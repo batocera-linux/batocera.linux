@@ -13,13 +13,13 @@
 #
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CONFIGS
 from ...controller import Controller, generate_sdl_game_controller_config
-from ...utils import esSettings, currentPlatform
+from ...utils import currentPlatform, esSettings
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -73,10 +73,10 @@ def createDefault():
     }
 
     # Disable OpenAL on slow CPUs
-    if currentPlatform.getCPUSpeed() < 2000:
+    if currentPlatform.get_cpu_speed() < 2000:
         options_to_set["set s_openal"] = "0"
 
-    if not currentPlatform.isPC():
+    if not currentPlatform.is_pc():
         options_to_set["set gl1_discardfb"] = "1"
         options_to_set["set gl1_lightmapcopies"] = "1"
         options_to_set["set gl1_pointparameters"] = "0"

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from configparser import ConfigParser
 from pathlib import Path
 from typing import TYPE_CHECKING
-from configparser import ConfigParser
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, HOME
@@ -42,9 +42,8 @@ class MoonlightGenerator(Generator):
             config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"
             config = ConfigParser()
             config.read(config_path)
-            host = config["hosts"]["1\\manualaddress"]
-            return host
-        except:
+            return config["hosts"]["1\\manualaddress"]
+        except:  # noqa: E722
             return None
 
     # Main entry of the module

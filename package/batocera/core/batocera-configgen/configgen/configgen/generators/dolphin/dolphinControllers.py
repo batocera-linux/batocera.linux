@@ -430,7 +430,7 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
         # In case of two pads having the same name, dolphin wants a number to handle this
         double_pads: dict[str, int] = {}
 
-        for pad in playersControllers:
+        for nplayer, pad in enumerate(playersControllers):
             # Handle x pads having the same name
             nsamepad = double_pads.get(pad.real_name.strip(), 0)
             double_pads[pad.real_name.strip()] = nsamepad+1
@@ -446,8 +446,6 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
                     generateControllerConfig_wheel(f, pad, nplayer)
                 else:
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
-
-            nplayer += 1
 
 
 def generateControllerConfig_wheel(f: codecs.StreamReaderWriter, pad: Controller, nplayer: int) -> None:

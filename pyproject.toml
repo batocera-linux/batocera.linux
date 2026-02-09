@@ -18,6 +18,7 @@ deps = [
     'configobj==5.0.8',
     'requests==2.32.3',
     'qrcode==8.0',
+    'pysdl2==0.9.17',
     'ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6',
 ]
 lint = [
@@ -56,6 +57,7 @@ stubPath = "python-src/stubs"
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
 
+typeCheckingMode = "strict"
 strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
@@ -63,7 +65,6 @@ reportMissingModuleSource = "none"
 reportDeprecated = "warning"
 
 reportUnnecessaryTypeIgnoreComment = "warning"
-typeCheckingMode = "strict"
 reportPrivateUsage = "none"
 reportUnusedImport = "none"
 reportUnusedVariable = "none"
@@ -72,6 +73,44 @@ enableExperimentalFeatures = true
 deprecateTypingAliases = true
 
 enableTypeIgnoreComments = false  # Force pyright: ignore comments
+
+[[tool.pyright.executionEnvironments]]
+# pyright doesn't allow setting typeCheckingMode per environment, so we
+# set it to strict globally and disable specific reports for configgen
+root = 'package/batocera/core/batocera-configgen/configgen'
+
+reportMissingTypeStubs = "none"
+reportConstantRedefinition = "none"
+reportDuplicateImport = "none"
+reportIncompleteStub = "none"
+reportInconsistentConstructor = "none"
+reportInvalidStubStatement = "none"
+reportMatchNotExhaustive = "none"
+reportMissingParameterType = "none"
+reportMissingTypeArgument = "none"
+reportTypeCommentUsage = "none"
+reportUnknownArgumentType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+reportUnnecessaryCast = "none"
+reportUnnecessaryComparison = "none"
+reportUnnecessaryContains = "none"
+reportUnnecessaryIsInstance = "none"
+reportUnusedClass = "none"
+reportUnusedFunction = "none"
+reportUntypedBaseClass = "none"
+reportUntypedClassDecorator = "none"
+reportUntypedFunctionDecorator = "none"
+reportUntypedNamedTuple = "none"
+reportAssertAlwaysTrue = "warning"
+reportInvalidStringEscapeSequence = "warning"
+reportInvalidTypeVarUse = "warning"
+reportSelfClsParameterName = "warning"
+reportUnsupportedDunderAll = "warning"
+reportUnusedExpression = "warning"
+reportWildcardImportFromLibrary = "warning"
 
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]

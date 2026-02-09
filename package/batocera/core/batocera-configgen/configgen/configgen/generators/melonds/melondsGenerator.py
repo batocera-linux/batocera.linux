@@ -138,7 +138,7 @@ class MelonDSGenerator(Generator):
 
         # Console
         base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
-        
+
         # Check if dual screen mode is enabled
         is_dual_screen_enabled = system.config.get("melonds_dual_screen", False)
 
@@ -149,14 +149,14 @@ class MelonDSGenerator(Generator):
             base_config["Instance0"]["Window0"]["ScreenSwap"] = False
             base_config["Instance0"]["Window0"]["ScreenLayout"] = 0
             base_config["Instance0"]["Window0"]["ScreenSizing"] = 4
-            
+
             # Window1 (Bottom Screen)
             base_config["Instance0"]["Window1"]["Enabled"] = True
             base_config["Instance0"]["Window1"]["ScreenRotation"] = 0
             base_config["Instance0"]["Window1"]["ScreenSwap"] = False
             base_config["Instance0"]["Window1"]["ScreenLayout"] = 0
             base_config["Instance0"]["Window1"]["ScreenSizing"] = 5
-            
+
             # Sync IntegerScaling from Window0 to Window1
             window0_scaling = system.config.get("melonds_scaling", 0)
             base_config["Instance0"]["Window0"]["IntegerScaling"] = window0_scaling

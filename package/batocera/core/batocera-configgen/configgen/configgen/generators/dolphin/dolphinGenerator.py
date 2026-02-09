@@ -95,7 +95,7 @@ class DolphinGenerator(Generator):
 
         # fixes exit and gui display
         dolphinSettings.remove_option("Display", "RenderToMain")
-        
+
         # start fullscreen
         dolphinSettings.set("Display", "Fullscreen", "True")
 

@@ -117,10 +117,10 @@ class MameGenerator(Generator):
             softList = 'fmtowns_cd'
 
         commandArray: list[str | Path] =  [ "/usr/bin/mame/mame" ]
-        
+
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
-        
+
         # set audio to pipewire to fix audio from 0.278
         commandArray += [ "-sound", "pipewire" ]
         # skip game info at start

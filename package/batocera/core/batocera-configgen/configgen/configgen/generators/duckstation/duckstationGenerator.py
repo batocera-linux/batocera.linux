@@ -378,7 +378,7 @@ class DuckstationGenerator(Generator):
 
         # Guns - configure based on detected guns, not controllers
         if system.config.use_guns and guns:
-            for nplayer, gun in enumerate(guns[:8], start=1):
+            for nplayer, _ in enumerate(guns[:8], start=1):
                 pad_num = f"Pad{nplayer}"
                 gun_num = f"Pointer-{nplayer - 1}"
                 # Gun mapping is hardcoded into patch.

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import platform
+import subprocess
+import sys
 from pathlib import Path
 
-def getCPUSpeed() -> int:
+
+def get_cpu_speed() -> int:
     try:
         if not Path("/usr/bin/lscpu").exists():
             return 0
@@ -14,7 +17,7 @@ def getCPUSpeed() -> int:
     except Exception:
         return 0
 
-def isPC() -> bool:
+def is_pc() -> bool:
     try:
         return platform.uname().machine.lower().find("x86") == 0
     except Exception:
