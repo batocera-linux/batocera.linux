@@ -26,24 +26,7 @@ diff --git a/drivers/soc/qcom/qcom-geni-se.c b/drivers/soc/qcom/qcom-geni-se.c
 index 111111111111..222222222222 100644
 --- a/drivers/soc/qcom/qcom-geni-se.c
 +++ b/drivers/soc/qcom/qcom-geni-se.c
-@@ -1,11 +1,15 @@
- // SPDX-License-Identifier: GPL-2.0
--// Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
-+/*
-+ *  Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
-+ *  Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
- 
- /* Disable MMIO tracing to prevent excessive logging of unwanted MMIO traces */
- #define __DISABLE_TRACE_MMIO__
- 
- #include <linux/acpi.h>
- #include <linux/clk.h>
-+#include <linux/firmware.h>
- #include <linux/slab.h>
- #include <linux/dma-mapping.h>
- #include <linux/io.h>
-@@ -15,6 +19,7 @@
+@@ -20,6 +20,7 @@
  #include <linux/pinctrl/consumer.h>
  #include <linux/platform_device.h>
  #include <linux/soc/qcom/geni-se.h>
@@ -51,44 +34,35 @@ index 111111111111..222222222222 100644
  
  /**
   * DOC: Overview
-@@ -80,9 +85,9 @@
+@@ -85,8 +86,9 @@
   * common to all the serial engines and are independent of serial interfaces.
   */
  
 -#define MAX_CLK_PERF_LEVEL 32
 -#define MAX_CLKS 2
--
 +#define MAX_CLK_PERF_LEVEL	32
 +#define MAX_CLKS		2
 +#define MAX_PROTOCOL		6
+ 
  /**
   * struct geni_wrapper - Data structure to represent the QUP Wrapper Core
-  * @dev:		Device pointer of the QUP wrapper core
-@@ -110,28 +115,23 @@ struct geni_se_desc {
- static const char * const icc_path_names[] = {"qup-core", "qup-config",
- 						"qup-memory"};
+@@ -190,12 +192,11 @@ struct se_fw_hdr {
+ /* QUPV3_COMMON_CGC_CTRL fields */
+ #define COMMON_CSR_SLV_CLK_CGC_ON	BIT(0)
  
 +static const char * const protocol_name[MAX_PROTOCOL] = { "None", "SPI", "UART",
 +							  "I2C", "I3C", "SPI SLAVE"};
 +
- #define QUP_HW_VER_REG			0x4
- 
  /* Common SE registers */
--#define GENI_INIT_CFG_REVISION		0x0
--#define GENI_S_INIT_CFG_REVISION	0x4
--#define GENI_OUTPUT_CTRL		0x24
--#define GENI_CGC_CTRL			0x28
- #define GENI_CLK_CTRL_RO		0x60
--#define GENI_FW_S_REVISION_RO		0x6c
+-#define SE_GENI_INIT_CFG_REVISION	0x0
+-#define SE_GENI_S_INIT_CFG_REVISION	0x4
+-#define SE_GENI_CGC_CTRL		0x28
+ #define SE_GENI_CLK_CTRL_RO		0x60
+-#define SE_GENI_FW_S_REVISION_RO	0x6c
+ #define SE_GENI_CFG_REG0		0x100
  #define SE_GENI_BYTE_GRAN		0x254
  #define SE_GENI_TX_PACKING_CFG0		0x260
- #define SE_GENI_TX_PACKING_CFG1		0x264
- #define SE_GENI_RX_PACKING_CFG0		0x284
- #define SE_GENI_RX_PACKING_CFG1		0x288
--#define SE_GENI_M_GP_LENGTH		0x910
--#define SE_GENI_S_GP_LENGTH		0x914
- #define SE_DMA_TX_PTR_L			0xc30
- #define SE_DMA_TX_PTR_H			0xc34
+@@ -208,7 +209,6 @@ struct se_fw_hdr {
  #define SE_DMA_TX_ATTR			0xc38
  #define SE_DMA_TX_LEN			0xc3c
  #define SE_DMA_TX_IRQ_EN		0xc48
@@ -96,42 +70,15 @@ index 111111111111..222222222222 100644
  #define SE_DMA_TX_IRQ_EN_CLR		0xc50
  #define SE_DMA_TX_LEN_IN		0xc54
  #define SE_DMA_TX_MAX_BURST		0xc5c
-@@ -140,9 +140,7 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
+@@ -217,7 +217,6 @@ struct se_fw_hdr {
  #define SE_DMA_RX_ATTR			0xd38
  #define SE_DMA_RX_LEN			0xd3c
  #define SE_DMA_RX_IRQ_EN		0xd48
 -#define SE_DMA_RX_IRQ_EN_SET		0xd4c
  #define SE_DMA_RX_IRQ_EN_CLR		0xd50
--#define SE_DMA_RX_LEN_IN		0xd54
  #define SE_DMA_RX_MAX_BURST		0xd5c
  #define SE_DMA_RX_FLUSH			0xd60
- #define SE_GSI_EVENT_EN			0xe18
-@@ -179,7 +177,7 @@ static const char * const icc_path_names[] = {"qup-core", "qup-config",
- /* SE_DMA_GENERAL_CFG */
- #define DMA_RX_CLK_CGC_ON		BIT(0)
- #define DMA_TX_CLK_CGC_ON		BIT(1)
--#define DMA_AHB_SLV_CFG_ON		BIT(2)
-+#define DMA_AHB_SLV_CLK_CGC_ON		BIT(2)
- #define AHB_SEC_SLV_CLK_CGC_ON		BIT(3)
- #define DUMMY_RX_NON_BUFFERABLE		BIT(4)
- #define RX_DMA_ZERO_PADDING_EN		BIT(5)
-@@ -220,12 +218,12 @@ static void geni_se_io_init(void __iomem *base)
- {
- 	u32 val;
- 
--	val = readl_relaxed(base + GENI_CGC_CTRL);
-+	val = readl_relaxed(base + SE_GENI_CGC_CTRL);
- 	val |= DEFAULT_CGC_EN;
--	writel_relaxed(val, base + GENI_CGC_CTRL);
-+	writel_relaxed(val, base + SE_GENI_CGC_CTRL);
- 
- 	val = readl_relaxed(base + SE_DMA_GENERAL_CFG);
--	val |= AHB_SEC_SLV_CLK_CGC_ON | DMA_AHB_SLV_CFG_ON;
-+	val |= AHB_SEC_SLV_CLK_CGC_ON | DMA_AHB_SLV_CLK_CGC_ON;
- 	val |= DMA_TX_CLK_CGC_ON | DMA_RX_CLK_CGC_ON;
- 	writel_relaxed(val, base + SE_DMA_GENERAL_CFG);
- 
-@@ -891,6 +889,379 @@ int geni_icc_disable(struct geni_se *se)
+@@ -988,6 +987,379 @@ int geni_icc_disable(struct geni_se *se)
  }
  EXPORT_SYMBOL_GPL(geni_icc_disable);
  
@@ -508,36 +455,14 @@ index 111111111111..222222222222 100644
 +}
 +EXPORT_SYMBOL_GPL(geni_load_se_firmware);
 +
- static int geni_se_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
+ /**
+  * geni_find_protocol_fw() - Locate and validate SE firmware for a protocol.
+  * @dev: Pointer to the device structure.
 diff --git a/include/linux/soc/qcom/geni-se.h b/include/linux/soc/qcom/geni-se.h
 index 111111111111..222222222222 100644
 --- a/include/linux/soc/qcom/geni-se.h
 +++ b/include/linux/soc/qcom/geni-se.h
-@@ -1,11 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2025 Qualcomm Innovation Center, Inc. All rights reserved.
-  */
- 
- #ifndef _LINUX_QCOM_GENI_SE
- #define _LINUX_QCOM_GENI_SE
- 
-+#include <linux/bitfield.h>
- #include <linux/interconnect.h>
- 
- /**
-@@ -36,6 +38,7 @@ enum geni_se_protocol_type {
- 	GENI_SE_I2C,
- 	GENI_SE_I3C,
- 	GENI_SE_SPI_SLAVE,
-+	GENI_SE_INVALID_PROTO = 255,
- };
- 
- struct geni_wrapper;
-@@ -61,6 +64,8 @@ struct geni_icc_path {
+@@ -63,6 +63,8 @@ struct geni_icc_path {
   * @num_clk_levels:	Number of valid clock levels in clk_perf_tbl
   * @clk_perf_tbl:	Table of clock frequency input to serial engine clock
   * @icc_paths:		Array of ICC paths for SE
@@ -546,7 +471,7 @@ index 111111111111..222222222222 100644
   */
  struct geni_se {
  	void __iomem *base;
-@@ -70,24 +75,32 @@ struct geni_se {
+@@ -72,18 +74,25 @@ struct geni_se {
  	unsigned int num_clk_levels;
  	unsigned long *clk_perf_tbl;
  	struct geni_icc_path icc_paths[3];
@@ -573,22 +498,24 @@ index 111111111111..222222222222 100644
  #define SE_GENI_DMA_MODE_EN		0x258
  #define SE_GENI_M_CMD0			0x600
  #define SE_GENI_M_CMD_CTRL_REG		0x604
- #define SE_GENI_M_IRQ_STATUS		0x610
- #define SE_GENI_M_IRQ_EN		0x614
- #define SE_GENI_M_IRQ_CLEAR		0x618
-+#define SE_GENI_S_IRQ_ENABLE		0x644
- #define SE_GENI_M_IRQ_EN_SET		0x61c
- #define SE_GENI_M_IRQ_EN_CLEAR		0x620
+@@ -95,7 +104,7 @@ struct geni_se {
  #define SE_GENI_S_CMD0			0x630
-@@ -109,13 +122,22 @@ struct geni_se {
+ #define SE_GENI_S_CMD_CTRL_REG		0x634
+ #define SE_GENI_S_IRQ_STATUS		0x640
+-#define SE_GENI_S_IRQ_EN		0x644
++#define SE_GENI_S_IRQ_ENABLE		0x644
+ #define SE_GENI_S_IRQ_CLEAR		0x648
+ #define SE_GENI_S_IRQ_EN_SET		0x64c
+ #define SE_GENI_S_IRQ_EN_CLEAR		0x650
+@@ -111,13 +120,22 @@ struct geni_se {
  #define SE_GENI_S_GP_LENGTH		0x914
  #define SE_DMA_TX_IRQ_STAT		0xc40
  #define SE_DMA_TX_IRQ_CLR		0xc44
-+#define SE_DMA_TX_IRQ_EN_SET		0xc4c
++#define SE_DMA_TX_IRQ_EN_SET	0xc4c
  #define SE_DMA_TX_FSM_RST		0xc58
  #define SE_DMA_RX_IRQ_STAT		0xd40
  #define SE_DMA_RX_IRQ_CLR		0xd44
-+#define SE_DMA_RX_IRQ_EN_SET		0xd4c
++#define SE_DMA_RX_IRQ_EN_SET	0xd4c
  #define SE_DMA_RX_LEN_IN		0xd54
  #define SE_DMA_RX_FSM_RST		0xd58
  #define SE_HW_PARAM_0			0xe24
@@ -603,7 +530,7 @@ index 111111111111..222222222222 100644
  
  /* GENI_FORCE_DEFAULT_REG fields */
  #define FORCE_DEFAULT	BIT(0)
-@@ -137,7 +159,7 @@ struct geni_se {
+@@ -139,7 +157,7 @@ struct geni_se {
  
  /* GENI_FW_REVISION_RO fields */
  #define FW_REV_PROTOCOL_MSK		GENMASK(15, 8)
@@ -612,7 +539,7 @@ index 111111111111..222222222222 100644
  
  /* GENI_CLK_SEL fields */
  #define CLK_SEL_MSK			GENMASK(2, 0)
-@@ -325,9 +347,9 @@ static inline u32 geni_se_read_proto(struct geni_se *se)
+@@ -327,9 +345,9 @@ static inline u32 geni_se_read_proto(struct geni_se *se)
  {
  	u32 val;
  
@@ -624,14 +551,6 @@ index 111111111111..222222222222 100644
  }
  
  /**
-@@ -531,5 +553,7 @@ void geni_icc_set_tag(struct geni_se *se, u32 tag);
- int geni_icc_enable(struct geni_se *se);
- 
- int geni_icc_disable(struct geni_se *se);
-+
-+int geni_load_se_firmware(struct geni_se *se, enum geni_se_protocol_type protocol);
- #endif
- #endif
 diff --git a/include/linux/soc/qcom/qup-fw-load.h b/include/linux/soc/qcom/qup-fw-load.h
 new file mode 100644
 index 000000000000..111111111111
@@ -732,5 +651,4 @@ index 000000000000..111111111111
 +};
 +#endif /* _LINUX_QCOM_QUP_FW_LOAD */
 -- 
-Armbian
 
