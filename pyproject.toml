@@ -42,7 +42,7 @@ members = [
     'python-src/*',
     './package/batocera/core/batocera-configgen/configgen',
 ]
-exclude = ['python-src/stubs']
+exclude = ['python-src/stubs', 'python-src/scripts']
 
 [tool.pyright]
 exclude = [

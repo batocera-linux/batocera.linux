@@ -23,44 +23,49 @@ class DeviceInfo(NamedTuple):
     product: int
     version: int
 
-class _Capabilities[KT, VT, AKT, AVT](Mapping[KT | AKT, VT | AVT]):
+class _Capabilities[KeyT, ValueT, AbsKeyT, AbsValueT](Mapping[KeyT | AbsKeyT, ValueT | AbsValueT]):
     @overload
-    def __getitem__(self, key: AKT, /) -> AVT: ...
+    def __getitem__(self, key: AbsKeyT, /) -> AbsValueT: ...
     @overload
-    def __getitem__(self, key: KT, /) -> VT: ...
+    def __getitem__(self, key: KeyT, /) -> ValueT: ...
     @overload
-    def __getitem__(self, key: KT | AKT, /) -> AVT | VT: ...
+    def __getitem__(self, key: KeyT | AbsKeyT, /) -> AbsValueT | ValueT: ...
     @overload
-    def get(self, key: AKT, /) -> AVT | None: ...
+    def get(self, key: AbsKeyT, /) -> AbsValueT | None: ...
     @overload
-    def get(self, key: KT, /) -> VT | None: ...
+    def get(self, key: KeyT, /) -> ValueT | None: ...
     @overload
-    def get(self, key: KT | AKT, /) -> AVT | VT | None: ...
+    def get(self, key: KeyT | AbsKeyT, /) -> AbsValueT | ValueT | None: ...
     @overload
-    def get[T](self, key: AKT, /, default: AVT | T) -> AVT | T: ...
+    def get[T](self, key: AbsKeyT, /, default: AbsValueT | T) -> AbsValueT | T: ...
     @overload
-    def get[T](self, key: KT, /, default: VT | T) -> VT | T: ...
+    def get[T](self, key: KeyT, /, default: ValueT | T) -> ValueT | T: ...
     @overload
-    def get[T](self, key: KT | AKT, /, default: AVT | VT | T) -> AVT | VT | T: ...  # pyright: ignore[reportIncompatibleMethodOverride]
+    def get[T](self, key: KeyT | AbsKeyT, /, default: AbsValueT | ValueT | T) -> AbsValueT | ValueT | T: ...  # pyright: ignore[reportIncompatibleMethodOverride]
 
-class _CapabilitiesWithAbsInfo(
-    _Capabilities[Literal[0, 1, 2, 4, 5, 17, 18, 20, 21, 22, 23], list[int], Literal[3], list[tuple[int, AbsInfo]]]
-): ...
-class _VerboseCapabilitiesWithAbsInfo(
+type _Keys = Literal[0, 1, 2, 4, 5, 17, 18, 20, 21, 22, 23]
+type _AbsKeys = Literal[3]
+type _VerboseKeys = (
+    tuple[Literal['EV_SYN'], Literal[0]]
+    | tuple[Literal['EV_KEY'], Literal[1]]
+    | tuple[Literal['EV_REL'], Literal[2]]
+    | tuple[Literal['EV_MSC'], Literal[4]]
+    | tuple[Literal['EV_SW'], Literal[5]]
+    | tuple[Literal['EV_LED'], Literal[17]]
+    | tuple[Literal['EV_SND'], Literal[18]]
+    | tuple[Literal['EV_REP'], Literal[20]]
+    | tuple[Literal['EV_FF'], Literal[21]]
+    | tuple[Literal['EV_PWR'], Literal[22]]
+    | tuple[Literal['EV_FF_STATUS'], Literal[23]]
+)
+type _VerboseAbsKeys = tuple[Literal['EV_ABS'], Literal[3]]
+
+class _AbsInfoCapabilities(_Capabilities[_Keys, list[int], _AbsKeys, list[tuple[int, AbsInfo]]]): ...
+class _VerboseAbsInfoCapabilities(
     _Capabilities[
-        tuple[Literal['EV_SYN'], Literal[0]]
-        | tuple[Literal['EV_KEY'], Literal[1]]
-        | tuple[Literal['EV_REL'], Literal[2]]
-        | tuple[Literal['EV_MSC'], Literal[4]]
-        | tuple[Literal['EV_SW'], Literal[5]]
-        | tuple[Literal['EV_LED'], Literal[17]]
-        | tuple[Literal['EV_SND'], Literal[18]]
-        | tuple[Literal['EV_REP'], Literal[20]]
-        | tuple[Literal['EV_FF'], Literal[21]]
-        | tuple[Literal['EV_PWR'], Literal[22]]
-        | tuple[Literal['EV_FF_STATUS'], Literal[23]],
+        _VerboseKeys,
         list[tuple[str, int]],
-        tuple[Literal['EV_ABS'], Literal[3]],
+        _VerboseAbsKeys,
         list[tuple[tuple[str, int], AbsInfo]],
     ]
 ): ...
@@ -75,11 +80,11 @@ class InputDevice(EventIO):
     def __init__(self, dev: StrOrBytesPath) -> None: ...
     def __del__(self) -> None: ...
     @overload
-    def capabilities(self, verbose: Literal[False] = ..., absinfo: Literal[True] = ...) -> _CapabilitiesWithAbsInfo: ...
+    def capabilities(self, verbose: Literal[False] = ..., absinfo: Literal[True] = ...) -> _AbsInfoCapabilities: ...
     @overload
     def capabilities(self, verbose: Literal[False], absinfo: Literal[False]) -> dict[int, list[int]]: ...
     @overload
-    def capabilities(self, verbose: Literal[True], absinfo: Literal[True] = ...) -> _VerboseCapabilitiesWithAbsInfo: ...
+    def capabilities(self, verbose: Literal[True], absinfo: Literal[True] = ...) -> _VerboseAbsInfoCapabilities: ...
     @overload
     def capabilities(
         self, verbose: Literal[True], absinfo: Literal[False]
