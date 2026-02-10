@@ -3614,6 +3614,51 @@ coco:
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
 
+cgenie:
+  name: Colour Genie
+  manufacturer: EACA
+  release: 1982
+  hardware: computer
+  extensions: [cas, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME requires BIOS file cgenie.zip
+  comment_br: |
+          Requer o arquivo cgenie.zip da BIOS do MAME
+
+trs80:
+  name: TRS-80
+  manufacturer: Tandy Radio Shack
+  release: 1977
+  hardware: computer
+  extensions: [cmd, cas, dsk, dmk, bas, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME requires BIOS file trs80.zip (Model I), trs80m3.zip (Model III), or trs80m4.zip (Model 4)
+
+          Default Autoload Behaviors
+          1. Cassette (.cas) files autoload using SYSTEM then filename
+          2. Disk (.dsk/.dmk) files autoload from boot disk
+          3. Command (.cmd) files autoload directly as executables
+          4. BASIC (.bas) files autoload using RUN command
+
+          TRS-80 Models supported by MAME:
+          - Model I (1977) - Original Z80-based microcomputer
+          - Model III (1980) - Integrated design with built-in disk drives
+          - Model 4 (1983) - Enhanced Model III with 80x24 display
+
+          user definable autoload overrides in: `system/configs/mame/autoload/trs80_{cass,flop}_autoload.csv`
+  comment_br: |
+          Requer o arquivo trs80.zip da BIOS do MAME
+
 vc4000:
   name:       VC 4000
   manufacturer: Interton

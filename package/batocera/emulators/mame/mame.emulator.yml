@@ -1233,6 +1233,84 @@ systems:
   - plugnplay
   - samcoupe
   - uzebox
+  - name: cgenie
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Colour Genie Cassettes: cgenie_cass
+          Colour Genie Floppies (ROM required): cgenie_flop_rom
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load
+        choices:
+          Cassette: cass
+          Floppy Disk 1: flop1
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
+  - name: trs80
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          TRS-80 Cassettes: trs80_cass
+          TRS-80 Floppies: trs80_flop
+          TRS-80 Quickload (.cmd): trs80_quik
+      altmodel:
+        prompt: TRS-80 MODEL
+        description: Select model of TRS-80 to emulate
+        choices:
+          Model I (Level I Basic): trs80
+          Model I (Level II Basic): trs80l2
+          Model III (Default): trs80m3
+          Model 4: trs80m4
+          Model 4P: trs80m4p
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load
+        choices:
+          Cassette: cass
+          Quickload (.cmd): quik
+          Floppy Disk 1: flop1
+          Floppy Disk 2: flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
   - name: pc60
     features:
       - padtokeyboard
