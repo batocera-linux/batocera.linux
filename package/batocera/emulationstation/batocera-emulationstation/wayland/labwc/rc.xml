@@ -73,11 +73,17 @@
         <output></output>
       </action>
     </windowRule>
-    <windowRule title="Batocera OSD">
+    <windowRule identifier="batocera-flash-screen*" title="Batocera OSD*">
       <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
     </windowRule>
     <windowRule title="Batocera Control Center">
       <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
     </windowRule>
     <windowRule title="backglass">
       <action name="MoveToOutput">
