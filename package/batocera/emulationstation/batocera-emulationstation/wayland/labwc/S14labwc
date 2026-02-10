@@ -9,99 +9,120 @@ SRC_DIR="/usr/share/labwc"
 DEST_DIR="/userdata/system/.config/labwc"
 
 start() {
-    display_log="/userdata/system/logs/display.log"
-    mkdir -p "$(dirname "$display_log")"
-    echo "Initializing Labwc configuration..." > "$display_log"
-    mkdir -p "$DEST_DIR"
-    for file in rc.xml autostart; do
-        echo "Copying default $file to $DEST_DIR..." >> "$display_log"
-        cp "$SRC_DIR/$file" "$DEST_DIR/"
-    done
-    RC_XML_PATH="$DEST_DIR/rc.xml"
-    # Double check if the file exists before trying to modify it
-    if [ -f "${RC_XML_PATH}" ]; then
-        echo "Fetching video output settings to apply to ${RC_XML_PATH}..." >> "$display_log"
-        # Get the primary and secondary video outputs from Batocera's settings
-        PRIMARY_OUT=$(batocera-settings-get-master global.videooutput)
-        SECONDARY_OUT=$(batocera-settings-get-master global.videooutput2)
-        echo "Found Primary Output: ${PRIMARY_OUT:-'none'}" >> "$display_log"
-        echo "Found Secondary Output: ${SECONDARY_OUT:-'none'}" >> "$display_log"
-        # Set EmulationStation to the primary output
-        if [ -n "${PRIMARY_OUT}" ]; then
-            echo "Applying window rules for EmulationStation -> ${PRIMARY_OUT}" >> "$display_log"
-            sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { 
+	display_log="/userdata/system/logs/display.log"
+	mkdir -p "$(dirname "$display_log")"
+	echo "Initializing Labwc configuration..." >"$display_log"
+	mkdir -p "$DEST_DIR"
+	for file in rc.xml autostart; do
+		echo "Copying default $file to $DEST_DIR..." >>"$display_log"
+		cp "$SRC_DIR/$file" "$DEST_DIR/"
+	done
+	RC_XML_PATH="$DEST_DIR/rc.xml"
+	# Double check if the file exists before trying to modify it
+	if [ -f "${RC_XML_PATH}" ]; then
+		echo "Fetching video output settings to apply to ${RC_XML_PATH}..." >>"$display_log"
+		# Get the primary and secondary video outputs from Batocera's settings
+		PRIMARY_OUT=$(batocera-settings-get-master global.videooutput)
+		SECONDARY_OUT=$(batocera-settings-get-master global.videooutput2)
+		echo "Found Primary Output: ${PRIMARY_OUT:-'none'}" >>"$display_log"
+		echo "Found Secondary Output: ${SECONDARY_OUT:-'none'}" >>"$display_log"
+		# Set EmulationStation to the primary output
+		if [ -n "${PRIMARY_OUT}" ]; then
+			echo "Applying window rules for EmulationStation -> ${PRIMARY_OUT}" >>"$display_log"
+			sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ {
                 /action name="FocusOutput"/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
                 /action name="MoveToOutput"/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
             }' "${RC_XML_PATH}"
-        else
-            echo "No primary output set. Skipping EmulationStation rules." >> "$display_log"
-        fi
-        # Set backglass to the secondary output, or clear if no secondary output
-        echo "Applying window rules for backglass..." >> "$display_log"
-        BACKGLASS_OUT=""
-        if [ -n "${SECONDARY_OUT}" ]; then
-            BACKGLASS_OUT="${SECONDARY_OUT}"
-        fi
-        sed -i -e '/<windowRule.*title="backglass"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+		else
+			echo "No primary output set. Skipping EmulationStation rules." >>"$display_log"
+		fi
+		# Set backglass to the secondary output, or clear if no secondary output
+		echo "Applying window rules for backglass..." >>"$display_log"
+		BACKGLASS_OUT=""
+		if [ -n "${SECONDARY_OUT}" ]; then
+			BACKGLASS_OUT="${SECONDARY_OUT}"
+		fi
+		sed -i -e '/<windowRule.*title="backglass"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
             n
             s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
         } }' "${RC_XML_PATH}"
 
-        echo "Applying window rules for azahar..." >> "$display_log"
-        if [ -n "${PRIMARY_OUT}" ]; then
-            echo "Setting main azahar window -> ${PRIMARY_OUT}" >> "$display_log"
-            sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+		echo "Applying window rules for azahar..." >>"$display_log"
+		if [ -n "${PRIMARY_OUT}" ]; then
+			echo "Setting main azahar window -> ${PRIMARY_OUT}" >>"$display_log"
+			sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                 n
                 s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
             } }' "${RC_XML_PATH}"
-        else
-            echo "No primary output set. Skipping main azahar rule." >> "$display_log"
-        fi
-        AZAHAR_SECONDARY_OUT=""
-        if [ -n "${SECONDARY_OUT}" ]; then
-            AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
-            echo "Setting azahar Secondary Window -> ${AZAHAR_SECONDARY_OUT}" >> "$display_log"
-        else
-            echo "No secondary output set. Clearing output for azahar Secondary Window." >> "$display_log"
-        fi
-        sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+		else
+			echo "No primary output set. Skipping main azahar rule." >>"$display_log"
+		fi
+		AZAHAR_SECONDARY_OUT=""
+		if [ -n "${SECONDARY_OUT}" ]; then
+			AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
+			echo "Setting azahar Secondary Window -> ${AZAHAR_SECONDARY_OUT}" >>"$display_log"
+		else
+			echo "No secondary output set. Clearing output for azahar Secondary Window." >>"$display_log"
+		fi
+		sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
             n
             s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
         } }' "${RC_XML_PATH}"
 
-        # --- Check for touchscreen and configure it ---
-        TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
-        if [ -n "${TOUCHSCREEN}" ] && [ -n "${PRIMARY_OUT}" ]; then
-            echo "Touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${PRIMARY_OUT}." >> "$display_log"
-            
-            # Update the main <touch> tag with the correct deviceName and mapToOutput.
-            sed -i \
-                "/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PRIMARY_OUT}\"|" \
-                "${RC_XML_PATH}"
-        else
-            if [ -z "${PRIMARY_OUT}" ]; then
-                echo "No primary output set. Skipping touchscreen configuration." >> "$display_log"
-            else
-                echo "No touchscreen found. Skipping touchscreen configuration." >> "$display_log"
-            fi
-        fi
+		# Set BCC to the secondary output, or clear if no secondary output
+		echo "Applying window rules for BCC..." >>"$display_log"
+		BCC_OUT=""
+		if [ -n "${SECONDARY_OUT}" ]; then
+			BCC_OUT="${SECONDARY_OUT}"
+		fi
+		sed -i -e '/<windowRule.*title="Batocera Control Center"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+		n
+		s#\s*<output>.*</output>#        <output>'"${BCC_OUT}"'</output>#
+	} }' "${RC_XML_PATH}"
 
-        echo "Labwc configuration modification complete." >> "$display_log"
-    else
-        echo "ERROR: ${RC_XML_PATH} not found after copy. Cannot apply settings." >> "$display_log"
-    fi
+		# Set OSD to the main output
+		echo "Applying window rules for OSD..." >>"$display_log"
+		OSD_OUT=""
+		if [ -n "${PRIMARY_OUT}" ]; then
+			OSD_OUT="${PRIMARY_OUT}"
+		fi
+		sed -i -e '/<windowRule.*title="Batocera OSD"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+		n
+		s#\s*<output>.*</output>#        <output>'"${OSD_OUT}"'</output>#
+	} }' "${RC_XML_PATH}"
+
+		# --- Check for touchscreen and configure it ---
+		TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
+		if [ -n "${TOUCHSCREEN}" ] && [ -n "${PRIMARY_OUT}" ]; then
+			echo "Touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${PRIMARY_OUT}." >>"$display_log"
+
+			# Update the main <touch> tag with the correct deviceName and mapToOutput.
+			sed -i \
+				"/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PRIMARY_OUT}\"|" \
+				"${RC_XML_PATH}"
+		else
+			if [ -z "${PRIMARY_OUT}" ]; then
+				echo "No primary output set. Skipping touchscreen configuration." >>"$display_log"
+			else
+				echo "No touchscreen found. Skipping touchscreen configuration." >>"$display_log"
+			fi
+		fi
+
+		echo "Labwc configuration modification complete." >>"$display_log"
+	else
+		echo "ERROR: ${RC_XML_PATH} not found after copy. Cannot apply settings." >>"$display_log"
+	fi
 }
 
 case "$1" in
-    start)
-        start
-        ;;
-    stop)
-        ;;
-    *)
-        echo "Usage: $0 start"
-        exit 1
-        ;;
+start)
+	start
+	;;
+stop) ;;
+*)
+	echo "Usage: $0 start"
+	exit 1
+	;;
 esac
 
 exit 0
