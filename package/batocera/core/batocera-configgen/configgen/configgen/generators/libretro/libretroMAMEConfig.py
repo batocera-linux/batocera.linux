@@ -62,7 +62,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
     else:
         corePath = str(system.config.core)
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.config.get_bool("customcfg"):
@@ -70,10 +70,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         else:
             cfgPath = SAVES / "mame" / "mame" / "cfg"
         mkdir_if_not_exists(cfgPath)
-        if system.name == 'vis':
-            commandLine += [ 'vis', '-cdrom', f'"{rom}"' ]
-        else:
-            commandLine += [ romDrivername ]
+        commandLine += [ romDrivername ]
         commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
         commandLine += [ '-rompath', f'"{rom.parent};/userdata/bios/mame/;/userdata/bios/"' ]
         pluginsToLoad: list[str] = []

@@ -4980,6 +4980,8 @@ vis:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 vpinball:
   name: Visual Pinball X
