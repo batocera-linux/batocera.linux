@@ -520,6 +520,13 @@ systems = {
                                                 { "md5": "", "zippedFile": "motoroff.wav", "file": "bios/mame/samples/bbc.zip"},
                                                 { "md5": "", "zippedFile": "motoron.wav", "file": "bios/mame/samples/bbc.zip"} ] },
 
+    # ---------- Amstrad PCW ---------- #
+    "pcw":   { "name": "Amstrad PCW", "biosFiles":  [ { "md5": "", "file": "bios/pcw8256.zip"  },
+                                                { "md5": "a846b928562ca8281bc279f41b475a06", "zippedFile": "40026.ic701", "file": "bios/pcw8256.zip"},
+                                                { "md5": "cefe4b0b7c701c1a80130e3390b007f5", "zippedFile": "40027.ic801", "file": "bios/pcw8256.zip"},
+                                                { "md5": "", "file": "bios/pcw9512.zip"  },
+                                                { "md5": "b664af93987d575b0248832832c61505", "zippedFile": "40103.ic109", "file": "bios/pcw9512.zip"} ] },
+
     # ---------- APF M-1000 ---------- #
     "apfm1000":   { "name": "APF M-1000", "biosFiles":  [ { "md5": "", "file": "bios/apfm1000.zip"  },
                                                 { "md5": "1f4a976350202ee1e32c2b0477c3fc1b", "zippedFile": "apf_4000.rom", "file": "bios/apfm1000.zip"},
