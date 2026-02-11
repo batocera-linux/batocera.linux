@@ -1,0 +1,163 @@
+diff --git a/es-app/CMakeLists.txt b/es-app/CMakeLists.txt
+index caaf9c6..b1910d3 100644
+--- a/es-app/CMakeLists.txt
++++ b/es-app/CMakeLists.txt
+@@ -104,6 +104,7 @@ set(ES_HEADERS
+ 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSaveState.h
+ 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFileBrowser.h	
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFavoriteMusicSelector.h	
++    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMoonlight.h
+ 
+     # Scrapers
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/Scraper.h
+@@ -209,6 +210,7 @@ set(ES_SOURCES
+ 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiSaveState.cpp
+ 	${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFileBrowser.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiFavoriteMusicSelector.cpp
++    ${CMAKE_CURRENT_SOURCE_DIR}/src/guis/GuiMoonlight.cpp
+ 
+     # Scrapers
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/Scraper.cpp
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+index f6d143b..8470475 100644
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -20,6 +20,7 @@
+ #include "guis/GuiRetroAchievementsSettings.h"
+ #include "guis/GuiSystemInformation.h"
+ #include "guis/GuiControllersSettings.h"
++#include "guis/GuiMoonlight.h"
+ #include "views/UIModeController.h"
+ #include "views/ViewController.h"
+ #include "CollectionSystemManager.h"
+@@ -2763,6 +2764,9 @@ void GuiMenu::openGamesSettings()
+ 	// Game List Update
+ 	s->addEntry(_("UPDATE GAMELISTS"), false, [this, window] { updateGameLists(window); });
+ 
++	if (Utils::FileSystem::exists("/usr/bin/batocera-moonlight"))
++		s->addEntry(_("MOONLIGHT GAME STREAMING"), false, [window] { GuiMoonlight::show(window); });
++
+ 	if (SystemConf::getInstance()->getBool("global.retroachievements") && !Settings::getInstance()->getBool("RetroachievementsMenuitem") && SystemConf::getInstance()->get("global.retroachievements.username") != "")
+ 	{
+ 		s->addEntry(_("RETROACHIEVEMENTS").c_str(), true, [this] 
+diff --git a/es-app/src/guis/GuiMoonlight.cpp b/es-app/src/guis/GuiMoonlight.cpp
+new file mode 100644
+index 0000000..6ffb5a0
+--- /dev/null
++++ b/es-app/src/guis/GuiMoonlight.cpp
+@@ -0,0 +1,95 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include "guis/GuiMoonlight.h"
++
++#include <cstdio>
++#include <cstdlib>
++#include <ctime>
++
++#include "Scripting.h"
++#include "SystemConf.h"
++#include "ThemeData.h"
++#include "Window.h"
++#include "components/TextComponent.h"
++#include "guis/GuiMsgBox.h"
++#include "utils/Platform.h"
++
++void GuiMoonlight::show(Window* window)
++{
++    window->pushGui(new GuiMoonlight(window));
++}
++
++GuiMoonlight::GuiMoonlight(Window* window)
++    : GuiSettings(window, _("MOONLIGHT GAME STREAMING"))
++{
++    std::srand(static_cast<unsigned int>(std::time(nullptr)));
++    char pin[5];
++    std::snprintf(pin, sizeof(pin), "%04d", std::rand() % 10000);
++
++    auto theme = ThemeData::getMenuTheme();
++    auto pinUI = std::make_shared<TextComponent>(window, pin, theme->Text.font, theme->Text.color);
++    auto runCommand = [](const std::string& cmd) -> int {
++        Utils::Platform::ProcessStartInfo command(cmd);
++        command.waitForExit = true;
++        return command.run();
++    };
++
++    addGroup(_("TOOLS"));
++
++    addEntry(_("QUIT CURRENT GAME"), false, [window, runCommand] {
++        std::string serverIp = SystemConf::getInstance()->get("moonlight.host");
++        if (serverIp.empty())
++        {
++            window->pushGui(new GuiMsgBox(window, _("Set SERVER IP first.")));
++            return;
++        }
++
++        runCommand("batocera-moonlight quit");
++    });
++
++    addEntry(_("UPDATE MOONLIGHT GAMES"), false, [window, runCommand] {
++        std::string serverIp = SystemConf::getInstance()->get("moonlight.host");
++        if (serverIp.empty())
++        {
++            window->pushGui(new GuiMsgBox(window, _("Set SERVER IP first.")));
++            return;
++        }
++
++        int rc = runCommand("batocera-moonlight init");
++        if (rc == 0)
++        {
++            Scripting::fireEvent("quit", "restart");
++            Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT);
++        }
++        else
++            window->pushGui(new GuiMsgBox(window, _("Unable to connect to server")));
++    });
++
++    addEntry(_("PAIR WITH SERVER"), false, [window, pin, runCommand] {
++        std::string serverIp = SystemConf::getInstance()->get("moonlight.host");
++        if (serverIp.empty())
++        {
++            window->pushGui(new GuiMsgBox(window, _("Set SERVER IP first.")));
++            return;
++        }
++
++        std::string cmd = std::string("batocera-moonlight pair ") + pin;
++        int rc = runCommand(cmd);
++        if (rc == 0)
++            window->pushGui(new GuiMsgBox(window, _("Successfully paired with server")));
++        else
++            window->pushGui(new GuiMsgBox(window, _("Unable to pair with server")));
++    });
++
++    addEntry(_("UNPAIR WITH SERVER"), false, [window, runCommand] {
++        int rc = runCommand("batocera-moonlight clean");
++        if (rc == 0)
++            window->pushGui(new GuiMsgBox(window, _("Unpaired from server")));
++        else
++            window->pushGui(new GuiMsgBox(window, _("Unable to unpair from server")));
++    });
++
++    addGroup(_("SETTINGS"));
++    addInputTextConfigRow(_("SERVER IP"), "moonlight.host", false);
++    addWithLabel(_("PAIRING PIN"), pinUI);
++}
+diff --git a/es-app/src/guis/GuiMoonlight.h b/es-app/src/guis/GuiMoonlight.h
+new file mode 100644
+index 0000000..17cd39e
+--- /dev/null
++++ b/es-app/src/guis/GuiMoonlight.h
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#pragma once
++
++#include "GuiSettings.h"
++
++class GuiMoonlight : public GuiSettings
++{
++public:
++    static void show(Window* window);
++
++protected:
++    explicit GuiMoonlight(Window* window);
++};
