@@ -1,0 +1,19 @@
+diff --git a/Makefile.libretro b/Makefile.libretro
+index ac4a707..32950c8 100644
+--- a/Makefile.libretro
++++ b/Makefile.libretro
+@@ -169,10 +169,14 @@ ifneq (,$(findstring unix,$(platform)))
+          PLATFORM_DEFINES += -DARM11 -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard
+       else ifneq (,$(findstring rpi2,$(platform)))
+          PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
++      else ifneq (,$(findstring rpi3_64,$(platform)))
++         PLATFORM_DEFINES += -DARM -march=armv8-a+crc+simd -mtune=cortex-a53
+       else ifneq (,$(findstring rpi3,$(platform)))
+          PLATFORM_DEFINES += -DARM -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+       else ifneq (,$(findstring rpi4_64,$(platform)))
+          PLATFORM_DEFINES += -DARM -march=armv8-a+crc+simd -mtune=cortex-a72
++      else ifneq (,$(findstring rpi5,$(platform)))
++         PLATFORM_DEFINES += -DARM -mcpu=cortex-a76 -mtune=cortex-a76
+       endif
+    endif
+    
