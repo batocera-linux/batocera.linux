@@ -2,7 +2,7 @@
 name = "batocera-linux"
 version = "43.dev0"
 requires-python = "==3.12.8"
-dependencies = ["configgen", "batocera_es_system"]
+dependencies = ["configgen", "batocera-es-system"]
 
 [dependency-groups]
 deps = [
@@ -35,7 +35,7 @@ package = false
 
 [tool.uv.sources]
 configgen = { workspace = true }
-batocera_es_system = { workspace = true }
+batocera-es-system = { workspace = true }
 
 [tool.uv.workspace]
 members = [
