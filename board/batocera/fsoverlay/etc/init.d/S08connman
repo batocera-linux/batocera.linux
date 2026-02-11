@@ -95,14 +95,13 @@ wifi_enable() {
         fi
     done
     echo "*** Wifi Hardware detected. ***" > /dev/kmsg
-
-    # Toggling the interface UP physically helps the certain firmware load cleanly
-    ip link set wlan0 up 2>/dev/null
     
     # If wifi interface is available then apply the country code if set by the user
     settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
     if [ -n "$settingsCountry" ]; then
         /usr/sbin/iw reg set "$settingsCountry" 2>/dev/null
+        # Delay to allow for dodgy firmware issues (ATH12K)
+        sleep 3
     fi
 
     connmanctl enable wifi 2>/dev/null
