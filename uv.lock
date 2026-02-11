@@ -11,6 +11,7 @@ members = [
 
 [[package]]
 name = "batocera-es-system"
+version = "1.4"
 source = { editable = "python-src/batocera-es-system" }
 dependencies = [
     { name = "pyyaml" },
@@ -20,9 +21,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "ruamel-yaml", specifier = "==0.18.6" },
-    { name = "typing-extensions", specifier = "==4.15.0" },
+    { name = "pyyaml" },
+    { name = "ruamel-yaml" },
+    { name = "typing-extensions" },
 ]
 
 [[package]]
