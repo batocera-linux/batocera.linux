@@ -4,9 +4,12 @@ import sys
 def is_valid_element(txt):
     return "${" not in txt
 
+def is_valid_tag(tag):
+    return tag not in ["img"]
+
 def get_all_values_recurse(element, keys):
     display_value = element.get('display')
-    if display_value is not None and is_valid_element(display_value) and display_value not in keys:
+    if display_value is not None and is_valid_element(display_value) and display_value not in keys and is_valid_tag(element.tag):
         keys[display_value] = {}
 
     for child in element:
