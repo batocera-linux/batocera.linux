@@ -1,18 +1,24 @@
 from __future__ import annotations
 
+import ctypes
 import json
 import logging
 import subprocess
+import time
 from collections import defaultdict
 from contextlib import AbstractContextManager
-from dataclasses import dataclass, field
+from copy import deepcopy
+from dataclasses import InitVar, dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Literal, NotRequired, TypedDict, cast
+from threading import Lock, Thread
+from typing import TYPE_CHECKING, Final, Literal, NotRequired, Self, TypedDict, cast
+
+import sdl2
 
 from ..batoceraPaths import CONFIGS, EVMAPY
 
 if TYPE_CHECKING:
-    from collections.abc import Container, Mapping
+    from collections.abc import Callable, Container, Mapping
     from types import TracebackType
 
     from ..controller import Controller, Controllers
@@ -88,21 +94,148 @@ def _keys_mouse_action_to_evmapy_action(
 
 
 @dataclass(slots=True)
-class evmapy(AbstractContextManager[None, None]):
+class _ControllerMonitor:
+    reconfigure_evmapy: Callable[[], None]
+    __thread: Thread = field(init=False)
+    __lock: Lock = field(init=False, default_factory=Lock)
+    __active_controllers: list[Controller | None] = field(init=False, default_factory=list)
+
+    @property
+    def active_controllers(self) -> list[Controller | None]:
+        with self.__lock:
+            return self.__active_controllers
+
+    @active_controllers.setter
+    def active_controllers(self, value: list[Controller | None]) -> None:
+        with self.__lock:
+            self.__active_controllers = value
+
+    def __post_init__(self) -> None:
+        self.__thread = Thread(target=self.__monitor_controls, daemon=True)
+
+    def start(self, controllers: Controllers, /) -> None:
+        self.active_controllers = [deepcopy(controller) for controller in controllers]
+
+        if self.__thread.ident is None:
+            self.__thread.start()
+
+    def __monitor_controls(self) -> None:
+        # Runs in the background, watching for controller add/remove events.
+        # Uses pysdl2 to reliably get controller GUIDs and paths, then intelligently "revives"
+        # the original controller object to preserve player order without disrupting the emulator.
+
+        import pyudev
+        initial_controllers_snapshot = deepcopy(self.active_controllers)
+        for i, p_controller in enumerate(initial_controllers_snapshot):
+            if p_controller and p_controller.guid:
+                _logger.info(">>>   [P%s] Stored GUID: %s, Initial Path: %s", i+1, p_controller.guid, p_controller.device_path)
+
+        we_initialized_sdl = False
+        try:
+            if sdl2.SDL_WasInit(sdl2.SDL_INIT_JOYSTICK) == 0:
+                _logger.info(">>> SDL2 joystick subsystem not initialized. Initializing it now.")
+                sdl2.SDL_Init(sdl2.SDL_INIT_JOYSTICK)
+                we_initialized_sdl = True
+            else:
+                _logger.info(">>> SDL2 joystick subsystem already initialized by host (emulator). Will not re-initialize.")
+        except Exception as e:
+            _logger.error("FATAL: Could not initialize pysdl2 for controller monitoring: %s", e)
+            return
+
+        context = pyudev.Context()
+        monitor = pyudev.Monitor.from_netlink(context)
+        monitor.filter_by(subsystem='input')
+
+        _logger.info(">>> Starting background controller monitor.")
+        for device in iter(monitor.poll, None):
+            if device.properties.get('ID_INPUT_JOYSTICK') != '1':
+                continue
+
+            _logger.info("--- Joystick Event Detected: %s on %s ---", device.action, device.sys_path)
+            reconfigure_needed = False
+
+            sdl2.SDL_JoystickUpdate()
+            online_controllers_map = {}
+            for i in range(sdl2.SDL_NumJoysticks()):
+                try:
+                    guid_struct = sdl2.SDL_JoystickGetDeviceGUID(i)
+                    guid_str_buffer = (ctypes.c_char * 33)()
+                    sdl2.SDL_JoystickGetGUIDString(guid_struct, guid_str_buffer, 33)
+                    guid = guid_str_buffer.value.decode('utf-8')
+
+                    path_bytes = sdl2.SDL_JoystickPathForIndex(i)
+                    path = path_bytes.decode('utf-8') if path_bytes else None
+
+                    if guid and path:
+                        online_controllers_map[guid] = path
+                except Exception as e:
+                    _logger.warning("Error while querying joystick index %s with pysdl2: %s", i, e)
+
+            _logger.info(">>> [Check 1] Pysdl2 scan found online controllers: %s", online_controllers_map)
+
+            new_active_controllers = cast('list[Controller | None]', [None] * len(initial_controllers_snapshot))
+
+            for i, initial_controller in enumerate(initial_controllers_snapshot):
+                if initial_controller and initial_controller.guid in online_controllers_map:
+                    new_path = online_controllers_map[initial_controller.guid]
+                    if initial_controller.device_path != new_path:
+                        _logger.info(">>> [Revival] Player %s (GUID: %s) path has changed.", initial_controller.player_number, initial_controller.guid)
+                        initial_controller.device_path = new_path
+                    new_active_controllers[i] = initial_controller
+
+            current_paths = [c.device_path if c else None for c in self.active_controllers]
+            new_paths = [c.device_path if c else None for c in new_active_controllers]
+
+            if current_paths != new_paths:
+                _logger.info(">>> [Check 2] Controller state changed. Old Paths: %s. New Paths: %s", current_paths, new_paths)
+                self.active_controllers = new_active_controllers
+                reconfigure_needed = True
+            else:
+                _logger.info(">>> [Check 2] No change in assigned controller paths detected.")
+
+            if reconfigure_needed:
+                time.sleep(1)
+                self.reconfigure_evmapy()
+
+        if we_initialized_sdl:
+            sdl2.SDL_QuitSubSystem(sdl2.SDL_INIT_JOYSTICK)
+
+
+@dataclass(slots=True)
+class evmapy(AbstractContextManager['evmapy', None]):
     # evmapy is a process that map pads to keyboards (for pygame for example)
     __started: bool = field(init=False, default=False)
+    __monitor: _ControllerMonitor = field(init=False)
+    __lock: Lock = field(init=False, default_factory=Lock)
+    __controllers: Controllers = field(init=False)
 
     system: str
     emulator: str
     core: str
     rom: Path
-    controllers: Controllers
+    _controllers: InitVar[Controllers]
     guns: Guns
 
-    def __enter__(self) -> None:
+    @property
+    def controllers(self) -> Controllers:
+        with self.__lock:
+            return self.__controllers
+
+    @controllers.setter
+    def controllers(self, value: Controllers) -> None:
+        with self.__lock:
+            self.__controllers = value
+
+    def __post_init__(self, _controllers: Controllers) -> None:
+        self.controllers = _controllers
+        self.__monitor = _ControllerMonitor(self.__reconfigure)
+
+    def __enter__(self) -> Self:
         if self.__prepare():
             self.__started = True
             subprocess.call(['batocera-evmapy', 'start'])
+
+        return self
 
     def __exit__(
         self,
@@ -115,6 +248,9 @@ class evmapy(AbstractContextManager[None, None]):
             self.__started = False
             subprocess.call(['batocera-evmapy', 'stop'])
             subprocess.call(['batocera-evmapy', 'clear'])
+
+    def start_monitoring_controllers(self, controllers: Controllers, /) -> None:
+        self.__monitor.start(controllers)
 
     def __build_merged_keys_file(self) -> Path | None:
         # consider files here in this order to get a configuration
@@ -209,6 +345,24 @@ class evmapy(AbstractContextManager[None, None]):
                 self.__write_controller_config(pad, actions, keys_file)
 
         return True
+
+    def __reconfigure(self) -> None:
+        # Re-runs the evmapy configuration by stopping the current evmapy, setting the new controllers, and restarting it
+        _logger.info(">>> --- STARTING EVMAPY RECONFIGURATION ---")
+
+        valid_controllers = [c for c in self.__monitor.active_controllers if c is not None]
+        _logger.info(">>> Found %s valid controllers to configure.", len(valid_controllers))
+        for c in valid_controllers:
+            _logger.info(">>>   - Configuring P%s with Path: %s", c.player_number, c.device_path)
+
+        self.controllers = valid_controllers
+
+        subprocess.call(['batocera-evmapy', 'stop'])
+        time.sleep(0.5)
+        self.__prepare()
+        subprocess.call(['batocera-evmapy', 'start'])
+
+        _logger.info(">>> --- EVMAPY RECONFIGURATION COMPLETE ---")
 
     def __write_gun_config(self, gun: Gun, actions: _KeysActions, keys_file: Path, /) -> None:
         config_file = _EVMAPY_RUN_DIR / f'{Path(gun.node).name}.json'
@@ -373,14 +527,17 @@ class evmapy(AbstractContextManager[None, None]):
                 evmapy_action['trigger'] = trigger
 
                 if isinstance(trigger, list):
-                    if all(x in known_button_names or f'ABS_OTHERS_{x}:max' in known_button_names for x in trigger):
-                        if len(trigger) == len(set(trigger)): # because of aliases (hotkeys), a button can be present 2 times => disable this key
-                            # rewrite axis buttons
-                            evmapy_action['trigger'] = [
-                                f'ABS_OTHERS_{val}:max' if f'ABS_OTHERS_{val}:max' in known_button_names else val
-                                for val in trigger
-                            ]
-                            evmapy_config['actions'].append(evmapy_action)
+                    if (
+                        # because of aliases (hotkeys), a button can be present 2 times => disable this key
+                        all(x in known_button_names or f'ABS_OTHERS_{x}:max' in known_button_names for x in trigger)
+                        and len(trigger) == len(set(trigger))
+                    ):
+                        # rewrite axis buttons
+                        evmapy_action['trigger'] = [
+                            f'ABS_OTHERS_{val}:max' if f'ABS_OTHERS_{val}:max' in known_button_names else val
+                            for val in trigger
+                        ]
+                        evmapy_config['actions'].append(evmapy_action)
                 else:
                     if trigger in known_button_names:
                         evmapy_config['actions'].append(evmapy_action)
