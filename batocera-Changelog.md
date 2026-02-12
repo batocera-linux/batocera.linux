@@ -128,6 +128,7 @@
 - OpenMOHAA to v0.82.1
 - Play! to 0.73
 - PCSX2 to v2.6.3
+- Pygame to 2.6.1
 - RClone to v1.72.1
 - RetroArch to 1.22.2
 - RPCS3 to v0.0.39
