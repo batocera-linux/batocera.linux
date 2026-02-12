@@ -1,17 +1,21 @@
 #!/bin/bash
 
+##### Options selection #####
+
 ### full version (not on login, otherwise you can't log when OpenGL/Vulkan are out of order)
-if test "$1" = "--full"; then
-	FULL_DISPLAY=1
-else
-	FULL_DISPLAY=0
-fi
-###
+FULL_DISPLAY=false
+OSD_DISPLAY=false
+TEMP_DEVICES=false
 
-if test -z "${DISPLAY}"; then
-    export DISPLAY=$(getLocalXDisplay)
-fi
+for i in "$@"; do
+  i=${i,,}
+  [ ${i} == "--full" ]  && FULL_DISPLAY=true
+  [ ${i} == "--short" ] && OSD_DISPLAY=true
+  [ ${i} == "--temp" ]  && TEMP_DEVICES=true
+  [ ${i} == "--help" ]  && { echo "$(basename $0) --full --short --temp --help"; exit 0; }
+done
 
+###### Functions #######
 getCpu() {
     test -e "${1}/cpufreq/scaling_max_freq" || return 0
 
@@ -21,6 +25,30 @@ getCpu() {
     fi
     cat "${CPU}/cpufreq/scaling_max_freq"
 }
+
+###
+
+# export Display
+if test -z "${DISPLAY}"; then
+    export DISPLAY=$(getLocalXDisplay || echo :0.0)
+fi
+
+
+# get temperature or sensors list by --temp arg
+# Unit: millidegree Celsius
+USER_TEMP=/userdata/system/user_temp.txt
+if ${TEMP_DEVICES}; then
+  printf "%s\t%s\t%s\n" ">Name" "|T m°C" "||Device Path"
+  while read TEMPS; do
+    printf "%s\t%s\t%s\n" $(cat $(dirname $TEMPS)/name) $(cat "$TEMPS") ${TEMPS}
+  done < <(find /sys/class/hwmon/hwmon*/temp*_input /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null)
+  echo;echo "To pick a sensor manually, copy the 'Device Path' to '${USER_TEMP}'"
+  exit 0
+fi
+# check if user setted a sensor device manually
+test -s ${USER_TEMP} && TEMPE=$(cat $(<$_) 2>/dev/null) || TEMPE=$(cat /sys/class/hwmon/hwmon*/temp*_input /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null)
+TEMPE=$(printf "%s\n" ${TEMPE} | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
+
 
 # Detect battery
 BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
@@ -60,7 +88,7 @@ if [ -n "${BATTERY_DIR}" ]; then
 fi	
 
 ### short version (for osd)
-if test "$1" = "--short"; then
+if ${OSD_DISPLAY}; then
     DT=$(date +%H:%M)
     if test -n "${BATT}"; then
         echo "Battery: ${BATT}%${BATTREMAINING} - ${DT}"
@@ -132,9 +160,7 @@ if ! [ -z "$CPU_TDP" ]; then
     echo "Ryzen Mobile TDP: ${MAX_TDP}W"
 fi
 
-# temperature
-# Unit: millidegree Celsius
-TEMPE=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | sort -rn | head -1 | sed -e s+"[0-9][0-9][0-9]$"++)
+# output temperature if available
 if test -n "${TEMPE}"; then
     echo "Temperature: ${TEMPE}°C"
 fi
@@ -193,7 +219,7 @@ else
     done
 fi
 
-if [[ "${FULL_DISPLAY}" != 0 ]]; then
+if ${FULL_DISPLAY}; then
 	# OPENGL
 	if test "${V_BOARD}" = "x86" -o "${V_BOARD}" = "x86_64"; then
 	    V_OPENGLVERSION=$(DISPLAY=$(getLocalXDisplay) glxinfo 2>/dev/null | grep -E '^OpenGL core profile version string:' | sed -e s+'^OpenGL core profile version string:[ ]*'++)
@@ -234,7 +260,7 @@ else
     fi
 fi
 
-if [[ "${FULL_DISPLAY}" != 0 ]]; then
+if ${FULL_DISPLAY}; then
 	MACADDR=$(ip a | grep -b1 "$PREFSRC" | awk '/link\/ether/ {print $3}' | sed 's/:/-/g')
 	if [ -n "$MACADDR" ]; then
 		echo "Corresponding MAC Address: $MACADDR"
@@ -242,7 +268,7 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 fi
 
 # Boot information
-if [[ "${FULL_DISPLAY}" != 0 ]]; then
+if ${FULL_DISPLAY}; then
 	if [ -d /sys/firmware/efi ]; then
 		echo "UEFI Boot: Yes"
 		if [ -x /usr/bin/mokutil ]; then
