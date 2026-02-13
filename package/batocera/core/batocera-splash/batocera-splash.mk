@@ -20,23 +20,19 @@ endif
 
 # MPV options
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-        # drm doesn't work on my nvidia card. sdl runs smoothly.
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=yes
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3568),y)
-        # use v4l2request-copy for the VeriSilicon Hantro decoder
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=gpu --hwdec=auto
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
-        # use v4l2m2m-copy for the Iris decoder
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=v4l2m2m-copy
-    else ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA)$(BR2_PACKAGE_BATOCERA_TARGET_QCS6490)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=drm,sdl --hwdec=auto
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=gpu --hwdec=auto
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS=
-    else
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--hwdec=auto
+    # Baseline for modern boards using gpu-next
+    BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=auto
+    # Boards requiring a fallback VO (drm/sdl)
+    ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=drm,sdl --hwdec=auto
+    endif
+    # SM8550 has specific HWDEC overrides
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=v4l2m2m-copy
+    endif
+    # Targets that should remain empty (handled by internal defaults)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS =
     endif
 endif
 
@@ -101,12 +97,24 @@ endef
 
 define BATOCERA_SPLASH_INSTALL_IMAGE
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png" -fill white -pointsize 15 -annotate 270x270+300+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x480.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png" -fill white -pointsize 20 -annotate 270x270+440+814 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-480x854.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480p.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png" -fill white -pointsize 15 -annotate +20+220 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x240.png"
-    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480-dmg.png" -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480-dmg.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" \
+        -fill white -pointsize 30 -annotate +50+1020 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-3-2-480-rotate.png" \
+        -fill white -pointsize 15 -annotate 270x270+300+440 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x480.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-16-9-480-rotate.png" \
+        -fill white -pointsize 20 -annotate 270x270+440+814 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version-480x854.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480p.png" \
+        -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-240.png" \
+        -fill white -pointsize 15 -annotate +20+220 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version-320x240.png"
+    convert "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480-dmg.png" \
+        -fill white -pointsize 20 -annotate +40+440 "$(BATOCERA_SPLASH_TGVERSION)" \
+        "${TARGET_DIR}/usr/share/batocera/splash/logo-version-640x480-dmg.png"
 endef
 
 $(eval $(generic-package))
