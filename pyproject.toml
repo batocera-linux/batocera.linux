@@ -2,7 +2,7 @@
 name = "batocera-linux"
 version = "43.dev0"
 requires-python = "==3.12.8"
-dependencies = ["batocera-configgen", "batocera-es-system"]
+dependencies = ["batocera-configgen", "batocera-es-system", "hotkeygen"]
 
 [dependency-groups]
 dev = [
@@ -32,6 +32,7 @@ constraint-dependencies = [
 [tool.uv.sources]
 batocera-configgen = { workspace = true }
 batocera-es-system = { workspace = true }
+hotkeygen = { workspace = true }
 
 [tool.uv.workspace]
 members = [

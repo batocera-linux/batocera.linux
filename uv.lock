@@ -7,6 +7,7 @@ members = [
     "batocera-configgen",
     "batocera-es-system",
     "batocera-linux",
+    "hotkeygen",
 ]
 constraints = [
     { name = "configobj", specifier = "==5.0.8" },
@@ -80,6 +81,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "batocera-configgen" },
     { name = "batocera-es-system" },
+    { name = "hotkeygen" },
 ]
 
 [package.dev-dependencies]
@@ -92,6 +94,7 @@ dev = [
 requires-dist = [
     { name = "batocera-configgen", editable = "package/batocera/core/batocera-configgen/configgen" },
     { name = "batocera-es-system", editable = "python-src/batocera-es-system" },
+    { name = "hotkeygen", editable = "python-src/hotkeygen" },
 ]
 
 [package.metadata.requires-dev]
@@ -176,6 +179,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a7/b2/4140c69c6a66432916b26158687e821ba631a4c9273c474343badf84d3ba/future-1.0.0.tar.gz", hash = "sha256:bd2968309307861edae1458a4f8a4f3598c03be43b97521076aebf5d94c07b05", size = 1228490, upload-time = "2024-02-21T11:52:38.461Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl", hash = "sha256:929292d34f5872e70396626ef385ec22355a1fae8ad29e1a734c3e43f9fbc216", size = 491326, upload-time = "2024-02-21T11:52:35.956Z" },
+]
+
+[[package]]
+name = "hotkeygen"
+version = "1.1"
+source = { editable = "python-src/hotkeygen" }
+dependencies = [
+    { name = "evdev", marker = "sys_platform == 'linux'" },
+    { name = "pyudev", marker = "sys_platform == 'linux'" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "evdev", marker = "sys_platform == 'linux'" },
+    { name = "pyudev", marker = "sys_platform == 'linux'" },
 ]
 
 [[package]]

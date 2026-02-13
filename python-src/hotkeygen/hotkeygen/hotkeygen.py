@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import re
@@ -12,11 +11,12 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, TypedDict
-import errno
 
 import evdev
 import pyudev
 from evdev import ecodes
+
+from hotkeygen.shared import CONFIG_DEFAULTDIR, CONFIG_SYSTEMDIR, CONFIG_USERDIR, ECODES_NAMES, HOTKEYGEN_MAPPING
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -26,31 +26,23 @@ if TYPE_CHECKING:
         name: str
         keys: dict[str, list[int] | int | str]
 
-
     class JsonHotkeysContext(TypedDict):
         name: str
         keys: dict[str, list[str] | str]
 
 
-DEVICE_NAME: Final   = "batocera hotkeys"
-GDEFAULTCONTEXT_FILE: Final = Path("/etc/hotkeygen/default_context.conf")
-GCOMMONCONTEXT_FILE: Final = Path("/etc/hotkeygen/common_context.conf")
-GDEFAULTMAPPING_FILE: Final = Path("/etc/hotkeygen/default_mapping.conf")
+DEVICE_NAME: Final = 'batocera hotkeys'
+GDEFAULTCONTEXT_FILE: Final = CONFIG_DEFAULTDIR / 'default_context.conf'
+GCOMMONCONTEXT_FILE: Final = CONFIG_DEFAULTDIR / 'common_context.conf'
 
-GCONTEXT_FILE: Final = Path("/var/run/hotkeygen.context")
-GPID_FILE: Final     = Path("/var/run/hotkeygen.pid")
-GSYSTEM_DIR: Final   = Path("/usr/share/hotkeygen")
-GUSER_DIR: Final     = Path("/userdata/system/configs/hotkeygen")
+GCONTEXT_FILE: Final = Path('/var/run/hotkeygen.context')
+GPID_FILE: Final = Path('/var/run/hotkeygen.pid')
 
-GUSERCOMMONCONTEXT_FILE: Final = GUSER_DIR / Path("common_context.conf")
-GUSERDEFAULTMAPPING_FILE: Final = GUSER_DIR / Path("default_mapping.conf")
+GUSERCOMMONCONTEXT_FILE: Final = CONFIG_USERDIR / Path('common_context.conf')
+GUSERDEFAULTMAPPING_FILE: Final = CONFIG_USERDIR / Path('default_mapping.conf')
 
 gdebug = False
 
-ECODES_NAMES: Final[dict[int, str]] = {
-    # add BTN_ to that joysticks buttons can run hotkeys (but keep generating only KEY_ events)
-    key_code: key_name for key_name, key_code in ecodes.ecodes.items() if key_name.startswith("KEY_") or key_name.startswith("BTN_")
-}
 
 # default context is for es
 def get_default_context() -> HotkeysContext:
@@ -59,9 +51,10 @@ def get_default_context() -> HotkeysContext:
             data = json.load(file)
             return load_context(data)
     else:
-        return {"name": "", "keys": {}}
+        return {'name': '', 'keys': {}}
 
-def get_common_context_keys() -> dict[str, int|str]:
+
+def get_common_context_keys() -> dict[str, list[int] | int | str]:
     keys = {}
     userkeys = {}
 
@@ -77,28 +70,29 @@ def get_common_context_keys() -> dict[str, int|str]:
 
     return keys | userkeys
 
+
 def get_context() -> HotkeysContext | None:
     if GCONTEXT_FILE.exists():
         try:
             if gdebug:
-                print(f"using default context {GCONTEXT_FILE}")
+                print(f'using default context {GCONTEXT_FILE}')
             with GCONTEXT_FILE.open() as file:
                 data = json.load(file)
-                context = load_context(data)
-                return context
+                return load_context(data)
         except Exception as e:
-            print(f"fail to load context file : {e}")
+            print(f'fail to load context file : {e}')
             return None
     else:
         context = get_default_context()
-        context["keys"] |= get_common_context_keys()
+        context['keys'] |= get_common_context_keys()
         if gdebug:
-            print("using default context")
+            print('using default context')
             print_context(context)
         return context
 
+
 def load_context_keys(keys: dict[str, list[str] | str]) -> dict[str, list[int] | int | str]:
-    res = {}
+    res: dict[str, list[int] | int | str] = {}
     for action, key_code_names in keys.items():
         if isinstance(key_code_names, list):
             codes: list[int] = []
@@ -107,70 +101,76 @@ def load_context_keys(keys: dict[str, list[str] | str]) -> dict[str, list[int] |
                 if x in ecodes.ecodes:
                     codes.append(ecodes.ecodes[x])
                 else:
-                    raise Exception(f"invalid key {x!r}")
+                    raise Exception(f'invalid key {x!r}')
         else:
             # string are key if starting by KEY_ else commands (maybe not the best choice, but simple)
-            if key_code_names[:4] == "KEY_":
+            if key_code_names[:4] == 'KEY_':
                 if key_code_names in ecodes.ecodes:
                     res[action] = ecodes.ecodes[key_code_names]
                 else:
-                    raise Exception(f"invalid key {data['keys'][action]!r}")
+                    raise Exception(f'invalid key {key_code_names!r}')
             else:
                 # command
                 res[action] = key_code_names
     return res
 
-def load_context(data: JsonHotkeysContext) -> HotkeysContext:
-    if "name" not in data:
-        raise Exception("no name section found")
-    if "keys" not in data:
-        raise Exception("no keys section found")
 
-    context: HotkeysContext = { "name": data["name"], "keys": {} }
-    context["keys"] = load_context_keys(data["keys"])
+def load_context(data: JsonHotkeysContext) -> HotkeysContext:
+    if 'name' not in data:
+        raise Exception('no name section found')
+    if 'keys' not in data:
+        raise Exception('no keys section found')
+
+    context: HotkeysContext = {'name': data['name'], 'keys': {}}
+    context['keys'] = load_context_keys(data['keys'])
     if gdebug:
         print_context(context)
     return context
 
-def save_context(context: HotkeysContext, gcontext_file: Path) -> None:
-    save: JsonHotkeysContext = { "name": context["name"], "keys": {} }
-    for action, key_codes in context["keys"].items():
-        if isinstance(key_codes, list):
-            save["keys"][action] = [ECODES_NAMES[key] for key in key_codes]
-        elif isinstance(key_codes, str):
-            save["keys"][action] = key_codes
-        else:
-            save["keys"][action] = ECODES_NAMES[key_codes]
 
-    with gcontext_file.open("w") as fd:
+def save_context(context: HotkeysContext, gcontext_file: Path) -> None:
+    save: JsonHotkeysContext = {'name': context['name'], 'keys': {}}
+    for action, key_codes in context['keys'].items():
+        if isinstance(key_codes, list):
+            save['keys'][action] = [ECODES_NAMES[key] for key in key_codes]
+        elif isinstance(key_codes, str):
+            save['keys'][action] = key_codes
+        else:
+            save['keys'][action] = ECODES_NAMES[key_codes]
+
+    with gcontext_file.open('w') as fd:
         json.dump(save, fd, indent=2)
 
+
 def print_context(context: HotkeysContext) -> None:
-    print(f"Context [{context['name']}]:")
-    for action, keys in context["keys"].items():
+    print(f'Context [{context["name"]}]:')
+    for action, keys in context['keys'].items():
         if isinstance(keys, list):
-            print(f"  {action:-<20}-> {[ECODES_NAMES[key] for key in keys]}")
+            print(f'  {action:-<20}-> {[ECODES_NAMES[key] for key in keys]}')
         elif isinstance(keys, str):
-            print(f"  {action:-<20}-> command [{keys}]")
+            print(f'  {action:-<20}-> command [{keys}]')
         else:
-            print(f"  {action:-<20}-> {ECODES_NAMES[keys]}")
+            print(f'  {action:-<20}-> {ECODES_NAMES[keys]}')
+
 
 def get_device_config_filename(device: evdev.InputDevice) -> str:
     name = re.sub('[^a-zA-Z0-9_]', '', device.name.replace(' ', '_'))
-    return f"{name}-{device.info.vendor:02x}-{device.info.product:02x}.mapping"
+    return f'{name}-{device.info.vendor:02x}-{device.info.product:02x}.mapping'
+
 
 def get_mapping_full_path(device: evdev.InputDevice) -> Path | None:
     fullpath = None
     fname = get_device_config_filename(device)
     if gdebug:
-        print(f"...looking for {GUSER_DIR}/{fname}, {GSYSTEM_DIR}/{fname}")
-    if (GUSER_DIR / fname).exists():
-        fullpath = GUSER_DIR / fname
-    elif (GSYSTEM_DIR / fname).exists():
-        fullpath = GSYSTEM_DIR / fname
+        print(f'...looking for {CONFIG_USERDIR}/{fname}, {CONFIG_SYSTEMDIR}/{fname}')
+    if (CONFIG_USERDIR / fname).exists():
+        fullpath = CONFIG_USERDIR / fname
+    elif (CONFIG_SYSTEMDIR / fname).exists():
+        fullpath = CONFIG_SYSTEMDIR / fname
     return fullpath
 
-def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
+
+def get_mapping(device: evdev.InputDevice | None) -> dict[int, str]:
     if device is None:
         fullpath = None
     else:
@@ -178,25 +178,26 @@ def get_mapping(device: evdev.InputDevice) -> dict[int, str]:
 
     if fullpath is not None:
         if gdebug:
-            print(f"using mapping {fullpath}")
+            print(f'using mapping {fullpath}')
         with fullpath.open() as fd:
             data = json.load(fd)
         return load_mapping(data)
-    else:
-        data = {}
-        userdata = {}
-        if GDEFAULTMAPPING_FILE.exists():
-            if gdebug:
-                print(f"use default mapping file {GDEFAULTMAPPING_FILE}")
-            with GDEFAULTMAPPING_FILE.open() as fd:
-                data = json.load(fd)
-        if GUSERDEFAULTMAPPING_FILE.exists():
-            if gdebug:
-                print(f"use user mapping file {GUSERDEFAULTMAPPING_FILE}")
-            with GUSERDEFAULTMAPPING_FILE.open() as fd:
-                userdata = json.load(fd)
 
-        return load_mapping(data | userdata)
+    data: dict[str, str] = {}
+    userdata: dict[str, str] = {}
+    if HOTKEYGEN_MAPPING.exists():
+        if gdebug:
+            print(f'use default mapping file {HOTKEYGEN_MAPPING}')
+        with HOTKEYGEN_MAPPING.open() as fd:
+            data = json.load(fd)
+    if GUSERDEFAULTMAPPING_FILE.exists():
+        if gdebug:
+            print(f'use user mapping file {GUSERDEFAULTMAPPING_FILE}')
+        with GUSERDEFAULTMAPPING_FILE.open() as fd:
+            userdata = json.load(fd)
+
+    return load_mapping(data | userdata)
+
 
 def load_mapping(data: dict[str, str]) -> dict[int, str]:
     try:
@@ -205,15 +206,17 @@ def load_mapping(data: dict[str, str]) -> dict[int, str]:
             if key in ecodes.ecodes:
                 mapping[ecodes.ecodes[key]] = action
             else:
-                raise Exception(f"invalid key {action!r}")
+                raise Exception(f'invalid key {action!r}')
         return mapping
     except Exception as e:
-        print(f"fail to load mapping : {e}")
+        print(f'fail to load mapping : {e}')
         return {}
 
-def get_mapping_associations(mapping: Mapping[int, str], caps: evdev._CapabilitiesWithAbsInfo):
+
+def get_mapping_associations(mapping: Mapping[int, str], caps: evdev._AbsInfoCapabilities):
     capskeys = set(caps[ecodes.EV_KEY])
     return {key: value for key, value in mapping.items() if key in capskeys}
+
 
 def print_mapping(
     mapping: Mapping[int, str], associations: Mapping[int, str], context: HotkeysContext | None = None
@@ -221,24 +224,22 @@ def print_mapping(
     for k in mapping:
         if k in associations:
             if context is None:
-                print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]}")
+                print(f'  {ECODES_NAMES[k]:-<15}-> {associations[k]}')
             else:
-                if associations[k] in context["keys"]:
-                    key_codes = context["keys"][associations[k]]
+                if associations[k] in context['keys']:
+                    key_codes = context['keys'][associations[k]]
                     if isinstance(key_codes, list):
                         key_names = [ECODES_NAMES[x] for x in key_codes]
-                        print(
-                            f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_names}"
-                        )
+                        print(f'  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_names}')
                     elif isinstance(key_codes, str):
-                        print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_codes}")
+                        print(f'  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {key_codes}')
                     else:
-                        print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {ECODES_NAMES[key_codes]}")
+                        print(f'  {ECODES_NAMES[k]:-<15}-> {associations[k]:-<15}-> {ECODES_NAMES[key_codes]}')
                 else:
-                    print(f"  {ECODES_NAMES[k]:-<15}-> {associations[k]:15}")
+                    print(f'  {ECODES_NAMES[k]:-<15}-> {associations[k]:15}')
 
 
-def send_keys(target: evdev.UInput, keys: int | list[int] | str, begin: bool) -> None:
+def send_keys(target: evdev.UInput, keys: int | list[int], begin: bool) -> None:
     if begin:
         n = 1
     else:
@@ -247,37 +248,43 @@ def send_keys(target: evdev.UInput, keys: int | list[int] | str, begin: bool) ->
     if isinstance(keys, list):
         for x in keys:
             if gdebug:
-               print(f"sending EV_KEY {x} {n}")
+                print(f'sending EV_KEY {x} {n}')
             target.write(ecodes.EV_KEY, x, n)
             target.syn()
     else:
         if gdebug:
-            print(f"sending EV_KEY {keys} {n}")
+            print(f'sending EV_KEY {keys} {n}')
         target.write(ecodes.EV_KEY, keys, n)
         target.syn()
+
 
 def do_send(key: str, delay: None | int) -> None:
     if gdebug:
         if delay:
-            print(f"Sending {key} with delay {delay}")
+            print(f'Sending {key} with delay {delay}')
         else:
-            print(f"Sending {key}")
+            print(f'Sending {key}')
 
     mapping = get_mapping(None)
     for code in mapping:
         if mapping[code] == key:
             if gdebug:
-                print(f"sending {key}")
-            sender = evdev.UInput(name="virtual keyboard", events={ ecodes.EV_KEY: [code] })
-            time.sleep(0.1) # need some time to initialize... (otherwise the first events are ignored the time add is taken)
+                print(f'sending {key}')
+            sender = evdev.UInput(name='virtual keyboard', events={ecodes.EV_KEY: [code]})
+            time.sleep(
+                0.1
+            )  # need some time to initialize... (otherwise the first events are ignored the time add is taken)
             send_keys(sender, code, True)
             # time required for emulators (like mame) based on states and not on events
             # (if you go too fast, the event is not seen)
             if delay:
                 time.sleep(delay)
             else:
-                time.sleep(0.3) # some emulators (ra, mame) needs some time otherwise they don't see the touch was pressed
+                time.sleep(
+                    0.3
+                )  # some emulators (ra, mame) needs some time otherwise they don't see the touch was pressed
             send_keys(sender, code, False)
+
 
 def send_reset_signal(target_device: evdev.UInput) -> None:
     target_device.write(ecodes.EV_REL, ecodes.REL_X, -10000)
@@ -287,7 +294,7 @@ def send_reset_signal(target_device: evdev.UInput) -> None:
     time.sleep(0.10)
 
     # Only send mouse click on Wayland (unsafe on X11)
-    if os.environ.get("WAYLAND_DISPLAY"):
+    if os.environ.get('WAYLAND_DISPLAY'):
         target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 1)
         target_device.syn()
         target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 0)
@@ -295,14 +302,12 @@ def send_reset_signal(target_device: evdev.UInput) -> None:
 
         time.sleep(0.10)
 
+
 def do_reset_mouse() -> None:
     # Create temporary device
     sender = evdev.UInput(
-        name="batocera-mouse-reset", 
-        events={
-            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
-            ecodes.EV_KEY: [ecodes.BTN_LEFT]
-        }
+        name='batocera-mouse-reset',
+        events={ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y], ecodes.EV_KEY: [ecodes.BTN_LEFT]},
     )
     time.sleep(0.2)
 
@@ -310,18 +315,19 @@ def do_reset_mouse() -> None:
 
     sender.close()
 
+
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
         return fd.read().replace('\n', '')
 
-def do_new_context(context_name: str | None = None, context_json: str | None = None, include_common:bool = True) -> None:
+
+def do_new_context(
+    context_name: str | None = None, context_json: str | None = None, include_common: bool = True
+) -> None:
     if context_name is not None and context_json is not None:
-        context = load_context({
-            'name': context_name,
-            'keys': json.loads(context_json)
-        })
+        context = load_context({'name': context_name, 'keys': json.loads(context_json)})
         if include_common:
-            context["keys"] |= get_common_context_keys()
+            context['keys'] |= get_common_context_keys()
 
         # update the config file
         save_context(context, GCONTEXT_FILE)
@@ -333,10 +339,12 @@ def do_new_context(context_name: str | None = None, context_json: str | None = N
     pid = int(read_pid())
     os.kill(pid, signal.SIGHUP)
 
+
 def do_reload_devices_config():
     # inform the process
     pid = int(read_pid())
     os.kill(pid, signal.SIGHUP)
+
 
 def do_list() -> None:
     context = get_context()
@@ -347,7 +355,7 @@ def do_list() -> None:
         print_context(context)
 
     for device in udev_context.list_devices(subsystem='input'):
-        if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
+        if device.device_node is not None and device.device_node.startswith('/dev/input/event'):
             dev = evdev.InputDevice(device.device_node)
             if dev.name != DEVICE_NAME:
                 caps = dev.capabilities()
@@ -357,12 +365,13 @@ def do_list() -> None:
 
                     fullpath = get_mapping_full_path(dev)
                     if fullpath:
-                        print(f"# device {device.device_node} [{dev.name}] ({fullpath})")
+                        print(f'# device {device.device_node} [{dev.name}] ({fullpath})')
                     else:
                         fname = get_device_config_filename(dev)
-                        print(f"# device {device.device_node} [{dev.name}] (no {fname} file found)")
+                        print(f'# device {device.device_node} [{dev.name}] (no {fname} file found)')
                     if associations:
                         print_mapping(mapping, associations, context)
+
 
 @dataclass(slots=True)
 class Daemon:
@@ -370,9 +379,11 @@ class Daemon:
 
     context: HotkeysContext | None = field(init=False, default=None)
     running: bool = field(init=False, default=False)
-    input_devices: dict[str, evdev.InputDevice] = field(init=False, default_factory=dict)
-    input_devices_by_fd: dict[int, evdev.InputDevice] = field(init=False, default_factory=dict)
-    mappings_by_fd: dict[int, dict[int, str]] = field(init=False, default_factory=dict)
+    input_devices: dict[str | bytes, evdev.InputDevice] = field(
+        init=False, default_factory=dict[str | bytes, evdev.InputDevice]
+    )
+    input_devices_by_fd: dict[int, evdev.InputDevice] = field(init=False, default_factory=dict[int, evdev.InputDevice])
+    mappings_by_fd: dict[int, dict[int, str]] = field(init=False, default_factory=dict[int, dict[int, str]])
     udev_context: pyudev.Context = field(init=False)
     monitor: pyudev.Monitor = field(init=False)
     poll: select.poll = field(init=False)
@@ -386,20 +397,17 @@ class Daemon:
 
         self.poll = select.poll()
 
-        keys_list = [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_"]
+        keys_list = [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == 'KEY_']
         keys_list.append(ecodes.BTN_LEFT)
 
         # target virtual keyboard & mouse
         self.target = evdev.UInput(
-            name=DEVICE_NAME, events={
-                ecodes.EV_KEY: keys_list,
-                ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y]
-            }
+            name=DEVICE_NAME, events={ecodes.EV_KEY: keys_list, ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y]}
         )
 
     def __handle_actions(self, action: str, device: pyudev.Device) -> None:
-        if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
-            if action == "add":
+        if device.device_node is not None and device.device_node.startswith('/dev/input/event'):
+            if action == 'add':
                 input_device = evdev.InputDevice(device.device_node)
 
                 if input_device.name != DEVICE_NAME:
@@ -411,18 +419,18 @@ class Daemon:
 
                         if associations:
                             if gdebug:
-                                print(f"Adding device {device.device_node}: {input_device.name}")
+                                print(f'Adding device {device.device_node}: {input_device.name}')
                                 print_mapping(mapping, associations)
                             self.input_devices[device.device_node] = input_device
                             self.input_devices_by_fd[input_device.fileno()] = input_device
                             self.mappings_by_fd[input_device.fileno()] = mapping
                             self.poll.register(input_device, select.POLLIN)
-            elif action == "remove":
+            elif action == 'remove':
                 input_device = self.input_devices.get(device.device_node)
 
                 if input_device is not None:
                     if gdebug:
-                        print(f"Removing device {device.device_node}: {input_device.name}")
+                        print(f'Removing device {device.device_node}: {input_device.name}')
 
                     self.poll.unregister(input_device)
                     del self.mappings_by_fd[input_device.fileno()]
@@ -430,17 +438,17 @@ class Daemon:
                     del self.input_devices[device.device_node]
 
     def __handle_event(self, event: evdev.InputEvent, action: str, begin: bool) -> None:
-        if self.context is not None and action in self.context["keys"]:
-            keys = self.context["keys"][action]
+        if self.context is not None and action in self.context['keys']:
+            keys = self.context['keys'][action]
 
-            if action == "exit" and ((isinstance(keys, str) and not begin) or (not isinstance(keys, str) and begin)):
+            if action == 'exit' and ((isinstance(keys, str) and not begin) or (not isinstance(keys, str) and begin)):
                 send_reset_signal(self.target)
 
             if gdebug:
-                print(f"code:{event.code}, value:{event.value}, action:{action}")
+                print(f'code:{event.code}, value:{event.value}, action:{action}')
             if begin:
                 if isinstance(keys, str):
-                    pass # nothing on keydown
+                    pass  # nothing on keydown
                 else:
                     send_keys(self.target, keys, True)
             else:
@@ -450,12 +458,12 @@ class Daemon:
                     send_keys(self.target, keys, False)
 
     def __write_pid(self) -> None:
-        with GPID_FILE.open("w") as fd:
+        with GPID_FILE.open('w') as fd:
             fd.write(str(os.getpid()))
 
     def __handle_sighup(self, signum: int, frame: FrameType | None) -> None:
         self.context = get_context()
-        self.require_reconfig = True # done outside of the event cause, to make it safely
+        self.require_reconfig = True  # done outside of the event cause, to make it safely
 
     def __reload_devices_configs(self) -> None:
         # reload config files for devices
@@ -471,7 +479,7 @@ class Daemon:
 
     def run(self) -> None:
         if self.running:
-            raise Exception("already running!")
+            raise Exception('already running!')
 
         self.running = True
         self.context = get_context()
@@ -504,51 +512,50 @@ class Daemon:
                         self.__handle_actions(action, device)
                     else:
                         event = self.input_devices_by_fd[fd].read_one()
-                        if (
-                            event is not None and
-                            event.type == ecodes.EV_KEY and
-                            event.code in self.mappings_by_fd[fd]
-                        ):
+                        if event is not None and event.type == ecodes.EV_KEY and event.code in self.mappings_by_fd[fd]:
                             if event.value == 1:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], True)
                             elif event.value == 0:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], False)
-                #except (OSError, KeyError, FileNotFoundError) as e:
-                except (Exception) as e:
+                # except (OSError, KeyError, FileNotFoundError) as e:
+                except Exception as e:
                     if fd == self.monitor.fileno():
-                        print("Exception happened on the monitor fd")
+                        print('Exception happened on the monitor fd')
                         print(e)
-                        #raise
+                        # raise
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
                             input_device = self.input_devices_by_fd[fd]
                             if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
                                 print(e)
-                                print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                                print(f'error on device {input_device.name} ({input_device.path}), closing.')
                             del self.mappings_by_fd[fd]
                             del self.input_devices_by_fd[fd]
                             del self.input_devices[input_device.path]
                             try:
                                 self.poll.unregister(input_device)
                                 input_device.close()
-                            except:
+                            except:  # noqa: E722
                                 pass
         # never happening, but should be done to quit
         self.target.close()
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="hotkeygen")
-    parser.add_argument("--debug", action="store_true")
-    parser.add_argument("--list", action="store_true")
-    parser.add_argument("--send")
-    parser.add_argument("--send-delay", type=int)
-    parser.add_argument("--default-context", action="store_true")
-    parser.add_argument("--new-context", nargs=2, metavar=("new-context-name", "new-context-json"))
-    parser.add_argument("--disable-common", action="store_true")
-    parser.add_argument("--reload", action="store_true")
-    parser.add_argument("--permanent", action="store_true")
-    parser.add_argument("--reset-mouse", action="store_true")
+
+def main() -> None:
+    global gdebug
+
+    parser = argparse.ArgumentParser(prog='hotkeygen')
+    parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--list', action='store_true')
+    parser.add_argument('--send')
+    parser.add_argument('--send-delay', type=int)
+    parser.add_argument('--default-context', action='store_true')
+    parser.add_argument('--new-context', nargs=2, metavar=('new-context-name', 'new-context-json'))
+    parser.add_argument('--disable-common', action='store_true')
+    parser.add_argument('--reload', action='store_true')
+    parser.add_argument('--permanent', action='store_true')
+    parser.add_argument('--reset-mouse', action='store_true')
     args = parser.parse_args()
     if args.debug:
         gdebug = True
@@ -568,4 +575,3 @@ if __name__ == "__main__":
         do_new_context()
     else:
         Daemon(permanent=args.permanent).run()
-#####
