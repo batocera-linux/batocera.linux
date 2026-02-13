@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 from . import fsuaeControllers
 from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
@@ -108,4 +109,9 @@ class FsuaeGenerator(Generator):
         for n, pad in enumerate(playersControllers[:4]):
             commandArray.append(f"--joystick_port_{n}={pad.real_name}")
 
-        return Command.Command(array=commandArray)
+        # SDL GameController mappings for virtual mouse (right stick + R3 click)
+        env = {
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
+        }
+
+        return Command.Command(array=commandArray, env=env)

@@ -29,7 +29,12 @@ define FSUAE_INSTALL_EVMAPY
 	        $(TARGET_DIR)/usr/share/evmapy/
 endef
 
-FSUAE_POST_INSTALL_TARGET_HOOKS = FSUAE_INSTALL_EVMAPY
+define FSUAE_INSTALL_INPUT_DATA
+	mkdir -p $(TARGET_DIR)/usr/share/fs-uae/input
+	cp -r $(@D)/share/fs-uae/input/* $(TARGET_DIR)/usr/share/fs-uae/input/
+endef
+
+FSUAE_POST_INSTALL_TARGET_HOOKS += FSUAE_INSTALL_EVMAPY FSUAE_INSTALL_INPUT_DATA
 
 $(eval $(autotools-package))
 $(eval $(emulator-info-package))
