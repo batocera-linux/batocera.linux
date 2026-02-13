@@ -348,7 +348,7 @@ endif
 		echo "Total packages to reset: $(PKGS_TO_RESET)"; \
 		for pkg in $(PKGS_TO_RESET); do \
 			echo "Surgically removing $$pkg from build and per-package directories..."; \
-			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg-*; \
+			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg*; \
 			rm -rf $(TARGET_OUTPUT_DIR)/per-package/$$pkg; \
 		done; \
 	else \
