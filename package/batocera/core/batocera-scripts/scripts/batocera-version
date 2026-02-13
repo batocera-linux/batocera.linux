@@ -7,6 +7,7 @@ test -e "/boot/boot/overlay" && FIND_OVERLAY=1
 
 FIND_CUSTOMSH=
 test -e "/userdata/system/custom.sh" && FIND_CUSTOMSH=1
+test -e "/userdata/system/services/custom_service" && FIND_CUSTOMSH=1
 
 FIND_CUSTOMESSYSTEMS=
 test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTOMESSYSTEMS=1
@@ -14,7 +15,9 @@ test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTO
 FIND_CUSTOMESFEATURES=
 test -e "/userdata/system/configs/emulationstation/es_features.cfg" && FIND_CUSTOMESFEATURES=1
 
-FIND_CUSTOMSERVICES=$(batocera-services list user | grep '\*$' | head -1)
+FIND_CUSTOMSERVICES=$(batocera-services list user | grep -v "custom_service" | grep '\*$' | head -1)
+
+FIND_USERSCRIPTS=$(find /userdata/system/scripts -type f -executable -print -quit 2>/dev/null)
 
 FIND_PRO=
 test -e "/userdata/system/pro" && FIND_PRO=1
@@ -31,6 +34,7 @@ test -n "${FIND_OVERLAY}"          && EXTRA=${EXTRA}o
 test -n "${FIND_PRO}"              && EXTRA=${EXTRA}p
 test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
 test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
+test -n "${FIND_USERSCRIPTS}"      && EXTRA=${EXTRA}v
 
 if test "${1}" = "--extra"
 then
