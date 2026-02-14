@@ -10,6 +10,7 @@ BATOCERA_SYSTEM_VERSION = 43-dev
 BATOCERA_SYSTEM_DATE_TIME = $(shell date "+%Y/%m/%d %H:%M")
 BATOCERA_SYSTEM_DATE = $(shell date "+%Y/%m/%d")
 BATOCERA_SYSTEM_DEPENDENCIES = tzdata
+BATOCERA_SYSTEM_INSTALL_IMAGES = YES
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
 	BATOCERA_SYSTEM_ARCH=bcm2837
@@ -103,20 +104,14 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# datainit
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera.conf \
-	    $(TARGET_DIR)/usr/share/batocera/datainit/system
-
-	# batocera-boot.conf
-	$(INSTALL) -D -m 0644 \
-	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/batocera-boot.conf \
-		$(BINARIES_DIR)/batocera-boot.conf
+	cp $(BATOCERA_SYSTEM_PKGDIR)/batocera.conf $(TARGET_DIR)/usr/share/batocera/datainit/system
 
 	# sysconfigs (default batocera.conf for boards)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/sysconfigs
     if test -d \
-	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}; \
+	    $(BATOCERA_SYSTEM_PKGDIR)/sysconfigs/${BATOCERA_SYSTEM_ARCH}; \
 		then cp -pr \
-		$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* \
+		$(BATOCERA_SYSTEM_PKGDIR)/sysconfigs/${BATOCERA_SYSTEM_ARCH}/* \
 		$(TARGET_DIR)/usr/share/batocera/sysconfigs; fi
 
 	# mounts
@@ -124,18 +119,20 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# variables
 	mkdir -p $(TARGET_DIR)/etc/profile.d
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/xdg.sh \
-	    $(TARGET_DIR)/etc/profile.d/xdg.sh
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/dbus.sh \
-	    $(TARGET_DIR)/etc/profile.d/dbus.sh
+	cp $(BATOCERA_SYSTEM_PKGDIR)/xdg.sh $(TARGET_DIR)/etc/profile.d/xdg.sh
+	cp $(BATOCERA_SYSTEM_PKGDIR)/dbus.sh $(TARGET_DIR)/etc/profile.d/dbus.sh
 
 	# not really needed for xorg
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-system/wayland.sh \
-	    $(TARGET_DIR)/etc/profile.d/wayland.sh
+	cp $(BATOCERA_SYSTEM_PKGDIR)/wayland.sh $(TARGET_DIR)/etc/profile.d/wayland.sh
 
 	# list of modules that doesnt like suspend
 	mkdir -p $(TARGET_DIR)/etc/pm/config.d
 	echo 'SUSPEND_MODULES="rtw88_8822ce snd_pci_acp5x"' > $(TARGET_DIR)/etc/pm/config.d/config
+endef
+
+define BATOCERA_SYSTEM_INSTALL_IMAGES_CMDS
+	# batocera-boot.conf
+	$(INSTALL) -D -m 0644 $(BATOCERA_SYSTEM_PKGDIR)/batocera-boot.conf $(BINARIES_DIR)/batocera-boot.conf
 endef
 
 $(eval $(generic-package))
