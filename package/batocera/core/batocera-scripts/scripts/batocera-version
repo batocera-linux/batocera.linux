@@ -1,13 +1,27 @@
 #!/bin/bash
 
+## Symbol Matrix
+## According: https://wiki.batocera.org/launch_a_script
+## b  = user setted some boot scripts
+## u  = a userservices is active, ʉ all services inactive (ignore inactive custom_service)
+## g  = ES user scripts found in $HOME/configs/emulationstations/scripts
+## cC = custom_service and custom.sh found
+## cu = indicating custom_service is active
+## v  = executables found in $HOME/scripts
+
+FIND_EXT=
 FIND_EXT=$(find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" | head -1)
 
 FIND_OVERLAY=
 test -e "/boot/boot/overlay" && FIND_OVERLAY=1
 
+# rather used to check autoconvertion and if users added annother custom.sh 
 FIND_CUSTOMSH=
-test -e "/userdata/system/custom.sh" && FIND_CUSTOMSH=1
-test -e "/userdata/system/services/custom_service" && FIND_CUSTOMSH=1
+test -e "/userdata/system/services/custom_service" && FIND_CUSTOMSH=false
+test -e "/userdata/system/custom.sh"               && FIND_CUSTOMSH=true
+
+FIND_BOOTCUSTOM=
+test -e "/boot/boot-custom.sh" || test -e "/boot/postshare.sh" && FIND_BOOTCUSTOM=1
 
 FIND_CUSTOMESSYSTEMS=
 test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTOMESSYSTEMS=1
@@ -15,9 +29,16 @@ test -e "/userdata/system/configs/emulationstation/es_systems.cfg" && FIND_CUSTO
 FIND_CUSTOMESFEATURES=
 test -e "/userdata/system/configs/emulationstation/es_features.cfg" && FIND_CUSTOMESFEATURES=1
 
-FIND_CUSTOMSERVICES=$(batocera-services list user | grep -v "custom_service" | grep '\*$' | head -1)
+# batocera-services user-service;* active, user-service;- inactive, strip '-'-char to distinguish active/inactive services
+FIND_USERSERVICES=
+FIND_USERSERVICES=$(batocera-services list user | grep -v "^custom_service;-$" | grep -Po '[*-]$' | tr -d '\n')
+[[ -n "${FIND_USERSERVICES}" ]] && { [[ -z "${FIND_USERSERVICES//-/}" ]] && FIND_USERSERVICES=true || FIND_USERSERVICES=false; } 
 
+FIND_USERSCRIPTS=
 FIND_USERSCRIPTS=$(find /userdata/system/scripts -type f -executable -print -quit 2>/dev/null)
+
+FIND_ESGUISCRIPTS=
+FIND_ESGUISCRIPTS=$(find /userdata/system/configs/emulationstation/scripts -type f -executable -print -quit 2>/dev/null)
 
 FIND_PRO=
 test -e "/userdata/system/pro" && FIND_PRO=1
@@ -25,25 +46,22 @@ test -e "/userdata/system/pro" && FIND_PRO=1
 FIND_ADDONS=
 test -e "/userdata/system/add-ons" && FIND_ADDONS=1
 
+# 1.check for a valid string       && Assign Char    2. check true or false          then assign char
 EXTRA=
 test -n "${FIND_ADDONS}"           && EXTRA=${EXTRA}a
-test -n "${FIND_CUSTOMSH}"         && EXTRA=${EXTRA}c
+test -n "${FIND_BOOTCUSTOM}"       && EXTRA=${EXTRA}b
+test -n "${FIND_CUSTOMSH}"         && EXTRA=${EXTRA}c && if "${FIND_CUSTOMSH}";     then EXTRA=${EXTRA}C; fi
 test -n "${FIND_EXT}"              && EXTRA=${EXTRA}e
 test -n "${FIND_CUSTOMESFEATURES}" && EXTRA=${EXTRA}f
+test -n "${FIND_ESGUISCRIPTS}"     && EXTRA=${EXTRA}g
 test -n "${FIND_OVERLAY}"          && EXTRA=${EXTRA}o
 test -n "${FIND_PRO}"              && EXTRA=${EXTRA}p
 test -n "${FIND_CUSTOMESSYSTEMS}"  && EXTRA=${EXTRA}s
-test -n "${FIND_CUSTOMSERVICES}"   && EXTRA=${EXTRA}u
+test -n "${FIND_USERSERVICES}"     && EXTRA=${EXTRA}u && if "${FIND_USERSERVICES}"; then EXTRA=${EXTRA:0:-1}ʉ; fi
 test -n "${FIND_USERSCRIPTS}"      && EXTRA=${EXTRA}v
 
-if test "${1}" = "--extra"
-then
-    if test -z "${EXTRA}"
-    then
-	echo "none"
-    else
-	echo "${EXTRA}"
-    fi
+if test "${1}" = "--extra"; then
+  [ -n "${EXTRA}" ] && echo "${EXTRA}" || echo "none"
 else
-    cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
+  cat /usr/share/batocera/batocera.version | sed -e s+"^\([0-9]*\)"+"\1${EXTRA}"+
 fi
