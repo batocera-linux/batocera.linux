@@ -8,6 +8,7 @@ UBOOT_POWKIDDY_A13_VERSION = powkiddy-a13
 UBOOT_POWKIDDY_A13_SITE = \
     $(call github,alpgarcia,caesar-u-boot,$(UBOOT_POWKIDDY_A13_VERSION))
 UBOOT_POWKIDDY_A13_LICENSE = GPLv2
+UBOOT_POWKIDDY_A13_INSTALL_IMAGES = YES
 
 UBOOT_POWKIDDY_A13_DEPENDENCIES = rk3128-blobs
 
@@ -37,7 +38,7 @@ define UBOOT_POWKIDDY_A13_BUILD_CMDS
         $(@D)/trust.img --size 1024 4
 endef
 
-define UBOOT_POWKIDDY_A13_INSTALL_TARGET_CMDS
+define UBOOT_POWKIDDY_A13_INSTALL_IMAGES_CMDS
 	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader.img
 	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot-powkiddy-a13.img
 	cp $(@D)/trust.img     $(BINARIES_DIR)/trust.img
