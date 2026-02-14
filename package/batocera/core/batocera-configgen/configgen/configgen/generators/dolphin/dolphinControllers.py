@@ -424,13 +424,12 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str 
 def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
-        nplayer = 1
         nsamepad = 0
 
         # In case of two pads having the same name, dolphin wants a number to handle this
         double_pads: dict[str, int] = {}
 
-        for nplayer, pad in enumerate(playersControllers):
+        for nplayer, pad in enumerate(playersControllers, start=1):
             # Handle x pads having the same name
             nsamepad = double_pads.get(pad.real_name.strip(), 0)
             double_pads[pad.real_name.strip()] = nsamepad+1
