@@ -1543,6 +1543,21 @@ amstradcpc:
     Para habilitar o suporte ao controle, vá no menu RetroArch com "Hotkey + B" e altere esta opção:
     De "Quick Menu/Core Input Options/User 1 Device type: Retropad" para "Amstrad Joystick"
 
+pcw:
+  name:       Amstrad PCW
+  manufacturer: Amstrad
+  release: 1985
+  hardware: computer
+  extensions: [mfi, dfi, mfm, td0, imd, 86f, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Requires MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
+    Games are floppy disk images (.dsk). Most games are self-booting and don't require a separate system disk.
+
 msx1:
   name: MSX1
   manufacturer: Microsoft
@@ -3244,6 +3259,20 @@ crvision:
           Requires MAME BIOS file crvision.zip
   comment_br: |
           Requer o arquivo crvision.zip da BIOS do MAME
+
+ctvboy:
+  name:       Compact Vision TV Boy
+  manufacturer: Gakken
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME 0.262+ required
 
 laser310:
   name:       Laser 310
