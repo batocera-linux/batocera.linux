@@ -9,6 +9,7 @@ UBOOT_PS5000_VERSION = e20e9d85d326345fb2e80105a79263c95757414f
 UBOOT_PS5000_SITE = \
     $(call github,rk3128-cfw,caesar-u-boot,$(UBOOT_PS5000_VERSION))
 UBOOT_PS5000_LICENSE = GPLv2
+UBOOT_PS5000_INSTALL_IMAGES = YES
 
 UBOOT_PS5000_DEPENDENCIES = rk3128-blobs
 
@@ -38,7 +39,7 @@ define UBOOT_PS5000_BUILD_CMDS
         $(@D)/trust.img --size 1024 4
 endef
 
-define UBOOT_PS5000_INSTALL_TARGET_CMDS
+define UBOOT_PS5000_INSTALL_IMAGES_CMDS
 	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader.img
 	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot-ps5000.img
 	cp $(@D)/trust.img     $(BINARIES_DIR)/trust.img
