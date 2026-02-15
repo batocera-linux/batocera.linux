@@ -56,8 +56,9 @@ then
 
     nohup evsieve                                              \
             --input "${DEV1}" "${DEV2}" "${DEV3}" persist=exit \
-            --map key:1                btn:1                   \
-            --map key:5                btn:2                   \
+            --map btn:middle           btn:2                   \
+            --map key:1                btn:middle              \
+            --map key:5                btn:1                   \
             --map key:up               btn:5                   \
             --map key:down             btn:6                   \
             --map key:left             btn:7                   \
