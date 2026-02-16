@@ -1,0 +1,96 @@
+--- a/libfsemu/src/ml/input.c
++++ b/libfsemu/src/ml/input.c
+@@ -203,7 +203,7 @@
+ {
+     FS_ML_INIT_ONCE;
+ 
+-    SDL_Init(SDL_INIT_JOYSTICK);
++    SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+ 
+     fs_log("[INPUT] fs_ml_input_init\n");
+ 
+@@ -336,6 +336,15 @@
+         }
+ 
+         g_fs_ml_sdl_joystick_index_map[instance_id] = k;
++
++        if (SDL_IsGameController(i)) {
++            SDL_GameController *gc = SDL_GameControllerOpen(i);
++            if (gc) {
++                fs_log("[INPUT] Device #%d opened as GameController: %s\n",
++                       i, SDL_GameControllerName(gc));
++            }
++        }
++
+         k += 1;
+     }
+ 
+--- a/libfsemu/src/ml/sdl.c
++++ b/libfsemu/src/ml/sdl.c
+@@ -886,6 +886,32 @@
+     g_fs_ml_video_height = height;
+ }
+ 
++static int g_virtual_mouse_rx = 0;
++static int g_virtual_mouse_ry = 0;
++#define VIRTUAL_MOUSE_DEADZONE 8000
++#define VIRTUAL_MOUSE_SPEED 10.0f
++
++static void process_virtual_mouse(void)
++{
++    int xrel = 0, yrel = 0;
++    if (abs(g_virtual_mouse_rx) > VIRTUAL_MOUSE_DEADZONE) {
++        xrel = (int)((float)g_virtual_mouse_rx / 32767.0f * VIRTUAL_MOUSE_SPEED);
++    }
++    if (abs(g_virtual_mouse_ry) > VIRTUAL_MOUSE_DEADZONE) {
++        yrel = (int)((float)g_virtual_mouse_ry / 32767.0f * VIRTUAL_MOUSE_SPEED);
++    }
++    if (xrel != 0 || yrel != 0) {
++        fs_ml_event *me = fs_ml_alloc_event();
++        me->type = FS_ML_MOUSEMOTION;
++        me->motion.device = g_fs_ml_first_mouse_index;
++        me->motion.xrel = xrel;
++        me->motion.yrel = yrel;
++        me->motion.x = FS_ML_NO_ABSOLUTE_MOUSE_POS;
++        me->motion.y = FS_ML_NO_ABSOLUTE_MOUSE_POS;
++        fs_ml_post_event(me);
++    }
++}
++
+ int fs_ml_event_loop(void)
+ {
+     // printf("fs_ml_event_loop\n");
+@@ -1034,6 +1060,25 @@
+             new_event->key.keysym.mod = event.key.keysym.mod;
+             new_event->key.state = event.key.state;
+         }
++        else if (event.type == SDL_CONTROLLERAXISMOTION) {
++            if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTX) {
++                g_virtual_mouse_rx = event.caxis.value;
++            } else if (event.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY) {
++                g_virtual_mouse_ry = event.caxis.value;
++            }
++        }
++        else if (event.type == SDL_CONTROLLERBUTTONDOWN ||
++                 event.type == SDL_CONTROLLERBUTTONUP) {
++            if (event.cbutton.button == SDL_CONTROLLER_BUTTON_RIGHTSTICK) {
++                int pressed = (event.type == SDL_CONTROLLERBUTTONDOWN);
++                new_event = fs_ml_alloc_event();
++                new_event->type = pressed ? FS_ML_MOUSEBUTTONDOWN
++                                          : FS_ML_MOUSEBUTTONUP;
++                new_event->button.device = g_fs_ml_first_mouse_index;
++                new_event->button.button = FS_ML_BUTTON_LEFT;
++                new_event->button.state = pressed;
++            }
++        }
+         else if (event.type == SDL_JOYBUTTONDOWN) {
+             if (g_fs_log_input) {
+                 fs_log("SDL_JOYBUTTONDOWN which %d button %d state %d\n",
+@@ -1171,6 +1216,7 @@
+             fs_ml_post_event(new_event);
+         }
+     }
++    process_virtual_mouse();
+     return result;
+ }
+ 
