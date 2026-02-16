@@ -61,6 +61,7 @@
 - Sega Cave CV1000 support (currently x86 systems only)
 - Sega Gaelco support (currently x86 systems only)
 - Sega Hikaru support (currently x86 systems only)
+- Added support for GUO HUA PS3 GamePad in the Bluez package's Sixaxis plugin (models VOYEE - HY-2208 and MiniThink - CECHZC2U)
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
