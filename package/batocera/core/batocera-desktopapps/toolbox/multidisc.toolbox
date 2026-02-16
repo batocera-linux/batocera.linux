@@ -36,7 +36,7 @@ def find_multi_cd_games(root_dir):
     for root, dirs, files in os.walk(root_dir):
         for file in files:
             # Check game file extensions
-            if file.lower().endswith(('.iso', '.chd', '.cue', '.img', '.bin')):
+            if file.lower().endswith(('.iso', '.chd', '.cue', '.img', '.rvz', '.bin')):
                 # Remove file extension for pattern matching
                 filename_no_ext = os.path.splitext(file)[0]
                 match = cd_pattern.search(filename_no_ext)
