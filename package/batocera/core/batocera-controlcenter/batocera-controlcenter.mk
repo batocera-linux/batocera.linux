@@ -3,8 +3,8 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Last commit on Feb 9, 2026
-BATOCERA_CONTROLCENTER_VERSION = d94927c3754f7dc7648449c40d425547eb4c8b70
+# Last commit on Feb 16, 2026
+BATOCERA_CONTROLCENTER_VERSION = 6c01ef573e50ae1f50948093c5090c20544b4ef2
 BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
 BATOCERA_CONTROLCENTER_STE_METHOD = git
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
@@ -37,15 +37,16 @@ define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	install -m 0755 $(@D)/gamepads.py       $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/DocViewer.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(@D)/log.py            $(TARGET_DIR)/usr/share/batocera/controlcenter
-	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/images/bato-record.gif   $(TARGET_DIR)/usr/share/batocera/controlcenter
-	cd $(TARGET_DIR)/usr/bin; ln -sf ../share/batocera/controlcenter/controlcenter.py \
-	    ./batocera-controlcenter-app
+	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/images/bato-record.gif \
+	    $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/batocera-controlcenter-toogle.sh \
 	    $(TARGET_DIR)/usr/bin/batocera-controlcenter
 	install -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter
 	install -m 0644 $(BATOCERA_CONTROLCENTER_PATH)/ra-icon.png \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter/resources/ra-icon.png
+	cd $(TARGET_DIR)/usr/bin; ln -sf ../share/batocera/controlcenter/controlcenter.py \
+	    ./batocera-controlcenter-app
 
 	# install translations
 	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh build \
