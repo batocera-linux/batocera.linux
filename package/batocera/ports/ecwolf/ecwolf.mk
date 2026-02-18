@@ -4,8 +4,9 @@
 #
 ################################################################################
 # Version: 2024-05-20
-ECWOLF_VERSION = d1de69a576d4bb39e89124185a6dfd6991202cb9
-ECWOLF_SITE = https://bitbucket.org/ecwolf/ecwolf.git
+# temporary fix, change ECWOLF_SITE to https://github.com/ECWolfEngine/ECWolf when upgrade version to a newer one
+ECWOLF_VERSION = b5732a685b660df98ab2d9914b3ce9eeac9b95c9
+ECWOLF_SITE = https://github.com/victorgawk/ECWolf.git
 ECWOLF_SITE_METHOD=git
 ECWOLF_GIT_SUBMODULES=YES
 ECWOLF_LICENSE = Non-commercial
