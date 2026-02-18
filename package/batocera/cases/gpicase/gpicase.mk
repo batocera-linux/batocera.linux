@@ -6,17 +6,17 @@
 
 GPICASE_VERSION = 2.1
 GPICASE_SOURCE =
+GPICASE_INSTALL_IMAGES = YES
 
 define GPICASE_INSTALL_TARGET_CMDS
-	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
-	cp -rf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/overlays/* \
-	    $(BINARIES_DIR)/rpi-firmware/overlays/
 	mkdir -p $(TARGET_DIR)/etc/udev/rules.d/
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/99-gpicase.rules \
-	    $(TARGET_DIR)/etc/udev/rules.d/
-	$(INSTALL) -m 0755 \
-	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/cases/gpicase/batocera-gpicase-install \
-	    $(TARGET_DIR)/usr/bin/batocera-gpicase-install
+	cp $(GPICASE_PKGDIR)/99-gpicase.rules $(TARGET_DIR)/etc/udev/rules.d/
+	$(INSTALL) -m 0755 $(GPICASE_PKGDIR)/batocera-gpicase-install $(TARGET_DIR)/usr/bin/batocera-gpicase-install
+endef
+
+define GPICASE_INSTALL_IMAGES_CMDS
+	mkdir -p $(BINARIES_DIR)/rpi-firmware/overlays
+	cp -rf $(GPICASE_PKGDIR)/overlays/* $(BINARIES_DIR)/rpi-firmware/overlays/
 endef
 
 $(eval $(generic-package))

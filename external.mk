@@ -1,3 +1,4 @@
+include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-boot.mk
 include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-emulator-info.mk
 include $(sort $(wildcard $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*/*.mk))
 

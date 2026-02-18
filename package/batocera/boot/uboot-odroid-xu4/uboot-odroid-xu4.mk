@@ -8,7 +8,7 @@ UBOOT_ODROID_XU4_VERSION = 42ac93dcfbbb8a08c2bdc02e19f96eb35a81891a
 UBOOT_ODROID_XU4_SITE = https://github.com/hardkernel/u-boot.git
 UBOOT_ODROID_XU4_SITE_METHOD=git
 
-define UBOOT_ODROID_XU4_INSTALL_TARGET_CMDS
+define UBOOT_ODROID_XU4_INSTALL_IMAGES_CMDS
         cp $(@D)/sd_fuse/bl1.bin.hardkernel            $(BINARIES_DIR)/bl1.bin.hardkernel
         dd if=$(@D)/sd_fuse/bl1.bin.hardkernel         of=$(BINARIES_DIR)/bl1.bin.hardkernel.reduced bs=512 count=30 # because bl1 overlaps bl2
         cp $(@D)/sd_fuse/bl2.bin.hardkernel.720k_uboot $(BINARIES_DIR)/bl2.bin.hardkernel.720k_uboot
@@ -17,4 +17,4 @@ define UBOOT_ODROID_XU4_INSTALL_TARGET_CMDS
         dd if=/dev/zero of=$(BINARIES_DIR)/uboot-clearenv count=32 bs=512
 endef
 
-$(eval $(generic-package))
+$(eval $(boot-package))

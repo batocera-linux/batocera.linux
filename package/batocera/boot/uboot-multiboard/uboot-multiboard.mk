@@ -14,6 +14,7 @@ UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
 UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools
 UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
+UBOOT_MULTIBOARD_INSTALL_IMAGES = YES
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_H3),y)
 UBOOT_MULTIBOARD_DEPENDENCIES += arm-trusted-firmware
@@ -65,22 +66,28 @@ UBOOT_MULTIBOARD_PATCHES_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/*.patch)
 UBOOT_MULTIBOARD_CNF_FRAGS_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/*.config.fragment)
 UBOOT_MULTIBOARD_PATCHES_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/*.patch)
 
-# Use empty extract commands because we extract (and patch, configure, build
-# and install) multiple times in a loop.
-define UBOOT_MULTIBOARD_EXTRACT_CMDS
+define UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS
+	$(foreach config,$(call qstrip,$(BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS)),
+		$(call UBOOT_MULTIBOARD_$(1)_FOR_CONFIG,$(config)))
 endef
 
 # Helper macro to extract U-Boot.
 # $(1): the name of U-Boot defconfig without _defconfig part
-define UBOOT_MULTIBOARD_STEP_EXTRACT
+define UBOOT_MULTIBOARD_EXTRACT_FOR_CONFIG
 	@$(call MESSAGE,"Extract U-Boot for $(1)")
 	@mkdir -p $(@D)/source-$(1)
 	@$(TAR) --strip-components=1 -C $(@D)/source-$(1) $(TAR_OPTIONS) $(UBOOT_MULTIBOARD_DL_DIR)/$(UBOOT_MULTIBOARD_SOURCE)
 endef
 
+# Use empty extract commands because we extract (and patch, configure, build
+# and install) multiple times in a loop.
+define UBOOT_MULTIBOARD_EXTRACT_CMDS
+	$(call UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS,EXTRACT)
+endef
+
 # Helper macro to patch U-Boot.
 # $(1): the name of U-Boot defconfig without _defconfig part
-define UBOOT_MULTIBOARD_STEP_PATCH
+define UBOOT_MULTIBOARD_PATCH_FOR_CONFIG
 	@$(call MESSAGE,"Patch U-Boot for $(1)")
 	$(eval UBOOT_MULTIBOARD_PATCHES = $(strip
 		$(UBOOT_MULTIBOARD_PATCHES_COMMON)
@@ -93,10 +100,16 @@ define UBOOT_MULTIBOARD_STEP_PATCH
 	)
 endef
 
+define UBOOT_MULTIBOARD_PATCH_CONFIGS
+	$(call UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS,PATCH)
+endef
+
+UBOOT_MULTIBOARD_POST_PATCH_HOOKS += UBOOT_MULTIBOARD_PATCH_CONFIGS
+
 # Helper macro to configure U-Boot, adaptation of buildroot pkg-kconfig's
 # config and config fragment handling.
 # $(1): the name of U-Boot defconfig without _defconfig part
-define UBOOT_MULTIBOARD_STEP_CONFIGURE
+define UBOOT_MULTIBOARD_CONFIGURE_FOR_CONFIG
 	@$(call MESSAGE,"Configure U-Boot for $(1)")
 	$(eval UBOOT_MULTIBOARD_CNF_FRAGS = $(strip
 		$(UBOOT_MULTIBOARD_CNF_FRAGS_COMMON)
@@ -113,9 +126,13 @@ define UBOOT_MULTIBOARD_STEP_CONFIGURE
 	)
 endef
 
+define UBOOT_MULTIBOARD_CONFIGURE_CMDS
+	$(call UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS,CONFIGURE)
+endef
+
 # Helper macro to build U-Boot, adaptation of buildroot uboot's build.
 # $(1): the name of U-Boot defconfig without _defconfig part
-define UBOOT_MULTIBOARD_STEP_BUILD
+define UBOOT_MULTIBOARD_BUILD_FOR_CONFIG
 	@$(call MESSAGE,"Build U-Boot for $(1)")
 	$(TARGET_CONFIGURE_OPTS) \
 		PKG_CONFIG="$(PKG_CONFIG_HOST_BINARY)" \
@@ -127,10 +144,13 @@ define UBOOT_MULTIBOARD_STEP_BUILD
 			O=$(@D)/build-$(1) $(UBOOT_MULTIBOARD_MAKE_OPTS) all
 endef
 
+define UBOOT_MULTIBOARD_BUILD_CMDS
+	$(call UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS,BUILD)
+endef
 
 # Helper macro to install U-Boot.
 # $(1): the name of U-Boot defconfig without _defconfig part
-define UBOOT_MULTIBOARD_STEP_INSTALL
+define UBOOT_MULTIBOARD_INSTALL_FOR_CONFIG
 	@$(call MESSAGE,"Install U-Boot for $(1)")
 	@mkdir -p $(BINARIES_DIR)/uboot-multiboard/$(1)
 	@$(foreach bin,$(call qstrip,$(BR2_PACKAGE_UBOOT_MULTIBOARD_BINARIES)),
@@ -138,15 +158,8 @@ define UBOOT_MULTIBOARD_STEP_INSTALL
 	)
 endef
 
-# The build loop.
-define UBOOT_MULTIBOARD_BUILD_CMDS
-	$(foreach config,$(call qstrip,$(BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS)),
-		$(call UBOOT_MULTIBOARD_STEP_EXTRACT,$(config))
-		$(call UBOOT_MULTIBOARD_STEP_PATCH,$(config))
-		$(call UBOOT_MULTIBOARD_STEP_CONFIGURE,$(config))
-		$(call UBOOT_MULTIBOARD_STEP_BUILD,$(config))
-		$(call UBOOT_MULTIBOARD_STEP_INSTALL,$(config))
-	)
+define UBOOT_MULTIBOARD_INSTALL_IMAGES_CMDS
+	$(call UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS,INSTALL)
 endef
 
 $(eval $(generic-package))
