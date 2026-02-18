@@ -150,4 +150,9 @@ SDL3_CONF_OPTS += -DSDL_X11=OFF
 SDL3_CONF_OPTS += -DSDL_X11_SHARED=OFF
 endif
 
+# Add option for a system without a standard desktop windowing environment.
+ifeq ($(BR2_PACKAGE_SDL3_WAYLAND)$(BR2_PACKAGE_SDL3_X11),)
+SDL3_CONF_OPTS += -DSDL_UNIX_CONSOLE_BUILD=ON
+endif
+
 $(eval $(cmake-package))
