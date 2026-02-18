@@ -367,6 +367,46 @@ systems:
         choices:
           "On": 1
           "Off": 0
+  - name: pcw
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Amstrad PCW disk images: pcw
+      altmodel:
+        prompt: PCW MODEL
+        description: Select model to emulate
+        choices:
+          PCW8256 - 256KB (default): pcw8256
+          PCW8512 - 512KB: pcw8512
+          PCW9256 - 256KB: pcw9256
+          PCW9512 - 512KB: pcw9512
+          PCW10 - 512KB: pcw10
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Disk (Drive A): flop
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
   - name: bbc
     features:
       - padtokeyboard
@@ -523,6 +563,22 @@ systems:
         choices:
           Cartridge: cart
           Cassette: cass
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: ctvboy
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Gakken Compact Vision TV Boy cartridges: ctvboy
       pergamecfg:
         group: ADVANCED OPTIONS
         prompt: CUSTOM GAME CONFIG
