@@ -5,7 +5,7 @@
 ################################################################################
 # Version: 2024-05-20
 # temporary fix, change ECWOLF_SITE to https://github.com/ECWolfEngine/ECWolf when upgrade version to a newer one
-ECWOLF_VERSION = b5732a685b660df98ab2d9914b3ce9eeac9b95c9
+ECWOLF_VERSION = 80d8645f0a271e135d25c5b184e07df736ea5e9b
 ECWOLF_SITE = https://github.com/victorgawk/ECWolf.git
 ECWOLF_SITE_METHOD=git
 ECWOLF_GIT_SUBMODULES=YES
