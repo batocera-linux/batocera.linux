@@ -1,0 +1,114 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  ep128emu_wait:
+    group: PERFORMANCE
+    prompt: MAIN THREAD WAIT
+    description: Main thread wait time in milliseconds. Core default (0).
+    preset: sliderauto
+    preset_parameters: 0 10 1 ms
+  ep128emu_sdhq:
+    group: AUDIO
+    prompt: HIGH SOUND QUALITY
+    description: Enable high quality sound processing.
+    choices:
+      Disabled: '0'
+      Enabled (Default): '1'
+  ep128emu_swfb:
+    group: PERFORMANCE
+    prompt: ACCELERATED SW FRAMEBUFFER
+    description: Use accelerated software framebuffer.
+    choices:
+      Disabled (Default): '0'
+      Enabled: '1'
+  ep128emu_useh:
+    group: DISPLAY
+    prompt: RESOLUTION CHANGES
+    description: Enable resolution changes (requires restart).
+    choices:
+      Disabled: '0'
+      Enabled (Default): '1'
+  ep128emu_brds:
+    group: DISPLAY
+    prompt: BORDER LINES WHEN ZOOMING
+    description: Border lines to keep when zooming in. Core default (0).
+    choices:
+      0 (Default): '0'
+      '2': '2'
+      '4': '4'
+      '8': '8'
+      '10': '10'
+      '20': '20'
+  ep128emu_romv:
+    group: SYSTEM
+    prompt: SYSTEM ROM VERSION
+    description: Select the system ROM version (Enterprise only).
+    choices:
+      Original (Default): Original
+      Enhanced: Enhanced
+  ep128emu_zoom:
+    group: CONTROLS
+    prompt: USER 1 ZOOM BUTTON
+    description: Button for User 1 zoom function.
+    choices:
+      R3 (Default): R3
+      Start: Start
+      Select: Select
+      X: X
+      Y: Y
+      A: A
+      B: B
+      L: L
+      R: R
+      L2: L2
+      R2: R2
+      L3: L3
+  ep128emu_info:
+    group: CONTROLS
+    prompt: USER 1 INFO BUTTON
+    description: Button for User 1 info function.
+    choices:
+      L3 (Default): L3
+      R3: R3
+      Start: Start
+      Select: Select
+      X: X
+      Y: Y
+      A: A
+      B: B
+      L: L
+      R: R
+      L2: L2
+      R2: R2
+  ep128emu_afbt:
+    group: CONTROLS
+    prompt: USER 1 AUTOFIRE BUTTON
+    description: Select button for User 1 autofire function.
+    choices:
+      None (Default): None
+      X: X
+      Y: Y
+      A: A
+      B: B
+      L: L
+      R: R
+      L2: L2
+      R2: R2
+      L3: L3
+      R3: R3
+      Start: Start
+      Select: Select
+  ep128emu_afsp:
+    group: CONTROLS
+    prompt: USER 1 AUTOFIRE REPEAT DELAY
+    description: Autofire repeat delay for User 1. Core default (1).
+    choices:
+      1 (Default): '1'
+      '2': '2'
+      '4': '4'
+      '8': '8'
+      '16': '16'

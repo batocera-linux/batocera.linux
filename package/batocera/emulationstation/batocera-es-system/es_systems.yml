@@ -5876,14 +5876,23 @@ enterprise:
   manufacturer: Enterprise Computers
   release: 1985
   hardware: computer
-  extensions: [bas, com, zip]
+  extensions: [bas, com, zip, img, dsk, tap, dtf, trn, 128, cas, cdt, tzx]
   emulators:
     clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+      clk:      { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [img,dsk,tap,dtf,trn,128,cas,cdt,tzx]  }
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires BIOS files:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+          Requires MAME BIOS file:
+          bios/ep64.zip
+          bios/ep128.zip
+          bios/ep64_exdos.zip
   comment_fr: |
           Nécessite ces fichiers de BIOS:
           bios/Enterprise/basic21.bin
@@ -5892,3 +5901,31 @@ enterprise:
           Requer arquivo de BIOS:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+
+tvc:
+  name:       Videoton TVC
+  manufacturer: Videoton
+  release: 1986
+  hardware: computer
+  extensions: [cas, tap, dsk, img, zip]
+  emulators:
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires BIOS files:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+          bios/tvcfileio.rom
+          Requires MAME BIOS file:
+          bios/mame/tvc64.zip
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
