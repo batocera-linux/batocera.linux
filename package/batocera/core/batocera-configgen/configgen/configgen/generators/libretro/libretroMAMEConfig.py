@@ -62,7 +62,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
     else:
         corePath = str(system.config.core)
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'tvgames', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.config.get_bool("customcfg"):
@@ -145,7 +145,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                 commandLine += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and system.config.get('sticktype', 'none') != 'none':
+            if system.name == "bbcmicro" and system.config.get('sticktype', 'none') != 'none':
                 commandLine += ["-analogue", system.config['sticktype']]
                 specialController = system.config['sticktype']
 
@@ -314,7 +314,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             if (mameIniDir / "batocera.ini").exists():
                 (mameIniDir / "batocera.ini").unlink()
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList[-4:] == "cass":
                         autoRunCmd = '*tape\\nchain""\\n'
@@ -629,7 +629,7 @@ def generateMAMEPadConfig(
 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
+    specialControlList = [ "cdimono1", "apfm1000", "astrocade", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
         "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if messSysName in specialControlList:
         # Load mess controls from csv

@@ -1781,12 +1781,12 @@ def _genesisplusgx_options(
     # MSU-MD/MegaCD
 
     # Needs to be forced to sega/mega cd for MSU-MD to work.
-    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'msu-md' else 'auto')
+    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'megadrive-msu' else 'auto')
     _set(coreSettings, 'genesis_plus_gx_add_on', add_on)
 
     # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
     # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
-    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'msu-md' else '100')
+    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'megadrive-msu' else '100')
     _set(coreSettings, 'genesis_plus_gx_cdda_volume', cdda_volume)
 
     # gun

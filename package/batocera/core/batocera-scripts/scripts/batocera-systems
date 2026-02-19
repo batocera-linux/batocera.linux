@@ -84,7 +84,7 @@ systems = {
 
     # ---------- Magnavox and Philips ---------- #
     # https://docs.libretro.com/library/o2em/#bios
-    "o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
+    "odyssey2": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
                                                   { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   } ] },
 
     "videopacplus": { "name": "Videopac+ G7400", "biosFiles": [ { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
@@ -143,7 +143,7 @@ systems = {
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
     # https://docs.libretro.com/library/genesis_plus_gx/#bios
-    "msu-md":       { "name": "MSU-MD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
+    "megadrive-msu":{ "name": "MSU-MD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
@@ -292,7 +292,7 @@ systems = {
                                                             { "md5": "e9fc3890963b12cf15d0a2eea5815b72", "file": "bios/np2kai/ITF.ROM"  },
                                                             { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
     # ---------- Casio Loopy ---------- #
-    "casloopy": { "name": "Casio Loopy", "biosFiles": [
+    "loopy": { "name": "Casio Loopy", "biosFiles": [
                                                           { "md5": "0e1d8dc0110ecf8201c0cef11ef4a858", "file": "bios/casloopy.zip" },
                                                           { "md5": "d527e3ed1bf9bd0661154c202a65c5bd", "zippedFile": "hd6437021.lsi302", "file": "bios/casloopy.zip" },
                                                           { "md5": "c0f1c899c9ca098663d046d60779711d", "zippedFile": "hn62434fa.lsi352", "file": "bios/casloopy.zip" } ] },
@@ -447,7 +447,7 @@ systems = {
                                                 { "md5": "206daf498ac5d0141de1d47d38afd899", "zippedFile": "cd2326a.u2b", "file": "bios/ti99_speech.zip"} ] },
 
     # ---------- Bally Astrocade ---------- #
-    "astrocde":   { "name": "Bally Astrocade", "biosFiles":  [ { "md5": "", "file": "bios/astrocde.zip"  },
+    "astrocade":   { "name": "Bally Astrocade", "biosFiles":  [ { "md5": "", "file": "bios/astrocde.zip"  },
                                                 { "md5": "7d25a26e5c4841b364cfe6b1735eaf03", "zippedFile": "astro.bin", "file": "bios/astrocde.zip"}, ] },
 
     # ---------- Game Master ---------- #

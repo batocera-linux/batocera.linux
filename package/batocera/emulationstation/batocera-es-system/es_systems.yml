@@ -519,8 +519,8 @@ megacd:
   release: 1991
   hardware: console
   extensions: [cue, iso, chd, m3u]
-  platform:   segacd
-  theme:      segacd
+  platform:   megacd
+  theme:      megacd
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -537,7 +537,7 @@ sega32x:
     libretro:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
-msu-md:
+megadrive-msu:
   name:       MSU-MD
   manufacturer: Sega
   release: 2020
@@ -545,6 +545,7 @@ msu-md:
   extensions: [md, zip, 7z, squashfs]
   platform:   genesis, megadrive
   group:      megadrive
+  theme: megadrive-msu
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -1855,13 +1856,12 @@ msxturbor:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
-o2em:
+odyssey2:
   name:       Odyssey2
   manufacturer: Magnavox - Philips
   release: 1978
   hardware: console
   extensions: [bin, zip, 7z]
-  path:       o2em
   theme:      odyssey2
   emulators:
     libretro:
@@ -2531,7 +2531,7 @@ windows_installers:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:windows
 
-xash3d_fwgs:
+halflife:
   name: Half-Life 1
   manufacturer: Ports
   release: 1998
@@ -2554,7 +2554,7 @@ xash3d_fwgs:
     Installation:
 
     Copy the game's directory from your Steam installation (Steam/steamapps/common/Half-Life/<game data folder>/)
-    to /userdata/roms/xash3d_fwgs/<game folder> and create an empty `<game folder>.game` file in the same directory.
+    to /userdata/roms/halflife/<game folder> and create an empty `<game folder>.game` file in the same directory.
 
     For Half-Life 1, the game folder is `valve/`.
   comment_br: |
@@ -2569,7 +2569,7 @@ xash3d_fwgs:
     Instalação:
 
     Copie o diretório do jogo da sua instalação do Steam (Steam/steamapps/common/Half-Life/<game data folder>/)
-    para /userdata/roms/xash3d_fwgs/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
+    para /userdata/roms/halflife/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
 
     Para Half-Life 1, a pasta do jogo é `valve/`.
 
@@ -2668,6 +2668,7 @@ imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
   release:
+  theme: screenshots
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm]
   path:       /userdata/screenshots
@@ -3169,7 +3170,7 @@ advision:
   comment_br: |
           Requer o arquivo advision.zip da BIOS do MAME
 
-plugnplay:
+tvgames:
   name:       Plug and Play TV Games
   manufacturer: Various
   release: 2002
@@ -3436,7 +3437,7 @@ apfm1000:
   comment_br: |
           Requer o arquivo apfm1000.zip da BIOS do MAME
 
-bbc:
+bbcmicro:
   name:       BBC Micro
   manufacturer: Acorn Computers
   release: 1981
@@ -3519,7 +3520,7 @@ gmaster:
   comment_br: |
           Requer o arquivo gmaster.zip da BIOS do MAME
 
-astrocde:
+astrocade:
   name:       Astrocade
   manufacturer: Bally
   release: 1978
@@ -4016,7 +4017,7 @@ hikaru:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     airtrix: Air Trix (Rev. A)
     airtrixo: Air Trix (original)
     braveff: Brave Firefighters
@@ -4026,7 +4027,7 @@ hikaru:
     sgnascar: NASCAR Arcade (Rev. A)
     sgnascaro: NASCAR Arcade (original)
     von4: Cyber Troopers Virtual-On 4: Force (Rev. E)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Hikaru games under Linux!
@@ -4091,14 +4092,14 @@ gaelco:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     atvtrack: ATV Track (set 1)
     atvtracka: ATV Track (set 2)
     gfootbal: Gaelco Football
     smashdrv: Smashing Drive (World)
     smashdrvb: Smashing Drive (UK)
     smashdrvs: Smashing Drive (Spain, Portugal)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Gaelco games under Linux!
@@ -4163,7 +4164,7 @@ cave3rd:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     akatana: Akai Katana (2010/ 8/13 MASTER VER.)
     deathsmil: Deathsmiles (2007/10/09 MASTER VER)
     dsmbl: Deathsmiles Mega Black Label (2008/10/06 MEGABLACK LABEL VER)
@@ -4193,7 +4194,7 @@ cave3rd:
     pinkswtsa: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER...)
     pinkswtsb: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER.)
     pinkswtsx: Pink Sweets Ibara Sorekara (2006/XX/XX MASTER VER.)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Cave CV1000 games under Linux!
@@ -5121,7 +5122,7 @@ theforceengine:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:theforceengine
 
-iortcw:
+rtcw:
   name: Return To Castle Wolfenstein
   manufacturer: Ports
   release: 2001
@@ -5129,6 +5130,7 @@ iortcw:
   extensions: [rtcw]
   platform: pc
   group: ports
+  theme: rtcw
   emulators:
     iortcw:
       iortcw: { requireAnyOf: [ BR2_PACKAGE_IORTCW ] }
@@ -5824,12 +5826,13 @@ bennugd:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
 
-casloopy:
+loopy:
   name:       Casio Loopy
   manufacturer: Casio
   release: 1995
   hardware: console
   extensions: [bin, ic1, zip, 7z]
+  theme: loopy
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }

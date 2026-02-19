@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ...types import HotkeysContext
 
 
-_IORTCW_CONFIG: Final = ROMS / "iortcw"
+_IORTCW_CONFIG: Final = ROMS / "rtcw"
 _IORTCW_CONFIG_FILE: Final = _IORTCW_CONFIG / "main" / "wolfconfig.cfg"
 
 
@@ -107,7 +107,7 @@ class IORTCWGenerator(Generator):
         return Command(
             array=commandArray,
             env={
-                "XDG_DATA_HOME": ROMS,
+                "XDG_DATA_HOME": str(ROMS),
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
             }
         )
