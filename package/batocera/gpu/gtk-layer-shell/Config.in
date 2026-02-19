@@ -1,0 +1,8 @@
+config BR2_PACKAGE_GTK_LAYER_SHELL
+	bool "gtk-layer-shell"
+	select BR2_PACKAGE_LIBGTK3
+	help
+	  A library to create panels and other desktop components 
+	  for Wayland using the Layer Shell protocol.
+
+	  https://github.com/wmww/gtk-layer-shell
