@@ -204,7 +204,7 @@ case "${1}" in
 	    exit 1
 	fi
 	arch="${2}"
-	cat "./output/${arch}/build/build-time.log" | grep -E "^[^:]*:end" | cut -d : -f 3 | sort | uniq -c | sort -rn
+	cat "./output/${arch}/build/build-time.log" | grep -E "^[^:]*:end" | cut -d : -f 3 | sort | uniq -c | sort -rn | grep -vE '[ ]+rsync[ ]*$|[ ]+install-[a-z]+[ ]*$'
 	;;
     "logrunning")
 	if test -z "${2}"
