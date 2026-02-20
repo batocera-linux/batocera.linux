@@ -15,6 +15,9 @@
 - Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
   These version continue to have problems with later kernel versions and are not longer sustainable.
   Only the legacy 470.xx, 580.xx and current 590.xx drivers will be supported in v43.
+- A few roms directories have changed names for consistency with themes and the overall rule of naming them after systems, not
+  emulators: now please use odyssey2 (o2em), megadrive-msu (msu-md), halflife (xash3d_fwgs), tvgames (plugnplay),
+  astrocade (astrocde), bbcmicro (bbc), rtcw (iortcw), loopy (casloopy).
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support

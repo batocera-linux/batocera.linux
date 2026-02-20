@@ -323,7 +323,7 @@ class MameGenerator(Generator):
                 commandArray += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
+            if system.name == "bbcmicro" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
                 commandArray += ["-analogue", sticktype]
                 specialController = sticktype
 
@@ -464,7 +464,7 @@ class MameGenerator(Generator):
             autoRunDelay = 0
             # Autostart computer games where applicable
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList.endswith("cass"):
                         autoRunCmd = '*tape\\nchain""\\n'
