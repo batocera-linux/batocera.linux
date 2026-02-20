@@ -142,7 +142,7 @@ ifeq ($(BR2_PACKAGE_DEMUL),y)
 endif
 
 # melonds
-ifeq ($(BR2_PACKAGE_DEMUL),y)
+ifeq ($(BR2_PACKAGE_MELONDS),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-melonds
   BATOCERA_DESKTOPAPPS_APPS    += melonds-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
