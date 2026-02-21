@@ -155,6 +155,7 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/libXrender.so"* \
 "${G_TARGETDIR}/usr/lib/libXcursor.so"* \
 "${G_TARGETDIR}/usr/lib/libSDL2"*"so"* \
+"${G_TARGETDIR}/usr/lib/libSDL3"*"so"* \
 "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"* \
 "${G_TARGETDIR}/lib/libnss_"*
 do
@@ -181,6 +182,7 @@ cp -prv "${G_TARGETDIR}/usr/lib/libgnutls"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libFAudio.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libXrender.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libSDL2"*"so"*  "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libSDL3"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/lib/libnss_"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libpulse"*"so"* "${TMPOUT}/lib32/" || exit 1
@@ -220,6 +222,7 @@ echo
 mkdir -p "${TMPOUT}/usr/bin/lindbergh" || exit 1
 mkdir -p "${TMPOUT}/lib32/extralibs" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lind"*        "${TMPOUT}/usr/bin/lindbergh/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/controls"*    "${TMPOUT}/usr/bin/lindbergh/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lib"*"so"*    "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/extralibs/lib"*"so"* "${TMPOUT}/lib32/extralibs/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libglut.so"*            "${TMPOUT}/lib32/" || exit 1
