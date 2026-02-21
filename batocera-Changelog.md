@@ -126,6 +126,7 @@
 - Libretro Swanstation to 2nd of August 2025 build
 - Libretro Vecx to 12th of January 2026 build
 - Libretro YabaSanshiro to 20th of December 2025 build
+- Lindbergh Loader to v2.1.3
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
