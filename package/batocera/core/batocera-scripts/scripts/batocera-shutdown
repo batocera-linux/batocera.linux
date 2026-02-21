@@ -434,8 +434,12 @@ start_es() {
 
 stop_other_services() {
 	/etc/init.d/S03system-splash stop
-	/etc/init.d/S13irqbalance stop
-	/etc/init.d/S25lircd stop
+    if [ -f /etc/init.d/S13irqbalance ]; then
+        /etc/init.d/S13irqbalance stop
+    fi
+    if [ -f /etc/init.d/S25lircd ]; then
+        /etc/init.d/S25lircd stop
+    fi
 	/etc/init.d/S32bluetooth stop
 	/etc/init.d/S49ntp stop
 	/etc/init.d/S50avahi-daemon stop
@@ -450,8 +454,12 @@ stop_other_services() {
 }
 
 start_other_services() {
-	/etc/init.d/S13irqbalance start
-	/etc/init.d/S25lircd start
+    if [ -f /etc/init.d/S13irqbalance ]; then
+        /etc/init.d/S13irqbalance start
+    fi
+    if [ -f /etc/init.d/S25lircd ]; then
+        /etc/init.d/S25lircd start
+    fi
 	/etc/init.d/S32bluetooth start
 	/etc/init.d/S49ntp start
 	/etc/init.d/S50avahi-daemon start
