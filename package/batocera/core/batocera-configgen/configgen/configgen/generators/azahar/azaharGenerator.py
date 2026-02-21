@@ -96,6 +96,8 @@ class AzaharGenerator(Generator):
         azaharConfig.set("Layout", r"swap_screen\default", "false")
         azaharConfig.set("Layout", "layout_option", layout_option)
         azaharConfig.set("Layout", r"layout_option\default", "false")
+        azaharConfig.set("Layout", "large_screen_proportion", system.config.get("azahar_large_screen_proportion", "4"))
+        azaharConfig.set("Layout", r"large_screen_proportion\default", "false")
 
         ## [SYSTEM]
         if not azaharConfig.has_section("System"):
