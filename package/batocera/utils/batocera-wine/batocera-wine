@@ -126,7 +126,7 @@ setPrefixArch(){
     ENABLE_WIN32="$(get_setting enable_win32 "${SYSTEM}" "${ROMGAMENAME}")"
 
     # check registry settings in PREFIX for current WINE-RUNNER
-    local val
+    local val winever
     if [[ -e "${1}/userdef.reg" ]]; then
         if val=$(grep -Po '^#arch=\K.*' "${1}/userdef.reg"); then
             echo "${FUNCNAME[0]}: Found arch '${val}' in Prefix-registry-file"
@@ -991,6 +991,18 @@ init_wine() {
         WINE_VERSION="wine-proton"
     fi
     echo "*** Chosen WINE runner is ${WINE_VERSION} ***"
+
+   #---> better determine wine version and then continue or make a radical cut here
+   #---> knifes out
+   #----> Doe something like this:
+
+## WINE_RUNNER_EXE_VERSION=$(${somepath}/bin/wine --version)
+## output is something like wine-11.1.build.ver.abff1234
+## WINE_RUNNER_EXE_VERSION=$(printf "%04d" $(echo $WINE_RUNNER_EXE_VERSION | grep -Po ^wine-\K\d+') $(echo $WINE_RUNNER_EXE_VERSION | grep -Po ^wine-\d+\.\K\d+'))
+##  a bit shorter: printf "%04d" $(echo wine-1.123-abc | grep -Po '^wine-\K\d+\.\d+' | tr "." "\n")
+## This will result to 00110001 - so version 11 is 0011, and the fraction is 0001 so we can achive a fix version for a turn
+##
+
 
     ## Wine executables
     DIR="$(find_wine_dir "$WINE_VERSION")"
