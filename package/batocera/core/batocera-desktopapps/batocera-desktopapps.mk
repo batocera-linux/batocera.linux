@@ -4,11 +4,18 @@
 #
 ################################################################################
 
-BATOCERA_DESKTOPAPPS_VERSION = 1.1
+BATOCERA_DESKTOPAPPS_VERSION = 1.2
 BATOCERA_DESKTOPAPPS_SOURCE =
 
 BATOCERA_DESKTOPAPPS_PKGDIR = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps
+
+# depend on yad if the device meets the criteria
+ifeq ($(BR2_PACKAGE_XORG7),y)
+ifeq ($(BR2_PACKAGE_LIBGTK2)$(BR2_PACKAGE_LIBGTK3_X11),y)
+BATOCERA_DESKTOPAPPS_DEPENDENCIES = yad
+endif
+endif
 
 # Base files
 BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
@@ -20,10 +27,12 @@ BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
 #file-roller integration for pcmanfm - open/list archives
 BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
 
-#1og Viewer for ES log files for all platforms that use pcmanfm
-BATOCERA_DESKTOPAPPS_SCRIPTS += view-eslog
-BATOCERA_DESKTOPAPPS_APPS    += view-eslog.desktop
-BATOCERA_DESKTOPAPPS_ICONS   += view-eslog.png
+#1og Viewer for ES log files for platforms that can use yad
+ifeq ($(BR2_PACKAGE_YAD),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += view-eslog
+  BATOCERA_DESKTOPAPPS_APPS    += view-eslog.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += view-eslog.png
+endif
 
 ## System depended applets
 
