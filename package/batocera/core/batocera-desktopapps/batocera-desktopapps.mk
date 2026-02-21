@@ -216,6 +216,12 @@ ifeq ($(BR2_PACKAGE_DOSBOX),y)
   BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.extract.desktop
 endif
 
+ifeq ($(BR2_PACKAGE_SCUMMVM),y)
+  BATOCERA_DESKTOPAPPS_TOOLBOX += scummvm.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += scummvm.toolbox.squashfs.desktop
+  BATOCERA_DESKTOPAPPS_ACTIONS += scummvm.toolbox.extract.desktop
+endif
+
 
 define BATOCERA_DESKTOPAPPS_INSTALL_TARGET_CMDS
 	# scripts (Install as executable 0755)
