@@ -2624,6 +2624,7 @@ cgenius:
   hardware: port
   extensions: [cgenius]
   platform: pc
+  group: ports
   emulators:
     cgenius:
       cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
