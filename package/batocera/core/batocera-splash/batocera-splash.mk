@@ -30,6 +30,9 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=v4l2m2m-copy
     endif
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=gpu --hwdec=auto
+    endif
     # Targets that should remain empty (handled by internal defaults)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS =
