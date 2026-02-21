@@ -1,0 +1,26 @@
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 0e00c8f..52a78da 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -24,6 +24,8 @@ aliases {
+ 		mmc2 = &mmc1;
+ 		serial0 = &uart0;
+ 		serial1 = &uart5;
++		rtc0 = &pcf8563;
++		rtc1 = &rtc;        
+ 	};
+ 
+ 	backlight: backlight {
+@@ -392,6 +393,12 @@ uart5_ph_pins: uart5-ph-pins {
+ &r_i2c {
+ 	status = "okay";
+ 
++	pcf8563: rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++	};
++
+ 	axp717: pmic@34 {
+ 		compatible = "x-powers,axp717";
+ 		reg = <0x34>;
