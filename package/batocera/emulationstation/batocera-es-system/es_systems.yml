@@ -2035,16 +2035,16 @@ jaguarcd:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
 gamecube:
-  name:       GameCube
+  name: GameCube
   manufacturer: Nintendo
   release: 2001
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
-  platform:   gc
-  theme:      gc
+  platform: gc
+  theme: gc
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
@@ -2063,15 +2063,15 @@ gamecube:
     Para mais informações: https://wiki.batocera.org/systems:gamecube
 
 triforce:
-  name:       Triforce
+  name: Triforce
   manufacturer: Namco, Sega, Nintendo
   release: 2003
   hardware: arcade
   extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
-  platform:   triforce, arcade
+  platform: triforce, arcade
   emulators:
-    dolphin_triforce:
-      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
+    dolphin:
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
   comment_en: |
     Triforce is an arcade machine based on the GameCube's hardware.
 
@@ -2084,14 +2084,14 @@ triforce:
     Para mais informações: https://wiki.batocera.org/systems:triforce
 
 wii:
-  name:       Wii
+  name: Wii
   manufacturer: Nintendo
   release: 2006
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |

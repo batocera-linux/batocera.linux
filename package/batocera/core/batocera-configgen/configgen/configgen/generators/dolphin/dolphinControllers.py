@@ -51,6 +51,8 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
             elif system.config.get("dolphin_wheel_type") == "Steering Wheel":
                 used_wheels = wheels
         generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
+    elif system.name == "triforce":
+        generateControllerConfig_triforce(system, playersControllers, rom)
     else:
         raise BatoceraException(f"Invalid system name: '{system.name}'")
 
@@ -243,6 +245,60 @@ def generateControllerConfig_gamecube(system: Emulator, playersControllers: Cont
                 line = cconfig.readline()
 
     generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
+
+def generateControllerConfig_triforce(system: Emulator, playersControllers: Controllers, rom: Path) -> None:
+    # Based on GameCube mapping but with arcade specific overrides
+    triforceMapping = {
+        'a':             'Buttons/B',
+        'b':             'Buttons/A',
+        'y':             'Buttons/Y',
+        'x':             'Buttons/X',
+        'pagedown':      'Buttons/Z',
+        'pageup':        'Triforce/Service',
+        'select':        'Triforce/Coin',
+        'start':         'Buttons/Start',
+        'l2':            'Triggers/L',
+        'r2':            'Triggers/R',
+        'up':            'D-Pad/Up',
+        'down':          'D-Pad/Down',
+        'left':          'D-Pad/Left',
+        'right':         'D-Pad/Right',
+        'joystick1up':   'Main Stick/Up',
+        'joystick1left': 'Main Stick/Left',
+        'joystick2up':   'C-Stick/Up',
+        'joystick2left': 'C-Stick/Left',
+        'hotkey':        'Triforce/Test'
+    }
+    
+    triforceReverseAxes: dict[str | None, str] = {
+        'Main Stick/Up':   'Main Stick/Down',
+        'Main Stick/Left': 'Main Stick/Right',
+        'C-Stick/Up':      'C-Stick/Down',
+        'C-Stick/Left':    'C-Stick/Right'
+    }
+
+    triforceReplacements = {
+        'joystick1up':    'up',
+        'joystick1left':  'left',
+        'joystick1down':  'down',
+        'joystick1right': 'right',
+        'l2':             'pageup',
+        'r2':             'pagedown'
+    }
+
+    # Handle per-ROM overrides if a .cfg file exists
+    configname = rom.with_name(f'{rom.name}.cfg')
+    if configname.is_file():
+        import ast
+        with configname.open() as cconfig:
+            line = cconfig.readline()
+            while line:
+                entry = f"{{{line}}}"
+                res = ast.literal_eval(entry)
+                triforceMapping.update(res)
+                line = cconfig.readline()
+
+    generateControllerConfig_any(system, playersControllers, {}, "GCPadNew.ini", "GCPad", triforceMapping, triforceReverseAxes, triforceReplacements)
 
 def removeControllerConfig_gamecube() -> None:
     configFileName = DOLPHIN_CONFIG / "GCPadNew.ini"
