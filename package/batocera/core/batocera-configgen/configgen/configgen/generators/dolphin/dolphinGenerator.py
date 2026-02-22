@@ -34,6 +34,9 @@ class DolphinGenerator(Generator):
         # Dir required for saves
         mkdir_if_not_exists(DOLPHIN_SAVES / "StateSaves")
 
+        # GaemSettings
+        mkdir_if_not_exists(DOLPHIN_SAVES / "GameSettings")
+
         # Generate the controller config(s)
         dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
 

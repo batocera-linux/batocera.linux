@@ -18,6 +18,8 @@
 - A few roms directories have changed names for consistency with themes and the overall rule of naming them after systems, not
   emulators: now please use odyssey2 (o2em), megadrive-msu (msu-md), halflife (xash3d_fwgs), tvgames (plugnplay),
   astrocade (astrocde), bbcmicro (bbc), rtcw (iortcw), loopy (casloopy).
+- Dolphin-Emu now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
+  Saves should be moved from /userdata/saves/dolphin-triforce to dolphin accordingly.
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
@@ -90,7 +92,7 @@
 - BigPEmu to v121
 - Cemu to 22nd of January 2026 build
 - CLK to 2026-01-06
-- Dolphin-Emu to 2512-99
+- Dolphin-Emu to 2512-421
 - DXX-Rebirth to May 25, 2025
 - EasyRPG to 0.8.1.1
 - EDuke32 to Oct 10, 2025

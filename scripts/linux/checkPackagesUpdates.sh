@@ -149,7 +149,6 @@ PACKAGES_EMULATORS="amiberry
                     clk
                     hypseus-singe
                     dolphin-emu
-                    dolphin-triforce
                     dosbox
                     dosbox-staging
                     dosbox-x

@@ -807,7 +807,7 @@ systems = {
                                   { "md5": "ebf432d3b09f694db1c62018eb2ab471", "zippedFile": "p513bk0b.bin", "file": "bios/vis.zip"},
                                   { "md5": "758f8fec271fbf526bb22b36e88f154b", "zippedFile": "p513bk1b.bin", "file": "bios/vis.zip"} ] },
 
-    # ---------- GameCube ---------- #
+    # ---------- Nintendo 64DD ---------- #
     "n64dd":   { "name": "Nintendo 64DD", "biosFiles":  [ { "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", "file": "bios/64DD_IPL.bin" } ] },
 
     # ---------- GameCube ---------- #
@@ -825,6 +825,8 @@ systems = {
     # ---------- Enterprise ---------- #
     "enterprise": { "name": "Enterprise", "biosFiles": [{ "md5": "e972fe42b398c9ff1d93ff014786aec6", "file": "bios/Enterprise/basic21.bin" },
                                                         { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" }] },
+    # ---------- Triforce ---------- #
+    "triforce": { "name": "Triforce", "biosFiles":  [ { "md5": "2ef01c0e93f7ee3a0a4b139aa14728b9", "file": "saves/dolphin-emu/Triforce/segaboot.gcm" }] },
 }
 
 class BiosStatus:
