@@ -1,8 +1,8 @@
 # coco_flop autoload (mame -autoboot_command) override file
 #  https://github.com/batocera-linux/batocera.linux/pull/11706
 #
-# one rom override per line using ";" as delimiter
-# <romBasename>;<autoload command override>
+# override line:
+# <romBasename> = '<autoload command override>'
 #
 # it is *not* necessary to escape quotes or ampersands (&) (as required in MAME software list XML)
 #
@@ -10,5 +10,4 @@
 # result:  loads & executes machine language in "SLUTHIGH" into high memory,
 #          then starts execution at address 0x073F after loading "SLUTHLOW" into low memory
 #
-# Sam Sleuth;LOADM "SLUTHIGH":EXEC:LOADM "SLUTHLOW":EXEC &H073F
-
+# "Sam Sleuth" = 'LOADM "SLUTHIGH":EXEC:LOADM "SLUTHLOW":EXEC &H073F'
