@@ -46,7 +46,7 @@ def createDefault():
         "bind BTN_NORTH": "weapprev",
         "bind BTN_BACK": "cmd help",
         "bind BTN_GUIDE": "",
-        "bind STICK_LEFT": "",
+        "bind STICK_LEFT": "+gyroaction",
         "bind STICK_RIGHT": "centerview",
         "bind DP_UP": "cycleweap weapon_plasmabeam weapon_boomer weapon_chaingun weapon_etf_rifle weapon_machinegun weapon_blaster",
         "bind DP_DOWN": "cycleweap weapon_supershotgun weapon_shotgun weapon_chainfist",
@@ -102,9 +102,7 @@ class YQuake2Generator(Generator):
         if not defaultConfig.exists():
             createDefault()
 
-        romName = rom.name
         swapButtons = "1" if esSettings.getInvertButtonsValue() else "0"
-
         commandArray = [ "/usr/bin/yquake2/quake2", "-cfgdir", "configs/yquake2",
                          "+set", "joy_confirm", swapButtons ]
 
@@ -112,11 +110,12 @@ class YQuake2Generator(Generator):
             commandArray.extend([ "+set", "in_initjoy", str(pad.index + 1) ])
 
         # Mission Packs
-        if "reckoning" in romName.lower():
+        romName = rom.name.lower()
+        if "reckoning" in romName:
             commandArray.extend(["+set", "game", "xatrix"])
-        elif "zero" in romName.lower():
+        elif "ground" in romName or "zero" in romName:
             commandArray.extend(["+set", "game", "rogue"])
-        elif "zaero" in romName.lower():
+        elif "zaero" in romName:
             commandArray.extend(["+set", "game", "zaero"])
 
         return Command.Command(
