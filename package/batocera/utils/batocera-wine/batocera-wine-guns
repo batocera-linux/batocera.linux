@@ -1,0 +1,436 @@
+#!/usr/bin/env python3
+#
+#batocera-wine-guns - Light gun mapping & homemade DemulShooter support (thanks to argon le fou's open code)
+#
+#Two roles in one daemon:
+#  1. Button translation: extra gun buttons -> keyboard keys via uinput
+#  2. DemulShooter bridge: coordinates + triggers -> TCP to BepInEx plugins
+#
+#Default virtual lightgun button layout:
+#  BTN_LEFT   = Trigger          (x11 passthrough)
+#  BTN_RIGHT  = Action/Secondary (x11 passthrough)
+#  BTN_MIDDLE = Start            (mapped per player: KEY_1..KEY_4)
+#  BTN_1      = Select/Coin      (mapped per player: KEY_5..KEY_8)
+#  BTN_2      = Sub1             (rarely used)
+#  BTN_5      = D-Pad Up         (KEY_UP)
+#  BTN_6      = D-Pad Down       (KEY_DOWN)
+#  BTN_7      = D-Pad Left       (KEY_LEFT)
+#  BTN_8      = D-Pad Right      (KEY_RIGHT)
+#
+#Launched and stopped by batocera-wine.
+#
+#Usage: batocera-wine-guns /var/run/wine-guns.json
+
+import sys
+import os
+import json
+import struct
+import signal
+import select
+import socket
+import time
+import logging
+
+logger = logging.getLogger("wine-guns")
+
+PIDFILE = "/var/run/wine-guns.pid"
+DS_PORT = 33610
+
+# ─── Gun discovery ───
+
+def find_gun_devices():
+    #Detect lightgun evdev devices, up to 4
+    try:
+        import pyudev
+        context = pyudev.Context()
+        guns = []
+        for device in context.list_devices(subsystem='input'):
+            if device.properties.get('ID_INPUT_GUN') == '1':
+                node = device.device_node
+                if node and '/dev/input/event' in node:
+                    guns.append(node)
+        return sorted(guns)[:4]
+    except ImportError:
+        logger.warning("pyudev not available, falling back to evdev scan")
+        return _find_gun_devices_fallback()
+
+
+def _find_gun_devices_fallback():
+    #Fallback, unsure if needed
+    try:
+        import evdev
+        from evdev import ecodes
+        guns = []
+        for path in sorted(evdev.list_devices()):
+            try:
+                dev = evdev.InputDevice(path)
+                caps = dev.capabilities(verbose=False)
+                abs_codes = [c[0] if isinstance(c, tuple) else c
+                             for c in caps.get(ecodes.EV_ABS, [])]
+                key_codes = caps.get(ecodes.EV_KEY, [])
+                if (ecodes.ABS_X in abs_codes
+                        and ecodes.ABS_Y in abs_codes
+                        and ecodes.BTN_LEFT in key_codes):
+                    guns.append(path)
+                dev.close()
+            except Exception:
+                pass
+        return guns[:4]
+    except ImportError:
+        return []
+
+
+# ─── Config ───
+
+def load_config(config_path):
+    #e.g.: Rabbids Hollywood Arcade (rha)
+    #
+    #{
+    #  "guns": [
+    #    {"player": 1, "mapping": {"BTN_MIDDLE": "KEY_1", ...}},
+    #    {"player": 2, "mapping": {"BTN_MIDDLE": "KEY_2", ...}}
+    #    {"player": 3, "mapping": {"BTN_MIDDLE": "KEY_3", ...}}
+    #    {"player": 4, "mapping": {"BTN_MIDDLE": "KEY_4", ...}}
+    #  ],
+    #  "ds_bridge": {"game": "rha", "width": 1920, "height": 1080}
+    #}
+    from evdev import ecodes
+
+    with open(config_path) as f:
+        raw = json.load(f)
+
+    gun_configs = []
+    if "guns" in raw:
+        for gun_cfg in raw["guns"]:
+            btn_to_key = _resolve_mapping(gun_cfg["mapping"], ecodes)
+            player = gun_cfg.get("player", len(gun_configs) + 1)
+            gun_configs.append({"player": player, "mapping": btn_to_key})
+    elif raw:
+        btn_to_key = _resolve_mapping(raw, ecodes)
+        gun_configs.append({"player": 1, "mapping": btn_to_key})
+
+    ds_bridge = raw.get("ds_bridge", None)
+    return gun_configs, ds_bridge
+
+
+def _resolve_mapping(raw_mapping, ecodes):
+    btn_to_key = {}
+    for src_name, dst_name in raw_mapping.items():
+        if dst_name is None:
+            continue
+        src_code = ecodes.ecodes.get(src_name)
+        dst_code = ecodes.ecodes.get(dst_name)
+        if src_code is not None and dst_code is not None:
+            btn_to_key[src_code] = dst_code
+        else:
+            logger.warning("Unknown evdev code: %s -> %s", src_name, dst_name)
+    return btn_to_key
+
+
+# ─── DemulShooter packet formats ───
+#
+# Fields serialized alphabetically (C# reflection).
+# Array sizes = MAX_PLAYERS per game.
+# Little-endian: floats 4B, bytes 1B.
+# Bytes size is crucial here
+
+def build_ds_packet(states, game, scr_w, scr_h):
+    ax = [s.pixel_x(scr_w) for s in states]
+    ay = [scr_h - s.pixel_y(scr_h) for s in states]
+    t = [s.trigger for s in states]
+    r = [s.reload for s in states]
+
+    while len(ax) < 4:
+        ax.append(0.0); ay.append(0.0); t.append(0); r.append(0)
+
+    if game == 'rha':
+        # 4P: Axis_X[4] Axis_Y[4] EnableInputsHack HideCrosshairs Trigger[4] = 38
+        return struct.pack('<ffffffff BB BBBB', *ax[:4], *ay[:4], 1, 0, *t[:4])
+    elif game == 'wws':
+        # 2P: Axis_X[2] Axis_Y[2] EnableInputsHack HideCrosshairs Reload[2] Trigger[2] = 22
+        return struct.pack('<ffff BB BB BB', *ax[:2], *ay[:2], 1, 0, *r[:2], *t[:2])
+    elif game == 'tra':
+        # 4P: Axis_X[4] Axis_Y[4] EnableInputsHack HideCrosshairs Reload[4] Trigger[4] = 42
+        return struct.pack('<ffffffff BB BBBB BBBB', *ax[:4], *ay[:4], 1, 0, *r[:4], *t[:4])
+    elif game == 'owr':
+        # 2P: Axis_X[2] Axis_Y[2] ChangeWeapon[2] EnableInputsHack HideCrosshairs Reload[2] Trigger[2] = 24
+        return struct.pack('<ffff BB BB BB BB', *ax[:2], *ay[:2], 0, 0, 1, 0, *r[:2], *t[:2])
+    elif game == 'mib':
+        # 2P: Axis_X[2] Axis_Y[2] EnableInputsHack HideCrosshairs HideGuns Trigger[2] = 21
+        return struct.pack('<ffff BBB BB', *ax[:2], *ay[:2], 1, 0, 0, *t[:2])
+    elif game == 'mia':
+        # 2P: Axis_X[2] Axis_Y[2] EnableInputsHack HideCrosshairs Reload[2] TriggerL[2] TriggerR[2] = 24
+        return struct.pack('<ffff BB BB BB BB', *ax[:2], *ay[:2], 1, 0, *r[:2], *t[:2], 0, 0)
+    elif game == 'nha2':
+        # 2P: Action[2] Axis_X[2] Axis_Y[2] ChangeWeapon[2] EnableInputsHack HideCrosshairs HideGuns Trigger[2] = 25
+        return struct.pack('<BB ffff BB BBB BB', 0, 0, *ax[:2], *ay[:2], 0, 0, 1, 0, 0, *t[:2])
+    elif game == 'marss':
+        # 4P: Axis_X[4] Axis_Y[4] ChangeWeapon[4] EnableInputsHack HideCrosshairs Trigger[4] = 42
+        return struct.pack('<ffffffff BBBB BB BBBB', *ax[:4], *ay[:4], 0, 0, 0, 0, 1, 0, *t[:4])
+    elif game == 'pvz':
+        # 1P: Axis_X[1] Axis_Y[1] EnableInputsHack HideCrosshairs Trigger[1] = 11
+        return struct.pack('<ff BB B', ax[0], ay[0], 1, 0, t[0])
+    else:
+        # pbx (default): PBX, DRK, RTNA — 2P base = 20
+        return struct.pack('<ffff BB BB', *ax[:2], *ay[:2], 1, 0, *t[:2])
+
+
+# ─── Gun "mouse" ───
+
+class GunState:
+    def __init__(self, x_min=0, x_max=65535, y_min=0, y_max=65535):
+        self.x = 0
+        self.y = 0
+        self.x_min = x_min
+        self.x_max = x_max
+        self.y_min = y_min
+        self.y_max = y_max
+        self.trigger = 0
+        self.reload = 0
+
+    def pixel_x(self, screen_w):
+        if self.x_max <= self.x_min:
+            return 0.0
+        n = (self.x - self.x_min) / (self.x_max - self.x_min)
+        return max(0.0, min(1.0, n)) * screen_w
+
+    def pixel_y(self, screen_h):
+        if self.y_max <= self.y_min:
+            return 0.0
+        n = (self.y - self.y_min) / (self.y_max - self.y_min)
+        return max(0.0, min(1.0, n)) * screen_h
+
+
+# ─── PID file ───
+
+def write_pidfile():
+    try:
+        with open(PIDFILE, 'w') as f:
+            f.write(str(os.getpid()))
+    except Exception as e:
+        logger.warning("Cannot write pidfile: %s", e)
+
+
+def cleanup_pidfile():
+    try:
+        if os.path.exists(PIDFILE):
+            os.unlink(PIDFILE)
+    except Exception:
+        pass
+
+
+# ─── Main ───
+# FIXME
+# mostly useless
+# FIXME
+def main():
+    logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
+
+    if len(sys.argv) < 2:
+        logger.error("Usage: %s <config.json>", sys.argv[0])
+        sys.exit(1)
+
+    try:
+        import evdev
+        from evdev import UInput, ecodes
+    except ImportError:
+        logger.error("python-evdev is not installed")
+        sys.exit(1)
+
+    try:
+        gun_configs, ds_bridge = load_config(sys.argv[1])
+    except Exception as e:
+        logger.error("Failed to load config: %s", e)
+        sys.exit(1)
+
+    has_mappings = any(gc["mapping"] for gc in gun_configs)
+    has_ds = ds_bridge is not None
+
+    if not has_mappings and not has_ds:
+        logger.info("No mappings and no DemulShooter bridge configured")
+        return
+
+    gun_paths = find_gun_devices()
+    if not gun_paths:
+        logger.info("No light guns detected")
+        return
+
+    logger.info("Found %d gun(s): %s", len(gun_paths), gun_paths)
+
+    # Open devices
+    guns = []
+    uinputs = []
+
+    for i, path in enumerate(gun_paths):
+        try:
+            dev = evdev.InputDevice(path)
+        except Exception as e:
+            logger.warning("Cannot open %s: %s", path, e)
+            continue
+
+        state = GunState()
+        try:
+            info = dev.absinfo(ecodes.ABS_X)
+            state.x_min, state.x_max = info.min, info.max
+        except Exception:
+            pass
+        try:
+            info = dev.absinfo(ecodes.ABS_Y)
+            state.y_min, state.y_max = info.min, info.max
+        except Exception:
+            pass
+
+        if i < len(gun_configs):
+            cfg = gun_configs[i]
+        else:
+            cfg = gun_configs[0] if gun_configs else {"player": i + 1, "mapping": {}}
+
+        mapping = cfg["mapping"]
+        player = cfg.get("player", i + 1)
+
+        ui = None
+        if mapping:
+            ui = UInput({ecodes.EV_KEY: list(set(mapping.values()))},
+                        name="Wine Gun Keys P{}".format(player))
+            uinputs.append(ui)
+
+        guns.append({
+            "dev": dev, "state": state, "mapping": mapping,
+            "uinput": ui, "player": player,
+        })
+        logger.info("Gun %d -> P%d: %s (%s) [%d,%d]",
+                     i, player, path, dev.name, state.x_min, state.x_max)
+
+    if not guns:
+        logger.error("Could not set up any gun")
+        for ui in uinputs:
+            ui.close()
+        return
+
+    # Homemade DemulShooter bridge
+    ds_sock = None
+    ds_game = ds_bridge["game"] if has_ds else None
+    ds_w = ds_bridge.get("width", 1920) if has_ds else 1920
+    ds_h = ds_bridge.get("height", 1080) if has_ds else 1080
+
+    if has_ds:
+        logger.info("DemulShooter bridge: game=%s %dx%d", ds_game, ds_w, ds_h)
+
+    write_pidfile()
+    running = True
+
+    def stop(sig, frame):
+        nonlocal running
+        running = False
+
+    signal.signal(signal.SIGTERM, stop)
+    signal.signal(signal.SIGINT, stop)
+
+    # ─── Event loop ───
+
+    try:
+        while running:
+            fds = [g["dev"].fd for g in guns]
+
+            if has_ds and ds_sock is None:
+                try:
+                    ds_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    ds_sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+                    ds_sock.connect(('127.0.0.1', DS_PORT))
+                    logger.info("DemulShooter: connected on port %d", DS_PORT)
+                except Exception:
+                    try:
+                        ds_sock.close()
+                    except Exception:
+                        pass
+                    ds_sock = None
+
+            if ds_sock is not None:
+                fds.append(ds_sock.fileno())
+
+            try:
+                readable, _, _ = select.select(fds, [], [], 0.5)
+            except Exception:
+                continue
+
+            if ds_sock is not None and ds_sock.fileno() in readable:
+                try:
+                    if not ds_sock.recv(4096):
+                        logger.info("DemulShooter: plugin disconnected, reconnecting...")
+                        ds_sock.close()
+                        ds_sock = None
+                except Exception:
+                    pass
+
+            ds_changed = False
+
+            for gun in list(guns):
+                if gun["dev"].fd not in readable:
+                    continue
+                try:
+                    for event in gun["dev"].read():
+                        if (event.type == ecodes.EV_KEY
+                                and event.code in gun["mapping"]
+                                and gun["uinput"] is not None):
+                            gun["uinput"].write(ecodes.EV_KEY,
+                                                gun["mapping"][event.code],
+                                                event.value)
+                            gun["uinput"].syn()
+
+                        if has_ds:
+                            st = gun["state"]
+                            if event.type == ecodes.EV_ABS:
+                                if event.code == ecodes.ABS_X:
+                                    st.x = event.value
+                                elif event.code == ecodes.ABS_Y:
+                                    st.y = event.value
+                            elif event.type == ecodes.EV_KEY:
+                                if event.code == ecodes.BTN_LEFT:
+                                    st.trigger = 1 if event.value else 0
+                                elif event.code == ecodes.BTN_RIGHT:
+                                    st.reload = 1 if event.value else 0
+                            elif event.type == ecodes.EV_SYN:
+                                ds_changed = True
+
+                except OSError:
+                    logger.warning("P%d disconnected: %s", gun["player"], gun["dev"].path)
+                    try:
+                        gun["dev"].close()
+                    except Exception:
+                        pass
+                    guns.remove(gun)
+
+            if has_ds and ds_changed and ds_sock is not None:
+                try:
+                    states = [g["state"] for g in guns]
+                    ds_sock.sendall(build_ds_packet(states, ds_game, ds_w, ds_h))
+                except Exception:
+                    logger.info("DemulShooter: connection lost, reconnecting...")
+                    try:
+                        ds_sock.close()
+                    except Exception:
+                        pass
+                    ds_sock = None
+
+    finally:
+        if ds_sock:
+            try:
+                ds_sock.close()
+            except Exception:
+                pass
+        for gun in guns:
+            try:
+                gun["dev"].close()
+            except Exception:
+                pass
+        for ui in uinputs:
+            try:
+                ui.close()
+            except Exception:
+                pass
+        cleanup_pidfile()
+        logger.info("Stopped cleanly")
+
+
+if __name__ == "__main__":
+    main()

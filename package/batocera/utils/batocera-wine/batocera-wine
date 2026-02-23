@@ -43,6 +43,28 @@ AUTORUN_FOUNDEXE=
 SYSTEM_DISPLAY_MODE=""
 CMD_PREFIX=""
 
+# Light gun support
+GUN_CONFIG_FILE="/var/run/wine-guns.json"
+GUN_SCRIPT="/usr/bin/batocera-wine-guns"
+GUN_PIDFILE="/var/run/wine-guns.pid"
+
+start_guns() {
+    if [[ -e "${GUN_CONFIG_FILE}" ]] && [[ -e "${GUN_SCRIPT}" ]]; then
+        echo "Starting light gun support..."
+        "${GUN_SCRIPT}" "${GUN_CONFIG_FILE}" &
+    fi
+}
+
+stop_guns() {
+    if [[ -e "${GUN_PIDFILE}" ]]; then
+        local pid
+        pid=$(cat "${GUN_PIDFILE}" 2>/dev/null)
+        [[ -n "${pid}" ]] && kill "${pid}" 2>/dev/null
+        rm -f "${GUN_PIDFILE}"
+    fi
+    rm -f "${GUN_CONFIG_FILE}"
+}
+
 stopWineServer() {
     [[ -z "${WINESERVER}" || -z "${WINEPOINT}" ]] && exit 0
 
@@ -662,6 +684,11 @@ play_pc() {
     dxvk_install "${WINEPOINT}" || return 1
     saveFilesToUserdata "${ROMGAMENAME}" "${WINE_SAVEDIR}" "${WINE_SAVEFILES}" || return 1
 
+    # BepInEx (DemulShooter) needs native winhttp.dll to inject into Unity games
+    if [[ -d "${GAMENAME}/BepInEx" ]]; then
+        export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};winhttp=n,b"
+    fi
+
     env
     if [[ -n "${WINE_LANG}" ]]; then
         (cd "${GAMENAME}/${WINE_DIR}" && LC_ALL=${WINE_LANG} WINEPREFIX=${WINEPOINT} eval "${WINE_ENV}" ${CMD_PREFIX} "${WINE}" ${VDESKTOP} ${WINE_CMD})
@@ -943,6 +970,7 @@ requestFileSystem() {
 }
 
 cleanAndExit() {
+    stop_guns
     RESNEW=$(batocera-resolution currentMode)
     if [[ "${RESNEW}" != "${G_RESCUR}" ]]; then
         batocera-resolution setMode "${G_RESCUR}"
@@ -1066,6 +1094,7 @@ case "${ACTION}" in
 # case selections will provide 2 variables here, GAMENAME and WINEPOINT
    "play")
    init_wine
+    start_guns
 	case "${GAMEEXT,,}" in
 	    "wine")
 		requestFileSystem "${GAMENAME}"

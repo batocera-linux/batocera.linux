@@ -1,0 +1,367 @@
+diff --git a/dlls/win32u/rawinput.c b/dlls/win32u/rawinput.c
+index 6650d65..69f0863 100644
+--- a/dlls/win32u/rawinput.c
++++ b/dlls/win32u/rawinput.c
+@@ -29,6 +29,7 @@
+ #include "win32u_private.h"
+ #include "ntuser_private.h"
+ #define WIN32_NO_STATUS
++#include <stdlib.h>
+ #include "winioctl.h"
+ #include "ddk/hidclass.h"
+ #include "wine/hid.h"
+@@ -282,6 +283,57 @@ static void enumerate_devices( DWORD type, const WCHAR *class )
+     NtClose( class_key );
+ }
+ 
++static void add_virtual_mice(void)
++{
++    static const RID_DEVICE_INFO_MOUSE mouse_info = {1, 5, 0, FALSE};
++    const char *env;
++    int count, i;
++    struct device *device, *next;
++
++    env = getenv( "WINE_RAWMOUSE_COUNT" );
++    count = env ? atoi( env ) : 0;
++    FIXME( "WINE_RAWMOUSE_COUNT env=%s count=%d\n", env ? env : "(null)", count );
++    if (count <= 0 || count > 8) return;
++
++    /* Remove the built-in mouse device so apps only see our virtual mice */
++    LIST_FOR_EACH_ENTRY_SAFE( device, next, &devices, struct device, entry )
++    {
++        if (device->handle == WINE_MOUSE_HANDLE)
++        {
++            FIXME( "Removing built-in mouse handle=%#x\n", (unsigned int)(UINT_PTR)device->handle );
++            list_remove( &device->entry );
++            if (device->file) NtClose( device->file );
++            free( device->data );
++            free( device );
++            break;
++        }
++    }
++
++    for (i = 0; i < count; i++)
++    {
++        unsigned int handle = 0x10001 + i;
++
++        LIST_FOR_EACH_ENTRY( device, &devices, struct device, entry )
++            if (device->handle == ULongToHandle( handle )) goto skip;
++
++        if (!(device = calloc( 1, sizeof(*device) ))) continue;
++
++        swprintf( device->path, ARRAY_SIZE(device->path),
++                  L"\\\\?\\WINE_RAWMOUSE_%u", i + 1 );
++        device->file   = NULL;
++        device->handle = ULongToHandle( handle );
++        device->info.cbSize = sizeof(RID_DEVICE_INFO);
++        device->info.dwType = RIM_TYPEMOUSE;
++        device->info.mouse  = mouse_info;
++        device->data   = NULL;
++        list_add_tail( &devices, &device->entry );
++
++        FIXME( "Added virtual mouse %d: handle=%#x\n", i + 1, handle );
++        continue;
++    skip:;
++    }
++}
++
+ static void rawinput_update_device_list( BOOL force )
+ {
+     unsigned int ticks = NtGetTickCount();
+@@ -296,7 +348,7 @@ static void rawinput_update_device_list( BOOL force )
+     LIST_FOR_EACH_ENTRY_SAFE( device, next, &devices, struct device, entry )
+     {
+         list_remove( &device->entry );
+-        NtClose( device->file );
++        if (device->file) NtClose( device->file );
+         free( device->data );
+         free( device );
+     }
+@@ -304,6 +356,7 @@ static void rawinput_update_device_list( BOOL force )
+     enumerate_devices( RIM_TYPEMOUSE, guid_devinterface_mouseW );
+     enumerate_devices( RIM_TYPEKEYBOARD, guid_devinterface_keyboardW );
+     enumerate_devices( RIM_TYPEHID, guid_devinterface_hidW );
++    add_virtual_mice();
+ }
+ 
+ static struct device *find_device_from_handle( HANDLE handle, BOOL refresh )
+@@ -692,7 +745,7 @@ BOOL WINAPI NtUserRegisterRawInputDevices( const RAWINPUTDEVICE *devices, UINT d
+             return FALSE;
+         }
+ 
+-        if (devices[i].dwFlags & ~(RIDEV_REMOVE|RIDEV_NOLEGACY|RIDEV_INPUTSINK|RIDEV_DEVNOTIFY))
++        if (devices[i].dwFlags & ~(RIDEV_REMOVE|RIDEV_NOLEGACY|RIDEV_INPUTSINK|RIDEV_DEVNOTIFY|RIDEV_CAPTUREMOUSE))
+             FIXME( "Unhandled flags %#x for device %u.\n", devices[i].dwFlags, i );
+     }
+ 
+diff --git a/dlls/winex11.drv/mouse.c b/dlls/winex11.drv/mouse.c
+index c55d680..dfdd298 100644
+--- a/dlls/winex11.drv/mouse.c
++++ b/dlls/winex11.drv/mouse.c
+@@ -143,6 +143,34 @@ MAKE_FUNCPTR(XIQueryDevice);
+ MAKE_FUNCPTR(XIQueryVersion);
+ MAKE_FUNCPTR(XISelectEvents);
+ #undef MAKE_FUNCPTR
++
++#define WINE_RAW_MOUSE_MAX 8
++static struct {
++    int sourceid;
++    unsigned int handle;
++    BOOL is_absolute;
++    int x_number, y_number;
++    double x_min, x_max, y_min, y_max;
++} raw_mouse_map[WINE_RAW_MOUSE_MAX];
++static int raw_mouse_count;
++
++static unsigned int get_raw_mouse_handle( int sourceid )
++{
++    int i;
++    for (i = 0; i < raw_mouse_count; i++)
++        if (raw_mouse_map[i].sourceid == sourceid)
++            return raw_mouse_map[i].handle;
++    return 0;
++}
++
++static int find_raw_mouse_index( int sourceid )
++{
++    int i;
++    for (i = 0; i < raw_mouse_count; i++)
++        if (raw_mouse_map[i].sourceid == sourceid)
++            return i;
++    return -1;
++}
+ #endif
+ 
+ #ifdef HAVE_X11_EXTENSIONS_XINPUT_H
+@@ -440,6 +468,66 @@ void x11drv_xinput2_init( struct x11drv_thread_data *data )
+     }
+ 
+     TRACE( "XInput2 %d.%d available\n", major, minor );
++
++    /* Enumerate slave pointers for multi-mouse rawinput */
++    {
++        int ndevices, i, j;
++        XIDeviceInfo *all_devices = pXIQueryDevice( data->display, XIAllDevices, &ndevices );
++        raw_mouse_count = 0;
++        for (i = 0; i < ndevices && raw_mouse_count < WINE_RAW_MOUSE_MAX; i++)
++        {
++            if (all_devices[i].use != XISlavePointer) continue;
++            if (all_devices[i].attachment != data->xinput2_pointer) continue;
++            if (strstr( all_devices[i].name, "XTEST" )) continue;
++
++            raw_mouse_map[raw_mouse_count].sourceid = all_devices[i].deviceid;
++            raw_mouse_map[raw_mouse_count].handle   = 0x10001 + raw_mouse_count;
++            raw_mouse_map[raw_mouse_count].is_absolute = FALSE;
++            raw_mouse_map[raw_mouse_count].x_number = -1;
++            raw_mouse_map[raw_mouse_count].y_number = -1;
++
++            for (j = 0; j < all_devices[i].num_classes; j++)
++            {
++                XIValuatorClassInfo *v = (XIValuatorClassInfo *)all_devices[i].classes[j];
++                if (all_devices[i].classes[j]->type != XIValuatorClass) continue;
++                if (v->number == 0)
++                {
++                    raw_mouse_map[raw_mouse_count].x_number = 0;
++                    raw_mouse_map[raw_mouse_count].x_min = v->min;
++                    raw_mouse_map[raw_mouse_count].x_max = v->max;
++                    if (v->mode == XIModeAbsolute)
++                        raw_mouse_map[raw_mouse_count].is_absolute = TRUE;
++                }
++                else if (v->number == 1)
++                {
++                    raw_mouse_map[raw_mouse_count].y_number = 1;
++                    raw_mouse_map[raw_mouse_count].y_min = v->min;
++                    raw_mouse_map[raw_mouse_count].y_max = v->max;
++                }
++            }
++
++            FIXME( "Slave pointer [%d]: id=%d name='%s' -> handle=%#x %s x=[%.0f,%.0f] y=[%.0f,%.0f]\n",
++                   raw_mouse_count, all_devices[i].deviceid,
++                   all_devices[i].name, raw_mouse_map[raw_mouse_count].handle,
++                   raw_mouse_map[raw_mouse_count].is_absolute ? "ABS" : "REL",
++                   raw_mouse_map[raw_mouse_count].x_min, raw_mouse_map[raw_mouse_count].x_max,
++                   raw_mouse_map[raw_mouse_count].y_min, raw_mouse_map[raw_mouse_count].y_max );
++            raw_mouse_count++;
++        }
++        pXIFreeDeviceInfo( all_devices );
++        FIXME( "Found %d slave pointer(s) for rawinput\n", raw_mouse_count );
++    }
++
++    /* Force rawinput mode if requested */
++    {
++        const char *force_ri = getenv( "WINE_FORCE_RAWINPUT" );
++        if (force_ri && atoi( force_ri ) && raw_mouse_count > 0)
++        {
++            data->xinput2_rawinput = TRUE;
++            x11drv_xinput2_enable( data->display, DefaultRootWindow( data->display ) );
++            FIXME( "Forced rawinput mode via WINE_FORCE_RAWINPUT\n" );
++        }
++    }
+ }
+ 
+ #else /* HAVE_X11_EXTENSIONS_XINPUT2_H */
+@@ -1851,13 +1939,34 @@ static BOOL map_raw_event_coords( XIRawEvent *event, INPUT *input, BOOL send_raw
+ static BOOL X11DRV_RawMotion( XGenericEventCookie *xev )
+ {
+     struct x11drv_thread_data *thread_data = x11drv_thread_data();
+-    UINT flags = thread_data->xinput2_rawinput ? SEND_HWMSG_NO_MSG : SEND_HWMSG_NO_RAW;
++    UINT flags = thread_data->xinput2_rawinput ? 0 : SEND_HWMSG_NO_RAW;
+     XIRawEvent *event = xev->data;
+     INPUT input;
++    int dev_idx;
++
++    /* Early diagnostic: log ALL events before any filtering */
++    {
++        static int early_count;
++        static int src_counts[32];
++        int sid = event->sourceid < 32 ? event->sourceid : 31;
++        src_counts[sid]++;
++        if (++early_count <= 100)
++            FIXME( "ENTRY: deviceid=%d sourceid=%d mask_len=%d\n",
++                   event->deviceid, event->sourceid, event->valuators.mask_len );
++        if (early_count % 200 == 0)
++        {
++            int j;
++            for (j = 0; j < 32; j++)
++                if (src_counts[j])
++                    FIXME( "STATS: total=%d src[%d]=%d\n", early_count, j, src_counts[j] );
++        }
++    }
+ 
+     if (broken_rawevents && is_old_motion_event( xev->serial ))
+     {
+-        TRACE( "old serial %lu, ignoring\n", xev->serial );
++        static int old_count;
++        if (++old_count <= 20)
++            FIXME( "OLDSERIAL: sourceid=%d serial=%lu\n", event->sourceid, xev->serial );
+         return FALSE;
+     }
+ 
+@@ -1865,11 +1974,64 @@ static BOOL X11DRV_RawMotion( XGenericEventCookie *xev )
+     input.mi.mouseData   = 0;
+     input.mi.dwFlags     = MOUSEEVENTF_MOVE;
+     input.mi.time        = EVENT_x11_time_to_win32_time( event->time );
+-    input.mi.dwExtraInfo = 0;
++    input.mi.dwExtraInfo = get_raw_mouse_handle( event->sourceid );
+     input.mi.dx          = 0;
+     input.mi.dy          = 0;
+-    if (!map_raw_event_coords( event, &input, flags & SEND_HWMSG_NO_MSG )) return FALSE;
+-    if (!(input.mi.dwFlags & MOUSEEVENTF_MOVE)) return FALSE;
++
++    dev_idx = find_raw_mouse_index( event->sourceid );
++    if (dev_idx >= 0 && raw_mouse_map[dev_idx].is_absolute)
++    {
++        /* Absolute device (lightgun): convert from device range to screen pixels */
++        /* Use raw_values (pre-X-server-transformation) for absolute devices */
++        const double *raw_vals = event->raw_values;
++        double x_raw = 0, y_raw = 0;
++        double x_range, y_range;
++        int i;
++
++        if (!event->valuators.mask_len) return FALSE;
++
++        for (i = 0; i <= max( raw_mouse_map[dev_idx].x_number, raw_mouse_map[dev_idx].y_number ); i++)
++        {
++            if (!XIMaskIsSet( event->valuators.mask, i )) continue;
++            if (i == raw_mouse_map[dev_idx].x_number) x_raw = *raw_vals;
++            if (i == raw_mouse_map[dev_idx].y_number) y_raw = *raw_vals;
++            raw_vals++;
++        }
++
++        x_range = raw_mouse_map[dev_idx].x_max - raw_mouse_map[dev_idx].x_min;
++        y_range = raw_mouse_map[dev_idx].y_max - raw_mouse_map[dev_idx].y_min;
++        if (x_range <= 0) x_range = 1;
++        if (y_range <= 0) y_range = 1;
++
++        {
++            /* NtUserSendHardwareInput expects pixel coordinates, not 0-65535 normalized */
++            int screen_w = DisplayWidth( thread_data->display, DefaultScreen( thread_data->display ) );
++            int screen_h = DisplayHeight( thread_data->display, DefaultScreen( thread_data->display ) );
++
++            input.mi.dx = (LONG)round( (x_raw - raw_mouse_map[dev_idx].x_min) / x_range * (screen_w - 1) );
++            input.mi.dy = (LONG)round( (y_raw - raw_mouse_map[dev_idx].y_min) / y_range * (screen_h - 1) );
++            input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
++
++            {
++                static int diag_count;
++                if (++diag_count <= 80)
++                    FIXME( "ABS: src=%d h=%#x raw=(%.0f,%.0f) scr=%dx%d -> dx=%d dy=%d\n",
++                           event->sourceid, raw_mouse_map[dev_idx].handle,
++                           x_raw, y_raw, screen_w, screen_h, (int)input.mi.dx, (int)input.mi.dy );
++            }
++        }
++    }
++    else
++    {
++        {
++            static int rel_count;
++            if (++rel_count <= 20)
++                FIXME( "REL motion: src=%d idx=%d deviceid=%d pointer=%d\n",
++                       event->sourceid, dev_idx, event->deviceid, thread_data->xinput2_pointer );
++        }
++        if (!map_raw_event_coords( event, &input, flags & SEND_HWMSG_NO_MSG )) return FALSE;
++        if (!(input.mi.dwFlags & MOUSEEVENTF_MOVE)) return FALSE;
++    }
+ 
+     NtUserSendHardwareInput( 0, flags, &input, 0 );
+     return TRUE;
+@@ -1914,12 +2076,43 @@ static BOOL X11DRV_RawButtonEvent( XGenericEventCookie *cookie )
+     input.mi.mouseData   = button_data[button];
+     input.mi.dwFlags     = button_flags[button] | MOUSEEVENTF_MOVE;
+     input.mi.time        = EVENT_x11_time_to_win32_time( event->time );
+-    input.mi.dwExtraInfo = 0;
++    input.mi.dwExtraInfo = get_raw_mouse_handle( event->sourceid );
+     input.mi.dx          = 0;
+     input.mi.dy          = 0;
+-    map_raw_event_coords( event, &input, TRUE );
+ 
+-    NtUserSendHardwareInput( 0, SEND_HWMSG_NO_MSG, &input, 0 );
++    {
++        int dev_idx = find_raw_mouse_index( event->sourceid );
++        if (dev_idx >= 0 && raw_mouse_map[dev_idx].is_absolute)
++        {
++            const double *raw_vals = event->raw_values;
++            double x_val = 0, y_val = 0, x_range, y_range;
++            int i;
++            for (i = 0; event->valuators.mask_len && i <= max( raw_mouse_map[dev_idx].x_number, raw_mouse_map[dev_idx].y_number ); i++)
++            {
++                if (!XIMaskIsSet( event->valuators.mask, i )) continue;
++                if (i == raw_mouse_map[dev_idx].x_number) x_val = *raw_vals;
++                if (i == raw_mouse_map[dev_idx].y_number) y_val = *raw_vals;
++                raw_vals++;
++            }
++            x_range = raw_mouse_map[dev_idx].x_max - raw_mouse_map[dev_idx].x_min;
++            y_range = raw_mouse_map[dev_idx].y_max - raw_mouse_map[dev_idx].y_min;
++            if (x_range <= 0) x_range = 1;
++            if (y_range <= 0) y_range = 1;
++            {
++                int screen_w = DisplayWidth( thread_data->display, DefaultScreen( thread_data->display ) );
++                int screen_h = DisplayHeight( thread_data->display, DefaultScreen( thread_data->display ) );
++                input.mi.dx = (LONG)round( (x_val - raw_mouse_map[dev_idx].x_min) / x_range * (screen_w - 1) );
++                input.mi.dy = (LONG)round( (y_val - raw_mouse_map[dev_idx].y_min) / y_range * (screen_h - 1) );
++            }
++            input.mi.dwFlags |= MOUSEEVENTF_ABSOLUTE;
++        }
++        else
++        {
++            map_raw_event_coords( event, &input, TRUE );
++        }
++    }
++
++    NtUserSendHardwareInput( 0, 0, &input, 0 );
+     return TRUE;
+ }
+ 
+diff --git a/server/queue.c b/server/queue.c
+index b126162..9078589 100644
+--- a/server/queue.c
++++ b/server/queue.c
+@@ -2051,7 +2051,7 @@ static void rawmouse_init( struct rawinput *header, RAWMOUSE *rawmouse, int x, i
+     unsigned int i;
+ 
+     header->type   = RIM_TYPEMOUSE;
+-    header->device = WINE_MOUSE_HANDLE;
++    header->device = info ? (unsigned int)info : WINE_MOUSE_HANDLE;
+     header->wparam = 0;
+     header->usage  = MAKELONG(HID_USAGE_GENERIC_MOUSE, HID_USAGE_PAGE_GENERIC);
+ 

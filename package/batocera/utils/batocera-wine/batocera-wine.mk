@@ -20,6 +20,8 @@ define BATOCERA_WINE_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/bin/batocera-wine-runners
 	install -m 0755 $(BATOCERA_WINE_SOURCE_PATH)/bsod.py \
 	    $(TARGET_DIR)/usr/bin/bsod-wine
+	install -m 0755 $(BATOCERA_WINE_SOURCE_PATH)/batocera-wine-guns \
+	    $(TARGET_DIR)/usr/bin/batocera-wine-guns
 	ln -fs /userdata/system/99-nvidia.conf $(TARGET_DIR)/etc/X11/xorg.conf.d/99-nvidia.conf
 
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
