@@ -5827,13 +5827,13 @@ bennugd:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
 
-loopy:
+casloopy:
   name:       Casio Loopy
   manufacturer: Casio
   release: 1995
   hardware: console
   extensions: [bin, ic1, zip, 7z]
-  theme: loopy
+  theme: casloopy
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
