@@ -69,8 +69,6 @@ do_html() {
     for board in ${BOARDS}
     do
         mkdir -p "output/${arch}/images/batocera/images/${board}/" || return 1
-	cp "output/${arch}/images/batocera/batocera_systemsReport.html" "output/${arch}/images/batocera/images/${board}/" || return 1
-	cp "output/${arch}/images/batocera/batocera_systemsReport.json" "output/${arch}/images/batocera/images/${board}/" || return 1
 	(docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batoceralinux/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build/output/${arch} ${board} > /build/output/${arch}/images/batocera/images/${board}/index.html")
     done
 }
