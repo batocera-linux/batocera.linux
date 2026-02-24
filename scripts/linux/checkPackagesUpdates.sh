@@ -152,7 +152,6 @@ PACKAGES_EMULATORS="amiberry
                     dosbox
                     dosbox-staging
                     dosbox-x
-                    drastic
                     duckstation
                     easyrpg-player
                     liblcf

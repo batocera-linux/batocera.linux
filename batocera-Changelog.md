@@ -20,6 +20,7 @@
   astrocade (astrocde), bbcmicro (bbc), rtcw (iortcw), loopy (casloopy).
 - Dolphin-Emu now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
   Saves should be moved from /userdata/saves/dolphin-triforce to dolphin accordingly.
+- Removed Drastic emulator due to it's closed source nature and no longer compatible with the core OS.
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
