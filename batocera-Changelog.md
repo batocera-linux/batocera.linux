@@ -68,6 +68,7 @@
 - Sega Gaelco support (currently x86 systems only)
 - Sega Hikaru support (currently x86 systems only)
 - Added support for GUO HUA PS3 GamePad in the Bluez package's Sixaxis plugin (models VOYEE - HY-2208 and MiniThink - CECHZC2U)
+- Experimental Sinden light gun borders for RPCS3 and Wine
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
@@ -77,6 +78,7 @@
 - Massive MAME log (switchres verbose disabled by default)
 - PCSX2 light gun mapping (START can now be pressed on the light gun instead of controller)
 - PS4 and PSVita games not appearing in the "last played" auto collection
+- Sinden light gun's camera freezing after exiting Wine
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
