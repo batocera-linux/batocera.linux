@@ -172,6 +172,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON_BATOCERA_COMMON	# common python functionality
 	select BR2_PACKAGE_BATOCERA_ES_SYSTEM		# emulation station es_systems.cfg generator + default roms
 	select BR2_PACKAGE_BATOCERA_CONFIGGEN		# emulation station external command launcher
+	select BR2_PACKAGE_BATOCERA_LAUNCH		# new emulation station external command launcher
 	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY	# multimedia/power buttons
 	select BR2_PACKAGE_BATOCERA_UDEV_RULES		# extra udev rules for specifics joysticks/devices
 	select BR2_PACKAGE_BATOCERA_USERDATAINIT	# userdata init files

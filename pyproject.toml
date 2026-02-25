@@ -5,7 +5,10 @@ requires-python = "==3.14.5"
 dependencies = [
     "batocera-common",
     "batocera-configgen",
-    "batocera-es-system"
+    "batocera-es-system",
+    "batocera-launch",
+    "batocera-launch-flycast",
+    "batocera-launch-fallout",
 ]
 
 [dependency-groups]
@@ -42,6 +45,9 @@ constraint-dependencies = [
 batocera-common = { workspace = true }
 batocera-configgen = { workspace = true }
 batocera-es-system = { workspace = true }
+batocera-launch = { workspace = true }
+batocera-launch-flycast = { workspace = true }
+batocera-launch-fallout = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -51,6 +57,10 @@ members = [
 exclude = ['python-src/stubs', 'python-src/scripts']
 
 [tool.pyright]
+include = [
+    "python-src",
+    "package/batocera/core/batocera-configgen/configgen",
+]
 exclude = [
     ".venv*",
     "buildroot*",
@@ -79,6 +89,21 @@ enableExperimentalFeatures = true
 deprecateTypingAliases = true
 
 enableTypeIgnoreComments = false  # Force pyright: ignore comments
+
+[[tool.pyright.executionEnvironments]]
+root = 'python-src/batocera-common'
+
+[[tool.pyright.executionEnvironments]]
+root = 'python-src/batocera-es-system'
+
+[[tool.pyright.executionEnvironments]]
+root = 'python-src/batocera-launch'
+
+[[tool.pyright.executionEnvironments]]
+root = 'python-src/batocera-launch-flycast'
+
+[[tool.pyright.executionEnvironments]]
+root = 'python-src/batocera-launch-fallout'
 
 [[tool.pyright.executionEnvironments]]
 # pyright doesn't allow setting typeCheckingMode per environment, so we
@@ -136,6 +161,6 @@ ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["batocera_common", "configgen", "batocera_es_system"]
+known-first-party = ["batocera_common", "batocera_launch", "configgen", "batocera_es_system"]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]

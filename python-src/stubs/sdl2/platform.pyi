@@ -1,0 +1,3 @@
+__all__ = ['SDL_GetPlatform']
+
+def SDL_GetPlatform() -> bytes | None: ...
