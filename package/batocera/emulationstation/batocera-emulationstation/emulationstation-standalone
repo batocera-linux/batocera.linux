@@ -296,8 +296,8 @@ while [ -e "${REBOOT_FLAG}" ]; do
     if which xrandr; then # if xrandr available
         echo "Standalone: --- Applying X.org Specific Settings ---" >> "$log"
         ### DPI override for nvidia gpus ###
-        settings_output="$(batocera-settings-get global.dpi)"
-        [ ! -z "${settings_output}" ] && batocera-resolution setDPI "${settings_output}"
+        settings_dpi="$(batocera-settings-get global.dpi)"
+        [ ! -z "${settings_dpi}" ] && batocera-resolution setDPI "${settings_dpi}"
         ###################
 
         ### Keyboard (specific to xorg) ###
