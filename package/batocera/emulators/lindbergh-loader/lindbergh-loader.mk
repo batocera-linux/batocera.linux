@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-LINDBERGH_LOADER_VERSION = v2.1.3
+LINDBERGH_LOADER_VERSION = v2.1.4
 LINDBERGH_LOADER_SITE = $(call github,lindbergh-loader,lindbergh-loader,$(LINDBERGH_LOADER_VERSION))
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
