@@ -474,9 +474,21 @@ start_other_services() {
 }
 
 # --- Battery and Time Monitoring Functions for Fake Suspend ---
+is_power_connected() {
+    local BATTERY_DIR=$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -z "${BATTERY_DIR}" ]; then
+        return 0
+    fi
+    local BATTERY_STATUS=$(cat "${BATTERY_DIR}/status" 2>/dev/null)
+    if [ "${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 get_battery_level() {
     local battery_path=$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
-
     if [ -n "${battery_path}" ] && [ -f "${battery_path}/capacity" ]; then
         cat "${battery_path}/capacity"
     else
@@ -488,7 +500,6 @@ start_background_monitor() {
     local monitor_script="/tmp/batocera-fake-suspend-monitor.sh"
     cat > "${monitor_script}" << EOF
 #!/bin/bash
-START_TIME=\$(date +%s)
 
 is_power_connected() {
     local BATTERY_DIR=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
@@ -507,6 +518,17 @@ is_power_connected() {
     fi
 }
 
+get_battery_level() {
+    local battery_path=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -n "\${battery_path}" ] && [ -f "\${battery_path}/capacity" ]; then
+        cat "\${battery_path}/capacity"
+    else
+        echo "100"
+    fi
+}
+
+START_TIME=\$(date +%s)
+
 while true; do
     sleep 60 # Check every minute
 
@@ -521,7 +543,7 @@ while true; do
     if [ \${ELAPSED} -ge 3600 ]; then
         echo "Fake suspend timeout reached. Shutting down."
         batocera-wifi enable
-        sleep 2
+        sleep 5
         /sbin/shutdown -h now
         exit 0
     fi
@@ -531,7 +553,7 @@ while true; do
     if [ -n "\${BATTERY_LEVEL}" ] && [ "\${BATTERY_LEVEL}" -le 10 ]; then
         echo "Low battery (\${BATTERY_LEVEL}%) detected. Shutting down."
         batocera-wifi enable
-        sleep 2
+        sleep 5
         /sbin/shutdown -h now
         exit 0
     fi
@@ -614,7 +636,9 @@ if [ "${SETACTION}" = "gui" ]; then
             pm-is-supported --hibernate && pm-hibernate
             ;;
         "fake")
-            if [ "$(get_battery_level)" -le 10 ]; then
+            if is_power_connected; then
+                echo "Power connected, ignoring fake suspend."
+            elif [ "$(get_battery_level)" -le 10 ]; then
                 echo "Battery too low for fake suspend, shutting down instead."
                 /sbin/shutdown -h now
             else
@@ -636,17 +660,21 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
         if [ -f "${FAKE_SUSPEND_FLAG}" ]; then
             do_fake_resume
         else
-            # Before entering fake suspend, check if a game is running.
-            HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
-            if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
-                # A game is running. Log it and do nothing.
-                echo "INFO: Fake suspend request ignored because a game is running."
+            if is_power_connected; then
+                echo "INFO: Fake suspend request ignored because power is connected."
             else
-                if [ "$(get_battery_level)" -le 10 ]; then
-                    echo "Battery too low for fake suspend, shutting down instead."
-                    /sbin/shutdown -h now
+                # Before entering fake suspend, check if a game is running.
+                HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+                if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
+                    # A game is running. Log it and do nothing.
+                    echo "INFO: Fake suspend request ignored because a game is running."
                 else
-                    do_fake_suspend
+                    if [ "$(get_battery_level)" -le 10 ]; then
+                        echo "Battery too low for fake suspend, shutting down instead."
+                        /sbin/shutdown -h now
+                    else
+                        do_fake_suspend
+                    fi
                 fi
             fi
         fi
