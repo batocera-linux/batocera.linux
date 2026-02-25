@@ -58,9 +58,12 @@ endef
 define LINDBERGH_LOADER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/lindbergh
 	mkdir -p $(TARGET_DIR)/usr/bin/lindbergh/extralibs
+	mkdir -p $(TARGET_DIR)/usr/bin/lindbergh/crosshairs
 	cp -fv $(@D)/build/* $(TARGET_DIR)/usr/bin/lindbergh/
 	cp -fv $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/*.ini \
 	    $(TARGET_DIR)/usr/bin/lindbergh/
+	cp -fv $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/crosshairs/* \
+	    $(TARGET_DIR)/usr/bin/lindbergh/crosshairs/
 	cp -fv $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/lindbergh-loader/lib*.so* \
 	    $(TARGET_DIR)/usr/bin/lindbergh/extralibs
 endef

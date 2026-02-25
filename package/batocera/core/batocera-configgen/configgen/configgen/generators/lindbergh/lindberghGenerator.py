@@ -13,6 +13,7 @@
 #
 from __future__ import annotations
 
+import filecmp
 import logging
 import os
 import re
@@ -69,22 +70,22 @@ class LindberghGenerator(Generator):
         "ANALOGUE_DEADZONE_1":       True, "ANALOGUE_DEADZONE_2":       True, "ANALOGUE_DEADZONE_3":       True, "ANALOGUE_DEADZONE_4":       True,
         "ANALOGUE_DEADZONE_5":       True, "ANALOGUE_DEADZONE_6":       True, "ANALOGUE_DEADZONE_7":       True, "ANALOGUE_DEADZONE_8":       True,
         "EMULATE_HW210_CARDREADER":  True, "CARDFILE_01":               True, "CARDFILE_02":               True, "CPU_FREQ_GHZ":              True,
-        "OR2_IPADDRESS":             True, "PLAYER_1_COIN":             True, "BOOST_RENDER_RES":          True,
-        "HIDE_CURSOR":               True, "EMULATE_ID_CARD READER":    True, "EMULATE_TOUCHSCREEN":       True, "ID_CARDFILE_AUTOLOAD":      True,
-        "ID_CARDFOLDER":             True, "DISABLE_BUILTIN_FONT":      True, "DISABLE_BUILTIN_LOGOS":     True, "CUSTOM_CURSOR_ENABLED":     True,
-        "CUSTOM_CURSOR":             True, "CUSTOM_CURSOR_WIDTH":       True, "CUSTOM_CURSOR_HEIGHT":      True, "TOUCH_CURSOR":              True,
-        "TOUCH_CURSOR_WIDTH":        True, "TOUCH_CURSOR_HEIGHT":       True, "PRIMEVAL_HUNT_TEST_SCREEN_SINGLE": True, "RAMBO_GUNS_SWITCH": True,
-        "ID5_CHINESE_LANGUAGE":      True, "ID_STEERING_REDUCTION_PERCENTAGE": True, "ENABLE_CROSSHAIRS": True, "P1_CROSSHAIR_PATH":        True,
-        "P2_CROSSHAIR_PATH":         True, "CUSTOM_CROSSHAIRS_WIDTH":   True, "CUSTOM_CROSSHAIRS_HEIGHT":  True, "ENABLE_NETWORK_PATCHES":   True,
-        "NIC_NAME":                  True, "OR2_NETMASK":               True, "ID_IP_SEAT_1":              True, "ID_IP_SEAT_2":              True,
-        "IP_CAB1":                   True, "IP_CAB2":                   True, "IP_CAB3":                   True, "IP_CAB4":                   True,
-        "2SPICY_IP_CAB1":            True, "2SPICY_IP_CAB2":            True, "SRTV_IPADDRESS":            True,
+        "OR2_IPADDRESS":             True, "PLAYER_1_COIN":             True, "BOOST_RENDER_RES":          True, "HIDE_CURSOR":               True,
+        "EMULATE_ID_CARD READER":    True, "EMULATE_TOUCHSCREEN":       True, "ID_CARDFILE_AUTOLOAD":      True, "ID_CARDFOLDER":             True,
+        "DISABLE_BUILTIN_FONT":      True, "DISABLE_BUILTIN_LOGOS":     True, "CUSTOM_CURSOR_ENABLED":     True, "CUSTOM_CURSOR":             True,
+        "CUSTOM_CURSOR_WIDTH":       True, "CUSTOM_CURSOR_HEIGHT":      True, "TOUCH_CURSOR":              True, "TOUCH_CURSOR_WIDTH":        True,
+        "TOUCH_CURSOR_HEIGHT":       True, "PRIMEVAL_HUNT_TEST_SCREEN_SINGLE": True, "RAMBO_GUNS_SWITCH":  True, "ID5_CHINESE_LANGUAGE":      True,
+        "ID_STEERING_REDUCTION_PERCENTAGE": True, "ENABLE_CROSSHAIRS":  True, "P1_CROSSHAIR_PATH":         True, "P2_CROSSHAIR_PATH":         True,
+        "CUSTOM_CROSSHAIRS_WIDTH":   True, "CUSTOM_CROSSHAIRS_HEIGHT":  True, "ENABLE_NETWORK_PATCHES":    True, "NIC_NAME":                  True,
+        "OR2_NETMASK":               True, "ID_IP_SEAT_1":              True, "ID_IP_SEAT_2":              True, "IP_CAB1":                   True,
+        "IP_CAB2":                   True, "IP_CAB3":                   True, "IP_CAB4":                   True, "2SPICY_IP_CAB1":            True,
+        "2SPICY_IP_CAB2":            True, "SRTV_IPADDRESS":            True, "EXIT_GAME":                 True
     }
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "lindbergh loader",
-            "keys": { "exit": "KEY_T", "coin": "KEY_5" }
+            "keys": { "exit": "KEY_ESC", "coin": "KEY_5" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -289,18 +290,27 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "HUMMER_FLICKER_FIX",        "true" if system.config.get_bool("lindbergh_hummer") else "false")
         self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", "true" if system.config.get_bool("lindbergh_lens", True) else "false")
         self.setConf(conf, "BOOST_RENDER_RES",          "true" if system.config.get_bool("lindbergh_boost") else "false")
-        self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", "true" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "false")
+        self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", "false" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "true") #disable by default, otherwise no FFB
         self.setConf(conf, "SRAM_PATH",   f'"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}"')
         self.setConf(conf, "EEPROM_PATH", f'"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}"')
         self.setConf(conf, "HIDE_CURSOR", "true" if system.config.get_bool("lindbergh_hide_cursor", True) else "false")
         self.setConf(conf, "DISABLE_BUILTIN_FONT", "true" if system.config.get_bool("lindbergh_disable_font") else "false")
         self.setConf(conf, "DISABLE_BUILTIN_LOGOS", "true" if system.config.get_bool("lindbergh_disable_logos") else "false")
         self.setConf(conf, "ENABLE_NETWORK_PATCHES", "true" if system.config.get_bool("lindbergh_network_patches", True) else "false")
+        self.setConf(conf, "ENABLE_CROSSHAIRS", "true" if system.config.get_bool("lindbergh_crosshairs") else "false")
 
         ## Additional game specific options
 
+        # Driveboard emulation for FFB on gamepad
+        has_ffb = "outr" in romName.lower() or "hummer" in romName.lower() or "rtuned" in romName.lower() or "segartv" in romName.lower()
+        self.setConf(conf, "EMULATE_DRIVEBOARD", "true" if has_ffb and system.config.get_bool("lindbergh_ffb", True) else "auto")
+
+        # enabling network patches blocks hdkotr from booting, checking network with a timeout error
+        if "harley" in romName.lower() or "hdkotr" in romName.lower():
+            self.setConf(conf, "ENABLE_NETWORK_PATCHES", "false")
+
         # Virtua Tennis / R-Tuned / Initial D - Card Reader
-        if ("tennis" in romName.lower() or "rtuned" in romName.lower()) and system.config.get_bool("lindbergh_card"):
+        if ("tennis" in romName.lower() or "rtuned" in romName.lower()) and system.config.get_bool("lindbergh_card", True):
             self.setConf(conf, "EMULATE_HW210_CARDREADER", "true")
             self.setConf(conf, "CARDFILE_01", "Card_01.crd")
             self.setConf(conf, "CARDFILE_02", "Card_02.crd")
@@ -308,7 +318,7 @@ class LindberghGenerator(Generator):
         else:
             self.setConf(conf, "EMULATE_HW210_CARDREADER", "false")
 
-        if "initiad" in romName.lower() and system.config.get_bool("lindbergh_card"):
+        if "initiad" in romName.lower() and system.config.get_bool("lindbergh_card", True):
             self.setConf(conf, "EMULATE_ID_CARD READER", "true")
             self.setConf(conf, "ID_CARDFILE_AUTOLOAD", "true")
             self.setConf(conf, "ID_CARDFOLDER", f'"{self.LINDBERGH_SAVES}"')
@@ -343,7 +353,7 @@ class LindberghGenerator(Generator):
 
         # Primeval Hunt mode (touch screen)
         if "primevah" in romName.lower() or "primehunt" in romName.lower():
-            self.setConf(conf, "PRIMEVAL_HUNT_SCREEN_MODE", system.config.get("lindbergh_hunt", "2"))
+            self.setConf(conf, "PRIMEVAL_HUNT_SCREEN_MODE", system.config.get("lindbergh_hunt", "1"))
             self.setConf(conf, "EMULATE_TOUCHSCREEN", "true")
 
         # TO DO - LIBCG_PATH
@@ -359,6 +369,11 @@ class LindberghGenerator(Generator):
             self.setConf(conf, "BORDER_ENABLED", "true" if need_guns_border else "false")
         else:
             self.setConf(conf, "BORDER_ENABLED", "false")
+
+        # Crosshairs (ghostsev; hotd4; hotd4sp; primevil, rambo)
+        crosshairs = system.config.get("lindbergh_crosshairs") == "1"
+        self.setConf(conf, "P1_CROSSHAIR_PATH", "/usr/bin/lindbergh/crosshairs/p1_crosshair.png" if crosshairs else "")
+        self.setConf(conf, "P2_CROSSHAIR_PATH", "/usr/bin/lindbergh/crosshairs/p2_crosshair.png" if crosshairs else "")
 
         self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
@@ -396,7 +411,7 @@ class LindberghGenerator(Generator):
         if input_mode == 2:
             hkevent = hotkeygen.get_hotkeygen_event()
             if hkevent is not None:
-                self.setConf(conf, "TEST_BUTTON",   f"{hkevent}:KEY:{ecodes.KEY_T}")
+                self.setConf(conf, "EXIT_GAME",     f"{hkevent}:KEY:{ecodes.KEY_ESC}")
                 # only 1 assignment possible for coins, let's it on the select button of player 1 for the moment
                 # could be set to hotkeygen/coin and on player1/select via .keys, but different from sdl
                 # self.setConf(conf, "PLAYER_1_COIN", f"{hkevent}:KEY:{ecodes.KEY_5}")
@@ -470,20 +485,21 @@ class LindberghGenerator(Generator):
 
                 ### choose the adapted mapping
                 if system.config.use_wheels:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(
-                        shortRomName,
-                        "wheel",
-                        nplayer,
-                        pad,
-                        # This test works because wheels are rearranged to be first in the player list
-                        len(wheels) >= nplayer
-                    )
-                    _logger.debug("lindbergh wheel mapping for player %s", nplayer)
+                    if len(wheels) >= nplayer:
+                        lindberghCtrl = self.getMappingForJoystickOrWheel(
+                            shortRomName, "wheel", nplayer, pad, True)
+                        _logger.debug("lindbergh wheel mapping for player %s", nplayer)
+                    else:
+                        lindberghCtrl = self.getMappingForJoystickOrWheel(
+                            shortRomName, "pad", nplayer, pad, False)
+                        _logger.debug("lindbergh pad mapping for player %s", nplayer)
                 elif system.config.use_guns:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(
+                        shortRomName, "gun", nplayer, pad, False)
                     _logger.debug("lindbergh gun mapping for player %s", nplayer)
                 else:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(
+                        shortRomName, "pad", nplayer, pad, False)
                     _logger.debug("lindbergh pad mapping for player %s", nplayer)
 
                 # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
@@ -607,6 +623,21 @@ class LindberghGenerator(Generator):
             "l3":             "BUTTON_SERVICE"
         }
 
+        lindberghCtrl_pad_driving = {
+            "x":        "BUTTON_DOWN",              # view change
+            "pageup":   "BUTTON_DOWN_ON_PLAYER_2",  # gear down
+            "pagedown": "BUTTON_UP_ON_PLAYER_2",    # gear up
+            "l2":       "ANALOGUE_3",               # brake
+            "r2":       "ANALOGUE_2",               # gas
+        }
+
+        lindberghCtrl_pad_abc = {
+            "a":  "BUTTON_1",   # gun trigger
+            "b":  "BUTTON_2",   # missile
+            "x":  "BUTTON_3",   # climax switch
+            "r2": "ANALOGUE_3", # throttle
+        }
+
         # the same mapping for a wheel or a pad for a wheel game should do the job
         lindberghCtrl_wheel = {
             "a":              "BUTTON_2",
@@ -645,7 +676,7 @@ class LindberghGenerator(Generator):
             "l3":             "BUTTON_SERVICE"
         }
 
-        # mapping specific to games
+        # mapping specific to games - wheel
         _logger.debug("lindberg mapping for game %s", shortRomName)
 
         if shortRomName == "hdkotr":
@@ -687,6 +718,59 @@ class LindberghGenerator(Generator):
         if shortRomName == "rtuned" or shortRomName.startswith(("segartv", "outr", "initiad")):
             lindberghCtrl_wheel["pageup"]   = "BUTTON_DOWN_ON_PLAYER_2"
             lindberghCtrl_wheel["pagedown"] = "BUTTON_UP_ON_PLAYER_2"
+
+        # mapping specific to games - pad with dict for driving + ABC
+
+        if shortRomName.startswith("outr"):
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["down"]
+
+        if shortRomName.startswith("hummer"):
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            lindberghCtrl_pad["a"]        = "BUTTON_DOWN_ON_PLAYER_2" # boost
+            lindberghCtrl_pad["pageup"]   = "BUTTON_5"
+            lindberghCtrl_pad["pagedown"] = "BUTTON_6"
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["down"]
+
+        if shortRomName.startswith("initiad"):
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            lindberghCtrl_pad["x"] = "BUTTON_1"                # view change (not BUTTON_DOWN)
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["b"]
+
+        if shortRomName == "rtuned":
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            lindberghCtrl_pad["a"] = "BUTTON_RIGHT"            # boost
+            lindberghCtrl_pad["y"] = "BUTTON_1_ON_PLAYER_2"    # boost 2
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["right"]
+            del lindberghCtrl_pad["down"]
+
+        if shortRomName.startswith("segartv"):
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            lindberghCtrl_pad["a"] = "BUTTON_1_ON_PLAYER_2"    # boost
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["down"]
+
+        if shortRomName == "hdkotr":
+            lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
+            lindberghCtrl_pad["joystick1left"] = "ANALOGUE_2"  # steer (swapped)
+            lindberghCtrl_pad["r2"] = "ANALOGUE_1"             # gas (swapped)
+            lindberghCtrl_pad["l2"] = "ANALOGUE_4"             # brake (swapped)
+            lindberghCtrl_pad["x"]  = "BUTTON_2"               # view change
+            lindberghCtrl_pad["pageup"]   = "BUTTON_4"         # gear down
+            lindberghCtrl_pad["pagedown"] = "BUTTON_3"         # gear up
+            del lindberghCtrl_pad["joystick1up"]
+            del lindberghCtrl_pad["a"]
+            del lindberghCtrl_pad["y"]
+
+        if shortRomName.startswith("abcli"):
+            lindberghCtrl_pad.update(lindberghCtrl_pad_abc)
+            del lindberghCtrl_pad["l2"]
+            del lindberghCtrl_pad["y"]
+        ###
 
         # remap buttons if for non real wheel
         if deviceType == "wheel" and not isRealWheel:
@@ -730,8 +814,7 @@ class LindberghGenerator(Generator):
             # pads without joystick1left, but with a hat
             if "joystick1left" not in pad.inputs and "left" in pad.inputs and (pad.inputs["left"].type == "hat" or pad.inputs["left"].type == "axis"):
                 lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
-                if "right" in lindberghCtrl_wheel:
-                    del lindberghCtrl_wheel["right"]
+                del lindberghCtrl_wheel["right"]
                 del lindberghCtrl_wheel["joystick1left"]
                 #
                 lindberghCtrl_pad["left"] = lindberghCtrl_pad["joystick1left"]
@@ -847,7 +930,7 @@ class LindberghGenerator(Generator):
             self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS:1")
 
             # reverse axis for let's go jungle
-            if shortRomName == ("letsgoju", "letsgojua"): # not for the special version
+            if shortRomName in ("letsgoju", "letsgojua"): # not for the special version
                 self.setConf(conf, f"ANALOGUE_{xplayer}", f"{evplayer}:ABS_NEG:1")
                 self.setConf(conf, f"ANALOGUE_{yplayer}", f"{evplayer}:ABS_NEG:0")
 
@@ -909,16 +992,19 @@ class LindberghGenerator(Generator):
                 shutil.copy2("/lib32/extralibs/libCgGL.so.harley", destCgGL)
                 _logger.debug("Copied: %s", destCgGL)
 
-        # fixes shadows and textures
+        # fixes shadows and textures, the bundled libs are known-bad.
+        # Scan first; if diff, overwrite
         if any(keyword in romName.lower() for keyword in ("initiad", "letsgoju", "tennis")):
             destCg = Path(romDir) / "libCg.so"
             destCgGL = Path(romDir) / "libCgGL.so"
-            if not destCg.exists():
-                shutil.copy2("/lib32/extralibs/libCg.so.other", destCg)
-                _logger.debug("Copied: %s", destCg)
-            if not destCgGL.exists():
-                shutil.copy2("/lib32/extralibs/libCgGL.so.other", destCgGL)
-                _logger.debug("Copied: %s", destCgGL)
+            srcCg   = Path("/lib32/extralibs/libCg.so.other")
+            srcCgGL = Path("/lib32/extralibs/libCgGL.so.other")
+            if not destCg.exists() or not filecmp.cmp(srcCg, destCg, shallow=False):
+                shutil.copy2(srcCg, destCg)
+                _logger.debug("Overwriting bad lib: %s", destCg)
+            if not destCgGL.exists() or not filecmp.cmp(srcCgGL, destCgGL, shallow=False):
+                shutil.copy2(srcCgGL, destCgGL)
+                _logger.debug("Overwriting bad lib: %s", destCgGL)
 
         # remove any legacy libsegaapi.so
         if Path(romDir, "libsegaapi.so").exists():
