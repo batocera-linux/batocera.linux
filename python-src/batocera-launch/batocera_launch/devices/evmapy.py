@@ -1,0 +1,690 @@
+from __future__ import annotations
+
+import asyncio
+import contextlib
+import ctypes
+import json
+import logging
+from collections import defaultdict
+from contextlib import AbstractAsyncContextManager
+from dataclasses import InitVar, dataclass, field
+from pathlib import Path
+from typing import TYPE_CHECKING, Final, Literal, NotRequired, Self, TypedDict, cast
+
+import sdl2
+
+from batocera_common.asyncio import run
+from batocera_common.paths import CONFIGS
+from batocera_launch.paths import EVMAPY
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator, Container, Mapping
+    from types import TracebackType
+
+    from batocera_launch.devices.controller import Controller
+    from batocera_launch.devices.gun import Gun, Guns
+    from batocera_launch.emulator import Emulator
+
+_logger = logging.getLogger(__name__)
+
+_EVMAPY_SHARE_DIR: Final = Path('/usr/share/evmapy')
+_EVMAPY_RUN_DIR: Final = Path('/var/run/evmapy')
+
+
+class _EvmapyAction(TypedDict):
+    trigger: str | list[str]
+    type: Literal['exec', 'key', 'mouse']
+    target: str | list[str]
+    mode: NotRequired[Literal['all', 'sequence', 'any']]
+    hold: NotRequired[float]
+
+
+class _EvmapyButton(TypedDict):
+    name: str
+    code: int
+
+
+class _EvmapyAxis(_EvmapyButton):
+    min: float
+    max: float
+
+
+class _EvmapyConfig(TypedDict):
+    actions: list[_EvmapyAction]
+    grab: bool
+    axes: NotRequired[list[_EvmapyAxis]]
+    buttons: NotRequired[list[_EvmapyButton]]
+
+
+class _KeysActionBase(TypedDict):
+    trigger: str | list[str]
+    mode: NotRequired[Literal['all', 'sequence', 'any']]
+    hold: NotRequired[float]
+    description: NotRequired[str]
+
+
+class _KeysAction(_KeysActionBase):
+    type: Literal['exec', 'key']
+    target: str | list[str]
+
+
+class _KeysMouseAction(_KeysActionBase):
+    type: Literal['mouse']
+
+
+type _KeysActions = list[_KeysAction | _KeysMouseAction]
+type _KeysConfig = dict[str, _KeysActions]
+
+
+def _keys_action_to_evmapy_action(keys_action: _KeysAction, /) -> _EvmapyAction:
+    return cast('_EvmapyAction', {key: value for key, value in keys_action.items() if key != 'description'})
+
+
+def _keys_mouse_action_to_evmapy_action(
+    keys_action: _KeysMouseAction, /, *, trigger: str, target: str
+) -> _EvmapyAction:
+    return cast(
+        '_EvmapyAction',
+        {
+            **{key: value for key, value in keys_action.items() if key != 'description'},
+            'trigger': trigger,
+            'target': target,
+        },
+    )
+
+
+@dataclass(slots=True)
+class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
+    # evmapy is a process that map pads to keyboards (for pygame for example)
+    __started: bool = field(init=False, default=False)
+    system_name: str = field(init=False)
+    emulator: str = field(init=False)
+    core: str = field(init=False)
+    rom: Path = field(init=False)
+    controllers: list[Controller | None] = field(init=False)
+    guns: Guns = field(init=False)
+
+    _emulator: InitVar[Emulator]
+
+    def __post_init__(self, _emulator: Emulator) -> None:
+        self.system_name = _emulator.system
+        self.emulator = _emulator.name
+        self.core = _emulator.core
+        self.rom = _emulator.rom
+        self.controllers = list(_emulator.controllers)  # type: ignore[assignment]
+        self.guns = _emulator.guns
+
+    async def __aenter__(self) -> Self:
+        if await self.__prepare():
+            self.__started = True
+            await run('batocera-evmapy', 'start')
+
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+        /,
+    ) -> None:
+        if self.__started:
+            self.__started = False
+            await run('batocera-evmapy', 'stop')
+            await run('batocera-evmapy', 'clear')
+
+    @contextlib.asynccontextmanager
+    async def monitor_controllers(self) -> AsyncGenerator[None]:
+        task = asyncio.create_task(self._monitor_controllers_loop())
+        try:
+            yield
+        finally:
+            task.cancel()
+            with contextlib.suppress(asyncio.CancelledError):
+                await task
+
+    async def _monitor_controllers_loop(self) -> None:
+        # Runs in the background, watching for controller add/remove events.
+        # Uses pysdl2 to reliably get controller GUIDs and paths, then intelligently "revives"
+        # the original controller object to preserve player order without disrupting the emulator.
+
+        import pyudev
+
+        initial_controllers_snapshot = list(self.controllers)
+        for i, p_controller in enumerate(initial_controllers_snapshot):
+            if p_controller and p_controller.guid:
+                _logger.info(
+                    '>>>   [P%s] Stored GUID: %s, Initial Path: %s', i + 1, p_controller.guid, p_controller.device_path
+                )
+
+        we_initialized_sdl = False
+        try:
+            if sdl2.SDL_WasInit(sdl2.SDL_INIT_JOYSTICK) == 0:
+                _logger.info('>>> SDL2 joystick subsystem not initialized. Initializing it now.')
+                sdl2.SDL_Init(sdl2.SDL_INIT_JOYSTICK)
+                we_initialized_sdl = True
+            else:
+                _logger.info(
+                    '>>> SDL2 joystick subsystem already initialized by host (emulator). Will not re-initialize.'
+                )
+        except Exception as e:
+            _logger.error('FATAL: Could not initialize pysdl2 for controller monitoring: %s', e)
+            return
+
+        context = pyudev.Context()
+        monitor = pyudev.Monitor.from_netlink(context)
+        monitor.filter_by(subsystem='input')
+
+        loop = asyncio.get_running_loop()
+
+        _logger.info('>>> Starting background controller monitor.')
+        try:
+            while True:
+                device = await loop.run_in_executor(None, monitor.poll, None)
+                if device is None:
+                    break
+
+                if device.properties.get('ID_INPUT_JOYSTICK') != '1':
+                    continue
+
+                _logger.info('--- Joystick Event Detected: %s on %s ---', device.action, device.sys_path)
+                reconfigure_needed = False
+
+                sdl2.SDL_JoystickUpdate()
+                online_controllers_map: dict[str, str] = {}
+                for i in range(sdl2.SDL_NumJoysticks()):
+                    try:
+                        guid_struct = sdl2.SDL_JoystickGetDeviceGUID(i)
+                        guid_str_buffer = (ctypes.c_char * 33)()
+                        sdl2.SDL_JoystickGetGUIDString(guid_struct, guid_str_buffer, 33)
+                        guid = guid_str_buffer.value.decode('utf-8')
+
+                        path_bytes = sdl2.SDL_JoystickPathForIndex(i)
+                        path = path_bytes.decode('utf-8') if path_bytes else None
+
+                        if guid and path:
+                            online_controllers_map[guid] = path
+                    except Exception as e:
+                        _logger.warning('Error while querying joystick index %s with pysdl2: %s', i, e)
+
+                _logger.info('>>> [Check 1] Pysdl2 scan found online controllers: %s', online_controllers_map)
+
+                new_active_controllers = cast('list[Controller | None]', [None] * len(initial_controllers_snapshot))
+
+                for i, initial_controller in enumerate(initial_controllers_snapshot):
+                    if initial_controller and initial_controller.guid in online_controllers_map:
+                        new_path = online_controllers_map[initial_controller.guid]
+                        if initial_controller.device_path != new_path:
+                            _logger.info(
+                                '>>> [Revival] Player %s (GUID: %s) path has changed.',
+                                initial_controller.player_number,
+                                initial_controller.guid,
+                            )
+                            initial_controller.device_path = new_path
+                        new_active_controllers[i] = initial_controller
+
+                current_paths = [c.device_path if c else None for c in self.controllers]
+                new_paths = [c.device_path if c else None for c in new_active_controllers]
+
+                if current_paths != new_paths:
+                    _logger.info(
+                        '>>> [Check 2] Controller state changed. Old Paths: %s. New Paths: %s',
+                        current_paths,
+                        new_paths,
+                    )
+                    self.controllers = new_active_controllers
+                    reconfigure_needed = True
+                else:
+                    _logger.info('>>> [Check 2] No change in assigned controller paths detected.')
+
+                if reconfigure_needed:
+                    await asyncio.sleep(1)
+                    await self.__reconfigure()
+        finally:
+            if we_initialized_sdl:
+                sdl2.SDL_QuitSubSystem(sdl2.SDL_INIT_JOYSTICK)
+
+    def __build_merged_keys_file(self) -> Path | None:
+        # consider files here in this order to get a configuration
+        files_to_merge = [
+            keys_file
+            for keys_file in [
+                # {rom}.keys form is forbidden for directories, it must be inside
+                (self.rom.parent / f'{self.rom.name}.keys') if not self.rom.is_dir() else (self.rom / 'padto.keys'),
+                # EVMAPY / f"{self.system}.{self.emulator}.{self.core}.keys",
+                # EVMAPY / f"{self.system}.{self.emulator}.keys",
+                EVMAPY / f'{self.system_name}.keys',
+                EVMAPY / f'{self.emulator}.keys',
+                EVMAPY / 'any.keys',
+                # _EVMAPY_SHARE_DIR / f"{self.system}.{self.emulator}.{self.core}.keys" ,
+                _EVMAPY_SHARE_DIR / f'{self.system_name}.{self.emulator}.keys',
+                _EVMAPY_SHARE_DIR / f'{self.system_name}.keys',
+                _EVMAPY_SHARE_DIR / f'{self.emulator}.keys',
+                _EVMAPY_SHARE_DIR / 'any.keys',
+            ]
+            if keys_file.exists()
+        ]
+
+        # merge conditionnally on the global hotkeys file until it is set everywhere
+        keys_file = _EVMAPY_SHARE_DIR / 'hotkeys.keys'
+        user_keys_file = CONFIGS / 'hotkeys.keys'  # prefer the custom one
+
+        if user_keys_file.exists():
+            keys_file = user_keys_file
+
+        if keys_file.exists():
+            files_to_merge.append(keys_file)
+
+        if not files_to_merge:
+            _logger.debug('no files to merge')
+            return None
+
+        _logger.debug('files to merge : %s', files_to_merge)
+
+        if len(files_to_merge) == 1:
+            return files_to_merge[0]
+
+        merged_file = Path('/var/run/evmapy_merged.keys')
+
+        merged_unique_values: dict[str, dict[str, _KeysAction | _KeysMouseAction]] = defaultdict(dict)
+
+        for file in files_to_merge:
+            values: _KeysConfig = json.loads(file.read_text())
+
+            for player_actions in values:
+                for action in values[player_actions]:
+                    # merge multiple trigger keys list in a single ordered key
+                    if isinstance(action['trigger'], list):
+                        action['trigger'].sort()
+                        trigger = '-'.join(action['trigger'])
+                    else:
+                        trigger = action['trigger']
+
+                    if trigger not in merged_unique_values[player_actions]:
+                        merged_unique_values[player_actions][trigger] = action
+
+        merged_values: _KeysConfig = defaultdict(list)
+
+        for player_actions in merged_unique_values:
+            for action in merged_unique_values[player_actions]:
+                merged_values[player_actions].append(merged_unique_values[player_actions][action])
+
+        merged_file.write_text(json.dumps(merged_values, indent=2))
+
+        return merged_file
+
+    async def __prepare(self) -> bool:
+        keys_file = self.__build_merged_keys_file()
+
+        if keys_file is None:
+            # otherwise, preparation did nothing
+            _logger.debug('no evmapy config file found for system=%s, emulator=%s', self.system_name, self.emulator)
+            return False
+
+        _logger.debug('evmapy on %s', keys_file)
+        await run('batocera-evmapy', 'clear')
+
+        pad_action_config: _KeysConfig = json.loads(keys_file.read_text())
+
+        # configure guns
+        for ngun, gun in enumerate(self.guns, start=1):
+            if (actions := pad_action_config.get(f'actions_gun{ngun}')) is not None:
+                self.__write_gun_config(gun, actions, keys_file)
+
+        # configure each player
+        for pad in self.controllers:
+            if pad is None:
+                continue
+            if (actions := pad_action_config.get(f'actions_player{pad.player_number}')) is not None:
+                self.__write_controller_config(pad, actions, keys_file)
+
+        return True
+
+    async def __reconfigure(self) -> None:
+        # Re-runs the evmapy configuration by stopping the current evmapy, setting the new controllers, and restarting it
+        _logger.info('>>> --- STARTING EVMAPY RECONFIGURATION ---')
+
+        valid_controllers = [c for c in self.controllers if c is not None]
+        _logger.info('>>> Found %s valid controllers to configure.', len(valid_controllers))
+        for c in valid_controllers:
+            _logger.info('>>>   - Configuring P%s with Path: %s', c.player_number, c.device_path)
+
+        await run('batocera-evmapy', 'stop')
+        await asyncio.sleep(0.5)
+        await self.__prepare()
+        await run('batocera-evmapy', 'start')
+
+        _logger.info('>>> --- EVMAPY RECONFIGURATION COMPLETE ---')
+
+    def __write_gun_config(self, gun: Gun, actions: _KeysActions, keys_file: Path, /) -> None:
+        config_file = _EVMAPY_RUN_DIR / f'{Path(gun.node).name}.json'
+        _logger.debug('config file for keysfile is %s (from %s) - gun', config_file, keys_file)
+
+        evmapy_config: _EvmapyConfig = {
+            'buttons': [{'name': button, 'code': code} for button, code in gun.button_map.items()],
+            'axes': [],
+            'actions': [
+                {**_keys_action_to_evmapy_action(action), 'trigger': gun_trigger}
+                for action in actions
+                if 'trigger' in action
+                and 'type' in action
+                and action['type'] != 'mouse'
+                and 'target' in action
+                and (gun_trigger := self.__get_gun_trigger(action['trigger'], gun))
+            ],
+            'grab': False,
+        }
+
+        config_file.write_text(json.dumps(evmapy_config, indent=2))
+
+    def __write_controller_config(self, controller: Controller, keys_actions: _KeysActions, keys_file: Path, /) -> None:
+        config_file = _EVMAPY_RUN_DIR / f'{Path(controller.device_path).name}.json'
+        _logger.debug('config file for keysfile is %s (from %s)', config_file, keys_file)
+
+        # create mapping
+        evmapy_config: _EvmapyConfig = {
+            'axes': [],
+            'buttons': [],
+            'grab': False,
+            'actions': [],
+        }
+
+        absbasex_positive = True
+        absbasey_positive = True
+
+        # define buttons / axes
+        known_button_names: set[str] = set()
+        known_button_codes: dict[str, str] = {}
+        known_button_aliases: dict[str, str] = {}
+        known_axis_codes: set[str] = set()
+
+        for input in controller.inputs.values():
+            if input.type == 'button':
+                # don't add the same button twice (ie select as hotkey)
+                if input.code is not None:
+                    if input.code not in known_button_codes:
+                        known_button_names.add(input.name)
+                        known_button_codes[input.code] = input.name  # keep the master name for aliases
+                        evmapy_config['buttons'].append({'name': input.name, 'code': int(input.code)})
+                    else:
+                        known_button_aliases[input.name] = known_button_codes[input.code]
+            elif input.type == 'hat':
+                if (input_value := int(input.value)) in [1, 2]:  # don't duplicate values
+                    if input_value == 1:
+                        name = 'X'
+                        is_y_as_int = 0
+                    else:
+                        name = 'Y'
+                        is_y_as_int = 1
+
+                    known_button_names.add(f'HAT{input.id}{name}:min')
+                    known_button_names.add(f'HAT{input.id}{name}:max')
+
+                    evmapy_config['axes'].append(
+                        {
+                            'name': f'HAT{input.id}{name}',
+                            'code': int(input.id) + 16 + is_y_as_int,  # 16 = HAT0X in linux/input.h
+                            'min': -1,
+                            'max': 1,
+                        }
+                    )
+            elif input.type == 'axis':  # noqa: SIM102
+                if input.code not in known_axis_codes and input.code is not None:
+                    # avoid duplicated value for axis (bad pad configuration that make evmappy to stop)
+                    known_axis_codes.add(input.code)
+
+                    axis_id: str | None = None
+                    axis_name: str | None = None
+
+                    if input.name.startswith(('joystick1', 'joystick2')):
+                        axis_id = '0' if input.name == 'joystick1up' or input.name == 'joystick1left' else '1'
+                        axis_name = 'Y' if input.name == 'joystick1up' or input.name == 'joystick2up' else 'X'
+                    elif input.name == 'up' or input.name == 'down':
+                        axis_id = 'BASE'
+                        axis_name = 'Y'
+                        if input.name == 'up':
+                            absbasey_positive = int(input.value) >= 0
+                        else:
+                            absbasey_positive = int(input.value) < 0
+                    elif input.name == 'left' or input.name == 'right':
+                        axis_id = 'BASE'
+                        axis_name = 'X'
+                        if input.name == 'left':
+                            absbasex_positive = int(input.value) < 0
+                        else:
+                            absbasex_positive = int(input.value) >= 0
+                    else:
+                        axis_id = '_OTHERS_'
+                        axis_name = input.name
+
+                    if (axis_id and axis_name) or axis_id == '_OTHERS_':
+                        axis_min, axis_max = self.__get_pad_min_max_axis(controller.device_path, int(input.code))
+
+                        known_button_names.add(f'ABS{axis_id}{axis_name}:min')
+                        known_button_names.add(f'ABS{axis_id}{axis_name}:max')
+                        known_button_names.add(f'ABS{axis_id}{axis_name}:val')
+
+                        evmapy_config['axes'].append(
+                            {
+                                'name': f'ABS{axis_id}{axis_name}',
+                                'code': int(input.code),
+                                'min': axis_min,
+                                'max': axis_max,
+                            }
+                        )
+
+        # only add actions for which buttons are defined (otherwise, evmapy doesn't like it)
+        evmapy_actions: list[_EvmapyAction] = []
+        trigger_mapping = self.__get_mapping_for_triggers(known_button_names, absbasex_positive, absbasey_positive)
+
+        for keys_action in keys_actions:
+            if (
+                'type' in keys_action
+                and keys_action['type'] == 'mouse'
+                and 'target' not in keys_action
+                and 'trigger' in keys_action
+            ):
+                # handle mouse events : only joystick1 or joystick2 defined for 2 events
+                if keys_action['trigger'] == 'joystick1':
+                    evmapy_actions.append(
+                        _keys_mouse_action_to_evmapy_action(keys_action, trigger='joystick1x', target='X')
+                    )
+                    evmapy_actions.append(
+                        _keys_mouse_action_to_evmapy_action(keys_action, trigger='joystick1y', target='Y')
+                    )
+                elif keys_action['trigger'] == 'joystick2':
+                    evmapy_actions.append(
+                        _keys_mouse_action_to_evmapy_action(keys_action, trigger='joystick2x', target='X')
+                    )
+                    evmapy_actions.append(
+                        _keys_mouse_action_to_evmapy_action(keys_action, trigger='joystick2y', target='Y')
+                    )
+            else:
+                evmapy_actions.append(_keys_action_to_evmapy_action(keys_action))
+
+        axis_for_mouse: set[str] = set()
+        trigger_mapping = self.__get_mapping_for_triggers(known_button_names, absbasex_positive, absbasey_positive)
+
+        # define actions
+        for evmapy_action in evmapy_actions:
+            if 'trigger' in evmapy_action:
+                trigger = self.__trigger_mapper(
+                    evmapy_action['trigger'], known_button_aliases, known_button_names, trigger_mapping
+                )
+
+                if 'mode' not in evmapy_action:
+                    mode = self.__trigger_mapper_mode(evmapy_action['trigger'])
+                    if mode is not None:
+                        evmapy_action['mode'] = mode
+
+                evmapy_action['trigger'] = trigger
+
+                if isinstance(trigger, list):
+                    if (
+                        # because of aliases (hotkeys), a button can be present 2 times => disable this key
+                        all(x in known_button_names or f'ABS_OTHERS_{x}:max' in known_button_names for x in trigger)
+                        and len(trigger) == len(set(trigger))
+                    ):
+                        # rewrite axis buttons
+                        evmapy_action['trigger'] = [
+                            f'ABS_OTHERS_{val}:max' if f'ABS_OTHERS_{val}:max' in known_button_names else val
+                            for val in trigger
+                        ]
+                        evmapy_config['actions'].append(evmapy_action)
+                else:
+                    if trigger in known_button_names:
+                        evmapy_config['actions'].append(evmapy_action)
+                    if f'ABS_OTHERS_{trigger}:max' in known_button_names:
+                        evmapy_config['actions'].append(
+                            {**evmapy_action, 'trigger': f'ABS_OTHERS_{evmapy_action["trigger"]}:max'}
+                        )
+
+        # use full axis for mouse and 50% for keys
+        for evmapy_action in evmapy_config['actions']:
+            if 'type' in evmapy_action and evmapy_action['type'] == 'mouse':
+                if isinstance(evmapy_action['trigger'], list):
+                    for x in evmapy_action['trigger']:
+                        axis_for_mouse.add(x)
+                else:
+                    axis_for_mouse.add(evmapy_action['trigger'])
+
+        for axis in evmapy_config['axes']:
+            if (
+                f'{axis["name"]}:val' not in axis_for_mouse
+                and f'{axis["name"]}:min' not in axis_for_mouse
+                and f'{axis["name"]}:max' not in axis_for_mouse
+            ):
+                axis['min'], axis['max'] = self.__get_pad_min_max_axis_for_keys(axis['min'], axis['max'])
+
+        # save config file
+        config_file.write_text(json.dumps(evmapy_config, indent=2))
+
+    def __get_mapping_for_triggers(
+        self,
+        known_button_names: Container[str],
+        absbasex_positive: bool,
+        absbasey_positive: bool,
+        /,
+    ) -> dict[str, str | list[str]]:
+        # maybe this function is more complex if a pad has several hat. never see them.
+        mapping = {
+            'joystick1right': 'ABS0X:max',
+            'joystick1left': 'ABS0X:min',
+            'joystick1down': 'ABS0Y:max',
+            'joystick1up': 'ABS0Y:min',
+            'joystick2right': 'ABS1X:max',
+            'joystick2left': 'ABS1X:min',
+            'joystick2down': 'ABS1Y:max',
+            'joystick2up': 'ABS1Y:min',
+            'joystick1x': ['ABS0X:val', 'ABS0X:min', 'ABS0X:max'],
+            'joystick1y': ['ABS0Y:val', 'ABS0Y:min', 'ABS0Y:max'],
+            'joystick2x': ['ABS1X:val', 'ABS1X:min', 'ABS1X:max'],
+            'joystick2y': ['ABS1Y:val', 'ABS1Y:min', 'ABS1Y:max'],
+        }
+
+        if 'HAT0X:min' in known_button_names:
+            mapping['left'] = 'HAT0X:min'
+            mapping['right'] = 'HAT0X:max'
+            mapping['down'] = 'HAT0Y:max'
+            mapping['up'] = 'HAT0Y:min'
+
+        if 'ABSBASEX:min' in known_button_names:
+            if absbasex_positive:
+                mapping['left'] = 'ABSBASEX:min'
+                mapping['right'] = 'ABSBASEX:max'
+            else:
+                mapping['left'] = 'ABSBASEX:max'
+                mapping['right'] = 'ABSBASEX:min'
+
+        if 'ABSBASEX:min' in known_button_names:
+            if absbasey_positive:
+                mapping['down'] = 'ABSBASEY:max'
+                mapping['up'] = 'ABSBASEY:min'
+            else:
+                mapping['down'] = 'ABSBASEY:min'
+                mapping['up'] = 'ABSBASEY:max'
+
+        return mapping
+
+    # remap evmapy trigger (aka up become HAT0Y:max)
+    def __trigger_mapper(
+        self,
+        trigger: str | list[str],
+        known_button_aliases: Mapping[str, str],
+        known_button_names: Container[str],
+        trigger_mapping: Mapping[str, str | list[str]],
+        /,
+    ) -> str | list[str]:
+        if isinstance(trigger, list):
+            return [
+                cast('str', self.__trigger_mapper_string(x, known_button_aliases, known_button_names, trigger_mapping))
+                for x in trigger
+            ]
+
+        return self.__trigger_mapper_string(trigger, known_button_aliases, known_button_names, trigger_mapping)
+
+    def __trigger_mapper_string(
+        self,
+        trigger: str,
+        known_button_aliases: Mapping[str, str],
+        known_button_names: Container[str],
+        trigger_mapping: Mapping[str, str | list[str]],
+        /,
+    ) -> str | list[str]:
+        if trigger in known_button_aliases:
+            return known_button_aliases[trigger]
+
+        if (mapped := trigger_mapping.get(trigger)) is not None:
+            if isinstance(mapped, list):
+                if all(x in known_button_names for x in mapped):
+                    return mapped
+            elif mapped in known_button_names:
+                return trigger_mapping[trigger]
+
+        return trigger  # no tranformation
+
+    def __trigger_mapper_mode(self, trigger: str | list[str], /) -> Literal['any'] | None:
+        if isinstance(trigger, list):
+            for x in trigger:
+                mode = self.__trigger_mapper_mode_string(x)
+                if mode is not None:
+                    return mode
+            return None
+        return self.__trigger_mapper_mode_string(trigger)
+
+    def __trigger_mapper_mode_string(self, trigger: str, /) -> Literal['any'] | None:
+        if trigger in ['joystick1x', 'joystick1y', 'joystick2x', 'joystick2y']:
+            return 'any'
+        return None
+
+    def __get_gun_trigger(self, trigger: str | list[str], gun: Gun, /) -> str | list[str] | None:
+        if isinstance(trigger, list):
+            for button in trigger:
+                if button not in gun.buttons:
+                    return None
+            return trigger
+
+        if trigger not in gun.buttons:
+            return None
+
+        return trigger
+
+    def __get_pad_min_max_axis(self, device_path: str, axis_code: int, /) -> tuple[int, int]:
+        import evdev
+
+        device = evdev.InputDevice(device_path)
+        capabilities = device.capabilities(False)
+
+        for event_type in capabilities:
+            if event_type == 3:  # "EV_ABS"
+                for abs_code, val in capabilities[event_type]:
+                    if abs_code == axis_code:
+                        return val.min, val.max
+
+        return 0, 0  # not found
+
+    def __get_pad_min_max_axis_for_keys(self, min: float, max: float, /) -> tuple[float, float]:
+        val_range = (max - min) / 2  # for each side
+        val_min = min + val_range / 2
+        val_max = max - val_range / 2
+        return val_min, val_max

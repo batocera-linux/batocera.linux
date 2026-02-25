@@ -20,11 +20,6 @@ extends = "../../pyproject.toml"
 [tool.ruff]
 extend = "../../pyproject.toml"
 
-target-version = "py314"
-
-[tool.ruff.lint]
-ignore = ["SIM105", "SIM108", "E501", "RUF051"]
-
 [tool.pytest]
 minversion = "9.0"
 addopts = ["--import-mode=importlib", "--cov=batocera_common", "--cov-branch", "--cov-report=term"]
