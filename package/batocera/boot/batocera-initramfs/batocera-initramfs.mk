@@ -76,6 +76,8 @@ define BATOCERA_INITRAMFS_SM8550_EARLY_FIRMWARE
         $(INITRAMFS_DIR)/lib/firmware/qcom/sm8550/
 	cp $(ALLLINUXFIRMWARES_DIR)/qcom/a740_sqe.fw \
 	    $(INITRAMFS_DIR)/lib/firmware/qcom/
+	cp $(ALLLINUXFIRMWARES_DIR)/qcom/gmu_gen70200.bin \
+	    $(INITRAMFS_DIR)/lib/firmware/qcom/
     cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/fsoverlay/lib/firmware/qcom/* \
         $(INITRAMFS_DIR)/lib/firmware/qcom/
 endef
