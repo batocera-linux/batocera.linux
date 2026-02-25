@@ -1,0 +1,3 @@
+__all__ = ['SDL_OpenURL']
+
+def SDL_OpenURL(url: bytes | None, /) -> int: ...
