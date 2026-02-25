@@ -1,6 +1,7 @@
 config BR2_PACKAGE_LIBRETRO_SCUMMVM
     bool "libretro-scummvm"
 	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_BATOCERA_LAUNCH_LIBRETRO_SCUMMVM
     help
       A libretro SCUMMVM emulator core for ARM.
 

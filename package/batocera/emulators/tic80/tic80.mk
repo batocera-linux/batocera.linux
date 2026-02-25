@@ -10,6 +10,7 @@ TIC80_SITE_METHOD = git
 TIC80_GIT_SUBMODULES = YES
 TIC80_LICENSE = MIT
 TIC80_LICENSE_FILES = LICENSE
+TIC80_EMULATOR_INFO = tic80.emulator.yml
 
 TIC80_DEPENDENCIES = sdl2 host-pkgconf zlib libcurl
 
@@ -37,3 +38,4 @@ define TIC80_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

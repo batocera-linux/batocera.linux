@@ -7,6 +7,6 @@ else
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-emulatorlauncher -system model2 -rom config
+batocera-launch -system model2 -rom config
 
 exit 0

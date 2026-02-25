@@ -72,7 +72,7 @@
 				<text display="${curl http://127.0.0.1:1234/runningGame | jq -r '.name' | sed 's/null//'}" align="left" refresh="3" if="!id(gamemarquee)" />
 			</feature>
 			<feature>
-				<text display='${P=$(ps -o etime= -C emulatorlauncher 2>/dev/null | head -1 | tr -d [[:blank:]]) &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P"}' align="left" refresh="1" id="playtime" />
+				<text display='${PID=$(pgrep -n -x batocera-launch) &amp;&amp; P=$(ps -o etime= -p "$PID" 2>/dev/null | tr -d "[[:blank:]]") &amp;&amp; [ -n "$P" ] &amp;&amp; echo "Playing for $P"}' align="left" refresh="1" id="playtime" />
 			</feature>
 		</hgroup>
 		<vgroup>

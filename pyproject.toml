@@ -7,6 +7,7 @@ dev = [
     "pytest-mock==3.15.1",
     "pytest-cov==7.1.0",
     "pytest-xdist==3.8.0",
+    "pyfakefs==6.2.0",
     "coverage[toml]==7.15.4",
     "pygobject-stubs @ git+https://github.com/pygobject/pygobject-stubs.git@959c470767cd44a74912ba182e9fb202d0d96519",
 ]
@@ -16,6 +17,7 @@ package = false
 # These versions need to be kept in sync with the versions
 # built by buildroot
 constraint-dependencies = [
+    "hatchling==1.29.0",
     "pyyaml==6.0.3",
     "configobj==5.0.8",
     "evdev==1.9.3",
@@ -34,6 +36,9 @@ config-settings-package = { pygobject-stubs = { config = "Gtk3,Gdk3" } }
 
 [tool.uv.sources]
 batocera-common = { workspace = true }
+batocera-launch = { workspace = true }
+batocera-launch-libretro = { workspace = true }
+batocera-launch-mame-common = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -56,6 +61,10 @@ strict = true
 omit = ["**/python-src/*/tests/**"]
 
 [tool.pyright]
+include = [
+    "python-src",
+    "package/batocera/core/batocera-configgen/configgen",
+]
 exclude = [
     ".venv*",
     "buildroot*",
@@ -135,12 +144,97 @@ quote-style = "single"
 preview = true
 explicit-preview-rules = true
 select = [
-    "TC", "PYI", "I", "UP", "F", "FA", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
+    "TC", "PYI", "I", "UP", "F", "FA", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "PT", "RUF"
 ]
 ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["batocera_common", "configgen", "batocera_es_system"]
+known-first-party = [
+    "batocera_common",
+    "batocera_launch",
+    "batocera_launch_libretro",
+    "batocera_launch_libretro_mame",
+    "batocera_launch_mame_common",
+    "configgen",
+    "batocera_es_system"
+]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]
+
+[tool.zuban]
+strict = true
+mypy_path = ['python-src/stubs', 'python-src']
+
+[tool.pyrefly]
+project-includes = [
+    "python-src",
+]
+project-excludes = [
+    ".venv*",
+    "buildroot*",
+    "output",
+    "dl",
+    "python-src/stubs/configobj/validate.pyi",
+]
+python-platform = "linux"
+python-version = "3.14.0"
+site-package-path = ["python-src/stubs"]
+infer-with-first-use = false
+
+[tool.pyrefly.errors]
+missing-source = "ignore"
+deprecated = "warn"
+no-access = "ignore"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-test-support"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-common"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-es-system"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-flycast"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-fallout"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-libretro"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-libretro-fbneo"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-libretro-mame"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-libretro-scummvm"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-mame"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-mame-common"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-rpcs3"
+
+[[tool.pyrefly.sub-config]]
+matches = "python-src/batocera-launch-trx"
+
+[[tool.pyrefly.sub-config]]
+matches = "package/batocera/core/batocera-configgen/configgen"
+
+[tool.pyrefly.sub-config.errors]
+untyped-import = "ignore"
+implicit-any-parameter = "ignore"
+implicit-any = "ignore"
+invalid-type-var = "warn"
+redundant-cast = "ignore"

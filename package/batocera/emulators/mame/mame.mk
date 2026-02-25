@@ -7,7 +7,7 @@
 MAME_VERSION = gm0288sr222d
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
-MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd 
+MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd
 
 $(eval $(call register,mame.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,bgfxbackend.mame.emulator.yml))

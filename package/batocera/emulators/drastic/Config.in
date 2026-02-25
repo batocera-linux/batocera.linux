@@ -1,10 +1,11 @@
 config BR2_PACKAGE_DRASTIC
 	bool "drastic"
-    select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_BATOCERA_LAUNCH_DRASTIC
 	help
-      Drastic is a Nintendo DS emulator.
-      This is an Aarch64 specific binary.
+	  Drastic is a Nintendo DS emulator.
+	  This is an Aarch64 specific binary.
 
-      libdrastouch.c courtesy of Rocknix development.
-      
-      https://www.drastic-ds.com/
+	  libdrastouch.c courtesy of Rocknix development.
+
+	  https://www.drastic-ds.com/

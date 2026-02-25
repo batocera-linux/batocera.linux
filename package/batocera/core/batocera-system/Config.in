@@ -173,6 +173,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_PYTHON_BATOCERA_COMMON	# common python functionality
 	select BR2_PACKAGE_BATOCERA_ES_SYSTEM		# emulation station es_systems.cfg generator + default roms
 	select BR2_PACKAGE_BATOCERA_CONFIGGEN		# emulation station external command launcher
+	select BR2_PACKAGE_BATOCERA_LAUNCH		# new emulation station external command launcher
 	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY	# multimedia/power buttons
 	select BR2_PACKAGE_BATOCERA_UDEV_RULES		# extra udev rules for specifics joysticks/devices
 	select BR2_PACKAGE_BATOCERA_USERDATAINIT	# userdata init files
@@ -1899,6 +1900,7 @@ config BR2_PACKAGE_BATOCERA_KODI21
 	bool "batocera.linux Kodi 21 packages selection"
 	default n
 	select BR2_PACKAGE_KODI				# kodi
+	select BR2_PACKAGE_BATOCERA_LAUNCH_KODI
 	select BR2_PACKAGE_PYTHON_PYOPENSSL		# used by some kodi plugins
 	select BR2_PACKAGE_X264				# decoder
 	select BR2_PACKAGE_X265				# decoder

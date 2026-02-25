@@ -7,7 +7,7 @@ case "${1}" in
 	touch /var/run/evmapy/ready || exit 1
 	inotifywait /var/run/evmapy/ready -t 5 -q & # wait the evmapy ready flag
 	X=$!
-	nohup evmapy &
+	nohup evmapy </dev/null >/dev/null 2>&1 &
 	wait "${X}"
 	exit 0
 	;;

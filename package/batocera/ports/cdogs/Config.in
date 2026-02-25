@@ -6,6 +6,7 @@ config BR2_PACKAGE_CDOGS
 	select BR2_PACKAGE_PYTHON_PROTOBUF
 	select BR2_PACKAGE_HOST_PYTHON_PROTOBUF
 	select BR2_PACKAGE_ENET
+	select BR2_PACKAGE_BATOCERA_LAUNCH_CDOGS
 	depends on BR2_INSTALL_LIBSTDCPP
 	help
 	  Classic overhead run-and-gun game

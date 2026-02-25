@@ -13,6 +13,7 @@ config BR2_PACKAGE_MAME
 	select BR2_PACKAGE_SQLITE
 	select BR2_PACKAGE_ZLIB
 	select BR2_PACKAGE_ZSTD
+	select BR2_PACKAGE_BATOCERA_LAUNCH_MAME
 	help
 	  MAME emulator standalone package
 
