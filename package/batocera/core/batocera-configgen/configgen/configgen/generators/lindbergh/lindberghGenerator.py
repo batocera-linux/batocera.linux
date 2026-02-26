@@ -367,6 +367,8 @@ class LindberghGenerator(Generator):
                 self.setConf(conf, "WHITE_BORDER_PERCENTAGE", bordersInnerSize)
                 self.setConf(conf, "BLACK_BORDER_PERCENTAGE", bordersOuterSize)
             self.setConf(conf, "BORDER_ENABLED", "true" if need_guns_border else "false")
+            if "letsgojusp" in romName.lower():
+                self.setConf(conf, "BORDER_ENABLED", "false")
         else:
             self.setConf(conf, "BORDER_ENABLED", "false")
 
