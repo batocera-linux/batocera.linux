@@ -291,8 +291,8 @@ class LindberghGenerator(Generator):
         self.setConf(conf, "OUTRUN_LENS_GLARE_ENABLED", "true" if system.config.get_bool("lindbergh_lens", True) else "false")
         self.setConf(conf, "BOOST_RENDER_RES",          "true" if system.config.get_bool("lindbergh_boost") else "false")
         self.setConf(conf, "SKIP_OUTRUN_CABINET_CHECK", "false" if "outrun" in romName.lower() or "outr2sdx" in romName.lower() else "true") #disable by default, otherwise no FFB
-        self.setConf(conf, "SRAM_PATH",   f'"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem}"')
-        self.setConf(conf, "EEPROM_PATH", f'"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem}"')
+        self.setConf(conf, "SRAM_PATH",   f'"{self.LINDBERGH_SAVES}/sram.bin.{Path(romName).stem.lower()}"')
+        self.setConf(conf, "EEPROM_PATH", f'"{self.LINDBERGH_SAVES}/eeprom.bin.{Path(romName).stem.lower()}"')
         self.setConf(conf, "HIDE_CURSOR", "true" if system.config.get_bool("lindbergh_hide_cursor", True) else "false")
         self.setConf(conf, "DISABLE_BUILTIN_FONT", "true" if system.config.get_bool("lindbergh_disable_font") else "false")
         self.setConf(conf, "DISABLE_BUILTIN_LOGOS", "true" if system.config.get_bool("lindbergh_disable_logos") else "false")
