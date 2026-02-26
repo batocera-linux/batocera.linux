@@ -59,6 +59,12 @@ custom_features:
     choices:
       SDL2: 1
       EVDEV (Default): 2
+  lindbergh_ffb:
+    prompt: FORCE FEEDBACK
+    description: Enable force feedback/rumble to supported games.
+    choices:
+      Off : 0
+      'On' (default): 1
   lindbergh_hummer:
     group: GAME OPTIONS
     prompt: HUMMER FLICKER FIX
@@ -92,10 +98,10 @@ custom_features:
   lindbergh_card:
     group: GAME OPTIONS
     prompt: CARD READER
-    description: Enable to emulate the card reader in Virtua Tenis 3 or R-Tuned.
+    description: Enable to emulate the card reader in Virtua Tenis 3, ID4/5 or R-Tuned.
     choices:
-      Off (Default): 0
-      'On': 1
+      Off: 0
+      'On' (Default): 1
   lindbergh_speed:
     group: GAME OPTIONS
     prompt: CPU SPEED
@@ -106,6 +112,27 @@ custom_features:
     group: GAME OPTIONS
     prompt: IP ADDRESS
     description: Enable the IP address for OutRun 2 network play against another PC on the same network.
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_rambo_switch:
+    group: GAME OPTIONS
+    prompt: RAMBO GUNS SWITCH
+    description: Switch the gun display style in Rambo.
+    choices:
+      Off (Default): 0
+      'On': 1
+lindbergh_crosshairs:
+    group: GAME OPTIONS
+    prompt: CROSSHAIRS
+    description: Enable crosshairs in supported light gun games (Ghostsev, HotD4/SP, Primeval, Rambo).
+    choices:
+      Off (Default): 0
+      'On': 1
+  lindbergh_cabinet_skip:
+    group: GAME OPTIONS
+    prompt: SKIP OUTRUN CABINET CHECK
+    description: Bypass steering wheel and actuator hardware checks in OutRun 2 SP SDX. May help boot on some systems but disables force feedback.
     choices:
       Off (Default): 0
       'On': 1
