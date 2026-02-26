@@ -47,7 +47,7 @@ poll.register(input.fd, select.POLLIN)
 inputkey = hashlib.md5(input.name.encode()).hexdigest()[0:8]
 
 # output
-outputSize = [1000, 1000] # output rectangle
+outputSize = [1005, 1005] # output rectangle
 evkeys = []
 for x in range(ecodes.KEY_MAX):
     if x not in [
@@ -71,7 +71,7 @@ for x in range(ecodes.KEY_MAX):
 target = evdev.UInput(name=input.name+" calibrated", events={
     ecodes.EV_ABS: [
         (ecodes.ABS_X, evdev.AbsInfo(value=0, min=0, max=outputSize[0], fuzz=0, flat=0, resolution=0)),
-        (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1], fuzz=0, flat=0, resolution=0))
+        (ecodes.ABS_Y, evdev.AbsInfo(value=0, min=0, max=outputSize[1.1], fuzz=0, flat=0, resolution=0))
     ],
     ecodes.EV_KEY: evkeys})
 
