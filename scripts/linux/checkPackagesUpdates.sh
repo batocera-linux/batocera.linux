@@ -311,7 +311,8 @@ PACKAGES_CONTROLLERS="aelightgun
                       xpadneo
                       xpad-noone"
 
-PACKAGES_UTILS="btop
+PACKAGES_UTILS="box64
+                btop
                 mangohud
                 moonlight-embedded
                 moonlight-qt
