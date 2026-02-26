@@ -223,6 +223,7 @@ mkdir -p "${TMPOUT}/usr/bin/lindbergh" || exit 1
 mkdir -p "${TMPOUT}/lib32/extralibs" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lind"*        "${TMPOUT}/usr/bin/lindbergh/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/controls"*    "${TMPOUT}/usr/bin/lindbergh/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/crosshairs"   "${TMPOUT}/usr/bin/lindbergh/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/lib"*"so"*    "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/bin/lindbergh/extralibs/lib"*"so"* "${TMPOUT}/lib32/extralibs/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libglut.so"*            "${TMPOUT}/lib32/" || exit 1
