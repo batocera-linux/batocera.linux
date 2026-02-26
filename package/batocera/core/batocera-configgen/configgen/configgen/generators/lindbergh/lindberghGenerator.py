@@ -486,20 +486,16 @@ class LindberghGenerator(Generator):
                 ### choose the adapted mapping
                 if system.config.use_wheels:
                     if len(wheels) >= nplayer:
-                        lindberghCtrl = self.getMappingForJoystickOrWheel(
-                            shortRomName, "wheel", nplayer, pad, True)
+                        lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad, True)
                         _logger.debug("lindbergh wheel mapping for player %s", nplayer)
                     else:
-                        lindberghCtrl = self.getMappingForJoystickOrWheel(
-                            shortRomName, "pad", nplayer, pad, False)
+                        lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
                         _logger.debug("lindbergh pad mapping for player %s", nplayer)
                 elif system.config.use_guns:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(
-                        shortRomName, "gun", nplayer, pad, False)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
                     _logger.debug("lindbergh gun mapping for player %s", nplayer)
                 else:
-                    lindberghCtrl = self.getMappingForJoystickOrWheel(
-                        shortRomName, "pad", nplayer, pad, False)
+                    lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
                     _logger.debug("lindbergh pad mapping for player %s", nplayer)
 
                 # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
