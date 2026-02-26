@@ -374,6 +374,12 @@ class LindberghGenerator(Generator):
         crosshairs = system.config.get("lindbergh_crosshairs") == "1"
         self.setConf(conf, "P1_CROSSHAIR_PATH", "/usr/bin/lindbergh/crosshairs/p1_crosshair.png" if crosshairs else "")
         self.setConf(conf, "P2_CROSSHAIR_PATH", "/usr/bin/lindbergh/crosshairs/p2_crosshair.png" if crosshairs else "")
+        if "ghostsev" in romName.lower():
+            self.setConf(conf, "CUSTOM_CROSSHAIRS_WIDTH", "28")
+            self.setConf(conf, "CUSTOM_CROSSHAIRS_HEIGHT", "28")
+        else:
+            self.setConf(conf, "CUSTOM_CROSSHAIRS_WIDTH", "64")
+            self.setConf(conf, "CUSTOM_CROSSHAIRS_HEIGHT", "64")
 
         self.setup_controllers(conf, system, romName, playersControllers, guns, wheels)
 
@@ -878,9 +884,8 @@ class LindberghGenerator(Generator):
             del mappings_actions["2"]
 
         if shortRomName == "ghostsev":
-            mappings_actions["right"] = "BUTTON_2"
-            mappings_actions["2"]     = "BUTTON_3"
-            mappings_actions["7"]     = "BUTTON_4"
+            mappings_actions["right"] = "BUTTON_3" # Action
+            mappings_actions["2"]     = "BUTTON_4" # Cycle firerate
             del mappings_actions["3"]
 
         if shortRomName == "hotdex":
