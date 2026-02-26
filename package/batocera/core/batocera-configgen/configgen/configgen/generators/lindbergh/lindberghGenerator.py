@@ -144,18 +144,18 @@ class LindberghGenerator(Generator):
                 "SDL_AUDIODRIVER": "alsa",
             }
 
-        if system.config.get_bool("lindbergh_zink"):
-            environment.update(
-                {
-                    "MESA_LOADER_DRIVER_OVERRIDE": "zink"
-                }
-            )
-
         # Run command - Use -c * -o for ini files and -g for the game folder
         config_file = "/userdata/system/configs/lindbergh/lindbergh.ini"
         controller_file = "/userdata/system/configs/lindbergh/controls.ini"
         commandArray: list[str | Path] = [str(source_dir / "lindbergh"), "-c", config_file, "-o", controller_file, "-g", str(romDir)]
 
+        if system.config.get_bool("lindbergh_zink"):
+            commandArray.append("--zink")
+            environment.update({
+                "MESA_LOADER_DRIVER_OVERRIDE": "zink",
+                "VK_LOADER_LAYERS_DISABLE": "~all~"
+            })
+        
         if system.config.get_bool("lindbergh_test"):
             commandArray.append("-t")
 
