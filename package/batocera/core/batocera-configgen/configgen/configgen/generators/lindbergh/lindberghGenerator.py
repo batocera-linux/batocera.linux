@@ -493,12 +493,12 @@ class LindberghGenerator(Generator):
 
                 ### choose the adapted mapping
                 if system.config.use_wheels:
-                    if len(wheels) >= nplayer:
+                    if pad.device_path in wheels:
                         lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "wheel", nplayer, pad, True)
                         _logger.debug("lindbergh wheel mapping for player %s", nplayer)
                     else:
                         lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "pad", nplayer, pad, False)
-                        _logger.debug("lindbergh pad mapping for player %s", nplayer)
+                        _logger.debug("lindbergh pad mapping for player %s (not a wheel device)", nplayer)
                 elif system.config.use_guns:
                     lindberghCtrl = self.getMappingForJoystickOrWheel(shortRomName, "gun", nplayer, pad, False)
                     _logger.debug("lindbergh gun mapping for player %s", nplayer)
