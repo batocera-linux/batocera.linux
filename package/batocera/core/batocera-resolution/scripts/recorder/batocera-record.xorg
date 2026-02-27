@@ -1,11 +1,25 @@
-#!/bin/sh
+#!/bin/bash
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 
 # Setup Paths
 PID_FILE="/tmp/ffmpeg-recorder.pid"
 CONF_FILE="/tmp/rec.conf"
 BASE_DIR="/userdata/recordings"
-VAAPI_DEVICE="/dev/dri/renderD128"
+LOG_FILE="/userdata/system/logs/recording.log"
 mkdir -p "$BASE_DIR"
+mkdir -p "$(dirname "$LOG_FILE")"
 
 # Default Values
 DEFAULT_QUALITY="mid"
@@ -14,10 +28,17 @@ DEFAULT_ALL="false"
 
 export DISPLAY=$(getLocalXDisplay)
 
+# --- Logging Helper ---
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
 # --- Configuration Helpers ---
 get_conf() {
+    # Usage: get_conf KEY DEFAULT_VALUE
     if [ -f "$CONF_FILE" ]; then
-        VAL=$(grep "^$1=" "$CONF_FILE" | cut -d'=' -f2)
+        local VAL
+        VAL=$(grep "^$1=" "$CONF_FILE" | tail -1 | cut -d'=' -f2-)
         echo "${VAL:-$2}"
     else
         echo "$2"
@@ -25,63 +46,150 @@ get_conf() {
 }
 
 set_conf() {
+    # Usage: set_conf KEY VALUE
     touch "$CONF_FILE"
+    # Remove existing key
     sed -i "/^$1=/d" "$CONF_FILE"
+    # Append new key
     echo "$1=$2" >> "$CONF_FILE"
+    log "Config changed: $1=$2"
 }
 
 # --- Hardware Detection ---
 has_nvidia_gpu() {
-    lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { return 0 } }'
-    return 1
+    lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { found=1 } } END { exit !found }'
+}
+
+vainfo_check_device() {
+    local dev="$1"
+    local output
+    # Try --display drm --device first
+    output=$(vainfo --display drm --device "$dev" 2>/dev/null)
+    if [ -z "$output" ]; then
+        output=$(vainfo "$dev" 2>/dev/null)
+    fi
+    echo "$output"
+}
+
+# Check for encoder support first on all available render nodes
+find_best_vaapi_device() {
+    log "Searching for Encoder hardware..."
+    if ! command -v vainfo > /dev/null 2>&1; then
+        log "vainfo not found, skipping VAAPI detection"
+        echo "none|none"
+        return
+    fi
+    # Try HEVC first
+    for dev in /dev/dri/renderD*; do
+        [ -e "$dev" ] || continue
+        if vainfo_check_device "$dev" | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
+            log "Selected HEVC VAAPI on $dev"
+            echo "hevc_vaapi|$dev"
+            return
+        fi
+    done
+
+    # Otherwise try H.264
+    for dev in /dev/dri/renderD*; do
+        [ -e "$dev" ] || continue
+        if vainfo_check_device "$dev" | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
+            log "Selected H264 VAAPI on $dev"
+            echo "h264_vaapi|$dev"
+            return
+        fi
+    done
+
+    echo "none|none"
 }
 
 auto_detect_encoder() {
-    if vainfo 2>/dev/null | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
-        echo "hevc_vaapi"
-    elif vainfo 2>/dev/null | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
-        echo "h264_vaapi"
+    local VA_RESULT VA_ENC VA_DEV
+    VA_RESULT=$(find_best_vaapi_device)
+    VA_ENC=$(echo "$VA_RESULT" | cut -d'|' -f1)
+    VA_DEV=$(echo "$VA_RESULT" | cut -d'|' -f2)
+
+    if [ "$VA_ENC" != "none" ]; then
+        echo "$VA_ENC|$VA_DEV"
     elif has_nvidia_gpu; then
-        echo "hevc_nvenc"
+        log "Selected NVENC (NVIDIA)"
+        echo "hevc_nvenc|none"
     else
-        echo "libx264"
+        log "Selected libx264 (Software)"
+        echo "libx264|none"
     fi
 }
 
 # --- Audio Detection ---
 get_audio_device() {
+    local VAL SRC
     VAL=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
     case "$VAL" in
         mic)
-            pactl list short sources | grep -v 'monitor' | head -1 | awk '{print $2}'
+            SRC=$(pactl list short sources | grep -v 'monitor' | head -1 | awk '{print $2}')
+            log "Audio Source: Mic ($SRC)"
+            echo "$SRC"
             ;;
         none)
+            log "Audio Source: None"
             echo "none"
             ;;
         *)
-            LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{print $1 ".monitor"}'
+            SRC=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{print $1 ".monitor"}')
+            log "Audio Source: Desktop ($SRC)"
+            echo "$SRC"
             ;;
     esac
 }
 
 case "$1" in
     status)
-        if [ -f "$PID_FILE" ] && kill -0 $(cat "$PID_FILE") 2>/dev/null; then
-            echo "RECORDING..."
-        else
-            echo "Ready"
+        RUNNING=0
+        if [ -f "$PID_FILE" ]; then
+            while read -r PID; do
+                kill -0 "$PID" 2>/dev/null && RUNNING=1 && break
+            done < "$PID_FILE"
         fi
+        [ "$RUNNING" = "1" ] && echo "RECORDING..." || echo "Ready"
         ;;
     is_running)
-        if [ -f "$PID_FILE" ] && kill -0 $(cat "$PID_FILE") 2>/dev/null; then
-            echo "true"
+        RUNNING=0
+        if [ -f "$PID_FILE" ]; then
+            while read -r PID; do
+                if kill -0 "$PID" 2>/dev/null; then
+                    RUNNING=1
+                    break
+                fi
+            done < "$PID_FILE"
         fi
+        [ "$RUNNING" = "1" ] && echo "true" || echo "false"
         ;;
     stop)
         if [ -f "$PID_FILE" ]; then
-            PIDS=$(cat "$PID_FILE")
-            kill -15 $PIDS 2>/dev/null
-            rm "$PID_FILE"
+            PIDS_ARRAY=()
+            while read -r PID; do
+                # Ignore empty lines
+                [ -n "$PID" ] && PIDS_ARRAY+=("$PID")
+            done < "$PID_FILE"
+
+            log "Stopping recording (PIDs: ${PIDS_ARRAY[*]})"
+            for PID in "${PIDS_ARRAY[@]}"; do
+                # ffmpeg prefers SIGINT (-2) over SIGTERM (-15) for gracefully finishing files
+                kill -2 "$PID" 2>/dev/null
+            done
+
+            # Clean up any stray X11 ffmpeg tasks safely
+            pkill -2 -f "ffmpeg.*x11grab" 2>/dev/null
+
+            # Wait for all processes to exit before removing PID file
+            for PID in "${PIDS_ARRAY[@]}"; do
+                waited=0
+                while kill -0 "$PID" 2>/dev/null; do
+                    sleep 0.1
+                    waited=$((waited + 1))
+                    [ "$waited" -ge 50 ] && { log "PID $PID did not exit cleanly, sending SIGTERM"; kill -15 "$PID" 2>/dev/null; break; }
+                done
+            done
+            rm -f "$PID_FILE"
         fi
         ;;
     get-quality) get_conf "QUALITY" "$DEFAULT_QUALITY" ;;
@@ -92,60 +200,86 @@ case "$1" in
     set-all)     set_conf "ALL" "$2" ;;
 
     start)
-        # 1. Load BCC Configuration
+        : > "$LOG_FILE"
+        log "--- Start Recording Sequence ---"
+        # Load BCC Configuration
         Q=$(get_conf "QUALITY" "$DEFAULT_QUALITY")
         A=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
         ALL=$(get_conf "ALL" "$DEFAULT_ALL")
 
-        # 2. Map BCC Quality to FFmpeg Parameters
+        # Map BCC Quality to FFmpeg Parameters
         case "$Q" in
-            ultra) CRF=18; PRESET="medium"; FPS=60 ;; # Epic mode
-            high)  CRF=23; PRESET="fast";   FPS=60 ;; # High quality
-            low)   CRF=35; PRESET="ultrafast"; FPS=25 ;; # Compress/Low
-            *)     CRF=28; PRESET="veryfast"; FPS=30 ;; # Mid/Default
+            ultra) CRF=18; PRESET="medium";    V_QUAL=18; FPS=60 ;; # Epic mode
+            high)  CRF=23; PRESET="fast";      V_QUAL=23; FPS=60 ;; # High quality
+            low)   CRF=35; PRESET="ultrafast"; V_QUAL=35; FPS=25 ;; # Compress/Low
+            *)     CRF=28; PRESET="veryfast";  V_QUAL=28; FPS=30 ;; # Mid/Default
         esac
 
-        # 3. Handle Screen Geometry (All vs Primary)
+        # Handle Screen Geometry (All vs Primary)
         if [ "$ALL" = "true" ]; then
             # X11 Desktop (Total Virtual Size)
             GEOM=$(xwininfo -root | grep -E 'geometry' | awk '{print $2}' | cut -d+ -f1)
             OFFSET="0,0"
         else
-            # Primary Monitor Only
+            # Primary Monitor Only - detect actual offset for multi-head layouts
             GEOM=$(batocera-resolution currentResolution)
-            OFFSET="0,0" # Default offset, adjust if needed for multi-head layouts
+            OFFSET=$(xrandr | awk '/ connected primary / { sub(/.*[0-9]+x[0-9]+\+/, ""); split($0, m, "+"); print int(m[1])","int(m[2]) }')
+            OFFSET="${OFFSET:-0,0}"
         fi
+        log "Geometry: $GEOM Offset: $OFFSET"
 
-        # 4. Handle Encoder Selection
-        ENCODER=$(auto_detect_encoder)
+        # Handle Encoder and Device Selection
+        DETECTION_DATA=$(auto_detect_encoder)
+        ENCODER=$(echo "$DETECTION_DATA" | cut -d'|' -f1)
+        SELECTED_DEVICE=$(echo "$DETECTION_DATA" | cut -d'|' -f2)
 
-        # 5. Handle Audio
+        # Handle Video X11 Input Array
+        X11_IN=(-probesize 20M -video_size "$GEOM" -framerate "$FPS" -thread_queue_size 1024 -f x11grab -i ":0.0+${OFFSET}")
+
+        # Handle Audio Input/Output Arrays
         AUDIO_SRC=$(get_audio_device)
-        AUDIO_INPUT=""
+        AUDIO_IN=()
+        AUDIO_OUT=()
         if [ "$AUDIO_SRC" != "none" ]; then
-            AUDIO_INPUT="-f pulse -ac 2 -channel_layout stereo -i $AUDIO_SRC"
+            AUDIO_IN=(-f pulse -ac 2 -channel_layout stereo -i "$AUDIO_SRC")
+            AUDIO_OUT=(-c:a aac -async 1)
         fi
 
-        # 6. Build the FFmpeg Command
+        # Construct hardware-specific Video Output parameters
+        VID_OUT=()
+        if echo "$ENCODER" | grep -q "vaapi"; then
+            VID_OUT=(-vaapi_device "$SELECTED_DEVICE" -vf "format=nv12,hwupload" -c:v "$ENCODER" -global_quality "$V_QUAL")
+        elif echo "$ENCODER" | grep -q "nvenc"; then
+            VID_OUT=(-vf "format=nv12" -c:v "$ENCODER" -rc vbr -cq "$CRF" -preset slow)
+        else
+            VID_OUT=(-c:v "$ENCODER" -crf "$CRF" -preset "$PRESET")
+        fi
+
+        # Build Output File
         TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
         OUTPUT="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
-
-        # Construct hardware-specific filters
-        HW_OPTS=""
-        if echo "$ENCODER" | grep -q "vaapi"; then
-            HW_OPTS="-vaapi_device $VAAPI_DEVICE -vf format=nv12,hwupload"
-        elif echo "$ENCODER" | grep -q "nvenc"; then
-            HW_OPTS="-vf format=nv12"
-        fi
+        log "Output: $OUTPUT"
 
         # Launch FFmpeg
-        ffmpeg -probesize 20M -video_size "$GEOM" -framerate "$FPS" \
-               -thread_queue_size 1024 -f x11grab -i :0.0+"$OFFSET" \
-               $AUDIO_INPUT \
-               $HW_OPTS -c:v "$ENCODER" -crf "$CRF" -preset "$PRESET" \
-               -c:a aac -async 1 "$OUTPUT" > /dev/null 2>&1 &
+        log "Executing FFmpeg with encoder $ENCODER"
 
-        echo $! > "$PID_FILE"
+        ffmpeg "${X11_IN[@]}" \
+               "${AUDIO_IN[@]}" \
+               "${VID_OUT[@]}" \
+               "${AUDIO_OUT[@]}" \
+               "$OUTPUT" >> "$LOG_FILE" 2>&1 &
+
+        echo "$!" > "$PID_FILE"
+
+        # Wait slightly so the PID file exists before the UI refreshes
         sleep 0.5
+        FIRST_PID=$(head -1 "$PID_FILE")
+
+        # Proper check to protect against an empty PID_FILE or dead process
+        if [ -z "$FIRST_PID" ] || ! kill -0 "$FIRST_PID" 2>/dev/null; then
+            log "FFmpeg failed to start. Check recording.log"
+            rm -f "$PID_FILE"
+            exit 1
+        fi
         ;;
 esac
