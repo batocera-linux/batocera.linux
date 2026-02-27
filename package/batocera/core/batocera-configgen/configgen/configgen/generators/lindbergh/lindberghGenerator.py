@@ -817,19 +817,24 @@ class LindberghGenerator(Generator):
         if not shortRomName.startswith("vf5") and not shortRomName.startswith("vt"): # all but vf5 and vt3
             # pads without joystick1left, but with a hat
             if "joystick1left" not in pad.inputs and "left" in pad.inputs and (pad.inputs["left"].type == "hat" or pad.inputs["left"].type == "axis"):
-                lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
-                del lindberghCtrl_wheel["right"]
-                del lindberghCtrl_wheel["joystick1left"]
-                #
-                lindberghCtrl_pad["left"] = lindberghCtrl_pad["joystick1left"]
-                del lindberghCtrl_pad["right"]
-                del lindberghCtrl_pad["joystick1left"]
+                if "joystick1left" in lindberghCtrl_wheel:
+                    lindberghCtrl_wheel["left"] = lindberghCtrl_wheel["joystick1left"]
+                    if "right" in lindberghCtrl_wheel:
+                        del lindberghCtrl_wheel["right"]
+                    del lindberghCtrl_wheel["joystick1left"]
+                if "joystick1left" in lindberghCtrl_pad:
+                    lindberghCtrl_pad["left"] = lindberghCtrl_pad["joystick1left"]
+                    if "right" in lindberghCtrl_pad:
+                        del lindberghCtrl_pad["right"]
+                    del lindberghCtrl_pad["joystick1left"]
 
             # pads without joystick1up, but with a hat
             if "joystick1up" not in pad.inputs and "up" in pad.inputs and (pad.inputs["up"].type == "hat" or pad.inputs["up"].type == "axis"):
-                lindberghCtrl_pad["up"] = lindberghCtrl_pad["joystick1up"]
-                del lindberghCtrl_pad["down"]
-                del lindberghCtrl_pad["joystick1up"]
+                if "joystick1up" in lindberghCtrl_pad:
+                    lindberghCtrl_pad["up"] = lindberghCtrl_pad["joystick1up"]
+                    if "down" in lindberghCtrl_pad:
+                        del lindberghCtrl_pad["down"]
+                    del lindberghCtrl_pad["joystick1up"]
         ###
 
         # choose mapping
