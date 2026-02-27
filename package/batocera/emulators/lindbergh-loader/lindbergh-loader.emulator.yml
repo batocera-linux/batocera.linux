@@ -115,6 +115,13 @@ custom_features:
     choices:
       Off (Default): 0
       'On': 1
+  lindbergh_network_patches:
+    group: GAME OPTIONS
+    prompt: NETWORK PATCHES
+    description: Required for multi-cabinet networking with specific IP address.
+    choices:
+      Off (Default): 0
+      'On': 1
   lindbergh_rambo_switch:
     group: GAME OPTIONS
     prompt: RAMBO GUNS SWITCH
