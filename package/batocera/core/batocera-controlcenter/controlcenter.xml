@@ -2,7 +2,7 @@
 	<vgroup name="Top bar" role="header">
 		<feature>
 			<text display="${batocera-info --short}" refresh="2" />
-			<img display="/usr/share/batocera/controlcenter/bato-record.gif" if='${/usr/bin/batocera-record is_running}' refresh="2" height="3%" />
+			<img display="/usr/share/batocera/controlcenter/bato-record.gif" if='${/usr/bin/batocera-record is_running | grep true}' refresh="2" height="3%" />
 		</feature>
 		<feature display="Batocera">
 			<text display="${batocera-version | cut -d' ' -f1}" />
@@ -23,9 +23,9 @@
 	<hgroup name="Record" display="Record">
 		<!-- Main Controls Row -->
 		<feature display="Recording in progress">
-			<switch value='${batocera-record is_running}'
+			<switch value='${batocera-record is_running | grep true}'
 				action_on="batocera-record start" action_off="batocera-record stop"
-				afterclick="bcc_refresh" refresh="2" />
+				afterclick="bcc_close" refresh="2" />
 		</feature>
 
 		<!-- Quality Row: Clicking 'Select' will open the choice popup -->
