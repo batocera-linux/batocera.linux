@@ -18,7 +18,7 @@ mkdir -p "${BATOCERA_BINARIES_DIR}/build-uboot-vim4"     || exit 1
 cp "${BOARD_DIR}/build-uboot.sh"          "${BATOCERA_BINARIES_DIR}/build-uboot-vim4/" || exit 1
 cd "${BATOCERA_BINARIES_DIR}/build-uboot-vim4/" && ./build-uboot.sh "${HOST_DIR}" "${BOARD_DIR}" "${BINARIES_DIR}" || exit 1
 
-mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot/amlogic" || exit 1
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
 
 cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
@@ -26,7 +26,8 @@ cp "${BINARIES_DIR}/initrd.gz"       "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
-cp "${BINARIES_DIR}/kvim4.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1
+cp "${BINARIES_DIR}/kvim4.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/amlogic/"   || exit 1
+cp "${BINARIES_DIR}/kvim4n.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/amlogic/"  || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 # cp "${BINARIES_DIR}/boot.scr"                          "${BATOCERA_BINARIES_DIR}/boot/"               || exit 1
 # cp "${BOARD_DIR}/boot/logo.bmp"                        "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1

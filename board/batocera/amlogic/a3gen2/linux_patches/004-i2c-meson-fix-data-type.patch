@@ -1,8 +1,28 @@
 diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
-index 0133170f5..7b59ac86a 100644
 --- a/drivers/i2c/busses/i2c-meson.c
 +++ b/drivers/i2c/busses/i2c-meson.c
-@@ -273,7 +273,7 @@ static void meson_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
+@@ -162,7 +162,7 @@ static void meson_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
+ 		clk_rate, freq, div);
+ }
+ 
+-static void meson_i2c_get_data(struct meson_i2c *i2c, char *buf, int len)
++static void meson_i2c_get_data(struct meson_i2c *i2c, u8 *buf, int len)
+ {
+ 	u32 rdata0, rdata1;
+ 	int i;
+@@ -180,7 +180,7 @@ static void meson_i2c_get_data(struct meson_i2c *i2c, char *buf, int len)
+ 		*buf++ = (rdata1 >> (i - 4) * 8) & 0xff;
+ }
+ 
+-static void meson_i2c_put_data(struct meson_i2c *i2c, char *buf, int len)
++static void meson_i2c_put_data(struct meson_i2c *i2c, u8 *buf, int len)
+ {
+ 	u32 wdata0 = 0, wdata1 = 0;
+ 	int i;
+diff --git a/common_drivers/drivers/i2c/busses/i2c-meson.c b/common_drivers/drivers/i2c/busses/i2c-meson.c
+--- a/common_drivers/drivers/i2c/busses/i2c-meson.c
++++ b/common_drivers/drivers/i2c/busses/i2c-meson.c
+@@ -274,7 +274,7 @@ static void meson_i2c_set_clk_div(struct meson_i2c *i2c, unsigned int freq)
  }
  #endif
  
@@ -11,7 +31,7 @@ index 0133170f5..7b59ac86a 100644
  {
  	u32 rdata0, rdata1;
  	int i;
-@@ -291,7 +291,7 @@ static void meson_i2c_get_data(struct meson_i2c *i2c, char *buf, int len)
+@@ -292,7 +292,7 @@ static void meson_i2c_get_data(struct meson_i2c *i2c, char *buf, int len)
  		*buf++ = (rdata1 >> (i - 4) * 8) & 0xff;
  }
  

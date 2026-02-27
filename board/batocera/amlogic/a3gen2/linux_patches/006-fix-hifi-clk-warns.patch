@@ -1,0 +1,18 @@
+--- a/common_drivers/sound/soc/amlogic/auge/pdm.c
++++ b/common_drivers/sound/soc/amlogic/auge/pdm.c
+@@ -967,9 +967,12 @@
+ 	}
+ 
+ 	/* disable clock and gate */
+-	clk_disable_unprepare(p_pdm->clk_pdm_dclk);
+-	clk_disable_unprepare(p_pdm->clk_pdm_sysclk);
+-	clk_disable_unprepare(p_pdm->clk_gate);
++	if (__clk_is_enabled(p_pdm->clk_pdm_dclk))
++		clk_disable_unprepare(p_pdm->clk_pdm_dclk);
++	if (__clk_is_enabled(p_pdm->clk_pdm_sysclk))
++		clk_disable_unprepare(p_pdm->clk_pdm_sysclk);
++	if (__clk_is_enabled(p_pdm->clk_gate))
++		clk_disable_unprepare(p_pdm->clk_gate);
+ }
+ 
+ static const struct snd_soc_dai_ops aml_pdm_dai_ops = {

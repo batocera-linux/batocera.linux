@@ -1,0 +1,13 @@
+diff --git a/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts b/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/kvim4.dts
+@@ -55,8 +55,7 @@
+ 	memory@00000000 {
+ 		device_type = "memory";
+ 		linux,usable-memory = <0x00000000 0x00000000 0x00000000 0xE0000000
+-								0x00000001 0x00000000 0x00000000 0xE0000000
+-								0x00000002 0x00000000 0x00000000 0x40000000>;
++								0x00000001 0x00000000 0x00000001 0x20000000>;
+ 	};
+ 
+ 	reserved-memory {
