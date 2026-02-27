@@ -41,6 +41,10 @@ else
 MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-libva
 endif
 
+ifeq ($(BR2_PACKAGE_LIBVA_INTEL_DRIVER),y)
+    MOONLIGHT_QT_DEPENDENCIES += libva-intel-driver intel-mediadriver
+endif
+
 ifeq ($(BR2_PACKAGE_LIBVDPAU),y)
 MOONLIGHT_QT_DEPENDENCIES += libvdpau
 else
