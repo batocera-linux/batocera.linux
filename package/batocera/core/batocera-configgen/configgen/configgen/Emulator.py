@@ -196,9 +196,19 @@ class Emulator:
 
         if 'use_guns' not in system_data and args.lightgun:
             system_data['use_guns'] = True
+        elif 'use_guns' in system_data:
+            if args.lightgun:
+                _logger.warning("use_guns manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_guns'])
+            else:
+                _logger.info("use_guns manually set to '%s' to flagless game", system_data['use_guns'])
 
         if 'use_wheels' not in system_data and args.wheel:
             system_data['use_wheels'] = True
+        elif 'use_wheels' in system_data:
+            if args.wheel:
+                _logger.warning("use_wheels manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_wheels'])
+            else:
+                _logger.info("use_wheels manually set to '%s' to flagless game", system_data['use_wheels'])
 
         # network options
         if args.netplaymode is not None:
