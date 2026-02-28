@@ -574,6 +574,11 @@ rtcw:
   emulator: iortcw
   core:     iortcw
   core:     taradino
+rx78:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 samcoupe:
   emulator: samcoupe
   core:     samcoupe
@@ -656,6 +661,11 @@ supergrafx:
 supervision:
   emulator: libretro
   core:     potator
+sv8000:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 switch:
   emulator: citron
   core:     citron
