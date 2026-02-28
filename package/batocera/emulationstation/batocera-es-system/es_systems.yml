@@ -990,11 +990,12 @@ colecovision:
   extensions: [bin, col, rom, zip, 7z]
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      bluemsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      gearcoleco: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARCOLECO] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx:    { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
     clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
+      clk:        { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
   comment_en: |
     ## BIOS ##
 
