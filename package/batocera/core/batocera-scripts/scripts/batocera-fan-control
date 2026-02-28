@@ -1,0 +1,222 @@
+#!/bin/sh
+# Simple fan control daemon
+# Original script written by Mikhailzrick and adapted from Knulli
+# Mode is determined at startup: quiet(x0.5 curve) | normal(x1.0 curve) | performance(x1.5 curve)
+
+LOCK_FILE="/var/run/fan-control.lock"
+
+exec 9>"${LOCK_FILE}"
+if ! flock -n 9; then
+  exit 0
+fi
+
+cleanup() {
+    # set to max on term just as a safety precaution
+    echo "$FAN_MAX" > "$FAN_STATE" 2>/dev/null || true
+
+    flock -u 9 2>/dev/null || true
+    exec 9>&-
+}
+
+do_exit() {
+    cleanup
+    exit 0
+}
+
+trap do_exit INT TERM HUP QUIT
+
+POLL_SEC=2
+
+OFF_DELAY_LOOPS=3 # How many loops needed to go from ON -> OFF
+OFF_COUNT=0
+
+# Re-latch hottest sensor every N loops
+RELATCH_EVERY=5
+LOOP_COUNT=0
+
+MODE="${1:-normal}"
+case "$MODE" in
+    quiet|normal|performance) ;;
+    *)
+        echo "Usage: $0 [quiet|normal|performance]" >&2
+        exit 1
+        ;;
+esac
+
+IFS= read -r BOARD < /boot/boot/batocera.board
+
+T_MIN=""
+T_MAX=""
+T_OFF=""
+FAN_STATE=""
+FAN_MAX=""
+case "$BOARD" in
+    rp5|rpflip2|rpmini)
+        FAN_STATE="$(ls -1 /sys/class/hwmon/hwmon*/pwm1 2>/dev/null | head -n1)"
+        FAN_MAX=255
+
+        FAN_ENABLE="${FAN_STATE%/pwm1}/pwm1_enable"
+        if [ -f "$FAN_ENABLE" ]; then
+            echo 1 > "$FAN_ENABLE" 2>/dev/null || true
+        fi
+
+        # Temperature ramp (C)
+        T_OFF=30 # below this -> fan off
+        T_MIN=35
+        T_MAX=80
+    ;;
+    *)
+    echo "Device not supported!"
+    exit 1
+    ;;
+esac
+
+FAN_MIN=$(( (FAN_MAX + 9) / 10 ))   # floor = 10% of FAN_MAX
+
+# helpers
+clamp() {
+    v="$1"; lo="$2"; hi="$3"
+    [ "$v" -lt "$lo" ] 2>/dev/null && v="$lo"
+    [ "$v" -gt "$hi" ] 2>/dev/null && v="$hi"
+    echo "$v"
+}
+
+build_temp_file_list() {
+    TEMP_FILES=""
+
+    for z in /sys/class/thermal/thermal_zone*; do
+        [ -f "$z/type" ] || continue
+        [ -f "$z/temp" ] || continue
+
+        IFS= read -r t < "$z/type" 2>/dev/null || continue
+        case "$t" in
+            cpu*|cluster*)
+                TEMP_FILES="$TEMP_FILES $z/temp"
+                ;;
+        esac
+    done
+}
+
+pick_hottest_temp_file() {
+    hottest=""
+    hottest_v=-1
+
+    for f in $TEMP_FILES; do
+        IFS= read -r v < "$f" 2>/dev/null || continue
+        case "$v" in ''|*[!0-9]*) continue ;; esac
+        [ "$v" -gt "$hottest_v" ] && { hottest_v="$v"; hottest="$f"; }
+    done
+
+    [ -n "$hottest" ] || return 1
+    TEMP_FILE="$hottest"
+    return 0
+}
+
+read_temp_c() {
+    IFS= read -r TEMP_MC < "$TEMP_FILE" || return 1
+    case "$TEMP_MC" in ''|*[!0-9]*) return 1 ;; esac
+    echo $(( TEMP_MC / 1000 ))
+}
+
+base_from_temp() {
+    t="$1"
+
+    if [ -n "${T_OFF:-}" ] && [ "$t" -lt "$T_OFF" ]; then
+        echo 0
+        return
+    fi
+
+    t="$(clamp "$t" "$T_MIN" "$T_MAX")"
+
+    den=$(( T_MAX - T_MIN ))
+    [ "$den" -le 0 ] && { echo 1; return; }
+
+    base=$(( 1 + ( (t - T_MIN) * (FAN_MAX - 1) ) / den ))
+    clamp "$base" 1 "$FAN_MAX"
+}
+
+apply_mode() {
+    base="$1"
+
+    [ "$base" -eq 0 ] 2>/dev/null && { echo 0; return; }
+
+    case "$MODE" in
+        quiet)
+            # Approximately 0.5x of normal
+            out=$(( (base + 1) / 2 ))
+            [ "$out" -lt 1 ] && out=1
+            ;;
+        normal)
+            out="$base"
+            ;;
+        performance)
+            # Approximately 1.5x of normal
+            out=$(( (3 * base + 1) / 2 ))
+            [ "$out" -gt "$FAN_MAX" ] && out="$FAN_MAX"
+            ;;
+    esac
+
+    echo "$out"
+}
+
+# startup
+[ -n "$FAN_STATE" ] && [ -e "$FAN_STATE" ] || {
+    echo "Missing fan control file" >&2
+    exit 1
+}
+
+build_temp_file_list
+pick_hottest_temp_file || TEMP_FILE=""
+
+# If no temperature source exists, pick a safe fixed speed
+[ -z "$TEMP_FILE" ] && {
+    case "$MODE" in
+        quiet)  FIXED=$(( (FAN_MAX + 1) / 3 )) ;;
+        normal) FIXED=$(( (2 * FAN_MAX + 1) / 3 )) ;;
+        performance)    FIXED="$FAN_MAX" ;;
+    esac
+    echo "$FIXED" > "$FAN_STATE"
+    sleep infinity # So daemon controller sees it as still running
+}
+
+LAST="0"
+
+# main loop
+while :; do
+    LOOP_COUNT=$((LOOP_COUNT + 1))
+    if [ $((LOOP_COUNT % RELATCH_EVERY)) -eq 0 ]; then
+        pick_hottest_temp_file >/dev/null 2>&1 || true
+    fi
+
+    TEMP_C="$(read_temp_c 2>/dev/null || true)"
+
+    if [ -n "$TEMP_C" ]; then
+        BASE="$(base_from_temp "$TEMP_C")"
+        TARGET="$(apply_mode "$BASE")"
+    else
+        TARGET=$(( (FAN_MAX + 1) / 2 ))
+    fi
+
+    if [ "$TARGET" -ne 0 ]; then
+        TARGET="$(clamp "$TARGET" "$FAN_MIN" "$FAN_MAX")"
+    fi
+
+    # OFF debounce, delay so it won't immediately go from ON -> OFF -> ON
+    if [ "$TARGET" -eq 0 ]; then
+        OFF_COUNT=$((OFF_COUNT + 1))
+        if [ "$OFF_COUNT" -lt "$OFF_DELAY_LOOPS" ]; then
+            TARGET="$LAST"
+        fi
+    else
+        OFF_COUNT=0
+    fi
+
+    if [ "$TARGET" != "$LAST" ]; then
+        echo "$TARGET" > "$FAN_STATE"
+        LAST="$TARGET"
+    fi
+
+    sleep "$POLL_SEC"
+done
+
+exit 0
