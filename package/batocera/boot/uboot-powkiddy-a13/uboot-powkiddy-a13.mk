@@ -8,6 +8,8 @@ UBOOT_POWKIDDY_A13_VERSION = powkiddy-a13
 UBOOT_POWKIDDY_A13_SITE = \
     $(call github,alpgarcia,caesar-u-boot,$(UBOOT_POWKIDDY_A13_VERSION))
 UBOOT_POWKIDDY_A13_LICENSE = GPLv2
+UBOOT_POWKIDDY_A13_BOOT_SRC = idbloader.img uboot.img:uboot-powkiddy-a13.img trust.img
+UBOOT_POWKIDDY_A13_BINARIES_SUBDIR =
 
 UBOOT_POWKIDDY_A13_DEPENDENCIES = rk3128-blobs
 
@@ -30,17 +32,11 @@ define UBOOT_POWKIDDY_A13_BUILD_CMDS
     # Generate uboot.img
     $(@D)/tools/loaderimage --pack --uboot $(@D)/u-boot-dtb.bin \
         $(@D)/uboot.img --size 1024 4
-  
+
     # Generate trust.img
     $(@D)/tools/loaderimage --pack --trustos \
         $(BINARIES_DIR)/rkbin/bin/rk31/rk3126_tee_ta_v2.01.bin \
         $(@D)/trust.img --size 1024 4
 endef
 
-define UBOOT_POWKIDDY_A13_INSTALL_TARGET_CMDS
-	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader.img
-	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot-powkiddy-a13.img
-	cp $(@D)/trust.img     $(BINARIES_DIR)/trust.img
-endef
-
-$(eval $(generic-package))
+$(eval $(boot-package))
