@@ -615,6 +615,58 @@ multivision:
     libretro:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
+sc3000:
+  name:       SC-3000
+  manufacturer: Sega
+  release: 1983
+  hardware: computer
+  extensions: [bin, sg, wav, cas, bit, zip, 7z]
+  platform:   sc-3000
+  theme:      sc-3000
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: sc3000.zip (sc3000.rom) in bios/mame/
+    SC-3000 cartridges are compatible with SG-1000.
+    Cassette tapes (.wav, .cas, .bit) are SC-3000 exclusive.
+
+segaai:
+  name:       Sega AI Computer
+  manufacturer: Sega
+  release: 1986
+  hardware: computer
+  extensions: [bin, wav, flac, cas, zip, 7z]
+  platform:   segaai
+  theme:      segaai
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: segaai.zip in bios/mame/
+    Software on Sega My Cards (.bin) or cassette tapes (.wav, .flac, .cas).
+
+beena:
+  name:       Advanced Pico Beena
+  manufacturer: Sega
+  release: 2005
+  hardware: console
+  extensions: [bin, zip, 7z]
+  platform:   beena
+  theme:      beena
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: beena.zip in bios/mame/
+    Successor to the Sega Pico. Cartridge-based educational console.
+
 psp:
   name: PlayStation Portable
   manufacturer: Sony
