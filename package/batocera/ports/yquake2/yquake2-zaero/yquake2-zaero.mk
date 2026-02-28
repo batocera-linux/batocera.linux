@@ -17,6 +17,8 @@ ifeq ($(BR2_aarch64),y)
     YQUAKE2_ZAERO_BUILD_ARGS += YQ2_ARCH=aarch64
 else ifeq ($(BR2_arm),y)
     YQUAKE2_ZAERO_BUILD_ARGS += YQ2_ARCH=arm
+else ifeq ($(BR2_riscv),y)
+    YQUAKE2_ZAERO_BUILD_ARGS += YQ2_ARCH=riscv
 else ifeq ($(BR2_x86_64),y)
     YQUAKE2_ZAERO_BUILD_ARGS += YQ2_ARCH=x86_64
 else ifeq ($(BR2_i386),y)
