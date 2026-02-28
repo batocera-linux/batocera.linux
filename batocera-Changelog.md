@@ -104,6 +104,7 @@
 - Groovy MAME to 0.285
 - Hatari to v2.6.1
 - Hurrican to Jul 26, 2025 build
+- Ikemen to 5th of February 2026 build
 - Jazz2 to 3.5.0
 - Libretro Atari800 to 4th of December 2025 build
 - Libretro BlueMSX to 4th of November 2025 build
