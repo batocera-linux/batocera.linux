@@ -54,6 +54,12 @@ set_conf() {
 }
 
 # --- Hardware Detection ---
+
+# Check if FFmpeg has the encoder compiled in
+check_ffmpeg_encoder() {
+    ffmpeg -encoders 2>/dev/null | grep -q "V..... $1"
+}
+
 has_nvidia_gpu() {
     lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { found=1 } } END { exit !found }'
 }
@@ -77,10 +83,18 @@ find_best_vaapi_device() {
         echo "none|none"
         return
     fi
-    # Try HEVC first
+
+    local dev
+    declare -A VAINFO_CACHE
+
     for dev in /dev/dri/renderD*; do
         [ -e "$dev" ] || continue
-        if vainfo_check_device "$dev" | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
+        VAINFO_CACHE["$dev"]=$(vainfo_check_device "$dev")
+    done
+
+    # Try HEVC first
+    for dev in "${!VAINFO_CACHE[@]}"; do
+        if echo "${VAINFO_CACHE[$dev]}" | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
             log "Selected HEVC VAAPI on $dev"
             echo "hevc_vaapi|$dev"
             return
@@ -88,9 +102,8 @@ find_best_vaapi_device() {
     done
 
     # Otherwise try H.264
-    for dev in /dev/dri/renderD*; do
-        [ -e "$dev" ] || continue
-        if vainfo_check_device "$dev" | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
+    for dev in "${!VAINFO_CACHE[@]}"; do
+        if echo "${VAINFO_CACHE[$dev]}" | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
             log "Selected H264 VAAPI on $dev"
             echo "h264_vaapi|$dev"
             return
@@ -101,20 +114,57 @@ find_best_vaapi_device() {
 }
 
 auto_detect_encoder() {
+    log "Probing for best hardware encoder..."
+
+    # PC: VA-API (Intel/AMD)
     local VA_RESULT VA_ENC VA_DEV
     VA_RESULT=$(find_best_vaapi_device)
     VA_ENC=$(echo "$VA_RESULT" | cut -d'|' -f1)
     VA_DEV=$(echo "$VA_RESULT" | cut -d'|' -f2)
-
     if [ "$VA_ENC" != "none" ]; then
+        log "Detection: Selected VAAPI ($VA_ENC) on $VA_DEV"
         echo "$VA_ENC|$VA_DEV"
-    elif has_nvidia_gpu; then
-        log "Selected NVENC (NVIDIA)"
-        echo "hevc_nvenc|none"
-    else
-        log "Selected libx264 (Software)"
-        echo "libx264|none"
+        return
     fi
+
+    # PC: NVIDIA NVENC
+    if has_nvidia_gpu; then
+        if check_ffmpeg_encoder "hevc_nvenc"; then
+            log "Detection: Selected NVENC HEVC"
+            echo "hevc_nvenc|none"
+            return
+        elif check_ffmpeg_encoder "h264_nvenc"; then
+            log "Detection: Selected NVENC H264"
+            echo "h264_nvenc|none"
+            return
+        fi
+    fi
+
+    # ARM: Rockchip MPP (RK3588 / RK3399)
+    if check_ffmpeg_encoder "hevc_rkmpp"; then
+        log "Detection: Selected Rockchip MPP HEVC"
+        echo "hevc_rkmpp|none"
+        return
+    elif check_ffmpeg_encoder "h264_rkmpp"; then
+        log "Detection: Selected Rockchip MPP H264"
+        echo "h264_rkmpp|none"
+        return
+    fi
+
+    # ARM: V4L2 M2M (Qualcomm SM8250/SM8550, RPi 4, Allwinner H700)
+    if check_ffmpeg_encoder "hevc_v4l2m2m"; then
+        log "Detection: Selected Qualcomm/V4L2 HEVC"
+        echo "hevc_v4l2m2m|none"
+        return
+    elif check_ffmpeg_encoder "h264_v4l2m2m"; then
+        log "Detection: Selected V4L2 H264 (Snapdragon/RPi4/Allwinner)"
+        echo "h264_v4l2m2m|none"
+        return
+    fi
+
+    # Software Fallback (RPi 5 / Unsupported SoCs)
+    log "Detection: No hardware encoder found, using libx264 software"
+    echo "libx264|none"
 }
 
 # --- Audio Detection ---
@@ -123,7 +173,7 @@ get_audio_device() {
     VAL=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
     case "$VAL" in
         mic)
-            SRC=$(pactl list short sources | grep -v 'monitor' | head -1 | awk '{print $2}')
+            SRC=$(pactl list short sources | grep -v 'monitor' | head -1 | awk '{$1=""; sub(/^ /, ""); print}')
             log "Audio Source: Mic ($SRC)"
             echo "$SRC"
             ;;
@@ -132,7 +182,7 @@ get_audio_device() {
             echo "none"
             ;;
         *)
-            SRC=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{print $1 ".monitor"}')
+            SRC=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{$1=$1; print $0".monitor"}')
             log "Audio Source: Desktop ($SRC)"
             echo "$SRC"
             ;;
@@ -183,7 +233,11 @@ case "$1" in
                 while kill -0 "$PID" 2>/dev/null; do
                     sleep 0.1
                     waited=$((waited + 1))
-                    [ "$waited" -ge 50 ] && { log "PID $PID did not exit cleanly, sending SIGTERM"; kill -15 "$PID" 2>/dev/null; break; }
+                    if [ "$waited" -ge 50 ]; then
+                        log "PID $PID did not exit cleanly, sending SIGTERM"
+                        kill -15 "$PID" 2>/dev/null
+                        break
+                    fi
                 done
             done
             rm -f "$PID_FILE"
@@ -201,16 +255,17 @@ case "$1" in
 
     start)
         : > "$LOG_FILE"
+        : > "$PID_FILE" # Ensure clean start
         log "--- Start Recording Sequence ---"
         Q=$(get_conf "QUALITY" "$DEFAULT_QUALITY")
         A=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
         ALL=$(get_conf "ALL" "$DEFAULT_ALL")
 
         case "$Q" in
-            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60 ;;
-            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60 ;;
-            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25 ;;
-            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30 ;;
+            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60; BITRATE="25M" ;;
+            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60; BITRATE="15M" ;;
+            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25; BITRATE="3M"  ;;
+            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30; BITRATE="8M"  ;;
         esac
 
         # Detect encoder
@@ -224,8 +279,18 @@ case "$1" in
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
         elif echo "$ENCODER" | grep -q "nvenc"; then
             ENC_FLAGS=(-c "$ENCODER" -p "rc=vbr" -p "cq=$CRF")
+        elif echo "$ENCODER" | grep -qE "v4l2m2m|rkmpp"; then
+            # ARM - use bitrate-based encoding with extra buffers for stability
+            ENC_FLAGS=(-c "$ENCODER" -p "b=$BITRATE" -p "g=60" -p "num_capture_buffers=16")
         else
             ENC_FLAGS=(-c "$ENCODER" -p "crf=$CRF" -p "preset=$PRESET")
+        fi
+
+        # Qualcomm (v4l2m2m) and Rockchip (rkmpp) need nv12 pixel format to prevent green frames.
+        EXTRA_FMT=()
+        ARM_ENC_REGEX='v4l2m2m|rkmpp'
+        if [[ "$ENCODER" =~ $ARM_ENC_REGEX ]]; then
+            EXTRA_FMT=(-x "nv12")
         fi
 
         AUDIO_SRC=$(get_audio_device)
@@ -251,27 +316,41 @@ case "$1" in
                 FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.mkv"
                 log "Recording output: $DISP -> $FILE"
                 if [ "$DISP" = "$PRIMARY" ]; then
-                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 else
-                    wf-recorder "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 fi
                 RUNNING_PIDS+=("$!")
             done <<< "$ALL_OUTPUTS"
 
             # Validate all PIDs started successfully
-            VALID_PIDS=()
             sleep 0.5
+            VALID_PIDS=()
+            FAILED=0
 
             for PID in "${RUNNING_PIDS[@]}"; do
                 if kill -0 "$PID" 2>/dev/null; then
                     VALID_PIDS+=("$PID")
                 else
                     log "wf-recorder instance (PID $PID) failed to start."
+                    FAILED=1
                 fi
             done
 
             if [ "${#VALID_PIDS[@]}" -eq 0 ]; then
                 log "All wf-recorder instances failed to start, aborting"
+                rm -f "$PID_FILE"
+                exit 1
+            fi
+
+            # If some (but not all) failed, stop survivors too
+            if [ "$FAILED" = "1" ]; then
+                log "One or more encoders failed. Stopping all for a clean state."
+                for PID in "${VALID_PIDS[@]}"; do
+                    kill -2 "$PID" 2>/dev/null
+                done
+                pkill -2 -x wf-recorder 2>/dev/null
+                rm -f "$PID_FILE"
                 exit 1
             fi
 
@@ -280,7 +359,7 @@ case "$1" in
             FILE="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
             log "Recording primary output: $PRIMARY -> $FILE"
 
-            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
             echo "$!" > "$PID_FILE"
 
             # Wait slightly so the PID file exists before the UI refreshes
