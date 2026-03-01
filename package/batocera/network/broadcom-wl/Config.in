@@ -1,0 +1,10 @@
+comment "broadcom-wl needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_BROADCOM_WL
+	bool "broadcom-wl"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Broadcom 43x0 wifi driver typically used in older Macbooks / Dell Laptops.
+
+	  https://docs.broadcom.com/docs-and-downloads/docs/linux_sta
