@@ -94,7 +94,7 @@ case ${1,,} in
             shutdown -P -h now; ret=11
         elif [[ "${1,,}" == "--reboot" && $ES_PID -ne 0 ]]; then
             /etc/init.d/S31emulationstation stop
-            shutdown -P -h now; ret=10
+            shutdown -r now; ret=10
         fi
     ;;
 
