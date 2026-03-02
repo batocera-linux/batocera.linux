@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Version: Commits on Jan 20, 2026
-ROCKNIX_ABL_VERSION = 41156820a11869c4b6950d873c403d532ef0779b
+# Version: Commits on Mar 3, 2026
+ROCKNIX_ABL_VERSION = e4e056485d6f34c05f9cdfaa84ff3d4e2e3cc709
 ROCKNIX_ABL_SITE = $(call github,ROCKNIX,abl,$(ROCKNIX_ABL_VERSION))
 
 ROCKNIX_ABL_DEPENDENCIES = pv
