@@ -96,7 +96,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
     with wheelsUtils.configure_wheels(player_controllers, system, md) as (player_controllers, wheels):
         # find the generator
-        generator = get_generator(system.config.emulator)
+        generator = get_generator(system.config.emulator, system.config.core)
 
         # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
         wantedGameMode = generator.getResolutionMode(system.config)
