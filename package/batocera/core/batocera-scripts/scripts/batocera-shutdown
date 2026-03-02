@@ -544,7 +544,7 @@ while true; do
         echo "Fake suspend timeout reached. Shutting down."
         batocera-wifi enable
         sleep 5
-        /sbin/shutdown -h now
+        /sbin/shutdown -P -h now
         exit 0
     fi
 
@@ -554,7 +554,7 @@ while true; do
         echo "Low battery (\${BATTERY_LEVEL}%) detected. Shutting down."
         batocera-wifi enable
         sleep 5
-        /sbin/shutdown -h now
+        /sbin/shutdown -P -h now
         exit 0
     fi
 done
@@ -640,14 +640,14 @@ if [ "${SETACTION}" = "gui" ]; then
                 echo "Power connected, ignoring fake suspend."
             elif [ "$(get_battery_level)" -le 10 ]; then
                 echo "Battery too low for fake suspend, shutting down instead."
-                /sbin/shutdown -h now
+                /sbin/shutdown -P -h now
             else
                 do_fake_suspend
             fi
             ;;
         *)
             # Default action if mode is unset or invalid is shutdown.
-            /sbin/shutdown -h now
+            /sbin/shutdown -P -h now
             ;;
     esac
     exit 0
@@ -671,7 +671,7 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
                 else
                     if [ "$(get_battery_level)" -le 10 ]; then
                         echo "Battery too low for fake suspend, shutting down instead."
-                        /sbin/shutdown -h now
+                        /sbin/shutdown -P -h now
                     else
                         do_fake_suspend
                     fi
@@ -701,7 +701,7 @@ do_es_menu() {
 if [ "${SETACTION}" = "1" ]; then
     ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
     if [ "${SUSPEND_MODE}" = "" ] && [ "${SHUTDOWNDELAY}" = "0" ]; then
-		/sbin/shutdown -h now
+		/sbin/shutdown -P -h now
     else
 		touch "/var/run/shutdown-delay.flag"
 		SLEEPTIME=$(expr "${SHUTDOWNDELAY}" + 1)
@@ -751,7 +751,7 @@ else
 				pm-is-supported --hibernate && pm-hibernate
 				;;
 			*)
-				/sbin/shutdown -h now
+				/sbin/shutdown -P -h now
 				;;
 		esac
     fi
