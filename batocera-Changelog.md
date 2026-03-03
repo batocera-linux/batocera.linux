@@ -21,6 +21,9 @@
 - Dolphin-Emu now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
   Saves should be moved from /userdata/saves/dolphin-triforce to dolphin accordingly.
 - Removed Drastic emulator due to it's closed source nature and no longer compatible with the core OS.
+- SM8250 and SM8550 devices now have one image with the device selection in the bootloader
+  You must upgrade the Android Bootloader (ABL) before migrating to v43
+  See the wiki for further details - https://wiki.batocera.org/hardware:ayn
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
