@@ -77,6 +77,27 @@ do_root() {
 	fi
     done
 
+    # remove stale files left over from the previous boot layout
+    if test -e /boot_root/boot.stale
+    then
+        mount -o remount,rw /boot_root || return 1
+        while IFS= read -r stalepath || [ -n "$stalepath" ]
+        do
+            # skip empty lines and comments
+            case "$stalepath" in
+                ''|\#*) continue ;;
+            esac
+            fullpath="/boot_root/${stalepath}"
+            if test -e "$fullpath" || test -L "$fullpath"
+            then
+                echo "Removing stale path: ${stalepath}"
+                rm -rf "$fullpath"
+            fi
+        done < /boot_root/boot.stale
+        rm -f /boot_root/boot.stale
+        mount -o remount,ro /boot_root || return 1
+    fi
+
     # create an overlay on memory
     mount -t tmpfs -o size=256M tmpfs /overlay_root || return 1
     mkdir /overlay_root/base /overlay_root/base2 /overlay_root/overlay /overlay_root/work /overlay_root/saved || return 1
