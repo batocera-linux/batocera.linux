@@ -140,29 +140,7 @@ auto_detect_encoder() {
         fi
     fi
 
-    # ARM: Rockchip MPP (RK3588 / RK3399)
-    if check_ffmpeg_encoder "hevc_rkmpp"; then
-        log "Detection: Selected Rockchip MPP HEVC"
-        echo "hevc_rkmpp|none"
-        return
-    elif check_ffmpeg_encoder "h264_rkmpp"; then
-        log "Detection: Selected Rockchip MPP H264"
-        echo "h264_rkmpp|none"
-        return
-    fi
-
-    # ARM: V4L2 M2M (Qualcomm SM8250/SM8550, RPi 4, Allwinner H700)
-    if check_ffmpeg_encoder "hevc_v4l2m2m"; then
-        log "Detection: Selected Qualcomm/V4L2 HEVC"
-        echo "hevc_v4l2m2m|none"
-        return
-    elif check_ffmpeg_encoder "h264_v4l2m2m"; then
-        log "Detection: Selected V4L2 H264 (Snapdragon/RPi4/Allwinner)"
-        echo "h264_v4l2m2m|none"
-        return
-    fi
-
-    # Software Fallback (RPi 5 / Unsupported SoCs)
+    # Software Fallback
     log "Detection: No hardware encoder found, using libx264 software"
     echo "libx264|none"
 }
@@ -262,10 +240,10 @@ case "$1" in
         ALL=$(get_conf "ALL" "$DEFAULT_ALL")
 
         case "$Q" in
-            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60; BITRATE="25M" ;;
-            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60; BITRATE="15M" ;;
-            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25; BITRATE="3M"  ;;
-            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30; BITRATE="8M"  ;;
+            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60 ;;
+            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60 ;;
+            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25 ;;
+            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30 ;;
         esac
 
         # Detect encoder
@@ -279,18 +257,8 @@ case "$1" in
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
         elif echo "$ENCODER" | grep -q "nvenc"; then
             ENC_FLAGS=(-c "$ENCODER" -p "rc=vbr" -p "cq=$CRF")
-        elif echo "$ENCODER" | grep -qE "v4l2m2m|rkmpp"; then
-            # ARM - use bitrate-based encoding with extra buffers for stability
-            ENC_FLAGS=(-c "$ENCODER" -p "b=$BITRATE" -p "g=60" -p "num_capture_buffers=16")
         else
             ENC_FLAGS=(-c "$ENCODER" -p "crf=$CRF" -p "preset=$PRESET")
-        fi
-
-        # Qualcomm (v4l2m2m) and Rockchip (rkmpp) need nv12 pixel format to prevent green frames.
-        EXTRA_FMT=()
-        ARM_ENC_REGEX='v4l2m2m|rkmpp'
-        if [[ "$ENCODER" =~ $ARM_ENC_REGEX ]]; then
-            EXTRA_FMT=(-x "nv12")
         fi
 
         AUDIO_SRC=$(get_audio_device)
@@ -316,9 +284,9 @@ case "$1" in
                 FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.mkv"
                 log "Recording output: $DISP -> $FILE"
                 if [ "$DISP" = "$PRIMARY" ]; then
-                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 else
-                    wf-recorder "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 fi
                 RUNNING_PIDS+=("$!")
             done <<< "$ALL_OUTPUTS"
@@ -359,7 +327,7 @@ case "$1" in
             FILE="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
             log "Recording primary output: $PRIMARY -> $FILE"
 
-            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${EXTRA_FMT[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
             echo "$!" > "$PID_FILE"
 
             # Wait slightly so the PID file exists before the UI refreshes
