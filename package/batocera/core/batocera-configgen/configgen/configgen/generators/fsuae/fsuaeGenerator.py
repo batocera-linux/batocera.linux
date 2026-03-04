@@ -25,6 +25,9 @@ class FsuaeGenerator(Generator):
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F12" }
         }
 
+    def supportsInternalBezels(self):
+        return True
+
     # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
     # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
     def floppiesFromRom(self, rom: Path):
@@ -64,7 +67,9 @@ class FsuaeGenerator(Generator):
                                            f"--base_dir={FSUAE_CONFIG_DIR!s}",
                                            f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
                                            f"--save_states_dir={FSUAE_SAVES / system.config.core / self.filePrefix(rom)}",
-                                           "--zoom=auto"
+                                           "--zoom=auto",
+                                           "--bezel=1",
+                                           "--theme=fsemu-classic"
                        ]
 
         device_type = "floppy"

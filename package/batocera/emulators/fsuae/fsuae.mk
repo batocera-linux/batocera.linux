@@ -34,7 +34,13 @@ define FSUAE_INSTALL_INPUT_DATA
 	cp -r $(@D)/share/fs-uae/input/* $(TARGET_DIR)/usr/share/fs-uae/input/
 endef
 
-FSUAE_POST_INSTALL_TARGET_HOOKS += FSUAE_INSTALL_EVMAPY FSUAE_INSTALL_INPUT_DATA
+define FSUAE_INSTALL_THEME
+	mkdir -p $(TARGET_DIR)/usr/share/fs-uae/fsemu-classic
+	cp -r $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/fsuae/fsemu-classic/* \
+		$(TARGET_DIR)/usr/share/fs-uae/fsemu-classic/
+endef
+
+FSUAE_POST_INSTALL_TARGET_HOOKS += FSUAE_INSTALL_EVMAPY FSUAE_INSTALL_INPUT_DATA FSUAE_INSTALL_THEME
 
 $(eval $(autotools-package))
 $(eval $(emulator-info-package))
