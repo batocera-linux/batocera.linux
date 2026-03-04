@@ -1,0 +1,25 @@
+From 8c04211fd7b7dc2ac988280180946b237d9492ae Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 18 Feb 2026 19:01:00 +0100
+Subject: [PATCH] dts: sm8550 add pice1_port0 label
+
+---
+ arch/arm64/boot/dts/qcom/sm8550.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+index 7724dba75db7..69bf9f191d73 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+@@ -2237,7 +2237,7 @@ opp-32000000 {
+ 				};
+ 			};
+ 
+-			pcie@0 {
++			pcie1_port0: pcie@0 {
+ 				device_type = "pci";
+ 				reg = <0x0 0x0 0x0 0x0 0x0>;
+ 				bus-range = <0x01 0xff>;
+-- 
+2.52.0
+
