@@ -10,7 +10,7 @@ index 896749c..18e85e6 100755
 +        ### hack to transform as a non focus window
 +        # wayland GtkLayerShell
 +        if not window.focus:
-+            if "WAYLAND_DISPLAY" in os.environ:
++            if os.environ.get("WAYLAND_DISPLAY", "") != "":
 +                import subprocess
 +                gi.require_version('GtkLayerShell', '0.1')
 +                from gi.repository import GtkLayerShell
