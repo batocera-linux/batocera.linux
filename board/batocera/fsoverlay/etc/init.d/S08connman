@@ -95,18 +95,19 @@ wifi_enable() {
         fi
     done
     echo "*** Wifi Hardware detected. ***" > /dev/kmsg
+    # Delay to allow for firmware to settle
+    sleep 3
     
     # If wifi interface is available then apply the country code if set by the user
-    settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
+    settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country | tr -d '[:space:]')"
     if [ -n "$settingsCountry" ]; then
+        echo "*** Wifi Country set to: $settingsCountry ***" > /dev/kmsg
         /usr/sbin/iw reg set "$settingsCountry" 2>/dev/null
         # Delay to allow for dodgy firmware issues (ATH12K)
         sleep 3
     fi
 
     connmanctl enable wifi 2>/dev/null
-    # Allow 3 seconds for the firmware to settle before checking status.
-    sleep 3
 
     # Connection Check Loop (30 Seconds Max)
     for i in $(seq 1 30); do
