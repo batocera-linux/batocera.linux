@@ -958,6 +958,39 @@ systems:
         choices:
           "On": 1
           "Off": 0
+  - name: rx78
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bandai RX-78 cartridges: rx78_cart
+          Bandai RX-78 cassettes: rx78_cass
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: sv8000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bandai Super Vision 8000 cartridges: sv8000
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
   - name: supracan
     custom_features:
       softList:
