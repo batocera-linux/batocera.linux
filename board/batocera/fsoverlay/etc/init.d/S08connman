@@ -122,8 +122,20 @@ wifi_enable() {
         # Connman usually auto-scans on enable. We only force a scan if
         # we still aren't connected after 12 seconds.
         if [ "$i" -eq 12 ]; then
-            echo "*** Wifi not yet connected. Triggering one passive scan... ***" > /dev/kmsg
+            echo "*** Wifi not yet connected. Scanning for alternative services... ***" > /dev/kmsg
             connmanctl scan wifi 2>/dev/null
+            sleep 1
+            # Try connecting to each service matching our SSID
+            ssid_hex=$(echo -n "$settings_ssid" | xxd -p)
+            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "$ssid_hex" | while read service; do
+                state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+                if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
+                    break
+                fi
+                echo "*** Wifi trying service: $service ***" > /dev/kmsg
+                connmanctl connect "$service" 2>/dev/null
+                sleep 1
+            done
         fi
 
         sleep 1
