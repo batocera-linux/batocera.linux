@@ -54,23 +54,34 @@ batocera_wifi_configure() {
     settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.ssid)"
     settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key | tr -d '\\')"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
-    optionalPassphrase=""
-    
-    [ -n "$settings_key" ] && optionalPassphrase="Passphrase=${settings_key}"
 
     # Create or remove wifi configuration file based on SSID and WLAN status
     if [ -n "$settings_ssid" ] && [ "$settingsWlan" = "1" ]; then
         mkdir -p "/var/lib/connman"
-        cat > "${settings_file}" <<-_EOF_
-		[global]
-		Name=batocera
-		[service_batocera_${settings_name}]
-		Type=wifi
-		Name=${settings_ssid}
-		Hidden=${settings_hide}
-		${optionalPassphrase}
-		Autoconnect=true
-	_EOF_
+
+        # Unescape special characters in password (users escape them in batocera.conf)
+        # batocera.conf docs say: "Escape your special chars (# ; $) with a backslash"
+        # We need to remove those backslashes before writing to connman config
+        if [ -n "$settings_key" ]; then
+            # Remove backslashes before special characters: $ ! # ;
+            unescaped_key="${settings_key//\\$/\$}"
+            unescaped_key="${unescaped_key//\\!/!}"
+            unescaped_key="${unescaped_key//\\#/#}"
+            unescaped_key="${unescaped_key//\\;/;}"
+        fi
+
+        # Build config file content
+        {
+            echo "[global]"
+            echo "Name=batocera"
+            echo "[service_batocera_${settings_name}]"
+            echo "Type=wifi"
+            echo "Name=${settings_ssid}"
+            echo "Hidden=${settings_hide}"
+            # Write unescaped password to connman config
+            [ -n "$settings_key" ] && printf "Passphrase=%s\n" "$unescaped_key"
+            echo "Autoconnect=true"
+        } > "${settings_file}"
     else
         rm "${settings_file}" 2>/dev/null
     fi
