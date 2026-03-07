@@ -52,7 +52,10 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
                 used_wheels = wheels
         generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
     elif system.name == "triforce":
-        generateControllerConfig_triforce(system, playersControllers, rom)
+        used_wheels: DeviceInfoMapping = {}
+        if system.config.use_wheels and wheels:
+            used_wheels = wheels
+        generateControllerConfig_triforce(system, playersControllers, used_wheels, rom)
     else:
         raise BatoceraException(f"Invalid system name: '{system.name}'")
 
@@ -246,7 +249,7 @@ def generateControllerConfig_gamecube(system: Emulator, playersControllers: Cont
 
     generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
-def generateControllerConfig_triforce(system: Emulator, playersControllers: Controllers, rom: Path) -> None:
+def generateControllerConfig_triforce(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, rom: Path) -> None:
     # Based on GameCube mapping but with arcade specific overrides
     triforceMapping = {
         'a':             'Buttons/B',
@@ -254,11 +257,13 @@ def generateControllerConfig_triforce(system: Emulator, playersControllers: Cont
         'y':             'Buttons/Y',
         'x':             'Buttons/X',
         'pagedown':      'Buttons/Z',
-        'pageup':        'Triforce/Service',
+        'pageup':        None,
         'select':        'Triforce/Coin',
         'start':         'Buttons/Start',
         'l2':            'Triggers/L',
         'r2':            'Triggers/R',
+        'l3':            'Triforce/Test',
+        'r3':            'Triforce/Service',
         'up':            'D-Pad/Up',
         'down':          'D-Pad/Down',
         'left':          'D-Pad/Left',
@@ -267,7 +272,7 @@ def generateControllerConfig_triforce(system: Emulator, playersControllers: Cont
         'joystick1left': 'Main Stick/Left',
         'joystick2up':   'C-Stick/Up',
         'joystick2left': 'C-Stick/Left',
-        'hotkey':        'Triforce/Test'
+        'hotkey':        None
     }
     
     triforceReverseAxes: dict[str | None, str] = {
@@ -298,7 +303,33 @@ def generateControllerConfig_triforce(system: Emulator, playersControllers: Cont
                 triforceMapping.update(res)
                 line = cconfig.readline()
 
-    generateControllerConfig_any(system, playersControllers, {}, "GCPadNew.ini", "GCPad", triforceMapping, triforceReverseAxes, triforceReplacements)
+    # Wheel mapping for Triforce arcade racing games.
+    wheelTriforceMapping: dict[str, str | None] = {
+        'select':        'Triforce/Coin',
+        'start':         'Buttons/Start',
+        'up':            'D-Pad/Up',
+        'down':          'D-Pad/Down',
+        'left':          'D-Pad/Left',
+        'right':         'D-Pad/Right',
+        'a':             'Buttons/A',            # Boost (F-Zero AX) / Item (Mario Kart GP)
+        'b':             'Buttons/B',            # VS-Cancel (Mario Kart GP)
+        'y':             'Buttons/Z',            # Jump (Mario Kart GP)
+        'r2':            'Triggers/R-Analog',    # Gas
+        'l2':            'Triggers/L-Analog',    # Brake
+        'joystick1left': 'Main Stick/Left',      # Steering
+        'pageup':        'Buttons/X',            # Paddle left
+        'pagedown':      'Buttons/Y',            # Paddle right
+    }
+
+    wheelTriforceReverseAxes: dict[str | None, str] = {
+        'Main Stick/Left': 'Main Stick/Right',
+    }
+
+    wheelTriforceExtraOptions: dict[str, str] = {
+        'Main Stick/Dead Zone': '0.',
+    }
+
+    generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", triforceMapping, triforceReverseAxes, triforceReplacements, wheelMapping=wheelTriforceMapping, wheelReverseAxes=wheelTriforceReverseAxes, wheelExtraOptions=wheelTriforceExtraOptions)
 
 def removeControllerConfig_gamecube() -> None:
     configFileName = DOLPHIN_CONFIG / "GCPadNew.ini"
@@ -477,7 +508,7 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str 
 
     return mapping
 
-def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
+def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}, wheelMapping: Mapping[str, str | None] | None = None, wheelReverseAxes: Mapping[str | None, str] | None = None, wheelExtraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
         nsamepad = 0
@@ -497,7 +528,9 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
                 if not generateControllerConfig_any_from_profiles(f, pad, system):
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
             else:
-                if pad.device_path in wheels:
+                if pad.device_path in wheels and wheelMapping is not None:
+                    generateControllerConfig_any_auto(f, pad, wheelMapping, wheelReverseAxes or {}, None, wheelExtraOptions, system, nplayer, nsamepad)
+                elif pad.device_path in wheels:
                     generateControllerConfig_wheel(f, pad, nplayer)
                 else:
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)

@@ -157,6 +157,13 @@ class DolphinGenerator(Generator):
                 else:
                     dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
+        # Triforce wheel: both ports must be GC Steering (8) for baseboard detection.
+        if system.name == "triforce" and system.config.use_wheels and wheels:
+            if not system.config.get("dolphin_port_1_type"):
+                dolphinSettings.set("Core", "SIDevice0", "8")
+            if not system.config.get("dolphin_port_2_type"):
+                dolphinSettings.set("Core", "SIDevice1", "8")
+
         # [Light Gun] HiResTextures for crosshair (part 1/2)
         if system.config.use_guns and guns and not system.config.get_bool('dolphin_crosshair'):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
