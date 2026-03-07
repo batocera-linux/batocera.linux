@@ -52,7 +52,7 @@ batocera_wifi_configure() {
     [ "$X" = ".hidden" ] && { settings_name="hidden_AP"; settings_hide=true; }
 
     settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.ssid)"
-    settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key)"
+    settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key | tr -d '\\')"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
     optionalPassphrase=""
     
