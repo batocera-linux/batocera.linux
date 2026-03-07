@@ -132,6 +132,10 @@ class Model2EmuGenerator(Generator):
         Config.set("Renderer","MeshTransparency", system.config.get("model2_meshTransparency", "0"))
         Config.set("Renderer","FSAA", system.config.get("model2_fullscreenAA", "0"))
         Config.set("Input","UseRawInput", system.config.get("model2_useRawInput", "0"))
+        # Force RawInput when lightguns are detected
+        # This is required for multi-gun support (each gun gets its own hDevice)
+        if system.config.use_guns and guns:
+            Config.set("Input","UseRawInput", "1")
         if crosshairs := system.config.get("model2_crossHairs"):
             Config.set("Renderer","DrawCross", crosshairs)
         else:
@@ -178,6 +182,14 @@ class Model2EmuGenerator(Generator):
                     'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
                 }
             )
+
+        # Multi-gun rawinput support for lightguns
+        # Tell patched Wine to expose separate rawinput devices per gun
+        if system.config.use_guns and guns:
+            environment.update({
+                "WINE_FORCE_RAWINPUT": "1",
+                "WINE_RAWMOUSE_COUNT": str(len(guns))
+            })
 
         # now run the emulator
         return Command.Command(array=commandArray, env=environment)
