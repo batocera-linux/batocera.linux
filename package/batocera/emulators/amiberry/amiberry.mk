@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = d153c682e43dcaa5bed18588e9e35b53463d95d4
+AMIBERRY_VERSION = facaaeb13d996e8fa4e5f391c767a07183ab19e3
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -24,17 +24,8 @@ AMIBERRY_CONF_OPTS += -DUSE_OPENGL=OFF
 endif
 
 define AMIBERRY_INSTALL_TARGET_CMDS
-	# Strip and install binary
-	$(TARGET_STRIP) $(@D)/buildroot-build/amiberry
+	# install binary
 	$(INSTALL) -D $(@D)/buildroot-build/amiberry $(TARGET_DIR)/usr/bin/amiberry
-
-	# Create config and nvram directories, copy default config
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf
-	cp -prn $(@D)/buildroot-build/controllers/gamecontrollerdb.txt \
-	    $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/conf/
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/saves/amiga/nvram
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/amiberry/plugins
-
 
 	# Copy AROS (open source alternative BIOS)
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/amiga

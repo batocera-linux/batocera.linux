@@ -94,6 +94,7 @@
   to presetup them. This is mostly thought for startup files like dosbox.bat and autorun.cmd and for handling squashed archive files.
 - RPCS3 PS Move (light gun) mapping simplified. D-pad buttons are now PS Move face buttons. Check wiki for more info.
 ### Updated
+- Amiberry to 5th of March 2026 build
 - Azahar to 2124
 - BigPEmu to v121
 - Cemu to 22nd of January 2026 build
