@@ -47,9 +47,6 @@ class MelonDSGenerator(Generator):
             "LastBIOSFolder": str(BIOS),
             "PauseLostFocus": False,
             "LastROMFolder": str(_MELONDS_ROMS),
-            "SavestatePath": str(_MELONDS_SAVES),
-            "CheatFilePath": str(_MELONDS_CHEATS),
-            "SaveFilePath": str(_MELONDS_SAVES),
             "MouseHideSeconds": 5,
             "DS": {
                 "FirmwarePath": str(BIOS / "firmware.bin"),
@@ -78,7 +75,20 @@ class MelonDSGenerator(Generator):
                 "ExternalBIOSEnable": True
             },
             "Instance0": {
+                "SaveFilePath": str(_MELONDS_SAVES),
+                "SavestatePath": str(_MELONDS_SAVES),
+                "CheatFilePath": str(_MELONDS_CHEATS),
+                "EnableCheats": False,
                 "Joystick": {},
+                "Firmware": {
+                    "MAC": "",
+                    "FavouriteColour": 0,
+                    "BirthdayDay": 1,
+                    "BirthdayMonth": 1,
+                    "Language": 1,
+                    "Message": "",
+                    "OverrideSettings": True
+                },
                 "Window0": {
                     "ScreenRotation": 0,
                     "ScreenSwap": False,
@@ -141,6 +151,16 @@ class MelonDSGenerator(Generator):
 
         # Console
         base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
+        
+        # Override Firmware settings
+        base_config["Instance0"]["Firmware"]["OverrideSettings"] = system.config.get_bool("melonds_use_fw_settings", False)
+
+        # Firmware Language
+        base_config["Instance0"]["Firmware"]["Language"] = system.config.get_int("melonds_language", 1)
+
+        # Birthday date
+        base_config["Instance0"]["Firmware"]["BirthdayDay"] = system.config.get_int("melonds_day", 1)
+        base_config["Instance0"]["Firmware"]["BirthdayMonth"] = system.config.get_int("melonds_month", 1)
 
         # Scaling (Matches TOML boolean type)
         scaling = system.config.get_bool("melonds_scaling", False)
