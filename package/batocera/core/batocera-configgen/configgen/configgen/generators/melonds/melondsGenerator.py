@@ -64,8 +64,8 @@ class MelonDSGenerator(Generator):
             "DSi": {
                 "FullBIOSBoot": False,
                 "FirmwarePath": str(BIOS / "dsi_firmware.bin"),
-                "BIOS9Path": str(BIOS / "bios9.bin"),
-                "BIOS7Path": str(BIOS / "bios7.bin"),
+                "BIOS9Path": str(BIOS / "dsi_bios9.bin"),
+                "BIOS7Path": str(BIOS / "dsi_bios7.bin"),
                 "NANDPath": str(BIOS / "dsi_nand.bin"),
                 "SD": {
                     "FolderPath": str(_MELONDS_SAVES),
