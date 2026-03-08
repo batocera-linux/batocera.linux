@@ -1088,6 +1088,23 @@ class LindberghGenerator(Generator):
             shutil.copy2(source_controls, LINDBERGH_CONTROLS_FILE)
             _logger.debug("Updated controls.ini")
 
+        ### Adjust controls.ini (SDL mode) ###
+        content = LINDBERGH_CONTROLS_FILE.read_text()
+
+        # Steering deadzone - lower for driving games, mandatory for ID4/5
+        steer_deadzone = "800" if "initiad" in romName.lower() else "1000"
+        content = re.sub(r'Steer_DeadZone\s*=\s*\d+', f'Steer_DeadZone = {steer_deadzone}', content)
+
+        # Test and Service buttons - same as evdev (dpad down / facebutton down)
+        if system.config.get_bool("lindbergh_test"):
+            content = re.sub(r'Test\s*=\s*.*', 'Test = KEY_T, GC0_BUTTON_A, JOY0_BUTTON_0', content)
+            content = re.sub(r'P1_Service\s*=\s*.*', 'P1_Service = KEY_S, GC0_BUTTON_DPDOWN, JOY0_HAT0_DOWN', content)
+        else:
+            content = re.sub(r'Test\s*=\s*.*', 'Test = KEY_T', content)
+            content = re.sub(r'P1_Service\s*=\s*.*', 'P1_Service = KEY_S, JOY0_BUTTON_10, GC0_BUTTON_BACK', content)
+
+        LINDBERGH_CONTROLS_FILE.write_text(content)
+
         # load and modify it if needed and save it
         conf = self.loadConf(LINDBERGH_CONFIG_FILE)
         self.buildConfFile(conf, system, gameResolution, guns, wheels, playersControllers, romName)
