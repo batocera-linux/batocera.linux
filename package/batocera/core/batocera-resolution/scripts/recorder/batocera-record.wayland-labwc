@@ -13,6 +13,8 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 
+export XDG_RUNTIME_DIR=/var/run
+
 PID_FILE="/tmp/wf-recorder.pid"
 CONF_FILE="/tmp/rec.conf"
 BASE_DIR="/userdata/recordings"
