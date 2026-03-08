@@ -153,7 +153,7 @@
 - Sonic CD to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
-- Syncthing to 2.0.12
+- Syncthing to 2.0.15
 - Taradino to 20251222
 - TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
