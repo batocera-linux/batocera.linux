@@ -82,7 +82,6 @@ class MelonDSGenerator(Generator):
                 "Joystick": {},
                 "Firmware": {
                     "MAC": "",
-                    "FavouriteColour": 0,
                     "BirthdayDay": 1,
                     "BirthdayMonth": 1,
                     "Language": 1,
