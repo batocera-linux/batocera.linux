@@ -252,6 +252,26 @@ case "$1" in
         SELECTED_DEVICE=$(echo "$DETECTION_DATA" | cut -d'|' -f2)
         log "Executing wf-recorder with encoder $ENCODER"
 
+        # VAAPI cannot mix its hardware filter chain with the CPU-side
+        # transpose filter that wf-recorder inserts for rotated displays.
+        PRIMARY=$(batocera-resolution currentOutput)
+        SCREEN_TRANSFORM=$(wlr-randr 2>/dev/null | awk -v out="$PRIMARY" '
+            $0 ~ out { found=1 }
+            found && /Transform:/ { print $2; found=0 }
+        ')
+        log "Screen transform for $PRIMARY: '${SCREEN_TRANSFORM:-none}'"
+
+        IS_ROTATED=0
+        case "$SCREEN_TRANSFORM" in
+            90|270|flipped-90|flipped-270) IS_ROTATED=1 ;;
+        esac
+
+        if [ "$IS_ROTATED" = "1" ] && echo "$ENCODER" | grep -q "vaapi"; then
+            log "Rotated display detected with VAAPI encoder — falling back to libx264 (software)"
+            ENCODER="libx264"
+            SELECTED_DEVICE="none"
+        fi
+
         # Build encoder flags
         if echo "$ENCODER" | grep -q "vaapi"; then
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
@@ -268,7 +288,6 @@ case "$1" in
         fi
 
         TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
-        PRIMARY=$(batocera-resolution currentOutput)
 
         if [ "$ALL" = "true" ]; then
             RAW_OUTPUTS=$(wf-recorder -L 2>&1)
