@@ -529,6 +529,15 @@ case "${ACTION}" in
                 s#\s*<output>.*</output>#        <output>'"${MELONDS_SECONDARY_OUT}"'</output>#
             } }' "${RC_XML}"
 
+            # Set batocera-flash-screen (OSD) to the primary output
+            if [ -n "${PRIMARY_OUT}" ]; then
+                _log "Setting batocera-flash-screen (OSD) window to output: ${PRIMARY_OUT}"
+                sed -i -e '/<windowRule identifier="batocera-flash-screen\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+                    n
+                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+                } }' "${RC_XML}"
+            fi
+
             # Trigger labwc to reload the configuration
             _reconfigure_labwc
         fi
