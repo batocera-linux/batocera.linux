@@ -30,7 +30,7 @@ from ... import Command
 from ...batoceraPaths import SAVES, mkdir_if_not_exists
 from ...controller import Controller, Controllers, generate_sdl_game_controller_config
 from ...exceptions import BatoceraException, InvalidConfiguration
-from ...utils import bezels as bezelsUtil, hotkeygen
+from ...utils import bezels as bezelsUtil, hotkeygen, videoMode
 from ...utils.download import download
 from ..Generator import Generator
 
@@ -193,6 +193,11 @@ class LindberghGenerator(Generator):
         
         if system.config.get_bool("lindbergh_test"):
             commandArray.append("-t")
+
+        # temp workaround - load MESA 25.1.x for hotd4 games
+        if "hotd4" in romName.lower() and videoMode.getGLVendor() in ("amd", "intel", "unknown"):
+            environment["LIBGL_DRIVERS_PATH"] = "/lib32/dri-legacy"
+            environment["LD_LIBRARY_PATH"] = f"/lib32/dri-legacy:{environment['LD_LIBRARY_PATH']}"
 
         return Command.Command(array=commandArray, env=environment)
 
@@ -718,7 +723,7 @@ class LindberghGenerator(Generator):
         # mapping specific to games - wheel
         _logger.debug("lindberg mapping for game %s", shortRomName)
 
-        if shortRomName == "hdkotr":
+        if shortRomName == "hdkotr" or "harley" in shortRomName:
             lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
             lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
             lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
@@ -793,7 +798,7 @@ class LindberghGenerator(Generator):
             del lindberghCtrl_pad["joystick1up"]
             del lindberghCtrl_pad["down"]
 
-        if shortRomName == "hdkotr":
+        if shortRomName == "hdkotr" or "harley" in shortRomName:
             lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
             lindberghCtrl_pad["joystick1left"] = "ANALOGUE_2"  # steer (swapped)
             lindberghCtrl_pad["r2"] = "ANALOGUE_1"             # gas (swapped)

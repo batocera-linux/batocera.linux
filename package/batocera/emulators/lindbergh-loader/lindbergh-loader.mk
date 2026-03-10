@@ -22,6 +22,9 @@ LINDBERGH_LOADER_SITE = $(call github,lindbergh-loader,lindbergh-loader,$(LINDBE
 LINDBERGH_LOADER_LICENSE = ShareAlike 4.0 International
 LINDBERGH_LOADER_LICENSE_FILES = LICENSE.md
 LINDBERGH_LOADER_EMULATOR_INFO = lindbergh-loader.emulator.yml
+LINDBERGH_LOADER_MESA_LEGACY_SOURCE = mesa-legacy-25.1.9-lib32.tar.xz
+LINDBERGH_LOADER_EXTRA_DOWNLOADS = \
+    https://github.com/Tovarichtch/lindbergh-mesa-legacy/releases/download/v25.1.9/$(LINDBERGH_LOADER_MESA_LEGACY_SOURCE)
 
 ifeq ($(BR2_x86_64),y)
 LINDBERGH_LOADER_DEPENDENCIES = wine-x86 dmidecode ossp
@@ -72,7 +75,14 @@ define LINDBERGH_LOADER_CROSSHAIRS
 	    $(TARGET_DIR)/usr/bin/lindbergh/crosshairs/
 endef
 
-LINDBERGH_LOADER_POST_INSTALL_TARGET_HOOKS += LINDBERGH_LOADER_CROSSHAIRS
+# temp workaround for HOTD4 games (radeonsi regression in Mesa 25.2+)
+define LINDBERGH_LOADER_MESA_LEGACY
+    mkdir -p $(TARGET_DIR)/lib32/dri-legacy
+    tar xf $(DL_DIR)/$(LINDBERGH_LOADER_DL_SUBDIR)/$(LINDBERGH_LOADER_MESA_LEGACY_SOURCE) \
+        -C $(TARGET_DIR)/lib32/dri-legacy/
+endef
+
+LINDBERGH_LOADER_POST_INSTALL_TARGET_HOOKS += LINDBERGH_LOADER_CROSSHAIRS LINDBERGH_LOADER_MESA_LEGACY
 
 $(eval $(generic-package))
 $(eval $(emulator-info-package))
