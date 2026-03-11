@@ -8,10 +8,11 @@ Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
 ---
  Makefiles/Makefile.UNIX            |   2 +-
  Makefiles/Rules.inc                |   1 +
+ Src/Model3/Model3.cpp              |  16 +++
  Src/OSD/SDL/Main.cpp               |   3 +
  Src/OSD/evdev/EvdevInputSystem.cpp | 287 +++++++++++++++++++++++++++++
  Src/OSD/evdev/EvdevInputSystem.h   |  51 +++++
- 5 files changed, 343 insertions(+), 1 deletion(-)
+ 6 files changed, 359 insertions(+), 1 deletion(-)
  create mode 100644 Src/OSD/evdev/EvdevInputSystem.cpp
  create mode 100644 Src/OSD/evdev/EvdevInputSystem.h
 
@@ -29,7 +30,7 @@ index af02998..3d1eeb6 100644
  
  
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index 50bd817..17ecfe2 100644
+index 6c08735..7f84f11 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
 @@ -158,6 +158,7 @@ SRC_FILES = \
@@ -40,8 +41,42 @@ index 50bd817..17ecfe2 100644
  	Src/OSD/SDL/Crosshair.cpp \
  	Src/OSD/Outputs.cpp \
  	Src/Sound/MPEG/MpegAudio.cpp \
+diff --git a/Src/Model3/Model3.cpp b/Src/Model3/Model3.cpp
+index 7f4b418..dc70d79 100644
+--- a/Src/Model3/Model3.cpp
++++ b/Src/Model3/Model3.cpp
+@@ -453,6 +453,14 @@ UINT8 CModel3::ReadInputs(unsigned reg)
+     {
+       data &= ~(Inputs->analogTriggerLeft[0]->value<<0);
+       data &= ~(Inputs->analogTriggerRight[0]->value<<1);
++      // simulate offscreen reload like real hardware (shoot offscreen to reload)
++      if (m_game.name == "lostwsga" || m_game.name == "lostwsgp")
++      {
++        UINT8 gx = (UINT8)Inputs->analogGunX[0]->value;
++        UINT8 gy = (UINT8)Inputs->analogGunY[0]->value;
++        if ((gx <= 2 || gx >= 253 || gy <= 2 || gy >= 253) && Inputs->analogTriggerLeft[0]->value)
++          data &= ~(1<<1); // offscreen
++      }
+     }
+ 
+     if ((m_game.inputs & Game::INPUT_MAGTRUCK))
+@@ -550,6 +558,14 @@ UINT8 CModel3::ReadInputs(unsigned reg)
+     {
+       data &= ~(Inputs->analogTriggerLeft[1]->value<<0);
+       data &= ~(Inputs->analogTriggerRight[1]->value<<1);
++      // simulate offscreen reload like real hardware (shoot offscreen to reload)
++      if (m_game.name == "lostwsga" || m_game.name == "lostwsgp")
++      {
++        UINT8 gx = (UINT8)Inputs->analogGunX[1]->value;
++        UINT8 gy = (UINT8)Inputs->analogGunY[1]->value;
++        if ((gx <= 2 || gx >= 253 || gy <= 2 || gy >= 253) && Inputs->analogTriggerLeft[1]->value)
++          data &= ~(1<<1); // offscreen
++      }
+     }
+ 
+     if ((m_game.inputs & Game::INPUT_MAGTRUCK))
 diff --git a/Src/OSD/SDL/Main.cpp b/Src/OSD/SDL/Main.cpp
-index 9bb806c..7daaea5 100644
+index 957c385..1cf8243 100644
 --- a/Src/OSD/SDL/Main.cpp
 +++ b/Src/OSD/SDL/Main.cpp
 @@ -86,6 +86,7 @@
@@ -52,7 +87,7 @@ index 9bb806c..7daaea5 100644
  #include "SDLIncludes.h"
  #include "Debugger/SupermodelDebugger.h"
  #include "Graphics/Legacy3D/Legacy3D.h"
-@@ -2364,6 +2365,8 @@ int main(int argc, char **argv)
+@@ -2367,6 +2368,8 @@ int main(int argc, char **argv)
      InputSystem = std::shared_ptr<CInputSystem>(new CSDLInputSystem(s_runtime_config, false));
    else if (selectedInputSystem == "sdlgamepad")
      InputSystem = std::shared_ptr<CInputSystem>(new CSDLInputSystem(s_runtime_config, true));
@@ -63,7 +98,7 @@ index 9bb806c..7daaea5 100644
      InputSystem = std::shared_ptr<CInputSystem>(new CDirectInputSystem(s_runtime_config, s_window, false, false));
 diff --git a/Src/OSD/evdev/EvdevInputSystem.cpp b/Src/OSD/evdev/EvdevInputSystem.cpp
 new file mode 100644
-index 0000000..ee695ba
+index 0000000..762d7db
 --- /dev/null
 +++ b/Src/OSD/evdev/EvdevInputSystem.cpp
 @@ -0,0 +1,287 @@
@@ -356,7 +391,7 @@ index 0000000..ee695ba
 +}
 diff --git a/Src/OSD/evdev/EvdevInputSystem.h b/Src/OSD/evdev/EvdevInputSystem.h
 new file mode 100644
-index 0000000..6f8a2b2
+index 0000000..0e4697b
 --- /dev/null
 +++ b/Src/OSD/evdev/EvdevInputSystem.h
 @@ -0,0 +1,51 @@
