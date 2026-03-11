@@ -41,6 +41,7 @@ endef
 define SUPERMODEL_LINE_ENDINGS_FIXUP
 	# DOS2UNIX Supermodel.ini and Main.cpp - patch system does not support different line endings
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/OSD/SDL/Main.cpp
+	sed -i -E -e "s|\r$$||g" $(@D)/Src/Model3/Model3.cpp
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/Inputs/Inputs.cpp
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/Graphics/New3D/R3DShaderTriangles.h
 	sed -i -E -e "s|\r$$||g" $(@D)/Src/OSD/Unix/FileSystemPath.cpp
