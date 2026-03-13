@@ -2339,6 +2339,30 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# ColecoVision (GearColeco)
+def _gearcoleco_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Refresh Rate (requires restart)
+    _set_from_system(coreSettings, 'gearcoleco_timing', system, default='Auto')
+
+    # Aspect Ratio
+    _set_from_system(coreSettings, 'gearcoleco_aspect_ratio', system, default='1:1 PAR')
+
+    # Overscan
+    _set_from_system(coreSettings, 'gearcoleco_overscan', system, default='Disabled')
+
+    # Allow Up+Down / Left+Right
+    _set_from_system(coreSettings, 'gearcoleco_up_down_allowed', system, default='Disabled')
+
+    # No Sprite Limit
+    _set_from_system(coreSettings, 'gearcoleco_no_sprite_limit', system, default='Disabled')
+
+    # Spinner support
+    _set_from_system(coreSettings, 'gearcoleco_spinners', system, default='Disabled')
+
+    # Spinner Sensitivity
+    _set_from_system(coreSettings, 'gearcoleco_spinner_sensitivity', system, default='1')
 # Enterprise 128 (EP128EMU)
 def _ep128emu_core_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2444,6 +2468,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'hatarib': _hatarib_options,
     'mednafen_wswan': _mednafen_wswan_options,
     'stella': _stella_options,
+    'gearcoleco': _gearcoleco_options,
     'ep128emu-core': _ep128emu_core_options,
 }
 
