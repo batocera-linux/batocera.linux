@@ -2,6 +2,7 @@
 
 BOOTCONF="/boot/batocera-boot.conf"
 REBOOT_FLAG=/var/run/emulationstation-standalone
+DOCKED_FLAG="/var/run/batocera-docked"
 log="/userdata/system/logs/display.log"
 
 if [ "$1" = "--stop-rebooting" ]; then
@@ -52,8 +53,15 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
     
-    # Use --init to get the current screens...
+    # Use --init to get the current screens (also detects docked state)
     batocera-switch-screen-checker --init
+
+    # Check for docked mode
+    DOCKED_OUTPUT=""
+    if [ -f "${DOCKED_FLAG}" ]; then
+        DOCKED_OUTPUT=$(cat "${DOCKED_FLAG}")
+        echo "Standalone: Docked mode active. External output: ${DOCKED_OUTPUT}" >> "$log"
+    fi
 
     # Attempt to get video outputs from master settings first
     settings_output=$(batocera-settings-get-master global.videooutput)
@@ -165,7 +173,15 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # We set the output to enable screens...
     echo "Standalone: --- Enabling Outputs ---" >> "$log"
-    batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
+    if [ -n "${DOCKED_OUTPUT}" ]; then
+        echo "Standalone: Docked mode - enabling external output only: ${DOCKED_OUTPUT}" >> "$log"
+        batocera-resolution setOutput "${DOCKED_OUTPUT}"
+        settings_output="${DOCKED_OUTPUT}"
+        settings_output2=""
+        settings_output3=""
+    else
+        batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
+    fi
     echo "Updated video outputs: ${settings_output}, ${settings_output2}, ${settings_output3}" >> $log
     ###################
 
@@ -173,36 +189,41 @@ while [ -e "${REBOOT_FLAG}" ]; do
     
     ### RESOLUTION ###
     echo "Standalone: --- Applying Resolutions ---" >> "$log"
-    ## The resolution for the first screen is on the boot file so that it is easier to change it
-    ## It is not needed for other screens
-    bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
-    if [ -z "${bootresolution}" ]; then
-        echo "Standalone: No resolution in boot config for '${settings_output}'. Using minTomaxResolution-secure." >> "$log"
-        batocera-resolution --screen "${settings_output}" minTomaxResolution-secure
+    if [ -n "${DOCKED_OUTPUT}" ]; then
+        echo "Standalone: Docked mode - applying minTomaxResolution for ${DOCKED_OUTPUT}." >> "$log"
+        batocera-resolution --screen "${DOCKED_OUTPUT}" minTomaxResolution
     else
-        echo "Standalone: Setting resolution for '${settings_output}' to '${bootresolution}'." >> "$log"
-        batocera-resolution --screen "${settings_output}" setMode "${bootresolution}"
-    fi
-
-    # Other screens
-    if [ -n "${settings_output2}" ]; then
-        bootresolution2="$(batocera-settings-get-master es.resolution2)"
-        if [ -z "${bootresolution2}" ]; then
-            echo "Standalone: No resolution for '${settings_output2}'. Using minTomaxResolution-secure." >> "$log"
-            batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
+        ## The resolution for the first screen is on the boot file so that it is easier to change it
+        ## It is not needed for other screens
+        bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"
+        if [ -z "${bootresolution}" ]; then
+            echo "Standalone: No resolution in boot config for '${settings_output}'. Using minTomaxResolution-secure." >> "$log"
+            batocera-resolution --screen "${settings_output}" minTomaxResolution-secure
         else
-            echo "Standalone: Setting resolution for '${settings_output2}' to '${bootresolution2}'." >> "$log"
-            batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
+            echo "Standalone: Setting resolution for '${settings_output}' to '${bootresolution}'." >> "$log"
+            batocera-resolution --screen "${settings_output}" setMode "${bootresolution}"
         fi
-    fi
-    if [ -n "${settings_output3}" ]; then
-        bootresolution3="$(batocera-settings-get es.resolution3)"
-        if [ -z "${bootresolution3}" ]; then
-            echo "Standalone: No resolution for '${settings_output3}'. Using minTomaxResolution-secure." >> "$log"
-            batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
-        else
-            echo "Standalone: Setting resolution for '${settings_output3}' to '${bootresolution3}'." >> "$log"
-            batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+
+        # Other screens
+        if [ -n "${settings_output2}" ]; then
+            bootresolution2="$(batocera-settings-get-master es.resolution2)"
+            if [ -z "${bootresolution2}" ]; then
+                echo "Standalone: No resolution for '${settings_output2}'. Using minTomaxResolution-secure." >> "$log"
+                batocera-resolution --screen "${settings_output2}" minTomaxResolution-secure
+            else
+                echo "Standalone: Setting resolution for '${settings_output2}' to '${bootresolution2}'." >> "$log"
+                batocera-resolution --screen "${settings_output2}" setMode "${bootresolution2}"
+            fi
+        fi
+        if [ -n "${settings_output3}" ]; then
+            bootresolution3="$(batocera-settings-get es.resolution3)"
+            if [ -z "${bootresolution3}" ]; then
+                echo "Standalone: No resolution for '${settings_output3}'. Using minTomaxResolution-secure." >> "$log"
+                batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
+            else
+                echo "Standalone: Setting resolution for '${settings_output3}' to '${bootresolution3}'." >> "$log"
+                batocera-resolution --screen "${settings_output3}" setMode "${bootresolution3}"
+            fi
         fi
     fi
     ###################
@@ -270,7 +291,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         # we can correctly position them next to each other
         echo "Standalone: --- Repositioning Outputs ---" >> "$log"
         display_position=$(/usr/bin/batocera-settings-get-master "display.position")
-        if [ -n "${display_position}" ]; then
+        if [ -n "${display_position}" ] && [ -z "${DOCKED_OUTPUT}" ]; then
             batocera-resolution repositionOutputs "${display_position}" "${settings_output}" "${settings_output2}" "${settings_output3}"
         fi
     fi
