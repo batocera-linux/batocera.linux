@@ -151,6 +151,7 @@ _get_available_modes() {
     echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | \
         sed '1d;$d' | \
         grep "^[[:space:]]*[0-9]*x[0-9]*" | \
+        grep -viE "i px|\(interlaced\)" | \
         while IFS= read -r mode_line; do
             resolution=$(echo "${mode_line}" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\).*/\1/p')
             refresh=$(echo "${mode_line}" | sed -n 's/.*[[:space:]]\([0-9]*\.[0-9]*\)[[:space:]]*Hz.*/\1/p')
@@ -160,7 +161,7 @@ _get_available_modes() {
             elif [ -n "${resolution}" ]; then
                 printf "%s\n" "${resolution}"
             fi
-        done
+        done | sort -u | sort -Vr
 }
 
 f_minTomaxResolution() {
