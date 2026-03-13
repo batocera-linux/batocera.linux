@@ -414,6 +414,16 @@ systems = {
                                                   { "md5": "", "file": "bios/mac701.chd", "emulator": "libretro", "core": "mame" },
                                                   { "md5": "", "file": "bios/mac755.chd", "emulator": "libretro", "core": "mame" } ] },
 
+    # ---------- Sega SC-3000 ---------- #
+    "sc3000": { "name": "Sega SC-3000", "biosFiles":  [ { "md5": "", "file": "bios/sc3000.zip"  },
+                                                { "md5": "a6a47eae38600e41cc67e887e36e70b7", "zippedFile": "sc3000.rom", "file": "bios/sc3000.zip"} ] },
+
+    # ---------- Sega AI Computer ---------- #
+    "segaai": { "name": "Sega AI Computer", "biosFiles":  [ { "md5": "", "file": "bios/segaai.zip" } ] },
+
+    # ---------- Sega Advanced Pico Beena ---------- #
+    "beena": { "name": "Advanced Pico Beena", "biosFiles":  [ { "md5": "", "file": "bios/beena.zip" } ] },
+
     # ---------- Tandy Color Conputer ---------- #
     "coco":   { "name": "Tandy Color Computer", "biosFiles":  [ { "md5": "", "file": "bios/coco.zip"  },
                                                 { "md5": "a74f3d95b395dad7cdca19d560eeea74", "zippedFile": "bas10.rom", "file": "bios/coco.zip"},

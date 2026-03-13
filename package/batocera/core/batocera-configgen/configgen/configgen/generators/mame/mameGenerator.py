@@ -406,6 +406,16 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop1" ]
                         else:
                             commandArray += [ "-cart" ]
+                    elif system.name == "sc3000":
+                        if romExt.casefold() in (".cas", ".wav", ".bit"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-cart" ]
+                    elif system.name == "segaai":
+                        if romExt.casefold() in (".wav", ".flac", ".cas"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-card" ]
                     elif system.name == "mc10":
                         if romExt.casefold() == ".cas":
                             commandArray += [ "-cass" ]
