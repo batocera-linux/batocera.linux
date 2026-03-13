@@ -1,0 +1,58 @@
+From ebc770d74b55452d29b7d89c3d0c693fa84b6e00 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Fri, 6 Feb 2026 15:30:36 +0100
+Subject: [PATCH] pci: pwrctrl: rename pci-pwrctrl-slot as generic
+
+The driver is pretty generic and would fit for either
+PCI Slots or PCI devices connected to PCI ports, so rename
+the driver and module as pci-pwrctrl-generic.
+
+Suggested-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/pci/pwrctrl/Kconfig               | 8 ++++----
+ drivers/pci/pwrctrl/Makefile              | 4 ++--
+ drivers/pci/pwrctrl/{slot.c => generic.c} | 0
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+ rename drivers/pci/pwrctrl/{slot.c => generic.c} (100%)
+
+diff --git a/drivers/pci/pwrctrl/Kconfig b/drivers/pci/pwrctrl/Kconfig
+index e0f999f299bb..0a93ac4cd11b 100644
+--- a/drivers/pci/pwrctrl/Kconfig
++++ b/drivers/pci/pwrctrl/Kconfig
+@@ -11,12 +11,12 @@ config PCI_PWRCTRL_PWRSEQ
+ 	select POWER_SEQUENCING
+ 	select PCI_PWRCTRL
+ 
+-config PCI_PWRCTRL_SLOT
+-	tristate "PCI Power Control driver for PCI slots"
++config PCI_PWRCTRL_GENERIC
++	tristate "Generic PCI Power Control driver for PCI slots"
+ 	select PCI_PWRCTRL
+ 	help
+-	  Say Y here to enable the PCI Power Control driver to control the power
+-	  state of PCI slots.
++	  Say Y here to enable the generic PCI Power Control driver to control
++	  the power state of PCI slots.
+ 
+ 	  This is a generic driver that controls the power state of different
+ 	  PCI slots. The voltage regulators powering the rails of the PCI slots
+diff --git a/drivers/pci/pwrctrl/Makefile b/drivers/pci/pwrctrl/Makefile
+index 13b02282106c..f6bb4fb9a410 100644
+--- a/drivers/pci/pwrctrl/Makefile
++++ b/drivers/pci/pwrctrl/Makefile
+@@ -5,5 +5,5 @@ pci-pwrctrl-core-y			:= core.o
+ 
+ obj-$(CONFIG_PCI_PWRCTRL_PWRSEQ)	+= pci-pwrctrl-pwrseq.o
+ 
+-obj-$(CONFIG_PCI_PWRCTRL_SLOT)		+= pci-pwrctrl-slot.o
+-pci-pwrctrl-slot-y			:= slot.o
++obj-$(CONFIG_PCI_PWRCTRL_GENERIC)	+= pci-pwrctrl-generic.o
++pci-pwrctrl-generic-y			:= generic.o
+ 
+diff --git a/drivers/pci/pwrctrl/slot.c b/drivers/pci/pwrctrl/generic.c
+similarity index 100%
+rename from drivers/pci/pwrctrl/slot.c
+rename to drivers/pci/pwrctrl/generic.c
+-- 
+GitLab

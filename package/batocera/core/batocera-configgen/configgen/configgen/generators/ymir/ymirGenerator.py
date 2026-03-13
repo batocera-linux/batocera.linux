@@ -15,13 +15,13 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypedDict, cast
 
 import toml
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SCREENSHOTS, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...controller import write_sdl_controller_db
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -30,8 +30,13 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
+class _BindData(TypedDict):
+    sdl_map: dict[str, list[str]]
+    keyboard_map: dict[int, dict[str, list[str]]]
+
+
 # Mappings based on stock Ymir.toml
-PERIPHERAL_BINDS = {
+PERIPHERAL_BINDS: dict[str, _BindData] = {
     "AnalogPad": {
         "sdl_map": {
             "A": ["GamepadX"], "B": ["GamepadA"], "C": ["GamepadB"],
@@ -182,7 +187,7 @@ class YmirGenerator(Generator):
             "CheckForUpdates": False,
             "IncludeNightlyBuilds": False
         })
-        
+
         # adds [General.PathOverrides]
         path_overrides = cast("dict[str, str]", general_config.setdefault("PathOverrides", {}))
         path_overrides.update({
@@ -225,7 +230,7 @@ class YmirGenerator(Generator):
         for pad in playersControllers[:2]:
             port_key = f"Port{pad.player_number}"
             port_config = cast("dict[str, object]", input_config.setdefault(port_key, {}))
-            
+
             port_config["PeripheralType"] = 'AnalogPad'
             port_config["DevicePath"] = pad.device_path
 
@@ -233,7 +238,7 @@ class YmirGenerator(Generator):
             for peripheral_name, bind_data in PERIPHERAL_BINDS.items():
                 peripheral_config = cast("dict[str, object]", port_config.setdefault(peripheral_name, {}))
                 binds_config = cast("dict[str, list[str]]", peripheral_config.setdefault("Binds", {}))
-                
+
                 # Start with a clean slate, then apply keyboard defaults
                 binds_config.clear()
                 player_keyboard_map = bind_data["keyboard_map"].get(pad.player_number, {})
@@ -244,7 +249,7 @@ class YmirGenerator(Generator):
                     bind_list = binds_config.setdefault(ymir_key, [])
                     for sdl_suffix in sdl_suffixes:
                         bind_list.append(f'{sdl_suffix}@{pad.index}')
-        
+
         # Now write the updated toml
         toml_file.write_text(toml.dumps(config))
 

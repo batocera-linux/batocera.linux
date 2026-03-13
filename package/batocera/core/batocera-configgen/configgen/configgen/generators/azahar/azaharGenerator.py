@@ -96,6 +96,8 @@ class AzaharGenerator(Generator):
         azaharConfig.set("Layout", r"swap_screen\default", "false")
         azaharConfig.set("Layout", "layout_option", layout_option)
         azaharConfig.set("Layout", r"layout_option\default", "false")
+        azaharConfig.set("Layout", "large_screen_proportion", system.config.get("azahar_large_screen_proportion", "4"))
+        azaharConfig.set("Layout", r"large_screen_proportion\default", "false")
 
         ## [SYSTEM]
         if not azaharConfig.has_section("System"):
@@ -134,13 +136,13 @@ class AzaharGenerator(Generator):
         # screenshots
         azaharConfig.set("UI", r"Paths\screenshotPath", "/userdata/screenshots")
         azaharConfig.set("UI", r"Paths\screenshotPath\default", "false")
-        
+
         ## [MISCELLANEOUS]
         if not azaharConfig.has_section("Miscellaneous"):
             azaharConfig.add_section("Miscellaneous")
         # Don't check for update at start
         azaharConfig.set("Miscellaneous", "check_for_update_on_start", "false")
-        azaharConfig.set("Miscellaneous", r"check_for_update_on_start\default", "false")        
+        azaharConfig.set("Miscellaneous", r"check_for_update_on_start\default", "false")
 
         ## [RENDERER]
         if not azaharConfig.has_section("Renderer"):

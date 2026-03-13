@@ -46,7 +46,7 @@ class FlycastGenerator(Generator):
         # Lightguns - configure before controllers (guns take priority on ports)
         gun_ports = set()
         if system.config.use_guns and guns:
-            for nplayer, gun in enumerate(guns[:4], start=1):
+            for nplayer, _ in enumerate(guns[:4], start=1):
                 Config.set("input", f'device{nplayer}', "7")   # MDT_LightGun
                 Config.set("input", f'device{nplayer}.1', "1") # VMU
                 Config.set("input", f'device{nplayer}.2', "10") # None

@@ -2,46 +2,43 @@
 name = "batocera-linux"
 version = "43.dev0"
 requires-python = "==3.12.8"
-dependencies = ["configgen", "batocera_es_system"]
+dependencies = ["batocera-configgen", "batocera-es-system"]
 
 [dependency-groups]
-deps = [
-    'pip>=25.1',
-
-    # These versions need to be kept in sync with the versions
-    # built by buildroot
-    'typing-extensions==4.15.0',
-    'PyYAML==6.0.2',
-    'ruamel.yaml==0.18.6',
-    'toml==0.10.2',
-    'pillow==11.0.0',
-    'configobj==5.0.8',
-    'requests==2.32.3',
-    'qrcode==8.0',
-    'ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6',
-]
-lint = [
+dev = [
     'ruff==0.14.14',
     'pyright[nodejs]==1.1.408',
-]
-dev = [
-    { include-group = 'deps' },
-    { include-group = 'lint' },
 ]
 
 [tool.uv]
 package = false
+# These versions need to be kept in sync with the versions
+# built by buildroot
+constraint-dependencies = [
+    "pyyaml==6.0.2",
+    "configobj==5.0.8",
+    "evdev==1.7.1",
+    "pillow==11.0.0",
+    "pysdl2==0.9.17",
+    "pyudev==0.24.3",
+    "qrcode==8.0",
+    "requests==2.32.3",
+    "ruamel.yaml==0.18.6",
+    "toml==0.10.2",
+    "typing-extensions==4.15.0",
+    "ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6",
+]
 
 [tool.uv.sources]
-configgen = { workspace = true }
-batocera_es_system = { workspace = true }
+batocera-configgen = { workspace = true }
+batocera-es-system = { workspace = true }
 
 [tool.uv.workspace]
 members = [
     'python-src/*',
     './package/batocera/core/batocera-configgen/configgen',
 ]
-exclude = ['python-src/stubs']
+exclude = ['python-src/stubs', 'python-src/scripts']
 
 [tool.pyright]
 exclude = [
@@ -56,6 +53,7 @@ stubPath = "python-src/stubs"
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
 
+typeCheckingMode = "strict"
 strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
@@ -63,7 +61,6 @@ reportMissingModuleSource = "none"
 reportDeprecated = "warning"
 
 reportUnnecessaryTypeIgnoreComment = "warning"
-typeCheckingMode = "strict"
 reportPrivateUsage = "none"
 reportUnusedImport = "none"
 reportUnusedVariable = "none"
@@ -72,6 +69,44 @@ enableExperimentalFeatures = true
 deprecateTypingAliases = true
 
 enableTypeIgnoreComments = false  # Force pyright: ignore comments
+
+[[tool.pyright.executionEnvironments]]
+# pyright doesn't allow setting typeCheckingMode per environment, so we
+# set it to strict globally and disable specific reports for configgen
+root = 'package/batocera/core/batocera-configgen/configgen'
+
+reportMissingTypeStubs = "none"
+reportConstantRedefinition = "none"
+reportDuplicateImport = "none"
+reportIncompleteStub = "none"
+reportInconsistentConstructor = "none"
+reportInvalidStubStatement = "none"
+reportMatchNotExhaustive = "none"
+reportMissingParameterType = "none"
+reportMissingTypeArgument = "none"
+reportTypeCommentUsage = "none"
+reportUnknownArgumentType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+reportUnnecessaryCast = "none"
+reportUnnecessaryComparison = "none"
+reportUnnecessaryContains = "none"
+reportUnnecessaryIsInstance = "none"
+reportUnusedClass = "none"
+reportUnusedFunction = "none"
+reportUntypedBaseClass = "none"
+reportUntypedClassDecorator = "none"
+reportUntypedFunctionDecorator = "none"
+reportUntypedNamedTuple = "none"
+reportAssertAlwaysTrue = "warning"
+reportInvalidStringEscapeSequence = "warning"
+reportInvalidTypeVarUse = "warning"
+reportSelfClsParameterName = "warning"
+reportUnsupportedDunderAll = "warning"
+reportUnusedExpression = "warning"
+reportWildcardImportFromLibrary = "warning"
 
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]

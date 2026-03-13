@@ -4,28 +4,21 @@
 #
 ################################################################################
 
-BATOCERA_ES_SYSTEM_VERSION=1.04
 BATOCERA_ES_SYSTEM_SOURCE=
 BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR=
 BATOCERA_ES_SYSTEM_INSTALL_STAGING = YES
-BATOCERA_ES_SYSTEM_DEPENDENCIES = host-batocera-es-system batocera-configgen
+BATOCERA_ES_SYSTEM_DEPENDENCIES = host-batocera-es-system batocera-configgen host-gettext
 
 HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR=$(BR2_EXTERNAL_BATOCERA_PATH)/python-src/batocera-es-system
 HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR_RSYNC_EXCLUSIONS=--exclude=".*" --exclude="**/__pycache__/" --exclude="dist"
 HOST_BATOCERA_ES_SYSTEM_SOURCE=
 HOST_BATOCERA_ES_SYSTEM_SETUP_TYPE=hatch
-HOST_BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python-pyyaml host-python-ruamel-yaml host-gettext
+HOST_BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python-pyyaml host-python-ruamel-yaml host-python-typing-extensions
 
 $(eval $(call register,_shared.emulator.yml _global.emulator.yml lexaloffle.emulator.yml sh.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,tdp._shared.emulator.yml))
 $(eval $(call register-if-none-of,$(BATOCERA_SYSTEM_ARCH),s905 bcm2835 bcm2836,hud._shared.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_STELLA,stella.emulator.yml))
-
-define HOST_BATOCERA_ES_SYSTEM_SET_PACKAGE_VERSION
-	echo "__version__ = '$(BATOCERA_ES_SYSTEM_VERSION)'" > $(@D)/batocera_es_system/__version__.py
-endef
-
-HOST_BATOCERA_ES_SYSTEM_POST_RSYNC_HOOKS += HOST_BATOCERA_ES_SYSTEM_SET_PACKAGE_VERSION
 
 define BATOCERA_ES_SYSTEM_EXTRACT_CMDS
 	mkdir -p $(BATOCERA_ES_SYSTEM_DIR)/roms

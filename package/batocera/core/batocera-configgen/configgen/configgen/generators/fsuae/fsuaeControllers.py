@@ -10,6 +10,18 @@ if TYPE_CHECKING:
     from ...Emulator import Emulator
 
 
+def _build_long_config_name(name, buttons, axes, hats):
+    # e.g.: "Xbox Wireless Controller", 11, 6, 1 → "xbox_wireless_controller_11_6_1_0_linux"
+    name = name.split('#')[0].lower().strip()
+    for c in name:
+        if not c.isalnum() and c != '_':
+            name = name.replace(c, '_')
+    # collapse consecutive underscores
+    while '__' in name:
+        name = name.replace('__', '_')
+    name = name.strip('_')
+    return f"{name}_{buttons}_{axes}_{hats}_0_linux"
+
 # Create the controller configuration file
 def generateControllerConfig(system: Emulator, playersControllers: Controllers) -> None:
 
@@ -36,18 +48,8 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
     mkdir_if_not_exists(confDirectory)
 
     for pad in playersControllers:
-        configFileName = confDirectory / f"{pad.guid}_linux.conf"
-        f = configFileName.open("w")
-
-        # fs-uae-controller
-        f.write("[fs-uae-controller]\n")
-        f.write(f"name = {pad.real_name}\n")
-        f.write("platform = linux\n")
-        f.write("\n")
-
-        # events
-        f.write("[default]\n")
-        f.write("include = universal_gamepad\n")
+        # Build mapping lines to reuse for both config files
+        mapping_lines = []
 
         for x in pad.inputs:
             input = pad.inputs[x]
@@ -55,10 +57,10 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
 
             if input.name in fsuaeMapping:
                 if input.type == "button":
-                    f.write(f"button_{input.id} = {fsuaeMapping[input.name]}\n")
+                    mapping_lines.append(f"button_{input.id} = {fsuaeMapping[input.name]}\n")
                 elif input.type == "hat":
                     if input.value in fsuaeHatMapping:
-                        f.write(f"hat_{input.id}_{fsuaeHatMapping[input.value]} = {fsuaeMapping[input.name]}\n")
+                        mapping_lines.append(f"hat_{input.id}_{fsuaeHatMapping[input.value]} = {fsuaeMapping[input.name]}\n")
                 elif input.type == "axis":
                     if input.value == "1":
                         axis_valstr = "pos"
@@ -66,7 +68,26 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers) 
                     else:
                         axis_valstr = "neg"
                         revaxis_valstr = "pos"
-                    f.write(f"axis_{input.id}_{axis_valstr} = {fsuaeMapping[input.name]}\n")
+                    mapping_lines.append(f"axis_{input.id}_{axis_valstr} = {fsuaeMapping[input.name]}\n")
                     if input.name in fsuaeReverseAxisMapping and fsuaeReverseAxisMapping[input.name] in fsuaeMapping:
-                        f.write(f"axis_{input.id}_{revaxis_valstr} = {fsuaeMapping[fsuaeReverseAxisMapping[input.name]]}\n")
-        f.close()
+                        mapping_lines.append(f"axis_{input.id}_{revaxis_valstr} = {fsuaeMapping[fsuaeReverseAxisMapping[input.name]]}\n")
+
+        # Write config for both GUID lookup (joystick config) and long-name lookup (menu config)
+        long_name = _build_long_config_name(pad.real_name, pad.button_count, pad.axis_count, pad.hat_count)
+        for config_name in [pad.guid.lower(), long_name]:
+            configFileName = confDirectory / f"{config_name}.conf"
+            f = configFileName.open("w")
+
+            # fs-uae-controller
+            f.write("[fs-uae-controller]\n")
+            f.write(f"name = {pad.real_name}\n")
+            f.write("platform = linux\n")
+            f.write("\n")
+
+            # events
+            f.write("[default]\n")
+            f.write("include = universal_gamepad\n")
+
+            for line in mapping_lines:
+                f.write(line)
+            f.close()

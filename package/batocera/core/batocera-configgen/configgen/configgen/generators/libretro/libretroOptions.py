@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ...batoceraPaths import BIOS, ROMS, ES_GAMES_METADATA, ensure_parents_and_open
+from ...batoceraPaths import BIOS, ES_GAMES_METADATA, ROMS, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
-from ...utils import videoMode, metadata
+from ...utils import metadata as _metadataUtils, videoMode
 from ...utils.configparser import CaseSensitiveConfigParser
-
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -815,6 +814,8 @@ def _dosbox_pure_options(
     # Midi Type
     _set_from_system(coreSettings, 'dosbox_pure_midi', system, 'pure_midi', default='disabled')
 
+    # OS Disk Modifications
+    _set_from_system(coreSettings, 'dosbox_pure_bootos_ramdisk', system, 'pure_bootos_ramdisk', default='false')
 
 # Microsoft MSX and Colecovision
 def _bluemsx_options(
@@ -979,7 +980,7 @@ def _mupen64plus_next_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = metadata.getGamesMetaData(ES_GAMES_METADATA, system.name, rom)
+                metadata = _metadataUtils.get_games_meta_data(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
@@ -1047,7 +1048,7 @@ def _parallel_n64_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = metadata.getGamesMetaData(ES_GAMES_METADATA, system.name, rom)
+                metadata = _metadataUtils.get_games_meta_data(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
@@ -1780,12 +1781,12 @@ def _genesisplusgx_options(
     # MSU-MD/MegaCD
 
     # Needs to be forced to sega/mega cd for MSU-MD to work.
-    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'msu-md' else 'auto')
+    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'megadrive-msu' else 'auto')
     _set(coreSettings, 'genesis_plus_gx_add_on', add_on)
 
     # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
     # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
-    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'msu-md' else '100')
+    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'megadrive-msu' else '100')
     _set(coreSettings, 'genesis_plus_gx_cdda_volume', cdda_volume)
 
     # gun
@@ -2338,6 +2339,55 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# ColecoVision (GearColeco)
+def _gearcoleco_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Refresh Rate (requires restart)
+    _set_from_system(coreSettings, 'gearcoleco_timing', system, default='Auto')
+
+    # Aspect Ratio
+    _set_from_system(coreSettings, 'gearcoleco_aspect_ratio', system, default='1:1 PAR')
+
+    # Overscan
+    _set_from_system(coreSettings, 'gearcoleco_overscan', system, default='Disabled')
+
+    # Allow Up+Down / Left+Right
+    _set_from_system(coreSettings, 'gearcoleco_up_down_allowed', system, default='Disabled')
+
+    # No Sprite Limit
+    _set_from_system(coreSettings, 'gearcoleco_no_sprite_limit', system, default='Disabled')
+
+    # Spinner support
+    _set_from_system(coreSettings, 'gearcoleco_spinners', system, default='Disabled')
+
+    # Spinner Sensitivity
+    _set_from_system(coreSettings, 'gearcoleco_spinner_sensitivity', system, default='1')
+# Enterprise 128 (EP128EMU)
+def _ep128emu_core_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Main thread wait (ms)
+    _set_from_system(coreSettings, 'ep128emu_wait', system, default='0')
+    # High sound quality
+    _set_from_system(coreSettings, 'ep128emu_sdhq', system, default='1')
+    # Use accelerated SW framebuffer
+    _set_from_system(coreSettings, 'ep128emu_swfb', system, default='0')
+    # Enable resolution changes (requires restart)
+    _set_from_system(coreSettings, 'ep128emu_useh', system, default='1')
+    # Border lines to keep when zooming in
+    _set_from_system(coreSettings, 'ep128emu_brds', system, default='0')
+    # System ROM version (EP only)
+    _set_from_system(coreSettings, 'ep128emu_romv', system, default='Original')
+    # User 1 Zoom button
+    _set_from_system(coreSettings, 'ep128emu_zoom', system, default='R3')
+    # User 1 Info button
+    _set_from_system(coreSettings, 'ep128emu_info', system, default='L3')
+    # User 1 Autofire for button
+    _set_from_system(coreSettings, 'ep128emu_afbt', system, default='None')
+    # User 1 Autofire repeat delay
+    _set_from_system(coreSettings, 'ep128emu_afsp', system, default='1')
+
 
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
@@ -2418,6 +2468,8 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'hatarib': _hatarib_options,
     'mednafen_wswan': _mednafen_wswan_options,
     'stella': _stella_options,
+    'gearcoleco': _gearcoleco_options,
+    'ep128emu-core': _ep128emu_core_options,
 }
 
 

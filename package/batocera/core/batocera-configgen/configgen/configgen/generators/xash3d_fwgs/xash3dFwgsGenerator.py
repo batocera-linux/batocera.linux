@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 _CONFIG_DIR: Final = CONFIGS / 'xash3d_fwgs'
-_ROMS_DIR: Final = ROMS / 'xash3d_fwgs'
+_ROMS_DIR: Final = ROMS / 'halflife'
 _SAVES_DIR: Final = SAVES / 'xash3d_fwgs'
 _HLSDK_LIBS_DIR: Final = Path('/usr/lib/xash3d/hlsdk')
 _DEFAULT_SERVER_LIB: Final = 'hl'

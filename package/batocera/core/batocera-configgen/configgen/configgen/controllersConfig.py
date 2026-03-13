@@ -2,18 +2,15 @@ from __future__ import annotations
 
 import logging
 import re
-import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, NotRequired, TypedDict, cast
 
 import pyudev
 
-from .utils import metadata
-
 if TYPE_CHECKING:
     from .types import DeviceInfoDict, DeviceInfoMapping
 
-_logger = logging.getLogger(__name__)
+_logger: Final = logging.getLogger(__name__)
 
 def dev2int(dev: str) -> int | None:
     matches = re.match(r"^/dev/input/event([0-9]*)$", dev)

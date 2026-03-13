@@ -1,0 +1,11 @@
+--- a/src/lindbergh/patch.c
++++ b/src/lindbergh/patch.c
+@@ -430,7 +430,7 @@
+             detourFunction(0x081818a8, amDipswExit);
+             detourFunction(0x0818191d, amDipswGetData);
+             detourFunction(0x08181994, stubRetZero);
+-            patchMemoryFromString(0x080f37dd, "75"); // patch to prevent memory assignment error
++            patchMemoryFromString(0x080f37dd, "EB"); // JMP: always skip alignment split to prevent heap corruption
+             // Stop the extra inputs by removing io_glut_init
+             detourFunction(0x080e7f94, stubRetZero);
+ 

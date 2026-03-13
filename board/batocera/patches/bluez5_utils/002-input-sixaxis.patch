@@ -1,0 +1,20 @@
+diff --git a/profiles/input/sixaxis.h b/profiles/input/sixaxis.h
+index 44e43b483..a069a13d6 100644
+# credits to GramThanos, https://github.com/bluez/bluez/pull/617/files
+--- a/profiles/input/sixaxis.h
++++ b/profiles/input/sixaxis.h
+@@ -48,6 +48,14 @@ get_pairing(uint16_t vid, uint16_t pid, const char *name)
+ 			.version = 0x0000,
+ 			.type = CABLE_PAIRING_SIXAXIS,
+ 		},
++		{
++			.name = "GUO HUA PS3 GamePad",
++			.source = 0x0002,
++			.vid = 0x054c,
++			.pid = 0x0268,
++			.version = 0x0000,
++			.type = CABLE_PAIRING_SIXAXIS,
++		},
+ 		{
+ 			.name = "Navigation Controller",
+ 			.source = 0x0002,

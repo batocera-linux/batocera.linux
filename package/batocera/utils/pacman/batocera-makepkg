@@ -29,7 +29,18 @@ FORCE=0
 # builddate = 1590539371 # epoch of creation
 
 ##### Valid "groups" for Batocera packages #####
-GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32 amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne devilutionx dos dreamcast easyrpg fbneo fds flash flatpak fmtowns gamecube gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 intellivision jaguar lightgun lutro lynx mame mastersystem megadrive moonlight mrboom msx1 msx2 msx2+ msxturbor n64 n64dd naomi nds neogeo neogeocd nes ngp ngpc o2em openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8 pokemini ports prboom ps2 ps3 psp psx pygame satellaview saturn scummvm sdlpop sega32x segacd sg1000 snes snes-msu1 solarus sufami supergrafx supervision thomson tic80 tyrquake vectrex virtualboy wii wiiu windows windows_installers wswan wswanc x1 x68000 xash3d_fwgs xbox zx81 zxspectrum)
+GRP_ARRAY=(game music theme bezel misc 3do 3ds amiga1200 amiga500 amigacd32
+    amigacdtv amstradcpc apple2 atari2600 atari5200 atari7800 atari800 atarist
+    atomiswave c128 c20 c64 cannonball cavestory channelf colecovision daphne
+    devilutionx dos dreamcast easyrpg fbneo fds flash flatpak fmtowns gamecube
+    gameandwatch gamegear gb gb2players gba gbc gbc2players gx4000 halflife intellivision
+    jaguar lightgun loopy lutro lynx mame mastersystem megacd megadrive megadrive-msu
+    moonlight mrboom msx1 msx2 msx2+ msxturbor n64 n64dd naomi nds neogeo neogeocd
+    nes ngp ngpc odyssey2 openbor pc88 pc98 pcengine pcenginecd pcfx pet pico8
+    pokemini ports prboom ps2 ps3 ps4 psp psx pygame satellaview saturn scummvm
+    sdlpop sega32x sg1000 snes snes-msu1 solarus sufami supergrafx supervision
+    thomson tic80 tvgames tyrquake vectrex virtualboy wii wiiu windows windows_installers
+    wswan wswanc x1 x68000 xbox xbox360 zx81 zxspectrum)
 
 ##### Valid archs for Batocera packages #####
 ARCH_ARRAY=(any x86_64 x86 armv7l aarch64)
@@ -37,100 +48,100 @@ ARCH_ARRAY=(any x86_64 x86 armv7l aarch64)
 ##### Function Calls #####
 
 function get_config() {
-	# Search for key.value and #key.value for only one occurrence
-	# If the character is the COMMENT CHAR then set value to it
-	# Otherwise strip till the equal-char to obtain value
-	local val
-	local ret
-	val="$(grep -E -m1 "^\s*$1\s*=" $INFO)"
-	ret=$?
-	if [[ $ret -eq 1 ]]; then
-		val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=\s*" $INFO)"
-		ret=$?
-		[[ $ret -eq 0 ]] && val=$COMMENT_CHAR
-	else
-		# Maybe here some finetuning to catch key.value = ENTRY without blanks
-		val="${val#*=}"
-	fi
-	echo "$val" | tr -d [[:blank:]]
-	return $ret
+    # Search for key.value and #key.value for only one occurrence
+    # If the character is the COMMENT CHAR then set value to it
+    # Otherwise strip till the equal-char to obtain value
+    local val
+    local ret
+    val="$(grep -E -m1 "^\s*$1\s*=" $INFO)"
+    ret=$?
+    if [[ $ret -eq 1 ]]; then
+        val="$(grep -E -m1 "^$COMMENT_CHAR_SEARCH\s*$1\s*=\s*" $INFO)"
+        ret=$?
+        [[ $ret -eq 0 ]] && val=$COMMENT_CHAR
+    else
+        # Maybe here some finetuning to catch key.value = ENTRY without blanks
+        val="${val#*=}"
+    fi
+    echo "$val" | tr -d [[:blank:]]
+    return $ret
 }
 
 function check_argument() {
-	vinput="$1"
-	val="$(get_config $vinput)"
-	ret=$?
-	[[ -z "$val" && $ret -eq 1 ]] && echo "ERROR: '$vinput' not found - you need to manually fill it in your .PKGINFO" >&2 && exit 1
-	[[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it in your .PKGINFO" >&2 && exit 1
-	[[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR in your .PKGINFO" >&2 && exit 1
-	if [[ "$vinput" == "group" ]]; then
-		# optionally accept sub-groups like nes-platform, megadrive-shooter...
-		! (printf "%s\n" "${GRP_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown group '$val' in your .PKGINFO" >&2
-	fi
-	if [[ "$vinput" == "arch" ]]; then
-		# optionally accept sub-groups like nes-platform, megadrive-shooter...
-		! (printf "%s\n" "${ARCH_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown arch '$val' in your .PKGINFO -- only the first one will be generated, and most probably won't install" >&2
-	fi
+    vinput="$1"
+    val="$(get_config $vinput)"
+    ret=$?
+    [[ -z "$val" && $ret -eq 1 ]] && echo "ERROR: '$vinput' not found - you need to manually fill it in your .PKGINFO" >&2 && exit 1
+    [[ -z "$val" && $ret -eq 0 ]] && echo "ERROR: '$vinput' is empty - you need to manually fill it in your .PKGINFO" >&2 && exit 1
+    [[ "$val" == "$COMMENT_CHAR" ]] && echo "ERROR: '$vinput' is commented with $COMMENT_CHAR in your .PKGINFO" >&2 && exit 1
+    if [[ "$vinput" == "group" ]]; then
+        # optionally accept sub-groups like nes-platform, megadrive-shooter...
+        ! (printf "%s\n" "${GRP_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown group '$val' in your .PKGINFO" >&2
+    fi
+    if [[ "$vinput" == "arch" ]]; then
+        # optionally accept sub-groups like nes-platform, megadrive-shooter...
+        ! (printf "%s\n" "${ARCH_ARRAY[@]}" | grep -q ${val//-*/}) && echo "WARNING: Unknown arch '$val' in your .PKGINFO -- only the first one will be generated, and most probably won't install" >&2
+    fi
 }
 
 function check_optional_argument() {
-	vinput="$1"
-	default="$2"
-	val="$(get_config $vinput)"
-	ret=$?
-	[[ -z "$val" ]] && write_argument "$vinput" "$default"
-	[[ "$val" == "$COMMENT_CHAR" ]] && write_argument "$vinput" "$default"
+    vinput="$1"
+    default="$2"
+    val="$(get_config $vinput)"
+    ret=$?
+    [[ -z "$val" ]] && write_argument "$vinput" "$default"
+    [[ "$val" == "$COMMENT_CHAR" ]] && write_argument "$vinput" "$default"
 }
 
 function set_config() {
-	# search for first key.name at beginning of line and write value to it
-	sed -i "0,/^\(\s*$1\s*=\).*/{s^^$1 = $2^}" "$INFO"
+    # search for first key.name at beginning of line and write value to it
+    sed -i "0,/^\(\s*$1\s*=\).*/{s^^$1 = $2^}" "$INFO"
 }
 
 function uncomment_config() {
-	# search for first Comment Char at beginning of line and remove it
-	sed -i "0,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/{s//\1/}" "$INFO"
+    # search for first Comment Char at beginning of line and remove it
+    sed -i "0,/^$COMMENT_CHAR_SEARCH\(\s*$1\)/{s//\1/}" "$INFO"
 }
 
 function write_argument() {
-	keyvalue="$1"
-	newvalue="$2"
-	val="$(get_config $keyvalue)"
-	ret=$?
-	if [[ "$val" == "$COMMENT_CHAR" ]]; then
-		uncomment_config "$keyvalue"
-		set_config "$keyvalue" "$newvalue"
-	elif [[ -z "$val" && $ret -eq 1 ]]; then
-		# add this new parameter
-		echo "$keyvalue = $newvalue" >> "$INFO"
-	else
-		set_config "$keyvalue" "$newvalue"
-	fi
+    keyvalue="$1"
+    newvalue="$2"
+    val="$(get_config $keyvalue)"
+    ret=$?
+    if [[ "$val" == "$COMMENT_CHAR" ]]; then
+        uncomment_config "$keyvalue"
+        set_config "$keyvalue" "$newvalue"
+    elif [[ -z "$val" && $ret -eq 1 ]]; then
+        # add this new parameter
+        echo "$keyvalue = $newvalue" >>"$INFO"
+    else
+        set_config "$keyvalue" "$newvalue"
+    fi
 }
 
 function sanitize_info() {
-	# pacman needs a space before and after "="
-	sed -i 's/\([^ ]\)=/\1 =/;s/=\([^ ]\)/= \1/;s/[[:blank:]]*$//' "$INFO"
+    # pacman needs a space before and after "="
+    sed -i 's/\([^ ]\)=/\1 =/;s/=\([^ ]\)/= \1/;s/[[:blank:]]*$//' "$INFO"
 }
 
 function make_pkg() {
-	pk=../"$1".pkg.tar.zst
-	[[ "$FORCE" -eq 1 ]] && rm -f "$pk"
-	[[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
-	echo "Creating package $pk ..."
-	LST_BATOEXEC=( $(ls "$BATOEXEC"* 2>/dev/null) )
-	if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
-	    tar -cf - "$INFO" "$BATOEXEC"* * | zstd -c --rsyncable - -o "$pk"
-	else
-	    tar -cf - "$INFO" * | zstd -c --rsyncable - -o "$pk"
-	fi
-	ret=$?
-	chmod go+r "$pk" 2>/dev/null
-	[[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
+    pk=../"$1".pkg.tar.zst
+    [[ "$FORCE" -eq 1 ]] && rm -f "$pk"
+    [[ -f "$pk" ]] && echo "ERROR: file $pk already exists. Aborting." && exit 1
+    echo "Creating package $pk ..."
+    LST_BATOEXEC=($(ls "$BATOEXEC"* 2>/dev/null))
+    if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
+        tar -cf - "$INFO" "$BATOEXEC"* * | zstd -c --rsyncable - -o "$pk"
+    else
+        tar -cf - "$INFO" * | zstd -c --rsyncable - -o "$pk"
+    fi
+    ret=$?
+    chmod go+r "$pk" 2>/dev/null
+    [[ $ret -eq 0 ]] && echo "SUCCESS: package $pk correctly generated" && exit 0
 }
 
 function print_help() {
-cat << EOF
+    cat <<EOF
 batocera-makepkg: makes a pacman package for a Batocera system.
 usage:
 batocera-makepkg [-f] [-h]
@@ -138,49 +149,54 @@ batocera-makepkg [-f] [-h]
   -h : describes available options
 You need to have a .PKGINFO file in the running directory to get your package created.
 EOF
-exit
+    exit
 }
 
 function main() {
-	    # New PKGINFO file passed as an argument
-	    while :; do
-		    case $1 in
-			    -h|--help) print_help
-				    ;;
-			    -f|--force) FORCE=1
-				    ;;
-			    *) break
-		    esac
-		    shift
-	    done
-	    [[ -f "$INFO" ]] || { echo "ERROR: File not found: $INFO, aborting." >&2; exit 1; }
-	    dos2unix "$INFO"
+    # New PKGINFO file passed as an argument
+    while :; do
+        case $1 in
+        -h | --help)
+            print_help
+            ;;
+        -f | --force)
+            FORCE=1
+            ;;
+        *) break ;;
+        esac
+        shift
+    done
+    [[ -f "$INFO" ]] || {
+        echo "ERROR: File not found: $INFO, aborting." >&2
+        exit 1
+    }
+    dos2unix "$INFO"
 
-	    for mandatory in pkgname pkgver pkgdesc arch group ; do
-		    check_argument "$mandatory"
-	    done
-	    for optional in url packager ; do
-		    check_optional_argument "$optional" http://batocera.org
-	    done
-	    # Now the parameters to add / refresh
-	    sz=$(du -s . | cut -f1)
-	    write_argument size $(expr $sz \* 1024)
-	    write_argument builddate $(date +%s)
-	    # Finally, create the actual package
-	    sanitize_info
-	    LST_BATOEXEC=( $(ls "$BATOEXEC"* 2>/dev/null) )
-	    if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
-		    i=0
-		    mkdir -p "$BATOEXEC_PATH"
-		    for F in "${LST_BATOEXEC[@]}"; do
-			    dos2unix "$F"
-			    cp -f "$F" "$BATOEXEC_PATH"/"$(get_config pkgname)"_"$i"
-			    i=$((i+1))
-		    done
-	    fi
-	    for a in $(get_config arch | sed "s:,: :g"); do
-		    make_pkg "$(get_config pkgname)-$(get_config pkgver)-$a"
-	    done
+    for mandatory in pkgname pkgver pkgdesc arch group; do
+        check_argument "$mandatory"
+    done
+    for optional in url packager; do
+        check_optional_argument "$optional" http://batocera.org
+    done
+    # Now the parameters to add / refresh
+    sz=$(du -s . | cut -f1)
+    write_argument size $(expr $sz \* 1024)
+    write_argument builddate $(date +%s)
+    # Finally, create the actual package
+    sanitize_info
+    LST_BATOEXEC=($(ls "$BATOEXEC"* 2>/dev/null))
+    if ! [[ -z "${LST_BATOEXEC[@]}" ]]; then
+        i=0
+        mkdir -p "$BATOEXEC_PATH"
+        for F in "${LST_BATOEXEC[@]}"; do
+            dos2unix "$F"
+            cp -f "$F" "$BATOEXEC_PATH"/"$(get_config pkgname)"_"$i"
+            i=$((i + 1))
+        done
+    fi
+    for a in $(get_config arch | sed "s:,: :g"); do
+        make_pkg "$(get_config pkgname)-$(get_config pkgver)-$a"
+    done
 
 }
 

@@ -314,7 +314,7 @@ systems:
         choices:
           "On": 1
           "Off": 0
-  - name: astrocde
+  - name: astrocade
     custom_features:
       softList:
         group: ADVANCED OPTIONS
@@ -367,7 +367,47 @@ systems:
         choices:
           "On": 1
           "Off": 0
-  - name: bbc
+  - name: pcw
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Amstrad PCW disk images: pcw
+      altmodel:
+        prompt: PCW MODEL
+        description: Select model to emulate
+        choices:
+          PCW8256 - 256KB (default): pcw8256
+          PCW8512 - 512KB: pcw8512
+          PCW9256 - 256KB: pcw9256
+          PCW9512 - 512KB: pcw9512
+          PCW10 - 512KB: pcw10
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Disk (Drive A): flop
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: bbcmicro
     features:
       - padtokeyboard
     custom_features:
@@ -507,6 +547,85 @@ systems:
         choices:
           "On": 1
           "Off": 0
+  - name: dragon64
+    features:
+      - padtokeyboard
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Dragon Cassettes: dragon_cass
+          Dragon Cartridges: dragon_cart
+          Dragon Disk images: dragon_flop
+      altmodel:
+        prompt: DRAGON MODEL
+        description: Select model of Dragon to emulate
+        choices:
+          Dragon 32: dragon32
+          Dragon 64 (Default): dragon64
+          Dragon Alpha: dgnalpha
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load
+        choices:
+          Cassette: cass
+          Cartridge: cart
+          Floppy Disk 1: flop1
+          Floppy Disk 2: flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          'On': 1
+          'Off': 0
+  - name: mc10
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Tandy MC-10 cassettes: mc10_cass
+      altmodel:
+        prompt: MC-10 MODEL
+        description: Select the model to emulate
+        choices:
+          Tandy MC-10 (Default): mc10
+          Matra & Hachette Alice: alice
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Cartridge: cart
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
   - name: crvision
     custom_features:
       softList:
@@ -523,6 +642,22 @@ systems:
         choices:
           Cartridge: cart
           Cassette: cass
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: ctvboy
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Gakken Compact Vision TV Boy cartridges: ctvboy
       pergamecfg:
         group: ADVANCED OPTIONS
         prompt: CUSTOM GAME CONFIG
@@ -797,6 +932,136 @@ systems:
         choices:
           "On": 1
           "Off": 0
+  - name: mz2000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Sharp MZ-2000 cassettes: mz2000_cass
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Cassette: cass
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: mz2500
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Sharp MZ-2500 floppy disks: mz2500_flop
+      altromtype:
+        group: ADVANCED OPTIONS
+        prompt: MEDIA TYPE
+        description: Type of ROM file to load.
+        choices:
+          Disk (Drive 1): flop1
+          Disk (Drive 2): flop2
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: mz700
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Sharp MZ-700 cassettes: mz700_cass
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: mz800
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Sharp MZ-800 cassettes: mz800_cass
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: mz80k
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Sharp MZ-80K cassettes: mz80k_cass
+      enableui:
+        group: ADVANCED OPTIONS
+        prompt: UI KEYS
+        description: Toggle with hotkey + D-pad up or Scroll Lock in-game.
+        choices:
+          Off at Start: 0
+          On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
   - name: macintosh
     custom_features:
       softList:
@@ -1041,6 +1306,39 @@ systems:
         choices:
           Off at Start: 0
           On at Start: 1
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: rx78
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bandai RX-78 cartridges: rx78_cart
+          Bandai RX-78 cassettes: rx78_cass
+      pergamecfg:
+        group: ADVANCED OPTIONS
+        prompt: CUSTOM GAME CONFIG
+        description: Enable per-game custom configuration via MAME menu.
+        choices:
+          "On": 1
+          "Off": 0
+  - name: sv8000
+    custom_features:
+      softList:
+        group: ADVANCED OPTIONS
+        prompt: SOFTWARE LIST
+        description: Use MAME software lists to identify ROM
+        choices:
+          Don't Use (Default): none
+          Bandai Super Vision 8000 cartridges: sv8000
       pergamecfg:
         group: ADVANCED OPTIONS
         prompt: CUSTOM GAME CONFIG
@@ -1311,7 +1609,7 @@ systems:
         choices:
           Enabled: 1
           Disabled (Default): 0
-  - casloopy
+  - loopy
   - name: gameandwatch
     exclude_extensions:
       - mgw
@@ -1320,9 +1618,11 @@ systems:
       - mgw
   - namco22
   - oricatmos
-  - plugnplay
   - samcoupe
+  - tvgames
   - uzebox
+  - enterprise
+  - tvc
   - name: pc60
     features:
       - padtokeyboard

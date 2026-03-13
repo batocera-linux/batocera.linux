@@ -1,0 +1,16 @@
+diff --git a/Source/Core/Core/HW/SI/SI_DeviceAMBaseboard.cpp b/Source/Core/Core/HW/SI/SI_DeviceAMBaseboard.cpp
+index 5532c06..f81108a 100644
+--- a/Source/Core/Core/HW/SI/SI_DeviceAMBaseboard.cpp
++++ b/Source/Core/Core/HW/SI/SI_DeviceAMBaseboard.cpp
+@@ -1758,8 +1758,9 @@ int CSIDevice_AMBaseboard::RunBuffer(u8* buffer, int request_length)
+                 }
+                 else
+                 {
+-                  // The center for the Y axis is expected to be 78h this adjusts that
+-                  message.AddData(pad_status.stickX - 12);
++                  // Clamp stickX - 12 to prevent u8 underflow at extreme left.
++                  const int steering = (int)pad_status.stickX - 12;
++                  message.AddData((u8)std::clamp(steering, 0, 255));
+                   message.AddData((u8)0);
+ 
+                   message.AddData(pad_status.stickY);

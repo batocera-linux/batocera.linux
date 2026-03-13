@@ -62,7 +62,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
     else:
         corePath = str(system.config.core)
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'tvgames', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.config.get_bool("customcfg"):
@@ -145,7 +145,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                 commandLine += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and system.config.get('sticktype', 'none') != 'none':
+            if system.name == "bbcmicro" and system.config.get('sticktype', 'none') != 'none':
                 commandLine += ["-analogue", system.config['sticktype']]
                 specialController = system.config['sticktype']
 
@@ -314,7 +314,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             if (mameIniDir / "batocera.ini").exists():
                 (mameIniDir / "batocera.ini").unlink()
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList[-4:] == "cass":
                         autoRunCmd = '*tape\\nchain""\\n'
