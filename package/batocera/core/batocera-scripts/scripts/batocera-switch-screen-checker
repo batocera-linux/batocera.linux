@@ -3,6 +3,7 @@
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
 STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
+DOCKED_FLAG="/var/run/batocera-docked"
 
 _wait_for_emulationstation() {
     local timeout=3; local waited=0
@@ -17,6 +18,40 @@ _wait_for_emulationstation() {
     return 0
 }
 
+_detect_docked_output() {
+    KNOWN_OUTPUTS=""
+    for key in global.videooutput global.videooutput2 global.videooutput3; do
+        val=$(batocera-settings-get-master "$key")
+        [ -n "$val" ] && KNOWN_OUTPUTS="$KNOWN_OUTPUTS $val"
+    done
+
+    # If no outputs are configured, we have no baseline to detect against. Skip.
+    if [ -z "${KNOWN_OUTPUTS}" ]; then
+        echo "Checker: No configured outputs defined. Skipping docked detection." >> "$LOG"
+        return 0
+    fi
+
+    EXTERNAL_OUTPUT=""
+    while IFS= read -r output; do
+        IS_KNOWN=0
+        for known in $KNOWN_OUTPUTS; do
+            [ "$output" = "$known" ] && IS_KNOWN=1 && break
+        done
+        if [ "$IS_KNOWN" -eq 0 ]; then
+            EXTERNAL_OUTPUT="$output"
+            break
+        fi
+    done < <(batocera-resolution listOutputs)
+
+    if [ -n "$EXTERNAL_OUTPUT" ]; then
+        echo "Checker: External output detected: ${EXTERNAL_OUTPUT}. Writing docked flag." >> "$LOG"
+        echo "$EXTERNAL_OUTPUT" > "${DOCKED_FLAG}"
+    else
+        echo "Checker: No external output detected. Removing docked flag." >> "$LOG"
+        rm -f "${DOCKED_FLAG}"
+    fi
+}
+
 case "$1" in
     "--init")
         export XDG_RUNTIME_DIR=/var/run
@@ -25,6 +60,9 @@ case "$1" in
         echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
 
         echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
+
+        # Detect docked state at init time (handles reboot-while-docked)
+        _detect_docked_output
         exit 0
         ;;
     *)
@@ -51,6 +89,9 @@ case "$1" in
             rm -f "${DEBOUNCE_LOCK}"
             exit 1
         fi
+
+        # Detect and write/remove docked flag before triggering ES restart
+        _detect_docked_output
 
         echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
         curl http://localhost:1234/quit
