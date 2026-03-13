@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 import codecs
-import csv
 import logging
 import os
 import shutil
-import xml.etree.ElementTree as ET
 import zipfile
 from pathlib import Path
 from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
-from ..mame.mameCommon import is_atom_floppy
+from ...exceptions import InvalidConfiguration
+from ..mame.mameCommon import (
+    get_autorun_command,
+    get_mame_control_mapping,
+    get_mess_system_controls,
+    get_mess_system_info,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -83,7 +87,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             pluginsToLoad += [ "coindrop" ]
         if pluginsToLoad:
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
-        messMode = -1
+        mess_system = None
         messModel = ''
     else:
         # Set up command line for MESS or MAMEVirtual
@@ -99,27 +103,17 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             softList = 'fmtowns_cd'
 
         # Determine MESS system name (if needed)
-        openFile = (DEFAULTS_DIR / "data" / "mame" / "messSystems.csv").open()
-        messSystems: list[str] = []
-        messSysName: list[str] = []
-        messRomType: list[str] = []
-        messAutoRun: list[str] = []
-        with openFile:
-            messDataList = csv.reader(openFile, delimiter=';', quotechar="'")
-            for row in messDataList:
-                messSystems.append(row[0])
-                messSysName.append(row[1])
-                messRomType.append(row[2])
-                messAutoRun.append(row[3])
-        messMode = messSystems.index(system.name)
+        mess_system = get_mess_system_info(system)
+        if mess_system is None:
+            raise InvalidConfiguration(f'Unknown MESS system: {system.name}')
 
         # Alternate system for machines that have different configs (ie computers with different hardware)
-        messModel = messSysName[messMode]
+        messModel = mess_system.name
         if altmodel := system.config.get("altmodel"):
             messModel = altmodel
         commandLine += [ messModel ]
 
-        if messSysName[messMode] == "":
+        if not mess_system.name:
             # Command line for non-arcade, non-system ROMs (lcdgames, plugnplay)
             if system.config.get_bool("customcfg"):
                 cfgPath = CONFIGS / corePath / "custom"
@@ -237,7 +231,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                         else:
                             commandLine += [ "-flop1" ]
                     else:
-                        commandLine += [ "-" + messRomType[messMode] ]
+                        commandLine += [ "-" + mess_system.rom_type ]
                 else:
                     if boot_disk:
                         if (altromtype == "flop1" or not altromtype) and boot_disk in [ "macos30", "macos608", "macos701", "macos75" ]:
@@ -245,12 +239,12 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                         elif altromtype:
                             commandLine += [ "-" + altromtype ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + mess_system.rom_type ]
                     else:
                         if altromtype:
                             commandLine += [ "-" + altromtype ]
                         else:
-                            commandLine += [ "-" + messRomType[messMode] ]
+                            commandLine += [ "-" + mess_system.rom_type ]
                 # Use the full filename for MESS non-softlist ROMs
                 commandLine += [ f'"{rom}"' ]
                 commandLine += [ "-rompath", f'"{rom.parent};/userdata/bios/"' ]
@@ -296,112 +290,27 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
 
             # MESS config folder
             if system.config.get_bool("customcfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / "custom"
+                cfgPath = CONFIGS / corePath / mess_system.name / "custom"
             else:
-                cfgPath = SAVES / "mame" / "cfg" / messSysName[messMode]
+                cfgPath = SAVES / "mame" / "cfg" / mess_system.name
             if system.config.get_bool("pergamecfg"):
-                cfgPath = CONFIGS / corePath / messSysName[messMode] / rom.name
+                cfgPath = CONFIGS / corePath / mess_system.name / rom.name
             mkdir_if_not_exists(cfgPath)
             commandLine += [ '-cfg_directory', f'"{cfgPath}"' ]
 
             # Autostart via ini file
-            # Init variables, delete old ini if it exists, prepare ini path
             # lr-mame does NOT support multiple ini paths
-            autoRunCmd = ""
-            autoRunDelay = 0
             mameIniDir = SAVES / "mame" / "mame" / "ini"
             mkdir_if_not_exists(mameIniDir)
             if (mameIniDir / "batocera.ini").exists():
                 (mameIniDir / "batocera.ini").unlink()
-            # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbcmicro":
-                if altromtype or softList:
-                    if altromtype == "cass" or softList[-4:] == "cass":
-                        autoRunCmd = '*tape\\nchain""\\n'
-                        autoRunDelay = 2
-                    elif (altromtype and altromtype.startswith("flop")) or "flop" in softList:
-                        autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
-                        autoRunDelay = 3
-                else:
-                    autoRunCmd = '*cat\\n\\n\\n\\n*exec !boot\\n'
-                    autoRunDelay = 3
-            # fm7 boots floppies, needs cassette loading
-            elif system.name == "fm7":
-                if (
-                    system.config.get("altromtype") == "cass"
-                    or (softList != "" and softList[-4:] == "cass")
-                ):
-                    autoRunCmd = 'LOADM”“,,R\\n'
-                    autoRunDelay = 5
-            elif system.name == "coco":
-                romType = 'cart'
-                autoRunDelay = 2
-
-                # if using software list, use "usage" for autoRunCmd (if provided)
-                if softList != "":
-                    softListFile = Path(f'/usr/bin/mame/hash/{softList}.xml')
-                    if softListFile.exists():
-                        softwarelist = ET.parse(softListFile)
-                        for software in softwarelist.findall('software'):
-                            if software.attrib and software.get('name') == romDrivername:
-                                for info in software.iter('info'):
-                                    if info.get('name') == 'usage':
-                                        autoRunCmd = f'{info.get('value')}\\n'
-
-                # if still undefined, default autoRunCmd based on media type
-                if autoRunCmd == "":
-                    if altromtype == "cass" or (softList and softList.endswith("cass")) or rom.suffix.casefold() == ".cas":
-                        romType = 'cass'
-                        if romDrivername.casefold().endswith(".bas"):
-                            autoRunCmd = 'CLOAD:RUN\\n'
-                        else:
-                            autoRunCmd = 'CLOADM:EXEC\\n'
-                    if altromtype == "flop1" or (softList and softList.endswith("flop")) or rom.suffix.casefold() == ".dsk":
-                        romType = 'flop'
-                        if romDrivername.casefold().endswith(".bas"):
-                            autoRunCmd = f'RUN \"{romDrivername}\"\\n'
-                        else:
-                            autoRunCmd = f'LOADM \"{romDrivername}\":EXEC\\n'
-
-                # check for a user override
-                autoRunFile = CONFIGS / 'mame' / 'autoload' / f'{system.name}_{romType}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row and not row[0].startswith('#') and row[0].casefold() == romDrivername.casefold():
-                                autoRunCmd = row[1] + "\\n"
-            elif system.name == "atom":
-                autoRunDelay = 2
-                autoRunCmd = messAutoRun[messMode]
-                if (
-                    (altromtype == "flop1") or
-                    (softList and softList.endswith("flop")) or
-                    is_atom_floppy(rom)
-                ):
-                    autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / 'atom_flop_autoload.csv'
-                    if autoRunFile.exists():
-                        with autoRunFile.open() as openARFile:
-                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                            for row in autoRunList:
-                                if row and not row[0].startswith('#') and row[0].casefold() == rom.stem.casefold():
-                                    autoRunCmd = row[1] + "\\n"
-                                    break
-            else:
-                # Check for an override file, otherwise use generic (if it exists)
-                autoRunCmd = messAutoRun[messMode]
-                autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / f'{softList}_autoload.csv'
-                if autoRunFile.exists():
-                    with autoRunFile.open() as openARFile:
-                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
-                        for row in autoRunList:
-                            if row[0].casefold() == rom.stem.casefold():
-                                autoRunCmd = row[1] + "\\n"
-                                autoRunDelay = 3
+            autoRunCmd, autoRunDelay = get_autorun_command(
+                system.name, mess_system.auto_run, rom, altromtype or None, softList, atom_delay=2
+            )
 
             inipath = SAVES / 'mame' / 'mame' / 'ini'
             commandLine += [ '-inipath', f'"{inipath}"' ]
-            if autoRunCmd != "":
+            if autoRunCmd:
                 if autoRunCmd.startswith("'"):
                     autoRunCmd.replace("'", "")
                 iniFile = (SAVES / 'mame' / 'mame' / 'ini' / 'batocera.ini').open("w")
@@ -472,7 +381,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         cmdFile.close()
 
     # Call Controller Config
-    if messMode == -1:
+    if mess_system is None:
         generateMAMEPadConfig(cfgPath, playersControllers, system, "", rom, specialController, guns)
     else:
         generateMAMEPadConfig(cfgPath, playersControllers, system, messModel, rom, specialController, guns)
@@ -579,25 +488,8 @@ def generateMAMEPadConfig(
     # Get controller scheme
     altButtons = getMameControlScheme(system, rom)
 
-    # Load standard controls from csv
-    controlFile = DEFAULTS_DIR / 'data' / 'mame' / 'mameControls.csv'
-    controlDict: dict[str, dict[str, str]] = {}
-    with controlFile.open() as openFile:
-        controlList = csv.reader(openFile)
-        for row in controlList:
-            if row[0] not in controlDict:
-                controlDict[row[0]] = {}
-            controlDict[row[0]][row[1]] = row[2]
-
     # Common controls
-    mappings: dict[str, str] = {}
-    for controlDef in controlDict['default']:
-        mappings[controlDef] = controlDict['default'][controlDef]
-
-    # Buttons that change based on game/setting
-    if altButtons in controlDict:
-        for controlDef in controlDict[altButtons]:
-            mappings.update({controlDef: controlDict[altButtons][controlDef]})
+    mappings = get_mame_control_mapping(altButtons)
 
     xml_mameconfig = getRoot(config, "mameconfig")
     xml_mameconfig.setAttribute("version", "10") # otherwise, config of pad won't work at first run (batocera v33)
@@ -608,7 +500,6 @@ def generateMAMEPadConfig(
     xml_input = config.createElement("input")
     xml_system.appendChild(xml_input)
 
-    messControlDict = {}
     if messSysName in [ "bbcb", "bbcm", "bbcm512", "bbcmc" ]:
         if specialController == 'none':
             useControls = "bbc"
@@ -629,50 +520,9 @@ def generateMAMEPadConfig(
 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
-    specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
-        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
-    if messSysName in specialControlList:
-        # Load mess controls from csv
-        messControlFile = DEFAULTS_DIR / 'data' / 'mame' / 'messControls.csv'
-        with messControlFile.open() as openMessFile:
-            controlList = csv.reader(openMessFile, delimiter=';')
-            for row in controlList:
-                if row[0] not in messControlDict:
-                    messControlDict[row[0]] = {}
-                messControlDict[row[0]][row[1]] = {}
-                currentEntry = messControlDict[row[0]][row[1]]
-                currentEntry['type'] = row[2]
-                currentEntry['player'] = int(row[3])
-                currentEntry['tag'] = row[4]
-                currentEntry['key'] = row[5]
-                if currentEntry['type'] in [ 'special', 'main' ]:
-                    currentEntry['mapping'] = row[6]
-                    currentEntry['useMapping'] = row[7]
-                    currentEntry['reversed'] = row[8]
-                    currentEntry['mask'] = row[9]
-                    currentEntry['default'] = row[10]
-                elif currentEntry['type'] == 'analog':
-                    currentEntry['incMapping'] = row[6]
-                    currentEntry['decMapping'] = row[7]
-                    currentEntry['useMapping1'] = row[8]
-                    currentEntry['useMapping2'] = row[9]
-                    currentEntry['reversed'] = row[10]
-                    currentEntry['mask'] = row[11]
-                    currentEntry['default'] = row[12]
-                    currentEntry['delta'] = row[13]
-                    currentEntry['axis'] = row[14]
-                if currentEntry['type'] == 'combo':
-                    currentEntry['kbMapping'] = row[6]
-                    currentEntry['mapping'] = row[7]
-                    currentEntry['useMapping'] = row[8]
-                    currentEntry['reversed'] = row[9]
-                    currentEntry['mask'] = row[10]
-                    currentEntry['default'] = row[11]
-                if currentEntry['reversed'] == 'False':
-                    currentEntry['reversed'] = False
-                else:
-                    currentEntry['reversed'] = True
+    messControlDict = get_mess_system_controls(messSysName, useControls)
 
+    if messControlDict is not None:
         config_alt = minidom.Document()
         configFile_alt = cfgPath / f"{messSysName}.cfg"
         if configFile_alt.exists():
@@ -728,7 +578,7 @@ def generateMAMEPadConfig(
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], retroPad[mappings_use[mapping]], False, "", ""))
+                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], retroPad[mappings_use[mapping]], False))
                 else:
                     xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[mappings_use[mapping]], False, altButtons))
             else:
@@ -738,29 +588,28 @@ def generateMAMEPadConfig(
 
         #UI Mappings
         if nplayer == 1:
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_DOWN"]], False, "", ""))      # Down
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_DOWN"]], False))      # Down
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False))    # Left
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False))            # Up
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False)) # Right
+            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False))                                                     # Select
 
-        if useControls in messControlDict:
-            for controlDef in messControlDict[useControls]:
-                thisControl = messControlDict[useControls][controlDef]
-                if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
-                    if thisControl['type'] == 'special':
-                        xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
-                    elif thisControl['type'] == 'main':
-                        xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
-                    elif thisControl['type'] == 'analog':
-                        xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
-                            mappings_use[thisControl['decMapping']], retroPad[mappings_use[thisControl['useMapping1']]], retroPad[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
-                            thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
-                    elif thisControl['type'] == 'combo':
-                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+        if messControlDict:
+            for thisControl in messControlDict.values():
+                if nplayer == thisControl.player and xml_input_alt is not None and config_alt is not None:
+                    if thisControl.type == 'special':
+                        xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl.tag, nplayer, pad.index, thisControl.key, thisControl.mapping, \
+                            retroPad[mappings_use[thisControl.useMapping]], thisControl.reversed, thisControl.mask, thisControl.default))
+                    elif thisControl.type == 'main':
+                        xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl.tag, nplayer, pad.index, thisControl.key, thisControl.mapping, \
+                            retroPad[mappings_use[thisControl.useMapping]], thisControl.reversed, thisControl.mask, thisControl.default))
+                    elif thisControl.type == 'analog':
+                        xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl.tag, nplayer, pad.index, thisControl.key, mappings_use[thisControl.incMapping], \
+                            mappings_use[thisControl.decMapping], retroPad[mappings_use[thisControl.incUseMapping]], retroPad[mappings_use[thisControl.decUseMapping]], thisControl.reversed, \
+                            thisControl.mask, thisControl.default, thisControl.delta, thisControl.axis))
+                    elif thisControl.type == 'combo':
+                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl.tag, pad.index, thisControl.key, thisControl.kbMapping, thisControl.mapping, \
+                            retroPad[mappings_use[thisControl.useMapping]], thisControl.reversed, thisControl.mask, thisControl.default))
 
 
         # save the config file
@@ -772,7 +621,7 @@ def generateMAMEPadConfig(
                 mameXml.write(dom_string)
 
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if messSysName in specialControlList and overwriteSystem and config_alt is not None and configFile_alt is not None:
+        if messControlDict is not None and overwriteSystem and config_alt is not None and configFile_alt is not None:
             with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
                 dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
                 mameXml_alt.write(dom_string_alt)
@@ -799,13 +648,13 @@ def generatePortElement(pad: Controller, config: minidom.Document, nplayer: int,
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: str, reversed: bool, mask: str, default: str):
+def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: str, reversed: bool, mask: int | None = None, default: int | None = None):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
     xml_port.setAttribute("type", mapping)
-    xml_port.setAttribute("mask", mask)
-    xml_port.setAttribute("defvalue", default)
+    xml_port.setAttribute("mask", f'{mask}' if mask is not None else '')
+    xml_port.setAttribute("defvalue", f'{default}' if default is not None else '')
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
@@ -816,13 +665,13 @@ def generateSpecialPortElement(pad: Controller, config: minidom.Document, tag: s
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str, padindex: int, mapping: str, kbkey: str, key: str, input: str, reversed: bool, mask: str, default: str):
+def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str, padindex: int, mapping: str, kbkey: str, key: str, input: str, reversed: bool, mask: int | None = None, default: int | None = None):
     # Maps a keycode + button - for important keyboard keys when available
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
     xml_port.setAttribute("type", mapping)
-    xml_port.setAttribute("mask", mask)
-    xml_port.setAttribute("defvalue", default)
+    xml_port.setAttribute("mask", f'{mask}' if mask is not None else '')
+    xml_port.setAttribute("defvalue", f'{default}' if default is not None else '')
     xml_newseq = config.createElement("newseq")
     xml_newseq.setAttribute("type", "standard")
     xml_port.appendChild(xml_newseq)
@@ -830,14 +679,14 @@ def generateComboPortElement(pad: Controller, config: minidom.Document, tag: str
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, inckey: str, deckey: str, mappedinput: str, mappedinput2: str, reversed: bool, mask: str, default: str, delta: str, axis: str = ''):
+def generateAnalogPortElement(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, inckey: str, deckey: str, mappedinput: str, mappedinput2: str, reversed: bool, mask: int, default: int, delta: int, axis: str = ''):
     # Mapping analog to digital (mouse, etc)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
     xml_port.setAttribute("type", mapping)
-    xml_port.setAttribute("mask", mask)
-    xml_port.setAttribute("defvalue", default)
-    xml_port.setAttribute("keydelta", delta)
+    xml_port.setAttribute("mask", f'{mask}')
+    xml_port.setAttribute("defvalue", f'{default}')
+    xml_port.setAttribute("keydelta", f'{delta}')
     xml_newseq_inc = config.createElement("newseq")
     xml_newseq_inc.setAttribute("type", "increment")
     xml_port.appendChild(xml_newseq_inc)
