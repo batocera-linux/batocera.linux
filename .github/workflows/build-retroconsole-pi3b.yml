@@ -1,0 +1,34 @@
+name: Build RetroConsole for Raspberry Pi 3B
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential curl wget git bash \
+             libssl-dev rsync cpio unzip gettext bc m4 default-jre \
+             locales xz-utils gcc-multilib g++-multilib python3 \
+             imagemagick p7zip-full
+
+    - name: Build the image
+      run: |
+        make batocera-bcm2837_defconfig
+        make
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: retroconsole-pi3b-image
+        path: output/images/batocera-bcm2837.img.gz
