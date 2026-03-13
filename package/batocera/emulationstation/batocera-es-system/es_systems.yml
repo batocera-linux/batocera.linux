@@ -376,8 +376,6 @@ nds:
       melondsds:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS_DS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
-    drastic:
-      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
 
 fds:
   name:       Family Computer Disk System
@@ -519,8 +517,8 @@ megacd:
   release: 1991
   hardware: console
   extensions: [cue, iso, chd, m3u]
-  platform:   segacd
-  theme:      segacd
+  platform:   megacd
+  theme:      megacd
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -537,7 +535,7 @@ sega32x:
     libretro:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
-msu-md:
+megadrive-msu:
   name:       MSU-MD
   manufacturer: Sega
   release: 2020
@@ -545,6 +543,7 @@ msu-md:
   extensions: [md, zip, 7z, squashfs]
   platform:   genesis, megadrive
   group:      megadrive
+  theme: megadrive-msu
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -615,6 +614,58 @@ multivision:
   emulators:
     libretro:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
+
+sc3000:
+  name:       SC-3000
+  manufacturer: Sega
+  release: 1983
+  hardware: computer
+  extensions: [bin, sg, wav, cas, bit, zip, 7z]
+  platform:   sc-3000
+  theme:      sc-3000
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: sc3000.zip (sc3000.rom) in bios/mame/
+    SC-3000 cartridges are compatible with SG-1000.
+    Cassette tapes (.wav, .cas, .bit) are SC-3000 exclusive.
+
+segaai:
+  name:       Sega AI Computer
+  manufacturer: Sega
+  release: 1986
+  hardware: computer
+  extensions: [bin, wav, flac, cas, zip, 7z]
+  platform:   segaai
+  theme:      segaai
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: segaai.zip in bios/mame/
+    Software on Sega My Cards (.bin) or cassette tapes (.wav, .flac, .cas).
+
+beena:
+  name:       Advanced Pico Beena
+  manufacturer: Sega
+  release: 2005
+  hardware: console
+  extensions: [bin, zip, 7z]
+  platform:   beena
+  theme:      beena
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    BIOS: beena.zip in bios/mame/
+    Successor to the Sega Pico. Cartridge-based educational console.
 
 psp:
   name: PlayStation Portable
@@ -991,11 +1042,12 @@ colecovision:
   extensions: [bin, col, rom, zip, 7z]
   emulators:
     libretro:
-      bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      bluemsx:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX] }
+      gearcoleco: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARCOLECO] }
     openmsx:
-      openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+      openmsx:    { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
     clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
+      clk:        { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
   comment_en: |
     ## BIOS ##
 
@@ -1303,12 +1355,14 @@ tic80:
   emulators:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+    tic80:
+      tic80: { requireAnyOf: [BR2_PACKAGE_TIC80] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:tic-80
+    For more info: https://wiki.batocera.org/systems:tic80
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic-80
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic80
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:tic-80
+    Para mais informações: https://wiki.batocera.org/systems:tic80
 
 pico8:
   name:       Pico-8
@@ -1320,11 +1374,11 @@ pico8:
     libretro:
       fake08: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FAKE08] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:pico-8
+    For more info: https://wiki.batocera.org/systems:pico8
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico8
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:pico-8
+    Para mais informações: https://wiki.batocera.org/systems:pico8
 
 lowresnx:
   name:       Lowres NX
@@ -1542,6 +1596,21 @@ amstradcpc:
   comment_br: |
     Para habilitar o suporte ao controle, vá no menu RetroArch com "Hotkey + B" e altere esta opção:
     De "Quick Menu/Core Input Options/User 1 Device type: Retropad" para "Amstrad Joystick"
+
+pcw:
+  name:       Amstrad PCW
+  manufacturer: Amstrad
+  release: 1985
+  hardware: computer
+  extensions: [mfi, dfi, mfm, td0, imd, 86f, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+    Requires MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
+    Games are floppy disk images (.dsk). Most games are self-booting and don't require a separate system disk.
 
 msx1:
   name: MSX1
@@ -1855,13 +1924,87 @@ msxturbor:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
+mz2000:
+  name:       Sharp MZ-2000
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, d88, dsk, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz2000.zip
+          Using software list mode is recommended.
+
+mz2500:
+  name:       Sharp MZ-2500
+  manufacturer: Sharp
+  release: 1985
+  hardware: computer
+  extensions: [d88, dsk, mfi, dfi, hfe, mfm, td0, imd, d77, 1dd, cqm, cqi, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz2500.zip
+          Using software list mode is recommended.
+
+mz700:
+  name:       Sharp MZ-700
+  manufacturer: Sharp
+  release: 1982
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz700.zip
+          Using software list mode is recommended.
+
+mz800:
+  name:       Sharp MZ-800
+  manufacturer: Sharp
+  release: 1984
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz800.zip
+          Using software list mode is recommended.
+
+mz80k:
+  name:       Sharp MZ-80K
+  manufacturer: Sharp
+  release: 1978
+  hardware: computer
+  extensions: [mzf, mzt, m12, wav, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires MAME BIOS file mz80k.zip
+          Using software list mode is recommended.
+
 o2em:
   name:       Odyssey2
   manufacturer: Magnavox - Philips
   release: 1978
   hardware: console
   extensions: [bin, zip, 7z]
-  path:       o2em
   theme:      odyssey2
   emulators:
     libretro:
@@ -2035,16 +2178,16 @@ jaguarcd:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
 gamecube:
-  name:       GameCube
+  name: GameCube
   manufacturer: Nintendo
   release: 2001
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
-  platform:   gc
-  theme:      gc
+  platform: gc
+  theme: gc
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
@@ -2063,15 +2206,15 @@ gamecube:
     Para mais informações: https://wiki.batocera.org/systems:gamecube
 
 triforce:
-  name:       Triforce
+  name: Triforce
   manufacturer: Namco, Sega, Nintendo
   release: 2003
   hardware: arcade
   extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
-  platform:   triforce, arcade
+  platform: triforce, arcade
   emulators:
-    dolphin_triforce:
-      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
+    dolphin:
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
   comment_en: |
     Triforce is an arcade machine based on the GameCube's hardware.
 
@@ -2084,14 +2227,14 @@ triforce:
     Para mais informações: https://wiki.batocera.org/systems:triforce
 
 wii:
-  name:       Wii
+  name: Wii
   manufacturer: Nintendo
   release: 2006
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
@@ -2120,16 +2263,16 @@ wii:
     Para mais informações: https://wiki.batocera.org/systems:wii
 
 ps2:
-  name:       PlayStation 2
+  name: PlayStation 2
   manufacturer: Sony
   release: 2000
   hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u]  }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u] }
     libretro:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2], incompatible_extensions: [m3u] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u] }
@@ -2145,7 +2288,7 @@ ps3:
   manufacturer: Sony
   release: 2006
   hardware: console
-  extensions: [ps3, psn, squashfs]
+  extensions: [ps3, psn, iso, squashfs]
   emulators:
     rpcs3:
       rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
@@ -2215,7 +2358,7 @@ x1:
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
+  extensions: [3ds, cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
   emulators:
     azahar:
       azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR] }
@@ -2531,7 +2674,7 @@ windows_installers:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:windows
 
-xash3d_fwgs:
+halflife:
   name: Half-Life 1
   manufacturer: Ports
   release: 1998
@@ -2554,7 +2697,7 @@ xash3d_fwgs:
     Installation:
 
     Copy the game's directory from your Steam installation (Steam/steamapps/common/Half-Life/<game data folder>/)
-    to /userdata/roms/xash3d_fwgs/<game folder> and create an empty `<game folder>.game` file in the same directory.
+    to /userdata/roms/halflife/<game folder> and create an empty `<game folder>.game` file in the same directory.
 
     For Half-Life 1, the game folder is `valve/`.
   comment_br: |
@@ -2569,7 +2712,7 @@ xash3d_fwgs:
     Instalação:
 
     Copie o diretório do jogo da sua instalação do Steam (Steam/steamapps/common/Half-Life/<game data folder>/)
-    para /userdata/roms/xash3d_fwgs/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
+    para /userdata/roms/halflife/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
 
     Para Half-Life 1, a pasta do jogo é `valve/`.
 
@@ -2624,6 +2767,7 @@ cgenius:
   hardware: port
   extensions: [cgenius]
   platform: pc
+  group: ports
   emulators:
     cgenius:
       cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
@@ -2668,6 +2812,7 @@ imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
   release:
+  theme: screenshots
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm]
   path:       /userdata/screenshots
@@ -2705,12 +2850,6 @@ model3:
     supermodel:
       supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
       supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
-    libretro:
-      archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
-    mame:
-      archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
@@ -3175,7 +3314,7 @@ advision:
   comment_br: |
           Requer o arquivo advision.zip da BIOS do MAME
 
-plugnplay:
+tvgames:
   name:       Plug and Play TV Games
   manufacturer: Various
   release: 2002
@@ -3276,6 +3415,20 @@ crvision:
           Requires MAME BIOS file crvision.zip
   comment_br: |
           Requer o arquivo crvision.zip da BIOS do MAME
+
+ctvboy:
+  name:       Compact Vision TV Boy
+  manufacturer: Gakken
+  release: 1983
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          MAME 0.262+ required
 
 laser310:
   name:       Laser 310
@@ -3474,7 +3627,7 @@ apfm1000:
   comment_br: |
           Requer o arquivo apfm1000.zip da BIOS do MAME
 
-bbc:
+bbcmicro:
   name:       BBC Micro
   manufacturer: Acorn Computers
   release: 1981
@@ -3486,9 +3639,12 @@ bbc:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    clk:
+      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
-          Requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
+          MAME requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Also sample pack bbc.zip in bios/mame/samples
+          CLK requires Acorn/{basic.rom or basic2.rom} (usual crc32: 79434781); BBCMicro/os12.rom (usual crc32: 3c14fc70) and BBCMicro/dfs-2.26.rom (usual crc32: 5ae33e94)
   comment_br: |
           Requer os arquivo de BIOS MAME bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Também pacote de samples bbc.zip em bios/mame/samples
@@ -3541,6 +3697,18 @@ arcadia:
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
+sv8000:
+  name:       Super Vision 8000
+  manufacturer: Bandai
+  release: 1979
+  hardware: console
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
 gmaster:
   name:       Game Master
   manufacturer: Hartung
@@ -3557,7 +3725,7 @@ gmaster:
   comment_br: |
           Requer o arquivo gmaster.zip da BIOS do MAME
 
-astrocde:
+astrocade:
   name:       Astrocade
   manufacturer: Bally
   release: 1978
@@ -3645,6 +3813,58 @@ coco:
           The default is Tandy CoCo 2B (NTSC,T1)
   comment_br: |
           Requer o arquivo coco.zip da BIOS do MAME
+
+dragon64:
+  name: Dragon 64
+  manufacturer: Dragon Data
+  release: 1983
+  hardware: computer
+  extensions: [wav, cas, dsk, dmk, ccc, rom, bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
+  comment_en: |
+          MAME requires BIOS file dragon64.zip (or dragon32.zip for Dragon 32)
+
+          The Dragon 64 is a British home computer from 1983, compatible with Tandy CoCo.
+          It features a Motorola 6809E CPU, 64KB RAM, and Microsoft Extended BASIC.
+
+          Default Autoload Behaviors
+          1. Cartridge (.ccc/.rom) files autoload directly
+          2. Cassette (.cas/.wav) files autoload using CLOADM:EXEC
+          3. Disk (.dsk/.dmk) files autoload from boot disk
+
+          Dragon Models supported by MAME:
+          - Dragon 32 (1982) - 32KB RAM version
+          - Dragon 64 (1983) - 64KB RAM with RS-232 serial port
+          - Dragon Alpha (prototype) - Enhanced Dragon 64
+
+          user definable autoload overrides in: `system/configs/mame/autoload/dragon64_{cass,flop}_autoload.csv`
+  comment_br: |
+          Requer o arquivo dragon64.zip da BIOS do MAME
+
+mc10:
+  name: MC-10
+  manufacturer: Tandy Radio Shack
+  release: 1983
+  hardware: computer
+  extensions: [wav, cas, rom, bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+    xroar:
+      xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
+  comment_en: |
+          MAME requires BIOS file mc10.zip
+
+          Xroar requires BASIC ROMs to be in the /userdata/bios/xroar folder.
+          The required rom files can be obtained from here: https://colorcomputerarchive.com/repo/ROMs/XRoar
 
 vc4000:
   name:       VC 4000
@@ -4054,7 +4274,7 @@ hikaru:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     airtrix: Air Trix (Rev. A)
     airtrixo: Air Trix (original)
     braveff: Brave Firefighters
@@ -4064,7 +4284,7 @@ hikaru:
     sgnascar: NASCAR Arcade (Rev. A)
     sgnascaro: NASCAR Arcade (original)
     von4: Cyber Troopers Virtual-On 4: Force (Rev. E)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Hikaru games under Linux!
@@ -4129,14 +4349,14 @@ gaelco:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     atvtrack: ATV Track (set 1)
     atvtracka: ATV Track (set 2)
     gfootbal: Gaelco Football
     smashdrv: Smashing Drive (World)
     smashdrvb: Smashing Drive (UK)
     smashdrvs: Smashing Drive (Spain, Portugal)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Gaelco games under Linux!
@@ -4201,7 +4421,7 @@ cave3rd:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     akatana: Akai Katana (2010/ 8/13 MASTER VER.)
     deathsmil: Deathsmiles (2007/10/09 MASTER VER)
     dsmbl: Deathsmiles Mega Black Label (2008/10/06 MEGABLACK LABEL VER)
@@ -4231,7 +4451,7 @@ cave3rd:
     pinkswtsa: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER...)
     pinkswtsb: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER.)
     pinkswtsx: Pink Sweets Ibara Sorekara (2006/XX/XX MASTER VER.)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Cave CV1000 games under Linux!
@@ -5159,7 +5379,7 @@ theforceengine:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:theforceengine
 
-iortcw:
+rtcw:
   name: Return To Castle Wolfenstein
   manufacturer: Ports
   release: 2001
@@ -5167,6 +5387,7 @@ iortcw:
   extensions: [rtcw]
   platform: pc
   group: ports
+  theme: rtcw
   emulators:
     iortcw:
       iortcw: { requireAnyOf: [ BR2_PACKAGE_IORTCW ] }
@@ -5463,6 +5684,18 @@ rott:
     Trouvez la documentation ici: https://wiki.batocera.org/systems:taradino
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:taradino
+
+rx78:
+  name:       RX-78
+  manufacturer: Bandai
+  release: 1983
+  hardware: computer
+  extensions: [bin, zip, 7z]
+  emulators:
+    libretro:
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 commanderx16:
   name: Commander X16
@@ -5862,12 +6095,13 @@ bennugd:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
 
-casloopy:
+loopy:
   name:       Casio Loopy
   manufacturer: Casio
   release: 1995
   hardware: console
   extensions: [bin, ic1, zip, 7z]
+  theme: loopy
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
@@ -5914,14 +6148,23 @@ enterprise:
   manufacturer: Enterprise Computers
   release: 1985
   hardware: computer
-  extensions: [bas, com, zip]
+  extensions: [bas, com, zip, img, dsk, tap, dtf, trn, 128, cas, cdt, tzx]
   emulators:
     clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+      clk:      { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [img,dsk,tap,dtf,trn,128,cas,cdt,tzx]  }
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires BIOS files:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+          Requires MAME BIOS file:
+          bios/ep64.zip
+          bios/ep128.zip
+          bios/ep64_exdos.zip
   comment_fr: |
           Nécessite ces fichiers de BIOS:
           bios/Enterprise/basic21.bin
@@ -5930,3 +6173,31 @@ enterprise:
           Requer arquivo de BIOS:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+
+tvc:
+  name:       Videoton TVC
+  manufacturer: Videoton
+  release: 1986
+  hardware: computer
+  extensions: [cas, tap, dsk, img, zip]
+  emulators:
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires BIOS files:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+          bios/tvcfileio.rom
+          Requires MAME BIOS file:
+          bios/mame/tvc64.zip
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom

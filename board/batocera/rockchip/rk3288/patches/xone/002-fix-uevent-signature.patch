@@ -1,0 +1,18 @@
+diff --git a/bus/bus.c b/bus/bus.c
+index 8baa71e..842527e 100644
+--- a/bus/bus.c
++++ b/bus/bus.c
+@@ -26,8 +26,13 @@ static struct device_type gip_adapter_type = {
+ 	.release = gip_adapter_release,
+ };
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
+ static int gip_client_uevent(const struct device *dev,
+ 			     struct kobj_uevent_env *env)
++#else
++static int gip_client_uevent(struct device *dev,
++                             struct kobj_uevent_env *env)
++#endif
+ {
+ 	struct gip_client *client = to_gip_client(dev);
+ 	struct gip_classes *classes = client->classes;

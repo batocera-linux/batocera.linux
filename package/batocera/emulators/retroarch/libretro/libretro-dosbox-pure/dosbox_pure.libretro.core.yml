@@ -92,6 +92,13 @@ custom_features:
       Switzerland (German): sg
       Switzerland (French): sf
       Turkey: tr
+  pure_bootos_ramdisk:
+    prompt: OS DISK MODIFICATIONS
+    description: OS Disk Modifications
+    choices:
+      Keep (default): "false"
+      Discard: "true"
+      Save Difference Per Content: diff
   pure_savestate:
     prompt: SAVESTATE/REWIND
     description: Rewind can be CPU heavy.

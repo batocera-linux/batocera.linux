@@ -1,0 +1,13 @@
+diff --git a/src/citra_qt/citra_qt.cpp b/src/citra_qt/citra_qt.cpp.new
+index e2077aa..1b34b8e 100644
+--- a/src/citra_qt/citra_qt.cpp
++++ b/src/citra_qt/citra_qt.cpp.new
+@@ -2530,6 +2530,8 @@ void GMainWindow::OnStopGame() {
+     graphics_api_button->setEnabled(true);
+     Settings::RestoreGlobalState(false);
+     UpdateStatusButtons();
++    // batcoera - close all windows
++    this->close();
+ }
+ 
+ void GMainWindow::OnLoadComplete() {

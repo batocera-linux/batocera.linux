@@ -8,10 +8,12 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
+
+
 if [[ -x /usr/bin/dolphin-emu ]]; then
     XDG_CONFIG_HOME=/userdata/system/configs \
         XDG_DATA_HOME=/userdata/saves \
-        /usr/bin/dolphin-emu
+        /usr/bin/dolphin-emu.desktopconfig
 else
     echo "System not found."
     exit 1

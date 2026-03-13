@@ -1,0 +1,13 @@
+diff --git a/src/tmt300rs/hid-tmt300rs.c b/src/tmt300rs/hid-tmt300rs.c.new
+index f83e3aff46..924b30fbb6 100644
+--- a/src/tmt300rs/hid-tmt300rs.c
++++ b/src/tmt300rs/hid-tmt300rs.c.new
+@@ -368,7 +368,7 @@ static void t300rs_calculate_periodic_values(struct ff_effect *effect)
+ 	headroom = 0x7fff - periodic->magnitude;
+ 	/* magnitude + offset cannot be outside the valid magnitude range, */
+ 	/* otherwise the wheel behaves incorrectly */
+-	periodic->offset = clamp(periodic->offset, -headroom, headroom);
++	periodic->offset = clamp_t(s16, periodic->offset, -headroom, headroom);
+ }
+ 
+ static uint16_t t300rs_condition_max_saturation(uint16_t effect_type)

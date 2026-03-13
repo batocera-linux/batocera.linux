@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import shutil
 from pathlib import Path
 from shutil import copyfile
@@ -8,14 +7,12 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
-from ...controller import Controller, generate_sdl_game_controller_config
-from ...exceptions import BatoceraException
+from ...controller import generate_sdl_game_controller_config
 from ...gun import Guns, guns_need_crosses
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 

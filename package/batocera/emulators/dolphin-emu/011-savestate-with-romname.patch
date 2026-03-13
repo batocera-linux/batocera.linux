@@ -88,31 +88,35 @@ diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
 index c298dd1..e6d71f4 100644
 --- a/Source/Core/Core/State.cpp
 +++ b/Source/Core/Core/State.cpp
-@@ -327,7 +327,10 @@ static std::string SystemTimeAsDoubleToString(double time)
- #endif
+@@ -301,11 +301,10 @@ static std::string SystemTimeAsDoubleToString(double time)
+   return fmt::format(std::locale{""}, "{:%x %X}", *local_time);
  }
  
--static std::string MakeStateFilename(int number);
+-static std::string MakeStateFilename(int number)
+-{
+-  return fmt::format("{}{}.s{:02d}", File::GetUserPath(D_STATESAVES_IDX),
+-                     SConfig::GetInstance().GetGameID(), number);
+-}
 +static std::string MakeStateFilename(bool useId, int number);
 +static std::string MakeStateFilename_partdirectory(int number);
 +static std::string MakeStateFilename_partfileName(int number);
 +static std::string MakeStateFilename_partfileID(int number);
  
- // read state timestamps
- static std::map<double, int> GetSavedStates()
-@@ -336,7 +339,7 @@ static std::map<double, int> GetSavedStates()
-   std::map<double, int> m;
-   for (int i = 1; i <= (int)NUM_STATES; i++)
+ static std::vector<SlotWithTimestamp> GetUsedSlotsWithTimestamp()
+ {
+@@ -313,7 +312,7 @@ static std::vector<SlotWithTimestamp> GetUsedSlotsWithTimestamp()
+   StateHeader header;
+   for (int i = 1; i <= int(NUM_STATES); ++i)
    {
 -    std::string filename = MakeStateFilename(i);
 +    std::string filename = MakeStateFilename(true, i);
-     if (File::Exists(filename))
-     {
-       if (ReadHeader(filename, header))
-@@ -536,7 +539,7 @@ bool ReadHeader(const std::string& filename, StateHeader& header)
+     if (!File::Exists(filename) || !ReadHeader(filename, header))
+       continue;
  
- std::string GetInfoStringOfSlot(int slot, bool translate)
+@@ -609,7 +608,7 @@ std::string GetInfoStringOfSlot(int slot, bool translate)
  {
+   std::lock_guard lk{s_state_saves_in_progress};
+ 
 -  std::string filename = MakeStateFilename(slot);
 +  std::string filename = MakeStateFilename(true, slot);
    if (!File::Exists(filename))
@@ -127,18 +131,12 @@ index c298dd1..e6d71f4 100644
      return 0;
  
    constexpr u64 MS_PER_SEC = 1000;
-@@ -968,20 +968,49 @@ void Shutdown()
-   }
+@@ -899,14 +898,46 @@ void Shutdown()
+   s_flush_unsaved_data_hook.reset();
  }
  
--static std::string MakeStateFilename(int number)
 +static std::string MakeStateFilename(bool useId, int number)
- {
--  return fmt::format("{}{}.s{:02d}", File::GetUserPath(D_STATESAVES_IDX),
--                     SConfig::GetInstance().GetGameID(), number);
-+  // if the useId flag is set : if the file with name exits, returns it, otherwise, if the file with id exists, returns it, otherwise, return the file with name
-+  // => priority with the file with name.
-+  // if the game is not loaded from a file (disk), use the gameId
++{
 +  std::string filePartName = MakeStateFilename_partfileName(number);
 +  std::string fileWithName = fmt::format("{}{}", MakeStateFilename_partdirectory(number), filePartName);
 +  if (File::Exists(fileWithName) && filePartName != "")
@@ -165,13 +163,13 @@ index c298dd1..e6d71f4 100644
 +  std::string basesavestate = SConfig::GetInstance().GetBaseSaveState();
 +  if(basesavestate == "") return "";
 +  return fmt::format("{}.s{:02d}", basesavestate, number);
- }
- 
- void Save(Core::System& system, int slot, bool wait)
++}
++
+ void Save(Core::System& system, int slot)
  {
--  SaveAs(system, MakeStateFilename(slot), wait);
+-  SaveAs(system, MakeStateFilename(slot));
 +  std::string savePath = MakeStateFilename(false, slot);
-+  SaveAs(system, savePath, wait);
++  SaveAs(system, savePath);
 +  Core::SaveScreenShotWithPath(MakeStateFilename_partdirectory(slot), PathToFileName(savePath));
  }
  
@@ -182,3 +180,21 @@ index c298dd1..e6d71f4 100644
  }
  
  void LoadLastSaved(Core::System& system, int i)
+@@ -926,7 +957,7 @@ void LoadLastSaved(Core::System& system, int i)
+     }
+ 
+     std::ranges::stable_sort(used_slots, std::ranges::greater{}, &SlotWithTimestamp::timestamp);
+-    LoadAsFromCore(system, MakeStateFilename(used_slots[i].slot));
++    LoadAsFromCore(system, MakeStateFilename(true, used_slots[i].slot));
+   });
+ }
+ 
+@@ -945,7 +976,7 @@ void SaveFirstSaved(Core::System& system)
+       slot = used_slots.front().slot;
+     }
+ 
+-    SaveAsFromCore(system, MakeStateFilename(*slot));
++    SaveAsFromCore(system, MakeStateFilename(false, *slot));
+   });
+ }
+ 

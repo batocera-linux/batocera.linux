@@ -175,6 +175,7 @@ fi
 # Vulkan
 if command -v vulkaninfo >/dev/null; then
     vulkaninfo --summary > "${DDISPLAY}/vulkan_summary.txt" 2>/dev/null
+    vulkaninfo > "${DDISPLAY}/vulkan_info.txt" 2>/dev/null
 fi
 
 # Wayland Compositor State (Sway)

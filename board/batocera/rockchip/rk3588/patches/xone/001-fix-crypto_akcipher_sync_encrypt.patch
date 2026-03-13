@@ -1,0 +1,37 @@
+diff --git a/auth/crypto.c b/auth/crypto.c
+index 64dd738..731481a 100644
+--- a/auth/crypto.c
++++ b/auth/crypto.c
+@@ -15,6 +15,32 @@
+ 
+ #define GIP_AUTH_ECDH_SECRET_LEN 32
+ 
++/* 
++ * Fix for Rockchip 6.1 Kernels:
++ * These kernels are often missing the sync helper found in standard 5.19+ kernels.
++ */
++static inline int crypto_akcipher_sync_encrypt(struct crypto_akcipher *tfm,
++					       const void *src, unsigned int slen,
++					       void *dst, unsigned int dlen)
++{
++	struct akcipher_request *req;
++	struct scatterlist src_sg, dst_sg;
++	int err;
++
++	req = akcipher_request_alloc(tfm, GFP_KERNEL);
++	if (!req)
++		return -ENOMEM;
++
++	sg_init_one(&src_sg, src, slen);
++	sg_init_one(&dst_sg, dst, dlen);
++	akcipher_request_set_crypt(req, &src_sg, &dst_sg, slen, dlen);
++
++	err = crypto_akcipher_encrypt(req);
++
++	akcipher_request_free(req);
++	return err;
++}
++
+ struct shash_desc *gip_auth_alloc_shash(const char *alg)
+ {
+ 	struct crypto_shash *tfm;

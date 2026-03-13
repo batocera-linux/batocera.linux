@@ -1,0 +1,32 @@
+diff --git a/webview/platforms/gtk.py b/webview/platforms/gtk.py
+index 896749c..18e85e6 100755
+--- a/webview/platforms/gtk.py
++++ b/webview/platforms/gtk.py
+@@ -77,6 +77,27 @@ class BrowserView:
+         self.js_results = {}
+ 
+         self.window = gtk.ApplicationWindow(title=window.title, application=_app)
++
++        ### hack to transform as a non focus window
++        # wayland GtkLayerShell
++        if not window.focus:
++            if "WAYLAND_DISPLAY" in os.environ:
++                import subprocess
++                gi.require_version('GtkLayerShell', '0.1')
++                from gi.repository import GtkLayerShell
++                GtkLayerShell.init_for_window(self.window)
++                GtkLayerShell.set_layer(self.window, GtkLayerShell.Layer.BACKGROUND) # declare as a decorative, non active, background (any window will go above)
++                display = Gdk.Display.get_default()
++                monitor_idx = 1 # on batocera, 0 is the main screen, and 1 is the backglass (i'm not completly sure it is correct)
++                monitor = display.get_monitor(monitor_idx)
++                GtkLayerShell.set_monitor(self.window, monitor)
++                # extend to full screen
++                GtkLayerShell.set_anchor(self.window, GtkLayerShell.Edge.TOP, True)
++                GtkLayerShell.set_anchor(self.window, GtkLayerShell.Edge.BOTTOM, True)
++                GtkLayerShell.set_anchor(self.window, GtkLayerShell.Edge.LEFT, True)
++                GtkLayerShell.set_anchor(self.window, GtkLayerShell.Edge.RIGHT, True)
++        ###
++
+         self.pywebview_window.native = self.window
+ 
+         self.shown = window.events.shown

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+
 from ..batoceraPaths import ES_SETTINGS
+
 
 # Return value for ES InvertButtons (are confirm/cancel swapped)
 def getInvertButtonsValue() -> bool:

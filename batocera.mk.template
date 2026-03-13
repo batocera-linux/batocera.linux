@@ -1,10 +1,9 @@
 # DL_DIR      :=
 # OUTPUT_DIR  :=
 # CCACHE_DIR  :=
-# EXTRA_OPTS  :=  BR2_PACKAGE_BATOCERA_DEV=y BR2_CCACHE_INITIAL_SETUP=\"--max-size=50G\" 
 # DOCKER_OPTS :=
 # DOCKER_REPO :=
-# IMAGE_NAME  :=
+# DOCKER_IMAGE_NAME  :=
 # MAKE_JLEVEL := 4
 # MAKE_LLEVEL := 4
 # BATCH_MODE  := y
@@ -18,3 +17,6 @@
 
 # SERIAL_DEV      := /dev/tty.usbserial-14310
 # SERIAL_BAUDRATE := 115200
+
+# $(call add-defconfig,BR2_PACKAGE_BATOCERA_DEV=y)
+# $(call add-defconfig,BR2_CCACHE_INITIAL_SETUP="--max-size=50G")

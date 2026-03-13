@@ -1,0 +1,208 @@
+diff --git a/src/lindbergh/config.c b/src/lindbergh/config.c
+index b47296e..3a4699b 100644
+--- a/src/lindbergh/config.c
++++ b/src/lindbergh/config.c
+@@ -423,6 +423,7 @@ void applyIniConfig(EmulatorConfig *config, const IniConfig *ini)
+ 
+     // [EVDEV]
+     getString(ini, "EVDEV", "TEST_BUTTON", config->arcadeInputs.test, INPUT_STRING_LENGTH);
++    getString(ini, "EVDEV", "EXIT_GAME", config->arcadeInputs.exit_game, INPUT_STRING_LENGTH);
+     getString(ini, "EVDEV", "PLAYER_1_COIN", config->arcadeInputs.player1_coin, INPUT_STRING_LENGTH);
+     getString(ini, "EVDEV", "PLAYER_1_BUTTON_START", config->arcadeInputs.player1_button_start, INPUT_STRING_LENGTH);
+     getString(ini, "EVDEV", "PLAYER_1_BUTTON_SERVICE", config->arcadeInputs.player1_button_service, INPUT_STRING_LENGTH);
+diff --git a/src/lindbergh/config.h b/src/lindbergh/config.h
+index 5be1187..b66a71e 100644
+--- a/src/lindbergh/config.h
++++ b/src/lindbergh/config.h
+@@ -192,6 +192,9 @@ typedef struct {
+     // Test button
+     char test[INPUT_STRING_LENGTH];
+ 
++    // Exit game
++    char exit_game[INPUT_STRING_LENGTH];
++
+     // Player 1 controls
+     char player1_button_start[INPUT_STRING_LENGTH];
+     char player1_button_service[INPUT_STRING_LENGTH];
+diff --git a/src/lindbergh/configIni.c b/src/lindbergh/configIni.c
+index 192da66..c10a495 100644
+--- a/src/lindbergh/configIni.c
++++ b/src/lindbergh/configIni.c
+@@ -166,7 +166,8 @@ void createDefaultIni(const char *filePath)
+     // [EVDEV]
+     fprintf(file, "[EVDEV]\n");
+     fprintf(file, "# EVDEV MODE (Input Mode 2)\n# To find the value pairs for these run ./lindbergh --list-controllers\n\n");
+-    fprintf(file, "#TEST_BUTTON = \"AT_TRANSLATED_SET_2_KEYBOARD_KEY_T\"\n\n");
++    fprintf(file, "#TEST_BUTTON = \"AT_TRANSLATED_SET_2_KEYBOARD_KEY_T\"\n");
++    fprintf(file, "#EXIT_GAME = \"\"\n\n");
+     fprintf(file, "#PLAYER_1_COIN = \"AT_TRANSLATED_SET_2_KEYBOARD_KEY_5\"\n");
+     fprintf(file, "#PLAYER_1_BUTTON_START = \"AT_TRANSLATED_SET_2_KEYBOARD_KEY_1\n");
+     fprintf(file, "#PLAYER_1_BUTTON_SERVICE = \"AT_TRANSLATED_SET_2_KEYBOARD_KEY_S\"\n");
+diff --git a/src/lindbergh/controlIniGen.c b/src/lindbergh/controlIniGen.c
+index 1b3fbfb..a52519e 100644
+--- a/src/lindbergh/controlIniGen.c
++++ b/src/lindbergh/controlIniGen.c
+@@ -9,6 +9,7 @@
+ 
+ const ControlBinding gDefaultCommonBindings[] = {
+     {INPUT_TYPE_KEY, 0, SDL_SCANCODE_T, AXIS_MODE_DIGITAL, 0, false, SYSTEM, LA_Test},
++    {INPUT_TYPE_KEY, 0, SDL_SCANCODE_ESCAPE, AXIS_MODE_DIGITAL, 0, false, SYSTEM, LA_ExitGame},
+     {INPUT_TYPE_KEY, 0, SDL_SCANCODE_5, AXIS_MODE_DIGITAL, 0, false, PLAYER_1, LA_Coin},
+     {INPUT_TYPE_KEY, 0, SDL_SCANCODE_6, AXIS_MODE_DIGITAL, 0, false, PLAYER_2, LA_Coin},
+     {INPUT_TYPE_KEY, 0, SDL_SCANCODE_1, AXIS_MODE_DIGITAL, 0, false, PLAYER_1, LA_Start},
+diff --git a/src/lindbergh/evdevInput.c b/src/lindbergh/evdevInput.c
+index 554cfe6..81df88a 100644
+--- a/src/lindbergh/evdevInput.c
++++ b/src/lindbergh/evdevInput.c
+@@ -19,6 +19,7 @@
+ #include "crossHair.h"
+ #include "jvs.h"
+ #include "log.h"
++#include "sdlCalls.h"
+ 
+ extern uint32_t gId;
+ extern int gGrp;
+@@ -82,6 +83,8 @@ ArcadeInput arcadeInputs[] = {{"TEST_BUTTON", 0, BUTTON_TEST, 1},
+                               {"ANALOGUE_7", 0, ANALOGUE_7, 1},
+                               {"ANALOGUE_8", 0, ANALOGUE_8, 1},
+ 
++                              {"EXIT_GAME", 0, EXIT_GAME, 1},
++
+                               {"END", 0, 0, 0}};
+ 
+ static const char *const events[EV_MAX + 1] = {
+@@ -1246,6 +1249,13 @@ void *controllerThread(void *_args)
+                     if (!args->controller->keyTriggers[event.code].enabled)
+                         continue;
+ 
++                    if (args->controller->keyTriggers[event.code].isExitGame == 1)
++                    {
++                        if (event.value == 1)
++                            sdlQuit();
++                        continue;
++                    }
++
+                     if (args->controller->keyTriggers[event.code].isAnalogue)
+                     {
+                         setAnalogue(args->controller->keyTriggers[event.code].channel, event.value == 0 ? 0 : 1 * (pow(2, jvsBits) - 1));
+@@ -1419,6 +1429,8 @@ char *getMapping(char *mapping)
+     // Test button
+     if (strcmp(mapping, config->arcadeInputs.test) == 0)
+         return "TEST_BUTTON";
++    if (strcmp(mapping, config->arcadeInputs.exit_game) == 0)
++        return "EXIT_GAME";
+     if (strcmp(mapping, config->arcadeInputs.player1_coin) == 0)
+         return "PLAYER_1_COIN";
+     if (strcmp(mapping, config->arcadeInputs.player2_coin) == 0)
+@@ -1554,6 +1566,7 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+             controllers->controller[i].keyTriggers[j].enabled = 0;
+             controllers->controller[i].keyTriggers[j].isAnalogue = 0;
+             controllers->controller[i].keyTriggers[j].isCoin = 0;
++            controllers->controller[i].keyTriggers[j].isExitGame = 0;
+         }
+ 
+         for (int j = 0; j < controllers->controller[i].inputCount; j++)
+@@ -1666,6 +1679,11 @@ ControllerStatus startControllerThreads(Controllers *controllers)
+                     {
+                         controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].isCoin = 1;
+                     }
++
++                    if (strcmp(input.name, "EXIT_GAME") == 0)
++                    {
++                        controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].isExitGame = 1;
++                    }
+                 }
+                 break;
+ 
+diff --git a/src/lindbergh/evdevInput.h b/src/lindbergh/evdevInput.h
+index ab47b42..7734a7e 100644
+--- a/src/lindbergh/evdevInput.h
++++ b/src/lindbergh/evdevInput.h
+@@ -40,6 +40,7 @@ typedef struct
+     double shakePreviousScaled;
+ 
+     int isCoin;
++    int isExitGame;
+ } ArcadeInput;
+ 
+ typedef enum
+diff --git a/src/lindbergh/jvs.h b/src/lindbergh/jvs.h
+index f60bd2f..c2e3f00 100644
+--- a/src/lindbergh/jvs.h
++++ b/src/lindbergh/jvs.h
+@@ -137,6 +137,7 @@ typedef enum
+     ROTARY_10 = 9,
+ 
+     /* Things that aren't actually doable */
++    EXIT_GAME = 97,
+     COIN = 98,
+     NONE = 99,
+ } JVSInput;
+diff --git a/src/lindbergh/sdlCalls.h b/src/lindbergh/sdlCalls.h
+index dd26471..4d5bf8e 100644
+--- a/src/lindbergh/sdlCalls.h
++++ b/src/lindbergh/sdlCalls.h
+@@ -4,4 +4,5 @@
+ 
+ int initSDL();
+ void startSDL(int *argcp, char **argv);
++void sdlQuit();
+ void pollEvents();
+diff --git a/src/lindbergh/sdlInput.c b/src/lindbergh/sdlInput.c
+index bec3df4..5413bc7 100644
+--- a/src/lindbergh/sdlInput.c
++++ b/src/lindbergh/sdlInput.c
+@@ -23,6 +23,7 @@
+ #include "sdlInput.h"
+ #include "jvs.h"
+ #include "log.h"
++#include "sdlCalls.h"
+ #include "touchScreen.h"
+ #include "wiimoteEvdev.h"
+ 
+@@ -163,7 +164,8 @@ const struct
+                       {"ButtonPon", LA_Pon},
+                       {"ButtonKan", LA_Kan},
+                       {"ButtonAgari", LA_Agari},
+-                      {"ButtonCancel", LA_Cancel}};
++                      {"ButtonCancel", LA_Cancel},
++                      {"ExitGame", LA_ExitGame}};
+ 
+ const int NUM_ACTION_NAMES = sizeof(gActionNameMap) / sizeof(gActionNameMap[0]);
+ 
+@@ -427,6 +429,8 @@ bool parseActionKey(const char *key, JVSPlayer *out_player, LogicalAction *out_a
+         strcpy(genericKey, key);
+         if (strcmp(genericKey, "Test") == 0)
+             *out_player = SYSTEM;
++        if (strcmp(genericKey, "ExitGame") == 0)
++            *out_player = SYSTEM;
+     }
+     for (int i = 0; i < NUM_ACTION_NAMES; i++)
+     {
+@@ -1835,6 +1839,14 @@ void processChangedActions()
+     {
+         JVSPlayer player = gChangedActions[i].player;
+         LogicalAction actionId = gChangedActions[i].action;
++
++        // Exit game triggers a clean shutdown via sdlQuit()
++        if (actionId == LA_ExitGame && gActionStates[player][actionId].isActive)
++        {
++            sdlQuit();
++            continue;
++        }
++
+         JVSActionMapping *map = &gJvsMap[player][actionId];
+         ActionState *state = &gActionStates[player][actionId];
+         switch (map->call_type)
+diff --git a/src/lindbergh/sdlInput.h b/src/lindbergh/sdlInput.h
+index 3597f6e..272701c 100644
+--- a/src/lindbergh/sdlInput.h
++++ b/src/lindbergh/sdlInput.h
+@@ -95,6 +95,7 @@ typedef enum
+     LA_Kan,
+     LA_Agari,
+     LA_Cancel,
++    LA_ExitGame,
+     NUM_LOGICAL_ACTIONS
+ } LogicalAction;
+ 

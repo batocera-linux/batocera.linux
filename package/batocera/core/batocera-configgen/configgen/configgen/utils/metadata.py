@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
-from pathlib import Path
 import xml.etree.ElementTree as ET
+from pathlib import Path
 from typing import Final
 
 _logger = logging.getLogger(__name__)
@@ -27,7 +29,7 @@ _ARCADE_SYSTEMS: Final = {
     'namco22',
 }
 
-def shortNameFromPath(path: str | Path) -> str:
+def _short_name_from_path(path: str | Path) -> str:
     redname = Path(path).stem.lower()
     inpar   = False
     inblock = False
@@ -52,11 +54,11 @@ def _update_metadata_from_element(md: dict[str, str], element: ET.Element, /, ex
             md[key] = attrib_value
             _logger.info("found game metadata %s=%s%s", key, attrib_value, extra_log_text)
 
-def getGamesMetaData(db_xml: str | Path, system: str, rom: str | Path) -> dict[str, str]:
+def get_games_meta_data(db_xml: str | Path, system: str, rom: str | Path) -> dict[str, str]:
     # load the database
     tree = ET.parse(db_xml)
     root: ET.Element = tree.getroot()
-    game = shortNameFromPath(rom)
+    game = _short_name_from_path(rom)
     md: dict[str, str] = {}
 
     _logger.info("looking for game metadata (%s, %s) in %s", system, game, db_xml)
