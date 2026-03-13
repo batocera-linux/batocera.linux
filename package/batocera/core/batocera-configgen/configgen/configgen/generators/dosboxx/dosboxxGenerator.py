@@ -51,13 +51,8 @@ class DosBoxxGenerator(Generator):
         autoexecFile = rom / "dosbox.aut"
         if autoexecFile.exists():
             # Read dosbox.aut and append it to the custom config file
-            f1 = open(customConfFile, 'a+')
-            f2 = open(autoexecFile, 'r')
-
-            f1.write(f2.read())
-
-            f1.close()
-            f2.close()
+            with customConfFile.open('a+') as f1:
+                f1.write(autoexecFile.read_text())
 
             # Setting the defaultdir to the rom dir.
             # This way we can use relative paths to the rom directory

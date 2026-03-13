@@ -117,10 +117,10 @@ class MameGenerator(Generator):
             softList = 'fmtowns_cd'
 
         commandArray: list[str | Path] =  [ "/usr/bin/mame/mame" ]
-        
+
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
-        
+
         # set audio to pipewire to fix audio from 0.278
         commandArray += [ "-sound", "pipewire" ]
         # skip game info at start
@@ -323,9 +323,13 @@ class MameGenerator(Generator):
                 commandArray += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
+            if system.name == "bbcmicro" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
                 commandArray += ["-analogue", sticktype]
                 specialController = sticktype
+
+            # Enterprise
+            if system.name == "enterprise":
+                commandArray += ['-exp', 'exdos']
 
             # Apple II
             if system.name == "apple2":
@@ -464,7 +468,7 @@ class MameGenerator(Generator):
             autoRunDelay = 0
             # Autostart computer games where applicable
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList.endswith("cass"):
                         autoRunCmd = '*tape\\nchain""\\n'

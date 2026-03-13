@@ -27,11 +27,77 @@ case "$HW_DEVICE" in
     ;;
 esac
 
-ELF="/usr/share/bootloader/rocknix_abl/abl_signed-${HW_DEVICE}.elf"
-SHA256SUM="/usr/share/bootloader/rocknix_abl/abl_signed-${HW_DEVICE}.elf.sha256"
+ABL_DIR="/usr/share/bootloader/rocknix_abl"
+ELF="${ABL_DIR}/abl_signed-${HW_DEVICE}.elf"
+SHA256SUM="${ABL_DIR}/abl_signed-${HW_DEVICE}.elf.sha256"
 
 ABL_A="/dev/disk/by-partlabel/abl_a"
 ABL_B="/dev/disk/by-partlabel/abl_b"
+
+# Ensure the ABL directory exists
+mkdir -p "$ABL_DIR"
+
+# ---- GitHub Online Check Logic ----
+if [[ "${1:-}" == "--check-online" ]]; then
+    echo "Checking GitHub for ABL updates..."
+    
+    # URL pointing to the raw files on GitHub 
+    GITHUB_BASE_URL="https://github.com/ROCKNIX/abl/raw/refs/heads/master"
+    REMOTE_SHA_URL="${GITHUB_BASE_URL}/abl_signed-${HW_DEVICE}.elf.sha256"
+    REMOTE_ELF_URL="${GITHUB_BASE_URL}/abl_signed-${HW_DEVICE}.elf"
+
+    # Fetch remote SHA256 sum, suppress error if unreachable to allow local fallback
+    REMOTE_SHA_CONTENT=$(curl -sL --fail "$REMOTE_SHA_URL" || true)
+    
+    if [ -n "$REMOTE_SHA_CONTENT" ]; then
+        REMOTE_HASH=$(echo "$REMOTE_SHA_CONTENT" | awk '{print $1}')
+        
+        # Determine local hash
+        LOCAL_HASH=""
+        if [ -f "$SHA256SUM" ]; then
+            LOCAL_HASH=$(awk '{print $1}' "$SHA256SUM")
+        fi
+
+        if [ "$REMOTE_HASH" != "$LOCAL_HASH" ]; then
+            echo "A newer or different ABL bootloader is available online!"
+            read -p "Do you want to download and flash the new ABL update? (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                echo "Downloading new ABL files..."
+                if ! wget -q -O "${SHA256SUM}.tmp" "$REMOTE_SHA_URL" || ! wget -q --show-progress -O "${ELF}.tmp" "$REMOTE_ELF_URL"; then
+                    echo "Error: Failed to download files from GitHub. Aborting update."
+                    rm -f "${SHA256SUM}.tmp" "${ELF}.tmp"
+                    exit 1
+                fi
+                
+                # Verify the downloaded file matches the remote hash
+                echo "Verifying downloaded file..."
+                DOWNLOADED_HASH=$(sha256sum "${ELF}.tmp" | awk '{print $1}')
+                if [ "$DOWNLOADED_HASH" != "$REMOTE_HASH" ]; then
+                    echo "Error: Downloaded file checksum does not match! Aborting update."
+                    rm -f "${SHA256SUM}.tmp" "${ELF}.tmp"
+                    exit 1
+                fi
+                
+                # Apply new files
+                mv "${SHA256SUM}.tmp" "$SHA256SUM"
+                mv "${ELF}.tmp" "$ELF"
+                echo "Download complete and verified."
+            else
+                echo "Skipping ABL update download."
+                # If local files don't exist and user skips download, we must exit
+                if [ ! -f "$ELF" ]; then
+                    echo "No local ABL files exist. Exiting."
+                    exit 0
+                fi
+            fi
+        else
+            echo "The latest ABL is already downloaded locally."
+        fi
+    else
+        echo "Warning: Could not reach GitHub to check for ABL updates. Proceeding with local files if they exist."
+    fi
+fi
 
 # ---- Sanity checks ----
 if [ ! -f "${ELF}" ]; then

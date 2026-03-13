@@ -1,7 +1,7 @@
-diff --git a/src/lindbergh/evdevinput.c b/src/lindbergh/evdevinput.c
+diff --git a/src/lindbergh/evdevInput.c b/src/lindbergh/evdevInput.c
 index 4dfa26d..4cffb30 100644
---- a/src/lindbergh/evdevinput.c
-+++ b/src/lindbergh/evdevinput.c
+--- a/src/lindbergh/evdevInput.c
++++ b/src/lindbergh/evdevInput.c
 @@ -938,11 +938,16 @@ static ControllerStatus listControllers(Controllers *controllers)
  
          if (test_bit(EV_ABS, bit[0]))
@@ -21,10 +21,10 @@ index 4dfa26d..4cffb30 100644
                      controllers->controller[i].enabled = 1;
                      ControllerInput *controllerInput =
                          &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
-diff --git a/src/lindbergh/evdevinput.h b/src/lindbergh/evdevinput.h
+diff --git a/src/lindbergh/evdevInput.h b/src/lindbergh/evdevInput.h
 index bd80be6..17d408c 100644
---- a/src/lindbergh/evdevinput.h
-+++ b/src/lindbergh/evdevinput.h
+--- a/src/lindbergh/evdevInput.h
++++ b/src/lindbergh/evdevInput.h
 @@ -4,7 +4,7 @@
  
  #define SIZE 300

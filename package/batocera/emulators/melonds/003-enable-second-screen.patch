@@ -20,6 +20,28 @@ index 09a9ca1af8..5d035223de 100644
      {"ScreenFilter",        1, "Screen.Filter", false},
      {"ScreenUseGL",         1, "Screen.UseGL", false},
      {"ScreenVSync",         1, "Screen.VSync", false},
+diff --git a/src/frontend/qt_sdl/Window.cpp b/src/frontend/qt_sdl/Window.cpp
+index aaf351b..40f2e7a 100644
+--- a/src/frontend/qt_sdl/Window.cpp
++++ b/src/frontend/qt_sdl/Window.cpp
+@@ -259,7 +259,7 @@ MainWindow::MainWindow(int id, EmuInstance* inst, QWidget* parent) :
+ 
+     showOSD = windowCfg.GetBool("ShowOSD");
+ 
+-    setWindowTitle("melonDS " MELONDS_VERSION);
++    setWindowTitle(QString("[w%1] melonDS %2").arg(windowID + 1).arg(MELONDS_VERSION));
+     setAttribute(Qt::WA_DeleteOnClose);
+     setAcceptDrops(true);
+     setFocusPolicy(Qt::ClickFocus);
+@@ -859,6 +859,8 @@ void MainWindow::closeEvent(QCloseEvent* event)
+     // emuInstance may be deleted
+     // prevent use after free from us
+     emuInstance = nullptr;
++    // batocera, close both windows
++    qApp->quit();
+     QMainWindow::closeEvent(event);
+ }
+ 
 diff --git a/src/frontend/qt_sdl/main.cpp b/src/frontend/qt_sdl/main.cpp
 index 0e077b7630..03e6dc0924 100644
 --- a/src/frontend/qt_sdl/main.cpp

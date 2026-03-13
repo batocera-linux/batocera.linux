@@ -73,11 +73,17 @@
         <output></output>
       </action>
     </windowRule>
-    <windowRule title="Batocera OSD">
+    <windowRule identifier="batocera-flash-screen*" title="Batocera OSD*">
       <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
     </windowRule>
     <windowRule title="Batocera Control Center">
       <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
     </windowRule>
     <windowRule title="backglass">
       <action name="MoveToOutput">
@@ -115,6 +121,17 @@
       <action name="ToggleFullscreen" />
     </windowRule>
     <windowRule identifier="xterm" serverDecoration="yes" />
-    <windowRule identifier="batocera-config-scummvm" serverDecoration="yes" />
+    <windowRule identifier="batocera-config-*" serverDecoration="yes" />
+    <windowRule identifier="*.desktopconfig" serverDecoration="yes" />
+    <windowRule identifier="duckstation-qt" serverDecoration="yes" />
+    <windowRule identifier="pcsx2-qt" serverDecoration="yes" />
+    <windowRule identifier="info.cemu.Cemu" serverDecoration="yes" />
+    <windowRule identifier="rpcs3" serverDecoration="yes" />
+    <windowRule identifier="net.shadps4.shadPS4" serverDecoration="yes" />
+    <windowRule identifier="net.kuribo64.melonDS" serverDecoration="yes" />
+    <windowRule identifier="org.azahar_emu.Azahar" serverDecoration="yes" />
+    <windowRule identifier="Play" serverDecoration="yes" />
+    <windowRule identifier="bauh" serverDecoration="yes" />
+    <windowRule identifier="l3afpad" serverDecoration="yes" />
   </windowRules>
 </labwc_config>

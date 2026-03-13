@@ -1,0 +1,12 @@
+diff '--color=auto' -uri iortcw-lbrpdx/SP/code/qcommon/q_shared.h iortcw-438e7d413b5f7277187c35b032eb0ef9093ae778/SP/code/qcommon/q_shared.h
+--- iortcw-lbrpdx/SP/code/qcommon/q_shared.h	2026-02-19 10:06:50.336419396 -0800
++++ iortcw-438e7d413b5f7277187c35b032eb0ef9093ae778/SP/code/qcommon/q_shared.h	2026-02-19 10:06:03.902359945 -0800
+@@ -60,7 +60,7 @@
+   #define CLIENT_WINDOW_TITLE     	"Return To Castle Wolfenstein"
+   #define CLIENT_WINDOW_MIN_TITLE 	"iowolfsp"
+ #ifdef USE_XDG
+-  #define HOMEPATH_NAME_UNIX		"iortcw"
++  #define HOMEPATH_NAME_UNIX		"rtcw" // New directory name in Batocera
+ #else
+   #define HOMEPATH_NAME_UNIX		".wolf"
+ #endif

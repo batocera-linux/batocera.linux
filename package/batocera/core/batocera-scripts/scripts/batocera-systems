@@ -84,7 +84,7 @@ systems = {
 
     # ---------- Magnavox and Philips ---------- #
     # https://docs.libretro.com/library/o2em/#bios
-    "o2em": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
+    "odyssey2": { "name": "Odyssey 2", "biosFiles": [ { "md5": "562d5ebf9e030a40d6fabfc2f33139fd", "file": "bios/o2rom.bin" },
                                                   { "md5": "f1071cdb0b6b10dde94d3bc8a6146387", "file": "bios/c52.bin"   } ] },
 
     "videopacplus": { "name": "Videopac+ G7400", "biosFiles": [ { "md5": "c500ff71236068e0dc0d0603d265ae76", "file": "bios/g7400.bin" },
@@ -143,7 +143,7 @@ systems = {
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
     # https://docs.libretro.com/library/genesis_plus_gx/#bios
-    "msu-md":       { "name": "MSU-MD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
+    "megadrive-msu":{ "name": "MSU-MD", "biosFiles":      [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
@@ -292,7 +292,7 @@ systems = {
                                                             { "md5": "e9fc3890963b12cf15d0a2eea5815b72", "file": "bios/np2kai/ITF.ROM"  },
                                                             { "md5": "7da1e5b7c482d4108d22a5b09631d967", "file": "bios/np2kai/font.bmp" } ] },
     # ---------- Casio Loopy ---------- #
-    "casloopy": { "name": "Casio Loopy", "biosFiles": [
+    "loopy": { "name": "Casio Loopy", "biosFiles": [
                                                           { "md5": "0e1d8dc0110ecf8201c0cef11ef4a858", "file": "bios/casloopy.zip" },
                                                           { "md5": "d527e3ed1bf9bd0661154c202a65c5bd", "zippedFile": "hd6437021.lsi302", "file": "bios/casloopy.zip" },
                                                           { "md5": "c0f1c899c9ca098663d046d60779711d", "zippedFile": "hn62434fa.lsi352", "file": "bios/casloopy.zip" } ] },
@@ -447,7 +447,7 @@ systems = {
                                                 { "md5": "206daf498ac5d0141de1d47d38afd899", "zippedFile": "cd2326a.u2b", "file": "bios/ti99_speech.zip"} ] },
 
     # ---------- Bally Astrocade ---------- #
-    "astrocde":   { "name": "Bally Astrocade", "biosFiles":  [ { "md5": "", "file": "bios/astrocde.zip"  },
+    "astrocade":   { "name": "Bally Astrocade", "biosFiles":  [ { "md5": "", "file": "bios/astrocde.zip"  },
                                                 { "md5": "7d25a26e5c4841b364cfe6b1735eaf03", "zippedFile": "astro.bin", "file": "bios/astrocde.zip"}, ] },
 
     # ---------- Game Master ---------- #
@@ -810,7 +810,7 @@ systems = {
                                   { "md5": "ebf432d3b09f694db1c62018eb2ab471", "zippedFile": "p513bk0b.bin", "file": "bios/vis.zip"},
                                   { "md5": "758f8fec271fbf526bb22b36e88f154b", "zippedFile": "p513bk1b.bin", "file": "bios/vis.zip"} ] },
 
-    # ---------- GameCube ---------- #
+    # ---------- Nintendo 64DD ---------- #
     "n64dd":   { "name": "Nintendo 64DD", "biosFiles":  [ { "md5": "8d3d9f294b6e174bc7b1d2fd1c727530", "file": "bios/64DD_IPL.bin" } ] },
 
     # ---------- GameCube ---------- #
@@ -827,7 +827,39 @@ systems = {
                                                        { "md5": "c888b36bf0fc222c3585c3fabe556d21", "file": "bios/Oric/colour.rom" }] },
     # ---------- Enterprise ---------- #
     "enterprise": { "name": "Enterprise", "biosFiles": [{ "md5": "e972fe42b398c9ff1d93ff014786aec6", "file": "bios/Enterprise/basic21.bin" },
-                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" }] },
+                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/Enterprise/exos21.bin" },
+                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/exos21.rom" },
+                                                        { "md5": "e972fe42b398c9ff1d93ff014786aec6", "file": "bios/basic21.rom" },
+                                                        { "md5": "ddff70c014d1958dc75378b6c9aab6f8", "file": "bios/exdos13.rom" },
+                                                        { "md5": "5ad3baaad3b5156d6b60b34229a676fb", "file": "bios/exos20.rom" },
+                                                        { "md5": "8e18edce4a7acb2c33cc0ab18f988482", "file": "bios/basic20.rom" },
+                                                        { "md5": "a68ebcbc73a4d2178d755b7755bf18fe", "file": "bios/epfileio.rom" },
+                                                        { "md5": "55af78f877a21ca45eb2df68a74fcc60", "file": "bios/exos24uk.rom" },
+                                                        { "md5": "22167938f142c222f40992839aa21a06", "file": "bios/hun.rom" },
+                                                        { "md5": "6593dff00ab32a4b1fc084674ededf2b", "file": "bios/epdos16f.rom" },
+                                                        { "md5": "f91c4a507cc6895bdd9c43df4f021df3", "file": "bios/exdos14isdos10uk.rom" },
+                                                        { "md5": "6af0402906944fd134004b85097c8524", "file": "bios/brd.rom" },
+                                                        { "md5": "228540b6be83ae2acd7569c8ff0f91d0", "file": "bios/zt19uk.rom" },
+                                                        { "md5": "8c54285f541930cde766069942bad0f2", "file": "bios/tvc22_sys.rom" },
+                                                        { "md5": "5ce95a26ceed5bec73995d83568da9cf", "file": "bios/tvc22_ext.rom" },
+                                                        { "md5": "a2cf86ba8e7fc58b242137fe59036832", "file": "bios/tvcfileio.rom" },
+                                                        { "md5": "88dc7876d584f90e4106f91444ab23b7", "file": "bios/tvc_dos12d.rom" },
+                                                        { "md5": "a993f85b88ac4350cf4d41554e87fe4f", "file": "bios/cpc464.rom" },
+                                                        { "md5": "5a384a2310f472c7857888371c00ed66", "file": "bios/cpc664.rom" },
+                                                        { "md5": "b96280dc6c95a48857b4b8eb931533ae", "file": "bios/cpc6128.rom" },
+                                                        { "md5": "25629dfe870d097469c217b95fdc1c95", "file": "bios/cpc_amsdos.rom" },
+                                                        { "md5": "85fede415f4294cc777517d7eada482e", "file": "bios/zx128.rom" },
+                                                        { "md5": "4c42a2f075212361c3117015b107f",    "file": "bios/zx48.rom" },
+                                                        { "md5": "5ad3baaad3b5156d6b60b34229a676fb", "zippedFile": "9256ds-0038_enter05-23-a.u2", "file": "bios/ep64.zip" },
+                                                        { "md5": "f36f24cbb87745fbd2714e4df881db09", "zippedFile": "9256ds-0019_enter08-45-a.u2", "file": "bios/ep128.zip" },
+                                                        { "md5": "47258d03aec37bc24df5dbc5d50fc9f8", "zippedFile": "exdos13.rom", "file": "bios/ep64_exdos.zip" } ] },
+    # ---------- Videoton TVC ---------- #
+    "tvc": { "name": "Videoton TVC", "biosFiles": [{ "md5": "8c54285f541930cde766069942bad0f2", "file": "bios/tvc22_sys.rom" },
+                                                   { "md5": "5ce95a26ceed5bec73995d83568da9cf", "file": "bios/tvc22_ext.rom" },
+                                                   { "md5": "a2cf86ba8e7fc58b242137fe59036832", "file": "bios/tvcfileio.rom" },
+                                                   { "md5": "88dc7876d584f90e4106f91444ab23b7", "file": "bios/tvc_dos12d.rom" } ] },
+    # ---------- Triforce ---------- #
+    "triforce": { "name": "Triforce", "biosFiles":  [ { "md5": "2ef01c0e93f7ee3a0a4b139aa14728b9", "file": "saves/dolphin-emu/Triforce/segaboot.gcm" }] },
 }
 
 class BiosStatus:

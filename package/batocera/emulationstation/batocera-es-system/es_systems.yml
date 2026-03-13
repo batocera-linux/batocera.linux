@@ -376,8 +376,6 @@ nds:
       melondsds:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MELONDS_DS] }
     melonds:
       melonds: { requireAnyOf: [BR2_PACKAGE_MELONDS] }
-    drastic:
-      drastic: { requireAnyOf: [BR2_PACKAGE_DRASTIC], incompatible_extensions: [7z] }
 
 fds:
   name:       Family Computer Disk System
@@ -519,8 +517,8 @@ megacd:
   release: 1991
   hardware: console
   extensions: [cue, iso, chd, m3u]
-  platform:   segacd
-  theme:      segacd
+  platform:   megacd
+  theme:      megacd
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -537,7 +535,7 @@ sega32x:
     libretro:
       picodrive: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PICODRIVE] }
 
-msu-md:
+megadrive-msu:
   name:       MSU-MD
   manufacturer: Sega
   release: 2020
@@ -545,6 +543,7 @@ msu-md:
   extensions: [md, zip, 7z, squashfs]
   platform:   genesis, megadrive
   group:      megadrive
+  theme: megadrive-msu
   emulators:
     libretro:
       genesisplusgx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GENESISPLUSGX] }
@@ -1304,12 +1303,14 @@ tic80:
   emulators:
     libretro:
       tic80: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_TIC80] }
+    tic80:
+      tic80: { requireAnyOf: [BR2_PACKAGE_TIC80] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:tic-80
+    For more info: https://wiki.batocera.org/systems:tic80
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic-80
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:tic80
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:tic-80
+    Para mais informações: https://wiki.batocera.org/systems:tic80
 
 pico8:
   name:       Pico-8
@@ -1321,11 +1322,11 @@ pico8:
     libretro:
       fake08: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FAKE08] }
   comment_en: |
-    For more info: https://wiki.batocera.org/systems:pico-8
+    For more info: https://wiki.batocera.org/systems:pico8
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico-8
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:pico8
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:pico-8
+    Para mais informações: https://wiki.batocera.org/systems:pico8
 
 lowresnx:
   name:       Lowres NX
@@ -1856,13 +1857,12 @@ msxturbor:
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
 
-o2em:
+odyssey2:
   name:       Odyssey2
   manufacturer: Magnavox - Philips
   release: 1978
   hardware: console
   extensions: [bin, zip, 7z]
-  path:       o2em
   theme:      odyssey2
   emulators:
     libretro:
@@ -2036,16 +2036,16 @@ jaguarcd:
       bigpemu: { requireAnyOf: [BR2_PACKAGE_BIGPEMU] }
 
 gamecube:
-  name:       GameCube
+  name: GameCube
   manufacturer: Nintendo
   release: 2001
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
-  platform:   gc
-  theme:      gc
+  platform: gc
+  theme: gc
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
@@ -2064,15 +2064,15 @@ gamecube:
     Para mais informações: https://wiki.batocera.org/systems:gamecube
 
 triforce:
-  name:       Triforce
+  name: Triforce
   manufacturer: Namco, Sega, Nintendo
   release: 2003
   hardware: arcade
   extensions: [gcm, iso, gcz, ciso, wbfs, elf, dol, m3u]
-  platform:   triforce, arcade
+  platform: triforce, arcade
   emulators:
-    dolphin_triforce:
-      dolphin_triforce:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_TRIFORCE]       }
+    dolphin:
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
   comment_en: |
     Triforce is an arcade machine based on the GameCube's hardware.
 
@@ -2085,14 +2085,14 @@ triforce:
     Para mais informações: https://wiki.batocera.org/systems:triforce
 
 wii:
-  name:       Wii
+  name: Wii
   manufacturer: Nintendo
   release: 2006
   hardware: console
   extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
   emulators:
     dolphin:
-      dolphin:  { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU]       }
+      dolphin: { requireAnyOf: [BR2_PACKAGE_DOLPHIN_EMU] }
     libretro:
       dolphin: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_DOLPHIN] }
   comment_en: |
@@ -2121,16 +2121,16 @@ wii:
     Para mais informações: https://wiki.batocera.org/systems:wii
 
 ps2:
-  name:       PlayStation 2
+  name: PlayStation 2
   manufacturer: Sony
   release: 2000
   hardware: console
   extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u]
   emulators:
     pcsx2:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u]  }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u] }
     libretro:
-      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2], incompatible_extensions: [m3u] }
+      pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2] }
       play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u] }
     play:
       play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u] }
@@ -2146,7 +2146,7 @@ ps3:
   manufacturer: Sony
   release: 2006
   hardware: console
-  extensions: [ps3, psn, squashfs]
+  extensions: [ps3, psn, iso, squashfs]
   emulators:
     rpcs3:
       rpcs3: { requireAnyOf: [BR2_PACKAGE_RPCS3] }
@@ -2216,7 +2216,7 @@ x1:
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
+  extensions: [3ds, cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
   emulators:
     azahar:
       azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR] }
@@ -2532,7 +2532,7 @@ windows_installers:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:windows
 
-xash3d_fwgs:
+halflife:
   name: Half-Life 1
   manufacturer: Ports
   release: 1998
@@ -2555,7 +2555,7 @@ xash3d_fwgs:
     Installation:
 
     Copy the game's directory from your Steam installation (Steam/steamapps/common/Half-Life/<game data folder>/)
-    to /userdata/roms/xash3d_fwgs/<game folder> and create an empty `<game folder>.game` file in the same directory.
+    to /userdata/roms/halflife/<game folder> and create an empty `<game folder>.game` file in the same directory.
 
     For Half-Life 1, the game folder is `valve/`.
   comment_br: |
@@ -2570,7 +2570,7 @@ xash3d_fwgs:
     Instalação:
 
     Copie o diretório do jogo da sua instalação do Steam (Steam/steamapps/common/Half-Life/<game data folder>/)
-    para /userdata/roms/xash3d_fwgs/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
+    para /userdata/roms/halflife/<pasta do jogo> e crie um arquivo `<pasta do jogo>.game` vazio no mesmo diretório.
 
     Para Half-Life 1, a pasta do jogo é `valve/`.
 
@@ -2625,6 +2625,7 @@ cgenius:
   hardware: port
   extensions: [cgenius]
   platform: pc
+  group: ports
   emulators:
     cgenius:
       cgenius: { requireAnyOf: [BR2_PACKAGE_CGENIUS] }
@@ -2669,6 +2670,7 @@ imageviewer:
   name:       Screenshots
   manufacturer: Misc. System
   release:
+  theme: screenshots
   hardware: system
   extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm]
   path:       /userdata/screenshots
@@ -2706,12 +2708,6 @@ model3:
     supermodel:
       supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
       supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
-    libretro:
-      archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
-    mame:
-      archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
@@ -3176,7 +3172,7 @@ advision:
   comment_br: |
           Requer o arquivo advision.zip da BIOS do MAME
 
-plugnplay:
+tvgames:
   name:       Plug and Play TV Games
   manufacturer: Various
   release: 2002
@@ -3443,7 +3439,7 @@ apfm1000:
   comment_br: |
           Requer o arquivo apfm1000.zip da BIOS do MAME
 
-bbc:
+bbcmicro:
   name:       BBC Micro
   manufacturer: Acorn Computers
   release: 1981
@@ -3526,7 +3522,7 @@ gmaster:
   comment_br: |
           Requer o arquivo gmaster.zip da BIOS do MAME
 
-astrocde:
+astrocade:
   name:       Astrocade
   manufacturer: Bally
   release: 1978
@@ -4023,7 +4019,7 @@ hikaru:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     airtrix: Air Trix (Rev. A)
     airtrixo: Air Trix (original)
     braveff: Brave Firefighters
@@ -4033,7 +4029,7 @@ hikaru:
     sgnascar: NASCAR Arcade (Rev. A)
     sgnascaro: NASCAR Arcade (original)
     von4: Cyber Troopers Virtual-On 4: Force (Rev. E)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Hikaru games under Linux!
@@ -4098,14 +4094,14 @@ gaelco:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     atvtrack: ATV Track (set 1)
     atvtracka: ATV Track (set 2)
     gfootbal: Gaelco Football
     smashdrv: Smashing Drive (World)
     smashdrvb: Smashing Drive (UK)
     smashdrvs: Smashing Drive (Spain, Portugal)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Gaelco games under Linux!
@@ -4170,7 +4166,7 @@ cave3rd:
     ---------------------
 
     Demul has a specific list of currently compatible roms:
-    
+
     akatana: Akai Katana (2010/ 8/13 MASTER VER.)
     deathsmil: Deathsmiles (2007/10/09 MASTER VER)
     dsmbl: Deathsmiles Mega Black Label (2008/10/06 MEGABLACK LABEL VER)
@@ -4200,7 +4196,7 @@ cave3rd:
     pinkswtsa: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER...)
     pinkswtsb: Pink Sweets Ibara Sorekara (2006/04/06 MASTER VER.)
     pinkswtsx: Pink Sweets Ibara Sorekara (2006/XX/XX MASTER VER.)
-    
+
     With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Cave CV1000 games under Linux!
@@ -5128,7 +5124,7 @@ theforceengine:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:theforceengine
 
-iortcw:
+rtcw:
   name: Return To Castle Wolfenstein
   manufacturer: Ports
   release: 2001
@@ -5136,6 +5132,7 @@ iortcw:
   extensions: [rtcw]
   platform: pc
   group: ports
+  theme: rtcw
   emulators:
     iortcw:
       iortcw: { requireAnyOf: [ BR2_PACKAGE_IORTCW ] }
@@ -5831,12 +5828,13 @@ bennugd:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:bennugd
 
-casloopy:
+loopy:
   name:       Casio Loopy
   manufacturer: Casio
   release: 1995
   hardware: console
   extensions: [bin, ic1, zip, 7z]
+  theme: loopy
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
@@ -5883,14 +5881,23 @@ enterprise:
   manufacturer: Enterprise Computers
   release: 1985
   hardware: computer
-  extensions: [bas, com, zip]
+  extensions: [bas, com, zip, img, dsk, tap, dtf, trn, 128, cas, cdt, tzx]
   emulators:
     clk:
-      clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
+      clk:      { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [img,dsk,tap,dtf,trn,128,cas,cdt,tzx]  }
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires BIOS files:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+          Requires MAME BIOS file:
+          bios/ep64.zip
+          bios/ep128.zip
+          bios/ep64_exdos.zip
   comment_fr: |
           Nécessite ces fichiers de BIOS:
           bios/Enterprise/basic21.bin
@@ -5899,3 +5906,31 @@ enterprise:
           Requer arquivo de BIOS:
           bios/Enterprise/basic21.bin
           bios/Enterprise/exos21.bin
+
+tvc:
+  name:       Videoton TVC
+  manufacturer: Videoton
+  release: 1986
+  hardware: computer
+  extensions: [cas, tap, dsk, img, zip]
+  emulators:
+    libretro:
+      ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
+      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
+  comment_en: |
+          Requires BIOS files:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+          bios/tvcfileio.rom
+          Requires MAME BIOS file:
+          bios/mame/tvc64.zip
+  comment_fr: |
+          Nécessite ces fichiers de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom
+  comment_br: |
+          Requer arquivo de BIOS:
+          bios/tvc22_sys.rom
+          bios/tvc22_ext.rom

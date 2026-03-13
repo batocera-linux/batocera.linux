@@ -43,10 +43,10 @@ class DosBoxStagingGenerator(Generator):
         ]
 
         if common_resource_dir.is_dir():
-            commandArray.extend(["-c", f"set RESDIR={str(common_resource_dir)}"])
+            commandArray.extend(["-c", f"set RESDIR={common_resource_dir!s}"])
 
         if common_resource_conf:
-            commandArray.extend(["-c", f"set RESCONF={str(common_resource_conf)}"])
+            commandArray.extend(["-c", f"set RESCONF={common_resource_conf!s}"])
 
         if dosbox_cfg:
             commandArray.extend(["--conf", dosbox_cfg.name, "-c", f"set GAMECFG={dosbox_cfg.name}"])

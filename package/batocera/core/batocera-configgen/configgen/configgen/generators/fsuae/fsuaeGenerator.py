@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
+from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 from . import fsuaeControllers
 from .fsuaePaths import FSUAE_BIOS_DIR, FSUAE_CONFIG_DIR, FSUAE_SAVES
@@ -23,6 +24,9 @@ class FsuaeGenerator(Generator):
             "name": "fsuae",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F12" }
         }
+
+    def supportsInternalBezels(self):
+        return True
 
     # from one file (x1.zip), get the list of all existing files with the same extension + last char (as number) suffix
     # for example, "/path/toto0.zip" becomes ["/path/toto0.zip", "/path/toto1.zip", "/path/toto2.zip"]
@@ -63,7 +67,9 @@ class FsuaeGenerator(Generator):
                                            f"--base_dir={FSUAE_CONFIG_DIR!s}",
                                            f"--kickstarts_dir={FSUAE_BIOS_DIR!s}",
                                            f"--save_states_dir={FSUAE_SAVES / system.config.core / self.filePrefix(rom)}",
-                                           "--zoom=auto"
+                                           "--zoom=auto",
+                                           "--bezel=1",
+                                           "--theme=fsemu-classic"
                        ]
 
         device_type = "floppy"
@@ -108,4 +114,9 @@ class FsuaeGenerator(Generator):
         for n, pad in enumerate(playersControllers[:4]):
             commandArray.append(f"--joystick_port_{n}={pad.real_name}")
 
-        return Command.Command(array=commandArray)
+        # SDL GameController mappings for virtual mouse (right stick + R3 click)
+        env = {
+            "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)
+        }
+
+        return Command.Command(array=commandArray, env=env)

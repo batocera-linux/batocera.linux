@@ -117,8 +117,8 @@ do_videostart ()
     fi
     if [[ $? -eq 0 ]]; then
         video_rotation=$(do_angels_conversion $video_rotation)
-	# --vf-add=sub : rotation of subtitles
-        [[ $? -eq 0 ]] && mpv_video="--video-rotate=${video_rotation} --vf-add=sub"
+        # --blend-subtitles=video : rotation of subtitles
+        [[ $? -eq 0 ]] && mpv_video="--video-rotate=${video_rotation} --blend-subtitles=video"
     fi
 
     drm_mode="preferred"
@@ -128,16 +128,9 @@ do_videostart ()
         video_resize=$(batocera-settings-get-master es.resolution)
     fi
     if [[ -n "$video_resize" ]]; then
-        resolution_only="${video_resize%%.*}"
-        if [[ "${video_rotation}" -eq 90 || "${video_rotation}" -eq 270 ]]; then
-            # invert the resize resolution
-            width="${resolution_only%x*}"
-            height="${resolution_only#*x}"
-            resize_rotate="${height}x${width}"
-        fi
-        resize="${resize_rotate/x/:}"
-        mpv_video="${mpv_video} --vf=scale=${resize}"
-        drm_mode=$resolution_only
+        # avoid using --vf=scale with --blend-subtitles
+        # gpu-next should handle the scaling
+        drm_mode="${video_resize%%.*}"
     fi
 
     video_subtitle=$(batocera-settings-get splash.screen.subtitle)

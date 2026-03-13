@@ -24,6 +24,15 @@ custom_features:
       Separate Windows: 4-false
       Hybrid Screen Top: 5-false
       Hybrid Screen Bottom: 5-true
+  azahar_large_screen_proportion:
+      prompt: SCREEN PROPORTION
+      description: Determines the proportion of the larger screen relative to the smaller one.
+      choices:
+        "2":            2
+        "3":            3
+        "4 (Default)":  4
+        "5":            5
+        "6":            6
   azahar_resolution_factor:
     submenu: GRAPHICS
     prompt: RENDERING RESOLUTION

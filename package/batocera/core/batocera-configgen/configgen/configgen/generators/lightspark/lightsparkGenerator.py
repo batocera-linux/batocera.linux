@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class LightsparkGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        commandArray = ["lightspark", "-s", "local-with-networking", rom]
+        commandArray = ["lightspark", "-fs", "-s", "local-with-networking", rom]
         return Command.Command(
             array=commandArray)
 

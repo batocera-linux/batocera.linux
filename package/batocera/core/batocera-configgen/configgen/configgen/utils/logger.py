@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import logging
-import sys
 import errno
 import io
+import logging
+import sys
 from contextlib import contextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TextIO
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -34,10 +34,12 @@ class EpipeTolerantStreamHandler(logging.StreamHandler):
 
 
 class EpipeTolerantTextIO(io.TextIOBase):
+    _raw: TextIO
+
     """
     Wrap a text stream to swallow BrokenPipeError/EPIPE on write/flush.
     """
-    def __init__(self, raw: io.TextIOBase):
+    def __init__(self, raw: TextIO) -> None:
         self._raw = raw
 
     def write(self, s: str) -> int:
@@ -62,8 +64,8 @@ class EpipeTolerantTextIO(io.TextIOBase):
 
     # Delegate other properties/methods
     @property
-    def encoding(self):
-        return getattr(self._raw, "encoding", None)
+    def encoding(self) -> str:  # pyright: ignore[reportIncompatibleVariableOverride]
+        return self._raw.encoding
 
     def fileno(self):
         return self._raw.fileno()
@@ -81,7 +83,7 @@ class EpipeTolerantTextIO(io.TextIOBase):
                 raise
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         return self._raw.closed
 
 
