@@ -65,6 +65,7 @@ endif
 # Build & install
 
 define YQUAKE2_BUILD_CMDS
+    mkdir -p $(@D)/release/baseq2
     $(MAKE) $(TARGET_CONFIGURE_OPTS) $(YQUAKE2_BUILD_ARGS) -C $(@D)
 endef
 
