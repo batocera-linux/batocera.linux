@@ -5,7 +5,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
-from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
+from ...batoceraPaths import (
+    BIOS,
+    CACHE,
+    CHEATS,
+    CONFIGS,
+    SAVES,
+    SCREENSHOTS,
+    ensure_parents_and_open,
+    mkdir_if_not_exists,
+)
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...exceptions import BatoceraException
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -218,12 +227,13 @@ class DuckstationGenerator(Generator):
             settings.add_section("Cheevos")
         # RetroAchievements
         if system.config.get_bool('retroachievements'):
-            username  = system.config.get('retroachievements.username', "")
-            hardcore  = system.config.get('retroachievements.hardcore', "")
-            presence  = system.config.get('retroachievements.richpresence', "")
-            indicator = system.config.get('retroachievements.challenge_indicators', "")
-            leaderbd  = system.config.get('retroachievements.leaderboards', "")
-            token     = system.config.get('retroachievements.token', "")
+            username   = system.config.get('retroachievements.username', "")
+            hardcore   = system.config.get('retroachievements.hardcore', "")
+            presence   = system.config.get('retroachievements.richpresence', "")
+            indicator  = system.config.get('retroachievements.challenge_indicators', "")
+            leaderbd   = system.config.get('retroachievements.leaderboards', "")
+            token      = system.config.get('retroachievements.token', "")
+            unofficial = system.config.get('retroachievements.unofficial', "")
             settings.set("Cheevos", "Enabled",       "true")
             settings.set("Cheevos", "Username",      username)
             settings.set("Cheevos", "Token",         token)
@@ -243,6 +253,10 @@ class DuckstationGenerator(Generator):
                 settings.set("Cheevos", "Leaderboards",  "true")
             else:
                 settings.set("Cheevos", "Leaderboards",  "false")
+            if unofficial == '1':
+                settings.set("Cheevos", "UnofficialTestMode",  "true")
+            else:
+                settings.set("Cheevos", "UnofficialTestMode",  "false")
             #settings.set("Cheevos", "UseFirstDiscFromPlaylist", "false") # When enabled, the first disc in a playlist will be used for achievements, regardless of which disc is active
             #settings.set("Cheevos", "TestMode",      "false")            # DuckStation will assume all achievements are locked and not send any unlock notifications to the server.
         else:
@@ -282,9 +296,13 @@ class DuckstationGenerator(Generator):
         if not settings.has_section("Folders"):
             settings.add_section("Folders")
         # Set other folder locations too
+        mkdir_if_not_exists(CACHE / "duckstation")
         settings.set("Folders", "Cache", "../../cache/duckstation")
+        mkdir_if_not_exists(SCREENSHOTS)
         settings.set("Folders", "Screenshots", "../../../screenshots")
+        mkdir_if_not_exists(SAVES / "duckstation")
         settings.set("Folders", "SaveStates", "../../../saves/duckstation")
+        mkdir_if_not_exists(CHEATS / "duckstation")
         settings.set("Folders", "Cheats", "../../../cheats/duckstation")
 
         ## [Pad]
@@ -306,7 +324,6 @@ class DuckstationGenerator(Generator):
                 if nplayer > 4:
                     settings.set("ControllerPorts", "MultitapMode", "BothPorts")
             pad_num = f"Pad{nplayer}"
-            gun_num = f"Pointer-{pad.index}"
             sdl_num = f"SDL-{pad.index}"
             ctrl_num = f"Controller{nplayer}"
             # SDL2 configs are always the same for controllers
@@ -353,45 +370,34 @@ class DuckstationGenerator(Generator):
                 settings.set(pad_num, "R", f"{sdl_num}/RightShoulder")
                 settings.set(pad_num, "SteeringLeft", f"{sdl_num}/-LeftX")
                 settings.set(pad_num, "SteeringRight", f"{sdl_num}/+LeftX")
-            # Guns
-            if system.config.use_guns and guns:
-                # Justifier compatible ROM...
-                if metadata.get("gun_type") == "justifier":
-                    settings.set(pad_num, "Type", "Justifier")
-                    settings.set(pad_num, "Trigger", f"{gun_num}/LeftButton")
-                    settings.set(pad_num, "Start", f"{gun_num}/RightButton")
-                # Default or GunCon compatible ROM...
-                else:
-                    settings.set(pad_num, "Type", "GunCon")
-                    settings.set(pad_num, "Trigger", f"{gun_num}/LeftButton")
-
-                ### find a keyboard key to simulate the action of the player (always like button 2) ; search in batocera.conf, else default config
-                pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
-                pedalkey = None
-                pedalcname = f"controllers.pedals{nplayer}"
-                if pedalcname in system.config:
-                    pedalkey = system.config[pedalcname]
-                else:
-                    if nplayer in pedalsKeys:
-                        pedalkey = pedalsKeys[nplayer]
-                if pedalkey is None:
-                    settings.set(pad_num, "A", f"{gun_num}/RightButton")
-                else:
-                    settings.set(pad_num, "A", f"{gun_num}/RightButton & Keyboard/{pedalkey.upper()}")
-                ###
-                settings.set(pad_num, "B", f"{gun_num}/MiddleButton")
-                if system.config.get(f"duckstation_{ctrl_num}") == "GunCon":
-                    settings.set(pad_num, "Trigger", f"{sdl_num}/+RightTrigger")
-                    settings.set(pad_num, "ShootOffscreen", f"{sdl_num}/+LeftTrigger")
-                    settings.set(pad_num, "A", f"{sdl_num}/A")
-                    settings.set(pad_num, "B", f"{sdl_num}/B")
-            # Guns crosshair
-            settings.set(pad_num, "CrosshairScale", system.config.get("duckstation_crosshair", "0"))
             # Mouse
             if system.config.get(f"duckstation_{ctrl_num}") == "PlayStationMouse":
                 settings.set(pad_num, "Right", f"{sdl_num}/B")
                 settings.set(pad_num, "Left", f"{sdl_num}/A")
                 settings.set(pad_num, "RelativeMouseMode", f"{sdl_num}true")
+
+        # Guns - configure based on detected guns, not controllers
+        if system.config.use_guns and guns:
+            for nplayer, _ in enumerate(guns[:8], start=1):
+                pad_num = f"Pad{nplayer}"
+                gun_num = f"Pointer-{nplayer - 1}"
+                # Gun mapping is hardcoded into patch.
+                # Justifier ROM mapping: BTN_LEFT = Trigger | BTN_RIGHT = Back | BTN_MIDDLE = Start
+                if metadata.get("gun_type") == "justifier":
+                    settings.set(pad_num, "Type", "Justifier")
+                else:
+                    # GunCon ROM mapping: BTN_LEFT = Trigger | BTN_RIGHT = A | BTN_MIDDLE = B
+                    settings.set(pad_num, "Type", "GunCon")
+                    # Pedal key for button A
+                    pedalsKeys = {1: "c", 2: "v", 3: "b", 4: "n"}
+                    pedalkey = system.config.get(f"controllers.pedals{nplayer}", pedalsKeys.get(nplayer))
+                    if pedalkey:
+                        settings.set(pad_num, "A", f"{gun_num}/RightButton & Keyboard/{pedalkey.upper()}")
+                    else:
+                        settings.set(pad_num, "A", f"{gun_num}/RightButton")
+                # Crosshairs - BGR color code. Player 1 red; player 2 blue.
+                settings.set(pad_num, "CrosshairScale", system.config.get("duckstation_crosshair", "0"))
+                settings.set(pad_num, "CrosshairColor", "0000FF" if nplayer == 1 else "FF0000")
 
         ## [Hotkeys]
         if not settings.has_section("Hotkeys"):

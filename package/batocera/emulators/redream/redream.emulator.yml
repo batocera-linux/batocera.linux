@@ -1,0 +1,83 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  redreamResolution:
+    prompt: RENDERING RESOLUTION
+    description: Choose your render resolution (Requires personal redream.key file).
+    choices:
+      1x (640x480): 1
+      2x (1280x960) (Default): 2
+      3x (1920x1440): 3
+      4x (2560x1920): 4
+      5x (3200x2400): 5
+      6x (3840x2880): 6
+  redreamRatio:
+    prompt: ASPECT RATIO
+    description: Choose your preferred aspect ratio.
+    choices:
+      4:3 (Default): 4:3
+      16:9: 16:9
+      Stretch: stretch
+  redreamFrameSkip:
+    prompt: FRAMESKIP
+    description: Enable auto frameskipping for performance on lower-end systems.
+    choices:
+      Off (Default): 0
+      'On': 1
+  redreamVsync:
+    prompt: VSYNC
+    description: Enable vertical sync to avoid tearing in some cases.
+    choices:
+      Off (Default): 0
+      'On': 1
+  redreamRender:
+    group: ADVANCED OPTIONS
+    prompt: RENDER MODE
+    choices:
+      HLE (per-strip): hle_perstrip
+      HLE (per-pixel): hle_perpixel
+      LLE: lle
+  redreamRegion:
+    prompt: REGION
+    description: Choose the Dreamcast console region.
+    choices:
+      USA (Default): usa
+      Europe: europe
+      Japan: japan
+  redreamLanguage:
+    prompt: CONSOLE LANGUAGE
+    description: Choose console language. Not all games may support the language choice.
+    choices:
+      English (Default): english
+      German: german
+      French: french
+      Spanish: spanish
+      Italian: italian
+      Japanese: japanese
+  redreamBroadcast:
+    prompt: BROADCAST
+    description: Choose broadcast standard (for older TV's).
+    choices:
+      NTSC (Default): ntsc
+      PAL: pal
+      PAL_M: pal_m
+      PAL_N: pal_n
+  redreamCable:
+    prompt: CABLE
+    description: Choose cable type for the TV.
+    choices:
+      VGA (Default): vga
+      RGB: rgb
+      Composite: composite
+systems:
+  - dreamcast

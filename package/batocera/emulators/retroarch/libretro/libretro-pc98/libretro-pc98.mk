@@ -8,6 +8,7 @@ LIBRETRO_PC98_VERSION = rev.22
 LIBRETRO_PC98_SITE = $(call github,AZO234,NP2kai,$(LIBRETRO_PC98_VERSION))
 LIBRETRO_PC98_LICENSE = GPLv3
 LIBRETRO_PC98_DEPENDENCIES += retroarch
+LIBRETRO_PC98_EMULATOR_INFO = np2kai.libretro.core.yml
 
 LIBRETRO_PC98_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -45,3 +46,4 @@ define LIBRETRO_PC98_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

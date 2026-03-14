@@ -1,12 +1,10 @@
 config BR2_PACKAGE_LIBRETRO_VITAQUAKE2
 	bool "libretro-vitaquake2"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-	  help
-        A libretro Quake 2 core.
+	help
+      A libretro Quake 2 core.
 
 	  http://www.libretro.com
 
 comment "LIBRETRO_VITAQUAKE2 needs a toolchain w/ C++"
 	depends on !BR2_INSTALL_LIBSTDCPP
-

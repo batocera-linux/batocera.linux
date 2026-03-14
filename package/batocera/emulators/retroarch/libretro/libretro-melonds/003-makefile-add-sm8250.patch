@@ -9,7 +9,7 @@ index 77d951b..f2d58b9 100644
 +# SM8250
 +else ifeq ($(platform), sm8250)
 +   EXT ?= so
-+   CPUFLAGS += -mcpu=cortex-a76.cortex-a55 -mtune=cortex-a76.cortex-a55
++   CPUFLAGS += -mcpu=cortex-a77 -mtune=cortex-a77
 +   HAVE_NEON = 1
 +   TARGET := $(TARGET_NAME)_libretro.$(EXT)
 +   fpic := -fPIC

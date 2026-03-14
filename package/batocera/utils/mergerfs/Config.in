@@ -1,0 +1,8 @@
+config BR2_PACKAGE_MERGERFS
+    bool "mergerfs"
+    help
+      mergerfs is a union filesystem for FUSE which allows multiple
+      directories to be merged and presented as a single directory tree.
+
+      Homepage: https://github.com/trapexit/mergerfs
+

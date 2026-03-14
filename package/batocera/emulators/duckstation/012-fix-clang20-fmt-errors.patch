@@ -1,0 +1,194 @@
+diff --git a/dep/fmt/src/os.cc b/dep/fmt/src/os.cc.new
+index bca410e945..38b0e3fa2f 100644
+--- a/dep/fmt/src/os.cc
++++ b/dep/fmt/src/os.cc.new
+@@ -145,7 +145,7 @@ void detail::format_windows_error(detail::buffer<char>& out, int error_code,
+     if (msg) {
+       auto utf8_message = to_utf8<wchar_t>();
+       if (utf8_message.convert(msg)) {
+-        fmt::format_to(appender(out), FMT_STRING("{}: {}"), message,
++        fmt::format_to(appender(out), "{}: {}", message,
+                        string_view(utf8_message));
+         return;
+       }
+@@ -169,7 +169,7 @@ buffered_file::buffered_file(cstring_view filename, cstring_view mode) {
+   FMT_RETRY_VAL(file_, FMT_SYSTEM(fopen(filename.c_str(), mode.c_str())),
+                 nullptr);
+   if (!file_)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot open file {}"),
++    FMT_THROW(system_error(errno, "cannot open file {}",
+                            filename.c_str()));
+ }
+ 
+@@ -178,7 +178,7 @@ void buffered_file::close() {
+   int result = FMT_SYSTEM(fclose(file_));
+   file_ = nullptr;
+   if (result != 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot close file")));
++    FMT_THROW(system_error(errno, "cannot close file"));
+ }
+ 
+ int buffered_file::descriptor() const {
+@@ -188,7 +188,7 @@ int buffered_file::descriptor() const {
+   int fd = FMT_POSIX_CALL(fileno(file_));
+ #endif
+   if (fd == -1)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot get file descriptor")));
++    FMT_THROW(system_error(errno, "cannot get file descriptor"));
+   return fd;
+ }
+ 
+@@ -208,7 +208,7 @@ file::file(cstring_view path, int oflag) {
+   FMT_RETRY(fd_, FMT_POSIX_CALL(open(path.c_str(), oflag, default_open_mode)));
+   if (fd_ == -1)
+     FMT_THROW(
+-        system_error(errno, FMT_STRING("cannot open file {}"), path.c_str()));
++        system_error(errno, "cannot open file {}", path.c_str()));
+ #  endif
+ }
+ 
+@@ -226,7 +226,7 @@ void file::close() {
+   int result = FMT_POSIX_CALL(close(fd_));
+   fd_ = -1;
+   if (result != 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot close file")));
++    FMT_THROW(system_error(errno, "cannot close file"));
+ }
+ 
+ long long file::size() const {
+@@ -248,7 +248,7 @@ long long file::size() const {
+   using Stat = struct stat;
+   Stat file_stat = Stat();
+   if (FMT_POSIX_CALL(fstat(fd_, &file_stat)) == -1)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot get file attributes")));
++    FMT_THROW(system_error(errno, "cannot get file attributes"));
+   static_assert(sizeof(long long) >= sizeof(file_stat.st_size),
+                 "return type of file::size is not large enough");
+   return file_stat.st_size;
+@@ -259,7 +259,7 @@ std::size_t file::read(void* buffer, std::size_t count) {
+   rwresult result = 0;
+   FMT_RETRY(result, FMT_POSIX_CALL(read(fd_, buffer, convert_rwcount(count))));
+   if (result < 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot read from file")));
++    FMT_THROW(system_error(errno, "cannot read from file"));
+   return detail::to_unsigned(result);
+ }
+ 
+@@ -267,7 +267,7 @@ std::size_t file::write(const void* buffer, std::size_t count) {
+   rwresult result = 0;
+   FMT_RETRY(result, FMT_POSIX_CALL(write(fd_, buffer, convert_rwcount(count))));
+   if (result < 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot write to file")));
++    FMT_THROW(system_error(errno, "cannot write to file"));
+   return detail::to_unsigned(result);
+ }
+ 
+@@ -277,7 +277,7 @@ file file::dup(int fd) {
+   int new_fd = FMT_POSIX_CALL(dup(fd));
+   if (new_fd == -1)
+     FMT_THROW(system_error(
+-        errno, FMT_STRING("cannot duplicate file descriptor {}"), fd));
++        errno, "cannot duplicate file descriptor {}", fd));
+   return file(new_fd);
+ }
+ 
+@@ -286,7 +286,7 @@ void file::dup2(int fd) {
+   FMT_RETRY(result, FMT_POSIX_CALL(dup2(fd_, fd)));
+   if (result == -1) {
+     FMT_THROW(system_error(
+-        errno, FMT_STRING("cannot duplicate file descriptor {} to {}"), fd_,
++        errno, "cannot duplicate file descriptor {} to {}", fd_,
+         fd));
+   }
+ }
+@@ -313,7 +313,7 @@ void file::pipe(file& read_end, file& write_end) {
+   int result = FMT_POSIX_CALL(pipe(fds));
+ #  endif
+   if (result != 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot create pipe")));
++    FMT_THROW(system_error(errno, "cannot create pipe"));
+   // The following assignments don't throw because read_fd and write_fd
+   // are closed.
+   read_end = file(fds[0]);
+@@ -329,7 +329,7 @@ buffered_file file::fdopen(const char* mode) {
+ #  endif
+   if (!f) {
+     FMT_THROW(system_error(
+-        errno, FMT_STRING("cannot associate stream with file descriptor")));
++        errno, "cannot associate stream with file descriptor"));
+   }
+   buffered_file bf(f);
+   fd_ = -1;
+@@ -341,7 +341,7 @@ file file::open_windows_file(wcstring_view path, int oflag) {
+   int fd = -1;
+   auto err = _wsopen_s(&fd, path.c_str(), oflag, _SH_DENYNO, default_open_mode);
+   if (fd == -1) {
+-    FMT_THROW(system_error(err, FMT_STRING("cannot open file {}"),
++    FMT_THROW(system_error(err, "cannot open file {}",
+                            detail::to_utf8<wchar_t>(path.c_str()).c_str()));
+   }
+   return file(fd);
+@@ -362,7 +362,7 @@ long getpagesize() {
+ #      endif
+ 
+   if (size < 0)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot get memory page size")));
++    FMT_THROW(system_error(errno, "cannot get memory page size"));
+   return size;
+ #    endif
+ }
+diff --git a/dep/fmt/include/fmt/format-inl.h b/dep/fmt/include/fmt/format-inl.h.new
+index dac2d437a4..70479a8243 100644
+--- a/dep/fmt/include/fmt/format-inl.h
++++ b/dep/fmt/include/fmt/format-inl.h.new
+@@ -58,8 +58,8 @@ FMT_FUNC void format_error_code(detail::buffer<char>& out, int error_code,
+   error_code_size += detail::to_unsigned(detail::count_digits(abs_value));
+   auto it = buffer_appender<char>(out);
+   if (message.size() <= inline_buffer_size - error_code_size)
+-    format_to(it, FMT_STRING("{}{}"), message, SEP);
+-  format_to(it, FMT_STRING("{}{}"), ERROR_STR, error_code);
++    format_to(it, "{}{}", message, SEP);
++  format_to(it, "{}{}", ERROR_STR, error_code);
+   FMT_ASSERT(out.size() <= inline_buffer_size, "");
+ }
+ 
+@@ -77,7 +77,7 @@ inline void fwrite_fully(const void* ptr, size_t size, size_t count,
+                          FILE* stream) {
+   size_t written = std::fwrite(ptr, size, count, stream);
+   if (written < count)
+-    FMT_THROW(system_error(errno, FMT_STRING("cannot write to file")));
++    FMT_THROW(system_error(errno, "cannot write to file"));
+ }
+ 
+ #ifndef FMT_STATIC_THOUSANDS_SEPARATOR
+@@ -1373,14 +1373,14 @@ template <> struct formatter<detail::bigint> {
+     for (auto i = n.bigits_.size(); i > 0; --i) {
+       auto value = n.bigits_[i - 1u];
+       if (first) {
+-        out = format_to(out, FMT_STRING("{:x}"), value);
++        out = format_to(out, "{:x}", value);
+         first = false;
+         continue;
+       }
+-      out = format_to(out, FMT_STRING("{:08x}"), value);
++      out = format_to(out, "{:08x}", value);
+     }
+     if (n.exp_ > 0)
+-      out = format_to(out, FMT_STRING("p{}"),
++      out = format_to(out, "p{}",
+                       n.exp_ * detail::bigint::bigit_bits);
+     return out;
+   }
+diff --git a/dep/fmt/include/fmt/chrono.h b/dep/fmt/include/fmt/chrono.h.new
+index ff3e1445b9..05d9695d35 100644
+--- a/dep/fmt/include/fmt/chrono.h
++++ b/dep/fmt/include/fmt/chrono.h.new
+@@ -1109,7 +1109,7 @@ void write_floating_seconds(memory_buffer& buf, Duration duration,
+       num_fractional_digits = 6;
+   }
+ 
+-  format_to(std::back_inserter(buf), FMT_STRING("{:.{}f}"),
++  format_to(std::back_inserter(buf), fmt::runtime("{:.{}f}"),
+             std::fmod(val * static_cast<rep>(Duration::period::num) /
+                           static_cast<rep>(Duration::period::den),
+                       static_cast<rep>(60)),

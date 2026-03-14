@@ -19,8 +19,8 @@ default:
   emulator: libretro
   core:     opera
 3ds:
-  emulator: citra
-  core:     citra
+  emulator: azahar
+  core:     azahar
 abuse:
   emulator: abuse
   core:     abuse
@@ -45,6 +45,9 @@ amigacdtv:
 amstradcpc:
   emulator: libretro
   core:     cap32
+pcw:
+  emulator: libretro
+  core:     mame
 apfm1000:
   emulator: libretro
   core:     mame
@@ -65,7 +68,7 @@ archimedes:
 arduboy:
   emulator: libretro
   core:     arduous
-astrocde:
+astrocade:
   emulator: libretro
   core:     mame
 atari2600:
@@ -89,9 +92,12 @@ atom:
 atomiswave:
   emulator: libretro
   core:     flycast
-bbc:
+bbcmicro:
   emulator: libretro
   core:     mame
+bennugd:
+  emulator: libretro
+  core:     bennugd
 bstone:
   emulator: bstone
   core:     bstone
@@ -110,12 +116,18 @@ c20:
 camplynx:
   emulator: libretro
   core:     mame
+cassettevision:
+  emulator: libretro
+  core:     pd777
 catacomb:
   emulator: catacombgl
   core:     catacombgl
 cannonball:
   emulator: cannonball
   core:     cannonball
+cave3rd:
+  emulator: libretro
+  core:     mame
 cavestory:
   emulator: libretro
   core:     nxengine
@@ -148,6 +160,9 @@ corsixth:
 crvision:
   emulator: libretro
   core:     mame
+ctvboy:
+  emulator: libretro
+  core:     mame
 
 # D-L
 
@@ -168,6 +183,12 @@ doom3:
 dos:
   emulator: libretro
   core:     dosbox_pure
+dragon64:
+  emulator: libretro
+  core:     mame
+mc10:
+  emulator: libretro
+  core:     mame
 dreamcast:
   emulator: libretro
   core:     flycast
@@ -186,6 +207,9 @@ eduke32:
 electron:
   emulator: libretro
   core:     mame
+enterprise:
+  emulator: clk
+  core:     clk
 etlegacy:
   emulator: etlegacy
   core:     etlegacy
@@ -220,6 +244,9 @@ fmtowns:
 fury:
   emulator: eduke32
   core:     fury
+gaelco:
+  emulator: libretro
+  core:     mame
 gamate:
   emulator: libretro
   core:     mame
@@ -270,11 +297,19 @@ gx4000:
 gzdoom:
   emulator: gzdoom
   core:     gzdoom
+halflife:
+  emulator: xash3d_fwgs
+  core:     xash3d_fwgs
+  options:
+    hud_support: false
 hcl:
   emulator: hcl
   core:     hcl
   options:
     bezel: none
+hikaru:
+  emulator: demul
+  core:     demul
 hurrican:
   emulator: hurrican
   core:     hurrican
@@ -288,9 +323,6 @@ ikemen:
 intellivision:
   emulator: libretro
   core:     freeintv
-iortcw:
-  emulator: iortcw
-  core:     iortcw
 jaguar:
   emulator: libretro
   core:     virtualjaguar
@@ -322,6 +354,11 @@ lcdgames:
 lindbergh:
   emulator: lindbergh-loader
   core:     lindbergh-loader
+  options:
+    hud_support: false
+loopy:
+  emulator: libretro
+  core:     mame
 lowresnx:
   emulator: libretro
   core:     lowresnx
@@ -346,6 +383,9 @@ mastersystem:
 megadrive:
   emulator: libretro
   core:     genesisplusgx
+megadrive-msu:
+  emulator: libretro
+  core:     genesisplusgx
 megaduck:
   emulator: libretro
   core:     sameduck
@@ -358,6 +398,9 @@ model2:
 model3:
   emulator: supermodel
   core:     supermodel
+mohaa:
+  emulator: openmohaa
+  core:     openmohaa
 moonlight:
   emulator: moonlight
   core:     moonlight
@@ -367,9 +410,6 @@ moonlight:
 mrboom:
   emulator: libretro
   core:     mrboom
-msu-md:
-  emulator: libretro
-  core:     genesisplusgx
 msx1:
   emulator: libretro
   core:     bluemsx
@@ -382,6 +422,21 @@ msx2+:
 msxturbor:
   emulator: libretro
   core:     bluemsx
+mz2000:
+  emulator: libretro
+  core:     mame
+mz2500:
+  emulator: libretro
+  core:     mame
+mz700:
+  emulator: libretro
+  core:     mame
+mz800:
+  emulator: libretro
+  core:     mame
+mz80k:
+  emulator: libretro
+  core:     mame
 mugen:
   emulator: mugen
   core:     wine-tkg
@@ -394,6 +449,9 @@ n64:
 n64dd:
   emulator: mupen64plus
   core:     glide64mk2
+namco22:
+  emulator: libretro
+  core:     mame
 namco2x6:
   emulator: play
   core:     play
@@ -405,7 +463,7 @@ naomi2:
   core:     flycast
 nds:
   emulator: libretro
-  core:     desmume
+  core:     melonds
 neogeo:
   emulator: libretro
   core:     fbneo
@@ -429,7 +487,7 @@ odcommander:
   core:     odcommander
   options:
     hud_support: false
-o2em:
+odyssey2:
   emulator: libretro
   core:     o2em
 openbor:
@@ -443,11 +501,14 @@ openjazz:
   emulator: openjazz
   core:     openjazz
 oricatmos:
-  emulator: clk
-  core:     clk
+  emulator: libretro
+  core:     mame
 
 # P-S
 
+pc60:
+  emulator: libretro
+  core:     mame
 pc88:
   emulator: libretro
   core:     quasi88
@@ -475,9 +536,6 @@ pico:
 pico8:
   emulator: libretro
   core:     fake08
-plugnplay:
-  emulator: libretro
-  core:     mame
 pokemini:
   emulator: libretro
   core:     pokemini
@@ -497,6 +555,8 @@ ps2:
 ps3:
   emulator: rpcs3
   core:     rpcs3
+  options:
+    hud_support: false
 ps4:
   emulator: shadps4
   core:     shadps4
@@ -512,6 +572,12 @@ psx:
 pv1000:
   emulator: libretro
   core:     mame
+pv2000:
+  emulator: libretro
+  core:     mame
+pc80:
+  emulator: libretro
+  core:     mame
 pygame:
   emulator: pygame
   core:     pygame
@@ -522,10 +588,10 @@ quake:
   emulator: libretro
   core:     tyrquake
 quake2:
-  emulator: libretro
-  core:     vitaquake2
+  emulator: yquake2
+  core:     yquake2
   options:
-    gfxbackend: glcore
+    hud_support: false
 quake3:
   emulator: ioquake3
   core:     ioquake3
@@ -537,7 +603,15 @@ reminiscence:
   core:     reminiscence
 rott:
   emulator: taradino
+rtcw:
+  emulator: iortcw
+  core:     iortcw
   core:     taradino
+rx78:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 samcoupe:
   emulator: samcoupe
   core:     samcoupe
@@ -564,6 +638,15 @@ sega32x:
 megacd:
   emulator: libretro
   core:     genesisplusgx
+sc3000:
+  emulator: libretro
+  core:     mame
+segaai:
+  emulator: libretro
+  core:     mame
+beena:
+  emulator: libretro
+  core:     mame
 sg1000:
   emulator: libretro
   core:     genesisplusgx
@@ -620,6 +703,11 @@ supergrafx:
 supervision:
   emulator: libretro
   core:     potator
+sv8000:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 switch:
   emulator: citron
   core:     citron
@@ -655,9 +743,12 @@ traider2:
   emulator: tr2x
   core:     tr2x
 triforce:
-  emulator: dolphin_triforce
-  core:     dolphin_triforce
+  emulator: dolphin
+  core:     dolphin
 tutor:
+  emulator: libretro
+  core:     mame
+tvgames:
   emulator: libretro
   core:     mame
 tyrian:
@@ -727,11 +818,6 @@ x1:
 x68000:
   emulator: libretro
   core:     px68k
-xash3d_fwgs:
-  emulator: xash3d_fwgs
-  core:     xash3d_fwgs
-  options:
-    hud_support: false
 xegs:
   emulator: libretro
   core:     mame

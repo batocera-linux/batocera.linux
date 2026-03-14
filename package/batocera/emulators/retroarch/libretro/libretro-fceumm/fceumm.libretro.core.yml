@@ -1,0 +1,94 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  fceumm_show_crosshair:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': disabled
+      'On': enabled
+  fceumm_nospritelimit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eight sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  fceumm_cropoverscan:
+    group: ADVANCED OPTIONS
+    prompt: CROP OVERSCAN
+    description: Zooms in to hide black borders. Borders are different per game.
+    choices:
+      None: none
+      Horizontal: h
+      Vertical: v
+      Both: both
+  fceumm_palette:
+    group: ADVANCED OPTIONS
+    prompt: COLOR FILTER
+    description: Can be used to simulate colors of particular displays.
+    choices:
+      default: default
+      asqrealc: asqrealc
+      nintendo-vc: nintendo-vc
+      rgb: rgb
+      yuv-v3: yuv-v3
+      unsaturated-final: unsaturated-final
+      sony-cxa2025as-us: sony-cxa2025as-us
+      pal: pal
+      bmf-final2: bmf-final2
+      bmf-final3: bmf-final3
+      smooth-fbx: smooth-fbx
+      composite-direct-fbx: composite-direct-fbx
+      pvm-style-d93-fbx: pvm-style-d93-fbx
+      ntsc-hardware-fbx: ntsc-hardware-fbx
+      nes-classic-fbx-fs: nes-classic-fbx-fs
+      nescap: nescap
+      wavebeam: wavebeam
+      custom: custom
+  fceumm_ntsc_filter:
+    group: ADVANCED OPTIONS
+    prompt: BLARGG NTSC FILTER
+    description: Core-powered video filter.
+    choices:
+      'Off': disabled
+      Composite (color bleeding + artifacts): composite
+      SVideo (color bleeding only): svideo
+      RGB (crisp image): rgb
+  fceumm_sndquality:
+    group: ADVANCED OPTIONS
+    prompt: SOUND QUALITY
+    description: Only supported games. Higher settings increase system requirements.
+    choices:
+      Low: Low
+      High: High
+      Very High: Very High
+  fceumm_overclocking:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      disabled: disabled
+      2x-Postrender: 2x-Postrender
+      2x-VBlank: 2x-VBlank
+  controller1_nes:
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      Autodetect: 1
+      NES Gamepad: 513
+      NES Zapper: 258
+  controller2_nes:
+    prompt: CONTROLLER 2 TYPE
+    description: Paddle can only be used in port 2.
+    choices:
+      Autodetect: 1
+      NES Gamepad: 513
+      NES Zapper: 258
+      Arkanoid paddle: 514
+systems:
+  - fds
+  - nes

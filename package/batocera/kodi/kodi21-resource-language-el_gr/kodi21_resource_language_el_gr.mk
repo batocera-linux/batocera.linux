@@ -1,10 +1,10 @@
 ################################################################################
 #
-# kodi21 el_gr language resource
+# kodi21-resource-language-el_gr
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION = 11.0.65
+KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION = 11.0.75
 KODI21_RESOURCE_LANGUAGE_EL_GR_SOURCE = \
     resource.language.el_gr-$(KODI21_RESOURCE_LANGUAGE_EL_GR_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_EL_GR_SITE = \

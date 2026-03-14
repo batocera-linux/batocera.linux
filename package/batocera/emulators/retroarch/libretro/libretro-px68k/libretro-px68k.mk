@@ -8,6 +8,7 @@ LIBRETRO_PX68K_VERSION = 4c7542e34df71e3ebab77b5867901747d58dbb38
 LIBRETRO_PX68K_SITE = $(call github,libretro,px68k-libretro,$(LIBRETRO_PX68K_VERSION))
 LIBRETRO_PX68K_LICENSE = Unknown
 LIBRETRO_PX68K_DEPENDENCIES += retroarch
+LIBRETRO_PX68K_EMULATOR_INFO = px68k.libretro.core.yml
 
 LIBRETRO_PX68K_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_PX68K_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

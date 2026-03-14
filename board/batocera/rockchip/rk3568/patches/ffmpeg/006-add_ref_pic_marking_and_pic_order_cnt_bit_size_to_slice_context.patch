@@ -1,0 +1,199 @@
+From patchwork Tue Aug  6 09:06:05 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50904
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1916450vqb;
+        Tue, 6 Aug 2024 02:26:10 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCUmA4PAGOU1aK36fokvnffB2BwxKja1X0IkwBhXX6ShPfq4foJEC+BTfMdd0vAWdXMWliqQSdEotnW0fAkx03YgIUFO95Z/x2ZhFw==
+X-Google-Smtp-Source: 
+ AGHT+IFM7KWukIEDmgRvoqiqcGCV1MTYjG3dX5RGY3feDB7NQ6TN2Tr8XfhUQUDDgv3HyYPHAqsW
+X-Received: by 2002:a2e:2c14:0:b0:2ef:24a0:c176 with SMTP id
+ 38308e7fff4ca-2f15aac182cmr105388481fa.28.1722936370523;
+        Tue, 06 Aug 2024 02:26:10 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722936370; cv=none;
+        d=google.com; s=arc-20160816;
+        b=Cq+tph1/aU066bqm2kRQTW05aWxCWP7LGwYEGBtGmhWz9E7hNs9nAbNZk8X9ilGsZu
+         qJ4iMwbYviHmthHdIDQK7FzEJnA8Grec7uFq5yPzEyaa4ct2u8KhKtXybPE/uMTptu3E
+         PwAg/E5mtpgGqM0dUJZa95k06DmNACgD3MikKSdnajdAjAT8i1v2m6l5uPEi1ADw/18W
+         hB9QCcDm4FkmVZyvqwWJMieuXPyFiqmRHSoqqiBzcV3oLpcdJouPFlf0hOXX+mI8fj8b
+         jLqPI48nQzI9PpPIYvdNFwQ7qAiS43Zn4pwvkVh6w3UY6PBHdUBGTm6czrvYq2PZFf4H
+         HVnQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=wHNS3I28FRuq8zwLkoENiTeNusqfw52XV5FJ3+1Pm6Q=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=RL/+tfN8vcrqhHOKcRBv/fMGLz2vrxtOy8pU7wV+dTGoTqA7Ra0s0owcAKf040/ZU1
+         fiS7/eUwnD7zqBSZioLw450BiJzl1iyg/WyVLntM/pETqccuFnOTmYdli3jzyPwi6GsG
+         vG/hdjdgDIFRBTN2AuMW+wTa6FJDgOzqulq0UNC5wY43RNUKD2qkMVuJj/+VgNi6fCTc
+         t4ePDySJprJ9kIOPwhybUElVrUa79mnefklI7la0PmIBgEhEvcOVgSt6daDBlkQZVA3L
+         9Cpyu7IQKFsEiE3U+VDkL201RM2IIkjR5aRhyEaEe7NOzwnHZyvGaVD9UGGe9Hd/MVG7
+         pe0g==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b="I/qdJK1f";
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ 38308e7fff4ca-2f18097c378si13199821fa.537.2024.08.06.02.26.10;
+        Tue, 06 Aug 2024 02:26:10 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b="I/qdJK1f";
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id B6DDC68D9B9;
+	Tue,  6 Aug 2024 12:06:43 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [149.28.215.223])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id 7DF7368D99F
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:35 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935192; bh=eu95Mv+WUbMxjZ/wz5d/UJUMF5aDOTzJ5VijNDIQF6A=;
+ b=I/qdJK1fnxV4WPcZwrblghLceCzFLEd0Lv73oxMHhzp6sCZt+BdPaWsWpIaz+t+7d4E90l08l
+ /GerLG5ZJbzFHwndaHlloxHqMQap7rXovZ9OXmPEkm1Hh2XMXO5IM7sI9hOe97e76NnF7/WCRds
+ x2L2as4ac1MGgrLdmJvWKB6p93L6VTLQy1QjR8PvWVFSJcyl6mvqjMM76QNm+M4qx5aa73TCtCI
+ phBfZ0Bb2FoFbUaGzfdF4d4o8MgRtSUkHfRAYZIxTh5adYjEU/2jMG7Pc694a/mudVETyxYpuku
+ QzEhp7Kfefe54yF/nDtY5/OB1QxpXopCy7TREKn1n4Gg==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:05 +0000
+Message-ID: <20240806090607.43240-7-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 149.28.215.223
+X-ForwardEmail-ID: 66b1e7988ac7bd7d98d34c96
+Subject: [FFmpeg-devel] [PATCH v2 6/8] avcodec/h264dec: add ref_pic_marking
+ and pic_order_cnt bit_size to slice context
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: uUwbOGovDirR
+
+From: Boris Brezillon <boris.brezillon@collabora.com>
+
+The V4L2_CID_STATELESS_H264_DECODE_PARAMS control require following:
+
+- dec_ref_pic_marking_bit_size
+  Size in bits of the dec_ref_pic_marking() syntax element.
+
+- pic_order_cnt_bit_size
+  Combined size in bits of the picture order count related syntax
+  elements: pic_order_cnt_lsb, delta_pic_order_cnt_bottom,
+  delta_pic_order_cnt0, and delta_pic_order_cnt1.
+
+Save the bit sizes while parsing for later use in hwaccel, similar to
+short/long_term_ref_pic_set_size in hevcdec.
+
+Signed-off-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ libavcodec/h264_slice.c | 6 +++++-
+ libavcodec/h264dec.h    | 2 ++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/h264_slice.c b/libavcodec/h264_slice.c
+index a66b75ca80..58a48f3fbe 100644
+--- a/libavcodec/h264_slice.c
++++ b/libavcodec/h264_slice.c
+@@ -1690,7 +1690,7 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
+     unsigned int slice_type, tmp, i;
+     int field_pic_flag, bottom_field_flag;
+     int first_slice = sl == h->slice_ctx && !h->current_slice;
+-    int picture_structure;
++    int picture_structure, pos;
+ 
+     if (first_slice)
+         av_assert0(!h->setup_finished);
+@@ -1781,6 +1781,7 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
+ 
+     sl->poc_lsb = 0;
+     sl->delta_poc_bottom = 0;
++    pos = get_bits_left(&sl->gb);
+     if (sps->poc_type == 0) {
+         sl->poc_lsb = get_bits(&sl->gb, sps->log2_max_poc_lsb);
+ 
+@@ -1795,6 +1796,7 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
+         if (pps->pic_order_present == 1 && picture_structure == PICT_FRAME)
+             sl->delta_poc[1] = get_se_golomb(&sl->gb);
+     }
++    sl->pic_order_cnt_bit_size = pos - get_bits_left(&sl->gb);
+ 
+     sl->redundant_pic_count = 0;
+     if (pps->redundant_pic_cnt_present)
+@@ -1834,9 +1836,11 @@ static int h264_slice_header_parse(const H264Context *h, H264SliceContext *sl,
+ 
+     sl->explicit_ref_marking = 0;
+     if (nal->ref_idc) {
++        pos = get_bits_left(&sl->gb);
+         ret = ff_h264_decode_ref_pic_marking(sl, &sl->gb, nal, h->avctx);
+         if (ret < 0 && (h->avctx->err_recognition & AV_EF_EXPLODE))
+             return AVERROR_INVALIDDATA;
++        sl->ref_pic_marking_bit_size = pos - get_bits_left(&sl->gb);
+     }
+ 
+     if (sl->slice_type_nos != AV_PICTURE_TYPE_I && pps->cabac) {
+diff --git a/libavcodec/h264dec.h b/libavcodec/h264dec.h
+index ccd7583bf4..71cbb0e0cc 100644
+--- a/libavcodec/h264dec.h
++++ b/libavcodec/h264dec.h
+@@ -324,6 +324,7 @@ typedef struct H264SliceContext {
+     MMCO mmco[H264_MAX_MMCO_COUNT];
+     int  nb_mmco;
+     int explicit_ref_marking;
++    int ref_pic_marking_bit_size;
+ 
+     int frame_num;
+     int idr_pic_id;
+@@ -332,6 +333,7 @@ typedef struct H264SliceContext {
+     int delta_poc[2];
+     int curr_pic_num;
+     int max_pic_num;
++    int pic_order_cnt_bit_size;
+ } H264SliceContext;
+ 
+ /**

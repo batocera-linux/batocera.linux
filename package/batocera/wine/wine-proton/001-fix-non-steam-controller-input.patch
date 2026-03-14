@@ -1,0 +1,73 @@
+diff --git a/share/wine/wine.inf b/share/wine/wine.inf
+index a37aaa4829..97afaa7a42 100644
+--- a/share/wine/wine.inf
++++ b/share/wine/wine.inf
+@@ -74,7 +74,8 @@ AddReg=\
+     Tapi,\
+     ThemeManager,\
+     VCRuntime.ntx86,\
+-    LicenseInformation
++    LicenseInformation,\
++    WineBatoOverrides
+ 
+ [DefaultInstall.NT]
+ RegisterDlls=RegisterDllsSection
+@@ -104,7 +105,8 @@ AddReg=\
+     VersionInfo,\
+     LicenseInformation,\
+     NVIDIANGX, \
+-    ProtonOverrides
++    ProtonOverrides, \
++    WineBatoOverrides
+ 
+ [DefaultInstall.ntamd64]
+ RegisterDlls=RegisterDllsSection
+@@ -136,7 +138,8 @@ AddReg=\
+     LicenseInformation,\
+     NVIDIANGX, \
+     TTS, \
+-    ProtonOverrides
++    ProtonOverrides, \
++    WineBatoOverrides
+ 
+ [DefaultInstall.ntarm64]
+ RegisterDlls=RegisterDllsSection
+@@ -166,7 +169,8 @@ AddReg=\
+     VCRuntime.ntamd64,\
+     VCRuntime.ntarm64,\
+     VersionInfo,\
+-    LicenseInformation
++    LicenseInformation, \
++    WineBatoOverrides
+ 
+ [Wow64Install.ntx86]
+ RegisterDlls=RegisterDllsSection
+@@ -188,7 +192,8 @@ AddReg=\
+     VersionInfo,\
+     LicenseInformation,\
+     NVIDIANGX, \
+-    ProtonOverrides
++    ProtonOverrides, \
++    WineBatoOverrides
+ 
+ [Wow64Install.ntarm]
+ RegisterDlls=RegisterDllsSection
+@@ -205,7 +210,8 @@ AddReg=\
+     SteamClient64,\
+     Tapi,\
+     VersionInfo,\
+-    LicenseInformation
++    LicenseInformation, \
++    WineBatoOverrides
+ 
+ [DefaultInstall.Services]
+ AddService=BITS,0,BITSService
+@@ -3015,3 +3021,8 @@ HKLM,Software\Wow6432Node\lucasarts entertainment company llc\Star Wars: Episode
+ ;;Other app-specific overrides
+ HKCU,Software\Wine\AppDefaults\Pentiment.exe\DllOverrides,"SpeechSynthesisWrapper",,"disabled"
+ HKCU,Software\Wine\AppDefaults\Maine-Win64-Shipping.exe\DllOverrides,"SpeechSynthWrapper",0x2,"disabled"
++
++[WineBatoOverrides]
++HKLM,System\CurrentControlSet\Services\winebus,"DisableHidraw",0x10001,"1"
++HKLM,System\CurrentControlSet\Services\winebus,"Enable SDL",0x10001,"1"
++

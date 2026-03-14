@@ -29,6 +29,7 @@ from ...exceptions import BatoceraException
 from ...utils import bezels as bezelsUtil, videoMode
 from ..Generator import Generator
 from . import mameControllers
+from .mameCommon import is_atom_floppy
 from .mamePaths import MAME_BIOS, MAME_CHEATS, MAME_CONFIG, MAME_DEFAULT_DATA, MAME_ROMS, MAME_SAVES
 
 if TYPE_CHECKING:
@@ -116,9 +117,15 @@ class MameGenerator(Generator):
             softList = 'fmtowns_cd'
 
         commandArray: list[str | Path] =  [ "/usr/bin/mame/mame" ]
+
         # MAME options used here are explained as it's not always straightforward
         # A lot more options can be configured, just run mame -showusage and have a look
+
+        # set audio to pipewire to fix audio from 0.278
+        commandArray += [ "-sound", "pipewire" ]
+        # skip game info at start
         commandArray += [ "-skip_gameinfo" ]
+
         if messMode == -1:
             commandArray += [ "-rompath", f"{romDirname};{MAME_BIOS};{BIOS}" ]
         else:
@@ -139,8 +146,9 @@ class MameGenerator(Generator):
         commandArray += [ "-cheat" ]
         commandArray += [ "-cheatpath",    MAME_CHEATS ]       # Should this point to path containing the cheat.7z file
 
-        # logs
+        # Logs and Swithres ini read by default (including its own verbose)
         commandArray += [ "-verbose" ]
+        commandArray += [ "-switchres_ini" ]
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
         commandArray += [ "-nvram_directory" ,    MAME_SAVES / "nvram" ]
@@ -148,7 +156,7 @@ class MameGenerator(Generator):
         # Set custom config path if option is selected or default path if not
         customCfg = system.config.get_bool("customcfg")
 
-        if system.name == "mame":
+        if messMode == -1:
             if customCfg:
                 cfgPath = MAME_CONFIG / "custom"
             else:
@@ -243,6 +251,8 @@ class MameGenerator(Generator):
             pluginsToLoad += [ "coindrop" ]
         if system.config.get_bool("dataplugin"):
             pluginsToLoad += [ "data" ]
+        if system.config.get_bool('offscreenreload'): # new offscreenreload for light guns games
+            pluginsToLoad += [ "offscreenreload" ]
         if pluginsToLoad:
             commandArray += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
 
@@ -280,8 +290,6 @@ class MameGenerator(Generator):
             commandArray += [ "-lightgunprovider", "udev" ]
             commandArray += [ "-lightgun_device", "lightgun" ]
             commandArray += [ "-adstick_device", "lightgun" ]
-        if system.config.get_bool('offscreenreload'):
-            commandArray += [ "-offscreen_reload" ]
 
         # wheels
         useWheels = system.config.use_wheels
@@ -308,16 +316,20 @@ class MameGenerator(Generator):
                 if system.config.get_bool("ti99_32kram", True):
                     commandArray += ["-ioport:peb:slot2", "32kmem"]
                 if system.config.get_bool("ti99_speech", True):
-                    commandArray += ["-ioport:peb:slot3", "speech"]
+                    commandArray += ["-ioport", "speechsyn"]
 
             #Laser 310 Memory Expansion & Joystick
             if system.name == "laser310":
                 commandArray += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
+            if system.name == "bbcmicro" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
                 commandArray += ["-analogue", sticktype]
                 specialController = sticktype
+
+            # Enterprise
+            if system.name == "enterprise":
+                commandArray += ['-exp', 'exdos']
 
             # Apple II
             if system.name == "apple2":
@@ -387,11 +399,26 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop1" ]
                         else:
                             commandArray += [ "-cart1" ]
-                    elif system.name == "coco":
+                    elif system.name in ("coco", "dragon64"):
                         if romExt.casefold() == ".cas":
                             commandArray += [ "-cass" ]
                         elif romExt.casefold() == ".dsk":
                             commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
+                    elif system.name == "sc3000":
+                        if romExt.casefold() in (".cas", ".wav", ".bit"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-cart" ]
+                    elif system.name == "segaai":
+                        if romExt.casefold() in (".wav", ".flac", ".cas"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-card" ]
+                    elif system.name == "mc10":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
                         else:
                             commandArray += [ "-cart" ]
                     else:
@@ -437,6 +464,10 @@ class MameGenerator(Generator):
                     targetFolder = MAME_SAVES / system.name
                     targetDisk = targetFolder / romName
                 # Add elif statements here for other systems if enabled
+                else:
+                    blankDisk = Path('/usr/share/mame/blank.default')
+                    targetFolder = MAME_SAVES / system.name
+                    targetDisk = targetFolder / f'{romName}.default'
                 mkdir_if_not_exists(targetFolder)
                 if not targetDisk.exists():
                     shutil.copy2(blankDisk, targetDisk)
@@ -452,7 +483,7 @@ class MameGenerator(Generator):
             autoRunDelay = 0
             # Autostart computer games where applicable
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList.endswith("cass"):
                         autoRunCmd = '*tape\\nchain""\\n'
@@ -471,7 +502,7 @@ class MameGenerator(Generator):
                 ):
                     autoRunCmd = 'LOADM”“,,R\\n'
                     autoRunDelay = 5
-            elif system.name == "coco":
+            elif system.name in ("coco", "dragon64"):
                 romType = 'cart'
                 autoRunDelay = 2
 
@@ -509,6 +540,52 @@ class MameGenerator(Generator):
                         for row in autoRunList:
                             if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
                                 autoRunCmd = f"{row[1]}\\n"
+            elif system.name == "mc10":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = Path('/usr/bin/mame/hash') / f'{softList}.xml'
+                    if softListFile.exists():
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib and software.get('name') == romName:
+                                for info in software.iter('info'):
+                                    if info.get('name') == 'usage':
+                                        autoRunCmd = f"{info.get('value')}\\n"
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if altromtype == "cass" or (softList and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        autoRunCmd = 'CLOAD\\n'
+
+                # check for a user override
+                autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'
+                if autoRunFile.exists():
+                    with autoRunFile.open() as openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
+                                autoRunCmd = f"{row[1]}\\n"
+            elif system.name == "atom":
+                autoRunDelay = 1
+                autoRunCmd = messAutoRun[messMode]
+                # Check if the media being used is a floppy type
+                if (
+                    (altromtype == "flop1") or
+                    (softList and softList.endswith("flop")) or
+                    is_atom_floppy(rom)
+                ):
+                    autoRunFile = MAME_DEFAULT_DATA / 'atom_flop_autoload.csv'
+                    if autoRunFile.exists():
+                        with autoRunFile.open() as openARFile:
+                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                            for row in autoRunList:
+                                if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
+                                    autoRunCmd = f"{row[1]}\\n"
+                                    break
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
@@ -552,7 +629,14 @@ class MameGenerator(Generator):
 
         # Change directory to MAME folder (allows data plugin to load properly)
         os.chdir('/usr/bin/mame')
-        return Command.Command(array=commandArray, env={"PWD":"/usr/bin/mame/","XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":SAVES})
+        return Command.Command(
+            array=commandArray,
+            env={
+                "PWD":"/usr/bin/mame/",
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CACHE_HOME": SAVES
+                }
+            )
 
     @staticmethod
     def writeBezelConfig(bezelSet: str | None, system: Emulator, rom: Path, messSys: str, gameResolution: Resolution, gunsBordersSize: str | None, gunsBordersRatio: str | None) -> None:
@@ -606,6 +690,7 @@ class MameGenerator(Generator):
             (tmpZipDir / 'default.lay').symlink_to(bz_infos["layout"])
             pngFile = tmpZipDir / bz_infos["png"].name
             pngFile.symlink_to(bz_infos["png"])
+            img_width, img_height = bezelsUtil.fast_image_size(bz_infos["png"])
         else:
             pngFile = tmpZipDir / "default.png"
             pngFile.symlink_to(bz_infos["png"])
@@ -647,6 +732,8 @@ class MameGenerator(Generator):
             f.close()
 
         if (bezel_tattoo := system.config.get_str('bezel.tattoo', "0")) != "0":
+            tattoo: Image.Image | None = None
+
             if bezel_tattoo == 'system':
                 tattoo_file = BATOCERA_SHARE_DIR / 'controller-overlays' / f'{system.name}.png'
                 if not tattoo_file.exists():
@@ -666,35 +753,37 @@ class MameGenerator(Generator):
                     tattoo = Image.open(tattoo_file)
                 except Exception:
                     _logger.error("Error opening custom file: %s", tattoo_file)
-            output_png_file = Path("/tmp/bezel_tattooed.png")
-            back = Image.open(pngFile)
-            tattoo = tattoo.convert("RGBA")
-            back = back.convert("RGBA")
-            tw,th = bezelsUtil.fast_image_size(tattoo_file)
-            tatwidth = int(240/1920 * img_width) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
-            pcent = float(tatwidth / tw)
-            tatheight = int(float(th) * pcent)
-            tattoo = tattoo.resize((tatwidth,tatheight), Image.Resampling.LANCZOS)
-            alphatat = tattoo.split()[-1]
-            corner = system.config.get_str('bezel.tattoo_corner', 'NW')
-            if corner.upper() == 'NE':
-                back.paste(tattoo, (img_width-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
-            elif corner.upper() == 'SE':
-                back.paste(tattoo, (img_width-tatwidth,img_height-tatheight-20), alphatat)
-            elif corner.upper() == 'SW':
-                back.paste(tattoo, (0,img_height-tatheight-20), alphatat)
-            else: # default = NW
-                back.paste(tattoo, (0,20), alphatat)
-            imgnew = Image.new("RGBA", (img_width,img_height), (0,0,0,255))
-            imgnew.paste(back, (0,0,img_width,img_height))
-            imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
-            try:
-                pngFile.unlink()
-            except Exception:
-                pass
+            if tattoo is not None:
+                output_png_file = Path("/tmp/bezel_tattooed.png")
+                back = Image.open(pngFile)
+                tattoo = tattoo.convert("RGBA")
+                back = back.convert("RGBA")
+                tw,th = bezelsUtil.fast_image_size(tattoo_file)
+                tatwidth = int(240/1920 * img_width) # 240 = half of the difference between 4:3 and 16:9 on 1920px (0.5*1920/16*4)
+                pcent = float(tatwidth / tw)
+                tatheight = int(float(th) * pcent)
+                tattoo = tattoo.resize((tatwidth,tatheight), Image.Resampling.LANCZOS)
+                alphatat = tattoo.split()[-1]
+                corner = system.config.get_str('bezel.tattoo_corner', 'NW')
+                if corner.upper() == 'NE':
+                    back.paste(tattoo, (img_width-tatwidth,20), alphatat) # 20 pixels vertical margins (on 1080p)
+                elif corner.upper() == 'SE':
+                    back.paste(tattoo, (img_width-tatwidth,img_height-tatheight-20), alphatat)
+                elif corner.upper() == 'SW':
+                    back.paste(tattoo, (0,img_height-tatheight-20), alphatat)
+                else: # default = NW
+                    back.paste(tattoo, (0,20), alphatat)
+                imgnew = Image.new("RGBA", (img_width,img_height), (0,0,0,255))
+                imgnew.paste(back, (0,0,img_width,img_height))
+                imgnew.save(output_png_file, mode="RGBA", format="PNG")
 
-            pngFile.symlink_to(output_png_file)
+                try:
+                    pngFile.unlink()
+                except Exception:
+                    pass
+
+                pngFile.symlink_to(output_png_file)
 
         # borders for guns
         if gunsBordersSize is not None:

@@ -1,0 +1,2369 @@
+From eca6838fbfeb815582a6118acefbeb5fbd5bca25 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Thu, 2 Oct 2025 21:29:05 +0200
+Subject: [PATCH 01/21] drm/sun4i: vi_layer: Limit formats for DE33
+
+YUV formats need scaler support due to chroma upscaling, but that's not
+yet supported in the driver. Remove them from supported list until
+DE33 scaler is properly supported.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_vi_layer.c | 36 +++++++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+index 40008c38003d..baa240c4bb82 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_vi_layer.c
+@@ -403,6 +403,37 @@ static const u32 sun8i_vi_layer_de3_formats[] = {
+ 	DRM_FORMAT_YVU422,
+ };
+ 
++/*
++ * TODO: DE33 VI planes naturally support YUV formats but
++ * driver needs improvements in order to support them.
++ */
++static const u32 sun8i_vi_layer_de33_formats[] = {
++	DRM_FORMAT_ABGR1555,
++	DRM_FORMAT_ABGR2101010,
++	DRM_FORMAT_ABGR4444,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_ARGB1555,
++	DRM_FORMAT_ARGB2101010,
++	DRM_FORMAT_ARGB4444,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_BGR565,
++	DRM_FORMAT_BGR888,
++	DRM_FORMAT_BGRA1010102,
++	DRM_FORMAT_BGRA5551,
++	DRM_FORMAT_BGRA4444,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_RGB565,
++	DRM_FORMAT_RGB888,
++	DRM_FORMAT_RGBA1010102,
++	DRM_FORMAT_RGBA4444,
++	DRM_FORMAT_RGBA5551,
++	DRM_FORMAT_RGBA8888,
++	DRM_FORMAT_RGBX8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_XRGB8888,
++};
++
+ static const uint64_t sun8i_layer_modifiers[] = {
+ 	DRM_FORMAT_MOD_LINEAR,
+ 	DRM_FORMAT_MOD_INVALID
+@@ -432,7 +463,10 @@ struct sun8i_layer *sun8i_vi_layer_init_one(struct drm_device *drm,
+ 	layer->regs = regs;
+ 	layer->cfg = cfg;
+ 
+-	if (layer->cfg->de_type >= SUN8I_MIXER_DE3) {
++	if (layer->cfg->de_type == SUN8I_MIXER_DE33) {
++		formats = sun8i_vi_layer_de33_formats;
++		format_count = ARRAY_SIZE(sun8i_vi_layer_de33_formats);
++	} else if (layer->cfg->de_type == SUN8I_MIXER_DE3) {
+ 		formats = sun8i_vi_layer_de3_formats;
+ 		format_count = ARRAY_SIZE(sun8i_vi_layer_de3_formats);
+ 	} else {
+-- 
+2.51.0
+
+
+From 37d1712755091c5c3591d4d7be1a8702fc859f9e Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 27 Sep 2025 12:51:45 +0200
+Subject: [PATCH 02/21] clk: sunxi-ng: de2: Export register regmap for DE33
+
+DE33 clock pre-set plane mapping, which is not something that we want
+from clock driver. Export registers instead, so DRM driver can set them
+properly.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/clk/sunxi-ng/ccu-sun8i-de2.c | 52 ++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
+index a6cd0f988859..11c019295cc8 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
++++ b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
+@@ -6,9 +6,11 @@
+ #include <linux/clk.h>
+ #include <linux/clk-provider.h>
+ #include <linux/io.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/regmap.h>
+ #include <linux/reset.h>
+ 
+ #include "ccu_common.h"
+@@ -250,6 +252,40 @@ static const struct sunxi_ccu_desc sun50i_h616_de33_clk_desc = {
+ 	.num_resets	= ARRAY_SIZE(sun50i_h5_de2_resets),
+ };
+ 
++/*
++ * Add a regmap for the DE33 plane driver to access plane
++ * mapping registers.
++ * Only these registers are allowed to be written, in order
++ * to prevent overriding clock and reset configuration.
++ */
++
++#define SUN50I_DE33_CHN2CORE_REG 0x24
++#define SUN50I_DE33_PORT02CHN_REG 0x28
++#define SUN50I_DE33_PORT12CHN_REG 0x2c
++static bool sun8i_de2_ccu_regmap_accessible_reg(struct device *dev,
++						unsigned int reg)
++{
++	switch (reg) {
++	case SUN50I_DE33_CHN2CORE_REG:
++	case SUN50I_DE33_PORT02CHN_REG:
++	case SUN50I_DE33_PORT12CHN_REG:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config sun8i_de2_ccu_regmap_config = {
++	.reg_bits	= 32,
++	.val_bits	= 32,
++	.reg_stride	= 4,
++	.max_register	= 0xe0,
++
++	/* other devices have no business accessing other registers */
++	.readable_reg	= sun8i_de2_ccu_regmap_accessible_reg,
++	.writeable_reg	= sun8i_de2_ccu_regmap_accessible_reg,
++};
++
+ static int sunxi_de2_clk_probe(struct platform_device *pdev)
+ {
+ 	struct clk *bus_clk, *mod_clk;
+@@ -303,13 +339,23 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	/*
+-	 * The DE33 requires these additional (unknown) registers set
++	 * The DE33 requires these additional plane mapping registers set
+ 	 * during initialisation.
+ 	 */
+ 	if (of_device_is_compatible(pdev->dev.of_node,
+ 				    "allwinner,sun50i-h616-de33-clk")) {
+-		writel(0, reg + 0x24);
+-		writel(0x0000a980, reg + 0x28);
++		struct regmap *regmap;
++
++		regmap = devm_regmap_init_mmio(&pdev->dev, reg,
++				       &sun8i_de2_ccu_regmap_config);
++		if (IS_ERR(regmap)) {
++			ret = PTR_ERR(regmap);
++			goto err_assert_reset;
++		}
++
++		ret = of_syscon_register_regmap(pdev->dev.of_node, regmap);
++		if (ret)
++			goto err_assert_reset;
+ 	}
+ 
+ 	ret = devm_sunxi_ccu_probe(&pdev->dev, reg, ccu_desc);
+-- 
+2.51.0
+
+
+From bfac60a4de5b2b0fa7b3c0e53116ea73cdc4947c Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Mon, 29 Sep 2025 22:10:39 +0200
+Subject: [PATCH 03/21] drm/sun4i: Add planes driver
+
+This driver serves just as planes sharing manager, needed for Display
+Engine 3.3 and newer.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/Kconfig         |   8 +
+ drivers/gpu/drm/sun4i/Makefile        |   1 +
+ drivers/gpu/drm/sun4i/sun50i_planes.c | 205 ++++++++++++++++++++++++++
+ drivers/gpu/drm/sun4i/sun50i_planes.h |  43 ++++++
+ 4 files changed, 257 insertions(+)
+ create mode 100644 drivers/gpu/drm/sun4i/sun50i_planes.c
+ create mode 100644 drivers/gpu/drm/sun4i/sun50i_planes.h
+
+diff --git a/drivers/gpu/drm/sun4i/Kconfig b/drivers/gpu/drm/sun4i/Kconfig
+index b56ba00aabca..946dd7606094 100644
+--- a/drivers/gpu/drm/sun4i/Kconfig
++++ b/drivers/gpu/drm/sun4i/Kconfig
+@@ -85,4 +85,12 @@ config DRM_SUN8I_TCON_TOP
+ 	  TCON TOP is responsible for configuring display pipeline for
+ 	  HDMI, TVE and LCD.
+ 
++config DRM_SUN50I_PLANES
++	tristate
++	default DRM_SUN4I if DRM_SUN8I_MIXER!=n
++	help
++	  Chose this option if you have an Allwinner Soc with the
++	  Display Engine 3.3 or newer. Planes are shared resource
++	  between multiple mixers.
++
+ endif
+diff --git a/drivers/gpu/drm/sun4i/Makefile b/drivers/gpu/drm/sun4i/Makefile
+index bad7497a0d11..03f002abef15 100644
+--- a/drivers/gpu/drm/sun4i/Makefile
++++ b/drivers/gpu/drm/sun4i/Makefile
+@@ -38,3 +38,4 @@ obj-$(CONFIG_DRM_SUN6I_DSI)	+= sun6i_mipi_dsi.o
+ obj-$(CONFIG_DRM_SUN8I_DW_HDMI)	+= sun8i-drm-hdmi.o
+ obj-$(CONFIG_DRM_SUN8I_MIXER)	+= sun8i-mixer.o
+ obj-$(CONFIG_DRM_SUN8I_TCON_TOP) += sun8i_tcon_top.o
++obj-$(CONFIG_DRM_SUN50I_PLANES)	+= sun50i_planes.o
+diff --git a/drivers/gpu/drm/sun4i/sun50i_planes.c b/drivers/gpu/drm/sun4i/sun50i_planes.c
+new file mode 100644
+index 000000000000..a99c01122990
+--- /dev/null
++++ b/drivers/gpu/drm/sun4i/sun50i_planes.c
+@@ -0,0 +1,205 @@
++// SPDX-License-Identifier: GPL-2.0+
++/* Copyright (c) 2025 Jernej Skrabec <jernej.skrabec@gmail.com> */
++
++#include <linux/device.h>
++#include <linux/io.h>
++#include <linux/mfd/syscon.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_graph.h>
++#include <linux/platform_device.h>
++
++#include "sun50i_planes.h"
++#include "sun8i_ui_layer.h"
++#include "sun8i_vi_layer.h"
++
++static bool sun50i_planes_node_is_planes(struct device_node *node)
++{
++	return !!of_match_node(sun50i_planes_of_table, node);
++}
++
++struct drm_plane **
++sun50i_planes_setup(struct device *dev, struct drm_device *drm,
++		    unsigned int mixer)
++{
++	struct sun50i_planes *planes = dev_get_drvdata(dev);
++	const struct sun50i_planes_quirks *quirks;
++	struct drm_plane **drm_planes;
++	const struct default_map *map;
++	unsigned int i;
++
++	if (!sun50i_planes_node_is_planes(dev->of_node)) {
++		dev_err(dev, "Device is not planes driver!\n");
++		return NULL;
++	}
++
++	if (!planes) {
++		dev_err(dev, "Planes driver is not loaded yet!\n");
++		return NULL;
++	}
++
++	if (mixer > 1) {
++		dev_err(dev, "Mixer index is too high!\n");
++		return NULL;
++	}
++
++	quirks = planes->quirks;
++	map = &quirks->def_map[mixer];
++
++	drm_planes = devm_kcalloc(drm->dev, map->num_ch + 1,
++				  sizeof(*drm_planes), GFP_KERNEL);
++	if (!drm_planes)
++		return ERR_PTR(-ENOMEM);
++
++	for (i = 0; i < map->num_ch; i++) {
++		unsigned int phy_ch = map->map[i];
++		struct sun8i_layer *layer;
++		enum drm_plane_type type;
++
++		if ((i == 0 && map->num_ch == 1) || i == 1)
++			type = DRM_PLANE_TYPE_PRIMARY;
++		else
++			type = DRM_PLANE_TYPE_OVERLAY;
++
++		if (phy_ch < UI_PLANE_OFFSET)
++			layer = sun8i_vi_layer_init_one(drm, type, planes->regs,
++							i, phy_ch, map->num_ch,
++							&quirks->cfg);
++		else
++			layer = sun8i_ui_layer_init_one(drm, type, planes->regs,
++							i, phy_ch, map->num_ch,
++							&quirks->cfg);
++
++		if (IS_ERR(layer)) {
++			dev_err(drm->dev,
++				"Couldn't initialize DRM plane\n");
++			return ERR_CAST(layer);
++		}
++
++		drm_planes[i] = &layer->plane;
++	}
++
++	return drm_planes;
++}
++EXPORT_SYMBOL(sun50i_planes_setup);
++
++static void sun50i_planes_init_mapping(struct sun50i_planes *planes)
++{
++	const struct sun50i_planes_quirks *quirks = planes->quirks;
++	unsigned int i, j;
++	u32 mapping;
++
++	mapping = 0;
++	for (j = 0; j < MAX_DISP; j++)
++		for (i = 0; i < quirks->def_map[j].num_ch; i++) {
++			unsigned int ch = quirks->def_map[j].map[i];
++
++			if (ch < UI_PLANE_OFFSET)
++				mapping |= j << (ch * 2);
++			else
++				mapping |= j << ((ch - UI_PLANE_OFFSET) * 2 + 16);
++		}
++	regmap_write(planes->mapping, SUNXI_DE33_DE_CHN2CORE_MUX_REG, mapping);
++
++	for (j = 0; j < MAX_DISP; j++) {
++		mapping = 0;
++		for (i = 0; i < quirks->def_map[j].num_ch; i++) {
++			unsigned int ch = quirks->def_map[j].map[i];
++
++			if (ch >= UI_PLANE_OFFSET)
++				ch += 2;
++
++			mapping |= ch << (i * 4);
++		}
++		regmap_write(planes->mapping, SUNXI_DE33_DE_PORT02CHN_MUX_REG + j * 4, mapping);
++	}
++}
++
++static const struct regmap_config sun50i_planes_regmap_config = {
++	.name		= "planes",
++	.reg_bits	= 32,
++	.val_bits	= 32,
++	.reg_stride	= 4,
++	.max_register	= 0x17fffc,
++};
++
++static int sun50i_planes_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct sun50i_planes *planes;
++	void __iomem *regs;
++
++	planes = devm_kzalloc(dev, sizeof(*planes), GFP_KERNEL);
++	if (!planes)
++		return -ENOMEM;
++
++	planes->quirks = of_device_get_match_data(&pdev->dev);
++	if (!planes->quirks)
++		return dev_err_probe(dev, -EINVAL, "Unable to get quirks\n");
++
++	planes->mapping = syscon_regmap_lookup_by_phandle(dev->of_node,
++							  "allwinner,plane-mapping");
++	if (IS_ERR(planes->mapping))
++		return dev_err_probe(dev, PTR_ERR(planes->mapping),
++				     "Unable to get mapping\n");
++
++	regs = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(regs))
++		return PTR_ERR(regs);
++
++	planes->regs = devm_regmap_init_mmio(dev, regs, &sun50i_planes_regmap_config);
++	if (IS_ERR(planes->regs))
++		return PTR_ERR(planes->regs);
++
++	dev_set_drvdata(dev, planes);
++
++	sun50i_planes_init_mapping(planes);
++
++	return 0;
++}
++
++static const struct sun50i_planes_quirks sun50i_h616_planes_quirks = {
++	.def_map = {
++		{
++			.map = {0, 6, 7},
++			.num_ch = 3,
++		},
++		{
++			.map = {1, 2, 8},
++			.num_ch = 3,
++		},
++	},
++	.cfg = {
++		.de_type	= SUN8I_MIXER_DE33,
++		/*
++		 * TODO: All planes support scaling, but driver needs
++		 * improvements to properly support it.
++		 */
++		.scaler_mask    = 0,
++		.scanline_yuv	= 4096,
++	},
++};
++
++/* sun4i_drv uses this list to check if a device node is a plane */
++const struct of_device_id sun50i_planes_of_table[] = {
++	{
++		.compatible = "allwinner,sun50i-h616-de33-planes",
++		.data = &sun50i_h616_planes_quirks
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, sun50i_planes_of_table);
++EXPORT_SYMBOL(sun50i_planes_of_table);
++
++static struct platform_driver sun50i_planes_platform_driver = {
++	.probe		= sun50i_planes_probe,
++	.driver		= {
++		.name		= "sun50i-planes",
++		.of_match_table	= sun50i_planes_of_table,
++	},
++};
++module_platform_driver(sun50i_planes_platform_driver);
++
++MODULE_AUTHOR("Jernej Skrabec <jernej.skrabec@gmail.com>");
++MODULE_DESCRIPTION("Allwinner DE33 planes driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/gpu/drm/sun4i/sun50i_planes.h b/drivers/gpu/drm/sun4i/sun50i_planes.h
+new file mode 100644
+index 000000000000..446feaeb03fc
+--- /dev/null
++++ b/drivers/gpu/drm/sun4i/sun50i_planes.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/* Copyright (c) 2025 Jernej Skrabec <jernej.skrabec@gmail.com> */
++
++#ifndef _SUN50I_PLANES_H_
++#define _SUN50I_PLANES_H_
++
++#include <drm/drm_device.h>
++#include <linux/regmap.h>
++
++#include "sun8i_mixer.h"
++
++/* mapping registers, located in clock register space */
++#define SUNXI_DE33_DE_CHN2CORE_MUX_REG	0x24
++#define SUNXI_DE33_DE_PORT02CHN_MUX_REG	0x28
++#define SUNXI_DE33_DE_PORT12CHN_MUX_REG	0x2c
++
++#define MAX_DISP	2
++#define MAX_CHANNELS	8
++#define UI_PLANE_OFFSET	6
++
++struct default_map {
++	unsigned int map[MAX_CHANNELS];
++	unsigned int num_ch;
++};
++
++struct sun50i_planes_quirks {
++	struct default_map	def_map[MAX_DISP];
++	struct sun8i_layer_cfg	cfg;
++};
++
++struct sun50i_planes {
++	struct regmap				*regs;
++	struct regmap				*mapping;
++	const struct sun50i_planes_quirks	*quirks;
++};
++
++extern const struct of_device_id sun50i_planes_of_table[];
++
++struct drm_plane **
++sun50i_planes_setup(struct device *dev, struct drm_device *drm,
++		    unsigned int mixer);
++
++#endif /* _SUN50I_PLANES_H_ */
+-- 
+2.51.0
+
+
+From 527e7f89095dd8c7fcbfab7c1d5b7deb77bef1c4 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sat, 27 Sep 2025 11:04:09 +0200
+Subject: [PATCH 04/21] drm/sun4i: switch DE33 to new bindings
+
+Now that everything is in place, switch DE33 to new bindings.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.c | 132 +++++++++++++++-------------
+ drivers/gpu/drm/sun4i/sun8i_mixer.h |  10 +--
+ 2 files changed, 72 insertions(+), 70 deletions(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.c b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+index 5de68cbb6060..dc275d77546d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -13,6 +13,7 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/of_graph.h>
++#include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/reset.h>
+ 
+@@ -24,6 +25,7 @@
+ #include <drm/drm_probe_helper.h>
+ 
+ #include "sun4i_drv.h"
++#include "sun50i_planes.h"
+ #include "sun8i_mixer.h"
+ #include "sun8i_ui_layer.h"
+ #include "sun8i_vi_layer.h"
+@@ -256,7 +258,6 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ {
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
+ 	u32 bld_base = sun8i_blender_base(mixer);
+-	struct regmap *bld_regs = sun8i_blender_regmap(mixer);
+ 	struct drm_plane_state *plane_state;
+ 	struct drm_plane *plane;
+ 	u32 route = 0, pipe_en = 0;
+@@ -293,16 +294,16 @@ static void sun8i_mixer_commit(struct sunxi_engine *engine,
+ 		route |= layer->index << SUN8I_MIXER_BLEND_ROUTE_PIPE_SHIFT(zpos);
+ 		pipe_en |= SUN8I_MIXER_BLEND_PIPE_CTL_EN(zpos);
+ 
+-		regmap_write(bld_regs,
++		regmap_write(engine->regs,
+ 			     SUN8I_MIXER_BLEND_ATTR_COORD(bld_base, zpos),
+ 			     SUN8I_MIXER_COORD(x, y));
+-		regmap_write(bld_regs,
++		regmap_write(engine->regs,
+ 			     SUN8I_MIXER_BLEND_ATTR_INSIZE(bld_base, zpos),
+ 			     SUN8I_MIXER_SIZE(w, h));
+ 	}
+ 
+-	regmap_write(bld_regs, SUN8I_MIXER_BLEND_ROUTE(bld_base), route);
+-	regmap_write(bld_regs, SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
++	regmap_write(engine->regs, SUN8I_MIXER_BLEND_ROUTE(bld_base), route);
++	regmap_write(engine->regs, SUN8I_MIXER_BLEND_PIPE_CTL(bld_base),
+ 		     pipe_en | SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(0));
+ 
+ 	if (mixer->cfg->de_type != SUN8I_MIXER_DE33)
+@@ -317,7 +318,6 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
+ 	int plane_cnt = mixer->cfg->ui_num + mixer->cfg->vi_num;
+ 	enum drm_plane_type type;
+-	unsigned int phy_index;
+ 	int i;
+ 
+ 	planes = devm_kcalloc(drm->dev, plane_cnt, sizeof(*planes), GFP_KERNEL);
+@@ -332,12 +332,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		phy_index = i;
+-		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-			phy_index = mixer->cfg->map[i];
+-
+ 		layer = sun8i_vi_layer_init_one(drm, type, mixer->engine.regs,
+-						i, phy_index, plane_cnt,
++						i, i, plane_cnt,
+ 						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev,
+@@ -357,12 +353,8 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 		else
+ 			type = DRM_PLANE_TYPE_OVERLAY;
+ 
+-		phy_index = index;
+-		if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+-			phy_index = mixer->cfg->map[index];
+-
+ 		layer = sun8i_ui_layer_init_one(drm, type, mixer->engine.regs,
+-						index, phy_index, plane_cnt,
++						index, index, plane_cnt,
+ 						&mixer->cfg->lay_cfg);
+ 		if (IS_ERR(layer)) {
+ 			dev_err(drm->dev, "Couldn't initialize %s plane\n",
+@@ -376,16 +368,25 @@ static struct drm_plane **sun8i_layers_init(struct drm_device *drm,
+ 	return planes;
+ }
+ 
++static struct drm_plane **sun50i_layers_init(struct drm_device *drm,
++					     struct sunxi_engine *engine)
++{
++	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++
++	if (IS_ENABLED(CONFIG_DRM_SUN50I_PLANES))
++		return sun50i_planes_setup(mixer->planes_dev, drm, engine->id);
++
++	return NULL;
++}
++
+ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
+ 				 const struct drm_display_mode *mode)
+ {
+ 	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
+-	struct regmap *bld_regs;
+ 	u32 bld_base, size, val;
+ 	bool interlaced;
+ 
+ 	bld_base = sun8i_blender_base(mixer);
+-	bld_regs = sun8i_blender_regmap(mixer);
+ 	interlaced = !!(mode->flags & DRM_MODE_FLAG_INTERLACE);
+ 	size = SUN8I_MIXER_SIZE(mode->hdisplay, mode->vdisplay);
+ 
+@@ -397,14 +398,14 @@ static void sun8i_mixer_mode_set(struct sunxi_engine *engine,
+ 	else
+ 		regmap_write(mixer->engine.regs, SUN8I_MIXER_GLOBAL_SIZE, size);
+ 
+-	regmap_write(bld_regs, SUN8I_MIXER_BLEND_OUTSIZE(bld_base), size);
++	regmap_write(engine->regs, SUN8I_MIXER_BLEND_OUTSIZE(bld_base), size);
+ 
+ 	if (interlaced)
+ 		val = SUN8I_MIXER_BLEND_OUTCTL_INTERLACED;
+ 	else
+ 		val = 0;
+ 
+-	regmap_update_bits(bld_regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
++	regmap_update_bits(engine->regs, SUN8I_MIXER_BLEND_OUTCTL(bld_base),
+ 			   SUN8I_MIXER_BLEND_OUTCTL_INTERLACED, val);
+ 
+ 	DRM_DEBUG_DRIVER("Switching display mixer interlaced mode %s\n",
+@@ -417,8 +418,14 @@ static const struct sunxi_engine_ops sun8i_engine_ops = {
+ 	.mode_set	= sun8i_mixer_mode_set,
+ };
+ 
++static const struct sunxi_engine_ops sun50i_engine_ops = {
++	.commit		= sun8i_mixer_commit,
++	.layers_init	= sun50i_layers_init,
++	.mode_set	= sun8i_mixer_mode_set,
++};
++
+ static const struct regmap_config sun8i_mixer_regmap_config = {
+-	.name		= "layers",
++	.name		= "mixer",
+ 	.reg_bits	= 32,
+ 	.val_bits	= 32,
+ 	.reg_stride	= 4,
+@@ -433,14 +440,6 @@ static const struct regmap_config sun8i_top_regmap_config = {
+ 	.max_register	= 0x3c,
+ };
+ 
+-static const struct regmap_config sun8i_disp_regmap_config = {
+-	.name		= "display",
+-	.reg_bits	= 32,
+-	.val_bits	= 32,
+-	.reg_stride	= 4,
+-	.max_register	= 0x20000,
+-};
+-
+ static int sun8i_mixer_of_get_id(struct device_node *node)
+ {
+ 	struct device_node *ep, *remote;
+@@ -463,17 +462,14 @@ static int sun8i_mixer_of_get_id(struct device_node *node)
+ 
+ static void sun8i_mixer_init(struct sun8i_mixer *mixer)
+ {
+-	struct regmap *top_regs, *disp_regs;
+ 	unsigned int base = sun8i_blender_base(mixer);
++	struct regmap *top_regs;
+ 	int plane_cnt, i;
+ 
+-	if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
++	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
+ 		top_regs = mixer->top_regs;
+-		disp_regs = mixer->disp_regs;
+-	} else {
++	else
+ 		top_regs = mixer->engine.regs;
+-		disp_regs = mixer->engine.regs;
+-	}
+ 
+ 	/* Enable the mixer */
+ 	regmap_write(top_regs, SUN8I_MIXER_GLOBAL_CTL,
+@@ -483,25 +479,25 @@ static void sun8i_mixer_init(struct sun8i_mixer *mixer)
+ 		regmap_write(top_regs, SUN50I_MIXER_GLOBAL_CLK, 1);
+ 
+ 	/* Set background color to black */
+-	regmap_write(disp_regs, SUN8I_MIXER_BLEND_BKCOLOR(base),
++	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_BKCOLOR(base),
+ 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
+ 
+ 	/*
+ 	 * Set fill color of bottom plane to black. Generally not needed
+ 	 * except when VI plane is at bottom (zpos = 0) and enabled.
+ 	 */
+-	regmap_write(disp_regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
++	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+ 		     SUN8I_MIXER_BLEND_PIPE_CTL_FC_EN(0));
+-	regmap_write(disp_regs, SUN8I_MIXER_BLEND_ATTR_FCOLOR(base, 0),
++	regmap_write(mixer->engine.regs, SUN8I_MIXER_BLEND_ATTR_FCOLOR(base, 0),
+ 		     SUN8I_MIXER_BLEND_COLOR_BLACK);
+ 
+ 	plane_cnt = mixer->cfg->vi_num + mixer->cfg->ui_num;
+ 	for (i = 0; i < plane_cnt; i++)
+-		regmap_write(disp_regs,
++		regmap_write(mixer->engine.regs,
+ 			     SUN8I_MIXER_BLEND_MODE(base, i),
+ 			     SUN8I_MIXER_BLEND_MODE_DEF);
+ 
+-	regmap_update_bits(disp_regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
++	regmap_update_bits(mixer->engine.regs, SUN8I_MIXER_BLEND_PIPE_CTL(base),
+ 			   SUN8I_MIXER_BLEND_PIPE_CTL_EN_MSK, 0);
+ }
+ 
+@@ -532,7 +528,6 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 	if (!mixer)
+ 		return -ENOMEM;
+ 	dev_set_drvdata(dev, mixer);
+-	mixer->engine.ops = &sun8i_engine_ops;
+ 	mixer->engine.node = dev->of_node;
+ 
+ 	if (of_property_present(dev->of_node, "iommus")) {
+@@ -562,6 +557,11 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 	if (!mixer->cfg)
+ 		return -EINVAL;
+ 
++	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++		mixer->engine.ops = &sun50i_engine_ops;
++	else
++		mixer->engine.ops = &sun8i_engine_ops;
++
+ 	regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(regs))
+ 		return PTR_ERR(regs);
+@@ -574,7 +574,7 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 	}
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
+-		regs = devm_platform_ioremap_resource_byname(pdev, "top");
++		regs = devm_platform_ioremap_resource(pdev, 1);
+ 		if (IS_ERR(regs))
+ 			return PTR_ERR(regs);
+ 
+@@ -584,17 +584,6 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 			dev_err(dev, "Couldn't create the top regmap\n");
+ 			return PTR_ERR(mixer->top_regs);
+ 		}
+-
+-		regs = devm_platform_ioremap_resource_byname(pdev, "display");
+-		if (IS_ERR(regs))
+-			return PTR_ERR(regs);
+-
+-		mixer->disp_regs = devm_regmap_init_mmio(dev, regs,
+-							 &sun8i_disp_regmap_config);
+-		if (IS_ERR(mixer->disp_regs)) {
+-			dev_err(dev, "Couldn't create the disp regmap\n");
+-			return PTR_ERR(mixer->disp_regs);
+-		}
+ 	}
+ 
+ 	mixer->reset = devm_reset_control_get(dev, NULL);
+@@ -634,6 +623,33 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 
+ 	clk_prepare_enable(mixer->mod_clk);
+ 
++	if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
++		struct platform_device *pdev;
++		struct device_node *np;
++		void *data;
++
++		np = of_parse_phandle(dev->of_node, "allwinner,planes", 0);
++		if (!np) {
++			ret = -ENODEV;
++			goto err_disable_mod_clk;
++		}
++
++		pdev = of_find_device_by_node(np);
++		of_node_put(np);
++		if (!pdev){
++			ret = -EPROBE_DEFER;
++			goto err_disable_mod_clk;
++		}
++
++		data = platform_get_drvdata(pdev);
++		if (!data) {
++			put_device(&pdev->dev);
++			return -EPROBE_DEFER;
++		}
++
++		mixer->planes_dev = &pdev->dev;
++	}
++
+ 	list_add_tail(&mixer->engine.list, &drv->engine_list);
+ 
+ 	/* Reset registers and disable unused sub-engines */
+@@ -668,6 +684,8 @@ static int sun8i_mixer_bind(struct device *dev, struct device *master,
+ 
+ 	return 0;
+ 
++err_disable_mod_clk:
++	clk_disable_unprepare(mixer->mod_clk);
+ err_disable_bus_clk:
+ 	clk_disable_unprepare(mixer->bus_clk);
+ err_assert_reset:
+@@ -863,16 +881,8 @@ static const struct sun8i_mixer_cfg sun50i_h6_mixer0_cfg = {
+ };
+ 
+ static const struct sun8i_mixer_cfg sun50i_h616_mixer0_cfg = {
+-	.lay_cfg = {
+-		.de_type	= SUN8I_MIXER_DE33,
+-		.scaler_mask	= 0xf,
+-		.scanline_yuv	= 4096,
+-	},
+ 	.de_type	= SUN8I_MIXER_DE33,
+ 	.mod_rate	= 600000000,
+-	.ui_num		= 3,
+-	.vi_num		= 1,
+-	.map		= {0, 6, 7, 8},
+ };
+ 
+ static const struct of_device_id sun8i_mixer_of_table[] = {
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 6b59c52ba4d5..5f1989730cbe 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -201,7 +201,6 @@ struct sun8i_mixer_cfg {
+ 	int			ui_num;
+ 	unsigned int		de_type;
+ 	unsigned long		mod_rate;
+-	unsigned int		map[6];
+ };
+ 
+ struct sun8i_mixer {
+@@ -215,7 +214,7 @@ struct sun8i_mixer {
+ 	struct clk			*mod_clk;
+ 
+ 	struct regmap			*top_regs;
+-	struct regmap			*disp_regs;
++	struct device			*planes_dev;
+ };
+ 
+ enum {
+@@ -251,13 +250,6 @@ sun8i_blender_base(struct sun8i_mixer *mixer)
+ 	return mixer->cfg->de_type == SUN8I_MIXER_DE3 ? DE3_BLD_BASE : DE2_BLD_BASE;
+ }
+ 
+-static inline struct regmap *
+-sun8i_blender_regmap(struct sun8i_mixer *mixer)
+-{
+-	return mixer->cfg->de_type == SUN8I_MIXER_DE33 ?
+-		mixer->disp_regs : mixer->engine.regs;
+-}
+-
+ static inline u32
+ sun8i_channel_base(struct sun8i_layer *layer)
+ {
+-- 
+2.51.0
+
+
+From f0dd3e7c53131f9e0e2706a8432131f1bb2d1281 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Tue, 30 Sep 2025 18:57:00 +0200
+Subject: [PATCH 05/21] drm/sun4i: Add H616 TCON TV support
+
+It needs additional quirk to enable HDMI pads.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun4i_tcon.c | 13 +++++++++++++
+ drivers/gpu/drm/sun4i/sun4i_tcon.h |  2 ++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+index 960e83c8291d..5d6c7d08cf8f 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+@@ -1284,6 +1284,11 @@ static int sun4i_tcon_bind(struct device *dev, struct device *master,
+ 				   tcon->id);
+ 	}
+ 
++	if (tcon->quirks->hdmi_pad)
++		regmap_update_bits(tcon->regs, SUN4I_TCON_GCTL_REG,
++				   SUN4I_TCON_GCTL_PAD_SEL,
++				   SUN4I_TCON_GCTL_PAD_SEL);
++
+ 	list_add_tail(&tcon->list, &drv->tcon_list);
+ 
+ 	return 0;
+@@ -1542,6 +1547,13 @@ static const struct sun4i_tcon_quirks sun20i_d1_lcd_quirks = {
+ 	.set_mux		= sun8i_r40_tcon_tv_set_mux,
+ };
+ 
++static const struct sun4i_tcon_quirks sun50i_h616_tv_quirks = {
++	.has_channel_1		= true,
++	.polarity_in_ch0	= true,
++	.hdmi_pad		= true,
++	.set_mux		= sun8i_r40_tcon_tv_set_mux,
++};
++
+ /* sun4i_drv uses this list to check if a device node is a TCON */
+ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun4i-a10-tcon", .data = &sun4i_a10_quirks },
+@@ -1561,6 +1573,7 @@ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-tv", .data = &sun9i_a80_tcon_tv_quirks },
+ 	{ .compatible = "allwinner,sun20i-d1-tcon-lcd", .data = &sun20i_d1_lcd_quirks },
+ 	{ .compatible = "allwinner,sun20i-d1-tcon-tv", .data = &sun8i_r40_tv_quirks },
++	{ .compatible = "allwinner,sun50i-h616-tcon-tv", .data = &sun50i_h616_tv_quirks },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_tcon_of_table);
+diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.h b/drivers/gpu/drm/sun4i/sun4i_tcon.h
+index fa23aa23fe4a..98bee2bd96d2 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.h
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.h
+@@ -19,6 +19,7 @@
+ 
+ #define SUN4I_TCON_GCTL_REG			0x0
+ #define SUN4I_TCON_GCTL_TCON_ENABLE			BIT(31)
++#define SUN4I_TCON_GCTL_PAD_SEL				BIT(1)
+ #define SUN4I_TCON_GCTL_IOMAP_MASK			BIT(0)
+ #define SUN4I_TCON_GCTL_IOMAP_TCON1			(1 << 0)
+ #define SUN4I_TCON_GCTL_IOMAP_TCON0			(0 << 0)
+@@ -243,6 +244,7 @@ struct sun4i_tcon_quirks {
+ 	bool    needs_edp_reset; /* a80 edp reset needed for tcon0 access */
+ 	bool	supports_lvds;   /* Does the TCON support an LVDS output? */
+ 	bool	polarity_in_ch0; /* some tcon1 channels have polarity bits in tcon0 pol register */
++	bool	hdmi_pad;	/* h616 has to enable pad for HDMI */
+ 	u8	dclk_min_div;	/* minimum divider for TCON0 DCLK */
+ 
+ 	/* callback to handle tcon muxing options */
+-- 
+2.51.0
+
+
+From 7a0fd1d8517de8f670613aff278858bdfbc8ff95 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Tue, 30 Sep 2025 18:59:51 +0200
+Subject: [PATCH 06/21] srm/sun4i: Add support for H616 HDMI PHY
+
+It needs separate configuration table, but in general, it's just
+standard combination of Synopsys HDMI controller and PHY.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c | 71 ++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+index 4fa69c463dc4..e02cf3136d7d 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
++++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+@@ -124,6 +124,66 @@ static const struct dw_hdmi_phy_config sun50i_h6_phy_config[] = {
+ 	{ ~0UL,	     0x0000, 0x0000, 0x0000}
+ };
+ 
++static const struct dw_hdmi_mpll_config sun50i_h616_mpll_cfg[] = {
++	{
++		27000000, {
++			{ 0x00b3, 0x0003 },
++			{ 0x2153, 0x0003 },
++			{ 0x40f3, 0x0003 },
++		},
++	},  {
++		74250000, {
++			{ 0x0072, 0x0003 },
++			{ 0x2145, 0x0003 },
++			{ 0x4061, 0x0003 },
++		},
++	},  {
++		148500000, {
++			{ 0x0051, 0x0003 },
++			{ 0x214c, 0x0003 },
++			{ 0x4064, 0x0003 },
++		},
++	},  {
++		297000000, {
++			{ 0x0040, 0x0003 },
++			{ 0x3b4c, 0x0003 },
++			{ 0x5a64, 0x0003 },
++		},
++	},  {
++		594000000, {
++			{ 0x1a40, 0x0003 },
++			{ 0x3b4c, 0x0003 },
++			{ 0x5a64, 0x0003 },
++		},
++	}, {
++		~0UL, {
++			{ 0x0000, 0x0000 },
++			{ 0x0000, 0x0000 },
++			{ 0x0000, 0x0000 },
++		},
++	}
++};
++
++static const struct dw_hdmi_curr_ctrl sun50i_h616_cur_ctr[] = {
++	/* pixelclk    bpp8    bpp10   bpp12 */
++	{ 27000000,  { 0x0012, 0x0000, 0x0000 }, },
++	{ 74250000,  { 0x0013, 0x0013, 0x0013 }, },
++	{ 148500000, { 0x0019, 0x0019, 0x0019 }, },
++	{ 297000000, { 0x0019, 0x001b, 0x0019 }, },
++	{ 594000000, { 0x0010, 0x0010, 0x0010 }, },
++	{ ~0UL,      { 0x0000, 0x0000, 0x0000 }, }
++};
++
++static const struct dw_hdmi_phy_config sun50i_h616_phy_config[] = {
++	/*pixelclk   symbol   term   vlev*/
++	{ 27000000,  0x8009, 0x0007, 0x02b0},
++	{ 74250000,  0x8019, 0x0004, 0x0290},
++	{ 148500000, 0x8019, 0x0004, 0x0290},
++	{ 297000000, 0x8039, 0x0004, 0x022b},
++	{ 594000000, 0x8029, 0x0000, 0x008a},
++	{ ~0UL,	     0x0000, 0x0000, 0x0000}
++};
++
+ static void sun8i_hdmi_phy_set_polarity(struct sun8i_hdmi_phy *phy,
+ 					const struct drm_display_mode *mode)
+ {
+@@ -626,6 +686,13 @@ static const struct sun8i_hdmi_phy_variant sun50i_h6_hdmi_phy = {
+ 	.phy_init = &sun50i_hdmi_phy_init_h6,
+ };
+ 
++static const struct sun8i_hdmi_phy_variant sun50i_h616_hdmi_phy = {
++	.cur_ctr  = sun50i_h616_cur_ctr,
++	.mpll_cfg = sun50i_h616_mpll_cfg,
++	.phy_cfg  = sun50i_h616_phy_config,
++	.phy_init = &sun50i_hdmi_phy_init_h6,
++};
++
+ static const struct of_device_id sun8i_hdmi_phy_of_table[] = {
+ 	{
+ 		.compatible = "allwinner,sun8i-a83t-hdmi-phy",
+@@ -647,6 +714,10 @@ static const struct of_device_id sun8i_hdmi_phy_of_table[] = {
+ 		.compatible = "allwinner,sun50i-h6-hdmi-phy",
+ 		.data = &sun50i_h6_hdmi_phy,
+ 	},
++	{
++		.compatible = "allwinner,sun50i-h616-hdmi-phy",
++		.data = &sun50i_h616_hdmi_phy,
++	},
+ 	{ /* sentinel */ }
+ };
+ 
+-- 
+2.51.0
+
+
+From bc20d03deb1a5603b9376a0b43ba46cdcb42898b Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Tue, 23 Sep 2025 17:15:46 +0200
+Subject: [PATCH 07/21] drm/sun4i: Add compatible for H616 display engine
+
+Enable H616 display engine pipeline by adding respective compatible.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun4i_drv.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+index c11dfb2739fa..6986b329236c 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -436,6 +436,7 @@ static const struct of_device_id sun4i_drv_of_table[] = {
+ 	{ .compatible = "allwinner,sun20i-d1-display-engine" },
+ 	{ .compatible = "allwinner,sun50i-a64-display-engine" },
+ 	{ .compatible = "allwinner,sun50i-h6-display-engine" },
++	{ .compatible = "allwinner,sun50i-h616-display-engine" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_drv_of_table);
+-- 
+2.51.0
+
+
+From d868d8b552ca3f4a26e858ebb95b9d79bb5d5c50 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Tue, 23 Sep 2025 17:08:11 +0200
+Subject: [PATCH 08/21] arm64: dts: allwinner: h616: Add display pipeline
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 308 ++++++++++++++++++
+ 1 file changed, 308 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index ceedae9e399b..254ebf8ac0c3 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -7,8 +7,11 @@
+ #include <dt-bindings/clock/sun50i-h616-ccu.h>
+ #include <dt-bindings/clock/sun50i-h6-r-ccu.h>
+ #include <dt-bindings/clock/sun6i-rtc.h>
++#include <dt-bindings/clock/sun8i-de2.h>
++#include <dt-bindings/clock/sun8i-tcon-top.h>
+ #include <dt-bindings/reset/sun50i-h616-ccu.h>
+ #include <dt-bindings/reset/sun50i-h6-r-ccu.h>
++#include <dt-bindings/reset/sun8i-de2.h>
+ #include <dt-bindings/thermal/thermal.h>
+ 
+ / {
+@@ -94,6 +97,12 @@ l2_cache: l2-cache {
+ 		};
+ 	};
+ 
++	de: display-engine {
++		compatible = "allwinner,sun50i-h616-display-engine";
++		allwinner,pipelines = <&mixer0>, <&mixer1>;
++		status = "disabled";
++	};
++
+ 	reserved-memory {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+@@ -150,6 +159,80 @@ soc {
+ 		#size-cells = <1>;
+ 		ranges = <0x0 0x0 0x0 0x40000000>;
+ 
++		bus@1000000 {
++			compatible = "allwinner,sun50i-h616-de33",
++				     "allwinner,sun50i-a64-de2";
++			reg = <0x1000000 0x400000>;
++			allwinner,sram = <&de3_sram 1>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0x1000000 0x400000>;
++
++			display_clocks: clock@8000 {
++				compatible = "allwinner,sun50i-h616-de33-clk";
++				reg = <0x8000 0x100>;
++				clocks = <&ccu CLK_DE>, <&ccu CLK_BUS_DE>;
++				clock-names = "mod", "bus";
++				resets = <&ccu RST_BUS_DE>;
++				#clock-cells = <1>;
++				#reset-cells = <1>;
++			};
++
++			planes: planes@100000 {
++				compatible = "allwinner,sun50i-h616-de33-planes";
++				reg = <0x100000 0x180000>;
++				allwinner,plane-mapping = <&display_clocks>;
++			};
++
++			mixer0: mixer@280000 {
++				compatible = "allwinner,sun50i-h616-de33-mixer-0";
++				reg = <0x280000 0x20000>,
++				      <0x8100 0x40>;
++				clocks = <&display_clocks CLK_BUS_MIXER0>,
++					 <&display_clocks CLK_MIXER0>;
++				clock-names = "bus", "mod";
++				resets = <&display_clocks RST_MIXER0>;
++				allwinner,planes = <&planes>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					mixer0_out: port@1 {
++						reg = <1>;
++
++						mixer0_out_tcon_top_mixer0: endpoint {
++							remote-endpoint = <&tcon_top_mixer0_in_mixer0>;
++						};
++					};
++				};
++			};
++
++			mixer1: mixer@2a0000 {
++				compatible = "allwinner,sun50i-h616-de33-mixer-0";
++				reg = <0x2a0000 0x20000>,
++				      <0x8140 0x40>;
++				clocks = <&display_clocks CLK_BUS_MIXER1>,
++					 <&display_clocks CLK_MIXER1>;
++				clock-names = "bus", "mod";
++				resets = <&display_clocks RST_MIXER1>;
++				allwinner,planes = <&planes>;
++
++				ports {
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					mixer1_out: port@1 {
++						reg = <1>;
++
++						mixer1_out_tcon_top_mixer1: endpoint {
++							remote-endpoint = <&tcon_top_mixer1_in_mixer1>;
++						};
++					};
++				};
++			};
++		};
++
+ 		gpu: gpu@1800000 {
+ 			compatible = "allwinner,sun50i-h616-mali",
+ 				     "arm,mali-bifrost";
+@@ -188,6 +271,12 @@ sram_c: sram@28000 {
+ 				#address-cells = <1>;
+ 				#size-cells = <1>;
+ 				ranges = <0 0x00028000 0x30000>;
++
++				de3_sram: sram-section@0 {
++					compatible = "allwinner,sun50i-h616-sram-c",
++						     "allwinner,sun50i-a64-sram-c";
++					reg = <0x0000 0x1e000>;
++				};
+ 			};
+ 		};
+ 
+@@ -868,6 +957,226 @@ ohci3: usb@5311400 {
+ 			status = "disabled";
+ 		};
+ 
++		hdmi: hdmi@6000000 {
++			compatible = "allwinner,sun50i-h616-dw-hdmi",
++				     "allwinner,sun50i-h6-dw-hdmi";
++			#sound-dai-cells = <0>;
++			reg = <0x06000000 0x10000>;
++			reg-io-width = <1>;
++			interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_HDMI>, <&ccu CLK_HDMI_SLOW>,
++				 <&ccu CLK_HDMI>, <&ccu CLK_HDMI_CEC>,
++				 <&ccu CLK_HDCP>, <&ccu CLK_BUS_HDCP>;
++			clock-names = "iahb", "isfr", "tmds", "cec", "hdcp",
++				      "hdcp-bus";
++			resets = <&ccu RST_BUS_HDMI>, <&ccu RST_BUS_HDCP>;
++			reset-names = "ctrl", "hdcp";
++			phys = <&hdmi_phy>;
++			phy-names = "phy";
++			status = "disabled";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				hdmi_in: port@0 {
++					reg = <0>;
++
++					hdmi_in_tcon_top: endpoint {
++						remote-endpoint = <&tcon_top_hdmi_out_hdmi>;
++					};
++				};
++
++				hdmi_out: port@1 {
++					reg = <1>;
++				};
++			};
++		};
++
++		hdmi_phy: hdmi-phy@6010000 {
++			compatible = "allwinner,sun50i-h616-hdmi-phy";
++			reg = <0x06010000 0x10000>;
++			clocks = <&ccu CLK_BUS_HDMI>, <&ccu CLK_HDMI_SLOW>;
++			clock-names = "bus", "mod";
++			resets = <&ccu RST_BUS_HDMI_SUB>;
++			reset-names = "phy";
++			#phy-cells = <0>;
++		};
++
++		tcon_top: tcon-top@6510000 {
++			compatible = "allwinner,sun50i-h616-tcon-top",
++				     "allwinner,sun50i-h6-tcon-top";
++			reg = <0x06510000 0x1000>;
++			clocks = <&ccu CLK_BUS_TCON_TOP>,
++				 <&ccu CLK_TCON_TV0>;
++			clock-names = "bus",
++				      "tcon-tv0";
++			clock-output-names = "tcon-top-tv0";
++			resets = <&ccu RST_BUS_TCON_TOP>;
++			#clock-cells = <1>;
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				tcon_top_mixer0_in: port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++
++					tcon_top_mixer0_in_mixer0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&mixer0_out_tcon_top_mixer0>;
++					};
++				};
++
++				tcon_top_mixer0_out: port@1 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <1>;
++
++					tcon_top_mixer0_out_tcon_lcd0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&tcon_lcd0_in_tcon_top_mixer0>;
++					};
++
++					tcon_top_mixer0_out_tcon_tv0: endpoint@2 {
++						reg = <2>;
++						remote-endpoint = <&tcon_tv0_in_tcon_top_mixer0>;
++					};
++				};
++
++				tcon_top_mixer1_in: port@2 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <2>;
++
++					tcon_top_mixer1_in_mixer1: endpoint@1 {
++						reg = <1>;
++						remote-endpoint = <&mixer1_out_tcon_top_mixer1>;
++					};
++				};
++
++				tcon_top_mixer1_out: port@3 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <3>;
++
++					tcon_top_mixer1_out_tcon_lcd0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&tcon_lcd0_in_tcon_top_mixer1>;
++					};
++
++					tcon_top_mixer1_out_tcon_tv0: endpoint@2 {
++						reg = <2>;
++						remote-endpoint = <&tcon_tv0_in_tcon_top_mixer1>;
++					};
++				};
++
++				tcon_top_hdmi_in: port@4 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <4>;
++
++					tcon_top_hdmi_in_tcon_tv0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&tcon_tv0_out_tcon_top>;
++					};
++				};
++
++				tcon_top_hdmi_out: port@5 {
++					reg = <5>;
++
++					tcon_top_hdmi_out_hdmi: endpoint {
++						remote-endpoint = <&hdmi_in_tcon_top>;
++					};
++				};
++			};
++		};
++
++		tcon_lcd0: lcd-controller@6511000 {
++			compatible = "allwinner,sun50i-h616-tcon-lcd",
++				     "allwinner,sun8i-r40-tcon-lcd";
++			reg = <0x06511000 0x1000>;
++			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_TCON_LCD0>, <&ccu CLK_TCON_LCD0>;
++			clock-names = "ahb", "tcon-ch0";
++			clock-output-names = "tcon-data-clock";
++			#clock-cells = <0>;
++			resets = <&ccu RST_BUS_TCON_LCD0>, <&ccu RST_BUS_LVDS>;
++			reset-names = "lcd", "lvds";
++			status = "disabled";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				tcon_lcd0_in: port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++
++					tcon_lcd0_in_tcon_top_mixer0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&tcon_top_mixer0_out_tcon_lcd0>;
++					};
++
++					tcon_lcd0_in_tcon_top_mixer1: endpoint@1 {
++						reg = <1>;
++						remote-endpoint = <&tcon_top_mixer1_out_tcon_lcd0>;
++					};
++				};
++
++				tcon_lcd0_out: port@1 {
++					reg = <1>;
++				};
++			};
++		};
++
++		tcon_tv0: lcd-controller@6515000 {
++			compatible = "allwinner,sun50i-h616-tcon-tv";
++			reg = <0x06515000 0x1000>;
++			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
++			clocks = <&ccu CLK_BUS_TCON_TV0>,
++				 <&tcon_top CLK_TCON_TOP_TV0>;
++			clock-names = "ahb",
++				      "tcon-ch1";
++			resets = <&ccu RST_BUS_TCON_TV0>;
++			reset-names = "lcd";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				tcon_tv0_in: port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++
++					tcon_tv0_in_tcon_top_mixer0: endpoint@0 {
++						reg = <0>;
++						remote-endpoint = <&tcon_top_mixer0_out_tcon_tv0>;
++					};
++
++					tcon_tv0_in_tcon_top_mixer1: endpoint@1 {
++						reg = <1>;
++						remote-endpoint = <&tcon_top_mixer1_out_tcon_tv0>;
++					};
++				};
++
++				tcon_tv0_out: port@1 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <1>;
++
++					tcon_tv0_out_tcon_top: endpoint@1 {
++						reg = <1>;
++						remote-endpoint = <&tcon_top_hdmi_in_tcon_tv0>;
++					};
++				};
++			};
++		};
++
+ 		rtc: rtc@7000000 {
+ 			compatible = "allwinner,sun50i-h616-rtc";
+ 			reg = <0x07000000 0x400>;
+-- 
+2.51.0
+
+
+From 47ab11202163a60479365f03cad43b2085d4520e Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 16 Mar 2025 10:26:29 +0100
+Subject: [PATCH 09/21] arm64: dts: allwinner: h616: Enable HDMI on several
+ boards
+
+Now that H616 display pipeline is added, enable HDMI on several boards.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ .../dts/allwinner/sun50i-h313-tanix-tx1.dts   | 26 +++++++++++++++++++
+ .../allwinner/sun50i-h616-orangepi-zero.dtsi  | 21 +++++++++++++++
+ .../allwinner/sun50i-h616-orangepi-zero2.dts  |  5 ++++
+ .../dts/allwinner/sun50i-h616-x96-mate.dts    | 26 +++++++++++++++++++
+ .../allwinner/sun50i-h618-orangepi-zero3.dts  |  5 ++++
+ .../sun50i-h618-transpeed-8k618-t.dts         | 26 +++++++++++++++++++
+ .../sun50i-h618-yuzukihd-chameleon.dts        | 26 +++++++++++++++++++
+ 7 files changed, 135 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h313-tanix-tx1.dts b/arch/arm64/boot/dts/allwinner/sun50i-h313-tanix-tx1.dts
+index 7906b79c0389..af479489216c 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h313-tanix-tx1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h313-tanix-tx1.dts
+@@ -26,6 +26,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 
+@@ -75,6 +86,10 @@ &cpu0 {
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -84,6 +99,17 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &ir {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
+index a8644fb52b04..afc43c92a0c3 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero.dtsi
+@@ -22,6 +22,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "d";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -64,6 +75,10 @@ &codec {
+ 	status = "okay";
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci1 {
+ 	status = "okay";
+ };
+@@ -81,6 +96,12 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &mdio0 {
+ 	ext_rgmii_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+index f2e3300e078a..0d30c072fbd5 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-orangepi-zero2.dts
+@@ -28,6 +28,11 @@ &gpu {
+ 	mali-supply = <&reg_dcdcc>;
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_bldo1>;
++	status = "okay";
++};
++
+ &mmc0 {
+ 	vmmc-supply = <&reg_dcdce>;
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+index 085f3e4e8eaa..cac704821fd7 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-x96-mate.dts
+@@ -23,6 +23,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC input */
+ 		compatible = "regulator-fixed";
+@@ -42,6 +53,10 @@ &cpu0 {
+ 	cpu-supply = <&reg_dcdca>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -55,6 +70,17 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_bldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &ir {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+index c51d4d9120de..4a1754eeb0b6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-orangepi-zero3.dts
+@@ -31,6 +31,11 @@ &gpu {
+ 	mali-supply = <&reg_dcdc1>;
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
+ &mmc0 {
+ 	/*
+ 	 * The schematic shows the card detect pin wired up to PF6, via an
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-transpeed-8k618-t.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-transpeed-8k618-t.dts
+index efe0faa252f5..c27e9bfc4fd1 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-transpeed-8k618-t.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-transpeed-8k618-t.dts
+@@ -24,6 +24,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC input */
+ 		compatible = "regulator-fixed";
+@@ -61,6 +72,10 @@ &cpu0 {
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -74,6 +89,17 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &ir {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h618-yuzukihd-chameleon.dts b/arch/arm64/boot/dts/allwinner/sun50i-h618-yuzukihd-chameleon.dts
+index eae56908b9b4..c0704d308e40 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h618-yuzukihd-chameleon.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h618-yuzukihd-chameleon.dts
+@@ -24,6 +24,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the USB-C socket */
+ 		compatible = "regulator-fixed";
+@@ -52,6 +63,10 @@ &cpu0 {
+ 	cpu-supply = <&reg_dcdc2>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -68,6 +83,17 @@ &ehci3 {
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &mmc0 {
+ 	bus-width = <4>;
+ 	cd-gpios = <&pio 5 6 GPIO_ACTIVE_LOW>;	/* PF6 */
+-- 
+2.51.0
+
+
+From 11f65cebaf931ce1947b7b213e50bd278f468245 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 16 Feb 2025 22:27:10 +1300
+Subject: [PATCH 10/21] dt-bindings: allwinner: Add TCON_TOP_LCD clock defines
+
+The Allwinner H700 exposes RGB and LVDS pins as well as a HDMI
+connector. This requires additional clocks for the TCON_TOP as per the
+T507 datasheet (which shares the same die).
+
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+---
+ include/dt-bindings/clock/sun8i-tcon-top.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/dt-bindings/clock/sun8i-tcon-top.h b/include/dt-bindings/clock/sun8i-tcon-top.h
+index 25164d767835..2a12d047d2e1 100644
+--- a/include/dt-bindings/clock/sun8i-tcon-top.h
++++ b/include/dt-bindings/clock/sun8i-tcon-top.h
+@@ -7,5 +7,7 @@
+ #define CLK_TCON_TOP_TV0	0
+ #define CLK_TCON_TOP_TV1	1
+ #define CLK_TCON_TOP_DSI	2
++#define CLK_TCON_TOP_LCD0	3
++#define CLK_TCON_TOP_LCD1	4
+ 
+ #endif /* _DT_BINDINGS_CLOCK_SUN8I_TCON_TOP_H_ */
+-- 
+2.51.0
+
+
+From 084f40d893e7f929f94aa49d4b6910125fff0fc9 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 7 May 2025 15:19:26 -0500
+Subject: [PATCH 11/21] dt-bindings: allwinner: add H616 DE33 bus binding
+
+The Allwinner H616 and variants have a new display engine revision
+(DE33).
+
+Add a display engine bus binding for the DE33. Note that the DE33
+requires 3 register blocks instead of 1. To keep things simple
+remove the maxItems value for registers for the child nodes and instead
+rely on the bindings for the child nodes such as
+allwinner,sun8i-a83t-de2-mixer.yaml to enforce the max values.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+---
+ .../devicetree/bindings/bus/allwinner,sun50i-a64-de2.yaml  | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.yaml b/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.yaml
+index 232252e8825e..1161e058fb1e 100644
+--- a/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.yaml
++++ b/Documentation/devicetree/bindings/bus/allwinner,sun50i-a64-de2.yaml
+@@ -24,7 +24,9 @@ properties:
+     oneOf:
+       - const: allwinner,sun50i-a64-de2
+       - items:
+-          - const: allwinner,sun50i-h6-de3
++          - enum:
++              - allwinner,sun50i-h6-de3
++              - allwinner,sun50i-h616-de33
+           - const: allwinner,sun50i-a64-de2
+ 
+   reg:
+@@ -47,9 +49,6 @@ patternProperties:
+   "@[0-9a-f]+$":
+     type: object
+     additionalProperties: true
+-    properties:
+-      reg:
+-        maxItems: 1
+ 
+     required:
+       - reg
+-- 
+2.51.0
+
+
+From d0d4180bc199dc123b3e696c404f73ac29878a23 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sat, 19 Jul 2025 22:03:04 +1200
+Subject: [PATCH 12/21] dt-bindings: display: sun4i: Add compatible strings for
+ H616 DE
+
+Add compatible strings for allwinner,sun50i-h616-display-engine. The
+device is functionally identical to the
+allwinner,sun50i-h6-display-engine. This is added as a new device rather
+than a fallback as all other DEs are modelled this way, and the device
+is essentially "virtual", with the relevant functional differences
+represented in the mixer and TCON components.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+--
+Changelog v1..v2:
+- DE compatible added for H616
+---
+ .../bindings/display/allwinner,sun4i-a10-display-engine.yaml     | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
+index e6088f379f70..117426862430 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-display-engine.yaml
+@@ -65,6 +65,7 @@ properties:
+       - allwinner,sun20i-d1-display-engine
+       - allwinner,sun50i-a64-display-engine
+       - allwinner,sun50i-h6-display-engine
++      - allwinner,sun50i-h616-display-engine
+ 
+   allwinner,pipelines:
+     $ref: /schemas/types.yaml#/definitions/phandle-array
+-- 
+2.51.0
+
+
+From 5c48f8c90b7c9e9ce2f949c2aaa7ce69665ec721 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sat, 19 Jul 2025 22:01:20 +1200
+Subject: [PATCH 13/21] dt-bindings: display: sun4i: Add compatible strings for
+ H616 TCON TOP
+
+Add compatible string for allwinner,sun50i-h616-tcon-top with a
+fallback string of allwinner,sun50i-h6-tcon-top.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+--
+Changelog v1..v2:
+- Add H616 TCON TOP compatible.
+---
+ .../display/allwinner,sun8i-r40-tcon-top.yaml       | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+index 7d849c4095a3..80f1e49f5b7a 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun8i-r40-tcon-top.yaml
+@@ -39,10 +39,15 @@ properties:
+     const: 1
+ 
+   compatible:
+-    enum:
+-      - allwinner,sun8i-r40-tcon-top
+-      - allwinner,sun20i-d1-tcon-top
+-      - allwinner,sun50i-h6-tcon-top
++    oneOf:
++      - enum:
++          - allwinner,sun8i-r40-tcon-top
++          - allwinner,sun20i-d1-tcon-top
++          - allwinner,sun50i-h6-tcon-top
++      - items:
++          - enum:
++              - allwinner,sun50i-h616-tcon-top
++          - const: allwinner,sun50i-h6-tcon-top
+ 
+   reg:
+     maxItems: 1
+-- 
+2.51.0
+
+
+From 76884daf886f720a0ea1f21859a3730759d03dbe Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sat, 19 Jul 2025 22:02:27 +1200
+Subject: [PATCH 14/21] dt-bindings: display: sun4i: add allwinner R40 and H616
+ tcon compatible strings
+
+Add compatible strings for the Allwinner R40 and H616 LCD timing
+controller. The H616 LCD timing controller is compatible with the R40's,
+so is added with a fallback to the R40.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+--
+Changelog v1..v2:
+- Add additional H616 strings
+---
+ .../bindings/display/allwinner,sun4i-a10-tcon.yaml     | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+index 724d93b9193b..f9fc0d87ce0d 100644
+--- a/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
++++ b/Documentation/devicetree/bindings/display/allwinner,sun4i-a10-tcon.yaml
+@@ -29,6 +29,7 @@ properties:
+       - const: allwinner,sun8i-a33-tcon
+       - const: allwinner,sun8i-a83t-tcon-lcd
+       - const: allwinner,sun8i-a83t-tcon-tv
++      - const: allwinner,sun8i-r40-tcon-lcd
+       - const: allwinner,sun8i-r40-tcon-tv
+       - const: allwinner,sun8i-v3s-tcon
+       - const: allwinner,sun9i-a80-tcon-lcd
+@@ -47,6 +48,11 @@ properties:
+               - allwinner,sun50i-a64-tcon-lcd
+           - const: allwinner,sun8i-a83t-tcon-lcd
+ 
++      - items:
++          - enum:
++              - allwinner,sun50i-h616-tcon-lcd
++          - const: allwinner,sun8i-r40-tcon-lcd
++
+       - items:
+           - enum:
+               - allwinner,sun8i-h3-tcon-tv
+@@ -56,6 +62,7 @@ properties:
+       - items:
+           - enum:
+               - allwinner,sun50i-h6-tcon-tv
++              - allwinner,sun50i-h616-tcon-tv
+           - const: allwinner,sun8i-r40-tcon-tv
+ 
+   reg:
+@@ -231,6 +238,7 @@ allOf:
+           contains:
+             enum:
+               - allwinner,sun8i-a83t-tcon-lcd
++              - allwinner,sun8i-r40-tcon-lcd
+               - allwinner,sun8i-v3s-tcon
+               - allwinner,sun9i-a80-tcon-lcd
+               - allwinner,sun20i-d1-tcon-lcd
+@@ -280,6 +288,7 @@ allOf:
+               - allwinner,sun9i-a80-tcon-lcd
+               - allwinner,sun4i-a10-tcon
+               - allwinner,sun8i-a83t-tcon-lcd
++              - allwinner,sun8i-r40-tcon-lcd
+               - allwinner,sun20i-d1-tcon-lcd
+ 
+     then:
+@@ -297,6 +306,7 @@ allOf:
+               - allwinner,sun8i-a23-tcon
+               - allwinner,sun8i-a33-tcon
+               - allwinner,sun8i-a83t-tcon-lcd
++              - allwinner,sun8i-r40-tcon-lcd
+               - allwinner,sun20i-d1-tcon-lcd
+ 
+     then:
+-- 
+2.51.0
+
+
+From 62eff62cad1096bbed3f78c02149a0e4c064388b Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sat, 19 Jul 2025 22:04:38 +1200
+Subject: [PATCH 15/21] dt-bindings: sram: sunxi-sram: Add H616 SRAM C
+ compatible
+
+Add a compatible string for the H616 SRAM C region which is
+functionally similar to the A64 SRAM C region.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+--
+Changelog v1..v2: Add H616 fallback string
+---
+ .../bindings/sram/allwinner,sun4i-a10-system-control.yaml     | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+index e7f7cf72719e..cdb664d1ec41 100644
+--- a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
++++ b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
+@@ -103,7 +103,9 @@ patternProperties:
+                       - allwinner,sun7i-a20-sram-d
+                   - const: allwinner,sun4i-a10-sram-d
+               - items:
+-                  - const: allwinner,sun50i-h6-sram-c
++                  - enum:
++                      - allwinner,sun50i-h6-sram-c
++                      - allwinner,sun50i-h616-sram-c
+                   - const: allwinner,sun50i-a64-sram-c
+ 
+ required:
+-- 
+2.51.0
+
+
+From 3a2bb0a21b4c951f3950149ca5f6a18a441a12b3 Mon Sep 17 00:00:00 2001
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+Date: Sun, 16 Feb 2025 22:27:11 +1300
+Subject: [PATCH 16/21] drm/sun4i: tcon: add support for R40
+
+The Allwinner H616 and related SOCs have an LCD timing controller
+(TCON) which is compatible with the R40 SOC's controller and existing
+sun4i driver. The H616 does not expose this controller but the H700 and
+T507 (based on the same die) do. The controller supports LVDS and RGB
+output.
+
+Add quirks and compatible string to cover these SOCs.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+---
+ drivers/gpu/drm/sun4i/sun4i_tcon.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_tcon.c b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+index 5d6c7d08cf8f..566a44b33619 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+@@ -1519,6 +1519,14 @@ static const struct sun4i_tcon_quirks sun8i_a83t_tv_quirks = {
+ 	.has_channel_1		= true,
+ };
+ 
++static const struct sun4i_tcon_quirks sun8i_r40_lcd_quirks = {
++	.supports_lvds		= true,
++	.has_channel_0		= true,
++	.set_mux		= sun8i_r40_tcon_tv_set_mux,
++	.dclk_min_div		= 1,
++	.setup_lvds_phy		= sun6i_tcon_setup_lvds_phy,
++};
++
+ static const struct sun4i_tcon_quirks sun8i_r40_tv_quirks = {
+ 	.has_channel_1		= true,
+ 	.polarity_in_ch0	= true,
+@@ -1567,6 +1575,7 @@ const struct of_device_id sun4i_tcon_of_table[] = {
+ 	{ .compatible = "allwinner,sun8i-a33-tcon", .data = &sun8i_a33_quirks },
+ 	{ .compatible = "allwinner,sun8i-a83t-tcon-lcd", .data = &sun8i_a83t_lcd_quirks },
+ 	{ .compatible = "allwinner,sun8i-a83t-tcon-tv", .data = &sun8i_a83t_tv_quirks },
++	{ .compatible = "allwinner,sun8i-r40-tcon-lcd", .data = &sun8i_r40_lcd_quirks },
+ 	{ .compatible = "allwinner,sun8i-r40-tcon-tv", .data = &sun8i_r40_tv_quirks },
+ 	{ .compatible = "allwinner,sun8i-v3s-tcon", .data = &sun8i_v3s_quirks },
+ 	{ .compatible = "allwinner,sun9i-a80-tcon-lcd", .data = &sun9i_a80_tcon_lcd_quirks },
+-- 
+2.51.0
+
+
+From 6c4bd1741312adbebc217d23e1e7dada1171d00c Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 20 Jul 2025 09:22:48 +1200
+Subject: [PATCH 17/21] arm64: dts: allwinner: h616: add LCD and LVDS pins
+
+The Allwinner H616 (and its H618, H700 and T507 package variants with
+the same die) have 28 video output pins for RGB/SPI and LVDS display.
+These are in GPIO Bank D and are multiplexed.
+
+In RGB mode, pins PD0-PD23 are for 24-bit RGB pixel output, pins
+PD24-PD27 are for clock, DE, HSYNC and VSYNC.
+
+In LVDS mode, pins PD0-PD9 are for LVDS0 and pins PD10-19 for LVDS1, and
+can be configured by the H616 display engine for either one high-
+resolution (dual link) or two low resolution displays.
+
+Add device tree nodes for the LCD and LVDS pins.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+[ryan@testtoast.com: add RGB and LVDS1 pin assignments]
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+--
+Changelog v1..v2:
+- Remove PWM pin assignment as driver not implemented
+---
+ .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 254ebf8ac0c3..20bc1f76489a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -367,6 +367,32 @@ ir_rx_pin: ir-rx-pin {
+ 				function = "ir_rx";
+ 			};
+ 
++			/omit-if-no-ref/
++			lcd0_rgb888_pins: lcd0-rgb888-pins {
++				pins = "PD0", "PD1", "PD2", "PD3",
++				       "PD4", "PD5", "PD6", "PD7",
++				       "PD8", "PD9", "PD10", "PD11",
++				       "PD12", "PD13", "PD14", "PD15",
++				       "PD16", "PD17", "PD18", "PD19",
++				       "PD20", "PD21", "PD22", "PD23",
++				       "PD24", "PD25", "PD26", "PD27";
++				function = "lcd0";
++			};
++
++			/omit-if-no-ref/
++			lvds0_pins: lvds0-pins {
++				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
++				       "PD5", "PD6", "PD7", "PD8", "PD9";
++				function = "lvds0";
++			};
++
++			/omit-if-no-ref/
++			lvds1_pins: lvds1-pins {
++				pins = "PD10", "PD11", "PD12", "PD13", "PD14",
++				       "PD15", "PD16", "PD17", "PD18", "PD19";
++				function = "lvds1";
++			};
++
+ 			mmc0_pins: mmc0-pins {
+ 				pins = "PF0", "PF1", "PF2", "PF3",
+ 				       "PF4", "PF5";
+-- 
+2.51.0
+
+
+From 1247a3227950c34ac595bcdb2cef3d0aaecf85e9 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 2 Nov 2025 08:17:04 +1300
+Subject: [PATCH 18/21] arm64: dts: allwinner: h616: add lcd tcon endpoint
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index 20bc1f76489a..a4bf07d217fa 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -1154,6 +1154,12 @@ tcon_lcd0_in_tcon_top_mixer1: endpoint@1 {
+ 
+ 				tcon_lcd0_out: port@1 {
+ 					reg = <1>;
++					#address-cells = <1>;
++					#size-cells = <0>;
++
++					tcon_lcd0_out_lcd: endpoint@0 {
++						reg = <0>;
++					};
+ 				};
+ 			};
+ 		};
+-- 
+2.51.0
+
+
+From f70a04ebd85c58a42de276ade90c4ace873fc0e3 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 2 Nov 2025 08:16:39 +1300
+Subject: [PATCH 19/21] arm64: dts: allwinner: rg35xx: Enable LCD output
+
+The RG35XX has a 640x480 RGB/SPI LCD panel, supported by the SoC display
+pipeline and an NV3052C controller. The H616 SOC's GPIO bank D contains
+the muxed display pins for RGB and LVDS output support.
+
+The backlight for this device is not modelled as the PWM driver for the
+H616 is not yet implemented.
+
+Enable the display engine and LCD timing controller, configure the
+panel, and add a fixed 3.3v GPIO-controlled regulator for the panel, and
+a VCC supply for the display pins as per the other GPIO banks.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Tested-by: Philippe Simons <simons.philippe@gmail.com>
+Signed-off-by: Ryan Walklin <ryan@testtoast.com>
+
+Changelog v1..v2:
+- Remove GPIO backlight node.
+---
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 1a750c5f6fac..7d1da4463adf 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -181,6 +181,49 @@ reg_vcc5v: regulator-vcc5v { /* USB-C power input */
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 	};
++
++	reg_lcd: regulator-gpio-lcd-vdd {
++		compatible = "regulator-fixed";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-name = "vdd-lcd";
++		gpio = <&pio 8 15 GPIO_ACTIVE_HIGH>; // PI15
++		enable-active-high;
++	};
++
++	spi_lcd: spi {
++		compatible = "spi-gpio";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		sck-gpios = <&pio 8 9 GPIO_ACTIVE_HIGH>; // PI9
++		mosi-gpios = <&pio 8 10 GPIO_ACTIVE_HIGH>; // PI10
++		cs-gpios = <&pio 8 8 GPIO_ACTIVE_HIGH>; // PI8
++		num-chipselects = <1>;
++
++		panel: panel@0 {
++			compatible = "anbernic,rg35xx-plus-panel";
++
++			reg = <0>;
++
++			spi-max-frequency = <3125000>;
++			spi-3wire;
++
++			reset-gpios = <&pio 8 14 GPIO_ACTIVE_LOW>; // PI14
++
++			backlight = <&backlight>;
++			power-supply = <&reg_lcd>;
++
++			pinctrl-0 = <&lcd0_rgb888_pins>;
++			pinctrl-names = "default";
++
++			port {
++				panel_in_rgb: endpoint {
++					remote-endpoint = <&tcon_lcd0_out_lcd>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &codec {
+@@ -196,6 +239,10 @@ &cpu0 {
+ 	cpu-supply = <&reg_dcdc1>;
+ };
+ 
++&de {
++	status = "okay";
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -220,6 +267,7 @@ &ohci0 {
+ &pio {
+ 	vcc-pa-supply = <&reg_cldo3>;
+ 	vcc-pc-supply = <&reg_cldo3>;
++	vcc-pd-supply = <&reg_cldo3>;
+ 	vcc-pe-supply = <&reg_cldo3>;
+ 	vcc-pf-supply = <&reg_cldo3>;
+ 	vcc-pg-supply = <&reg_aldo4>;
+@@ -379,3 +427,11 @@ &usbotg {
+ &usbphy {
+ 	status = "okay";
+ };
++
++&tcon_lcd0 {
++	status = "okay";
++};
++
++&tcon_lcd0_out_lcd {
++	remote-endpoint = <&panel_in_rgb>;
++};
+-- 
+2.51.0
+
+
+From 3fa0090c9b9679cb9e3017024dd28c02260203d4 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 2 Nov 2025 08:10:28 +1300
+Subject: [PATCH 20/21] arm64: dts: allwinner: rg35xx: add HDMI connector
+
+---
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 7d1da4463adf..6665f211cb4b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -31,6 +31,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	connector {
++		compatible = "hdmi-connector";
++		type = "d";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	gpio_keys_gamepad: gpio-keys-gamepad {
+ 		compatible = "gpio-keys";
+ 
+@@ -252,6 +263,17 @@ &gpu {
+ 	status = "okay";
+ };
+ 
++&hdmi {
++	// hvcc-supply = <&reg_aldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &mmc0 {
+ 	vmmc-supply = <&reg_cldo3>;
+ 	disable-wp;
+-- 
+2.51.0
+
+
+From 25ff06a9e61581411fee639380c08e1f430c6f32 Mon Sep 17 00:00:00 2001
+From: Ryan Walklin <ryan@testtoast.com>
+Date: Sun, 2 Nov 2025 08:10:53 +1300
+Subject: [PATCH 21/21] arm64: dts: allwinner: rg35xx: add GPIO backlight
+
+---
+ .../boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 6665f211cb4b..b52726d8d09b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -21,6 +21,12 @@ aliases {
+ 		serial0 = &uart0;
+ 	};
+ 
++	backlight: backlight {
++		compatible = "gpio-backlight";
++		gpios = <&pio 3 28 GPIO_ACTIVE_HIGH>; // PD28
++		default-on;
++	};
++
+ 	battery: battery {
+ 		compatible = "simple-battery";
+ 		constant-charge-current-max-microamp = <1024000>;
+-- 
+2.51.0
+

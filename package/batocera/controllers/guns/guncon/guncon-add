@@ -7,7 +7,7 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 # Based on GunCon2 GUN4IR model, Redemp's work
 ############
 # Trigger           : BTN_LEFT
-# A                 : BTN_1
+# A                 : BTN_RIGHT
 # B                 : BTN_MIDDLE
 # C                 : BTN_C
 # Start             : KEY_1
@@ -16,13 +16,13 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 
 DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
 evsieve --input "${DEVNAME}" persist=exit     \
-        --map yield btn:middle   btn:1        \
-        --map yield btn:right    btn:middle   \
-        --map yield key:1        btn:3        \
-        --map yield key:5        btn:2        \
+        --map yield btn:middle   btn:3        \
+        --map yield btn:right    btn:2        \
+        --map yield btn:c        btn:right    \
+        --map yield key:1        btn:middle   \
+        --map yield key:5        btn:1        \
         --map yield key:up       btn:5        \
         --map yield key:down     btn:6        \
         --map yield key:left     btn:7        \
         --map yield key:right    btn:8        \
-        --map yield btn:c        btn:right    \
         --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &

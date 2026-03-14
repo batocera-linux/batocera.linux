@@ -112,3 +112,6 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
 
     # Don't use SDL "Add credit" with the South button/plunger and pad2key default mapping
     vpinballSettings.set("Player", "JoyAddCreditKey", system.config.get_bool("vpinball_pad_add_credit", return_values=("", "0")))
+
+    # PBWEnabled. Accelerometer (helps with some controllers equipped with accelerometers)
+    vpinballSettings.set("Player", "PBWEnabled", system.config.get_bool("vpinball_pbw", True, return_values=("", "0")))

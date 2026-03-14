@@ -1,0 +1,8 @@
+config BR2_PACKAGE_KDDOCKWIDGETS
+    bool "kddockwidgets"
+    select BR2_PACKAGE_QT6BASE
+    select BR2_PACKAGE_QT6BASE_WIDGETS
+    help
+      KDAB's Dock Widget Framework for Qt.
+      
+      https://github.com/KDAB/KDDockWidgets

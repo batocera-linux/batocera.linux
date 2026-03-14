@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
-from ...gun import guns_need_crosses
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
@@ -34,6 +33,9 @@ class DolphinGenerator(Generator):
 
         # Dir required for saves
         mkdir_if_not_exists(DOLPHIN_SAVES / "StateSaves")
+
+        # GaemSettings
+        mkdir_if_not_exists(DOLPHIN_SAVES / "GameSettings")
 
         # Generate the controller config(s)
         dolphinControllers.generateControllerConfig(system, playersControllers, metadata, wheels, rom, guns)
@@ -96,7 +98,9 @@ class DolphinGenerator(Generator):
 
         # fixes exit and gui display
         dolphinSettings.remove_option("Display", "RenderToMain")
-        dolphinSettings.remove_option("Display", "Fullscreen")
+
+        # start fullscreen
+        dolphinSettings.set("Display", "Fullscreen", "True")
 
         # Enable Cheats
         dolphinSettings.set("Core", "EnableCheats", str(system.config.get_bool("enable_cheats")))
@@ -153,8 +157,15 @@ class DolphinGenerator(Generator):
                 else:
                     dolphinSettings.set("Core", f"SIDevice{i}", "6")
 
-        # HiResTextures for guns part 1/2 (see below the part 2)
-        if system.config.use_guns and guns and system.config.get_bool('dolphin-lightgun-hide-crosshair', not guns_need_crosses(guns)):
+        # Triforce wheel: both ports must be GC Steering (8) for baseboard detection.
+        if system.name == "triforce" and system.config.use_wheels and wheels:
+            if not system.config.get("dolphin_port_1_type"):
+                dolphinSettings.set("Core", "SIDevice0", "8")
+            if not system.config.get("dolphin_port_2_type"):
+                dolphinSettings.set("Core", "SIDevice1", "8")
+
+        # [Light Gun] HiResTextures for crosshair (part 1/2)
+        if system.config.use_guns and guns and not system.config.get_bool('dolphin_crosshair'):
             dolphinSettings.set("General", "CustomTexturesPath", "/usr/share/DolphinCrosshairsPack")
         else:
             dolphinSettings.remove_option("General", "CustomTexturesPath")
@@ -230,8 +241,8 @@ class DolphinGenerator(Generator):
         dolphinGFXSettings.set("Settings", "HiresTextures",      hires_textures)
         dolphinGFXSettings.set("Settings", "CacheHiresTextures", hires_textures)
 
-        # HiResTextures for guns part 2/2 (see upper part1)
-        if system.config.use_guns and guns and system.config.get_bool('dolphin-lightgun-hide-crosshair', True):
+        # [Light Gun] HiResTextures for crosshair (part 2/2)
+        if system.config.use_guns and guns and not system.config.get_bool('dolphin_crosshair'):
             # erase what can be set by the option hires_textures
             dolphinGFXSettings.set("Settings", "HiresTextures",      "True")
             dolphinGFXSettings.set("Settings", "CacheHiresTextures", "True")
@@ -375,14 +386,15 @@ class DolphinGenerator(Generator):
         if system.config.get_bool('retroachievements'):
             RacConfig.set('Achievements', 'Enabled', 'True')
             RacConfig.set('Achievements', 'AchievementsEnabled', 'True')
-            username  = system.config.get('retroachievements.username', '')
-            token     = system.config.get('retroachievements.token', '')
-            hardcore  = system.config.get('retroachievements.hardcore', 'False')
-            presence  = system.config.get('retroachievements.richpresence', 'False')
-            leaderbd  = system.config.get('retroachievements.leaderboard', 'False')
-            progress  = system.config.get('retroachievements.challenge_indicators', 'False')
-            encore    = system.config.get('retroachievements.encore', 'False')
-            verbose   = system.config.get('retroachievements.verbose', 'False')
+            username   = system.config.get('retroachievements.username', '')
+            token      = system.config.get('retroachievements.token', '')
+            hardcore   = system.config.get('retroachievements.hardcore', 'False')
+            presence   = system.config.get('retroachievements.richpresence', 'False')
+            leaderbd   = system.config.get('retroachievements.leaderboard', 'False')
+            progress   = system.config.get('retroachievements.challenge_indicators', 'False')
+            encore     = system.config.get('retroachievements.encore', 'False')
+            verbose    = system.config.get('retroachievements.verbose', 'False')
+            unofficial = system.config.get('retroachievements.unofficial', 'False')
             RacConfig.set('Achievements', 'Username', username)
             RacConfig.set('Achievements', 'ApiToken', token)
             RacConfig.set('Achievements', 'HardcoreEnabled', hardcore)
@@ -391,6 +403,7 @@ class DolphinGenerator(Generator):
             RacConfig.set('Achievements', 'ProgressEnabled', progress)
             RacConfig.set('Achievements', 'LeaderboardsEnabled', leaderbd)
             RacConfig.set('Achievements', 'RichPresenceEnabled', presence)
+            RacConfig.set('Achievements', 'UnofficialEnabled', unofficial)
         else:
             RacConfig.set('Achievements', 'Enabled', 'False')
             RacConfig.set('Achievements', 'AchievementsEnabled', 'False')
@@ -420,8 +433,7 @@ class DolphinGenerator(Generator):
             env={
                 "XDG_CONFIG_HOME": CONFIGS,
                 "XDG_DATA_HOME": SAVES,
-                "XDG_CACHE_HOME": CACHE,
-                "QT_QPA_PLATFORM": "xcb"
+                "XDG_CACHE_HOME": CACHE
             }
         )
 

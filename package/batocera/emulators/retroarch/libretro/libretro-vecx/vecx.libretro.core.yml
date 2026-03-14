@@ -1,0 +1,16 @@
+features:
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  res_multi:
+    prompt: RESOLUTION MULTIPLIER
+    description: Resolution multipliers to smooth vectors
+    choices:
+      'Off': 1
+      "2": 2
+      "3": 3
+      "4": 4
+systems:
+  - vectrex

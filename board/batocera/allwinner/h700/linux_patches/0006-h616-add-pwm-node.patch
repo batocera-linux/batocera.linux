@@ -1,0 +1,37 @@
+From 193e59a21f1a828e1860cd6fdfcb3fbf041a3f19 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Thu, 23 Jan 2025 23:39:47 +0100
+Subject: [PATCH 8/9] h616: add pwm node
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+index c335e81a5..7417a214a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -257,6 +257,20 @@ ccu: clock@3001000 {
+ 			#reset-cells = <1>;
+ 		};
+ 
++		pwm: pwm@300a000 {
++			compatible = "allwinner,sun50i-h616-pwm";
++			reg = <0x0300a000 0x400>;
++			clocks = <&ccu CLK_BUS_PWM>,
++				 <&osc24M>,
++				 <&ccu CLK_APB1>;
++			clock-names = "bus", "hosc", "apb";
++			resets = <&ccu RST_BUS_PWM>;
++			#pwm-cells = <0x3>;
++			status = "disabled";
++
++			allwinner,pwm-channels = <6>;
++		};
++
+ 		dma: dma-controller@3002000 {
+ 			compatible = "allwinner,sun50i-h616-dma",
+ 				     "allwinner,sun50i-a100-dma";
+-- 
+2.47.1
+

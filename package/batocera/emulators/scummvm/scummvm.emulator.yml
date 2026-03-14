@@ -1,0 +1,77 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  scumm_scale:
+    prompt: SCALE FACTOR
+    description: Select scale resolution of the game.
+    choices:
+      1x (320x200): 1
+      2x (640x400): 2
+      3x (960x600): 3
+      4x (1280x800): 4
+      5x (1600x1000): 5
+      6x (1920x1200): 6
+      7x (2240x1400): 7
+      8x (2560x1600): 8
+  scumm_scaler_mode:
+    prompt: SCALER MODE
+    description: Sets the scaler filter mode when rendering.
+    choices:
+      Normal: normal
+      HQ (bilinear filter): hq
+      Edge (sharper filet): edge
+      AdvMame: advmame
+      Scanline Interpolation Filter (SAI): sai
+      SuperSAI: supersai
+      SuperEagle: supereagle
+      Pixel-Perfect: pm
+      DotMatrix: dotmatrix
+      TV2x CRT Television Filter: tv
+  scumm_stretch:
+    prompt: STRETCH MODE
+    description: Stretches the output to fill the display area.
+    choices:
+      Center: center
+      Pixel Perfect: pixel-perfect
+      Even Pixels: even-pixels
+      Stretch to screen: stretch
+      Fit resolution scale: fit
+      Fit 4:3 Aspect Ratio: fit_force_aspect
+  scumm_renderer:
+    prompt: RENDERER
+    description: Choose your preferred renderer.
+    choices:
+      Software: software
+      OpenGL (Default): opengl
+      OpenGL with Shaders: opengl_shaders
+  scumm_language:
+    prompt: LANGUAGE
+    description: Choose your preferred language.
+    choices:
+      English: en
+      German: de
+      French: fr
+      Italian: it
+      Portuguese: pt
+      Spanish: es
+      Japanese: jp
+      Chinese (Mandarin): zh
+      Korean: kr
+      Swedish: se
+      Hebrew: hb
+      Russian: ru
+      Czech: cz
+systems:
+  - scummvm

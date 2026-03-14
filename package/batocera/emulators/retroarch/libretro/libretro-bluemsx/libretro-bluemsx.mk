@@ -3,11 +3,12 @@
 # libretro-bluemsx
 #
 ################################################################################
-# Version: Commits on Dec 4, 2024
-LIBRETRO_BLUEMSX_VERSION = 572c91856a5288b7433c619af651e31f00f3ce7e
+# Version: Commits on Nov 4, 2025
+LIBRETRO_BLUEMSX_VERSION = 036376d6679c9e153712dbbb3fdca774afc49706
 LIBRETRO_BLUEMSX_SITE = $(call github,libretro,blueMSX-libretro,$(LIBRETRO_BLUEMSX_VERSION))
 LIBRETRO_BLUEMSX_LICENSE = GPLv2
 LIBRETRO_BLUEMSX_DEPENDENCIES += retroarch
+LIBRETRO_BLUEMSX_EMULATOR_INFO = bluemsx.libretro.core.yml
 
 LIBRETRO_BLUEMSX_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_BLUEMSX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

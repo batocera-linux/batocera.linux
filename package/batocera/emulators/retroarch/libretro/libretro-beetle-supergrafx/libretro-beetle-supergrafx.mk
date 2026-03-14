@@ -9,6 +9,7 @@ LIBRETRO_BEETLE_SUPERGRAFX_SITE = \
     $(call github,libretro,beetle-supergrafx-libretro,$(LIBRETRO_BEETLE_SUPERGRAFX_VERSION))
 LIBRETRO_BEETLE_SUPERGRAFX_LICENSE = GPLv2
 LIBRETRO_BEETLE_SUPERGRAFX_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_SUPERGRAFX_EMULATOR_INFO = mednafen_supergrafx.libretro.core.yml
 
 LIBRETRO_BEETLE_SUPERGRAFX_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -36,3 +37,4 @@ define LIBRETRO_BEETLE_SUPERGRAFX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

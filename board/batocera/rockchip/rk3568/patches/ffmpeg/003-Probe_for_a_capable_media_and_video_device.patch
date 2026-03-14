@@ -1,0 +1,880 @@
+From patchwork Tue Aug  6 09:06:02 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50905
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1916466vqb;
+        Tue, 6 Aug 2024 02:26:12 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCVdMcpIqIjo4mhEWvOuAwsdHktwX6pWTsCP97iKCtjuTm6fggohKWfiPpwwDSNXvhEQDsJPxCqHBMbV7W3karhI1k+30wGAGbPZQA==
+X-Google-Smtp-Source: 
+ AGHT+IHL5gsMuqnH6qUN80gjrQuFbTmSC2UKdjpBGOJnHONingLr+QZYBqc89ce8dhSFbGh8lEE0
+X-Received: by 2002:aa7:d357:0:b0:5a3:2af5:c722 with SMTP id
+ 4fb4d7f45d1cf-5b7f38ebb2dmr9492307a12.13.1722936372614;
+        Tue, 06 Aug 2024 02:26:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722936372; cv=none;
+        d=google.com; s=arc-20160816;
+        b=fcGRijAB6hpBWf77mHPo9SZMq1D33XvfJZBOhPz2K4dgOxQ++zgkQiezSJm/2GKDSX
+         Kj+aEEdh0Q5Z9PV0pjLGLuK46aIbpb/lNHaTAl9MItNCGOjlQAnNLZCmS6QTxDGVhjsR
+         hEh7t4BaYREKRwIf8N05DG/hxnz06D1aOk1EFN/OziJOGLc47xGrKRinFUd/twB3BoSe
+         41/CjSU9HcCri7Kyt7mWVKeGVS9PFKoriq6Re9KvBZBaeZShphinueldfvTSM6taFNK0
+         j4xXqLL5Lxwq7mTuT+KXM+MO2Dm4luoZuDNAk0lymp4+3fG4P+uIJ68SNUb8rWTd2urT
+         lpbg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=00nT1Vj4MBAxr9ZB3tFQ8YDelzTggIIgXtDrJj49G84=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=eLze/YDrpOkAxFnQxf9Q8lpn/ER5EvAk311DEvUjJsLniGK5J3s/xiPydc75k5wl/m
+         x6qoJOxDmkRFtJBmQ08oKy8ICaixvGVr5R4awZAxUF1cLK3vK7NpPldTxHYZ+xSZP/gC
+         otvwwhmPUGPC0R7gONXaEdyc4jDzQHOmbed1+6cM7wmcaP8nYQqO9BbSCKoJQb//nGun
+         x8INFWV82ZwUQaeGXxs8/mrjwD6wjArH3KmBTQGJmFJtkmM+YN9qIEkg+/4jGu3qNMyS
+         Q+Ouhzx6ZN8TcA/WFFengkUX4bn+6UNUXBg1Qpkox9uloLp+wd6EdJ+egk0GNhLRVVbU
+         2I/A==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=V5iLpnlW;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ 4fb4d7f45d1cf-5b83bf3eb64si5325671a12.402.2024.08.06.02.26.12;
+        Tue, 06 Aug 2024 02:26:12 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=V5iLpnlW;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id 4562C68D99D;
+	Tue,  6 Aug 2024 12:06:39 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [164.92.70.200])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id 6D2D068D96E
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:31 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935186; bh=s5imjEnTysBvYd0lfsj3K8zPbMlHxWBIiYalGP7a6Ps=;
+ b=V5iLpnlWRvwG26d2TtW1bPNgtiGPoEkoV/HE1hW/IlNPpjuXvTK1avePDvN84YzcRPNkrG1Zr
+ la0vkCg1X43IpQg/7zIOlXhZ0Jtw+3aUWm67YIk6Xf7hkR5ZdQv0xidrDcrPcNCIkcSsbjs1+Q8
+ k2OPbPCJQr2bFBEqym5aoLFsdhZDktr5fS0jXO7K3FYvYrKx8uqTUmqc/2G91U8rE7LPwIH/vEz
+ +fnISmoxVDKHalkvabLE4wUUUZCR2Iw1naM4+7hDUZpSv1Det7TVm3SzIxnM5EY/KufPIlAV9Zt
+ OUD4sytagP6xvwww1ZD7I5BzGP8oAej+yUAeiq7ocfgA==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:02 +0000
+Message-ID: <20240806090607.43240-4-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 164.92.70.200
+X-ForwardEmail-ID: 66b1e7928ac7bd7d98d34c60
+Subject: [FFmpeg-devel] [PATCH v2 3/8] avcodec/v4l2request: Probe for a
+ capable media and video device
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: 58+s/mRwDdU+
+
+Probe all media devices and its linked video devices to locate a video
+device that support stateless decoding of the specific codec using the
+V4L2 Request API.
+
+When AVV4L2RequestDeviceContext.media_fd is a valid file descriptor only
+video devices for the opened media device is probed.
+E.g. using a -init_hw_device v4l2request:/dev/media1 parameter.
+
+A video device is deemed capable when all tests pass, e.g. kernel driver
+support the codec, FFmpeg v4l2-request code know about the buffer format
+and kernel driver report that the frame size is supported.
+
+A codec specific hook, post_probe, is supported to e.g. test for codec
+specific limitations, PROFILE and LEVEL controls.
+
+Basic flow for initialization follow the kernel Memory-to-memory
+Stateless Video Decoder Interface > Initialization [1].
+
+[1] https://www.kernel.org/doc/html/latest/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
+
+Co-developed-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Co-developed-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Alex Bee <knaerzche@gmail.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ configure                          |   4 +-
+ libavcodec/Makefile                |   2 +-
+ libavcodec/v4l2_request.c          |  18 +-
+ libavcodec/v4l2_request_internal.h |   9 +
+ libavcodec/v4l2_request_probe.c    | 614 +++++++++++++++++++++++++++++
+ 5 files changed, 641 insertions(+), 6 deletions(-)
+ create mode 100644 libavcodec/v4l2_request_probe.c
+
+diff --git a/configure b/configure
+index 23d00edc48..a5e01fecc3 100755
+--- a/configure
++++ b/configure
+@@ -1964,6 +1964,7 @@ EXTERNAL_LIBRARY_LIST="
+     libtorch
+     libtwolame
+     libuavs3d
++    libudev
+     libv4l2
+     libvmaf
+     libvorbis
+@@ -3150,7 +3151,7 @@ dxva2_deps="dxva2api_h DXVA2_ConfigPictureDecode ole32 user32"
+ ffnvcodec_deps_any="libdl LoadLibrary"
+ mediacodec_deps="android mediandk"
+ nvdec_deps="ffnvcodec"
+-v4l2_request_deps="linux_media_h v4l2_timeval_to_ns"
++v4l2_request_deps="linux_media_h v4l2_timeval_to_ns libdrm libudev"
+ vaapi_x11_deps="xlib_x11"
+ videotoolbox_hwaccel_deps="videotoolbox pthreads"
+ videotoolbox_hwaccel_extralibs="-framework QuartzCore"
+@@ -7177,6 +7178,7 @@ fi
+ 
+ if enabled v4l2_request; then
+     check_func_headers "linux/media.h linux/videodev2.h" v4l2_timeval_to_ns
++    check_pkg_config libudev libudev libudev.h udev_new
+ fi
+ 
+ check_headers sys/videoio.h
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index b851401c7a..f1db822568 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -174,7 +174,7 @@ OBJS-$(CONFIG_VP3DSP)                  += vp3dsp.o
+ OBJS-$(CONFIG_VP56DSP)                 += vp56dsp.o
+ OBJS-$(CONFIG_VP8DSP)                  += vp8dsp.o
+ OBJS-$(CONFIG_V4L2_M2M)                += v4l2_m2m.o v4l2_context.o v4l2_buffers.o v4l2_fmt.o
+-OBJS-$(CONFIG_V4L2_REQUEST)            += v4l2_request.o
++OBJS-$(CONFIG_V4L2_REQUEST)            += v4l2_request.o v4l2_request_probe.o
+ OBJS-$(CONFIG_WMA_FREQS)               += wma_freqs.o
+ OBJS-$(CONFIG_WMV2DSP)                 += wmv2dsp.o
+ 
+diff --git a/libavcodec/v4l2_request.c b/libavcodec/v4l2_request.c
+index 436c8de4a4..6f44c5d826 100644
+--- a/libavcodec/v4l2_request.c
++++ b/libavcodec/v4l2_request.c
+@@ -244,7 +244,11 @@ static AVBufferRef *v4l2_request_frame_alloc(void *opaque, size_t size)
+         return NULL;
+     }
+ 
+-    // TODO: Set AVDRMFrameDescriptor of this AVFrame
++    // Set AVDRMFrameDescriptor of this AVFrame
++    if (ff_v4l2_request_set_drm_descriptor(desc, &ctx->format) < 0) {
++        av_buffer_unref(&ref);
++        return NULL;
++    }
+ 
+     return ref;
+ }
+@@ -261,8 +265,7 @@ int ff_v4l2_request_frame_params(AVCodecContext *avctx,
+     AVHWFramesContext *hwfc = (AVHWFramesContext *)hw_frames_ctx->data;
+ 
+     hwfc->format = AV_PIX_FMT_DRM_PRIME;
+-    // TODO: Set sw_format based on capture buffer format
+-    hwfc->sw_format = AV_PIX_FMT_NONE;
++    hwfc->sw_format = ff_v4l2_request_get_sw_format(&ctx->format);
+ 
+     if (V4L2_TYPE_IS_MULTIPLANAR(ctx->format.type)) {
+         hwfc->width = ctx->format.fmt.pix_mp.width;
+@@ -413,6 +416,7 @@ int ff_v4l2_request_init(AVCodecContext *avctx,
+ {
+     V4L2RequestContext *ctx = v4l2_request_context(avctx);
+     AVV4L2RequestDeviceContext *hwctx = NULL;
++    int ret;
+ 
+     // Set initial default values
+     ctx->av_class = &v4l2_request_context_class;
+@@ -428,7 +432,13 @@ int ff_v4l2_request_init(AVCodecContext *avctx,
+         }
+     }
+ 
+-    // TODO: Probe for a capable media and video device
++    // Probe for a capable media and video device for the V4L2 codec pixelformat
++    ret = ff_v4l2_request_probe(avctx, pixelformat, buffersize, control, count);
++    if (ret < 0) {
++        av_log(avctx, AV_LOG_INFO, "No V4L2 video device found for %s\n",
++               av_fourcc2str(pixelformat));
++        return ret;
++    }
+ 
+     // Transfer (or return) ownership of media device file descriptor to hwdevice
+     if (hwctx) {
+diff --git a/libavcodec/v4l2_request_internal.h b/libavcodec/v4l2_request_internal.h
+index 554b663ab4..a5c3de22ef 100644
+--- a/libavcodec/v4l2_request_internal.h
++++ b/libavcodec/v4l2_request_internal.h
+@@ -39,4 +39,13 @@ static inline V4L2RequestFrameDescriptor *v4l2_request_framedesc(AVFrame *frame)
+     return (V4L2RequestFrameDescriptor *)frame->data[0];
+ }
+ 
++enum AVPixelFormat ff_v4l2_request_get_sw_format(struct v4l2_format *format);
++
++int ff_v4l2_request_set_drm_descriptor(V4L2RequestFrameDescriptor *framedesc,
++                                       struct v4l2_format *format);
++
++int ff_v4l2_request_probe(AVCodecContext *avctx, uint32_t pixelformat,
++                          uint32_t buffersize, struct v4l2_ext_control *control,
++                          int count);
++
+ #endif /* AVCODEC_V4L2_REQUEST_INTERNAL_H */
+diff --git a/libavcodec/v4l2_request_probe.c b/libavcodec/v4l2_request_probe.c
+new file mode 100644
+index 0000000000..941042ec04
+--- /dev/null
++++ b/libavcodec/v4l2_request_probe.c
+@@ -0,0 +1,614 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "config.h"
++
++#include <fcntl.h>
++#include <sys/ioctl.h>
++#include <sys/types.h>
++#include <unistd.h>
++
++#include <drm_fourcc.h>
++#include <libudev.h>
++
++#include "libavutil/hwcontext_v4l2request.h"
++#include "libavutil/mem.h"
++#include "v4l2_request_internal.h"
++
++static const struct {
++    uint32_t pixelformat;
++    enum AVPixelFormat sw_format;
++    uint32_t drm_format;
++    uint64_t format_modifier;
++} v4l2_request_capture_pixelformats[] = {
++    { V4L2_PIX_FMT_NV12, AV_PIX_FMT_NV12, DRM_FORMAT_NV12, DRM_FORMAT_MOD_LINEAR },
++#if defined(V4L2_PIX_FMT_NV12_32L32)
++    { V4L2_PIX_FMT_NV12_32L32, AV_PIX_FMT_NONE, DRM_FORMAT_NV12, DRM_FORMAT_MOD_ALLWINNER_TILED },
++#endif
++#if defined(V4L2_PIX_FMT_NV15) && defined(DRM_FORMAT_NV15)
++    { V4L2_PIX_FMT_NV15, AV_PIX_FMT_NONE, DRM_FORMAT_NV15, DRM_FORMAT_MOD_LINEAR },
++#endif
++    { V4L2_PIX_FMT_NV16, AV_PIX_FMT_NV16, DRM_FORMAT_NV16, DRM_FORMAT_MOD_LINEAR },
++#if defined(V4L2_PIX_FMT_NV20) && defined(DRM_FORMAT_NV20)
++    { V4L2_PIX_FMT_NV20, AV_PIX_FMT_NONE, DRM_FORMAT_NV20, DRM_FORMAT_MOD_LINEAR },
++#endif
++#if defined(V4L2_PIX_FMT_P010) && defined(DRM_FORMAT_P010)
++    { V4L2_PIX_FMT_P010, AV_PIX_FMT_P010, DRM_FORMAT_P010, DRM_FORMAT_MOD_LINEAR },
++#endif
++#if defined(V4L2_PIX_FMT_NV12_COL128) && defined(V4L2_PIX_FMT_NV12_10_COL128)
++    {
++        .pixelformat = V4L2_PIX_FMT_NV12_COL128,
++        .sw_format = AV_PIX_FMT_NONE,
++        .drm_format = DRM_FORMAT_NV12,
++        .format_modifier = DRM_FORMAT_MOD_BROADCOM_SAND128,
++    },
++#if defined(DRM_FORMAT_P030)
++    {
++        .pixelformat = V4L2_PIX_FMT_NV12_10_COL128,
++        .sw_format = AV_PIX_FMT_NONE,
++        .drm_format = DRM_FORMAT_P030,
++        .format_modifier = DRM_FORMAT_MOD_BROADCOM_SAND128,
++    },
++#endif
++#endif
++#if defined(V4L2_PIX_FMT_YUV420_10_AFBC_16X16_SPLIT)
++    {
++        .pixelformat = V4L2_PIX_FMT_YUV420_10_AFBC_16X16_SPLIT,
++        .sw_format = AV_PIX_FMT_NONE,
++        .drm_format = DRM_FORMAT_YUV420_10BIT,
++        .format_modifier = DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
++                                                   AFBC_FORMAT_MOD_SPARSE |
++                                                   AFBC_FORMAT_MOD_SPLIT),
++    },
++#endif
++#if defined(V4L2_PIX_FMT_YUV420_8_AFBC_16X16_SPLIT)
++    {
++        .pixelformat = V4L2_PIX_FMT_YUV420_8_AFBC_16X16_SPLIT,
++        .sw_format = AV_PIX_FMT_NONE,
++        .drm_format = DRM_FORMAT_YUV420_8BIT,
++        .format_modifier = DRM_FORMAT_MOD_ARM_AFBC(AFBC_FORMAT_MOD_BLOCK_SIZE_16x16 |
++                                                   AFBC_FORMAT_MOD_SPARSE |
++                                                   AFBC_FORMAT_MOD_SPLIT),
++    },
++#endif
++};
++
++enum AVPixelFormat ff_v4l2_request_get_sw_format(struct v4l2_format *format)
++{
++    uint32_t pixelformat = V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                           format->fmt.pix_mp.pixelformat :
++                           format->fmt.pix.pixelformat;
++
++    for (int i = 0; i < FF_ARRAY_ELEMS(v4l2_request_capture_pixelformats); i++) {
++        if (pixelformat == v4l2_request_capture_pixelformats[i].pixelformat)
++            return v4l2_request_capture_pixelformats[i].sw_format;
++    }
++
++    return AV_PIX_FMT_NONE;
++}
++
++int ff_v4l2_request_set_drm_descriptor(V4L2RequestFrameDescriptor *framedesc,
++                                       struct v4l2_format *format)
++{
++    AVDRMFrameDescriptor *desc = &framedesc->base;
++    AVDRMLayerDescriptor *layer = &desc->layers[0];
++    uint32_t pixelformat = V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                           format->fmt.pix_mp.pixelformat :
++                           format->fmt.pix.pixelformat;
++
++    // Set drm format and format modifier
++    layer->format = 0;
++    for (int i = 0; i < FF_ARRAY_ELEMS(v4l2_request_capture_pixelformats); i++) {
++        if (pixelformat == v4l2_request_capture_pixelformats[i].pixelformat) {
++            layer->format = v4l2_request_capture_pixelformats[i].drm_format;
++            desc->objects[0].format_modifier =
++                        v4l2_request_capture_pixelformats[i].format_modifier;
++            break;
++        }
++    }
++
++    if (!layer->format)
++        return AVERROR(ENOENT);
++
++    desc->nb_objects = 1;
++    desc->objects[0].fd = framedesc->capture.fd;
++    desc->objects[0].size = framedesc->capture.size;
++
++    desc->nb_layers = 1;
++    layer->nb_planes = 1;
++
++    layer->planes[0].object_index = 0;
++    layer->planes[0].offset = 0;
++    layer->planes[0].pitch = V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                             format->fmt.pix_mp.plane_fmt[0].bytesperline :
++                             format->fmt.pix.bytesperline;
++
++    // AFBC formats only use 1 plane, remaining use 2 planes
++    if ((desc->objects[0].format_modifier >> 56) != DRM_FORMAT_MOD_VENDOR_ARM) {
++        layer->nb_planes = 2;
++        layer->planes[1].object_index = 0;
++        layer->planes[1].offset = layer->planes[0].pitch *
++                                  (V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                                   format->fmt.pix_mp.height :
++                                   format->fmt.pix.height);
++        layer->planes[1].pitch = layer->planes[0].pitch;
++    }
++
++#if defined(V4L2_PIX_FMT_NV12_COL128) && defined(V4L2_PIX_FMT_NV12_10_COL128)
++    // Raspberry Pi formats need special handling
++    if (pixelformat == V4L2_PIX_FMT_NV12_COL128 ||
++        pixelformat == V4L2_PIX_FMT_NV12_10_COL128) {
++        desc->objects[0].format_modifier =
++            DRM_FORMAT_MOD_BROADCOM_SAND128_COL_HEIGHT(layer->planes[0].pitch);
++        layer->planes[1].offset = 128 *
++                                  (V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                                   format->fmt.pix_mp.height :
++                                   format->fmt.pix.height);
++        layer->planes[0].pitch = (V4L2_TYPE_IS_MULTIPLANAR(format->type) ?
++                                  format->fmt.pix_mp.width :
++                                  format->fmt.pix.width);
++        if (pixelformat == V4L2_PIX_FMT_NV12_10_COL128)
++            layer->planes[0].pitch *= 2;
++        layer->planes[1].pitch = layer->planes[0].pitch;
++    }
++#endif
++
++    return 0;
++}
++
++static int v4l2_request_set_format(AVCodecContext *avctx,
++                                   enum v4l2_buf_type type,
++                                   uint32_t pixelformat,
++                                   uint32_t buffersize)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct v4l2_format format = {
++        .type = type,
++    };
++
++    if (V4L2_TYPE_IS_MULTIPLANAR(type)) {
++        format.fmt.pix_mp.width = avctx->coded_width;
++        format.fmt.pix_mp.height = avctx->coded_height;
++        format.fmt.pix_mp.pixelformat = pixelformat;
++        format.fmt.pix_mp.plane_fmt[0].sizeimage = buffersize;
++        format.fmt.pix_mp.num_planes = 1;
++    } else {
++        format.fmt.pix.width = avctx->coded_width;
++        format.fmt.pix.height = avctx->coded_height;
++        format.fmt.pix.pixelformat = pixelformat;
++        format.fmt.pix.sizeimage = buffersize;
++    }
++
++    if (ioctl(ctx->video_fd, VIDIOC_S_FMT, &format) < 0)
++        return AVERROR(errno);
++
++    return 0;
++}
++
++static int v4l2_request_select_capture_format(AVCodecContext *avctx)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    enum v4l2_buf_type type = ctx->format.type;
++    struct v4l2_format format = {
++        .type = type,
++    };
++    struct v4l2_fmtdesc fmtdesc = {
++        .index = 0,
++        .type = type,
++    };
++    uint32_t pixelformat;
++
++    // Get the driver preferred (or default) format
++    if (ioctl(ctx->video_fd, VIDIOC_G_FMT, &format) < 0)
++        return AVERROR(errno);
++
++    pixelformat = V4L2_TYPE_IS_MULTIPLANAR(type) ?
++                  format.fmt.pix_mp.pixelformat :
++                  format.fmt.pix.pixelformat;
++
++    // Use the driver preferred format when it is supported
++    for (int i = 0; i < FF_ARRAY_ELEMS(v4l2_request_capture_pixelformats); i++) {
++        if (pixelformat == v4l2_request_capture_pixelformats[i].pixelformat)
++            return v4l2_request_set_format(avctx, type, pixelformat, 0);
++    }
++
++    // Otherwise, use first format that is supported
++    while (ioctl(ctx->video_fd, VIDIOC_ENUM_FMT, &fmtdesc) >= 0) {
++        for (int i = 0; i < FF_ARRAY_ELEMS(v4l2_request_capture_pixelformats); i++) {
++            if (fmtdesc.pixelformat == v4l2_request_capture_pixelformats[i].pixelformat)
++                return v4l2_request_set_format(avctx, type, fmtdesc.pixelformat, 0);
++        }
++
++        fmtdesc.index++;
++    }
++
++    return AVERROR(errno);
++}
++
++static int v4l2_request_try_framesize(AVCodecContext *avctx,
++                                      uint32_t pixelformat)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct v4l2_frmsizeenum frmsize = {
++        .index = 0,
++        .pixel_format = pixelformat,
++    };
++
++    // Enumerate and check if frame size is supported
++    while (ioctl(ctx->video_fd, VIDIOC_ENUM_FRAMESIZES, &frmsize) >= 0) {
++        if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE &&
++            frmsize.discrete.width == avctx->coded_width &&
++            frmsize.discrete.height == avctx->coded_height) {
++            return 0;
++        } else if ((frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
++                    frmsize.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) &&
++                   avctx->coded_width <= frmsize.stepwise.max_width &&
++                   avctx->coded_height <= frmsize.stepwise.max_height &&
++                   avctx->coded_width % frmsize.stepwise.step_width == 0 &&
++                   avctx->coded_height % frmsize.stepwise.step_height == 0) {
++            return 0;
++        }
++
++        frmsize.index++;
++    }
++
++    return AVERROR(errno);
++}
++
++static int v4l2_request_try_format(AVCodecContext *avctx,
++                                   enum v4l2_buf_type type,
++                                   uint32_t pixelformat)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct v4l2_fmtdesc fmtdesc = {
++        .index = 0,
++        .type = type,
++    };
++
++    // Enumerate and check if format is supported
++    while (ioctl(ctx->video_fd, VIDIOC_ENUM_FMT, &fmtdesc) >= 0) {
++        if (fmtdesc.pixelformat == pixelformat)
++            return 0;
++
++        fmtdesc.index++;
++    }
++
++    return AVERROR(errno);
++}
++
++static int v4l2_request_probe_video_device(const char *path,
++                                           AVCodecContext *avctx,
++                                           uint32_t pixelformat,
++                                           uint32_t buffersize,
++                                           struct v4l2_ext_control *control,
++                                           int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct v4l2_capability capability;
++    struct v4l2_create_buffers buffers = {
++        .count = 0,
++        .memory = V4L2_MEMORY_MMAP,
++    };
++    unsigned int capabilities;
++    int ret;
++
++    /*
++     * Open video device in non-blocking mode to support decoding using
++     * multiple queued requests, required for e.g. multi stage decoding.
++     */
++    ctx->video_fd = open(path, O_RDWR | O_NONBLOCK);
++    if (ctx->video_fd < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Failed to open video device %s: %s (%d)\n",
++               path, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    // Query capabilities of the video device
++    if (ioctl(ctx->video_fd, VIDIOC_QUERYCAP, &capability) < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Failed to query capabilities of %s: %s (%d)\n",
++               path, strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    // Use device capabilities when needed
++    if (capability.capabilities & V4L2_CAP_DEVICE_CAPS)
++        capabilities = capability.device_caps;
++    else
++        capabilities = capability.capabilities;
++
++    // Ensure streaming is supported on the video device
++    if ((capabilities & V4L2_CAP_STREAMING) != V4L2_CAP_STREAMING) {
++        av_log(ctx, AV_LOG_VERBOSE, "Device %s is missing streaming capability\n", path);
++        ret = AVERROR(EINVAL);
++        goto fail;
++    }
++
++    // Ensure multi- or single-planar API can be used
++    if ((capabilities & V4L2_CAP_VIDEO_M2M_MPLANE) == V4L2_CAP_VIDEO_M2M_MPLANE) {
++        ctx->output_type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
++        ctx->format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++    } else if ((capabilities & V4L2_CAP_VIDEO_M2M) == V4L2_CAP_VIDEO_M2M) {
++        ctx->output_type = V4L2_BUF_TYPE_VIDEO_OUTPUT;
++        ctx->format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
++    } else {
++        av_log(ctx, AV_LOG_VERBOSE, "Device %s is missing mem2mem capability\n", path);
++        ret = AVERROR(EINVAL);
++        goto fail;
++    }
++
++    // Query output buffer capabilities
++    buffers.format.type = ctx->output_type;
++    if (ioctl(ctx->video_fd, VIDIOC_CREATE_BUFS, &buffers) < 0) {
++        av_log(avctx, AV_LOG_ERROR,
++               "Failed to query output buffer capabilities of %s: %s (%d)\n",
++               path, strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    // Ensure requests can be used
++    if ((buffers.capabilities & V4L2_BUF_CAP_SUPPORTS_REQUESTS) !=
++        V4L2_BUF_CAP_SUPPORTS_REQUESTS) {
++        av_log(ctx, AV_LOG_VERBOSE, "Device %s is missing support for requests\n", path);
++        ret = AVERROR(EINVAL);
++        goto fail;
++    }
++
++    // Ensure the codec pixelformat can be used
++    ret = v4l2_request_try_format(avctx, ctx->output_type, pixelformat);
++    if (ret < 0) {
++        av_log(ctx, AV_LOG_VERBOSE, "Device %s is missing support for pixelformat %s\n",
++               path, av_fourcc2str(pixelformat));
++        goto fail;
++    }
++
++    // Ensure frame size is supported, when driver support ENUM_FRAMESIZES
++    ret = v4l2_request_try_framesize(avctx, pixelformat);
++    if (ret < 0 && ret != AVERROR(ENOTTY)) {
++        av_log(ctx, AV_LOG_VERBOSE,
++               "Device %s is missing support for frame size %dx%d of pixelformat %s\n",
++               path, avctx->coded_width, avctx->coded_height, av_fourcc2str(pixelformat));
++        goto fail;
++    }
++
++    // Set the codec pixelformat and output buffersize to be used
++    ret = v4l2_request_set_format(avctx, ctx->output_type, pixelformat, buffersize);
++    if (ret < 0) {
++        av_log(avctx, AV_LOG_ERROR,
++               "Failed to set output pixelformat %s of %s: %s (%d)\n",
++               av_fourcc2str(pixelformat), path, strerror(errno), errno);
++        goto fail;
++    }
++
++    /*
++     * Set any codec specific controls that can help assist the driver
++     * make a decision on what capture buffer format can be used.
++     */
++    ret = ff_v4l2_request_set_controls(avctx, control, count);
++    if (ret < 0)
++        goto fail;
++
++    // Select a capture buffer format known to the hwaccel
++    ret = v4l2_request_select_capture_format(avctx);
++    if (ret < 0) {
++        av_log(avctx, AV_LOG_VERBOSE,
++               "Failed to select a capture format for %s of %s: %s (%d)\n",
++               av_fourcc2str(pixelformat), path, strerror(errno), errno);
++        goto fail;
++    }
++
++    // Check codec specific controls, e.g. profile and level
++    if (ctx->post_probe) {
++        ret = ctx->post_probe(avctx);
++        if (ret < 0)
++            goto fail;
++    }
++
++    // All tests passed, video device should be capable
++    return 0;
++
++fail:
++    if (ctx->video_fd >= 0) {
++        close(ctx->video_fd);
++        ctx->video_fd = -1;
++    }
++    return ret;
++}
++
++static int v4l2_request_probe_video_devices(struct udev *udev,
++                                            AVCodecContext *avctx,
++                                            uint32_t pixelformat,
++                                            uint32_t buffersize,
++                                            struct v4l2_ext_control *control,
++                                            int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct media_device_info device_info;
++    struct media_v2_topology topology = {0};
++    struct media_v2_interface *interfaces;
++    struct udev_device *device;
++    const char *path;
++    dev_t devnum;
++    int ret;
++
++    if (ioctl(ctx->media_fd, MEDIA_IOC_DEVICE_INFO, &device_info) < 0)
++        return AVERROR(errno);
++
++    if (ioctl(ctx->media_fd, MEDIA_IOC_G_TOPOLOGY, &topology) < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Failed to get media topology: %s (%d)\n",
++               strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    if (!topology.num_interfaces)
++        return AVERROR(ENOENT);
++
++    interfaces = av_calloc(topology.num_interfaces, sizeof(struct media_v2_interface));
++    if (!interfaces)
++        return AVERROR(ENOMEM);
++
++    topology.ptr_interfaces = (__u64)(uintptr_t)interfaces;
++    if (ioctl(ctx->media_fd, MEDIA_IOC_G_TOPOLOGY, &topology) < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Failed to get media topology: %s (%d)\n",
++               strerror(errno), errno);
++        ret = AVERROR(errno);
++        goto fail;
++    }
++
++    ret = AVERROR(ENOENT);
++    for (int i = 0; i < topology.num_interfaces; i++) {
++        if (interfaces[i].intf_type != MEDIA_INTF_T_V4L_VIDEO)
++            continue;
++
++        devnum = makedev(interfaces[i].devnode.major, interfaces[i].devnode.minor);
++        device = udev_device_new_from_devnum(udev, 'c', devnum);
++        if (!device)
++            continue;
++
++        path = udev_device_get_devnode(device);
++        if (path)
++            ret = v4l2_request_probe_video_device(path, avctx, pixelformat,
++                                                  buffersize, control, count);
++        udev_device_unref(device);
++
++        // Stop when we have found a capable video device
++        if (!ret) {
++            av_log(avctx, AV_LOG_INFO,
++                   "Using V4L2 media driver %s (%u.%u.%u) for %s\n",
++                   device_info.driver,
++                   device_info.driver_version >> 16,
++                   (device_info.driver_version >> 8) & 0xff,
++                   device_info.driver_version & 0xff,
++                   av_fourcc2str(pixelformat));
++            break;
++        }
++    }
++
++fail:
++    av_free(interfaces);
++    return ret;
++}
++
++static int v4l2_request_probe_media_device(struct udev_device *device,
++                                           AVCodecContext *avctx,
++                                           uint32_t pixelformat,
++                                           uint32_t buffersize,
++                                           struct v4l2_ext_control *control,
++                                           int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    const char *path;
++    int ret;
++
++    path = udev_device_get_devnode(device);
++    if (!path)
++        return AVERROR(ENODEV);
++
++    // Open enumerated media device
++    ctx->media_fd = open(path, O_RDWR);
++    if (ctx->media_fd < 0) {
++        av_log(avctx, AV_LOG_ERROR, "Failed to open media device %s: %s (%d)\n",
++               path, strerror(errno), errno);
++        return AVERROR(errno);
++    }
++
++    // Probe video devices of current media device
++    ret = v4l2_request_probe_video_devices(udev_device_get_udev(device),
++                                           avctx, pixelformat,
++                                           buffersize, control, count);
++
++    // Cleanup when no capable video device was found
++    if (ret < 0) {
++        close(ctx->media_fd);
++        ctx->media_fd = -1;
++    }
++
++    return ret;
++}
++
++static int v4l2_request_probe_media_devices(struct udev *udev,
++                                            AVCodecContext *avctx,
++                                            uint32_t pixelformat,
++                                            uint32_t buffersize,
++                                            struct v4l2_ext_control *control,
++                                            int count)
++{
++    struct udev_enumerate *enumerate;
++    struct udev_list_entry *devices;
++    struct udev_list_entry *entry;
++    struct udev_device *device;
++    int ret;
++
++    enumerate = udev_enumerate_new(udev);
++    if (!enumerate)
++        return AVERROR(ENOMEM);
++
++    udev_enumerate_add_match_subsystem(enumerate, "media");
++    udev_enumerate_scan_devices(enumerate);
++    devices = udev_enumerate_get_list_entry(enumerate);
++
++    ret = AVERROR(ENOENT);
++    udev_list_entry_foreach(entry, devices) {
++        const char *path = udev_list_entry_get_name(entry);
++        if (!path)
++            continue;
++
++        device = udev_device_new_from_syspath(udev, path);
++        if (!device)
++            continue;
++
++        // Probe media device for a capable video device
++        ret = v4l2_request_probe_media_device(device, avctx, pixelformat,
++                                              buffersize, control, count);
++        udev_device_unref(device);
++
++        // Stop when we have found a capable media and video device
++        if (!ret)
++            break;
++    }
++
++    udev_enumerate_unref(enumerate);
++    return ret;
++}
++
++int ff_v4l2_request_probe(AVCodecContext *avctx,
++                          uint32_t pixelformat, uint32_t buffersize,
++                          struct v4l2_ext_control *control, int count)
++{
++    V4L2RequestContext *ctx = v4l2_request_context(avctx);
++    struct udev *udev;
++    int ret;
++
++    udev = udev_new();
++    if (!udev)
++        return AVERROR(ENOMEM);
++
++    if (ctx->media_fd >= 0) {
++        // Probe video devices of current media device
++        ret = v4l2_request_probe_video_devices(udev, avctx, pixelformat,
++                                               buffersize, control, count);
++    } else {
++        // Probe all media devices (auto-detect)
++        ret = v4l2_request_probe_media_devices(udev, avctx, pixelformat,
++                                               buffersize, control, count);
++    }
++
++    udev_unref(udev);
++    return ret;
++}

@@ -1,0 +1,79 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 187f3bddd0..5a2d413a0a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -78,14 +78,12 @@ set(BUILD_SHARED_LIBS_backup "$CACHE{BUILD_SHARED_LIBS}")
+ set(BUILD_SHARED_LIBS OFF CACHE INTERNAL "" FORCE)
+ 
+ # libressl
+-if (NOT NO_SYSTEM_DEPENDENCIES)
+-    list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+-    find_package(OpenSSL)
+-    find_package(ZLIB)
+-    find_package(PNG)
+-endif()
++list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
++find_package(OpenSSL)
++find_package(ZLIB)
++find_package(PNG)
+ 
+-if (NO_SYSTEM_DEPENDENCIES OR NOT OpenSSL_FOUND)
++if (NOT OpenSSL_FOUND)
+     set (LIBRESSL_APPS OFF CACHE BOOL "Build apps" FORCE)
+     set (LIBRESSL_TESTS OFF CACHE BOOL "Build tests" FORCE)
+     set (ENABLE_ASM OFF CACHE BOOL "Enable assembly" FORCE)
+@@ -112,7 +110,7 @@ else()
+ endif()
+ 
+ # zlib
+-if (NO_SYSTEM_DEPENDENCIES OR NOT ZLIB_FOUND)
++if (NOT ZLIB_FOUND)
+     set(ZLIB_ENABLE_TESTS OFF CACHE BOOL "Build test binaries" FORCE)
+     set(ZLIB_COMPAT ON CACHE BOOL "Compile with zlib compatible API" FORCE)
+     set(SKIP_INSTALL_ALL TRUE)
+@@ -136,7 +134,7 @@ if (NO_SYSTEM_DEPENDENCIES OR NOT ZLIB_FOUND)
+ endif()
+ 
+ # libpng
+-if (NO_SYSTEM_DEPENDENCIES OR NOT PNG_FOUND)
++if (NOT PNG_FOUND)
+     set(PNG_SHARED OFF CACHE BOOL "Build libpng as a shared library" FORCE)
+     set(PNG_TESTS OFF CACHE BOOL "Build the libpng tests" FORCE)
+     set(PNG_TOOLS OFF CACHE BOOL "" FORCE)
+diff --git a/core/CMakeLists.txt b/core/CMakeLists.txt
+index 2a86892876..888fe673e0 100644
+--- a/core/CMakeLists.txt
++++ b/core/CMakeLists.txt
+@@ -35,9 +35,11 @@ FetchContent_Declare(cmake_git_version_tracking
+   GIT_TAG 6c0cb87edd029ddfb403a8e24577c144a03605a6
+ )
+ 
+-FetchContent_MakeAvailable(rpmalloc cmake_git_version_tracking)
++FetchContent_Populate(rpmalloc)
++FetchContent_Populate(cmake_git_version_tracking)
+ 
+ add_library(core OBJECT ${COMMON_SRC} ${BGDRTM_SRC})
++target_include_directories(core PRIVATE "${cmake_git_version_tracking_SOURCE_DIR}/")
+ target_include_directories(core PRIVATE "${rpmalloc_SOURCE_DIR}/rpmalloc/")
+ 
+ if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+@@ -72,5 +65,5 @@ target_link_libraries(core
+     ${OPENSSL_CRYPTO_LIBRARY}
+     ZLIB::ZLIB
+     SDL::SDL
+-    cmake_git_version_tracking)
++    )
+ 
+diff --git a/core/common/bgd_version.c b/core/common/bgd_version.c
+index 24bdd6e614..26e6ba15d2 100644
+--- a/core/common/bgd_version.c
++++ b/core/common/bgd_version.c
+@@ -7,7 +7,7 @@ const char* bgd_getversion()
+ {
+     if (*buffer==0)
+     {
+-        snprintf(buffer, sizeof(buffer), "1.0.0-BennuGD_libretro-%s-%s", git_Branch(), git_CommitSHA1() );
++        snprintf(buffer, sizeof(buffer), "1.0.0-BennuGD_libretro-batocera");
+     }
+ 
+     return buffer;

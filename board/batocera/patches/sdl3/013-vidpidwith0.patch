@@ -1,0 +1,44 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index e208539..0c7cea3 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -2703,7 +2703,7 @@ SDL_GUID SDL_CreateJoystickGUID(Uint16 bus, Uint16 vendor, Uint16 product, Uint1
+     *guid16++ = SDL_Swap16LE(bus);
+     *guid16++ = 0;
+ 
+-    if (vendor) {
++    //if (vendor) {
+         *guid16++ = SDL_Swap16LE(vendor);
+         *guid16++ = 0;
+         *guid16++ = SDL_Swap16LE(product);
+@@ -2711,18 +2711,18 @@ SDL_GUID SDL_CreateJoystickGUID(Uint16 bus, Uint16 vendor, Uint16 product, Uint1
+         *guid16++ = SDL_Swap16LE(version);
+         guid.data[14] = driver_signature;
+         guid.data[15] = driver_data;
+-    } else {
+-        size_t available_space = sizeof(guid.data) - 4;
+-
+-        if (driver_signature) {
+-            available_space -= 2;
+-            guid.data[14] = driver_signature;
+-            guid.data[15] = driver_data;
+-        }
+-        if (product_name) {
+-            SDL_strlcpy((char *)guid16, product_name, available_space);
+-        }
+-    }
++    //} else {
++    //    size_t available_space = sizeof(guid.data) - 4;
++    //
++    //    if (driver_signature) {
++    //        available_space -= 2;
++    //        guid.data[14] = driver_signature;
++    //        guid.data[15] = driver_data;
++    //    }
++    //    if (product_name) {
++    //        SDL_strlcpy((char *)guid16, product_name, available_space);
++    //    }
++    //}
+     return guid;
+ }
+ 

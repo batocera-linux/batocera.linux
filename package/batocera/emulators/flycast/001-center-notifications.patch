@@ -23,16 +23,16 @@ index c60cf0a823..470d435727 100644
  		for (auto it = leaderboards.rbegin(); it != leaderboards.rend(); ++it)
  		{
 -			const std::string& text = it->second;
--			ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
+-			ImVec2 size = font->CalcTextSizeA(font->LegacySize, FLT_MAX, -1.f, text.c_str());
 -			ImVec2 psize = size + padding * 2;
 -			pos.y -= psize.y;
 -			dl->AddRectFilled(pos, pos + psize, bg_col, 0.f);
 -			ImVec2 tpos = pos + padding;
 -			const ImU32 col = alphaOverride(0xffffff, alpha);
--			dl->AddText(font, font->FontSize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
+-			dl->AddText(font, font->LegacySize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
 -			pos.y -= padding.y;
 +		    const std::string& text = it->second;
-+		    ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
++		    ImVec2 size = font->CalcTextSizeA(font->LegacySize, FLT_MAX, -1.f, text.c_str());
 +		    ImVec2 psize = size + padding * 2;
 +		    totalSize.x = std::max(totalSize.x, psize.x);
 +		    totalSize.y += psize.y + padding.y;
@@ -44,12 +44,12 @@ index c60cf0a823..470d435727 100644
 +		for (auto it = leaderboards.rbegin(); it != leaderboards.rend(); ++it)
 +		{
 +		    const std::string& text = it->second;
-+		    ImVec2 size = font->CalcTextSizeA(font->FontSize, FLT_MAX, -1.f, text.c_str());
++		    ImVec2 size = font->CalcTextSizeA(font->LegacySize, FLT_MAX, -1.f, text.c_str());
 +		    ImVec2 psize = size + padding * 2;
 +		    dl->AddRectFilled(pos, pos + psize, bg_col, 0.f);
 +		    ImVec2 tpos = pos + padding;
 +		    const ImU32 col = alphaOverride(0xffffff, alpha);
-+		    dl->AddText(font, font->FontSize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
++		    dl->AddText(font, font->LegacySize, tpos, col, &text.front(), &text.back() + 1, FLT_MAX);
 +		    pos.y += psize.y + padding.y;
  		}
  	}

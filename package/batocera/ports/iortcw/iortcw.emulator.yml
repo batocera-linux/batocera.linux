@@ -1,0 +1,75 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+features:
+  - padtokeyboard
+custom_features:
+  iortcw_api:
+    submenu: GRAPHICS
+    prompt: RENDERER
+    description: Choose your preferred renderer.
+    choices:
+      Standard OpenGL (Default): opengl1
+      Enhanced OpenGL: rend2
+  iortcw_vsync:
+    submenu: GRAPHICS
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  iortcw_fps:
+    submenu: GRAPHICS
+    prompt: REFRESH RATE
+    description: Set the desired maximum refresh rate when Vsync is off.
+    choices:
+      30 fps: "30"
+      50 fps: "50"
+      60 fps (Default): "60"
+      75 fps: "75"
+      120 fps: "120"
+  iortcw_filtering:
+    submenu: GRAPHICS
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      2x (Default): "2"
+      4x: "4"
+      8x: "8"
+      16x: "16"
+  iortcw_aa:
+    submenu: GRAPHICS
+    prompt: ANTI-ALIASING
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      None (Default): "0"
+      2x: "2"
+      4x: "4"
+      8x: "8"
+      16x: "16"
+  iortcw_skip_video:
+    prompt: SKIP INTRO VIDEO
+    description: Skip the initial intro video.
+    choices:
+      Play (Default): 0
+      Skip: 1
+  iortcw_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      English (Default): 0
+      French: 1
+      German: 2
+      Italian: 3
+      Spanish: 4
+systems:
+  - rtcw

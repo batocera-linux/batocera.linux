@@ -3,11 +3,12 @@
 # libretro-fceumm
 #
 ################################################################################
-# Version: Commits on Jan 25, 2024
-LIBRETRO_FCEUMM_VERSION = 63643ba02c8eaea15dbe167ef907f3da7a3e6fd7
+# Version: Commits on Sep 12, 2025
+LIBRETRO_FCEUMM_VERSION = 5cd4a43e16a7f3cd35628d481c347a0a98cfdfa2
 LIBRETRO_FCEUMM_SITE = $(call github,libretro,libretro-fceumm,$(LIBRETRO_FCEUMM_VERSION))
 LIBRETRO_FCEUMM_LICENSE = GPLv2
 LIBRETRO_FCEUMM_DEPENDENCIES += retroarch
+LIBRETRO_FCEUMM_EMULATOR_INFO = fceumm.libretro.core.yml
 
 LIBRETRO_FCEUMM_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_FCEUMM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -1,9 +1,12 @@
 # Three events at all time:
 # Keyboard, Mouse and Gamepad. Merge only Keyboard and Mouse.
-SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P[1-4] *", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-openfire-add"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P1 *", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-openfire-add 1"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P2 *", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-openfire-add 2"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P3 *", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-openfire-add 3"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P4 *", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="0", RUN+="/usr/bin/virtual-openfire-add 4"
 
 # Gamepad event must be disabled, this mode is unsupported for now
 SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE FIRECon P[1-4]", ENV{ID_INPUT_MOUSE}="0", ENV{ID_INPUT_JOYSTICK}="0"
 
 # Virtual Light Gun
-SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE light gun", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="OpenFIRE light gun P[1-4]", MODE="0666", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", ENV{ID_INPUT_MOUSE}="1", ENV{ID_INPUT_GUN}="1"

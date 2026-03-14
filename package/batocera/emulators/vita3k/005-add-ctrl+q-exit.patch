@@ -7,7 +7,7 @@ index c4ef196ba4..629c1ade67 100644
  
          case SDL_KEYDOWN: {
 +            // Check for Ctrl+Q to exit
-+            if ((event.key.keysym.mod & KMOD_CTRL) && (event.key.keysym.sym == SDLK_q)) {
++            if ((event.key.keysym.mod & KMOD_CTRL) && (event.key.keysym.sym == SDLK_F12)) {
 +                LOG_INFO("CTRL+Q detected, exiting gracefully...");
 +                if (!emuenv.io.app_path.empty())
 +                    gui::update_time_app_used(gui, emuenv, emuenv.io.app_path);
@@ -17,7 +17,7 @@ index c4ef196ba4..629c1ade67 100644
 +                if (emuenv.display.vblank_thread) {
 +                    emuenv.display.vblank_thread->join();
 +                }
-+                return false;
++                exit(0);
 +            }
 +            
              const auto get_sce_ctrl_btn_from_scancode = [&emuenv](const SDL_Scancode scancode) {

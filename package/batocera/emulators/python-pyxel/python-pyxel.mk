@@ -11,6 +11,7 @@ PYTHON_PYXEL_LICENSE = MIT
 PYTHON_PYXEL_SETUP_TYPE = maturin
 PYTHON_PYXEL_CARGO_MANIFEST_PATH = crates/pyxel-extension/Cargo.toml
 PYTHON_PYXEL_DEPENDENCIES = host-rust-bin sdl2
+PYTHON_PYXEL_EMULATOR_INFO = pyxel.emulator.yml
 
 PYTHON_PYXEL_SUBDIR = python
 
@@ -49,6 +50,6 @@ PYTHON_PYXEL_PRE_INSTALL_TARGET_HOOKS += PYTHON_PYXEL_REMOVE_PREVIOUS
 PYTHON_PYXEL_POST_INSTALL_TARGET_HOOKS += PYTHON_PYXEL_SAMPLE_AND_KEYS
 
 $(eval $(python-package))
-
 # python-package sets this to run cargo after download, but we want to let maturin do that
 PYTHON_PYXEL_DOWNLOAD_POST_PROCESS =
+$(eval $(emulator-info-package))

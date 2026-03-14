@@ -1,0 +1,92 @@
+diff --git a/drivers/net/wireless/esp8089/esp_sip.c b/drivers/net/wireless/esp8089/esp_sip.c
+index 5a4da2c3b6..5d42bda86b 100644
+--- a/drivers/net/wireless/esp8089/esp_sip.c
++++ b/drivers/net/wireless/esp8089/esp_sip.c
+@@ -81,7 +81,7 @@ static struct sip_trace str;
+ #define STRACE_TX_ONE_SHOT_INC() (str.tx_one_shot_overflow++)
+ #define STRACE_SHOW(sip)
+ #else
+-#define esp_sip_dbg(...)
++#define esp_sip_dbg(...) do {} while (0)
+ #define STRACE_TX_DATA_INC()
+ #define STRACE_TX_CMD_INC()
+ #define STRACE_RX_DATA_INC()
+@@ -225,7 +225,7 @@ static void sip_recalc_credit_timeout(unsigned long data)
+ #endif
+ {
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+-	struct esp_sip *sip = from_timer(sip, t, credit_timer);
++	struct esp_sip *sip = container_of(t, struct esp_sip, credit_timer);
+ #else
+ 	struct esp_sip *sip = (struct esp_sip *) data;
+ #endif
+@@ -276,7 +276,11 @@ static void sip_recalc_credit_release(struct esp_sip *sip)
+ 
+ 	if (atomic_read(&sip->credit_status) == RECALC_CREDIT_ENABLE) {
+ 		atomic_set(&sip->credit_status, RECALC_CREDIT_DISABLE);
+-		del_timer_sync(&sip->credit_timer);
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
++                timer_delete_sync(&sip->credit_timer);
++#else
++                del_timer_sync(&sip->credit_timer);
++#endif
+ 	} else
+ 		esp_dbg(ESP_SHOW, "maybe bogus credit");
+ }
+diff --git a/drivers/net/wireless/esp8089/esp_mac80211.c b/drivers/net/wireless/esp8089/esp_mac80211.c
+index 82044b2786..e5aed7aa5e 100644
+--- a/drivers/net/wireless/esp8089/esp_mac80211.c
++++ b/drivers/net/wireless/esp8089/esp_mac80211.c
+@@ -313,7 +313,11 @@ static void esp_op_remove_interface(struct ieee80211_hw *hw,
+ 
+ 	if (evif->ap_up) {
+ 		evif->beacon_interval = 0;
+-		del_timer_sync(&evif->beacon_timer);
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
++        	timer_delete_sync(&evif->beacon_timer);
++#else
++        	del_timer_sync(&evif->beacon_timer);
++#endif
+ 		evif->ap_up = false;
+ 	}
+ 	epub->vif = NULL;
+@@ -396,7 +400,7 @@ static void drv_handle_beacon(unsigned long data)
+ #endif
+ {
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0))
+-	struct esp_vif *evif = from_timer(evif, t, beacon_timer);
++	struct esp_vif *evif = container_of(t, struct esp_vif, beacon_timer);
+ 	struct ieee80211_vif *vif = evif->epub->vif;
+ #else
+ 	struct ieee80211_vif *vif = (struct ieee80211_vif *) data;
+@@ -473,7 +477,7 @@ static void init_beacon_timer(struct ieee80211_vif *vif)
+ 	add_timer(&evif->beacon_timer);
+ }
+ 
+-static int esp_op_config(struct ieee80211_hw *hw, u32 changed)
++static int esp_op_config(struct ieee80211_hw *hw, int link_id, u32 changed)
+ {
+ 	//struct ieee80211_conf *conf = &hw->conf;
+ 
+@@ -560,7 +560,11 @@ static void esp_op_bss_info_changed(struct ieee80211_hw *hw,
+ 						  __func__,
+ 						  info->beacon_int);
+ 				evif->beacon_interval = 0;
+-				del_timer_sync(&evif->beacon_timer);
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(6, 2, 0))
++                                timer_delete_sync(&evif->beacon_timer);
++#else
++                                del_timer_sync(&evif->beacon_timer);
++#endif
+ 				sip_send_bss_info_update(epub, evif,
+ 							 (u8 *) info->
+ 							 bssid, 2);
+@@ -768,7 +772,7 @@ static void hw_scan_timeout_report(struct work_struct *work)
+ #endif
+ }
+ 
+-static int esp_op_set_rts_threshold(struct ieee80211_hw *hw, u32 value)
++static int esp_op_set_rts_threshold(struct ieee80211_hw *hw, int link_id, u32 value)
+ {
+ 	ESP_IEEE80211_DBG(ESP_DBG_TRACE, "%s enter \n", __func__);
+ 

@@ -104,7 +104,7 @@ class HypseusSingeGenerator(Generator):
             "maddog": ["maddog", "maddog-hd", "maddog_hd"],
             "maddog2": ["maddog2", "maddog2-hd", "maddog2_hd"],
             "jack": ["jack", "samurai_jack"],
-            "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd"],
+            "johnnyrock": ["johnnyrock", "johnnyrock-hd", "johnnyrocknoir", "wsjr_hd", "wsjr-hd"],
             "pussinboots": ["pussinboots", "puss_in_boots"],
             "spacepirates": ["spacepirates", "spacepirates-hd", "space_pirates_hd"],
         }
@@ -144,6 +144,7 @@ class HypseusSingeGenerator(Generator):
 
         # extension used .daphne and the file to start the game is in the folder .daphne with the extension .txt
         romName = rom.stem
+        zipFile = rom / f"{romName}.zip"
         frameFile = rom / f"{romName}.txt"
         commandsFile = rom / f"{romName}.commands"
         singeFile = rom / f"{romName}.singe"
@@ -179,10 +180,17 @@ class HypseusSingeGenerator(Generator):
             _logger.debug("Resolution: %s", video_resolution)
 
         if system.name == "singe":
-            commandArray = ['/usr/bin/hypseus',
-                            "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
-                            "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
-                            "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+            if zipFile.exists():
+                commandArray = ['/usr/bin/hypseus',
+                                "singe", "vldp", "-retropath", "-framefile", frameFile, "-zlua", zipFile,
+                                "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
+                                "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+            else:
+                commandArray = ['/usr/bin/hypseus',
+                                "singe", "vldp", "-retropath", "-framefile", frameFile, "-script", singeFile,
+                                "-fullscreen", "-gamepad", "-datadir", _DATA_DIR, "-singedir", _SINGE_ROM_DIR,
+                                "-romdir", _SINGE_ROM_DIR, "-homedir", _DATA_DIR]
+
         else:
             commandArray = ['/usr/bin/hypseus',
                             romName, "vldp", "-framefile", frameFile, "-fullscreen",
@@ -265,19 +273,19 @@ class HypseusSingeGenerator(Generator):
                         borderColor = "w"
 
                 if bordersSize == "thin":
-                    commandArray.extend(["-sinden", "2", borderColor])
-                elif bordersSize == "medium":
                     commandArray.extend(["-sinden", "4", borderColor])
+                elif bordersSize == "medium":
+                    commandArray.extend(["-sinden", "7", borderColor])
                 else:
-                    commandArray.extend(["-sinden", "6", borderColor])
+                    commandArray.extend(["-sinden", "9", borderColor])
+
+            if guns: # enable manymouse for guns
+                commandArray.extend(["-manymouse"]) # sinden implies manymouse
+                if xratio is not None:
+                    commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
             else:
-                if guns: # enable manymouse for guns
-                    commandArray.extend(["-manymouse"]) # sinden implies manymouse
-                    if xratio is not None:
-                        commandArray.extend(["-xratio", str(xratio)]) # accuracy correction based on ratio
-                else:
-                    if system.config.get_bool("singe_abs"):
-                        commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
+                if system.config.get_bool("singe_abs"):
+                    commandArray.extend(["-manymouse"]) # this is causing issues on some "non-gun" games
 
         # bezels
         if not system.config.get_bool('hypseus_bezels', True):
@@ -306,9 +314,9 @@ class HypseusSingeGenerator(Generator):
         if (scanlines := system.config.get_int('hypseus_scanlines')) > 0:
             commandArray.extend(["-scanlines", "-scanline_shunt", str(scanlines)])
 
-        # Hide crosshair in supported games (e.g. ActionMax, ALG)
+        # Crosshair in supported games (e.g. ActionMax, ALG)
         # needCrosshair
-        if guns and not system.config.get_bool('singe_crosshair'):
+        if system.config.use_guns and guns and system.config.get_bool('singe_crosshair', True):
             commandArray.append("-nocrosshair")
 
         # Enable SDL_TEXTUREACCESS_STREAMING, can aid SBC's with SDL2 => 2.0.16

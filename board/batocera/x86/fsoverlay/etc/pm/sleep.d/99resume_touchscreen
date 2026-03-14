@@ -1,10 +1,33 @@
 #!/bin/bash
+
+LOG="/userdata/system/logs/display.log"
+BOOTCONF="/boot/batocera-boot.conf"
+
+# Function to wait for the EmulationStation service to be ready after resume.
+_wait_for_emulationstation() {
+    local timeout=10
+    local waited=0
+    echo "Resume: Waiting for EmulationStation service to be ready..." >> "$LOG"
+    while [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:1234/isIdle)" == "000" ]; do
+        sleep 0.5
+        waited=$(echo "$waited + 0.5" | bc)
+        if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+            echo "Resume: Timed out waiting for EmulationStation web server to respond for touchscreen." >> "$LOG"
+            return 1
+        fi
+    done
+    echo "Resume: EmulationStation service is ready. Applying display settings." >> "$LOG"
+    return 0
+}
+
 case "$1" in
     resume|thaw)
-        # Run the touchscreen rotation script when resuming
-        if test -z "${DISPLAY}"; then
-            export DISPLAY=:0.0
+        # Wait for the full GUI session to be restored before proceeding.
+        if ! _wait_for_emulationstation; then
+            exit 1
         fi
+        
+        # Now that the session is ready, it's safe to apply settings.
         CURRENT_ROTATION=$(batocera-resolution getRotation)
         if [ "${CURRENT_ROTATION}" != "0" ]; then
             bootresolution="$(batocera-settings-get-master -f "$BOOTCONF" es.resolution)"

@@ -16,7 +16,8 @@ class TsugaruGenerator(Generator):
 
         # Start emulator fullscreen
         commandArray = ["/usr/bin/Tsugaru_CUI", BIOS / "fmtowns"]
-        commandArray += ["-AUTOSCALE", "-HIGHRES", "-NOWAITBOOT"]
+        commandArray += ["-FULLSCREEN", "-NOHIGHRESPCM", "-NOWAITBOOT"]
+        commandArray += ["-AUTOSCALE", "-MAINTAINASPECT", "-HIGHRES"]
         commandArray += ["-GAMEPORT0", "KEY"]
         commandArray += ["-KEYBOARD", "DIRECT"]
         commandArray += ["-PAUSEKEY", "F10"]

@@ -60,7 +60,7 @@ if [ ! -f "$steam_file" ]; then
 fi
 
 # Check if the Steam applications directory exists
-steam_apps_dir="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications"
+steam_apps_dir="/userdata/saves/flatpak/data/Desktop/"
 
 if [ ! -d "$steam_apps_dir" ]; then
     echo "Steam applications directory not found: $steam_apps_dir" >> $log

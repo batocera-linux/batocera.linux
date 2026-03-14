@@ -8,6 +8,7 @@ LIBRETRO_BEETLE_LYNX_VERSION = 7fead71b49e0f08be5c4d4224fea73c6174763bf
 LIBRETRO_BEETLE_LYNX_SITE = $(call github,libretro,beetle-lynx-libretro,$(LIBRETRO_BEETLE_LYNX_VERSION))
 LIBRETRO_BEETLE_LYNX_LICENSE = GPLv2
 LIBRETRO_BEETLE_LYNX_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_LYNX_EMULATOR_INFO = mednafen_lynx.libretro.core.yml
 
 LIBRETRO_BEETLE_LYNX_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -40,3 +41,4 @@ define LIBRETRO_BEETLE_LYNX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

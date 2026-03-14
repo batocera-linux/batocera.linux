@@ -1,43 +1,112 @@
 #!/bin/bash
 
-# required for x
-export DISPLAY=$(getLocalXDisplay)
-# required for wayland
-[ -f /etc/profile.d/04-sway.sh ] && . /etc/profile.d/04-sway.sh
+LOG="/userdata/system/logs/display.log"
+DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
+STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
+DOCKED_FLAG="/var/run/batocera-docked"
 
-if test "${1}" == "--init"
-then
-    batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
-    exit 0
-fi
+_wait_for_emulationstation() {
+    local timeout=3; local waited=0
+    while [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:1234/isIdle)" == "000" ]; do
+        sleep 0.5; waited=$(echo "$waited + 0.5" | bc)
+        if [ "$(echo "$waited > $timeout" | bc)" -eq 1 ]; then
+            echo "Checker: Timed out waiting for EmulationStation web server. Aborting trigger." >> "$LOG"
+            return 1
+        fi
+    done
+    echo "Checker: EmulationStation web server is responsive." >> "$LOG"
+    return 0
+}
 
-DELTANEW=$(batocera-resolution listOutputs | sort | diff /var/run/batocera-switch-screen-checker-status - | grep -E '^> ' | sed -e s/"^> "// | head -1)
-NDELTANEW=$(echo "${DELTANEW}" | wc -l)
+_detect_docked_output() {
+    # Build known outputs from master settings first
+    KNOWN_OUTPUTS=""
+    for key in global.videooutput global.videooutput2 global.videooutput3; do
+        val=$(batocera-settings-get-master "$key")
+        [ -n "$val" ] && KNOWN_OUTPUTS="$KNOWN_OUTPUTS $val"
+    done
 
-# reinit status
-batocera-resolution listOutputs | sort > /var/run/batocera-switch-screen-checker-status
-
-# 1 new screen, switch on it
-if test "${NDELTANEW}" == 1 -a "${DELTANEW}" != ""
-then
-    # es not running or running game, exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
-    test $? != 0                 && exit 0
-    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle
-    
-    if echo "${DELTANEW}" > "/var/run/switch_screen_request"
-    then
-	# restart es
-	curl http://localhost:1234/quit
+    # If no configured outputs, fall back to the status file as the baseline
+    if [ -z "${KNOWN_OUTPUTS}" ]; then
+        if [ -f "${STATUS_FILE}" ]; then
+            echo "Checker: No configured outputs. Using status file as baseline." >> "$LOG"
+            KNOWN_OUTPUTS=$(cat "${STATUS_FILE}" | tr '\n' ' ')
+        else
+            echo "Checker: No configured outputs and no status file. Skipping docked detection." >> "$LOG"
+            return 0
+        fi
     fi
-else
-    # es not (yet) running exit
-    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:1234/isIdle)
-    test $? != 0                 && exit 0
-    test "${HTTP_STATUS}" != 200 && exit 0 # 200 when idle # don't exit when es is not idle, it could be scrapping. and some screen shuts down after some time.
 
-    # in case the game is running, the restart will happen once the game is exited manually
-    # this is not perfect, but at least, it leaves a last chance to the user to replug the screen to save
-    touch /var/run/switch_screen_request # request to the default one
-    curl http://localhost:1234/quit
-fi
+    EXTERNAL_OUTPUT=""
+    while IFS= read -r output; do
+        IS_KNOWN=0
+        for known in $KNOWN_OUTPUTS; do
+            [ "$output" = "$known" ] && IS_KNOWN=1 && break
+        done
+        if [ "$IS_KNOWN" -eq 0 ]; then
+            EXTERNAL_OUTPUT="$output"
+            break
+        fi
+    done < <(batocera-resolution listOutputs)
+
+    if [ -n "$EXTERNAL_OUTPUT" ]; then
+        echo "Checker: External output detected: ${EXTERNAL_OUTPUT}. Writing docked flag." >> "$LOG"
+        echo "$EXTERNAL_OUTPUT" > "${DOCKED_FLAG}"
+    else
+        echo "Checker: No external output detected. Removing docked flag." >> "$LOG"
+        rm -f "${DOCKED_FLAG}"
+    fi
+}
+
+case "$1" in
+    "--init")
+        export XDG_RUNTIME_DIR=/var/run
+        OUTPUT_LIST=$(batocera-resolution listOutputs)
+
+        # Detect docked state FIRST, using existing status file as baseline if needed
+        _detect_docked_output
+
+        # If docked, only write the docked output to the status file
+        if [ -f "${DOCKED_FLAG}" ]; then
+            DOCKED_OUT=$(cat "${DOCKED_FLAG}")
+            echo "${DOCKED_OUT}" > "${STATUS_FILE}"
+            echo "Checker-Init: Docked mode - status file set to docked output only: ${DOCKED_OUT}" >> "$LOG"
+        else
+            LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
+            echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
+            echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
+        fi
+        exit 0
+        ;;
+    *)
+        # This script's only job is to trigger an ES restart.
+        # The main standalone script will handle all display logic.
+
+        # Check for the existence of /tmp/no-hotplug
+        if [ -f "/tmp/no-hotplug" ]; then
+            # this is not a hotplug event, exit
+            rm /tmp/no-hotplug
+            exit 0
+        fi
+
+        # Debounce lock to avoid multiple udev triggers
+        if [ -f "${DEBOUNCE_LOCK}" ]; then
+            exit 0
+        fi
+        touch "${DEBOUNCE_LOCK}"
+        (sleep 5; rm -f "${DEBOUNCE_LOCK}") &
+
+        echo "Checker: Hotplug event detected. Waiting for EmulationStation..." >> "$LOG"
+
+        if ! _wait_for_emulationstation; then
+            rm -f "${DEBOUNCE_LOCK}"
+            exit 1
+        fi
+
+        # Detect and write/remove docked flag before triggering ES restart
+        _detect_docked_output
+
+        echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
+        curl http://localhost:1234/quit
+        ;;
+esac

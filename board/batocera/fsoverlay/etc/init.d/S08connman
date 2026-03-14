@@ -55,7 +55,7 @@ batocera_wifi_configure() {
     [ "$X" = ".adhoc" ] && { settings_name="adhoc_AP"; settings_priority=0; }
 
     settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.ssid)"
-    settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key)"
+    settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key | tr -d '\\')"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
     optionalPriority=""
     optionalPassphrase=""
@@ -104,16 +104,67 @@ batocera_wifi_configure() {
 wifi_configure_all() {
     for i in 1 2 3 .hidden .adhoc; do
 	    batocera_wifi_configure $i
-		ret=$?
     done
 }
 
 wifi_enable() {
-    settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country)"
-    [ -n "$settingsCountry" ] && /usr/sbin/iw reg set "$settingsCountry"
+    # Wait for the wifi interface.
+    wait_count=0
+    while ! grep -q "wlan" /proc/net/dev; do
+        sleep 1
+        wait_count=$((wait_count+1))
+        # If no wifi card is found after 15s, give up to save resources
+        if [ "$wait_count" -ge 15 ]; then
+            echo "*** Wifi Hardware not detected after 15s. Aborting. ***" > /dev/kmsg
+            return
+        fi
+    done
+    echo "*** Wifi Hardware detected. ***" > /dev/kmsg
+    # Delay to allow for firmware to settle
+    sleep 3
+    
+    # If wifi interface is available then apply the country code if set by the user
+    settingsCountry="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.country | tr -d '[:space:]')"
+    if [ -n "$settingsCountry" ]; then
+        echo "*** Wifi Country set to: $settingsCountry ***" > /dev/kmsg
+        /usr/sbin/iw reg set "$settingsCountry" 2>/dev/null
+        # Delay to allow for dodgy firmware issues (ATH12K)
+        sleep 3
+    fi
 
     connmanctl enable wifi 2>/dev/null
-    connmanctl scan   wifi 2>/dev/null
+
+    # Connection Check Loop (30 Seconds Max)
+    for i in $(seq 1 30); do
+        state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+        
+        # Check if connected
+        if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
+            echo "*** Wifi connected successfully. ***" > /dev/kmsg
+            break
+        fi
+
+        # Connman usually auto-scans on enable. We only force a scan if
+        # we still aren't connected after 12 seconds.
+        if [ "$i" -eq 12 ]; then
+            echo "*** Wifi not yet connected. Scanning for alternative services... ***" > /dev/kmsg
+            connmanctl scan wifi 2>/dev/null
+            sleep 1
+            # Try connecting to each service matching our SSID
+            ssid_hex=$(echo -n "$settings_ssid" | xxd -p)
+            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "$ssid_hex" | while read service; do
+                state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+                if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
+                    break
+                fi
+                echo "*** Wifi trying service: $service ***" > /dev/kmsg
+                connmanctl connect "$service" 2>/dev/null
+                sleep 1
+            done
+        fi
+
+        sleep 1
+    done
 }
 
 wifi_disable() {

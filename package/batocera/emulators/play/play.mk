@@ -3,14 +3,15 @@
 # play!
 #
 ################################################################################
-# Version: Commits on Feb 4, 2025
-PLAY_VERSION = fbe1d81dfad0ca61a196001569fbba16d0d1ab56
+
+PLAY_VERSION = 0.73
 PLAY_SITE = https://github.com/jpd002/Play-.git
 PLAY_SITE_METHOD = git
 PLAY_GIT_SUBMODULES = YES
 PLAY_LICENSE = BSD
+PLAY_EMULATOR_INFO = play.emulator.yml
 
-PLAY_DEPENDENCIES = openal qt6base sqlite ecm
+PLAY_DEPENDENCIES = openal qt6base sqlite ecm libevdev eudev
 
 PLAY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PLAY_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
@@ -19,7 +20,7 @@ PLAY_CONF_OPTS += -DBUILD_TESTS=OFF
 PLAY_CONF_OPTS += -DENABLE_AMAZON_S3=OFF
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-    PLAY_DEPENDENCIES += xserver_xorg-server libglew libglu
+    PLAY_DEPENDENCIES += libglew libglu
     PLAY_CONF_OPTS += -DOpenGL_GL_PREFERENCE=GLVND
 else
     PLAY_DEPENDENCIES += qt6wayland
@@ -42,3 +43,4 @@ endef
 PLAY_POST_INSTALL_TARGET_HOOKS += PLAY_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

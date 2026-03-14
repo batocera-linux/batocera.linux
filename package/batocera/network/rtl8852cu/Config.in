@@ -1,0 +1,11 @@
+comment "rtl8852cu needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RTL8852CU
+	bool "rtl8852cu"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux Driver for USB WiFi Adapters that are based on
+	  the RTL8832CU and RTL8852CU Chipsets.
+
+	  https://github.com/morrownr/rtl8852cu-20240510

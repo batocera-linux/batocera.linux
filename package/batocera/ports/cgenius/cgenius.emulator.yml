@@ -1,0 +1,55 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  cgenius_aspect:
+    prompt: ASPECT RATIO
+    description: Choose your preferred aspect ratio.
+    choices:
+      4x3 (Default): 4:3
+      5x4: 5:4
+      16x9: 16:9
+      16x10: 16:10
+      disabled: 0:0
+  cgenius_filter:
+    prompt: VIDEO FILTER
+    description: Choose your preferred video filter.
+    choices:
+      None (Default): 1
+      Scale2x: 2
+      Scale3x: 3
+      Scale4x: 4
+  cgenius_quality:
+    prompt: VIDEO QUALITY
+    description: Choose your preferred video quality.
+    choices:
+      nearest: nearest
+      linear: linear
+      best: best
+  cgenius_render:
+    prompt: RENDER RESOLUTION
+    description: Choose your preferred render resolution.
+    choices:
+      320x200: "200"
+      320x240: "240"
+      640x360: "360"
+      640x480: "480"
+  cgenius_cursor:
+    prompt: CURSOR
+    description: Enabled or disable the mouse cursor. Useful for CG's menus.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+systems:
+  - cgenius

@@ -1,0 +1,56 @@
+From 3b769f75009265d9b46301e24e55ad3e24f84f75 Mon Sep 17 00:00:00 2001
+From: Sparticuz <kyle@kmcnally.net>
+Date: Fri, 8 Mar 2024 21:17:17 -0500
+Subject: [PATCH] arm64: dts: rockchip: fix wifi sdio errors
+
+---
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi  | 3 +++
+ arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rk2023.dtsi | 3 +++
+ arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts     | 3 +++
+ 3 files changed, 9 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+index 233eade30f21..c9d24cada41a 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+@@ -633,6 +633,9 @@ &sdmmc2 {
+ 	sd-uhs-sdr50;
+ 	vmmc-supply = <&vcc_wifi>;
+ 	vqmmc-supply = <&vcca1v8_pmu>;
++	no-mmc;
++	no-sd;
++	sd-uhs-sdr50;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rk2023.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rk2023.dtsi
+index bd332714a023..18b9e60b6f3c 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rk2023.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rk2023.dtsi
+@@ -776,6 +776,9 @@ &sdmmc2 {
+ 	pinctrl-names = "default";
+ 	vmmc-supply = <&vcc_wifi>;
+ 	vqmmc-supply = <&vcca1v8_pmu>;
++	no-mmc;
++	no-sd;
++	sd-uhs-sdr50;
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
+index 5a648db41f35..0f26b8789c40 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
+@@ -839,6 +839,9 @@ &sdmmc1 {
+ 	pinctrl-0 = <&sdmmc1_bus4>, <&sdmmc1_cmd>, <&sdmmc1_clk>;
+ 	pinctrl-names = "default";
+ 	vmmc-supply = <&vcc_wifi>;
++	no-mmc;
++	no-sd;
++	sd-uhs-sdr50;
+ 	status = "okay";
+ };
+ 
+-- 
+2.34.1
+

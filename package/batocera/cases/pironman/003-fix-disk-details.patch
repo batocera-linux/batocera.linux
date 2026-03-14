@@ -1,0 +1,26 @@
+diff --git a/pironman/system_status.py b/pironman/system_status.py
+index a993c359ca..4aaf4b03c5 100644
+--- a/pironman/system_status.py
++++ b/pironman/system_status.py
+@@ -32,7 +32,20 @@ def get_cpu_usage():
+     return psutil.cpu_percent()
+ 
+ def get_disk_info():
+-    total, used, free = shutil.disk_usage("/")
++    # Find the partition mounted as /userdata or, if not available, the second partition
++    partitions = psutil.disk_partitions()
++    mount_point = "/"
++
++    # Check if /userdata is mounted
++    userdata_partition = next((p.mountpoint for p in partitions if p.mountpoint == "/userdata"), None)
++    if userdata_partition:
++        mount_point = userdata_partition
++    elif len(partitions) > 1:
++        # If /userdata is not found, use the second partition
++        mount_point = partitions[1].mountpoint
++
++    # Get disk usage for the selected mount point
++    total, used, free = shutil.disk_usage(mount_point)
+     disk = {
+         'total': round(total / (2**30), 2),
+         'used': round(used / (2**30), 2),

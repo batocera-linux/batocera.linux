@@ -1,0 +1,165 @@
+diff --git a/src/lindbergh/blitStretching.h b/src/lindbergh/blitStretching.h
+index e1bd65c..6ea32c6 100644
+--- a/src/lindbergh/blitStretching.h
++++ b/src/lindbergh/blitStretching.h
+@@ -10,6 +10,13 @@ typedef struct
+     float gameScale;
+ } Dest;
+ 
++extern Dest dest;
++extern int drawableW;
++extern int drawableH;
++extern int blitWidth;
++extern int blitHeight;
++extern int fboInitialized;
++
+ void initBlitting();
+ void blitSetWidthandHeightSize();
+ int blitInitializeFbo();
+diff --git a/src/lindbergh/crossHair.c b/src/lindbergh/crossHair.c
+index 558dad1..094796a 100644
+--- a/src/lindbergh/crossHair.c
++++ b/src/lindbergh/crossHair.c
+@@ -14,6 +14,7 @@
+ 
+ #include "config.h"
+ #include "crossHair.h"
++#include "blitStretching.h"
+ #include "resolution.h"
+ 
+ #define MAX_PLAYERS 2
+@@ -23,8 +24,6 @@ extern uint32_t gId;
+ extern int gGrp;
+ extern int gWidth;
+ extern int gHeight;
+-extern int drawableW;
+-extern int drawableH;
+ 
+ extern int phX, phY, phW, phH;
+ extern int phX2, phY2, phW2, phH2;
+@@ -226,8 +225,16 @@ void updateCrosshairPosition(int player, float normX, float normY)
+ {
+     if (player < 0 || player >= MAX_PLAYERS)
+         return;
+-    crossHair[player].x = normX * drawableW;
+-    crossHair[player].y = normY * drawableH;
++    if (fboInitialized && gId == GHOST_SQUAD_EVOLUTION)
++    {
++        crossHair[player].x = normX * blitWidth;
++        crossHair[player].y = normY * blitHeight;
++    }
++    else
++    {
++        crossHair[player].x = normX * drawableW;
++        crossHair[player].y = normY * drawableH;
++    }
+     // crossHair[player].lastMovementTime = time(NULL);
+     // crossHair[player].visible = true;
+     if (testMode || gId == PRIMEVAL_HUNT)
+@@ -375,7 +382,9 @@ void renderGsEvoCrosshairs(void)
+     glMatrixMode(GL_PROJECTION);
+     glPushMatrix();
+     glLoadIdentity();
+-    glOrtho(0, drawableW, drawableH, 0, -1, 1);
++    int orthoW = (fboInitialized) ? blitWidth : drawableW;
++    int orthoH = (fboInitialized) ? blitHeight : drawableH;
++    glOrtho(0, orthoW, orthoH, 0, -1, 1);
+     glMatrixMode(GL_MODELVIEW);
+     glPushMatrix();
+     glLoadIdentity();
+diff --git a/src/lindbergh/evdevInput.c b/src/lindbergh/evdevInput.c
+index 554cfe6..4e93c85 100644
+--- a/src/lindbergh/evdevInput.c
++++ b/src/lindbergh/evdevInput.c
+@@ -16,6 +16,7 @@
+ 
+ #include "evdevInput.h"
+ #include "config.h"
++#include "blitStretching.h"
+ #include "crossHair.h"
+ #include "jvs.h"
+ #include "log.h"
+@@ -1287,6 +1288,28 @@ void *controllerThread(void *_args)
+                             if (scaled > analogue_deadzones[channel].end_min)
+                                 scaled = 1.0;
+ 
++                            /* Remap gun coords when blitStretching letterboxes the game */
++                            if (fboInitialized && dest.W > 0 && dest.H > 0 &&
++                                drawableW > 0 && drawableH > 0)
++                            {
++                                if (channel == ANALOGUE_1 || channel == ANALOGUE_3)
++                                {
++                                    float pixelX = scaled * drawableW;
++                                    float gameX = (pixelX - dest.X) / (float)dest.W;
++                                    if (gameX < 0.0f) gameX = 0.0f;
++                                    if (gameX > 1.0f) gameX = 1.0f;
++                                    scaled = gameX;
++                                }
++                                else if (channel == ANALOGUE_2 || channel == ANALOGUE_4)
++                                {
++                                    float pixelY = scaled * drawableH;
++                                    float gameY = (pixelY - dest.Y) / (float)dest.H;
++                                    if (gameY < 0.0f) gameY = 0.0f;
++                                    if (gameY > 1.0f) gameY = 1.0f;
++                                    scaled = gameY;
++                                }
++                            }
++
+                             // uint32_t gId = getConfig()->crc32;
+ 
+                             if (channel == ANALOGUE_1 || channel == ANALOGUE_2)
+@@ -1333,10 +1356,53 @@ void *controllerThread(void *_args)
+                                 double x_pos = (channel == ANALOGUE_3) ? scaled : args->controller->lastAnalogueValue[ANALOGUE_3];
+                                 double y_pos = (channel == ANALOGUE_4) ? scaled : args->controller->lastAnalogueValue[ANALOGUE_4];
+ 
++                                if (x_pos <= 0.01 || x_pos >= 0.99 || y_pos <= 0.01 || y_pos >= 0.99)
++                                {
++                                    switch (gId)
++                                    {
++                                        case GHOST_SQUAD_EVOLUTION:
++                                            setSwitch(2, BUTTON_2, 1);
++                                            break;
++                                    }
++                                }
++                                else
++                                {
++                                    setSwitch(2, BUTTON_2, 0);
++                                }
++
+                                 updateCrosshairPosition(1, x_pos, y_pos);
+                             }
+ 
+-                            setAnalogue(channel, scaled * (pow(2, jvsBits) - 1));
++                            /* Compensate gsevo asymmetric internal gun mapping (piecewise, per-player) */
++                            float jvsScaled = scaled;
++                            if (gId == GHOST_SQUAD_EVOLUTION)
++                            {
++                                if (channel == ANALOGUE_1)
++                                {
++                                    if (scaled < 0.5f)
++                                        jvsScaled = (scaled - 0.5f) * 1.04f + 0.5f;
++                                    else
++                                        jvsScaled = (scaled - 0.5f) * 0.69f + 0.5f;
++                                }
++                                else if (channel == ANALOGUE_2)
++                                {
++                                    jvsScaled = (scaled - 0.5f) * 0.97f + 0.5f - 0.04f;
++                                }
++                                else if (channel == ANALOGUE_3)
++                                {
++                                    if (scaled < 0.5f)
++                                        jvsScaled = (scaled - 0.5f) * 0.99f + 0.5f;
++                                    else
++                                        jvsScaled = (scaled - 0.5f) * 0.8f + 0.5f;
++                                }
++                                else if (channel == ANALOGUE_4)
++                                {
++                                    jvsScaled = (scaled - 0.5f) * 0.94f + 0.5f - 0.05f;
++                                }
++                                if (jvsScaled < 0.0f) jvsScaled = 0.0f;
++                                if (jvsScaled > 1.0f) jvsScaled = 1.0f;
++                            }
++                            setAnalogue(channel, jvsScaled * (pow(2, jvsBits) - 1));
+                         }
+                         else
+                         {

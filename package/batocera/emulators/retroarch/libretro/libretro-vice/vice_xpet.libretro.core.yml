@@ -1,0 +1,77 @@
+features:
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  pet_model:
+    prompt: MODEL TYPE
+    choices:
+      "8032": 8032
+      "2001": 2001
+      "3008": 3008
+      "3016": 3016
+      "3032": 3032
+      3032B: 3032B
+      "4016": 4016
+      "4032": 4032
+      4032B: 4032B
+      "8096": 8096
+      "8296": 8296
+      SUPERPET: SUPERPET
+  vice_pet_external_palette:
+    prompt: COLOR FILTER
+    description: Can be used to simulate colors of particular displays.
+    choices:
+      default: default
+      green: green
+      amber: amber
+      white: white
+  vice_aspect_ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      PAL 576x312px: pal
+      NTSC 492x262px: ntsc
+  vice_zoom_mode:
+    group: ADVANCED OPTIONS
+    prompt: ZOOM/CROP (HIDE BORDERS)
+    description: Hides borders on many games. Some games used the borders.
+    choices:
+      Auto-disable zoom: auto_disable
+      Auto zoom: automatic
+      'Off': disabled
+      small: small
+      medium: medium
+      maximum: maximum
+  vice_retropad_options:
+    prompt: Button Options
+    description: RetroPad Face Button Options.
+    choices:
+      B = Fire: disabled
+      B = Fire, A = Up: jump
+      Y = Fire: rotate
+      Y = Fire, B = Up: rotate_jump
+  vice_joyport:
+    prompt: CONTROLLER PORT
+    description: Most games use port 2, some use port 1.
+    choices:
+      Port 1: 1
+      Port 2: 2
+  vice_joyport_type:
+    prompt: CONTROLLER TYPE
+    choices:
+      Joystick: 1
+      Paddles: 2
+      Mouse (1351): 3
+      Trackball (Atari CX-22): 6
+      Koalapad: 10
+  vice_keyboard_pass_through:
+    group: ADVANCED OPTIONS
+    prompt: KEYBOARD PASSTHROUGH
+    description: Keyboard shortcuts unavailable if passing through the keyboard.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - pet

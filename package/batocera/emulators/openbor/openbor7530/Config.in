@@ -6,6 +6,7 @@ config BR2_PACKAGE_OPENBOR7530
     select BR2_PACKAGE_LIBPNG
     select BR2_PACKAGE_LIBOGG
     select BR2_PACKAGE_LIBVORBIS
+    select BR2_PACKAGE_OPENBOR_COMMON
     help
       OpenBOR 4 is the ultimate 2D side scrolling engine for beat em' ups, shooters, and more!
 

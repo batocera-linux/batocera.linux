@@ -11,6 +11,7 @@ CATACOMBGL_LICENSE_FILES = COPYING.txt
 CATACOMBGL_SUPPORTS_IN_SOURCE_BUILD = NO
 
 CATACOMBGL_DEPENDENCIES = sdl2
+CATACOMBGL_EMULATOR_INFO = catacombgl.emulator.yml
 
 define CATACOMBGL_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
@@ -21,3 +22,4 @@ endef
 CATACOMBGL_POST_INSTALL_TARGET_HOOKS = CATACOMBGL_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

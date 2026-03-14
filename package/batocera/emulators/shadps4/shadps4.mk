@@ -2,11 +2,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -17,17 +17,29 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = v.0.7.0
-SHADPS4_SITE = https://github.com/shadps4-emu/shadPS4
-SHADPS4_SITE_METHOD=git
-SHADPS4_GIT_SUBMODULES=YES
+SHADPS4_VERSION = SHAD_PS4_PLUS_0_12_0_A
+SHADPS4_SITE = https://github.com/AzaharPlus/shadPS4Plus
+SHADPS4_SITE_METHOD = git
+SHADPS4_EMULATOR_INFO = shadps4.emulator.yml
+#SHADPS4_GIT_SUBMODULES = YES
+
+SHADPS4_SOURCE = shadps4-$(SHADPS4_VERSION).tar.gz
+
 SHADPS4_LICENSE = GPLv2
 SHADPS4_LICENSE_FILE = LICENSE
-SHADPS4_DEPENDENCIES += alsa-lib pulseaudio openal openssl libzlib libedit udev
-SHADPS4_DEPENDENCIES += libevdev jack2 qt6base qt6svg qt6tools qt6multimedia
-SHADPS4_DEPENDENCIES += vulkan-headers vulkan-loader vulkan-validationlayers
 
 SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
+
+SHADPS4_DEPENDENCIES += host-shadps4 alsa-lib pulseaudio openal openssl libzlib
+SHADPS4_DEPENDENCIES += libedit udev libevdev jack2 qt6base qt6svg qt6tools
+SHADPS4_DEPENDENCIES += qt6multimedia vulkan-headers vulkan-loader
+SHADPS4_DEPENDENCIES += vulkan-validationlayers sdl3
+
+SHADPS4_CMAKE_BACKEND = ninja
+# Use clang for performance
+SHADPS4_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
+SHADPS4_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+SHADPS4_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
 
 SHADPS4_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SHADPS4_CONF_OPTS += -DCMAKE_INSTALL_PREFIX=/usr
@@ -35,6 +47,27 @@ SHADPS4_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 SHADPS4_CONF_OPTS += -DENABLE_QT_GUI=ON
 SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
+SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
+
+# Fix MoltenVK submodule bug
+define SHADPS4_FIX_AND_FETCH_SUBMODULES
+    flock $(SHADPS4_DL_DIR)/.shadps4.lock -c ' \
+    if [ -f $(SHADPS4_DL_DIR)/.shadps4_submodules_fixed ]; then \
+        echo "MoltenVK submodule fix already applied. Skipping..."; \
+    else \
+        echo "Acquired lock. Fixing MoltenVK submodule issue for ShadPS4+..."; \
+        cd $(SHADPS4_DL_DIR)/git && (git rm --cached -rf externals/MoltenVK || true); \
+        cd $(SHADPS4_DL_DIR)/git && (git config --file .gitmodules --remove-section submodule.externals/MoltenVK || true); \
+        rm -rf $(SHADPS4_DL_DIR)/git/externals/MoltenVK; \
+        cd $(SHADPS4_DL_DIR)/git && git submodule update --init --recursive; \
+        echo "Creating source tarball..."; \
+        tar --exclude=.git -czf $(SHADPS4_DL_DIR)/$(SHADPS4_SOURCE) -C $(SHADPS4_DL_DIR)/git .; \
+        touch $(SHADPS4_DL_DIR)/.shadps4_submodules_fixed; \
+    fi'
+endef
+
+HOST_SHADPS4_POST_DOWNLOAD_HOOKS = SHADPS4_FIX_AND_FETCH_SUBMODULES
+SHADPS4_POST_DOWNLOAD_HOOKS = SHADPS4_FIX_AND_FETCH_SUBMODULES
 
 define SHADPS4_INSTALL_TARGET_CMDS
 	 mkdir -p $(TARGET_DIR)/usr/bin/shadps4
@@ -42,4 +75,16 @@ define SHADPS4_INSTALL_TARGET_CMDS
 	 cp -pr $(@D)/buildroot-build/translations $(TARGET_DIR)/usr/bin/shadps4/
 endef
 
+define HOST_SHADPS4_BUILD_CMDS
+	$(CXX) $(@D)/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp -o \
+	    $(@D)/shadps4_Dear_ImGui_FontEmbed
+endef
+
+define HOST_SHADPS4_INSTALL_CMDS
+	$(INSTALL) -D -m 0755 $(@D)/shadps4_Dear_ImGui_FontEmbed \
+	    $(HOST_DIR)/usr/bin/shadps4_Dear_ImGui_FontEmbed
+endef
+
 $(eval $(cmake-package))
+$(eval $(host-generic-package))
+$(eval $(emulator-info-package))

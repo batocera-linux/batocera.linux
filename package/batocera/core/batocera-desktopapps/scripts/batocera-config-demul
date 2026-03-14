@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if test -z "${DISPLAY}"
+then
+	export DISPLAY=:0.0
+fi
+
+WINE_BOTTLE="/userdata/system/wine-bottles/demul"
+EXE_PATH="${WINE_BOTTLE}/demul/demul.exe"
+PATH=$PATH:/usr/wine/wine-proton/bin
+
+cd "$WINE_BOTTLE/demul/"
+
+export LD_LIBRARY_PATH=/lib32:/usr/wine/wine-proton/lib/wine
+export LIBGL_DRIVERS_PATH=/lib32/dri
+# hum pw 0.2 and 0.3 are hardcoded, not nice
+export SPA_PLUGIN_DIR="/usr/lib/spa-0.2:/lib32/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/usr/lib/pipewire-0.3:/lib32/pipewire-0.3"
+# set wine
+export WINEARCH=win32
+export WINEPREFIX="${WINE_BOTTLE}"
+wine "${EXE_PATH}"
+
+exit 0

@@ -1,0 +1,68 @@
+#!/bin/sh
+
+# Flash SPI on first boot
+# Written for OragePi 5 boards
+# Adjust as necessary
+
+IMAGE="/boot/boot/rkspi_loader.img"
+MTD="/dev/mtdblock0"
+BOOTCONF="/boot/batocera-boot.conf"
+LOGFILE="/userdata/logs/spi.log"
+
+log_error() {
+    echo "[flashspi] $1" >> "$LOGFILE"
+}
+
+do_flash() {
+    # Check if we have the SPI image file
+    if [ ! -f "$IMAGE" ]; then
+        exit 0
+    fi
+    # Don't flash if already marked as done
+    if grep -q '^flashed\.spi=true' "$BOOTCONF" 2>/dev/null; then
+        exit 0
+    fi
+    # Check SPI is mounted
+    if [ ! -e "$MTD" ]; then
+        log_error "SPI device $MTD not found. Is that the correct loacation?"
+        exit 0
+    fi
+    # Write the image
+    if ! dd if="$IMAGE" of="$MTD" bs=512 conv=notrunc status=none; then
+        log_error "SPI flash failed!"
+        exit 1
+    fi
+    # Set the boot flag
+    if mount -o remount,rw /boot; then
+        if grep -q '^flashed\.spi=' "$BOOTCONF"; then
+            if ! sed -i 's/^flashed\.spi=.*/flashed.spi=true/' "$BOOTCONF"; then
+                log_error "Failed to update flashed.spi line in $BOOTCONF"
+                mount -o remount,ro /boot
+                exit 1
+            fi
+        else
+            # Write the flag if an old conf file
+            if ! echo "flashed.spi=true" >> "$BOOTCONF"; then
+                log_error "Failed to append flashed.spi=true to $BOOTCONF"
+                mount -o remount,ro /boot
+                exit 1
+            fi
+        fi
+        mount -o remount,ro /boot
+    else
+        log_error "Failed to remount /boot as read-write!"
+        exit 1
+    fi
+
+    exit 0
+}
+
+case "$1" in
+    start)
+        do_flash
+        ;;
+    *)
+        # Ignore all other actions
+        exit 0
+        ;;
+esac

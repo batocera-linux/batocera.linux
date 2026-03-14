@@ -1,0 +1,53 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+custom_features:
+  kronos_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      original: original
+      480p: 480p
+      720p: 720p
+      1080p: 1080p
+      4k: 4k
+      8k: 8k
+  kronos_meshmode:
+    prompt: IMPROVED MESH
+    description: Replace meshed transparency by real transparency.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  kronos_bandingmode:
+    prompt: IMPROVED BANDING
+    description: Apply gouraud shading instead of flat shading.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  kronos-autowidescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  kronos_multitap:
+    prompt: MULTITAP
+    description: Allows up to 7 or 12 controllers in supported games.
+    choices:
+      'Off': disabled
+      Port1: port1
+      Port2: port2
+      Port1+2: port12
+  kronos_language_id:
+    prompt: BIOS Language
+    description: Choose system BIOS language.
+    choices:
+      English: English
+      German: German
+      French: French
+      Spanish: Spanish
+      Italian: Italian
+      Japanese: Japanese
+systems:
+  - saturn

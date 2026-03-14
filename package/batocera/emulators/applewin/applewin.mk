@@ -10,6 +10,7 @@ APPLEWIN_SITE_METHOD=git
 APPLEWIN_GIT_SUBMODULES=YES
 APPLEWIN_LICENSE = GPLv2
 APPLEWIN_DEPENDENCIES = sdl2 sdl2_image minizip-zlib slirp libpcap boost
+APPLEWIN_EMULATOR_INFO = applewin.emulator.yml applewin.libretro.core.yml
 
 APPLEWIN_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -34,3 +35,4 @@ define APPLEWIN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

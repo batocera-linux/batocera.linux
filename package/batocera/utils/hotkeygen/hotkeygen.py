@@ -276,8 +276,39 @@ def do_send(key: str, delay: None | int) -> None:
             if delay:
                 time.sleep(delay)
             else:
-                time.sleep(0.1)
+                time.sleep(0.3) # some emulators (ra, mame) needs some time otherwise they don't see the touch was pressed
             send_keys(sender, code, False)
+
+def send_reset_signal(target_device: evdev.UInput) -> None:
+    target_device.write(ecodes.EV_REL, ecodes.REL_X, -10000)
+    target_device.write(ecodes.EV_REL, ecodes.REL_Y, -10000)
+    target_device.syn()
+
+    time.sleep(0.10)
+
+    # Only send mouse click on Wayland (unsafe on X11)
+    if os.environ.get("WAYLAND_DISPLAY"):
+        target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 1)
+        target_device.syn()
+        target_device.write(ecodes.EV_KEY, ecodes.BTN_LEFT, 0)
+        target_device.syn()
+
+        time.sleep(0.10)
+
+def do_reset_mouse() -> None:
+    # Create temporary device
+    sender = evdev.UInput(
+        name="batocera-mouse-reset", 
+        events={
+            ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y],
+            ecodes.EV_KEY: [ecodes.BTN_LEFT]
+        }
+    )
+    time.sleep(0.2)
+
+    send_reset_signal(sender)
+
+    sender.close()
 
 def read_pid() -> str:
     with GPID_FILE.open() as fd:
@@ -302,6 +333,10 @@ def do_new_context(context_name: str | None = None, context_json: str | None = N
     pid = int(read_pid())
     os.kill(pid, signal.SIGHUP)
 
+def do_reload_devices_config():
+    # inform the process
+    pid = int(read_pid())
+    os.kill(pid, signal.SIGHUP)
 
 def do_list() -> None:
     context = get_context()
@@ -342,6 +377,7 @@ class Daemon:
     monitor: pyudev.Monitor = field(init=False)
     poll: select.poll = field(init=False)
     target: evdev.UInput = field(init=False)
+    require_reconfig: bool = field(init=False, default=False)
 
     def __post_init__(self) -> None:
         self.udev_context = pyudev.Context()
@@ -350,9 +386,15 @@ class Daemon:
 
         self.poll = select.poll()
 
-        # target virtual keyboard
+        keys_list = [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_"]
+        keys_list.append(ecodes.BTN_LEFT)
+
+        # target virtual keyboard & mouse
         self.target = evdev.UInput(
-            name=DEVICE_NAME, events={ ecodes.EV_KEY: [x for x in range(ecodes.KEY_MAX) if x in ECODES_NAMES and ECODES_NAMES[x][:4] == "KEY_" ] }
+            name=DEVICE_NAME, events={
+                ecodes.EV_KEY: keys_list,
+                ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y]
+            }
         )
 
     def __handle_actions(self, action: str, device: pyudev.Device) -> None:
@@ -371,7 +413,6 @@ class Daemon:
                             if gdebug:
                                 print(f"Adding device {device.device_node}: {input_device.name}")
                                 print_mapping(mapping, associations)
-
                             self.input_devices[device.device_node] = input_device
                             self.input_devices_by_fd[input_device.fileno()] = input_device
                             self.mappings_by_fd[input_device.fileno()] = mapping
@@ -391,6 +432,10 @@ class Daemon:
     def __handle_event(self, event: evdev.InputEvent, action: str, begin: bool) -> None:
         if self.context is not None and action in self.context["keys"]:
             keys = self.context["keys"][action]
+
+            if action == "exit" and ((isinstance(keys, str) and not begin) or (not isinstance(keys, str) and begin)):
+                send_reset_signal(self.target)
+
             if gdebug:
                 print(f"code:{event.code}, value:{event.value}, action:{action}")
             if begin:
@@ -410,6 +455,19 @@ class Daemon:
 
     def __handle_sighup(self, signum: int, frame: FrameType | None) -> None:
         self.context = get_context()
+        self.require_reconfig = True # done outside of the event cause, to make it safely
+
+    def __reload_devices_configs(self) -> None:
+        # reload config files for devices
+        for fd in self.input_devices_by_fd:
+            input_device = self.input_devices_by_fd[fd]
+            mapping = get_mapping(input_device)
+            self.mappings_by_fd[fd] = mapping
+
+        # try to load a device that had not configuration file before
+        for device in self.udev_context.list_devices(subsystem='input'):
+            if device.device_node not in self.input_devices:
+                self.__handle_actions('add', device)
 
     def run(self) -> None:
         if self.running:
@@ -435,7 +493,11 @@ class Daemon:
 
         # read all devices
         while True:
-            for fd, _ in self.poll.poll():
+            if self.require_reconfig:
+                self.require_reconfig = False
+                self.__reload_devices_configs()
+
+            for fd, _ in self.poll.poll(1000):
                 try:
                     if fd == self.monitor.fileno():
                         (action, device) = self.monitor.receive_device()
@@ -451,9 +513,12 @@ class Daemon:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], True)
                             elif event.value == 0:
                                 self.__handle_event(event, self.mappings_by_fd[fd][event.code], False)
-                except (OSError, KeyError) as e:
+                #except (OSError, KeyError, FileNotFoundError) as e:
+                except (Exception) as e:
                     if fd == self.monitor.fileno():
-                        raise
+                        print("Exception happened on the monitor fd")
+                        print(e)
+                        #raise
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
@@ -469,9 +534,8 @@ class Daemon:
                                 input_device.close()
                             except:
                                 pass
-                except:
-                    self.target.close()
-                    raise
+        # never happening, but should be done to quit
+        self.target.close()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="hotkeygen")
@@ -482,18 +546,24 @@ if __name__ == "__main__":
     parser.add_argument("--default-context", action="store_true")
     parser.add_argument("--new-context", nargs=2, metavar=("new-context-name", "new-context-json"))
     parser.add_argument("--disable-common", action="store_true")
+    parser.add_argument("--reload", action="store_true")
     parser.add_argument("--permanent", action="store_true")
+    parser.add_argument("--reset-mouse", action="store_true")
     args = parser.parse_args()
     if args.debug:
         gdebug = True
 
     if args.list:
         do_list()
+    elif args.reset_mouse:
+        do_reset_mouse()
     elif args.send is not None:
         do_send(args.send, args.send_delay)
     elif args.new_context is not None:
         new_context_name, new_context_json = args.new_context
         do_new_context(new_context_name, new_context_json, not args.disable_common)
+    elif args.reload:
+        do_reload_devices_config()
     elif args.default_context:
         do_new_context()
     else:

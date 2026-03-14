@@ -3,14 +3,15 @@
 # hurrican
 #
 ################################################################################
-# Version: Commits on Nov 24, 2024
-HURRICAN_VERSION = 72d808cc4d6db5d38e5d87ab95ab0b1bcfd89ede
+# Version: Commits on Jul 26, 2025
+HURRICAN_VERSION = 9933cbe887aaa2c75e723ba6322942fec2b838e7
 HURRICAN_SITE = https://github.com/HurricanGame/Hurrican
 
 HURRICAN_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image libepoxy
 HURRICAN_SITE_METHOD=git
 HURRICAN_GIT_SUBMODULES=YES
 HURRICAN_LICENSE = GPL-2.0
+HURRICAN_EMULATOR_INFO = hurrican.emulator.yml
 
 HURRICAN_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -27,3 +28,4 @@ define HURRICAN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

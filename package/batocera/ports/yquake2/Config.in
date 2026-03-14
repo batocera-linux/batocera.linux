@@ -1,0 +1,7 @@
+config BR2_PACKAGE_YQUAKE2
+    bool "yquake2"
+    depends on BR2_PACKAGE_BATOCERA_HAS_SDL
+    help
+      Quake II port, focused on authenticity to the original.
+
+      https://www.yamagi.org/quake2/

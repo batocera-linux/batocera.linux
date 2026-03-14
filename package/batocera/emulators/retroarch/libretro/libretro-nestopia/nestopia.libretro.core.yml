@@ -1,0 +1,78 @@
+features:
+  - netplay
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  nestopia_show_crosshair:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': disabled
+      'On': enabled
+  nestopia_nospritelimit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eight sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  nestopia_cropoverscan:
+    group: ADVANCED OPTIONS
+    prompt: CROP OVERSCAN
+    description: Zooms in to hide black borders. Borders are different per game.
+    choices:
+      None: none
+      Horizontal: h
+      Vertical: v
+      Both: both
+  nestopia_palette:
+    group: ADVANCED OPTIONS
+    prompt: COLOR FILTER
+    description: Can be used to simulate colors of particular displays.
+    choices:
+      cxa2025as (US): cxa2025as
+      CXA2025AS (JP): cxa2025as_jp
+      royaltea: royaltea
+      consumer: consumer
+      canonical: canonical
+      alternative: alternative
+      rgb: rgb
+      pal: pal
+      Digital Prime FBX: digital-prime-fbx
+      Magnum FBX: magnum-fbx
+      Smooth V2 FBX: smoothv2-fbx
+      composite-direct-fbx: composite-direct-fbx
+      pvm-style-d93-fbx: pvm-style-d93-fbx
+      ntsc-hardware-fbx: ntsc-hardware-fbx
+      nes-classic-fbx-fs: nes-classic-fbx-fs
+      Restored Wii VC: restored-wii-vc
+      Wii Virtual Console: wii-vc
+      Raw: raw
+      custom: custom
+  nestopia_blargg_ntsc_filter:
+    group: ADVANCED OPTIONS
+    prompt: BLARGG NTSC FILTER
+    description: Core-powered video filter.
+    choices:
+      'Off': disabled
+      Composite (color bleeding + artifacts): composite
+      SVideo (color bleeding only): svideo
+      RGB (crisp image): rgb
+  nestopia_overclock:
+    group: ADVANCED OPTIONS
+    prompt: OVERCLOCK (UNSTABLE)
+    description: Enhancement. Reduces system slowdown. Causes issues in some games.
+    choices:
+      'Off': 1x
+      2x: 2x
+  nestopia_select_adapter:
+    prompt: 4 PLAYER ADAPTER
+    description: Manually activate the adapter for supported games.
+    choices:
+      Autodetect: automatic
+      NTSC (NES): ntsc
+      Famicom (FDS): famicom
+systems:
+  - fds
+  - nes

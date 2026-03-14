@@ -1,0 +1,23 @@
+diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
+index 50de60a..9c0e2ff 100644
+--- a/Source/Core/DolphinQt/MainWindow.cpp
++++ b/Source/Core/DolphinQt/MainWindow.cpp
+@@ -1230,8 +1230,16 @@ void MainWindow::ShowRenderWidget()
+     // Otherwise, just show it.
+     m_rendering_to_main = false;
+ 
+-    m_render_widget->showNormal();
+-    m_render_widget->restoreGeometry(m_render_widget_geometry);
++    // batocera - fix batch mode rendering
++    if (Settings::Instance().IsBatchModeEnabled())
++    {
++      m_render_widget->showFullScreen();
++    }
++    else
++    {
++      m_render_widget->showNormal();
++      m_render_widget->restoreGeometry(m_render_widget_geometry);
++    }
+   }
+ }
+ 

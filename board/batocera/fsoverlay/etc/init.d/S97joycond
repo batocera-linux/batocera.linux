@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 # joycond is a service that pairs Nintendo Switch joy-cons together into a virtual controller
 
 #########
@@ -8,7 +9,7 @@
 # Joycons #
 # ======= #
 
-# With the joy-cons, to use a single contoller alone:
+# With the joy-cons, to use a single controller alone:
 # Once paired via bluetooth you will have the four indicator lights flashing.
 # Hold ZL and L at the same time (ZR and R for the right joy-con).
 # Alternatively, hold both S triggers at once (when held horizontally).
@@ -21,13 +22,35 @@
 # Note: When using a virtual combined controller, Batocera will see three controllers (Left, Right & Virtual)
 #       You may need to manually assign the controller number in EmulationStation for emulator compatibility.
 
-if test "$1" = "start"; then
-    # joycond: force daemon to start if not already started
-    if [ "$(pgrep joycond)" = "" ]; then
-        # ensure module ledtrig-timer is loaded
-        modprobe ledtrig-timer
-        nohup /usr/bin/joycond &
-    fi
-else
-    exit 0
-fi
+case "$1" in
+    start)
+        echo "Starting joycond..."
+        if ! pgrep -x "joycond" > /dev/null; then
+            modprobe ledtrig-timer
+            nohup /usr/bin/joycond &>/dev/null &
+            echo "joycond started."
+        else
+            echo "joycond is already running."
+        fi
+        ;;
+    stop)
+        echo "Stopping joycond..."
+        if pgrep -x "joycond" > /dev/null; then
+            pkill -x joycond
+            echo "joycond stopped."
+        else
+            echo "joycond is not running."
+        fi
+        ;;
+    restart)
+        "$0" stop
+        sleep 1
+        "$0" start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

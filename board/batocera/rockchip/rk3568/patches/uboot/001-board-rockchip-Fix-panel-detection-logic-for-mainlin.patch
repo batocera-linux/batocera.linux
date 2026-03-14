@@ -1,0 +1,53 @@
+From 21af290030161a3f8c8d6576dba1c5c3da3aca02 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Fri, 6 Sep 2024 15:09:44 -0500
+Subject: [PATCH 3/3] board: rockchip: Fix panel detection logic for mainline
+ A-TF
+
+The current panel detection logic crashes when the device boots with
+mainline A-TF, causing a reboot loop. It turns out mainline A-TF
+doesn't enable the VO power domain like the BSP A-TF did.
+
+Set the VO domain on and use a memory barrier to ensure it is powered
+up before we attempt to do the panel detection.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c | 13 +++++++++++++
+ configs/anbernic-rgxx3-rk3566_defconfig    |  3 ---
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+index c0353484f6..be45a03867 100644
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -22,6 +22,10 @@
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+ 
++#define PMU_BASE_ADDR		0xfdd90000
++#define PMU_PWR_GATE_SFTCON	0xa0
++#define PMU_PD_VO_DWN_ENA	BIT(7)
++
+ #define GPIO0_BASE		0xfdd60000
+ #define GPIO4_BASE		0xfe770000
+ #define GPIO_SWPORT_DR_L	0x0000
+@@ -295,6 +299,15 @@ int rgxx3_detect_display(void)
+ 	int i;
+ 	u8 panel_id[2];
+ 
++	/* Disable VO power domain power-down */
++	writel((PMU_PD_VO_DWN_ENA << 16),
++	       PMU_BASE_ADDR + PMU_PWR_GATE_SFTCON);
++	/*
++	 * System will crash if the power domain isn't enabled before
++	 * we start trying to talk to the DSI panel.
++	 */
++	wmb();
++
+ 	/*
+ 	 * Take panel out of reset status.
+ 	 * Set GPIO4_A0 to output.
+-- 
+2.34.1
+

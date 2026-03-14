@@ -1,0 +1,36 @@
+diff --git a/src/frontend/qt_sdl/Screen.cpp b/src/frontend/qt_sdl/Screen.cpp
+index 6d58fff981..71b19572d9
+--- a/src/frontend/qt_sdl/Screen.cpp
++++ b/src/frontend/qt_sdl/Screen.cpp
+@@ -1299,6 +1299,7 @@ std::optional<WindowInfo> ScreenPanelGL::getWindowInfo()
+         wi.display_connection = x11->display();
+         wi.window_handle = reinterpret_cast<void*>(winId());
+     }
++    #if defined(ENABLE_WAYLAND) && ENABLE_WAYLAND
+     else if (platform_name == QStringLiteral("wayland"))
+     {
+         wi.type = WindowInfo::Type::Wayland;
+@@ -1306,6 +1307,7 @@ std::optional<WindowInfo> ScreenPanelGL::getWindowInfo()
+         wi.display_connection = wl->display();
+         wi.window_handle = reinterpret_cast<void*>(winId());
+     }
++    #endif
+     #else
+     QPlatformNativeInterface* pni = QGuiApplication::platformNativeInterface();
+     if (platform_name == QStringLiteral("xcb"))
+@@ -1314,6 +1316,7 @@ std::optional<WindowInfo> ScreenPanelGL::getWindowInfo()
+         wi.display_connection = pni->nativeResourceForWindow("display", windowHandle());
+         wi.window_handle = reinterpret_cast<void*>(winId());
+     }
++    #if defined(ENABLE_WAYLAND) && ENABLE_WAYLAND
+     else if (platform_name == QStringLiteral("wayland"))
+     {
+         wi.type = WindowInfo::Type::Wayland;
+@@ -1325,6 +1328,7 @@ std::optional<WindowInfo> ScreenPanelGL::getWindowInfo()
+         wi.window_handle = pni->nativeResourceForWindow("surface", handle);
+     }
+     #endif
++    #endif
+     else
+     {
+         Platform::Log(Platform::LogLevel::Error, "Unknown PNI platform %s\n", platform_name.toStdString().c_str());

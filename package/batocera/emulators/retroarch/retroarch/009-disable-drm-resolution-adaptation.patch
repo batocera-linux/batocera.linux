@@ -15,7 +15,7 @@ index 5b59e4c..6ecaa72 100644
     }
     if ((width == 0 && height == 0) || !fullscreen)
     {
--      RARCH_WARN("[KMS]: Falling back to mode 0 (default)\n");
+-      RARCH_WARN("[KMS] Falling back to mode 0 (default).\n");
 -      g_drm_mode     = &g_drm_connector->modes[0];
 +      // on batocera, we won't guess a mode ; we want the one set by drmMode
 +      g_drm_mode = &g_drm_connector->modes[0];

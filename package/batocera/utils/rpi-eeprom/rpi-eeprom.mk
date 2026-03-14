@@ -3,8 +3,8 @@
 # rpi-eeprom
 #
 ################################################################################
-# Version: Commits on Mar 27, 2025
-RPI_EEPROM_VERSION = 7f66ffe483698e788858fe51000217849fa6331f
+# Version: Commits on Dec 16, 2025
+RPI_EEPROM_VERSION = 9e9a95477262ccc23c847475ba16a1446b86a52d
 RPI_EEPROM_SITE = $(call github,raspberrypi,rpi-eeprom,$(RPI_EEPROM_VERSION))
 RPI_EEPROM_LICENSE = BSD-3-Clause
 RPI_EEPROM_LICENSE_FILES = LICENCE

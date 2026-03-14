@@ -8,6 +8,7 @@ LIBRETRO_SAME_CDI_VERSION = 54cf493c2dee4c46666059c452f8aaaa0bd7c8e0
 LIBRETRO_SAME_CDI_SITE = $(call github,libretro,same_cdi,$(LIBRETRO_SAME_CDI_VERSION))
 LIBRETRO_SAME_CDI_LICENSE = GPL
 LIBRETRO_SAME_CDI_DEPENDENCIES += retroarch
+LIBRETRO_SAME_CDI_EMULATOR_INFO = same_cdi.libretro.core.yml
 
 ifeq ($(BR2_x86_64),y)
 LIBRETRO_SAME_CDI_EXTRA_ARGS += LIBRETRO_CPU=x86_64 PLATFORM=x64
@@ -36,3 +37,4 @@ define LIBRETRO_SAME_CDI_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

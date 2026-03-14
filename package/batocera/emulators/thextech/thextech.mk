@@ -4,11 +4,12 @@
 #
 ################################################################################
 
-THEXTECH_VERSION = v1.3.7-hotfix2
+THEXTECH_VERSION = v1.3.7.2-1
 THEXTECH_SITE = https://github.com/Wohlstand/TheXTech
 THEXTECH_SITE_METHOD = git
 THEXTECH_GIT_SUBMODULES = YES
 THEXTECH_LICENSE = GPLv3
+THEXTECH_EMULATOR_INFO = thextech.emulator.yml
 THEXTECH_DEPENDENCIES = sdl2 sdl2_mixer sdl2_ttf
 
 THEXTECH_CONF_ENV = GIT_DISCOVERY_ACROSS_FILESYSTEM=1
@@ -41,3 +42,4 @@ define THEXTECH_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

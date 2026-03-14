@@ -22,7 +22,12 @@ class SteamGenerator(Generator):
             commandArray = ["batocera-steam"]
         else:
             commandArray = ["batocera-steam", gameId]
-        return Command.Command(array=commandArray)
+
+        # Fix for Xbox Bluetooth controllers not working with Steam (issue #12731)
+        # xpadneo fixes mappings at evdev level, but Steam reads raw HIDAPI data
+        env = {"SDL_JOYSTICK_HIDAPI_XBOX": "0"}
+
+        return Command.Command(array=commandArray, env=env)
 
     def getMouseMode(self, config, rom):
         return True

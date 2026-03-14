@@ -1,0 +1,113 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  swanstation_PatchFastBoot:
+    prompt: SHOW BIOS BOOTLOGO
+    description: Enhancement. Skipping it can break some games.
+    choices:
+      Show: "false"
+      Skip: "true"
+  gpu_software:
+    prompt: USE SOFTWARE RENDERING
+    description: More accurate emulation, but slower.
+    choices:
+      'Off': "false"
+      'On': "true"
+  swanstation_resolution_scale:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (320x240): 1
+      2x (640x480): 2
+      3x (960x720): 3
+      4x (1280x960): 4
+      5x (1600x1200): 5
+      6x (1920x1440): 6
+      7x (2240x1680): 7
+      8x (2560x1920): 8
+      9x (2880x2160): 9
+  swanstation_pgxp:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE PGXP CORRECTIONS
+    description: Reduces wobbly polygons & warping textures.
+    choices:
+      Disabled: "false"
+      Enabled (Default): "true"
+  swanstation_antialiasing:
+    group: ADVANCED OPTIONS
+    prompt: ANTI-ALIASING (MSAA/SSAA)
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      'Off': 1
+      2x MSAA: 2
+      4x MSAA: 4
+      8x MSAA: 8
+      16x MSAA: 16
+      32x MSAA: 32
+      2x SSAA: 2-ssaa
+      4x SSAA: 4-ssaa
+      8x SSAA: 8-ssaa
+      16x SSAA: 16-ssaa
+      32x SSAA: 32-ssaa
+  swanstation_texture_filtering:
+    prompt: TEXTURE FILTERING
+    description: Enhancement. Smooth/upscale textures.
+    choices:
+      Nearest: Nearest
+      Bilinear: Bilinear
+      JINC2: JINC2
+      xBR: xBR
+  swanstation_widescreen_hack:
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': "false"
+      'On': "true"
+  swanstation_CropMode:
+    group: ADVANCED OPTIONS
+    prompt: CROP OVERSCAN
+    description: Zooms in to hide black borders. Borders are different per game.
+    choices:
+      'Off': None
+      Only Overscan Area: Overscan
+      All Borders: Borders
+  swanstation_Controller1:
+    prompt: CONTROLLER 1 TYPE
+    description: DualShock has rumble support. Not all games support DualShock.
+    choices:
+      None: 0
+      Digital Controller (Gamepad): 1
+      Analog Controller (DualShock): 261
+      Analog Joystick: 517
+      NeGcon: 773
+      NeGcon (Rumble): 1029
+      Namco GunCon: 260
+      PlayStation Mouse: 258
+  swanstation_Controller2:
+    prompt: CONTROLLER 2 TYPE
+    description: DualShock has rumble support. Not all games support DualShock.
+    choices:
+      None: 0
+      Digital Controller (Gamepad): 1
+      Analog Controller (DualShock): 261
+      Analog Joystick: 517
+      NeGcon: 773
+      NeGcon (Rumble): 1029
+      Namco GunCon: 260
+      PlayStation Mouse: 258
+  swanstation_Controller_ShowCrosshair:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    description: null
+    choices:
+      'Off': "false"
+      'On': "true"
+systems:
+  - psx

@@ -1,0 +1,53 @@
+shared_features:
+  - autosave
+custom_features:
+  resolution_mode:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (320x240): original
+      2x (640x480): 2x
+      4x (1280x960): 4x
+      720p: 720p
+      1080p: 1080p
+      4K: 4k
+  yabasanshiro-autowidescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  multitap_yabasanshiro:
+    prompt: MULTITAP
+    description: Allows up to 7 or 12 controllers in supported games.
+    choices:
+      'Off': disabled
+      Port1: port1
+      Port2: port2
+      Port1+2: port12
+  controller1_saturn:
+    prompt: CONTROLLER 1 TYPE
+    description: Not all games support 3D pad.
+    choices:
+      Saturn Pad: 1
+      Saturn 3D Pad: 5
+  controller2_saturn:
+    prompt: CONTROLLER 2 TYPE
+    description: Not all games support 3D pad.
+    choices:
+      Saturn Pad: 1
+      Saturn 3D Pad: 5
+  yabasanshiro_language:
+    prompt: LANGUAGE
+    description: Change the system's language.
+    choices:
+      English (Default): english
+      Spanish: spanish
+      French: french
+      Deutsch: deutsch
+      Italian: italian
+      Japanese: japanese
+systems:
+  - name: saturn
+    exclude_extensions:
+      - m3u

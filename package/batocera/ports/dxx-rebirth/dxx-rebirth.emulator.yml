@@ -1,0 +1,41 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  rebirth_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  rebirth_filtering:
+    prompt: TEXTURE FILTERING
+    description: Smooth textures on 3D objects.
+    choices:
+      Classic (Default): 0
+      Blocky Filtered: 1
+      Smooth: 2
+  rebirth_anisotropy:
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+  rebirth_multisample:
+    prompt: 4x MULTISAMPLING
+    choices:
+      Disabled (Default): 0
+      Enabled: 1
+systems:
+  - dxx-rebirth

@@ -3,12 +3,13 @@
 # libretro-swanstation
 #
 ################################################################################
-# Version: Commits on Jan 25, 2024
-LIBRETRO_SWANSTATION_VERSION = 77aeeea58a45cccae7a8be37645f8f5a27ff101b
+# Version: Commits on Aug 2, 2025
+LIBRETRO_SWANSTATION_VERSION = 4d309c05fd7bdc503d91d267bd542edb8d192b09
 LIBRETRO_SWANSTATION_SITE = $(call github,libretro,swanstation,$(LIBRETRO_SWANSTATION_VERSION))
 LIBRETRO_SWANSTATION_LICENSE = GPLv2
 LIBRETRO_SWANSTATION_DEPENDENCIES = fmt boost ffmpeg retroarch
 LIBRETRO_SWANSTATION_SUPPORTS_IN_SOURCE_BUILD = NO
+LIBRETRO_SWANSTATION_EMULATOR_INFO = swanstation.libretro.core.yml
 
 LIBRETRO_SWANSTATION_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 LIBRETRO_SWANSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
@@ -43,3 +44,4 @@ define LIBRETRO_SWANSTATION_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -22,7 +22,6 @@ class _InputMapping(TypedDict):
     config_name: str
     event_variations: list[tuple[str, str]]
 
-
 def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path):
 
     mkdir_if_not_exists(_RPCS3_INPUT_DIR)
@@ -273,12 +272,14 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Vendor ID: 1356\n')
                 f.write('    Product ID: 616\n')
                 f.write('  Buddy Device: ""\n')
+            # Use default SDL3 controller method
             else:
-                _logger.debug("*** Using default SDL2 configuration ***")
+                _logger.debug("*** Using default SDL3 configuration ***")
                 f.write(f'Player {nplayer} Input:\n')
                 f.write('  Handler: SDL\n')
+                ctrlname = pad.real_name
                 # workaround controllers with commas in their name - like Nintendo
-                ctrlname = pad.real_name.split(',')[0].strip()
+                ctrlname = ctrlname.replace(",", ".")
                 # rpcs3 appends a unique number per controller name
                 if ctrlname in controller_counts:
                     controller_counts[ctrlname] += 1
@@ -297,10 +298,10 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Start: Start\n')
                 f.write('    Select: Back\n')
                 f.write('    PS Button: Guide\n')
-                f.write('    Square: X\n')
-                f.write('    Cross: A\n')
-                f.write('    Circle: B\n')
-                f.write('    Triangle: Y\n')
+                f.write('    Square: West\n')
+                f.write('    Cross: South\n')
+                f.write('    Circle: East\n')
+                f.write('    Triangle: North\n')
                 f.write('    Left: Left\n')
                 f.write('    Down: Down\n')
                 f.write('    Right: Right\n')
@@ -333,14 +334,20 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('      Axis: RY\n')
                 f.write('      Mirrored: false\n')
                 f.write('      Shift: 0\n')
+                f.write('    Orientation Reset Button: ""\n')
+                f.write('    Orientation Enabled: false\n')
                 f.write('    Pressure Intensity Button: ""\n')
                 f.write('    Pressure Intensity Percent: 50\n')
                 f.write('    Pressure Intensity Toggle Mode: false\n')
                 f.write('    Pressure Intensity Deadzone: 0\n')
+                f.write('    Analog Limiter Button: ""\n')
+                f.write('    Analog Limiter Toggle Mode: false\n')
                 f.write('    Left Stick Multiplier: 100\n')
                 f.write('    Right Stick Multiplier: 100\n')
                 f.write('    Left Stick Deadzone: 8000\n')
                 f.write('    Right Stick Deadzone: 8000\n')
+                f.write('    Left Stick Anti-Deadzone: 4259\n')
+                f.write('    Right Stick Anti-Deadzone: 4259\n')
                 f.write('    Left Trigger Threshold: 0\n')
                 f.write('    Right Trigger Threshold: 0\n')
                 f.write('    Left Pad Squircling Factor: 8000\n')
@@ -352,8 +359,12 @@ def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Pa
                 f.write('    Use LED as a battery indicator: false\n')
                 f.write('    LED battery indicator brightness: 10\n')
                 f.write('    Player LED enabled: true\n')
-                f.write(f'    Enable Large Vibration Motor: {rumble}\n')
-                f.write(f'    Enable Small Vibration Motor: {rumble}\n')
+                if rumble == "true":
+                    f.write('    Enable Large Vibration Motor: 100\n')
+                    f.write('    Enable Small Vibration Motor: 100\n')
+                else:
+                    f.write('    Enable Large Vibration Motor: 0\n')
+                    f.write('    Enable Small Vibration Motor: 0\n')
                 f.write('    Switch Vibration Motors: false\n')
                 f.write('    Mouse Movement Mode: Relative\n')
                 f.write('    Mouse Deadzone X Axis: 60\n')

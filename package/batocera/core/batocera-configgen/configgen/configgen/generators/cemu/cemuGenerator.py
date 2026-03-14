@@ -64,8 +64,10 @@ class CemuGenerator(Generator):
 
         return Command.Command(
             array=commandArray,
-            env={"XDG_CONFIG_HOME":CONFIGS, "XDG_CACHE_HOME":CACHE,
-                "XDG_DATA_HOME":SAVES,
+            env={
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CACHE_HOME": CACHE,
+                "XDG_DATA_HOME": SAVES,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }

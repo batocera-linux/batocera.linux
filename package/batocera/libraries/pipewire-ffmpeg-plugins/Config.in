@@ -1,0 +1,15 @@
+config BR2_PACKAGE_PIPEWIRE_FFMPEG_PLUGINS
+	bool "pipewire-ffmpeg-plugins"
+	depends on BR2_PACKAGE_PIPEWIRE
+	depends on BR2_PACKAGE_FFMPEG
+	help
+	  FFmpeg integration for PipeWire.
+
+	  This builds the spa-ffmpeg codec plugin, the ffmpeg-based
+	  video converter, and pw-cat with FFmpeg format support as a
+	  separate package to avoid a circular dependency between
+	  pipewire, sdl2, and ffmpeg.
+
+	  pw-cat FFmpeg support requires libsndfile.
+
+	  https://pipewire.org/

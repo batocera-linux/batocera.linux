@@ -9,6 +9,7 @@ LIBRETRO_BEETLE_SATURN_SITE = \
     $(call github,libretro,beetle-saturn-libretro,$(LIBRETRO_BEETLE_SATURN_VERSION))
 LIBRETRO_BEETLE_SATURN_LICENSE = GPLv2
 LIBRETRO_BEETLE_SATURN_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_SATURN_EMULATOR_INFO = beetle-saturn.libretro.core.yml
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGLES),y)
 LIBRETRO_BEETLE_SATURN_DEPENDENCIES += libgles
@@ -25,3 +26,4 @@ define LIBRETRO_BEETLE_SATURN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

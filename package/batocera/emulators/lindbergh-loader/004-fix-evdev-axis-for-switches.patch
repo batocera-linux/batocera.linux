@@ -1,0 +1,96 @@
+diff --git a/src/lindbergh/evdevInput.c b/src/lindbergh/evdevInput.c
+index a06dc56..f37cfd6 100644
+--- a/src/lindbergh/evdevInput.c
++++ b/src/lindbergh/evdevInput.c
+@@ -1349,42 +1349,57 @@ void *controllerThread(void *_args)
+                                       scaled < 0.8 ? 0 : 1);
+                         }
+                     }
+-
+-                    if (event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
+-                    {
+-                        if (args->controller->absTriggers[event.code].minEnabled)
+-                        {
+-                            int channel = args->controller->absTriggers[event.code].minChannel;
+-
+-                            if (args->controller->absTriggers[event.code].isAnalogue)
+-                            {
+-                                setAnalogue(channel, scaled < 0.2 ? 0.0 : pow(2, jvsBits) * 1.0);
+-                            }
+-                            else
+-                            {
+-                                setSwitch(args->controller->absTriggers[event.code].minPlayer,
+-                                          args->controller->absTriggers[event.code].minChannel, scaled < 0.2 ? 1 : 0);
+-                            }
+-                        }
++                    
++                    // handle the deadzone part separatly for switches to avoid cases when the switch is an axe and not coming back completly (from 255 to 126 (128 is the middle))
++                    // relax the button
++                    if((scaled > 0.4 && scaled < 0.6) && !args->controller->absTriggers[event.code].isAnalogue) {
++                    	if (args->controller->absTriggers[event.code].minEnabled) {
++                    		setSwitch(args->controller->absTriggers[event.code].minPlayer,
++                    		args->controller->absTriggers[event.code].minChannel, 0);
++                    	}
++                    	
++                    	if (args->controller->absTriggers[event.code].maxEnabled) {
++                    		setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++                    		args->controller->absTriggers[event.code].maxChannel, 0);
++                    	}
+                     }
+-
+-                    if (event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++                    else
+                     {
+-                        if (args->controller->absTriggers[event.code].maxEnabled)
+-                        {
+-                            int channel = args->controller->absTriggers[event.code].maxChannel;
+-
+-                            if (args->controller->absTriggers[event.code].isAnalogue)
+-                            {
+-                                setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) : 0.0);
+-                            }
+-                            else
+-                            {
+-                                setSwitch(args->controller->absTriggers[event.code].maxPlayer,
+-                                          args->controller->absTriggers[event.code].maxChannel, scaled > 0.8 ? 1 : 0);
+-                            }
+-                        }
+-                    }
++                    	if (event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++                    	{
++                    		if (args->controller->absTriggers[event.code].minEnabled)
++                    		{
++                    			int channel = args->controller->absTriggers[event.code].minChannel;
++                    			if (args->controller->absTriggers[event.code].isAnalogue)
++                    			{
++                    				setAnalogue(channel, scaled < 0.2 ? 0.0 : pow(2, jvsBits) * 1.0);
++                    			}
++                    			else
++                    			{
++                    				setSwitch(args->controller->absTriggers[event.code].minPlayer,
++                    				args->controller->absTriggers[event.code].minChannel, scaled < 0.2 ? 1 : 0);
++                    			}
++                    		}
++                    	}
++
++		        if (event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++		        {
++		        	if (args->controller->absTriggers[event.code].maxEnabled)
++		                {
++		                    int channel = args->controller->absTriggers[event.code].maxChannel;
++
++		                    if (args->controller->absTriggers[event.code].isAnalogue)
++		                    {
++		                        setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) : 0.0);
++		                    }
++		                    else
++		                    {
++		                        setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++		                                  args->controller->absTriggers[event.code].maxChannel, scaled > 0.8 ? 1 : 0);
++		                    }
++		                }
++		            }
++		    }
+                     
+                     if (args->controller->absTriggers[event.code].shakeEnabled)
+                     {

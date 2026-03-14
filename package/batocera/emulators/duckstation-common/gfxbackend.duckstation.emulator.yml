@@ -1,0 +1,10 @@
+custom_features:
+  duckstation_gfxbackend:
+    submenu: DISPLAY
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      Vulkan: Vulkan
+      OpenGL: OpenGL
+      Software: Software
+    before: duckstation_vsync

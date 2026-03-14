@@ -16,13 +16,14 @@
 # openjk
 #
 ################################################################################
-# Version: Commits on Mar 10, 2025
-OPENJK_VERSION = 5878f620f6dabb6573595470627ab2e31cb46b67
+# Version: Commits on Oct 10, 2025
+OPENJK_VERSION = d1cb662f07dfa4c1999edfb5c1a86fd1c6285372
 OPENJK_SITE = https://github.com/JACoders/OpenJK
 OPENJK_SITE_METHOD = git
 OPENJK_SUPPORTS_IN_SOURCE_BUILD = NO
 OPENJK_LICENSE = GPL-2.0 license
 OPENJK_LICENSE_FILE = LICENSE.txt
+OPENJK_EMULATOR_INFO = openjk.emulator.yml
 
 OPENJK_DEPENDENCIES += host-openjk libjpeg-bato libpng sdl2 zlib
 
@@ -59,3 +60,4 @@ OPENJK_POST_INSTALL_TARGET_HOOKS += OPENJK_EVMAPY
 
 $(eval $(cmake-package))
 $(eval $(host-cmake-package))
+$(eval $(emulator-info-package))

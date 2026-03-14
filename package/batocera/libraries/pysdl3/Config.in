@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYSDL3
+	bool "pysdl3"
+	select BR2_PACKAGE_SDL3
+	help
+	  A pure Python wrapper for SDL3.
+
+	  https://pysdl3.readthedocs.io/

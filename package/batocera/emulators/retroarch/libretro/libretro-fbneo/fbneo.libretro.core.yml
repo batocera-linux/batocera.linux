@@ -1,0 +1,76 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  fbneo-cpu-speed-adjust:
+    group: ADVANCED OPTIONS
+    prompt: CPU CLOCK
+    description: Can fix slowdown. Only works on some drivers.
+    choices:
+      30%: 30%
+      40%: 40%
+      50%: 50%
+      60%: 60%
+      70%: 70%
+      80%: 80%
+      90%: 90%
+      100%: 100%
+      110%: 110%
+      120%: 120%
+      130%: 130%
+      140%: 140%
+      150%: 150%
+      160%: 160%
+      170%: 170%
+      180%: 180%
+      190%: 190%
+      200%: 200%
+  fbneo-frameskip:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      No skipping: 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+  fbneo-lightgun-crosshair-emulation:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': always hide
+      'On': always show
+  altlayout:
+    prompt: SPECIAL CONTROL LAYOUTS
+    description: Controls for 5/6 button games and other unique controls
+    choices:
+      Default Only: default
+      Modern Fightstick Style: fightstick
+systems:
+  - name: neogeo
+    custom_features:
+      fbneo-neogeo-mode-switch:
+        prompt: NEO GEO BIOS
+        choices:
+          Console AES World: AES Asia
+          Console AES Japan: AES Japan
+          Arcade MVS Europe: MVS Asia/Europe
+          Arcade MVS USA: MVS USA
+          Arcade MVS Japan: MVS Japan
+          Arcade Universe BIOS (Cheats): Universe BIOS
+      fbneo-memcard-mode:
+        group: ADVANCED OPTIONS
+        prompt: MEMORY CARD MODE
+        choices:
+          'Off': disabled
+          Shared: shared
+          Per-game: per-game
+  - fbneo

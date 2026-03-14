@@ -1,0 +1,21 @@
+diff --git a/src/osdep/amiberry.cpp b/src/osdep/amiberry.cpp
+index ef14840..f62ef7a 100644
+--- a/src/osdep/amiberry.cpp
++++ b/src/osdep/amiberry.cpp
+@@ -4288,12 +4288,14 @@ static std::string get_xdg_home(const char *var, const std::string& suffix)
+ 
+ static std::string get_xdg_data_home()
+ {
+-	return get_xdg_home("XDG_DATA_HOME", "/.local/share");
++	const auto env_value = getenv("XDG_DATA_HOME");
++   return env_value ? std::string(env_value) : "";
+ }
+ 
+ static std::string get_xdg_config_home()
+ {
+-	return get_xdg_home("XDG_CONFIG_HOME", "/.config");
++	const auto env_value = getenv("XDG_CONFIG_HOME");
++   return env_value ? std::string(env_value) : "";
+ }
+ 
+ bool directory_exists(std::string directory, const std::string& sub_dir)

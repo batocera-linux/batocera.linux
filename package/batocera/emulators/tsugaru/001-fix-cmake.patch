@@ -1,0 +1,15 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index ccf8a38e7b..0a512bfce5 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
+ if(UNIX)
+-	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -Wno-unused-variable)
+-	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -Wno-unused-variable)
++	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-variable")
++	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-variable")
+ endif()
+ 
+ 

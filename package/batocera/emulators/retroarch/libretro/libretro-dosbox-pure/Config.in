@@ -1,9 +1,8 @@
 config BR2_PACKAGE_LIBRETRO_DOSBOX_PURE
     bool "libretro-dosbox-pure"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
-      help
-        A libretro DOS emulator core.
+    help
+      A libretro DOS emulator core.
 
 	  http://www.libretro.com
 

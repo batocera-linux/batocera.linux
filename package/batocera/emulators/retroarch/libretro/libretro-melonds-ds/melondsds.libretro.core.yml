@@ -1,0 +1,219 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+custom_features:
+  melondsds_console_mode:
+    prompt: NDS VERSION
+    decription: Choose the NDS handheld version
+    choices:
+      DS: DS
+      DSi (Experiemental): DSi
+  melondsds_render_mode:
+    submenu: VIDEO SETTINGS
+    prompt: RENDERER MODE
+    description: Software mode is faster and more accurate, while OpenGL mode supports scaling 3D graphics.
+    choices:
+      Software: software
+      OpenGL (Overwrites Libretro API settings): opengl
+  melondsds_resolution:
+    submenu: VIDEO SETTINGS
+    prompt: INTERNAL RESOLUTION
+    description: Degree in which 3D graphics are scaled up. OpenGL renderer only.
+    choices:
+      1x native (256 x 192): 1
+      2x native (512 x 384): 2
+      3x native (768 x 576): 3
+      4x native (1024 x 768): 4
+      5x native (1280 x 960): 5
+      6x native (1536 x 1152): 6
+      7x native (1792 x 1344): 7
+      8x native (2048 x 1536): 8
+  melondsds_poygon:
+    submenu: VIDEO SETTINGS
+    prompt: IMPROVED POLYGON SPLITTING
+    description: Enable this if your game's 3D modles are not rendered correctly. OpenGL renderer only.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_filtering:
+    submenu: VIDEO SETTINGS
+    prompt: SCREEN FILTERING
+    description: Affects how the emulated screens are scaled. OpenGL renderer only.
+    choices:
+      Nearest: nearest
+      Linear: linear
+  melondsds_cursor:
+    submenu: SCREEN SETTINGS
+    prompt: CURSOR MODE
+    description: Determines how the cursor should apprear on the botton screen.
+    choices:
+      Never: never
+      While Touching: touching
+      Until Timeout: timeout
+      Always: always
+  melondsds_cursor_timeout:
+    submenu: SCREEN SETTINGS
+    prompt: CURSOR TIMEOUT
+    description: Cursor timeout in seconds when using Cursor Mode - Until Timeout.
+    choices:
+      1 second: 1
+      2 seconds: 2
+      3 seconds: 3
+      5 seconds: 5
+      10 seconds: 10
+      15 seconds: 15
+      20 seconds: 20
+      30 seconds: 30
+      60 seconds: 60
+  melondsds_touchmode:
+    submenu: SCREEN SETTINGS
+    prompt: TOUCH MODE
+    description: Determine how the console's touch screen in emulated.
+    choices:
+      Joystick: joystick
+      Pointer: pointer
+  melondsds_dns:
+    submenu: FIRMWARE SETTINGS
+    prompt: DNS OVERRIDE
+    description: Use this to play online with custom servers that reimplement the discontinued Nintendo Wi-Fi.
+    choices:
+      Kaeru WFC (178.62.43.212): 178.62.43.212
+      AltWFC (172.104.88.237): 172.104.88.237
+      Wiimmfi (95.217.77.181): 95.217.77.181
+      Force Default DNS: 0.0.0.0
+      Don't Override: default
+  melondsds_language:
+    submenu: FIRMWARE SETTINGS
+    prompt: LANGUAGE
+    description: Overrides the language mode of the emulated console.
+    choices:
+      Use Host: auto
+      English: en
+      Japanese: jp
+      French: fr
+      German: de
+      Italian: it
+      Spanish: es
+      Don't Override: default
+  melondsds_colour:
+    submenu: FIRMWARE SETTINGS
+    prompt: FAVOURITE COLOUR
+    description: The theme colour of the emulated console.
+    choices:
+      Gray: 0
+      Brown: 1
+      Red: 2
+      Light Pink: 3
+      Orange: 4
+      Yellow: 5
+      Lime: 6
+      Light Green: 7
+      Dark Green: 8
+      Turquoise: 9
+      Light Blue: 10
+      Blue: 11
+      Dark Blue: 12
+      Dark Purple: 13
+      Light Purple: 14
+      Dark Pink: 15
+      Don't Override: default
+  melondsds_month:
+    submenu: FIRMWARE SETTINGS
+    prompt: BIRTH MONTH
+    description: The month of your birthay.
+    choices:
+      January: 1
+      February: 2
+      March: 3
+      April: 4
+      May: 5
+      June: 6
+      July: 7
+      August: 8
+      September: 9
+      October: 10
+      November: 11
+      December: 12
+      Don't Override: default
+  melondsds_day:
+    submenu: FIRMWARE SETTINGS
+    prompt: BIRTH DAY
+    description: The day within the month of your birthday.
+    choices:
+      1st: 1
+      2nd: 2
+      3rd: 3
+      4th: 4
+      5th: 5
+      6th: 6
+      7th: 7
+      8th: 8
+      9th: 9
+      10th: 10
+      11th: 11
+      12th: 12
+      13th: 13
+      14th: 14
+      15th: 15
+      16th: 16
+      17th: 17
+      18th: 18
+      19th: 19
+      20th: 20
+      21st: 21
+      22nd: 22
+      23rd: 23
+      24th: 24
+      25th: 25
+      26th: 26
+      27th: 27
+      28th: 28
+      29th: 29
+      30th: 30
+      31st: 31
+      Don't Override: default
+  melondsds_show_unsupported:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: WARN ABOUT UNSUPPORTED FEATURES
+    description: Enable to display an on-screen message if trying to use unsupported features.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_show_bios:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: WARN ABOUT BIOS PROBLEMS
+    description: Enable to display if your BIOS haas known problems.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_show_layout:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: SHOW SCREEN LAYOUT
+    description: Enable to show which screen layout with the configured sequence is active.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_show_mic:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: SHOW HOST MICROPHONE STATE
+    description: Enable to show whether your device's microphone is active.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_show_camera:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: SHOW HOST CAMERA STATE
+    description: Enable to show whether your device's camera is active.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  melondsds_show_lid:
+    submenu: ON-SCREEN DISPLAY & NOTIFCATIONS
+    prompt: SHOW LID STATE
+    description: Enable to show whether the emulated screens are closed.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+systems:
+  - nds

@@ -1,0 +1,36 @@
+diff --git a/src/lindbergh/evdevInput.c b/src/lindbergh/evdevInput.c
+index 4dfa26d..4cffb30 100644
+--- a/src/lindbergh/evdevInput.c
++++ b/src/lindbergh/evdevInput.c
+@@ -938,11 +938,16 @@ static ControllerStatus listControllers(Controllers *controllers)
+ 
+         if (test_bit(EV_ABS, bit[0]))
+         {
+-            ioctl(controller, EVIOCGBIT(EV_ABS, KEY_MAX), bit[EV_ABS]);
+-            for (int code = 0; code < KEY_MAX; code++)
++            ioctl(controller, EVIOCGBIT(EV_ABS, ABS_MAX), bit[EV_ABS]);
++            for (int code = 0; code < ABS_MAX; code++)
+             {
+                 if (test_bit(code, bit[EV_ABS]))
+                 {
++                    if(controllers->controller[i].inputCount >= MAX_INPUTS) { // the number of input is limited
++		      fprintf(stderr, "warning, maximum number of inputs reached !\n");
++		      break;
++                    }
++
+                     controllers->controller[i].enabled = 1;
+                     ControllerInput *controllerInput =
+                         &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+diff --git a/src/lindbergh/evdevInput.h b/src/lindbergh/evdevInput.h
+index bd80be6..17d408c 100644
+--- a/src/lindbergh/evdevInput.h
++++ b/src/lindbergh/evdevInput.h
+@@ -4,7 +4,7 @@
+ 
+ #define SIZE 300
+ #define CONTROLLER_THREAD_MAX 256
+-#define MAX_INPUTS 512
++#define MAX_INPUTS 768 // KEY_MAX : some events have this
+ 
+ typedef struct
+ {

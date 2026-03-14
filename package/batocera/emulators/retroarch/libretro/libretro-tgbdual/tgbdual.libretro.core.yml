@@ -1,0 +1,16 @@
+features:
+  - netplay
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  sync_saves:
+    group: ADVANCED OPTIONS
+    prompt: SYNC SAVE FILES
+    description: Sync GB2Player/GBC2Player saves with saves in "saves/gb" or "saves/gbc".
+    choices:
+      'On': 1
+      'Off': 0
+systems:
+  - gb2players
+  - gbc2players

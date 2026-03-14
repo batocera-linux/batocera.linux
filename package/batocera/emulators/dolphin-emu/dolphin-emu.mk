@@ -3,11 +3,11 @@
 # dolphin-emu
 #
 ################################################################################
-# Version: Commits on Feb 6, 2025
+# Version: Commits on Feb 22, 2026
 # Add major & minor version accordingly for any bump
-DOLPHIN_EMU_VERSION = c6be362a8c8f53502ec61b2afa34414e1d5a040e
-DOLPHIN_EMU_VERSION_MAJOR = 2412
-DOLPHIN_EMU_VERSION_MINOR = 268
+DOLPHIN_EMU_VERSION = b55aaa8ca78619785ca334c62d5e9d3743c29171
+DOLPHIN_EMU_VERSION_MAJOR = 2512
+DOLPHIN_EMU_VERSION_MINOR = 421
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
@@ -15,11 +15,10 @@ DOLPHIN_EMU_GIT_SUBMODULES = YES
 DOLPHIN_EMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl
-DOLPHIN_EMU_DEPENDENCIES += bluez5_utils hidapi xz host-xz sdl2
-# add dolphin-triforce as a dependency so it builds first
-ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
-DOLPHIN_EMU_DEPENDENCIES += dolphin-triforce
-endif
+DOLPHIN_EMU_DEPENDENCIES += bluez5_utils hidapi xz host-xz sdl3 cpp-ipc
+
+$(eval $(call register,dolphin.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,gfxbackend.dolphin.emulator.yml))
 
 DOLPHIN_EMU_CONF_OPTS  = -DCMAKE_BUILD_TYPE=Release
 DOLPHIN_EMU_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
@@ -66,6 +65,16 @@ define DOLPHIN_EMU_PRE_CONFIGURE_HOOK
         $(@D)/CMake/ScmRevGen.cmake
 endef
 
+define DOLPHIN_EMU_INI
+    mkdir -p $(TARGET_DIR)/usr/share/dolphin-emu/sys/GameSettings
+    # copy extra triforce ini files - force overwrite
+    cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-emu/*.ini \
+		$(TARGET_DIR)/usr/share/dolphin-emu/sys/GameSettings
+    cd $(TARGET_DIR)/usr/bin && ln -sf dolphin-emu dolphin-emu.desktopconfig
+endef
+
 DOLPHIN_EMU_PRE_CONFIGURE_HOOKS = DOLPHIN_EMU_PRE_CONFIGURE_HOOK
+DOLPHIN_EMU_POST_INSTALL_TARGET_HOOKS += DOLPHIN_EMU_INI
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

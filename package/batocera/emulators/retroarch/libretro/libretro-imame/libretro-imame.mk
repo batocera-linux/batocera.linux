@@ -8,6 +8,7 @@ LIBRETRO_IMAME_VERSION = 1472da3a39ab14fff8325b1f51a1dfdb8eabb5c8
 LIBRETRO_IMAME_SITE = $(call github,libretro,mame2000-libretro,$(LIBRETRO_IMAME_VERSION))
 LIBRETRO_IMAME_LICENSE = MAME
 LIBRETRO_IMAME_DEPENDENCIES += retroarch
+LIBRETRO_IMAME_EMULATOR_INFO = imame4all.libretro.core.yml
 
 LIBRETRO_IMAME_PLATFORM=$(LIBRETRO_PLATFORM)
 
@@ -33,3 +34,4 @@ define LIBRETRO_IMAME_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,40 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  beetle-saturn_crosshair:
+    group: LIGHT GUN
+    prompt: LIGHT GUN CROSSHAIR
+    choices:
+      Cross: Cross
+      Dot: Dot
+      Disabled: 'Off'
+  beetle-saturn-autowidescreen:
+    prompt: AUTO WIDESCREEN
+    description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+    choices:
+      'Off': "False"
+      'On': "True"
+  controller1_saturn:
+    prompt: CONTROLLER 1 TYPE
+    description: Not all games support 3D pad.
+    choices:
+      Saturn Pad: 1
+      Saturn 3D Pad: 261
+  controller2_saturn:
+    prompt: CONTROLLER 2 TYPE
+    description: Not all games support 3D pad.
+    choices:
+      Saturn Pad: 1
+      Saturn 3D Pad: 261
+systems:
+  - name: saturn
+    exclude_extensions:
+      - zip

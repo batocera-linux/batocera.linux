@@ -1,0 +1,58 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  shadps4_hdr:
+    prompt: HDR
+    description: Enable High Dynamic Range if your display supports it.
+    choices:
+      Disabled: false
+      Enabled: true
+  shadps4_console_lang:
+    prompt: CONSOLE LANGUAGE
+    description: Choose console language. Not all games may support the language choice.
+    choices:
+      Arabic: 21
+      Czech: 23
+      Danish: 14
+      Dutch: 6
+      English (United Kingdom): 18
+      English (United States): 1
+      Finnish: 12
+      French (Canada): 22
+      French (France): 2
+      German: 4
+      Greek: 25
+      Hungarian: 24
+      Indonesian: 29
+      Italian: 5
+      Japanese: 0
+      Korean: 9
+      Norwegian (Bokmaal): 15
+      Polish: 16
+      Portuguese (Brazil): 17
+      Portuguese (Portugal): 7
+      Romanian: 26
+      Russian: 8
+      Simplified Chinese: 11
+      Spanish (Latin America): 20
+      Spanish (Spain): 3
+      Swedish: 13
+      Thai: 27
+      Traditional Chinese: 10
+      Turkish: 19
+      Ukrainian: 30
+      Vietnamese: 28
+systems:
+  - ps4

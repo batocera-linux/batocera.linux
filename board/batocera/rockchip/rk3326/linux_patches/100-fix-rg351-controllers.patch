@@ -1,0 +1,190 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts
+index 26658a37f4..3ac1672ad4 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3326-anbernic-rg351v.dts
+@@ -55,10 +55,156 @@ battery: battery {
+                                        <3574170 0>;
+        };
+ 
+-	vibrator {
+-		compatible = "pwm-vibrator";
+-		pwms = <&pwm0 0 1000000 0>;
++	joypad: odroidgo2-joypad {
++		compatible = "odroidgo2-v11-joypad";
++
++		/* Added PWM for rumble support with this driver */
++		pwms = <&pwm0 0 200000000 0>;		 
+ 		pwm-names = "enable";
++
++		/*
++		  - odroidgo2-joypad sysfs list -
++		   * for poll device interval(ms)
++		   /sys/devices/platform/odroidgo2_joypad/poll_interval [rw]
++		   * for button-adc-fuzz
++		   /sys/devices/platform/odroidgo2_joypad/adc_fuzz [r]
++		   * for button-adc-flat
++		   /sys/devices/platform/odroidgo2_joypad/adc_flat [r]
++		   * for report control(1:enable, 0:disable)
++		   /sys/devices/platform/odroidgo2_joypad/enable [rw]
++		   * for adc calibration value setup(1:current adcs value -> cal value)
++		   /sys/devices/platform/odroidgo2_joypad/adc_cal [rw]
++		*/
++
++		/* gpio pincontrol setup */
++		pinctrl-names = "default";
++		pinctrl-0 = <&btn_pins>;
++		pinctrl-1 = <&pwm0_pin>;
++
++		/* JOY_X, JOY_Y Channel define */
++		io-channel-names = "joy_x", "joy_y";
++		io-channels = <&saradc 1>, <&saradc 2>;
++
++		/* adc channel count */
++		button-adc-count = <2>;
++
++		/* adc calculate scale */
++		button-adc-scale = <2>;
++
++		/* adc deadzone range  */
++		button-adc-deadzone = <20>;
++
++		/*
++		    joy-stick voltage range
++		    /sys/devices/platform/ff288000.saradc/iio:device0
++		    adc-x : in_voltage1_raw
++		    adc-y : in_voltage2_raw
++
++		    range calculate.
++		    (adc raw max value - adc raw min value) * scale * 1.7515
++		*/
++		button-adc-x-range = <1800>;
++		button-adc-y-range = <1800>;
++
++		/*
++		  specifies fuzz value that is used to filter noise from
++		  the event stream.
++		*/
++		button-adc-fuzz = <32>;
++		button-adc-flat = <32>;
++
++		/* poll device interval (ms), adc read interval */
++		poll-interval = <10>;
++
++		/* gpio button auto repeat set value : default disable */
++		/*
++			autorepeat;
++		*/
++
++		/*
++		    joypad driver is poll-device driver.
++		    poll-device is does not support wakeup-source.
++		*/
++		sw1 {
++			gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-UP";
++			linux,code = <BTN_DPAD_UP>; // 0x220
++		};
++		sw2 {
++			gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-DOWN";
++			linux,code = <BTN_DPAD_DOWN>; // 0x221
++		};
++		sw3 {
++			gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-LEFT";
++			linux,code = <BTN_DPAD_LEFT>; // 0x222
++		};
++		sw4 {
++			gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-RIGHT";
++			linux,code = <BTN_DPAD_RIGHT>; // 0x223
++		};
++		sw5 {
++			gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
++			label = "GPIO KEY BTN-A";
++			linux,code = <BTN_EAST>; // 0x131
++		};
++		sw6 {
++			gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-B";
++			linux,code = <BTN_SOUTH>; // 0x130
++		};
++		sw7 {
++			gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-Y";
++			linux,code = <BTN_WEST>; // 0x134
++		};
++		sw8 {
++			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-X";
++			linux,code = <BTN_NORTH>; // 0x133
++		};
++		sw9 {
++			gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-SELECT";
++			linux,code = <BTN_SELECT>; // 0x2c0
++		};
++		sw10 {
++			gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-THUMBL";
++			linux,code = <BTN_THUMBL>; // 0x2c1
++		};
++		sw13 {
++			gpios = <&gpio2 RK_PA4 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-MODE";
++			linux,code = <BTN_MODE>; // 0x2c4
++		};
++		sw14 {
++			gpios = <&gpio2 RK_PA5 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-START";
++			linux,code = <BTN_START>; // 0x13c
++		};
++		sw15 {
++			gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-LEFT";
++			linux,code = <BTN_TL>; // 0x02
++		};
++		sw16 {
++			gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-RIGHT";
++			linux,code = <BTN_TR>; // 0x05
++		};
++		sw20 {
++			gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-LEFT2";
++			linux,code = <BTN_TL2>;
++		};
++		sw21 {
++			gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++			label = "GPIO TOP-RIGHT2";
++			linux,code = <BTN_TR2>;
++		};
+ 	};
+ };
+ 
+@@ -116,6 +262,25 @@ &vccio_sd {
+ 
+ &pinctrl {
+         btns {
++		btn_pins: btn-pins {
++			rockchip,pins = <1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
++					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
++					<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
++					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
++					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++		
+                 btn_pins_vol: btn-pins-vol {
+                         rockchip,pins = <2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
+                                         <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-VKD3D_PROTON_VERSION = 2.14.1
+VKD3D_PROTON_VERSION = 3.0a
 VKD3D_PROTON_SOURCE = vkd3d-proton-$(VKD3D_PROTON_VERSION).tar.zst
 VKD3D_PROTON_SITE = \
     https://github.com/HansKristian-Work/vkd3d-proton/releases/download/v$(VKD3D_PROTON_VERSION)

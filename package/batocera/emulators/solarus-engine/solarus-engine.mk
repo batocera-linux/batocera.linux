@@ -7,6 +7,7 @@
 SOLARUS_ENGINE_VERSION = bbecaf31ada06357d4c18726b572fe4b4ebccf56
 SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
 SOLARUS_ENGINE_SITE_METHOD=git
+SOLARUS_ENGINE_EMULATOR_INFO = solarus.emulator.yml
 
 SOLARUS_ENGINE_LICENSE = GPL-3.0 (code), CC-BY-SA-4.0 (Solarus logos and icons), \
 	CC-BY-SA-3.0 (GUI icons)
@@ -34,3 +35,4 @@ SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_WRITE_DIR=solarus
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=ON
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

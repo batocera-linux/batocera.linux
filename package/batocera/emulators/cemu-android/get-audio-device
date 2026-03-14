@@ -1,0 +1,3 @@
+#!/bin/bash
+
+LANGUAGE=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "++ | tr -d '\n'

@@ -1,0 +1,35 @@
+features:
+  - netplay
+  - padtokeyboard
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  q88_basic_mode:
+    prompt: PC MODEL
+    choices:
+      N88 BASIC V2: N88 V2
+      N88 BASIC V1H: N88 V1H
+      N88 BASIC V1S: N88 V1S
+      N BASIC: N
+  q88_cpu_clock:
+    prompt: CPU CLOCK
+    description: Slow down or speed up games as appropriate.
+    choices:
+      1 MHz (Underclock): 1
+      2 MHz (Underclock): 2
+      4 MHz (NEC uPD780): 4
+      8 MHz (NEC uPID7008): 8
+      16 MHz (Overclock): 16
+      32 MHz (Overclock): 32
+      64 MHz (Overclock): 64
+  q88_pcg-8100:
+    group: ADVANCED OPTIONS
+    prompt: EMULATE PCG-8100
+    description: Required for some games.
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - pc88

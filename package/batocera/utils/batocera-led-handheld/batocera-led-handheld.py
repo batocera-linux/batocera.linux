@@ -46,8 +46,8 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in ["pwm", "rgbaddr"]:
-        for path in ["/sys/class/power_supply/qcom-battery", "/sys/class/power_supply/battery"]:
+    if model in ["pwm", "rgbaddr", "legiongos"]:
+        for path in ["/sys/class/power_supply/BAT0", "/sys/class/power_supply/BAT1", "/sys/class/power_supply/qcom-battery", "/sys/class/power_supply/battery"]:
             if os.path.exists(path):
                 return path
     if model in ["rgb"]:
@@ -113,23 +113,36 @@ def led_check(led):
         print(ledconfig)
     prevblock = 0
     while True:
-        with open(PATH + '/capacity', 'r') as tp, \
-                open(PATH + '/status','r') as st:
-            bt = tp.readline().strip()
-            ch = st.readline().strip()
-            if (ch == "Charging") or (ch == "Full"):
-                bt = '100'
-            if (ch == "Discharging") and (bt == "100"):
-                bt = '99'
-            block = read_color(bt, ledconfig)
-            prevblock = block
-            try:
-                if DEBUG:
-                    print(f"Set color to {block} for {bt}%")
+        try:
+            if batoled.batoconf("led.enabled") == "0":
                 if color_changes_allowed():
-                    led.set_color(block)
-            except Exception as e:
-                print (f"Error: {e}") 
+                    led.set_color("000000") # Ensure the LED is physically off
+                time.sleep(CHECK_INTERVAL)
+                continue
+        except Exception:
+            pass
+
+        try:
+            with open(PATH + '/capacity', 'r') as tp, \
+                    open(PATH + '/status','r') as st:
+                bt = tp.readline().strip()
+                ch = st.readline().strip()
+                if (ch == "Charging") or (ch == "Full"):
+                    bt = '100'
+                if (ch == "Discharging") and (bt == "100"):
+                    bt = '99'
+                block = read_color(bt, ledconfig)
+                prevblock = block
+                try:
+                    if DEBUG:
+                        print(f"Set color to {block} for {bt}%")
+                    if color_changes_allowed():
+                        led.set_color(block)
+                except Exception as e:
+                    print (f"Error: {e}") 
+                time.sleep(CHECK_INTERVAL)
+        except Exception as e:
+            print(f"Error reading battery status: {e}")
             time.sleep(CHECK_INTERVAL)
 
 # Prevent color changes when entering color selection

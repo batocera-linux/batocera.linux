@@ -1,0 +1,86 @@
+diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/pm8150b.dtsi linux/arch/arm64/boot/dts/qcom/pm8150b.dtsi
+--- linux.orig/arch/arm64/boot/dts/qcom/pm8150b.dtsi	2024-11-29 14:02:15.559060845 +0000
++++ linux/arch/arm64/boot/dts/qcom/pm8150b.dtsi	2024-11-29 14:35:58.144509809 +0000
+@@ -5,6 +5,7 @@
+  */
+ 
+ #include <dt-bindings/iio/qcom,spmi-vadc.h>
++#include <dt-bindings/input/qcom,spmi-haptics.h>
+ #include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/spmi/spmi.h>
+ 
+@@ -107,6 +108,34 @@
+ 			#thermal-sensor-cells = <0>;
+ 		};
+ 
++		pm8150b_charger: charger@1000 {
++			compatible = "qcom,pm8150b-charger";
++			reg = <0x1000>;
++
++			interrupts = <0x2 0x13 0x4 IRQ_TYPE_EDGE_BOTH>,
++				     <0x2 0x12 0x2 IRQ_TYPE_EDGE_BOTH>,
++				     <0x2 0x16 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x13 0x7 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "usbin-plugin",
++					  "bat-ov",
++					  "wdog-bark",
++					  "usbin-icl-change";
++
++			io-channels = <&pm8150b_adc 7>,
++				      <&pm8150b_adc 8>;
++			io-channel-names = "usb_in_i_uv", "usb_in_v_div_16";
++
++			status = "disabled";
++		};
++
++		pm8150b_fg: fuel-gauge@4000 {
++			compatible = "qcom,pm8150b-fg";
++			reg = <0x4000>;
++			interrupts = <0x2 0x40 0x3 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "soc-delta";
++			status = "disabled";
++		};
++
+ 		pm8150b_adc: adc@3100 {
+ 			compatible = "qcom,spmi-adc5";
+ 			reg = <0x3100>;
+@@ -133,6 +162,18 @@
+ 				label = "die_temp";
+ 			};
+ 
++			channel@7 {
++				reg = <ADC5_USB_IN_I>;
++				qcom,pre-scaling = <1 1>;
++				label = "usb_in_i_uv";
++			};
++
++			channel@8 {
++				reg = <ADC5_USB_IN_V_16>;
++				qcom,pre-scaling = <1 16>;
++				label = "usb_in_v_div_16";
++			};
++
+ 			channel@9 {
+ 				reg = <ADC5_CHG_TEMP>;
+ 				qcom,pre-scaling = <1 1>;
+@@ -176,5 +217,20 @@
+ 
+ 			status = "disabled";
+ 		};
++
++		pm8150b_haptics: haptics@c000 {
++			compatible = "qcom,pmi8998-haptics", "qcom,spmi-haptics";
++			reg = <0xc000>;
++
++			interrupts = <0x3 0xc0 0x0 IRQ_TYPE_EDGE_BOTH>,
++				     <0x3 0xc0 0x1 IRQ_TYPE_EDGE_BOTH>;
++			interrupt-names = "short", "play";
++
++			qcom,wave-shape = <HAP_WAVE_SINE>;
++			qcom,play-mode = <HAP_PLAY_BUFFER>;
++			qcom,brake-pattern = <0x3 0x3 0x2 0x1>;
++
++			status = "disabled";
++		};
+ 	};
+ };

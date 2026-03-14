@@ -1,0 +1,13 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 9215768..61147f7 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -2700,7 +2700,7 @@ SDL_GUID SDL_CreateJoystickGUID(Uint16 bus, Uint16 vendor, Uint16 product, Uint1
+     // We only need 16 bits for each of these; space them out to fill 128.
+     // Byteswap so devices get same GUID on little/big endian platforms.
+     *guid16++ = SDL_Swap16LE(bus);
+-    *guid16++ = SDL_Swap16LE(crc);
++    *guid16++ = 0;
+ 
+     if (vendor) {
+         *guid16++ = SDL_Swap16LE(vendor);

@@ -1,0 +1,22 @@
+features:
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  pokemini_lcdfilter:
+    group: ADVANCED OPTIONS
+    prompt: LCD FILTER
+    description: Produces a clean LCD effect.
+    choices:
+      'Off': none
+      'On': dotmatrix
+  pokemini_lcdmode:
+    group: ADVANCED OPTIONS
+    prompt: LCD GHOSTING EFFECTS
+    description: Required for certain visual effects.
+    choices:
+      'Off': 3shades
+      'On': analog
+systems:
+  - pokemini

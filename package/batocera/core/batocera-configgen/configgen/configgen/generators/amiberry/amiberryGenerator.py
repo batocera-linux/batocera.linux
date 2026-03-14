@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Final
 
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
 from ..libretro import libretroControllers
@@ -18,46 +18,62 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 _CONFIG_DIR: Final = CONFIGS / 'amiberry'
-_CONFIG: Final = _CONFIG_DIR / 'conf' / 'amiberry.conf'
-_RETROARCH_CUSTOM: Final = _CONFIG_DIR / 'conf' / 'retroarch' / 'overlay.cfg'
-_RETROARCH_INPUTS_DIR: Final = _CONFIG_DIR / 'conf' / 'retroarch' / 'inputs'
+_CONFIG: Final = _CONFIG_DIR / 'amiberry.conf'
+_RETROARCH_CUSTOM: Final = _CONFIG_DIR / 'retroarch' / 'overlay.cfg'
+_RETROARCH_INPUTS_DIR: Final = _CONFIG_DIR / 'retroarch' / 'inputs'
+_AMIBERRY_PLUGINS: Final = _CONFIG_DIR / 'plugins'
+_WHDBOOT_DIR: Final = _CONFIG_DIR / 'whdboot'
+_SAVES_DIR: Final = Path('/userdata/saves/amiga')
+_SCREENSHOTS_DIR: Final = Path('/userdata/screenshots')
+_BIOS_DIR: Final = Path('/userdata/bios/amiga')
+_LOG_FILE: Final = Path('/userdata/system/logs/amiberry.log')
+_AMIBERRY_BIN: Final = Path('/usr/bin/amiberry')
+_AMIBERRY_DATA: Final = Path('/usr/share/amiberry/data')
 
 class AmiberryGenerator(Generator):
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "amiberry",
-            "keys": { "exit": "KEY_F10" }
+            "keys": {
+                "exit": "KEY_F9",
+                "menu": "KEY_F8"
+            }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_RETROARCH_CUSTOM.parent)
+        mkdir_if_not_exists(_AMIBERRY_PLUGINS)
 
         retroconfig = UnixSettings(_RETROARCH_CUSTOM, separator=' ')
         amiberryconf = UnixSettings(_CONFIG, separator=' ')
-        amiberryconf.save('default_quit_key', 'F10')
-        amiberryconf.save('saveimage_dir', '/userdata/saves/amiga/')
-        amiberryconf.save('savestate_dir', '/userdata/saves/amiga/')
-        amiberryconf.save('screenshot_dir', '/userdata/screenshots/')
-        amiberryconf.save('rom_path', '/userdata/bios/amiga/')
-        amiberryconf.save('whdboot_path', '/usr/share/amiberry/whdboot/')
-        amiberryconf.save('logfile_path', '/userdata/system/logs/amiberry.log')
-        amiberryconf.save('controllers_path', '/userdata/system/configs/amiberry/conf/retroarch/inputs/')
+        amiberryconf.save('default_quit_key', 'F9')
+        amiberryconf.save('default_open_gui_key', 'F8')
+        amiberryconf.save('saveimage_dir', _SAVES_DIR)
+        amiberryconf.save('savestate_dir', _SAVES_DIR)
+        amiberryconf.save('screenshot_dir', _SCREENSHOTS_DIR)
+        amiberryconf.save('nvram_dir', _SAVES_DIR / 'nvram')
+        amiberryconf.save('rom_path', _BIOS_DIR)
+        amiberryconf.save('whdboot_path', _WHDBOOT_DIR)
+        amiberryconf.save('logfile_path', _LOG_FILE)
+        amiberryconf.save('controllers_path', _RETROARCH_INPUTS_DIR)
         amiberryconf.save('retroarch_config', _RETROARCH_CUSTOM)
-        amiberryconf.save('default_vkbd_enabled', 'yes')
-        amiberryconf.save('default_vkbd_hires', 'yes') # TODO: make an option in ES
-        amiberryconf.save('default_vkbd_transparency', '60') # TODO: make an option in ES
+        amiberryconf.save('default_vkbd_enabled', system.config.get_bool('amiberry_virtual_keyboard', return_values=(1, 0)))
+        amiberryconf.save('default_vkbd_hires', system.config.get_bool('amiberry_hires_keyboard', return_values=(1, 0)))
+        amiberryconf.save('default_vkbd_transparency', system.config.get('amiberry_vkbd_transparency', '60'))
+        amiberryconf.save('default_vkbd_language', system.config.get('amiberry_vkbd_language', 'US'))
         amiberryconf.save('default_vkbd_toggle', 'leftstick')
+        amiberryconf.save('default_fullscreen_mode', '2')
+        amiberryconf.save('write_logfile', 'yes')
         amiberryconf.write()
 
         romType = self.getRomType(rom)
         _logger.debug("romType: %s", romType)
         if romType != 'UNKNOWN' :
-            commandArray: list[str | Path] = [ "/usr/bin/amiberry", "-G" ]
+            commandArray: list[str | Path] = [ _AMIBERRY_BIN ]
             if romType != 'WHDL' :
                 commandArray.append("--model")
                 commandArray.append(system.config.core)
-
             if romType == 'WHDL' :
                 commandArray.append("--autoload")
                 commandArray.append(rom)
@@ -66,6 +82,9 @@ class AmiberryGenerator(Generator):
                 commandArray.append(f"hardfile2=rw,DH0:{rom},32,1,2,512,0,,uae0")
                 commandArray.append("-s")
                 commandArray.append(f"uaehf0=hdf,rw,DH0:{rom},32,1,2,512,0,,uae0")
+            elif romType == 'UAE' :
+                commandArray.append("-f")
+                commandArray.append(rom)
             elif romType == 'CD' :
                 commandArray.append("--cdimage")
                 commandArray.append(rom)
@@ -84,6 +103,7 @@ class AmiberryGenerator(Generator):
             retroconfig.write()
 
             mkdir_if_not_exists(_RETROARCH_INPUTS_DIR)
+            write_sdl_controller_db(playersControllers, _RETROARCH_INPUTS_DIR / "gamecontrollerdb.txt")
 
             for pad in playersControllers:
                 replacements = {f'_player{pad.player_number}_':'_'}
@@ -159,10 +179,22 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("sound_frequency=48000")
 
-            return Command.Command(array=commandArray,env={
-                "AMIBERRY_DATA_DIR": "/usr/share/amiberry/",
-                "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry/",
-                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
+            # Disable GUI at launch
+            if not commandArray or commandArray[-1] != "-G":
+                commandArray.append("-G")
+
+            return Command.Command(
+                array=commandArray,env={
+                    "AMIBERRY_DATA_DIR": _AMIBERRY_DATA,
+                    "AMIBERRY_HOME_DIR": _CONFIG_DIR,
+                    "AMIBERRY_CONFIG_DIR": _CONFIG_DIR,
+                    "AMIBERRY_PLUGINS_DIR": _AMIBERRY_PLUGINS,
+                    "XDG_DATA_HOME": CONFIGS,
+                    "XDG_CONFIG_HOME": CONFIGS,
+                    "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
+                    "SDL_JOYSTICK_HIDAPI": "0"
+                }
+            )
         # otherwise, unknown format
         return Command.Command(array=[])
 
@@ -209,6 +241,8 @@ class AmiberryGenerator(Generator):
             return 'WHDL'
         if extension == 'hdf' :
             return 'HDF'
+        if extension == 'uae' :
+            return 'UAE'
         if extension in ['iso','cue', 'chd'] :
             return 'CD'
         if extension in ['adf','ipf']:
@@ -224,7 +258,7 @@ class AmiberryGenerator(Generator):
                         if extension == 'lha' :
                             _logger.warning("Amiberry doesn't support .lha inside a .zip")
                             return 'UNKNOWN'
-                        if extension == 'adf' :
+                        if extension in ['adf','ipf'] :
                             return 'DISK'
             # no info or adf file found
             return 'UNKNOWN'

@@ -1,0 +1,75 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  internal_resolution_desmume:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (256x192): 256x192
+      2x (512x384): 512x384
+      3x (768x576): 768x576
+      4x (1024x768): 1024x768
+      5x (1280x960): 1280x960
+      6x (1536x1152): 1536x1152
+      7x (1792x1344): 1792x1344
+      8x (2048x1536): 2048x1536
+      9x (2304x1728): 2304x1728
+      10x (2560x1920): 2560x1920
+  texture_scaling:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE UPSCALING (XBRZ)
+    description: Enhancement. Upscales textures on 3D objects.
+    choices:
+      'Off': 1
+      2x: 2
+      4x: 4
+  texture_smoothing:
+    prompt: TEXTURE SMOOTHING
+    description: Smooths out textures on 3D objects.
+    choices:
+      'Off': disabled
+      'On': enabled
+  multisampling:
+    group: ADVANCED OPTIONS
+    prompt: ANTI-ALIASING (MSAA)
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      'Off': disabled
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+      32x: 32
+  screens_layout:
+    prompt: SCREEN LAYOUT
+    description: Arrange the dual screen layout.
+    choices:
+      top/bottom: top/bottom
+      bottom/top: bottom/top
+      left/right: left/right
+      right/left: right/left
+      top only: top only
+      bottom only: bottom only
+      quick switch: quick switch
+      hybrid/top: hybrid/top
+      hybrid/bottom: hybrid/bottom
+  frameskip_desmume:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+systems:
+  - nds

@@ -2,11 +2,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2025+.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -22,6 +22,7 @@ BSTONE_SITE = $(call github,bibendovsky,bstone,$(BSTONE_VERSION))
 BSTONE_SUPPORTS_IN_SOURCE_BUILD = NO
 BSTONE_LICENSE = GPLv2 & MIT
 BSTONE_LICENSE_FILE = LICENSE.txt
+BSTONE_EMULATOR_INFO = bstone.emulator.yml
 
 BSTONE_DEPENDENCIES = openal sdl2
 
@@ -38,3 +39,4 @@ endef
 BSTONE_POST_INSTALL_TARGET_HOOKS += BSTONE_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

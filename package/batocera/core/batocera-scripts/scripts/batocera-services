@@ -18,6 +18,19 @@ is_valid_service_name() {
     [[ "${1}" =~ ^[_[:alpha:]][_[:alpha:][:digit:]]*$ ]]
 }
 
+# With executable bit   : call service directly
+# Without executable bit: call service via bash interpeter
+call_service() {
+    local service_file_path="${1}"
+    local argument="${2}"
+
+    if [ -x "${service_file_path}" ]; then
+        "${service_file_path}" "${argument}"
+    else
+        bash "${service_file_path}" "${argument}"
+    fi
+}
+
 do_list() {
     enabled_services="$(/usr/bin/batocera-settings-get system.services)"
     if test -n "${enabled_services}"; then
@@ -108,7 +121,6 @@ do_disable() {
         done
     fi
 
-    #
     if test "${JDONE}" = 1; then
         /usr/bin/batocera-settings-set system.services "${NEW_ENABLED_SERVICES}"
     fi
@@ -117,21 +129,21 @@ do_disable() {
 do_start() {
     find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
         while read SERVICE; do
-            bash "${SERVICE}" start
+            call_service "${SERVICE}" start
         done
 }
 
 do_stop() {
     find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
         while read SERVICE; do
-            bash "${SERVICE}" stop
+            call_service "${SERVICE}" stop
         done
 }
 
 do_status() {
     find -L /userdata/system/services /usr/share/batocera/services -type f -name "${1}" 2>/dev/null |
         while read SERVICE; do
-            bash "${SERVICE}" status
+            call_service "${SERVICE}" status
         done
 }
 

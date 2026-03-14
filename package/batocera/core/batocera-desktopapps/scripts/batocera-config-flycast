@@ -1,7 +1,9 @@
 #!/bin/bash
 
-if test -z "${DISPLAY}"
-then
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export SDL_VIDEODRIVER=wayland
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-flycast"
+else
     export DISPLAY=$(getLocalXDisplay)
 fi
 

@@ -9,6 +9,7 @@ CDOGS_SITE = $(call github,cxong,cdogs-sdl,$(CDOGS_VERSION))
 
 CDOGS_DEPENDENCIES = sdl2 sdl2_image sdl2_mixer python-protobuf enet
 CDOGS_LICENSE = GPL-2.0
+CDOGS_EMULATOR_INFO = cdogs.emulator.yml
 
 CDOGS_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -34,3 +35,4 @@ define CDOGS_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

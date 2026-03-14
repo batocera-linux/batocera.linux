@@ -3,8 +3,8 @@
 # batocera-emulationstation
 #
 ################################################################################
-# Last update: Commits on Apr 2, 2025
-BATOCERA_EMULATIONSTATION_VERSION = e01318339bcbcc0f897542deadc8c4a4ad110504
+# Last update: Commits on Mar 14, 2026
+BATOCERA_EMULATIONSTATION_VERSION = 24be8599cc89fcafba5a3389d51abb24d03991f5
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -107,14 +107,16 @@ endef
 define BATOCERA_EMULATIONSTATION_EXTERNAL_POS
 	cp $(STAGING_DIR)/usr/share/batocera-es-system/es_external_translations.h \
 	    $(STAGING_DIR)/usr/share/batocera-es-system/es_keys_translations.h $(@D)/es-app/src
-	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; \
-	    do if test -e $$P/batocera-es-system.po; then \
-	    cp $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po \
-	    $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp && \
-	    $(HOST_DIR)/bin/msgcat \
-		$(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp \
-	    $$P/batocera-es-system.po > \
-	    $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; fi; done
+	for P in $(STAGING_DIR)/usr/share/batocera-es-system/locales/*; do \
+		if test -e $$P/batocera-es-system.po; then \
+			cp $(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po \
+				$(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp; \
+			$(HOST_DIR)/bin/msgcat \
+				$(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po.tmp \
+				$$P/batocera-es-system.po > \
+				$(@D)/locale/lang/$$(basename $$P)/LC_MESSAGES/emulationstation2.po; \
+		fi; \
+	done
 endef
 
 define BATOCERA_EMULATIONSTATION_RESOURCES
@@ -139,10 +141,12 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 
 	# es_input.cfg
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
-	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/controllers/es_input.cfg $(TARGET_DIR)/usr/share/emulationstation
+	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/controllers/es_input.cfg \
+	    $(TARGET_DIR)/usr/share/emulationstation
 
 	# savestates config
-	$(INSTALL) -m 0644 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/es_savestates.cfg $(TARGET_DIR)/usr/share/emulationstation
+	$(INSTALL) -m 0644 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/es_savestates.cfg \
+	    $(TARGET_DIR)/usr/share/emulationstation
 
 	# hooks
 	cp $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/batocera-preupdate-gamelists-hook \
@@ -188,6 +192,12 @@ BATOCERA_EMULATIONSTATION_DEPENDENCIES += sway
 BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
 endif
 
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_LABWC),y)
+BATOCERA_EMULATIONSTATION_CMD = labwc-launch
+BATOCERA_EMULATIONSTATION_DEPENDENCIES += labwc
+BATOCERA_EMULATIONSTATION_POST_INSTALL_TARGET_HOOKS += BATOCERA_EMULATIONSTATION_WAYLAND_LABWC
+endif
+
 define BATOCERA_EMULATIONSTATION_XORG
 	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/xorg/xinitrc \
 	    $(BINARIES_DIR)/batocera-target/etc/X11/xinit/xinitrc
@@ -200,6 +210,22 @@ define BATOCERA_EMULATIONSTATION_WAYLAND_SWAY
 	    $(TARGET_DIR)/etc/sway/config
     $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/sway/sway-launch \
 	    $(TARGET_DIR)/usr/bin/sway-launch
+endef
+
+define BATOCERA_EMULATIONSTATION_WAYLAND_LABWC
+    mkdir -p $(TARGET_DIR)/usr/share/labwc
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/04-labwc.sh \
+	    $(TARGET_DIR)/etc/profile.d/04-labwc.sh
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/rc.xml \
+	    $(TARGET_DIR)/usr/share/labwc/rc.xml
+	$(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/S14labwc \
+	    $(TARGET_DIR)/etc/init.d/S14labwc
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/autostart \
+	    $(TARGET_DIR)/usr/share/labwc/autostart
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/autostart_* \
+	    $(TARGET_DIR)/usr/share/labwc/
+    $(INSTALL) -D -m 0755 $(BATOCERA_EMULATIONSTATION_SOURCE_PATH)/wayland/labwc/labwc-launch \
+	    $(TARGET_DIR)/usr/bin/labwc-launch
 endef
 
 define BATOCERA_EMULATIONSTATION_BOOT

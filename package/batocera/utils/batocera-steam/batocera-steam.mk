@@ -6,6 +6,7 @@
 
 BATOCERA_STEAM_VERSION = 1
 BATOCERA_STEAM_SOURCE=
+BATOCERA_STEAM_EMULATOR_INFO = steam.emulator.yml
 
 define BATOCERA_STEAM_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
@@ -18,3 +19,4 @@ define BATOCERA_STEAM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

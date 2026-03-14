@@ -1,0 +1,45 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  ymir_aspect:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      4:3: 1.3333333333333333
+      3:2: 1.5
+      16:10: 1.6
+      16:9: 1.777777777777778
+  ymir_rotation:
+    prompt: ROTATION
+    description: Change the rotation of the rendered image.
+    choices:
+      Normal: Normal
+      90 degrees clockwise: 90CW
+      180 degrees: 180
+      90 degrees counter-clockwise: 90CCW
+  ymir_interlace:
+    prompt: DEINTERLACE
+    description: Choose deinterlace option.
+    choices:
+      Interlaced: 0
+      De-Interlaced: 1
+  ymir_meshes:
+    prompt: TRANSPARENT MESHES
+    description: Choose to render meshes as transparent polygons.
+    choices:
+      'Off': 0
+      'On': 1
+systems:
+  - saturn

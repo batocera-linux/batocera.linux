@@ -1,0 +1,10 @@
+custom_features:
+  cassettevision_announce_course_switch:
+    group: DISPLAY
+    prompt: ANNOUNCE COURSE SWITCH
+    description: Show the new setting of the Course Select Switch when changing it with up/down buttons.
+    choices:
+      "Off": disabled
+      "On": enabled
+systems:
+  - cassettevision

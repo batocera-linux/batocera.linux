@@ -74,7 +74,7 @@ index 489e00f..334a844 100644
     struct udev_enumerate *enumerate = udev_enumerate_new(udev->udev);
 +   unsigned i;
 +   unsigned sorted_count = 0;
-+   struct event_udev_entry sorted[64];
++   struct event_udev_entry sorted[1024];
 +   const char *name;
 +   const char *devnode;
  
@@ -90,7 +90,7 @@ index 489e00f..334a844 100644
 +      dev = udev_device_new_from_syspath(udev->udev, name);
 +      devnode = udev_device_get_devnode(dev);
 +
-+      if (devnode != NULL && sorted_count < 64) {
++      if (devnode != NULL && sorted_count < 1024) {
 +         sorted[sorted_count].devnode = devnode;
 +         sorted[sorted_count].item = item;
 +         sorted_count++;

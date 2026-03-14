@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# This fixes issue when audio desyncs after suspend/resume on sm8250 devices (rp5, etc)
+
+read -r ARCH < /usr/share/batocera/batocera.arch
+[ "$ARCH" = "sm8250" ] || exit 0
+
+case "$1" in
+    thaw|resume)
+        sm8250-audio-resync # resync audio
+        ;;
+esac
+
+exit 0

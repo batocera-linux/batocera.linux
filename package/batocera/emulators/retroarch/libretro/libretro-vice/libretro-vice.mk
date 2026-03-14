@@ -8,6 +8,7 @@ LIBRETRO_VICE_VERSION = 86eca8b0a64aa4ca442e696e75d43de19b9556d3
 LIBRETRO_VICE_SITE = $(call github,libretro,vice-libretro,$(LIBRETRO_VICE_VERSION))
 LIBRETRO_VICE_LICENSE = GPLv2
 LIBRETRO_VICE_DEPENDENCIES += retroarch
+LIBRETRO_VICE_EMULATOR_INFO = vice_x128.libretro.core.yml vice_x64.libretro.core.yml vice_x64sc.libretro.core.yml vice_xpet.libretro.core.yml vice_xplus4.libretro.core.yml vice_xscpu64.libretro.core.yml vice_xvic.libretro.core.yml
 
 LIBRETRO_VICE_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -62,3 +63,4 @@ define LIBRETRO_VICE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

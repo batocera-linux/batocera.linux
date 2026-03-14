@@ -10,6 +10,7 @@ LIBRETRO_BEETLE_WSWAN_SITE = \
 LIBRETRO_BEETLE_WSWAN_LICENSE = GPLv2
 
 LIBRETRO_BEETLE_WSWAN_DEPENDENCIES = libpng retroarch
+LIBRETRO_BEETLE_WSWAN_EMULATOR_INFO = mednafen_wswan.libretro.core.yml
 
 LIBRETRO_BEETLE_WSWAN_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -37,3 +38,4 @@ define LIBRETRO_BEETLE_WSWAN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

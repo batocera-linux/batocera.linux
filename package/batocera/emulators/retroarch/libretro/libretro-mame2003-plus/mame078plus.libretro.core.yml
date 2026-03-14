@@ -1,0 +1,54 @@
+features:
+  - netplay
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  mame2003-plus_analog:
+    prompt: CONTROL MAPPING
+    choices:
+      Analog: analog
+      Digital: digital
+  mame2003-plus_frameskip:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+  mame2003-plus_input_interface:
+    group: ADVANCED OPTIONS
+    prompt: INPUT INTERFACE
+    description: Keyboard shortcuts unavailable if passing through the keyboard.
+    choices:
+      Retropad: retropad
+      Keyboard passthrough: keyboard
+      Simultaneous: simultaneous
+  mame2003-plus_tate_mode:
+    prompt: VERTICAL ROTATION (TATE)
+    description: Rotates screen by 90 degrees. Intended for rotating displays.
+    choices:
+      'Off': disabled
+      'On': enabled
+  mame2003-plus_neogeo_bios:
+    prompt: NEO GEO BIOS
+    choices:
+      Console AES World: asia-aes
+      Arcade MVS Europe: euro
+      Arcade MVS USA: us
+      Arcade MVS Japan: japan
+      Arcade Universe BIOS 4.0 (Cheats): unibios40
+      Arcade Universe BIOS 3.3 (Cheats): unibios33
+  mame2003-plus_crosshair_enabled:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': disabled
+      'On': enabled
+systems:
+  - mame
+  - neogeo

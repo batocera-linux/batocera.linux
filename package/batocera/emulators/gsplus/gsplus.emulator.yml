@@ -1,0 +1,62 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  gsplus_bios_filename:
+    prompt: GSPLUS BIOS FILENAME
+    description: Choose which BIOS file for GSplus to boot with.
+    choices:
+      ROM.03 (default): ROM.03
+      ROM1: ROM1
+      ROM.00: ROM.00
+      APPLE2GS.ROM: APPLE2GS.ROM
+      APPLE2GS-BIOS.ROM: APPLE2GS-BIOS.ROM
+systems:
+  - name: apple2
+    exclude_extensions:
+      - mfi
+      - dfi
+      - rti
+      - edd
+      - woz
+      - wav
+      - zip
+      - 7z
+      - chd
+      - hdv
+      - 2mg
+  - name: apple2gs
+    exclude_extensions:
+      - mfi
+      - dfi
+      - rti
+      - edd
+      - woz
+      - hfe
+      - mfm
+      - td0
+      - imd
+      - d77
+      - d88
+      - 1dd
+      - cqm
+      - cqui
+      - ima
+      - img
+      - ufi
+      - 360
+      - ipf
+      - dc42
+      - zip
+      - 7z

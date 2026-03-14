@@ -1,9 +1,8 @@
 config BR2_PACKAGE_TSUGARU
     bool "tsugaru"
+    select BR2_PACKAGE_ALSA_LIB
     select BR2_PACKAGE_LIBGLU
     help
       FM TOWNS Emulator "Tsugaru"
 
 	    https://github.com/captainys/TOWNSEMU
-
-

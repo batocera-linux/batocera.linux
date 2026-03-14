@@ -1,0 +1,307 @@
+https://raw.githubusercontent.com/ROCKNIX/distribution/refs/heads/main/projects/Rockchip/patches/linux/RK3566/005-anbernic-input.patch
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
+index 94e6dd61a2db..0b20a54a3f08 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
+@@ -16,62 +16,6 @@ aliases {
+ 		mmc1 = &sdmmc1;
+ 		mmc2 = &sdmmc2;
+ 	};
+-
+-	adc-joystick {
+-		compatible = "adc-joystick";
+-		io-channels = <&adc_mux 0>,
+-			      <&adc_mux 1>,
+-			      <&adc_mux 2>,
+-			      <&adc_mux 3>;
+-		pinctrl-0 = <&joy_mux_en>;
+-		pinctrl-names = "default";
+-		poll-interval = <60>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		axis@0 {
+-			reg = <0>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <1023 15>;
+-			linux,code = <ABS_X>;
+-		};
+-
+-		axis@1 {
+-			reg = <1>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <15 1023>;
+-			linux,code = <ABS_RX>;
+-		};
+-
+-		axis@2 {
+-			reg = <2>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <15 1023>;
+-			linux,code = <ABS_Y>;
+-		};
+-
+-		axis@3 {
+-			reg = <3>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <1023 15>;
+-			linux,code = <ABS_RY>;
+-		};
+-	};
+-
+-	adc_mux: adc-mux {
+-		compatible = "io-channel-mux";
+-		channels = "left_x", "right_x", "left_y", "right_y";
+-		#io-channel-cells = <1>;
+-		io-channels = <&saradc 3>;
+-		io-channel-names = "parent";
+-		mux-controls = <&gpio_mux>;
+-		settle-time-us = <100>;
+-	};
+-
+ 	battery: battery {
+ 		compatible = "simple-battery";
+ 		charge-full-design-microamp-hours = <3472000>;
+@@ -91,13 +35,6 @@ battery: battery {
+ 					<3400000 0>;
+ 	};
+ 
+-	gpio_mux: mux-controller {
+-		compatible = "gpio-mux";
+-		mux-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>,
+-			    <&gpio0 RK_PB7 GPIO_ACTIVE_LOW>;
+-		#mux-control-cells = <0>;
+-	};
+-
+ 	gpio_spi: spi {
+ 		compatible = "spi-gpio";
+ 		pinctrl-names = "default";
+@@ -164,6 +101,160 @@ spk_amp: audio-amplifier {
+ 		pinctrl-names = "default";
+ 		sound-name-prefix = "Speaker Amp";
+ 	};
++
++    joypad: singleadc-joypad {
++		compatible = "singleadc-joypad";
++
++		joypad-name = "retrogame_joypad";
++		joypad-product = <0x1101>;
++		joypad-revision = <0x0100>;
++		joypad-vendor = <0x484B>;
++
++		status = "okay";
++
++		/* gpio pincontrol setup */
++		pinctrl-names = "default";
++		pinctrl-0 = <&btn_pins_ctrl>;
++
++		/* Analog mux define */
++		io-channel-names = "amux_adc";
++		io-channels = <&saradc 3>;
++
++		/* adc mux channel count */
++		amux-count = <4>;
++		/* adc mux select(a,b) gpio */
++		amux-a-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
++		amux-b-gpios = <&gpio0 RK_PB7 GPIO_ACTIVE_LOW>;
++		/* adc mux enable gpio */
++		amux-en-gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_LOW>;
++
++		/* adc calculate scale */
++		button-adc-scale = <2>;
++
++		/* adc deadzone range  */
++		button-adc-deadzone = <64>;
++
++		/*
++		  specifies fuzz value that is used to filter noise from
++		  the event stream.
++		*/
++		button-adc-fuzz = <32>;
++		button-adc-flat = <32>;
++
++		/*
++		  Analog Stick data tuning value(precent)
++		  p = positive direction, n = negative direction
++		  report value = (real_adc_data * tuning_value) / 100
++		*/
++		abs_x-p-tuning = <450>;
++		abs_x-n-tuning = <450>;
++
++		abs_y-p-tuning = <450>;
++		abs_y-n-tuning = <450>;
++
++		abs_rx-p-tuning = <450>;
++		abs_rx-n-tuning = <450>;
++
++		abs_ry-p-tuning = <450>;
++		abs_ry-n-tuning = <450>;
++
++		/* poll device interval (ms), adc read interval */
++		poll-interval = <10>;
++
++		/* required to invert x/y */
++		invert-absx;
++		invert-absy;
++
++		/* gpio button auto repeat set value : default disable */
++		/*
++			autorepeat;
++		*/
++		sw1 {
++		        gpios = <&gpio3 RK_PA3 GPIO_ACTIVE_LOW>;
++		        label = "GPIO DPAD-UP";
++		        linux,code = <BTN_DPAD_UP>;
++		};
++		sw2 {
++		        gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_LOW>;
++		        label = "GPIO DPAD-DOWN";
++		        linux,code = <BTN_DPAD_DOWN>;
++		};
++		sw3 {
++		        gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_LOW>;
++		        label = "GPIO DPAD-LEFT";
++		        linux,code = <BTN_DPAD_LEFT>;
++		};
++		sw4 {
++		        gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
++		        label = "GPIO DPAD-RIGHT";
++		        linux,code = <BTN_DPAD_RIGHT>;
++		};
++		sw5 {
++		        gpios = <&gpio3 RK_PC3 GPIO_ACTIVE_LOW>;
++		        label = "GPIO KEY BTN-A";
++		        linux,code = <BTN_SOUTH>;
++		};
++		sw6 {
++		        gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN-B";
++		        linux,code = <BTN_EAST>;
++		};
++		sw7 {
++		        gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN-X";
++		        linux,code = <BTN_NORTH>;
++		};
++		sw8 {
++		        gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN-Y";
++		        linux,code = <BTN_WEST>;
++		};
++		sw9 {
++		        gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_SELECT";
++		        linux,code = <BTN_SELECT>;
++		};
++		sw10 {
++		        gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_START";
++		        linux,code = <BTN_START>;
++		};
++		sw11 {
++		        gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_F";
++		        linux,code = <BTN_MODE>;
++		};
++		sw12 {
++		        gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_TL";
++		        linux,code = <BTN_TL>;
++		};
++		sw13 {
++		        gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_TR";
++		        linux,code = <BTN_TR>;
++		};
++		sw14 {
++		        gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_TL2";
++		        linux,code = <BTN_TL2>;
++		};
++		sw15 {
++		        gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_TR2";
++		        linux,code = <BTN_TR2>;
++		};
++		sw16 {
++		        gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_THUMBL";
++		        linux,code = <BTN_THUMBL>;
++		};
++		sw17 {
++		        gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_LOW>;
++		        label = "GPIO BTN_THUMBR";
++		        linux,code = <BTN_THUMBR>;
++		};
++	};
+ };
+ 
+ &cru {
+@@ -199,62 +290,6 @@ mipi_out_panel: endpoint {
+ 	};
+ };
+ 
+-&gpio_keys_control {
+-	button-a {
+-		gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_LOW>;
+-		label = "EAST";
+-		linux,code = <BTN_EAST>;
+-	};
+-
+-	button-left {
+-		gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_LOW>;
+-		label = "DPAD-LEFT";
+-		linux,code = <BTN_DPAD_LEFT>;
+-	};
+-
+-	button-right {
+-		gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
+-		label = "DPAD-RIGHT";
+-		linux,code = <BTN_DPAD_RIGHT>;
+-	};
+-
+-	button-r1 {
+-		gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+-		label = "TR";
+-		linux,code = <BTN_TR>;
+-	};
+-
+-	button-r2 {
+-		gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+-		label = "TR2";
+-		linux,code = <BTN_TR2>;
+-	};
+-
+-	button-right {
+-		gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
+-		label = "DPAD-RIGHT";
+-		linux,code = <BTN_DPAD_RIGHT>;
+-	};
+-
+-	button-thumbl {
+-		gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_LOW>;
+-		label = "THUMBL";
+-		linux,code = <BTN_THUMBL>;
+-	};
+-
+-	button-thumbr {
+-		gpios = <&gpio3 RK_PA2 GPIO_ACTIVE_LOW>;
+-		label = "THUMBR";
+-		linux,code = <BTN_THUMBR>;
+-	};
+-
+-	button-y {
+-		gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
+-		label = "WEST";
+-		linux,code = <BTN_WEST>;
+-	};
+-};
+-
+ &pinctrl {
+ 	audio-amplifier {
+ 		spk_amp_enable_h: spk-amp-enable-h {

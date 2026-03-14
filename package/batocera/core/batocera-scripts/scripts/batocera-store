@@ -50,7 +50,7 @@ do_getPer() {
 }
 
 do_clean () {
-	if ! lsof | grep ${DB_FILE}; then
+	if ! lsof ${DB_FILE} 2>/dev/null; then
 		rm -f ${DB_FILE}
 	fi
 }

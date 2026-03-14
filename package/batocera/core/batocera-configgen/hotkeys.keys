@@ -9,8 +9,8 @@
 	{
             "trigger": ["hotkey", "a"],
             "type": "key",
-            "target": [ "KEY_RESTART" ],
-	    "description": "Reset"
+            "target": [ "KEY_CONTEXT_MENU" ],
+	    "description": "Batocera Control Center"
         },
 	{
             "trigger": ["hotkey", "b"],
@@ -61,7 +61,7 @@
 	    "description": "Screenshot"
         },
 	{
-            "trigger": ["hotkey", "pagedown"],
+            "trigger": ["hotkey", "l3"],
             "type": "key",
             "target": [ "KEY_VIDEO_NEXT" ],
 	    "description": "Next disk"
@@ -69,7 +69,7 @@
 	{
             "trigger": ["hotkey", "l2"],
             "type": "key",
-            "target": [ "KEY_SCREEN" ],
+            "target": [ "KEY_CAMERA_FOCUS" ],
 	    "description": "Swap screen"
         },
 	{
@@ -79,7 +79,7 @@
 	    "description": "Toogle screen layout"
         },
 	{
-            "trigger": ["hotkey", "l3"],
+            "trigger": ["hotkey", "pagedown"],
             "type": "key",
             "target": [ "KEY_SUBTITLE" ],
 	    "description": "Translate"

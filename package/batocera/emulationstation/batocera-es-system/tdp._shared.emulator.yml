@@ -1,0 +1,8 @@
+custom_features:
+  tdp:
+    group: POWER OPTIONS
+    prompt: RYZEN THERMAL DESIGN POWER
+    description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
+    preset: sliderauto
+    preset_parameters: 10 120 5 %
+    before: videomode

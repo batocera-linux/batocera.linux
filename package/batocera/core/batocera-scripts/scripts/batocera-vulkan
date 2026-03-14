@@ -27,7 +27,13 @@ num_devices() {
 has_discrete() {
     vulkaninfo | grep -q PHYSICAL_DEVICE_TYPE_DISCRETE_GPU
     if [ $? -eq 0 ]; then
-        echo "true"
+        # allow override
+        radeon_prime=$(/usr/bin/batocera-settings-get -f /boot/batocera-boot.conf radeon-prime)
+        if [ "$radeon_prime" = "false" ]; then
+            echo "false"
+        else
+            echo "true"
+        fi
     else
         echo "false"
     fi
@@ -63,6 +69,18 @@ discrete_name() {
     device_name=$(vulkaninfo | grep deviceName | sed -n "${discrete_gpu_index}p" | awk -F'= ' '{print $2}')
     if [ -z "$device_name" ]; then
         echo "Failed to retrieve name for the discrete GPU."
+        exit 1
+    fi
+
+    echo "$device_name"
+}
+
+# Function to retrieve the name of the DEFAULT (first) GPU
+default_name() {
+    device_name=$(vulkaninfo | grep deviceName | sed -n '1p' | awk -F'= ' '{print $2}')
+    
+    if [ -z "$device_name" ]; then
+        echo "Failed to retrieve name for the default GPU."
         exit 1
     fi
 
@@ -128,6 +146,9 @@ case "$1" in
     "discreteIndex")
         discrete_index
         ;;
+    "defaultName")
+        default_name
+        ;;
     "hasVulkan")
         has_vulkan
         ;;
@@ -135,7 +156,7 @@ case "$1" in
         vulkan_version
         ;;
     *)
-        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|hasVulkan|vulkanVersion}"
+        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|defaultName|hasVulkan|vulkanVersion}"
         exit 1
         ;;
 esac

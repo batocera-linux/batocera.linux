@@ -1,7 +1,7 @@
 default:
   options:
     hud_support: true
-    
+
 advision:
   emulator: mame
   core:     mame
@@ -23,7 +23,7 @@ nds:
 ps2:
   emulator: libretro
   core:     play
-plugnplay:
+tvgames:
   emulator: mame
   core:     mame
 pdp1:
@@ -50,7 +50,7 @@ gamepock:
 apfm1000:
   emulator: mame
   core:     mame
-bbc:
+bbcmicro:
   emulator: mame
   core:     mame
 adam:
@@ -59,7 +59,7 @@ adam:
 gmaster:
   emulator: mame
   core:     mame
-astrocde:
+astrocade:
   emulator: mame
   core:     mame
 ti99:
@@ -110,3 +110,12 @@ laser310:
 quake3:
   emulator: vkquake3
   core:     vkquake3
+saturn:
+  emulator: ymir
+  core:     ymir
+  options:
+    decorations: none
+    hud_support: none
+oricatmos:
+  emulator: clk
+  core:     clk

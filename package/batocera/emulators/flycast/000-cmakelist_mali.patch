@@ -1,21 +1,21 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ee5e3b4..9ae8f5e 100644
+index 1210802f9b..e1ee21ab04 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -25,6 +25,7 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
- option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
+@@ -78,6 +78,7 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
  option(USE_DISCORD "Use Discord Presence API" OFF)
+ option(USE_LIBCDIO "Use libcdio for CDROM access" OFF)
 +option(USE_MALI "Use mali" OFF)
-
+ 
  if(IOS AND NOT LIBRETRO)
-	 set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -157,6 +158,10 @@ else()
- 	add_executable(${PROJECT_NAME} core/emulator.cpp)
- endif()
+ 	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
+@@ -235,6 +236,10 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
+ 		CMAKE_CXX_STANDARD 20
+ 		CMAKE_CXX_STANDARD_REQUIRED ON)
  
 +if(USE_MALI)
-+  target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
++        target_link_libraries(${PROJECT_NAME} PRIVATE "-lmali")
 +endif()
 +
  if(WINDOWS_STORE)

@@ -1,0 +1,13 @@
+diff --git a/3rdparty/AudioCodecs/libopus/CMakeLists.txt b/3rdparty/AudioCodecs/libopus/CMakeLists.txt
+index 2bc5c9513e..121ccf0e16 100644
+--- a/3rdparty/AudioCodecs/libopus/CMakeLists.txt
++++ b/3rdparty/AudioCodecs/libopus/CMakeLists.txt
+@@ -475,7 +475,7 @@ if(OPUS_ARM_ARCHITECTURE)
+         endif()
+ 
+         if(FLOAT_POINT)
+-            set(OPUS_ARM_ASM 1)
++            set(OPUS_ARM_ASM 0)
+         endif()
+ 
+         configure_file(celt/arm/armopts.s.in ${CMAKE_CURRENT_BINARY_DIR}/config/celt/arm/armopts.s)

@@ -1,0 +1,11 @@
+comment "ryzen-smu needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RYZEN_SMU
+	bool "ryzen-smu"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Ryzen SMU is a Linux kernel driver that exposes access to the
+	  SMU (System Management Unit) for certain AMD Ryzen Processors.
+
+	  https://github.com/amkillam/ryzen_smu

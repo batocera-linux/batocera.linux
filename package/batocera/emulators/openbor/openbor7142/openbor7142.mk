@@ -3,12 +3,13 @@
 # OPENBOR7142
 #
 ################################################################################
-# Version.: 
+# Version.:
 OPENBOR7142_VERSION = 3caaddd5545ea916aaeef329ba43c9f2c4a451cc
 OPENBOR7142_SITE = $(call github,DCurrent,openbor,$(OPENBOR7142_VERSION))
 OPENBOR7142_LICENSE = BSD
+OPENBOR7142_DEPENDENCIES = openbor-common libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
+OPENBOR7142_EMULATOR_INFO = openbor7142.openbor.core.yml
 
-OPENBOR7142_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
 OPENBOR7142_EXTRAOPTS=""
 
 ifeq ($(BR2_x86_64),y)
@@ -34,3 +35,4 @@ define OPENBOR7142_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

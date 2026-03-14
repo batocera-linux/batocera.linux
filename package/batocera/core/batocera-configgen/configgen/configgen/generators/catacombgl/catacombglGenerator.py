@@ -76,6 +76,7 @@ class CatacombGLGenerator(Generator):
             "abyss": "--abyss",
             "abyss_sw13": "--abyss_sw13",
             "descent": "--descent",
+            "cat3d": "--descent",
             "armageddon": "--armageddon",
             "apocalypse": "--apocalypse",
         }.items():

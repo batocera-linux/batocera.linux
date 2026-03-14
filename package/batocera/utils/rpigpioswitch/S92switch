@@ -1,7 +1,6 @@
 #!/bin/sh
 
-RUN="/usr/bin/rpi_gpioswitch"
-BTD_PID=$(pgrep -f "/bin/bash $RUN")
+readonly RUN="/usr/bin/rpi_gpioswitch"
 
 ### --DEVS! Add a new power device to /usr/bin/rpi_gpioswitch array--
 # Read current config, if no key is set in batocera.conf then try to use
@@ -20,20 +19,15 @@ case "$1" in
     ;;
 
     stop)
-        if [ -n "$BTD_PID" ]; then
-            kill "$BTD_PID"
-            $RUN stop "$powerswitch"
-        elif [ -e "/tmp/shutdown.please" ] || [ -e "/tmp/poweroff.please" ]; then
-            $RUN stop "$powerswitch"
+        if [ -n "$powerswitch" ]; then
+            "$RUN" stop "$powerswitch"
         fi
     ;;
 
-    status)
-        if [ -n "$BTD_PID" ]; then
-            echo "Service rpi_gpioswitch [$BTD_PID] [ OK ]"
-        else
-            echo "Service rpi_gpioswitch [ KO ]"
-        fi
+    restart)
+        "$0" stop
+        sleep 1
+        "$0" start
     ;;
 
     setup)
@@ -50,7 +44,7 @@ case "$1" in
     ;;
 
     *)
-        echo "Usage: /etc/init.d/S92switch {start | stop | status | setup}"
+        echo "Usage: $0 {start|stop|restart|setup}"
         exit 1
     ;;
 esac

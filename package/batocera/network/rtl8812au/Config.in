@@ -5,6 +5,7 @@ config BR2_PACKAGE_RTL8812AU
 	bool "rtl8812au"
 	depends on BR2_LINUX_KERNEL
 	help
-	  rtl8812au wifi driver
+	  Linux Driver for USB WiFi Adapters that are based on
+	  the RTL8812AU Chipset. Use for Kernels below 5.4.
 
-	  https://github.com/morrownr/8812au-20210629
+	  https://github.com/morrownr/8812au-20210820

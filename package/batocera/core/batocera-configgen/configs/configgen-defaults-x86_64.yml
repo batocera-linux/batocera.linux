@@ -32,10 +32,7 @@ cdi:
 advision:
   emulator: mame
   core:     mame
-#triforce:
-#  emulator: dolphin-triforce
-#  core:     dolphin-triforce
-plugnplay:
+tvgames:
   emulator: mame
   core:     mame
 megaduck:
@@ -65,7 +62,7 @@ gamepock:
 apfm1000:
   emulator: mame
   core:     mame
-bbc:
+bbcmicro:
   emulator: mame
   core:     mame
 adam:
@@ -79,7 +76,7 @@ arcadia:
 gmaster:
   emulator: mame
   core:     mame
-astrocde:
+astrocade:
   emulator: mame
   core:     mame
 ti99:
@@ -130,12 +127,6 @@ gp32:
 laser310:
   emulator: mame
   core:     mame
-gaelco:
-  options:
-    videomode: max-640x480
-hikaru:
-  options:
-    videomode: max-640x480
 psvita:
   options:
     hud_support: false
@@ -154,3 +145,6 @@ spectravideo:
 quake3:
   emulator: vkquake3
   core:     vkquake3
+oricatmos:
+  emulator: clk
+  core:     clk

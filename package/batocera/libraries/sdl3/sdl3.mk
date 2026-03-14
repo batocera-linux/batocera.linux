@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SDL3_VERSION = 3.2.8
+SDL3_VERSION = 3.4.2
 SDL3_SOURCE = SDL3-$(SDL3_VERSION).tar.gz
 SDL3_SITE = http://www.libsdl.org/release
 SDL3_LICENSE = Zlib
@@ -17,9 +17,9 @@ SDL3_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SDL3_CONF_OPTS += -DSDL_RENDER_METAL=OFF
 SDL3_CONF_OPTS += -DSDL_CCACHE=ON
 SDL3_CONF_OPTS += -DSDL_JACK=OFF
-# We don't want HIDAPI yet
 SDL3_CONF_OPTS += -DSDL_HIDAPI=OFF
 SDL3_CONF_OPTS += -DSDL_HIDAPI_LIBUSB=OFF
+SDL3_CONF_OPTS += -DSDL_HIDAPI_LIBUSB_SHARED=OFF
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
 SDL3_DEPENDENCIES += alsa-lib
@@ -35,13 +35,6 @@ SDL3_DEPENDENCIES += dbus
 SDL3_CONF_OPTS += -DSDL_DBUS=ON
 else
 SDL3_CONF_OPTS += -DSDL_DBUS=OFF
-endif
-
-ifeq ($(BR2_PACKAGE_DXVK),y)
-SDL3_DEPENDENCIES += dxvk
-SDL3_CONF_OPTS += -DSDL_GPU_DXVK=ON
-else
-SDL3_CONF_OPTS += -DSDL_GPU_DXVK=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
@@ -148,6 +141,11 @@ endif
 else
 SDL3_CONF_OPTS += -DSDL_X11=OFF
 SDL3_CONF_OPTS += -DSDL_X11_SHARED=OFF
+endif
+
+# Add option for a system without a standard desktop windowing environment.
+ifeq ($(BR2_PACKAGE_SDL3_WAYLAND)$(BR2_PACKAGE_SDL3_X11),)
+SDL3_CONF_OPTS += -DSDL_UNIX_CONSOLE_BUILD=ON
 endif
 
 $(eval $(cmake-package))

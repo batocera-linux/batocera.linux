@@ -1,0 +1,49 @@
+features:
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  tyrquake_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      320x240: 320x240
+      640x480: 640x480
+      960x720: 960x720
+      1024x768: 1024x768
+      1280x720: 1280x720
+      1920x1080: 1920x1080
+  tyrquake_framerate:
+    prompt: FRAME RATE LIMIT
+    choices:
+      Automatic: automatic
+      10fps: 10fps
+      15fps: 15fps
+      20fps: 20fps
+      25fps: 25fps
+      30fps: 30fps
+      40fps: 40fps
+      50fps: 50fps
+      60fps: 60fps
+      75fps: 75fps
+      90fps: 90fps
+      100fps: 100fps
+      120fps: 120fps
+      144fps: 144fps
+      155fps: 155fps
+      160fps: 160fps
+  tyrquake_rumble:
+    prompt: RUMBLE
+    choices:
+      'Off': disabled
+      'On': enabled
+  tyrquake_controller1:
+    prompt: CONTROLLER PROFILE
+    choices:
+      Gamepad Classic: 1
+      Gamepad Classic Alt: 513
+      Gamepad Modern: 773
+      Keyboard + Mouse: 3
+systems:
+  - quake

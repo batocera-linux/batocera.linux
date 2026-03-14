@@ -1,0 +1,176 @@
+#!/bin/bash
+set -eu
+
+help="\
+Manage batocera moonlight integration
+
+Usage:
+  $(basename $0) <command> [options] [arguments]
+
+Commands:
+  pair   <host>        pair with sunshine host
+  sync   <host>        fetch apps list from sunshine host
+  list                 list available apps
+  clean                remove all available apps and metadata
+  stream <host> <app>  stream application from host
+
+Options:
+  -h, --help           display current help message
+"
+
+moonlight="/usr/bin/moonlight-qt"
+romsdir="/userdata/roms/moonlight"
+romsext=".moonlight"
+gamelist="$romsdir/gamelist.xml"
+
+join_by() {
+    local d=${1-} f=${2-}
+    if shift 2; then
+        printf %s "$f" "${@/#/$d}"
+    fi
+}
+
+log() {
+    local callstack=("${FUNCNAME[@]}")
+    callstack=($(printf "%s\n" "${callstack[@]}" | tac | tr "\n" " "; echo))
+    callstack=("$(basename $0)" "${callstack[@]:2}")
+    unset callstack[-1]
+
+    local prefix=$(join_by ": " "${callstack[@]}")
+    echo "$prefix: $@"
+}
+
+error() {
+    echo "error: $@" >&2;
+}
+
+pair() {
+    local host="${1:-}"
+    if [ -z "$host" ]; then
+        error "missing required argument <host>"
+        exit 1
+    fi
+
+    log "pairing with host '$host'"
+    $moonlight pair "$host"
+}
+
+romfname() {
+    local app="$1"
+    echo "$app" \
+        | tr '[:upper:]' '[:lower:]' \
+        | sed -r 's/[^A-Za-z0-9.-]+/-/g'
+}
+
+xmlescape() {
+    local str="$1"
+    python3 -c \
+        "import sys, xml.sax.saxutils; print(xml.sax.saxutils.escape(sys.argv[1], {'\"': '&quot;'}), end='')" \
+        "$str"
+}
+
+sync() {
+    local host="$1"
+    if [ -z "$host" ]; then
+        error "missing required argument <host>"
+        exit 1
+    fi
+
+    log "fetching apps list from host '$host'"
+    local apps
+    readarray -t apps < <($moonlight list "$host")
+
+    log "populating moonlight roms"
+    local glist
+    if [ ! -f "$gamelist" ]; then
+        glist="$(echo -e "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gameList>\n</gameList>")"
+    else
+        glist="$(cat "$gamelist")"
+    fi
+
+    for app in "${apps[@]}"; do
+        local fname="$(romfname "$app")"
+        local rom="${fname}${romsext}"
+
+        log "creating moonlight rom entry '$rom' for app '$app'"
+        echo "$app" > "$romsdir/$rom"
+
+        if ! echo -e "$glist" | grep "<path>./$(xmlescape "$rom")</path>" &>/dev/null; then
+            log "creating gamelist entry for app '$app'"
+            glist="$(echo -e "$glist" \
+                | sed "/<\/gameList>/i <game>\n<path>.\/$(xmlescape "$rom")<\/path>\n<name>$(xmlescape "$app")<\/name>\n<\/game>" \
+                | XMLLINT_INDENT="    " xmllint --format --encode UTF-8 -)"
+        else
+            log "gamelist entry for app '$app' already exists, skipping"
+        fi
+    done
+    echo -e "$glist" > "$gamelist"
+}
+
+list() {
+    find "$romsdir" \
+        -name "*$romsext" \
+        -type f \
+        -exec cat {} \;
+}
+
+clean() {
+    log "purging romsdir in $romsdir"
+    rm -rfv $romsdir/*$romsext
+    rm -fv $gamelist
+}
+
+stream() {
+    local host="${1:-}"
+    local app="${2:-}"
+
+    if [ -z "$host" ]; then
+        error "missing required argument <host>"
+        exit 1
+    fi
+
+    if [ -z "$app" ]; then
+        error "missing required argument <app>"
+        exit 1
+    fi
+
+    log "streaming app '$app' from host '$host'"
+    $moonlight stream "$host" "$app"
+}
+
+help() {
+    echo "$help"
+    exit 0
+}
+
+main() {
+    case "${1:-}" in
+        pair)
+            local host="${2:-}"
+            pair "$host"
+            ;;
+        sync)
+            local host="${2:-}"
+            sync "$host"
+            ;;
+        list)
+            list
+            ;;
+        clean)
+            clean
+            ;;
+        stream)
+            local host="${2:-}"
+            local app="${3:-}"
+            stream "$host" "$app"
+            ;;
+        -h|--help)
+            help
+            ;;
+        *)
+            help
+            ;;
+    esac
+}
+
+main "$@"

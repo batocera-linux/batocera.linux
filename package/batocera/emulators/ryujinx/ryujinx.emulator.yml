@@ -1,0 +1,111 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  ryujinx_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: OpenGL
+      Vulkan: Vulkan
+  ryujinx_scale:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      Native (720p/1080p): 1
+      2x (1440p/2160p): 2
+      3x (2160p/3240p): 3
+      4x (2880p/4320p): 4
+  ryujinx_ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      4:3: Fixed4x3
+      16:9 (Default): Fixed16x9
+      16:10: Fixed16x10
+      21:9: Fixed21x9
+      32:9: Fixed32x9
+      Stretch to fit window: Stretched
+  ryujinx_filtering:
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  ryujinx_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      American English: AmericanEnglish
+      British English: BritishEnglish
+      Canadian French: CanadianFrench
+      Chinese: Chinese
+      Dutch: Dutch
+      French: French
+      German: German
+      Italian: Italian
+      Japanese: Japanese
+      Korean: Korean
+      Latin American Spanish: LatinAmericanSpanish
+      Portuguese: Portuguese
+      Russian: Russian
+      Simplified Chinese: SimplifiedChinese
+      Spanish: Spanish
+      Taiwanese: Taiwanese
+      Traditional Chinese: TraditionalChinese
+      Brazilian Portuguese: BrazilianPortuguese
+  ryujinx_region:
+    prompt: CHOOSE CONSOLE REGION
+    description: Choose your console region.
+    choices:
+      Japan: Japan
+      USA: USA
+      Europe: Europe
+      Australia: Australia
+      China: China
+      Korea: Korea
+      Taiwan: Taiwan
+  ryujinx_timeoffset:
+    prompt: CHOOSE CONSOLE TIMEZONE
+    description: Choose your console UTC timezone.
+    choices:
+      UTC-12: -12
+      UTC-11: -11
+      UTC-10: -10
+      UTC-9: -9
+      UTC-8: -8
+      UTC-7: -7
+      UTC-6: -6
+      UTC-5: -5
+      UTC-4: -4
+      UTC-3: -3
+      UTC-2: -2
+      UTC-1: -1
+      UTC: 0
+      UTC+1: 1
+      UTC+2: 2
+      UTC+3: 3
+      UTC+4: 4
+      UTC+5: 5
+      UTC+6: 6
+      UTC+7: 7
+      UTC+8: 8
+      UTC+9: 9
+      UTC+10: 10
+      UTC+11: 11
+      UTC+12: 12
+systems:
+  - switch

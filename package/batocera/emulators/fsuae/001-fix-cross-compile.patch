@@ -1,0 +1,68 @@
+diff --git a/Makefile.am b/Makefile.am.new
+index 234a66e..93d10a9 100644
+--- a/Makefile.am
++++ b/Makefile.am.new
+@@ -108,12 +108,7 @@ bin_PROGRAMS = \
+ dist_doc_DATA = README COPYING
+ 
+ noinst_PROGRAMS = \
+-	gen/build68k \
+-	gen/genblitter \
+-	gen/gencomp \
+-	gen/gencpu \
+-	gen/genlinetoscr
+-
++	fs-uae-device-helper
+ noinst_LIBRARIES =
+ 
+ BUILT_SOURCES = \
+@@ -1155,33 +1150,27 @@ CM_CFLAGS += @LIBMPEG2_CFLAGS@
+ LIBS += @LIBMPEG2_LIBS@
+ endif
+ 
+-gen_build68k_SOURCES = \
+-	src/build68k.cpp \
+-	src/writelog.cpp
+-
+-gen_genblitter_SOURCES = \
+-	src/blitops.cpp \
+-	src/genblitter.cpp \
+-	src/writelog.cpp
++HOST_COMPILER_FLAGS = $(CXXFLAGS_FOR_BUILD) $(CPPFLAGS_FOR_BUILD) -I. -I$(srcdir)/src -I$(srcdir)/src/include -I$(srcdir)/src/od-fs -I$(srcdir)/src/od-fs/include -I$(srcdir)/libfsemu/include -I$(builddir)/gen -DUAE -DFSUAE -DHAVE_CONFIG_H
+ 
+-gen_gencomp_SOURCES = \
+-	src/jit/gencomp.cpp \
+-	src/missing.cpp \
+-	src/readcpu.cpp
++gen/build68k$(EXEEXT): $(srcdir)/src/build68k.cpp $(srcdir)/src/writelog.cpp
++	@mkdir -p gen
++	$(CXX_FOR_BUILD) $(HOST_COMPILER_FLAGS) -o $@ $^ -lm
+ 
+-nodist_gen_gencomp_SOURCES = \
+-	gen/cpudefs.cpp
++gen/genblitter$(EXEEXT): $(srcdir)/src/blitops.cpp $(srcdir)/src/genblitter.cpp $(srcdir)/src/writelog.cpp
++	@mkdir -p gen
++	$(CXX_FOR_BUILD) $(HOST_COMPILER_FLAGS) -o $@ $^ -lm
+ 
+-gen_gencpu_SOURCES = \
+-	src/gencpu.cpp \
+-	src/missing.cpp \
+-	src/readcpu.cpp
++gen/gencomp$(EXEEXT): $(srcdir)/src/jit/gencomp.cpp $(srcdir)/src/missing.cpp $(srcdir)/src/readcpu.cpp gen/cpudefs.cpp
++	@mkdir -p gen
++	$(CXX_FOR_BUILD) $(HOST_COMPILER_FLAGS) -o $@ $^ -lm
+ 
+-nodist_gen_gencpu_SOURCES = \
+-	gen/cpudefs.cpp
++gen/gencpu$(EXEEXT): $(srcdir)/src/gencpu.cpp $(srcdir)/src/missing.cpp $(srcdir)/src/readcpu.cpp gen/cpudefs.cpp
++	@mkdir -p gen
++	$(CXX_FOR_BUILD) $(HOST_COMPILER_FLAGS) -o $@ $^ -lm
+ 
+-gen_genlinetoscr_SOURCES = \
+-	src/genlinetoscr.cpp
++gen/genlinetoscr$(EXEEXT): $(srcdir)/src/genlinetoscr.cpp
++	@mkdir -p gen
++	$(CXX_FOR_BUILD) $(HOST_COMPILER_FLAGS) -o $@ $^ -lm
+ 
+ TESTS = \
+ 	tests/dummy-test

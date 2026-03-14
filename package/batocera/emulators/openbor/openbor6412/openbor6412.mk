@@ -3,12 +3,12 @@
 # OPENBOR6412
 #
 ################################################################################
-# Version.: 
+# Version.:
 OPENBOR6412_VERSION = 05af203b0e5676034678291bbedc0b9fe4c8f898
 OPENBOR6412_SITE = $(call github,DCurrent,openbor,$(OPENBOR6412_VERSION))
 OPENBOR6412_LICENSE = BSD
-
-OPENBOR6412_DEPENDENCIES = libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
+OPENBOR6412_DEPENDENCIES = openbor-common libvpx sdl2 libpng libogg libvorbis host-yasm sdl2_gfx
+OPENBOR6412_EMULATOR_INFO = openbor6412.openbor.core.yml
 
 OPENBOR6412_EXTRAOPTS=""
 
@@ -35,3 +35,4 @@ define OPENBOR6412_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

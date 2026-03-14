@@ -1,0 +1,13 @@
+config BR2_PACKAGE_XROAR
+    bool "xroar"
+    select BR2_PACKAGE_ALSA_LIB
+    select BR2_PACKAGE_LIBEVDEV
+    select BR2_PACKAGE_LIBPNG
+    select BR2_PACKAGE_LIBZLIB
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_IMAGE
+    help
+      XRoar emulates the Dragon 32/64, Tandy Colour Computers 1, 2 and 3
+      the Tandy MC-10 and some other similar machines or clones.
+
+      https://www.6809.org.uk/xroar/

@@ -65,7 +65,8 @@ do
     (cd "${BATOCERA_BINARIES_DIR}/boot" && tar -I "xz -T0" -cf "${BATOCERA_BINARIES_DIR}/images/${BATOCERA_SUBTARGET}/boot.tar.xz" *) || exit 1
 
     # rename the squashfs : the .update is the version that will be renamed at boot to replace the old version
-    mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera" || exit 1
+    mv "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"     "${BATOCERA_BINARIES_DIR}/boot/boot/batocera"     || exit 1
+    mv "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata" || exit 1
 
     # create *.img
     if [ "${BATOCERA_LOWER_TARGET}" = "${BATOCERA_SUBTARGET}" ]; then
@@ -122,4 +123,3 @@ done
 
 #### update the target dir with some information files
 cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1
-"${BR2_EXTERNAL_BATOCERA_PATH}"/scripts/linux/systemsReport.sh "${PWD}" "${BATOCERA_BINARIES_DIR}" || exit 1

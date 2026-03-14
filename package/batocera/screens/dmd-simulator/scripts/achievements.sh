@@ -19,6 +19,6 @@ do
 done
 
 # fallback : empty
-dmd-play ${DMDOPT} -t "WOUHOU !" --once --moving-text --no-fit --overlay
+dmd-play ${DMDOPT} -t "WOUHOU !" --once --moving-text --overlay
 
 exit 0

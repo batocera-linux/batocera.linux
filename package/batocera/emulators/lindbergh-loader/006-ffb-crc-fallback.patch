@@ -1,0 +1,283 @@
+diff --git a/src/lindbergh/forceFeedback.c b/src/lindbergh/forceFeedback.c
+index 05a52bf..cc9ac02 100644
+--- a/src/lindbergh/forceFeedback.c
++++ b/src/lindbergh/forceFeedback.c
+@@ -11,48 +11,73 @@ extern SDLControllers sdlJoysticks;
+ 
+ void sdlFfbInit(void)
+ {
+-    int i, num_haptics;
+-    SDL_HapticID *haptics = SDL_GetHaptics(&num_haptics);
+-    if (haptics)
++    // SDL input mode: open haptic from already-opened joysticks
++    for (int i = 0; i < sdlJoysticks.joysticksCount && i < MAX_JOYSTICKS; ++i)
+     {
+-        for (i = 0; i < num_haptics; ++i)
++        SDL_Joystick *joy = NULL;
++
++        if (sdlJoysticks.controllers[i])
++            joy = SDL_GetGamepadJoystick(sdlJoysticks.controllers[i]);
++        else if (sdlJoysticks.joysticks[i])
++            joy = sdlJoysticks.joysticks[i];
++
++        if (!joy)
++            continue;
++
++        if (!SDL_IsJoystickHaptic(joy))
++            continue;
++
++        sdlJoysticks.haptics[i] = SDL_OpenHapticFromJoystick(joy);
++        if (sdlJoysticks.haptics[i])
+         {
+-            SDL_HapticID instance_id = haptics[i];
+-            SDL_Log("Haptic %" SDL_PRIu32 ": %s", instance_id, SDL_GetHapticNameForID(instance_id));
+-            sdlJoysticks.haptics[i] = SDL_OpenHaptic(instance_id);
+-            sdlFfbRumble(1.0, 1.0, 200);
++            if (SDL_GetHapticFeatures(sdlJoysticks.haptics[i]) & SDL_HAPTIC_LEFTRIGHT)
++            {
++                SDL_Log("FFB: Haptic opened from joystick %d (%s)", i, SDL_GetJoystickName(joy));
++                sdlFfbRumble(1.0, 1.0, 200);
++            }
++            else
++            {
++                SDL_Log("FFB: Joystick %d has no LEFTRIGHT support, skipping", i);
++                SDL_CloseHaptic(sdlJoysticks.haptics[i]);
++                sdlJoysticks.haptics[i] = NULL;
++            }
+         }
+-
+-        SDL_free(haptics);
+     }
+-    else {
+-        SDL_Log("No haptic support!");
++
++    // EVDEV input mode: fall back to standalone haptic devices
++    if (!sdlJoysticks.haptics[0])
++    {
++        int num_haptics;
++        SDL_HapticID *haptics = SDL_GetHaptics(&num_haptics);
++        if (haptics)
++        {
++            for (int i = 0; i < num_haptics && i < MAX_JOYSTICKS; ++i)
++            {
++                if (sdlJoysticks.haptics[i])
++                    continue;
++
++                sdlJoysticks.haptics[i] = SDL_OpenHaptic(haptics[i]);
++                if (sdlJoysticks.haptics[i])
++                {
++                    if (SDL_GetHapticFeatures(sdlJoysticks.haptics[i]) & SDL_HAPTIC_LEFTRIGHT)
++                    {
++                        SDL_Log("FFB: Standalone haptic %d: %s", i, SDL_GetHapticNameForID(haptics[i]));
++                        sdlFfbRumble(1.0, 1.0, 200);
++                    }
++                    else
++                    {
++                        SDL_Log("FFB: Standalone haptic %d has no LEFTRIGHT support, skipping", i);
++                        SDL_CloseHaptic(sdlJoysticks.haptics[i]);
++                        sdlJoysticks.haptics[i] = NULL;
++                    }
++                }
++            }
++            SDL_free(haptics);
++        }
+     }
+-    
+-    // int num_joysticks;
+-    // SDL_JoystickID *joystics = SDL_GetJoysticks(&num_joysticks);
+-    // if (joystics)
+-    // {
+-    //     SDL_JoystickID instance_id;
+-    //     for (int i = 0; i < num_joysticks; ++i)
+-    //     {
+-    //         instance_id = joystics[i];
+-    //         // sdlJoysticks.haptics[i] = SDL_HapticOpenFromJoystick(sdlJoysticks.joysticks[i]);
+-    //         // sdlJoysticks.haptics[i] = SDL_OpenHapticFromJoystick(SDL_GetGamepadJoystick(sdlJoysticks.controllers[i]));
+-    //         sdlJoysticks.haptics[i] = SDL_OpenHaptic(instance_id);
+-    //         printf("JoyName: %s\n", SDL_GetJoystickNameForID(instance_id));
+-    //         if (sdlJoysticks.haptics[i] && SDL_GetHapticFeatures(sdlJoysticks.haptics[i]) & SDL_HAPTIC_LEFTRIGHT)
+-    //         {
+-    //             printf("Haptic initialized!\n");
+-    //             sdlFfbRumble(1.0, 1.0, 200);
+-    //         }
+-    //         else
+-    //         {
+-    //             printf("No haptic support!\n");
+-    //             sdlJoysticks.haptics[i] = NULL;
+-    //         }
+-    //     }
+-    // }
++
++    if (!sdlJoysticks.haptics[0])
++        SDL_Log("FFB: No haptic device found");
+ }
+ 
+ void sdlFfbRumble(float left, float right, int duration_ms)
+diff --git a/src/lindbergh/hook.c b/src/lindbergh/hook.c
+index 84d4c42..155e5a3 100644
+--- a/src/lindbergh/hook.c
++++ b/src/lindbergh/hook.c
+@@ -7,6 +7,7 @@
+ #undef __x86_64__
+ #include <ctype.h>
+ #include <dirent.h>
++#include <elf.h>
+ #include <link.h>
+ #include <math.h>
+ #include <net/if.h>
+@@ -16,6 +17,7 @@
+ #include <stdio.h>
+ #include <stdint.h>
+ #include <sys/ioctl.h>
++#include <unistd.h>
+ 
+ #include "cardReader.h"
+ #include "baseBoard.h"
+@@ -23,6 +25,7 @@
+ #include "driveBoard.h"
+ #include "eeprom.h"
+ #include "evdevInput.h"
++#include "forceFeedback.h"
+ #include "fpsLimiter.h"
+ #include "gpuVendor.h"
+ #include "hook.h"
+@@ -183,6 +186,102 @@ uint32_t getCrc32(const char *s, ssize_t n)
+     return ~crc;
+ }
+ 
++/* CRC32 fallback: read ELF from /proc/self/exe when dl_iterate_phdr fails */
++static uint32_t computeCrcFromElf(void)
++{
++    uint32_t crc = 0;
++    FILE *f = fopen("/proc/self/exe", "rb");
++    if (!f)
++    {
++        log_warn("ELF fallback: cannot open /proc/self/exe");
++        return 0;
++    }
++
++    char exePath[1024];
++    ssize_t len = readlink("/proc/self/exe", exePath, sizeof(exePath) - 1);
++    if (len > 0)
++    {
++        exePath[len] = '\0';
++        log_info("ELF fallback: /proc/self/exe -> %s", exePath);
++    }
++
++    Elf32_Ehdr ehdr;
++    if (fread(&ehdr, sizeof(ehdr), 1, f) != 1)
++    {
++        log_warn("ELF fallback: failed to read ELF header");
++        goto done;
++    }
++
++    log_info("ELF fallback: e_ident class=%d, phnum=%d, phoff=0x%X",
++             ehdr.e_ident[EI_CLASS], ehdr.e_phnum, ehdr.e_phoff);
++
++    if (ehdr.e_ident[EI_CLASS] != ELFCLASS32)
++    {
++        log_warn("ELF fallback: not ELFCLASS32 (class=%d)", ehdr.e_ident[EI_CLASS]);
++        goto done;
++    }
++
++    if (ehdr.e_phnum < 3)
++    {
++        log_warn("ELF fallback: only %d phdrs, need >= 3", ehdr.e_phnum);
++        goto done;
++    }
++
++    if (fseek(f, ehdr.e_phoff, SEEK_SET) != 0)
++    {
++        log_warn("ELF fallback: fseek to phoff failed");
++        goto done;
++    }
++
++    /* Read up to 32 phdrs */
++    Elf32_Phdr phdrs[32];
++    uint16_t phcount = ehdr.e_phnum < 32 ? ehdr.e_phnum : 32;
++    if (fread(phdrs, sizeof(Elf32_Phdr), phcount, f) != phcount)
++    {
++        log_warn("ELF fallback: failed to read %d phdrs", phcount);
++        goto done;
++    }
++
++    log_info("ELF fallback: phdr[2] type=0x%X flags=0x%X offset=0x%X filesz=0x%X",
++             phdrs[2].p_type, phdrs[2].p_flags, phdrs[2].p_offset, phdrs[2].p_filesz);
++
++    if (phdrs[2].p_type == PT_LOAD && phdrs[2].p_flags == 5)
++    {
++        char buf[0x4000];
++        if (fseek(f, phdrs[2].p_offset + 10, SEEK_SET) != 0)
++        {
++            log_warn("ELF fallback: fseek to segment data failed");
++            goto done;
++        }
++        if (fread(buf, 1, sizeof(buf), f) != sizeof(buf))
++        {
++            log_warn("ELF fallback: failed to read 0x4000 bytes from segment");
++            goto done;
++        }
++
++        crc = getCrc32(buf, sizeof(buf));
++        log_info("CRC32 computed from ELF file: 0x%08X", crc);
++    }
++    else
++    {
++        log_warn("ELF fallback: phdr[2] mismatch - type=0x%X (want 0x%X), flags=0x%X (want 0x5)",
++                 phdrs[2].p_type, PT_LOAD, phdrs[2].p_flags);
++
++        for (int i = 0; i < phcount; i++)
++        {
++            if (phdrs[i].p_type == PT_LOAD && phdrs[i].p_flags == 5)
++            {
++                log_info("ELF fallback: found matching phdr at index %d (offset=0x%X, filesz=0x%X)",
++                         i, phdrs[i].p_offset, phdrs[i].p_filesz);
++            }
++        }
++    }
++
++done:
++    fclose(f);
++    return crc;
++}
++
+ int setConfigFolder()
+ {
+     char *home = getenv("HOME");
+@@ -304,9 +403,16 @@ void __attribute__((constructor)) hook_init()
+     // We force x11 for SDL so the window do not scale in wayland.
+     setenv("SDL_VIDEODRIVER", "x11", 1);
+ 
+-    // Get offsets of the Game's ELF and calculate CRC32.
++    // Get offsets of the Game's ELF and calculate CRC32 from memory.
+     dl_iterate_phdr(callback, NULL);
+ 
++    // CRC fallback when dl_iterate_phdr fails (e.g. LD_PRELOAD environments)
++    if (elf_crc == 0)
++    {
++        log_warn("CRC from memory failed, trying ELF file fallback...");
++        elf_crc = computeCrcFromElf();
++    }
++
+     // Implement SIGSEGV handler
+     struct sigaction act;
+     memset(&act, 0, sizeof(act));
+@@ -384,6 +490,10 @@ void __attribute__((constructor)) hook_init()
+     if (initEvdevControllers(&controllers) != 0)
+         exit(1);
+ 
++    // EVDEV mode: initSdlInput() skips sdlFfbInit(), so init FFB here
++    if (getConfig()->inputMode == 2)
++        sdlFfbInit();
++
+     securityBoardSetDipResolution(getConfig()->width, getConfig()->height);
+ 
+     printf("\nSEGA Lindbergh Emulator\nBy the Lindbergh Development Team 2025\n\n");
+@@ -1272,6 +1382,7 @@ ssize_t write(int fd, const void *buf, size_t count)
+ {
+     int (*_write)(int fd, const void *buf, size_t count) = dlsym(RTLD_NEXT, "write");
+     void *addr = __builtin_return_address(0);
++
+     if (fd == hooks[BASEBOARD])
+     {
+         return baseboardWrite(fd, buf, count);

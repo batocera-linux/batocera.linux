@@ -62,23 +62,6 @@ index 0c595c8..dd7e475 100644
      string s = "Loading " + fullpath + " ... ";
  
      F = mpo_open(fullpath.c_str(), MPO_OPEN_READONLY);
-diff --git a/src/io/cmdline.cpp b/src/io/cmdline.cpp
-index 1324734..4e1b50f 100644
-@@ -510,6 +547,14 @@ bool parse_cmd_line(int argc, char **argv)
-                 get_next_word(s, sizeof(s));
-             }
- 
-+            // if they are defining an alternate 'roms' directory.
-+            // Primary used for OSX/linux to keep roms
-+            // in the user-writable space.
-+            else if (strcasecmp(s, "-romdir") == 0) {
-+                // Ignore this one, already handled
-+                get_next_word(s, sizeof(s));
-+            }
-+
-             // If they are defining an alternate 'data' directory, where all
-             // other files aside from the executable live.
-             // Primary used for linux to separate binary file (eg. hypseus.bin)
 diff '--color=auto' -uri hypseus-singe-v2.11.4/src/io/homedir.cpp hypseus-singe-v2.11.4-lbrpdx/src/io/homedir.cpp
 --- hypseus-singe-v2.11.4/src/io/homedir.cpp	2025-01-10 05:00:00.000000000 -0800
 +++ hypseus-singe-v2.11.4-lbrpdx/src/io/homedir.cpp	2025-03-29 09:40:15.072359810 -0700
@@ -88,7 +71,7 @@ diff '--color=auto' -uri hypseus-singe-v2.11.4/src/io/homedir.cpp hypseus-singe-
 
 +string homedir::get_full_romfile(const string &s)
 +{
-+    return find_file(get_romdir() + "/roms/" + s, true);
++    return get_romdir() + "/roms/" + s;
 +}
 +
  string homedir::get_ramfile(const string &s)

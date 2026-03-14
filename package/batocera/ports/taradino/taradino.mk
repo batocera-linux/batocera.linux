@@ -3,13 +3,14 @@
 # taradino
 #
 ################################################################################
-# Version: Commits on Feb 18, 2025
-TARADINO_VERSION = 3ca0a42d62d535a8009e883a1733597f8058c757
+
+TARADINO_VERSION = 20251222
 TARADINO_SITE = https://github.com/fabiangreffrath/taradino.git
 TARADINO_SITE_METHOD=git
 TARADINO_GIT_SUBMODULES=YES
 TARADINO_LICENSE = GPLv2
 TARADINO_LICENSE_FILE = README.md
+TARADINO_EMULATOR_INFO = taradino.emulator.yml
 TARADINO_SUPPORTS_IN_SOURCE_BUILD = NO
 
 TARADINO_DEPENDENCIES = sdl2 sdl2_mixer
@@ -26,3 +27,4 @@ endef
 TARADINO_POST_INSTALL_TARGET_HOOKS += TARADINO_EVMAPY
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

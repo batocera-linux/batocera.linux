@@ -1,0 +1,364 @@
+#!/bin/bash
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+export XDG_RUNTIME_DIR=/var/run
+
+PID_FILE="/tmp/wf-recorder.pid"
+CONF_FILE="/tmp/rec.conf"
+BASE_DIR="/userdata/recordings"
+LOG_FILE="/userdata/system/logs/recording.log"
+mkdir -p "$BASE_DIR"
+mkdir -p "$(dirname "$LOG_FILE")"
+
+# Default Values
+DEFAULT_QUALITY="mid"
+DEFAULT_AUDIO="auto"
+DEFAULT_ALL="false"
+
+# --- Logging Helper ---
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+# --- Configuration Helpers ---
+get_conf() {
+    # Usage: get_conf KEY DEFAULT_VALUE
+    if [ -f "$CONF_FILE" ]; then
+        local VAL
+        VAL=$(grep "^$1=" "$CONF_FILE" | tail -1 | cut -d'=' -f2-)
+        echo "${VAL:-$2}"
+    else
+        echo "$2"
+    fi
+}
+
+# Helper to write config
+set_conf() {
+    # Usage: set_conf KEY VALUE
+    touch "$CONF_FILE"
+    # Remove existing key
+    sed -i "/^$1=/d" "$CONF_FILE"
+    # Append new key
+    echo "$1=$2" >> "$CONF_FILE"
+    log "Config changed: $1=$2"
+}
+
+# --- Hardware Detection ---
+
+# Check if FFmpeg has the encoder compiled in
+check_ffmpeg_encoder() {
+    ffmpeg -encoders 2>/dev/null | grep -q "V..... $1"
+}
+
+has_nvidia_gpu() {
+    lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { found=1 } } END { exit !found }'
+}
+
+vainfo_check_device() {
+    local dev="$1"
+    local output
+    # Try --display drm --device first
+    output=$(vainfo --display drm --device "$dev" 2>/dev/null)
+    if [ -z "$output" ]; then
+        output=$(vainfo "$dev" 2>/dev/null)
+    fi
+    echo "$output"
+}
+
+# Check for encoder support first on all available render nodes
+find_best_vaapi_device() {
+    log "Searching for Encoder hardware..."
+    if ! command -v vainfo > /dev/null 2>&1; then
+        log "vainfo not found, skipping VAAPI detection"
+        echo "none|none"
+        return
+    fi
+
+    local dev
+    declare -A VAINFO_CACHE
+
+    for dev in /dev/dri/renderD*; do
+        [ -e "$dev" ] || continue
+        VAINFO_CACHE["$dev"]=$(vainfo_check_device "$dev")
+    done
+
+    # Try HEVC first
+    for dev in "${!VAINFO_CACHE[@]}"; do
+        if echo "${VAINFO_CACHE[$dev]}" | grep -q "VAProfileHEVCMain.*VAEntrypointEncSlice"; then
+            log "Selected HEVC VAAPI on $dev"
+            echo "hevc_vaapi|$dev"
+            return
+        fi
+    done
+
+    # Otherwise try H.264
+    for dev in "${!VAINFO_CACHE[@]}"; do
+        if echo "${VAINFO_CACHE[$dev]}" | grep -q "VAProfileH264Main.*VAEntrypointEncSlice"; then
+            log "Selected H264 VAAPI on $dev"
+            echo "h264_vaapi|$dev"
+            return
+        fi
+    done
+
+    echo "none|none"
+}
+
+auto_detect_encoder() {
+    log "Probing for best hardware encoder..."
+
+    # PC: VA-API (Intel/AMD)
+    local VA_RESULT VA_ENC VA_DEV
+    VA_RESULT=$(find_best_vaapi_device)
+    VA_ENC=$(echo "$VA_RESULT" | cut -d'|' -f1)
+    VA_DEV=$(echo "$VA_RESULT" | cut -d'|' -f2)
+    if [ "$VA_ENC" != "none" ]; then
+        log "Detection: Selected VAAPI ($VA_ENC) on $VA_DEV"
+        echo "$VA_ENC|$VA_DEV"
+        return
+    fi
+
+    # PC: NVIDIA NVENC
+    if has_nvidia_gpu; then
+        if check_ffmpeg_encoder "hevc_nvenc"; then
+            log "Detection: Selected NVENC HEVC"
+            echo "hevc_nvenc|none"
+            return
+        elif check_ffmpeg_encoder "h264_nvenc"; then
+            log "Detection: Selected NVENC H264"
+            echo "h264_nvenc|none"
+            return
+        fi
+    fi
+
+    # Software Fallback
+    log "Detection: No hardware encoder found, using libx264 software"
+    echo "libx264|none"
+}
+
+# --- Audio Detection ---
+get_audio_device() {
+    local VAL SRC
+    VAL=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
+    case "$VAL" in
+        mic)
+            SRC=$(pactl list short sources | grep -v 'monitor' | head -1 | awk '{$1=""; sub(/^ /, ""); print}')
+            log "Audio Source: Mic ($SRC)"
+            echo "$SRC"
+            ;;
+        none)
+            log "Audio Source: None"
+            echo "none"
+            ;;
+        *)
+            SRC=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{$1=$1; print $0".monitor"}')
+            log "Audio Source: Desktop ($SRC)"
+            echo "$SRC"
+            ;;
+    esac
+}
+
+case "$1" in
+    status)
+        RUNNING=0
+        if [ -f "$PID_FILE" ]; then
+            while read -r PID; do
+                kill -0 "$PID" 2>/dev/null && RUNNING=1 && break
+            done < "$PID_FILE"
+        fi
+        [ "$RUNNING" = "1" ] && echo "RECORDING..." || echo "Ready"
+        ;;
+    is_running)
+        RUNNING=0
+        if [ -f "$PID_FILE" ]; then
+            while read -r PID; do
+                if kill -0 "$PID" 2>/dev/null; then
+                    RUNNING=1
+                    break
+                fi
+            done < "$PID_FILE"
+        fi
+        [ "$RUNNING" = "1" ] && echo "true" || echo "false"
+        ;;
+    stop)
+        if [ -f "$PID_FILE" ]; then
+            PIDS_ARRAY=()
+            while read -r PID; do
+                # Ignore empty lines
+                [ -n "$PID" ] && PIDS_ARRAY+=("$PID")
+            done < "$PID_FILE"
+
+            log "Stopping recording (PIDs: ${PIDS_ARRAY[*]})"
+            for PID in "${PIDS_ARRAY[@]}"; do
+                kill -2 "$PID" 2>/dev/null
+            done
+
+            # Also clean up any stray wf-recorder processes not in PID file
+            pkill -2 -x wf-recorder 2>/dev/null
+
+            # Wait for all processes to exit before removing PID file
+            for PID in "${PIDS_ARRAY[@]}"; do
+                waited=0
+                while kill -0 "$PID" 2>/dev/null; do
+                    sleep 0.1
+                    waited=$((waited + 1))
+                    if [ "$waited" -ge 50 ]; then
+                        log "PID $PID did not exit cleanly, sending SIGTERM"
+                        kill -15 "$PID" 2>/dev/null
+                        break
+                    fi
+                done
+            done
+            rm -f "$PID_FILE"
+        fi
+        ;;
+    # Getters for BCC UI
+    get-quality) get_conf "QUALITY" "$DEFAULT_QUALITY" ;;
+    get-audio)   get_conf "AUDIO" "$DEFAULT_AUDIO" ;;
+    get-all)     get_conf "ALL" "$DEFAULT_ALL" ;;
+
+    # Setters for BCC UI
+    set-quality) set_conf "QUALITY" "$2" ;;
+    set-audio)   set_conf "AUDIO" "$2" ;;
+    set-all)     set_conf "ALL" "$2" ;;
+
+    start)
+        : > "$LOG_FILE"
+        : > "$PID_FILE" # Ensure clean start
+        log "--- Start Recording Sequence ---"
+        Q=$(get_conf "QUALITY" "$DEFAULT_QUALITY")
+        A=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
+        ALL=$(get_conf "ALL" "$DEFAULT_ALL")
+
+        case "$Q" in
+            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60 ;;
+            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60 ;;
+            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25 ;;
+            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30 ;;
+        esac
+
+        # Detect encoder
+        DETECTION_DATA=$(auto_detect_encoder)
+        ENCODER=$(echo "$DETECTION_DATA" | cut -d'|' -f1)
+        SELECTED_DEVICE=$(echo "$DETECTION_DATA" | cut -d'|' -f2)
+        log "Executing wf-recorder with encoder $ENCODER"
+
+        # VAAPI cannot mix its hardware filter chain with the CPU-side
+        # transpose filter that wf-recorder inserts for rotated displays.
+        PRIMARY=$(batocera-resolution currentOutput)
+        SCREEN_TRANSFORM=$(wlr-randr 2>/dev/null | awk -v out="$PRIMARY" '
+            $0 ~ out { found=1 }
+            found && /Transform:/ { print $2; found=0 }
+        ')
+        log "Screen transform for $PRIMARY: '${SCREEN_TRANSFORM:-none}'"
+
+        IS_ROTATED=0
+        case "$SCREEN_TRANSFORM" in
+            90|270|flipped-90|flipped-270) IS_ROTATED=1 ;;
+        esac
+
+        if [ "$IS_ROTATED" = "1" ] && echo "$ENCODER" | grep -q "vaapi"; then
+            log "Rotated display detected with VAAPI encoder — falling back to libx264 (software)"
+            ENCODER="libx264"
+            SELECTED_DEVICE="none"
+        fi
+
+        # Build encoder flags
+        if echo "$ENCODER" | grep -q "vaapi"; then
+            ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
+        elif echo "$ENCODER" | grep -q "nvenc"; then
+            ENC_FLAGS=(-c "$ENCODER" -p "rc=vbr" -p "cq=$CRF")
+        else
+            ENC_FLAGS=(-c "$ENCODER" -p "crf=$CRF" -p "preset=$PRESET")
+        fi
+
+        AUDIO_SRC=$(get_audio_device)
+        AUDIO_FLAGS=()
+        if [ "$AUDIO_SRC" != "none" ]; then
+            AUDIO_FLAGS=("--audio=${AUDIO_SRC}" --audio-backend=pulseaudio -C aac)
+        fi
+
+        TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
+
+        if [ "$ALL" = "true" ]; then
+            RAW_OUTPUTS=$(wf-recorder -L 2>&1)
+            log "wf-recorder -L raw output: $RAW_OUTPUTS"
+            ALL_OUTPUTS=$(echo "$RAW_OUTPUTS" | awk '{ for(i=1;i<=NF;i++) if($i=="Name:") print $(i+1) }')
+            if [ -z "$ALL_OUTPUTS" ]; then
+                log "No outputs found from wf-recorder -L, aborting"
+                exit 1
+            fi
+
+            RUNNING_PIDS=()
+            while read -r DISP; do
+                FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.mkv"
+                log "Recording output: $DISP -> $FILE"
+                if [ "$DISP" = "$PRIMARY" ]; then
+                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                else
+                    wf-recorder "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                fi
+                RUNNING_PIDS+=("$!")
+            done <<< "$ALL_OUTPUTS"
+
+            # Validate all PIDs started successfully
+            sleep 0.5
+            VALID_PIDS=()
+            FAILED=0
+
+            for PID in "${RUNNING_PIDS[@]}"; do
+                if kill -0 "$PID" 2>/dev/null; then
+                    VALID_PIDS+=("$PID")
+                else
+                    log "wf-recorder instance (PID $PID) failed to start."
+                    FAILED=1
+                fi
+            done
+
+            if [ "${#VALID_PIDS[@]}" -eq 0 ]; then
+                log "All wf-recorder instances failed to start, aborting"
+                rm -f "$PID_FILE"
+                exit 1
+            fi
+
+            # If some (but not all) failed, stop survivors too
+            if [ "$FAILED" = "1" ]; then
+                log "One or more encoders failed. Stopping all for a clean state."
+                for PID in "${VALID_PIDS[@]}"; do
+                    kill -2 "$PID" 2>/dev/null
+                done
+                pkill -2 -x wf-recorder 2>/dev/null
+                rm -f "$PID_FILE"
+                exit 1
+            fi
+
+            printf '%s\n' "${VALID_PIDS[@]}" > "$PID_FILE"
+        else
+            FILE="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
+            log "Recording primary output: $PRIMARY -> $FILE"
+
+            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+            echo "$!" > "$PID_FILE"
+
+            # Wait slightly so the PID file exists before the UI refreshes
+            sleep 0.5
+            FIRST_PID=$(head -1 "$PID_FILE")
+            if [ -z "$FIRST_PID" ] || ! kill -0 "$FIRST_PID" 2>/dev/null; then
+                log "wf-recorder failed to start."
+                rm -f "$PID_FILE"
+                exit 1
+            fi
+        fi
+        ;;
+esac

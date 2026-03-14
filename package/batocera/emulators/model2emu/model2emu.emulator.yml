@@ -1,0 +1,117 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  model2_renderRes:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      640x480: 0
+      800x600: 1
+      1024x768: 2
+      1280x1024: 3
+      Screen Resolution (Default): 4
+  model2_ratio:
+    prompt: ENABLE WIDESCREEN
+    description: Enable widescreen support.
+    choices:
+      'Off': false
+      'On': true
+  model2_scanlines:
+    prompt: ENABLE SCANLINES
+    description: Enable scanlines for roms that support it.
+    choices:
+      'Off': false
+      'On': true
+  model2_crossHairs:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    choices:
+      'Off': 0
+      'On': 1
+  model2_fakeGouraud:
+    group: ADVANCED OPTIONS
+    prompt: FAKE GOURAUD
+    description: Tries to guess Per-vertex colour (gouraud) from the Model2 per-poly information (flat).
+    choices:
+      'Off': 0
+      'On': 1
+  model2_bilinearFiltering:
+    group: ADVANCED OPTIONS
+    prompt: BILINEAR FILTERING
+    description: Smooth textures.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_trilinearFiltering:
+    group: ADVANCED OPTIONS
+    prompt: TRILINEAR FILTERING
+    description: Enables mipmap usage and trilinear filtering. Doesn't work with some games.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_filterTilemaps:
+    group: ADVANCED OPTIONS
+    prompt: FILTER TILEMAPS
+    description: Enables bilinear filtering on tilemaps. Looks good, but can cause some stretch artifacts.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_forceManaged:
+    group: ADVANCED OPTIONS
+    prompt: FORCE MANAGED
+    description: Forces the DX driver to use Managed textures instead of Dynamic.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_enableMIP:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE MIP-MAP
+    description: Enables Direct3D Automip-map generation.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_meshTransparency:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE MESH TRANSPARENCY
+    description: Enabled meshed polygons for translucency.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_fullscreenAA:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE FULL-SCREEN ANTI-ALIASING
+    description: Enable full-screen antialiasing in Direct3D.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_useRawInput:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE RAW INPUT
+    description: Read mouse through Rawinput, allowing 2 mice for 2 player shooting games.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_Software:
+    prompt: ENABLE SOFTWARE RENDERER
+    description: Use if you're having graphical issues or GPU problems with this emulator.
+    choices:
+      Off (Default): 0
+      'On': 1
+  model2_xinput:
+    prompt: X-INPUT
+    description: Enable X-Input mode for Xbox type controllers.
+    choices:
+      'Off': 0
+      'On': 1
+  model2_forceFeedback:
+    prompt: RUMBLE
+    description: Only some games support rumble. Requires X-Input mode and may not be compatible with all controllers.
+    choices:
+      'Off': 0
+      'On': 1
+systems:
+  - model2

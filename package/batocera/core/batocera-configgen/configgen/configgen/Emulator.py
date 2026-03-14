@@ -4,7 +4,7 @@ import logging
 import xml.etree.ElementTree as ET
 from collections.abc import Mapping
 from dataclasses import InitVar, dataclass, field
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
@@ -40,13 +40,14 @@ def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
 
 
 def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
-    with default_yml.open('r') as f:
-        defaults = yaml.load(f, Loader=yaml.CLoader)
+    try:
+        defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
+    except:
+        return None
 
     arch_defaults: dict[str, Any] = {}
     if default_arch_yml.exists():
-        with default_arch_yml.open('r') as f:
-            loaded_arch_defaults = yaml.load(f, Loader=yaml.CLoader)
+        loaded_arch_defaults = yaml.load(default_arch_yml.read_text(), Loader=yaml.CLoader)
         if loaded_arch_defaults is not None:
             arch_defaults = loaded_arch_defaults
 
@@ -67,8 +68,12 @@ def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, 
     return config
 
 
-def _load_system_config(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
-    defaults = _load_defaults(system_name, default_yml, default_arch_yml)
+def _load_system_config(system_name: str, /) -> dict[str, Any]:
+    defaults = _load_defaults(
+        system_name,
+        DEFAULTS_DIR / 'configgen-defaults.yml',
+        DEFAULTS_DIR / 'configgen-defaults-arch.yml'
+    )
 
     # In the yaml files, the "options" structure is not flat, so we have to flatten it here
     # because the options are flat in batocera.conf to make it easier for end users to edit
@@ -101,7 +106,7 @@ class Emulator:
 
         try:
             tree = ET.parse(self.game_info_xml)
-            root = cast('ET.Element', tree.getroot())
+            root = tree.getroot()
             for child in root:
                 for metadata in child:
                     vals[metadata.tag] = metadata.text or ''
@@ -115,15 +120,7 @@ class Emulator:
         self.game_info_xml = args.gameinfoxml
 
         # read the configuration from the system name
-        system_data = _load_system_config(
-            args.system,
-            DEFAULTS_DIR / 'configgen-defaults.yml',
-            DEFAULTS_DIR / 'configgen-defaults-arch.yml'
-        )
-
-        if not system_data['emulator']:
-            _logger.error('no emulator defined. exiting.')
-            raise MissingEmulator
+        system_data = _load_system_config(args.system)
 
         # sanitize rule by EmulationStation
         # see FileData::getConfigurationName() on batocera-emulationstation
@@ -141,10 +138,21 @@ class Emulator:
         # update config
         system_data.update(settings.get_all_iter('display', keep_name=True, keep_defaults=True))
         system_data.update(settings.get_all_iter('controllers', keep_name=True))
+
+        language = settings.config.get('DEFAULT', 'system.language', fallback=None)
+        if language is not None:
+            # A few emulators have config options named "language", so "system.language" is chosen
+            # in order to prevent conflicts with config options from es_features.yaml
+            system_data['system.language'] = language
+
         system_data.update(global_settings)
         system_data.update(system_settings)
         system_data.update(folder_settings)
         system_data.update(game_settings)
+
+        if not system_data['emulator']:
+            _logger.error('no emulator defined. exiting.')
+            raise MissingEmulator
 
         try:
             es_config = ET.parse(ES_SETTINGS)
@@ -191,9 +199,19 @@ class Emulator:
 
         if 'use_guns' not in system_data and args.lightgun:
             system_data['use_guns'] = True
+        elif 'use_guns' in system_data:
+            if args.lightgun:
+                _logger.warning("use_guns manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_guns'])
+            else:
+                _logger.info("use_guns manually set to '%s' to flagless game", system_data['use_guns'])
 
         if 'use_wheels' not in system_data and args.wheel:
             system_data['use_wheels'] = True
+        elif 'use_wheels' in system_data:
+            if args.wheel:
+                _logger.warning("use_wheels manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_wheels'])
+            else:
+                _logger.info("use_wheels manually set to '%s' to flagless game", system_data['use_wheels'])
 
         # network options
         if args.netplaymode is not None:
@@ -241,8 +259,11 @@ class Emulator:
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
         # so that we can fetch them from system.shader without -renderer
-        render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
-        render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
+        try:
+            render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
+            render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
+        except:
+            pass
 
         self.renderconfig = Config(render_data)
 

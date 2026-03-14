@@ -2,9 +2,6 @@ default:
   options:
     hud_support: true
 
-nds:
-  emulator: drastic
-  core:     drastic
 3ds:
   emulator: azahar
   core:     azahar
@@ -40,3 +37,9 @@ wii:
   core:     dolphin
   options:
     gfxbackend: Vulkan
+saturn:
+  emulator: ymir
+  core:     ymir
+  options:
+    decorations: none
+    hud_support: none

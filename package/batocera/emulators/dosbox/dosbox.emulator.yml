@@ -1,0 +1,47 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  dosbox_cpu_core:
+    submenu: EMULATION
+    prompt: CPU CORE
+    description: CPU Core used in emulation
+    choices:
+      AUTO: auto
+      Dynamic: dynamic
+      Normal: normal
+      Simple: simple
+  dosbox_cpu_cputype:
+    submenu: EMULATION
+    prompt: CPU TYPE
+    description: CPU Type used in emulation
+    choices:
+      AUTO: auto
+      "386": "386"
+      386_slow: 386_slow
+      486_slow: 486_slow
+      pentium_slow: pentium_slow
+      386_prefetch: 386_prefetch
+  dosbox_cpu_cycles:
+    submenu: EMULATION
+    prompt: CPU CYCLES
+    description: Amount of instructions DOSBox tries to emulate
+    choices:
+      AUTO: auto
+      Max: max
+systems:
+  - name: dos
+    exclude_extensions:
+      - zip

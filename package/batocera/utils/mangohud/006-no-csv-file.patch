@@ -1,0 +1,12 @@
+--- MangoHud-12620c91eaca0917a7939a92ec33915cadf24475/src/logging.cpp   2024-06-15 04:27:17.000000000 -0700
++++ mangohud-new/src/logging.cpp        2026-01-16 15:51:51.076963588 -0800
+@@ -264,7 +264,8 @@
+
+   calculate_benchmark_data();
+   output_file.close();
+-  writeSummary(m_log_files.back());
++  // Batocera: skip that
++  // writeSummary(m_log_files.back());
+   clear_log_data();
+ #ifdef __linux__
+   control_client_check(HUDElements.params->control, global_control_client, gpu.c_str());

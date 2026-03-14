@@ -5,22 +5,50 @@ command -v batocera-brightness >/dev/null || exit 0
 case $1 in
     start)
         # don't set if under 5%, while it can cause false positive issues
-        BRI=$(batocera-settings-get display.brightness)
-        if [ $? -eq 0 ]; then
-            if [ "$BRI" -lt 5 ]; then
-                BRI=5
+	NUM_DISPLAY=1
+	while true
+	do
+	    if test ${NUM_DISPLAY} = 1
+	    then
+		NUM_STR=""
+	    else
+		NUM_STR=${NUM_DISPLAY}
+	    fi
+            BRI=$(batocera-settings-get display.brightness${NUM_STR})
+            if [ $? -eq 0 ]; then
+		if [ "$BRI" -lt 5 ]; then
+                    BRI=5
+		fi
+		batocera-brightness "-${NUM_DISPLAY}" "$BRI"
+	    else
+		# quit
+		exit 0
             fi
-            batocera-brightness "$BRI"
-        fi
+	    NUM_DISPLAY=$(($NUM_DISPLAY + 1))
+	done
         ;;
     stop)
-        current_brightness=$(batocera-brightness)
-        stored_brightness=$(batocera-settings-get display.brightness)
-        if [ "$stored_brightness" != "$current_brightness" ]; then
-            if [ -e "/userdata/system/batocera.conf" ]; then
-                batocera-settings-set display.brightness "$current_brightness"
+	NUM_DISPLAY=1
+	while true
+	do
+	    if test ${NUM_DISPLAY} = 1
+	    then
+		NUM_STR=""
+	    else
+		NUM_STR=${NUM_DISPLAY}
+	    fi
+
+            current_brightness=$(batocera-brightness "-${NUM_DISPLAY}" 2>/dev/null)
+	    test $? -ne 0 && exit 0
+            stored_brightness=$(batocera-settings-get "display.brightness${NUM_STR}")
+	    test $? -ne 0 && exit 0
+            if [ "$stored_brightness" != "$current_brightness" ]; then
+		if [ -e "/userdata/system/batocera.conf" ]; then
+                    batocera-settings-set "display.brightness${NUM_STR}" "$current_brightness"
+		fi
             fi
-        fi
+	    NUM_DISPLAY=$(($NUM_DISPLAY + 1))
+	done
         ;;
 esac
 

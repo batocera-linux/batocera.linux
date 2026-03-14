@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any, cast
 from ruamel.yaml import YAML
 
 from ... import Command
-from ...batoceraPaths import BIOS, CACHE, CONFIGS, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...batoceraPaths import BIOS, CACHE, CONFIGS, configure_emulator, mkdir_if_not_exists
 from ...exceptions import BatoceraException
 from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -224,6 +223,7 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
+            self._generateGunConfig()
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
@@ -256,16 +256,20 @@ class Rpcs3Generator(Generator):
 
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
+        
+        elif rom.suffix.lower() == ".iso":
+            romName = rom
+        elif configure_emulator(rom):
+            romName: Path | None = None
         else:
             romName = rom / "PS3_GAME" / "USRDIR" / "EBOOT.BIN"
 
-        # write our own gamecontrollerdb.txt file before launching the game
-        dbfile = RPCS3_CONFIG_DIR / "input_configs" / "gamecontrollerdb.txt"
-        write_sdl_controller_db(playersControllers, dbfile)
+        if romName:
+            commandArray: list[Path | str] = [RPCS3_BIN, romName]
+        else:
+            commandArray: list[Path | str] = [RPCS3_BIN]
 
-        commandArray: list[Path | str] = [RPCS3_BIN, romName]
-
-        if not system.config.get_bool("rpcs3_gui"):
+        if not system.config.get_bool("rpcs3_gui") and romName:
             commandArray.append("--no-gui")
 
         # firmware not installed and available : instead of starting the game, install it
@@ -275,13 +279,28 @@ class Rpcs3Generator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_CACHE_HOME":CACHE,
-                "QT_QPA_PLATFORM":"xcb",
-                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
-                "SDL_JOYSTICK_HIDAPI": "0"
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CACHE_HOME": CACHE
             }
         )
+
+    def _generateGunConfig(self):
+        # D-Pad mapping is face buttons of the PS Move △ =up ✕ =down □ =left ○ =right
+        gunMapping = {
+            "T": 1,
+            "Move": 2,
+            "Start": 3,
+            "Select": 4,
+            "Triangle": 8,
+            "Cross": 9,
+            "Square": 10,
+            "Circle": 11
+        }
+        with (RPCS3_CONFIG_DIR / "gem_gun.yml").open("w") as f:
+            for player in range(1, 5):
+                f.write(f"Player {player}:\n")
+                for psmove, gun_num in gunMapping.items():
+                    f.write(f"  {psmove}: Gun Button {gun_num}\n")
 
     @staticmethod
     def getClosestRatio(gameResolution: Resolution) -> str:

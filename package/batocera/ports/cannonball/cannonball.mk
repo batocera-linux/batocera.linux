@@ -7,6 +7,7 @@
 CANNONBALL_VERSION = 27493ebf62be3498dff93ed6a45e8e2db819bae1
 CANNONBALL_SITE = $(call github,djyt,cannonball,$(CANNONBALL_VERSION))
 CANNONBALL_LICENSE = GPLv2
+CANNONBALL_EMULATOR_INFO = cannonball.emulator.yml
 CANNONBALL_DEPENDENCIES = sdl2 boost
 CANNONBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 CANNONBALL_SUBDIR = cmake
@@ -55,3 +56,4 @@ define CANNONBALL_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,25 @@
+features:
+  - netplay
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  81_chroma_81:
+    group: ADVANCED OPTIONS
+    prompt: COLORIZATION
+    description: Emulate Chroma 81 interface (colorization).
+    choices:
+      Autodetect: automatic
+      'Off': disabled
+      On (forced): enabled
+  81_highres:
+    group: ADVANCED OPTIONS
+    prompt: WRX HIGH RESOLUTION
+    description: Required for some homebrew.
+    choices:
+      Autodetect: automatic
+      'Off': none
+      On (forced): WRX
+systems:
+  - zx81

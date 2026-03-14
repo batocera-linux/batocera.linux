@@ -1,0 +1,30 @@
+From 1708664b09dc1251b8c194d3cd7c096d35777d96 Mon Sep 17 00:00:00 2001
+From: Mario Limonciello <mario.limonciello@amd.com>
+Date: Thu, 2 Oct 2025 12:42:42 -0500
+Subject: [PATCH 4/5] drm/amd: Don't always set IP block HW status to false
+
+amdgpu_device_ip_suspend_phase2() calls amdgpu_ip_block_suspend()
+which already sets HW block status to false when succeeding with
+IP suspend. Remove the explicit call in
+amdgpu_device_ip_suspend_phase2() so that the status is accurate.
+
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 71d9e886c728..0286a82f462a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -3632,7 +3632,6 @@ static int amdgpu_device_ip_suspend_phase2(struct amdgpu_device *adev)
+ 
+ 		/* XXX handle errors */
+ 		r = amdgpu_ip_block_suspend(&adev->ip_blocks[i]);
+-		adev->ip_blocks[i].status.hw = false;
+ 
+ 		/* handle putting the SMC in the appropriate state */
+ 		if (!amdgpu_sriov_vf(adev)) {
+-- 
+2.43.0
+

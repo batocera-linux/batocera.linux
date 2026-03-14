@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_WINE_VERSION = 1.3
+BATOCERA_WINE_VERSION = 1.4
 BATOCERA_WINE_LICENSE = GPL
 BATOCERA_WINE_SOURCE=
 

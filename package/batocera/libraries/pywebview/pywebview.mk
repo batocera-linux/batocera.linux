@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PYWEBVIEW_VERSION = 5.3.2
+PYWEBVIEW_VERSION = 6.1
 PYWEBVIEW_SITE = $(call github,r0x0r,pywebview,$(PYWEBVIEW_VERSION))
 PYWEBVIEW_LICENSE = BSD
 

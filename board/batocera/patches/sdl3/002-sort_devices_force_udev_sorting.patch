@@ -1,0 +1,13 @@
+diff --git a/src/joystick/linux/SDL_sysjoystick.c b/src/joystick/linux/SDL_sysjoystick.c
+index 3861d32..fd3b8bd 100644
+--- a/src/joystick/linux/SDL_sysjoystick.c
++++ b/src/joystick/linux/SDL_sysjoystick.c
+@@ -1001,7 +1001,7 @@ static bool LINUX_JoystickInit(void)
+     last_input_dir_mtime = 0;
+ 
+     // Manually scan first, since we sort by device number and udev doesn't
+-    LINUX_JoystickDetect();
++    //LINUX_JoystickDetect();
+ 
+ #ifdef SDL_USE_LIBUDEV
+     if (enumeration_method == ENUMERATION_UNSET) {

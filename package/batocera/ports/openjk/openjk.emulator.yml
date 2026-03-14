@@ -1,0 +1,173 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  openjk_colour:
+    submenu: VIDEO
+    prompt: COLOUR DEPTH
+    description: Choose the emulated colour depth.
+    choices:
+      Default: None
+      16-bit: 16
+      32-bit: 32
+  openjk_detail:
+    submenu: VIDEO
+    prompt: GEOMETRIC DETAIL
+    description: Choose the level of geometric detail.
+    choices:
+      Low: Low
+      Medium: Medium
+      High: High
+  openjk_texture:
+    submenu: VIDEO
+    prompt: TEXTURE DETAIL
+    description: Choose the level of texture detail.
+    choices:
+      Low: 3
+      Medium: 2
+      High: 1
+      Very High: 0
+  openjk_texture_quality:
+    submenu: VIDEO
+    prompt: TEXTURE QUALITY
+    description: Choose the depth of texture quality.
+    choices:
+      Default: 0
+      16-bit: 16
+      32-bit: 32
+  openjk_texture_filter:
+    submenu: VIDEO
+    prompt: TEXTURE FILTER
+    description: Choose the texture filter type.
+    choices:
+      Bilinear: GL_LINEAR_MIPMAP_NEAREST
+      Trilinear: GL_LINEAR_MIPMAP_LINEAR
+  openjk_shaders:
+    submenu: VIDEO
+    prompt: DETAILED SHADERS
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_vsync:
+    submenu: VIDEO
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_brightness:
+    submenu: VIDEO
+    prompt: BRIGHTNESS
+    description: Change the game's brightness.
+    preset: sliderauto
+    preset_parameters: 0.50 3.00 .10
+  openjk_shadows:
+    submenu: VIDEO
+    prompt: SHADOWS
+    description: Choose shadow details.
+    choices:
+      None: 0
+      Simple: 1
+      Volumetric: 2
+  openjk_lights:
+    submenu: VIDEO
+    prompt: DYNAMIC LIGHTS
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_glow:
+    submenu: VIDEO
+    prompt: DYNAMIC GLOW
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_flares:
+    submenu: VIDEO
+    prompt: LIGHT FLARES
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_wall:
+    submenu: VIDEO
+    prompt: WALL MARKS
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_anistropic:
+    submenu: VIDEO
+    prompt: ANISTROPIC FILTER
+    description: Improves clarity of distant textures.
+    preset: sliderauto
+    preset_parameters: 0.00 16.00 .50
+  openjk_crosshair:
+    prompt: DRAW CROSSHAIR
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_target:
+    prompt: IDENTIFY TARGET
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_death:
+    prompt: SLOW MOTION DEATH
+    description: Choose slow motion death option.
+    choices:
+      Never: 0
+      Player: 1
+      Player, Last Enemy Jedi: 2
+      Player, Any Enemy Jedi: 3
+      Player, Last Enemy in Group: 4
+      Player, Any Enemy: 5
+      All + Enemy Jedi Dodge: 6
+  openjk_guns:
+    prompt: 1ST PERSON GUNS
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_dismember:
+    prompt: MODEL DISMEMBERMENT
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_sway:
+    prompt: VIEW SWAYING
+    choices:
+      'Off': 0
+      'On': 1
+  openjk_text:
+    prompt: TEXT
+    description: Choose text language.
+    choices:
+      English: english
+      French: french
+      German: deutsch
+      Spanish: spanish
+  openjk_voice:
+    prompt: VOICE
+    description: Choose voice language.
+    choices:
+      English: english
+      French: french
+      German: deutsch
+      Spanish: spanish
+  openjk_subtitles:
+    prompt: SUBTITLES
+    description: Choose when to enable subtitles.
+    choices:
+      None: 0
+      In Cinematics: 2
+      All voiceovers: 1
+systems:
+  - jknight

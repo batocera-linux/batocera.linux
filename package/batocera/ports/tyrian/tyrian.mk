@@ -8,6 +8,7 @@ TYRIAN_VERSION = v2.1.20221123
 TYRIAN_SITE = $(call github,opentyrian,opentyrian,$(TYRIAN_VERSION))
 
 TYRIAN_DEPENDENCIES = sdl2 sdl2_net
+TYRIAN_EMULATOR_INFO = tyrian.emulator.yml
 
 define TYRIAN_BUILD_CMDS
 	# Cross-compile
@@ -26,3 +27,4 @@ define TYRIAN_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -6,9 +6,9 @@
 
 case "$1" in
     resume|thaw)
-        info_output=$(batocera-info | grep "Model:" | awk -F": " '{print $2}' | head -n 1)
+        model_output=$(batocera-model)
         # Steam Decks
-        if [[ $info_output == "Jupiter" || $info_output == "Galileo" ]]; then
+        if [[ $model_output == "Jupiter" || $model_output == "Galileo" ]]; then
             # Check if the steam controller module is loaded
             if ! lsmod | grep -q hid_steam; then
                 # Load the steam hid module
@@ -17,7 +17,7 @@ case "$1" in
             # Set lizard_mode to 0 (false)
             echo 0 > /sys/module/hid_steam/parameters/lizard_mode
         # Ayaneo handhelds
-        elif [[ $info_output == "AIR_Plus" || $info_output == "AYANEO_2S" ]]; then
+        elif [[ $model_output == "AIR_Plus" || $model_output == "AYANEO_2S" ]]; then
             rmmod xpad_noone
             modprobe xpad_noone
         fi
@@ -25,4 +25,3 @@ case "$1" in
 esac
 
 exit 0
-

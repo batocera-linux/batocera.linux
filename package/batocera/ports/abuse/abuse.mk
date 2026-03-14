@@ -6,6 +6,7 @@
 # Version.: Commits on Oct 27, 2022
 ABUSE_VERSION = v0.9.1
 ABUSE_SITE = $(call github,Xenoveritas,abuse,$(ABUSE_VERSION))
+ABUSE_EMULATOR_INFO = abuse.emulator.yml
 
 ABUSE_DEPENDENCIES = sdl2 sdl2_mixer
 ABUSE_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -18,3 +19,4 @@ define ABUSE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

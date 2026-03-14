@@ -1,0 +1,409 @@
+From patchwork Tue Aug  6 09:06:04 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50907
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1928402vqb;
+        Tue, 6 Aug 2024 02:56:07 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCXZshrqSd2A+muY4yLgKH305wCs1vvu70It8aY9ix3G5dIU/k2V+5gUZBvB5RyWApuzgMjkZen9lsCoEXgV4GQ8ImL1jpeuWCBRdw==
+X-Google-Smtp-Source: 
+ AGHT+IGIadopmMLqzYmcAcDpOPskxYSc5aG6vQEz9lcaF3HeRSLIgO3MEPWCJYXlbn1scRcB51az
+X-Received: by 2002:a05:6512:2389:b0:530:aea3:4659 with SMTP id
+ 2adb3069b0e04-530bb39d2f1mr9443514e87.9.1722938167314;
+        Tue, 06 Aug 2024 02:56:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722938167; cv=none;
+        d=google.com; s=arc-20160816;
+        b=O+e8t+rtS1q6rbEyJ3v+rYmReZ0evzekHmQ/Otgg5ckVQB/czyrwNnyvBzLlAuC9Gz
+         plQsiCN570ZsvLoZniwst6CXv+421L5jxHtUaurvQ86CxRUJ+YQEvr4mNlmsGVDfeQLT
+         9wt12fV0vULlzrSHaVs9feXkMgdIWfu35bavxAq3FefhIjeAEUPUrfDLrfJcyGzU4WpN
+         w9k9pE+h30phUrfDoqB237W1LAyrN9GhzUWJqMr/njmoaBuzhBMyCPW+W5Ayvb6Aqeq9
+         gau5E8J91K4xDnDAjyvo+SIwytmZk2bjPFLlJbl85SXYUz9+zLB683KBkMsvaZ9t5djA
+         NJaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=Zu38vH2TQC+JrjT80VrIwZ0Tq7MgPyMTVAmpEDIwKAc=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=ZQ7XDX0rrrK2F0W3KGnz48SBNiLVOYI/hlWMZKkIIdAdfCs6Ylt/kYB9mTdqkMhGA5
+         fbuRGxbeiPH6dV8K+mW94icO7joGKAm23nHpyHIKR9IhjW8cq/Rnr48nms5Yk1niv/kD
+         Tjw2yNqk+v2O0+w0vaJEOhuWukMeJB6/X0Ky1eh5rxukTaXiQGp3ofqlYVpH+UrZqD45
+         dhqtMB3VAJGl3AYayZ2Obnreiqo2FmP9gbeBeyIVrie9XKwqeu2c6OMxTR9PS8F/zfcL
+         C5R5gq1z3W5EIPvHLK74j6CC+Jeyltki4XNj8FnuX5THlGR2DB97mDiGPfSNJbZ67ELF
+         kujg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=ho3LrtGl;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ 4fb4d7f45d1cf-5b83bf3a2b9si5251187a12.383.2024.08.06.02.56.06;
+        Tue, 06 Aug 2024 02:56:07 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=ho3LrtGl;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id 6C15868D99F;
+	Tue,  6 Aug 2024 12:06:41 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [164.92.70.200])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id 2F11A68D91D
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:35 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935192; bh=h+bR3pSuFqogl+gbK8wxIqKFFf1MzIF6HRaR15nY5Z0=;
+ b=ho3LrtGlRVo3q1qhQ9WTuR4ocSpAHqPCStaXuxR+3f/zMaNb/PqPOJ607OEX7QaRxE6Ym+rMr
+ q4M2ww+5WKcqMjLliCQVnpHYm1zFFWMl94vUxtLveujtMxp7e1hPakz6FFFyIYIToogrrEA8+xT
+ LOi28MJk/jOP5y8QDMlOoGJETu3Vw5tjNAubCTWZHrp/OoQ7+v2SvV+yBRKkY0YBHrH/1lsobVj
+ IJX7GMEQYcTBaJZpUtZO94wwGZWQbs/RV46xfs0xzsH9JZ13fL/h/l8GVkFRIPXoqr+9OZTsRxA
+ 7vcQgJ15pMXtJGGxLDTcKYw6TYbkdNjJYovYuZmkM8eg==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:04 +0000
+Message-ID: <20240806090607.43240-6-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 164.92.70.200
+X-ForwardEmail-ID: 66b1e7968ac7bd7d98d34c84
+Subject: [FFmpeg-devel] [PATCH v2 5/8] avcodec: Add V4L2 Request API mpeg2
+ hwaccel
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: KvkanqmLTCO4
+
+Add a V4L2 Request API hwaccel for MPEG2.
+
+Support for MPEG2 is enabled when Linux kernel headers declare the
+control id V4L2_CID_STATELESS_MPEG2_SEQUENCE, added in v5.14.
+
+This also change v4l2_request hwaccel to use autodetect in configure.
+
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ configure                       |   7 +-
+ libavcodec/Makefile             |   1 +
+ libavcodec/hwaccels.h           |   1 +
+ libavcodec/mpeg12dec.c          |   6 ++
+ libavcodec/v4l2_request_mpeg2.c | 176 ++++++++++++++++++++++++++++++++
+ 5 files changed, 189 insertions(+), 2 deletions(-)
+ create mode 100644 libavcodec/v4l2_request_mpeg2.c
+
+diff --git a/configure b/configure
+index af6d12f7bb..35e33a8409 100755
+--- a/configure
++++ b/configure
+@@ -358,7 +358,7 @@ External library support:
+   --enable-omx-rpi         enable OpenMAX IL code for Raspberry Pi [no]
+   --enable-rkmpp           enable Rockchip Media Process Platform code [no]
+   --disable-v4l2-m2m       disable V4L2 mem2mem code [autodetect]
+-  --enable-v4l2-request    enable V4L2 Request API code [no]
++  --disable-v4l2-request   disable V4L2 Request API code [autodetect]
+   --disable-vaapi          disable Video Acceleration API (mainly Unix/Intel) code [autodetect]
+   --disable-vdpau          disable Nvidia Video Decode and Presentation API for Unix code [autodetect]
+   --disable-videotoolbox   disable VideoToolbox code [autodetect]
+@@ -2004,6 +2004,7 @@ HWACCEL_AUTODETECT_LIBRARY_LIST="
+     videotoolbox
+     vulkan
+     v4l2_m2m
++    v4l2_request
+ "
+ 
+ # catchall list of things that require external libs to link
+@@ -2025,7 +2026,6 @@ HWACCEL_LIBRARY_LIST="
+     mmal
+     omx
+     opencl
+-    v4l2_request
+ "
+ 
+ DOCUMENT_LIST="
+@@ -3234,6 +3234,8 @@ mpeg2_dxva2_hwaccel_deps="dxva2"
+ mpeg2_dxva2_hwaccel_select="mpeg2video_decoder"
+ mpeg2_nvdec_hwaccel_deps="nvdec"
+ mpeg2_nvdec_hwaccel_select="mpeg2video_decoder"
++mpeg2_v4l2request_hwaccel_deps="v4l2_request mpeg2_v4l2_request"
++mpeg2_v4l2request_hwaccel_select="mpeg2video_decoder"
+ mpeg2_vaapi_hwaccel_deps="vaapi"
+ mpeg2_vaapi_hwaccel_select="mpeg2video_decoder"
+ mpeg2_vdpau_hwaccel_deps="vdpau"
+@@ -7177,6 +7179,7 @@ if enabled v4l2_m2m; then
+ fi
+ 
+ if enabled v4l2_request; then
++    check_cc mpeg2_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_MPEG2_SEQUENCE"
+     check_cc v4l2_m2m_hold_capture_buf linux/videodev2.h "int i = V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF"
+     check_func_headers "linux/media.h linux/videodev2.h" v4l2_timeval_to_ns
+     check_pkg_config libudev libudev libudev.h udev_new
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 590d2e3bc2..5c51818d0d 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -1031,6 +1031,7 @@ OBJS-$(CONFIG_MPEG2_DXVA2_HWACCEL)        += dxva2_mpeg2.o
+ OBJS-$(CONFIG_MPEG2_D3D12VA_HWACCEL)      += dxva2_mpeg2.o d3d12va_mpeg2.o
+ OBJS-$(CONFIG_MPEG2_NVDEC_HWACCEL)        += nvdec_mpeg12.o
+ OBJS-$(CONFIG_MPEG2_QSV_HWACCEL)          += qsvdec.o
++OBJS-$(CONFIG_MPEG2_V4L2REQUEST_HWACCEL)  += v4l2_request_mpeg2.o
+ OBJS-$(CONFIG_MPEG2_VAAPI_HWACCEL)        += vaapi_mpeg2.o
+ OBJS-$(CONFIG_MPEG2_VDPAU_HWACCEL)        += vdpau_mpeg12.o
+ OBJS-$(CONFIG_MPEG2_VIDEOTOOLBOX_HWACCEL) += videotoolbox.o
+diff --git a/libavcodec/hwaccels.h b/libavcodec/hwaccels.h
+index 5171e4c7d7..0cba7c71be 100644
+--- a/libavcodec/hwaccels.h
++++ b/libavcodec/hwaccels.h
+@@ -57,6 +57,7 @@ extern const struct FFHWAccel ff_mpeg2_d3d11va2_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_d3d12va_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_dxva2_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_nvdec_hwaccel;
++extern const struct FFHWAccel ff_mpeg2_v4l2request_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_vaapi_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_vdpau_hwaccel;
+ extern const struct FFHWAccel ff_mpeg2_videotoolbox_hwaccel;
+diff --git a/libavcodec/mpeg12dec.c b/libavcodec/mpeg12dec.c
+index 4f784611de..af8ffa5976 100644
+--- a/libavcodec/mpeg12dec.c
++++ b/libavcodec/mpeg12dec.c
+@@ -839,6 +839,9 @@ static const enum AVPixelFormat mpeg2_hwaccel_pixfmt_list_420[] = {
+ #endif
+ #if CONFIG_MPEG2_VIDEOTOOLBOX_HWACCEL
+     AV_PIX_FMT_VIDEOTOOLBOX,
++#endif
++#if CONFIG_MPEG2_V4L2REQUEST_HWACCEL
++    AV_PIX_FMT_DRM_PRIME,
+ #endif
+     AV_PIX_FMT_YUV420P,
+     AV_PIX_FMT_NONE
+@@ -2681,6 +2684,9 @@ const FFCodec ff_mpeg2video_decoder = {
+ #endif
+ #if CONFIG_MPEG2_VIDEOTOOLBOX_HWACCEL
+                         HWACCEL_VIDEOTOOLBOX(mpeg2),
++#endif
++#if CONFIG_MPEG2_V4L2REQUEST_HWACCEL
++                        HWACCEL_V4L2REQUEST(mpeg2),
+ #endif
+                         NULL
+                     },
+diff --git a/libavcodec/v4l2_request_mpeg2.c b/libavcodec/v4l2_request_mpeg2.c
+new file mode 100644
+index 0000000000..998c91355a
+--- /dev/null
++++ b/libavcodec/v4l2_request_mpeg2.c
+@@ -0,0 +1,176 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "config.h"
++
++#include "hwaccel_internal.h"
++#include "hwconfig.h"
++#include "mpegvideo.h"
++#include "v4l2_request.h"
++
++typedef struct V4L2RequestControlsMPEG2 {
++    V4L2RequestPictureContext pic;
++    struct v4l2_ctrl_mpeg2_sequence sequence;
++    struct v4l2_ctrl_mpeg2_picture picture;
++    struct v4l2_ctrl_mpeg2_quantisation quantisation;
++} V4L2RequestControlsMPEG2;
++
++static int v4l2_request_mpeg2_start_frame(AVCodecContext *avctx,
++                                          av_unused const uint8_t *buffer,
++                                          av_unused uint32_t size)
++{
++    const MpegEncContext *s = avctx->priv_data;
++    V4L2RequestControlsMPEG2 *controls = s->cur_pic.ptr->hwaccel_picture_private;
++    int ret;
++
++    ret = ff_v4l2_request_start_frame(avctx, &controls->pic, s->cur_pic.ptr->f);
++    if (ret)
++        return ret;
++
++    controls->sequence = (struct v4l2_ctrl_mpeg2_sequence) {
++        /* ISO/IEC 13818-2, ITU-T Rec. H.262: Sequence header */
++        .horizontal_size = s->width,
++        .vertical_size = s->height,
++        .vbv_buffer_size = controls->pic.output->size,
++
++        /* ISO/IEC 13818-2, ITU-T Rec. H.262: Sequence extension */
++        .profile_and_level_indication = 0,
++        .chroma_format = s->chroma_format,
++    };
++
++    if (s->progressive_sequence)
++        controls->sequence.flags |= V4L2_MPEG2_SEQ_FLAG_PROGRESSIVE;
++
++    controls->picture = (struct v4l2_ctrl_mpeg2_picture) {
++        /* ISO/IEC 13818-2, ITU-T Rec. H.262: Picture header */
++        .picture_coding_type = s->pict_type,
++
++        /* ISO/IEC 13818-2, ITU-T Rec. H.262: Picture coding extension */
++        .f_code[0][0] = s->mpeg_f_code[0][0],
++        .f_code[0][1] = s->mpeg_f_code[0][1],
++        .f_code[1][0] = s->mpeg_f_code[1][0],
++        .f_code[1][1] = s->mpeg_f_code[1][1],
++        .picture_structure = s->picture_structure,
++        .intra_dc_precision = s->intra_dc_precision,
++    };
++
++    if (s->top_field_first)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_TOP_FIELD_FIRST;
++
++    if (s->frame_pred_frame_dct)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_FRAME_PRED_DCT;
++
++    if (s->concealment_motion_vectors)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_CONCEALMENT_MV;
++
++    if (s->intra_vlc_format)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_INTRA_VLC;
++
++    if (s->q_scale_type)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_Q_SCALE_TYPE;
++
++    if (s->alternate_scan)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_ALT_SCAN;
++
++    if (s->repeat_first_field)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_REPEAT_FIRST;
++
++    if (s->progressive_frame)
++        controls->picture.flags |= V4L2_MPEG2_PIC_FLAG_PROGRESSIVE;
++
++    switch (s->pict_type) {
++    case AV_PICTURE_TYPE_B:
++        if (s->next_pic.ptr)
++            controls->picture.backward_ref_ts =
++                ff_v4l2_request_get_capture_timestamp(s->next_pic.ptr->f);
++        // fall-through
++    case AV_PICTURE_TYPE_P:
++        if (s->last_pic.ptr)
++            controls->picture.forward_ref_ts =
++                ff_v4l2_request_get_capture_timestamp(s->last_pic.ptr->f);
++    }
++
++    for (int i = 0; i < 64; i++) {
++        int n = s->idsp.idct_permutation[ff_zigzag_direct[i]];
++        controls->quantisation.intra_quantiser_matrix[i] = s->intra_matrix[n];
++        controls->quantisation.non_intra_quantiser_matrix[i] = s->inter_matrix[n];
++        controls->quantisation.chroma_intra_quantiser_matrix[i] = s->chroma_intra_matrix[n];
++        controls->quantisation.chroma_non_intra_quantiser_matrix[i] = s->chroma_inter_matrix[n];
++    }
++
++    return 0;
++}
++
++static int v4l2_request_mpeg2_decode_slice(AVCodecContext *avctx,
++                                           const uint8_t *buffer, uint32_t size)
++{
++    const MpegEncContext *s = avctx->priv_data;
++    V4L2RequestControlsMPEG2 *controls = s->cur_pic.ptr->hwaccel_picture_private;
++
++    return ff_v4l2_request_append_output(avctx, &controls->pic, buffer, size);
++}
++
++static int v4l2_request_mpeg2_end_frame(AVCodecContext *avctx)
++{
++    const MpegEncContext *s = avctx->priv_data;
++    V4L2RequestControlsMPEG2 *controls = s->cur_pic.ptr->hwaccel_picture_private;
++
++    struct v4l2_ext_control control[] = {
++        {
++            .id = V4L2_CID_STATELESS_MPEG2_SEQUENCE,
++            .ptr = &controls->sequence,
++            .size = sizeof(controls->sequence),
++        },
++        {
++            .id = V4L2_CID_STATELESS_MPEG2_PICTURE,
++            .ptr = &controls->picture,
++            .size = sizeof(controls->picture),
++        },
++        {
++            .id = V4L2_CID_STATELESS_MPEG2_QUANTISATION,
++            .ptr = &controls->quantisation,
++            .size = sizeof(controls->quantisation),
++        },
++    };
++
++    return ff_v4l2_request_decode_frame(avctx, &controls->pic,
++                                        control, FF_ARRAY_ELEMS(control));
++}
++
++static int v4l2_request_mpeg2_init(AVCodecContext *avctx)
++{
++    return ff_v4l2_request_init(avctx, V4L2_PIX_FMT_MPEG2_SLICE,
++                                1024 * 1024,
++                                NULL, 0);
++}
++
++const FFHWAccel ff_mpeg2_v4l2request_hwaccel = {
++    .p.name             = "mpeg2_v4l2request",
++    .p.type             = AVMEDIA_TYPE_VIDEO,
++    .p.id               = AV_CODEC_ID_MPEG2VIDEO,
++    .p.pix_fmt          = AV_PIX_FMT_DRM_PRIME,
++    .start_frame        = v4l2_request_mpeg2_start_frame,
++    .decode_slice       = v4l2_request_mpeg2_decode_slice,
++    .end_frame          = v4l2_request_mpeg2_end_frame,
++    .flush              = ff_v4l2_request_flush,
++    .frame_priv_data_size = sizeof(V4L2RequestControlsMPEG2),
++    .init               = v4l2_request_mpeg2_init,
++    .uninit             = ff_v4l2_request_uninit,
++    .priv_data_size     = sizeof(V4L2RequestContext),
++    .frame_params       = ff_v4l2_request_frame_params,
++};

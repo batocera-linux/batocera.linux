@@ -1,0 +1,26 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+systems:
+  - name: dos
+    exclude_extensions:
+      - zip
+custom_features:
+  dosbox_staging_writes_to_rom:
+    prompt: Enable writable overlay for squashfs ROMs
+    description: Writes are saved per-game in saves/dos/game-rom-name
+    choices:
+      Enabled: True
+      Disabled: False

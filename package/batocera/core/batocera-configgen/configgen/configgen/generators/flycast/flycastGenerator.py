@@ -42,8 +42,22 @@ class FlycastGenerator(Generator):
 
         if not Config.has_section("input"):
             Config.add_section("input")
+
+        # Lightguns - configure before controllers (guns take priority on ports)
+        gun_ports = set()
+        if system.config.use_guns and guns:
+            for nplayer, _ in enumerate(guns[:4], start=1):
+                Config.set("input", f'device{nplayer}', "7")   # MDT_LightGun
+                Config.set("input", f'device{nplayer}.1', "1") # VMU
+                Config.set("input", f'device{nplayer}.2', "10") # None
+                gun_ports.add(nplayer)
+
         # For each pad detected
         for controller in playersControllers:
+            # Skip ports already assigned to guns
+            if controller.player_number in gun_ports:
+                continue
+
             # Write the mapping files for Dreamcast
             if (system.name == "dreamcast"):
                 flycastControllers.generateControllerConfig(controller, "dreamcast")
@@ -59,7 +73,7 @@ class FlycastGenerator(Generator):
             Config.set("input", f'device{controller.player_number}.2', system.config.get_str(ctrlpackconfig, '1'))  # Sega VMU
             # Ensure controller(s) are on seperate Ports
             port = controller.player_number-1
-            Config.set("input", f'maple_sdl_joystick_{port}', str(port))
+            Config.set("input", f'maple_sdl_joystick_{controller.index}', str(port))
 
         # add the keyboard mappings for hotkeys
         flycastControllers.generateKeyboardConfig()
@@ -119,9 +133,10 @@ class FlycastGenerator(Generator):
         Config.set("config", "Dreamcast.AutoSaveState", system.config.get_str("flycast_savestate", "no"))
         # windows CE
         Config.set("config", "Dreamcast.ForceWindowsCE", system.config.get_str("flycast_winCE", "no"))
+        # Per-game VMU
+        Config.set("config", "PerGameVmu", system.config.get_bool("flycast_per_game_vmu", return_values=("yes", "no")))
         # DSP
         Config.set("config", "aica.DSPEnabled", system.config.get_str("flycast_DSP", "no"))
-        # Guns (WIP)
         # Guns crosshairs
         Config.set("config", "rend.CrossHairColor1", system.config.get_str("flycast_lightgun1_crosshair", "0"))
         Config.set("config", "rend.CrossHairColor2", system.config.get_str("flycast_lightgun2_crosshair", "0"))
@@ -177,11 +192,11 @@ class FlycastGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_CONFIG_DIRS":CONFIGS,
-                "XDG_DATA_HOME":FLYCAST_SAVES.parent,
-                "FLYCAST_DATADIR":FLYCAST_SAVES.parent,
-                "FLYCAST_BIOS_PATH":FLYCAST_BIOS,
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_CONFIG_DIRS": CONFIGS,
+                "XDG_DATA_HOME": FLYCAST_SAVES.parent,
+                "FLYCAST_DATADIR": FLYCAST_SAVES.parent,
+                "FLYCAST_BIOS_PATH": FLYCAST_BIOS,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0"
             }

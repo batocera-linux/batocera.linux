@@ -1,0 +1,27 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+features:
+  - padtokeyboard
+custom_features:
+  cth_new_graphics:
+    prompt: USE NEW GRAPHICS
+    description: Use new graphics created from CorsixTH project
+    choices:
+      Enabled (Default): "true"
+      Disabled: "false"
+  cth_free_build_mode:
+    prompt: ENABLE SANDBOX MODE
+    description: Free Build or Sandbox mode. You cannot win or lose custom made maps if this is set to true. You also don't have to worry about money.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+  cth_play_intro:
+    prompt: PLAY INTRO MOVIE
+    description: Enable or Disable Intro movie (Enabled by default).
+    choices:
+      Enabled (Default): "true"
+      Disabled: "false"
+systems:
+  - corsixth

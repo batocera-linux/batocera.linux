@@ -11,8 +11,8 @@ ifeq ($(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4),y)
     ROCKCHIP_RGA_SOURCE = rockchip-rga-$(ROCKCHIP_RGA_VERSION).tar.gz
     ROCKCHIP_RGA_SITE = https://github.com/batocera-linux/rockchip-packages/releases/download/20220303
 else
-    # Version: Commits on Sep 19, 2024
-    ROCKCHIP_RGA_VERSION = e97e327662d1c0867d4cbcc01d5caf15250fc4e7
+    # Version: Commits on Jun 1, 2025
+    ROCKCHIP_RGA_VERSION = 571a880951583a3b2a04e7e1fa900861653befde
     ROCKCHIP_RGA_SITE =  $(call github,nyanmisaka,rk-mirrors,jellyfin-rga,$(ROCKCHIP_RGA_VERSION))
 endif
 

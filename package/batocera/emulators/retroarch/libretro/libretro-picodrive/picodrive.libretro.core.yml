@@ -1,0 +1,73 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - autosave
+custom_features:
+  picodrive_sprlim:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the eighty sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  picodrive_cropoverscan:
+    group: ADVANCED OPTIONS
+    prompt: CROP OVERSCAN
+    description: Zooms in to hide black borders.
+    choices:
+      'Off': disabled
+      'On': enabled
+  pd_controller1_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 1 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  pd_controller2_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 2 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  pd_controller3_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 3 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  pd_controller4_mapping:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 4 INPUT MAPPING
+    description: Use Megadrive to automap inputs for a Megadrive style controller with a 6 button layout.
+    choices:
+      Retropad (Default): retropad
+      Megadrive: megadrive
+  picodrive_controller1:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      Joypad 3 Button: 3 button pad
+      Joypad 6 Button: 6 button pad
+  picodrive_controller2:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER 2 TYPE
+    choices:
+      Joypad 3 Button: 3 button pad
+      Joypad 6 Button: 6 button pad
+systems:
+  - gamegear
+  - mastersystem
+  - megacd
+  - megadrive
+  - pico
+  - name: sega32x
+    custom_features:
+      picodrive-autowidescreen:
+        prompt: AUTO WIDESCREEN
+        description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
+        choices:
+          'Off': "False"
+          'On': "True"

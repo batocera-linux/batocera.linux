@@ -1,0 +1,19 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      4:3: 0
+      16:9: 1
+  highResolution:
+    prompt: HIGH RESOLUTION MODE
+    description: Improves both sprite scaling and road rendering. Does not affect the car sprite.
+    choices:
+      'Off': 0
+      'On': 1
+systems:
+  - cannonball

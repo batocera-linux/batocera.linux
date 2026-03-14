@@ -46,6 +46,15 @@ def get_discrete_gpu_name() -> str | None:
     return None
 
 
+def get_default_gpu_name() -> str | None:
+    try:
+        return subprocess.check_output([_BATOCERA_VULKAN, 'defaultName'], text=True).strip() or None
+    except subprocess.CalledProcessError:
+        _logger.exception('Error getting default GPU Name')
+
+    return None
+
+
 def get_discrete_gpu_uuid() -> str | None:
     try:
         return subprocess.check_output([_BATOCERA_VULKAN, 'discreteUUID'], text=True).strip() or None

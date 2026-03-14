@@ -1,0 +1,118 @@
+shared_features:
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  wii_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x native (640x528): x1 (640 x 528)
+      2x 720p (1280x1056): x2 (1280 x 1056)
+      3x 1080p (1920x1584): x3 (1920 x 1584)
+      4x 1440p (2560x2112): x4 (2560 x 2112)
+      5x (3200x2640): x5 (3200 x 2640)
+      6x 4K (3840x3168): x6 (3840 x 3168)
+  wii_language:
+    prompt: LANGUAGE
+    description: Wii NAND's language setting.
+    choices:
+      English: English
+      French: French
+      German: German
+      Spanish: Spanish
+      Italian: Italian
+      Dutch: Dutch
+      Japanese: Japanese
+      Simplified Chinese: Simplified Chinese
+      Traditional Chinese: Traditional Chinese
+      Korean: Korean
+  wii_widescreen_hack:
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': disabled
+      'On': enabled
+  wii_shader_mode:
+    group: ADVANCED OPTIONS
+    prompt: UBERSHADERS
+    description: May not work well on all hardware. Hybrid is preferred, where supported.
+    choices:
+      No Ubershaders: sync
+      Exclusive Ubershaders: sync UberShaders
+      Hybrid Ubershaders: a-sync UberShaders
+      Skip Drawing: a-sync Skip Rendering
+  wii_anisotropic:
+    group: ADVANCED OPTIONS
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      'Off': 1x
+      2x: 2x
+      4x: 4x
+      8x: 8x
+      16x: 16x
+  wii_osd:
+    group: ADVANCED OPTIONS
+    prompt: OSD MESSAGES
+    description: Enables or disable on screen messages.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+systems:
+  - gamecube
+  - name: wii
+    custom_features:
+      wii_widescreen:
+        prompt: WII TV MODE
+        description: Wii NAND's aspect ratio setting. Most games support both ratios natively.
+        choices:
+          16:9: enabled
+          4:3: disabled
+      controller1_wii:
+        prompt: CONTROLLER 1 TYPE
+        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+        choices:
+          WiiMote: 1
+          WiiMote Sideways: 513
+          WiiMote + Nunchuk: 769
+          WiiMote + Classic Controller: 1025
+          WiiMote + Classic Controller Pro: 1281
+          Real Wiimote: 1536
+          GameCube Controller: 1281
+      controller2_wii:
+        prompt: CONTROLLER 2 TYPE
+        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+        choices:
+          WiiMote: 1
+          WiiMote Sideways: 513
+          WiiMote + Nunchuk: 769
+          WiiMote + Classic Controller: 1025
+          WiiMote + Classic Controller Pro: 1281
+          Real Wiimote: 1536
+          GameCube Controller: 1281
+      controller3_wii:
+        prompt: CONTROLLER 3 TYPE
+        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+        choices:
+          WiiMote: 1
+          WiiMote Sideways: 513
+          WiiMote + Nunchuk: 769
+          WiiMote + Classic Controller: 1025
+          WiiMote + Classic Controller Pro: 1281
+          Real Wiimote: 1536
+          GameCube Controller: 1281
+      controller4_wii:
+        prompt: CONTROLLER 4 TYPE
+        description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
+        choices:
+          WiiMote: 1
+          WiiMote Sideways: 513
+          WiiMote + Nunchuk: 769
+          WiiMote + Classic Controller: 1025
+          WiiMote + Classic Controller Pro: 1281
+          Real Wiimote: 1536
+          GameCube Controller: 1281

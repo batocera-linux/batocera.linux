@@ -8,6 +8,7 @@ LIBRETRO_LUTRO_VERSION = 09a134eccad87127ec757503f736d6e4f9d06d4c
 LIBRETRO_LUTRO_SITE = $(call github,libretro,libretro-lutro,$(LIBRETRO_LUTRO_VERSION))
 LIBRETRO_LUTRO_LICENSE = MIT
 LIBRETRO_LUTRO_DEPENDENCIES += retroarch
+LIBRETRO_LUTRO_EMULATOR_INFO = lutro.libretro.core.yml
 
 LIBRETRO_LUTRO_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -48,3 +49,4 @@ define LIBRETRO_LUTRO_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

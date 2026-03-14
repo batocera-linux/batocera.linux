@@ -1,0 +1,126 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+  - use_guns
+custom_features:
+  stella_console:
+    group: DISPLAY
+    prompt: CONSOLE DISPLAY
+    description: Select the console video standard / display mode.
+    choices:
+      Auto (Default): auto
+      NTSC: ntsc
+      PAL: pal
+      SECAM: secam
+      NTSC50: ntsc50
+      PAL60: pal60
+      SECAM60: secam60
+  stella_palette:
+    group: DISPLAY
+    prompt: PALETTE COLORS
+    description: Select the palette used to render colors.
+    choices:
+      Standard (Default): standard
+      Z26: z26
+      User: user
+      Custom: custom
+  stella_filter:
+    group: DISPLAY
+    prompt: TV EFFECTS
+    description: Enable TV-like filtering / effects.
+    choices:
+      Disabled (Default): disabled
+      Composite: composite
+      S-Video: s-video
+      RGB: rgb
+      Badly adjusted: badly adjusted
+  stella_crop_hoverscan:
+    group: DISPLAY
+    prompt: CROP HORIZONTAL OVERSCAN
+    description: Crop horizontal overscan.
+    choices:
+      Disabled (Default): disabled
+      Enabled: enabled
+  stella_crop_voverscan:
+    group: DISPLAY
+    prompt: CROP VERTICAL OVERSCAN
+    description: Crop vertical overscan (lines). Core default (0).
+    preset: sliderauto
+    preset_parameters: 0 24 1
+  stella_ntsc_aspect:
+    group: DISPLAY
+    prompt: NTSC ASPECT
+    description: NTSC aspect ratio correction. Core default (PAR).
+    preset: sliderauto
+    preset_parameters: 75 125 1 %
+  stella_pal_aspect:
+    group: DISPLAY
+    prompt: PAL ASPECT
+    description: PAL aspect ratio correction. Core default (PAR).
+    preset: sliderauto
+    preset_parameters: 75 125 1 %
+  stella_phosphor:
+    group: DISPLAY
+    prompt: PHOSPHOR MODE
+    description: Enable phosphor mode (motion blur) for flickering effects.
+    choices:
+      Auto (Default): auto
+      'Off': 'off'
+      'On': 'on'
+  stella_phosphor_blend:
+    group: DISPLAY
+    prompt: PHOSPHOR BLEND
+    description: Phosphor blend level. Core default (60%).
+    preset: sliderauto
+    preset_parameters: 0 100 5 %
+  stella_stereo:
+    group: AUDIO
+    prompt: STEREO SOUND
+    description: Stereo sound output.
+    choices:
+      Auto (Default): auto
+      'Off': 'off'
+      'On': 'on'
+  stella_paddle_mouse_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE MOUSE SENSITIVITY
+    description: Mouse sensitivity for paddles. Core default (10).
+    preset: sliderauto
+    preset_parameters: 1 30 1
+  stella_paddle_joypad_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE JOYPAD SENSITIVITY
+    description: Joypad sensitivity for paddles. Core default  (3).
+    preset: sliderauto
+    preset_parameters: 1 20 1
+  stella_paddle_analog_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE ANALOG SENSITIVITY
+    description: Analog sensitivity for paddles. Core default (20).
+    preset: sliderauto
+    preset_parameters: 0 30 1
+  stella_paddle_analog_deadzone:
+    group: CONTROLS
+    prompt: PADDLE ANALOG DEADZONE
+    description: Analog deadzone for paddles. Core default (15).
+    preset: sliderauto
+    preset_parameters: 0 30 1
+  stella_paddle_analog_absolute:
+    group: CONTROLS
+    prompt: PADDLE ANALOG ABSOLUTE
+    description: Use absolute analog input for paddles.
+    choices:
+      Disabled (Default): disabled
+      Enabled: enabled
+  stella_lightgun_crosshair:
+    group: LIGHT GUN
+    prompt: LIGHT GUN CROSSHAIRS
+    description: Show a crosshair for lightgun games.
+    choices:
+      Disabled (Default): disabled
+      Enabled: enabled
+systems:
+  - atari2600

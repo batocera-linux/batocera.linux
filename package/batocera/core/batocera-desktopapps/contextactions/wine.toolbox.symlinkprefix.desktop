@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=WINE: Create Symlink to Prefix 
+Folders=*/windows*;
+Basenames=*.pc;*.wsquashfs;*.wgtz;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=all/all
+Exec=/usr/share/file-manager/actions/toolbox/wine.toolbox --symlink-prefix %b

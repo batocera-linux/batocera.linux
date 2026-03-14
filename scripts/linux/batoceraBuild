@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cd /batocera/batocera.linux || exit 1
+export PARALLEL_BUILD=y
 
 SEARCHDIR="./run/current"
 LOGDIR="./run/logs"
@@ -68,8 +69,6 @@ do_html() {
     for board in ${BOARDS}
     do
         mkdir -p "output/${arch}/images/batocera/images/${board}/" || return 1
-	cp "output/${arch}/images/batocera/batocera_systemsReport.html" "output/${arch}/images/batocera/images/${board}/" || return 1
-	cp "output/${arch}/images/batocera/batocera_systemsReport.json" "output/${arch}/images/batocera/images/${board}/" || return 1
 	(docker run --rm --name "${arch}_html_"$(date "+%Y%m%d_%H%M%S") -v $PWD:/build batoceralinux/batocera.linux-build /bin/bash -c "/build/scripts/linux/buildstats.sh /build/output/${arch} ${board} > /build/output/${arch}/images/batocera/images/${board}/index.html")
     done
 }
@@ -114,6 +113,9 @@ buildAll() {
 	    return 1
 	fi
 	echo_msg "${NEXTITEM}" "building..."
+
+	# remove the config file to regenerate it in case options like parallelism are changed
+	rm -f "configs/batocera-${NEXTITEM}_defconfig" || return 1
 	if make "${NEXTITEM}-build" > "${LOGDIR}/build-${NEXTITEM}.log" 2> "${LOGDIR}/build-${NEXTITEM}.err"
 	then
 	    do_html "${NEXTITEM}" "${ftptarget}"
@@ -192,6 +194,27 @@ case "${1}" in
 	fi
 	arch="${2}"
 	tail -f "./output/${arch}/build/build-time.log"
+	;;
+    "logstats")
+	if test -z "${2}"
+	then
+	    echo_msg "-" "missing argument" >&2
+	    exit 1
+	fi
+	arch="${2}"
+	cat "./output/${arch}/build/build-time.log" | grep -E "^[^:]*:end" | cut -d : -f 3 | sort | uniq -c | sort -rn | grep -vE '[ ]+rsync[ ]*$|[ ]+install-[a-z]+[ ]*$'
+	;;
+    "logrunning")
+	if test -z "${2}"
+	then
+	    echo_msg "-" "missing argument" >&2
+	    exit 1
+	fi
+	arch="${2}"
+	cat "./output/${arch}/build/build-time.log" | cut -d : -f 2,3,4 | sed -e s+" "++g | grep -E '^start:' | cut -d : -f 2,3 | sort > /tmp/logrunningA
+	cat "./output/${arch}/build/build-time.log" | cut -d : -f 2,3,4 | sed -e s+" "++g | grep -E '^end:'   | cut -d : -f 2,3 | sort > /tmp/logrunningB
+	join -v 1 /tmp/logrunningA /tmp/logrunningB
+	rm -f /tmp/logrunningA /tmp/logrunningB
 	;;
     "push")
 	ftptarget=${2}

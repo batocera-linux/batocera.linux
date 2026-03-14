@@ -33,10 +33,12 @@ class LexaloffleGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         if (system.name == "pico8"):
+            LD_LIB=BIOS / "pico-8"
             BIN_PATH=PICO8_BIN_PATH
             CONTROLLERS=PICO8_CONTROLLERS
             ROOT_PATH=PICO8_ROOT_PATH
         elif (system.name == "voxatron"):
+            LD_LIB=BIOS / "voxatron"
             BIN_PATH=VOX_BIN_PATH
             CONTROLLERS=VOX_CONTROLLERS
             ROOT_PATH=VOX_ROOT_PATH
@@ -80,7 +82,11 @@ class LexaloffleGenerator(Generator):
         with ensure_parents_and_open(CONTROLLERS, "w") as file:
                file.write(controllersconfig)
 
-        return Command.Command(array=commandArray, env={})
+        existing_library_path = os.environ.get("LD_LIBRARY_PATH")
+
+        return Command.Command(array=commandArray, env={
+            "LD_LIBRARY_PATH": f"{LD_LIB}:{existing_library_path}" if existing_library_path else LD_LIB
+        })
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 4/3

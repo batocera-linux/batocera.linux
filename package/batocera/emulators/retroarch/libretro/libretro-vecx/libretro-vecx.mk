@@ -3,11 +3,12 @@
 # libretro-vecx
 #
 ################################################################################
-# Version.: Commits on Feb 10, 2024
-LIBRETRO_VECX_VERSION = 56a99fa08a7601b304d752188ca573febf26faeb
+# Version.: Commits on Jan 12, 2026
+LIBRETRO_VECX_VERSION = eacee1f6f029688b043ed802cece29dd3c320e21
 LIBRETRO_VECX_SITE = $(call github,libretro,libretro-vecx,$(LIBRETRO_VECX_VERSION))
 LIBRETRO_VECX_LICENSE = GPLv2|LGPLv2.1
 LIBRETRO_VECX_DEPENDENCIES += retroarch
+LIBRETRO_VECX_EMULATOR_INFO = vecx.libretro.core.yml
 
 ifeq ($(BR2_PACKAGE_HAS_LIBGL),y)
 LIBRETRO_VECX_DEPENDENCIES += libgl
@@ -26,7 +27,7 @@ LIBRETRO_VECX_PLATFORM = $(LIBRETRO_PLATFORM)
 ifeq ($(BR2_PACKAGE_BATOCERA_RPI_VCORE),y)
 LIBRETRO_VECX_PLATFORM = rpi
 
-else ifeq ($(BR2_PACKAGE_BATOCERA_RPI_MESA3D),y)
+else ifeq ($(BR2_PACKAGE_BATOCERA_RPI_MESA3D)$(BR2_PACKAGE_BATOCERA_RPI4_MESA3D),y)
 LIBRETRO_VECX_PLATFORM = rpi-mesa
 
 else ifeq ($(BR2_aarch64),y)
@@ -50,3 +51,4 @@ define LIBRETRO_VECX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

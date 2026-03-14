@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Action
+Name=Get md5 Checksum
+Profiles=Batocera
+
+[X-Action-Profile Batocera]
+MimeTypes=all/allfiles
+Exec=bash -c "md5sum %F | yad --text-info"

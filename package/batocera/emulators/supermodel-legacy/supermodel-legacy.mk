@@ -7,8 +7,9 @@
 # Major move to OpenGL 4.1 breaks the RPi4 compatibility
 SUPERMODEL_LEGACY_VERSION = 0eef09ba2b74e48fd5cfd388ee69a3743fd5f618
 SUPERMODEL_LEGACY_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_LEGACY_VERSION))
-SUPERMODEL_LEGACY_DEPENDENCIES = sdl2 zlib libzip sdl2_net
+SUPERMODEL_LEGACY_DEPENDENCIES = sdl2 zlib libzip sdl2_net supermodel-common
 SUPERMODEL_LEGACY_LICENSE = GPLv3
+SUPERMODEL_LEGACY_EMULATOR_INFO = supermodel-legacy.supermodel.core.yml
 
 ifeq ($(BR2_PACKAGE_LIBGLEW),y)
     SUPERMODEL_LEGACY_DEPENDENCIES += libglew
@@ -61,3 +62,4 @@ SUPERMODEL_LEGACY_PRE_PATCH_HOOKS += SUPERMODEL_LEGACY_LINE_ENDINGS_FIXUP
 SUPERMODEL_LEGACY_POST_INSTALL_TARGET_HOOKS += SUPERMODEL_LEGACY_POST_PROCESS
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

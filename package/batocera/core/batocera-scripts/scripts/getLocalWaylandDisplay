@@ -1,0 +1,4 @@
+#!/bin/bash
+
+find /run -name "wayland-*.lock" 2>/dev/null | head -1 | sed -e s+"^.*/\([^/]*\)\.lock$"+"\1"+
+exit ${PIPESTATUS[0]}

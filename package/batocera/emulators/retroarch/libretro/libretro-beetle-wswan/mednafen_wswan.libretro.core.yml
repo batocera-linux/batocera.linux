@@ -1,0 +1,17 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  wswan_rotate_display:
+    prompt: DISPLAY ROTATION
+    decription: Initial orientation of the game & controls
+    choices:
+      Manual: manual
+      Portrait: portrait
+      Landscape: landscape
+systems:
+  - wswan
+  - wswanc

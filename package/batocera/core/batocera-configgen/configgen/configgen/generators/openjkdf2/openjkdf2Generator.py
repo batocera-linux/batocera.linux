@@ -13,28 +13,26 @@
 #
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Set, Optional, Tuple
-
-import shutil
-import os
-import logging
 import json
+import logging
+import os
+import shutil
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Final
+
 from ... import Command
 from ...batoceraPaths import mkdir_if_not_exists
-from ...config import Config
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 
 if TYPE_CHECKING:
-    from ...config import SystemConfig
-    from ...types import HotkeysContext, Resolution
+    from ...types import HotkeysContext
 
 _logger = logging.getLogger(__name__)
 
 # --- Default Template for Batocera.plr Creation ---
 # Represents the file content when created for the first time
-DEFAULT_PLAYER_CONFIG_TEMPLATE = [
+_DEFAULT_PLAYER_CONFIG_TEMPLATE: Final = [
     "version 1\n",
     "diff 1\n",
     "fullsubtitles 0\n",
@@ -144,17 +142,16 @@ DEFAULT_PLAYER_CONFIG_TEMPLATE = [
 ]
 
 # --- Helper to find line index in template ---
-DEFAULT_TEMPLATE_LINE_MAP: Dict[str, int] = {}
-for i, line in enumerate(DEFAULT_PLAYER_CONFIG_TEMPLATE):
+_DEFAULT_TEMPLATE_LINE_MAP: dict[str, int] = {}
+for i, line in enumerate(_DEFAULT_PLAYER_CONFIG_TEMPLATE):
     stripped = line.strip()
     parts = stripped.split(" ", 1)
     if len(parts) > 1:
         # Use the first word (key)
-        DEFAULT_TEMPLATE_LINE_MAP[parts[0]] = i
+        _DEFAULT_TEMPLATE_LINE_MAP[parts[0]] = i
 
 
 class OpenJKDF2Generator(Generator):
-
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "openjkdf2",
@@ -165,43 +162,43 @@ class OpenJKDF2Generator(Generator):
             }
         }
 
-    def _update_player_config(self, config_file: Path, settings_to_set: Dict[str, str]):
+    def _update_player_config(self, config_file: Path, settings_to_set: dict[str, str]):
 
-        output_lines: List[str] = []
+        output_lines: list[str] = []
         config_file.parent.mkdir(parents=True, exist_ok=True)
         if not config_file.exists():
             # --- Create file from Template ---
-            _logger.debug(f"Config file {config_file} not found. Creating from template.")
-            output_lines = DEFAULT_PLAYER_CONFIG_TEMPLATE[:]
+            _logger.debug("Config file %s not found. Creating from template.", config_file)
+            output_lines = _DEFAULT_PLAYER_CONFIG_TEMPLATE[:]
 
             # Apply the settings provided onto the template
             for plr_key, new_line_content in settings_to_set.items():
-                line_index = DEFAULT_TEMPLATE_LINE_MAP.get(plr_key)
+                line_index = _DEFAULT_TEMPLATE_LINE_MAP.get(plr_key)
                 if line_index is not None:
                     output_lines[line_index] = new_line_content
         else:
             # --- Modify Existing File ---
-            _logger.debug(f"Config file {config_file} exists. Modifying.")
-            settings_processed: Dict[str, str] = settings_to_set.copy()
-            original_lines: List[str] = []
-            processed_keys_in_file: Set[str] = set()
+            _logger.debug("Config file %s exists. Modifying.", config_file)
+            settings_processed = settings_to_set.copy()
+            original_lines: list[str] = []
+            processed_keys_in_file: set[str] = set()
             try:
-                with open(config_file, 'r') as f_read:
+                with config_file.open() as f_read:
                     original_lines = f_read.readlines()
             except OSError as e:
-                _logger.error(f"Error reading existing player config file {config_file}: {e}. Cannot modify.")
+                _logger.error("Error reading existing player config file %s: %s. Cannot modify.", config_file, e)
                 # Fallback to creation logic if read fails
-                _logger.info(f"Falling back to creating {config_file} from template due to read error.")
-                output_lines = DEFAULT_PLAYER_CONFIG_TEMPLATE[:]
+                _logger.info("Falling back to creating %s from template due to read error.", config_file)
+                output_lines = _DEFAULT_PLAYER_CONFIG_TEMPLATE[:]
                 for plr_key, new_line_content in settings_to_set.items():
-                    line_index = DEFAULT_TEMPLATE_LINE_MAP.get(plr_key)
+                    line_index = _DEFAULT_TEMPLATE_LINE_MAP.get(plr_key)
                     if line_index is not None:
                         output_lines[line_index] = new_line_content
                 original_lines = []
 
             # Ensure "version 1" is present if file was malformed (and we didn't fallback)
             if original_lines and (not output_lines) and (not original_lines[0].strip().lower().startswith("version ")):
-                 _logger.warning(f"Existing config {config_file} missing 'version 1' at start. Prepending.")
+                 _logger.warning("Existing config %s missing 'version 1' at start. Prepending.", config_file)
                  output_lines.append("version 1\n")
                  # Add original lines after, skipping potential existing version line
                  start_index = 1 if original_lines and original_lines[0].strip().lower().startswith("version ") else 0
@@ -229,53 +226,41 @@ class OpenJKDF2Generator(Generator):
                         output_lines.append(line)
                 # Append any settings that were not found in the original file
                 if settings_processed:
-                     _logger.warning(f"Settings {list(settings_processed.keys())} were not found in existing file {config_file}. Appending them.")
+                     _logger.warning("Settings %s were not found in existing file %s. Appending them.", list(settings_processed.keys()), config_file)
                      output_lines.extend(settings_processed.values())
-        
+
         # --- Write the final output ---
         try:
-            with open(config_file, 'w') as f_write:
+            with config_file.open('w') as f_write:
                 f_write.writelines(output_lines)
-            _logger.debug(f"Successfully wrote player config file: {config_file}")
+            _logger.debug("Successfully wrote player config file: %s", config_file)
         except OSError as e:
-            _logger.error(f"Error writing player config file {config_file}: {e}")
+            _logger.error("Error writing player config file %s: %s", config_file, e)
 
-    def parse_bool(self, value_input: Any) -> bool:
-        if isinstance(value_input, str):
-            return value_input.lower() in Config.TRUE_VALUES
-        elif value_input is None:
-            return False
-        else:
-            try:
-                return bool(value_input)
-            except TypeError:
-                _logger.warning(f"parse_bool received unexpected type {type(value_input)}, returning False.")
-                return False
-
-    def _update_json_config(self, config_file: Path, settings_to_set: Dict[str, Any]):
+    def _update_json_config(self, config_file: Path, settings_to_set: dict[str, Any]):
         config_file.parent.mkdir(parents=True, exist_ok=True)
         existing_data = {}
         if config_file.exists():
             try:
-                with open(config_file, "r") as f_read:
+                with config_file.open() as f_read:
                     content = f_read.read()
                     if content.strip():
                         existing_data = json.loads(content)
                     else:
-                         _logger.warning(f"JSON config file {config_file} is empty.")
+                         _logger.warning("JSON config file %s is empty.", config_file)
             except (OSError, json.JSONDecodeError) as e:
-                _logger.error(f"Error reading/parsing JSON config file {config_file}: {e}. Starting fresh.")
+                _logger.error("Error reading/parsing JSON config file %s: %s. Starting fresh.", config_file, e)
                 existing_data = {}
 
         existing_data.update(settings_to_set)
 
         try:
-            with open(config_file, "w") as f_write:
+            with config_file.open("w") as f_write:
                 json.dump(existing_data, f_write, indent=4)
         except OSError as e:
-            _logger.error(f"Error writing JSON config file {config_file}: {e}")
+            _logger.error("Error writing JSON config file %s: %s", config_file, e)
 
-    def generate(self, system, rom: Path, playersControllers: dict, metadata: dict, guns: list, wheels: list, gameResolution: Resolution):
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # --- Setup Paths ---
         romdir = rom.parent
@@ -290,10 +275,10 @@ class OpenJKDF2Generator(Generator):
 
         # --- Player Config (.plr) Generation ---
         try:
-            _logger.debug(f"Preparing settings for player config: {openjkdf2_player_file}")
+            _logger.debug("Preparing settings for player config: %s", openjkdf2_player_file)
             # Map Batocera config keys to PLR keys AND the default value from the TEMPLATE
             # These defaults are only used if the Batocera key is MISSING
-            settings_map: Dict[str, Tuple[str, str]] = {
+            settings_map = {
                 # Batocera Key        # PLR Key             # Template Default Value
                 "jkdf2_difficulty"  : ("diff",              "1"),
                 "jkdf2_subs"        : ("fullsubtitles",     "0"),
@@ -305,35 +290,35 @@ class OpenJKDF2Generator(Generator):
                 "jkdf2_aiming"      : ("autoAim",           "1")
             }
 
-            target_settings: Dict[str, str] = {}
+            target_settings: dict[str, str] = {}
 
             for config_key, (plr_key, template_default_value) in settings_map.items():
                 value = system.config.get_str(config_key, template_default_value)
                 target_settings[plr_key] = f"{plr_key} {value}\n"
 
             # Calculate additional bitwise aggregated values
-            autoPickup = (int(system.config.get("jkdf2_pickup", 1)) * 1 +
-                        int(system.config.get("jkdf2_dangerous", 0)) * 2 +
-                        int(system.config.get("jkdf2_weaker", 0)) * 4 +
-                        int(system.config.get("jkdf2_saber", 0)) * 8)
+            autoPickup = (system.config.get_int("jkdf2_pickup", 1) * 1 +
+                        system.config.get_int("jkdf2_dangerous", 0) * 2 +
+                        system.config.get_int("jkdf2_weaker", 0) * 4 +
+                        system.config.get_int("jkdf2_saber", 0) * 8)
 
-            autoSwitch = (int(system.config.get("jkdf2_switch", 1)) * 1 +
-                        int(system.config.get("jkdf2_switch_dangerous", 1)) * 2)
+            autoSwitch = (system.config.get_int("jkdf2_switch", 1) * 1 +
+                        system.config.get_int("jkdf2_switch_dangerous", 1) * 2)
 
-            autoReload = (int(system.config.get("jkdf2_reload", 0)) * 1 +
-                        int(system.config.get("jkdf2_reload_saber", 0)) * 2)
+            autoReload = (system.config.get_int("jkdf2_reload", 0) * 1 +
+                        system.config.get_int("jkdf2_reload_saber", 0) * 2)
 
             # Multimap defaults are different
-            multiPickup = (int(system.config.get("jkdf2_pickup", 1)) * 1 +
-                        int(system.config.get("jkdf2_dangerous", 1)) * 2 +
-                        int(system.config.get("jkdf2_weaker", 1)) * 4 +
-                        int(system.config.get("jkdf2_saber", 1)) * 8)
+            multiPickup = (system.config.get_int("jkdf2_pickup", 1) * 1 +
+                        system.config.get_int("jkdf2_dangerous", 1) * 2 +
+                        system.config.get_int("jkdf2_weaker", 1) * 4 +
+                        system.config.get_int("jkdf2_saber", 1) * 8)
 
-            multiSwitch = (int(system.config.get("jkdf2_switch", 1)) * 1 +
-                        int(system.config.get("jkdf2_switch_dangerous", 1)) * 2)
+            multiSwitch = (system.config.get_int("jkdf2_switch", 1) * 1 +
+                        system.config.get_int("jkdf2_switch_dangerous", 1) * 2)
 
-            multiReload = (int(system.config.get("jkdf2_reload", 1)) * 1 +
-                        int(system.config.get("jkdf2_reload_saber", 1)) * 2)
+            multiReload = (system.config.get_int("jkdf2_reload", 1) * 1 +
+                        system.config.get_int("jkdf2_reload_saber", 1) * 2)
 
             # Add to single user settings
             target_settings["autoPickup"] = f"autoPickup {autoPickup}\n"
@@ -347,11 +332,42 @@ class OpenJKDF2Generator(Generator):
             self._update_player_config(openjkdf2_player_file, target_settings)
 
         except Exception as e:
-            _logger.error(f"Error preparing player configuration for {openjkdf2_player_file}: {e}", exc_info=True)
+            _logger.exception("Error preparing player configuration for %s: %s", openjkdf2_player_file, e)
+
+        def _convert_to_json_value(config_key: str, default_value: bool | float, /) -> bool | float | str:
+            config_value = system.config.get(config_key)
+            target_type = type(default_value)
+            final_value = default_value
+
+            if config_value is not system.config.MISSING:
+                try:
+                    if target_type is bool:
+                        parsed_value = system.config.get_bool(config_key)
+                    elif target_type is int:
+                        if isinstance(config_value, bool):
+                            parsed_value = 1 if config_value else 0
+                        else:
+                            parsed_value = int(float(config_value))
+                    elif target_type is float:
+                            if isinstance(config_value, bool):
+                                parsed_value = 1.0 if config_value else 0.0
+                            else:
+                                parsed_value = float(config_value)
+                    elif target_type is str:
+                        parsed_value = str(config_value)
+                    else:
+                            _logger.warning("Unhandled target type '%s' for key '%s'. Using raw string.", target_type.__name__, config_key)
+                            parsed_value = str(config_value)
+                    final_value = parsed_value
+                except (ValueError, TypeError) as e:
+                    _logger.warning("Conversion failed for '%s' to %s. Using default '%s'. Error: %s", config_value, target_type.__name__, default_value, e)
+                    final_value = default_value
+
+            return final_value
 
         # --- JSON Config (openjkdf2.json) Generation ---
         try:
-            _logger.debug(f"Generating JSON config: {openjkdf2_config_file}")
+            _logger.debug("Generating JSON config: %s", openjkdf2_config_file)
             json_settings_map = {
                 "jkdf2_waggle"       : ("bDisableWeaponWaggle"    , False),
                 "jkdf2_jkgm"         : ("bEnableJkgm"             , True),
@@ -381,50 +397,19 @@ class OpenJKDF2Generator(Generator):
                 "jkdf2_hidpi"        : ("windowishidpi"           , True),
             }
 
-            json_target_settings = {}
-            for config_key, (json_key, generator_default_value) in json_settings_map.items():
-                found_value = system.config.get(config_key, Config.MISSING)
-                target_type = type(generator_default_value)
-                final_value = generator_default_value
-                was_key_found = found_value is not Config.MISSING
-
+            self._update_json_config(openjkdf2_config_file, {
                 # Special case: jkdf2_ssao (bool in config, but int in JSON)
-                if config_key == "jkdf2_ssao":
-                    final_value = 1 if system.config.get_bool(config_key) else 0
-                    json_target_settings[json_key] = final_value
-                    continue
-
-                if was_key_found:
-                    try:
-                        parsed_value = None
-                        if target_type is bool:
-                            parsed_value = self.parse_bool(found_value)
-                        elif target_type is int:
-                            if isinstance(found_value, bool): parsed_value = 1 if found_value else 0
-                            else: parsed_value = int(float(str(found_value)))
-                        elif target_type is float:
-                             if isinstance(found_value, bool): parsed_value = 1.0 if found_value else 0.0
-                             else: parsed_value = float(str(found_value))
-                        elif target_type is str:
-                            parsed_value = str(found_value)
-                        else:
-                             _logger.warning(f"Unhandled target type '{target_type.__name__}' for key '{config_key}'. Using raw string.")
-                             parsed_value = str(found_value)
-                        final_value = parsed_value
-                    except (ValueError, TypeError) as e:
-                        _logger.warning(f"Conversion failed for '{found_value}' to {target_type.__name__}. Using default '{generator_default_value}'. Error: {e}")
-                        final_value = generator_default_value
-
-                json_target_settings[json_key] = final_value
-                       
-            self._update_json_config(openjkdf2_config_file, json_target_settings)
+                json_key: system.config.get_bool(config_key, return_values=(1, 0)) if config_key == "jkdf2_ssao"
+                else  _convert_to_json_value(config_key, generator_default_value)
+                for config_key, (json_key, generator_default_value) in json_settings_map.items()
+            })
 
         except Exception as e:
-            _logger.error(f"Error preparing JSON configuration for {openjkdf2_config_file}: {e}", exc_info=True)
+            _logger.exception("Error preparing JSON configuration for %s: %s", openjkdf2_config_file, e)
 
         # --- CVAR JSON Config Generation ---
         try:
-            _logger.debug(f"Generating CVAR JSON config: {openjkdf2_cvar_file}")
+            _logger.debug("Generating CVAR JSON config: %s", openjkdf2_cvar_file)
             cvar_settings_map = {
                 "jkdf2_janky"        : ("g_bJankyPhysics"             , False),
                 "jkdf2_corpses"      : ("g_bKeepCorpses"              , False),
@@ -454,43 +439,18 @@ class OpenJKDF2Generator(Generator):
                 "jkdf2_ssaa_multiple": ("r_ssaaMultiple"              , 1.0)
             }
 
-            cvar_target_settings = {}
-            for config_key, (json_key, generator_default_value) in cvar_settings_map.items():
-                found_value = system.config.get(config_key, Config.MISSING)
-                target_type = type(generator_default_value)
-                final_value = generator_default_value
-                was_key_found = found_value is not Config.MISSING
-                if was_key_found:
-                    try:
-                        parsed_value = None
-                        if target_type is bool:
-                            parsed_value = self.parse_bool(found_value)
-                        elif target_type is int:
-                            if isinstance(found_value, bool): parsed_value = 1 if found_value else 0
-                            else: parsed_value = int(float(str(found_value)))
-                        elif target_type is float:
-                            if isinstance(found_value, bool): parsed_value = 1.0 if found_value else 0.0
-                            else: parsed_value = float(str(found_value))
-                        elif target_type is str:
-                            parsed_value = str(found_value)
-                        else:
-                            _logger.warning(f"Unhandled target type '{target_type.__name__}' for key '{config_key}'. Using raw string.")
-                            parsed_value = str(found_value)
-                        final_value = parsed_value
-                    except (ValueError, TypeError) as e:
-                        _logger.warning(f"Conversion failed for '{found_value}' to {target_type.__name__}. Using default '{generator_default_value}'. Error: {e}")
-                        final_value = generator_default_value
-
-                cvar_target_settings[json_key] = final_value
-            self._update_json_config(openjkdf2_cvar_file, cvar_target_settings)
+            self._update_json_config(openjkdf2_cvar_file, {
+                json_key: _convert_to_json_value(config_key, generator_default_value)
+                for config_key, (json_key, generator_default_value) in cvar_settings_map.items()
+            })
 
         except Exception as e:
-            _logger.error(f"Error preparing CVAR JSON configuration for {openjkdf2_cvar_file}: {e}", exc_info=True)
+            _logger.exception("Error preparing CVAR JSON configuration for %s: %s", openjkdf2_cvar_file, e)
 
         # Check if the binary exists in the destination and if it is outdated
-        if not binary_dest.exists() or os.path.getmtime(binary_src) > os.path.getmtime(binary_dest):
+        if not binary_dest.exists() or binary_src.stat().st_mtime > binary_dest.stat().st_mtime:
             shutil.copy2(binary_src, binary_dest)
-            os.chmod(binary_dest, 0o755)
+            binary_dest.chmod(0o755)
 
         # --- Change Directory & Prepare Command ---
         os.chdir(romdir)
@@ -512,5 +472,4 @@ class OpenJKDF2Generator(Generator):
     def getInGameRatio(self, config, gameResolution, rom):
         if config.get_bool("jkdf2_aspect"):
             return 4/3
-        else:
-            return 16/9
+        return 16/9

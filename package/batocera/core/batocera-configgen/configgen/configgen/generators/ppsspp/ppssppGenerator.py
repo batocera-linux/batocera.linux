@@ -51,8 +51,8 @@ class PPSSPPGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
-                "XDG_CONFIG_HOME":CONFIGS,
-                "XDG_DATA_HOME":SAVES,
+                "XDG_CONFIG_HOME": CONFIGS,
+                "XDG_DATA_HOME": SAVES,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers, ignore_buttons = ["hotkey"]) # the hotkey button is used to open the menu
             }
         )

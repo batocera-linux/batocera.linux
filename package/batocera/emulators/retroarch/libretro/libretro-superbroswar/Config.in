@@ -1,6 +1,4 @@
 config BR2_PACKAGE_LIBRETRO_SUPERBROSWAR
-        bool "libretro-superbroswar"
-	depends on BR2_PACKAGE_RETROARCH
-        help
-          Libretro port of SuperMarioWar
-
+    bool "libretro-superbroswar"
+    help
+      Libretro port of SuperMarioWar

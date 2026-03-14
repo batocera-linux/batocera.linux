@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from ... import controllersConfig
-from ...batoceraPaths import BIOS, ROMS, ensure_parents_and_open
+from ...batoceraPaths import BIOS, ES_GAMES_METADATA, ROMS, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
+from ...utils import metadata as _metadataUtils, videoMode
 from ...utils.configparser import CaseSensitiveConfigParser
-from .libretroPaths import RETROARCH_CONFIG
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -87,6 +86,46 @@ def _atari800_options(
         # Joy Hack (for robotron)
         _set_from_system(coreSettings, 'atari800_opt2', system, default="disabled")
 
+# Atari 2600 (Stella)
+def _stella_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Video standard / console type
+    _set_from_system(coreSettings, 'stella_console', system, default='auto')
+
+    # Palette / colors
+    _set_from_system(coreSettings, 'stella_palette', system, default='standard')
+
+    # TV effects / filter
+    _set_from_system(coreSettings, 'stella_filter', system, default='disabled')
+
+    # Overscan cropping
+    _set_from_system(coreSettings, 'stella_crop_hoverscan', system, default='disabled')
+    _set_from_system(coreSettings, 'stella_crop_voverscan', system, default='0')
+
+    # Aspect ratio correction (percent). "par" = pixel aspect ratio
+    _set_from_system(coreSettings, 'stella_ntsc_aspect', system, default='par')
+    _set_from_system(coreSettings, 'stella_pal_aspect', system, default='par')
+
+    # Audio
+    _set_from_system(coreSettings, 'stella_stereo', system, default='auto')
+
+    # Phosphor (motion blur)
+    _set_from_system(coreSettings, 'stella_phosphor', system, default='auto')
+    _set_from_system(coreSettings, 'stella_phosphor_blend', system, default='60')
+
+    # Paddles
+    _set_from_system(coreSettings, 'stella_paddle_mouse_sensitivity', system, default='10')
+    _set_from_system(coreSettings, 'stella_paddle_joypad_sensitivity', system, default='3')
+    _set_from_system(coreSettings, 'stella_paddle_analog_sensitivity', system, default='20')
+    _set_from_system(coreSettings, 'stella_paddle_analog_deadzone', system, default='15')
+    _set_from_system(coreSettings, 'stella_paddle_analog_absolute', system, default='disabled')
+
+    # Lightgun crosshair
+    _set_from_system(coreSettings, 'stella_lightgun_crosshair', system, 'stella_lightgun_crosshair', default='enabled' if guns_need_crosses(guns) else 'disabled')
+
+    # Convenience
+    _set_from_system(coreSettings, 'stella_reload', system, default='off')
 
 # Atari Jaguar
 def _virtualjaguar_options(
@@ -110,6 +149,18 @@ def _handy_options(
     # Set this option to start game at 'None' because it crash the emulator
     _set(coreSettings, 'handy_rot', 'None')
 
+# Bandai Wonder Swan & Wonder Swan Color
+def _mednafen_wswan_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Display rotation
+    if (rotate_display := system.config.get('wswan_rotate_display')) is not system.config.MISSING:
+        wswanOrientation = rotate_display
+    else:
+        wswanGameRotation = videoMode.getAltDecoration(system.name, rom, 'retroarch')
+        wswanOrientation = "portrait" if wswanGameRotation == "90" else "manual"
+
+    _set(coreSettings, 'wswan_rotate_display', wswanOrientation)
 
 # Commodore 64
 def _vice_x64_options(
@@ -509,6 +560,40 @@ def _puae_options(
         _set_from_system(coreSettings, 'puae_cd32pad_options', system, default="disabled")
 
 
+# DICE
+def _dice_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Pointer-as-paddle, simplest mouse setup
+    _set_from_system(coreSettings, 'dice_use_mouse_pointer_for_paddle_1', system, 'ttl_use_mouse_pointer_for_paddle_1', default='disabled')
+    # DEVICE_RETRO_MOUSE control of paddles
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0', system, 'ttl_retromouse_paddle0', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1', system, 'ttl_retromouse_paddle1', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2', system, 'ttl_retromouse_paddle2', default='disabled')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3', system, 'ttl_retromouse_paddle3', default='disabled')
+    # Axes for mouse-paddles.  Default for mice, but allow overrides for spinner setups
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle0_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle1_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle2_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3_x', system, 'ttl_retromouse_paddle0_x', default='x')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle3_y', system, 'ttl_retromouse_paddle0_y', default='y')
+    # Miscellaneous input scaling tweaks
+    _set_from_system(coreSettings, 'dice_paddle_keyboard_sensitivity', system, 'ttl_paddle_keyboard_sensitivity', default='250')
+    _set_from_system(coreSettings, 'dice_paddle_joystick_sensitivity', system, 'ttl_paddle_joystick_sensitivity', default='500')
+    _set_from_system(coreSettings, 'dice_retromouse_paddle_sensitivity', system, 'ttl_retromouse_paddle_sensitivity', default='125')
+    _set_from_system(coreSettings, 'dice_wheel_keyjoy_sensitivity', system, 'ttl_wheel_keyjoy_sensitivity', default='500')
+    _set_from_system(coreSettings, 'dice_throttle_keyjoy_sensitivity', system, 'ttl_throttle_keyjoy_sensitivity', default='250')
+    # DIP switches
+    _set_from_system(coreSettings, 'dice_dipswitch_1', system, 'ttl_dipswitch_1', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch_2', system, 'ttl_dipswitch_2', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch_3', system, 'ttl_dipswitch_3', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch16_1', system, 'ttl_dipswitch16_1', default='-1')
+    _set_from_system(coreSettings, 'dice_dipswitch16_2', system, 'ttl_dipswitch16_2', default='-1')
+
+
 # Dolpin Wii
 def _dolphin_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -533,6 +618,20 @@ def _dolphin_options(
 
     # OSD
     _set_from_system(coreSettings, 'dolphin_osd_enabled', system, 'wii_osd', default="enabled")
+
+    # Light gun
+    if system.config.use_guns and guns:
+        _set(coreSettings, 'dolphin_ir_mode', '3')
+    else:
+        _set(coreSettings, 'dolphin_ir_mode', '1')
+
+
+# Epoch - Cassette Vision
+def _pd777_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Course selection switch visual feedback
+    _set_from_system(coreSettings, 'pd777_announce_course_switch', system, 'cassettevision_announce_course_switch', default='enabled')
 
 
 # Magnavox - Odyssey2 / Phillips Videopac+
@@ -715,6 +814,8 @@ def _dosbox_pure_options(
     # Midi Type
     _set_from_system(coreSettings, 'dosbox_pure_midi', system, 'pure_midi', default='disabled')
 
+    # OS Disk Modifications
+    _set_from_system(coreSettings, 'dosbox_pure_bootos_ramdisk', system, 'pure_bootos_ramdisk', default='false')
 
 # Microsoft MSX and Colecovision
 def _bluemsx_options(
@@ -828,18 +929,6 @@ def _pcfx_options(
     # Remove 16-sprites-per-scanline hardware limit
     _set_from_system(coreSettings, 'pcfx_nospritelimit', system, 'pcfx_nospritelimit', default='enabled')
 
-
-# Nintendo 3DS
-def _citra_options(
-    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
-) -> None:
-    # TODO: Add CORE Options for 3DS
-    # Set OpenGL rendering
-    n3ds_config = RETROARCH_CONFIG / "3ds.cfg"
-    if not n3ds_config.exists():
-        n3ds_config.write_text("video_driver = \"glcore\"\n")
-
-
 # Nintendo 64
 def _mupen64plus_next_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -891,7 +980,7 @@ def _mupen64plus_next_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = controllersConfig.getGamesMetaData(system.name, rom)
+                metadata = _metadataUtils.get_games_meta_data(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
@@ -959,7 +1048,7 @@ def _parallel_n64_options(
 
         if pak_value == 'auto_rumble':
             if metadata is None:
-                metadata = controllersConfig.getGamesMetaData(system.name, rom)
+                metadata = _metadataUtils.get_games_meta_data(ES_GAMES_METADATA, system.name, rom)
 
             pak_value = 'rumble' if metadata.get('controller_rumble') == 'true' else pak_default
 
@@ -1622,6 +1711,9 @@ def _flycast_options(
     _set_from_system(coreSettings, 'reicast_language', system, 'reicast_language', default='Default')
     _set_from_system(coreSettings, 'reicast_region', system, 'reicast_region', default='Default')
 
+    # Native Depth Interpolation
+    _set_from_system(coreSettings, 'reicast_native_depth_interpolation', system, 'reicast_native_depth_interpolation', default='disabled')
+
     ## Atomiswave / Naomi
 
     # Screen Orientation
@@ -1643,7 +1735,7 @@ def _genesisplusgx_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Allows each game to have its own one brm file for save without lack of space
-    _set(coreSettings, 'genesis_plus_gx_bram', 'per game')
+    _set(coreSettings, 'genesis_plus_gx_system_bram', 'per game')
 
     # Sometimes needs to be forced to NTSC-U for MSU-MD to work (this is to avoid an intentionally coded lock-out screen):
     # https://arcadetv.github.io/msu-md-patches/wiki/Lockout-screen.html
@@ -1689,12 +1781,12 @@ def _genesisplusgx_options(
     # MSU-MD/MegaCD
 
     # Needs to be forced to sega/mega cd for MSU-MD to work.
-    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'msu-md' else 'auto')
+    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'megadrive-msu' else 'auto')
     _set(coreSettings, 'genesis_plus_gx_add_on', add_on)
 
     # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
     # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
-    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'msu-md' else '100')
+    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'megadrive-msu' else '100')
     _set(coreSettings, 'genesis_plus_gx_cdda_volume', cdda_volume)
 
     # gun
@@ -1829,6 +1921,7 @@ def _px68k_options(
     joytype = system.config.get('px68k_joytype', 'Default (2 Buttons)')
     _set(coreSettings, 'px68k_joytype1', joytype)
     _set(coreSettings, 'px68k_joytype2', joytype)
+
 
 # Sinclair ZX81
 def _81_options(
@@ -2030,7 +2123,43 @@ def _pcsx2_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Fast Boot
-    _set_from_system(coreSettings, 'pcsx2_fast_boot', system, 'lr_pcsx2_fast_boot', default='disabled')
+    _set_from_system(coreSettings, 'pcsx2_fastboot', system, 'lr_pcsx2_fast_boot', default='disabled')
+    # Fast CD/DVD Access
+    _set_from_system(coreSettings, 'pcsx2_fastcdvd', system, 'lr_pcsx2_fast_cdvd', default='disabled')
+    # Enable Cheats
+    _set_from_system(coreSettings, 'pcsx2_enable_cheats', system, 'lr_pcsx2_fast_cheats', default='disabled')
+    # Language Unlock
+    _set_from_system(coreSettings, 'pcsx2_hint_language_unlock', system, 'lr_pcsx2_language_unlock', default='disabled')
+    # Graphics API
+    gfxbackend = system.config.get("gfxbackend")
+    if gfxbackend == "vulkan":
+        _set(coreSettings, 'pcsx2_renderer', 'Vulkan')
+    else:
+        _set(coreSettings, 'pcsx2_renderer', 'OpenGL')
+    # Render resolution
+    _set_from_system(coreSettings, 'pcsx2_upscale_multiplier', system, 'lr_pcsx2_resolution', default='1x Native (PS2)')
+    # Texture Filtering
+    _set_from_system(coreSettings, 'pcsx2_texture_filtering', system, 'lr_pcsx2_texture_filtering', default='Bilinear (PS2)')
+    # Trilinear Filtering
+    _set_from_system(coreSettings, 'pcsx2_trilinear_filtering', system, 'lr_pcsx2_trilinear_filtering', default='Automatic')
+    # Anisotropic Filtering
+    _set_from_system(coreSettings, 'pcsx2_anisotropic_filtering', system, 'lr_pcsx2_anisotropic', default='disabled')
+    # Dithering
+    _set_from_system(coreSettings, 'pcsx2_dithering', system, 'lr_pcsx2_dithering', default='Unscaled')
+    # Blending Accuracy
+    _set_from_system(coreSettings, 'pcsx2_blending_accuracy', system, 'lr_pcsx2_blending', default='Basic')
+    # Widescreen hint
+    widescreenhint = system.config.get("ratio")
+    if widescreenhint == "16/9" or widescreenhint == "full":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (16:9)')
+    elif widescreenhint == "16/10":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (16:10)')
+    elif widescreenhint == "21/9":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (21:9)')
+    elif widescreenhint == "32/9":
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'enabled (32:9)')
+    else:
+        _set(coreSettings, 'pcsx2_widescreen_hint', 'disabled')
 
 
 def _pcsx_rearmed_options(
@@ -2210,6 +2339,55 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# ColecoVision (GearColeco)
+def _gearcoleco_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Refresh Rate (requires restart)
+    _set_from_system(coreSettings, 'gearcoleco_timing', system, default='Auto')
+
+    # Aspect Ratio
+    _set_from_system(coreSettings, 'gearcoleco_aspect_ratio', system, default='1:1 PAR')
+
+    # Overscan
+    _set_from_system(coreSettings, 'gearcoleco_overscan', system, default='Disabled')
+
+    # Allow Up+Down / Left+Right
+    _set_from_system(coreSettings, 'gearcoleco_up_down_allowed', system, default='Disabled')
+
+    # No Sprite Limit
+    _set_from_system(coreSettings, 'gearcoleco_no_sprite_limit', system, default='Disabled')
+
+    # Spinner support
+    _set_from_system(coreSettings, 'gearcoleco_spinners', system, default='Disabled')
+
+    # Spinner Sensitivity
+    _set_from_system(coreSettings, 'gearcoleco_spinner_sensitivity', system, default='1')
+# Enterprise 128 (EP128EMU)
+def _ep128emu_core_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Main thread wait (ms)
+    _set_from_system(coreSettings, 'ep128emu_wait', system, default='0')
+    # High sound quality
+    _set_from_system(coreSettings, 'ep128emu_sdhq', system, default='1')
+    # Use accelerated SW framebuffer
+    _set_from_system(coreSettings, 'ep128emu_swfb', system, default='0')
+    # Enable resolution changes (requires restart)
+    _set_from_system(coreSettings, 'ep128emu_useh', system, default='1')
+    # Border lines to keep when zooming in
+    _set_from_system(coreSettings, 'ep128emu_brds', system, default='0')
+    # System ROM version (EP only)
+    _set_from_system(coreSettings, 'ep128emu_romv', system, default='Original')
+    # User 1 Zoom button
+    _set_from_system(coreSettings, 'ep128emu_zoom', system, default='R3')
+    # User 1 Info button
+    _set_from_system(coreSettings, 'ep128emu_info', system, default='L3')
+    # User 1 Autofire for button
+    _set_from_system(coreSettings, 'ep128emu_afbt', system, default='None')
+    # User 1 Autofire repeat delay
+    _set_from_system(coreSettings, 'ep128emu_afsp', system, default='1')
+
 
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
@@ -2241,9 +2419,9 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'np2kai': _np2kai_options,
     'mednafen_supergrafx': _mednafen_supergrafx_options,
     'pcfx': _pcfx_options,
-    'citra': _citra_options,
     'mupen64plus-next': _mupen64plus_next_options,
     'parallel_n64': _parallel_n64_options,
+    'dice': _dice_options,
     'desmume': _desmume_options,
     'melonds': _melonds_options,
     'melondsds': _melondsds_options,
@@ -2265,6 +2443,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'scummvm': _scummvm_options,
     'flycast': _flycast_options,
     'genesisplusgx': _genesisplusgx_options,
+    'genesisplusgx-expanded': _genesisplusgx_options,
     'picodrive': _picodrive_options,
     'yabasanshiro': _yabasanshiro_options,
     'kronos': _kronos_options,
@@ -2281,11 +2460,16 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'pcsx2': _pcsx2_options,
     'pcsx_rearmed': _pcsx_rearmed_options,
     'theodore': _theodore_options,
+    'pd777': _pd777_options,
     'potator': _potator_options,
     'prboom': _prboom_options,
     'tyrquake': _tyrquake_options,
     'mrboom': _mrboom_options,
     'hatarib': _hatarib_options,
+    'mednafen_wswan': _mednafen_wswan_options,
+    'stella': _stella_options,
+    'gearcoleco': _gearcoleco_options,
+    'ep128emu-core': _ep128emu_core_options,
 }
 
 

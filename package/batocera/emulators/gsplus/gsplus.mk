@@ -8,6 +8,7 @@ GSPLUS_VERSION = dc1835d62bb485f69faf3fd50a2550629393ee38
 GSPLUS_SITE = $(call github,applemu,gsplus,$(GSPLUS_VERSION))
 GSPLUS_LICENSE = GPLv2
 GSPLUS_DEPENDENCIES = sdl2 libpcap host-re2c readline freetype sdl2_image
+GSPLUS_EMULATOR_INFO = gsplus.emulator.yml
 
 define GSPLUS_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/bin/GSplus $(TARGET_DIR)/usr/bin/
@@ -18,3 +19,4 @@ define GSPLUS_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(cmake-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,63 @@
+features:
+  - padtokeyboard
+shared_features:
+  - autosave
+custom_features:
+  fuse_machine:
+    prompt: MODEL
+    choices:
+      Spectrum 48K: Spectrum 48K
+      Spectrum 48K (NTSC): Spectrum 48K (NTSC)
+      Spectrum 128K: Spectrum 128K
+      Spectrum +2: Spectrum +2
+      Spectrum +2A: Spectrum +2A
+      Spectrum +3: Spectrum +3
+      Spectrum +3e: Spectrum +3e
+      Spectrum SE: Spectrum SE
+      Timex TC2048: Timex TC2048
+      Timex TS2068: Timex TS2068
+      Spectrum 16K: Spectrum 16K
+      Pentagon 128K: Pentagon 128K
+      Pentagon 512K: Pentagon 512K
+      Pentagon 1024: Pentagon 1024
+      Scorpion 256K: Scorpion 256K
+  fuse_hide_border:
+    prompt: ZOOM (HIDE BORDERS)
+    description: Hides borders on many games. Some games used the borders.
+    choices:
+      'Off': disabled
+      'On': enabled
+  controller1_zxspec:
+    prompt: CONTROLLER TYPE 1
+    description: Sinclair 1 controller set to AUTO.
+    choices:
+      None: 0
+      Retropad: 1
+      Cursor Joystick: 257
+      Kempston Joystick: 513
+      Sinclair 1 Joystick: 769
+      Sinclair 2 Joystick: 1025
+      Timex 1 Joystick: 1281
+      Timex 2 Joystick: 1537
+      Fuller Joystick: 1793
+  controller2_zxspec:
+    prompt: CONTROLLER TYPE 2
+    description: Sinclair 2 controller set to AUTO.
+    choices:
+      None: 0
+      Retropad: 1
+      Cursor Joystick: 257
+      Kempston Joystick: 513
+      Sinclair 1 Joystick: 769
+      Sinclair 2 Joystick: 1025
+      Timex 1 Joystick: 1281
+      Timex 2 Joystick: 1537
+      Fuller Joystick: 1793
+  controller3_zxspec:
+    prompt: KEYBOARD SUPPORT
+    description: Set controller 1 and 2 to None to use it standalone.
+    choices:
+      'Off': 0
+      'On': 259
+systems:
+  - zxspectrum

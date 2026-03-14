@@ -1,7 +1,7 @@
-diff --git a/Makefile b/Makefile.new
+diff --git a/Makefile b/Makefile
 index 5e598e0410..b422cd4894 100644
 --- a/Makefile
-+++ b/Makefile.new
++++ b/Makefile
 @@ -21,7 +21,7 @@ lindbergh: src/lindbergh/lindbergh.c src/lindbergh/jvs.c src/lindbergh/jvs.h src
  
  libxdiff.a: $(XDIFF_OBJS)
@@ -15,8 +15,8 @@ index 5e598e0410..b422cd4894 100644
  	$(CC) $(CFLAGS) -c $< -o $@
  
  libsegaapi.so: src/libsegaapi/libsegaapi.o
--	$(CC) -m32 -O0 -g src/libsegaapi/libsegaapi.c -lFAudio -L/app/lib32 -fPIC -shared -o $(BUILD)/libsegaapi.so
-+	$(CC) $(CFLAGS) -m32 -O0 -g src/libsegaapi/libsegaapi.c -fPIC -shared -o $(BUILD)/libsegaapi.so
+-	$(CC) -m32 -O0 -g src/libsegaapi/libsegaapi.c -Wl,-Bstatic -lFAudio -Wl,-Bdynamic -L/app/lib32 -fPIC -shared -o $(BUILD)/libsegaapi.so
++	$(CC) $(CFLAGS) $(LDFLAGS) -fno-stack-protector -O0 -g src/libsegaapi/libsegaapi.c -fPIC -shared -o $(BUILD)/libsegaapi.so
  
  libkswapapi.so: src/libkswapapi/libkswapapi.o
  	$(CC) -m32 src/libkswapapi/libkswapapi.o -fPIC -shared -o $(BUILD)/libkswapapi.so

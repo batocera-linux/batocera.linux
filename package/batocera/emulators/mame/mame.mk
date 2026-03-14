@@ -3,16 +3,20 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.276 - Switchres 2.21e
-MAME_VERSION = gm0276sr221e
+# Version: GroovyMAME 0.285 - Switchres 2.21f
+MAME_VERSION = gm0285sr221f
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
-MAME_DEPENDENCIES += expat flac fontconfig glm jpeg libpng lua pulseaudio 
-MAME_DEPENDENCIES += rapidjson sdl2 sdl2_ttf sqlite zlib
+MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
+MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib
+
+$(eval $(call register,mame.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,bgfxbackend.mame.emulator.yml))
+$(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,sega-arcade.mame.emulator.yml))
 
 MAME_LICENSE = MAME
 
 MAME_CROSS_ARCH = unknown
-MAME_CROSS_OPTS = PRECOMPILE=0
+MAME_CROSS_OPTS = PRECOMPILE=0 NO_USE_PULSEAUDIO=1
 MAME_CFLAGS =
 MAME_LDFLAGS =
 
@@ -36,15 +40,33 @@ MAME_CROSS_OPTS += PTR64=0
 MAME_CROSS_OPTS += NOWERROR=1
 endif
 
+# Determine the correct make target based on architecture
+# Default to 'linux' for non-x86 architectures to avoid the -m64 flag issue
+MAME_ARCH = linux
+ifeq ($(BR2_i386),y)
+MAME_ARCH = linux_x86
+endif
+
 # x86_64 is desktop linux based on X11 and OpenGL
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 MAME_CROSS_ARCH = x86_64
+MAME_CROSS_OPTS += PLATFORM=x86
+MAME_ARCH = linux_x64
 # sm8550 has OpenGL
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
 MAME_CROSS_OPTS += NO_X11=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1
 # other archs are embedded, no X11, no OpenGL (only ES)
 else
 MAME_CROSS_OPTS += NO_X11=1 NO_OPENGL=1 NO_USE_XINPUT=1 NO_USE_BGFX_KHRONOS=1 FORCE_DRC_C_BACKEND=1
+endif
+
+# Pipewire
+ifeq ($(BR2_PACKAGE_PIPEWIRE),y)
+MAME_DEPENDENCIES += pipewire
+MAME_CROSS_OPTS += NO_USE_PIPEWIRE=0
+MAME_CFLAGS += -I$(STAGING_DIR)/usr/include/pipewire-0.3 -I$(STAGING_DIR)/usr/include/spa-0.2
+else
+MAME_CROSS_OPTS += NO_USE_PIPEWIRE=1
 endif
 
 # Wayland
@@ -58,6 +80,7 @@ endif
 ifeq ($(BR2_aarch64),y)
 MAME_CROSS_ARCH = arm64
 MAME_CFLAGS += -DEGL_NO_X11=1
+MAME_CROSS_OPTS += PLATFORM=arm64
 endif
 ifeq ($(BR2_arm),y)
 MAME_CROSS_ARCH = arm
@@ -113,7 +136,7 @@ define MAME_GENIE
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
-	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
+	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=1 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
 endef
 
@@ -128,7 +151,8 @@ define MAME_BUILD_CMDS
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	CCACHE_SLOPPINESS="pch_defines,time_macros" \
-	$(MAKE) -j$(MAME_JOBS) -l$(MAME_JOBS) TARGETOS=linux OSD=sdl \
+	$(MAKE) -j$(MAME_JOBS) -l$(MAME_JOBS) $(MAME_ARCH) \
+	TARGETOS=linux OSD=sdl \
 	TARGET=mame \
 	SUBTARGET=mame \
 	OVERRIDE_CC="$(TARGET_CC)" \
@@ -245,6 +269,12 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(MAME_CONF_INIT)/autoload
 	cp -R $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/autoload \
 	    $(MAME_CONF_INIT)
+
+    # symblink mame tools to /usr/bin to make them available from every location
+    # chdman
+    ln -sf /usr/bin/mame/chdman  $(TARGET_DIR)/usr/bin/chdman
+
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

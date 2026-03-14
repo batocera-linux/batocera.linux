@@ -53,7 +53,7 @@ fi
 GNAME=$(wget "http://localhost:1234/systems/${GSYSTEM}/games/${GHASH}?localpaths=true" -qO - | jq -r '.name' | txt2http)
 if test -n "${GNAME}"
 then
-    dmd-play ${DMDOPT} -t "${GNAME}" --once --moving-text --no-fit
+    dmd-play ${DMDOPT} -t "${GNAME}"
     exit 0
 else
     # fallback : empty

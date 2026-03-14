@@ -4,16 +4,18 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.49
+XEMU_VERSION = v0.8.134
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
 XEMU_LICENSE = GPLv2
-XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl2 libgbm libopenssl
+XEMU_EMULATOR_INFO = xemu.emulator.yml
+XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl3 libgbm libopenssl
 XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
 XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp
 
-XEMU_EXTRA_DOWNLOADS = https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
+XEMU_EXTRA_DOWNLOADS = \
+    https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip
 
 XEMU_CONF_ENV += PATH="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin:$$PATH"
 
@@ -72,6 +74,7 @@ XEMU_CONF_OPTS += --disable-hvf
 XEMU_CONF_OPTS += --disable-whpx
 XEMU_CONF_OPTS += --with-default-devices
 XEMU_CONF_OPTS += --disable-renderdoc
+XEMU_CONF_OPTS += --enable-pixman
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
 XEMU_CONF_OPTS += --enable-avx2
@@ -82,13 +85,13 @@ define XEMU_CONFIGURE_CMDS
 endef
 
 define XEMU_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-		CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
-		CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
-		    CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
-            PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
-            PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
-		$(MAKE) -C $(@D)
+$(TARGET_CONFIGURE_OPTS) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+    CC_FOR_BUILD="$(TARGET_CC)" GCC_FOR_BUILD="$(TARGET_CC)" \
+	CXX_FOR_BUILD="$(TARGET_CXX)" LD_FOR_BUILD="$(TARGET_LD)" \
+	CROSS_COMPILE="$(STAGING_DIR)/usr/bin/" \
+    PREFIX="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/" \
+    PKG_CONFIG="/x86_64/host/x86_64-buildroot-linux-gnu/sysroot/usr/bin/pkg-config" \
+	$(MAKE) -C $(@D)
 endef
 
 define XEMU_INSTALL_TARGET_CMDS
@@ -133,28 +136,60 @@ define XEMU_GET_SUBMODULES
 	    https://github.com/mborgerson/genconfig/archive/$(REVISION).tar.gz
 	$(TAR) -xzf genconfig.tar.gz --strip-components=1 -C $(@D)/subprojects/genconfig
 	rm genconfig.tar.gz
-	
+
     # tomlplusplus
 	mkdir -p $(@D)/subprojects/tomlplusplus
-    $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/tomlplusplus.wrap))
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/tomlplusplus.wrap))
 	$(HOST_DIR)/bin/curl -L -o tomlplusplus.tar.gz \
 	    https://github.com/marzer/tomlplusplus/archive/$(REVISION).tar.gz
 	$(TAR) -xzf tomlplusplus.tar.gz --strip-components=1 -C $(@D)/subprojects/tomlplusplus
 	rm tomlplusplus.tar.gz
-	
+
+	# glslang
+	mkdir -p $(@D)/subprojects/glslang
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/glslang.wrap))
+	$(HOST_DIR)/bin/curl -L -o glslang.tar.gz \
+	    https://github.com/KhronosGroup/glslang/archive/$(REVISION).tar.gz
+	$(TAR) -xzf glslang.tar.gz --strip-components=1 -C $(@D)/subprojects/glslang
+	rm glslang.tar.gz
+
+	# volk
+	mkdir -p $(@D)/subprojects/volk
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/volk.wrap))
+	$(HOST_DIR)/bin/curl -L -o volk.tar.gz \
+	    https://github.com/zeux/volk/archive/$(REVISION).tar.gz
+	$(TAR) -xzf volk.tar.gz --strip-components=1 -C $(@D)/subprojects/volk
+	rm volk.tar.gz
+
+	# SPIRV-Reflect
+	mkdir -p $(@D)/subprojects/SPIRV-Reflect
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/SPIRV-Reflect.wrap))
+	$(HOST_DIR)/bin/curl -L -o SPIRV-Reflect.tar.gz \
+	    https://github.com/KhronosGroup/SPIRV-Reflect/archive/$(REVISION).tar.gz
+	$(TAR) -xzf SPIRV-Reflect.tar.gz --strip-components=1 -C $(@D)/subprojects/SPIRV-Reflect
+	rm SPIRV-Reflect.tar.gz
+
+	# VulkanMemoryAllocator
+	mkdir -p $(@D)/subprojects/VulkanMemoryAllocator
+    $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/VulkanMemoryAllocator.wrap))
+	$(HOST_DIR)/bin/curl -L -o VulkanMemoryAllocator.tar.gz \
+	    https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/$(REVISION).tar.gz
+	$(TAR) -xzf VulkanMemoryAllocator.tar.gz --strip-components=1 -C $(@D)/subprojects/VulkanMemoryAllocator
+	rm VulkanMemoryAllocator.tar.gz
+
     # xxhash
 	mkdir -p $(@D)/subprojects/xxHash-0.8.3
 	$(HOST_DIR)/bin/curl -L -o xxhash.tar.gz \
 	    http://github.com/mesonbuild/wrapdb/releases/download/xxhash_0.8.3-1/xxHash-0.8.3.tar.gz
 	$(TAR) -xzf xxhash.tar.gz --strip-components=1 -C $(@D)/subprojects/xxHash-0.8.3
 	rm xxhash.tar.gz
-	
+
     # xxhash patch
 	$(HOST_DIR)/bin/curl -L -o xxhash_0.8.3-1_patch.zip \
 	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.3-1/get_patch
 	$(UNZIP) -o xxhash_0.8.3-1_patch.zip -d $(@D)/subprojects
 	rm xxhash_0.8.3-1_patch.zip
-	
+
     # keycodemapdb - revision variation
 	mkdir -p $(@D)/subprojects/keycodemapdb
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/keycodemapdb.wrap))
@@ -162,7 +197,7 @@ define XEMU_GET_SUBMODULES
 	    https://gitlab.com/qemu-project/keycodemapdb/-/archive/$(REVISION)/$(REVISION).tar.gz
 	$(TAR) -xzf keycodemapdb.tar.gz --strip-components=1 -C $(@D)/subprojects/keycodemapdb
 	rm keycodemapdb.tar.gz
-	
+
     # nv2a_vsh_cpu
 	mkdir -p $(@D)/subprojects/nv2a_vsh_cpu
     $(eval REVISION = $(shell grep -Po '(?<=^revision=).+' $(@D)/subprojects/nv2a_vsh_cpu.wrap))
@@ -170,7 +205,7 @@ define XEMU_GET_SUBMODULES
 	    https://github.com/xemu-project/nv2a_vsh_cpu/archive/$(REVISION).tar.gz
 	$(TAR) -xzf nv2a_vsh_cpu.tar.gz --strip-components=1 -C $(@D)/subprojects/nv2a_vsh_cpu
 	rm nv2a_vsh_cpu.tar.gz
-	
+
     # berkeley-softfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-softfloat-3
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/berkeley-softfloat-3.wrap))
@@ -179,7 +214,7 @@ define XEMU_GET_SUBMODULES
 	$(TAR) -xzf berkeley-softfloat-3.tar.gz --strip-components=1 -C $(@D)/subprojects/berkeley-softfloat-3
 	cp $(@D)/subprojects/packagefiles/berkeley-softfloat-3/* $(@D)/subprojects/berkeley-softfloat-3
 	rm berkeley-softfloat-3.tar.gz
-	
+
     # berkeley-testfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-testfloat-3
     $(eval REVISION = $(shell grep -Po '(?<=^revision = ).+' $(@D)/subprojects/berkeley-testfloat-3.wrap))
@@ -194,3 +229,4 @@ XEMU_PRE_CONFIGURE_HOOKS = XEMU_VERSION_DETAILS
 XEMU_PRE_CONFIGURE_HOOKS += XEMU_GET_SUBMODULES
 
 $(eval $(autotools-package))
+$(eval $(emulator-info-package))

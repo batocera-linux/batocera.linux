@@ -9,6 +9,7 @@ LIBRETRO_O2EM_VERSION = c039e83f2589cb9d21b9aa5dc211954234ab8c97
 LIBRETRO_O2EM_SITE = $(call github,libretro,libretro-o2em,$(LIBRETRO_O2EM_VERSION))
 LIBRETRO_O2EM_LICENSE = Artistic License
 LIBRETRO_O2EM_DEPENDENCIES += retroarch
+LIBRETRO_O2EM_EMULATOR_INFO = o2em.libretro.core.yml
 
 LIBRETRO_O2EM_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -39,3 +40,4 @@ define LIBRETRO_O2EM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

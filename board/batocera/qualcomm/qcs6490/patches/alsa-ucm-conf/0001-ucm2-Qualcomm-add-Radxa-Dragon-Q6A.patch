@@ -1,0 +1,130 @@
+From 67628fb4871e72bc37d0fbf17b865752558a0ef7 Mon Sep 17 00:00:00 2001
+From: Xilin Wu <sophon@radxa.com>
+Date: Sun, 10 Aug 2025 21:06:38 +0800
+Subject: [PATCH] ucm2: Qualcomm: add Radxa Dragon Q6A
+
+Closes: https://github.com/alsa-project/alsa-ucm-conf/pull/601
+Signed-off-by: Xilin Wu <sophon@radxa.com>
+Signed-off-by: Jaroslav Kysela <perex@perex.cz>
+---
+ .../QCS6490-Radxa-Dragon-Q6A/HiFi.conf        | 73 +++++++++++++++++++
+ .../QCS6490-Radxa-Dragon-Q6A.conf             | 17 +++++
+ .../qcs6490/QCS6490-Radxa-Dragon-Q6A.conf     |  1 +
+ 3 files changed, 91 insertions(+)
+ create mode 100644 ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
+ create mode 100644 ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/QCS6490-Radxa-Dragon-Q6A.conf
+ create mode 120000 ucm2/conf.d/qcs6490/QCS6490-Radxa-Dragon-Q6A.conf
+
+diff --git a/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
+new file mode 100644
+index 0000000..4ed6b27
+--- /dev/null
++++ b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf
+@@ -0,0 +1,73 @@
++SectionVerb {
++	EnableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 1"
++		cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia2' 0"
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer TX_CODEC_DMA_TX_3' 1"
++	]
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	Include.wcdhpe.File "/codecs/wcd938x/HeadphoneEnableSeq.conf"
++	Include.wcdhpd.File "/codecs/wcd938x/HeadphoneDisableSeq.conf"
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	EnableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 1"
++	]
++
++	DisableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 0"
++	]
++
++	Value {
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP"
++		JackControl "Headphone Jack"
++	}
++}
++
++SectionDevice."DisplayPort" {
++	Comment "DisplayPort playback"
++
++	EnableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 0"
++		cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia2' 1"
++	]
++
++	DisableSequence [
++		cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia2' 0"
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++	]
++
++	Value {
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},1"
++		JackControl "DP0 Jack"
++	}
++}
++
++SectionDevice."Headset" {
++	Comment "Headset microphone"
++
++	Include.wcdmice.File "/codecs/wcd938x/HeadphoneMicEnableSeq.conf"
++	Include.wcdmicd.File "/codecs/wcd938x/HeadphoneMicDisableSeq.conf"
++	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicEnableSeq.conf"
++	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicDisableSeq.conf"
++
++	Value {
++		CapturePriority 100
++		CapturePCM "hw:${CardId},2"
++		CaptureMixerElem "ADC2"
++		JackControl "Mic Jack"
++	}
++}
+diff --git a/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/QCS6490-Radxa-Dragon-Q6A.conf b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/QCS6490-Radxa-Dragon-Q6A.conf
+new file mode 100644
+index 0000000..76b1a92
+--- /dev/null
++++ b/ucm2/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/QCS6490-Radxa-Dragon-Q6A.conf
+@@ -0,0 +1,17 @@
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/HiFi.conf"
++	Comment "HiFi quality Music."
++}
++
++BootSequence [
++	cset "name='HPHL Volume' 2"
++	cset "name='HPHR Volume' 2"
++	cset "name='ADC2 Volume' 10"
++]
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wcd-init.File "/codecs/wcd938x/init.conf"
++Include.rxm-init.File "/codecs/qcom-lpass/rx-macro/init.conf"
+diff --git a/ucm2/conf.d/qcs6490/QCS6490-Radxa-Dragon-Q6A.conf b/ucm2/conf.d/qcs6490/QCS6490-Radxa-Dragon-Q6A.conf
+new file mode 120000
+index 0000000..0683c36
+--- /dev/null
++++ b/ucm2/conf.d/qcs6490/QCS6490-Radxa-Dragon-Q6A.conf
+@@ -0,0 +1 @@
++../../Qualcomm/qcs6490/QCS6490-Radxa-Dragon-Q6A/QCS6490-Radxa-Dragon-Q6A.conf
+\ No newline at end of file
+-- 
+2.30.2
+

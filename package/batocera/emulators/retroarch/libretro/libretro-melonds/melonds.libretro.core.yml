@@ -1,0 +1,57 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+custom_features:
+  melonds_console_mode:
+    prompt: NDS VERSION
+    decription: Choose the NDS handheld version
+    choices:
+      DS (Default): DS
+      DSi: DSi
+  melonds_boot_directly:
+    prompt: SKIP DS SYSTEM MENU
+    description: Disable to access the system's settings, like time and language.
+    choices:
+      'Off': disabled
+      'On': enabled
+  melonds_use_fw_settings:
+    prompt: USE FIRMWARE SETTINGS
+    description: Use language and username from the NDS Firmware
+    choices:
+      'ON': enable
+      OFF (Default): disable
+  melonds_language:
+    prompt: LANGUAGE
+    description: Select language will be used if 'Use Firmware Settings' is disabled or if firmware file was not found.
+    choices:
+      English (Default): English
+      French: French
+      German: German
+      Italian: Italian
+      Spanish: Spanish
+      Japanese: Japanese
+  melonds_screen_layout:
+    prompt: SCREEN LAYOUT
+    description: Arrange the dual screen layout.
+    choices:
+      top/bottom: Top/Bottom
+      bottom/top: Bottom/Top
+      left/right: Left/Right
+      right/left: Right/Left
+      top only: Top Only
+      bottom only: Bottom Only
+      hybrid top ratio 2: Hybrid Top-Ratio2
+      hybrid top ratio 3: Hybrid Top-Ratio3
+      hybrid bottom ratio 2: Hybrid Bottom-Ratio2
+      hybrid bottom ratio 3: Hybrid Bottom-Ratio3
+  melonds_touch_mode:
+    prompt: TOUCH SCREEN MODE
+    description: Select the input type to navigate the touch screen
+    choices:
+      None: Disabled
+      Mouse: Mouse
+      Touch Screen: Touch
+      Right Stick: Joystick
+systems:
+  - nds

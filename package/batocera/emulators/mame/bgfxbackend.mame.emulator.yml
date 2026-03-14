@@ -1,0 +1,10 @@
+custom_features:
+  bgfxbackend:
+    prompt: BGFX GRAPHICS API
+    description: Depends on video mode being set to BGFX.
+    choices:
+      MAME Detect: automatic
+      OpenGL: opengl
+      OpenGL ES: gles
+      Vulkan: vulkan
+    before: bgfxshaders

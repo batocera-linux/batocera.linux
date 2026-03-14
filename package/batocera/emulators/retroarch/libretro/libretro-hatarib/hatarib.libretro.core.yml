@@ -1,0 +1,111 @@
+features:
+  - padtokeyboard
+shared_features:
+  - autosave
+custom_features:
+  hatarib_machine:
+    prompt: ATARI MACHINE TYPE
+    description: Choose your desired Atari machine type.
+    choices:
+      ST: "0"
+      Mega ST: "1"
+      STE: "2"
+      Mega STE: "3"
+      TT: "4"
+      Falcon: "5"
+  hatarib_cpu:
+    group: ADVANCED OPTIONS
+    prompt: ATARI CPU TYPE
+    description: Choose your desired Atari CPU type.
+    choices:
+      "68000": "0"
+      "68010": "1"
+      "68020": "2"
+      "68030": "3"
+      "68040": "4"
+      "68060": "5"
+  hatarib_cpu_clock:
+    group: ADVANCED OPTIONS
+    prompt: ATARI CPU CLOCK RATE
+    description: Choose your desired Atari CPU clock rate.
+    choices:
+      8 MHz: "8"
+      16 MHz: "16"
+      32 MHz: "32"
+  hatarib_memory:
+    prompt: ATARI ST MEMORY SIZE
+    description: Choose your desired Atari ST memory size.
+    choices:
+      1 MB: "1024"
+      2 MB: "2048"
+      2.5 MB: "2560"
+      4 MB: "4096"
+      8 MB: "8192"
+      10 MB: "10240"
+      14 MB: "14336"
+  hatarib_monitor:
+    prompt: ATARI MONITOR TYPE
+    description: Choose your desired Atari Monitor.
+    choices:
+      Monochrome High-Resolution: "0"
+      RGB Colour Low/Medium-Resolution: "1"
+      VGA: "2"
+      TV: "3"
+  hatarib_ratio:
+    prompt: ASPECT RATIO
+    description: Choose your desired pixel aspect ratio.
+    choices:
+      Square Pixels: "0"
+      Atari Monitor: "1"
+      NTSC TV: "2"
+      PAL TV: "3"
+  hatarib_borders:
+    prompt: SCREEN BORDERS
+    description: Atari ST monitors had a visible border around the main screen area, but most software does not display anything in it.
+    choices:
+      Hide: "0"
+      Full: "1"
+      Crop 720p (240, 480): "2"
+      Crop 1080p (270, 540): "3"
+  hatarib_pause:
+    prompt: PAUSE SCREEN DISPLAY
+    description: Choose your desired pause screen display type.
+    choices:
+      Help and Information: "2"
+      Floppy Disk List: "3"
+      Bouncing Box: "4"
+      Snow: "5"
+      Darken: "1"
+      No Indicator: "0"
+  hatarib_language:
+    prompt: LANGUAGE
+    description: Emutos language && region setting.
+    choices:
+      English (us): "0"
+      German (de): "1"
+      French (fr): "2"
+      British English (uk): "3"
+      Spanish (es): "4"
+      Italian (it): "5"
+      Swedish (se): "6"
+      Swiss French (ch): "7"
+      Swiss German (ch): "8"
+      Turkish (tr): "9"
+      Finnish (fi): "10"
+      Norwegian (no): "11"
+      Danish (dk): "12"
+      Arabic (ar): "13"
+      Netherlands (nl): "14"
+      Czech (cz): "15"
+      Hungarian (hg): "16"
+      Poland (pl): "17"
+      Russian (ru): "18"
+      Greek (gk): "19"
+  hatarib_drive:
+    prompt: ATARI HARD DRIVE TYPE
+    description: Choose your Atari hard drive type for the .hd extension file.
+    choices:
+      IDE (Default): IDE
+      ACSI: ACSI
+systems:
+  - atarist

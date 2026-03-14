@@ -1,0 +1,11 @@
+comment "rtw88 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RTW88
+	bool "rtw88"
+	depends on BR2_LINUX_KERNEL
+	help
+	  A backport of the Realtek Wifi 5 drivers from the wireless-next repo.
+	  Use for Kernel versions between 5.4 & 6.12 only.
+
+	  https://github.com/lwfinger/rtw88

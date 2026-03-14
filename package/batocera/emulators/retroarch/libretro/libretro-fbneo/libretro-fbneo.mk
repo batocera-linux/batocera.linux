@@ -3,11 +3,12 @@
 # libretro-fbneo
 #
 ################################################################################
-# Version: Commits on Oct 3, 2024
-LIBRETRO_FBNEO_VERSION = d72f49f4a45dbfc5a855956d1a75ce2d0601c1c5
+# Version: Commits on Jan 11, 2026
+LIBRETRO_FBNEO_VERSION = aaecfedbb206a79d0e35a0dfe922622b921a66f7
 LIBRETRO_FBNEO_SITE = $(call github,libretro,FBNeo,$(LIBRETRO_FBNEO_VERSION))
 LIBRETRO_FBNEO_LICENSE = Non-commercial
 LIBRETRO_FBNEO_DEPENDENCIES += retroarch
+LIBRETRO_FBNEO_EMULATOR_INFO = fbneo.libretro.core.yml
 
 LIBRETRO_FBNEO_PLATFORM = $(LIBRETRO_PLATFORM)
 LIBRETRO_FBNEO_EXTRA_ARGS =
@@ -68,3 +69,4 @@ define LIBRETRO_FBNEO_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

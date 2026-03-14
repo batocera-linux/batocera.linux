@@ -1,0 +1,55 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+features: []
+custom_features:
+  vita3k_gfxbackend:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL: OpenGL
+      Vulkan: Vulkan
+  vita3k_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x (960x544): 1
+      2x (1920x1088): 2
+      3x (2880x1632): 3
+      4x (3840x2176): 4
+      5x (4800x2720): 5
+      6x (5760x3264): 6
+      7x (6720x3808): 7
+      8x (7680x4352): 8
+  vita3k_surface:
+    prompt: DISABLE SURFACE SYNC
+    description: Speed hack, enable to disable surface syncing between CPU and GPU. Surface syncing is needed by a few games.
+    preset: switchauto
+  vita3k_linear:
+    prompt: LINEAR FILTERING
+    description: The image will be softer which could help with aliasing.
+    preset: switchauto
+  vita3k_fxaa:
+    prompt: FXAA
+    description: Anti-aliasing is a technique for smoothing out jagged edges.
+    preset: switchauto
+  vita3k_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    preset: switchauto
+  vita3k_anisotropic:
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      1x: 1
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  vita3k_show_pointer:
+    prompt: SHOW POINTER
+    description: You can hide the pointer on touchscreen devices.
+    preset: switchauto
+systems:
+  - psvita

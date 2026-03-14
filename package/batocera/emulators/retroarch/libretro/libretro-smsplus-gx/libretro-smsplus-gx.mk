@@ -8,6 +8,7 @@ LIBRETRO_SMSPLUS_GX_VERSION = 96fa9bc65aa27a5ab2779f9f2ff0439fec7cf513
 LIBRETRO_SMSPLUS_GX_SITE = $(call github,libretro,smsplus-gx,$(LIBRETRO_SMSPLUS_GX_VERSION))
 LIBRETRO_SMSPLUS_GX_LICENSE = Non-commercial
 LIBRETRO_SMSPLUS_GX_DEPENDENCIES += retroarch
+LIBRETRO_SMSPLUS_GX_EMULATOR_INFO = smsplus.libretro.core.yml
 
 LIBRETRO_SMSPLUS_GX_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -31,3 +32,4 @@ define LIBRETRO_SMSPLUS_GX_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

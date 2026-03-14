@@ -1,0 +1,9 @@
+config BR2_PACKAGE_DEMUL
+    bool "demul"
+    depends on BR2_x86_64
+    select BR2_PACKAGE_WINE_PROTON
+    select BR2_PACKAGE_XDOTOOL
+    help
+      Demul is Sega's multi-system game console and automaton emulator.
+      
+      http://demul.emulation64.com

@@ -3,13 +3,14 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version: Commits on Mar 27, 2024
-LIBRETRO_PICODRIVE_VERSION = ad93670449a28825d4b2cebf2eeff72cf03377a9
+# Version: Commits on Dec 3, 2025
+LIBRETRO_PICODRIVE_VERSION = 3365b1774bc8680be9899968fe45b224ad2f11c1
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
 LIBRETRO_PICODRIVE_DEPENDENCIES = libpng retroarch
 LIBRETRO_PICODRIVE_LICENSE = MAME
+LIBRETRO_PICODRIVE_EMULATOR_INFO = picodrive.libretro.core.yml
 
 LIBRETRO_PICODRIVE_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -48,3 +49,4 @@ define LIBRETRO_PICODRIVE_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

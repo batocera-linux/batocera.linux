@@ -9,7 +9,7 @@
 MODEL2EMU_SOURCE = m2emulator.zip
 # source location updated since previous website is now unavailable
 MODEL2EMU_SITE = https://github.com/batocera-linux/model2emu/raw/main
-
+MODEL2EMU_EMULATOR_INFO = model2emu.emulator.yml
 MODEL2EMU_EXTRAS = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/model2emu
 
 define MODEL2EMU_EXTRACT_CMDS
@@ -33,3 +33,4 @@ define MODEL2EMU_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -14,30 +14,32 @@ BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.12.17"
-BR2_KERNEL_HEADERS_6_12=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.16"
+BR2_KERNEL_HEADERS_6_18=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/linux_sm8550-defconfig.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/qcs8550-ayn-odin2 qcom/qcs8550-ayn-odin2portal"
-                                                                              
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/qcs8550-ayn-odin2 qcom/qcs8550-ayn-odin2portal qcom/qcs8550-ayn-odin2mini qcom/qcs8550-ayn-thor qcom/qcs8550-ayaneo-pocketace qcom/qcs8550-ayaneo-pocketdmg qcom/qcs8550-ayaneo-pocketds qcom/qcs8550-ayaneo-pocketevo qcom/qcs8550-ayaneo-pockets2k qcom/qcs8550-retroidpocket-rp6 qcom/qcs8550-retroidpocket-rp6-top-dpad"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/dts/*"
+
 # Filesystem tools
 BR2_PACKAGE_HOST_DOSFSTOOLS=y
 BR2_PACKAGE_HOST_GENIMAGE=y
 BR2_PACKAGE_HOST_MTOOLS=y
 
-# System
+# GPU
 BR2_PACKAGE_BATOCERA_FREEDRENO_MESA3D=y
-BR2_PACKAGE_BATOCERA_WAYLAND_SWAY=y
+BR2_PACKAGE_BATOCERA_WAYLAND_LABWC=y
 BR2_PACKAGE_BATOCERA_XWAYLAND=y
+
+# Firmware
 BR2_PACKAGE_FIRMWARE_ARMBIAN=y
 
 # Bootloader
-BR2_TARGET_GRUB2=y
-BR2_TARGET_GRUB2_ARM64_EFI=y
-BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos part_gpt normal efi_gop search search_fs_file search_fs_uuid search_label chain reboot"
+BR2_PACKAGE_ROCKNIX_ABL=y
+BR2_PACKAGE_HOST_PYTHON_MKBOOTIMG=y
 
 # Batocera Splash Support
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y

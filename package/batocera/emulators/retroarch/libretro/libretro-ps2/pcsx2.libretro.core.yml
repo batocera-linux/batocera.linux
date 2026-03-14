@@ -1,0 +1,104 @@
+shared_features:
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  lr_pcsx2_fast_boot:
+    submenu: SYSTEM
+    prompt: BIOS FAST BOOT
+    description: Skip the bios boot logo, may cause default language issues.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  lr_pcsx2_fast_cdvd:
+    submenu: SYSTEM
+    prompt: FAST CD/DVD ACCESS
+    description: A small  number of games will have compatibility problems with this enabled.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  lr_pcsx2_cheats:
+    submenu: SYSTEM
+    prompt: CHEATS
+    description: Enables cheats files to be read from the `cheats` directory.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  lr_pcsx2_language_unlock:
+    submenu: SYSTEM
+    prompt: LANGUAGE UNLOCK
+    description: Helps forcing an international Japanese version to English. Unlocking more European languages etc.
+    choices:
+      Disabled: disabled
+      Enabled: enabled
+  lr_pcsx2_resolution:
+    submenu: GRAPHICS
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      1x Native (PS2): 1x Native (PS2)
+      2x Native (~720p): 2x Native (~720p)
+      3x Native (~1080p): 3x Native (~1080p)
+      4x Native (~1440p/2K): 4x Native (~1440p/2K)
+      5x Native (~1800p/3K): 5x Native (~1800p/3K)
+      6x Native (~2160p/4K): 6x Native (~2160p/4K)
+      7x Native (~2530p): 7x Native (~2530p)
+      8x Native (~2880p/5K): 8x Native (~2880p/5K)
+      9x Native (~3240p): 9x Native (~3240p)
+      10x Native (~3600p/6K): 10x Native (~3600p/6K)
+      11x Native (~3960p): 11x Native (~3960p)
+      12x Native (~4320p/8K): 12x Native (~4320p/8K)
+      13x Native (~5824p): 13x Native (~5824p)
+      14x Native (~6272p): 14x Native (~6272p)
+      15x Native (~6720p): 15x Native (~6720p)
+      16x Native (~7168p): 16x Native (~7168p)
+  lr_pcsx2_texture_filtering:
+    submenu: GRAPHICS
+    prompt: TEXTURE FILTERING
+    description: Enhancement. Smooth/upscale textures on 3D objects.
+    choices:
+      Nearest: Nearest
+      Bilinear (Forced): Bilinear (Forced)
+      Bilinear (PS2): Bilinear (PS2)
+      Bilinear (Forced excluding sprite): Bilinear (Forced excluding sprite)
+  lr_pcsx2_trilinear_filtering:
+    submenu: GRAPHICS
+    prompt: TRILINEAR FILTERING
+    description: Control the texture's trilinear filtering of the emulation.
+    choices:
+      'OFF': false
+      Trilinear (PS2): Trilinear (PS2)
+      Trilinear (Forced): Trilinear (Forced)
+  lr_pcsx2_anisotropic:
+    submenu: GRAPHICS
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures.
+    choices:
+      'OFF': disabled
+      2x: 2x
+      4x: 4x
+      8x: 8x
+      16x: 16x
+  lr_pcsx2_dithering:
+    submenu: GRAPHICS
+    prompt: DITHERING
+    description: Reduces banding between colours and improves the preceived colour depth.
+    choices:
+      'OFF': false
+      Scaled: Scaled
+      Unscaled: Unscaled
+      Force 32bit: Force 32bit
+  lr_pcsx2_blending:
+    submenu: GRAPHICS
+    prompt: BLENDING ACCURACY
+    description: The higher the setting, the more blending is emulated in the shader accurately, and the higher the speed penalty will be.
+    choices:
+      Minimum: Minimum
+      Basic: Basic
+      Medium: Medium
+      High: High
+      Full: Full
+      Maximum: Maximum
+systems:
+  - name: ps2

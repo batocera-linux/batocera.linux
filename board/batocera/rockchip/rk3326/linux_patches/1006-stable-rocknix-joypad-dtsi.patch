@@ -1,0 +1,125 @@
+--- /dev/null	2025-04-28 17:53:20.285890583 +0000
++++ linux-6.12.17/arch/arm64/boot/dts/rockchip/retrogame_joypad_s2_f1.dtsi	2025-05-09 17:14:55.222064032 +0000
+@@ -0,0 +1,122 @@
++/* 
++  This is a skeleton of joypad with 2 sticks and FN (MODE) button.
++  Fits devices with 1 stick and 2 extra face buttons too.
++  By including this ans setting I/O properties only,
++  devices should get consistent controller id and mapping
++  thus reusing non-game configs:
++    * SDL gamecontrollerdb.txt
++    * ES es_input.cfg
++    * Retroarch gamepad
++*/
++
++/ {
++    joypad: retrogame_joypad_s2_f1 {
++        /* These drivers emit the same button set which makes this skeleton ADC-agnostic */
++        /* compatible = "rocknix-joypad"; */
++        /* compatible = "rocknix-singleadc-joypad"; */
++
++        /* These are constants making Joystick Guid the same */
++        joypad-name = "retrogame_joypad_s2_f1";
++        joypad-vendor = <0x484B>;
++        joypad-product = <0x1121>;  /* 11 inherited, 2 for number of sticks, 1 for number of FN */
++        joypad-revision = <0x0100>;
++
++        /* require explicit status = "okay"; */
++        status = "disabled";
++
++        /* adc calculate scale */
++        button-adc-scale = <2>;
++
++        /* adc deadzone range  */
++        button-adc-deadzone = <64>;
++
++        /*
++          specifies fuzz value that is used to filter noise from
++          the event stream.
++        */
++        button-adc-fuzz = <32>;
++        button-adc-flat = <32>;
++
++        /* poll device interval (ms), adc read interval */
++        poll-interval = <10>;
++
++        /* gpio button auto repeat set value : default disable */
++        /*
++            autorepeat;
++        */
++
++        /* meaningful node names for easier use */
++        up {
++            label = "GPIO DPAD-UP";
++            linux,code = <BTN_DPAD_UP>;
++        };
++        down {
++            label = "GPIO DPAD-DOWN";
++            linux,code = <BTN_DPAD_DOWN>;
++        };
++        left {
++            label = "GPIO DPAD-LEFT";
++            linux,code = <BTN_DPAD_LEFT>;
++        };
++        right {
++            label = "GPIO DPAD-RIGHT";
++            linux,code = <BTN_DPAD_RIGHT>;
++        };
++
++        a {
++            label = "GPIO BTN-A";
++            linux,code = <BTN_EAST>;
++        };
++        b {
++            label = "GPIO BTN-B";
++            linux,code = <BTN_SOUTH>;
++        };
++        x {
++            label = "GPIO BTN-X";
++            linux,code = <BTN_NORTH>;
++        };
++        y {
++            label = "GPIO BTN-Y";
++            linux,code = <BTN_WEST>;
++        };
++
++        select {
++            label = "GPIO BTN_SELECT";
++            linux,code = <BTN_SELECT>;
++        };
++        start {
++            label = "GPIO BTN_START";
++            linux,code = <BTN_START>;
++        };
++        mode {
++            label = "GPIO BTN_F";
++            linux,code = <BTN_MODE>;
++        };
++
++        tl {
++            label = "GPIO BTN_TL";
++            linux,code = <BTN_TL>;
++        };
++        tr {
++            label = "GPIO BTN_TR";
++            linux,code = <BTN_TR>;
++        };
++        tl2 {
++            label = "GPIO BTN_TL2";
++            linux,code = <BTN_TL2>;
++        };
++        tr2 {
++            label = "GPIO BTN_TR2";
++            linux,code = <BTN_TR2>;
++        };
++
++        thumbl {
++            label = "GPIO BTN_THUMBL";
++            linux,code = <BTN_THUMBL>;
++        };
++        thumbr {
++            label = "GPIO BTN_THUMBR";
++            linux,code = <BTN_THUMBR>;
++        };
++    };
++};

@@ -8,3 +8,17 @@ config BR2_PACKAGE_AIC8800
 	  Linux Driver for the aicsemi aic8800 WiFi / BT Adapter.
 
 	  https://www.aicsemi.com/drivers/aic8800.tar.gz
+
+config BR2_PACKAGE_AIC8800_SDIO
+	bool "aic8800sdio"
+	depends on BR2_LINUX_KERNEL
+	select BR2_PACKAGE_AIC8800
+	help
+	  Linux Driver for the aicsemi aic8800 WiFi / BT Adapter, SDIO driver.
+
+config BR2_PACKAGE_AIC8800_USB
+	bool "aic8800usb"
+	depends on BR2_LINUX_KERNEL
+	select BR2_PACKAGE_AIC8800
+	help
+	  Linux Driver for the aicsemi aic8800 WiFi / BT Adapter, USB driver.

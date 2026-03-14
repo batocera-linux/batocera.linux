@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING
 from xml.dom import minidom
 
 from ...batoceraPaths import BIOS, CONFIGS, DEFAULTS_DIR, ROMS, SAVES, USER_DECORATIONS, mkdir_if_not_exists
+from ..mame.mameCommon import is_atom_floppy
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -36,10 +37,10 @@ retroPad = {
     "joystick2down":    "RYAXIS_POS_SWITCH",
     "joystick2left":    "RXAXIS_NEG_SWITCH",
     "joystick2right":   "RXAXIS_POS_SWITCH",
-    "a":                "BUTTON1",
-    "b":                "BUTTON2",
-    "x":                "BUTTON3",
-    "y":                "BUTTON4",
+    "b":                "BUTTON1",
+    "a":                "BUTTON2",
+    "y":                "BUTTON3",
+    "x":                "BUTTON4",
     "pageup":           "BUTTON5",
     "pagedown":         "BUTTON6",
     "l2":               "RZAXIS_POS_SWITCH",
@@ -61,7 +62,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
     else:
         corePath = str(system.config.core)
 
-    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'plugnplay', 'vis' ]:
+    if system.name in [ 'mame', 'neogeo', 'lcdgames', 'tvgames', 'vis', 'namco22', 'model2', 'cave3rd', 'gaelco', 'hikaru' ]:
         # Set up command line for basic systems
         # ie. no media, softlists, etc.
         if system.config.get_bool("customcfg"):
@@ -137,14 +138,14 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                 if system.config.get_bool("ti99_32kram"):
                     commandLine += ["-ioport:peb:slot2", "32kmem"]
                 if system.config.get_bool("ti99_speech", True):
-                    commandLine += ["-ioport:peb:slot3", "speech"]
+                    commandLine += ["-ioport", "speechsyn"]
 
             #Laser 310 Memory Expansion & joystick
             if system.name == "laser310":
                 commandLine += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and system.config.get('sticktype', 'none') != 'none':
+            if system.name == "bbcmicro" and system.config.get('sticktype', 'none') != 'none':
                 commandLine += ["-analogue", system.config['sticktype']]
                 specialController = system.config['sticktype']
 
@@ -313,7 +314,7 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             if (mameIniDir / "batocera.ini").exists():
                 (mameIniDir / "batocera.ini").unlink()
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList[-4:] == "cass":
                         autoRunCmd = '*tape\\nchain""\\n'
@@ -370,6 +371,22 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                         for row in autoRunList:
                             if row and not row[0].startswith('#') and row[0].casefold() == romDrivername.casefold():
                                 autoRunCmd = row[1] + "\\n"
+            elif system.name == "atom":
+                autoRunDelay = 2
+                autoRunCmd = messAutoRun[messMode]
+                if (
+                    (altromtype == "flop1") or
+                    (softList and softList.endswith("flop")) or
+                    is_atom_floppy(rom)
+                ):
+                    autoRunFile = DEFAULTS_DIR / 'data' / 'mame' / 'atom_flop_autoload.csv'
+                    if autoRunFile.exists():
+                        with autoRunFile.open() as openARFile:
+                            autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                            for row in autoRunList:
+                                if row and not row[0].startswith('#') and row[0].casefold() == rom.stem.casefold():
+                                    autoRunCmd = row[1] + "\\n"
+                                    break
             else:
                 # Check for an override file, otherwise use generic (if it exists)
                 autoRunCmd = messAutoRun[messMode]
@@ -426,10 +443,12 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         if system.config.get_bool("artworkcrop"):
             commandLine += [ "-artwork_crop" ]
 
-    # Share plugins & samples with standalone MAME (except TI99)
+    # Share plugins with standalone MAME (except TI99)
     if system.name != "ti99":
         commandLine += [ "-pluginspath", f"/usr/bin/mame/plugins/;{SAVES / 'mame' / 'plugins'}" ]
         commandLine += [ "-homepath" , SAVES / 'mame' / 'plugins' ]
+    # Share samples with standalone MAME (except gamecom and TI99)
+    if system.name not in ['gamecom', 'ti99']:
         commandLine += [ "-samplepath", BIOS / "mame" / "samples" ]
     mkdir_if_not_exists(SAVES / "mame" / "plugins")
     mkdir_if_not_exists(BIOS / "mame" / "samples")
@@ -505,26 +524,20 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
 
     romName = rom.stem
     if romName in capcomList:
-        if controllerType in [ "auto", "snes" ]:
+        if controllerType in [ "auto", "snes", "fightstick" ]:
             return "sfsnes"
         if controllerType == "megadrive":
             return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
     elif romName in mkList:
-        if controllerType in [ "auto", "snes" ]:
+        if controllerType in [ "auto", "snes", "fightstick" ]:
             return "mksnes"
         if controllerType == "megadrive":
             return "mkmegadrive"
-        if controllerType == "fightstick":
-            return "mkstick"
     elif romName in kiList:
-        if controllerType in [ "auto", "snes" ]:
+        if controllerType in [ "auto", "snes", "fightstick" ]:
             return "kisnes"
         if controllerType == "megadrive":
             return "megadrive"
-        if controllerType == "fightstick":
-            return "sfstick"
     elif romName in  neogeoList:
         return "neomini"
     elif romName in  twinstickList:
@@ -533,7 +546,7 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
         return "qbert"
     else:
         if controllerType == "fightstick":
-            return "fightstick"
+            return "sfsnes"
 
     return "default"
 
@@ -609,6 +622,11 @@ def generateMAMEPadConfig(
     else:
         useControls = messSysName
 
+    config_alt: minidom.Document | None = None
+    xml_input_alt: minidom.Element | None = None
+    overwriteSystem = True
+    configFile_alt: Path | None = None
+
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
@@ -666,8 +684,6 @@ def generateMAMEPadConfig(
         perGameCfg = system.config.get_bool('pergamecfg')
         if configFile_alt.exists() and (customCfg or perGameCfg):
             overwriteSystem = False
-        else:
-            overwriteSystem = True
 
         xml_mameconfig_alt = getRoot(config_alt, "mameconfig")
         xml_mameconfig_alt.setAttribute("version", "10")
@@ -731,7 +747,7 @@ def generateMAMEPadConfig(
         if useControls in messControlDict:
             for controlDef in messControlDict[useControls]:
                 thisControl = messControlDict[useControls][controlDef]
-                if nplayer == thisControl['player']:
+                if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
                     if thisControl['type'] == 'special':
                         xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
                             retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
@@ -756,7 +772,7 @@ def generateMAMEPadConfig(
                 mameXml.write(dom_string)
 
         # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if messSysName in specialControlList and overwriteSystem:
+        if messSysName in specialControlList and overwriteSystem and config_alt is not None and configFile_alt is not None:
             with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
                 dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
                 mameXml_alt.write(dom_string_alt)

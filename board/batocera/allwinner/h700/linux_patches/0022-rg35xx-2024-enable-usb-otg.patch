@@ -1,0 +1,49 @@
+From 046e4ac968cfd9daf6c913bd074a24231b2a10d8 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Tue, 22 Apr 2025 12:48:35 +0200
+Subject: [PATCH] rg35xx: enable usb OTG
+
+---
+ .../sun50i-h700-anbernic-rg35xx-2024.dts          | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 037f20a92d83..a35bd6d5f17c 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -322,6 +322,16 @@ reg_vcc3v3_mmc2: regulator-vcc3v3-mmc2 {
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-name = "vcc3v3-mmc2";
+ 	};
++
++	reg_usb0_vbus: regulator-usb0-vbus {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&pio 8 16 GPIO_ACTIVE_HIGH>; /* PI16 */
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-name = "usb0-vbus";
++		vin-supply = <&reg_boost>;
++	};
+ };
+ 
+ &codec {
+@@ -571,11 +581,14 @@ &uart0 {
+ 
+ /* the AXP717 has USB type-C role switch functionality, not yet described by the binding */
+ &usbotg {
+-	dr_mode = "peripheral";   /* USB type-C receptable */
++	dr_mode = "otg";   /* USB type-C receptable */
+ 	status = "okay";
+ };
+ 
+ &usbphy {
++	usb0_id_det-gpios = <&pio 8 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
++	usb0_vbus_power-supply = <&usb_power>;
++	usb0_vbus-supply = <&reg_usb0_vbus>;
+ 	status = "okay";
+ };
+ 
+-- 
+2.49.0
+

@@ -9,7 +9,7 @@ from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import HOME, ROMS, configure_emulator, mkdir_if_not_exists
+from ...batoceraPaths import ROMS, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import wine
 from ...utils.configparser import CaseSensitiveConfigParser
@@ -32,10 +32,10 @@ class Model2EmuGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        wineprefix = HOME / "wine-bottles" / "model2"
-        emupath = wineprefix / "model2emu"
+        wine_runner = wine.Runner.default("model2")
+        emupath = wine_runner.bottle_dir / "model2emu"
 
-        mkdir_if_not_exists(wineprefix)
+        mkdir_if_not_exists(wine_runner.bottle_dir)
 
         #copy model2emu to /userdata for rw & emulator directory creation reasons
         if not emupath.exists():
@@ -43,16 +43,16 @@ class Model2EmuGenerator(Generator):
             (emupath / "EMULATOR.INI").chmod(stat.S_IRWXO)
 
         # install windows libraries required
-        wine.install_wine_trick(wineprefix, 'd3dx9')
-        wine.install_wine_trick(wineprefix, 'd3dcompiler_42')
-        wine.install_wine_trick(wineprefix, 'd3dx9_42')
-        wine.install_wine_trick(wineprefix, 'xact')
-        wine.install_wine_trick(wineprefix, 'xact_x64')
+        wine_runner.install_wine_trick('d3dx9')
+        wine_runner.install_wine_trick('d3dcompiler_42')
+        wine_runner.install_wine_trick('d3dx9_42')
+        wine_runner.install_wine_trick('xact')
+        wine_runner.install_wine_trick('xact_x64')
 
         # for existing bottles we want to ensure files are updated as necessary
         copy_updated_files(Path("/usr/model2emu/scripts"), emupath / "scripts")
 
-        xinput_cfg_done = wineprefix / "xinput_cfg.done"
+        xinput_cfg_done = wine_runner.bottle_dir / "xinput_cfg.done"
         if not xinput_cfg_done.exists():
             copy_updated_files(Path("/usr/model2emu/CFG"), emupath / "CFG")
             with xinput_cfg_done.open("w") as f:
@@ -61,7 +61,7 @@ class Model2EmuGenerator(Generator):
         # move to the emulator path to ensure configs are saved etc
         os.chdir(emupath)
 
-        commandArray: list[str | Path] = [wine.WINE, emupath / "emulator_multicpu.exe"]
+        commandArray: list[str | Path] = [wine_runner.wine, emupath / "emulator_multicpu.exe"]
         # simplify the rom name (strip the directory & extension)
         if not configure_emulator(rom):
             commandArray.extend([rom.stem])
@@ -151,7 +151,7 @@ class Model2EmuGenerator(Generator):
             Config.write(configfile)
 
         # set the environment variables
-        environment = wine.get_wine_environment(wineprefix)
+        environment = wine_runner.get_environment()
         environment.update({
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"

@@ -4,30 +4,51 @@
 #
 ################################################################################
 
-LIBRETRO_CORE_INFO_VERSION = 52fe3598d8cacce6c2d688c26e9ee00b773c971e
-LIBRETRO_CORE_INFO_SITE = $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
+LIBRETRO_CORE_INFO_VERSION = 28f18a4d2fd75a88a8dff32ab60ee1c3b9f8a162
+LIBRETRO_CORE_INFO_SITE = \
+    $(call github,libretro,libretro-core-info,$(LIBRETRO_CORE_INFO_VERSION))
 LIBRETRO_CORE_INFO_LICENSE = GPL
 
 define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/libretro/info
 	cp -r $(@D)/*.info $(TARGET_DIR)/usr/share/libretro/info
 
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_saturn_libretro.info	beetle-saturn_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf bsnes_hd_beta_libretro.info		bsnes_hd_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_wide_libretro.info	genesisplusgx-wide_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_libretro.info	genesisplusgx_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2003_plus_libretro.info		mame078plus_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame_libretro.info			mess_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mupen64plus_next_libretro.info	mupen64plus-next_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_fast_libretro.info	pce_fast_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_libretro.info		pce_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pcfx_libretro.info		pcfx_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2002_libretro.info		pocketsnes_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2010_libretro.info		snes9x_next_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf vbam_libretro.info			vba-m_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_vb_libretro.info		vb_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf fbalpha2012_libretro.info		fbalpha_libretro.info
-	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2000_libretro.info		imame4all_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_saturn_libretro.info \
+	    beetle-saturn_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf bsnes_hd_beta_libretro.info \
+	    bsnes_hd_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_wide_libretro.info \
+	    genesisplusgx-wide_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_libretro.info \
+	    genesisplusgx_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf genesis_plus_gx_libretro.info \
+	    genesisplusgx-expanded_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2003_plus_libretro.info \
+	    mame078plus_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame_libretro.info \
+	    mess_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mupen64plus_next_libretro.info \
+	    mupen64plus-next_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_fast_libretro.info \
+	    pce_fast_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pce_libretro.info \
+	    pce_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_pcfx_libretro.info \
+	    pcfx_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2002_libretro.info \
+	    pocketsnes_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf snes9x2010_libretro.info \
+	    snes9x_next_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf vbam_libretro.info \
+	    vba-m_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mednafen_vb_libretro.info \
+	    vb_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf fbalpha2012_libretro.info \
+	    fbalpha_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2000_libretro.info \
+	    imame4all_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf ep128emu_core_libretro.info \
+	    ep128emu-core_libretro.info
 
 	# mamevirtual_libretro.so      => no info found
 	# superflappybirds_libretro.so => no info found

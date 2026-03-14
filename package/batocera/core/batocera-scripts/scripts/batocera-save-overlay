@@ -58,7 +58,7 @@ fi
 
 # save
 echo "Saving the real overlay to disk..."
-if ! rsync -av --delete "${OVERLAYRAM}/" "${OVERLAYMOUNT}"
+if ! rsync -av --delete --exclude="/.cache" "${OVERLAYRAM}/" "${OVERLAYMOUNT}"
 then
     umount "${OVERLAYMOUNT}"
     mount -o remount,ro /boot

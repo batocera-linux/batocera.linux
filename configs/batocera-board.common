@@ -1,4 +1,4 @@
-include batocera-board.local.common
+-include batocera-board.local.common
 
 # users
 BR2_ROOTFS_USERS_TABLES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/users.txt"
@@ -90,6 +90,9 @@ BR2_PACKAGE_GLIBC_UTILS=y
 # disable the mosquitto broker which is on by default
 BR2_PACKAGE_MOSQUITTO_BROKER=n
 
+# dmd
+BR2_PACKAGE_DMD_PLAY_RUST_DMD_PLAY_BIN=y
+
 # System
 BR2_PACKAGE_BATOCERA_SYSTEM=y
 BR2_PACKAGE_BATOCERA_EXTRAS=y
@@ -114,3 +117,6 @@ BR2_PACKAGE_BATOCERA_VIDEO_CODECS=y
 
 # Enables ccache
 BR2_CCACHE=y
+
+# Don't purge locales
+BR2_ENABLE_LOCALE_PURGE=n

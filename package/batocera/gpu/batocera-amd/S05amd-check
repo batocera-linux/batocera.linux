@@ -1,42 +1,46 @@
 #!/bin/bash
 
 # S05amd-check forces the amdgpu over the legacy radeon driver(s)
-# for supported AMD island cards only 
-# function can be turned off using batocera-boot.conf
+# for supported AMD island cards only.
+# Function can be turned off using batocera-boot.conf.
 
-if test "$1" != "start"; then
+if [ "$1" != "start" ]; then
     exit 0
 fi
 
-# Setup the log file
-mkdir -p "/userdata/system/logs"
-log="/userdata/system/logs/amd.log"
+mkdir -p "/var/log"
+log="/var/log/amd.log"
 
 if grep -qE "^[ ]*amdgpu[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf; then
-  echo "Detecting AMD or Radeon GPU." > "$log"
-  gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
-  if [[ -n $gpu_name ]]; then
-    echo "Detected - $gpu_name." > "$log"
-    vid_pid=$(echo "$gpu_name" | awk -F'[][]' '{print $(NF-1)}')
-    # Check the vid:pid is in the list file
-    if grep -q "$vid_pid" /usr/share/amd/islands.list; then
-      # Logging
-      echo "Supported AMD Islands card found - $vid_pid." >> "$log"
-      # Write module changes
-      mkdir -p /var/run/amd/modprobe || exit 1
-      echo "options amdgpu si_support=1" > /var/run/amd/modprobe/amdgpu.conf
-      echo "options amdgpu cik_support=1" >> /var/run/amd/modprobe/amdgpu.conf
-      echo "options radeon si_support=0" > /var/run/amd/modprobe/radeon.conf
-      echo "options radeon cik_support=0" >> /var/run/amd/modprobe/radeon.conf
-      # Load amdgpu module
-      modprobe amdgpu
+    echo "amdgpu=true found. Searching for a compatible GPU..." > "$log"
+
+    gpu_name=$(lspci -nn | grep -iE "AMD/ATI" | grep -iE "VGA|3D|Display controller")
+
+    if [[ -n "$gpu_name" ]]; then
+        echo "Detected: $gpu_name" >> "$log"
+        vid_pid=$(echo "$gpu_name" | awk -F'[][]' '{print $(NF-1)}')
+
+        # Check if the GPU's PCI ID is in the supported list.
+        if grep -qF "$vid_pid" /usr/share/amd/islands.list; then
+            echo "Supported AMD Islands card found: $vid_pid. Applying override." >> "$log"
+
+            # Write module changes.
+            mkdir -p /var/run/amd/modprobe || exit 1
+            echo "options amdgpu si_support=1" > /var/run/amd/modprobe/amdgpu.conf
+            echo "options amdgpu cik_support=1" >> /var/run/amd/modprobe/amdgpu.conf
+            echo "options radeon si_support=0" > /var/run/amd/modprobe/radeon.conf
+            echo "options radeon cik_support=0" >> /var/run/amd/modprobe/radeon.conf
+            
+            # Load the amdgpu module with the new settings.
+            modprobe amdgpu
+        else
+            echo "GPU ($vid_pid) not found in islands.list. Using default Mesa driver." >> "$log"
+        fi
     else
-      # Logging
-      echo "No matching PCI ID of $vid_pid found in islands.list." >> "$log"
-      echo "Using Mesa driver defaults..." >> "$log"
+        echo "No physical AMD/ATI GPU was detected." >> "$log"
     fi
-  else
-    # Logging
-    echo "No AMD or Radeon GPU found." > "$log"
-  fi
+else
+    echo "Feature is disabled (amdgpu=true not found in /boot/batocera-boot.conf)." > "$log"
 fi
+
+exit 0

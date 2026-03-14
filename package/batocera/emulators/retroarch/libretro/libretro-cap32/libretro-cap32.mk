@@ -8,6 +8,7 @@ LIBRETRO_CAP32_VERSION = 57fea8ba89372a330eaac485d135d656da9f54e6
 LIBRETRO_CAP32_SITE = $(call github,libretro,libretro-cap32,$(LIBRETRO_CAP32_VERSION))
 LIBRETRO_CAP32_LICENSE = GPLv2
 LIBRETRO_CAP32_DEPENDENCIES += retroarch
+LIBRETRO_CAP32_EMULATOR_INFO = cap32.libretro.core.yml
 
 LIBRETRO_CAP32_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -41,3 +42,4 @@ define LIBRETRO_CAP32_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

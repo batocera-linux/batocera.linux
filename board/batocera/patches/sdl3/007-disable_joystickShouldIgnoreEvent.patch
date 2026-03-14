@@ -1,0 +1,12 @@
+diff --git a/src/joystick/SDL_joystick.c b/src/joystick/SDL_joystick.c
+index 61147f7..e208539 100644
+--- a/src/joystick/SDL_joystick.c
++++ b/src/joystick/SDL_joystick.c
+@@ -2065,6 +2065,7 @@ void SDL_QuitJoysticks(void)
+ 
+ static bool SDL_PrivateJoystickShouldIgnoreEvent(void)
+ {
++    return false;
+     if (SDL_joystick_allows_background_events) {
+         return false;
+     }

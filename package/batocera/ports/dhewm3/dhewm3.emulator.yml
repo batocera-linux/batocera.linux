@@ -1,0 +1,41 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  dhewm3_brightness:
+    prompt: BRIGHTNESS
+    description: Change the game's brightness.
+    choices:
+      100% (Default): 1
+      120%: 1.2
+      140%: 1.4
+      160%: 1.6
+      180%: 1.8
+      200% (Maximum): 2
+  dhewm3_language:
+    prompt: LANGUAGE
+    description: Change the game's language. Game files require the supported language strings in the .pk4 files.
+    choices:
+      English: english
+      Spanish: spanish
+      Italian: italian
+      German: german
+      French: french
+      Russian: russian
+      Polish: polish
+      Korean: korean
+      Japanese: japanese
+      Chinese: chinese
+systems:
+  - doom3

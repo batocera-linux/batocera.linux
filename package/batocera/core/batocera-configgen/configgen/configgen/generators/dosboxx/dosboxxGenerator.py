@@ -45,12 +45,30 @@ class DosBoxxGenerator(Generator):
 
         # -fullscreen removed as it crashes on N2
         commandArray = ['/usr/bin/dosbox-x',
-                        "-exit",
+                        "-exit"]
+
+        # Find autoexe file
+        autoexecFile = rom / "dosbox.aut"
+        if autoexecFile.exists():
+            # Read dosbox.aut and append it to the custom config file
+            with customConfFile.open('a+') as f1:
+                f1.write(autoexecFile.read_text())
+
+            # Setting the defaultdir to the rom dir.
+            # This way we can use relative paths to the rom directory
+            # in dosbox.auto
+            commandArray.extend([
+                        "-defaultdir", f"""{rom!s}"""])
+        else:
+            # Otherwise, mount the rom directory as c: and run dosbox.bat
+            commandArray.extend([
                         "-c", f"""mount c {rom!s}""",
                         "-c", "c:",
-                        "-c", "dosbox.bat",
+                        "-c", "dosbox.bat"])
+
+        commandArray.extend([
                         "-fastbioslogo",
-                        f"-conf {customConfFile!s}"]
+                        "-conf", f"{customConfFile!s}"])
 
         return Command.Command(array=commandArray, env={"XDG_CONFIG_HOME":CONFIGS})
 

@@ -25,13 +25,13 @@ index 1b3fa52ce9..7d79a9505f 100644
  				auto systemWideSource = NCINE_INSTALL_PREFIX "/share/" NCINE_LINUX_PACKAGE "/Source/";
 index 5b5199b0b6..14a1be044a 100644
 --- a/Sources/Shared/IO/FileSystem.cpp
-+++ b/Sources/Shared/IO/FileSystem.cpp.new
-@@ -2554,7 +2554,7 @@ namespace Death { namespace IO {
- #elif defined(DEATH_TARGET_UNIX) || defined(DEATH_TARGET_EMSCRIPTEN)
++++ b/Sources/Shared/IO/FileSystem.cpp
+@@ -1265,7 +1265,7 @@ namespace Death { namespace IO {
+ #elif defined(DEATH_TARGET_UNIX) || defined(DEATH_TARGET_EMSCRIPTEN) || defined(DEATH_TARGET_VITA)
  		StringView config = ::getenv("XDG_CONFIG_HOME");
  		if (IsAbsolutePath(config)) {
--			_savePath = CombinePath(config, applicationName);
-+			_savePath = CombinePath(config, "jazz2");
- 			return;
+-			return CombinePath(config, applicationName);
++			return CombinePath(config, "jazz2");
  		}
  
+ 		StringView home = ::getenv("HOME");

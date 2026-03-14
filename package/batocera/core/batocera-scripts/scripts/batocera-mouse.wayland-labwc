@@ -1,0 +1,16 @@
+#!/bin/sh
+
+case "${1}" in
+    "show")
+        # Press Alt+Win+s to trigger 'ShowCursor'
+        wtype -M alt -M logo -k s -m logo -m alt
+    ;;
+    "hide")
+        # Press Alt+Win+h to trigger 'HideCursor'
+        wtype -M alt -M logo -k h -m logo -m alt
+    ;;
+    *)
+        echo "Usage: ${0} <show|hide>" >&2
+        exit 1
+esac
+exit 0

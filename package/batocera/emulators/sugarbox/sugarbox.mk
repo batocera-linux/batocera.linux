@@ -11,7 +11,7 @@ SUGARBOX_GIT_SUBMODULES=YES
 SUGARBOX_LICENSE = MIT
 SUGARBOX_DEPENDENCIES = qt6base qt6tools qt6websockets
 
-ifeq ($(BR2_PACKAGE_SWAY),y)
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
 SUGARBOX_DEPENDENCIES += qt6wayland
 endif
 
@@ -24,7 +24,7 @@ SUGARBOX_CONF_OPTS += -DCMAKE_INSTALL_PREFIX="/usr/sugarbox/"
 
 SUGARBOX_CONF_ENV += LDFLAGS=-lpthread
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
   SUGARBOX_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lmali_hook -Wl,--whole-archive -lmali_hook_injector -Wl,--no-whole-archive -lmali"
 endif
 

@@ -1,0 +1,36 @@
+features:
+  - padtokeyboard
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  bluemsx_overscan:
+    prompt: ZOOM (HIDE BORDERS)
+    description: Hides borders on many games. Some games used the borders.
+    choices:
+      'Off': disabled
+      'On': enabled
+      MSX2: MSX2
+  bluemsx_nospritelimits:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the four sprites per line limit.
+    choices:
+      'Off': false
+      'On': true
+systems:
+  - colecovision
+  - name: msx1
+    exclude_extensions:
+      - ogv
+      - openmsx
+  - name: msx2
+    exclude_extensions:
+      - openmsx
+  - name: msx2+
+    exclude_extensions:
+      - openmsx
+  - name: msxturbor
+    exclude_extensions:
+      - openmsx
+  - spectravideo

@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_BEETLE_SUPERGRAFX
     bool "libretro-beetle-supergrafx"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
     help
       A libretro Supergrafx emulator core for ARM.

@@ -8,6 +8,7 @@ LIBRETRO_HANDY_VERSION = 65d6b865544cd441ef2bd18cde7bd834c23d0e48
 LIBRETRO_HANDY_SITE = $(call github,libretro,libretro-handy,$(LIBRETRO_HANDY_VERSION))
 LIBRETRO_HANDY_LICENSE = Zlib
 LIBRETRO_HANDY_DEPENDENCIES += retroarch
+LIBRETRO_HANDY_EMULATOR_INFO = handy.libretro.core.yml
 
 LIBRETRO_HANDY_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -35,3 +36,4 @@ define LIBRETRO_HANDY_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

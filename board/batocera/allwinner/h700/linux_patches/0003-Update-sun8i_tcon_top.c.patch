@@ -1,0 +1,26 @@
+From e455e1333985180431dc6de43d3ab97a2f608edc Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 5 Nov 2025 22:19:01 +0100
+Subject: [PATCH] Update sun8i_tcon_top.c
+
+hack to fix first row on panel
+---
+ drivers/gpu/drm/sun4i/sun8i_tcon_top.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/sun4i/sun8i_tcon_top.c b/drivers/gpu/drm/sun4i/sun8i_tcon_top.c
+index 8adda578c51b..badb6609d8ed 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_tcon_top.c
++++ b/drivers/gpu/drm/sun4i/sun8i_tcon_top.c
+@@ -179,7 +179,7 @@ static int sun8i_tcon_top_bind(struct device *dev, struct device *master,
+ 	 * At least on H6, some registers have some bits set by default
+ 	 * which may cause issues. Clear them here.
+ 	 */
+-	writel(0, regs + TCON_TOP_PORT_SEL_REG);
++	writel(0x20, regs + TCON_TOP_PORT_SEL_REG);
+ 	writel(0, regs + TCON_TOP_GATE_SRC_REG);
+ 
+ 	/*
+-- 
+2.51.0
+

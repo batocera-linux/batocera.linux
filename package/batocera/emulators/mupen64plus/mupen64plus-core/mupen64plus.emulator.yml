@@ -1,0 +1,274 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  mupen64plus_ratio:
+    prompt: GAME ASPECT RATIO
+    choices:
+      4:3: 4/3
+      16:9: 16/9
+  mupen64plus_frameskip:
+    group: ADVANCED OPTIONS
+    prompt: FRAMESKIP (GL64MK2 ONLY)
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': 0
+      Autodetect: automatic
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+  mupen64plus_AudioSync:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO SYNC
+    description: Enable second audio limiter. Improves audio quality at the cost of performance.
+    choices:
+      'Off': "False"
+      'On': "True"
+  mupen64plus_AudioBuffer:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO BUFFER (SAMPLES)
+    description: Lower values reduce audio latency and improve performance, but can cause audio issues.
+    choices:
+      Very High: Very High
+      High: High
+      Medium: Medium
+      Low: Low
+  mupen64plus_Mipmapping:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE MIP-MAPPING (BLUR)
+    description: Smooth textures on distant 3D objects based on angle.
+    choices:
+      'Off': 0
+      nearest: 1
+      bilinear: 2
+      trilinear: 3
+  mupen64plus_Anisotropic:
+    group: ADVANCED OPTIONS
+    prompt: ANISOTROPIC FILTERING
+    description: Enhancement. Improves clarity of distant textures when mip-mapping is enabled.
+    choices:
+      'Off': 0
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  mupen64plus_AntiAliasing:
+    group: ADVANCED OPTIONS
+    prompt: ANTI-ALIASING (MSAA)
+    description: Enhancement. Smooth out jagged edges on 3D object polygons.
+    choices:
+      'Off': 0
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  mupen64plus_TextureEnhancement:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE UPSCALING (RICE ONLY)
+    description: Upscale textures on 3D objects.
+    choices:
+      'Off': 0
+      2X: 1
+      2XSAI: 2
+      HQ2X: 3
+      LQ2X: 4
+      HQ4X: 5
+      Sharpen: 6
+      Sharpen More: 7
+      External: 8
+      Mirrored: 9
+  mupen64plus_LoadHiResTextures:
+    group: ADVANCED OPTIONS
+    prompt: LOAD CUSTOM TEXTURES
+    choices:
+      'Off': "False"
+      'On': "True"
+  mupen64plus_DisableExtraMem:
+    group: ADVANCED OPTIONS
+    prompt: DISABLE 4MB EXPANSION RAM PACK
+    description: Required by some games.
+    choices:
+      'Off': "False"
+      'On': "True"
+  mupen64plus_fb_read_always:
+    group: ADVANCED OPTIONS
+    prompt: READ FRAMEBUFFER EVERY FRAME (GLIDE64MK2)
+    description: Required for some effects in-game (Banjo Kazooie and DK64 transitions), can cause slowdown.
+    choices:
+      Game default: -1
+      Disable: 0
+      Enable: 1
+  mupen64plus_cheats:
+    group: ADVANCED OPTIONS
+    prompt: CHEATS
+    description: Pass custom cheats argument directly to mupen64plus using --cheats.
+    preset: input
+  mupen64-controller1:
+    submenu: CONTROLLER 1
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers. Limited hotkeys for controllers without dedicated hotkey.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64-controller2:
+    submenu: CONTROLLER 2
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64-controller3:
+    submenu: CONTROLLER 3
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64-controller4:
+    submenu: CONTROLLER 4
+    prompt: CONTROLLER TYPE
+    description: Useful for N64 style controllers.
+    choices:
+      RetroPad (Default): retropad
+      N64: n64
+  mupen64-sensitivity1:
+    submenu: CONTROLLER 1
+    prompt: SENSITIVITY
+    description: Apply a multiplier to the joystick's input to lower or increase responsiveness.
+    choices:
+      0.5x: 0.5
+      0.6x: 0.6
+      0.7x: 0.7
+      0.8x: 0.8
+      0.9x: 0.9
+      1x (Default): 1.0
+      1.1x: 1.1
+      1.2x: 1.2
+      1.3x: 1.3
+      1.4x: 1.4
+      1.5x: 1.5
+  mupen64-sensitivity2:
+    submenu: CONTROLLER 2
+    prompt: SENSITIVITY
+    description: Apply a multiplier to the joystick's input to lower or increase responsiveness.
+    choices:
+      0.5x: 0.5
+      0.6x: 0.6
+      0.7x: 0.7
+      0.8x: 0.8
+      0.9x: 0.9
+      1x (Default): 1.0
+      1.1x: 1.1
+      1.2x: 1.2
+      1.3x: 1.3
+      1.4x: 1.4
+      1.5x: 1.5
+  mupen64-sensitivity3:
+    submenu: CONTROLLER 3
+    prompt: SENSITIVITY
+    description: Apply a multiplier to the joystick's input to lower or increase responsiveness.
+    choices:
+      0.5x: 0.5
+      0.6x: 0.6
+      0.7x: 0.7
+      0.8x: 0.8
+      0.9x: 0.9
+      1x (Default): 1.0
+      1.1x: 1.1
+      1.2x: 1.2
+      1.3x: 1.3
+      1.4x: 1.4
+      1.5x: 1.5
+  mupen64-sensitivity4:
+    submenu: CONTROLLER 4
+    prompt: SENSITIVITY
+    description: Apply a multiplier to the joystick's input to lower or increase responsiveness.
+    choices:
+      0.5x: 0.5
+      0.6x: 0.6
+      0.7x: 0.7
+      0.8x: 0.8
+      0.9x: 0.9
+      1x (Default): 1.0
+      1.1x: 1.1
+      1.2x: 1.2
+      1.3x: 1.3
+      1.4x: 1.4
+      1.5x: 1.5
+  mupen64-deadzone1:
+    submenu: CONTROLLER 1
+    prompt: DEADZONE
+    description: The area around the joystick's neutral position where input is ignored. Can help reduce unintended inputs.
+    choices:
+      0%: 0.0
+      1% (Default): 0.01
+      5%: 0.05
+      10%: 0.1
+      15%: 0.15
+      20%: 0.2
+      25%: 0.25
+  mupen64-deadzone2:
+    submenu: CONTROLLER 2
+    prompt: DEADZONE
+    description: The area around the joystick's neutral position where input is ignored. Can help reduce unintended inputs.
+    choices:
+      0%: 0.0
+      1% (Default): 0.01
+      5%: 0.05
+      10%: 0.1
+      15%: 0.15
+      20%: 0.2
+      25%: 0.25
+  mupen64-deadzone3:
+    submenu: CONTROLLER 3
+    prompt: DEADZONE
+    description: The area around the joystick's neutral position where input is ignored. Can help reduce unintended inputs.
+    choices:
+      0%: 0.0
+      1% (Default): 0.01
+      5%: 0.05
+      10%: 0.1
+      15%: 0.15
+      20%: 0.2
+      25%: 0.25
+  mupen64-deadzone4:
+    submenu: CONTROLLER 4
+    prompt: DEADZONE
+    description: The area around the joystick's neutral position where input is ignored. Can help reduce unintended inputs.
+    choices:
+      0%: 0.0
+      1% (Default): 0.01
+      5%: 0.05
+      10%: 0.1
+      15%: 0.15
+      20%: 0.2
+      25%: 0.25
+systems:
+  - name: n64
+    as_core:
+      - glide64mk2
+      - gliden64
+      - rice
+    exclude_extensions:
+      - zip
+      - 7z
+  - name: n64dd
+    as_core:
+      - glide64mk2
+      - gliden64
+      - rice

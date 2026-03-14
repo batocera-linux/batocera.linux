@@ -118,11 +118,8 @@ class Pcsx2Generator(Generator):
             if not re.search(r'^flags\s*:.*\ssse4_1\W', cpuinfo.read(), re.MULTILINE):
                 _logger.warning("CPU does not support SSE4.1 which is required by pcsx2.  The emulator will likely crash with SIGILL (illegal instruction).")
 
-        # use their modified shaderc library
-        envcmd = {
-            "XDG_CONFIG_HOME":CONFIGS,
-            "QT_QPA_PLATFORM":"xcb",
-            "SDL_JOYSTICK_HIDAPI": "0"
+        envcmd: dict[str, str | Path] = {
+            "XDG_CONFIG_HOME": CONFIGS
         }
 
         # wheels won't work correctly when SDL_GAMECONTROLLERCONFIG is set. excluding wheels from SDL_GAMECONTROLLERCONFIG doesn't fix too.
@@ -188,6 +185,26 @@ def configureAudio(config_directory: Path) -> None:
 
 def configureINI(config_directory: Path, bios_directory: Path, system: Emulator, rom: Path, controllers: Controllers, metadata: Mapping[str, str], guns: Guns, wheels: DeviceInfoMapping, playingWithWheel: bool) -> None:
     configFileName = config_directory / 'inis' / "PCSX2.ini"
+
+    valid_sony_guids = [
+        # ds3
+        "030000004c0500006802000011010000",
+        "030000004c0500006802000011810000",
+        "050000004c0500006802000000800000",
+        "050000004c0500006802000000000000",
+        # ds4
+        "030000004c050000c405000011810000",
+        "050000004c050000c405000000810000",
+        "030000004c050000cc09000011010000",
+        "050000004c050000cc09000000010000",
+        "030000004c050000cc09000011810000",
+        "050000004c050000cc09000000810000",
+        "030000004c050000a00b000011010000",
+        "030000004c050000a00b000011810000",
+        # ds5
+        "030000004c050000e60c000011810000",
+        "050000004c050000e60c000000810000"
+    ]
 
     mkdir_if_not_exists(configFileName.parent)
 
@@ -274,6 +291,8 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         pcsx2INIConfig.set("Achievements", "PrimedIndicators", system.config.get_bool('retroachievements.challenge_indicators', return_values=("true", "false")))
         pcsx2INIConfig.set("Achievements", "RichPresence", system.config.get_bool('retroachievements.richpresence', return_values=("true", "false")))
         pcsx2INIConfig.set("Achievements", "Leaderboards", system.config.get_bool('retroachievements.leaderboards', return_values=("true", "false")))
+        pcsx2INIConfig.set("Achievements", "EncoreMode", system.config.get_bool('retroachievements.encore', return_values=("true", "false")))
+        pcsx2INIConfig.set("Achievements", "UnofficialTestMode", system.config.get_bool('retroachievements.unofficial', return_values=("true", "false")))
     # set other settings
     pcsx2INIConfig.set("Achievements", "TestMode", "false")
     pcsx2INIConfig.set("Achievements", "UnofficialTestMode", "false")
@@ -292,15 +311,15 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # Check Vulkan first to be sure
     if vulkan.is_available():
         _logger.debug("Vulkan driver is available on the system.")
-        renderer = "12"  # Default to OpenGL
+        renderer = "-1"
 
         if gfxbackend := system.config.get("pcsx2_gfxbackend"):
+            if gfxbackend == "12":
+                _logger.debug("User selected OpenGL")
             if gfxbackend == "13":
                 _logger.debug("User selected Software! Man you must have a fast CPU!")
-                renderer = "13"
             elif gfxbackend == "14":
                 _logger.debug("User selected Vulkan")
-                renderer = "14"
                 if vulkan.has_discrete_gpu():
                     _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_name = vulkan.get_discrete_gpu_name()
@@ -313,13 +332,14 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
                 else:
                     _logger.debug("Discrete GPU is not available on the system. Using default.")
                     pcsx2INIConfig.set("EmuCore/GS", "Adapter", "(Default)")
+            renderer = gfxbackend
         else:
-            _logger.debug("User selected or defaulting to OpenGL")
+            _logger.debug("User selected to Automatic")
 
         pcsx2INIConfig.set("EmuCore/GS", "Renderer", renderer)
     else:
-        _logger.debug("Vulkan driver is not available on the system. Falling back to OpenGL")
-        pcsx2INIConfig.set("EmuCore/GS", "Renderer", "12")
+        _logger.debug("Vulkan driver is not available on the system. Falling back to Automatic")
+        pcsx2INIConfig.set("EmuCore/GS", "Renderer", "-1")
 
     # Ratio
     pcsx2INIConfig.set("EmuCore/GS", "AspectRatio", system.config.get("pcsx2_ratio", "Auto 4:3/3:2"))
@@ -375,6 +395,12 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # OSD messages
     pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", system.config.get("pcsx2_osd_messages", "true"))
 
+    # OSD Messages Position
+    pcsx2INIConfig.set("EmuCore/GS", "OsdMessagesPos", system.config.get("pcsx2_osd_messages_position", "2"))
+
+    # OSD Performance Position
+    pcsx2INIConfig.set("EmuCore/GS", "OsdPerformancePos", system.config.get("pcsx2_osd_performance_position", "0"))
+
     # TV Shader
     pcsx2INIConfig.set("EmuCore", "TVShader", system.config.get("pcsx2_shaderset", "0"))
 
@@ -389,7 +415,6 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     pcsx2INIConfig.set("InputSources", "Keyboard", "true")
     pcsx2INIConfig.set("InputSources", "Mouse", "true")
     pcsx2INIConfig.set("InputSources", "SDL", "true")
-    pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
 
     ## [Hotkeys]
     if not pcsx2INIConfig.has_section("Hotkeys"):
@@ -472,15 +497,17 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             ###
             if gun1onport2:
                 pcsx2INIConfig.set("USB2", "guncon2_numdevice", "0")
-    # Gun crosshairs - one player only, PCSX2 can't distinguish both crosshair for some reason
+    # Gun crosshairs
     if pcsx2INIConfig.has_section("USB1"):
         if system.config.get("pcsx2_crosshairs") == "1":
-            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Blue.png"))
+            pcsx2INIConfig.set("USB1", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "default.png"))
+            pcsx2INIConfig.set("USB1", "guncon2_cursor_color", "#0000ff") # blue
         else:
             pcsx2INIConfig.set("USB1", "guncon2_cursor_path", "")
     if pcsx2INIConfig.has_section("USB2"):
         if system.config.get("pcsx2_crosshairs") == "1":
-            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "Red.png"))
+            pcsx2INIConfig.set("USB2", "guncon2_cursor_path", str(_PCSX2_RESOURCES_DIR / "crosshairs" / "default.png"))
+            pcsx2INIConfig.set("USB2", "guncon2_cursor_color", "#ff0000") # red
         else:
             pcsx2INIConfig.set("USB2", "guncon2_cursor_path", "")
     # hack for the fog bug for guns (time crisis - crisis zone)
@@ -630,6 +657,11 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
 
     # Now add Controllers
     for nplayer, pad in enumerate(controllers, start=1):
+        if pad.guid in valid_sony_guids:
+            pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "true")
+        else:
+            pcsx2INIConfig.set("InputSources", "SDLControllerEnhancedMode", "false")
+
         # only configure the number of controllers set
         if nplayer <= multiTap:
             pad_index = nplayer
@@ -657,10 +689,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
             pcsx2INIConfig.set(pad_num, "Right", sdl_num + "/DPadRight")
             pcsx2INIConfig.set(pad_num, "Down", sdl_num + "/DPadDown")
             pcsx2INIConfig.set(pad_num, "Left", sdl_num + "/DPadLeft")
-            pcsx2INIConfig.set(pad_num, "Triangle", sdl_num + "/Y")
-            pcsx2INIConfig.set(pad_num, "Circle", sdl_num + "/B")
-            pcsx2INIConfig.set(pad_num, "Cross", sdl_num + "/A")
-            pcsx2INIConfig.set(pad_num, "Square", sdl_num + "/X")
+            pcsx2INIConfig.set(pad_num, "Triangle", sdl_num + "/FaceNorth")
+            pcsx2INIConfig.set(pad_num, "Circle", sdl_num + "/FaceEast")
+            pcsx2INIConfig.set(pad_num, "Cross", sdl_num + "/FaceSouth")
+            pcsx2INIConfig.set(pad_num, "Square", sdl_num + "/FaceWest")
             pcsx2INIConfig.set(pad_num, "Select", sdl_num + "/Back")
             pcsx2INIConfig.set(pad_num, "Start", sdl_num + "/Start")
             pcsx2INIConfig.set(pad_num, "L1", sdl_num + "/LeftShoulder")

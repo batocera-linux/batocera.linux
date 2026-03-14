@@ -1,0 +1,26 @@
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  neocd_region:
+    prompt: CONSOLE REGION
+    description: Can change the language of some games.
+    choices:
+      Japan: Japan
+      USA: USA
+      Europe: Europe
+  neocd_bios:
+    prompt: NEO GEO CD BIOS
+    description: Universe BIOS is not compatible with cheats.
+    choices:
+      CDZ: neocd_z.rom (CDZ)
+      CDZ MAME: neocd.bin (CDZ)
+      CDZ Universe 3.3: uni-bioscd.rom (CDZ, Universe 3.3)
+  neocd_per_content_saves:
+    prompt: PER-GAME SAVES
+    description: Use one save file per game.
+    choices:
+      'Off': false
+      'On': true
+systems:
+  - neogeocd

@@ -4,12 +4,10 @@
 #
 ################################################################################
 
-BATOCERA_CONFIGGEN_VERSION = 1.4
 BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
-BATOCERA_CONFIGGEN_SETUP_TYPE = pep517
+BATOCERA_CONFIGGEN_SETUP_TYPE = hatch
 BATOCERA_CONFIGGEN_DEPENDENCIES = \
-	host-python-hatchling \
 	python-pyyaml \
 	python-toml \
 	python-evdev \
@@ -18,15 +16,12 @@ BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	ffmpeg-python \
 	python-pillow \
 	python-ruamel-yaml \
-	python-requests
+	python-requests \
+	python-qrcode \
+	pysdl2
 BATOCERA_CONFIGGEN_INSTALL_STAGING = YES
-
-CONFIGGEN_DIR = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen
-
-define BATOCERA_CONFIGGEN_EXTRACT_CMDS
-	rsync -av --exclude=".*" --exclude="**/__pycache__/" --exclude="dist" $(CONFIGGEN_DIR)/configgen/ $(@D)
-	echo "__version__ = '$(BATOCERA_CONFIGGEN_VERSION)'" > $(@D)/configgen/__version__.py
-endef
+BATOCERA_CONFIGGEN_OVERRIDE_SRCDIR=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-configgen/configgen
+BATOCERA_CONFIGGEN_OVERRIDE_SRCDIR_RSYNC_EXCLUSIONS=--exclude=".*" --exclude="**/__pycache__/" --exclude="dist"
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 	BATOCERA_CONFIGGEN_SYSTEM=bcm2835
@@ -72,6 +67,8 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H5),y)
 	BATOCERA_CONFIGGEN_SYSTEM=h5
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
 	BATOCERA_CONFIGGEN_SYSTEM=h616
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
+	BATOCERA_CONFIGGEN_SYSTEM=h700
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
 	BATOCERA_CONFIGGEN_SYSTEM=s812
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3128),y)
@@ -82,8 +79,12 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
 	BATOCERA_CONFIGGEN_SYSTEM=h6
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588),y)
 	BATOCERA_CONFIGGEN_SYSTEM=rk3588
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO),y)
+	BATOCERA_CONFIGGEN_SYSTEM=rk3588-sdio
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_JH7110),y)
 	BATOCERA_CONFIGGEN_SYSTEM=jh7110
+else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_QCS6490),y)
+	BATOCERA_CONFIGGEN_SYSTEM=qcs6490
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
 	BATOCERA_CONFIGGEN_SYSTEM=sm8250
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
@@ -94,29 +95,29 @@ endif
 
 define BATOCERA_CONFIGGEN_INSTALL_STAGING_CMDS
 	mkdir -p $(STAGING_DIR)/usr/share/batocera/configgen
-	cp $(CONFIGGEN_DIR)/configs/configgen-defaults.yml \
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/configs/configgen-defaults.yml \
 	    $(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults.yml
-	cp $(CONFIGGEN_DIR)/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml \
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml \
 	    $(STAGING_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
 endef
 
 define BATOCERA_CONFIGGEN_CONFIGS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen
-	cp -pr $(CONFIGGEN_DIR)/data \
+	cp -pr $(BATOCERA_CONFIGGEN_PKGDIR)/data \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/
-	cp $(CONFIGGEN_DIR)/configs/configgen-defaults.yml \
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/configs/configgen-defaults.yml \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults.yml
-	cp $(CONFIGGEN_DIR)/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml \
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/configs/configgen-defaults-$(BATOCERA_CONFIGGEN_SYSTEM).yml \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/configgen-defaults-arch.yml
-	cp $(CONFIGGEN_DIR)/scripts/call_achievements_hooks.sh \
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/call_achievements_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/
 	# evmapy default hotkeys file
         mkdir -p $(TARGET_DIR)/usr/share/evmapy
-	cp $(CONFIGGEN_DIR)/hotkeys.keys $(TARGET_DIR)/usr/share/evmapy/hotkeys.keys
+	cp $(BATOCERA_CONFIGGEN_PKGDIR)/hotkeys.keys $(TARGET_DIR)/usr/share/evmapy/hotkeys.keys
 endef
 
 define BATOCERA_CONFIGGEN_ES_HOOKS
-	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/powermode_launch_hooks.sh \
+	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/powermode_launch_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/powermode_launch_hooks.sh
 
 	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/adhoc_hooks.sh \
@@ -124,15 +125,20 @@ define BATOCERA_CONFIGGEN_ES_HOOKS
 endef
 
 define BATOCERA_CONFIGGEN_X86_HOOKS
-	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/tdp_hooks.sh \
+	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/tdp_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/tdp_hooks.sh
 
-	install -D -m 0755 $(CONFIGGEN_DIR)/scripts/nvidia-workaround.sh \
+	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/nvidia-workaround.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/nvidia-workaround.sh
+endef
+
+define BATOCERA_CONFIGGEN_SCRIPTS
+	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/batocera-joysticks-hotkeys.py $(TARGET_DIR)/usr/bin/batocera-joysticks-hotkeys
 endef
 
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS = BATOCERA_CONFIGGEN_CONFIGS
 BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_ES_HOOKS
+BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_SCRIPTS
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
     BATOCERA_CONFIGGEN_POST_INSTALL_TARGET_HOOKS += BATOCERA_CONFIGGEN_X86_HOOKS

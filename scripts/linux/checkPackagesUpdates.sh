@@ -31,7 +31,6 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-bsnes-hd
                    libretro-cap32
                    libretro-chailove
-                   libretro-citra
                    libretro-craft
                    libretro-desmume
                    libretro-dinothawr
@@ -52,6 +51,7 @@ PACKAGES_LIBRETRO="libretro-81
                    libretro-gambatte
                    libretro-gearsystem
                    libretro-genesisplusgx
+                   libretro-genesisplusgx-expanded
                    libretro-genesisplusgx-wide
                    libretro-gpsp
                    libretro-gw
@@ -145,15 +145,13 @@ PACKAGES_EMULATORS="amiberry
                     azahar
                     bigpemu
                     cemu
-                    citra
                     citron
+                    clk
                     hypseus-singe
                     dolphin-emu
-                    dolphin-triforce
                     dosbox
                     dosbox-staging
                     dosbox-x
-                    drastic
                     duckstation
                     easyrpg-player
                     liblcf
@@ -231,6 +229,7 @@ PACKAGES_PORTS="abuse
                 iortcw
                 jazz2-native
                 lindbergh-loader
+                openmohaa
                 openjazz
                 openjk
                 openjkdf2
@@ -257,7 +256,11 @@ PACKAGES_PORTS="abuse
                 xash3d-fwgs
                 vkquake
                 vkquake2
-                vkquake3"
+                vkquake3
+                yquake2
+                yquake2-xatrix
+                yquake2-rogue
+                yquake2-zaero"
 
 PACKAGES_WINE="dxvk
                dxvk-nvapi
@@ -311,6 +314,7 @@ PACKAGES_CONTROLLERS="aelightgun
 PACKAGES_UTILS="btop
                 mangohud
                 moonlight-embedded
+                moonlight-qt
                 ryzenadj
                 switchres
                 syncthing

@@ -1,0 +1,761 @@
+From patchwork Tue Aug  6 09:06:06 2024
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jonas Karlman <jonas@kwiboo.se>
+X-Patchwork-Id: 50906
+Delivered-To: ffmpegpatchwork2@gmail.com
+Received: by 2002:a05:612c:1f5a:b0:489:2eb3:e4c4 with SMTP id
+ jm26csp1924541vqb;
+        Tue, 6 Aug 2024 02:46:11 -0700 (PDT)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCUyvFeq+O3eiIf9F/CRd0jdN6ZI0/GEa/kKw4WUVnCjqiKljVzk3OQYzj9Dg4sbDrxDIZvUNMIxEhBVe26QnyzLnz0TWh0se54MEw==
+X-Google-Smtp-Source: 
+ AGHT+IGEsGy+NfiBrflwSehrPpTCGDshyVde5b1eSjp/+iCrHs3SsE+3k/tGaOCf4h9Z2pMHK4h0
+X-Received: by 2002:a2e:8543:0:b0:2f0:19f5:9d99 with SMTP id
+ 38308e7fff4ca-2f15aab0ae2mr106391401fa.23.1722937571524;
+        Tue, 06 Aug 2024 02:46:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1722937571; cv=none;
+        d=google.com; s=arc-20160816;
+        b=HTjAJuHYWAet0FsJpyp9UKF5uZ2eMrlduRrsDBC7cTC7DaLmIJu8BTgzeVMXbfv6a8
+         IPx+rh+emiGs9nzpUh5rJyqr+3YdiuQJAx6gzcC8JCFzC1sRgrh5H0tcDacO99iKiTWI
+         MO/NF86G+aG4U7+YNHIMk8IqiMCPMY2zrs5B9ehp+AHRAr3Gncd2V4ZP6L3MtV5P5MNL
+         leWpqhaHnBduRR3fBQgxII6fw6dY2A8xuHLyhehYsXeNp8r/u7wU2eq7TYPKnVWnQ547
+         GV1EQ+YRwSZPr1m8m7iLFKzth36sEf7Y1nP7B7xLylUIetjhu2qt9dA8UxChUbgioG1j
+         qplA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+        h=sender:errors-to:content-transfer-encoding:cc:reply-to
+         :list-subscribe:list-help:list-post:list-archive:list-unsubscribe
+         :list-id:precedence:subject:mime-version:references:in-reply-to
+         :message-id:date:to:from:dkim-signature:delivered-to;
+        bh=20UlyHegIfzwgrBgxTs80FU+t/kXlVij7d7A9YT96lI=;
+        fh=F0y82oXdVu1PBU0SjSpsDDU9xEVfmDCmSjHZdwqvnK8=;
+        b=EVUMuLPkWSWrUH9EBFrElv6Yugifb+tWkzy+uVVzojlWKWbQk8u+hkk0oYa1Zz1gOQ
+         Vc/6JQZhmSlEKrQr8poy9/BWcvM++CtOUOdceLpulSXoOuKXDAkD6afyetur/GJg02cO
+         NwpZN/nJq5ZLLF6UBtjWtP8i9pyhJlLYxisyy3ssXeQhqpa07HtX/bKiZTnOOWFJsRWb
+         orDI9G2UQa26MzFsKUz1bvZJQBxg0+j9FvLZb33CL2jGVDqnBEx+yLrYuzvS6WfwPB4t
+         GOA0upGlr9kgqrn4OScLAx7OoqD09afZTLtLW6PBJ7S4i49ghQU3GRhBYjF2cVEZP8YM
+         fVTA==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=kJuOb32A;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Return-Path: <ffmpeg-devel-bounces@ffmpeg.org>
+Received: from ffbox0-bg.mplayerhq.hu (ffbox0-bg.ffmpeg.org. [79.124.17.100])
+        by mx.google.com with ESMTP id
+ 38308e7fff4ca-2f15e1edabesi26787021fa.372.2024.08.06.02.46.10;
+        Tue, 06 Aug 2024 02:46:11 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender) client-ip=79.124.17.100;
+Authentication-Results: mx.google.com;
+       dkim=neutral (body hash did not verify) header.i=@kwiboo.se
+ header.s=fe-e1b5cab7be header.b=kJuOb32A;
+       spf=pass (google.com: domain of ffmpeg-devel-bounces@ffmpeg.org
+ designates 79.124.17.100 as permitted sender)
+ smtp.mailfrom=ffmpeg-devel-bounces@ffmpeg.org;
+       dmarc=fail (p=NONE sp=NONE dis=NONE) header.from=kwiboo.se
+Received: from [127.0.1.1] (localhost [127.0.0.1])
+	by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTP id EF57168D9CB;
+	Tue,  6 Aug 2024 12:06:49 +0300 (EEST)
+X-Original-To: ffmpeg-devel@ffmpeg.org
+Delivered-To: ffmpeg-devel@ffmpeg.org
+Received: from smtp.forwardemail.net (smtp.forwardemail.net [164.92.70.200])
+ by ffbox0-bg.mplayerhq.hu (Postfix) with ESMTPS id F33B668D9BF
+ for <ffmpeg-devel@ffmpeg.org>; Tue,  6 Aug 2024 12:06:41 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kwiboo.se;
+ h=Content-Transfer-Encoding: MIME-Version: References: In-Reply-To:
+ Message-ID: Date: Subject: Cc: To: From; q=dns/txt; s=fe-e1b5cab7be;
+ t=1722935198; bh=jQGs/27n/zY8Ht3tq+sXscYeOR0AeGT+7ec6UmCXKzc=;
+ b=kJuOb32A2JUc6ET/UdTAOJ2++9HwjLgkqwwEs/Wnale9eTFSo7EyuCMcYaANJ7YIv+o+FR1rp
+ xxPVrW62DRqfbTSdms23E2d1+MOh0PuCk6DdXbWl+4vHODRbsrlvA/FoRNzPaqzDaRdFS/slrYi
+ LgxFDTkUTPAhjWnoqzhTTE2B6dkbc7xMk5VVOiTJ20mJaEjYGhgQJG/Z5rNx7HHXtqJk/lJNBAG
+ zbTwXWaxGdDaCr3VPcfrVvlNeXBiYzK+TRJnyJ4K5bL5BbALd/7KeJRM64DUdErt4vTTDCY2HWH
+ PLx9sJKrMcfTq424kpKRziMgpJ9ogRUFHvDPZl0GLrbQ==
+From: Jonas Karlman <jonas@kwiboo.se>
+To: ffmpeg-devel@ffmpeg.org
+Date: Tue,  6 Aug 2024 09:06:06 +0000
+Message-ID: <20240806090607.43240-8-jonas@kwiboo.se>
+X-Mailer: git-send-email 2.45.2
+In-Reply-To: <20240806090607.43240-1-jonas@kwiboo.se>
+References: <20240806090607.43240-1-jonas@kwiboo.se>
+MIME-Version: 1.0
+X-Report-Abuse-To: abuse@forwardemail.net
+X-Report-Abuse: abuse@forwardemail.net
+X-Complaints-To: abuse@forwardemail.net
+X-ForwardEmail-Version: 0.4.40
+X-ForwardEmail-Sender: rfc822; jonas@kwiboo.se, smtp.forwardemail.net,
+ 164.92.70.200
+X-ForwardEmail-ID: 66b1e79a8ac7bd7d98d34ca8
+Subject: [FFmpeg-devel] [PATCH v2 7/8] avcodec: Add V4L2 Request API h264
+ hwaccel
+X-BeenThere: ffmpeg-devel@ffmpeg.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: FFmpeg development discussions and patches <ffmpeg-devel.ffmpeg.org>
+List-Unsubscribe: <https://ffmpeg.org/mailman/options/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=unsubscribe>
+List-Archive: <https://ffmpeg.org/pipermail/ffmpeg-devel>
+List-Post: <mailto:ffmpeg-devel@ffmpeg.org>
+List-Help: <mailto:ffmpeg-devel-request@ffmpeg.org?subject=help>
+List-Subscribe: <https://ffmpeg.org/mailman/listinfo/ffmpeg-devel>,
+ <mailto:ffmpeg-devel-request@ffmpeg.org?subject=subscribe>
+Reply-To: FFmpeg development discussions and patches <ffmpeg-devel@ffmpeg.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Jonas Karlman <jonas@kwiboo.se>, Alex Bee <knaerzche@gmail.com>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Boris Brezillon <boris.brezillon@collabora.com>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Errors-To: ffmpeg-devel-bounces@ffmpeg.org
+Sender: "ffmpeg-devel" <ffmpeg-devel-bounces@ffmpeg.org>
+X-TUID: UH4KdabMf8sm
+
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
+
+Add a V4L2 Request API hwaccel for H.264, supporting both slice and
+frame decoding modes.
+
+Support for H.264 is enabled when Linux kernel headers declare the
+control id V4L2_CID_STATELESS_H264_DECODE_MODE, added in v5.11.
+
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Co-developed-by: Jonas Karlman <jonas@kwiboo.se>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+In a future revision or follow up patch a check for PROFILE and LEVEL
+controls should be added to filter out any video device not reporting
+support for current profile and level.
+---
+ configure                      |   3 +
+ libavcodec/Makefile            |   1 +
+ libavcodec/h264_slice.c        |   7 +
+ libavcodec/h264dec.c           |   3 +
+ libavcodec/hwaccels.h          |   1 +
+ libavcodec/v4l2_request_h264.c | 523 +++++++++++++++++++++++++++++++++
+ 6 files changed, 538 insertions(+)
+ create mode 100644 libavcodec/v4l2_request_h264.c
+
+diff --git a/configure b/configure
+index 35e33a8409..0dcd834e08 100755
+--- a/configure
++++ b/configure
+@@ -3188,6 +3188,8 @@ h264_dxva2_hwaccel_deps="dxva2"
+ h264_dxva2_hwaccel_select="h264_decoder"
+ h264_nvdec_hwaccel_deps="nvdec"
+ h264_nvdec_hwaccel_select="h264_decoder"
++h264_v4l2request_hwaccel_deps="v4l2_request h264_v4l2_request"
++h264_v4l2request_hwaccel_select="h264_decoder"
+ h264_vaapi_hwaccel_deps="vaapi"
+ h264_vaapi_hwaccel_select="h264_decoder"
+ h264_vdpau_hwaccel_deps="vdpau"
+@@ -7179,6 +7181,7 @@ if enabled v4l2_m2m; then
+ fi
+ 
+ if enabled v4l2_request; then
++    check_cc h264_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_H264_DECODE_MODE"
+     check_cc mpeg2_v4l2_request linux/videodev2.h "int i = V4L2_CID_STATELESS_MPEG2_SEQUENCE"
+     check_cc v4l2_m2m_hold_capture_buf linux/videodev2.h "int i = V4L2_BUF_FLAG_M2M_HOLD_CAPTURE_BUF"
+     check_func_headers "linux/media.h linux/videodev2.h" v4l2_timeval_to_ns
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 5c51818d0d..dadddb55a8 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -1009,6 +1009,7 @@ OBJS-$(CONFIG_H264_DXVA2_HWACCEL)         += dxva2_h264.o
+ OBJS-$(CONFIG_H264_D3D12VA_HWACCEL)       += dxva2_h264.o d3d12va_h264.o
+ OBJS-$(CONFIG_H264_NVDEC_HWACCEL)         += nvdec_h264.o
+ OBJS-$(CONFIG_H264_QSV_HWACCEL)           += qsvdec.o
++OBJS-$(CONFIG_H264_V4L2REQUEST_HWACCEL)   += v4l2_request_h264.o
+ OBJS-$(CONFIG_H264_VAAPI_HWACCEL)         += vaapi_h264.o
+ OBJS-$(CONFIG_H264_VDPAU_HWACCEL)         += vdpau_h264.o
+ OBJS-$(CONFIG_H264_VIDEOTOOLBOX_HWACCEL)  += videotoolbox.o
+diff --git a/libavcodec/h264_slice.c b/libavcodec/h264_slice.c
+index 58a48f3fbe..259a2c307a 100644
+--- a/libavcodec/h264_slice.c
++++ b/libavcodec/h264_slice.c
+@@ -781,6 +781,7 @@ static enum AVPixelFormat get_pixel_format(H264Context *h, int force_callback)
+                      (CONFIG_H264_D3D11VA_HWACCEL * 2) + \
+                      CONFIG_H264_D3D12VA_HWACCEL + \
+                      CONFIG_H264_NVDEC_HWACCEL + \
++                     CONFIG_H264_V4L2REQUEST_HWACCEL + \
+                      CONFIG_H264_VAAPI_HWACCEL + \
+                      CONFIG_H264_VIDEOTOOLBOX_HWACCEL + \
+                      CONFIG_H264_VDPAU_HWACCEL + \
+@@ -806,6 +807,9 @@ static enum AVPixelFormat get_pixel_format(H264Context *h, int force_callback)
+ #endif
+ #if CONFIG_H264_VULKAN_HWACCEL
+         *fmt++ = AV_PIX_FMT_VULKAN;
++#endif
++#if CONFIG_H264_V4L2REQUEST_HWACCEL
++        *fmt++ = AV_PIX_FMT_DRM_PRIME;
+ #endif
+         if (CHROMA444(h)) {
+             if (h->avctx->colorspace == AVCOL_SPC_RGB) {
+@@ -862,6 +866,9 @@ static enum AVPixelFormat get_pixel_format(H264Context *h, int force_callback)
+ #if CONFIG_H264_VIDEOTOOLBOX_HWACCEL
+         if (h->avctx->colorspace != AVCOL_SPC_RGB)
+             *fmt++ = AV_PIX_FMT_VIDEOTOOLBOX;
++#endif
++#if CONFIG_H264_V4L2REQUEST_HWACCEL
++        *fmt++ = AV_PIX_FMT_DRM_PRIME;
+ #endif
+         if (CHROMA444(h)) {
+             if (h->avctx->colorspace == AVCOL_SPC_RGB)
+diff --git a/libavcodec/h264dec.c b/libavcodec/h264dec.c
+index c77d8f42db..7a274c3264 100644
+--- a/libavcodec/h264dec.c
++++ b/libavcodec/h264dec.c
+@@ -1160,6 +1160,9 @@ const FFCodec ff_h264_decoder = {
+ #endif
+ #if CONFIG_H264_VULKAN_HWACCEL
+                                HWACCEL_VULKAN(h264),
++#endif
++#if CONFIG_H264_V4L2REQUEST_HWACCEL
++                               HWACCEL_V4L2REQUEST(h264),
+ #endif
+                                NULL
+                            },
+diff --git a/libavcodec/hwaccels.h b/libavcodec/hwaccels.h
+index 0cba7c71be..024e021d73 100644
+--- a/libavcodec/hwaccels.h
++++ b/libavcodec/hwaccels.h
+@@ -34,6 +34,7 @@ extern const struct FFHWAccel ff_h264_d3d11va2_hwaccel;
+ extern const struct FFHWAccel ff_h264_d3d12va_hwaccel;
+ extern const struct FFHWAccel ff_h264_dxva2_hwaccel;
+ extern const struct FFHWAccel ff_h264_nvdec_hwaccel;
++extern const struct FFHWAccel ff_h264_v4l2request_hwaccel;
+ extern const struct FFHWAccel ff_h264_vaapi_hwaccel;
+ extern const struct FFHWAccel ff_h264_vdpau_hwaccel;
+ extern const struct FFHWAccel ff_h264_videotoolbox_hwaccel;
+diff --git a/libavcodec/v4l2_request_h264.c b/libavcodec/v4l2_request_h264.c
+new file mode 100644
+index 0000000000..57651282ce
+--- /dev/null
++++ b/libavcodec/v4l2_request_h264.c
+@@ -0,0 +1,523 @@
++/*
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
++
++#include "config.h"
++
++#include "h264dec.h"
++#include "hwaccel_internal.h"
++#include "hwconfig.h"
++#include "internal.h"
++#include "v4l2_request.h"
++
++typedef struct V4L2RequestContextH264 {
++    V4L2RequestContext base;
++    enum v4l2_stateless_h264_decode_mode decode_mode;
++    enum v4l2_stateless_h264_start_code start_code;
++} V4L2RequestContextH264;
++
++typedef struct V4L2RequestControlsH264 {
++    V4L2RequestPictureContext pic;
++    struct v4l2_ctrl_h264_sps sps;
++    struct v4l2_ctrl_h264_pps pps;
++    struct v4l2_ctrl_h264_scaling_matrix scaling_matrix;
++    struct v4l2_ctrl_h264_decode_params decode_params;
++    struct v4l2_ctrl_h264_slice_params slice_params;
++    struct v4l2_ctrl_h264_pred_weights pred_weights;
++    bool pred_weights_required;
++    bool first_slice;
++    int num_slices;
++} V4L2RequestControlsH264;
++
++static uint8_t nalu_slice_start_code[] = { 0x00, 0x00, 0x01 };
++
++static void fill_weight_factors(struct v4l2_h264_weight_factors *weight_factors,
++                                int list, const H264SliceContext *sl)
++{
++    for (int i = 0; i < sl->ref_count[list]; i++) {
++        if (sl->pwt.luma_weight_flag[list]) {
++            weight_factors->luma_weight[i] = sl->pwt.luma_weight[i][list][0];
++            weight_factors->luma_offset[i] = sl->pwt.luma_weight[i][list][1];
++        } else {
++            weight_factors->luma_weight[i] = 1 << sl->pwt.luma_log2_weight_denom;
++            weight_factors->luma_offset[i] = 0;
++        }
++        for (int j = 0; j < 2; j++) {
++            if (sl->pwt.chroma_weight_flag[list]) {
++                weight_factors->chroma_weight[i][j] = sl->pwt.chroma_weight[i][list][j][0];
++                weight_factors->chroma_offset[i][j] = sl->pwt.chroma_weight[i][list][j][1];
++            } else {
++                weight_factors->chroma_weight[i][j] = 1 << sl->pwt.chroma_log2_weight_denom;
++                weight_factors->chroma_offset[i][j] = 0;
++            }
++        }
++    }
++}
++
++static void fill_dpb_entry(struct v4l2_h264_dpb_entry *entry,
++                           const H264Picture *pic, int long_idx)
++{
++    entry->reference_ts = ff_v4l2_request_get_capture_timestamp(pic->f);
++    entry->pic_num = pic->pic_id;
++    entry->frame_num = pic->long_ref ? long_idx : pic->frame_num;
++    entry->fields = pic->reference & V4L2_H264_FRAME_REF;
++    entry->flags = V4L2_H264_DPB_ENTRY_FLAG_VALID;
++    if (entry->fields)
++        entry->flags |= V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
++    if (pic->long_ref)
++        entry->flags |= V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM;
++    if (pic->field_picture)
++        entry->flags |= V4L2_H264_DPB_ENTRY_FLAG_FIELD;
++    if (pic->field_poc[0] != INT_MAX)
++        entry->top_field_order_cnt = pic->field_poc[0];
++    if (pic->field_poc[1] != INT_MAX)
++        entry->bottom_field_order_cnt = pic->field_poc[1];
++}
++
++static void fill_dpb(struct v4l2_ctrl_h264_decode_params *decode_params,
++                     const H264Context *h)
++{
++    int entries = 0;
++
++    for (int i = 0; i < h->short_ref_count; i++) {
++        const H264Picture *pic = h->short_ref[i];
++        if (pic && (pic->field_poc[0] != INT_MAX || pic->field_poc[1] != INT_MAX))
++            fill_dpb_entry(&decode_params->dpb[entries++], pic, pic->pic_id);
++    }
++
++    if (!h->long_ref_count)
++        return;
++
++    for (int i = 0; i < FF_ARRAY_ELEMS(h->long_ref); i++) {
++        const H264Picture *pic = h->long_ref[i];
++        if (pic && (pic->field_poc[0] != INT_MAX || pic->field_poc[1] != INT_MAX))
++            fill_dpb_entry(&decode_params->dpb[entries++], pic, i);
++    }
++}
++
++static void fill_ref_list(struct v4l2_h264_reference *reference,
++                          struct v4l2_ctrl_h264_decode_params *decode_params,
++                          const H264Ref *ref)
++{
++    uint64_t timestamp;
++
++    if (!ref->parent)
++        return;
++
++    timestamp = ff_v4l2_request_get_capture_timestamp(ref->parent->f);
++
++    for (uint8_t i = 0; i < FF_ARRAY_ELEMS(decode_params->dpb); i++) {
++        struct v4l2_h264_dpb_entry *entry = &decode_params->dpb[i];
++        if ((entry->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID) &&
++            entry->reference_ts == timestamp) {
++            reference->fields = ref->reference & V4L2_H264_FRAME_REF;
++            reference->index = i;
++            return;
++        }
++    }
++}
++
++static void fill_sps(struct v4l2_ctrl_h264_sps *ctrl, const H264Context *h)
++{
++    const SPS *sps = h->ps.sps;
++
++    *ctrl = (struct v4l2_ctrl_h264_sps) {
++        .profile_idc = sps->profile_idc,
++        .constraint_set_flags = sps->constraint_set_flags,
++        .level_idc = sps->level_idc,
++        .seq_parameter_set_id = sps->sps_id,
++        .chroma_format_idc = sps->chroma_format_idc,
++        .bit_depth_luma_minus8 = sps->bit_depth_luma - 8,
++        .bit_depth_chroma_minus8 = sps->bit_depth_chroma - 8,
++        .log2_max_frame_num_minus4 = sps->log2_max_frame_num - 4,
++        .pic_order_cnt_type = sps->poc_type,
++        .log2_max_pic_order_cnt_lsb_minus4 = sps->log2_max_poc_lsb - 4,
++        .max_num_ref_frames = sps->ref_frame_count,
++        .num_ref_frames_in_pic_order_cnt_cycle = sps->poc_cycle_length,
++        .offset_for_non_ref_pic = sps->offset_for_non_ref_pic,
++        .offset_for_top_to_bottom_field = sps->offset_for_top_to_bottom_field,
++        .pic_width_in_mbs_minus1 = h->mb_width - 1,
++        .pic_height_in_map_units_minus1 = sps->frame_mbs_only_flag ?
++                                          h->mb_height - 1 : h->mb_height / 2 - 1,
++    };
++
++    if (sps->poc_cycle_length > 0 && sps->poc_cycle_length <= 255)
++        memcpy(ctrl->offset_for_ref_frame, sps->offset_for_ref_frame,
++               sps->poc_cycle_length * sizeof(ctrl->offset_for_ref_frame[0]));
++
++    if (sps->residual_color_transform_flag)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_SEPARATE_COLOUR_PLANE;
++
++    if (sps->transform_bypass)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_QPPRIME_Y_ZERO_TRANSFORM_BYPASS;
++
++    if (sps->delta_pic_order_always_zero_flag)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO;
++
++    if (sps->gaps_in_frame_num_allowed_flag)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_GAPS_IN_FRAME_NUM_VALUE_ALLOWED;
++
++    if (sps->frame_mbs_only_flag)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY;
++
++    if (sps->mb_aff)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD;
++
++    if (sps->direct_8x8_inference_flag)
++        ctrl->flags |= V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE;
++}
++
++static void fill_pps(struct v4l2_ctrl_h264_pps *ctrl, const H264Context *h)
++{
++    const SPS *sps = h->ps.sps;
++    const PPS *pps = h->ps.pps;
++    const H264SliceContext *sl = &h->slice_ctx[0];
++    int qp_bd_offset = 6 * (sps->bit_depth_luma - 8);
++
++    *ctrl = (struct v4l2_ctrl_h264_pps) {
++        .pic_parameter_set_id = sl->pps_id,
++        .seq_parameter_set_id = pps->sps_id,
++        .num_slice_groups_minus1 = pps->slice_group_count - 1,
++        .num_ref_idx_l0_default_active_minus1 = pps->ref_count[0] - 1,
++        .num_ref_idx_l1_default_active_minus1 = pps->ref_count[1] - 1,
++        .weighted_bipred_idc = pps->weighted_bipred_idc,
++        .pic_init_qp_minus26 = pps->init_qp - 26 - qp_bd_offset,
++        .pic_init_qs_minus26 = pps->init_qs - 26 - qp_bd_offset,
++        .chroma_qp_index_offset = pps->chroma_qp_index_offset[0],
++        .second_chroma_qp_index_offset = pps->chroma_qp_index_offset[1],
++    };
++
++    if (pps->cabac)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE;
++
++    if (pps->pic_order_present)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT;
++
++    if (pps->weighted_pred)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_WEIGHTED_PRED;
++
++    if (pps->deblocking_filter_parameters_present)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_DEBLOCKING_FILTER_CONTROL_PRESENT;
++
++    if (pps->constrained_intra_pred)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_CONSTRAINED_INTRA_PRED;
++
++    if (pps->redundant_pic_cnt_present)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_REDUNDANT_PIC_CNT_PRESENT;
++
++    if (pps->transform_8x8_mode)
++        ctrl->flags |= V4L2_H264_PPS_FLAG_TRANSFORM_8X8_MODE;
++
++    /* FFmpeg always provide a scaling matrix */
++    ctrl->flags |= V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT;
++}
++
++static int v4l2_request_h264_start_frame(AVCodecContext *avctx,
++                                         av_unused const uint8_t *buffer,
++                                         av_unused uint32_t size)
++{
++    const H264Context *h = avctx->priv_data;
++    const PPS *pps = h->ps.pps;
++    const SPS *sps = h->ps.sps;
++    const H264SliceContext *sl = &h->slice_ctx[0];
++    V4L2RequestControlsH264 *controls = h->cur_pic_ptr->hwaccel_picture_private;
++    int ret;
++
++    ret = ff_v4l2_request_start_frame(avctx, &controls->pic, h->cur_pic_ptr->f);
++    if (ret)
++        return ret;
++
++    fill_sps(&controls->sps, h);
++    fill_pps(&controls->pps, h);
++
++    memcpy(controls->scaling_matrix.scaling_list_4x4, pps->scaling_matrix4,
++           sizeof(controls->scaling_matrix.scaling_list_4x4));
++    memcpy(controls->scaling_matrix.scaling_list_8x8[0], pps->scaling_matrix8[0],
++           sizeof(controls->scaling_matrix.scaling_list_8x8[0]));
++    memcpy(controls->scaling_matrix.scaling_list_8x8[1], pps->scaling_matrix8[3],
++           sizeof(controls->scaling_matrix.scaling_list_8x8[1]));
++
++    if (sps->chroma_format_idc == 3) {
++        memcpy(controls->scaling_matrix.scaling_list_8x8[2], pps->scaling_matrix8[1],
++               sizeof(controls->scaling_matrix.scaling_list_8x8[2]));
++        memcpy(controls->scaling_matrix.scaling_list_8x8[3], pps->scaling_matrix8[4],
++               sizeof(controls->scaling_matrix.scaling_list_8x8[3]));
++        memcpy(controls->scaling_matrix.scaling_list_8x8[4], pps->scaling_matrix8[2],
++               sizeof(controls->scaling_matrix.scaling_list_8x8[4]));
++        memcpy(controls->scaling_matrix.scaling_list_8x8[5], pps->scaling_matrix8[5],
++               sizeof(controls->scaling_matrix.scaling_list_8x8[5]));
++    }
++
++    controls->decode_params = (struct v4l2_ctrl_h264_decode_params) {
++        .nal_ref_idc = h->nal_ref_idc,
++        .frame_num = h->poc.frame_num,
++        .top_field_order_cnt = h->cur_pic_ptr->field_poc[0] != INT_MAX ?
++                               h->cur_pic_ptr->field_poc[0] : 0,
++        .bottom_field_order_cnt = h->cur_pic_ptr->field_poc[1] != INT_MAX ?
++                                  h->cur_pic_ptr->field_poc[1] : 0,
++        .idr_pic_id = sl->idr_pic_id,
++        .pic_order_cnt_lsb = sl->poc_lsb,
++        .delta_pic_order_cnt_bottom = sl->delta_poc_bottom,
++        .delta_pic_order_cnt0 = sl->delta_poc[0],
++        .delta_pic_order_cnt1 = sl->delta_poc[1],
++        /* Size in bits of dec_ref_pic_marking() syntax element. */
++        .dec_ref_pic_marking_bit_size = sl->ref_pic_marking_bit_size,
++        /* Size in bits of pic order count syntax. */
++        .pic_order_cnt_bit_size = sl->pic_order_cnt_bit_size,
++        .slice_group_change_cycle = 0, /* slice group not supported by FFmpeg */
++    };
++
++    if (h->picture_idr)
++        controls->decode_params.flags |= V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
++
++    if (FIELD_PICTURE(h))
++        controls->decode_params.flags |= V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC;
++
++    if (h->picture_structure == PICT_BOTTOM_FIELD)
++        controls->decode_params.flags |= V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD;
++
++#if defined(V4L2_H264_DECODE_PARAM_FLAG_PFRAME)
++    if (sl->slice_type_nos == AV_PICTURE_TYPE_P)
++        controls->decode_params.flags |= V4L2_H264_DECODE_PARAM_FLAG_PFRAME;
++#endif
++
++#if defined(V4L2_H264_DECODE_PARAM_FLAG_BFRAME)
++    if (sl->slice_type_nos == AV_PICTURE_TYPE_B)
++        controls->decode_params.flags |= V4L2_H264_DECODE_PARAM_FLAG_BFRAME;
++#endif
++
++    fill_dpb(&controls->decode_params, h);
++
++    controls->first_slice = true;
++    controls->num_slices = 0;
++
++    return 0;
++}
++
++static int v4l2_request_h264_queue_decode(AVCodecContext *avctx, bool last_slice)
++{
++    const H264Context *h = avctx->priv_data;
++    V4L2RequestContextH264 *ctx = avctx->internal->hwaccel_priv_data;
++    V4L2RequestControlsH264 *controls = h->cur_pic_ptr->hwaccel_picture_private;
++
++    struct v4l2_ext_control control[] = {
++        {
++            .id = V4L2_CID_STATELESS_H264_SPS,
++            .ptr = &controls->sps,
++            .size = sizeof(controls->sps),
++        },
++        {
++            .id = V4L2_CID_STATELESS_H264_PPS,
++            .ptr = &controls->pps,
++            .size = sizeof(controls->pps),
++        },
++        {
++            .id = V4L2_CID_STATELESS_H264_SCALING_MATRIX,
++            .ptr = &controls->scaling_matrix,
++            .size = sizeof(controls->scaling_matrix),
++        },
++        {
++            .id = V4L2_CID_STATELESS_H264_DECODE_PARAMS,
++            .ptr = &controls->decode_params,
++            .size = sizeof(controls->decode_params),
++        },
++        {
++            .id = V4L2_CID_STATELESS_H264_SLICE_PARAMS,
++            .ptr = &controls->slice_params,
++            .size = sizeof(controls->slice_params),
++        },
++        {
++            .id = V4L2_CID_STATELESS_H264_PRED_WEIGHTS,
++            .ptr = &controls->pred_weights,
++            .size = sizeof(controls->pred_weights),
++        },
++    };
++
++    if (ctx->decode_mode == V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED) {
++        int count = FF_ARRAY_ELEMS(control) - (controls->pred_weights_required ? 0 : 1);
++        return ff_v4l2_request_decode_slice(avctx, &controls->pic, control, count,
++                                            controls->first_slice, last_slice);
++    }
++
++    return ff_v4l2_request_decode_frame(avctx, &controls->pic,
++                                        control, FF_ARRAY_ELEMS(control) - 2);
++}
++
++static int v4l2_request_h264_decode_slice(AVCodecContext *avctx,
++                                          const uint8_t *buffer, uint32_t size)
++{
++    const H264Context *h = avctx->priv_data;
++    const PPS *pps = h->ps.pps;
++    const H264SliceContext *sl = &h->slice_ctx[0];
++    V4L2RequestContextH264 *ctx = avctx->internal->hwaccel_priv_data;
++    V4L2RequestControlsH264 *controls = h->cur_pic_ptr->hwaccel_picture_private;
++    int i, ret, count;
++
++    if (ctx->decode_mode == V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED &&
++        controls->num_slices) {
++        ret = v4l2_request_h264_queue_decode(avctx, false);
++        if (ret)
++            return ret;
++
++        ff_v4l2_request_reset_picture(avctx, &controls->pic);
++        controls->first_slice = 0;
++    }
++
++    if (ctx->start_code == V4L2_STATELESS_H264_START_CODE_ANNEX_B) {
++        ret = ff_v4l2_request_append_output(avctx, &controls->pic,
++                                            nalu_slice_start_code, 3);
++        if (ret)
++            return ret;
++    }
++
++    ret = ff_v4l2_request_append_output(avctx, &controls->pic, buffer, size);
++    if (ret)
++        return ret;
++
++    if (ctx->decode_mode != V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED)
++        return 0;
++
++    controls->slice_params = (struct v4l2_ctrl_h264_slice_params) {
++        /* Offset in bits to slice_data() from the beginning of this slice. */
++        .header_bit_size = get_bits_count(&sl->gb),
++
++        .first_mb_in_slice = sl->first_mb_addr,
++
++        .slice_type = ff_h264_get_slice_type(sl),
++        .colour_plane_id = 0, /* separate colour plane not supported by FFmpeg */
++        .redundant_pic_cnt = sl->redundant_pic_count,
++        .cabac_init_idc = sl->cabac_init_idc,
++        .slice_qp_delta = sl->qscale - pps->init_qp,
++        .slice_qs_delta = 0, /* not implemented by FFmpeg */
++        .disable_deblocking_filter_idc = sl->deblocking_filter < 2 ?
++                                         !sl->deblocking_filter :
++                                         sl->deblocking_filter,
++        .slice_alpha_c0_offset_div2 = sl->slice_alpha_c0_offset / 2,
++        .slice_beta_offset_div2 = sl->slice_beta_offset / 2,
++        .num_ref_idx_l0_active_minus1 = sl->list_count > 0 ? sl->ref_count[0] - 1 : 0,
++        .num_ref_idx_l1_active_minus1 = sl->list_count > 1 ? sl->ref_count[1] - 1 : 0,
++    };
++
++    if (sl->slice_type == AV_PICTURE_TYPE_B && sl->direct_spatial_mv_pred)
++        controls->slice_params.flags |= V4L2_H264_SLICE_FLAG_DIRECT_SPATIAL_MV_PRED;
++
++    /* V4L2_H264_SLICE_FLAG_SP_FOR_SWITCH: not implemented by FFmpeg */
++
++    controls->pred_weights_required =
++        V4L2_H264_CTRL_PRED_WEIGHTS_REQUIRED(&controls->pps, &controls->slice_params);
++    if (controls->pred_weights_required) {
++        controls->pred_weights.chroma_log2_weight_denom = sl->pwt.chroma_log2_weight_denom;
++        controls->pred_weights.luma_log2_weight_denom = sl->pwt.luma_log2_weight_denom;
++    }
++
++    count = sl->list_count > 0 ? sl->ref_count[0] : 0;
++    for (i = 0; i < count; i++)
++        fill_ref_list(&controls->slice_params.ref_pic_list0[i],
++                      &controls->decode_params, &sl->ref_list[0][i]);
++    if (count && controls->pred_weights_required)
++        fill_weight_factors(&controls->pred_weights.weight_factors[0], 0, sl);
++
++    count = sl->list_count > 1 ? sl->ref_count[1] : 0;
++    for (i = 0; i < count; i++)
++        fill_ref_list(&controls->slice_params.ref_pic_list1[i],
++                      &controls->decode_params, &sl->ref_list[1][i]);
++    if (count && controls->pred_weights_required)
++        fill_weight_factors(&controls->pred_weights.weight_factors[1], 1, sl);
++
++    controls->num_slices++;
++    return 0;
++}
++
++static int v4l2_request_h264_end_frame(AVCodecContext *avctx)
++{
++    return v4l2_request_h264_queue_decode(avctx, true);
++}
++
++static int v4l2_request_h264_post_probe(AVCodecContext *avctx)
++{
++    V4L2RequestContextH264 *ctx = avctx->internal->hwaccel_priv_data;
++
++    struct v4l2_ext_control control[] = {
++        { .id = V4L2_CID_STATELESS_H264_DECODE_MODE, },
++        { .id = V4L2_CID_STATELESS_H264_START_CODE, },
++    };
++
++    ctx->decode_mode = ff_v4l2_request_query_control_default_value(avctx,
++                                            V4L2_CID_STATELESS_H264_DECODE_MODE);
++    if (ctx->decode_mode != V4L2_STATELESS_H264_DECODE_MODE_SLICE_BASED &&
++        ctx->decode_mode != V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED) {
++        av_log(ctx, AV_LOG_VERBOSE, "Unsupported decode mode: %d\n",
++               ctx->decode_mode);
++        return AVERROR(EINVAL);
++    }
++
++    ctx->start_code = ff_v4l2_request_query_control_default_value(avctx,
++                                            V4L2_CID_STATELESS_H264_START_CODE);
++    if (ctx->start_code != V4L2_STATELESS_H264_START_CODE_NONE &&
++        ctx->start_code != V4L2_STATELESS_H264_START_CODE_ANNEX_B) {
++        av_log(ctx, AV_LOG_VERBOSE, "Unsupported start code: %d\n",
++               ctx->start_code);
++        return AVERROR(EINVAL);
++    }
++
++    // TODO: check V4L2_CID_MPEG_VIDEO_H264_PROFILE control
++    // TODO: check V4L2_CID_MPEG_VIDEO_H264_LEVEL control
++
++    control[0].value = ctx->decode_mode;
++    control[1].value = ctx->start_code;
++
++    return ff_v4l2_request_set_controls(avctx, control, FF_ARRAY_ELEMS(control));
++}
++
++static int v4l2_request_h264_init(AVCodecContext *avctx)
++{
++    V4L2RequestContextH264 *ctx = avctx->internal->hwaccel_priv_data;
++    const H264Context *h = avctx->priv_data;
++    struct v4l2_ctrl_h264_sps sps;
++    int ret;
++
++    struct v4l2_ext_control control[] = {
++        {
++            .id = V4L2_CID_STATELESS_H264_SPS,
++            .ptr = &sps,
++            .size = sizeof(sps),
++        },
++    };
++
++    fill_sps(&sps, h);
++
++    ctx->base.post_probe = v4l2_request_h264_post_probe;
++    return ff_v4l2_request_init(avctx, V4L2_PIX_FMT_H264_SLICE,
++                                4 * 1024 * 1024,
++                                control, FF_ARRAY_ELEMS(control));
++}
++
++const FFHWAccel ff_h264_v4l2request_hwaccel = {
++    .p.name             = "h264_v4l2request",
++    .p.type             = AVMEDIA_TYPE_VIDEO,
++    .p.id               = AV_CODEC_ID_H264,
++    .p.pix_fmt          = AV_PIX_FMT_DRM_PRIME,
++    .start_frame        = v4l2_request_h264_start_frame,
++    .decode_slice       = v4l2_request_h264_decode_slice,
++    .end_frame          = v4l2_request_h264_end_frame,
++    .flush              = ff_v4l2_request_flush,
++    .frame_priv_data_size = sizeof(V4L2RequestControlsH264),
++    .init               = v4l2_request_h264_init,
++    .uninit             = ff_v4l2_request_uninit,
++    .priv_data_size     = sizeof(V4L2RequestContextH264),
++    .frame_params       = ff_v4l2_request_frame_params,
++};

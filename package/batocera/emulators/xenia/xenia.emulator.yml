@@ -1,0 +1,249 @@
+features: []
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  xenia_api:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use. D3D12 may yield better results with faster GPUs.
+    choices:
+      D3D12 (Default): D3D12
+      Native Vulkan: Vulkan
+  xenia_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: false
+      Enabled: true
+  xenia_license:
+    prompt: XBOX LIVE ARCADE
+    description: This option enables the ability to play Xbox Live Arcade games. May cause compatibility issues with non-XBLA games.
+    choices:
+      No licenses enabled: 0
+      XBLA license enabled (Default): 1
+      All possible licenses (Not recommended): -1
+  xenia_headless:
+    prompt: UI PROMPTS
+    description: Choose to display UI prompts or accept defaults.
+    choices:
+      Enabled (Default): false
+      Disabled: true
+  xenia_country:
+    prompt: CONSOLE COUNTRY
+    description: Change the consoles country from the default of the United States.
+    choices:
+      United Arab Emirates: 1
+      Albania: 2
+      Armenia: 3
+      Argentina: 4
+      Austria: 5
+      Australia: 6
+      Azerbaijan: 7
+      Belgium: 8
+      Bulgaria: 9
+      Bahrain: 10
+      Brunei: 11
+      Bolivia: 12
+      Brazil: 13
+      Belarus: 14
+      Belize: 15
+      Canada: 16
+      Switzerland: 18
+      Chile: 19
+      China: 20
+      Colombia: 21
+      Costa Rica: 22
+      Czech Republic: 23
+      Germany: 24
+      Denmark: 25
+      Dominican Republic: 26
+      Algeria: 27
+      Ecuador: 28
+      Estonia: 29
+      Egypt: 30
+      Spain: 31
+      Finland: 32
+      Faroe Islands: 33
+      France: 34
+      United Kingdom: 35
+      Georgia: 36
+      Greece: 37
+      Guatemala: 38
+      Hong Kong: 39
+      Honduras: 40
+      Croatia: 41
+      Hungary: 42
+      Indonesia: 43
+      Ireland: 44
+      Israel: 45
+      India: 46
+      Iraq: 47
+      Iran: 48
+      Iceland: 49
+      Italy: 50
+      Jamaica: 51
+      Jordan: 52
+      Japan: 53
+      Kenya: 54
+      Kyrgyzstan: 55
+      South Korea: 56
+      Kuwait: 57
+      Kazakhstan: 58
+      Lebanon: 59
+      Liechtenstein: 60
+      Lithuania: 61
+      Luxembourg: 62
+      Latvia: 63
+      Libya: 64
+      Morocco: 65
+      Monaco: 66
+      North Macedonia: 67
+      Mongolia: 68
+      Macau: 69
+      Maldives: 70
+      Mexico: 71
+      Malaysia: 72
+      Nicaragua: 73
+      Netherlands: 74
+      Norway: 75
+      New Zealand: 76
+      Oman: 77
+      Panama: 78
+      Peru: 79
+      Philippines: 80
+      Pakistan: 81
+      Poland: 82
+      Puerto Rico: 83
+      Portugal: 84
+      Paraguay: 85
+      Qatar: 86
+      Romania: 87
+      Russia: 88
+      Saudi Arabia: 89
+      Sweden: 90
+      Singapore: 91
+      Slovenia: 92
+      Slovakia: 93
+      El Salvador: 95
+      Syria: 96
+      Thailand: 97
+      Tunisia: 98
+      Turkey: 99
+      Trinidad and Tobago: 100
+      Taiwan: 101
+      Ukraine: 102
+      United States: 103
+      Uruguay: 104
+      Uzbekistan: 105
+      Venezuela: 106
+      Vietnam: 107
+      Yemen: 108
+      South Africa: 109
+  xenia_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      English (Default): 1
+      Japanese: 2
+      German: 3
+      French: 4
+      Spanish: 5
+      Italian: 6
+      Korean: 7
+      Chinese: 8
+      Portuguese: 9
+      Polish: 11
+      Russian: 12
+      Swedish: 13
+      Turkish: 14
+      Norwegian: 15
+      Dutch: 16
+  xenia_page_state:
+    group: ADVANCED OPTIONS
+    prompt: CLEAR MEMORY PAGE STATE
+    description: Refresh state of memory pages to enable gpu written data. (Use for 'Team Ninja' Games to fix missing character models).
+    choices:
+      Disabled: false
+      Enabled: true
+  xenia_target_path:
+    group: ADVANCED OPTIONS
+    prompt: RENDER TARGET PATH
+    description: Render target emulation path to use on Direct3D 12. Try changing if you have render issues.
+    choices:
+      Any: any
+      RTV (Default): rtv
+      ROV: rov
+  xenia_query_occlusion:
+    group: ADVANCED OPTIONS
+    prompt: QUERY OCCLUSION
+    description: The sample count of every tile will be incremented on every EVENT_WRITE_ZPD by this number. Setting this to 0 means everything is reported as occluded.
+    choices:
+      "0": 0
+      "10": 10
+      "50": 50
+      "100": 100
+      "250": 250
+      "500": 500
+      "750": 750
+      1000 (Default): 1000
+  xenia_readback_resolve:
+    group: ADVANCED OPTIONS
+    prompt: READBACK RESOLVE
+    description: D3D12, read render-to-texture results on the CPU. Needed in some games, but causes mid-frame synchronization, so it has a huge performance impact.
+    choices:
+      Disabled: false
+      Enabled: true
+  xenia_limit_hard:
+    group: ADVANCED OPTIONS
+    prompt: HARD TEXTURE CACHE MEMORY LIMIT
+    description: Maximum host texture memory usage (in megabytes) above which textures will be destroyed as soon as possible.
+    choices:
+      768MB (Default): 768
+      1536MB: 1536
+      2304MB: 2034
+      3072MB: 3072
+      3840MB: 3840
+      4096MB: 4096
+      5120MB: 5120
+      6144MB: 6144
+  xenia_limit_render_to_texture:
+    group: ADVANCED OPTIONS
+    prompt: TEXTURE MEMORY SCALE SIZE
+    description: Part of the host texture memory budget (in megabytes) that will be scaled by the current drawing resolution scale.
+    choices:
+      24MB (Default): 24
+      48MB: 48
+      72MB: 72
+      96MB: 96
+  xenia_limit_soft:
+    group: ADVANCED OPTIONS
+    prompt: SOFT TEXTURE CACHE MEMORY LIMIT
+    description: Maximum host texture memory usage (in megabytes) above which old textures will be destroyed. Set below hard limit.
+    choices:
+      384MB (Default): 384
+      768MB: 768
+      1536MB: 1536
+      2048MB: 2048
+      3072MB: 3072
+      4096MB: 4096
+  xenia_limit_soft_lifetime:
+    group: ADVANCED OPTIONS
+    prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
+    description: Seconds a texture should be unused to be considered old enough to be deleted if texture memory usage exceeds Soft Texture Cache limit.
+    choices:
+      15s: 15
+      30s (Default): 30
+      45s: 45
+      60s: 60
+  xenia_cache:
+    group: ADVANCED OPTIONS
+    prompt: MOUNT CACHE
+    description: Enable cache mount. Can improve performance and compatibility in some games.
+    choices:
+      Disabled: false
+      Enabled: true
+systems:
+  - name: xbox360
+    exclude_extensions:
+      - zar

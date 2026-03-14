@@ -8,6 +8,7 @@ LIBRETRO_BLASTEM_VERSION = 277e4a62668597d4f59cadda1cbafb844f981d45
 LIBRETRO_BLASTEM_SITE = $(call github,libretro,blastem,$(LIBRETRO_BLASTEM_VERSION))
 LIBRETRO_BLASTEM_LICENSE = GPLv3
 LIBRETRO_BLASTEM_DEPENDENCIES += retroarch
+LIBRETRO_BLASTEM_EMULATOR_INFO = blastem.libretro.core.yml
 
 LIBRETRO_BLASTEM_EXTRAOPTS=""
 
@@ -29,3 +30,4 @@ define LIBRETRO_BLASTEM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

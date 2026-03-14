@@ -1,0 +1,19 @@
+diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
+index 2e3ae87..7c444bd 100644
+--- a/src/duckstation-qt/CMakeLists.txt
++++ b/src/duckstation-qt/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-find_package(Qt6 6.7.2 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
++find_package(Qt6 6.7.2 COMPONENTS Core Gui Widgets LinguistTools GuiPrivate REQUIRED)
+ 
+ include(CopyBaseTranslations)
+ 
+@@ -169,7 +169,7 @@ set(TS_FILES
+ add_executable(duckstation-qt ${SRCS} ${QM_FILES})
+ target_precompile_headers(duckstation-qt PRIVATE "pch.h")
+ target_include_directories(duckstation-qt PRIVATE "${Qt6Gui_PRIVATE_INCLUDE_DIRS}" "${CMAKE_CURRENT_SOURCE_DIR}")
+-target_link_libraries(duckstation-qt PRIVATE core common imgui minizip scmversion Qt6::Core Qt6::Gui Qt6::Widgets)
++target_link_libraries(duckstation-qt PRIVATE core common imgui minizip scmversion Qt6::Core Qt6::Gui Qt6::Widgets Qt6::GuiPrivate)
+ 
+ # Our Qt builds may have exceptions on, so force them off.
+ target_compile_definitions(duckstation-qt PRIVATE QT_NO_EXCEPTIONS)

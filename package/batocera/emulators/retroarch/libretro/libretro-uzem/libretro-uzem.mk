@@ -8,6 +8,7 @@ LIBRETRO_UZEM_VERSION = 08e39e19167727c89fb995e3fa70dde252e6aab0
 LIBRETRO_UZEM_SITE = $(call github,libretro,libretro-uzem,$(LIBRETRO_UZEM_VERSION))
 LIBRETRO_UZEM_LICENSE = MIT
 LIBRETRO_UZEM_DEPENDENCIES += retroarch
+LIBRETRO_UZEM_EMULATOR_INFO = uzem.libretro.core.yml
 
 LIBRETRO_UZEM_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -33,3 +34,4 @@ define LIBRETRO_UZEM_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

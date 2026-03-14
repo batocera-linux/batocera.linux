@@ -1,0 +1,37 @@
+diff --git a/pm_auto/utils.py b/pm_auto/utils.py
+index 9aef686ea6..12750e5536 100644
+--- a/pm_auto/utils.py
++++ b/pm_auto/utils.py
+@@ -92,12 +92,26 @@ class DebounceRunner():
+     def __call__(self):
+         return self.run()
+ 
+-def softlink_gpiochip0_to_gpiochip4():
+-    ''' Softlink gpiochip0 device to gpiochip4. '''
++def softlink_gpiochip0_to_gpiochip4(retries=30, delay=1):
++    ''' Softlink /dev/gpiochip0 to /dev/gpiochip4 with retries. '''
+     import os
++
+     if not os.path.exists('/dev/gpiochip0'):
+-        raise Exception('gpiochip0 device not found')
++        raise FileNotFoundError('gpiochip0 device not found')
++
++    # If already correctly linked, do nothing
++    if os.path.islink('/dev/gpiochip4') and os.readlink('/dev/gpiochip4') == '/dev/gpiochip0':
++        return
++
+     if not os.path.exists('/dev/gpiochip4'):
+-        status, result = run_command('ln -s /dev/gpiochip0 /dev/gpiochip4')
+-        if status != 0:
+-            raise Exception(f'Failed to softlink gpiochip0 to gpiochip4: {result}')
++        for attempt in range(1, retries + 1):
++            status, result = run_command('ln -sf /dev/gpiochip0 /dev/gpiochip4')
++            if status == 0:
++                try:
++                    if os.path.islink('/dev/gpiochip4') and os.readlink('/dev/gpiochip4') == '/dev/gpiochip0':
++                        return
++                except OSError:
++                    pass
++            time.sleep(delay)
++
++        raise RuntimeError(f'Failed to create symlink /dev/gpiochip4 → /dev/gpiochip0 after {retries} attempts: {result}')

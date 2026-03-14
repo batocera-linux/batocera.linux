@@ -1,0 +1,21 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  pce_nospritelimit:
+    prompt: REDUCE SPRITE FLICKERING
+    description: Enhancement. Remove the sixteen sprites per line limit.
+    choices:
+      'Off': disabled
+      'On': enabled
+  controller1_pce:
+    prompt: CONTROLLER 1 TYPE
+    choices:
+      PCE Joypad: 1
+      PCE Mouse: 2
+systems:
+  - pcengine
+  - pcenginecd

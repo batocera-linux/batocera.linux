@@ -1,0 +1,183 @@
+features:
+  - cheevos
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  flycast_ratio:
+    prompt: GAME ASPECT RATIO
+    description: Force the game to render in this aspect ratio.
+    choices:
+      4/3: false
+      16/9: true
+  flycast_render_resolution:
+    prompt: RENDER RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      0.5x (320x240): 240
+      1x (640x480): 480
+      1.5x (960x720): 720
+      2x (1280x960): 960
+      2.5x (1600x1200): 1200
+      3x (1920x1440): 1440
+      4x (2560x1920): 1920
+      4.5x (2880x2160): 2160
+  flycast_renderer:
+    prompt: GRAPHICS API
+    choices:
+      OpenGL (Default): 0
+      Vulkan: 4
+  flycast_rotate:
+    prompt: SCREEN ROTATION
+    description: Rotate the screen with the emulator.
+    choices:
+      0 degrees: false
+      90 degrees: true
+  flycast_anisotropic:
+    group: ADVANCED OPTIONS
+    prompt: ANISOTROPIC FILTERING
+    description: Improves clarity of distant textures when mip-mapping is enabled.
+    choices:
+      Disabled (Default): 1
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  flycast_sorting:
+    group: ADVANCED OPTIONS
+    prompt: ALPHA SORTING
+    description: Per pixel is the most accurate, but also the most demanding.
+    choices:
+      Per Strip: 2
+      Per Triangle (Default): 1
+      Per Pixel: 3
+  flycast_lightgun1_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 1 CROSSHAIR COLOR
+    choices:
+      Red: -1073741571
+      Blue: -1057153792
+      Green: -1073479933
+      White: -1056964609
+      Disabled: 0
+  flycast_lightgun2_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 2 CROSSHAIR COLOR
+    choices:
+      Red: -1073741571
+      Blue: -1057153792
+      Green: -1073479933
+      White: -1056964609
+      Disabled: 0
+  flycast_lightgun3_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 3 CROSSHAIR COLOR
+    choices:
+      Red: -1073741571
+      Blue: -1057153792
+      Green: -1073479933
+      White: -1056964609
+      Disabled: 0
+  flycast_lightgun4_crosshair:
+    group: LIGHT GUN
+    prompt: PLAYER 4 CROSSHAIR COLOR
+    choices:
+      Red: -1073741571
+      Blue: -1057153792
+      Green: -1073479933
+      White: -1056964609
+      Disabled: 0
+systems:
+  - name: dreamcast
+    custom_features:
+      flycast_language:
+        prompt: BIOS LANGUAGE
+        description: Dreamcast BIOS's language setting. Can change the language of some games. Some games default to Japanese.
+        choices:
+          Japanese: 0
+          English: 1
+          German: 2
+          French: 3
+          Spanish: 4
+          Italian: 5
+          Game's default: 6
+      flycast_region:
+        prompt: CONSOLE REGION
+        choices:
+          Japan: 0
+          USA: 1
+          Europe: 2
+          Game's default: 3
+      flycast_loadstate:
+        prompt: AUTO LOAD ON GAME LAUNCH
+        choices:
+          Off (Default): false
+          "On": true
+      flycast_savestate:
+        prompt: AUTO SAVE ON GAME EXIT
+        choices:
+          Off (Default): false
+          "On": true
+      flycast_winCE:
+        group: ADVANCED OPTIONS
+        prompt: FORCE WINDOWS CE MODE
+        description: Required for some games.
+        choices:
+          "Off": false
+          "On": true
+      flycast_per_game_vmu:
+        group: ADVANCED OPTIONS
+        prompt: PER-GAME VMU
+        description: When enabled, each game has its own VMU on port 1 of controller 1.
+        preset: switchauto
+      flycast_ctrl1_pack:
+        group: ADVANCED OPTIONS
+        prompt: CONTROLLER 1 FEATURE PACK
+        description: Choose second feature pack for the controller.
+        choices:
+          2nd VMU (Default): 1
+          Purupuru Pack/Vibration Pack: 3
+      flycast_ctrl2_pack:
+        group: ADVANCED OPTIONS
+        prompt: CONTROLLER 2 FEATURE PACK
+        description: Choose second feature pack for the controller.
+        choices:
+          2nd VMU (Default): 1
+          Purupuru Pack/Vibration Pack: 3
+      flycast_ctrl3_pack:
+        group: ADVANCED OPTIONS
+        prompt: CONTROLLER 3 FEATURE PACK
+        description: Choose second feature pack for the controller.
+        choices:
+          2nd VMU (Default): 1
+          Purupuru Pack/Vibration Pack: 3
+      flycast_ctrl4_pack:
+        group: ADVANCED OPTIONS
+        prompt: CONTROLLER 4 FEATURE PACK
+        description: Choose second feature pack for the controller.
+        choices:
+          2nd VMU (Default): 1
+          Purupuru Pack/Vibration Pack: 3
+      flycast_DSP:
+        prompt: DIGITAL SOUND PROCESSOR
+        description: Enable the Dreamcast DSP for more accurate audio. Only recommended for fast systems.
+        choices:
+          Disabled (Default): "no"
+          Enabled: "yes"
+  - naomi
+  - atomiswave
+  - systemsp
+  - naomi2

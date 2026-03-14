@@ -8,6 +8,7 @@ X16EMU_VERSION = 48
 X16EMU_SITE = $(call github,X16Community,x16-emulator,r$(X16EMU_VERSION))
 X16EMU_LICENSE = BSD-2-Clause license
 X16EMU_LICENSE_FILE = LICENSE
+X16EMU_EMULATOR_INFO = x16emu.emulator.yml
 
 X16EMU_DEPENDENCIES = sdl2
 
@@ -38,3 +39,4 @@ endef
 X16EMU_POST_INSTALL_TARGET_HOOKS += X16EMU_BIOS
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

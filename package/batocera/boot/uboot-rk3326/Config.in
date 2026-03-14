@@ -1,0 +1,19 @@
+config BR2_PACKAGE_UBOOT_RK3326
+	bool "uboot-rk3326"
+	help
+	  U-Boot bootloader for specific RK3326 devices.
+
+	  https://www.denx.de/wiki/U-Boot
+
+if BR2_PACKAGE_UBOOT_RK3326
+
+config BR2_TARGET_UBOOT_RK3326_UART5
+	bool "Use UART5 for debug console"
+	depends on BR2_PACKAGE_UBOOT_RK3326
+	help
+	  Select this if your RK3326-based handheld is a clone
+	  that uses UART5 for the debug console (e.g., K36 clones).
+	  This will change the DDR binary and U-Boot configuration
+	  to match.
+
+endif

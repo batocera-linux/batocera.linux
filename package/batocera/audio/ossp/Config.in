@@ -1,0 +1,7 @@
+config BR2_PACKAGE_OSSP
+    bool "ossp"
+    select BR2_PACKAGE_LIBFUSE3
+    help
+      Emulate OSS device(s) using CUSE.
+      
+      https://github.com/OpenMandrivaSoftware/ossp

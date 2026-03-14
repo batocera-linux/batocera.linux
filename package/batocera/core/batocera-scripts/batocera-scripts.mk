@@ -1,10 +1,10 @@
 ################################################################################
 #
-# batocera scripts
+# batocera-scripts
 #
 ################################################################################
 
-BATOCERA_SCRIPTS_VERSION = 3
+BATOCERA_SCRIPTS_VERSION = 4.2
 BATOCERA_SCRIPTS_LICENSE = GPL
 BATOCERA_SCRIPTS_DEPENDENCIES = pciutils
 BATOCERA_SCRIPTS_SOURCE=
@@ -21,6 +21,13 @@ ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
   BATOCERA_SCRIPTS_MOUSE_TYPE=wayland-sway
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_MOUSE
 endif
+
+ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_LABWC),y)
+  BATOCERA_SCRIPTS_MOUSE_TYPE=wayland-labwc
+  BATOCERA_SCRIPTS_DEPENDENCIES+= wtype
+  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_MOUSE
+endif
+
 ###
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
@@ -36,10 +43,10 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-save-overlay              $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-kodi                      $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-kodilauncher              $(TARGET_DIR)/usr/bin/
-    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-usbmount                  $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-encode                    $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-padsinfo                  $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-info                      $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-model                     $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-install                   $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-format                    $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-mount                     $(TARGET_DIR)/usr/bin/
@@ -74,7 +81,13 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-vulkan                    $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-power-mode                $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-es-web-notifier           $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-xtract                    $(TARGET_DIR)/usr/bin/
+    ln -sf /usr/bin/batocera-xtract $(TARGET_DIR)/usr/bin/file-roller
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/getLocalXDisplay                   $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/getLocalWaylandDisplay             $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-storage-manager           $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-storage-udev              $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-keyboard                  $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_MOUSE

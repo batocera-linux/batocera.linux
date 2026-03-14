@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_DICE
     bool "libretro-dice"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
     help
       DICE is a Discrete Integrated Circuit Emulator for games without any type of CPU.

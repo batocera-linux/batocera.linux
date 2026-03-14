@@ -9,6 +9,7 @@ LIBRETRO_BEETLE_VB_SITE = \
     $(call github,libretro,beetle-vb-libretro,$(LIBRETRO_BEETLE_VB_VERSION))
 LIBRETRO_BEETLE_VB_LICENSE = GPLv2
 LIBRETRO_BEETLE_VB_DEPENDENCIES += retroarch
+LIBRETRO_BEETLE_VB_EMULATOR_INFO = vb.libretro.core.yml
 
 LIBRETRO_BEETLE_VB_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -38,3 +39,4 @@ define LIBRETRO_BEETLE_VB_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

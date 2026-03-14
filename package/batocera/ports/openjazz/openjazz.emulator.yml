@@ -1,0 +1,37 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  jazz_resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      320 x 200: 320x200
+      640 x 480: 640x480
+      800 x 600: 800x600
+      1024 x 768: 1024x768
+      1280 x 720: 1280x720
+      1280 x 800: 1280x800
+      1280 x 1024: 1280x1024
+      1366 x 768: 1366x768
+      1440 x 900: 1440x900
+      1600 x 900: 1600x900
+      1680 x 1050: 1680x1050
+      1920 x 1080: 1920x1080
+      1920 x 1200: 1920x1200
+      2560 x 1440: 2560x1440
+      2560 x 1600: 2560x1600
+      3840 x 2160: 3840x2160
+systems:
+  - openjazz

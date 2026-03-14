@@ -31,10 +31,13 @@
 #v2.9 - add Waveshare WM8960 audio HAT - @dmanlfc
 #v3.0 - migrate RPi scripts from RPi.GPIO to gpiod - @dmanlfc
 #v3.1 - remove the RETROFLAG option in favor of RETROFLAG_ADV & add dtbo for retroflag cases - @dmanlfc
+#v3.2 - add Retroflag 64Pi case for Raspberry Pi 5 support.
+#v3.3 - fix mounting bugs & pironman updates
 
 ### Array for Powerdevices, add/remove entries here
 
 powerdevices=(
+              RETROFLAG_64PI "Retroflag 64Pi case for Raspberry Pi 5" \
               RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
               ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
@@ -188,7 +191,7 @@ function onoffshim_start()
     #Check if dtooverlay is setted in /boot/config
     #This is needed to do proper restarts/shutdowns
     if ! grep -q "^dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" "/boot/config.txt"; then
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         echo "dtoverlay=gpio-poweroff,gpiopin=$2,active_low=1,input=1" >> "/boot/config.txt"
     fi
     [ $CONF -eq 1 ] && return
@@ -404,25 +407,25 @@ function argonone_start()
     case $(cat /usr/share/batocera/batocera.arch) in
         bcm2711)
 	    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
-		 mount -o remount, rw /boot
+		 mount -o remount,rw /boot
 		 echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
 	    fi
 	    if ! grep -q "^dtparam=i2c-1=on" "/boot/config.txt"; then
-		 mount -o remount, rw /boot
+		 mount -o remount,rw /boot
 		 echo "dtparam=i2c-1=on" >> "/boot/config.txt"
 	    fi
 	    if ! grep -q "^enable_uart=1" "/boot/config.txt"; then
-		 mount -o remount, rw /boot
+		 mount -o remount,rw /boot
 		 echo "enable_uart=1" >> "/boot/config.txt"
 	    fi
         ;;
         bcm2712)
 	    if ! grep -q "^dtparam=i2c=on" "/boot/config.txt"; then
-		 mount -o remount, rw /boot
+		 mount -o remount,rw /boot
 		 echo "dtparam=i2c=on" >> "/boot/config.txt"
 	    fi
 	    if ! grep -q "^dtparam=uart0=on" "/boot/config.txt"; then
-		 mount -o remount, rw /boot
+		 mount -o remount,rw /boot
 		 echo "dtparam=uart0=on" >> "/boot/config.txt"
 	    fi
         ;;
@@ -488,7 +491,7 @@ function deskpipro_start()
     # Check config.txt for fan & front USB
     if ! grep -q "^dtoverlay=dwc2,dr_mode=host" "/boot/config.txt"; then
         echo "*** Adding DeskPi Pro Case Fan config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         # Remove other dtoverlay=dwc2 type configs to avoid conflicts
         sed -i '/dtoverlay=dwc2*/d' /boot/config.txt
         echo "" >> "/boot/config.txt"
@@ -498,13 +501,13 @@ function deskpipro_start()
     # Check config.txt for Infrared
     if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
         echo "*** Adding DeskPi Pro Case Infrared config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=17/g' /boot/config.txt
     fi
     # Add Infrared parameters
     if ! grep -q "driver = default" "/etc/lirc/lirc_options.conf"; then
         echo "*** Adding DeskPi Pro Case Infrared lirc_options.conf parameters ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         echo "driver = default" >> "/etc/lirc/lirc_options.conf"
         echo "device = /dev/lirc0" >> "/etc/lirc/lirc_options.conf"
     fi
@@ -539,7 +542,7 @@ function pistation_start()
     # Check config.txt for fkms
     if ! grep -Fxq "vc4-fkms-v3d-pi4" "/boot/config.txt"; then
         echo "*** Adding PiStation LCD kms config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         # Remove default vc4-kms-v3d-pi4 type config to avoid conflict
         sed -i 's/vc4-kms-v3d-pi4/#vc4-kms-v3d-pi4/g' /boot/config.txt
         echo "" >> "/boot/config.txt"
@@ -551,7 +554,7 @@ function pistation_start()
     # Check config.txt for EDID
     if ! grep -Fxq "[EDID=YDK-YD2680]" "/boot/config.txt"; then
         echo "*** Adding PiStation LCD EDID config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         echo "" >> "/boot/config.txt"
         echo "# PiStation LCD EDID" >> "/boot/config.txt"
         echo "# remove the section below if no longer needed" >> "/boot/config.txt"
@@ -672,7 +675,7 @@ function pironman_start()
     # Check config.txt for i2c
     if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
         echo "*** Adding Pironman i2c config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         # Remove other dtparam=i2c_arm type configs to avoid conflicts
         sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
         echo "" >> "/boot/config.txt"
@@ -680,10 +683,11 @@ function pironman_start()
         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
     fi
     # Check config.txt for spi
-    if grep -q "dtparam=spi=" "/boot/config.txt"; then
+    if grep -q "^#\?dtparam=spi=" "/boot/config.txt"; then
         echo "*** Enabling Pironman spi config.txt parameter ***"
         mount -o remount,rw /boot
-        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+        # Enable SPI if it's commented out or set to off
+        sed -i 's/^#\?dtparam=spi=.*/dtparam=spi=on/' /boot/config.txt
     else
         echo "*** Adding Pironman spi config.txt parameter ***"
         mount -o remount,rw /boot
@@ -692,27 +696,27 @@ function pironman_start()
     # Check config.txt for core_freq
     if grep -q "core_freq=" "/boot/config.txt"; then
         echo "*** Setting Pironman core_freq config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         sed -i 's/^\s*#\?\s*\(core_freq=\).*$/\1500/' /boot/config.txt
     else
         echo "*** Adding Pironman core_freq config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         echo "core_freq=500" >> /boot/config.txt
     fi
     # Check config.txt for core_freq_min
     if grep -q "core_freq_min=" "/boot/config.txt"; then
         echo "*** Setting Pironman core_freq_min config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         sed -i 's/^\s*#\?\s*\(core_freq_min=\).*$/\1500/' /boot/config.txt
     else
         echo "*** Adding Pironman core_freq_min config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         echo "core_freq_min=500" >> /boot/config.txt
     fi
     # Check config.txt for power button
     if ! grep -q "^dtoverlay=gpio-poweroff,gpio_pin=26,active_low=0" "/boot/config.txt"; then
         echo "*** Adding Pironman power off config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         # Remove other dtoverlay=gpio-poweroff type configs to avoid conflicts
         sed -i '/dtoverlay=gpio-poweroff*/d' /boot/config.txt
         echo "dtoverlay=gpio-poweroff,gpio_pin=26,active_low=0" >> "/boot/config.txt"
@@ -720,7 +724,7 @@ function pironman_start()
     # Check config.txt for Infrared
     if grep -Fxq "#dtoverlay=gpio-ir,gpio_pin=17" "/boot/config.txt"; then
         echo "*** Adding Pironman infrared config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         #Pironman uses gpio 13 not 17
         sed -i 's/#dtoverlay=gpio-ir,gpio_pin=17/dtoverlay=gpio-ir,gpio_pin=13/g' /boot/config.txt
     fi
@@ -750,7 +754,7 @@ function pironman5_start()
     # Check config.txt for i2c
     if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
         echo "*** Adding Pironman i2c config.txt parameter ***"
-        mount -o remount, rw /boot
+        mount -o remount,rw /boot
         # Remove other dtparam=i2c_arm type configs to avoid conflicts
         sed -i '/dtparam=i2c_arm*/d' /boot/config.txt
         echo "" >> "/boot/config.txt"
@@ -758,12 +762,13 @@ function pironman5_start()
         echo "dtparam=i2c_arm=on" >> "/boot/config.txt"
     fi
     # Check config.txt for spi
-    if grep -q "dtparam=spi=" "/boot/config.txt"; then
-        echo "*** Enabling Pironman spi config.txt parameter ***"
+    if grep -q "^#\?dtparam=spi=" "/boot/config.txt"; then
+        echo "*** Enabling Pironman5 SPI config.txt parameter ***"
         mount -o remount,rw /boot
-        sed -i 's/^#\?\s*\(dtparam=spi=\)off/\1on/' /boot/config.txt
+        # Enable SPI if it's commented out or set to off
+        sed -i 's/^#\?dtparam=spi=.*/dtparam=spi=on/' /boot/config.txt
     else
-        echo "*** Adding Pironman spi config.txt parameter ***"
+        echo "*** Adding Pironman5 SPI config.txt parameter ***"
         mount -o remount,rw /boot
         echo "dtparam=spi=on" >> /boot/config.txt
     fi
@@ -771,12 +776,8 @@ function pironman5_start()
     mkdir -p /var/log/pironman5
     # ensure i2c is running
     modprobe i2c_dev
-    # setup user adjustable config file
-    site_packages_dir=$(python3 -c "import site; print(site.getsitepackages()[0])")
-    mkdir -p $site_packages_dir/pironman5
-    ln -sf /userdata/system/configs/pironman5/config.json $site_packages_dir/pironman5/config.json
     # start
-    /usr/bin/pironman5 start --background
+    /usr/bin/pironman5 start --background -cp /userdata/system/configs/pironman5/config.json
 }
 
 function pironman5_stop()
@@ -1018,6 +1019,9 @@ case "$CONFVALUE" in
     ;;
     "PIN356ONOFFRESET")
         pin356_$1
+    ;;
+    "RETROFLAG_64PI")
+        retroflag_$1 rpi-retroflag-64PiCase
     ;;
     "RETROFLAG_GPI")
         retroflag_$1 rpi-retroflag-GPiCase

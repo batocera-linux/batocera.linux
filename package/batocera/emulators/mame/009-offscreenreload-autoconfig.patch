@@ -1,0 +1,81 @@
+--- a/plugins/offscreenreload/init.lua	2026-02-01 18:23:17.000000000 +0000
++++ b/plugins/offscreenreload/init.lua	2026-02-01 20:29:07.216650534 +0000
+@@ -61,10 +61,78 @@
+ 		end
+ 	end
+ 
++	local function auto_configure()
++		local ioport = manager.machine.ioport
++		local result = {}
++		local players = {}
++
++		for tag, port in pairs(ioport.ports) do
++			for fname, field in pairs(port.fields) do
++				local type_token = ioport:input_type_to_token(field.type)
++				if type_token then
++					local p = field.player + 1
++					if not players[p] then
++						players[p] = {}
++					end
++					local info = {
++						port = field.port.tag,
++						mask = field.mask,
++						type = field.type,
++						field = field
++					}
++
++					if (type_token:match('_LIGHTGUN_Y$') or type_token:match('_AD_STICK_Y$'))
++					   and field.is_analog and not field.analog_wraps then
++						players[p].y = info
++					elseif (type_token:match('_LIGHTGUN_X$') or type_token:match('_AD_STICK_X$'))
++					   and field.is_analog and not field.analog_wraps then
++						players[p].x = info
++					elseif type_token:match('_BUTTON1$')
++					   and not field.is_analog and not field.is_toggle then
++						if not players[p].trigger then
++							players[p].trigger = info
++						end
++					end
++				end
++			end
++		end
++
++		for player_num, pdata in pairs(players) do
++			if pdata.y and pdata.trigger then
++				local token = 'GUNCODE_' .. player_num .. '_BUTTON2'
++				local seq = manager.machine.input:seq_from_tokens(token)
++				if seq then
++					table.insert(result, {
++						binding = seq,
++						bindingcfg = token,
++						axis = pdata.y,
++						button = pdata.trigger
++					})
++					if pdata.x then
++						table.insert(result, {
++							binding = seq,
++							bindingcfg = token,
++							axis = pdata.x,
++							button = pdata.trigger
++						})
++					end
++				end
++			end
++		end
++
++		return result
++	end
++
+ 	local function start()
+ 		input = manager.machine.input
+ 		local persister = require('offscreenreload/offscreenreload_persist')
+ 		helpers = persister.load_settings()
++		if #helpers == 0 then
++			helpers = auto_configure()
++			if #helpers > 0 then
++				persister:save_settings(helpers)
++			end
++		end
+ 	end
+ 
+ 	local function stop()

@@ -1,0 +1,211 @@
+custom_features:
+  ttl_use_mouse_pointer_for_paddle_1:
+    group: CONTROLS
+    prompt: USE MOUSE POINTER FOR PADDLE 1
+    description: Use the system mouse pointer as paddle controller 1.  Does not let you choose a specific mouse if you have several.
+    choices:
+      'Off': disabled
+      'On': enabled
+  ttl_retromouse_paddle0:
+    group: CONTROLS
+    prompt: USE MOUSE FOR PADDLE 1
+    description: Use a specific mouse for Paddle 1, chosen by Port 1's Mouse Index.
+    choices:
+      'Off': disabled
+      'On': enabled
+  ttl_retromouse_paddle1:
+    group: CONTROLS
+    prompt: USE MOUSE FOR PADDLE 2
+    description: Use a specific mouse for Paddle 2, chosen by Port 2's Mouse Index.
+    choices:
+      'Off': disabled
+      'On': enabled
+  ttl_retromouse_paddle2:
+    group: CONTROLS
+    prompt: USE MOUSE FOR PADDLE 3
+    description: Use a specific mouse for Paddle 3, chosen by Port 3's Mouse Index.
+    choices:
+      'Off': disabled
+      'On': enabled
+  ttl_retromouse_paddle3:
+    group: CONTROLS
+    prompt: USE MOUSE FOR PADDLE 4
+    description: Use a specific mouse for Paddle 4, chosen by Port 4's Mouse Index.
+    choices:
+      'Off': disabled
+      'On': enabled
+  ttl_retromouse_paddle0_x:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 1 HORIZONTAL
+    description: Mouse axis for player 1, horizontal screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle0_y:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 1 VERTICAL
+    description: Mouse axis for player 1, vertical screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle1_x:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 2 HORIZONTAL
+    description: Mouse axis for player 2, horizontal screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle1_y:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 2 VERTICAL
+    description: Mouse axis for player 2, vertical screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle2_x:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 3 HORIZONTAL
+    description: Mouse axis for player 3, horizontal screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle2_y:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 3 VERTICAL
+    description: Mouse axis for player 3, vertical screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle3_x:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 4 HORIZONTAL
+    description: Mouse axis for player 4, horizontal screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_retromouse_paddle3_y:
+    group: CONTROLS
+    prompt: MOUSE AXIS FOR PADDLE 4 VERTICAL
+    description: Mouse axis for player 4, vertical screen motion.
+    choices:
+      X: x
+      Y: y
+  ttl_paddle_keyboard_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE D-PAD SENSITIVITY
+    description: Sensitivity when using D-pad for a paddle.
+    choices:
+      "125": 125
+      "250": 250
+      "375": 375
+      "500": 500
+  ttl_paddle_joystick_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE ANALOG STICK SENSITIVITY
+    description: Sensitivity when using analog stick for a paddle.
+    choices:
+      "125": 125
+      "250": 250
+      "375": 375
+      "500": 500
+  ttl_retromouse_paddle_sensitivity:
+    group: CONTROLS
+    prompt: PADDLE MOUSE SENSITIVITY
+    description: Sensitivity when using mouse for a paddle.
+    choices:
+      "25": 25
+      "50": 50
+      "75": 75
+      "100": 100
+      "125": 125
+      "250": 250
+      "375": 375
+      "500": 500
+  ttl_wheel_keyjoy_sensitivity:
+    group: CONTROLS
+    prompt: WHEEL SENSITIVITY
+    description: Sensitivity when using D-pad or analog stick for a wheel.
+    choices:
+      "125": 125
+      "250": 250
+      "375": 375
+      "500": 500
+  ttl_throttle_keyjoy_sensitivity:
+    group: CONTROLS
+    prompt: THROTTLE SENSITIVITY
+    description: Sensitivity when using D-pad or analog stick for a throttle.
+    choices:
+      "125": 125
+      "250": 250
+      "375": 375
+      "500": 500
+  ttl_dipswitch_1:
+    group: ADVANCED OPTIONS
+    prompt: DIP SWITCH 1
+    description: Setting for DIP switch 1.
+    choices:
+      Default: -1
+      "0": 0
+      "1": 1
+  ttl_dipswitch_2:
+    group: ADVANCED OPTIONS
+    prompt: DIP SWITCH 2
+    description: Setting for DIP switch 2.
+    choices:
+      Default: -1
+      "0": 0
+      "1": 1
+  ttl_dipswitch_3:
+    group: ADVANCED OPTIONS
+    prompt: DIP SWITCH 3
+    description: Setting for DIP switch 3.
+    choices:
+      Default: -1
+      "0": 0
+      "1": 1
+  ttl_dipswitch16_1:
+    group: ADVANCED OPTIONS
+    prompt: DIP SWITCH HEX 1
+    description: Setting for 16-position DIP switch number 1.
+    choices:
+      Default: -1
+      "0": 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+      "10": 10
+      "11": 11
+      "12": 12
+      "13": 13
+      "14": 14
+      "15": 15
+  ttl_dipswitch16_2:
+    group: ADVANCED OPTIONS
+    prompt: DIP SWITCH HEX 2
+    description: Setting for 16-position DIP switch number 2.
+    choices:
+      Default: -1
+      "0": 0
+      "1": 1
+      "2": 2
+      "3": 3
+      "4": 4
+      "5": 5
+      "6": 6
+      "7": 7
+      "8": 8
+      "9": 9
+      "10": 10
+      "11": 11
+      "12": 12
+      "13": 13
+      "14": 14
+      "15": 15
+systems:
+  - dice

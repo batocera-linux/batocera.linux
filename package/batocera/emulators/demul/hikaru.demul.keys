@@ -1,0 +1,270 @@
+{
+    "actions_player1": [
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_0",
+            "description": "Start"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_MINUS",
+            "description": "Coin"
+        },
+	    {
+	        "trigger": "a",
+	        "type": "key",
+	        "target": [ "KEY_KP1" ],
+            "description": "Push 2"
+	    },
+	    {
+	        "trigger": "b",
+	        "type": "key",
+	        "target": [ "KEY_KP2" ],
+            "description": "Push 1"
+	    },
+	    {
+	        "trigger": "x",
+	        "type": "key",
+	        "target": [ "KEY_KP4" ],
+            "description": "Push 4"
+	    },
+	    {
+	        "trigger": "y",
+	        "type": "key",
+	        "target": [ "KEY_KP5" ],
+            "description": "Push 3"
+	    },
+        {
+            "trigger": ["l2"],
+            "type": "key",
+            "target": [ "KEY_Q" ],
+            "description": "Push 5"
+        },
+        {
+            "trigger": ["r2"],
+            "type": "key",
+            "target": [ "KEY_E" ],
+            "description": "Push 6"
+        },
+        {
+            "trigger": ["l3"],
+            "type": "key",
+            "target": [ "KEY_KP7" ],
+            "description": "Push 7"
+        },
+        {
+            "trigger": ["r3"],
+            "type": "key",
+            "target": [ "KEY_KP8" ],
+            "description": "Push 8"
+        },
+        {
+	        "trigger": "left",
+	        "type": "key",
+	        "target": [ "KEY_A" ],
+            "description": "Digital Left"
+	    },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": [ "KEY_D" ],
+            "description": "Digital Right"
+	    },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": [ "KEY_W" ],
+            "description": "Digital Up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": [ "KEY_S" ],
+            "description": "Digital Down"
+        },
+        {
+	        "trigger": "joystick1left",
+	        "type": "key",
+	        "target": [ "KEY_F" ],
+            "description": "Analog 1 Left"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": [ "KEY_H" ],
+            "description": "Analog 1 Right"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": [ "KEY_T" ],
+            "description": "Analog 1 Up"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": [ "KEY_G" ],
+            "description": "Analog 1 Down"
+        },
+        {
+	        "trigger": "joystick2left",
+	        "type": "key",
+	        "target": [ "KEY_J" ],
+            "description": "Analog 2 Left"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": [ "KEY_L" ],
+            "description": "Analog 2 Right"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": [ "KEY_I" ],
+            "description": "Analog 2 Up"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": [ "KEY_K" ],
+            "description": "Analog 2 Down"
+        }
+    ],
+    "actions_player2": [
+        {
+            "trigger": "start",
+            "type": "key",
+            "target": "KEY_Z",
+            "description": "Start"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_X",
+            "description": "Coin"
+        },
+	    {
+	        "trigger": "a",
+	        "type": "key",
+	        "target": [ "KEY_1" ],
+            "description": "Push 1"
+	    },
+	    {
+	        "trigger": "b",
+	        "type": "key",
+	        "target": [ "KEY_2" ],
+            "description": "Push 2"
+	    },
+	    {
+	        "trigger": "x",
+	        "type": "key",
+	        "target": [ "KEY_4" ],
+            "description": "Push 4"
+	    },
+	    {
+	        "trigger": "y",
+	        "type": "key",
+	        "target": [ "KEY_5" ],
+            "description": "Push 5"
+	    },
+        {
+            "trigger": ["l2"],
+            "type": "key",
+            "target": [ "KEY_INSERT" ],
+            "description": "Push 8"
+        },
+        {
+            "trigger": ["r2"],
+            "type": "key",
+            "target": [ "KEY_PAGEUP" ],
+            "description": "Push 8"
+        },
+        {
+            "trigger": ["l3"],
+            "type": "key",
+            "target": [ "KEY_7" ],
+            "description": "Push 7"
+        },
+        {
+            "trigger": ["r3"],
+            "type": "key",
+            "target": [ "KEY_8" ],
+            "description": "Push 8"
+        },
+        {
+	        "trigger": "left",
+	        "type": "key",
+	        "target": [ "KEY_LEFT" ],
+            "description": "Digital Left"
+	    },
+        {
+            "trigger": "right",
+            "type": "key",
+            "target": [ "KEY_RIGHT" ],
+            "description": "Digital Right"
+	    },
+        {
+            "trigger": "up",
+            "type": "key",
+            "target": [ "KEY_UP" ],
+            "description": "Digital Up"
+        },
+        {
+            "trigger": "down",
+            "type": "key",
+            "target": [ "KEY_DOWN" ],
+            "description": "Digital Down"
+        },
+        {
+	        "trigger": "joystick1left",
+	        "type": "key",
+	        "target": [ "KEY_DELETE" ],
+            "description": "Analog 1 Left"
+        },
+        {
+            "trigger": "joystick1right",
+            "type": "key",
+            "target": [ "KEY_PAGEDOWN" ],
+            "description": "Analog 1 Right"
+        },
+        {
+            "trigger": "joystick1up",
+            "type": "key",
+            "target": [ "KEY_HOME" ],
+            "description": "Analog 1 Up"
+        },
+        {
+            "trigger": "joystick1down",
+            "type": "key",
+            "target": [ "KEY_END" ],
+            "description": "Analog 1 Down"
+        },
+        {
+	        "trigger": "joystick2left",
+	        "type": "key",
+	        "target": [ "KEY_COMMA" ],
+            "description": "Analog 2 Left"
+        },
+        {
+            "trigger": "joystick2right",
+            "type": "key",
+            "target": [ "KEY_SLASH" ],
+            "description": "Analog 2 Right"
+        },
+        {
+            "trigger": "joystick2up",
+            "type": "key",
+            "target": [ "KEY_SEMICOLON" ],
+            "description": "Analog 2 Up"
+        },
+        {
+            "trigger": "joystick2down",
+            "type": "key",
+            "target": [ "KEY_DOT" ],
+            "description": "Analog 2 Down"
+        }
+    ]
+}

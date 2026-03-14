@@ -1,0 +1,31 @@
+[project]
+name = "batocera-es-system"
+version = '1.04'
+dependencies = [
+    'typing-extensions',
+    'PyYAML',
+    'ruamel.yaml',
+]
+
+[project.scripts]
+batocera-build-es-data = "batocera_es_system.build_es_data:main"
+batocera-systems-report = "batocera_es_system.systems_report:main"
+batocera-generate-es-headers = "batocera_es_system.translations:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "/batocera_es_system",
+]
+
+[tool.pyright]
+extends = "../../pyproject.toml"
+
+[tool.ruff]
+extend = "../../pyproject.toml"

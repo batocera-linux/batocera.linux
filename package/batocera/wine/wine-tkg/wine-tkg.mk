@@ -4,13 +4,14 @@
 #
 ################################################################################
 
-WINE_TKG_VERSION = 10.5
+WINE_TKG_VERSION = 10.20
 WINE_TKG_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+
 WINE_TKG_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_TKG_SELINUX_MODULES = wine
-WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg
+WINE_TKG_DEPENDENCIES = host-bison host-flex host-wine-tkg wine-common
+WINE_TKG_EMULATOR_INFO = wine-tkg.wine.core.yml wine-tkg.mugen.core.yml
 HOST_WINE_TKG_DEPENDENCIES = host-bison host-flex
 
 WINE_TKG_GIT_SUBMODULES = YES
@@ -154,13 +155,6 @@ else
 WINE_TKG_CONF_OPTS += --without-v4l2
 endif
 
-ifeq ($(BR2_PACKAGE_MESA3D_OSMESA_GALLIUM),y)
-WINE_TKG_CONF_OPTS += --with-osmesa
-WINE_TKG_DEPENDENCIES += mesa3d
-else
-WINE_TKG_CONF_OPTS += --without-osmesa
-endif
-
 ifeq ($(BR2_PACKAGE_PCSC_LITE),y)
 WINE_TKG_CONF_OPTS += --with-pcsclite
 WINE_TKG_DEPENDENCIES += pcsc-lite
@@ -213,7 +207,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
 WINE_TKG_CONF_OPTS += --with-wayland
-WINE_TKG_DEPENDENCIES += wayland
+WINE_TKG_DEPENDENCIES += wayland wayland-protocols libxkbcommon
 else
 WINE_TKG_CONF_OPTS += --without-wayland
 endif
@@ -297,8 +291,14 @@ HOST_WINE_TKG_CONF_OPTS += --without-gettext --without-gettextpo
 endif
 
 # Wine needs to enable 64-bit build tools on 64-bit host
-ifeq ($(HOSTARCH),x86_64)
+ifneq ($(filter $(HOSTARCH),x86_64 aarch64),)
 HOST_WINE_TKG_CONF_OPTS += --enable-win64
+endif
+
+ifeq ($(HOSTARCH),aarch64)
+# Even though we only compile the tools, the configure script still checks if it
+# can compile wine and needs help to find the right tools on aarch64
+HOST_WINE_TKG_CONF_OPTS += --enable-archs=x86_64 --host=aarch64-linux-gnu
 endif
 
 # Wine only needs the host tools to be built, so cut-down the
@@ -377,3 +377,4 @@ endif
 
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
+$(eval $(emulator-info-package))

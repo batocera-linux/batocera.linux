@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SPIRV_CROSS_VERSION = vulkan-sdk-1.4.309.0
+SPIRV_CROSS_VERSION = vulkan-sdk-1.4.328.1
 SPIRV_CROSS_SITE = https://github.com/KhronosGroup/SPIRV-Cross
 SPIRV_CROSS_GIT_SUBMODULES=YES
 SPIRV_CROSS_SITE_METHOD=git

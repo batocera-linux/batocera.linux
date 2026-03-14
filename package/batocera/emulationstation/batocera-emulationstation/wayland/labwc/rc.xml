@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<labwc_config>
+  <core>
+    <decoration>server</decoration>
+    <gap>0</gap>
+    <adaptiveSync>yes</adaptiveSync>
+    <allowTearing>no</allowTearing>
+    <autoEnableOutputs>yes</autoEnableOutputs>
+    <reuseOutputMode>no</reuseOutputMode>
+    <xwaylandPersistence>no</xwaylandPersistence>
+  </core>
+  <touch deviceName="" mapToOutput="" mouseEmulation="no"/>
+  <keyboard>
+    <keybind key="A-Tab">
+      <action name="NextWindow" />
+    </keybind>
+    <keybind key="A-S-Tab">
+      <action name="PreviousWindow" />
+    </keybind>
+    <keybind key="A-W-h">
+      <action name="HideCursor" />
+      <action name="WarpCursor" x="-1" y="-1" />
+    </keybind>
+    <keybind key="A-W-s">
+      <action name="ShowCursor" />
+    </keybind>
+    <keybind key="A-F4">
+      <action name="Close" />
+    </keybind>
+    <keybind key="W-a">
+      <action name="ToggleMaximize" />
+    </keybind>
+    <keybind key="A-Left">
+      <action name="MoveToEdge" direction="left" />
+    </keybind>
+    <keybind key="A-Right">
+      <action name="MoveToEdge" direction="right" />
+    </keybind>
+    <keybind key="A-Up">
+      <action name="MoveToEdge" direction="up" />
+    </keybind>
+    <keybind key="A-Down">
+      <action name="MoveToEdge" direction="down" />
+    </keybind>
+    <keybind key="W-Left">
+      <action name="SnapToEdge" direction="left" />
+    </keybind>
+    <keybind key="W-Right">
+      <action name="SnapToEdge" direction="right" />
+    </keybind>
+    <keybind key="W-Up">
+      <action name="SnapToEdge" direction="up" />
+    </keybind>
+    <keybind key="W-Down">
+      <action name="SnapToEdge" direction="down" />
+    </keybind>
+  </keyboard>
+  <mouse>
+    <default />
+    <context name="root">
+      <mousebind button="Left" action="Press" />
+      <mousebind button="Right" action="Press" />
+      <mousebind button="Middle" action="Press" />
+    </context>
+  </mouse>
+  <windowRules>
+    <windowRule identifier="*" serverDecoration="no" />
+    <windowRule identifier="emulationstation">
+      <action name="FocusOutput">
+        <output></output>
+      </action>
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="batocera-flash-screen*" title="Batocera OSD*">
+      <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule title="Batocera Control Center">
+      <action name="MoveToEdge" direction="up" snapWindows="no" />
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule title="backglass">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="azahar">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="azahar" title="*Secondary Window*">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+      <action name="ToggleFullscreen" />
+    </windowRule>
+    <windowRule identifier="net.kuribo64.melonDS" title="*w1*">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="net.kuribo64.melonDS" title="*w2*">
+      <action name="MoveToOutput">
+        <output></output>
+      </action>
+    </windowRule>
+    <windowRule identifier="pcmanfm">
+      <action name="ToggleFullscreen" />
+    </windowRule>
+    <windowRule identifier="clksignal">
+      <action name="ToggleFullscreen" />
+    </windowRule>
+    <windowRule identifier="steam_proton" title="Demul">
+      <action name="ToggleFullscreen" />
+    </windowRule>
+    <windowRule identifier="xterm" serverDecoration="yes" />
+    <windowRule identifier="batocera-config-*" serverDecoration="yes" />
+    <windowRule identifier="*.desktopconfig" serverDecoration="yes" />
+    <windowRule identifier="duckstation-qt" serverDecoration="yes" />
+    <windowRule identifier="pcsx2-qt" serverDecoration="yes" />
+    <windowRule identifier="info.cemu.Cemu" serverDecoration="yes" />
+    <windowRule identifier="rpcs3" serverDecoration="yes" />
+    <windowRule identifier="net.shadps4.shadPS4" serverDecoration="yes" />
+    <windowRule identifier="net.kuribo64.melonDS" serverDecoration="yes" />
+    <windowRule identifier="org.azahar_emu.Azahar" serverDecoration="yes" />
+    <windowRule identifier="Play" serverDecoration="yes" />
+    <windowRule identifier="bauh" serverDecoration="yes" />
+    <windowRule identifier="l3afpad" serverDecoration="yes" />
+  </windowRules>
+</labwc_config>

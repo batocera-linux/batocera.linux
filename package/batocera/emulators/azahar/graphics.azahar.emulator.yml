@@ -1,0 +1,10 @@
+custom_features:
+  azahar_graphics_api:
+    submenu: GRAPHICS
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      Software: 0
+      OpenGL (Default): 1
+      Vulkan: 2
+    before: azahar_use_hw_shader

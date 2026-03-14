@@ -353,7 +353,7 @@ class LibretroGenerator(Generator):
         elif system.name == 'sgb-msu1':
             if "squashfs" in str(rom) and rom.is_dir():
                 rom = next(itertools.chain(rom.glob('*.gb'), rom.glob('*.gbc')))
-        elif system.name == 'msu-md':  # noqa: SIM102
+        elif system.name == 'megadrive-msu':  # noqa: SIM102
             if "squashfs" in str(rom) and rom.is_dir():
                 rom = next(rom.glob('*.md'))
 
@@ -384,6 +384,7 @@ class LibretroGenerator(Generator):
             if rom.suffix.lower() in ['.hd', '.gemdos']:
                 #don't pass hd drive as parameter, it need to be added in configuration
                 dontAppendROM = True
+                targetlink.unlink(missing_ok=True)
                 targetlink.symlink_to(rom)
 
         if not dontAppendROM:
@@ -419,7 +420,7 @@ def getGFXBackend(system: Emulator) -> str:
         if not setManually:
             # If set to glcore or gl, override setting for certain cores that require one or the other
             core = system.config.core
-            if backend == "gl" and core in [ 'kronos', 'citra', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
+            if backend == "gl" and core in [ 'kronos', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
                 backend = "glcore"
             if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'boom3' ]:
                 backend = "gl"

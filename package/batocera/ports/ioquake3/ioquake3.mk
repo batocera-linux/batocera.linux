@@ -8,8 +8,9 @@ IOQUAKE3_VERSION = 3fb9006e6461b877b67781cd0f0d94032804a475
 IOQUAKE3_SITE = $(call github,ioquake,ioq3,$(IOQUAKE3_VERSION))
 IOQUAKE3_LICENSE = GPL-2.0
 IOQUAKE3_LICENSE_FILE = COPYING.txt
+IOQUAKE3_EMULATOR_INFO = ioquake3.emulator.yml
 
-IOQUAKE3_DEPENDENCIES = libcurl libogg libvorbis libzlib openal opus sdl2 
+IOQUAKE3_DEPENDENCIES = libcurl libogg libvorbis libzlib openal opus sdl2
 
 IOQUAKE3_BUILD_ARGS += BUILD_SERVER=0
 IOQUAKE3_BUILD_ARGS += BUILD_CLIENT=1
@@ -63,3 +64,4 @@ endef
 IOQUAKE3_POST_INSTALL_TARGET_HOOKS += IOQUAKE3_EVMAPY
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

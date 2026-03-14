@@ -10,7 +10,7 @@ index 0cd567cf17..37754c232c 100644
 +else ifneq (,$(findstring rpi5,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
 +	fpic := -fPIC
-+	SHARED := -shared -Wl,--version-script=$(LINK_T) -Wl,-no-undefined
++	SHARED := -shared -Wl,--version-script=src/drivers/libretro/link.T -Wl,-no-undefined
 +	CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76 -funsafe-math-optimizations
 +	CFLAGS += -fomit-frame-pointer -fstrict-aliasing -ffast-math
 +

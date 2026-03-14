@@ -1,0 +1,86 @@
+diff --git a/src/action.c b/src/action.c
+index 7ddba0b..076c81e 100644
+--- a/src/action.c
++++ b/src/action.c
+@@ -135,6 +135,7 @@ enum action_type {
+ 	ACTION_TYPE_ZOOM_OUT,
+ 	ACTION_TYPE_WARP_CURSOR,
+ 	ACTION_TYPE_HIDE_CURSOR,
++    ACTION_TYPE_SHOW_CURSOR,
+ };
+ 
+ const char *action_names[] = {
+@@ -204,6 +205,7 @@ const char *action_names[] = {
+ 	"ZoomOut",
+ 	"WarpCursor",
+ 	"HideCursor",
++    "ShowCursor",
+ 	NULL
+ };
+ 
+@@ -1556,7 +1558,10 @@ run_action(struct view *view, struct server *server, struct action *action,
+ 		break;
+ 	}
+ 	case ACTION_TYPE_HIDE_CURSOR:
+-		cursor_set_visible(&server->seat, false);
++		cursor_set_permanent_hide(&server->seat, true);
++		break;
++	case ACTION_TYPE_SHOW_CURSOR:
++		cursor_set_permanent_hide(&server->seat, false);
+ 		break;
+ 	case ACTION_TYPE_INVALID:
+ 		wlr_log(WLR_ERROR, "Not executing unknown action");
+diff --git a/include/labwc.h b/include/labwc.h
+index 3d3ca2a..f7a2eec 100644
+--- a/include/labwc.h
++++ b/include/labwc.h
+@@ -35,6 +35,7 @@ struct seat {
+ 	 */
+ 	enum lab_cursors server_cursor;
+ 	bool cursor_visible;
++	bool cursor_force_hidden;
+ 	struct wlr_cursor *cursor;
+ 	struct wlr_xcursor_manager *xcursor_manager;
+ 	struct accumulated_scroll {
+diff --git a/src/input/cursor.c b/src/input/cursor.c
+index 29409be..70853de 100644
+--- a/src/input/cursor.c
++++ b/src/input/cursor.c
+@@ -393,6 +393,10 @@ cursor_set(struct seat *seat, enum lab_cursors cursor)
+ void
+ cursor_set_visible(struct seat *seat, bool visible)
+ {
++    if (visible && seat->cursor_force_hidden) {
++        return;
++    }
++
+ 	if (seat->cursor_visible == visible) {
+ 		return;
+ 	}
+@@ -401,6 +405,13 @@ cursor_set_visible(struct seat *seat, bool visible)
+ 	cursor_update_image(seat);
+ }
+ 
++void
++cursor_set_permanent_hide(struct seat *seat, bool enable)
++{
++    seat->cursor_force_hidden = enable;
++    cursor_set_visible(seat, !enable);
++}
++
+ void
+ cursor_update_image(struct seat *seat)
+ {
+diff --git a/include/input/cursor.h b/include/input/cursor.h
+index 7260a86..ca46243 100644
+--- a/include/input/cursor.h
++++ b/include/input/cursor.h
+@@ -117,6 +117,8 @@ enum lab_cursors cursor_get_from_edge(enum lab_edge resize_edges);
+  */
+ void cursor_update_focus(struct server *server);
+ 
++void cursor_set_permanent_hide(struct seat *seat, bool enable);
++
+ /**
+  * cursor_update_image - re-set the labwc cursor image
+  * @seat - seat

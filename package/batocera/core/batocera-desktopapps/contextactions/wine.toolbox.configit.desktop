@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Action
+Name=WINE: Toolbox Config
+Folders=*/windows*;
+Profiles=Batocera
+
+[X-Action-Profile Batocera]
+MimeTypes=all/all
+Exec=/usr/share/file-manager/actions/toolbox/wine.toolbox --setup-wine-toolboxfonts

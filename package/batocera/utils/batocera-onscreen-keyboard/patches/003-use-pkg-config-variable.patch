@@ -1,0 +1,21 @@
+From: Batocera Linux <batocera@batocera.org>
+Subject: [PATCH] Use PKG_CONFIG variable for cross-compilation support
+
+The Makefile hardcodes 'pkg-config' which breaks cross-compilation.
+This patch makes it use $(PKG_CONFIG) which can be overridden.
+
+--- a/Makefile
++++ b/Makefile
+@@ -1,8 +1,10 @@
+ include config.mk
+ 
++PKG_CONFIG ?= pkg-config
++
+ PKGS = wayland-client xkbcommon pangocairo
+-INCS := $(shell pkg-config --cflags $(PKGS))
+-LIBS := $(shell pkg-config --libs $(PKGS))
++INCS := $(shell $(PKG_CONFIG) --cflags $(PKGS))
++LIBS := $(shell $(PKG_CONFIG) --libs $(PKGS))
+ 
+ WVKBD_SRC = $(wildcard *.c)
+ PROTO_SRC = $(wildcard proto/*.c)

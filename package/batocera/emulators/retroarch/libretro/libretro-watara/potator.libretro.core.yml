@@ -1,0 +1,53 @@
+features:
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  watara_palette:
+    prompt: COLOR PALETTE
+    choices:
+      Green - GameKing: gameking
+      GB - DMG: gb_dmg
+      GB - Light: gb_light
+      GB - Pocket: gb_pocket
+      VB - Virtual Boy: virtual_boy
+      Potator - Orangish - Amber: potator_amber
+      Potator - Green: potator_green
+      Potator - Blue: potator_blue
+      Potator - Green - BGB: potator_bgb
+      Potator - Green Wataroo: potator_wataroo
+      Brownish - Travel Wood: travel_wood
+      Blue - Bubbles Blue: bubbles_Blue
+      Blue - Game Master: game_master
+      Blue - Shiny Sky Blue: shiny_sky_blue
+      Blue - Slime Blue: slime_blue
+      Gold - Golden Wild: golden_wild
+      Gold - Labo Fawn: labo_fawn
+      Gold - Million Live Gold: million_live_gold
+      Gold - Odyssey Gold: odyssey_Gold
+      Grey - Greyscale: default
+      Grey - Digivice: digivice
+      Grey - Microvision: microvision
+      Green - Buttercup Green: buttercup_green
+      Green - Game.com: game_com
+      Green - Greenscale: greenscale
+      Green - Legendary Super Saiyan: legendary_super_saiyan
+      Green - TI-83: ti_83
+      Orange - Hokage Orange: hokage_orange
+      Pink - Blossom Pink: blossom_pink
+  watara_ghosting:
+    prompt: LCD GHOSTING EFFECT
+    description: Required for certain visual effects.
+    choices:
+      'Off': 0
+      1 Frame: 1
+      2 Frames: 2
+      3 Frames: 3
+      4 Frames: 4
+      5 Frames: 5
+      6 Frames: 6
+      7 Frames: 7
+      8 Frames: 8
+systems:
+  - supervision

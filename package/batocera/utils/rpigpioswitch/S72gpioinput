@@ -35,8 +35,8 @@ case "$1" in
   start)
     ba_gpio_configure
 
-    # Required to initialize GPIO pins on RPi4
-    if [ "$arch" = "bcm2711" ] && [ $gpio_enabled -eq 1 ]
+    # Required to initialize GPIO pins on RPi4 and RPi5
+    if { [ "$arch" = "bcm2711" ] || [ "$arch" = "bcm2712" ]; } && [ $gpio_enabled -eq 1 ]
     then
     /usr/bin/python - <<-_EOF_
         import gpiod

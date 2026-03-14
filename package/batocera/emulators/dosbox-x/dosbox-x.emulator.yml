@@ -1,0 +1,21 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - ratio
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+systems:
+  - name: dos
+    as_emulator: dosboxx
+    as_core: dosbox-x
+    exclude_extensions:
+      - zip

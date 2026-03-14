@@ -11,6 +11,7 @@ VKQUAKE2_LICENSE_FILE = LICENSE
 
 VKQUAKE2_DEPENDENCIES = alsa-lib glslang libglu vulkan-headers vulkan-loader
 VKQUAKE2_DEPENDENCIES += xlib_libXxf86dga xlib_libXxf86vm
+VKQUAKE2_EMULATOR_INFO = vkquake2.emulator.yml
 
 ifeq ($(BR2_aarch64),y)
     VKQUAKE2_ARCH = aarch64
@@ -74,3 +75,4 @@ endef
 VKQUAKE2_POST_INSTALL_TARGET_HOOKS += VKQUAKE2_EVMAPY
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

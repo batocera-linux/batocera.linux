@@ -13,10 +13,10 @@ index cbff6d3140..e011e981ec 100644
      if (Main_bHeadless)
      {
          Window_UpdateHeadless();
-@@ -716,6 +720,15 @@ void Window_SdlUpdate()
+@@ -795,6 +795,15 @@ void Window_SdlUpdate()
+             bIsGamepad = 1;
+         }
  
-     while (SDL_PollEvent(&event))
-     {
 +        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F10) {
 +            stdPlatform_Printf("INSTANT QUIT key (F10) pressed! Requesting shutdown.\n");
 +            if (jkPlayer_bHasLoadedSettingsOnce) {
@@ -29,16 +29,16 @@ index cbff6d3140..e011e981ec 100644
          switch (event.type)
          {
              case SDL_JOYDEVICEADDED: {
-@@ -737,6 +750,9 @@ void Window_SdlUpdate()
+@@ -817,6 +826,9 @@ void Window_SdlUpdate()
                  Window_HandleWindowEvent(&event);
                  break;
              case SDL_KEYDOWN:
 +                if (event.key.keysym.sym == SDLK_F10) {
 +                    continue; // Prevent F10 from being processed further
 +                }
+                 //stdPlatform_Printf("scancode %d\n", event.key.keysym.scancode);
                  //handleKey(&event.key.keysym, WM_KEYDOWN, 0x1);
                  if (event.key.keysym.sym == SDLK_ESCAPE)
-                 {
 @@ -820,6 +836,9 @@ void Window_SdlUpdate()
                  //    stdControl_SetSDLKeydown(event.key.keysym.scancode, 1, event.key.timestamp);
                  break;

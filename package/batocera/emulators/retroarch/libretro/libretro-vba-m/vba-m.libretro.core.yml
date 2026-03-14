@@ -1,0 +1,125 @@
+features:
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+systems:
+  - name: gb
+    custom_features:
+      palettes:
+        prompt: GB COLORIZATION
+        description: Add color to Game Boy games.
+        choices:
+          original gameboy: original gameboy
+          black and white: black and white
+          gba sp: gba sp
+          blue sea: blue sea
+          dark knight: dark knight
+          green forest: green forest
+          hot desert: hot desert
+          pink dreams: pink dreams
+          weird colors: weird colors
+      gbcoloroption_gb:
+        group: ADVANCED OPTIONS
+        prompt: COLOR CORRECTION
+        description: Simulate LCD color inaccuracy.
+        choices:
+          'Off': disabled
+          'On': enabled
+      showborders_gb:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GB BORDERS
+        description: Only for Super Game Boy enhanced games.
+        choices:
+          'Off': disabled
+          'On': enabled
+  - name: gbc
+    custom_features:
+      gbcoloroption_gbc:
+        group: ADVANCED OPTIONS
+        prompt: COLOR CORRECTION
+        description: Simulate LCD color inaccuracy.
+        choices:
+          'Off': disabled
+          'On': enabled
+      showborders_gbc:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GB BORDERS
+        description: Only for Super Game Boy enhanced games.
+        choices:
+          'Off': disabled
+          'On': enabled
+  - name: gba
+    custom_features:
+      solarsensor:
+        group: ADVANCED OPTIONS
+        prompt: SOLAR SENSOR LEVEL
+        description: Only for games that employed it (for Boktai)
+        choices:
+          "0": 0
+          "1": 1
+          "2": 2
+          "3": 3
+          "4": 4
+          "5": 5
+          "6": 6
+          "7": 7
+          "8": 8
+          "9": 9
+          "10": 10
+      gyro_sensitivity:
+        group: ADVANCED OPTIONS
+        prompt: SENSOR SENSITIVITY (GYROSCOPE)
+        description: For Gyro-enabled games (bound to left analog stick)
+        choices:
+          "10": 10
+          "15": 15
+          "20": 20
+          "25": 25
+          "30": 30
+          "35": 35
+          "40": 40
+          "45": 45
+          "50": 50
+          "55": 55
+          "60": 60
+          "65": 65
+          "70": 70
+          "75": 75
+          "80": 80
+          "85": 85
+          "90": 90
+          "95": 95
+          "100": 100
+          "105": 105
+          "110": 110
+          "115": 115
+          "120": 120
+      tilt_sensitivity:
+        group: ADVANCED OPTIONS
+        prompt: SENSOR SENSITIVITY (TILT)
+        description: For Gyro-enabled games (bound to right analog stick)
+        choices:
+          "10": 10
+          "15": 15
+          "20": 20
+          "25": 25
+          "30": 30
+          "35": 35
+          "40": 40
+          "45": 45
+          "50": 50
+          "55": 55
+          "60": 60
+          "65": 65
+          "70": 70
+          "75": 75
+          "80": 80
+          "85": 85
+          "90": 90
+          "95": 95
+          "100": 100
+          "105": 105
+          "110": 110
+          "115": 115
+          "120": 120

@@ -1,20 +1,28 @@
 from __future__ import annotations
 
+import json
 import logging
+import shutil
 import struct
 from pathlib import Path
-from typing import TYPE_CHECKING, TypedDict, cast
+from typing import TYPE_CHECKING, NotRequired, TypedDict, cast
 
 import qrcode
-from PIL import Image, ImageOps
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-from ..batoceraPaths import BATOCERA_SHARE_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
+from ..batoceraPaths import BATOCERA_SHARE_DIR, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
 from ..exceptions import BatoceraException
+from . import metadata
 from .videoMode import getAltDecoration
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from PIL.ImageFile import ImageFile
     from qrcode.image.pil import PilImage
+
+    from configgen.gun import Guns
+    from configgen.types import Resolution
 
     from ..config import SystemConfig
     from ..Emulator import Emulator
@@ -382,3 +390,215 @@ def createTransparentBezel(output_png: Path, width: int, height: int) -> None:
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
     ImageDraw.Draw(imgnew)
     imgnew.save(output_png, mode="RGBA", format="PNG")
+
+class _GunInfosTextDict(TypedDict):
+    value: str
+    x: float
+    y: float
+    line_color: str
+    line: list[str]
+    align: NotRequired[str]
+    font_size_per_height: NotRequired[float]
+
+class _GunInfosDict(TypedDict):
+    texts: NotRequired[list[_GunInfosTextDict]]
+    font_size_per_height: NotRequired[float]
+    color: NotRequired[str]
+
+def png_to_png_with_texts(
+    input_png_path: Path,
+    output_png_path: Path,
+    data: _GunInfosDict,
+    /,
+    *,
+    font_path: Path,
+    width: int | None = None,
+    height: int | None = None,
+) -> None:
+    img_big = Image.open(input_png_path)
+    ratio = img_big.width / img_big.height
+
+    if width is None and height is None:
+        raise ValueError("width or height must be provided")
+
+    img_width: int = 0
+    img_height: int = 0
+
+    if width is None and height is not None:
+        img_height = height
+        img_width = int(height * ratio)
+
+    if width is not None and height is None:
+        img_width = width
+        img_height = int(width * ratio)
+
+    img = img_big.resize((img_width, img_height))
+    draw = ImageDraw.Draw(img)
+
+    # font
+    font = {}
+    if "font_size_per_height" in data:
+        font_size = int(data["font_size_per_height"]*img_height)
+        font[font_size] = ImageFont.truetype(font_path, font_size)
+
+    # lines
+    if "texts" in data:
+        for text in data["texts"]:
+            if "value" in text and text["value"] != "":
+                line_color = "black"
+                line_size  = 2
+                if "line_color" in text:
+                    line_color = text["line_color"]
+                if "line_size" in text:
+                    line_size = text["line_size"]
+                if "line" in text:
+                    points = []
+                    for i, v in enumerate(text["line"]):
+                        if i % 2 == 1:
+                            points.append((text["line"][i-1] * img_width, v * img_height))
+                    draw.line(points, fill=line_color, width=line_size)
+
+    # texts
+    if "texts" in data and "font_size_per_height" in data:
+        for text in data["texts"]:
+            if "x" in text and "y" in text and "value" in text:
+                # x, y
+                x = round(text["x"]*img_width)
+                y = round(text["y"]*img_height)
+
+                # color
+                color = "black"
+                if "color" in data:
+                    color = data["color"]
+                if "color" in text:
+                    color = text["color"]
+
+                # font
+                font_size = int(data["font_size_per_height"]*img_height)
+                if "font_size_per_height" in text:
+                    font_size = int(text["font_size_per_height"]*img_height)
+                    if font_size not in font:
+                        font[font_size] = ImageFont.truetype(font_path, font_size)
+
+                # alignment
+                text_width = draw.textlength(text["value"], font[font_size])
+                align = "left"
+                if "align" in text:
+                    align = text["align"]
+                if align == "center":
+                    x = x-int(text_width/2)
+                if align == "right":
+                    x = x-text_width
+                draw.text((x, y), text["value"], fill=color, font=font[font_size])
+
+    # save
+    img.save(output_png_path, "PNG")
+
+def gun_help_replace(text: str, replacements: Mapping[str, str]) -> str:
+    res = text
+    for r in replacements:
+        res = res.replace(r, replacements[r])
+    return res
+
+def generate_gun_help(
+    system: str,
+    rom: Path,
+    use_guns: bool,
+    guns: Guns,
+    gun_help_dir: Path,
+    gun_help_filename: str,
+    gameResolution: Resolution,
+    /,
+) -> None:
+    ttf = Path("/usr/share/fonts/dejavu/DejaVuSans.ttf")
+    img_ratio = 0.5 # ratio of the screen height
+    default_gun_help_path = gun_help_dir / "gun_help_default.png" # cache file for next game run
+    target_path = gun_help_dir / gun_help_filename
+
+    # default replacements
+    replacements = {
+        "<TRIGGER>": "TRIGGER",
+        "<ACTION>":  "ACTION",
+        "<START>":   "START",
+        "<SELECT>":  "SELECT",
+        "<SUB1>":    "SUB1",
+        "<SUB2>":    "SUB2",
+        "<SUB3>":    "SUB3",
+        "<UP>":      "UP",
+        "<DOWN>":    "DOWN",
+        "<LEFT>":    "LEFT",
+        "<RIGHT>":   "RIGHT",
+    }
+
+    if not gun_help_dir.exists():
+        gun_help_dir.mkdir(parents=True)
+
+    # customize texts ?
+    # use a gamesgunsbuttonsdb.xml to customize gun helps for each game
+    customize_texts = False
+
+    # search specific metadata
+    md = {}
+    if ES_GUNS_ART_METADATA.exists():
+        md = metadata.get_games_meta_data(ES_GUNS_ART_METADATA, system, rom)
+        for key in md:
+            if key.startswith("gun_"):
+                customize_texts = True
+        # if we customize text, we reset replacements by only the one in metadata
+        if customize_texts:
+            for key in replacements:
+                rkey = key[1:-1].lower() # remove the first, last char and lowercase
+                if "gun_"+rkey in md:
+                    replacements[key] = md["gun_"+rkey]
+                else:
+                    replacements[key] = "" # we replace by an empty string
+    else:
+        _logger.info("gun help: metadata file not found : %s", ES_GUNS_ART_METADATA)
+
+    # if we use the image without any customization, copy the backup
+    # we did of it to the destination
+    if (use_guns or guns) and not customize_texts and default_gun_help_path.exists():
+        shutil.copyfile(default_gun_help_path, target_path)
+        _logger.info("gun help: using cache image : %s", default_gun_help_path)
+        return
+
+    # remove any existing file
+    if target_path.exists():
+        target_path.unlink()
+
+    # don't enable if not a gun game or no gun
+    if not(use_guns and guns):
+        _logger.info("gun help: not generating gun help image")
+        return
+
+    _logger.info("gun help: generating gun help image")
+
+    # take the first gun
+    gun_name = guns[0].name
+    GUN_HELP_DIR = Path("/usr/share/batocera/guns-overlays")
+    GUN_HELP_PNG = GUN_HELP_DIR / Path(gun_name + ".png")
+    GUN_HELP_INFO = GUN_HELP_DIR / Path(gun_name + ".infos")
+
+    if not GUN_HELP_PNG.exists():
+        _logger.info("gun help: image doesn't exist : %s", GUN_HELP_PNG)
+        return
+
+    # try to open the help texts
+    data: _GunInfosDict = {}
+    if GUN_HELP_INFO.exists():
+        with GUN_HELP_INFO.open(encoding="utf-8") as file:
+            data = cast('_GunInfosDict', json.load(file))
+
+    # replace data in texts
+    if "texts" in data:
+        for n, _ in enumerate(data["texts"]):
+            data["texts"][n]["value"] = gun_help_replace(data["texts"][n]["value"], replacements)
+
+    img_height = int(gameResolution["height"] * img_ratio)
+    _logger.info("gun help: generating image %s", target_path)
+    png_to_png_with_texts(GUN_HELP_PNG, target_path, data, font_path=ttf, height=img_height)
+
+    # save the default help as a cache
+    if not customize_texts:
+        shutil.copyfile(target_path, default_gun_help_path)
+        _logger.info("gun help: caching file to : %s", default_gun_help_path)

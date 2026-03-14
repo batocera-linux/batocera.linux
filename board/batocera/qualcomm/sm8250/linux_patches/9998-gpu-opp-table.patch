@@ -1,0 +1,35 @@
+diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi linux/arch/arm64/boot/dts/qcom/sm8250.dtsi
+--- linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-09-04 06:12:09.853024692 +0000
++++ linux/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-09-04 06:18:51.210804151 +0000
+@@ -2945,10 +2945,28 @@
+ 			gpu_opp_table: opp-table {
+ 				compatible = "operating-points-v2";
+ 
+-				opp-670000000 {
+-					opp-hz = /bits/ 64 <670000000>;
++                                opp-800000000 {
++                                        opp-hz = /bits/ 64 <800000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
+-					opp-supported-hw = <0xa>;
++                                        opp-supported-hw = <0xb>;
++                                };
++
++                                opp-750000000 {
++                                        opp-hz = /bits/ 64 <750000000>;
++                                        opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
++                                        opp-supported-hw = <0xb>;
++                                };
++
++                                opp-700000000 {
++                                        opp-hz = /bits/ 64 <700000000>;
++                                        opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
++                                        opp-supported-hw = <0xb>;
++                                };
++
++				opp-650000000 {
++					opp-hz = /bits/ 64 <650000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
++					opp-supported-hw = <0xb>;
+ 				};
+ 
+ 				opp-587000000 {

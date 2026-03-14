@@ -1,0 +1,29 @@
+--- mergerfs-2.40.2-lbrpdx/libfuse/lib/fuse_loop.cpp	2024-02-29 12:41:22.000000000 -0800
++++ mergerfs-2.40.2/libfuse/lib/fuse_loop.cpp	2025-11-10 10:04:58.648639831 -0800
+@@ -4,7 +4,7 @@
+
+ #include "cpu.hpp"
+ #include "fmt/core.h"
+-#include "make_unique.hpp"
++// #include "make_unique.hpp"
+ #include "scope_guard.hpp"
+ #include "thread_pool.hpp"
+
+diff '--color=auto' -rui mergerfs-2.40.2-lbrpdx/libfuse/lib/make_unique.hpp mergerfs-2.40.2/libfuse/lib/make_unique.hpp
+--- mergerfs-2.40.2-lbrpdx/libfuse/lib/make_unique.hpp	2024-02-29 12:41:22.000000000 -0800
++++ mergerfs-2.40.2/libfuse/lib/make_unique.hpp	2025-11-10 10:04:26.205977446 -0800
+@@ -2,7 +2,7 @@
+ #include <memory>
+ #include <type_traits>
+ #include <utility>
+-
++#if !defined(__cpp_lib_make_unique)
+ namespace std
+ {
+   template<class T> struct _Unique_if
+@@ -39,3 +39,4 @@
+   typename _Unique_if<T>::_Known_bound
+   make_unique(Args&&...) = delete;
+ }
++#endif
+

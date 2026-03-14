@@ -4,10 +4,11 @@
 #
 ################################################################################
 
-BATOCERA_PYGAME_VERSION = e3238c736dfbde20d7ee402828ec57d89586d4de
-RETROTRIVIA_VERSION = 1.3
+BATOCERA_PYGAME_VERSION = 879a88badc15725f52074de1c4de23cfd8906a32
+RETROTRIVIA_VERSION = 1.4
 BATOCERA_PYGAME_LICENSE = GPLv3
 BATOCERA_PYGAME_SITE = $(call github,lbrpdx,retrotrivia,$(BATOCERA_PYGAME_VERSION))
+BATOCERA_PYGAME_EMULATOR_INFO = pygame.emulator.yml
 
 define BATOCERA_PYGAME_INSTALL_SAMPLE
 	mkdir -p $(TARGET_DIR)/usr/bin
@@ -35,3 +36,4 @@ endef
 BATOCERA_PYGAME_POST_INSTALL_TARGET_HOOKS = BATOCERA_PYGAME_INSTALL_SAMPLE
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

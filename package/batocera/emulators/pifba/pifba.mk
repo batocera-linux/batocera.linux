@@ -7,6 +7,7 @@ PIFBA_VERSION = 419faa7c3967560f6fa149f2f78b5aedca5b123a
 PIFBA_SITE = $(call github,batocera-linux,pifba,$(PIFBA_VERSION))
 PIFBA_LICENSE = GPLv2
 PIFBA_DEPENDENCIES = sdl2 alsa-lib rpi-userland libglib2
+PIFBA_EMULATOR_INFO = fba2x.emulator.yml
 
 PIFBA_SDL_CONFIG=$(STAGING_DIR)/usr/bin/sdl2-config
 PIFBA_SDL_FLAGS=`$(PIFBA_SDL_CONFIG) --cflags`
@@ -48,3 +49,4 @@ endef
 PIFBA_PRE_CONFIGURE_HOOKS += PIFBA_RPI_FIXUP
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

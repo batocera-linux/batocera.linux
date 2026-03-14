@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYQT_BUILDER
+	bool "pyqt-builder"
+	help
+	  PyQt-builder is the PEP 517 compliant build system for PyQt and projects that extend PyQt.
+	  It extends the SIP build system and uses Qt's qmake to perform the actual compilation
+	  and installation of extension modules.
+
+	  https://pypi.org/project/PyQt-builder/

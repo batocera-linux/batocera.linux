@@ -1,0 +1,13 @@
+config BR2_PACKAGE_ROCKNIX_JOYPAD
+    bool "rocknix-joypad"
+    depends on BR2_LINUX_KERNEL
+    help
+      Linux kernel driver for various handheld devices.
+      Provides input support for analog sticks connected via
+      ADC and Multiplexers, and buttons via GPIO.
+      Thanks Rocknix team!
+      
+      https://github.com/ROCKNIX/rocknix-joypad
+
+comment "rocknix-joypad needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL

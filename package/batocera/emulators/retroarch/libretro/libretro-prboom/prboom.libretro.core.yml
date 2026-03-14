@@ -1,0 +1,24 @@
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  prboom-resolution:
+    prompt: RENDERING RESOLUTION
+    description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
+    choices:
+      320x200: 320x200
+      640x400: 640x400
+      960x600: 960x600
+      1280x800: 1280x800
+      1600x1000: 1600x1000
+      1920x1200: 1920x1200
+      2240x1400: 2240x1400
+      2560x1600: 2560x1600
+  prboom_controller1:
+    prompt: CONTROLLER PROFILE
+    choices:
+      Gamepad Classic: 1
+      Gamepad Modern: 773
+      Keyboard + Mouse: 3
+systems:
+  - prboom

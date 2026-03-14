@@ -1,29 +1,74 @@
 {
     "actions_player1": [
         {
-            "trigger": [ "pageup" ],
+            "trigger": "up",
             "type": "key",
-            "target": [ "KEY_F5" ]
+            "target": "KEY_UP"
         },
         {
-            "trigger": ["up"],
+            "trigger": "down",
             "type": "key",
-            "target": [ "KEY_UP" ]
+            "target": "KEY_DOWN"
         },
         {
-            "trigger": ["down"],
+            "trigger": "left",
             "type": "key",
-            "target": [ "KEY_DOWN" ]
+            "target": "KEY_LEFT"
         },
         {
-            "trigger": ["left"],
+            "trigger": "right",
             "type": "key",
-            "target": [ "KEY_LEFT" ]
+            "target": "KEY_RIGHT"
         },
         {
-            "trigger": ["right"],
+            "trigger": "start",
             "type": "key",
-            "target": [ "KEY_RIGHT" ]
+            "target": "KEY_ENTER"
+        },
+        {
+            "trigger": "select",
+            "type": "key",
+            "target": "KEY_ESC"
+        },
+        {
+            "trigger": "a",
+            "type": "key",
+            "target": "KEY_SPACE"
+        },
+        {
+            "trigger": "x",
+            "type": "key",
+            "target": "KEY_Y"
+        },
+        {
+            "trigger": "y",
+            "type": "key",
+            "target": "KEY_N"
+        },
+        {
+            "trigger": "pageup",
+            "type": "key",
+            "target": "KEY_1"
+        },
+        {
+            "trigger": "pagedown",
+            "type": "key",
+            "target": "KEY_2"
+        },
+        {
+            "trigger": "l2",
+            "type": "key",
+            "target": "KEY_3"
+        },
+        {
+            "trigger": "r2",
+            "type": "key",
+            "target": "KEY_4"
+        },
+        {
+            "trigger": "b",
+            "type": "key",
+            "target": "KEY_Q"
         }
     ]
 }

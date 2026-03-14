@@ -10,6 +10,7 @@ XENIA_SITE = \
     https://github.com/xenia-project/release-builds-windows/releases/download/$(XENIA_VERSION)
 XENIA_LICENSE = BSD
 XENIA_LICENSE_FILE = LICENSE
+XENIA_EMULATOR_INFO = xenia.emulator.yml
 
 XENIA_DEPENDENCIES = python-toml
 
@@ -33,3 +34,4 @@ endef
 XENIA_PRE_DOWNLOAD_HOOKS = XENIA_CLEAR_DL
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

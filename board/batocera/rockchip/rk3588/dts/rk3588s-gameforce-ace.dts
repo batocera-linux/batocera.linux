@@ -4,6 +4,7 @@
  * Copyright (c) 2024 Romain Tisserand (https://github.com/rtissera)
  * Copyright (c) 2024 r3claimer (https://github.com/r3claimer)
  * Copyright (c) 2024 Juliano Dorigão (https://github.com/jdorigao)
+ * Copyright (c) 2025 Daniel Martin (https://github.com/dmanlfc)
  *
  */
 
@@ -200,7 +201,7 @@
 	};
 
 	hdmi0_sound: hdmi0-sound {
-		status = "disabled";
+		status = "okay";
 		compatible = "rockchip,hdmi";
 		rockchip,mclk-fs = <128>;
 		rockchip,card-name = "rockchip-hdmi0";
@@ -210,7 +211,7 @@
 	};
 
 	dp0_sound: dp0-sound {
-		status = "disabled";
+		status = "okay";
 		compatible = "rockchip,hdmi";
 		rockchip,card-name= "rockchip-dp0";
 		rockchip,mclk-fs = <512>;
@@ -289,8 +290,8 @@
 
 	es8388_sound: es8388-sound {
 		status = "okay";
-		compatible = "rockchip,multicodecs-card","everest,es8388";
-		rockchip,card-name = "rockchip,es8388-codec";
+		compatible = "rockchip,multicodecs-card";
+		rockchip,card-name = "rockchip-es8388";
 		hp-det-gpio = <&gpio3 RK_PA6 GPIO_ACTIVE_LOW>;
 		io-channels = <&saradc 3>;
 		io-channel-names = "adc-detect";
@@ -302,13 +303,6 @@
 		rockchip,mclk-fs = <256>;
 		rockchip,cpu = <&i2s0_8ch>;
 		rockchip,codec = <&es8388>;
-		spk-volume = <50>;
-		spk-volume-l = <50>;
-		spk-volume-r = <50>;
-        use-ext-amplifier;
-		hp-volume = <20>;
-		out-l2spk-r2hp;
-
 		rockchip,audio-routing =
 			"Headphone", "LOUT1",
 			"Headphone", "ROUT1",
@@ -322,7 +316,6 @@
 			"LINPUT2", "Main Mic",
 			"RINPUT1", "Headset Mic",
 			"RINPUT2", "Headset Mic";
-
 		pinctrl-names = "default";
 		pinctrl-0 = <&hp_det>;
 		play-pause-key {
@@ -493,7 +486,7 @@
 };
 
 &hdmi0_sound {
-    status = "disabled";
+    status = "okay";
 };
 
 &hdptxphy_hdmi0 {
@@ -510,7 +503,7 @@
 };
 
 &dp0_sound{
-    status = "disabled";
+    status = "okay";
 };
 
 &dp0 {

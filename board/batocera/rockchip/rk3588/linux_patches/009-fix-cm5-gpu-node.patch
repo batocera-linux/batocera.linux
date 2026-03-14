@@ -1,0 +1,19 @@
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-genbook.dts b/arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-genbook.dts
+old mode 100755
+new mode 100644
+index e2aa1f9f14..6e3c35ef75
+--- a/arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-genbook.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-coolpi-cm5-genbook.dts
+@@ -384,9 +384,10 @@ &sdhci {
+ 	status = "okay";
+ };
+ 
+-&gpu_panthor {
+-	mali-supply = <&vdd_gpu_s0>;
++&gpu {
+ 	status = "okay";
++	mali-supply = <&vdd_gpu_s0>;
++	mem-supply = <&vdd_gpu_mem_s0>;
+ };
+ 
+ &iep {

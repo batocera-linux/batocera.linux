@@ -6,8 +6,9 @@
 
 REDREAM_VERSION = 1.5.0-1133-g03c2ae9
 REDREAM_SITE = https://redream.io/download
+REDREAM_EMULATOR_INFO = redream.emulator.yml
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+ifeq ($(BR2_aarch64),y)
 REDREAM_SOURCE = redream.universal-raspberry-linux-v$(REDREAM_VERSION).tar.gz
 else
 REDREAM_SOURCE = redream.x86_64-linux-v$(REDREAM_VERSION).tar.gz
@@ -26,8 +27,9 @@ define REDREAM_INSTALL_TARGET_CMDS
     $(INSTALL) -D $(@D)/target/redream $(TARGET_DIR)/usr/bin/redream
 endef
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
+ifeq ($(BR2_aarch64),y)
     REDREAM_PRE_INSTALL_TARGET_HOOKS += REDREAM_RPI4_RENAME_ELF
 endif
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

@@ -1,0 +1,94 @@
+features:
+  - cheevos
+shared_features:
+  - autosave
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  show_bios_bootlogo:
+    prompt: SHOW BIOS BOOTLOGO
+    description: Off is safer, On for specific games.
+    choices:
+      Show: enabled
+      Skip: disabled
+  frameskip_pcsx:
+    prompt: FRAMESKIP
+    description: Skip frames to improve performance, at the cost of choppy motion.
+    choices:
+      'Off': 0
+      "1": 1
+      "2": 2
+      "3": 3
+  neon_enhancement:
+    prompt: ENHANCED RENDERING RESOLUTION
+    description: Double the rendering resolution.
+    choices:
+      'Off': disabled
+      'On': enabled
+      On (Speed hack): enabled_with_speedhack
+  pcsx_rearmed_multitap:
+    prompt: MULTITAP
+    description: Allows up to 5 or 8 controllers in supported games.
+    choices:
+      'Off': disabled
+      Port1: port 1 only
+      Port2: port 2 only
+      Port1+2: both
+  game_fixes_pcsx:
+    group: ADVANCED OPTIONS
+    prompt: SPECIFIC GAME FIXES
+    choices:
+      'Off': disabled
+      Capcom VS games Expand Screen Width: Capcom_fighting
+      Chrono Chross Odd/Even Bit Hack: Chrono_Chross
+      Dark Forces Flat Tex Triangles Fix: Dark_Forces
+      Diablo Music Fix: Diablo_Music_Fix
+      Lunar Ignore Brightness Color Fix: Lunar
+      InuYasha Sengoku Battle Fix: InuYasha_Sengoku
+      Pandemonium 2 Lazy Screen Update Fix: Pandemonium
+      Parasite Eve 2/Vandal Hearts 1&2 Fix: Parasite_Eve
+  controller1_pcsx:
+    prompt: CONTROLLER 1 TYPE
+    description: DualShock has rumble support. Not all games support DualShock.
+    choices:
+      Digital Controller: 1
+      Analog Controller: 261
+      DualShock Controller: 517
+      Namco GunCon: 260
+      Hyper Blaster/Justifier: 516
+      NeGcon: 773
+      PlayStation Mouse: 258
+  controller2_pcsx:
+    prompt: CONTROLLER 2 TYPE
+    description: DualShock has rumble support. Not all games support DualShock.
+    choices:
+      Digital Controller: 1
+      Analog Controller: 261
+      DualShock Controller: 517
+      Namco GunCon: 260
+      Hyper Blaster/Justifier: 516
+      NeGcon: 773
+      PlayStation Mouse: 258
+  pcsx_rearmed_crosshair1:
+    group: LIGHT GUN
+    prompt: PLAYER 1 CROSSHAIR COLOR
+    choices:
+      Red: red
+      Blue: blue
+      Green: green
+      White: white
+      Disabled: disabled
+  pcsx_rearmed_crosshair2:
+    group: LIGHT GUN
+    prompt: PLAYER 2 CROSSHAIR COLOR
+    choices:
+      Red: red
+      Blue: blue
+      Green: green
+      White: white
+      Disabled: disabled
+systems:
+  - psx

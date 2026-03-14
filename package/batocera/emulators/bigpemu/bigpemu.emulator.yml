@@ -1,0 +1,96 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+features:
+  - padtokeyboard
+custom_features:
+  bigpemu_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      Disabled: 0
+      Enabled: 1
+  bigpemu_ratio:
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      4:3 (Default): 2
+      16:9: 8
+  bigpemu_screenfilter:
+    prompt: SCREEN FILTER
+    description: Basic Filtering type for the jaguar display when rendering to the native display.
+    choices:
+      Point (Default): 0
+      Bilinear: 1
+  bigpemu_avp:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: ALIEN VS PREDATOR
+    description: Supports uncapped frame rates, analog controllers, and mouse look functionality.
+    preset: switchauto
+  bigpemu_avp_mp:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: ALIEN VS PREDATOR MULTIPLAYER
+    description: Switches the game to multiplayer mode.
+    preset: switchauto
+  bigpemu_brett_hull_hockey:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: BRETT HULL HOCKEY
+    description: Fixes flickering.
+    preset: switchauto
+  bigpemu_checkered_flag:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: CHECKERED FLAG
+    description: Features native resolution rendering, analog controller and mouse support, frame rate unlocking up to 60Hz, an improved camera with a disable tilt option, custom sky/background functionality, and various other tweaks and options.
+    preset: switchauto
+  bigpemu_cybermorph:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: CYBERMORPH
+    description: Renders polygons and textures at the native resolution.
+    preset: switchauto
+  bigpemu_iron_soldier:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: IRON SOLDIER
+    description: Offers support for analog controllers and mouse look functionality for improved control.
+    preset: switchauto
+  bigpemu_mc3d_vr:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: MISSILE COMMAND 3D VR
+    description: Includes VR head tracking and stereoscopic rendering for both VR and 3D TVs, along with mouse support (Mouse Look), and introduces a new Head Tracker input device type with options to convert analog inputs to tracker angles for enhanced analog controller support.
+    preset: switchauto
+  bigpemu_t2k_rotary:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: TEMPEST 2000
+    description: Provides analog controller and mouse support while patching existing rotary controller bugs found in hardware.
+    preset: switchauto
+  bigpemu_wolf3d:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: WOLFENSTEIN 3D
+    description: Offers analog controller and mouse support (Mouse Look), along with options for always-strafe and always-run functionalities.
+    preset: switchauto
+  bigpemu_doom:
+    group: ADVANCED OPTIONS
+    submenu: SCRIPT MODULES
+    prompt: DOOM
+    description: Activate Doom DOS original music and throttle the Doom frame rate.
+    preset: switchauto
+systems:
+  - jaguar
+  - jaguarcd

@@ -2,15 +2,6 @@ diff --git a/makefile b/makefile
 index 46c78d04dc0..d95e3e6c3b0 100644
 --- a/makefile
 +++ b/makefile
-@@ -388,7 +388,7 @@
- endif
- endif
- 
--ifeq ($(findstring arm,$(UNAME)),arm)
-+ifeq ($(findstring arm,$(PLATFORM)),arm)
- ARCHITECTURE :=
- ifneq ($(PLATFORM),arm64)
- 	ifndef FORCE_DRC_C_BACKEND
 @@ -397,7 +397,7 @@
  endif
  endif
@@ -20,12 +11,3 @@ index 46c78d04dc0..d95e3e6c3b0 100644
  ARCHITECTURE :=
  endif
  
-@@ -406,7 +406,7 @@
- endif
- endif
- 
--ifeq ($(findstring riscv64,$(UNAME)),riscv64)
-+ifeq ($(findstring riscv64,$(PLATFORM)),riscv64)
- ARCHITECTURE :=
- ifndef FORCE_DRC_C_BACKEND
- 	FORCE_DRC_C_BACKEND := 1

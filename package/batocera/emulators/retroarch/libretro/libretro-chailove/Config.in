@@ -1,6 +1,5 @@
 config BR2_PACKAGE_LIBRETRO_CHAILOVE
 	bool "libretro-chailove"
-	depends on BR2_PACKAGE_RETROARCH
 	depends on BR2_INSTALL_LIBSTDCPP
 	help
 	  ChaiLove is an awesome framework you can use to make 2D games in ChaiScript.

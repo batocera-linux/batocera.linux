@@ -1,0 +1,29 @@
+From 742af2c4e58156315dd5347190cabdd40b0d0c18 Mon Sep 17 00:00:00 2001
+From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+Date: Mon, 6 May 2024 11:11:45 +0100
+Subject: [PATCH] pwm: add pwm_set_period
+
+---
+ include/linux/pwm.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/linux/pwm.h b/include/linux/pwm.h
+index 4a6568dfdf3f..f9d3bf5ac924 100644
+--- a/include/linux/pwm.h
++++ b/include/linux/pwm.h
+@@ -110,6 +110,12 @@ static inline bool pwm_is_enabled(const struct pwm_device *pwm)
+ 	return state.enabled;
+ }
+ 
++static inline void pwm_set_period(struct pwm_device *pwm, u64 period)
++{
++	if (pwm)
++		pwm->state.period = period;
++}
++
+ static inline u64 pwm_get_period(const struct pwm_device *pwm)
+ {
+ 	struct pwm_state state;
+-- 
+2.34.1
+

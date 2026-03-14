@@ -1,31 +1,131 @@
+[project]
+name = "batocera-linux"
+version = "43.dev0"
+requires-python = "==3.12.8"
+dependencies = ["batocera-configgen", "batocera-es-system"]
+
+[dependency-groups]
+dev = [
+    'ruff==0.14.14',
+    'pyright[nodejs]==1.1.408',
+]
+
+[tool.uv]
+package = false
+# These versions need to be kept in sync with the versions
+# built by buildroot
+constraint-dependencies = [
+    "pyyaml==6.0.2",
+    "configobj==5.0.8",
+    "evdev==1.7.1",
+    "pillow==11.0.0",
+    "pysdl2==0.9.17",
+    "pyudev==0.24.3",
+    "qrcode==8.0",
+    "requests==2.32.3",
+    "ruamel.yaml==0.18.6",
+    "toml==0.10.2",
+    "typing-extensions==4.15.0",
+    "ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6",
+]
+
+[tool.uv.sources]
+batocera-configgen = { workspace = true }
+batocera-es-system = { workspace = true }
+
+[tool.uv.workspace]
+members = [
+    'python-src/*',
+    './package/batocera/core/batocera-configgen/configgen',
+]
+exclude = ['python-src/stubs', 'python-src/scripts']
+
 [tool.pyright]
-exclude = [".venv*", "buildroot*", "output", "dl"]
-stubPath = "python-stubs"
+exclude = [
+    ".venv*",
+    "buildroot*",
+    "output",
+    "dl",
+    "python-src/stubs/configobj/validate.pyi",
+]
+stubPath = "python-src/stubs"
 
 pythonVersion = "3.12"
 pythonPlatform = "Linux"
 
+typeCheckingMode = "strict"
 strictListInference = true
 strictDictionaryInference = true
 strictSetInference = true
 reportMissingModuleSource = "none"
 reportDeprecated = "warning"
 
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportPrivateUsage = "none"
+reportUnusedImport = "none"
+reportUnusedVariable = "none"
+reportImportCycles = "none"
+enableExperimentalFeatures = true
+deprecateTypingAliases = true
+
+enableTypeIgnoreComments = false  # Force pyright: ignore comments
+
+[[tool.pyright.executionEnvironments]]
+# pyright doesn't allow setting typeCheckingMode per environment, so we
+# set it to strict globally and disable specific reports for configgen
+root = 'package/batocera/core/batocera-configgen/configgen'
+
+reportMissingTypeStubs = "none"
+reportConstantRedefinition = "none"
+reportDuplicateImport = "none"
+reportIncompleteStub = "none"
+reportInconsistentConstructor = "none"
+reportInvalidStubStatement = "none"
+reportMatchNotExhaustive = "none"
+reportMissingParameterType = "none"
+reportMissingTypeArgument = "none"
+reportTypeCommentUsage = "none"
+reportUnknownArgumentType = "none"
+reportUnknownLambdaType = "none"
+reportUnknownMemberType = "none"
+reportUnknownParameterType = "none"
+reportUnknownVariableType = "none"
+reportUnnecessaryCast = "none"
+reportUnnecessaryComparison = "none"
+reportUnnecessaryContains = "none"
+reportUnnecessaryIsInstance = "none"
+reportUnusedClass = "none"
+reportUnusedFunction = "none"
+reportUntypedBaseClass = "none"
+reportUntypedClassDecorator = "none"
+reportUntypedFunctionDecorator = "none"
+reportUntypedNamedTuple = "none"
+reportAssertAlwaysTrue = "warning"
+reportInvalidStringEscapeSequence = "warning"
+reportInvalidTypeVarUse = "warning"
+reportSelfClsParameterName = "warning"
+reportUnsupportedDunderAll = "warning"
+reportUnusedExpression = "warning"
+reportWildcardImportFromLibrary = "warning"
+
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]
 line-length = 120
 target-version = "py312"
 
+[tool.ruff.format]
+quote-style = "single"
+
 [tool.ruff.lint]
 preview = true
 explicit-preview-rules = true
 select = [
-    "TCH", "PYI", "I", "UP", "F", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
+    "TC", "PYI", "I", "UP", "F", "FA", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "RUF"
 ]
 ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["configgen"]
+known-first-party = ["configgen", "batocera_es_system"]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]

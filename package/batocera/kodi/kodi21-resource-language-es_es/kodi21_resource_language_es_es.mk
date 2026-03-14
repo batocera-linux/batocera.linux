@@ -1,10 +1,10 @@
 ################################################################################
 #
-# kodi21 es_es language resource
+# kodi21-resource-language-es_es
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_ES_ES_VERSION = 11.0.83
+KODI21_RESOURCE_LANGUAGE_ES_ES_VERSION = 11.0.97
 KODI21_RESOURCE_LANGUAGE_ES_ES_SOURCE = \
     resource.language.es_es-$(KODI21_RESOURCE_LANGUAGE_ES_ES_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_ES_ES_SITE = \

@@ -1,0 +1,44 @@
+diff -ur a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts	2024-12-24 12:16:07.664240881 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts	2024-12-24 12:21:50.854290587 +0000
+@@ -16,6 +16,7 @@
+ 	model = "Anbernic RG35XX 2024";
+ 	chassis-type = "handset";
+ 	compatible = "anbernic,rg35xx-2024", "allwinner,sun50i-h700";
++	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-2024";
+ 
+ 	aliases {
+ 		mmc0 = &mmc0;
+diff -ur a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2024-12-24 12:16:07.624240873 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts	2024-12-24 12:22:18.754293123 +0000
+@@ -9,6 +9,7 @@
+ / {
+ 	model = "Anbernic RG35XX H";
+ 	compatible = "anbernic,rg35xx-h", "allwinner,sun50i-h700";
++	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-h";
+ 
+ 	reg_vcc3v8_usb: regulator-vcc3v8-usb {
+ 		compatible = "regulator-fixed";
+diff -ur a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts	2024-12-24 12:16:07.694240885 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts	2024-12-24 12:22:35.594294024 +0000
+@@ -8,6 +8,7 @@
+ / {
+ 	model = "Anbernic RG35XX Plus";
+ 	compatible = "anbernic,rg35xx-plus", "allwinner,sun50i-h700";
++	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-plus";
+ 
+ 	wifi_pwrseq: pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+diff -ur a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-sp.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-sp.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-sp.dts	2024-12-19 17:13:24.000000000 +0000
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-sp.dts	2024-12-24 12:23:03.124296054 +0000
+@@ -10,6 +10,7 @@
+ / {
+ 	model = "Anbernic RG35XX SP";
+ 	compatible = "anbernic,rg35xx-sp", "allwinner,sun50i-h700";
++	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-sp";
+ 
+ 	gpio-keys-lid {
+ 		compatible = "gpio-keys";

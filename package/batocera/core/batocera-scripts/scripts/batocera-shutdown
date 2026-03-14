@@ -1,19 +1,1063 @@
-#!/bin/bash 
+#!/bin/bash
 #
-# Suspend or shutdown
+# Suspend, shutdown, or fake suspend
 #
 
+exec 1> >(tee >(logger -t batocera-shutdown -s)) 2>&1
+
+################################################################################
+# FAKE SUSPEND/RESUME HELPER FUNCTIONS
+# (Inspired by ROCKNIX)
+################################################################################
+
+FAKE_SUSPEND_FLAG="/var/run/batocera-fake-suspend.flag"
+FAKE_SUSPEND_MONITOR_PID="/var/run/batocera-fake-suspend-monitor.pid"
+# State files
+ACTIVE_DISPLAYS_FILE="/var/run/active_displays.list"
+CPU_GOV_STATE_FILE="/var/run/cpu_governor.state"
+CPU_MAX_FREQ_STATE_FILE="/var/run/cpu_max_freq.state"
+GPU_GOV_STATE_FILE="/var/run/gpu_governor.state"
+BT_STATE_FILE="/var/run/bluetooth.state"
+MUTED_SINK_STATE_FILE="/var/run/muted_sink.state"
+
+# The LED init.d control script
+BATOLED_INIT_SCRIPT="/etc/init.d/S51led-handheld"
+
+# --- IMPORTANT: Input Whitelist ---
+# Add substrings of device names that should NOT be blocked.
+# This is CRITICAL to ensure the power button can wake the device.
+# To find your power button's name, you can run: cat /proc/bus/input/devices
+# Look for an entry with "power" or "pwr" in the name.
+INPUT_WHITELIST_PATTERNS=(
+    "Power"      # Matches "Power Button"
+    "power"      # Matches "powerkey"
+    "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
+    "gpio-keys"  # AYN Thor lid
+)
+
+INTERNAL_DISPLAY_PATTERNS=(
+    "DSI"
+    "LVDS"
+    "eDP"
+)
+
+_is_internal_display() {
+    local output_name="$1"
+    for pattern in "${INTERNAL_DISPLAY_PATTERNS[@]}"; do
+        if [[ "${output_name}" == *"${pattern}"* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# --- Backlight Control Functions ---
+save_and_turn_off_backlight() {
+    /etc/init.d/S27brightness stop
+    batocera-brightness 0
+}
+
+restore_backlight() {
+    /etc/init.d/S27brightness start
+}
+
+# --- Display Functions ---
+display_off() {
+    echo "Turning display OFF"
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn off display."
+            return
+        fi
+        
+        echo "INFO: [Sway] Found socket file at: $sway_sock"
+        
+        local active_displays
+        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
+
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: [Sway] Saved active displays to state file: $(cat ${ACTIVE_DISPLAYS_FILE})"
+
+            for output in ${active_displays}; do
+                echo "INFO: [Sway] Turning off output '${output}'"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
+            done
+        else
+            echo "INFO: [Sway] No active displays found to turn off."
+        fi
+    elif pgrep -x "labwc" >/dev/null; then
+        # For labwc, find active displays, save their names, then turn them off.
+        local active_displays
+        active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: Saved active displays to state file: $(cat ${ACTIVE_DISPLAYS_FILE})"
+
+            for output in ${active_displays}; do
+                echo "INFO: Turning off output '${output}'"
+                wlr-randr --output "${output}" --off
+            done
+        else
+            echo "INFO: No active displays found to turn off."
+        fi
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        save_and_turn_off_backlight
+        local active_displays=$(xrandr | grep " connected " | awk '{print $1}')
+        if [ -n "${active_displays}" ]; then
+            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
+            echo "INFO: [X11] Saved active displays: $(cat ${ACTIVE_DISPLAYS_FILE})"
+            for o in $active_displays; do
+                echo "INFO: [X11] Turning off output '${o}'"
+                xrandr --output "${o}" --off
+            done
+        fi
+        echo "INFO: [X11] Forcing DPMS off"
+        xset dpms force off
+    fi
+}
+
+# --- Internal-display-only off (used when docked) ---
+PLUGGED_INTERNAL_DISPLAYS_FILE="/var/run/plugged_internal_displays.list"
+
+display_off_internal_only() {
+    echo "INFO: [Plugged] Turning off internal display(s) only."
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file. Cannot turn off internal display."
+            return
+        fi
+
+        local active_displays
+        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [Sway] Turning off internal output '${output}'"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [Sway] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+        fi
+
+    elif pgrep -x "labwc" >/dev/null; then
+        local active_displays
+        active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [labwc] Turning off internal output '${output}'"
+                wlr-randr --output "${output}" --off
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [labwc] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+        fi
+
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        local active_displays
+        active_displays=$(xrandr | grep " connected " | awk '{print $1}')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [X11] Turning off internal output '${output}'"
+                xrandr --output "${output}" --off
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [X11] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+            save_and_turn_off_backlight
+        fi
+    fi
+}
+
+display_on_internal_only() {
+    echo "INFO: [Plugged] Turning on internal display(s)."
+    if [ ! -f "${PLUGGED_INTERNAL_DISPLAYS_FILE}" ]; then
+        echo "INFO: No plugged internal display state file found. Nothing to restore."
+        return
+    fi
+
+    local outputs_to_enable
+    outputs_to_enable=$(cat "${PLUGGED_INTERNAL_DISPLAYS_FILE}")
+    rm -f "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+
+    if [ -z "${outputs_to_enable}" ]; then
+        return
+    fi
+
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+        for output in ${outputs_to_enable}; do
+            echo "INFO: [Sway] Restoring internal output '${output}'"
+            SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
+        done
+    elif pgrep -x "labwc" >/dev/null; then
+        batocera-resolution setOutput ${outputs_to_enable}
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        for output in ${outputs_to_enable}; do
+            echo "INFO: [X11] Restoring internal output '${output}'"
+            xrandr --output "${output}" --auto
+        done
+        restore_backlight
+    fi
+}
+
+display_on() {
+    echo "Turning display ON"
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn on display."
+            return
+        fi
+        
+        echo "INFO: [Sway] Found socket file at: $sway_sock"
+
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable
+            outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+
+            for output in ${outputs_to_enable}; do
+                echo "INFO: [Sway] Restoring output '${output}'"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
+            done
+
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: [Sway] No active display state file found. Restoring all outputs."
+            for output in $(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[].name'); do
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
+            done
+        fi
+    elif pgrep -x "labwc" >/dev/null; then
+        # For labwc, restore displays using the saved state file.
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable
+            outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+
+            if [ -n "${outputs_to_enable}" ]; then
+                echo "INFO: Restoring displays using 'batocera-resolution setOutput ${outputs_to_enable}'"
+                batocera-resolution setOutput ${outputs_to_enable}
+            fi
+            # Clean up the state file after use.
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: No active display state file found. Restoring all outputs."
+			# Turn all detected outputs back on.
+			for output in $(wlr-randr | awk '/^[^ ]/ {print $1}'); do
+				echo "INFO: Turning on output '${output}'"
+				wlr-randr --output "${output}" --on
+			done
+        fi
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        echo "INFO: [X11] Forcing DPMS on"
+        xset dpms force on
+        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
+            local outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
+            if [ -n "${outputs_to_enable}" ]; then
+                batocera-resolution setOutput ${outputs_to_enable}
+                echo "INFO: [X11] Re-enabling displays with 'xrandr --auto'..."
+                for o in $outputs_to_enable; do
+                    xrandr --output "${o}" --auto
+                done
+            fi
+            rm -f "${ACTIVE_DISPLAYS_FILE}"
+        else
+            echo "WARNING: No active display state file found, running 'xrandr --auto' on all outputs."
+            xrandr --auto
+        fi
+        restore_backlight
+    fi
+}
+
+# --- Audio Functions ---
+mute_audio() {
+    echo "Muting audio"
+    # Capture the actual sink name now so unmute_audio targets the same sink
+    local sink_name
+    sink_name=$(pactl get-default-sink 2>/dev/null)
+    echo "${sink_name}" > "${MUTED_SINK_STATE_FILE}"
+    pactl set-sink-mute "${sink_name}" true
+    echo "Muting ${sink_name}"
+}
+
+unmute_audio() {
+    echo "Unmuting audio"
+    if [ -f "${MUTED_SINK_STATE_FILE}" ]; then
+        local sink_name
+        sink_name=$(cat "${MUTED_SINK_STATE_FILE}")
+        rm -f "${MUTED_SINK_STATE_FILE}"
+        # Only unmute if the sink still exists (e.g. HDMI may have been disconnected).
+        if pactl list sinks short | grep -q "^[0-9]*	${sink_name}	"; then
+            pactl set-sink-mute "${sink_name}" false
+        else
+            echo "INFO: Saved sink '${sink_name}' no longer exists. Skipping unmute."
+        fi
+    else
+        # Fallback: no saved sink, unmute whatever is current
+        pactl set-sink-mute @DEFAULT_SINK@ false
+    fi
+}
+
+# --- CPU Core Functions ---
+park_cores() {
+    echo "Parking additional CPU cores"
+    for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
+        echo 0 > "${core}"
+    done
+}
+
+unpark_cores() {
+    echo "Unparking additional CPU cores"
+    for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
+        echo 1 > "${core}"
+    done
+}
+
+# --- Input Blocking Functions (with Whitelist) ---
+block_input() {
+    echo "Blocking input devices (excluding whitelisted power buttons)"
+    for device_path in /dev/input/event*; do
+        # Get the device name from sysfs
+        local event_node=$(basename "${device_path}")
+        local device_name=$(cat "/sys/class/input/${event_node}/device/name")
+
+        local found_in_whitelist=0
+        # Check if the device name contains any of the whitelist patterns
+        for pattern in "${INPUT_WHITELIST_PATTERNS[@]}"; do
+            if [[ "${device_name}" == *"${pattern}"* ]]; then
+                found_in_whitelist=1
+                echo "INFO: Whitelisting '${device_name}' (matches pattern '${pattern}'). Not blocking."
+                break
+            fi
+        done
+
+        # If the device was not found in the whitelist, block it.
+        if (( ! found_in_whitelist )); then
+            echo "INFO: Blocking '${device_name}' (${device_path})"
+            /usr/bin/evtest --grab "${device_path}" > /dev/null &
+        fi
+    done
+}
+
+unblock_input() {
+    echo "Unblocking input devices"
+    # Kill all evtest processes started by block_input
+    killall -q evtest
+}
+
+# --- Wifi Control Functions ---
+disable_wifi() {
+    batocera-wifi disable
+}
+
+enable_wifi() {
+    batocera-wifi enable
+}
+
+# --- LED Daemon Control Functions ---
+suspend_led_daemon() {
+    # Stop the LED daemon service if it's running
+    if [ -f "/var/run/led-handheld.pid" ] && [ -x "${BATOLED_INIT_SCRIPT}" ]; then
+        echo "INFO: Stopping LED daemon service."
+        ${BATOLED_INIT_SCRIPT} stop >/dev/null 2>&1
+    fi
+}
+
+resume_led_daemon() {
+    # Restart the LED daemon service if the init script exists
+    if [ -x "${BATOLED_INIT_SCRIPT}" ]; then
+        # Check the config setting to see if we should restart it
+        local led_enabled
+        led_enabled=$(batocera-settings-get system.led-handheld)
+        if [ "$led_enabled" != "0" ]; then
+            echo "INFO: Starting LED daemon service."
+            ${BATOLED_INIT_SCRIPT} start >/dev/null 2>&1
+        fi
+    fi
+}
+
+# --- CPU/GPU Power Saving Functions ---
+_get_gpu_governor_path() {
+    find -L /sys/class/devfreq/ \( -name "governor" -o -name "scaling_governor" \) -print -quit
+}
+
+set_low_power_governor() {
+    echo "INFO: Saving original CPU max frequencies..."
+    for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
+        if [ -d "${cpu_policy_dir}" ]; then
+            local max_freq_file="${cpu_policy_dir}/scaling_max_freq"
+            cat "${max_freq_file}" >> "${CPU_MAX_FREQ_STATE_FILE}"
+        fi
+    done
+
+    echo "INFO: Clamping CPU max frequency to minimum..."
+    for cpu_policy_dir in /sys/devices/system/cpu/cpu*/cpufreq; do
+        if [ -d "${cpu_policy_dir}" ]; then
+            local max_freq_file="${cpu_policy_dir}/scaling_max_freq"
+            local min_freq_file="${cpu_policy_dir}/scaling_min_freq"
+            local min_freq
+            min_freq=$(cat "${min_freq_file}")
+            echo "INFO: Setting max freq for ${cpu_policy_dir##*/} to ${min_freq}"
+            echo "${min_freq}" > "${max_freq_file}"
+        fi
+    done
+
+    echo "INFO: Setting CPU/GPU to low power mode..."
+    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor > "${CPU_GOV_STATE_FILE}"
+    for cpu_gov in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
+	    echo "powersave" > "${cpu_gov}"
+	done
+
+    local gpu_gov_file_path=$(_get_gpu_governor_path)
+    if [ -n "${gpu_gov_file_path}" ]; then
+        echo "INFO: Found GPU governor at ${gpu_gov_file_path}"
+        cat "${gpu_gov_file_path}" > "${GPU_GOV_STATE_FILE}"
+        echo "powersave" > "${gpu_gov_file_path}"
+    else
+        echo "INFO: Could not find a GPU governor file."
+    fi
+}
+
+restore_default_governor() {
+    echo "INFO: Restoring CPU/GPU to default power mode..."
+    if [ -f "${CPU_MAX_FREQ_STATE_FILE}" ]; then
+        echo "INFO: Restoring original CPU max frequencies..."
+        local i=0
+        while IFS= read -r original_max_freq; do
+            local max_freq_file="/sys/devices/system/cpu/cpu${i}/cpufreq/scaling_max_freq"
+            if [ -f "${max_freq_file}" ]; then
+                echo "INFO: Restoring max freq for cpu${i} to ${original_max_freq}"
+                echo "${original_max_freq}" > "${max_freq_file}"
+            fi
+            i=$((i + 1))
+        done < "${CPU_MAX_FREQ_STATE_FILE}"
+        rm -f "${CPU_MAX_FREQ_STATE_FILE}"
+    fi
+    if [ -f "${CPU_GOV_STATE_FILE}" ]; then
+        i=0
+		while IFS= read -r gov; do
+		    echo "${gov}" > "/sys/devices/system/cpu/cpu${i}/cpufreq/scaling_governor"
+			i=$((i+1))
+		done < "${CPU_GOV_STATE_FILE}"
+		rm -f "${CPU_GOV_STATE_FILE}"
+    fi
+    local gpu_gov_file_path=$(_get_gpu_governor_path)
+    if [ -n "${gpu_gov_file_path}" ] && [ -f "${GPU_GOV_STATE_FILE}" ]; then
+        echo "INFO: Restoring GPU governor at ${gpu_gov_file_path}"
+        cat "${GPU_GOV_STATE_FILE}" > "${gpu_gov_file_path}"
+		rm -f "${GPU_GOV_STATE_FILE}"
+    fi
+}
+
+# --- AMD TDP Power Saving Functions ---
+_is_amd_tdp_supported() {
+    # First, check if it's an AMD CPU at all.
+    if ! lscpu | grep -q AuthenticAMD; then
+        return 1
+    fi
+    # Next, check if ryzenadj supports this specific model.
+    if ! ryzenadj -i 2>/dev/null | head -n 1 | grep -q "unsupported model"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+set_low_power_tdp() {
+    if ! _is_amd_tdp_supported; then
+        return
+    fi
+    
+    # 3W is a common and safe low-power value for standby.
+    local low_tdp_value=3
+    echo "INFO: AMD TDP supported. Setting to low power mode (${low_tdp_value}W)."
+    /usr/bin/batocera-amd-tdp "${low_tdp_value}"
+}
+
+restore_default_tdp() {
+    if ! _is_amd_tdp_supported; then
+        return
+    fi
+
+    echo "INFO: AMD TDP supported. Restoring user-configured TDP."
+    
+    # Get the system's absolute maximum TDP, which is stored by the init.d script.
+    local max_tdp
+    max_tdp=$(/usr/bin/batocera-settings-get system.cpu.tdp)
+    
+    if [ -z "${max_tdp}" ]; then
+        echo "WARNING: Max TDP not defined in settings. Cannot restore TDP."
+        return
+    fi
+    
+    # Get the desired TDP percentage from global settings.
+    local tdp_percentage
+    tdp_percentage=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
+
+    local final_tdp_value
+    # If the user has a percentage set, calculate the wattage.
+    if [ -n "${tdp_percentage}" ] && [ "${tdp_percentage}" -ge 10 ]; then
+        final_tdp_value=$(awk -v max_tdp="$max_tdp" -v tdp_percentage="$tdp_percentage" 'BEGIN { printf("%.0f\n", max_tdp * tdp_percentage / 100) }')
+    else
+        # Otherwise, restore to the default (maximum) TDP.
+        final_tdp_value="${max_tdp}"
+    fi
+    
+    echo "INFO: Restoring TDP to ${final_tdp_value}W."
+    /usr/bin/batocera-amd-tdp "${final_tdp_value}"
+}
+
+# --- Bluetooth Control Functions ---
+disable_bluetooth() {
+    if rfkill list bluetooth | grep -q "Soft blocked: no"; then
+        echo "INFO: Bluetooth is active, disabling it..."
+		touch "${BT_STATE_FILE}"
+		rfkill block bluetooth
+    fi
+}
+
+enable_bluetooth() {
+    if [ -f "${BT_STATE_FILE}" ]; then
+        echo "INFO: Re-enabling Bluetooth..."
+		rfkill unblock bluetooth
+		rm -f "${BT_STATE_FILE}"
+    fi
+}
+
+# --- EmulationStation Functions
+stop_es() {
+	/etc/init.d/S31emulationstation suspend
+}
+
+start_es() {
+	/etc/init.d/S31emulationstation resume
+}
+
+stop_other_services() {
+	/etc/init.d/S03system-splash stop
+    if [ -f /etc/init.d/S13irqbalance ]; then
+        /etc/init.d/S13irqbalance stop
+    fi
+    if [ -f /etc/init.d/S25lircd ]; then
+        /etc/init.d/S25lircd stop
+    fi
+	/etc/init.d/S32bluetooth stop
+	/etc/init.d/S49ntp stop
+	/etc/init.d/S50avahi-daemon stop
+	/etc/init.d/S50dropbear stop
+	/etc/init.d/S60nfs stop
+	if [ -f /etc/init.d/S90battery_checker ]; then
+		/etc/init.d/S90battery_checker stop
+    fi
+	/etc/init.d/S90hotkeygen stop
+	/etc/init.d/S91smb stop
+	/etc/init.d/S97joycond stop
+}
+
+start_other_services() {
+    if [ -f /etc/init.d/S13irqbalance ]; then
+        /etc/init.d/S13irqbalance start
+    fi
+    if [ -f /etc/init.d/S25lircd ]; then
+        /etc/init.d/S25lircd start
+    fi
+	/etc/init.d/S32bluetooth start
+	/etc/init.d/S49ntp start
+	/etc/init.d/S50avahi-daemon start
+	/etc/init.d/S50dropbear start
+	if [ -f /etc/init.d/S90battery_checker ]; then
+	    /etc/init.d/S90battery_checker start
+    fi
+	/etc/init.d/S60nfs start
+    /etc/init.d/S90hotkeygen start
+    /etc/init.d/S91smb start
+    /etc/init.d/S97joycond start
+}
+
+# --- Battery and Time Monitoring Functions for Fake Suspend ---
+is_power_connected() {
+    local BATTERY_DIR=$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -z "${BATTERY_DIR}" ]; then
+        return 0
+    fi
+    local BATTERY_STATUS=$(cat "${BATTERY_DIR}/status" 2>/dev/null)
+    if [ "${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+get_battery_level() {
+    local battery_path=$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -n "${battery_path}" ] && [ -f "${battery_path}/capacity" ]; then
+        cat "${battery_path}/capacity"
+    else
+        echo "100"
+    fi
+}
+
+start_background_monitor() {
+    local monitor_script="/tmp/batocera-fake-suspend-monitor.sh"
+    cat > "${monitor_script}" << EOF
+#!/bin/bash
+
+is_power_connected() {
+    local BATTERY_DIR=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+
+    if [ -z "\${BATTERY_DIR}" ]; then
+        # No battery found (likely a Desktop PC), assume power is connected
+        return 0
+    fi
+
+    local BATTERY_STATUS=\$(cat "\${BATTERY_DIR}/status" 2>/dev/null)
+
+    if [ "\${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+get_battery_level() {
+    local battery_path=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -n "\${battery_path}" ] && [ -f "\${battery_path}/capacity" ]; then
+        cat "\${battery_path}/capacity"
+    else
+        echo "100"
+    fi
+}
+
+START_TIME=\$(date +%s)
+
+while true; do
+    sleep 60 # Check every minute
+
+    if is_power_connected; then
+        # Reset timer while plugged in so the 1-hour limit 
+        START_TIME=\$(date +%s)
+        continue
+    fi
+
+    CURRENT_TIME=\$(date +%s)
+    ELAPSED=\$((CURRENT_TIME - START_TIME))
+    if [ \${ELAPSED} -ge 3600 ]; then
+        echo "Fake suspend timeout reached. Shutting down."
+        batocera-wifi enable
+        sleep 5
+        /sbin/shutdown -P -h now
+        exit 0
+    fi
+
+    # Check battery level
+    BATTERY_LEVEL=\$(get_battery_level)
+    if [ -n "\${BATTERY_LEVEL}" ] && [ "\${BATTERY_LEVEL}" -le 10 ]; then
+        echo "Low battery (\${BATTERY_LEVEL}%) detected. Shutting down."
+        batocera-wifi enable
+        sleep 5
+        /sbin/shutdown -P -h now
+        exit 0
+    fi
+done
+EOF
+    chmod +x "${monitor_script}"
+    nohup "${monitor_script}" >/dev/null 2>&1 &
+    echo $! > "${FAKE_SUSPEND_MONITOR_PID}"
+}
+
+stop_background_monitor() {
+    if [ -f "${FAKE_SUSPEND_MONITOR_PID}" ]; then
+        local pid
+        pid=$(cat "${FAKE_SUSPEND_MONITOR_PID}")
+        if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+            kill "${pid}"
+        fi
+        rm -f "${FAKE_SUSPEND_MONITOR_PID}"
+    fi
+    rm -f "/tmp/batocera-fake-suspend-monitor.sh"
+}
+
+# Flag used to track the "plugged in, internal screen off" state
+PLUGGED_SCREEN_OFF_FLAG="/var/run/batocera-plugged-screen-off.flag"
+
+# --- Main Fake Suspend/Resume Action Groups ---
+do_fake_suspend() {
+    echo "--- Entering Fake Suspend ---"
+	block_input
+	stop_other_services
+	suspend_led_daemon
+	disable_wifi
+	disable_bluetooth
+	set_low_power_governor
+	set_low_power_tdp
+	mute_audio
+	park_cores
+	display_off
+	sleep 1s
+	stop_es
+	# restart triggerhappy to fix hung state from gui standby
+	/etc/init.d/S50triggerhappy restart
+	touch "${FAKE_SUSPEND_FLAG}"
+    start_background_monitor
+	echo "--- Fake Suspend Complete ---"
+}
+
+do_fake_resume() {
+    echo "--- Resuming from Fake Suspend ---"
+    stop_background_monitor
+	unblock_input
+	display_on
+	unmute_audio
+	unpark_cores
+	restore_default_governor
+	restore_default_tdp
+	start_es
+	resume_led_daemon
+	enable_bluetooth
+	enable_wifi
+	start_other_services
+	rm -f "${FAKE_SUSPEND_FLAG}"
+	echo "--- Resume Complete ---"
+}
+
+# --- Plugged-in screen-off toggle (power connected, no full fake suspend) ---
+do_plugged_screen_off() {
+    echo "--- Plugged in: turning off internal screen and LEDs ---"
+    display_off_internal_only
+    suspend_led_daemon
+    touch "${PLUGGED_SCREEN_OFF_FLAG}"
+    echo "--- Plugged screen off complete ---"
+}
+
+do_plugged_screen_on() {
+    echo "--- Plugged in: restoring internal screen and LEDs ---"
+    display_on_internal_only
+    resume_led_daemon
+    rm -f "${PLUGGED_SCREEN_OFF_FLAG}"
+    echo "--- Plugged screen on complete ---"
+}
+
+################################################################################
+# DOCK DETECTION
+# "Docked" = power connected AND at least one external display is active.
+################################################################################
+
+is_external_display_connected() {
+    local outputs=""
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+        [ -n "$sway_sock" ] && outputs=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs \
+            | jq -r '.[] | select(.active==true) | .name')
+    elif pgrep -x "labwc" >/dev/null; then
+        outputs=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        outputs=$(xrandr | grep " connected " | awk '{print $1}')
+    fi
+    while IFS= read -r output_name; do
+        if ! _is_internal_display "${output_name}"; then
+            return 0
+        fi
+    done <<< "${outputs}"
+    return 1
+}
+
+is_docked() {
+    is_power_connected && is_external_display_connected
+}
+
+################################################################################
+# UNDOCK MONITOR
+#
+# Event-driven daemon (udevadm) active during plugged-screen-off state.
+# Watches power supply and drm subsystems for charger/display hotplug events.
+# On full undock (power and external display lost), starts a 10-minute countdown
+# then does a do_fake_suspend. This avoids battery drain with the user doesn't
+# wake up the device up after being undocked. (power button ot lid switch)
+################################################################################
+
+UNDOCK_MONITOR_PID="/var/run/batocera-undock-monitor.pid"
+UNDOCK_MONITOR_LOCK="/var/run/batocera-undock-monitor.lock"
+UNDOCK_ESCALATION_DELAY=600  # 10 minutes
+
+start_undock_monitor() {
+    # if a monitor is already running, do nothing.
+    if [ -f "${UNDOCK_MONITOR_LOCK}" ]; then
+        echo "INFO: Undock monitor already running. Ignoring duplicate start."
+        return
+    fi
+    touch "${UNDOCK_MONITOR_LOCK}"
+    local monitor_script="/tmp/batocera-undock-monitor.sh"
+    local internal_patterns_str="${INTERNAL_DISPLAY_PATTERNS[*]}"
+    local screen_off_flag="${PLUGGED_SCREEN_OFF_FLAG}"
+    local escalation_delay="${UNDOCK_ESCALATION_DELAY}"
+
+    cat > "${monitor_script}" << UNDOCK_EOF
+#!/bin/bash
+
+PLUGGED_SCREEN_OFF_FLAG="${screen_off_flag}"
+ESCALATION_DELAY=${escalation_delay}
+INTERNAL_DISPLAY_PATTERNS=(${internal_patterns_str})
+
+_is_internal_display() {
+    local name="\$1"
+    for p in "\${INTERNAL_DISPLAY_PATTERNS[@]}"; do
+        [[ "\${name}" == *"\${p}"* ]] && return 0
+    done
+    return 1
+}
+
+is_power_connected() {
+    local BATTERY_DIR=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -z "\${BATTERY_DIR}" ]; then
+        return 0
+    fi
+    local BATTERY_STATUS=\$(cat "\${BATTERY_DIR}/status" 2>/dev/null)
+    if [ "\${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+is_external_display_connected() {
+    local outputs=""
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            [ -e "\$sock_file" ] && sway_sock="\$sock_file" && break
+        done
+        [ -n "\$sway_sock" ] && outputs=\$(SWAYSOCK="\${sway_sock}" swaymsg -t get_outputs \
+            | jq -r '.[] | select(.active==true) | .name')
+    elif pgrep -x "labwc" >/dev/null; then
+        outputs=\$(wlr-randr | awk '/^[^ ]/ {display_name=\$1} /Enabled: yes/ {print display_name}')
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        outputs=\$(xrandr | grep " connected " | awk '{print \$1}')
+    fi
+    while IFS= read -r o; do
+        _is_internal_display "\${o}" || return 0
+    done <<< "\${outputs}"
+    return 1
+}
+
+is_docked() {
+    is_power_connected && is_external_display_connected
+}
+
+COUNTDOWN_ACTIVE=0
+UNDOCK_TIME=0
+
+# Watch power_supply (charger events) and drm (display hotplug events).
+udevadm monitor --udev \
+    --subsystem-match=power_supply \
+    --subsystem-match=drm \
+    2>/dev/null | while IFS= read -t 60 -r _event_line; do
+
+    # If the flag is gone the main script has already resumed — exit cleanly.
+    if [ ! -f "\${PLUGGED_SCREEN_OFF_FLAG}" ]; then
+        echo "INFO: [undock-monitor] Screen-off flag removed. Exiting."
+        exit 0
+    fi
+
+    if is_docked; then
+        if [ \${COUNTDOWN_ACTIVE} -eq 1 ]; then
+            echo "INFO: [undock-monitor] Re-docked. Cancelling escalation countdown."
+            COUNTDOWN_ACTIVE=0
+            UNDOCK_TIME=0
+        fi
+    else
+        if [ \${COUNTDOWN_ACTIVE} -eq 0 ]; then
+            echo "INFO: [undock-monitor] Undocked. Starting \${ESCALATION_DELAY}s countdown."
+            UNDOCK_TIME=\$(date +%s)
+            COUNTDOWN_ACTIVE=1
+        else
+            NOW=\$(date +%s)
+            ELAPSED=\$(( NOW - UNDOCK_TIME ))
+            if [ \${ELAPSED} -ge \${ESCALATION_DELAY} ]; then
+                # Check if a game is running. Interactive suspend is blocked mid-game,
+                # but automated escalation cannot be — the device is abandoned on battery.
+                # Force a clean shutdown instead to prevent silent battery drain.
+                HTTP_STATUS=\$(curl --connect-timeout 1 -s -o /dev/null \
+                    -w "%{http_code}" "http://localhost:1234/runningGame")
+                if [ \$? -eq 0 ] && [ "\${HTTP_STATUS}" != "201" ]; then
+                    echo "INFO: [undock-monitor] Game running at escalation timeout. Forcing shutdown."
+                    batocera-wifi enable
+                    sleep 5
+                    /sbin/shutdown -P -h now
+                else
+                    echo "INFO: [undock-monitor] Countdown elapsed. Escalating to full fake suspend."
+                    /usr/bin/batocera-shutdown 1
+                fi
+                exit 0
+            fi
+        fi
+    fi
+
+done
+UNDOCK_EOF
+
+    chmod +x "${monitor_script}"
+    nohup "${monitor_script}" >/dev/null 2>&1 &
+    local monitor_pid=$!
+    echo "${monitor_pid}" > "${UNDOCK_MONITOR_PID}"
+    echo "INFO: Undock monitor started (PID ${monitor_pid})."
+}
+
+stop_undock_monitor() {
+    if [ -f "${UNDOCK_MONITOR_PID}" ]; then
+        local pid
+        pid=$(cat "${UNDOCK_MONITOR_PID}")
+        if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+            echo "INFO: Stopping undock monitor (PID ${pid})."
+            pkill -P "${pid}" 2>/dev/null  # kill udevadm child
+            kill "${pid}" 2>/dev/null
+        fi
+        rm -f "${UNDOCK_MONITOR_PID}"
+    fi
+    rm -f "${UNDOCK_MONITOR_LOCK}"
+    rm -f "/tmp/batocera-undock-monitor.sh"
+}
+
+################################################################################
+# MAIN SCRIPT LOGIC
+################################################################################
+
 SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
-# because on rg552, it is too easy to push on the shutdown button
+SETACTION=$1 # 1 for press, 0 for release & gui from, well the GUI :-)
+
+# --- Handle Direct Action Mode for the GUI ---
+if [ "${SETACTION}" = "gui" ]; then
+    case "${SUSPEND_MODE}" in
+        "suspend")
+            pm-is-supported --suspend && pm-suspend
+            ;;
+        "hybrid")
+            pm-is-supported --suspend-hybrid && pm-suspend-hybrid
+            ;;
+        "hibernate")
+            pm-is-supported --hibernate && pm-hibernate
+            ;;
+        "fake")
+            if is_power_connected; then
+                echo "Power connected, ignoring fake suspend."
+            elif [ "$(get_battery_level)" -le 10 ]; then
+                echo "Battery too low for fake suspend, shutting down instead."
+                /sbin/shutdown -P -h now
+            else
+                do_fake_suspend
+            fi
+            ;;
+        *)
+            # Default action if mode is unset or invalid is shutdown.
+            /sbin/shutdown -P -h now
+            ;;
+    esac
+    exit 0
+fi
+
+# --- Handle Fake Suspend Mode First ---
+if [ "${SUSPEND_MODE}" = "fake" ]; then
+    # We only care about the button press event (1).
+    if [ "${SETACTION}" = "1" ]; then
+        if [ -f "${FAKE_SUSPEND_FLAG}" ]; then
+            # Currently in a full fake suspend — resume normally.
+            do_fake_resume
+        elif [ -f "${PLUGGED_SCREEN_OFF_FLAG}" ]; then
+            # Currently in plugged screen-off state (docked or mid-undock countdown)
+            # — restore internal screen and LEDs, cancel any undock monitor.
+            stop_undock_monitor
+            do_plugged_screen_on
+        else
+            if is_docked; then
+                # Docked (power + external display): blank internal screen and LEDs only.
+                echo "INFO: Docked. Turning off internal screen and LEDs."
+                do_plugged_screen_off
+                start_undock_monitor
+            else
+                # Undocked: full fake suspend (with game-running check).
+                HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+                if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
+                    # A game is running. Log it and do nothing.
+                    echo "INFO: Fake suspend request ignored because a game is running."
+                else
+                    if [ "$(get_battery_level)" -le 10 ]; then
+                        echo "Battery too low for fake suspend, shutting down instead."
+                        /sbin/shutdown -P -h now
+                    else
+                        do_fake_suspend
+                    fi
+                fi
+            fi
+        fi
+    fi
+    exit 0
+fi
+
+# --- Script Logic for Hardware Suspend/Shutdown ---
+
 SHUTDOWNDELAY="$(/usr/bin/batocera-settings-get-master system.shutdowndelay)"
 if [ "${SHUTDOWNDELAY}" = "" ]; then
     SHUTDOWNDELAY=0
 fi
-
-###############################
-# 1 when pressed
-# 0 when released
-SETACTION=$1
 
 do_es_menu() {
     # display the menu only when es is up and no game is running
@@ -24,10 +1068,10 @@ do_es_menu() {
     curl "http://localhost:1234/quit?confirm=menu"
 }
 
-if [ "${SETACTION}" = 1 ]; then
+if [ "${SETACTION}" = "1" ]; then
     ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
-    if [ "${SUSPEND_MODE}" = "" -a "${SHUTDOWNDELAY}" = "" ]; then
-		/sbin/shutdown -h now
+    if [ "${SUSPEND_MODE}" = "" ] && [ "${SHUTDOWNDELAY}" = "0" ]; then
+		/sbin/shutdown -P -h now
     else
 		touch "/var/run/shutdown-delay.flag"
 		SLEEPTIME=$(expr "${SHUTDOWNDELAY}" + 1)
@@ -77,7 +1121,7 @@ else
 				pm-is-supported --hibernate && pm-hibernate
 				;;
 			*)
-				/sbin/shutdown -h now
+				/sbin/shutdown -P -h now
 				;;
 		esac
     fi

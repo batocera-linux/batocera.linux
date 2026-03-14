@@ -1,0 +1,9 @@
+custom_features:
+  gfxbackend:
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use. Vulkan may not work for every core.
+    choices:
+      OpenGL: gl
+      GLCore: glcore
+      Vulkan: vulkan
+    before: audio_driver

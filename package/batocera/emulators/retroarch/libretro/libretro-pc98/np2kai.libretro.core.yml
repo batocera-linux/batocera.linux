@@ -1,0 +1,137 @@
+features:
+  - netplay
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  np2kai_model:
+    prompt: PC MODEL
+    choices:
+      PC-286: PC-286
+      PC-9801VM: PC-9801VM
+      PC-9801VX: PC-9801VX
+  np2kai_cpu_feature:
+    prompt: CPU FEATURE
+    description: Select the processor model.
+    choices:
+      Intel 80386: Intel 80386
+      Intel i486DX: Intel i486DX
+      Intel Pentium (MMX): Intel MMX Pentium
+      Intel Pentium 2: Intel Pentium II
+      Intel Pentium 3: Intel Pentium III
+      Intel Pentium 4: Intel Pentium 4
+      Neko Processor II: Neko Processor II
+  np2kai_clk_mult:
+    prompt: OVERCLOCK MULTIPLIER
+    choices:
+      2x: 2
+      4x: 4
+      5x: 5
+      6x (Recommended): 6
+      8x: 8
+      10x: 10
+      12x: 12
+      16x: 16
+      20x: 20
+      24x: 24
+      30x: 30
+      36x: 36
+      40x: 40
+      42x: 42
+      52x: 52
+      64x: 64
+      76x: 76
+      88x: 88
+      100x: 100
+  np2kai_ExMemory:
+    prompt: EMULATED RAM SIZE
+    choices:
+      1MB: 1
+      3MB: 2
+      7MB: 7
+      11MB: 11
+      13MB (Recommended): 13
+      16MB: 16
+      32MB: 32
+      64MB: 64
+      120MB: 120
+      230MB: 230
+      512MB: 512
+      1024MB: 1024
+  np2kai_gdc:
+    group: ADVANCED OPTIONS
+    prompt: GDC
+    description: Graphic Display Controller model.
+    choices:
+      uPD7220: uPD7220
+      uPD72020: uPD72020
+  np2kai_skipline:
+    group: ADVANCED OPTIONS
+    prompt: REMOVE SCANLINES
+    description: Older games skipped drawing every second line, this masks that.
+    choices:
+      Full 255 lines: Full 255 lines
+      'Off': false
+      'On': true
+  np2kai_realpal:
+    group: ADVANCED OPTIONS
+    prompt: REAL PALETTES
+    description: Some games rely on this (Apros).
+    choices:
+      'Off': false
+      'On': true
+  np2kai_SNDboard:
+    group: ADVANCED OPTIONS
+    prompt: SOUND BOARD
+    description: 26K for old games and 86K for newer games.
+    choices:
+      None: None
+      PC9801-14: PC9801-14
+      PC9801-26K: PC9801-26K
+      PC9801-26K + 86: PC9801-26K + 86
+      PC9801-86: PC9801-86
+      PC9801-86 + 118(B460): PC9801-86 + 118(B460)
+      PC9801-86 + 118(B460) + Sound Blaster 16: PC9801-86 + 118(B460) + Sound Blaster 16
+      PC9801-86 + Mate-X PCM(B460): PC9801-86 + Mate-X PCM(B460)
+      PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16: PC9801-86 + Mate-X PCM(B460) + Sound Blaster 16
+      PC9801-86 + Chibi-oto: PC9801-86 + Chibi-oto
+      PC9801-86 + Speek Board: PC9801-86 + Speak Board
+      PC9801-86 + Sound Blaster 16: PC9801-86 + Sound Blaster 16
+      PC9801-118: PC9801-118
+      PC9801-118 + Sound Blaster 16: PC9801-118 + Sound Blaster 16
+      AMD-98: AMD-98
+      Chibi-oto: Chibi-oto
+      Sound Blaster 16: Sound Blaster 16
+      Speak Board: Speak Board
+      Spark Board: Spark Board
+      Sound Orchestra: Sound Orchestra
+      Sound Orchestra-V: Sound Orchestra-V
+      Little Orchestra L: Little Orchestra L
+      Multimedia Orchestra: Multimedia Orchestra
+      Mate-X PCM(B460): Mate-X PCM
+      Mate-X PCM + Sound Blaster 16: Mate-X PCM + Sound Blaster 16
+      Otomi-chanx2: Otomi-chanx2
+      Otomi-chanx2 + 86: Otomi-chanx2 + 86
+      WaveStar: WaveStar
+  np2kai_jast_snd:
+    group: ADVANCED OPTIONS
+    prompt: JAST SOUND
+    description: To have music and not only sound in games (Owl-Zoo).
+    choices:
+      'Off': false
+      'On': true
+  np2kai_joymode:
+    prompt: JOY2KEY PROFILE
+    description: Emulate a keyboard/mouse/joypad.
+    choices:
+      'Off': false
+      Mouse: Mouse
+      Arrows: Arrows
+      Arrows 3button: Arrows 3button
+      Keypad: Keypad
+      Keypad 3button: Keypad 3button
+      Manual keyboard: Manual Keyboard
+      Atari Joypad: Atari Joypad
+systems:
+  - pc98

@@ -1,0 +1,56 @@
+From 8f35161aa6c046cda20d3e707dd473f3e103f877 Mon Sep 17 00:00:00 2001
+From: Ao Zhong <hacc1225@gmail.com>
+Date: Sat, 10 Feb 2024 01:24:43 +0100
+Subject: [PATCH] drm/panel: st7703: Fix Panel Initialization for Anbernic
+ RG353V-V2
+
+This patch addresses an issue with the Anbernic RG353V-V2 panel
+initialization that was caused by incorrect parameter. The correct
+initialization sequence was derived by referencing the JELOS (Just
+Enough Linux OS) BSP kernel's device tree for the V2 panel, which is
+identified by the ID "38 21". The relevant device tree can be found at:
+
+https://github.com/JustEnoughLinuxOS/rk356x-kernel/blob/d4d7335a5ca18fc216a29712d5c6cecfb86147d2/arch/arm64/boot/dts/rockchip/rk3568-evb-rg353v.dtsi#L582
+
+The proper initialization sequence was further informed by dissecting
+instructions as outlined in the "Rockchip_DRM_Panel_Porting_Guide",
+specifically in Chapter 3.3 of the document.
+
+https://web.archive.org/web/20240209211932if_/http://download.t-firefly.com/product/Board/Common/Document/Developer/Rockchip_Developer_Guide_DRM_Panel_Porting_CN.pdf
+
+Upon comparing the initialization sequence within the
+rg353v2_init_sequence function against the device tree in the BSP
+kernel, discrepancies were identified in two instructions. The relevant
+instructions in the device tree are:
+
+1. 15 00 03 b6 7f 7f corresponding to the ST7703_CMD_SETVCOM command
+   with parameters 7f 7f
+2. 39 00 05 b8 26 62 f0 63 corresponding to the ST7703_CMD_SETPOWER_EXT
+   command with parameters 26 62 f0 63
+
+Adjusting the parameters to match those specified in the BSP kernel's
+device tree allow the panel to initialize correctly.
+
+Signed-off-by: Ao Zhong <hacc1225@gmail.com>
+---
+ drivers/gpu/drm/panel/panel-sitronix-st7703.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7703.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+index 67e8e45498cb..9b42898cab29 100644
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+@@ -347,8 +347,8 @@ static void rg353v2_init_sequence(struct mipi_dsi_multi_context *dsi_ctx)
+ 				     0x28, 0x03, 0xff, 0x00, 0x00, 0x00, 0x00);
+ 	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETCYC, 0x80);
+ 	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETBGP, 0x0a, 0x0a);
+-	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETVCOM, 0x92, 0x92);
+-	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETPOWER_EXT, 0x25, 0x22,
++	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETVCOM, 0x7f, 0x7f);
++	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETPOWER_EXT, 0x26, 0x62,
+ 				     0xf0, 0x63);
+ 	mipi_dsi_dcs_write_seq_multi(dsi_ctx, ST7703_CMD_SETMIPI, 0x33, 0x81, 0x05,
+ 				     0xf9, 0x0e, 0x0e, 0x20, 0x00, 0x00, 0x00, 0x00,
+-- 
+2.34.1
+

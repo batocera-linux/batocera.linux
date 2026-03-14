@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Action
+Name=DOS: Extract Game
+Folders=*/dos*;
+Basenames=*.squashfs;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=all/allfiles
+Exec=/usr/share/file-manager/actions/toolbox/dos.toolbox --extract-game %d %b
+

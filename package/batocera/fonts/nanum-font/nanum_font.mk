@@ -11,7 +11,7 @@ NANUM_FONT_TARGET_DIR=$(TARGET_DIR)/usr/share/fonts/truetype/nanum
 
 define NANUM_FONT_INSTALL_TARGET_CMDS
 	@mkdir -p $(NANUM_FONT_TARGET_DIR)
-	@cp $(@D)/ttf/NanumSquare_acB.ttf $(NANUM_FONT_TARGET_DIR)
+	@cp $(@D)/ttf/NanumGothicBold.ttf $(NANUM_FONT_TARGET_DIR)
 endef
 
 $(eval $(generic-package))

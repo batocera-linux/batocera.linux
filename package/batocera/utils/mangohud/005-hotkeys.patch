@@ -1,0 +1,29 @@
+diff --git a/src/overlay_params.cpp b/src/overlay_params.cpp
+index ac1737d..1c37a81 100644
+--- a/src/overlay_params.cpp
++++ b/src/overlay_params.cpp
+@@ -803,15 +803,15 @@ parse_overlay_config(struct overlay_params *params,
+    }
+ 
+ #ifdef HAVE_X11
+-   params->toggle_hud = { XK_Shift_R, XK_F12 };
+-   params->toggle_hud_position = { XK_Shift_R, XK_F11 };
+-   params->toggle_preset = { XK_Shift_R, XK_F10 };
+-   params->reset_fps_metrics = { XK_Shift_R, XK_F9};
+-   params->toggle_fps_limit = { XK_Shift_L, XK_F1 };
+-   params->toggle_logging = { XK_Shift_L, XK_F2 };
+-   params->reload_cfg = { XK_Shift_L, XK_F4 };
+-   params->upload_log = { XK_Shift_L, XK_F3 };
+-   params->upload_logs = { XK_Control_L, XK_F3 };
++   params->toggle_hud = { XK_Shift_R, XK_Undo };
++   params->toggle_hud_position = { };
++   params->toggle_preset = { };
++   params->reset_fps_metrics = { };
++   params->toggle_fps_limit = { };
++   params->toggle_logging = { };
++   params->reload_cfg = { };
++   params->upload_log = { };
++   params->upload_logs = { };
+ #endif
+ 
+ #ifdef _WIN32

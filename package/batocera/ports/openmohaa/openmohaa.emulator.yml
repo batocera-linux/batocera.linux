@@ -1,0 +1,166 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  mohaa_colour:
+    submenu: VIDEO
+    prompt: COLOUR DEPTH
+    description: Choose the emulated colour depth.
+    choices:
+      Default: 0
+      16-bit: 16
+      32-bit: 32
+  mohaa_texture:
+    submenu: VIDEO
+    prompt: TEXTURE DETAIL
+    description: Choose the level of texture detail.
+    choices:
+      Low: 2
+      Medium: 1
+      High: 0
+  mohaa_texture_colour:
+    submenu: VIDEO
+    prompt: TEXTURE COLOUR DEPTH
+    description: Choose the texture colour depth.
+    choices:
+      Default: 0
+      16-bit: 16
+      32-bit: 32
+  mohaa_texture_filter:
+    submenu: VIDEO
+    prompt: TEXTURE FILTER
+    description: Choose the texture filter type.
+    choices:
+      Bilinear: GL_LINEAR_MIPMAP_NEAREST
+      Trilinear: gl_linear_mipmap_linear
+  mohaa_decals:
+    submenu: VIDEO
+    prompt: WALL DECALS
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_weather:
+    submenu: VIDEO
+    prompt: WEATHER EFFECTS
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_brightness:
+    submenu: VIDEO
+    prompt: BRIGHTNESS
+    description: Change the game's brightness.
+    preset: sliderauto
+    preset_parameters: 0.50 3.00 .10
+  mohaa_compression:
+    submenu: VIDEO
+    prompt: TEXTURE COMPRESSION
+    description: Increases texture quality.
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_view:
+    submenu: ADVANCED OPTIONS
+    prompt: VIEW MODEL
+    description: Choose the character view type.
+    choices:
+      None: 0
+      Gun Only: 1
+      Full: 2
+  mohaa_shadows:
+    submenu: ADVANCED OPTIONS
+    prompt: SHADOWS
+    description: Choose the amount of shadow detail.
+    choices:
+      None: 0
+      Simple: 1
+      Complex: 2
+  mohaa_terrain:
+    submenu: ADVANCED OPTIONS
+    prompt: TERRAIN DETAIL
+    description: Choose the level of terrain detail.
+    choices:
+      Low: 0
+      Medium: 1
+      High Detail: 2
+      Max Detail: 3
+  mohaa_model:
+    submenu: ADVANCED OPTIONS
+    prompt: MODEL DETAIL
+    description: Choose the level of model detail.
+    choices:
+      Lowest: 0
+      Low: 1
+      Medium: 2
+      High: 3
+      Higher: 4
+      Highest: 5
+  mohaa_effects:
+    submenu: ADVANCED OPTIONS
+    prompt: EFFECTS DETAIL
+    description: Choose the level of effects detail.
+    choices:
+      Minimum: 0
+      Lower: 1
+      Low: 2
+      Medium: 3
+      High: 4
+      Higher: 5
+      Max: 6
+  mohaa_curve:
+    submenu: ADVANCED OPTIONS
+    prompt: CURVE DETAIL
+    description: Choose the level of curve detail.
+    choices:
+      Lowest: 0
+      Low: 1
+      Medium: 2
+      High: 3
+  mohaa_subtitles:
+    submenu: ADVANCED OPTIONS
+    prompt: SUBTITLES
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_dynamic_lighting:
+    submenu: ADVANCED OPTIONS
+    prompt: REAL DYNAMIC LIGHTING
+    choices:
+      'Off': 1
+      'On': 0
+  mohaa_entity_lighting:
+    submenu: ADVANCED OPTIONS
+    prompt: FULL ENTITY LIGHTING
+    choices:
+      'Off': 1
+      'On': 0
+  mohaa_smoke:
+    submenu: ADVANCED OPTIONS
+    prompt: VOLUMETRIC SMOKE
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_weapons:
+    submenu: ADVANCED OPTIONS
+    prompt: WEAPONS BAR
+    choices:
+      'Off': 0
+      'On': 1
+  mohaa_crosshair:
+    submenu: ADVANCED OPTIONS
+    prompt: CROSSHAIR
+    choices:
+      'Off': 0
+      'On': 1
+systems:
+  - mohaa
