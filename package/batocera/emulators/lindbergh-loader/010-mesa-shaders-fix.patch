@@ -1,5 +1,5 @@
 diff --git a/src/lindbergh/shaderPatches.c b/src/lindbergh/shaderPatches.c
-index 25ce447..822418a 100644
+index 25ce447..f2ad7d1 100644
 --- a/src/lindbergh/shaderPatches.c
 +++ b/src/lindbergh/shaderPatches.c
 @@ -8,7 +8,9 @@
@@ -12,7 +12,7 @@ index 25ce447..822418a 100644
  #include <sys/mman.h>
  #include <unistd.h>
  
-@@ -716,8 +718,60 @@ char *cgCreateProgram(uint32_t context, int program_type, const char *program, i
+@@ -716,8 +718,86 @@ char *cgCreateProgram(uint32_t context, int program_type, const char *program, i
      return _cgCreateProgram(context, program_type, program, profile, entry, args);
  }
  
@@ -31,6 +31,32 @@ index 25ce447..822418a 100644
 +{
 +    return (gGrp == GROUP_HOD4 || gGrp == GROUP_HOD4_TEST ||
 +            gGrp == GROUP_HOD4_SP || gGrp == GROUP_HOD4_SP_TEST);
++}
++
++// Compile/link wrappers: querying status forces Mesa to finalize before linking
++static void (*real_glCompileShaderARB)(GLuint) = NULL;
++static void (*real_glLinkProgramARB)(GLuint) = NULL;
++
++void gl_CompileShaderARB(GLuint shader)
++{
++    if (!real_glCompileShaderARB)
++        real_glCompileShaderARB = (void (*)(GLuint))real_glXGetProcAddress("glCompileShaderARB");
++    real_glCompileShaderARB(shader);
++    if (hotd4_is_active())
++    {
++        GLint status;
++        void (*getShaderiv)(GLuint, GLenum, GLint *) =
++            (void (*)(GLuint, GLenum, GLint *))real_glXGetProcAddress("glGetShaderiv");
++        if (getShaderiv)
++            getShaderiv(shader, GL_COMPILE_STATUS, &status);
++    }
++}
++
++void gl_LinkProgramARB(GLuint program)
++{
++    if (!real_glLinkProgramARB)
++        real_glLinkProgramARB = (void (*)(GLuint))real_glXGetProcAddress("glLinkProgramARB");
++    real_glLinkProgramARB(program);
 +}
 +
  void gl_ShaderSourceARB(GLhandleARB shaderObj, GLsizei count, const GLcharARB **const string, const GLint *length)
@@ -73,14 +99,25 @@ index 25ce447..822418a 100644
      if (gGrp != GROUP_HUMMER && gId != SEGA_RACE_TV)
      {
          glShaderSourceARB(shaderObj, count, string, length);
-@@ -933,7 +987,13 @@ void *gl_XGetProcAddressARB(const unsigned char *procName)
+@@ -932,8 +1012,24 @@ void *gl_XGetProcAddressARB(const unsigned char *procName)
+         }
          return (void *)gl_ShaderSourceARB;
      }
- 
--    return glXGetProcAddressARB(procName);
++    if (strcmp((const char *)procName, "glCompileShaderARB\0") == 0 ||
++        strcmp((const char *)procName, "glCompileShader\0") == 0)
++    {
++        return (void *)gl_CompileShaderARB;
++    }
++    if (strcmp((const char *)procName, "glLinkProgramARB\0") == 0 ||
++        strcmp((const char *)procName, "glLinkProgram\0") == 0)
++    {
++        return (void *)gl_LinkProgramARB;
++    }
++
 +    return real_glXGetProcAddress((const char *)procName);
 +}
-+
+ 
+-    return glXGetProcAddressARB(procName);
 +// LD_PRELOAD override to intercept GL lookups from NNGLD
 +__GLXextFuncPtr glXGetProcAddressARB(const GLubyte *procName)
 +{
