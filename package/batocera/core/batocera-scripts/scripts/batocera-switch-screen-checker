@@ -19,16 +19,22 @@ _wait_for_emulationstation() {
 }
 
 _detect_docked_output() {
+    # Build known outputs from master settings first
     KNOWN_OUTPUTS=""
     for key in global.videooutput global.videooutput2 global.videooutput3; do
         val=$(batocera-settings-get-master "$key")
         [ -n "$val" ] && KNOWN_OUTPUTS="$KNOWN_OUTPUTS $val"
     done
 
-    # If no outputs are configured, we have no baseline to detect against. Skip.
+    # If no configured outputs, fall back to the status file as the baseline
     if [ -z "${KNOWN_OUTPUTS}" ]; then
-        echo "Checker: No configured outputs defined. Skipping docked detection." >> "$LOG"
-        return 0
+        if [ -f "${STATUS_FILE}" ]; then
+            echo "Checker: No configured outputs. Using status file as baseline." >> "$LOG"
+            KNOWN_OUTPUTS=$(cat "${STATUS_FILE}" | tr '\n' ' ')
+        else
+            echo "Checker: No configured outputs and no status file. Skipping docked detection." >> "$LOG"
+            return 0
+        fi
     fi
 
     EXTERNAL_OUTPUT=""
@@ -56,13 +62,20 @@ case "$1" in
     "--init")
         export XDG_RUNTIME_DIR=/var/run
         OUTPUT_LIST=$(batocera-resolution listOutputs)
-        LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
-        echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
 
-        echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
-
-        # Detect docked state at init time (handles reboot-while-docked)
+        # Detect docked state FIRST, using existing status file as baseline if needed
         _detect_docked_output
+
+        # If docked, only write the docked output to the status file
+        if [ -f "${DOCKED_FLAG}" ]; then
+            DOCKED_OUT=$(cat "${DOCKED_FLAG}")
+            echo "${DOCKED_OUT}" > "${STATUS_FILE}"
+            echo "Checker-Init: Docked mode - status file set to docked output only: ${DOCKED_OUT}" >> "$LOG"
+        else
+            LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
+            echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
+            echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
+        fi
         exit 0
         ;;
     *)
