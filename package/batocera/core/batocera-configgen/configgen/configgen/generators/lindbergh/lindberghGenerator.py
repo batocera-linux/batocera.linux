@@ -718,7 +718,7 @@ class LindberghGenerator(Generator):
         # mapping specific to games - wheel
         _logger.debug("lindberg mapping for game %s", shortRomName)
 
-        if shortRomName == "hdkotr":
+        if shortRomName == "hdkotr" or "harley" in shortRomName:
             lindberghCtrl_wheel["x"]  = "BUTTON_2"   # change view
             lindberghCtrl_wheel["l2"] = "ANALOGUE_4"
             lindberghCtrl_wheel["r2"] = "ANALOGUE_1"
@@ -793,7 +793,7 @@ class LindberghGenerator(Generator):
             del lindberghCtrl_pad["joystick1up"]
             del lindberghCtrl_pad["down"]
 
-        if shortRomName == "hdkotr":
+        if shortRomName == "hdkotr" or "harley" in shortRomName:
             lindberghCtrl_pad.update(lindberghCtrl_pad_driving)
             lindberghCtrl_pad["joystick1left"] = "ANALOGUE_2"  # steer (swapped)
             lindberghCtrl_pad["r2"] = "ANALOGUE_1"             # gas (swapped)
