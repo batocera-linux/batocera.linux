@@ -1,21 +1,119 @@
-diff --git a/pcsx2/Input/InputManager.h b/pcsx2/Input/InputManager.h
-index 5e7bd4e..b00e125 100644
---- a/pcsx2/Input/InputManager.h
-+++ b/pcsx2/Input/InputManager.h
-@@ -163,7 +163,7 @@ namespace InputManager
- 	static constexpr double VIBRATION_UPDATE_INTERVAL_SECONDS = 0.5; // 500ms
+diff --git a/pcsx2/GS/GS.cpp b/pcsx2/GS/GS.cpp
+index 3e8aec9..645d7c7 100644
+--- a/pcsx2/GS/GS.cpp
++++ b/pcsx2/GS/GS.cpp
+@@ -56,6 +56,10 @@
  
- 	/// Maximum number of host mouse devices.
--	static constexpr u32 MAX_POINTER_DEVICES = 1;
-+	static constexpr u32 MAX_POINTER_DEVICES = 2;
- 	static constexpr u32 MAX_POINTER_BUTTONS = 3;
+ Pcsx2Config::GSOptions GSConfig;
  
- 	/// Maximum number of software cursors. We allocate an extra two for USB devices with
++// GunCon2 photodiode state, shared between GS and USB threads.
++bool g_guncon2_display_dark = false;
++int g_guncon2_count = 0;
++
+ static GSRendererType GSCurrentRenderer;
+ 
+ GSRendererType GSGetCurrentRenderer()
+diff --git a/pcsx2/GS/Renderers/Common/GSRenderer.cpp b/pcsx2/GS/Renderers/Common/GSRenderer.cpp
+index 5281bad..3cfad03 100644
+--- a/pcsx2/GS/Renderers/Common/GSRenderer.cpp
++++ b/pcsx2/GS/Renderers/Common/GSRenderer.cpp
+@@ -30,6 +30,10 @@
+ #include <thread>
+ #include <mutex>
+ 
++// GunCon2 photodiode emulation (defined in GS.cpp).
++extern bool g_guncon2_display_dark;
++extern int g_guncon2_count;
++
+ static void DumpGSPrivRegs(const GSPrivRegSet& r, const std::string& filename);
+ 
+ static constexpr std::array<PresentShader, 8> s_tv_shader_indices = {
+@@ -72,6 +76,7 @@ void GSRenderer::Reset(bool hardware_reset)
+ 
+ void GSRenderer::Destroy()
+ {
++	m_photodiode_dl.reset();
+ 	GSCapture::EndCapture();
+ }
+ 
+@@ -90,6 +95,7 @@ bool GSRenderer::Merge(int field)
+ 	if (!PCRTCDisplays.PCRTCDisplays[0].enabled && !PCRTCDisplays.PCRTCDisplays[1].enabled)
+ 	{
+ 		m_real_size = GSVector2i(0, 0);
++		g_guncon2_display_dark = true;
+ 		return false;
+ 	}
+ 
+@@ -141,9 +147,13 @@ bool GSRenderer::Merge(int field)
+ 				mad_tex = nullptr;
+ 			}
+ 		}
++		g_guncon2_display_dark = true;
+ 		return false;
+ 	}
+ 
++	// Display active, photodiode sampling below may override.
++	g_guncon2_display_dark = false;
++
+ 	s_n++;
+ 
+ 	GSVector4 src_gs_read[2];
+@@ -239,6 +249,36 @@ bool GSRenderer::Merge(int field)
+ 	const u32 c = (m_regs->BGCOLOR.U32[0] & 0x00FFFFFFu) | (m_regs->PMODE.ALP << 24);
+ 	g_gs_device->Merge(tex, src_gs_read, dst, fs, m_regs->PMODE, m_regs->EXTBUF, c);
+ 
++	// GunCon2 photodiode: sample center pixel to detect black-frame calibration screens.
++	if (g_guncon2_count > 0)
++	{
++		GSTexture* current = g_gs_device->GetCurrent();
++		if (current)
++		{
++			if (!m_photodiode_dl)
++				m_photodiode_dl = g_gs_device->CreateDownloadTexture(1, 1, GSTexture::Format::Color);
++			if (m_photodiode_dl)
++			{
++				const int cx = current->GetWidth() / 2;
++				const int cy = current->GetHeight() / 2;
++				m_photodiode_dl->CopyFromTexture(
++					GSVector4i(0, 0, 1, 1), current,
++					GSVector4i(cx, cy, cx + 1, cy + 1), 0);
++				m_photodiode_dl->Flush();
++
++				const GSVector4i rc(0, 0, 1, 1);
++				if (m_photodiode_dl->Map(rc))
++				{
++					const u32 px = *reinterpret_cast<const u32*>(m_photodiode_dl->GetMapPointer());
++					const u32 lum = (px & 0xFFu) + ((px >> 8) & 0xFFu) + ((px >> 16) & 0xFFu);
++					if (lum < 10)
++						g_guncon2_display_dark = true;
++					m_photodiode_dl->Unmap();
++				}
++			}
++		}
++	}
++
+ 	if (isReallyInterlaced() && GSConfig.InterlaceMode != GSInterlaceMode::Off)
+ 	{
+ 		const float offset = is_bob ? (tex[1] ? tex_scale[1] : tex_scale[0]) : 0.0f;
+diff --git a/pcsx2/GS/Renderers/Common/GSRenderer.h b/pcsx2/GS/Renderers/Common/GSRenderer.h
+index 1f8a310..d2d1c1c 100644
+--- a/pcsx2/GS/Renderers/Common/GSRenderer.h
++++ b/pcsx2/GS/Renderers/Common/GSRenderer.h
+@@ -24,6 +24,9 @@ private:
+ 	int m_last_draw_n = 0;
+ 	int m_last_transfer_n = 0;
+ 
++	// GunCon2 photodiode readback.
++	std::unique_ptr<GSDownloadTexture> m_photodiode_dl;
++
+ protected:
+ 	GSVector2i m_real_size{0, 0};
+ 	bool m_texture_shuffle = false;
 diff --git a/pcsx2/ImGui/ImGuiManager.cpp b/pcsx2/ImGui/ImGuiManager.cpp
-index 84d0641..353d038 100644
+index f287e52..6a83f10 100644
 --- a/pcsx2/ImGui/ImGuiManager.cpp
 +++ b/pcsx2/ImGui/ImGuiManager.cpp
-@@ -1112,12 +1112,14 @@ void ImGuiManager::DrawSoftwareCursor(const SoftwareCursor& sc, const std::pair<
+@@ -1114,12 +1114,14 @@ void ImGuiManager::DrawSoftwareCursor(const SoftwareCursor& sc, const std::pair<
  
  void ImGuiManager::DrawSoftwareCursors()
  {
@@ -33,11 +131,24 @@ index 84d0641..353d038 100644
  		DrawSoftwareCursor(s_software_cursors[i], s_software_cursors[i].pos);
  }
  
+diff --git a/pcsx2/Input/InputManager.h b/pcsx2/Input/InputManager.h
+index 370b494..fa2ea17 100644
+--- a/pcsx2/Input/InputManager.h
++++ b/pcsx2/Input/InputManager.h
+@@ -166,7 +166,7 @@ namespace InputManager
+ 	static constexpr double VIBRATION_UPDATE_INTERVAL_SECONDS = 0.5; // 500ms
+ 
+ 	/// Maximum number of host mouse devices.
+-	static constexpr u32 MAX_POINTER_DEVICES = 1;
++	static constexpr u32 MAX_POINTER_DEVICES = 2;
+ 	static constexpr u32 MAX_POINTER_BUTTONS = 3;
+ 
+ 	/// Maximum number of software cursors. We allocate an extra two for USB devices with
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
-index a69dbb1..d6d0e04 100644
+index 87ab27e..6ab16ad 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.cpp
 +++ b/pcsx2/USB/usb-lightgun/guncon2.cpp
-@@ -31,6 +31,12 @@
+@@ -19,6 +19,15 @@
  
  #include <tuple>
  
@@ -47,10 +158,13 @@ index a69dbb1..d6d0e04 100644
 +#include <linux/input.h>
 +#include "GS/Renderers/Common/GSDevice.h"
 +
++extern bool g_guncon2_display_dark;
++extern int g_guncon2_count;
++
  namespace usb_lightgun
  {
  	enum : u32
-@@ -130,6 +136,7 @@ namespace usb_lightgun
+@@ -118,6 +127,7 @@ namespace usb_lightgun
  	struct GunCon2State
  	{
  		explicit GunCon2State(u32 port_);
@@ -58,7 +172,7 @@ index a69dbb1..d6d0e04 100644
  
  		USBDevice dev{};
  		USBDesc desc{};
-@@ -148,6 +155,7 @@ namespace usb_lightgun
+@@ -136,6 +146,7 @@ namespace usb_lightgun
  		float center_y = 120;
  		float scale_x = 1.0f;
  		float scale_y = 1.0f;
@@ -66,7 +180,7 @@ index a69dbb1..d6d0e04 100644
  
  		//////////////////////////////////////////////////////////////////////////
  		// Host State (Not Saved)
-@@ -175,6 +183,12 @@ namespace usb_lightgun
+@@ -163,6 +174,14 @@ namespace usb_lightgun
  
  		std::tuple<s16, s16> CalculatePosition();
  
@@ -75,11 +189,13 @@ index a69dbb1..d6d0e04 100644
 +		float udev_internalGunX;
 +		float udev_internalGunY;
 +		int   udev_gunMinx, udev_gunMiny, udev_gunMaxx, udev_gunMaxy;
++		bool  udev_at_edge_x = false;
++		bool  udev_at_edge_y = false;
 +
  		// 0..1, not -1..1.
  		std::pair<float, float> GetAbsolutePositionFromRelativeAxes() const;
  		u32 GetSoftwarePointerIndex() const;
-@@ -240,6 +254,12 @@ namespace usb_lightgun
+@@ -228,6 +247,12 @@ namespace usb_lightgun
  		0x08, // Polling interval (frame counts)
  	};
  
@@ -92,7 +208,7 @@ index a69dbb1..d6d0e04 100644
  	static void guncon2_handle_control(
  		USBDevice* dev, USBPacket* p, int request, int value, int index, int length, uint8_t* data)
  	{
-@@ -269,9 +289,93 @@ namespace usb_lightgun
+@@ -257,9 +282,105 @@ namespace usb_lightgun
  		p->status = USB_RET_STALL;
  	}
  
@@ -156,9 +272,21 @@ index a69dbb1..d6d0e04 100644
 +	    switch (event->code) {
 +	    case ABS_X:
 +	      us->udev_internalGunX = ((event->value - us->udev_gunMinx) / ((float)(us->udev_gunMaxx - us->udev_gunMinx))) * g_gs_device->GetWindowWidth();
++	      {
++	        const int range = us->udev_gunMaxx - us->udev_gunMinx;
++	        const int margin = range / 80; // ~1.25% of range
++	        us->udev_at_edge_x = (event->value <= us->udev_gunMinx + margin ||
++	                              event->value >= us->udev_gunMaxx - margin);
++	      }
 +	      break;
 +	    case ABS_Y:
 +	      us->udev_internalGunY = ((event->value - us->udev_gunMiny) / ((float)(us->udev_gunMaxy - us->udev_gunMiny))) * g_gs_device->GetWindowHeight();
++	      {
++	        const int range = us->udev_gunMaxy - us->udev_gunMiny;
++	        const int margin = range / 80;
++	        us->udev_at_edge_y = (event->value <= us->udev_gunMiny + margin ||
++	                              event->value >= us->udev_gunMaxy - margin);
++	      }
 +	      break;
 +	    }
 +	    break;
@@ -186,19 +314,63 @@ index a69dbb1..d6d0e04 100644
  
  		switch (p->pid)
  		{
-@@ -280,6 +384,8 @@ namespace usb_lightgun
+@@ -268,18 +389,8 @@ namespace usb_lightgun
  				if (p->ep->nr == 1)
  				{
  					const auto [pos_x, pos_y] = us->CalculatePosition();
+-
+-					// Time Crisis games do a "calibration" by displaying a black frame for a single frame,
+-					// waiting for the gun to report (0, 0), and then computing an offset on the first non-zero
+-					// value. So, after the trigger is pulled, we wait for a few frames, then send the (0, 0)
+-					// report, then go back to normal values. To reduce error if the mouse is moving during
+-					// these frames (unlikely), we store the fire position and keep returning that.
+-					if (us->button_state & (1u << BID_RECALIBRATE) && us->calibration_timer == 0)
+-					{
+-						us->calibration_timer = GUNCON2_CALIBRATION_DELAY;
+-						us->calibration_pos_x = pos_x;
+-						us->calibration_pos_y = pos_y;
+-					}
 +					if (!us->cursor_path.empty() && udev_has(us))
 +						ImGuiManager::SetSoftwareCursorPosition(us->port, us->udev_internalGunX, us->udev_internalGunY);
  
- 					// Time Crisis games do a "calibration" by displaying a black frame for a single frame,
- 					// waiting for the gun to report (0, 0), and then computing an offset on the first non-zero
-@@ -350,8 +456,16 @@ namespace usb_lightgun
+ 					// Buttons are active low.
+ 					GunCon2Out out;
+@@ -287,24 +398,16 @@ namespace usb_lightgun
+ 					out.pos_x = pos_x;
+ 					out.pos_y = pos_y;
+ 
+-					if (us->calibration_timer > 0)
++					if (us->button_state & (1u << BID_SHOOT_OFFSCREEN))
+ 					{
+-						// Force trigger down while calibrating.
+ 						out.buttons &= ~(1u << BID_TRIGGER);
+-						out.pos_x = us->calibration_pos_x;
+-						out.pos_y = us->calibration_pos_y;
+-						us->calibration_timer--;
+-
+-						if (us->calibration_timer < GUNCON2_CALIBRATION_REPORT_DELAY)
+-						{
+-							out.pos_x = 0;
+-							out.pos_y = 0;
+-						}
++						out.pos_x = 0;
++						out.pos_y = 0;
+ 					}
+-					else if (us->button_state & (1u << BID_SHOOT_OFFSCREEN))
++
++					// Photodiode: report (0,0) when screen is dark.
++					if (g_guncon2_display_dark)
+ 					{
+-						// Offscreen shot - use 0,0.
+-						out.buttons &= ~(1u << BID_TRIGGER);
+ 						out.pos_x = 0;
+ 						out.pos_y = 0;
+ 					}
+@@ -338,8 +441,18 @@ namespace usb_lightgun
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
++	  g_guncon2_count++;
 +	  udev_fd = -1;
 +	  udev_internalGunX = 0.0;
 +	  udev_internalGunY = 0.0;
@@ -206,13 +378,14 @@ index a69dbb1..d6d0e04 100644
  
 +	GunCon2State::~GunCon2State()
 +	{
++	  g_guncon2_count--;
 +	  if(udev_fd != -1) close(udev_fd);
 + 	}
 +
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -384,6 +498,13 @@ namespace usb_lightgun
+@@ -372,10 +485,18 @@ namespace usb_lightgun
  			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
  		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
  
@@ -224,9 +397,16 @@ index a69dbb1..d6d0e04 100644
 +		}
 +
  		s16 pos_x, pos_y;
- 		if (pointer_x < 0.0f || pointer_y < 0.0f)
+-		if (pointer_x < 0.0f || pointer_y < 0.0f)
++		if (pointer_x < 0.0f || pointer_y < 0.0f || pointer_x > 1.0f || pointer_y > 1.0f
++			|| (udev_has(this) && (udev_at_edge_x || udev_at_edge_y)))
  		{
-@@ -433,7 +554,8 @@ namespace usb_lightgun
+-			// off-screen
++			// off-screen (any edge, or gun at edge of tracking range)
+ 			pos_x = 0;
+ 			pos_y = 0;
+ 		}
+@@ -423,7 +544,8 @@ namespace usb_lightgun
  
  	u32 GunCon2State::GetSoftwarePointerIndex() const
  	{
@@ -236,8 +416,8 @@ index a69dbb1..d6d0e04 100644
  	}
  
  	void GunCon2State::UpdateSoftwarePointerPosition()
-@@ -458,9 +580,151 @@ namespace usb_lightgun
- 		return "guncon2";
+@@ -450,9 +572,151 @@ namespace usb_lightgun
+ 		return ICON_PF_GUNCON2;
  	}
  
 +	int event_isNumber(const char *s) {
@@ -388,11 +568,20 @@ index a69dbb1..d6d0e04 100644
  		s->desc.full = &s->desc_dev;
  		s->desc.str = desc_strings;
  
+@@ -587,8 +851,6 @@ namespace usb_lightgun
+ 			{"Trigger", TRANSLATE_NOOP("USB", "Trigger"), nullptr, InputBindingInfo::Type::Button, BID_TRIGGER, GenericInputBinding::R2},
+ 			{"ShootOffscreen", TRANSLATE_NOOP("USB", "Shoot Offscreen"), nullptr, InputBindingInfo::Type::Button, BID_SHOOT_OFFSCREEN,
+ 				GenericInputBinding::R1},
+-			{"Recalibrate", TRANSLATE_NOOP("USB", "Calibration Shot"), nullptr, InputBindingInfo::Type::Button, BID_RECALIBRATE,
+-				GenericInputBinding::Unknown},
+ 			{"A", TRANSLATE_NOOP("USB", "A"), nullptr, InputBindingInfo::Type::Button, BID_A, GenericInputBinding::Cross},
+ 			{"B", TRANSLATE_NOOP("USB", "B"), nullptr, InputBindingInfo::Type::Button, BID_B, GenericInputBinding::Circle},
+ 			{"C", TRANSLATE_NOOP("USB", "C"), nullptr, InputBindingInfo::Type::Button, BID_C, GenericInputBinding::Triangle},
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.h b/pcsx2/USB/usb-lightgun/guncon2.h
-index 9b7d011..5d46d36 100644
+index 0afabbb..fd8d830 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.h
 +++ b/pcsx2/USB/usb-lightgun/guncon2.h
-@@ -18,6 +18,8 @@
+@@ -6,6 +6,8 @@
  
  namespace usb_lightgun
  {
@@ -401,7 +590,7 @@ index 9b7d011..5d46d36 100644
  	class GunCon2Device final : public DeviceProxy
  	{
  	public:
-@@ -30,5 +32,8 @@ namespace usb_lightgun
+@@ -19,5 +21,8 @@ namespace usb_lightgun
  		void SetBindingValue(USBDevice* dev, u32 bind_index, float value) const override;
  		std::span<const InputBindingInfo> Bindings(u32 subtype) const override;
  		std::span<const SettingInfo> Settings(u32 subtype) const override;
