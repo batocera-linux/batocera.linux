@@ -1309,6 +1309,12 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Color Computer (Tandy TRS-80)
 	select BR2_PACKAGE_XROAR		if BR2_PACKAGE_HAS_LIBGL # Xroar requires OpenGL
 
+	# BK-0010/0011/Terak 8510a
+	select BR2_PACKAGE_LIBRETRO_BK
+
+	# Enterprise 128
+	select BR2_PACKAGE_LIBRETRO_EP128EMU_CORE
+
 	help
 	  Old computers
 
@@ -1603,6 +1609,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# BennuGD Game Engine
 	select BR2_PACKAGE_LIBRETRO_BENNUGD if !BR2_RISCV_64    # ALL (compilation error: get_thread_id not implemented)
+
+	# ColecoVision
+	select BR2_PACKAGE_LIBRETRO_GEARCOLECO
 
 	help
 	  All avaible systems for the selected architecture
