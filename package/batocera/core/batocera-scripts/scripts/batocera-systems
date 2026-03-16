@@ -440,6 +440,9 @@ systems = {
                                                 { "md5": "", "file": "bios/coco_fdc_v11.zip"  },
                                                 { "md5": "8cab28f4b7311b8df63c07bb3b59bfd5", "zippedFile": "disk11.rom", "file": "bios/coco_fdc_v11.zip"} ] },
 
+    # ---------- Colour Genie ---------- #
+    "cgenie":  { "name": "Colour Genie", "biosFiles": [ { "md5": "", "file": "bios/cgenie.zip" } ] },
+
     # ---------- Dragon 64 ---------- #
     "dragon64":   { "name": "Dragon 64", "biosFiles":  [ { "md5": "", "file": "bios/dragon64.zip"  },
                                                 { "md5": "", "zippedFile": "d64_1.rom", "file": "bios/dragon64.zip"},
@@ -453,6 +456,16 @@ systems = {
                                                 { "md5": "", "zippedFile": "mc10.rom", "file": "bios/mc10.zip"},
                                                 { "md5": "", "file": "bios/alice.zip"  },
                                                 { "md5": "", "zippedFile": "alice.rom", "file": "bios/alice.zip"} ] },
+
+    # ---------- TRS-80 ---------- #
+    "trs80":   { "name": "TRS-80", "biosFiles":  [ { "md5": "", "file": "bios/trs80.zip"  },
+                                                { "md5": "", "zippedFile": "level1.rom", "file": "bios/trs80.zip"},
+                                                { "md5": "", "zippedFile": "level2.rom", "file": "bios/trs80.zip"},
+                                                { "md5": "", "file": "bios/trs80m3.zip" },
+                                                { "md5": "", "zippedFile": "8041730.u12", "file": "bios/trs80m3.zip"},
+                                                { "md5": "", "file": "bios/trs80m4.zip" },
+                                                { "md5": "", "zippedFile": "8043216.u11", "file": "bios/trs80m4.zip"},
+                                                { "md5": "", "file": "bios/trs80m4p.zip" } ] },
 
     # ---------- Tomy Tutor ---------- #
     "tutor":   { "name": "Tomy Tutor", "biosFiles":  [ { "md5": "", "file": "bios/tutor.zip"  },
