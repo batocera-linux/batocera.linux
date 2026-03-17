@@ -1,34 +1,92 @@
+diff --git a/pcsx2-qt/Settings/USBBindingWidget_GunCon2.ui b/pcsx2-qt/Settings/USBBindingWidget_GunCon2.ui
+index 8fe0100..67f2568 100644
+--- a/pcsx2-qt/Settings/USBBindingWidget_GunCon2.ui
++++ b/pcsx2-qt/Settings/USBBindingWidget_GunCon2.ui
+@@ -706,44 +706,6 @@
+         </layout>
+        </widget>
+       </item>
+-      <item row="1" column="0" colspan="2">
+-       <widget class="QGroupBox" name="groupBox_9">
+-        <property name="title">
+-         <string>Calibration Shot</string>
+-        </property>
+-        <layout class="QGridLayout" name="gridLayout_8">
+-         <item row="0" column="1">
+-          <widget class="InputBindingWidget" name="Recalibrate">
+-           <property name="minimumSize">
+-            <size>
+-             <width>125</width>
+-             <height>0</height>
+-            </size>
+-           </property>
+-           <property name="maximumSize">
+-            <size>
+-             <width>125</width>
+-             <height>16777215</height>
+-            </size>
+-           </property>
+-           <property name="text">
+-            <string notr="true">PushButton</string>
+-           </property>
+-          </widget>
+-         </item>
+-         <item row="2" column="0" colspan="3">
+-          <widget class="QLabel" name="label">
+-           <property name="text">
+-            <string>Calibration shot is required to pass the setup screen in some games.</string>
+-           </property>
+-           <property name="wordWrap">
+-            <bool>true</bool>
+-           </property>
+-          </widget>
+-         </item>
+-        </layout>
+-       </widget>
+-      </item>
+      </layout>
+     </widget>
+    </item>
 diff --git a/pcsx2/GS/GS.cpp b/pcsx2/GS/GS.cpp
-index 3e8aec9..645d7c7 100644
+index 3e8aec9..7e545f5 100644
 --- a/pcsx2/GS/GS.cpp
 +++ b/pcsx2/GS/GS.cpp
-@@ -56,6 +56,10 @@
+@@ -56,6 +56,9 @@
  
  Pcsx2Config::GSOptions GSConfig;
  
-+// GunCon2 photodiode state, shared between GS and USB threads.
-+bool g_guncon2_display_dark = false;
-+int g_guncon2_count = 0;
++std::atomic<bool> g_guncon2_display_dark{false};
++std::atomic<int> g_guncon2_count{0};
 +
  static GSRendererType GSCurrentRenderer;
  
  GSRendererType GSGetCurrentRenderer()
+diff --git a/pcsx2/GS/GS.h b/pcsx2/GS/GS.h
+index 81b9765..0dcfd6a 100644
+--- a/pcsx2/GS/GS.h
++++ b/pcsx2/GS/GS.h
+@@ -7,6 +7,7 @@
+ #include "SaveState.h"
+ #include "pcsx2/Config.h"
+ 
++#include <atomic>
+ #include <map>
+ #include <optional>
+ #include <string>
+@@ -133,4 +134,8 @@ namespace Host
+ 	void OnCaptureStopped();
+ }
+ 
++// GunCon2 photodiode state: true when GS merged output is black (calibration).
++extern std::atomic<bool> g_guncon2_display_dark;
++extern std::atomic<int> g_guncon2_count;
++
+ extern Pcsx2Config::GSOptions GSConfig;
 diff --git a/pcsx2/GS/Renderers/Common/GSRenderer.cpp b/pcsx2/GS/Renderers/Common/GSRenderer.cpp
-index 5281bad..3cfad03 100644
+index 5281bad..97a3b31 100644
 --- a/pcsx2/GS/Renderers/Common/GSRenderer.cpp
 +++ b/pcsx2/GS/Renderers/Common/GSRenderer.cpp
-@@ -30,6 +30,10 @@
- #include <thread>
- #include <mutex>
- 
-+// GunCon2 photodiode emulation (defined in GS.cpp).
-+extern bool g_guncon2_display_dark;
-+extern int g_guncon2_count;
-+
- static void DumpGSPrivRegs(const GSPrivRegSet& r, const std::string& filename);
- 
- static constexpr std::array<PresentShader, 8> s_tv_shader_indices = {
-@@ -72,6 +76,7 @@ void GSRenderer::Reset(bool hardware_reset)
+@@ -72,6 +72,7 @@ void GSRenderer::Reset(bool hardware_reset)
  
  void GSRenderer::Destroy()
  {
@@ -36,35 +94,27 @@ index 5281bad..3cfad03 100644
  	GSCapture::EndCapture();
  }
  
-@@ -90,6 +95,7 @@ bool GSRenderer::Merge(int field)
+@@ -87,6 +88,11 @@ bool GSRenderer::Merge(int field)
+ 	int y_offset[3] = { 0, 0, 0 };
+ 	const bool feedback_merge = m_regs->EXTWRITE.WRITE == 1;
+ 
++	// GunCon2 photodiode: assume dark until pixel sampling proves otherwise.
++	// Early returns (no displays, no textures) leave this true — correct behavior.
++	const bool gun_active = g_guncon2_count.load(std::memory_order_relaxed) > 0;
++	g_guncon2_display_dark.store(gun_active, std::memory_order_relaxed);
++
  	if (!PCRTCDisplays.PCRTCDisplays[0].enabled && !PCRTCDisplays.PCRTCDisplays[1].enabled)
  	{
  		m_real_size = GSVector2i(0, 0);
-+		g_guncon2_display_dark = true;
- 		return false;
- 	}
- 
-@@ -141,9 +147,13 @@ bool GSRenderer::Merge(int field)
- 				mad_tex = nullptr;
- 			}
- 		}
-+		g_guncon2_display_dark = true;
- 		return false;
- 	}
- 
-+	// Display active, photodiode sampling below may override.
-+	g_guncon2_display_dark = false;
-+
- 	s_n++;
- 
- 	GSVector4 src_gs_read[2];
-@@ -239,6 +249,36 @@ bool GSRenderer::Merge(int field)
+@@ -239,6 +245,38 @@ bool GSRenderer::Merge(int field)
  	const u32 c = (m_regs->BGCOLOR.U32[0] & 0x00FFFFFFu) | (m_regs->PMODE.ALP << 24);
  	g_gs_device->Merge(tex, src_gs_read, dst, fs, m_regs->PMODE, m_regs->EXTBUF, c);
  
-+	// GunCon2 photodiode: sample center pixel to detect black-frame calibration screens.
-+	if (g_guncon2_count > 0)
++	// GunCon2 photodiode: sample center pixel to detect black-frame calibration.
++	// Sum of R+G+B < threshold means the screen is dark.
++	if (gun_active)
 +	{
++		static constexpr u32 GUNCON2_DARK_THRESHOLD = 10;
 +		GSTexture* current = g_gs_device->GetCurrent();
 +		if (current)
 +		{
@@ -84,8 +134,8 @@ index 5281bad..3cfad03 100644
 +				{
 +					const u32 px = *reinterpret_cast<const u32*>(m_photodiode_dl->GetMapPointer());
 +					const u32 lum = (px & 0xFFu) + ((px >> 8) & 0xFFu) + ((px >> 16) & 0xFFu);
-+					if (lum < 10)
-+						g_guncon2_display_dark = true;
++					if (lum >= GUNCON2_DARK_THRESHOLD)
++						g_guncon2_display_dark.store(false, std::memory_order_relaxed);
 +					m_photodiode_dl->Unmap();
 +				}
 +			}
@@ -145,10 +195,10 @@ index 370b494..fa2ea17 100644
  
  	/// Maximum number of software cursors. We allocate an extra two for USB devices with
 diff --git a/pcsx2/USB/usb-lightgun/guncon2.cpp b/pcsx2/USB/usb-lightgun/guncon2.cpp
-index 87ab27e..6ab16ad 100644
+index 87ab27e..9243af8 100644
 --- a/pcsx2/USB/usb-lightgun/guncon2.cpp
 +++ b/pcsx2/USB/usb-lightgun/guncon2.cpp
-@@ -19,6 +19,15 @@
+@@ -19,6 +19,12 @@
  
  #include <tuple>
  
@@ -158,13 +208,10 @@ index 87ab27e..6ab16ad 100644
 +#include <linux/input.h>
 +#include "GS/Renderers/Common/GSDevice.h"
 +
-+extern bool g_guncon2_display_dark;
-+extern int g_guncon2_count;
-+
  namespace usb_lightgun
  {
  	enum : u32
-@@ -118,6 +127,7 @@ namespace usb_lightgun
+@@ -118,6 +124,7 @@ namespace usb_lightgun
  	struct GunCon2State
  	{
  		explicit GunCon2State(u32 port_);
@@ -172,7 +219,7 @@ index 87ab27e..6ab16ad 100644
  
  		USBDevice dev{};
  		USBDesc desc{};
-@@ -136,6 +146,7 @@ namespace usb_lightgun
+@@ -136,6 +143,7 @@ namespace usb_lightgun
  		float center_y = 120;
  		float scale_x = 1.0f;
  		float scale_y = 1.0f;
@@ -180,7 +227,7 @@ index 87ab27e..6ab16ad 100644
  
  		//////////////////////////////////////////////////////////////////////////
  		// Host State (Not Saved)
-@@ -163,6 +174,14 @@ namespace usb_lightgun
+@@ -163,6 +171,14 @@ namespace usb_lightgun
  
  		std::tuple<s16, s16> CalculatePosition();
  
@@ -195,7 +242,7 @@ index 87ab27e..6ab16ad 100644
  		// 0..1, not -1..1.
  		std::pair<float, float> GetAbsolutePositionFromRelativeAxes() const;
  		u32 GetSoftwarePointerIndex() const;
-@@ -228,6 +247,12 @@ namespace usb_lightgun
+@@ -228,6 +244,12 @@ namespace usb_lightgun
  		0x08, // Polling interval (frame counts)
  	};
  
@@ -208,7 +255,7 @@ index 87ab27e..6ab16ad 100644
  	static void guncon2_handle_control(
  		USBDevice* dev, USBPacket* p, int request, int value, int index, int length, uint8_t* data)
  	{
-@@ -257,9 +282,105 @@ namespace usb_lightgun
+@@ -257,9 +279,105 @@ namespace usb_lightgun
  		p->status = USB_RET_STALL;
  	}
  
@@ -274,7 +321,7 @@ index 87ab27e..6ab16ad 100644
 +	      us->udev_internalGunX = ((event->value - us->udev_gunMinx) / ((float)(us->udev_gunMaxx - us->udev_gunMinx))) * g_gs_device->GetWindowWidth();
 +	      {
 +	        const int range = us->udev_gunMaxx - us->udev_gunMinx;
-+	        const int margin = range / 80; // ~1.25% of range
++	        const int margin = range / 80;
 +	        us->udev_at_edge_x = (event->value <= us->udev_gunMinx + margin ||
 +	                              event->value >= us->udev_gunMaxx - margin);
 +	      }
@@ -314,7 +361,7 @@ index 87ab27e..6ab16ad 100644
  
  		switch (p->pid)
  		{
-@@ -268,18 +389,8 @@ namespace usb_lightgun
+@@ -268,18 +386,8 @@ namespace usb_lightgun
  				if (p->ep->nr == 1)
  				{
  					const auto [pos_x, pos_y] = us->CalculatePosition();
@@ -335,7 +382,7 @@ index 87ab27e..6ab16ad 100644
  
  					// Buttons are active low.
  					GunCon2Out out;
-@@ -287,24 +398,16 @@ namespace usb_lightgun
+@@ -287,24 +395,16 @@ namespace usb_lightgun
  					out.pos_x = pos_x;
  					out.pos_y = pos_y;
  
@@ -359,18 +406,18 @@ index 87ab27e..6ab16ad 100644
 -					else if (us->button_state & (1u << BID_SHOOT_OFFSCREEN))
 +
 +					// Photodiode: report (0,0) when screen is dark.
-+					if (g_guncon2_display_dark)
++					if (g_guncon2_display_dark.load(std::memory_order_relaxed))
  					{
 -						// Offscreen shot - use 0,0.
 -						out.buttons &= ~(1u << BID_TRIGGER);
  						out.pos_x = 0;
  						out.pos_y = 0;
  					}
-@@ -338,8 +441,18 @@ namespace usb_lightgun
+@@ -338,8 +438,18 @@ namespace usb_lightgun
  	GunCon2State::GunCon2State(u32 port_)
  		: port(port_)
  	{
-+	  g_guncon2_count++;
++	  g_guncon2_count.fetch_add(1, std::memory_order_relaxed);
 +	  udev_fd = -1;
 +	  udev_internalGunX = 0.0;
 +	  udev_internalGunY = 0.0;
@@ -378,14 +425,14 @@ index 87ab27e..6ab16ad 100644
  
 +	GunCon2State::~GunCon2State()
 +	{
-+	  g_guncon2_count--;
++	  g_guncon2_count.fetch_sub(1, std::memory_order_relaxed);
 +	  if(udev_fd != -1) close(udev_fd);
 + 	}
 +
  	void GunCon2State::AutoConfigure()
  	{
  		const std::string serial = VMManager::GetDiscSerial();
-@@ -372,10 +485,18 @@ namespace usb_lightgun
+@@ -372,8 +482,16 @@ namespace usb_lightgun
  			(has_relative_binds) ? GetAbsolutePositionFromRelativeAxes() : InputManager::GetPointerAbsolutePosition(0);
  		GSTranslateWindowToDisplayCoordinates(window_x, window_y, &pointer_x, &pointer_y);
  
@@ -398,15 +445,12 @@ index 87ab27e..6ab16ad 100644
 +
  		s16 pos_x, pos_y;
 -		if (pointer_x < 0.0f || pointer_y < 0.0f)
-+		if (pointer_x < 0.0f || pointer_y < 0.0f || pointer_x > 1.0f || pointer_y > 1.0f
++		if (pointer_x < 0.0f || pointer_y < 0.0f
 +			|| (udev_has(this) && (udev_at_edge_x || udev_at_edge_y)))
  		{
--			// off-screen
-+			// off-screen (any edge, or gun at edge of tracking range)
+ 			// off-screen
  			pos_x = 0;
- 			pos_y = 0;
- 		}
-@@ -423,7 +544,8 @@ namespace usb_lightgun
+@@ -423,7 +541,8 @@ namespace usb_lightgun
  
  	u32 GunCon2State::GetSoftwarePointerIndex() const
  	{
@@ -416,7 +460,7 @@ index 87ab27e..6ab16ad 100644
  	}
  
  	void GunCon2State::UpdateSoftwarePointerPosition()
-@@ -450,9 +572,151 @@ namespace usb_lightgun
+@@ -450,9 +569,151 @@ namespace usb_lightgun
  		return ICON_PF_GUNCON2;
  	}
  
@@ -568,7 +612,7 @@ index 87ab27e..6ab16ad 100644
  		s->desc.full = &s->desc_dev;
  		s->desc.str = desc_strings;
  
-@@ -587,8 +851,6 @@ namespace usb_lightgun
+@@ -587,8 +848,6 @@ namespace usb_lightgun
  			{"Trigger", TRANSLATE_NOOP("USB", "Trigger"), nullptr, InputBindingInfo::Type::Button, BID_TRIGGER, GenericInputBinding::R2},
  			{"ShootOffscreen", TRANSLATE_NOOP("USB", "Shoot Offscreen"), nullptr, InputBindingInfo::Type::Button, BID_SHOOT_OFFSCREEN,
  				GenericInputBinding::R1},
