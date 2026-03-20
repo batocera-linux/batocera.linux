@@ -37,6 +37,7 @@
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
 - Raxda Zero 3W initial support
+- Retroid Pocket 6 initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
