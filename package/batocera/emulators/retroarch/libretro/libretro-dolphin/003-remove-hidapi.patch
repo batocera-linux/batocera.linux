@@ -1,0 +1,40 @@
+# Remove hidapi functions to fix Steam Deck controllers
+# Signed off by dmanlfc
+diff --git a/Source/Core/InputCommon/CMakeLists.txt b/Source/Core/InputCommon/CMakeLists.txt
+index 0132e75..67a9e5c 100644
+--- a/Source/Core/InputCommon/CMakeLists.txt
++++ b/Source/Core/InputCommon/CMakeLists.txt
+@@ -199,13 +199,3 @@ if(MSVC)
+   # Add precompiled header
+   target_link_libraries(inputcommon PRIVATE use_pch)
+ endif()
+-
+-if(TARGET Hidapi::Hidapi)
+-  target_sources(inputcommon
+-  PRIVATE
+-    ControllerInterface/SteamDeck/SteamDeck.cpp
+-    ControllerInterface/SteamDeck/SteamDeck.h
+-  )
+-  target_link_libraries(inputcommon PUBLIC Hidapi::Hidapi)
+-  target_compile_definitions(inputcommon PRIVATE -DHAVE_HIDAPI=1)
+-endif()
+diff --git a/Source/Core/Core/CMakeLists.txt b/Source/Core/Core/CMakeLists.txt
+index 511702a..ab54c9a 100644
+--- a/Source/Core/Core/CMakeLists.txt
++++ b/Source/Core/Core/CMakeLists.txt
+@@ -785,15 +785,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+   target_link_options(core PUBLIC -Wl,-zwxneeded)
+ endif()
+ 
+-if(TARGET Hidapi::Hidapi)
+-  target_sources(core PRIVATE
+-    HW/WiimoteReal/IOhidapi.cpp
+-    HW/WiimoteReal/IOhidapi.h
+-  )
+-  target_link_libraries(core PUBLIC Hidapi::Hidapi)
+-  target_compile_definitions(core PRIVATE -DHAVE_HIDAPI=1)
+-endif()
+-
+ if(UNIX)
+   target_sources(core PRIVATE
+     MemoryWatcher.cpp
