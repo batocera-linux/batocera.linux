@@ -9,12 +9,15 @@ LIBRETRO_DOLPHIN_SITE = https://github.com/libretro/dolphin.git
 LIBRETRO_DOLPHIN_SITE_METHOD = git
 LIBRETRO_DOLPHIN_GIT_SUBMODULES = YES
 LIBRETRO_DOLPHIN_LICENSE = GPLv2
-LIBRETRO_DOLPHIN_DEPENDENCIES = libevdev fmt bluez5_utils retroarch pugixml libenet libcurl hidapi
+LIBRETRO_DOLPHIN_DEPENDENCIES = libevdev fmt bluez5_utils retroarch pugixml libenet libcurl
 LIBRETRO_DOLPHIN_EMULATOR_INFO = dolphin.libretro.core.yml
 
 LIBRETRO_DOLPHIN_PLATFORM = $(LIBRETRO_PLATFORM)
 
-LIBRETRO_DOLPHIN_CONF_OPTS = -DLIBRETRO=ON \
+LIBRETRO_DOLPHIN_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
+                             -DBUILD_SHARED_LIBS=OFF \
+                             -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -fpermissive" \
+                             -DLIBRETRO=ON \
                              -DLINUX=ON \
                              -DENABLE_NOGUI=OFF \
                              -DENABLE_QT=OFF \
@@ -22,9 +25,7 @@ LIBRETRO_DOLPHIN_CONF_OPTS = -DLIBRETRO=ON \
                              -DUSE_DISCORD_PRESENCE=OFF \
                              -DUSE_SYSTEM_XXHASH=OFF \
                              -DUSE_SYSTEM_SPNG=OFF \
-                             -DBUILD_SHARED_LIBS=OFF \
-                             -DCMAKE_BUILD_TYPE=Release \
-                             -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -fpermissive"
+                             -DUSE_SYSTEM_HIDAPI=OFF
 
 ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
     LIBRETRO_DOLPHIN_DEPENDENCIES += xserver_xorg-server
