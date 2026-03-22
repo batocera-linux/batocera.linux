@@ -149,11 +149,34 @@ auto_detect_encoder() {
 
 # --- Audio Detection ---
 get_audio_device() {
-    local VAL SRC
+    local VAL
     VAL=$(get_conf "AUDIO" "$DEFAULT_AUDIO")
     case "$VAL" in
         mic)
-            SRC=$(pactl list short sources | grep -v 'monitor' | head -1 | awk '{$1=""; sub(/^ /, ""); print}')
+            # Prefer source with device.class=sound and active mic port
+            SRC=$(pactl list sources | awk '
+                /^Source #/                { name=""; has_sound=0; has_mic=0 }
+                /^\s+Name:/               { name=$2 }
+                /device\.class = "sound"/ { has_sound=1 }
+                /Active Port:.*mic/       { has_mic=1 }
+                /^\s*$/                   { if(has_sound && has_mic && name!="") print has_mic, name }
+            ' | sort -rn | head -1 | awk '{print $2}')
+
+            # Fallback: any device.class=sound source
+            if [ -z "$SRC" ]; then
+                SRC=$(pactl list sources | awk '
+                    /^Source #/                { name=""; has_sound=0 }
+                    /^\s+Name:/               { name=$2 }
+                    /device\.class = "sound"/ { has_sound=1 }
+                    /^\s*$/                   { if(has_sound && name!="") print name }
+                ' | head -1)
+            fi
+
+            # Last resort: first non-monitor source
+            if [ -z "$SRC" ]; then
+                SRC=$(pactl list sources | awk '/^\s+Name:/{print $2}' | grep -v '\.monitor' | head -1)
+            fi
+
             log "Audio Source: Mic ($SRC)"
             echo "$SRC"
             ;;
@@ -162,9 +185,8 @@ get_audio_device() {
             echo "none"
             ;;
         *)
-            SRC=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1 | awk '{$1=$1; print $0".monitor"}')
-            log "Audio Source: Desktop ($SRC)"
-            echo "$SRC"
+            log "Audio Source: Desktop (PipeWire default)"
+            echo "desktop"
             ;;
     esac
 }
@@ -285,9 +307,16 @@ case "$1" in
 
         AUDIO_SRC=$(get_audio_device)
         AUDIO_FLAGS=()
-        if [ "$AUDIO_SRC" != "none" ]; then
-            AUDIO_FLAGS=("--audio=${AUDIO_SRC}" --audio-backend=pipewire -C aac)
-        fi
+        case "$AUDIO_SRC" in
+            none)
+                ;;
+            desktop)
+                AUDIO_FLAGS=(--audio -C aac)
+                ;;
+            *)
+                AUDIO_FLAGS=("--audio=${AUDIO_SRC}" -C aac)
+                ;;
+        esac
 
         TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
 
