@@ -286,7 +286,7 @@ case "$1" in
         AUDIO_SRC=$(get_audio_device)
         AUDIO_FLAGS=()
         if [ "$AUDIO_SRC" != "none" ]; then
-            AUDIO_FLAGS=("--audio=${AUDIO_SRC}" --audio-backend=pulseaudio -C aac)
+            AUDIO_FLAGS=("--audio=${AUDIO_SRC}" --audio-backend=pipewire -C aac)
         fi
 
         TIMESTAMP=$(date +%Y.%m.%d-%Hh%M.%S)
