@@ -275,7 +275,8 @@ mount_partition() {
             local SIZE_CLEAN=$(echo "$SIZE" | tr ':' '_')
             [ -z "$MODEL_CLEAN" ] && MODEL_CLEAN="Generic Drive"
 
-            send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT"
+            local UNIQUE_ID=$(get_unique_id "$PARENT")
+            send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT:$UNIQUE_ID"
             return 2
         fi
     fi
