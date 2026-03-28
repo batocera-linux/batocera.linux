@@ -184,7 +184,7 @@ do
 done
 
 # snapshot to help create .stale file
-BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale)$' | sort)
+BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*)$' | sort)
 
 # extract file on /boot
 do_upgmsg "Extracting files ..."
@@ -195,7 +195,7 @@ fi
 
 # build stale list: entries present before extraction but absent from the new tarball
 do_upgmsg "Generating stale file list ..."
-TARBALL_CONTENTS=$(xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar tf - | sed 's|/$||' | sort)
+TARBALL_CONTENTS=$(xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar tf - | sed -e 's|^\./||' -e 's|/$||' | sort -u)
 comm -23 \
     <(echo "$BOOT_BEFORE") \
     <(echo "$TARBALL_CONTENTS") \
