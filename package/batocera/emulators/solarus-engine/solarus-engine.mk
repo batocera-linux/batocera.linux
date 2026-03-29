@@ -3,8 +3,9 @@
 # solarus-engine
 #
 ################################################################################
-# Version: Commits on Jan 18, 2025
-SOLARUS_ENGINE_VERSION = bbecaf31ada06357d4c18726b572fe4b4ebccf56
+# Version: Commits on Jan 21, 2026 (v2.0.3 tag)
+# CAUTION: Only use stable commits from Solarus official repository tags
+SOLARUS_ENGINE_VERSION = d5e170be67a0119d73a502988e91bffcf04c3e06
 SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
 SOLARUS_ENGINE_SITE_METHOD=git
 SOLARUS_ENGINE_EMULATOR_INFO = solarus.emulator.yml
