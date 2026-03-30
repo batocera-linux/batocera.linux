@@ -15,6 +15,15 @@
 - Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
   These version continue to have problems with later kernel versions and are not longer sustainable.
   Only the legacy 470.xx, 580.xx and current 590.xx drivers will be supported in v43.
+- A few roms directories have changed names for consistency with themes and the overall rule of naming them after systems, not
+  emulators: now please use odyssey2 (o2em), megadrive-msu (msu-md), halflife (xash3d_fwgs), tvgames (plugnplay),
+  astrocade (astrocde), bbcmicro (bbc), rtcw (iortcw), loopy (casloopy).
+- Dolphin-Emu now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
+  Saves should be moved from /userdata/saves/dolphin-triforce to dolphin accordingly.
+- Removed Drastic emulator due to it's closed source nature and no longer compatible with the core OS.
+- SM8250 and SM8550 devices now have one image with the device selection in the bootloader
+  You must upgrade the Android Bootloader (ABL) before migrating to v43
+  See the wiki for further details - https://wiki.batocera.org/hardware:ayn
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
 - Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
@@ -28,6 +37,7 @@
 - Powkiddy X55 initial support
 - Raxda Dragon Q6A initial support
 - Raxda Zero 3W initial support
+- Retroid Pocket 6 initial support
 - RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
 ### Added
 - EmulationStation:
@@ -61,15 +71,21 @@
 - Sega Cave CV1000 support (currently x86 systems only)
 - Sega Gaelco support (currently x86 systems only)
 - Sega Hikaru support (currently x86 systems only)
+- Added support for GUO HUA PS3 GamePad in the Bluez package's Sixaxis plugin (models VOYEE - HY-2208 and MiniThink - CECHZC2U)
+- Experimental Sinden light gun borders for RPCS3 and Wine
+- Steering wheel support for Triforce system
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
 - Odin 2 variants wifi not working in some regions
 - Wifi country not being applied at boot
-- Light gun accuracy in MAME
+- Light gun overall accuracy (with shaders, sliders, bezels) in MAME standalone
 - Crosshairs for light guns in PCSX2
 - Massive MAME log (switchres verbose disabled by default)
 - PCSX2 light gun mapping (START can now be pressed on the light gun instead of controller)
 - PS4 and PSVita games not appearing in the "last played" auto collection
+- Sinden light gun's camera freezing after exiting Wine
+- Supermodel: offscreen reload not working on The Lost World: Jurassic Park (lostwsga)
+- MAME: broken light gun input in Jurassic Park (jpark), Operation Wolf 3 (opwolf3) and Police Trainer (policetr)
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
@@ -78,15 +94,17 @@
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 - DOSBox Staging's working directory is now set to the games' folder, allowing for local and relative (img)mount and conf file references.
 - DOSBox Staging will fallback to a C:\> prompt inside the games' folder if its missing dosbox.cfg/.conf/.bat files.
+- DOSBox Staging now stores DOS filesystem changes in /userdata/saves/dos/<game> for squashfs ROMs.
 - Systems like WINE and DOSBOX can now be prepared from PCManFM context menu. Right click on file items inside supported ones.
   to presetup them. This is mostly thought for startup files like dosbox.bat and autorun.cmd and for handling squashed archive files.
 - RPCS3 PS Move (light gun) mapping simplified. D-pad buttons are now PS Move face buttons. Check wiki for more info.
 ### Updated
+- Amiberry to 5th of March 2026 build
 - Azahar to 2124
 - BigPEmu to v121
 - Cemu to 22nd of January 2026 build
 - CLK to 2026-01-06
-- Dolphin-Emu to 2512-99
+- Dolphin-Emu to 2512-421
 - DXX-Rebirth to May 25, 2025
 - EasyRPG to 0.8.1.1
 - EDuke32 to Oct 10, 2025
@@ -122,15 +140,17 @@
 - Libretro Swanstation to 2nd of August 2025 build
 - Libretro Vecx to 12th of January 2026 build
 - Libretro YabaSanshiro to 20th of December 2025 build
+- Lindbergh Loader to v2.1.4
 - MelonDS to 1.1
 - OpenJK to 10th of October 2025 build
 - OpenJKDF2 to v0.9.8
 - OpenMOHAA to v0.82.1
 - Play! to 0.73
 - PCSX2 to v2.6.3
+- Pygame to 2.6.1
 - RClone to v1.72.1
 - RetroArch to 1.22.2
-- RPCS3 to v0.0.39
+- RPCS3 to v0.0.40
 - Ruffle to 31th of January 2026 nightly build
 - ScummVM to v2026.1.0
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
@@ -138,7 +158,7 @@
 - Sonic CD to 1.3.3
 - Sonic Mania to v1.1.1
 - Supermodel to 13th of November 2025 build
-- Syncthing to 2.0.12
+- Syncthing to 2.0.15
 - Taradino to 20251222
 - TheXTech to v1.3.7.2-1
 - TheForceEngine to v1.22.420
@@ -146,7 +166,7 @@
 - VkQuake to 19th of November 2025 build
 - Xash3D FWGS engine to Oct 17 build
 - Xenia-Canary to build f85f4c3
-- Xemu to v0.8.132
+- Xemu to v0.8.134
 - Ymir to 0.2.1
 ### System
 - Bluez to 5.84
@@ -155,10 +175,10 @@
 - Go language compiler to 1.25.5
 - GStreamer codecs to 1.26.6
 - Linux Firmware to 20251125
-- Linux Kernel to 6.18.9
+- Linux Kernel to 6.18.16
 - LabWC to 0.9.3
 - LLVM Project to 20.1.8
-- Mesa3D to 25.3.5
+- Mesa3D to 25.3.6
 - MPV to v0.41.0
 - Nvidia 580.xx legacy drivers to 580.126.09
 - Nvidia production drivers to 590.48.01

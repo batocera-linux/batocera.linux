@@ -4,26 +4,37 @@
 #
 ################################################################################
 
-BATOCERA_DESKTOPAPPS_VERSION = 1.1
+BATOCERA_DESKTOPAPPS_VERSION = 1.2
 BATOCERA_DESKTOPAPPS_SOURCE =
 
 BATOCERA_DESKTOPAPPS_PKGDIR = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-desktopapps
+
+# depend on yad if the device meets the criteria
+ifeq ($(BR2_PACKAGE_XORG7),y)
+ifeq ($(BR2_PACKAGE_LIBGTK2)$(BR2_PACKAGE_LIBGTK3_X11),y)
+BATOCERA_DESKTOPAPPS_DEPENDENCIES = yad
+endif
+endif
 
 # Base files
 BATOCERA_DESKTOPAPPS_SCRIPTS = filemanagerlauncher
 BATOCERA_DESKTOPAPPS_APPS    = xterm.desktop
 BATOCERA_DESKTOPAPPS_ICONS   =
 BATOCERA_DESKTOPAPPS_TOOLBOX =
-BATOCERA_DESKTOPAPPS_ACTIONS = system.md5sum.desktop
+BATOCERA_DESKTOPAPPS_ACTIONS =
 
-#file-roller integration for pcmanfm - open/list archives
-BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
 
-#1og Viewer for ES log files for all platforms that use pcmanfm
-BATOCERA_DESKTOPAPPS_SCRIPTS += view-eslog
-BATOCERA_DESKTOPAPPS_APPS    += view-eslog.desktop
-BATOCERA_DESKTOPAPPS_ICONS   += view-eslog.png
+# only applications for platforms that can use yad
+ifeq ($(BR2_PACKAGE_YAD),y)
+  # 1og Viewer for ES log files
+  BATOCERA_DESKTOPAPPS_SCRIPTS += view-eslog
+  BATOCERA_DESKTOPAPPS_APPS    += view-eslog.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += view-eslog.png
+
+  # file-roller integration for pcmanfm - open/list archives
+  BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
+endif
 
 ## System depended applets
 
@@ -43,13 +54,6 @@ ifeq ($(BR2_PACKAGE_DOLPHIN_EMU)$(BR2_PACKAGE_XORG7),yy)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
   BATOCERA_DESKTOPAPPS_APPS    += dolphin-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += dolphin.png
-endif
-
-# dolphin-triforce
-ifeq ($(BR2_PACKAGE_DOLPHIN_TRIFORCE),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin-triforce
-  BATOCERA_DESKTOPAPPS_APPS    += dolphin-triforce-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += dolphin-triforce.png
 endif
 
 # duckstation
@@ -142,7 +146,7 @@ ifeq ($(BR2_PACKAGE_DEMUL),y)
 endif
 
 # melonds
-ifeq ($(BR2_PACKAGE_DEMUL),y)
+ifeq ($(BR2_PACKAGE_MELONDS),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-melonds
   BATOCERA_DESKTOPAPPS_APPS    += melonds-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += melonds.png
@@ -190,30 +194,36 @@ endif
 
 ## Context Menu Actions
 
-# m3u playlists for psx, segacd, systems that support m3u
-BATOCERA_DESKTOPAPPS_TOOLBOX += multidisc.toolbox
-BATOCERA_DESKTOPAPPS_ACTIONS += multidisc.toolbox.m3ufromdir.desktop
+# only actions for platforms that can use yad
+ifeq ($(BR2_PACKAGE_YAD),y)
+  # get md5 checksums for selected files
+  BATOCERA_DESKTOPAPPS_ACTIONS += system.md5sum.desktop
 
-# wine
-ifeq ($(BR2_PACKAGE_WINE_TKG),y)
-  BATOCERA_DESKTOPAPPS_TOOLBOX += wine.toolbox
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.configit.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.wsquashfs.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.symlinkprefix.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.listprefix.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.folder2autorun.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.file2autorun.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
-endif
+  # m3u playlists for psx, segacd, systems that support m3u
+  BATOCERA_DESKTOPAPPS_TOOLBOX += multidisc.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += multidisc.toolbox.m3ufromdir.desktop
 
-# dosbox
-ifeq ($(BR2_PACKAGE_DOSBOX),y)
-  BATOCERA_DESKTOPAPPS_TOOLBOX += dos.toolbox
-  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.configit.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.squashfs.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.folder2autorun.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.file2autorun.desktop
-  BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.extract.desktop
+  # wine
+  ifeq ($(BR2_PACKAGE_WINE_TKG),y)
+    BATOCERA_DESKTOPAPPS_TOOLBOX += wine.toolbox
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.configit.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.wsquashfs.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.symlinkprefix.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.listprefix.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.folder2autorun.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.file2autorun.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
+  endif
+
+  # dosbox
+  ifeq ($(BR2_PACKAGE_DOSBOX),y)
+    BATOCERA_DESKTOPAPPS_TOOLBOX += dos.toolbox
+    BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.configit.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.squashfs.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.folder2autorun.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.file2autorun.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += dos.toolbox.extract.desktop
+  endif
 endif
 
 

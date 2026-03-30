@@ -353,7 +353,7 @@ class LibretroGenerator(Generator):
         elif system.name == 'sgb-msu1':
             if "squashfs" in str(rom) and rom.is_dir():
                 rom = next(itertools.chain(rom.glob('*.gb'), rom.glob('*.gbc')))
-        elif system.name == 'msu-md':  # noqa: SIM102
+        elif system.name == 'megadrive-msu':  # noqa: SIM102
             if "squashfs" in str(rom) and rom.is_dir():
                 rom = next(rom.glob('*.md'))
 

@@ -4,13 +4,61 @@ requires-python = "==3.12.8"
 
 [manifest]
 members = [
+    "batocera-configgen",
     "batocera-es-system",
     "batocera-linux",
-    "configgen",
+]
+constraints = [
+    { name = "configobj", specifier = "==5.0.8" },
+    { name = "evdev", specifier = "==1.7.1" },
+    { name = "ffmpeg-python", git = "https://github.com/kkroening/ffmpeg-python.git?rev=df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6" },
+    { name = "pillow", specifier = "==11.0.0" },
+    { name = "pysdl2", specifier = "==0.9.17" },
+    { name = "pyudev", specifier = "==0.24.3" },
+    { name = "pyyaml", specifier = "==6.0.2" },
+    { name = "qrcode", specifier = "==8.0" },
+    { name = "requests", specifier = "==2.32.3" },
+    { name = "ruamel-yaml", specifier = "==0.18.6" },
+    { name = "toml", specifier = "==0.10.2" },
+    { name = "typing-extensions", specifier = "==4.15.0" },
+]
+
+[[package]]
+name = "batocera-configgen"
+version = "1.4"
+source = { editable = "package/batocera/core/batocera-configgen/configgen" }
+dependencies = [
+    { name = "configobj" },
+    { name = "evdev", marker = "sys_platform == 'linux'" },
+    { name = "ffmpeg-python" },
+    { name = "pillow" },
+    { name = "pysdl2" },
+    { name = "pyudev", marker = "sys_platform == 'linux'" },
+    { name = "pyyaml" },
+    { name = "qrcode" },
+    { name = "requests" },
+    { name = "ruamel-yaml" },
+    { name = "toml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "configobj" },
+    { name = "evdev", marker = "sys_platform == 'linux'" },
+    { name = "ffmpeg-python" },
+    { name = "pillow" },
+    { name = "pysdl2" },
+    { name = "pyudev", marker = "sys_platform == 'linux'" },
+    { name = "pyyaml" },
+    { name = "qrcode" },
+    { name = "requests" },
+    { name = "ruamel-yaml" },
+    { name = "toml" },
 ]
 
 [[package]]
 name = "batocera-es-system"
+version = "1.4"
 source = { editable = "python-src/batocera-es-system" }
 dependencies = [
     { name = "pyyaml" },
@@ -20,9 +68,9 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "ruamel-yaml", specifier = "==0.18.6" },
-    { name = "typing-extensions", specifier = "==4.15.0" },
+    { name = "pyyaml" },
+    { name = "ruamel-yaml" },
+    { name = "typing-extensions" },
 ]
 
 [[package]]
@@ -30,80 +78,24 @@ name = "batocera-linux"
 version = "43.dev0"
 source = { virtual = "." }
 dependencies = [
+    { name = "batocera-configgen" },
     { name = "batocera-es-system" },
-    { name = "configgen" },
 ]
 
 [package.dev-dependencies]
-deps = [
-    { name = "configobj" },
-    { name = "ffmpeg-python" },
-    { name = "pillow" },
-    { name = "pip" },
-    { name = "pysdl2" },
-    { name = "pyyaml" },
-    { name = "qrcode" },
-    { name = "requests" },
-    { name = "ruamel-yaml" },
-    { name = "toml" },
-    { name = "typing-extensions" },
-]
 dev = [
-    { name = "configobj" },
-    { name = "ffmpeg-python" },
-    { name = "pillow" },
-    { name = "pip" },
-    { name = "pyright", extra = ["nodejs"] },
-    { name = "pysdl2" },
-    { name = "pyyaml" },
-    { name = "qrcode" },
-    { name = "requests" },
-    { name = "ruamel-yaml" },
-    { name = "ruff" },
-    { name = "toml" },
-    { name = "typing-extensions" },
-]
-lint = [
     { name = "pyright", extra = ["nodejs"] },
     { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "batocera-configgen", editable = "package/batocera/core/batocera-configgen/configgen" },
     { name = "batocera-es-system", editable = "python-src/batocera-es-system" },
-    { name = "configgen", editable = "package/batocera/core/batocera-configgen/configgen" },
 ]
 
 [package.metadata.requires-dev]
-deps = [
-    { name = "configobj", specifier = "==5.0.8" },
-    { name = "ffmpeg-python", git = "https://github.com/kkroening/ffmpeg-python.git?rev=df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6" },
-    { name = "pillow", specifier = "==11.0.0" },
-    { name = "pip", specifier = ">=25.1" },
-    { name = "pysdl2", specifier = "==0.9.17" },
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "qrcode", specifier = "==8.0" },
-    { name = "requests", specifier = "==2.32.3" },
-    { name = "ruamel-yaml", specifier = "==0.18.6" },
-    { name = "toml", specifier = "==0.10.2" },
-    { name = "typing-extensions", specifier = "==4.15.0" },
-]
 dev = [
-    { name = "configobj", specifier = "==5.0.8" },
-    { name = "ffmpeg-python", git = "https://github.com/kkroening/ffmpeg-python.git?rev=df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6" },
-    { name = "pillow", specifier = "==11.0.0" },
-    { name = "pip", specifier = ">=25.1" },
-    { name = "pyright", extras = ["nodejs"], specifier = "==1.1.408" },
-    { name = "pysdl2", specifier = "==0.9.17" },
-    { name = "pyyaml", specifier = "==6.0.2" },
-    { name = "qrcode", specifier = "==8.0" },
-    { name = "requests", specifier = "==2.32.3" },
-    { name = "ruamel-yaml", specifier = "==0.18.6" },
-    { name = "ruff", specifier = "==0.14.14" },
-    { name = "toml", specifier = "==0.10.2" },
-    { name = "typing-extensions", specifier = "==4.15.0" },
-]
-lint = [
     { name = "pyright", extras = ["nodejs"], specifier = "==1.1.408" },
     { name = "ruff", specifier = "==0.14.14" },
 ]
@@ -152,10 +144,6 @@ wheels = [
 ]
 
 [[package]]
-name = "configgen"
-source = { editable = "package/batocera/core/batocera-configgen/configgen" }
-
-[[package]]
 name = "configobj"
 version = "5.0.8"
 source = { registry = "https://pypi.org/simple" }
@@ -166,6 +154,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/cb/87/17d4c6d634c044ab0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d3/bb/d10e531b297dd1d46f6b1fd11d018247af9f2d460037554bb7bb9011c6ac/configobj-5.0.8-py2.py3-none-any.whl", hash = "sha256:a7a8c6ab7daade85c3f329931a807c8aee750a2494363934f8ea84d8a54c87ea", size = 36180, upload-time = "2023-01-18T22:34:42.431Z" },
 ]
+
+[[package]]
+name = "evdev"
+version = "1.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/12/bb/f622a8a5e64d46ca83020a761877c0ead19140903c9aaf1431f3c531fdf6/evdev-1.7.1.tar.gz", hash = "sha256:0c72c370bda29d857e188d931019c32651a9c1ea977c08c8d939b1ced1637fde", size = 30705, upload-time = "2024-05-07T23:02:35.997Z" }
 
 [[package]]
 name = "ffmpeg-python"
@@ -238,15 +232,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pip"
-version = "25.3"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fe/6e/74a3f0179a4a73a53d66ce57fdb4de0080a8baa1de0063de206d6167acc2/pip-25.3.tar.gz", hash = "sha256:8d0538dbbd7babbd207f261ed969c65de439f6bc9e5dbd3b3b9a77f25d95f343", size = 1803014, upload-time = "2025-10-25T00:55:41.394Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/44/3c/d717024885424591d5376220b5e836c2d5293ce2011523c9de23ff7bf068/pip-25.3-py3-none-any.whl", hash = "sha256:9655943313a94722b7774661c21049070f6bbb0a1516bf02f7c8d5d9201514cd", size = 1778622, upload-time = "2025-10-25T00:55:39.247Z" },
-]
-
-[[package]]
 name = "pyright"
 version = "1.1.408"
 source = { registry = "https://pypi.org/simple" }
@@ -271,6 +256,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/d7/ff/8704d84ad4d25f0a7bf7912504f64575e432e8d57dfba2fe35f5b2db7e04/pysdl2-0.9.17.tar.gz", hash = "sha256:48c6ef01a4eb123db5f7e46e1a1b565675755b07e615f3fe20a623c94735b52b", size = 775955, upload-time = "2024-12-30T18:07:27.562Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/5d/e2/399ea7900e7510096aeb41439e6f1540bef0bdf7e15cc2d8464e4adb71e8/PySDL2-0.9.17-py3-none-any.whl", hash = "sha256:fe923dbf5c7b27bbc1eb2bf58abfa793f8f13fd7ae8b27b1bc2de49920bcbd41", size = 583137, upload-time = "2024-12-30T18:07:25.987Z" },
+]
+
+[[package]]
+name = "pyudev"
+version = "0.24.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/5c/6cc034da13830e3da123ccf9a30910bc868fa16670362f004e4b788d0df1/pyudev-0.24.3.tar.gz", hash = "sha256:2e945427a21674893bb97632401db62139d91cea1ee96137cc7b07ad22198fc7", size = 55970, upload-time = "2024-05-10T18:24:04.599Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/3b/c37870f68ceb067707ca7b04db364a1478fcd40c6194007fb6e492ff9a92/pyudev-0.24.3-py3-none-any.whl", hash = "sha256:e8246f0a014fe370119ba2bc781bfbe62c0298d0d6b39c94e83102a8a3f56960", size = 62677, upload-time = "2024-05-10T18:24:02.743Z" },
 ]
 
 [[package]]

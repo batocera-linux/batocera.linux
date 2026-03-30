@@ -85,6 +85,7 @@ class LexaloffleGenerator(Generator):
         existing_library_path = os.environ.get("LD_LIBRARY_PATH")
 
         return Command.Command(array=commandArray, env={
+            "SDL_AUDIODRIVER": "alsa",
             "LD_LIBRARY_PATH": f"{LD_LIB}:{existing_library_path}" if existing_library_path else LD_LIB
         })
 

@@ -1,0 +1,127 @@
+diff --git a/src/lindbergh/shaderPatches.c b/src/lindbergh/shaderPatches.c
+index 25ce447..f2ad7d1 100644
+--- a/src/lindbergh/shaderPatches.c
++++ b/src/lindbergh/shaderPatches.c
+@@ -8,7 +8,9 @@
+ #include <fcntl.h>
+ #include <libgen.h>
+ #include <stdbool.h>
++#include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <sys/mman.h>
+ #include <unistd.h>
+ 
+@@ -716,8 +718,86 @@ char *cgCreateProgram(uint32_t context, int program_type, const char *program, i
+     return _cgCreateProgram(context, program_type, program, profile, entry, args);
+ }
+ 
++// HOTD4/SP: Mesa 25.2+ NIR linker fix for NNGLD varyings
++
++static __GLXextFuncPtr (*_real_glXGetProcAddressARB)(const GLubyte *) = NULL;
++
++static void *real_glXGetProcAddress(const char *name)
++{
++    if (!_real_glXGetProcAddressARB)
++        _real_glXGetProcAddressARB = (__GLXextFuncPtr (*)(const GLubyte *))dlsym(RTLD_NEXT, "glXGetProcAddressARB");
++    return (void *)_real_glXGetProcAddressARB((const GLubyte *)name);
++}
++
++static bool hotd4_is_active(void)
++{
++    return (gGrp == GROUP_HOD4 || gGrp == GROUP_HOD4_TEST ||
++            gGrp == GROUP_HOD4_SP || gGrp == GROUP_HOD4_SP_TEST);
++}
++
++// Compile/link wrappers: querying status forces Mesa to finalize before linking
++static void (*real_glCompileShaderARB)(GLuint) = NULL;
++static void (*real_glLinkProgramARB)(GLuint) = NULL;
++
++void gl_CompileShaderARB(GLuint shader)
++{
++    if (!real_glCompileShaderARB)
++        real_glCompileShaderARB = (void (*)(GLuint))real_glXGetProcAddress("glCompileShaderARB");
++    real_glCompileShaderARB(shader);
++    if (hotd4_is_active())
++    {
++        GLint status;
++        void (*getShaderiv)(GLuint, GLenum, GLint *) =
++            (void (*)(GLuint, GLenum, GLint *))real_glXGetProcAddress("glGetShaderiv");
++        if (getShaderiv)
++            getShaderiv(shader, GL_COMPILE_STATUS, &status);
++    }
++}
++
++void gl_LinkProgramARB(GLuint program)
++{
++    if (!real_glLinkProgramARB)
++        real_glLinkProgramARB = (void (*)(GLuint))real_glXGetProcAddress("glLinkProgramARB");
++    real_glLinkProgramARB(program);
++}
++
+ void gl_ShaderSourceARB(GLhandleARB shaderObj, GLsizei count, const GLcharARB **const string, const GLint *length)
+ {
++    // HOTD4/SP: zero-init NNGLD varyings in vertex shaders for Mesa 25.2+
++    if (hotd4_is_active() && count > 0 && string[0])
++    {
++        int src_len = (length && length[0] > 0) ? length[0] : (int)strlen(string[0]);
++        if (strstr(string[0], "gl_Position") && strstr(string[0], "nnglvTexCoord01"))
++        {
++            const char *main_str = strstr(string[0], "void main");
++            const char *open_brace = main_str ? strchr(main_str, '{') : NULL;
++            if (open_brace)
++            {
++                static const char *varying_init =
++                    "\n"
++                    "nnglvTexCoord01 = vec4(0.0);\n"
++                    "nnglvTexCoord23 = vec4(0.0);\n"
++                    "nnglvTexCoord45 = vec4(0.0);\n"
++                    "nnglvTexCoord67 = vec4(0.0);\n";
++                int fix_len = strlen(varying_init);
++                int insert_pos = (int)(open_brace - string[0]) + 1;
++                int new_len = src_len + fix_len;
++                char *patched = malloc(new_len + 1);
++                if (patched)
++                {
++                    memcpy(patched, string[0], insert_pos);
++                    memcpy(patched + insert_pos, varying_init, fix_len);
++                    memcpy(patched + insert_pos + fix_len, string[0] + insert_pos, src_len - insert_pos);
++                    patched[new_len] = '\0';
++                    GLint patched_len = new_len;
++                    glShaderSourceARB(shaderObj, 1, (const GLcharARB **)&patched, &patched_len);
++                    free(patched);
++                    return;
++                }
++            }
++        }
++    }
++
+     if (gGrp != GROUP_HUMMER && gId != SEGA_RACE_TV)
+     {
+         glShaderSourceARB(shaderObj, count, string, length);
+@@ -932,8 +1012,24 @@ void *gl_XGetProcAddressARB(const unsigned char *procName)
+         }
+         return (void *)gl_ShaderSourceARB;
+     }
++    if (strcmp((const char *)procName, "glCompileShaderARB\0") == 0 ||
++        strcmp((const char *)procName, "glCompileShader\0") == 0)
++    {
++        return (void *)gl_CompileShaderARB;
++    }
++    if (strcmp((const char *)procName, "glLinkProgramARB\0") == 0 ||
++        strcmp((const char *)procName, "glLinkProgram\0") == 0)
++    {
++        return (void *)gl_LinkProgramARB;
++    }
++
++    return real_glXGetProcAddress((const char *)procName);
++}
+ 
+-    return glXGetProcAddressARB(procName);
++// LD_PRELOAD override to intercept GL lookups from NNGLD
++__GLXextFuncPtr glXGetProcAddressARB(const GLubyte *procName)
++{
++    return (__GLXextFuncPtr)gl_XGetProcAddressARB(procName);
+ }
+ 
+ /**

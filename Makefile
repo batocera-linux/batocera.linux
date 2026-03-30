@@ -97,7 +97,18 @@ KERNEL_MODULE_PKGS = $(eval KERNEL_MODULE_PKGS := $(sort $(patsubst %.mk,%,$(not
 GIT_PACKAGES_TO_REBUILD = $(eval GIT_PACKAGES_TO_REBUILD := $(shell \
 	{ git -C $(PROJECT_DIR) log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; \
 	  git -C $(PROJECT_DIR)/buildroot log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; } \
-	| sed -r 's:^package/::; /^batocera\/[^/]*$$/d; s:^batocera/[^/]+/::; s:^([^/]+)/.*:\1:' \
+	| grep '^package/' \
+	| while read f; do \
+		dir="$(PROJECT_DIR)/$$f"; \
+		[ -f "$$dir" ] && dir=$$(dirname "$$dir"); \
+		while [ "$$dir" != "$(PROJECT_DIR)/package" ] && [ "$$dir" != "$(PROJECT_DIR)" ]; do \
+			mk=$$(basename "$$dir"); \
+			if ls "$$dir/$$mk.mk" 2>/dev/null | grep -q .; then \
+				echo "$$mk"; break; \
+			fi; \
+			dir=$$(dirname "$$dir"); \
+		done; \
+	done \
 	| sort -u))$(GIT_PACKAGES_TO_REBUILD)
 
 # Base list of all target packages to be reset
@@ -348,7 +359,7 @@ endif
 		echo "Total packages to reset: $(PKGS_TO_RESET)"; \
 		for pkg in $(PKGS_TO_RESET); do \
 			echo "Surgically removing $$pkg from build and per-package directories..."; \
-			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg-*; \
+			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg*; \
 			rm -rf $(TARGET_OUTPUT_DIR)/per-package/$$pkg; \
 		done; \
 	else \

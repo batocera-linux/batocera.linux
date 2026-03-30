@@ -51,6 +51,11 @@ def generateControllerConfig(system: Emulator, playersControllers: Controllers, 
             elif system.config.get("dolphin_wheel_type") == "Steering Wheel":
                 used_wheels = wheels
         generateControllerConfig_gamecube(system, playersControllers, used_wheels, rom)               # Pass ROM name to allow for per ROM configuration
+    elif system.name == "triforce":
+        used_wheels: DeviceInfoMapping = {}
+        if system.config.use_wheels and wheels:
+            used_wheels = wheels
+        generateControllerConfig_triforce(system, playersControllers, used_wheels, rom)
     else:
         raise BatoceraException(f"Invalid system name: '{system.name}'")
 
@@ -244,6 +249,86 @@ def generateControllerConfig_gamecube(system: Emulator, playersControllers: Cont
 
     generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", gamecubeMapping, gamecubeReverseAxes, gamecubeReplacements)
 
+def generateControllerConfig_triforce(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, rom: Path) -> None:
+    # Based on GameCube mapping but with arcade specific overrides
+    triforceMapping = {
+        'a':             'Buttons/B',
+        'b':             'Buttons/A',
+        'y':             'Buttons/Y',
+        'x':             'Buttons/X',
+        'pagedown':      'Buttons/Z',
+        'pageup':        'Triforce/Service',
+        'select':        'Triforce/Coin',
+        'start':         'Buttons/Start',
+        'l2':            'Triggers/L',
+        'r2':            'Triggers/R',
+        'up':            'D-Pad/Up',
+        'down':          'D-Pad/Down',
+        'left':          'D-Pad/Left',
+        'right':         'D-Pad/Right',
+        'joystick1up':   'Main Stick/Up',
+        'joystick1left': 'Main Stick/Left',
+        'joystick2up':   'C-Stick/Up',
+        'joystick2left': 'C-Stick/Left',
+        'hotkey':        None
+    }
+    
+    triforceReverseAxes: dict[str | None, str] = {
+        'Main Stick/Up':   'Main Stick/Down',
+        'Main Stick/Left': 'Main Stick/Right',
+        'C-Stick/Up':      'C-Stick/Down',
+        'C-Stick/Left':    'C-Stick/Right'
+    }
+
+    triforceReplacements = {
+        'joystick1up':    'up',
+        'joystick1left':  'left',
+        'joystick1down':  'down',
+        'joystick1right': 'right',
+        'l2':             'pageup',
+        'r2':             'pagedown'
+    }
+
+    # Handle per-ROM overrides if a .cfg file exists
+    configname = rom.with_name(f'{rom.name}.cfg')
+    if configname.is_file():
+        import ast
+        with configname.open() as cconfig:
+            line = cconfig.readline()
+            while line:
+                entry = f"{{{line}}}"
+                res = ast.literal_eval(entry)
+                triforceMapping.update(res)
+                line = cconfig.readline()
+
+    # Wheel mapping for Triforce arcade racing games.
+    wheelTriforceMapping: dict[str, str | None] = {
+        'select':        'Triforce/Coin',
+        'start':         'Buttons/Start',
+        'up':            'D-Pad/Up',
+        'down':          'D-Pad/Down',
+        'left':          'D-Pad/Left',
+        'right':         'D-Pad/Right',
+        'a':             'Buttons/A',            # Boost (F-Zero AX) / Item (Mario Kart GP)
+        'b':             'Buttons/B',            # VS-Cancel (Mario Kart GP)
+        'y':             'Buttons/Z',            # Jump (Mario Kart GP)
+        'r2':            'Triggers/R-Analog',    # Gas
+        'l2':            'Triggers/L-Analog',    # Brake
+        'joystick1left': 'Main Stick/Left',      # Steering
+        'pageup':        'Buttons/X',            # Paddle left
+        'pagedown':      'Buttons/Y',            # Paddle right
+    }
+
+    wheelTriforceReverseAxes: dict[str | None, str] = {
+        'Main Stick/Left': 'Main Stick/Right',
+    }
+
+    wheelTriforceExtraOptions: dict[str, str] = {
+        'Main Stick/Dead Zone': '0.',
+    }
+
+    generateControllerConfig_any(system, playersControllers, wheels, "GCPadNew.ini", "GCPad", triforceMapping, triforceReverseAxes, triforceReplacements, wheelMapping=wheelTriforceMapping, wheelReverseAxes=wheelTriforceReverseAxes, wheelExtraOptions=wheelTriforceExtraOptions)
+
 def removeControllerConfig_gamecube() -> None:
     configFileName = DOLPHIN_CONFIG / "GCPadNew.ini"
     if configFileName.is_file():
@@ -421,16 +506,15 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str 
 
     return mapping
 
-def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}) -> None:
+def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}, wheelMapping: Mapping[str, str | None] | None = None, wheelReverseAxes: Mapping[str | None, str] | None = None, wheelExtraOptions: Mapping[str, str] = {}) -> None:
     configFileName = DOLPHIN_CONFIG / filename
     with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
-        nplayer = 1
         nsamepad = 0
 
         # In case of two pads having the same name, dolphin wants a number to handle this
         double_pads: dict[str, int] = {}
 
-        for nplayer, pad in enumerate(playersControllers):
+        for nplayer, pad in enumerate(playersControllers, start=1):
             # Handle x pads having the same name
             nsamepad = double_pads.get(pad.real_name.strip(), 0)
             double_pads[pad.real_name.strip()] = nsamepad+1
@@ -442,7 +526,9 @@ def generateControllerConfig_any(system: Emulator, playersControllers: Controlle
                 if not generateControllerConfig_any_from_profiles(f, pad, system):
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)
             else:
-                if pad.device_path in wheels:
+                if pad.device_path in wheels and wheelMapping is not None:
+                    generateControllerConfig_any_auto(f, pad, wheelMapping, wheelReverseAxes or {}, None, wheelExtraOptions, system, nplayer, nsamepad)
+                elif pad.device_path in wheels:
                     generateControllerConfig_wheel(f, pad, nplayer)
                 else:
                     generateControllerConfig_any_auto(f, pad, anyMapping, anyReverseAxes, anyReplacements, extraOptions, system, nplayer, nsamepad)

@@ -3,6 +3,7 @@
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
 STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
+DOCKED_FLAG="/var/run/batocera-docked"
 
 _wait_for_emulationstation() {
     local timeout=3; local waited=0
@@ -17,14 +18,64 @@ _wait_for_emulationstation() {
     return 0
 }
 
+_detect_docked_output() {
+    # Build known outputs from master settings first
+    KNOWN_OUTPUTS=""
+    for key in global.videooutput global.videooutput2 global.videooutput3; do
+        val=$(batocera-settings-get-master "$key")
+        [ -n "$val" ] && KNOWN_OUTPUTS="$KNOWN_OUTPUTS $val"
+    done
+
+    # If no configured outputs, fall back to the status file as the baseline
+    if [ -z "${KNOWN_OUTPUTS}" ]; then
+        if [ -f "${STATUS_FILE}" ]; then
+            echo "Checker: No configured outputs. Using status file as baseline." >> "$LOG"
+            KNOWN_OUTPUTS=$(cat "${STATUS_FILE}" | tr '\n' ' ')
+        else
+            echo "Checker: No configured outputs and no status file. Skipping docked detection." >> "$LOG"
+            return 0
+        fi
+    fi
+
+    EXTERNAL_OUTPUT=""
+    while IFS= read -r output; do
+        IS_KNOWN=0
+        for known in $KNOWN_OUTPUTS; do
+            [ "$output" = "$known" ] && IS_KNOWN=1 && break
+        done
+        if [ "$IS_KNOWN" -eq 0 ]; then
+            EXTERNAL_OUTPUT="$output"
+            break
+        fi
+    done < <(batocera-resolution listOutputs)
+
+    if [ -n "$EXTERNAL_OUTPUT" ]; then
+        echo "Checker: External output detected: ${EXTERNAL_OUTPUT}. Writing docked flag." >> "$LOG"
+        echo "$EXTERNAL_OUTPUT" > "${DOCKED_FLAG}"
+    else
+        echo "Checker: No external output detected. Removing docked flag." >> "$LOG"
+        rm -f "${DOCKED_FLAG}"
+    fi
+}
+
 case "$1" in
     "--init")
         export XDG_RUNTIME_DIR=/var/run
         OUTPUT_LIST=$(batocera-resolution listOutputs)
-        LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
-        echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
 
-        echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
+        # Detect docked state FIRST, using existing status file as baseline if needed
+        _detect_docked_output
+
+        # If docked, only write the docked output to the status file
+        if [ -f "${DOCKED_FLAG}" ]; then
+            DOCKED_OUT=$(cat "${DOCKED_FLAG}")
+            echo "${DOCKED_OUT}" > "${STATUS_FILE}"
+            echo "Checker-Init: Docked mode - status file set to docked output only: ${DOCKED_OUT}" >> "$LOG"
+        else
+            LOGGABLE_OUTPUTS=$(echo "${OUTPUT_LIST}" | tr '\n' ' ')
+            echo "Checker-Init: Storing settled display list: [${LOGGABLE_OUTPUTS}]" >> "$LOG"
+            echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
+        fi
         exit 0
         ;;
     *)
@@ -51,6 +102,9 @@ case "$1" in
             rm -f "${DEBOUNCE_LOCK}"
             exit 1
         fi
+
+        # Detect and write/remove docked flag before triggering ES restart
+        _detect_docked_output
 
         echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
         curl http://localhost:1234/quit

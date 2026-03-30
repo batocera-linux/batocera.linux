@@ -7,7 +7,7 @@ LOG_FILE="/var/log/batocera-storage.log"
 POOL_PATH="/userdata/roms"
 CONFIG_KEY="mergerfs.roms"
 BOOT_CONF_FILE="/boot/batocera-boot.conf"
-MERGERFS_OPTS="-o cache.files=off,dropcacheonclose=false,category.create=mfs,allow_other,use_ino,moveonenospc=true,minfreespace=4G"
+MERGERFS_OPTS="-o cache.files=partial,dropcacheonclose=true,category.create=eplfs,allow_other,inodecalc=path-hash,moveonenospc=true,minfreespace=4G"
 
 # --- HELPERS ---
 log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
@@ -164,8 +164,12 @@ get_unique_id() {
     [ -n "$id" ] && { echo "$id"; return; }
     local all_uuids=$(lsblk -no UUID,PARTUUID "/dev/${1}"* | tr -d '[:space:]' | sort -u | tr -d '\n')
     if [ -n "$all_uuids" ]; then echo "$all_uuids" | md5sum | cut -d' ' -f1; return; fi
+    # Append devname so two identical drives get different IDs
     local info=$(lsblk -d -n -o VENDOR,MODEL,SIZE "$dev_path" | sed 's/  */_/g')
-    [ -n "$info" ] && { echo "$info"; return; }
+    if [ -n "$info" ]; then
+        echo "${info}_$(basename $dev_path)"
+        return
+    fi
 }
 
 mount_partition() {
@@ -271,7 +275,8 @@ mount_partition() {
             local SIZE_CLEAN=$(echo "$SIZE" | tr ':' '_')
             [ -z "$MODEL_CLEAN" ] && MODEL_CLEAN="Generic Drive"
 
-            send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT"
+            local UNIQUE_ID=$(get_unique_id "$PARENT")
+            send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT:$UNIQUE_ID"
             return 2
         fi
     fi
@@ -510,6 +515,8 @@ handle_disk_event() {
 
     # Ignore drives 4GB or smaller (8388608 sectors). 
     # This safely ignores Qualcomm android partitions like sdg/sdh.
+    local gb_size=$(awk "BEGIN {printf \"%.1fG\", $raw_sectors * 512 / 1073741824}")
+
     if [ "$raw_sectors" -le 8388608 ]; then
         log_msg "SAFETY: [$devname] Drive is 4GB or smaller ($gb_size). Likely a system LUN. Skipping."
         exit 0
@@ -518,7 +525,6 @@ handle_disk_event() {
     # Trigger Format Prompt in ES
     touch "$pending_flag"
     local model=$(lsblk -d -n -o MODEL "/dev/$parent")
-    local gb_size=$(awk "BEGIN {printf \"%.1fG\", $raw_sectors * 512 / 1073741824}")
     
     local model_clean=$(echo "$model" | tr ':' '_' | xargs)
     local size_clean=$(echo "$gb_size" | tr ':' '_')
@@ -612,7 +618,7 @@ case "$COMMAND" in
     U_RETRY=0
     while mount | grep " $POOL_PATH " | grep -q "mergerfs"; do
         if [ $U_RETRY -eq 0 ]; then log_msg "REFRESH: Unmounting existing pool(s)..."; fi
-        umount -l "$POOL_PATH"
+        umount "$POOL_PATH" 2>/dev/null || umount -l "$POOL_PATH"
         sleep 0.5
         ((U_RETRY++))
         if [ $U_RETRY -ge $UNMOUNT_RETRIES ]; then
@@ -621,15 +627,19 @@ case "$COMMAND" in
         fi
     done
 
+    # Verify pool is fully settled before touching files
+    if mount | grep -q " $POOL_PATH "; then
+        log_msg "CRITICAL: Pool still mounted after unmount attempts. Aborting."
+        exit 1
+    fi
+
     BASE_DIR="/userdata/.roms_base"
     mkdir -p "$BASE_DIR"
-    
-    # Move internal files if they are currently exposed
-    if ! mount | grep -q " $POOL_PATH "; then
-        if [ -n "$(ls -A "$POOL_PATH" 2>/dev/null)" ]; then
-            mv "$POOL_PATH"/* "$BASE_DIR"/ 2>/dev/null
-            mv "$POOL_PATH"/.[!.]* "$BASE_DIR"/ 2>/dev/null
-        fi
+
+    # Safe to move now — pool is confirmed down, POOL_PATH is raw internal only
+    if [ -n "$(ls -A "$POOL_PATH" 2>/dev/null)" ]; then
+        mv "$POOL_PATH"/* "$BASE_DIR"/ 2>/dev/null
+        mv "$POOL_PATH"/.[!.]* "$BASE_DIR"/ 2>/dev/null
     fi
 
     # Build Branch List
@@ -737,11 +747,17 @@ case "$COMMAND" in
     log_msg "FORMAT: Setting up structure at $MOUNT_POINT..."
     mkdir -p "$MOUNT_POINT/roms"
 
+    BASE_DIR="/userdata/.roms_base"
     log_msg "FORMAT: Replicating empty folder structure from internal storage..."
-    # rsync directories only. This ensures the external drive has snes, gba, etc.
-    # We sync FROM /userdata/roms/ (Internal) TO $MOUNT_POINT/roms/
-    if [ -d "/userdata/roms" ]; then
-        rsync -a -f"+ */" -f"- *" "/userdata/roms/" "$MOUNT_POINT/roms/" 2>/dev/null
+    if mount | grep -q " $POOL_PATH"; then
+        RSYNC_SOURCE="$BASE_DIR"
+    else
+        RSYNC_SOURCE="$POOL_PATH"
+    fi
+
+    if [ -d "$RSYNC_SOURCE" ]; then
+        log_msg "FORMAT: Replicating folder structure from $RSYNC_SOURCE..."
+        rsync -a -f"+ */" -f"- *" "$RSYNC_SOURCE/" "$MOUNT_POINT/roms/" 2>/dev/null
     fi
 
     send_notification "NOTIFY:Configuring Storage..."
@@ -784,13 +800,21 @@ case "$COMMAND" in
 
     mount -o remount,ro /boot
 
-    if mount | grep -q "fuse.mergerfs on $POOL_PATH"; then
-        log_msg "POOL: Reloading MergerFS to include new drive..."
-        umount -l "$POOL_PATH"
-    fi
-
     BASE_DIR="/userdata/.roms_base"
     mkdir -p "$BASE_DIR"
+
+    # Tear down the live pool BEFORE touching any files.
+    if mount | grep -q " $POOL_PATH"; then
+        log_msg "POOL: Reloading MergerFS to include new drive..."
+        MAX_RETRIES=5
+        COUNT=0
+        while mount | grep -q " $POOL_PATH"; do
+            umount "$POOL_PATH" 2>/dev/null || umount -l "$POOL_PATH"
+            sleep 0.5
+            ((COUNT++))
+            [ $COUNT -ge $MAX_RETRIES ] && { log_msg "CRITICAL: Cannot unmount pool."; send_notification "NOTIFY:Error: Merge Failed"; exit 1; }
+        done
+    fi
 
     # Check if /userdata/roms (Internal) has files. If so, move them to .roms_base
     # so they can be part of the pool instead of being masked by the mount.
@@ -844,8 +868,9 @@ case "$COMMAND" in
     ;;
 
 "unmount_live_pool")
-    MOUNT_POINT=$1
-    
+    EJECTED_MOUNT=$ARG2
+    log_msg "POOL: unmount_live_pool triggered, ejected mount: ${EJECTED_MOUNT:-unknown}"
+
     # Force Unmount the existing pool (Loop to handle stacked mounts)
     if mount | grep " $POOL_PATH " | grep -q "mergerfs"; then
         log_msg "POOL: Active MergerFS found. Stopping to reconfigure..."
@@ -854,7 +879,7 @@ case "$COMMAND" in
         MAX_RETRIES=5
         COUNT=0
         while mount | grep " $POOL_PATH " | grep -q "mergerfs"; do
-            umount -l "$POOL_PATH"
+            umount "$POOL_PATH" 2>/dev/null || umount -l "$POOL_PATH"
             sleep 1
             ((COUNT++))
             if [ $COUNT -ge $MAX_RETRIES ]; then
@@ -877,13 +902,15 @@ case "$COMMAND" in
         if [ -d "$BASE_DIR" ]; then
             log_msg "POOL: No external drives remaining. Restoring internal ROMs..."
             send_notification "NOTIFY:Restoring Internal Games..."
-            
-            cp -alf "$BASE_DIR"/. "$POOL_PATH"/ >> "$LOG_FILE" 2>&1
-            # Now remove the empty directory structure left behind
-            rm -rf "$BASE_DIR"
 
-            log_msg "POOL: Restoration complete."
-            send_notification "NOTIFY:Restoration complete"
+            if rsync -a --ignore-existing "$BASE_DIR"/ "$POOL_PATH"/ >> "$LOG_FILE" 2>&1; then
+                log_msg "POOL: Restoration complete. Cleaning up base dir..."
+                rm -rf "$BASE_DIR"
+                send_notification "NOTIFY:Restoration complete"
+            else
+                log_msg "ERROR: Restoration rsync failed. BASE_DIR preserved at $BASE_DIR for safety."
+                send_notification "NOTIFY:Error: Restore incomplete, data preserved in .roms_base"
+            fi
         fi
     else
         # Re-build the pool with the remaining drives + internal

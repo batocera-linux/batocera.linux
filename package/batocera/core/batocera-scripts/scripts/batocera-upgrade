@@ -183,11 +183,31 @@ do
     fi
 done
 
+# snapshot to help create .stale file
+BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*)$' | sort)
+
 # extract file on /boot
 do_upgmsg "Extracting files ..."
 if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf - --no-same-owner)
 then
     exit 1
+fi
+
+# build stale list: entries present before extraction but absent from the new tarball
+do_upgmsg "Generating stale file list ..."
+TARBALL_CONTENTS=$(xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar tf - | sed -e 's|^\./||' -e 's|/$||' | sort -u)
+comm -23 \
+    <(echo "$BOOT_BEFORE") \
+    <(echo "$TARBALL_CONTENTS") \
+    > /boot/boot.stale
+
+STALE_COUNT=$(wc -l < /boot/boot.stale)
+if [ "$STALE_COUNT" -eq 0 ]; then
+    echo "No stale files detected"
+    rm -f /boot/boot.stale
+else
+    echo "Stale files to be removed on next boot (${STALE_COUNT}):"
+    cat /boot/boot.stale
 fi
 
 # restore boot files

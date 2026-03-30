@@ -99,10 +99,14 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
         rm -f $(TARGET_DIR)/lib/firmware/lt9611uxc_fw.bin; \
         find $(TARGET_DIR)/lib/firmware/ti -maxdepth 1 -type f -delete; \
     fi
-
-    # Logic for ARM SM8250: Prune other QCOM SoCs, keep only sm8250 folder
+    
+    # Logic for ARM SM8250: Keep only necessary firmware folders
     if [ "$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)" = "y" ]; then \
-        find $(TARGET_DIR)/lib/firmware/qcom -maxdepth 1 -type d ! -name "sm8250" ! -name "qcom" -exec rm -rf {} +; \
+        find $(TARGET_DIR)/lib/firmware/qcom -maxdepth 1 -mindepth 1 -type d \
+            ! -name "sm8250" \
+            ! -name "vpu" \
+            ! -name "venus-*" \
+            -exec rm -rf {} +; \
         rm -f $(TARGET_DIR)/lib/firmware/a300_*.fw; \
         rm -f $(TARGET_DIR)/lib/firmware/a420_*.fw; \
         rm -f $(TARGET_DIR)/lib/firmware/a530_*.fw; \

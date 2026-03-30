@@ -12,6 +12,10 @@ BATOCERA_AUDIO_SOURCE=
 # so it must be built after it
 BATOCERA_AUDIO_DEPENDENCIES = pipewire wireplumber alsa-ucm-conf
 
+ifeq ($(BR2_PACKAGE_FFMPEG),y)
+BATOCERA_AUDIO_DEPENDENCIES += pipewire-ffmpeg-plugins
+endif
+
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3326),y)
 ALSA_SUFFIX = "-rk3326"
 else

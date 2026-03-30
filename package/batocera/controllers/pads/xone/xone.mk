@@ -12,7 +12,7 @@ else
 endif
 
 XONE_SITE = $(call github,dlundqvist,xone,$(XONE_VERSION))
-XONE_DEPENDENCIES = host-libcurl host-cabextract host-coreutils libusb
+XONE_DEPENDENCIES = host-libcurl host-cabextract libusb
 
 XONE_FIRMWARE_URLS = \
 https://catalog.s.download.windowsupdate.com/d/msdownload/update/driver/drvs/2017/03/2ea9591b-f751-442c-80ce-8f4692cdc67b_6b555a3a288153cf04aec6e03cba360afe2fce34.cab \
@@ -53,7 +53,7 @@ define XONE_PREPARE_FIRMWARE
 		mkdir -p "$$TEMP_EXTRACT_DIR"; \
 		$(HOST_DIR)/bin/cabextract -d "$$TEMP_EXTRACT_DIR" "$$TEMP_CAB"; \
 		if [ -f "$$TEMP_EXTRACT_DIR/$$FILENAME" ]; then \
-			echo "$$HASH  $$TEMP_EXTRACT_DIR/$$FILENAME" | $(HOST_DIR)/bin/sha256sum -c -; \
+			echo "$$HASH  $$TEMP_EXTRACT_DIR/$$FILENAME" | sha256sum -c -; \
 			mv "$$TEMP_EXTRACT_DIR/$$FILENAME" "$$FIRMWARE_STAGING_DIR/$$DEST_NAME"; \
 			echo "--- Staged $$DEST_NAME ---"; \
 		else \

@@ -323,9 +323,13 @@ class MameGenerator(Generator):
                 commandArray += ['-io', 'joystick', "-mem", system.config.get('memslot', 'laser_64k')]
 
             # BBC Joystick
-            if system.name == "bbc" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
+            if system.name == "bbcmicro" and (sticktype := system.config.get('sticktype', 'none')) != 'none':
                 commandArray += ["-analogue", sticktype]
                 specialController = sticktype
+
+            # Enterprise
+            if system.name == "enterprise":
+                commandArray += ['-exp', 'exdos']
 
             # Apple II
             if system.name == "apple2":
@@ -395,11 +399,26 @@ class MameGenerator(Generator):
                             commandArray += [ "-flop1" ]
                         else:
                             commandArray += [ "-cart1" ]
-                    elif system.name == "coco":
+                    elif system.name in ("coco", "dragon64"):
                         if romExt.casefold() == ".cas":
                             commandArray += [ "-cass" ]
                         elif romExt.casefold() == ".dsk":
                             commandArray += [ "-flop1" ]
+                        else:
+                            commandArray += [ "-cart" ]
+                    elif system.name == "sc3000":
+                        if romExt.casefold() in (".cas", ".wav", ".bit"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-cart" ]
+                    elif system.name == "segaai":
+                        if romExt.casefold() in (".wav", ".flac", ".cas"):
+                            commandArray += [ "-cass" ]
+                        else:
+                            commandArray += [ "-card" ]
+                    elif system.name == "mc10":
+                        if romExt.casefold() == ".cas":
+                            commandArray += [ "-cass" ]
                         else:
                             commandArray += [ "-cart" ]
                     else:
@@ -464,7 +483,7 @@ class MameGenerator(Generator):
             autoRunDelay = 0
             # Autostart computer games where applicable
             # bbc has different boots for floppy & cassette, no special boot for carts
-            if system.name == "bbc":
+            if system.name == "bbcmicro":
                 if altromtype or softList:
                     if altromtype == "cass" or softList.endswith("cass"):
                         autoRunCmd = '*tape\\nchain""\\n'
@@ -483,7 +502,7 @@ class MameGenerator(Generator):
                 ):
                     autoRunCmd = 'LOADM”“,,R\\n'
                     autoRunDelay = 5
-            elif system.name == "coco":
+            elif system.name in ("coco", "dragon64"):
                 romType = 'cart'
                 autoRunDelay = 2
 
@@ -512,6 +531,35 @@ class MameGenerator(Generator):
                             autoRunCmd = f'RUN \"{romName}\"\\n'
                         else:
                             autoRunCmd = f'LOADM \"{romName}\":EXEC\\n'
+
+                # check for a user override
+                autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'
+                if autoRunFile.exists():
+                    with autoRunFile.open() as openARFile:
+                        autoRunList = csv.reader(openARFile, delimiter=';', quotechar="'")
+                        for row in autoRunList:
+                            if row and not row[0].startswith('#') and row[0].casefold() == romName.casefold():
+                                autoRunCmd = f"{row[1]}\\n"
+            elif system.name == "mc10":
+                romType = 'cart'
+                autoRunDelay = 2
+
+                # if using software list, use "usage" for autoRunCmd (if provided)
+                if softList != "":
+                    softListFile = Path('/usr/bin/mame/hash') / f'{softList}.xml'
+                    if softListFile.exists():
+                        softwarelist = ET.parse(softListFile)
+                        for software in softwarelist.findall('software'):
+                            if software.attrib and software.get('name') == romName:
+                                for info in software.iter('info'):
+                                    if info.get('name') == 'usage':
+                                        autoRunCmd = f"{info.get('value')}\\n"
+
+                # if still undefined, default autoRunCmd based on media type
+                if autoRunCmd == "":
+                    if altromtype == "cass" or (softList and softList.endswith("cass")) or romExt.casefold() == ".cas":
+                        romType = 'cass'
+                        autoRunCmd = 'CLOAD\\n'
 
                 # check for a user override
                 autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'

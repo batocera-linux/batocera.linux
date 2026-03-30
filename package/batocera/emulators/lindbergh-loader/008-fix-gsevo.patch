@@ -1,0 +1,130 @@
+--- a/src/lindbergh/blitStretching.h	2026-03-13 23:56:55.772652110 +0000
++++ b/src/lindbergh/blitStretching.h	2026-03-13 23:57:03.496649444 +0000
+@@ -10,6 +10,13 @@
+     float gameScale;
+ } Dest;
+ 
++extern Dest dest;
++extern int drawableW;
++extern int drawableH;
++extern int blitWidth;
++extern int blitHeight;
++extern int fboInitialized;
++
+ void initBlitting();
+ void blitSetWidthandHeightSize();
+ int blitInitializeFbo();
+--- a/src/lindbergh/crossHair.c	2026-03-13 23:56:55.778652108 +0000
++++ b/src/lindbergh/crossHair.c	2026-03-13 23:57:22.710642812 +0000
+@@ -14,6 +14,7 @@
+ 
+ #include "config.h"
+ #include "crossHair.h"
++#include "blitStretching.h"
+ #include "resolution.h"
+ 
+ #define MAX_PLAYERS 2
+@@ -23,8 +24,6 @@
+ extern int gGrp;
+ extern int gWidth;
+ extern int gHeight;
+-extern int drawableW;
+-extern int drawableH;
+ 
+ extern int phX, phY, phW, phH;
+ extern int phX2, phY2, phW2, phH2;
+@@ -228,6 +227,11 @@
+         return;
+     crossHair[player].x = normX * drawableW;
+     crossHair[player].y = normY * drawableH;
++    if (fboInitialized && gId == GHOST_SQUAD_EVOLUTION)
++    {
++        crossHair[player].x = normX * blitWidth;
++        crossHair[player].y = normY * blitHeight;
++    }
+     // crossHair[player].lastMovementTime = time(NULL);
+     // crossHair[player].visible = true;
+     if (testMode || gId == PRIMEVAL_HUNT)
+@@ -375,7 +379,9 @@
+     glMatrixMode(GL_PROJECTION);
+     glPushMatrix();
+     glLoadIdentity();
+-    glOrtho(0, drawableW, drawableH, 0, -1, 1);
++    int orthoW = (fboInitialized) ? blitWidth : drawableW;
++    int orthoH = (fboInitialized) ? blitHeight : drawableH;
++    glOrtho(0, orthoW, orthoH, 0, -1, 1);
+     glMatrixMode(GL_MODELVIEW);
+     glPushMatrix();
+     glLoadIdentity();
+--- a/src/lindbergh/evdevInput.c	2026-03-13 23:56:55.783652106 +0000
++++ b/src/lindbergh/evdevInput.c	2026-03-13 23:59:17.225603286 +0000
+@@ -16,6 +16,7 @@
+ 
+ #include "evdevInput.h"
+ #include "config.h"
++#include "blitStretching.h"
+ #include "crossHair.h"
+ #include "jvs.h"
+ #include "log.h"
+@@ -1302,6 +1303,28 @@
+                             if (scaled > analogue_deadzones[channel].end_min)
+                                 scaled = 1.0;
+ 
++                            // Remap gun coords when blitStretching letterboxes the game
++                            if (fboInitialized && dest.W > 0 && dest.H > 0 &&
++                                drawableW > 0 && drawableH > 0)
++                            {
++                                if (channel == ANALOGUE_1 || channel == ANALOGUE_3)
++                                {
++                                    float pixelX = scaled * drawableW;
++                                    float gameX = (pixelX - dest.X) / (float)dest.W;
++                                    if (gameX < 0.0f) gameX = 0.0f;
++                                    if (gameX > 1.0f) gameX = 1.0f;
++                                    scaled = gameX;
++                                }
++                                else if (channel == ANALOGUE_2 || channel == ANALOGUE_4)
++                                {
++                                    float pixelY = scaled * drawableH;
++                                    float gameY = (pixelY - dest.Y) / (float)dest.H;
++                                    if (gameY < 0.0f) gameY = 0.0f;
++                                    if (gameY > 1.0f) gameY = 1.0f;
++                                    scaled = gameY;
++                                }
++                            }
++
+                             // uint32_t gId = getConfig()->crc32;
+ 
+                             if (channel == ANALOGUE_1 || channel == ANALOGUE_2)
+@@ -1313,11 +1336,9 @@
+ 
+                                 if (x_pos <= 0.01 || x_pos >= 0.99 || y_pos <= 0.01 || y_pos >= 0.99)
+                                 {
+-                                    // log_info("Off-screen detected - X: %f, Y: %f", x_pos, y_pos);
+                                     switch (gId)
+                                     {
+                                         case GHOST_SQUAD_EVOLUTION:
+-                                            // log_info("GSE: Triggering reload via BUTTON_2");
+                                             setSwitch(1, BUTTON_2, 1);
+                                             break;
+                                     }
+@@ -1348,6 +1369,20 @@
+                                 double x_pos = (channel == ANALOGUE_3) ? scaled : args->controller->lastAnalogueValue[ANALOGUE_3];
+                                 double y_pos = (channel == ANALOGUE_4) ? scaled : args->controller->lastAnalogueValue[ANALOGUE_4];
+ 
++                                if (x_pos <= 0.01 || x_pos >= 0.99 || y_pos <= 0.01 || y_pos >= 0.99)
++                                {
++                                    switch (gId)
++                                    {
++                                        case GHOST_SQUAD_EVOLUTION:
++                                            setSwitch(2, BUTTON_2, 1);
++                                            break;
++                                    }
++                                }
++                                else
++                                {
++                                    setSwitch(2, BUTTON_2, 0);
++                                }
++
+                                 updateCrosshairPosition(1, x_pos, y_pos);
+                             }
+ 

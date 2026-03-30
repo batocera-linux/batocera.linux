@@ -47,9 +47,6 @@ class MelonDSGenerator(Generator):
             "LastBIOSFolder": str(BIOS),
             "PauseLostFocus": False,
             "LastROMFolder": str(_MELONDS_ROMS),
-            "SavestatePath": str(_MELONDS_SAVES),
-            "CheatFilePath": str(_MELONDS_CHEATS),
-            "SaveFilePath": str(_MELONDS_SAVES),
             "MouseHideSeconds": 5,
             "DS": {
                 "FirmwarePath": str(BIOS / "firmware.bin"),
@@ -64,8 +61,8 @@ class MelonDSGenerator(Generator):
             "DSi": {
                 "FullBIOSBoot": False,
                 "FirmwarePath": str(BIOS / "dsi_firmware.bin"),
-                "BIOS9Path": str(BIOS / "bios9.bin"),
-                "BIOS7Path": str(BIOS / "bios7.bin"),
+                "BIOS9Path": str(BIOS / "dsi_bios9.bin"),
+                "BIOS7Path": str(BIOS / "dsi_bios7.bin"),
                 "NANDPath": str(BIOS / "dsi_nand.bin"),
                 "SD": {
                     "FolderPath": str(_MELONDS_SAVES),
@@ -78,13 +75,25 @@ class MelonDSGenerator(Generator):
                 "ExternalBIOSEnable": True
             },
             "Instance0": {
+                "SaveFilePath": str(_MELONDS_SAVES),
+                "SavestatePath": str(_MELONDS_SAVES),
+                "CheatFilePath": str(_MELONDS_CHEATS),
+                "EnableCheats": False,
                 "Joystick": {},
+                "Firmware": {
+                    "MAC": "",
+                    "BirthdayDay": 1,
+                    "BirthdayMonth": 1,
+                    "Language": 1,
+                    "Message": "",
+                    "OverrideSettings": True
+                },
                 "Window0": {
                     "ScreenRotation": 0,
                     "ScreenSwap": False,
                     "ScreenLayout": 0,
                     "ScreenSizing": 0,
-                    "IntegerScaling": 0,
+                    "IntegerScaling": False,
                     "ShowOSD": False
                 },
                 "Window1": {
@@ -93,7 +102,7 @@ class MelonDSGenerator(Generator):
                     "ScreenSwap": False,
                     "ScreenLayout": 0,
                     "ScreenSizing": 5,
-                    "IntegerScaling": 0
+                    "IntegerScaling": False
                 }
             },
             "3D": {
@@ -104,51 +113,67 @@ class MelonDSGenerator(Generator):
                 }
             },
             "Screen": {
-                "VSync": False
+                "VSync": False,
+                "UseGL": False
             }
         }
 
         ## User selected options
 
-        # Override Renderer if system option is set
+        # Override Renderer and UseGL
         if "melonds_renderer" in system.config:
-            base_config["3D"]["Renderer"] = system.config.get_int("melonds_renderer")
+            renderer = system.config.get_int("melonds_renderer")
+            base_config["3D"]["Renderer"] = renderer
+            base_config["Screen"]["UseGL"] = (renderer != 0)
 
-        if vsync := system.config.get("melonds_vsync"):
+        if vsync := system.config.get_bool("melonds_vsync"):
             base_config["Screen"]["VSync"] = vsync
             base_config["Screen"]["VSyncInterval"] = 1
 
         # Cheater! Enable cheats if the option is set
-        base_config["Instance0"]["EnableCheats"] = system.config.get("melonds_cheats", False)
+        base_config["Instance0"]["EnableCheats"] = system.config.get_bool("melonds_cheats", False)
 
         # Framerate
-        base_config["LimitFPS"] = system.config.get("melonds_framerate", True)
+        base_config["LimitFPS"] = system.config.get_bool("melonds_framerate", True)
 
         # Resolution
         if (resolution := system.config.get_int("melonds_resolution")) is not system.config.MISSING:
             base_config["3D"]["GL"]["ScaleFactor"] = resolution
-            base_config["3D"]["GL"]["HiresCoordinates"] = resolution == 2
+            base_config["3D"]["GL"]["HiresCoordinates"] = (resolution == 2)
 
         # Polygons
-        if polygons := system.config.get("melonds_polygons"):
+        if polygons := system.config.get_bool("melonds_polygons"):
             base_config["3D"]["GL"]["BetterPolygons"] = polygons
 
         # OSD
-        base_config["Instance0"]["Window0"]["ShowOSD"] = system.config.get("melonds_osd", False)
+        base_config["Instance0"]["Window0"]["ShowOSD"] = system.config.get_bool("melonds_osd", False)
 
         # Console
         base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
+        
+        # Override Firmware settings
+        base_config["Instance0"]["Firmware"]["OverrideSettings"] = system.config.get_bool("melonds_use_fw_settings", False)
+
+        # Firmware Language
+        base_config["Instance0"]["Firmware"]["Language"] = system.config.get_int("melonds_language", 1)
+
+        # Birthday date
+        base_config["Instance0"]["Firmware"]["BirthdayDay"] = system.config.get_int("melonds_day", 1)
+        base_config["Instance0"]["Firmware"]["BirthdayMonth"] = system.config.get_int("melonds_month", 1)
+
+        # Scaling (Matches TOML boolean type)
+        scaling = system.config.get_bool("melonds_scaling", False)
 
         # Check if dual screen mode is enabled
-        is_dual_screen_enabled = system.config.get("melonds_dual_screen", False)
+        is_dual_screen_enabled = system.config.get_bool("melonds_dual_screen", False)
 
         if is_dual_screen_enabled:
-            # Force specific settings for dual screen mode for optimal layout
             # Window0 (Top Screen)
             base_config["Instance0"]["Window0"]["ScreenRotation"] = 0
             base_config["Instance0"]["Window0"]["ScreenSwap"] = False
             base_config["Instance0"]["Window0"]["ScreenLayout"] = 0
             base_config["Instance0"]["Window0"]["ScreenSizing"] = 4
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = scaling
 
             # Window1 (Bottom Screen)
             base_config["Instance0"]["Window1"]["Enabled"] = True
@@ -156,19 +181,14 @@ class MelonDSGenerator(Generator):
             base_config["Instance0"]["Window1"]["ScreenSwap"] = False
             base_config["Instance0"]["Window1"]["ScreenLayout"] = 0
             base_config["Instance0"]["Window1"]["ScreenSizing"] = 5
-
-            # Sync IntegerScaling from Window0 to Window1
-            window0_scaling = system.config.get("melonds_scaling", 0)
-            base_config["Instance0"]["Window0"]["IntegerScaling"] = window0_scaling
-            base_config["Instance0"]["Window1"]["IntegerScaling"] = window0_scaling
+            base_config["Instance0"]["Window1"]["IntegerScaling"] = scaling
         else:
-            # Apply standard user settings if dual screen is off
             base_config["Instance0"]["Window1"]["Enabled"] = False
             base_config["Instance0"]["Window0"]["ScreenRotation"] = system.config.get_int("melonds_rotation", 0)
-            base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config.get("melonds_screenswap", False)
+            base_config["Instance0"]["Window0"]["ScreenSwap"] = system.config.get_bool("melonds_screenswap", False)
             base_config["Instance0"]["Window0"]["ScreenLayout"] = system.config.get_int("melonds_layout", 0)
             base_config["Instance0"]["Window0"]["ScreenSizing"] = system.config.get_int("melonds_screensizing", 0)
-            base_config["Instance0"]["Window0"]["IntegerScaling"] = system.config.get("melonds_scaling", 0)
+            base_config["Instance0"]["Window0"]["IntegerScaling"] = scaling
 
         # Map controllers
         melonDSMapping = {

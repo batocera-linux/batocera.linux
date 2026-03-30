@@ -3,8 +3,8 @@ from .device import (
     AbsInfo as AbsInfo,
     DeviceInfo as DeviceInfo,
     InputDevice as InputDevice,
-    _CapabilitiesWithAbsInfo as _CapabilitiesWithAbsInfo,
-    _VerboseCapabilitiesWithAbsInfo as _VerboseCapabilitiesWithAbsInfo,
+    _AbsInfoCapabilities as _AbsInfoCapabilities,
+    _VerboseAbsInfoCapabilities as _VerboseAbsInfoCapabilities,
 )
 from .eventio import EvdevError as EvdevError
 from .events import (
