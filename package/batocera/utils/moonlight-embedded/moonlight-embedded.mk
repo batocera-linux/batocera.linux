@@ -9,8 +9,8 @@ MOONLIGHT_EMBEDDED_SITE = https://github.com/moonlight-stream/moonlight-embedded
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
 MOONLIGHT_EMBEDDED_LICENSE = GPLv3
-MOONLIGHT_EMBEDDED_DEPENDENCIES = moonlight-common opus expat libevdev avahi alsa-lib udev \
-                                  libcurl libcec ffmpeg sdl2 libenet
+MOONLIGHT_EMBEDDED_DEPENDENCIES += moonlight-common opus expat libevdev avahi alsa-lib
+MOONLIGHT_EMBEDDED_DEPENDENCIES += libcurl libcec ffmpeg sdl2 libenet udev
 
 MOONLIGHT_EMBEDDED_CONF_OPTS = "-DCMAKE_INSTALL_SYSCONFDIR=/etc"
 
