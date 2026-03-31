@@ -616,20 +616,19 @@ multivision:
       gearsystem:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GEARSYSTEM]}
 
 sc3000:
-  name:       SC-3000
+  name: SC-3000
   manufacturer: Sega
   release: 1983
   hardware: computer
   extensions: [bin, sg, wav, cas, bit, zip, 7z]
-  platform:   sc-3000
-  theme:      sc-3000
+  platform: sc-3000
+  theme: sc-3000
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-    BIOS: sc3000.zip (sc3000.rom) in bios/mame/
     SC-3000 cartridges are compatible with SG-1000.
     Cassette tapes (.wav, .cas, .bit) are SC-3000 exclusive.
 
