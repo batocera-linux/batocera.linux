@@ -26,21 +26,27 @@ _detect_docked_output() {
         [ -n "$val" ] && KNOWN_OUTPUTS="$KNOWN_OUTPUTS $val"
     done
 
-    # If no configured outputs, fall back to the status file as the baseline
-    if [ -z "${KNOWN_OUTPUTS}" ]; then
-        if [ -f "${STATUS_FILE}" ]; then
-            echo "Checker: No configured outputs. Using status file as baseline." >> "$LOG"
-            KNOWN_OUTPUTS=$(cat "${STATUS_FILE}" | tr '\n' ' ')
-        else
-            echo "Checker: No configured outputs and no status file. Skipping docked detection." >> "$LOG"
-            return 0
-        fi
+    # If the user has explicitly configured video outputs, docked mode
+    # detection must not run — it would override their configuration.
+    if [ -n "${KNOWN_OUTPUTS}" ]; then
+        echo "Checker: Explicit video outputs configured (${KNOWN_OUTPUTS}). Skipping docked detection." >> "$LOG"
+        rm -f "${DOCKED_FLAG}"
+        return 0
     fi
+
+    # No configured outputs — fall back to the status file as the baseline
+    if [ ! -f "${STATUS_FILE}" ]; then
+        echo "Checker: No configured outputs and no status file. Skipping docked detection." >> "$LOG"
+        return 0
+    fi
+
+    echo "Checker: No configured outputs. Using status file as baseline." >> "$LOG"
+    BASELINE_OUTPUTS=$(cat "${STATUS_FILE}" | tr '\n' ' ')
 
     EXTERNAL_OUTPUT=""
     while IFS= read -r output; do
         IS_KNOWN=0
-        for known in $KNOWN_OUTPUTS; do
+        for known in $BASELINE_OUTPUTS; do
             [ "$output" = "$known" ] && IS_KNOWN=1 && break
         done
         if [ "$IS_KNOWN" -eq 0 ]; then
