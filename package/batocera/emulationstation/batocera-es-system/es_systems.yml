@@ -6222,21 +6222,36 @@ enterprise:
     mame:
       mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires BIOS files:
-          bios/Enterprise/basic21.bin
-          bios/Enterprise/exos21.bin
+          Requires ep128emu BIOS files:
+          bios/ep128emu/roms/exos21.rom (Expandible OS 2.1)
+          bios/ep128emu/roms/basic21.rom (BASIC Interpreter v2.1)
+          bios/ep128emu/roms/exdos13.rom (Disk Controller v1.3)
+          bios/ep128emu/roms/epfileio.rom (Direct File I/O)
+          Optional ep128emu BIOS files:
+          bios/ep128emu/roms/exos20.rom (Enterprise 64 OS 2.0)
+          bios/ep128emu/roms/basic20.rom (Enterprise 64 BASIC v2.0)
+          bios/ep128emu/roms/exos24uk.rom (Expandible OS 2.4)
+          bios/ep128emu/roms/hun.rom (Hungarian language extension)
+          bios/ep128emu/roms/brd.rom (German language extension)
+          bios/ep128emu/roms/epd19hft.rom (EP-DOS Hungarian)
+          bios/ep128emu/roms/zt19uk.rom (ZozoTools extension)
+          bios/ep128emu/roms/zt19hfnt.rom (ZozoTools Hungarian)
           Requires MAME BIOS file:
           bios/ep64.zip
           bios/ep128.zip
           bios/ep64_exdos.zip
   comment_fr: |
-          Nécessite ces fichiers de BIOS:
-          bios/Enterprise/basic21.bin
-          bios/Enterprise/exos21.bin
+          Nécessite ces fichiers de BIOS ep128emu:
+          bios/ep128emu/roms/exos21.rom
+          bios/ep128emu/roms/basic21.rom
+          bios/ep128emu/roms/exdos13.rom
+          bios/ep128emu/roms/epfileio.rom
   comment_br: |
-          Requer arquivo de BIOS:
-          bios/Enterprise/basic21.bin
-          bios/Enterprise/exos21.bin
+          Requer arquivo de BIOS ep128emu:
+          bios/ep128emu/roms/exos21.rom
+          bios/ep128emu/roms/basic21.rom
+          bios/ep128emu/roms/exdos13.rom
+          bios/ep128emu/roms/epfileio.rom
 
 tvc:
   name:       Videoton TVC
@@ -6251,17 +6266,22 @@ tvc:
     mame:
       mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
-          Requires BIOS files:
-          bios/tvc22_sys.rom
-          bios/tvc22_ext.rom
-          bios/tvcfileio.rom
+          Requires ep128emu BIOS files:
+          bios/ep128emu/roms/tvc22_sys.rom (TVC system BIOS)
+          bios/ep128emu/roms/tvc22_ext.rom (TVC extension BIOS)
+          bios/ep128emu/roms/tvcfileio.rom (TVC Direct File I/O)
+          bios/ep128emu/roms/tvc_dos12d.rom (TVC disk BIOS)
           Requires MAME BIOS file:
           bios/mame/tvc64.zip
   comment_fr: |
-          Nécessite ces fichiers de BIOS:
-          bios/tvc22_sys.rom
-          bios/tvc22_ext.rom
+          Nécessite ces fichiers de BIOS ep128emu:
+          bios/ep128emu/roms/tvc22_sys.rom
+          bios/ep128emu/roms/tvc22_ext.rom
+          bios/ep128emu/roms/tvcfileio.rom
+          bios/ep128emu/roms/tvc_dos12d.rom
   comment_br: |
-          Requer arquivo de BIOS:
-          bios/tvc22_sys.rom
-          bios/tvc22_ext.rom
+          Requer arquivo de BIOS ep128emu:
+          bios/ep128emu/roms/tvc22_sys.rom
+          bios/ep128emu/roms/tvc22_ext.rom
+          bios/ep128emu/roms/tvcfileio.rom
+          bios/ep128emu/roms/tvc_dos12d.rom
