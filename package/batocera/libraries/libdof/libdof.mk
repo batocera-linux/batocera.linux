@@ -3,8 +3,8 @@
 # libdof
 #
 ################################################################################
-# Version: Commits on Sep 27, 2025
-LIBDOF_VERSION = 2711a23f7ec1085448f944145e0d63b7ab792033
+# Version: Commits on Apr 2, 2026
+LIBDOF_VERSION = b5119cf7f0846586fbbfbf4e9234ed8541b535ff
 LIBDOF_SITE = $(call github,jsm174,libdof,$(LIBDOF_VERSION))
 LIBDOF_LICENSE = BSD-3-Clause
 LIBDOF_LICENSE_FILES = LICENSE
