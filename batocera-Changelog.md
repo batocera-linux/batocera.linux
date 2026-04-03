@@ -2,6 +2,7 @@
 ### Special Notes
 
 ### Hardware
+- Mangmi Air X initial support
 
 ### Added
 

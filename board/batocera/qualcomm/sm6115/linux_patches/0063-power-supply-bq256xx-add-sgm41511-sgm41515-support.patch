@@ -1,0 +1,20 @@
+--- a/drivers/power/supply/bq256xx_charger.c	2026-03-24 17:36:43
++++ b/drivers/power/supply/bq256xx_charger.c	2026-03-24 17:37:53
+@@ -1776,6 +1776,8 @@
+ 	{ "bq25611d", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25611D] },
+ 	{ "bq25618", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25618] },
+ 	{ "bq25619", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25619] },
++	{ "sgm41511", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25601] },
++	{ "sgm41515", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25601D] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, bq256xx_i2c_ids);
+@@ -1788,6 +1790,8 @@
+ 	{ .compatible = "ti,bq25611d", .data = &bq256xx_chip_info_tbl[BQ25611D] },
+ 	{ .compatible = "ti,bq25618", .data = &bq256xx_chip_info_tbl[BQ25618] },
+ 	{ .compatible = "ti,bq25619", .data = &bq256xx_chip_info_tbl[BQ25619] },
++	{ .compatible = "sgmicro,sgm41511", .data = &bq256xx_chip_info_tbl[BQ25601] },
++	{ .compatible = "sgmicro,sgm41515", .data = &bq256xx_chip_info_tbl[BQ25601D] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, bq256xx_of_match);

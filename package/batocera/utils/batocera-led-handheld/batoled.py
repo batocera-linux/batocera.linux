@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-PWM + RGB unified LED driver 
+PWM + RGB + Multi-LED unified LED driver 
 Written for Batocera - @lbrpdx
 Updated for kernel module updates - @dmanlfc
+Updated for multi-led platform - @dmanlfc
 """
 import os
 import time
@@ -18,6 +19,9 @@ DEFAULT_ES_COLOR = '255 0 165'
 ####################
 # Is your handheld supported by this library?
 def batocera_model():
+    # Multi-led check (e.g. Mangmi Air X)
+    if glob.glob('/sys/devices/platform/multi-led-l1/leds/rgb:l1/multi_intensity'):
+        return "multiled"
     # Generic check for modern joystick ring LEDs from ayaneo-platform/ayn-platform
     if glob.glob('/sys/class/leds/*:rgb:joystick_rings/multi_intensity'):
         return "rgb"
@@ -70,6 +74,106 @@ def batoconf_color():
         print (f"batocera.conf said led.colour = {r} {g} {b}")
     return [ r, g, b ]
 
+
+####################
+# Handhelds using the Multi-LED Platform (i.e. Mangmi Air X)
+class multiled(object):
+    def __init__(self):
+        # Glob all possible LED nodes (l1..l7, r1..r7)
+        self.paths = glob.glob('/sys/devices/platform/multi-led-*/leds/rgb:*/')
+        self.max_val = 255
+
+    def _write_hardware(self, brightness, r, g, b):
+        # Based on user shell script: multi_intensity expects "Blue Green Red"
+        color_str = f"{b} {g} {r}"
+        for p in self.paths:
+            try:
+                with open(p + 'brightness', 'w') as f:
+                    f.write(str(brightness))
+                with open(p + 'multi_intensity', 'w') as f:
+                    f.write(color_str)
+            except:
+                pass
+
+    def set_color(self, rgb):
+        if rgb == "OFF":
+            self.turn_off()
+            return
+
+        # Get brightness from config
+        b_conf = batoconf("led.brightness")
+        if b_conf is None: b_conf = 255
+        
+        if rgb == "ESCOLOR":
+            r, g, b = batoconf_color()
+        elif rgb == "RAINBOW":
+            self.rainbow_effect()
+            return
+        elif rgb == "PULSE":
+            self.pulse_effect()
+            return
+        else:
+            r, g, b = hex_to_dec(rgb[0:2]), hex_to_dec(rgb[2:4]), hex_to_dec(rgb[4:6])
+        
+        self._write_hardware(b_conf, r, g, b)
+
+    def set_color_dec(self, rgb_str):
+        try:
+            r, g, b = [int(x) for x in rgb_str.split()]
+            b_conf = batoconf("led.brightness") or 255
+            self._write_hardware(b_conf, r, g, b)
+        except:
+            pass
+
+    def get_color(self):
+        try:
+            with open(self.paths[0] + 'multi_intensity', 'r') as f:
+                # Driver stores B G R
+                b, g, r = f.readline().strip().split()
+                return f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
+        except:
+            return "000000"
+
+    def get_color_dec(self):
+        try:
+            with open(self.paths[0] + 'multi_intensity', 'r') as f:
+                b, g, r = f.readline().strip().split()
+                return f"{r} {g} {b}"
+        except:
+            return "0 0 0"
+
+    def rainbow_effect(self):
+        prev = self.get_color()
+        for i in range(0, EFFECT_STEP):
+            o = getRainbowRGB(float(i/EFFECT_STEP))
+            self.set_color(o)
+            time.sleep(EFFECT_DURATION/EFFECT_STEP)
+        self.set_color(prev)
+
+    def pulse_effect(self):
+        prev = self.get_color()
+        for i in range(0, EFFECT_STEP):
+            o = getPulseRGB(i, EFFECT_STEP, prev)
+            self.set_color(o)
+            time.sleep(PULSE_DURATION/EFFECT_STEP)
+        self.set_color(prev)
+
+    def turn_off(self):
+        self._write_hardware(0, 0, 0, 0)
+
+    def set_brightness(self, b):
+        self.set_color("ESCOLOR")
+
+    def set_brightness_conf(self):
+        self.set_color("ESCOLOR")
+
+    def get_brightness(self):
+        try:
+            with open(self.paths[0] + 'brightness', 'r') as f:
+                b = f.readline().strip()
+            return (b, "255")
+        except:
+            return ("-1", "-1")
 
 ####################
 # Handhelds that use the Lenovo Legion Go S interface
@@ -628,6 +732,8 @@ class led(object):
             return rgbledaddr()
         elif m == "legiongos":
             return legiongosled()
+        elif m == "multiled":
+            return multiled()
         else:
             print(m)
 

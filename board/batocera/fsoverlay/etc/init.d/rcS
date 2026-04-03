@@ -28,4 +28,5 @@ for i in /etc/init.d/S??* ;do
      esac
 
      echo $(date +"%F %T,%3N")": ${i} - started" >> /var/run/boot.log
+     # echo $(date +"%F %T,%3N")": ${i} - started" > /dev/kmsg # <- debugging
 done

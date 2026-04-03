@@ -1,0 +1,294 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 1/6] dt-bindings: clock: qcom,sm6115-dispcc: Define MDSS
+ resets
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:19 -0300
+Message-Id: <20260216233600.13098-3-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Add the missing defines for MDSS resets.
+While here, align comment style with other SoCs.
+
+Fixes: 38557c6fc077 ("dt-bindings: clock: add QCOM SM6115 display clock bindings")
+Signed-off-by: Val Packett <val@packett.cool>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ include/dt-bindings/clock/qcom,sm6115-dispcc.h | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/include/dt-bindings/clock/qcom,sm6115-dispcc.h b/include/dt-bindings/clock/qcom,sm6115-dispcc.h
+index d1a6c45b5029..ab8d312ade37 100644
+--- a/include/dt-bindings/clock/qcom,sm6115-dispcc.h
++++ b/include/dt-bindings/clock/qcom,sm6115-dispcc.h
+@@ -6,7 +6,7 @@
+ #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
+ #define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6115_H
+ 
+-/* DISP_CC clocks */
++/* Clocks */
+ #define DISP_CC_PLL0			0
+ #define DISP_CC_PLL0_OUT_MAIN		1
+ #define DISP_CC_MDSS_AHB_CLK		2
+@@ -30,7 +30,10 @@
+ #define DISP_CC_SLEEP_CLK		20
+ #define DISP_CC_SLEEP_CLK_SRC		21
+ 
+-/* DISP_CC GDSCR */
++/* Resets */
++#define DISP_CC_MDSS_CORE_BCR			0
++
++/* GDSCs */
+ #define MDSS_GDSC			0
+ 
+ #endif
+-- 
+2.52.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 2/6] dt-bindings: clock: qcom,dispcc-sm6125: Define MDSS
+ resets
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:20 -0300
+Message-Id: <20260216233600.13098-4-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Add the missing defines for MDSS resets.
+While here, align comment style with other SoCs.
+
+Fixes: 8397c9c0c26b ("dt-bindings: clock: add QCOM SM6125 display clock bindings")
+Signed-off-by: Val Packett <val@packett.cool>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ include/dt-bindings/clock/qcom,dispcc-sm6125.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/include/dt-bindings/clock/qcom,dispcc-sm6125.h b/include/dt-bindings/clock/qcom,dispcc-sm6125.h
+index 4ff974f4fcc3..f58b85d2c814 100644
+--- a/include/dt-bindings/clock/qcom,dispcc-sm6125.h
++++ b/include/dt-bindings/clock/qcom,dispcc-sm6125.h
+@@ -6,6 +6,7 @@
+ #ifndef _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6125_H
+ #define _DT_BINDINGS_CLK_QCOM_DISP_CC_SM6125_H
+ 
++/* Clocks */
+ #define DISP_CC_PLL0			0
+ #define DISP_CC_MDSS_AHB_CLK		1
+ #define DISP_CC_MDSS_AHB_CLK_SRC	2
+@@ -35,7 +36,10 @@
+ #define DISP_CC_MDSS_VSYNC_CLK_SRC	26
+ #define DISP_CC_XO_CLK			27
+ 
+-/* DISP_CC GDSCR */
++/* Resets */
++#define DISP_CC_MDSS_CORE_BCR			0
++
++/* GDSCs */
+ #define MDSS_GDSC			0
+ 
+ #endif
+-- 
+2.52.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 3/6] clk: qcom: dispcc-sm6115: Add missing MDSS resets
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:21 -0300
+Message-Id: <20260216233600.13098-5-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The MDSS resets were left undescribed, fix that.
+
+Fixes: 9b518788631c ("clk: qcom: Add display clock controller driver for SM6115")
+Signed-off-by: Val Packett <val@packett.cool>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ drivers/clk/qcom/dispcc-sm6115.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/clk/qcom/dispcc-sm6115.c b/drivers/clk/qcom/dispcc-sm6115.c
+index 8ae25d51db94..75bd57213079 100644
+--- a/drivers/clk/qcom/dispcc-sm6115.c
++++ b/drivers/clk/qcom/dispcc-sm6115.c
+@@ -22,6 +22,7 @@
+ #include "clk-regmap-divider.h"
+ #include "common.h"
+ #include "gdsc.h"
++#include "reset.h"
+ 
+ enum {
+ 	DT_BI_TCXO,
+@@ -511,6 +512,10 @@ static struct clk_branch disp_cc_sleep_clk = {
+ 	},
+ };
+ 
++static const struct qcom_reset_map disp_cc_sm6115_resets[] = {
++	[DISP_CC_MDSS_CORE_BCR] = { 0x2000 },
++};
++
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
+ 	.pd = {
+@@ -561,6 +566,8 @@ static const struct qcom_cc_desc disp_cc_sm6115_desc = {
+ 	.config = &disp_cc_sm6115_regmap_config,
+ 	.clks = disp_cc_sm6115_clocks,
+ 	.num_clks = ARRAY_SIZE(disp_cc_sm6115_clocks),
++	.resets = disp_cc_sm6115_resets,
++	.num_resets = ARRAY_SIZE(disp_cc_sm6115_resets),
+ 	.gdscs = disp_cc_sm6115_gdscs,
+ 	.num_gdscs = ARRAY_SIZE(disp_cc_sm6115_gdscs),
+ };
+-- 
+2.52.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 4/6] clk: qcom: dispcc-sm6125: Add missing MDSS resets
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:22 -0300
+Message-Id: <20260216233600.13098-6-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The MDSS resets were left undescribed, fix that.
+
+Fixes: 6e87c8f07407 ("clk: qcom: Add display clock controller driver for SM6125")
+Signed-off-by: Val Packett <val@packett.cool>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ drivers/clk/qcom/dispcc-sm6125.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/clk/qcom/dispcc-sm6125.c b/drivers/clk/qcom/dispcc-sm6125.c
+index 851d38a487d3..2c67abcfef12 100644
+--- a/drivers/clk/qcom/dispcc-sm6125.c
++++ b/drivers/clk/qcom/dispcc-sm6125.c
+@@ -17,6 +17,7 @@
+ #include "clk-regmap.h"
+ #include "common.h"
+ #include "gdsc.h"
++#include "reset.h"
+ 
+ enum {
+ 	P_BI_TCXO,
+@@ -607,6 +608,10 @@ static struct clk_branch disp_cc_xo_clk = {
+ 	},
+ };
+ 
++static const struct qcom_reset_map disp_cc_sm6125_resets[] = {
++	[DISP_CC_MDSS_CORE_BCR] = { 0x2000 },
++};
++
+ static struct gdsc mdss_gdsc = {
+ 	.gdscr = 0x3000,
+ 	.pd = {
+@@ -663,6 +668,8 @@ static const struct qcom_cc_desc disp_cc_sm6125_desc = {
+ 	.config = &disp_cc_sm6125_regmap_config,
+ 	.clks = disp_cc_sm6125_clocks,
+ 	.num_clks = ARRAY_SIZE(disp_cc_sm6125_clocks),
++	.resets = disp_cc_sm6125_resets,
++	.num_resets = ARRAY_SIZE(disp_cc_sm6125_resets),
+ 	.gdscs = disp_cc_sm6125_gdscs,
+ 	.num_gdscs = ARRAY_SIZE(disp_cc_sm6125_gdscs),
+ };
+-- 
+2.52.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 5/6] arm64: dts: qcom: sm6115: Add missing MDSS core reset
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:23 -0300
+Message-Id: <20260216233600.13098-7-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+To make sure the display subsystem starts in a predictable state, we
+need to reset it. Otherwise, unpredictable issues can happen, e.g.
+on the motorola-guamp smartphone DSI would not transmit anything.
+
+Wire up the reset to fix.
+
+Fixes: 705e50427d81 ("arm64: dts: qcom: sm6115: Add mdss/dpu node")
+Signed-off-by: Val Packett <val@packett.cool>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ arch/arm64/boot/dts/qcom/sm6115.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index e9336adbc391..3a9a1ad8d581 100644
+--- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+@@ -1864,6 +1864,8 @@ mdss: display-subsystem@5e00000 {
+ 				 <&gcc GCC_DISP_HF_AXI_CLK>,
+ 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
+ 
++			resets = <&dispcc DISP_CC_MDSS_CORE_BCR>;
++
+ 			interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
+-- 
+2.52.0
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 6/6] arm64: dts: qcom: sm6125: Add missing MDSS core reset
+From: Val Packett <val@packett.cool>
+Date: Mon, 16 Feb 2026 20:25:24 -0300
+Message-Id: <20260216233600.13098-8-val@packett.cool>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+To make sure the display subsystem starts in a predictable state, we
+need to reset it. On closely related SoC (sm6115) this has caused
+DSI displays to not work.
+
+Wire up the reset to fix.
+
+Fixes: 0865d23a0226 ("arm64: dts: qcom: sm6125: Add display hardware nodes")
+Signed-off-by: Val Packett <val@packett.cool>
+Tested-By: Yedaya Katsman <yedaya.ka@gmail.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ arch/arm64/boot/dts/qcom/sm6125.dtsi | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm6125.dtsi b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+index 80c42dff5399..a22374e5a17f 100644
+--- a/arch/arm64/boot/dts/qcom/sm6125.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6125.dtsi
+@@ -1238,6 +1238,8 @@ mdss: display-subsystem@5e00000 {
+ 				      "ahb",
+ 				      "core";
+ 
++			resets = <&dispcc DISP_CC_MDSS_CORE_BCR>;
++
+ 			power-domains = <&dispcc MDSS_GDSC>;
+ 
+ 			iommus = <&apps_smmu 0x400 0x0>;
+@@ -1437,6 +1439,7 @@ dispcc: clock-controller@5f00000 {
+ 			power-domains = <&rpmpd RPMPD_VDDCX>;
+ 
+ 			#clock-cells = <1>;
++			#reset-cells = <1>;
+ 			#power-domain-cells = <1>;
+ 		};
+ 
+-- 
+2.52.0
+

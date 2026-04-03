@@ -46,7 +46,7 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in ["pwm", "rgbaddr", "legiongos"]:
+    if model in ["pwm", "rgbaddr", "legiongos", "multiled"]:
         for path in ["/sys/class/power_supply/BAT0", "/sys/class/power_supply/BAT1", "/sys/class/power_supply/qcom-battery", "/sys/class/power_supply/battery"]:
             if os.path.exists(path):
                 return path
@@ -221,4 +221,3 @@ else:
         bt = tp.readline().strip()
         ch = st.readline().strip()
         print (f"Battery: {bt}% ({ch})")
-

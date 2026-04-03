@@ -1,0 +1,27 @@
+Subject: [PATCH] ASoC: qcom: common: enable jack detection for MI2S DAI links
+
+qcom_snd_wcd_jack_setup() only calls snd_soc_component_set_jack() for
+TX_CODEC_DMA DAI types. On boards using MI2S with external codecs that
+have jack detection (like ES8326), the codec's jack is never connected,
+so IRQ-based jack detection is silently ignored.
+
+Add MI2S DAI cases so codecs on MI2S links get their jack set up.
+
+Based on upstream patch by Hongyang Zhao:
+https://lore.kernel.org/linux-arm-msm/20260305-rubikpi-next-20260304-v1-4-327595a4528a@thundersoft.com/
+---
+ sound/soc/qcom/common.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/soc/qcom/common.c b/sound/soc/qcom/common.c
+--- a/sound/soc/qcom/common.c
++++ b/sound/soc/qcom/common.c
+@@ -226,6 +226,8 @@
+ 	}
+
+ 	switch (cpu_dai->id) {
++	case PRIMARY_MI2S_RX ... QUATERNARY_MI2S_TX:
++	case QUINARY_MI2S_RX ... QUINARY_MI2S_TX:
+ 	case TX_CODEC_DMA_TX_0:
+ 	case TX_CODEC_DMA_TX_1:
+ 	case TX_CODEC_DMA_TX_2:

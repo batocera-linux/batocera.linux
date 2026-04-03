@@ -1,0 +1,31 @@
+--- a/drivers/power/supply/bq256xx_charger.c
++++ b/drivers/power/supply/bq256xx_charger.c
+@@ -1563,6 +1563,11 @@
+ 	int wd_reg_val = BQ256XX_WATCHDOG_DIS;
+ 	int ret = 0;
+ 	int i;
++
++	/* Reset chip to clear stale register values (e.g. from Android) */
++	regmap_update_bits(bq->regmap, BQ256XX_PART_INFORMATION,
++			   BQ256XX_REG_RST, BQ256XX_REG_RST);
++	msleep(10);
+
+ 	for (i = 0; i < BQ256XX_NUM_WD_VAL; i++) {
+ 		if (bq->watchdog_timer == bq256xx_watchdog_time[i]) {
+@@ -1623,13 +1628,13 @@
+ 	ret = bq->chip_info->bq256xx_set_ichg(bq,
+-				bq->chip_info->bq256xx_def_ichg);
++				bat_info->constant_charge_current_max_ua);
+ 	if (ret)
+ 		return ret;
+
+ 	ret = bq->chip_info->bq256xx_set_iprechg(bq,
+ 				bat_info->precharge_current_ua);
+ 	if (ret)
+ 		return ret;
+
+ 	ret = bq->chip_info->bq256xx_set_vbatreg(bq,
+-				bq->chip_info->bq256xx_def_vbatreg);
++				bat_info->constant_charge_voltage_max_uv);
+ 	if (ret)
+ 		return ret;

@@ -1,0 +1,34 @@
+From 6d1ebadf6f3b7d39d79a70f4e5c0fa61a98f5b46 Mon Sep 17 00:00:00 2001
+From: Romain Tisserand <romain.tisserand@gmail.com>
+Date: Sat, 3 Jan 2026 12:00:00 +0100
+Subject: [PATCH] ASoC: es8326: default sysclk to mclk rate when provided
+
+The SM6115 machine driver does not program codec sysclk. When the ES8326
+has a valid MCLK, default the sysclk to the MCLK rate so clock
+coefficients can be selected during hw_params.
+
+Signed-off-by: Romain Tisserand <romain.tisserand@gmail.com>
+---
+ sound/soc/codecs/es8326.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
+index 43c338b08675..d60c419d1a16 100644
+--- a/sound/soc/codecs/es8326.c
++++ b/sound/soc/codecs/es8326.c
+@@ -1303,7 +1303,13 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "unable to enable mclk\n");
+ 		return ret;
+ 	}
++	if (es8326->mclk) {
++		es8326->sysclk = clk_get_rate(es8326->mclk);
++		if (!es8326->sysclk)
++			dev_warn(&i2c->dev, "mclk rate is 0, sysclk unset\n");
++	}
++
+ 	return devm_snd_soc_register_component(&i2c->dev,
+ 					&soc_component_dev_es8326,
+ 					&es8326_dai, 1);
+-- 
+2.43.1
