@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=Create .psn launchers from installed PSN games
+Folders=/userdata/roms*;
+Basenames=ps3;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=inode/directory
+Exec=bash -c 'python3 /usr/share/file-manager/actions/toolbox/psnlauncher.toolbox "%f" 2>&1 | yad --text-info --wrap --width=900 --height=600 --title="PSN launcher generation"'
