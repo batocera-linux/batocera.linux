@@ -147,7 +147,7 @@ mountDevicesOrNetwork() {
         do
             XWAIT=4 # N seconds between each try
             XTRY=$((MAXTRY / XWAIT)) # X tries and give up
-            
+
             while [ "${XTRY}" -gt 0 ]
             do
                 XTRY=$((XTRY-1))
@@ -393,6 +393,28 @@ case "${MODE}" in
         fi
     ;;
 esac
+
+# Debug boot mode
+# We wait for userdata to be mounted normally so we can move and bind mount roms and bios later
+DEBUG_FLAG="/var/run/bootmode.debug"
+if [ -f "$DEBUG_FLAG" ]; then
+    echo "[DEBUG BOOT] Checking userdata..."
+
+    FSTYPE="$(awk '$2=="/userdata"{print $3}' /proc/mounts)"
+
+    if [ "$FSTYPE" = "tmpfs" ]; then
+        echo "[DEBUG BOOT] /userdata is already tmpfs. Nothing to do..."
+    else
+        mkdir -p /userdata.real
+
+        echo "[DEBUG BOOT] Moving /userdata to /userdata.real"
+        mount --move /userdata /userdata.real
+
+        echo "[DEBUG BOOT] Mounting new tmpfs as /userdata"
+
+        mount -t tmpfs -o size=256M tmpfs /userdata
+    fi
+fi
 
 # filesystem compression
 compressenabled="$(/usr/bin/batocera-settings-get system.fscompression.enabled)"
