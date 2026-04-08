@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_PD777_VERSION = 56097d6ac5ee5202f3bf73c4d5eac4d443fe0fb7
+LIBRETRO_PD777_VERSION = v1.01.01
 LIBRETRO_PD777_SITE = $(call github,mittonk,pd777,$(LIBRETRO_PD777_VERSION))
 LIBRETRO_PD777_LICENSE = MIT
 LIBRETRO_PD777_DEPENDENCIES += retroarch
