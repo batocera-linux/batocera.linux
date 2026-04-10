@@ -4,26 +4,23 @@
 #
 ################################################################################
 
-AZAHAR_VERSION = 2124.3
+AZAHAR_VERSION = 2125.0.1
 AZAHAR_SITE = https://github.com/azahar-emu/azahar
 AZAHAR_SITE_METHOD = git
 AZAHAR_GIT_SUBMODULES = YES
 AZAHAR_LICENSE = GPLv2
 AZAHAR_SUPPORTS_IN_SOURCE_BUILD = NO
 
-AZAHAR_DEPENDENCIES += boost fdk-aac ffmpeg fmt openal sdl2
+AZAHAR_DEPENDENCIES += boost fdk-aac ffmpeg fmt host-clang openal sdl2
 
 $(eval $(call register,azahar.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,graphics.azahar.emulator.yml))
 
-ifeq ($(BR2_x86_64),y)
 AZAHAR_CMAKE_BACKEND = ninja
-# Use clang for performance
+
 AZAHAR_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
 AZAHAR_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
 AZAHAR_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
-endif
-
 AZAHAR_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 AZAHAR_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 AZAHAR_CONF_OPTS += -DENABLE_TESTS=OFF
@@ -37,7 +34,7 @@ AZAHAR_CONF_OPTS += -DUSE_SYSTEM_OPENAL=ON
 AZAHAR_CONF_OPTS += -DUSE_SYSTEM_BOOST=OFF
 AZAHAR_CONF_OPTS += -DENABLE_SDL2=ON
 AZAHAR_CONF_OPTS += -DUSE_SYSTEM_SDL2=ON    # important to avoid HIDAPI
-AZAHAR_CONF_OPTS += -DENABLE_LTO=OFF
+AZAHAR_CONF_OPTS += -DENABLE_LTO=ON
 
 ifeq ($(BR2_X86_CPU_HAS_SSE42),y)
     AZAHAR_CONF_OPTS += -DENABLE_SSE42=ON
@@ -56,10 +53,12 @@ else
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
-    AZAHAR_CONF_OPTS += -DENABLE_VULKAN=ON
     AZAHAR_DEPENDENCIES += vulkan-headers vulkan-loader
+    AZAHAR_CONF_OPTS += -DENABLE_VULKAN=ON
+    AZAHAR_CONF_OPTS += -DUSE_SYSTEM_VULKAN_HEADERS=ON
 else
     AZAHAR_CONF_OPTS += -DENABLE_VULKAN=OFF
+    AZAHAR_CONF_OPTS += -DUSE_SYSTEM_VULKAN_HEADERS=OFF
 endif
 
 AZAHAR_CONF_ENV += LDFLAGS=-lpthread
