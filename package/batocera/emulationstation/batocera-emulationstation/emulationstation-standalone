@@ -295,6 +295,14 @@ while [ -e "${REBOOT_FLAG}" ]; do
             batocera-resolution repositionOutputs "${display_position}" "${settings_output}" "${settings_output2}" "${settings_output3}"
         fi
     fi
+    if which xrandr; then # if xrandr available
+	if [ -z "${DOCKED_OUTPUT}" ]; then
+	    # Now that all screens are enabled, rotated, resized... we reenable cause it may change the position in case of multi screens
+	    if [ -n "${settings_output2}" -o -n "${settings_output3}" ]; then
+		batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
+	    fi
+	fi
+    fi
     ###################
 
     ### REFLECTION ###
