@@ -229,6 +229,12 @@ if [ "${#cpu_features[@]}" -gt 0 ]; then
     echo "CPU Features: ${cpu_features[*]}"
 fi
 
+if test -x /usr/bin/x86-64-level
+then
+    X64VERSION=$(x86-64-level)
+    echo "CPU X86-64 version: ${X64VERSION}"
+fi
+
 # ---------------------------------------------------------------------------
 # TDP (Ryzen Mobile)
 # ---------------------------------------------------------------------------
