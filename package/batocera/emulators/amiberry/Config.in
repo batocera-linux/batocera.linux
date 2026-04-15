@@ -1,8 +1,8 @@
 config BR2_PACKAGE_AMIBERRY
     bool "amiberry"
-    select BR2_PACKAGE_SDL2
-    select BR2_PACKAGE_SDL2_IMAGE
-    select BR2_PACKAGE_SDL2_TTF
+    select BR2_PACKAGE_SDL3
+    select BR2_PACKAGE_SDL3_IMAGE
+    select BR2_PACKAGE_SDL3_TTF
     select BR2_PACKAGE_MPG123
     select BR2_PACKAGE_LIBXML2
     select BR2_PACKAGE_LIBMPEG2
