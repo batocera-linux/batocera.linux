@@ -14,6 +14,7 @@ from ...controller import generate_sdl_game_controller_config
 from ...utils import wine
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
+import subprocess
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -95,33 +96,6 @@ class Model2EmuGenerator(Generator):
         # scanlines
         if lua_file_path.exists():
             modify_lua_scanlines(lua_file_path, system.config.get_bool("model2_scanlines"))
-        # sinden - check if rom is a gun game
-        known_gun_roms = ["bel", "gunblade", "hotd", "rchase2", "vcop", "vcop2", "vcopa"]
-        if rom.stem in known_gun_roms and system.config.use_guns and guns:
-            for gun in guns:
-                if gun.needs_borders:
-                    if lua_file_path.exists():
-                        bordersSize = system.guns_borders_size_name(guns)
-                        # add more intelligence for lower resolution screens to avoid massive borders
-                        if bordersSize == "thin":
-                            thickness = "1"
-                        elif bordersSize == "medium":
-                            if gameResolution["width"] <= 640:
-                                thickness = "1"  # thin
-                            elif 640 < gameResolution["width"] <= 1080:
-                                thickness = "2"
-                            else:
-                                thickness = "2"
-                        else:
-                            if gameResolution["width"] << 1080:
-                                thickness = "2"
-                            else:
-                                thickness = "3"
-
-                        modify_lua_sinden(lua_file_path, "true", thickness)
-                else:
-                    modify_lua_sinden(lua_file_path, "false", "0")
-
         # now set the other emulator features
         Config.set("Renderer","FakeGouraud", system.config.get("model2_fakeGouraud", "0"))
         Config.set("Renderer","Bilinear", system.config.get("model2_bilinearFiltering", "1"))
@@ -132,14 +106,18 @@ class Model2EmuGenerator(Generator):
         Config.set("Renderer","MeshTransparency", system.config.get("model2_meshTransparency", "0"))
         Config.set("Renderer","FSAA", system.config.get("model2_fullscreenAA", "0"))
         Config.set("Input","UseRawInput", system.config.get("model2_useRawInput", "0"))
-        if crosshairs := system.config.get("model2_crossHairs"):
-            Config.set("Renderer","DrawCross", crosshairs)
+        # Crosshair handling: Lua crosshairs replace broken native ones
+        model2_lua_path = emupath / "scripts" / "model2.lua"
+        if system.config.use_guns and guns and model2_lua_path.exists():
+            Config.set("Renderer","DrawCross", "0")
+            lua_cross_on = system.config.get("model2_crossHairs", "0") == "1"
+            if not lua_cross_on:
+                for gun in guns:
+                    if gun.needs_cross:
+                        lua_cross_on = True
+            modify_lua_crosshairs(model2_lua_path, lua_cross_on)
         else:
-            for gun in guns:
-                if gun.needs_cross:
-                    Config.set("Renderer","DrawCross", "1")
-                else:
-                    Config.set("Renderer","DrawCross", "0")
+            Config.set("Renderer","DrawCross", system.config.get("model2_crossHairs", "0"))
 
         # xinput
         Config.set("Input","XInput", system.config.get_bool("model2_xinput", return_values=("1", "0")))
@@ -177,6 +155,15 @@ class Model2EmuGenerator(Generator):
                     'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
                     'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d'
                 }
+            )
+
+        # offscreen reload daemon for lightgun games (uinput right-click injection)
+        reload_daemon = Path("/usr/model2emu/m2_reload_daemon.py")
+        if system.config.use_guns and guns and reload_daemon.exists():
+            subprocess.Popen(
+                ["python3", str(reload_daemon)],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                start_new_session=True
             )
 
         # now run the emulator
@@ -229,27 +216,6 @@ def modify_lua_scanlines(file_path: Path, condition: bool) -> None:
     with file_path.open('w') as lua_file:
         lua_file.writelines(modified_lines)
 
-def modify_lua_sinden(file_path: Path, condition: str, thickness: str) -> None:
-    with file_path.open('r') as lua_file:
-        original_lines = lua_file.readlines()
-
-    modified_lines: list[str] = []
-    sinden_line_added = False
-
-    for line in original_lines:
-        if "TestSurface = Video_CreateSurfaceFromFile" in line:
-            modified_lines.append(line)
-            if "Options.bezels.value=" not in line and not sinden_line_added:
-                modified_lines.append(f'\tOptions.bezels.value={"0" if condition == "False" else thickness}\r\n')
-                sinden_line_added = True
-        elif "Options.bezels.value=" in line and not sinden_line_added:
-            modified_lines.append(line.replace("Options.bezels.value=", f'Options.bezels.value={thickness}\r\n'))
-        else:
-            modified_lines.append(line)
-
-    with file_path.open('w') as lua_file:
-        lua_file.writelines(modified_lines)
-
 def copy_updated_files(source_path: Path, destination_path: Path) -> None:
     dcmp = filecmp.dircmp(source_path, destination_path)
 
@@ -264,3 +230,15 @@ def copy_updated_files(source_path: Path, destination_path: Path) -> None:
         else:
             shutil.copy2(src, dst)
             _logger.debug("Copying file %s to %s", src, dst)
+
+def modify_lua_crosshairs(file_path: Path, condition: bool) -> None:
+    with file_path.open('r') as lua_file:
+        content = lua_file.read()
+
+    if condition:
+        content = content.replace("M2_CROSS_ON = false", "M2_CROSS_ON = true")
+    else:
+        content = content.replace("M2_CROSS_ON = true", "M2_CROSS_ON = false")
+
+    with file_path.open('w') as lua_file:
+        lua_file.write(content)
