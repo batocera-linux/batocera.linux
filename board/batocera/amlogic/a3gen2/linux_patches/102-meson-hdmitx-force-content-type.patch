@@ -1,0 +1,10 @@
+--- a/common_drivers/drivers/drm/meson_hdmi.c	2025-03-12 22:57:54.169391130 +0100
++++ b/common_drivers/drivers/drm/meson_hdmi.c	2025-03-12 22:57:59.254510995 +0100
+@@ -870,6 +870,7 @@
+ 	}
+
+ 	/*check content type.*/
++	hdmitx_content_type = (1 <<new_hdmitx_state->base.content_type);
+ 	if (((1 << new_hdmitx_state->base.content_type) &
+ 		hdmitx_content_type) == 0) {
+ 		DRM_ERROR("[%s] check content type[%d-%u] fail\n",

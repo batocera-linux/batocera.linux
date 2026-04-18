@@ -1,0 +1,55 @@
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/mesong12a-bifrost.dtsi	2024-11-21 03:54:47.000000000 +0100
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/mesong12a-bifrost.dtsi	2025-03-11 11:42:10.671638729 +0100
+@@ -6,7 +6,10 @@
+ / {
+ 
+ 	gpu:bifrost {
+-		compatible = "arm,malit60x", "arm,malit6xx", "arm,mali-midgard";
++		compatible =  "amlogic,meson-g12a-mali", "arm,mali-bifrost";
++		interrupt-names = "gpu", "mmu", "job";
++		/*mali-supply = <&vdd_gpu>;*/
++		dma-coherent;
+ 		#cooling-cells = <2>;		/* min followed by max */
+ 		reg = <0 0xFFE40000 0 0x04000>, /*mali APB bus base address*/
+ 			<0 0xFFD01000 0 0x01000>, /*reset register*/
+@@ -16,7 +16,6 @@
+ 			<0 0xFFD01000 0 0x01000>; /*reset register*/
+ 		interrupt-parent = <&gic>;
+ 		interrupts = <0 160 4>, <0 161 4>, <0 162 4>;
+-		interrupt-names = "GPU", "MMU", "JOB";
+ 		/* ACE-Lite = 0; ACE = 1; No-coherency = 31; */
+ 		/* system-coherency = <31>; */
+ 
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/mesont7.dtsi	2025-03-11 17:44:58.539548680 +0100
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/mesont7.dtsi	2025-03-11 17:45:13.172883816 +0100
+@@ -4719,7 +4719,7 @@
+ 		<0 0xFE002000 0 0x01000>; /*reset register*/
+ 
+ 	interrupts = <0 144 4>, <0 145 4>, <0 146 4>;
+-	interrupt-names = "GPU", "MMU", "JOB";
++	interrupt-names = "gpu", "mmu", "job";
+ 	power-domains = <&pwrdm PDID_T7_MALI_TOP>;
+ 	num_of_pp = <4>;
+ 	system-coherency = <0>;
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/mesont7c.dtsi	2025-03-11 17:48:05.168828563 +0100
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/mesont7c.dtsi	2025-03-11 17:49:28.257737295 +0100
+@@ -4552,7 +4552,7 @@
+ 		<0 0xFE002000 0 0x01000>; /*reset register*/
+ 
+ 	interrupts = <0 144 4>, <0 145 4>, <0 146 4>;
+-	interrupt-names = "GPU", "MMU", "JOB";
++	interrupt-names = "gpu", "mmu", "job";
+ 	power-domains = <&pwrdm PDID_T7_MALI_TOP>;
+ 	num_of_pp = <4>;
+ 	system-coherency = <0>;
+--- a/common_drivers/arch/arm64/boot/dts/amlogic/meson-s4.dtsi	2025-03-17 17:19:37.056718429 +0100
++++ b/common_drivers/arch/arm64/boot/dts/amlogic/meson-s4.dtsi	2025-03-17 17:19:57.747198757 +0100
+@@ -2968,7 +2968,7 @@
+ 		<0 0xFE002000 0 0x01000>; /*reset register*/
+ 
+ 	interrupts = <0 144 4>, <0 145 4>, <0 146 4>;
+-	interrupt-names = "GPU", "MMU", "JOB";
++	interrupt-names = "gpu", "mmu", "job";
+ 	clk_cntl_reg = <0x57>;
+ 
+ 	clocks = <&clkc CLKID_MALI>;

@@ -1,0 +1,28 @@
+From ec993321315227d288dd867ee04a209e1a2658a7 Mon Sep 17 00:00:00 2001
+From: retro98boy <retro98boy@qq.com>
+Date: Fri, 24 Apr 2026 23:30:54 +0800
+Subject: [PATCH] panfrost force noafbc
+
+Signed-off-by: retro98boy <retro98boy@qq.com>
+---
+ src/panfrost/lib/pan_props.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/src/panfrost/lib/pan_props.c b/src/panfrost/lib/pan_props.c
+index 49697f8..44825e7 100644
+--- a/src/panfrost/lib/pan_props.c
++++ b/src/panfrost/lib/pan_props.c
+@@ -108,9 +108,7 @@ pan_query_compressed_formats(const struct pan_kmod_dev_props *props)
+ bool
+ pan_query_afbc(const struct pan_kmod_dev_props *props)
+ {
+-   unsigned reg = props->afbc_features;
+-
+-   return (pan_arch(props->gpu_id) >= 5) && (reg == 0);
++   return false;
+ }
+ 
+ /* Check for AFRC hardware support. AFRC is introduced in v10. Implementations
+-- 
+2.53.0
+

@@ -1,0 +1,34 @@
+--- a/common_drivers/drivers/clk/meson/t7.c
++++ b/common_drivers/drivers/clk/meson/t7.c
+@@ -1018,6 +1018,18 @@
+ };
+ #endif
+ 
++static const struct pll_mult_range t7_hifi_pll_range = {
++	.min = 125,
++	.max = 250,
++};
++static const struct reg_sequence t7_hifi_init_regs[] = {
++	{ .reg = ANACTRL_HIFIPLL_CTRL1, .def = 0x00000000 },
++	{ .reg = ANACTRL_HIFIPLL_CTRL2, .def = 0x00000000 },
++	{ .reg = ANACTRL_HIFIPLL_CTRL3, .def = 0x6a285c00 },
++	{ .reg = ANACTRL_HIFIPLL_CTRL4, .def = 0x65771290 },
++	{ .reg = ANACTRL_HIFIPLL_CTRL5, .def = 0x3927200a },
++	{ .reg = ANACTRL_HIFIPLL_CTRL6, .def = 0x56540000 }
++};
+ static struct clk_regmap t7_hifi_pll_dco = {
+ 	.data = &(struct meson_clk_pll_data){
+ 		.en = {
+@@ -1050,9 +1062,9 @@
+ 			.shift   = 29,
+ 			.width   = 1,
+ 		},
+-		.table = t7_hifi_pll_table,
+-		.flags = CLK_MESON_PLL_ROUND_CLOSEST
+-			 | CLK_MESON_PLL_FIXED_FRAC_WEIGHT_PRECISION,
++		.range = &t7_hifi_pll_range,
++		.init_regs = t7_hifi_init_regs,
++		.init_count = ARRAY_SIZE(t7_hifi_init_regs),
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "hifi_pll_dco",
