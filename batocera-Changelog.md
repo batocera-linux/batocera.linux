@@ -86,6 +86,7 @@
 - Sinden light gun's camera freezing after exiting Wine
 - Supermodel: offscreen reload not working on The Lost World: Jurassic Park (lostwsga)
 - MAME: broken light gun input in Jurassic Park (jpark), Operation Wolf 3 (opwolf3) and Police Trainer (policetr)
+- Duplicated buttons with Wiimote in gun/zapper modes
 ### Changed / Improved
 - Wifi country can now be chosen under the Network Setting option.
   This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
