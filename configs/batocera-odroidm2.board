@@ -1,0 +1,45 @@
+include batocera-board.common
+
+# Target definition
+BR2_aarch64=y
+BR2_cortex_a76_a55=y
+BR2_ARM_FPU_NEON_FP_ARMV8=y
+BR2_PACKAGE_BATOCERA_TARGET_ODROIDM2=y
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mtune=cortex-a76"
+BR2_TARGET_GENERIC_GETTY_PORT="/dev/ttyS2"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/fsoverlay"
+
+# Kernel - mainline stable
+BR2_LINUX_KERNEL=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.21"
+BR2_KERNEL_HEADERS_6_18=y
+BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidm2/linux_patches"
+BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidm2/linux-defconfig.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/odroidm2/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
+
+# Build the DTB from the kernel sources - in-tree DTS, no custom needed!
+BR2_LINUX_KERNEL_DTS_SUPPORT=y
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-odroid-m2"
+BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
+
+# Bootloader
+BR2_PACKAGE_UBOOT_ODROID_M2=y
+
+# System
+BR2_PACKAGE_BATOCERA_KODI21=y
+
+# GPU - Panthor for RK3588 Mali G610
+BR2_PACKAGE_BATOCERA_PANFROST_MESA3D=y
+BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_ZINK=y
+
+# Enable Wayland & XWayland
+BR2_PACKAGE_BATOCERA_WAYLAND_LABWC=y
+BR2_PACKAGE_BATOCERA_XWAYLAND=y
+
+# Boot splash
+BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
