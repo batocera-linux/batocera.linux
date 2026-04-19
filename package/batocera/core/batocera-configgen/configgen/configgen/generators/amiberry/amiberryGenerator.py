@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
@@ -64,13 +64,20 @@ class AmiberryGenerator(Generator):
         amiberryconf.save('default_vkbd_language', system.config.get('amiberry_vkbd_language', 'US'))
         amiberryconf.save('default_vkbd_toggle', 'leftstick')
         amiberryconf.save('default_fullscreen_mode', '2')
+        amiberryconf.save('default_auto_crop', system.config.get_bool('amiberry_auto_crop', return_values=('true', 'false')))
+        amiberryconf.save('default_keep_aspect', system.config.get_bool('amiberry_keep_aspect', return_values=('true', 'false')))
+        amiberryconf.save('shader', system.config.get('amiberry_shader', 'none'))
+
+
         amiberryconf.save('write_logfile', 'yes')
         amiberryconf.write()
 
         romType = self.getRomType(rom)
         _logger.debug("romType: %s", romType)
+
         if romType != 'UNKNOWN' :
             commandArray: list[str | Path] = [ _AMIBERRY_BIN ]
+
             if romType != 'WHDL' :
                 commandArray.append("--model")
                 commandArray.append(system.config.core)
@@ -79,9 +86,9 @@ class AmiberryGenerator(Generator):
                 commandArray.append(rom)
             elif romType == 'HDF' :
                 commandArray.append("-s")
-                commandArray.append(f"hardfile2=rw,DH0:{rom},32,1,2,512,0,,uae0")
+                commandArray.append(f"hardfile2=rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
                 commandArray.append("-s")
-                commandArray.append(f"uaehf0=hdf,rw,DH0:{rom},32,1,2,512,0,,uae0")
+                commandArray.append(f"uaehf0=hdf,rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
             elif romType == 'UAE' :
                 commandArray.append("-f")
                 commandArray.append(rom)
@@ -105,6 +112,7 @@ class AmiberryGenerator(Generator):
             mkdir_if_not_exists(_RETROARCH_INPUTS_DIR)
             write_sdl_controller_db(playersControllers, _RETROARCH_INPUTS_DIR / "gamecontrollerdb.txt")
 
+            is_player2 = None
             for pad in playersControllers:
                 replacements = {f'_player{pad.player_number}_':'_'}
                 # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
@@ -118,13 +126,33 @@ class AmiberryGenerator(Generator):
                                 outfile.write(newline)
                 if pad.player_number == 1: # 1 = joystick port
                     commandArray.append("-s")
+                    commandArray.append(f"joyport1=joy0")
+                    commandArray.append("-s")
                     commandArray.append(f"joyport1_friendlyname={padfilename}")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyportname1=")
                     if romType == 'CD' :
                         commandArray.append("-s")
                         commandArray.append("joyport1_mode=cd32joy")
                 if pad.player_number == 2: # 0 = mouse for the player 2
+                    is_player2 = 1
                     commandArray.append("-s")
-                    commandArray.append(f"joyport0_friendlyname={padfilename}")
+                    commandArray.append(f"joyport0=joy1")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyport0_friendlyname=\"{padfilename}\"")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyportname0=")
+
+
+            #set default mouse if no player2 gamepad is configured
+            #when gamepad is configured on joyport0, autoswitch between gamepad<->mouse is enabled by default
+            if not is_player2:
+                commandArray.append("-s")
+                commandArray.append(f"joyport0=mouse")
+                commandArray.append("-s")
+                commandArray.append(f"joyport0_friendlyname=\"System mouse\"")
+                commandArray.append("-s")
+                commandArray.append(f"joyportname0=MOUSE0")
 
             # fps
             if system.config.show_fps:
@@ -135,49 +163,72 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
-            # remove interlace artifacts
-            commandArray.append("-s")
-            commandArray.append(f'gfx_flickerfixer={system.config.get_bool("amiberry_flickerfixer", return_values=("true", "false"))}')
 
-            # auto height
-            commandArray.append("-s")
-            commandArray.append(f'amiberry.gfx_auto_height={system.config.get_bool("amiberry_auto_height", return_values=("true", "false"))}')
+            # remove interlace artifacts
+            if amiberry_scandoubler := system.config.get('amiberry_scandoubler'):
+                commandArray.append("-s")
+                commandArray.append(f'gfx_scandoubler={amiberry_scandoubler}')
+
+            # auto_crop (previously auto_height)
+            if amiberry_auto_crop := system.config.get('amiberry_auto_crop'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_auto_crop={amiberry_auto_crop}")
 
             # line mode
-            commandArray.append("-s")
-            commandArray.append(f"gfx_linemode={system.config.get('amiberry_linemode', 'double')}")
+            if amiberry_linemode := system.config.get('amiberry_linemode'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_linemode={amiberry_linemode}")
 
             # video resolution
-            commandArray.append("-s")
-            commandArray.append(f"gfx_resolution={system.config.get('amiberry_resolution', 'hires')}")
+            if amiberry_resolution := system.config.get('amiberry_resolution'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_resolution={amiberry_resolution}")
+
 
             # Scaling method
             match system.config.get("amiberry_scalingmethod"):
-                case "smooth":
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=true")
-                    commandArray.append("-s")
-                    commandArray.append("amiberry.scaling_method=1")
-                case "pixelated":
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=true")
-                    commandArray.append("-s")
-                    commandArray.append("amiberry.scaling_method=0")
-                case _:
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=false")
+                case "none":
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=-1")
+                case "pixelated":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=0")
+                case "smooth":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=1")
+                case "integer":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=2")
+
 
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
+
+            # force ntsc
+            amiberry_default_ntsc = False
+            # detect ntsc from rom filename hint
+            if 'ntsc' in rom.stem.lower():
+                amiberry_default_ntsc = True
+
+            amiberry_ntsc = system.config.get_bool('amiberry_ntsc', amiberry_default_ntsc)
+            if amiberry_ntsc:
+                commandArray.append("-s")
+                commandArray.append("ntsc=true")
+                commandArray.append("-s")
+                commandArray.append("chipset_refreshrate=60.000000")
+
+            # memory
+            commandArray.append("-F 8")
+
+
 
             # fix sound buffer and frequency
             commandArray.append("-s")
             commandArray.append("sound_max_buff=4096")
             commandArray.append("-s")
             commandArray.append("sound_frequency=48000")
+
 
             # Disable GUI at launch
             if not commandArray or commandArray[-1] != "-G":
