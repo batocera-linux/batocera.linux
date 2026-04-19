@@ -21,17 +21,6 @@ DEVILUTIONX_CONF_OPTS += -DPREFILL_PLAYER_NAME=ON
 # They should all be present in the source package.
 DEVILUTIONX_CONF_OPTS += -DFETCHCONTENT_FULLY_DISCONNECTED=ON
 
-# ZeroTier on aarch64 uses ARMv8 Cryptography Extensions.
-# These extension are optional and only certain Armv8-A CPUs support them.
-# Disables ZeroTier if the CPU compilation flags do not specify the "+crypto" extension.
-ifeq ($(BR2_aarch64)$(BR2_ARM_CPU_ARMV8A),yy)
-    ifneq ($(findstring +crypto,$(BR2_TARGET_OPTIMIZATION)),+crypto)
-        DEVILUTIONX_CONF_OPTS += -DDISABLE_ZERO_TIER=ON
-    endif
-else ifeq ($(BR2_arm),y)
-    DEVILUTIONX_CONF_OPTS += -DDISABLE_ZERO_TIER=ON
-endif
-
 # ugly hack becuase the is no version in the source file
 # and using the git tag doesn't download the submodules properly
 define DEVILUTIONX_CLEAR_DL
