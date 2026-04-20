@@ -56,9 +56,6 @@ class LibretroGenerator(Generator):
     # Main entry of the module
     # Configure retroarch and return a command
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        # Fix for the removed MESS/MAMEVirtual cores
-        if system.config.core in [ 'mess', 'mamevirtual' ]:
-            system.config['core'] = 'mame'
 
         # Get the graphics backend first
         gfxBackend = getGFXBackend(system)
@@ -126,11 +123,13 @@ class LibretroGenerator(Generator):
             shutil.copyfile(RETROARCH_CUSTOM, remapconfigDir / "common.rmp")
 
         # Retroarch core on the filesystem
-        retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
+        # 'mess' uses the mame core binary
+        coreBinary = "mame" if system.config.core == "mess" else system.config.core
+        retroarchCore = RETROARCH_CORES / f"{coreBinary}_libretro.so"
 
         # for each core, a file /usr/lib/<core>.info must exit, otherwise, info such as rewinding/netplay will not work
         # to do a global check : cd /usr/lib/libretro && for i in *.so; do INF=$(echo $i | sed -e s+/usr/lib/libretro+/usr/share/libretro/info+ -e s+\.so+.info+); test -e "$INF" || echo $i; done
-        infoFile = RETROARCH_SHARE / "info" / f"{system.config.core}_libretro.info"
+        infoFile = RETROARCH_SHARE / "info" / f"{coreBinary}_libretro.info"
         if not infoFile.exists():
             raise MissingCore
 

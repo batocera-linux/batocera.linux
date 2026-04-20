@@ -1,0 +1,3 @@
+emu.keypost('\n')
+
+

@@ -625,9 +625,9 @@ sc3000:
   theme: sc-3000
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     SC-3000 cartridges are compatible with SG-1000.
     Cassette tapes (.wav, .cas, .bit) are SC-3000 exclusive.
@@ -642,9 +642,9 @@ segaai:
   theme:      segaai
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     BIOS: segaai.zip in bios/mame/
     Software on Sega My Cards (.bin) or cassette tapes (.wav, .flac, .cas).
@@ -659,9 +659,9 @@ beena:
   theme:      beena
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     BIOS: beena.zip in bios/mame/
     Successor to the Sega Pico. Cartridge-based educational console.
@@ -1135,9 +1135,9 @@ xegs:
   group:      atari8bit
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     Requires MAME BIOS file xegs.zip
     Software list mode recommended
@@ -1484,9 +1484,9 @@ vectrex:
   emulators:
     libretro:
       vecx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_VECX] }
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 
 lutro:
@@ -1604,9 +1604,9 @@ pcw:
   extensions: [mfi, dfi, mfm, td0, imd, 86f, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     Requires MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
     Games are floppy disk images (.dsk). Most games are self-booting and don't require a separate system disk.
@@ -1626,6 +1626,8 @@ msx1:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
+    mame:
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [ogv, openmsx }
   comment_en: |
     ## BIOS ##
 
@@ -1825,6 +1827,8 @@ msx2+:
       fmsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_FMSX], incompatible_extensions: [openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX], incompatible_extensions: [m3u] }
+    mame:
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [ogv, openmsx }
   comment_en: |
     ## BIOS ##
 
@@ -1922,6 +1926,8 @@ msxturbor:
       bluemsx: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BLUEMSX], incompatible_extensions: [openmsx] }
     openmsx:
       openmsx: { requireAnyOf: [BR2_PACKAGE_OPENMSX] }
+    mame:
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [ogv, openmsx }
 
 mz2000:
   name:       Sharp MZ-2000
@@ -1931,9 +1937,9 @@ mz2000:
   extensions: [mzf, mzt, m12, wav, d88, dsk, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file mz2000.zip
           Using software list mode is recommended.
@@ -1946,9 +1952,9 @@ mz2500:
   extensions: [d88, dsk, mfi, dfi, hfe, mfm, td0, imd, d77, 1dd, cqm, cqi, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file mz2500.zip
           Using software list mode is recommended.
@@ -1961,9 +1967,9 @@ mz700:
   extensions: [mzf, mzt, m12, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file mz700.zip
           Using software list mode is recommended.
@@ -1976,9 +1982,9 @@ mz800:
   extensions: [mzf, mzt, m12, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file mz800.zip
           Using software list mode is recommended.
@@ -1991,9 +1997,9 @@ mz80k:
   extensions: [mzf, mzt, m12, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file mz80k.zip
           Using software list mode is recommended.
@@ -2046,9 +2052,9 @@ bk:
   emulators:
     libretro:
       bk:   { requireAnyOf: [BR2_PACKAGE_LIBRETRO_BK]   }
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     BK-0010/0011 was a Soviet home computer series from Elektronika.
     Supports BK-0010, BK-0010.01, BK-0011(M) and Terak 8510/a emulation.
@@ -2143,10 +2149,10 @@ apple2:
   extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
       applewin: { requireAnyOf: [BR2_PACKAGE_APPLEWIN] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     gsplus:
       gsplus: { requireAnyOf: [BR2_PACKAGE_GSPLUS], incompatible_extensions: [mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg] }
     applewin:
@@ -2622,9 +2628,9 @@ fmtowns:
   platform:   fmtowns
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [xdf, m3u] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [xdf, m3u] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [xdf, m3u] }
     tsugaru:
       tsugaru: { requireAnyOf: [BR2_PACKAGE_TSUGARU], incompatible_extensions: [chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z] }
 
@@ -3296,9 +3302,9 @@ uzebox:
   emulators:
     libretro:
       uzem: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_UZEM], incompatible_extensions: [bin, zip] }
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 cdi:
   name:       CD-i
@@ -3309,9 +3315,9 @@ cdi:
   emulators:
     libretro:
       same_cdi: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAME_CDI], incompatible_extensions: [cue, toc, nrg, gdi, cdr] }
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file cdimono1.zip
   comment_br: |
@@ -3325,9 +3331,9 @@ advision:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file advision.zip
   comment_br: |
@@ -3353,10 +3359,10 @@ megaduck:
   extensions:  [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
       sameduck:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_SAMEDUCK] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 pv1000:
   name:       PV-1000
@@ -3366,9 +3372,9 @@ pv1000:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 pv2000:
   name:       PV-2000
@@ -3378,9 +3384,9 @@ pv2000:
   extensions: [bin, cas, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file pv2000.zip
   comment_br: |
@@ -3394,9 +3400,9 @@ pc80:
   extensions: [d77, d88, 1dd, dsk, n80, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file pc8001mk2sr.zip
   comment_br: |
@@ -3410,9 +3416,9 @@ gamate:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gamate.zip
   comment_br: |
@@ -3427,9 +3433,9 @@ crvision:
   extensions: [bin, rom, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file crvision.zip
   comment_br: |
@@ -3443,9 +3449,9 @@ ctvboy:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           MAME 0.262+ required
 
@@ -3457,9 +3463,9 @@ laser310:
   extensions: [vz, wav, cas, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file laser310.zip
           Using snapshot (.vz) files is recommended.
@@ -3475,9 +3481,9 @@ socrates:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file socrates.zip
           Software list mode recommended
@@ -3509,9 +3515,9 @@ supracan:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Sound support is preliminary
   comment_br: |
@@ -3525,9 +3531,9 @@ gamecom:
   extensions: [bin, tgc, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gamecom.zip
   comment_br: |
@@ -3541,9 +3547,9 @@ gamepock:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gamepock.zip
   comment_br: |
@@ -3557,9 +3563,9 @@ fm7:
   extensions: [wav, t77, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
   comment_br: |
@@ -3574,9 +3580,9 @@ archimedes:
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
   comment_en: |
@@ -3596,9 +3602,9 @@ atom:
   extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file atom.zip
           Using software list mode is recommended. Software list cassettes don't work but floppies do.
@@ -3616,9 +3622,9 @@ electron:
   extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
   comment_en: |
@@ -3638,9 +3644,9 @@ apfm1000:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file apfm1000.zip
   comment_br: |
@@ -3655,9 +3661,9 @@ bbcmicro:
   extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
   comment_en: |
@@ -3676,9 +3682,9 @@ camplynx:
   extensions: [wav, tap, ldf, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS files lynx128k.zip, lynx96k.zip, lynx48k.zip
           Using software list mode is recommended.
@@ -3694,9 +3700,9 @@ adam:
   extensions: [wav, ddp, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, rom, col, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires the following MAME BIOS files:
           adam.zip, adam_ddp.zip, adam_fdc.zip, adam_kb.zip, & adam_prn.zip
@@ -3712,9 +3718,9 @@ arcadia:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 sv8000:
   name:       Super Vision 8000
@@ -3724,9 +3730,9 @@ sv8000:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 gmaster:
   name:       Game Master
@@ -3736,9 +3742,9 @@ gmaster:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gmaster.zip
   comment_br: |
@@ -3753,9 +3759,9 @@ astrocade:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file astrocde.zip
   comment_br: |
@@ -3769,9 +3775,9 @@ ti99:
   extensions: [rpk, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file ti99_4a.zip
           Cartridges need to be in .rpk format and unzipped if not using software lists.
@@ -3787,9 +3793,9 @@ tutor:
   extensions: [bin, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file tutor.zip
           To get through the loading menu, R1 will move down and A/East will select.
@@ -3805,9 +3811,9 @@ coco:
   extensions: [wav, cas, dsk, ccc, rom, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     xroar:
       xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
   comment_en: |
@@ -3841,9 +3847,9 @@ cgenie:
   extensions: [cas, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           MAME requires BIOS file cgenie.zip
   comment_br: |
@@ -3857,9 +3863,9 @@ dragon64:
   extensions: [wav, cas, dsk, dmk, ccc, rom, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     xroar:
       xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
   comment_en: |
@@ -3890,9 +3896,9 @@ mc10:
   extensions: [wav, cas, rom, bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     xroar:
       xroar: { requireAnyOf: [BR2_PACKAGE_XROAR] }
   comment_en: |
@@ -3909,9 +3915,9 @@ trs80:
   extensions: [cmd, cas, dsk, dmk, bas, wav, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           MAME requires BIOS file trs80.zip (Model I), trs80m3.zip (Model III), or trs80m4.zip (Model 4)
 
@@ -3938,9 +3944,9 @@ vc4000:
   extensions: [bin, rom, pgm, tvc, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 vgmplay:
   name:       Video Game Music Player
@@ -3950,9 +3956,9 @@ vgmplay:
   extensions: [vgm, vgz, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Software lists recommended. QSound can be CPU-intensive.
           Use the File Manager in the MAME menu to change tracks.
@@ -4154,9 +4160,9 @@ samcoupe:
     samcoupe:
       samcoupe:  { requireAnyOf: [BR2_PACKAGE_SIMCOUPE] }
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mes: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 abuse:
   name:       Abuse
@@ -4225,9 +4231,9 @@ macintosh:
   emulators:
     libretro:
       minivmac: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MINIVMAC], incompatible_extensions: [7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi] }
-      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [ 7z ] }
   comment_en: |
@@ -4528,9 +4534,9 @@ pdp1:
   extensions: [zip, 7z, tap, rim, drm]
   emulators:
     libretro:
-      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
     Use Control-Enter or Start to start after loading. Loading may take some time,
     if the green lights are blinking, it is loading.
@@ -4606,9 +4612,9 @@ gp32:
   extensions: [smc, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file gp32.zip
   comment_br: |
@@ -5295,7 +5301,9 @@ vis:
   extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 vpinball:
   name: Visual Pinball X
@@ -5757,9 +5765,9 @@ rx78:
   extensions: [bin, zip, 7z]
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
 commanderx16:
   name: Commander X16
@@ -5973,9 +5981,9 @@ oricatmos:
     clk:
       clk: { requireAnyOf: [BR2_PACKAGE_CLK] }
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
 
   comment_en: |
     Emulator for Oric Atmos (and Oric 1)
@@ -6168,9 +6176,9 @@ loopy:
   theme: loopy
   emulators:
     libretro:
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires MAME BIOS file:
           bios/mame/casloopy.zip
@@ -6189,9 +6197,9 @@ pc60:
   extensions: [bin, cas, p6, d77, d88, dsk, 1dd, mfi, dfi, mfm, td0, imd, cqm, cqi, xdf, hdm, 2hd, fdi, zip, 7z]
   emulators:
     mame:
-      mame:  { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess:  { requireAnyOf: [BR2_PACKAGE_MAME] }
     libretro:
-      mame:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess:  { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
   comment_en: |
     Requires MAME BIOS files (depending on model):
     bios/pc6001.zip (PC-6001)
@@ -6218,9 +6226,9 @@ enterprise:
       clk:      { requireAnyOf: [BR2_PACKAGE_CLK], incompatible_extensions: [img,dsk,tap,dtf,trn,128,cas,cdt,tzx]  }
     libretro:
       ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
-      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires ep128emu BIOS files:
           bios/ep128emu/roms/exos21.rom (Expandible OS 2.1)
@@ -6262,9 +6270,9 @@ tvc:
   emulators:
     libretro:
       ep128emu-core: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_EP128EMU_CORE] }
-      mame:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
     mame:
-      mame:     { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mess:     { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
           Requires ep128emu BIOS files:
           bios/ep128emu/roms/tvc22_sys.rom (TVC system BIOS)

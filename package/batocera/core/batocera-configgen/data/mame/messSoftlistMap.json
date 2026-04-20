@@ -1,0 +1,3613 @@
+{
+  "_comment": "Maps MAME softlist names to machine/media/autoboot configuration. lua_script paths are relative to the autoboot_script/ subdirectory shipped with this data.",
+  "32x": {
+    "machine": "32x",
+    "media": "cart"
+  },
+  "3do": {
+    "machine": "3do_fz10",
+    "media": "cdrom"
+  },
+  "3do_m2": {
+    "machine": "3do_fz10",
+    "media": "cdrom"
+  },
+  "a2600": {
+    "machine": "a2600",
+    "media": "cart"
+  },
+  "a2600_cass": {
+    "machine": "a2600",
+    "media": "cassa"
+  },
+  "a5200": {
+    "machine": "a5200",
+    "media": "cart"
+  },
+  "a7800": {
+    "machine": "a7800",
+    "media": "cart"
+  },
+  "a800": {
+    "machine": "a800xl",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cart"
+  },
+  "a800_cass": {
+    "machine": "a800xl",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cass1"
+  },
+  "a800_flop": {
+    "machine": "a800xl",
+    "lua_script": "a800_flop.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "abc1600_flop": {
+    "machine": "abc1600",
+    "media": "flop1"
+  },
+  "abc1600_hdd": {
+    "machine": "abc1600",
+    "media": "hdd"
+  },
+  "abc800_hdd": {
+    "machine": "abc800c",
+    "media": "hdd"
+  },
+  "abc806_flop": {
+    "machine": "abc806",
+    "media": "flop"
+  },
+  "abc80_cass": {
+    "machine": "abc80",
+    "media": "cass1"
+  },
+  "abc80_flop": {
+    "machine": "abc80",
+    "media": "flop1"
+  },
+  "abc80_rom": {
+    "machine": "abc80",
+    "media": "rom"
+  },
+  "abc830_flop": {
+    "machine": "abc800c",
+    "media": "flop"
+  },
+  "abc832_flop": {
+    "machine": "abc800c",
+    "media": "flop"
+  },
+  "abc838_flop": {
+    "machine": "abc800c",
+    "media": "flop"
+  },
+  "acrnsys_flop": {
+    "machine": "acrnsys3",
+    "media": "flop1"
+  },
+  "acrnsys_rom": {
+    "machine": "acrnsys3",
+    "media": "rom1"
+  },
+  "adam_cart": {
+    "machine": "adam",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cart"
+  },
+  "adam_cass": {
+    "machine": "adam",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass1"
+  },
+  "adam_flop": {
+    "machine": "adam",
+    "lua_script": "adam_flop.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "advantage": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "advision": {
+    "machine": "advision",
+    "media": "cart"
+  },
+  "aim65_cart": {
+    "machine": "aim65",
+    "media": "z24"
+  },
+  "aleste": {
+    "machine": "al520ex",
+    "media": "flop1"
+  },
+  "alice32": {
+    "machine": "alice90",
+    "lua_script": "alice90.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass1"
+  },
+  "alice90": {
+    "machine": "alice90",
+    "lua_script": "alice90.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass"
+  },
+  "alphasmart_kapps": {
+    "machine": "asma3k",
+    "media": "kapp"
+  },
+  "alphatro_cart": {
+    "machine": "alphatro",
+    "media": "cart"
+  },
+  "alphatro_flop": {
+    "machine": "alphatro",
+    "media": "flop1"
+  },
+  "altos5": {
+    "machine": "altos5",
+    "media": "flop1"
+  },
+  "altos586": {
+    "machine": "altos586",
+    "media": "flop1"
+  },
+  "altos8600": {
+    "machine": "altos8600",
+    "media": "flop1"
+  },
+  "amiga_amix": {
+    "machine": "a3000",
+    "media": "flop1"
+  },
+  "amiga_apps": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amiga_cd": {
+    "machine": "cd32",
+    "media": "cdrom"
+  },
+  "amiga_demos": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amiga_flop": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amiga_hardware": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amiga_hdd": {
+    "machine": "a1200",
+    "media": "hdd"
+  },
+  "amiga_workbench": {
+    "machine": "a1200",
+    "media": "kickstart"
+  },
+  "amigaaga_flop": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amigaecs_flop": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "amigaocs_flop": {
+    "machine": "a1200",
+    "media": "flop1"
+  },
+  "ampro": {
+    "machine": "ampro",
+    "media": "flop1"
+  },
+  "apc": {
+    "machine": "apc",
+    "media": "flop1"
+  },
+  "apexc_cyl": {
+    "machine": "apexc",
+    "media": "cyl"
+  },
+  "apfimag_cass": {
+    "machine": "apfimag",
+    "media": "cass"
+  },
+  "apfm1000": {
+    "machine": "apfm1000",
+    "media": "cart"
+  },
+  "apogee": {
+    "machine": "apogee",
+    "lua_script": "apogee.lua",
+    "media": "cass"
+  },
+  "apollo_ctape": {
+    "machine": "dn3500",
+    "media": "cass1"
+  },
+  "apple1": {
+    "machine": "apple1",
+    "media": "cass"
+  },
+  "apple2_cass": {
+    "machine": "apple2p",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      },
+      {
+        "key": "gameio",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-gameio",
+          "{value}"
+        ],
+        "value_machine_restriction": {
+          "joyport": [
+            "apple2p"
+          ]
+        }
+      }
+    ],
+    "media": "cass"
+  },
+  "apple2_flop_clcracked": {
+    "machine": "apple2",
+    "media": "flop1"
+  },
+  "apple2_flop_misc": {
+    "machine": "apple2ee",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      },
+      {
+        "key": "gameio",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-gameio",
+          "{value}"
+        ],
+        "value_machine_restriction": {
+          "joyport": [
+            "apple2p"
+          ]
+        }
+      }
+    ],
+    "rom_ext_args": [
+      {
+        "extensions": [
+          ".hdv",
+          ".2mg",
+          ".chd",
+          ".iso",
+          ".bin",
+          ".cue"
+        ],
+        "args": [
+          "-sl7",
+          "cffa202"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "apple2_flop_orig": {
+    "machine": "apple2",
+    "media": "flop1"
+  },
+  "apple2gs_flop_clcracked": {
+    "machine": "apple2gsr3p",
+    "media": "flop1"
+  },
+  "apple2gs_flop_misc": {
+    "machine": "apple2gsr3p",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      },
+      {
+        "key": "gameio",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-gameio",
+          "{value}"
+        ],
+        "value_machine_restriction": {
+          "joyport": [
+            "apple2p"
+          ]
+        }
+      }
+    ],
+    "media": "flop1"
+  },
+  "apple2gs_flop_orig": {
+    "machine": "apple2gsr3p",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      },
+      {
+        "key": "gameio",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-gameio",
+          "{value}"
+        ],
+        "value_machine_restriction": {
+          "joyport": [
+            "apple2p"
+          ]
+        }
+      }
+    ],
+    "media": "flop1"
+  },
+  "apple3": {
+    "machine": "apple3",
+    "media": "flop1"
+  },
+  "applix_flop": {
+    "machine": "applix",
+    "media": "flop1"
+  },
+  "apricot_flop": {
+    "machine": "apricot",
+    "media": "flop1"
+  },
+  "apxen_flop": {
+    "machine": "apxen",
+    "media": "flop1"
+  },
+  "aquarius_cart": {
+    "machine": "aquarius",
+    "media": "cart1"
+  },
+  "aquarius_cass": {
+    "machine": "aquarius",
+    "media": "cass1",
+    "lua_script": "aquarius_cass.lua"
+  },
+  "arb": {
+    "machine": "arb",
+    "media": "cart"
+  },
+  "arcadia": {
+    "machine": "arcadia",
+    "media": "cart"
+  },
+  "archimedes": {
+    "machine": "aa4401",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "flop"
+  },
+  "archimedes_hdd": {
+    "machine": "aa310",
+    "media": "hdd"
+  },
+  "archimedes_rom": {
+    "machine": "aa310",
+    "media": "rom"
+  },
+  "astrocde": {
+    "machine": "astrocde",
+    "media": "cart"
+  },
+  "atom_cass": {
+    "machine": "atom",
+    "media": "cass1"
+  },
+  "atom_flop": {
+    "machine": "atom",
+    "media": "flop1",
+    "lua_script": "atom_flop.lua"
+  },
+  "atom_rom": {
+    "machine": "atom",
+    "media": "cart"
+  },
+  "attache": {
+    "machine": "attache",
+    "media": "flop1"
+  },
+  "aussiebyte": {
+    "machine": "aussieby",
+    "media": "flop1"
+  },
+  "b2m": {
+    "machine": "b2m",
+    "media": "disk"
+  },
+  "basf7100": {
+    "machine": "basf7120",
+    "media": "flop1"
+  },
+  "bbc_cass": {
+    "machine": "bbcb",
+    "lua_script": "bbc_cass.lua",
+    "config_args": [
+      {
+        "key": "sticktype",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-analogue",
+          "{value}"
+        ]
+      }
+    ],
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass"
+  },
+  "bbc_flop_32016": {
+    "machine": "acw443",
+    "media": "flop1"
+  },
+  "bbc_flop_6502": {
+    "machine": "bbcmt",
+    "media": "flop1"
+  },
+  "bbc_flop_68000": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "bbc_flop_80186": {
+    "machine": "bbcm512",
+    "media": "flop1"
+  },
+  "bbc_flop_arm": {
+    "machine": "bbcmarm",
+    "media": "flop1",
+    "extra_args": [
+      "-tube",
+      "arm "
+    ]
+  },
+  "bbc_flop_hybrid": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "bbc_flop_torch": {
+    "machine": "torch725",
+    "media": "flop1"
+  },
+  "bbc_flop_z80": {
+    "machine": "abc110",
+    "media": "flop1"
+  },
+  "bbc_hdd": {
+    "machine": "bbcb",
+    "media": "hdd"
+  },
+  "bbc_rom": {
+    "machine": "bbcb",
+    "config_args": [
+      {
+        "key": "sticktype",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-analogue",
+          "{value}"
+        ]
+      }
+    ],
+    "media": "rom1"
+  },
+  "bbc_vsm": {
+    "machine": "bbcb",
+    "media": "rom"
+  },
+  "bbcb_flop": {
+    "machine": "bbcb",
+    "lua_script": "bbcb_flop.lua",
+    "config_args": [
+      {
+        "key": "sticktype",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-analogue",
+          "{value}"
+        ]
+      }
+    ],
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "bbcb_flop_orig": {
+    "machine": "bbcb",
+    "lua_script": "bbcb_flop_orig.lua",
+    "config_args": [
+      {
+        "key": "sticktype",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-analogue",
+          "{value}"
+        ]
+      }
+    ],
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "bbcb_flop_us": {
+    "machine": "bbcb_us",
+    "lua_script": "bbcb_flop.lua",
+    "config_args": [
+      {
+        "key": "sticktype",
+        "type": "str",
+        "default": "none",
+        "skip_if": "none",
+        "args": [
+          "-analogue",
+          "{value}"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "bbcbc": {
+    "machine": "bbcbc",
+    "media": "cart"
+  },
+  "bbcm_cart": {
+    "machine": "bbcm",
+    "media": "cart"
+  },
+  "bbcm_flop": {
+    "machine": "bbcm",
+    "media": "flop1"
+  },
+  "bbcmc_flop": {
+    "machine": "bbcmc",
+    "media": "flop1"
+  },
+  "bdesignm_design_cart": {
+    "machine": "bdesignm",
+    "media": "cart"
+  },
+  "bdesignm_game_cart": {
+    "machine": "bdesignm",
+    "media": "cart"
+  },
+  "bingobear": {
+    "machine": "bbear",
+    "media": "cart"
+  },
+  "bk0010": {
+    "machine": "bk001001",
+    "lua_script": "bk0010.lua",
+    "media": "cass"
+  },
+  "bkrankp_cart": {
+    "machine": "bkrankp",
+    "media": "cart"
+  },
+  "bmjr_cass": {
+    "machine": "bmjr",
+    "media": "cass"
+  },
+  "bml3_cass": {
+    "machine": "bml3",
+    "media": "cass"
+  },
+  "bml3_flop": {
+    "machine": "bml3",
+    "media": "flop1"
+  },
+  "brother_pn": {
+    "machine": "pn8800",
+    "media": "flop1"
+  },
+  "bungo_flop": {
+    "machine": "mini5sx",
+    "media": "flop1"
+  },
+  "buzztime_cart": {
+    "machine": "buzztime",
+    "media": "cart"
+  },
+  "bw12": {
+    "machine": "bw12",
+    "media": "flop1"
+  },
+  "bw14": {
+    "machine": "bw14",
+    "media": "flop1"
+  },
+  "bw2": {
+    "machine": "bw2",
+    "media": "flop1"
+  },
+  "bx256hp_flop": {
+    "machine": "bx256hp",
+    "media": "flop1"
+  },
+  "c128_cart": {
+    "machine": "c128",
+    "media": "cart"
+  },
+  "c128_flop": {
+    "machine": "c128",
+    "media": "flop1"
+  },
+  "c128_rom": {
+    "machine": "c128",
+    "media": "rom"
+  },
+  "c2color_cart": {
+    "machine": "c2color",
+    "media": "cart"
+  },
+  "c64_cart": {
+    "machine": "c64",
+    "media": "cart"
+  },
+  "c64_cass": {
+    "machine": "c64",
+    "lua_script": "c64_cass.lua",
+    "media": "cass1"
+  },
+  "c64_flop_misc": {
+    "machine": "c64",
+    "lua_script": "c64_flop.lua",
+    "media": "flop1"
+  },
+  "c64_flop_orig": {
+    "machine": "c64",
+    "lua_script": "c64_flop.lua",
+    "media": "flop1"
+  },
+  "c65_flop": {
+    "machine": "c65",
+    "media": "flop1"
+  },
+  "camplynx_cass": {
+    "machine": "lynx128k",
+    "lua_script": "camplynx_cass.lua",
+    "extra_args": [
+      "-skip_gameinfo",
+      "-ram",
+      "128k"
+    ],
+    "media": "cass"
+  },
+  "camplynx_flop": {
+    "machine": "lynx128k",
+    "media": "flop1"
+  },
+  "carbeena": {
+    "machine": "beena",
+    "media": "rom"
+  },
+  "casio_rompack": {
+    "machine": "casiorom",
+    "media": "cart"
+  },
+  "casloopy": {
+    "machine": "casloopy",
+    "media": "cart"
+  },
+  "cassvisn_cart": {
+    "machine": "cassvisn",
+    "media": "cart"
+  },
+  "cbm2_cart": {
+    "machine": "b256",
+    "media": "cart"
+  },
+  "cbm2_flop": {
+    "machine": "b256",
+    "media": "flop1"
+  },
+  "cbm8096_flop": {
+    "machine": "cbm8096",
+    "media": "flop1"
+  },
+  "cbm8296_flop": {
+    "machine": "cbm8296",
+    "media": "flop1"
+  },
+  "cc40_cart": {
+    "machine": "cc40",
+    "media": "cart"
+  },
+  "cd32": {
+    "machine": "cd32",
+    "media": "cdrom"
+  },
+  "cdi": {
+    "machine": "cdimono1",
+    "lua_script": "cdi.lua",
+    "media": "cdrm"
+  },
+  "cdtv": {
+    "machine": "cdtv",
+    "media": "cdrom1"
+  },
+  "cecflop": {
+    "machine": "cec2000",
+    "media": "flop1"
+  },
+  "cgenie_cass": {
+    "machine": "cgenie",
+    "lua_script": "cgenie_cass.lua",
+    "extra_args": [
+      "-ram",
+      "32k"
+    ],
+    "media": "cass"
+  },
+  "cgenie_flop_rom": {
+    "machine": "cgenie_fdc",
+    "media": "rom"
+  },
+  "challenge_gear_cart": {
+    "machine": "chalgear",
+    "media": "cart"
+  },
+  "channelf": {
+    "machine": "channelf",
+    "media": "cart"
+  },
+  "chessking_cart": {
+    "machine": "chesskng",
+    "media": "cart"
+  },
+  "chessmstdm": {
+    "machine": "chessmstdm",
+    "media": "cart"
+  },
+  "chip8_quik": {
+    "machine": "d6800",
+    "media": "quik"
+  },
+  "clickstart_cart": {
+    "machine": "clikstrt",
+    "media": "cart"
+  },
+  "clipper_flop": {
+    "machine": "clipper",
+    "media": "flop1"
+  },
+  "coco_cart": {
+    "machine": "coco3",
+    "media": "cart"
+  },
+  "coco_cass": {
+    "machine": "coco3",
+    "lua_script": "trs80_cass.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cass"
+  },
+  "coco_flop": {
+    "machine": "coco3",
+    "lua_script": "trs80_flop.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "coleco": {
+    "machine": "coleco",
+    "media": "cart"
+  },
+  "coleco_homebrew": {
+    "machine": "coleco",
+    "media": "cart"
+  },
+  "compclr2_flop": {
+    "machine": "compclr2",
+    "media": "flop1"
+  },
+  "compis": {
+    "machine": "compis",
+    "media": "flop1"
+  },
+  "comx35_flop": {
+    "machine": "comx35p",
+    "media": "flop1"
+  },
+  "conchess": {
+    "machine": "conc",
+    "media": "cart"
+  },
+  "copera": {
+    "machine": "copera",
+    "media": "cart"
+  },
+  "cpc_cass": {
+    "machine": "cpc464",
+    "lua_script": "cpc_cass.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cass1"
+  },
+  "cpc_flop": {
+    "machine": "cpc6128",
+    "lua_script": "cpc_flop.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "crvision": {
+    "machine": "crvision",
+    "lua_script": "crvision.lua",
+    "media": "cart"
+  },
+  "ctvboy": {
+    "machine": "ctvboy",
+    "media": "cart"
+  },
+  "cubieboard4": {
+    "machine": "cubibrd4",
+    "media": "image"
+  },
+  "cx3000tc": {
+    "machine": "cx3000tc",
+    "media": "cart"
+  },
+  "cz1_cart": {
+    "machine": "cz1",
+    "media": "cart"
+  },
+  "dai_cass": {
+    "machine": "dai",
+    "lua_script": "dai_cass.lua",
+    "media": "cass1"
+  },
+  "database": {
+    "machine": "database",
+    "media": "cart"
+  },
+  "dc": {
+    "machine": "dc",
+    "media": "cdrom"
+  },
+  "dgnalpha_flop": {
+    "machine": "dgnalpha",
+    "media": "flop1"
+  },
+  "dgnbeta_flop": {
+    "machine": "dgnbeta",
+    "media": "flop1"
+  },
+  "digiblast_cart": {
+    "machine": "digiblst",
+    "media": "cart"
+  },
+  "digilog320": {
+    "machine": "digilog320",
+    "media": "flop1"
+  },
+  "dim68k": {
+    "machine": "dim68k",
+    "media": "flop1"
+  },
+  "dmv": {
+    "machine": "dmv",
+    "media": "flop"
+  },
+  "dps1": {
+    "machine": "dps1",
+    "media": "flop1"
+  },
+  "dragon_cart": {
+    "machine": "dragon64",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cart"
+  },
+  "dragon_cass": {
+    "machine": "dragon64",
+    "lua_script": "dragon_cass.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cass"
+  },
+  "dragon_flex": {
+    "machine": "dragon64",
+    "media": "flop1"
+  },
+  "dragon_flop": {
+    "machine": "dragon64",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "flop1"
+  },
+  "dragon_os9": {
+    "machine": "dragon64",
+    "media": "flop1"
+  },
+  "duelmast_cart": {
+    "machine": "duelmast",
+    "media": "cart"
+  },
+  "easy_karaoke_cart": {
+    "machine": "easykara",
+    "media": "cart"
+  },
+  "ec1841": {
+    "machine": "ec1841",
+    "media": "flop1"
+  },
+  "einstein": {
+    "machine": "einst256",
+    "lua_script": "einstein.lua",
+    "media": "flop1"
+  },
+  "einstein_rom": {
+    "machine": "einstein",
+    "media": "rom"
+  },
+  "ekara_cart": {
+    "machine": "ekara",
+    "media": "cart"
+  },
+  "electron_cart": {
+    "machine": "electron",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cart"
+  },
+  "electron_cass": {
+    "machine": "electron",
+    "lua_script": "electron_cass.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass"
+  },
+  "electron_flop": {
+    "machine": "electron",
+    "lua_script": "electron_flop.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "electron_rom": {
+    "machine": "electron",
+    "media": "rom"
+  },
+  "entex_sag": {
+    "machine": "sag",
+    "media": "cart"
+  },
+  "ep64_cart": {
+    "machine": "ep64",
+    "media": "cart"
+  },
+  "ep64_cass": {
+    "machine": "ep64",
+    "media": "cass1"
+  },
+  "ep64_flop": {
+    "machine": "ep64",
+    "media": "flop1"
+  },
+  "epson_cpm": {
+    "machine": "ehx20",
+    "media": "flop1"
+  },
+  "eti660_quik": {
+    "machine": "eti660",
+    "media": "quik"
+  },
+  "evio": {
+    "machine": "evio",
+    "media": "cart"
+  },
+  "ews286_flop": {
+    "machine": "ews286",
+    "media": "flop1"
+  },
+  "excalibur64": {
+    "machine": "excali64",
+    "media": "flop1"
+  },
+  "exl100": {
+    "machine": "exl100",
+    "media": "cart"
+  },
+  "famibox": {
+    "machine": "famicom",
+    "media": "cart"
+  },
+  "famicom_cass": {
+    "machine": "famicom",
+    "lua_script": "famicom_cass.lua",
+    "media": "cass"
+  },
+  "famicom_flop": {
+    "machine": "famicom",
+    "media": "flop1"
+  },
+  "fidel_msc": {
+    "machine": "miniscc",
+    "media": "cart"
+  },
+  "fidel_sc6": {
+    "machine": "fscc6",
+    "media": "cart"
+  },
+  "fidel_scc": {
+    "machine": "feag",
+    "media": "cart"
+  },
+  "fm77av": {
+    "machine": "fm77av",
+    "media": "flop1"
+  },
+  "fm7_cass": {
+    "machine": "fm7",
+    "lua_script": "fm7_cass.lua",
+    "media": "cass"
+  },
+  "fm7_disk": {
+    "machine": "fm7",
+    "media": "flop1"
+  },
+  "fm8_cass": {
+    "machine": "fm8",
+    "media": "cass1"
+  },
+  "fmtowns_cd": {
+    "machine": "fmtowns",
+    "media": "cdrm"
+  },
+  "fmtowns_flop_cracked": {
+    "machine": "fmtowns",
+    "media": "flop1"
+  },
+  "fmtowns_flop_misc": {
+    "machine": "fmtowns",
+    "media": "flop1"
+  },
+  "fmtowns_flop_orig": {
+    "machine": "fmtowns",
+    "media": "flop1"
+  },
+  "fp1100_cass": {
+    "machine": "fp1100",
+    "media": "cass1"
+  },
+  "gaelco_ds5002fp_rom": {
+    "machine": "gaelcods",
+    "media": "cart"
+  },
+  "galaxy": {
+    "machine": "galaxy",
+    "lua_script": "galaxy.lua",
+    "media": "cass1"
+  },
+  "gamate": {
+    "machine": "gamate",
+    "media": "cart"
+  },
+  "gameboy": {
+    "machine": "gameboy",
+    "media": "cart"
+  },
+  "gamecom": {
+    "machine": "gamecom",
+    "media": "cart1"
+  },
+  "gamegear": {
+    "machine": "gamegear",
+    "media": "cart"
+  },
+  "gameking": {
+    "machine": "gameking",
+    "media": "cart"
+  },
+  "gameking3": {
+    "machine": "gamekin3",
+    "media": "cart"
+  },
+  "gamepock": {
+    "machine": "gamepock",
+    "media": "cart"
+  },
+  "gba": {
+    "machine": "gba",
+    "media": "cart"
+  },
+  "gbcolor": {
+    "machine": "gbcolor",
+    "media": "cart"
+  },
+  "gcslottv": {
+    "machine": "gcslottv",
+    "media": "cart"
+  },
+  "generic_cdrom": {
+    "machine": "generic",
+    "media": "cdrom"
+  },
+  "generic_flop_525": {
+    "machine": "generic",
+    "media": "flop1"
+  },
+  "ggm": {
+    "machine": "ggm",
+    "media": "cart"
+  },
+  "gimix": {
+    "machine": "gimix",
+    "media": "flop1"
+  },
+  "gj4000": {
+    "machine": "gj4000",
+    "media": "rom"
+  },
+  "gjmovie": {
+    "machine": "gjmovie",
+    "media": "rom"
+  },
+  "gjrstar": {
+    "machine": "gjrstar",
+    "media": "rom"
+  },
+  "gl2000": {
+    "machine": "gl2000",
+    "media": "rom"
+  },
+  "gl6000sl": {
+    "machine": "gl6000sl",
+    "media": "rom"
+  },
+  "glcolor": {
+    "machine": "glcolor",
+    "media": "rom"
+  },
+  "glcx": {
+    "machine": "gl6600cx",
+    "media": "rom"
+  },
+  "gln": {
+    "machine": "gln",
+    "media": "rom"
+  },
+  "gls": {
+    "machine": "gls",
+    "media": "rom"
+  },
+  "gmaster": {
+    "machine": "gmaster",
+    "media": "cart"
+  },
+  "gp32": {
+    "machine": "gp32",
+    "media": "memc",
+    "extra_args": [
+      "-bios",
+      "166m"
+    ]
+  },
+  "guab": {
+    "machine": "guab",
+    "media": "flop1"
+  },
+  "gx4000": {
+    "machine": "gx4000",
+    "media": "cart"
+  },
+  "h21": {
+    "machine": "h21",
+    "media": "cart"
+  },
+  "h88_cass": {
+    "machine": "h88",
+    "media": "cass"
+  },
+  "hikara": {
+    "machine": "hikara",
+    "media": "cart"
+  },
+  "horizon": {
+    "machine": "nshrz2mhz",
+    "media": "flop1"
+  },
+  "hp85_rom": {
+    "machine": "hp85",
+    "media": "rom"
+  },
+  "hp86_rom": {
+    "machine": "hp86b",
+    "media": "rom"
+  },
+  "hp9825_rom": {
+    "machine": "hp9825b",
+    "media": "rom"
+  },
+  "hp9831_rom": {
+    "machine": "hp9831",
+    "media": "rom"
+  },
+  "hp9835a_rom": {
+    "machine": "hp9835a",
+    "media": "rom"
+  },
+  "hp9845a_rom": {
+    "machine": "hp9845a",
+    "media": "rom"
+  },
+  "hp9845b_rom": {
+    "machine": "hp9845b",
+    "media": "rom"
+  },
+  "hp98x6_rom": {
+    "machine": "hp9836c",
+    "media": "rom"
+  },
+  "hp9k3xx_cdrom": {
+    "machine": "hp9k380",
+    "media": "cdrom1"
+  },
+  "hp9k3xx_flop": {
+    "machine": "hp9k380",
+    "media": "bas4sys"
+  },
+  "hp9k3xx_hdd": {
+    "machine": "hp9k380",
+    "media": "hdd"
+  },
+  "hp_ipc": {
+    "machine": "hp_ipc",
+    "media": "flop1"
+  },
+  "hp_ipc_rom": {
+    "machine": "hp_ipc",
+    "media": "rom"
+  },
+  "ht68k": {
+    "machine": "ht68k",
+    "media": "flop1"
+  },
+  "hx20_rom": {
+    "machine": "ehx20",
+    "media": "rom"
+  },
+  "hyperscan": {
+    "machine": "hyprscan",
+    "media": "cdrom"
+  },
+  "hyperscan_card": {
+    "machine": "hyprscan",
+    "media": "card"
+  },
+  "i7000_card": {
+    "machine": "i7000",
+    "media": "card"
+  },
+  "ibm5140": {
+    "machine": "ibm5140",
+    "media": "flop1"
+  },
+  "ibm5150": {
+    "machine": "ibm5150",
+    "media": "flop1"
+  },
+  "ibm5150_cass": {
+    "machine": "ibm5150",
+    "media": "cass1"
+  },
+  "ibm5150_hdd": {
+    "machine": "ibm5150",
+    "media": "hdd"
+  },
+  "ibm5170": {
+    "machine": "ibm5170",
+    "media": "flop1"
+  },
+  "ibm5170_cdrom": {
+    "machine": "ibm5170",
+    "media": "cdrom1"
+  },
+  "ibm5170_hdd": {
+    "machine": "ibm5170",
+    "media": "hdd"
+  },
+  "ibm6580": {
+    "machine": "ibm6580",
+    "media": "flop1"
+  },
+  "ibmpcjr_cart": {
+    "machine": "ibmpcjr",
+    "media": "cart"
+  },
+  "ibmpcjr_flop": {
+    "machine": "ibmpcjr",
+    "media": "flop1"
+  },
+  "ibmpcjx": {
+    "machine": "ibmpcjx",
+    "media": "flop1"
+  },
+  "icanguit": {
+    "machine": "icanguit",
+    "media": "cart"
+  },
+  "icanpian": {
+    "machine": "icanpian",
+    "media": "cart"
+  },
+  "intellect02": {
+    "machine": "intel02",
+    "media": "cart"
+  },
+  "interact": {
+    "machine": "interact",
+    "media": "cass"
+  },
+  "interpro": {
+    "machine": "ip6800",
+    "media": "disc1"
+  },
+  "intv": {
+    "machine": "intv",
+    "media": "cart"
+  },
+  "intvecs": {
+    "machine": "intvecs",
+    "media": "cart"
+  },
+  "iq128": {
+    "machine": "iq128",
+    "media": "rom"
+  },
+  "iq151_cart": {
+    "machine": "iq151",
+    "media": "cart"
+  },
+  "iq151_flop": {
+    "machine": "iq151",
+    "media": "flop1"
+  },
+  "ique": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "iqunlim_cart": {
+    "machine": "iqunlim",
+    "media": "cart"
+  },
+  "itt3030": {
+    "machine": "itt3030",
+    "media": "flop1"
+  },
+  "jaguar": {
+    "machine": "jaguar",
+    "media": "cart"
+  },
+  "jakks_gamekey_dp": {
+    "machine": "jak_dpr",
+    "media": "cart"
+  },
+  "jakks_gamekey_dy": {
+    "machine": "jak_disf",
+    "media": "cart"
+  },
+  "jakks_gamekey_mv": {
+    "machine": "jak_spdm",
+    "media": "cart"
+  },
+  "jakks_gamekey_nk": {
+    "machine": "jak_dora",
+    "media": "cart"
+  },
+  "jakks_gamekey_nm": {
+    "machine": "jak_mpac",
+    "media": "cart"
+  },
+  "jakks_gamekey_sw": {
+    "machine": "jak_sith",
+    "media": "cart"
+  },
+  "jaminator": {
+    "machine": "jaminator",
+    "media": "cart"
+  },
+  "jazz": {
+    "machine": "mmr4000be",
+    "media": "hdd"
+  },
+  "jb3000_flop": {
+    "machine": "jb3000",
+    "media": "flop1"
+  },
+  "juicebox": {
+    "machine": "juicebox",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "memc"
+  },
+  "juku": {
+    "machine": "juku",
+    "lua_script": "juku.lua",
+    "media": "flop1"
+  },
+  "jupace_cass": {
+    "machine": "jupace",
+    "lua_script": "jupace_cass.lua",
+    "extra_args": [
+      "-ram",
+      "48k"
+    ],
+    "media": "cass1"
+  },
+  "jupace_snap": {
+    "machine": "jupace",
+    "lua_script": "jupace_snap.lua",
+    "extra_args": [
+      "-ram",
+      "48k"
+    ],
+    "media": "snap"
+  },
+  "k28": {
+    "machine": "k28",
+    "media": "cart"
+  },
+  "k28o": {
+    "machine": "k28o",
+    "media": "cart"
+  },
+  "kaypro": {
+    "machine": "kaypro484",
+    "media": "flop1"
+  },
+  "kc_cart": {
+    "machine": "kc85_2",
+    "media": "cart"
+  },
+  "kc_cass": {
+    "machine": "kc85_2",
+    "media": "cass"
+  },
+  "kc_flop": {
+    "machine": "kc85_2",
+    "media": "flop"
+  },
+  "kim1_cass": {
+    "machine": "kim1",
+    "media": "cass"
+  },
+  "kisssite_cd": {
+    "machine": "kisssite",
+    "media": "cdrom"
+  },
+  "korvet_flop": {
+    "machine": "korvet",
+    "media": "flop1"
+  },
+  "kpython2": {
+    "machine": "gtrfrkv3j",
+    "media": "dvdrom1"
+  },
+  "lanteach": {
+    "machine": "lanteach",
+    "media": "cart"
+  },
+  "lantrans": {
+    "machine": "lantrans",
+    "media": "cart"
+  },
+  "laser2001_cart": {
+    "machine": "lasr2001",
+    "media": "cart"
+  },
+  "laser2001_flop": {
+    "machine": "lasr2001",
+    "media": "flop1"
+  },
+  "leapfrog_didj_cart": {
+    "machine": "didj",
+    "media": "cart"
+  },
+  "leapfrog_iquest_cart": {
+    "machine": "iquest",
+    "media": "cart"
+  },
+  "leapfrog_leappad_cart": {
+    "machine": "leappad",
+    "media": "cart"
+  },
+  "leapfrog_ltleappad_cart": {
+    "machine": "ltleappad",
+    "media": "cart"
+  },
+  "leapfrog_mfleappad_cart": {
+    "machine": "mfleappad",
+    "media": "cart"
+  },
+  "leapfrog_zippity_cart": {
+    "machine": "zippity",
+    "media": "cart"
+  },
+  "leapster": {
+    "machine": "leapster",
+    "media": "cart"
+  },
+  "leapster_explorer_cart": {
+    "machine": "leapexpr",
+    "media": "cart"
+  },
+  "lisa": {
+    "machine": "lisa",
+    "media": "flop1"
+  },
+  "lisa2": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "lk3000": {
+    "machine": "lk3000",
+    "media": "cart"
+  },
+  "lnux4004": {
+    "machine": "lnux4004",
+    "media": "linux4004"
+  },
+  "lviv": {
+    "machine": "lviv",
+    "media": "cass1"
+  },
+  "lynx": {
+    "machine": "lynx",
+    "media": "cart"
+  },
+  "m20": {
+    "machine": "m20",
+    "media": "flop1"
+  },
+  "m24": {
+    "machine": "m24",
+    "media": "flop1"
+  },
+  "m3": {
+    "machine": "m3",
+    "media": "flop1"
+  },
+  "m5_cart": {
+    "machine": "m5",
+    "media": "cart"
+  },
+  "m5_cass": {
+    "machine": "m5",
+    "lua_script": "m5_cass.lua",
+    "extra_args": [
+      "-cart1",
+      "basici"
+    ],
+    "media": "cass1"
+  },
+  "m5_flop": {
+    "machine": "m5p_brno",
+    "media": "flop1",
+    "extra_args": [
+      "-cart1",
+      "basici"
+    ]
+  },
+  "mac_cdrom": {
+    "machine": "maclc475",
+    "media": "cdrom1"
+  },
+  "mac_flop": {
+    "machine": "macsefd",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ],
+        "only_machines": [
+          "maciix",
+          "maclc3"
+        ],
+        "machine_overrides": {
+          "maclc3": {
+            "value_map": {
+              "2": 4
+            },
+            "max": 80
+          },
+          "maciix": {
+            "value_map": {
+              "16": 32,
+              "48": 64
+            }
+          }
+        }
+      }
+    ],
+    "media": "flop1"
+  },
+  "mac_flop_clcracked": {
+    "machine": "mac",
+    "media": "flop1"
+  },
+  "mac_flop_orig": {
+    "machine": "mac",
+    "media": "flop1"
+  },
+  "mac_hdd": {
+    "machine": "maclc3",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ],
+        "only_machines": [
+          "maciix",
+          "maclc3"
+        ],
+        "machine_overrides": {
+          "maclc3": {
+            "value_map": {
+              "2": 4
+            },
+            "max": 80
+          },
+          "maciix": {
+            "value_map": {
+              "16": 32,
+              "48": 64
+            }
+          }
+        }
+      }
+    ],
+    "media": "hdd"
+  },
+  "mac_hdflop": {
+    "machine": "maclc3",
+    "media": "flop1"
+  },
+  "mbc200": {
+    "machine": "mbc200",
+    "media": "flop1"
+  },
+  "mbc55x": {
+    "machine": "mbc55x",
+    "media": "flop1"
+  },
+  "mbee_cart": {
+    "machine": "mbee",
+    "media": "cart"
+  },
+  "mbee_cass": {
+    "machine": "mbee",
+    "media": "cass"
+  },
+  "mbee_flop": {
+    "machine": "mbee256",
+    "media": "flop1"
+  },
+  "mbee_quik": {
+    "machine": "mbee",
+    "media": "quik"
+  },
+  "mc10": {
+    "machine": "mc10",
+    "lua_script": "mc10_cass.lua",
+    "extra_args": [
+      "-ram",
+      "20k"
+    ],
+    "media": "cass"
+  },
+  "mc1000_cass": {
+    "machine": "mc1000",
+    "media": "cass1"
+  },
+  "mc1502_flop": {
+    "machine": "mc1502",
+    "media": "flop1"
+  },
+  "md2_flop": {
+    "machine": "md2",
+    "media": "flop1"
+  },
+  "megacd": {
+    "machine": "megacd",
+    "lua_script": "megacd.lua",
+    "media": "cdrom"
+  },
+  "megadriv": {
+    "machine": "megadriv",
+    "media": "cart"
+  },
+  "megaduck": {
+    "machine": "megaduck",
+    "media": "cart"
+  },
+  "megapc": {
+    "machine": "megapc",
+    "media": "flop1"
+  },
+  "megatech": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "mephisto_mm1": {
+    "machine": "mm1",
+    "media": "cart"
+  },
+  "mephisto_mm2": {
+    "machine": "mm2",
+    "media": "cart"
+  },
+  "mephisto_mm4": {
+    "machine": "mm4",
+    "media": "cart"
+  },
+  "mephisto_mm5": {
+    "machine": "mm5",
+    "media": "cart"
+  },
+  "mephisto_smondial2": {
+    "machine": "smondial2",
+    "media": "cart"
+  },
+  "microbox2_flop": {
+    "machine": "microbx2",
+    "media": "flop1"
+  },
+  "microvision": {
+    "machine": "microvsn",
+    "media": "cart"
+  },
+  "midi_flop": {
+    "machine": "a486sv1",
+    "media": "flop1"
+  },
+  "mikro80": {
+    "machine": "mikro80",
+    "media": "cass1"
+  },
+  "mikrosha_cart": {
+    "machine": "mikrosha",
+    "media": "cart"
+  },
+  "mikrosha_cass": {
+    "machine": "mikrosha",
+    "media": "cass"
+  },
+  "mindset_flop": {
+    "machine": "mindset",
+    "media": "flop1"
+  },
+  "misterx": {
+    "machine": "misterx",
+    "media": "cart"
+  },
+  "mk14_quik": {
+    "machine": "mk14",
+    "media": "quik"
+  },
+  "mm1_flop": {
+    "machine": "mm1m7",
+    "media": "flop1"
+  },
+  "mm2_flop": {
+    "machine": "mm2m35d",
+    "media": "flop1"
+  },
+  "mo5_cart": {
+    "machine": "mo5",
+    "media": "cart"
+  },
+  "mo5_cass": {
+    "machine": "mo5",
+    "lua_script": "mo5_cass.lua",
+    "media": "cass1"
+  },
+  "mo5_flop": {
+    "machine": "mo5",
+    "media": "flop1"
+  },
+  "mo5_qd": {
+    "machine": "mo5",
+    "media": "cart"
+  },
+  "mo6_cass": {
+    "machine": "mo6",
+    "lua_script": "mo6_cass.lua",
+    "media": "cass1"
+  },
+  "mo6_flop": {
+    "machine": "mo6",
+    "media": "flop1"
+  },
+  "mobigo_cart": {
+    "machine": "mobigo",
+    "media": "cart"
+  },
+  "monon_color": {
+    "machine": "mononcol",
+    "media": "cart"
+  },
+  "mpc3000_flop": {
+    "machine": "mpc3000",
+    "media": "disk1"
+  },
+  "mpf1_rom": {
+    "machine": "mpf1",
+    "media": "rom"
+  },
+  "mpu1000": {
+    "machine": "mpu1000",
+    "media": "cart"
+  },
+  "mpz80": {
+    "machine": "mpz80",
+    "media": "flop"
+  },
+  "msx1_bee_card": {
+    "machine": "hx10",
+    "media": "cart2",
+    "extra_args": [
+      "-cartslot1",
+      "beepack"
+    ]
+  },
+  "msx1_cart": {
+    "machine": "hx10",
+    "media": "cart1"
+  },
+  "msx1_cass": {
+    "machine": "hx10",
+    "media": "cass1",
+    "lua_script": "msx1_cass.lua"
+  },
+  "msx1_flop": {
+    "machine": "nms8250",
+    "media": "flop1"
+  },
+  "msx1_flop_525": {
+    "machine": "hx10",
+    "media": "flop1",
+    "extra_args": [
+      "-cart1",
+      "cdx2"
+    ]
+  },
+  "msx2_cart": {
+    "machine": "nms8250",
+    "media": "cart1"
+  },
+  "msx2_cass": {
+    "machine": "nms8250",
+    "media": "cass1",
+    "lua_script": "msx1_cass.lua"
+  },
+  "msx2_flop": {
+    "machine": "nms8250",
+    "media": "flop1"
+  },
+  "msx2p_cart": {
+    "machine": "fsa1gt",
+    "media": "cart1"
+  },
+  "msx2p_flop": {
+    "machine": "fsa1gt",
+    "media": "flop1"
+  },
+  "msx_softcard": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "msx_yamaha_minicart": {
+    "machine": "cx5m128",
+    "media": "cart"
+  },
+  "msxr_cart": {
+    "machine": "fsa1gt",
+    "media": "cart"
+  },
+  "msxr_flop": {
+    "machine": "fsa1gt",
+    "media": "flop1"
+  },
+  "mt65_cass": {
+    "machine": "mt65",
+    "media": "cass1"
+  },
+  "mt65_rom": {
+    "machine": "mt65",
+    "media": "rom1"
+  },
+  "mt65_snap": {
+    "machine": "mt65",
+    "media": "snap"
+  },
+  "mtu130_flop": {
+    "machine": "mtu130",
+    "media": "flop1"
+  },
+  "mtx_cart": {
+    "machine": "mtx512",
+    "media": "cart"
+  },
+  "mtx_cass": {
+    "machine": "mtx512",
+    "lua_script": "mtx_cass.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass1"
+  },
+  "mtx_flop": {
+    "machine": "mtx512",
+    "media": "flop"
+  },
+  "mtx_hdd": {
+    "machine": "mtx512",
+    "media": "hdd"
+  },
+  "mtx_rom": {
+    "machine": "mtx512",
+    "media": "rom"
+  },
+  "myvision": {
+    "machine": "myvision",
+    "media": "cart"
+  },
+  "mz2000_cass": {
+    "machine": "mz2000",
+    "lua_script": "mz2000_cass.lua",
+    "media": "cass"
+  },
+  "mz2000_flop": {
+    "machine": "mz2000",
+    "media": "flop1"
+  },
+  "mz2000_snap": {
+    "machine": "mz2000",
+    "media": "snap"
+  },
+  "mz2500_flop": {
+    "machine": "mz2500",
+    "media": "flop1"
+  },
+  "mz5500_flop": {
+    "machine": "mz5500",
+    "media": "flop1"
+  },
+  "mz700_cass": {
+    "machine": "mz700",
+    "lua_script": "mz700_cass.lua",
+    "media": "cass"
+  },
+  "mz800_cass": {
+    "machine": "mz800",
+    "lua_script": "mz800_cass.lua",
+    "media": "cass"
+  },
+  "mz800_rom": {
+    "machine": "no_machine_found",
+    "media": "rom"
+  },
+  "mz80b_cass": {
+    "machine": "mz80b",
+    "media": "cass1"
+  },
+  "mz80b_flop": {
+    "machine": "mz80b",
+    "media": "flop1"
+  },
+  "mz80k_cass": {
+    "machine": "mz80k",
+    "lua_script": "mz80k_cass.lua",
+    "media": "cass"
+  },
+  "n64": {
+    "machine": "n64",
+    "media": "cart"
+  },
+  "n64_lodgenet": {
+    "machine": "n64_lodgenet",
+    "media": "cart"
+  },
+  "n64dd": {
+    "machine": "n64dd",
+    "media": "disk"
+  },
+  "nascom_flop": {
+    "machine": "nascom2",
+    "media": "flop1"
+  },
+  "nascom_snap": {
+    "machine": "nascom2",
+    "media": "snap"
+  },
+  "nascom_socket": {
+    "machine": "nascom2",
+    "media": "socket"
+  },
+  "neocd": {
+    "machine": "neocd",
+    "media": "cdrom"
+  },
+  "neogeo": {
+    "machine": "aes",
+    "media": "cart"
+  },
+  "nes": {
+    "machine": "nes",
+    "media": "cart"
+  },
+  "nes_ade": {
+    "machine": "nes",
+    "media": "cart"
+  },
+  "nes_datach": {
+    "machine": "nes",
+    "media": "cart"
+  },
+  "nes_kstudio": {
+    "machine": "nes",
+    "media": "cart"
+  },
+  "nes_ntbrom": {
+    "machine": "nes",
+    "media": "cart"
+  },
+  "nes_vt_cart": {
+    "machine": "timetp25",
+    "media": "cart"
+  },
+  "next": {
+    "machine": "nextst",
+    "media": "flop1"
+  },
+  "next_cdrom": {
+    "machine": "next",
+    "media": "cdrom"
+  },
+  "next_hdd": {
+    "machine": "next",
+    "media": "hdd"
+  },
+  "ngp": {
+    "machine": "ngp",
+    "lua_script": "ngp.lua",
+    "media": "cart"
+  },
+  "ngpc": {
+    "machine": "ngpc",
+    "lua_script": "ngp.lua",
+    "media": "cart"
+  },
+  "nimbus": {
+    "machine": "nimbus",
+    "media": "flop1"
+  },
+  "novag_ssensor4": {
+    "machine": "ssensor4",
+    "media": "exrom"
+  },
+  "nuon": {
+    "machine": "n501",
+    "media": "dvdrom"
+  },
+  "octopus": {
+    "machine": "octopus",
+    "media": "flop1"
+  },
+  "ondra": {
+    "machine": "ondrat",
+    "media": "cass"
+  },
+  "orao": {
+    "machine": "orao",
+    "media": "cass1"
+  },
+  "oric1_cass": {
+    "machine": "oric1",
+    "lua_script": "oric1_cass.lua",
+    "media": "cass"
+  },
+  "orina_stylish_plus_cart": {
+    "machine": "orinasp",
+    "media": "cart"
+  },
+  "orion_cart": {
+    "machine": "orion128",
+    "media": "cart"
+  },
+  "orion_cass": {
+    "machine": "orionzms",
+    "lua_script": "orion_cass.lua",
+    "extra_args": [
+      "-cart",
+      "romdisk"
+    ],
+    "media": "cass1"
+  },
+  "orion_flop": {
+    "machine": "orion128",
+    "media": "disk"
+  },
+  "orionpro_flop": {
+    "machine": "orionpro",
+    "media": "disk"
+  },
+  "osborne1": {
+    "machine": "osborne1",
+    "media": "flop1"
+  },
+  "osborne2": {
+    "machine": "osbexec",
+    "media": "flop1"
+  },
+  "p500_flop": {
+    "machine": "p500",
+    "media": "flop1"
+  },
+  "partner_cass": {
+    "machine": "partner",
+    "media": "cass"
+  },
+  "partner_flop": {
+    "machine": "partner",
+    "media": "disk"
+  },
+  "pasogo": {
+    "machine": "pasogo",
+    "media": "cart"
+  },
+  "pasopia7_cass": {
+    "machine": "pasopia7",
+    "media": "cass1"
+  },
+  "pasopia_cass": {
+    "machine": "pasopia",
+    "media": "cass1"
+  },
+  "pb2000c": {
+    "machine": "pb2000c",
+    "media": "cart"
+  },
+  "pc1000": {
+    "machine": "pc1000",
+    "media": "rom"
+  },
+  "pc100_flop": {
+    "machine": "pc100",
+    "media": "flop1"
+  },
+  "pc1512_flop": {
+    "machine": "pc1512",
+    "media": "flop1"
+  },
+  "pc1512_hdd": {
+    "machine": "pc1512",
+    "media": "hdd"
+  },
+  "pc1640_flop": {
+    "machine": "pc1640",
+    "media": "flop1"
+  },
+  "pc1640_hdd": {
+    "machine": "pc1640",
+    "media": "hdd"
+  },
+  "pc200": {
+    "machine": "pc200",
+    "media": "flop1"
+  },
+  "pc6001_cart": {
+    "machine": "pc6001",
+    "media": "cart1"
+  },
+  "pc6001_cass": {
+    "machine": "pc6001",
+    "lua_script": "pc6001_cass.lua",
+    "media": "cart"
+  },
+  "pc6001mk2_cass": {
+    "machine": "pc6001mk2",
+    "lua_script": "pc6001mk2_cass.lua",
+    "media": "cart"
+  },
+  "pc8001_flop": {
+    "machine": "pc8001",
+    "media": "flop1"
+  },
+  "pc8001mk2_flop": {
+    "machine": "pc8001mk2",
+    "media": "flop1"
+  },
+  "pc8001mk2sr_flop": {
+    "machine": "pc8001mk2sr",
+    "media": "flop1"
+  },
+  "pc8201": {
+    "machine": "pc8201",
+    "media": "cart"
+  },
+  "pc8801_cass": {
+    "machine": "pc8801",
+    "media": "cass1"
+  },
+  "pc8801_cdrom": {
+    "machine": "pc8801mc",
+    "media": "cdrom"
+  },
+  "pc8801_flop": {
+    "machine": "pc8801mk2sr",
+    "media": "flop1"
+  },
+  "pc88va": {
+    "machine": "pc88va",
+    "media": "flop1"
+  },
+  "pc98": {
+    "machine": "pc9821",
+    "media": "flop1"
+  },
+  "pc98_cd": {
+    "machine": "pc9821",
+    "media": "cdrom"
+  },
+  "pc98_flop_orig": {
+    "machine": "pc9821",
+    "media": "flop1"
+  },
+  "pc98_hdd": {
+    "machine": "pc9821",
+    "media": "hdd"
+  },
+  "pcd_flop": {
+    "machine": "pcd",
+    "media": "flop1"
+  },
+  "pce": {
+    "machine": "pce",
+    "media": "cart"
+  },
+  "pce_tourvision": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "pcecd": {
+    "machine": "pce",
+    "lua_script": "pcecd.lua",
+    "media": "cdrom"
+  },
+  "pcfx": {
+    "machine": "pcfx",
+    "media": "cdrom"
+  },
+  "pcw": {
+    "machine": "pcw8256",
+    "media": "flop"
+  },
+  "pcw16": {
+    "machine": "pcw16",
+    "media": "flop1"
+  },
+  "pcx_flop": {
+    "machine": "pcx",
+    "media": "flop1"
+  },
+  "pda600": {
+    "machine": "pda600",
+    "media": "card"
+  },
+  "pdp1_ptp": {
+    "machine": "pdp1",
+    "media": "ptp"
+  },
+  "pecom_cass": {
+    "machine": "pecom64",
+    "media": "cass1",
+    "lua_script": "pecom_cass.lua"
+  },
+  "pegasus_cart": {
+    "machine": "pegasus",
+    "media": "cart"
+  },
+  "pencil2": {
+    "machine": "pencil2",
+    "media": "cart"
+  },
+  "pencil2_cass": {
+    "machine": "pencil2",
+    "media": "cass1"
+  },
+  "pentagon_cass": {
+    "machine": "pentagon",
+    "media": "cass"
+  },
+  "pet_cass": {
+    "machine": "cbm8296",
+    "media": "cass"
+  },
+  "pet_flop": {
+    "machine": "pet",
+    "media": "flop1"
+  },
+  "pet_hdd": {
+    "machine": "cbm8296",
+    "media": "hdd"
+  },
+  "pet_quik": {
+    "machine": "cbm8296",
+    "media": "quik"
+  },
+  "pet_rom": {
+    "machine": "cbm8296",
+    "media": "rom"
+  },
+  "phc25_cass": {
+    "machine": "phc25",
+    "media": "cass"
+  },
+  "photo_cd": {
+    "machine": "cd32",
+    "media": "cdrom"
+  },
+  "pi_storyreader_cart": {
+    "machine": "pi_stry",
+    "media": "cart"
+  },
+  "pi_storyreader_v2_cart": {
+    "machine": "pi_stry2",
+    "media": "cart"
+  },
+  "picno": {
+    "machine": "picno",
+    "media": "cart"
+  },
+  "pico": {
+    "machine": "pico",
+    "media": "cart"
+  },
+  "pippin": {
+    "machine": "pippin",
+    "media": "cdrom"
+  },
+  "pippin_flop": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "pixter_cart": {
+    "machine": "pixtermu",
+    "media": "cart"
+  },
+  "playmaker": {
+    "machine": "playmaker",
+    "media": "cart"
+  },
+  "pls1000_cart": {
+    "machine": "pls1000",
+    "media": "cart"
+  },
+  "plus4_cart": {
+    "machine": "plus4",
+    "media": "cart"
+  },
+  "plus4_cass": {
+    "machine": "plus4",
+    "media": "cass1"
+  },
+  "plus4_flop": {
+    "machine": "plus4",
+    "media": "flop1"
+  },
+  "pmd85_cass": {
+    "machine": "pmd851",
+    "media": "cass1"
+  },
+  "pockchalv2": {
+    "machine": "pockchv2",
+    "media": "cart"
+  },
+  "pockchalw": {
+    "machine": "pockchal",
+    "media": "cart"
+  },
+  "pofo": {
+    "machine": "pofo",
+    "media": "card"
+  },
+  "poisk1_flop": {
+    "machine": "poisk1",
+    "media": "flop1"
+  },
+  "pokemini": {
+    "machine": "pokemini",
+    "media": "cart"
+  },
+  "poly_flop": {
+    "machine": "poly1",
+    "media": "flop1"
+  },
+  "polysix": {
+    "machine": "polysix",
+    "media": "a"
+  },
+  "princ": {
+    "machine": "princ",
+    "media": "rom"
+  },
+  "pro128_cart": {
+    "machine": "pro128",
+    "media": "cart"
+  },
+  "pro128_cass": {
+    "machine": "pro128",
+    "media": "cass1"
+  },
+  "pro128_flop": {
+    "machine": "pro128",
+    "media": "flop1"
+  },
+  "pro128s_flop": {
+    "machine": "pro128s",
+    "media": "flop1"
+  },
+  "prof180": {
+    "machine": "prof180x",
+    "media": "flop1"
+  },
+  "prof80": {
+    "machine": "prof80",
+    "media": "flop1"
+  },
+  "psi98": {
+    "machine": "psi98",
+    "media": "flop1"
+  },
+  "psion1": {
+    "machine": "psion1",
+    "media": "cart"
+  },
+  "psion2": {
+    "machine": "psioncm",
+    "media": "cart"
+  },
+  "psion_flop": {
+    "machine": "mc600",
+    "media": "flop1"
+  },
+  "psion_ssd": {
+    "machine": "psion3",
+    "media": "cart"
+  },
+  "psx": {
+    "machine": "psj",
+    "media": "cdrom"
+  },
+  "pt68k2": {
+    "machine": "pt68k2",
+    "media": "flop1"
+  },
+  "pv1000": {
+    "machine": "pv1000",
+    "media": "cart"
+  },
+  "pv2000": {
+    "machine": "pv2000",
+    "media": "cart"
+  },
+  "px4_cart": {
+    "machine": "px4",
+    "media": "cart"
+  },
+  "px8_cart": {
+    "machine": "px8",
+    "media": "cart1"
+  },
+  "pyl601": {
+    "machine": "pyl601",
+    "media": "disk"
+  },
+  "ql_cart": {
+    "machine": "ql",
+    "media": "cart"
+  },
+  "ql_cass": {
+    "machine": "ql",
+    "media": "cass1"
+  },
+  "ql_flop": {
+    "machine": "ql",
+    "media": "flop1"
+  },
+  "quizwiz": {
+    "machine": "quizwizc",
+    "media": "cart"
+  },
+  "qx10_flop": {
+    "machine": "qx10",
+    "media": "flop1"
+  },
+  "r8_card": {
+    "machine": "r8",
+    "media": "card"
+  },
+  "r9751": {
+    "machine": "r9751",
+    "media": "flop1"
+  },
+  "radio86_cart": {
+    "machine": "radiorom",
+    "media": "cart"
+  },
+  "radio86_cass": {
+    "machine": "radio86",
+    "lua_script": "radio86_cass.lua",
+    "media": "cass"
+  },
+  "rainbow": {
+    "machine": "rainbow",
+    "media": "flop1"
+  },
+  "ramstar": {
+    "machine": "ramstar",
+    "media": "rom"
+  },
+  "roland_tnsc1": {
+    "machine": "rlndtnsc1",
+    "media": "cart"
+  },
+  "roland_tnsc2": {
+    "machine": "rlndtnsc2",
+    "media": "cart"
+  },
+  "rwtrntcs": {
+    "machine": "rwtrntcs",
+    "media": "cart"
+  },
+  "rx78_cart": {
+    "machine": "rx78",
+    "media": "cart"
+  },
+  "rx78_cass": {
+    "machine": "rx78",
+    "lua_script": "rx78_cass.lua",
+    "media": "cass"
+  },
+  "rz1_cass": {
+    "machine": "rz1",
+    "media": "sidea"
+  },
+  "s2000_flop": {
+    "machine": "s2000",
+    "media": "disk1"
+  },
+  "s3000_cdrom": {
+    "machine": "s3000",
+    "media": "cdrom1"
+  },
+  "sagafox": {
+    "machine": "sagafox",
+    "media": "flop1"
+  },
+  "sage2": {
+    "machine": "sage2",
+    "media": "flop1"
+  },
+  "saitek_egr": {
+    "machine": "corona",
+    "media": "extrom"
+  },
+  "saitek_kso": {
+    "machine": "tstar432",
+    "media": "extrom"
+  },
+  "saitek_schess": {
+    "machine": "schess",
+    "media": "cart"
+  },
+  "samcoupe_cass": {
+    "machine": "samcoupe",
+    "media": "cass"
+  },
+  "samcoupe_flop": {
+    "machine": "samcoupe",
+    "lua_script": "samcoupe_flop.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "sat_cart": {
+    "machine": "saturn",
+    "media": "cart"
+  },
+  "sat_vccart": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "saturn": {
+    "machine": "saturn",
+    "lua_script": "saturn.lua",
+    "media": "cdrom"
+  },
+  "sawatte": {
+    "machine": "sawatte",
+    "media": "cart"
+  },
+  "sbrain": {
+    "machine": "sbrain",
+    "media": "flop1"
+  },
+  "sc3000_cart": {
+    "machine": "sc3000",
+    "media": "cart"
+  },
+  "sc3000_cass": {
+    "machine": "sc3000",
+    "lua_script": "sc3000_cass.lua",
+    "extra_args": [
+      "-cart",
+      "basic3e"
+    ],
+    "media": "cass"
+  },
+  "scv": {
+    "machine": "scv",
+    "media": "cart"
+  },
+  "sd132_flop": {
+    "machine": "sd132",
+    "media": "flop"
+  },
+  "sd1_flop": {
+    "machine": "sd1",
+    "media": "flop"
+  },
+  "sdk85": {
+    "machine": "sdk85",
+    "media": "prom"
+  },
+  "sega_beena_cart": {
+    "machine": "beena",
+    "media": "cart"
+  },
+  "segaai": {
+    "machine": "segaai",
+    "media": "card"
+  },
+  "sf7000": {
+    "machine": "sf7000",
+    "media": "flop1"
+  },
+  "sg1000": {
+    "machine": "sg1000",
+    "media": "cart"
+  },
+  "sgi_mips": {
+    "machine": "indy_4610",
+    "media": "cdrom"
+  },
+  "sgi_mips_hdd": {
+    "machine": "indy_4610",
+    "media": "hdd"
+  },
+  "sgx": {
+    "machine": "sgx",
+    "media": "cart"
+  },
+  "singingstarkaraoke_cart": {
+    "machine": "sstarkar",
+    "media": "cart"
+  },
+  "sitcom": {
+    "machine": "sitcom",
+    "media": "san"
+  },
+  "smartcycle_cart": {
+    "machine": "smartcyc",
+    "media": "cart"
+  },
+  "smarttv_cart": {
+    "machine": "smartvad",
+    "media": "cart"
+  },
+  "smc777": {
+    "machine": "smc777",
+    "media": "flop1"
+  },
+  "sms": {
+    "machine": "sms",
+    "media": "cart"
+  },
+  "snes": {
+    "machine": "snes",
+    "media": "cart"
+  },
+  "snes_bspack": {
+    "machine": "snes",
+    "media": "cart"
+  },
+  "snes_strom": {
+    "machine": "snes",
+    "media": "cart"
+  },
+  "snes_vkun": {
+    "machine": "no_machine_found",
+    "media": "cdrom"
+  },
+  "snotec": {
+    "machine": "snotec",
+    "media": "rom"
+  },
+  "snread": {
+    "machine": "snread",
+    "media": "cart"
+  },
+  "snspell": {
+    "machine": "snspell",
+    "media": "cart"
+  },
+  "socrates": {
+    "machine": "socrates",
+    "media": "cart"
+  },
+  "softbox": {
+    "machine": "softbox",
+    "media": "flop1"
+  },
+  "sol20_cass": {
+    "machine": "sol20",
+    "media": "cass1"
+  },
+  "sony_news": {
+    "machine": "nws5000x",
+    "media": "hdd"
+  },
+  "sorcerer_cart": {
+    "machine": "sorcerer2",
+    "media": "cart"
+  },
+  "sorcerer_cass": {
+    "machine": "sorcerer2",
+    "lua_script": "sorcerer_cass.lua",
+    "extra_args": [
+      "-cart",
+      "basicpac"
+    ],
+    "media": "cass"
+  },
+  "sorcerer_flop": {
+    "machine": "sorcererd",
+    "media": "flop1"
+  },
+  "spc1000_cass": {
+    "machine": "spc1000",
+    "media": "cass1"
+  },
+  "spc1500_cass": {
+    "machine": "spc1500",
+    "media": "cass"
+  },
+  "special_cass": {
+    "machine": "special",
+    "media": "cass"
+  },
+  "special_flop": {
+    "machine": "specimx",
+    "media": "disk"
+  },
+  "specnext_sd": {
+    "machine": "tbblue",
+    "media": "card"
+  },
+  "specpls3_flop": {
+    "machine": "specpls3",
+    "lua_script": "specpls3_flop.lua",
+    "media": "flop1"
+  },
+  "spectrum_betadisc_flop": {
+    "machine": "tsconf",
+    "media": "flop1"
+  },
+  "spectrum_cart": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "spectrum_cass": {
+    "machine": "spectrum",
+    "lua_script": "spectrum_cass.lua",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "cass"
+  },
+  "spectrum_flop_opus": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "spectrum_mgt_flop": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "spectrum_microdrive": {
+    "machine": "no_machine_found",
+    "media": "cass"
+  },
+  "spectrum_wafadrive": {
+    "machine": "no_machine_found",
+    "media": "cass"
+  },
+  "sprachmg": {
+    "machine": "sprachmg",
+    "media": "rom"
+  },
+  "squale_cart": {
+    "machine": "squale",
+    "media": "cart"
+  },
+  "ssem_quik": {
+    "machine": "ssem",
+    "media": "quik"
+  },
+  "st_cart": {
+    "machine": "st",
+    "media": "cart"
+  },
+  "st_flop": {
+    "machine": "st",
+    "media": "flop1"
+  },
+  "st_flop_demos": {
+    "machine": "st",
+    "media": "flop1"
+  },
+  "stepone_flop": {
+    "machine": "stepone",
+    "media": "flop1"
+  },
+  "studio2": {
+    "machine": "studio2",
+    "media": "cart"
+  },
+  "stv": {
+    "machine": "no_machine_found",
+    "media": "cart"
+  },
+  "sun_sparc": {
+    "machine": "e250",
+    "media": "cdrom1"
+  },
+  "super6": {
+    "machine": "super6",
+    "media": "flop1"
+  },
+  "super80_cass": {
+    "machine": "super80",
+    "lua_script": "super80_cass.lua",
+    "media": "cass"
+  },
+  "super80_flop": {
+    "machine": "super80v",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "flop1"
+  },
+  "super_tv_pc_cart": {
+    "machine": "suprtvpc",
+    "media": "cart"
+  },
+  "superpet_flop": {
+    "machine": "superpet",
+    "media": "flop1"
+  },
+  "supracan": {
+    "machine": "supracan",
+    "media": "cart"
+  },
+  "sv8000": {
+    "machine": "sv8000",
+    "media": "cart"
+  },
+  "svi318_cart": {
+    "machine": "svi318",
+    "media": "cart"
+  },
+  "svi318_cass": {
+    "machine": "svi318",
+    "lua_script": "svi318_cass.lua",
+    "media": "cass1"
+  },
+  "svi318_flop": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "svision": {
+    "machine": "svision",
+    "media": "cart"
+  },
+  "svmu": {
+    "machine": "svmu",
+    "media": "quik"
+  },
+  "t1000": {
+    "machine": "t1000",
+    "media": "flop1"
+  },
+  "takara_daigunder_dx_cart": {
+    "machine": "tak_daig",
+    "media": "cart"
+  },
+  "tandy200": {
+    "machine": "tandy200",
+    "media": "cart"
+  },
+  "tandy2k": {
+    "machine": "tandy2k",
+    "media": "flop1"
+  },
+  "tandy6k": {
+    "machine": "no_machine_found",
+    "media": "flop1"
+  },
+  "tc4": {
+    "machine": "tc4",
+    "media": "cart"
+  },
+  "tdv2324": {
+    "machine": "tdv2324",
+    "media": "flop"
+  },
+  "tek4052_cart": {
+    "machine": "tek4052a",
+    "media": "cart"
+  },
+  "telestory_cart": {
+    "machine": "telestry",
+    "media": "cart"
+  },
+  "teradrive_flop": {
+    "machine": "teradrive",
+    "media": "flop1"
+  },
+  "teradrive_hdd": {
+    "machine": "teradrive",
+    "media": "hdd"
+  },
+  "tg16": {
+    "machine": "tg16",
+    "media": "cart"
+  },
+  "thinkpad8xx": {
+    "machine": "tpad850",
+    "media": "cdrom1"
+  },
+  "ti74_cart": {
+    "machine": "ti74",
+    "media": "cart"
+  },
+  "ti95_cart": {
+    "machine": "ti95",
+    "media": "cart"
+  },
+  "ti99_cart": {
+    "machine": "ti99_4a",
+    "extra_args": [
+      "-ioport",
+      "peb"
+    ],
+    "config_args": [
+      {
+        "key": "ti99_32kram",
+        "type": "bool",
+        "default": true,
+        "if_true": [
+          "-ioport:peb:slot2",
+          "32kmem"
+        ]
+      },
+      {
+        "key": "ti99_speech",
+        "type": "bool",
+        "default": true,
+        "if_true": [
+          "-ioport",
+          "speechsyn"
+        ]
+      }
+    ],
+    "media": "cart"
+  },
+  "tiki100": {
+    "machine": "tiki100",
+    "media": "flop1"
+  },
+  "timex_cass": {
+    "machine": "ts2068",
+    "lua_script": "timex_cass.lua",
+    "media": "cass"
+  },
+  "timex_dock": {
+    "machine": "ts2068",
+    "media": "cart"
+  },
+  "tmc600_quik": {
+    "machine": "tmc600s2",
+    "media": "quik"
+  },
+  "tntell": {
+    "machine": "tntell",
+    "media": "cart"
+  },
+  "to770_cart": {
+    "machine": "to770",
+    "media": "cart"
+  },
+  "to770a_cart": {
+    "machine": "to770a",
+    "media": "cart"
+  },
+  "to7_cart": {
+    "machine": "to7",
+    "media": "cart"
+  },
+  "to7_cass": {
+    "machine": "to7",
+    "media": "cass1"
+  },
+  "to7_qd": {
+    "machine": "to7",
+    "media": "flop1"
+  },
+  "to8_cass": {
+    "machine": "to8",
+    "media": "cass1"
+  },
+  "to8_qd": {
+    "machine": "to8",
+    "media": "flop1"
+  },
+  "to_flop": {
+    "machine": "to8",
+    "lua_script": "to_flop.lua",
+    "media": "flop1"
+  },
+  "triton_rom": {
+    "machine": "triton72",
+    "media": "rom"
+  },
+  "trs80_cass": {
+    "machine": "trs80m3",
+    "lua_script": "trs80_cass.lua",
+    "media": "cass"
+  },
+  "trs80_flop": {
+    "machine": "trs80m3",
+    "media": "flop1"
+  },
+  "trs80_quik": {
+    "machine": "trs80m3",
+    "config_args": [
+      {
+        "key": "ramsize",
+        "type": "int",
+        "skip_if": 0,
+        "args": [
+          "-ramsize",
+          "{value}M"
+        ]
+      }
+    ],
+    "media": "quik"
+  },
+  "trs80m2": {
+    "machine": "trs80m2",
+    "media": "flop1"
+  },
+  "trsm100": {
+    "machine": "trsm100",
+    "media": "cart"
+  },
+  "tsconf_betadisc_flop": {
+    "machine": "tsconf",
+    "media": "flop1"
+  },
+  "ttwist_brainquest_cart": {
+    "machine": "ttwistbq",
+    "media": "cart"
+  },
+  "turboextreme_cart": {
+    "machine": "turboex",
+    "media": "cart"
+  },
+  "tutor": {
+    "machine": "tutor",
+    "media": "cart"
+  },
+  "tvc_cart": {
+    "machine": "tvc64p",
+    "media": "cart"
+  },
+  "tvc_cass": {
+    "machine": "tvc64p",
+    "lua_script": "tvc_cass.lua",
+    "media": "cass"
+  },
+  "tvc_flop": {
+    "machine": "tvc64p",
+    "media": "flop1",
+    "lua_script": "tvc_flop.lua",
+    "extra_args": [
+      "-exp1",
+      "hbf"
+    ]
+  },
+  "tvdear": {
+    "machine": "tvdear",
+    "media": "cart"
+  },
+  "tvgogo": {
+    "machine": "tvgogo",
+    "media": "cart"
+  },
+  "tvochken": {
+    "machine": "tvochken",
+    "media": "card1"
+  },
+  "tx0_ptp": {
+    "machine": "tx0_8kw",
+    "media": "ptp"
+  },
+  "u110_card": {
+    "machine": "cm32p",
+    "media": "card"
+  },
+  "unichamp": {
+    "machine": "unichamp",
+    "media": "cart"
+  },
+  "ut88": {
+    "machine": "ut88",
+    "media": "cass"
+  },
+  "uzebox": {
+    "machine": "uzebox",
+    "media": "cart"
+  },
+  "v1050_flop": {
+    "machine": "v1050",
+    "media": "flop1"
+  },
+  "v1050_hdd": {
+    "machine": "v1050",
+    "media": "hdd"
+  },
+  "vbaby_cart": {
+    "machine": "vbaby",
+    "media": "cart"
+  },
+  "vboy": {
+    "machine": "vboy",
+    "media": "cart"
+  },
+  "vc4000": {
+    "machine": "vc4000",
+    "media": "cart"
+  },
+  "vector06_cart": {
+    "machine": "vector06",
+    "media": "cart"
+  },
+  "vector06_flop": {
+    "machine": "vector06",
+    "lua_script": "vector06_flop.lua",
+    "media": "flop1"
+  },
+  "vectrex": {
+    "machine": "vectrex",
+    "media": "cart"
+  },
+  "vfxsd_flop": {
+    "machine": "vfxsd",
+    "media": "flop"
+  },
+  "vg5k": {
+    "machine": "vg5k",
+    "lua_script": "vg5k.lua",
+    "extra_args": [
+      "-skip_gameinfo"
+    ],
+    "media": "cass"
+  },
+  "vgmplay": {
+    "machine": "vgmplay",
+    "media": "quik"
+  },
+  "vic10": {
+    "machine": "vic10",
+    "media": "cart"
+  },
+  "vic1001_cart": {
+    "machine": "vic1001",
+    "media": "cart"
+  },
+  "vic1001_cass": {
+    "machine": "vic1001",
+    "media": "cass1"
+  },
+  "vic1001_flop": {
+    "machine": "vic1001",
+    "media": "flop1"
+  },
+  "victor9k_flop": {
+    "machine": "victor9k",
+    "media": "flop1"
+  },
+  "vidbrain": {
+    "machine": "vidbrain",
+    "media": "cart"
+  },
+  "videoart": {
+    "machine": "videoart",
+    "media": "cart"
+  },
+  "videopac": {
+    "machine": "videopac",
+    "media": "cart"
+  },
+  "vii": {
+    "machine": "vii",
+    "media": "cart"
+  },
+  "vip": {
+    "machine": "vip",
+    "media": "cass1"
+  },
+  "vis": {
+    "machine": "vis",
+    "media": "cdrom"
+  },
+  "visicom": {
+    "machine": "visicom",
+    "media": "cart"
+  },
+  "vixen": {
+    "machine": "vixen",
+    "media": "flop1"
+  },
+  "vsmile_cart": {
+    "machine": "vsmile",
+    "media": "cart"
+  },
+  "vsmile_cd": {
+    "machine": "vsmilpro",
+    "media": "cdrom"
+  },
+  "vsmileb_cart": {
+    "machine": "vsmileb",
+    "media": "cart"
+  },
+  "vsmilem_cart": {
+    "machine": "vsmilem",
+    "media": "cart"
+  },
+  "vtech2_cass": {
+    "machine": "laser700",
+    "lua_script": "vtech2_cass.lua",
+    "media": "cass1"
+  },
+  "vtech_innotab_cart": {
+    "machine": "innotab2",
+    "media": "cart"
+  },
+  "vtech_innotv_cart": {
+    "machine": "innotv",
+    "media": "cart"
+  },
+  "vtech_storio_cart": {
+    "machine": "vreader",
+    "media": "cart"
+  },
+  "vz_cass": {
+    "machine": "laser310",
+    "media": "cass1"
+  },
+  "vz_snap": {
+    "machine": "laser310",
+    "media": "snap"
+  },
+  "wangpc": {
+    "machine": "wangpc",
+    "media": "flop1"
+  },
+  "waveterm": {
+    "machine": "waveterm",
+    "media": "flop1"
+  },
+  "wicat": {
+    "machine": "wicat",
+    "media": "flop1"
+  },
+  "wizard_cart": {
+    "machine": "iq7000",
+    "media": "cart"
+  },
+  "wmbullet": {
+    "machine": "wmbullet",
+    "media": "flop1"
+  },
+  "wren_flop": {
+    "machine": "wren",
+    "media": "flop1"
+  },
+  "wscolor": {
+    "machine": "wscolor",
+    "media": "cart"
+  },
+  "wswan": {
+    "machine": "wswan",
+    "media": "cart"
+  },
+  "x07_card": {
+    "machine": "x07",
+    "media": "card"
+  },
+  "x07_cass": {
+    "machine": "x07",
+    "media": "cass"
+  },
+  "x1_cass": {
+    "machine": "x1",
+    "media": "cass"
+  },
+  "x1_flop": {
+    "machine": "x1",
+    "media": "flop1"
+  },
+  "x37_flop": {
+    "machine": "x37",
+    "media": "flop1"
+  },
+  "x68k_flop": {
+    "machine": "x68000",
+    "media": "flop1"
+  },
+  "xegs": {
+    "machine": "xegs",
+    "media": "cart"
+  },
+  "xerox820": {
+    "machine": "bigboard",
+    "media": "flop1"
+  },
+  "xerox820ii": {
+    "machine": "x820ii",
+    "media": "flop1"
+  },
+  "z80clock": {
+    "machine": "z80clock",
+    "media": "u12"
+  },
+  "z80ne_cass": {
+    "machine": "z80net",
+    "media": "cass1"
+  },
+  "z80ne_flop": {
+    "machine": "z80netf",
+    "media": "flop1"
+  },
+  "z88_cart": {
+    "machine": "z88",
+    "media": "cart1"
+  },
+  "zorba": {
+    "machine": "zorba",
+    "media": "flop1"
+  },
+  "zx80_cass": {
+    "machine": "zx80",
+    "media": "cass1"
+  },
+  "zx81_cass": {
+    "machine": "zx81",
+    "lua_script": "zx81_cass.lua",
+    "media": "cass1"
+  }
+}
