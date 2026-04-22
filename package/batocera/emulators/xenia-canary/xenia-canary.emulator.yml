@@ -12,6 +12,7 @@ custom_features:
       XBLA license enabled (Default): 1
       All possible licenses (Not recommended): -1
   xenia_resolution:
+    group: DISPLAY OPTIONS
     prompt: INTERNAL DISPLAY RESOLUTION
     description: Allow game that support different resolutions to be rendered in specific resolution.
     choices:
@@ -33,18 +34,21 @@ custom_features:
       1920x540: 15
       1920x1080: 16
   xenia_api:
+    group: DISPLAY OPTIONS
     prompt: GRAPHICS API
     description: Choose which graphics API library to use. D3D12 may yield better results with faster GPUs.
     choices:
       D3D12 (Default): D3D12
       Native Vulkan: Vulkan
   xenia_vsync:
+    group: DISPLAY OPTIONS
     prompt: VSYNC
     description: Fix screen tearing. With Some games you need to turn VSync on in the games options.
     choices:
       Disabled: false
       Enabled: true
   xenia_vsync_fps:
+    group: DISPLAY OPTIONS
     prompt: VSYNC FPS
     description: Manually set VSYNC frames per second. Ideally this should match your monitor refresh rate.
     choices:
@@ -285,5 +289,33 @@ custom_features:
     choices:
       Disabled: false
       Enabled: true
+  xenia_postprocess_scaling_and_sharpening:
+    group: DISPLAY OPTIONS
+    prompt: POST-PROCESSING SCALING AND SHARPENING
+    description: Upscaling and sharpening filter. CAS = AMD FidelityFX Contrast Adaptive Sharpening, FSR = AMD FidelityFX Super Resolution 1.0.
+    choices:
+      Bilinear (Default): bilinear
+      CAS: cas
+      FSR: fsr
+  xenia_postprocess_antialiasing:
+    group: DISPLAY OPTIONS
+    prompt: POST-PROCESSING ANTI-ALIASING
+    description: Post-processing anti-aliasing filter.
+    choices:
+      None (Default): none
+      FXAA: fxaa
+      FXAA Extreme: fxaa_extreme
+  xenia_postprocess_ffx_cas_additional_sharpness:
+    group: DISPLAY OPTIONS
+    prompt: CAS ADDITIONAL SHARPNESS
+    description: Additional sharpness for AMD FidelityFX CAS, from 0 to 1. Higher is sharper.
+    preset: sliderauto
+    preset_parameters: 0.0 1.0 0.1
+  xenia_postprocess_ffx_fsr_sharpness_reduction:
+    group: DISPLAY OPTIONS
+    prompt: FSR SHARPNESS REDUCTION
+    description: Sharpness reduction for AMD FidelityFX FSR 1.0, in stops. Lower is sharper.
+    preset: sliderauto
+    preset_parameters: 0.0 2.0 0.1
 systems:
   - xbox360
