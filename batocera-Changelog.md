@@ -1,32 +1,32 @@
-# 2026/xx/xx - batocera.linux 43 - Glasswing
+# 2026/04/xx - batocera.linux 43 - Glasswing
 ### Special Notes
-- x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86-64-v3 image using Wayland and the LabWC compositor.
-  Note: Nvidia drivers are currently included in the x86-64-v3 image but considered experiemental.
-  Desktop Nvidia users should continue to use the x86-64 image with Xorg for stability.
-- The ability to use a custom.sh script is deprecated in this version. If you already used such a script, then it will be one time transformed into a service.
-  Please use the services for future scripts and refer to our [Wikipedia](https://wiki.batocera.org/scripting_services_rules_examples)
-- TheXTech update in v43 needs minimum of 1.3.7 assets, ensure you update accordingly.
+- x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86_64-v3 image using Wayland and the LabWC compositor.
+  Note: Nvidia drivers are currently included in the x86_64-v3 image but considered experimental.
+  Desktop Nvidia users should continue to use the x86_64 image with Xorg for stability.
+- The ability to use a custom.sh script is deprecated in this version. If you already used such a script, then it will be one-time transformed into a service.
+  Please use services for future scripts and refer to our [Wikipedia](https://wiki.batocera.org/scripting_services_rules_examples)
+- TheXTech update in v43 needs a minimum of 1.3.7 assets, ensure you update accordingly.
 - Azahar Plus has been replaced with the source project Azahar.
-  3DS roms will need to be decrypted.
-- WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones.
+  3DS ROMs will need to be decrypted.
+- WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones do.
   `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
   We recommend following the procedure described in our wiki to back up Windows savegames.
-- We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & bluetooth.
+- We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & Bluetooth.
 - Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
-  These version continue to have problems with later kernel versions and are not longer sustainable.
+  These versions continue to have problems with later kernel versions and are no longer sustainable.
   Only the legacy 470.xx, 580.xx and current 590.xx drivers will be supported in v43.
-- A few roms directories have changed names for consistency with themes and the overall rule of naming them after systems, not
-  emulators: now please use odyssey2 (o2em), megadrive-msu (msu-md), halflife (xash3d_fwgs), tvgames (plugnplay),
+- A few ROM directories have changed names for consistency with themes and the overall rule of naming them after systems,
+  not emulators. Please now use odyssey2 (o2em), megadrive-msu (msu-md), halflife (xash3d_fwgs), tvgames (plugnplay),
   astrocade (astrocde), bbcmicro (bbc), rtcw (iortcw), loopy (casloopy).
-- Dolphin-Emu now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
-  Saves should be moved from /userdata/saves/dolphin-triforce to dolphin accordingly.
-- Removed Drastic emulator due to it's closed source nature and no longer compatible with the core OS.
-- SM8250 and SM8550 devices now have one image with the device selection in the bootloader
+- Dolphin now supports Triforce. The older Dolphin-Triforce emulator has been removed as a result.
+  Saves should be moved from /userdata/saves/dolphin-triforce/ to /userdata/saves/dolphin/ accordingly.
+- Removed DraStic emulator due to its closed-source nature and no longer compatible with the core OS.
+- SM8250 and SM8550 devices now have one image with device selection in the bootloader
   You must upgrade the Android Bootloader (ABL) before migrating to v43
-  See the wiki for further details - https://wiki.batocera.org/hardware:ayn
+  See the wiki for further details: https://wiki.batocera.org/hardware:ayn
 ### Hardware
 - AIC8800 USB driver support for Raxda Boards
-- Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RGCUBEXX device variant support
+- Anbernic RG28XX, RG34XX, RG35XX, RG40XX, RG CubeXX device variant support
 - AYN Thor initial support
 - FriendlyElec CM3588 NAS support
 - Legion Go S Controller & LED updates
@@ -35,33 +35,33 @@
   - MOZA R12 V2 (Direct Drive)
 - Odin 2 Mini initial support
 - Powkiddy X55 initial support
-- Raxda Dragon Q6A initial support
-- Raxda Zero 3W initial support
+- Radxa Dragon Q6A initial support
+- Radxa Zero 3W initial support
 - Retroid Pocket 6 initial support
-- RTL8832CU and RTL8852CU USB wifi adapter support (x86_64)
+- RTL8832CU and RTL8852CU USB Wi-Fi adapter support (x86_64)
 ### Added
 - EmulationStation:
   - New UI for configuring in-game controller hotkeys (plus batocera-joysticks-hotkeys command)
   - Global hotkeys configuration for any device (unused device buttons, any arcade special buttons or keyboard key), also via batocera-hotkeys command
-  - LED colour control for Arm based handhelds
-  - Ability to turn the controller LED's off
+  - LED colour control for ARM-based handhelds
+  - Ability to turn the controller LEDs off
   - Added missing characters on the on-screen AZERTY keyboard
   - New sorting option: hardware type, then release year
-  - Control brightness on multiple screens (Ayn Thor)
-  - Wifi country selector
-  - Ability to add a "sort name" that take precedence over the (scraped) game name in metadata
-  - New Keyboard Layout and Keyboard Variant options
-- Batocera Control Center (on-screen interface for global configuration and control, [hotkey]+[east] by default)
-- Virtual keyboard for devices using Wayland with a touchscreen, launched from Batocera Control Center
-- batocera-xtract for handling archives, systems with PCManFM filemanager can use a small GUI and mouse context menus
+  - Control brightness on multiple screens (AYN Thor)
+  - Wi-Fi country selector
+  - Ability to add a "sort name" that takes precedence over the (scraped) game name in metadata
+  - New keyboard layout and keyboard variant options
+- Batocera Control Center (on-screen interface for global configuration and control [hotkey]+[east] by default)
+- Virtual keyboard for Wayland devices with a touchscreen, launched from the Batocera Control Center
+- batocera-xtract for handling archives on systems with PCManFM file manager can use a small GUI and mouse context menus
 - dmd-play-rust is now used by default to play dmd images (performances)
-- Yamagi Quake II added which support more systems, especially lower-end hardware
+- Yamagi Quake II added which supports more systems, especially lower-end hardware
 - Light gun support to:
   - new Libretro Dolphin core (multi-light guns)
   - Duckstation (multi-light guns)
   - Play! emulator for Namco 2x6 gun games (single-light gun only)
   - Flycast standalone (multi-light guns)
-- nfc reader support
+- NFC reader support
 - Casio Loopy as a separate system
 - Enterprise 64/128 (via CLK emulator)
 - Xroar emulator as an option for the Color Computer (Tandy TRS-80)
@@ -74,10 +74,12 @@
 - Added support for GUO HUA PS3 GamePad in the Bluez package's Sixaxis plugin (models VOYEE - HY-2208 and MiniThink - CECHZC2U)
 - Experimental Sinden light gun borders for RPCS3 and Wine
 - Steering wheel support for Triforce system
+- Crosshairs for gun games in Lindbergh loader
+- Re-added .3ds extension support for Azahar emulator
 ### Fixed
 - Not being able to exit emulator on first controller disconnection. i.e. Bluetooth disconnects.
-- Odin 2 variants wifi not working in some regions
-- Wifi country not being applied at boot
+- Odin 2 variants Wi-Fi not working in some regions
+- Wi-Fi country not being applied at boot
 - Light gun overall accuracy (with shaders, sliders, bezels) in MAME standalone
 - Crosshairs for light guns in PCSX2
 - Massive MAME log (switchres verbose disabled by default)
@@ -87,18 +89,22 @@
 - Supermodel: offscreen reload not working on The Lost World: Jurassic Park (lostwsga)
 - MAME: broken light gun input in Jurassic Park (jpark), Operation Wolf 3 (opwolf3) and Police Trainer (policetr)
 - Duplicated buttons with Wiimote in gun/zapper modes
+- MelonDS save and cheat paths
+- Bluetooth xbox controllers not working on Steam
 ### Changed / Improved
-- Wifi country can now be chosen under the Network Setting option.
-  This improves Wifi connectivity by aligning your device with regional regulations as well as 6GHz band support.
+- Wi-Fi country can now be chosen under the Network Setting option.
+  This improves Wi-Fi connectivity by aligning your device with regional regulations as well as 6GHz band support.
 - Moonlight has transitioned from Moonlight Embedded to Moonlight QT for the majority of boards to allow for more hardware acceleration.
   Hardware acceleration depends on supported codecs for devices in FFmpeg.
 - You can now choose to create a Win32 WINE bottle only via the option to run 32-bit Windows games.
 - DOSBox Staging's working directory is now set to the games' folder, allowing for local and relative (img)mount and conf file references.
 - DOSBox Staging will fallback to a C:\> prompt inside the games' folder if its missing dosbox.cfg/.conf/.bat files.
 - DOSBox Staging now stores DOS filesystem changes in /userdata/saves/dos/<game> for squashfs ROMs.
-- Systems like WINE and DOSBOX can now be prepared from PCManFM context menu. Right click on file items inside supported ones.
-  to presetup them. This is mostly thought for startup files like dosbox.bat and autorun.cmd and for handling squashed archive files.
+- Systems like WINE and DOSBOX can now be prepared from PCManFM context menu. Right click on file items inside supported ones to
+  presetup them. This is mostly thought for startup files like dosbox.bat and autorun.cmd and for handling squashed archive files.
 - RPCS3 PS Move (light gun) mapping simplified. D-pad buttons are now PS Move face buttons. Check wiki for more info.
+- RPCS3 with .ISO support
+- GUN4IR and GunCon2 now correctly mapped (start is start; select is select)
 ### Updated
 - Amiberry to 5th of March 2026 build
 - Azahar to 2125.0.1
@@ -123,8 +129,8 @@
 - Libretro FBNeo to 11th of January 2026 build
 - Libretro Fceumm to 12th of September 2025 build
 - Libretro Flycast to 2.6
-- Libretro Genesis Plus GX to 21th of December 2025 build
-- Libretro Genesis Plus GX-Wide to 21th of October 2024 build
+- Libretro Genesis Plus GX to 21st of December 2025 build
+- Libretro Genesis Plus GX-Wide to 21st of October 2024 build
 - Libretro Holani to 0.9.9
 - Libretro MAME2003plus to 16th of January 2026 build
 - Libretro MAME to 0.285
@@ -152,7 +158,7 @@
 - RClone to v1.72.1
 - RetroArch to 1.22.2
 - RPCS3 to v0.0.40
-- Ruffle to 31th of January 2026 nightly build
+- Ruffle to 31st of January 2026 nightly build
 - ScummVM to v2026.1.0
 - ShadPS4 Plus to SHAD_PS4_PLUS_0_12_0_A
 - Sonic 2013 to 1.3.3
