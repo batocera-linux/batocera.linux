@@ -5,8 +5,9 @@ config BR2_PACKAGE_IKEMEN
     select BR2_PACKAGE_HOST_GO
     select BR2_PACKAGE_MESA3D
     select BR2_PACKAGE_LIBGTK3
-    select BR2_PACKAGE_OPENAL
     select BR2_PACKAGE_LIBGLFW
+    select BR2_PACKAGE_FFMPEG
+    select BR2_PACKAGE_SDL2
     help
         A MUGEN emulator written in GoLang
 
