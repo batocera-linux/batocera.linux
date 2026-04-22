@@ -4,12 +4,12 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = facaaeb13d996e8fa4e5f391c767a07183ab19e3
+AMIBERRY_VERSION = v8.1.5
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
 
-AMIBERRY_DEPENDENCIES += sdl2 sdl2_image sdl2_ttf mpg123 libpcap libxml2 libmpeg2
+AMIBERRY_DEPENDENCIES += sdl3 sdl3_image sdl3_ttf mpg123 libpcap libxml2 libmpeg2 libcurl json-for-modern-cpp
 AMIBERRY_DEPENDENCIES += flac libpng libserialport libportmidi libzlib libenet
 AMIBERRY_EMULATOR_INFO = amiberry.emulator.yml
 
@@ -38,7 +38,6 @@ define AMIBERRY_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/amiberry
 	cp -pr $(@D)/buildroot-build/whdboot $(TARGET_DIR)/usr/share/amiberry/
 	cp -pr $(@D)/buildroot-build/data $(TARGET_DIR)/usr/share/amiberry/
-	cp -p $(@D)/data/AmigaTopaz.ttf $(TARGET_DIR)/usr/share/amiberry/data
 endef
 
 define AMIBERRY_EVMAP
