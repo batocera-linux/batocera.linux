@@ -3,7 +3,8 @@
 do_help() {
     echo "Usage options for ${0}"
     echo "(where \"myservice\" is the name of your service)"
-    echo "- list [all|system|user]"
+    echo "- list  [all|system|user]"
+    echo "- count [all|system|user]"
     echo "- enable myservice"
     echo "- disable myservice"
     echo "- start myservice"
@@ -153,6 +154,14 @@ shift
 case "${ACTION}" in
     list)
         do_list "${1}"
+        ;;
+    count)
+        count=$(do_list "${1}" | grep -Po '[*-]$' | tr -d '\n')
+        [[ ${#count} -eq 0 ]] && { echo "No service found" >&2; exit 1; }
+        [[ "${1}" == "user" || "${1}" == "system" ]] && printf "${1}" || printf "all"
+        test -z "${count//-/}" && active_count=0 || active_count=${#_}
+        inactive_count=$((${#count}-${active_count}))
+        printf ":\t%s\tinactive:\t%s\tactivated:\t%s\n" ${#count} ${inactive_count} ${active_count}
         ;;
     enable)
         do_enable "${1}"
