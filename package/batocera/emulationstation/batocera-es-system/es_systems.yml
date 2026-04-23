@@ -3180,6 +3180,30 @@ sonicretro:
 
     A opção do menu de desenvolvimento é necessária para executar modificações (mods).
 
+model1:
+  name: Model 1
+  manufacturer: Sega
+  release: 1992
+  hardware: arcade
+  extensions: [zip]
+  platform: model1, arcade
+  emulators:
+    libretro:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+    mame:
+      archs_include: [x86_64, x86-64-v3]
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+
+  comment_en: |
+    ## SEGA MODEL 1 ##
+
+    Put your Model 1 roms in this directory.
+
+    Rom files must have a ".zip" extension from a MAME ROM set.
+
+    Known games: Virtua Fighter, Virtua Racing, Wing War, Star Wars Arcade, Virtua Formula, Net Merc.
+
 model2:
   name: Model 2
   manufacturer: Sega
