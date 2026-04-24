@@ -12,7 +12,8 @@ import os
 import sys
 import re
 import subprocess
-import httplib2
+import urllib.request
+import urllib.error
 import xml.etree.ElementTree as ET
 ES_SERVER="http://127.0.0.1:1234"
 ROMPATH="/userdata/roms"
@@ -49,8 +50,11 @@ def call_es(system, elem, mode):
     headers = {"Content-type": "application/x-www-form-urlencoded",\
                "Accept": "text/plain"}
     try:
-        cnx=httplib2.Http()
-        resp, content = cnx.request(ES_SERVER)
+        try:
+            urllib.request.urlopen(ES_SERVER, timeout=5).close()
+        except urllib.error.HTTPError:
+            # ES answered with a non-2xx status: still up, continue
+            pass
     except Exception as e:
         print (f"WARNING: Looks like {ES_SERVER} is not responding ({e}) - processing local files")
         if not os.path.isfile(ROMPATH+'/'+system+'/gamelist.xml'):
@@ -75,11 +79,18 @@ def call_es(system, elem, mode):
             return(0)
     try:
         if (mode in 'install'):
-            res, rout = cnx.request(ES_SERVER + "/addgames/" + str(system).strip(), method="POST", body=body, headers=headers)
+            endpoint = ES_SERVER + "/addgames/" + str(system).strip()
         elif (mode in 'uninstall'):
-            res, rout = cnx.request(ES_SERVER + "/removegames/" + str(system).strip(), method="POST", body=body, headers=headers)
-        if (res.status != 200):
-            print (f"WARNING: ES responded with #{res.status} [{res.reason}] {rout}")
+            endpoint = ES_SERVER + "/removegames/" + str(system).strip()
+        req = urllib.request.Request(endpoint, data=body.encode('utf-8'), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req) as resp:
+                rout = resp.read().decode('utf-8', errors='replace')
+                if resp.status != 200:
+                    print (f"WARNING: ES responded with #{resp.status} [{resp.reason}] {rout}")
+        except urllib.error.HTTPError as e:
+            rout = e.read().decode('utf-8', errors='replace')
+            print (f"WARNING: ES responded with #{e.code} [{e.reason}] {rout}")
     except Exception as e:
         print (f"ERROR: Impossible to access ES service endpoints through {ES_SERVER}: {e} ")
         return (1)
@@ -116,13 +127,13 @@ def exec_cmd(base_cmd, data, mode):
         return (1)
     if data:
         if (mode in 'install'):
-            data = re.sub("\.UNINSTALL_START.*\.UNINSTALL_END", "", data, flags=re.S)
-            data = re.sub("\.INSTALL_START", "", data)
-            data = re.sub("\.INSTALL_END", "", data)
+            data = re.sub(r"\.UNINSTALL_START.*\.UNINSTALL_END", "", data, flags=re.S)
+            data = re.sub(r"\.INSTALL_START", "", data)
+            data = re.sub(r"\.INSTALL_END", "", data)
         elif (mode in 'uninstall'):
-            data = re.sub("\.INSTALL_START.*\.INSTALL_END", "", data, flags=re.S)
-            data = re.sub("\.UNINSTALL_START", "", data)
-            data = re.sub("\.UNINSTALL_END", "", data)
+            data = re.sub(r"\.INSTALL_START.*\.INSTALL_END", "", data, flags=re.S)
+            data = re.sub(r"\.UNINSTALL_START", "", data)
+            data = re.sub(r"\.UNINSTALL_END", "", data)
         clist = data.split('\n')
         clist = [sub.replace('"', '\\"') for sub in clist]
         for el in clist:
