@@ -27,5 +27,16 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="KADE USB Keyb
 # Remove flag joystick in Microsoft 2.4GHz Transceiver v8.0 (VID=045e, PID=0745)
 SUBSYSTEM=="input", ATTRS{name}=="Microsoft Microsoft® 2.4GHz Transceiver v8.0 System Control", ENV{ID_INPUT_JOYSTICK}="0"
 
-# Remove flag joystick in "Microsoft Microsoft® Nano Transceiver v2.0 System Control" (VID=045e, PID=0800)
+# Remove flag joystick in "Microsoft Microsoft® Nano Transceiver v2.0 System Control" (VID=045e, various PID)
 SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0800", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="009d", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="00b0", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="00b4", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0730", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0745", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0748", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0750", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0768", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0773", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="07a5", ENV{ID_INPUT_JOYSTICK}="0"
+SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="07b2", ENV{ID_INPUT_JOYSTICK}="0"
