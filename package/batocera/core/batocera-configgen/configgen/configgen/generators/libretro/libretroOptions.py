@@ -599,13 +599,13 @@ def _dolphin_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Wii System Languages
-    _set_from_system(coreSettings, 'dolphin_language', system, 'wii_language', default='English')
+    _set_from_system(coreSettings, 'dolphin_language', system, 'wii_language', default='1')
 
     # Wii Resolution Scale
-    _set_from_system(coreSettings, 'dolphin_efb_scale', system, 'wii_resolution', default="x1 (640 x 528)")
+    _set_from_system(coreSettings, 'dolphin_efb_scale', system, 'wii_resolution', default="1")
 
     # Anisotropic Filtering
-    _set_from_system(coreSettings, 'dolphin_max_anisotropy', system, 'wii_anisotropic', default="x1")
+    _set_from_system(coreSettings, 'dolphin_max_anisotropy', system, 'wii_anisotropic', default='0')
 
     # Wii Tv Mode
     _set_from_system(coreSettings, 'dolphin_widescreen', system, 'wii_widescreen', default="enabled")
@@ -614,7 +614,7 @@ def _dolphin_options(
     _set_from_system(coreSettings, 'dolphin_widescreen_hack', system, 'wii_widescreen_hack', default="disabled")
 
     # Shader Compilation Mode
-    _set_from_system(coreSettings, 'dolphin_shader_compilation_mode', system, 'wii_shader_mode', default="sync")
+    _set_from_system(coreSettings, 'dolphin_shader_compilation_mode', system, 'wii_shader_mode', default='0')
 
     # OSD
     _set_from_system(coreSettings, 'dolphin_osd_enabled', system, 'wii_osd', default="enabled")

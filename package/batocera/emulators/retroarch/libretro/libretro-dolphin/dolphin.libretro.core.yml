@@ -10,26 +10,26 @@ custom_features:
     prompt: RENDERING RESOLUTION
     description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
     choices:
-      1x native (640x528): x1 (640 x 528)
-      2x 720p (1280x1056): x2 (1280 x 1056)
-      3x 1080p (1920x1584): x3 (1920 x 1584)
-      4x 1440p (2560x2112): x4 (2560 x 2112)
-      5x (3200x2640): x5 (3200 x 2640)
-      6x 4K (3840x3168): x6 (3840 x 3168)
+      1x native (640x528): 1
+      2x 720p (1280x1056): 2
+      3x 1080p (1920x1584): 3
+      4x 1440p (2560x2112): 4
+      5x (3200x2640): 5
+      6x 4K (3840x3168): 6
   wii_language:
     prompt: LANGUAGE
     description: Wii NAND's language setting.
     choices:
-      English: English
-      French: French
-      German: German
-      Spanish: Spanish
-      Italian: Italian
-      Dutch: Dutch
-      Japanese: Japanese
-      Simplified Chinese: Simplified Chinese
-      Traditional Chinese: Traditional Chinese
-      Korean: Korean
+      Japanese: 0
+      English: 1
+      German: 2
+      French: 3
+      Spanish: 4
+      Italian: 5
+      Dutch: 6
+      Simplified Chinese: 7
+      Traditional Chinese: 8
+      Korean: 9
   wii_widescreen_hack:
     prompt: WIDESCREEN HACK (GLITCHY)
     description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
@@ -41,20 +41,20 @@ custom_features:
     prompt: UBERSHADERS
     description: May not work well on all hardware. Hybrid is preferred, where supported.
     choices:
-      No Ubershaders: sync
-      Exclusive Ubershaders: sync UberShaders
-      Hybrid Ubershaders: a-sync UberShaders
-      Skip Drawing: a-sync Skip Rendering
+      No Ubershaders: 0
+      Exclusive Ubershaders: 1
+      Hybrid Ubershaders: 2
+      Skip Drawing: 3
   wii_anisotropic:
     group: ADVANCED OPTIONS
     prompt: ANISOTROPIC FILTERING
     description: Improves clarity of distant textures.
     choices:
-      'Off': 1x
-      2x: 2x
-      4x: 4x
-      8x: 8x
-      16x: 16x
+      'Off': 0
+      2x: 1
+      4x: 2
+      8x: 3
+      16x: 4
   wii_osd:
     group: ADVANCED OPTIONS
     prompt: OSD MESSAGES
