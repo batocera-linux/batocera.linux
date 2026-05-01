@@ -160,7 +160,7 @@
 		VDDIO-supply = <&vdd_ts>;
 
 		touchscreen-size-x = <768>;
-		touchscreen-size-y = <1024>;		
+		touchscreen-size-y = <1024>;
 
 		pinctrl-names = "default";
 		pinctrl-0 = <&ts2_reset>, <&ts2_irq>;
@@ -194,6 +194,11 @@
 	};
 };
 
+&mdss_dsi0_out {
+	remote-endpoint = <&panel0_in>;
+	data-lanes = <0 1 2 3>;
+};
+
 &display_panel {
 	compatible = "chipone,icna3512";
 
@@ -201,6 +206,12 @@
 	vddio-supply = <&vreg_l12b_1p8>;
 	reset-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
 	rotation = <270>;
+
+	port {
+		panel0_in: endpoint {
+			remote-endpoint = <&mdss_dsi0_out>;
+		};
+	};
 };
 
 &mdss_dsi1 {

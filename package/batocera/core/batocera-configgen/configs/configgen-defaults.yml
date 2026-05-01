@@ -45,6 +45,9 @@ amigacdtv:
 amstradcpc:
   emulator: libretro
   core:     cap32
+pcw:
+  emulator: libretro
+  core:     mame
 apfm1000:
   emulator: libretro
   core:     mame
@@ -92,6 +95,9 @@ atomiswave:
 bbcmicro:
   emulator: libretro
   core:     mame
+bk:
+  emulator: libretro
+  core:     bk
 bennugd:
   emulator: libretro
   core:     bennugd
@@ -137,6 +143,9 @@ cdogs:
 cgenius:
   emulator: cgenius
   core:     cgenius
+cgenie:
+  emulator: libretro
+  core:     mame
 channelf:
   emulator: libretro
   core:     freechaf
@@ -155,6 +164,9 @@ corsixth:
   options:
     hud_support: false
 crvision:
+  emulator: libretro
+  core:     mame
+ctvboy:
   emulator: libretro
   core:     mame
 
@@ -177,6 +189,12 @@ doom3:
 dos:
   emulator: libretro
   core:     dosbox_pure
+dragon64:
+  emulator: libretro
+  core:     mame
+mc10:
+  emulator: libretro
+  core:     mame
 dreamcast:
   emulator: libretro
   core:     flycast
@@ -410,6 +428,21 @@ msx2+:
 msxturbor:
   emulator: libretro
   core:     bluemsx
+mz2000:
+  emulator: libretro
+  core:     mame
+mz2500:
+  emulator: libretro
+  core:     mame
+mz700:
+  emulator: libretro
+  core:     mame
+mz800:
+  emulator: libretro
+  core:     mame
+mz80k:
+  emulator: libretro
+  core:     mame
 mugen:
   emulator: mugen
   core:     wine-tkg
@@ -545,6 +578,12 @@ psx:
 pv1000:
   emulator: libretro
   core:     mame
+pv2000:
+  emulator: libretro
+  core:     mame
+pc80:
+  emulator: libretro
+  core:     mame
 pygame:
   emulator: pygame
   core:     pygame
@@ -574,6 +613,11 @@ rtcw:
   emulator: iortcw
   core:     iortcw
   core:     taradino
+rx78:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 samcoupe:
   emulator: samcoupe
   core:     samcoupe
@@ -600,6 +644,15 @@ sega32x:
 megacd:
   emulator: libretro
   core:     genesisplusgx
+sc3000:
+  emulator: libretro
+  core:     mame
+segaai:
+  emulator: libretro
+  core:     mame
+beena:
+  emulator: libretro
+  core:     mame
 sg1000:
   emulator: libretro
   core:     genesisplusgx
@@ -656,6 +709,11 @@ supergrafx:
 supervision:
   emulator: libretro
   core:     potator
+sv8000:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
 switch:
   emulator: citron
   core:     citron
@@ -693,6 +751,9 @@ traider2:
 triforce:
   emulator: dolphin
   core:     dolphin
+trs80:
+  emulator: libretro
+  core:     mame
 tutor:
   emulator: libretro
   core:     mame

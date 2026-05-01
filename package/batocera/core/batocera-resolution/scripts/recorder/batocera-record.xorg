@@ -13,7 +13,8 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 
-# Setup Paths
+export XDG_RUNTIME_DIR=/var/run
+
 PID_FILE="/tmp/ffmpeg-recorder.pid"
 CONF_FILE="/tmp/rec.conf"
 BASE_DIR="/userdata/recordings"

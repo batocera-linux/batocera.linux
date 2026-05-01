@@ -315,6 +315,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_MOKUTIL				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # mokutil machine owner key utility
         select BR2_PACKAGE_CRYPTSETUP				# LUKS encrypted volume userland support
         select BR2_PACKAGE_CLEVIS				# Automated decryption policy framework
+	select BR2_PACKAGE_X86_64_LEVEL                         if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY # detect the x86_64 version
 
 	# Controllers
 	select BR2_PACKAGE_XONE					if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # xbox receiver (require linux >= 4.15)
@@ -855,6 +856,7 @@ config BR2_PACKAGE_BATOCERA_HOMEBREW_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_EASYRPG	# libretro core
 
 	# Fantasy consoles
+	select BR2_PACKAGE_TIC80	# ALL
 	select BR2_PACKAGE_LIBRETRO_TIC80	# ALL
 	select BR2_PACKAGE_LIBRETRO_FAKE08	# ALL
 	select BR2_PACKAGE_LEXALOFFLE_PICO8	# ALL
@@ -1308,6 +1310,12 @@ config BR2_PACKAGE_BATOCERA_COMPUTER_SYSTEMS
 	# Color Computer (Tandy TRS-80)
 	select BR2_PACKAGE_XROAR		if BR2_PACKAGE_HAS_LIBGL # Xroar requires OpenGL
 
+	# BK-0010/0011/Terak 8510a
+	select BR2_PACKAGE_LIBRETRO_BK
+
+	# Enterprise 128
+	select BR2_PACKAGE_LIBRETRO_EP128EMU_CORE
+
 	help
 	  Old computers
 
@@ -1602,6 +1610,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 
 	# BennuGD Game Engine
 	select BR2_PACKAGE_LIBRETRO_BENNUGD if !BR2_RISCV_64    # ALL (compilation error: get_thread_id not implemented)
+
+	# ColecoVision
+	select BR2_PACKAGE_LIBRETRO_GEARCOLECO
 
 	help
 	  All avaible systems for the selected architecture

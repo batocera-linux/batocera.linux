@@ -66,6 +66,8 @@ class KeyboardController:
         return config
 
     def save_config(self, config_name, config):
+        if not os.path.exists("/userdata/system/configs/keyboardToPads/inputs"):
+            os.makedirs("/userdata/system/configs/keyboardToPads/inputs")
         userconfig = Path(f"/userdata/system/configs/keyboardToPads/inputs/{config_name}")
         with open(userconfig, 'w') as file:
             yaml.dump(config, file)

@@ -74,7 +74,7 @@
 					reg = <0>;
 
 					pmic_glink_hs_in: endpoint {
-						/* remote-endpoint = <&usb_1_dwc3_hs>; */
+						remote-endpoint = <&usb_1_dwc3_hs>;
 					};
 				};
 
@@ -82,7 +82,7 @@
 					reg = <1>;
 
 					pmic_glink_ss_in: endpoint {
-						/* remote-endpoint = <&usb_dp_qmpphy_out>; */
+						remote-endpoint = <&usb_dp_qmpphy_out>;
 					};
 				};
 
@@ -90,7 +90,7 @@
 					reg = <2>;
 
 					pmic_glink_sbu: endpoint {
-						/* remote-endpoint = <&usb0_sbu_mux>; */
+						remote-endpoint = <&usb0_sbu_mux>;
 					};
 				};
 			};

@@ -1,0 +1,26 @@
+diff --git a/src/osdep/gfx_platform_internal_host.h b/src/osdep/gfx_platform_internal_host.h
+index 45d7cae..2a399b0 100644
+--- a/src/osdep/gfx_platform_internal_host.h
++++ b/src/osdep/gfx_platform_internal_host.h
+@@ -2,7 +2,8 @@
+ 
+ #include <png.h>
+ #include <SDL_image.h>
+-
++#include <fsdb_host.h>
++#include <drawing.h>
+ #include <string>
+ 
+ static inline bool gfx_platform_skip_alloctexture(int monid, int w, int h)
+diff --git a/src/include/drawing.h b/src/include/drawing.h
+index 1a6c8f0..89d5410 100644
+--- a/src/include/drawing.h
++++ b/src/include/drawing.h
+@@ -10,6 +10,7 @@
+ #define DISABLE_BPLCON1 0
+ 
+ #include "uae/types.h"
++#include "custom.h"
+ 
+ #ifdef AGA
+ #define MAX_PLANES 8

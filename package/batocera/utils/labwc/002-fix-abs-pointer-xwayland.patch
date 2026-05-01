@@ -1,0 +1,19 @@
+--- a/src/input/cursor.c	2026-03-20 01:24:24.000000000 +0000
++++ b/src/input/cursor.c	2026-03-20 01:25:14.000000000 +0000
+@@ -996,6 +996,16 @@
+ 	double dx = lx - seat->cursor->x;
+ 	double dy = ly - seat->cursor->y;
+ 
++	if (cursor_locked(seat, event->pointer)) {
++		wlr_relative_pointer_manager_v1_send_relative_motion(
++			seat->server->relative_pointer_manager,
++			seat->seat, (uint64_t)event->time_msec * 1000,
++			dx, dy, dx, dy);
++		seat->cursor->x = lx;
++		seat->cursor->y = ly;
++		return;
++	}
++
+ 	preprocess_cursor_motion(seat, event->pointer,
+ 		event->time_msec, dx, dy);
+ }

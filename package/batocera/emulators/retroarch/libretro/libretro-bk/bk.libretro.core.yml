@@ -1,0 +1,56 @@
+features:
+  - padtokeyboard
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  bk_model:
+    prompt: MODEL
+    description: Select the emulated computer model. Requires restart.
+    choices:
+      BK-0010: BK-0010
+      BK-0010.01: BK-0010.01
+      BK-0010.01 + FDD: BK-0010.01 + FDD
+      BK-0011M + FDD: BK-0011M + FDD
+      Terak 8510/a: Terak 8510/a
+      Slow BK-0011M: Slow BK-0011M
+  bk_peripheral:
+    prompt: PERIPHERAL (UP PORT)
+    description: Select peripheral device. Requires restart.
+    choices:
+      None: none
+      Covox: covox
+      AY-3-8910: ay_3_8910
+      Mouse High: mouse_high
+      Mouse Low: mouse_low
+      Joystick: joystick
+  bk_doublespeed:
+    prompt: DOUBLE CPU SPEED
+    description: Run CPU at double speed.
+    choices:
+      'Off': disabled
+      'On': enabled
+  bk_color:
+    prompt: COLOR DISPLAY
+    description: Enable color display emulation.
+    choices:
+      'On': enabled
+      'Off': disabled
+  bk_aspect_ratio:
+    prompt: ASPECT RATIO
+    description: Select display aspect ratio.
+    choices:
+      '1:1': '1:1'
+      '4:3': '4:3'
+  bk_layout:
+    prompt: KEYBOARD LAYOUT
+    description: Select keyboard layout.
+    choices:
+      QWERTY: qwerty
+      JCUKEN: jcuken
+  bk_keyboard_type:
+    prompt: KEYBOARD TYPE
+    description: Select keyboard input method. Requires restart.
+    choices:
+      Poll: poll
+      Callback: callback

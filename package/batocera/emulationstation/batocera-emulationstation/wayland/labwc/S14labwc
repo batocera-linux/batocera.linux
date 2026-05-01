@@ -57,6 +57,7 @@ start() {
 		else
 			echo "No primary output set. Skipping main azahar rule." >>"$display_log"
 		fi
+
 		AZAHAR_SECONDARY_OUT=""
 		if [ -n "${SECONDARY_OUT}" ]; then
 			AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
@@ -80,16 +81,14 @@ start() {
 		s#\s*<output>.*</output>#        <output>'"${BCC_OUT}"'</output>#
 	} }' "${RC_XML_PATH}"
 
-		# Set OSD to the main output
-		echo "Applying window rules for OSD..." >>"$display_log"
-		OSD_OUT=""
+		# --- Set batocera-flash-screen / OSD to the primary output ---
+		echo "Applying window rules for batocera-flash-screen (OSD)..." >>"$display_log"
 		if [ -n "${PRIMARY_OUT}" ]; then
-			OSD_OUT="${PRIMARY_OUT}"
+			sed -i -e '/<windowRule identifier="batocera-flash-screen\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+				n
+				s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
+			} }' "${RC_XML_PATH}"
 		fi
-		sed -i -e '/<windowRule.*title="Batocera OSD"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-		n
-		s#\s*<output>.*</output>#        <output>'"${OSD_OUT}"'</output>#
-	} }' "${RC_XML_PATH}"
 
 		# --- Check for touchscreen and configure it ---
 		TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')

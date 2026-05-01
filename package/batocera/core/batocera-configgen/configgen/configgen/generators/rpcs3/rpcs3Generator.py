@@ -256,6 +256,9 @@ class Rpcs3Generator(Generator):
 
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
+        
+        elif rom.suffix.lower() == ".iso":
+            romName = rom
         elif configure_emulator(rom):
             romName: Path | None = None
         else:

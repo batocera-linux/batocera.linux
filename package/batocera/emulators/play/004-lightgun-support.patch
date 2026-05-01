@@ -1,6 +1,6 @@
 --- a/Source/ui_qt/unix/InputProviderEvDev.h
 +++ b/Source/ui_qt/unix/InputProviderEvDev.h
-@@ -1,19 +1,38 @@
+@@ -1,19 +1,39 @@
  #pragma once
  
 +#include <vector>
@@ -17,6 +17,7 @@
 +	struct LightGunDevice
 +	{
 +		int fd = -1;
++		struct libevdev* dev = nullptr;
 +		int minX = 0, maxX = 1, minY = 0, maxY = 1;
 +		float lastX = 0.5f, lastY = 0.5f;
 +	};
@@ -43,12 +44,11 @@
  };
 --- a/Source/ui_qt/unix/InputProviderEvDev.cpp
 +++ b/Source/ui_qt/unix/InputProviderEvDev.cpp
-@@ -1,12 +1,33 @@
+@@ -1,12 +1,36 @@
  #include <cassert>
 +#include <algorithm>
 +#include <fcntl.h>
 +#include <unistd.h>
-+#include <linux/input.h>
 +#include <libudev.h>
  #include "InputProviderEvDev.h"
 +#include "PS2VM.h"
@@ -74,11 +74,15 @@
 +{
 +	m_gunPolling = false;
 +	if(m_gunThread.joinable()) m_gunThread.join();
-+	for(auto& g : m_guns) if(g.fd >= 0) close(g.fd);
++	for(auto& g : m_guns)
++	{
++		if(g.dev) libevdev_free(g.dev);
++		if(g.fd >= 0) close(g.fd);
++	}
  }
  
  uint32 CInputProviderEvDev::GetId() const
-@@ -19,6 +40,11 @@
+@@ -19,6 +43,11 @@
  	return string_format("EvDev: btn-%d", target.keyId);
  }
  
@@ -90,7 +94,7 @@
  void CInputProviderEvDev::OnEvDevInputEvent(GamePadDeviceId deviceId, int code, int value, int type, const input_absinfo* abs)
  {
  	BINDINGTARGET tgt;
-@@ -66,3 +92,87 @@
+@@ -66,3 +95,102 @@
  		OnInput(tgt, fixedValue);
  	}
  }
@@ -108,26 +112,40 @@
 +	struct udev_list_entry* entry;
 +	udev_list_entry_foreach(entry, udev_enumerate_get_list_entry(enumerate))
 +	{
-+		struct udev_device* dev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(entry));
-+		const char* devnode = udev_device_get_devnode(dev);
++		struct udev_device* udevDev = udev_device_new_from_syspath(udev, udev_list_entry_get_name(entry));
++		const char* devnode = udev_device_get_devnode(udevDev);
 +		if(devnode && strstr(devnode, "/dev/input/event"))
 +		{
 +			int fd = open(devnode, O_RDONLY | O_NONBLOCK);
 +			if(fd >= 0)
 +			{
-+				struct input_absinfo absX, absY;
-+				if(ioctl(fd, EVIOCGABS(ABS_X), &absX) >= 0 && ioctl(fd, EVIOCGABS(ABS_Y), &absY) >= 0)
++				struct libevdev* dev = nullptr;
++				if(libevdev_new_from_fd(fd, &dev) >= 0)
 +				{
-+					LightGunDevice gun;
-+					gun.fd = fd;
-+					gun.minX = absX.minimum; gun.maxX = absX.maximum;
-+					gun.minY = absY.minimum; gun.maxY = absY.maximum;
-+					m_guns.push_back(gun);
++					const struct input_absinfo* absX = libevdev_get_abs_info(dev, ABS_X);
++					const struct input_absinfo* absY = libevdev_get_abs_info(dev, ABS_Y);
++					if(absX && absY)
++					{
++						LightGunDevice gun;
++						gun.fd = fd;
++						gun.dev = dev;
++						gun.minX = absX->minimum; gun.maxX = absX->maximum;
++						gun.minY = absY->minimum; gun.maxY = absY->maximum;
++						m_guns.push_back(gun);
++					}
++					else
++					{
++						libevdev_free(dev);
++						close(fd);
++					}
 +				}
-+				else close(fd);
++				else
++				{
++					close(fd);
++				}
 +			}
 +		}
-+		udev_device_unref(dev);
++		udev_device_unref(udevDev);
 +	}
 +	udev_enumerate_unref(enumerate);
 +	udev_unref(udev);
@@ -139,9 +157,10 @@
 +	{
 +		for(auto& gun : m_guns)
 +		{
-+			if(gun.fd < 0) continue;
++			if(!gun.dev) continue;
 +			struct input_event ev;
-+			while(read(gun.fd, &ev, sizeof(ev)) == sizeof(ev))
++			int rc;
++			while((rc = libevdev_next_event(gun.dev, LIBEVDEV_READ_FLAG_NORMAL, &ev)) == LIBEVDEV_READ_STATUS_SUCCESS)
 +			{
 +				if(ev.type == EV_ABS)
 +				{
@@ -191,7 +210,7 @@
  namespace Ui
  {
  	class MainWindow;
-@@ -104,6 +108,9 @@ private:
+@@ -113,6 +117,9 @@
  	bool m_pauseFocusLost = true;
  	std::shared_ptr<CInputProviderQtKey> m_qtKeyInputProvider;
  	std::shared_ptr<CInputProviderQtMouse> m_qtMouseInputProvider;
@@ -203,7 +222,7 @@
  
 --- a/Source/ui_qt/mainwindow.cpp
 +++ b/Source/ui_qt/mainwindow.cpp
-@@ -175,7 +175,8 @@ void MainWindow::InitVirtualMachine()
+@@ -185,7 +185,8 @@
  		bindingManager.RegisterInputProvider(std::make_shared<CInputProviderMacOsHid>());
  #endif
  #ifdef HAS_LIBEVDEV
@@ -213,7 +232,7 @@
  #endif
  #ifdef WIN32
  		bindingManager.RegisterInputProvider(std::make_shared<CInputProviderDirectInput>());
-@@ -843,6 +844,10 @@ void MainWindow::outputWindow_doubleClickEvent(QMouseEvent* ev)
+@@ -912,6 +913,10 @@
  
  void MainWindow::outputWindow_mouseMoveEvent(QMouseEvent* ev)
  {
@@ -226,7 +245,7 @@
  		auto gsHandler = m_virtualMachine->GetGSHandler();
 --- a/Source/ui_qt/CMakeLists.txt
 +++ b/Source/ui_qt/CMakeLists.txt
-@@ -56,6 +56,11 @@ if(TARGET_PLATFORM_UNIX)
+@@ -59,6 +59,11 @@
  	find_package(LIBEVDEV)
  	if(LIBEVDEV_FOUND)
  		list(APPEND UI_QT_PROJECT_LIBS ${LIBEVDEV_LIBRARY})
@@ -238,7 +257,7 @@
  		list(APPEND UI_QT_DEFINITIONS_LIST HAS_LIBEVDEV=1)
  	endif()
  
-@@ -321,6 +326,9 @@ target_include_directories(Play PRIVATE
+@@ -369,6 +374,9 @@
  
  if(LIBEVDEV_FOUND)
  	target_include_directories(Play PRIVATE ${LIBEVDEV_INCLUDE_DIR})

@@ -1,0 +1,2 @@
+# Disable runtime PM for WCD938x SoundWire RX/TX to fix jack detection
+ACTION=="bind", SUBSYSTEM=="soundwire", KERNEL=="sdw:*:0217:010d:*", ATTR{power/control}="on"

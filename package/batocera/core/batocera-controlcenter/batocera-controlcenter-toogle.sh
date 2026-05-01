@@ -37,7 +37,9 @@ if test "$?" -eq 0; then
 else
     # switch on
     export DISPLAY=$(getLocalXDisplay)
-    . /etc/profile.d/wayland.sh 2>/dev/null
+    if [ -f "/etc/profile.d/wayland.sh" ]; then
+        . /etc/profile.d/wayland.sh
+    fi
 
     bccdisabled="$(/usr/bin/batocera-settings-get bcc.disabled)"
     bcclogs="$(/usr/bin/batocera-settings-get bcc.logs)"

@@ -54,18 +54,15 @@ index 1fb25c4521..05aeaab0e6 100755
  #endif
  
 diff --git a/board/hardkernel/odroidgou/odroid_pmic.c b/board/hardkernel/odroidgou/odroid_pmic.c
-index b39b7c566b..5f243ce7ec 100755
+index b39b7c566b9e..58e51c797efe 100755
 --- a/board/hardkernel/odroidgou/odroid_pmic.c
 +++ b/board/hardkernel/odroidgou/odroid_pmic.c
-@@ -199,6 +199,11 @@ int board_check_power(void)
+@@ -199,6 +199,8 @@ int board_check_power(void)
  	printf("PWRON source : %d\n",pwron_src);
  
  	if ((pwron_src != PWRON_KEY) && (bootmode == BOOTMODE_NORMAL)) {
-+		if((pwron_src == PWRON_USB) && (get_battery_cap() > 0))
-+			return 0;
-+		else
-+			gou_init_lcd();
-+		
++		gou_init_lcd();
++
  		/* RK817 BOOST, OTG_POWER(USB A-type VBUS) disable */
  		rk817_i2c_write(RK817_POWER_EN3, 0xf0);
  		printf("battery charge state\n");

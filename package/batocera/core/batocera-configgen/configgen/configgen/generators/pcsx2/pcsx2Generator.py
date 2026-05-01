@@ -233,6 +233,11 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     pcsx2INIConfig.set("UI", "HideMainWindowWhenRunning", "true")
     pcsx2INIConfig.set("UI", "DoubleClickTogglesFullscreen", "false")
 
+    # clear to not have the window anywhere when switching from multi to single screen and vice and versa
+    for opt in ["MainWindowGeometry", "MainWindowState", "DisplayWindowGeometry"]:
+        if pcsx2INIConfig.has_section("UI") and pcsx2INIConfig.has_option("UI", opt):
+            pcsx2INIConfig.remove_option("UI", opt)
+
     ## [Folders]
     if not pcsx2INIConfig.has_section("Folders"):
         pcsx2INIConfig.add_section("Folders")

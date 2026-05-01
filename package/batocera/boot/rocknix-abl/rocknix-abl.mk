@@ -4,9 +4,9 @@
 #
 ################################################################################
 
-# Version: Commits on Mar 3, 2026
-ROCKNIX_ABL_VERSION = e4e056485d6f34c05f9cdfaa84ff3d4e2e3cc709
-ROCKNIX_ABL_SITE = $(call github,ROCKNIX,abl,$(ROCKNIX_ABL_VERSION))
+ROCKNIX_ABL_VERSION = 1.0.0
+ROCKNIX_ABL_SOURCE = rocknix-abl-v$(ROCKNIX_ABL_VERSION).tar.gz
+ROCKNIX_ABL_SITE = https://github.com/ROCKNIX/abl/releases/download/v$(ROCKNIX_ABL_VERSION)
 
 ROCKNIX_ABL_DEPENDENCIES = pv
 

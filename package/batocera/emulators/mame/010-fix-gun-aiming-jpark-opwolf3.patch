@@ -1,0 +1,229 @@
+From: Tovarichtch
+Date: Tue, 11 Mar 2026 23:26:00 -0400
+Subject: [PATCH] Fix gun aiming in jpark and opwolf3
+
+Fixes gun aiming in jpark and opwolf3 by converting screen coordinates
+to match what the real arcade cabinet hardware expects, based on FBNeo's
+proven scaling values and MAME's lghost implementation pattern.
+---
+ src/mame/sega/segas32.cpp   | 84 +++++++++++++++++++++++++++++++++++-
+ src/mame/taito/slapshot.cpp | 22 ++++++++++--
+ src/mame/taito/slapshot.h   |  8 ++++
+ 3 files changed, 109 insertions(+), 5 deletions(-)
+
+diff --git a/src/mame/sega/segas32.cpp b/src/mame/sega/segas32.cpp
+--- a/src/mame/sega/segas32.cpp
++++ b/src/mame/sega/segas32.cpp
+@@ -2335,6 +2335,86 @@
+ }
+ 
+ 
++// Jurassic Park: gun pot response curve remapping (same approach as lghost in segas18.cpp)
++
++class segas32_jpark_state : public segas32_analog_state
++{
++public:
++	segas32_jpark_state(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock);
++
++protected:
++	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
++
++private:
++	required_ioport_array<4> m_gun_analog;
++
++	static uint8_t scale(int val, int in_min, int in_max, int out_min, int out_max)
++	{
++		return uint8_t(out_min + (val - in_min) * (out_max - out_min) / (in_max - in_min));
++	}
++
++	ioport_value gun_x1_r();
++	ioport_value gun_y1_r();
++	ioport_value gun_x2_r();
++	ioport_value gun_y2_r();
++};
++
++DEFINE_DEVICE_TYPE(SEGA_S32_JPARK_DEVICE, segas32_jpark_state, "segas32_pcb_jpark", "Sega System 32 Jurassic Park PCB")
++
++segas32_jpark_state::segas32_jpark_state(const machine_config &mconfig, const char *tag, device_t *owner, uint32_t clock)
++	: segas32_analog_state(mconfig, SEGA_S32_JPARK_DEVICE, tag, owner, clock)
++	, m_gun_analog(*this, "ANALOG%u", 1U)
++{
++}
++
++void segas32_jpark_state::device_add_mconfig(machine_config &config)
++{
++	segas32_state::device_add_mconfig(config);
++
++	m_maincpu->set_addrmap(AS_PROGRAM, &segas32_jpark_state::system32_analog_map);
++
++	msm6253_device &adc(MSM6253(config, "adc", 0));
++	adc.set_input_cb<0>(FUNC(segas32_jpark_state::gun_x1_r));
++	adc.set_input_cb<1>(FUNC(segas32_jpark_state::gun_y1_r));
++	adc.set_input_cb<2>(FUNC(segas32_jpark_state::gun_x2_r));
++	adc.set_input_cb<3>(FUNC(segas32_jpark_state::gun_y2_r));
++}
++
++// P1 X: piecewise linear, breakpoint at 0x55 -> 0x90
++ioport_value segas32_jpark_state::gun_x1_r()
++{
++	uint8_t raw = m_gun_analog[0]->read();
++	if (raw >= 0x55)
++		return scale(raw, 0x55, 0xff, 0x90, 0xc1);
++	else
++		return scale(raw, 0x00, 0x55, 0x3f, 0x90);
++}
++
++// P1 Y
++ioport_value segas32_jpark_state::gun_y1_r()
++{
++	uint8_t raw = m_gun_analog[1]->read();
++	return scale(raw, 0x00, 0xff, 0x3f, 0xc1);
++}
++
++// P2 X: piecewise linear, breakpoint at 0xaa -> 0x70
++ioport_value segas32_jpark_state::gun_x2_r()
++{
++	uint8_t raw = m_gun_analog[2]->read();
++	if (raw >= 0xaa)
++		return scale(raw, 0xaa, 0xff, 0x70, 0xc1);
++	else
++		return scale(raw, 0x00, 0xaa, 0x3f, 0x70);
++}
++
++// P2 Y
++ioport_value segas32_jpark_state::gun_y2_r()
++{
++	uint8_t raw = m_gun_analog[3]->read();
++	return scale(raw, 0x00, 0xff, 0x3f, 0xc1);
++}
++
++
+ 
+ void segas32_trackball_state::system32_trackball_map(address_map &map)
+ {
+@@ -2716,6 +2796,7 @@
+ 	void sega_system32_cd(machine_config &config);
+ 	void sega_system32_arf(machine_config &config);
+ 	void sega_system32_analog(machine_config &config);
++	void sega_system32_jpark(machine_config &config);
+ 	void sega_system32_4p(machine_config &config);
+ 
+ 	void init_titlef();
+@@ -2766,6 +2847,11 @@
+ 	SEGA_S32_ANALOG_DEVICE(config, "mainpcb", 0);
+ }
+ 
++void segas32_new_state::sega_system32_jpark(machine_config &config)
++{
++	SEGA_S32_JPARK_DEVICE(config, "mainpcb", 0);
++}
++
+ void segas32_new_state::sega_system32_track(machine_config &config)
+ {
+ 	SEGA_S32_TRACKBALL_DEVICE(config, "mainpcb", 0);
+@@ -6030,10 +6116,10 @@
+ 
+ GAME( 1992, holo,      0,        sega_system32,             holo,     segas32_new_state, init_holo,     ORIENTATION_FLIP_Y, "Sega",   "Holosseum (US, Rev A)", MACHINE_IMPERFECT_GRAPHICS )
+ 
+-GAME( 1993, jpark,     0,        sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", MACHINE_IMPERFECT_GRAPHICS )  /* Released in 02.1994 */
+-GAME( 1993, jparkj,    jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
+-GAME( 1993, jparkja,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
+-GAME( 1993, jparkjc,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", MACHINE_IMPERFECT_GRAPHICS )
++GAME( 1993, jpark,     0,        sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", MACHINE_IMPERFECT_GRAPHICS )  /* Released in 02.1994 */
++GAME( 1993, jparkj,    jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
++GAME( 1993, jparkja,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
++GAME( 1993, jparkjc,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", MACHINE_IMPERFECT_GRAPHICS )
+ 
+ GAME( 1992, kokoroj,   0,        sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology (Rev A)", MACHINE_IMPERFECT_GRAPHICS | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER) /* uses an Audio CD */
+ GAME( 1992, kokoroja,  kokoroj,  sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology", MACHINE_IMPERFECT_GRAPHICS | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER) /* uses an Audio CD */
+diff --git a/src/mame/taito/slapshot.cpp b/src/mame/taito/slapshot.cpp
+--- a/src/mame/taito/slapshot.cpp
++++ b/src/mame/taito/slapshot.cpp
+@@ -349,16 +349,16 @@
+ 	PORT_SERVICE_NO_TOGGLE(0x10, IP_ACTIVE_LOW)
+ 
+ 	PORT_START("GUN1X")
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_MINMAX(0x10,0xf0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_REVERSE PORT_PLAYER(1)
++	PORT_BIT( 0xff, 0x80, IPT_AD_STICK_X ) PORT_CROSSHAIR(X, -1.0, 0.0, 0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_CENTERDELTA(0) PORT_REVERSE PORT_PLAYER(1)
+ 
+ 	PORT_START("GUN1Y")
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_MINMAX(0x10,0xf0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_PLAYER(1)
++	PORT_BIT( 0xff, 0x80, IPT_AD_STICK_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_CENTERDELTA(0) PORT_PLAYER(1)
+ 
+ 	PORT_START("GUN2X")
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_X ) PORT_MINMAX(0x10,0xf0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_REVERSE PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_AD_STICK_X ) PORT_CROSSHAIR(X, -1.0, 0.0, 0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_CENTERDELTA(0) PORT_REVERSE PORT_PLAYER(2)
+ 
+ 	PORT_START("GUN2Y")
+-	PORT_BIT( 0xff, 0x80, IPT_LIGHTGUN_Y ) PORT_MINMAX(0x10,0xf0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_PLAYER(2)
++	PORT_BIT( 0xff, 0x80, IPT_AD_STICK_Y ) PORT_CROSSHAIR(Y, 1.0, 0.0, 0) PORT_SENSITIVITY(30) PORT_KEYDELTA(20) PORT_CENTERDELTA(0) PORT_PLAYER(2)
+ INPUT_PORTS_END
+ 
+ /***********************************************************
+@@ -453,6 +453,20 @@
+ 	m_tc0140syt->reset_callback().set_inputline("audiocpu", INPUT_LINE_RESET);
+ }
+ 
++// opwolf3: gun pot response curve remapping (same approach as lghost in segas18.cpp)
++
++ioport_value slapshot_state::opwolf3_gun_x_r(int player)
++{
++	uint8_t raw = m_gun_x[player].found() ? uint8_t(m_gun_x[player]->read()) : 0x80;
++	return 0x05 + raw * 160 / 255;
++}
++
++ioport_value slapshot_state::opwolf3_gun_y_r(int player)
++{
++	uint8_t raw = m_gun_y[player].found() ? uint8_t(m_gun_y[player]->read()) : 0x80;
++	return 0x08 + raw * 111 / 255;
++}
++
+ void slapshot_state::opwolf3(machine_config &config)
+ {
+ 	/* basic machine hardware */
+@@ -467,10 +481,10 @@
+ 
+ 	adc0809_device &adc(ADC0809(config, "adc", 500000)); // unknown clock
+ 	adc.eoc_ff_callback().set_inputline("maincpu", 3);
+-	adc.in_callback<0>().set_ioport("GUN1X");
+-	adc.in_callback<1>().set_ioport("GUN1Y");
+-	adc.in_callback<2>().set_ioport("GUN2X");
+-	adc.in_callback<3>().set_ioport("GUN2Y");
++	adc.in_callback<0>().set(FUNC(slapshot_state::opwolf3_gun_x_cb<0>));
++	adc.in_callback<1>().set(FUNC(slapshot_state::opwolf3_gun_y_cb<0>));
++	adc.in_callback<2>().set(FUNC(slapshot_state::opwolf3_gun_x_cb<1>));
++	adc.in_callback<3>().set(FUNC(slapshot_state::opwolf3_gun_y_cb<1>));
+ 
+ 	TC0640FIO(config, m_tc0640fio, 0);
+ 	m_tc0640fio->read_1_callback().set_ioport("COINS");
+diff --git a/src/mame/taito/slapshot.h b/src/mame/taito/slapshot.h
+--- a/src/mame/taito/slapshot.h
++++ b/src/mame/taito/slapshot.h
+@@ -32,7 +32,9 @@
+ 		m_spriteext(*this,"spriteext"),
+ 		m_z80bank(*this,"z80bank"),
+ 		m_io_system(*this,"SYSTEM"),
+-		m_io_service(*this,"SERVICE")
++		m_io_service(*this,"SERVICE"),
++		m_gun_x(*this, "GUN%uX", 1U),
++		m_gun_y(*this, "GUN%uY", 1U)
+ 	{ }
+ 
+ 	void opwolf3(machine_config &config);
+@@ -108,6 +110,13 @@
+ 
+ 	INTERRUPT_GEN_MEMBER(interrupt);
+ 
++	optional_ioport_array<2> m_gun_x;
++	optional_ioport_array<2> m_gun_y;
++	ioport_value opwolf3_gun_x_r(int player);
++	ioport_value opwolf3_gun_y_r(int player);
++	template <int N> ioport_value opwolf3_gun_x_cb() { return opwolf3_gun_x_r(N); }
++	template <int N> ioport_value opwolf3_gun_y_cb() { return opwolf3_gun_y_r(N); }
++
+ 	void opwolf3_map(address_map &map) ATTR_COLD;
+ 	void slapshot_map(address_map &map) ATTR_COLD;
+ 	void sound_map(address_map &map) ATTR_COLD;
+-- 
+2.48.1
+

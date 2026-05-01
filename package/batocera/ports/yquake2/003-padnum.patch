@@ -1,5 +1,5 @@
 diff --git a/src/client/input/sdl2.c b/src/client/input/sdl2.c
-index 527e3f5c..831b418a 100644
+index 527e3f5c..1f36bd7d 100644
 --- a/src/client/input/sdl2.c
 +++ b/src/client/input/sdl2.c
 @@ -2519,7 +2519,7 @@ static void
@@ -46,23 +46,48 @@ index 527e3f5c..831b418a 100644
  	{
  		const char* joystick_name;
  		size_t name_len;
-@@ -2769,7 +2774,14 @@ IN_Controller_Init(qboolean notify_user)
+@@ -2611,7 +2616,7 @@ IN_Controller_Init(qboolean notify_user)
+ 		if (!joystick)
+ 		{
+ 			Com_Printf ("Couldn't open joystick %d: %s.\n", i+1, SDL_GetError());
+-			continue;	// try next joystick
++			goto next_joy;	// try next joystick
+ 		}
+ 
+ 		joystick_name = SDL_JoystickName(joystick);
+@@ -2651,7 +2656,7 @@ IN_Controller_Init(qboolean notify_user)
+ 				Com_Printf ("skipping.\n");
+ 			}
+ #endif
+-			continue;
++			goto next_joy;
+ 		}
+ 
+ 		Com_Printf ("Buttons = %d, Axes = %d, Hats = %d\n", SDL_JoystickNumButtons(joystick),
+@@ -2680,7 +2685,7 @@ IN_Controller_Init(qboolean notify_user)
+ 			if (!controller)
+ 			{
+ 				Com_Printf("SDL Controller error: %s.\n", SDL_GetError());
+-				continue;	// try next joystick
++				goto next_joy;	// try next joystick
+ 			}
+ 
+ 			show_gamepad = true;
+@@ -2769,7 +2774,12 @@ IN_Controller_Init(qboolean notify_user)
  			break;
  #endif
  		}
 +
++next_joy:
 +		i++;
-+		if (i == numjoysticks)
-+		{
-+			i = 0;
-+		}
++		if (i == numjoysticks) i = 0;
  	}
 +	while (i != joy_num);
  
  	IN_GamepadLabels_Changed();
  	IN_GamepadConfirm_Changed();
 diff --git a/src/client/input/sdl3.c b/src/client/input/sdl3.c
-index 5817e88e..5ccb0db2 100644
+index 5817e88e..e208aff6 100644
 --- a/src/client/input/sdl3.c
 +++ b/src/client/input/sdl3.c
 @@ -2500,7 +2500,7 @@ static void
@@ -100,7 +125,7 @@ index 5817e88e..5ccb0db2 100644
  	if (numjoysticks == 0)
  	{
  		joystick_haptic = SDL_OpenHapticFromMouse();
-@@ -2581,7 +2580,10 @@ IN_Controller_Init(qboolean notify_user)
+@@ -2581,13 +2580,16 @@ IN_Controller_Init(qboolean notify_user)
  			Com_Printf ("%d mappings loaded from gamecontrollerdb.txt\n", nummappings);
  	}
  
@@ -112,16 +137,39 @@ index 5817e88e..5ccb0db2 100644
  	{
  		joystick = SDL_OpenJoystick(joysticks[i]);
  		if (!joystick)
-@@ -2738,7 +2740,14 @@ IN_Controller_Init(qboolean notify_user)
+ 		{
+ 			Com_Printf ("Couldn't open joystick %d: %s.\n", i+1, SDL_GetError());
+-			continue;	// try next joystick
++			goto next_joy;	// try next joystick
+ 		}
+ 
+ 		const char* joystick_name = SDL_GetJoystickName(joystick);
+@@ -2627,7 +2629,7 @@ IN_Controller_Init(qboolean notify_user)
+ 				Com_Printf ("skipping.\n");
+ 			}
+ #endif
+-			continue;
++			goto next_joy;
+ 		}
+ 
+ 		Com_Printf ("Buttons = %d, Axes = %d, Hats = %d\n", SDL_GetNumJoystickButtons(joystick),
+@@ -2656,7 +2658,7 @@ IN_Controller_Init(qboolean notify_user)
+ 			if (!controller)
+ 			{
+ 				Com_Printf("SDL Gamepad error: %s.\n", SDL_GetError());
+-				continue;	// try next joystick
++				goto next_joy;	// try next joystick
+ 			}
+ 
+ 			show_gamepad = true;
+@@ -2738,7 +2740,12 @@ IN_Controller_Init(qboolean notify_user)
  			break;
  #endif
  		}
 +
++next_joy:
 +		i++;
-+		if (i == numjoysticks)
-+		{
-+			i = 0;
-+		}
++		if (i == numjoysticks) i = 0;
  	}
 +	while (i != joy_num);
  

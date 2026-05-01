@@ -147,16 +147,24 @@ class AzaharGenerator(Generator):
         ## [RENDERER]
         if not azaharConfig.has_section("Renderer"):
             azaharConfig.add_section("Renderer")
-        # Use Hardware rendering with Hardware Shader by default; give user choice to disable it for some games
-        azaharConfig.set("Renderer", "use_hw_renderer", "true")
-        azaharConfig.set("Renderer", r"use_hw_renderer\default", "false")
-        azaharConfig.set("Renderer", "use_hw_shader", system.config.get_bool("azahar_use_hw_shader", True, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"use_hw_shader\default", "false")
-        azaharConfig.set("Renderer", "use_shader_jit",  "true")
-        azaharConfig.set("Renderer", r"use_hw_shader_jit\default", "false")
+        # Hardware Shader
+        azaharConfig.set("Renderer", "use_hw_shader", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", "use_hw_shader\default", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
+        # Accurate Multiplication
+        azaharConfig.set("Renderer", "shaders_accurate_mul", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", "shaders_accurate_mul\default", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
+        # Shader JIT
+        azaharConfig.set("Renderer", "use_shader_jit", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
+        azaharConfig.set("Renderer", "use_hw_shader_jit\default", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
+        # Async Shader Compilation
+        azaharConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", "async_shader_compilation\default", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
+        # Async Presentation
+        azaharConfig.set("Renderer", "async_presentation", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", "async_presentation\default", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
         # Software, OpenGL (default) or Vulkan
         azaharConfig.set("Renderer", "graphics_api", system.config.get("azahar_graphics_api", "1"))
-        azaharConfig.set("Renderer", r"graphics_api\default", "false")
+        azaharConfig.set("Renderer", r"graphics_api\default", "true")
         # Set Vulkan as necessary
         if system.config.get("azahar_graphics_api") == "2" and vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
@@ -177,12 +185,6 @@ class AzaharGenerator(Generator):
         # Resolution Factor
         azaharConfig.set("Renderer", "resolution_factor", system.config.get("azahar_resolution_factor", "1"))
         azaharConfig.set("Renderer", r"resolution_factor\default", "false")
-        # Async Shader Compilation
-        azaharConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("azahar_async_shader_compilation", return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"async_shader_compilation\default", "false")
-        # Use Frame Limit
-        azaharConfig.set("Renderer", "use_frame_limit", system.config.get_bool("azahar_use_frame_limit", True, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"use_frame_limit\default", "false")
 
         ## [WEB SERVICE]
         if not azaharConfig.has_section("WebService"):

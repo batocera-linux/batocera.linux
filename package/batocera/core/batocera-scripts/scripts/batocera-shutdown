@@ -18,6 +18,7 @@ CPU_GOV_STATE_FILE="/var/run/cpu_governor.state"
 CPU_MAX_FREQ_STATE_FILE="/var/run/cpu_max_freq.state"
 GPU_GOV_STATE_FILE="/var/run/gpu_governor.state"
 BT_STATE_FILE="/var/run/bluetooth.state"
+MUTED_SINK_STATE_FILE="/var/run/muted_sink.state"
 
 # The LED init.d control script
 BATOLED_INIT_SCRIPT="/etc/init.d/S51led-handheld"
@@ -33,6 +34,22 @@ INPUT_WHITELIST_PATTERNS=(
     "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
     "gpio-keys"  # AYN Thor lid
 )
+
+INTERNAL_DISPLAY_PATTERNS=(
+    "DSI"
+    "LVDS"
+    "eDP"
+)
+
+_is_internal_display() {
+    local output_name="$1"
+    for pattern in "${INTERNAL_DISPLAY_PATTERNS[@]}"; do
+        if [[ "${output_name}" == *"${pattern}"* ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
 
 # --- Backlight Control Functions ---
 save_and_turn_off_backlight() {
@@ -107,6 +124,124 @@ display_off() {
         fi
         echo "INFO: [X11] Forcing DPMS off"
         xset dpms force off
+    fi
+}
+
+# --- Internal-display-only off (used when docked) ---
+PLUGGED_INTERNAL_DISPLAYS_FILE="/var/run/plugged_internal_displays.list"
+
+display_off_internal_only() {
+    echo "INFO: [Plugged] Turning off internal display(s) only."
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+
+        if [ -z "$sway_sock" ]; then
+            echo "ERROR: [Sway] Could not find sway socket file. Cannot turn off internal display."
+            return
+        fi
+
+        local active_displays
+        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [Sway] Turning off internal output '${output}'"
+                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [Sway] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+        fi
+
+    elif pgrep -x "labwc" >/dev/null; then
+        local active_displays
+        active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [labwc] Turning off internal output '${output}'"
+                wlr-randr --output "${output}" --off
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [labwc] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+        fi
+
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        local active_displays
+        active_displays=$(xrandr | grep " connected " | awk '{print $1}')
+
+        local turned_off=""
+        for output in ${active_displays}; do
+            if _is_internal_display "${output}"; then
+                echo "INFO: [X11] Turning off internal output '${output}'"
+                xrandr --output "${output}" --off
+                turned_off="${turned_off} ${output}"
+            else
+                echo "INFO: [X11] Skipping external output '${output}'"
+            fi
+        done
+
+        if [ -n "${turned_off}" ]; then
+            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+            save_and_turn_off_backlight
+        fi
+    fi
+}
+
+display_on_internal_only() {
+    echo "INFO: [Plugged] Turning on internal display(s)."
+    if [ ! -f "${PLUGGED_INTERNAL_DISPLAYS_FILE}" ]; then
+        echo "INFO: No plugged internal display state file found. Nothing to restore."
+        return
+    fi
+
+    local outputs_to_enable
+    outputs_to_enable=$(cat "${PLUGGED_INTERNAL_DISPLAYS_FILE}")
+    rm -f "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
+
+    if [ -z "${outputs_to_enable}" ]; then
+        return
+    fi
+
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+        for output in ${outputs_to_enable}; do
+            echo "INFO: [Sway] Restoring internal output '${output}'"
+            SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
+        done
+    elif pgrep -x "labwc" >/dev/null; then
+        batocera-resolution setOutput ${outputs_to_enable}
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        for output in ${outputs_to_enable}; do
+            echo "INFO: [X11] Restoring internal output '${output}'"
+            xrandr --output "${output}" --auto
+        done
+        restore_backlight
     fi
 }
 
@@ -189,12 +324,30 @@ display_on() {
 # --- Audio Functions ---
 mute_audio() {
     echo "Muting audio"
-    pactl set-sink-mute @DEFAULT_SINK@ true
+    # Capture the actual sink name now so unmute_audio targets the same sink
+    local sink_name
+    sink_name=$(pactl get-default-sink 2>/dev/null)
+    echo "${sink_name}" > "${MUTED_SINK_STATE_FILE}"
+    pactl set-sink-mute "${sink_name}" true
+    echo "Muting ${sink_name}"
 }
 
 unmute_audio() {
     echo "Unmuting audio"
-    pactl set-sink-mute @DEFAULT_SINK@ false
+    if [ -f "${MUTED_SINK_STATE_FILE}" ]; then
+        local sink_name
+        sink_name=$(cat "${MUTED_SINK_STATE_FILE}")
+        rm -f "${MUTED_SINK_STATE_FILE}"
+        # Only unmute if the sink still exists (e.g. HDMI may have been disconnected).
+        if pactl list sinks short | grep -q "^[0-9]*	${sink_name}	"; then
+            pactl set-sink-mute "${sink_name}" false
+        else
+            echo "INFO: Saved sink '${sink_name}' no longer exists. Skipping unmute."
+        fi
+    else
+        # Fallback: no saved sink, unmute whatever is current
+        pactl set-sink-mute @DEFAULT_SINK@ false
+    fi
 }
 
 # --- CPU Core Functions ---
@@ -576,6 +729,9 @@ stop_background_monitor() {
     rm -f "/tmp/batocera-fake-suspend-monitor.sh"
 }
 
+# Flag used to track the "plugged in, internal screen off" state
+PLUGGED_SCREEN_OFF_FLAG="/var/run/batocera-plugged-screen-off.flag"
+
 # --- Main Fake Suspend/Resume Action Groups ---
 do_fake_suspend() {
     echo "--- Entering Fake Suspend ---"
@@ -614,6 +770,211 @@ do_fake_resume() {
 	start_other_services
 	rm -f "${FAKE_SUSPEND_FLAG}"
 	echo "--- Resume Complete ---"
+}
+
+# --- Plugged-in screen-off toggle (power connected, no full fake suspend) ---
+do_plugged_screen_off() {
+    echo "--- Plugged in: turning off internal screen and LEDs ---"
+    display_off_internal_only
+    suspend_led_daemon
+    touch "${PLUGGED_SCREEN_OFF_FLAG}"
+    echo "--- Plugged screen off complete ---"
+}
+
+do_plugged_screen_on() {
+    echo "--- Plugged in: restoring internal screen and LEDs ---"
+    display_on_internal_only
+    resume_led_daemon
+    rm -f "${PLUGGED_SCREEN_OFF_FLAG}"
+    echo "--- Plugged screen on complete ---"
+}
+
+################################################################################
+# DOCK DETECTION
+# "Docked" = power connected AND at least one external display is active.
+################################################################################
+
+is_external_display_connected() {
+    local outputs=""
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            if [ -e "$sock_file" ]; then
+                sway_sock="$sock_file"
+                break
+            fi
+        done
+        [ -n "$sway_sock" ] && outputs=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs \
+            | jq -r '.[] | select(.active==true) | .name')
+    elif pgrep -x "labwc" >/dev/null; then
+        outputs=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        outputs=$(xrandr | grep " connected " | awk '{print $1}')
+    fi
+    while IFS= read -r output_name; do
+        if ! _is_internal_display "${output_name}"; then
+            return 0
+        fi
+    done <<< "${outputs}"
+    return 1
+}
+
+is_docked() {
+    is_power_connected && is_external_display_connected
+}
+
+################################################################################
+# UNDOCK MONITOR
+#
+# Event-driven daemon (udevadm) active during plugged-screen-off state.
+# Watches power supply and drm subsystems for charger/display hotplug events.
+# On full undock (power and external display lost), starts a 10-minute countdown
+# then does a do_fake_suspend. This avoids battery drain with the user doesn't
+# wake up the device up after being undocked. (power button ot lid switch)
+################################################################################
+
+UNDOCK_MONITOR_PID="/var/run/batocera-undock-monitor.pid"
+UNDOCK_MONITOR_LOCK="/var/run/batocera-undock-monitor.lock"
+UNDOCK_ESCALATION_DELAY=600  # 10 minutes
+
+start_undock_monitor() {
+    # if a monitor is already running, do nothing.
+    if [ -f "${UNDOCK_MONITOR_LOCK}" ]; then
+        echo "INFO: Undock monitor already running. Ignoring duplicate start."
+        return
+    fi
+    touch "${UNDOCK_MONITOR_LOCK}"
+    local monitor_script="/tmp/batocera-undock-monitor.sh"
+    local internal_patterns_str="${INTERNAL_DISPLAY_PATTERNS[*]}"
+    local screen_off_flag="${PLUGGED_SCREEN_OFF_FLAG}"
+    local escalation_delay="${UNDOCK_ESCALATION_DELAY}"
+
+    cat > "${monitor_script}" << UNDOCK_EOF
+#!/bin/bash
+
+PLUGGED_SCREEN_OFF_FLAG="${screen_off_flag}"
+ESCALATION_DELAY=${escalation_delay}
+INTERNAL_DISPLAY_PATTERNS=(${internal_patterns_str})
+
+_is_internal_display() {
+    local name="\$1"
+    for p in "\${INTERNAL_DISPLAY_PATTERNS[@]}"; do
+        [[ "\${name}" == *"\${p}"* ]] && return 0
+    done
+    return 1
+}
+
+is_power_connected() {
+    local BATTERY_DIR=\$(ls -d /sys/class/power_supply/*[Bb][Aa][Tt]* 2>/dev/null | head -1)
+    if [ -z "\${BATTERY_DIR}" ]; then
+        return 0
+    fi
+    local BATTERY_STATUS=\$(cat "\${BATTERY_DIR}/status" 2>/dev/null)
+    if [ "\${BATTERY_STATUS}" = "Discharging" ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+is_external_display_connected() {
+    local outputs=""
+    if pgrep -x "sway" >/dev/null; then
+        local sway_sock=""
+        for sock_file in /var/run/sway-ipc.*.sock; do
+            [ -e "\$sock_file" ] && sway_sock="\$sock_file" && break
+        done
+        [ -n "\$sway_sock" ] && outputs=\$(SWAYSOCK="\${sway_sock}" swaymsg -t get_outputs \
+            | jq -r '.[] | select(.active==true) | .name')
+    elif pgrep -x "labwc" >/dev/null; then
+        outputs=\$(wlr-randr | awk '/^[^ ]/ {display_name=\$1} /Enabled: yes/ {print display_name}')
+    elif pgrep -x "xinit" >/dev/null; then
+        export DISPLAY=:0
+        outputs=\$(xrandr | grep " connected " | awk '{print \$1}')
+    fi
+    while IFS= read -r o; do
+        _is_internal_display "\${o}" || return 0
+    done <<< "\${outputs}"
+    return 1
+}
+
+is_docked() {
+    is_power_connected && is_external_display_connected
+}
+
+COUNTDOWN_ACTIVE=0
+UNDOCK_TIME=0
+
+# Watch power_supply (charger events) and drm (display hotplug events).
+udevadm monitor --udev \
+    --subsystem-match=power_supply \
+    --subsystem-match=drm \
+    2>/dev/null | while IFS= read -t 60 -r _event_line; do
+
+    # If the flag is gone the main script has already resumed — exit cleanly.
+    if [ ! -f "\${PLUGGED_SCREEN_OFF_FLAG}" ]; then
+        echo "INFO: [undock-monitor] Screen-off flag removed. Exiting."
+        exit 0
+    fi
+
+    if is_docked; then
+        if [ \${COUNTDOWN_ACTIVE} -eq 1 ]; then
+            echo "INFO: [undock-monitor] Re-docked. Cancelling escalation countdown."
+            COUNTDOWN_ACTIVE=0
+            UNDOCK_TIME=0
+        fi
+    else
+        if [ \${COUNTDOWN_ACTIVE} -eq 0 ]; then
+            echo "INFO: [undock-monitor] Undocked. Starting \${ESCALATION_DELAY}s countdown."
+            UNDOCK_TIME=\$(date +%s)
+            COUNTDOWN_ACTIVE=1
+        else
+            NOW=\$(date +%s)
+            ELAPSED=\$(( NOW - UNDOCK_TIME ))
+            if [ \${ELAPSED} -ge \${ESCALATION_DELAY} ]; then
+                # Check if a game is running. Interactive suspend is blocked mid-game,
+                # but automated escalation cannot be — the device is abandoned on battery.
+                # Force a clean shutdown instead to prevent silent battery drain.
+                HTTP_STATUS=\$(curl --connect-timeout 1 -s -o /dev/null \
+                    -w "%{http_code}" "http://localhost:1234/runningGame")
+                if [ \$? -eq 0 ] && [ "\${HTTP_STATUS}" != "201" ]; then
+                    echo "INFO: [undock-monitor] Game running at escalation timeout. Forcing shutdown."
+                    batocera-wifi enable
+                    sleep 5
+                    /sbin/shutdown -P -h now
+                else
+                    echo "INFO: [undock-monitor] Countdown elapsed. Escalating to full fake suspend."
+                    /usr/bin/batocera-shutdown 1
+                fi
+                exit 0
+            fi
+        fi
+    fi
+
+done
+UNDOCK_EOF
+
+    chmod +x "${monitor_script}"
+    nohup "${monitor_script}" >/dev/null 2>&1 &
+    local monitor_pid=$!
+    echo "${monitor_pid}" > "${UNDOCK_MONITOR_PID}"
+    echo "INFO: Undock monitor started (PID ${monitor_pid})."
+}
+
+stop_undock_monitor() {
+    if [ -f "${UNDOCK_MONITOR_PID}" ]; then
+        local pid
+        pid=$(cat "${UNDOCK_MONITOR_PID}")
+        if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+            echo "INFO: Stopping undock monitor (PID ${pid})."
+            pkill -P "${pid}" 2>/dev/null  # kill udevadm child
+            kill "${pid}" 2>/dev/null
+        fi
+        rm -f "${UNDOCK_MONITOR_PID}"
+    fi
+    rm -f "${UNDOCK_MONITOR_LOCK}"
+    rm -f "/tmp/batocera-undock-monitor.sh"
 }
 
 ################################################################################
@@ -658,12 +1019,21 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
     # We only care about the button press event (1).
     if [ "${SETACTION}" = "1" ]; then
         if [ -f "${FAKE_SUSPEND_FLAG}" ]; then
+            # Currently in a full fake suspend — resume normally.
             do_fake_resume
+        elif [ -f "${PLUGGED_SCREEN_OFF_FLAG}" ]; then
+            # Currently in plugged screen-off state (docked or mid-undock countdown)
+            # — restore internal screen and LEDs, cancel any undock monitor.
+            stop_undock_monitor
+            do_plugged_screen_on
         else
-            if is_power_connected; then
-                echo "INFO: Fake suspend request ignored because power is connected."
+            if is_docked; then
+                # Docked (power + external display): blank internal screen and LEDs only.
+                echo "INFO: Docked. Turning off internal screen and LEDs."
+                do_plugged_screen_off
+                start_undock_monitor
             else
-                # Before entering fake suspend, check if a game is running.
+                # Undocked: full fake suspend (with game-running check).
                 HTTP_STATUS=$(curl --connect-timeout 1 -s -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
                 if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
                     # A game is running. Log it and do nothing.

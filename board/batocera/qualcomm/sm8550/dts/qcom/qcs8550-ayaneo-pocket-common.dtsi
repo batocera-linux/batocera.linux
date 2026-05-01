@@ -172,7 +172,7 @@
 			no-map;
 		};
 
-		splash_region: splash_region@b8000000 { 
+		splash_region: splash_region@b8000000 {
 			reg = <0x0 0xb8000000 0x0 0x2b00000>;
 			label = "cont_splash_region";
 			no-map;
@@ -1315,7 +1315,7 @@
 	746000000 RPMH_REGULATOR_LEVEL_NOM
 	794000000 RPMH_REGULATOR_LEVEL_NOM_L1
 	827000000 RPMH_REGULATOR_LEVEL_TURBO
-	860000000 RPMH_REGULATOR_LEVEL_TURBO_L1 
+	860000000 RPMH_REGULATOR_LEVEL_TURBO_L1
 	1000000000 RPMH_REGULATOR_LEVEL_TURBO_L2
 */
 	opp-719000000 {
@@ -1414,18 +1414,7 @@
 		pinctrl-0 = <&sde_dsi_active>, <&sde_te_active>;
 		pinctrl-1 = <&sde_dsi_suspend>, <&sde_te_suspend>;
 		pinctrl-names = "default", "sleep";
-
-		port {
-			panel0_in: endpoint {
-				remote-endpoint = <&mdss_dsi0_out>;
-			};
-		};
 	};
-};
-
-&mdss_dsi0_out {
-	remote-endpoint = <&panel0_in>;
-	data-lanes = <0 1 2 3>;
 };
 
 &mdss_dsi0_phy {

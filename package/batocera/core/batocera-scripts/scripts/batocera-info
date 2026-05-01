@@ -229,6 +229,12 @@ if [ "${#cpu_features[@]}" -gt 0 ]; then
     echo "CPU Features: ${cpu_features[*]}"
 fi
 
+if test -x /usr/bin/x86-64-level
+then
+    X64VERSION=$(x86-64-level)
+    echo "CPU X86-64 version: ${X64VERSION}"
+fi
+
 # ---------------------------------------------------------------------------
 # TDP (Ryzen Mobile)
 # ---------------------------------------------------------------------------
@@ -322,10 +328,14 @@ if [ "${NUM_OUTPUTS}" -le 1 ]; then
 else
     i=1
     for output in ${OUTPUTS}; do
-        echo "Display Output ${i}: ${output}"
-        DISPLAYRES=$(batocera-resolution --screen "${output}" currentResolution 2>/dev/null)
         CURRENT_MODE=$(batocera-resolution --screen "${output}" currentMode 2>/dev/null)
+        # Skip disabled/disconnected outputs
+        case "${CURRENT_MODE}" in
+            "unknown.0"|"unknown"|"") continue ;;
+        esac
+        DISPLAYRES=$(batocera-resolution --screen "${output}" currentResolution 2>/dev/null)
         DISPLAYRATE=$(get_displayrate "${CURRENT_MODE}")
+        echo "Display Output ${i}: ${output}"
         echo "Display Resolution ${i}: ${DISPLAYRES}"
         echo "Display Refresh Rate ${i}: ${DISPLAYRATE}Hz"
         i=$(( i + 1 ))
