@@ -1,6 +1,5 @@
 config BR2_PACKAGE_XENIA_EDGE
     bool "xenia-edge"
-    depends on BR2_x86_64
     select BR2_PACKAGE_SDL2
     select BR2_PACKAGE_VULKAN_HEADERS
     select BR2_PACKAGE_VULKAN_LOADER
