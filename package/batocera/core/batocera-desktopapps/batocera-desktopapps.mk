@@ -166,6 +166,13 @@ ifeq ($(BR2_PACKAGE_XENIA_CANARY),y)
   BATOCERA_DESKTOPAPPS_ICONS   += xenia-canary.png
 endif
 
+# xenia-edge
+ifeq ($(BR2_PACKAGE_XENIA_EDGE),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-xenia-edge
+  BATOCERA_DESKTOPAPPS_APPS    += xenia-edge-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += xenia-edge.png
+endif
+
 # vita3k
 ifeq ($(BR2_PACKAGE_VITA3K),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-vita3k
