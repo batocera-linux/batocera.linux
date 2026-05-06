@@ -83,6 +83,7 @@ endef
 
 ifeq ($(BR2_PACKAGE_LIBSNDFILE),y)
 define PIPEWIRE_FFMPEG_PLUGINS_INSTALL_PW_CAT
+	$(INSTALL) -d $(TARGET_DIR)/usr/bin
 	$(INSTALL) -m 0755 $(@D)/buildroot-build/src/tools/pw-cat \
 		$(TARGET_DIR)/usr/bin/pw-cat
 endef
