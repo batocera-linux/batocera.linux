@@ -1,4 +1,4 @@
-# 2026/04/xx - batocera.linux 43 - Glasswing
+# 2026/05/08 - batocera.linux 43 - Glasswing
 ### Special Notes
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86_64-v3 image using Wayland and the LabWC compositor.
   Note: Nvidia drivers are currently included in the x86_64-v3 image but considered experimental.
@@ -9,7 +9,7 @@
 - Azahar Plus has been replaced with the source project Azahar.
   3DS ROMs will need to be decrypted.
 - WINE: Compressed applications (wsquashfs, wtgz) use the same storage paths to store the PREFIX as uncompressed ones do.
-  `~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine`
+  ~/wine-bottles/windows/<gamename>` turns to `~/wine-bottles/windows/<winerunner>/<gamename>.wine
   We recommend following the procedure described in our wiki to back up Windows savegames.
 - We have moved to the mainline Nintendo controller driver. You may need to reconfigure your Nintendo controller accordingly for wired & Bluetooth.
 - Legacy Nvidia 340.xx & 390.xx drivers have been removed from the image going forward.
