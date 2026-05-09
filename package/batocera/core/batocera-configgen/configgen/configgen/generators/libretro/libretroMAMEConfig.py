@@ -713,69 +713,66 @@ def generateMAMEPadConfig(
             xml_input_alt.appendChild(xml_kbenable_alt)
 
     # Don't configure pads if guns are present and "use_guns" is on
-    if system.config.use_guns and guns:
-        return
+    if not (system.config.use_guns and guns):
+        # Fill in controls on cfg files
+        for nplayer, pad in enumerate(playersControllers, start=1):
+            mappings_use = mappings
+            if "joystick1up" not in pad.inputs:
+                mappings_use["JOYSTICK_UP"] = "up"
+                mappings_use["JOYSTICK_DOWN"] = "down"
+                mappings_use["JOYSTICK_LEFT"] = "left"
+                mappings_use["JOYSTICK_RIGHT"] = "right"
 
-    # Fill in controls on cfg files
-    for nplayer, pad in enumerate(playersControllers, start=1):
-        mappings_use = mappings
-        if "joystick1up" not in pad.inputs:
-            mappings_use["JOYSTICK_UP"] = "up"
-            mappings_use["JOYSTICK_DOWN"] = "down"
-            mappings_use["JOYSTICK_LEFT"] = "left"
-            mappings_use["JOYSTICK_RIGHT"] = "right"
-
-        for mapping in mappings_use:
-            if mappings_use[mapping] in pad.inputs:
-                if mapping in [ 'START', 'COIN' ]:
-                    xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], retroPad[mappings_use[mapping]], False, "", ""))
+            for mapping in mappings_use:
+                if mappings_use[mapping] in pad.inputs:
+                    if mapping in [ 'START', 'COIN' ]:
+                        xml_input.appendChild(generateSpecialPortElement(pad, config, 'standard', nplayer, pad.index, mapping + str(nplayer), mappings_use[mapping], retroPad[mappings_use[mapping]], False, "", ""))
+                    else:
+                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[mappings_use[mapping]], False, altButtons))
                 else:
-                    xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[mappings_use[mapping]], False, altButtons))
-            else:
-                rmapping = reverseMapping(mappings_use[mapping])
-                if rmapping in retroPad:
-                        xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[rmapping], True, altButtons))
+                    rmapping = reverseMapping(mappings_use[mapping])
+                    if rmapping in retroPad:
+                            xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], retroPad[rmapping], True, altButtons))
 
-        #UI Mappings
-        if nplayer == 1:
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_DOWN"]], False, "", ""))      # Down
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
-            xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
+            #UI Mappings
+            if nplayer == 1:
+                xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_DOWN", "DOWN", mappings_use["JOYSTICK_DOWN"], retroPad[mappings_use["JOYSTICK_DOWN"]], False, "", ""))      # Down
+                xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_LEFT", "LEFT", mappings_use["JOYSTICK_LEFT"], retroPad[mappings_use["JOYSTICK_LEFT"]], False, "", ""))    # Left
+                xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_UP", "UP", mappings_use["JOYSTICK_UP"], retroPad[mappings_use["JOYSTICK_UP"]], False, "", ""))            # Up
+                xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_RIGHT", "RIGHT", mappings_use["JOYSTICK_RIGHT"], retroPad[mappings_use["JOYSTICK_RIGHT"]], False, "", "")) # Right
+                xml_input.appendChild(generateComboPortElement(pad, config, 'standard', pad.index, "UI_SELECT", "ENTER", 'a', retroPad['a'], False, "", ""))                                                     # Select
 
-        if useControls in messControlDict:
-            for controlDef in messControlDict[useControls]:
-                thisControl = messControlDict[useControls][controlDef]
-                if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
-                    if thisControl['type'] == 'special':
-                        xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
-                    elif thisControl['type'] == 'main':
-                        xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
-                    elif thisControl['type'] == 'analog':
-                        xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
-                            mappings_use[thisControl['decMapping']], retroPad[mappings_use[thisControl['useMapping1']]], retroPad[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
-                            thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
-                    elif thisControl['type'] == 'combo':
-                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
-                            retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+            if useControls in messControlDict:
+                for controlDef in messControlDict[useControls]:
+                    thisControl = messControlDict[useControls][controlDef]
+                    if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
+                        if thisControl['type'] == 'special':
+                            xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                                retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                        elif thisControl['type'] == 'main':
+                            xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                                retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                        elif thisControl['type'] == 'analog':
+                            xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
+                                mappings_use[thisControl['decMapping']], retroPad[mappings_use[thisControl['useMapping1']]], retroPad[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
+                                thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
+                        elif thisControl['type'] == 'combo':
+                            xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
+                                retroPad[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
 
+    # save the config file
+    #mameXml = open(configFile, "w")
+    # TODO: python 3 - workawround to encode files in utf-8
+    if overwriteMAME:
+        with codecs.open(str(configFile), "w", "utf-8") as mameXml:
+            dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+            mameXml.write(dom_string)
 
-        # save the config file
-        #mameXml = open(configFile, "w")
-        # TODO: python 3 - workawround to encode files in utf-8
-        if overwriteMAME:
-            with codecs.open(str(configFile), "w", "utf-8") as mameXml:
-                dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
-                mameXml.write(dom_string)
-
-        # Write alt config (if used, custom config is turned off or file doesn't exist yet)
-        if messSysName in specialControlList and overwriteSystem and config_alt is not None and configFile_alt is not None:
-            with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
-                dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
-                mameXml_alt.write(dom_string_alt)
+    # Write alt config (if used, custom config is turned off or file doesn't exist yet)
+    if messSysName in specialControlList and overwriteSystem and config_alt is not None and configFile_alt is not None:
+        with codecs.open(str(configFile_alt), "w", "utf-8") as mameXml_alt:
+            dom_string_alt = os.linesep.join([s for s in config_alt.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+            mameXml_alt.write(dom_string_alt)
 
 def reverseMapping(key: str) -> str | None:
     if key == "joystick1down":
