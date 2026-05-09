@@ -240,10 +240,21 @@ class BigPEmuGenerator(Generator):
 
         mkdir_if_not_exists(bigPemuConfig.parent)
 
-        # Delete the config file to update controllers
-        # As it doesn't like to be updated
-        # ¯\_(ツ)_/¯
+        # Preserve user-configured keys that BigPEmu writes in-game and that
+        # are not managed by the generator (BIOS paths, screen shader).
+        _PRESERVED_KEYS = ("BootROM", "CDBIOS", "ScreenEffect")
+        preserved: dict[str, Any] = {}
         if bigPemuConfig.exists():
+            try:
+                existing = json.loads(bigPemuConfig.read_text())
+                for key in _PRESERVED_KEYS:
+                    if key in existing.get("BigPEmuConfig", {}):
+                        preserved[key] = existing["BigPEmuConfig"][key]
+            except Exception:
+                pass
+            # Delete the config file to update controllers
+            # As it doesn't like to be updated
+            # ¯\_(ツ)_/¯
             bigPemuConfig.unlink()
 
         config: dict[str, Any] = {}
@@ -402,6 +413,8 @@ class BigPEmuGenerator(Generator):
         # Close off input
         config["BigPEmuConfig"]["Input"]["InputVer"] = 2
         config["BigPEmuConfig"]["Input"]["InputPluginVer"] = 666
+
+        config["BigPEmuConfig"].update(preserved)
 
         bigPemuConfig.write_text(json.dumps(config, indent=4))
 
