@@ -33,22 +33,44 @@ custom_features:
     prompt: SCALING METHOD
     description: Change pixel scaling and filtering method.
     choices:
-      Automatic: automatic
+      None (default) : none
       Pixelated (Nearest): pixelated
       Smooth (Linear): smooth
-  amiberry_flickerfixer:
+      Integer: integer
+  amiberry_scandoubler:
     group: ADVANCED OPTIONS
     prompt: REMOVE INTERLACE ARTIFACTS
     description: Fix flickering in a static screen like Workbench.
     choices:
       "OFF": false
       "ON": true
-  amiberry_auto_height:
-    prompt: AUTO HEIGHT
+  amiberry_auto_crop:
+    prompt: AUTO CROP
     description: Resize automatically screen height.
     choices:
       "OFF": false
       "ON": true
+  amiberry_keep_aspect:
+    prompt: KEEP ASPECT RATIO
+    description: Keep original aspect ratio when stretching.
+    choices:
+      "OFF (Default)": False
+      "ON": True
+  amiberry_ntsc:
+    prompt: FORCE NTSC
+    description: Force NTSC instead PAL.
+    choices:
+      "ON (Default)": False
+      "OFF": True
+  amiberry_shader:
+    prompt: SHADER
+    description: CRT Shader.
+    choices:
+      "None (Default)": none
+      "TV CRT effect with heaver scanlines and curvature": tv
+      "PC monitor effect with lighter scanlines": pc
+      "Lightweight CRT effect": lite
+      "Commodore 1084 monitor": 1084
   amiberry_virtual_keyboard:
     group: KEYBOARD OPTIONS
     prompt: VIRTUAL KEYBOARD
@@ -76,7 +98,7 @@ custom_features:
     group: KEYBOARD OPTIONS
     prompt: KEYBOARD TRANSPARENCY
     description: Set the on-screen keyboard transparency (0-100%).
-    preset: slider
+    preset: sliderauto
     preset_parameters: 0 100 5 60
 systems:
   - name: amiga500
