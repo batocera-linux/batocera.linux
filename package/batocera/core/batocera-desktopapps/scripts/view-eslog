@@ -16,15 +16,22 @@
 
 
 # View ES log files, as yad notebook dialog style
-# 02-2026 v1.0
+# 02-2026    v1.0 by cyperghost aka crcerror
 # Icon view-eslog.png created with icon.kitchen
+# 09.05.2026 v2.0, added web report-tool
+# errorcode: ec 1 = general, ec 2 = no log files found (nearly impossible!)
 
+################################
+#         INIT                 #
+################################
 
-# user added logs to /userdata/system/user-logs.txt - use absolute pathes
-# strings that contains # will be ignored
+## user added logs to /userdata/system/user-logs.txt - use absolute pathes
+## strings that contains # will be ignored
 i=/userdata/system/user-logs.txt
 [[ -e "$i" ]] && readarray -t LOGS < <(grep -v -E "^[[:space:]*]|[#]|^[[:space:]]*$" "$i")
-# defaults log
+unset i
+
+## set defaults log
 LOGS+=(
        /userdata/system/logs/es_launch_stdout.log
        /userdata/system/logs/es_launch_stderr.log
@@ -33,36 +40,71 @@ LOGS+=(
        /userdata/system/batocera.conf
       )
 
-# Ensure DISPLAY is set
-if test -z "${DISPLAY}"
-then
-  export DISPLAY=$(getLocalXDisplay || echo :0.0)
-fi
+################################
+#       FUNCTIONS              #
+################################
 
-# Create notebook subsets per file found
-KEY=$RANDOM
-for i in "${LOGS[@]}"; do
-  if [[ -e "${i}" ]]; then
-    TABS+=( "--tab=$(basename "$i")" )
-    yad --plug=$KEY --tabnum=${#TABS[@]} --text-info < "${i}" &>/dev/null & 
+# Send batocera-info to a server if /tmp-file is not available or older than 60min (aka 1h)
+netreport(){
+  if $(find "$1" -mmin -60 -printf false 2>/dev/null || echo true); then
+    rm -f -- "$1"
+    { date; /usr/bin/batocera-info; /usr/bin/batocera-version; stat /usr/bin/batocera-version; } | curl -s -F BatoceraInfo=@- https://pastefy.app > "$1"
   fi
-done
+  [[ -e "$1" ]] || return 1
+}
 
-# Do nothing if no file is found, use TABS arr as counter
-[[ ${#TABS[@]} -eq 0 ]] && exit
+# Create Notebook subsets per file found in LOG-array
+pcmanfm_gui(){
+  local KEY=$RANDOM
+  local TABS i
+  local PIN="${1}"
+  local TEXT_MSG
 
-# else show tabs, left sided, close button or create support file
-yad --tab-pos=left --notebook \
-    --text-align=center --text="BATOCERA 1og Viewer\nOS ver. $(batocera-version)" \
-    --button="Create support file...":5 \
-    --button="Close":0 \
-    --key=$KEY "${TABS[@]}" &>/dev/null
+  for i in "${LOGS[@]}"; do
+    if [[ -e "${i}" ]]; then
+      TABS+=( "--tab=$(basename "$i")" )
+      yad --plug=$KEY --tabnum=${#TABS[@]} --text-info < "${i}" &>/dev/null & 
+    fi
+  done
 
-# Button handler
-case $? in
-  0) true ;;
-  5) text=$(batocera-support)
-     printf "%s\n\n\t%s" "Finished!" "${text}" | yad --text-info --button="Close":0
-  ;;
-  *) exit 1
+  # Do nothing if no file is found, use TABS arr as counter, ec-2
+  [[ ${#TABS[@]} -eq 0 ]] && return 2
+
+  # else show tabs, left sided, close button or create support file
+  yad --tab-pos=left --notebook \
+      --text-align=center --text="BATOCERA 1og Viewer\nOS ver. $(batocera-version)" \
+      --button="Create support PIN":7 \
+      --button="Create support file...":5 \
+      --button="Close":0 \
+      --key=$KEY "${TABS[@]}" &>/dev/null
+
+  # Button handler
+  case $? in
+    0) true ;;
+    7) netreport "${PIN}" || return 1
+       PIN=$(basename $(cat "${PIN}"))
+       printf "Your support PIN is: %s\n\n\\nReport to our Discord and visit https://pastefy.app/%s" "${PIN}" "${PIN}" | yad --text-info --button="Close":0
+    ;;
+    5) TEXT_MSG=$(batocera-support)
+       printf "%s\n\n\t%s" "Finished!" "${TEXT_MSG}" | yad --text-info --button="Close":0
+    ;;
+    *) return 1
+  esac
+}
+
+# Create the file from output
+batocera_es(){
+  netreport "${1}" && cat "${1}" || return $?
+}
+
+################################
+#         MAIN                 #
+################################
+
+
+case "${1}" in
+  pcmanfm) pcmanfm_gui "/tmp/net_report.dat"; ret=$? ;;
+   es-gui) batocera_es "/tmp/net_report.dat"; ret=$? ;;
+        *) echo "Usage: $(basename $0) [pcmanfm, es-gui]"; ret=1
 esac
+exit $ret
