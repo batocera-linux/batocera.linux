@@ -1,3 +1,18 @@
+# 2026/xx/xx - batocera.linux 44 - xxxx
+### Special Notes
+
+### Hardware
+
+### Added
+
+### Fixed
+
+### Changed / Improved
+
+### Updated
+
+### System
+
 # 2026/05/08 - batocera.linux 43 - Glasswing
 ### Special Notes
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86_64-v3 image using Wayland and the LabWC compositor.
