@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # keep customizable
 test -e "/userdata/system/configs/emulationstation/scripts/game-selected/dmd-simulator.sh" && exit 0
@@ -15,7 +15,7 @@ DMDFORMAT=$(batocera-settings-get dmd.format)
 test "${DMDFORMAT}" = "hd" && DMDOPT="--hd"
 
 # custom
-# exact matching
+# same name
 ROMBASE=$(basename "${GPATH}" | sed -e s+"\.[^\.]*$"++)
 for EXT in gif png
 do
@@ -27,17 +27,23 @@ do
     fi
 done
 
-# exact matching
+# minimized name
 ROMMIN=$(echo "${ROMBASE}" | sed -e s+"([^)]*)"+""+g -e s+"[^A-Za-z0-9]"+""+g | tr A-Z a-z) # lowercase and remove any but a-z and 0-9, remove things in parenthesis
-for EXT in gif png
+
+CUSS=
+while read X
 do
-    CUS="/userdata/system/dmd/games/${GSYSTEM}/${ROMMIN}.${EXT}"
-    if test -e "${CUS}"
-    then
-	dmd-play ${DMDOPT} -f "${CUS}"
-	exit 0
-    fi
-done
+    test -n "${CUSS}" && CUSS="${CUSS}:"
+    CUSS=${CUSS}${X}
+done < <(
+    # first, the name without numbers
+    find "/userdata/system/dmd/games/${GSYSTEM}" -maxdepth 1 -type f -regextype posix-extended -regex ".*/${ROMMIN}\.(gif|png)$";
+    find "/userdata/system/dmd/games/${GSYSTEM}" -maxdepth 1 -type f -regextype posix-extended -regex ".*/${ROMMIN}_[0-9]+\.(gif|png)$" | sort -V)
+if test -n "${CUSS}"
+then
+    dmd-play ${DMDOPT} -f "${CUSS}"
+    exit 0
+fi
 
 # marquee
 GHASH=$(echo -n "${GPATH}" | md5sum | cut -c 1-32)
