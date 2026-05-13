@@ -436,8 +436,7 @@ handle_disk_event() {
     if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
         log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
         partprobe "/dev/$devname" >/dev/null 2>&1
-        # Use a short sleep to let the kernel update /dev
-        sleep 0.2 
+        udevadm settle
     fi
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
