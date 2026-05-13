@@ -462,14 +462,7 @@ handle_disk_event() {
         done
 
         if [ "$has_parts" = true ]; then
-            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Triggering child partition scans..."
-            for p in /sys/class/block/$parent/$parent*; do
-                 [ -e "$p" ] || continue
-                 PNAME=$(basename "$p")
-                 [ "$PNAME" == "$parent" ] && continue
-                 log_msg "TRIGGER: Executing detection for child partition $PNAME"
-                 $0 detect "$PNAME" &
-            done
+            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Partition events handled by udev."
             exit 0
         fi
         
