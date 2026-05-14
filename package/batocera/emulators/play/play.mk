@@ -11,7 +11,7 @@ PLAY_GIT_SUBMODULES = YES
 PLAY_LICENSE = BSD
 PLAY_EMULATOR_INFO = play.emulator.yml
 
-PLAY_DEPENDENCIES = openal qt6base sqlite ecm libevdev
+PLAY_DEPENDENCIES = openal qt6base sqlite ecm libevdev eudev
 
 PLAY_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PLAY_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF

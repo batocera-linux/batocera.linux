@@ -23,11 +23,11 @@ case "$1" in
         exit 1
     else
         # check if tdp capable processor exists for Ryzen Mobile Processor
-        if ! ryzenadj -i | head -n 1 | grep -q "unsupported model"; then            
-            echo "" >> $log
+        if ! ryzenadj -i | head -n 1 | grep -q "unsupported model"; then
+            echo "" > $log
             echo "*** ------------------------------------- ***" >> $log
             echo "" >> $log
-            echo "Supported Ryzen Mobile Processor found for TDP..." > $log
+            echo "Supported Ryzen Mobile Processor found for TDP..." >> $log
             MAX_TDP=$(/usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}')
             # Check if MAX_TDP is defined and not-empty
             if [ -n "$MAX_TDP" ]; then

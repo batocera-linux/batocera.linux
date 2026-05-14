@@ -1,0 +1,11 @@
+# Force top screen resolution for AYN Thor
+WIDTH=1920
+HEIGHT=1080
+
+# Stretch and rotation
+FBV_OPTS="-r -y -o 1"
+
+# Ensure we use the correct image
+image="/usr/share/batocera/splash/boot-logo.png"
+
+echo "AYN Thor: Overriding splash" >> /var/log/splash.log

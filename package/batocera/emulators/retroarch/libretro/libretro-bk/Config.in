@@ -1,0 +1,10 @@
+config BR2_PACKAGE_LIBRETRO_BK
+    bool "libretro-bk"
+    depends on BR2_INSTALL_LIBSTDCPP
+    help
+      A libretro core for BK-0010/0011/Terak 8510a emulation.
+
+      https://github.com/libretro/bk-emulator
+
+comment "LIBRETRO_BK needs a toolchain w/ C++"
+    depends on !BR2_INSTALL_LIBSTDCPP

@@ -1,0 +1,28 @@
+diff --git a/src/lindbergh/sdlInput.c b/src/lindbergh/sdlInput.c
+index 5413bc7..479c41f 100644
+--- a/src/lindbergh/sdlInput.c
++++ b/src/lindbergh/sdlInput.c
+@@ -1403,6 +1403,11 @@ void processSdlEvent(const SDL_Event *e)
+                             }
+                         }
+ 
++                        // Reduce steering range for Initial D (same as EVDEV path)
++                        if (binding->action == LA_Steer &&
++                            (gGrp == GROUP_ID4_EXP || gGrp == GROUP_ID4_JAP || gGrp == GROUP_ID5))
++                            newVal = (newVal - 0.5f) * 0.35f + 0.5f;
++
+                         if (binding->isInverted)
+                             newVal = 1.0f - newVal;
+ 
+@@ -1481,6 +1486,11 @@ void processSdlEvent(const SDL_Event *e)
+                             newVal = (abs(e->gaxis.value) < deadZone) ? 0.0f : (float)e->gaxis.value / 32767.0f;
+                         }
+ 
++                        // Reduce steering range for Initial D (same as EVDEV path)
++                        if (binding->action == LA_Steer &&
++                            (gGrp == GROUP_ID4_EXP || gGrp == GROUP_ID4_JAP || gGrp == GROUP_ID5))
++                            newVal = (newVal - 0.5f) * 0.35f + 0.5f;
++
+                         if (binding->isInverted)
+                             newVal = 1.0f - newVal;
+ 

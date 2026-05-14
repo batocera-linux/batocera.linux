@@ -38,13 +38,20 @@ class MoonlightGenerator(Generator):
         return None
 
     def get_moonlight_host(self):
+        # We should move this...
+        config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"       
+        if not config_path.exists():
+            return None
+
         try:
-            config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"
             config = ConfigParser()
             config.read(config_path)
-            return config["hosts"]["1\\manualaddress"]
-        except:  # noqa: E722
+            if config.has_section("hosts") and "1\\manualaddress" in config["hosts"]:
+                return config["hosts"]["1\\manualaddress"]
+        except Exception:
             return None
+            
+        return None
 
     # Main entry of the module
     # Configure fba and return a command
@@ -71,7 +78,6 @@ class MoonlightGenerator(Generator):
 
         if not host:
             return commandArray
-
 
         # resolution
         match system.config.get("moonlight_resolution"):

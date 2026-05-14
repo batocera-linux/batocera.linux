@@ -1,0 +1,3 @@
+# Prevent the RTw88 from going into power save mode
+ACTION=="add", SUBSYSTEM=="net", KERNEL=="wlan0", RUN+="/usr/sbin/iw dev wlan0 set power_save off"
+

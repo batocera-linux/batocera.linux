@@ -21,7 +21,7 @@ log() {
 
 # --- Wayland sanity ---
 setup_wayland() {
-    export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/0}"
+    export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run}"
 
     if [ -z "${WAYLAND_DISPLAY:-}" ]; then
         for sock in wayland-1 wayland-0; do

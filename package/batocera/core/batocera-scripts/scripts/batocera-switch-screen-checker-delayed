@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # at the time of the event, outputs are not always completly initialized ;-( add a 2 seconds delay before querying the switch
-(sleep 2 && /usr/bin/batocera-switch-screen-checker) >/dev/null 2>/dev/null &
+(sleep 2 && /usr/bin/batocera-switch-screen-checker && VOL=$(batocera-settings-get-master audio.volume) && [ -n "${VOL}" ] && pactl list sinks short | awk '{print $2}' | while read -r sink; do pactl set-sink-volume "${sink}" "${VOL}%"; done) >/dev/null 2>/dev/null &

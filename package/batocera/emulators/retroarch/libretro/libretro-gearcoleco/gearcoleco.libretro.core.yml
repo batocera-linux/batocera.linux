@@ -1,0 +1,71 @@
+features:
+  - netplay
+  - cheevos
+shared_features:
+  - rewind
+  - autosave
+custom_features:
+  gearcoleco_timing:
+    group: DISPLAY
+    prompt: REFRESH RATE
+    description: Select the refresh rate (requires restart).
+    choices:
+      Auto (Default): Auto
+      NTSC (60 Hz): NTSC (60 Hz)
+      PAL (50 Hz): PAL (50 Hz)
+  gearcoleco_aspect_ratio:
+    group: DISPLAY
+    prompt: ASPECT RATIO
+    description: Select the display aspect ratio.
+    choices:
+      1:1 PAR (Default): 1:1 PAR
+      4:3 DAR: 4:3 DAR
+      16:9 DAR: 16:9 DAR
+      16:10 DAR: 16:10 DAR
+  gearcoleco_overscan:
+    group: DISPLAY
+    prompt: OVERSCAN
+    description: Select the overscan mode.
+    choices:
+      Disabled (Default): Disabled
+      Top+Bottom: Top+Bottom
+      Full (284 width): Full (284 width)
+      Full (320 width): Full (320 width)
+  gearcoleco_up_down_allowed:
+    group: ADVANCED
+    prompt: ALLOW UP+DOWN / LEFT+RIGHT
+    description: Allow pressing up+down or left+right simultaneously.
+    choices:
+      Disabled (Default): Disabled
+      Enabled: Enabled
+  gearcoleco_no_sprite_limit:
+    group: ADVANCED
+    prompt: NO SPRITE LIMIT
+    description: Remove the sprite limit to reduce flickering.
+    choices:
+      Disabled (Default): Disabled
+      Enabled: Enabled
+  gearcoleco_spinners:
+    group: CONTROLS
+    prompt: SPINNER SUPPORT
+    description: Select the spinner controller type.
+    choices:
+      Disabled (Default): Disabled
+      Super Action Controller: Super Action Controller
+      Wheel Controller: Wheel Controller
+      Roller Controller: Roller Controller
+  gearcoleco_spinner_sensitivity:
+    group: CONTROLS
+    prompt: SPINNER SENSITIVITY
+    description: Select the spinner sensitivity level.
+    choices:
+      1 (Default): '1'
+      '2': '2'
+      '3': '3'
+      '4': '4'
+      '5': '5'
+      '6': '6'
+      '7': '7'
+      '8': '8'
+      '9': '9'
+      '10': '10'

@@ -18,8 +18,8 @@ _SQUASHFS_DIR: Final = Path("/var/run/squashfs/")
 
 
 @contextmanager
-def squashfs_rom(rom: Path, /) -> Iterator[Path]:
-    _logger.debug("squashfs_rom(%s)", rom)
+def mount_squashfs(rom: Path, /) -> Iterator[Path]:
+    _logger.debug("mount_squashfs(%s)", rom)
     mount_point = _SQUASHFS_DIR / rom.stem
 
     mkdir_if_not_exists(_SQUASHFS_DIR)
@@ -63,12 +63,12 @@ def squashfs_rom(rom: Path, /) -> Iterator[Path]:
                 _logger.debug("squashfs: linked rom %s", rom_linked)
                 yield rom_linked
     finally:
-        _logger.debug("squashfs_rom: cleaning up %s", mount_point)
+        _logger.debug("mount_squashfs: cleaning up %s", mount_point)
 
         # unmount
         return_code = subprocess.call(["umount", mount_point])
         if return_code != 0:
-            _logger.debug("squashfs_rom: unmounting %s failed", mount_point)
+            _logger.debug("mount_squashfs: unmounting %s failed", mount_point)
             raise BatoceraException(f"Unable to unmount the file {mount_point}")
 
         # cleaning the empty directory

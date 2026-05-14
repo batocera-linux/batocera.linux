@@ -1,0 +1,171 @@
+#!/usr/bin/env python3
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+#
+# This toolbox scans installed RPCS3 PSN titles and creates .psn launchers
+# in the selected Batocera PS3 roms directory.
+# Created by zognic aka modhack 04-2026 for BATOCERA
+#
+
+import csv
+import io
+import os
+import re
+import sys
+import unicodedata
+import urllib.request
+
+NPS_TSV_URL = "https://nopaystation.com/tsv/PS3_GAMES.tsv"
+GAME_DIR_DEFAULT = "/userdata/system/configs/rpcs3/dev_hdd0/game"
+PSN_SERIAL_RE = re.compile(r"^NP[A-Z]{2}\d{5}$")
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
+IGNORE_FOLDERS = {"TEST12345"}
+
+
+def is_psn_serial(value):
+    return bool(PSN_SERIAL_RE.fullmatch(value.strip().upper()))
+
+
+def safe_filename(name):
+    name = name.strip()
+    name = unicodedata.normalize("NFKD", name)
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    name = re.sub(r'[\\/:*?"<>|]', "", name)
+    name = re.sub(r"\s+", " ", name).strip()
+    return name if name else "Unknown Title"
+
+
+def fetch(url, timeout=30):
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            return response.read()
+    except Exception as exc:
+        print(f"[fetch error] {url} — {exc}")
+        return None
+
+
+def load_nps_tsv(url):
+    print(f"[nps] Downloading {url} …")
+    data = fetch(url)
+    if not data:
+        print("[nps] Download failed.")
+        return {}
+
+    database = {}
+    try:
+        text = data.decode("utf-8", errors="replace")
+        reader = csv.DictReader(io.StringIO(text), delimiter="\t")
+        for row in reader:
+            title_id = (row.get("Title ID") or "").strip().upper()
+            name = (row.get("Name") or "").strip()
+            if title_id.startswith("NP") and name:
+                database[title_id] = name
+    except Exception as exc:
+        print(f"[nps] TSV parsing error: {exc}")
+        return {}
+
+    print(f"[nps] {len(database):,} PSN titles loaded.")
+    return database
+
+
+def create_psn_launchers(game_dir, out_dir, database):
+    folders = sorted(
+        folder for folder in os.listdir(game_dir)
+        if os.path.isdir(os.path.join(game_dir, folder))
+    )
+
+    created = 0
+    skipped = 0
+    not_found = 0
+    non_psn = 0
+
+    for folder in folders:
+        if folder in IGNORE_FOLDERS:
+            skipped += 1
+            continue
+
+        serial = folder.strip().upper()
+        if not is_psn_serial(serial):
+            non_psn += 1
+            continue
+
+        title = database.get(serial)
+        if not title:
+            print(f"[not found] {serial}")
+            not_found += 1
+            continue
+
+        filename = f"{safe_filename(title)} [{serial}].psn"
+        target = os.path.join(out_dir, filename)
+
+        if os.path.exists(target):
+            print(f"[exists] {target}")
+            skipped += 1
+            continue
+
+        try:
+            with open(target, "w", encoding="utf-8") as handle:
+                handle.write(serial + "\n")
+            print(f"[created] {target}")
+            created += 1
+        except Exception as exc:
+            print(f"[error] {target} — {exc}")
+
+    print("\n--- Summary ---")
+    print(f"Created        : {created}")
+    print(f"Skipped        : {skipped}")
+    print(f"Non PSN        : {non_psn}  (physical/ISO games, ignored)")
+    print(f"Not found      : {not_found}")
+
+
+def main():
+    if len(sys.argv) > 1:
+        out_dir = str(sys.argv[1])
+    else:
+        out_dir = os.getcwd()
+
+    game_dir = GAME_DIR_DEFAULT
+
+    if not os.path.isdir(out_dir):
+        print(f"Error: Output folder '{out_dir}' does not exist.")
+        return 1
+
+    if os.path.realpath(out_dir) != "/userdata/roms/ps3":
+        print(f"Error: This action is only supported for /userdata/roms/ps3")
+        print(f"Current folder: {os.path.realpath(out_dir)}")
+        return 1
+
+    if not os.path.isdir(game_dir):
+        print(f"Error: RPCS3 game folder not found: {game_dir}")
+        return 1
+
+    print(f"Selected folder : {out_dir}")
+    print(f"RPCS3 game dir  : {game_dir}")
+    print("-" * 60)
+
+    database = load_nps_tsv(NPS_TSV_URL)
+    if not database:
+        print("Error: NPS database unavailable, aborting.")
+        return 1
+
+    create_psn_launchers(game_dir, out_dir, database)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

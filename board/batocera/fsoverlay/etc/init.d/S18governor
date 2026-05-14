@@ -51,12 +51,17 @@ case "$1" in
     set_governor "$governor"
     ;;
 
+  stop)
+    # Do nothing to avoid delaying shutdown
+    :
+    ;;
+
   list)
     cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors
     ;;
 
   *)
-    echo "Usage: $0 {start|restart|reload|list}"
+    echo "Usage: $0 {start|stop|restart|reload|list}"
     exit 1
     ;;
 esac

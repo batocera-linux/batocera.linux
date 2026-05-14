@@ -46,5 +46,34 @@ custom_features:
     choices:
       Enabled: True
       Disabled: False
+  xroar_tv_type:
+    prompt: TV Type
+    description: Select the TV standard for video output.
+    choices:
+      PAL: pal
+      NTSC: ntsc
+      PAL-M: pal-m
+  xroar_tv_input:
+    prompt: TV Input
+    description: Select the video signal type.
+    choices:
+      Composite (Colour): svideo
+      Composite (Mono): mono
+      RGB: rgb
+  xroar_kbd_translate:
+    prompt: Keyboard Translation
+    description: Enable host keyboard translation to map typed characters to the emulated machine.
+    choices:
+      Enabled: True
+      Disabled: False
 systems:
   - coco
+  - dragon64
+  - name: mc10
+    custom_features:
+      xroar_ram:
+        prompt: RAM Size
+        description: Select the amount of RAM. MC-10 has 4K by default, expandable to 20K with a 16K expansion module.
+        choices:
+          4K: 4
+          20K: 20

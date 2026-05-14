@@ -1,0 +1,15 @@
+#Signed-off-by: Daniel Martin dmanlfc@gmail.com
+diff --git a/sound/soc/codecs/wcd938x-sdw.c b/sound/soc/codecs/wcd938x-sdw.c
+index 8c8f39d..728132e 100644
+--- a/sound/soc/codecs/wcd938x-sdw.c
++++ b/sound/soc/codecs/wcd938x-sdw.c
+@@ -144,6 +144,9 @@ static int wcd9380_interrupt_callback(struct sdw_slave *slave,
+ 				      struct sdw_slave_intr_status *status)
+ {
+ 	struct wcd938x_sdw_priv *wcd = dev_get_drvdata(&slave->dev);
++	
++	if (!wcd->is_tx || !wcd->slave_irq)
++		return IRQ_NONE;
+ 
+ 	return wcd_interrupt_callback(slave, wcd->slave_irq, WCD938X_DIGITAL_INTR_STATUS_0,
+ 				WCD938X_DIGITAL_INTR_STATUS_1, WCD938X_DIGITAL_INTR_STATUS_2);

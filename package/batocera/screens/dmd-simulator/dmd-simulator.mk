@@ -3,7 +3,7 @@
 # dmd-simulator
 #
 ################################################################################
-DMD_SIMULATOR_VERSION = 6298b07d0a083f4531236adb54d4d272e82f297b
+DMD_SIMULATOR_VERSION = 55c0f931aa89a4545902991e81904f3e7a3b5455
 DMD_SIMULATOR_SITE =  $(call github,batocera-linux,dmd-simulator,$(DMD_SIMULATOR_VERSION))
 DMD_SIMULATOR_SETUP_TYPE = pep517
 DMD_SIMULATOR_DEPENDENCIES = host-python-hatchling

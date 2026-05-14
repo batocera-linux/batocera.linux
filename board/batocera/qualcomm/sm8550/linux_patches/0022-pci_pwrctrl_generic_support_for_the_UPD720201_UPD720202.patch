@@ -1,0 +1,31 @@
+From a35feaf5bb558f420e96f7d5bb6e6078703e8b81 Mon Sep 17 00:00:00 2001
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Fri, 6 Feb 2026 15:32:42 +0100
+Subject: [PATCH] pci: pwrctrl: generic: support for the UPD720201/UPD720202
+ USB 3.0 xHCI Host Controller
+
+Enable the generic pwrctrl driver to control the power of the
+PCIe UPD720201/UPD720202 USB 3.0 xHCI Host Controller.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ drivers/pci/pwrctrl/generic.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/pci/pwrctrl/generic.c b/drivers/pci/pwrctrl/generic.c
+index 08e53243cdbd..4a57a631362f 100644
+--- a/drivers/pci/pwrctrl/generic.c
++++ b/drivers/pci/pwrctrl/generic.c
+@@ -73,6 +73,10 @@ static const struct of_device_id pci_pwrctrl_slot_of_match[] = {
+ 	{
+ 		.compatible = "pciclass,0604",
+ 	},
++	/* Renesas UPD720201/UPD720202 USB 3.0 xHCI Host Controller */
++	{
++		.compatible = "pci1912,0014",
++	},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, pci_pwrctrl_slot_of_match);
+-- 
+GitLab

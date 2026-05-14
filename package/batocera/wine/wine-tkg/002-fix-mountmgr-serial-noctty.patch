@@ -1,0 +1,29 @@
+--- a/dlls/mountmgr.sys/unixlib.c
++++ b/dlls/mountmgr.sys/unixlib.c
+@@ -299,26 +299,6 @@
+     char *path;
+     NTSTATUS status = STATUS_SUCCESS;
+ 
+-#ifdef linux
+-    /* Serial port device files almost always exist on Linux even if the corresponding serial
+-     * ports don't exist. Do a basic functionality check before advertising a serial port. */
+-    if (params->serial)
+-    {
+-        struct termios tios;
+-        int fd;
+-
+-        if ((fd = open( params->dest, O_RDONLY )) == -1)
+-            return FALSE;
+-
+-        if (tcgetattr( fd, &tios ) == -1)
+-        {
+-            close( fd );
+-            return FALSE;
+-        }
+-
+-        close( fd );
+-    }
+-#endif
+ 
+     if (!(path = get_dosdevices_path( params->dev ))) return STATUS_NO_MEMORY;
+ 

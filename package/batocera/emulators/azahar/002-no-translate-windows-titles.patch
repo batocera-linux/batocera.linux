@@ -1,0 +1,13 @@
+diff --git a/src/citra_qt/citra_qt.cpp b/src/citra_qt/citra_qt.cpp
+index d3e25be..e2077aa 100644
+--- a/src/citra_qt/citra_qt.cpp
++++ b/src/citra_qt/citra_qt.cpp
+@@ -4090,7 +4090,7 @@ void GMainWindow::UpdateWindowTitle() {
+         render_window->setWindowTitle(
+             QStringLiteral("Azahar %1 | %2 | %3").arg(full_name, game_title, tr("Primary Window")));
+         secondary_window->setWindowTitle(QStringLiteral("Azahar %1 | %2 | %3")
+-                                             .arg(full_name, game_title, tr("Secondary Window")));
++                                             .arg(full_name, game_title, "Secondary Window"));
+     }
+ }
+ 

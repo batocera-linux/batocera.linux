@@ -1,0 +1,27 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -639,7 +639,15 @@ endif()
+ ################################
+ # SDL2
+ ################################
+-if(BUILD_SDL AND NOT EMSCRIPTEN AND NOT RPI)
++if(BUILD_SDL AND NOT EMSCRIPTEN AND NOT RPI AND NOT WIN32 AND NOT ANDROID)
++    # Use system SDL2 on Linux
++    find_package(SDL2 REQUIRED)
++    add_library(SDL2-static ALIAS SDL2::SDL2)
++    # Create SDL2main alias (may not exist on all systems)
++    if(TARGET SDL2::SDL2main)
++        add_library(SDL2main ALIAS SDL2::SDL2main)
++    endif()
++elseif(BUILD_SDL AND NOT EMSCRIPTEN AND NOT RPI)
+
+     if(WIN32)
+         set(HAVE_LIBC TRUE)
+@@ -671,7 +679,6 @@ if(BUILD_SDL AND BUILD_PLAYER AND NOT RPI)
+     endif()
+
+     target_include_directories(player-sdl PRIVATE
+-        ${THIRDPARTY_DIR}/sdl2/include
+         ${CMAKE_SOURCE_DIR}/include
+         ${CMAKE_SOURCE_DIR}/src)
+

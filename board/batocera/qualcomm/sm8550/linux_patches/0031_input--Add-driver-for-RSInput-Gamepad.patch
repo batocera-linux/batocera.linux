@@ -1,21 +1,20 @@
-From 63cf9c45ac695a062d47213b5bc962785b6f9147 Mon Sep 17 00:00:00 2001
-From: Teguh Sobirin <teguh@sobir.in>
-Date: Thu, 20 Feb 2025 14:50:30 +0800
+From b175ff8ef938557010d163de6c5b264e28810816 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sat, 21 Feb 2026 19:06:28 +0100
 Subject: [PATCH] input: Add driver for RSInput Gamepad
 
-Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
  drivers/input/joystick/Kconfig   |   4 +
  drivers/input/joystick/Makefile  |   1 +
- drivers/input/joystick/rsinput.c | 418 +++++++++++++++++++++++++++++++
- 3 files changed, 423 insertions(+)
+ drivers/input/joystick/rsinput.c | 563 +++++++++++++++++++++++++++++++
+ 3 files changed, 568 insertions(+)
  create mode 100644 drivers/input/joystick/rsinput.c
 
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 7755e5b454d2..0da3c0f44ecf 100644
+index 132a44428dcd..2a77296e1b85 100644
 --- a/drivers/input/joystick/Kconfig
 +++ b/drivers/input/joystick/Kconfig
-@@ -383,6 +383,10 @@ config JOYSTICK_QWIIC
+@@ -387,6 +387,10 @@ config JOYSTICK_QWIIC
  	  To compile this driver as a module, choose M here: the
  	  module will be called qwiic-joystick.
  
@@ -27,10 +26,10 @@ index 7755e5b454d2..0da3c0f44ecf 100644
  	tristate "FlySky FS-iA6B RC Receiver"
  	select SERIO
 diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 9976f596a920..3de503e29489 100644
+index ccbed1bafbef..f848b82d99dc 100644
 --- a/drivers/input/joystick/Makefile
 +++ b/drivers/input/joystick/Makefile
-@@ -28,6 +28,7 @@ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
+@@ -29,6 +29,7 @@ obj-$(CONFIG_JOYSTICK_RETROID)		+= retroid.o
  obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
  obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
  obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
@@ -40,10 +39,10 @@ index 9976f596a920..3de503e29489 100644
  obj-$(CONFIG_JOYSTICK_SIDEWINDER)	+= sidewinder.o
 diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
 new file mode 100644
-index 000000000000..4a7096407712
+index 000000000000..913c499ad30a
 --- /dev/null
 +++ b/drivers/input/joystick/rsinput.c
-@@ -0,0 +1,464 @@
+@@ -0,0 +1,578 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * RSInput Gamepad Driver
@@ -51,7 +50,6 @@ index 000000000000..4a7096407712
 + * Copyright (C) 2024 Teguh Sobirin <teguh@sobir.in>
 + *
 + */
-+#define DEBUG
 +
 +#include <linux/errno.h>
 +#include <linux/gpio/consumer.h>
@@ -59,10 +57,82 @@ index 000000000000..4a7096407712
 +#include <linux/input.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
++#include <linux/minmax.h>
 +#include <linux/of.h>
++#include <linux/regulator/consumer.h>
 +#include <linux/serdev.h>
 +#include <linux/slab.h>
 +#include <uapi/linux/sched/types.h>
++
++static int update_params=0;
++
++static int trigger_left_max=0x610;
++static int trigger_left_deadzone=0x0;
++static int trigger_left_antideadzone=0x0;
++
++static int trigger_right_max=0x610;
++static int trigger_right_deadzone=0x0;
++static int trigger_right_antideadzone=0x0;
++
++static int axis_leftx_min=-0x580;
++static int axis_leftx_center=0x0;
++static int axis_leftx_max=0x580;
++static int axis_leftx_deadzone=0x0;
++static int axis_leftx_antideadzone=0x0;
++
++static int axis_lefty_min=-0x580;
++static int axis_lefty_center=0x0;
++static int axis_lefty_max=0x580;
++static int axis_lefty_deadzone=0x0;
++static int axis_lefty_antideadzone=0x0;
++
++static int axis_rightx_min=-0x580;
++static int axis_rightx_center=0x0;
++static int axis_rightx_max=0x580;
++static int axis_rightx_deadzone=0x0;
++static int axis_rightx_antideadzone=0x0;
++
++static int axis_righty_min=-0x580;
++static int axis_righty_center=0x0;
++static int axis_righty_max=0x580;
++static int axis_righty_deadzone=0x0;
++static int axis_righty_antideadzone=0x0;
++
++module_param(update_params,int,0660);
++
++module_param(trigger_left_max,int,0660);
++module_param(trigger_left_deadzone,int,0660);
++module_param(trigger_left_antideadzone,int,0660);
++
++module_param(trigger_right_max,int,0660);
++module_param(trigger_right_deadzone,int,0660);
++module_param(trigger_right_antideadzone,int,0660);
++
++module_param(axis_leftx_min,int,0660);
++module_param(axis_leftx_center,int,0660);
++module_param(axis_leftx_max,int,0660);
++module_param(axis_leftx_deadzone,int,0660);
++module_param(axis_leftx_antideadzone,int,0660);
++
++module_param(axis_lefty_min,int,0660);
++module_param(axis_lefty_center,int,0660);
++module_param(axis_lefty_max,int,0660);
++module_param(axis_lefty_deadzone,int,0660);
++module_param(axis_lefty_antideadzone,int,0660);
++
++module_param(axis_rightx_min,int,0660);
++module_param(axis_rightx_center,int,0660);
++module_param(axis_rightx_max,int,0660);
++module_param(axis_rightx_deadzone,int,0660);
++module_param(axis_rightx_antideadzone,int,0660);
++
++module_param(axis_righty_min,int,0660);
++module_param(axis_righty_center,int,0660);
++module_param(axis_righty_max,int,0660);
++module_param(axis_righty_deadzone,int,0660);
++module_param(axis_righty_antideadzone,int,0660);
++
++#define INT_SIGN(X) ((X > 0) - (X < 0))
 +
 +#define FRAME_HEAD_1              0xA5
 +#define FRAME_HEAD_2              0xD3
@@ -101,10 +171,15 @@ index 000000000000..4a7096407712
 +struct rsinput_driver {
 +    struct serdev_device *serdev;
 +    struct input_dev *input;
++    struct regulator *vdd;
 +    struct gpio_desc *boot_gpio;
 +    struct gpio_desc *enable_gpio;
 +    struct gpio_desc *reset_gpio;
-+    uint8_t rx_buf[256];
++    bool invert_x;
++    bool invert_y;
++    bool invert_rx;
++    bool invert_ry;
++    uint8_t rx_buf[1024];
 +    uint8_t sequence_number;
 +};
 +
@@ -157,6 +232,20 @@ index 000000000000..4a7096407712
 +static int rsinput_init_commands(struct rsinput_driver *drv) {
 +    int error;
 +
++    if (drv->boot_gpio)
++        gpiod_set_value_cansleep(drv->boot_gpio, 0);
++
++    if (drv->reset_gpio)
++        gpiod_set_value_cansleep(drv->reset_gpio, 0);
++
++    msleep(100);
++
++    if (drv->enable_gpio)
++        gpiod_set_value_cansleep(drv->enable_gpio, 1);
++
++    if (drv->reset_gpio)
++        gpiod_set_value_cansleep(drv->reset_gpio, 1);
++
 +    msleep(100);
 +    uint8_t version_request[] = {DATA_COMMOD_VERSION};
 +    error = rsinput_send_command(drv, CMD_COMMOD, version_request, sizeof(version_request));
@@ -167,7 +256,7 @@ index 000000000000..4a7096407712
 +
 +    msleep(100);
 +    uint8_t mcu_params[] = {
-+        DATA_COMMOD_SET_PAR, 
++        DATA_COMMOD_SET_PAR,
 +        0x01,
 +        0x00, 0x00, 0x00, 0x28,
 +        0x00, 0x00, 0x00, 0x07
@@ -206,45 +295,6 @@ index 000000000000..4a7096407712
 +    }
 +}
 +
-+#define GAMEPAD_RAW_SENSOR_FULL_RANGE_VAL 0x755
-+#define GAMEPAD_RAW_TRIGGER_MIN 354
-+#define GAMEPAD_RAW_TRIGGER_MAX 1845
-+
-+#ifndef clamp
-+#define clamp(val, min, max) ({ \
-+	typeof(val) __val = (val); \
-+	typeof(min) __min = (min); \
-+	typeof(max) __max = (max); \
-+	__val = __val < __min ? __min : __val; \
-+	__val > __max ? __max : __val; \
-+})
-+#endif
-+
-+static inline int scale_trigger_signed_range(unsigned int raw_val, int raw_min, int raw_max) {
-+    long scaled;
-+    long input_range = raw_max - raw_min;
-+    long output_min = -32768L;
-+    long output_max = 32767L;
-+    long output_range = output_max - output_min;
-+
-+    if (input_range == 0)
-+        return 0;
-+ 
-+    long val_shifted = raw_val - raw_min;
-+ 
-+    if (val_shifted < 0) val_shifted = 0;
-+    if (val_shifted > input_range) val_shifted = input_range;
-+ 
-+    scaled = (val_shifted * output_range / input_range) + output_min;
-+
-+    if (scaled > 32767)
-+        scaled = 32767;
-+    else if (scaled < -32768)
-+        scaled = -32768;
-+
-+    return (int)scaled;
-+}
-+
 +static void handle_cmd_status(struct rsinput_driver *drv, const uint8_t *data, size_t payload_length) {
 +    if (payload_length >= 6) {
 +    static unsigned long prev_states;
@@ -252,31 +302,64 @@ index 000000000000..4a7096407712
 +    unsigned long current_states = keys, changes;
 +    int i;
 +
++    if (update_params) {
++        input_set_abs_params(drv->input, ABS_X,
++            INT_SIGN(axis_leftx_min) * ( abs(axis_leftx_min) - axis_leftx_antideadzone ),
++            INT_SIGN(axis_leftx_max) * ( abs(axis_leftx_max) - axis_leftx_antideadzone ),
++            0, 0);
++        input_set_abs_params(drv->input, ABS_Y,
++            INT_SIGN(axis_lefty_min) * ( abs(axis_lefty_min) - axis_lefty_antideadzone ),
++            INT_SIGN(axis_lefty_max) * ( abs(axis_lefty_max) - axis_lefty_antideadzone ),
++             0, 0);
++        input_set_abs_params(drv->input, ABS_RX,
++            INT_SIGN(axis_rightx_min) * ( abs(axis_rightx_min) - axis_rightx_antideadzone ),
++            INT_SIGN(axis_rightx_max) * ( abs(axis_rightx_max) - axis_rightx_antideadzone ),
++            0, 0);
++        input_set_abs_params(drv->input, ABS_RY,
++            INT_SIGN(axis_righty_min) * ( abs(axis_righty_min) - axis_righty_antideadzone ),
++            INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
++             0, 0);
++        input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++        input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++        update_params = 0;
++    }
++
 +    bitmap_xor(&changes, &current_states, &prev_states, ARRAY_SIZE(keymap));
 +
 +    for_each_set_bit(i, &changes, ARRAY_SIZE(keymap)) {
 +        input_report_key(drv->input, keymap[i], (current_states & BIT(i)));
 +    }
 +
-+    int raw_trig_l_current = GAMEPAD_RAW_SENSOR_FULL_RANGE_VAL - (data[FRAME_POS_DATA_3] | (data[FRAME_POS_DATA_4] << 8));
-+    int raw_trig_r_current = GAMEPAD_RAW_SENSOR_FULL_RANGE_VAL - (data[FRAME_POS_DATA_5] | (data[FRAME_POS_DATA_6] << 8));
++    int16_t raw_trig_l = (data[FRAME_POS_DATA_3] | (data[FRAME_POS_DATA_4] << 8));
++    int16_t z = trigger_left_max - raw_trig_l;
++    z = ( z < trigger_left_deadzone ) ? 0 : z - trigger_left_antideadzone;
 +
-+    int raw_l_clamped = clamp(raw_trig_l_current, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
-+    int raw_r_clamped = clamp(raw_trig_r_current, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
++    int16_t raw_trig_r = (data[FRAME_POS_DATA_5] | (data[FRAME_POS_DATA_6] << 8));
++    int16_t rz = trigger_right_max - raw_trig_r;
++    rz = ( rz < trigger_right_deadzone ) ? 0 : rz - trigger_right_antideadzone;
 +
-+    int scaled_z  = scale_trigger_signed_range(raw_l_clamped, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
-+    int scaled_rz = scale_trigger_signed_range(raw_r_clamped, GAMEPAD_RAW_TRIGGER_MIN, GAMEPAD_RAW_TRIGGER_MAX);
++    int16_t raw_x = -(int16_t)(data[FRAME_POS_DATA_7] | (data[FRAME_POS_DATA_8] << 8));
++    int16_t x = raw_x + axis_leftx_center;
++    x = ( abs(x) < axis_leftx_deadzone ) ? 0 : INT_SIGN(x) * ( abs(x) - axis_leftx_antideadzone );
 +
-+    input_report_abs(drv->input, ABS_Z, scaled_z);
-+    input_report_abs(drv->input, ABS_RZ, scaled_rz);
-+    input_report_abs(drv->input, ABS_X,
-+             -(int16_t)(data[FRAME_POS_DATA_7] | (data[FRAME_POS_DATA_8] << 8)));
-+    input_report_abs(drv->input, ABS_Y,
-+             -(int16_t)(data[FRAME_POS_DATA_9] | (data[FRAME_POS_DATA_10] << 8)));
-+    input_report_abs(drv->input, ABS_RX,
-+             -(int16_t)(data[FRAME_POS_DATA_11] | (data[FRAME_POS_DATA_12] << 8)));
-+    input_report_abs(drv->input, ABS_RY,
-+             -(int16_t)(data[FRAME_POS_DATA_13] | (data[FRAME_POS_DATA_14] << 8)));
++    int16_t raw_y = -(int16_t)(data[FRAME_POS_DATA_9] | (data[FRAME_POS_DATA_10] << 8));
++    int16_t y = raw_y + axis_lefty_center;
++    y = ( abs(y) < axis_lefty_deadzone ) ? 0 : INT_SIGN(y) * ( abs(y) - axis_lefty_antideadzone );
++
++    int16_t raw_rx = -(int16_t)(data[FRAME_POS_DATA_11] | (data[FRAME_POS_DATA_12] << 8));
++    int16_t rx = raw_rx + axis_rightx_center;
++    rx = ( abs(rx) < axis_rightx_deadzone ) ? 0 : INT_SIGN(rx) * ( abs(rx) - axis_rightx_antideadzone );
++
++    int16_t raw_ry = -(int16_t)(data[FRAME_POS_DATA_13] | (data[FRAME_POS_DATA_14] << 8));
++    int16_t ry = raw_ry + axis_righty_center;
++    ry = ( abs(ry) < axis_righty_deadzone ) ? 0 : INT_SIGN(ry) * ( abs(ry) - axis_righty_antideadzone );
++
++    input_report_abs(drv->input, ABS_Z, z);
++    input_report_abs(drv->input, ABS_RZ, rz);
++    input_report_abs(drv->input, ABS_X, drv->invert_x ? x * (-1) : x);
++    input_report_abs(drv->input, ABS_Y, drv->invert_y ? y * (-1) : y);
++    input_report_abs(drv->input, ABS_RX, drv->invert_rx ? rx * (-1) : rx);
++    input_report_abs(drv->input, ABS_RY, drv->invert_ry ? ry * (-1) : ry);
 +
 +    input_sync(drv->input);
 +    prev_states = keys;
@@ -350,7 +433,7 @@ index 000000000000..4a7096407712
 +    computed_checksum = compute_checksum(drv->rx_buf, count);
 +
 +    if (computed_checksum != received_checksum) {
-+        rsinput_init_commands(drv);
++        dev_warn_ratelimited(&serdev->dev, "Checksum mismatch\n");
 +        goto error;
 +    }
 +
@@ -376,6 +459,38 @@ index 000000000000..4a7096407712
 +    if (!drv)
 +    return -ENOMEM;
 +
++    drv->invert_x = device_property_present(&serdev->dev, "invert-x");
++    drv->invert_y = device_property_present(&serdev->dev, "invert-y");
++    drv->invert_rx = device_property_present(&serdev->dev, "invert-rx");
++    drv->invert_ry = device_property_present(&serdev->dev, "invert-ry");
++
++    {
++        u32 range;
++        if (!device_property_read_u32(&serdev->dev, "axis-range", &range)) {
++            axis_leftx_min  = -range;
++            axis_leftx_max  =  range;
++            axis_lefty_min  = -range;
++            axis_lefty_max  =  range;
++            axis_rightx_min = -range;
++            axis_rightx_max =  range;
++            axis_righty_min = -range;
++            axis_righty_max =  range;
++
++            dev_info(&serdev->dev, "DT axis-range override applied: ±%u\n", range);
++        }
++    }
++
++    drv->vdd = devm_regulator_get(&serdev->dev, "vdd");
++    if (IS_ERR(drv->vdd)) {
++        error = PTR_ERR(drv->vdd);
++        return error;
++    }
++
++    error = regulator_enable(drv->vdd);
++        if (error < 0) {
++        return error;
++    }
++
 +    drv->boot_gpio =
 +        devm_gpiod_get_optional(&serdev->dev, "boot", GPIOD_OUT_HIGH);
 +    if (IS_ERR(drv->boot_gpio)) {
@@ -397,29 +512,13 @@ index 000000000000..4a7096407712
 +        dev_warn(&serdev->dev, "Unable to get reset gpio: %d\n", error);
 +    }
 +
-+    if (drv->boot_gpio)
-+        gpiod_set_value_cansleep(drv->boot_gpio, 0);
-+
-+    if (drv->reset_gpio)
-+        gpiod_set_value_cansleep(drv->reset_gpio, 0);
-+
-+    msleep(100);
-+
-+    if (drv->enable_gpio)
-+        gpiod_set_value_cansleep(drv->enable_gpio, 1);
-+
-+    if (drv->reset_gpio)
-+        gpiod_set_value_cansleep(drv->reset_gpio, 1);
-+
-+    msleep(100);
-+
 +    error = serdev_device_open(serdev);
 +    if (error)
 +        return dev_err_probe(&serdev->dev, error, "Unable to open UART device\n");
 +
 +    drv->serdev = serdev;
 +    drv->sequence_number = 0;
-+    
++
 +    serdev_device_set_drvdata(serdev, drv);
 +
 +    error = serdev_device_set_baudrate(serdev, 115200);
@@ -433,7 +532,7 @@ index 000000000000..4a7096407712
 +        return -ENOMEM;
 +
 +    drv->input->phys = "rsinput-gamepad/input0";
-+    
++
 +    error = device_property_read_string(&serdev->dev, "gamepad-name", &drv->input->name);
 +    if (error) {
 +        drv->input->name = "RSInput Gamepad";
@@ -454,12 +553,25 @@ index 000000000000..4a7096407712
 +        input_set_capability(drv->input, EV_KEY, keymap[i]);
 +
 +    __set_bit(EV_ABS, drv->input->evbit);
-+    for (int i = ABS_X; i <= ABS_RZ; i++)
-+        input_set_abs_params(drv->input, i, -0x580, 0x580,
-+                     0, 0);
++    input_set_abs_params(drv->input, ABS_X,
++        INT_SIGN(axis_leftx_min) * ( abs(axis_leftx_min) - axis_leftx_antideadzone ),
++        INT_SIGN(axis_leftx_max) * ( abs(axis_leftx_max) - axis_leftx_antideadzone ),
++        0, 0);
++    input_set_abs_params(drv->input, ABS_Y,
++        INT_SIGN(axis_lefty_min) * ( abs(axis_lefty_min) - axis_lefty_antideadzone ),
++        INT_SIGN(axis_lefty_max) * ( abs(axis_lefty_max) - axis_lefty_antideadzone ),
++        0, 0);
++    input_set_abs_params(drv->input, ABS_RX,
++        INT_SIGN(axis_rightx_min) * ( abs(axis_rightx_min) - axis_rightx_antideadzone ),
++        INT_SIGN(axis_rightx_max) * ( abs(axis_rightx_max) - axis_rightx_antideadzone ),
++        0, 0);
++    input_set_abs_params(drv->input, ABS_RY,
++        INT_SIGN(axis_righty_min) * ( abs(axis_righty_min) - axis_righty_antideadzone ),
++        INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
++        0, 0);
 +
-+    input_set_abs_params(drv->input, ABS_Z, 0, 1830, 0, 30);
-+    input_set_abs_params(drv->input, ABS_RZ, 0, 1830, 0, 30);
++    input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++    input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
 +
 +    error = input_register_device(drv->input);
 +    if (error)
@@ -486,6 +598,8 @@ index 000000000000..4a7096407712
 +
 +    if (drv->reset_gpio)
 +        gpiod_set_value_cansleep(drv->reset_gpio, 0);
++
++    regulator_disable(drv->vdd);
 +}
 +
 +static const struct of_device_id rsinput_of_match[] = {
@@ -509,5 +623,5 @@ index 000000000000..4a7096407712
 +MODULE_DESCRIPTION("RSInput Gamepad Driver");
 +MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
 -- 
-2.34.1
+2.52.0
 

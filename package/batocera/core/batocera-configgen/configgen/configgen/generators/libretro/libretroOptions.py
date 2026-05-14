@@ -599,13 +599,13 @@ def _dolphin_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
 ) -> None:
     # Wii System Languages
-    _set_from_system(coreSettings, 'dolphin_language', system, 'wii_language', default='English')
+    _set_from_system(coreSettings, 'dolphin_language', system, 'wii_language', default='1')
 
     # Wii Resolution Scale
-    _set_from_system(coreSettings, 'dolphin_efb_scale', system, 'wii_resolution', default="x1 (640 x 528)")
+    _set_from_system(coreSettings, 'dolphin_efb_scale', system, 'wii_resolution', default="1")
 
     # Anisotropic Filtering
-    _set_from_system(coreSettings, 'dolphin_max_anisotropy', system, 'wii_anisotropic', default="x1")
+    _set_from_system(coreSettings, 'dolphin_max_anisotropy', system, 'wii_anisotropic', default='0')
 
     # Wii Tv Mode
     _set_from_system(coreSettings, 'dolphin_widescreen', system, 'wii_widescreen', default="enabled")
@@ -614,7 +614,7 @@ def _dolphin_options(
     _set_from_system(coreSettings, 'dolphin_widescreen_hack', system, 'wii_widescreen_hack', default="disabled")
 
     # Shader Compilation Mode
-    _set_from_system(coreSettings, 'dolphin_shader_compilation_mode', system, 'wii_shader_mode', default="sync")
+    _set_from_system(coreSettings, 'dolphin_shader_compilation_mode', system, 'wii_shader_mode', default='0')
 
     # OSD
     _set_from_system(coreSettings, 'dolphin_osd_enabled', system, 'wii_osd', default="enabled")
@@ -816,6 +816,32 @@ def _dosbox_pure_options(
 
     # OS Disk Modifications
     _set_from_system(coreSettings, 'dosbox_pure_bootos_ramdisk', system, 'pure_bootos_ramdisk', default='false')
+
+# Elektronika BK-0010/0011
+def _bk_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Model: BK-0010, BK-0010.01, BK-0010.01 + FDD, BK-0011M + FDD, Terak 8510/a, Slow BK-0011M
+    _set_from_system(coreSettings, 'bk_model', system, default='BK-0011M + FDD')
+
+    # Peripheral (UP port): none, covox, ay_3_8910, mouse_high, mouse_low, joystick
+    _set_from_system(coreSettings, 'bk_peripheral', system, default='none')
+
+    # Double CPU speed: disabled, enabled
+    _set_from_system(coreSettings, 'bk_doublespeed', system, default='disabled')
+
+    # Use color display: enabled, disabled
+    _set_from_system(coreSettings, 'bk_color', system, default='enabled')
+
+    # Aspect ratio: 1:1, 4:3
+    _set_from_system(coreSettings, 'bk_aspect_ratio', system, default='1:1')
+
+    # Keyboard layout: qwerty, jcuken
+    _set_from_system(coreSettings, 'bk_layout', system, default='qwerty')
+
+    # Keyboard type: poll, callback
+    _set_from_system(coreSettings, 'bk_keyboard_type', system, default='poll')
+
 
 # Microsoft MSX and Colecovision
 def _bluemsx_options(
@@ -1781,12 +1807,12 @@ def _genesisplusgx_options(
     # MSU-MD/MegaCD
 
     # Needs to be forced to sega/mega cd for MSU-MD to work.
-    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'msu-md' else 'auto')
+    add_on = system.config.get('gpgx_cd_add_on', 'sega/mega cd' if system.name == 'megadrive-msu' else 'auto')
     _set(coreSettings, 'genesis_plus_gx_add_on', add_on)
 
     # Volume setting is actually important, unlike MegaCD the MSU-MD is pre-amped at a different rate.
     # That is, the default level 100 will make the CD audio drown out the cartridge sound effects.
-    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'msu-md' else '100')
+    cdda_volume = system.config.get('gpgx_cdda_volume', '70' if system.name == 'megadrive-msu' else '100')
     _set(coreSettings, 'genesis_plus_gx_cdda_volume', cdda_volume)
 
     # gun
@@ -2339,10 +2365,60 @@ def _hatarib_options(
         _set(coreSettings, 'hatarib_hardboot', '0')
         _set(coreSettings, 'hatarib_hard_readonly', '1')
 
+# ColecoVision (GearColeco)
+def _gearcoleco_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Refresh Rate (requires restart)
+    _set_from_system(coreSettings, 'gearcoleco_timing', system, default='Auto')
+
+    # Aspect Ratio
+    _set_from_system(coreSettings, 'gearcoleco_aspect_ratio', system, default='1:1 PAR')
+
+    # Overscan
+    _set_from_system(coreSettings, 'gearcoleco_overscan', system, default='Disabled')
+
+    # Allow Up+Down / Left+Right
+    _set_from_system(coreSettings, 'gearcoleco_up_down_allowed', system, default='Disabled')
+
+    # No Sprite Limit
+    _set_from_system(coreSettings, 'gearcoleco_no_sprite_limit', system, default='Disabled')
+
+    # Spinner support
+    _set_from_system(coreSettings, 'gearcoleco_spinners', system, default='Disabled')
+
+    # Spinner Sensitivity
+    _set_from_system(coreSettings, 'gearcoleco_spinner_sensitivity', system, default='1')
+# Enterprise 128 (EP128EMU)
+def _ep128emu_core_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Main thread wait (ms)
+    _set_from_system(coreSettings, 'ep128emu_wait', system, default='0')
+    # High sound quality
+    _set_from_system(coreSettings, 'ep128emu_sdhq', system, default='1')
+    # Use accelerated SW framebuffer
+    _set_from_system(coreSettings, 'ep128emu_swfb', system, default='0')
+    # Enable resolution changes (requires restart)
+    _set_from_system(coreSettings, 'ep128emu_useh', system, default='1')
+    # Border lines to keep when zooming in
+    _set_from_system(coreSettings, 'ep128emu_brds', system, default='0')
+    # System ROM version (EP only)
+    _set_from_system(coreSettings, 'ep128emu_romv', system, default='Original')
+    # User 1 Zoom button
+    _set_from_system(coreSettings, 'ep128emu_zoom', system, default='R3')
+    # User 1 Info button
+    _set_from_system(coreSettings, 'ep128emu_info', system, default='L3')
+    # User 1 Autofire for button
+    _set_from_system(coreSettings, 'ep128emu_afbt', system, default='None')
+    # User 1 Autofire repeat delay
+    _set_from_system(coreSettings, 'ep128emu_afsp', system, default='1')
+
 
 _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, DeviceInfoMapping], None]] = {
     'cap32': _cap32_options,
     'atari800': _atari800_options,
+    'bk': _bk_options,
     'virtualjaguar': _virtualjaguar_options,
     'handy': _handy_options,
     'vice_x64': _vice_x64_options,
@@ -2419,6 +2495,8 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'hatarib': _hatarib_options,
     'mednafen_wswan': _mednafen_wswan_options,
     'stella': _stella_options,
+    'gearcoleco': _gearcoleco_options,
+    'ep128emu-core': _ep128emu_core_options,
 }
 
 

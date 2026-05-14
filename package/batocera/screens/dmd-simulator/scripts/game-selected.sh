@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # keep customizable
 test -e "/userdata/system/configs/emulationstation/scripts/game-selected/dmd-simulator.sh" && exit 0
@@ -15,29 +15,44 @@ DMDFORMAT=$(batocera-settings-get dmd.format)
 test "${DMDFORMAT}" = "hd" && DMDOPT="--hd"
 
 # custom
-# exact matching
+# same name : we accept same name + .png/.gif
 ROMBASE=$(basename "${GPATH}" | sed -e s+"\.[^\.]*$"++)
+FOUNDCUS=
 for EXT in gif png
 do
     CUS="/userdata/system/dmd/games/${GSYSTEM}/${ROMBASE}.${EXT}"
     if test -e "${CUS}"
     then
-	dmd-play ${DMDOPT} -f "${CUS}"
-	exit 0
+	FOUNDCUS="${CUS}"
     fi
 done
 
-# exact matching
+# minimized name : we accept : minimized name + .png/.gif and minimized name + _ + numbers + .gif/.png
 ROMMIN=$(echo "${ROMBASE}" | sed -e s+"([^)]*)"+""+g -e s+"[^A-Za-z0-9]"+""+g | tr A-Z a-z) # lowercase and remove any but a-z and 0-9, remove things in parenthesis
-for EXT in gif png
+
+if test "${ROMBASE}" = "${ROMMIN}"
+then
+    # ignore the image found on the rombase name to avoid duplicated images
+    FOUNDCUS=
+fi
+
+CUSS=
+while read X
 do
-    CUS="/userdata/system/dmd/games/${GSYSTEM}/${ROMMIN}.${EXT}"
-    if test -e "${CUS}"
-    then
-	dmd-play ${DMDOPT} -f "${CUS}"
-	exit 0
-    fi
-done
+    test -n "${CUSS}" && CUSS="${CUSS}:"
+    CUSS=${CUSS}${X}
+done < <(
+    # first the same name image
+    test -n "${FOUNDCUS}" && echo "${FOUNDCUS}"
+    # second, the minimized name without numbers
+    find "/userdata/system/dmd/games/${GSYSTEM}" -maxdepth 1 -type f -regextype posix-extended -regex ".*/${ROMMIN}\.(gif|png)$"
+    # third, the minimized name with numbers
+    find "/userdata/system/dmd/games/${GSYSTEM}" -maxdepth 1 -type f -regextype posix-extended -regex ".*/${ROMMIN}_[0-9]+\.(gif|png)$" | sort -V)
+if test -n "${CUSS}"
+then
+    dmd-play ${DMDOPT} -f "${CUSS}"
+    exit 0
+fi
 
 # marquee
 GHASH=$(echo -n "${GPATH}" | md5sum | cut -c 1-32)

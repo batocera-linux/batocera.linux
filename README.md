@@ -38,3 +38,6 @@ Batocera Linux is an open-source and completely free retro-gaming distribution t
  - `scripts` Various miscellanous scripts that handle aspects external to Batocera, such as the report data sent to the [compatibility page](https://batocera.org/compatibility.php) or info about the Bezel Project.
 
 A cheatsheet of notable files/folders can be found [on the wiki](https://wiki.batocera.org/notable_files).
+
+Built with ❤️
+

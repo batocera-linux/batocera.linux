@@ -9,6 +9,15 @@ if TYPE_CHECKING:
     from .Generator import Generator
 
 
+_LEGACY_GENERATOR_MAP: Final[dict[str, dict[str, tuple[str, str]]]] = {
+    'duckstation': {
+        'duckstation-legacy': ('duckstation_legacy.duckstationLegacyGenerator', 'DuckstationLegacyGenerator'),
+    },
+    'supermodel': {
+        'supermodel-legacy': ('supermodel_legacy.supermodelLegacyGenerator', 'SupermodelLegacyGenerator'),
+    }
+}
+
 _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'applewin': ('applewin.applewinGenerator', 'AppleWinGenerator'),
     'bigpemu': ('bigpemu.bigpemuGenerator', 'BigPEmuGenerator'),
@@ -19,11 +28,9 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'corsixth': ('corsixth.corsixthGenerator', 'CorsixTHGenerator'),
     'devilutionx': ('devilutionx.devilutionxGenerator', 'DevilutionXGenerator'),
     'dhewm3': ('dhewm3.dhewm3Generator', 'Dhewm3Generator'),
-    'dolphin_triforce': ('dolphin_triforce.dolphinTriforceGenerator', 'DolphinTriforceGenerator'),
     'dosbox': ('dosbox.dosboxGenerator', 'DosBoxGenerator'),
     'dosbox_staging': ('dosboxstaging.dosboxstagingGenerator', 'DosBoxStagingGenerator'),
     'dosboxx': ('dosboxx.dosboxxGenerator', 'DosBoxxGenerator'),
-    'duckstation-legacy': ('duckstation_legacy.duckstationLegacyGenerator', 'DuckstationLegacyGenerator'),
     'dxx-rebirth': ('dxx_rebirth.dxx_rebirthGenerator', 'DXX_RebirthGenerator'),
     'easyrpg': ('easyrpg.easyrpgGenerator', 'EasyRPGGenerator'),
     'ecwolf': ('ecwolf.ecwolfGenerator', 'ECWolfGenerator'),
@@ -53,7 +60,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'sonic2013': ('sonicretro.sonicretroGenerator', 'SonicRetroGenerator'),
     'sonic3-air': ('sonic3_air.sonic3_airGenerator', 'Sonic3AIRGenerator'),
     'soniccd': ('sonicretro.sonicretroGenerator', 'SonicRetroGenerator'),
-    'supermodel-legacy': ('supermodel_legacy.supermodelLegacyGenerator', 'SupermodelLegacyGenerator'),
     'theforceengine': ('theforceengine.theforceengineGenerator', 'TheForceEngineGenerator'),
     'thextech': ('thextech.thextechGenerator', 'TheXTechGenerator'),
     'tr1x': ('tr1x.tr1xGenerator', 'TR1XGenerator'),
@@ -66,10 +72,13 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'xenia-canary': ('xenia.xeniaGenerator', 'XeniaGenerator'),
     'ymir': ('ymir.ymirGenerator', 'YmirGenerator'),
     'yquake2': ('yquake2.yquake2Generator', 'YQuake2Generator'),
+    'tic80': ('tic80.tic80Generator', 'tic80Generator'),
 }
 
-def get_generator(emulator: str) -> Generator:
-    if emulator in _GENERATOR_MAP:
+def get_generator(emulator: str, core: str) -> Generator:
+    if (cores := _LEGACY_GENERATOR_MAP.get(emulator)) and core in cores:
+        module_path, cls_name = cores[core]
+    elif emulator in _GENERATOR_MAP:
         module_path, cls_name = _GENERATOR_MAP[emulator]
     else:
         module_path = f'{emulator}.{emulator}Generator'

@@ -24,6 +24,15 @@ custom_features:
       Separate Windows: 4-false
       Hybrid Screen Top: 5-false
       Hybrid Screen Bottom: 5-true
+  azahar_large_screen_proportion:
+      prompt: SCREEN PROPORTION
+      description: Determines the proportion of the larger screen relative to the smaller one.
+      choices:
+        "2":            2
+        "3":            3
+        "4 (Default)":  4
+        "5":            5
+        "6":            6
   azahar_resolution_factor:
     submenu: GRAPHICS
     prompt: RENDERING RESOLUTION
@@ -39,13 +48,6 @@ custom_features:
       8x (3200x1920): 8
       9x (3600x2160): 9
       10x (4000x2400): 10
-  azahar_use_hw_shader:
-    submenu: GRAPHICS
-    prompt: HARDWARE SHADER
-    description: Helps some games to launch when disabled. May affect performance.
-    choices:
-      'Off': 0
-      'On': 1
   azahar_use_vsync_new:
     submenu: GRAPHICS
     prompt: VSYNC
@@ -53,24 +55,45 @@ custom_features:
     choices:
       'Off': 0
       'On': 1
-  azahar_use_frame_limit:
+  azahar_use_hw_shader:
     submenu: GRAPHICS
-    prompt: FRAME LIMIT
-    description: Off will help some games, others will run too fast.
+    prompt: HARDWARE SHADER
+    description: Helps improve performance and requires a powerful GPU. May cause some games not launch when enabled.
+    choices:
+      Off (Default): 0
+      'On': 1
+  azahar_accurate_multiplication:
+    submenu: GRAPHICS
+    prompt: ACCURATE MULTIPLICATION
+    description: Some applications requires this to be enabled for the hardware shader to render properly. However this would reduce performance in most applications.
+    choices:
+      'Off' : 0
+      'On': 1
+  azahar_use_shader_jit:
+    submenu: GRAPHICS
+    prompt: SHADER JIT
+    description: Use the JIT engine instead of the interpreter for software shader emulation. Enable this for better performance.
+    choices:
+      'Off' : 0
+      'On': 1
+  azahar_async_shader_compilation:
+    submenu: GRAPHICS
+    prompt: ENABLE ASYNC SHADER COMPILATION
+    description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
+    choices:
+      'Off': 0
+      'On': 1
+  azahar_async_presentation:
+    submenu: GRAPHICS
+    prompt: ENABLE ASYNC PRESENTATION
+    description: Perform presentation on separate threads. Improves performance when using Vulkan in most applications. Adds ~1 frame of input lag.
     choices:
       'Off': 0
       'On': 1
   azahar_use_disk_shader_cache:
     submenu: GRAPHICS
     prompt: DISK SHADER CACHE
-    description: Reduce stutter that happens when compiling shaders.
-    choices:
-      'Off': 0
-      'On': 1
-  azahar_async_shader_compilation:
-    submenu: GRAPHICS
-    prompt: ENABLE ASYNC SHADER COMPILATION
-    description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
+    description: Reduce stutter that happens when compiling shaders. Requires hardware shader to be enabled.
     choices:
       'Off': 0
       'On': 1

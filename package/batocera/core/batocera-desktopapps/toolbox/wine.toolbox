@@ -43,11 +43,18 @@
 pgrep -x pcmanfm >/dev/null && [[ -n "$1" ]] || { echo "error: No instance of pcmanFM found... exit now!"; exit 1; }
 
 Setup_Fonts() {
-  local textarray i
+  local textarray i new_fonts ret
+  touch $CONF_FILE
   textarray=("Text example for extracting/creating archives" "Text example for listing prefixes" "Text example for any info messages")
   for i in "${!textarray[@]}"; do
-    echo $(yad --font --button="Next Item":0 --fontname="${f[$i]}" --preview="${textarray[$i]}") >> $CONFFILE
+    i=$(yad --font --button="Reset to defaults":2 --button="Abort":1 --button="Next Item":0 --preview="${textarray[$i]}" --fontname="${f[$i]}")
+    ret=$?
+    [[ $ret -eq 0 ]] && new_fonts="${new_fonts}|$i" 
+    [[ $ret -eq 1 ]] && exit $ret
+    [[ $ret -eq 2 ]] && { sed -i "s/^[^#]*${CONF_KEY}/#&/" "${CONF_FILE}"; exit $ret; }
   done
+  # set new key, first char of new_fonts is removed
+  batocera-settings-set -f "${CONF_FILE}" "${CONF_KEY}" "${new_fonts:1}"
 }
 
 Delete_Unused_Prefixes() {
@@ -129,14 +136,15 @@ Squash_Game() {
 
 # set fonts and type, by yad --font dialog
 # yad --text-info --fontname="FAMILY STYLE SIZE" is better as using --text <span>-tag
-CONFFILE=/userdata/system/.config/pcmanfm/wine.toolbox.conf
-[[ ${1} == --setup-wine-toolboxfonts ]] && [[ -e $CONFFILE ]] && { echo "$CONFFILE already found! Delete and setup again?" | yad --text-info && rm $CONFFILE || exit; }
+CONF_FILE=/userdata/system/.config/pcmanfm/toolbox.conf
+CONF_KEY=$(basename $0).font
+CONF_VALS=3
 
 # init font: read from conf, or check if dejavu-font is available or fallback to default
 ft="DejaVu Sans Mono"
-if [[ -e $CONFFILE ]]; then
-  readarray -t f < $CONFFILE
-  fx="</span>"
+if grep -q "^${CONF_KEY}" "${CONF_FILE}"; then
+  readarray -t -d "|" f < <(batocera-settings-get -f "${CONF_FILE}" "${CONF_KEY}")
+  [[ ${#f[@]} -ge ${CONF_VALS} ]] && fx="</span>" || { unset f; sed -i "s/^[^#]*${CONF_KEY}/#&/" "${CONF_FILE}"; }
 elif fc-list -q "${ft}"; then
   f=("${ft} Bold 12" "${ft} Book 16" "${ft} Book 20")
   fx="</span>"

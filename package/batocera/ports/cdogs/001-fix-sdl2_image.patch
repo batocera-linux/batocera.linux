@@ -1,0 +1,29 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt.new
+index 2a49092..033ec8f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt.new
+@@ -68,8 +68,9 @@ set(CMAKE_MODULE_PATH
+ find_package(Nanopb 0.4.5...<1.0.0 REQUIRED)
+ find_package(SDL2 REQUIRED)
+ message("SDL2 include dir: ${SDL2_INCLUDE_DIRS}")
+-find_package(SDL2_image REQUIRED)
+-find_package(SDL2_mixer REQUIRED)
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(SDL2_IMAGE REQUIRED SDL2_image)
++pkg_check_modules(SDL2_MIXER REQUIRED SDL2_mixer)
+ if(BUILD_EDITOR)
+ 	find_package(OpenGL REQUIRED)
+ endif()
+diff --git a/src/cdogs/CMakeLists.txt b/src/cdogs/CMakeLists.txt.new
+index 5c0ee84..bbe137f 100644
+--- a/src/cdogs/CMakeLists.txt
++++ b/src/cdogs/CMakeLists.txt.new
+@@ -246,6 +246,6 @@ target_link_libraries(cdogs
+ 	SDL_joystickbuttonnames
+ 	yajl_s
+ 	SDL2::SDL2
+-	SDL2_image::SDL2_image
+-	SDL2_mixer::SDL2_mixer
++	${SDL2_IMAGE_LDFLAGS}
++	${SDL2_MIXER_LDFLAGS}
+ 	${ENet_LIBRARIES})

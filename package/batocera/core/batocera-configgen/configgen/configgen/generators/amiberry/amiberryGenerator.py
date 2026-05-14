@@ -6,8 +6,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
-from ...controller import generate_sdl_game_controller_config
+from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
+from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
 from ..libretro import libretroControllers
@@ -18,9 +18,17 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 _CONFIG_DIR: Final = CONFIGS / 'amiberry'
-_CONFIG: Final = _CONFIG_DIR / 'conf' / 'amiberry.conf'
-_RETROARCH_CUSTOM: Final = _CONFIG_DIR / 'conf' / 'retroarch' / 'overlay.cfg'
-_RETROARCH_INPUTS_DIR: Final = _CONFIG_DIR / 'conf' / 'retroarch' / 'inputs'
+_CONFIG: Final = _CONFIG_DIR / 'amiberry.conf'
+_RETROARCH_CUSTOM: Final = _CONFIG_DIR / 'retroarch' / 'overlay.cfg'
+_RETROARCH_INPUTS_DIR: Final = _CONFIG_DIR / 'retroarch' / 'inputs'
+_AMIBERRY_PLUGINS: Final = _CONFIG_DIR / 'plugins'
+_WHDBOOT_DIR: Final = _CONFIG_DIR / 'whdboot'
+_SAVES_DIR: Final = Path('/userdata/saves/amiga')
+_SCREENSHOTS_DIR: Final = Path('/userdata/screenshots')
+_BIOS_DIR: Final = Path('/userdata/bios/amiga')
+_LOG_FILE: Final = Path('/userdata/system/logs/amiberry.log')
+_AMIBERRY_BIN: Final = Path('/usr/bin/amiberry')
+_AMIBERRY_DATA: Final = Path('/usr/share/amiberry/data')
 
 class AmiberryGenerator(Generator):
 
@@ -35,19 +43,20 @@ class AmiberryGenerator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         mkdir_if_not_exists(_RETROARCH_CUSTOM.parent)
+        mkdir_if_not_exists(_AMIBERRY_PLUGINS)
 
         retroconfig = UnixSettings(_RETROARCH_CUSTOM, separator=' ')
         amiberryconf = UnixSettings(_CONFIG, separator=' ')
         amiberryconf.save('default_quit_key', 'F9')
         amiberryconf.save('default_open_gui_key', 'F8')
-        amiberryconf.save('saveimage_dir', '/userdata/saves/amiga/')
-        amiberryconf.save('savestate_dir', '/userdata/saves/amiga/')
-        amiberryconf.save('screenshot_dir', '/userdata/screenshots/')
-        amiberryconf.save('nvram_dir', '/userdata/saves/amiga/nvram/')
-        amiberryconf.save('rom_path', '/userdata/bios/amiga/')
-        amiberryconf.save('whdboot_path', '/userdata/system/configs/amiberry/whdboot/')
-        amiberryconf.save('logfile_path', '/userdata/system/logs/amiberry.log')
-        amiberryconf.save('controllers_path', '/userdata/system/configs/amiberry/conf/retroarch/inputs/')
+        amiberryconf.save('saveimage_dir', _SAVES_DIR)
+        amiberryconf.save('savestate_dir', _SAVES_DIR)
+        amiberryconf.save('screenshot_dir', _SCREENSHOTS_DIR)
+        amiberryconf.save('nvram_dir', _SAVES_DIR / 'nvram')
+        amiberryconf.save('rom_path', _BIOS_DIR)
+        amiberryconf.save('whdboot_path', _WHDBOOT_DIR)
+        amiberryconf.save('logfile_path', _LOG_FILE)
+        amiberryconf.save('controllers_path', _RETROARCH_INPUTS_DIR)
         amiberryconf.save('retroarch_config', _RETROARCH_CUSTOM)
         amiberryconf.save('default_vkbd_enabled', system.config.get_bool('amiberry_virtual_keyboard', return_values=(1, 0)))
         amiberryconf.save('default_vkbd_hires', system.config.get_bool('amiberry_hires_keyboard', return_values=(1, 0)))
@@ -55,13 +64,20 @@ class AmiberryGenerator(Generator):
         amiberryconf.save('default_vkbd_language', system.config.get('amiberry_vkbd_language', 'US'))
         amiberryconf.save('default_vkbd_toggle', 'leftstick')
         amiberryconf.save('default_fullscreen_mode', '2')
+        amiberryconf.save('default_auto_crop', system.config.get_bool('amiberry_auto_crop', return_values=('true', 'false')))
+        amiberryconf.save('default_keep_aspect', system.config.get_bool('amiberry_keep_aspect', return_values=('true', 'false')))
+        amiberryconf.save('shader', system.config.get('amiberry_shader', 'none'))
+
+
         amiberryconf.save('write_logfile', 'yes')
         amiberryconf.write()
 
         romType = self.getRomType(rom)
         _logger.debug("romType: %s", romType)
+
         if romType != 'UNKNOWN' :
-            commandArray: list[str | Path] = [ "/usr/bin/amiberry" ]
+            commandArray: list[str | Path] = [ _AMIBERRY_BIN ]
+
             if romType != 'WHDL' :
                 commandArray.append("--model")
                 commandArray.append(system.config.core)
@@ -70,9 +86,9 @@ class AmiberryGenerator(Generator):
                 commandArray.append(rom)
             elif romType == 'HDF' :
                 commandArray.append("-s")
-                commandArray.append(f"hardfile2=rw,DH0:{rom},32,1,2,512,0,,uae0")
+                commandArray.append(f"hardfile2=rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
                 commandArray.append("-s")
-                commandArray.append(f"uaehf0=hdf,rw,DH0:{rom},32,1,2,512,0,,uae0")
+                commandArray.append(f"uaehf0=hdf,rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
             elif romType == 'UAE' :
                 commandArray.append("-f")
                 commandArray.append(rom)
@@ -94,7 +110,9 @@ class AmiberryGenerator(Generator):
             retroconfig.write()
 
             mkdir_if_not_exists(_RETROARCH_INPUTS_DIR)
+            write_sdl_controller_db(playersControllers, _RETROARCH_INPUTS_DIR / "gamecontrollerdb.txt")
 
+            is_player2 = None
             for pad in playersControllers:
                 replacements = {f'_player{pad.player_number}_':'_'}
                 # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
@@ -108,13 +126,33 @@ class AmiberryGenerator(Generator):
                                 outfile.write(newline)
                 if pad.player_number == 1: # 1 = joystick port
                     commandArray.append("-s")
+                    commandArray.append(f"joyport1=joy0")
+                    commandArray.append("-s")
                     commandArray.append(f"joyport1_friendlyname={padfilename}")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyportname1=")
                     if romType == 'CD' :
                         commandArray.append("-s")
                         commandArray.append("joyport1_mode=cd32joy")
                 if pad.player_number == 2: # 0 = mouse for the player 2
+                    is_player2 = 1
                     commandArray.append("-s")
-                    commandArray.append(f"joyport0_friendlyname={padfilename}")
+                    commandArray.append(f"joyport0=joy1")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyport0_friendlyname=\"{padfilename}\"")
+                    commandArray.append("-s")
+                    commandArray.append(f"joyportname0=")
+
+
+            #set default mouse if no player2 gamepad is configured
+            #when gamepad is configured on joyport0, autoswitch between gamepad<->mouse is enabled by default
+            if not is_player2:
+                commandArray.append("-s")
+                commandArray.append(f"joyport0=mouse")
+                commandArray.append("-s")
+                commandArray.append(f"joyport0_friendlyname=\"System mouse\"")
+                commandArray.append("-s")
+                commandArray.append(f"joyportname0=MOUSE0")
 
             # fps
             if system.config.show_fps:
@@ -125,43 +163,65 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("joyport2=")
 
-            # remove interlace artifacts
-            commandArray.append("-s")
-            commandArray.append(f'gfx_flickerfixer={system.config.get_bool("amiberry_flickerfixer", return_values=("true", "false"))}')
 
-            # auto height
-            commandArray.append("-s")
-            commandArray.append(f'amiberry.gfx_auto_height={system.config.get_bool("amiberry_auto_height", return_values=("true", "false"))}')
+            # remove interlace artifacts
+            if amiberry_scandoubler := system.config.get('amiberry_scandoubler'):
+                commandArray.append("-s")
+                commandArray.append(f'gfx_scandoubler={amiberry_scandoubler}')
+
+            # auto_crop (previously auto_height)
+            if amiberry_auto_crop := system.config.get('amiberry_auto_crop'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_auto_crop={amiberry_auto_crop}")
 
             # line mode
-            commandArray.append("-s")
-            commandArray.append(f"gfx_linemode={system.config.get('amiberry_linemode', 'double')}")
+            if amiberry_linemode := system.config.get('amiberry_linemode'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_linemode={amiberry_linemode}")
 
             # video resolution
-            commandArray.append("-s")
-            commandArray.append(f"gfx_resolution={system.config.get('amiberry_resolution', 'hires')}")
+            if amiberry_resolution := system.config.get('amiberry_resolution'):
+                commandArray.append("-s")
+                commandArray.append(f"gfx_resolution={amiberry_resolution}")
+
 
             # Scaling method
             match system.config.get("amiberry_scalingmethod"):
-                case "smooth":
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=true")
-                    commandArray.append("-s")
-                    commandArray.append("amiberry.scaling_method=1")
-                case "pixelated":
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=true")
-                    commandArray.append("-s")
-                    commandArray.append("amiberry.scaling_method=0")
-                case _:
-                    commandArray.append("-s")
-                    commandArray.append("gfx_lores_mode=false")
+                case "none":
                     commandArray.append("-s")
                     commandArray.append("amiberry.scaling_method=-1")
+                case "pixelated":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=0")
+                case "smooth":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=1")
+                case "integer":
+                    commandArray.append("-s")
+                    commandArray.append("amiberry.scaling_method=2")
+
 
             # display vertical centering
             commandArray.append("-s")
             commandArray.append("gfx_center_vertical=smart")
+
+            # force ntsc
+            amiberry_default_ntsc = False
+            # detect ntsc from rom filename hint
+            if 'ntsc' in rom.stem.lower():
+                amiberry_default_ntsc = True
+
+            amiberry_ntsc = system.config.get_bool('amiberry_ntsc', amiberry_default_ntsc)
+            if amiberry_ntsc:
+                commandArray.append("-s")
+                commandArray.append("ntsc=true")
+                commandArray.append("-s")
+                commandArray.append("chipset_refreshrate=60.000000")
+
+            # memory
+            commandArray.append("-F 8")
+
+
 
             # fix sound buffer and frequency
             commandArray.append("-s")
@@ -169,17 +229,23 @@ class AmiberryGenerator(Generator):
             commandArray.append("-s")
             commandArray.append("sound_frequency=48000")
 
+
             # Disable GUI at launch
             if not commandArray or commandArray[-1] != "-G":
                 commandArray.append("-G")
 
-            return Command.Command(array=commandArray,env={
-                 "AMIBERRY_DATA_DIR": "/usr/share/amiberry/data/",
-                 "AMIBERRY_HOME_DIR": "/userdata/system/configs/amiberry",
-                 "AMIBERRY_CONFIG_DIR": "/userdata/system/configs/amiberry/conf/",
-                 "AMIBERRY_PLUGINS_DIR": "/userdata/system/configs/amiberry/plugins/",
-                 "XDG_DATA_HOME": "/userdata/system/configs/",
-                "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers)})
+            return Command.Command(
+                array=commandArray,env={
+                    "AMIBERRY_DATA_DIR": _AMIBERRY_DATA,
+                    "AMIBERRY_HOME_DIR": _CONFIG_DIR,
+                    "AMIBERRY_CONFIG_DIR": _CONFIG_DIR,
+                    "AMIBERRY_PLUGINS_DIR": _AMIBERRY_PLUGINS,
+                    "XDG_DATA_HOME": CONFIGS,
+                    "XDG_CONFIG_HOME": CONFIGS,
+                    "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
+                    "SDL_JOYSTICK_HIDAPI": "0"
+                }
+            )
         # otherwise, unknown format
         return Command.Command(array=[])
 

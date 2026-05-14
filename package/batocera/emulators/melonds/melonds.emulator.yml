@@ -50,6 +50,79 @@ custom_features:
       14x (3584x2688): 14
       15x (3840x2880): 15
       16x (4096x3072): 16
+  melonds_use_fw_settings:
+    submenu: FIRMWARE SETTINGS
+    prompt: USE FIRMWARE SETTINGS
+    description: Use language and username from the NDS Firmware.
+    choices:
+      on (Default): false
+      'off': true
+  melonds_language:
+    submenu: FIRMWARE SETTINGS
+    prompt: LANGUAGE
+    description: Select language will be used if 'Use Firmware Settings' is disabled or if firmware file was not found.
+    choices:
+      Japanese: 0
+      English (Default): 1
+      French: 2
+      German: 3
+      Italian: 4
+      Spanish: 5
+  melonds_month:
+    submenu: FIRMWARE SETTINGS
+    prompt: BIRTH MONTH
+    description: The month of your birthay.
+    choices:
+      January: 1
+      February: 2
+      March: 3
+      April: 4
+      May: 5
+      June: 6
+      July: 7
+      August: 8
+      September: 9
+      October: 10
+      November: 11
+      December: 12
+      Don't Override: 1
+  melonds_day:
+    submenu: FIRMWARE SETTINGS
+    prompt: BIRTH DAY
+    description: The day within the month of your birthday.
+    choices:
+      1st: 1
+      2nd: 2
+      3rd: 3
+      4th: 4
+      5th: 5
+      6th: 6
+      7th: 7
+      8th: 8
+      9th: 9
+      10th: 10
+      11th: 11
+      12th: 12
+      13th: 13
+      14th: 14
+      15th: 15
+      16th: 16
+      17th: 17
+      18th: 18
+      19th: 19
+      20th: 20
+      21st: 21
+      22nd: 22
+      23rd: 23
+      24th: 24
+      25th: 25
+      26th: 26
+      27th: 27
+      28th: 28
+      29th: 29
+      30th: 30
+      31st: 31
+      Don't Override: 1
   melonds_polygons:
     group: ADVANCED OPTIONS
     prompt: ENABLE POLYGON SPLITTING

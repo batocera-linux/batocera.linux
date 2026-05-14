@@ -182,6 +182,10 @@ class XeniaGenerator(Generator):
         config['Display'] = {
             'fullscreen': True,
             'internal_display_resolution': system.config.get_int('xenia_resolution', 8)}
+        config['Display']['postprocess_scaling_and_sharpening'] = system.config.get('xenia_postprocess_scaling_and_sharpening', 'bilinear')
+        config['Display']['postprocess_antialiasing'] = system.config.get('xenia_postprocess_antialiasing', 'none')
+        config['Display']['postprocess_ffx_cas_additional_sharpness'] = float(system.config.get('xenia_postprocess_ffx_cas_additional_sharpness', '0'))
+        config['Display']['postprocess_ffx_fsr_sharpness_reduction'] = float(system.config.get('xenia_postprocess_ffx_fsr_sharpness_reduction', '0.2'))
         # add node GPU
         if 'GPU' not in config:
             config['GPU'] = {}

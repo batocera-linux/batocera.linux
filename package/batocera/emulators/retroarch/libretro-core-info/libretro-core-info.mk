@@ -47,6 +47,8 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	    fbalpha_libretro.info
 	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf mame2000_libretro.info \
 	    imame4all_libretro.info
+	cd $(TARGET_DIR)/usr/share/libretro/info && ln -sf ep128emu_core_libretro.info \
+	    ep128emu-core_libretro.info
 
 	# mamevirtual_libretro.so      => no info found
 	# superflappybirds_libretro.so => no info found

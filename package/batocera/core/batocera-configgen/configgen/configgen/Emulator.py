@@ -40,7 +40,10 @@ def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
 
 
 def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
-    defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
+    try:
+        defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
+    except:
+        return None
 
     arch_defaults: dict[str, Any] = {}
     if default_arch_yml.exists():
@@ -196,9 +199,19 @@ class Emulator:
 
         if 'use_guns' not in system_data and args.lightgun:
             system_data['use_guns'] = True
+        elif 'use_guns' in system_data:
+            if args.lightgun:
+                _logger.warning("use_guns manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_guns'])
+            else:
+                _logger.info("use_guns manually set to '%s' to flagless game", system_data['use_guns'])
 
         if 'use_wheels' not in system_data and args.wheel:
             system_data['use_wheels'] = True
+        elif 'use_wheels' in system_data:
+            if args.wheel:
+                _logger.warning("use_wheels manually set to '%s' to flagged game (auto-detection overridden)", system_data['use_wheels'])
+            else:
+                _logger.info("use_wheels manually set to '%s' to flagless game", system_data['use_wheels'])
 
         # network options
         if args.netplaymode is not None:
@@ -246,8 +259,11 @@ class Emulator:
         # for compatibility with earlier Batocera versions, let's keep -renderer
         # but it should be reviewed when we refactor configgen (to Python3?)
         # so that we can fetch them from system.shader without -renderer
-        render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
-        render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
+        try:
+            render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
+            render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
+        except:
+            pass
 
         self.renderconfig = Config(render_data)
 

@@ -74,21 +74,21 @@ def do_comment(line):
 
 def readChangeLogLine(infos, line):
     # version
-    m = re.search('^# (..../../..) - batocera\.linux', line)
+    m = re.search(r'^# (..../../..) - batocera\.linux', line)
     if m is not None:
-        m = re.search('^# (..../../..) - batocera\.linux ([0-9\.]*) - (.*)$', line)
+        m = re.search(r'^# (..../../..) - batocera\.linux ([0-9\.]*) - (.*)$', line)
         if m is not None:
             vdate    = m.group(1)
             vversion = m.group(2)
             vtitle   = m.group(3)
         else:
-            m = re.search('^# (..../../..) - batocera\.linux ([0-9\.]*)$', line)
+            m = re.search(r'^# (..../../..) - batocera\.linux ([0-9\.]*)$', line)
             if m is not None:
                 vdate    = m.group(1)
                 vversion = m.group(2)
                 vtitle   = None
             else:
-                m = re.search('^# (..../../..) - batocera\.linux$', line)
+                m = re.search(r'^# (..../../..) - batocera\.linux$', line)
                 if m is not None:
                     vdate    = m.group(1)
                     vversion = None
@@ -123,7 +123,7 @@ def readChangeLogLine(infos, line):
         return
 
     # section
-    m = re.search('^### ([a-zA-Z].*)$', line)
+    m = re.search(r'^### ([a-zA-Z].*)$', line)
     if m is not None:
         if infos["nsubitems"] > 0:
             infos["nsubitems"] = 0
@@ -137,7 +137,7 @@ def readChangeLogLine(infos, line):
         return
 
     # item
-    m = re.search('^- ([a-zA-Z0-9/"\*\.].*)$', line)
+    m = re.search(r'^- ([a-zA-Z0-9/"\*\.].*)$', line)
     if m is not None:
         if infos["nsubitems"] > 0:
             infos["nsubitems"] = 0
@@ -150,7 +150,7 @@ def readChangeLogLine(infos, line):
         return
 
     # subitem
-    m = re.search('^  - ([a-zA-Z0-9/"\*\.].*)$', line)
+    m = re.search(r'^  - ([a-zA-Z0-9/"\*\.].*)$', line)
     if m is not None:
         if infos["nsubitems"] == 0:
             do_start_subitems()
@@ -159,7 +159,7 @@ def readChangeLogLine(infos, line):
         return
 
     # comments
-    m = re.search('^  ([a-zA-Z0-9/"\*\.].*)$', line)
+    m = re.search(r'^  ([a-zA-Z0-9/"\*~\.].*)$', line)
     if m is not None:
         do_comment(m.group(1))
         return

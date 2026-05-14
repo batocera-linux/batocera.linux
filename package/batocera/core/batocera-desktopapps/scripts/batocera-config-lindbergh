@@ -1,49 +1,66 @@
 #!/bin/bash
 
-# Function to display help message
+EMU_DIR="/usr/bin/lindbergh"
+CONF_BASE="/userdata/system/configs/lindbergh"
+CONFIG_INI="$CONF_BASE/lindbergh.ini"
+CONTROLS_INI="$CONF_BASE/controls.ini"
+
 show_help() {
-    echo "Usage: $(basename "$0") [OPTIONS] GAME_PATH [FLAG]"
-    echo
-    echo "Arguments:"
-    echo "  GAME_PATH    Required. Path to the games executable directory."
-    echo "  FLAG         Optional. A flag to pass to the 'lindbergh' executable."
-    echo
-    echo "Options:"
-    echo "  -h, --help   Show this help message and exit."
+    cat << EOF
+Usage: $(basename "$0") [GAME_PATH] [FLAGS...]
+
+Arguments:
+  GAME_PATH    Optional. Path to the game directory.
+  FLAGS        Optional. Additional flags passed to the emulator.
+
+Note: 
+  Config (-c) and Control (-o) paths are handled automatically.
+  You do not need to specify them.
+  Default Config:   $CONFIG_INI
+  Default Controls: $CONTROLS_INI
+
+Example:
+  $(basename "$0") /userdata/roms/lindbergh/Hummer --create
+EOF
     exit 0
 }
 
-# Check for help option
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     show_help
 fi
 
-# Validate required argument
-if [[ -z "$1" ]]; then
-    echo "Error: GAME_PATH is required."
-    show_help
+# logic: If $1 is a directory, use it as GAME_PATH and shift arguments.
+if [[ -d "$1" ]]; then
+    GAME_PATH="$1"
+    shift
+else
+    GAME_PATH=""
 fi
 
 # Ensure DISPLAY is set
-if test -z "${DISPLAY}"
-then
-    export DISPLAY=$(getLocalXDisplay || echo :0.0)
+if [[ -z "${DISPLAY}" ]]; then
+    export DISPLAY=$(getLocalXDisplay 2>/dev/null || echo :0.0)
 fi
-# Define variables
-GAME_PATH="$1"
-FLAG="$2"
 
-export LD_LIBRARY_PATH="/lib32:/lib32/extralibs:/lib:/usr/lib:${GAME_PATH}"
+# Build LD_LIBRARY_PATH
+LD_PATH="/lib32:/lib32/extralibs:/lib:/usr/lib:${EMU_DIR}"
+[[ -n "${GAME_PATH}" ]] && LD_PATH="${LD_PATH}:${GAME_PATH}"
+export LD_LIBRARY_PATH="$LD_PATH"
+
+# User-specified Environment Variables
 export GST_PLUGIN_SYSTEM_PATH_1_0="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
 export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
 export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
 export SPA_PLUGIN_DIR="/lib32/spa-0.2:/usr/lib/spa-0.2"
 export PIPEWIRE_MODULE_DIR="/lib32/pipewire-0.3:/usr/lib/pipewire-0.3"
 
-# Execute the main program
-cd "${GAME_PATH}" || exit
-if [[ -n "${FLAG}" ]]; then
-    LD_PRELOAD=lindbergh.so ./lindbergh "${FLAG}"
-else
-    LD_PRELOAD=lindbergh.so ./lindbergh
-fi
+# Switch to emulator directory
+cd "$EMU_DIR" || exit 1
+
+# Preload the library
+export LD_PRELOAD="${EMU_DIR}/lindbergh.so"
+
+exec "${EMU_DIR}/lindbergh" \
+    -c "$CONFIG_INI" \
+    -o "$CONTROLS_INI" \
+    "$@"

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+
+    # Log the detected model to dmesg so we can debug it
+    echo "AYN: Boot script started. Detected model: '$V_BOARD_MODEL'" >> /dev/kmsg
+    if [ "$V_BOARD_MODEL" = "AYN_Thor" ]; then
+        echo "AYN: Thor model detected, waiting for DRM..." >> /dev/kmsg
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+            if [ -w /sys/class/drm/card0-DSI-1/status ]; then
+                echo "off" > /sys/class/drm/card0-DSI-1/status
+                sleep 0.1
+                echo "AYN: SUCCESS - DSI-1 disabled successfully!" >> /dev/kmsg
+                exit 0
+            fi
+            sleep 0.2
+        done
+
+        echo "AYN: FAILED - /sys/class/drm/card0-DSI-1/status never appeared!" >> /dev/kmsg
+    fi
+    ;;
+  stop|restart|status)
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
