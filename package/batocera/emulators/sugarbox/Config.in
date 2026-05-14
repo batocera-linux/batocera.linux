@@ -1,8 +1,6 @@
 config BR2_PACKAGE_SUGARBOX
 	bool "sugarbox"
-
 	select BR2_PACKAGE_BATOCERA_QT6                      
-
 	help
 	  SugarBox - Amstrad CPC emulator
 	  https://github.com/Tom1975/SugarboxV2

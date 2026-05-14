@@ -1,0 +1,13 @@
+diff --git a/cmake/modules/FindWaylandpp.cmake b/cmake/modules/FindWaylandpp.cmake
+index b360a69..7d1ea64 100644
+--- a/cmake/modules/FindWaylandpp.cmake
++++ b/cmake/modules/FindWaylandpp.cmake
+@@ -66,7 +66,7 @@ if(KODI_DEPENDSBUILD)
+ endif()
+ 
+ # Promote to cache variables so all code can access it
+-set(WAYLANDPP_PROTOCOLS_DIR "${PC_WAYLANDPP_PKGDATADIR}/protocols" CACHE INTERNAL "")
++set(WAYLANDPP_PROTOCOLS_DIR "${CMAKE_SYSROOT}${PC_WAYLANDPP_PKGDATADIR}/protocols" CACHE INTERNAL "")
+ 
+ # wayland-scanner++ is from native/host system in case of cross-compilation, so
+ # it's ok if we don't find it with pkgconfig

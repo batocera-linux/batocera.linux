@@ -22,8 +22,8 @@ FLYCAST_CONF_OPTS += -DUSE_DX9=OFF
 FLYCAST_CONF_OPTS += -DUSE_DX11=OFF
 
 # Get version details
-FLYCAST_GIT_TAG = $(shell $(GIT) -C $(FLYCAST_DL_DIR)/git describe --tags --always | tr -d '\n')
-FLYCAST_GIT_HASH = $(shell $(GIT) -C $(FLYCAST_DL_DIR)/git rev-parse --short HEAD | tr -d '\n')
+FLYCAST_GIT_TAG = $(shell $(BR2_GIT) -C $(FLYCAST_DL_DIR)/git describe --tags --always | tr -d '\n')
+FLYCAST_GIT_HASH = $(shell $(BR2_GIT) -C $(FLYCAST_DL_DIR)/git rev-parse --short HEAD | tr -d '\n')
 FLYCAST_CONF_OPTS += -DGIT_VERSION=$(FLYCAST_GIT_TAG)
 FLYCAST_CONF_OPTS += -DGIT_HASH=$(FLYCAST_GIT_HASH)
 

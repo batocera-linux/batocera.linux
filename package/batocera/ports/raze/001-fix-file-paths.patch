@@ -67,15 +67,15 @@ diff --git a/source/common/platform/posix/unix/i_specialpaths.cpp b/source/commo
  }
  
  //===========================================================================
-@@ -112,7 +60,7 @@
- {
- 	// Don't use GAME_DIR and such so that ZDoom and its child ports can
- 	// share the node cache.
--	FString path = NicePath("$HOME/.config/" GAMENAMELOWERCASE);
-+	FString path = NicePath("/userdata/system/configs/raze");
+@@ -63,7 +63,7 @@ FString M_GetAppDataPath(bool create)
+ 	#if defined(__HAIKU__)
+ 		FString path = NicePath("$HOME/config/settings/" GAMENAME);
+ 	#else
+-		FString path = NicePath("$HOME/.config/" GAMENAMELOWERCASE);
++		FString path = NicePath("/userdata/system/configs/raze");
+ 	#endif
  	if (create)
  	{
- 		CreatePath(path);
 @@ -132,7 +80,7 @@
  {
  	// Don't use GAME_DIR and such so that ZDoom and its child ports can

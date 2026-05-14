@@ -1,0 +1,12 @@
+diff --git a/src/floppy_ipf.c b/src/floppy_ipf.c.new
+index 54db609..a514602 100644
+--- a/src/floppy_ipf.c
++++ b/src/floppy_ipf.c.new
+@@ -24,6 +24,7 @@ const char floppy_ipf_fileid[] = "Hatari floppy_ipf.c";
+ #include "screen.h"
+ #include "video.h"
+ #include "cycles.h"
++#include <ctype.h>
+ 
+ #ifdef HAVE_CAPSIMAGE
+ #ifndef __cdecl

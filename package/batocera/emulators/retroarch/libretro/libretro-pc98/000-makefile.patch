@@ -1,7 +1,7 @@
-diff --git a/sdl2/Makefile.libretro b/sdl2/Makefile.libretro
+diff --git a/sdl/Makefile.libretro b/sdl/Makefile.libretro
 index 3174232..5895023 100755
---- a/sdl2/Makefile.libretro
-+++ b/sdl2/Makefile.libretro
+--- a/sdl/Makefile.libretro
++++ b/sdl/Makefile.libretro
 @@ -92,6 +92,23 @@ else ifneq (,$(findstring rpi,$(platform)))
  		CFLAGS += -mcpu=cortex-a72 -fdata-sections -ffunction-sections -Wl,--gc-sections -fmerge-all-constants
  	endif

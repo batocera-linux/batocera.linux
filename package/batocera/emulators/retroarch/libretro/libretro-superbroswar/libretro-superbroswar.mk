@@ -3,8 +3,8 @@
 # libretro-superbroswar
 #
 ################################################################################
-# Version.: Commits on Oct 21, 2024
-LIBRETRO_SUPERBROSWAR_VERSION = d8d5d58f3cbc1e08f91a0e218bc990ec47282c08
+# Version: Commits on Dec 12, 2025
+LIBRETRO_SUPERBROSWAR_VERSION = ae824f626ad80c8b7ee848698b3d1dcebe9a5ccb
 LIBRETRO_SUPERBROSWAR_SITE = https://github.com/libretro/superbroswar-libretro.git
 LIBRETRO_SUPERBROSWAR_SITE_METHOD = git
 LIBRETRO_SUPERBROSWAR_LICENSE = GPLv3
@@ -14,8 +14,11 @@ LIBRETRO_SUPERBROSWAR_EMULATOR_INFO = superbroswar.libretro.core.yml
 
 LIBRETRO_SUPERBROSWAR_CONF_ENV += LDFLAGS="-fPIC" CFLAGS="-fPIC" CXX_FLAGS="-fPIC"
 
+# Workaround GCC 14 strictness
+LIBRETRO_SUPERBROSWAR_CFLAGS = $(TARGET_CFLAGS) -Wno-error=incompatible-pointer-types
+
 define LIBRETRO_SUPERBROSWAR_BUILD_CMDS
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+    $(TARGET_CONFIGURE_OPTS) CFLAGS="$(LIBRETRO_SUPERBROSWAR_CFLAGS)" $(MAKE) \
 	    -C $(@D)/ -I $(@D)/dependencies -f Makefile.libretro platform="unix"
 endef
 

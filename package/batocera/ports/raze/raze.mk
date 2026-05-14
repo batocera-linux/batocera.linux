@@ -3,8 +3,8 @@
 # raze
 #
 ################################################################################
-
-RAZE_VERSION = 1.11.0
+# Version: Commits on Nov 19, 2025
+RAZE_VERSION = 76fe82f5eb318fdeb30ba9fb27093a9a10bc3821
 RAZE_SITE = $(call github,coelckers,Raze,$(RAZE_VERSION))
 RAZE_LICENSE = GPLv2
 RAZE_DEPENDENCIES = host-raze sdl2 bzip2 fluidsynth openal zmusic webp libvpx

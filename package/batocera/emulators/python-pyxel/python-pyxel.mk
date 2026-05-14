@@ -3,8 +3,8 @@
 # python-pyxel
 #
 ################################################################################
-
-PYTHON_PYXEL_VERSION = v2.2.4
+# Version: Commits on May 9, 2026
+PYTHON_PYXEL_VERSION = 3c21bda75435d837809825d90b15646010188b7e
 PYTHON_PYXEL_SITE =  $(call github,kitao,pyxel,$(PYTHON_PYXEL_VERSION))
 PYTHON_PYXEL_SETUP_TYPE = setuptools
 PYTHON_PYXEL_LICENSE = MIT
@@ -14,6 +14,10 @@ PYTHON_PYXEL_DEPENDENCIES = host-rust-bin sdl2
 PYTHON_PYXEL_EMULATOR_INFO = pyxel.emulator.yml
 
 PYTHON_PYXEL_SUBDIR = python
+
+PYTHON_PYXEL_ENV += \
+    BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$(STAGING_DIR) -I$(STAGING_DIR)/usr/include -I$(STAGING_DIR)/usr/include/SDL2" \
+    LIBRARY_PATH="$(STAGING_DIR)/usr/lib"
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 	PYXEL_CARGO_TARGET=x86_64-unknown-linux-gnu
@@ -37,13 +41,6 @@ define PYTHON_PYXEL_SAMPLE_AND_KEYS
 	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/python-pyxel/pyxel.keys \
 	    $(TARGET_DIR)/usr/share/evmapy/
 endef
-
-define PYTHON_PYXEL_FIX_BUILD
-    $(SED) "s+-I/usr/include+-I$(STAGING_DIR)/usr/include/SDL2+g" \
-	    $(@D)/rust/pyxel-platform/build.rs
-endef
-
-PYTHON_PYXEL_PRE_CONFIGURE_HOOKS += PYTHON_PYXEL_FIX_BUILD
 
 PYTHON_PYXEL_PRE_INSTALL_TARGET_HOOKS += PYTHON_PYXEL_REMOVE_PREVIOUS
 

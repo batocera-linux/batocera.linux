@@ -20,6 +20,7 @@ DEVILUTIONX_CONF_OPTS += -DPREFILL_PLAYER_NAME=ON
 # Ensure that DevilutionX's vendored dependencies are not accidentally fetched from network.
 # They should all be present in the source package.
 DEVILUTIONX_CONF_OPTS += -DFETCHCONTENT_FULLY_DISCONNECTED=ON
+DEVILUTIONX_CONF_OPTS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # ZeroTier on aarch64 uses ARMv8 Cryptography Extensions.
 # These extension are optional and only certain Armv8-A CPUs support them.

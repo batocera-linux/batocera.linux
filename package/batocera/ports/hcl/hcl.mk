@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Hydra Castle Labyrinth
+# hcl (Hydra Castle Labyrinth)
 #
 ################################################################################
 # Version.: Commits on Jun 24, 2022
@@ -13,7 +13,9 @@ HCL_EMULATOR_INFO = hcl.emulator.yml
 
 HCL_SUPPORTS_IN_SOURCE_BUILD = NO
 
-HCL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release -DUSE_SDL2=ON
+HCL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+HCL_CONF_OPTS += -DUSE_SDL2=ON
+HCL_CONF_OPTS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 define HCL_INSTALL_TARGET_CMDS
 	cp $(@D)/buildroot-build/hcl $(TARGET_DIR)/usr/bin/hcl

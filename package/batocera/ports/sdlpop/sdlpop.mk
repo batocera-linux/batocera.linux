@@ -11,6 +11,10 @@ SDLPOP_LICENSE = GPLv3
 SDLPOP_DEPENDENCIES = sdl2 sdl2_image
 SDLPOP_EMULATOR_INFO = sdlpop.emulator.yml
 
+SDLPOP_CONF_OPTS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+SDLPOP_CONF_OPTS += -DCMAKE_C_FLAGS="$(TARGET_CFLAGS) -D_GNU_SOURCE \
+    -Wno-error=implicit-function-declaration -Wno-error=int-conversion"
+
 define SDLPOP_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/sdlpop
 	mkdir -p $(TARGET_DIR)/usr/share/sdlpop/cfg

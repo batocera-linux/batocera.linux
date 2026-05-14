@@ -1,5 +1,5 @@
 config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
-        bool "batocera Emulationstation"
+    bool "batocera Emulationstation"
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_SDL2_MIXER
@@ -28,9 +28,8 @@ config BR2_PACKAGE_BATOCERA_EMULATIONSTATION
 	select BR2_PACKAGE_FFMPEG_AVRESAMPLE
 	select BR2_PACKAGE_FFMPEG_SWSCALE
 	select BR2_PACKAGE_FFMPEG_POSTPROC
-
-        help
-          A multi emulator frontend.
+    help
+      A multi emulator frontend.
 
 	  https://github.com/Aloshi/EmulationStation
 

@@ -32,7 +32,7 @@ TR2X_CONF_OPTS = -Dstaticdeps=false
 # Use install target commands to get all files & dirs
 define TR2X_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/tr2x
-	cp -f $(@D)/src/tr2/build/TR2X $(TARGET_DIR)/usr/bin/tr2x/
+	cp -f $(@D)/src/tr2/buildroot-build/TR2X $(TARGET_DIR)/usr/bin/tr2x/
 	cp -rf $(@D)/data/tr2/ship/* $(TARGET_DIR)/usr/bin/tr2x/
 endef
 

@@ -16,6 +16,10 @@ HYPSEUS_SINGE_SUBDIR = src
 HYPSEUS_SINGE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 HYPSEUS_SINGE_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 HYPSEUS_SINGE_CONF_OPTS += -DABSTRACT_SINGE=OFF
+# Add the "Legacy" flags to bypass GCC 14 strictne
+HYPSEUS_SINGE_CONF_OPTS += \
+    -DCMAKE_C_FLAGS="$(TARGET_CFLAGS) -Wno-error=implicit-function-declaration -Wno-error=int-conversion" \
+    -DCMAKE_CXX_FLAGS="$(TARGET_CXX_FLAGS) -Wno-error=implicit-function-declaration -Wno-error=int-conversion"
 
 $(eval $(call register,hypseus-singe.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,graphics.hypseus-singe.emulator.yml))

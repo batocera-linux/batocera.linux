@@ -74,15 +74,15 @@ endif
 
 define PIPEWIRE_FFMPEG_PLUGINS_INSTALL_TARGET_CMDS
 	$(INSTALL) -d $(TARGET_DIR)/usr/lib/spa-0.2/ffmpeg
-	$(INSTALL) -m 0755 $(@D)/build/spa/plugins/ffmpeg/libspa-ffmpeg.so \
+	$(INSTALL) -m 0755 $(@D)/buildroot-build/spa/plugins/ffmpeg/libspa-ffmpeg.so \
 		$(TARGET_DIR)/usr/lib/spa-0.2/ffmpeg/
-	$(INSTALL) -m 0755 $(@D)/build/spa/plugins/videoconvert/libspa-videoconvert.so \
+	$(INSTALL) -m 0755 $(@D)/buildroot-build/spa/plugins/videoconvert/libspa-videoconvert.so \
 		$(TARGET_DIR)/usr/lib/spa-0.2/videoconvert/
 endef
 
 ifeq ($(BR2_PACKAGE_LIBSNDFILE),y)
 define PIPEWIRE_FFMPEG_PLUGINS_INSTALL_PW_CAT
-	$(INSTALL) -m 0755 $(@D)/build/src/tools/pw-cat \
+	$(INSTALL) -m 0755 $(@D)/buildroot-build/src/tools/pw-cat \
 		$(TARGET_DIR)/usr/bin/pw-cat
 endef
 

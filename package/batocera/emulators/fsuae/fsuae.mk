@@ -8,7 +8,7 @@ FSUAE_VERSION = v3.2.35
 FSUAE_SITE = $(call github,FrodeSolheim,fs-uae,$(FSUAE_VERSION))
 FSUAE_LICENSE = GPLv2
 FSUAE_DEPENDENCIES += libpng libmpeg2 libglib2 libcapsimage openal
-FSUAE_DEPENDENCIES += sdl2 sdl2_ttf zlib
+FSUAE_DEPENDENCIES += host-zip sdl2 sdl2_ttf zlib
 FSUAE_EMULATOR_INFO = fsuae.emulator.yml
 
 FSUAE_AUTORECONF = YES

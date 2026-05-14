@@ -3,14 +3,21 @@
 # mupen64plus-core
 #
 ################################################################################
-# Version: Commits on Sep 10, 2024
-MUPEN64PLUS_CORE_VERSION = 312a5befde1b44db8beee7868b929c23d896991f
+# Version: Commits on Mar 30, 2026
+MUPEN64PLUS_CORE_VERSION = 53a08fceb71653000dd6640cac05eb390fba7885
 MUPEN64PLUS_CORE_SITE = \
     $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2
 MUPEN64PLUS_CORE_DEPENDENCIES = host-nasm sdl2 alsa-lib freetype dejavu
 MUPEN64PLUS_CORE_INSTALL_STAGING = YES
 MUPEN64PLUS_CORE_EMULATOR_INFO = mupen64plus.emulator.yml
+
+# GCC 14 compatibility flags
+MUPEN64PLUS_CORE_CFLAGS = $(TARGET_CFLAGS) \
+	-Wno-error=implicit-function-declaration \
+	-Wno-error=int-conversion \
+	-Wno-error=incompatible-pointer-types \
+	-D_GNU_SOURCE
 
 MUPEN64PLUS_GL_CFLAGS = -I$(STAGING_DIR)/usr/include -L$(STAGING_DIR)/usr/lib
 
@@ -20,12 +27,6 @@ ifeq ($(BR2_PACKAGE_LIBGLU)$(BR2_PACKAGE_SDL2_OPENGL)$(BR2_PACKAGE_XSERVER_XORG_
 else
 	MUPEN64PLUS_GL_LDLIBS = -lGLESv2 -lEGL
 	MUPEN64PLUS_PARAMS = USE_GLES=1
-endif
-
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	MUPEN64PLUS_CORE_DEPENDENCIES += rpi-userland
-	MUPEN64PLUS_GL_LDLIBS = -lbcm_host
-	MUPEN64PLUS_PARAMS = VC=1
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
@@ -85,7 +86,7 @@ define MUPEN64PLUS_CORE_BUILD_CMDS
 		PREFIX="$(STAGING_DIR)/usr" \
 		PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config" \
 		HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
-		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)"
+		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(MUPEN64PLUS_CORE_CFLAGS)"
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
@@ -96,7 +97,7 @@ define MUPEN64PLUS_CORE_INSTALL_STAGING_CMDS
 		HOST_CPU="$(MUPEN64PLUS_HOST_CPU)" \
 		INSTALL="/usr/bin/install" \
 		INSTALL_STRIP_FLAG="" \
-		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(TARGET_CXXFLAGS)" install
+		-C $(@D)/projects/unix all $(MUPEN64PLUS_PARAMS) OPTFLAGS="$(MUPEN64PLUS_CORE_CFLAGS)" install
 endef
 
 define MUPEN64PLUS_CORE_INSTALL_TARGET_CMDS

@@ -1,0 +1,49 @@
+diff --git a/VENDOR/libretro-rs-ffi/include/libretro.h b/VENDOR/libretro-rs-ffi/include/libretro.h
+index 2492df7..cba301d 100644
+--- a/VENDOR/libretro-rs-ffi/include/libretro.h
++++ b/VENDOR/libretro-rs-ffi/include/libretro.h
+@@ -2868,7 +2868,12 @@ typedef bool (RETRO_CALLCONV *retro_set_image_index_t)(unsigned index);
+ /* Gets total number of images which are available to use. */
+ typedef unsigned (RETRO_CALLCONV *retro_get_num_images_t)(void);
+ 
+-struct retro_game_info;
++struct retro_game_info {
++   const char *path;
++   const void *data;
++   size_t      size;
++   const char *meta;
++};
+ 
+ /* Replaces the disk image associated with index.
+  * Arguments to pass in info have same requirements as retro_load_game().
+@@ -3621,21 +3626,7 @@ struct retro_core_options_update_display_callback
+    retro_core_options_update_display_callback_t callback;
+ };
+ 
+-struct retro_game_info
+-{
+-   const char *path;       /* Path to game, UTF-8 encoded.
+-                            * Sometimes used as a reference for building other paths.
+-                            * May be NULL if game was loaded from stdin or similar,
+-                            * but in this case some cores will be unable to load `data`.
+-                            * So, it is preferable to fabricate something here instead
+-                            * of passing NULL, which will help more cores to succeed.
+-                            * retro_system_info::need_fullpath requires
+-                            * that this path is valid. */
+-   const void *data;       /* Memory buffer of loaded game. Will be NULL
+-                            * if need_fullpath was set. */
+-   size_t      size;       /* Size of memory buffer. */
+-   const char *meta;       /* String of implementation specific meta-data. */
+-};
++/* retro_game_info defined earlier */
+ 
+ #define RETRO_MEMORY_ACCESS_WRITE (1 << 0)
+    /* The core will write to the buffer provided by retro_framebuffer::data. */
+diff --git a/VENDOR/libretro-rs-ffi/.cargo-checksum.json b/VENDOR/libretro-rs-ffi/.cargo-checksum.json
+index 12d4a90..17cab7b 100644
+--- a/VENDOR/libretro-rs-ffi/.cargo-checksum.json
++++ b/VENDOR/libretro-rs-ffi/.cargo-checksum.json
+@@ -1 +1 @@
+-{"files":{"Cargo.toml":"415e57e9d0f64fa2a61308f85ad368dfc9d9fc350356200d393c42027c5361eb","README.md":"85b2d76a7bc85980ee692667d7842fc9e17730944be5a7078693e1d45555b710","build.rs":"3a367f663cf249f11eedca1828f3bc82b8fa2babf6d22c0a1f4d043e28c37663","include/libretro.h":"d391a40dbdf892cfa20f88d24c086538b16a235ab0c1920f4cc34b4536eb31db","src/lib.rs":"5d6780d6f8a244fcf7fbdf06407b06fd83d0eb3aefdcafb576bc7192b10c9e4b"},"package":null}
+\ No newline at end of file
++{"files":{"Cargo.toml":"415e57e9d0f64fa2a61308f85ad368dfc9d9fc350356200d393c42027c5361eb","README.md":"85b2d76a7bc85980ee692667d7842fc9e17730944be5a7078693e1d45555b710","build.rs":"3a367f663cf249f11eedca1828f3bc82b8fa2babf6d22c0a1f4d043e28c37663","include/libretro.h":"5acc3d88a8c0fc8dcc062aa974a10ceb2c97060f7058cdcb4492bfc08f8d57a2","src/lib.rs":"5d6780d6f8a244fcf7fbdf06407b06fd83d0eb3aefdcafb576bc7192b10c9e4b"},"package":null}
