@@ -26,15 +26,18 @@ EOF
 RUN <<EOF
 PACKAGES=(
     "bc"
+    "bison"
     "build-essential"
     "cpio"
     "curl"
     "default-jre"
     "file"
+    "flex"
     "gettext"  # buildstats.sh
     "git"
     "gosu"  # entry-point.sh
     "graphviz"
+    "libcrypt-dev"
     "libncurses6"
     "libncurses-dev"
     "libssl-dev"  # cmake build
