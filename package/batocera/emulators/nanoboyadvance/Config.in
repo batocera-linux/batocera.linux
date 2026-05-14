@@ -1,0 +1,8 @@
+config BR2_PACKAGE_NANOBOYADVANCE
+	bool "nanoboyadvance"
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_QT6BASE
+	help
+	  NanoBoyAdvance - Accurate Game Boy Advance emulator.
+	  Requires OpenGL 3.3 Core Profile.
+	  https://github.com/nba-emu/NanoBoyAdvance

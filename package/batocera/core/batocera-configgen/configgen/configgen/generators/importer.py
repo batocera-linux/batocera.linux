@@ -48,6 +48,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'melonds': ('melonds.melondsGenerator', 'MelonDSGenerator'),
     'model2emu': ('model2emu.model2emuGenerator', 'Model2EmuGenerator'),
     'mupen64plus': ('mupen.mupenGenerator', 'MupenGenerator'),
+    'nanoboyadvance': ('nanoboyadvance.nanoboyadvanceGenerator', 'NanoboyadvanceGenerator'),
     'openjazz': ('openjazz.openjazzGenerator', 'OpenJazzGenerator'),
     'openjk': ('openjk.openjkGenerator', 'OpenJKGenerator'),
     'openjkdf2': ('openjkdf2.openjkdf2Generator', 'OpenJKDF2Generator'),
