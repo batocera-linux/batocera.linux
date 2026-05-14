@@ -1,7 +1,8 @@
-DOCKER         ?= docker
-DOCKER_OPTS    ?=
-DOCKER_REPO    ?= batoceralinux
-DOCKER_IMAGE_NAME   ?= batocera.linux-build
+DOCKER            ?= docker
+DOCKER_OPTS       ?=
+DOCKER_REPO       ?= batoceralinux
+DOCKER_IMAGE_NAME ?= batocera.linux-build
+DOCKER_PLATFORM   ?= linux/amd64,linux/arm64
 
 ifdef IMAGE_NAME
 $(warning IMAGE_NAME will be removed in the future, please migrate to DOCKER_IMAGE_NAME)
@@ -24,15 +25,13 @@ GID  := $(shell id -g)
 
 define RUN_DOCKER
 	$(DOCKER) run -t --init --rm \
-		-e HOME \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
 		-v $(OUTPUT_DIR)/$*:/$* \
-		-v $(CCACHE_DIR):$(HOME)/.buildroot-ccache \
+		-v $(CCACHE_DIR):/home/batocera/.buildroot-ccache \
 		-w /$* \
-		-v /etc/passwd:/etc/passwd:ro \
-		-v /etc/group:/etc/group:ro \
-		-u $(UID):$(GID) \
+		-e HOST_UID=$(UID) \
+		-e HOST_GID=$(GID) \
 		$(DOCKER_OPTS) \
 		$(DOCKER_IMAGE)
 endef
@@ -48,11 +47,30 @@ endif
 DOCKER_IMAGE_STAMP = $(PROJECT_DIR)/.ba-docker-image-available
 DOCKER_IMAGE_AVAILABLE := $(if $(DIRECT_BUILD),,$(DOCKER_IMAGE_STAMP))
 
+define DOCKER_CHECK_BUILDER
+if ! $(DOCKER) buildx inspect batocera-builder >/dev/null 2>&1 ; then \
+	$(call MESSAGE,Creating docker builder 'batocera-builder'); \
+	$(DOCKER) buildx create --name batocera-builder; \
+fi
+endef
+
+define DOCKER_ECHO_ACTION_MESSAGE
+$(call MESSAGE,$(DOCKER_ACTION_MESSAGE) docker image $(DOCKER_IMAGE))
+endef
+
 $(DOCKER_IMAGE_STAMP): | _check_docker
-	@$(call MESSAGE,$(DOCKER_ACTION_MESSAGE) docker image $(DOCKER_IMAGE))
-	$(if $(filter build,$(DOCKER_ACTION)),\
-		$(DOCKER) build -t $(DOCKER_IMAGE) .,\
-		$(DOCKER) pull $(DOCKER_IMAGE))
+	@if [ '$(DOCKER_ACTION)' = 'build' ]; then \
+		$(DOCKER_CHECK_BUILDER); \
+		$(DOCKER_ECHO_ACTION_MESSAGE); \
+		$(DOCKER) buildx build --builder batocera-builder \
+				--platform $(DOCKER_PLATFORM) \
+				-t $(DOCKER_IMAGE) $(PROJECT_DIR)/docker; \
+		$(DOCKER) buildx build --builder batocera-builder \
+				--load -t $(DOCKER_IMAGE) $(PROJECT_DIR)/docker; \
+	else \
+		$(DOCKER_ECHO_ACTION_MESSAGE); \
+		$(DOCKER) pull $(DOCKER_IMAGE); \
+	fi
 	@touch $@
 
 .PHONY: pull-docker-image
@@ -79,5 +97,9 @@ rebuild-docker-image: clean-for-docker-image
 
 .PHONY: publish-docker-image
 publish-docker-image: | _check_docker
+	@$(DOCKER_CHECK_BUILDER)
 	@$(call MESSAGE,Publishing docker image $(DOCKER_IMAGE))
-	@$(DOCKER) push $(DOCKER_IMAGE):latest
+	@$(DOCKER) buildx build --builder batocera-builder \
+		--push --platform $(DOCKER_PLATFORM) \
+		-t $(DOCKER_IMAGE) \
+		$(PROJECT_DIR)/docker

@@ -69,7 +69,7 @@ MESSAGE = printf '$(TERM_BOLD)>>> $(if $*,$*: ,)%b$(TERM_RESET)\n' $$'$(call str
 $(file >$(USER_DEFCONFIG),)
 
 -include $(LOCAL_MK)
-include $(PROJECT_DIR)/docker.mk
+include $(PROJECT_DIR)/docker/docker.mk
 
 ifdef EXTRA_OPTS
 $(warning EXTRA_OPTS will be removed in the future, please migrate to $$(call add-defconfig,...))
