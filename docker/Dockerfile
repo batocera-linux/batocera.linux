@@ -1,4 +1,4 @@
-FROM ubuntu:noble-20260113
+FROM ubuntu:26.04
 SHELL ["/bin/bash", "-c"]
 
 # Architecture to build for
@@ -14,8 +14,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN <<EOF
 apt-get update -y
 apt-get install ca-certificates -y
-
-echo 'APT::Snapshot "20260215T000000Z";' > /etc/apt/apt.conf.d/50snapshot
 
 if [ "$TARGETPLATFORM" = "linux/amd64" ]; then
     dpkg --add-architecture i386
