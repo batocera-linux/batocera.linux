@@ -47,3 +47,6 @@ BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos par
 # Enable Wayland & XWayland
 BR2_PACKAGE_BATOCERA_WAYLAND_LABWC=y
 BR2_PACKAGE_BATOCERA_XWAYLAND=y
+
+# Enable Vulkan (required for GZDoom and other apps on Wayland, as OpenGL/GLX is unavailable without a full Xorg server)
+BR2_PACKAGE_BATOCERA_VULKAN=y

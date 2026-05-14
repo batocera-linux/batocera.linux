@@ -3,6 +3,7 @@ from __future__ import annotations
 import collections
 import re
 import shlex
+from os import environ
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
@@ -93,11 +94,15 @@ class GZDoomGenerator(Generator):
         gzdoom_api = system.config.get("gz_api", "0")
         arch_path = BATOCERA_SHARE_DIR / "batocera.arch"
 
-        # Default to GLES on non-x86_64 architectures if API is auto ("0")
         if gzdoom_api == "0" and arch_path.exists():
             arch = arch_path.read_text().strip()
             if arch != "x86_64":
+                # Default to GLES on non-x86_64 architectures
                 gzdoom_api = "3"
+            elif environ.get("WAYLAND_DISPLAY"):
+                # On x86_64 + Wayland, default to Vulkan (built with VULKAN_USE_WAYLAND=ON)
+                # OpenGL/GLX is not available without a full Xorg server
+                gzdoom_api = "1"
 
         if gzdoom_api == "3":
             # OpenGL ES settings for performance
@@ -256,7 +261,10 @@ class GZDoomGenerator(Generator):
         if system.config.get_bool("nologo"):
             commandArray.append("-nologo")
 
+        sdl_videodriver = "wayland" if environ.get("WAYLAND_DISPLAY") else "x11"
+
         return Command.Command(array=commandArray, env={
+            "SDL_VIDEODRIVER": sdl_videodriver,
             "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
             "SDL_JOYSTICK_HIDAPI": "0"
             }
