@@ -30,7 +30,6 @@ PACKAGES=(
     "build-essential"
     "cpio"
     "curl"
-    "default-jre"
     "file"
     "flex"
     "gettext"  # buildstats.sh
@@ -44,6 +43,7 @@ PACKAGES=(
     "locales"
     "lzip"
     "mercurial"
+    "openjdk-17-jdk-headless"  # use for kodi
     "python3"
     "rsync"
     "subversion"
