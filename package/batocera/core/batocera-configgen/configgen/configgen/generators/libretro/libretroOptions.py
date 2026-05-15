@@ -1535,6 +1535,20 @@ def _bsnes_options(
     # Video Filters
     _set_from_system(coreSettings, 'bsnes_video_filter', system, 'bsnes_video_filter', default='disabled')
 
+    # HD Mode 7 (bsnes_hd only, SNES systems)
+    if system.config.core == 'bsnes_hd' and system.name in ('snes', 'snes-msu1'):
+        _set_from_system(coreSettings, 'bsnes_mode7_scale',       system, 'bsnes_mode7_scale',       default='disable')
+        _set_from_system(coreSettings, 'bsnes_mode7_supersample', system, 'bsnes_mode7_supersample', default='none')
+        _set_from_system(coreSettings, 'bsnes_mode7_wsMode',         system, 'bsnes_mode7_wsMode',         default='Off')
+
+    # SGB options
+    if system.name == 'sgb-msu1':
+        # BIOS
+        _set_from_system(coreSettings, 'bsnes_sgb_bios', system, 'bsnes_sgb_bios', default='SGB1.sfc')
+        # Hide SGB border (bsnes only, not supported by bsnes_hd)
+        if system.config.core == 'bsnes':
+            _set_from_system(coreSettings, 'bsnes_hide_sgb_border', system, 'bsnes_hide_sgb_border', default='OFF')
+
 
 # Nintendo SNES/GB/GBC/SGB
 def _mesen_s_options(
@@ -2463,6 +2477,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'snes9x': _snes9x_options,
     'snes9x_next': _snes9x_next_options,
     'bsnes': _bsnes_options,
+    'bsnes_hd': _bsnes_options,
     'mesen-s': _mesen_s_options,
     'vb': _vb_options,
     'opera': _opera_options,
