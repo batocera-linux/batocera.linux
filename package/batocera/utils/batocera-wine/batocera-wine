@@ -291,12 +291,9 @@ wine_options() {
     export USE_BUILTIN_VKD3D=0
 
     # Nvidia variables
-    if [[ -e "/userdata/system/cache" ]]; then
-        export XDG_CACHE_HOME="/userdata/system/cache"
-    else
-        mkdir -p "/userdata/system/cache"
-        export XDG_CACHE_HOME="/userdata/system/cache"
-    fi
+    [[ -e "/userdata/system/cache/nvidia" ]] || mkdir -p "/userdata/system/cache/nvidia"
+    export XDG_CACHE_HOME="/userdata/system/cache"
+
     export __GL_SHADER_DISK_CACHE_SIZE=2147483648
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
     export __GL_SHADER_DISK_CACHE_PATH="${XDG_CACHE_HOME}"/nvidia
@@ -1203,6 +1200,5 @@ case "${ACTION}" in
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
-
 cleanAndExit $?
 exit $?
