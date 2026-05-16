@@ -5,7 +5,7 @@
 - Mangmi Air X initial support
 
 ### Added
-
+- NanoBoyAdvance as an alternative GBA emulator
 ### Fixed
 
 ### Changed / Improved
