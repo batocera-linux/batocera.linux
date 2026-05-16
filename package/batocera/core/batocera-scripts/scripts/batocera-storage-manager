@@ -397,8 +397,8 @@ handle_partition_event() {
     done < <(blkid -o export "$part_dev")
 
     # Standard Batocera drive check
-    if [[ "$label" == "SHARE" || "$label" == "BATOCERA" ]]; then 
-        log_msg "SKIP: [$devname] System partition detected."
+    if [[ "$label" =~ ^(SHARE|BATOCERA)$ ]] && is_system_disk "$parent"; then
+        log_msg "SKIP: [$devname] System partition detected parent:$parent (label: $label)."
         exit 0
     fi
 
@@ -431,6 +431,12 @@ handle_disk_event() {
         exit 0
     fi
     trap "rmdir '$parent_lock' 2>/dev/null" EXIT
+
+    # Check System Disk
+    if is_system_disk "$devname"; then
+        log_msg "SKIP: [$devname] $devname is the system drive."
+        exit 0
+    fi
 
     # Force the kernel to look for partitions before we decide the disk is "empty"
     if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
@@ -541,12 +547,6 @@ case "$COMMAND" in
     log_msg "ENTRY: [$DEVNAME] Detect event triggered."
 
     PARENT_DISK=$(get_parent_disk "$DEVNAME")
-
-    # Check System Disk
-    if is_system_disk "$PARENT_DISK"; then
-        log_msg "SKIP: [$DEVNAME] Parent '$PARENT_DISK' is the system drive."
-        exit 0
-    fi
 
     # Check Manual Config (sharedevice)
     if is_manual_drive "$PARENT_DISK"; then
