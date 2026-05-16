@@ -8,6 +8,7 @@ fi
 /usr/xenia_edge/xenia_edge \
     --storage_root=/userdata/system/configs/xenia_edge \
     --content_root=/userdata/saves/xbox360 \
-    --cache_root=/userdata/system/cache/xenia_edge
+    --cache_root=/userdata/system/cache/xenia_edge \
+    --log_file=/userdata/system/configs/xenia_edge/xenia_edge.log
 
 exit 0
