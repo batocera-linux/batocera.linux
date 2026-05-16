@@ -1,0 +1,74 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  nba_filter:
+    prompt: VIDEO FILTER
+    description: Upscaling/filtering algorithm applied to the GBA screen.
+    choices:
+      Nearest (Default): "nearest"
+      Linear: "linear"
+      Sharp: "sharp"
+      xBRZ: "xbrz"
+      LCD 1x: "lcd1x"
+  nba_color_correction:
+    prompt: COLOR CORRECTION
+    description: Emulate the color rendering of the original GBA hardware.
+    choices:
+      AGB (Default): "agb"
+      higan: "higan"
+      None: "none"
+  nba_lcd_ghosting:
+    prompt: LCD GHOSTING
+    description: Simulate the motion blur of the original GBA LCD screen.
+    choices:
+      Enabled (Default): "true"
+      Disabled: "false"
+  nba_audio_resampler:
+    prompt: AUDIO RESAMPLER
+    description: Audio interpolation quality. Higher quality uses more CPU.
+    choices:
+      Cosine (Default): "cosine"
+      Cubic: "cubic"
+      Sinc 64: "sinc64"
+      Sinc 128: "sinc128"
+      Sinc 256: "sinc256"
+  nba_mp2k_hle:
+    prompt: MP2K HLE AUDIO
+    description: High-quality reimplementation of the GBA MP2K/M4A audio mixer. Experimental.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+  nba_skip_bios:
+    prompt: SKIP BIOS INTRO
+    description: Skip the GBA boot logo. Requires a BIOS file when disabled.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+  nba_integer_scaling:
+    prompt: INTEGER SCALING
+    description: Snap screen size to integer multiples of 240x160.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+  nba_force_solar_sensor:
+    prompt: SOLAR SENSOR EMULATION
+    description: Force-enable solar sensor emulation (Boktai series). Overrides game database detection.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
+  nba_solar_sensor_level:
+    prompt: SOLAR SENSOR LEVEL
+    description: Emulated sunlight intensity (0 = darkness, 255 = full sunlight).
+    choices:
+      "0": "0"
+      "Low (23)": "23"
+      "Medium (60)": "60"
+      "High (99)": "99"
+      "Maximum (175)": "175"
+      "255": "255"
+systems:
+  - gba
