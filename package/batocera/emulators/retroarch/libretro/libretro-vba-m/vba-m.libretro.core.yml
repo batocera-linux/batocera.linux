@@ -26,26 +26,12 @@ systems:
         choices:
           'Off': disabled
           'On': enabled
-      showborders_gb:
-        group: ADVANCED OPTIONS
-        prompt: SUPER GB BORDERS
-        description: Only for Super Game Boy enhanced games.
-        choices:
-          'Off': disabled
-          'On': enabled
   - name: gbc
     custom_features:
       gbcoloroption_gbc:
         group: ADVANCED OPTIONS
         prompt: COLOR CORRECTION
         description: Simulate LCD color inaccuracy.
-        choices:
-          'Off': disabled
-          'On': enabled
-      showborders_gbc:
-        group: ADVANCED OPTIONS
-        prompt: SUPER GB BORDERS
-        description: Only for Super Game Boy enhanced games.
         choices:
           'Off': disabled
           'On': enabled

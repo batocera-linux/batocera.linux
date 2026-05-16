@@ -13,13 +13,6 @@ custom_features:
 systems:
   - name: gb
     custom_features:
-      sgb_borders:
-        group: ADVANCED OPTIONS
-        prompt: SUPER GB BORDERS
-        description: Only for Super Game Boy enhanced games.
-        choices:
-          'Off': false
-          'On': true
       color_correction:
         group: ADVANCED OPTIONS
         prompt: COLOR CORRECTION
@@ -29,13 +22,6 @@ systems:
           'On': GBA
   - name: gbc
     custom_features:
-      sgb_borders:
-        group: ADVANCED OPTIONS
-        prompt: SUPER GB BORDERS
-        description: Only for Super Game Boy enhanced games.
-        choices:
-          'Off': false
-          'On': true
       color_correction:
         group: ADVANCED OPTIONS
         prompt: COLOR CORRECTION
@@ -76,4 +62,12 @@ systems:
           "8": 8
           "9": 9
           "10": 10
-  - sgb
+  - name: sgb
+    custom_features:
+      sgb_borders:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GB BORDERS
+        description: Show the Super Game Boy decorative border.
+        choices:
+          'On': true
+          'Off': false

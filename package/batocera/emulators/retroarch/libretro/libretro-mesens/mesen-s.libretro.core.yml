@@ -38,13 +38,6 @@ custom_features:
       Game Boy: Game Boy
       Game Boy Color: Game Boy Color
       Super Game Boy: Super Game Boy
-  mesen-s_sgb2:
-    group: ADVANCED OPTIONS
-    prompt: SUPER GAME BOY 2
-    description: Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed.
-    choices:
-      'On': enabled
-      'Off': disabled
   mesen-s_overclock:
     group: ADVANCED OPTIONS
     prompt: OVERCLOCK (UNSTABLE)
@@ -77,5 +70,13 @@ systems:
   - gb
   - gbc
   - satellaview
-  - sgb
+  - name: sgb
+    custom_features:
+      mesen-s_sgb2:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GAME BOY 2
+        description: Emulate the Super Game Boy 2 for SGB. Runs games at the correct speed.
+        choices:
+          'On': enabled
+          'Off': disabled
   - snes
