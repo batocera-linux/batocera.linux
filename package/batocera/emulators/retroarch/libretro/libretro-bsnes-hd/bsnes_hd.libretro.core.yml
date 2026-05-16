@@ -4,7 +4,106 @@ features:
 shared_features:
   - rewind
   - autosave
+custom_features:
+  bsnes_video_filter:
+    prompt: VIDEO FILTERS
+    description: Apply a video filter to mimic various NTSC TV signals.
+    choices:
+      'Off': None
+      NTSC (RF): NTSC (RF)
+      NTSC (RGB): NTSC (RGB)
+      NTSC (S-Video): NTSC (S-Video)
+      NTSC (Composite): NTSC (Composite)
 systems:
-  - sgb-msu1
-  - snes
-  - snes-msu1
+  - name: sgb-msu1
+    custom_features:
+      bsnes_sgb_bios:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GAME BOY BIOS
+        description: Select the SGB BIOS. Requires SGB1.sfc or SGB2.sfc in the bios folder.
+        choices:
+          Super Game Boy: SGB1.sfc
+          Super Game Boy 2: SGB2.sfc
+
+  - name: snes
+    custom_features:
+      bsnes_mode7_scale:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 SCALE
+        description: Scale Mode 7 graphics at a higher resolution. Higher values require more GPU power.
+        choices:
+          'Off': disable
+          '240p (1x)': 1x
+          '480p (2x)': 2x
+          '720p (3x)': 3x
+          '960p (4x)': 4x
+          '1200p (5x)': 5x
+          '1440p (6x)': 6x
+          '1680p (7x)': 7x
+          '1920p (8x)': 8x
+          '2160p (9x)': 9x
+          '2400p (10x)': 10x
+      bsnes_mode7_supersample:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 SUPERSAMPLING
+        description: Supersample Mode 7 before scaling for smoother edges. Higher values require more GPU power.
+        choices:
+          'Off': none
+          2x: 2x
+          3x: 3x
+          4x: 4x
+          5x: 5x
+          6x: 6x
+          7x: 7x
+          8x: 8x
+          9x: 9x
+          10x: 10x
+      bsnes_mode7_wsMode:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 WIDESCREEN
+        description: Extend the horizontal field of view for widescreen displays.
+        choices:
+          'Off': Off
+          Only for Mode 7 scenes: Mode 7
+          Enable for all scenes: all
+  - name: snes-msu1
+    custom_features:
+      bsnes_mode7_scale:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 SCALE
+        description: Scale Mode 7 graphics at a higher resolution. Higher values require more GPU power.
+        choices:
+          'Off': disable
+          '240p (1x)': 1x
+          '480p (2x)': 2x
+          '720p (3x)': 3x
+          '960p (4x)': 4x
+          '1200p (5x)': 5x
+          '1440p (6x)': 6x
+          '1680p (7x)': 7x
+          '1920p (8x)': 8x
+          '2160p (9x)': 9x
+          '2400p (10x)': 10x
+      bsnes_mode7_supersample:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 SUPERSAMPLING
+        description: Supersample Mode 7 before scaling for smoother edges. Higher values require more GPU power.
+        choices:
+          'Off': none
+          2x: 2x
+          3x: 3x
+          4x: 4x
+          5x: 5x
+          6x: 6x
+          7x: 7x
+          8x: 8x
+          9x: 9x
+          10x: 10x
+      bsnes_mode7_wsMode:
+        group: ADVANCED OPTIONS
+        prompt: HD MODE 7 WIDESCREEN
+        description: Extend the horizontal field of view for widescreen displays.
+        choices:
+          'Off': Off
+          Only for Mode 7 scenes: Mode 7
+          Enable for all scenes: all

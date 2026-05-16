@@ -16,6 +16,21 @@ custom_features:
       NTSC (S-Video): NTSC (S-Video)
       NTSC (Composite): NTSC (Composite)
 systems:
-  - sgb-msu1
+  - name: sgb-msu1
+    custom_features:
+      bsnes_sgb_bios:
+        group: ADVANCED OPTIONS
+        prompt: SUPER GAME BOY BIOS
+        description: Select the SGB BIOS. Requires SGB1.sfc or SGB2.sfc in the bios folder.
+        choices:
+          Super Game Boy: SGB1.sfc
+          Super Game Boy 2: SGB2.sfc
+      bsnes_hide_sgb_border:
+        group: ADVANCED OPTIONS
+        prompt: HIDE SGB BORDER
+        description: Hide the Super Game Boy decorative border.
+        choices:
+          'Off': OFF
+          'On': ON
   - snes
   - snes-msu1
