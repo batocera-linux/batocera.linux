@@ -25,7 +25,7 @@ class TheXTechGenerator(Generator):
 
         commandArray.extend([system.config.get_bool('frameskip', True, return_values=("--frameskip", "--no-frameskip"))])
 
-        commandArray.extend(["-c", rom])
+        commandArray.extend(["-c", str(rom) + "/"])
 
         return Command.Command(array=commandArray)
 
