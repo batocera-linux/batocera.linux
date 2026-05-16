@@ -38,20 +38,20 @@ log_initial_info() {
         
         if [ -n "$major_disks" ]; then
             for disk in $major_disks; do
-                
+
                 # Check if the device actually exists as a block device
                 if [ -b "/dev/$disk" ]; then
-                    parted_output=$(parted -s "/dev/$disk" unit MiB print 2>&1)
-                    
+                    sgdisk_output=$(sfdisk -d "/dev/$disk" 2>&1)
+
                     if [ $? -eq 0 ]; then
                         log_msg "SYSTEM: DISK: /dev/$disk"
-                        # Log each line of the parted output
-                        echo "$parted_output" | while IFS= read -r line; do
-                            log_msg "PARTED:   $line"
+                        # Log each line of the sgdisk output
+                        echo "$sgdisk_output" | while IFS= read -r line; do
+                            log_msg "SGDISK:   $line"
                         done
                     else
-                        # Log the disk but note that parted failed to read it.
-                        log_msg "SYSTEM: DISK: /dev/$disk - WARNING: parted failed to read the disk partition table. Skipping detailed dump."
+                        # Log the disk but note that sgdisk failed to read it.
+                        log_msg "SYSTEM: DISK: /dev/$disk - WARNING: sgdisk failed to read the disk partition table. Skipping detailed dump."
                     fi
                 else
                     log_msg "SYSTEM: DISK: /dev/$disk - WARNING: Device not found (block file missing)."
@@ -442,8 +442,7 @@ handle_disk_event() {
     if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
         log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
         partprobe "/dev/$devname" >/dev/null 2>&1
-        # Use a short sleep to let the kernel update /dev
-        sleep 0.2 
+        udevadm settle
     fi
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
@@ -468,14 +467,7 @@ handle_disk_event() {
         done
 
         if [ "$has_parts" = true ]; then
-            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Triggering child partition scans..."
-            for p in /sys/class/block/$parent/$parent*; do
-                 [ -e "$p" ] || continue
-                 PNAME=$(basename "$p")
-                 [ "$PNAME" == "$parent" ] && continue
-                 log_msg "TRIGGER: Executing detection for child partition $PNAME"
-                 $0 detect "$PNAME" &
-            done
+            log_msg "INFO: [$devname] Partition table ($pttype) with partitions found. Partition events handled by udev."
             exit 0
         fi
         
