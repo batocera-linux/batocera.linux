@@ -293,7 +293,6 @@ wine_options() {
     # Nvidia variables
     [[ -e "/userdata/system/cache/nvidia" ]] || mkdir -p "/userdata/system/cache/nvidia"
     export XDG_CACHE_HOME="/userdata/system/cache"
-
     export __GL_SHADER_DISK_CACHE_SIZE=2147483648
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
     export __GL_SHADER_DISK_CACHE_PATH="${XDG_CACHE_HOME}"/nvidia
@@ -873,6 +872,15 @@ install_exe_msi() {
     GAMEEXT="$1"
     GAMENAME="$2"
     WINEPOINT="$3"
+    ENABLE_WIN32="$(get_setting enable_win32 "${SYSTEM}" "${ROMGAMENAME}")"
+
+#----- SETUP for windows and toss windows_installer -----
+    SYSTEM="$4"                                 #set back windows
+    ROMGAMENAME="$(basename "${WINEPOINT}")"    #get name from installed game
+
+    #Set some from installer file and set it to installed game
+    /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].wine-runner" "${WINE_VERSION}"
+    /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].enable_win32" "${ENABLE_WIN32}"
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     createWineDirectory "${WINEPOINT}"
@@ -887,6 +895,15 @@ install_iso() {
     GAMENAME="$1"
     WINEPOINT="$2"
     GAMEISOMOUNT="/var/run/wine/${ROMGAMENAME}.cdrom"
+    ENABLE_WIN32="$(get_setting enable_win32 "${SYSTEM}" "${ROMGAMENAME}")"
+
+#----- SETUP for windows and toss windows_installer -----
+    SYSTEM="$3"                                 #set back windows
+    ROMGAMENAME="$(basename "${WINEPOINT}")"    #get name from installed game
+
+    #Set some from installer file and set it to installed game
+    /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].wine-runner" "${WINE_VERSION}"
+    /usr/bin/batocera-settings-set "${SYSTEM}[\"${ROMGAMENAME}\"].enable_win32" "${ENABLE_WIN32}"
 
     mkdir -p "${GAMEISOMOUNT}" || return 1
     if ! mount -t iso9660 "${GAMENAME}" "${GAMEISOMOUNT}"; then
@@ -1094,15 +1111,16 @@ case "${ACTION}" in
 	;;
 
     "install")
+    SYSTEM="windows_installers" # To read settings from batocera.conf for installer system, before init_wine
     init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
 	    "exe"|"msi")
 		#Winepoint with stripped extension, add current date_time to avoid duplicates
-		install_exe_msi "${GAMEEXT,,}" "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+		install_exe_msi "${GAMEEXT,,}" "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine" "${1,,}"
 		;;
 	    "iso")
 		#Parsing Gamename, Winepoint with stripped extension, add current date_time to avoid duplicates
-		install_iso "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+		install_iso "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine" "${1,,}"
 		;;
 	    *)
 		echo "unknown extension ${GAMEEXT}" >&2
@@ -1110,6 +1128,8 @@ case "${ACTION}" in
 	;;
 
     "tricks"|"createprefix")
+        [[ "${GAMENAME}" == "." ]] && { GAMENAME="$PWD"; GAMEEXT="${GAMENAME##*.}"; }
+        [[ -e "${GAMENAME}" ]] && GAMENAME="$(realpath "${GAMENAME}")" || exit 1
         init_wine && requestFileSystem "${GAMENAME}"
         case "${GAMEEXT,,}" in
             "wine")
@@ -1122,6 +1142,7 @@ case "${ACTION}" in
                 setPrefixArch "${l_PREFIX}" "${WINE_VERSION}" "${ACTION}"
                 test -d "${l_PREFIX}" && echo "WINEPREFIX: '$_' already found!" || { createWineDirectory "$_" && echo "WINEPREFIX: '$_' created!"; }
                 ;;
+             *) echo "Fullpath for game needed, or extension is unknown ... Exit now!"; exit 1
         esac
 
         if [[ -n "${TRICK}" && "${ACTION}" == "tricks" ]]; then
@@ -1200,5 +1221,6 @@ case "${ACTION}" in
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
+
 cleanAndExit $?
 exit $?
