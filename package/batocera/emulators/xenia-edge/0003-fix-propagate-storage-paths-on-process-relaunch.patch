@@ -1,0 +1,119 @@
+diff --git a/src/xenia/app/emulator_window.cc b/src/xenia/app/emulator_window.cc
+index a53d7ff60..2cec308d8 100644
+--- a/src/xenia/app/emulator_window.cc
++++ b/src/xenia/app/emulator_window.cc
+@@ -161,6 +161,11 @@ DECLARE_string(apu);
+ DECLARE_bool(guide_button);
+ DECLARE_string(config);
+ 
++DECLARE_path(storage_root);
++DECLARE_path(content_root);
++DECLARE_path(cache_root);
++DECLARE_path(log_file);
++
+ DECLARE_bool(clear_memory_page_state);
+ 
+ DECLARE_string(readback_resolve);
+@@ -462,6 +467,22 @@ void EmulatorWindow::OnEmulatorInitialized() {
+     auto exe_path_u16 = xe::path_to_utf16(executable_path);
+     std::u16string cmd_line = u"\"" + exe_path_u16 + u"\"";
+ 
++    if (!cvars::storage_root.empty()) {
++      cmd_line += u" --storage_root=\"" +
++                  xe::to_utf16(cvars::storage_root.string()) + u"\"";
++    }
++    if (!cvars::content_root.empty()) {
++      cmd_line += u" --content_root=\"" +
++                  xe::to_utf16(cvars::content_root.string()) + u"\"";
++    }
++    if (!cvars::cache_root.empty()) {
++      cmd_line +=
++          u" --cache_root=\"" + xe::to_utf16(cvars::cache_root.string()) + u"\"";
++    }
++    if (!cvars::log_file.empty()) {
++      cmd_line +=
++          u" --log_file=\"" + xe::to_utf16(cvars::log_file.string()) + u"\"";
++    }
+     if (!cvars::config.empty()) {
+       cmd_line += u" --config=\"" + xe::to_utf16(cvars::config) + u"\"";
+     }
+@@ -530,6 +551,20 @@ void EmulatorWindow::OnEmulatorInitialized() {
+ 
+       arg_storage.push_back(executable_path.string());
+ 
++      if (!cvars::storage_root.empty()) {
++        arg_storage.push_back("--storage_root=" +
++                               cvars::storage_root.string());
++      }
++      if (!cvars::content_root.empty()) {
++        arg_storage.push_back("--content_root=" +
++                               cvars::content_root.string());
++      }
++      if (!cvars::cache_root.empty()) {
++        arg_storage.push_back("--cache_root=" + cvars::cache_root.string());
++      }
++      if (!cvars::log_file.empty()) {
++        arg_storage.push_back("--log_file=" + cvars::log_file.string());
++      }
+       if (!cvars::config.empty()) {
+         arg_storage.push_back("--config=" + cvars::config);
+       }
+@@ -2749,7 +2784,22 @@ void EmulatorWindow::LaunchTitleInNewProcess(
+   // Build full command line with quotes for paths that may contain spaces
+   std::u16string cmd_line = u"\"" + exe_path_u16 + u"\"";
+ 
+-  // Pass the config file path if one is being used
++  if (!cvars::storage_root.empty()) {
++    cmd_line += u" --storage_root=\"" +
++                xe::to_utf16(cvars::storage_root.string()) + u"\"";
++  }
++  if (!cvars::content_root.empty()) {
++    cmd_line += u" --content_root=\"" +
++                xe::to_utf16(cvars::content_root.string()) + u"\"";
++  }
++  if (!cvars::cache_root.empty()) {
++    cmd_line += u" --cache_root=\"" +
++                xe::to_utf16(cvars::cache_root.string()) + u"\"";
++  }
++  if (!cvars::log_file.empty()) {
++    cmd_line += u" --log_file=\"" +
++                xe::to_utf16(cvars::log_file.string()) + u"\"";
++  }
+   if (!cvars::config.empty()) {
+     cmd_line += u" --config=\"" + xe::to_utf16(cvars::config) + u"\"";
+   }
+@@ -2814,8 +2864,24 @@ void EmulatorWindow::LaunchTitleInNewProcess(
+ 
+     argv.push_back(executable_path.c_str());
+ 
+-    // Pass the config file if one is being used
+-    std::string config_arg;
++    std::string storage_root_arg, content_root_arg, cache_root_arg,
++        log_file_arg, config_arg, target_arg;
++    if (!cvars::storage_root.empty()) {
++      storage_root_arg = "--storage_root=" + cvars::storage_root.string();
++      argv.push_back(storage_root_arg.c_str());
++    }
++    if (!cvars::content_root.empty()) {
++      content_root_arg = "--content_root=" + cvars::content_root.string();
++      argv.push_back(content_root_arg.c_str());
++    }
++    if (!cvars::cache_root.empty()) {
++      cache_root_arg = "--cache_root=" + cvars::cache_root.string();
++      argv.push_back(cache_root_arg.c_str());
++    }
++    if (!cvars::log_file.empty()) {
++      log_file_arg = "--log_file=" + cvars::log_file.string();
++      argv.push_back(log_file_arg.c_str());
++    }
+     if (!cvars::config.empty()) {
+       config_arg = "--config=" + cvars::config;
+       argv.push_back(config_arg.c_str());
+@@ -2825,7 +2891,6 @@ void EmulatorWindow::LaunchTitleInNewProcess(
+     argv.push_back("--return_to_ui=true");
+ 
+     // Add the target game file
+-    std::string target_arg;
+     if (!path_to_file.empty()) {
+       target_arg = path_to_file.string();
+       argv.push_back(target_arg.c_str());
