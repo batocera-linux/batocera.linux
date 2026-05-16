@@ -3,8 +3,8 @@
 # libretro-pc98
 #
 ################################################################################
-# Version.: Commits on May 10, 2020
-LIBRETRO_PC98_VERSION = rev.22
+# Version: Commits on May 9, 2026
+LIBRETRO_PC98_VERSION = eebb95c060f82df45a5615be676c3fa4b7bb7ae0
 LIBRETRO_PC98_SITE = $(call github,AZO234,NP2kai,$(LIBRETRO_PC98_VERSION))
 LIBRETRO_PC98_LICENSE = GPLv3
 LIBRETRO_PC98_DEPENDENCIES += retroarch
@@ -34,14 +34,17 @@ else ifeq ($(BR2_aarch64),y)
 LIBRETRO_PC98_PLATFORM = unix
 endif
 
+# Get NP2KAI_VERSION from commit description
 define LIBRETRO_PC98_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/sdl2/ -f Makefile.libretro platform="$(LIBRETRO_PC98_PLATFORM)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_PC98_VERSION) | cut -c 1-7)"
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	-C $(@D)/sdl/ -f Makefile.libretro platform="$(LIBRETRO_PC98_PLATFORM)" \
+    NP2KAI_VERSION="20260502" \
+	NP2KAI_HASH="-$(shell echo $(LIBRETRO_PC98_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_PC98_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/np2kai
-	$(INSTALL) -D $(@D)/sdl2/np2kai_libretro.so \
+	$(INSTALL) -D $(@D)/sdl/np2kai_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/np2kai_libretro.so
 endef
 

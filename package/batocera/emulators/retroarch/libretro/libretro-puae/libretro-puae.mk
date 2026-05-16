@@ -3,8 +3,8 @@
 # libretro-puae
 #
 ################################################################################
-# Version: Commits on Nov 2, 2025
-LIBRETRO_PUAE_VERSION = 0043cf9c061bd9b81dbc1869c2761017139cfc63
+# Version: Commits on May 12, 2026
+LIBRETRO_PUAE_VERSION = d998eee5dbf653d3cdeeeedecccaa3cfea859701
 LIBRETRO_PUAE_SITE = $(call github,libretro,libretro-uae,$(LIBRETRO_PUAE_VERSION))
 LIBRETRO_PUAE_LICENSE = GPLv2
 LIBRETRO_PUAE_DEPENDENCIES += retroarch
@@ -24,10 +24,19 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
 LIBRETRO_PUAE_PLATFORM = rpi5
 endif
 
+# Workaround GCC 14 strictness
+LIBRETRO_PUAE_CFLAGS = $(TARGET_CFLAGS) \
+	-Wno-error=implicit-function-declaration \
+	-Wno-error=incompatible-pointer-types \
+	-Wno-error=int-conversion \
+	-Wno-error=implicit-int
+
 define LIBRETRO_PUAE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_PUAE_PLATFORM)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_PUAE_VERSION) | cut -c 1-7)"
+	$(TARGET_CONFIGURE_OPTS) \
+	    CFLAGS="$(LIBRETRO_PUAE_CFLAGS)" \
+		$(MAKE) -C $(@D)/ -f Makefile \
+		platform="$(LIBRETRO_PUAE_PLATFORM)" \
+		GIT_VERSION="-$(shell echo $(LIBRETRO_PUAE_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_PUAE_INSTALL_TARGET_CMDS

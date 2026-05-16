@@ -3,8 +3,8 @@
 # libretro-picodrive
 #
 ################################################################################
-# Version: Commits on Dec 3, 2025
-LIBRETRO_PICODRIVE_VERSION = 3365b1774bc8680be9899968fe45b224ad2f11c1
+# Version: Commits on Apr 2, 2026
+LIBRETRO_PICODRIVE_VERSION = f0d4a0118a9733a1f10bce5a4ac772c474f9300d
 LIBRETRO_PICODRIVE_SITE = https://github.com/libretro/picodrive.git
 LIBRETRO_PICODRIVE_SITE_METHOD=git
 LIBRETRO_PICODRIVE_GIT_SUBMODULES=YES
@@ -34,13 +34,18 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 LIBRETRO_PICODRIVE_PLATFORM = unix
 endif
 
+# Workaround GCC 14 strictness
+LIBRETRO_PICODRIVE_CFLAGS = $(TARGET_CFLAGS) \
+	-Wno-error=incompatible-pointer-types
+
 define LIBRETRO_PICODRIVE_BUILD_CMDS
 	$(MAKE) -C $(@D)/cpu/cyclone CONFIG_FILE=$(@D)/cpu/cyclone_config.h
 
     # force -j 1 to avoid parallel issues in the makefile
-	cd $(@D) && $(TARGET_CONFIGURE_OPTS) $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	cd $(@D) && $(TARGET_CONFIGURE_OPTS) CFLAGS="$(LIBRETRO_PICODRIVE_CFLAGS)" \
+	    $(MAKE) -j 1 CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	    -C $(@D) -f Makefile.libretro platform="$(LIBRETRO_PICODRIVE_PLATFORM)" \
-        GIT_VERSION=" $(shell echo $(LIBRETRO_PICODRIVE_VERSION) | cut -c 1-7)"
+        GIT_VERSION="$(shell echo $(LIBRETRO_PICODRIVE_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_PICODRIVE_INSTALL_TARGET_CMDS

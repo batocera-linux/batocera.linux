@@ -2429,7 +2429,6 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'vice_xvic': _vice_xvic_options,
     'vice_xpet': _vice_xpet_options,
     'puae': _puae_options,
-    'puae2021': _puae_options,
     'dolphin': _dolphin_options,
     'o2em': _o2em_options,
     'mame': _mame_options,

@@ -16,8 +16,8 @@
 # openjk
 #
 ################################################################################
-# Version: Commits on Oct 10, 2025
-OPENJK_VERSION = d1cb662f07dfa4c1999edfb5c1a86fd1c6285372
+# Version: Commits on May 13, 2026
+OPENJK_VERSION = 8cce3ea23125f56200b553cd0b149af617adf397
 OPENJK_SITE = https://github.com/JACoders/OpenJK
 OPENJK_SITE_METHOD = git
 OPENJK_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -38,6 +38,7 @@ OPENJK_CONF_OPTS += -DBuildJK2SPRdVanilla=ON
 HOST_OPENJK_DEPENDENCIES = mesa3d
 
 HOST_OPENJK_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+HOST_OPENJK_CONF_OPTS += -DCMAKE_FIND_ROOT_PATH="$(HOST_DIR);$(STAGING_DIR)"
 HOST_OPENJK_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 HOST_OPENJK_CONF_OPTS += -DUseInternalSDL2=ON
 HOST_OPENJK_CONF_OPTS += -DUseInternalJPEG=ON

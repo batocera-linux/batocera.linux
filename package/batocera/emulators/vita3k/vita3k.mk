@@ -18,7 +18,8 @@ VITA3K_SUPPORTS_IN_SOURCE_BUILD = NO
 VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
                    -DBUILD_SHARED_LIBS=OFF \
                    -DUSE_DISCORD_RICH_PRESENCE=OFF \
-                   -DUSE_VITA3K_UPDATE=OFF
+                   -DUSE_VITA3K_UPDATE=OFF \
+                   -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 ifeq ($(BR2_x86_64),y)
 VITA3K_FFMPEG_NAME=ffmpeg-linux-x64.zip

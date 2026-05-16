@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-GAMENETWORKINGSOCKETS_VERSION = 725e273c7442bac7a8bc903c0b210b1c15c34d92
+GAMENETWORKINGSOCKETS_VERSION = v1.5.1
 GAMENETWORKINGSOCKETS_SITE = https://github.com/ValveSoftware/GameNetworkingSockets
 GAMENETWORKINGSOCKETS_SITE_METHOD = git
 GAMENETWORKINGSOCKETS_GIT_SUBMODULES = YES

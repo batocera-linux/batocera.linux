@@ -1,7 +1,7 @@
 config BR2_PACKAGE_LIGHTSPARK
 	bool "lightspark"
 	select BR2_PACKAGE_FREETYPE
-	select BR2_PACKAGE_PCRE
+	select BR2_PACKAGE_PCRE2
 	select BR2_PACKAGE_JPEG
 	select BR2_PACKAGE_LIBPNG
 	select BR2_PACKAGE_SDL2

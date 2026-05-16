@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TSUGARU_VERSION = v20250513
+TSUGARU_VERSION = v20251206
 TSUGARU_SITE = $(call github,captainys,TOWNSEMU,$(TSUGARU_VERSION))
 TSUGARU_LICENSE = GPLv2
 TSUGARU_SUPPORTS_IN_SOURCE_BUILD = NO

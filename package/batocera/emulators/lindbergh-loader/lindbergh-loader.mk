@@ -33,15 +33,20 @@ LINDBERGH_LOADER_DEPENDENCIES += pcsc-lite libbsd libglew sdl3 sdl3_image sdl3_t
 LINDBERGH_LOADER_DEPENDENCIES += ncurses openal pipewire udev xlib_libX11 xlib_libXext   
 LINDBERGH_LOADER_DEPENDENCIES += xlib_libXi xlib_libXmu xlib_libXScrnSaver
 
-LINDBERGH_LOADER_CFLAGS += -g -fPIC -m32 -pthread -Wall -Werror -Wno-misleading-indentation
-LINDBERGH_LOADER_CFLAGS += -Wno-unused-but-set-variable -Wno-unused-variable
-LINDBERGH_LOADER_CFLAGS += -Wno-unused-function -D_GNU_SOURCE -Wno-char-subscripts
+LINDBERGH_LOADER_CFLAGS += -g -fPIC -m32 -pthread -Wall -Wno-error -Wno-error=discarded-qualifiers 
+LINDBERGH_LOADER_CFLAGS += -Wno-misleading-indentation -Wno-unused-but-set-variable 
+LINDBERGH_LOADER_CFLAGS += -Wno-unused-variable -Wno-unused-function -D_GNU_SOURCE -Wno-char-subscripts
 LINDBERGH_LOADER_CFLAGS += -I$(STAGING_DIR)/usr/include
 
 LINDBERGH_LOADER_LDFLAGS += -m32 -Wl,-z,defs -rdynamic -static-libgcc -lc -ldl -lGL -lglut -lX11
 LINDBERGH_LOADER_LDFLAGS += -lXcursor -lSDL3 -lSDL3_image -lSDL3_ttf -ludev -lm -lpthread
 LINDBERGH_LOADER_LDFLAGS += -shared -nostdlib -lasound -lxdiff -lFAudio -L./src/libxdiff
 LINDBERGH_LOADER_LDFLAGS += -L$(STAGING_DIR)/usr/lib
+
+define LINDBERGH_LOADER_FIX_STRSTR
+	$(SED) 's/char \*strstr/char \*(strstr)/g' $(@D)/src/lindbergh/patchNetwork.c
+endef
+LINDBERGH_LOADER_POST_PATCH_HOOKS += LINDBERGH_LOADER_FIX_STRSTR
 
 define LINDBERGH_LOADER_BUILD_CMDS
     $(MAKE) \

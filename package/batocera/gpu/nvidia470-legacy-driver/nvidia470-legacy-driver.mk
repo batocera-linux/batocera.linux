@@ -82,8 +82,10 @@ define NVIDIA470_LEGACY_DRIVER_INSTALL_GL_DEV
 	$(SED) 's:__GENERATED_BY__:Buildroot:' $(STAGING_DIR)/usr/lib/libGL.la
 	$(SED) 's:__LIBGL_PATH__:/usr/lib:' $(STAGING_DIR)/usr/lib/libGL.la
 	$(SED) 's:-L[^[:space:]]\+::' $(STAGING_DIR)/usr/lib/libGL.la
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/gl.pc $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
-	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/egl.pc $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/gl.pc \
+	    $(STAGING_DIR)/usr/lib/pkgconfig/gl.pc
+	$(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/nvidia-driver/egl.pc \
+	    $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
 endef
 
 # Those libraries are 'private' libraries requiring an agreement with
@@ -152,7 +154,8 @@ endif # NVIDIA470_LEGACY_DRIVER_MODULE == y
 # virtually everywhere, and it is fine enough to provide useful options.
 # Except it can't extract into an existing (even empty) directory.
 define NVIDIA470_LEGACY_DRIVER_EXTRACT_CMDS
-	PATH="$(HOST_DIR)/bin:$(PATH)" $(SHELL) $(NVIDIA470_LEGACY_DRIVER_DL_DIR)/$(NVIDIA470_LEGACY_DRIVER_SOURCE) \
+	PATH="$(HOST_DIR)/bin:$(PATH)" \
+	    $(SHELL) $(NVIDIA470_LEGACY_DRIVER_DL_DIR)/$(NVIDIA470_LEGACY_DRIVER_SOURCE) \
 		--extract-only --target $(@D)/tmp-extract
 	chmod u+w -R $(@D)
 	mv $(@D)/tmp-extract/* $(@D)/tmp-extract/.manifest $(@D)
@@ -227,9 +230,11 @@ endef
 define NVIDIA470_LEGACY_DRIVER_VULKANJSON_X86_64
     mkdir -p $(TARGET_DIR)/usr/share/vulkan/nvidia
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.x86_64.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.x86_64.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/usr/lib/libGLX_nvidia'+ \
+		    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.x86_64.json
 	$(INSTALL) -D -m 0644 $(@D)/nvidia_icd.json $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.i686.json
-        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.i686.json
+        sed -i -e s+'"library_path": "libGLX_nvidia'+'"library_path": "/lib32/libGLX_nvidia'+ \
+		    $(TARGET_DIR)/usr/share/vulkan/nvidia/nvidia470_legacy_icd.i686.json
 endef
 
 define NVIDIA470_LEGACY_DRIVER_VULKANJSON_X86

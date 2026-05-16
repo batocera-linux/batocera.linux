@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Abuse
+# abuse
 #
 ################################################################################
 # Version.: Commits on Oct 27, 2022
@@ -11,6 +11,7 @@ ABUSE_EMULATOR_INFO = abuse.emulator.yml
 ABUSE_DEPENDENCIES = sdl2 sdl2_mixer
 ABUSE_SUPPORTS_IN_SOURCE_BUILD = NO
 ABUSE_CONF_OPTS += -DASSETDIR=/userdata/roms/abuse
+ABUSE_CONF_OPTS += -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 # Data files and evmapy keys are moved to a Pacman package (saves 16MB)
 define ABUSE_INSTALL_TARGET_CMDS

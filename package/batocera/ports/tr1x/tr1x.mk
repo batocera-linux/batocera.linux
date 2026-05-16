@@ -33,7 +33,7 @@ TR1X_CONF_OPTS = -Dstaticdeps=false
 # Use install target commands to get all files & dirs
 define TR1X_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/tr1x
-	cp -f $(@D)/src/tr1/build/TR1X $(TARGET_DIR)/usr/bin/tr1x/
+	cp -f $(@D)/src/tr1/buildroot-build/TR1X $(TARGET_DIR)/usr/bin/tr1x/
 	cp -rf $(@D)/data/tr1/ship/* $(TARGET_DIR)/usr/bin/tr1x/
 endef
 

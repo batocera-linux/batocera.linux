@@ -243,7 +243,7 @@ def createLibretroConfig(
     retroarchConfig['input_libretro_device_p2'] = '1'
 
     # D-pad = Left analog stick forcing on PUAE and VICE (New D2A system on RA doesn't work with these cores.)
-    if system.config.core == 'puae' or system.config.core == 'puae2021' or system.config.core == 'vice_x64':
+    if system.config.core == 'puae' or system.config.core == 'vice_x64':
         retroarchConfig['input_player1_analog_dpad_mode'] = '3'
         retroarchConfig['input_player2_analog_dpad_mode'] = '3'
 
@@ -275,11 +275,11 @@ def createLibretroConfig(
         retroarchConfig['input_libretro_device_p2'] = coreToP2Device[system.config.core]
 
     ## AMIGA BIOS files are in /userdata/bios/amiga
-    if system.config.core == 'puae' or system.config.core == 'puae2021' or system.config.core == 'uae4arm':
+    if system.config.core == 'puae' or system.config.core == 'uae4arm':
         retroarchConfig['system_directory'] = '"/userdata/bios/amiga/"'
 
     ## AMIGA OCS-ECS/AGA/CD32
-    if system.config.core == 'puae' or system.config.core == 'puae2021':
+    if system.config.core == 'puae':
         if system.name != 'amigacd32':
             retroarchConfig['input_libretro_device_p1'] = system.config.get('controller1_puae', '1')
             retroarchConfig['input_libretro_device_p2'] = system.config.get('controller2_puae', '1')
