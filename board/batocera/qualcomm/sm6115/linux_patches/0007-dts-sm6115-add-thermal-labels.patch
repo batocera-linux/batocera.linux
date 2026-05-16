@@ -1,0 +1,52 @@
+From 8c2557f7ceb5e261ca473e8c5f1af89ec667d42b Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Tue, 6 Jan 2026 11:27:14 +0100
+Subject: [PATCH] dts:sm6115: add thermal labels
+
+---
+ arch/arm64/boot/dts/qcom/sm6115.dtsi | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index 91fc36b59abf..859bb171aae1 100644
+--- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+@@ -3318,7 +3318,7 @@ cpu7_crit: cpu-crit {
+ 			};
+ 		};
+ 
+-		cpu45-thermal {
++		cpu45_thermal: cpu45-thermal {
+ 			thermal-sensors = <&tsens0 10>;
+ 
+ 			trips {
+@@ -3342,7 +3342,7 @@ cpu45_crit: cpu-crit {
+ 			};
+ 		};
+ 
+-		cpu67-thermal {
++		cpu67_thermal: cpu67-thermal {
+ 			thermal-sensors = <&tsens0 11>;
+ 
+ 			trips {
+@@ -3366,7 +3366,7 @@ cpu67_crit: cpu-crit {
+ 			};
+ 		};
+ 
+-		cpu0123-thermal {
++		cpu0123_thermal: cpu0123-thermal {
+ 			thermal-sensors = <&tsens0 12>;
+ 
+ 			trips {
+@@ -3426,7 +3426,7 @@ trip-point1 {
+ 			};
+ 		};
+ 
+-		gpu-thermal {
++		gpu_thermal: gpu-thermal {
+ 			polling-delay-passive = <250>;
+ 
+ 			thermal-sensors = <&tsens0 15>;
+-- 
+2.52.0
+

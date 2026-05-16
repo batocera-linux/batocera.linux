@@ -1,0 +1,89 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v4] iommu/arm-smmu: add actlr settings for mdss on Qualcomm
+ platforms
+From: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Date: Tue, 02 Dec 2025 18:24:47 +0530
+Message-Id: <20251202125447.2102658-1-charan.kalla@oss.qualcomm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Add ACTLR settings for missing MDSS devices on Qualcomm platforms.
+
+These are QoS settings and are specific to per SoC thus different
+settings, eg: some have shallow prefetch while others have no
+prefetch.
+
+Aswell, this prefetch feature is not implemented for all the
+platforms, capturing to those are implemented to the best of my
+knowledge.
+
+Signed-off-by: Charan Teja Kalla <charan.kalla@oss.qualcomm.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+---
+Changes from V3:
+ 1) Add actlr setting for missing sc8180x & sm6115.
+ 2) Improved commit message.
+https://lore.kernel.org/all/20251124171030.323989-1-charan.kalla@oss.qualcomm.com/
+
+Changes from V2:
+ 1) Add actlr settings for all the mdss devices on Qualcomm platforms.
+ 2) Improved the commit message that explain why different ACTLR
+    settings
+https://lore.kernel.org/lkml/20251118171822.3539062-1-charan.kalla@oss.qualcomm.com/#t
+
+Changes from V1:
+  1) Added actlr setting only for MDSS and dropped for fastrpc. --
+konrad
+  2) ACTLR table is updated per alphanumeric order -- konrad 
+  https://lore.kernel.org/all/20251105075307.1658329-1-charan.kalla@oss.qualcomm.com/
+
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 26 ++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index c21a401c71eb..149da53091de 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -41,12 +41,38 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,fastrpc",
+ 			.data = (const void *) (PREFETCH_DEEP | CPRE | CMTLB) },
++	{ .compatible = "qcom,qcm2290-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc7280-venus",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sc8180x-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sc8280xp-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6115-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6125-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm6350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8150-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8250-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8350-mdss",
++			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm8450-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ .compatible = "qcom,sm8550-mdss",
+ 			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8650-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,sm8750-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
++	{ .compatible = "qcom,x1e80100-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ }
+ };
+ 
+-- 
+2.34.1
+

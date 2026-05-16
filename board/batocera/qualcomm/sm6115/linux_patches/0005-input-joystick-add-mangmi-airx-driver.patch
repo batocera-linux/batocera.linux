@@ -1,0 +1,390 @@
+From f407e141317fd71496caddaf9cfcf33febbdf014 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Fri, 2 Jan 2026 21:22:34 +0100
+Subject: [PATCH] input:joystick: add mangmi airx driver
+
+---
+ drivers/input/joystick/Kconfig  |   9 +
+ drivers/input/joystick/Makefile |   1 +
+ drivers/input/joystick/mangmi.c | 341 ++++++++++++++++++++++++++++++++
+ 3 files changed, 351 insertions(+)
+ create mode 100644 drivers/input/joystick/mangmi.c
+
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 7755e5b454d2..bf12c66e6a9f 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -332,6 +332,15 @@ config JOYSTICK_WALKERA0701
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called walkera0701.
+ 
++config JOYSTICK_MANGMI
++	tristate "Mangmi game controller"
++	select SERIO
++	help
++	  Say Y here if you want to use the Mangmi game controller with your computer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mangmi.
++
+ config JOYSTICK_MAPLE
+ 	tristate "Dreamcast control pad"
+ 	depends on MAPLE
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 9976f596a920..a117fed293ec 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_JOYSTICK_GUILLEMOT)	+= guillemot.o
+ obj-$(CONFIG_JOYSTICK_IFORCE)		+= iforce/
+ obj-$(CONFIG_JOYSTICK_INTERACT)		+= interact.o
+ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
++obj-$(CONFIG_JOYSTICK_MANGMI)		+= mangmi.o
+ obj-$(CONFIG_JOYSTICK_MAGELLAN)		+= magellan.o
+ obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
+ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
+diff --git a/drivers/input/joystick/mangmi.c b/drivers/input/joystick/mangmi.c
+new file mode 100644
+index 000000000000..13fa4209ce9a
+--- /dev/null
++++ b/drivers/input/joystick/mangmi.c
+@@ -0,0 +1,337 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * MANGMI Air X Joypad Driver
++ *
++ * Copyright (c) 2025, ROCKNIX <https://rocknix.org>
++ */
++
++#include <linux/errno.h>
++#include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/init.h>
++#include <linux/input.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/serdev.h>
++#include <linux/slab.h>
++#include <linux/delay.h>
++#include <linux/unaligned.h>
++
++#define DRIVER_NAME         "mangmi-air-x-joypad"
++#define MCU_PKT_LEN         64
++#define MCU_HEADER_BYTE     0x00
++
++/* Analog Stick Tuning */
++#define STICK_DEADZONE      400
++#define TRIGGER_DEADZONE    20
++
++/* UART Packet Bitmasks (Bytes 2 & 3) */
++#define MASK_HAT_RIGHT      0x08
++#define MASK_HAT_LEFT       0x04
++#define MASK_HAT_DOWN       0x02
++#define MASK_HAT_UP         0x01
++#define MASK_BTN_START      0x10 /* Unused (GPIO) */
++#define MASK_BTN_SELECT     0x20 /* Unused (GPIO) */
++#define MASK_BTN_THUMBL     0x40
++#define MASK_BTN_THUMBR     0x80
++
++#define MASK_BTN_TL         0x01
++#define MASK_BTN_TR         0x02
++#define MASK_BTN_MODE       0x04 /* Unused (GPIO) */
++#define MASK_BTN_A          0x10
++#define MASK_BTN_B          0x20
++#define MASK_BTN_X          0x40
++#define MASK_BTN_Y          0x80
++
++struct mcu_joy_drv {
++    struct serdev_device *serdev;
++    struct input_dev *input;
++
++    /* Hardware Control GPIOs */
++    struct gpio_desc *boot0_gpio;
++    struct gpio_desc *boot1_gpio;
++    struct gpio_desc *reset_gpio;
++    struct gpio_desc *power_gpio;
++    struct gpio_desc *stick_en_gpio;
++
++    /* Input Interrupt GPIOs */
++    struct gpio_desc *btn_start;
++    struct gpio_desc *btn_select;
++    struct gpio_desc *btn_mode;
++    struct gpio_desc *btn_back;
++
++    u8 rx_buf[MCU_PKT_LEN];
++    int rx_idx;
++};
++
++/*	Re-maps a number from one range to another
++*
++*/
++static int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max){
++  if (x < in_min) return out_min;
++  if (x > in_max) return out_max;
++
++  return abs(x - in_min) * abs(out_max - out_min) / abs(in_max - in_min) + out_min;
++}
++
++/* Interrupt Handler for Start/Select/Mode/Back */
++static irqreturn_t mcu_gpio_btn_handler(int irq, void *dev_id)
++{
++    struct mcu_joy_drv *drv = dev_id;
++    struct input_dev *dev = drv->input;
++
++    if (drv->btn_start)  input_report_key(dev, BTN_START,  gpiod_get_value(drv->btn_start));
++    if (drv->btn_select) input_report_key(dev, BTN_SELECT, gpiod_get_value(drv->btn_select));
++    if (drv->btn_mode)   input_report_key(dev, BTN_MODE,   gpiod_get_value(drv->btn_mode));
++    if (drv->btn_back)   input_report_key(dev, BTN_BACK,   gpiod_get_value(drv->btn_back));
++
++    input_sync(dev);
++    return IRQ_HANDLED;
++}
++
++static void mcu_process_packet(struct mcu_joy_drv *drv, const u8 *data)
++{
++    struct input_dev *dev = drv->input;
++    u16 raw_val;
++    int abs_val;
++
++    if (!dev || data[0] != MCU_HEADER_BYTE) return;
++
++    /* D-Pad */
++    int hat_x = !!(data[2] & MASK_HAT_RIGHT) - !!(data[2] & MASK_HAT_LEFT);
++    int hat_y = !!(data[2] & MASK_HAT_DOWN) - !!(data[2] & MASK_HAT_UP);
++    input_report_abs(dev, ABS_HAT0X, hat_x);
++    input_report_abs(dev, ABS_HAT0Y, hat_y);
++
++    /* Thumb Sticks (Click) */
++    input_report_key(dev, BTN_THUMBL, data[2] & MASK_BTN_THUMBL);
++    input_report_key(dev, BTN_THUMBR, data[2] & MASK_BTN_THUMBR);
++
++    /* Face Buttons & Shoulders */
++    input_report_key(dev, BTN_A,    data[3] & MASK_BTN_A);
++    input_report_key(dev, BTN_B,    data[3] & MASK_BTN_B);
++    input_report_key(dev, BTN_X,    data[3] & MASK_BTN_X);
++    input_report_key(dev, BTN_Y,    data[3] & MASK_BTN_Y);
++    input_report_key(dev, BTN_TL,   data[3] & MASK_BTN_TL);
++    input_report_key(dev, BTN_TR,   data[3] & MASK_BTN_TR);
++
++    /* Left Stick */
++    raw_val = get_unaligned_le16(&data[6]);
++    abs_val = map(raw_val, 900, 3300, -32768, 32767);
++    if (abs(abs_val) < STICK_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_X, abs_val);
++
++    raw_val = get_unaligned_le16(&data[8]);
++    raw_val = 3300 + 900 - raw_val; /* Invert Y-Axis */
++    abs_val = map(raw_val, 900, 3300, -32768, 32767);
++    if (abs(abs_val) < STICK_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_Y, abs_val);
++
++    /* Right Stick */
++    raw_val = get_unaligned_le16(&data[10]);
++    abs_val = map(raw_val, 900, 3300, -32768, 32767);
++    if (abs(abs_val) < STICK_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_RX, abs_val);
++
++    raw_val = get_unaligned_le16(&data[12]);
++    raw_val = 3300 + 900 - raw_val; /* Invert Y-Axis */
++    abs_val = map(raw_val, 900, 3300, -32768, 32767);
++    if (abs(abs_val) < STICK_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_RY, abs_val);
++
++    /* Analog Triggers */
++    raw_val = (data[14] << 8) | data[4];
++    abs_val = map(raw_val, 2900, 4000, 0, 255);
++    if (abs(abs_val) < TRIGGER_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_Z, abs_val);
++
++    raw_val = (data[15] << 8) | data[5];
++    abs_val = map(raw_val, 2900, 4000, 0, 255);
++    if (abs(abs_val) < TRIGGER_DEADZONE) abs_val = 0;
++    input_report_abs(dev, ABS_RZ, abs_val);
++
++    input_sync(dev);
++}
++
++static size_t mcu_joy_receive_buf(struct serdev_device *serdev, const u8 *data, size_t count)
++{
++    struct mcu_joy_drv *drv = serdev_device_get_drvdata(serdev);
++    int i;
++
++    for (i = 0; i < count; i++) {
++        drv->rx_buf[drv->rx_idx++] = data[i];
++
++        if (drv->rx_idx == MCU_PKT_LEN) {
++            mcu_process_packet(drv, drv->rx_buf);
++            drv->rx_idx = 0;
++        }
++    }
++
++    return count;
++}
++
++static const struct serdev_device_ops mcu_joy_serdev_ops = {
++    .receive_buf = mcu_joy_receive_buf,
++    .write_wakeup = serdev_device_write_wakeup,
++};
++
++static int mcu_setup_gpio_irq(struct device *dev, struct gpio_desc *gpiod,
++                              struct mcu_joy_drv *drv, const char* name)
++{
++    int irq, error;
++    if (!gpiod) return 0;
++
++    irq = gpiod_to_irq(gpiod);
++    if (irq < 0) return irq;
++
++    /* Interrupt on both Press and Release edges */
++    error = devm_request_threaded_irq(dev, irq, NULL, mcu_gpio_btn_handler,
++                                      IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++                                      name, drv);
++    return error;
++}
++
++static int mcu_joy_probe(struct serdev_device *serdev)
++{
++    struct mcu_joy_drv *drv;
++    struct input_dev *input;
++    int error;
++
++    drv = devm_kzalloc(&serdev->dev, sizeof(*drv), GFP_KERNEL);
++    if (!drv) return -ENOMEM;
++    serdev_device_set_drvdata(serdev, drv);
++    drv->serdev = serdev;
++
++    /* 1. Request Hardware Control GPIOs */
++    drv->boot0_gpio = devm_gpiod_get_optional(&serdev->dev, "mcu-boot0", GPIOD_OUT_LOW);
++    drv->boot1_gpio = devm_gpiod_get_optional(&serdev->dev, "mcu-boot1", GPIOD_OUT_LOW);
++    drv->reset_gpio = devm_gpiod_get_optional(&serdev->dev, "mcu-reset", GPIOD_OUT_LOW);
++    drv->power_gpio = devm_gpiod_get_optional(&serdev->dev, "mcu-power", GPIOD_OUT_LOW);
++    drv->stick_en_gpio = devm_gpiod_get_optional(&serdev->dev, "stick-en", GPIOD_OUT_LOW);
++
++    /* 2. Request Input Button GPIOs */
++    drv->btn_start = devm_gpiod_get_optional(&serdev->dev, "mcu-start", GPIOD_IN);
++    drv->btn_select = devm_gpiod_get_optional(&serdev->dev, "mcu-select", GPIOD_IN);
++    drv->btn_mode = devm_gpiod_get_optional(&serdev->dev, "mcu-mode", GPIOD_IN);
++    drv->btn_back = devm_gpiod_get_optional(&serdev->dev, "mcu-back", GPIOD_IN);
++
++    /* 3. Setup Input Device */
++    input = devm_input_allocate_device(&serdev->dev);
++    if (!input) return -ENOMEM;
++    drv->input = input;
++
++    input->name = "MANGMI Air X Joypad";
++    input->phys = "mangmi-air-x/input0";
++    input->id.bustype = BUS_HOST;
++    input->id.vendor = 0x4001;
++    input->id.product = 0x0428;
++    input->id.version = 0x0100;
++
++    /* Configure Capabilities */
++    input_set_capability(input, EV_KEY, BTN_A);
++    input_set_capability(input, EV_KEY, BTN_B);
++    input_set_capability(input, EV_KEY, BTN_X);
++    input_set_capability(input, EV_KEY, BTN_Y);
++    input_set_capability(input, EV_KEY, BTN_TL);
++    input_set_capability(input, EV_KEY, BTN_TR);
++    input_set_capability(input, EV_KEY, BTN_THUMBL);
++    input_set_capability(input, EV_KEY, BTN_THUMBR);
++    input_set_capability(input, EV_KEY, BTN_SELECT);
++    input_set_capability(input, EV_KEY, BTN_START);
++    input_set_capability(input, EV_KEY, BTN_MODE);
++    input_set_capability(input, EV_KEY, BTN_BACK);
++
++    input_set_abs_params(input, ABS_X, -32768, 32767, 64, 256);
++    input_set_abs_params(input, ABS_Y, -32768, 32767, 64, 256);
++    input_set_abs_params(input, ABS_RX, -32768, 32767, 64, 256);
++    input_set_abs_params(input, ABS_RY, -32768, 32767, 64, 256);
++    input_set_abs_params(input, ABS_Z, 0, 255, 4, 8);
++    input_set_abs_params(input, ABS_RZ, 0, 255, 4, 8);
++    input_set_abs_params(input, ABS_HAT0X, -1, 1, 0, 0);
++    input_set_abs_params(input, ABS_HAT0Y, -1, 1, 0, 0);
++
++    error = input_register_device(input);
++    if (error) return error;
++
++    /* 4. Attach GPIO Interrupts */
++    mcu_setup_gpio_irq(&serdev->dev, drv->btn_start, drv, "btn-start");
++    mcu_setup_gpio_irq(&serdev->dev, drv->btn_select, drv, "btn-select");
++    mcu_setup_gpio_irq(&serdev->dev, drv->btn_mode, drv, "btn-mode");
++    mcu_setup_gpio_irq(&serdev->dev, drv->btn_back, drv, "btn-back");
++
++    /* * 5. Hardware Initialization Sequence
++     * Performs a cold boot to ensure MCU is stable.
++     */
++
++    /* Force Power Down & Reset */
++    if (drv->power_gpio) gpiod_set_value_cansleep(drv->power_gpio, 0);
++    if (drv->stick_en_gpio) gpiod_set_value_cansleep(drv->stick_en_gpio, 0);
++    if (drv->reset_gpio) gpiod_set_value_cansleep(drv->reset_gpio, 1);
++
++    msleep(500); /* Wait for capacitors to discharge */
++
++    /* Power Up */
++    if (drv->power_gpio) gpiod_set_value_cansleep(drv->power_gpio, 1);
++    if (drv->stick_en_gpio) gpiod_set_value_cansleep(drv->stick_en_gpio, 1);
++
++    /* Set Boot Mode High (Flash Mode) */
++    if (drv->boot0_gpio) gpiod_set_value_cansleep(drv->boot0_gpio, 1);
++    if (drv->boot1_gpio) gpiod_set_value_cansleep(drv->boot1_gpio, 1);
++
++    serdev_device_set_client_ops(serdev, &mcu_joy_serdev_ops);
++
++    /* * 6. UART Initialization (Double-Open Trick)
++     * Opens, Closes, and Re-opens to clear the hardware FIFO
++     * and prevent "0 RX bytes" initialization errors.
++     */
++    error = devm_serdev_device_open(&serdev->dev, serdev);
++    if (error) return dev_err_probe(&serdev->dev, error, "UART Open Failed\n");
++
++    error = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
++    if (error) return dev_err_probe(&serdev->dev, error, "Set parity Failed\n");
++
++    serdev_device_set_flow_control(serdev, false);
++    serdev_device_set_baudrate(serdev, 4000000);
++
++    /* 7. Release Reset (Start MCU) */
++    if (drv->reset_gpio) {
++        msleep(20);
++        gpiod_set_value_cansleep(drv->reset_gpio, 0);
++    }
++
++    return 0;
++}
++
++static void mcu_joy_remove(struct serdev_device *serdev)
++{
++    struct mcu_joy_drv *drv = serdev_device_get_drvdata(serdev);
++
++    serdev_device_close(serdev);
++
++    /* Place MCU in safe power-down state */
++    if (drv->reset_gpio) gpiod_set_value_cansleep(drv->reset_gpio, 1);
++    if (drv->stick_en_gpio) gpiod_set_value_cansleep(drv->stick_en_gpio, 0);
++    if (drv->power_gpio) gpiod_set_value_cansleep(drv->power_gpio, 0);
++}
++
++static const struct of_device_id mcu_joy_of_match[] = {
++    { .compatible = "rocknix,mangmi-air-x-joypad" },
++    { /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mcu_joy_of_match);
++
++static struct serdev_device_driver mcu_joy_driver = {
++    .driver = {
++        .name = DRIVER_NAME,
++        .of_match_table = mcu_joy_of_match,
++    },
++    .probe = mcu_joy_probe,
++    .remove = mcu_joy_remove,
++};
++
++module_serdev_device_driver(mcu_joy_driver);
++
++MODULE_AUTHOR("ROCKNIX");
++MODULE_DESCRIPTION("MANGMI Air X Joypad Driver");
++MODULE_LICENSE("GPL");
+-- 
+2.52.0
+

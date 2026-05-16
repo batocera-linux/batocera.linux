@@ -1,0 +1,13 @@
+diff --git a/src/daemon/pipewire.conf.in b/src/daemon/pipewire.conf.in
+index 0d54cf9b90..bdea2ca072 100644
+--- a/src/daemon/pipewire.conf.in
++++ b/src/daemon/pipewire.conf.in
+@@ -43,7 +43,7 @@ context.properties = {
+     #default.clock.rate          = 48000
+     #default.clock.allowed-rates = [ 48000 ]
+     #default.clock.quantum       = 1024
+-    #default.clock.min-quantum   = 32
++    default.clock.min-quantum   = 960
+     #default.clock.max-quantum   = 2048
+     #default.clock.quantum-limit = 8192
+     #default.clock.quantum-floor = 4

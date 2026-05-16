@@ -1,0 +1,70 @@
+From 573375d1bb08bab11d8b99bc1cc164ed2727ca09 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Fri, 26 Dec 2025 21:07:18 +0100
+Subject: [PATCH] add pm6125-pwm
+
+---
+ arch/arm64/boot/dts/qcom/pm6125.dtsi | 8 ++++++++
+ drivers/leds/rgb/leds-qcom-lpg.c     | 8 ++++++++
+ drivers/mfd/qcom-spmi-pmic.c         | 1 +
+ 3 files changed, 17 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/pm6125.dtsi b/arch/arm64/boot/dts/qcom/pm6125.dtsi
+index d0db28336fa9..d0533e24964d 100644
+--- a/arch/arm64/boot/dts/qcom/pm6125.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm6125.dtsi
+@@ -155,5 +155,13 @@ pm6125_gpios: gpio@c000 {
+ 	pmic@1 {
+ 		compatible = "qcom,pm6125", "qcom,spmi-pmic";
+ 		reg = <0x1 SPMI_USID>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		pm6125_pwm: pwm {
++			compatible = "qcom,pm6125-pwm";
++			#pwm-cells = <2>;
++			status = "disabled";
++		};
+ 	};
+ };
+diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+index 4f2a178e3d26..28d32a3464a9 100644
+--- a/drivers/leds/rgb/leds-qcom-lpg.c
++++ b/drivers/leds/rgb/leds-qcom-lpg.c
+@@ -1701,6 +1701,13 @@ static const struct lpg_data pmi8950_pwm_data = {
+ 	},
+ };
+ 
++static const struct lpg_data pm6125_pwm_data = {
++	.num_channels = 1,
++	.channels = (const struct lpg_channel_data[]) {
++		{ .base = 0xb300 },
++	},
++};
++
+ static const struct lpg_data pm8994_lpg_data = {
+ 	.lut_base = 0xb000,
+ 	.lut_size = 64,
+@@ -1819,6 +1826,7 @@ static const struct lpg_data pmk8550_pwm_data = {
+ };
+ 
+ static const struct of_device_id lpg_of_table[] = {
++	{ .compatible = "qcom,pm6125-pwm", .data = &pm6125_pwm_data },
+ 	{ .compatible = "qcom,pm660l-lpg", .data = &pm660l_lpg_data },
+ 	{ .compatible = "qcom,pm8150b-lpg", .data = &pm8150b_lpg_data },
+ 	{ .compatible = "qcom,pm8150l-lpg", .data = &pm8150l_lpg_data },
+diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
+index b4b178caf754..79a5b06c4e49 100644
+--- a/drivers/mfd/qcom-spmi-pmic.c
++++ b/drivers/mfd/qcom-spmi-pmic.c
+@@ -37,6 +37,7 @@ static DEFINE_MUTEX(pmic_spmi_revid_lock);
+ #define N_USIDS(n)		((void *)n)
+ 
+ static const struct of_device_id pmic_spmi_id_table[] = {
++	{ .compatible = "qcom,pm6125", .data = N_USIDS(2) },
+ 	{ .compatible = "qcom,pm660", .data = N_USIDS(2) },
+ 	{ .compatible = "qcom,pm660l", .data = N_USIDS(2) },
+ 	{ .compatible = "qcom,pm8004", .data = N_USIDS(2) },
+-- 
+2.52.0
+

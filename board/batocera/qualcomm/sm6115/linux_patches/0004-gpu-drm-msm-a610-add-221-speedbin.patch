@@ -1,0 +1,114 @@
+From a1068b755e5787a3b676fba670be9f702d807767 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sat, 27 Dec 2025 20:49:13 +0100
+Subject: [PATCH] gpu:drm:msm: a610 add 221 speedbin
+
+---
+ arch/arm64/boot/dts/qcom/sm6115.dtsi      | 24 ++++++++++++++++-------
+ drivers/gpu/drm/msm/adreno/a6xx_catalog.c |  1 +
+ drivers/pmdomain/qcom/rpmpd.c             |  2 +-
+ 3 files changed, 19 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index 91fc36b59abf..7b6b6602cdeb 100644
+--- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+@@ -429,6 +429,10 @@ rpmpd_opp_turbo: opp7 {
+ 						rpmpd_opp_turbo_plus: opp8 {
+ 							opp-level = <RPM_SMD_LEVEL_TURBO_NO_CPR>;
+ 						};
++
++						rpmpd_opp_turbo_high: opp9 {
++							opp-level = <464>;
++						};
+ 					};
+ 				};
+ 			};
+@@ -1755,37 +1759,37 @@ gpu_opp_table: opp-table {
+ 				opp-320000000 {
+ 					opp-hz = /bits/ 64 <320000000>;
+ 					required-opps = <&rpmpd_opp_low_svs>;
+-					opp-supported-hw = <0x1f>;
++					opp-supported-hw = <0x3f>;
+ 				};
+ 
+ 				opp-465000000 {
+ 					opp-hz = /bits/ 64 <465000000>;
+ 					required-opps = <&rpmpd_opp_svs>;
+-					opp-supported-hw = <0x1f>;
++					opp-supported-hw = <0x3f>;
+ 				};
+ 
+ 				opp-600000000 {
+ 					opp-hz = /bits/ 64 <600000000>;
+ 					required-opps = <&rpmpd_opp_svs_plus>;
+-					opp-supported-hw = <0x1f>;
++					opp-supported-hw = <0x3f>;
+ 				};
+ 
+ 				opp-745000000 {
+ 					opp-hz = /bits/ 64 <745000000>;
+ 					required-opps = <&rpmpd_opp_nom>;
+-					opp-supported-hw = <0xf>;
++					opp-supported-hw = <0x2f>;
+ 				};
+ 
+ 				opp-820000000 {
+ 					opp-hz = /bits/ 64 <820000000>;
+ 					required-opps = <&rpmpd_opp_nom_plus>;
+-					opp-supported-hw = <0x7>;
++					opp-supported-hw = <0x27>;
+ 				};
+ 
+ 				opp-900000000 {
+ 					opp-hz = /bits/ 64 <900000000>;
+ 					required-opps = <&rpmpd_opp_turbo>;
+-					opp-supported-hw = <0x7>;
++					opp-supported-hw = <0x27>;
+ 				};
+ 
+ 				/* Speed bin 2 can reach 950 Mhz instead of 980 like the rest. */
+@@ -1798,8 +1802,14 @@ opp-950000000 {
+ 				opp-980000000 {
+ 					opp-hz = /bits/ 64 <980000000>;
+ 					required-opps = <&rpmpd_opp_turbo_plus>;
+-					opp-supported-hw = <0x3>;
++					opp-supported-hw = <0x23>;
+ 				};
++
++				opp-1050000000 {
++					opp-hz = /bits/ 64 <1050000000>;
++					required-opps = <&rpmpd_opp_turbo_high>;
++					opp-supported-hw = <0x20>;
++				};				
+ 			};
+ 		};
+ 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
+index 44df6410bce1..6d879871522f 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
+@@ -704,6 +704,7 @@ static const struct adreno_info a6xx_gpus[] = {
+ 			{ 200, 2 },
+ 			{ 157, 3 },
+ 			{ 127, 4 },
++			{ 221, 5 },
+ 		),
+ 	}, {
+ 		.chip_ids = ADRENO_CHIP_IDS(0x06010500),
+diff --git a/drivers/pmdomain/qcom/rpmpd.c b/drivers/pmdomain/qcom/rpmpd.c
+index f8580ec0f737..fd299d94cd76 100644
+--- a/drivers/pmdomain/qcom/rpmpd.c
++++ b/drivers/pmdomain/qcom/rpmpd.c
+@@ -877,7 +877,7 @@ static struct rpmpd *sm6115_rpmpds[] = {
+ static const struct rpmpd_desc sm6115_desc = {
+ 	.rpmpds = sm6115_rpmpds,
+ 	.num_pds = ARRAY_SIZE(sm6115_rpmpds),
+-	.max_state = RPM_SMD_LEVEL_TURBO_NO_CPR,
++	.max_state = RPM_SMD_LEVEL_BINNING,
+ };
+ 
+ static struct rpmpd *sm6125_rpmpds[] = {
+-- 
+2.52.0
+

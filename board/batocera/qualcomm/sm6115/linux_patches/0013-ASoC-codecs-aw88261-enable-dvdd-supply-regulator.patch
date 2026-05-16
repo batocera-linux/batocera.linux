@@ -1,0 +1,35 @@
+From downstream
+
+ASoC: codecs: aw88261: enable dvdd-supply regulator before chip ID read
+
+Enable dvdd-supply regulator before reading the chip ID register so that
+the codec is powered when probing via devicetree with a regulator-managed
+supply.
+
+Link: https://github.com/bharadwaj-raju/linux/commit/0d0f674f684f7a0fc63b9311bf58ac307c5af97f
+Signed-off-by: Bharadwaj Raju <bharadwaj.raju@machinesoul.in>
+---
+ sound/soc/codecs/aw88261.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/sound/soc/codecs/aw88261.c
++++ b/sound/soc/codecs/aw88261.c
+@@ -11,6 +11,7 @@
+ #include <linux/i2c.h>
+ #include <linux/firmware.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include <sound/soc.h>
+ #include "aw88261.h"
+ #include "aw88395/aw88395_data_type.h"
+@@ -1190,6 +1191,10 @@
+ 	unsigned int chip_id;
+ 	int ret;
+
++	ret = devm_regulator_get_enable(&i2c->dev, "dvdd");
++	if (ret)
++		return dev_err_probe(&i2c->dev, ret, "Failed to enable dvdd supply\n");
++
+ 	/* read chip id */
+ 	ret = regmap_read(regmap, AW88261_ID_REG, &chip_id);
+ 	if (ret) {

@@ -1,0 +1,59 @@
+From upstream (combined)
+
+ASoC: codecs: aw88261: add devicetree support
+
+Combine two upstream patches to make the aw88261 driver probe correctly
+from devicetree:
+
+1. Remove AW88261_I2C_NAME macro, use inline string (Luca Weiss)
+2. Add of_device_id table with "awinic,aw88261" compatible (Luca Weiss)
+
+Link: https://lore.kernel.org/linux-sound/20260109-aw88261-dt-v1-0-45840c7632a3@fairphone.com/
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+---
+ sound/soc/codecs/aw88261.c | 12 ++++++++++--
+ sound/soc/codecs/aw88261.h |  2 --
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+--- a/sound/soc/codecs/aw88261.c
++++ b/sound/soc/codecs/aw88261.c
+@@ -1264,19 +1264,26 @@
+ }
+
+ static const struct i2c_device_id aw88261_i2c_id[] = {
+-	{ AW88261_I2C_NAME },
++	{ "aw88261" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, aw88261_i2c_id);
+
++static const struct of_device_id aw88261_of_table[] = {
++	{ .compatible = "awinic,aw88261" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, aw88261_of_table);
++
+ static struct i2c_driver aw88261_i2c_driver = {
+ 	.driver = {
+-		.name = AW88261_I2C_NAME,
++		.name = "aw88261",
++		.of_match_table = aw88261_of_table,
+ 	},
+ 	.probe = aw88261_i2c_probe,
+ 	.id_table = aw88261_i2c_id,
+ };
+ module_i2c_driver(aw88261_i2c_driver);
+
+ MODULE_DESCRIPTION("ASoC AW88261 Smart PA Driver");
+ MODULE_LICENSE("GPL v2");
+--- a/sound/soc/codecs/aw88261.h
++++ b/sound/soc/codecs/aw88261.h
+@@ -370,8 +370,6 @@
+ #define AW88261_START_RETRIES		(5)
+ #define AW88261_START_WORK_DELAY_MS	(0)
+
+-#define AW88261_I2C_NAME		"aw88261"
+-
+ #define AW88261_RATES (SNDRV_PCM_RATE_8000_48000 | \
+ 			SNDRV_PCM_RATE_96000)
+ #define AW88261_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | \
