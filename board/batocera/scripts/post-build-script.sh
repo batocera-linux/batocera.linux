@@ -55,11 +55,11 @@ rm -rf "${TARGET_DIR}/boot/grub" || exit 1
 # reorder the boot scripts for the network boot
 if test -e "${TARGET_DIR}/etc/init.d/S10udev"
 then
-    mv "${TARGET_DIR}/etc/init.d/S10udev"    "${TARGET_DIR}/etc/init.d/S05udev"    || exit 1 # move to make number spaces
+    mv "${TARGET_DIR}/etc/init.d/S10udev"    "${TARGET_DIR}/etc/init.d/S05udev" || exit 1 # move to make number spaces
 fi
-if test -e "${TARGET_DIR}/etc/init.d/S30dbus"
+if test -e "${TARGET_DIR}/etc/init.d/S30dbus-daemon"
 then
-    mv "${TARGET_DIR}/etc/init.d/S30dbus"    "${TARGET_DIR}/etc/init.d/S01dbus"    || exit 1 # move really before for network (connman prerequisite) and pipewire
+    mv "${TARGET_DIR}/etc/init.d/S30dbus-daemon"    "${TARGET_DIR}/etc/init.d/S01dbus-daemon" || exit 1 # move really before for network (connman prerequisite) and pipewire
 fi
 if test -e "${TARGET_DIR}/etc/init.d/S40network"
 then
