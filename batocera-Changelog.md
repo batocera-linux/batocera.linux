@@ -32,6 +32,7 @@
 - Mupen64Plus-Core to March 30th, 2026 build
 - OpenMSX to Release 21
 - OpenJK to May 13th, 2026 build
+- PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
 - Tsugaru to v20251206
 - VKQuake to 1.34.1

@@ -10,6 +10,7 @@ PPSSPP_SITE_METHOD=git
 PPSSPP_GIT_SUBMODULES=YES
 PPSSPP_LICENSE = GPLv2
 PPSSPP_DEPENDENCIES = sdl2 sdl2_ttf libzip
+PPSSPP_SUPPORTS_IN_SOURCE_BUILD = NO
 
 $(eval $(call register,ppsspp.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,gfxbackend.ppsspp.emulator.yml))
