@@ -3,13 +3,13 @@
 # ecwolf
 #
 ################################################################################
-# Version: 2024-05-20
-ECWOLF_VERSION = d1de69a576d4bb39e89124185a6dfd6991202cb9
-ECWOLF_SITE = https://bitbucket.org/ecwolf/ecwolf.git
-ECWOLF_SITE_METHOD=git
-ECWOLF_GIT_SUBMODULES=YES
+# Version: Commits on Feb 23, 2026
+ECWOLF_VERSION = 1bff92d43bc1c1b6e9c4c03f0fd3c7ae9c972f9e
+ECWOLF_SITE = https://github.com/ECWolfEngine/ECWolf.git
+ECWOLF_SITE_METHOD = git
+ECWOLF_GIT_SUBMODULES = YES
 ECWOLF_LICENSE = Non-commercial
-ECWOLF_DEPENDENCIES = host-ecwolf sdl2 sdl2_mixer sdl2_net zlib bzip2 jpeg
+ECWOLF_DEPENDENCIES = bzip2 host-ecwolf jpeg libxmp sdl2 sdl2_mixer sdl2_net zlib
 ECWOLF_SUPPORTS_IN_SOURCE_BUILD = NO
 ECWOLF_EMULATOR_INFO = ecwolf.emulator.yml
 

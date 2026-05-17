@@ -14,6 +14,7 @@
 - Removed Libretro-Puae2021
 ### Updated
 - CDogs to 2.4.0
+- ECWolf to Feb 23, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
