@@ -293,7 +293,6 @@ wine_options() {
     # Nvidia variables
     [[ -e "/userdata/system/cache/nvidia" ]] || mkdir -p "/userdata/system/cache/nvidia"
     export XDG_CACHE_HOME="/userdata/system/cache"
-
     export __GL_SHADER_DISK_CACHE_SIZE=2147483648
     export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
     export __GL_SHADER_DISK_CACHE_PATH="${XDG_CACHE_HOME}"/nvidia
@@ -1094,15 +1093,38 @@ case "${ACTION}" in
 	;;
 
     "install")
-    init_wine && requestFileSystem "${GAMENAME}"
+        # Sync windows_installers and windows, so setting from installer section will be used for the installed program
+        # This method is very safe and can also be improved in time, but it syncs all settings between 2 systems - better then wild seds
+        INST_ROMGAMENAME="$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+        # get global keys of all windows_installers.value
+        readarray -t globalkeys < <(grep -o "^windows_installers\.[^=]*" /userdata/system/batocera.conf)
+        # get local keys with the gamename within
+        readarray -t localkeys < <(grep -o "^windows_installers\[.$ROMGAMENAME[^=]*" /userdata/system/batocera.conf)
+
+        for i in "${globalkeys[@]}"; do
+            val_key=$(batocera-settings-get "$i")
+            batocera-settings-set "${i/windows_installers/windows}" "$val_key"
+        done
+        echo "Converted ${#globalkeys[@]} windows_installers -> windows as global keys"
+
+        for i in "${localkeys[@]}"; do
+            val_key=$(batocera-settings-get "$i")
+            i="${i/windows_installers/windows}"
+            batocera-settings-set "${i/$ROMGAMENAME/$INST_ROMGAMENAME}" "$val_key"
+        done
+        echo "Converted ${#localkeys[@]} windows_installers -> windows as local game specific keys"
+
+        unset i val_key globalkeys localkeys
+
+        init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
 	    "exe"|"msi")
-		#Winepoint with stripped extension, add current date_time to avoid duplicates
-		install_exe_msi "${GAMEEXT,,}" "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+		#INST_ROMGAMENAME -> Winepoint with stripped extension, add current date_time to avoid duplicates
+		install_exe_msi "${GAMEEXT,,}" "${GAMENAME}" "${G_ROMS_DIR}/${INST_ROMGAMENAME}"
 		;;
 	    "iso")
-		#Parsing Gamename, Winepoint with stripped extension, add current date_time to avoid duplicates
-		install_iso "${GAMENAME}" "${G_ROMS_DIR}/$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
+		#INST_ROMGAMENAME -> Parsing Gamename, Winepoint with stripped extension, add current date_time to avoid duplicates
+		install_iso "${GAMENAME}" "${G_ROMS_DIR}/${INST_ROMGAMENAME}"
 		;;
 	    *)
 		echo "unknown extension ${GAMEEXT}" >&2
@@ -1110,6 +1132,8 @@ case "${ACTION}" in
 	;;
 
     "tricks"|"createprefix")
+        [[ "${GAMENAME}" == "." ]] && { GAMENAME="$PWD"; GAMEEXT="${GAMENAME##*.}"; }
+        [[ -e "${GAMENAME}" ]] && GAMENAME="$(realpath "${GAMENAME}")" || exit 1
         init_wine && requestFileSystem "${GAMENAME}"
         case "${GAMEEXT,,}" in
             "wine")
@@ -1122,6 +1146,7 @@ case "${ACTION}" in
                 setPrefixArch "${l_PREFIX}" "${WINE_VERSION}" "${ACTION}"
                 test -d "${l_PREFIX}" && echo "WINEPREFIX: '$_' already found!" || { createWineDirectory "$_" && echo "WINEPREFIX: '$_' created!"; }
                 ;;
+             *) echo "Fullpath for game needed, or extension is unknown ... Exit now!"; exit 1
         esac
 
         if [[ -n "${TRICK}" && "${ACTION}" == "tricks" ]]; then
@@ -1200,5 +1225,6 @@ case "${ACTION}" in
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
+
 cleanAndExit $?
 exit $?
