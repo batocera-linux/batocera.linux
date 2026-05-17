@@ -6,46 +6,81 @@
 . /etc/profile.d/xdg.sh
 . /etc/profile.d/dbus.sh
 
-BOARD=$(cat /boot/boot/batocera.board)
+TAG="S06audio"
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/var/run}
+
+log() {
+    local level="$1"
+    local msg="$2"
+    echo "[$TAG] $msg"
+    logger -t "$TAG" -p "user.$level" "$msg"
+}
 
 start_pipewire() {
-    printf "Starting pipewire: "
+    log "info" "Starting audio service sequence..."
+    # Cleanup stale locks
+    rm -f /var/run/pipewire-0 /var/run/pipewire-0.lock
+    # Start the PipeWire daemon
     start-stop-daemon -S -b -q -m -p /var/run/pipewire.pid --exec /usr/bin/pipewire
-    msg=OK
-
-    #Wait till sinks are listed, this means PW is working
-    until pactl list sinks-raw | grep -qo sink=
-    do
+    if [ $? -eq 0 ]; then
+        log "info" "PipeWire daemon backgrounded (PID $(cat /var/run/pipewire.pid))"
+    else
+        log "err" "Failed to background PipeWire daemon"
+        return 1
+    fi
+    # Wait loop for real hardware discovery
+    N=0
+    MAX_RETRIES=50
+    
+    while [ $N -lt $MAX_RETRIES ]; do
+        # Check through audio init stack
+        if [ ! -S "$XDG_RUNTIME_DIR/pipewire-0" ]; then
+            REASON="Waiting for pipewire-0 socket..."
+        elif ! pactl info >/dev/null 2>&1; then
+            REASON="Pulse bridge initializing..."
+        elif ! sinks=$(pactl list sinks short 2>/dev/null) || ! echo "$sinks" | grep -qE "alsa_output|pci|usb"; then
+            REASON="Hardware discovery in progress (Sinks found: $(echo $sinks | awk '{print $2}' | xargs || echo 'none'))"       
+        else
+            log "info" "Hardware sinks discovered: $(echo "$sinks" | grep -E 'alsa|pci|usb' | awk '{print $2}' | xargs)"
+            echo "OK"
+            return 0
+        fi
+        # Continue to keep us informed...
+        if [ $((N % 20)) -eq 0 ]; then
+            log "info" "Status [${N}/50]: $REASON"
+        fi
         sleep 0.1
         N=$((N+1))
-        test $N -gt 50 && { msg=KO; break; }
     done
 
-    echo "$msg"
+    log "err" "TIMEOUT: No hardware sinks found in 5s. Only dummy/null may be available."
+    echo "FAIL"
+    return 1
 }
 
 stop_pipewire() {
-    printf "Stopping pipewire: "
+    log "info" "Stopping audio services..."
     start-stop-daemon -K -q -p /var/run/pipewire.pid
-    killall pipewire
+    killall wireplumber pipewire-pulse pipewire 2>/dev/null
+    rm -f /var/run/pipewire.pid
     echo "OK"
 }
 
 case "$1" in
     start)
-        alsactl init # init cards with alsa files
+        alsactl init 2>&1 | logger -t "$TAG" -p "user.info"
         start_pipewire
     ;;
     stop)
         stop_pipewire
     ;;
     restart|reload)
-        stop_pipewire
-        start_pipewire
+        $0 stop
+        sleep 1
+        $0 start
     ;;
     *)
         echo "Usage: $0 {start|stop|restart}"
         exit 1
+    ;;
 esac
-
-exit $?
