@@ -1,0 +1,37 @@
+gamecube:
+  emulator: libretro
+  core:     dolphin
+nds:
+  emulator: libretro
+  core:     melonds
+wii:
+  emulator: libretro
+  core:     dolphin
+fmtowns:
+  emulator: libretro
+  core:     mame
+psx:
+  options:
+    hud_support: false # duckstation doesn't like it
+ps2:
+  emulator: libretro
+  core:     play
+flash:
+  emulator: lightspark
+  core:     lightspark
+model3:
+  emulator: supermodel
+  core:     supermodel-legacy
+  options:
+    videomode: max-1920x1080
+    decorations: none
+    hud_support: none
+quake3:
+  emulator: vkquake3
+  core:     vkquake3
+saturn:
+  emulator: ymir
+  core:     ymir
+  options:
+    decorations: none
+    hud_support: none
