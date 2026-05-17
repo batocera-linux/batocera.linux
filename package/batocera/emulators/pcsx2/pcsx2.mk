@@ -3,8 +3,8 @@
 # pcsx2
 #
 ################################################################################
-
-PCSX2_VERSION = v2.6.3
+# Version: Commits on May 17, 2026
+PCSX2_VERSION = e18d5b71832fc96f3ba5dd90113567f5284ee6dd
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -17,7 +17,7 @@ PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 PCSX2_DEPENDENCIES += alsa-lib ecm fmt freetype host-clang host-libcurl kddockwidgets
 PCSX2_DEPENDENCIES += libaio libbacktrace libcurl libgtk3 libpcap libpng libsamplerate
 PCSX2_DEPENDENCIES += libsoundtouch plutosvg portaudio qt6base qt6svg qt6tools
-PCSX2_DEPENDENCIES += shaderc sdl3 webp wxwidgets xorgproto yaml-cpp zlib
+PCSX2_DEPENDENCIES += rapidyaml shaderc sdl3 webp wxwidgets xorgproto yaml-cpp zlib
 
 # Use clang for performance
 PCSX2_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
