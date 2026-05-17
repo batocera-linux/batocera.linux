@@ -45,10 +45,5 @@ SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
 SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
 
-define SHADPS4_INSTALL_TARGET_CMDS
-	 mkdir -p $(TARGET_DIR)/usr/bin/shadps4
-	 $(INSTALL) -m 0755 $(@D)/buildroot-build/shadps4 $(TARGET_DIR)/usr/bin/
-endef
-
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
