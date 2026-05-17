@@ -177,5 +177,83 @@ custom_features:
     choices:
       'Off': false
       'On': true
+  network_enable:
+    submenu: NETWORKING
+    prompt: ENABLE NETWORK (relay/internet)
+    description: Master network switch. When Off, no network settings are applied regardless of other options.
+    choices:
+      'Off': false
+      'On': true
+  lan_adhoc_mode:
+    submenu: NETWORKING
+    prompt: LAN ADHOC MODE
+    description: "Local LAN multiplayer without internet. Host: this machine runs the Ad-Hoc server. Client: connects to the host on the same network."
+    choices:
+      'Off': "off"
+      'Host (run local Ad-Hoc server)': "host"
+  adhoc_server:
+    submenu: NETWORKING
+    prompt: ADHOC SERVER
+    description: "Adhoc server for local multiplayer over network. List sourced from metadata.ppsspp.org/adhoc-servers.json"
+    choices:
+      'Auto (PPSSPP default)': ""
+      'Manual (keep existing)': "__manual__"
+      'Localhost (LAN host mode)': "localhost"
+      'Socom Adhoc Server (France)': "socom.cc"
+      'Madness Gaming Network (Alaska USA)': "psp.mgn.pub"
+      'EA Nation Hub (France)': "eahub.eu"
+      'Psi-Hate (Minnesota USA)': "psi-hate.com"
+      'Relay Brasileiro (São Paulo Brazil)': "jpa36a7.glddns.com"
+      'ArenaAnywhere SA (South Africa)': "relay-sa.arenaanywhere.site"
+      'ArenaAnywhere EU (Europe)': "relay.arenaanywhere.site"
+      'ArenaAnywhere Dubai': "relay-dubai.arenaanywhere.site"
+      'ArenaAnywhere Asia (Singapore)': "relay-asia.arenaanywhere.site"
+      'Saya Akan Lawan! (Indonesia)': "sayaakanlawan.my.id"
+      'Retroverze Relay Beta': "psp.retroverze.my.id"
+      'Games Nexus (Milan Italy)': "adhoc.gamesnexus.ovh"
+      'CVN-Play (China)': "cvn-play.top"
+      'NT Arena Brasil (Brazil)': "ntarena.duckdns.org"
+      'Lason Club Manila (Philippines)': "38.54.80.95"
+      'Neko PSP (Japan)': "cat.wjg.jp"
+      'Sprawl Relay (Brazil)': "brazil-01.sprawl-relay.link"
+  adhoc_relay_mode:
+    submenu: NETWORKING
+    prompt: ADHOC RELAY MODE
+    description: Controls how the adhoc server relay is used.
+    choices:
+      Auto: 0
+      Always On: 1
+      Always Off: 2
+  adhoc_port_offset:
+    submenu: NETWORKING
+    prompt: ADHOC PORT OFFSET
+    description: Port offset for adhoc connections. Increase if running multiple instances on the same network.
+    choices:
+      '0': 0
+      '10000 (Default)': 10000
+      '20000': 20000
+      '30000': 30000
+  adhoc_forced_connect:
+    submenu: NETWORKING
+    prompt: FORCE FIRST CONNECT
+    description: Force the first network connection attempt. Useful for some games that fail to connect on the first try.
+    choices:
+      'Off': false
+      'On': true
+  upnp_enable:
+    submenu: NETWORKING
+    prompt: ENABLE UPNP
+    description: Enable UPnP for automatic port forwarding. Requires a compatible router.
+    choices:
+      'Off': false
+      'On': true
+  infra_auto_dns:
+    submenu: NETWORKING
+    prompt: INFRASTRUCTURE AUTO DNS
+    description: "When disabled, PPSSPP uses 67.222.156.250 as DNS server for Infrastructure (online) mode."
+    choices:
+      'Off': false
+      'On': true
+
 systems:
   - psp
