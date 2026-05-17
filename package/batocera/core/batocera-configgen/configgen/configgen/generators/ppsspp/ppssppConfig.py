@@ -195,6 +195,43 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
         iniConfig.set("Achievements", "AchievementsEnable", "False")
         iniConfig.set("Achievements", "AchievementsChallengeMode", "False")
 
+    ## [NETWORK]
+    if not iniConfig.has_section("Network"):
+        iniConfig.add_section("Network")
+
+    network_enable = system.config.get_bool("network_enable", False)
+    iniConfig.set("Network", "EnableWlan", str(network_enable))
+
+    if network_enable:
+        lan_adhoc_mode = system.config.get_str("lan_adhoc_mode", "off")
+        port_offset    = system.config.get_str("adhoc_port_offset", "10000")
+
+        # LAN host mode
+        if lan_adhoc_mode == "host":
+            iniConfig.set("Network", "EnableAdhocServer", "True")
+        else:
+            iniConfig.set("Network", "EnableAdhocServer", "False")
+
+        # proAdhocServer is always controlled by the ADHOC SERVER choice
+        adhoc_server = system.config.get_str("adhoc_server", "")
+        if adhoc_server and adhoc_server != "__manual__":
+            iniConfig.set("Network", "proAdhocServer", adhoc_server)
+
+        # Common settings
+        iniConfig.set("Network", "PortOffset", port_offset)
+        iniConfig.set("Network", "EnableUPnP", str(system.config.get_bool("upnp_enable", False)))
+
+        # Relay-specific settings (only when not in LAN host mode)
+        if lan_adhoc_mode == "off":
+            iniConfig.set("Network", "AdhocServerRelayMode", system.config.get_str("adhoc_relay_mode", "0"))
+            iniConfig.set("Network", "ForcedFirstConnect",   str(system.config.get_bool("adhoc_forced_connect", False)))
+
+            # Infrastructure DNS
+            infra_auto_dns = system.config.get_bool("infra_auto_dns", True)
+            iniConfig.set("Network", "InfrastructureAutoDNS", str(infra_auto_dns))
+            if not infra_auto_dns:
+                iniConfig.set("Network", "PrimaryDNSServer", "67.222.156.250")
+
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for section_option, user_config_value in system.config.items(starts_with='ppsspp.'):
         custom_section, _, custom_option = section_option.partition('.')
