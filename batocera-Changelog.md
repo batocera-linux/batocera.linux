@@ -1,6 +1,6 @@
 # 2026/xx/xx - batocera.linux 44 - xxxx
 ### Special Notes
-
+- ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 ### Hardware
 - Mangmi Air X initial support
 
@@ -35,6 +35,7 @@
 - PCSX2 to May 17th, 2026 build
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
+- ShadPS4 to v.0.15.0
 - Tsugaru to v20251206
 - VKQuake to 1.34.1
 ### System
