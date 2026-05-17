@@ -229,9 +229,9 @@ class shadPS4Generator(Generator):
 
         # Run command
         if configure_emulator(rom):
-            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4"]
+            commandArray: list[str | Path] = ["/usr/bin/shadps4"]
         else:
-            commandArray: list[str | Path] = ["/usr/bin/shadps4/shadps4", rom.parent / "eboot.bin"]
+            commandArray: list[str | Path] = ["/usr/bin/shadps4", rom.parent / "eboot.bin"]
 
         return Command.Command(
             array=commandArray,
