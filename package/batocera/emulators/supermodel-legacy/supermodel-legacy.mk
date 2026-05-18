@@ -25,8 +25,18 @@ define SUPERMODEL_LEGACY_BUILD_CMDS
 	$(SED) "s|CXX = g++|CXX = $(TARGET_CXX)|g" $(@D)/Makefile
 	$(SED) "s|LD = gcc|LD = $(TARGET_CC)|g" $(@D)/Makefile
 	$(SED) "s|sdl2-config|$(STAGING_DIR)/usr/bin/sdl2-config|g" $(@D)/Makefile
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) clean && \
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile NET_BOARD=1 VERBOSE=1 ARCH=$(BR2_TARGET_OPTIMIZATION)
+	
+	# Reduce GCC 14 strictness at the end of the Makefile
+	@echo '' >> $(@D)/Makefile
+	@echo 'CFLAGS += -Wno-error=implicit-function-declaration -Wno-error=implicit-int' >> $(@D)/Makefile
+	@echo 'CXXFLAGS += -Wno-error=implicit-function-declaration' >> $(@D)/Makefile
+
+	# We use MAKE1 to avoid the obj/ directory nonexistent race condition
+	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE1) -C $(@D) -f Makefile clean
+	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_OPTS) $(MAKE1) -C $(@D) -f Makefile \
+		NET_BOARD=1 \
+		VERBOSE=1 \
+		ARCH=$(BR2_TARGET_OPTIMIZATION)
 endef
 
 define SUPERMODEL_LEGACY_INSTALL_TARGET_CMDS
