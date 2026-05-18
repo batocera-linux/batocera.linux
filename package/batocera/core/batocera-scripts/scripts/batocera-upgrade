@@ -3,6 +3,7 @@
 do_clean() {
     test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
     rm -f "/userdata/system/upgrade/upgrade_message.txt"
+    # delete the default target locations
     rm -f "/userdata/system/upgrade/boot.tar.xz"
     rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
     if test $# -eq 1; then
@@ -34,7 +35,7 @@ do_badgeines() {
             COUNT=$((COUNT+5))
             sleep 0.1
         else
-            CURVAL=$(stat --printf="%s" "/userdata/system/upgrade/boot.tar.xz")
+            CURVAL=$(stat --printf="%s" "${LOCAL_FILE}")
             CURVAL=$((CURVAL / 1024 / 1024))
             PER=$((CURVAL * 100 / TARVAL))
             echo "$CURVAL of $TARVAL MB downloaded ... >>> ${PER}%"
@@ -43,8 +44,13 @@ do_badgeines() {
     done
 }
 
+get_media_manual_file() {
+    FILE=$(ls /media/*/boot.tar.xz /media/*/batocera/boot.tar.xz 2>/dev/null)
+    # check it is a single file
+    test -e "${FILE}" && echo "${FILE}"
+}
+
 # ---- MAIN ----
-echo "Starting the upgrade..."
 
 # --- Prepare update URLs ---
 
@@ -73,18 +79,55 @@ test $# -eq 1 && DWD_HTTP_DIR="$1"
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
 # --- Prepare file downloads ---
+LOCAL_FILE="/userdata/system/upgrade/boot.tar.xz" # default
+
+if [ "$1" == "canmanualmedia" ]; then
+    LOCAL_FILE=$(get_media_manual_file)
+    test "${LOCAL_FILE}" = "" && exit 1 # no file found
+    exit 0
+fi
+
+echo "Starting the upgrade..."
 
 # Check if "manual" argument is provided
 if [ "$1" == "manual" ]; then
+    # MFILE can be :
+    # - empty : old behavior, get from /userdata/.../upgrade)
+    # - a real file
+    # - media : search in media a file (root directory, or in a subfolder named batocera)
+    MFILE=$2
+
+    if test "${MFILE}" = "media"
+    then
+	LOCAL_FILE=$(get_media_manual_file)
+    elif test "${MFILE}" != ""
+    then
+	LOCAL_FILE="${MFILE}"
+    fi
+
     # Check if the local file exists
-    if [ -f "/userdata/system/upgrade/boot.tar.xz" ]; then
-        # Get exact uncompressed size
-        size=$(xz --robot -l "/userdata/system/upgrade/boot.tar.xz" | tail -1 | awk '{print $5}')
-        size=$((size / 1024 / 1024))
-        echo "Using local file: /userdata/system/upgrade/boot.tar.xz (${size}MB uncompressed)"
+    if [ -f "${LOCAL_FILE}" ]; then
+	# Get exact uncompressed size
+	size=$(xz --robot -l "${LOCAL_FILE}" | tail -1 | awk '{print $5}')
+	size=$((size / 1024 / 1024))
+	echo "Using local file: ${LOCAL_FILE} (${size}MB uncompressed)"
     else
-        echo "Error: Local file /userdata/system/upgrade/boot.tar.xz not found."
-        exit 1
+	echo "Error: Local file ${LOCAL_FILE} not found."
+	exit 1
+    fi
+
+    # check the architecture of the local file
+    LOCAL_FILE_BOARD=$(tar xf "${LOCAL_FILE}" "boot/batocera.board" -O --occurrence=1) # --occurrence=1 to stop at first occurrence for perf
+    echo "Using local file board: ${LOCAL_FILE_BOARD}"
+    if test "${LOCAL_FILE_BOARD}" != "${board}"
+    then
+	if test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${board}" = "x86_64-v3"
+	then
+	    echo "Migrating board from ${board} to ${LOCAL_FILE_BOARD}"
+	else
+	    echo "Error:Local file board: ${LOCAL_FILE_BOARD} is different from ${board}"
+	    exit 1
+	fi
     fi
 else
     # download directory
@@ -129,26 +172,26 @@ done
 if [ "$1" != "manual" ]; then
     if [ $TERMINAL -eq 0 ]; then
         # download inside ES with badge
-        touch "/userdata/system/upgrade/boot.tar.xz"
+        touch "${LOCAL_FILE}"
         do_badgeines "${size}" &
         GETPERPID=$!
-        curl -A "batocera-upgrade" -sfL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+        curl -A "batocera-upgrade" -sfL "${url}" -o "${LOCAL_FILE}" || exit 1
         do_upgmsg "Calculating md5 checksum ..."
     else
         # download inside SSH or terminal
-        curl -A "batocera-upgrade" -fL "${url}" -o "/userdata/system/upgrade/boot.tar.xz" || exit 1
+        curl -A "batocera-upgrade" -fL "${url}" -o "${LOCAL_FILE}" || exit 1
         echo "Check proper file download, checking md5sum - please wait"
     fi
 fi
 
 # try to download an md5 checksum
 if [ "$1" != "manual" ]; then
-    curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "/userdata/system/upgrade/boot.tar.xz.md5"
+    curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "${LOCAL_FILE}.md5"
 fi
-if test -e "/userdata/system/upgrade/boot.tar.xz.md5"
+if test -e "${LOCAL_FILE}.md5"
 then
-    DISTMD5=$(cat "/userdata/system/upgrade/boot.tar.xz.md5")
-    CURRMD5=$(md5sum "/userdata/system/upgrade/boot.tar.xz" | sed -e s+' .*$'++)
+    DISTMD5=$(cat "${LOCAL_FILE}.md5")
+    CURRMD5=$(md5sum "${LOCAL_FILE}" | sed -e s+' .*$'++)
     if test "${DISTMD5}" = "${CURRMD5}"
     then
         do_upgmsg "Checksum validated ..." 2
@@ -188,14 +231,14 @@ BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/bato
 
 # extract file on /boot
 do_upgmsg "Extracting files ..."
-if ! (cd /boot && xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar xvf - --no-same-owner)
+if ! (cd /boot && xz -dc < "${LOCAL_FILE}" | tar xvf - --no-same-owner)
 then
     exit 1
 fi
 
 # build stale list: entries present before extraction but absent from the new tarball
 do_upgmsg "Generating stale file list ..."
-TARBALL_CONTENTS=$(xz -dc < "/userdata/system/upgrade/boot.tar.xz" | tar tf - | sed -e 's|^\./||' -e 's|/$||' | sort -u)
+TARBALL_CONTENTS=$(xz -dc < "${LOCAL_FILE}" | tar tf - | sed -e 's|^\./||' -e 's|/$||' | sort -u)
 comm -23 \
     <(echo "$BOOT_BEFORE") \
     <(echo "$TARBALL_CONTENTS") \
