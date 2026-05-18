@@ -1094,27 +1094,18 @@ case "${ACTION}" in
 
     "install")
         # Sync windows_installers and windows, so setting from installer section will be used for the installed program
-        # This method is very safe and can also be improved in time, but it syncs all settings between 2 systems - better then wild seds
+        # This method is very safe and but it syncs all settings between 2 systems, $INST_ROMGAMENAME is used for an unique filename
         INST_ROMGAMENAME="$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
-        # get global keys of all windows_installers.value
-        readarray -t globalkeys < <(grep -o "^windows_installers\.[^=]*" /userdata/system/batocera.conf)
-        # get local keys with the gamename within
-        readarray -t localkeys < <(grep -o "^windows_installers\[.$ROMGAMENAME[^=]*" /userdata/system/batocera.conf)
 
-        for i in "${globalkeys[@]}"; do
+        while read i; do
             val_key=$(batocera-settings-get "$i")
-            batocera-settings-set "${i/windows_installers/windows}" "$val_key"
-        done
-        echo "Converted ${#globalkeys[@]} windows_installers -> windows as global keys"
-
-        for i in "${localkeys[@]}"; do
-            val_key=$(batocera-settings-get "$i")
-            i="${i/windows_installers/windows}"
-            batocera-settings-set "${i/$ROMGAMENAME/$INST_ROMGAMENAME}" "$val_key"
-        done
-        echo "Converted ${#localkeys[@]} windows_installers -> windows as local game specific keys"
-
-        unset i val_key globalkeys localkeys
+            printf "Converted ${i} -> "
+            i="${i/${SYSTEM}_installers/${SYSTEM}}"
+            i="${i/${ROMGAMENAME}/${INST_ROMGAMENAME}}"
+            batocera-settings-set "${i}" "$val_key"
+            echo "${i} with value ${val_key}"
+        done < <(grep -Eo "^${SYSTEM}_installers(\[\"${ROMGAMENAME}\"\])?[.][^=]*" /userdata/system/batocera.conf)
+        unset i val_key
 
         init_wine && requestFileSystem "${GAMENAME}"
 	case "${GAMEEXT,,}" in
@@ -1225,6 +1216,5 @@ case "${ACTION}" in
         echo "${0} windows stop"                                 >&2
         exit 1
 esac
-
 cleanAndExit $?
 exit $?
