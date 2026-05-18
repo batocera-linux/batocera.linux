@@ -63,6 +63,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rk3326/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rocknix-abl/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-radxa-zero-3/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-odroid-m2/Config.in"
   endmenu
 
   menu "Toolchain"
