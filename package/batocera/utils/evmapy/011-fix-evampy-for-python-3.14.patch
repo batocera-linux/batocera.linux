@@ -1,0 +1,48 @@
+diff --git a/evmapy/config.py b/evmapy/config.py
+index 3300764..acdd6e0 100644
+--- a/evmapy/config.py
++++ b/evmapy/config.py
+@@ -72,7 +72,7 @@ def _get_device_config_path(device):
+     :rtype: str
+     """
+     info = evmapy.util.get_app_info()
+-    config_filename = os.path.basename(device.fn) + '.json'
++    config_filename = os.path.basename(device.path) + '.json'
+     return os.path.join(info['config_dir'], config_filename)
+ 
+ 
+@@ -206,7 +206,7 @@ def load(device, name, old_config=None):
+         config = parse(config_input)
+     except Exception as exc:
+         raise ConfigError(exc, path)
+-    logging.getLogger().info("%s: loaded %s", device.fn, path)
++    logging.getLogger().info("%s: loaded %s", device.path, path)
+     return (config, config_input)
+ 
+ 
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index e273725..8017e3d 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -166,7 +166,7 @@ class Multiplexer(object):
+         :returns: None
+         """
+         device = evdev.InputDevice(path)
+-        self._logger.debug("trying to add %s (%s)", device.fn, device.name)
++        self._logger.debug("trying to add %s (%s)", device.path, device.name)
+         try:
+             source = evmapy.source.Source(device)           
+             self._fds[source.device['fd']] = source
+diff --git a/evmapy/source.py b/evmapy/source.py
+index 099f416..016d410 100644
+--- a/evmapy/source.py
++++ b/evmapy/source.py
+@@ -52,7 +52,7 @@ class Source(object):
+         self.device = {
+             'fd':   device.fd,
+             'name': device.name,
+-            'path': device.fn,
++            'path': device.path,
+         }
+         self._device = device
+         self._config = {}
