@@ -47,6 +47,19 @@
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
 
+# 2026/05/xx - batocera.linux 43.1
+- fix es for missing systems / collections disappearing
+- fix LR-Dolphin options broken
+- fix Steam issue
+- Apple II GS  MAME support has been removed
+- fix LR-MAME guns broken
+- fix bad detection of Microsoft controllers as keyboards
+- fix Batocera storage manager ignoring some partitions
+- fix Batocera storage manager race condition
+- fix theXtech broken
+- fix extensions for Dolphin-triforce
+- fix issues on nvidia detection
+
 # 2026/05/08 - batocera.linux 43 - Glasswing
 ### Special Notes
 - x86_64 Handhelds with AMD and Intel graphics will be supported on the preferred x86_64-v3 image using Wayland and the LabWC compositor.
