@@ -398,10 +398,11 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     pcsx2INIConfig.set("EmuCore/GS", "LoadTextureReplacements", system.config.get("pcsx2_texture_replacements", "false"))
 
     # OSD messages
-    pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", system.config.get("pcsx2_osd_messages", "true"))
+    osd_enabled = system.config.get("pcsx2_osd_messages", "true")
+    pcsx2INIConfig.set("EmuCore/GS", "OsdShowMessages", osd_enabled)
 
     # OSD Messages Position
-    pcsx2INIConfig.set("EmuCore/GS", "OsdMessagesPos", system.config.get("pcsx2_osd_messages_position", "2"))
+    pcsx2INIConfig.set("EmuCore/GS", "OsdMessagesPos", "0" if osd_enabled == "false" else system.config.get("pcsx2_osd_messages_position", "2"))
 
     # OSD Performance Position
     pcsx2INIConfig.set("EmuCore/GS", "OsdPerformancePos", system.config.get("pcsx2_osd_performance_position", "0"))
