@@ -153,6 +153,22 @@ if [ "$MODE" = "open" ]; then
     # libnvidia-wayland-client.so
     ln -sf /usr/lib/libnvidia-wayland-client.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-wayland-client.so
     ln -sf /var/run/nvidia/lib/libnvidia-wayland-client.so /usr/lib/libnvidia-wayland-client.so
+    # CUDA drivers
+    # libcuda.so
+    ln -sf /usr/lib/libcuda.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so
+    ln -sf /var/run/nvidia/lib/libcuda.so /usr/lib/libcuda.so
+    ln -sf /usr/lib/libcuda.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so.1
+    ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so.1
+    # libnvcuvid.so
+    ln -sf /usr/lib/libnvcuvid.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvcuvid.so
+    ln -sf /var/run/nvidia/lib/libnvcuvid.so /usr/lib/libnvcuvid.so
+    ln -sf /usr/lib/libnvcuvid.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvcuvid.so.1
+    ln -sf /var/run/nvidia/lib/libnvcuvid.so.1 /usr/lib/libnvcuvid.so.1
+    # libnvidia-encode.so
+    ln -sf /usr/lib/libnvidia-encode.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-encode.so
+    ln -sf /var/run/nvidia/lib/libnvidia-encode.so /usr/lib/libnvidia-encode.so
+    ln -sf /usr/lib/libnvidia-encode.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-encode.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-encode.so.1 /usr/lib/libnvidia-encode.so.1
     # GBM symlink for Wayland/labwc
     mkdir -p /usr/lib/gbm
     ln -sf /usr/lib/libnvidia-allocator.so.$NVIDIA_DRIVER_VERSION /usr/lib/gbm/nvidia-drm_gbm.so
@@ -214,6 +230,22 @@ if [ "$MODE" = "open" ]; then
     # libnvidia-glvkspirv.so
     ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
+    # CUDA drivers
+    # libcuda.so
+    ln -sf /lib32/libcuda.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libcuda.so
+    ln -sf /var/run/nvidia/lib32/libcuda.so /lib32/libcuda.so
+    ln -sf /lib32/libcuda.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libcuda.so.1
+    ln -sf /var/run/nvidia/lib32/libcuda.so.1 /lib32/libcuda.so.1
+    # libnvcuvid.so
+    ln -sf /lib32/libnvcuvid.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvcuvid.so
+    ln -sf /var/run/nvidia/lib32/libnvcuvid.so /lib32/libnvcuvid.so
+    ln -sf /lib32/libnvcuvid.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvcuvid.so.1
+    ln -sf /var/run/nvidia/lib32/libnvcuvid.so.1 /lib32/libnvcuvid.so.1
+    # libnvidia-encode.so
+    ln -sf /lib32/libnvidia-encode.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-encode.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-encode.so /lib32/libnvidia-encode.so
+    ln -sf /lib32/libnvidia-encode.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-encode.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-encode.so.1 /lib32/libnvidia-encode.so.1
     
     # sym link Xorg libraries too
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so
@@ -346,6 +378,22 @@ elif [ "$MODE" = "legacy580" ]; then
     # libnvidia-wayland-client.so
     ln -sf /usr/lib/libnvidia-wayland-client.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-wayland-client.so
     ln -sf /var/run/nvidia/lib/libnvidia-wayland-client.so /usr/lib/libnvidia-wayland-client.so
+    # CUDA drivers
+    # libcuda.so
+    ln -sf /usr/lib/libcuda.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so
+    ln -sf /var/run/nvidia/lib/libcuda.so /usr/lib/libcuda.so
+    ln -sf /usr/lib/libcuda.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libcuda.so.1
+    ln -sf /var/run/nvidia/lib/libcuda.so.1 /usr/lib/libcuda.so.1
+    # libnvcuvid.so
+    ln -sf /usr/lib/libnvcuvid.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvcuvid.so
+    ln -sf /var/run/nvidia/lib/libnvcuvid.so /usr/lib/libnvcuvid.so
+    ln -sf /usr/lib/libnvcuvid.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvcuvid.so.1
+    ln -sf /var/run/nvidia/lib/libnvcuvid.so.1 /usr/lib/libnvcuvid.so.1
+    # libnvidia-encode.so
+    ln -sf /usr/lib/libnvidia-encode.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-encode.so
+    ln -sf /var/run/nvidia/lib/libnvidia-encode.so /usr/lib/libnvidia-encode.so
+    ln -sf /usr/lib/libnvidia-encode.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libnvidia-encode.so.1
+    ln -sf /var/run/nvidia/lib/libnvidia-encode.so.1 /usr/lib/libnvidia-encode.so.1
     # GBM symlink for Wayland/labwc
     mkdir -p /usr/lib/gbm
     ln -sf /usr/lib/libnvidia-allocator.so.$NVIDIA580_LEGACY_DRIVER_VERSION /usr/lib/gbm/nvidia-drm_gbm.so
@@ -407,6 +455,22 @@ elif [ "$MODE" = "legacy580" ]; then
     # libnvidia-glvkspirv.so
     ln -sf /lib32/libnvidia-glvkspirv.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-glvkspirv.so
     ln -sf /var/run/nvidia/lib32/libnvidia-glvkspirv.so /lib32/libnvidia-glvkspirv.so
+    # CUDA drivers
+    # libcuda.so
+    ln -sf /lib32/libcuda.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libcuda.so
+    ln -sf /var/run/nvidia/lib32/libcuda.so /lib32/libcuda.so
+    ln -sf /lib32/libcuda.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libcuda.so.1
+    ln -sf /var/run/nvidia/lib32/libcuda.so.1 /lib32/libcuda.so.1
+    # libnvcuvid.so
+    ln -sf /lib32/libnvcuvid.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvcuvid.so
+    ln -sf /var/run/nvidia/lib32/libnvcuvid.so /lib32/libnvcuvid.so
+    ln -sf /lib32/libnvcuvid.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvcuvid.so.1
+    ln -sf /var/run/nvidia/lib32/libnvcuvid.so.1 /lib32/libnvcuvid.so.1
+    # libnvidia-encode.so
+    ln -sf /lib32/libnvidia-encode.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-encode.so
+    ln -sf /var/run/nvidia/lib32/libnvidia-encode.so /lib32/libnvidia-encode.so
+    ln -sf /lib32/libnvidia-encode.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib32/libnvidia-encode.so.1
+    ln -sf /var/run/nvidia/lib32/libnvidia-encode.so.1 /lib32/libnvidia-encode.so.1
     
     # sym link Xorg libraries too
     ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$NVIDIA580_LEGACY_DRIVER_VERSION /var/run/nvidia/lib/libglxserver_nvidia.so
@@ -438,10 +502,19 @@ elif [ "$MODE" = "legacy580" ]; then
     mkdir -p /var/run/nvidia/modules
     # Unload default/existing modules before symlinking
     echo "Unloading existing NVIDIA modules to release hardware..." >> "$log"
-    for m in nvidia_drm nvidia_uvm nvidia_modeset nvidia ipmi_devintf; do
-        modprobe -r $m >> "$log" 2>&1
+    for m in nvidia_drm nvidia_uvm nvidia_modeset nvidia; do
+        if lsmod | grep -q "^$m"; then
+            echo "Attempting to unload $m" >> "$log"
+            modprobe -r $m >> "$log" 2>&1
+            
+            # Double check if it's still there
+            if lsmod | grep -q "^$m"; then
+                echo "CRITICAL: $m is still in use! Forcing..." >> "$log"
+                rmmod -f $m >> "$log" 2>&1
+            fi
+        fi
     done
-    echo "Linking NVIDIA 580.xx kernel modules" >> $log
+    echo "Linking NVIDIA 580.xx kernel modules..." >> $log
     ln -sf /usr/share/nvidia/modules/nvidia580-legacy.ko /var/run/nvidia/modules/nvidia.ko
     ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
     ln -sf /usr/share/nvidia/modules/nvidia580-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
@@ -633,7 +706,7 @@ elif [ "$MODE" = "legacy470" ]; then
     for m in nvidia_drm nvidia_uvm nvidia_modeset nvidia ipmi_devintf; do
         modprobe -r $m >> "$log" 2>&1
     done
-    echo "Linking NVIDIA 470.xx kernel modules" >> $log
+    echo "Linking NVIDIA 470.xx kernel modules..." >> $log
     ln -sf /usr/share/nvidia/modules/nvidia470-legacy.ko /var/run/nvidia/modules/nvidia.ko
     ln -sf /var/run/nvidia/modules/nvidia.ko /lib/modules/$LINUX_VER/updates/nvidia.ko
     ln -sf /usr/share/nvidia/modules/nvidia470-modeset-legacy.ko /var/run/nvidia/modules/nvidia-modeset.ko
