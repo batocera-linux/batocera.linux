@@ -28,7 +28,7 @@ class Rpcs3Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "rpcs3",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": {}
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):

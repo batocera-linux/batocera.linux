@@ -50,5 +50,12 @@ else
     RPCS3_CONF_OPTS += -DUSE_VULKAN=OFF
 endif
 
+define RPCS3_EVMAPY
+	# evmap config
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/rpcs3/*.keys \
+	    $(TARGET_DIR)/usr/share/evmapy
+endef
+
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
