@@ -227,10 +227,10 @@ def createPPSSPPConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator):
             iniConfig.set("Network", "ForcedFirstConnect",   str(system.config.get_bool("adhoc_forced_connect", False)))
 
             # Infrastructure DNS
-            infra_auto_dns = system.config.get_bool("infra_auto_dns", True)
-            iniConfig.set("Network", "InfrastructureAutoDNS", str(infra_auto_dns))
-            if not infra_auto_dns:
+            if not iniConfig.has_option("Network", "PrimaryDNSServer"):
                 iniConfig.set("Network", "PrimaryDNSServer", "67.222.156.250")
+            infra_auto_dns = system.config.get_str("infra_auto_dns", "auto")
+            iniConfig.set("Network", "InfrastructureAutoDNS", "False" if infra_auto_dns == "manual" else "True")
 
     # Custom : allow the user to configure directly PPSSPP via batocera.conf via lines like : ppsspp.section.option=value
     for section_option, user_config_value in system.config.items(starts_with='ppsspp.'):
