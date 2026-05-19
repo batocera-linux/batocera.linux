@@ -116,8 +116,8 @@ define PPSSPP_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin
     $(INSTALL) -D -m 0755 $(@D)/buildroot-build/$(PPSSPP_TARGET_BINARY) \
         $(TARGET_DIR)/usr/bin/PPSSPP
-    mkdir -p $(TARGET_DIR)/usr/share/ppsspp
-    cp -R $(@D)/assets $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
+    mkdir -p $(TARGET_DIR)/usr/share/ppsspp/PPSSPP
+    cp -R $(@D)/assets/. $(TARGET_DIR)/usr/share/ppsspp/PPSSPP/
     # Fix PSP font rendering for CJK languages
     # (font from http://wenq.org/wqy2/index.cgi?Download#MicroHei_Beta)
     cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/ppsspp/wqy-microhei.ttc \
