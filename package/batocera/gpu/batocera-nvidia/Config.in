@@ -14,6 +14,6 @@ config BR2_PACKAGE_BATOCERA_NVIDIA
     select BR2_PACKAGE_NVIDIA470_LEGACY_DRIVER_MODULE
     # cuda
     select BR2_PACKAGE_NVIDIA_OPEN_DRIVER_CUDA
-    #select BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA # adds to much weight
+    select BR2_PACKAGE_NVIDIA580_LEGACY_DRIVER_CUDA
     help
       This package helps switch between the different nvidia drivers
