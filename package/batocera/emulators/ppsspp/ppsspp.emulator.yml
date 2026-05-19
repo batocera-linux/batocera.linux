@@ -249,11 +249,12 @@ custom_features:
       'On': true
   infra_auto_dns:
     submenu: NETWORKING
-    prompt: INFRASTRUCTURE AUTO DNS
-    description: "When disabled, PPSSPP uses 67.222.156.250 as DNS server for Infrastructure (online) mode."
+    prompt: INFRASTRUCTURE DNS SERVER
+    description: "Auto/On: PPSSPP handles DNS automatically. Manual: disables auto DNS, use PrimaryDNSServer in ppsspp.ini."
     choices:
-      'Off': false
-      'On': true
+      'Auto': "auto"
+      'On': "on"
+      'Manual': "manual"
 
 systems:
   - psp
