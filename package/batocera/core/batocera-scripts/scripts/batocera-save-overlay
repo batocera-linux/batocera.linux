@@ -8,7 +8,7 @@ OVERLAYMOUNT="/overlay/saved"
 OVERLAYRAM="/overlay/overlay"
 OVERLAYSIZE=100 # M
 
-DEBUGFLAG="/var/run/bootmode.debug"
+DEBUG_FLAG="/boot/boot/bootmode.debug"
 
 if [ -f "$DEBUGFLAG" ]; then
     echo "[DEBUG BOOT] Overlay save disabled while in debug boot mode."

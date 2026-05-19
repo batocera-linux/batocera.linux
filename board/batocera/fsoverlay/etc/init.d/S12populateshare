@@ -154,7 +154,7 @@ cp /usr/share/batocera/batocera.version /userdata/system/data.version
 
 # Debug boot mode:
 # Bind mount userdata.real/bios and userdata.real/roms to tmpfs userdata
-DEBUG_FLAG="/var/run/bootmode.debug"
+DEBUG_FLAG="/boot/boot/bootmode.debug"
 if [ -f "$DEBUG_FLAG" ]; then
     if [ -d /userdata.real/roms ]; then
         mkdir -p "${OUT}/roms"

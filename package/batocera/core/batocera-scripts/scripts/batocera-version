@@ -61,9 +61,9 @@ test -n "${FIND_USERSERVICES}"     && EXTRA=${EXTRA}u${FIND_USERSERVICES}
 test -n "${FIND_USERSCRIPTS}"      && EXTRA=${EXTRA}v
 
 # Override EXTRA if debug boot mode
-DEBUGFLAG="/var/run/bootmode.debug"
+DEBUG_FLAG="/boot/boot/bootmode.debug"
 
-if [ -f "${DEBUGFLAG}" ]; then
+if [ -f "${DEBUG_FLAG}" ]; then
     EXTRA="debug"
 fi
 

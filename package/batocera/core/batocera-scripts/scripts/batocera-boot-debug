@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# Debug flag file needed for initramfs, and anything else that might need to know if debug mode is active.
+
+DEBUG_FLAG="/boot/boot/bootmode.debug"
+
+usage() {
+    echo "Usage: $0 {enable|disable|status|info}" >&2
+    exit 1
+}
+
+case "$1" in
+    enable)
+        mount -o remount,rw /boot 2>/dev/null
+        touch "$DEBUG_FLAG"
+        echo "[DEBUG BOOT] enabled"
+        mount -o remount,ro /boot 2>/dev/null
+        exit 0
+        ;;
+    disable)
+        mount -o remount,rw /boot 2>/dev/null
+        rm -f "$DEBUG_FLAG"
+        echo "[DEBUG BOOT] disabled"
+        mount -o remount,ro /boot 2>/dev/null
+        exit 0
+        ;;
+    status)
+        if [ -f "$DEBUG_FLAG" ]; then
+            echo "1"
+        else
+            echo "0"
+        fi
+        exit 0
+        ;;
+    info)
+        if [ -f "$DEBUG_FLAG" ]; then
+            echo "Debug boot: enabled"
+        else
+            echo "Debug boot: disabled"
+        fi
+        exit 0
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+exit 0
