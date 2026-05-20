@@ -3,6 +3,8 @@ from __future__ import annotations
 import logging
 import re
 import shutil
+import os
+import subprocess
 from typing import TYPE_CHECKING, Any, cast
 
 from ruamel.yaml import YAML
@@ -14,7 +16,7 @@ from ...utils import vulkan
 from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import rpcs3Controllers
-from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG
+from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG, RPCS3_SAVES, RPCS3_USER_HOME
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -34,6 +36,35 @@ class Rpcs3Generator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
+
+        # bind mount saves
+        mkdir_if_not_exists(RPCS3_USER_HOME)
+        mkdir_if_not_exists(RPCS3_SAVES)
+
+        def move_data(src_dir: Path, dst_dir: Path) -> None:
+            if src_dir.exists():
+                for item in src_dir.iterdir():
+                    dst = dst_dir / item.name
+
+                    # Do not overwrite existing user-facing save data.
+                    if dst.exists():
+                        _logger.warning("RPCS3 save data already exists, leaving original in place: %s", dst)
+                        continue
+
+                    shutil.move(str(item), str(dst))
+
+        def is_mounted(mount_point: Path) -> bool:
+            path = os.path.realpath(mount_point)
+            with open("/proc/self/mountinfo", "r") as f:
+                for line in f:
+                    parts = line.split()
+                    if len(parts) >= 5 and os.path.realpath(parts[4]) == path:
+                        return True
+            return False
+
+        if not is_mounted(RPCS3_USER_HOME):
+            move_data(RPCS3_USER_HOME, RPCS3_SAVES)
+            subprocess.call(["mount", "--bind", str(RPCS3_SAVES), str(RPCS3_USER_HOME)])
 
         # Taking care of the CurrentSettings.ini file
         mkdir_if_not_exists(RPCS3_CURRENT_CONFIG.parent)
@@ -256,7 +287,7 @@ class Rpcs3Generator(Generator):
 
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
-        
+
         elif rom.suffix.lower() == ".iso":
             romName = rom
         elif configure_emulator(rom):
