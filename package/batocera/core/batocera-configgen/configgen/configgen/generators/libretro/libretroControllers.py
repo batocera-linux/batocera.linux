@@ -49,7 +49,14 @@ def writeControllersConfig(
     retroconfig.save('input_ai_service',          '"f9"')
     retroconfig.save('input_reset',               '"f10"')
     retroconfig.save('input_rewind',              '"f11"')
-    retroconfig.save('input_hold_fast_forward',   '"f12"')
+
+    # See if FF is toggle or hold
+    ff_action = 'toggle_fast_forward' if (
+        system.isOptSet('toggle_fast_forward')
+        and system.getOptBoolean('toggle_fast_forward')
+    ) else 'hold_fast_forward'
+
+    retroconfig.save(f'input_{ff_action}',        '"f12"')
     retroconfig.save('input_screenshot',          '"nul"')
     retroconfig.save('input_audio_mute',          '"nul"')
     retroconfig.save('input_grab_mouse_toggle',   '"nul"')
@@ -71,10 +78,10 @@ def cleanControllerConfig(retroconfig: UnixSettings, controllers: Controllers, /
     for x in [
             'state_slot_increase',  'load_state',        'save_state',
             'state_slot_decrease',  'reset',             'exit_emulator',
-            'rewind',               'hold_fast_forward', 'screenshot',
-            'disk_prev',            'disk_next',         'disk_eject_toggle',
-            'shader_prev',          'shader_next',       'ai_service',
-            'menu_toggle'
+            'rewind',               'hold_fast_forward', 'toggle_fast_forward',
+            'screenshot',           'disk_prev',         'disk_next',
+            'disk_eject_toggle',    'shader_prev',       'shader_next',
+            'ai_service',           'menu_toggle'
     ]:
         retroconfig.disable_all(f'input_{x}')
 

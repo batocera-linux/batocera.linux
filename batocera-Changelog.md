@@ -6,6 +6,7 @@
 
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
+- ES Setting for toggle fast forward
 ### Fixed
 
 ### Changed / Improved
