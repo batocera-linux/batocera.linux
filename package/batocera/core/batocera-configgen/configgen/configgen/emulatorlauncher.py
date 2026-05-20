@@ -586,7 +586,7 @@ def runCommand(command: Command) -> int:
     if not command.array:
         raise BadCommandLineArguments
 
-    proc = subprocess.Popen(command.array, env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(["nice", "-n", "-4", *command.array], env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     exitcode = 0
 
     try:
