@@ -6,6 +6,7 @@
 
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
+- Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 ### Fixed
 
 ### Changed / Improved

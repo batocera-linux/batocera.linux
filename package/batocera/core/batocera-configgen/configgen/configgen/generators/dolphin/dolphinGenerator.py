@@ -147,7 +147,7 @@ class DolphinGenerator(Generator):
             key = f"dolphin_port_{i+1}_type"
             if value := system.config.get(key):
                 # Set value to 6 if it is 6a or 6b. This is to differentiate between Standard Controller and GameCube Controller type.
-                value = "6" if value in ["6a", "6b"] else value
+                value = "6" if value in ["6a", "6b", "6c"] else value
                 # Sub in the appropriate values from es_features, accounting for the 1 integer difference.
                 dolphinSettings.set("Core", f"SIDevice{i}", value)
             else:
