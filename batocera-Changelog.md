@@ -3,7 +3,7 @@
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 ### Hardware
 - Mangmi Air X initial support
-
+- Anbernic RG-DS initial support
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
 ### Fixed
