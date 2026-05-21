@@ -23,6 +23,7 @@ import os
 import time
 import sys
 import glob
+import subprocess
 from threading import Thread
 
 DEBUG = 0
@@ -77,6 +78,17 @@ def load_config(fname):
         return []
     return newconfig
 
+def get_cpu_temp():
+    try:
+        out = subprocess.check_output(
+            ["batocera-cpu-temp"],
+            text=True,
+            stderr=subprocess.DEVNULL
+        ).strip()
+        return int(out)
+    except Exception:
+        return 50 # So fan is still on
+
 # Check the current temperature and adjust fan speed
 def temp_check():
     fanconfig = ["80=100", "70=80", "60=60", "50=40", "40=30", "30=20", "20=0"] # Default values when no config file
@@ -89,9 +101,7 @@ def temp_check():
         print ("Error: no fan control found.")
         exit
     while True:
-        with open("/sys/class/thermal/thermal_zone0/temp","r") as temp:
-            tpp = temp.readline()
-            val = float(int(tpp)/1000)
+            val = get_cpu_temp()
             block = get_fanspeed(val, fanconfig)
             if block < prevblock:
                 time.sleep(CHECK_INTERVAL)
@@ -124,8 +134,6 @@ if len(sys.argv)>1:
         except Exception as e:
             print (f"Could not stop fan: {e}")
 else:
-    with open("/sys/class/thermal/thermal_zone0/temp","r") as tp:
-        temp = tp.readline().strip()
-        val = float(int(temp)/1000)
-        print ("Temp: {:5.1f}C".format(val))
+    val = get_cpu_temp()
+    print(f"Temp: {val}C")
 
