@@ -48,6 +48,7 @@
 - Mesa3D to 26.1.0
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
+- New cpu temp helper script, batocera-cpu-temp
 
 # 2026/05/xx - batocera.linux 43.1
 - fix es for missing systems / collections disappearing
