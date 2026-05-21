@@ -539,6 +539,15 @@ case "${ACTION}" in
                 } }' "${RC_XML}"
             fi
 
+            # Set the catch-all wildcard windowRule to the primary output
+            if [ -n "${PRIMARY_OUT}" ]; then
+                _log "Setting wildcard catch-all window rule to output: ${PRIMARY_OUT}"
+                sed -i -e '/<windowRule identifier="\*">/,/\/windowRule>/ {
+                    /<action name="MoveToOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
+                    /<action name="FocusOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
+                }' "${RC_XML}"
+            fi
+            
             # Trigger labwc to reload the configuration
             _reconfigure_labwc
         fi

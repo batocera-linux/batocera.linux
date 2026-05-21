@@ -90,6 +90,15 @@ start() {
 			} }' "${RC_XML_PATH}"
 		fi
 
+		# --- Set the catch-all wildcard windowRule to the primary output ---
+		echo "Applying window rules for wildcard catch-all..." >>"$display_log"
+		if [ -n "${PRIMARY_OUT}" ]; then
+			sed -i -e '/<windowRule identifier="\*">/,/\/windowRule>/ {
+				/<action name="MoveToOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
+				/<action name="FocusOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
+			}' "${RC_XML_PATH}"
+		fi
+
 		# --- Check for touchscreen and configure it ---
 		TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
 		if [ -n "${TOUCHSCREEN}" ] && [ -n "${PRIMARY_OUT}" ]; then

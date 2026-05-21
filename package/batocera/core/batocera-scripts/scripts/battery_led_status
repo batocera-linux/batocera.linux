@@ -1,0 +1,130 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2026 ROCKNIX (https://github.com/ROCKNIX)
+# Modified for Batocera by dmanlfc
+# Battery LED status monitor for RK3566 devices (Anbernic RG DS)
+#
+# Upper LED (green:power + red:status):
+#   Green  = normal (>20%)
+#   Red    = low battery (<=20%)
+#   Blink  = critical battery (<=5%)
+#   Amber  = fake suspend active
+#
+# Lower LED (amber:charging):
+#   Amber  = charging
+#   Off    = discharging / full
+#
+# Thresholds and poll interval can be overridden via environment variables, e.g.:
+#   THRESHOLD_CRITICAL=50 THRESHOLD_LOW=80 /usr/bin/battery_led_status
+
+LED_PATH="/sys/class/leds"
+
+THRESHOLD_LOW=${THRESHOLD_LOW:-20}
+THRESHOLD_CRITICAL=${THRESHOLD_CRITICAL:-5}
+POLL_INTERVAL=${POLL_INTERVAL:-1}
+
+get_setting() {
+  batocera-settings-get "$1" 2>/dev/null
+}
+
+get_brightness() {
+  case $(get_setting led.brightness) in
+    mid) echo 63 ;;
+    min) echo 15 ;;
+    *)   echo 255 ;;
+  esac
+}
+
+led_upper() {
+  local bri=$(get_brightness)
+  case ${1} in
+    green)
+      echo "none" >${LED_PATH}/red:status/trigger
+      echo ${bri} >${LED_PATH}/green:power/brightness
+      echo 0      >${LED_PATH}/red:status/brightness
+    ;;
+    red)
+      echo "none" >${LED_PATH}/red:status/trigger
+      echo 0      >${LED_PATH}/green:power/brightness
+      echo ${bri} >${LED_PATH}/red:status/brightness
+    ;;
+    amber)
+      echo "none" >${LED_PATH}/red:status/trigger
+      echo ${bri} >${LED_PATH}/green:power/brightness
+      echo ${bri} >${LED_PATH}/red:status/brightness
+    ;;
+    blink_red)
+      echo 0 >${LED_PATH}/green:power/brightness
+      local BLINK=$(cat ${LED_PATH}/red:status/brightness)
+      [ "${BLINK}" = "0" ] && echo ${bri} >${LED_PATH}/red:status/brightness \
+                           || echo 0      >${LED_PATH}/red:status/brightness
+    ;;
+  esac
+}
+
+led_lower() {
+  local bri=$(get_brightness)
+  [ "${1}" = "0" ] && echo 0      >${LED_PATH}/amber:charging/brightness \
+                   || echo ${bri} >${LED_PATH}/amber:charging/brightness
+}
+
+get_upper_state() {
+  local capacity=${1}
+  if [ "${capacity}" -le "${THRESHOLD_CRITICAL}" ]; then
+    echo "blink_red"
+  elif [ "${capacity}" -le "${THRESHOLD_LOW}" ]; then
+    echo "red"
+  else
+    echo "green"
+  fi
+}
+
+PREV_UPPER=""
+PREV_LOWER=""
+PREV_BRI=""
+
+while true; do
+  CAP=$(cat /sys/class/power_supply/battery/capacity)
+  STAT=$(cat /sys/class/power_supply/battery/status)
+  UPPER=$(get_upper_state ${CAP})
+  LOWER=0
+  BRI=$(get_brightness)
+
+  case ${STAT} in
+    Charging)
+      # No blinking while charging, show battery level colour + amber lower
+      [ "${UPPER}" = "blink_red" ] && UPPER="red"
+      LOWER=${BRI}
+    ;;
+    Full|"Not charging")
+      UPPER="green"
+    ;;
+    Discharging)
+      : # UPPER is already correct from get_upper_state; no override needed unlike Charging/Full
+    ;;
+    *)
+      # Unknown state — fall back to green
+      UPPER="green"
+    ;;
+  esac
+
+  # If fake suspend flag exists, force upper LED to Amber (green + red)
+  if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
+    UPPER="amber"
+  fi
+
+  BRI_CHANGED=0
+  [ "${BRI}" != "${PREV_BRI}" ] && BRI_CHANGED=1 && PREV_BRI="${BRI}"
+
+  # Always call led_upper for blink_red (needs to toggle every poll), otherwise only on state or brightness change
+  if [ "${UPPER}" = "blink_red" ] || [ "${UPPER}" != "${PREV_UPPER}" ] || [ "${BRI_CHANGED}" = "1" ]; then
+    led_upper ${UPPER}
+    PREV_UPPER="${UPPER}"
+  fi
+  if [ "${LOWER}" != "${PREV_LOWER}" ] || [ "${BRI_CHANGED}" = "1" ]; then
+    led_lower ${LOWER}
+    PREV_LOWER="${LOWER}"
+  fi
+
+  sleep ${POLL_INTERVAL}
+done
