@@ -61,11 +61,11 @@ for h in /sys/class/hwmon/hwmon*; do
 done
 
 if [ -n "$BEST_CPU" ]; then
-    echo "${BEST_CPU}C"
+    echo "${BEST_CPU}"
 elif [ -n "$BEST_ANY" ]; then
-    echo "${BEST_ANY}C"
+    echo "${BEST_ANY}"
 else
-    echo "0C"
+    echo "0"
 fi
 
 exit 0
