@@ -1,0 +1,71 @@
+#!/bin/sh
+# Find hottest likely candidate for cpu. Some handhelds use clusters.
+# Fallback to just reporting the hottest temp found, and if nothing is found report 0C.
+
+BEST_CPU=""
+BEST_ANY=""
+
+check_temp() {
+    label="$1"
+    file="$2"
+
+    IFS= read -r v < "$file" 2>/dev/null || return
+
+    case "$v" in
+        ''|*[!0-9-]*) return ;;
+    esac
+
+    c=$(( v / 1000 ))
+
+    [ "$c" -gt 0 ] 2>/dev/null || return
+    [ "$c" -lt 130 ] 2>/dev/null || return
+
+    if [ -z "$BEST_ANY" ] || [ "$c" -gt "$BEST_ANY" ]; then
+        BEST_ANY="$c"
+    fi
+
+    case "$label" in
+        *[Cc][Pp][Uu]*|*[Cc][Ll][Uu][Ss][Tt][Ee][Rr]*)
+            if [ -z "$BEST_CPU" ] || [ "$c" -gt "$BEST_CPU" ]; then
+                BEST_CPU="$c"
+            fi
+            ;;
+    esac
+}
+
+for z in /sys/class/thermal/thermal_zone* /sys/devices/virtual/thermal/thermal_zone*; do
+    [ -f "$z/temp" ] || continue
+    [ -f "$z/type" ] || continue
+
+    IFS= read -r label < "$z/type" 2>/dev/null || label=""
+    check_temp "$label" "$z/temp"
+done
+
+for h in /sys/class/hwmon/hwmon*; do
+    [ -d "$h" ] || continue
+
+    IFS= read -r name < "$h/name" 2>/dev/null || name=""
+
+    for t in "$h"/temp*_input; do
+        [ -f "$t" ] || continue
+
+        label_file="${t%_input}_label"
+        if [ -f "$label_file" ]; then
+            IFS= read -r label < "$label_file" 2>/dev/null || label=""
+        else
+            label=""
+        fi
+
+        check_temp "$name $label" "$t"
+    done
+done
+
+if [ -n "$BEST_CPU" ]; then
+    echo "${BEST_CPU}C"
+elif [ -n "$BEST_ANY" ]; then
+    echo "${BEST_ANY}C"
+else
+    echo "0C"
+fi
+
+exit 0

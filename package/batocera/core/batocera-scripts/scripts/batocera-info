@@ -248,43 +248,7 @@ fi
 # ---------------------------------------------------------------------------
 # Temperature
 # ---------------------------------------------------------------------------
-get_temperature() {
-    local best=""
-    for zone in /sys/devices/virtual/thermal/thermal_zone*; do
-        local type
-        type=$(cat "${zone}/type" 2>/dev/null)
-        # Prefer known CPU zone types
-        case "${type}" in
-            cpu-thermal|x86_pkg_temp|cpu_thermal|arm-thermal|soc-thermal)
-                local t
-                t=$(cat "${zone}/temp" 2>/dev/null)
-                if [ -n "$t" ] && { [ -z "$best" ] || [ "$t" -gt "$best" ]; }; then
-                    best="$t"
-                fi
-                ;;
-        esac
-    done
-
-    # Fall back: hwmon temp*_input, excluding "in" (voltage) sensors
-    if [ -z "$best" ]; then
-        best=$(cat /sys/class/hwmon/hwmon*/temp*_input 2>/dev/null | \
-               sort -rn | head -1)
-    fi
-
-    # Still nothing: global thermal_zone max
-    if [ -z "$best" ]; then
-        best=$(cat /sys/devices/virtual/thermal/thermal_zone*/temp 2>/dev/null | \
-               sort -rn | head -1)
-    fi
-
-    # Trim trailing 3 digits (millidegree → degree)
-    echo "${best}" | sed -e 's/[0-9][0-9][0-9]$//'
-}
-
-TEMPE=$(get_temperature)
-if test -n "${TEMPE}"; then
-    echo "Temperature: ${TEMPE}°C"
-fi
+echo "Temperature: $(batocera-cpu-temp)"
 
 # ---------------------------------------------------------------------------
 # Memory

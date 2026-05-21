@@ -3,7 +3,7 @@
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 ### Hardware
 - Mangmi Air X initial support
-
+- Anbernic RG-DS initial support
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
@@ -17,6 +17,7 @@
 - Removed Libretro-Puae2021
 ### Updated
 - CDogs to 2.4.0
+- CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Hatari to April 21st, 2026 build
@@ -49,6 +50,7 @@
 - Mesa3D to 26.1.0
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
+- New cpu temp helper script, batocera-cpu-temp
 
 # 2026/05/xx - batocera.linux 43.1
 - fix es for missing systems / collections disappearing

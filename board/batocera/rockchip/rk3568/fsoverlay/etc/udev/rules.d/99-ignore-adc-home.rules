@@ -1,0 +1,2 @@
+# Prevent adc-keys-home from being treated as a joystick
+SUBSYSTEM=="input", ATTRS{name}=="adc-keys-home", ENV{ID_INPUT_JOYSTICK}="0", ENV{ID_INPUT_KEY}="1"

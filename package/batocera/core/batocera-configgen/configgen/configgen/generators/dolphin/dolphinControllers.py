@@ -504,6 +504,13 @@ def get_AltMapping(system: Emulator, nplayer: int, anyMapping: Mapping[str, str 
         mapping['y'] = 'Buttons/B'
         mapping['x'] = 'Buttons/Y'
 
+    # BattlerGC Pro is a "real" GC style controller, plus full analog+digital analogs(x-input only, home+B turns on/off, digital triggers are mirrored l3/r3).
+    if system.config.get(f"dolphin_port_{nplayer}_type") == '6c':
+        mapping['a'] = 'Buttons/B'
+        mapping['b'] = 'Buttons/A'
+        mapping['l3'] = 'Triggers/L'
+        mapping['r3'] = 'Triggers/R'
+
     return mapping
 
 def generateControllerConfig_any(system: Emulator, playersControllers: Controllers, wheels: DeviceInfoMapping, filename: str, anyDefKey: str, anyMapping: Mapping[str, str | None], anyReverseAxes: Mapping[str | None, str], anyReplacements: Mapping[str, str] | None, extraOptions: Mapping[str, str] = {}, wheelMapping: Mapping[str, str | None] | None = None, wheelReverseAxes: Mapping[str | None, str] | None = None, wheelExtraOptions: Mapping[str, str] = {}) -> None:
