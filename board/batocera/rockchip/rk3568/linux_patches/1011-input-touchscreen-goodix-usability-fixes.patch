@@ -1,0 +1,12 @@
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -1021,7 +1021,8 @@
+ 	default:
+ 		if (ts->gpiod_int && ts->gpiod_rst) {
+ 			ts->reset_controller_at_probe = true;
+-			ts->load_cfg_from_disk = true;
++			// Disabled to prevent ~60s timeout wait
++			// ts->load_cfg_from_disk = true;
+ 			ts->irq_pin_access_method = IRQ_PIN_ACCESS_GPIO;
+ 		}
+ 	}

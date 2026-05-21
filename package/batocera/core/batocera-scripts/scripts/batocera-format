@@ -34,7 +34,7 @@ disks_to_keep() {
 do_listDisks() {
     echo "INTERNAL INTERNAL"
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
-	grep -E '^TYPE=\"disk\" ' |
+	grep -E '^TYPE="disk" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
 	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
 	while read XDRIVE XTEXT
