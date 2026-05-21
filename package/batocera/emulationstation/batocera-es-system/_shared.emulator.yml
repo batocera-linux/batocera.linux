@@ -54,6 +54,10 @@ custom_features:
     choices:
       "On": 1
       "Off": 0
+  toggle_fast_forward:
+    prompt: TOGGLE FAST FORWARD
+    description: Enable to toggle fast forward instead of holding it down. Only on libretro cores.
+    preset: switchauto
   autosave:
     prompt: AUTO SAVE/LOAD ON GAME LAUNCH
     description: Load latest save state on game launch and save state when exiting game.

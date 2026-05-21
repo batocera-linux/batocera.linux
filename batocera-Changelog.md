@@ -6,6 +6,7 @@
 - Anbernic RG-DS initial support
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
+- ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 ### Fixed
 
