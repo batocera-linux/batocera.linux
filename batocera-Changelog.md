@@ -6,6 +6,8 @@
 
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
+- ES Setting for toggle fast forward
+- Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
 ### Fixed
 
