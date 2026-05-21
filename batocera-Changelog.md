@@ -6,6 +6,7 @@
 
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
+- ES setting to determnine mitigations On|Off(Default On)
 ### Fixed
 
 ### Changed / Improved

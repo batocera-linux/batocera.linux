@@ -1,0 +1,147 @@
+#!/bin/bash
+
+SYS_CFG="/boot/EFI/batocera/syslinux.cfg"
+ARG="mitigations=off"
+
+usage() {
+    echo "Usage: $0 {off|on|status}"
+    exit 1
+}
+
+remount_boot_write() {
+    echo "Remounting /boot read-write..."
+    mount -o remount,rw /boot || {
+        echo "ERROR: failed to remount /boot read-write"
+        exit 1
+    }
+}
+
+remount_boot_read() {
+    echo "Remounting /boot read-only..."
+    mount -o remount,ro /boot || {
+        echo "WARNING: failed to remount /boot read-only"
+        return 1
+    }
+}
+
+backup_config() {
+    BACKUP="${SYS_CFG}.bak.$(date +%Y%m%d-%H%M%S)"
+    echo "Creating backup: $BACKUP"
+
+    cp -a "$SYS_CFG" "$BACKUP" || {
+        echo "ERROR: failed to create backup"
+        remount_boot_read
+        exit 1
+    }
+}
+
+get_batocera_block() {
+    sed -n '/^LABEL[[:space:]]\+batocera$/,/^LABEL[[:space:]]/p' "$SYS_CFG"
+}
+
+has_mitigations_off() {
+    get_batocera_block | grep -qE '^[[:space:]]*APPEND[[:space:]].*(^|[[:space:]])mitigations=off([[:space:]]|$)'
+}
+
+show_append_line() {
+    get_batocera_block | grep -E '^[[:space:]]*APPEND[[:space:]]'
+}
+
+notify_es() {
+    msg="$1"
+    curl -s -X POST "http://127.0.0.1:1234/messagebox" -d "$msg" >/dev/null 2>&1
+}
+
+ACTION="$1"
+
+case "$ACTION" in
+    off|on|status)
+        ;;
+    *)
+        usage
+        ;;
+esac
+
+if [ ! -f "$SYS_CFG" ]; then
+    echo "ERROR: $SYS_CFG not found"
+    exit 1
+fi
+
+case "$ACTION" in
+    status)
+        if has_mitigations_off; then
+            echo "Mitigations are OFF."
+        else
+            echo "Mitigations are ON(default)."
+        fi
+
+        echo "Current default batocera APPEND line:"
+        show_append_line
+        exit 0
+        ;;
+
+    off)
+        if has_mitigations_off; then
+            echo "Mitigations are already off."
+            show_append_line
+            exit 0
+        fi
+
+        remount_boot_write
+        backup_config
+
+        echo "Setting mitigations off..."
+
+        sed -i '/^LABEL[[:space:]]\+batocera$/,/^LABEL[[:space:]]/ {
+            /^[[:space:]]*APPEND[[:space:]]/ {
+                /(^\|[[:space:]])mitigations=off\([[:space:]]\|$\)/! s/[[:space:]]*$/ mitigations=off/
+            }
+        }' "$SYS_CFG" || {
+            echo "ERROR: failed to apply change"
+            remount_boot_read
+            exit 1
+        }
+
+        remount_boot_read
+
+        echo "Done. Default batocera APPEND line:"
+        show_append_line
+
+        notify_es "Reboot to apply changes!"
+        ;;
+
+    on)
+        if ! has_mitigations_off; then
+            echo "Mitigations are already on/default."
+            show_append_line
+            exit 0
+        fi
+
+        remount_boot_write
+        backup_config
+
+        echo "Removing mitigations=off..."
+
+        sed -i '/^LABEL[[:space:]]\+batocera$/,/^LABEL[[:space:]]/ {
+            /^[[:space:]]*APPEND[[:space:]]/ {
+                s/[[:space:]]mitigations=off\([[:space:]]\|$\)/\1/g
+                s/[[:space:]]*$//
+            }
+        }' "$SYS_CFG" || {
+            echo "ERROR: failed to apply change"
+            remount_boot_read
+            exit 1
+        }
+
+        remount_boot_read
+
+        echo "Done. Default batocera APPEND line:"
+        show_append_line
+
+        notify_es "Reboot to apply changes!"
+        ;;
+esac
+
+echo "Reboot to apply."
+
+exit 0
