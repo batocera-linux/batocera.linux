@@ -1,0 +1,36 @@
+--- a/hatari/CMakeLists.txt	2026-02-13 19:14:52.000000000 -0800
++++ b/hatari/CMakeLists.txt	2026-05-21 16:14:36.876165273 -0700
+@@ -145,10 +145,11 @@
+ 	endif(X11_FOUND)
+ endif()
+
+-find_package(PortMidi)
+-if(PortMidi_FOUND)
+-	set(HAVE_PORTMIDI 1)
+-endif(PortMidi_FOUND)
++# Disable PortMidi for libretro/batocera build
++#find_package(PortMidi)
++#if(PortMidi_FOUND)
++#	set(HAVE_PORTMIDI 1)
++#endif(PortMidi_FOUND)
+
+ find_package(CapsImage)
+ if(CapsImage_FOUND)
+@@ -434,11 +435,12 @@
+   message( "  - png :\tnot found, install it to compress screenshot/avi files using png" )
+ endif(PNG_FOUND)
+
+-if(PortMidi_FOUND)
+-  message( "  - portmidi :\tfound, required for (non-Linux) MIDI support" )
+-else()
+-  message( "  - portmidi :\tnot found, install it for MIDI support on Windows / OSX" )
+-endif(PortMidi_FOUND)
++# if(PortMidi_FOUND)
++#   message( "  - portmidi :\tfound, required for (non-Linux) MIDI support" )
++# else()
++#   message( "  - portmidi :\tnot found, install it for MIDI support on Windows / OSX" )
++# endif(PortMidi_FOUND)
++message( "  - portmidi :\tdisabled for libretro core on Batocera" )
+
+ if(CapsImage_FOUND)
+   message( "  - capsimage :\tv5 found, allow to use .IPF, .RAW and .CTR disk images" )
