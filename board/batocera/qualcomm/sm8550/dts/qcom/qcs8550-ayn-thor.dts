@@ -16,6 +16,8 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 
+		pinctrl-0 = <&volume_up_n &key_ayn_n>;
+
 		key-ayn {
 			label = "AYN Key";
 			debounce-interval = <15>;
@@ -343,6 +345,21 @@
 	};
 };
 
+&{/sound} {
+	model = "AYN-Thor";
+	audio-routing =
+			"IN1_HPHL", "HPHL_OUT",
+			"IN2_HPHR", "HPHR_OUT",
+			"AMIC2", "MIC BIAS2",
+			"TX SWR_INPUT1", "ADC2_OUTPUT",
+			"DMIC3", "MIC BIAS3",
+			"TX SWR_INPUT7", "DMIC3_OUTPUT";
+};
+
+&{/sound/wcd-capture-dai-link/codec} {
+	sound-dai = <&wcd938x 1>, <&swr2 1>, <&lpass_txmacro 0>;
+};
+
 &i2c_hub_3 {
 	clock-frequency = <100000>;
 	status = "okay";
@@ -413,6 +430,15 @@
 
 &mdss_dsi1_out {
 	qcom,te-source = "mdp_vsync_s";
+};
+
+&tlmm {
+	key_ayn_n: key-ayn-n-state {
+		pins = "gpio41";
+		function = "gpio";
+		bias-pull-up;
+		output-disable;
+	};
 };
 
 &remoteproc_adsp {

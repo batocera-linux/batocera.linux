@@ -1,31 +1,33 @@
-From d33738b93e9560e8d9e08a024cc84c8055bb7eb9 Mon Sep 17 00:00:00 2001
-From: Teguh Sobirin <teguh@sobir.in>
-Date: Mon, 24 Feb 2025 17:19:57 +0800
-Subject: [PATCH] Add AYN Odin2
+From 2037560fdc8aff449764f91992a24bf4087807f4 Sat May 9 00:45:00 2026
+From: Luke Johnson <jaewun@me.com>
+Date: Sat, 9 May 2026 00:45:00 +1200
+Subject: [PATCH] Add AYN Thor
 
-Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+Add a Thor UCM profile with the verified built-in microphone route.
+Thor's internal mic uses the WCD938x DMIC3 path through SWR_MIC7.
 ---
- ucm2/AYN/Odin2/AYN-Odin2.conf     | 31 +++++++++++
- ucm2/AYN/Odin2/HiFi.conf          | 91 +++++++++++++++++++++++++++++++
- ucm2/conf.d/sm8550/AYN-Odin2.conf |  1 +
- 3 files changed, 123 insertions(+)
- create mode 100644 ucm2/AYN/Odin2/AYN-Odin2.conf
- create mode 100644 ucm2/AYN/Odin2/HiFi.conf
- create mode 120000 ucm2/conf.d/sm8550/AYN-Odin2.conf
+ ucm2/AYN/Thor/AYN-Thor.conf        |  33 ++++++++++++
+ ucm2/AYN/Thor/HiFi.conf            | 100 ++++++++++++++++++++++++++++++++++++
+ ucm2/conf.d/sm8550/AYN-Thor.conf   |   1 +
+ ucm2/conf.d/sm8550/ayn-AYNThor-.conf | 1 +
+ 4 files changed, 135 insertions(+)
+ create mode 100644 ucm2/AYN/Thor/AYN-Thor.conf
+ create mode 100644 ucm2/AYN/Thor/HiFi.conf
+ create mode 120000 ucm2/conf.d/sm8550/AYN-Thor.conf
+ create mode 120000 ucm2/conf.d/sm8550/ayn-AYNThor-.conf
 
-diff --git a/ucm2/AYN/Odin2/AYN-Odin2.conf b/ucm2/AYN/Odin2/AYN-Odin2.conf
+diff --git a/ucm2/AYN/Thor/AYN-Thor.conf b/ucm2/AYN/Thor/AYN-Thor.conf
 new file mode 100644
-index 0000000..e4054ba
+index 0000000..ecba163
 --- /dev/null
-+++ b/ucm2/AYN/Odin2/AYN-Odin2.conf
-@@ -0,0 +1,31 @@
-+# Use case configuration for AYN Odin2
-+# Author: Teguh Sobirin <teguh@sobir.in>
++++ b/ucm2/AYN/Thor/AYN-Thor.conf
+@@ -0,0 +1,33 @@
++# Use case configuration for AYN Thor
 +
 +Syntax 4
 +
 +SectionUseCase."HiFi" {
-+	File "/AYN/Odin2/HiFi.conf"
++	File "/AYN/Thor/HiFi.conf"
 +	Comment "HiFi quality Music."
 +}
 +
@@ -34,6 +36,9 @@ index 0000000..e4054ba
 +	cset "name='RX_RX1 Digital Volume' 84"
 +	cset "name='HPHL Volume' 20"
 +	cset "name='HPHR Volume' 20"
++	cset "name='SPK_L PCM Playback Volume' 0"
++	cset "name='SPK_R PCM Playback Volume' 0"
++	cset "name='ADC1 Volume' 20"
 +	cset "name='ADC2 Volume' 10"
 +]
 +
@@ -50,14 +55,13 @@ index 0000000..e4054ba
 +Include.card-init.File "/lib/card-init.conf"
 +Include.ctl-remap.File "/lib/ctl-remap.conf"
 +Include.wcd-init.File "/codecs/wcd938x/init.conf"
-diff --git a/ucm2/AYN/Odin2/HiFi.conf b/ucm2/AYN/Odin2/HiFi.conf
+diff --git a/ucm2/AYN/Thor/HiFi.conf b/ucm2/AYN/Thor/HiFi.conf
 new file mode 100644
-index 0000000..dc5211e
+index 0000000..d9489f1
 --- /dev/null
-+++ b/ucm2/AYN/Odin2/HiFi.conf
-@@ -0,0 +1,91 @@
-+# Use case configuration for AYN Odin2
-+# Author: Teguh Sobirin <teguh@sobir.in>
++++ b/ucm2/AYN/Thor/HiFi.conf
+@@ -0,0 +1,100 @@
++# Use case configuration for AYN Thor
 +
 +SectionVerb {
 +	EnableSequence [
@@ -108,22 +112,32 @@ index 0000000..dc5211e
 +	}
 +}
 +
-+#SectionDevice."Headset" {
-+#	Comment "Headphone Microphone"
-+#
-+#	Include.wcdmice.File "/codecs/wcd938x/HeadphoneMicEnableSeq.conf"
-+#	Include.wcdmicd.File "/codecs/wcd938x/HeadphoneMicDisableSeq.conf"
-+#	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/SoundwireMic1EnableSeq.conf"
-+#	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/HeadphoneMicDisableSeq.conf"
-+#
-+#	Value {
-+#		CapturePriority 200
-+#		CapturePCM "hw:${CardId},2"
-+#		CaptureMixerElem "ADC2"
-+#		CaptureChannels 1
-+#		JackControl "Mic Jack"
-+#	}
-+#}
++SectionDevice."Mic" {
++	Comment "Internal Microphone"
++
++	EnableSequence [
++		cset "name='TX DEC0 MUX' SWR_MIC"
++		cset "name='TX SMIC MUX0' SWR_MIC7"
++		cset "name='DMIC3 Switch' 1"
++		cset "name='DMIC3_MIXER Switch' 1"
++		cset "name='TX_AIF1_CAP Mixer DEC0' 1"
++		cset "name='DEC0 MODE' ADC_DEFAULT"
++		cset "name='TX_DEC0 Volume' 100"
++	]
++
++	DisableSequence [
++		cset "name='TX_AIF1_CAP Mixer DEC0' 0"
++		cset "name='DMIC3_MIXER Switch' 0"
++		cset "name='DMIC3 Switch' 0"
++		cset "name='TX SMIC MUX0' ZERO"
++	]
++
++	Value {
++		CapturePriority 200
++		CapturePCM "hw:${CardId},2"
++		CaptureChannels 2
++	}
++}
 +
 +SectionDevice."DisplayPort" {
 +	Comment "DisplayPort playback"
@@ -147,14 +161,21 @@ index 0000000..dc5211e
 +		JackHWMute "Speaker"
 +	}
 +}
-diff --git a/ucm2/conf.d/sm8550/AYN-Odin2.conf b/ucm2/conf.d/sm8550/AYN-Odin2.conf
+diff --git a/ucm2/conf.d/sm8550/AYN-Thor.conf b/ucm2/conf.d/sm8550/AYN-Thor.conf
 new file mode 120000
-index 0000000..414976a
+index 0000000..6c6aaec
 --- /dev/null
-+++ b/ucm2/conf.d/sm8550/AYN-Odin2.conf
++++ b/ucm2/conf.d/sm8550/AYN-Thor.conf
 @@ -0,0 +1 @@
-+../../AYN/Odin2/AYN-Odin2.conf
++../../AYN/Thor/AYN-Thor.conf
+\ No newline at end of file
+diff --git a/ucm2/conf.d/sm8550/ayn-AYNThor-.conf b/ucm2/conf.d/sm8550/ayn-AYNThor-.conf
+new file mode 120000
+index 0000000..6c6aaec
+--- /dev/null
++++ b/ucm2/conf.d/sm8550/ayn-AYNThor-.conf
+@@ -0,0 +1 @@
++../../AYN/Thor/AYN-Thor.conf
 \ No newline at end of file
 -- 
-2.34.1
-
+2.49.0

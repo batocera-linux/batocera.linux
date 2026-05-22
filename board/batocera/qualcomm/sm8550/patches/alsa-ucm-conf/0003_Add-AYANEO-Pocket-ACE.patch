@@ -1,0 +1,87 @@
+diff --git a/ucm2/AYANEO/Pocket/AYANEO-Pocket.conf b/ucm2/AYANEO/Pocket/AYANEO-Pocket.conf
+new file mode 100644
+index 0000000..e4054ba
+--- /dev/null
++++ b/ucm2/AYANEO/Pocket/AYANEO-Pocket.conf
+@@ -0,0 +1,11 @@
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/AYANEO/Pocket/HiFi.conf"
++	Comment "HiFi quality Music."
++}
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wsa-init.File "/codecs/wsa884x/two-speakers/init.conf"
++Include.wsam-init.File "/codecs/qcom-lpass/wsa-macro/init.conf"
+diff --git a/ucm2/AYANEO/Pocket/HiFi.conf b/ucm2/AYANEO/Pocket/HiFi.conf
+new file mode 100644
+index 0000000..dc5211e
+--- /dev/null
++++ b/ucm2/AYANEO/Pocket/HiFi.conf
+@@ -0,0 +1,56 @@
++SectionVerb {
++	EnableSequence [
++		cset "name='WSA_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer VA_CODEC_DMA_TX_0' 1"
++ 	]
++
++	Include.wsae.File "/codecs/wsa884x/two-speakers/DefaultEnableSeq.conf"
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker playback"
++
++        Include.wsmspk1e.File "/codecs/qcom-lpass/wsa-macro/SpeakerEnableSeq.conf"
++        Include.wsmspk1d.File "/codecs/qcom-lpass/wsa-macro/SpeakerDisableSeq.conf"
++        Include.wsaspkd.File "/codecs/wsa884x/two-speakers/SpeakerSeq.conf"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++                PlaybackMixerElem "Speakers"
++	}
++}
++
++SectionDevice."Mic1" {
++        Comment "Top microphones"
++
++        Include.vadm0e.File "/codecs/qcom-lpass/va-macro/DMIC0EnableSeq.conf"
++        Include.vadm0d.File "/codecs/qcom-lpass/va-macro/DMIC0DisableSeq.conf"
++        Include.vadm1e.File "/codecs/qcom-lpass/va-macro/DMIC1EnableSeq.conf"
++        Include.vadm1d.File "/codecs/qcom-lpass/va-macro/DMIC1DisableSeq.conf"
++
++        Value {
++                CapturePriority 100
++                CapturePCM "hw:${CardId},2"
++        }
++}
++
++#SectionDevice."Mic2" {
++#        Comment "Bottom microphones"
++#
++#        Include.vadm2e.File "/codecs/qcom-lpass/va-macro/DMIC2EnableSeq.conf"
++#        Include.vadm2d.File "/codecs/qcom-lpass/va-macro/DMIC2DisableSeq.conf"
++#        Include.vadm3e.File "/codecs/qcom-lpass/va-macro/DMIC3EnableSeq.conf"
++#        Include.vadm3d.File "/codecs/qcom-lpass/va-macro/DMIC3DisableSeq.conf"
++#
++#        Value {
++#                CapturePriority 100
++#                CapturePCM "hw:${CardId},4"
++#        }
++#}
+diff --git a/ucm2/conf.d/sm8550/SM8550-APS.conf b/ucm2/conf.d/sm8550/SM8550-APS.conf
+new file mode 120000
+index 0000000..414976a
+--- /dev/null
++++ b/ucm2/conf.d/sm8550/SM8550-APS.conf
+@@ -0,0 +1 @@
++../../AYANEO/Pocket/AYANEO-Pocket.conf
+\ No newline at end of file

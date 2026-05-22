@@ -137,7 +137,7 @@
 
 	panel@0 {
 		reg = <0>;
-		compatible = "retroid,pocket-6-panel";
+		compatible = "vtdr6130,rp6";
 
 		pinctrl-0 = <&dsi_p_rst_active>, <&dsi_p_te_active>;
 		pinctrl-1 = <&dsi_p_rst_suspend>, <&dsi_p_te_suspend>;
