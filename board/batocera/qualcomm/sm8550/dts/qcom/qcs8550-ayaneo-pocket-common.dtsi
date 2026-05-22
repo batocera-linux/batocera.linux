@@ -179,54 +179,6 @@
 		};
 	};
 
-	upd720201_avdd33_reg: upd720201-avdd33-regulator {
-		compatible = "regulator-fixed";
-
-		regulator-name = "upd720201_avdd33";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-
-		gpios = <&tlmm 10 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-
-		vin-supply = <&vph_pwr>;
-
-		pinctrl-0 = <&upd720201_avdd33>;
-		pinctrl-names = "default";
-	};
-
-	upd720201_vdd10_reg: upd720201-vdd10-regulator {
-		compatible = "regulator-fixed";
-
-		regulator-name = "upd720201_vdd10";
-		regulator-min-microvolt = <1050000>;
-		regulator-max-microvolt = <1050000>;
-
-		gpios = <&tlmm 13 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-
-		vin-supply = <&vph_pwr>;
-
-		pinctrl-0 = <&upd720201_vdd10>;
-		pinctrl-names = "default";
-	};
-
-	upd720201_vdd33_reg: upd720201-vdd33-regulator {
-		compatible = "regulator-fixed";
-
-		regulator-name = "upd720201_vdd33";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-
-		gpios = <&tlmm 18 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-
-		vin-supply = <&vph_pwr>;
-
-		pinctrl-0 = <&upd720201_vdd33>;
-		pinctrl-names = "default";
-	};
-
 	sound {
 		status = "okay";
 		compatible = "qcom,sm8550-sndcard", "qcom,sm8450-sndcard";
@@ -273,216 +225,135 @@
 		cpuss0-thermal {
 			polling-delay = <200>;
 			trips {
-				cpuss0_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				cpuss0_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				cpuss0_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				cpuss0_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map0 { trip = <&cpuss0_fan0>; cooling-device = <&pwm_fan 0 1>; };
-				map1 { trip = <&cpuss0_fan1>; cooling-device = <&pwm_fan 1 2>; };
-				map2 { trip = <&cpuss0_fan2>; cooling-device = <&pwm_fan 2 3>; };
-				map3 { trip = <&cpuss0_fan3>; cooling-device = <&pwm_fan 3 4>; };
-				map4 { trip = <&cpuss0_fan4>; cooling-device = <&pwm_fan 4 5>; };
-				map5 { trip = <&cpuss0_fan5>; cooling-device = <&pwm_fan 5 6>; };
-				map6 { trip = <&cpuss0_fan6>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		cpuss1-thermal {
 			polling-delay = <200>;
 			trips {
-				cpuss1_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "active"; };
-				cpuss1_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; ype = "active"; };
-				cpuss1_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "active"; };
-				cpuss1_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "active"; };
-				cpuss1_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				cpuss1_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				cpuss1_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				cpuss1_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				cpuss1_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map0 { trip = <&cpuss1_fan0>; cooling-device = <&pwm_fan 0 1>; };
-				map1 { trip = <&cpuss1_fan1>; cooling-device = <&pwm_fan 1 2>; };
-				map2 { trip = <&cpuss1_fan2>; cooling-device = <&pwm_fan 2 3>; };
-				map3 { trip = <&cpuss1_fan3>; cooling-device = <&pwm_fan 3 4>; };
-				map4 { trip = <&cpuss1_fan4>; cooling-device = <&pwm_fan 4 5>; };
-				map5 { trip = <&cpuss1_fan5>; cooling-device = <&pwm_fan 5 6>; };
-				map6 { trip = <&cpuss1_fan6>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		cpuss2-thermal {
 			polling-delay = <200>;
 			trips {
-				cpuss2_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				cpuss2_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				cpuss2_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				cpuss2_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map0 { trip = <&cpuss2_fan0>; cooling-device = <&pwm_fan 0 1>; };
-				map1 { trip = <&cpuss2_fan1>; cooling-device = <&pwm_fan 1 2>; };
-				map2 { trip = <&cpuss2_fan2>; cooling-device = <&pwm_fan 2 3>; };
-				map3 { trip = <&cpuss2_fan3>; cooling-device = <&pwm_fan 3 4>; };
-				map4 { trip = <&cpuss2_fan4>; cooling-device = <&pwm_fan 4 5>; };
-				map5 { trip = <&cpuss2_fan5>; cooling-device = <&pwm_fan 5 6>; };
-				map6 { trip = <&cpuss2_fan6>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		cpuss3-thermal {
 			polling-delay = <200>;
 			trips {
-				cpuss3_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				cpuss3_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				cpuss3_fan0: trip-point2 { temperature = <40000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan1: trip-point3 { temperature = <50000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan2: trip-point4 { temperature = <60000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan3: trip-point5 { temperature = <65000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan4: trip-point6 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan5: trip-point7 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				cpuss3_fan6: trip-point8 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map0 { trip = <&cpuss3_fan0>; cooling-device = <&pwm_fan 0 1>; };
-				map1 { trip = <&cpuss3_fan1>; cooling-device = <&pwm_fan 1 2>; };
-				map2 { trip = <&cpuss3_fan2>; cooling-device = <&pwm_fan 2 3>; };
-				map3 { trip = <&cpuss3_fan3>; cooling-device = <&pwm_fan 3 4>; };
-				map4 { trip = <&cpuss3_fan4>; cooling-device = <&pwm_fan 4 5>; };
-				map5 { trip = <&cpuss3_fan5>; cooling-device = <&pwm_fan 5 6>; };
-				map6 { trip = <&cpuss3_fan6>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		cpu7-top-thermal {
 			polling-delay = <200>;
 			trips {
-				cpu7_top_fan0: trip-point2 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				cpu7_top_fan1: trip-point3 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				cpu7_top_fan2: trip-point4 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				cpu7_top_fan0: trip-point2 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				cpu7_top_fan1: trip-point3 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				cpu7_top_fan2: trip-point4 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map0 { trip = <&cpu7_top_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map1 { trip = <&cpu7_top_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map2 { trip = <&cpu7_top_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-0-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss0_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss0_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss0_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss0_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss0_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss0_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss0_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss0_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss0_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-1-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss1_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss1_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss1_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss1_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss1_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss1_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss1_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss1_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss1_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-2-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss2_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss2_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss2_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss2_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss2_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss2_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss2_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss2_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss2_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-3-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss3_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss3_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss3_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss3_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss3_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss3_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss3_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss3_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss3_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-4-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss4_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss4_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss4_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss4_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss4_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss4_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss4_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss4_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss4_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-5-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss5_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss5_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss5_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss5_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss5_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss5_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss5_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss5_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss5_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-6-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss6_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss6_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss6_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss6_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss6_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss6_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss6_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss6_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss6_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 		gpuss-7-thermal {
 			polling-delay = <200>;
 			trips {
-				gpuss7_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "active"; };
-				gpuss7_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "active"; };
-				gpuss7_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "active"; };
+				gpuss7_fan0: trip-point3 { temperature = <70000>; hysteresis = <3000>; type = "passive"; };
+				gpuss7_fan1: trip-point4 { temperature = <75000>; hysteresis = <3000>; type = "passive"; };
+				gpuss7_fan2: trip-point5 { temperature = <80000>; hysteresis = <3000>; type = "passive"; };
 			};
 
-			cooling-maps {
-				map1 { trip = <&gpuss7_fan0>; cooling-device = <&pwm_fan 4 5>; };
-				map2 { trip = <&gpuss7_fan1>; cooling-device = <&pwm_fan 5 6>; };
-				map3 { trip = <&gpuss7_fan2>; cooling-device = <&pwm_fan 6 7>; };
-			};
 		};
 	};
 
@@ -1091,6 +962,7 @@
 	no-mmc;
 
 	qcom,dll-config = <0x0007442c>;
+	sdhci-caps-mask = <0x3 0x0>;
 
 	status = "okay";
 };
@@ -1167,29 +1039,16 @@
 		pins = "gpio64";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-pull-pull;
+		bias-pull-up;
 		input-enable;
 	};
 
-	upd720201_avdd33: upd720201-avdd33-state {
-		pins = "gpio10";
+	upd720201_active: upd720201-active-state {
+		pins = "gpio10",  "gpio13", "gpio18";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
-	};
-
-	upd720201_vdd10: pd720201-vdd10-state {
-		pins = "gpio13";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-	};
-
-	upd720201_vdd33: upd720201-vdd33-state {
-		pins = "gpio18";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
+		bias-pull-up;
+		output-high;
 	};
 
 	gamepad_pwr_en: gamepad-pwr-en-active-state {
@@ -1301,11 +1160,10 @@
 };
 
 &gpu {
-	compatible = "qcom,adreno-43050a00", "qcom,adreno"; //FDA32
 	status = "okay";
 
 	zap-shader {
-		firmware-name = "qcom/sm8550/ayaneo/a740_zap.mbn";
+		firmware-name = "qcom/sm8550/a740_zap.mbn";
 	};
 };
 
@@ -1431,8 +1289,9 @@
 };
 
 &pcie0 {
-	perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
 	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+	perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+
 	max-link-speed = <2>;
 
 	pinctrl-0 = <&pcie0_default_state>;
@@ -1469,25 +1328,10 @@
 	wake-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
 	perst-gpios = <&tlmm 97 GPIO_ACTIVE_LOW>;
 
-	pinctrl-0 = <&pcie1_default_state>;
+	pinctrl-0 = <&pcie1_default_state>, <&upd720201_active>, <&gamepad_pwr_en>;
 	pinctrl-names = "default";
 
 	status = "okay";
-};
-
-&pcie1_port0 {
-	/* Renesas μPD720201 PCIe USB3.0 HOST CONTROLLER */
-	usb-controller@0 {
-		compatible = "pci1912,0014";
-		reg = <0x10000 0x0 0x0 0x0 0x0>;
-
-		avdd33-supply = <&upd720201_avdd33_reg>;
-		vdd10-supply = <&upd720201_vdd10_reg>;
-		vdd33-supply = <&upd720201_vdd33_reg>;
-
-		pinctrl-0 = <&gamepad_pwr_en>;
-		pinctrl-names = "default";
-	};
 };
 
 &pcie1_phy {
@@ -1565,4 +1409,8 @@
 
 		max-speed = <3200000>;
 	};
+};
+
+&iris {
+	status = "okay";
 };

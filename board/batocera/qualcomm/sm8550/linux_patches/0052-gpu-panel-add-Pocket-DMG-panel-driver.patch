@@ -48,7 +48,7 @@ new file mode 100644
 index 000000000000..67151480f1aa
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ar02-3inch.c
-@@ -0,0 +1,647 @@
+@@ -0,0 +1,648 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright (c) 2025 FIXME
 +// Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
@@ -59,6 +59,7 @@ index 000000000000..67151480f1aa
 +#include <linux/gpio/consumer.h>
 +#include <linux/mod_devicetable.h>
 +#include <linux/module.h>
++#include <linux/regulator/consumer.h>
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>

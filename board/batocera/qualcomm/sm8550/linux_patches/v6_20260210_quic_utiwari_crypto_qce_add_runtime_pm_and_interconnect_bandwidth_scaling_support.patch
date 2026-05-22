@@ -1,9 +1,9 @@
 From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v5] crypto: qce - Add runtime PM and interconnect bandwidth
+Subject: [PATCH v6] crypto: qce - Add runtime PM and interconnect bandwidth
  scaling support
 From: Udit Tiwari <quic_utiwari@quicinc.com>
-Date: Thu, 20 Nov 2025 11:54:43 +0530
-Message-Id: <20251120062443.2016084-1-quic_utiwari@quicinc.com>
+Date: Tue, 10 Feb 2026 11:44:37 +0530
+Message-Id: <20260210061437.2293654-1-quic_utiwari@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
@@ -44,14 +44,21 @@ Tested:
 
 Signed-off-by: Udit Tiwari <quic_utiwari@quicinc.com>
 ---
+Changes in v6:
+- Adopt ACQUIRE(pm_runtime_active_try, ...) for scoped runtime PM management
+  in qce_handle_queue(). This removes the need for manual put calls and
+  goto labels in the error paths, as suggested by Konrad.
+
 Changes in v5:
 - Drop Reported-by and Closes tags for kernel test robot W=1 warnings, as
   the issue was fixed within the same patch series.
 - Fix a minor comment indentation/style issue.
+- Link to v5: https://lore.kernel.org/lkml/20251120062443.2016084-1-quic_utiwari@quicinc.com/
 
 Changes in v4:
 - Annotate runtime PM callbacks with __maybe_unused to silence W=1 warnings.
 - Add Reported-by and Closes tags for kernel test robot warning.
+- Link to v4: https://lore.kernel.org/lkml/20251117062737.3946074-1-quic_utiwari@quicinc.com/
 
 Changes in v3:
 - Switch from manual clock management to PM clock helpers
@@ -68,11 +75,11 @@ Changes in v2:
 - Register dev_pm_ops and implement runtime_suspend/resume callbacks.
 - Link to v1: https://lore.kernel.org/lkml/20250606105808.2119280-1-quic_utiwari@quicinc.com/
 ---
- drivers/crypto/qce/core.c | 103 +++++++++++++++++++++++++++++++-------
- 1 file changed, 86 insertions(+), 17 deletions(-)
+ drivers/crypto/qce/core.c | 98 +++++++++++++++++++++++++++++++++------
+ 1 file changed, 83 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/crypto/qce/core.c b/drivers/crypto/qce/core.c
-index b966f3365b7d..2f07cc479998 100644
+index b966f3365b7d..2e1e4db93682 100644
 --- a/drivers/crypto/qce/core.c
 +++ b/drivers/crypto/qce/core.c
 @@ -12,6 +12,9 @@
@@ -85,44 +92,19 @@ index b966f3365b7d..2f07cc479998 100644
  #include <linux/types.h>
  #include <crypto/algapi.h>
  #include <crypto/internal/hash.h>
-@@ -90,13 +93,17 @@ static int qce_handle_queue(struct qce_device *qce,
+@@ -90,6 +93,11 @@ static int qce_handle_queue(struct qce_device *qce,
  	struct crypto_async_request *async_req, *backlog;
  	int ret = 0, err;
  
-+	ret = pm_runtime_resume_and_get(qce->dev);
-+	if (ret < 0)
++	ACQUIRE(pm_runtime_active_try, pm)(qce->dev);
++	ret = ACQUIRE_ERR(pm_runtime_active_auto_try, &pm);
++	if (ret)
 +		return ret;
 +
  	scoped_guard(mutex, &qce->lock) {
  		if (req)
  			ret = crypto_enqueue_request(&qce->queue, req);
- 
- 		/* busy, do not dequeue request */
- 		if (qce->req)
--			return ret;
-+			goto qce_suspend;
- 
- 		backlog = crypto_get_backlog(&qce->queue);
- 		async_req = crypto_dequeue_request(&qce->queue);
-@@ -105,7 +112,7 @@ static int qce_handle_queue(struct qce_device *qce,
- 	}
- 
- 	if (!async_req)
--		return ret;
-+		goto qce_suspend;
- 
- 	if (backlog) {
- 		scoped_guard(mutex, &qce->lock)
-@@ -118,6 +125,8 @@ static int qce_handle_queue(struct qce_device *qce,
- 		schedule_work(&qce->done_work);
- 	}
- 
-+qce_suspend:
-+	pm_runtime_put_autosuspend(qce->dev);
- 	return ret;
- }
- 
-@@ -207,37 +216,47 @@ static int qce_crypto_probe(struct platform_device *pdev)
+@@ -207,37 +215,47 @@ static int qce_crypto_probe(struct platform_device *pdev)
  	if (ret < 0)
  		return ret;
  
@@ -133,26 +115,26 @@ index b966f3365b7d..2f07cc479998 100644
 +	ret = devm_pm_clk_create(dev);
 +	if (ret)
 +		return ret;
++
++	ret = pm_clk_add(dev, "core");
++	if (ret)
++		return ret;
  
 -	qce->iface = devm_clk_get_optional_enabled(qce->dev, "iface");
 -	if (IS_ERR(qce->iface))
 -		return PTR_ERR(qce->iface);
-+	ret = pm_clk_add(dev, "core");
++	ret = pm_clk_add(dev, "iface");
 +	if (ret)
 +		return ret;
  
 -	qce->bus = devm_clk_get_optional_enabled(qce->dev, "bus");
 -	if (IS_ERR(qce->bus))
 -		return PTR_ERR(qce->bus);
-+	ret = pm_clk_add(dev, "iface");
++	ret = pm_clk_add(dev, "bus");
 +	if (ret)
 +		return ret;
  
 -	qce->mem_path = devm_of_icc_get(qce->dev, "memory");
-+	ret = pm_clk_add(dev, "bus");
-+	if (ret)
-+		return ret;
-+
 +	qce->mem_path = devm_of_icc_get(dev, "memory");
  	if (IS_ERR(qce->mem_path))
  		return PTR_ERR(qce->mem_path);
@@ -184,7 +166,7 @@ index b966f3365b7d..2f07cc479998 100644
  
  	INIT_WORK(&qce->done_work, qce_req_done_work);
  	crypto_init_queue(&qce->queue, QCE_QUEUE_LENGTH);
-@@ -245,9 +264,58 @@ static int qce_crypto_probe(struct platform_device *pdev)
+@@ -245,9 +263,58 @@ static int qce_crypto_probe(struct platform_device *pdev)
  	qce->async_req_enqueue = qce_async_request_enqueue;
  	qce->async_req_done = qce_async_request_done;
  
@@ -214,8 +196,8 @@ index b966f3365b7d..2f07cc479998 100644
 +	icc_disable(qce->mem_path);
 +
 +	return 0;
-+}
-+
+ }
+ 
 +static int __maybe_unused qce_runtime_resume(struct device *dev)
 +{
 +	struct qce_device *qce = dev_get_drvdata(dev);
@@ -234,8 +216,8 @@ index b966f3365b7d..2f07cc479998 100644
 +err_icc:
 +	icc_disable(qce->mem_path);
 +	return ret;
- }
- 
++}
++
 +static const struct dev_pm_ops qce_crypto_pm_ops = {
 +	SET_RUNTIME_PM_OPS(qce_runtime_suspend, qce_runtime_resume, NULL)
 +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend, pm_runtime_force_resume)
@@ -244,7 +226,7 @@ index b966f3365b7d..2f07cc479998 100644
  static const struct of_device_id qce_crypto_of_match[] = {
  	{ .compatible = "qcom,crypto-v5.1", },
  	{ .compatible = "qcom,crypto-v5.4", },
-@@ -261,6 +329,7 @@ static struct platform_driver qce_crypto_driver = {
+@@ -261,6 +328,7 @@ static struct platform_driver qce_crypto_driver = {
  	.driver = {
  		.name = KBUILD_MODNAME,
  		.of_match_table = qce_crypto_of_match,
