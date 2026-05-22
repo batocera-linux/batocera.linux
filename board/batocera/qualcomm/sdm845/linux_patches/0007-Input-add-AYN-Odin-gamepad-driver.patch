@@ -1,0 +1,412 @@
+From 6ccf93c7fa566cb2d8ea0370b7067aa3faab79e3 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Fri, 1 Jul 2022 01:34:03 +0700
+Subject: [PATCH 4/5] Input: add AYN Odin gamepad driver
+
+---
+ drivers/input/joystick/Kconfig        |   8 +
+ drivers/input/joystick/Makefile       |   1 +
+ drivers/input/joystick/odin-gamepad.c | 360 ++++++++++++++++++++++++++
+ 3 files changed, 868 insertions(+)
+ create mode 100644 drivers/input/joystick/odin-gamepad.c
+
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 3b23078bc7b5..558db560bd65 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -343,6 +343,14 @@ config JOYSTICK_MAPLE
+ 	  To compile this as a module choose M here: the module will be called
+ 	  maplecontrol.
+ 
++config JOYSTICK_ODIN_GAMEPAD
++	tristate "AYN Odin Gamepad driver"
++	depends on ARCH_QCOM
++	help
++	  Say Y here if you wish to enable AYN Odin internal gamepad unit.
++	  To compile this as a module choose M here: the module will be called
++	  odin-gamepad.
++
+ config JOYSTICK_PSXPAD_SPI
+ 	tristate "PlayStation 1/2 joypads via SPI interface"
+ 	depends on SPI
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 5174b8aba2dd..97918839334c 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -25,6 +25,7 @@ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
+ obj-$(CONFIG_JOYSTICK_MAGELLAN)		+= magellan.o
+ obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
+ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
++obj-$(CONFIG_JOYSTICK_ODIN_GAMEPAD)	+= odin-gamepad.o
+ obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
+ obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
+ obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
+diff --git a/drivers/input/joystick/odin-gamepad.c b/drivers/input/joystick/odin-gamepad.c
+new file mode 100644
+index 0000000..d008308
+--- /dev/null
++++ b/drivers/input/joystick/odin-gamepad.c
+@@ -0,0 +1,360 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * AYN Odin ADC joysticks and GPIO buttons driver.
++ * Copyright (c) 2022 Teguh Sobirin <teguh@sobir.in>
++ * Copyright (c) 2024 Hugh Cole-Baker <hugh@sigmaris.info>
++ * Copyright (c) 2026 Daniel Martin <dmanlfc@gmail.com>
++ */
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/gpio/consumer.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/types.h>
++#include <linux/input.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of_gpio.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/slab.h>
++
++#define DRIVER_NAME "odin-gamepad"
++#define ODIN_DEFAULT_POLL_INTERVAL 10
++
++struct odin_button_config {
++	const char *const name;
++	const int code;
++	const bool recenter_combo;
++};
++
++static const struct odin_button_config gpio_buttons[] = {
++	{ .name = "north-btn",   .code = BTN_NORTH, },
++	{ .name = "east-btn",    .code = BTN_EAST, },
++	{ .name = "south-btn",   .code = BTN_SOUTH, },
++	{ .name = "west-btn",    .code = BTN_WEST, },
++	{ .name = "l1-btn",      .code = BTN_TL, },
++	{ .name = "r1-btn",      .code = BTN_TR, },
++	{ .name = "rear-l-btn",  .code = BTN_TL2,    .recenter_combo = true, },
++	{ .name = "rear-r-btn",  .code = BTN_TR2,    .recenter_combo = true, },
++	{ .name = "thumb-l-btn", .code = BTN_THUMBL, },
++	{ .name = "thumb-r-rtn", .code = BTN_THUMBR, },
++	{ .name = "start-btn",   .code = BTN_START,  .recenter_combo = true, },
++	{ .name = "select-btn",  .code = BTN_SELECT, .recenter_combo = true, },
++	{ .name = "home-btn",    .code = BTN_MODE, },
++};
++
++struct odin_axis_config {
++	const char *const name;
++	const int report_type;
++	const bool is_trigger;
++};
++
++static const struct odin_axis_config adc_axes[] = {
++	{ .name = "x-axis",     .report_type = ABS_X, },
++	{ .name = "y-axis",     .report_type = ABS_Y, },
++	{ .name = "rx-axis",    .report_type = ABS_RX, },
++	{ .name = "ry-axis",    .report_type = ABS_RY, },
++	{ .name = "r2-trigger", .report_type = ABS_RZ, .is_trigger = true, },
++	{ .name = "l2-trigger", .report_type = ABS_Z, .is_trigger = true, },
++};
++
++struct odin_axis {
++	const struct odin_axis_config *config;
++	struct iio_channel *channel;
++	u32 range[2];
++	u32 rest_pos;
++	bool invert;
++	u32 fuzz;
++	u32 flat;
++};
++
++struct odin_button {
++	const struct odin_button_config *config;
++	struct gpio_desc *gpiod;
++};
++
++static const char *const dpad_names[] = { "dpad-up", "dpad-down", "dpad-left", "dpad-right" };
++
++struct odin_gamepad {
++	struct device *dev;
++	struct input_dev *input;
++
++	struct odin_axis *axes;
++	struct odin_button *btns;
++
++	struct gpio_desc *enable_gpiod;
++   struct gpio_desc *dpad_gpios[4]; // Up, Down, Left, Right
++
++	// Bitmap of buttons in recenter combo
++	unsigned long recenter_combo;
++	// Which buttons in combo are pressed now
++	unsigned long combo_btns_pressed;
++};
++
++static void odin_gamepad_poll(struct input_dev *input)
++{
++	struct odin_gamepad *gamepad = input_get_drvdata(input);
++	int i, ret, value;
++	bool recenter = false;
++
++	BUILD_BUG_ON(ARRAY_SIZE(gpio_buttons) > BITS_PER_LONG);
++
++	for (i = 0; i < ARRAY_SIZE(gpio_buttons); i++) {
++		struct odin_button *btn = &gamepad->btns[i];
++
++		value = gpiod_get_value_cansleep(btn->gpiod);
++		input_event(input, EV_KEY, btn->config->code, value);
++		if (btn->config->recenter_combo) {
++			// Check if any of the recenter buttons were just pressed:
++			if (value)
++				recenter |= !__test_and_set_bit(i, &gamepad->combo_btns_pressed);
++			else
++				__clear_bit(i, &gamepad->combo_btns_pressed);
++		}
++	}
++
++	int up    = gpiod_get_value_cansleep(gamepad->dpad_gpios[0]);
++	int down  = gpiod_get_value_cansleep(gamepad->dpad_gpios[1]);
++	int left  = gpiod_get_value_cansleep(gamepad->dpad_gpios[2]);
++	int right = gpiod_get_value_cansleep(gamepad->dpad_gpios[3]);
++
++	input_report_abs(input, ABS_HAT0X, right - left);
++	input_report_abs(input, ABS_HAT0Y, down - up);
++
++	// Only recenter if all combo buttons are pressed (and one was just pressed)
++	recenter &= (gamepad->combo_btns_pressed == gamepad->recenter_combo);
++
++	for (i = 0; i < ARRAY_SIZE(adc_axes); i++) {
++		struct odin_axis *axis = &gamepad->axes[i];
++
++		ret = iio_read_channel_processed(axis->channel, &value);
++		if (unlikely(ret < 0)) {
++			continue;
++		}
++
++		if (recenter)
++			axis->rest_pos = value;
++
++		value = value - axis->rest_pos;
++		if (axis->invert)
++			value = -value;
++
++		input_report_abs(input, axis->config->report_type, value);
++	}
++
++	if (recenter)
++		dev_info(gamepad->dev, "Recentered axes\n");
++
++	input_sync(input);
++}
++
++static int odin_gamepad_setup_one_axis(struct odin_gamepad *gamepad, struct odin_axis *axis,
++				  struct fwnode_handle *fw_node)
++{
++	int ret, range;
++
++	axis->channel = devm_iio_channel_get(gamepad->dev, axis->config->name);
++	if (IS_ERR(axis->channel))
++		return dev_err_probe(gamepad->dev, PTR_ERR(axis->channel),
++				     "failed to get ADC channel for %s\n", axis->config->name);
++
++	ret = fwnode_property_read_u32(fw_node, "abs-range", &range);
++	if (ret < 0)
++		return dev_err_probe(gamepad->dev, ret, "missing range for %s\n",
++				     axis->config->name);
++
++	axis->invert = fwnode_property_read_bool(fw_node, "inverted");
++
++	ret = iio_read_channel_processed(axis->channel, &axis->rest_pos);
++	if (ret < 0) {
++		dev_err_ratelimited(gamepad->dev, "failed to read ADC channel %s\n",
++				    axis->config->name);
++		return ret;
++	}
++
++	dev_info(gamepad->dev, "%s: rest_pos=%u invert=%d\n",
++		 axis->config->name, axis->rest_pos, axis->invert);
++
++	ret = fwnode_property_read_u32(fw_node, "abs-fuzz", &axis->fuzz);
++	if (ret < 0)
++		axis->fuzz = 0;
++
++	ret = fwnode_property_read_u32(fw_node, "abs-flat", &axis->flat);
++	if (ret < 0)
++		axis->flat = 0;
++
++	input_set_abs_params(gamepad->input, axis->config->report_type,
++			     axis->config->is_trigger ? 0 : -(range / 2),
++			     axis->config->is_trigger ? range : (range / 2),
++			     axis->fuzz, axis->flat);
++	input_set_capability(gamepad->input, EV_ABS, axis->config->report_type);
++
++	return 0;
++}
++
++static int odin_gamepad_setup_controls(struct odin_gamepad *gamepad)
++{
++	int i, ret;
++	gamepad->axes = devm_kzalloc(gamepad->dev, ARRAY_SIZE(adc_axes) *
++				     sizeof(struct odin_axis), GFP_KERNEL);
++	gamepad->btns = devm_kzalloc(gamepad->dev, ARRAY_SIZE(gpio_buttons) *
++				     sizeof(struct odin_button), GFP_KERNEL);
++	if (!gamepad->axes || !gamepad->btns)
++		return -ENOMEM;
++
++	for (i = 0; i < ARRAY_SIZE(adc_axes); i++) {
++		dev_info(gamepad->dev, "%s: work on axis %d\n", __func__, i);
++		struct odin_axis *axis = &gamepad->axes[i];
++		axis->config = &adc_axes[i];
++
++		dev_info(gamepad->dev, "%s: get child %s\n", __func__, axis->config->name);
++		struct fwnode_handle *child = device_get_named_child_node(gamepad->dev,
++									  axis->config->name);
++		if (!child)
++			return dev_err_probe(gamepad->dev, -ENXIO, "No %s node found\n",
++					     axis->config->name);
++
++		dev_info(gamepad->dev, "%s: setup one axis %s\n", __func__, axis->config->name);
++		ret = odin_gamepad_setup_one_axis(gamepad, axis, child);
++		fwnode_handle_put(child);
++		if (ret < 0)
++			return ret;
++	}
++
++	// Setup Hat Axes
++	input_set_abs_params(gamepad->input, ABS_HAT0X, -1, 1, 0, 0);
++	input_set_abs_params(gamepad->input, ABS_HAT0Y, -1, 1, 0, 0);
++
++	// Request D-pad GPIOs
++	for (i = 0; i < 4; i++) {
++		gamepad->dpad_gpios[i] = devm_gpiod_get(gamepad->dev, dpad_names[i], GPIOD_IN);
++		if (IS_ERR(gamepad->dpad_gpios[i]))
++			return dev_err_probe(gamepad->dev, PTR_ERR(gamepad->dpad_gpios[i]), "failed to get D-pad GPIO %s\n", dpad_names[i]);
++	}
++
++	// Request Button GPIOs
++	for (i = 0; i < ARRAY_SIZE(gpio_buttons); i++) {
++		struct odin_button *btn = &gamepad->btns[i];
++		btn->config = &gpio_buttons[i];
++		btn->gpiod = devm_gpiod_get(gamepad->dev, btn->config->name, GPIOD_IN);
++		// TODO: test missing GPIOs in devicetree
++		if (IS_ERR(btn->gpiod))
++			return dev_err_probe(gamepad->dev, PTR_ERR(btn->gpiod),
++					    "failed to get GPIO for %s\n",
++					    btn->config->name);
++		
++		input_set_capability(gamepad->input, EV_KEY, btn->config->code);
++
++		// If this button is part of recenter combo, record that:
++		if (btn->config->recenter_combo)
++			__set_bit(i, &gamepad->recenter_combo);
++	}
++
++	return 0;
++}
++
++inline static void odin_gamepad_enable(struct odin_gamepad *gamepad)
++{
++	gpiod_set_value_cansleep(gamepad->enable_gpiod, 1);
++}
++
++inline static void odin_gamepad_disable(struct odin_gamepad *gamepad)
++{
++	gpiod_set_value_cansleep(gamepad->enable_gpiod, 0);
++}
++
++static int odin_gamepad_open(struct input_dev *input)
++{
++	struct odin_gamepad *gamepad = input_get_drvdata(input);
++	odin_gamepad_enable(gamepad);
++	return 0;
++}
++
++static void odin_gamepad_close(struct input_dev *input)
++{
++	struct odin_gamepad *gamepad = input_get_drvdata(input);
++	odin_gamepad_disable(gamepad);
++}
++
++static int odin_gamepad_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct odin_gamepad *gamepad;
++	struct input_dev *input;
++	int error;
++	unsigned int poll_interval = 0;
++
++	gamepad = devm_kzalloc(dev, sizeof(struct odin_gamepad), GFP_KERNEL);
++	if (!gamepad) {
++		dev_err(dev, "gamepad devm_kzmalloc error!\n");
++		return -ENOMEM;
++	}
++	gamepad->dev = dev;
++
++	input = devm_input_allocate_device(dev);
++	if (!input) {
++		dev_err(dev, "failed to allocate input device\n");
++		return -ENOMEM;
++	}
++	gamepad->input = input;
++
++	error = device_property_read_u32(dev, "poll-interval", &poll_interval);
++	if (error) {
++		/* -EINVAL means the property is absent. */
++		if (error != -EINVAL)
++			return dev_err_probe(dev, error, "Unable to get poll-interval\n");
++		else
++			poll_interval = ODIN_DEFAULT_POLL_INTERVAL;
++	} else if (poll_interval == 0)
++		return dev_err_probe(dev, -EINVAL, "Unable to get poll-interval\n");
++
++	gamepad->enable_gpiod = devm_gpiod_get(gamepad->dev, "enable", GPIOD_OUT_LOW);
++	if (IS_ERR(gamepad->enable_gpiod))
++		return dev_err_probe(gamepad->dev, PTR_ERR(gamepad->enable_gpiod),
++				     "failed to get enable GPIO\n");
++
++	// Enable gamepad temporarily to read axis at-rest values
++	odin_gamepad_enable(gamepad);
++	msleep(100); // stabilization time
++	error = odin_gamepad_setup_controls(gamepad);
++	odin_gamepad_disable(gamepad);
++	if (error)
++		return error;
++
++	input_set_drvdata(input, gamepad);
++	input->id.bustype = BUS_HOST;
++	input->name = "AYN Odin Gamepad";
++	input->phys = DRIVER_NAME"/input0";
++	input->open = odin_gamepad_open;
++	input->close = odin_gamepad_close;
++
++	dev_info(dev, "%s: setup polling\n", __func__);
++	input_setup_polling(input, odin_gamepad_poll);
++	input_set_poll_interval(input, poll_interval);
++
++	dev_info(dev, "%s: register input_dev\n", __func__);
++	error = input_register_device(input);
++	if (error)
++		return dev_err_probe(dev, error, "Unable to register input device\n");
++
++	return 0;
++}
++
++static const struct of_device_id odin_gamepad_of_match[] = {
++	{ .compatible = "ayntec,odin-gamepad", },
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, odin_gamepad_of_match);
++
++static struct platform_driver odin_gamepad_driver = {
++	.probe = odin_gamepad_probe,
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = odin_gamepad_of_match,
++	},
++};
++module_platform_driver(odin_gamepad_driver);
++
++MODULE_DESCRIPTION("AYN Odin ADC joysticks and GPIO buttons driver");
++MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
++MODULE_LICENSE("GPL");
+-- 
+2.34.1
+

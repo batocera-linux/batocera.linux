@@ -76,7 +76,7 @@ index 58648e5..711b580 100644
 +   ASFLAGS = -f elf64 -d ELF_TYPE
 +
 +# AYN Odin
-+else ifneq (,$(findstring odin,$(platform)))
++else ifneq (,$(findstring sdm845,$(platform)))
 +   TARGET := $(TARGET_NAME)_libretro.so
 +   LDFLAGS += -shared -Wl,--version-script=$(LIBRETRO_DIR)/link.T -Wl,--no-undefined
 +   GL_LIB := -lGLESv2

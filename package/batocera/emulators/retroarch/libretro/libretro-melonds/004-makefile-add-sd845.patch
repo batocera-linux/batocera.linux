@@ -1,0 +1,25 @@
+diff --git a/Makefile b/Makefile.new
+index 84fa0ea..c703d55 100644
+--- a/Makefile
++++ b/Makefile.new
+@@ -347,6 +347,20 @@ else ifeq ($(platform), sm8250)
+    HAVE_THREADS = 1
+    JIT_ARCH = aarch64
+ 
++# SDM845
++else ifeq ($(platform), sdm845)
++   EXT ?= so
++   CPUFLAGS += -mcpu=cortex-a75 -mtune=cortex-a75
++   HAVE_NEON = 1
++   TARGET := $(TARGET_NAME)_libretro.$(EXT)
++   fpic := -fPIC
++   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/link.T -Wl,--no-undefined
++   LIBS += -lpthread
++   HAVE_OPENGLES3 = 1
++   HAVE_OPENGL = 0
++   HAVE_THREADS = 1
++   JIT_ARCH = aarch64
++
+ # Windows MSVC 2017 all architectures
+ else ifneq (,$(findstring windows_msvc2017,$(platform)))
+ 

@@ -27,7 +27,7 @@ import subprocess
 from threading import Thread
 
 DEBUG = 0
-CHECK_INTERVAL = 15 # seconds between two temperature checks
+CHECK_INTERVAL = 10 # seconds between two temperature checks
 
 config_file='/userdata/system/configs/fan.conf'
 
@@ -87,53 +87,69 @@ def get_cpu_temp():
         ).strip()
         return int(out)
     except Exception:
-        return 50 # So fan is still on
+        return 50 # Fallback safety temperature
 
 # Check the current temperature and adjust fan speed
 def temp_check():
-    fanconfig = ["80=100", "70=80", "60=60", "50=40", "40=30", "30=20", "20=0"] # Default values when no config file
+    fanconfig = ["80=100", "70=80", "60=60", "50=40", "40=30", "30=20", "20=0"] # Default values
     tmpconfig = load_config(config_file)
     if len(tmpconfig) > 0:
         fanconfig = tmpconfig
-    prevblock = 0
-    fan_find = glob.glob("/sys/class/hwmon/hwmon*/pwm1")[0] 
-    if not fan_find:
-        print ("Error: no fan control found.")
-        exit
+    prevblock = -1
+    
+    try:
+        fan_find = glob.glob("/sys/class/hwmon/hwmon*/pwm1")[0] 
+        # Attempt to set pwm1_enable to 1 (manual mode) so speed writes work
+        enable_path = fan_find + "_enable"
+        if os.path.exists(enable_path):
+            with open(enable_path, "w") as enable_file:
+                enable_file.write("1")
+    except IndexError:
+        print("Error: no fan control found.")
+        sys.exit(1)
+
     while True:
-            val = get_cpu_temp()
-            block = get_fanspeed(val, fanconfig)
-            if block < prevblock:
-                time.sleep(CHECK_INTERVAL)
-            prevblock = block
-            try:
-                num = int(block*2.55)
-                if DEBUG:
-                    print(f"Set fan speed {block}% ({num}) for temp {val}C ")
-                with open(fan_find, "w") as fan_file:
-                    fan_file.write("%i"%num)
-            except IOError:
-                temp = ""
+        val = get_cpu_temp()
+        block = get_fanspeed(val, fanconfig)
+        if block < prevblock:
             time.sleep(CHECK_INTERVAL)
+        prevblock = block
+        try:
+            num = int(block*2.55)
+            if DEBUG:
+                print(f"Set fan speed {block}% ({num}) for temp {val}C ")
+            with open(fan_find, "w") as fan_file:
+                fan_file.write("%i"%num)
+        except IOError:
+            pass
+        time.sleep(CHECK_INTERVAL)
 
 # argument: start, stop, or no argument = show temp
 if len(sys.argv)>1:
     if str(sys.argv[1]) == "start":
         try:
-            t = Thread(target=temp_check)
+            t = Thread(target=temp_check, daemon=True)
             t.start()
+            # Keep main thread alive while background thread runs
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("Daemon stopped manually.")
         except Exception as e:
-            print (f"Could not launch daemon: {e}")
-            t.stop()
+            print(f"Could not launch daemon: {e}")
+            sys.exit(1)
     elif str(sys.argv[1]) == "stop":
         try:
-            # force fan stop
+            # Force fan stop and restore auto control if supported
             fan_find = glob.glob("/sys/class/hwmon/hwmon*/pwm1")[0] 
             with open(fan_find, "w") as fan_file:
                 fan_file.write("0")
+            enable_path = fan_find + "_enable"
+            if os.path.exists(enable_path):
+                with open(enable_path, "w") as enable_file:
+                    enable_file.write("2") # Back to auto mode
         except Exception as e:
-            print (f"Could not stop fan: {e}")
+            print(f"Could not stop fan: {e}")
 else:
     val = get_cpu_temp()
     print(f"Temp: {val}C")
-
