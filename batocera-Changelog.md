@@ -20,6 +20,7 @@
 - CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
+- Libretro-EasyRPG to 0.8.1.1
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
 - Libretro-PC88 to April 21st, 2026 build
@@ -27,7 +28,9 @@
 - Libretro-PCSX to May 15th, 2026 build
 - Libretro-PD777 to May 16th, 2026 build
 - Libretro-Picodrive to April 2nd, 2026 build
+- Libretro-Play to 0.75
 - Libretro-Prboom to May 4th, 2026 build
+- Libretro-ppsspp to 1.20.4
 - Libretro-PS2 to May 14th, 2026 build
 - Libretro-PUAE to May 12th, 2026 build
 - Libretro-PX68k to April 21st, 2026 build
