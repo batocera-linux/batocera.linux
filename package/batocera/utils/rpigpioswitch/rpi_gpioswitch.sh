@@ -33,6 +33,7 @@
 #v3.1 - remove the RETROFLAG option in favor of RETROFLAG_ADV & add dtbo for retroflag cases - @dmanlfc
 #v3.2 - add Retroflag 64Pi case for Raspberry Pi 5 support.
 #v3.3 - fix mounting bugs & pironman updates
+#v3.4 - readded some old shell switches like ONOFFSHIM and MAUSBERRY
 
 ### Array for Powerdevices, add/remove entries here
 
@@ -148,35 +149,22 @@ function atx_raspi_config()
 function mausberry_start()
 {
     # Init GPIO :
-    # $1 is the GPIO pin connected to the lead on switch labeled OUT
-    # $2 is the GPIO pin connected to the lead on switch labeled IN
-    echo "$1" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio$1/direction
+    # $1 is the GPIO pin connected to the lead on switch labeled OUT - GPIO23 -- will get high if button is pressed (therefore the label OUT)
+    # $2 is the GPIO pin connected to the lead on switch labeled IN -- GPIO24 -- is set high and feeds the device (therefore the label IN)
+    # init
+    gpioset 0 $2=1
 
-    echo "$2" > /sys/class/gpio/export
-    echo "out" > /sys/class/gpio/gpio$2/direction
-    echo "1" > /sys/class/gpio/gpio$2/value
-
-    # Wait for switch off signal
-    power=0
-    while [ "$power" = "0" ]; do
+    while [ $(gpioget 0 $1) -eq 0 ]; do
         sleep 1
-        power=$(cat /sys/class/gpio/gpio$1/value)
     done
 
-    # Switch off
-    if [ "$?" = "0" ]; then
-        touch "/tmp/poweroff.please"
-        poweroff
-    fi
+    touch "/tmp/poweroff.please"
+    poweroff
 }
 
 function mausberry_stop()
 {
-    # Cleanup GPIO init
-    for i in $*; do
-        echo "$i" > /sys/class/gpio/unexport
-    done
+    true
 }
 
 function mausberry_config()
