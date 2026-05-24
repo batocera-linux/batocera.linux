@@ -2,8 +2,9 @@
 ### Special Notes
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 ### Hardware
-- Mangmi Air X initial support
 - Anbernic RG-DS initial support
+- AYN Odin initial support
+- Mangmi Air X initial support
 ### Added
 - NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
@@ -56,17 +57,17 @@
 - New cpu temp helper script, batocera-cpu-temp
 
 # 2026/05/xx - batocera.linux 43.1
-- fix es for missing systems / collections disappearing
-- fix LR-Dolphin options broken
-- fix Steam issue
+### Fixed
+- EmultationStation for missing systems / collections disappearing
+- LR-Dolphin options broken
+- Steam & flatpak issue
 - Apple II GS  MAME support has been removed
-- fix LR-MAME guns broken
-- fix bad detection of Microsoft controllers as keyboards
-- fix Batocera storage manager ignoring some partitions
-- fix Batocera storage manager race condition
-- fix theXtech broken
-- fix extensions for Dolphin-triforce
-- fix issues on nvidia detection
+- LR-MAME guns broken
+- Bad detection of Microsoft controllers as keyboards
+- Batocera storage manager ignoring some partitions
+- theXtech missing assets
+- Extensions for Dolphin with Triforce
+- CUDA support for the Nvida 580.x driver for WINE and Lindbergh Loader support
 
 # 2026/05/08 - batocera.linux 43 - Glasswing
 ### Special Notes
