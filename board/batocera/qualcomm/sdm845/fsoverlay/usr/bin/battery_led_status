@@ -9,6 +9,8 @@
 #   Red    = low battery (<=10%)
 #   Flash  = critical battery (<=5%)
 #   Amber  = fake suspend active
+#   Yellow = fake suspend charging
+#   Flash Amber = fake suspend critical battery (<=10%)
 #
 # multi_index order is: blue green red
 #
@@ -47,6 +49,7 @@ set_led() {
 led_blue()   { set_led 511 0   0   ; }  # normal
 led_green()  { set_led 0   511 0   ; }  # charging
 led_amber()  { set_led 0   180 511 ; }  # suspend
+led_yellow() { set_led 0   511 511 ; }  # suspend charging
 led_purple() { set_led 511 0   511 ; }  # warning (purple)
 led_red()    { set_led 0   0   511 ; }  # low
 
@@ -56,6 +59,18 @@ led_blink_red() {
   if [ "${cur}" = "0" ]; then
     echo "none" >"${LED}/trigger"
     echo "0 0 511" >"${LED}/multi_intensity"
+    echo 511 >"${LED}/brightness"
+  else
+    echo 0 >"${LED}/brightness"
+  fi
+}
+
+led_blink_amber() {
+  local cur
+  cur=$(cat "${LED}/brightness")
+  if [ "${cur}" = "0" ]; then
+    echo "none" >"${LED}/trigger"
+    echo "0 180 511" >"${LED}/multi_intensity"
     echo 511 >"${LED}/brightness"
   else
     echo 0 >"${LED}/brightness"
@@ -89,22 +104,30 @@ while true; do
     STATE="green"
   fi
 
-  # Fake suspend overrides everything
+  # Fake suspend overrides
   if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
-    STATE="amber"
+    if [ "${CAP}" -le "${THRESHOLD_LOW}" ]; then
+      STATE="blink_amber"
+    elif [ "${ONLINE}" = "1" ]; then
+      STATE="yellow"
+    else
+      STATE="amber"
+    fi
   fi
 
   BRI_CHANGED=0
   [ "${BRI}" != "${PREV_BRI}" ] && BRI_CHANGED=1 && PREV_BRI="${BRI}"
 
-  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" != "${PREV_STATE}" ] || [ "${BRI_CHANGED}" = "1" ]; then
+  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" = "blink_amber" ] || [ "${STATE}" != "${PREV_STATE}" ] || [ "${BRI_CHANGED}" = "1" ]; then
     case ${STATE} in
-      blue)      led_blue      ;;
-      green)     led_green     ;;
-      amber)     led_amber     ;;
-      purple)    led_purple    ;;
-      red)       led_red       ;;
-      blink_red) led_blink_red ;;
+      blue)        led_blue        ;;
+      green)       led_green       ;;
+      amber)       led_amber       ;;
+      yellow)      led_yellow      ;;
+      purple)      led_purple      ;;
+      red)         led_red         ;;
+      blink_red)   led_blink_red   ;;
+      blink_amber) led_blink_amber ;;
     esac
     PREV_STATE="${STATE}"
   fi
