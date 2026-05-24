@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20260110
+ALLLINUXFIRMWARES_VERSION = 20260519
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
 ALLLINUXFIRMWARES_SITE = https://www.kernel.org/pub/linux/kernel/firmware
 
