@@ -13,6 +13,7 @@
 ### Fixed
 
 ### Changed / Improved
+- New CPU temp helper script - batocera-cpu-temp
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Removed Libretro-Puae2021
@@ -51,10 +52,11 @@
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - FAudio to 26.05
 - LabWC to 0.9.7
+- Linux Firmware to 20260519
 - Mesa3D to 26.1.0
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
-- New cpu temp helper script, batocera-cpu-temp
+- X86_64 / Zen3 kernel update to 7.0.9
 
 # 2026/05/xx - batocera.linux 43.1
 ### Fixed
