@@ -1,0 +1,113 @@
+#!/bin/sh
+#
+# Battery LED status monitor for AYN Odin (SDM845)
+# Written by dmanlfc for the Batocera project
+#
+# RGB status LED (rgb:status via PMI8998 LPG):
+#   Blue   = normal (>20%)
+#   Purple = warning (<=20% and >10%)
+#   Red    = low battery (<=10%)
+#   Flash  = critical battery (<=5%)
+#   Amber  = fake suspend active
+#
+# multi_index order is: blue green red
+#
+# Thresholds and poll interval can be overridden via environment variables, e.g.:
+#   THRESHOLD_CRITICAL=5 THRESHOLD_LOW=10 THRESHOLD_WARNING=20 /usr/bin/battery_led_status
+
+LED="/sys/class/leds/rgb:status"
+BAT="/sys/class/power_supply/qcom-battery"
+CHG="/sys/class/power_supply/pmi8998-charger"
+THRESHOLD_WARNING=${THRESHOLD_WARNING:-20}
+THRESHOLD_LOW=${THRESHOLD_LOW:-10}
+THRESHOLD_CRITICAL=${THRESHOLD_CRITICAL:-5}
+POLL_INTERVAL=${POLL_INTERVAL:-1}
+
+get_setting() {
+  batocera-settings-get "$1" 2>/dev/null
+}
+
+get_brightness() {
+  case $(get_setting led.brightness) in
+    mid) echo 200 ;;
+    min) echo 80  ;;
+    *)   echo 511 ;;
+  esac
+}
+
+# multi_index = blue green red
+set_led() {
+  local b=${1} g=${2} r=${3}
+  local bri=$(get_brightness)
+  echo "none" >"${LED}/trigger"
+  echo "${b} ${g} ${r}" >"${LED}/multi_intensity"
+  echo "${bri}" >"${LED}/brightness"
+}
+
+led_blue()   { set_led 511 0   0   ; }  # normal
+led_green()  { set_led 0   511 0   ; }  # charging
+led_amber()  { set_led 0   180 511 ; }  # suspend
+led_purple() { set_led 511 0   511 ; }  # warning (purple)
+led_red()    { set_led 0   0   511 ; }  # low
+
+led_blink_red() {
+  local cur
+  cur=$(cat "${LED}/brightness")
+  if [ "${cur}" = "0" ]; then
+    echo "none" >"${LED}/trigger"
+    echo "0 0 511" >"${LED}/multi_intensity"
+    echo 511 >"${LED}/brightness"
+  else
+    echo 0 >"${LED}/brightness"
+  fi
+}
+
+get_state() {
+  local capacity=${1}
+  if   [ "${capacity}" -le "${THRESHOLD_CRITICAL}" ]; then
+    echo "blink_red"
+  elif [ "${capacity}" -le "${THRESHOLD_LOW}" ]; then
+    echo "red"
+  elif [ "${capacity}" -le "${THRESHOLD_WARNING}" ]; then
+    echo "purple"
+  else
+    echo "blue"
+  fi
+}
+
+PREV_STATE=""
+PREV_BRI=""
+
+while true; do
+  CAP=$(cat "${BAT}/capacity")
+  ONLINE=$(cat "${CHG}/online")
+  STATE=$(get_state "${CAP}")
+  BRI=$(get_brightness)
+
+  if [ "${ONLINE}" = "1" ]; then
+    # Charging — always green, no blinking
+    STATE="green"
+  fi
+
+  # Fake suspend overrides everything
+  if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
+    STATE="amber"
+  fi
+
+  BRI_CHANGED=0
+  [ "${BRI}" != "${PREV_BRI}" ] && BRI_CHANGED=1 && PREV_BRI="${BRI}"
+
+  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" != "${PREV_STATE}" ] || [ "${BRI_CHANGED}" = "1" ]; then
+    case ${STATE} in
+      blue)      led_blue      ;;
+      green)     led_green     ;;
+      amber)     led_amber     ;;
+      purple)    led_purple    ;;
+      red)       led_red       ;;
+      blink_red) led_blink_red ;;
+    esac
+    PREV_STATE="${STATE}"
+  fi
+
+  sleep ${POLL_INTERVAL}
+done

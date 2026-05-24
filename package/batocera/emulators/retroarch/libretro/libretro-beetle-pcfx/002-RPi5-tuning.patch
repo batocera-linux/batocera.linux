@@ -18,6 +18,6 @@ index c5bb9810f2..d75dca9f1c 100644
 +   FLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +   ASFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +
- else ifneq (,$(findstring odin,$(platform)))
+ else ifneq (,$(findstring sdm845,$(platform)))
     TARGET := $(TARGET_NAME)_libretro.so
     fpic := -fPIC

@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 0a8c2d4..0fcce7d 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -429,6 +429,18 @@ else ifneq (,$(findstring odin,$(platform)))
+@@ -429,6 +429,18 @@ else ifneq (,$(findstring sdm845,$(platform)))
     COREFLAGS += -DUSE_GENERIC_GLESV2 -DOS_LINUX
     ASFLAGS = -f elf -d ELF_TYPE
 

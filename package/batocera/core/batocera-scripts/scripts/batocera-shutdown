@@ -352,6 +352,11 @@ unmute_audio() {
 
 # --- CPU Core Functions ---
 park_cores() {
+    if [ "$(batocera-model)" = "AYN_Odin" ]; then
+        echo "INFO: AYN Odin detected. Skipping core parking."
+        return
+    fi
+
     echo "Parking additional CPU cores"
     for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
         echo 0 > "${core}"
@@ -359,6 +364,10 @@ park_cores() {
 }
 
 unpark_cores() {
+    if [ "$(batocera-model)" = "AYN_Odin" ]; then
+        return
+    fi
+
     echo "Unparking additional CPU cores"
     for core in /sys/devices/system/cpu/cpu[1-9]*/online; do
         echo 1 > "${core}"

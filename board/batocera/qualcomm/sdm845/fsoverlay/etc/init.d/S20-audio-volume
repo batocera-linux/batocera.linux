@@ -1,0 +1,20 @@
+#!/bin/sh
+
+case "$1" in
+    start)
+        echo "Setting audio hardware volumes..."
+        amixer -c 0 cset name='RX7 Digital Volume' 100
+        amixer -c 0 cset name='RX8 Digital Volume' 100
+        ;;
+    stop)
+        ;;
+    restart|reload)
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0

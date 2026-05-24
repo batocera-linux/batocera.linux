@@ -4,8 +4,8 @@
        PLATFORM_DEFINES += -DARM -march=armv8-a+crc -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53
     endif
  
-+   # Odroid-N2
-+   ifneq (,$(findstring odin,$(platform)))
++   # SDM845 devices like the Ayn Odin
++   ifneq (,$(findstring sdm845,$(platform)))
 +      ENDIANNESS_DEFINES += -DALIGN_LONG
 +      CFLAGS += -fomit-frame-pointer -ffast-math
 +      PLATFORM_DEFINES += -DARM -march=armv8-a+crc -mcpu=cortex-a75 -mtune=cortex-a75.cortex-a55
