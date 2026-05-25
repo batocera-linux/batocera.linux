@@ -21,7 +21,7 @@ BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sd
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sdm845/linux_sdm845-defconfig.config"
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sdm845-ayn-odin"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sdm845-ayn-odin qcom/sdm845-ayn-odin-m2"
 
 # System
 BR2_PACKAGE_BATOCERA_USE_QCOM_FW=y
@@ -41,7 +41,7 @@ BR2_PACKAGE_HOST_MTOOLS=y
 # Bootloader
 BR2_TARGET_GRUB2=y
 BR2_TARGET_GRUB2_ARM64_EFI=y
-BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos part_gpt normal efi_gop search search_fs_file search_fs_uuid search_label chain reboot"
+BR2_TARGET_GRUB2_BUILTIN_MODULES_EFI="boot linux ext2 fat squash4 part_msdos part_gpt normal efi_gop search search_fs_file search_fs_uuid search_label chain reboot font gfxterm video video_fb bufio loadenv"
 
 # Batocera Splash Support
 BR2_PACKAGE_BATOCERA_SPLASH_MPV=y

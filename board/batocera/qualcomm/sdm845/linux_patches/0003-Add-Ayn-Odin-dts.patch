@@ -28,11 +28,12 @@ new file mode 100644
 index 0000000..d676a93
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
-@@ -0,0 +1,1227 @@
+@@ -0,0 +1,1224 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (c) 2022, Teguh Sobirin.
 + * Copyright (c) 2024, Anton Bambura.
++ * Copyright (c) 2026, Daniel Martin.
 + */
 +
 +/dts-v1/;
@@ -51,7 +52,7 @@ index 0000000..d676a93
 +
 +/ {
 +	model = "AYN Odin";
-+	compatible = "ayntec,odin", "qcom,sdm845";
++	compatible = "ayn,odin", "qcom,sdm845";
 +	chassis-type = "tablet";
 +
 +	aliases {
@@ -647,27 +648,23 @@ index 0000000..d676a93
 +	status = "okay";
 +	clock-frequency = <400000>;
 +
-+	synaptics-rmi4-i2c@20 {
++	synaptics-rmi4-i2c@70 {
 +		compatible = "syna,rmi4-i2c";
-+		reg = <0x20>;
++		reg = <0x70>;
 +
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		// TODO: unused
-+		reset-gpios = <&tlmm 104 GPIO_ACTIVE_LOW>;
 +		interrupts-extended = <&tlmm 125 IRQ_TYPE_EDGE_FALLING>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&ts_int_active &ts_reset_active>;
 +
 +		vdd-supply = <&vreg_l28a_3p0>;
 +		vio-supply = <&vreg_l14a_1p8>;
 +
 +		syna,reset-delay-ms = <200>;
 +		syna,startup-delay-ms = <200>;
-+
-+		panel = <&display_panel>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&ts_int_active &ts_reset_active>;
 +
 +		rmi4-f01@1 {
 +			reg = <0x01>;
