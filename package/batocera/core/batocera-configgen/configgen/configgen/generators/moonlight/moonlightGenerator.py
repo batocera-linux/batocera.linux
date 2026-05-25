@@ -39,7 +39,7 @@ class MoonlightGenerator(Generator):
 
     def get_moonlight_host(self):
         # We should move this...
-        config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"       
+        config_path = HOME / ".config/Moonlight Game Streaming Project/Moonlight.conf"
         if not config_path.exists():
             return None
 
@@ -50,7 +50,7 @@ class MoonlightGenerator(Generator):
                 return config["hosts"]["1\\manualaddress"]
         except Exception:
             return None
-            
+
         return None
 
     # Main entry of the module

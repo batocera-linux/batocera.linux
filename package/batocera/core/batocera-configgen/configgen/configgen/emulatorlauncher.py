@@ -36,8 +36,8 @@ from .utils import bezels as bezelsUtil, metadata, videoMode, wheelsUtils
 from .utils.evmapy import evmapy
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
-from .utils.squashfs import mount_squashfs
 from .utils.overlayfs import mount_overlayfs
+from .utils.squashfs import mount_squashfs
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

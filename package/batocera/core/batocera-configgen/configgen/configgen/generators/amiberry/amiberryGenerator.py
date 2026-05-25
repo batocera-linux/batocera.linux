@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, ROMS, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
@@ -86,9 +86,9 @@ class AmiberryGenerator(Generator):
                 commandArray.append(rom)
             elif romType == 'HDF' :
                 commandArray.append("-s")
-                commandArray.append(f"hardfile2=rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
+                commandArray.append(f'hardfile2=rw,DH0:"{rom}",32,1,2,512,0,,uae0')
                 commandArray.append("-s")
-                commandArray.append(f"uaehf0=hdf,rw,DH0:\"{rom}\",32,1,2,512,0,,uae0")
+                commandArray.append(f'uaehf0=hdf,rw,DH0:"{rom}",32,1,2,512,0,,uae0')
             elif romType == 'UAE' :
                 commandArray.append("-f")
                 commandArray.append(rom)
@@ -126,33 +126,33 @@ class AmiberryGenerator(Generator):
                                 outfile.write(newline)
                 if pad.player_number == 1: # 1 = joystick port
                     commandArray.append("-s")
-                    commandArray.append(f"joyport1=joy0")
+                    commandArray.append("joyport1=joy0")
                     commandArray.append("-s")
                     commandArray.append(f"joyport1_friendlyname={padfilename}")
                     commandArray.append("-s")
-                    commandArray.append(f"joyportname1=")
+                    commandArray.append("joyportname1=")
                     if romType == 'CD' :
                         commandArray.append("-s")
                         commandArray.append("joyport1_mode=cd32joy")
                 if pad.player_number == 2: # 0 = mouse for the player 2
                     is_player2 = 1
                     commandArray.append("-s")
-                    commandArray.append(f"joyport0=joy1")
+                    commandArray.append("joyport0=joy1")
                     commandArray.append("-s")
-                    commandArray.append(f"joyport0_friendlyname=\"{padfilename}\"")
+                    commandArray.append(f'joyport0_friendlyname="{padfilename}"')
                     commandArray.append("-s")
-                    commandArray.append(f"joyportname0=")
+                    commandArray.append("joyportname0=")
 
 
             #set default mouse if no player2 gamepad is configured
             #when gamepad is configured on joyport0, autoswitch between gamepad<->mouse is enabled by default
             if not is_player2:
                 commandArray.append("-s")
-                commandArray.append(f"joyport0=mouse")
+                commandArray.append("joyport0=mouse")
                 commandArray.append("-s")
-                commandArray.append(f"joyport0_friendlyname=\"System mouse\"")
+                commandArray.append('joyport0_friendlyname="System mouse"')
                 commandArray.append("-s")
-                commandArray.append(f"joyportname0=MOUSE0")
+                commandArray.append("joyportname0=MOUSE0")
 
             # fps
             if system.config.show_fps:

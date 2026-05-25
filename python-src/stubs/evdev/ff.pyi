@@ -1,5 +1,13 @@
 import ctypes
 
+class Replay(ctypes.Structure):
+    length: int
+    delay: int
+
+class Trigger(ctypes.Structure):
+    button: int
+    interval: int
+
 class Envelope(ctypes.Structure):
     attack_length: int
     attack_level: int
@@ -48,8 +56,8 @@ class Effect(ctypes.Structure):
     type: int
     id: int
     direction: int
-    ff_trigger: object
-    ff_replay: object
+    ff_trigger: Trigger
+    ff_replay: Replay
     u: EffectType
 
 class UInputUpload(ctypes.Structure):

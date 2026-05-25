@@ -6,7 +6,7 @@ from typing import IO, TYPE_CHECKING, Any, Final, overload
 
 if TYPE_CHECKING:
     from _typeshed import OpenBinaryModeUpdating, OpenBinaryModeWriting, OpenTextModeUpdating, OpenTextModeWriting
-    from collections.abc import Iterator
+    from collections.abc import Generator
     from io import BufferedRandom, BufferedWriter, TextIOWrapper
 
 BATOCERA_SHARE_DIR: Final = Path('/usr/share/batocera')
@@ -64,21 +64,21 @@ def mkdir_if_not_exists(dir: Path, /) -> None:
 
 @overload
 @contextmanager
-def ensure_parents_and_open(file: Path, mode: OpenTextModeWriting | OpenTextModeUpdating) -> Iterator[TextIOWrapper]:
+def ensure_parents_and_open(file: Path, mode: OpenTextModeWriting | OpenTextModeUpdating) -> Generator[TextIOWrapper]:
     ...
 
 @overload
 @contextmanager
-def ensure_parents_and_open(file: Path, mode: OpenBinaryModeUpdating) -> Iterator[BufferedRandom]:
+def ensure_parents_and_open(file: Path, mode: OpenBinaryModeUpdating) -> Generator[BufferedRandom]:
     ...
 
 @overload
 @contextmanager
-def ensure_parents_and_open(file: Path, mode: OpenBinaryModeWriting) -> Iterator[BufferedWriter]:
+def ensure_parents_and_open(file: Path, mode: OpenBinaryModeWriting) -> Generator[BufferedWriter]:
     ...
 
 @contextmanager
-def ensure_parents_and_open(file: Path, mode: str) -> Iterator[IO[Any]]:
+def ensure_parents_and_open(file: Path, mode: str) -> Generator[IO[Any]]:
     mkdir_if_not_exists(file.parent)
     with file.open(mode) as f:
         yield f

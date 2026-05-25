@@ -150,7 +150,7 @@ class MelonDSGenerator(Generator):
 
         # Console
         base_config["Emu"]["ConsoleType"] = system.config.get_int("melonds_console", 0)
-        
+
         # Override Firmware settings
         base_config["Instance0"]["Firmware"]["OverrideSettings"] = system.config.get_bool("melonds_use_fw_settings", False)
 

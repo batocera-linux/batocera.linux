@@ -1,23 +1,26 @@
-from typing import ClassVar
+from typing import Final, Protocol
 
 class InputEvent:
-    sec: float
+    sec: int
     usec: int
     type: int
     code: int
-    value: object
-
+    value: int
+    def __init__(self, sec: int, usec: int, type: int, code: int, value: int) -> None: ...
     def timestamp(self) -> float: ...
 
+class HasEvent(Protocol):
+    event: InputEvent
+
 class KeyEvent:
-    key_up: ClassVar[int]
-    key_down: ClassVar[int]
-    key_hold: ClassVar[int]
+    key_up: Final[int]
+    key_down: Final[int]
+    key_hold: Final[int]
     scancode: int
     keystate: int
-    keycode: str
+    keycode: str | tuple[str, ...]
     event: InputEvent
-    def __init__(self, event: InputEvent, allow_unknown: bool = ...) -> None: ...
+    def __init__(self, event: InputEvent, allow_unknown: bool = False) -> None: ...
 
 class RelEvent:
     event: InputEvent
@@ -30,3 +33,5 @@ class AbsEvent:
 class SynEvent:
     event: InputEvent
     def __init__(self, event: InputEvent) -> None: ...
+
+event_factory: dict[int, type[KeyEvent | RelEvent | AbsEvent | SynEvent]]

@@ -24,7 +24,6 @@ class Devices:
     @classmethod
     def from_environment(cls, context: Context) -> Device: ...
 
-
 class Device:
     def __del__(self) -> None: ...
     @property

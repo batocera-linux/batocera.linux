@@ -149,19 +149,19 @@ class AzaharGenerator(Generator):
             azaharConfig.add_section("Renderer")
         # Hardware Shader
         azaharConfig.set("Renderer", "use_hw_shader", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", "use_hw_shader\default", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"use_hw_shader\default", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
         # Accurate Multiplication
         azaharConfig.set("Renderer", "shaders_accurate_mul", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", "shaders_accurate_mul\default", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"shaders_accurate_mul\default", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
         # Shader JIT
         azaharConfig.set("Renderer", "use_shader_jit", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
-        azaharConfig.set("Renderer", "use_hw_shader_jit\default", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"use_hw_shader_jit\default", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
         # Async Shader Compilation
         azaharConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", "async_shader_compilation\default", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"async_shader_compilation\default", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
         # Async Presentation
         azaharConfig.set("Renderer", "async_presentation", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", "async_presentation\default", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"async_presentation\default", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
         # Software, OpenGL (default) or Vulkan
         azaharConfig.set("Renderer", "graphics_api", system.config.get("azahar_graphics_api", "1"))
         azaharConfig.set("Renderer", r"graphics_api\default", "true")

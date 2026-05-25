@@ -8,7 +8,7 @@ from typing import IO, TYPE_CHECKING
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
     from pathlib import Path
 
 _logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class DownloadException(BatoceraException): ...
 
 
 @contextmanager
-def download(url: str, directory: Path, /) -> Iterator[IO[bytes]]:
+def download(url: str, directory: Path, /) -> Generator[IO[bytes]]:
     import requests  # only import requests when it's needed because it's slow to import initially
 
     _logger.debug('Downloading %s to %s...', url, directory)

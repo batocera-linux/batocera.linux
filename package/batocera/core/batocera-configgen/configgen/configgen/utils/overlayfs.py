@@ -11,7 +11,7 @@ from ..batoceraPaths import mkdir_if_not_exists
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
 
 _logger = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ def _mount(read_only_dir: Path, writable_upper_dir: Path, writable_work_dir: Pat
 
 
 @contextmanager
-def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /) -> Iterator[Path]:
+def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /) -> Generator[Path]:
     """
     The Linux kernel's overlay file system (overlayfs) creates a virtual file
     system mount point based on a "stack" of two or more of underlying directory
