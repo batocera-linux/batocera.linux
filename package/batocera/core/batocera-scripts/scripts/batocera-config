@@ -181,47 +181,6 @@ if [ "$command" = "module" ]; then
     exit 0
 fi
 
-if [ "$command" = "canupdate" ];then
-	updatetype="$(/usr/bin/batocera-settings-get updates.type)"
-	if test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly"; then
-	    # force a default value in case the value is removed or miswritten
-		updatetype="stable"
-	fi
-	settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
-
-	# customizable upgrade url website
-	if test -n "${settingsupdateurl}"; then
-	    updateurl="${settingsupdateurl}"
-	fi
-
-	#echo "Update url: ${updateurl}/${board}/${updatetype}/last"
-	test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
-	available=`wget -qO- ${updateurl}/${board}/${updatetype}/last/batocera.version`
-	if [ "$?" != "0" ]; then
-	    echo "Unable to access the url" >&2
-		exit 2
-	fi
-	# hum, i don't know how to check correctly while the ws return success in case of real 404
-	nbytes=`echo "${available}" | wc -c`
-	if test "${nbytes}" -ge 50; then
-	    echo "Unable to retrieve the version" >&2
-	    exit 2
-	fi
-	installed=`cat /usr/share/batocera/batocera.version`
-
-	echo "${available}"
-	
-	if [ "$available" != "$installed" ]; then
-		exit 0
-	fi
-	exit 12
-fi
-
-if [ "$command" = "update" ];then
-	batocera-upgrade
-	exit $?
-fi
-
 if [ "$command" = "storage" ]; then
     if [ "$mode" = "current" ]; then
 	    if test -e $storageFile; then
