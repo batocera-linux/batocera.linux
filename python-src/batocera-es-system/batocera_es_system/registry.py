@@ -5,8 +5,7 @@ from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, Self, TypedDict, Unpack, cast
-from typing_extensions import ReadOnly
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, ReadOnly, Self, TypedDict, Unpack, cast
 
 from batocera_es_system.shared import ConfiggenDefaults, safe_dump_yaml12, safe_load_yaml12
 

@@ -16,7 +16,7 @@ from .settings.unixSettings import UnixSettings
 if TYPE_CHECKING:
     from argparse import Namespace
     from pathlib import Path
-    from typing_extensions import deprecated
+    from warnings import deprecated
 
     from .gun import Guns
 
@@ -42,7 +42,7 @@ def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
 def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
     try:
         defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
-    except:
+    except Exception:
         return None
 
     arch_defaults: dict[str, Any] = {}
@@ -262,7 +262,7 @@ class Emulator:
         try:
             render_data.update(settings.get_all_iter(f'{args.system}-renderer'))
             render_data.update(settings.get_all_iter(f'{args.system}["{gsname}"]-renderer'))
-        except:
+        except Exception:
             pass
 
         self.renderconfig = Config(render_data)

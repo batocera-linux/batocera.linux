@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
     from cProfile import Profile
 
 # 1) touch /var/run/emulatorlauncher.perf
@@ -35,7 +35,7 @@ def stop() -> None:
 
 
 @contextmanager
-def pause() -> Iterator[None]:
+def pause() -> Generator[None]:
     if not _profile:
         yield
         return

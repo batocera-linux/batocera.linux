@@ -85,7 +85,9 @@ def safe_dump_yaml12(data: object, file: Path, /) -> None:
     yaml = ruamel.yaml.YAML(typ='safe', pure=True)
     yaml.default_flow_style = False
     yaml.sort_base_mapping_type_on_output = False  # pyright: ignore
-    yaml.indent(mapping=2, sequence=4, offset=2)  # pyright: ignore
+    yaml.map_indent = 2
+    yaml.sequence_indent = 4
+    yaml.sequence_dash_offset = 2
     yaml.dump(data, file)  # pyright: ignore
 
 

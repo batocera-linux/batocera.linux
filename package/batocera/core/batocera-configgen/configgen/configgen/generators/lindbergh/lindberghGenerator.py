@@ -92,7 +92,7 @@ class LindberghGenerator(Generator):
     def resolve_real_rom_path(rom_dir: Path) -> Path:
         try:
             rom_dir_str = str(rom_dir)
-            with open("/proc/mounts", "r") as f:
+            with Path("/proc/mounts").open() as f:
                 for line in f:
                     parts = line.split()
                     if len(parts) < 3 or parts[2] != "fuse.mergerfs":
@@ -190,7 +190,7 @@ class LindberghGenerator(Generator):
                 "MESA_LOADER_DRIVER_OVERRIDE": "zink",
                 "VK_LOADER_LAYERS_DISABLE": "~all~"
             })
-        
+
         if system.config.get_bool("lindbergh_test"):
             commandArray.append("-t")
 

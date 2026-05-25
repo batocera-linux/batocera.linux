@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator as _Generator
 
     from ..Emulator import Emulator
     from ..generators.Generator import Generator
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 @contextmanager
-def set_hotkeygen_context(generator: Generator, system: Emulator, /) -> Iterator[None]:
+def set_hotkeygen_context(generator: Generator, system: Emulator, /) -> _Generator[None]:
     # hotkeygen context
     hkc = generator.getHotkeysContext()
 

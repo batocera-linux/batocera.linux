@@ -103,12 +103,10 @@ class FsuaeGenerator(Generator):
                     commandArray.append(f"--{device_type}_drive_{n}={TEMP_DIR / disk}")
 
         else:
-            n = 0
-            for img in self.floppiesFromRom(rom):
+            for n, img in enumerate(self.floppiesFromRom(rom)):
                 commandArray.append(f"--{device_type}_image_{n}={img}")
                 if (n <= 1 and device_type == "floppy") or (n == 0 and device_type == "cdrom"):
                     commandArray.append(f"--{device_type}_drive_{n}={img}")
-                n += 1
 
         # controllers
         for n, pad in enumerate(playersControllers[:4]):

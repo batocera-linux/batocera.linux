@@ -6,6 +6,7 @@ import os
 import re
 import signal
 import subprocess
+from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
@@ -16,7 +17,7 @@ from .. import controllersConfig
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator
+    from collections.abc import Generator, Iterable
 
     from ..controller import Controller, ControllerList
     from ..Emulator import Emulator
@@ -110,7 +111,7 @@ _EMULATOR_MAPPING: Final = {
 @contextmanager
 def configure_wheels(
     controllers: ControllerList, system: Emulator, metadata: dict[str, str], /
-) -> Iterator[tuple[ControllerList, DeviceInfoDict]]:
+) -> Generator[tuple[ControllerList, DeviceInfoDict]]:
     if not system.config.use_wheels or not controllers:
         _logger.info("wheels disabled.")
         yield controllers, {}

@@ -10,7 +10,7 @@ from ..batoceraPaths import mkdir_if_not_exists
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
 
 _logger = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ _SQUASHFS_DIR: Final = Path("/var/run/squashfs/")
 
 
 @contextmanager
-def mount_squashfs(rom: Path, /) -> Iterator[Path]:
+def mount_squashfs(rom: Path, /) -> Generator[Path]:
     _logger.debug("mount_squashfs(%s)", rom)
     mount_point = _SQUASHFS_DIR / rom.stem
 

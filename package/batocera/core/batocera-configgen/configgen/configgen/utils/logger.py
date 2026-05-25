@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, TextIO
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Generator
 
 
 class EpipeTolerantStreamHandler(logging.StreamHandler):
@@ -88,7 +88,7 @@ class EpipeTolerantTextIO(io.TextIOBase):
 
 
 @contextmanager
-def setup_logging() -> Iterator[None]:
+def setup_logging() -> Generator[None]:
     """
     Configure logging with EPIPE-tolerant stdout/stderr and handlers.
     - DEBUG..INFO to stdout
