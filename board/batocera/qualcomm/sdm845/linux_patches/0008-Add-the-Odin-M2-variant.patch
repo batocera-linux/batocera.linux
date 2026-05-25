@@ -1,0 +1,35 @@
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 6447992..f93f213 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -241,6 +241,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sdm636-sony-xperia-ganges-mermaid.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm660-xiaomi-lavender.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm670-google-sargo.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-ayn-odin.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-ayn-odin-m2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-db845c.dtb
+ 
+ sdm845-db845c-navigation-mezzanine-dtbs	:= sdm845-db845c.dtb sdm845-db845c-navigation-mezzanine.dtbo
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin-m2.dts b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin-m2.dts
+new file mode 100644
+index 0000000..a3df758
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin-m2.dts
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2024, Anton Bambura.
++ */
++
++/dts-v1/;
++
++#include "sdm845-ayn-odin.dts"
++
++/ {
++	model = "AYN Odin M2";
++	compatible = "ayn,odin-m2", "ayn,odin", "qcom,sdm845";
++};
++
++&display_panel {
++	rotation = <270>;
++};

@@ -24,6 +24,7 @@ cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomac
 cp -f "${BOARD_DIR}/grub.cfg"         "${BINARIES_DIR}/efi-part/EFI/BOOT/grub.cfg" || exit 1
 cp -r "${BINARIES_DIR}/efi-part/EFI/" "${BATOCERA_BINARIES_DIR}/boot/"             || exit 1
 
-cp "${BINARIES_DIR}/sdm845-ayn-odin.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/sdm845-ayn-odin.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/sdm845-ayn-odin-m2.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0
