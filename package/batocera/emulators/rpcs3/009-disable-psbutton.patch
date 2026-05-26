@@ -1,0 +1,39 @@
+diff --git a/rpcs3/Input/pad_thread.cpp b/rpcs3/Input/pad_thread.cpp
+index 55652bc22..3626e8df8 100644
+--- a/rpcs3/Input/pad_thread.cpp
++++ b/rpcs3/Input/pad_thread.cpp
+@@ -673,20 +673,20 @@ void pad_thread::operator()()
+ 
+ 				// Check if an LDD pad pressed the PS button (bit 0 of the first button)
+ 				// NOTE: Rock Band 3 doesn't seem to care about the len. It's always 0.
+-				if (pad->ldd /*&& pad->ldd_data.len >= 1 */&& !!(pad->ldd_data.button[0] & CELL_PAD_CTRL_LDD_PS))
+-				{
+-					ps_button_pressed = true;
+-					break;
+-				}
+-
+-				for (const Button& button : pad->m_buttons)
+-				{
+-					if (button.m_offset == CELL_PAD_BTN_OFFSET_DIGITAL1 && button.m_outKeyCode == CELL_PAD_CTRL_PS && button.m_pressed)
+-					{
+-						ps_button_pressed = true;
+-						break;
+-					}
+-				}
++				//if (pad->ldd /*&& pad->ldd_data.len >= 1 */&& !!(pad->ldd_data.button[0] & CELL_PAD_CTRL_LDD_PS))
++				//{
++				//	ps_button_pressed = true;
++				//	break;
++				//}
++
++				//for (const Button& button : pad->m_buttons)
++				//{
++				//	if (button.m_offset == CELL_PAD_BTN_OFFSET_DIGITAL1 && button.m_outKeyCode == CELL_PAD_CTRL_PS && button.m_pressed)
++				//	{
++				//		ps_button_pressed = true;
++				//		break;
++				//	}
++				//}
+ 			}
+ 
+ 			// Make sure we call this function only once per button press
