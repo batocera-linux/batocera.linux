@@ -1,0 +1,51 @@
+From c4d3dd13dcc318924c16bfe561af823bbaa5ff1a Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sun, 5 Jan 2025 15:11:47 +0100
+Subject: [PATCH] add forcefeedback
+
+---
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 19 ++++++++++++++++++-
+ 4 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index 1c2637d21..ec9b7174a 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -58,9 +58,14 @@ joypad: rocknix-singleadc-joypad {
+ 
+ 		status = "okay";
+ 
++		pwms = <&pwm 2 1000000 0>;
++		pwm-names = "enable";
++		rumble-boost-weak = <0>;
++		rumble-boost-strong = <0>;
++		
+ 		/* gpio pincontrol setup */
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&joy_mux_pin>;
++		pinctrl-0 = <&joy_mux_pin>, <&pwm2_pin>;
+ 
+ 		/* Analog mux define */
+ 		io-channel-names = "amux_adc";
+@@ -397,6 +402,18 @@ lcd_backlight_pin: pwm0-pin {
+ 		function = "pwm0";
+ 	};
+ 
++	/omit-if-no-ref/
++	pwm2_pin: pwm2-pin {
++		pins = "PH2";
++		function = "pwm2";
++	};
++
++	/omit-if-no-ref/
++	pwm3_pin: pwm3-pin {
++		pins = "PI13";
++		function = "pwm3";
++	};
++
+ 	joy_mux_pin: joy-mux-pin {
+ 		pins = "PI0";
+ 		function = "gpio_out";
+-- 
+2.47.1
+

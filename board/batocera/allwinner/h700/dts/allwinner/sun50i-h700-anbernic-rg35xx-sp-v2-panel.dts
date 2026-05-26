@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
+ * Copyright (C) 2024 Chris Morgan <macroalpha82@gmail.com>.
+ */
+
+#include "sun50i-h700-anbernic-rg35xx-sp.dts"
+
+/ {
+	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-sp-v2-panel";
+};
+
+&panel {
+	compatible = "anbernic,rg35xx-sp-v2-panel", "panel-mipi-dpi-spi";
+};

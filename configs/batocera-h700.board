@@ -15,8 +15,8 @@ BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.16"
-BR2_KERNEL_HEADERS_6_18=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="7.0.9"
+BR2_KERNEL_HEADERS_7_0=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/h700/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/h700/linux-sun50i-h700.config"
@@ -25,18 +25,19 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="allwinner/sun50i-h700-anbernic-rg28xx allwinner/sun50i-h700-anbernic-rg34xx allwinner/sun50i-h700-anbernic-rg34xx-sp allwinner/sun50i-h700-anbernic-rg35xx-2024 allwinner/sun50i-h700-anbernic-rg35xx-2024-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-h allwinner/sun50i-h700-anbernic-rg35xx-h-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-plus allwinner/sun50i-h700-anbernic-rg35xx-plus-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-pro allwinner/sun50i-h700-anbernic-rg35xx-sp allwinner/sun50i-h700-anbernic-rg35xx-sp-v2-panel allwinner/sun50i-h700-anbernic-rg40xx-h allwinner/sun50i-h700-anbernic-rg40xx-v allwinner/sun50i-h700-anbernic-rgcubexx"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="allwinner/sun50i-h700-anbernic-rg28xx allwinner/sun50i-h700-anbernic-rg34xx allwinner/sun50i-h700-anbernic-rg34xx-sp allwinner/sun50i-h700-anbernic-rg35xx-2024 allwinner/sun50i-h700-anbernic-rg35xx-2024-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-h allwinner/sun50i-h700-anbernic-rg35xx-h-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-plus allwinner/sun50i-h700-anbernic-rg35xx-plus-rev6-panel allwinner/sun50i-h700-anbernic-rg35xx-pro allwinner/sun50i-h700-anbernic-rg35xx-sp allwinner/sun50i-h700-anbernic-rg35xx-sp-v2-panel allwinner/sun50i-h700-anbernic-rg40xx-h allwinner/sun50i-h700-anbernic-rg40xx-h-v2-panel allwinner/sun50i-h700-anbernic-rg40xx-v allwinner/sun50i-h700-anbernic-rg40xx-v-v2-panel allwinner/sun50i-h700-anbernic-rgcubexx"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/h700/dts/*"
 
 # Bootloader
 BR2_TARGET_ARM_TRUSTED_FIRMWARE=y
 BR2_TARGET_ARM_TRUSTED_FIRMWARE_CUSTOM_GIT=y
 BR2_TARGET_ARM_TRUSTED_FIRMWARE_CUSTOM_REPO_URL="https://github.com/ARM-software/arm-trusted-firmware.git"
-BR2_TARGET_ARM_TRUSTED_FIRMWARE_CUSTOM_REPO_VERSION="lts-v2.12.8"
+BR2_TARGET_ARM_TRUSTED_FIRMWARE_CUSTOM_REPO_VERSION="lts-v2.14.2"
 BR2_TARGET_ARM_TRUSTED_FIRMWARE_PLATFORM="sun50i_h616"
 BR2_TARGET_UBOOT=y
 BR2_TARGET_UBOOT_BUILD_SYSTEM_KCONFIG=y
 BR2_TARGET_UBOOT_CUSTOM_VERSION=y
-BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2025.10"
+BR2_TARGET_UBOOT_CUSTOM_VERSION_VALUE="2026.04"
 BR2_TARGET_UBOOT_BOARD_DEFCONFIG="anbernic_rg35xx_h700"
 BR2_TARGET_UBOOT_NEEDS_DTC=y
 BR2_TARGET_UBOOT_NEEDS_PYLIBFDT=y

@@ -1,0 +1,36 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Copyright (C) 2024 Philippe Simons <simons.philippe@gmail.com>.
+ */
+
+#include "sun50i-h700-anbernic-rg35xx-plus.dts"
+
+/ {
+	model = "Anbernic RG40XX V";
+	compatible = "anbernic,rg40xx-V", "allwinner,sun50i-h700";
+	rocknix-dt-id = "sun50i-h700-anbernic-rg40xx-v";
+};
+
+&joypad {
+	amux-count = <4>;
+	pwms = <&pwm 3 1000000 0>;
+	pinctrl-0 = <&joy_mux_pin>, <&pwm3_pin>;
+};
+
+&uart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart5_ph_pins>;
+	status = "okay";	
+};
+
+&leds {
+	led-rgb {
+		function = LED_FUNCTION_KBD_BACKLIGHT;
+		color = <LED_COLOR_ID_RGB>;
+		gpios = <&pio 8 7 GPIO_ACTIVE_HIGH>; /* PI7 */
+	};	
+};
+
+&panel {
+	compatible = "anbernic,rg40xx-panel", "panel-mipi-dpi-spi";
+};

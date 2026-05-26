@@ -3,9 +3,12 @@
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 ### Hardware
 - Anbernic RG-DS initial support
+- Anbernic RG40xx-H-v2-panel variant support
+- Anbernic RG40xx-V-v2-panel variant support
 - AYN Odin initial support
 - Mangmi Air X initial support
 ### Added
+- Anbernic RGCubeXX device LED controller support
 - NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
@@ -56,7 +59,8 @@
 - Mesa3D to 26.1.0
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
-- X86_64 / Zen3 kernel update to 7.0.9
+- X86_64 / Zen3 kernel updated to 7.0.9
+- Anbernic H700 kernel updated to 7.0.9
 
 # 2026/05/xx - batocera.linux 43.1
 ### Fixed

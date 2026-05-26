@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Copyright (C) 2024 Philippe Simons <simons.philippe@gmail.com>.
+ */
+
+#include "sun50i-h700-anbernic-rg40xx-v.dts"
+
+/ {
+	rocknix-dt-id = "sun50i-h700-anbernic-rg40xx-v-v2-panel";
+};
+
+&panel {
+	compatible = "anbernic,rg40xx-v2-panel", "panel-mipi-dpi-spi";
+};
