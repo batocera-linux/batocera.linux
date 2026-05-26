@@ -18,6 +18,14 @@ then
     PSCREEN=$(xrandr --listPrimary)
 fi
 
+# Fallback if no primary screen is designated
+# Therefore we default to the first connected output.
+# Helps with TV"s powering off whilst Bato is active
+if test -z "${PSCREEN}"
+then
+    PSCREEN=$(xrandr --listConnectedOutputs | sed -e 's/\*$//' | head -n1)
+fi
+
 f_usage() {
     echo "${0} listModes" >&2
     echo "${0} setMode <MODE>" >&2
