@@ -1,0 +1,27 @@
+From eb89c9384eacd92611c9c839589b721c3ae45a0c Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 18 Dec 2024 10:30:24 +0100
+Subject: [PATCH] Update sun50i-h700-anbernic-rg35xx-h.dts
+
+---
+ .../boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts      | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+index 83bdbeef6..f4bfd11be 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+@@ -30,6 +30,10 @@ reg_vcc5v0_usb: regulator-vcc5v0-usb {
+ 	};
+ };
+ 
++&joypad {
++	amux-count = <4>;
++};
++
+ &ehci1 {
+ 	status = "okay";
+ };
+-- 
+2.47.1
+

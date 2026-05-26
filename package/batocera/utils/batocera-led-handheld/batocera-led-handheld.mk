@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_LED_HANDHELD_VERSION = 0.5
+BATOCERA_LED_HANDHELD_VERSION = 0.6
 BATOCERA_LED_HANDHELD_LICENSE = LGPL
 BATOCERA_LED_HANDHELD_SOURCE=
 
@@ -19,7 +19,7 @@ define BATOCERA_LED_HANDHELD_INSTALL_TARGET_CMDS
         $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/
     install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/batocera-led-handheld.py \
         $(TARGET_DIR)/usr/bin/batocera-led-handheld
-    install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/S51led-handheld \
+    install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/S21led-handheld \
         $(TARGET_DIR)/etc/init.d/
 endef
 

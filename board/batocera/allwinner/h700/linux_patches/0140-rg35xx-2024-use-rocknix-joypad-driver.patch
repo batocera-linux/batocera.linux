@@ -1,0 +1,400 @@
+From a0e931952dc69378bb50fcf673ac94c4fb4fc78c Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Tue, 17 Dec 2024 13:40:16 +0100
+Subject: [PATCH] rg35xx-2024 use rocknix joypad driver
+
+---
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 228 +++++++++++-------
+ .../sun50i-h700-anbernic-rg35xx-h.dts         |  95 --------
+ 2 files changed, 144 insertions(+), 179 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+index a8f36c4f1..1c2637d21 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -47,111 +47,156 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
+-	gpio_keys_gamepad: gpio-keys-gamepad {
+-		compatible = "gpio-keys";
++	joypad: rocknix-singleadc-joypad {
++		compatible = "rocknix-singleadc-joypad";
++		hw_info = <0x01>;
+ 
+-		button-a {
+-			label = "Action-Pad A";
+-			gpios = <&pio 0 0 GPIO_ACTIVE_LOW>; /* PA0 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_EAST>;
+-		};
++		joypad-name = "H700 Gamepad";
++		joypad-product = <0x14DF>;
++		joypad-revision = <0x0100>;
++		joypad-vendor = <0x484B>;
+ 
+-		button-b {
+-			label = "Action-Pad B";
+-			gpios = <&pio 0 1 GPIO_ACTIVE_LOW>; /* PA1 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_SOUTH>;
+-		};
++		status = "okay";
+ 
+-		button-down {
+-			label = "D-Pad Down";
+-			gpios = <&pio 4 0 GPIO_ACTIVE_LOW>; /* PE0 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_DPAD_DOWN>;
+-		};
++		/* gpio pincontrol setup */
++		pinctrl-names = "default";
++		pinctrl-0 = <&joy_mux_pin>;
+ 
+-		button-l1 {
+-			label = "Key L1";
+-			gpios = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_TL>;
+-		};
++		/* Analog mux define */
++		io-channel-names = "amux_adc";
++		io-channels = <&gpadc 0>;
+ 
+-		button-l2 {
+-			label = "Key L2";
+-			gpios = <&pio 0 11 GPIO_ACTIVE_LOW>; /* PA11 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_TL2>;
+-		};
++		/* adc mux channel count */
++		amux-count = <0>;
++		/* ABS_RY ABS_RX ABS_Y ABS_X */
++		amux-channel-mapping = <0 2 1 3>;
+ 
+-		button-left {
+-			label = "D-Pad left";
+-			gpios = <&pio 0 8 GPIO_ACTIVE_LOW>; /* PA8 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_DPAD_LEFT>;
+-		};
++		/* adc mux select(a,b) gpio */
++		amux-a-gpios = <&pio 8 1 GPIO_ACTIVE_LOW>;
++		amux-b-gpios = <&pio 8 2 GPIO_ACTIVE_LOW>;
+ 
+-		button-menu {
+-			label = "Key Menu";
+-			gpios = <&pio 4 3 GPIO_ACTIVE_LOW>; /* PE3 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_MODE>;
+-		};
++		/* adc calculate scale */
++		button-adc-scale = <2>;
+ 
+-		button-r1 {
+-			label = "Key R1";
+-			gpios = <&pio 0 12 GPIO_ACTIVE_LOW>; /* PA12 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_TR>;
+-		};
++		/* adc deadzone range  */
++		button-adc-deadzone = <128>;
+ 
+-		button-r2 {
+-			label = "Key R2";
+-			gpios = <&pio 0 7 GPIO_ACTIVE_LOW>; /* PA7 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_TR2>;
+-		};
++		/*
++			specifies fuzz value that is used to filter noise from
++			the event stream.
++		*/
++		button-adc-fuzz = <32>;
++		button-adc-flat = <32>;
++
++		/*
++			Analog Stick data tuning value(precent)
++			p = positive direction, n = negative direction
++			report value = (real_adc_data * tuning_value) / 100
++		*/
++		abs_x-p-tuning = <70>;
++		abs_x-n-tuning = <70>;
++		invert-absx;
++
++		abs_y-p-tuning = <70>;
++		abs_y-n-tuning = <70>;
++		invert-absy;
++
++		abs_rx-p-tuning = <70>;
++		abs_rx-n-tuning = <70>;
++
++		abs_ry-p-tuning = <70>;
++		abs_ry-n-tuning = <70>;
++
++		/* poll device interval (ms), adc read interval */
++		poll-interval = <10>;
+ 
+-		button-right {
+-			label = "D-Pad Right";
++		/* gpio button auto repeat set value : default disable */
++		/* autorepeat; */
++
++		sw1 {
++			gpios = <&pio 0 6 GPIO_ACTIVE_LOW>; /* PA6 */
++			label = "GPIO DPAD-UP";
++			linux,code = <BTN_DPAD_UP>;
++		};
++		sw2 {
++			gpios = <&pio 4 0 GPIO_ACTIVE_LOW>; /* PE0 */
++			label = "GPIO DPAD-DOWN";
++			linux,code = <BTN_DPAD_DOWN>;
++		};
++		sw3 {
++			gpios = <&pio 0 8 GPIO_ACTIVE_LOW>; /* PA8 */
++			label = "GPIO DPAD-LEFT";
++			linux,code = <BTN_DPAD_LEFT>;
++		};
++		sw4 {
+ 			gpios = <&pio 0 9 GPIO_ACTIVE_LOW>; /* PA9 */
+-			linux,input-type = <EV_KEY>;
++			label = "GPIO DPAD-RIGHT";
+ 			linux,code = <BTN_DPAD_RIGHT>;
+ 		};
+-
+-		button-select {
+-			label = "Key Select";
++		sw5 {
++			gpios = <&pio 0 0 GPIO_ACTIVE_LOW>; /* PA0 */
++			label = "GPIO BTN-A";
++			linux,code = <BTN_EAST>;
++		};
++		sw6 {
++			gpios = <&pio 0 1 GPIO_ACTIVE_LOW>; /* PA1 */
++			label = "GPIO BTN-B";
++			linux,code = <BTN_SOUTH>;
++		};
++		sw7 {
++			gpios = <&pio 0 3 GPIO_ACTIVE_LOW>; /* PA2 */
++			label = "GPIO BTN-X";
++			linux,code = <BTN_NORTH>;
++		};
++		sw8 {
++			gpios = <&pio 0 2 GPIO_ACTIVE_LOW>; /* PA3 */
++			label = "GPIO BTN-Y";
++			linux,code = <BTN_WEST>;
++		};
++		sw9 {
+ 			gpios = <&pio 0 5 GPIO_ACTIVE_LOW>; /* PA5 */
+-			linux,input-type = <EV_KEY>;
++			label = "BTN_SELECT";
+ 			linux,code = <BTN_SELECT>;
+ 		};
+-		button-start {
+-			label = "Key Start";
++		sw10 {
+ 			gpios = <&pio 0 4 GPIO_ACTIVE_LOW>; /* PA4 */
+-			linux,input-type = <EV_KEY>;
++			label = "BTN_START";
+ 			linux,code = <BTN_START>;
+ 		};
+-
+-		button-up {
+-			label = "D-Pad Up";
+-			gpios = <&pio 0 6 GPIO_ACTIVE_LOW>; /* PA6 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_DPAD_UP>;
++		sw11 {
++			gpios = <&pio 4 3 GPIO_ACTIVE_LOW>; /* PE3 */
++			label = "GPIO BTN_F";
++			linux,code = <BTN_MODE>;
+ 		};
+-
+-		button-x {
+-			label = "Action-Pad X";
+-			gpios = <&pio 0 3 GPIO_ACTIVE_LOW>; /* PA3 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_NORTH>;
++		sw12 {
++			gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
++			label = "BTN_THUMBL";
++			linux,code = <BTN_THUMBL>;
+ 		};
+-
+-		button-y {
+-			label = "Action Pad Y";
+-			gpios = <&pio 0 2 GPIO_ACTIVE_LOW>; /* PA2 */
+-			linux,input-type = <EV_KEY>;
+-			linux,code = <BTN_WEST>;
++		sw13 {
++			gpios = <&pio 4 9 GPIO_ACTIVE_LOW>; /* PE9 */
++			label = "BTN_THUMBR";
++			linux,code = <BTN_THUMBR>;
++		};
++		sw14 {
++			gpios = <&pio 0 12 GPIO_ACTIVE_LOW>; /* PA12 */
++			label = "GPIO BTN_TR";
++			linux,code = <BTN_TR>;
++		};
++		sw15 {
++			gpios = <&pio 0 7 GPIO_ACTIVE_LOW>; /* PA7 */
++			label = "GPIO BTN_TR2";
++			linux,code = <BTN_TR2>;
++		};
++		sw16 {
++			gpios = <&pio 0 10 GPIO_ACTIVE_LOW>; /* PA10 */
++			label = "GPIO BTN_TL";
++			linux,code = <BTN_TL>;
++		};
++		sw17 {
++			gpios = <&pio 0 11 GPIO_ACTIVE_LOW>; /* PA11 */
++			label = "GPIO BTN_TL2";
++			linux,code = <BTN_TL2>;
+ 		};
+ 	};
+ 
+@@ -351,6 +396,21 @@ lcd_backlight_pin: pwm0-pin {
+ 		pins = "PD28";
+ 		function = "pwm0";
+ 	};
++
++	joy_mux_pin: joy-mux-pin {
++		pins = "PI0";
++		function = "gpio_out";
++	};
++};
++
++&gpadc {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	channel@0 {
++		reg = <0>;
++	};
+ };
+ 
+ &r_i2c {
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+index bef4d1074..83bdbeef6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-h.dts
+@@ -10,68 +10,6 @@ / {
+ 	model = "Anbernic RG35XX H";
+ 	compatible = "anbernic,rg35xx-h", "allwinner,sun50i-h700";
+ 
+-	adc-joystick {
+-		compatible = "adc-joystick";
+-		io-channels = <&adc_mux 0>,
+-			      <&adc_mux 1>,
+-			      <&adc_mux 2>,
+-			      <&adc_mux 3>;
+-		pinctrl-0 = <&joy_mux_pin>;
+-		pinctrl-names = "default";
+-		poll-interval = <60>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		axis@0 {
+-			reg = <0>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <4096 0>;
+-			linux,code = <ABS_X>;
+-		};
+-
+-		axis@1 {
+-			reg = <1>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <0 4096>;
+-			linux,code = <ABS_Y>;
+-		};
+-
+-		axis@2 {
+-			reg = <2>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <0 4096>;
+-			linux,code = <ABS_RX>;
+-		};
+-
+-		axis@3 {
+-			reg = <3>;
+-			abs-flat = <32>;
+-			abs-fuzz = <32>;
+-			abs-range = <4096 0>;
+-			linux,code = <ABS_RY>;
+-		};
+-	};
+-
+-	adc_mux: adc-mux {
+-		compatible = "io-channel-mux";
+-		channels = "left_x", "left_y", "right_x", "right_y";
+-		#io-channel-cells = <1>;
+-		io-channels = <&gpadc 0>;
+-		io-channel-names = "parent";
+-		mux-controls = <&gpio_mux>;
+-		settle-time-us = <100>;
+-	};
+-
+-	gpio_mux: mux-controller {
+-		compatible = "gpio-mux";
+-		mux-gpios = <&pio 8 1 GPIO_ACTIVE_LOW>,
+-			    <&pio 8 2 GPIO_ACTIVE_LOW>;
+-		#mux-control-cells = <0>;
+-	};
+-
+ 	reg_vcc3v8_usb: regulator-vcc3v8-usb {
+ 		compatible = "regulator-fixed";
+ 		enable-active-high;
+@@ -92,32 +30,6 @@ reg_vcc5v0_usb: regulator-vcc5v0-usb {
+ 	};
+ };
+ 
+-&gpadc {
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	status = "okay";
+-
+-	channel@0 {
+-		reg = <0>;
+-	};
+-};
+-
+-&gpio_keys_gamepad {
+-	button-thumbl {
+-		label = "GPIO Thumb Left";
+-		gpios = <&pio 4 8 GPIO_ACTIVE_LOW>; /* PE8 */
+-		linux,input-type = <EV_KEY>;
+-		linux,code = <BTN_THUMBL>;
+-	};
+-
+-	button-thumbr {
+-		label = "GPIO Thumb Right";
+-		gpios = <&pio 4 9 GPIO_ACTIVE_LOW>; /* PE9 */
+-		linux,input-type = <EV_KEY>;
+-		linux,code = <BTN_THUMBR>;
+-	};
+-};
+-
+ &ehci1 {
+ 	status = "okay";
+ };
+@@ -126,13 +38,6 @@ &ohci1 {
+ 	status = "okay";
+ };
+ 
+-&pio {
+-	joy_mux_pin: joy-mux-pin {
+-		pins = "PI0";
+-		function = "gpio_out";
+-	};
+-};
+-
+ &usbphy {
+ 	usb1_vbus-supply = <&reg_vcc5v0_usb>;
+ };
+-- 
+2.47.1
+

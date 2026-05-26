@@ -6,6 +6,8 @@ config BR2_PACKAGE_ROCKNIX_JOYPAD
       Provides input support for analog sticks connected via
       ADC and Multiplexers, and buttons via GPIO.
       Thanks Rocknix team!
+
+      Note: Currently requires a Kernel polldev patch!
       
       https://github.com/ROCKNIX/rocknix-joypad
 

@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Start/stop the battery status LED monitor daemon
+#
+
+DAEMON="/usr/bin/battery_led_status"
+PIDFILE="/var/run/battery-led-status.pid"
+
+# Hardware check: Exit if the expected LEDs do not exist
+if [ ! -d "/sys/class/leds/green:power" ]; then
+    exit 0
+fi
+
+start() {
+    echo -n "Starting battery LED monitor: "
+    start-stop-daemon -S -q -b -m -p "$PIDFILE" -x "$DAEMON"
+    echo "OK"
+}
+
+stop() {
+    echo -n "Stopping battery LED monitor: "
+    start-stop-daemon -K -q -p "$PIDFILE"
+    rm -f "$PIDFILE"
+    echo "OK"
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        sleep 1
+        start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac

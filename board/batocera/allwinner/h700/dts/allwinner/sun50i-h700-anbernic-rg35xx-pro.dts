@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+/*
+ * Copyright (C) 2024 Ryan Walklin <ryan@testtoast.com>.
+ * Copyright (C) 2024 Chris Morgan <macroalpha82@gmail.com>.
+ */
+
+#include "sun50i-h700-anbernic-rg35xx-plus.dts"
+
+/ {
+	model = "Anbernic RG35XX Pro";
+	compatible = "anbernic,rg35xx-pro", "allwinner,sun50i-h700";
+	rocknix-dt-id = "sun50i-h700-anbernic-rg35xx-pro";
+};
+
+&joypad {
+	amux-count = <4>;
+};
