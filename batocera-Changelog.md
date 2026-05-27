@@ -19,6 +19,8 @@
 - New CPU temp helper script - batocera-cpu-temp
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
+- Khadas VIM4 now uses LabWC
+- Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
 - Removed Libretro-Puae2021
 ### Updated
 - CDogs to 2.4.0
@@ -61,6 +63,7 @@
 - Nvidia 580 Legacy driver to 580.159.03
 - X86_64 / Zen3 kernel updated to 7.0.9
 - Anbernic H700 kernel updated to 7.0.9
+- Khadas VIM4 kernel updated to vendor 5.15.y
 
 # 2026/05/xx - batocera.linux 43.1
 ### Fixed
