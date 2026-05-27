@@ -1,0 +1,43 @@
+From e56f5db14a4160424a1f90842a7e76b3ce0430e7 Mon Sep 17 00:00:00 2001
+From: retro98boy <retro98boy@qq.com>
+Date: Mon, 25 May 2026 23:58:39 +0800
+Subject: [PATCH] Fix Mesa 26.1.0 eglinitialize error on A311D2 vendor 5.15.y
+ kernel with Panfrost
+
+Revert "pipe-loader: fallback to zink instead of kmsro for render nodes"
+
+This reverts commit adf18abb4097805c2896e350e06e3a5cad6ec68e.
+
+26.0.7 -> Labwc + wlroots OK
+
+26.1.0 -> Labwc + wlroots NOK (eglinitialize error)
+
+git bisect between 26.0-branchpoint and 26.1-branchpoint
+---
+ src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
+index b97c526aedd..54e30948000 100644
+--- a/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
++++ b/src/gallium/auxiliary/pipe-loader/pipe_loader_drm.c
+@@ -172,14 +172,10 @@ pipe_loader_drm_probe_fd_nodup(struct pipe_loader_device **dev, int fd, bool zin
+    if (strcmp(ddev->base.driver_name, "vgem") == 0)
+       goto fail;
+ 
+-   /* kmsro supports lots of drivers, try as a fallback for primary nodes */
+-   if (!ddev->dd && !zink && drmGetNodeTypeFromFd(fd) == DRM_NODE_PRIMARY)
++   /* kmsro supports lots of drivers, try as a fallback */
++   if (!ddev->dd && !zink)
+       ddev->dd = get_driver_descriptor("kmsro");
+ 
+-   /* Try zink for unknown render nodes */
+-   if (!ddev->dd && drmGetNodeTypeFromFd(fd) == DRM_NODE_RENDER)
+-      ddev->dd = get_driver_descriptor("zink");
+-
+    if (!ddev->dd)
+       goto fail;
+ 
+-- 
+2.54.0
+
