@@ -36,9 +36,9 @@ $(call inner-generic-package,$(1),$(2),$(2),target)
 
 ifndef $(2)_BOOT_SRC_DIR
 ifdef $(2)_SOURCE
-$(2)_BOOT_SRC_DIR = $($(2)_BUILDDIR)
+$(2)_BOOT_SRC_DIR = $$($(2)_BUILDDIR)
 else
-$(2)_BOOT_SRC_DIR = $($(2)_PKGDIR)
+$(2)_BOOT_SRC_DIR = $$($(2)_PKGDIR)
 endif
 endif
 
