@@ -14,14 +14,8 @@ SONIC3_AIR_EMULATOR_INFO = sonic3-air.emulator.yml
 # CMakeLists.txt in subfolder
 SONIC3_AIR_SUBDIR = Oxygen/sonic3air/build/_cmake
 
-SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu
+SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu mesa3d
 SONIC3_AIR_DEPENDENCIES += xlib_libXxf86vm xlib_libXcomposite zlib
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
-SONIC3_AIR_DEPENDENCIES += mesa3d-rpi4
-else
-SONIC3_AIR_DEPENDENCIES += mesa3d
-endif
 
 SONIC3_AIR_SUPPORTS_IN_SOURCE_BUILD = NO
 
