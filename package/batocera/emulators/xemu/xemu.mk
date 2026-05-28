@@ -119,7 +119,7 @@ define XEMU_GET_SUBMODULES
     $(HOST_DIR)/bin/curl -L -o imgui.tar.gz \
         https://github.com/xemu-project/imgui/archive/$(REVISION).tar.gz
     $(TAR) -xzf imgui.tar.gz --strip-components=1 -C $(@D)/subprojects/imgui
-    rm imgui.tar.gz
+    rm -f imgui.tar.gz
 
 	# implot
 	mkdir -p $(@D)/subprojects/implot
@@ -127,7 +127,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o implot.tar.gz \
 	    https://github.com/xemu-project/implot/archive/$(REVISION).tar.gz
 	$(TAR) -xzf implot.tar.gz --strip-components=1 -C $(@D)/subprojects/implot
-	rm implot.tar.gz
+	rm -f implot.tar.gz
 
 	# genconfig
 	mkdir -p $(@D)/subprojects/genconfig
@@ -135,7 +135,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o genconfig.tar.gz \
 	    https://github.com/mborgerson/genconfig/archive/$(REVISION).tar.gz
 	$(TAR) -xzf genconfig.tar.gz --strip-components=1 -C $(@D)/subprojects/genconfig
-	rm genconfig.tar.gz
+	rm -f genconfig.tar.gz
 
     # tomlplusplus
 	mkdir -p $(@D)/subprojects/tomlplusplus
@@ -143,7 +143,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o tomlplusplus.tar.gz \
 	    https://github.com/marzer/tomlplusplus/archive/$(REVISION).tar.gz
 	$(TAR) -xzf tomlplusplus.tar.gz --strip-components=1 -C $(@D)/subprojects/tomlplusplus
-	rm tomlplusplus.tar.gz
+	rm -f tomlplusplus.tar.gz
 
 	# glslang
 	mkdir -p $(@D)/subprojects/glslang
@@ -151,7 +151,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o glslang.tar.gz \
 	    https://github.com/KhronosGroup/glslang/archive/$(REVISION).tar.gz
 	$(TAR) -xzf glslang.tar.gz --strip-components=1 -C $(@D)/subprojects/glslang
-	rm glslang.tar.gz
+	rm -f glslang.tar.gz
 
 	# volk
 	mkdir -p $(@D)/subprojects/volk
@@ -159,7 +159,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o volk.tar.gz \
 	    https://github.com/zeux/volk/archive/$(REVISION).tar.gz
 	$(TAR) -xzf volk.tar.gz --strip-components=1 -C $(@D)/subprojects/volk
-	rm volk.tar.gz
+	rm -f volk.tar.gz
 
 	# SPIRV-Reflect
 	mkdir -p $(@D)/subprojects/SPIRV-Reflect
@@ -167,7 +167,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o SPIRV-Reflect.tar.gz \
 	    https://github.com/KhronosGroup/SPIRV-Reflect/archive/$(REVISION).tar.gz
 	$(TAR) -xzf SPIRV-Reflect.tar.gz --strip-components=1 -C $(@D)/subprojects/SPIRV-Reflect
-	rm SPIRV-Reflect.tar.gz
+	rm -f SPIRV-Reflect.tar.gz
 
 	# VulkanMemoryAllocator
 	mkdir -p $(@D)/subprojects/VulkanMemoryAllocator
@@ -175,20 +175,20 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o VulkanMemoryAllocator.tar.gz \
 	    https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/$(REVISION).tar.gz
 	$(TAR) -xzf VulkanMemoryAllocator.tar.gz --strip-components=1 -C $(@D)/subprojects/VulkanMemoryAllocator
-	rm VulkanMemoryAllocator.tar.gz
+	rm -f VulkanMemoryAllocator.tar.gz
 
     # xxhash
 	mkdir -p $(@D)/subprojects/xxHash-0.8.3
 	$(HOST_DIR)/bin/curl -L -o xxhash.tar.gz \
 	    http://github.com/mesonbuild/wrapdb/releases/download/xxhash_0.8.3-1/xxHash-0.8.3.tar.gz
 	$(TAR) -xzf xxhash.tar.gz --strip-components=1 -C $(@D)/subprojects/xxHash-0.8.3
-	rm xxhash.tar.gz
+	rm -f xxhash.tar.gz
 
     # xxhash patch
 	$(HOST_DIR)/bin/curl -L -o xxhash_0.8.3-1_patch.zip \
 	    https://wrapdb.mesonbuild.com/v2/xxhash_0.8.3-1/get_patch
 	$(UNZIP) -o xxhash_0.8.3-1_patch.zip -d $(@D)/subprojects
-	rm xxhash_0.8.3-1_patch.zip
+	rm -f xxhash_0.8.3-1_patch.zip
 
     # keycodemapdb - revision variation
 	mkdir -p $(@D)/subprojects/keycodemapdb
@@ -196,7 +196,7 @@ define XEMU_GET_SUBMODULES
     $(HOST_DIR)/bin/curl -L -o keycodemapdb.tar.gz \
 	    https://gitlab.com/qemu-project/keycodemapdb/-/archive/$(REVISION)/$(REVISION).tar.gz
 	$(TAR) -xzf keycodemapdb.tar.gz --strip-components=1 -C $(@D)/subprojects/keycodemapdb
-	rm keycodemapdb.tar.gz
+	rm -f keycodemapdb.tar.gz
 
     # nv2a_vsh_cpu
 	mkdir -p $(@D)/subprojects/nv2a_vsh_cpu
@@ -204,7 +204,7 @@ define XEMU_GET_SUBMODULES
 	$(HOST_DIR)/bin/curl -L -o nv2a_vsh_cpu.tar.gz \
 	    https://github.com/xemu-project/nv2a_vsh_cpu/archive/$(REVISION).tar.gz
 	$(TAR) -xzf nv2a_vsh_cpu.tar.gz --strip-components=1 -C $(@D)/subprojects/nv2a_vsh_cpu
-	rm nv2a_vsh_cpu.tar.gz
+	rm -f nv2a_vsh_cpu.tar.gz
 
     # berkeley-softfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-softfloat-3
@@ -213,7 +213,7 @@ define XEMU_GET_SUBMODULES
 	    https://gitlab.com/qemu-project/berkeley-softfloat-3/-/archive/$(REVISION)/$(REVISION).tar.gz
 	$(TAR) -xzf berkeley-softfloat-3.tar.gz --strip-components=1 -C $(@D)/subprojects/berkeley-softfloat-3
 	cp $(@D)/subprojects/packagefiles/berkeley-softfloat-3/* $(@D)/subprojects/berkeley-softfloat-3
-	rm berkeley-softfloat-3.tar.gz
+	rm -f berkeley-softfloat-3.tar.gz
 
     # berkeley-testfloat-3 - revision variation
 	mkdir -p $(@D)/subprojects/berkeley-testfloat-3
@@ -222,7 +222,7 @@ define XEMU_GET_SUBMODULES
 	    https://gitlab.com/qemu-project/berkeley-testfloat-3/-/archive/$(REVISION)/$(REVISION).tar.gz
 	$(TAR) -xzf berkeley-testfloat-3.tar.gz --strip-components=1 -C $(@D)/subprojects/berkeley-testfloat-3
 	cp $(@D)/subprojects/packagefiles/berkeley-testfloat-3/* $(@D)/subprojects/berkeley-testfloat-3
-	rm berkeley-testfloat-3.tar.gz
+	rm -f berkeley-testfloat-3.tar.gz
 endef
 
 XEMU_PRE_CONFIGURE_HOOKS = XEMU_VERSION_DETAILS
