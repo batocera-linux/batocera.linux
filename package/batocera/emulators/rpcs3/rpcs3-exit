@@ -1,5 +1,5 @@
 #!/bin/sh
 
-pkill -TERM -x rpcs3 >/dev/null 2>&1
+(pkill -TERM -x rpcs3 >/dev/null 2>&1 ; sleep 2; pkill -KILL -x rpcs3 >/dev/null 2>&1)&
 
 exit 0
