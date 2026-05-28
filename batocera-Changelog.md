@@ -52,6 +52,7 @@
 - Tsugaru to v20251206
 - VKQuake to 1.34.1
 ### System
+- Allwinner H700 device kernel updated to 7.0.10
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - FAudio to 26.05
 - LabWC to 0.9.7
@@ -59,8 +60,9 @@
 - Mesa3D to 26.1.0
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
-- X86_64 / Zen3 kernel updated to 7.0.9
-- Anbernic H700 kernel updated to 7.0.9
+- Qualcomm SM8550 device kernel updated to 7.0.10
+- Rockchip RK3568 device kernel updated to 7.0.10
+- X86_64 / Zen3 kernel updated to 7.0.10
 
 # 2026/05/xx - batocera.linux 43.1
 ### Fixed
