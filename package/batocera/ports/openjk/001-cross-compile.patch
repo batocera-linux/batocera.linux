@@ -1,13 +1,100 @@
-diff --git a/codemp/rd-rend2/CMakeLists.txt b/codemp/rd-rend2/CMakeLists.txt
-index 786cf25..44ecef9 100644
+From: Batocera build system
+Subject: [PATCH] Allow cross-compiling: import a pre-built compact_glsl and
+ keep its sources compilable without an OpenGL development package
+
+When cross-compiling, the rd-rend2 GLSL "compact_glsl" code-generator must run
+on the build host (not the target).  Two source-level changes let the
+build system pre-compile compact_glsl with the host toolchain and hand the
+resulting binary to the CMake cross build:
+
+  * codemp/rd-rend2/CMakeLists.txt:
+      - If -Dcompact_glsl_EXECUTABLE=<path> is passed, declare compact_glsl
+        as an IMPORTED GLOBAL executable target pointing at that path
+        instead of compiling it for the target architecture.
+      - The custom-command that invokes compact_glsl uses the bare target
+        name (resolved by CMake to either the in-tree binary or the imported
+        location) so the in-build relative path is no longer hard-coded;
+        this is the same branch used on Win32 / Apple.
+
+  * codemp/rd-rend2/qgl.h:
+      - Wraps the entire body of the header in #if !defined(GLSL_BUILDTOOL).
+        Under GLSL_BUILDTOOL we provide stubs for the seven GL types that
+        tr_local.h actually references (GLuint, GLenum, GLint, GLsizei,
+        GLfloat, GLboolean, GLsync) and the GL_UNSIGNED_INT macro, then
+        short-circuit before the qgl* function-pointer wrappers and the PFN*
+        extern declarations.  This lets compact_glsl be compiled directly by
+        the build system's HOSTCXX without an OpenGL development package on
+        the build machine.
+
 --- a/codemp/rd-rend2/CMakeLists.txt
 +++ b/codemp/rd-rend2/CMakeLists.txt
-@@ -193,7 +193,7 @@ if (NOT WIN32 AND NOT APPLE)
- 	target_compile_definitions(compact_glsl PRIVATE "ARCH_STRING=\"${Architecture}\"")
+@@ -182,18 +182,25 @@
+ target_link_libraries(${MPRend2} ${MPRend2Libraries})
+ target_include_directories(${MPRend2} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+ 
+-# GLSL shader file generator
+-add_executable(compact_glsl
+-	${MPDir}/rd-rend2/glsl/compact.cpp
+-	${MPDir}/rd-rend2/tr_allocator.cpp
+-	${MPDir}/rd-rend2/tr_allocator.h
+-	${MPDir}/rd-rend2/tr_glsl_parse.cpp)
+-target_compile_definitions(compact_glsl PRIVATE "GLSL_BUILDTOOL" "NOMINMAX")
+-if (NOT WIN32 AND NOT APPLE)
+-	target_compile_definitions(compact_glsl PRIVATE "ARCH_STRING=\"${Architecture}\"")
++# GLSL shader file generator.  When cross-compiling, the build system can
++# supply a pre-built host binary via -Dcompact_glsl_EXECUTABLE=<path>, in
++# which case we import it instead of building one for the target.
++if(compact_glsl_EXECUTABLE)
++	add_executable(compact_glsl IMPORTED GLOBAL)
++	set_target_properties(compact_glsl PROPERTIES IMPORTED_LOCATION "${compact_glsl_EXECUTABLE}")
++else()
++	add_executable(compact_glsl
++		${MPDir}/rd-rend2/glsl/compact.cpp
++		${MPDir}/rd-rend2/tr_allocator.cpp
++		${MPDir}/rd-rend2/tr_allocator.h
++		${MPDir}/rd-rend2/tr_glsl_parse.cpp)
++	target_compile_definitions(compact_glsl PRIVATE "GLSL_BUILDTOOL" "NOMINMAX")
++	if (NOT WIN32 AND NOT APPLE)
++		target_compile_definitions(compact_glsl PRIVATE "ARCH_STRING=\"${Architecture}\"")
++	endif()
++	target_include_directories(compact_glsl PRIVATE "${MPRend2IncludeDirectories}")
  endif()
- target_include_directories(compact_glsl PRIVATE "${MPRend2IncludeDirectories}")
+-target_include_directories(compact_glsl PRIVATE "${MPRend2IncludeDirectories}")
 -if (WIN32 OR APPLE)
-+if (WIN32 OR APPLE OR CMAKE_CROSSCOMPILING)
++if (WIN32 OR APPLE OR compact_glsl_EXECUTABLE)
  add_custom_command(
  	OUTPUT
  		${CMAKE_CURRENT_BINARY_DIR}/glsl_shaders.cpp
+--- a/codemp/rd-rend2/qgl.h
++++ b/codemp/rd-rend2/qgl.h
+@@ -1,5 +1,24 @@
+ #pragma once
+ 
++#if defined(GLSL_BUILDTOOL)
++// The compact_glsl code-generator only includes this header transitively via
++// tr_local.h; it never calls OpenGL.  Provide the minimal subset of GL types
++// and macros referenced by tr_local.h so the tool can be compiled on a host
++// that has no OpenGL development files installed, and stop here -- the rest
++// of qgl.h (qgl* function-pointer wrappers and PFN externs) needs the full
++// glext.h definitions and is unused by the tool.
++typedef unsigned int    GLenum;
++typedef unsigned char   GLboolean;
++typedef unsigned int    GLuint;
++typedef int             GLint;
++typedef int             GLsizei;
++typedef float           GLfloat;
++typedef struct __GLsync *GLsync;
++#ifndef GL_UNSIGNED_INT
++#define GL_UNSIGNED_INT 0x1405
++#endif
++#else // GLSL_BUILDTOOL
++
+ #if defined( __LINT__ )
+ #	include <GL/gl.h>
+ #elif defined( _WIN32 )
+@@ -614,3 +633,5 @@
+ extern PFNGLQUERYCOUNTERPROC qglQueryCounter;
+ extern PFNGLGETQUERYOBJECTI64VPROC qglGetQueryObjecti64v;
+ extern PFNGLGETQUERYOBJECTUI64VPROC qglGetQueryObjectui64v;
++
++#endif // GLSL_BUILDTOOL
