@@ -43,8 +43,11 @@ LIBRETRO_FLYCASTVL_EXTRA_ARGS += FORCE_GLES=1 ARCH=arm64 LDFLAGS=-lrt
 endif
 
 define LIBRETRO_FLYCASTVL_BUILD_CMDS
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile \
-		platform="$(LIBRETRO_FLYCASTVL_PLATFORM)" $(LIBRETRO_FLYCASTVL_EXTRA_ARGS) \
+    $(TARGET_CONFIGURE_OPTS) $(MAKE) \
+        CC="$(TARGET_CC) -Wno-error=implicit-function-declaration" \
+        CXX="$(TARGET_CXX) -Wno-error=implicit-function-declaration" \
+        -C $(@D)/ -f Makefile \
+        platform="$(LIBRETRO_FLYCASTVL_PLATFORM)" $(LIBRETRO_FLYCASTVL_EXTRA_ARGS) \
         GIT_VERSION="-$(shell echo $(LIBRETRO_FLYCASTVL_VERSION) | cut -c 1-7)"
 endef
 
@@ -52,7 +55,7 @@ define LIBRETRO_FLYCASTVL_INSTALL_TARGET_CMDS
 	$(INSTALL) -D $(@D)/flycast_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/flycastvl_libretro.so
 	mkdir -p $(TARGET_DIR)/usr/share/libretro/info
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/retroarch/libretro/libretro-flycastvl/flycastvl_libretro.info \
+	cp $(LIBRETRO_FLYCASTVL_PKGDIR)/flycastvl_libretro.info \
 		$(TARGET_DIR)/usr/share/libretro/info/
 endef
 
