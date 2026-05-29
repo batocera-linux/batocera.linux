@@ -45,5 +45,17 @@ SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
 SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
 
+# Dear_ImGui_FontEmbed is a build-time code generator. When cross-compiling
+# (e.g. aarch64 host -> x86_64 target) the binary built with the target
+# toolchain cannot be executed on the build host, so pre-build it with the
+# host compiler and tell CMake to import it (see 0001-imgui-renderer-*.patch).
+define SHADPS4_BUILD_HOST_FONTEMBED
+	$(HOSTCXX) -O2 -o $(@D)/host-dear-imgui-fontembed \
+		$(@D)/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp
+endef
+SHADPS4_PRE_CONFIGURE_HOOKS += SHADPS4_BUILD_HOST_FONTEMBED
+
+SHADPS4_CONF_OPTS += -DDear_ImGui_FontEmbed_EXECUTABLE=$(BUILD_DIR)/shadps4-$(SHADPS4_VERSION)/host-dear-imgui-fontembed
+
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
