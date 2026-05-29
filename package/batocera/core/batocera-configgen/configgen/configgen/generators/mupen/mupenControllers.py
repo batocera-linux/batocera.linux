@@ -8,11 +8,12 @@ from .mupenPaths import MUPEN_SYSTEM_MAPPING, MUPEN_USER_MAPPING
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...controller import Controller, Controllers
     from ...Emulator import Emulator
     from ...input import Input, InputMapping
     from ...types import DeviceInfoMapping
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 # Must read :
 # http://mupen64plus.org/wiki/index.php?title=Mupen64Plus_Plugin_Parameters

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ...batoceraPaths import BIOS, ES_GAMES_METADATA, ROMS, ensure_parents_and_open
 from ...gun import Guns, guns_need_crosses
 from ...utils import metadata as _metadataUtils, videoMode
-from ...utils.configparser import CaseSensitiveConfigParser
 
 if TYPE_CHECKING:
     from collections.abc import Callable

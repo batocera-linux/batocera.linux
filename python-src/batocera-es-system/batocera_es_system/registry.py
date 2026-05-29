@@ -7,10 +7,12 @@ from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, ReadOnly, Self, TypedDict, Unpack, cast
 
-from batocera_es_system.shared import ConfiggenDefaults, safe_dump_yaml12, safe_load_yaml12
+from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
+
+    from batocera_es_system.shared import ConfiggenDefaults
 
 
 class KeysActionBase(TypedDict):
@@ -394,7 +396,8 @@ class _FileInfoBase[I: CoreInfoDict | EmulatorInfoDict](_BaseInfo[I]):
 
     def load_extensions(self, extensions: Iterable[Path], /) -> None:
         for extension in extensions:
-            self.extend(safe_load_yaml12(extension, I))
+            if extension_data := safe_load_yaml12(extension, I):
+                self.extend(extension_data)
 
     def extend(self, extension: I, /) -> None:
         super(_FileInfoBase, self).extend(extension)
@@ -576,7 +579,7 @@ class RegistryInfo[T: EmulatorInfo | CoreInfo]:
     info: T
 
     def extend(self, extension: Path, /) -> None:
-        self.info.extend(safe_load_yaml12(extension, Any))
+        self.info.extend(safe_load_yaml12(extension, Any) or {})
 
     def register(self, dest: Path, /) -> None:
         info_dict = self.info._to_dict()
@@ -736,12 +739,12 @@ class Registry:
 
         for emulator_name, emulator in emulators.items():
             for extension in extensions.get(emulator_name, []):
-                emulator.extend(safe_load_yaml12(extension, EmulatorInfoDict))
+                emulator.extend(safe_load_yaml12(extension, EmulatorInfoDict) or {})
 
         for emulator_name, emulator_cores in cores.items():
             for core_name, core in emulator_cores.items():
                 for extension in core_extensions.get(emulator_name, {}).get(core_name, []):
-                    core.extend(safe_load_yaml12(extension, CoreInfoDict))
+                    core.extend(safe_load_yaml12(extension, CoreInfoDict) or {})
 
         return cls(_emulators=emulators, _cores=cores)
 

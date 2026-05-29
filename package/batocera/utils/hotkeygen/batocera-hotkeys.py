@@ -1,19 +1,24 @@
 #!/usr/bin/env python3
 
+from __future__ import annotations
+
 import argparse
-import evdev
-from evdev import ecodes
-import pyudev
-import select
 import datetime
-import sys
+import json
 import os
 import re
+import select
+import sys
 from pathlib import Path
-import json
+
+import evdev
+import pyudev
+from evdev import ecodes
+
+from batocera_common.paths import CONFIGS
 
 DEVICES_EXCLUSION = ["batocera hotkeys"]
-CONFIG_USERDIR = Path("/userdata/system/configs/hotkeygen")
+CONFIG_USERDIR = CONFIGS / "hotkeygen"
 CONFIG_SYSTEMDIR = Path("/usr/share/hotkeygen")
 HOTKEYGEN_MAPPING = Path("/etc/hotkeygen/default_mapping.conf")
 

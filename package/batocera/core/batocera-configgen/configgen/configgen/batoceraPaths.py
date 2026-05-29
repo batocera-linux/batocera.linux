@@ -9,26 +9,29 @@ if TYPE_CHECKING:
     from collections.abc import Generator
     from io import BufferedRandom, BufferedWriter, TextIOWrapper
 
-BATOCERA_SHARE_DIR: Final = Path('/usr/share/batocera')
+from batocera_common.paths import (
+    BATOCERA_CONF as BATOCERA_CONF,
+    BATOCERA_SHARE_DIR as BATOCERA_SHARE_DIR,
+    BIOS as BIOS,
+    CACHE as CACHE,
+    CHEATS as CHEATS,
+    CONFIGS as CONFIGS,
+    HOME as HOME,
+    LOGS as LOGS,
+    OVERLAYS as OVERLAYS,
+    RECORDINGS as RECORDINGS,
+    ROMS as ROMS,
+    SAVES as SAVES,
+    SCREENSHOTS as SCREENSHOTS,
+    USERDATA as USERDATA,
+)
+
 DATAINIT_DIR: Final = BATOCERA_SHARE_DIR / 'datainit'
-USERDATA: Final = Path('/userdata')
 
 HOME_INIT: Final = DATAINIT_DIR / 'system'
 CONF_INIT: Final = HOME_INIT / 'configs'
 
-HOME: Final = USERDATA / 'system'
-CONFIGS: Final = HOME / 'configs'
 EVMAPY: Final = CONFIGS / 'evmapy'
-SAVES: Final = USERDATA / 'saves'
-SCREENSHOTS: Final = USERDATA / 'screenshots'
-RECORDINGS: Final = USERDATA / 'recordings'
-BIOS: Final = USERDATA / 'bios'
-OVERLAYS: Final = USERDATA / 'overlays'
-CACHE: Final = HOME / 'cache'
-ROMS: Final = USERDATA / 'roms'
-CHEATS: Final = USERDATA / 'cheats'
-LOGS: Final = HOME / 'logs'
-BATOCERA_CONF: Final = HOME / 'batocera.conf'
 
 USER_ES_DIR: Final = CONFIGS / 'emulationstation'
 BATOCERA_ES_DIR: Final = Path('/usr/share/emulationstation')

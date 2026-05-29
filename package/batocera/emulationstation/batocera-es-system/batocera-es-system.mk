@@ -13,7 +13,7 @@ HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR=$(BR2_EXTERNAL_BATOCERA_PATH)/python-src
 HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR_RSYNC_EXCLUSIONS=--exclude=".*" --exclude="**/__pycache__/" --exclude="dist"
 HOST_BATOCERA_ES_SYSTEM_SOURCE=
 HOST_BATOCERA_ES_SYSTEM_SETUP_TYPE=hatch
-HOST_BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python-pyyaml host-python-ruamel-yaml host-python-typing-extensions
+HOST_BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python-batocera-common
 
 $(eval $(call register,_shared.emulator.yml _global.emulator.yml lexaloffle.emulator.yml sh.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,tdp._shared.emulator.yml))

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """
 LED Service Daemon for handheld devices
 Show battery level and retroachievements through LED controllers
@@ -31,17 +32,25 @@ SSH into Batocera and type the 3 commands:
    chmod +x /userdata/system/configs/emulationstation/scripts/achievements/leds.sh
 
 """
+from __future__ import annotations
+
 import os
-import time
 import sys
-import glob
-import batoled
+import time
 from threading import Thread
+from typing import TYPE_CHECKING
+
+import batoled
+
+from batocera_common.paths import CONFIGS
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 DEBUG = 0
 CHECK_INTERVAL  = 3  # seconds between two checks
 LED_CHANGE_TIME = 120 # seconds to prevent changes while entering the settings menu
-CONFIG_FILE='/userdata/system/configs/leds.conf'
+CONFIG_FILE = CONFIGS / 'leds.conf'
 BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
@@ -69,10 +78,10 @@ def read_color(tempval, configlist):
     return 0
 
 # Load the config file to memory
-def load_config(fname):
-    newconfig = []
+def load_config(fname: Path) -> list[str]:
+    newconfig: list[str] = []
     try:
-        with open(fname, "r") as fp:
+        with fname.open() as fp:
             for curline in fp:
                 if not curline:
                     continue
@@ -168,7 +177,7 @@ def color_changes_allowed():
 
 # argument: start, stop, or no argument = show battery %
 PATH = check_support()
-if PATH == None:
+if PATH is None:
     exit()
 if len(sys.argv)>1:
     led = batoled.led()

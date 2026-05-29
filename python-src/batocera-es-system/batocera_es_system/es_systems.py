@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.yaml import safe_load_yaml
 from batocera_es_system.shared import (
     SystemDict,
     SystemsData,
     SystemsDataMapping,
     peekable,
     protect_xml,
-    safe_load_yaml,
     to_xml_attribute,
     wrap_tag,
     write_xml,
@@ -128,7 +128,7 @@ def _systems_data_to_xml(
 
 
 def load_es_systems(es_systems_yml: Path, /) -> SystemsData:
-    systems_data = safe_load_yaml(es_systems_yml, SystemsData)
+    systems_data = safe_load_yaml(es_systems_yml, SystemsData) or {}
     return dict(sorted(systems_data.items(), key=lambda x: x[0]))
 
 

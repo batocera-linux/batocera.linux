@@ -7,6 +7,8 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import (
     BIOS,
@@ -20,7 +22,6 @@ from ...batoceraPaths import (
 )
 from ...controller import Controllers, generate_sdl_game_controller_config, write_sdl_controller_db
 from ...utils import vulkan
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:
