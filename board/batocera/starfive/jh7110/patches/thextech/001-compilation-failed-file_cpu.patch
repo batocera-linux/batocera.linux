@@ -1,0 +1,12 @@
+diff --git a/lib/CrashHandler/crash_handler.cpp b/lib/CrashHandler/crash_handler.cpp
+index 18818e9..959260c 100644
+--- a/lib/CrashHandler/crash_handler.cpp
++++ b/lib/CrashHandler/crash_handler.cpp
+@@ -195,7 +195,6 @@ static const char *g_messageToUser =
+     "================================================" OS_NEWLINE
+     V_FILE_DESC "\n"
+     "- Version:           " V_FILE_VERSION V_FILE_RELEASE OS_NEWLINE
+-    "- Architecture:      " FILE_CPU OS_NEWLINE
+     "- Operating system:  " OPERATION_SYSTEM OS_NEWLINE
+     "- GIT Revision code: #" V_BUILD_VER OS_NEWLINE
+     "- GIT branch:        " V_BUILD_BRANCH OS_NEWLINE
