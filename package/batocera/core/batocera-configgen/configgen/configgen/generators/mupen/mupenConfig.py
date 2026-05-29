@@ -6,10 +6,11 @@ from ...batoceraPaths import BIOS, SCREENSHOTS
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_SAVES
 
 if TYPE_CHECKING:
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...controller import Controllers
     from ...Emulator import Emulator
     from ...types import Resolution
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 
 def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, controllers: Controllers, gameResolution: Resolution):

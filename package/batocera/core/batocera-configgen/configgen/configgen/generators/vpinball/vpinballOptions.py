@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...Emulator import Emulator
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 
 def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulator) -> None:

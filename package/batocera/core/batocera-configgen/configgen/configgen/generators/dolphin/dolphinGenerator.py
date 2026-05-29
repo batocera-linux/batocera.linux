@@ -5,10 +5,11 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ...utils import vulkan
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import dolphinControllers, dolphinSYSCONF
 from .dolphinPaths import (

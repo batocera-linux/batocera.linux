@@ -7,7 +7,7 @@
 HOTKEYGEN_VERSION = 1.1
 HOTKEYGEN_LICENSE = GPL
 HOTKEYGEN_SOURCE=
-HOTKEYGEN_DEPENDENCIES = python-pyudev python-evdev
+HOTKEYGEN_DEPENDENCIES = python-pyudev python-evdev python-batocera-common
 
 HOTKEYGEN_PATH = $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/hotkeygen
 

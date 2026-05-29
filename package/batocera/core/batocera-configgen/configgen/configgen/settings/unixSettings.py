@@ -7,7 +7,7 @@ import typing
 from dataclasses import InitVar, dataclass, field
 from pathlib import Path
 
-from ..utils.configparser import CaseSensitiveConfigParser
+from batocera_common.configparser import CaseSensitiveConfigParser
 
 if typing.TYPE_CHECKING:
     from _typeshed import StrPath

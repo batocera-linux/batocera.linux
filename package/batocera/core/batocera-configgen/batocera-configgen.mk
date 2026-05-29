@@ -8,14 +8,13 @@ BATOCERA_CONFIGGEN_LICENSE = GPL
 BATOCERA_CONFIGGEN_SOURCE=
 BATOCERA_CONFIGGEN_SETUP_TYPE = hatch
 BATOCERA_CONFIGGEN_DEPENDENCIES = \
-	python-pyyaml \
+	python-batocera-common \
 	python-toml \
 	python-evdev \
 	python-pyudev \
 	python3-configobj \
 	ffmpeg-python \
 	python-pillow \
-	python-ruamel-yaml \
 	python-requests \
 	python-qrcode \
 	pysdl2

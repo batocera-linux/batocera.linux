@@ -3,9 +3,10 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ...batoceraPaths import ensure_parents_and_open
 from ...utils import vulkan
-from ...utils.configparser import CaseSensitiveConfigParser
 from .ppssppPaths import PPSSPP_PSP_SYSTEM_DIR
 
 if TYPE_CHECKING:

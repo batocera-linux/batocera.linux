@@ -5,8 +5,9 @@ import logging
 import re
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ...exceptions import BatoceraException
-from ...utils.configparser import CaseSensitiveConfigParser
 from .dolphinPaths import DOLPHIN_CONFIG
 
 if TYPE_CHECKING:

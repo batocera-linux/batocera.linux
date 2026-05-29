@@ -2,12 +2,21 @@
 name = "batocera-linux"
 version = "44.dev0"
 requires-python = "==3.14.5"
-dependencies = ["batocera-configgen", "batocera-es-system"]
+dependencies = [
+    "batocera-common",
+    "batocera-configgen",
+    "batocera-es-system"
+]
 
 [dependency-groups]
 dev = [
-    'ruff==0.15.14',
-    'pyright[nodejs]==1.1.409',
+    "ruff==0.15.14",
+    "pyright[nodejs]==1.1.409",
+    "pytest>=9.0.2",
+    "pytest-mock>=3.15.1",
+    "pytest-cov>=7.0.0",
+    "pytest-xdist>=3.8.0",
+    "coverage[toml]>=7.13.4",
 ]
 
 [tool.uv]
@@ -30,6 +39,7 @@ constraint-dependencies = [
 ]
 
 [tool.uv.sources]
+batocera-common = { workspace = true }
 batocera-configgen = { workspace = true }
 batocera-es-system = { workspace = true }
 
@@ -126,6 +136,6 @@ ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
-known-first-party = ["configgen", "batocera_es_system"]
+known-first-party = ["batocera_common", "configgen", "batocera_es_system"]
 combine-as-imports = true
 required-imports = ["from __future__ import annotations"]

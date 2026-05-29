@@ -3,15 +3,17 @@ from __future__ import annotations
 import logging
 import re
 import shutil
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from ruamel.yaml import YAML
+
+from batocera_common.configparser import CaseSensitiveConfigParser
+from batocera_common.yaml import safe_load_yaml12
 
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, configure_emulator, mkdir_if_not_exists
 from ...exceptions import BatoceraException
 from ...utils import vulkan
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import rpcs3Controllers
 from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG
@@ -60,9 +62,7 @@ class Rpcs3Generator(Generator):
         # Generate a default config if it doesn't exist otherwise just open the existing
         rpcs3ymlconfig: dict[str, dict[str, Any]] = {}
         if RPCS3_CONFIG.is_file():
-            with RPCS3_CONFIG.open("r") as stream:
-                yaml = YAML(typ='safe', pure=True)
-                rpcs3ymlconfig = cast('dict[str, dict[str, Any]]', yaml.load(stream) or {})
+            rpcs3ymlconfig = safe_load_yaml12(RPCS3_CONFIG, dict[str, dict[str, Any]]) or {}
 
         # Add Nodes if not in the file
         if "Core" not in rpcs3ymlconfig:

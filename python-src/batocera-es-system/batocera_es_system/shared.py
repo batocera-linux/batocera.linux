@@ -3,10 +3,9 @@ from __future__ import annotations
 from collections import deque
 from dataclasses import InitVar, dataclass, field
 from typing import TYPE_CHECKING, Any, Final, NotRequired, Self, overload
-from typing_extensions import Sentinel, TypedDict, TypeForm
+from typing_extensions import Sentinel, TypedDict
 
-import ruamel.yaml
-import yaml
+from batocera_common.yaml import safe_load_yaml
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping
@@ -73,26 +72,6 @@ def get_deep_value(mapping: Mapping[str, Any], first_key: str, /, *keys: str) ->
             return MISSING
 
     return result
-
-
-def safe_load_yaml12[T](file: Path, type: TypeForm[T], /) -> T:
-    yml = ruamel.yaml.YAML(typ='safe', pure=True)
-    with file.open() as f:
-        return yml.load(f)  # pyright: ignore
-
-
-def safe_dump_yaml12(data: object, file: Path, /) -> None:
-    yaml = ruamel.yaml.YAML(typ='safe', pure=True)
-    yaml.default_flow_style = False
-    yaml.sort_base_mapping_type_on_output = False  # pyright: ignore
-    yaml.map_indent = 2
-    yaml.sequence_indent = 4
-    yaml.sequence_dash_offset = 2
-    yaml.dump(data, file)  # pyright: ignore
-
-
-def safe_load_yaml[T](file: Path, type: TypeForm[T], /) -> T:
-    return yaml.safe_load(file.read_text())
 
 
 def write_xml(file: Path, root: str, lines: Iterable[str], /) -> None:
@@ -202,7 +181,7 @@ class ConfiggenDefaults:
     @classmethod
     def for_defaults(cls, defaults: Path, arch_defaults: Path, /) -> Self:
         return cls(
-            safe_load_yaml(defaults, dict[str, DefaultDict]),
+            safe_load_yaml(defaults, dict[str, DefaultDict]) or {},
             safe_load_yaml(arch_defaults, dict[str, DefaultDict] | None) or {},
         )
 

@@ -4,11 +4,12 @@ from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import BIOS, CONFIGS, ensure_parents_and_open
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
 from ...exceptions import BatoceraException
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:

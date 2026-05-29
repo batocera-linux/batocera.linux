@@ -168,6 +168,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_BATOCERA_ES_WEB_UI		# emulationstation web ui
 	select BR2_PACKAGE_ES_THEME_CARBON		# emulationstation theme
 	select BR2_PACKAGE_ES_BACKGROUND_MUSICS		# emulationstation musics
+	select BR2_PACKAGE_PYTHON_BATOCERA_COMMON	# common python functionality
 	select BR2_PACKAGE_BATOCERA_ES_SYSTEM		# emulation station es_systems.cfg generator + default roms
 	select BR2_PACKAGE_BATOCERA_CONFIGGEN		# emulation station external command launcher
 	select BR2_PACKAGE_BATOCERA_TRIGGERHAPPY	# multimedia/power buttons
