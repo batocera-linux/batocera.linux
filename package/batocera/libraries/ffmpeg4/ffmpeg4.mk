@@ -20,6 +20,7 @@ FFMPEG4_CPE_ID_VENDOR = ffmpeg
 
 FFMPEG4_CONF_OPTS = \
 	--prefix=/usr \
+	--extra-cflags="-Wno-error=incompatible-pointer-types" \
     --incdir=/usr/include/ffmpeg4.4 \
     --libdir=/usr/lib/ffmpeg4.4 \
 	--enable-avfilter \
