@@ -25,7 +25,7 @@ OPENJK_LICENSE = GPL-2.0 license
 OPENJK_LICENSE_FILE = LICENSE.txt
 OPENJK_EMULATOR_INFO = openjk.emulator.yml
 
-OPENJK_DEPENDENCIES += host-openjk libjpeg-bato libpng sdl2 zlib
+OPENJK_DEPENDENCIES += libjpeg-bato libpng sdl2 zlib
 
 OPENJK_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 OPENJK_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
@@ -35,16 +35,27 @@ OPENJK_CONF_OPTS += -DBuildJK2SPEngine=ON
 OPENJK_CONF_OPTS += -DBuildJK2SPGame=ON
 OPENJK_CONF_OPTS += -DBuildJK2SPRdVanilla=ON
 
-HOST_OPENJK_DEPENDENCIES = mesa3d
+# compact_glsl is a build-time code generator (it embeds .glsl shader files
+# into a C++ source file). When cross-compiling, the binary built with the
+# target toolchain cannot be executed on the build host, so pre-build it
+# with the host compiler and tell CMake to import it via the cache variable
+# added in 001-cross-compile.patch.
+OPENJK_COMPACT_GLSL_BIN = $(@D)/host-compact_glsl
+OPENJK_COMPACT_GLSL_SRCS = \
+	$(@D)/codemp/rd-rend2/glsl/compact.cpp \
+	$(@D)/codemp/rd-rend2/tr_allocator.cpp \
+	$(@D)/codemp/rd-rend2/tr_glsl_parse.cpp
 
-HOST_OPENJK_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-HOST_OPENJK_CONF_OPTS += -DCMAKE_FIND_ROOT_PATH="$(HOST_DIR);$(STAGING_DIR)"
-HOST_OPENJK_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
-HOST_OPENJK_CONF_OPTS += -DUseInternalSDL2=ON
-HOST_OPENJK_CONF_OPTS += -DUseInternalJPEG=ON
-HOST_OPENJK_CONF_OPTS += -DUseInternalPNG=ON
+define OPENJK_BUILD_HOST_COMPACT_GLSL
+	$(HOSTCXX) -O2 -std=c++11 -DGLSL_BUILDTOOL -DNOMINMAX \
+		-DARCH_STRING='"host"' \
+		-I$(@D)/codemp -I$(@D)/codemp/rd-rend2 -I$(@D)/shared \
+		-I$(@D)/lib/gsl-lite/include \
+		-o $(OPENJK_COMPACT_GLSL_BIN) $(OPENJK_COMPACT_GLSL_SRCS)
+endef
+OPENJK_PRE_CONFIGURE_HOOKS += OPENJK_BUILD_HOST_COMPACT_GLSL
 
-HOST_OPENJK_BUILD_OPTS += --target compact_glsl
+OPENJK_CONF_OPTS += -Dcompact_glsl_EXECUTABLE=$(BUILD_DIR)/openjk-$(OPENJK_VERSION)/host-compact_glsl
 
 define OPENJK_EVMAPY
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
@@ -52,13 +63,7 @@ define OPENJK_EVMAPY
 	    $(TARGET_DIR)/usr/share/evmapy
 endef
 
-define HOST_OPENJK_INSTALL_CMDS
-	$(INSTALL) -D -m 0755 $(HOST_OPENJK_BUILDDIR)/compact_glsl \
-	    $(HOST_DIR)/usr/bin/compact_glsl
-endef
-
 OPENJK_POST_INSTALL_TARGET_HOOKS += OPENJK_EVMAPY
 
 $(eval $(cmake-package))
-$(eval $(host-cmake-package))
 $(eval $(emulator-info-package))
