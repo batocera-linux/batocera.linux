@@ -277,7 +277,9 @@ cores:
           "Off": "false"
           "On": "true"
       pcsx2_wheel_type:
-        group: WHEELS
+        order: 100
+        group: CONTROLS
+        submenu: WHEELS
         prompt: WHEEL MODEL
         description: Playstation 2 wheel type
         choices:
@@ -286,7 +288,9 @@ cores:
           GT Force: GTForce
           Virtual: Virtual
       pcsx2_crosshairs:
-        group: LIGHT GUN
+        order: 99
+        group: CONTROLS
+        submenu: LIGHT GUNS
         prompt: SHOW LIGHT GUN CROSSHAIRS
         description:
         choices:
