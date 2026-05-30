@@ -7,6 +7,7 @@
 - Anbernic RG40xx-V-v2-panel variant support
 - AYN Odin initial support
 - Mangmi Air X initial support
+- Odroid M2 initial support
 ### Added
 - Anbernic RGCubeXX device LED controller support
 - NanoBoyAdvance as an alternative GBA emulator
@@ -20,6 +21,8 @@
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Removed Libretro-Puae2021
+- Rockcip RK3588 devices moved to the mainline linux kernel:
+  CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5, Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 ### Updated
 - CDogs to 2.4.0
 - CLK to 2026-04-30
@@ -62,6 +65,7 @@
 - Nvidia 580 Legacy driver to 580.159.03
 - Qualcomm SM8550 device kernel updated to 7.0.10
 - Rockchip RK3568 device kernel updated to 7.0.10
+- Rockchip RK3588 mainline device kernel updated to 7.0.10
 - X86_64 / Zen3 kernel updated to 7.0.10
 
 # 2026/05/xx - batocera.linux 43.1
