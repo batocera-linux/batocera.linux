@@ -88,6 +88,11 @@ cores:
           Standard (4:3): 4:3
           Widescreen (16:9): 16:9
           10:7 (1.43:1 - custom): 10:7
+      pcsx2_crop_overscan:
+        submenu: DISPLAY
+        prompt: CROP OVERSCAN
+        description: Crops a small number of pixels from the screen edges to hide visual artifacts.
+        preset: switchauto
       pcsx2_deinterlacing:
         submenu: DISPLAY
         prompt: DEINTERLACING
@@ -262,6 +267,25 @@ cores:
           Maximum 2 Players (Default): 2
           Maximum 4 Players: 4
           Maximum 8 Players: 8
+      pcsx2_vuthread:
+        submenu: SPEEDHACKS
+        group: ADVANCED OPTIONS
+        prompt: MULTI-THREADED VU1
+        description: Runs VU1 emulation on a separate thread to improve performance on multi-core CPUs. May cause issues in some games.
+        preset: switchauto
+      pcsx2_eecyclerate:
+        submenu: SPEEDHACKS
+        group: ADVANCED OPTIONS
+        prompt: EE CYCLE RATE
+        description: Adjusts the emulated PS2 CPU speed. Lower or higher values may improve performance or game speed, but may cause issues.
+        choices:
+          "50%": -3
+          "60%": -2
+          "75%": -1
+          "100%(Default)": 0
+          "130%": 1
+          "180%": 2
+          "300%": 3
       pcsx2_texture_replacements:
         group: ADVANCED OPTIONS
         prompt: TEXTURE REPLACEMENTS
