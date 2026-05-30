@@ -68,7 +68,7 @@
 - Rockchip RK3588 mainline device kernel updated to 7.0.10
 - X86_64 / Zen3 kernel updated to 7.0.10
 
-# 2026/05/xx - batocera.linux 43.1
+# 2026/05/30 - batocera.linux 43.1
 ### Fixed
 - EmultationStation for missing systems / collections disappearing
 - LR-Dolphin options broken
@@ -80,6 +80,7 @@
 - theXtech missing assets
 - Extensions for Dolphin with Triforce
 - CUDA support for the Nvida 580.x driver for WINE and Lindbergh Loader support
+- rpcs3 game exit (sometimes was blocked)
 
 # 2026/05/08 - batocera.linux 43 - Glasswing
 ### Special Notes
