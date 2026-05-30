@@ -313,6 +313,10 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     if not pcsx2INIConfig.has_section("EmuCore/GS"):
         pcsx2INIConfig.add_section("EmuCore/GS")
 
+    ## [EMUCORE/Speedhacks]
+    if not pcsx2INIConfig.has_section("EmuCore/Speedhacks"):
+        pcsx2INIConfig.add_section("EmuCore/Speedhacks")
+
     # Renderer
     # Check Vulkan first to be sure
     if vulkan.is_available():
@@ -408,12 +412,26 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
     # OSD Performance Position
     pcsx2INIConfig.set("EmuCore/GS", "OsdPerformancePos", system.config.get("pcsx2_osd_performance_position", "0"))
 
+    # Crop Overscan
+    cropOverscan = "3" if system.config.get_bool("pcsx2_overscan") else "0"
+
+    pcsx2INIConfig.set("EmuCore/GS", "CropLeft", cropOverscan)
+    pcsx2INIConfig.set("EmuCore/GS", "CropTop", cropOverscan)
+    pcsx2INIConfig.set("EmuCore/GS", "CropRight", cropOverscan)
+    pcsx2INIConfig.set("EmuCore/GS", "CropBottom", cropOverscan)
+
     # TV Shader
     pcsx2INIConfig.set("EmuCore", "TVShader", system.config.get("pcsx2_shaderset", "0"))
 
     pcsx2INIConfig.set("EmuCore", "AutoIncrementSlot", system.config.get_bool('incrementalsavestates', True, return_values=("true", "false")))
 
     pcsx2INIConfig.set("EmuCore", "SaveStateOnShutdown", system.config.get_bool('autosave', return_values=("true", "false")))
+
+    # VU thread speedhack
+    pcsx2INIConfig.set("EmuCore/Speedhacks", "vuThread", system.config.get_bool("pcsx2_vuthread", return_values=("true", "false")))
+
+    # EE Cycle Rate speedhack
+    pcsx2INIConfig.set("EmuCore/Speedhacks", "EECycleRate", system.config.get("pcsx2_eecyclerate", "0"))
 
     ## [InputSources]
     if not pcsx2INIConfig.has_section("InputSources"):
