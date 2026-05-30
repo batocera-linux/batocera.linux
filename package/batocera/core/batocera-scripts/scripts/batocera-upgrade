@@ -115,19 +115,29 @@ if [ "$1" == "manual" ]; then
 	echo "Error: Local file ${LOCAL_FILE} not found."
 	exit 1
     fi
-
+    
     # check the architecture of the local file
     LOCAL_FILE_BOARD=$(tar xf "${LOCAL_FILE}" "boot/batocera.board" -O --occurrence=1) # --occurrence=1 to stop at first occurrence for perf
     echo "Using local file board: ${LOCAL_FILE_BOARD}"
     if test "${LOCAL_FILE_BOARD}" != "${board}"
     then
-	if test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${board}" = "x86_64-v3"
-	then
-	    echo "Migrating board from ${board} to ${LOCAL_FILE_BOARD}"
-	else
-	    echo "Error:Local file board: ${LOCAL_FILE_BOARD} is different from ${board}"
-	    exit 1
-	fi
+        # Check if migrating either way between x86_64 and x86_64-v3
+        if { test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${board}" = "x86_64-v3"; } || { test "${LOCAL_FILE_BOARD}" = "x86_64-v3" -a "${board}" = "x86_64"; }
+        then
+            echo "Migrating board from ${board} to ${LOCAL_FILE_BOARD}"
+        else
+            echo "Warning: Local file board (${LOCAL_FILE_BOARD}) is different from current board (${board})"
+            read -r -p "Do you want to proceed anyway? (y/N): " response
+            case "${response}" in
+                [yY][eE][sS]|[yY])
+                    echo "Proceeding..."
+                    ;;
+                *)
+                    echo "Aborting."
+                    exit 1
+                    ;;
+            esac
+        fi
     fi
 else
     # download directory
