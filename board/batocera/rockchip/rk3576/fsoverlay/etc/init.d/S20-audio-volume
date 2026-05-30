@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    amixer -c 0 cset name='Output 1 Playback Volume' 36 > /dev/null 2>&1
+    amixer -c 0 cset name='Output 2 Playback Volume' 36 > /dev/null 2>&1
+    ;;
+  stop|restart|reload|force-reload)
+    # Nothing to do here
+    ;;
+  *)
+    echo "Usage: $0 start" >&2
+    exit 3
+    ;;
+esac
+
+exit 0

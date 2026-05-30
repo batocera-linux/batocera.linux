@@ -1,0 +1,13 @@
+diff --git a/drivers/power/supply/cw221x_battery.c b/drivers/power/supply/cw221x_battery.c
+index 2ffdab3..c26fac7 100644
+--- a/drivers/power/supply/cw221x_battery.c
++++ b/drivers/power/supply/cw221x_battery.c
+@@ -28,7 +28,7 @@ MODULE_PARM_DESC(debug, "Set to one to enable debugging messages.");
+ 			pr_info("FG_CW221X: %s-%d:" fmt, __func__, __LINE__, ##arg);	\
+ 	}
+ 
+-#define CW_PROPERTIES "bat-cw221X"
++#define CW_PROPERTIES "battery"
+ 
+ #define REG_CHIP_ID		0x00
+ #define REG_VCELL_H		0x02

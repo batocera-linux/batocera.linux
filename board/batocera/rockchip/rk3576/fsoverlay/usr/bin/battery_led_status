@@ -1,0 +1,127 @@
+#!/bin/sh
+#
+# Battery LED status monitor for Anbernic RG Vita Pro devices (Modified for Amber LED)
+# Written by dmanlfc for the Batocera project
+#
+# Green/Red/Amber status LEDs:
+#   Green  = normal (>20%)
+#   Amber  = warning (<=20% and >10%)
+#   Red    = low battery (<=10%)
+#   Flash Red = critical battery (<=5%)
+#   Flash Amber = fake suspend active
+#   Flash Green = fake suspend charging
+#   Flash Red = fake suspend critical battery (<=10%)
+#   Flash Green = charging (>20%)
+#
+
+LED_GREEN="/sys/class/leds/green:power"
+LED_RED="/sys/class/leds/red:status"
+LED_AMBER="/sys/class/leds/amber:charging"
+
+# Auto-detect battery and charger nodes
+BAT=$(find /sys/class/power_supply/ -name "*battery*" -o -name "BAT*" | head -n 1)
+CHG=$(find /sys/class/power_supply/ -name "*charger*" -o -name "*usb*" -o -name "ac" | head -n 1)
+
+THRESHOLD_WARNING=${THRESHOLD_WARNING:-20}
+THRESHOLD_LOW=${THRESHOLD_LOW:-10}
+THRESHOLD_CRITICAL=${THRESHOLD_CRITICAL:-5}
+POLL_INTERVAL=${POLL_INTERVAL:-1}
+
+get_setting() {
+  batocera-settings-get "$1" 2>/dev/null
+}
+
+# Updated to control green, red, and amber LEDs
+set_led() {
+  local g=${1} r=${2} a=${3:-0}
+  echo "${g}" > "${LED_GREEN}/brightness"
+  echo "${r}" > "${LED_RED}/brightness"
+  echo "${a}" > "${LED_AMBER}/brightness"
+}
+
+led_green()  { set_led 1 0 0; }  # normal
+led_red()    { set_led 0 1 0; }  # low
+led_orange() { set_led 0 0 1; }  # warning (uses physical amber)
+led_off()    { set_led 0 0 0; }  # off
+
+led_blink_red() {
+  local cur
+  cur=$(cat "${LED_RED}/brightness")
+  if [ "${cur}" = "0" ]; then
+    set_led 0 1 0
+  else
+    set_led 0 0 0
+  fi
+}
+
+led_blink_green() {
+  local cur
+  cur=$(cat "${LED_GREEN}/brightness")
+  if [ "${cur}" = "0" ]; then
+    set_led 1 0 0
+  else
+    set_led 0 0 0
+  fi
+}
+
+led_blink_orange() {
+  local cur
+  cur=$(cat "${LED_AMBER}/brightness")
+  if [ "${cur}" = "0" ]; then
+    set_led 0 0 1
+  else
+    set_led 0 0 0
+  fi
+}
+
+get_state() {
+  local capacity=${1}
+  if   [ "${capacity}" -le "${THRESHOLD_CRITICAL}" ]; then
+    echo "blink_red"
+  elif [ "${capacity}" -le "${THRESHOLD_LOW}" ]; then
+    echo "red"
+  elif [ "${capacity}" -le "${THRESHOLD_WARNING}" ]; then
+    echo "orange"
+  else
+    echo "green"
+  fi
+}
+
+PREV_STATE=""
+
+while true; do
+  CAP=$(cat "${BAT}/capacity")
+  ONLINE=$(cat "${CHG}/online")
+  STATE=$(get_state "${CAP}")
+
+  if [ "${ONLINE}" = "1" ]; then
+    # Charging — slow blinking green
+    STATE="blink_green"
+  fi
+
+  # Fake suspend overrides
+  if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
+    if [ "${CAP}" -le "${THRESHOLD_LOW}" ]; then
+      STATE="blink_red"
+    elif [ "${ONLINE}" = "1" ]; then
+      STATE="blink_green"
+    else
+      STATE="blink_orange"
+    fi
+  fi
+
+  # If in a blinking state, bypass the state-change block to toggle the LEDs on each tick
+  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" = "blink_green" ] || [ "${STATE}" = "blink_orange" ] || [ "${STATE}" != "${PREV_STATE}" ]; then
+    case ${STATE} in
+      green)        led_green        ;;
+      orange)       led_orange       ;;
+      red)          led_red          ;;
+      blink_red)    led_blink_red    ;;
+      blink_green)  led_blink_green  ;;
+      blink_orange) led_blink_orange ;;
+    esac
+    PREV_STATE="${STATE}"
+  fi
+
+  sleep ${POLL_INTERVAL}
+done

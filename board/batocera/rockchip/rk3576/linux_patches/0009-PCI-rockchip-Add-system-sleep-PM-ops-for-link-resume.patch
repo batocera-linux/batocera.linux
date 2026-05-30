@@ -1,0 +1,88 @@
+--- a/drivers/pci/controller/dwc/pcie-dw-rockchip.c
++++ b/drivers/pci/controller/dwc/pcie-dw-rockchip.c
+@@ -707,6 +707,75 @@
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_PM_SLEEP
++static int rockchip_pcie_suspend_noirq(struct device *dev)
++{
++	struct rockchip_pcie *rockchip = dev_get_drvdata(dev);
++
++	rockchip_pcie_disable_ltssm(rockchip);
++	clk_bulk_disable_unprepare(rockchip->clk_cnt, rockchip->clks);
++	rockchip_pcie_phy_deinit(rockchip);
++
++	return 0;
++}
++
++static int rockchip_pcie_resume_noirq(struct device *dev)
++{
++	struct rockchip_pcie *rockchip = dev_get_drvdata(dev);
++	struct dw_pcie *pci = &rockchip->pci;
++	int ret;
++	u32 val;
++
++	ret = rockchip_pcie_phy_init(rockchip);
++	if (ret)
++		return ret;
++
++	ret = reset_control_deassert(rockchip->rst);
++	if (ret)
++		goto err_phy_deinit;
++
++	ret = clk_bulk_prepare_enable(rockchip->clk_cnt, rockchip->clks);
++	if (ret)
++		goto err_phy_deinit;
++
++	/* Restore RC mode and LTSSM enhance control (lost during power-off) */
++	val = FIELD_PREP_WM16(PCIE_LTSSM_ENABLE_ENHANCE, 1);
++	rockchip_pcie_writel_apb(rockchip, val, PCIE_CLIENT_HOT_RESET_CTRL);
++
++	rockchip_pcie_writel_apb(rockchip,
++				 PCIE_CLIENT_SET_MODE(PCIE_CLIENT_MODE_RC),
++				 PCIE_CLIENT_GENERAL_CON);
++
++	rockchip_pcie_enable_l0s(pci);
++
++	dw_pcie_setup_rc(&pci->pp);
++
++	ret = dw_pcie_start_link(pci);
++	if (ret)
++		goto err_disable_clk;
++
++	ret = dw_pcie_wait_for_link(pci);
++	if (ret)
++		goto err_stop_link;
++
++	return 0;
++
++err_stop_link:
++	dw_pcie_stop_link(pci);
++err_disable_clk:
++	clk_bulk_disable_unprepare(rockchip->clk_cnt, rockchip->clks);
++err_phy_deinit:
++	rockchip_pcie_phy_deinit(rockchip);
++
++	return ret;
++}
++
++static const struct dev_pm_ops rockchip_pcie_pm_ops = {
++	NOIRQ_SYSTEM_SLEEP_PM_OPS(rockchip_pcie_suspend_noirq,
++				  rockchip_pcie_resume_noirq)
++};
++#endif
++
+ static const struct rockchip_pcie_of_data rockchip_pcie_rc_of_data_rk3568 = {
+ 	.mode = DW_PCIE_RC_TYPE,
+ };
+@@ -742,6 +811,9 @@
+ 		.name	= "rockchip-dw-pcie",
+ 		.of_match_table = rockchip_pcie_of_match,
+ 		.suppress_bind_attrs = true,
++#ifdef CONFIG_PM_SLEEP
++		.pm	= &rockchip_pcie_pm_ops,
++#endif
+ 	},
+ 	.probe = rockchip_pcie_probe,
+ };

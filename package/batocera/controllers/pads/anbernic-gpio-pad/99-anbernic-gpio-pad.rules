@@ -3,10 +3,12 @@
 # ---------------------------------------------------------------
 
 # 1. RAW DEVICES
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-control", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add %E{DEVNAME} %s{name}"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add %E{DEVNAME} %s{name}"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add %E{DEVNAME} %s{name}"
-SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add %E{DEVNAME} %s{name}"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-control", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys-gamepad", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-keys", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="adc-joystick", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="MCU Joypad", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gamepad-keys", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/anbernic-gpio-pad-add '%E{DEVNAME}' '%s{name}'"
 
 # 2. VIRTUAL PADS
 # virtual anbernic pad
@@ -19,3 +21,5 @@ SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic RG35
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic RG35XX button pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
 # virtual anbernic rg arc pad
 SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic RG ARC pad", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"
+# virtual anbernic rg vita pro pad
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="Anbernic RG Vita Pro controller", MODE="0666", ENV{ID_INPUT_JOYSTICK}="1"

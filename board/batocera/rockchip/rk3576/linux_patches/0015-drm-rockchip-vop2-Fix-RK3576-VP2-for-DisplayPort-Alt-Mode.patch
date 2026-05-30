@@ -1,0 +1,68 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ROCKNIX <noreply@rocknix.org>
+Date: Mon, 01 Jan 2024 00:00:00 +0000
+Subject: [PATCH] drm/rockchip: vop2: Fix RK3576 VP2 for DisplayPort Alt Mode
+
+Two VOP2 fixes are required for USB-C DP Alt Mode output through VP2
+on RK3576:
+
+1. Give VP2 a primary plane.
+
+   The RK3576 VOP2 has three video ports: VP0 and VP1 each have a
+   Cluster window as their primary plane, but VP2 (the one connected to
+   the DesignWare DP controller) has only Esmart windows available, all
+   of which are typed DRM_PLANE_TYPE_OVERLAY.  The VOP2 driver requires
+   every active VP to have a DRM_PLANE_TYPE_PRIMARY plane; without one it
+   returns -ENOENT and the entire VOP2 bind fails, taking down the whole
+   display subsystem.
+
+   Promote Esmart0 to DRM_PLANE_TYPE_PRIMARY.  This is safe because:
+   - Esmart0's layer_sel_id[2] = 0 (valid VP2 layer slot)
+   - VP0 still has Cluster0 as primary and retains Esmart2 as overlay
+
+   Resulting plane assignment:
+     VP0: primary=Cluster0, overlay=Esmart2
+     VP1: primary=Cluster1, overlays=Esmart1, Esmart3
+     VP2: primary=Esmart0,  overlays=Esmart1, Esmart2, Esmart3
+
+2. Fix the VP2 pixel-clock divider for DP output.
+
+   The generic non-eDP branch in rk3576_set_intf_mux() sets
+   RK3576_DSP_IF_PCLK_DIV (BIT(20)) in the interface-control register
+   whenever port_pix_rate == 1.  VP2 has pixel_rate = 1, so this bit is
+   always asserted for DP0/DP1, halving the pixel clock delivered to the
+   DP controller.  The resulting clock mismatch produces a blank display
+   even though link training succeeds.
+
+   The existing else branch was written for HDMI/MIPI outputs on VP0/VP1
+   (pixel_rate=2), where the condition is false and the divider is
+   correctly left clear.  Add an explicit else-if for DP using the
+   existing vop2_output_if_is_dp() helper that forces if_pixclk_div to
+   zero, leaving HDMI/MIPI unchanged.
+
+Signed-off-by: ROCKNIX <noreply@rocknix.org>
+---
+ drivers/gpu/drm/rockchip/rockchip_vop2_reg.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c b/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
+--- a/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
++++ b/drivers/gpu/drm/rockchip/rockchip_vop2_reg.c
+@@ -895,7 +895,7 @@
+ 		.format_modifiers = format_modifiers,
+ 		.layer_sel_id = { 2, 0xf, 0, 0xf },
+ 		.supported_rotations = DRM_MODE_REFLECT_Y,
+-		.type = DRM_PLANE_TYPE_OVERLAY,
++		.type = DRM_PLANE_TYPE_PRIMARY,
+ 		.axi_bus_id = 0,
+ 		.axi_yrgb_r_id = 0x10,
+ 		.axi_uv_r_id = 0x11,
+@@ -1491,6 +1491,8 @@
+
+ 	if (vop2_output_if_is_edp(id))
+ 		if_pixclk_div = port_pix_rate == 2 ? RK3576_DSP_IF_PCLK_DIV : 0;
++	else if (vop2_output_if_is_dp(id))
++		if_pixclk_div = 0;
+ 	else
+ 		if_pixclk_div = port_pix_rate == 1 ? RK3576_DSP_IF_PCLK_DIV : 0;
+
