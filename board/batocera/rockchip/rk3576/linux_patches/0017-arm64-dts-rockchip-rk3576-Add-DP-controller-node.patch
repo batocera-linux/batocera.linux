@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ROCKNIX <noreply@rocknix.org>
+Date: Mon, 01 Jan 2024 00:00:00 +0000
+Subject: [PATCH] arm64: dts: rockchip: rk3576: Add DesignWare DisplayPort controller node
+
+Add the DP controller node at 0x27e40000 to the RK3576 base DTSI.
+The controller uses the USBDP combo PHY for USB-C DisplayPort Alt Mode.
+Enabling this allows boards to route VOP2 VP2 output through the DP
+controller to the USB-C port for external display output.
+
+Clock mapping (RK3576 mainline CRU):
+  apb  -> PCLK_DP0         (APB bus clock)
+  aux  -> CLK_AUX16MHZ_0   (16 MHz AUX channel clock)
+  hdcp -> ACLK_DP0          (AXI clock)
+
+Verified against ANBERNIC RG Vita Pro BSP device tree:
+  address 0x27e40000, interrupt SPI 337 level-high,
+  power domain VO1, reset SRST_DP0.
+
+A port@2 endpoint is added to the DP node's ports block so the DRM
+bridge audio framework (DRM_BRIDGE_OP_DP_AUDIO) can discover SAI7 as
+the CPU DAI via hdmi_audio_dai_port=2.  The matching endpoint is added
+to the SAI7 node to complete the OF graph.  SAI7 (0x27ed0000) shares
+the VO1 power domain with the DP controller and acts as I2S master
+delivering audio samples to the DP controller's audio sampler hardware.
+
+Signed-off-by: ROCKNIX <noreply@rocknix.org>
+---
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi | 45 +++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3576.dtsi b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+--- a/arch/arm64/boot/dts/rockchip/rk3576.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3576.dtsi
+@@ -1482,6 +1482,45 @@
+ 				};
+ 			};
+ 		};
++		dp: dp@27e40000 {
++			compatible = "rockchip,rk3576-dp";
++			reg = <0x0 0x27e40000 0x0 0x30000>;
++			interrupts = <GIC_SPI 337 IRQ_TYPE_LEVEL_HIGH>;
++			assigned-clocks = <&cru CLK_AUX16MHZ_0>;
++			assigned-clock-rates = <16000000>;
++			clocks = <&cru PCLK_DP0>, <&cru CLK_AUX16MHZ_0>,
++				 <&cru ACLK_DP0>;
++			clock-names = "apb", "aux", "hdcp";
++			phys = <&usbdp_phy PHY_TYPE_DP>;
++			power-domains = <&power RK3576_PD_VO1>;
++			resets = <&cru SRST_DP0>;
++			#sound-dai-cells = <0>;
++			status = "disabled";
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				dp0_in: port@0 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <0>;
++				};
++
++				dp0_out: port@1 {
++					#address-cells = <1>;
++					#size-cells = <0>;
++					reg = <1>;
++				};
++
++				dp0_sound_in: port@2 {
++					reg = <2>;
++					dp0_i2s_in: endpoint {
++						remote-endpoint = <&sai7_dp_out>;
++					};
++				};
++			};
++		};
+
+ 		sai7: sai@27ed0000 {
+ 			compatible = "rockchip,rk3576-sai";
+@@ -1499,6 +1538,12 @@
+ 			#sound-dai-cells = <0>;
+ 			sound-name-prefix = "SAI7";
+ 			status = "disabled";
++
++			port {
++				sai7_dp_out: endpoint {
++					remote-endpoint = <&dp0_i2s_in>;
++				};
++			};
+ 		};
+
+ 		sai8: sai@27ee0000 {

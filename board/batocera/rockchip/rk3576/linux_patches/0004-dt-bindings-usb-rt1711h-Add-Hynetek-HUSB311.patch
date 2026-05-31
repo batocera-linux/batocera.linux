@@ -1,0 +1,39 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 2/4] dt-bindings: usb: richtek,rt1711h: Add Hynetek HUSB311
+From: Alexey Charkov <alchark@flipper.net>
+Date: Wed, 11 Mar 2026 20:20:45 +0400
+Message-Id: <20260311-husb311-v1-2-f25bcb58cff7@flipper.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+HUSB311 is a pin-compatible and register-compatible drop-in replacement
+for RT1711H, so add its compatible string to the existing binding.
+
+Link: https://www.hynetek.com/uploadfiles/site/219/news/0863c0c7-f535-4f09-bacd-0440d2c21088.pdf
+Link: https://dl.xkwy2018.com/downloads/RK3588S/03_Product%20Line%20Branch_Tablet/02_Key%20Device%20Specifications/HUSB311%20introduction%2020210526.pdf
+Signed-off-by: Alexey Charkov <alchark@flipper.net>
+Link: https://www.richtek.com/assets/product_file/RT1711H/DS1711H-04.pdf
+---
+ Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml b/Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml
+index ae611f7e57ca..b24502bc8213 100644
+--- a/Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml
++++ b/Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml
+@@ -21,8 +21,10 @@ properties:
+     enum:
+       - richtek,rt1711h
+       - richtek,rt1715
++      - hynetek,husb311
+     description:
+       RT1711H support PD20, RT1715 support PD30 except Fast Role Swap.
++      HUSB311 is a rebrand of RT1711H which is pin and register compatible.
+ 
+   reg:
+     maxItems: 1
+
+-- 
+2.52.0
+

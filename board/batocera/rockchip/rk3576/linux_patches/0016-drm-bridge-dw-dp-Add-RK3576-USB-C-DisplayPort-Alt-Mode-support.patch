@@ -1,0 +1,241 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ROCKNIX <noreply@rocknix.org>
+Date: Mon, 01 Jan 2024 00:00:00 +0000
+Subject: [PATCH] drm/bridge: dw-dp: Add RK3576 USB-C DisplayPort Alt Mode and audio support
+
+Four driver changes are needed to support the DesignWare DP controller
+on RK3576 for USB-C DisplayPort Alt Mode output with embedded audio:
+
+1. Add "rockchip,rk3576-dp" to the OF match table in the Rockchip
+   platform glue driver (dw_dp-rockchip.c).
+
+2. Make the i2s and spdif clocks optional.
+
+   The RK3576 CRU does not provide i2s or spdif clocks for the DP
+   controller.  The current devm_clk_get() (mandatory) calls fail at
+   probe time with -ENOENT, preventing the bridge from registering.
+   Change both to devm_clk_get_optional() so the driver probes
+   successfully on SoCs that lack these clocks.
+
+3. Add single-pixel input mode for RK3576.
+
+   The DP controller supports three input pixel modes (PIXEL_MODE_SELECT):
+     SINGLE (0): 1 pixel per VOP2 clock cycle
+     DUAL   (1): 2 pixels per VOP2 clock cycle
+     QUAD   (2): 4 pixels per VOP2 clock cycle  <- current hard-coded default
+
+   The QUAD default is correct for RK3588, where the VOP2 comment
+   explicitly states "4 pixclk/cycle on rk3588".  On RK3576, VOP2 video
+   port 2 (VP2) has pixel_rate = 1 (single pixel per cycle).  With QUAD
+   mode the controller latches four pixels per clock while VOP2 provides
+   only one; three of every four pixel slots contain undefined data.  The
+   resulting DP stream is completely blank even though link training
+   succeeds and the CRTC reports a valid active mode.
+
+   Add a boolean field `single_pixel_mode` to `dw_dp_plat_data`.  When
+   set, dw_dp_bind() selects DW_DP_MP_SINGLE_PIXEL instead of the QUAD
+   default.  The Rockchip glue driver sets this flag via
+   of_device_is_compatible() for "rockchip,rk3576-dp"; RK3588 continues
+   to use QUAD unchanged.
+
+4. Implement DRM_BRIDGE_OP_DP_AUDIO so the DesignWare DP controller can
+   embed I2S audio into the DisplayPort stream.
+
+   On RK3576 there is no dedicated CRU I2S clock for the DP controller
+   (change 2 already makes i2s_clk optional). SAI7 acts as the I2S
+   master and delivers audio samples to the DP controller's audio sampler
+   hardware via its I2S input. No separate i2s_clk is required on the DP
+   controller side.
+
+   The audio sampler is configured via:
+     DW_DP_AUD_CONFIG1 (0x0400): channel count, bit width, I2S mode
+     DW_DP_SDP_VERTICAL_CTRL (0x0500): enable audio stream and
+                                        timestamp SDP packets
+
+   The framework auto-creates an hdmi-audio-codec platform device at
+   probe time. SAI7 is discovered as the CPU DAI via hdmi_audio_dai_port=2
+   which points to port@2 in the DP controller DT node (added in the
+   companion DT patch).
+
+   drm_connector_hdmi_audio_plugged_notify() is called from the bridge's
+   atomic_enable/disable callbacks so PipeWire knows when the DP display
+   is connected or disconnected.
+
+Signed-off-by: ROCKNIX <noreply@rocknix.org>
+---
+ drivers/gpu/drm/bridge/synopsys/dw-dp.c   | 71 +++++++++++++++++++++--
+ drivers/gpu/drm/rockchip/dw_dp-rockchip.c |  2 ++
+ include/drm/bridge/dw_dp.h                |  1 +
+ 3 files changed, 70 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-dp.c b/drivers/gpu/drm/bridge/synopsys/dw-dp.c
+--- a/drivers/gpu/drm/bridge/synopsys/dw-dp.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-dp.c
+@@ -19,6 +19,9 @@
+ #include <linux/unaligned.h>
+
+ #include <drm/bridge/dw_dp.h>
++#include <drm/drm_atomic.h>
++#include <drm/display/drm_hdmi_audio_helper.h>
++#include <sound/hdmi-codec.h>
+ #include <drm/drm_atomic_helper.h>
+ #include <drm/drm_bridge.h>
+ #include <drm/drm_bridge_connector.h>
+@@ -1668,6 +1671,8 @@
+ 		return;
+ 	}
+
++	drm_connector_hdmi_audio_plugged_notify(connector, true);
++
+ 	set_bit(0, dp->sdp_reg_bank);
+
+ 	ret = dw_dp_link_enable(dp);
+@@ -1705,6 +1710,11 @@
+ 			struct drm_atomic_state *state)
+ {
+ 	struct dw_dp *dp = bridge_to_dp(bridge);
++	struct drm_connector *connector;
++
++	connector = drm_atomic_get_old_connector_for_encoder(state, bridge->encoder);
++	if (connector)
++		drm_connector_hdmi_audio_plugged_notify(connector, false);
+
+ 	dw_dp_video_disable(dp);
+ 	dw_dp_link_disable(dp);
+@@ -1818,6 +1828,56 @@
+ 	return &state->base;
+ }
+
++static int dw_dp_audio_prepare(struct drm_bridge *bridge,
++			       struct drm_connector *connector,
++			       struct hdmi_codec_daifmt *fmt,
++			       struct hdmi_codec_params *params)
++{
++	struct dw_dp *dp = bridge_to_dp(bridge);
++	unsigned int data_in_en;
++	u32 val;
++
++	if (fmt->fmt != HDMI_I2S)
++		return -EINVAL;
++
++	/* One I2S input lane per stereo pair */
++	data_in_en = (1u << DIV_ROUND_UP(params->channels, 2)) - 1;
++
++	val = FIELD_PREP(AUDIO_TIMESTAMP_VERSION_NUM, 0x11) |
++	      FIELD_PREP(AUDIO_PACKET_ID, 0x02) |
++	      FIELD_PREP(NUM_CHANNELS, params->channels - 1) |
++	      FIELD_PREP(AUDIO_DATA_WIDTH, params->sample_width) |
++	      FIELD_PREP(AUDIO_DATA_IN_EN, data_in_en);
++	/* AUDIO_INF_SELECT=0 (I2S); AUDIO_MUTE=0 (not muted) */
++	regmap_write(dp->regmap, DW_DP_AUD_CONFIG1, val);
++
++	regmap_update_bits(dp->regmap, DW_DP_SDP_VERTICAL_CTRL,
++			   EN_AUDIO_STREAM_SDP | EN_AUDIO_TIMESTAMP_SDP,
++			   EN_AUDIO_STREAM_SDP | EN_AUDIO_TIMESTAMP_SDP);
++	return 0;
++}
++
++static void dw_dp_audio_shutdown(struct drm_bridge *bridge,
++				 struct drm_connector *connector)
++{
++	struct dw_dp *dp = bridge_to_dp(bridge);
++
++	regmap_update_bits(dp->regmap, DW_DP_SDP_VERTICAL_CTRL,
++			   EN_AUDIO_STREAM_SDP | EN_AUDIO_TIMESTAMP_SDP, 0);
++	regmap_update_bits(dp->regmap, DW_DP_AUD_CONFIG1, AUDIO_MUTE, AUDIO_MUTE);
++}
++
++static int dw_dp_audio_mute_stream(struct drm_bridge *bridge,
++				   struct drm_connector *connector,
++				   bool enable, int direction)
++{
++	struct dw_dp *dp = bridge_to_dp(bridge);
++
++	regmap_update_bits(dp->regmap, DW_DP_AUD_CONFIG1, AUDIO_MUTE,
++			   enable ? AUDIO_MUTE : 0);
++	return 0;
++}
++
+ static const struct drm_bridge_funcs dw_dp_bridge_funcs = {
+ 	.atomic_duplicate_state = dw_dp_bridge_atomic_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
+@@ -1829,6 +1889,9 @@
+ 	.atomic_enable = dw_dp_bridge_atomic_enable,
+ 	.atomic_disable = dw_dp_bridge_atomic_disable,
+ 	.detect = dw_dp_bridge_detect,
++	.dp_audio_prepare = dw_dp_audio_prepare,
++	.dp_audio_shutdown = dw_dp_audio_shutdown,
++	.dp_audio_mute_stream = dw_dp_audio_mute_stream,
+ 	.edid_read = dw_dp_bridge_edid_read,
+ };
+
+@@ -1984,7 +2047,7 @@
+ 		return ERR_CAST(dp);
+
+ 	dp->dev = dev;
+-	dp->pixel_mode = DW_DP_MP_QUAD_PIXEL;
++	dp->pixel_mode = plat_data->single_pixel_mode ? DW_DP_MP_SINGLE_PIXEL : DW_DP_MP_QUAD_PIXEL;
+
+ 	dp->plat_data.max_link_rate = plat_data->max_link_rate;
+ 	bridge = &dp->bridge;
+@@ -2020,13 +2083,13 @@
+ 		return ERR_CAST(dp->aux_clk);
+ 	}
+
+-	dp->i2s_clk = devm_clk_get(dev, "i2s");
++	dp->i2s_clk = devm_clk_get_optional(dev, "i2s");
+ 	if (IS_ERR(dp->i2s_clk)) {
+ 		dev_err_probe(dev, PTR_ERR(dp->i2s_clk), "failed to get i2s clock\n");
+ 		return ERR_CAST(dp->i2s_clk);
+ 	}
+
+-	dp->spdif_clk = devm_clk_get(dev, "spdif");
++	dp->spdif_clk = devm_clk_get_optional(dev, "spdif");
+ 	if (IS_ERR(dp->spdif_clk)) {
+ 		dev_err_probe(dev, PTR_ERR(dp->spdif_clk), "failed to get spdif clock\n");
+ 		return ERR_CAST(dp->spdif_clk);
+@@ -2045,9 +2108,13 @@
+ 	}
+
+ 	bridge->of_node = dev->of_node;
+-	bridge->ops = DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD;
++	bridge->ops = DRM_BRIDGE_OP_DETECT | DRM_BRIDGE_OP_EDID | DRM_BRIDGE_OP_HPD |
++		      DRM_BRIDGE_OP_DP_AUDIO;
+ 	bridge->type = DRM_MODE_CONNECTOR_DisplayPort;
+ 	bridge->ycbcr_420_allowed = true;
++	bridge->hdmi_audio_dev = dev;
++	bridge->hdmi_audio_max_i2s_playback_channels = 2;
++	bridge->hdmi_audio_dai_port = 2;
+
+ 	ret = devm_drm_bridge_add(dev, bridge);
+ 	if (ret)
+diff --git a/drivers/gpu/drm/rockchip/dw_dp-rockchip.c b/drivers/gpu/drm/rockchip/dw_dp-rockchip.c
+--- a/drivers/gpu/drm/rockchip/dw_dp-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw_dp-rockchip.c
+@@ -90,6 +90,7 @@
+ 	platform_set_drvdata(pdev, dp);
+
+ 	plat_data.max_link_rate = 810000;
++	plat_data.single_pixel_mode = of_device_is_compatible(dev->of_node, "rockchip,rk3576-dp");
+ 	encoder = &dp->encoder.encoder;
+ 	encoder->possible_crtcs = drm_of_find_possible_crtcs(drm_dev, dev->of_node);
+ 	rockchip_drm_encoder_set_crtc_endpoint_id(&dp->encoder, dev->of_node, 0, 0);
+@@ -135,6 +136,7 @@
+ }
+
+ static const struct of_device_id dw_dp_of_match[] = {
++	{ .compatible = "rockchip,rk3576-dp", },
+ 	{ .compatible = "rockchip,rk3588-dp", },
+ 	{}
+ };
+diff --git a/include/drm/bridge/dw_dp.h b/include/drm/bridge/dw_dp.h
+--- a/include/drm/bridge/dw_dp.h
++++ b/include/drm/bridge/dw_dp.h
+@@ -13,6 +13,7 @@
+
+ struct dw_dp_plat_data {
+ 	u32 max_link_rate;
++	bool single_pixel_mode;
+ };
+
+ struct dw_dp *dw_dp_bind(struct device *dev, struct drm_encoder *encoder,

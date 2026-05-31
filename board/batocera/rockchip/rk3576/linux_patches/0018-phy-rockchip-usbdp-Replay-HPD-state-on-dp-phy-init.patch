@@ -1,0 +1,54 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: ROCKNIX <noreply@rocknix.org>
+Date: Mon, 01 Jan 2024 00:00:00 +0000
+Subject: [PATCH] phy: rockchip: usbdp: Replay HPD state on DP PHY init
+
+When a USB-C DP Alt Mode display is connected before the DP PHY is
+initialized (e.g. the HUSB311 TCPC negotiates DP Alt Mode at boot
+before the DesignWare DP bridge driver has completed its probe),
+rk_udphy_typec_mux_set() receives the HPD_STATE notification and
+calls rk_udphy_dp_hpd_event_trigger() with hpd=true.  However, the
+guard in that function:
+
+    if (!udphy->dp_in_use)
+        return;
+
+prevents the VOGRF HPD trigger register from being written, so the
+DP controller hardware never sees an HPD rising edge.  GIC_SPI 337
+therefore never fires, drm_helper_hpd_irq_event() is never called,
+and the display is not detected by the compositor.
+
+The state IS saved (dp_sink_hpd_sel/dp_sink_hpd_cfg), but nothing
+ever applies it once dp_in_use transitions to true in
+rk_udphy_dp_phy_init().
+
+Fix: after setting dp_in_use = true in rk_udphy_dp_phy_init(), replay
+the saved HPD state by calling rk_udphy_dp_hpd_event_trigger() when
+dp_sink_hpd_sel is set.  The DP controller hardware is already
+initialised at this point (dw_dp_init_hw() runs before phy_init() in
+dw_dp_bind()), so the VOGRF write will cause the controller to assert
+HPD_HOT_PLUG.  The level-high interrupt then fires as soon as
+devm_request_threaded_irq() registers the handler immediately after.
+
+Without this fix, displays connected at boot are invisible to sway
+until the cable is manually unplugged and re-inserted (at which point
+dp_in_use is already true and the VOGRF write proceeds normally).
+
+Signed-off-by: ROCKNIX <noreply@rocknix.org>
+---
+ drivers/phy/rockchip/phy-rockchip-usbdp.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/phy/rockchip/phy-rockchip-usbdp.c b/drivers/phy/rockchip/phy-rockchip-usbdp.c
+--- a/drivers/phy/rockchip/phy-rockchip-usbdp.c
++++ b/drivers/phy/rockchip/phy-rockchip-usbdp.c
+@@ -1047,6 +1047,10 @@ static int rk_udphy_dp_phy_init(struct phy *phy)
+ 	mutex_lock(&udphy->mutex);
+
+ 	udphy->dp_in_use = true;
++
++	/* Replay any HPD state that arrived before the PHY was initialized */
++	if (udphy->dp_sink_hpd_sel)
++		rk_udphy_dp_hpd_event_trigger(udphy, udphy->dp_sink_hpd_cfg);
+
+ 	mutex_unlock(&udphy->mutex);

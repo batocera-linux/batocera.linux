@@ -1,0 +1,41 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH 1/4] dt-bindings: vendor-prefixes: Add Hynetek
+ Semiconductor Co., Ltd.
+From: Alexey Charkov <alchark@flipper.net>
+Date: Wed, 11 Mar 2026 20:20:44 +0400
+Message-Id: <20260311-husb311-v1-1-f25bcb58cff7@flipper.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Hynetek Semiconductor Co., Ltd. focuses on intelligent energy control
+technology, mainly for the intelligent fast charging and digital energy
+fields.
+
+Link: https://en.hynetek.com/
+Signed-off-by: Alexey Charkov <alchark@flipper.net>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Link: https://www.hynetek.com/uploadfiles/site/219/news/0863c0c7-f535-4f09-bacd-0440d2c21088.pdf
+Link: https://dl.xkwy2018.com/downloads/RK3588S/03_Product%20Line%20Branch_Tablet/02_Key%20Device%20Specifications/HUSB311%20introduction%2020210526.pdf
+Link: https://www.richtek.com/assets/product_file/RT1711H/DS1711H-04.pdf
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 04b7d1aaaef1..f1e6b1d03839 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -745,6 +745,8 @@ patternProperties:
+     description: Hycon Technology Corp.
+   "^hydis,.*":
+     description: Hydis Technologies
++  "^hynetek,.*":
++    description: Hynetek Semiconductor Co., Ltd.
+   "^hynitron,.*":
+     description: Shanghai Hynitron Microelectronics Co. Ltd.
+   "^hynix,.*":
+
+-- 
+2.52.0
+
