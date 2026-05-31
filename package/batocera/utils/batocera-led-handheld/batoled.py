@@ -8,15 +8,16 @@ Updated for dual_multiled platform - @dmanlfc
 Updated for AYN Odin (odin_mono) platform - @dmanlfc
 Updated for Anbernic RG CubeXX - @dmanlfc
 """
+import glob
 import os
 import time
-import glob
+
+from batocera_common.paths import BATOCERA_CONF
 
 DEBUG = 0            # set to 1 for debugging
 EFFECT_STEP = 60     # how many colors in the effect
 EFFECT_DURATION = 2  # how many seconds
 PULSE_DURATION  = 1  # how many seconds
-BATOCONFFILE = '/userdata/system/batocera.conf'
 DEFAULT_ES_COLOR = '255 0 165'
 
 ####################
@@ -65,7 +66,7 @@ def batocera_model():
 ####################
 # Get a value from batocera.conf
 def batoconf(key):
-    with open(BATOCONFFILE) as f:
+    with open(BATOCERA_CONF) as f:
         for line in f:
             if not line.startswith(key+"="):
                 continue

@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...config import SystemConfig
     from ...Emulator import Emulator
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 
 # return true if the option is considered defined

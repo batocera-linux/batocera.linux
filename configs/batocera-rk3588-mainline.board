@@ -14,8 +14,8 @@ BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2
 # Kernel - mainline stable
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="6.18.21"
-BR2_KERNEL_HEADERS_6_18=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="7.0.10"
+BR2_KERNEL_HEADERS_7_0=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588-mainline/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588-mainline/linux-defconfig.config"
@@ -24,12 +24,14 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources - in-tree DTS, no custom needed!
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-odroid-m2"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-orangepi-5 rockchip/rk3588-orangepi-5-plus rockchip/rk3588s-odroid-m2 rockchip/rk3588-friendlyelec-cm3588-nas rockchip/rk3588s-coolpi-4b rockchip/rk3588s-gameforce-ace rockchip/rk3588-rock-5b-plus rockchip/rk3588s-rock-5c rockchip/rk3588-rock-5b rockchip/rk3588s-rock-5a rockchip/rk3588s-orangepi-5b rockchip/rk3588-quartzpro64 rockchip/rk3588s-indiedroid-nova rockchip/rk3588s-khadas-edge2"
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 
 # Bootloader
 BR2_PACKAGE_HOST_DOSFSTOOLS=y
+BR2_PACKAGE_UBOOT_RK3588=y
 BR2_PACKAGE_UBOOT_ODROID_M2=y
+BR2_PACKAGE_UBOOT_ORANGEPI_5B=y
 
 # System
 BR2_PACKAGE_BATOCERA_KODI21=y

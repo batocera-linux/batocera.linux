@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, cast
 from typing_extensions import TypedDict
 
+from batocera_common.yaml import safe_load_yaml
 from batocera_es_system.es_systems import load_es_systems
 from batocera_es_system.registry import EmulatorInfo, EmulatorsBySystemMapping, EmulatorsMetadataMapping, Registry
 from batocera_es_system.shared import (
@@ -15,7 +16,6 @@ from batocera_es_system.shared import (
     SystemDict,
     SystemsData,
     get_deep_value,
-    safe_load_yaml,
 )
 
 if TYPE_CHECKING:
@@ -214,7 +214,7 @@ def _generate_systems_report(
     reports_data_dir: Path, es_systems_yml: Path, explanations_yml: Path, configgen_dir: Path, output_file: Path, /
 ) -> None:
     results: dict[str, dict[str, _EmulatorsResultDict]] = {}
-    explanations = safe_load_yaml(explanations_yml, '_ExplanationsDict')
+    explanations = safe_load_yaml(explanations_yml, '_ExplanationsDict') or {}
     es_systems_data = load_es_systems(es_systems_yml)
     all_emulators = Registry.load_path_file(reports_data_dir / 'all_info_files.txt')
     all_emulators_by_system = all_emulators.emulators_by_system

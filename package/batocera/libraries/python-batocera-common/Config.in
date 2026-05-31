@@ -1,0 +1,8 @@
+config BR2_PACKAGE_PYTHON_BATOCERA_COMMON
+	bool "batocera python common"
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_PYYAML
+	select BR2_PACKAGE_PYTHON_RUAMEL_YAML
+	select BR2_PACKAGE_PYTHON_TYPING_EXTENSIONS
+	help
+	  Common python functionality for Batocera

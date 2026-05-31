@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import ensure_parents_and_open, mkdir_if_not_exists
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import mupenConfig, mupenControllers
 from .mupenPaths import MUPEN_CONFIG_DIR, MUPEN_CUSTOM

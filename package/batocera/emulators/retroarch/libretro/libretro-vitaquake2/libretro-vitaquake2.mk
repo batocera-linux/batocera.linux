@@ -5,7 +5,8 @@
 ################################################################################
 # Version: Commits on Apr 10, 2026
 LIBRETRO_VITAQUAKE2_VERSION = 1fc6922632fe4c5cf44c1a9514fa0d4ef64489c3
-LIBRETRO_VITAQUAKE2_SITE = $(call github,libretro,vitaquake2,$(LIBRETRO_VITAQUAKE2_VERSION))
+LIBRETRO_VITAQUAKE2_SITE = \
+    $(call github,libretro,vitaquake2,$(LIBRETRO_VITAQUAKE2_VERSION))
 LIBRETRO_VITAQUAKE2_LICENSE = GPL-2.0
 LIBRETRO_VITAQUAKE2_DEPENDENCIES += retroarch
 LIBRETRO_VITAQUAKE2_EMULATOR_INFO = vitaquake2.libretro.core.yml
@@ -29,21 +30,27 @@ LIBRETRO_VITAQUAKE2_CONF_OPTS += GLES=1
 endif
 
 # Enable GLES 3.1 when possible
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_H700)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_GLES3)$(BR2_PACKAGE_BATOCERA_TARGET_ROCKCHIP_GLES3)$(BR2_PACKAGE_BATOCERA_TARGET_JH7110),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
 LIBRETRO_VITAQUAKE2_CONF_OPTS += GLES31=1
 endif
 
 define LIBRETRO_VITAQUAKE2_BUILD_CMDS
 	# build the mission cores
-    $(foreach game,xatrix rogue zaero, \
-	    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) clean && \
-	    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
-	        -f Makefile basegame=$(game) platform="$(LIBRETRO_VITAQUAKE2_PLATFORM)" $(LIBRETRO_VITAQUAKE2_CONF_OPTS);
+	$(foreach game,xatrix rogue zaero, \
+		$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX) -D_GNU_SOURCE" \
+		    CC="$(TARGET_CC) -D_GNU_SOURCE" -C $(@D) clean && \
+		$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX) -D_GNU_SOURCE" \
+		    CC="$(TARGET_CC) -D_GNU_SOURCE" -C $(@D) \
+			-f Makefile basegame=$(game) platform="$(LIBRETRO_VITAQUAKE2_PLATFORM)" \
+			$(LIBRETRO_VITAQUAKE2_CONF_OPTS); \
 	)
 	# now build the main core
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) clean && \
-    $(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D) \
-	    -f Makefile platform="$(LIBRETRO_VITAQUAKE2_PLATFORM)" $(LIBRETRO_VITAQUAKE2_CONF_OPTS)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX) -D_GNU_SOURCE" \
+	    CC="$(TARGET_CC) -D_GNU_SOURCE" -C $(@D) clean && \
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX) -D_GNU_SOURCE" \
+	    CC="$(TARGET_CC) -D_GNU_SOURCE" -C $(@D) \
+		-f Makefile platform="$(LIBRETRO_VITAQUAKE2_PLATFORM)" \
+		$(LIBRETRO_VITAQUAKE2_CONF_OPTS)
 endef
 
 define LIBRETRO_VITAQUAKE2_INSTALL_TARGET_CMDS

@@ -5,8 +5,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...controller import Controller, Controllers
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 # Map an emulationstation button name to the corresponding fba2x name
 fba4bnts = {

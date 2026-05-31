@@ -2,6 +2,7 @@
 name = "batocera-configgen"
 version = '1.5'
 dependencies = [
+    'batocera-common',
     'PyYAML',
     'toml',
     'evdev; sys_platform == "linux"',

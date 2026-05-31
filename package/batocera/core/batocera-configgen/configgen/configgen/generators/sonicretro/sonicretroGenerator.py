@@ -5,9 +5,10 @@ import os
 from functools import cache
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveRawConfigParser
+
 from ... import Command
 from ...controller import Controller, generate_sdl_game_controller_config
-from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:

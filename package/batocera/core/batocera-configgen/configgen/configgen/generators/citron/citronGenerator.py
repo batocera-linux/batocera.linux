@@ -4,10 +4,11 @@ import logging
 from os import environ
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.configparser import CaseSensitiveRawConfigParser
+
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...utils import vulkan
-from ...utils.configparser import CaseSensitiveRawConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:

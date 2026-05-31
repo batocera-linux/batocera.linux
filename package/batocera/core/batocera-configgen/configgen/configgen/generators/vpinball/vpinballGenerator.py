@@ -5,11 +5,12 @@ import logging
 import shutil
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils.batoceraServices import batoceraServices
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import vpinballOptions, vpinballWindowing
 

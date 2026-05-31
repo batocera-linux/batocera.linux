@@ -7,6 +7,8 @@
 UBOOT_PS7000_VERSION = e20e9d85d326345fb2e80105a79263c95757414f
 UBOOT_PS7000_SITE = $(call github,rk3128-cfw,caesar-u-boot,$(UBOOT_PS7000_VERSION))
 UBOOT_PS7000_LICENSE = GPLv2
+UBOOT_PS7000_BOOT_SRC = idbloader.img uboot.img:uboot-ps7000.img trust.img
+UBOOT_PS7000_BINARIES_SUBDIR =
 
 UBOOT_PS7000_DEPENDENCIES = rk3128-blobs
 
@@ -29,17 +31,11 @@ define UBOOT_PS7000_BUILD_CMDS
     # Generate uboot.img
     $(@D)/tools/loaderimage --pack --uboot \
         $(@D)/u-boot-dtb.bin $(@D)/uboot.img --size 1024 4
-  
+
     # Generate trust.img
     $(@D)/tools/loaderimage --pack --trustos \
         $(BINARIES_DIR)/rkbin/bin/rk31/rk3126_tee_ta_v2.01.bin \
         $(@D)/trust.img --size 1024 4
 endef
 
-define UBOOT_PS7000_INSTALL_TARGET_CMDS
-	cp $(@D)/idbloader.img $(BINARIES_DIR)/idbloader.img
-	cp $(@D)/uboot.img     $(BINARIES_DIR)/uboot-ps7000.img
-	cp $(@D)/trust.img     $(BINARIES_DIR)/trust.img
-endef
-
-$(eval $(generic-package))
+$(eval $(boot-package))

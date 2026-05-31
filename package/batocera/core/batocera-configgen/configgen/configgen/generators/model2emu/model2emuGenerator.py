@@ -8,11 +8,12 @@ import stat
 from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import ROMS, configure_emulator, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import wine
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:

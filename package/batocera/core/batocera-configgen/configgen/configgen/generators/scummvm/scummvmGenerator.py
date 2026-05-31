@@ -4,10 +4,11 @@ import os
 import re
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import BIOS, CACHE, CONFIGS, SAVES, SCREENSHOTS, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import Controller, generate_sdl_game_controller_config
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 
 if TYPE_CHECKING:

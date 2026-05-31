@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import CONFIGS, LOGS, ensure_parents_and_open
-from ...utils.configparser import CaseSensitiveConfigParser
 from ..Generator import Generator
 from . import fba2xConfig, fba2xControllers
 

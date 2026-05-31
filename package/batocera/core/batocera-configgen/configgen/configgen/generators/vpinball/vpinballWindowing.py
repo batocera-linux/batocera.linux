@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING
 from ...utils import videoMode
 
 if TYPE_CHECKING:
+    from batocera_common.configparser import CaseSensitiveConfigParser
+
     from ...Emulator import Emulator
     from ...types import Resolution, ScreenInfo
-    from ...utils.configparser import CaseSensitiveConfigParser
 
 
 def configureWindowing(vpinballSettings: CaseSensitiveConfigParser, system: Emulator, gameResolution: Resolution, hasDmd: bool) -> None:

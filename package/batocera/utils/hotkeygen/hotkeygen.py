@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import re
@@ -12,11 +13,12 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, TypedDict
-import errno
 
 import evdev
 import pyudev
 from evdev import ecodes
+
+from batocera_common.paths import CONFIGS
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -40,7 +42,7 @@ GDEFAULTMAPPING_FILE: Final = Path("/etc/hotkeygen/default_mapping.conf")
 GCONTEXT_FILE: Final = Path("/var/run/hotkeygen.context")
 GPID_FILE: Final     = Path("/var/run/hotkeygen.pid")
 GSYSTEM_DIR: Final   = Path("/usr/share/hotkeygen")
-GUSER_DIR: Final     = Path("/userdata/system/configs/hotkeygen")
+GUSER_DIR: Final     = CONFIGS / "hotkeygen"
 
 GUSERCOMMONCONTEXT_FILE: Final = GUSER_DIR / Path("common_context.conf")
 GUSERDEFAULTMAPPING_FILE: Final = GUSER_DIR / Path("default_mapping.conf")

@@ -11,15 +11,7 @@
 ################################################################################
 
 UBOOT_ODROID_M2_VERSION = 1.0
-UBOOT_ODROID_M2_SOURCE =
+UBOOT_ODROID_M2_BINARIES_SUBDIR = odroid-m2
+UBOOT_ODROID_M2_BOOT_SRC = u-boot-rockchip.bin
 
-define UBOOT_ODROID_M2_BUILD_CMDS
-endef
-
-define UBOOT_ODROID_M2_INSTALL_TARGET_CMDS
-	mkdir -p $(BINARIES_DIR)/odroid-m2
-	cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/boot/uboot-odroid-m2/u-boot-rockchip.bin \
-	    $(BINARIES_DIR)/odroid-m2/u-boot-rockchip.bin
-endef
-
-$(eval $(generic-package))
+$(eval $(boot-package))

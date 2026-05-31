@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from batocera_common.configparser import CaseSensitiveRawConfigParser
+
 from ...batoceraPaths import mkdir_if_not_exists
-from ...utils.configparser import CaseSensitiveRawConfigParser
 
 if TYPE_CHECKING:
     from collections.abc import Mapping

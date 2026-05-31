@@ -9,7 +9,7 @@ import sys
 from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING
 
-from configgen.utils.configparser import CaseSensitiveRawConfigParser
+from batocera_common.configparser import CaseSensitiveRawConfigParser
 
 from ... import Command
 from ...batoceraPaths import BIOS, SAVES, mkdir_if_not_exists
