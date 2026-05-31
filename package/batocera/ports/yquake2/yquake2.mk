@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-YQUAKE2_VERSION = QUAKE2_8_60
+YQUAKE2_VERSION = QUAKE2_8_70
 YQUAKE2_SITE = $(call github,yquake2,yquake2,$(YQUAKE2_VERSION))
 YQUAKE2_LICENSE = GPLv2
 YQUAKE2_LICENSE_FILES = LICENSE
@@ -12,6 +12,7 @@ YQUAKE2_EMULATOR_INFO = yquake2.emulator.yml
 
 YQUAKE2_BUILD_ARGS = WITH_SYSTEMWIDE=yes \
 	WITH_SYSTEMDIR=/userdata/roms/quake2 \
+	WITH_XDG=no \
 	INCLUDE= LDFLAGS= \
 	YQ2_OSTYPE=Linux
 
