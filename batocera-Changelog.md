@@ -20,6 +20,8 @@
 - New CPU temp helper script - batocera-cpu-temp
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
+- Khadas VIM4 now uses LabWC
+- Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
 - Removed Libretro-Puae2021
 - Rockcip RK3588 devices moved to the mainline linux kernel:
   CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5, Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
@@ -58,6 +60,7 @@
 - Allwinner H700 device kernel updated to 7.0.10
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - FAudio to 26.05
+- Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.9.7
 - Linux Firmware to 20260519
 - Mesa3D to 26.1.0

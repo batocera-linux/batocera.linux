@@ -1,0 +1,18 @@
+config BR2_PACKAGE_AMLOGIC_COMMON_DRIVERS
+	bool "Amlogic Common Drivers"
+	help
+	  Required by Amlogic vendor kernel.
+
+if BR2_PACKAGE_AMLOGIC_COMMON_DRIVERS
+
+config BR2_PACKAGE_AMLOGIC_COMMON_DRIVERS_VERSION
+	string "Amlogic common drivers version"
+	help
+	  The version/tag/commit of the Amlogic common drivers to use.
+
+config BR2_PACKAGE_AMLOGIC_COMMON_DRIVERS_REPOSITORY
+	string "Amlogic common drivers git repository URL"
+	help
+	  URL of the git repository for the Amlogic common drivers.
+
+endif

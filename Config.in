@@ -79,6 +79,7 @@ menu "System"
 
   menu "Firmwares"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/alllinuxfirmwares/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/amlogic-common-drivers/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/extralinuxfirmwares/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-armbian/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/firmwares/firmware-orangepi/Config.in"
