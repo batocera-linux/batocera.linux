@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-YQUAKE2_XATRIX_VERSION = XATRIX_2_16
+YQUAKE2_XATRIX_VERSION = XATRIX_2_17
 YQUAKE2_XATRIX_SITE = $(call github,yquake2,xatrix,$(YQUAKE2_XATRIX_VERSION))
 YQUAKE2_XATRIX_LICENSE = GPLv2
 YQUAKE2_XATRIX_LICENSE_FILES = LICENSE

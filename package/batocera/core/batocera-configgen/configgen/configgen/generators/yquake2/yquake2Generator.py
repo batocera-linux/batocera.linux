@@ -102,7 +102,7 @@ class YQuake2Generator(Generator):
         if not defaultConfig.exists():
             createDefault()
 
-        romName = rom.name
+        romName = rom.name.lower()
         swapButtons = "1" if esSettings.getInvertButtonsValue() else "0"
 
         commandArray = [ "/usr/bin/yquake2/quake2", "-cfgdir", "configs/yquake2",
@@ -112,11 +112,11 @@ class YQuake2Generator(Generator):
             commandArray.extend([ "+set", "in_initjoy", str(pad.index + 1) ])
 
         # Mission Packs
-        if "reckoning" in romName.lower():
+        if "reckoning" in romName:
             commandArray.extend(["+set", "game", "xatrix"])
-        elif "zero" in romName.lower():
+        elif "zero" in romName:
             commandArray.extend(["+set", "game", "rogue"])
-        elif "zaero" in romName.lower():
+        elif "zaero" in romName:
             commandArray.extend(["+set", "game", "zaero"])
 
         return Command.Command(
