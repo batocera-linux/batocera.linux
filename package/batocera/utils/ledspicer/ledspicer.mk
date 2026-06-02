@@ -4,38 +4,39 @@
 #
 ################################################################################
 
-LEDSPICER_VERSION = 0.6.3.1
+LEDSPICER_VERSION = 0.7.4.1
 LEDSPICER_SITE = $(call github,meduzapat,LEDSpicer,$(LEDSPICER_VERSION))
 LEDSPICER_LICENSE = GPLv3
 LEDSPICER_DEPENDENCIES = tinyxml2 libusb libtool udev libpthread-stubs
 LEDSPICER_AUTORECONF = YES
-LEDSPICER_CONF_OPTS = CXXFLAGS='-g0 -O3' --enable-nanoled --enable-pacdrive --enable-pacled64
-LEDSPICER_CONF_OPTS += --enable-ultimateio --enable-ledwiz32 --enable-howler --enable-adalight
-LEDSPICER_CONF_OPTS += --sysconfdir=/userdata/system/configs/ledspicer
-LEDSPICER_CONF_OPTS += --docdir=/usr/share/ledspicer/doc
+LEDSPICER_CONF_OPTS = -DENABLE_NANOLED=ON -DENABLE_PACDRIVE=ON -DENABLE_PACLED64=ON
+LEDSPICER_CONF_OPTS += -DENABLE_ULTIMATEIO=ON -DENABLE_LEDWIZ32=ON -DENABLE_HOWLER=ON -DENABLE_ADALIGHT=ON
+LEDSPICER_CONF_OPTS += -DINSTALL_FULL_DATADIR=/userdata/system/configs/
+LEDSPICER_CONF_OPTS += -DINSTALL_SYSCONFDIR=/userdata/system/configs/ledspicer
+LEDSPICER_CONF_OPTS += -DINSTALL_DOCDIR=/usr/share/ledspicer/doc
 
 ifeq ($(BR2_PACKAGE_PIGPIO),y)
     LEDSPICER_DEPENDENCIES += pigpio
 endif
 
 ifeq ($(BR2_PACKAGE_PULSEAUDIO),y)
-    LEDSPICER_CONF_OPTS += --enable-pulseaudio
+    LEDSPICER_CONF_OPTS += -DENABLE_PULSEAUDIO=ON
     LEDSPICER_DEPENDENCIES += pulseaudio
 else
-    LEDSPICER_CONF_OPTS += --disable-pulseaudio
+    LEDSPICER_CONF_OPTS += -DENABLE_PULSAUDIO=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_ALSA_LIB),y)
-    LEDSPICER_CONF_OPTS += --enable-alsaaudio
+    LEDSPICER_CONF_OPTS += -DENABLE_ALSAUDIO=ON
     LEDSPICER_DEPENDENCIES += alsa-lib
 else
-    LEDSPICER_CONF_OPTS += --disable-alsaaudio
+    LEDSPICER_CONF_OPTS += -DENABLE_ALSAUDIO=OFF
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
-	LEDSPICER_CONF_OPTS += --enable-raspberrypi
+	LEDSPICER_CONF_OPTS += -DENABLE_RASPERRYPI=ON
 else
-	LEDSPICER_CONF_OPTS += --disable-raspberrypi
+	LEDSPICER_CONF_OPTS += -DENABLE_RASPERRYPI=OFF
 endif
 
 define LEDSPICER_UDEV_RULE
@@ -52,4 +53,4 @@ endef
 LEDSPICER_POST_INSTALL_TARGET_HOOKS += LEDSPICER_UDEV_RULE
 LEDSPICER_POST_INSTALL_TARGET_HOOKS += LEDSPICER_SERVICE_INSTALL
 
-$(eval $(autotools-package))
+$(eval $(cmake-package))
