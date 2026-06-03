@@ -1,10 +1,12 @@
 --- ledspicer-0.7.4.1/CMakeLists.txt	2026-05-05 19:08:43.000000000 -0700
-+++ ledspicer-0.7.4.1-lbrpdx/CMakeLists.txt	2026-06-01 17:07:18.678369401 -0700
-@@ -8,7 +8,7 @@
++++ ledspicer-0.7.4.1-lbrpdx/CMakeLists.txt	2026-06-02 09:08:20.793680214 -0700
+@@ -7,8 +7,8 @@
+ # Project details
  set(PROJECT_NAME      "${CMAKE_PROJECT_NAME}")
  set(PROJECT_VERSION   "${CMAKE_PROJECT_VERSION}")
- set(PROJECT_DATA_DIR  "${CMAKE_INSTALL_FULL_DATADIR}/ledspicer/")
+-set(PROJECT_DATA_DIR  "${CMAKE_INSTALL_FULL_DATADIR}/ledspicer/")
 -set(PROJECT_CONF_DIR  "${CMAKE_INSTALL_SYSCONFDIR}")
++set(PROJECT_DATA_DIR  "/userdata/system/configs/ledspicer/")
 +set(PROJECT_CONF_DIR  "/userdata/system/configs/ledspicer")
  set(PROJECT_SITE      "https://github.com/meduzapat/LEDSpicer")
  set(PROJECT_BUGREPORT "https://github.com/meduzapat/LEDSpicer/issues")
