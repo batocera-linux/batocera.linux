@@ -34,7 +34,10 @@ def _unmount_and_remove(mount_point: Path):
 
 def _mount(read_only_dir: Path, writable_upper_dir: Path, writable_work_dir: Path, mount_point: Path) -> bool:
 
-    components = f"lowerdir={read_only_dir},upperdir={writable_upper_dir},workdir={writable_work_dir}"
+    def _escape(path: Path) -> str:
+        return str(path).replace(',', r'\,')
+
+    components = f"lowerdir={_escape(read_only_dir)},upperdir={_escape(writable_upper_dir)},workdir={_escape(writable_work_dir)}"
 
     result = subprocess.run(["mount", "-t", "overlay", "overlay",
                              "-o", components, str(mount_point)],
