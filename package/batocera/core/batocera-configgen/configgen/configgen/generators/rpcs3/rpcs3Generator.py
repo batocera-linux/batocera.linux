@@ -62,6 +62,11 @@ class Rpcs3Generator(Generator):
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
 
+        # Detect PSN game packed as a squashfs: emulatorlauncher has already mounted the
+        # squashfs and (via writesToRom=True) created a writable overlayfs, so rom is
+        # /var/run/overlays/<stem> mirroring the dev_hdd0 layout.
+        is_psn_squashfs = rom.is_dir() and str(rom).startswith("/var/run/") and (rom / "dev_hdd0" / "game").is_dir()
+
         # Taking care of the CurrentSettings.ini file
         mkdir_if_not_exists(RPCS3_CURRENT_CONFIG.parent)
 
@@ -94,8 +99,8 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Core"] = {}
         if "VFS" not in rpcs3ymlconfig:
             rpcs3ymlconfig["VFS"] = {}
-        # Set new save location for hdd0
-        rpcs3ymlconfig["VFS"]["/dev_hdd0/"] = f"{RPCS3_DEV_HDD0}/"
+        rpcs3ymlconfig["VFS"]["/dev_hdd0/"] = (str(rom / "dev_hdd0") + "/" if is_psn_squashfs
+                                               else f"{RPCS3_DEV_HDD0}/")
 
         if "Video" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Video"] = {}
@@ -285,6 +290,20 @@ class Rpcs3Generator(Generator):
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
 
+
+        elif is_psn_squashfs:
+            # rom is /var/run/overlays/<stem>; dev_hdd0 is redirected there via vfs.yml.
+            # Scan for the game ID directory and pass EBOOT.BIN directly to RPCS3.
+            romName = None
+            for game_id_dir in (rom / "dev_hdd0" / "game").iterdir():
+                eboot = game_id_dir / "USRDIR" / "EBOOT.BIN"
+                if eboot.exists():
+                    romName = eboot
+                    break
+            if romName is None:
+                raise BatoceraException(f'No PSN game found in squashfs {rom}')
+
+
         elif rom.suffix.lower() == ".iso":
             romName = rom
         elif configure_emulator(rom):
@@ -311,6 +330,9 @@ class Rpcs3Generator(Generator):
                 "XDG_CACHE_HOME": CACHE
             }
         )
+
+    def writesToRom(self, config) -> bool:
+        return True
 
     def _generateGunConfig(self):
         # D-Pad mapping is face buttons of the PS Move △ =up ✕ =down □ =left ○ =right
