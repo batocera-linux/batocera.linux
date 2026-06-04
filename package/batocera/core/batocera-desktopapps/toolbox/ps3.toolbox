@@ -1,0 +1,841 @@
+#!/usr/bin/env python3
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+#
+# This toolbox scans a Batocera PS3 roms directory for PSN .pkg (and matching
+# .rap) files, decrypts them with RPCS3-compatible logic, groups every .pkg/.rap
+# that share a game ID into one RPCS3 dev_hdd0 tree and packs it into a
+# .squashfs named "<game name> (<region>) [GAMEID].squashfs".
+#
+# Game names and regions come from the NoPayStation TSV databases:
+#   https://nopaystation.com/tsv/PS3_GAMES.tsv
+#   https://nopaystation.com/tsv/PS3_DLCS.tsv
+# When a game ID is in neither database, the name falls back to the TITLE field
+# of the PARAM.SFO embedded in the PKG (region inferred from the game ID).
+#
+# PKG decryption ported from RPCS3 (rpcs3/Crypto/unpkg.cpp, key_vault.h).
+# Created for BATOCERA.
+#
+
+import argparse
+import csv
+import hashlib
+import io
+import os
+import re
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import unicodedata
+import urllib.request
+from collections import defaultdict
+
+CHUNK_SIZE = 20 * 1024 * 1024  # 20 MB
+
+PS3_GAMES_URL = "https://nopaystation.com/tsv/PS3_GAMES.tsv"
+PS3_DLCS_URL = "https://nopaystation.com/tsv/PS3_DLCS.tsv"
+ROMS_PS3 = "/userdata/roms/ps3"
+USER_AGENT = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
+
+
+# ──────────────────────────────────────────────────────────────────
+# AES backend (target uses pycryptodomex → Cryptodome; dev may have Crypto)
+# ──────────────────────────────────────────────────────────────────
+
+def _import_aes():
+    try:
+        from Cryptodome.Cipher import AES
+        return AES
+    except ImportError:
+        from Crypto.Cipher import AES
+        return AES
+
+
+# ──────────────────────────────────────────────────────────────────
+# PS3 PKG extractor (ported from rpcs3/Crypto/unpkg.cpp)
+# ──────────────────────────────────────────────────────────────────
+
+class PS3PKGExtractor:
+    """Pure-Python PS3 PKG extractor.
+
+    Cipher selection matches rpcs3/Crypto/unpkg.cpp decrypt():
+      pkg_type == PKG_RELEASE_TYPE_DEBUG   (0x0000) → SHA1 stream cipher
+      pkg_type == PKG_RELEASE_TYPE_RELEASE (0x8000) → AES-128-CTR
+    Keys from rpcs3/Crypto/key_vault.h; layouts from rpcs3/Crypto/unpkg.h.
+    """
+
+    # rpcs3/Crypto/key_vault.h
+    PKG_AES_KEY     = bytes.fromhex("2e7b71d7c9c9a14ea3221f188828b8f8")
+    PKG_AES_KEY_IDU = bytes.fromhex("5db911e6b7e50a7d321538fd7c66f17b")
+    PKG_AES_KEY2    = bytes.fromhex("07f2c68290b50d2c33818d709b60e62b")  # PSP/PSVita entries
+
+    PKG_MAGIC                = b"\x7f\x50\x4b\x47"
+    PKG_RELEASE_TYPE_DEBUG   = 0x0000
+    PKG_RELEASE_TYPE_RELEASE = 0x8000
+    PKG_PLATFORM_PS3         = 0x0001
+    PKG_PLATFORM_PSP         = 0x0002   # PSP_PSVITA
+    PKG_ENTRY_FOLDER         = 4        # PKG_FILE_ENTRY_FOLDER
+    PKG_FILE_ENTRY_PSP       = 0x10000000
+    PKG_FILE_ENTRY_OVERWRITE = 0x80000000
+
+    # content_type values (rpcs3/Crypto/unpkg.h PKG_CONTENT_TYPE_*)
+    PKG_CONTENT_TYPE_GAME_DATA = 0x04
+    PKG_CONTENT_TYPE_GAME_EXEC = 0x05
+    PKG_CONTENT_TYPE_THEME     = 0x09
+    PKG_CONTENT_TYPE_LICENSE   = 0x0B
+
+    def __init__(self, pkg_path):
+        self.pkg_path     = pkg_path
+        self._dec_key     = None  # set by _resolve_retail_key() for retail PKGs
+        self.content_type = None  # filled by _parse_metadata()
+        self.install_dir  = None  # may be overridden by metadata packet 0xA
+        self._aes         = None
+        self._parse_header()
+        self._parse_metadata()
+
+    # ── Header parsing ──────────────────────────────────────────────
+
+    def _parse_header(self):
+        with open(self.pkg_path, "rb") as f:
+            magic = f.read(4)
+            if magic != self.PKG_MAGIC:
+                raise ValueError(
+                    f"Not a PS3 PKG (bad magic {magic.hex()}): {self.pkg_path}"
+                )
+
+            self.pkg_type, self.pkg_platform = struct.unpack(">HH", f.read(4))
+            _m_off, _m_cnt, _m_sz, self.file_count = struct.unpack(">IIII", f.read(16))
+            self.pkg_size_hdr = struct.unpack(">Q", f.read(8))[0]
+            self.data_offset  = struct.unpack(">Q", f.read(8))[0]
+            self.data_size    = struct.unpack(">Q", f.read(8))[0]
+            self.content_id   = f.read(48).decode("utf-8", errors="ignore").rstrip("\x00")
+
+            # qa_digest at 0x60 (seed for the debug SHA1 cipher)
+            f.seek(0x60)
+            qa = f.read(16)
+            self._qa0 = qa[0:8]
+            self._qa1 = qa[8:16]
+
+            # klicensee at 0x70 (initial AES-CTR counter for retail PKGs)
+            self.ctr_base = int.from_bytes(f.read(16), "big")
+
+        # install_dir defaults to the 9-byte title_id (offset 7 in content_id)
+        self.install_dir = self.content_id[7:16] if len(self.content_id) >= 16 else ""
+
+    def _parse_metadata(self):
+        with open(self.pkg_path, "rb") as f:
+            f.seek(0x08)
+            meta_offset, meta_count = struct.unpack(">II", f.read(8))[:2]
+            f.seek(meta_offset)
+            for _ in range(meta_count):
+                pid, psize = struct.unpack(">II", f.read(8))
+                data = f.read(psize)
+                if pid == 0x2 and psize == 4:
+                    self.content_type = struct.unpack(">I", data)[0]
+                elif pid == 0xA and psize > 8:
+                    self.install_dir = data[8:].rstrip(b"\x00").decode("utf-8", errors="replace")
+
+    # ── Debug cipher ─────────────────────────────────────────────────
+
+    def _decrypt_debug(self, rel_off, size):
+        if size == 0:
+            return b""
+
+        blk_start  = rel_off & ~15
+        lead       = rel_off - blk_start
+        rd_size    = (lead + size + 15) & ~15
+        block_base = rel_off >> 4
+
+        with open(self.pkg_path, "rb") as f:
+            f.seek(self.data_offset + blk_start)
+            buf = bytearray(f.read(rd_size))
+
+        for i in range(rd_size >> 4):
+            ctr    = block_base + i
+            sha_in = (self._qa0 + self._qa0 +
+                      self._qa1 + self._qa1 +
+                      b"\x00" * 24 +
+                      ctr.to_bytes(8, "big"))
+            ks = hashlib.sha1(sha_in).digest()   # 20 bytes; use first 16
+            base = i << 4
+            for j in range(min(16, rd_size - base)):
+                buf[base + j] ^= ks[j]
+
+        return bytes(buf[lead : lead + size])
+
+    # ── Retail AES-CTR cipher ─────────────────────────────────────────
+
+    def _decrypt_aes(self, rel_off, size):
+        if size == 0:
+            return b""
+
+        if self._aes is None:
+            self._aes = _import_aes()
+        AES = self._aes
+
+        blk_start = rel_off & ~15
+        lead      = rel_off - blk_start
+        rd_size   = (lead + size + 15) & ~15
+
+        ctr = self.ctr_base + (blk_start >> 4)
+
+        with open(self.pkg_path, "rb") as f:
+            f.seek(self.data_offset + blk_start)
+            enc = f.read(rd_size)
+
+        cipher = AES.new(self._dec_key, AES.MODE_CTR,
+                         initial_value=ctr.to_bytes(16, "big"), nonce=b"")
+        out = cipher.decrypt(enc)
+
+        return out[lead : lead + size]
+
+    def _decrypt_aes_with_key(self, key, rel_off, size):
+        saved = self._dec_key
+        self._dec_key = key
+        try:
+            return self._decrypt_aes(rel_off, size)
+        finally:
+            self._dec_key = saved
+
+    # ── Entry-table parsing ──────────────────────────────────────────
+
+    def _entry_table_key(self):
+        if self.pkg_platform == self.PKG_PLATFORM_PSP:
+            return self.PKG_AES_KEY2
+        return self._dec_key
+
+    def _file_key(self, entry_type):
+        if entry_type & self.PKG_FILE_ENTRY_PSP:
+            return self.PKG_AES_KEY2
+        return self._dec_key
+
+    def _parse_entries(self):
+        if self.file_count == 0 or self.file_count > 100_000:
+            raise RuntimeError(f"Implausible file_count={self.file_count}")
+
+        table_size = self.file_count * 32
+
+        if self.pkg_type == self.PKG_RELEASE_TYPE_DEBUG:
+            raw = self._decrypt_debug(0, table_size)
+        else:
+            raw = self._decrypt_aes_with_key(self._entry_table_key(), 0, table_size)
+
+        fsz     = self.data_size
+        entries = []
+        for i in range(self.file_count):
+            o = i * 32
+            name_offset, name_size = struct.unpack(">II", raw[o     : o + 8 ])
+            file_offset, file_size = struct.unpack(">QQ", raw[o + 8 : o + 24])
+            entry_type, _          = struct.unpack(">II", raw[o + 24: o + 32])
+
+            if name_size > 256:
+                raise RuntimeError(f"Entry {i}: name_size {name_size} > 256")
+            if name_size and (fsz < name_size or fsz - name_size < name_offset):
+                raise RuntimeError(f"Entry {i}: name extends beyond data_size")
+            if file_size and (fsz < file_size or fsz - file_size < file_offset):
+                raise RuntimeError(f"Entry {i}: file extends beyond data_size")
+
+            entries.append(dict(
+                name_offset=name_offset,
+                name_size=name_size,
+                file_offset=file_offset,
+                file_size=file_size,
+                type=entry_type,
+            ))
+        return entries
+
+    # ── Key resolution (retail only) ─────────────────────────────────
+
+    def _resolve_retail_key(self):
+        if self.pkg_platform == self.PKG_PLATFORM_PSP:
+            self._dec_key = self.PKG_AES_KEY
+            self._parse_entries()          # validates with PKG_AES_KEY2
+            return
+
+        for key in (self.PKG_AES_KEY, self.PKG_AES_KEY_IDU):
+            self._dec_key = key
+            try:
+                self._parse_entries()
+                return
+            except RuntimeError:
+                continue
+        raise RuntimeError(
+            "PKG decryption failed with both PKG_AES_KEY and PKG_AES_KEY_IDU."
+        )
+
+    # ── Public extraction API ────────────────────────────────────────
+
+    def extract(self, output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+
+        if self.pkg_type == self.PKG_RELEASE_TYPE_RELEASE:
+            self._resolve_retail_key()
+        elif self.pkg_type != self.PKG_RELEASE_TYPE_DEBUG:
+            raise RuntimeError(f"Unknown pkg_type 0x{self.pkg_type:04X}")
+
+        entries = self._parse_entries()
+
+        for idx, entry in enumerate(entries):
+            if entry["name_size"] == 0:
+                continue
+
+            if self.pkg_type == self.PKG_RELEASE_TYPE_DEBUG:
+                raw_name = self._decrypt_debug(entry["name_offset"], entry["name_size"])
+            else:
+                fkey_name = self._file_key(entry["type"])
+                raw_name = self._decrypt_aes_with_key(fkey_name, entry["name_offset"], entry["name_size"])
+
+            name = (raw_name.rstrip(b"\x00").decode("utf-8", errors="replace")
+                    or f"file_{idx:04d}")
+
+            is_dir = (entry["type"] & 0xFF) == self.PKG_ENTRY_FOLDER
+            dest   = os.path.join(output_dir, *name.replace("\\", "/").split("/"))
+
+            if is_dir:
+                os.makedirs(dest, exist_ok=True)
+                continue
+
+            parent = os.path.dirname(dest)
+            if parent:
+                os.makedirs(parent, exist_ok=True)
+
+            if os.path.exists(dest) and not (entry["type"] & self.PKG_FILE_ENTRY_OVERWRITE):
+                continue
+
+            rel       = entry["file_offset"]
+            remaining = entry["file_size"]
+
+            if self.pkg_type == self.PKG_RELEASE_TYPE_DEBUG:
+                decrypt_fn = lambda off, sz: self._decrypt_debug(off, sz)
+            else:
+                fkey = self._file_key(entry["type"])
+                decrypt_fn = lambda off, sz, k=fkey: self._decrypt_aes_with_key(k, off, sz)
+
+            with open(dest, "wb") as fout:
+                written = 0
+                while written < remaining:
+                    sz = min(CHUNK_SIZE, remaining - written)
+                    fout.write(decrypt_fn(rel + written, sz))
+                    written += sz
+
+    def read_param_sfo(self):
+        """Decrypt only the PARAM.SFO entry and return its parsed key/values.
+
+        Returns the SFO dict (with e.g. "TITLE") or None when the PKG has no
+        PARAM.SFO (typical for LICENSE-only packages).
+        """
+        if self.pkg_type == self.PKG_RELEASE_TYPE_RELEASE:
+            self._resolve_retail_key()
+        elif self.pkg_type != self.PKG_RELEASE_TYPE_DEBUG:
+            return None
+
+        for entry in self._parse_entries():
+            if entry["name_size"] == 0:
+                continue
+            if self.pkg_type == self.PKG_RELEASE_TYPE_DEBUG:
+                raw_name = self._decrypt_debug(entry["name_offset"], entry["name_size"])
+            else:
+                raw_name = self._decrypt_aes_with_key(
+                    self._file_key(entry["type"]), entry["name_offset"], entry["name_size"])
+
+            name = raw_name.rstrip(b"\x00").decode("utf-8", errors="replace")
+            if os.path.basename(name.replace("\\", "/")).upper() != "PARAM.SFO":
+                continue
+
+            if self.pkg_type == self.PKG_RELEASE_TYPE_DEBUG:
+                blob = self._decrypt_debug(entry["file_offset"], entry["file_size"])
+            else:
+                blob = self._decrypt_aes_with_key(
+                    self._file_key(entry["type"]), entry["file_offset"], entry["file_size"])
+            return parse_sfo(blob)
+        return None
+
+
+# ──────────────────────────────────────────────────────────────────
+# PARAM.SFO parser
+# ──────────────────────────────────────────────────────────────────
+
+# data_fmt values from the PS3 SFO format
+SFO_FMT_INT32 = 0x0404
+
+def parse_sfo(data):
+    """Parse a PS3 PARAM.SFO blob into a {key: value} dict.
+
+    UTF-8 string values are decoded; int32 values become Python ints.
+    Returns {} if the blob is not a valid SFO.
+    """
+    if len(data) < 20 or data[:4] != b"\x00PSF":
+        return {}
+    _version, key_table_start, data_table_start, num_entries = \
+        struct.unpack("<IIII", data[4:20])
+
+    result = {}
+    for i in range(num_entries):
+        o = 20 + i * 16
+        if o + 16 > len(data):
+            break
+        key_off, data_fmt, data_len, _data_max, data_off = \
+            struct.unpack("<HHIII", data[o:o + 16])
+
+        key_start = key_table_start + key_off
+        key_end = data.find(b"\x00", key_start)
+        if key_end == -1:
+            continue
+        key = data[key_start:key_end].decode("utf-8", errors="replace")
+
+        val_start = data_table_start + data_off
+        val = data[val_start:val_start + data_len]
+        if data_fmt == SFO_FMT_INT32:
+            value = struct.unpack("<I", val[:4])[0] if len(val) >= 4 else 0
+        else:
+            value = val.split(b"\x00", 1)[0].decode("utf-8", errors="replace")
+        result[key] = value
+    return result
+
+
+# ──────────────────────────────────────────────────────────────────
+# Content-ID / title-ID helpers
+# ──────────────────────────────────────────────────────────────────
+
+# region inferred from the 3rd letter of the game ID
+# (NP[U]B…=US, NP[E]B…=EU, NP[J]B…=JP, BL[U]S…=US, BL[E]S…=EU, …)
+REGION_BY_GAMEID = {"U": "US", "E": "EU", "J": "JP", "H": "ASIA",
+                    "K": "ASIA", "A": "ASIA", "I": "INT", "C": "CN"}
+
+def region_from_game_id(game_id):
+    if game_id and len(game_id) >= 3:
+        return REGION_BY_GAMEID.get(game_id[2].upper(), "")
+    return ""
+
+def title_id_from_content_id(content_id):
+    """Parse the game ID from a PS3 content ID.
+
+    Format: XX####-TITLEID_##-UNIQUEID  →  TITLEID  (e.g. BLES01718)
+    Base game and its DLC share the same TITLEID, which is how we group them.
+    """
+    parts = content_id.split("-")
+    if len(parts) >= 2:
+        return parts[1].split("_")[0]
+    return ""
+
+
+def content_id_from_rap(rap_path):
+    """A .rap file is named <content_id>.rap."""
+    return os.path.splitext(os.path.basename(rap_path))[0]
+
+
+# ──────────────────────────────────────────────────────────────────
+# dev_hdd0 layout builder
+# ──────────────────────────────────────────────────────────────────
+
+# extraction order within a group: base game (GAME_EXEC) first so DLC/data
+# packages are laid on top of it (matching PS3 install order).
+_PKG_ORDER = {
+    PS3PKGExtractor.PKG_CONTENT_TYPE_GAME_EXEC: 0,  # base game executable
+    PS3PKGExtractor.PKG_CONTENT_TYPE_GAME_DATA: 1,  # game data / DLC
+    PS3PKGExtractor.PKG_CONTENT_TYPE_THEME:     2,
+    PS3PKGExtractor.PKG_CONTENT_TYPE_LICENSE:   3,
+}
+
+def order_pkgs(pkg_paths):
+    """Sort a group's PKGs base-game-first, then DLC/data, then by name."""
+    def key(p):
+        try:
+            ct = PS3PKGExtractor(p).content_type
+        except Exception:
+            ct = None
+        return _PKG_ORDER.get(ct, 9), os.path.basename(p)
+    return sorted(pkg_paths, key=key)
+
+
+def build_dev_hdd0(pkg_paths, hdd0_root, rap_paths, edat_paths=(), game_id=""):
+    """Extract a group of PKGs into an RPCS3 dev_hdd0 tree.
+
+    Install paths mirror rpcs3/Crypto/unpkg.cpp set_install_path():
+      GAME_EXEC / GAME_DATA (and default) → dev_hdd0/game/<install_dir>/
+      LICENSE (0x0B)                       → dev_hdd0/home/00000001/exdata/
+      THEME   (0x09)                       → dev_hdd0/theme/<install_dir>/
+
+    rap_paths maps content_id → rap file path; matching .rap files are copied
+    into dev_hdd0/home/00000001/exdata/.  Any .edat in edat_paths whose filename
+    references game_id is copied there too (license that unlocks the game).
+
+    Returns (install_dir, consumed_raps, consumed_edats) listing the .rap/.edat
+    paths that were actually copied in.
+    """
+    exdata = os.path.join(hdd0_root, "home", "00000001", "exdata")
+    install_dir = None
+    consumed_raps = []
+    consumed_edats = []
+
+    for pkg_path in order_pkgs(pkg_paths):
+        extractor = PS3PKGExtractor(pkg_path)
+        ct = extractor.content_type
+
+        if ct == PS3PKGExtractor.PKG_CONTENT_TYPE_LICENSE:
+            dest = exdata
+        elif ct == PS3PKGExtractor.PKG_CONTENT_TYPE_THEME:
+            dest = os.path.join(hdd0_root, "theme", extractor.install_dir or "")
+        else:
+            idir = extractor.install_dir or title_id_from_content_id(extractor.content_id) or "UNKNOWN"
+            dest = os.path.join(hdd0_root, "game", idir)
+            if install_dir is None:
+                install_dir = idir
+
+        print(f"    extracting {os.path.basename(pkg_path)} ({extractor.content_id})")
+        extractor.extract(dest)
+
+        rap_src = rap_paths.get(extractor.content_id)
+        if rap_src and os.path.isfile(rap_src):
+            os.makedirs(exdata, exist_ok=True)
+            shutil.copy2(rap_src, os.path.join(exdata, f"{extractor.content_id}.rap"))
+            consumed_raps.append(rap_src)
+            print(f"    + rap {extractor.content_id}.rap")
+
+    # copy any .edat license that references this game id
+    for edat_path in edat_paths:
+        if game_id and game_id in os.path.basename(edat_path):
+            os.makedirs(exdata, exist_ok=True)
+            shutil.copy2(edat_path, os.path.join(exdata, os.path.basename(edat_path)))
+            consumed_edats.append(edat_path)
+            print(f"    + edat {os.path.basename(edat_path)}")
+
+    return install_dir or "UNKNOWN", consumed_raps, consumed_edats
+
+
+# ──────────────────────────────────────────────────────────────────
+# Squashfs creation
+# ──────────────────────────────────────────────────────────────────
+
+def create_squashfs(source_dir, output_image, compression="zstd"):
+    """Pack source_dir into output_image with mksquashfs."""
+    cmd = [
+        "mksquashfs", source_dir, output_image,
+        "-comp", compression,
+        "-noappend",
+        "-no-progress",
+    ]
+    subprocess.run(cmd, check=True)
+
+
+def unsquashfs(image, dest_dir):
+    """Unpack an existing squashfs image into dest_dir (filesystem root)."""
+    subprocess.run(["unsquashfs", "-f", "-d", dest_dir, image], check=True)
+
+
+# ──────────────────────────────────────────────────────────────────
+# NoPayStation TSV database
+# ──────────────────────────────────────────────────────────────────
+
+def fetch(url, timeout=60):
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            return response.read()
+    except Exception as exc:
+        print(f"[fetch error] {url} — {exc}")
+        return None
+
+
+def load_nps_tsv(url, database):
+    """Merge one NoPayStation TSV into database: title_id → (name, region).
+
+    First entry per title_id wins (PS3_GAMES is loaded before PS3_DLCS so the
+    base-game name/region takes precedence over DLC rows).
+    """
+    print(f"[nps] downloading {url} …")
+    data = fetch(url)
+    if not data:
+        print(f"[nps] download failed: {url}")
+        return database
+
+    text = data.decode("utf-8", errors="replace")
+    reader = csv.DictReader(io.StringIO(text), delimiter="\t")
+    added = 0
+    for row in reader:
+        title_id = (row.get("Title ID") or "").strip().upper()
+        name = (row.get("Name") or "").strip()
+        region = (row.get("Region") or "").strip()
+        if title_id and name and title_id not in database:
+            database[title_id] = (name, region)
+            added += 1
+    print(f"[nps] {added:,} titles added.")
+    return database
+
+
+# ──────────────────────────────────────────────────────────────────
+# Filename helpers
+# ──────────────────────────────────────────────────────────────────
+
+# version token from a PKG filename: prefer an explicit "v1.1"/"V2.0" marker,
+# otherwise a bare dotted number like "1.10".
+_VER_WITH_V = re.compile(r'[vV]\d+(?:\.\d+)+')
+_VER_BARE   = re.compile(r'(?<!\d)\d+\.\d+(?:\.\d+)*(?!\d)')
+
+def version_from_filename(filename):
+    stem = os.path.splitext(os.path.basename(filename))[0]
+    match = _VER_WITH_V.search(stem) or _VER_BARE.search(stem)
+    return match.group(0) if match else ""
+
+
+def safe_filename(name):
+    name = name.strip()
+    name = unicodedata.normalize("NFKD", name)
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    name = re.sub(r'[\\/:*?"<>|]', "", name)
+    name = re.sub(r"\s+", " ", name).strip()
+    return name
+
+
+# trailing trial/demo marker, e.g. "… - Trial", "… (Trial)", "… [Demo]"
+_TRIAL_SUFFIX = re.compile(r'\s*[-–:(\[]?\s*(?:trial|demo)\s*[)\]]?\s*$', re.IGNORECASE)
+
+def strip_trial(name):
+    """Drop a trailing Trial/Demo marker (the game is unlocked by a license)."""
+    return _TRIAL_SUFFIX.sub("", name).strip()
+
+
+def group_has_license(game_id, pkg_paths, rap_paths, edat_paths):
+    """True if this game group ships something that unlocks it: a LICENSE pkg,
+    a .rap matching a pkg content id, or a .edat referencing the game id."""
+    if any(game_id in os.path.basename(e) for e in edat_paths):
+        return True
+    for pkg in pkg_paths:
+        try:
+            ex = PS3PKGExtractor(pkg)
+        except Exception:
+            continue
+        if ex.content_type == PS3PKGExtractor.PKG_CONTENT_TYPE_LICENSE:
+            return True
+        if ex.content_id in rap_paths:
+            return True
+    return False
+
+
+def format_squashfs_name(game_id, name, region, version=""):
+    """Build "<name> (<region>) [version] [GAMEID].squashfs".
+
+    Missing pieces are simply omitted (e.g. "[GAMEID].squashfs" when the game
+    is unknown and the source filename carried no version).
+    """
+    parts = []
+    if name:
+        base = safe_filename(name)
+        if region:
+            base = f"{base} ({region})"
+        parts.append(base)
+    if version:
+        parts.append(f"[{version}]")
+    parts.append(f"[{game_id}]")
+    return " ".join(parts) + ".squashfs"
+
+
+def resolve_name(game_id, pkg_paths, database):
+    """Find (name, region) for a game: NPS database first, then PARAM.SFO.
+
+    Returns (name, region, source) where source is "nps", "sfo" or None.
+    """
+    entry = database.get(game_id.upper())
+    if entry:
+        return entry[0], entry[1], "nps"
+
+    # fallback: read TITLE from a PARAM.SFO inside one of the group's PKGs
+    for pkg_path in pkg_paths:
+        try:
+            extractor = PS3PKGExtractor(pkg_path)
+            sfo = extractor.read_param_sfo()
+        except Exception:
+            sfo = None
+        if sfo and sfo.get("TITLE"):
+            return sfo["TITLE"], region_from_game_id(game_id), "sfo"
+
+    return None, None, None
+
+
+# ──────────────────────────────────────────────────────────────────
+# Scanner / driver
+# ──────────────────────────────────────────────────────────────────
+
+def scan_groups(root_dir):
+    """Group .pkg files (top level of root_dir) by game ID.
+
+    Returns (groups, rap_paths, edat_paths):
+      groups     : game_id → list of .pkg paths
+      rap_paths  : content_id → .rap path
+      edat_paths : list of .edat paths
+    """
+    groups = defaultdict(list)
+    rap_paths = {}
+    edat_paths = []
+
+    for entry in sorted(os.listdir(root_dir)):
+        path = os.path.join(root_dir, entry)
+        if not os.path.isfile(path):
+            continue
+        lower = entry.lower()
+        if lower.endswith(".rap"):
+            rap_paths[content_id_from_rap(path)] = path
+        elif lower.endswith(".edat"):
+            edat_paths.append(path)
+        elif lower.endswith(".pkg"):
+            try:
+                extractor = PS3PKGExtractor(path)
+            except Exception as exc:
+                print(f"[skip] {entry}: not a readable PS3 PKG ({exc})")
+                continue
+            game_id = title_id_from_content_id(extractor.content_id)
+            if not game_id:
+                print(f"[skip] {entry}: could not determine game ID")
+                continue
+            groups[game_id].append(path)
+
+    return groups, rap_paths, edat_paths
+
+
+def process_group(game_id, pkg_paths, rap_paths, edat_paths, root_dir, database,
+                  keep_sources=False):
+    name, region, source = resolve_name(game_id, pkg_paths, database)
+    ordered = order_pkgs(pkg_paths)
+    version = version_from_filename(ordered[0]) if ordered else ""
+
+    # an unlocked game (we ship its license) is no longer a trial → drop marker
+    unlocked = group_has_license(game_id, pkg_paths, rap_paths, edat_paths)
+    if unlocked and name:
+        name = strip_trial(name)
+
+    out_name = format_squashfs_name(game_id, name, region, version)
+    out_path = os.path.join(root_dir, out_name)
+
+    if source == "sfo":
+        print(f"[sfo] {game_id}: name from PARAM.SFO (not in NPS database)")
+    elif source is None:
+        print(f"[unknown] {game_id}: not in NPS database and no PARAM.SFO title")
+    if unlocked:
+        print(f"[license] {game_id}: license present → unlocked (Trial/Demo dropped)")
+
+    merging = os.path.exists(out_path)
+    print(f"\n=== {game_id} → {out_name}{' (merge)' if merging else ''} ===")
+    for p in ordered:
+        print(f"    pkg {os.path.basename(p)}")
+
+    building = out_path + ".building"
+    with tempfile.TemporaryDirectory(prefix="ps3pkg_", dir=root_dir) as tmp:
+        dev_hdd0 = os.path.join(tmp, "dev_hdd0")
+        try:
+            # unpack the existing image so new PKG content is merged into it
+            if merging:
+                print(f"[merge] unpacking existing {out_name} …")
+                unsquashfs(out_path, tmp)
+            _install_dir, consumed_raps, consumed_edats = build_dev_hdd0(
+                pkg_paths, dev_hdd0, rap_paths, edat_paths, game_id)
+            create_squashfs(tmp, building)
+            os.replace(building, out_path)
+        except Exception as exc:
+            print(f"[error] {game_id}: {exc}")
+            if os.path.exists(building):
+                os.remove(building)
+            return False
+
+    size_mb = os.path.getsize(out_path) / (1024 ** 2)
+    print(f"[{'updated' if merging else 'created'}] {out_name} ({size_mb:.1f} MB)")
+
+    if keep_sources:
+        print("    keeping source .pkg/.rap/.edat files (--keep)")
+        return True
+
+    # delete consumed sources only after a successful build
+    for p in pkg_paths + consumed_raps + consumed_edats:
+        try:
+            os.remove(p)
+            print(f"    deleted {os.path.basename(p)}")
+        except OSError as exc:
+            print(f"    [warn] could not delete {os.path.basename(p)}: {exc}")
+
+    return True
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Pack PS3 PSN .pkg/.rap files into per-game .squashfs images.")
+    parser.add_argument("folder", nargs="?", default=os.getcwd(),
+                        help=f"PS3 roms folder to scan (must be {ROMS_PS3})")
+    parser.add_argument("-k", "--keep", action="store_true",
+                        help="keep the source .pkg/.rap files instead of deleting them")
+    args = parser.parse_args()
+
+    root_dir = args.folder
+    if not root_dir or root_dir == ".":
+        root_dir = os.getcwd()
+    root_dir = os.path.realpath(root_dir)
+
+    if not os.path.isdir(root_dir):
+        print(f"Error: folder '{root_dir}' does not exist.")
+        return 1
+
+    if root_dir != ROMS_PS3:
+        print(f"Error: this action is only supported for {ROMS_PS3}")
+        print(f"Current folder: {root_dir}")
+        return 1
+
+    if shutil.which("mksquashfs") is None or shutil.which("unsquashfs") is None:
+        print("Error: mksquashfs/unsquashfs not found (squashfs-tools missing).")
+        return 1
+
+    try:
+        _import_aes()
+    except ImportError:
+        print("Error: pycryptodome(x) not installed (Cryptodome/Crypto missing).")
+        return 1
+
+    print(f"Scanning folder : {root_dir}")
+    print("-" * 60)
+
+    groups, rap_paths, edat_paths = scan_groups(root_dir)
+    if not groups:
+        print("No PS3 .pkg files found.")
+        return 0
+
+    print(f"\n{len(groups)} game(s) found, {sum(len(v) for v in groups.values())} .pkg, "
+          f"{len(rap_paths)} .rap, {len(edat_paths)} .edat")
+
+    database = {}
+    load_nps_tsv(PS3_GAMES_URL, database)
+    load_nps_tsv(PS3_DLCS_URL, database)
+    if not database:
+        print("[warn] NPS databases unavailable — names will use GAMEID only.")
+
+    print("-" * 60)
+
+    if args.keep:
+        print("Keep mode       : source .pkg/.rap will NOT be deleted")
+        print("-" * 60)
+
+    created = 0
+    for game_id in sorted(groups):
+        if process_group(game_id, groups[game_id], rap_paths, edat_paths, root_dir,
+                         database, keep_sources=args.keep):
+            created += 1
+
+    print("\n" + "-" * 60)
+    print(f"Done! {created} .squashfs file(s) created.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
