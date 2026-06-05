@@ -6,11 +6,11 @@
  
 +	if (cursor_locked(seat, event->pointer)) {
 +		wlr_relative_pointer_manager_v1_send_relative_motion(
-+			seat->server->relative_pointer_manager,
-+			seat->seat, (uint64_t)event->time_msec * 1000,
++			server.relative_pointer_manager,
++			seat->wlr_seat, (uint64_t)event->time_msec * 1000,
 +			dx, dy, dx, dy);
-+		seat->cursor->x = lx;
-+		seat->cursor->y = ly;
++		
++		wlr_cursor_warp(seat->cursor, &event->pointer->base, dx, dy);
 +		return;
 +	}
 +
