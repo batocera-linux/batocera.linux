@@ -72,7 +72,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
 endif
 
 # enable vulkan if we are building with it
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     PPSSPP_CONF_OPTS += -DVULKAN=ON
     PPSSPP_CONF_OPTS += -DUSE_VULKAN_DISPLAY_KHR=ON
     # enable x11/vulkan interface only if xorg

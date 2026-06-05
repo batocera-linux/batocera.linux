@@ -43,9 +43,9 @@ else
 endif
 
 # currently duckstation build fails if you set vulkan off when headers & loader are present
-ifeq ($(BR2_PACKAGE_VULKAN_HEADERS)$(BR2_PACKAGE_VULKAN_LOADER),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
-    DUCKSTATION_DEPENDENCIES += vulkan-headers vulkan-loader
+    DUCKSTATION_DEPENDENCIES += mesa3d vulkan-loader
 else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
 endif
