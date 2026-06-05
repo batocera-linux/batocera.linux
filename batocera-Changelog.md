@@ -65,7 +65,7 @@
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.9.7
 - Linux Firmware to 20260519
-- Mesa3D to 26.1.0
+- Mesa3D to 26.1.2
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
 - Qualcomm SM8550 device kernel updated to 7.0.10
