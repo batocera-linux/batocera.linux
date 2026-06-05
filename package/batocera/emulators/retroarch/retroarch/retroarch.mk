@@ -111,7 +111,7 @@ ifeq ($(BR2_PACKAGE_HAS_LIBEGL),y)
     RETROARCH_DEPENDENCIES += libegl
 endif
 
-ifeq ($(BR2_PACKAGE_VULKAN_LOADER)$(BR2_PACKAGE_VULKAN_HEADERS),yy)
+ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     RETROARCH_CONF_OPTS += --enable-vulkan
     RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader slang-shaders
 endif
