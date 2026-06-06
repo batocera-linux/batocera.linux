@@ -4,29 +4,23 @@
 # if production we determine if we use the open source kernel drivers or proprietary ones.
 # driver can be detected 'auto' or also set using batocera-boot.conf
 
-# try to create the log dir
-mkdir -p "/var/log"
-mkdir -p "/var/tmp"
-log="/var/log/nvidia.log"
-
-MODE=$1
-
-if [ "${MODE}" = "auto" ]; then
-    echo "Detecting if we have an NVIDIA GPU" >> $log
+guess_mode() {
+    MODE=
+    echo "Detecting if we have an NVIDIA GPU" >&2
     NVIDIA_DEV=$(lspci -mn | awk '{ gsub("\"",""); if (($2 ~ "030[0-2]") && ($3 == "10de" || $3 == "12d2")) { print $1 } }')   
     if [ "$NVIDIA_DEV" ]; then
-        echo "Detected an NVIDIA GPU at $NVIDIA_DEV" >> "$log"
+        echo "Detected an NVIDIA GPU at $NVIDIA_DEV" >&2
         for d in $NVIDIA_DEV; do
             # Get the PCI Device ID and convert it to the required format with "0x" prefix
             PCIDEVID=$(lspci -mn -s "$d" | awk '{ gsub("\"",""); print "0x" toupper($4) }')
-            echo "Checking for supported card using ID: $PCIDEVID" >> "$log"
+            echo "Checking for supported card using ID: $PCIDEVID" >&2
             # Determine the mode and card name based on the JSON data
             jq_output=$(jq -r --arg pcidevid "$PCIDEVID" '.chips[] |
                 select(.devid == $pcidevid) |
                 "\(.name)|\(.legacybranch // "null")|\(.features | contains(["kernelopen"]) | tostring)"' \
                 /usr/share/nvidia/supported-gpus.json | head -n 1)
             
-            echo "Matched json query: $jq_output" >> $log
+            echo "Matched json query: $jq_output" >&2
             # Extract the card name and determine the driver mode
             CARDNAME=$(echo "$jq_output" | cut -d'|' -f1)
             LEGACYDRIVER=$(echo "$jq_output" | cut -d'|' -f2)
@@ -34,7 +28,7 @@ if [ "${MODE}" = "auto" ]; then
 
             if [ -z "$CARDNAME" ]; then
                 # If CARDNAME is empty or null, log it and set MODE to "open"
-                echo "No matching card name found for ID: $PCIDEVID" >> $log
+                echo "No matching card name found for ID: $PCIDEVID" >&2
                 MODE="open"
             else
                 if [ "$LEGACYDRIVER" != "null" ]; then
@@ -45,13 +39,42 @@ if [ "${MODE}" = "auto" ]; then
                     esac
                 elif [ "$KERNELOPEN" = "true" ]; then
                     MODE="open"
+                else
+                    MODE="unsupported"
                 fi
-                echo "Found Nvidia GPU: $CARDNAME with ID: $PCIDEVID" >> $log
-                echo "Setting driver to: $MODE" >> $log
+                echo "Found Nvidia GPU: $CARDNAME with ID: $PCIDEVID" >&2
+                echo "Setting driver to: $MODE" >&2
             fi
         done
     else
-        echo "No NVIDIA GPU detected" >> $log
+	echo "No NVIDIA GPU detected" >&2
+	MODE=none
+    fi
+    echo "${MODE}"
+}
+
+# just display the mode
+# none:         no nvidia card detected
+# unsupported : nvidia card detected and unsupported
+# open:         nvidia card detected and compatible using nvidia drivers
+# legacyxxx:    nvidia card detected and compatible using nvidia legacy drivers
+# nouveau:      nvidia card detected and compatible using open sources drivers
+if [ "${1}" = "--detected-mode" ]; then
+    guess_mode
+    exit 0
+fi
+
+# try to create the log dir
+mkdir -p "/var/log"
+mkdir -p "/var/tmp"
+log="/var/log/nvidia.log"
+
+MODE=$1
+
+if [ "${MODE}" = "auto" ]; then
+    DETECTED_MODE=$(guess_mode 2>> "$log")
+    if [ "${DETECTED_MODE}" == "none" ]
+    then
         echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
