@@ -1,0 +1,10 @@
+comment "keros-leds needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_KEROS_LEDS
+	bool "keros-leds"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Linux driver for R36 Ultra handhelds providing RGB control.
+
+	  https://github.com/imanolbarba/keros-leds
