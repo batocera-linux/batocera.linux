@@ -68,6 +68,7 @@
 - Mesa3D to 26.1.2
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
+- QT to 6.11.1
 - Qualcomm SM8550 device kernel updated to 7.0.11
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.0.11
