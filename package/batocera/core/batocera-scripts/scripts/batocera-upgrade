@@ -141,7 +141,7 @@ do_help() {
     cat <<-_EOF_
 		Usage of $(basename $0):
 		
-		  --check-update [type]    Checks for update on CLI and GUI
+		  --check-upgrade [type]   Checks for update on CLI and GUI
 		  --check-media-upgrade    Searches for upgrade files in media pool
 
 		  --upgrade                Starts the upgrade on CLI and GUI with configed URL
@@ -234,7 +234,13 @@ do_upgradecheck_1() {
 # Find local files in a media-pool
 do_get_media_file() {
     local media_file="$(find /media/*/ /media/*/batocera/ -maxdepth 1 -name boot.tar.xz -print -quit 2>/dev/null)"
-    test -e "${media_file}" && echo "${media_file}" && return 0 || return 1
+    if test -e "${media_file}"
+    then
+	echo "${media_file}"
+	return 0
+    else
+	return 1
+    fi
 }
 
 do_update() {
@@ -379,7 +385,7 @@ case "${ACTION}" in
         validate_arch     	|| exit 1
 	do_update            	|| exit 1
     ;;
-    --check-update) # Reuse of check code so users can retrieve versions by xterm/SSH
+    --check-upgrade) # Reuse of check code so users can retrieve versions by xterm/SSH
         G_PRESERVE_UPGRADE_FILES=1
         [[ ${1,,} == "butterfly" ]] && G_UPDATETYPE=butterfly
 	[[ ${1,,} == "stable" ]]    && G_UPDATETYPE=stable
