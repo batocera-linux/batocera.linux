@@ -26,8 +26,6 @@ DUCKSTATION_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-no-pie -lm -lstdc++"
 DUCKSTATION_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 DUCKSTATION_CONF_OPTS += -DBUILD_SHARED_LIBS=FALSE
 DUCKSTATION_CONF_OPTS += -DBUILD_QT_FRONTEND=ON
-DUCKSTATION_CONF_OPTS += -DSHADERC_INCLUDE_DIR=$(STAGING_DIR)/stenzek-shaderc/include
-DUCKSTATION_CONF_OPTS += -DSHADERC_LIBRARY=$(STAGING_DIR)/stenzek-shaderc/lib/libshaderc_shared.so
 
 ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_WAYLAND=ON
@@ -42,12 +40,15 @@ else
     DUCKSTATION_CONF_OPTS += -DENABLE_X11=OFF
 endif
 
-# currently duckstation build fails if you set vulkan off when headers & loader are present
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
     DUCKSTATION_DEPENDENCIES += mesa3d vulkan-loader
+    DUCKSTATION_CONF_OPTS += -DSHADERC_INCLUDE_DIR=$(STAGING_DIR)/stenzek-shaderc/include
+    DUCKSTATION_CONF_OPTS += -DSHADERC_LIBRARY=$(STAGING_DIR)/stenzek-shaderc/lib/libshaderc_shared.so
 else
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=OFF
+    # fix compilation without vulkan
+    DUCKSTATION_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -I$(STAGING_DIR)/stenzek-shaderc/include"
 endif
 
 define DUCKSTATION_INSTALL_TARGET_CMDS
