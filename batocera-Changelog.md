@@ -55,6 +55,7 @@
 - PCSX2 to May 17th, 2026 build
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
+- RPCS3 to v.0.0.41
 - ShadPS4 to v.0.15.0
 - Tsugaru to v20251206
 - VKQuake to 1.34.1
