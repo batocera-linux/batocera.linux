@@ -55,7 +55,7 @@ batocera_wifi_configure() {
     settings_key="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${X}.key | tr -d '\\')"
     settings_file="/var/lib/connman/batocera_wifi${X}.config"
     optionalPassphrase=""
-    
+
     [ -n "$settings_key" ] && optionalPassphrase="Passphrase=${settings_key}"
 
     # Create or remove wifi configuration file based on SSID and WLAN status
@@ -78,7 +78,7 @@ batocera_wifi_configure() {
 
 wifi_configure_all() {
     for i in 1 2 3 .hidden; do
-	    batocera_wifi_configure $i
+        batocera_wifi_configure $i
     done
 }
 
@@ -109,37 +109,38 @@ wifi_enable() {
 
     connmanctl enable wifi 2>/dev/null
 
-    # Connection Check Loop (30 Seconds Max)
-    for i in $(seq 1 30); do
+    # Get the primary SSID hex for filtering
+    settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.ssid)"
+    ssid_hex=$(echo -n "$settings_ssid" | xxd -p | tr -d '\n')
+
+    connected=false
+    for i in $(seq 1 10); do
         state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
-        
-        # Check if connected
         if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
-            echo "*** Wifi connected successfully. ***" > /dev/kmsg
+            connected=true
             break
         fi
 
-        # Connman usually auto-scans on enable. We only force a scan if
-        # we still aren't connected after 12 seconds.
-        if [ "$i" -eq 12 ]; then
-            echo "*** Wifi not yet connected. Scanning for alternative services... ***" > /dev/kmsg
-            connmanctl scan wifi 2>/dev/null
-            sleep 1
-            # Try connecting to each service matching our SSID
-            ssid_hex=$(echo -n "$settings_ssid" | xxd -p)
-            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "$ssid_hex" | while read service; do
-                state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
-                if [ "$state" = "ready" ] || [ "$state" = "online" ]; then
-                    break
-                fi
-                echo "*** Wifi trying service: $service ***" > /dev/kmsg
-                connmanctl connect "$service" 2>/dev/null
-                sleep 1
-            done
-        fi
-
+        echo "*** Wifi not yet connected. Scanning for alternative services... ***" > /dev/kmsg
+        connmanctl scan wifi 2>/dev/null
         sleep 1
+        # Build a signal-sorted list of matching services and try each one
+        while read signal service; do
+            state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
+            [ "$state" = "ready" ] || [ "$state" = "online" ] && { connected=true; break; }
+            echo "*** Wifi trying service: $service (signal: $signal) ***" > /dev/kmsg
+            connmanctl connect "$service" 2>/dev/null
+            sleep 2
+        done < <(
+            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "_${ssid_hex}_" | while read svc; do
+                signal=$(connmanctl services "$svc" 2>/dev/null | grep "Strength" | awk '{print $3}')
+                echo "${signal:-0} $svc"
+            done | sort -rn
+        )
+
+        [ "$connected" = true ] && break
     done
+    [ "$connected" = true ] && echo "*** Wifi connected successfully. ***" > /dev/kmsg
 }
 
 wifi_disable() {
@@ -147,10 +148,10 @@ wifi_disable() {
 }
 
 case "$1" in
-	start)
-	    batocera_hostname
-	    wifi_configure_all
-	    printf "Starting connman: "
+    start)
+        batocera_hostname
+        wifi_configure_all
+        printf "Starting connman: "
         start-stop-daemon -S -q -m -b -p /var/run/connmand.pid --exec /usr/sbin/connmand -- -n -r
 
         # wait connmann is started. otherwise, S10wifi is unable to execute connmanctl commands
@@ -161,7 +162,7 @@ case "$1" in
             sleep 0.25
         done
 
-        if [ "$settingsWlan" = "1" ];then
+        if [ "$settingsWlan" = "1" ]; then
             # Detach the wifi enable process
             wifi_enable &
         else
@@ -170,17 +171,17 @@ case "$1" in
 
         echo "done."
         ;;
-	stop)
+    stop)
         printf "Stopping connman: "
         start-stop-daemon -K -q -p /var/run/connmand.pid
         echo "done."
         ;;
-	restart | reload)
+    restart | reload)
         $0 stop
         sleep 0.5
         $0 start
         ;;
-	*)
+    *)
         echo "usage: $0 {start|stop|restart|reload}"
         ;;
 esac

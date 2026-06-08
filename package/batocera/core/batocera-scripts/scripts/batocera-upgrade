@@ -1,9 +1,24 @@
 #!/bin/bash
 
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
 do_clean() {
-    test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
+    test -n "${G_GETPERPID}" && kill -9 "${G_GETPERPID}"
     rm -f "/userdata/system/upgrade/upgrade_message.txt"
-    # delete the default target locations
+    # delete the default target locations if G_PRESERVE_UPGRADE_FILES is empty
+    [ -n "${G_PRESERVE_UPGRADE_FILES}" ] && return 0
     rm -f "/userdata/system/upgrade/boot.tar.xz"
     rm -f "/userdata/system/upgrade/boot.tar.xz.md5"
     if test $# -eq 1; then
@@ -13,16 +28,145 @@ do_clean() {
 }
 trap do_clean EXIT
 
+getSize_remote() {
+    local URL="${1}/boot.tar.xz"
+
+    echo "url: ${URL}" >&2
+    headers=$(curl -A "batocera-upgrade.header" -sfIL "${URL}")
+    test $? -eq 0 || return 1
+    SIZE=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
+    SIZE=$((SIZE / 1024 / 1024))
+    # Add 5% overhead estimate to account compression vs extracted data
+    SIZE=$((SIZE * 105 / 100)) 
+    echo "need to download and extract ~${SIZE}mb" >&2
+    echo "${SIZE}"
+    return 0
+}
+
+getSize_local() {
+    local SIZE=
+
+    if [ -f "${G_LOCAL_FILE}" ]; then
+        # Get exact uncompressed size
+        SIZE=$(xz --robot -l "${G_LOCAL_FILE}" | tail -1 | awk '{print $5}')
+        SIZE=$((SIZE / 1024 / 1024))
+        echo "Using local file: ${G_LOCAL_FILE} (${SIZE}MB uncompressed)" >&2
+    else
+        echo "Error: Local file ${G_LOCAL_FILE} not found." >&2
+        return 1
+    fi
+    echo "${SIZE}"
+    return 0
+}
+
+check_freespace() {
+    local SIZE=$1
+    local FS=$2
+
+    for fs in ${FS}; do
+        local FREESPACE=$(df -m "${fs}" | tail -1 | awk '{print $4}')
+        test $? -eq 0 || return 1
+        # Check for required size + 10MB safety buffer to prevent 100% disk usage
+        if test $((SIZE + 10)) -gt "${FREESPACE}"; then
+            echo "Not enough space on ${FS} to perform the update"
+            echo "Required: $((SIZE + 10))MB | Available: ${FREESPACE}MB"
+            return 1
+        fi
+    done
+    return 0
+}
+
+download_upgrades() {
+    local URL="${2}/boot.tar.xz"
+    local SIZE=$3
+    local PARENT_DIR=$(dirname "${G_LOCAL_FILE}")
+
+    test -z "${PARENT_DIR}"  && return 1
+    mkdir -p "${PARENT_DIR}" || return 1
+
+    if test "$1" = 0
+    then
+	#get md5sum file (optional)
+	curl -A "batocera-upgrade.md5" -sfL "${URL}.md5" -o "${G_LOCAL_FILE}.md5"
+	touch "${G_LOCAL_FILE}"
+	# use real size as download info, faktor 105 for real filsize instead of estimated filespace
+	do_badgeines $((SIZE * 100 / 105 )) &
+	G_GETPERPID=$!
+	curl -A "batocera-upgrade" -sfL "${URL}" -o "${G_LOCAL_FILE}" || return 1
+	return 0
+    else
+	curl -A "batocera-upgrade.md5" -sfL "${URL}.md5" -o "${G_LOCAL_FILE}.md5"
+	curl -A "batocera-upgrade" -fL "${URL}" -o "${G_LOCAL_FILE}" || return 1
+	return 0
+    fi
+}
+
+validate_checksum() {
+    if test -e "${G_LOCAL_FILE}.md5"; then
+        upgmsg "Calculating md5 checksum ..."
+        DISTMD5=$(cat "${G_LOCAL_FILE}.md5")
+        CURRMD5=$(md5sum "${G_LOCAL_FILE}" | sed -e s+' .*$'++)
+        if test "${DISTMD5}" = "${CURRMD5}"; then
+            upgmsg "Checksum validated ..." 2
+        else
+            upgmsg "Checksum error ..." 5
+            return 1
+        fi
+    else
+        upgmsg "Missing md5 file - proceed ..." 3
+    fi
+    return 0
+}
+
+validate_arch() {
+    upgmsg "Get board config from upgrade ..." 1
+    local LOCAL_FILE_BOARD=$(tar xf "${G_LOCAL_FILE}" "boot/batocera.board" -O --occurrence=1) # --occurrence=1 to stop at first occurrence for perf
+    test -z "${LOCAL_FILE_BOARD}" && return 1
+    upgmsg "Update is ${LOCAL_FILE_BOARD} ..." 1
+    if test "${LOCAL_FILE_BOARD}" != "${G_BOARD}"; then
+        if test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${G_BOARD}" = "x86_64-v3"; then
+            upgmsg "Migrating ${G_BOARD} to ${LOCAL_FILE_BOARD}" 2
+        else
+            upgmsg "Error: ${LOCAL_FILE_BOARD} didn't match this ${G_BOARD} board!" 5
+            return 1
+        fi
+    else
+        upgmsg "Current board is ${G_BOARD}!" 1
+    fi
+    return 0
+}
+
+# Dedicated helper page
+do_help() {
+    cat <<-_EOF_
+		Usage of $(basename $0):
+		
+		  --check-upgrade [type]   Checks for update on CLI and GUI
+		  --check-media-upgrade    Searches for upgrade files in media pool
+
+		  --upgrade                Starts the upgrade on CLI and GUI with configed URL
+		       --type <type>       Download stable or buttlerfly
+		       --url <url>         Use dedicated download location
+		       --version <version> Use plain version numbers for ex. 5.27.2, 39 or 44
+
+		  --media-upgrade          Try to upgrade with ~/upgrade/boot.tar.xz (default)
+		     --file [file path]    Use a dedicated file location
+		     --media               Use files in media pools, fallback to default
+_EOF_
+}
+
 # Create upgrade messages for the badge (TERMINAL=0) or plain text output
-do_upgmsg() {
+upgmsg() {
     if [ $TERMINAL -eq 0 ]; then
         echo "$1" > /userdata/system/upgrade/upgrade_message.txt
         [ -n "$2" ] && sleep $2
     else
         echo "$1"
     fi
+    return 0
 }
 
+# Animated badge inside ES
 do_badgeines() {
     TARVAL=$1
     COUNT=0
@@ -35,267 +179,257 @@ do_badgeines() {
             COUNT=$((COUNT+5))
             sleep 0.1
         else
-            CURVAL=$(stat --printf="%s" "${LOCAL_FILE}")
+            CURVAL=$(stat --printf="%s" "${G_LOCAL_FILE}")
             CURVAL=$((CURVAL / 1024 / 1024))
             PER=$((CURVAL * 100 / TARVAL))
-            echo "$CURVAL of $TARVAL MB downloaded ... >>> ${PER}%"
+            echo "${CURVAL} of ${TARVAL} MB downloaded ... >>> ${PER}%"
             sleep 5
         fi
     done
+    return 0
 }
 
-get_media_manual_file() {
-    FILE=$(ls /media/*/boot.tar.xz /media/*/batocera/boot.tar.xz 2>/dev/null)
-    # check it is a single file
-    test -e "${FILE}" && echo "${FILE}"
+# Future proof update check, depends just on build-date and build-time
+do_version_update() {
+    echo "$1" | awk '{ $0=$(NF-1)$NF; gsub(/[^0-9]/,""); print }'
 }
 
-# ---- MAIN ----
+# Upgrade Check, get updated url from ES call
+do_upgradecheck_0() {
+    local update_url="${1}"
+    local available=$(wget -qO- ${update_url})
+    if [ "$?" != "0" ]; then
+        echo "Unable to access the url" >&2
+        return 2
+    fi
+    # hum, i don't know how to check correctly while the ws return success in case of real 404
+    if test "$(echo "${available}" | wc -c)" -ge 50; then
+        echo "Unable to retrieve the version" >&2
+        return 2
+    fi
+    echo "${available}"
+    [ "$available" != "$G_CURRENT_VERSION" ] && return 0 || return 12
+}
 
-# --- Prepare update URLs ---
+# Upgrade Check for CLI, get updated url
+do_upgradecheck_1() {
+    local update_url="${1}"
+    local net_ver=$(wget -q -O - "${update_url}" || echo "--")
+    echo "Installed:   ${G_CURRENT_VERSION}"
+    echo "Modified:    $(batocera-version --extra)"
+    echo "Webversion:  $net_ver"
+    echo "Update URL:  $(dirname ${update_url})"
+    echo "Branch:      ${G_UPDATETYPE^^}-branch searched"
+    echo "Used arch:   ${G_BOARD}"
+    if [[ "$net_ver" != "--" ]]; then
+        if [[ $(do_version_update "${G_CURRENT_VERSION}") -lt $(do_version_update "$net_ver") ]]; then
+            echo "Status:      Possible Update found!"
+        else
+            echo "Status:      No Update found!"
+            return 1
+        fi
+    fi
+}
 
-updateurl="https://updates.batocera.org"
+# Find local files in a media-pool
+do_get_media_file() {
+    local media_file="$(find /media/*/ /media/*/batocera/ -maxdepth 1 -name boot.tar.xz -print -quit 2>/dev/null)"
+    if test -e "${media_file}"
+    then
+	echo "${media_file}"
+	return 0
+    else
+	return 1
+    fi
+}
 
-board=$(cat /boot/boot/batocera.board)
-oldboard="$board"
-test "${board}" = "rpi4" && board=rpi464 # "temporarly" download on rpi464 for rpi4
+do_update() {
+    # remount /boot in rw
+    echo "remounting /boot in rw"
+    if ! mount -o remount,rw /boot
+    then
+	return 1
+    fi
 
-updatetype="$(/usr/bin/batocera-settings-get updates.type)"
-settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
+    # backup boot files
+    # all these files doesn't exist on non rpi platform, so, we have to test them
+    # don't put the boot.ini file while it's not really to be customized
+    upgmsg "Backing up config files ..." 0.5
+    local BOOTFILES="config.txt batocera-boot.conf"
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}"
+	then
+            if ! cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade"
+            then
+		return 1
+            fi
+	fi
+    done
+
+    # snapshot to help create .stale file
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*)$' | sort)
+
+    # extract file on /boot
+    upgmsg "Extracting files ..."
+    if ! (cd /boot && xz -dc < "${G_LOCAL_FILE}" | tar xvf - --no-same-owner)
+    then
+	return 1
+    fi
+
+    # build stale list: entries present before extraction but absent from the new tarball
+    upgmsg "Generating stale file list ..."
+    TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
+    comm -23 \
+	 <(echo "$BOOT_BEFORE") \
+	 <(echo "$TARBALL_CONTENTS") \
+	 > /boot/boot.stale
+
+    STALE_COUNT=$(wc -l < /boot/boot.stale)
+    if [ "$STALE_COUNT" -eq 0 ]; then
+	upgmsg "No stale files detected ... proceed" 0.5
+	rm -f /boot/boot.stale
+    else
+	upgmsg "Stale files to be removed on next boot (${STALE_COUNT})" 1
+	cat /boot/boot.stale
+    fi
+
+    # restore boot files
+    upgmsg "Restoring config files ..." 0.5
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}.upgrade"
+	then
+            if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
+            then
+		echo "Outch" >&2
+            fi
+	fi
+    done
+
+    # remount /boot in ro
+    upgmsg "Doing final cleanups ..." 0.5
+    if ! mount -o remount,ro /boot
+    then
+	return 1
+    fi
+
+    # a sync with some cleanups of downloaded and created files
+    do_clean ${TERMINAL}
+    sync
+
+    # exit from ES-badge without additional messages
+    [ $TERMINAL -eq 0 ] && return 0
+
+    # verify update is for same board, provide a warning if not
+    NEWBOARD=$(cat /boot/boot/batocera.board)
+    if [ "${G_BOARD}" != "${NEWBOARD}" ]
+    then
+	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
+    fi
+
+    echo; echo "Done. Please reboot the system so that the changes take effect!"
+    return 0
+}
+
+#####################################################
+#                       MAIN                        #
+#####################################################
+
+G_UPDATEURL="https://updates.batocera.org"
+G_CURRENT_VERSION=$(cat /usr/share/batocera/batocera.version)
+G_BOARD=$(cat /boot/boot/batocera.board)
+G_UPDATETYPE="$(/usr/bin/batocera-settings-get updates.type)"
+G_SETTINGSUPDATEURL="$(/usr/bin/batocera-settings-get updates.url)"
 
 # customizable upgrade url website
-test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
+test -n "${G_SETTINGSUPDATEURL}" && G_UPDATEURL="${G_SETTINGSUPDATEURL}"
 
 # force a default value in case the value is removed or miswritten
-test "${updatetype}" != "stable" -a "${updatetype}" != "unstable" -a "${updatetype}" != "butterfly" && updatetype="stable"
+test "${G_UPDATETYPE}" != "stable" -a "${G_UPDATETYPE}" != "unstable" -a "${G_UPDATETYPE}" != "butterfly" && G_UPDATETYPE="stable"
 
 # custom the url directory
-DWD_HTTP_DIR="${updateurl}/${board}/${updatetype}/last"
+G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/${G_UPDATETYPE}/last"
 
-# custom CLI url
-test $# -eq 1 && DWD_HTTP_DIR="$1"
+# --- Prepare file and link downloads ---
+ACTION="${1,,}"
+shift
 
+# default media file
+G_LOCAL_FILE="/userdata/system/upgrade/boot.tar.xz"
+# If set to a value trap-function will not delete files
+G_PRESERVE_UPGRADE_FILES=
 # started from Terminal/SSH (TERMINAL=1) or from ES (TERMINAL=0)
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
-# --- Prepare file downloads ---
-LOCAL_FILE="/userdata/system/upgrade/boot.tar.xz" # default
-
-if [ "$1" == "canmanualmedia" ]; then
-    LOCAL_FILE=$(get_media_manual_file)
-    test "${LOCAL_FILE}" = "" && exit 1 # no file found
-    exit 0
-fi
-
-echo "Starting the upgrade..."
-
-# Check if "manual" argument is provided
-if [ "$1" == "manual" ]; then
-    # MFILE can be :
-    # - empty : old behavior, get from /userdata/.../upgrade)
-    # - a real file
-    # - media : search in media a file (root directory, or in a subfolder named batocera)
-    MFILE=$2
-
-    if test "${MFILE}" = "media"
-    then
-	LOCAL_FILE=$(get_media_manual_file)
-    elif test "${MFILE}" != ""
-    then
-	LOCAL_FILE="${MFILE}"
-    fi
-
-    # Check if the local file exists
-    if [ -f "${LOCAL_FILE}" ]; then
-	# Get exact uncompressed size
-	size=$(xz --robot -l "${LOCAL_FILE}" | tail -1 | awk '{print $5}')
-	size=$((size / 1024 / 1024))
-	echo "Using local file: ${LOCAL_FILE} (${size}MB uncompressed)"
-    else
-	echo "Error: Local file ${LOCAL_FILE} not found."
+case "${ACTION}" in
+    --media-upgrade) # use local file locations, additional param: A user file! A file found in media pool, tag as: "media"! or the default location /userdata/system/upgrade
+	SWITCH="${1,,}"
+	shift
+        case "${SWITCH}" in
+            --file) [[ -n "$1" ]] && G_LOCAL_FILE="$1" ;;
+            --media)
+		G_LOCAL_FILE="$(do_get_media_file)"
+		if test -z "${G_LOCAL_FILE}"
+		then
+		    echo "no update media found" >&2
+		    exit 1
+		fi
+		;;
+        esac
+	echo "Starting the upgrade..." >&2
+        SIZE=$(getSize_local)
+	test -z "${SIZE}" && exit 1
+        check_freespace "${SIZE}" "/boot" || exit 1
+        validate_checksum 	|| exit 1
+        validate_arch     	|| exit 1
+	do_update            	|| exit 1
+    ;;
+    --check-upgrade) # Reuse of check code so users can retrieve versions by xterm/SSH
+        G_PRESERVE_UPGRADE_FILES=1
+        [[ ${1,,} == "butterfly" ]] && G_UPDATETYPE=butterfly
+	[[ ${1,,} == "stable" ]]    && G_UPDATETYPE=stable
+        do_upgradecheck_${TERMINAL} "${G_UPDATEURL}/${G_BOARD}/${G_UPDATETYPE}/last/batocera.version"
+        exit $?
+    ;;
+    --check-media-upgrade) # Can a file be retrieved within ES
+        G_PRESERVE_UPGRADE_FILES=1
+        if do_get_media_file
+	then
+	    exit 0
+	else
+	    exit 1
+	fi
+    ;;
+    --upgrade)
+	SWITCH="${1,,}"
+	shift
+        case "${SWITCH}" in
+            --url) [[ -n "$1" ]] && G_DWD_HTTP_DIR="$1" ;;
+            --version) [[ "$1" =~ ^[0-9.]{2,6}$ ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/stable/$1" ;;
+            --type)
+		[[ "${1,,}" == "butterfly" ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/butterfly/last"
+		[[ "${1,,}" == "stable" ]]    && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/stable/last"
+		;;
+        esac
+	echo "Starting the upgrade..." >&2
+	SIZE=$(getSize_remote "${G_DWD_HTTP_DIR}")
+        if test $? != 0
+	then
+	    echo "Error: Connection failed '${G_DWD_HTTP_DIR}'"
+	    exit 1
+	fi
+        check_freespace "${SIZE}" "/userdata/system /boot" || exit 1
+        download_upgrades ${TERMINAL} "${G_DWD_HTTP_DIR}" "${SIZE}" || { echo "Error: Connection failed '${G_DWD_HTTP_DIR}'"; exit 1; }
+        validate_checksum || exit 1
+	do_update         || exit 1
+    ;;
+    --help|-h) # Dedicated help page
+        do_help
+        exit 0
+    ;;
+    *)
+	do_help
 	exit 1
-    fi
-    
-    # check the architecture of the local file
-    LOCAL_FILE_BOARD=$(tar xf "${LOCAL_FILE}" "boot/batocera.board" -O --occurrence=1) # --occurrence=1 to stop at first occurrence for perf
-    echo "Using local file board: ${LOCAL_FILE_BOARD}"
-    if test "${LOCAL_FILE_BOARD}" != "${board}"
-    then
-        # Check if migrating either way between x86_64 and x86_64-v3
-        if { test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${board}" = "x86_64-v3"; } || { test "${LOCAL_FILE_BOARD}" = "x86_64-v3" -a "${board}" = "x86_64"; }
-        then
-            echo "Migrating board from ${board} to ${LOCAL_FILE_BOARD}"
-        else
-            echo "Warning: Local file board (${LOCAL_FILE_BOARD}) is different from current board (${board})"
-            read -r -p "Do you want to proceed anyway? (y/N): " response
-            case "${response}" in
-                [yY][eE][sS]|[yY])
-                    echo "Proceeding..."
-                    ;;
-                *)
-                    echo "Aborting."
-                    exit 1
-                    ;;
-            esac
-        fi
-    fi
-else
-    # download directory
-    mkdir -p /userdata/system/upgrade || exit 1
-
-    # get size to download
-    url="${DWD_HTTP_DIR}/boot.tar.xz"
-    echo "url: ${url}"
-    headers=$(curl -A "batocera-upgrade.header" -sfIL "${url}")
-    test $? -eq 0 || exit 1
-    size=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
-    size=$((size / 1024 / 1024))
-    # Add 5% overhead estimate to account compression vs extracted data
-    size=$((size * 105 / 100)) 
-    test $? -eq 0 || exit 1
-    echo "need to download and extract ~${size}mb"
-fi
-
-# check free space on fs
-if [ "$1" != "manual" ]; then
-    filesystems="/userdata/system /boot"
-else
-    filesystems="/boot"
-fi
-
-# Check free space on filesystems
-for fs in $filesystems
-do
-    freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
-    test $? -eq 0 || exit 1
-    # Check for required size + 10MB safety buffer to prevent 100% disk usage
-    if test $((size + 10)) -gt "${freespace}"
-    then
-        echo "Not enough space on ${fs} to perform the update"
-        echo "Required: $((size + 10))MB | Available: ${freespace}MB"
-        exit 1
-    fi
-done
-
-##### Up to this the GUI was not used, now do_upgmsg will automatically decide which output to use
-# download
-if [ "$1" != "manual" ]; then
-    if [ $TERMINAL -eq 0 ]; then
-        # download inside ES with badge
-        touch "${LOCAL_FILE}"
-        do_badgeines "${size}" &
-        GETPERPID=$!
-        curl -A "batocera-upgrade" -sfL "${url}" -o "${LOCAL_FILE}" || exit 1
-        do_upgmsg "Calculating md5 checksum ..."
-    else
-        # download inside SSH or terminal
-        curl -A "batocera-upgrade" -fL "${url}" -o "${LOCAL_FILE}" || exit 1
-        echo "Check proper file download, checking md5sum - please wait"
-    fi
-fi
-
-# try to download an md5 checksum
-if [ "$1" != "manual" ]; then
-    curl -A "batocera-upgrade.md5" -sfL "${url}.md5" -o "${LOCAL_FILE}.md5"
-fi
-if test -e "${LOCAL_FILE}.md5"
-then
-    DISTMD5=$(cat "${LOCAL_FILE}.md5")
-    CURRMD5=$(md5sum "${LOCAL_FILE}" | sed -e s+' .*$'++)
-    if test "${DISTMD5}" = "${CURRMD5}"
-    then
-        do_upgmsg "Checksum validated ..." 2
-    else
-        do_upgmsg "Checksum error ..." 5
-        exit 1
-    fi
-else
-    do_upgmsg "Missing md5 file - proceed ..." 3
-fi
-
-# remount /boot in rw
-echo "remounting /boot in rw"
-if ! mount -o remount,rw /boot
-then
-    exit 1
-fi
-
-# backup boot files
-# all these files doesn't exist on non rpi platform, so, we have to test them
-# don't put the boot.ini file while it's not really to be customized
-do_upgmsg "Backing up config files ..." 0.5
-BOOTFILES="config.txt batocera-boot.conf"
-for BOOTFILE in ${BOOTFILES}
-do
-    if test -e "/boot/${BOOTFILE}"
-    then
-        if ! cp "/boot/${BOOTFILE}" "/boot/${BOOTFILE}.upgrade"
-        then
-            exit 1
-        fi
-    fi
-done
-
-# snapshot to help create .stale file
-BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*)$' | sort)
-
-# extract file on /boot
-do_upgmsg "Extracting files ..."
-if ! (cd /boot && xz -dc < "${LOCAL_FILE}" | tar xvf - --no-same-owner)
-then
-    exit 1
-fi
-
-# build stale list: entries present before extraction but absent from the new tarball
-do_upgmsg "Generating stale file list ..."
-TARBALL_CONTENTS=$(xz -dc < "${LOCAL_FILE}" | tar tf - | sed -e 's|^\./||' -e 's|/$||' | sort -u)
-comm -23 \
-    <(echo "$BOOT_BEFORE") \
-    <(echo "$TARBALL_CONTENTS") \
-    > /boot/boot.stale
-
-STALE_COUNT=$(wc -l < /boot/boot.stale)
-if [ "$STALE_COUNT" -eq 0 ]; then
-    echo "No stale files detected"
-    rm -f /boot/boot.stale
-else
-    echo "Stale files to be removed on next boot (${STALE_COUNT}):"
-    cat /boot/boot.stale
-fi
-
-# restore boot files
-do_upgmsg "Restoring config files ..." 0.5
-for BOOTFILE in ${BOOTFILES}
-do
-    if test -e "/boot/${BOOTFILE}.upgrade"
-    then
-        if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
-        then
-            echo "Outch" >&2
-        fi
-    fi
-done
-
-# remount /boot in ro
-do_upgmsg "Doing final cleanups ..." 0.5
-if ! mount -o remount,ro /boot
-then
-    exit 1
-fi
-
-# a sync with some cleanups of downloaded and created files
-do_clean $TERMINAL
-sync
-
-# exit from ES-badge without additional messages
-[ $TERMINAL -eq 0 ] && exit 0
-
-# verify update is for same board, provide a warning if not
-newboard=$(cat /boot/boot/batocera.board)
-if [ "$oldboard" != "$newboard" ]
-then
-    echo; echo "WARNING: Current board is ${oldboard}, applied update is for ${newboard}"
-fi
-
-echo; echo "Done. Please reboot the system so that the changes take effect!"
-exit 0
+esac
+###

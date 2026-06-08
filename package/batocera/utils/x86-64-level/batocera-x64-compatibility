@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# x64-v3 requires 2 conditions
+# - v3 x86_64
+# - if nvidia gpu card, nvidia compatibility
+
+X64VERSION=$(x86-64-level)
+echo "CPU X86-64 version: ${X64VERSION}" >&2
+
+NVIDIAMODE=$(batocera-nvidia --detected-mode 2>/dev/null)
+echo "Nvidia mode: ${NVIDIAMODE}" >&2
+
+if [ "${X64VERSION}" -ge 3 -a "${NVIDIA_COMPATIBLE}" != "unsupported" -a "${NVIDIA_COMPATIBLE}" != "nouveau" ]
+then
+    echo "Hardware compatible with x64-v3 : YES" >&2
+    exit 0
+else
+    echo "Hardware compatible with x64-v3 : NO" >&2
+    exit 1
+fi

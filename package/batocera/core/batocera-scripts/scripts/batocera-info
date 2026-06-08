@@ -229,10 +229,14 @@ if [ "${#cpu_features[@]}" -gt 0 ]; then
     echo "CPU Features: ${cpu_features[*]}"
 fi
 
-if test -x /usr/bin/x86-64-level
+if test "${V_BOARD}" = "x86_64"
 then
-    X64VERSION=$(x86-64-level)
-    echo "CPU X86-64 version: ${X64VERSION}"
+    if batocera-x64-compatibility 2>/dev/null
+    then
+	echo "Hardware compatible with x64-v3 : YES"
+    else
+	echo "Hardware compatible with x64-v3 : NO"
+    fi
 fi
 
 # ---------------------------------------------------------------------------
