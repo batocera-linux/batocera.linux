@@ -16,31 +16,11 @@ index 34999d5..555a864 100644
  #if defined(__APPLE__)
          // Store other data in the user-wide path. Otherwise we may end up dumping
          // files into the "/Applications/" install directory or the app bundle.
-@@ -220,12 +215,12 @@ void init_paths(Root &root_paths) {
-         auto APPDIR = getenv("APPDIR"); // Used in AppImage
- 
-         if (XDG_DATA_HOME != NULL)
--            root_paths.set_pref_path(fs::path(XDG_DATA_HOME) / app_name / app_name / "");
-+            root_paths.set_pref_path(fs::path(XDG_DATA_HOME) / "psvita" / "");
- 
-         if (XDG_CONFIG_HOME != NULL)
-             root_paths.set_config_path(fs::path(XDG_CONFIG_HOME) / app_name / "");
-         else if (env_home != NULL)
--            root_paths.set_config_path(fs::path(env_home) / ".config" / app_name / "");
-+            root_paths.set_config_path(fs::path(env_home) / "configs" / app_name / "");
- 
-         if (XDG_CACHE_HOME != NULL) {
-             root_paths.set_cache_path(fs::path(XDG_CACHE_HOME) / app_name / "");
-@@ -260,10 +255,10 @@ void init_paths(Root &root_paths) {
+@@ -371,7 +371,7 @@ void init_paths(Root &root_paths) {
  
          // shared path
-         if (env_home != NULL)
--            root_paths.set_shared_path(fs::path(env_home) / ".local/share" / app_name / "");
-+            root_paths.set_shared_path(fs::path("/userdata/saves/psvita/"));
- 
-         if (XDG_DATA_HOME != NULL) {
+         if (XDG_DATA_HOME != NULL)
 -            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / app_name / "");
 +            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / "psvita" / "");
-         }
- 
-         // patch path should be in shared path
+         else if (home_path[0] != '\0')
+             root_paths.set_shared_path(fs::path(home_path) / ".local/share" / app_name / "");

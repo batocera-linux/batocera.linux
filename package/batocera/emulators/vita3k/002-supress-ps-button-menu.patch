@@ -1,0 +1,15 @@
+diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
+index 9b0c431..8ddd8da 100644
+--- a/vita3k/gui-qt/src/main_window.cpp
++++ b/vita3k/gui-qt/src/main_window.cpp
+@@ -1033,8 +1033,8 @@ std::optional<AppLaunchRequest> MainWindow::boot_game_once(const AppLaunchReques
+     auto *ime_filter = new ImeKeyboardFilter(emuenv, m_game_window);
+     m_game_window->installEventFilter(ime_filter);
+ 
+-    connect(m_kb_filter, &CtrlKeyboardFilter::ps_button_pressed,
+-        this, &MainWindow::on_ps_button);
++    //connect(m_kb_filter, &CtrlKeyboardFilter::ps_button_pressed,
++    //    this, &MainWindow::on_ps_button);
+ 
+     connect(m_kb_filter, &CtrlKeyboardFilter::fullscreen_toggled,
+         this, [this]() { on_toolbar_fullscreen(); });
