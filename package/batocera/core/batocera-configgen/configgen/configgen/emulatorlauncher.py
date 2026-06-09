@@ -103,7 +103,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
         generator = get_generator(system.config.emulator, system.config.core)
 
         with (
-            mount_overlayfs(rom, SAVES / original_rom.parent.name / original_rom.stem)
+            mount_overlayfs(rom, SAVES / system.name / original_rom.stem)
             if original_rom.suffix == ".squashfs" and generator.writesToRom(system.config)
             else contextlib.nullcontext(rom)
         ) as rom:
