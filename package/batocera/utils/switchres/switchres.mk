@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SWITCHRES_VERSION = 2.2.1
+SWITCHRES_VERSION = 2.2.2
 SWITCHRES_SITE = $(call github,antonioginer,switchres,v$(SWITCHRES_VERSION))
 SWITCHRES_LICENSE = GPL-2.0+
 SWITCHRES_DEPENDENCIES = libdrm sdl2 sdl2_ttf

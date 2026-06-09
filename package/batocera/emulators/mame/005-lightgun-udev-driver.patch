@@ -29,10 +29,10 @@ diff --git a/scripts/src/osd/modules.lua b/scripts/src/osd/modules.lua
 index 4bbd42b..b7fa7ef 100644
 --- a/scripts/src/osd/modules.lua
 +++ b/scripts/src/osd/modules.lua
-@@ -87,6 +87,7 @@ function osdmodulesbuild()
- 		MAME_DIR .. "src/osd/modules/input/input_none.cpp",
+@@ -94,6 +94,7 @@ function osdmodulesbuild()
  		MAME_DIR .. "src/osd/modules/input/input_rawinput.cpp",
  		MAME_DIR .. "src/osd/modules/input/input_sdl.cpp",
+ 		MAME_DIR .. "src/osd/modules/input/input_sdl3.cpp",
 +		MAME_DIR .. "src/osd/modules/input/input_udev.cpp",
  		MAME_DIR .. "src/osd/modules/input/input_win32.cpp",
  		MAME_DIR .. "src/osd/modules/input/input_wincommon.h",
@@ -109,7 +109,7 @@ new file mode 100644
 index 0000000..ad7a63c
 --- /dev/null
 +++ b/src/osd/modules/input/input_udev.cpp
-@@ -0,0 +1,401 @@
+@@ -0,0 +1,402 @@
 +#if !defined(SDLMAME_WIN32)
 +
 +// MAME headers
@@ -128,6 +128,7 @@ index 0000000..ad7a63c
 +#include <fcntl.h>
 +#include <unistd.h>
 +#include <linux/input.h>
++#include <span>
 +
 +namespace {
 +
@@ -245,7 +246,7 @@ index 0000000..ad7a63c
 +    while ((len = read(m_fd, input_events, sizeof(input_events))) > 0) {
 +      len /= sizeof(*input_events);
 +      for (j = 0; j < len; j++) {
-+    	queue_events(&(input_events[j]), 1);
++    	queue_events(std::span(&(input_events[j]), 1));
 +      }
 +    }
 +  }

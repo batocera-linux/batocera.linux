@@ -3,11 +3,11 @@
 # MAME (GroovyMAME)
 #
 ################################################################################
-# Version: GroovyMAME 0.285 - Switchres 2.21f
-MAME_VERSION = gm0285sr221f
+# Version: GroovyMAME 0.288 - Switchres 2.22d
+MAME_VERSION = gm0288sr222d
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
-MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib
+MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd 
 
 $(eval $(call register,mame.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,bgfxbackend.mame.emulator.yml))
@@ -146,8 +146,9 @@ define MAME_BUILD_CMDS
 	+cd $(@D) ; \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	SYSROOT="$(STAGING_DIR)" \
-	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess"   \
-	LDFLAGS="--sysroot=$(STAGING_DIR) $(MAME_LDFLAGS)"  MPARAM="" \
+	CFLAGS="--sysroot=$(STAGING_DIR) $(MAME_CFLAGS) -fpch-preprocess" \
+	LDFLAGS="--sysroot=$(STAGING_DIR) $(MAME_LDFLAGS) -L$(STAGING_DIR)/usr/lib" \
+	LIBS="-lz -lzstd -lFLAC -l7z" \
 	PKG_CONFIG="$(HOST_DIR)/usr/bin/pkg-config --define-prefix" \
 	PKG_CONFIG_PATH="$(STAGING_DIR)/usr/lib/pkgconfig" \
 	CCACHE_SLOPPINESS="pch_defines,time_macros" \
@@ -171,6 +172,7 @@ define MAME_BUILD_CMDS
 	USE_SYSTEM_LIB_RAPIDJSON=1 \
 	USE_SYSTEM_LIB_EXPAT=1 \
 	USE_SYSTEM_LIB_GLM=1 \
+	USE_SYSTEM_LIB_ZSTD=1 \
 	OPENMP=1 \
 	SDL_INSTALL_ROOT="$(STAGING_DIR)/usr" USE_LIBSDL=1 \
 	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 \
@@ -178,7 +180,8 @@ define MAME_BUILD_CMDS
 	LDOPTS="-lasound -lfontconfig" \
 	SYMBOLS=0 \
 	STRIP_SYMBOLS=1 \
-	TOOLS=1
+	TOOLS=1 \
+	CXXFLAGS="$(TARGET_CXXFLAGS) -Wno-unknown-pragmas"
 endef
 
 MAME_CONF_INIT = $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/mame/
