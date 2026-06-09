@@ -30,11 +30,13 @@
 - CDogs to 2.4.0
 - CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
+- Groovy MAME to 0.288
 - Ledspicer to 0.7.4.1
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
+- Libretro-MAME to 0.288
 - Libretro-PC88 to April 21st, 2026 build
 - Libretro-PC98 to May 9th, 2026 build
 - Libretro-PCSX to May 15th, 2026 build
@@ -74,6 +76,7 @@
 - Qualcomm SM8550 device kernel updated to 7.0.11
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.0.11
+- SwitchRes to 2.2.2
 - Wlroots to 0.20.1
 - X86_64 / Zen3 kernel updated to 7.0.11
 

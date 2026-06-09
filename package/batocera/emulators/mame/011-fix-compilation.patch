@@ -1,0 +1,12 @@
+diff --git a/src/emu/emusync.cpp b/src/emu/emusync.cpp.new
+index 493dc28..dc6e225 100644
+--- a/src/emu/emusync.cpp
++++ b/src/emu/emusync.cpp.new
+@@ -10,6 +10,7 @@
+ #include <cstdint>
+ 
+ // MAME headers
++#include "emu.h"
+ #include "emuopts.h"
+ #include "emusync.h"
+ #include "screen.h"
