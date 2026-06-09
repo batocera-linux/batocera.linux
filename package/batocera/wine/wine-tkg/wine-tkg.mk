@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_TKG_VERSION = 10.20
+WINE_TKG_VERSION = 11.10
 WINE_TKG_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+
@@ -365,7 +365,7 @@ endef
 
 define WINE_TKG_64_POST_INSTALL
 	mkdir -p $(TARGET_DIR)/usr/wine/wine-tkg/bin
-	cp $(@D)/loader/wine64 $(TARGET_DIR)/usr/wine/wine-tkg/bin/wine
+	cp $(@D)/loader/wine $(TARGET_DIR)/usr/wine/wine-tkg/bin/wine
 	rm -f $(TARGET_DIR)/usr/wine/wine-tkg/lib/wine/x86_64-unix/*.a
 endef
 
