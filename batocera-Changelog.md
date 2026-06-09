@@ -57,6 +57,7 @@
 - Python Pyxel to May 9th, 2026 build
 - RPCS3 to v.0.0.41
 - ShadPS4 to v.0.15.0
+- Solarus to 2.0.4
 - Tsugaru to v20251206
 - VKQuake to 1.34.1
 ### System
