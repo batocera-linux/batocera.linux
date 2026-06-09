@@ -65,6 +65,7 @@
 ### System
 - Allwinner H700 device kernel updated to 7.0.11
 - Buildroot to 2026.05.x with supporting package & toolchain updates
+- DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.0
@@ -77,6 +78,11 @@
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.0.11
 - SwitchRes to 2.2.2
+- RTKit to v0.14
+- VKD3D Proton to 3.0.1
+- WINE Mono to 11.1.0
+- WINE Proton to proton-exp-11.0
+- WINE TKG to 11.10
 - Wlroots to 0.20.1
 - X86_64 / Zen3 kernel updated to 7.0.11
 

@@ -10,4 +10,3 @@ WINE_COMMON_EMULATOR_INFO = wine.emulator.yml mugen.emulator.yml
 
 $(eval $(generic-package))
 $(eval $(emulator-info-package))
-
