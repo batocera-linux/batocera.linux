@@ -1,0 +1,16 @@
+diff --git a/gfx/drivers_context/drm_go2_ctx.c b/gfx/drivers_context/drm_go2_ctx.c
+index daf5ff8fdb..104fe05ee0 100644
+--- a/gfx/drivers_context/drm_go2_ctx.c
++++ b/gfx/drivers_context/drm_go2_ctx.c
+@@ -51,6 +51,10 @@
+ #include "../common/egl_common.h"
+ #endif
+ 
++#ifdef HAVE_OPENGL
++#include "../common/gl_common.h"
++#endif
++
+ #ifdef HAVE_MENU
+ #include "../../menu/menu_driver.h"
+ #endif
+
