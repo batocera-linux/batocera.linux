@@ -8,6 +8,7 @@ Updated for dual_multiled platform - @dmanlfc
 Updated for AYN Odin (odin_mono) platform - @dmanlfc
 Updated for Anbernic RG CubeXX - @dmanlfc
 Updated for Anbernic RG Vita Pro - @dmanlfc
+Updated for R36 Ultra - @ImanolBarba
 """
 import glob
 import os
@@ -49,6 +50,10 @@ def batocera_model():
     l = '/sys/class/leds/go_s:rgb:joystick_rings/effect'
     if os.path.exists(l):
         return("legiongos")
+    # R36 Ultra check
+    l = '/sys/class/leds/keros::ambient/brightness'
+    if os.path.exists(l):
+        return("r36ultra")
     # Standard RGB check
     l = '/sys/class/leds/multicolor:chassis/multi_intensity'
     if os.path.exists(l):
@@ -886,6 +891,127 @@ class legiongosled(object):
             return ("-1", "-1")
 
 ####################
+# R36 Ultra
+class r36ultraled():
+    def __init__(self):
+        self.modepath = '/sys/class/leds/keros::ambient/brightness'
+        self.modemap = {
+            "000000": 0,
+            "FF0000": 1,
+            "FFFF00": 2,
+            "00FF00": 3,
+            "00FFFF": 4,
+            "0000FF": 5,
+            "FF00FF": 6,
+            "FFFFFF": 7,
+        }
+
+    def set_mode(self, mode: int) -> None:
+        with open(self.modepath, "w") as f:
+            f.write(str(mode))
+
+
+    def set_color(self, rgb: str) -> None:
+        # The R36 ultra has a preset number of modes, and the colours can't be adjusted.
+        # These modes are:
+        # 0. Off
+        # 1. Red     (FF0000)
+        # 2. Yellow  (FFFF00)
+        # 3. Green   (00FF00)
+        # 4. Cyan    (00FFFF)
+        # 5. Blue    (0000FF)
+        # 6. Magenta (FF00FF)
+        # 7. White   (FFFFFF)
+        # 8. Pulse - Alternates all the modes above fading in and out
+        # 9. Rainbow - Circular rainbow effect
+        #
+        # Due to this, we can't set arbitrary RGB colours, but we can approximate which
+        # is the closest one. Beats having nothing I guess.
+
+        if rgb == "ESCOLOR":
+            r, g, b = batoconf_color()
+            rgb = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
+        elif rgb == "RAINBOW":
+            self.rainbow_effect()
+            return
+        elif rgb == "PULSE":
+            self.pulse_effect()
+            return
+        elif rgb == "OFF":
+            self.turn_off()
+            return
+
+        rounded_hex = ""
+
+        try:
+            for i in range(0, 6, 2):
+                channel_val = hex_to_dec(rgb[i:i+2])
+
+                if channel_val < 0x80:
+                    rounded_hex += "00"
+                else:
+                    rounded_hex += "FF"
+
+            if rounded_hex in self.modemap:
+                self.set_mode(self.modemap[rounded_hex])
+            else:
+                print(f"Unable to translate color {rgb} to a suitable mode. Converted value: {rounded_hex}")
+        except ValueError as e:
+            print(f"Bad integer conversion: {e}")
+
+
+    def get_color(self) -> str:
+        try:
+            with open (self.modepath, 'r') as f:
+                mode = f.readline().strip()
+            return list(self.modemap.keys())[list(self.modemap.values()).index(int(mode))]
+        except:
+            return "000000"
+
+    def set_color_dec(self, rgb: str) -> None:
+        hex = ""
+        try:
+            for color in rgb.split():
+                hex += dec_to_hex(int(color))
+        except ValueError as e:
+            print(f"Bad integer conversion: {e}")
+        self.set_color(hex)
+
+    def get_color_dec(self) -> str:
+        hex = self.get_color()
+        dec = []
+
+        try:
+            for i in range(0, 6, 2):
+                dec.append(str(hex_to_dec(hex[i:i+2])))
+
+            return " ".join(dec)
+
+        except ValueError as e:
+            print(f"Bad integer conversion: {e}")
+
+        return "0 0 0"
+
+    def rainbow_effect(self) -> None:
+        self.set_mode(9)
+
+    def pulse_effect(self) -> None:
+        self.set_mode(8)
+
+    def turn_off(self) -> None:
+        self.set_mode(0)
+
+    def set_brightness (self, b: int) -> None:
+        print("Brightness is not adjusteable")
+
+    def set_brightness_conf (self) -> None:
+        print("Brightness is not adjusteable")
+
+    def get_brightness (self) -> tuple[str, str]:
+        return ("-1", "-1")
+
+
+####################
 # Handhelds that use a direct RGB interface (easy peasy)
 class rgbled(object):
     def __init__(self):
@@ -1320,6 +1446,8 @@ class led(object):
             return cubexxled()
         elif m == "rg_vita_pro":
             return rgvitaproled()
+        elif m == "r36ultra":
+            return r36ultraled()
         else:
             print(m)
 
