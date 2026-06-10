@@ -3,23 +3,41 @@
 # vita3k
 #
 ################################################################################
-# Version: Commits on Mar 3, 2025
-VITA3K_VERSION = 8de2d49c12b45da670906b0d13f3c5f90ed280fb
+# Version: Commits on Jun 10, 2026
+VITA3K_VERSION = 7c567c18043bc83282b1d834dc027dae13e5a296
 VITA3K_SITE = https://github.com/vita3k/vita3k
-VITA3K_SITE_METHOD=git
-VITA3K_GIT_SUBMODULES=YES
+VITA3K_SITE_METHOD = git
+VITA3K_GIT_SUBMODULES = YES
 VITA3K_LICENSE = GPLv3
 VITA3K_EMULATOR_INFO = vita3k.emulator.yml
-VITA3K_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf zlib libogg libvorbis python-ruamel-yaml boost libgtk3
-VITA3K_EXTRACT_DEPENDENCIES = host-libcurl
 
 VITA3K_SUPPORTS_IN_SOURCE_BUILD = NO
 
-VITA3K_CONF_OPTS = -DCMAKE_BUILD_TYPE=Release \
-                   -DBUILD_SHARED_LIBS=OFF \
-                   -DUSE_DISCORD_RICH_PRESENCE=OFF \
-                   -DUSE_VITA3K_UPDATE=OFF \
-                   -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+VITA3K_DEPENDENCIES += host-clang host-ninja python-ruamel-yaml libcurl
+VITA3K_DEPENDENCIES += sdl3 sdl3_image sdl3_ttf zlib libogg libvorbis
+VITA3K_DEPENDENCIES += boost pipewire qt6base qt6svg qt6tools qt6multimedia
+VITA3K_EXTRACT_DEPENDENCIES = host-libcurl
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+VITA3K_DEPENDENCIES += wayland
+endif
+
+VITA3K_CMAKE_BACKEND = ninja
+
+VITA3K_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang \
+                    -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++ \
+                    -DCMAKE_EXE_LINKER_FLAGS="-no-pie -lm -lstdc++" \
+                    -DCMAKE_BUILD_TYPE=Release \
+                    -DBUILD_SHARED_LIBS=OFF \
+                    -DUSE_DISCORD_RICH_PRESENCE=OFF \
+                    -DVITA3K_FORCE_SYSTEM_BOOST=ON \
+                    -DSDL_HIDAPI=OFF
+
+ifeq ($(BR2_X86_CPU_HAS_AVX2),y)
+VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=ON
+else
+VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=OFF
+endif
 
 ifeq ($(BR2_x86_64),y)
 VITA3K_FFMPEG_NAME=ffmpeg-linux-x64.zip
@@ -29,17 +47,6 @@ endif
 
 VITA3K_FFMPEG_VER=$(shell cd "$(DL_DIR)/$(VITA3K_DL_SUBDIR)/git/external/ffmpeg" \
     && git rev-parse --short HEAD)
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_ZEN3),y)
-    VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=ON
-else
-    VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=OFF
-endif
-
-define VITA3K_GET_SUBMODULE
-    mkdir -p $(@D)/external
-    cd $(@D)/external && git clone https://github.com/Vita3K/nativefiledialog-cmake
-endef
 
 define VITA3K_FFMPEG_ZIP
     mkdir -p $(@D)/buildroot-build/external
@@ -53,7 +60,6 @@ define VITA3K_INSTALL_TARGET_CMDS
 	cp -R $(@D)/buildroot-build/bin/* $(TARGET_DIR)/usr/bin/vita3k/
 endef
 
-VITA3K_POST_EXTRACT_HOOKS = VITA3K_GET_SUBMODULE
 VITA3K_POST_EXTRACT_HOOKS += VITA3K_FFMPEG_ZIP
 
 $(eval $(cmake-package))

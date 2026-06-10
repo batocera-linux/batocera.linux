@@ -61,6 +61,7 @@
 - ShadPS4 to v.0.15.0
 - Solarus to 2.0.4
 - Tsugaru to v20251206
+- Vita3k to 10th of June build
 - VKQuake to 1.34.1
 ### System
 - Allwinner H700 device kernel updated to 7.0.11

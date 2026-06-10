@@ -8,9 +8,9 @@ else
 fi
 
 # set the environment variables
-XDG_CONFIG_HOME=$CFGDIR \
-XDG_CACHE_HOME=/userdata/system/cache \
-XDG_DATA_HOME=/userdata/saves \
-XDG_DATA_DIRS=/userdata/saves \
-# now run the emulator
+export XDG_CONFIG_HOME="/userdata/system/configs"
+export XDG_CACHE_HOME="/userdata/system/cache"
+export XDG_DATA_HOME="/userdata/saves"
+
+# Now run the emulator
 /usr/bin/vita3k/Vita3K
