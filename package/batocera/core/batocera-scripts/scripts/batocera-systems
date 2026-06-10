@@ -434,7 +434,15 @@ systems = {
                                                 { "md5": "", "file": "bios/coco3p.zip"  },
                                                 { "md5": "4ae57e5a8e7494e5485446fefedb580b", "zippedFile": "coco3p.rom", "file": "bios/coco3p.zip"},
                                                 { "md5": "", "file": "bios/coco_fdc_v11.zip"  },
-                                                { "md5": "8cab28f4b7311b8df63c07bb3b59bfd5", "zippedFile": "disk11.rom", "file": "bios/coco_fdc_v11.zip"} ] },
+                                                { "md5": "8cab28f4b7311b8df63c07bb3b59bfd5", "zippedFile": "disk11.rom", "file": "bios/coco_fdc_v11.zip"},
+                                                # XRoar uses extracted ROMs (https://colorcomputerarchive.com/repo/ROMs/XRoar)
+                                                { "md5": "a74f3d95b395dad7cdca19d560eeea74", "file": "bios/xroar/bas10.rom"},
+                                                { "md5": "c933316c7d939532a13648850c1c2aa6", "file": "bios/xroar/bas12.rom"},
+                                                { "md5": "c2fc43556eb6b7b25bdf5955bd9df825", "file": "bios/xroar/bas13.rom"},
+                                                { "md5": "21070aa0496142b886c562bf76d7c113", "file": "bios/xroar/extbas11.rom"},
+                                                { "md5": "7233c6c429f3ce1c7392f28a933e0b6f", "file": "bios/xroar/coco3.rom"},
+                                                { "md5": "4ae57e5a8e7494e5485446fefedb580b", "file": "bios/xroar/coco3p.rom"},
+                                                { "md5": "8cab28f4b7311b8df63c07bb3b59bfd5", "file": "bios/xroar/disk11.rom"} ] },
 
     # ---------- Colour Genie ---------- #
     "cgenie":  { "name": "Colour Genie", "biosFiles": [ { "md5": "", "file": "bios/cgenie.zip" } ] },
@@ -444,13 +452,21 @@ systems = {
                                                 { "md5": "5f0bee59710e55f5880e74890912ed78", "zippedFile": "d64_1.rom", "file": "bios/dragon64.zip"},
                                                 { "md5": "fd91edce7be5e7c2d88e46b76956a8aa", "zippedFile": "d64_2.rom", "file": "bios/dragon64.zip"},
                                                 { "md5": "", "file": "bios/dragon32.zip"  },
-                                                { "md5": "", "zippedFile": "d32.rom", "file": "bios/dragon32.zip"} ] },
+                                                { "md5": "", "zippedFile": "d32.rom", "file": "bios/dragon32.zip"},
+                                                # XRoar uses extracted ROMs (https://colorcomputerarchive.com/repo/ROMs/XRoar)
+                                                { "md5": "3420b96031078a4ef408cad7bf21a33f", "file": "bios/xroar/d32.rom"},
+                                                { "md5": "5f0bee59710e55f5880e74890912ed78", "file": "bios/xroar/d64_1.rom"},
+                                                { "md5": "fd91edce7be5e7c2d88e46b76956a8aa", "file": "bios/xroar/d64_2.rom"},
+                                                { "md5": "1c965da49b6c5459b8353630aa1482e7", "file": "bios/xroar/ddos10.rom"} ] },
 
     # ---------- Tandy MC-10 ---------- #
     "mc10":   { "name": "Tandy MC-10", "biosFiles":  [ { "md5": "", "file": "bios/mc10.zip"  },
                                                 { "md5": "f29e94ff36577ffb6a787959e45bfe85", "zippedFile": "mc10.rom", "file": "bios/mc10.zip"},
                                                 { "md5": "", "file": "bios/alice.zip"  },
-                                                { "md5": "78af465c2f31cf4e05dec1efda77da01", "zippedFile": "alice.rom", "file": "bios/alice.zip"} ] },
+                                                { "md5": "78af465c2f31cf4e05dec1efda77da01", "zippedFile": "alice.rom", "file": "bios/alice.zip"},
+                                                # XRoar uses extracted ROMs (https://colorcomputerarchive.com/repo/ROMs/XRoar)
+                                                { "md5": "f29e94ff36577ffb6a787959e45bfe85", "file": "bios/xroar/mc10.rom"},
+                                                { "md5": "78af465c2f31cf4e05dec1efda77da01", "file": "bios/xroar/alice.rom"} ] },
 
     # ---------- TRS-80 ---------- #
     "trs80":   { "name": "TRS-80", "biosFiles":  [ { "md5": "", "file": "bios/trs80.zip"  },
