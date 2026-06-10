@@ -8,7 +8,7 @@ LIBZEDMD_VERSION = 24044222a83ffed33f93d9f0a0baa68fe9fa5a47
 LIBZEDMD_SITE = $(call github,PPUC,libzedmd,$(LIBZEDMD_VERSION))
 LIBZEDMD_LICENSE = GPLv3
 LIBZEDMD_LICENSE_FILES = LICENSE
-LIBZEDMD_DEPENDENCIES = cargs libserialport sockpp
+LIBZEDMD_DEPENDENCIES = cargs libserialport sockpp libframeutil
 LIBZEDMD_SUPPORTS_IN_SOURCE_BUILD = NO
 # Install to staging to build Visual Pinball Standalone
 LIBZEDMD_INSTALL_STAGING = YES

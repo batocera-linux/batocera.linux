@@ -3,6 +3,7 @@ config BR2_PACKAGE_LIBZEDMD
     select BR2_PACKAGE_CARGS
     select BR2_PACKAGE_LIBSERIALPORT
     select BR2_PACKAGE_SOCKPP
+    select BR2_PACKAGE_LIBFRAMEUTIL
     help
       ZeDMD communication library.
       
