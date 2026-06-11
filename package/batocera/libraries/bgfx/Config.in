@@ -1,0 +1,9 @@
+config BR2_PACKAGE_BGFX
+    bool "bgfx"
+    select BR2_PACKAGE_XLIB_LIBX11
+    select BR2_PACKAGE_LIBGL
+    help
+      Cross-platform, graphics API agnostic, “Bring Your Own Engine/Framework”
+      style rendering library.
+      
+      https://github.com/bkaradzic/bgfx.cmake
