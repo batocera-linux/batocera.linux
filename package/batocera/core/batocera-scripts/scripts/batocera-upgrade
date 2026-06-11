@@ -110,6 +110,7 @@ validate_checksum() {
             upgmsg "Checksum validated ..." 2
         else
             upgmsg "Checksum error ..." 5
+            G_PRESERVE_UPGRADE_FILES=
             return 1
         fi
     else
@@ -315,6 +316,7 @@ do_update() {
     fi
 
     # a sync with some cleanups of downloaded and created files
+    G_PRESERVE_UPGRADE_FILES=
     do_clean ${TERMINAL}
     sync
 
@@ -358,7 +360,8 @@ shift
 # default media file
 G_LOCAL_FILE="/userdata/system/upgrade/boot.tar.xz"
 # If set to a value trap-function will not delete files
-G_PRESERVE_UPGRADE_FILES=
+# Defaulting to 1 to preserve files with command typo or error
+G_PRESERVE_UPGRADE_FILES=1
 # started from Terminal/SSH (TERMINAL=1) or from ES (TERMINAL=0)
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
