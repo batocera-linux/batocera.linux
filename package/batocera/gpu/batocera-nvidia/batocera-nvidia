@@ -47,8 +47,8 @@ guess_mode() {
             fi
         done
     else
-	echo "No NVIDIA GPU detected" >&2
-	MODE=none
+        echo "No NVIDIA GPU detected" >&2
+        MODE="none"
     fi
     echo "${MODE}"
 }
@@ -73,12 +73,18 @@ MODE=$1
 
 if [ "${MODE}" = "auto" ]; then
     DETECTED_MODE=$(guess_mode 2>> "$log")
-    if [ "${DETECTED_MODE}" == "none" ]
-    then
-        echo "Failing back to the OpenSource Mesa Nouveau driver" >> $log
+    
+    # If no card is detected or the card is unsupported, revert to Nouveau
+    if [ "${DETECTED_MODE}" = "none" ] || [ "${DETECTED_MODE}" = "unsupported" ]; then
+        echo "Failing back to the OpenSource Mesa Nouveau driver (Reason: ${DETECTED_MODE})" >> "$log"
         test -e /var/run/nvidia/modprobe/blacklist-nouveau.conf && rm -f /var/run/nvidia/modprobe/blacklist-nouveau.conf
         test -e /var/run/nvidia/modprobe/nvidia-drm.conf        && rm -f /var/run/nvidia/modprobe/nvidia-drm.conf
+        # Remove the NVIDIA GBM symlink so it defaults back to Mesa
+        rm -f /usr/lib/gbm/nvidia-drm_gbm.so
         exit 0
+    else
+        # Correctly assign the detected driver mode to the execution flow
+        MODE="${DETECTED_MODE}"
     fi
 fi
 
