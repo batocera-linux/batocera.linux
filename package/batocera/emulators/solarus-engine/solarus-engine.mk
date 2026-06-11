@@ -35,9 +35,10 @@ SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_WRITE_DIR=solarus
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=ON
 
 define SOLARUS_ENGINE_INSTALL_TARGET_CMDS
-        $(INSTALL) -D $(@D)/cli/solarus-run $(TARGET_DIR)/usr/bin/
-        cp -af $(@D)/libsolarus.so* $(TARGET_DIR)/usr/lib/
-	cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/solarus-engine/solarus.keys $(TARGET_DIR)/usr/share/evmapy/
+    $(INSTALL) -D $(@D)/cli/solarus-run $(TARGET_DIR)/usr/bin/
+    cp -af $(@D)/libsolarus.so* $(TARGET_DIR)/usr/lib/
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp -f $(SOLARUS_ENGINE_PKGDIR)/solarus.keys $(TARGET_DIR)/usr/share/evmapy/
 endef
 
 $(eval $(cmake-package))
