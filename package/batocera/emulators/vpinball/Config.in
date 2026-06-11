@@ -1,5 +1,6 @@
 config BR2_PACKAGE_VPINBALL
     bool "vpinball"
+    select BR2_PACKAGE_BGFX
     select BR2_PACKAGE_LIBFREEIMAGE
     select BR2_PACKAGE_LIBPINMAME
     select BR2_PACKAGE_LIBALTSOUND
