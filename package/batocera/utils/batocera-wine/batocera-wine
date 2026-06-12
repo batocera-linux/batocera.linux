@@ -389,7 +389,10 @@ reg_install() {
     ii="${USER_DIR}/regs"
     if [[ -e "/var/run/rawinput.reg" ]]; then
         WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
-        WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        # Run WINE64 only if it is actually a distinct binary
+        if [[ "${WINE64}" != "${WINE}" ]]; then
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
+        fi
         rm /var/run/rawinput.reg
     fi
 
@@ -400,7 +403,10 @@ reg_install() {
 
         for file in "${i[@]}"; do
             WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" regedit //?/unix"${file}" &>/dev/null || return 1
-            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
+            # Run WINE64 only if it is actually a distinct binary
+            if [[ "${WINE64}" != "${WINE}" ]]; then
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix"${file}" &>/dev/null || return 1
+            fi
             echo "$(date '+%D %T') - Imported: '$file' --> $WINEPOINT" | tee -a "${USER_DIR}/imports.log"
             mv --backup=t "$file" "${USER_DIR}/installed.regs"
         done
@@ -533,7 +539,7 @@ saveFilesToUserdata() {
     WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                         #Savegamedir itself, content is copied/linked
     echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
 
-    if [[ -z "${WINE_SAVEFILES}" ]]; then
+    if [[ -z "${WINE_SAVEDIR}" ]]; then
         #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
         if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
             cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" || { echo "${FUNCNAME[0]}: Error in copying files ${WINE_SAVEDIR} -> ${SYSTEM_SAVEDIR}" >&2; return 1; }
@@ -999,18 +1005,21 @@ init_wine() {
 
     echo "*** Directory checks complete, WINE runner is ${WINE_VERSION} ***"
     USER_DIR="/userdata/system/wine"
-    # check 32-bit wine path
+    # Check 32-bit wine path
     if [[ -e "${DIR}/${WINE_VERSION}/lib/wine/i386-unix/wine" ]]; then
         WINE="${DIR}/${WINE_VERSION}/lib/wine/i386-unix/wine"
     else
         WINE="${DIR}/${WINE_VERSION}/bin/wine"
     fi
-    # check 64-bit wine64 path
+    # Check 64-bit wine64 path, with fallback to WINE if not found
     if [[ -e "${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix/wine64" ]]; then
         WINE64="${DIR}/${WINE_VERSION}/lib/wine/x86_64-unix/wine64"
-    else
+    elif [[ -e "${DIR}/${WINE_VERSION}/bin/wine64" ]]; then
         WINE64="${DIR}/${WINE_VERSION}/bin/wine64"
+    else
+        WINE64="${WINE}"
     fi
+    
     WINESERVER="${DIR}/${WINE_VERSION}/bin/wineserver"
     MSIEXEC="${DIR}/${WINE_VERSION}/bin/msiexec"
     WINETRICKS="${DIR}/winetricks"
