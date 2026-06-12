@@ -14,25 +14,52 @@ custom_features:
     prompt: RENDERING RESOLUTION
     description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
     choices:
+      0.5x (480x272): .5
       1x (960x544): 1
+      1.25x (1200x680): 1.25
+      1.5x (1440x816): 1.5
+      1.75x (1680x952): 1.75
       2x (1920x1088): 2
+      2.25x (2160x1224): 2.25
+      2.5x (2400x1360): 2.5
+      2.75x (2640x1496): 2.75
       3x (2880x1632): 3
+      3.25x (3120x1768): 3.25
+      3.5x (3360x1904): 3.5
+      3.75x (3600x2040): 3.75
       4x (3840x2176): 4
+      4.25x (4080x2312): 4.25
+      4.5x (4320x2448): 4.5
+      4.75x (4560x2584): 4.75
       5x (4800x2720): 5
+      5.25x (5040x2856): 5.25
+      5.5x (5280x2992): 5.5
+      5.75x (5520x3128): 5.75
       6x (5760x3264): 6
+      6.25x (6000x3400): 6.25
+      6.5x (6240x3536): 6.5
+      6.75x (6480x3672): 6.75
       7x (6720x3808): 7
+      7.25x (6960x3944): 7.25
+      7.5x (7200x4080): 7.5
+      7.75x (7440x4216): 7.75
       8x (7680x4352): 8
+  vita3k_filter:
+    prompt: SCREEN FILTER
+    description: Set the desired screen filter.
+    choices:
+      Nearest:  Nearest
+      Bilinear: Bilinear
+      Bicubic:  Bicubic
+      FXAA:     FXAA
+      FSR:      FSR
   vita3k_surface:
     prompt: DISABLE SURFACE SYNC
     description: Speed hack, enable to disable surface syncing between CPU and GPU. Surface syncing is needed by a few games.
     preset: switchauto
-  vita3k_linear:
-    prompt: LINEAR FILTERING
-    description: The image will be softer which could help with aliasing.
-    preset: switchauto
-  vita3k_fxaa:
-    prompt: FXAA
-    description: Anti-aliasing is a technique for smoothing out jagged edges.
+  vita3k_sync:
+    prompt: ASYNCHRONOUS PIPELINE COMPILATION
+    description: Allow pipelines to be compiled concurrently on multiple concurrent threads.This decreases pipeline compilation stutter at the cost of temporary graphical glitches.
     preset: switchauto
   vita3k_vsync:
     prompt: VSYNC
@@ -47,6 +74,57 @@ custom_features:
       4x: 4
       8x: 8
       16x: 16
+  vita3k_hd_pixel:
+    prompt: FULLSCREEN HD PIXEL PERFECT
+    description: Get a pixel perfect rendering with HD resolutions (1080p, 4K) in fullscreen on a 16:9 aspect ratio monitor. Will slightly crop the top and the bottom of the screen.
+    preset: switchauto
+  vita3k_accuracy:
+    prompt: RENDERING ACCURACY
+    description: Set the renderer accuracy level for Vulkan. High accuracy may improve visuals but reduce performance.
+    choices:
+      Standard: false
+      High:     true
+  vita3k_texture:
+    prompt: TEXTURE CACHE
+    description: Enable texture caching. Improves performance in most apps.
+    preset: switchauto
+  vita3k_shader:
+    prompt: SHADER CACHE
+    description: Enable shader caching. Reduces stuttering on subsequent runs.
+    preset: switchauto
+  vita3k_mapping:
+    prompt: MEMORY MAPPING
+    description: Memory mapping improved VUlkna performance. Reduces memory usage and fixes many graphical issues. However, it may be unstable on some GPUs.
+    choices:
+      Disabled:         disabled
+      Double Buffering: double-buffer
+      External Host:    external-host
+      Page Table:       page-table
+      Native Buffer:    native-buffer
+  vita3k_system_language:
+    prompt: SYSTEM LANGUAGE
+    description: Set the system language reported to applications.
+    choices:
+      Japanese: 0
+      English (US): 1
+      French: 2
+      Spanish: 3
+      German: 4
+      Italian: 5
+      Dutch: 6
+      Portuguese (PT): 7
+      Russian: 8
+      Korean: 9
+      Chinese (Traditional): 10
+      Chinese (Simplified): 11
+      Finnish: 12
+      Swedish: 13
+      Danish: 14
+      Norwegian: 15
+      Polish: 16
+      Portuguese (BR): 17
+      English (GB): 18
+      Turkish: 19
   vita3k_show_pointer:
     prompt: SHOW POINTER
     description: You can hide the pointer on touchscreen devices.
