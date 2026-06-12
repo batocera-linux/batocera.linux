@@ -1,5 +1,5 @@
 diff --git a/src/action.c b/src/action.c
-index 265ff6e..1bf885c 100644
+index 265ff6e..964a1e9 100644
 --- a/src/action.c
 +++ b/src/action.c
 @@ -139,6 +139,7 @@ struct action_arg_list {
@@ -10,16 +10,18 @@ index 265ff6e..1bf885c 100644
  	X(DEBUG_TOGGLE_KEY_STATE_INDICATOR, "DebugToggleKeyStateIndicator")
  
  /*
-@@ -1596,6 +1597,9 @@ run_action(struct view *view, struct action *action,
- 	case ACTION_TYPE_HIDE_CURSOR:
- 		cursor_set_visible(&server.seat, false);
+@@ -1594,7 +1595,10 @@ run_action(struct view *view, struct action *action,
  		break;
+ 	}
+ 	case ACTION_TYPE_HIDE_CURSOR:
+-		cursor_set_visible(&server.seat, false);
++		cursor_set_permanent_hide(&server.seat, true);
++		break;
 +	case ACTION_TYPE_SHOW_CURSOR:
 +		cursor_set_permanent_hide(&server.seat, false);
-+		break;
+ 		break;
  	case ACTION_TYPE_DEBUG_TOGGLE_KEY_STATE_INDICATOR:
  		key_state_indicator_toggle();
- 		break;
 diff --git a/include/labwc.h b/include/labwc.h
 index 87a4219..88392cf 100644
 --- a/include/labwc.h
@@ -33,23 +35,31 @@ index 87a4219..88392cf 100644
  	struct wlr_xcursor_manager *xcursor_manager;
  	struct accumulated_scroll {
 diff --git a/src/input/cursor.c b/src/input/cursor.c
-index e8ac7d9..cd5743c 100644
+index b0f5058..e15a409 100644
 --- a/src/input/cursor.c
 +++ b/src/input/cursor.c
-@@ -405,6 +405,13 @@ cursor_set_visible(struct seat *seat, bool visible)
- 	cursor_update_image(seat);
+@@ -394,9 +394,21 @@ cursor_set(struct seat *seat, enum lab_cursors cursor)
+ 	seat->server_cursor = cursor;
  }
  
 +void
 +cursor_set_permanent_hide(struct seat *seat, bool enable)
 +{
-+    seat->cursor_force_hidden = enable;
-+    cursor_set_visible(seat, !enable);
++	seat->cursor_force_hidden = enable;
++	cursor_set_visible(seat, !enable);
 +}
 +
  void
- cursor_update_image(struct seat *seat)
+ cursor_set_visible(struct seat *seat, bool visible)
  {
++	/* Do not show the cursor if it is permanently/force hidden */
++	if (seat->cursor_force_hidden && visible) {
++		return;
++	}
++
+ 	if (seat->cursor_visible == visible) {
+ 		return;
+ 	}
 diff --git a/include/input/cursor.h b/include/input/cursor.h
 index 3d7aa71..fff2f4c 100644
 --- a/include/input/cursor.h
