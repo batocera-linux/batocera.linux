@@ -16,7 +16,7 @@ from ...exceptions import BatoceraException
 from ...utils import vulkan
 from ..Generator import Generator
 from . import rpcs3Controllers
-from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG, RPCS3_DEV_HDD0
+from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG, RPCS3_DEV_HDD0, RPCS3_VFS
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -94,14 +94,13 @@ class Rpcs3Generator(Generator):
         if RPCS3_CONFIG.is_file():
             rpcs3ymlconfig = safe_load_yaml12(RPCS3_CONFIG, dict[str, dict[str, Any]]) or {}
 
+        # VFS is no longer stored in config.yml: RPCS3 reads it from a dedicated vfs.yml
+        # file. Drop any stale VFS section that older versions may have written here.
+        rpcs3ymlconfig.pop("VFS", None)
+
         # Add Nodes if not in the file
         if "Core" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Core"] = {}
-        if "VFS" not in rpcs3ymlconfig:
-            rpcs3ymlconfig["VFS"] = {}
-        rpcs3ymlconfig["VFS"]["/dev_hdd0/"] = (str(rom / "dev_hdd0") + "/" if is_psn_squashfs
-                                               else f"{RPCS3_DEV_HDD0}/")
-
         if "Video" not in rpcs3ymlconfig:
             rpcs3ymlconfig["Video"] = {}
         if "Audio" not in rpcs3ymlconfig:
@@ -271,6 +270,38 @@ class Rpcs3Generator(Generator):
             yaml = YAML(pure=True)
             yaml.default_flow_style = False
             yaml.dump(rpcs3ymlconfig, file)
+
+        dev_hdd0 = str(rom / "dev_hdd0") + "/" if is_psn_squashfs else f"{RPCS3_DEV_HDD0}/"
+
+        # For a PSN squashfs, redirect /dev_hdd1/ to the overlay when it ships one.
+        if is_psn_squashfs and (rom / "dev_hdd1").is_dir():
+            dev_hdd1 = str(rom / "dev_hdd1") + "/"
+        else:
+            dev_hdd1 = "$(EmulatorDir)dev_hdd1/"
+
+        rpcs3vfsconfig: dict[str, Any] = {
+            "$(EmulatorDir)": "",
+            "/dev_hdd0/": dev_hdd0,
+            "/dev_hdd1/": dev_hdd1,
+            "/dev_flash/": "$(EmulatorDir)dev_flash/",
+            "/dev_flash2/": "$(EmulatorDir)dev_flash2/",
+            "/dev_flash3/": "$(EmulatorDir)dev_flash3/",
+            "/dev_bdvd/": "$(EmulatorDir)dev_bdvd/",
+            "/games/": "$(EmulatorDir)games/",
+            "/app_home/": "",
+            "/dev_usb***/": {
+                "/dev_usb000": {"Path": "$(EmulatorDir)dev_usb000/", "Serial": "", "VID": "", "PID": ""},
+                **{
+                    f"/dev_usb00{index}": {"Path": "", "Serial": "", "VID": "", "PID": ""}
+                    for index in range(1, 8)
+                },
+            },
+        }
+
+        with RPCS3_VFS.open("w") as file:
+            yaml = YAML(pure=True)
+            yaml.default_flow_style = False
+            yaml.dump(rpcs3vfsconfig, file)
 
         # copy icon files to config
         icon_target = RPCS3_CONFIG_DIR / 'Icons'
