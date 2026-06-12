@@ -294,14 +294,14 @@ class XeniaGenerator(Generator):
         # now setup the command array for the emulator
         if configure_emulator(rom):
             if core == 'xenia-canary':
-                commandArray = [wine_runner.wine64, canarypath / 'xenia_canary.exe']
+                commandArray = [wine_runner.wine, canarypath / 'xenia_canary.exe']
             else:
-                commandArray = [wine_runner.wine64, emupath / 'xenia.exe']
+                commandArray = [wine_runner.wine, emupath / 'xenia.exe']
         else:
             if core == 'xenia-canary':
-                commandArray = [wine_runner.wine64, canarypath / 'xenia_canary.exe', f'z:{rom}']
+                commandArray = [wine_runner.wine, canarypath / 'xenia_canary.exe', f'z:{rom}']
             else:
-                commandArray = [wine_runner.wine64, emupath / 'xenia.exe', f'z:{rom}']
+                commandArray = [wine_runner.wine, emupath / 'xenia.exe', f'z:{rom}']
 
         environment = wine_runner.get_environment()
         environment.update(
