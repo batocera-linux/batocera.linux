@@ -81,6 +81,7 @@
 - SwitchRes to 2.2.2
 - RTKit to v0.14
 - VKD3D Proton to 3.0.1
+- Vulkan stack to 1.4.350
 - WINE Mono to 11.1.0
 - WINE Proton to proton-exp-11.0
 - WINE TKG to 11.10
