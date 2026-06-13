@@ -136,6 +136,17 @@ validate_arch() {
     else
         upgmsg "Current board is ${G_BOARD}!" 1
     fi
+
+    # Verify hardware compatibility if upgrading or migrating to x86-64-v3
+    if [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ]; then
+        if command -v batocera-x64-compatibility >/dev/null 2>&1; then
+            if ! batocera-x64-compatibility; then
+                upgmsg "Error: Hardware is not compatible with x86-64-v3!" 5
+                return 1
+            fi
+        fi
+    fi
+
     return 0
 }
 
