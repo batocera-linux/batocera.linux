@@ -6,6 +6,7 @@ TRICK=${4,,}                                                                    
 ROMGAMENAME=$(basename "${GAMENAME}")                                                # gamedir or gameexecutable: e.g. "Age of Empires.wine" or "AoE_inst.exe"
 ROMBASEDIR=$(dirname "${GAMENAME}")                                                  # gamedir or rootdir: eg "/userdata/roms/windows" if AoE is a wine.dir
 GAMEEXT="${GAMENAME##*.}"                                                            # gameextension: pc, wine, exe, msi
+INST_ROMGAMENAME=                                                                    # installed game with stripped extension and unique filename based on time+date
 # log scripts (aka winserver) running time with bash builtin command
 SECONDS=0
 
@@ -539,7 +540,7 @@ saveFilesToUserdata() {
     WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                         #Savegamedir itself, content is copied/linked
     echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
 
-    if [[ -z "${WINE_SAVEDIR}" ]]; then
+    if [[ -n "${WINE_SAVEDIR}" ]]; then
         #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
         if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
             cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" || { echo "${FUNCNAME[0]}: Error in copying files ${WINE_SAVEDIR} -> ${SYSTEM_SAVEDIR}" >&2; return 1; }
@@ -1103,7 +1104,7 @@ case "${ACTION}" in
 
     "install")
         # Sync windows_installers and windows, so setting from installer section will be used for the installed program
-        # This method is very safe and but it syncs all settings between 2 systems, $INST_ROMGAMENAME is used for an unique filename
+        # This method is very safe and it syncs all settings between the 2 systems, $INST_ROMGAMENAME is used for an unique filename
         INST_ROMGAMENAME="$(date +%y%m%d-%H%M%S)_${ROMGAMENAME%.*}.wine"
 
         while read i; do
