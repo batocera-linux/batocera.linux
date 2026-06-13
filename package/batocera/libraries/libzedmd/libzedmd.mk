@@ -21,9 +21,14 @@ LIBZEDMD_CONF_OPTS += -DPOST_BUILD_COPY_EXT_LIBS=OFF
 
 # handle supported target platforms
 ifeq ($(BR2_aarch64),y)
-    BUILD_ARCH = aarch64
+BUILD_ARCH = aarch64
+ifeq ($(BR2_PACKAGE_LIBGPIOD2),y)
+LIBZEDMD_DEPENDENCIES += libgpiod2
+else ifeq ($(BR2_PACKAGE_LIBGPIOD),y)
+LIBZEDMD_DEPENDENCIES += libgpiod
+endif
 else ifeq ($(BR2_x86_64),y)
-    BUILD_ARCH = x64
+BUILD_ARCH = x64
 endif
 
 define LIBZEDMD_POST_PROCESS
