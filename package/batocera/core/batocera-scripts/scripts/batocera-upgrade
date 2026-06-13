@@ -125,7 +125,9 @@ validate_arch() {
     test -z "${LOCAL_FILE_BOARD}" && return 1
     upgmsg "Update is ${LOCAL_FILE_BOARD} ..." 1
     if test "${LOCAL_FILE_BOARD}" != "${G_BOARD}"; then
-        if test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${G_BOARD}" = "x86_64-v3"; then
+        # Allow migration between x86_64 and x86-64-v3 in either direction
+        if { [ "${LOCAL_FILE_BOARD}" = "x86_64" ] && [ "${G_BOARD}" = "x86-64-v3" ]; } || \
+           { [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ] && [ "${G_BOARD}" = "x86_64" ]; }; then
             upgmsg "Migrating ${G_BOARD} to ${LOCAL_FILE_BOARD}" 2
         else
             upgmsg "Error: ${LOCAL_FILE_BOARD} didn't match this ${G_BOARD} board!" 5
