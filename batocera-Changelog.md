@@ -65,6 +65,7 @@
 - VKQuake to 1.34.1
 ### System
 - Allwinner H700 device kernel updated to 7.0.11
+- ALSA UCM configuration to v1.2.16
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
