@@ -3,65 +3,83 @@
 ACTION=$1
 
 do_help() {
-    echo "${1} list" >&2
-    echo "${1} trust <device address>" >&2
-    echo "${1} trust input" >&2
-    echo "${1} remove <device address>" >&2
-    echo "${1} save" >&2
-    echo "${1} restore" >&2
-    echo "${1} start_live_devices" >&2
-    echo "${1} stop_live_devices" >&2
-    echo "${1} enable" >&2
-    echo "${1} disable" >&2
-    echo "${1} connect <device address>" >&2
-    echo "${1} disconnect <device address>" >&2
+    echo "$1 list" >&2
+    echo "$1 trust <device address>" >&2
+    echo "$1 trust input" >&2
+    echo "$1 remove <device address>" >&2
+    echo "$1 save" >&2
+    echo "$1 restore" >&2
+    echo "$1 start_live_devices" >&2
+    echo "$1 stop_live_devices" >&2
+    echo "$1 enable" >&2
+    echo "$1 disable" >&2
+    echo "$1 connect <device address>" >&2
+    echo "$1 disconnect <device address>" >&2
+}
+
+get_bt_name() {
+    local addr="$1"
+    find /var/lib/bluetooth -type f -path "*/$addr/info" -print -quit 2>/dev/null \
+    | xargs -r sed -n 's/^Name=//p'
+}
+
+is_device_trusted() {
+  addr="$1"
+  [ -z "$addr" ] && return 1
+
+  info="$(find /var/lib/bluetooth -type f -path "*/$addr/info" -print -quit 2>/dev/null)"
+  [ -z "$info" ] && return 1
+
+  grep -q '^Trusted=true$' "$info"
+}
+
+stop_bt_agent() {
+  NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
+  [ -n "$NPID" ] && kill -12 "$NPID" 2>/dev/null
+  rm -f /var/run/bt_device /var/run/bt_listing
 }
 
 do_save() {
     BCK=/userdata/system/bluetooth/bluetooth.tar
-    (cd /var/lib && tar cf "${BCK}" bluetooth)
+    (cd /var/lib && tar cf "$BCK" bluetooth)
 }
 
 do_restore() {
     BCK=/userdata/system/bluetooth/bluetooth.tar
-    [ -f "${BCK}" ] && (cd /var/lib && tar xf "${BCK}")
+    [ -f "$BCK" ] && (cd /var/lib && tar xf "$BCK")
 }
 
 do_list() {
     find /var/lib/bluetooth/ -type f -name info |
-    while read FILE
-    do
-        if grep -qE '^Trusted=true$' "${FILE}"
-        then
-            DEVNAME=$(grep -E '^Name=' "${FILE}" | sed -e s+"^Name="++)
-            DEVCLASS=$(grep -E '^Class=' "${FILE}" | sed -e s+"^Class="++)
-            DEVADDR=$(basename $(dirname "${FILE}"))
+    while IFS= read -r FILE; do
+        if grep -qE '^Trusted=true$' "$FILE"; then
+            DEVNAME="$(grep -E '^Name='  "$FILE" | sed 's/^Name=//')"
+            DEVCLASS="$(grep -E '^Class=' "$FILE" | sed 's/^Class=//')"
+            DEVADDR="$(basename "$(dirname "$FILE")")"
 
-            DEVTYPE=
-            test "${DEVCLASS}" = "0x002508" && DEVTYPE="joystick"
-            test "${DEVCLASS}" = "0x000508" && DEVTYPE="joystick"
+            DEVTYPE=""
+            case "$DEVCLASS" in
+              0x002508|0x000508) DEVTYPE="joystick" ;;
+            esac
 
-            # Check if the device is connected
-            if bluetoothctl -- info "${DEVADDR}" | grep -q "Connected: yes"; then
+            if bluetoothctl -- info "$DEVADDR" | grep -q "Connected: yes"; then
                 CONNECTED="yes"
             else
                 CONNECTED="no"
             fi
 
-            echo "<device id=\""${DEVADDR}"\" name=\""${DEVNAME}"\" type=\""${DEVTYPE}"\" connected=\""${CONNECTED}"\" />"
+            printf '<device id="%s" name="%s" type="%s" connected="%s"/>\n' \
+                   "$DEVADDR" "$DEVNAME" "$DEVTYPE" "$CONNECTED"
         fi
     done
 }
 
 do_remove() {
-    DEV="${1}"
+    DEV="$1"
 
     # output is never nice
-    (echo "untrust ${DEV}" ; echo "remove ${DEV}") | bluetoothctl >/dev/null 2>/dev/null
-    find /var/lib/bluetooth -name "${DEV}" | while read X
-    do
-	rm -rf "${X}"
-    done
+    (echo "untrust $DEV" ; echo "remove $DEV") | bluetoothctl >/dev/null 2>/dev/null
+    find /var/lib/bluetooth -type d -name "$DEV" -prune -exec rm -rf {} + 2>/dev/null
 
     do_save # save
     return 0
@@ -69,21 +87,16 @@ do_remove() {
 
 do_devlist() {
     # clean any remining previous info
-    if ! > /var/run/bt_device
-    then
-	exit 1
-    fi
+    : > /var/run/bt_device || exit 1
 
     # tell listing mode
-    if ! > /var/run/bt_listing
-    then
-	exit 1
-    fi
+    : > /var/run/bt_listing || exit 1
 
-    NPID=$(cat /var/run/bluetooth-agent.pid)
-    trap "kill -12 ${NPID} ; rm -f /var/run/bt_listing; rm -f /var/run/bt_device" 2 3
 
-    kill -10 "${NPID}"
+    NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
+    [ -n "$NPID" ] && trap stop_bt_agent INT QUIT
+
+    [ -n "$NPID" ] && kill -10 "$NPID" 2>/dev/null
     # ok, not 10 lines should happen during this instant (between kill and tail)
     tail -f /var/run/bt_listing &
     echo $! > "/var/run/bt_listing.pid"
@@ -91,79 +104,132 @@ do_devlist() {
 }
 
 do_stopdevlist() {
-    KPID=$(cat /var/run/bt_listing.pid)
-    test -n "${KPID}" && kill -15 "${KPID}"
+    KPID="$(cat /var/run/bt_listing.pid 2>/dev/null)"
+    [ -n "$KPID" ] && kill -15 "$KPID" 2>/dev/null
+    rm -f /var/run/bt_listing.pid
+
+    stop_bt_agent
 }
 
 do_trust() {
-    TRUSTDEV=$1
-    NPID=$(cat /var/run/bluetooth-agent.pid)
-    test -z "${NPID}" && return 0
+    TRUSTDEV="$1"
+    NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
+    [ -z "$NPID" ] && return 0
 
-    touch "/var/run/bt_status" || retrun 1
-    LAST_MSG=$(cat "/var/run/bt_status")
+    # Snapshot trusted devices at start (used for both explicit MAC + input mode)
+    BASE_TRUSTED="$(
+      find /var/lib/bluetooth/ -type f -name info \
+        -exec grep -l '^Trusted=true$' {} + 2>/dev/null \
+      | xargs -r -n1 dirname | xargs -r -n1 basename | sort -u
+    )"
 
-    # check input
-    if test "${TRUSTDEV}" != "input"
-    then
-	# trust device
-	if ! echo "${TRUSTDEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"
-	then
-	    return 1
-	fi
-    fi
-    echo "${TRUSTDEV}" > /var/run/bt_device || return 1
+    touch /var/run/bt_status || return 1
+    LAST_MSG="$(cat /var/run/bt_status 2>/dev/null)"
 
-    # for input mode, we start automatically the discovery at the same time
-    if test "${TRUSTDEV}" = "input"
-    then
-	rm -f "/var/run/bt_listing"
-	NPID=$(cat /var/run/bluetooth-agent.pid)
-	trap "kill -12 ${NPID}; rm -f /var/run/bt_device" 2 3
-	kill -10 "${NPID}"
+    if [ "$TRUSTDEV" != "input" ]; then
+        echo "$TRUSTDEV" | grep -qE '^([0-9A-F]{2}:){5}[0-9A-F]{2}$' || return 1
     fi
 
-    N=60
-    while test $N -gt 0
-    do
-	NEW_MSG=$(cat "/var/run/bt_status")
-	if test "${LAST_MSG}" != "${NEW_MSG}"
-	then
-	    LAST_MSG="${NEW_MSG}"
-	    echo "${NEW_MSG}"
-	fi
+    echo "$TRUSTDEV" > /var/run/bt_device || return 1
 
-	# check is in list and uniq trusting
-	if echo "${TRUSTDEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"
-	then
-	    if do_list | grep -qE "id=\"${TRUSTDEV}\""
-	    then
-		# end when found
-		N=0
-	    fi
-	fi
+    # cleanup
+    trap stop_bt_agent INT QUIT TERM
 
-	# wait
-	test $N -gt 0 && sleep 1
+    if [ "$TRUSTDEV" = "input" ]; then
+        rm -f /var/run/bt_listing
+        kill -10 "$NPID" 2>/dev/null
+    fi
 
-	N=$((N-1))
+    GRACE_TICKS=20 # 10 seconds
+    GRACE_LEFT=0
+    CHANGED=0
+    N=120
+    while [ $N -gt 0 ]; do
+        STATUS_CHANGED=0
+        NEW_MSG="$(cat /var/run/bt_status 2>/dev/null)"
+        if [ "$LAST_MSG" != "$NEW_MSG" ]; then
+            LAST_MSG="$NEW_MSG"
+            STATUS_CHANGED=1
+            echo "$NEW_MSG"
+        fi
+
+        # Early cancel
+        if [ -e /var/run/bt_cancel ]; then
+            stop_bt_agent
+            echo "Pairing canceled"
+            sleep 1.5 # for toast notification
+            return 0
+        fi
+
+        # Success: explicit device(manual pairing)
+        if [ "$TRUSTDEV" != "input" ]; then
+            if is_device_trusted "$TRUSTDEV"; then
+                stop_bt_agent
+
+                DEVNAME="$(get_bt_name "$TRUSTDEV")"
+                [ -z "$DEVNAME" ] && DEVNAME="$TRUSTDEV"
+
+                if printf '%s\n' "$BASE_TRUSTED" | tr 'a-f' 'A-F' | grep -Fxq "$TRUSTDEV"; then
+                    curl -s http://localhost:1234/notify -d "Already paired: $DEVNAME" >/dev/null
+                else
+                    do_save
+                fi
+
+                return 0
+            fi
+        fi
+
+        # Success: first new device (auto pairing controllers)
+        if [ "$TRUSTDEV" = "input" ]; then
+            if [ $STATUS_CHANGED -eq 1 ] && [ $GRACE_LEFT -gt 0 ]; then
+                GRACE_LEFT=$GRACE_TICKS
+            fi
+
+            CUR_TRUSTED="$(
+                find /var/lib/bluetooth/ -type f -name info \
+                -exec grep -l '^Trusted=true$' {} + 2>/dev/null \
+                | xargs -r -n1 dirname | xargs -r -n1 basename | sort -u
+            )"
+
+            for addr in $CUR_TRUSTED; do
+                printf '%s\n' "$BASE_TRUSTED" | grep -Fxq "$addr" && continue
+
+                # Each newly paired controller extends the grace window
+                CHANGED=1
+                GRACE_LEFT=$GRACE_TICKS
+
+                # Mark it seen
+                BASE_TRUSTED="$(printf '%s\n%s' "$BASE_TRUSTED" "$addr")"
+            done
+
+            # Countdown grace window for additional controllers
+            if [ $GRACE_LEFT -gt 0 ]; then
+                GRACE_LEFT=$((GRACE_LEFT - 1))
+                if [ $GRACE_LEFT -le 0 ]; then
+                    stop_bt_agent
+                    do_save
+                    return 0
+                fi
+            fi
+        fi
+
+        sleep 0.5
+        N=$((N-1))
     done
 
-    # stop automatic discovery
-    if test "${TRUSTDEV}" = "input"
-    then
-	NPID=$(cat /var/run/bluetooth-agent.pid)
-	kill -12 "${NPID}"
-	rm -f /var/run/bt_device
+    # Timeout cleanup
+    stop_bt_agent
+    if [ "$CHANGED" -eq 0 ]; then
+        echo "Pairing timed out"
+        sleep 1.5 # for toast notification
     fi
 
-    do_save # save
+    return 0
 }
 
 do_enable() {
   /etc/init.d/S32bluetooth stop
   /etc/init.d/S31sixad stop
-  sleep 1
   /usr/bin/batocera-settings-set controllers.bluetooth.enabled 1
   /etc/init.d/S31sixad start
   /etc/init.d/S32bluetooth start
@@ -173,65 +239,68 @@ do_disable() {
   /usr/bin/batocera-settings-set controllers.bluetooth.enabled 0
   /etc/init.d/S32bluetooth stop
   /etc/init.d/S31sixad stop
+  # set cancel flag for pairing early exit
+  touch /var/run/bt_cancel
+  sleep 0.6 # do_trust loop is 0.5 second, so 0.6 guarentees it'll be seen
+  rm -f /var/run/bt_cancel
 }
 
 do_connect() {
-    DEV="${1}"
-    if ! echo "${DEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+    DEV="$1"
+    if ! echo "$DEV" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
         echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
         return 1
     fi
 
-    if bluetoothctl -- info "${DEV}" | grep -q "Connected: yes"; then
-        echo "Device ${DEV} is already connected." >&2
+    if bluetoothctl -- info "$DEV" | grep -q "Connected: yes"; then
+        echo "Device $DEV is already connected." >&2
         return 0
     fi
 
-    echo "Attempting to connect to device ${DEV}..."
-    if bluetoothctl -- connect "${DEV}"; then
-        echo "Successfully connected to device ${DEV}"
+    echo "Attempting to connect to device $DEV..."
+    if bluetoothctl -- connect "$DEV"; then
+        echo "Successfully connected to device $DEV"
         return 0
     else
-        echo "Failed to connect to device ${DEV}" >&2
+        echo "Failed to connect to device $DEV" >&2
         return 1
     fi
 }
 
 do_disconnect() {
-    DEV="${1}"
-    if ! echo "${DEV}" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+    DEV="$1"
+    if ! echo "$DEV" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
         echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
         return 1
     fi
 
-    if ! bluetoothctl -- info "${DEV}" | grep -q "Connected: yes"; then
+    if ! bluetoothctl -- info "$DEV" | grep -q "Connected: yes"; then
         echo "Device ${DEV} is not connected." >&2
         return 1
     fi
 
-    if bluetoothctl -- disconnect "${DEV}"; then
-        echo "Successfully disconnected device ${DEV}"
+    if bluetoothctl -- disconnect "$DEV"; then
+        echo "Successfully disconnected device $DEV"
         return 0
     else
-        echo "Failed to disconnect device ${DEV}" >&2
+        echo "Failed to disconnect device $DEV" >&2
         return 1
     fi
 }
 
-case "${ACTION}" in
+case "$ACTION" in
     "list")
         do_list
         ;;
     "trust")
         TRUSTDEV=$2
-        do_trust "${TRUSTDEV}"
+        do_trust "$TRUSTDEV"
         ;;
     "remove")
-        if test $# = 2
-        then
-            do_remove "${2}" || exit 1
+        if [ "$#" -eq 2 ]; then
+            do_remove "$2" || exit 1
         else
-            do_help "${0}"
+            do_help "$0"
             exit 1
         fi
         ;;
@@ -254,25 +323,23 @@ case "${ACTION}" in
         do_disable
         ;;
     "connect")
-        if test $# = 2
-        then
-            do_connect "${2}" || exit 1
+        if [ "$#" -eq 2 ]; then
+            do_connect "$2" || exit 1
         else
-            do_help "${0}"
+            do_help "$0"
             exit 1
         fi
         ;;
     "disconnect")
-        if test $# = 2
-        then
-            do_disconnect "${2}" || exit 1
+        if [ "$#" -eq 2 ]; then
+            do_disconnect "$2" || exit 1
         else
-            do_help "${0}"
+            do_help "$0"
             exit 1
         fi
         ;;
     *)
-        do_help "${0}"
+        do_help "$0"
         exit 1
 esac
 
