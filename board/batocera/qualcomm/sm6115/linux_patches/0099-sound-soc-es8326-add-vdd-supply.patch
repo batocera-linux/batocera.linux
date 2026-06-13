@@ -1,0 +1,31 @@
+Subject: [PATCH] ASoC: es8326: add optional "vdd" power supply
+
+---
+ sound/soc/codecs/es8326.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
+--- a/sound/soc/codecs/es8326.c
++++ b/sound/soc/codecs/es8326.c
+@@ -11,6 +11,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/module.h>
++#include <linux/regulator/consumer.h>
+ #include <sound/jack.h>
+ #include <sound/pcm_params.h>
+ #include <sound/soc.h>
+@@ -1276,6 +1277,11 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
+ 	if (!es8326)
+ 		return -ENOMEM;
+ 
++	ret = devm_regulator_get_enable_optional(&i2c->dev, "vdd");
++	if (ret < 0 && ret != -ENODEV)
++		return dev_err_probe(&i2c->dev, ret,
++				     "failed to enable vdd supply\n");
++
+ 	i2c_set_clientdata(i2c, es8326);
+ 	es8326->i2c = i2c;
+ 	mutex_init(&es8326->lock);
+--
+2.43.1

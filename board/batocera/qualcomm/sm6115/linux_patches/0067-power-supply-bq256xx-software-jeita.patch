@@ -1,0 +1,190 @@
+--- a/drivers/power/supply/bq256xx_charger.c
++++ b/drivers/power/supply/bq256xx_charger.c
+@@ -78,6 +78,16 @@
+ 
+ #define BQ256XX_CHG_CONFIG_MASK		BIT(4)
+ #define BQ256XX_CHG_CONFIG_BIT_SHIFT	4
++#define BQ256XX_JEITA_POLL_MS		5000
++#define BQ256XX_JEITA_T_HOT_dC		500
++#define BQ256XX_JEITA_T_HOT_REL_dC	480
++#define BQ256XX_JEITA_T_WARM_dC		450
++#define BQ256XX_JEITA_T_COOL_ENTER_dC	150
++#define BQ256XX_JEITA_T_COOL_EXIT_dC	200
++#define BQ256XX_JEITA_T_COLD_dC		0
++#define BQ256XX_JEITA_T_COLD_REL_dC	20
++#define BQ256XX_JEITA_ICHG_EDGE_uA	1000000
++#define BQ256XX_JEITA_VBATREG_WARM_uV	4100000
+ #define BQ256XX_OTG_CONFIG		BIT(5)
+ 
+ #define BQ256XX_ITERM_MASK		GENMASK(3, 0)
+@@ -247,6 +257,16 @@
+  * @state: device status and faults
+  * @watchdog_timer: watchdog timer value in milliseconds
+  */
++
++enum bq256xx_jeita_band {
++	BQ256XX_JEITA_BAND_UNKNOWN = -1,
++	BQ256XX_JEITA_BAND_COLD,
++	BQ256XX_JEITA_BAND_COOL,
++	BQ256XX_JEITA_BAND_NORMAL,
++	BQ256XX_JEITA_BAND_WARM,
++	BQ256XX_JEITA_BAND_HOT,
++};
++
+ struct bq256xx_device {
+ 	struct i2c_client *client;
+ 	struct device *dev;
+@@ -267,6 +287,10 @@
+ 	const struct bq256xx_chip_info *chip_info;
+ 	struct bq256xx_state state;
+ 	int watchdog_timer;
++
++	struct delayed_work jeita_work;
++	struct power_supply *fg_psy;
++	enum bq256xx_jeita_band jeita_band;
+ };
+ 
+ /**
+@@ -1392,6 +1416,115 @@
+ 	return ret;
+ }
+ 
++static int bq256xx_jeita_read_temp(struct bq256xx_device *bq, int *temp_dC)
++{
++	union power_supply_propval val;
++	int ret;
++
++	if (!bq->fg_psy) {
++		bq->fg_psy = power_supply_get_by_name("battery");
++		if (!bq->fg_psy)
++			return -EAGAIN;
++	}
++
++	ret = power_supply_get_property(bq->fg_psy, POWER_SUPPLY_PROP_TEMP, &val);
++	if (ret)
++		return ret;
++
++	*temp_dC = val.intval;
++	return 0;
++}
++
++static enum bq256xx_jeita_band
++bq256xx_jeita_classify(int temp_dC, enum bq256xx_jeita_band prev)
++{
++	bool was_cool = (prev == BQ256XX_JEITA_BAND_COLD ||
++			 prev == BQ256XX_JEITA_BAND_COOL);
++
++	if (temp_dC >= BQ256XX_JEITA_T_HOT_dC)
++		return BQ256XX_JEITA_BAND_HOT;
++	if (prev == BQ256XX_JEITA_BAND_HOT &&
++	    temp_dC > BQ256XX_JEITA_T_HOT_REL_dC)
++		return BQ256XX_JEITA_BAND_HOT;
++	if (temp_dC >= BQ256XX_JEITA_T_WARM_dC)
++		return BQ256XX_JEITA_BAND_WARM;
++	if ((was_cool && temp_dC < BQ256XX_JEITA_T_COOL_EXIT_dC) ||
++	    (!was_cool && temp_dC <= BQ256XX_JEITA_T_COOL_ENTER_dC)) {
++		if (temp_dC <= BQ256XX_JEITA_T_COLD_dC)
++			return BQ256XX_JEITA_BAND_COLD;
++		if (prev == BQ256XX_JEITA_BAND_COLD &&
++		    temp_dC < BQ256XX_JEITA_T_COLD_REL_dC)
++			return BQ256XX_JEITA_BAND_COLD;
++		return BQ256XX_JEITA_BAND_COOL;
++	}
++	return BQ256XX_JEITA_BAND_NORMAL;
++}
++
++static int bq256xx_jeita_apply(struct bq256xx_device *bq,
++			       enum bq256xx_jeita_band band)
++{
++	int ichg, vbatreg;
++
++	switch (band) {
++	case BQ256XX_JEITA_BAND_COLD:
++	case BQ256XX_JEITA_BAND_HOT:
++		return bq256xx_set_charge_type(bq, POWER_SUPPLY_CHARGE_TYPE_NONE);
++	case BQ256XX_JEITA_BAND_COOL:
++		ichg = min(BQ256XX_JEITA_ICHG_EDGE_uA, bq->init_data.ichg_max);
++		vbatreg = bq->init_data.vbatreg_max;
++		break;
++	case BQ256XX_JEITA_BAND_WARM:
++		ichg = min(BQ256XX_JEITA_ICHG_EDGE_uA, bq->init_data.ichg_max);
++		vbatreg = min(BQ256XX_JEITA_VBATREG_WARM_uV,
++			      bq->init_data.vbatreg_max);
++		break;
++	case BQ256XX_JEITA_BAND_NORMAL:
++		ichg = bq->init_data.ichg_max;
++		vbatreg = bq->init_data.vbatreg_max;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	bq->chip_info->bq256xx_set_ichg(bq, ichg);
++	bq->chip_info->bq256xx_set_vbatreg(bq, vbatreg);
++	return bq256xx_set_charge_type(bq, POWER_SUPPLY_CHARGE_TYPE_FAST);
++}
++
++static void bq256xx_jeita_work(struct work_struct *work)
++{
++	struct bq256xx_device *bq = container_of(to_delayed_work(work),
++					struct bq256xx_device, jeita_work);
++	enum bq256xx_jeita_band band;
++	int temp_dC, ret;
++
++	ret = bq256xx_jeita_read_temp(bq, &temp_dC);
++	if (ret)
++		goto reschedule;
++
++	band = bq256xx_jeita_classify(temp_dC, bq->jeita_band);
++	if (band != bq->jeita_band) {
++		dev_info(bq->dev, "JEITA: %d.%dC, band %d -> %d\n",
++			 temp_dC / 10, abs(temp_dC % 10), bq->jeita_band, band);
++		if (!bq256xx_jeita_apply(bq, band))
++			bq->jeita_band = band;
++	}
++
++reschedule:
++	schedule_delayed_work(&bq->jeita_work,
++			      msecs_to_jiffies(BQ256XX_JEITA_POLL_MS));
++}
++
++static void bq256xx_jeita_cleanup(void *data)
++{
++	struct bq256xx_device *bq = data;
++
++	cancel_delayed_work_sync(&bq->jeita_work);
++	if (bq->fg_psy)
++		power_supply_put(bq->fg_psy);
++}
++
++
+ static bool bq256xx_state_changed(struct bq256xx_device *bq,
+ 				  struct bq256xx_state *new_state)
+ {
+@@ -1444,8 +1577,10 @@
+ 	bq->state = state;
+ 	mutex_unlock(&bq->lock);
+ 
+-	if (state.vbus_stat != prev_vbus_stat)
++	if (state.vbus_stat != prev_vbus_stat) {
+ 		bq256xx_set_iindpm_for_type(bq, state.vbus_stat);
++		mod_delayed_work(system_wq, &bq->jeita_work, 0);
++	}
+ 
+ 	power_supply_changed(bq->charger);
+ 
+@@ -2059,6 +2194,14 @@
+ 		return ret;
+ 	}
+ 
++	INIT_DELAYED_WORK(&bq->jeita_work, bq256xx_jeita_work);
++	bq->jeita_band = BQ256XX_JEITA_BAND_UNKNOWN;
++	ret = devm_add_action_or_reset(dev, bq256xx_jeita_cleanup, bq);
++	if (ret)
++		return ret;
++	schedule_delayed_work(&bq->jeita_work,
++			      msecs_to_jiffies(BQ256XX_JEITA_POLL_MS));
++
+ 	return ret;
+ }
+ 

@@ -5,7 +5,6 @@
 
 /dts-v1/;
 
-#include <dt-bindings/clock/qcom,sm6115-lpasscc.h>
 #include <dt-bindings/leds/common.h>
 #include <dt-bindings/sound/qcom,q6afe.h>
 #include <dt-bindings/sound/qcom,q6asm.h>
@@ -32,10 +31,10 @@
 		charge-full-design-microamp-hours = <5000000>;
 		voltage-min-design-microvolt = <3400000>;
 		voltage-max-design-microvolt = <4350000>;
-		constant-charge-current-max-microamp = <2040000>;
+		constant-charge-current-max-microamp = <3000000>;
 		constant-charge-voltage-max-microvolt = <4350000>;
-		precharge-current-microamp = <180000>;
-		charge-term-current-microamp = <180000>;
+		precharge-current-microamp = <200000>;
+		charge-term-current-microamp = <200000>;
 	};
 
 	fan: gpio-fan {
@@ -47,11 +46,22 @@
 
 	vibrator {
 		compatible = "clk-vibrator";
-		vcc-supply = <&vibra_vcc>;
 		clocks = <&gcc GCC_GP1_CLK>;
+		vcc-supply = <&vibra_vcc>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&gpio_clk_pins>;
 		vibration-frequency-hz = <10000>;
+	};
+
+	led_vdd: regulator-led-vdd {
+		compatible = "regulator-fixed";
+		regulator-name = "led-vdd";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&tlmm 23 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_en_default>;
 	};
 
 	vibra_vcc: regulator-vibra-vcc {
@@ -61,6 +71,21 @@
 		regulator-max-microvolt = <3300000>;
 		gpio = <&tlmm 96 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+		pinctrl-names = "default";
+		pinctrl-0 = <&vibra_vcc_default>;
+	};
+
+	es8326_vdd_3v3: regulator-es8326-vdd {
+		compatible = "regulator-fixed";
+		regulator-name = "es8326-vdd-3v3";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&tlmm 66 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-always-on;
+		regulator-boot-on;
+		pinctrl-names = "default";
+		pinctrl-0 = <&es8326_vdd_default>;
 	};
 
 	gpio-keys {
@@ -91,11 +116,12 @@
 
 	panel_backlight: backlight {
 		compatible = "pwm-backlight";
-		pwms = <&pm6125_pwm 0 100000>;
+		pwms = <&pm6125_pwm 0 40000>;
 
-		brightness-levels = <0 255>;
-		num-interpolated-steps = <255>;
-		default-brightness-level = <255>;
+		brightness-levels = <0 204>;
+		num-interpolated-steps = <204>;
+		max-brightness = <204>;
+		default-brightness-level = <204>;
 	};
 
 	multi-led-l1 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l1"; leds = <&left_red_1>, <&left_green_1>, <&left_blue_1>; };
@@ -106,6 +132,7 @@
 	multi-led-l6 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l6"; leds = <&left_red_6>, <&left_green_6>, <&left_blue_6>; };
 	multi-led-l7 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l7"; leds = <&left_red_7>, <&left_green_7>, <&left_blue_7>; };
 	multi-led-l8 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l8"; leds = <&left_red_8>, <&left_green_8>, <&left_blue_8>; };
+	multi-led-l9 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l9"; leds = <&left_red_9>, <&left_green_9>, <&left_blue_9>; };
 
 	multi-led-r1 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r1"; leds = <&right_red_1>, <&right_green_1>, <&right_blue_1>; };
 	multi-led-r2 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r2"; leds = <&right_red_2>, <&right_green_2>, <&right_blue_2>; };
@@ -115,9 +142,10 @@
 	multi-led-r6 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r6"; leds = <&right_red_6>, <&right_green_6>, <&right_blue_6>; };
 	multi-led-r7 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r7"; leds = <&right_red_7>, <&right_green_7>, <&right_blue_7>; };
 	multi-led-r8 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r8"; leds = <&right_red_8>, <&right_green_8>, <&right_blue_8>; };
+	multi-led-r9 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r9"; leds = <&right_red_9>, <&right_green_9>, <&right_blue_9>; };
 
-	wcn3990-pmu {
-		compatible = "qcom,wcn3990-pmu";
+	wcn3950-pmu {
+		compatible = "qcom,wcn3950-pmu";
 
 		pinctrl-0 = <&sw_ctrl_default>;
 		pinctrl-names = "default";
@@ -157,13 +185,14 @@
 
 		pin-switches = "SPK_L Speaker", "SPK_R Speaker";
 
-		audio-routing = "Headphone Jack", "HPOL",
-				"Headphone Jack", "HPOR",
-				"SPK_L Speaker", "SPK_L DAC Output",
-				"SPK_R Speaker", "SPK_R DAC Output";
+		audio-routing = "SPK_L Speaker", "SPK_L DAC Output",
+				"SPK_R Speaker", "SPK_R DAC Output",
+				"Headphone Jack", "HPOL",
+				"Headphone Jack", "HPOR";
 
 		pinctrl-names = "default";
-		pinctrl-0 = <&lpi_i2s2_active>;
+		pinctrl-0 = <&lpi_qua_mi2s_active>, <&lpi_i2s2_active>,
+			    <&lpi_dmic23_active>;
 
 		mm1-dai-link {
 			link-name = "MultiMedia1";
@@ -195,14 +224,14 @@
 				sound-dai = <&q6routing>;
 			};
 			codec {
-				sound-dai = <&es8326>, <&aw88261_l>, <&aw88261_r>;
+				sound-dai = <&aw88261_l>, <&aw88261_r>;
 			};
 		};
 
-		sec-mi2s-capture-dai-link {
-			link-name = "Secondary MI2S Capture";
+		quat-mi2s-playback-dai-link {
+			link-name = "Quaternary MI2S Playback";
 			cpu {
-				sound-dai = <&q6afedai SECONDARY_MI2S_TX>;
+				sound-dai = <&q6afedai QUATERNARY_MI2S_RX>;
 			};
 			platform {
 				sound-dai = <&q6routing>;
@@ -211,6 +240,120 @@
 				sound-dai = <&es8326>;
 			};
 		};
+
+		quat-mi2s-capture-dai-link {
+			link-name = "Quaternary MI2S Capture";
+			cpu {
+				sound-dai = <&q6afedai QUATERNARY_MI2S_TX>;
+			};
+			platform {
+				sound-dai = <&q6routing>;
+			};
+			codec {
+				sound-dai = <&es8326>;
+			};
+		};
+
+		mm4-capture-dai-link {
+			link-name = "MultiMedia4 Capture";
+			cpu {
+				sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA4>;
+			};
+		};
+
+		mm5-capture-dai-link {
+			link-name = "MultiMedia5 Capture";
+			cpu {
+				sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA5>;
+			};
+		};
+
+		va-codec-dma-dai-link {
+			link-name = "VA_CODEC_DMA_TX_0";
+			cpu {
+				sound-dai = <&q6afedai VA_CODEC_DMA_TX_0>;
+			};
+			platform {
+				sound-dai = <&q6routing>;
+			};
+			codec {
+				sound-dai = <&vamacro 0>;
+			};
+		};
+	};
+};
+
+&soc {
+	rxmacro: codec@a600000 {
+		compatible = "qcom,sm6115-lpass-rx-macro";
+		reg = <0x0 0x0a600000 0x0 0x1000>;
+
+		clocks = <&q6afecc LPASS_CLK_ID_RX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_CLK_ID_RX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_HW_DCODEC_VOTE          LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&vamacro>;
+		clock-names = "mclk", "npl", "dcodec", "fsgen";
+
+		assigned-clocks = <&q6afecc LPASS_CLK_ID_RX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+				  <&q6afecc LPASS_CLK_ID_RX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		assigned-clock-rates = <22579200>, <22579200>;
+
+		#clock-cells = <0>;
+		clock-output-names = "mclk";
+		#sound-dai-cells = <1>;
+	};
+
+	txmacro: codec@a620000 {
+		compatible = "qcom,sm6115-lpass-tx-macro";
+		reg = <0x0 0x0a620000 0x0 0x1000>;
+
+		clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_HW_DCODEC_VOTE          LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&vamacro>;
+		clock-names = "mclk", "npl", "dcodec", "fsgen";
+
+		assigned-clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+				  <&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		assigned-clock-rates = <19200000>, <19200000>;
+
+		qcom,dmic-sample-rate = <2400000>;
+
+		#clock-cells = <0>;
+		clock-output-names = "mclk";
+		#sound-dai-cells = <1>;
+	};
+
+	lpass_audiocc: clock-controller@a6a9000 {
+		compatible = "qcom,sm6115-lpassaudiocc";
+		reg = <0x0 0x0a6a9000 0x0 0x1000>;
+		#reset-cells = <1>;
+	};
+
+	vamacro: codec@a730000 {
+		compatible = "qcom,sm6115-lpass-va-macro";
+		reg = <0x0 0x0a730000 0x0 0x1000>;
+
+		clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_HW_DCODEC_VOTE          LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+			 <&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		clock-names = "mclk", "dcodec", "npl";
+
+		assigned-clocks = <&q6afecc LPASS_CLK_ID_TX_CORE_MCLK     LPASS_CLK_ATTRIBUTE_COUPLE_NO>,
+				  <&q6afecc LPASS_CLK_ID_TX_CORE_NPL_MCLK LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		assigned-clock-rates = <19200000>, <19200000>;
+
+		qcom,dmic-sample-rate = <2400000>;
+
+		#clock-cells = <0>;
+		clock-output-names = "fsgen";
+		#sound-dai-cells = <1>;
+	};
+
+	lpasscc: clock-controller@a7e0000 {
+		compatible = "qcom,sm6115-lpasscc";
+		reg = <0x0 0x0a7e0000 0x0 0x12000>;
+		#reset-cells = <1>;
 	};
 };
 
@@ -224,6 +367,30 @@
 		reg = <SECONDARY_MI2S_TX>;
 		qcom,sd-lines = <1>;
 	};
+
+	dai@22 {
+		reg = <QUATERNARY_MI2S_RX>;
+		qcom,sd-lines = <0>;
+	};
+
+	dai@23 {
+		reg = <QUATERNARY_MI2S_TX>;
+		qcom,sd-lines = <1>;
+	};
+
+	dai@110 {
+		reg = <VA_CODEC_DMA_TX_0>;
+	};
+};
+
+&q6asmdai {
+	dai@3 {
+		reg = <MSM_FRONTEND_DAI_MULTIMEDIA4>;
+	};
+
+	dai@4 {
+		reg = <MSM_FRONTEND_DAI_MULTIMEDIA5>;
+	};
 };
 
 &i2c1 {
@@ -232,17 +399,26 @@
 
 	panel_avdd: regulator@3e {
 		reg = <0x3e>;
-		compatible = "sgmicro,sgm3804";
-		pinctrl-0 = <&panel_pwr_active>;
-		pinctrl-1 = <&panel_pwr_sleep>;
-		pinctrl-names = "default", "sleep";
-		regulator-name = "panel-avdd";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		reset-gpios = <&tlmm 44 GPIO_ACTIVE_HIGH>,
-					<&tlmm 45 GPIO_ACTIVE_HIGH>;
-		vin-supply = <&vreg_l22a_2p96>;
+		compatible = "awinic,aw37503"; /* SGM3804 is a clone */
 		status = "okay";
+
+		panel_avdd_outp: outp {
+			regulator-name = "panel-avdd-outp";
+			regulator-min-microvolt = <5500000>;
+			regulator-max-microvolt = <5500000>;
+			regulator-active-discharge = <1>;
+			enable-gpios = <&tlmm 44 GPIO_ACTIVE_HIGH>;
+			vin-supply = <&vph_pwr>;
+		};
+
+		panel_avdd_outn: outn {
+			regulator-name = "panel-avdd-outn";
+			regulator-min-microvolt = <5500000>;
+			regulator-max-microvolt = <5500000>;
+			regulator-active-discharge = <1>;
+			enable-gpios = <&tlmm 45 GPIO_ACTIVE_HIGH>;
+			vin-supply = <&vph_pwr>;
+		};
 	};
 
 	es8326: codec@18 {
@@ -253,11 +429,13 @@
 		assigned-clocks = <&q6afecc LPASS_CLK_ID_MCLK_1 LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
 		assigned-clock-rates = <12288000>;
 		interrupts-extended = <&tlmm 65 IRQ_TYPE_EDGE_FALLING>;
-		reset-gpios = <&tlmm 66 GPIO_ACTIVE_LOW>;
+		vdd-supply = <&es8326_vdd_3v3>;
 		everest,jack-detect-inverted;
+
 		pinctrl-names = "default";
-		pinctrl-0 = <&es8326_irq_default &es8326_pwr_default>;
+		pinctrl-0 = <&es8326_irq_default &lpi_ext_mclk0_b_active>;
 		#sound-dai-cells = <0>;
+		status = "okay";
 	};
 
 	aw88261_l: audio-codec@34 {
@@ -300,10 +478,12 @@
 		#sound-dai-cells = <0>;
 	};
 
-	fuel-gauge@64 {
-		compatible = "cellwise,cw221X";
+	fuel_gauge: fuel-gauge@64 {
+		compatible = "cellwise,cw221x";
 		reg = <0x64>;
 		monitored-battery = <&battery>;
+		#thermal-sensor-cells = <0>;
+		cellwise,sense-resistor-micro-ohms = <10000>;
 		cellwise,monitor-interval-ms = <5000>;
 		cellwise,battery-profile = /bits/ 8 <
 			0x5a 0x00 0x00 0x00 0x00 0x00 0x00 0x00
@@ -336,13 +516,24 @@
 		connector {
 			compatible = "usb-c-connector";
 			label = "USB-C";
-			pd-revision = /bits/ 8 <0x2 0x0 0x1 0x20>;
+			pd-revision = /bits/ 8 <0x3 0x0 0x1 0x20>;
+			self-powered;
 			power-role = "dual";
 			data-role = "dual";
 			try-power-role = "sink";
 			op-sink-microwatt = <10000000>;
-			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
-			source-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
+			sink-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE |
+						      PDO_FIXED_USB_COMM |
+						      PDO_FIXED_DATA_SWAP)
+				PDO_PPS_APDO(4000, 11000, 3000)>;
+
+			source-pdos = <PDO_FIXED(5000, 1200,
+						 PDO_FIXED_DUAL_ROLE |
+						 PDO_FIXED_DATA_SWAP |
+						 PDO_FIXED_USB_COMM)>;
+
+			pd-source-inputs = <0x04>;
+			pd-battery-info = <0x01>;
 
 			ports {
 				#address-cells = <1>;
@@ -366,15 +557,15 @@
 	};
 
 	charger@1a {
-		compatible = "sgmicro,sgm41515";
+		compatible = "sgmicro,sgm41515"; /* BQ25601D clone */
 		reg = <0x1a>;
 		monitored-battery = <&battery>;
 		interrupts-extended = <&tlmm 70 IRQ_TYPE_EDGE_FALLING>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&chg_int_default>;
+		pinctrl-0 = <&chg_int_default>, <&chg_en_default>;
+		wakeup-source;
 
 		input-voltage-limit-microvolt = <4500000>;
-		input-current-limit-microamp = <2400000>;
 
 		status = "okay";
 
@@ -387,6 +578,7 @@
 
 	led-controller@3a {
 		compatible = "awinic,aw20036";
+		vdd-supply = <&led_vdd>;
 		reg = <0x3a>;
 		enable-gpios = <&tlmm 21 GPIO_ACTIVE_HIGH>;
 		#address-cells = <1>;
@@ -396,41 +588,46 @@
 		pinctrl-1 = <&rgbl_suspend>;
 		status = "okay";
 
-		left_red_1: led@0 { reg = <0x0>; color = <LED_COLOR_ID_RED>; label = "left_red_1"; led-max-microamp = <9780>; };
-		left_green_1: led@1 { reg = <0x1>; color = <LED_COLOR_ID_GREEN>; label = "left_green_1"; led-max-microamp = <9780>; };
-		left_blue_1: led@2 { reg = <0x2>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_1"; led-max-microamp = <9780>; };
+		left_blue_1: led@0 { reg = <0x0>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_1"; led-max-microamp = <3400>; };
+		left_green_1: led@1 { reg = <0x1>; color = <LED_COLOR_ID_GREEN>; label = "left_green_1"; led-max-microamp = <3400>; };
+		left_red_1: led@2 { reg = <0x2>; color = <LED_COLOR_ID_RED>; label = "left_red_1"; led-max-microamp = <3400>; };
 
-		left_red_2: led@3 { reg = <0x3>; color = <LED_COLOR_ID_RED>; label = "left_red_2"; led-max-microamp = <9780>; };
-		left_green_2: led@4 { reg = <0x4>; color = <LED_COLOR_ID_GREEN>; label = "left_green_2"; led-max-microamp = <9780>; };
-		left_blue_2: led@5 { reg = <0x5>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_2"; led-max-microamp = <9780>; };
+		left_blue_2: led@3 { reg = <0x3>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_2"; led-max-microamp = <3400>; };
+		left_green_2: led@4 { reg = <0x4>; color = <LED_COLOR_ID_GREEN>; label = "left_green_2"; led-max-microamp = <3400>; };
+		left_red_2: led@5 { reg = <0x5>; color = <LED_COLOR_ID_RED>; label = "left_red_2"; led-max-microamp = <3400>; };
 
-		left_red_3: led@6 { reg = <0x6>; color = <LED_COLOR_ID_RED>; label = "left_red_3"; led-max-microamp = <9780>; };
-		left_green_3: led@7 { reg = <0x7>; color = <LED_COLOR_ID_GREEN>; label = "left_green_3"; led-max-microamp = <9780>; };
-		left_blue_3: led@8 { reg = <0x8>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_3"; led-max-microamp = <9780>; };
+		left_blue_3: led@6 { reg = <0x6>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_3"; led-max-microamp = <3400>; };
+		left_green_3: led@7 { reg = <0x7>; color = <LED_COLOR_ID_GREEN>; label = "left_green_3"; led-max-microamp = <3400>; };
+		left_red_3: led@8 { reg = <0x8>; color = <LED_COLOR_ID_RED>; label = "left_red_3"; led-max-microamp = <3400>; };
 
-		left_red_4: led@9 { reg = <0x9>; color = <LED_COLOR_ID_RED>; label = "left_red_4"; led-max-microamp = <9780>; };
-		left_green_4: led@a { reg = <0xa>; color = <LED_COLOR_ID_GREEN>; label = "left_green_4"; led-max-microamp = <9780>; };
-		left_blue_4: led@b { reg = <0xb>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_4"; led-max-microamp = <9780>; };
+		left_blue_4: led@9 { reg = <0x9>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_4"; led-max-microamp = <3400>; };
+		left_green_4: led@a { reg = <0xa>; color = <LED_COLOR_ID_GREEN>; label = "left_green_4"; led-max-microamp = <3400>; };
+		left_red_4: led@b { reg = <0xb>; color = <LED_COLOR_ID_RED>; label = "left_red_4"; led-max-microamp = <3400>; };
 
-		left_red_5: led@c { reg = <0xc>; color = <LED_COLOR_ID_RED>; label = "left_red_5"; led-max-microamp = <9780>; };
-		left_green_5: led@d { reg = <0xd>; color = <LED_COLOR_ID_GREEN>; label = "left_green_5"; led-max-microamp = <9780>; };
-		left_blue_5: led@e { reg = <0xe>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_5"; led-max-microamp = <9780>; };
+		left_blue_5: led@c { reg = <0xc>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_5"; led-max-microamp = <3400>; };
+		left_green_5: led@d { reg = <0xd>; color = <LED_COLOR_ID_GREEN>; label = "left_green_5"; led-max-microamp = <3400>; };
+		left_red_5: led@e { reg = <0xe>; color = <LED_COLOR_ID_RED>; label = "left_red_5"; led-max-microamp = <3400>; };
 
-		left_red_6: led@f { reg = <0xf>; color = <LED_COLOR_ID_RED>; label = "left_red_6"; led-max-microamp = <9780>; };
-		left_green_6: led@10 { reg = <0x10>; color = <LED_COLOR_ID_GREEN>; label = "left_green_6"; led-max-microamp = <9780>; };
-		left_blue_6: led@11 { reg = <0x11>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_6"; led-max-microamp = <9780>; };
+		left_blue_6: led@f { reg = <0xf>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_6"; led-max-microamp = <3400>; };
+		left_green_6: led@10 { reg = <0x10>; color = <LED_COLOR_ID_GREEN>; label = "left_green_6"; led-max-microamp = <3400>; };
+		left_red_6: led@11 { reg = <0x11>; color = <LED_COLOR_ID_RED>; label = "left_red_6"; led-max-microamp = <3400>; };
 
-		left_red_7: led@12 { reg = <0x12>; color = <LED_COLOR_ID_RED>; label = "left_red_7"; led-max-microamp = <9780>; };
-		left_green_7: led@13 { reg = <0x13>; color = <LED_COLOR_ID_GREEN>; label = "left_green_7"; led-max-microamp = <9780>; };
-		left_blue_7: led@14 { reg = <0x14>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_7"; led-max-microamp = <9780>; };
+		left_blue_7: led@12 { reg = <0x12>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_7"; led-max-microamp = <3400>; };
+		left_green_7: led@13 { reg = <0x13>; color = <LED_COLOR_ID_GREEN>; label = "left_green_7"; led-max-microamp = <3400>; };
+		left_red_7: led@14 { reg = <0x14>; color = <LED_COLOR_ID_RED>; label = "left_red_7"; led-max-microamp = <3400>; };
 
-		left_red_8: led@15 { reg = <0x15>; color = <LED_COLOR_ID_RED>; label = "left_red_8"; led-max-microamp = <9780>; };
-		left_green_8: led@16 { reg = <0x16>; color = <LED_COLOR_ID_GREEN>; label = "left_green_8"; led-max-microamp = <9780>; };
-		left_blue_8: led@17 { reg = <0x17>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_8"; led-max-microamp = <9780>; };
+		left_blue_8: led@15 { reg = <0x15>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_8"; led-max-microamp = <3400>; };
+		left_green_8: led@16 { reg = <0x16>; color = <LED_COLOR_ID_GREEN>; label = "left_green_8"; led-max-microamp = <3400>; };
+		left_red_8: led@17 { reg = <0x17>; color = <LED_COLOR_ID_RED>; label = "left_red_8"; led-max-microamp = <3400>; };
+
+		left_blue_9: led@18 { reg = <0x18>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_9"; led-max-microamp = <3400>; };
+		left_green_9: led@19 { reg = <0x19>; color = <LED_COLOR_ID_GREEN>; label = "left_green_9"; led-max-microamp = <3400>; };
+		left_red_9: led@1a { reg = <0x1a>; color = <LED_COLOR_ID_RED>; label = "left_red_9"; led-max-microamp = <3400>; };
 	};
 
 	led-controller@3b {
 		compatible = "awinic,aw20036";
+		vdd-supply = <&led_vdd>;
 		reg = <0x3b>;
 		enable-gpios = <&tlmm 37 GPIO_ACTIVE_HIGH>;
 		#address-cells = <1>;
@@ -440,37 +637,41 @@
 		pinctrl-1 = <&rgbr_suspend>;
 		status = "okay";
 
-		right_red_1: led@0 { reg = <0x0>; color = <LED_COLOR_ID_RED>; label = "right_red_1"; led-max-microamp = <9780>; };
-		right_green_1: led@1 { reg = <0x1>; color = <LED_COLOR_ID_GREEN>; label = "right_green_1"; led-max-microamp = <9780>; };
-		right_blue_1: led@2 { reg = <0x2>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_1"; led-max-microamp = <9780>; };
+		right_blue_1: led@0 { reg = <0x0>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_1"; led-max-microamp = <3400>; };
+		right_green_1: led@1 { reg = <0x1>; color = <LED_COLOR_ID_GREEN>; label = "right_green_1"; led-max-microamp = <3400>; };
+		right_red_1: led@2 { reg = <0x2>; color = <LED_COLOR_ID_RED>; label = "right_red_1"; led-max-microamp = <3400>; };
 
-		right_red_2: led@3 { reg = <0x3>; color = <LED_COLOR_ID_RED>; label = "right_red_2"; led-max-microamp = <9780>; };
-		right_green_2: led@4 { reg = <0x4>; color = <LED_COLOR_ID_GREEN>; label = "right_green_2"; led-max-microamp = <9780>; };
-		right_blue_2: led@5 { reg = <0x5>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_2"; led-max-microamp = <9780>; };
+		right_blue_2: led@3 { reg = <0x3>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_2"; led-max-microamp = <3400>; };
+		right_green_2: led@4 { reg = <0x4>; color = <LED_COLOR_ID_GREEN>; label = "right_green_2"; led-max-microamp = <3400>; };
+		right_red_2: led@5 { reg = <0x5>; color = <LED_COLOR_ID_RED>; label = "right_red_2"; led-max-microamp = <3400>; };
 
-		right_red_3: led@6 { reg = <0x6>; color = <LED_COLOR_ID_RED>; label = "right_red_3"; led-max-microamp = <9780>; };
-		right_green_3: led@7 { reg = <0x7>; color = <LED_COLOR_ID_GREEN>; label = "right_green_3"; led-max-microamp = <9780>; };
-		right_blue_3: led@8 { reg = <0x8>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_3"; led-max-microamp = <9780>; };
+		right_blue_3: led@6 { reg = <0x6>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_3"; led-max-microamp = <3400>; };
+		right_green_3: led@7 { reg = <0x7>; color = <LED_COLOR_ID_GREEN>; label = "right_green_3"; led-max-microamp = <3400>; };
+		right_red_3: led@8 { reg = <0x8>; color = <LED_COLOR_ID_RED>; label = "right_red_3"; led-max-microamp = <3400>; };
 
-		right_red_4: led@9 { reg = <0x9>; color = <LED_COLOR_ID_RED>; label = "right_red_4"; led-max-microamp = <9780>; };
-		right_green_4: led@a { reg = <0xa>; color = <LED_COLOR_ID_GREEN>; label = "right_green_4"; led-max-microamp = <9780>; };
-		right_blue_4: led@b { reg = <0xb>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_4"; led-max-microamp = <9780>; };
+		right_blue_4: led@9 { reg = <0x9>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_4"; led-max-microamp = <3400>; };
+		right_green_4: led@a { reg = <0xa>; color = <LED_COLOR_ID_GREEN>; label = "right_green_4"; led-max-microamp = <3400>; };
+		right_red_4: led@b { reg = <0xb>; color = <LED_COLOR_ID_RED>; label = "right_red_4"; led-max-microamp = <3400>; };
 
-		right_red_5: led@c { reg = <0xc>; color = <LED_COLOR_ID_RED>; label = "right_red_5"; led-max-microamp = <9780>; };
-		right_green_5: led@d { reg = <0xd>; color = <LED_COLOR_ID_GREEN>; label = "right_green_5"; led-max-microamp = <9780>; };
-		right_blue_5: led@e { reg = <0xe>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_5"; led-max-microamp = <9780>; };
+		right_blue_5: led@c { reg = <0xc>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_5"; led-max-microamp = <3400>; };
+		right_green_5: led@d { reg = <0xd>; color = <LED_COLOR_ID_GREEN>; label = "right_green_5"; led-max-microamp = <3400>; };
+		right_red_5: led@e { reg = <0xe>; color = <LED_COLOR_ID_RED>; label = "right_red_5"; led-max-microamp = <3400>; };
 
-		right_red_6: led@f { reg = <0xf>; color = <LED_COLOR_ID_RED>; label = "right_red_6"; led-max-microamp = <9780>; };
-		right_green_6: led@10 { reg = <0x10>; color = <LED_COLOR_ID_GREEN>; label = "right_green_6"; led-max-microamp = <9780>; };
-		right_blue_6: led@11 { reg = <0x11>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_6"; led-max-microamp = <9780>; };
+		right_blue_6: led@f { reg = <0xf>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_6"; led-max-microamp = <3400>; };
+		right_green_6: led@10 { reg = <0x10>; color = <LED_COLOR_ID_GREEN>; label = "right_green_6"; led-max-microamp = <3400>; };
+		right_red_6: led@11 { reg = <0x11>; color = <LED_COLOR_ID_RED>; label = "right_red_6"; led-max-microamp = <3400>; };
 
-		right_red_7: led@12 { reg = <0x12>; color = <LED_COLOR_ID_RED>; label = "right_red_7"; led-max-microamp = <9780>; };
-		right_green_7: led@13 { reg = <0x13>; color = <LED_COLOR_ID_GREEN>; label = "right_green_7"; led-max-microamp = <9780>; };
-		right_blue_7: led@14 { reg = <0x14>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_7"; led-max-microamp = <9780>; };
+		right_blue_7: led@12 { reg = <0x12>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_7"; led-max-microamp = <3400>; };
+		right_green_7: led@13 { reg = <0x13>; color = <LED_COLOR_ID_GREEN>; label = "right_green_7"; led-max-microamp = <3400>; };
+		right_red_7: led@14 { reg = <0x14>; color = <LED_COLOR_ID_RED>; label = "right_red_7"; led-max-microamp = <3400>; };
 
-		right_red_8: led@15 { reg = <0x15>; color = <LED_COLOR_ID_RED>; label = "right_red_8"; led-max-microamp = <9780>; };
-		right_green_8: led@16 { reg = <0x16>; color = <LED_COLOR_ID_GREEN>; label = "right_green_8"; led-max-microamp = <9780>; };
-		right_blue_8: led@17 { reg = <0x17>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_8"; led-max-microamp = <9780>; };
+		right_blue_8: led@15 { reg = <0x15>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_8"; led-max-microamp = <3400>; };
+		right_green_8: led@16 { reg = <0x16>; color = <LED_COLOR_ID_GREEN>; label = "right_green_8"; led-max-microamp = <3400>; };
+		right_red_8: led@17 { reg = <0x17>; color = <LED_COLOR_ID_RED>; label = "right_red_8"; led-max-microamp = <3400>; };
+
+		right_blue_9: led@18 { reg = <0x18>; color = <LED_COLOR_ID_BLUE>; label = "right_blue_9"; led-max-microamp = <3400>; };
+		right_green_9: led@19 { reg = <0x19>; color = <LED_COLOR_ID_GREEN>; label = "right_green_9"; led-max-microamp = <3400>; };
+		right_red_9: led@1a { reg = <0x1a>; color = <LED_COLOR_ID_RED>; label = "right_red_9"; led-max-microamp = <3400>; };
 	};
 };
 
@@ -481,12 +682,60 @@
 &gpu {
 	status = "okay";
 
+	interconnects = <&bimc MASTER_GRAPHICS_3D RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+	interconnect-names = "gfx-mem";
+
 	zap-shader {
 		firmware-name = "qcom/qrb4210/a610_zap.mbn";
 	};
 };
 
+&gpu_opp_table {
+	opp-320000000 {
+		opp-peak-kBps = < 2188000>;
+	};
+	opp-465000000 {
+		opp-peak-kBps = < 3072000>;
+	};
+	opp-600000000 {
+		opp-peak-kBps = < 4068000>;
+	};
+	opp-745000000 {
+		opp-peak-kBps = < 6220000>;
+	};
+	opp-820000000 {
+		opp-peak-kBps = < 6220000>;
+	};
+	opp-900000000 {
+		opp-peak-kBps = < 7216000>;
+	};
+	opp-950000000 {
+		opp-peak-kBps = < 7216000>;
+	};
+	opp-980000000 {
+		opp-peak-kBps = < 7216000>;
+	};
+	opp-1050000000 {
+		opp-peak-kBps = < 8368000>;
+	};
+};
+
+&cpu_bwmon_opp_table {
+	opp-10 { opp-peak-kBps = <8368000>; };
+};
+
 &mdss {
+	status = "okay";
+
+	interconnects = <&mmrt_virt MASTER_MDP_PORT0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>,
+			<&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &config_noc SLAVE_DISPLAY_CFG RPM_ACTIVE_TAG>;
+};
+
+&venus {
+	firmware-name = "qcom/venus-6.0/venus.mbn";
 	status = "okay";
 };
 
@@ -498,7 +747,8 @@
 		reg = <0>;
 
 		vdd1-supply = <&vreg_l9a_1p8>;
-		avdd-supply = <&panel_avdd>;
+		vsp-supply = <&panel_avdd_outp>;
+		vsn-supply = <&panel_avdd_outn>;
 		backlight = <&panel_backlight>;
 
 		enable-gpios = <&tlmm 97 GPIO_ACTIVE_HIGH>;
@@ -592,16 +842,43 @@
 	regulators-0 {
 		compatible = "qcom,rpm-pm6125-regulators";
 
-		vdd-s1-supply = <&vph_pwr>;
-		vdd-s2-supply = <&vph_pwr>;
-		vdd-s3-supply = <&vph_pwr>;
-		vdd-s4-supply = <&vph_pwr>;
-		vdd-s5-supply = <&vph_pwr>;
-		vdd-s6-supply = <&vph_pwr>;
-		vdd-s7-supply = <&vph_pwr>;
-		vdd-s8-supply = <&vph_pwr>;
-		vdd-s9-supply = <&vph_pwr>;
-		vdd-s10-supply = <&vph_pwr>;
+		vdd_s1-supply = <&vph_pwr>;
+		vdd_s2-supply = <&vph_pwr>;
+		vdd_s3-supply = <&vph_pwr>;
+		vdd_s4-supply = <&vph_pwr>;
+		vdd_s5-supply = <&vph_pwr>;
+		vdd_s6-supply = <&vph_pwr>;
+		vdd_s7-supply = <&vph_pwr>;
+		vdd_s8-supply = <&vph_pwr>;
+
+		vdd_l1_l7_l17_l18-supply = <&vreg_s6a_1p352>;
+		vdd_l2_l3_l4-supply = <&vreg_s6a_1p352>;
+		vdd_l5_l15_l19_l20_l21_l22-supply = <&vph_pwr>;
+		vdd_l6_l8-supply = <&vreg_s5a_0p848>;
+		vdd_l9_l11-supply = <&vreg_s7a_2p04>;
+		vdd_l10_l13_l14-supply = <&vreg_s7a_2p04>;
+		vdd_l12_l16-supply = <&vreg_s7a_2p04>;
+		vdd_l23_l24-supply = <&vph_pwr>;
+
+		vreg_s5a_0p848: s5 {
+			regulator-min-microvolt = <920000>;
+			regulator-max-microvolt = <1128000>;
+		};
+
+		vreg_s6a_1p352: s6 {
+			regulator-min-microvolt = <304000>;
+			regulator-max-microvolt = <1456000>;
+		};
+
+		vreg_s7a_2p04: s7 {
+			regulator-min-microvolt = <1280000>;
+			regulator-max-microvolt = <2040000>;
+		};
+
+		vreg_s8a_1p064: s8 {
+			regulator-min-microvolt = <1064000>;
+			regulator-max-microvolt = <1304000>;
+		};
 
 		vreg_l1a_1p0: l1 {
 			regulator-min-microvolt = <952000>;
@@ -614,7 +891,7 @@
 		};
 
 		vreg_l5a_2p96: l5 {
-			regulator-min-microvolt = <1800000>;
+			regulator-min-microvolt = <1648000>;
 			regulator-max-microvolt = <2960000>;
 			regulator-allow-set-load;
 		};
@@ -625,13 +902,12 @@
 		};
 
 		vreg_l7a_1p256: l7 {
-			regulator-min-microvolt = <1256000>;
-			regulator-max-microvolt = <1256000>;
-			regulator-always-on;
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
 		};
 
 		vreg_l8a_0p664: l8 {
-			regulator-min-microvolt = <640000>;
+			regulator-min-microvolt = <400000>;
 			regulator-max-microvolt = <640000>;
 		};
 
@@ -707,7 +983,7 @@
 		};
 
 		vreg_l22a_2p96: l22 {
-			regulator-min-microvolt = <2960000>;
+			regulator-min-microvolt = <2952000>;
 			regulator-max-microvolt = <2960000>;
 			regulator-system-load = <100000>;
 			regulator-allow-set-load;
@@ -750,6 +1026,14 @@
         vmmc-supply = <&vreg_l24a_2p96>;
         vqmmc-supply = <&vreg_l11a_1p8>;
 
+        non-removable;
+        supports-cqe;
+        cap-mmc-hw-reset;
+        mmc-ddr-1_8v;
+        mmc-hs200-1_8v;
+        mmc-hs400-1_8v;
+        mmc-hs400-enhanced-strobe;
+
         status = "okay";
 };
 
@@ -762,6 +1046,13 @@
 	vqmmc-supply = <&vreg_l5a_2p96>;
 	no-sdio;
 	no-mmc;
+
+	sd-uhs-sdr12;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	sd-uhs-ddr50;
+
 	status = "okay";
 };
 
@@ -770,6 +1061,7 @@
 };
 
 &lpass_tlmm {
+
 	lpi_i2s2_active: lpi-i2s2-active-state {
 		sck-pins {
 			pins = "gpio10";
@@ -802,13 +1094,67 @@
 			drive-strength = <8>;
 			output-high;
 		};
+	};
 
-		ext-mclk1-pins {
-			pins = "gpio18";
-			function = "wsa_mclk";
+	lpi_qua_mi2s_active: lpi-qua-mi2s-active-state {
+		sck-pins {
+			pins = "gpio0";
+			function = "qua_mi2s_sclk";
 			bias-disable;
-			drive-strength = <16>;
+			drive-strength = <8>;
 			output-high;
+		};
+
+		ws-pins {
+			pins = "gpio1";
+			function = "qua_mi2s_ws";
+			bias-disable;
+			drive-strength = <8>;
+			output-high;
+		};
+
+		data0-pins {
+			pins = "gpio2";
+			function = "qua_mi2s_data";
+			bias-disable;
+			drive-strength = <8>;
+			output-high;
+		};
+
+		data1-pins {
+			pins = "gpio3";
+			function = "qua_mi2s_data";
+			bias-pull-down;
+			drive-strength = <2>;
+			input-enable;
+		};
+	};
+
+	lpi_ext_mclk0_b_active: lpi-ext_mclk0_b-active-state {
+		mclk-pins {
+			pins = "gpio5";
+			function = "ext_mclk0_b";
+			bias-disable;
+			drive-strength = <4>;
+			output-high;
+		};
+	};
+
+	lpi_dmic23_active: lpi-dmic23-active-state {
+		clk-pins {
+			pins = "gpio8";
+			function = "dmic23_clk";
+			bias-disable;
+			drive-strength = <8>;
+			output-high;
+		};
+
+		data-pins {
+			pins = "gpio9";
+			function = "dmic23_data";
+			bias-pull-down;
+			drive-strength = <8>;
+			input-enable;
 		};
 	};
 };
@@ -844,20 +1190,6 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-pull-down;
-	};
-
-	panel_pwr_active: panel-pwr-active-state {
-		pins = "gpio44", "gpio45";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-pull-disable;
-		output-high;
-	};
-
-	panel_pwr_sleep: panel-pwr-sleep-state {
-		pins = "gpio44", "gpio45";
-		function = "gpio";
-		output-low;
 	};
 
 	qup_uart0_active: qup-uart0-active-state {
@@ -971,6 +1303,14 @@
 		bias-pull-up;
 	};
 
+	led_en_default: led-en-default {
+		function = "gpio";
+		pins = "gpio23";
+		drive-strength = <8>;
+		bias-pull-up;
+		output-high;
+	};
+
 	rgbr_activate: rgbr-activate {
 		function = "gpio";
 		pins = "gpio37";
@@ -1007,12 +1347,11 @@
 		input-enable;
 	};
 
-	es8326_pwr_default: es8326-pwr-default-state {
+	es8326_vdd_default: es8326-vdd-default-state {
 		pins = "gpio66";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
-		output-high;
 	};
 
 	aw88261_left_irq_default: aw88261-left-irq-default-state {
@@ -1031,6 +1370,21 @@
 		input-enable;
 	};
 
+	ts_irq_default: ts-irq-default-state {
+		pins = "gpio69";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	ts_reset_default: ts-reset-default-state {
+		pins = "gpio68";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-low;
+	};
+
 	tcpc_irq_default: tcpc-irq-default-state {
 		pins = "gpio39";
 		function = "gpio";
@@ -1046,10 +1400,19 @@
 		bias-pull-up;
 		input-enable;
 	};
+
+	chg_en_default: chg-en-default-state {
+		pins = "gpio85";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+		output-low;
+	};
 };
 
 &usb {
 	status = "okay";
+	assigned-clock-rates = <19200000>, <133333333>;
 };
 
 &usb_dwc3 {
@@ -1127,7 +1490,7 @@
 	status = "okay";
 
 	bluetooth {
-		compatible = "qcom,wcn3990-bt";
+		compatible = "qcom,wcn3950-bt";
 
 		vddio-supply = <&vreg_pmu_io>;
 		vddxo-supply = <&vreg_pmu_xo>;
@@ -1159,7 +1522,7 @@
 		};
 	};
 
-	trips { gpu_fan: gpu-fan { temperature = <55000>; hysteresis = <5000>; type = "active"; }; };
+	trips { gpu_fan: gpu-fan { temperature = <65000>; hysteresis = <5000>; type = "active"; }; };
 };
 
 &cpu0123_thermal {
@@ -1178,7 +1541,7 @@
 		};
 	};
 
-	trips { cpu0123_fan: cpu0123-fan { temperature = <55000>; hysteresis = <5000>; type = "active"; }; };
+	trips { cpu0123_fan: cpu0123-fan { temperature = <65000>; hysteresis = <5000>; type = "active"; }; };
 };
 
 &cpu45_thermal {
@@ -1197,7 +1560,7 @@
 		};
 	};
 
-	trips { cpu45_fan: cpu45-fan { temperature = <55000>; hysteresis = <5000>; type = "active"; }; };
+	trips { cpu45_fan: cpu45-fan { temperature = <65000>; hysteresis = <5000>; type = "active"; }; };
 };
 
 &cpu67_thermal {
@@ -1216,5 +1579,111 @@
 		};
 	};
 
-	trips { cpu67_fan: cpu67-fan { temperature = <55000>; hysteresis = <5000>; type = "active"; }; };
+	trips { cpu67_fan: cpu67-fan { temperature = <65000>; hysteresis = <5000>; type = "active"; }; };
+};
+
+/ {
+	cpu0_opp_table: opp-table-cpu0 {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-300000000  { opp-hz = /bits/ 64 < 300000000>; opp-peak-kBps = <  800000>; };
+		opp-614400000  { opp-hz = /bits/ 64 < 614400000>; opp-peak-kBps = < 2188000>; };
+		opp-864000000  { opp-hz = /bits/ 64 < 864000000>; opp-peak-kBps = < 3072000>; };
+		opp-1017600000 { opp-hz = /bits/ 64 <1017600000>; opp-peak-kBps = < 3072000>; };
+		opp-1305600000 { opp-hz = /bits/ 64 <1305600000>; opp-peak-kBps = < 3072000>; };
+		opp-1420800000 { opp-hz = /bits/ 64 <1420800000>; opp-peak-kBps = < 4068000>; };
+		opp-1612800000 { opp-hz = /bits/ 64 <1612800000>; opp-peak-kBps = < 4068000>; };
+		opp-1804800000 { opp-hz = /bits/ 64 <1804800000>; opp-peak-kBps = < 4068000>; };
+		opp-2016000000 { opp-hz = /bits/ 64 <2016000000>; opp-peak-kBps = < 6220000>; };
+	};
+
+	cpu4_opp_table: opp-table-cpu4 {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-300000000  { opp-hz = /bits/ 64 < 300000000>; opp-peak-kBps = <  800000>; };
+		opp-652800000  { opp-hz = /bits/ 64 < 652800000>; opp-peak-kBps = < 2188000>; };
+		opp-902400000  { opp-hz = /bits/ 64 < 902400000>; opp-peak-kBps = < 2188000>; };
+		opp-1056000000 { opp-hz = /bits/ 64 <1056000000>; opp-peak-kBps = < 4068000>; };
+		opp-1401600000 { opp-hz = /bits/ 64 <1401600000>; opp-peak-kBps = < 4068000>; };
+		opp-1536000000 { opp-hz = /bits/ 64 <1536000000>; opp-peak-kBps = < 6220000>; };
+		opp-1612800000 { opp-hz = /bits/ 64 <1612800000>; opp-peak-kBps = < 6220000>; };
+		opp-1804800000 { opp-hz = /bits/ 64 <1804800000>; opp-peak-kBps = < 6220000>; };
+		opp-2016000000 { opp-hz = /bits/ 64 <2016000000>; opp-peak-kBps = < 7216000>; };
+		opp-2112000000 { opp-hz = /bits/ 64 <2112000000>; opp-peak-kBps = < 8368000>; };
+	};
+
+	thermal-zones {
+		battery-thermal {
+			polling-delay-passive = <5000>;
+			polling-delay = <10000>;
+			thermal-sensors = <&fuel_gauge>;
+			linux,governor = "bang_bang";
+
+			trips {
+				battery_fan_on: battery-fan-on {
+					temperature = <40000>;
+					hysteresis = <5000>;
+					type = "active";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&battery_fan_on>;
+					cooling-device = <&fan THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+				};
+			};
+		};
+	};
+};
+
+&cpu0 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu0_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu1 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu0_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu2 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu0_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu3 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu0_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu4 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu4_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu5 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu4_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu6 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu4_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+&cpu7 {
+	#cooling-cells = <2>;
+	operating-points-v2 = <&cpu4_opp_table>;
+	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
 };

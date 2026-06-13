@@ -1,0 +1,19 @@
+Subject: [PATCH] gpu:drm:msm: a610 set highest_bank_bit=14 to match SoC DDR
+
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -749,7 +749,7 @@
+ 	}
+ 
+ 	if (adreno_is_a610(gpu)) {
+-		cfg->highest_bank_bit = 13;
++		cfg->highest_bank_bit = 14;
+ 		cfg->ubwc_swizzle = 0x7;
+ 	}
+ 
+-- 
+2.52.0
+

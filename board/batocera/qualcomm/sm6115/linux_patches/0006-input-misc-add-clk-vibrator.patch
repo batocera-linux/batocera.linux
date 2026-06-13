@@ -1,20 +1,21 @@
-From fe5f057641bd41d5e86e90133424e289d6c50f8a Mon Sep 17 00:00:00 2001
-From: Philippe Simons <simons.philippe@gmail.com>
+Original From: Philippe Simons <simons.philippe@gmail.com>
 Date: Tue, 6 Jan 2026 20:53:09 +0100
-Subject: [PATCH] input:misc: add clk vibrator
+Modifications borrowed from: Brian Masney <masneyb@onstation.org>
+Subject: [PATCH] input: misc: add clk vibrator
 
+Based on the clk-vibrator concept by Brian Masney for the Nexus 5.
+
+[simplified: removed clk_set_duty_cycle, enable-gpio; added PM ops]
 ---
- drivers/input/misc/Kconfig     |  11 ++
+ drivers/input/misc/Kconfig     |  12 ++
  drivers/input/misc/Makefile    |   1 +
- drivers/input/misc/clk-vibra.c | 185 +++++++++++++++++++++++++++++++++
- 3 files changed, 197 insertions(+)
+ drivers/input/misc/clk-vibra.c | 215 +++++++++++++++++++++++++++++++++
+ 3 files changed, 228 insertions(+)
  create mode 100644 drivers/input/misc/clk-vibra.c
 
-diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
-index cc2558630797..4ac68ec531b9 100644
 --- a/drivers/input/misc/Kconfig
 +++ b/drivers/input/misc/Kconfig
-@@ -648,6 +648,17 @@ config INPUT_PWM_VIBRA
+@@ -648,6 +648,17 @@
  	  To compile this driver as a module, choose M here: the module will be
  	  called pwm-vibra.
  
@@ -23,20 +24,18 @@ index cc2558630797..4ac68ec531b9 100644
 +	select INPUT_FF_MEMLESS
 +	help
 +	  Say Y here to get support for clock-based vibrator devices.
++	  The driver uses clk_enable/clk_disable for on/off control.
 +
 +	  If unsure, say N.
 +
 +	  To compile this driver as a module, choose M here: the module will be
 +	  called clk-vibra.
-+
  config INPUT_RK805_PWRKEY
  	tristate "Rockchip RK805 PMIC power key support"
  	depends on MFD_RK8XX
-diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
-index f5ebfa9d9983..3942766c6ea9 100644
 --- a/drivers/input/misc/Makefile
 +++ b/drivers/input/misc/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_INPUT_ATMEL_CAPTOUCH)	+= atmel_captouch.o
+@@ -25,6 +25,7 @@
  obj-$(CONFIG_INPUT_AW86927)		+= aw86927.o
  obj-$(CONFIG_INPUT_BBNSM_PWRKEY)	+= nxp-bbnsm-pwrkey.o
  obj-$(CONFIG_INPUT_BMA150)		+= bma150.o
@@ -46,10 +45,9 @@ index f5ebfa9d9983..3942766c6ea9 100644
  obj-$(CONFIG_INPUT_CMA3000_I2C)		+= cma3000_d0x_i2c.o
 diff --git a/drivers/input/misc/clk-vibra.c b/drivers/input/misc/clk-vibra.c
 new file mode 100644
-index 000000000000..91a3a369f9bf
 --- /dev/null
 +++ b/drivers/input/misc/clk-vibra.c
-@@ -0,0 +1,185 @@
+@@ -0,0 +1,215 @@
 +#include <linux/module.h>
 +#include <linux/platform_device.h>
 +#include <linux/input.h>
@@ -59,53 +57,56 @@ index 000000000000..91a3a369f9bf
 +#include <linux/err.h>
 +#include <linux/regulator/consumer.h>
 +#include <linux/of.h>
++#include <linux/pm.h>
 +
 +struct clk_vibrator {
 +	struct input_dev *input;
 +	struct clk *clk;
 +	struct regulator *vcc;
-+
++	struct mutex mutex;
 +	struct work_struct play_work;
 +	u16 magnitude;
 +	bool enabled;
 +	bool vcc_on;
-+	u32 vibration_freq_hz;
 +};
 +
 +static int clk_vibrator_start(struct clk_vibrator *vibrator)
-+{	
++{
 +	int ret;
 +
-+	/* Set the duty cycle to control intensity */
-+	ret = clk_set_duty_cycle(vibrator->clk, vibrator->magnitude, 0xffff);
-+	if (ret) {
-+		dev_err(&vibrator->input->dev, "Failed to set duty cycle: %d\n", ret);
-+		return ret;
++	mutex_lock(&vibrator->mutex);
++
++	if (!vibrator->vcc_on) {
++		ret = regulator_enable(vibrator->vcc);
++		if (ret) {
++			dev_err(&vibrator->input->dev,
++				"failed to enable regulator: %d\n", ret);
++			goto unlock;
++		}
++		vibrator->vcc_on = true;
 +	}
 +
 +	if (!vibrator->enabled) {
-+		if (!vibrator->vcc_on) {
-+			ret = regulator_enable(vibrator->vcc);
-+			if (ret) {
-+				dev_err(&vibrator->input->dev, "failed to enable regulator: %d\n", ret);
-+			} else {
-+				vibrator->vcc_on = true;
-+			}
-+		}
 +		ret = clk_prepare_enable(vibrator->clk);
 +		if (ret) {
-+			dev_err(&vibrator->input->dev, "Failed to enable clock: %d\n", ret);
-+		} else {
-+			vibrator->enabled = true;
++			dev_err(&vibrator->input->dev,
++				"failed to enable clock: %d\n", ret);
++			goto unlock;
 +		}
++		vibrator->enabled = true;
 +	}
 +
-+	return 0;
++	ret = 0;
++
++unlock:
++	mutex_unlock(&vibrator->mutex);
++	return ret;
 +}
 +
 +static void clk_vibrator_stop(struct clk_vibrator *vibrator)
 +{
-+	/* Stop vibration */
++	mutex_lock(&vibrator->mutex);
++
 +	if (vibrator->enabled) {
 +		clk_disable_unprepare(vibrator->clk);
 +		vibrator->enabled = false;
@@ -114,6 +115,8 @@ index 000000000000..91a3a369f9bf
 +		regulator_disable(vibrator->vcc);
 +		vibrator->vcc_on = false;
 +	}
++
++	mutex_unlock(&vibrator->mutex);
 +}
 +
 +static void clk_vibrator_play_work(struct work_struct *work)
@@ -128,15 +131,18 @@ index 000000000000..91a3a369f9bf
 +}
 +
 +static int clk_vibrator_play_effect(struct input_dev *dev, void *data,
-+									struct ff_effect *effect)
++				    struct ff_effect *effect)
 +{
 +	struct clk_vibrator *vibrator = input_get_drvdata(dev);
++
++	mutex_lock(&vibrator->mutex);
 +
 +	vibrator->magnitude = effect->u.rumble.strong_magnitude;
 +	if (!vibrator->magnitude)
 +		vibrator->magnitude = effect->u.rumble.weak_magnitude;
-+	
-+	/* Schedule the hardware update */
++
++	mutex_unlock(&vibrator->mutex);
++
 +	schedule_work(&vibrator->play_work);
 +
 +	return 0;
@@ -154,34 +160,33 @@ index 000000000000..91a3a369f9bf
 +{
 +	struct device *dev = &pdev->dev;
 +	struct clk_vibrator *vibrator;
++	u32 freq_hz;
 +	int ret;
 +
 +	vibrator = devm_kzalloc(dev, sizeof(*vibrator), GFP_KERNEL);
 +	if (!vibrator)
 +		return -ENOMEM;
 +
-+	/* Get the clock defined in Device Tree */
 +	vibrator->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(vibrator->clk)) {
-+		return dev_err_probe(dev, PTR_ERR(vibrator->clk), "Failed to get clock\n");
-+	}
++	if (IS_ERR(vibrator->clk))
++		return dev_err_probe(dev, PTR_ERR(vibrator->clk),
++				     "failed to get clock\n");
 +
 +	vibrator->vcc = devm_regulator_get(dev, "vcc");
 +	if (IS_ERR(vibrator->vcc))
 +		return dev_err_probe(dev, PTR_ERR(vibrator->vcc),
-+					 "Failed to request regulator\n");
++				     "failed to get regulator\n");
 +
-+	/* Optional: Set a specific frequency if the motor requires resonance */
-+	if (!device_property_read_u32(dev, "vibration-frequency-hz", &vibrator->vibration_freq_hz)) {
-+		ret = clk_set_rate(vibrator->clk, vibrator->vibration_freq_hz);
++	if (!device_property_read_u32(dev, "vibration-frequency-hz", &freq_hz)) {
++		ret = clk_set_rate(vibrator->clk, freq_hz);
 +		if (ret)
-+			dev_warn(dev, "Failed to set clock rate to %u Hz: %d\n", 
-+					 vibrator->vibration_freq_hz, ret);
++			dev_warn(dev, "failed to set clock rate to %u Hz: %d\n",
++				 freq_hz, ret);
 +	}
 +
++	mutex_init(&vibrator->mutex);
 +	INIT_WORK(&vibrator->play_work, clk_vibrator_play_work);
 +
-+	/* Allocate Input Device */
 +	vibrator->input = devm_input_allocate_device(dev);
 +	if (!vibrator->input)
 +		return -ENOMEM;
@@ -191,50 +196,70 @@ index 000000000000..91a3a369f9bf
 +	vibrator->input->id.bustype = BUS_HOST;
 +	vibrator->input->dev.parent = dev;
 +	vibrator->input->close = clk_vibrator_close;
-+	
-+	input_set_drvdata(vibrator->input, vibrator);
 +
-+	/* Configure Force Feedback capabilities */
++	input_set_drvdata(vibrator->input, vibrator);
 +	input_set_capability(vibrator->input, EV_FF, FF_RUMBLE);
-+	
-+	ret = input_ff_create_memless(vibrator->input, NULL, clk_vibrator_play_effect);
++
++	ret = input_ff_create_memless(vibrator->input, NULL,
++				      clk_vibrator_play_effect);
 +	if (ret) {
-+		dev_err(dev, "Failed to create ff memless: %d\n", ret);
++		dev_err(dev, "failed to create ff memless: %d\n", ret);
 +		return ret;
 +	}
 +
 +	ret = input_register_device(vibrator->input);
 +	if (ret) {
-+		dev_err(dev, "Failed to register input device: %d\n", ret);
++		dev_err(dev, "failed to register input device: %d\n", ret);
 +		return ret;
 +	}
 +
 +	platform_set_drvdata(pdev, vibrator);
-+	dev_info(dev, "Clock vibrator driver loaded\n");
++	dev_info(dev, "clock vibrator driver loaded\n");
 +
 +	return 0;
 +}
 +
-+#ifdef CONFIG_OF
-+static const struct of_device_id clk_vibra_dt_match_table[] = {
++static int __maybe_unused clk_vibrator_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct clk_vibrator *vibrator = platform_get_drvdata(pdev);
++
++	cancel_work_sync(&vibrator->play_work);
++	clk_vibrator_stop(vibrator);
++
++	return 0;
++}
++
++static int __maybe_unused clk_vibrator_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct clk_vibrator *vibrator = platform_get_drvdata(pdev);
++
++	if (vibrator->magnitude)
++		clk_vibrator_start(vibrator);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(clk_vibrator_pm_ops, clk_vibrator_suspend,
++			 clk_vibrator_resume);
++
++static const struct of_device_id clk_vibra_dt_match[] = {
 +	{ .compatible = "clk-vibrator" },
 +	{ }
 +};
-+MODULE_DEVICE_TABLE(of, clk_vibra_dt_match_table);
-+#endif
++MODULE_DEVICE_TABLE(of, clk_vibra_dt_match);
 +
 +static struct platform_driver clk_vibrator_driver = {
 +	.probe = clk_vibrator_probe,
 +	.driver = {
 +		.name = "clk-vibrator",
-+		.of_match_table = of_match_ptr(clk_vibra_dt_match_table),
++		.pm = &clk_vibrator_pm_ops,
++		.of_match_table = clk_vibra_dt_match,
 +	},
 +};
 +module_platform_driver(clk_vibrator_driver);
 +
-+MODULE_AUTHOR("ROCKNIX");
-+MODULE_DESCRIPTION("Vibrator driver using CLK API duty cycle");
++MODULE_AUTHOR("Brian Masney <masneyb@onstation.org>");
++MODULE_DESCRIPTION("Clock vibrator driver");
 +MODULE_LICENSE("GPL");
--- 
-2.52.0
-

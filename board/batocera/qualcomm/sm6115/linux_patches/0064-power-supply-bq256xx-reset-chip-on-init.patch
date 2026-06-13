@@ -1,31 +1,41 @@
+Subject: [PATCH] power: supply: bq256xx: reset chip on init + honor DT charge limits
+
+---
+ drivers/power/supply/bq256xx_charger.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/supply/bq256xx_charger.c b/drivers/power/supply/bq256xx_charger.c
 --- a/drivers/power/supply/bq256xx_charger.c
 +++ b/drivers/power/supply/bq256xx_charger.c
-@@ -1563,6 +1563,11 @@
- 	int wd_reg_val = BQ256XX_WATCHDOG_DIS;
+@@ -1614,6 +1614,13 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
  	int ret = 0;
  	int i;
-+
+ 
 +	/* Reset chip to clear stale register values (e.g. from Android) */
-+	regmap_update_bits(bq->regmap, BQ256XX_PART_INFORMATION,
-+			   BQ256XX_REG_RST, BQ256XX_REG_RST);
++	ret = regmap_update_bits(bq->regmap, BQ256XX_PART_INFORMATION,
++				 BQ256XX_REG_RST, BQ256XX_REG_RST);
++	if (ret)
++		return ret;
 +	msleep(10);
-
++
  	for (i = 0; i < BQ256XX_NUM_WD_VAL; i++) {
  		if (bq->watchdog_timer == bq256xx_watchdog_time[i]) {
-@@ -1623,13 +1628,13 @@
+ 			wd_reg_val = i;
+@@ -1671,7 +1680,7 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
+ 		return ret;
+ 
  	ret = bq->chip_info->bq256xx_set_ichg(bq,
 -				bq->chip_info->bq256xx_def_ichg);
 +				bat_info->constant_charge_current_max_ua);
  	if (ret)
  		return ret;
-
- 	ret = bq->chip_info->bq256xx_set_iprechg(bq,
- 				bat_info->precharge_current_ua);
- 	if (ret)
+ 
+@@ -1681,7 +1690,7 @@ static int bq256xx_hw_init(struct bq256xx_device *bq)
  		return ret;
-
+ 
  	ret = bq->chip_info->bq256xx_set_vbatreg(bq,
 -				bq->chip_info->bq256xx_def_vbatreg);
 +				bat_info->constant_charge_voltage_max_uv);
  	if (ret)
  		return ret;
+ 

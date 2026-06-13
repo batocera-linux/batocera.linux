@@ -1,0 +1,179 @@
+Subject: [PATCH] ASoC: qcom: sm8250: shut down MI2S AFE port clocks
+
+Adapted from upstream patch 5/6 of "ASoC: qcom: fixes and improvements"
+by Val Packett <val@packett.cool>:
+
+Original commit message:
+
+  These port clocks were never being turned off, leading to increased
+  power consumption after a sound was played through any of these ports
+  for the first time. Use enable counters to disable the clocks in the
+  shutdown callback, similar to how it's done for sdm845.
+
+---
+diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
+--- a/sound/soc/qcom/sm8250.c
++++ b/sound/soc/qcom/sm8250.c
+@@ -20,6 +20,7 @@
+ 
+ struct sm8250_snd_data {
+ 	bool stream_prepared[AFE_PORT_MAX];
++	uint32_t clk_count[AFE_PORT_MAX];
+ 	struct snd_soc_card *card;
+ 	struct snd_soc_jack jack;
+ 	struct snd_soc_jack usb_offload_jack;
+@@ -74,6 +75,8 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
+ 	unsigned int fmt = SND_SOC_DAIFMT_BP_FP;
+ 	unsigned int codec_dai_fmt = SND_SOC_DAIFMT_BC_FC;
+ 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
++	struct snd_soc_card *card = rtd->card;
++	struct sm8250_snd_data *data = snd_soc_card_get_drvdata(card);
+ 	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
+ 	struct snd_soc_dai *codec_dai;
+ 	int j;
+@@ -81,54 +84,60 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
+ 	switch (cpu_dai->id) {
+ 	case PRIMARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		if (++(data->clk_count[PRIMARY_MI2S_RX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
+ 	case SECONDARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		if (++(data->clk_count[SECONDARY_MI2S_RX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
+ 	case TERTIARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		if (++(data->clk_count[TERTIARY_MI2S_RX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
+ 	case QUATERNARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		if (++(data->clk_count[QUATERNARY_MI2S_RX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
+ 	case QUATERNARY_MI2S_TX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_CAPTURE);
++		if (++(data->clk_count[QUATERNARY_MI2S_TX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_CAPTURE);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
+ 	case QUINARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+-		snd_soc_dai_set_sysclk(cpu_dai,
+-			Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
+-			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		if (++(data->clk_count[QUINARY_MI2S_RX]) == 1)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
++				MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
+ 		snd_soc_dai_set_fmt(cpu_dai, fmt);
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+@@ -140,6 +149,57 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
+ 	return qcom_snd_sdw_startup(substream);
+ }
+ 
++static void sm8250_snd_shutdown(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
++	struct snd_soc_card *card = rtd->card;
++	struct sm8250_snd_data *data = snd_soc_card_get_drvdata(card);
++	struct snd_soc_dai *cpu_dai = snd_soc_rtd_to_cpu(rtd, 0);
++
++	switch (cpu_dai->id) {
++	case PRIMARY_MI2S_RX:
++		if (--(data->clk_count[PRIMARY_MI2S_RX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_PRI_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_PLAYBACK);
++		break;
++	case SECONDARY_MI2S_RX:
++		if (--(data->clk_count[SECONDARY_MI2S_RX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_SEC_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_PLAYBACK);
++		break;
++	case TERTIARY_MI2S_RX:
++		if (--(data->clk_count[TERTIARY_MI2S_RX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_TER_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_PLAYBACK);
++		break;
++	case QUATERNARY_MI2S_RX:
++		if (--(data->clk_count[QUATERNARY_MI2S_RX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_PLAYBACK);
++		break;
++	case QUATERNARY_MI2S_TX:
++		if (--(data->clk_count[QUATERNARY_MI2S_TX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_CAPTURE);
++		break;
++	case QUINARY_MI2S_RX:
++		if (--(data->clk_count[QUINARY_MI2S_RX]) == 0)
++			snd_soc_dai_set_sysclk(cpu_dai,
++				Q6AFE_LPASS_CLK_ID_QUI_MI2S_IBIT,
++				0, SNDRV_PCM_STREAM_PLAYBACK);
++		break;
++	default:
++		break;
++	}
++
++	qcom_snd_sdw_shutdown(substream);
++}
++
+ static int sm8250_snd_prepare(struct snd_pcm_substream *substream)
+ {
+ 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+@@ -160,7 +220,7 @@ static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
+ 
+ static const struct snd_soc_ops sm8250_be_ops = {
+ 	.startup = sm8250_snd_startup,
+-	.shutdown = qcom_snd_sdw_shutdown,
++	.shutdown = sm8250_snd_shutdown,
+ 	.hw_free = sm8250_snd_hw_free,
+ 	.prepare = sm8250_snd_prepare,
+ };

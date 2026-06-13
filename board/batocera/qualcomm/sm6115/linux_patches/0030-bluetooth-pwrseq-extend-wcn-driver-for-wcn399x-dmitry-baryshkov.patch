@@ -1,0 +1,82 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 2/14] Bluetooth: qca: enable pwrseq support for WCN39xx
+ devices
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Date: Tue, 06 Jan 2026 03:01:12 +0200
+Message-Id: <20260106-wcn3990-pwrctl-v2-2-0386204328be@oss.qualcomm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The WCN39xx family of WiFi/BT chips incorporates a simple PMU, spreading
+voltages over internal rails. Implement support for using powersequencer
+for this family of QCA devices in addition to using regulators.
+
+Reviewed-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcomm.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+---
+ drivers/bluetooth/hci_qca.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index b54350317a43..d1402a344063 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2230,6 +2230,18 @@ static void qca_power_shutdown(struct hci_uart *hu)
+ 	qcadev = serdev_device_get_drvdata(hu->serdev);
+ 	power = qcadev->bt_power;
+ 
++	switch (soc_type) {
++	case QCA_WCN3988:
++	case QCA_WCN3990:
++	case QCA_WCN3991:
++	case QCA_WCN3998:
++		host_set_baudrate(hu, 2400);
++		qca_send_power_pulse(hu, false);
++		break;
++	default:
++		break;
++	}
++
+ 	if (power && power->pwrseq) {
+ 		pwrseq_power_off(power->pwrseq);
+ 		set_bit(QCA_BT_OFF, &qca->flags);
+@@ -2241,8 +2253,6 @@ static void qca_power_shutdown(struct hci_uart *hu)
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+ 	case QCA_WCN3998:
+-		host_set_baudrate(hu, 2400);
+-		qca_send_power_pulse(hu, false);
+ 		qca_regulator_disable(qcadev);
+ 		break;
+ 
+@@ -2414,6 +2424,11 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 	}
+ 
+ 	switch (qcadev->btsoc_type) {
++	case QCA_WCN3950:
++	case QCA_WCN3988:
++	case QCA_WCN3990:
++	case QCA_WCN3991:
++	case QCA_WCN3998:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
+ 	case QCA_WCN6750:
+@@ -2438,12 +2453,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 			else
+ 				break;
+ 		}
+-		fallthrough;
+-	case QCA_WCN3950:
+-	case QCA_WCN3988:
+-	case QCA_WCN3990:
+-	case QCA_WCN3991:
+-	case QCA_WCN3998:
++
+ 		qcadev->bt_power->dev = &serdev->dev;
+ 		err = qca_init_regulators(qcadev->bt_power, data->vregs,
+ 					  data->num_vregs);
+
+-- 
+2.47.3
+
