@@ -1,0 +1,123 @@
+Subject: [PATCH] ASoC: codecs: aw88261: remove async start
+From: Val Packett <val@packett.cool>
+Date: Mon, 18 May 2026 18:44:34 -0300
+
+Codec drivers are not supposed to do anything like this. The result was
+that the first second or so of playback was essentially inaudible, and
+very short alert sounds could be missed entirely. Let's not do this.
+
+Signed-off-by: Val Packett <val@packett.cool>
+Tested-by: Luca Weiss <luca.weiss@fairphone.com> # qcm6490-fairphone-fp5
+---
+ sound/soc/codecs/aw88261.c | 33 ++++-----------------------------
+ sound/soc/codecs/aw88261.h |  6 ------
+ 2 files changed, 4 insertions(+), 35 deletions(-)
+
+diff --git a/sound/soc/codecs/aw88261.c b/sound/soc/codecs/aw88261.c
+index ba2a0b0fc296..e0644fb445e5 100644
+--- a/sound/soc/codecs/aw88261.c
++++ b/sound/soc/codecs/aw88261.c
+@@ -649,17 +649,7 @@ static void aw88261_start_pa(struct aw88261 *aw88261)
+ 		dev_err(aw88261->aw_pa->dev, "start failure (%d)\n", ret);
+ }
+ 
+-static void aw88261_startup_work(struct work_struct *work)
+-{
+-	struct aw88261 *aw88261 =
+-		container_of(work, struct aw88261, start_work.work);
+-
+-	mutex_lock(&aw88261->lock);
+-	aw88261_start_pa(aw88261);
+-	mutex_unlock(&aw88261->lock);
+-}
+-
+-static void aw88261_start(struct aw88261 *aw88261, bool sync_start)
++static void aw88261_start(struct aw88261 *aw88261)
+ {
+ 	if (aw88261->aw_pa->fw_status != AW88261_DEV_FW_OK)
+ 		return;
+@@ -667,12 +657,7 @@ static void aw88261_start(struct aw88261 *aw88261, bool sync_start)
+ 	if (aw88261->aw_pa->status == AW88261_DEV_PW_ON)
+ 		return;
+ 
+-	if (sync_start == AW88261_SYNC_START)
+-		aw88261_start_pa(aw88261);
+-	else
+-		queue_delayed_work(system_dfl_wq,
+-			&aw88261->start_work,
+-			AW88261_START_WORK_DELAY_MS);
++	aw88261_start_pa(aw88261);
+ }
+ 
+ static int aw88261_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+@@ -970,7 +955,7 @@ static int aw88261_profile_set(struct snd_kcontrol *kcontrol,
+ 
+ 	if (aw88261->aw_pa->status) {
+ 		aw88261_dev_stop(aw88261->aw_pa);
+-		aw88261_start(aw88261, AW88261_SYNC_START);
++		aw88261_start(aw88261);
+ 	}
+ 
+ 	mutex_unlock(&aw88261->lock);
+@@ -1032,7 +1017,7 @@ static int aw88261_playback_event(struct snd_soc_dapm_widget *w,
+ 	mutex_lock(&aw88261->lock);
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+-		aw88261_start(aw88261, AW88261_ASYNC_START);
++		aw88261_start(aw88261);
+ 		break;
+ 	case SND_SOC_DAPM_POST_PMD:
+ 		aw88261_dev_stop(aw88261->aw_pa);
+@@ -1192,8 +1177,6 @@ static int aw88261_codec_probe(struct snd_soc_component *component)
+ 	struct aw88261 *aw88261 = snd_soc_component_get_drvdata(component);
+ 	int ret;
+ 
+-	INIT_DELAYED_WORK(&aw88261->start_work, aw88261_startup_work);
+-
+ 	ret = aw88261_request_firmware_file(aw88261);
+ 	if (ret)
+ 		return dev_err_probe(aw88261->aw_pa->dev, ret,
+@@ -1217,16 +1200,8 @@ static int aw88261_codec_probe(struct snd_soc_component *component)
+ 	return ret;
+ }
+ 
+-static void aw88261_codec_remove(struct snd_soc_component *aw_codec)
+-{
+-	struct aw88261 *aw88261 = snd_soc_component_get_drvdata(aw_codec);
+-
+-	cancel_delayed_work_sync(&aw88261->start_work);
+-}
+-
+ static const struct snd_soc_component_driver soc_codec_dev_aw88261 = {
+ 	.probe = aw88261_codec_probe,
+-	.remove = aw88261_codec_remove,
+ };
+ 
+ static void aw88261_parse_channel_dt(struct aw88261 *aw88261)
+diff --git a/sound/soc/codecs/aw88261.h b/sound/soc/codecs/aw88261.h
+index 12c98f01fcfe..1b1beba6a26b 100644
+--- a/sound/soc/codecs/aw88261.h
++++ b/sound/soc/codecs/aw88261.h
+@@ -555,11 +555,6 @@
+ 	.put = profile_set, \
+ }
+ 
+-enum {
+-	AW88261_SYNC_START = 0,
+-	AW88261_ASYNC_START,
+-};
+-
+ enum aw88261_id {
+ 	AW88261_CHIP_ID = 0x2113,
+ };
+@@ -594,7 +589,6 @@ struct aw88261 {
+ 	struct aw_device *aw_pa;
+ 	struct mutex lock;
+ 	struct gpio_desc *reset_gpio;
+-	struct delayed_work start_work;
+ 	struct regmap *regmap;
+ 	struct aw_container *aw_cfg;
+ 
+-- 
+2.53.0
+

@@ -1,0 +1,53 @@
+Subject: [PATCH] ASoC: codecs: aw88261: fix incorrect masks for
+ boost regs
+From: Val Packett <val@packett.cool>
+Date: Mon, 18 May 2026 18:44:35 -0300
+
+The boost-related register fields used in aw88261_reg_force_set use the
+exact same definitions as the rest of the fields, where the mask must be
+inverted when passing it to regmap_update_bits, but they weren't
+inverted here.
+
+Fixes: 028a2ae25691 ("ASoC: codecs: Add aw88261 amplifier driver")
+Signed-off-by: Val Packett <val@packett.cool>
+Tested-by: Luca Weiss <luca.weiss@fairphone.com> # qcm6490-fairphone-fp5
+---
+ sound/soc/codecs/aw88261.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/codecs/aw88261.c b/sound/soc/codecs/aw88261.c
+index e0644fb445e5..adc728e45f57 100644
+--- a/sound/soc/codecs/aw88261.c
++++ b/sound/soc/codecs/aw88261.c
+@@ -243,22 +243,22 @@ static void aw88261_reg_force_set(struct aw88261 *aw88261)
+ 	if (aw88261->frcset_en == AW88261_FRCSET_ENABLE) {
+ 		/* set FORCE_PWM */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL3_REG,
+-				AW88261_FORCE_PWM_MASK, AW88261_FORCE_PWM_FORCEMINUS_PWM_VALUE);
++				~AW88261_FORCE_PWM_MASK, AW88261_FORCE_PWM_FORCEMINUS_PWM_VALUE);
+ 		/* set BOOST_OS_WIDTH */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL5_REG,
+-				AW88261_BST_OS_WIDTH_MASK, AW88261_BST_OS_WIDTH_50NS_VALUE);
++				~AW88261_BST_OS_WIDTH_MASK, AW88261_BST_OS_WIDTH_50NS_VALUE);
+ 		/* set BURST_LOOPR */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL6_REG,
+-				AW88261_BST_LOOPR_MASK, AW88261_BST_LOOPR_340K_VALUE);
++				~AW88261_BST_LOOPR_MASK, AW88261_BST_LOOPR_340K_VALUE);
+ 		/* set RSQN_DLY */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL7_REG,
+-				AW88261_RSQN_DLY_MASK, AW88261_RSQN_DLY_35NS_VALUE);
++				~AW88261_RSQN_DLY_MASK, AW88261_RSQN_DLY_35NS_VALUE);
+ 		/* set BURST_SSMODE */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL8_REG,
+-				AW88261_BURST_SSMODE_MASK, AW88261_BURST_SSMODE_FAST_VALUE);
++				~AW88261_BURST_SSMODE_MASK, AW88261_BURST_SSMODE_FAST_VALUE);
+ 		/* set BST_BURST */
+ 		regmap_update_bits(aw88261->regmap, AW88261_BSTCTRL9_REG,
+-				AW88261_BST_BURST_MASK, AW88261_BST_BURST_30MA_VALUE);
++				~AW88261_BST_BURST_MASK, AW88261_BST_BURST_30MA_VALUE);
+ 	} else {
+ 		dev_dbg(aw88261->aw_pa->dev, "needn't set reg value");
+ 	}
+-- 
+2.53.0
+

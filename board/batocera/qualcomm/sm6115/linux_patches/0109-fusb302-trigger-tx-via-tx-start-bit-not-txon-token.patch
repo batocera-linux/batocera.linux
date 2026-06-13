@@ -1,0 +1,27 @@
+Subject: [PATCH] usb: typec: tcpc: fusb302: trigger TX via TX_START bit, not TXON token
+
+---
+ drivers/usb/typec/tcpm/fusb302.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+--- a/drivers/usb/typec/tcpm/fusb302.c
++++ b/drivers/usb/typec/tcpm/fusb302.c
+@@ -997,11 +997,15 @@
+ 	buf[pos++] = FUSB302_TKN_EOP;
+ 	/* turn tx off after sending message */
+ 	buf[pos++] = FUSB302_TKN_TXOFF;
+-	/* start transmission */
+-	buf[pos++] = FUSB302_TKN_TXON;
+ 
+ 	ret = fusb302_i2c_block_write(chip, FUSB_REG_FIFOS, pos, buf);
++	if (ret < 0)
++		return ret;
++
++	ret = fusb302_i2c_set_bits(chip, FUSB_REG_CONTROL0,
++				   FUSB_REG_CONTROL0_TX_START);
+ 	if (ret < 0)
+ 		return ret;
++
+ 	fusb302_log(chip, "sending PD message header: %x", msg->header);
+ 	fusb302_log(chip, "sending PD message len: %d", len);

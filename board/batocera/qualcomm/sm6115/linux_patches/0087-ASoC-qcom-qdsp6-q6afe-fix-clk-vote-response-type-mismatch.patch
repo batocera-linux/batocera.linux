@@ -1,0 +1,81 @@
+From: Val Packett <val@packett.cool>
+Date: Wed, 6 May 2026 17:33:02 -0300
+Subject: [PATCH] ASoC: qcom: qdsp6: q6afe: fix clk vote response type mismatch
+
+The response sent by the firmware when requesting a clock vote (opcode
+AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST) does not actually have
+the same opcode + status payload as APR_BASIC_RSP_RESULT. Rather, it
+returns one single u32 which is the client_handle that must be used in
+future unvote requests for the same clock.
+
+As a result of this type confusion, the status returned by the callback
+to q6afe_vote_lpass_core_hw was actually an out-of-bounds read. It was
+only interpreted as success (0) most of the time due to luck, but there
+are some reports of random errors such as:
+
+[   20.961100] qcom-q6afe aprsvc:service:4:4: AFE failed to vote (3)
+[   20.961131] Failed to prepare clk 'core': -110
+
+Fix by correctly interpreting the response as a single u32, and actually
+store it as the client_handle to ensure unvote would work correctly.
+
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/all/5976946.DvuYhMxLoT@antlia/
+Fixes: 55e07531d922 ("ASoC: q6dsp: q6afe: add lpass hw voting support")
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>
+Signed-off-by: Val Packett <val@packett.cool>
+---
+ sound/soc/qcom/qdsp6/q6afe.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/qcom/qdsp6/q6afe.c b/sound/soc/qcom/qdsp6/q6afe.c
+index 40237267fda0..28b5b6b91897 100644
+--- a/sound/soc/qcom/qdsp6/q6afe.c
++++ b/sound/soc/qcom/qdsp6/q6afe.c
+@@ -379,6 +379,7 @@ struct q6afe {
+ 	struct q6core_svc_api_info ainfo;
+ 	struct mutex lock;
+ 	struct aprv2_ibasic_rsp_result_t result;
++	uint32_t vote_result;
+ 	wait_queue_head_t wait;
+ 	struct list_head port_list;
+ 	spinlock_t port_list_lock;
+@@ -968,13 +969,14 @@ static int q6afe_callback(struct apr_device *adev, const struct apr_resp_pkt *da
+ 	const struct aprv2_ibasic_rsp_result_t *res;
+ 	const struct apr_hdr *hdr = &data->hdr;
+ 	struct q6afe_port *port;
++	uint32_t *vote_res;
+ 
+ 	if (!data->payload_size)
+ 		return 0;
+ 
+-	res = data->payload;
+ 	switch (hdr->opcode) {
+ 	case APR_BASIC_RSP_RESULT: {
++		res = data->payload;
+ 		if (res->status) {
+ 			dev_err(afe->dev, "cmd = 0x%x returned error = 0x%x\n",
+ 				res->opcode, res->status);
+@@ -1001,8 +1003,10 @@ static int q6afe_callback(struct apr_device *adev, const struct apr_resp_pkt *da
+ 	}
+ 		break;
+ 	case AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST:
++		vote_res = data->payload;
+ 		afe->result.opcode = hdr->opcode;
+-		afe->result.status = res->status;
++		afe->result.status = 0;
++		afe->vote_result = *vote_res;
+ 		wake_up(&afe->wait);
+ 		break;
+ 	default:
+@@ -1899,6 +1903,8 @@ int q6afe_vote_lpass_core_hw(struct device *dev, uint32_t hw_block_id,
+ 			       AFE_CMD_RSP_REMOTE_LPASS_CORE_HW_VOTE_REQUEST);
+ 	if (ret)
+ 		dev_err(afe->dev, "AFE failed to vote (%d)\n", hw_block_id);
++	else
++		*client_handle = afe->vote_result;
+ 
+ 	return ret;
+ }
+-- 
+2.53.0

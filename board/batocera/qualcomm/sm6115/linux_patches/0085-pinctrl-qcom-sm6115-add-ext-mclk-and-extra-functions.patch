@@ -1,0 +1,128 @@
+Subject: [PATCH] pinctrl: qcom: sm6115-lpass-lpi: expose remaining LPASS functions
+
+The mainline SM6115 LPI pinctrl driver only declares a small subset of
+the alternate functions actually present on the silicon. The pinctrl-sm4250-lpass-lpi driver already exposes
+the full set.
+
+---
+--- a/drivers/pinctrl/qcom/pinctrl-sm6115-lpass-lpi.c
++++ b/drivers/pinctrl/qcom/pinctrl-sm6115-lpass-lpi.c
+@@ -15,6 +15,12 @@
+ 	LPI_MUX_dmic01_data,
+ 	LPI_MUX_dmic23_clk,
+ 	LPI_MUX_dmic23_data,
++	LPI_MUX_dmic4_clk,
++	LPI_MUX_dmic4_data,
++	LPI_MUX_ext_mclk0_a,
++	LPI_MUX_ext_mclk0_b,
++	LPI_MUX_ext_mclk1_b,
++	LPI_MUX_ext_mclk1_c,
+ 	LPI_MUX_i2s1_clk,
+ 	LPI_MUX_i2s1_data,
+ 	LPI_MUX_i2s1_ws,
+@@ -27,10 +33,14 @@
+ 	LPI_MUX_qua_mi2s_data,
+ 	LPI_MUX_qua_mi2s_sclk,
+ 	LPI_MUX_qua_mi2s_ws,
++	LPI_MUX_slim_clk,
++	LPI_MUX_slim_data,
+ 	LPI_MUX_swr_rx_clk,
+ 	LPI_MUX_swr_rx_data,
+ 	LPI_MUX_swr_tx_clk,
+ 	LPI_MUX_swr_tx_data,
++	LPI_MUX_swr_wsa_clk,
++	LPI_MUX_swr_wsa_data,
+ 	LPI_MUX_wsa_mclk,
+ 	LPI_MUX_gpio,
+ 	LPI_MUX__,
+@@ -60,8 +70,14 @@
+ 
+ static const char * const dmic01_clk_groups[] = { "gpio6" };
+ static const char * const dmic01_data_groups[] = { "gpio7" };
+-static const char * const dmic23_clk_groups[] = { "gpio8" };
+-static const char * const dmic23_data_groups[] = { "gpio9" };
++static const char * const dmic23_clk_groups[] = { "gpio8", "gpio12" };
++static const char * const dmic23_data_groups[] = { "gpio9", "gpio13" };
++static const char * const dmic4_clk_groups[] = { "gpio10" };
++static const char * const dmic4_data_groups[] = { "gpio11" };
++static const char * const ext_mclk0_a_groups[] = { "gpio13" };
++static const char * const ext_mclk0_b_groups[] = { "gpio5" };
++static const char * const ext_mclk1_b_groups[] = { "gpio9" };
++static const char * const ext_mclk1_c_groups[] = { "gpio17" };
+ static const char * const i2s1_clk_groups[] = { "gpio6" };
+ static const char * const i2s1_data_groups[] = { "gpio8", "gpio9" };
+ static const char * const i2s1_ws_groups[] = { "gpio7" };
+@@ -74,10 +90,14 @@
+ static const char * const qua_mi2s_data_groups[] = { "gpio2", "gpio3", "gpio4", "gpio5" };
+ static const char * const qua_mi2s_sclk_groups[] = { "gpio0" };
+ static const char * const qua_mi2s_ws_groups[] = { "gpio1" };
++static const char * const slim_clk_groups[] = { "gpio14" };
++static const char * const slim_data_groups[] = { "gpio15" };
+ static const char * const swr_rx_clk_groups[] = { "gpio3" };
+ static const char * const swr_rx_data_groups[] = { "gpio4", "gpio5" };
+ static const char * const swr_tx_clk_groups[] = { "gpio0" };
+ static const char * const swr_tx_data_groups[] = { "gpio1", "gpio2" };
++static const char * const swr_wsa_clk_groups[] = { "gpio10" };
++static const char * const swr_wsa_data_groups[] = { "gpio11" };
+ static const char * const wsa_mclk_groups[] = { "gpio18" };
+ 
+ static const struct lpi_pingroup sm6115_groups[] = {
+@@ -86,19 +106,19 @@
+ 	LPI_PINGROUP(2, 4, swr_tx_data, qua_mi2s_data, _, _),
+ 	LPI_PINGROUP(3, 8, swr_rx_clk, qua_mi2s_data, _, _),
+ 	LPI_PINGROUP(4, 10, swr_rx_data, qua_mi2s_data, _, _),
+-	LPI_PINGROUP(5, 12, swr_rx_data, _, qua_mi2s_data, _),
++	LPI_PINGROUP(5, 12, swr_rx_data, ext_mclk0_b, qua_mi2s_data, _),
+ 	LPI_PINGROUP(6, LPI_NO_SLEW, dmic01_clk, i2s1_clk, _, _),
+ 	LPI_PINGROUP(7, LPI_NO_SLEW, dmic01_data, i2s1_ws, _, _),
+ 	LPI_PINGROUP(8, LPI_NO_SLEW, dmic23_clk, i2s1_data, _, _),
+-	LPI_PINGROUP(9, LPI_NO_SLEW, dmic23_data, i2s1_data, _, _),
+-	LPI_PINGROUP(10, LPI_NO_SLEW, i2s2_clk, _, _, _),
+-	LPI_PINGROUP(11, LPI_NO_SLEW, i2s2_ws, _, _, _),
+-	LPI_PINGROUP(12, LPI_NO_SLEW, _, i2s2_data, _, _),
+-	LPI_PINGROUP(13, LPI_NO_SLEW, _, i2s2_data, _, _),
+-	LPI_PINGROUP(14, LPI_NO_SLEW, i2s3_clk, _, _, _),
+-	LPI_PINGROUP(15, LPI_NO_SLEW, i2s3_ws, _, _, _),
++	LPI_PINGROUP(9, LPI_NO_SLEW, dmic23_data, i2s1_data, ext_mclk1_b, _),
++	LPI_PINGROUP(10, LPI_NO_SLEW, i2s2_clk, swr_wsa_clk, dmic4_clk, _),
++	LPI_PINGROUP(11, LPI_NO_SLEW, i2s2_ws, swr_wsa_data, dmic4_data, _),
++	LPI_PINGROUP(12, LPI_NO_SLEW, dmic23_clk, i2s2_data, _, _),
++	LPI_PINGROUP(13, LPI_NO_SLEW, dmic23_data, i2s2_data, ext_mclk0_a, _),
++	LPI_PINGROUP(14, LPI_NO_SLEW, i2s3_clk, slim_clk, _, _),
++	LPI_PINGROUP(15, LPI_NO_SLEW, i2s3_ws, slim_data, _, _),
+ 	LPI_PINGROUP(16, LPI_NO_SLEW, i2s3_data, _, _, _),
+-	LPI_PINGROUP(17, LPI_NO_SLEW, i2s3_data, _, _, _),
++	LPI_PINGROUP(17, LPI_NO_SLEW, i2s3_data, ext_mclk1_c, _, _),
+ 	LPI_PINGROUP(18, 14, wsa_mclk, _, _, _),
+ };
+ 
+@@ -107,6 +127,12 @@
+ 	LPI_FUNCTION(dmic01_data),
+ 	LPI_FUNCTION(dmic23_clk),
+ 	LPI_FUNCTION(dmic23_data),
++	LPI_FUNCTION(dmic4_clk),
++	LPI_FUNCTION(dmic4_data),
++	LPI_FUNCTION(ext_mclk0_a),
++	LPI_FUNCTION(ext_mclk0_b),
++	LPI_FUNCTION(ext_mclk1_b),
++	LPI_FUNCTION(ext_mclk1_c),
+ 	LPI_FUNCTION(i2s1_clk),
+ 	LPI_FUNCTION(i2s1_data),
+ 	LPI_FUNCTION(i2s1_ws),
+@@ -119,10 +145,14 @@
+ 	LPI_FUNCTION(qua_mi2s_data),
+ 	LPI_FUNCTION(qua_mi2s_sclk),
+ 	LPI_FUNCTION(qua_mi2s_ws),
++	LPI_FUNCTION(slim_clk),
++	LPI_FUNCTION(slim_data),
+ 	LPI_FUNCTION(swr_rx_clk),
+ 	LPI_FUNCTION(swr_rx_data),
+ 	LPI_FUNCTION(swr_tx_clk),
+ 	LPI_FUNCTION(swr_tx_data),
++	LPI_FUNCTION(swr_wsa_clk),
++	LPI_FUNCTION(swr_wsa_data),
+ 	LPI_FUNCTION(wsa_mclk),
+ };
+ 
+--
+2.43.1

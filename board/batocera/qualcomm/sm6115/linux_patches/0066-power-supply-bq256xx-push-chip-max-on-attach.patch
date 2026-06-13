@@ -1,0 +1,64 @@
+Subject: [PATCH] power: supply: bq256xx: set IINDPM from detected source type
+---
+ drivers/power/supply/bq256xx_charger.c | 28 ++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+--- a/drivers/power/supply/bq256xx_charger.c
++++ b/drivers/power/supply/bq256xx_charger.c
+@@ -41,6 +41,8 @@
+ #define BQ256XX_IINDPM_MIN_uA		100000
+ #define BQ256XX_IINDPM_MAX_uA		3200000
+ #define BQ256XX_IINDPM_DEF_uA		2400000
++#define BQ256XX_IINDPM_SDP_uA		500000
++#define BQ256XX_IINDPM_CDP_uA		1500000
+ 
+ #define BQ256XX_TS_IGNORE		BIT(6)
+ #define BQ256XX_TS_IGNORE_SHIFT		6
+@@ -1412,12 +1414,34 @@
+ 	mutex_unlock(&bq->lock);
+ 
+ 	return memcmp(&old_state, new_state, sizeof(struct bq256xx_state)) != 0;
++}
++
++static void bq256xx_set_iindpm_for_type(struct bq256xx_device *bq, u8 vbus_stat)
++{
++	int iindpm;
++
++	switch (vbus_stat) {
++	case BQ256XX_VBUS_STAT_USB_SDP:
++		iindpm = BQ256XX_IINDPM_SDP_uA;
++		break;
++	case BQ256XX_VBUS_STAT_USB_CDP:
++		iindpm = BQ256XX_IINDPM_CDP_uA;
++		break;
++	case BQ256XX_VBUS_STAT_USB_DCP:
++		iindpm = BQ256XX_IINDPM_MAX_uA;
++		break;
++	default:
++		return;
++	}
++
++	bq->chip_info->bq256xx_set_iindpm(bq, iindpm);
+ }
+ 
+ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
+ {
+ 	struct bq256xx_device *bq = private;
+ 	struct bq256xx_state state;
++	u8 prev_vbus_stat;
+ 	int ret;
+ 
+ 	ret = bq256xx_get_state(bq, &state);
+@@ -1428,8 +1460,12 @@
+ 		goto irq_out;
+ 
+ 	mutex_lock(&bq->lock);
++	prev_vbus_stat = bq->state.vbus_stat;
+ 	bq->state = state;
+ 	mutex_unlock(&bq->lock);
++
++	if (state.vbus_stat != prev_vbus_stat)
++		bq256xx_set_iindpm_for_type(bq, state.vbus_stat);
+ 
+ 	power_supply_changed(bq->charger);
+ 

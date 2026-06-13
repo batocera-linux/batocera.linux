@@ -1,0 +1,278 @@
+Subject: [PATCH] power: supply: bq256xx: add SGM41515 chip_info
+
+SGMicro SGM41515 is a register-similar to BQ25601D. Tables verified
+from disassembly of SGM41515 datasheet and vendor driver.
+
+
+---
+ drivers/power/supply/bq256xx_charger.c | 206 +++++++++++++++++++++++++
+ 1 file changed, 206 insertions(+)
+
+--- a/drivers/power/supply/bq256xx_charger.c
++++ b/drivers/power/supply/bq256xx_charger.c
+@@ -113,6 +113,21 @@
+ #define BQ25618_ICHG_THRESH		0x3c
+ #define BQ25618_ICHG_THRESH_uA		1180000
+ 
++#define SGM41515_ICHG_MIN_uA		0
++#define SGM41515_ICHG_MAX_uA		3000000
++#define SGM41515_ICHG_DEF_uA		1980000
++#define SGM41515_IPRECHG_MIN_uA		5000
++#define SGM41515_IPRECHG_MAX_uA		240000
++#define SGM41515_IPRECHG_DEF_uA		120000
++#define SGM41515_ITERM_MIN_uA		5000
++#define SGM41515_ITERM_MAX_uA		240000
++#define SGM41515_ITERM_DEF_uA		120000
++#define SGM41515_VBATREG_MIN_uV		3856000
++#define SGM41515_VBATREG_MAX_uV		4624000
++#define SGM41515_VBATREG_DEF_uV		4208000
++#define SGM41515_VBATREG_SPECIAL_CODE	15
++#define SGM41515_VBATREG_SPECIAL_uV	4350000
++
+ #define BQ256XX_VBUS_STAT_MASK		GENMASK(7, 5)
+ #define BQ256XX_VBUS_STAT_NO_INPUT	0
+ #define BQ256XX_VBUS_STAT_USB_SDP	BIT(5)
+@@ -202,6 +222,7 @@
+ 	BQ25618,
+ 	BQ25619,
+ 	BQ25611D,
++	SGM41515,
+ };
+ 
+ /**
+@@ -333,6 +354,22 @@
+ 	1290000, 1360000, 1430000, 1500000
+ };
+ 
++static const int sgm41515_ichg_values[] = {
++	      0,    5000,   10000,   15000,   20000,   25000,   30000,   35000,
++	  40000,   50000,   60000,   70000,   80000,   90000,  100000,  110000,
++	 130000,  150000,  170000,  190000,  210000,  230000,  250000,  270000,
++	 300000,  330000,  360000,  390000,  420000,  450000,  480000,  510000,
++	 540000,  600000,  660000,  720000,  780000,  840000,  900000,  960000,
++	1020000, 1080000, 1140000, 1200000, 1260000, 1320000, 1380000, 1440000,
++	1500000, 1620000, 1740000, 1860000, 1980000, 2100000, 2220000, 2340000,
++	2460000, 2580000, 2700000, 2820000, 2940000, 3000000, 3000000, 3000000,
++};
++
++static const int sgm41515_prechrg_term_values[] = {
++	  5000,  10000,  15000,  20000,  30000,  40000,  50000,  60000,
++	 80000, 100000, 120000, 140000, 160000, 180000, 200000, 240000,
++};
++
+ static int bq256xx_array_parse(int array_size, int val, const int array[])
+ {
+ 	int i = 0;
+@@ -539,6 +578,35 @@
+ 					BQ256XX_ICHG_MASK, ichg_reg_code);
+ }
+ 
++static int sgm41515_get_ichg_curr(struct bq256xx_device *bq)
++{
++	unsigned int charge_current_limit;
++	unsigned int ichg_reg_code;
++	int ret;
++
++	ret = regmap_read(bq->regmap, BQ256XX_CHARGE_CURRENT_LIMIT,
++			  &charge_current_limit);
++	if (ret)
++		return ret;
++
++	ichg_reg_code = charge_current_limit & BQ256XX_ICHG_MASK;
++	return sgm41515_ichg_values[ichg_reg_code];
++}
++
++static int sgm41515_set_ichg_curr(struct bq256xx_device *bq, int ichg)
++{
++	int array_size = ARRAY_SIZE(sgm41515_ichg_values);
++	unsigned int ichg_reg_code;
++	int ichg_max = bq->init_data.ichg_max;
++
++	ichg = clamp(ichg, SGM41515_ICHG_MIN_uA, ichg_max);
++	ichg_reg_code = bq256xx_array_parse(array_size, ichg,
++					    sgm41515_ichg_values);
++
++	return regmap_update_bits(bq->regmap, BQ256XX_CHARGE_CURRENT_LIMIT,
++				  BQ256XX_ICHG_MASK, ichg_reg_code);
++}
++
+ static int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
+ {
+ 	unsigned int battery_volt_lim;
+@@ -692,6 +760,45 @@
+ 	return regmap_update_bits(bq->regmap, BQ256XX_BATTERY_VOLTAGE_LIMIT,
+ 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
+ 						BQ256XX_VBATREG_BIT_SHIFT);
++}
++
++static int sgm41515_get_chrg_volt(struct bq256xx_device *bq)
++{
++	unsigned int battery_volt_lim;
++	unsigned int vbatreg_reg_code;
++	int ret;
++
++	ret = regmap_read(bq->regmap, BQ256XX_BATTERY_VOLTAGE_LIMIT,
++			  &battery_volt_lim);
++	if (ret)
++		return ret;
++
++	vbatreg_reg_code = (battery_volt_lim & BQ256XX_VBATREG_MASK) >>
++			   BQ256XX_VBATREG_BIT_SHIFT;
++
++	if (vbatreg_reg_code == SGM41515_VBATREG_SPECIAL_CODE)
++		return SGM41515_VBATREG_SPECIAL_uV;
++
++	return SGM41515_VBATREG_MIN_uV +
++	       vbatreg_reg_code * BQ2560X_VBATREG_STEP_uV;
++}
++
++static int sgm41515_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
++{
++	unsigned int vbatreg_reg_code;
++	int vbatreg_max = bq->init_data.vbatreg_max;
++
++	vbatreg = clamp(vbatreg, SGM41515_VBATREG_MIN_uV, vbatreg_max);
++
++	if (vbatreg == SGM41515_VBATREG_SPECIAL_uV)
++		vbatreg_reg_code = SGM41515_VBATREG_SPECIAL_CODE;
++	else
++		vbatreg_reg_code = (vbatreg - SGM41515_VBATREG_MIN_uV) /
++				   BQ2560X_VBATREG_STEP_uV;
++
++	return regmap_update_bits(bq->regmap, BQ256XX_BATTERY_VOLTAGE_LIMIT,
++				  BQ256XX_VBATREG_MASK,
++				  vbatreg_reg_code << BQ256XX_VBATREG_BIT_SHIFT);
+ }
+ 
+ static int bq256xx_set_ts_ignore(struct bq256xx_device *bq, bool ts_ignore)
+@@ -764,6 +876,38 @@
+ 				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
+ }
+ 
++static int sgm41515_get_prechrg_curr(struct bq256xx_device *bq)
++{
++	unsigned int prechg_and_term_curr_lim;
++	unsigned int iprechg_reg_code;
++	int ret;
++
++	ret = regmap_read(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
++			  &prechg_and_term_curr_lim);
++	if (ret)
++		return ret;
++
++	iprechg_reg_code = (prechg_and_term_curr_lim & BQ256XX_IPRECHG_MASK)
++			   >> BQ256XX_IPRECHG_BIT_SHIFT;
++
++	return sgm41515_prechrg_term_values[iprechg_reg_code];
++}
++
++static int sgm41515_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
++{
++	int array_size = ARRAY_SIZE(sgm41515_prechrg_term_values);
++	unsigned int iprechg_reg_code;
++
++	iprechg = clamp(iprechg, SGM41515_IPRECHG_MIN_uA,
++			SGM41515_IPRECHG_MAX_uA);
++	iprechg_reg_code = bq256xx_array_parse(array_size, iprechg,
++					       sgm41515_prechrg_term_values)
++			   << BQ256XX_IPRECHG_BIT_SHIFT;
++
++	return regmap_update_bits(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
++				  BQ256XX_IPRECHG_MASK, iprechg_reg_code);
++}
++
+ static int bq256xx_get_term_curr(struct bq256xx_device *bq)
+ {
+ 	unsigned int prechg_and_term_curr_lim;
+@@ -822,8 +966,36 @@
+ 
+ 	return regmap_update_bits(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+ 				BQ256XX_ITERM_MASK, iterm_reg_code);
++}
++
++static int sgm41515_get_term_curr(struct bq256xx_device *bq)
++{
++	unsigned int prechg_and_term_curr_lim;
++	unsigned int iterm_reg_code;
++	int ret;
++
++	ret = regmap_read(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
++			  &prechg_and_term_curr_lim);
++	if (ret)
++		return ret;
++
++	iterm_reg_code = prechg_and_term_curr_lim & BQ256XX_ITERM_MASK;
++	return sgm41515_prechrg_term_values[iterm_reg_code];
+ }
+ 
++static int sgm41515_set_term_curr(struct bq256xx_device *bq, int iterm)
++{
++	int array_size = ARRAY_SIZE(sgm41515_prechrg_term_values);
++	unsigned int iterm_reg_code;
++
++	iterm = clamp(iterm, SGM41515_ITERM_MIN_uA, SGM41515_ITERM_MAX_uA);
++	iterm_reg_code = bq256xx_array_parse(array_size, iterm,
++					     sgm41515_prechrg_term_values);
++
++	return regmap_update_bits(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
++				  BQ256XX_ITERM_MASK, iterm_reg_code);
++}
++
+ static int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
+ {
+ 	unsigned int charger_control_2;
+@@ -1532,6 +1704,38 @@
+ 		.bq256xx_max_vbatreg = BQ25618_VBATREG_MAX_uV,
+ 
+ 		.has_usb_detect = false,
++	},
++
++	[SGM41515] = {
++		.model_id = SGM41515,
++		.bq256xx_regmap_config = &bq25600_regmap_config,
++		.bq256xx_get_ichg = sgm41515_get_ichg_curr,
++		.bq256xx_get_iindpm = bq256xx_get_input_curr_lim,
++		.bq256xx_get_vbatreg = sgm41515_get_chrg_volt,
++		.bq256xx_get_iterm = sgm41515_get_term_curr,
++		.bq256xx_get_iprechg = sgm41515_get_prechrg_curr,
++		.bq256xx_get_vindpm = bq256xx_get_input_volt_lim,
++
++		.bq256xx_set_ichg = sgm41515_set_ichg_curr,
++		.bq256xx_set_iindpm = bq256xx_set_input_curr_lim,
++		.bq256xx_set_vbatreg = sgm41515_set_chrg_volt,
++		.bq256xx_set_iterm = sgm41515_set_term_curr,
++		.bq256xx_set_iprechg = sgm41515_set_prechrg_curr,
++		.bq256xx_set_vindpm = bq256xx_set_input_volt_lim,
++		.bq256xx_set_charge_type = bq256xx_set_charge_type,
++		.bq256xx_set_ts_ignore = NULL,
++
++		.bq256xx_def_ichg = SGM41515_ICHG_DEF_uA,
++		.bq256xx_def_iindpm = BQ256XX_IINDPM_DEF_uA,
++		.bq256xx_def_vbatreg = SGM41515_VBATREG_DEF_uV,
++		.bq256xx_def_iterm = SGM41515_ITERM_DEF_uA,
++		.bq256xx_def_iprechg = SGM41515_IPRECHG_DEF_uA,
++		.bq256xx_def_vindpm = BQ256XX_VINDPM_DEF_uV,
++
++		.bq256xx_max_ichg = SGM41515_ICHG_MAX_uA,
++		.bq256xx_max_vbatreg = SGM41515_VBATREG_MAX_uV,
++
++		.has_usb_detect = true,
+ 	},
+ };
+ 
+@@ -1775,6 +1979,7 @@
+ 	{ "bq25611d", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25611D] },
+ 	{ "bq25618", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25618] },
+ 	{ "bq25619", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25619] },
++	{ "sgm41515", (kernel_ulong_t)&bq256xx_chip_info_tbl[SGM41515] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, bq256xx_i2c_ids);
+@@ -1787,6 +1992,7 @@
+ 	{ .compatible = "ti,bq25611d", .data = &bq256xx_chip_info_tbl[BQ25611D] },
+ 	{ .compatible = "ti,bq25618", .data = &bq256xx_chip_info_tbl[BQ25618] },
+ 	{ .compatible = "ti,bq25619", .data = &bq256xx_chip_info_tbl[BQ25619] },
++	{ .compatible = "sgmicro,sgm41515", .data = &bq256xx_chip_info_tbl[SGM41515] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, bq256xx_of_match);

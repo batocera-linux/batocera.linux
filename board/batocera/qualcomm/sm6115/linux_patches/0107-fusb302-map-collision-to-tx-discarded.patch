@@ -1,0 +1,18 @@
+Subject: [PATCH] usb: typec: tcpc: fusb302: map COLLISION to TCPC_TX_DISCARDED
+
+---
+ drivers/usb/typec/tcpm/fusb302.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+--- a/drivers/usb/typec/tcpm/fusb302.c
++++ b/drivers/usb/typec/tcpm/fusb302.c
+@@ -1581,7 +1581,7 @@
+ 
+ 	if (interrupt & FUSB_REG_INTERRUPT_COLLISION) {
+ 		fusb302_log(chip, "IRQ: PD collision");
+-		tcpm_pd_transmit_complete(chip->tcpm_port, TCPC_TX_FAILED);
++		tcpm_pd_transmit_complete(chip->tcpm_port, TCPC_TX_DISCARDED);
+ 	}
+ 
+ 	if (interrupta & FUSB_REG_INTERRUPTA_RETRYFAIL) {
