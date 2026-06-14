@@ -1,145 +1,156 @@
 #!/bin/bash
 
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+################################
+#          INIT                #
+################################
+
 log="/userdata/system/logs/steam.log"
-
-es_add_game_begin() {
-    echo "<gameList>" > /tmp/batocera-steam-update.tmp || return 1
-}
-
-es_add_game_end() {
-    ES_SERVER="http://127.0.0.1:1234"
-
-    echo "</gameList>" >> /tmp/batocera-steam-update.tmp || return 1
-    curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/steam" -d "@/tmp/batocera-steam-update.tmp" > /dev/null || return 1
-}
-
-es_add_game() {
-    GAME_BASENAME=$1
-    GAME_NAME=$2
-    GAME_IMAGE=$3
-
-    (cat <<EOF
-<game>
-  <path>./${GAME_BASENAME}</path>
-  <name>${GAME_NAME}</name>
-  <desc></desc>
-  <rating></rating>
-  <releasedate></releasedate>
-  <developer></developer>
-  <publisher></publisher>
-  <genre></genre>
-  <players></players>
-  <image>${GAME_IMAGE}</image>
-  <manual></manual>
-  <video></video>
-</game>
-EOF
-) >> /tmp/batocera-steam-update.tmp || return 1
-}
-
-# Start the game list
-es_add_game_begin || exit 1
-
-# create steam application app
 steam_file="/userdata/roms/steam/Steam.steam"
-mkdir -p /userdata/roms/steam || exit 1
-if [ ! -f "$steam_file" ]; then
-    echo "com.valvesoftware.Steam" > "$steam_file"
-    echo "Steam.steam file created successfully." >> $log
-    mkdir -p /userdata/roms/steam/images
-    # take flatpak logo
-    steam_png="/userdata/roms/flatpak/images/Valve Corporation.png"
-    if [ -f "$steam_png" ]; then
-        cp "$steam_png" /userdata/roms/steam/images/Steam.png
-        echo "Steam logo copied successfully." >> $log
-    else
-        echo "Steam logo not found, could not copy." >> $log
-    fi
-    es_add_game "Steam.steam" "Steam" "./images/Steam.png"
-    echo "Steam app added to game list." >> $log
-fi
+steam_png="/userdata/roms/flatpak/images/Valve Corporation.png"
+
+blacklisted_apps=("Runtime" "Proton" "SDK" "Dedicated" "Workshop" "Big Picture"
+                  "Source" "Linux Runtime" "Redistributables" "Desktop Mode")
 
 # Steam may put .desktop files in different locations depending on Flatpak/Steam version:
 # - newer: $HOME/Desktop (via XDG Desktop portal)
 # - older: $HOME/.var/app/com.valvesoftware.Steam/.local/share/applications
-steam_search_dirs=()
-for dir in \
-    "/userdata/saves/flatpak/data/Desktop" \
-    "/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications"; do
-    [ -d "$dir" ] && steam_search_dirs+=("$dir")
-done
+steam_search_dirs=("/userdata/saves/flatpak/data/Desktop" "/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/applications")
 
-if [ ${#steam_search_dirs[@]} -eq 0 ]; then
-    echo "Steam applications directory not found" >> $log
-else
-    # Define a blacklist of words to check in game names
-    BLACKLIST=(
-        "Runtime"
-        "Proton"
-        "SDK"
-        "Dedicated"
-        "Workshop"
-        "Big Picture"
-        "Source"
-        "Linux Runtime"
-        "Redistributables"
-        "Desktop Mode"
-    )
+################################
+#          FUNCTIONS           #
+################################
 
-    # Function to check if a game name contains any blacklisted word
-    contains_blacklisted_word() {
-        local game_name="$1"
-        for word in "${BLACKLIST[@]}"; do
-            if [[ "$game_name" == *"$word"* ]]; then
-                return 0  # Found in blacklist, should be ignored
-            fi
-        done
-        return 1  # Not found, can be added
-    }
+# Write Header
+es_add_game_begin() {
+  echo "<gameList>" > /tmp/batocera-steam-update.tmp || return 1
+}
 
-    # Find and process applications
-    find "${steam_search_dirs[@]}" -name "*.desktop" | (
-        N=0
-        while read STEAMAPP; do
-            if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}"; then  # Check if it's a game
-                BASEAPP=$(basename "${STEAMAPP}" | sed -e 's/\.desktop$//')
+# Write Footer
+es_add_game_end() {
+  ES_SERVER="http://127.0.0.1:1234"
 
-                if contains_blacklisted_word "$BASEAPP"; then
-                    echo "Skipping blacklisted entry: ${BASEAPP}" >> $log
-                    continue
-                fi
+  echo "</gameList>" >> /tmp/batocera-steam-update.tmp || return 1
+  curl -s -X POST -H "Content-type: application/x-www-form-urlencoded" -H "Accept: text/plain" "${ES_SERVER}/addgames/steam" -d "@/tmp/batocera-steam-update.tmp" > /dev/null || return 1
+  return 0
+}
 
-                if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"; then
-                    echo "Adding ${BASEAPP}"
-                    GAMEID=$(grep -E '^Exec=' "${STEAMAPP}" | sed -e 's/Exec=//' -e 's/[ ]*steam[ ]*//' | head -1)
+# Add Game (Working Part)
+es_add_game() {
+  # GAME_BASENAME=$1, GAME_NAME=$2, GAME_IMAGE=$3
+  touch /tmp/batocera-steam-update.tmp || return 1
+  cat >> /tmp/batocera-steam-update.tmp <<-_EOF_
+		<game>
+		  <path>./${1}</path>
+		  <name>${2}</name>
+		  <desc></desc>
+		  <rating></rating>
+		  <releasedate></releasedate>
+		  <developer></developer>
+		  <publisher></publisher>
+		  <genre></genre>
+		  <players></players>
+		  <image>${3}</image>
+		  <manual></manual>
+		  <video></video>
+		</game>
+	_EOF_
+}
 
-                    # Add image
-                    ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e 's/^Icon=steam_icon_//')_logo.png
-                    IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
-                    IMGARG=
-                    if test -e "${IMGFILE}"; then
-                        IMGARG="./images/${BASEAPP}.png"
-                        mkdir -p "/userdata/roms/steam/images" || return 1
-                        cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
-                    fi
+# Create Steam application
+create_steam_app() {
+  mkdir -p /userdata/roms/steam || return 1
+  if [ ! -f "$steam_file" ]; then
+    echo "com.valvesoftware.Steam" > "$steam_file"
+    echo "Steam.steam file created successfully." >> $log
+    mkdir -p /userdata/roms/steam/images || return 1
+    # take flatpak logo
+    if [ -f "$steam_png" ]; then
+      cp "$steam_png" /userdata/roms/steam/images/Steam.png
+      echo "Steam logo copied successfully." >> $log
+    else
+      echo "Steam logo not found, could not copy." >> $log
+    fi
+    es_add_game "Steam.steam" "Steam" "./images/Steam.png"
+    echo "Steam app added to game list." >> $log
+  fi
+  return 0
+}
 
-                    # Add game
-                    echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || return 1
+es_add_game_worker(){
+  N=0
+  for STEAMAPP in "$@"; do
+    if grep -qE '^[ ]*Categories[ ]*=.*Game.*$' "${STEAMAPP}"; then  # Check if it's a game
+      BASEAPP=$(basename "${STEAMAPP}" | sed -e 's/\.desktop$//')
 
-                    # Add game in EmulationStation
-                    if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"; then
-                        echo "Adding game in EmulationStation failed" >&2
-                        return 1
-                    fi
-                    let N++
-                fi
-            fi
-        done
-        echo "${N} games added to the list." >> $log
-    )
-fi
+      # blacklist some apps
+      for blacklistword in "${blacklisted_apps[@]}"; do
+        if [[ "${BASEAPP}" == *"${blacklistword}"* ]]; then
+          echo "Skipping blacklisted entry: ${BASEAPP}" >> $log
+          continue 2
+        fi
+      done
+
+      if ! test -e "/userdata/roms/steam/${BASEAPP}.steam"; then
+        echo "Adding ${BASEAPP}"
+        GAMEID=$(grep -E '^Exec=' "${STEAMAPP}" | sed -e 's/Exec=//' -e 's/[ ]*steam[ ]*//' | head -1)
+
+        # Add image
+        ICON=$(grep -E "^Icon=" "${STEAMAPP}" | sed -e 's/^Icon=steam_icon_//')_logo.png
+        IMGFILE="/userdata/saves/flatpak/data/.var/app/com.valvesoftware.Steam/.local/share/Steam/appcache/librarycache/${ICON}"
+        IMGARG=
+        if test -e "${IMGFILE}"; then
+          IMGARG="./images/${BASEAPP}.png"
+          mkdir -p "/userdata/roms/steam/images" || return 1
+          cp "${IMGFILE}" "/userdata/roms/steam/${IMGARG}" || return 1
+        fi
+
+        # Add game
+        echo "${GAMEID}" > "/userdata/roms/steam/${BASEAPP}.steam" || return 1
+
+        # Add game in EmulationStation
+        if ! es_add_game "${BASEAPP}.steam" "${BASEAPP}" "${IMGARG}"; then
+          echo "Adding game in EmulationStation failed" >&2
+          return 1
+        fi
+      fi
+      let N++
+    fi
+  done
+  echo "${#@} desktop entries found." >> $log
+  echo "${N} games added to the list." >> $log
+  return 0
+}
+
+
+################################
+#          MAIN                #
+################################
+
+# Create Steam Main application
+create_steam_app || exit 1
+
+# Start the game list
+es_add_game_begin || exit 1
+
+# Create Single entry for each desktop file
+readarray -t desktop_files < <(find "${steam_search_dirs[@]}" -name *.desktop 2>/dev/null)
+es_add_game_worker "${desktop_files[@]}" || exit 1
 
 # End the game list
 es_add_game_end || exit 1
-
+echo "All done, check logs: ${log}"
 exit 0
