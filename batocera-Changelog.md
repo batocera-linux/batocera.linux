@@ -58,7 +58,7 @@
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
 - RPCS3 to v.0.0.41
-- ShadPS4 to v.0.15.0
+- ShadPS4 to v.0.16.0
 - Solarus to 2.0.4
 - Tsugaru to v20251206
 - Vita3k to 10th of June build

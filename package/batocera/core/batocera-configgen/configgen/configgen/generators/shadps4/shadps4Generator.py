@@ -16,13 +16,12 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import toml
-
 from ... import Command
-from ...batoceraPaths import CONFIGS, configure_emulator, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
 from ...utils import vulkan
 from ..Generator import Generator
@@ -43,15 +42,16 @@ class shadPS4Generator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         # Set the paths using Path objects
-        configPath = CONFIGS / "shadps4"
-        userConfigPath = configPath / "user"
-        toml_file = userConfigPath / "config.toml"
+        json_path = CONFIGS / "shadPS4"
+        json_file = json_path / "config.json"
+        input_path = json_path / "input_config"
         savesPath = Path("/userdata/saves/shadps4")
         romDir = Path("/userdata/roms/ps4")
         dlcPath = romDir / "DLC"
 
-        mkdir_if_not_exists(userConfigPath)
+        mkdir_if_not_exists(json_path)
         mkdir_if_not_exists(savesPath)
+        mkdir_if_not_exists(input_path) # fixes hang if folder not present
 
         # Check Vulkan first before doing anything
         discrete_index = -1
@@ -63,7 +63,7 @@ class shadPS4Generator(Generator):
                 if vulkan.has_discrete_gpu():
                     _logger.debug("A discrete GPU is available on the system. We will use that for performance")
                     discrete_index = vulkan.get_discrete_gpu_index()
-                    if discrete_index:
+                    if discrete_index is not None and discrete_index != -1:
                         _logger.debug("Using Discrete GPU Index: %s for shadPS4", discrete_index)
                     else:
                         _logger.debug("Couldn't get discrete GPU index")
@@ -76,168 +76,170 @@ class shadPS4Generator(Generator):
             _logger.debug("*** Vulkan driver required is not available on the system!!! ***")
             sys.exit(1)
 
-        # Adjust the config.toml file
+        # Adjust the config.json file
         config: dict[str, dict[str, object]] = {}
 
         # Check if the file exists
-        if toml_file.is_file():
+        if json_file.is_file():
             try:
-                with toml_file.open("r") as f:
-                    config = toml.load(f)
+                with json_file.open("r", encoding="utf-8") as f:
+                    config = json.load(f)
             except Exception as e:
                  _logger.error("Failed to load existing shadps4 config: %s. Will create default.", e)
 
         # If config is empty, create default structure
         if not config:
-             _logger.info("Creating default shadps4 config at %s", toml_file)
+             _logger.info("Creating default shadps4 config at %s", json_file)
              config = {
-                "General": {
-                    "isPS4Pro": False,
-                    "isTrophyPopupDisabled": False,
-                    "trophyNotificationDuration": 6.0,
-                    "playBGM": False,
-                    "BGMvolume": 50,
-                    "enableDiscordRPC": False,
-                    "logFilter": "",
-                    "logType": "async",
-                    "userName": "Batocera",
-                    "updateChannel": "Release",
-                    "chooseHomeTab": "General",
-                    "showSplash": False,
-                    "autoUpdate": False,
-                    "alwaysShowChangelog": False,
-                    "sideTrophy": "right",
-                    "separateUpdateEnabled": False,
-                    "compatibilityEnabled": False,
-                    "checkCompatibilityOnStartup": False,
-                },
-                "Input": {
-                    "cursorState": 1,
-                    "cursorHideTimeout": 5,
-                    "backButtonBehavior": "left",
-                    "useSpecialPad": False,
-                    "specialPadClass": 1,
-                    "isMotionControlsEnabled": True,
-                    "useUnifiedInputConfig": True,
-                },
-                "GPU": {
-                    "screenWidth": int(gameResolution["width"]),
-                    "screenHeight": int(gameResolution["height"]),
-                    "nullGpu": False,
-                    "copyGPUBuffers": False,
-                    "dumpShaders": False,
-                    "patchShaders": True,
-                    "vblankDivider": 1,
-                    "Fullscreen": True,
-                    "FullscreenMode": "Fullscreen (Borderless)",
-                    "allowHDR": False,
-                },
-                "Vulkan": {
-                    "gpuId": int(discrete_index),
-                    "validation": False,
-                    "validation_sync": False,
-                    "validation_gpu": False,
-                    "crashDiagnostic": False,
-                    "hostMarkers": False,
-                    "guestMarkers": False,
-                    "rdocEnable": False,
+                "Audio": {
+                    "audio_backend": 0,
+                    "openal_main_output_device": "Default Device",
+                    "openal_mic_device": "Default Device",
+                    "openal_padSpk_output_device": "Default Device",
+                    "sdl_main_output_device": "Default Device",
+                    "sdl_mic_device": "Default Device",
+                    "sdl_padSpk_output_device": "Default Device"
                 },
                 "Debug": {
-                    "DebugDump": False,
-                    "CollectShader": False,
-                    "isSeparateLogFilesEnabled": False,
-                    "FPSColor": True,
+                    "config_version": "GITDIR-NOTFOUND",
+                    "debug_dump": False,
+                    "shader_collect": False
                 },
-                "Keys": {
-                    "TrophyKey": ""
-                 },
-                "GUI": {
-                    "installDirs": [str(romDir)],
-                    "saveDataPath": str(savesPath),
-                    "loadGameSizeEnabled": True,
-                    "addonInstallDir": str(dlcPath),
-                    "emulatorLanguage": "en_US",
-                    "backgroundImageOpacity": 50,
-                    "showBackgroundImage": True,
-                    "mw_width": int(gameResolution["width"]),
-                    "mw_height": int(gameResolution["height"]),
-                    "theme": 0,
-                    "iconSize": 36,
-                    "sliderPos": 0,
-                    "iconSizeGrid": 69,
-                    "sliderPosGrid": 0,
-                    "gameTableMode": 0,
-                    "geometry_x": 0,
-                    "geometry_y": 0,
-                    "geometry_w": int(gameResolution["width"]),
-                    "geometry_h": int(gameResolution["height"]),
-                    "pkgDirs": [str(romDir)],
-                    "elfDirs": [],
-                    "recentFiles": [],
+                "GPU": {
+                    "copy_gpu_buffers": False,
+                    "direct_memory_access_enabled": False,
+                    "dump_shaders": False,
+                    "fsr_enabled": False,
+                    "full_screen": True,
+                    "full_screen_mode": "Windowed",
+                    "hdr_allowed": False,
+                    "internal_screen_height": 720,
+                    "internal_screen_width": 1280,
+                    "null_gpu": False,
+                    "patch_shaders": False,
+                    "present_mode": "Mailbox",
+                    "rcas_attenuation": 250,
+                    "rcas_enabled": True,
+                    "readback_linear_images_enabled": False,
+                    "readbacks_mode": 0,
+                    "vblank_frequency": 60,
+                    "window_height": int(gameResolution["height"]),
+                    "window_width": int(gameResolution["width"])
                 },
-                "Settings": {
-                    "consoleLanguage": 1
+                "General": {
+                    "addon_install_dir": str(dlcPath),
+                    "big_picture_scale": 1000,
+                    "connected_to_network": False,
+                    "console_language": 1,
+                    "dev_kit_mode": False,
+                    "discord_rpc_enabled": False,
+                    "extra_dmem_in_mbytes": 0,
+                    "font_dir": "",
+                    "home_dir": str(savesPath),
+                    "install_dirs": [str(romDir)],
+                    "neo_mode": False,
+                    "shad_net_enabled": False,
+                    "shadnet_server": "",
+                    "show_fps_counter": False,
+                    "show_splash": False,
+                    "sys_modules_dir": "",
+                    "trophy_notification_duration": 6.0,
+                    "trophy_notification_side": "right",
+                    "trophy_popup_disabled": False,
+                    "volume_slider": 100
                 },
+                "Input": {
+                    "background_controller_input": False,
+                    "camera_id": -1,
+                    "cursor_hide_timeout": 5,
+                    "cursor_state": 1,
+                    "default_controller_id": "",
+                    "ime_accessibility_enabled": False,
+                    "ime_url_mail_short_panel": False,
+                    "is_circle_enter": False,
+                    "motion_controls_enabled": True,
+                    "special_pad_class": 1,
+                    "usb_device_backend": 0,
+                    "use_special_pad": False,
+                    "use_unified_input_config": True
+                },
+                "Log": {
+                    "append": False,
+                    "enable": True,
+                    "filter": "",
+                    "max_skip_duration": 5000,
+                    "separate": False,
+                    "size_limit": 104857600,
+                    "skip_duplicate": True,
+                    "sync": True
+                },
+                "Vulkan": {
+                    "gpu_id": int(discrete_index),
+                    "pipeline_cache_archived": False,
+                    "pipeline_cache_enabled": False,
+                    "renderdoc_enabled": False,
+                    "vkcrash_diagnostic_enabled": False,
+                    "vkguest_markers": False,
+                    "vkhost_markers": False,
+                    "vkvalidation_core_enabled": True,
+                    "vkvalidation_enabled": False,
+                    "vkvalidation_gpu_enabled": False,
+                    "vkvalidation_sync_enabled": False
+                }
              }
 
         # --- Apply Batocera Specific Overrides ---
-        # General
-        config.setdefault("General", {})["autoUpdate"] = False
-        config.setdefault("General", {})["enableDiscordRPC"] = False
-        config.setdefault("General", {})["userName"] = "Batocera"
+        general_config = config.setdefault("General", {})
+        general_config["discord_rpc_enabled"] = False
+        general_config["addon_install_dir"] = str(dlcPath)
+        general_config["install_dirs"] = [str(romDir)]
+        general_config["home_dir"] = str(savesPath)
 
         # GPU
         gpu_config = config.setdefault("GPU", {})
-        gpu_config["Fullscreen"] = True
-        gpu_config["FullscreenMode"] = "Fullscreen (Borderless)"
-        gpu_config["screenWidth"] = int(gameResolution["width"])
-        gpu_config["screenHeight"] = int(gameResolution["height"])
-
-        # GUI
-        gui_config = config.setdefault("GUI", {})
-        gui_config["addonInstallDir"] = str(dlcPath)
-        gui_config["installDirs"] = [str(romDir)]
-        gui_config["saveDataPath"] = str(savesPath)
-        gui_config["mw_width"] = int(gameResolution["width"])
-        gui_config["mw_height"] = int(gameResolution["height"])
-        gui_config["geometry_w"] = int(gameResolution["width"])
-        gui_config["geometry_h"] = int(gameResolution["height"])
-        gui_config["pkgDirs"] = [str(romDir)]
+        gpu_config["full_screen"] = True
+        gpu_config["full_screen_mode"] = "Fullscreen (Borderless)"
+        gpu_config["window_width"] = int(gameResolution["width"])
+        gpu_config["window_height"] = int(gameResolution["height"])
 
         # Vulkan - Set the detected GPU ID
-        config.setdefault("Vulkan", {})["gpuId"] = int(discrete_index)
+        vulkan_config = config.setdefault("Vulkan", {})
+        vulkan_config["gpu_id"] = int(discrete_index)
+        vulkan_config["pipeline_cache_enabled"] = True
 
         # Options
         if system.config.get_bool("shadps4_hdr"):
-            gpu_config["allowHDR"] = True
+            gpu_config["hdr_allowed"] = True
         else:
-            gpu_config["allowHDR"] = False
+            gpu_config["hdr_allowed"] = False
+
         if system.config.get("shadps4_console_lang"):
-            config["Settings"]["consoleLanguage"] = int(system.config["shadps4_console_lang"])
+            general_config["console_language"] = int(system.config["shadps4_console_lang"])
         else:
-            config["Settings"]["consoleLanguage"] = 1
+            general_config["console_language"] = 1
+        
+        log_config = config.setdefault("Log", {})
+        if system.config.get_bool("shadps4_logging"):
+            log_config["enable"] = True
+        else:
+            log_config["enable"] = False
 
         # Create necessary directories if they do not exist
-        mkdir_if_not_exists(toml_file.parent)
+        mkdir_if_not_exists(json_file.parent)
 
-        # Now write the updated toml
-        with toml_file.open("w") as f:
-            toml.dump(config, f)
-
-        # Change to the configPath directory before running
-        os.chdir(configPath)
+        # Now write the updated json
+        with json_file.open("w", encoding="utf-8") as f:
+            json.dump(config, f, indent=2)
 
         # Run command
-        if configure_emulator(rom):
-            commandArray: list[str | Path] = ["/usr/bin/shadps4"]
-        else:
-            commandArray: list[str | Path] = ["/usr/bin/shadps4", rom.parent / "eboot.bin"]
+        commandArray: list[str | Path] = ["/usr/bin/shadps4", "--game", rom.parent / "eboot.bin", "--fullscreen", "true"]
 
         return Command.Command(
             array=commandArray,
             env={
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
-                "SDL_JOYSTICK_HIDAPI": "0"
+                "SDL_JOYSTICK_HIDAPI": "0",
+                "XDG_DATA_HOME": CONFIGS
             }
         )
 
