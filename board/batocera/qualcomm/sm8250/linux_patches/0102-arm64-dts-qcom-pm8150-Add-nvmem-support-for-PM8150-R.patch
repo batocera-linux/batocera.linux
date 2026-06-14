@@ -1,0 +1,39 @@
+From a48cac11ff66d1f09c873a5628cd5cc5b07f96b3 Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Sun, 7 Dec 2025 11:33:36 +0000
+Subject: [PATCH] arm64: dts: qcom: pm8150: Add nvmem support for PM8150 RTC
+ offset
+
+---
+ arch/arm64/boot/dts/qcom/pm8150.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/pm8150.dtsi b/arch/arm64/boot/dts/qcom/pm8150.dtsi
+index d2568686a098..793185820f5f 100644
+--- a/arch/arm64/boot/dts/qcom/pm8150.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm8150.dtsi
+@@ -121,6 +121,21 @@ rtc@6000 {
+ 			reg = <0x6000>, <0x6100>;
+ 			reg-names = "rtc", "alarm";
+ 			interrupts = <0x0 0x61 0x1 IRQ_TYPE_NONE>;
++
++			nvmem-cells = <&rtc_offset>;
++			nvmem-cell-names = "offset";
++		};
++
++		pm8150_sdam_2: nvram@b100 {
++			compatible = "qcom,spmi-sdam";
++			reg = <0xb100>;
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges = <0 0xb100 0x100>;
++
++			rtc_offset: rtc-offset@bc {
++				reg = <0xbc 0x4>;
++			};
+ 		};
+ 
+ 		pm8150_gpios: gpio@c000 {
+-- 
+2.34.1
+

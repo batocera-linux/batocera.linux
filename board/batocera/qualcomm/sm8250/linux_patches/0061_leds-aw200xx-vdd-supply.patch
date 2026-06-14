@@ -1,0 +1,27 @@
+Subject: [PATCH] leds: aw200xx: enable an optional VDD supply
+
+Gate the AW200xx VDD rail via an external regulator. 
+Enable an optional "vdd" supply during probe.
+
+diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
+--- a/drivers/leds/leds-aw200xx.c
++++ b/drivers/leds/leds-aw200xx.c
+@@ -17,5 +17,6 @@
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/time.h>
+ #include <linux/units.h>
+@@ -566,6 +566,11 @@
+ 	chip->regmap = devm_regmap_init_i2c(client, &aw200xx_regmap_config);
+ 	if (IS_ERR(chip->regmap))
+ 		return PTR_ERR(chip->regmap);
+ 
++	ret = devm_regulator_get_enable_optional(&client->dev, "vdd");
++	if (ret < 0 && ret != -ENODEV)
++		return dev_err_probe(&client->dev, ret,
++				     "Failed to enable vdd regulator\n");
++
+ 	chip->hwen = devm_gpiod_get_optional(&client->dev, "enable",
+ 					     GPIOD_OUT_HIGH);

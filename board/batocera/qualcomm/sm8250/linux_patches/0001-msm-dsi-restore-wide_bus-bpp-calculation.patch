@@ -1,0 +1,25 @@
+From 2c70d81c00e4eaa9871eff3e672b8233c7110f0d Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 3 Jun 2026 17:37:41 +0200
+Subject: [PATCH] msm:dsi: restore wide_bus bpp calculation
+
+---
+ drivers/gpu/drm/msm/dsi/dsi_host.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
+index 50474c994d47..e396164c3b27 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -1050,7 +1050,7 @@ static void dsi_timing_setup(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
+ 		h_total -= hdisplay;
+ 		if (wide_bus_enabled) {
+ 			if (msm_host->mode_flags & MIPI_DSI_MODE_VIDEO)
+-				bits_per_pclk = dsc->bits_per_component * 3;
++				bits_per_pclk = mipi_dsi_pixel_format_to_bpp(msm_host->format);
+ 			else
+ 				bits_per_pclk = 48;
+ 		} else {
+-- 
+2.54.0
+

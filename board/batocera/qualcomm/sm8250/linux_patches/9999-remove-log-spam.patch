@@ -1,7 +1,7 @@
 diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi linux/arch/arm64/boot/dts/qcom/sm8250.dtsi
---- linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi	2024-10-19 13:35:28.332965210 +0000
-+++ linux/arch/arm64/boot/dts/qcom/sm8250.dtsi	2024-11-04 05:36:23.933316182 +0000
-@@ -3166,6 +3166,8 @@
+--- linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-12-18 16:18:44.484425346 +0000
++++ linux/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-12-18 16:19:20.500969202 +0000
+@@ -3150,6 +3150,8 @@
  			clocks = <&aoss_qmp>;
  			clock-names = "apb_pclk";
  
@@ -11,9 +11,9 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi linux/arch/arm64/boo
  				port {
  					stm_out: endpoint {
 diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_qca.c
---- linux.orig/drivers/bluetooth/hci_qca.c	2024-10-19 13:35:28.740974311 +0000
-+++ linux/drivers/bluetooth/hci_qca.c	2024-11-04 05:13:19.069066931 +0000
-@@ -844,8 +844,8 @@ static void device_woke_up(struct hci_ua
+--- linux.orig/drivers/bluetooth/hci_qca.c	2025-12-18 16:18:44.908431750 +0000
++++ linux/drivers/bluetooth/hci_qca.c	2025-12-18 16:19:20.500969202 +0000
+@@ -857,8 +857,8 @@ static void device_woke_up(struct hci_ua
  	switch (qca->tx_ibs_state) {
  	case HCI_IBS_TX_AWAKE:
  		/* Expect one if we send 2 WAKEs */
@@ -24,7 +24,7 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		break;
  
  	case HCI_IBS_TX_WAKING:
-@@ -862,8 +862,8 @@ static void device_woke_up(struct hci_ua
+@@ -875,8 +875,8 @@ static void device_woke_up(struct hci_ua
  
  	case HCI_IBS_TX_ASLEEP:
  	default:
@@ -35,7 +35,7 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		break;
  	}
  
-@@ -1267,7 +1267,7 @@ static int qca_recv(struct hci_uart *hu,
+@@ -1281,7 +1281,7 @@ static int qca_recv(struct hci_uart *hu,
  				  qca_recv_pkts, ARRAY_SIZE(qca_recv_pkts));
  	if (IS_ERR(qca->rx_skb)) {
  		int err = PTR_ERR(qca->rx_skb);
@@ -45,9 +45,9 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		return err;
  	}
 diff -rupbN linux.orig/drivers/clk/qcom/clk-alpha-pll.c linux/drivers/clk/qcom/clk-alpha-pll.c
---- linux.orig/drivers/clk/qcom/clk-alpha-pll.c	2024-10-19 13:35:28.772975024 +0000
-+++ linux/drivers/clk/qcom/clk-alpha-pll.c	2024-11-04 05:06:06.991809741 +0000
-@@ -1725,7 +1725,7 @@ static int __alpha_pll_trion_set_rate(st
+--- linux.orig/drivers/clk/qcom/clk-alpha-pll.c	2025-12-18 16:18:44.964432595 +0000
++++ linux/drivers/clk/qcom/clk-alpha-pll.c	2025-12-18 16:19:20.500969202 +0000
+@@ -1816,7 +1816,7 @@ static int __alpha_pll_trion_set_rate(st
  	udelay(1);
  	regmap_read(pll->clkr.regmap, PLL_MODE(pll), &val);
  	if (!(val & latch_ack)) {
@@ -57,9 +57,9 @@ diff -rupbN linux.orig/drivers/clk/qcom/clk-alpha-pll.c linux/drivers/clk/qcom/c
  	}
  
 diff -rupbN linux.orig/drivers/firmware/psci/psci.c linux/drivers/firmware/psci/psci.c
---- linux.orig/drivers/firmware/psci/psci.c	2024-10-19 13:35:28.860976987 +0000
-+++ linux/drivers/firmware/psci/psci.c	2024-11-04 05:11:35.226952701 +0000
-@@ -166,9 +166,9 @@ int psci_set_osi_mode(bool enable)
+--- linux.orig/drivers/firmware/psci/psci.c	2025-12-18 16:18:45.108434770 +0000
++++ linux/drivers/firmware/psci/psci.c	2025-12-18 16:19:20.500969202 +0000
+@@ -167,9 +167,9 @@ int psci_set_osi_mode(bool enable)
  			PSCI_1_0_SUSPEND_MODE_PC;
  
  	err = invoke_psci_fn(PSCI_1_0_FN_SET_SUSPEND_MODE, suspend_mode, 0, 0);
@@ -72,23 +72,9 @@ diff -rupbN linux.orig/drivers/firmware/psci/psci.c linux/drivers/firmware/psci/
  	return psci_to_linux_errno(err);
  }
  
-diff -rupbN linux.orig/drivers/remoteproc/qcom_q6v5_pas.c linux/drivers/remoteproc/qcom_q6v5_pas.c
---- linux.orig/drivers/remoteproc/qcom_q6v5_pas.c	2024-10-19 13:35:30.157005891 +0000
-+++ linux/drivers/remoteproc/qcom_q6v5_pas.c	2024-11-04 05:06:06.991809741 +0000
-@@ -316,8 +316,8 @@ static int qcom_pas_start(struct rproc *rproc)
- 
- 	ret = qcom_scm_pas_auth_and_reset(pas->pas_id);
- 	if (ret) {
--		dev_err(pas->dev,
--			"failed to authenticate image and release reset\n");
-+		//dev_err(pas->dev,
-+			//"failed to authenticate image and release reset\n");
- 		goto release_pas_metadata;
- 	}
- 
 diff -rupbN linux.orig/drivers/remoteproc/remoteproc_core.c linux/drivers/remoteproc/remoteproc_core.c
---- linux.orig/drivers/remoteproc/remoteproc_core.c	2024-10-19 13:35:30.157005891 +0000
-+++ linux/drivers/remoteproc/remoteproc_core.c	2024-11-04 05:06:06.991809741 +0000
+--- linux.orig/drivers/remoteproc/remoteproc_core.c	2025-12-18 16:18:46.720459115 +0000
++++ linux/drivers/remoteproc/remoteproc_core.c	2025-12-18 16:19:20.500969202 +0000
 @@ -1301,7 +1301,7 @@ static int rproc_start(struct rproc *rpr
  	/* power up the remote processor */
  	ret = rproc->ops->start(rproc);
@@ -99,9 +85,9 @@ diff -rupbN linux.orig/drivers/remoteproc/remoteproc_core.c linux/drivers/remote
  	}
  
 diff -rupbN linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c linux/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c
---- linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2024-10-19 13:35:30.349010172 +0000
-+++ linux/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2024-11-04 05:06:50.560754765 +0000
-@@ -379,7 +379,7 @@ static irqreturn_t qcom_pmic_typec_pdphy
+--- linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2025-12-18 16:18:46.940462438 +0000
++++ linux/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2025-12-18 16:19:20.500969202 +0000
+@@ -380,7 +380,7 @@ static irqreturn_t qcom_pmic_typec_pdphy
  
  	switch (irq_data->virq) {
  	case PMIC_PDPHY_SIG_TX_IRQ:
@@ -110,10 +96,33 @@ diff -rupbN linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c linux
  		break;
  	case PMIC_PDPHY_SIG_RX_IRQ:
  		schedule_work(&pmic_typec_pdphy->reset_work);
+diff -rupbN linux.orig/net/core/sock.c linux/net/core/sock.c
+--- linux.orig/net/core/sock.c	2025-12-18 16:18:47.456470231 +0000
++++ linux/net/core/sock.c	2025-12-18 16:30:47.559323819 +0000
+@@ -1554,8 +1554,8 @@ set_sndbuf:
+ 	case SO_PASSSEC:
+ 		if (IS_ENABLED(CONFIG_SECURITY_NETWORK) && sk_may_scm_recv(sk))
+ 			sk->sk_scm_security = valbool;
+-		else
+-			ret = -EOPNOTSUPP;
++		//else
++		//	ret = -EOPNOTSUPP;
+ 		break;
+ 
+ 	case SO_PASSPIDFD:
+@@ -1990,7 +1990,7 @@ int sk_getsockopt(struct sock *sk, int l
+ 
+ 	case SO_PASSSEC:
+ 		if (!IS_ENABLED(CONFIG_SECURITY_NETWORK) || !sk_may_scm_recv(sk))
+-			return -EOPNOTSUPP;
++		//	return -EOPNOTSUPP;
+ 
+ 		v.val = sk->sk_scm_security;
+ 		break;
 diff -rupbN linux.orig/sound/soc/codecs/lpass-va-macro.c linux/sound/soc/codecs/lpass-va-macro.c
---- linux.orig/sound/soc/codecs/lpass-va-macro.c	2024-10-19 13:35:30.909022660 +0000
-+++ linux/sound/soc/codecs/lpass-va-macro.c	2024-11-04 05:06:06.991809741 +0000
-@@ -1530,7 +1530,7 @@ static int va_macro_probe(struct platfor
+--- linux.orig/sound/soc/codecs/lpass-va-macro.c	2025-12-18 16:18:47.640473009 +0000
++++ linux/sound/soc/codecs/lpass-va-macro.c	2025-12-18 16:19:20.500969202 +0000
+@@ -1531,7 +1531,7 @@ static int va_macro_probe(struct platfor
  	ret = of_property_read_u32(dev->of_node, "qcom,dmic-sample-rate",
  				   &sample_rate);
  	if (ret) {
@@ -123,8 +132,8 @@ diff -rupbN linux.orig/sound/soc/codecs/lpass-va-macro.c linux/sound/soc/codecs/
  	} else {
  		ret = va_macro_validate_dmic_sample_rate(sample_rate, va);
 diff -rupbN linux.orig/sound/soc/qcom/qdsp6/q6asm.c linux/sound/soc/qcom/qdsp6/q6asm.c
---- linux.orig/sound/soc/qcom/qdsp6/q6asm.c	2024-10-19 13:35:30.949023554 +0000
-+++ linux/sound/soc/qcom/qdsp6/q6asm.c	2024-11-04 05:06:06.991809741 +0000
+--- linux.orig/sound/soc/qcom/qdsp6/q6asm.c	2025-12-18 16:18:47.696473855 +0000
++++ linux/sound/soc/qcom/qdsp6/q6asm.c	2025-12-18 16:19:20.500969202 +0000
 @@ -655,8 +655,8 @@ static int32_t q6asm_stream_callback(str
  			}
  			break;

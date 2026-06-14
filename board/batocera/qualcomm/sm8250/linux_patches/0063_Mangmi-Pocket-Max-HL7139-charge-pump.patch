@@ -1,0 +1,412 @@
+Subject: [PATCH] power: supply: add Halo Microelectronics HL7139 charge pump
+
+diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
+index 92f9f7aae92f..a1b2c3d4e5f6 100644
+--- a/drivers/power/supply/Kconfig
++++ b/drivers/power/supply/Kconfig
+@@ -817,6 +817,13 @@ config CHARGER_BQ25980
+ 	  Say Y to enable support for the TI BQ25980, BQ25975 and BQ25960
+ 	  series of fast battery chargers.
+ 
++config CHARGER_HL7139
++	tristate "Halo Microelectronics HL7139 charge pump"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	  Say Y to enable support for the Halo Microelectronics HL7139
++
+ config CHARGER_BQ256XX
+ 	tristate "TI BQ256XX battery charger driver"
+ 	depends on I2C
+diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
+index 4b79d5abc49a..b2c3d4e5f6a7 100644
+--- a/drivers/power/supply/Makefile
++++ b/drivers/power/supply/Makefile
+@@ -104,6 +104,7 @@
+ obj-$(CONFIG_CHARGER_BQ257XX)	+= bq257xx_charger.o
+ obj-$(CONFIG_CHARGER_BQ25890)	+= bq25890_charger.o
+ obj-$(CONFIG_CHARGER_BQ25980)	+= bq25980_charger.o
++obj-$(CONFIG_CHARGER_HL7139)	+= hl7139_charger.o
+ obj-$(CONFIG_CHARGER_BQ256XX)	+= bq256xx_charger.o
+ obj-$(CONFIG_CHARGER_RK817)	+= rk817_charger.o
+ obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
+diff --git a/drivers/power/supply/hl7139_charger.c b/drivers/power/supply/hl7139_charger.c
+new file mode 100644
+index 000000000000..f84c84eb7948
+--- /dev/null
++++ b/drivers/power/supply/hl7139_charger.c
+@@ -0,0 +1,374 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Halo Microelectronics HL7139
++ *
++ * Register map from:
++ *   - HiSilicon hwpower GPL driver
++ *   - the Mangmi Pocket Max stock kernel
++ *   - the live stock device tree
++ *
++ */
++#include <linux/bitfield.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/power_supply.h>
++#include <linux/regmap.h>
++
++#define HL7139_REG_DEVICE_ID	0x00
++#define  HL7139_DEV_ID_MASK	GENMASK(3, 0)
++#define  HL7139_DEV_ID_HL7139	0x0a
++#define  HL7139_DEV_REV_MASK	GENMASK(7, 4)
++
++#define HL7139_REG_STATUS_A	0x05
++#define  HL7139_STS_A_VIN_OVP	BIT(7)
++#define  HL7139_STS_A_VBAT_OVP	BIT(3)
++#define HL7139_REG_STATUS_B	0x06
++#define  HL7139_STS_B_IIN_OCP	BIT(7)
++#define  HL7139_STS_B_IBAT_OCP	BIT(6)
++#define  HL7139_STS_B_CFLY_SHORT BIT(3)
++#define  HL7139_STS_B_THSD	BIT(0)
++#define HL7139_REG_STATUS_C	0x07
++#define  HL7139_STS_C_VBUS_GOOD	BIT(0)
++
++#define HL7139_REG_VBAT_REG	0x08
++#define  HL7139_VBAT_TH_MASK	GENMASK(5, 0)
++#define  HL7139_VBAT_BASE_UV	4000000
++#define  HL7139_VBAT_STEP_UV	10000
++#define  HL7139_VBAT_MAX_UV	4600000
++
++#define HL7139_REG_IBAT_REG	0x0a
++#define  HL7139_IBAT_TH_MASK	GENMASK(5, 0)
++#define  HL7139_IBAT_BASE_UA	2000000
++#define  HL7139_IBAT_STEP_UA	100000
++#define  HL7139_IBAT_MAX_UA	6600000
++
++#define HL7139_REG_IIN_REG	0x0e
++#define  HL7139_IIN_TH_MASK	GENMASK(5, 0)
++#define  HL7139_IIN_CP_BASE_UA	1000000
++#define  HL7139_IIN_CP_STEP_UA	50000
++#define  HL7139_IIN_CP_MAX_UA	3500000
++
++#define HL7139_REG_CTRL0	0x12
++#define  HL7139_CTRL0_CHG_EN	BIT(7)
++#define HL7139_REG_CTRL2	0x14
++#define  HL7139_CTRL2_WD_DIS	BIT(3)
++#define HL7139_REG_CTRL3	0x15
++#define  HL7139_CTRL3_DEV_MODE	BIT(7)
++
++#define HL7139_REG_ADC_CTRL0	0x40
++#define  HL7139_ADC_READ_EN	BIT(0)
++#define HL7139_REG_ADC_CTRL1	0x41
++
++#define HL7139_REG_ADC_VIN	0x42
++#define HL7139_REG_ADC_IIN	0x44
++#define HL7139_REG_ADC_VBAT	0x46
++#define HL7139_REG_ADC_IBAT	0x48
++#define HL7139_REG_ADC_TDIE	0x4e
++#define HL7139_REG_MAX		0x4f
++
++#define HL7139_VIN_LSB_UV	4000
++#define HL7139_VBAT_LSB_UV	1250
++#define HL7139_IIN_CP_LSB_UA	1100
++#define HL7139_IIN_BP_LSB_UA	2200
++#define HL7139_IBAT_LSB_UA	2200
++
++struct hl7139 {
++	struct device *dev;
++	struct regmap *regmap;
++	struct power_supply *psy;
++};
++
++static int hl7139_read_adc(struct hl7139 *chip, u8 reg, int lsb)
++{
++	u8 buf[2];
++	int ret;
++
++	ret = regmap_bulk_read(chip->regmap, reg, buf, sizeof(buf));
++	if (ret)
++		return ret;
++
++	return ((buf[0] << 4) | (buf[1] & 0x0f)) * lsb;
++}
++
++static int hl7139_iin_now(struct hl7139 *chip)
++{
++	unsigned int ctrl3;
++	int lsb, ret;
++
++	ret = regmap_read(chip->regmap, HL7139_REG_CTRL3, &ctrl3);
++	if (ret)
++		return ret;
++
++	lsb = (ctrl3 & HL7139_CTRL3_DEV_MODE) ?
++		HL7139_IIN_BP_LSB_UA : HL7139_IIN_CP_LSB_UA;
++
++	return hl7139_read_adc(chip, HL7139_REG_ADC_IIN, lsb);
++}
++
++static int hl7139_set_charge_enable(struct hl7139 *chip, bool en)
++{
++	return regmap_update_bits(chip->regmap, HL7139_REG_CTRL0,
++				  HL7139_CTRL0_CHG_EN,
++				  en ? HL7139_CTRL0_CHG_EN : 0);
++}
++
++static enum power_supply_property hl7139_props[] = {
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_STATUS,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CURRENT_NOW,
++	POWER_SUPPLY_PROP_TEMP,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
++	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
++	POWER_SUPPLY_PROP_MODEL_NAME,
++	POWER_SUPPLY_PROP_MANUFACTURER,
++};
++
++static int hl7139_get_prop(struct power_supply *psy,
++			   enum power_supply_property prop,
++			   union power_supply_propval *val)
++{
++	struct hl7139 *chip = power_supply_get_drvdata(psy);
++	unsigned int reg;
++	int ret;
++
++	switch (prop) {
++	case POWER_SUPPLY_PROP_PRESENT:
++		ret = regmap_read(chip->regmap, HL7139_REG_STATUS_C, &reg);
++		if (ret)
++			return ret;
++		val->intval = !!(reg & HL7139_STS_C_VBUS_GOOD);
++		return 0;
++	case POWER_SUPPLY_PROP_ONLINE:
++	case POWER_SUPPLY_PROP_STATUS:
++		ret = regmap_read(chip->regmap, HL7139_REG_CTRL0, &reg);
++		if (ret)
++			return ret;
++		if (prop == POWER_SUPPLY_PROP_ONLINE)
++			val->intval = !!(reg & HL7139_CTRL0_CHG_EN);
++		else
++			val->intval = (reg & HL7139_CTRL0_CHG_EN) ?
++				POWER_SUPPLY_STATUS_CHARGING :
++				POWER_SUPPLY_STATUS_NOT_CHARGING;
++		return 0;
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = hl7139_read_adc(chip, HL7139_REG_ADC_VIN, HL7139_VIN_LSB_UV);
++		break;
++	case POWER_SUPPLY_PROP_CURRENT_NOW:
++		ret = hl7139_iin_now(chip);
++		break;
++	case POWER_SUPPLY_PROP_TEMP:
++		ret = hl7139_read_adc(chip, HL7139_REG_ADC_TDIE, 625);
++		if (ret < 0)
++			return ret;
++		val->intval = ret / 1000;
++		return 0;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
++		ret = regmap_read(chip->regmap, HL7139_REG_VBAT_REG, &reg);
++		if (ret)
++			return ret;
++		val->intval = HL7139_VBAT_BASE_UV +
++			FIELD_GET(HL7139_VBAT_TH_MASK, reg) * HL7139_VBAT_STEP_UV;
++		return 0;
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
++		ret = regmap_read(chip->regmap, HL7139_REG_IBAT_REG, &reg);
++		if (ret)
++			return ret;
++		val->intval = HL7139_IBAT_BASE_UA +
++			FIELD_GET(HL7139_IBAT_TH_MASK, reg) * HL7139_IBAT_STEP_UA;
++		return 0;
++	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
++		ret = regmap_read(chip->regmap, HL7139_REG_IIN_REG, &reg);
++		if (ret)
++			return ret;
++		val->intval = HL7139_IIN_CP_BASE_UA +
++			FIELD_GET(HL7139_IIN_TH_MASK, reg) * HL7139_IIN_CP_STEP_UA;
++		return 0;
++	case POWER_SUPPLY_PROP_MODEL_NAME:
++		val->strval = "HL7139";
++		return 0;
++	case POWER_SUPPLY_PROP_MANUFACTURER:
++		val->strval = "Halo Microelectronics";
++		return 0;
++	default:
++		return -EINVAL;
++	}
++
++	if (ret < 0)
++		return ret;
++	val->intval = ret;
++	return 0;
++}
++
++static int hl7139_set_prop(struct power_supply *psy,
++			   enum power_supply_property prop,
++			   const union power_supply_propval *val)
++{
++	struct hl7139 *chip = power_supply_get_drvdata(psy);
++	u32 v;
++
++	switch (prop) {
++	case POWER_SUPPLY_PROP_ONLINE:
++		return hl7139_set_charge_enable(chip, !!val->intval);
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
++		v = clamp_t(int, val->intval, HL7139_VBAT_BASE_UV, HL7139_VBAT_MAX_UV);
++		v = (v - HL7139_VBAT_BASE_UV) / HL7139_VBAT_STEP_UV;
++		return regmap_update_bits(chip->regmap, HL7139_REG_VBAT_REG,
++					  HL7139_VBAT_TH_MASK, v);
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
++		v = clamp_t(int, val->intval, HL7139_IBAT_BASE_UA, HL7139_IBAT_MAX_UA);
++		v = (v - HL7139_IBAT_BASE_UA) / HL7139_IBAT_STEP_UA;
++		return regmap_update_bits(chip->regmap, HL7139_REG_IBAT_REG,
++					  HL7139_IBAT_TH_MASK, v);
++	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
++		v = clamp_t(int, val->intval, HL7139_IIN_CP_BASE_UA, HL7139_IIN_CP_MAX_UA);
++		v = (v - HL7139_IIN_CP_BASE_UA) / HL7139_IIN_CP_STEP_UA;
++		return regmap_update_bits(chip->regmap, HL7139_REG_IIN_REG,
++					  HL7139_IIN_TH_MASK, v);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int hl7139_prop_writeable(struct power_supply *psy,
++				 enum power_supply_property prop)
++{
++	switch (prop) {
++	case POWER_SUPPLY_PROP_ONLINE:
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
++	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
++	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
++		return 1;
++	default:
++		return 0;
++	}
++}
++
++static const struct power_supply_desc hl7139_psy_desc = {
++	.name			= "hl7139-charger",
++	.type			= POWER_SUPPLY_TYPE_MAINS,
++	.properties		= hl7139_props,
++	.num_properties		= ARRAY_SIZE(hl7139_props),
++	.get_property		= hl7139_get_prop,
++	.set_property		= hl7139_set_prop,
++	.property_is_writeable	= hl7139_prop_writeable,
++};
++
++static irqreturn_t hl7139_irq(int irq, void *data)
++{
++	struct hl7139 *chip = data;
++	unsigned int a, b;
++
++	if (regmap_read(chip->regmap, HL7139_REG_STATUS_A, &a) ||
++	    regmap_read(chip->regmap, HL7139_REG_STATUS_B, &b))
++		return IRQ_NONE;
++
++	if (a & HL7139_STS_A_VIN_OVP)
++		dev_warn(chip->dev, "VIN OVP\n");
++	if (a & HL7139_STS_A_VBAT_OVP)
++		dev_warn(chip->dev, "VBAT OVP\n");
++	if (b & HL7139_STS_B_IIN_OCP)
++		dev_warn(chip->dev, "IIN OCP\n");
++	if (b & HL7139_STS_B_IBAT_OCP)
++		dev_warn(chip->dev, "IBAT OCP\n");
++	if (b & HL7139_STS_B_CFLY_SHORT)
++		dev_err(chip->dev, "flying-cap short\n");
++	if (b & HL7139_STS_B_THSD)
++		dev_err(chip->dev, "thermal shutdown\n");
++
++	power_supply_changed(chip->psy);
++	return IRQ_HANDLED;
++}
++
++static bool hl7139_volatile_reg(struct device *dev, unsigned int reg)
++{
++	return reg <= HL7139_REG_STATUS_C || reg >= HL7139_REG_ADC_VIN;
++}
++
++static const struct regmap_config hl7139_regmap = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = HL7139_REG_MAX,
++	.volatile_reg = hl7139_volatile_reg,
++	.cache_type = REGCACHE_RBTREE,
++};
++
++static int hl7139_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;
++	struct power_supply_config cfg = {};
++	struct hl7139 *chip;
++	unsigned int id;
++	int ret;
++
++	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
++	if (!chip)
++		return -ENOMEM;
++	chip->dev = dev;
++
++	chip->regmap = devm_regmap_init_i2c(client, &hl7139_regmap);
++	if (IS_ERR(chip->regmap))
++		return PTR_ERR(chip->regmap);
++
++	ret = regmap_read(chip->regmap, HL7139_REG_DEVICE_ID, &id);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to read device id\n");
++	if (FIELD_GET(HL7139_DEV_ID_MASK, id) != HL7139_DEV_ID_HL7139)
++		return dev_err_probe(dev, -ENODEV,
++				     "not an HL7139 (id 0x%02x)\n", id);
++	dev_info(dev, "HL7139 charge pump, rev %lu\n",
++		 FIELD_GET(HL7139_DEV_REV_MASK, id));
++
++	regmap_update_bits(chip->regmap, HL7139_REG_CTRL2,
++			   HL7139_CTRL2_WD_DIS, HL7139_CTRL2_WD_DIS);
++
++	regmap_write(chip->regmap, HL7139_REG_ADC_CTRL1, 0x00);
++	regmap_update_bits(chip->regmap, HL7139_REG_ADC_CTRL0,
++			   HL7139_ADC_READ_EN, HL7139_ADC_READ_EN);
++
++	cfg.drv_data = chip;
++	cfg.fwnode = dev_fwnode(dev);
++	chip->psy = devm_power_supply_register(dev, &hl7139_psy_desc, &cfg);
++	if (IS_ERR(chip->psy))
++		return dev_err_probe(dev, PTR_ERR(chip->psy),
++				     "failed to register power supply\n");
++
++	if (client->irq) {
++		ret = devm_request_threaded_irq(dev, client->irq, NULL,
++						hl7139_irq, IRQF_ONESHOT,
++						dev_name(dev), chip);
++		if (ret)
++			return dev_err_probe(dev, ret, "failed to request irq\n");
++	}
++
++	return 0;
++}
++
++static const struct of_device_id hl7139_of_match[] = {
++	{ .compatible = "halomicro,hl7139" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, hl7139_of_match);
++
++static const struct i2c_device_id hl7139_i2c_id[] = {
++	{ "hl7139" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, hl7139_i2c_id);
++
++static struct i2c_driver hl7139_driver = {
++	.driver = {
++		.name = "hl7139-charger",
++		.of_match_table = hl7139_of_match,
++	},
++	.probe = hl7139_probe,
++	.id_table = hl7139_i2c_id,
++};
++module_i2c_driver(hl7139_driver);
++
++MODULE_DESCRIPTION("Halo Microelectronics HL7139 charge pump driver");
++MODULE_LICENSE("GPL");

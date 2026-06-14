@@ -1,53 +1,35 @@
-From 4f09bcb4dc66a477cd50e768bcfbbf88ac3cbc26 Mon Sep 17 00:00:00 2001
-From: Teguh Sobirin <teguh@sobir.in>
-Date: Wed, 20 Nov 2024 23:13:18 +0700
-Subject: [PATCH] Input: driver for AYN Odin2 Gamepad
-
-There have been improvements from the original Odin 2 Gamepad driver
-Signed-off-by: Teguh Sobirin <teguh@sobir.in>
----
- drivers/input/joystick/Kconfig  |   4 +
- drivers/input/joystick/Makefile |   1 +
- drivers/input/joystick/odin2.c  | 313 ++++++++++++++++++++++++++++++++
- 3 files changed, 318 insertions(+)
- create mode 100644 drivers/input/joystick/odin2.c
-
-diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 7755e5b454d2..031b7428068a 100644
---- a/drivers/input/joystick/Kconfig
-+++ b/drivers/input/joystick/Kconfig
+diff -rupbN linux.orig/drivers/input/joystick/Kconfig linux/drivers/input/joystick/Kconfig
+--- linux.orig/drivers/input/joystick/Kconfig	2024-11-29 14:02:16.839088031 +0000
++++ linux/drivers/input/joystick/Kconfig	2024-11-29 21:41:56.036805416 +0000
 @@ -344,6 +344,10 @@ config JOYSTICK_MAPLE
  	  To compile this as a module choose M here: the module will be called
  	  maplecontrol.
  
-+config JOYSTICK_ODIN2
-+	tristate "AYN Odin2 gamepad"
-+	depends on SERIAL_DEV_BUS
++config JOYSTICK_RETROID
++       tristate "Retroid Pocket gamepad"
++       depends on SERIAL_DEV_BUS
 +
  config JOYSTICK_PSXPAD_SPI
  	tristate "PlayStation 1/2 joypads via SPI interface"
  	depends on SPI
-diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 9976f596a920..ba7d72514c8b 100644
---- a/drivers/input/joystick/Makefile
-+++ b/drivers/input/joystick/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
+diff -rupbN linux.orig/drivers/input/joystick/Makefile linux/drivers/input/joystick/Makefile
+--- linux.orig/drivers/input/joystick/Makefile	2024-11-29 14:02:16.839088031 +0000
++++ linux/drivers/input/joystick/Makefile	2024-11-29 21:41:56.036805416 +0000
+@@ -25,6 +25,7 @@ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydu
  obj-$(CONFIG_JOYSTICK_MAGELLAN)		+= magellan.o
  obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
  obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
-+obj-$(CONFIG_JOYSTICK_ODIN2)		+= odin2.o
++obj-$(CONFIG_JOYSTICK_RETROID)		+= retroid.o
  obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
  obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
  obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
-diff --git a/drivers/input/joystick/odin2.c b/drivers/input/joystick/odin2.c
-new file mode 100644
-index 000000000000..63a32175b441
---- /dev/null
-+++ b/drivers/input/joystick/odin2.c
-@@ -0,0 +1,313 @@
+diff -rupbN linux.orig/drivers/input/joystick/retroid.c linux/drivers/input/joystick/retroid.c
+--- linux.orig/drivers/input/joystick/retroid.c	1970-01-01 00:00:00.000000000 +0000
++++ linux/drivers/input/joystick/retroid.c	2024-12-18 16:08:54
+@@ -0,0 +1,484 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Driver for Ayn Odin 2 Gamepad
++ * Driver for Retroid Pocket Gamepad
 + *
 + * Copyright (C) 2024 Molly Sophia <mollysophia379@gmail.com>
 + * Copyright (C) 2024 BigfootACA <bigfoot@classfun.cn>
@@ -62,13 +44,15 @@ index 000000000000..63a32175b441
 +#include <linux/input.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
++#include <linux/moduleparam.h>
 +#include <linux/of.h>
 +#include <linux/serdev.h>
 +#include <linux/slab.h>
 +#include <uapi/linux/sched/types.h>
 +
-+#define DRIVER_NAME "odin2-gamepad"
++#define DRIVER_NAME "retroid-pocket-gamepad"
 +#define MAX_DATA_LEN 64
++#define INT_SIGN(X) ((X > 0) - (X < 0))
 +
 +#define gamepad_serdev_write_seq(serdev, seq...)                      \
 +	do {                                                              \
@@ -105,6 +89,102 @@ index 000000000000..63a32175b441
 +	struct gpio_desc *reset_gpio;
 +	struct input_dev *dev_input;
 +};
++
++
++static int update_params=0;
++
++static int trigger_left_max=0x610;
++static int trigger_left_deadzone=0x0;
++static int trigger_left_antideadzone=0x0;
++
++static int trigger_right_max=0x610;
++static int trigger_right_deadzone=0x0;
++static int trigger_right_antideadzone=0x0;
++
++static int axis_leftx_min=-0x580;
++static int axis_leftx_center=0x0;
++static int axis_leftx_max=0x580;
++static int axis_leftx_deadzone=0x0;
++static int axis_leftx_antideadzone=0x0;
++
++static int axis_lefty_min=-0x580;
++static int axis_lefty_center=0x0;
++static int axis_lefty_max=0x580;
++static int axis_lefty_deadzone=0x0;
++static int axis_lefty_antideadzone=0x0;
++
++static int axis_leftz_min=-0x580;
++static int axis_leftz_center=0x0;
++static int axis_leftz_max=0x580;
++static int axis_leftz_deadzone=0x0;
++static int axis_leftz_antideadzone=0x0;
++
++static int axis_rightx_min=-0x580;
++static int axis_rightx_center=0x0;
++static int axis_rightx_max=0x580;
++static int axis_rightx_deadzone=0x0;
++static int axis_rightx_antideadzone=0x0;
++
++static int axis_righty_min=-0x580;
++static int axis_righty_center=0x0;
++static int axis_righty_max=0x580;
++static int axis_righty_deadzone=0x0;
++static int axis_righty_antideadzone=0x0;
++
++static int axis_rightz_min=-0x580;
++static int axis_rightz_center=0x0;
++static int axis_rightz_max=0x580;
++static int axis_rightz_deadzone=0x0;
++static int axis_rightz_antideadzone=0x0;
++
++module_param(update_params,int,0660);
++
++module_param(trigger_left_max,int,0660);
++module_param(trigger_left_deadzone,int,0660);
++module_param(trigger_left_antideadzone,int,0660);
++
++
++module_param(trigger_right_max,int,0660);
++module_param(trigger_right_deadzone,int,0660);
++module_param(trigger_right_antideadzone,int,0660);
++
++module_param(axis_leftx_min,int,0660);
++module_param(axis_leftx_center,int,0660);
++module_param(axis_leftx_max,int,0660);
++module_param(axis_leftx_deadzone,int,0660);
++module_param(axis_leftx_antideadzone,int,0660);
++
++
++module_param(axis_lefty_min,int,0660);
++module_param(axis_lefty_center,int,0660);
++module_param(axis_lefty_max,int,0660);
++module_param(axis_lefty_deadzone,int,0660);
++module_param(axis_lefty_antideadzone,int,0660);
++
++module_param(axis_leftz_min,int,0660);
++module_param(axis_leftz_center,int,0660);
++module_param(axis_leftz_max,int,0660);
++module_param(axis_leftz_deadzone,int,0660);
++module_param(axis_leftz_antideadzone,int,0660);
++
++module_param(axis_rightx_min,int,0660);
++module_param(axis_rightx_center,int,0660);
++module_param(axis_rightx_max,int,0660);
++module_param(axis_rightx_deadzone,int,0660);
++module_param(axis_rightx_antideadzone,int,0660);
++
++module_param(axis_righty_min,int,0660);
++module_param(axis_righty_center,int,0660);
++module_param(axis_righty_max,int,0660);
++module_param(axis_righty_deadzone,int,0660);
++module_param(axis_righty_antideadzone,int,0660);
++
++module_param(axis_rightz_min,int,0660);
++module_param(axis_rightz_center,int,0660);
++module_param(axis_rightz_max,int,0660);
++module_param(axis_rightz_deadzone,int,0660);
++module_param(axis_rightz_antideadzone,int,0660);
++
 +
 +static u8 gamepad_data_checksum(const u8 *data, size_t count)
 +{
@@ -152,24 +232,75 @@ index 000000000000..63a32175b441
 +	if (!indev)
 +		return;
 +
++	if (update_params)
++	{
++		input_set_abs_params(indev, ABS_X,
++			INT_SIGN(axis_leftx_min) * ( abs(axis_leftx_min) - axis_leftx_antideadzone ),
++			INT_SIGN(axis_leftx_max) * ( abs(axis_leftx_max) - axis_leftx_antideadzone ),
++			0, 0);
++		input_set_abs_params(indev, ABS_Y,
++			INT_SIGN(axis_lefty_min) * ( abs(axis_lefty_min) - axis_lefty_antideadzone ),
++			INT_SIGN(axis_lefty_max) * ( abs(axis_lefty_max) - axis_lefty_antideadzone ),
++			 0, 0);
++		input_set_abs_params(indev, ABS_Z,
++			INT_SIGN(axis_leftz_min) * ( abs(axis_leftz_min) - axis_leftz_antideadzone ),
++			INT_SIGN(axis_leftz_max) * ( abs(axis_leftz_max) - axis_leftz_antideadzone ),
++			 0, 0);
++
++		input_set_abs_params(indev, ABS_RX,
++			INT_SIGN(axis_rightx_min) * ( abs(axis_rightx_min) - axis_rightx_antideadzone ),
++			INT_SIGN(axis_rightx_max) * ( abs(axis_rightx_max) - axis_rightx_antideadzone ),
++			0, 0);
++		input_set_abs_params(indev, ABS_RY,
++			INT_SIGN(axis_righty_min) * ( abs(axis_righty_min) - axis_righty_antideadzone ),
++			INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
++			 0, 0);
++		input_set_abs_params(indev, ABS_RZ,
++			INT_SIGN(axis_rightz_min) * ( abs(axis_rightz_min) - axis_rightz_antideadzone ),
++			INT_SIGN(axis_rightz_max) * ( abs(axis_rightz_max) - axis_rightz_antideadzone ),
++			 0, 0);
++
++		input_set_abs_params(indev, ABS_HAT2X, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++		input_set_abs_params(indev, ABS_HAT2Y, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++		update_params = 0;
++	}
++
++
 +	bitmap_xor(&changes, &current_states, &prev_states, ARRAY_SIZE(keymap));
 +
 +	for_each_set_bit(i, &changes, ARRAY_SIZE(keymap)) {
 +		input_report_key(indev, keymap[i], (current_states & BIT(i)));
 +	}
 +
-+	input_report_abs(indev, ABS_Z,
-+			 0x755 - (data->data[2] | (data->data[3] << 8)));
-+	input_report_abs(indev, ABS_RZ,
-+			 0x755 - (data->data[4] | (data->data[5] << 8)));
++	int16_t value;
++
++	value = (int16_t)(trigger_left_max - (data->data[2] | (data->data[3] << 8)));
++	input_report_abs(indev, ABS_HAT2X,
++			 ( value < trigger_left_deadzone )? 0 : value - trigger_left_antideadzone);
++
++	value = (int16_t)(trigger_right_max - (data->data[4] | (data->data[5] << 8)));
++	input_report_abs(indev, ABS_HAT2Y,
++			 ( value < trigger_right_deadzone )? 0 : value - trigger_right_antideadzone);
++
++	value = -(int16_t)(data->data[6] | (data->data[7] << 8));
++	value += axis_leftx_center;
 +	input_report_abs(indev, ABS_X,
-+			 -(int16_t)(data->data[6] | (data->data[7] << 8)));
++			 ( abs(value) < axis_leftx_deadzone )? 0 : INT_SIGN(value) * ( abs(value) - axis_leftx_antideadzone ));
++
++	value = -(int16_t)(data->data[8] | (data->data[9] << 8));
++	value += axis_lefty_center;
 +	input_report_abs(indev, ABS_Y,
-+			 -(int16_t)(data->data[8] | (data->data[9] << 8)));
++			 ( abs(value) < axis_lefty_deadzone )? 0 : INT_SIGN(value) * ( abs(value) - axis_lefty_antideadzone ));
++
++	value = -(int16_t)(data->data[10] | (data->data[11] << 8));
++	value += axis_rightx_center;
 +	input_report_abs(indev, ABS_RX,
-+			 -(int16_t)(data->data[10] | (data->data[11] << 8)));
++			 ( abs(value) < axis_rightx_deadzone )? 0 : INT_SIGN(value) * ( abs(value) - axis_rightx_antideadzone ));
++
++	value = -(int16_t)(data->data[12] | (data->data[13] << 8));
++	value += axis_righty_center;
 +	input_report_abs(indev, ABS_RY,
-+			 -(int16_t)(data->data[12] | (data->data[13] << 8)));
++			 ( abs(value) < axis_righty_deadzone )? 0 : INT_SIGN(value) * ( abs(value) - axis_righty_antideadzone ));
 +
 +	input_sync(indev);
 +	prev_states = keys;
@@ -203,7 +334,7 @@ index 000000000000..63a32175b441
 +
 +	checksum = gamepad_data_checksum(data, count);
 +	if (checksum != *(data + count - 1)) {
-+		dev_warn_ratelimited(dev, "packet checksum failed");
++		//dev_warn_ratelimited(dev, "packet checksum failed");
 +		return count;
 +	}
 +
@@ -297,10 +428,10 @@ index 000000000000..63a32175b441
 +		return dev_err_probe(dev, -ENOMEM, "Not enough memory for input device\n");
 +
 +	gamepad_dev->dev_input->phys = DRIVER_NAME"/input0";
-+	
++
 +	ret = device_property_read_string(dev, "gamepad-name", &gamepad_dev->dev_input->name);
 +	if (ret) {
-+		gamepad_dev->dev_input->name = "Ayn Odin2 Gamepad";
++		gamepad_dev->dev_input->name = "Retroid Pocket Gamepad";
 +	}
 +
 +	device_property_read_u32(dev, "gamepad-bus", &gamepad_bus);
@@ -318,12 +449,35 @@ index 000000000000..63a32175b441
 +		input_set_capability(gamepad_dev->dev_input, EV_KEY, keymap[i]);
 +
 +	__set_bit(EV_ABS, gamepad_dev->dev_input->evbit);
-+	for (int i = ABS_X; i <= ABS_RZ; i++)
-+		input_set_abs_params(gamepad_dev->dev_input, i, -0x580, 0x580,
-+				     0, 0);
 +
-+	input_set_abs_params(gamepad_dev->dev_input, ABS_Z, 0, 1830, 0, 30);
-+	input_set_abs_params(gamepad_dev->dev_input, ABS_RZ, 0, 1830, 0, 30);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_X,
++		INT_SIGN(axis_leftx_min) * ( abs(axis_leftx_min) - axis_leftx_antideadzone ),
++		INT_SIGN(axis_leftx_max) * ( abs(axis_leftx_max) - axis_leftx_antideadzone ),
++		0, 0);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_Y,
++		INT_SIGN(axis_lefty_min) * ( abs(axis_lefty_min) - axis_lefty_antideadzone ),
++		INT_SIGN(axis_lefty_max) * ( abs(axis_lefty_max) - axis_lefty_antideadzone ),
++		0, 0);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_Z,
++		INT_SIGN(axis_leftz_min) * ( abs(axis_leftz_min) - axis_leftz_antideadzone ),
++		INT_SIGN(axis_leftz_max) * ( abs(axis_leftz_max) - axis_leftz_antideadzone ),
++		0, 0);
++
++	input_set_abs_params(gamepad_dev->dev_input, ABS_RX,
++		INT_SIGN(axis_rightx_min) * ( abs(axis_rightx_min) - axis_rightx_antideadzone ),
++		INT_SIGN(axis_rightx_max) * ( abs(axis_rightx_max) - axis_rightx_antideadzone ),
++		0, 0);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_RY,
++		INT_SIGN(axis_righty_min) * ( abs(axis_righty_min) - axis_righty_antideadzone ),
++		INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
++		0, 0);
++	input_set_abs_params(gamepad_dev->dev_input, ABS_RZ,
++		INT_SIGN(axis_rightz_min) * ( abs(axis_rightz_min) - axis_rightz_antideadzone ),
++		INT_SIGN(axis_rightz_max) * ( abs(axis_rightz_max) - axis_rightz_antideadzone ),
++		0, 0);
++
++		input_set_abs_params(gamepad_dev->dev_input, ABS_HAT2X, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++		input_set_abs_params(gamepad_dev->dev_input, ABS_HAT2Y, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
 +
 +	ret = input_register_device(gamepad_dev->dev_input);
 +	if (ret)
@@ -337,7 +491,7 @@ index 000000000000..63a32175b441
 +}
 +
 +static const struct of_device_id gamepad_mcu_uart_of_match[] = {
-+	{ .compatible = "ayn,odin2-gamepad" },
++	{ .compatible = "retroid,retroid-pocket-gamepad" },
 +	{}
 +};
 +MODULE_DEVICE_TABLE(of, gamepad_mcu_uart_of_match);
@@ -353,11 +507,8 @@ index 000000000000..63a32175b441
 +module_serdev_device_driver(gamepad_mcu_uart_driver);
 +
 +MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Gamepad driver for Ayn Odin2");
++MODULE_DESCRIPTION("Gamepad driver for Retroid Pocket");
 +MODULE_AUTHOR("Molly Sophia <mollysophia379@gmail.com>");
 +MODULE_AUTHOR("BigfootACA <bigfoot@classfun.cn>");
 +MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
 +MODULE_ALIAS("platform:" DRIVER_NAME);
--- 
-2.34.1
-
