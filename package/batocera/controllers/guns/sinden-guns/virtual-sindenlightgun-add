@@ -86,7 +86,7 @@ then
             --map key:down             btn:6           \
             --map key:left             btn:7           \
             --map key:right            btn:8           \
-            --output name="Sinden lightgun" >/dev/null 2>"${LOGFILE}" &
+            --output name="Sinden lightgun" </dev/null >/dev/null 2>"${LOGFILE}" &
     echo $! > "${PIDFILE}"
 
     # ttyACM
@@ -189,7 +189,7 @@ then
 	# hack: before starting the sinden program wait again one second. if devices are not ready, the program don't wait, it just exists
 	sleep 1 # just in case because it is far from stable with the sinden program
 
-	PATH=/bin:/sbin:/usr/bin:/usr/sbin nohup mono-service -l:"/var/run/sinden/p${PARENTHASH}/lockfile" -d:"/var/run/sinden/p${PARENTHASH}" --no-daemon "./LightgunMono-${PARENTHASH}.exe" > "${LOGFILE2}" &
+	PATH=/bin:/sbin:/usr/bin:/usr/sbin nohup mono-service -l:"/var/run/sinden/p${PARENTHASH}/lockfile" -d:"/var/run/sinden/p${PARENTHASH}" --no-daemon "./LightgunMono-${PARENTHASH}.exe" </dev/null > "${LOGFILE2}" 2>&1 &
     fi
 else
     unlockAndExit 1
