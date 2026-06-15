@@ -31,7 +31,7 @@
 - CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
 - Groovy MAME to 0.288
-- Ledspicer to 0.7.4.1
+- Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Hatari to April 21st, 2026 build
