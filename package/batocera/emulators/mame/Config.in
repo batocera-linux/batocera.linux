@@ -12,6 +12,7 @@ config BR2_PACKAGE_MAME
 	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_SQLITE
 	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_ZSTD
 	help
 	  MAME emulator standalone package
 

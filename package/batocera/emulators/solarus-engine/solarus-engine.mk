@@ -3,8 +3,8 @@
 # solarus-engine
 #
 ################################################################################
-# Version: Commits on Jan 18, 2025
-SOLARUS_ENGINE_VERSION = bbecaf31ada06357d4c18726b572fe4b4ebccf56
+# Version: Commits on April 6, 2026 (2.0.4)
+SOLARUS_ENGINE_VERSION = b942f8ce5c0562610a93079dcacf53a51fa88540
 SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
 SOLARUS_ENGINE_SITE_METHOD=git
 SOLARUS_ENGINE_EMULATOR_INFO = solarus.emulator.yml
@@ -33,6 +33,13 @@ SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_BASE_WRITE_DIR=/userdata/saves
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_WRITE_DIR=solarus
 
 SOLARUS_ENGINE_CONF_OPTS += -DSOLARUS_USE_LUAJIT=ON
+
+define SOLARUS_ENGINE_INSTALL_TARGET_CMDS
+    $(INSTALL) -D $(@D)/cli/solarus-run $(TARGET_DIR)/usr/bin/
+    cp -af $(@D)/libsolarus.so* $(TARGET_DIR)/usr/lib/
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	cp -f $(SOLARUS_ENGINE_PKGDIR)/solarus.keys $(TARGET_DIR)/usr/share/evmapy/
+endef
 
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))

@@ -1,0 +1,1067 @@
+input: touchscreen: add Himax HX83112A SPI driver
+
+Add a touchscreen driver for the Himax HX83112A controller connected
+over SPI. Based on the mainline himax_hx83112b I2C driver by Job
+Noorman.
+
+Sources:
+  - Upstream HX83112B I2C driver: https://lwn.net/Articles/910877/
+  - Himax example driver https://github.com/HimaxSoftware/HX83112_Android_Driver
+  - Android paritions: himax_mmi_ts.ko kallsyms, ftrace SPI traces from android
+
+---
+ drivers/input/touchscreen/Kconfig          |  12 +
+ drivers/input/touchscreen/Makefile         |   1 +
+ drivers/input/touchscreen/himax_hx83112a.c | 672 ++++++++++++++++++++
+ 3 files changed, 685 insertions(+)
+ create mode 100644 drivers/input/touchscreen/himax_hx83112a.c
+
+--- a/drivers/input/touchscreen/Kconfig
++++ b/drivers/input/touchscreen/Kconfig
+@@ -1425,3 +1425,17 @@ config TOUCHSCREEN_HIMAX_HX83112B
+ 	  module will be called himax_hx83112b.
+
++config TOUCHSCREEN_HIMAX_HX83112A
++	tristate "Himax HX83112A touchscreen driver (SPI)"
++	depends on SPI_MASTER
++	select FW_LOADER
++	help
++	  Say Y here to enable support for Himax HX83112A touchscreens
++	  connected over SPI. This is the "0flash" variant that requires
++	  firmware upload (Himax_firmware.bin) on every boot.
++
++	  If unsure, say N.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called himax_hx83112a.
++
+ endif
+--- a/drivers/input/touchscreen/Makefile
++++ b/drivers/input/touchscreen/Makefile
+@@ -121,2 +121,3 @@
+ obj-$(CONFIG_TOUCHSCREEN_ZINITIX)	+= zinitix.o
+ obj-$(CONFIG_TOUCHSCREEN_HIMAX_HX83112B)	+= himax_hx83112b.o
++obj-$(CONFIG_TOUCHSCREEN_HIMAX_HX83112A)	+= himax_hx83112a.o
+--- /dev/null
++++ b/drivers/input/touchscreen/himax_hx83112a.c
+@@ -0,0 +1,1020 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Driver for Himax HX83112A touchscreens (SPI, 0flash variant)
++ *
++ *
++ * Based on himax_hx83112b.c:
++ *   Copyright (C) 2022 Job Noorman <job@noorman.info>
++ *
++ * Firmware upload sequence adapted from GPL Motorola himax_0flash_mmi driver:
++ *   Copyright (C) 2017 Himax Corporation.
++ *   MotorolaMobilityLLC/motorola-kernel-modules
++ */
++
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/firmware.h>
++#include <linux/gpio/consumer.h>
++#include <linux/input.h>
++#include <linux/input/mt.h>
++#include <linux/input/touchscreen.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/spi/spi.h>
++#include <linux/unaligned.h>
++
++#define HIMAX_FW_NAME			"Himax_firmware.bin"
++
++#define HIMAX_MAX_POINTS		5
++#define HIMAX_SPI_MAX_XFER		4088
++
++#define HIMAX_SPI_CMD_WRITE		0xF2
++#define HIMAX_SPI_CMD_READ		0xF3
++
++#define HIMAX_AHB_ADDR_BYTE_0		0x00
++#define HIMAX_AHB_ADDR_RDATA_BYTE_0	0x08
++#define HIMAX_AHB_ADDR_ACCESS_DIR	0x0c
++#define HIMAX_AHB_ADDR_INCR4		0x0d
++#define HIMAX_AHB_ADDR_IRQ_CTRL	0x11
++#define HIMAX_AHB_ADDR_CONTI		0x13
++#define HIMAX_AHB_ADDR_EVENT_STACK	0x30
++#define HIMAX_AHB_ADDR_PSW_LB		0x31
++#define HIMAX_AHB_ADDR_PSW_UB		0x32
++
++#define HIMAX_AHB_CMD_DIR_READ		0x00
++#define HIMAX_AHB_CMD_INCR4		0x10
++#define HIMAX_AHB_CMD_CONTI		0x31
++#define HIMAX_AHB_CMD_PSW_LB		0x27
++#define HIMAX_AHB_CMD_PSW_UB		0x95
++
++#define HIMAX_REG_ICID			0x900000d0
++#define HIMAX_REG_CS_CENTRAL_STATE	0x900000a8
++#define HIMAX_REG_TCON_RST		0x80020020
++#define HIMAX_REG_ADC_RST		0x80020094
++#define HIMAX_REG_SYSTEM_RESET		0x90000018
++#define HIMAX_REG_CTRL_FW_ISR		0x9000005c
++#define HIMAX_REG_SAFE_MODE_PW		0x90000098
++#define HIMAX_REG_FLAG_RESET_EVENT	0x900000e4
++#define HIMAX_REG_SET_FRAME		0x10007294
++#define HIMAX_REG_FLASH_RELOAD		0x10007f00
++#define HIMAX_REG_2ND_FLASH_RELOAD	0x100072c0
++#define HIMAX_REG_FW_DBG		0x10007f04
++#define HIMAX_REG_DDI_CTRL		0x800204b4
++#define HIMAX_REG_FW_VER		0x10007004
++
++#define HIMAX_REG_CRC_STATUS		0x80050000
++#define HIMAX_REG_CRC_RESULT		0x80050018
++#define HIMAX_REG_CRC_ADDR_FROM	0x80050020
++#define HIMAX_REG_CRC_CMD_BEAT		0x80050028
++
++#define HIMAX_DATA_SYSTEM_RESET		0x00000055
++#define HIMAX_DATA_FW_STOP		0x000000a5
++#define HIMAX_DATA_SAFE_MODE_ACTIVE	0x00000053
++#define HIMAX_DATA_SAFE_MODE_RESET	0x00000000
++#define HIMAX_DATA_CS_SAFE_MODE		0x0c
++#define HIMAX_DATA_FLASH_RELOAD_DIS	0x00009AA9
++
++#define HIMAX_REG_PSL			0x900000a0
++
++#define HIMAX_ESD_ZERO_EVENT_THRESHOLD	6
++
++#define HIMAX_FW_64K			0x10000
++#define HIMAX_FW_1K			0x400
++#define HIMAX_FW_PART_TABLE_OFF		12
++#define HIMAX_FW_PART_ENTRY_SZ		16
++
++#define HIMAX_ICID_HX83112A		0x83112a
++#define HIMAX_ICID_HX83112B		0x83112b
++
++#define HIMAX_INVALID_COORD		0xffff
++
++struct himax_event_point {
++	__be16 x;
++	__be16 y;
++} __packed;
++
++struct himax_event {
++	struct himax_event_point points[HIMAX_MAX_POINTS];
++	u8 majors[HIMAX_MAX_POINTS];
++	u8 pad[3];
++	u8 num_points;
++	u8 state_info[2];
++	u8 checksum;
++} __packed;
++
++static_assert(sizeof(struct himax_event) == 32);
++
++struct himax_fw_part {
++	u32 sram_addr;
++	u32 write_size;
++	u32 fw_offset;
++};
++
++#define HIMAX_IDLE_REENABLE_MS		30000
++
++struct himax_ts_data {
++	struct spi_device *spi;
++	struct gpio_desc *gpiod_rst;
++	struct input_dev *input_dev;
++	struct touchscreen_properties props;
++	struct mutex spi_lock;
++	struct work_struct esd_work;
++	struct delayed_work idle_work;
++	unsigned int zero_event_count;
++	bool reset_activate;
++	bool idle_enabled;
++};
++
++static int himax_firmware_upload(struct himax_ts_data *ts);
++
++static int himax_spi_read(struct himax_ts_data *ts, u8 reg,
++			   void *data, size_t length)
++{
++	u8 cmd[3] = { HIMAX_SPI_CMD_READ, reg, 0x00 };
++	struct spi_transfer xfer[2] = {
++		{ .tx_buf = cmd, .len = sizeof(cmd) },
++		{ .rx_buf = data, .len = length },
++	};
++
++	guard(mutex)(&ts->spi_lock);
++	return spi_sync_transfer(ts->spi, xfer, ARRAY_SIZE(xfer));
++}
++
++static int himax_spi_write_reg(struct himax_ts_data *ts, u8 reg, u32 val)
++{
++	u8 buf[6];
++	__le32 le_val = cpu_to_le32(val);
++
++	buf[0] = HIMAX_SPI_CMD_WRITE;
++	buf[1] = reg;
++	memcpy(&buf[2], &le_val, sizeof(le_val));
++
++	guard(mutex)(&ts->spi_lock);
++	return spi_write(ts->spi, buf, sizeof(buf));
++}
++
++static int himax_spi_write_byte(struct himax_ts_data *ts, u8 reg, u8 val)
++{
++	u8 buf[3] = { HIMAX_SPI_CMD_WRITE, reg, val };
++
++	guard(mutex)(&ts->spi_lock);
++	return spi_write(ts->spi, buf, sizeof(buf));
++}
++
++static int himax_bus_enable_burst(struct himax_ts_data *ts, bool auto_add)
++{
++	int error;
++
++	error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_CONTI,
++				     HIMAX_AHB_CMD_CONTI);
++	if (error)
++		return error;
++
++	return himax_spi_write_byte(ts, HIMAX_AHB_ADDR_INCR4,
++				    HIMAX_AHB_CMD_INCR4 | (auto_add ? 1 : 0));
++}
++
++static int himax_ahb_read(struct himax_ts_data *ts, u32 address,
++			   void *dst, size_t length)
++{
++	int error;
++
++	error = himax_bus_enable_burst(ts, length > 4);
++	if (error)
++		return error;
++
++	error = himax_spi_write_reg(ts, HIMAX_AHB_ADDR_BYTE_0, address);
++	if (error)
++		return error;
++
++	error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_ACCESS_DIR,
++				     HIMAX_AHB_CMD_DIR_READ);
++	if (error)
++		return error;
++
++	error = himax_spi_read(ts, HIMAX_AHB_ADDR_RDATA_BYTE_0, dst, length);
++
++	if (length > 4)
++		himax_bus_enable_burst(ts, false);
++
++	return error;
++}
++
++static int himax_ahb_write(struct himax_ts_data *ts, u32 address,
++			    const void *src, size_t length)
++{
++	int error;
++	u32 max_xfer = HIMAX_SPI_MAX_XFER;
++	u32 offset = 0;
++	u8 *buf;
++	struct spi_transfer xfer;
++	__le32 le_addr;
++
++	himax_bus_enable_burst(ts, length > 4);
++
++	while (offset < length) {
++		u32 chunk = min_t(u32, length - offset, max_xfer);
++		u32 addr = address + offset;
++
++		buf = kmalloc(2 + 4 + chunk, GFP_KERNEL);
++		if (!buf)
++			return -ENOMEM;
++
++		buf[0] = HIMAX_SPI_CMD_WRITE;
++		buf[1] = HIMAX_AHB_ADDR_BYTE_0;
++		le_addr = cpu_to_le32(addr);
++		memcpy(&buf[2], &le_addr, 4);
++		memcpy(&buf[6], (const u8 *)src + offset, chunk);
++
++		memset(&xfer, 0, sizeof(xfer));
++		xfer.tx_buf = buf;
++		xfer.len = 2 + 4 + chunk;
++
++		mutex_lock(&ts->spi_lock);
++		error = spi_sync_transfer(ts->spi, &xfer, 1);
++		mutex_unlock(&ts->spi_lock);
++
++		kfree(buf);
++		if (error)
++			return error;
++
++		offset += chunk;
++		udelay(100);
++	}
++
++	return 0;
++}
++
++static int himax_ahb_write_u32(struct himax_ts_data *ts, u32 address, u32 val)
++{
++	__le32 le_val = cpu_to_le32(val);
++
++	return himax_ahb_write(ts, address, &le_val, sizeof(le_val));
++}
++
++static void himax_hw_reset(struct himax_ts_data *ts)
++{
++	gpiod_set_value_cansleep(ts->gpiod_rst, 1);
++	msleep(20);
++	gpiod_set_value_cansleep(ts->gpiod_rst, 0);
++	msleep(50);
++}
++
++static int himax_system_reset(struct himax_ts_data *ts)
++{
++	return himax_ahb_write_u32(ts, HIMAX_REG_SYSTEM_RESET,
++				   HIMAX_DATA_SYSTEM_RESET);
++}
++
++static int himax_sense_off(struct himax_ts_data *ts)
++{
++	u8 tmp_data[4];
++	int cnt = 0;
++	int error;
++
++	for (cnt = 0; cnt < 10; cnt++) {
++		error = himax_ahb_write_u32(ts, HIMAX_REG_CTRL_FW_ISR,
++					    HIMAX_DATA_FW_STOP);
++		if (error)
++			return error;
++
++		usleep_range(10000, 11000);
++
++		error = himax_ahb_read(ts, HIMAX_REG_CS_CENTRAL_STATE,
++				       tmp_data, 4);
++		if (error)
++			return error;
++
++		if (tmp_data[0] != 0x05)
++			break;
++	}
++
++	for (cnt = 0; cnt < 15; cnt++) {
++		error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_PSW_LB,
++					     HIMAX_AHB_CMD_PSW_LB);
++		if (error)
++			return error;
++
++		error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_PSW_UB,
++					     HIMAX_AHB_CMD_PSW_UB);
++		if (error)
++			return error;
++
++		error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_PSW_LB, 0x00);
++		if (error)
++			return error;
++
++		error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_PSW_LB,
++					     HIMAX_AHB_CMD_PSW_LB);
++		if (error)
++			return error;
++
++		error = himax_spi_write_byte(ts, HIMAX_AHB_ADDR_PSW_UB,
++					     HIMAX_AHB_CMD_PSW_UB);
++		if (error)
++			return error;
++
++		error = himax_ahb_read(ts, HIMAX_REG_CS_CENTRAL_STATE,
++				       tmp_data, 4);
++		if (error)
++			return error;
++
++		if (tmp_data[0] == HIMAX_DATA_CS_SAFE_MODE) {
++			himax_ahb_write_u32(ts, HIMAX_REG_TCON_RST, 0x00);
++			usleep_range(1000, 1100);
++			himax_ahb_write_u32(ts, HIMAX_REG_TCON_RST, 0x01);
++
++			himax_ahb_write_u32(ts, HIMAX_REG_ADC_RST, 0x00);
++			usleep_range(1000, 1100);
++			himax_ahb_write_u32(ts, HIMAX_REG_ADC_RST, 0x01);
++			return 0;
++		}
++
++		himax_hw_reset(ts);
++	}
++
++	dev_err(&ts->spi->dev, "Failed to enter safe mode\n");
++	return -ETIMEDOUT;
++}
++
++static int himax_sense_on(struct himax_ts_data *ts)
++{
++	u8 tmp[4];
++
++	himax_spi_read(ts, HIMAX_AHB_ADDR_RDATA_BYTE_0, tmp, 4);
++	himax_bus_enable_burst(ts, false);
++	himax_ahb_write_u32(ts, HIMAX_REG_CTRL_FW_ISR, 0x00);
++	usleep_range(10000, 11000);
++	himax_hw_reset(ts);
++
++	return 0;
++}
++
++static u32 himax_sw_crc32c(const u8 *data, u32 len)
++{
++	u32 crc = 0xFFFFFFFF;
++	u32 polynomial = 0x82F63B78;
++	u32 i, j;
++
++	for (i = 0; i < len / 4; i++) {
++		u32 word = get_unaligned_le32(&data[i * 4]);
++		crc ^= word;
++		for (j = 0; j < 32; j++) {
++			if (crc & 1)
++				crc = (crc >> 1) ^ polynomial;
++			else
++				crc >>= 1;
++		}
++	}
++
++	return crc;
++}
++
++static int himax_hw_crc(struct himax_ts_data *ts, u32 sram_addr,
++			u32 length, u32 *result)
++{
++	u8 tmp_data[4];
++	__le32 le_addr = cpu_to_le32(sram_addr);
++	int cnt;
++	int error;
++
++	error = himax_ahb_write(ts, HIMAX_REG_CRC_ADDR_FROM,
++				&le_addr, sizeof(le_addr));
++	if (error)
++		return error;
++
++	tmp_data[0] = (length / 4) & 0xff;
++	tmp_data[1] = ((length / 4) >> 8) & 0xff;
++	tmp_data[2] = 0x99;
++	tmp_data[3] = 0x00;
++	error = himax_ahb_write(ts, HIMAX_REG_CRC_CMD_BEAT, tmp_data, 4);
++	if (error)
++		return error;
++
++	for (cnt = 0; cnt < 100; cnt++) {
++		error = himax_ahb_read(ts, HIMAX_REG_CRC_STATUS, tmp_data, 4);
++		if (error)
++			return error;
++
++		if ((tmp_data[0] & 0x01) == 0) {
++			error = himax_ahb_read(ts, HIMAX_REG_CRC_RESULT,
++					       tmp_data, 4);
++			if (error)
++				return error;
++
++			*result = get_unaligned_le32(tmp_data);
++			return 0;
++		}
++
++		usleep_range(1000, 1100);
++	}
++
++	dev_err(&ts->spi->dev, "CRC timed out\n");
++	return -ETIMEDOUT;
++}
++
++static int himax_write_sram_crc(struct himax_ts_data *ts,
++				const struct firmware *fw,
++				u32 sram_addr, u32 fw_offset, u32 length)
++{
++	int retry;
++	int error;
++	u32 crc_result;
++
++	for (retry = 0; retry < 3; retry++) {
++		error = himax_ahb_write(ts, sram_addr,
++					fw->data + fw_offset, length);
++		if (error)
++			return error;
++
++		error = himax_hw_crc(ts, sram_addr, length, &crc_result);
++		if (error)
++			return error;
++
++		if (crc_result == 0)
++			return 0;
++
++		dev_warn(&ts->spi->dev,
++			 "CRC fail at 0x%08x (retry %d)\n", sram_addr, retry);
++	}
++
++	return -EILSEQ;
++}
++
++static int himax_load_firmware(struct himax_ts_data *ts,
++			       const struct firmware *fw)
++{
++	struct device *dev = &ts->spi->dev;
++	int part_num, i;
++	u32 base_off;
++	struct himax_fw_part *parts;
++	u8 *cfg_buf = NULL;
++	u32 cfg_base = 0xFFFFFFFF, cfg_max = 0;
++	int cfg_max_idx = 0;
++	u32 cfg_sz;
++	int error;
++
++	if (fw->size < HIMAX_FW_64K + 16) {
++		dev_err(dev, "Firmware too small: %zu bytes\n", fw->size);
++		return -EINVAL;
++	}
++
++	if (fw->data[0] == 0 && fw->data[1] == 0 && fw->data[2] == 0 &&
++	    fw->data[3] == 0 && fw->data[4] == 0 && fw->data[5] == 0 &&
++	    fw->data[6] == 0 && fw->data[7] == 0 && fw->data[0x0e] == 0x87)
++		base_off = HIMAX_FW_64K + HIMAX_FW_1K;
++	else
++		base_off = HIMAX_FW_64K;
++
++	if (base_off + HIMAX_FW_PART_TABLE_OFF >= fw->size) {
++		dev_err(dev, "Firmware truncated at partition table\n");
++		return -EINVAL;
++	}
++
++	part_num = fw->data[base_off + HIMAX_FW_PART_TABLE_OFF];
++	if (part_num <= 0 || part_num > 32) {
++		dev_err(dev, "Invalid partition count: %d\n", part_num);
++		return -EINVAL;
++	}
++
++	if (base_off + (u32)part_num * HIMAX_FW_PART_ENTRY_SZ > fw->size) {
++		dev_err(dev, "Partition table overflows firmware\n");
++		return -EINVAL;
++	}
++
++	dev_info(dev, "Firmware partitions: %d\n", part_num);
++
++	parts = kcalloc(part_num, sizeof(*parts), GFP_KERNEL);
++	if (!parts)
++		return -ENOMEM;
++
++	for (i = 0; i < part_num; i++) {
++		const u8 *entry = &fw->data[base_off + i * HIMAX_FW_PART_ENTRY_SZ];
++
++		parts[i].sram_addr = get_unaligned_le32(&entry[0]);
++		parts[i].write_size = get_unaligned_le32(&entry[4]);
++		parts[i].fw_offset = get_unaligned_le32(&entry[8]);
++	}
++
++	if (parts[0].fw_offset + parts[0].write_size > fw->size) {
++		dev_err(dev, "Main FW partition overflows firmware\n");
++		error = -EINVAL;
++		goto out_free;
++	}
++
++	error = himax_write_sram_crc(ts, fw, parts[0].sram_addr,
++				     parts[0].fw_offset, parts[0].write_size);
++	if (error) {
++		dev_err(dev, "Main FW SRAM write failed\n");
++		goto out_free;
++	}
++
++	if (part_num < 2)
++		goto out_free;
++
++	for (i = 1; i < part_num; i++) {
++		if (parts[i].sram_addr < cfg_base)
++			cfg_base = parts[i].sram_addr;
++		if (parts[i].sram_addr > cfg_max) {
++			cfg_max = parts[i].sram_addr;
++			cfg_max_idx = i;
++		}
++	}
++
++	cfg_sz = (cfg_max - cfg_base) + parts[cfg_max_idx].write_size;
++	if (cfg_sz % 16)
++		cfg_sz += 16 - (cfg_sz % 16);
++
++	cfg_buf = kzalloc(cfg_sz, GFP_KERNEL);
++	if (!cfg_buf) {
++		error = -ENOMEM;
++		goto out_free;
++	}
++
++	for (i = 1; i < part_num; i++) {
++		u32 off = parts[i].sram_addr - cfg_base;
++
++		if (parts[i].fw_offset + parts[i].write_size > fw->size) {
++			dev_err(dev, "Part %d overflows firmware\n", i);
++			error = -EINVAL;
++			goto out_free;
++		}
++		memcpy(&cfg_buf[off], &fw->data[parts[i].fw_offset],
++		       parts[i].write_size);
++	}
++
++	/* Config CRC: compare HW result against SW-computed CRC32C */
++	{
++		u32 cfg_sw_crc = himax_sw_crc32c(cfg_buf, cfg_sz);
++
++		for (i = 0; i < 3; i++) {
++			u32 cfg_hw_crc;
++
++			error = himax_ahb_write(ts, cfg_base, cfg_buf, cfg_sz);
++			if (error)
++				goto out_free;
++
++			error = himax_hw_crc(ts, cfg_base, cfg_sz,
++					     &cfg_hw_crc);
++			if (error)
++				goto out_free;
++
++			if (cfg_hw_crc == cfg_sw_crc) {
++				dev_info(dev, "Config CRC OK: 0x%08x\n",
++					 cfg_sw_crc);
++				error = 0;
++				break;
++			}
++
++			dev_warn(dev,
++				 "Config CRC mismatch HW=0x%08x SW=0x%08x (retry %d)\n",
++				 cfg_hw_crc, cfg_sw_crc, i);
++			error = -EILSEQ;
++		}
++	}
++
++out_free:
++	kfree(cfg_buf);
++	kfree(parts);
++	return error;
++}
++
++static int himax_set_idle_mode(struct himax_ts_data *ts, bool enable)
++{
++	u8 want = enable ? 0x1f : 0x17;
++	u8 data[4];
++	int retry;
++	int error;
++
++	for (retry = 0; retry < 20; retry++) {
++		error = himax_ahb_read(ts, 0x10007088, data, 4);
++		if (error)
++			return error;
++
++		data[0] = want;
++		error = himax_ahb_write(ts, 0x10007088, data, 4);
++		if (error)
++			return error;
++
++		msleep(10);
++
++		error = himax_ahb_read(ts, 0x10007088, data, 4);
++		if (error)
++			return error;
++
++		if (data[0] == want) {
++			ts->idle_enabled = enable;
++			return 0;
++		}
++	}
++
++	return -EIO;
++}
++
++static void himax_idle_work(struct work_struct *work)
++{
++	struct himax_ts_data *ts = container_of(work, struct himax_ts_data,
++						 idle_work.work);
++
++	himax_set_idle_mode(ts, true);
++}
++
++static int himax_firmware_upload(struct himax_ts_data *ts)
++{
++	struct device *dev = &ts->spi->dev;
++	const struct firmware *fw;
++	u32 tmp = 1;
++	int error;
++
++	error = request_firmware(&fw, HIMAX_FW_NAME, dev);
++	if (error) {
++		dev_err(dev, "Failed to load %s: %d\n", HIMAX_FW_NAME, error);
++		return error;
++	}
++
++	dev_info(dev, "Firmware loaded: %zu bytes\n", fw->size);
++
++	error = himax_system_reset(ts);
++	if (error)
++		goto out_release;
++
++	msleep(20);
++
++	error = himax_sense_off(ts);
++	if (error)
++		goto out_release;
++
++	himax_ahb_write_u32(ts, HIMAX_REG_PSL, 0x00000000);
++
++	error = himax_load_firmware(ts, fw);
++	if (error)
++		goto out_release;
++
++	himax_ahb_write(ts, HIMAX_REG_SET_FRAME, &tmp, 4);
++	himax_ahb_write_u32(ts, HIMAX_REG_FLASH_RELOAD,
++			    HIMAX_DATA_FLASH_RELOAD_DIS);
++
++	error = himax_sense_on(ts);
++	if (error) {
++		dev_err(dev, "Failed first sense_on: %d\n", error);
++		goto out_release;
++	}
++
++	/* Poll for firmware-ready signature */
++	{
++		u8 data[4], data_2[4];
++		int retry;
++
++		for (retry = 0; retry < 200; retry++) {
++			himax_ahb_read(ts, HIMAX_REG_FLASH_RELOAD, data, 4);
++			himax_ahb_read(ts, HIMAX_REG_2ND_FLASH_RELOAD,
++				       data_2, 4);
++
++			if ((data[1] == 0x3A && data[0] == 0xA3) ||
++			    (data_2[1] == 0x72 && data_2[0] == 0xC0)) {
++				dev_info(dev, "FW reload OK (retry %d)\n", retry);
++				break;
++			}
++			usleep_range(10000, 11000);
++		}
++
++		if (retry >= 200)
++			dev_warn(dev, "FW reload signature timeout\n");
++	}
++
++	himax_sense_off(ts);
++
++	himax_ahb_write_u32(ts, HIMAX_REG_DDI_CTRL, 0x00000000);
++	himax_ahb_write_u32(ts, HIMAX_REG_FW_DBG, 0x00000000);
++
++	error = himax_sense_on(ts);
++	if (error) {
++		dev_err(dev, "Failed second sense_on: %d\n", error);
++		goto out_release;
++	}
++
++	msleep(50);
++
++	dev_info(dev, "Firmware upload complete, sensing enabled\n");
++
++	ts->reset_activate = true;
++	ts->zero_event_count = 0;
++
++	himax_set_idle_mode(ts, false);
++
++out_release:
++	release_firmware(fw);
++	return error;
++}
++
++
++static u8 himax_event_get_num_points(const struct himax_event *event)
++{
++	if (event->num_points == 0xff)
++		return 0;
++
++	return event->num_points & 0x0f;
++}
++
++static bool himax_process_event_point(struct himax_ts_data *ts,
++				      const struct himax_event *event,
++				      int point_index)
++{
++	const struct himax_event_point *point = &event->points[point_index];
++	u16 x = be16_to_cpu(point->x);
++	u16 y = be16_to_cpu(point->y);
++	u8 w = event->majors[point_index];
++
++	if (x == HIMAX_INVALID_COORD || y == HIMAX_INVALID_COORD)
++		return false;
++
++	input_mt_slot(ts->input_dev, point_index);
++	input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, true);
++	touchscreen_report_pos(ts->input_dev, &ts->props, x, y, true);
++	input_report_abs(ts->input_dev, ABS_MT_TOUCH_MAJOR, w);
++	input_report_abs(ts->input_dev, ABS_MT_WIDTH_MAJOR, w);
++
++	return true;
++}
++
++static void himax_process_event(struct himax_ts_data *ts,
++				const struct himax_event *event)
++{
++	int i;
++	int num_points_left = himax_event_get_num_points(event);
++
++	for (i = 0; i < HIMAX_MAX_POINTS && num_points_left > 0; i++) {
++		if (himax_process_event_point(ts, event, i))
++			num_points_left--;
++	}
++
++	input_mt_sync_frame(ts->input_dev);
++	input_sync(ts->input_dev);
++}
++
++static bool himax_verify_checksum(struct himax_ts_data *ts,
++				  const struct himax_event *event)
++{
++	const u8 *data = (const u8 *)event;
++	u16 checksum = 0;
++	int i;
++
++	for (i = 0; i < sizeof(*event); i++)
++		checksum += data[i];
++
++	if ((checksum & 0x00ff) != 0) {
++		dev_err_ratelimited(&ts->spi->dev,
++				    "Wrong event checksum: %04x\n", checksum);
++		return false;
++	}
++
++	return true;
++}
++
++static bool himax_is_esd_event(const struct himax_event *event)
++{
++	const u8 *data = (const u8 *)event;
++	u8 marker = data[0];
++	int i;
++
++	if (marker != 0xEB && marker != 0xEC &&
++	    marker != 0xED && marker != 0x00)
++		return false;
++
++	for (i = 1; i < sizeof(*event); i++) {
++		if (data[i] != marker)
++			return false;
++	}
++
++	return true;
++}
++
++static void himax_esd_recovery_work(struct work_struct *work)
++{
++	struct himax_ts_data *ts = container_of(work, struct himax_ts_data,
++						esd_work);
++	struct device *dev = &ts->spi->dev;
++	int error;
++
++	dev_info(dev, "ESD recovery: resetting and re-uploading firmware\n");
++
++	disable_irq(ts->spi->irq);
++
++	error = himax_firmware_upload(ts);
++	if (error)
++		dev_err(dev, "ESD recovery firmware upload failed: %d\n", error);
++
++	enable_irq(ts->spi->irq);
++}
++
++static irqreturn_t himax_irq_handler(int irq, void *dev_id)
++{
++	struct himax_ts_data *ts = dev_id;
++	struct himax_event event;
++	int error;
++
++	himax_spi_write_byte(ts, HIMAX_AHB_ADDR_IRQ_CTRL, 0x00);
++
++	error = himax_spi_read(ts, HIMAX_AHB_ADDR_EVENT_STACK,
++			       &event, sizeof(event));
++
++	himax_spi_write_byte(ts, HIMAX_AHB_ADDR_IRQ_CTRL, 0x01);
++
++	if (error)
++		return IRQ_NONE;
++
++	if (ts->idle_enabled)
++		himax_set_idle_mode(ts, false);
++	mod_delayed_work(system_wq, &ts->idle_work,
++			 msecs_to_jiffies(HIMAX_IDLE_REENABLE_MS));
++
++	if (ts->reset_activate) {
++		ts->reset_activate = false;
++		return IRQ_HANDLED;
++	}
++
++	if (himax_is_esd_event(&event)) {
++		const u8 *raw = (const u8 *)&event;
++
++		if (raw[0] != 0x00) {
++			dev_err(&ts->spi->dev, "ESD event (0x%02x)\n", raw[0]);
++			ts->zero_event_count = 0;
++			schedule_work(&ts->esd_work);
++		} else if (++ts->zero_event_count >=
++			   HIMAX_ESD_ZERO_EVENT_THRESHOLD) {
++			dev_err(&ts->spi->dev,
++				"ESD event (%u consecutive zero frames)\n",
++				ts->zero_event_count);
++			ts->zero_event_count = 0;
++			schedule_work(&ts->esd_work);
++		}
++		return IRQ_HANDLED;
++	}
++
++	ts->zero_event_count = 0;
++
++	if (himax_verify_checksum(ts, &event))
++		himax_process_event(ts, &event);
++
++	return IRQ_HANDLED;
++}
++
++static int himax_input_register(struct himax_ts_data *ts)
++{
++	int error;
++
++	ts->input_dev = devm_input_allocate_device(&ts->spi->dev);
++	if (!ts->input_dev)
++		return -ENOMEM;
++
++	ts->input_dev->name = "Himax Touchscreen";
++
++	input_set_capability(ts->input_dev, EV_ABS, ABS_MT_POSITION_X);
++	input_set_capability(ts->input_dev, EV_ABS, ABS_MT_POSITION_Y);
++	input_set_abs_params(ts->input_dev, ABS_MT_WIDTH_MAJOR, 0, 200, 0, 0);
++	input_set_abs_params(ts->input_dev, ABS_MT_TOUCH_MAJOR, 0, 200, 0, 0);
++
++	touchscreen_parse_properties(ts->input_dev, true, &ts->props);
++
++	error = input_mt_init_slots(ts->input_dev, HIMAX_MAX_POINTS,
++				    INPUT_MT_DIRECT | INPUT_MT_DROP_UNUSED);
++	if (error)
++		return error;
++
++	return input_register_device(ts->input_dev);
++}
++
++static void himax_cancel_esd_work(void *data)
++{
++	struct himax_ts_data *ts = data;
++
++	cancel_work_sync(&ts->esd_work);
++	cancel_delayed_work_sync(&ts->idle_work);
++}
++
++static int himax_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	struct himax_ts_data *ts;
++	u32 product_id;
++	int error;
++
++	ts = devm_kzalloc(dev, sizeof(*ts), GFP_KERNEL);
++	if (!ts)
++		return -ENOMEM;
++
++	spi_set_drvdata(spi, ts);
++	ts->spi = spi;
++	mutex_init(&ts->spi_lock);
++	INIT_WORK(&ts->esd_work, himax_esd_recovery_work);
++	INIT_DELAYED_WORK(&ts->idle_work, himax_idle_work);
++
++	error = devm_add_action_or_reset(dev, himax_cancel_esd_work, ts);
++	if (error)
++		return error;
++
++	spi->mode = SPI_MODE_3;
++	spi->bits_per_word = 8;
++	error = spi_setup(spi);
++	if (error)
++		return dev_err_probe(dev, error, "Failed to setup SPI\n");
++
++	ts->gpiod_rst = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(ts->gpiod_rst))
++		return dev_err_probe(dev, PTR_ERR(ts->gpiod_rst),
++				     "Failed to get reset GPIO\n");
++
++	himax_hw_reset(ts);
++
++	error = himax_ahb_read(ts, HIMAX_REG_ICID, &product_id,
++			       sizeof(product_id));
++	if (error)
++		return dev_err_probe(dev, error, "Failed to read IC ID\n");
++
++	product_id >>= 8;
++	dev_info(dev, "Product id: %x\n", product_id);
++
++	if (product_id != HIMAX_ICID_HX83112A &&
++	    product_id != HIMAX_ICID_HX83112B)
++		return dev_err_probe(dev, -ENODEV,
++				     "Unknown product id: %x\n", product_id);
++
++	error = himax_firmware_upload(ts);
++	if (error)
++		return dev_err_probe(dev, error, "Firmware upload failed\n");
++
++	error = himax_input_register(ts);
++	if (error)
++		return error;
++
++	error = devm_request_threaded_irq(dev, spi->irq, NULL,
++					  himax_irq_handler, IRQF_ONESHOT,
++					  dev_name(dev), ts);
++	if (error)
++		return dev_err_probe(dev, error, "Failed to request IRQ\n");
++
++	return 0;
++}
++
++static int himax_suspend(struct device *dev)
++{
++	struct himax_ts_data *ts = dev_get_drvdata(dev);
++
++	cancel_work_sync(&ts->esd_work);
++	cancel_delayed_work_sync(&ts->idle_work);
++	disable_irq(ts->spi->irq);
++	return 0;
++}
++
++static int himax_resume(struct device *dev)
++{
++	struct himax_ts_data *ts = dev_get_drvdata(dev);
++	u8 fw_ver[4] = {};
++	int error;
++
++	himax_spi_read(ts, HIMAX_AHB_ADDR_RDATA_BYTE_0, fw_ver, 4);
++
++	himax_ahb_read(ts, HIMAX_REG_FW_VER, fw_ver, 4);
++	if (fw_ver[1] == 0 && fw_ver[2] == 0) {
++		error = himax_firmware_upload(ts);
++		if (error)
++			dev_err(dev, "Firmware re-upload failed: %d\n", error);
++	}
++
++	input_mt_sync_frame(ts->input_dev);
++	input_sync(ts->input_dev);
++
++	enable_irq(ts->spi->irq);
++	return 0;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(himax_pm_ops, himax_suspend, himax_resume);
++
++static const struct spi_device_id himax_spi_id[] = {
++	{ "hx83112a" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(spi, himax_spi_id);
++
++static const struct of_device_id himax_of_match[] = {
++	{ .compatible = "himax,hx83112a" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, himax_of_match);
++
++static struct spi_driver himax_spi_driver = {
++	.probe = himax_probe,
++	.id_table = himax_spi_id,
++	.driver = {
++		.name = "himax_hx83112a",
++		.of_match_table = himax_of_match,
++		.pm = pm_sleep_ptr(&himax_pm_ops),
++	},
++};
++module_spi_driver(himax_spi_driver);
++
++MODULE_AUTHOR("Sunshineinabox");
++MODULE_DESCRIPTION("Himax HX83112A touchscreen driver (SPI, 0flash)");
++MODULE_LICENSE("GPL");

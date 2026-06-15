@@ -45,13 +45,24 @@ class Runner:
             wine64_bin = wine_server_bin
             wine = wine_bin / 'wine'
             wine64 = wine64_bin / 'wine64'
+            
+            # Fallback for Wine 11.10+ where wine64 does not exist
+            if not wine64.exists():
+                wine64 = wine
+            
             env_path = f'{wine_server_bin}:/bin:/usr/bin'
         else:
             wine_bin = wine_lib / 'i386-unix'
             wine64_bin = wine_lib / 'x86_64-unix'
             wine = wine_bin / 'wine'
             wine64 = wine64_bin / 'wine64'
-            env_path = f'{wine_bin}:{wine64_bin}:{wine_server_bin}:/bin:/usr/bin'
+            
+            # Fallback for Wine 11.10+ where wine64 does not exist
+            if not wine64.exists():
+                wine64 = wine
+                env_path = f'{wine_bin}:{wine_server_bin}:/bin:/usr/bin'
+            else:
+                env_path = f'{wine_bin}:{wine64_bin}:{wine_server_bin}:/bin:/usr/bin'
 
         self.wine = wine
         self.wine64 = wine64

@@ -1,13 +1,12 @@
-diff --git a/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp b/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp
-index 92645bb3a..cf102971f 100644
---- a/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp
-+++ b/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp
-@@ -82,7 +82,7 @@ void screenshot_manager_dialog::reload()
- 	m_abort_parsing = true;
- 	gui::utils::stop_future_watcher(m_parsing_watcher, true);
+--- rpcs3-v0.0.41/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp	2026-06-03 17:58:57.000000000 -0700
++++ rpcs3-v0.0.41-lbrpdx/rpcs3/rpcs3qt/screenshot_manager_dialog.cpp	2026-06-08 11:21:54.471855774 -0700
+@@ -110,7 +110,8 @@
+ 	const sort_filter s_filter = static_cast<sort_filter>(m_combo_sort_filter->currentData().toInt());
+ 	const QString game_filter = m_combo_game_filter->currentData().toString();
  
--	const std::string screenshot_path_qt   = fs::get_config_dir() + "screenshots/";
-+	const std::string screenshot_path_qt   = "/userdata/screenshots/";
- 	const std::string screenshot_path_cell = rpcs3::utils::get_hdd0_dir() + "/photo/";
+-	const std::string screenshot_path_rpcs3 = fs::get_config_dir() + "screenshots/";
++	// const std::string screenshot_path_rpcs3 = fs::get_config_dir() + "screenshots/";
++	const std::string screenshot_path_rpcs3 = "/userdata/screenshots/";
+ 	const std::string screenshot_path_cell  = rpcs3::utils::get_hdd0_dir() + "/photo/";
  
- 	m_flow_widget->clear();
+ 	std::vector<std::string> folders;

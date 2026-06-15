@@ -1,0 +1,42 @@
+Subject: [PATCH] ASoC: qcom: sm8250: add QUATERNARY_MI2S_RX/TX startup cases
+
+Mangmi Air X (SM6115) routes ES8326 headphone playback through
+QUAT_MI2S_RX on SD1 (gpio3) and mic capture through QUAT_MI2S_TX
+on SD0 (gpio2). The MI2S bus runs full-duplex on a shared bit
+clock, so both cases must vote for Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT
+in their respective stream directions; otherwise mic-only capture
+opens without a bit clock and times out as silent EIO.
+---
+ sound/soc/qcom/sm8250.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
+--- a/sound/soc/qcom/sm8250.c
++++ b/sound/soc/qcom/sm8250.c
+@@ -108,6 +108,24 @@
+ 		for_each_rtd_codec_dais(rtd, j, codec_dai)
+ 			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
+ 		break;
++	case QUATERNARY_MI2S_RX:
++		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
++		snd_soc_dai_set_sysclk(cpu_dai,
++			Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_PLAYBACK);
++		snd_soc_dai_set_fmt(cpu_dai, fmt);
++		for_each_rtd_codec_dais(rtd, j, codec_dai)
++			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
++		break;
++	case QUATERNARY_MI2S_TX:
++		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
++		snd_soc_dai_set_sysclk(cpu_dai,
++			Q6AFE_LPASS_CLK_ID_QUAD_MI2S_IBIT,
++			MI2S_BCLK_RATE, SNDRV_PCM_STREAM_CAPTURE);
++		snd_soc_dai_set_fmt(cpu_dai, fmt);
++		for_each_rtd_codec_dais(rtd, j, codec_dai)
++			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
++		break;
+ 	case QUINARY_MI2S_RX:
+ 		codec_dai_fmt |= SND_SOC_DAIFMT_NB_NF | SND_SOC_DAIFMT_I2S;
+ 		snd_soc_dai_set_sysclk(cpu_dai,
+--
+2.43.1

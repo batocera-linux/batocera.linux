@@ -1,0 +1,72 @@
+Subject: [PATCH] ASoC: qcom: q6asm-dai: fix error handling in prepare and set_params
+
+Upstream patch 3/5 of "ASoC: qcom: q6asm-dai: fix error handling" by
+Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>, posted to
+linux-arm-msm on 2026-05-18.
+
+Fix error handling in q6asm_dai_compr_set_params() and q6asm_dai_prepare()
+for both CMD_CLOSE and q6asm_unmap_memory_regions().
+
+In both the functions, we are doing q6asm_audio_client_free in failure
+cases, which means if prepare or set_params fail, we can never recover.
+Now open and close are done in respective dai_open/close functions.
+
+---
+diff --git a/sound/soc/qcom/qdsp6/q6asm-dai.c b/sound/soc/qcom/qdsp6/q6asm-dai.c
+--- a/sound/soc/qcom/qdsp6/q6asm-dai.c
++++ b/sound/soc/qcom/qdsp6/q6asm-dai.c
+@@ -226,9 +226,19 @@ static int q6asm_dai_prepare(struct snd_soc_component *component,
+ 	/* rate and channels are sent to audio driver */
+ 	if (prtd->state == Q6ASM_STREAM_RUNNING) {
+ 		/* clear the previous setup if any  */
+-		q6asm_cmd(prtd->audio_client, prtd->stream_id, CMD_CLOSE);
+-		q6asm_unmap_memory_regions(substream->stream,
+-					   prtd->audio_client);
++		ret = q6asm_cmd(prtd->audio_client, prtd->stream_id, CMD_CLOSE);
++		if (ret < 0) {
++			dev_err(dev, "Failed to close q6asm stream %d\n", prtd->stream_id);
++			return ret;
++		}
++
++		ret = q6asm_unmap_memory_regions(substream->stream, prtd->audio_client);
++		if (ret < 0) {
++			dev_err(dev, "Failed to unmap memory regions for q6asm stream %d\n",
++				prtd->stream_id);
++			return ret;
++		}
++
+ 		q6routing_stream_close(soc_prtd->dai_link->id,
+ 					 substream->stream);
+ 		prtd->state = Q6ASM_STREAM_STOPPED;
+@@ -296,8 +306,6 @@ static int q6asm_dai_prepare(struct snd_soc_component *component,
+ 	q6asm_cmd(prtd->audio_client, prtd->stream_id,  CMD_CLOSE);
+ open_err:
+ 	q6asm_unmap_memory_regions(substream->stream, prtd->audio_client);
+-	q6asm_audio_client_free(prtd->audio_client);
+-	prtd->audio_client = NULL;
+
+ 	return ret;
+ }
+@@ -912,7 +920,7 @@ static int q6asm_dai_compr_set_params(struct snd_soc_component *component,
+ 			      prtd->session_id, dir);
+ 	if (ret) {
+ 		dev_err(dev, "Stream reg failed ret:%d\n", ret);
+-		goto q6_err;
++		goto routing_err;
+ 	}
+
+ 	ret = __q6asm_dai_compr_set_codec_params(component, stream,
+@@ -938,11 +946,11 @@ static int q6asm_dai_compr_set_params(struct snd_soc_component *component,
+ 	return 0;
+
+ q6_err:
++	q6routing_stream_close(rtd->dai_link->id, dir);
++routing_err:
+ 	q6asm_cmd(prtd->audio_client, prtd->stream_id, CMD_CLOSE);
+
+ open_err:
+-	q6asm_audio_client_free(prtd->audio_client);
+-	prtd->audio_client = NULL;
+ 	return ret;
+ }
+

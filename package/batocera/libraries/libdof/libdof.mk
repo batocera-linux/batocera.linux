@@ -3,9 +3,9 @@
 # libdof
 #
 ################################################################################
-# Version: Commits on Sep 27, 2025
-LIBDOF_VERSION = 2711a23f7ec1085448f944145e0d63b7ab792033
-LIBDOF_SITE = $(call github,jsm174,libdof,$(LIBDOF_VERSION))
+# Version: Commits on May 8, 2026
+LIBDOF_VERSION = 50af22e1909132993c5106cc64a6834710212da0
+LIBDOF_SITE = $(call github,vpinball,libdof,$(LIBDOF_VERSION))
 LIBDOF_LICENSE = BSD-3-Clause
 LIBDOF_LICENSE_FILES = LICENSE
 LIBDOF_DEPENDENCIES = libusb libserialport hidapi libftdi1

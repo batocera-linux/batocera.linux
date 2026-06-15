@@ -1,0 +1,61 @@
+Subject: [PATCH] ASoC: qcom: q6asm-dai: close stream only when running
+
+Upstream patch 2/5 of "ASoC: qcom: q6asm-dai: fix error handling" by
+Srinivas Kandagatla <srinivas.kandagatla@oss.qualcomm.com>, posted to
+linux-arm-msm on 2026-05-18.
+
+q6asm_dai_close() and q6asm_dai_compr_free() currently issue CMD_CLOSE
+whenever prtd->state is non-zero.
+
+After prepare() closes an existing stream, the state is updated to
+Q6ASM_STREAM_STOPPED. Since this state is also non-zero, the close and
+free paths can send CMD_CLOSE again for a stream that has already been
+closed.
+
+Restrict CMD_CLOSE to the Q6ASM_STREAM_RUNNING state so the command is
+sent only when the ASM stream is still active.
+
+---
+diff --git a/sound/soc/qcom/qdsp6/q6asm-dai.c b/sound/soc/qcom/qdsp6/q6asm-dai.c
+--- a/sound/soc/qcom/qdsp6/q6asm-dai.c
++++ b/sound/soc/qcom/qdsp6/q6asm-dai.c
+@@ -455,12 +455,12 @@ static int q6asm_dai_close(struct snd_soc_component *component,
+ 	struct q6asm_dai_rtd *prtd = runtime->private_data;
+
+ 	if (prtd->audio_client) {
+-		if (prtd->state)
++		if (prtd->state == Q6ASM_STREAM_RUNNING) {
+ 			q6asm_cmd(prtd->audio_client, prtd->stream_id,
+ 				  CMD_CLOSE);
+-
+-		q6asm_unmap_memory_regions(substream->stream,
++			q6asm_unmap_memory_regions(substream->stream,
+ 					   prtd->audio_client);
++		}
+ 		q6asm_audio_client_free(prtd->audio_client);
+ 		prtd->audio_client = NULL;
+ 	}
+@@ -670,7 +670,7 @@ static int q6asm_dai_compr_free(struct snd_soc_component *component,
+ 	struct snd_soc_pcm_runtime *rtd = stream->private_data;
+
+ 	if (prtd->audio_client) {
+-		if (prtd->state) {
++		if (prtd->state == Q6ASM_STREAM_RUNNING) {
+ 			q6asm_cmd(prtd->audio_client, prtd->stream_id,
+ 				  CMD_CLOSE);
+ 			if (prtd->next_track_stream_id) {
+@@ -678,11 +678,11 @@ static int q6asm_dai_compr_free(struct snd_soc_component *component,
+ 					  prtd->next_track_stream_id,
+ 					  CMD_CLOSE);
+ 			}
+-		}
+
+-		snd_dma_free_pages(&prtd->dma_buffer);
+-		q6asm_unmap_memory_regions(stream->direction,
++			q6asm_unmap_memory_regions(stream->direction,
+ 					   prtd->audio_client);
++		}
++		snd_dma_free_pages(&prtd->dma_buffer);
+ 		q6asm_audio_client_free(prtd->audio_client);
+ 		prtd->audio_client = NULL;
+ 	}

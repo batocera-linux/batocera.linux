@@ -110,6 +110,7 @@ validate_checksum() {
             upgmsg "Checksum validated ..." 2
         else
             upgmsg "Checksum error ..." 5
+            G_PRESERVE_UPGRADE_FILES=
             return 1
         fi
     else
@@ -124,7 +125,9 @@ validate_arch() {
     test -z "${LOCAL_FILE_BOARD}" && return 1
     upgmsg "Update is ${LOCAL_FILE_BOARD} ..." 1
     if test "${LOCAL_FILE_BOARD}" != "${G_BOARD}"; then
-        if test "${LOCAL_FILE_BOARD}" = "x86_64" -a "${G_BOARD}" = "x86_64-v3"; then
+        # Allow migration between x86_64 and x86-64-v3 in either direction
+        if { [ "${LOCAL_FILE_BOARD}" = "x86_64" ] && [ "${G_BOARD}" = "x86-64-v3" ]; } || \
+           { [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ] && [ "${G_BOARD}" = "x86_64" ]; }; then
             upgmsg "Migrating ${G_BOARD} to ${LOCAL_FILE_BOARD}" 2
         else
             upgmsg "Error: ${LOCAL_FILE_BOARD} didn't match this ${G_BOARD} board!" 5
@@ -133,6 +136,17 @@ validate_arch() {
     else
         upgmsg "Current board is ${G_BOARD}!" 1
     fi
+
+    # Verify hardware compatibility if upgrading or migrating to x86-64-v3
+    if [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ]; then
+        if command -v batocera-x64-compatibility >/dev/null 2>&1; then
+            if ! batocera-x64-compatibility; then
+                upgmsg "Error: Hardware is not compatible with x86-64-v3!" 5
+                return 1
+            fi
+        fi
+    fi
+
     return 0
 }
 
@@ -315,6 +329,7 @@ do_update() {
     fi
 
     # a sync with some cleanups of downloaded and created files
+    G_PRESERVE_UPGRADE_FILES=
     do_clean ${TERMINAL}
     sync
 
@@ -358,7 +373,8 @@ shift
 # default media file
 G_LOCAL_FILE="/userdata/system/upgrade/boot.tar.xz"
 # If set to a value trap-function will not delete files
-G_PRESERVE_UPGRADE_FILES=
+# Defaulting to 1 to preserve files with command typo or error
+G_PRESERVE_UPGRADE_FILES=1
 # started from Terminal/SSH (TERMINAL=1) or from ES (TERMINAL=0)
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 

@@ -30,11 +30,13 @@
 - CDogs to 2.4.0
 - CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
-- Ledspicer to 0.7.4.1
+- Groovy MAME to 0.288
+- Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
+- Libretro-MAME to 0.288
 - Libretro-PC88 to April 21st, 2026 build
 - Libretro-PC98 to May 9th, 2026 build
 - Libretro-PCSX to May 15th, 2026 build
@@ -55,12 +57,17 @@
 - PCSX2 to May 17th, 2026 build
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
-- ShadPS4 to v.0.15.0
+- RPCS3 to v.0.0.41
+- ShadPS4 to v.0.16.0
+- Solarus to 2.0.4
 - Tsugaru to v20251206
+- Vita3k to 10th of June build
 - VKQuake to 1.34.1
 ### System
 - Allwinner H700 device kernel updated to 7.0.11
+- ALSA UCM configuration to v1.2.16
 - Buildroot to 2026.05.x with supporting package & toolchain updates
+- DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.0
@@ -69,9 +76,17 @@
 - Nvidia Open Production driver to 595.71.05
 - Nvidia 580 Legacy driver to 580.159.03
 - QT to 6.11.1
+- Qualcomm SM6115 device kernel updated to 7.0.11
 - Qualcomm SM8550 device kernel updated to 7.0.11
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.0.11
+- SwitchRes to 2.2.2
+- RTKit to v0.14
+- VKD3D Proton to 3.0.1
+- Vulkan stack to 1.4.350
+- WINE Mono to 11.1.0
+- WINE Proton to proton-exp-11.0
+- WINE TKG to 11.10
 - Wlroots to 0.20.1
 - X86_64 / Zen3 kernel updated to 7.0.11
 

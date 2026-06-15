@@ -1,0 +1,13 @@
+diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
+index 8ddd8da..737dc8d 100644
+--- a/vita3k/gui-qt/src/main_window.cpp
++++ b/vita3k/gui-qt/src/main_window.cpp
+@@ -1350,7 +1350,7 @@ void MainWindow::on_stop_triggered() {
+ }
+ 
+ void MainWindow::on_ps_button() {
+-    on_pause_triggered();
++    //on_pause_triggered();
+ }
+ 
+ void MainWindow::refresh_emulation_actions() {

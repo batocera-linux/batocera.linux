@@ -1,0 +1,15 @@
+diff --git a/3rdparty/luafilesystem/src/lfs.c b/3rdparty/luafilesystem/src/lfs.c
+index 1b4ef09..8ff32ea 100644
+--- a/3rdparty/luafilesystem/src/lfs.c
++++ b/3rdparty/luafilesystem/src/lfs.c
+@@ -35,8 +35,10 @@
+ #endif
+ 
+ #ifndef LFS_DO_NOT_USE_LARGE_FILE
++#ifndef _LARGEFILE64_SOURCE
+ #define _LARGEFILE64_SOURCE
+ #endif
++#endif
+ 
+ #include <errno.h>
+ #include <stdio.h>

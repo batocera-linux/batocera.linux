@@ -1,0 +1,51 @@
+Subject: [PATCH] Bluetooth: hci_qca: include WCN3950 in WCN family switches
+
+---
+ drivers/bluetooth/hci_qca.c | 9 7+/-2
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2239,6 +2239,7 @@
+ 	power = qcadev->bt_power;
+ 
+ 	switch (soc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+@@ -2257,6 +2258,7 @@
+         }
+ 
+ 	switch (soc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+@@ -2477,14 +2479,16 @@
+ 					     "failed to acquire BT_EN gpio\n");
+ 
+ 		if (!qcadev->bt_en &&
+-		    (data->soc_type == QCA_WCN6750 ||
++		    (data->soc_type == QCA_WCN3950 ||
++		     data->soc_type == QCA_WCN6750 ||
+ 		     data->soc_type == QCA_WCN6855))
+ 			bt_en_available = false;
+ 
+ 		qcadev->sw_ctrl = devm_gpiod_get_optional(&serdev->dev, "swctrl",
+ 					       GPIOD_IN);
+ 		if (IS_ERR(qcadev->sw_ctrl) &&
+-		    (data->soc_type == QCA_WCN6750 ||
++		    (data->soc_type == QCA_WCN3950 ||
++		     data->soc_type == QCA_WCN6750 ||
+ 		     data->soc_type == QCA_WCN6855 ||
+ 		     data->soc_type == QCA_WCN7850)) {
+ 			dev_err(&serdev->dev, "failed to acquire SW_CTRL gpio\n");
+@@ -2564,6 +2568,7 @@
+ 	struct qca_power *power = qcadev->bt_power;
+ 
+ 	switch (qcadev->btsoc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:

@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2025, ROCKNIX
+ */
+
+/dts-v1/;
+
+#include "sm6115-mangmi-air-x-base.dtsi"
+
+/ {
+	model = "MANGMI Air X MQ66B";
+	compatible = "mangmi,sm6115-air-x-mq66b", "qcom,sm6115";
+};
+
+&panel {
+	compatible = "mangmi,bm5460bb1";
+};

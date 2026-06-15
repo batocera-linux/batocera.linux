@@ -121,21 +121,21 @@ diff --git a/src/mame/sega/segas32.cpp b/src/mame/sega/segas32.cpp
  void segas32_new_state::sega_system32_track(machine_config &config)
  {
  	SEGA_S32_TRACKBALL_DEVICE(config, "mainpcb", 0);
-@@ -6030,10 +6116,10 @@
+@@ -6146,10 +6146,10 @@ GAME( 1992, ga2j,      ga2,      sega_system32_ga2,         ga2,      segas32_ne
  
- GAME( 1992, holo,      0,        sega_system32,             holo,     segas32_new_state, init_holo,     ORIENTATION_FLIP_Y, "Sega",   "Holosseum (US, Rev A)", MACHINE_IMPERFECT_GRAPHICS )
+ GAME( 1992, holo,      0,        sega_system32,             holo,     segas32_new_state, init_holo,     ORIENTATION_FLIP_Y, "Sega",   "Holosseum (US, Rev A)", 0 )
  
--GAME( 1993, jpark,     0,        sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", MACHINE_IMPERFECT_GRAPHICS )  /* Released in 02.1994 */
--GAME( 1993, jparkj,    jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
--GAME( 1993, jparkja,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
--GAME( 1993, jparkjc,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", MACHINE_IMPERFECT_GRAPHICS )
-+GAME( 1993, jpark,     0,        sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", MACHINE_IMPERFECT_GRAPHICS )  /* Released in 02.1994 */
-+GAME( 1993, jparkj,    jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
-+GAME( 1993, jparkja,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", MACHINE_IMPERFECT_GRAPHICS )
-+GAME( 1993, jparkjc,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", MACHINE_IMPERFECT_GRAPHICS )
+-GAME( 1993, jpark,     0,        sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", 0 )  /* Released in 02.1994 */
+-GAME( 1993, jparkj,    jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", 0 )
+-GAME( 1993, jparkja,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", 0 )
+-GAME( 1993, jparkjc,   jpark,    sega_system32_analog,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", 0 )
++GAME( 1993, jpark,     0,        sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (World, Rev A)", 0 )  /* Released in 02.1994 */
++GAME( 1993, jparkj,    jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Deluxe)", 0 )
++GAME( 1993, jparkja,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Deluxe)", 0 )
++GAME( 1993, jparkjc,   jpark,    sega_system32_jpark,      jpark,    segas32_new_state, init_jpark,    ROT0, "Sega",   "Jurassic Park (Japan, Rev A, Conversion)", 0 )
  
- GAME( 1992, kokoroj,   0,        sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology (Rev A)", MACHINE_IMPERFECT_GRAPHICS | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER) /* uses an Audio CD */
- GAME( 1992, kokoroja,  kokoroj,  sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology", MACHINE_IMPERFECT_GRAPHICS | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER) /* uses an Audio CD */
+ GAME( 1992, kokoroj,   0,        sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology (Rev A)", MACHINE_NOT_WORKING | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER ) /* uses an Audio CD (undumped, incompatible with kokoroj2) */
+ GAME( 1992, kokoroja,  kokoroj,  sega_system32_cd,          kokoroj2, segas32_new_state, init_radr,     ROT0, "Sega",   "Soreike Kokology", MACHINE_NOT_WORKING | MACHINE_IMPERFECT_SOUND | MACHINE_NODEVICE_PRINTER ) /* uses an Audio CD (undumped, incompatible with kokoroj2) */
 diff --git a/src/mame/taito/slapshot.cpp b/src/mame/taito/slapshot.cpp
 --- a/src/mame/taito/slapshot.cpp
 +++ b/src/mame/taito/slapshot.cpp

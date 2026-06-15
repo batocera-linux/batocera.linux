@@ -107,7 +107,7 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
     vpinballSettings.set("Standalone", "AltSound", system.config.get_bool("vpinball_altsound", True, return_values=("1", "0")))
 
     # select which ID for sounddevices by running:
-    # /usr/bin/vpinball/VPinballX_GL -listsnd
+    # /usr/bin/vpinball/VPinballX_BGFX -listsnd
     vpinballSettings.set("Player", "SoundDevice", system.config.get("vpinball_sounddevice", ""))
     vpinballSettings.set("Player", "SoundDeviceBG", system.config.get("vpinball_sounddevicebg", ""))
 

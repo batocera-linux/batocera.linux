@@ -24,7 +24,8 @@ cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomac
 cp -f "${BOARD_DIR}/grub.cfg"         "${BINARIES_DIR}/efi-part/EFI/BOOT/grub.cfg" || exit 1
 cp -r "${BINARIES_DIR}/efi-part/EFI/" "${BATOCERA_BINARIES_DIR}/boot/"             || exit 1
 
-cp "${BINARIES_DIR}/sm6115-mangmi-air-x-mq65.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
-cp "${BINARIES_DIR}/sm6115-mangmi-air-x-mq66.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/sm6115-mangmi-air-x-mq65.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/sm6115-mangmi-air-x-mq66.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/sm6115-mangmi-air-x-mq66b.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0

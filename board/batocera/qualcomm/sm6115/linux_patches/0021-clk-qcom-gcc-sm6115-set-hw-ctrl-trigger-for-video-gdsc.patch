@@ -1,0 +1,22 @@
+Subject: [PATCH] clk: qcom: gcc-sm6115: Set HW_CTRL_TRIGGER for video GDSC
+
+The venus video driver will uses dev_pm_genpd_set_hwmode() API to switch
+the video GDSC to HW and SW control modes at runtime. This requires domain
+to have the HW_CTRL_TRIGGER flag.
+
+Author: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+---
+ drivers/clk/qcom/gcc-sm6115.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/drivers/clk/qcom/gcc-sm6115.c
++++ b/drivers/clk/qcom/gcc-sm6115.c
+@@ -3218,6 +3218,7 @@ static struct gdsc gcc_vcodec0_gdsc = {
+ 	.pd = {
+ 		.name = "gcc_vcodec0",
+ 	},
++	.flags = HW_CTRL_TRIGGER,
+ 	.pwrsts = PWRSTS_OFF_ON,
+ };
+ 

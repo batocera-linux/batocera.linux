@@ -1,0 +1,33 @@
+diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
+index f5ad9e7..9b0c431 100644
+--- a/vita3k/gui-qt/src/main_window.cpp
++++ b/vita3k/gui-qt/src/main_window.cpp
+@@ -94,6 +94,7 @@
+ #include <QOpenGLContext>
+ #include <QPainter>
+ #include <QPushButton>
++#include <QShortcut>
+ #include <QSlider>
+ #include <QStandardPaths>
+ #include <QStatusBar>
+@@ -424,6 +425,20 @@ void MainWindow::initialize() {
+ 
+     setup_toolbar();
+ 
++    auto *quit_shortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F12), this);
++    quit_shortcut->setContext(Qt::ApplicationShortcut);
++    connect(quit_shortcut, &QShortcut::activated, this, [this]() {
++        close_auxiliary_windows();
++        
++        // Close the game window if running, without prompting
++        if (m_game_window) {
++            m_app_session.set_pause_reason(app::AppSessionPauseReason::User, false);
++            on_game_closed();
++        }
++        
++        close();
++    });
++
+     connect(m_ui->welcome_dialog_action, &QAction::triggered, this, [this]() {
+         auto *welcome = new WelcomeDialog(emuenv, true, this);
+         welcome->open();

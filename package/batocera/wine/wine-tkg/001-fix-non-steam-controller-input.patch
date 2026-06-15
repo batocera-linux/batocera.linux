@@ -22,13 +22,11 @@ index c4ca11782f..e3396cee16 100644
  
  [Wow64Install.ntx86]
  Needs=BaseWow64Install
-@@ -1573,3 +1575,7 @@ InfFiles  = 17
- NlsFiles  = 11
- SortFiles = 10,globalization\sorting
- WinmdFiles = 11,winmetadata
+@@ -1605,3 +1605,7 @@ HKCU,Software\Wine\DllOverrides,"version",0x2,"native,builtin"
+ HKCU,Software\Wine\DllOverrides,"dinput8",0x2,"native,builtin"
+ HKCU,Software\Wine\DllOverrides,"dinput",0x2,"native,builtin"
+ HKCU,Software\Wine\DllOverrides,"dsound",0x2,"native,builtin"
 +
 +[WineBatoOverrides]
 +HKLM,System\CurrentControlSet\Services\winebus,"DisableHidraw",0x10001,"1"
 +HKLM,System\CurrentControlSet\Services\winebus,"Enable SDL",0x10001,"1"
-
-

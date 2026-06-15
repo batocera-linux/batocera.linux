@@ -1,0 +1,37 @@
+Subject: [PATCH] usb: typec: tcpc: fusb302: enable PD 3.0 message handling on AW35615
+
+---
+ drivers/usb/typec/tcpm/fusb302.c     | 5 +++++
+ drivers/usb/typec/tcpm/fusb302_reg.h | 5 +++++
+ 2 files changed, 10 insertions(+)
+
+diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+--- a/drivers/usb/typec/tcpm/fusb302.c
++++ b/drivers/usb/typec/tcpm/fusb302.c
+@@ -404,6 +404,11 @@
+ 	ret = fusb302_enable_tx_auto_retries(chip, FUSB_REG_CONTROL3_N_RETRIES_3);
+ 	if (ret < 0)
+ 		return ret;
++
++	fusb302_i2c_set_bits(chip, FUSB_REG_CONTROL4,
++			     FUSB_REG_CONTROL4_EN_PAR_CFG);
++	fusb302_i2c_set_bits(chip, FUSB_REG_CONTROL5,
++			     FUSB_REG_CONTROL5_EN_PD3_MSG);
+ 	ret = fusb302_init_interrupt(chip);
+ 	if (ret < 0)
+ 		return ret;
+diff --git a/drivers/usb/typec/tcpm/fusb302_reg.h b/drivers/usb/typec/tcpm/fusb302_reg.h
+--- a/drivers/usb/typec/tcpm/fusb302_reg.h
++++ b/drivers/usb/typec/tcpm/fusb302_reg.h
+@@ -69,6 +69,11 @@
+ #define FUSB_REG_CONTROL3_N_RETRIES_2		(0x4)
+ #define FUSB_REG_CONTROL3_N_RETRIES_1		(0x2)
+ #define FUSB_REG_CONTROL3_AUTO_RETRY		BIT(0)
++#define FUSB_REG_CONTROL4			0x10
++#define FUSB_REG_CONTROL4_EN_PAR_CFG		BIT(1)
++#define FUSB_REG_CONTROL4_TOG_EXIT_AUD		BIT(0)
++#define FUSB_REG_CONTROL5			0x11
++#define FUSB_REG_CONTROL5_EN_PD3_MSG		BIT(0)
+ #define FUSB_REG_MASK				0x0A
+ #define FUSB_REG_MASK_VBUSOK			BIT(7)
+ #define FUSB_REG_MASK_ACTIVITY			BIT(6)

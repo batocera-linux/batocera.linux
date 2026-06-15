@@ -10,7 +10,7 @@ echo "CPU X86-64 version: ${X64VERSION}" >&2
 NVIDIAMODE=$(batocera-nvidia --detected-mode 2>/dev/null)
 echo "Nvidia mode: ${NVIDIAMODE}" >&2
 
-if [ "${X64VERSION}" -ge 3 -a "${NVIDIA_COMPATIBLE}" != "unsupported" -a "${NVIDIA_COMPATIBLE}" != "nouveau" ]
+if [ "${X64VERSION}" -ge 3 -a "${NVIDIAMODE}" != "unsupported" -a "${NVIDIAMODE}" != "nouveau" ]
 then
     echo "Hardware compatible with x64-v3 : YES" >&2
     exit 0

@@ -4,8 +4,9 @@
 #
 ################################################################################
 
-RTKIT_VERSION = v0.13
-RTKIT_SITE = $(call github,heftig,RTKIT,$(RTKIT_VERSION))
+RTKIT_VERSION = v0.14
+RTKIT_SOURCE = rtkit-$(RTKIT_VERSION).tar.gz
+RTKIT_SITE = https://gitlab.freedesktop.org/pipewire/rtkit/-/archive/$(RTKIT_VERSION)
 # host-vim needed for xxd 
 RTKIT_DEPENDENCIES = dbus host-vim libcap polkit
 

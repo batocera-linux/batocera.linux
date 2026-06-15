@@ -1,0 +1,18 @@
+Subject: [PATCH] Bluetooth: hci_qca: keep IBS disabled for WCN3950
+
+---
+ drivers/bluetooth/hci_qca.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2078,6 +2078,9 @@
+ 	qca->controller_id = le16_to_cpu(ver.rom_ver);
+ 	hci_devcd_register(hdev, hci_coredump_qca, qca_dmp_hdr, NULL);
+ 
++	if (soc_type == QCA_WCN3950)
++		set_bit(QCA_IBS_DISABLED, &qca->flags);
++
+ 	return ret;
+ }
+ 

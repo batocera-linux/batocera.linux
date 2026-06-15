@@ -1,0 +1,46 @@
+Subject: [PATCH] usb: typec: tcpc: fusb302: signal TX completion from IRQ bit
+
+---
+ drivers/usb/typec/tcpm/fusb302.c | 20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+--- a/drivers/usb/typec/tcpm/fusb302.c
++++ b/drivers/usb/typec/tcpm/fusb302.c
+@@ -1463,20 +1463,17 @@
+ 	fusb302_log(chip, "PD message len: %d", len);
+ 
+ 	/*
+-	 * Check if we've read off a GoodCRC message. If so then indicate to
+-	 * TCPM that the previous transmission has completed. Otherwise we pass
+-	 * the received message over to TCPM for processing.
+-	 *
+-	 * We make this check here instead of basing the reporting decision on
+-	 * the IRQ event type, as it's possible for the chip to report the
+-	 * TX_SUCCESS and GCRCSENT events out of order on occasion, so we need
+-	 * to check the message type to ensure correct reporting to TCPM.
++	 * TX completion is signaled directly from the TX_SUCCESS interrupt
++	 * bit, matching the pattern used by every
++	 * other TCPM-attached driver in tree.
++	 * If a stray GoodCRC ends up in the RX FIFO, silently drop it here
++	 * so it doesn't reach TCPM as a bogus received message.
+ 	 */
+ 	if ((!len) && (pd_header_type_le(msg->header) == PD_CTRL_GOOD_CRC))
+-		tcpm_pd_transmit_complete(chip->tcpm_port, TCPC_TX_SUCCESS);
+-	else
+-		tcpm_pd_receive(chip->tcpm_port, msg, TCPC_TX_SOP);
++		return ret;
+ 
++	tcpm_pd_receive(chip->tcpm_port, msg, TCPC_TX_SOP);
++
+ 	return ret;
+ }
+ 
+@@ -1601,6 +1598,7 @@
+ 
+ 	if (interrupta & FUSB_REG_INTERRUPTA_TX_SUCCESS) {
+ 		fusb302_log(chip, "IRQ: PD tx success");
++		tcpm_pd_transmit_complete(chip->tcpm_port, TCPC_TX_SUCCESS);
+ 		ret = fusb302_pd_read_message(chip, &pd_msg);
+ 		if (ret < 0) {
+ 			fusb302_log(chip,
