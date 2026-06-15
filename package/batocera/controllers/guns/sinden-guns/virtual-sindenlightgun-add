@@ -92,9 +92,9 @@ then
     # ttyACM
     ACMSEARCHDIR=/sys$(evsieve-helper parent-raw "${DEVNAME}" input usb)
     ACM=$(find "${ACMSEARCHDIR}" -name "ttyACM*" | head -1)
-    ACMDEV=/dev/$(basename "${ACM}")
-    if test -n "${ACMDEV}"
+    if test -n "${ACM}"
     then
+	ACMDEV=/dev/$(basename "${ACM}")
     	mkdir -p "/var/run/sinden" || unlockAndExit 1
 
 	CONFIGFILE="/var/run/sinden/p${PARENTHASH}/LightgunMono-${PARENTHASH}.exe.config"
