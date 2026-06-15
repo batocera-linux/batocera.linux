@@ -58,6 +58,8 @@ reportOnceConfigurationAvailable() {
 
 reportOnceConfigurationAvailable
 trylock
+# make sure the lock is released even if udev signals/kills this handler mid-setup
+trap 'rmdir "${LOCKFILE}" 2>/dev/null; exit 1' TERM INT HUP
 checkRunningPIDAndExit1
 
 CHILDRENINPUTS=$(evsieve-helper children "${PARENTHASH}" input usb)
