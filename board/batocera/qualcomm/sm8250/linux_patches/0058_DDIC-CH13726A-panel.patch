@@ -1,9 +1,23 @@
-diff -rupbN linux.orig/drivers/gpu/drm/panel/Kconfig linux/drivers/gpu/drm/panel/Kconfig
---- linux.orig/drivers/gpu/drm/panel/Kconfig	2024-11-09 15:37:39.894555780 +0000
-+++ linux/drivers/gpu/drm/panel/Kconfig	2024-12-04 14:29:50.284948618 +0000
-@@ -96,6 +96,17 @@ config DRM_PANEL_BOE_TV101WUM_LL2
- 	  Say Y here if you want to support for BOE TV101WUM-LL2
- 	  WUXGA PANEL DSI Video Mode panel
+From d0ff75b09e66023c5f88992706dee4601aa7a437 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 27 Oct 2025 16:53:15 +0800
+Subject: [PATCH] drm/panel: Add panel driver for DDIC CH13726A based panels
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ drivers/gpu/drm/panel/Kconfig               |  11 +
+ drivers/gpu/drm/panel/Makefile              |   1 +
+ drivers/gpu/drm/panel/panel-ddic-ch13726a.c | 327 ++++++++++++++++++++
+ 3 files changed, 339 insertions(+)
+ create mode 100644 drivers/gpu/drm/panel/panel-ddic-ch13726a.c
+
+diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
+index cc2b93322628..fd889664ff6b 100644
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -126,6 +126,17 @@ config DRM_PANEL_CHIPONE_ICNA35XX
+ 	  around the Chipone ICNA3512 and ICNA3520 display controllers,
+ 	  such as some Tianma panels used in AYN Odin2 Portal and Thor.
  
 +config DRM_PANEL_DDIC_CH13726A
 +	tristate "DDIC CH13726A-based DSI panel"
@@ -19,21 +33,24 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/Kconfig linux/drivers/gpu/drm/panel
  config DRM_PANEL_EBBG_FT8719
  	tristate "EBBG FT8719 panel driver"
  	depends on OF
-diff -rupbN linux.orig/drivers/gpu/drm/panel/Makefile linux/drivers/gpu/drm/panel/Makefile
---- linux.orig/drivers/gpu/drm/panel/Makefile	2024-11-09 15:37:39.894555780 +0000
-+++ linux/drivers/gpu/drm/panel/Makefile	2024-12-04 14:29:50.284948618 +0000
-@@ -8,6 +8,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_HIMAX8279D) +
- obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.o
- obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
+diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
+index 339a5cb9f31b..c5f4f5f7bd82 100644
+--- a/drivers/gpu/drm/panel/Makefile
++++ b/drivers/gpu/drm/panel/Makefile
+@@ -11,6 +11,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
+ obj-$(CONFIG_DRM_PANEL_BOE_XM91080G) += panel-boe-xm91080g.o
+ obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
 +obj-$(CONFIG_DRM_PANEL_DDIC_CH13726A) += panel-ddic-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
  obj-$(CONFIG_DRM_PANEL_LVDS) += panel-lvds.o
  obj-$(CONFIG_DRM_PANEL_SIMPLE) += panel-simple.o
-diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
---- linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c	1970-01-01 00:00:00.000000000 +0000
-+++ linux/drivers/gpu/drm/panel/panel-ddic-ch13726a.c	2024-12-04 14:30:40.229971350 +0000
-@@ -0,0 +1,345 @@
+diff --git a/drivers/gpu/drm/panel/panel-ddic-ch13726a.c b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
+new file mode 100644
+index 000000000000..946ad32f9b82
+--- /dev/null
++++ b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
+@@ -0,0 +1,327 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * DDIC CH13726A MIPI-DSI panel driver
@@ -47,8 +64,6 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +#include <linux/of.h>
 +#include <linux/regulator/consumer.h>
 +
-+#include <drm/display/drm_dsc.h>
-+#include <drm/display/drm_dsc_helper.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -58,7 +73,6 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +struct ch13726a_panel {
 +	struct drm_panel panel;
 +	struct mipi_dsi_device *dsi;
-+	struct drm_dsc_config dsc;
 +	struct regulator_bulk_data supplies[4];
 +	struct gpio_desc *reset_gpio;
 +	const struct drm_display_mode *display_mode;
@@ -83,54 +97,32 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +
 +static int ch13726a_on(struct ch13726a_panel *ctx)
 +{
-+	struct mipi_dsi_device *dsi = ctx->dsi;
-+	struct mipi_dsi_multi_context dsi_ctx = { .dsi = dsi };
-+	struct device *dev = &dsi->dev;
-+	int ret;
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 +
-+	dsi->mode_flags |= MIPI_DSI_MODE_LPM;
++	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
 +
-+	ret = mipi_dsi_dcs_exit_sleep_mode(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to exit sleep mode: %d\n", ret);
-+		return ret;
-+	}
-+	msleep(120);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xf0, 0x50);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xb9, 0x00);
++	
++	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
 +
-+	ret = mipi_dsi_dcs_set_display_on(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to set display on: %d\n", ret);
-+		return ret;
-+	}
-+	msleep(20);
++	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
 +
-+	return 0;
++	return dsi_ctx.accum_err;
 +}
 +
 +static int ch13726a_disable(struct drm_panel *panel)
 +{
 +	struct ch13726a_panel *ctx = to_ch13726a_panel(panel);
-+	struct mipi_dsi_device *dsi = ctx->dsi;
-+	struct device *dev = &dsi->dev;
-+	int ret;
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
 +
-+	dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
++	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
 +
-+	ret = mipi_dsi_dcs_set_display_off(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to set display off: %d\n", ret);
-+		return ret;
-+	}
++	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
++	mipi_dsi_msleep(&dsi_ctx, 50);
++	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
 +
-+	ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to enter sleep mode: %d\n", ret);
-+		return ret;
-+	}
-+
-+	msleep(100);
-+
-+	return 0;
++	return dsi_ctx.accum_err;
 +}
 +
 +static int ch13726a_prepare(struct drm_panel *panel)
@@ -179,6 +171,20 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +	return 0;
 +}
 +
++static const struct drm_display_mode rp5_display_mode = {
++	.clock = (1080 + 12 + 4 + 12) * (1920 + 12 + 4 + 12) * 60 / 1000,
++	.hdisplay = 1080,
++	.hsync_start = 1080 + 12,
++	.hsync_end = 1080 + 12 + 4,
++	.htotal = 1080 + 12 + 4 + 12,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 12,
++	.vsync_end = 1920 + 12 + 4,
++	.vtotal = 1920 + 12 + 4 + 12,
++	.width_mm = 68,
++	.height_mm = 121,
++};
++
 +static const struct drm_display_mode rpmini_display_mode = {
 +	.clock = (960 + 28 + 4 + 36) * (1280 + 16 + 4 + 8) * 60 / 1000,
 +	.hdisplay = 960,
@@ -193,18 +199,18 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +	.height_mm = 75,
 +};
 +
-+static const struct drm_display_mode rp5_display_mode = {
-+	.clock = (1080 + 12 + 4 + 12) * (1920 + 12 + 12 + 4) * 60 / 1000,
++static const struct drm_display_mode rpminiv2_display_mode = {
++	.clock = (1080 + 28 + 4 + 36) * (1240 + 16 + 4 + 8) * 60 / 1000,
 +	.hdisplay = 1080,
-+	.hsync_start = 1080 + 12,
-+	.hsync_end = 1080 + 12 + 4,
-+	.htotal = 1080 + 12 + 4 + 12,
-+	.vdisplay = 1920,
-+	.vsync_start = 1920 + 12,
-+	.vsync_end = 1920 + 12 + 12,
-+	.vtotal = 1920 + 12 + 12 + 4,
-+	.width_mm = 68,
-+	.height_mm = 121,
++	.hsync_start = 1080 + 28,
++	.hsync_end = 1080 + 28 + 4,
++	.htotal = 1080 + 28 + 4 + 36,
++	.vdisplay = 1240,
++	.vsync_start = 1240 + 16,
++	.vsync_end = 1240 + 16 + 4,
++	.vtotal = 1240 + 16 + 4 + 8,
++	.width_mm = 65,
++	.height_mm = 75,
 +};
 +
 +static int ch13726a_get_modes(struct drm_panel *panel,
@@ -281,7 +287,6 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +{
 +	struct device *dev = &dsi->dev;
 +	struct ch13726a_panel *ctx;
-+	int rotation;
 +	int ret;
 +
 +	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
@@ -305,19 +310,11 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
 +				     "Failed to get reset-gpios\n");
 +
-+	ret = of_property_read_u32(dev->of_node, "rotation", &rotation);
-+	if (ret == -EINVAL) {
-+		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
++	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	if (ret < 0) {
++		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
++		return ret;
 +	}
-+
-+	if (rotation == 0)
-+		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_NORMAL;
-+	else if (rotation == 90)
-+		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_RIGHT_UP;
-+	else if (rotation == 180)
-+		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_BOTTOM_UP;
-+	else if (rotation == 270)
-+		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_LEFT_UP;
 +
 +	ctx->dsi = dsi;
 +	mipi_dsi_set_drvdata(dsi, ctx);
@@ -361,8 +358,10 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +}
 +
 +static const struct of_device_id ch13726a_of_match[] = {
-+	{ .compatible = "ch13726a,rpmini", .data = &rpmini_display_mode },
 +	{ .compatible = "ch13726a,rp5", .data = &rp5_display_mode },
++	{ .compatible = "ch13726a,rpmini", .data = &rpmini_display_mode },
++	{ .compatible = "ch13726a,rpminiv2", .data = &rpminiv2_display_mode },
++	{ .compatible = "ch13726a,thor", .data = &rpminiv2_display_mode },
 +	{ /* sentinel */ }
 +};
 +MODULE_DEVICE_TABLE(of, ch13726a_of_match);
@@ -379,3 +378,6 @@ diff -rupbN linux.orig/drivers/gpu/drm/panel/panel-ddic-ch13726a.c linux/drivers
 +
 +MODULE_DESCRIPTION("DRM driver for CH13726A DSI panels");
 +MODULE_LICENSE("GPL");
+-- 
+2.34.1
+

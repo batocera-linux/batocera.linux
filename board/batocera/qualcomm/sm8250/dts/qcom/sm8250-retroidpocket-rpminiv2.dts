@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2025, ROCKNIX <https://rocknix.org>.
+ */
+
+/dts-v1/;
+
+#include "sm8250-retroidpocket-rpmini.dts"
+
+/ {
+	model = "Retroid Pocket Mini V2";
+	compatible = "retroidpocket,rpminiv2", "qcom,sm8250";
+};
+
+&i2c13 {
+	touchscreen@38 {
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1240>;
+	};
+};
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "ch13726a,rpminiv2";
+	};
+};

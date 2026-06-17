@@ -1,0 +1,11 @@
+Subject: [PATCH] ASoC: wsa881x: request powerdown GPIO non-exclusively
+
+diff --git a/sound/soc/codecs/wsa881x.c b/sound/soc/codecs/wsa881x.c
+--- a/sound/soc/codecs/wsa881x.c
++++ b/sound/soc/codecs/wsa881x.c
+@@ -1122,4 +1122,4 @@
+ 		return -ENOMEM;
+ 
+-	wsa881x->sd_n = devm_gpiod_get_optional(dev, "powerdown", 0);
++	wsa881x->sd_n = devm_gpiod_get_optional(dev, "powerdown", GPIOD_FLAGS_BIT_NONEXCLUSIVE);
+ 	if (IS_ERR(wsa881x->sd_n))
