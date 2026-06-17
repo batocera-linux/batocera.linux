@@ -26,9 +26,9 @@ OPENJKDF2_LICENSE = GPLv2 & MIT
 OPENJKDF2_LICENSE_FILE = LICENSE.txt
 OPENJKDF2_EMULATOR_INFO = openjkdf2.emulator.yml
 
-OPENJKDF2_DEPENDENCIES += gamenetworkingsockets host-python-cog libcurl libfreeglut
-OPENJKDF2_DEPENDENCIES += libglew libgtk3 libpng openal physfs protobuf python3
-OPENJKDF2_DEPENDENCIES += sdl2 sdl2_mixer zlib
+OPENJKDF2_DEPENDENCIES += gamenetworkingsockets host-clang host-python-cog libcurl
+OPENJKDF2_DEPENDENCIES += libfreeglut libglew libgtk3 libpng openal physfs protobuf
+OPENJKDF2_DEPENDENCIES += python3 sdl2 sdl2_mixer zlib
 
 OPENJKDF2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 OPENJKDF2_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
