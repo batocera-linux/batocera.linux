@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Imanol-Mikel Barba <imanol@local>
+Date: Sun, 1 Jun 2026 00:00:00 +0200
+Subject: [PATCH 3/3] mmc: sdio_cis: add RK915 CIS tuple quirks
+
+The Rockchip RK915 WiFi chip has a non-standard CIS (Card Information
+Structure) that may be smaller than the minimum required by the SDIO
+spec. The BSP kernel works around this with three changes:
+
+1. Bypass the CIS FUNCE tuple minimum size check.
+2. Force max_blksize to 512 for firmware download.
+3. Skip enable_timeout parsing when the buffer may be too short,
+   falling back to the default 1-second timeout.
+
+All changes are gated behind MMC_CAP2_WIFI_RK915 (set via the
+"supports-rk915" DT property).
+
+Signed-off-by: Imanol-Mikel Barba <imanol@local>
+---
+ drivers/mmc/core/sdio_cis.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mmc/core/sdio_cis.c b/drivers/mmc/core/sdio_cis.c
+index 777777777777..888888888888 100644
+--- a/drivers/mmc/core/sdio_cis.c
++++ b/drivers/mmc/core/sdio_cis.c
+@@ -174,6 +174,7 @@
+ {
+ 	unsigned vsn;
+ 	unsigned min_size;
++	struct mmc_host *host = card->host;
+ 
+ 	/* Only valid for the individual function's CIS (1-7) */
+ 	if (!func)
+@@ -190,15 +191,20 @@
+ 		pr_warn("%s: card has broken SDIO 1.1 CIS, forcing SDIO 1.0\n",
+ 			mmc_hostname(card->host));
+ 		vsn = SDIO_SDIO_REV_1_00;
+-	} else if (size < min_size) {
++	} else if (size < min_size &&
++		   !(host->caps2 & MMC_CAP2_WIFI_RK915)) {
+ 		return -EINVAL;
+ 	}
+ 
+ 	/* TPLFE_MAX_BLK_SIZE */
+ 	func->max_blksize = buf[12] | (buf[13] << 8);
++	/* RK915: force 512-byte block size for firmware download */
++	if (host->caps2 & MMC_CAP2_WIFI_RK915)
++		func->max_blksize = 512;
+ 
+ 	/* TPLFE_ENABLE_TIMEOUT_VAL, present in ver 1.1 and above */
+-	if (vsn > SDIO_SDIO_REV_1_00)
++	if (vsn > SDIO_SDIO_REV_1_00 &&
++	    !(host->caps2 & MMC_CAP2_WIFI_RK915))
+ 		func->enable_timeout = (buf[28] | (buf[29] << 8)) * 10;
+ 	else
+ 		func->enable_timeout = jiffies_to_msecs(HZ);
+-- 
+2.45.0
+

@@ -1,0 +1,17 @@
+comment "rk915 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_RK915
+	bool "rk915"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Rockchip RK915 SDIO WiFi driver, ported from BSP kernel 4.4
+	  to mainline Linux 6.x. The RK915 is an internal 2.4 GHz
+	  802.11 b/g/n WiFi chip found in some Anbernic/eeclone handhelds
+	  (e.g. R36 Ultra).
+
+	  Requires firmware files rk915_fw.bin and rk915_patch.bin
+	  in /lib/firmware/.
+
+	  The SDIO controller must be configured in the device tree
+	  with mmc-pwrseq-simple for power sequencing.
