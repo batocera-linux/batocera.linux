@@ -50,9 +50,10 @@ case "$1" in
 		    timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
 		fi
 		
-		# Clean up the communication pipe on a full system stop
+		# Clean up the communication pipe and the ready-flag on a full system stop
 		rm -f "${FIFO_PATH}"
 		rm -f "${SUSPEND_FLAG}"
+		rm -f "/tmp/emulationstation.ready"
 		;;
 
 	suspend)
