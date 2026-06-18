@@ -1,0 +1,31 @@
+#!/bin/sh
+
+COMMON_DIR="/userdata/system/torrent"
+DIR_INPUT="${COMMON_DIR}/input"
+DIR_OUTPUT="${COMMON_DIR}/output"
+DIR_TMP="${COMMON_DIR}/tmp"
+FILE_LOG="${COMMON_DIR}/transmission.log"
+DIR_CONFIG="${COMMON_DIR}/config"
+FILE_PID="${COMMON_DIR}/transmission.pid"
+
+case "${1}" in
+    start)
+	mkdir -p "${COMMON_DIR}" || exit 1
+	if ! transmission-daemon \
+	     -g "${DIR_CONFIG}" \
+	     -w "${DIR_OUTPUT}" \
+	     --incomplete-dir "${DIR_TMP}" \
+	     -c "${DIR_INPUT}" \
+	     --pid-file "${FILE_PID}" \
+	     --logfile "${FILE_LOG}"
+	then
+	    echo "failed to start transmission daemon" >&2
+	    exit 1
+	fi
+	nohup batocera-upgrade-torrent --checker-process &
+	;;
+    stop)
+	batocera-upgrade-torrent --stop-checker-process
+	transmission-remote --exit
+	;;
+esac
