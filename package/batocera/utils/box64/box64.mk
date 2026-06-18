@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BOX64_VERSION = v0.4.0
+BOX64_VERSION = v0.4.2
 BOX64_SITE = $(call github,ptitSeb,box64,$(BOX64_VERSION))
 BOX64_LICENSE = MIT
 BOX64_LICENSE_FILES = LICENSE
