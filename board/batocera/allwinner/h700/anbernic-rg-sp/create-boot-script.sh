@@ -25,4 +25,6 @@ cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomac
 cp "${BINARIES_DIR}/sun50i-h700-anbernic-rg-sp.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 
+cp "${BINARIES_DIR}/sun50i-h700-anbernic-rg35xx-2024-ddr3.dtbo" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+
 exit 0
