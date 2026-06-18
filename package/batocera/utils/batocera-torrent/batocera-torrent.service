@@ -1,0 +1,27 @@
+#!/bin/sh
+
+DIR_INPUT=/home/nicolas/dev/batocera.linux/torrent/input
+DIR_OUTPUT=/home/nicolas/dev/batocera.linux/torrent/output
+DIR_TMP=/home/nicolas/dev/batocera.linux/torrent/tmp
+FILE_LOG=/home/nicolas/dev/batocera.linux/torrent/transmission.log
+DIR_CONFIG=/home/nicolas/dev/batocera.linux/torrent/config
+FILE_PID=/home/nicolas/dev/batocera.linux/torrent/transmission.pid
+
+case "${1}" in
+    start)
+	if ! transmission-daemon \
+	     -g "${DIR_CONFIG}" \
+	     -w "${DIR_OUTPUT}" \
+	     --incomplete-dir "${DIR_TMP}" \
+	     -c "${DIR_INPUT}" \
+	     --pid-file "${FILE_PID}" \
+	     --logfile "${FILE_LOG}"
+	then
+	    echo "failed to start transmission daemon" >&2
+	    exit 1
+	fi
+	;;
+    stop)
+	transmission-remote --exit
+	;;
+esac
