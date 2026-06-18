@@ -3,8 +3,8 @@
 # libwinevbs
 #
 ################################################################################
-# Version: Commits on Jun 10, 2026
-LIBWINEVBS_VERSION = 770447bae894a478fe84ebb21fc00d24beb4d230
+# Version: Commits on Jun 18, 2026
+LIBWINEVBS_VERSION = 8ce73e202a4971ad3e08d91c694ea7ca0fe81ed6
 LIBWINEVBS_SITE = $(call github,vpinball,libwinevbs,$(LIBWINEVBS_VERSION))
 LIBWINEVBS_LICENSE = LGPL-2.1
 LIBWINEVBS_LICENSE_FILES = LICENSE
