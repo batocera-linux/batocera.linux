@@ -9,6 +9,7 @@ Updated for AYN Odin (odin_mono) platform - @dmanlfc
 Updated for Anbernic RG CubeXX - @dmanlfc
 Updated for Anbernic RG Vita Pro - @dmanlfc
 Updated for R36 Ultra - @ImanolBarba
+Updated for Legion Go / Go 2 - @dmanlfc
 """
 import glob
 import os
@@ -43,13 +44,17 @@ def batocera_model():
     # Multi-led check (e.g. Mangmi Air X)
     if glob.glob('/sys/devices/platform/multi-led-l1/leds/rgb:l1/multi_intensity'):
         return "multiled"
-    # Generic check for modern joystick ring LEDs from ayaneo-platform/ayn-platform
-    if glob.glob('/sys/class/leds/*:rgb:joystick_rings/multi_intensity'):
-        return "rgb"
     # Legion Go S check
     l = '/sys/class/leds/go_s:rgb:joystick_rings/effect'
     if os.path.exists(l):
         return("legiongos")
+    # Legion Go / Go 2 check
+    l_go = '/sys/class/leds/go:rgb:joystick_rings/effect'
+    if os.path.exists(l_go):
+        return("legiongo")
+    # Generic check for modern joystick ring LEDs from ayaneo-platform/ayn-platform
+    if glob.glob('/sys/class/leds/*:rgb:joystick_rings/multi_intensity'):
+        return "rgb"
     # R36 Ultra check
     l = '/sys/class/leds/keros::ambient/brightness'
     if os.path.exists(l):
@@ -757,27 +762,38 @@ class multiled(object):
             return ("-1", "-1")
 
 ####################
-# Handhelds that use the Lenovo Legion Go S interface
-class legiongosled(object):
-    def __init__(self):
-        self.bpath           = '/sys/class/leds/go_s:rgb:joystick_rings/'
+# Generic Lenovo Legion Go Family Base Class
+class legiongo_family_led(object):
+    def __init__(self, prefix):
+        self.bpath           = f'/sys/class/leds/{prefix}:rgb:joystick_rings/'
         self.effect_file     = self.bpath + 'effect'
         self.mode_file       = self.bpath + 'mode'
         self.speed_file      = self.bpath + 'speed'
-        # NOTE: The following are standard kernel LED class files, assumed to exist
+        self.enabled_file    = self.bpath + 'enabled'
         self.color_file      = self.bpath + 'multi_intensity'
         self.brightness_file = self.bpath + 'brightness'
         self.max_brightness  = self.bpath + 'max_brightness'
 
-        # Per documentation, mode must be 'custom' for Linux control
-        try:
-            with open(self.mode_file, 'w') as f:
-                f.write('custom')
-            if DEBUG:
-                print("Set Legion Go S LED mode to 'custom'")
-        except Exception as e:
-            if DEBUG:
-                print(f"Could not set Legion Go S mode: {e}")
+        if not self._write_verified(self.mode_file, 'custom'):
+            print(f"Warning: could not confirm Legion Go ({prefix}) mode=custom after retries")
+        if not self._write_verified(self.enabled_file, 'true'):
+            print(f"Warning: could not confirm Legion Go ({prefix}) enabled=true after retries")
+
+    def _write_verified(self, path, value, retries=10, delay=0.5):
+        for attempt in range(retries):
+            try:
+                with open(path, 'w') as f:
+                    f.write(value)
+                with open(path, 'r') as f:
+                    if f.read().strip() == value:
+                        if DEBUG:
+                            print(f"{path} -> {value} confirmed on attempt {attempt+1}")
+                        return True
+            except Exception as e:
+                if DEBUG:
+                    print(f"Attempt {attempt+1} writing {value} to {path} failed: {e}")
+            time.sleep(delay)
+        return False
 
     def set_color (self, rgb):
         if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
@@ -785,16 +801,18 @@ class legiongosled(object):
             return
 
         # Always ensure the LEDs are on, unless explicitly turned off
-        self.set_brightness_conf()
+        if rgb != "OFF":
+            self._write_verified(self.enabled_file, 'true')
+            self.set_brightness_conf()
 
         try:
             if rgb == "PULSE":
                 if DEBUG: print('Set effect to: breathe')
-                with open (self.effect_file, 'w') as p: p.write('breathe')
+                self._write_verified(self.effect_file, 'breathe')
                 return
             elif rgb == "RAINBOW":
                 if DEBUG: print('Set effect to: rainbow')
-                with open (self.effect_file, 'w') as p: p.write('rainbow')
+                self._write_verified(self.effect_file, 'rainbow')
                 return
             elif rgb == "OFF":
                 self.turn_off()
@@ -802,7 +820,7 @@ class legiongosled(object):
 
             # For static colors, set effect to monocolor first
             if DEBUG: print('Set effect to: monocolor')
-            with open (self.effect_file, 'w') as p: p.write('monocolor')
+            self._write_verified(self.effect_file, 'monocolor')
 
             if rgb == "ESCOLOR":
                 r, g, b = batoconf_color()
@@ -812,14 +830,20 @@ class legiongosled(object):
                 out = f'{hex_to_dec(r)} {hex_to_dec(g)} {hex_to_dec(b)}'
 
             if DEBUG: print (f'Set color to: {out}')
-            with open (self.color_file, 'w') as p:
-                p.write(out)
+            self._write_verified(self.color_file, out)
 
         except Exception as e:
             if DEBUG:
-                print(f'Error setting Legion Go S color: {e}')
+                print(f'Error setting Legion Go color: {e}')
 
     def get_color (self) -> str:
+        try:
+            with open(self.enabled_file, 'r') as f:
+                if f.read().strip() == 'false':
+                    return "000000"
+        except:
+            pass
+
         try:
             with open (self.color_file, 'r') as p:
                 rgb = p.readline().strip()
@@ -830,6 +854,12 @@ class legiongosled(object):
             return "000000"
 
     def set_color_dec (self, rgb):
+        try:
+            with open(self.enabled_file, 'w') as f:
+                f.write('true')
+        except Exception:
+            pass
+
         try:
             if DEBUG: print('Set effect to: monocolor')
             with open (self.effect_file, 'w') as p: p.write('monocolor')
@@ -842,19 +872,41 @@ class legiongosled(object):
 
     def get_color_dec (self) -> str:
         try:
+            with open(self.enabled_file, 'r') as f:
+                if f.read().strip() == 'false':
+                    return "0 0 0"
+        except:
+            pass
+
+        try:
             with open (self.color_file, 'r') as p:
                 return p.readline().strip()
         except:
             return "0 0 0"
 
     def rainbow_effect(self):
+        try:
+            with open(self.enabled_file, 'w') as f:
+                f.write('true')
+        except Exception:
+            pass
         self.set_color("RAINBOW")
 
     def pulse_effect(self):
+        try:
+            with open(self.enabled_file, 'w') as f:
+                f.write('true')
+        except Exception:
+            pass
         self.set_color("PULSE")
 
     def turn_off(self):
         if DEBUG: print('Turning off LED')
+        try:
+            with open(self.enabled_file, 'w') as f:
+                f.write('false')
+        except Exception as e:
+            if DEBUG: print(f"Could not disable LED interface: {e}")
         self.set_brightness(0)
 
     def set_brightness (self, b):
@@ -887,6 +939,14 @@ class legiongosled(object):
             return (b, x)
         except:
             return ("-1", "-1")
+
+class legiongosled(legiongo_family_led):
+    def __init__(self):
+        super().__init__(prefix="go_s")
+
+class legiongoled(legiongo_family_led):
+    def __init__(self):
+        super().__init__(prefix="go")
 
 ####################
 # R36 Ultra
@@ -1434,6 +1494,8 @@ class led(object):
             return rgbledaddr()
         elif m == "legiongos":
             return legiongosled()
+        elif m == "legiongo":
+            return legiongoled()
         elif m == "multiled":
             return multiled()
         elif m == "dual_multiled":

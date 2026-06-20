@@ -3,7 +3,7 @@
 """
 LED Service Daemon for handheld devices
 Show battery level and retroachievements through LED controllers
-Written for Batocera - @lbrpdx
+Written for Batocera - @lbrpdx & @dmanlfc
 
 In order to configure your own color mapping
 edit a file /userdata/system/configs/leds.conf with:
@@ -55,7 +55,7 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in ["pwm", "rgbaddr", "legiongos", "multiled", "dual_multiled", "odin_mono", "cubexx", "rg_vita_pro", "r36ultra"]:
+    if model in ["pwm", "rgbaddr", "legiongos", "legiongo", "multiled", "dual_multiled", "odin_mono", "cubexx", "rg_vita_pro", "r36ultra"]:
         for path in [
             "/sys/class/power_supply/BAT0", 
             "/sys/class/power_supply/BAT1", 
@@ -184,7 +184,7 @@ def color_changes_allowed():
 PATH = check_support()
 if PATH is None:
     exit()
-if len(sys.argv)>1:
+if len(sys.argv) > 1:
     led = batoled.led()
     if sys.argv[1] == "start":
         try:
@@ -194,29 +194,25 @@ if len(sys.argv)>1:
         except Exception as e:
             print (f"Could not launch daemon: {e}")
             t.stop()
-    elif sys.argv[1] == "stop" or sys.argv[1] == "off":
+    elif sys.argv[1] in ["stop", "off"]:
         led.turn_off()
-    elif sys.argv[1] == "retroachievement" or sys.argv[1] == "rainbow":
+    elif sys.argv[1] in ["retroachievement", "rainbow"]:
         if color_changes_allowed():
             led.rainbow_effect()
     elif sys.argv[1] == "pulse":
         if color_changes_allowed():
             led.pulse_effect()
-    elif sys.argv[1] == "set_color" and sys.argv[2] != None:
+    elif sys.argv[1] == "set_color" and len(sys.argv) > 2:
         if color_changes_allowed():
             led.set_color(sys.argv[2])
     elif sys.argv[1] == "get_color":
         print(led.get_color())
-    elif sys.argv[1] == "set_color_dec" and sys.argv[2] != None:
+    elif sys.argv[1] == "set_color_dec" and len(sys.argv) > 2:
         if color_changes_allowed():
-            rgb = ""
-            for p in (sys.argv[2:]):
-                rgb += str(p) + ' '
+            rgb = " ".join(sys.argv[2:]) + " "
             led.set_color_dec(rgb)
-    elif sys.argv[1] == "set_color_force_dec" and sys.argv[2] != None:
-        rgb = ""
-        for p in (sys.argv[2:]):
-            rgb += str(p) + ' '
+    elif sys.argv[1] == "set_color_force_dec" and len(sys.argv) > 2:
+        rgb = " ".join(sys.argv[2:]) + " "
         led.set_color_dec(rgb)
     elif sys.argv[1] == "get_color_dec":
         print(led.get_color_dec())
@@ -224,7 +220,7 @@ if len(sys.argv)>1:
         block_color_changes(True)
     elif sys.argv[1] == "unblock_color_changes":
         block_color_changes(False)
-    elif sys.argv[1] == "set_brightness" and sys.argv[2] != None:
+    elif sys.argv[1] == "set_brightness" and len(sys.argv) > 2:
         led.set_brightness(sys.argv[2])
     elif sys.argv[1] == "get_brightness":
         (b, m) = led.get_brightness()
