@@ -136,7 +136,7 @@ class shadPS4Generator(Generator):
                     "extra_dmem_in_mbytes": 0,
                     "font_dir": "",
                     "home_dir": str(savesPath),
-                    "install_dirs": [str(romDir)],
+                    "install_dirs": [{"enabled": True, "path": str(romDir)}],
                     "neo_mode": False,
                     "shad_net_enabled": False,
                     "shadnet_server": "",
@@ -192,7 +192,7 @@ class shadPS4Generator(Generator):
         general_config = config.setdefault("General", {})
         general_config["discord_rpc_enabled"] = False
         general_config["addon_install_dir"] = str(dlcPath)
-        general_config["install_dirs"] = [str(romDir)]
+        general_config["install_dirs"] = [{"enabled": True, "path": str(romDir)}]
         general_config["home_dir"] = str(savesPath)
 
         # GPU
@@ -207,22 +207,28 @@ class shadPS4Generator(Generator):
         vulkan_config["gpu_id"] = int(discrete_index)
         vulkan_config["pipeline_cache_enabled"] = True
 
-        # Options
-        if system.config.get_bool("shadps4_hdr"):
-            gpu_config["hdr_allowed"] = True
-        else:
-            gpu_config["hdr_allowed"] = False
+        # Options - GRAPHICS
+        gpu_config["fsr_enabled"] = system.config.get_bool("shadps4_fsr")
+        gpu_config["rcas_enabled"] = system.config.get_bool("shadps4_rcas")
+        gpu_config["hdr_allowed"] = system.config.get_bool("shadps4_hdr")
 
-        if system.config.get("shadps4_console_lang"):
-            general_config["console_language"] = int(system.config["shadps4_console_lang"])
-        else:
-            general_config["console_language"] = 1
-        
+        # Options - DISPLAY
+        gpu_config["present_mode"] = system.config.get("shadps4_present_mode") or "Mailbox"
+        gpu_config["vblank_frequency"] = int(system.config.get("shadps4_vblank_freq") or 60)
+        general_config["show_fps_counter"] = system.config.get_bool("shadps4_show_fps")
+
+        # Options - SYSTEM
+        general_config["neo_mode"] = system.config.get_bool("shadps4_neo_mode")
+        general_config["console_language"] = int(system.config.get("shadps4_console_lang") or 1)
+
+        # Options - ADVANCED
+        gpu_config["copy_gpu_buffers"] = system.config.get_bool("shadps4_copy_gpu_buffers")
+        gpu_config["readbacks_mode"] = int(system.config.get("shadps4_readbacks_mode") or 0)
+        gpu_config["direct_memory_access_enabled"] = system.config.get_bool("shadps4_dma")
+        vulkan_config["pipeline_cache_archived"] = system.config.get_bool("shadps4_pipeline_cache")
+
         log_config = config.setdefault("Log", {})
-        if system.config.get_bool("shadps4_logging"):
-            log_config["enable"] = True
-        else:
-            log_config["enable"] = False
+        log_config["enable"] = system.config.get_bool("shadps4_logging")
 
         # Create necessary directories if they do not exist
         mkdir_if_not_exists(json_file.parent)
