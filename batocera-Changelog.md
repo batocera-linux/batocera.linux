@@ -15,7 +15,9 @@
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
+- ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
 - box64 userland x86_64 emulator for aarch64
+- Legion Go / Go 2 LED controller support
 ### Fixed
 
 ### Changed / Improved
