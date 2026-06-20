@@ -1,0 +1,27 @@
+--- a/scripts/src/osd/sdl_cfg.lua
++++ b/scripts/src/osd/sdl_cfg.lua
+@@ -139,14 +139,16 @@
+ 	buildoptions {
+ 		backtick("pkg-config --cflags libdrm"),
+ 	}
+-	if _OPTIONS["QT_HOME"]~=nil then
+-		buildoptions {
+-			"-I" .. backtick(_OPTIONS["QT_HOME"] .. "/bin/qmake -query QT_INSTALL_HEADERS"),
+-		}
+-	else
+-		buildoptions {
+-			"-I$(shell qmake6 -query QT_INSTALL_HEADERS)",
+-		}
++	if _OPTIONS["USE_QTDEBUG"]=="1" then
++		if _OPTIONS["QT_HOME"]~=nil then
++			buildoptions {
++				"-I" .. backtick(_OPTIONS["QT_HOME"] .. "/bin/qmake -query QT_INSTALL_HEADERS"),
++			}
++		else
++			buildoptions {
++				"-I$(shell qmake6 -query QT_INSTALL_HEADERS)",
++			}
++		end
+ 	end
+ elseif _OPTIONS["targetos"]=="macosx" then
+ 	defines {
