@@ -13,13 +13,58 @@ shared_features:
   - bezel.tattoo_file
   - bezel.resize_tattoo
 custom_features:
+  shadps4_fsr:
+    submenu: GRAPHICS
+    prompt: FSR UPSCALING
+    description: Enable FidelityFX Super Resolution upscaling.
+    choices:
+      Disabled: false
+      Enabled: true
+  shadps4_rcas:
+    submenu: GRAPHICS
+    prompt: RCAS SHARPENING
+    description: Enable Robust Contrast-Adaptive Sharpening.
+    choices:
+      Disabled: false
+      Enabled: true
   shadps4_hdr:
+    submenu: GRAPHICS
     prompt: HDR
     description: Enable High Dynamic Range if your display supports it.
     choices:
       Disabled: false
       Enabled: true
+  shadps4_present_mode:
+    submenu: DISPLAY
+    prompt: PRESENT MODE
+    description: Frame presentation method. Mailbox is low latency, VSync prevents tearing, Immediate may tear.
+    choices:
+      Mailbox (Default): Mailbox
+      VSync: Fifo
+      Immediate: Immediate
+  shadps4_vblank_freq:
+    submenu: DISPLAY
+    prompt: VBLANK FREQUENCY
+    description: Set the vertical blank frequency. Use 120 for high refresh rate displays.
+    choices:
+      60 Hz (Default): 60
+      120 Hz: 120
+  shadps4_show_fps:
+    submenu: DISPLAY
+    prompt: FPS COUNTER
+    description: Show frames per second overlay.
+    choices:
+      Disabled: false
+      Enabled: true
+  shadps4_neo_mode:
+    submenu: SYSTEM
+    prompt: PS4 PRO MODE
+    description: Enable PS4 Pro (Neo) mode. Some games have enhanced graphics or performance in Pro mode.
+    choices:
+      Disabled: false
+      Enabled: true
   shadps4_console_lang:
+    submenu: SYSTEM
     prompt: CONSOLE LANGUAGE
     description: Choose console language. Not all games may support the language choice.
     choices:
@@ -54,7 +99,37 @@ custom_features:
       Turkish: 19
       Ukrainian: 30
       Vietnamese: 28
+  shadps4_copy_gpu_buffers:
+    submenu: ADVANCED
+    prompt: COPY GPU BUFFERS
+    description: May fix missing or incorrect graphics in some games at a small performance cost.
+    choices:
+      Disabled: false
+      Enabled: true
+  shadps4_readbacks_mode:
+    submenu: ADVANCED
+    prompt: READBACKS MODE
+    description: GPU readback mode. Can help fix rendering issues in some games.
+    choices:
+      Off (Default): 0
+      Sync: 1
+      Async: 2
+  shadps4_dma:
+    submenu: ADVANCED
+    prompt: DIRECT MEMORY ACCESS
+    description: Enable DMA for GPU. Some games require this for correct rendering.
+    choices:
+      Disabled: false
+      Enabled: true
+  shadps4_pipeline_cache:
+    submenu: ADVANCED
+    prompt: PIPELINE CACHE ARCHIVE
+    description: Archive compiled Vulkan shaders to disk to reduce stuttering on subsequent launches.
+    choices:
+      Disabled: false
+      Enabled: true
   shadps4_logging:
+    submenu: ADVANCED
     prompt: ENABLE LOGGING
     description: Enable logging for the emulator developers.
     preset: switchauto
