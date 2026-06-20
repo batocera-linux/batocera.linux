@@ -1,8 +1,8 @@
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
-@@ -263,6 +263,10 @@ void enc1_stream_encoder_dp_set_stream_a
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
+@@ -264,6 +264,10 @@ void enc1_stream_encoder_dp_set_stream_a
  	struct dc_crtc_timing hw_crtc_timing = *crtc_timing;
  
  	if (hw_crtc_timing.flags.INTERLACE) {
@@ -13,11 +13,11 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dio/dcn10/dcn10_stream_encoder.c
  		/*the input timing is in VESA spec format with Interlace flag =1*/
  		hw_crtc_timing.v_total /= 2;
  		hw_crtc_timing.v_border_top /= 2;
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
-@@ -3919,6 +3919,10 @@ static void apply_front_porch_workaround
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
+@@ -3931,6 +3931,10 @@ static void apply_front_porch_workaround
  	if (timing->flags.INTERLACE == 1) {
  		if (timing->v_front_porch < 2)
  			timing->v_front_porch = 2;
@@ -28,10 +28,10 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dcn10/dcn10_hwseq.c
  	} else {
  		if (timing->v_front_porch < 1)
  			timing->v_front_porch = 1;
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/optc/dcn10/dcn10_optc.c
 @@ -54,6 +54,10 @@ static void apply_front_porch_workaround
  	if (timing->flags.INTERLACE == 1) {
  		if (timing->v_front_porch < 2)

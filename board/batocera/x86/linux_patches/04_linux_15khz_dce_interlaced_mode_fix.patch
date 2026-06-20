@@ -1,7 +1,7 @@
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
 @@ -2869,7 +2869,8 @@ static void populate_initial_data(
  			data->bytes_per_pixel[num_displays + 4] = 4;
  			break;
@@ -22,11 +22,11 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/basics/dce_calcs.c
  		data->stereo_mode[num_displays + 4] = bw_def_mono;
  		num_displays++;
  	}
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
-@@ -1132,10 +1132,6 @@ bool dce110_timing_generator_validate_ti
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
+@@ -1134,10 +1134,6 @@ bool dce110_timing_generator_validate_ti
  	if (timing->timing_3d_format != TIMING_3D_FORMAT_NONE)
  		return false;
  
@@ -37,7 +37,7 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
  	/* Check maximum number of pixels supported by Timing Generator
  	 * (Currently will never fail, in order to fail needs display which
  	 * needs more than 8192 horizontal and
-@@ -1949,13 +1945,12 @@ void dce110_tg_set_overscan_color(struct
+@@ -1952,13 +1948,12 @@ void dce110_tg_set_overscan_color(struct
  	dm_write_reg(ctx, addr, value);
  }
  
@@ -52,7 +52,15 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
  	const enum signal_type signal,
  	bool use_vbios)
  {
-@@ -1965,6 +1960,29 @@ void dce110_tg_program_timing(struct tim
+@@ -1966,7 +1961,6 @@ void dce110_tg_program_timing(struct tim
+ 	(void)vstartup_start;
+ 	(void)vupdate_offset;
+ 	(void)vupdate_width;
+-	(void)pstate_keepout;
+ 	(void)signal;
+ 	if (use_vbios)
+ 		dce110_timing_generator_program_timing_generator(tg, timing);
+@@ -1974,6 +1968,29 @@ void dce110_tg_program_timing(struct tim
  		dce110_timing_generator_program_blanking(tg, timing);
  }
  
@@ -82,10 +90,10 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.c
  bool dce110_tg_is_blanked(struct timing_generator *tg)
  {
  	struct dce110_timing_generator *tg110 = DCE110TG_FROM_TG(tg);
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
 @@ -265,6 +265,15 @@ void dce110_tg_program_timing(struct tim
  	const enum signal_type signal,
  	bool use_vbios);
@@ -102,11 +110,11 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce110/dce110_timing_generator.h
  bool dce110_tg_is_blanked(struct timing_generator *tg);
  
  void dce110_tg_set_blank(struct timing_generator *tg,
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
-@@ -705,6 +705,15 @@ static void dce120_tg_program_timing(str
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
+@@ -712,6 +712,15 @@ static void dce120_tg_program_timing(str
  		dce110_timing_generator_program_timing_generator(tg, timing);
  	else
  		dce120_timing_generator_program_blanking(tg, timing);
@@ -122,10 +130,10 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce120/dce120_timing_generator.c
  }
  
  static bool dce120_tg_is_blanked(struct timing_generator *tg)
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
 @@ -118,7 +118,17 @@ static void program_timing(struct timing
  	if (!use_vbios)
  		program_pix_dur(tg, timing->pix_clk_100hz);
@@ -145,11 +153,11 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/dce60/dce60_timing_generator.c
  }
  
  static void dce60_timing_generator_enable_advanced_request(
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
-@@ -2950,6 +2950,19 @@ static void dce110_program_front_end_for
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
+@@ -3061,6 +3061,19 @@ static void dce110_program_front_end_for
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != NULL;
  
@@ -169,10 +177,10 @@ Index: linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dce110/dce110_hwseq.c
  	program_scaler(dc, pipe_ctx);
  
  	mi->funcs->mem_input_program_surface_config(
-Index: linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
+Index: linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
 ===================================================================
---- linux-7.0.orig/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
-+++ linux-7.0/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
+--- linux-7.1.orig/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
++++ linux-7.1/drivers/gpu/drm/amd/display/dc/hwss/dce60/dce60_hwseq.c
 @@ -311,6 +311,9 @@ dce60_program_front_end_for_pipe(
  
  	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != 0;
