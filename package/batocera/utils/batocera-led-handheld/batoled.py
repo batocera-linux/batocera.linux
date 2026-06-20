@@ -10,6 +10,7 @@ Updated for Anbernic RG CubeXX - @dmanlfc
 Updated for Anbernic RG Vita Pro - @dmanlfc
 Updated for R36 Ultra - @ImanolBarba
 Updated for Legion Go / Go 2 - @dmanlfc
+Updated for LED Mode handling & Chroma - @dmanlfc
 """
 import glob
 import os
@@ -183,6 +184,9 @@ class rgvitaproled(object):
         elif rgb == "RAINBOW":
             self.rainbow_effect()
             return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
         elif rgb == "PULSE":
             self.pulse_effect()
             return
@@ -244,6 +248,9 @@ class rgvitaproled(object):
                     f.write('5')
             except Exception:
                 pass
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         # Maps "PULSE" to Hardware Mode 2 (breathing/pulse)
@@ -362,6 +369,9 @@ class cubexxled(object):
         elif rgb == "RAINBOW":
             self.rainbow_effect()
             return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
         elif rgb == "PULSE":
             self.pulse_effect()
             return
@@ -404,6 +414,9 @@ class cubexxled(object):
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
         self.set_color(prev)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -477,7 +490,7 @@ class odinmono(object):
             if b_conf is None: 
                 b_conf = 1
             self._write_hardware(b_conf)
-        elif rgb in ["RAINBOW", "PULSE"]:
+        elif rgb in ["RAINBOW", "PULSE", "CHROMA"]:
             self.pulse_effect()
         else:
             r = hex_to_dec(rgb[0:2])
@@ -519,6 +532,9 @@ class odinmono(object):
         return "0 0 0"
 
     def rainbow_effect(self):
+        self.pulse_effect()
+
+    def chroma_effect(self):
         self.pulse_effect()
 
     def pulse_effect(self):
@@ -591,6 +607,9 @@ class dual_multiled(object):
         elif rgb == "RAINBOW":
             self.rainbow_effect()
             return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
         elif rgb == "PULSE":
             self.pulse_effect()
             return
@@ -634,6 +653,9 @@ class dual_multiled(object):
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
         self.set_color(prev)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -696,6 +718,9 @@ class multiled(object):
         elif rgb == "RAINBOW":
             self.rainbow_effect()
             return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
         elif rgb == "PULSE":
             self.pulse_effect()
             return
@@ -735,6 +760,9 @@ class multiled(object):
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
         self.set_color(prev)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -778,6 +806,10 @@ class legiongo_family_led(object):
             print(f"Warning: could not confirm Legion Go ({prefix}) mode=custom after retries")
         if not self._write_verified(self.enabled_file, 'true'):
             print(f"Warning: could not confirm Legion Go ({prefix}) enabled=true after retries")
+        
+        # Default the hardware delay speed to 100 (slowest possible transition)
+        if not self._write_verified(self.speed_file, '100'):
+            print(f"Warning: could not confirm Legion Go ({prefix}) speed=100 after retries")
 
     def _write_verified(self, path, value, retries=10, delay=0.5):
         for attempt in range(retries):
@@ -796,7 +828,7 @@ class legiongo_family_led(object):
         return False
 
     def set_color (self, rgb):
-        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "CHROMA", "OFF", "ESCOLOR" ]:
             print (f'Error Color {rgb} is invalid')
             return
 
@@ -813,6 +845,10 @@ class legiongo_family_led(object):
             elif rgb == "RAINBOW":
                 if DEBUG: print('Set effect to: rainbow')
                 self._write_verified(self.effect_file, 'rainbow')
+                return
+            elif rgb == "CHROMA":
+                if DEBUG: print('Set effect to: chroma')
+                self._write_verified(self.effect_file, 'chroma')
                 return
             elif rgb == "OFF":
                 self.turn_off()
@@ -891,6 +927,14 @@ class legiongo_family_led(object):
         except Exception:
             pass
         self.set_color("RAINBOW")
+
+    def chroma_effect(self):
+        try:
+            with open(self.enabled_file, 'w') as f:
+                f.write('true')
+        except Exception:
+            pass
+        self.set_color("CHROMA")
 
     def pulse_effect(self):
         try:
@@ -992,6 +1036,9 @@ class r36ultraled():
         elif rgb == "RAINBOW":
             self.rainbow_effect()
             return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
         elif rgb == "PULSE":
             self.pulse_effect()
             return
@@ -1053,6 +1100,9 @@ class r36ultraled():
     def rainbow_effect(self) -> None:
         self.set_mode(9)
 
+    def chroma_effect(self) -> None:
+        self.rainbow_effect()
+
     def pulse_effect(self) -> None:
         self.set_mode(8)
 
@@ -1093,7 +1143,7 @@ class rgbled(object):
         self.max_brightness  = self.bpath + 'max_brightness'
 
     def set_color (self, rgb):
-        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "CHROMA", "OFF", "ESCOLOR" ]:
             print (f'Error Color {rgb} is invalid')
             return
         if rgb == "PULSE":
@@ -1101,6 +1151,9 @@ class rgbled(object):
             return
         elif rgb == "RAINBOW":
             self.rainbow_effect()
+            return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
             return
         elif rgb == "OFF":
             self.turn_off()
@@ -1143,6 +1196,9 @@ class rgbled(object):
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
         self.set_color(prev)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -1240,7 +1296,7 @@ class pwmled(object):
         except: return 1.0
 
     def set_color (self, rgb):
-        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "OFF", "ESCOLOR" ]:
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "CHROMA", "OFF", "ESCOLOR" ]:
             print (f'Error Color {rgb} is invalid')
             return
         if rgb == "PULSE":
@@ -1248,6 +1304,9 @@ class pwmled(object):
             return
         elif rgb == "RAINBOW":
             self.rainbow_effect()
+            return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
             return
         elif rgb == "OFF":
             self.turn_off()
@@ -1331,6 +1390,9 @@ class pwmled(object):
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
         self.set_color(prev)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -1419,6 +1481,8 @@ class rgbledaddr(object):
             self._write_scaled(int(r), int(g), int(b))
         elif rgb == "RAINBOW":
             self.rainbow_effect()
+        elif rgb == "CHROMA":
+            self.chroma_effect()
         elif rgb == "PULSE":
             self.pulse_effect()
         elif len(rgb) == 6:
@@ -1457,6 +1521,9 @@ class rgbledaddr(object):
             r, g, b = hex_to_dec(o_hex[0:2]), hex_to_dec(o_hex[2:4]), hex_to_dec(o_hex[4:6])
             self._write_scaled(r, g, b)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
+
+    def chroma_effect(self):
+        self.rainbow_effect()
 
     def pulse_effect(self):
         # Get the 'base' color from config to pulse against
