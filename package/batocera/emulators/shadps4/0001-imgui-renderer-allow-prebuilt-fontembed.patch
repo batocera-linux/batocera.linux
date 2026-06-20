@@ -1,0 +1,17 @@
+diff --git a/src/imgui/renderer/CMakeLists.txt b/src/imgui/renderer/CMakeLists.txt
+--- a/src/imgui/renderer/CMakeLists.txt
++++ b/src/imgui/renderer/CMakeLists.txt
+@@ -3,7 +3,12 @@
+
+ project(ImGui_Resources)
+
+-add_executable(Dear_ImGui_FontEmbed ${CMAKE_SOURCE_DIR}/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp)
++if(Dear_ImGui_FontEmbed_EXECUTABLE)
++    add_executable(Dear_ImGui_FontEmbed IMPORTED GLOBAL)
++    set_target_properties(Dear_ImGui_FontEmbed PROPERTIES IMPORTED_LOCATION "${Dear_ImGui_FontEmbed_EXECUTABLE}")
++else()
++    add_executable(Dear_ImGui_FontEmbed ${CMAKE_SOURCE_DIR}/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp)
++endif()
+
+ set(FONT_LIST
+     NotoSansArabic-Regular.ttf
