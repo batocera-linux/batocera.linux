@@ -75,8 +75,8 @@
 - LabWC to 0.20.0
 - Linux Firmware to 20260519
 - Mesa3D to 26.1.2
-- Nvidia Open Production driver to 595.71.05
-- Nvidia 580 Legacy driver to 580.159.03
+- Nvidia Open Production driver to 595.84
+- Nvidia 580 Legacy driver to 580.159.04
 - QT to 6.11.1
 - Qualcomm SM6115 device kernel updated to 7.0.11
 - Qualcomm SM8550 device kernel updated to 7.0.11

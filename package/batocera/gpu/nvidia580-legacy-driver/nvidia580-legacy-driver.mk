@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-NVIDIA580_LEGACY_DRIVER_VERSION = 580.159.03
+NVIDIA580_LEGACY_DRIVER_VERSION = 580.159.04
 NVIDIA580_LEGACY_DRIVER_SUFFIX = $(if $(BR2_x86_64),_64)
 NVIDIA580_LEGACY_DRIVER_SITE = \
     http://download.nvidia.com/XFree86/Linux-x86$(NVIDIA580_LEGACY_DRIVER_SUFFIX)/$(NVIDIA580_LEGACY_DRIVER_VERSION)
