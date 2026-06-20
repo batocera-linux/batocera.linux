@@ -162,6 +162,12 @@ custom_features:
       3840x2160: 250
       4480x2520: 275
       5120x2880: 300
+  rpcs3_resolution_scale_threshold:
+    submenu: VIDEO
+    prompt: RENDER RESOLUTION SCALE THRESHOLD
+    description: "Only framebuffers greater than this size will be upscaled. May fix problems with missing graphics. (Default: 16)"
+    preset: sliderauto
+    preset_parameters: 1 1024 1
   rpcs3_scaling:
     submenu: RENDER
     prompt: OUTPUT SCALING
@@ -204,6 +210,13 @@ custom_features:
     submenu: RENDER
     prompt: WRITE COLOR BUFFERS
     description: May fix missing graphics and broken lighting at the cost of performance.
+    choices:
+      Off (Default): false
+      'On': true
+  rpcs3_read_colorbuffers:
+    submenu: RENDER
+    prompt: READ COLOR BUFFERS
+    description: Initializes render target memory using vm memory. Some games need this to fix broken graphics.
     choices:
       Off (Default): false
       'On': true
@@ -256,6 +269,13 @@ custom_features:
     choices:
       Off (Default): false
       On (Vulkan Only): true
+  rpcs3_force_cpu_blit_emulation:
+    submenu: RENDER
+    prompt: FORCE CPU BLIT EMULATION
+    description: Forces emulation of all blit and image manipulation operations on the CPU. Can fix some graphical issues at the cost of performance.
+    choices:
+      Off (Default): false
+      'On': true
   rpcs3_audio_format:
     submenu: AUDIO
     prompt: AUDIO FORMAT

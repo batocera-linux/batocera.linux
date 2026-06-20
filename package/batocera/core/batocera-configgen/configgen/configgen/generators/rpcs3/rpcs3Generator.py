@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from ruamel.yaml import YAML
 
 from batocera_common.configparser import CaseSensitiveConfigParser
+from batocera_common.fs import directory_differences
 from batocera_common.yaml import safe_load_yaml12
 
 from ... import Command
@@ -16,7 +17,14 @@ from ...exceptions import BatoceraException
 from ...utils import vulkan
 from ..Generator import Generator
 from . import rpcs3Controllers
-from .rpcs3Paths import RPCS3_BIN, RPCS3_CONFIG, RPCS3_CONFIG_DIR, RPCS3_CURRENT_CONFIG, RPCS3_DEV_HDD0, RPCS3_VFS
+from .rpcs3Paths import (
+    RPCS3_BIN,
+    RPCS3_CONFIG,
+    RPCS3_CONFIG_DIR,
+    RPCS3_CURRENT_CONFIG,
+    RPCS3_DEV_HDD0_DIR,
+    RPCS3_VFS_CONFIG,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -33,39 +41,56 @@ class Rpcs3Generator(Generator):
             "keys": { "exit": "/usr/bin/rpcs3-exit", "menu": ["KEY_LEFTSHIFT", "KEY_F10"] }
         }
 
-    def _migrateDevHdd0(self):
-        legacy_dev_hdd0 = RPCS3_CONFIG_DIR / 'dev_hdd0'
-
-        mkdir_if_not_exists(RPCS3_DEV_HDD0)
-
+    def _migrate_dev_hdd0(self) -> None:
+        legacy_dev_hdd0 = RPCS3_CONFIG_DIR / "dev_hdd0"
         if not legacy_dev_hdd0.exists():
+            # New install or fully migrated: nothing to do
             return
 
-        for source in legacy_dev_hdd0.rglob("*"):
-            relative_path = source.relative_to(legacy_dev_hdd0)
-            target = RPCS3_DEV_HDD0 / relative_path
+        if RPCS3_DEV_HDD0_DIR.exists():
+            # Partial or failed migration: leave it alone
+            _logger.warning(
+                "Skipping RPCS3 dev_hdd0 migration: target directory already exists at %s", RPCS3_DEV_HDD0_DIR
+            )
+            return
 
-            if source.is_dir():
-                mkdir_if_not_exists(target)
-                continue
+        mkdir_if_not_exists(RPCS3_DEV_HDD0_DIR.parent)
 
-            mkdir_if_not_exists(target.parent)
+        try:
+            shutil.copytree(legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
+        except Exception:
+            _logger.exception("Failed to copy RPCS3 dev_hdd0 from %s to %s", legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
+            return
 
-            if not target.exists():
-                shutil.move(str(source), str(target))
-            else:
-                _logger.warning("Skipping RPCS3 dev_hdd0 migration conflict: %s -> %s", source, target)
+        _logger.debug("Successfully copied RPCS3 dev_hdd0 from %s to %s", legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
+
+        differences = directory_differences(legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
+        if differences:
+            _logger.error("RPCS3 dev_hdd0 migration verification failed:\n%s", differences.report())
+            return
+
+        _logger.debug("Verified RPCS3 dev_hdd0 migration from %s to %s", legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
+
+        shutil.rmtree(legacy_dev_hdd0)
+
+        _logger.debug("Completed RPCS3 dev_hdd0 migration from %s to %s", legacy_dev_hdd0, RPCS3_DEV_HDD0_DIR)
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
-        self._migrateDevHdd0()
+        self._migrate_dev_hdd0()
+
+        mkdir_if_not_exists(RPCS3_DEV_HDD0_DIR)
+
+        rom_dev_hdd0 = rom / "dev_hdd0"
+        rom_dev_hdd1 = rom / "dev_hdd1"
+        rom_game_dir = rom_dev_hdd0 / "game"
 
         rpcs3Controllers.generateControllerConfig(system, playersControllers, rom)
 
         # Detect PSN game packed as a squashfs: emulatorlauncher has already mounted the
         # squashfs and (via writesToRom=True) created a writable overlayfs, so rom is
         # /var/run/overlays/<stem> mirroring the dev_hdd0 layout.
-        is_psn_squashfs = rom.is_dir() and str(rom).startswith("/var/run/") and (rom / "dev_hdd0" / "game").is_dir()
+        is_psn_squashfs = rom.is_dir() and str(rom).startswith("/var/run/") and rom_game_dir.is_dir()
 
         # Taking care of the CurrentSettings.ini file
         mkdir_if_not_exists(RPCS3_CURRENT_CONFIG.parent)
@@ -192,6 +217,8 @@ class Rpcs3Generator(Generator):
                 rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
         # Write Color Buffers
         rpcs3ymlconfig["Video"]["Write Color Buffers"] = system.config.get_bool("rpcs3_colorbuffers")
+        # Read Color Buffers
+        rpcs3ymlconfig["Video"]["Read Color Buffers"] = system.config.get_bool("rpcs3_read_colorbuffers")
         # Disable Vertex Cache
         rpcs3ymlconfig["Video"]["Disable Vertex Cache"] = system.config.get_bool("rpcs3_vertexcache")
         # Anisotropic Filtering
@@ -216,17 +243,24 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
         # Resolution scaling
         rpcs3ymlconfig["Video"]["Resolution Scale"] = system.config.get_int("rpcs3_resolution_scale", 100)
+        # Resolution scale threshold
+        rpcs3ymlconfig["Video"]["Minimum Scalable Dimension"] = int(system.config.get_float("rpcs3_resolution_scale_threshold", 16))
         # Output Scaling
         rpcs3ymlconfig["Video"]["Output Scaling Mode"] = system.config.get("rpcs3_scaling", "Bilinear")
         # Number of Shader Compilers
         rpcs3ymlconfig["Video"]["Shader Compiler Threads"] = system.config.get_int("rpcs3_num_compilers", 0)
         # Multithreaded RSX
         rpcs3ymlconfig["Video"]["Multithreaded RSX"] = system.config.get_bool("rpcs3_rsx")
-        # Async Texture Streaming
-        rpcs3ymlconfig["Video"]["Asynchronous Texture Streaming 2"] = system.config.get_bool("rpcs3_async_texture")
         # Write Depth Buffer
         rpcs3ymlconfig["Video"]["Write Depth Buffer"] = system.config.get_bool("rpcs3_write_depth_buffers")
+        # Force CPU blit emulation
+        rpcs3ymlconfig["Video"]["Force CPU Blit"] = system.config.get_bool("rpcs3_force_cpu_blit_emulation")
 
+        if "Vulkan" not in rpcs3ymlconfig["Video"]:
+            rpcs3ymlconfig["Video"]["Vulkan"] = {}
+
+        # Async Texture Streaming
+        rpcs3ymlconfig["Video"]["Vulkan"]["Asynchronous Texture Streaming 2"] = system.config.get_bool("rpcs3_async_texture")
 
         # -= [Audio] =-
         # defaults
@@ -271,13 +305,9 @@ class Rpcs3Generator(Generator):
             yaml.default_flow_style = False
             yaml.dump(rpcs3ymlconfig, file)
 
-        dev_hdd0 = str(rom / "dev_hdd0") + "/" if is_psn_squashfs else f"{RPCS3_DEV_HDD0}/"
-
+        dev_hdd0 = f"{rom_dev_hdd0 if is_psn_squashfs else RPCS3_DEV_HDD0_DIR}/"
         # For a PSN squashfs, redirect /dev_hdd1/ to the overlay when it ships one.
-        if is_psn_squashfs and (rom / "dev_hdd1").is_dir():
-            dev_hdd1 = str(rom / "dev_hdd1") + "/"
-        else:
-            dev_hdd1 = "$(EmulatorDir)dev_hdd1/"
+        dev_hdd1 = f"{rom_dev_hdd1 if is_psn_squashfs and rom_dev_hdd1.is_dir() else '$(EmulatorDir)dev_hdd1'}/"
 
         rpcs3vfsconfig: dict[str, Any] = {
             "$(EmulatorDir)": "",
@@ -298,7 +328,7 @@ class Rpcs3Generator(Generator):
             },
         }
 
-        with RPCS3_VFS.open("w") as file:
+        with RPCS3_VFS_CONFIG.open("w") as file:
             yaml = YAML(pure=True)
             yaml.default_flow_style = False
             yaml.dump(rpcs3vfsconfig, file)
@@ -316,24 +346,22 @@ class Rpcs3Generator(Generator):
             with rom.open() as fp:
                 for line in fp:
                     if len(line) >= 9:
-                        romName = RPCS3_DEV_HDD0 / "game" / line.strip().upper() / "USRDIR" / "EBOOT.BIN"
+                        romName = RPCS3_DEV_HDD0_DIR / "game" / line.strip().upper() / "USRDIR" / "EBOOT.BIN"
 
             if romName is None:
                 raise BatoceraException(f'No game ID found in {rom}')
-
 
         elif is_psn_squashfs:
             # rom is /var/run/overlays/<stem>; dev_hdd0 is redirected there via vfs.yml.
             # Scan for the game ID directory and pass EBOOT.BIN directly to RPCS3.
             romName = None
-            for game_id_dir in (rom / "dev_hdd0" / "game").iterdir():
+            for game_id_dir in rom_game_dir.iterdir():
                 eboot = game_id_dir / "USRDIR" / "EBOOT.BIN"
                 if eboot.exists():
                     romName = eboot
                     break
             if romName is None:
                 raise BatoceraException(f'No PSN game found in squashfs {rom}')
-
 
         elif rom.suffix.lower() == ".iso":
             romName = rom
