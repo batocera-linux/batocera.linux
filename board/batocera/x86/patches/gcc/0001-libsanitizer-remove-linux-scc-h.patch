@@ -1,0 +1,37 @@
+Subject: [PATCH] libsanitizer: Remove linux/scc.h and related definitions
+
+The linux/scc.h header was removed from the Linux kernel in version 7.1.
+To prevent compilation errors with incomplete types, remove both the
+header inclusion and the unused size definitions for scc_modem and
+scc_stat.
+
+---
+ libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp | 3 ---
+ libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.h   | 2 --
+ 2 files changed, 5 deletions(-)
+
+diff --git a/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp b/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp
+index 2147852ba87..e80c42ba567 100644
+--- a/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp
++++ b/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.cpp
+@@ -151,3 +151,2 @@
+ #include <linux/mroute6.h>
+-#include <linux/scc.h>
+ #include <linux/serial.h>
+@@ -518,4 +517,2 @@ unsigned struct_nr_parms_struct_sz = sizeof(struct nr_parms_struct);
+ #endif
+-  unsigned struct_scc_modem_sz = sizeof(struct scc_modem);
+-  unsigned struct_scc_stat_sz = sizeof(struct scc_stat);
+   unsigned struct_serial_multiport_struct_sz = sizeof(struct serial_multiport_struct);
+diff --git a/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.h b/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.h
+index b7a3c3c723a..b3802e3a19e 100644
+--- a/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.h
++++ b/libsanitizer/sanitizer_common/sanitizer_platform_limits_posix.h
+@@ -1030,4 +1030,2 @@ extern unsigned struct_kbsentry_sz;
+ extern unsigned struct_mtconfiginfo_sz;
+ extern unsigned struct_nr_parms_struct_sz;
+-extern unsigned struct_scc_modem_sz;
+-extern unsigned struct_scc_stat_sz;
+ extern unsigned struct_serial_multiport_struct_sz;
+-- 
+2.43.0
