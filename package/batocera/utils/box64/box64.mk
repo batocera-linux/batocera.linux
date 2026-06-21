@@ -51,11 +51,12 @@ endif
 
 BOX64_BIN_ARCH_EXCLUDE = \
 	/usr/bin \
-	/usr/lib/box64-x86_64-linux-gnu
+	/usr/lib/box64-x86_64-linux-gnu \
+	/usr/lib/box64-i386-linux-gnu
 
 define BOX64_INSTALL_INIT_SCRIPTS
-        install -m 0755 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/box64/binfmt_init \
-                $(TARGET_DIR)/etc/init.d/S19binfmt
+    mkdir -p $(TARGET_DIR)/etc/init.d
+    install -m 0755 $(BOX64_PKGDIR)/binfmt_init $(TARGET_DIR)/etc/init.d/S19binfmt
 endef
 
 BOX64_POST_INSTALL_TARGET_HOOKS += BOX64_INSTALL_INIT_SCRIPTS
