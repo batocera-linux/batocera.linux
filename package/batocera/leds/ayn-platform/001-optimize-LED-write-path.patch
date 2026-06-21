@@ -1,0 +1,26 @@
+diff --git a/ayn-platform.c b/ayn-platform.c
+index ab50e5d..a823512 100644
+--- a/ayn-platform.c
++++ b/ayn-platform.c
+@@ -602,21 +602,6 @@ static int ayn_led_mc_brightness_write(struct led_classdev *led_cdev,
+ static void ayn_led_mc_brightness_set(struct led_classdev *led_cdev,
+                                       enum led_brightness brightness)
+ {
+-        long mode;
+-        int retval;
+-
+-        retval = read_from_ec(AYN_LED_MODE_REG, 1, &mode);
+-        if (retval)
+-                return;
+-
+-        switch (mode) {
+-        case AYN_LED_MODE_WRITE:
+-        case AYN_LED_MODE_WRITE_ENABLED:
+-                break;
+-        default:
+-                return;
+-        }
+-
+         led_cdev->brightness = brightness;
+         ayn_led_mc_brightness_write(led_cdev, brightness);
+ };
