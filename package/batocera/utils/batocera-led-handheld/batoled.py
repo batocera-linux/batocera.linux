@@ -40,8 +40,8 @@ def batocera_model():
     # Odin 1 Monochrome GPIO layout
     if os.path.exists('/sys/class/leds/left_joystick/brightness'):
         return "odin_mono"
-    # Dual Multi-LED check
-    if glob.glob('/sys/devices/platform/multi-ledl1/leds/rgb:l1/multi_intensity'):
+    # Dual Multi-LED check (i.e. Retroid Pocket 5 and patched Ayaneo platform kernel module)
+    if glob.glob('/sys/class/leds/rgb:l1/multi_intensity') or glob.glob('/sys/devices/platform/multi-ledl1/leds/rgb:l1/multi_intensity'):
         return "dual_multiled"
     # Multi-led check (e.g. Mangmi Air X)
     if glob.glob('/sys/devices/platform/multi-led-l1/leds/rgb:l1/multi_intensity'):
@@ -717,7 +717,8 @@ class dual_multiled(object):
             
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "rainbow":
+            self.set_color("ESCOLOR")
 
     def chroma_effect(self):
         b_conf = batoconf("led.brightness")
@@ -737,15 +738,19 @@ class dual_multiled(object):
             self._write_hardware(b_conf, r, g, b)
             time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "chroma":
+            self.set_color("ESCOLOR")
 
     def pulse_effect(self):
-        prev = self.get_color()
+        r, g, b = batoconf_color()
+        base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range(0, EFFECT_STEP):
-            o = getPulseRGB(i, EFFECT_STEP, prev)
+            o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        if batoconf("led.mode") != "pulse":
+            self.set_color("ESCOLOR")
 
     def turn_off(self):
         self._write_hardware(0, 0, 0, 0)
@@ -885,7 +890,8 @@ class multiled(object):
             
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "rainbow":
+            self.set_color("ESCOLOR")
 
     def chroma_effect(self):
         b_conf = batoconf("led.brightness")
@@ -906,7 +912,8 @@ class multiled(object):
             
             time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "chroma":
+            self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -1685,7 +1692,8 @@ class rgbledaddr(object):
                         pass
             time.sleep(EFFECT_DURATION / EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "rainbow":
+            self.set_color("ESCOLOR")
 
     def chroma_effect(self):
         # Cycle all quadrants in unison through the spectrum (Chroma)
@@ -1696,7 +1704,8 @@ class rgbledaddr(object):
             
             time.sleep((EFFECT_DURATION * 3) / EFFECT_STEP)
             
-        self.set_color("ESCOLOR")
+        if batoconf("led.mode") != "chroma":
+            self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         # Get the 'base' color from config to pulse against

@@ -1,0 +1,393 @@
+diff --git a/ayaneo-platform.c b/ayaneo-platform.c
+index 3f53b4d..76b0ca9 100644
+--- a/ayaneo-platform.c
++++ b/ayaneo-platform.c
+@@ -7,6 +7,7 @@
+  * Copyright (C) 2023-2024 JELOS <https://github.com/JustEnoughLinuxOS>
+  * Copyright (C) 2024, 2025 Sebastian Kranz <https://github.com/Lightwars>
+  * Copyright (C) 2024 Trevor Heslop <https://github.com/SytheZN>
++ * Copyright (C) 2026 Daniel Martin <https://github.com/batocera-linux>
+  * Derived from ayaled originally developed by Maya Matuszczyk
+  * <https://github.com/Maccraft123/ayaled>
+  */
+@@ -154,6 +155,15 @@ static bool unlock_global_acpi_lock(void)
+ #define AYANEO_BYPASS_WRITER_DELAY_MS 30000
+ #define AYANEO_EC_VERSION_REG 0x00 /* until 0x04 */
+ 
++#define AYANEO_NUM_LEDS 8
++
++static const char *const ayaneo_led_names[AYANEO_NUM_LEDS] = {
++        "rgb:l1", "rgb:l2", "rgb:l3", "rgb:l4",
++        "rgb:r1", "rgb:r2", "rgb:r3", "rgb:r4"
++};
++
++extern struct led_classdev_mc ayaneo_led_mc[AYANEO_NUM_LEDS];
++
+ enum ayaneo_model {
+         air = 1,
+         air_1s,
+@@ -701,7 +718,7 @@ static void ayaneo_led_mc_release_control(void)
+  */
+ static struct task_struct *ayaneo_led_mc_writer_thread;
+ static int ayaneo_led_mc_update_required;
+-static u8 ayaneo_led_mc_update_color[3];
++static u8 ayaneo_led_mc_update_color[AYANEO_NUM_LEDS][3];
+ DEFINE_RWLOCK(ayaneo_led_mc_update_lock);
+ 
+ static void ayaneo_led_mc_scale_color(u8 *color, u8 max_value)
+@@ -718,71 +735,168 @@ static void ayaneo_led_mc_scale_color(u8 *color, u8 max_value)
+         }
+ }
+ 
+-static void ayaneo_led_mc_brightness_apply(u8 *color)
++static void ayaneo_led_mc_brightness_apply(u8 color[AYANEO_NUM_LEDS][3])
+ {
+-        u8 color_l[3]; /* Left joystick ring */
+-        u8 color_r[3]; /* Right joystick ring */
+-        u8 color_b[3]; /* AyaSpace Button (KUN Only) */
+-
++        u8 color_scaled[AYANEO_NUM_LEDS][3];
++        int i;
+         u8 zones[4] = {3, 6, 9, 12};
+ 
+-        for (int i = 0; i < 3; i++)
+-        {
+-                color_l[i] = color[i];
+-                color_r[i] = color[i];
+-                color_b[i] = color[i];
++        for (i = 0; i < AYANEO_NUM_LEDS; i++) {
++                color_scaled[i][0] = color[i][0];
++                color_scaled[i][1] = color[i][1];
++                color_scaled[i][2] = color[i][2];
+         }
+ 
+-        ayaneo_led_mc_scale_color(color_l, 192);
+-        ayaneo_led_mc_scale_color(color_r, 192);
+-        ayaneo_led_mc_scale_color(color_b, 192);
++        for (i = 0; i < 4; i++) {
++                ayaneo_led_mc_scale_color(color_scaled[i], 192); /* Left joystick ring */
++                ayaneo_led_mc_scale_color(color_scaled[i + 4], 192); /* Right joystick ring */
++        }
+ 
+         switch (model) {
+                 case air:
+                 case air_pro:
+                 case air_1s:
+                         ayaneo_led_mc_legacy_on();
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case air_1s_limited:
+-                        ayaneo_led_mc_scale_color(color_r, 204);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_scale_color(color_scaled[i + 4], 204);
++                        }
+                         ayaneo_led_mc_legacy_on();
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case geek:
+                 case geek_1s:
+                 case ayaneo_2:
+                 case ayaneo_2s:
+                         ayaneo_led_mc_legacy_on();
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                      ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                      ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                      ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case air_plus_mendo:
+-                        ayaneo_led_mc_scale_color(color_l, 64);
+-                        ayaneo_led_mc_scale_color(color_r, 32);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_scale_color(color_scaled[i], 64);
++                                ayaneo_led_mc_scale_color(color_scaled[i + 4], 32);
++                        }
+                         ayaneo_led_mc_legacy_on();
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_legacy_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case air_plus:
+-                        ayaneo_led_mc_scale_color(color_l, 64);
+-                        ayaneo_led_mc_scale_color(color_r, 32);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_scale_color(color_scaled[i], 64);
++                                ayaneo_led_mc_scale_color(color_scaled[i + 4], 32);
++                        }
+                         ayaneo_led_mc_on();
+-                        ayaneo_led_mc_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case slide:
+                         ayaneo_led_mc_on();
+-                        ayaneo_led_mc_intensity(AYANEO_LED_GROUP_LEFT, color_l, zones);
+-                        ayaneo_led_mc_intensity(AYANEO_LED_GROUP_RIGHT, color_r, zones);
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i], color_scaled[i][0]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i] + 1, color_scaled[i][1]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT, zones[i] + 2, color_scaled[i][2]);
++                        }
++                        for (i = 0; i < 4; i++) {
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i], color_scaled[i + 4][0]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 1, color_scaled[i + 4][1]);
++                                ayaneo_led_mc_set(AYANEO_LED_GROUP_RIGHT, zones[i] + 2, color_scaled[i + 4][2]);
++                        }
++                        ayaneo_led_mc_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 case kun:
+                         ayaneo_led_mc_legacy_on();
+-                        ayaneo_led_mc_legacy_intensity_kun(AYANEO_LED_GROUP_LEFT, color_l);
+-                        ayaneo_led_mc_legacy_intensity_kun(AYANEO_LED_GROUP_RIGHT, color_r);
+-                        ayaneo_led_mc_legacy_intensity_kun(AYANEO_LED_GROUP_BUTTON, color_b);
++                        u8 remap_color[3];
++                        remap_color[0] = color_scaled[0][1];
++                        remap_color[1] = color_scaled[0][0];
++                        remap_color[2] = color_scaled[0][2];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_LEFT, remap_color, 3);
++                        remap_color[0] = color_scaled[1][1];
++                        remap_color[1] = color_scaled[1][2];
++                        remap_color[2] = color_scaled[1][0];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_LEFT, remap_color, 6);
++                        remap_color[0] = color_scaled[2][2];
++                        remap_color[1] = color_scaled[2][0];
++                        remap_color[2] = color_scaled[2][1];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_LEFT, remap_color, 9);
++                        remap_color[0] = color_scaled[3][2];
++                        remap_color[1] = color_scaled[3][1];
++                        remap_color[2] = color_scaled[3][0];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_LEFT, remap_color, 12);
++
++                        remap_color[0] = color_scaled[4][1];
++                        remap_color[1] = color_scaled[4][0];
++                        remap_color[2] = color_scaled[4][2];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_RIGHT, remap_color, 3);
++                        remap_color[0] = color_scaled[5][1];
++                        remap_color[1] = color_scaled[5][2];
++                        remap_color[2] = color_scaled[5][0];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_RIGHT, remap_color, 6);
++                        remap_color[0] = color_scaled[6][2];
++                        remap_color[1] = color_scaled[6][0];
++                        remap_color[2] = color_scaled[6][1];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_RIGHT, remap_color, 9);
++                        remap_color[0] = color_scaled[7][2];
++                        remap_color[1] = color_scaled[7][1];
++                        remap_color[2] = color_scaled[7][0];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_RIGHT, remap_color, 12);
++
++                        /* AyaSpace Button (KUN Only) */
++                        remap_color[0] = color_scaled[0][2];
++                        remap_color[1] = color_scaled[0][0];
++                        remap_color[2] = color_scaled[0][1];
++                        ayaneo_led_mc_legacy_intensity_single(AYANEO_LED_GROUP_BUTTON, remap_color, 12);
++
++                        ayaneo_led_mc_legacy_set(AYANEO_LED_GROUP_LEFT_RIGHT, 0x00, 0x00);
+                         break;
+                 default:
+                         break;
+@@ -794,7 +908,8 @@ int ayaneo_led_mc_writer(void *pv)
+ {
+         pr_info("Writer thread started.\n");
+         int count;
+-        u8 color[3];
++        u8 color[AYANEO_NUM_LEDS][3];
++        int i;
+ 
+         while (!kthread_should_stop())
+         {
+@@ -803,9 +918,11 @@ int ayaneo_led_mc_writer(void *pv)
+ 
+                 if (count)
+                 {
+-                        color[0] = ayaneo_led_mc_update_color[0];
+-                        color[1] = ayaneo_led_mc_update_color[1];
+-                        color[2] = ayaneo_led_mc_update_color[2];
++                        for (i = 0; i < AYANEO_NUM_LEDS; i++) {
++                                color[i][0] = ayaneo_led_mc_update_color[i][0];
++                                color[i][1] = ayaneo_led_mc_update_color[i][1];
++                                color[i][2] = ayaneo_led_mc_update_color[i][2];
++                        }
+                 }
+                 read_unlock(&ayaneo_led_mc_update_lock);
+ 
+@@ -830,6 +947,7 @@ static void ayaneo_led_mc_brightness_set(struct led_classdev *led_cdev,
+                                       enum led_brightness brightness)
+ {
+         struct led_classdev_mc *mc_cdev = lcdev_to_mccdev(led_cdev);
++        int idx = mc_cdev - ayaneo_led_mc;
+         int val;
+         int i;
+         struct mc_subled s_led;
+@@ -845,7 +963,7 @@ static void ayaneo_led_mc_brightness_set(struct led_classdev *led_cdev,
+                 if (s_led.intensity < 0 || s_led.intensity > 255)
+                         return;
+                 val = brightness * s_led.intensity / led_cdev->max_brightness;
+-                ayaneo_led_mc_update_color[s_led.channel] = val;
++                ayaneo_led_mc_update_color[idx][s_led.channel] = val;
+         }
+         ayaneo_led_mc_update_required++;
+         write_unlock(&ayaneo_led_mc_update_lock);
+@@ -940,38 +1058,40 @@ static void suspend_mode_register_attr(void)
+         }
+ }
+ 
+-struct mc_subled ayaneo_led_mc_subled_info[] = {
+-        {
+-                .color_index = LED_COLOR_ID_RED,
+-                .brightness = 0,
+-                .intensity = 0,
+-                .channel = 0,
+-        },
+-        {
+-                .color_index = LED_COLOR_ID_GREEN,
+-                .brightness = 0,
+-                .intensity = 0,
+-                .channel = 1,
+-        },
+-        {
+-                .color_index = LED_COLOR_ID_BLUE,
+-                .brightness = 0,
+-                .intensity = 0,
+-                .channel = 2,
+-        },
++struct mc_subled ayaneo_led_mc_subled_info[AYANEO_NUM_LEDS][3] = {
++        [0 ... 7] = {
++                {
++                        .color_index = LED_COLOR_ID_RED,
++                        .brightness = 0,
++                        .intensity = 0,
++                        .channel = 0,
++                },
++                {
++                        .color_index = LED_COLOR_ID_GREEN,
++                        .brightness = 0,
++                        .intensity = 0,
++                        .channel = 1,
++                },
++                {
++                        .color_index = LED_COLOR_ID_BLUE,
++                        .brightness = 0,
++                        .intensity = 0,
++                        .channel = 2,
++                },
++        }
+ };
+ 
+-struct led_classdev_mc ayaneo_led_mc = {
+-        .led_cdev = {
+-                .color = LED_COLOR_ID_RGB,
+-                .name = "ayaneo:rgb:joystick_rings",
+-                .brightness = 0,
+-                .max_brightness = 255,
+-                .brightness_set = ayaneo_led_mc_brightness_set,
+-                .brightness_get = ayaneo_led_mc_brightness_get,
+-        },
+-        .num_colors = ARRAY_SIZE(ayaneo_led_mc_subled_info),
+-        .subled_info = ayaneo_led_mc_subled_info,
++struct led_classdev_mc ayaneo_led_mc[AYANEO_NUM_LEDS] = {
++        [0 ... 7] = {
++                .led_cdev = {
++                        .color = LED_COLOR_ID_RGB,
++                        .brightness = 0,
++                        .max_brightness = 255,
++                        .brightness_set = ayaneo_led_mc_brightness_set,
++                        .brightness_get = ayaneo_led_mc_brightness_get,
++                },
++                .num_colors = 3,
++        }
+ };
+ 
+ /* Handling bypass charge */
+@@ -1224,6 +1343,7 @@ static int ayaneo_platform_probe(struct platform_device *pdev)
+         struct device *dev = &pdev->dev;
+         const struct dmi_system_id *match;
+         int ret;
++        int i;
+ 
+         match = dmi_first_match(dmi_table);
+         ret = PTR_ERR_OR_ZERO(match);
+@@ -1234,13 +1354,19 @@ static int ayaneo_platform_probe(struct platform_device *pdev)
+         suspend_mode_register_attr();
+         ayaneo_led_mc_take_control();
+ 
+-        ret = devm_led_classdev_multicolor_register(dev, &ayaneo_led_mc);
+-        if (ret)
+-                return ret;
++        for (i = 0; i < AYANEO_NUM_LEDS; i++) {
++                ayaneo_led_mc[i].subled_info = ayaneo_led_mc_subled_info[i];
++                ayaneo_led_mc[i].led_cdev.name = ayaneo_led_names[i];
++                ayaneo_led_mc[i].led_cdev.dev = dev;
+ 
+-        ret = devm_device_add_group(ayaneo_led_mc.led_cdev.dev, &ayaneo_led_mc_group);
+-        if (ret)
+-                return ret;
++                ret = devm_led_classdev_multicolor_register(dev, &ayaneo_led_mc[i]);
++                if (ret)
++                        return ret;
++
++                ret = devm_device_add_group(ayaneo_led_mc[i].led_cdev.dev, &ayaneo_led_mc_group);
++                if (ret)
++                        return ret;
++        }
+ 
+         if(ayaneo_check_charge_control() >= 0) {
+             ps_priv.bypass_available = 1;
+@@ -1333,5 +1459,6 @@ module_init(ayaneo_platform_init);
+ module_exit(ayaneo_platform_exit);
+ 
+ MODULE_AUTHOR("Derek J. Clark <derekjohn.clark@gmail.com>");
++MODULE_AUTHOR("Daniel Martin <dmanlfc@gmail.com>");
+ MODULE_DESCRIPTION("Platform driver for AYANEO x86 devices");
+ MODULE_LICENSE("GPL");

@@ -125,7 +125,7 @@ def led_check(led):
         ledconfig = tmpconfig
     if (DEBUG):
         print(ledconfig)
-    prevblock = 0
+    last_state = None
     while True:
         try:
             if batoled.batoconf("led.enabled") == "0":
@@ -146,15 +146,36 @@ def led_check(led):
                 if (ch == "Discharging") and (bt == "100"):
                     bt = '99'
                 block = read_color(bt, ledconfig)
-                prevblock = block
-                try:
-                    if DEBUG:
-                        print(f"Set color to {block} for {bt}%")
-                    if color_changes_allowed():
-                        led.set_color(block)
-                except Exception as e:
-                    print (f"Error: {e}") 
-                time.sleep(CHECK_INTERVAL)
+                
+                # Resolve the color block or transition mode dynamically
+                target_action = block
+                if block == "ESCOLOR":
+                    mode = batoled.batoconf("led.mode") or "static"
+                    if mode == "rainbow":
+                        target_action = "RAINBOW"
+                    elif mode == "chroma":
+                        target_action = "CHROMA"
+                    elif mode == "pulse":
+                        target_action = "PULSE"
+
+                # Check if this is a software-driven effect that requires continuous looping
+                is_software_effect = target_action in ["RAINBOW", "CHROMA", "PULSE"] and batoled.batocera_model() in ["pwm", "rgb", "rgbaddr", "multiled", "dual_multiled", "odin_mono"]
+
+                # Only write to the hardware if the state has changed, or if it is a software effect that needs looping
+                if target_action != last_state or is_software_effect:
+                    try:
+                        if DEBUG:
+                            print(f"Set color to {target_action} for {bt}%")
+                        if color_changes_allowed():
+                            led.set_color(target_action)
+                            last_state = target_action
+                    except Exception as e:
+                        print (f"Error: {e}") 
+
+                if is_software_effect:
+                    time.sleep(0.1)
+                else:
+                    time.sleep(CHECK_INTERVAL)
         except Exception as e:
             print(f"Error reading battery status: {e}")
             time.sleep(CHECK_INTERVAL)
@@ -186,24 +207,6 @@ if PATH is None:
     exit()
 if len(sys.argv) > 1:
     led = batoled.led()
-
-    if led:
-        original_set_color = led.set_color
-        def custom_set_color(rgb):
-            if rgb == "ESCOLOR":
-                mode = batoled.batoconf("led.mode") or "static"
-                if mode == "rainbow":
-                    original_set_color("RAINBOW")
-                    return
-                elif mode == "chroma":
-                    original_set_color("CHROMA")
-                    return
-                elif mode == "pulse":
-                    original_set_color("PULSE")
-                    return
-            original_set_color(rgb)
-        led.set_color = custom_set_color
-
     if sys.argv[1] == "start":
         try:
             led.set_brightness_conf()
