@@ -50,6 +50,22 @@ class Model2EmuGenerator(Generator):
         wine_runner.install_wine_trick('xact')
         wine_runner.install_wine_trick('xact_x64')
 
+        egl_done_file = wine_runner.bottle_dir / "egl_disabled.done"
+        if not egl_done_file.exists():
+            import subprocess
+            result = subprocess.run(
+                [
+                    wine_runner.wine, 
+                    "reg", "add", "HKCU\\Software\\Wine\\X11 Driver", 
+                    "/v", "UseEGL", "/t", "REG_SZ", "/d", "n", "/f"
+                ],
+                env=wine_runner.get_environment(),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+            if result.returncode == 0:
+                egl_done_file.write_text("done")
+
         # for existing bottles we want to ensure files are updated as necessary
         copy_updated_files(Path("/usr/model2emu/scripts"), emupath / "scripts")
 
