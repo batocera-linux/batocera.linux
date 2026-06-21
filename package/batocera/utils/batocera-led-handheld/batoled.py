@@ -11,6 +11,7 @@ Updated for Anbernic RG Vita Pro - @dmanlfc
 Updated for R36 Ultra - @ImanolBarba
 Updated for Legion Go / Go 2 - @dmanlfc
 Updated for LED Mode handling & Chroma - @dmanlfc
+Updated for better LED Mode handling for various devices - @dmanlfc
 """
 import glob
 import os
@@ -237,7 +238,20 @@ class rgvitaproled(object):
         return f"{r} {g} {b}"
 
     def rainbow_effect(self):
-        # Maps "RAINBOW" to Hardware Mode 3 (rainbowfade) with speed 5
+        # Maps "RAINBOW" to Hardware Mode 4 with speed 5
+        if self.sysfs_path:
+            try:
+                with open(os.path.join(self.sysfs_path, 'led_switch'), 'w') as f:
+                    f.write('1')
+                with open(os.path.join(self.sysfs_path, 'led_mode'), 'w') as f:
+                    f.write('4')
+                with open(os.path.join(self.sysfs_path, 'led_speed'), 'w') as f:
+                    f.write('5')
+            except Exception:
+                pass
+
+    def chroma_effect(self):
+        # Maps "CHROMA" to Hardware Mode 3 with speed 5
         if self.sysfs_path:
             try:
                 with open(os.path.join(self.sysfs_path, 'led_switch'), 'w') as f:
@@ -249,9 +263,6 @@ class rgvitaproled(object):
             except Exception:
                 pass
 
-    def chroma_effect(self):
-        self.rainbow_effect()
-
     def pulse_effect(self):
         # Maps "PULSE" to Hardware Mode 2 (breathing/pulse)
         if self.sysfs_path:
@@ -260,8 +271,23 @@ class rgvitaproled(object):
                     f.write('1')
                 with open(os.path.join(self.sysfs_path, 'led_mode'), 'w') as f:
                     f.write('2')
+                with open(os.path.join(self.sysfs_path, 'led_speed'), 'w') as f:
+                    f.write('5')
             except Exception:
                 pass
+
+        # Write the active ES color so the joysticks pulse the correct color
+        r, g, b = batoconf_color()
+        b_conf = batoconf("led.brightness") or 255
+        for path in [self.left_path, self.right_path]:
+            if path:
+                try:
+                    with open(os.path.join(path, 'brightness'), 'w') as f:
+                        f.write(str(b_conf))
+                    with open(os.path.join(path, 'multi_intensity'), 'w') as f:
+                        f.write(f"{r} {g} {b}")
+                except Exception:
+                    pass
 
     def turn_off(self):
         self.current_color = "000000"
@@ -296,7 +322,6 @@ class rgvitaproled(object):
         b_conf = batoconf("led.brightness") or "100"
         return (str(b_conf), "100")
 
-
 ####################
 # Anbernic RG CubeXX LED Controller
 class cubexxled(object):
@@ -314,7 +339,7 @@ class cubexxled(object):
         except Exception:
             pass
 
-    def _write_hardware(self, brightness, r, g, b):
+    def _write_hardware(self, mode, brightness, r, g, b):
         try:
             # Enable GPIO power to the LED MCU
             with open(self.gpio_path, 'w') as f:
@@ -322,7 +347,7 @@ class cubexxled(object):
             
             # Construct the fixed-length 51-byte packet
             payload = bytearray()
-            payload.append(1)                 # LED_MODE
+            payload.append(mode)              # LED_MODE: Configurable
             payload.append(int(brightness))   # BRIGHTNESS
             
             # 8 LEDs for the Right Ring
@@ -379,7 +404,7 @@ class cubexxled(object):
             r, g, b = hex_to_dec(rgb[0:2]), hex_to_dec(rgb[2:4]), hex_to_dec(rgb[4:6])
             self.current_color = rgb
         
-        self._write_hardware(b_conf, r, g, b)
+        self._write_hardware(1, b_conf, r, g, b)
 
     def set_color_dec(self, rgb_str):
         try:
@@ -394,7 +419,7 @@ class cubexxled(object):
             except ValueError:
                 b_conf = 255
             self.current_color = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
-            self._write_hardware(b_conf, r, g, b)
+            self._write_hardware(1, b_conf, r, g, b)
         except Exception:
             pass
 
@@ -408,28 +433,26 @@ class cubexxled(object):
         return f"{r} {g} {b}"
 
     def rainbow_effect(self):
-        prev = self.get_color()
-        for i in range(0, EFFECT_STEP):
-            o = getRainbowRGB(float(i/EFFECT_STEP))
-            self.set_color(o)
-            time.sleep(EFFECT_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+        b_conf = batoconf("led.brightness") or 255
+        # Mode 6 is native Rainbow
+        self._write_hardware(6, b_conf, 0, 0, 0)
 
     def chroma_effect(self):
-        self.rainbow_effect()
+        b_conf = batoconf("led.brightness") or 255
+        # Mode 5 is native Chroma
+        self._write_hardware(5, b_conf, 0, 0, 0)
 
     def pulse_effect(self):
-        prev = self.get_color()
-        for i in range(0, EFFECT_STEP):
-            o = getPulseRGB(i, EFFECT_STEP, prev)
-            self.set_color(o)
-            time.sleep(PULSE_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+        b_conf = batoconf("led.brightness") or 255
+        r, g, b = batoconf_color()
+        # Mode 3 is a medium speed native Pulse
+        # pulsing the user's configured ES color
+        self._write_hardware(3, b_conf, r, g, b)
 
     def turn_off(self):
         self.current_color = "000000"
-        # Zero out RGB color registry
-        self._write_hardware(0, 0, 0, 0)
+        # Turn off by writing custom color mode (1) with 0 brightness/colors
+        self._write_hardware(1, 0, 0, 0, 0)
         # Power down the MCU
         try:
             with open(self.gpio_path, 'w') as f:
@@ -571,12 +594,19 @@ class odinmono(object):
             return ("-1", "-1")
 
 ####################
-# Handhelds using the Dual Multi-LED Platform
+# Handhelds using the Dual Multi-LED Platform (i.e. Retroid Pocket 5)
 class dual_multiled(object):
     def __init__(self):
         # Scan for both left (l1-l3) and right (r1-r3) paths
-        self.left_paths = glob.glob('/sys/devices/platform/multi-ledl*/leds/rgb:l*/')
-        self.right_paths = glob.glob('/sys/devices/platform/multi-ledr*/leds/rgb:r*/')
+        self.left_paths = sorted(glob.glob('/sys/class/leds/rgb:l*/'))
+        self.right_paths = sorted(glob.glob('/sys/class/leds/rgb:r*/'))
+        
+        # Fallback to absolute paths if symlinks are not populated
+        if not self.left_paths:
+            self.left_paths = glob.glob('/sys/devices/platform/multi-ledl*/leds/rgb:l*/')
+        if not self.right_paths:
+            self.right_paths = glob.glob('/sys/devices/platform/multi-ledr*/leds/rgb:r*/')
+            
         self.all_paths = self.left_paths + self.right_paths
         self.max_val = 255
 
@@ -647,15 +677,67 @@ class dual_multiled(object):
             return "0 0 0"
 
     def rainbow_effect(self):
-        prev = self.get_color()
+        b_conf = batoconf("led.brightness")
+        if b_conf is None:
+            b_conf = 255
+        else:
+            try:
+                pct = float(b_conf)
+                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
+            except ValueError:
+                b_conf = 255
+
+        # Create a chasing color wheel using quadrant phase-shifting (Rainbow)
         for i in range(0, EFFECT_STEP):
-            o = getRainbowRGB(float(i/EFFECT_STEP))
-            self.set_color(o)
+            # Sweep Left Joystick quadrants
+            for j, p in enumerate(self.left_paths):
+                val = (float(i) / EFFECT_STEP + float(j) / len(self.left_paths)) % 1.0
+                o = getRainbowRGB(val)
+                r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+                try:
+                    with open(p + 'brightness', 'w') as f:
+                        f.write(str(b_conf))
+                    with open(p + 'multi_intensity', 'w') as f:
+                        f.write(f"{r} {g} {b}")
+                except Exception:
+                    pass
+
+            # Sweep Right Joystick quadrants (synchronized alignment)
+            for j, p in enumerate(self.right_paths):
+                val = (float(i) / EFFECT_STEP + float(j) / len(self.right_paths)) % 1.0
+                o = getRainbowRGB(val)
+                r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+                try:
+                    with open(p + 'brightness', 'w') as f:
+                        f.write(str(b_conf))
+                    with open(p + 'multi_intensity', 'w') as f:
+                        f.write(f"{r} {g} {b}")
+                except Exception:
+                    pass
+            
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        self.rainbow_effect()
+        b_conf = batoconf("led.brightness")
+        if b_conf is None:
+            b_conf = 255
+        else:
+            try:
+                pct = float(b_conf)
+                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
+            except ValueError:
+                b_conf = 255
+
+        # Cycle all segments in unison through the spectrum (Chroma / Color Cycle) [3]
+        for i in range(0, EFFECT_STEP):
+            o = getRainbowRGB(float(i/EFFECT_STEP))
+            r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+            self._write_hardware(b_conf, r, g, b)
+            time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
+            
+        self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -688,14 +770,22 @@ class dual_multiled(object):
 # Handhelds using the Multi-LED Platform (i.e. Mangmi Air X)
 class multiled(object):
     def __init__(self):
-        # Glob all possible LED nodes (l1..l7, r1..r7)
-        self.paths = glob.glob('/sys/devices/platform/multi-led-*/leds/rgb:*/')
+        # Scan for both left (l1-l9) and right (r1-r9) paths inside standard sysfs location
+        self.left_paths = sorted(glob.glob('/sys/class/leds/rgb:l*/'))
+        self.right_paths = sorted(glob.glob('/sys/class/leds/rgb:r*/'))
+        
+        # Fallback to absolute paths if symlinks are not populated
+        if not self.left_paths:
+            self.left_paths = sorted(glob.glob('/sys/devices/platform/multi-led-*/leds/rgb:l*/'))
+        if not self.right_paths:
+            self.right_paths = sorted(glob.glob('/sys/devices/platform/multi-led-*/leds/rgb:r*/'))
+            
+        self.all_paths = self.left_paths + self.right_paths
         self.max_val = 255
 
     def _write_hardware(self, brightness, r, g, b):
-        # Based on user shell script: multi_intensity expects "Blue Green Red"
         color_str = f"{r} {g} {b}"
-        for p in self.paths:
+        for p in self.all_paths:
             try:
                 with open(p + 'brightness', 'w') as f:
                     f.write(str(brightness))
@@ -711,7 +801,8 @@ class multiled(object):
 
         # Get brightness from config
         b_conf = batoconf("led.brightness")
-        if b_conf is None: b_conf = 255
+        if b_conf is None: 
+            b_conf = 255
         
         if rgb == "ESCOLOR":
             r, g, b = batoconf_color()
@@ -739,7 +830,7 @@ class multiled(object):
 
     def get_color(self):
         try:
-            with open(self.paths[0] + 'multi_intensity', 'r') as f:
+            with open(self.all_paths[0] + 'multi_intensity', 'r') as f:
                 r, g, b = f.readline().strip().split()
                 return f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         except:
@@ -747,22 +838,75 @@ class multiled(object):
 
     def get_color_dec(self):
         try:
-            with open(self.paths[0] + 'multi_intensity', 'r') as f:
+            with open(self.all_paths[0] + 'multi_intensity', 'r') as f:
                 b, g, r = f.readline().strip().split()
                 return f"{r} {g} {b}"
         except:
             return "0 0 0"
 
     def rainbow_effect(self):
-        prev = self.get_color()
+        b_conf = batoconf("led.brightness")
+        if b_conf is None:
+            b_conf = 255
+        else:
+            try:
+                pct = float(b_conf)
+                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
+            except ValueError:
+                b_conf = 255
+
+        # Sweeping colour wheel across all segments per ring (Rainbow)
         for i in range(0, EFFECT_STEP):
-            o = getRainbowRGB(float(i/EFFECT_STEP))
-            self.set_color(o)
+            # Sweep Left Joystick quadrants
+            for j, p in enumerate(self.left_paths):
+                val = (float(i) / EFFECT_STEP + float(j) / len(self.left_paths)) % 1.0
+                o = getRainbowRGB(val)
+                r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+                try:
+                    with open(p + 'brightness', 'w') as f:
+                        f.write(str(b_conf))
+                    with open(p + 'multi_intensity', 'w') as f:
+                        f.write(f"{r} {g} {b}")
+                except Exception:
+                    pass
+
+            # Sweep Right Joystick quadrants
+            for j, p in enumerate(self.right_paths):
+                val = (float(i) / EFFECT_STEP + float(j) / len(self.right_paths)) % 1.0
+                o = getRainbowRGB(val)
+                r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+                try:
+                    with open(p + 'brightness', 'w') as f:
+                        f.write(str(b_conf))
+                    with open(p + 'multi_intensity', 'w') as f:
+                        f.write(f"{r} {g} {b}")
+                except Exception:
+                    pass
+            
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        self.rainbow_effect()
+        b_conf = batoconf("led.brightness")
+        if b_conf is None:
+            b_conf = 255
+        else:
+            try:
+                pct = float(b_conf)
+                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
+            except ValueError:
+                b_conf = 255
+
+        # Cycle all 18 segments in unison through the spectrum (Chroma)
+        for i in range(0, EFFECT_STEP):
+            o = getRainbowRGB(float(i/EFFECT_STEP))
+            r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+            self._write_hardware(b_conf, r, g, b)
+            
+            time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
+            
+        self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         prev = self.get_color()
@@ -783,7 +927,7 @@ class multiled(object):
 
     def get_brightness(self):
         try:
-            with open(self.paths[0] + 'brightness', 'r') as f:
+            with open(self.all_paths[0] + 'brightness', 'r') as f:
                 b = f.readline().strip()
             return (b, "255")
         except:
@@ -1415,7 +1559,7 @@ class pwmled(object):
         return (batoconf("led.brightness") or "100", str(self.period))
 
 ####################
-# Handhelds that use a direct RGB interface with each LED addressable
+# Handhelds that use a direct RGB interface with each LED addressable (i.e. Ayn Thor)
 class rgbledaddr(object):
     def __init__(self):
         # Use glob to find all red, green, and blue channels for both left (l) and right (r)
@@ -1516,14 +1660,43 @@ class rgbledaddr(object):
         except: return "0 0 0"
 
     def rainbow_effect(self):
+        factor = self._get_factor()
+        num_segments = 4
+        
+        # Create a chasing color wheel using quadrant phase-shifting (Rainbow)
+        for i in range(0, EFFECT_STEP):
+            for j in range(1, num_segments + 1):
+                val = (float(i) / EFFECT_STEP + float(j - 1) / num_segments) % 1.0
+                o = getRainbowRGB(val)
+                r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
+                
+                # Scale with brightness factor and max hardware value
+                rs = str(int((r / 255.0) * factor * self.max_val))
+                gs = str(int((g / 255.0) * factor * self.max_val))
+                bs = str(int((b / 255.0) * factor * self.max_val))
+                
+                # Direct write to both rings
+                for side in ['l', 'r']:
+                    try:
+                        with open(f'/sys/class/leds/{side}:r{j}/brightness', 'w') as f: f.write(rs)
+                        with open(f'/sys/class/leds/{side}:g{j}/brightness', 'w') as f: f.write(gs)
+                        with open(f'/sys/class/leds/{side}:b{j}/brightness', 'w') as f: f.write(bs)
+                    except:
+                        pass
+            time.sleep(EFFECT_DURATION / EFFECT_STEP)
+            
+        self.set_color("ESCOLOR")
+
+    def chroma_effect(self):
+        # Cycle all quadrants in unison through the spectrum (Chroma)
         for i in range(0, EFFECT_STEP):
             o_hex = getRainbowRGB(float(i/EFFECT_STEP))
             r, g, b = hex_to_dec(o_hex[0:2]), hex_to_dec(o_hex[2:4]), hex_to_dec(o_hex[4:6])
             self._write_scaled(r, g, b)
-            time.sleep(EFFECT_DURATION/EFFECT_STEP)
-
-    def chroma_effect(self):
-        self.rainbow_effect()
+            
+            time.sleep((EFFECT_DURATION * 3) / EFFECT_STEP)
+            
+        self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         # Get the 'base' color from config to pulse against
