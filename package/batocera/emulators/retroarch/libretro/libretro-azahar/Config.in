@@ -1,0 +1,16 @@
+config BR2_PACKAGE_LIBRETRO_AZAHAR
+    bool "libretro-azahar"            
+    select BR2_PACKAGE_BOOST
+    select BR2_PACKAGE_BOOST_SERIALIZATION
+    select BR2_PACKAGE_BOOST_IOSTREAMS
+    select BR2_PACKAGE_BOOST_REGEX
+    select BR2_PACKAGE_BOOST_LOCALE
+    select BR2_PACKAGE_BOOST_MATH
+    select BR2_PACKAGE_BOOST_CONTAINER
+    select BR2_PACKAGE_FDK_AAC
+    select BR2_PACKAGE_FFMPEG  
+    select BR2_PACKAGE_FMT
+    help
+      Azahar is a Citra fork and emulator for the Nintendo 3DS.
+      
+      https://github.com/azahar-emu/azahar

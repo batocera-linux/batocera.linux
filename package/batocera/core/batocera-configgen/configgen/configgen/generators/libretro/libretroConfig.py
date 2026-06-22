@@ -512,6 +512,10 @@ def createLibretroConfig(
     if system.config.core == 'bennugd':
         bezel = None
 
+    ## Nintendo 3DS (Azahar)
+    if system.config.core == 'azahar' and system.config.get('3ds_screen_layout', 'default') != 'default':
+        bezel = None
+
     ## PORTS
     ## Quake
     if system.config.core == 'tyrquake':
