@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.134
+XEMU_VERSION = v0.8.136
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -76,8 +76,8 @@ XEMU_CONF_OPTS += --with-default-devices
 XEMU_CONF_OPTS += --disable-renderdoc
 XEMU_CONF_OPTS += --enable-pixman
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86),y)
-XEMU_CONF_OPTS += --enable-avx2
+ifeq ($(BR2_x86_x86_64_v3),y)
+XEMU_CONF_OPTS += --x86-version=3
 endif
 
 define XEMU_CONFIGURE_CMDS

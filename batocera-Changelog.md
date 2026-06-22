@@ -68,6 +68,7 @@
 - Vita3k to 10th of June build
 - VKQuake to 1.34.1
 - Winetricks to 20260125
+- Xemu to v0.8.136
 ### System
 - Allwinner H700 device kernel updated to 7.0.11
 - ALSA UCM configuration to v1.2.16
