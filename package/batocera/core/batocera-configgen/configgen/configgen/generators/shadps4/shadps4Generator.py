@@ -237,8 +237,20 @@ class shadPS4Generator(Generator):
         with json_file.open("w", encoding="utf-8") as f:
             json.dump(config, f, indent=2)
 
+        # Determine the path based on extension
+        if rom.is_dir():
+            eboot_path = rom / "eboot.bin"
+        else:
+            eboot_path = rom.parent / "eboot.bin"
+        
         # Run command
-        commandArray: list[str | Path] = ["/usr/bin/shadps4", "--game", rom.parent / "eboot.bin", "--fullscreen", "true"]
+        commandArray: list[str | Path] = [
+            "/usr/bin/shadps4",
+            "--game",
+            eboot_path,
+            "--fullscreen",
+            "true"
+        ]
 
         return Command.Command(
             array=commandArray,
