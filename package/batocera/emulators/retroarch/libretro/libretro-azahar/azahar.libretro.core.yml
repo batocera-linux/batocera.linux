@@ -1,0 +1,101 @@
+shared_features:
+  - autosave
+custom_features:
+  3ds_system_model:
+    prompt: 3DS SYSTEM MODEL
+    description: Select whether to emulate the original 3DS or New 3DS. New 3DS has additional CPU power and memory, required for some games.
+    choices:
+      Original 3DS: Old 3DS
+      New 3DS:      New 3DS
+  3ds_system_region:
+    prompt: 3DS SYSTEM REGION
+    description: Set the 3DS system region. Auto-select will choose based on the game. Some games are region-locked and require matching regions.
+    choices:
+      Japan:     Japan
+      USA:       USA
+      Europe:    Europe
+      Australia: Australia
+      China:     China
+      Korea:     Korea
+      Taiwan:    Taiwan
+  3ds_system_language:
+    prompt: 3DS SYSTEM LANGUAGE
+    description: Set the system language for the emulated 3DS. This affects in-game text language when supported.
+    choices:
+      English:             English
+      Japanese:            Japanese
+      French:              French
+      Spanish:             Spanish
+      German:              German
+      Italian:             Italian
+      Dutch:               Dutch
+      Portuguese:          Portuguese
+      Russian:             Russian
+      Korean:              Korean
+      Traditional Chinese: Traditional Chinese
+      Simplified Chinese:  Simplified Chinese
+  3ds_internal_resolution:
+    prompt: INTERNAL RESOLUTION
+    description: Render the 3DS screens at a higher resolution. Higher values improve visual quality but significantly impact performance.
+    choices:
+      1x (Native 400x240): 1
+      2x (800x480):        2
+      3x (1200x720):       3
+      4x (1600x960):       4
+      5x (2000x1200):      5
+      6x (2400x1440):      6
+      7x (2800x1680):      7
+      8x (3200x1920):      8
+      9x (3600x2160):      9
+      10x (4000x2400):     10
+  3ds_texture_filter:
+    prompt: TEXTURE FILTER
+    description: Apply texture filtering to enhance visual quality. Some filters may significantly impact performance.
+    choices:
+      None:              none
+      Anime4K Ultrafast: Anime4K Ultrafast
+      Bicubic:           Bicubic
+      ScaleForce:        ScaleForce
+      xBRZ:              xBRZ
+      MMPX:              MMPX
+  3ds_screen_layout:
+    prompt: SCREEN LAYOUT
+    description: Choose how the 3DS screens are arranged in the display.
+    choices:
+      Default Top-Bottom:         default
+      Single Screen Only:         single_screen
+      Large Screen, Small Screen: large_screen
+      Side by Side:               side_by_side
+  3ds_prominent_screen:
+    prompt: PROMINENT SCREEN
+    description: Choose which screen is displayed prominently in single screen or large screen layouts.
+    choices:
+      Top Screen:    Top
+      Bottom Screen: Bottom
+  3ds_large_screen_proportion:
+    prompt: LARGE SCREEN PROPORTION
+    description: How many times larger the main screen is compared to the small screen in the Large Screen layout.
+    choices:
+      1.00x (Equal Size): 1.00
+      1.25x:              1.25
+      1.50x:              1.50
+      1.75x:              1.75
+      2.00x:              2.00
+      2.25x:              2.25
+      2.50x:              2.50
+      2.75x:              2.75
+      3.00x:              3.00
+      3.25x:              3.25
+      3.50x:              3.50
+      3.75x:              3.75
+      4.00x (Default):    4.00
+      4.25x:              4.25
+      4.50x:              4.50
+      4.75x:              4.75
+      5.00x:              5.00
+      5.25x:              5.25
+      5.50x:              5.50
+      5.75x:              5.75
+      6.00x:              6.00
+systems:
+  - 3ds

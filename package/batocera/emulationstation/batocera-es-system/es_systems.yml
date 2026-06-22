@@ -2379,6 +2379,8 @@ x1:
   emulators:
     azahar:
       azahar: { requireAnyOf: [BR2_PACKAGE_AZAHAR] }
+    libretro:
+      azahar: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_AZAHAR] }
 
 openbor:
   name: OpenBOR

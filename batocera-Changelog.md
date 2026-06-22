@@ -16,8 +16,9 @@
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
-- box64 userland x86_64 emulator for aarch64
+- Box64 userland x86_64 emulator for aarch64
 - Legion Go / Go 2 LED controller support
+- Libretro-Azahar
 ### Fixed
 
 ### Changed / Improved
@@ -30,7 +31,8 @@
 - Rockcip RK3588 devices moved to the mainline linux kernel:
   CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5, Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 ### Updated
-- box64 0.4.2
+- Azahar to 2125.1.2
+- Box64 0.4.2
 - CDogs to 2.4.0
 - CLK to 2026-04-30
 - ECWolf to Feb 23, 2026 build
