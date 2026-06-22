@@ -1,0 +1,17 @@
+diff --git a/loader/loader.c b/loader/loader.c
+index 8c3058a..337d168 100644
+--- a/loader/loader.c
++++ b/loader/loader.c
+@@ -4281,9 +4281,9 @@ void loader_remove_duplicate_layers(struct loader_instance *inst, struct loader_
+             }
+         }
+         if (has_duplicate) {
+-            loader_log(inst, VULKAN_LOADER_WARN_BIT, 0, "Removing layer %s (%s) because it is a duplicate of %s (%s)",
+-                       layers->list[duplicate_index].info.layerName, layers->list[duplicate_index].manifest_file_name,
+-                       layers->list[i].info.layerName, layers->list[i].manifest_file_name);
++            //loader_log(inst, VULKAN_LOADER_WARN_BIT, 0, "Removing layer %s (%s) because it is a duplicate of %s (%s)",
++            //           layers->list[duplicate_index].info.layerName, layers->list[duplicate_index].manifest_file_name,
++            //           layers->list[i].info.layerName, layers->list[i].manifest_file_name);
+             loader_remove_layer_in_list(inst, layers, duplicate_index);
+         }
+     }
