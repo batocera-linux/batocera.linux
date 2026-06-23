@@ -1,0 +1,27 @@
+From f10f0ccfed45e74a8dc1ef12c73519b369b7dd77 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Tue, 7 Apr 2026 16:21:01 +0800
+Subject: [PATCH 27/62] soc: qcom: socinfo: Add CQ8725S SoC ID
+
+Add the ID for the Qualcomm CQ8725S SoC which represents the Pakala
+platform.
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ drivers/soc/qcom/socinfo.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+index 003a2304d535..7a9f85efec96 100644
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -526,6 +526,7 @@ static const struct soc_id soc_id[] = {
+ 	{ qcom_board_id(QCS8275) },
+ 	{ qcom_board_id(QCS9075) },
+ 	{ qcom_board_id(QCS615) },
++	{ qcom_board_id(CQ8725S) },
+ 	{ qcom_board_id(CQ7790M) },
+ 	{ qcom_board_id(CQ7790S) },
+ 	{ qcom_board_id(IPQ5200) },
+-- 
+2.43.0

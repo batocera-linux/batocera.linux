@@ -1,0 +1,116 @@
+diff --git a/ucm2/AYN/Odin3/AYN-Odin3.conf b/ucm2/AYN/Odin3/AYN-Odin3.conf
+new file mode 100644
+index 0000000..e4054ba
+--- /dev/null	2026-04-26 12:20:14.913728837 +0800
++++ b/ucm2/AYN/Odin3/AYN-Odin3.conf	2026-04-26 13:58:49.336073124 +0800
+@@ -0,0 +1,31 @@
++# Use case configuration for AYN SM8750
++# Author: Teguh Sobirin <teguh@sobir.in>
++
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/AYN/Odin3/HiFi.conf"
++	Comment "HiFi quality Music."
++}
++
++BootSequence [
++	cset "name='RX_RX0 Digital Volume' 84"
++	cset "name='RX_RX1 Digital Volume' 84"
++	cset "name='HPHL Volume' 20"
++	cset "name='HPHR Volume' 20"
++	cset "name='ADC2 Volume' 10"
++]
++
++LibraryConfig.remap.Config {
++
++	ctl.default.map {
++		"name='HP Volume'" {
++			"name='HPHL Volume'".vindex.0 0
++			"name='HPHR Volume'".vindex.1 0
++		}
++	}
++}
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wcd-init.File "/codecs/wcd939x/init.conf"
+diff --git a/ucm2/AYN/Odin3/HiFi.conf b/ucm2/AYN/Odin3/HiFi.conf
+new file mode 100644
+index 0000000..dc5211e
+--- /dev/null	2026-04-26 12:20:14.913728837 +0800
++++ b/ucm2/AYN/Odin3/HiFi.conf	2026-04-26 13:58:49.334297133 +0800
+@@ -0,0 +1,65 @@
++# Use case configuration for AYN SM8750
++# Author: Teguh Sobirin <teguh@sobir.in>
++
++SectionVerb {
++	EnableSequence [
++		cset "name='SECONDARY_MI2S_RX Audio Mixer MultiMedia1' 1"
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer TX_CODEC_DMA_TX_3' 1"
++	]
++
++	Include.wcde.File "/codecs/wcd939x/DefaultEnableSeq.conf"
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker playback"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	Include.wcdhpe.File "/codecs/wcd939x/HeadphoneEnableSeq.conf"
++	Include.wcdhpd.File "/codecs/wcd939x/HeadphoneDisableSeq.conf"
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP Digital"
++		JackControl "Headphone Jack"
++		JackHWMute "Speaker"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	Include.wcdhpe.File "/codecs/wcd939x/HeadphoneEnableSeq.conf"
++	Include.wcdhpd.File "/codecs/wcd939x/HeadphoneDisableSeq.conf"
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP Digital"
++		JackControl "Headphone Jack"
++		JackHWMute "Speaker"
++	}
++}
+diff --git a/ucm2/conf.d/sm8750/SM8750-AYN.conf b/ucm2/conf.d/sm8750/SM8750-AYN.conf
+new file mode 120000
+index 0000000..414976a
+--- /dev/null
++++ b/ucm2/conf.d/sm8750/SM8750-AYN.conf
+@@ -0,0 +1 @@
++../../AYN/Odin3/AYN-Odin3.conf
+\ No newline at end of file

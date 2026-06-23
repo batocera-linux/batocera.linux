@@ -1,0 +1,28 @@
+From 4b7df4ea83aa261b18e52bcf74980719cf093386 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Tue, 7 Apr 2026 16:15:46 +0800
+Subject: [PATCH 26/62] dt-bindings: arm: qcom,ids: Add SoC ID for CQ8725S
+
+Add the ID for the Qualcomm CQ8725S SoC which represents the Pakala
+platform.
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ include/dt-bindings/arm/qcom,ids.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/arm/qcom,ids.h b/include/dt-bindings/arm/qcom,ids.h
+index 8776844e0eeb..50cf5d0b026f 100644
+--- a/include/dt-bindings/arm/qcom,ids.h
++++ b/include/dt-bindings/arm/qcom,ids.h
+@@ -297,6 +297,7 @@
+ #define QCOM_ID_QCS8275			675
+ #define QCOM_ID_QCS9075			676
+ #define QCOM_ID_QCS615			680
++#define QCOM_ID_CQ8725S			706
+ #define QCOM_ID_CQ7790M			731
+ #define QCOM_ID_CQ7790S			732
+ #define QCOM_ID_IPQ5200			765
+  * The board type and revision information, used by Qualcomm bootloaders and
+-- 
+2.43.0

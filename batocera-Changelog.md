@@ -7,6 +7,7 @@
 - Anbernic RG40xx-H-v2-panel variant support
 - Anbernic RG40xx-V-v2-panel variant support
 - AYN Odin initial support
+- AYN Odin 3 initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
 ### Added
