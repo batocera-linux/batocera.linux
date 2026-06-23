@@ -1,0 +1,11 @@
+config BR2_PACKAGE_SHADPS4_QTLAUNCHER
+    bool "shadps4-qtlauncher"
+    select BR2_PACKAGE_BATOCERA_QT6
+    select BR2_PACKAGE_OPENSSL
+    select BR2_PACKAGE_QT6WAYLAND    if BR2_PACKAGE_BATOCERA_WAYLAND
+    select BR2_PACKAGE_SDL3
+    select BR2_PACKAGE_VULKAN_HEADERS
+    help
+      QT6 launcher for shadPS4.
+
+      https://github.com/shadps4-emu/shadps4-qtlauncher
