@@ -1,0 +1,298 @@
+features: []
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+custom_features:
+  xenia_license:
+    prompt: XBOX LIVE ARCADE
+    description: This option enables the ability to play Xbox Live Arcade games. May cause compatibility issues with non-XBLA games.
+    choices:
+      No licenses enabled: 0
+      XBLA license enabled (Default): 1
+      All possible licenses (Not recommended): -1
+  xenia_resolution:
+    prompt: INTERNAL DISPLAY RESOLUTION
+    description: Allow games that support different resolutions to be rendered in a specific resolution.
+    choices:
+      640x480: 0
+      640x576: 1
+      720x480: 2
+      720x576: 3
+      800x600: 4
+      848x480: 5
+      1024x768: 6
+      1152x864: 7
+      1280x720 (Default): 8
+      1280x768: 9
+      1280x960: 10
+      1280x1024: 11
+      1360x768: 12
+      1440x900: 13
+      1680x1050: 14
+      1920x540: 15
+      1920x1080: 16
+  xenia_postprocess_scaling_and_sharpening:
+    prompt: UPSCALING & SHARPENING
+    description: Post-processing filter applied after rendering. CAS adds sharpening only. FSR upscales from a lower resolution for better performance.
+    choices:
+      Bilinear (Default): bilinear
+      CAS - FidelityFX Sharpening: cas
+      FSR - FidelityFX Super Resolution: fsr
+  xenia_postprocess_antialiasing:
+    prompt: ANTI-ALIASING
+    description: Post-processing anti-aliasing filter to smooth jagged edges.
+    choices:
+      None (Default): none
+      FXAA: fxaa
+      FXAA Extreme: fxaa_extreme
+  xenia_postprocess_ffx_cas_additional_sharpness:
+    prompt: CAS SHARPNESS
+    description: Additional sharpness intensity when using CAS filter. Higher value = more sharpening (0.0 to 1.0).
+    choices:
+      "0.0 (Default)": 0.0
+      "0.1": 0.1
+      "0.2": 0.2
+      "0.3": 0.3
+      "0.4": 0.4
+      "0.5": 0.5
+      "0.6": 0.6
+      "0.7": 0.7
+      "0.8": 0.8
+      "0.9": 0.9
+      "1.0": 1.0
+  xenia_postprocess_ffx_fsr_sharpness_reduction:
+    prompt: FSR SHARPNESS REDUCTION
+    description: Sharpness reduction when using FSR. Lower = sharper, higher = softer (0.0 to 2.0). Default 0.2.
+    choices:
+      "0.0 (Maximum sharpness)": 0.0
+      "0.1": 0.1
+      "0.2 (Default)": 0.2
+      "0.3": 0.3
+      "0.4": 0.4
+      "0.5": 0.5
+      "0.6": 0.6
+      "0.7": 0.7
+      "0.8": 0.8
+      "0.9": 0.9
+      "1.0": 1.0
+      "1.5": 1.5
+      "2.0 (Minimum sharpness)": 2.0
+  xenia_vsync:
+    prompt: VSYNC
+    description: Fix screen tearing. With some games you need to turn VSync on in the game's options.
+    choices:
+      Disabled: false
+      Enabled (Default): true
+  xenia_vsync_fps:
+    prompt: VSYNC FPS LIMIT
+    description: Manually set a framerate cap. Set to 0 to disable. Should match your monitor refresh rate when VSync is enabled.
+    choices:
+      No limit (Default): 0
+      30fps: 30
+      60fps: 60
+      120fps: 120
+      144fps: 144
+      165fps: 165
+  xenia_apu:
+    prompt: AUDIO BACKEND
+    description: Audio backend to use. ALSA is the native Linux audio system; SDL is a cross-platform fallback.
+    choices:
+      ALSA (Default): alsa
+      SDL: sdl
+  xenia_headless:
+    prompt: UI PROMPTS
+    description: Choose to display UI prompts or accept defaults automatically.
+    choices:
+      Enabled (Default): false
+      Disabled: true
+  xenia_achievement:
+    prompt: SHOW ACHIEVEMENT MESSAGES
+    description: Display in-game achievement notifications.
+    choices:
+      Disabled (Default): false
+      Enabled: true
+  xenia_country:
+    prompt: CONSOLE COUNTRY
+    description: Change the console's country from the default of the United States.
+    choices:
+      United States (Default): United States
+      UAE: UAE
+      Albania: Albania
+      Armenia: Armenia
+      Argentina: Argentina
+      Austria: Austria
+      Australia: Australia
+      Azerbaijan: Azerbaijan
+      Belgium: Belgium
+      Bulgaria: Bulgaria
+      Bahrain: Bahrain
+      Brunei: Brunei
+      Bolivia: Bolivia
+      Brazil: Brazil
+      Belarus: Belarus
+      Belize: Belize
+      Canada: Canada
+      Switzerland: Switzerland
+      Chile: Chile
+      China: China
+      Colombia: Colombia
+      Costa Rica: Costa Rica
+      Czech Republic: Czech Republic
+      Germany: Germany
+      Denmark: Denmark
+      Dominican Republic: Dominican Republic
+      Algeria: Algeria
+      Ecuador: Ecuador
+      Estonia: Estonia
+      Egypt: Egypt
+      Spain: Spain
+      Finland: Finland
+      Faroe Islands: Faroe Islands
+      France: France
+      Great Britain: Great Britain
+      Georgia: Georgia
+      Greece: Greece
+      Guatemala: Guatemala
+      Hong Kong: Hong Kong
+      Honduras: Honduras
+      Croatia: Croatia
+      Hungary: Hungary
+      Indonesia: Indonesia
+      Ireland: Ireland
+      Israel: Israel
+      India: India
+      Iraq: Iraq
+      Iran: Iran
+      Iceland: Iceland
+      Italy: Italy
+      Jamaica: Jamaica
+      Jordan: Jordan
+      Japan: Japan
+      Kenya: Kenya
+      Kyrgyzstan: Kyrgyzstan
+      Korea: Korea
+      Kuwait: Kuwait
+      Kazakhstan: Kazakhstan
+      Lebanon: Lebanon
+      Liechtenstein: Liechtenstein
+      Lithuania: Lithuania
+      Luxembourg: Luxembourg
+      Latvia: Latvia
+      Libya: Libya
+      Morocco: Morocco
+      Monaco: Monaco
+      Macedonia: Macedonia
+      Mongolia: Mongolia
+      Macau: Macau
+      Maldives: Maldives
+      Mexico: Mexico
+      Malaysia: Malaysia
+      Nicaragua: Nicaragua
+      Netherlands: Netherlands
+      Norway: Norway
+      New Zealand: New Zealand
+      Oman: Oman
+      Panama: Panama
+      Peru: Peru
+      Philippines: Philippines
+      Pakistan: Pakistan
+      Poland: Poland
+      Puerto Rico: Puerto Rico
+      Portugal: Portugal
+      Paraguay: Paraguay
+      Qatar: Qatar
+      Romania: Romania
+      Russia: Russia
+      Saudi Arabia: Saudi Arabia
+      Sweden: Sweden
+      Singapore: Singapore
+      Slovenia: Slovenia
+      Slovakia: Slovakia
+      El Salvador: El Salvador
+      Syria: Syria
+      Thailand: Thailand
+      Tunisia: Tunisia
+      Turkey: Turkey
+      Trinidad: Trinidad
+      Taiwan: Taiwan
+      Ukraine: Ukraine
+      Uruguay: Uruguay
+      Uzbekistan: Uzbekistan
+      Venezuela: Venezuela
+      Vietnam: Vietnam
+      Yemen: Yemen
+      South Africa: South Africa
+      Zimbabwe: Zimbabwe
+  xenia_language:
+    prompt: LANGUAGE
+    description: Change the game's language.
+    choices:
+      English (Default): English
+      Japanese: Japanese
+      German: German
+      French: French
+      Spanish: Spanish
+      Italian: Italian
+      Korean: Korean
+      Traditional Chinese: TChinese
+      Simplified Chinese: SChinese
+      Portuguese: Portuguese
+      Polish: Polish
+      Russian: Russian
+  xenia_patches:
+    prompt: GAME PATCHES
+    description: Enable or disable Xenia game patches. These patches can fix graphics and compatibility problems.
+    choices:
+      Disabled (Default): false
+      Enabled: true
+  xenia_cache:
+    prompt: MOUNT CACHE
+    description: Enable cache mount. Can improve performance and compatibility in some games.
+    choices:
+      Enabled (Default): true
+      Disabled: false
+  xenia_limit_hard:
+    group: ADVANCED OPTIONS
+    prompt: HARD TEXTURE CACHE MEMORY LIMIT
+    description: Maximum host texture memory usage (in megabytes) above which textures will be destroyed as soon as possible.
+    choices:
+      768MB (Default): 768
+      1536MB: 1536
+      2304MB: 2034
+      3072MB: 3072
+      3840MB: 3840
+      4096MB: 4096
+      5120MB: 5120
+      6144MB: 6144
+  xenia_limit_soft:
+    group: ADVANCED OPTIONS
+    prompt: SOFT TEXTURE CACHE MEMORY LIMIT
+    description: Maximum host texture memory usage (in megabytes) above which old textures will be destroyed. Set below hard limit.
+    choices:
+      384MB (Default): 384
+      768MB: 768
+      1536MB: 1536
+      2048MB: 2048
+      3072MB: 3072
+      4096MB: 4096
+  xenia_limit_soft_lifetime:
+    group: ADVANCED OPTIONS
+    prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
+    description: Seconds a texture should be unused before it is eligible for deletion when above the soft limit.
+    choices:
+      15s: 15
+      30s (Default): 30
+      45s: 45
+      60s: 60
+  xenia_limit_render_to_texture:
+    group: ADVANCED OPTIONS
+    prompt: RENDER-TO-TEXTURE MEMORY BUDGET
+    description: Part of the host texture memory budget (in megabytes) reserved for render-to-texture targets.
+    choices:
+      24MB (Default): 24
+      48MB: 48
+      72MB: 72
+      96MB: 96
+systems:
+  - xbox360

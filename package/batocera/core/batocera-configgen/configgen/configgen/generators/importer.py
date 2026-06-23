@@ -71,6 +71,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'vpinball': ('vpinball.vpinballGenerator', 'VPinballGenerator'),
     'xash3d_fwgs': ('xash3d_fwgs.xash3dFwgsGenerator', 'Xash3dFwgsGenerator'),
     'xenia-canary': ('xenia.xeniaGenerator', 'XeniaGenerator'),
+    'xenia-edge': ('xenia_edge.xenia_edgeGenerator', 'XeniaEdgeGenerator'),
     'ymir': ('ymir.ymirGenerator', 'YmirGenerator'),
     'yquake2': ('yquake2.yquake2Generator', 'YQuake2Generator'),
     'tic80': ('tic80.tic80Generator', 'tic80Generator'),

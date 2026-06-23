@@ -1,0 +1,51 @@
+From: Batocera Linux Team <batocera@batocera.linux>
+Date: Fri, 2 May 2026 00:00:00 +0000
+Subject: [PATCH 1/2] fix: add missing <tuple> include in several translation units
+
+With clang 18+ and GCC 13+ in strict C++20 mode, <tuple> is no longer
+pulled in transitively through other headers. Add explicit includes to
+the files that use std::tie / std::ignore.
+
+Signed-off-by: Batocera Linux Team <batocera@batocera.linux>
+---
+ src/xenia/apu/xma_context_master.cc      | 1 +
+ src/xenia/apu/xma_context_old.cc         | 1 +
+ src/xenia/base/utf8.cc                   | 1 +
+ src/xenia/kernel/xam/xdbf/spa_info.cc   | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/src/xenia/apu/xma_context_master.cc b/src/xenia/apu/xma_context_master.cc
+index 1111111..2222222 100644
+--- a/src/xenia/apu/xma_context_master.cc
++++ b/src/xenia/apu/xma_context_master.cc
+@@ -9,6 +9,7 @@
+  */
+
++#include <tuple>
+ #include "xenia/apu/xma_context_master.h"
+diff --git a/src/xenia/apu/xma_context_old.cc b/src/xenia/apu/xma_context_old.cc
+index 1111111..2222222 100644
+--- a/src/xenia/apu/xma_context_old.cc
++++ b/src/xenia/apu/xma_context_old.cc
+@@ -9,6 +9,7 @@
+  */
+
++#include <tuple>
+ #include "xenia/apu/xma_context_old.h"
+diff --git a/src/xenia/base/utf8.cc b/src/xenia/base/utf8.cc
+index 1111111..2222222 100644
+--- a/src/xenia/base/utf8.cc
++++ b/src/xenia/base/utf8.cc
+@@ -11,6 +11,7 @@
+ #include <algorithm>
+ #include <cstdint>
++#include <tuple>
+diff --git a/src/xenia/kernel/xam/xdbf/spa_info.cc b/src/xenia/kernel/xam/xdbf/spa_info.cc
+index 1111111..2222222 100644
+--- a/src/xenia/kernel/xam/xdbf/spa_info.cc
++++ b/src/xenia/kernel/xam/xdbf/spa_info.cc
+@@ -9,6 +9,7 @@
+  */
+
++#include <tuple>
+ #include "xenia/kernel/xam/xdbf/spa_info.h"

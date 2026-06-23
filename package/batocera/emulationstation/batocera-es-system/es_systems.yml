@@ -4549,19 +4549,17 @@ xbox360:
       xenia: { requireAnyOf: [BR2_PACKAGE_XENIA], incompatible_extensions: [zar] }
     xenia-canary:
       xenia-canary: { requireAnyOf: [BR2_PACKAGE_XENIA_CANARY] }
+    xenia-edge:
+      xenia-edge: { requireAnyOf: [BR2_PACKAGE_XENIA_EDGE] }
   comment_en: |
-    Currently the Xenia emulators run under WINE and are restricted to systems capable of Vulkan 1.3+ only.
-    The Xenia emulators will use native Vulkan by default however an experiemental D3D12 -> Vulkan (VKD3D) option is provided.
-
-    Note: An internet connection is required to create the initial WINE bottle.
+    Xenia and Xenia Canary run under WINE and require Vulkan 1.3+. An internet connection is needed to create the initial WINE bottle.
+    Xenia Edge is a native Linux port — no WINE required, uses Vulkan directly.
   comment_fr: |
-    Actuellement, les émulateurs Xenia fonctionnent sous WINE et sont limités aux systèmes compatibles uniquement avec Vulkan 1.3+.
-    Les émulateurs Xenia utiliseront Vulkan natif par défaut, mais une option expérimentale D3D12 -> Vulkan (VKD3D) est fournie.
-
-    Remarque : Une connexion Internet est requise pour créer la bouteille de VIN initiale.
+    Xenia et Xenia Canary fonctionnent sous WINE et nécessitent Vulkan 1.3+. Une connexion Internet est requise pour créer la bouteille WINE initiale.
+    Xenia Edge est un portage Linux natif — pas de WINE, utilise Vulkan directement.
   comment_br: |
-    Atualmente os emuladores Xenia rodam em WINE e estão restritos apenas a sistemas capazes de Vulkan 1.3+.
-    Os emuladores Xenia usarão Vulkan nativo por padrão, no entanto, uma opção experimental D3D12 -> Vulkan (VKD3D) é fornecida.
+    Xenia e Xenia Canary rodam em WINE e requerem Vulkan 1.3+. Uma conexão com a internet é necessária para criar a garrafa WINE inicial.
+    Xenia Edge é um port Linux nativo — sem WINE, usa Vulkan diretamente.
 
     Nota: É necessária uma ligação à Internet para criar a garrafa de WINE inicial.
 

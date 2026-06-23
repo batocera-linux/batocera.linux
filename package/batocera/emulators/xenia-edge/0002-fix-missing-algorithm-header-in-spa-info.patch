@@ -1,0 +1,22 @@
+From: Batocera Linux Team <batocera@batocera.linux>
+Date: Fri, 2 May 2026 00:00:00 +0000
+Subject: [PATCH 2/2] fix: add missing <algorithm> include in spa_info.h
+
+std::ranges::find_if requires <algorithm> to be explicitly included
+in C++20 strict mode (clang 18+ / GCC 13+).
+
+Signed-off-by: Batocera Linux Team <batocera@batocera.linux>
+---
+ src/xenia/kernel/xam/xdbf/spa_info.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/xenia/kernel/xam/xdbf/spa_info.h b/src/xenia/kernel/xam/xdbf/spa_info.h
+index 1111111..2222222 100644
+--- a/src/xenia/kernel/xam/xdbf/spa_info.h
++++ b/src/xenia/kernel/xam/xdbf/spa_info.h
+@@ -13,6 +13,7 @@
+ #include "xenia/kernel/xam/xdbf/xdbf_io.h"
+
++#include <algorithm>
+ #include <map>
+ #include <numeric>
