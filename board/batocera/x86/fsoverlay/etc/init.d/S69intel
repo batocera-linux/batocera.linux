@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# This script attempts to set PSys power limits to the long-term power limit (PL2)
+# of the CPU package domain but only if higher than current PSys settings.
+# This aims to uncap PantherLake laptops to their intended power capabilities.
+
+POWERCAP_BASE="/sys/class/powercap"
+CPU_PACKAGE_DEVICE_DIR="intel-rapl:0"
+PSYS_DEVICE_DIR="intel-rapl:1"
+LOG_FILE="/userdata/system/logs/set_rapl_psys_power.log"
+
+log_action() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - set_rapl_psys_power: $1" >> "$LOG_FILE"
+}
+
+do_start() {
+    log_action "Info: Starting RAPL PSys power limit configuration..."
+
+    CPU_PACKAGE_PATH="${POWERCAP_BASE}/${CPU_PACKAGE_DEVICE_DIR}"
+    PSYS_RAPL_PATH="${POWERCAP_BASE}/${PSYS_DEVICE_DIR}"
+
+    if [ ! -d "$CPU_PACKAGE_PATH" ]; then
+        exit 0
+    fi
+
+    TARGET_PSYS_MAX=0
+    CPU_PL2_FILE="${CPU_PACKAGE_PATH}/constraint_1_power_limit_uw"
+    
+    if [ -f "$CPU_PL2_FILE" ]; then
+        READ_CPU_PL2=$(cat "$CPU_PL2_FILE" 2>/dev/null)
+        CAT_EXIT_STATUS=$? 
+        
+        if [ "$CAT_EXIT_STATUS" -ne 0 ]; then
+            log_action "Error: failed to read CPU PL2 from ${CPU_PL2_FILE}. Exit status: $CAT_EXIT_STATUS."
+            exit 0
+        elif [ -n "$READ_CPU_PL2" ] && [ "$READ_CPU_PL2" -gt 0 ]; then
+            TARGET_PSYS_MAX="$READ_CPU_PL2"
+            log_action "Info: Determined target PSys max power from CPU Package PL2 (${CPU_PL2_FILE}): ${TARGET_PSYS_MAX} uw."
+        else
+            log_action "Warning: Read empty or invalid CPU Package PL2 from ${CPU_PL2_FILE} (read '$READ_CPU_PL2')."
+            exit 0
+        fi
+    else
+        log_action "Warning: CPU Package PL2 file (${CPU_PL2_FILE}) not found."
+        exit 0
+    fi
+
+    if [ ! -d "$PSYS_RAPL_PATH" ]; then
+        log_action "Info: Target PSys device path '$PSYS_RAPL_PATH' not found. No power limits adjusted."
+        exit 0
+    fi
+    log_action "Info: Identified PSys device path: $PSYS_RAPL_PATH"
+
+    ACTION_TAKEN=0
+
+    for i in 0 1; do
+        LIMIT_FILE="${PSYS_RAPL_PATH}/constraint_${i}_power_limit_uw"
+        
+        if [ -f "$LIMIT_FILE" ]; then
+            CURRENT_LIMIT=$(cat "$LIMIT_FILE" 2>/dev/null)
+
+            if [ -n "$TARGET_PSYS_MAX" ] && [ "$TARGET_PSYS_MAX" -gt 0 ]; then
+                if [ "$TARGET_PSYS_MAX" -gt "$CURRENT_LIMIT" ]; then
+                    if echo "$TARGET_PSYS_MAX" > "$LIMIT_FILE"; then
+                        log_action "Success: Set ${LIMIT_FILE} to ${TARGET_PSYS_MAX} uw (was ${CURRENT_LIMIT} uw)."
+                        ACTION_TAKEN=1
+                    else
+                        log_action "Error: Failed to set ${LIMIT_FILE} to ${TARGET_PSYS_MAX} uw."
+                    fi
+                else
+                    log_action "Info: ${LIMIT_FILE} (${CURRENT_LIMIT} uw) is already at or above target max (${TARGET_PSYS_MAX} uw)."
+                fi
+            else
+                log_action "Error: Target PSys max power is invalid. Skipping ${LIMIT_FILE}."
+            fi
+        else
+            log_action "Info: Limit file (${LIMIT_FILE}) does not exist."
+        fi
+    done
+
+    if [ "$ACTION_TAKEN" -eq 0 ]; then
+        log_action "Info: No PSys power limits were raised, either already at max or issues prevented changes."
+    fi
+    log_action "Info: RAPL PSys configuration script finished."
+}
+
+case "$1" in
+    start)
+        do_start
+        ;;
+    stop|restart)
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
