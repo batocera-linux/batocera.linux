@@ -1,0 +1,153 @@
+diff --git a/third_party/CMakeLists.txt b/third_party/CMakeLists.txt.new
+index 5458f8d..2869d8d 100644
+--- a/third_party/CMakeLists.txt
++++ b/third_party/CMakeLists.txt.new
+@@ -688,77 +688,83 @@ endif()
+ # ==============================================================================
+ # SDL3
+ # ==============================================================================
+-# Build SDL3 from source on every platform using upstream's own CMake. Xenia
+-# drives windowing/rendering/GPU directly, so the SDL subsystems we don't
+-# consume are switched off. Only audio + joystick/gamepad/haptic + events are
+-# exercised by xenia-apu-sdl / xenia-hid-sdl. Linux builds shared so the
+-# runtime dlopen("libSDL3.so.0") path in system_gnulinux.cc can resolve and so
+-# linuxdeploy can bundle the .so into the AppImage; Windows/macOS build static.
+-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+-  set(SDL_SHARED ON CACHE INTERNAL "")
+-  set(SDL_STATIC OFF CACHE INTERNAL "")
++option(XENIA_USE_SYSTEM_SDL3 "Use system-provided SDL3 instead of building the vendored submodule" OFF)
++
++if(XENIA_USE_SYSTEM_SDL3)
++  find_package(SDL3 REQUIRED CONFIG)
+ else()
+-  set(SDL_SHARED OFF CACHE INTERNAL "")
+-  set(SDL_STATIC ON CACHE INTERNAL "")
+-endif()
+-set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
+-set(SDL_INSTALL OFF CACHE INTERNAL "")
+-set(SDL_DISABLE_INSTALL ON CACHE INTERNAL "")
+-set(SDL_CAMERA OFF CACHE INTERNAL "")
+-set(SDL_DIALOG OFF CACHE INTERNAL "")
+-set(SDL_GPU OFF CACHE INTERNAL "")
+-set(SDL_RENDER OFF CACHE INTERNAL "")
+-set(SDL_SENSOR OFF CACHE INTERNAL "")
+-set(SDL_HIDAPI_LIBUSB OFF CACHE INTERNAL "")
++  # Build SDL3 from source on every platform using upstream's own CMake. Xenia
++  # drives windowing/rendering/GPU directly, so the SDL subsystems we don't
++  # consume are switched off. Only audio + joystick/gamepad/haptic + events are
++  # exercised by xenia-apu-sdl / xenia-hid-sdl. Linux builds shared so the
++  # runtime dlopen("libSDL3.so.0") path in system_gnulinux.cc can resolve and so
++  # linuxdeploy can bundle the .so into the AppImage; Windows/macOS build static.
++  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++    set(SDL_SHARED ON CACHE INTERNAL "")
++    set(SDL_STATIC OFF CACHE INTERNAL "")
++  else()
++    set(SDL_SHARED OFF CACHE INTERNAL "")
++    set(SDL_STATIC ON CACHE INTERNAL "")
++  endif()
++  set(SDL_TEST_LIBRARY OFF CACHE INTERNAL "")
++  set(SDL_INSTALL OFF CACHE INTERNAL "")
++  set(SDL_DISABLE_INSTALL ON CACHE INTERNAL "")
++  set(SDL_CAMERA OFF CACHE INTERNAL "")
++  set(SDL_DIALOG OFF CACHE INTERNAL "")
++  set(SDL_GPU OFF CACHE INTERNAL "")
++  set(SDL_RENDER OFF CACHE INTERNAL "")
++  set(SDL_SENSOR OFF CACHE INTERNAL "")
++  set(SDL_HIDAPI_LIBUSB OFF CACHE INTERNAL "")
+ 
+-# SDL3's sdlcommands.cmake uses file(GLOB CONFIGURE_DEPENDS ...) for its
+-# source lists. CMake honours that by emitting a "Re-checking globbed
+-# directories" probe on every build — slow and pointless for a submodule
+-# pinned to a release tag. Strip the flag in place at configure time;
+-# .gitmodules marks SDL3 as ignore=dirty so the in-tree edit doesn't pollute
+-# git status. Same pattern as snappy and zlib-ng.
+-set(_sdl3_cmd "${CMAKE_CURRENT_SOURCE_DIR}/SDL3/cmake/sdlcommands.cmake")
+-if(EXISTS "${_sdl3_cmd}")
+-  file(READ "${_sdl3_cmd}" _sdl3_cmd_content)
+-  string(REPLACE " CONFIGURE_DEPENDS " " " _sdl3_cmd_patched "${_sdl3_cmd_content}")
+-  if(NOT "${_sdl3_cmd_patched}" STREQUAL "${_sdl3_cmd_content}")
+-    file(WRITE "${_sdl3_cmd}" "${_sdl3_cmd_patched}")
++  # SDL3's sdlcommands.cmake uses file(GLOB CONFIGURE_DEPENDS ...) for its
++  # source lists. CMake honours that by emitting a "Re-checking globbed
++  # directories" probe on every build — slow and pointless for a submodule
++  # pinned to a release tag. Strip the flag in place at configure time;
++  # .gitmodules marks SDL3 as ignore=dirty so the in-tree edit doesn't pollute
++  # git status. Same pattern as snappy and zlib-ng.
++  set(_sdl3_cmd "${CMAKE_CURRENT_SOURCE_DIR}/SDL3/cmake/sdlcommands.cmake")
++  if(EXISTS "${_sdl3_cmd}")
++    file(READ "${_sdl3_cmd}" _sdl3_cmd_content)
++    string(REPLACE " CONFIGURE_DEPENDS " " " _sdl3_cmd_patched "${_sdl3_cmd_content}")
++    if(NOT "${_sdl3_cmd_patched}" STREQUAL "${_sdl3_cmd_content}")
++      file(WRITE "${_sdl3_cmd}" "${_sdl3_cmd_patched}")
++    endif()
+   endif()
+-endif()
+ 
+-# SDL3's target_precompile_headers emits /Yu on MSVC, which sccache cannot
+-# cache. Disable PCH so each source compiles standalone and caches across CI.
+-set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
+-# SDL3 puts /GL- on SDL_mslibc.c to keep its hand-written memcpy out of
+-# whole-program opt. Our inherited Release /GL then trips D9025, so drop /GL
+-# for the SDL3 subtree and restore it afterward.
+-get_directory_property(_xe_save_opts COMPILE_OPTIONS)
+-set(_xe_sdl_opts "${_xe_save_opts}")
+-list(FILTER _xe_sdl_opts EXCLUDE REGEX "/GL>$")
+-set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "${_xe_sdl_opts}")
+-add_subdirectory(SDL3 EXCLUDE_FROM_ALL)
+-set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "${_xe_save_opts}")
+-# Consistent target name for downstream link calls.
+-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+-  add_library(SDL3 ALIAS SDL3-shared)
+-else()
+-  add_library(SDL3 ALIAS SDL3-static)
+-endif()
++  # SDL3's target_precompile_headers emits /Yu on MSVC, which sccache cannot
++  # cache. Disable PCH so each source compiles standalone and caches across CI.
++  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
++  # SDL3 puts /GL- on SDL_mslibc.c to keep its hand-written memcpy out of
++  # whole-program opt. Our inherited Release /GL then trips D9025, so drop /GL
++  # for the SDL3 subtree and restore it afterward.
++  get_directory_property(_xe_save_opts COMPILE_OPTIONS)
++  set(_xe_sdl_opts "${_xe_save_opts}")
++  list(FILTER _xe_sdl_opts EXCLUDE REGEX "/GL>$")
++  set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "${_xe_sdl_opts}")
++  add_subdirectory(SDL3 EXCLUDE_FROM_ALL)
++  set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "${_xe_save_opts}")
++  # Consistent target name for downstream link calls.
++  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++    add_library(SDL3 ALIAS SDL3-shared)
++  else()
++    add_library(SDL3 ALIAS SDL3-static)
++  endif()
+ 
+-# SDL3 explicitly bakes /W3 into its target COMPILE_OPTIONS, which clashes
+-# with the directory-level /W0 above and produces D9025 noise on every TU.
+-# Strip the /W* and /WX flags it added so only the directory-level /W0
+-# survives. Mirrors the same workaround we apply to SPIRV-Tools.
+-if(MSVC)
+-  foreach(_sdl3_target SDL3-static SDL_uclibc)
+-    if(TARGET ${_sdl3_target})
+-      get_target_property(_opts ${_sdl3_target} COMPILE_OPTIONS)
+-      if(_opts)
+-        list(FILTER _opts EXCLUDE REGEX "^/[Ww]([0-9]|all|X)$")
+-        set_target_properties(${_sdl3_target} PROPERTIES COMPILE_OPTIONS "${_opts}")
++  # SDL3 explicitly bakes /W3 into its target COMPILE_OPTIONS, which clashes
++  # with the directory-level /W0 above and produces D9025 noise on every TU.
++  # Strip the /W* and /WX flags it added so only the directory-level /W0
++  # survives. Mirrors the same workaround we apply to SPIRV-Tools.
++  if(MSVC)
++    foreach(_sdl3_target SDL3-static SDL_uclibc)
++      if(TARGET ${_sdl3_target})
++        get_target_property(_opts ${_sdl3_target} COMPILE_OPTIONS)
++        if(_opts)
++          list(FILTER _opts EXCLUDE REGEX "^/[Ww]([0-9]|all|X)$")
++          set_target_properties(${_sdl3_target} PROPERTIES COMPILE_OPTIONS "${_opts}")
++        endif()
+       endif()
+-    endif()
+-  endforeach()
++    endforeach()
++  endif()
+ endif()
+ 
+ # ==============================================================================
