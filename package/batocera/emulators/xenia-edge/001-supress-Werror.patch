@@ -1,0 +1,13 @@
+diff --git a/cmake/XeniaHelpers.cmake b/cmake/XeniaHelpers.cmake.new
+index ff1e9e5..e7d9c4b 100644
+--- a/cmake/XeniaHelpers.cmake
++++ b/cmake/XeniaHelpers.cmake.new
+@@ -107,7 +107,7 @@ function(xe_target_defaults target)
+   if(MSVC)
+     target_compile_options(${target} PRIVATE /WX)
+   elseif(NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+-    target_compile_options(${target} PRIVATE -Werror)
++    target_compile_options(${target} PRIVATE -Werror -Wno-error=unused-result)
+   endif()
+ endfunction()
+ 

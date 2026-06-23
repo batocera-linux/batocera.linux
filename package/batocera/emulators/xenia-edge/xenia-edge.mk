@@ -3,7 +3,8 @@
 # xenia-edge
 #
 ################################################################################
-XENIA_EDGE_VERSION = b0a1ea5f8ba2de34240f5fb3e8e8da352348b7bc
+# Version: Commits on Jun 23, 2026
+XENIA_EDGE_VERSION = 65e7f337e928029f4beeede406ace4eca5503456
 XENIA_EDGE_SITE = https://github.com/has207/xenia-edge.git
 XENIA_EDGE_SITE_METHOD = git
 XENIA_EDGE_GIT_SUBMODULES = YES
@@ -11,14 +12,24 @@ XENIA_EDGE_LICENSE = BSD
 XENIA_EDGE_LICENSE_FILE = LICENSE
 XENIA_EDGE_EMULATOR_INFO = xenia-edge.emulator.yml
 
-# wxWidgets (vendored submodule) uses GTK3 — no Qt dependency
-XENIA_EDGE_DEPENDENCIES = sdl2 vulkan-headers vulkan-loader lz4 alsa-lib python-toml \
-    gtk3 pcre2
+XENIA_EDGE_DEPENDENCIES += alsa-lib ffmpeg fmt sdl3 glslang host-clang host-ninja imgui
+XENIA_EDGE_DEPENDENCIES += libcurl libgtk3 lz4 python-toml vulkan-headers vulkan-loader
 
+XENIA_EDGE_CMAKE_BACKEND = ninja
+
+XENIA_EDGE_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
+XENIA_EDGE_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+XENIA_EDGE_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
 XENIA_EDGE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_TESTS=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_MISC=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_ENABLE_LTO=OFF
+XENIA_EDGE_CONF_OPTS += -DXENIA_USE_SYSTEM_SDL3=ON
+
+define XENIA_EDGE_DOWNLOAD_SLANG
+	cd $(@D) && python3 ./xenia-build.py slang
+endef
+XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_DOWNLOAD_SLANG
 
 define XENIA_EDGE_GEN_VERSION_H
 	mkdir -p $(@D)
@@ -36,14 +47,10 @@ endef
 XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_GEN_VERSION_H
 
 define XENIA_EDGE_INSTALL_TARGET_CMDS
-	find $(@D) -maxdepth 6 -name "xenia_edge" -type f -perm /111 \
-	    | head -1 \
-	    | xargs -I{} $(INSTALL) -D -m 0755 {} $(TARGET_DIR)/usr/xenia_edge/xenia_edge
-
+    $(INSTALL) -D -m 0755 $(@D)/bin/Linux/xenia_edge $(TARGET_DIR)/usr/bin/
 	# game-patches are embedded in the binary at build time (build/data_repos/game-patches)
 	# The patches dialog writes enabled patches to storage_root/patches/ on first use
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/xenia_edge/patches
 endef
-
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
