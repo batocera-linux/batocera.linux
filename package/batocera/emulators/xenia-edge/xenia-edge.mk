@@ -12,10 +12,13 @@ XENIA_EDGE_LICENSE = BSD
 XENIA_EDGE_LICENSE_FILE = LICENSE
 XENIA_EDGE_EMULATOR_INFO = xenia-edge.emulator.yml
 
-XENIA_EDGE_DEPENDENCIES += alsa-lib ffmpeg fmt sdl3 glslang host-clang host-ninja imgui
+XENIA_EDGE_DEPENDENCIES += host-clang host-glslang host-shader-slang
+XENIA_EDGE_DEPENDENCIES += ffmpeg fmt sdl3 glslang imgui
 XENIA_EDGE_DEPENDENCIES += libcurl libgtk3 lz4 python-toml vulkan-headers vulkan-loader
 
 XENIA_EDGE_CMAKE_BACKEND = ninja
+
+XENIA_EDGE_CONF_ENV += SLANGC_PATH=$(HOST_DIR)/bin/slangc
 
 XENIA_EDGE_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
 XENIA_EDGE_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
@@ -25,11 +28,29 @@ XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_TESTS=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_MISC=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_ENABLE_LTO=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_USE_SYSTEM_SDL3=ON
+XENIA_EDGE_CONF_OPTS += -DXENIA_HOST_SHADER_CC=$(BUILD_DIR)/xenia-edge-$(XENIA_EDGE_VERSION)/host_tools/xenia-shader-cc
 
-define XENIA_EDGE_DOWNLOAD_SLANG
-	cd $(@D) && python3 ./xenia-build.py slang
+# xenia-shader-cc is a build-time host tool (GLSL/XeSL -> SPIR-V -> embedded
+# .h). We cross-compile x86_64 on an aarch64 host, so letting the project's
+# CMake build it with the target toolchain produces an x86_64 binary that
+# can't run during the build (and needlessly recompiles glslang/SPIRV-Tools).
+# Instead, compile it natively for the build machine against buildroot's
+# host-glslang / host-spirv-tools and import it (003-import-prebuilt-host-shader-cc.patch).
+define XENIA_EDGE_BUILD_HOST_SHADER_CC
+	mkdir -p $(@D)/host_tools
+	$(HOSTCXX) -O2 -std=c++17 \
+		-I$(HOST_DIR)/include \
+		-I$(HOST_DIR)/include/glslang \
+		-I$(@D)/third_party/glslang/StandAlone \
+		$(@D)/tools/build/shader_cc.cc \
+		-o $(@D)/host_tools/xenia-shader-cc \
+		-L$(HOST_DIR)/lib -Wl,-rpath,$(HOST_DIR)/lib \
+		-Wl,--no-as-needed \
+		-lSPIRV -lglslang-default-resource-limits -lglslang \
+		-lSPIRV-Tools-opt -lSPIRV-Tools -lpthread
 endef
-XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_DOWNLOAD_SLANG
+
+XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_BUILD_HOST_SHADER_CC
 
 define XENIA_EDGE_GEN_VERSION_H
 	mkdir -p $(@D)
