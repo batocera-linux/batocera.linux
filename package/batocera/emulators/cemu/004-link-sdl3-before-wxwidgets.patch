@@ -1,0 +1,36 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: suckbluefrog <suckbluefrog@proton.me>
+Date: Wed, 24 Jun 2026 00:00:00 +0000
+Subject: [PATCH] cemu: link SDL3 before wxWidgets
+
+The SDL3 Cemu build can still pull SDL2 transitively through wxWidgets.
+Both libraries export SDL_* symbols, so if SDL2 is loaded first then Cemu
+can bind SDL3 API calls to SDL2 implementations. Put SDL3 first in the
+executable link list so SDL3 symbols win.
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 0cc764de..91b5de52 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -214,6 +214,10 @@ set_target_properties(CemuBin PROPERTIES
+ 	OUTPUT_NAME "${OUTPUT_NAME}"
+ )
+ 
++if(ENABLE_SDL)
++	target_link_libraries(CemuBin PRIVATE SDL3::SDL3)
++endif()
++
+ target_link_libraries(CemuBin PRIVATE
+ 	CemuAudio
+ 	CemuCafe
+@@ -225,10 +229,6 @@ target_link_libraries(CemuBin PRIVATE
+ 	CemuUtil
+ )
+ 
+-if(ENABLE_SDL)
+-	target_link_libraries(CemuBin PRIVATE SDL3::SDL3)
+-endif()
+-
+ if(UNIX AND NOT APPLE)
+ 	# due to nasm output some linkers will make stack executable
+ 	# cemu does not require this so we explicity disable it
