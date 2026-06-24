@@ -1,0 +1,54 @@
+Allow importing a prebuilt host xenia-shader-cc
+
+xenia-shader-cc is a build-time host tool (GLSL/XeSL -> SPIR-V -> embedded
+.h) that links the bundled glslang frontend + SPIRV-Tools. When
+cross-compiling (e.g. x86_64 target on an aarch64 build host), CMake builds
+this tool for the *target* arch, so it can't run during the build, and it
+also recompiles glslang/SPIRV-Tools needlessly.
+
+Add a -DXENIA_HOST_SHADER_CC=<path> escape hatch: when set, import that
+prebuilt build-machine binary as the xenia-shader-cc target and skip building
+the bundled glslang frontend + SPIRV-Tools entirely. buildroot compiles the
+tool natively against host-glslang and passes its path in.
+
+The bundled glslang-spirv runtime static library (used by the emulator
+itself) is untouched.
+
+Signed-off-by: batocera
+
+diff --git a/third_party/CMakeLists.txt b/third_party/CMakeLists.txt
+--- a/third_party/CMakeLists.txt
++++ b/third_party/CMakeLists.txt
+@@ -193,6 +193,14 @@
+   set(_xe_use_host_shader_cc TRUE)
+ endif()
+ 
++# A prebuilt xenia-shader-cc compiled for the build machine can be supplied via
++# -DXENIA_HOST_SHADER_CC=<path> (e.g. when cross-compiling x86_64 on an aarch64
++# host, where a target-arch tool can't run during the build). When set, import
++# it and skip building the bundled glslang frontend + SPIRV-Tools entirely.
++if(XENIA_HOST_SHADER_CC)
++  set(_xe_use_host_shader_cc TRUE)
++endif()
++
+ if(NOT _xe_use_host_shader_cc)
+ 
+ # ==============================================================================
+@@ -425,7 +433,17 @@
+ endif()
+ if(MSVC)
+   target_compile_options(xenia-shader-cc PRIVATE /EHsc)
++endif()
++
++elseif(XENIA_HOST_SHADER_CC)  # use an externally-provided prebuilt host tool
++
++if(NOT EXISTS "${XENIA_HOST_SHADER_CC}")
++  message(FATAL_ERROR
++    "XENIA_HOST_SHADER_CC=${XENIA_HOST_SHADER_CC} does not exist.")
+ endif()
++add_executable(xenia-shader-cc IMPORTED GLOBAL)
++set_target_properties(xenia-shader-cc PROPERTIES
++  IMPORTED_LOCATION "${XENIA_HOST_SHADER_CC}")
+ 
+ else()  # _xe_use_host_shader_cc: x64→ARM64 cross-compile, use native build's binary
+ 

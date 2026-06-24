@@ -1,0 +1,50 @@
+From: Batocera build
+Subject: [PATCH] cmake: resolve system dependency target names
+
+Several slang targets link against non-namespaced target names that only
+exist when the dependency is built in-tree:
+
+  - tools/gfx links "Vulkan-Headers"
+  - source/slang-glslang links "SPIRV" and "SPIRV-Tools-link"
+
+When building against the system packages (SLANG_USE_SYSTEM_VULKAN_HEADERS,
+SLANG_USE_SYSTEM_GLSLANG) those dependencies expose different names:
+
+  - VulkanHeaders package exports Vulkan::Headers
+  - glslang package exports glslang::SPIRV
+  - SPIRV-Tools-link lives in its own CMake package slang never find_package()s
+
+CMake then cannot resolve the bare names to imported targets and passes
+them verbatim to the linker as -lVulkan-Headers / -lSPIRV /
+-lSPIRV-Tools-link (with no -L), causing "cannot find -l..." failures even
+though the libraries/headers are installed.
+
+Mirror slang's existing glslang alias handling: provide the expected
+non-namespaced names by aliasing the namespaced targets and by
+find_package()-ing the SPIRV-Tools-link package.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -528,6 +528,9 @@
+ 
+ if(${SLANG_USE_SYSTEM_VULKAN_HEADERS})
+     find_package(VulkanHeaders REQUIRED)
++    if(NOT TARGET Vulkan-Headers)
++        add_library(Vulkan-Headers ALIAS Vulkan::Headers)
++    endif()
+ endif()
+ 
+ if(${SLANG_USE_SYSTEM_SPIRV_TOOLS})
+@@ -539,6 +542,12 @@
+     if(NOT TARGET glslang)
+         add_library(glslang ALIAS glslang::glslang)
+     endif()
++    if(NOT TARGET SPIRV)
++        add_library(SPIRV ALIAS glslang::SPIRV)
++    endif()
++    if(NOT TARGET SPIRV-Tools-link)
++        find_package(SPIRV-Tools-link REQUIRED)
++    endif()
+ endif()
+ 
+ if(SLANG_ENABLE_DXIL)

@@ -1,0 +1,53 @@
+From: Batocera build
+Subject: [PATCH] cmake: build bundled miniz as a static library
+
+miniz's own CMakeLists.txt creates an untyped library
+(add_library(miniz ${miniz_SOURCE}) with no STATIC/SHARED keyword), so it
+follows BUILD_SHARED_LIBS. In a buildroot build BUILD_SHARED_LIBS is ON, so
+the bundled miniz is built as libminiz.so.* and becomes a runtime
+dependency of libslang and of the host generator tools (slangc /
+slang-bootstrap fail with "libminiz.so.3: cannot open shared object file"
+because that .so is not installed alongside the generators).
+
+Force the bundled miniz to build statically. Note miniz declares
+cmake_minimum_required(VERSION 3.5...3.12), which caps its policies below
+CMP0077 (added in 3.13); its option(BUILD_SHARED_LIBS ...) therefore uses
+the OLD behavior and ignores a plain normal variable, falling back to the
+cached -DBUILD_SHARED_LIBS=ON. Setting CMAKE_POLICY_DEFAULT_CMP0077 NEW
+makes option() honor our BUILD_SHARED_LIBS OFF. miniz already has
+POSITION_INDEPENDENT_CODE ON, so the static archive links cleanly into the
+shared libslang, and the separate libminiz.so.* dependency disappears.
+
+This only applies to the bundled build; SLANG_USE_SYSTEM_MINIZ is
+unaffected (the block is already guarded by it).
+
+--- a/external/CMakeLists.txt
++++ b/external/CMakeLists.txt
+@@ -41,6 +41,18 @@
+ 
+ # Miniz
+ if(NOT ${SLANG_USE_SYSTEM_MINIZ})
++    # Build the bundled miniz as a static (PIC) library so it is absorbed into
++    # libslang instead of producing a separate libminiz.so.* runtime dependency.
++    #
++    # miniz declares cmake_minimum_required(VERSION 3.5...3.12), which caps its
++    # policies below CMP0077 (added in 3.13). Its option(BUILD_SHARED_LIBS ...)
++    # therefore uses the OLD behavior and ignores the normal variable we set
++    # below, falling back to the cached -DBUILD_SHARED_LIBS=ON and producing a
++    # shared libminiz. Force CMP0077 NEW so option() honors our setting.
++    set(_prev_cmp0077 "${CMAKE_POLICY_DEFAULT_CMP0077}")
++    set(_prev_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
++    set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
++    set(BUILD_SHARED_LIBS OFF)
+     if(NOT SLANG_OVERRIDE_MINIZ_PATH)
+         add_subdirectory(miniz EXCLUDE_FROM_ALL ${system})
+     else()
+@@ -51,6 +63,8 @@
+             ${system}
+         )
+     endif()
++    set(BUILD_SHARED_LIBS ${_prev_BUILD_SHARED_LIBS})
++    set(CMAKE_POLICY_DEFAULT_CMP0077 "${_prev_cmp0077}")
+     set_property(TARGET miniz PROPERTY POSITION_INDEPENDENT_CODE ON)
+     # Work around https://github.com/richgel999/miniz/pull/292
+     get_target_property(miniz_c_launcher miniz C_COMPILER_LAUNCHER)
