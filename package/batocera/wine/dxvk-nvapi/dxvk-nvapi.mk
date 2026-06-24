@@ -18,6 +18,7 @@ define DXVK_NVAPI_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/wine/dxvk/x64
 	cp -a $(@D)/target/x32/nvapi.dll $(TARGET_DIR)/usr/wine/dxvk/x32
 	cp -a $(@D)/target/x64/nvapi64.dll $(TARGET_DIR)/usr/wine/dxvk/x64
+	cp -a $(@D)/target/x64/nvofapi64.dll $(TARGET_DIR)/usr/wine/dxvk/x64
 endef
 
 $(eval $(generic-package))
