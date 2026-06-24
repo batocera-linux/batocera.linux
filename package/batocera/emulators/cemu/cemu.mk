@@ -3,15 +3,15 @@
 # cemu
 #
 ################################################################################
-# Version: Commits on Apr 5, 2026
-CEMU_VERSION = b9b46ecb65e2eb1c15793380048309df73d2084e
+# Version: Commits on Jun 23, 2026
+CEMU_VERSION = a3d6395ed779a40cd236a35bc6697e277a5606c5
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
 CEMU_GIT_SUBMODULES=YES
 CEMU_DEPENDENCIES += cemu-common bluez5_utils boost fmt glslang glm host-doxygen
 CEMU_DEPENDENCIES += libcurl libgtk3 libopenssl libpng libusb libzip libzlib
-CEMU_DEPENDENCIES += pulseaudio pugixml rapidjson sdl2 speexdsp wxwidgets zstd
+CEMU_DEPENDENCIES += pulseaudio pugixml rapidjson sdl3 speexdsp wxwidgets zstd
 CEMU_DEPENDENCIES += host-clang host-ninja host-lld host-nasm
 
 CEMU_SUPPORTS_IN_SOURCE_BUILD = NO
