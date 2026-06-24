@@ -20,19 +20,26 @@
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
 ### Fixed
-
+- BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 ### Changed / Improved
+- BigPEmu added to capable aarch64 devices
+- Cemu added to capable aarch64 devices
 - New CPU temp helper script - batocera-cpu-temp
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
+- PCSX2 variant for capable aarch64 devices
 - Removed Libretro-Puae2021
 - Rockcip RK3588 devices moved to the mainline linux kernel:
   CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5, Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
+- The Force Engine to capable aarch64 devices
+- Vita3k added for capable aarch64 devices
 ### Updated
 - Azahar to 2125.1.2
+- BigPEmu to 1.221
 - Box64 0.4.2
+- Cemu to June 23rd, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-04-30
 - Dolphin-Emu to 2606
