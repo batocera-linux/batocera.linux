@@ -1,0 +1,270 @@
+From 9f6b8f3e7a49e545d2f6662397bd7effaee30b62 Mon Sep 17 00:00:00 2001
+From: Teguh Sobirin <teguh@sobir.in>
+Date: Mon, 30 Mar 2026 20:57:46 +0800
+Subject: [PATCH 45/54] Bluetooth: qca: add WCN7860 support
+
+Ideally, prior to downloading the Bluetooth firmware and NVM files,
+it is necessary to initialize and configure the baud rate for
+the Peripheral subsystem, followed by downloading the Peripheral
+firmware and NVM, and finally, downloading the TME-L subsystem firmware.
+
+However, in this initial support phase, simply waking up the SoC and
+configuring the Peripheral subsystem's baud rate is sufficient to enable
+Bluetooth functionality.
+
+Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+---
+ drivers/bluetooth/btqca.c   | 13 ++++++-
+ drivers/bluetooth/btqca.h   |  1 +
+ drivers/bluetooth/hci_qca.c | 69 ++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 81 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index 3b0626920193..9a16714d6581 100644
+--- a/drivers/bluetooth/btqca.c
++++ b/drivers/bluetooth/btqca.c
+@@ -843,6 +843,11 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/hmtbtfw%02x.tlv", rom_ver);
+ 			break;
++		case QCA_WCN7860:
++			config.type = ELF_TYPE_PATCH;
++			snprintf(config.fwname, sizeof(config.fwname),
++				 "qca/gngbtfw%02x.mbn", rom_ver);
++			break;
+ 		default:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/rampatch_%08x.bin", soc_ver);
+@@ -876,7 +881,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	/* Give the controller some time to get ready to receive the NVM */
+ 	msleep(10);
+ 
+-	if (soc_type == QCA_QCA2066 || soc_type == QCA_WCN7850)
++	if (soc_type == QCA_QCA2066 || soc_type == QCA_WCN7850 || soc_type == QCA_WCN7860)
+ 		qca_read_fw_board_id(hdev, &boardid);
+ 
+ 	/* Download NVM configuration */
+@@ -936,6 +941,10 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
+ 				 "hmtnv", soc_type, ver, rom_ver, boardid);
+ 			break;
++		case QCA_WCN7860:
++			qca_get_nvm_name_by_board(config.fwname, sizeof(config.fwname),
++				 "gngbtnv", soc_type, ver, rom_ver, boardid);
++			break;
+ 		default:
+ 			snprintf(config.fwname, sizeof(config.fwname),
+ 				 "qca/nvm_%08x.bin", soc_ver);
+@@ -962,6 +971,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		err = qca_disable_soc_logging(hdev);
+ 		if (err < 0)
+ 			return err;
+@@ -998,6 +1008,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		/* get fw build info */
+ 		err = qca_read_fw_build_info(hdev);
+ 		if (err < 0)
+diff --git a/drivers/bluetooth/btqca.h b/drivers/bluetooth/btqca.h
+index 8f3c1b1c77b3..3fe18739e5ab 100644
+--- a/drivers/bluetooth/btqca.h
++++ b/drivers/bluetooth/btqca.h
+@@ -158,6 +158,7 @@ enum qca_btsoc_type {
+ 	QCA_WCN6750,
+ 	QCA_WCN6855,
+ 	QCA_WCN7850,
++	QCA_WCN7860,
+ };
+ 
+ #if IS_ENABLED(CONFIG_BT_QCA)
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index bb9f002aa85e..f5f27ba1ea44 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1378,6 +1378,7 @@ static int qca_set_baudrate(struct hci_dev *hdev, uint8_t baudrate)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		usleep_range(1000, 10000);
+ 		break;
+ 
+@@ -1396,6 +1397,36 @@ static inline void host_set_baudrate(struct hci_uart *hu, unsigned int speed)
+ 		hci_uart_set_baudrate(hu, speed);
+ }
+ 
++static int peri_set_baudrate(struct hci_uart *hu, unsigned int baudrate)
++{
++	struct qca_data *qca = hu->priv;
++	struct sk_buff *skb;
++	u8 cmd[] = { 0x31, 0x00, 0xF1, 0xFF, 0x02, 0x02, 0x00};
++
++	cmd[6] = qca_get_baudrate_value(baudrate);
++
++	if(!hu->serdev) {
++		return -ENODEV;
++	}
++
++	if (send_hci_ibs_cmd(HCI_IBS_WAKE_IND, hu) < 0)
++		return -1;
++
++	msleep(10);
++
++	skb = bt_skb_alloc(sizeof(cmd), GFP_KERNEL);
++	if (!skb) {
++		return -ENOMEM;
++	}
++
++	skb_put_data(skb, cmd, sizeof(cmd));
++	skb_queue_tail(&qca->txq, skb);
++
++	msleep(100);
++
++	return 0;
++}
++
+ static int qca_send_power_pulse(struct hci_uart *hu, bool on)
+ {
+ 	int ret;
+@@ -1465,6 +1496,7 @@ static int qca_check_speeds(struct hci_uart *hu)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		if (!qca_get_speed(hu, QCA_INIT_SPEED) &&
+ 		    !qca_get_speed(hu, QCA_OPER_SPEED))
+ 			return -EINVAL;
+@@ -1508,6 +1540,7 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
+ 		case QCA_WCN6750:
+ 		case QCA_WCN6855:
+ 		case QCA_WCN7850:
++		case QCA_WCN7860:
+ 			hci_uart_set_flow_control(hu, true);
+ 			break;
+ 
+@@ -1543,6 +1576,7 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
+ 		case QCA_WCN6750:
+ 		case QCA_WCN6855:
+ 		case QCA_WCN7850:
++		case QCA_WCN7860:
+ 			hci_uart_set_flow_control(hu, false);
+ 			break;
+ 
+@@ -1886,5 +1920,6 @@ static int qca_power_on(struct hci_dev *hdev)
+	case QCA_WCN6750:
+	case QCA_WCN6855:
+	case QCA_WCN7850:
++	case QCA_WCN7860:
+		ret = qca_regulator_init(hu);
+		break;
+@@ -1955,6 +1990,10 @@ static int qca_setup(struct hci_uart *hu)
+ 		soc_name = "wcn7850";
+ 		break;
+ 
++	case QCA_WCN7860:
++		soc_name = "wcn7860";
++		break;
++
+ 	default:
+ 		soc_name = "ROME/QCA6390";
+ 	}
+@@ -1978,6 +2017,7 @@ static int qca_setup(struct hci_uart *hu)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		if (qcadev->bdaddr_property_broken)
+ 			hci_set_quirk(hdev, HCI_QUIRK_BDADDR_PROPERTY_BROKEN);
+ 
+@@ -1992,6 +2032,12 @@ static int qca_setup(struct hci_uart *hu)
+ 		qca_set_speed(hu, QCA_INIT_SPEED);
+ 	}
+ 
++	if (soc_type == QCA_WCN7860) {
++		ret = peri_set_baudrate(hu, qca_get_speed(hu, QCA_OPER_SPEED));
++		if (ret)
++			goto out;
++	}
++
+ 	/* Setup user speed if needed */
+ 	speed = qca_get_speed(hu, QCA_OPER_SPEED);
+ 	if (speed) {
+@@ -2011,6 +2057,7 @@ static int qca_setup(struct hci_uart *hu)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		break;
+ 
+ 	default:
+@@ -2211,6 +2258,21 @@ static const struct qca_device_data qca_soc_data_wcn7850 __maybe_unused = {
+ 			QCA_CAP_HFP_HW_OFFLOAD,
+ };
+ 
++static const struct qca_device_data qca_soc_data_wcn7860 __maybe_unused = {
++	.soc_type = QCA_WCN7860,
++	.vregs = (struct qca_vreg []) {
++		{ "vddio", 5000 },
++		{ "vddaon", 26000 },
++		{ "vdddig", 126000 },
++		{ "vddrfa0p8", 102000 },
++		{ "vddrfa1p2", 257000 },
++		{ "vddrfa1p9", 302000 },
++	},
++	.num_vregs = 6,
++	.capabilities = QCA_CAP_WIDEBAND_SPEECH | QCA_CAP_VALID_LE_STATES |
++			QCA_CAP_HFP_HW_OFFLOAD,
++};
++
+ static void qca_power_off(struct hci_uart *hu)
+ {
+ 	struct qca_serdev *qcadev;
+@@ -2410,5 +2472,6 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+	case QCA_WCN6750:
+	case QCA_WCN6855:
+	case QCA_WCN7850:
++	case QCA_WCN7860:
+		qcadev->bt_power = devm_kzalloc(&serdev->dev,
+ 						sizeof(struct qca_power),
+@@ -2424,6 +2487,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 	switch (qcadev->btsoc_type) {
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		if (!device_property_present(&serdev->dev, "enable-gpios")) {
+ 			/*
+@@ -2479,7 +2543,8 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 		if (IS_ERR(qcadev->sw_ctrl) &&
+ 		    (data->soc_type == QCA_WCN6750 ||
+ 		     data->soc_type == QCA_WCN6855 ||
+-		     data->soc_type == QCA_WCN7850)) {
++		     data->soc_type == QCA_WCN7850 ||
++		     data->soc_type == QCA_WCN7860)) {
+ 			dev_err(&serdev->dev, "failed to acquire SW_CTRL gpio\n");
+ 			return PTR_ERR(qcadev->sw_ctrl);
+ 		}
+@@ -2564,6 +2629,7 @@ static void qca_serdev_remove(struct serdev_device *serdev)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
++	case QCA_WCN7860:
+ 		if (power->vregs_on)
+ 			qca_power_shutdown(&qcadev->serdev_hu);
+ 		break;
+@@ -2766,6 +2832,7 @@ static const struct of_device_id qca_bluetooth_of_match[] = {
+ 	{ .compatible = "qcom,wcn6750-bt", .data = &qca_soc_data_wcn6750},
+ 	{ .compatible = "qcom,wcn6855-bt", .data = &qca_soc_data_wcn6855},
+ 	{ .compatible = "qcom,wcn7850-bt", .data = &qca_soc_data_wcn7850},
++	{ .compatible = "qcom,wcn7860-bt", .data = &qca_soc_data_wcn7860},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, qca_bluetooth_of_match);
+-- 
+2.43.0

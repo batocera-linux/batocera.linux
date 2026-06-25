@@ -27,7 +27,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=drm,sdl --hwdec=auto
     endif
     # SM8550 has specific HWDEC overrides
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=v4l2m2m-copy
     endif
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
