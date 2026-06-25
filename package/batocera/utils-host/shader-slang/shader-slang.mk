@@ -3,6 +3,7 @@
 # shader-slang
 #
 ################################################################################
+
 HOST_SHADER_SLANG_VERSION = v2026.8
 HOST_SHADER_SLANG_SITE = https://github.com/shader-slang/slang.git
 HOST_SHADER_SLANG_SITE_METHOD = git
@@ -12,8 +13,8 @@ HOST_SHADER_SLANG_LICENSE_FILE = LICENSE
 HOST_SHADER_SLANG_CMAKE_BACKEND = ninja
 SHADER_SLANG_SUPPORTS_IN_SOURCE_BUILD = NO
 
-HOST_SHADER_SLANG_DEPENDENCIES += host-lz4 host-vulkan-headers \
-				 host-spirv-headers host-spirv-tools host-glslang
+HOST_SHADER_SLANG_DEPENDENCIES += host-lz4 host-vulkan-headers host-clang \
+				 host-spirv-headers host-spirv-tools host-glslang host-xlib_libX11
 
 HOST_SHADER_SLANG_GENERATORS_BUILDDIR = $(HOST_SHADER_SLANG_SRCDIR)/build-host-generators
 HOST_SHADER_SLANG_GENERATORS_DIR = $(HOST_SHADER_SLANG_SRCDIR)/host-generators
