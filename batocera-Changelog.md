@@ -20,6 +20,7 @@
 - Box64 userland x86_64 emulator for aarch64
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
+- Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions

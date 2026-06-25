@@ -22,13 +22,14 @@ XENIA_EDGE_CONF_ENV += SLANGC_PATH=$(HOST_DIR)/bin/slangc
 
 XENIA_EDGE_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
 XENIA_EDGE_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
+XENIA_EDGE_CONF_OPTS += -DCMAKE_CXX_FLAGS="-Wno-unused-command-line-argument"
 XENIA_EDGE_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
 XENIA_EDGE_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_TESTS=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_MISC=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_ENABLE_LTO=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_USE_SYSTEM_SDL3=ON
-XENIA_EDGE_CONF_OPTS += -DXENIA_HOST_SHADER_CC=$(BUILD_DIR)/xenia-edge-$(XENIA_EDGE_VERSION)/host_tools/xenia-shader-cc
+XENIA_EDGE_CONF_OPTS += -DXENIA_HOST_SHADER_CC=$(@D)/host_tools/xenia-shader-cc
 
 # xenia-shader-cc is a build-time host tool (GLSL/XeSL -> SPIR-V -> embedded
 # .h). We cross-compile x86_64 on an aarch64 host, so letting the project's
@@ -60,18 +61,32 @@ define XENIA_EDGE_GEN_VERSION_H
 #define XE_BUILD_BRANCH "edge"\n\
 #define XE_BUILD_COMMIT "$(XENIA_EDGE_VERSION)"\n\
 #define XE_BUILD_COMMIT_SHORT "$(shell echo $(XENIA_EDGE_VERSION) | cut -c1-9)"\n\
-#define XE_BUILD_DATE __DATE__\n\
+#define XE_BUILD_DATE "$(shell date +'%b %e %Y')"\n\
 #define XE_BUILD_PR_NUMBER 0\n\
 #endif  // GENERATED_VERSION_H_\n' > $(@D)/version.h
 endef
 
 XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_GEN_VERSION_H
 
-define XENIA_EDGE_INSTALL_TARGET_CMDS
-    $(INSTALL) -D -m 0755 $(@D)/bin/Linux/xenia_edge $(TARGET_DIR)/usr/bin/
-	# game-patches are embedded in the binary at build time (build/data_repos/game-patches)
-	# The patches dialog writes enabled patches to storage_root/patches/ on first use
-	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/xenia_edge/patches
+# Fetch game patches
+define XENIA_EDGE_FETCH_DATA_REPOS
+	mkdir -p $(@D)/build/data_repos && \
+	if [ ! -d "$(@D)/build/data_repos/game-patches" ]; then \
+		git clone --depth=1 --branch main https://github.com/xenia-canary/game-patches.git \
+		    $(@D)/build/data_repos/game-patches; \
+	fi
 endef
+
+XENIA_EDGE_PRE_CONFIGURE_HOOKS += XENIA_EDGE_FETCH_DATA_REPOS
+
+define XENIA_EDGE_INSTALL_TARGET_CMDS
+    # binary
+	mkdir -p $(TARGET_DIR)/usr/bin/xenia-edge
+	$(INSTALL) -D -m 0755 $(@D)/bin/Linux/xenia_edge $(TARGET_DIR)/usr/bin/xenia-edge/
+	# patches
+	mkdir -p $(TARGET_DIR)/usr/bin/xenia-edge/patches
+	cp -r $(@D)/build/data_repos/game-patches/patches $(TARGET_DIR)/usr/bin/xenia-edge/
+endef
+
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
