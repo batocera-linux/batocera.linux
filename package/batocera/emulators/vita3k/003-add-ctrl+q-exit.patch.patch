@@ -1,33 +1,45 @@
 diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
-index f5ad9e7..9b0c431 100644
+index d4f03cd..40d53f9 100644
 --- a/vita3k/gui-qt/src/main_window.cpp
 +++ b/vita3k/gui-qt/src/main_window.cpp
-@@ -94,6 +94,7 @@
- #include <QOpenGLContext>
- #include <QPainter>
- #include <QPushButton>
-+#include <QShortcut>
- #include <QSlider>
- #include <QStandardPaths>
- #include <QStatusBar>
-@@ -424,6 +425,20 @@ void MainWindow::initialize() {
+@@ -85,6 +85,7 @@
+ #include <QCloseEvent>
+ #include <QDragEnterEvent>
+ #include <QDropEvent>
++#include <QKeyEvent>
+ #include <QFileInfo>
+ #include <QHBoxLayout>
+ #include <QLineEdit>
+@@ -423,6 +424,8 @@ void MainWindow::initialize() {
+     m_sdl_pump_timer->start();
  
      setup_toolbar();
++    
++    qApp->installEventFilter(this);
  
-+    auto *quit_shortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F12), this);
-+    quit_shortcut->setContext(Qt::ApplicationShortcut);
-+    connect(quit_shortcut, &QShortcut::activated, this, [this]() {
-+        close_auxiliary_windows();
-+        
-+        // Close the game window if running, without prompting
-+        if (m_game_window) {
-+            m_app_session.set_pause_reason(app::AppSessionPauseReason::User, false);
-+            on_game_closed();
-+        }
-+        
-+        close();
-+    });
-+
      connect(m_ui->welcome_dialog_action, &QAction::triggered, this, [this]() {
          auto *welcome = new WelcomeDialog(emuenv, true, this);
-         welcome->open();
+@@ -1245,6 +1248,23 @@ void MainWindow::on_live_area_closed() {
+ }
+ 
+ bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
++
++    if (event->type() == QEvent::KeyPress) {
++        auto *key_event = static_cast<QKeyEvent *>(event);
++        if (key_event->key() == Qt::Key_F12 && key_event->modifiers() == Qt::ControlModifier) {
++            close_auxiliary_windows();
++            
++            // Close the game window if running, without prompting
++            if (m_game_window) {
++                m_app_session.set_pause_reason(app::AppSessionPauseReason::User, false);
++                on_game_closed();
++            }
++            
++            close();
++            return true; // Consume event so it doesn't propagate further
++        }
++    }
++
+     if (watched == m_live_area_widget) {
+         if (event->type() == QEvent::Close) {
+             event->ignore();

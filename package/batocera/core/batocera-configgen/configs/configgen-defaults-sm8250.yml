@@ -23,8 +23,10 @@ psp:
   emulator: libretro
   core: ppsspp
 ps2:
-  emulator: libretro
-  core:     play
+  emulator: pcsx2
+  core:     pcsx2
+  options:
+    fullboot: true
 tvgames:
   emulator: mame
   core:     mame
