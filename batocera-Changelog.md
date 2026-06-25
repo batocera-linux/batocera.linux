@@ -35,6 +35,7 @@
 - Box64 0.4.2
 - CDogs to 2.4.0
 - CLK to 2026-04-30
+- Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - Groovy MAME to 0.288
 - Ledspicer to 0.7.6
