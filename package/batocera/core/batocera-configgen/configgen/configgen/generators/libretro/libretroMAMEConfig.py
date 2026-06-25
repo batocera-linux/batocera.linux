@@ -528,17 +528,25 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
             return "sfsnes"
         if controllerType == "megadrive":
             return "megadrive"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "arcade33top1"
     elif romName in mkList:
         if controllerType in [ "auto", "snes", "fightstick" ]:
             return "mksnes"
         if controllerType == "megadrive":
             return "mkmegadrive"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "mkarcade33"
     elif romName in kiList:
         if controllerType in [ "auto", "snes", "fightstick" ]:
             return "kisnes"
         if controllerType == "megadrive":
             return "megadrive"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "arcade33top1"
     elif romName in  neogeoList:
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "neoarcade33"
         return "neomini"
     elif romName in  twinstickList:
         return "twinstick"
@@ -547,7 +555,11 @@ def getMameControlScheme(system: Emulator, rom: Path) -> str:
     else:
         if controllerType == "fightstick":
             return "sfsnes"
-
+        if controllerType == "arcade33":
+            return "arcade33"
+        if controllerType == "arcade33top1":
+            return "arcade33top1"
+            
     return "default"
 
 def generateMAMEPadConfig(
