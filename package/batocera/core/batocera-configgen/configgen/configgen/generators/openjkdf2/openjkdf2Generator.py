@@ -447,6 +447,19 @@ class OpenJKDF2Generator(Generator):
         except Exception as e:
             _logger.exception("Error preparing CVAR JSON configuration for %s: %s", openjkdf2_cvar_file, e)
 
+        # --- Registry Config (registry.json) Generation ---
+        registry_file = romdir / "registry.json"
+        # Explicit check to ensure the file is present before attempting an update
+        if registry_file.exists():
+            _logger.debug("Registry file found. Updating config: %s", registry_file)
+
+            self._update_json_config(registry_file, {
+                "playerShortName": "Batocera",
+                "Window_isFullscreen": True
+            })
+        else:
+            _logger.debug("Registry file %s does not exist yet. Skipping config update.", registry_file)
+
         # Check if the binary exists in the destination and if it is outdated
         if not binary_dest.exists() or binary_src.stat().st_mtime > binary_dest.stat().st_mtime:
             shutil.copy2(binary_src, binary_dest)
