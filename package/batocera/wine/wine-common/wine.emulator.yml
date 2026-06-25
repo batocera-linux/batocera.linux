@@ -123,6 +123,13 @@ custom_features:
     choices:
       "Off": 0
       "On": 1
+  enable_vkreflex:
+    group: ADVANCED OPTIONS
+    prompt: ENABLE NVIDIA REFLEX
+    description: Enables Vulkan Reflex low-latency mode to reduce input lag. Automatically activates NVAPI if enabled.
+    choices:
+      "Off": 0
+      "On": 1
   dxvk_reset_cache:
     group: ADVANCED OPTIONS
     prompt: DXVK RESET CACHE

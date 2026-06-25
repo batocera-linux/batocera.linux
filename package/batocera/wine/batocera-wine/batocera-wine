@@ -176,6 +176,7 @@ wine_options() {
     HEAP_DELAY_FREE="$(get_setting heap_delay_free "${SYSTEM}" "${ROMGAMENAME}")"
     HIDE_NVIDIA_GPU="$(get_setting hide_nvidia_gpu "${SYSTEM}" "${ROMGAMENAME}")"
     ENABLE_NVAPI="$(get_setting enable_nvapi "${SYSTEM}" "${ROMGAMENAME}")"
+    ENABLE_VKREFLEX="$(get_setting enable_vkreflex "${SYSTEM}" "${ROMGAMENAME}")"
     ENABLE_HIDRAW="$(get_setting enable_hidraw "${SYSTEM}" "${ROMGAMENAME}")"
     DXVK_RESET_CACHE="$(get_setting dxvk_reset_cache "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_NTFS="$(get_setting wine_ntfs "${SYSTEM}" "${ROMGAMENAME}")"
@@ -184,6 +185,11 @@ wine_options() {
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
     VIRTUAL_DESKTOP_SIZE="$(get_setting videomode "${SYSTEM}" "${ROMGAMENAME}" || batocera-resolution currentResolution)"
     WAYLAND_DRIVER="$(get_setting wayland_driver "${SYSTEM}" "${ROMGAMENAME}")"
+
+    # Reflex requires NVAPI to function; force it on if Reflex is enabled
+    if [[ "${ENABLE_VKREFLEX}" = 1 ]]; then
+        ENABLE_NVAPI=1
+    fi
 
     if [[ "${VIRTUAL_DESKTOP}" = 1 ]]; then
         VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
@@ -280,6 +286,15 @@ wine_options() {
 
     export NVAPI=0
     [[ "${ENABLE_NVAPI}" = 1 ]] && NVAPI=1
+
+    # Vulkan Reflex implicit layer controls
+    if [[ "${ENABLE_VKREFLEX}" = 1 ]]; then
+        export DXVK_NVAPI_VKREFLEX=1
+        unset DISABLE_DXVK_NVAPI_VKREFLEX
+    else
+        export DISABLE_DXVK_NVAPI_VKREFLEX=1
+        unset DXVK_NVAPI_VKREFLEX
+    fi
 
     export DXVK_STATE_CACHE=1
     [[ "${DXVK_RESET_CACHE}" = 1 ]] && DXVK_STATE_CACHE=reset
