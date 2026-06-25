@@ -18,9 +18,7 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
-XENIA_EDGE_BIN     = Path('/usr/xenia_edge/xenia_edge')
-XENIA_EDGE_PATCHES_SRC = Path('/usr/xenia_edge/patches')
-
+XENIA_EDGE_BIN     = Path('/usr/bin/xenia-edge/xenia_edge')
 
 class XeniaEdgeGenerator(Generator):
 
@@ -31,8 +29,8 @@ class XeniaEdgeGenerator(Generator):
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        xeniaConfig = CONFIGS / 'xenia_edge'
-        xeniaCache  = CACHE  / 'xenia_edge'
+        xeniaConfig = CONFIGS / 'Xenia'
+        xeniaCache  = CACHE  / 'xenia-edge'
         xeniaSaves  = SAVES  / 'xbox360'
 
         if vulkan.is_available():
@@ -144,29 +142,16 @@ class XeniaEdgeGenerator(Generator):
         with toml_file.open('w') as f:
             toml.dump(config, f)
 
-        commandArray = [
-            str(XENIA_EDGE_BIN),
-            f'--storage_root={xeniaConfig}',
-            f'--content_root={xeniaSaves}',
-            f'--cache_root={xeniaCache}',
-        ]
+        commandArray = [str(XENIA_EDGE_BIN)]
+
         if not configure_emulator(rom):
             commandArray.append(str(rom))
 
         environment = {
             'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
             'SDL_JOYSTICK_HIDAPI': '0',
+            'XDG_DATA_HOME': CONFIGS
         }
-
-        if Path('/var/tmp/nvidia.prime').exists():
-            import os
-            for var in ('__NV_PRIME_RENDER_OFFLOAD', '__VK_LAYER_NV_optimus', '__GLX_VENDOR_LIBRARY_NAME'):
-                if var in os.environ:
-                    del os.environ[var]
-            environment.update({
-                'VK_ICD_FILENAMES': '/usr/share/vulkan/icd.d/nvidia_icd.x86_64.json',
-                'VK_LAYER_PATH': '/usr/share/vulkan/explicit_layer.d',
-            })
 
         return Command.Command(array=commandArray, env=environment)
 

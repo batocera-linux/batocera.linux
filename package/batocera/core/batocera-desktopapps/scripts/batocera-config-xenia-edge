@@ -5,10 +5,12 @@ then
 	export DISPLAY=$(getLocalXDisplay)
 fi
 
-/usr/xenia_edge/xenia_edge \
-    --storage_root=/userdata/system/configs/xenia_edge \
+export XDG_DATA_HOME=/userdata/system/configs
+
+/usr/bin/xenia-edge/xenia_edge \
+    --storage_root=/userdata/system/configs/Xenia \
     --content_root=/userdata/saves/xbox360 \
-    --cache_root=/userdata/system/cache/xenia_edge \
-    --log_file=/userdata/system/configs/xenia_edge/xenia_edge.log
+    --cache_root=/userdata/system/cache/xenia-edge \
+    --log_file=/userdata/system/logs/xenia-edge.log
 
 exit 0
