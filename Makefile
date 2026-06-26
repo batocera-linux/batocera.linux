@@ -374,7 +374,6 @@ endif
 		fi; \
 	done
 	@rm -rf $(TARGET_OUTPUT_DIR)/target
-	@rm -rf $(TARGET_OUTPUT_DIR)/target2
 
 %-refresh: %-clean-for-refresh | $(DOCKER_IMAGE_AVAILABLE)
 	@$(MAKE) $*-build
