@@ -17,14 +17,308 @@ _logger = logging.getLogger(__name__)
 
 _RPCS3_INPUT_DIR: Final = RPCS3_CONFIG_DIR / "input_configs" / "global"
 
+# Fixed keyboard input config for the arcade titles: players 1 and 2 on a single
+# keyboard, the remaining slots disabled. Written verbatim as the global Default.yml.
+_ARCADE_KEYBOARD_CONFIG: Final = """\
+Player 1 Input:
+  Handler: Keyboard
+  Device: Keyboard
+  Config:
+    Left Stick Left: ""
+    Left Stick Down: ""
+    Left Stick Right: ""
+    Left Stick Up: ""
+    Right Stick Left: ""
+    Right Stick Down: ""
+    Right Stick Right: ""
+    Right Stick Up: ""
+    Start: 1
+    Select: F2
+    PS Button: ""
+    Square: E
+    Cross: T
+    Circle: Y
+    Triangle: R
+    Left: A
+    Down: S
+    Right: D
+    Up: W
+    R1: U
+    R2: ""
+    R3: F1
+    L1: I
+    L2: ""
+    L3: 5
+    IR Nose: ""
+    IR Tail: ""
+    IR Left: ""
+    IR Right: ""
+    Tilt Left: ""
+    Tilt Right: ""
+    Motion Sensor X:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Y:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Z:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor G:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Orientation Reset Button: ""
+    Orientation Enabled: false
+    Pressure Intensity Button: ""
+    Pressure Intensity Percent: 50
+    Pressure Intensity Toggle Mode: false
+    Pressure Intensity Deadzone: 0
+    Analog Limiter Button: ""
+    Analog Limiter Toggle Mode: false
+    Left Stick Multiplier: 100
+    Right Stick Multiplier: 100
+    Left Stick Deadzone: 0
+    Right Stick Deadzone: 0
+    Left Stick Anti-Deadzone: 0
+    Right Stick Anti-Deadzone: 0
+    Left Trigger Threshold: 0
+    Right Trigger Threshold: 0
+    Left Pad Squircling Factor: 8000
+    Right Pad Squircling Factor: 8000
+    Color Value R: 0
+    Color Value G: 0
+    Color Value B: 0
+    Blink LED when battery is below 20%: true
+    Use LED as a battery indicator: false
+    LED battery indicator brightness: 50
+    Player LED enabled: true
+    Large Vibration Motor Multiplier: 100
+    Small Vibration Motor Multiplier: 100
+    Switch Vibration Motors: false
+    Vibration Threshold: 63
+    Mouse Movement Mode: Relative
+    Mouse Deadzone X Axis: 60
+    Mouse Deadzone Y Axis: 60
+    Mouse Acceleration X Axis: 200
+    Mouse Acceleration Y Axis: 250
+    Left Stick Lerp Factor: 100
+    Right Stick Lerp Factor: 100
+    Analog Button Lerp Factor: 100
+    Trigger Lerp Factor: 100
+    Device Class Type: 0
+    Vendor ID: 1356
+    Product ID: 616
+  Buddy Device: ""
+Player 2 Input:
+  Handler: Keyboard
+  Device: Keyboard
+  Config:
+    Left Stick Left: ""
+    Left Stick Down: ""
+    Left Stick Right: ""
+    Left Stick Up: ""
+    Right Stick Left: ""
+    Right Stick Down: ""
+    Right Stick Right: ""
+    Right Stick Up: ""
+    Start: 2
+    Select: F2
+    PS Button: ""
+    Square: F
+    Cross: H
+    Circle: J
+    Triangle: G
+    Left: Left
+    Down: Down
+    Right: Right
+    Up: Up
+    R1: K
+    R2: ""
+    R3: F1
+    L1: L
+    L2: ""
+    L3: 6
+    IR Nose: ""
+    IR Tail: ""
+    IR Left: ""
+    IR Right: ""
+    Tilt Left: ""
+    Tilt Right: ""
+    Motion Sensor X:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Y:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Z:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor G:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Orientation Reset Button: ""
+    Orientation Enabled: false
+    Pressure Intensity Button: ""
+    Pressure Intensity Percent: 50
+    Pressure Intensity Toggle Mode: false
+    Pressure Intensity Deadzone: 0
+    Analog Limiter Button: ""
+    Analog Limiter Toggle Mode: false
+    Left Stick Multiplier: 100
+    Right Stick Multiplier: 100
+    Left Stick Deadzone: 0
+    Right Stick Deadzone: 0
+    Left Stick Anti-Deadzone: 0
+    Right Stick Anti-Deadzone: 0
+    Left Trigger Threshold: 0
+    Right Trigger Threshold: 0
+    Left Pad Squircling Factor: 8000
+    Right Pad Squircling Factor: 8000
+    Color Value R: 0
+    Color Value G: 0
+    Color Value B: 0
+    Blink LED when battery is below 20%: true
+    Use LED as a battery indicator: false
+    LED battery indicator brightness: 50
+    Player LED enabled: true
+    Large Vibration Motor Multiplier: 100
+    Small Vibration Motor Multiplier: 100
+    Switch Vibration Motors: false
+    Vibration Threshold: 63
+    Mouse Movement Mode: Relative
+    Mouse Deadzone X Axis: 60
+    Mouse Deadzone Y Axis: 60
+    Mouse Acceleration X Axis: 200
+    Mouse Acceleration Y Axis: 250
+    Left Stick Lerp Factor: 100
+    Right Stick Lerp Factor: 100
+    Analog Button Lerp Factor: 100
+    Trigger Lerp Factor: 100
+    Device Class Type: 0
+    Vendor ID: 1356
+    Product ID: 616
+  Buddy Device: "Null"
+""" + "".join(
+    f"""Player {nplayer} Input:
+  Handler: "Null"
+  Device: "Null"
+  Config:
+    Left Stick Left: ""
+    Left Stick Down: ""
+    Left Stick Right: ""
+    Left Stick Up: ""
+    Right Stick Left: ""
+    Right Stick Down: ""
+    Right Stick Right: ""
+    Right Stick Up: ""
+    Start: ""
+    Select: ""
+    PS Button: ""
+    Square: ""
+    Cross: ""
+    Circle: ""
+    Triangle: ""
+    Left: ""
+    Down: ""
+    Right: ""
+    Up: ""
+    R1: ""
+    R2: ""
+    R3: ""
+    L1: ""
+    L2: ""
+    L3: ""
+    IR Nose: ""
+    IR Tail: ""
+    IR Left: ""
+    IR Right: ""
+    Tilt Left: ""
+    Tilt Right: ""
+    Motion Sensor X:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Y:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor Z:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Motion Sensor G:
+      Axis: ""
+      Mirrored: false
+      Shift: 0
+    Orientation Reset Button: ""
+    Orientation Enabled: false
+    Pressure Intensity Button: ""
+    Pressure Intensity Percent: 50
+    Pressure Intensity Toggle Mode: false
+    Pressure Intensity Deadzone: 0
+    Analog Limiter Button: ""
+    Analog Limiter Toggle Mode: false
+    Left Stick Multiplier: 100
+    Right Stick Multiplier: 100
+    Left Stick Deadzone: 0
+    Right Stick Deadzone: 0
+    Left Stick Anti-Deadzone: 0
+    Right Stick Anti-Deadzone: 0
+    Left Trigger Threshold: 0
+    Right Trigger Threshold: 0
+    Left Pad Squircling Factor: 8000
+    Right Pad Squircling Factor: 8000
+    Color Value R: 0
+    Color Value G: 0
+    Color Value B: 0
+    Blink LED when battery is below 20%: true
+    Use LED as a battery indicator: false
+    LED battery indicator brightness: 50
+    Player LED enabled: true
+    Large Vibration Motor Multiplier: 100
+    Small Vibration Motor Multiplier: 100
+    Switch Vibration Motors: false
+    Vibration Threshold: 63
+    Mouse Movement Mode: Relative
+    Mouse Deadzone X Axis: 60
+    Mouse Deadzone Y Axis: 60
+    Mouse Acceleration X Axis: 200
+    Mouse Acceleration Y Axis: 250
+    Left Stick Lerp Factor: 100
+    Right Stick Lerp Factor: 100
+    Analog Button Lerp Factor: 100
+    Trigger Lerp Factor: 100
+    Device Class Type: 0
+    Vendor ID: 0
+    Product ID: 0
+  Buddy Device: "Null"
+"""
+    for nplayer in range(3, 8)
+)
+
 
 class _InputMapping(TypedDict):
     config_name: str
     event_variations: list[tuple[str, str]]
 
-def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path):
+def generateControllerConfig(system: Emulator, controllers: Controllers, rom: Path, keyboard: bool = False):
 
     mkdir_if_not_exists(_RPCS3_INPUT_DIR)
+
+    # Lightgun arcade titles are driven through the keyboard (two players on one keyboard).
+    if keyboard:
+        configFileName = _RPCS3_INPUT_DIR / "Default.yml"
+        with codecs.open(str(configFileName), "w", encoding="utf_8_sig") as f:
+            f.write(_ARCADE_KEYBOARD_CONFIG)
+        return
 
     valid_sony_guids = [
         # ds3
