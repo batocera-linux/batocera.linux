@@ -41,5 +41,33 @@ custom_features:
     choices:
       'Off': 0
       'On': 1
+  ymir_integer_scaling:
+    prompt: FORCE INTEGER SCALING
+    description: Force integer scaling for video output.
+    choices:
+      'Off': 0
+      'On': 1
+  ymir_backup_ram_per_game:
+    prompt: PER-GAME BACKUP RAM
+    description: Isolate internal backup RAM per game to prevent space exhaustion.
+    choices:
+      'Off': 0
+      'On': 1
+  ymir_peripheral_p1:
+    prompt: PLAYER 1 CONTROLLER TYPE
+    description: Select the controller profile emulation for Port 1.
+    choices:
+      'Control Pad (Standard)': ControlPad
+      '3D Control Pad (Analog)': AnalogPad
+      'Arcade Racer (Wheel)': ArcadeRacer
+      'Mission Stick': MissionStick
+  ymir_peripheral_p2:
+    prompt: PLAYER 2 CONTROLLER TYPE
+    description: Select the controller profile emulation for Port 2.
+    choices:
+      'Control Pad (Standard)': ControlPad
+      '3D Control Pad (Analog)': AnalogPad
+      'Arcade Racer (Wheel)': ArcadeRacer
+      'Mission Stick': MissionStick
 systems:
   - saturn

@@ -1,0 +1,24 @@
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp.new
+index d1b4081..0f5a50e 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp.new
+@@ -1614,7 +1614,7 @@ void App::RunEmulator() {
+     m_context.saturn.instance->Reset(true);
+ 
+     auto t = clk::now();
+-    m_mouseHideTime = t;
++    m_mouseHideTime = t - std::chrono::seconds(2);
+ 
+     // Start emulator thread
+     m_emuThread = std::thread([&] { EmulatorThread(); });
+@@ -2307,6 +2307,10 @@ void App::RunEmulator() {
+                 return false;
+             }
+ 
++            if (!ImGui::IsMousePosValid()) {
++                return false;
++            }
++
+             const float mousePosY = io.MousePos.y;
+             const float vpTopQuarter =
+                 viewport->Pos.y + std::min(viewport->Size.y * 0.25f, 120.0f * m_context.displayScale);
