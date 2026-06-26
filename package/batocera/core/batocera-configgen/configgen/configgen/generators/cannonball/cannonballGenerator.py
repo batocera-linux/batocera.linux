@@ -26,34 +26,53 @@ class CannonballGenerator(Generator):
 
         configFile = configDir / "config.xml"
 
-        # Create data section
+        # Data Section
         data = ET.Element("data")
         ET.SubElement(data, "rompath").text = str(ROMS / "cannonball") + "/"
         ET.SubElement(data, "respath").text = str(configDir) + "/"
         ET.SubElement(data, "savepath").text = str(SAVES / "cannonball") + "/"
         ET.SubElement(data, "crc32").text = "0"
 
-        # Create video section
+        # Video Section
         video = ET.Element("video")
-        ET.SubElement(video, "mode").text = "1"  # fullscreen
+        ET.SubElement(video, "mode").text = "1"  # Fullscreen
         window = ET.SubElement(video, "window")
-        ET.SubElement(window, "scale").text = "2" # scale
+        ET.SubElement(window, "scale").text = "2"
         ET.SubElement(video, "fps_counter").text = "1" if system.config.show_fps else "0"
         ET.SubElement(video, "widescreen").text = system.config.get("ratio", "0")
         ET.SubElement(video, "hires").text = system.config.get("highResolution", "0")
-        ET.SubElement(video, "vsync").text = "1"  # default vsync to 1
-        ET.SubElement(video, "scanlines").text = "0"
-        ET.SubElement(video, "fps").text = "2" # 60 fps
+        ET.SubElement(video, "vsync").text = system.config.get("vsync", "1") # default vsync to 1
+        ET.SubElement(video, "scanlines").text = system.config.get("scanlines", "0")
+        ET.SubElement(video, "fps").text = system.config.get("fps", "2")  # 60 FPS default
 
+        # Sound Section
         # OutRun shipped with a corrupt PCM sample ROM. This uses the repaired ROM 'opr-10188.71f'
         sound = ET.Element("sound")
         ET.SubElement(sound, "enable").text = "1"
-        ET.SubElement(sound, "fix_samples").text = "0"  # run without it
+        ET.SubElement(sound, "fix_samples").text = "0" # run without it
+        ET.SubElement(sound, "advertise").text = "1"
+        ET.SubElement(sound, "preview").text = "1"
 
-        # Create controls section - disable, use controller defaults
+        # Engine Section
+        engine = ET.Element("engine")
+        ET.SubElement(engine, "time").text = system.config.get("time_limit", "1")
+        ET.SubElement(engine, "traffic").text = system.config.get("traffic_level", "1")
+        ET.SubElement(engine, "freeplay").text = "0"
+        ET.SubElement(engine, "japanese_tracks").text = "0"
+        ET.SubElement(engine, "prototype").text = "0"
+        ET.SubElement(engine, "levelobjects").text = "1"
+        ET.SubElement(engine, "fix_bugs").text = system.config.get("fix_bugs", "1")
+        ET.SubElement(engine, "fix_timer").text = "0"
+        ET.SubElement(engine, "new_attract").text = "1"
+        ET.SubElement(engine, "offroad").text = system.config.get("cheats_offroad", "0")
+        ET.SubElement(engine, "grippy_tyres").text = system.config.get("cheats_grippy_tyres", "0")
+        ET.SubElement(engine, "bumper").text = "0"
+        ET.SubElement(engine, "turbo").text = system.config.get("cheats_turbo", "0")
+        ET.SubElement(engine, "car_color").text = system.config.get("car_colour", "0")
+
+        # Controls Section
         controls = ET.Element("controls")
-        #from .cannonballControllers import generateControllerConfig
-        #generateControllerConfig(controls, playersControllers)
+        ET.SubElement(controls, "gear").text = system.config.get("gear_mode", "3") # default, automatic
 
         # Function to convert XML to pretty-printed
         def prettify(element: ET.Element) -> bytes:
@@ -68,6 +87,8 @@ class CannonballGenerator(Generator):
             cannonballXml.write(prettify(video))
             cannonballXml.write(b"\n")
             cannonballXml.write(prettify(sound))
+            cannonballXml.write(b"\n")
+            cannonballXml.write(prettify(engine))
             cannonballXml.write(b"\n")
             cannonballXml.write(prettify(controls))
 
