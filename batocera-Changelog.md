@@ -25,6 +25,7 @@
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
+- Commander Genius fullscreen in Wayland
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Pygame fullscreen with Wayland
 - X16emu fullscreen with Wayland
