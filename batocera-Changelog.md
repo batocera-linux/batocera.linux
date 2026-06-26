@@ -50,6 +50,7 @@
 - Cemu to June 23rd, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-04-30
+- CorsixTH to v0.69.2
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - Groovy MAME to 0.288
