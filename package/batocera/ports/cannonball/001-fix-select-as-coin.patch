@@ -1,0 +1,15 @@
+diff --git a/src/main/sdl2/input.cpp b/src/main/sdl2/input.cpp.new
+index 3eb9bb0..09f4c1f 100644
+--- a/src/main/sdl2/input.cpp
++++ b/src/main/sdl2/input.cpp.new
+@@ -62,8 +62,8 @@ void Input::open_joy()
+             bind_button(SDL_CONTROLLER_BUTTON_A, 2);                // Digital Controls. Map 'A' to Gear 1
+             bind_button(SDL_CONTROLLER_BUTTON_B, 3);                // Digital Controls. Map 'B' to Gear 2 (has to be enabled)
+             bind_button(SDL_CONTROLLER_BUTTON_START, 4);            // Digital Controls. Map 'START'
+-            bind_button(SDL_CONTROLLER_BUTTON_Y, 5);                // Digital Controls. Map 'Y' to Coin
+-            bind_button(SDL_CONTROLLER_BUTTON_BACK, 6);             // Digital Controls. Map 'Back' to Menu Button
++            bind_button(SDL_CONTROLLER_BUTTON_BACK, 5);             // Digital Controls. Map 'Back' to Coin
++            bind_button(SDL_CONTROLLER_BUTTON_Y, 6);                // Digital Controls. Map 'Y' to Menu Button
+             bind_button(SDL_CONTROLLER_BUTTON_X, 7);                // Digital Controls. Map 'X' to Change View
+             bind_button(SDL_CONTROLLER_BUTTON_DPAD_UP, 8);          // Digital Controls. Map D-Pad
+             bind_button(SDL_CONTROLLER_BUTTON_DPAD_DOWN, 9);
