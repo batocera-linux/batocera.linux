@@ -15,5 +15,86 @@ custom_features:
     choices:
       'Off': 0
       'On': 1
+  scanlines:
+    prompt: SCANLINES
+    description: Simulate vintage CRT scanlines (Requires scale factor 2x or higher).
+    choices:
+      'Off': 0
+      'On': 1
+  vsync:
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      'Off': 0
+      'On': 1
+  fps:
+    prompt: FRAME RATE (FPS)
+    description: Set the frame rate and rendering mode.
+    choices:
+      '30 FPS': 0
+      '30/60 FPS (Original Game)': 1
+      '60 FPS (Smooth)': 2
+  gear_mode:
+    prompt: GEAR SHIFT MODE
+    description: Set the gear shift behavior.
+    choices:
+      'Manual (Click to Shift)': 0
+      'Manual (Hold to Shift)': 1
+      'Manual (Separate Buttons)': 2
+      'Automatic': 3
+  car_colour:
+    prompt: FERRARI COLOUR
+    description: Customize the colour palette of your Ferrari.
+    choices:
+      'Red': 0
+      'Blue': 1
+      'Yellow': 2
+      'Green': 3
+      'Cyan': 4
+  time_limit:
+    prompt: TIME DIFFICULTY
+    description: Adjust starting and checkpoint time limits.
+    choices:
+      'Easy': 0
+      'Normal': 1
+      'Hard': 2
+      'Very Hard': 3
+      'Freeze Timer': 4
+  traffic_level:
+    prompt: TRAFFIC DENSITY
+    description: Adjust the amount of traffic on the road.
+    choices:
+      'Easy': 0
+      'Normal': 1
+      'Hard': 2
+      'Very Hard': 3
+      'No Traffic': 4
+  fix_bugs:
+    prompt: FIX ARCADE BUGS
+    description: Address various minor engine bugs from the original Sega codebase.
+    choices:
+      'On': 1
+      'Off': 0
+  cheats_offroad:
+    submenu: CHEATS
+    prompt: OFF-ROAD TRACTION
+    description: Keep your top speed even when driving off-road.
+    choices:
+      'Off': 0
+      'On': 1
+  cheats_grippy_tyres:
+    submenu: CHEATS
+    prompt: GRIP STYLE
+    description: Prevent sliding on tight corners with extra-grippy tyres.
+    choices:
+      'Off': 0
+      'On': 1
+  cheats_turbo:
+    submenu: CHEATS
+    prompt: TURBO MODE
+    description: Boosts the car's top speed by 20%.
+    choices:
+      'Off': 0
+      'On': 1
 systems:
   - cannonball
