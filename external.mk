@@ -1,3 +1,21 @@
+# Directories that are included in the rufomaculata squashfs image. These
+# are also excluded from the main squashfs image, so that they are only
+# included once in batocera. The variable is exported so it can be used in
+# post-build-script.sh.
+export BATOCERA_RUFOMACULATA_DIRS := \
+	usr/lib/libretro \
+	usr/wine \
+	usr/share/wine \
+	usr/share/lr-mame \
+	usr/bin/mame \
+	usr/bin/sonic3-air \
+	usr/pcsx2 \
+	usr/xenia
+
+# This variable needs to be here so that `-e ...` is the very last argument
+# appended to it
+ROOTFS_SQUASHFS_ARGS += -wildcards -e $(BATOCERA_RUFOMACULATA_DIRS)
+
 include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-boot.mk
 include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-emulator-info.mk
 include $(sort $(wildcard $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*/*.mk))
