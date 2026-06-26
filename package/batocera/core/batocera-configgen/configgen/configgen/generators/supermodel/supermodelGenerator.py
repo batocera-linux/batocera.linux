@@ -169,6 +169,25 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns) -> None:
         for key, value in templateConfig.items(section):
             targetConfig.set(section, key, value)
 
+    # Network Outputs configuration (MAME-compatible outputs)
+    if not targetConfig.has_section("Global"):
+        targetConfig.add_section("Global")
+
+    m3_outputs = system.config.get("m3_outputs", "none")
+    targetConfig.set("Global", "Outputs", m3_outputs)
+
+    if m3_outputs == "net":
+        outputs_lf = "true" if system.config.get_bool("m3_outputs_lf") else "false"
+        targetConfig.set("Global", "OutputsWithLF", outputs_lf)
+        
+        tcp_port = system.config.get("m3_outputs_tcp", "0")
+        targetConfig.set("Global", "OutputsTCPPort", tcp_port)
+        
+        udp_port = system.config.get("m3_outputs_udp", "0")
+        targetConfig.set("Global", "OutputsUDPBroadcastPort", udp_port)
+    else:
+        targetConfig.set("Global", "Outputs", "none")
+
     # evdev for guns or sdlgamepad
     for section in targetConfig.sections():
         if section.strip() in [ "Global", rom.stem ]:
