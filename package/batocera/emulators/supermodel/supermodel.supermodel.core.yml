@@ -1,2 +1,35 @@
+custom_features:
+  m3_outputs:
+    group: CABINET OUTPUTS
+    prompt: CABINET OUTPUTS
+    description: Send cabinet and lamp output signals via network to external tools like MAME Hooker.
+    choices:
+      'Off': none
+      'On': net
+  m3_outputs_lf:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS USE LINE FEED
+    description: Terminate network message packets with a line feed (\n) character.
+    choices:
+      'Off': 0
+      'On': 1
+  m3_outputs_tcp:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS TCP PORT
+    description: The TCP port used to send network output packets. Leave at default (0) to disable.
+    choices:
+      '0 (Disabled)': 0
+      '8000': 8000
+      '8001': 8001
+      '15124': 15124
+  m3_outputs_udp:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS UDP BROADCAST PORT
+    description: The UDP broadcast port used to send network output packets. Leave at default (0) to disable.
+    choices:
+      '0 (Disabled)': 0
+      '8000': 8000
+      '8001': 8001
+      '15126': 15126
 systems:
   - model3
