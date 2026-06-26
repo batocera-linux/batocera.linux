@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-X16EMU_VERSION = 48
+X16EMU_VERSION = 49
 X16EMU_SITE = $(call github,X16Community,x16-emulator,r$(X16EMU_VERSION))
 X16EMU_LICENSE = BSD-2-Clause license
 X16EMU_LICENSE_FILE = LICENSE

@@ -24,6 +24,7 @@
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
+- X16emu fullscreen with wayland
 ### Changed / Improved
 - BigPEmu added to capable aarch64 devices
 - Cemu added to capable aarch64 devices
@@ -81,6 +82,7 @@
 - Vita3k to 10th of June build
 - VKQuake to 1.34.1
 - Winetricks to 20260125
+- X16emu to r49
 - Xemu to v0.8.136
 ### System
 - Allwinner H700 device kernel updated to 7.0.11
