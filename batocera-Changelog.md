@@ -24,7 +24,8 @@
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
-- X16emu fullscreen with wayland
+- Pygame fullscreen with Wayland
+- X16emu fullscreen with Wayland
 ### Changed / Improved
 - BigPEmu added to capable aarch64 devices
 - Cemu added to capable aarch64 devices
