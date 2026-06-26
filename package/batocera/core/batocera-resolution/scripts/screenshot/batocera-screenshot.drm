@@ -1,8 +1,66 @@
 #!/bin/sh
+TIMER=""
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+    --timer)
+        shift
+        if [ -z "$1" ]; then
+            echo "Error: --timer requires an argument (0–60 seconds)." >&2
+            exit 1
+        fi
+        TIMER="$1"
+        # Validate that TIMER is an integer between 0 and 60
+        case "$TIMER" in
+        '' | *[!0-9]*)
+            echo "Error: --timer value must be an integer between 0 and 60." >&2
+            exit 1
+            ;;
+        *)
+            if [ "$TIMER" -lt 0 ] || [ "$TIMER" -gt 60 ]; then
+                echo "Error: --timer value must be between 0 and 60." >&2
+                exit 1
+            fi
+            ;;
+        esac
+        shift
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        # First non-option is the FILE
+        break
+        ;;
+    esac
+done
 
 FILE=$1
-if [ -z ${FILE} ]; then
-    FILE=/userdata/screenshots/screenshot-$(date +%Y-%m-%d_%Hh%M%S).pbm
+if [ -z "${FILE}" ]; then
+    FILE="/userdata/screenshots/screenshot-$(date +%Y.%m.%d-%Hh%M.%S).png"
 fi
 
-fbdump > "${FILE}" 2>/dev/null || exit 1
+mkdir -p "$(dirname "$FILE")"
+
+do_capture() {
+    fbdump >"${FILE}" 2>/dev/null || exit 1
+
+    # Visual feedback when screenshot is taken
+    batocera-flash-screen 2>/dev/null
+}
+
+# Handle timer: run capture in background after N seconds
+if [ -n "$TIMER" ]; then
+    echo "Screenshot will be taken in $TIMER sec."
+    (
+        sleep "$TIMER"
+        do_capture
+    ) &
+    # Return immediately while background process handles the capture
+    # This enables this script to be launched from the Control Center
+    exit 0
+fi
+
+# No timer: capture immediately
+do_capture
