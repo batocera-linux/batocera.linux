@@ -52,6 +52,17 @@
 					action_off="batocera-record set-all false"
 					afterclick="bcc_refresh" refresh="1" />
 		</feature>
+                <!-- Screenshot -->
+                <feature display="Screenshot">
+                  <button display="Take screenshot"
+                     action='DELAY=$(cat /tmp/batocera-screenshot-delay 2>/dev/null || echo 2); (sleep "$DELAY"; batocera-screenshot) >/tmp/batocera-screenshot-from-bcc.log &amp;'
+                     afterclick="bcc_close" />
+                    <choice display="Immediately (with Control Center)" action="echo 0 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
+                    <choice display="2 sec"  action="echo 2 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
+                    <choice display="5 sec"  action="echo 5 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
+                    <choice display="10 sec" action="echo 10 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
+                    <text display='${printf "after %s sec" $(cat /tmp/batocera-screenshot-delay || echo 1)}' refresh="1" />
+        </feature>
 	</hgroup>
 
 	<hgroup name="Game" display="Game">

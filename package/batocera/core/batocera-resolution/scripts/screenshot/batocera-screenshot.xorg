@@ -3,15 +3,50 @@
 export DISPLAY=$(getLocalXDisplay)
 
 CAPTURE_ALL=false
+TIMER=""
 
-
-if [ "$1" = "--all" ]; then
-    CAPTURE_ALL=true
-    shift
-fi
+while [ $# -gt 0 ]; do
+    case "$1" in
+    --all)
+        CAPTURE_ALL=true
+        shift
+        ;;
+    --timer)
+        shift
+        if [ -z "$1" ]; then
+            echo "Error: --timer requires an argument (0–60 seconds)." >&2
+            exit 1
+        fi
+        TIMER="$1"
+        # Validate that TIMER is an integer between 0 and 60
+        case "$TIMER" in
+        '' | *[!0-9]*)
+            echo "Error: --timer value must be an integer between 0 and 60." >&2
+            exit 1
+            ;;
+        *)
+            if [ "$TIMER" -lt 0 ] || [ "$TIMER" -gt 60 ]; then
+                echo "Error: --timer value must be between 0 and 60." >&2
+                exit 1
+            fi
+            ;;
+        esac
+        shift
+        ;;
+    --)
+        shift
+        break
+        ;;
+    *)
+        # First non-option is the FILE
+        break
+        ;;
+    esac
+done
 
 FILE=$1
 if [ -z "${FILE}" ]; then
+    # Use a slightly different default name for multi-screen captures for clarity
     if [ "$CAPTURE_ALL" = true ]; then
         FILE="/userdata/screenshots/screenshot-all-$(date +%Y.%m.%d-%Hh%M.%S).png"
     else
@@ -23,30 +58,47 @@ mkdir -p "$(dirname "$FILE")"
 
 FFMPEG_CMD=""
 
-if [ "$CAPTURE_ALL" = true ]; then
-    echo "Capturing all outputs."
-    # Original behavior: capture the entire X screen layout
-    FFMPEG_CMD="ffmpeg -f x11grab -i \"${DISPLAY}\" -vframes 1 \"${FILE}\""
-else
-    echo "Capturing primary output."
-    # New default behavior: find the primary monitor and capture only that region.
-    # We get the geometry string (e.g., 1920x1080+0+0) from xrandr.
-    GEOMETRY=$(xrandr 2>/dev/null | grep " primary " | awk '{print $4}')
-
-    if [ -n "$GEOMETRY" ]; then
-        RESOLUTION=$(echo "$GEOMETRY" | cut -d'+' -f1)
-        POSITION=$(echo "$GEOMETRY" | sed 's/.*+\([0-9]*\)+\([0-9]*\)/\1,\2/')
-
-        echo "Found primary display at ${RESOLUTION} with offset ${POSITION}."
-        FFMPEG_CMD="ffmpeg -f x11grab -video_size ${RESOLUTION} -i \"${DISPLAY}+${POSITION}\" -vframes 1 \"${FILE}\""
-    else
-        # Fallback for safety: if no primary display is found, capture everything.
-        echo "Warning: Could not find a primary display. Capturing all outputs as a fallback."
+do_capture() {
+    if [ "$CAPTURE_ALL" = true ]; then
+        echo "Capturing all outputs."
+        # Original behavior: capture the entire X screen layout
         FFMPEG_CMD="ffmpeg -f x11grab -i \"${DISPLAY}\" -vframes 1 \"${FILE}\""
+    else
+        echo "Capturing primary output."
+        # New default behavior: find the primary monitor and capture only that region.
+        # We get the geometry string (e.g., 1920x1080+0+0) from xrandr.
+        GEOMETRY=$(xrandr 2>/dev/null | grep " primary " | awk '{print $4}')
+
+        if [ -n "$GEOMETRY" ]; then
+            RESOLUTION=$(echo "$GEOMETRY" | cut -d'+' -f1)
+            POSITION=$(echo "$GEOMETRY" | sed 's/.*+\([0-9]*\)+\([0-9]*\)/\1,\2/')
+
+            echo "Found primary display at ${RESOLUTION} with offset ${POSITION}."
+            FFMPEG_CMD="ffmpeg -f x11grab -video_size ${RESOLUTION} -i \"${DISPLAY}+${POSITION}\" -vframes 1 \"${FILE}\""
+        else
+            # Fallback for safety: if no primary display is found, capture everything.
+            echo "Warning: Could not find a primary display. Capturing all outputs as a fallback."
+            FFMPEG_CMD="ffmpeg -f x11grab -i \"${DISPLAY}\" -vframes 1 \"${FILE}\""
+        fi
     fi
+
+    eval "$FFMPEG_CMD" 2>/dev/null || exit 1
+
+    # Visual feedback when screenshot is taken
+    batocera-flash-screen 2>/dev/null
+}
+
+# Handle timer: run capture in background after N seconds
+if [ -n "$TIMER" ]; then
+    echo "Screenshot will be taken in $TIMER sec."
+    (
+        sleep "$TIMER"
+        do_capture
+    ) &
+    # Return immediately while background process handles the capture
+    # This enables this script to be launched from the Control Center
+    exit 0
 fi
 
-eval "$FFMPEG_CMD" 2>/dev/null || exit 1
-
-# Visual feedback when screenshot is taken
-batocera-flash-screen 2>/dev/null
+# No timer: capture immediately
+do_capture
