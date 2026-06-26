@@ -124,6 +124,10 @@
     <windowRule identifier="steam_proton" title="Demul">
       <action name="ToggleFullscreen" />
     </windowRule>
+    <windowRule identifier="x16emu" title="Commander X16">
+      <action name="ToggleFullscreen" />
+      <action name="serverDecoration" decoration="no" />
+    </windowRule>
     <windowRule identifier="xterm" serverDecoration="yes" />
     <windowRule identifier="batocera-config-*" serverDecoration="yes" />
     <windowRule identifier="*.desktopconfig" serverDecoration="yes" />
