@@ -1,17 +1,17 @@
 #!/bin/sh
 
 if [ "$1" != "start" ]; then
-  exit 0
+    exit 0
 fi
 
 if [ ! -f /etc/modules.conf ]; then
-  exit 0
+    exit 0
 fi
 
 while IFS='' read -r line || [ -n "$line" ]; do
     # Skip empty lines or lines starting with #
     case "$line" in
-        ""|#*) continue ;;
+        ""|\#*) continue ;;
     esac
     modprobe "$line"
 done < /etc/modules.conf

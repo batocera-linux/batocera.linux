@@ -65,7 +65,7 @@ PERIPHERAL_BINDS: dict[str, _BindData] = {
             "A": ["GamepadX"], "B": ["GamepadA"], "C": ["GamepadB"],
             "X": ["GamepadLeftBumper"], "Y": ["GamepadY"], "Z": ["GamepadRightBumper"],
             "L": ["GamepadLeftTriggerButton"], "R": ["GamepadRightTriggerButton"],
-            "Start": ["GamepadStart"], "DPad": ["GamepadDPad", "GamepadLeftStick"]
+            "Start": ["GamepadStart"], "DPad": ["GamepadLeftStick", "GamepadDPad"]
         },
         "keyboard_map": {
             1: {
@@ -164,6 +164,11 @@ class YmirGenerator(Generator):
         if not config:
             _logger.info("Creating default ymir config at %s", toml_file)
             config = {
+                "ConfigVersion": 4,
+                "Cartridge": {
+                    "AutoLoadGameCarts": True,
+                    "Type": "None"
+                },
                 "General": {
                     "BoostEmuThreadPriority": True,
                     "BoostProcessPriority": True,
@@ -172,10 +177,16 @@ class YmirGenerator(Generator):
                     "PreloadDiscImagesToRAM": False,
                     "RewindCompressionLevel": 12
                 },
-                "System": {"AutoDetectRegion": True},
+                "System": {
+                    "AutoDetectRegion": True,
+                    "InternalBackupRAMPerGame": False
+                },
                 "Video": {
                     "AutoResizeWindow": False, "Deinterlace": False,
-                    "FullScreen": True, "ForceAspectRatio": True
+                    "FullScreen": True, "ForceAspectRatio": True,
+                    "ForceIntegerScaling": False,
+                    "ThreadedVDP1": True, "ThreadedVDP2": True,
+                    "ThreadedDeinterlacer": True
                 }
             }
 
@@ -198,11 +209,26 @@ class YmirGenerator(Generator):
             "Screenshots": str(screenshotPath)
         })
 
+        # System
+        system_config = config.setdefault("System", {})
+        system_config.update({
+            "AutoDetectRegion": True,
+            "InternalBackupRAMPerGame": system.config.get_bool("ymir_backup_ram_per_game", False)
+        })
+
+        # Cartridge
+        cartridge_config = config.setdefault("Cartridge", {})
+        cartridge_config.update({
+            "AutoLoadGameCarts": True
+        })
+
         # Video
         video_config = config.setdefault("Video", {})
         video_config.update({
             "AutoResizeWindow": False, "DisplayVideoOutputInWindow": False, "FullScreen": True,
-            "ThreadedDeinterlacer": True, "ForceAspectRatio": True, "ForceIntegerScaling": False
+            "ThreadedDeinterlacer": True, "ForceAspectRatio": True,
+            "ForceIntegerScaling": system.config.get_bool("ymir_integer_scaling", False),
+            "ThreadedVDP1": True, "ThreadedVDP2": True
         })
 
         # Options
@@ -226,12 +252,20 @@ class YmirGenerator(Generator):
             if f"Port{i}" in input_config:
                 del input_config[f"Port{i}"]
 
+        # Pre-initialize Port 1 and Port 2 as "None" (fallback if player is not connected)
+        for i in range(1, 3):
+            port_config = cast("dict[str, object]", input_config.setdefault(f"Port{i}", {}))
+            port_config["PeripheralType"] = "None"
+
         # Configure up to a maximum of two controllers
         for pad in playersControllers[:2]:
-            port_key = f"Port{pad.player_number}"
+            player_num = int(pad.player_number)
+            port_key = f"Port{player_num}"
             port_config = cast("dict[str, object]", input_config.setdefault(port_key, {}))
 
-            port_config["PeripheralType"] = 'AnalogPad'
+            # Default to 'ControlPad' (Sega Saturn standard layout)
+            peripheral_type = system.config.get(f"ymir_peripheral_p{player_num}", "ControlPad")
+            port_config["PeripheralType"] = peripheral_type
             port_config["DevicePath"] = pad.device_path
 
             # Generate config sections for all known peripheral types for consistency
@@ -241,8 +275,12 @@ class YmirGenerator(Generator):
 
                 # Start with a clean slate, then apply keyboard defaults
                 binds_config.clear()
-                player_keyboard_map = bind_data["keyboard_map"].get(pad.player_number, {})
+                player_keyboard_map = bind_data["keyboard_map"].get(player_num, {})
                 binds_config.update({key: val.copy() for key, val in player_keyboard_map.items()})
+
+                # ArcadeRacer default Sensitivity
+                if peripheral_name == "ArcadeRacer":
+                    peripheral_config["Sensitivity"] = 0.5
 
                 # Append the SDL gamepad maps to the keyboard maps
                 for ymir_key, sdl_suffixes in bind_data["sdl_map"].items():
