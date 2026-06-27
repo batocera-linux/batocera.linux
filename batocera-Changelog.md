@@ -55,6 +55,7 @@
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - Groovy MAME to 0.288
+- IOQuake3 to Mar 9, 2026
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
@@ -89,6 +90,7 @@
 - Tsugaru to v20251206
 - Vita3k to 10th of June build
 - VKQuake to 1.34.1
+- VKQuake3 to 1.36
 - Winetricks to 20260125
 - X16emu to r49
 - Xemu to v0.8.136
