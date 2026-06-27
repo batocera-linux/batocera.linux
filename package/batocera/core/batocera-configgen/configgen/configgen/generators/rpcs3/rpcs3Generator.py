@@ -512,7 +512,7 @@ class Rpcs3Generator(Generator):
         # Shader compilation
         rpcs3ymlconfig["Video"]["Shader Mode"] = system.config.get("rpcs3_shadermode", "Async Shader Recompiler")
         # Vsync
-        rpcs3ymlconfig["Video"]["VSync"] = system.config.get_bool("rpcs3_vsync")
+        rpcs3ymlconfig["Video"]["VSync"] = system.config.get("rpcs3_vsync", "Full")
         # Stretch to display area
         rpcs3ymlconfig["Video"]["Stretch To Display Area"] = system.config.get_bool("rpcs3_stretchdisplay")
         # Frame Limit
