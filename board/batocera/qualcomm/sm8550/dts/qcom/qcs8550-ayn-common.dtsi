@@ -1764,3 +1764,8 @@
 &xo_board {
 	clock-frequency = <76800000>;
 };
+
+// Batocera - we need this
+&little_cpu_sleep_0 {
+	status = "disabled";
+};
