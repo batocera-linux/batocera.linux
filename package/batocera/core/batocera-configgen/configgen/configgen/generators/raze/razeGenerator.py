@@ -23,7 +23,12 @@ class RazeGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "raze",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F6", "restore_state": "KEY_F9" }
+            "keys": { 
+                "exit": ["KEY_LEFTALT", "KEY_F4"],
+                "save_state": "KEY_F6",
+                "restore_state": "KEY_F9",
+                "screenshot": "KEY_F12"
+            }
         }
 
     config_dir = CONFIGS / "raze"
@@ -64,8 +69,6 @@ class RazeGenerator(Generator):
             "F": "+Strafe_Right",
             "PgUp": "+Quick_Kick",  # used in several games
             "PgDn": "+Alt_Fire",  # used in Blood
-            "End": "+Crouch",
-            "Home": "+Fire",
             "Del": "toggle cl_autorun",
             "Ins": "+toggle_crouch",
             "UpArrow": "weapprev",
@@ -76,6 +79,23 @@ class RazeGenerator(Generator):
             "B": "+jump",
             "Y": "+open",
             "A": "+open",
+
+            # Gamepad Bindings
+            "Pad_Start": "menu_endgame",
+            "Pad_Back": "togglemap",
+            "Pad_A": "+open",
+            "Pad_Y": "+jump",
+            "Pad_B": "+Quick_Kick",
+            "Pad_X": "+crouch",
+            "LThumb": "+Run",
+            "RThumb": "+toggle_crouch",
+            "LShoulder": "weapprev",
+            "RShoulder": "weapnext",
+            "LTrigger": "+altattack",
+            "RTrigger": "+fire",
+            "DPadDown": "invuse",
+            "DPadLeft": "invprev",
+            "DPadRight": "invnext",
         }
         config_defaults[f"{name}.AutomapBindings"] = {
             "PgUp": "+Shrink_Screen",
@@ -86,6 +106,9 @@ class RazeGenerator(Generator):
             "RightArrow": "+am_panright",
             "Del": "togglefollow",
             "Ins": "togglerotate",
+            # Gamepad Automap Bindings
+            "LThumb": "+enlarge_Screen",
+            "RThumb": "+shrink_screen",
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -136,6 +159,8 @@ class RazeGenerator(Generator):
                             line = f"vid_preferbackend={raze_api}\n"
                         else:
                             line = "vid_preferbackend=2\n"
+                    elif line.strip().startswith("use_joystick="):
+                        line = "use_joystick=true\n"
 
                 # Write the line
                 config_file.write(line)
@@ -155,6 +180,7 @@ class RazeGenerator(Generator):
                     config_file.write(f"vid_preferbackend={raze_api}\n")
                 else:
                     config_file.write("vid_preferbackend=2\n")
+                config_file.write("use_joystick=true\n")
 
         with self.script_file.open("w") as script:
             script.write(
@@ -171,8 +197,6 @@ class RazeGenerator(Generator):
 
         launch_args += [
             "-exec", self.script_file,
-            # Disable controllers because support is poor; we use evmapy instead
-            "-nojoy",
             "-width", str(gameResolution["width"]),
             "-height", str(gameResolution["height"]),
             "-nologo" if system.config.get_bool("nologo") else "",
