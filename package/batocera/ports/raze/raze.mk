@@ -64,9 +64,6 @@ define RAZE_INSTALL_TARGET_CMDS
         $(TARGET_DIR)/usr/share/raze/raze.pk3
     $(INSTALL) -D -m 0755 $(@D)/buildroot-build/soundfonts/raze.sf2 \
         $(TARGET_DIR)/usr/share/raze/soundfonts/raze.sf2
-    mkdir -p $(TARGET_DIR)/usr/share/evmapy
-    cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/ports/raze/raze.keys \
-        $(TARGET_DIR)/usr/share/evmapy
 endef
 
 $(eval $(cmake-package))
