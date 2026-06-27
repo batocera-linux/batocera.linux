@@ -29,6 +29,7 @@
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Pygame fullscreen with Wayland
 - Raze analog controls and improved controller bindings
+- Simcoupe not starting fullscreen
 - Sonic Mania controllers
 - Taradino blank screen with Wayland
 - X16emu fullscreen with Wayland

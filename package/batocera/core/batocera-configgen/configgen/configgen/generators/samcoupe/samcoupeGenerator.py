@@ -12,16 +12,21 @@ if TYPE_CHECKING:
 
 class SamcoupeGenerator(Generator):
 
-    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        commandArray = ["simcoupe", "autoboot", "-disk1", rom]
-        return Command.Command(
-            array=commandArray,
-            env={
-                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers)
-            })
-
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "samcoupe",
-            "keys": { "exit": ["KEY_LEFTCTRL", "KEY_F12"], "menu": "KEY_F10", "pause": "KEY_F10" }
+            "keys": { 
+                "exit": ["KEY_LEFTCTRL", "KEY_F12"],
+                "menu": "KEY_F10", "pause": "KEY_F10"
+            }
         }
+
+    def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
+        commandArray = [ "simcoupe", "-fullscreen", "1", rom ]
+        return Command.Command(
+            array=commandArray,
+            env={
+                'SDL_GAMECONTROLLERCONFIG': generate_sdl_game_controller_config(playersControllers),
+
+            }
+        )
