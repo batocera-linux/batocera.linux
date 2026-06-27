@@ -1,0 +1,377 @@
+#!/bin/bash
+
+# TODO list:
+# disabled is space < 10G
+# es : check and display upgrade in es
+# background process to update local info about last version
+# lock file when upgrading to avoid removing the file during upgrade or check if batocera-upgrade is not running
+# .md5 downloads/checks
+
+# determine the version number of batocera (without the ending part with the date)
+installed_master_version() {
+    cat /usr/share/batocera/batocera.version | sed -e s/'^\([0-9][0-9\.]*\).*$'/'\1'/
+}
+
+# web version. master is just the first part (42, 43, 43.1, ...)
+web_master_version() {
+    wget "${G_UPDATEURL}/${G_BOARD}/stable/last/batocera.version" -qO - | sed -e s/'^\([0-9][0-9\.]*\).*$'/'\1'/
+}
+
+# version in cache, associated with the loaded torrents
+# when a web master version changes, local master version must be updated, but some files must be cleaned too
+local_master_version() {
+    cat "${G_BASE_DIR}/batocera/versions/${G_BOARD}" 2>/dev/null
+}
+
+do_help() {
+    echo "Update batocera to the last stable version from torrent files and share it." >&2
+    echo "    just call batocera-upgrade-torrent --add-from-torrent to start to share the last stable torrent (the transmission daemon must be one)" >&2
+    echo "    just call batocera-upgrade-torrent --upgrade to check if the file is ready and upgrade" >&2
+    echo "    in case there is no seed, call batocera-upgrade-torrent --add-from-http to download the update from http and share it as a torrent" >&2
+    echo
+    echo "batocera-upgrade-torrent --add-from-http" >&2
+    echo "    [--board board_name]" >&2
+    echo "    download last stable version of boot.tar.xz via http server and share it via torrent (usefull when there is no seed)" >&2
+    echo "batocera-upgrade-torrent --add-from-torrent" >&2
+    echo "    [--board board_name]" >&2
+    echo "    download last stable version of boot.tar.xz.torrent and share it via torrent" >&2
+    echo "batocera-upgrade-torrent --clean" >&2
+    echo "    [--board board_name]" >&2
+    echo "    clean batocera torrent used to share updates/installs" >&2
+    echo "    warning: it will remove the downloaded files too" >&2
+    echo "batocera-upgrade-torrent --status" >&2
+    echo "    status of downloads" >&2
+    echo "batocera-upgrade-torrent --update" >&2
+    echo "    update local information from batocera web servers (check if a new version is available)" >&2
+    echo "batocera-upgrade-torrent --upgrade" >&2
+    echo "    perform the batocera-upgrade command if the torrent file is valid and can be applied" >&2
+    echo "batocera-upgrade-torrent --is-file-ready-to-update" >&2
+    echo "    return 0 if the upgrade is ready to be done" >&2
+    echo "batocera-upgrade-torrent --file-ready-to-update" >&2
+    echo "    display the name of the file in case a file is ready to be applied" >&2
+}
+
+check_if_torrent_already_exists() {
+    NOTORRENT=$(echo "$1" | sed -e s+"\.torrent$"++)
+    IMG=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${NOTORRENT}\") | .name")
+    if test -n "${IMG}"
+    then
+	return 0
+    fi
+    # not found
+    return 1
+}
+
+add_from_http() {
+    MASTER_VERSION=$1
+    if test -z "${MASTER_VERSION}"
+    then
+	echo "version not found" >&2
+	return 1
+    fi
+    
+    TORRENT_FILE="boot-${G_BOARD}-${MASTER_VERSION}.tar.xz.torrent"
+    TARGET_FILE="boot-${G_BOARD}-${MASTER_VERSION}.tar.xz"
+
+    if check_if_torrent_already_exists "${TORRENT_FILE}"
+    then
+	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing torrent files." >&2
+	return 1
+    fi
+
+    # download boot.tar.xz in tmp (as .tmp first, to be erased later by the next call if the job was cancelled)
+    if test -e "${G_BASE_DIR}/output/${TARGET_FILE}"
+    then
+	echo "File ${G_BASE_DIR}/output/${TARGET_FILE} already exists" >&2
+    else
+	if ! wget "${G_UPDATEURL}/${G_BOARD}/stable/last/boot.tar.xz" --show-progress -qO "${G_BASE_DIR}/tmp/boot.tar.xz.tmp"
+	then
+	    echo "Unable to download last stable version for ${G_BOARD} as a boot.tar.xz" >&2
+	    return 1
+	fi
+	# rename it to the version name in output
+	if ! mv "${G_BASE_DIR}/tmp/boot.tar.xz.tmp" "${G_BASE_DIR}/output/${TARGET_FILE}"
+	then
+	    return 1
+	fi
+    fi
+
+    # same as adding the torrent now that we have the file
+    # transmission will find the find in output and assume it is here at 100% and start it
+    add_from_torrent "" "${MASTER_VERSION}" || return 1
+    return 0
+}
+
+add_from_torrent() {
+    TORRENT_FILE=$1
+    MASTER_VERSION=$2
+
+    # if no argument passed, recompute it
+    if test -z "${TORRENT_FILE}"
+    then
+	if test -z "${MASTER_VERSION}"
+	then
+	    echo "invalid version" >&2
+	    return 1
+	fi
+        TORRENT_FILE="boot-${G_BOARD}-${MASTER_VERSION}.tar.xz.torrent"
+
+	# "${G_BASE_DIR}/batocera/versions" contains the last known webx versions
+	mkdir -p "${G_BASE_DIR}/batocera/versions" || return 1
+	if ! echo "${MASTER_VERSION}" > "${G_BASE_DIR}/batocera/versions/${G_BOARD}"
+	then
+	    return 1
+	fi
+    fi
+
+    if check_if_torrent_already_exists "${TORRENT_FILE}"
+    then
+	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing torrent files." >&2
+	return 1
+    fi
+
+    # get the torrent file
+    if ! wget "${G_UPDATEURL}/${G_BOARD}/stable/last/${TORRENT_FILE}" -qO "${G_BASE_DIR}/tmp/boot.tar.xz.torrent.tmp"
+    then
+	echo "Unable to download last stable version for ${G_BOARD} as a torrent" >&2
+	return 1
+    fi
+    
+    # transmission seems to note automatically start the torrent from input, or just at boot, so explicitly add it
+    if transmission-remote -a "${G_BASE_DIR}/tmp/boot.tar.xz.torrent.tmp" >/dev/null
+    then
+	if ! mv "${G_BASE_DIR}/tmp/boot.tar.xz.torrent.tmp" "${G_BASE_DIR}/input/${TORRENT_FILE}.added"
+	then
+	    return 1
+	fi
+    else
+	return 1
+    fi
+
+    echo "${G_BASE_DIR}/input/${TORRENT_FILE} added" >&2
+    return 0
+}
+
+board_status() {
+    BOARD=$1
+
+    TFILE="${G_BASE_DIR}/batocera/versions/${BOARD}"
+    if test -z "${TFILE}"
+    then
+	echo "MISSING"
+	return 0
+    fi
+    
+    VFILE=$(cat "${TFILE}")
+    BFILE=$(basename "${TFILE}")
+    XZFILE="boot-${BFILE}-${VFILE}.tar.xz"
+    IMG=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${XZFILE}\")")
+    if test -z "${IMG}"
+    then
+	echo "MISSING"
+	return 0
+    fi
+
+    TSIZE=$(echo "${IMG}" | jq -r ".size_when_done")
+    LSIZE=$(echo "${IMG}" | jq -r ".left_until_done")
+
+    if test "${LSIZE}" = 0
+    then
+	echo "OK"
+	return 0
+    fi
+
+    TDONE=$(expr "${TSIZE}" - "${LSIZE}")
+    PDONE=$(expr "${TDONE}" '*' 100 / "${TSIZE}")
+
+    echo "PARTIAL ${PDONE}%"
+    return 0
+}
+
+do_status() {
+    find "${G_BASE_DIR}/batocera/versions" -type f |
+	while read TFILE
+	do
+	    BFILE=$(basename "${TFILE}")
+	    VFILE=$(cat "${TFILE}")
+	    TFILE="boot-${BFILE}-${VFILE}.tar.xz"
+	    IMG=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${TFILE}\")")
+	    if test -n "${IMG}" # in case the image was removed
+	    then
+		TSIZE=$(echo "${IMG}" | jq -r ".size_when_done")
+		LSIZE=$(echo "${IMG}" | jq -r ".left_until_done")
+		TDONE=$(expr "${TSIZE}" - "${LSIZE}")
+		PDONE=$(expr "${TDONE}" '*' 100 / "${TSIZE}")
+		printf "%35s %3s%%\n" "${TFILE}" "${PDONE}"
+	    fi
+	done
+}
+
+do_clean() {
+    MASTER_VERSION=$1
+    BOARD=$2
+
+    TORRENT_FILE="boot-${BOARD}-${MASTER_VERSION}.tar.xz.torrent"
+    TORRENT_FILE_EXTRA="boot-${BOARD}-${MASTER_VERSION}.tar.xz.torrent.added"
+    TARGET_FILE="boot-${BOARD}-${MASTER_VERSION}.tar.xz"
+
+    # remove the downloaded file
+    # remote the .torrent and .torrent.added
+    # remote the tmp file
+    IMGID=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${TARGET_FILE}\") | .id")
+    if test -n "${IMGID}"
+    then
+	transmission-remote -t "${IMGID}" -r >/dev/null || return 1
+    fi
+    rm -f "${G_BASE_DIR}/output/${TARGET_FILE}" "${G_BASE_DIR}/tmp/${TARGET_FILE}" || return 1
+    rm -f "${G_BASE_DIR}/input/${TORRENT_FILE}" "${G_BASE_DIR}/input/${TORRENT_FILE_EXTRA}" || return 1
+    rm -f "${G_BASE_DIR}/batocera/versions/${BOARD}" || return 1
+
+    return 0
+}
+
+check_www() {
+    WEB_MASTER_VERSION=$(web_master_version)
+    WWW_VERBOSE=$1
+    if test -z "${WEB_MASTER_VERSION}"
+    then
+	echo "unable to get web version" >&2
+	return 1
+    fi
+
+    LOCAL_MASTER_VERSION=$(local_master_version)
+
+    if test "${LOCAL_MASTER_VERSION}" != "${WEB_MASTER_VERSION}"
+    then
+	echo "version ${WEB_MASTER_VERSION} is available." >&2
+    else
+	if test "${WWW_VERBOSE}" = 1
+	then
+	    echo "version ${WEB_MASTER_VERSION} is already up to date." >&2
+	fi
+	return 0
+    fi
+
+    # clean and update existing version
+    if test -n "${LOCAL_MASTER_VERSION}"
+    then
+	do_clean "${LOCAL_MASTER_VERSION}" "${G_BOARD}" || return 1
+	add_from_torrent "" "${WEB_MASTER_VERSION}"     || return 1
+    fi
+
+    # "${G_BASE_DIR}/batocera/versions" contains the last known web versions
+    if ! echo "${WEB_MASTER_VERSION}" > "${G_BASE_DIR}/batocera/versions/${G_BOARD}"
+    then
+	return 1
+    fi
+
+    return 0
+}
+
+is_file_ready_for_update() {
+    INSTALLED_MASTER_VERSION=$(installed_master_version)
+    LOCAL_MASTER_VERSION=$(local_master_version)
+    SBOARD=$(board_status "${G_BOARD}")
+    
+    # batocera is already on the last stable version
+    if test "${INSTALLED_MASTER_VERSION}" = "${LOCAL_MASTER_VERSION}"
+    then
+	return 1
+    fi
+
+    # ok local master is different, thus, check if the torrent file is ready
+    # if the version is different and the file is ready, that's ok !
+    if test "${SBOARD}" = "OK"
+    then
+	return 0
+    fi
+
+    return 1
+}
+
+file_ready_for_update() {
+    MASTER_VERSION=$(local_master_version)
+    if is_file_ready_for_update
+    then
+	TARGET_FILE="${G_BASE_DIR}/output/boot-${G_BOARD}-${MASTER_VERSION}.tar.xz"
+	if test -e "${TARGET_FILE}"
+	then
+	    echo "${TARGET_FILE}"
+	    return 0
+	fi
+    fi
+    return 1
+}
+
+upgrade() {
+    if is_file_ready_for_update
+    then
+	UPDFILE=$(file_ready_for_update)
+	if test -n "${UPDFILE}"
+	then
+	    batocera-upgrade --media-upgrade --file "${UPDFILE}"
+	fi
+    else
+	echo "No upgrade to do." >&2
+	return 1
+    fi
+}
+
+ACTION=$1
+shift
+
+G_BASE_DIR="/userdata/system/torrent"
+G_BOARD=$(cat /boot/boot/batocera.board)
+G_UPDATEURL="https://updates.batocera.org"
+
+# get other flags
+while test "${1}" != ""
+do
+    OPT=$1
+    shift
+
+    case "${OPT}" in
+	"--board")
+	    G_BOARD=$1
+	    shift
+	    ;;
+	*)
+	    echo "unknown option ${OPT}"
+	    exit 1
+    esac
+done
+
+case "${ACTION}" in
+    # initialize the host as a seed after a http download (required when there is no seeder)
+    # always add the lastest version whatever is installed locally
+    "--add-from-http")
+	check_www 0 || exit 1
+	add_from_http "$(local_master_version)" || exit 1
+	;;
+    # get the torrent file from the current web version, and start it (and eventually clean the old files)
+    "--add-from-torrent")
+	check_www 0 || exit 1
+	add_from_torrent "" "$(local_master_version)" || exit 1
+	;;
+    # remove any file from batocera upgrade system (don't touch to torrent that a user may have added manually)
+    "--clean")
+	do_clean "$(local_master_version)" "${G_BOARD}" || exit 1
+	;;
+    "--status")
+	do_status
+	;;
+    "--update")
+	check_www 1 || exit 1
+	;;
+    "--upgrade")
+	upgrade || exit 1
+	;;
+    "--is-file-ready-to-update")
+	is_file_ready_for_update || exit 1
+	;;
+    "--file-ready-to-update")
+	file_ready_for_update || exit 1
+	;;
+    *)
+	do_help
+esac
