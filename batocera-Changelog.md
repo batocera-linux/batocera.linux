@@ -54,6 +54,7 @@
 - CorsixTH to v0.69.2
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
+- EDuke32 / Fury to Feb 03, 2026 build
 - Groovy MAME to 0.288
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
