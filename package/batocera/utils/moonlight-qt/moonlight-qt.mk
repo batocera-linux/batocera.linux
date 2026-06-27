@@ -3,23 +3,15 @@
 # moonlight-qt
 #
 ################################################################################
-
-MOONLIGHT_QT_VERSION = v6.1.0
+# Version: Commits on Jun 26, 2026
+MOONLIGHT_QT_VERSION = e223bf9a1beffdda71df31a22321f45d16c9f3fe
 MOONLIGHT_QT_SITE = https://github.com/moonlight-stream/moonlight-qt
 MOONLIGHT_QT_SITE_METHOD = git
 MOONLIGHT_QT_GIT_SUBMODULES = YES
 MOONLIGHT_QT_LICENSE = GPLv3
 
-MOONLIGHT_QT_DEPENDENCIES = \
-	moonlight-common \
-	qt6base \
-	qt6svg \
-	qt6declarative \
-	sdl2 \
-	sdl2_ttf \
-	opus \
-	ffmpeg \
-	openssl
+MOONLIGHT_QT_DEPENDENCIES = moonlight-common qt6base qt6svg qt6declarative
+MOONLIGHT_QT_DEPENDENCIES += sdl2 sdl2_ttf opus ffmpeg openssl
 
 MOONLIGHT_QT_CONF_OPTS += PREFIX=/usr
 
@@ -42,7 +34,7 @@ MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-libva
 endif
 
 ifeq ($(BR2_PACKAGE_LIBVA_INTEL_DRIVER),y)
-    MOONLIGHT_QT_DEPENDENCIES += libva-intel-driver intel-mediadriver
+MOONLIGHT_QT_DEPENDENCIES += libva-intel-driver intel-mediadriver
 endif
 
 ifeq ($(BR2_PACKAGE_LIBVDPAU),y)
@@ -64,12 +56,9 @@ MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-wayland
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
-    ifneq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
-        MOONLIGHT_QT_DEPENDENCIES += libplacebo vulkan-headers vulkan-loader
-    endif
+MOONLIGHT_QT_DEPENDENCIES += libplacebo vulkan-headers vulkan-loader
 else
-    # Explicitly disable libplacebo if Vulkan is not enabled
-    MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-libplacebo
+MOONLIGHT_QT_CONF_OPTS += CONFIG+=disable-libplacebo
 endif
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
@@ -91,10 +80,31 @@ endef
 
 MOONLIGHT_QT_PRE_CONFIGURE_HOOKS += MOONLIGHT_QT_INSTALL_QT_CONF
 
+# Dynamically create the missing Qt6 cross-compilation mkspec for this package
+define MOONLIGHT_QT_CREATE_MKSPEC
+	mkdir -p $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++
+	cp -f $(STAGING_DIR)/usr/mkspecs/devices/linux-generic-g++/qmake.conf \
+		$(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	cp -f $(STAGING_DIR)/usr/mkspecs/devices/linux-generic-g++/qplatformdefs.h \
+		$(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qplatformdefs.h
+	echo "QMAKE_CC = $(TARGET_CC)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_CXX = $(TARGET_CXX)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_LINK = $(TARGET_CXX)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_LINK_SHLIB = $(TARGET_CXX)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_AR = $(TARGET_AR) cqs" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_OBJCOPY = $(TARGET_OBJCOPY)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_RANLIB = $(TARGET_RANLIB)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_STRIP = $(TARGET_STRIP)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_CFLAGS += $(TARGET_CFLAGS)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_CXXFLAGS += $(TARGET_CXXFLAGS)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+	echo "QMAKE_LFLAGS += $(TARGET_LDFLAGS)" >> $(STAGING_DIR)/usr/mkspecs/devices/linux-buildroot-g++/qmake.conf
+endef
+MOONLIGHT_QT_PRE_CONFIGURE_HOOKS += MOONLIGHT_QT_CREATE_MKSPEC
+
 define MOONLIGHT_QT_CONFIGURE_CMDS
 	cd $(@D) && \
 	$(TARGET_MAKE_ENV) $(MOONLIGHT_QT_CONF_ENV) \
-	$(HOST_DIR)/bin/qmake6 -spec devices/linux-generic-g++ $(MOONLIGHT_QT_CONF_OPTS)
+	$(HOST_DIR)/bin/qmake6 -spec devices/linux-buildroot-g++ $(MOONLIGHT_QT_CONF_OPTS)
 endef
 
 define MOONLIGHT_QT_BUILD_CMDS
