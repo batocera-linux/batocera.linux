@@ -3,8 +3,8 @@
 # vkquake3
 #
 ################################################################################
-# Version: Commits on Jan 26, 2025
-VKQUAKE3_VERSION = 5300b32803c1c61bc3b6bdf86a084c1db1a217ad
+# Version: Commits on Jun 15, 2026
+VKQUAKE3_VERSION = 650bd625eb725446279c6176804b554e2e1c98f3
 VKQUAKE3_SITE = $(call github,suijingfeng,vkQuake3,$(VKQUAKE3_VERSION))
 VKQUAKE3_LICENSE = GPL-2.0
 VKQUAKE3_LICENSE_FILE = COPYING.txt
