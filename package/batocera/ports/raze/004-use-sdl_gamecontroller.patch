@@ -1,0 +1,449 @@
+diff --git a/source/common/platform/posix/sdl/i_joystick.cpp b/source/common/platform/posix/sdl/i_joystick.cpp.new
+index 42837ec..a759578 100644
+--- a/source/common/platform/posix/sdl/i_joystick.cpp
++++ b/source/common/platform/posix/sdl/i_joystick.cpp.new
+@@ -3,6 +3,7 @@
+ **
+ **---------------------------------------------------------------------------
+ ** Copyright 2005-2016 Randy Heit
++** Copyright 2026 Daniel Martin
+ ** All rights reserved.
+ **
+ ** Redistribution and use in source and binary forms, with or without
+@@ -46,37 +47,56 @@
+ class SDLInputJoystick: public IJoystickConfig
+ {
+ public:
+-	SDLInputJoystick(int DeviceIndex) : DeviceIndex(DeviceIndex), Multiplier(1.0f) , Enabled(true)
++	SDLInputJoystick(int DeviceIndex) : DeviceIndex(DeviceIndex), Controller(nullptr), Multiplier(1.0f) , Enabled(true), PhysicalAxisCount(0), LThumbState(0), RThumbState(0), LTriggerState(0), RTriggerState(0)
+ 	{
+-		Device = SDL_JoystickOpen(DeviceIndex);
+-		if(Device != NULL)
+-		{
+-			NumAxes = SDL_JoystickNumAxes(Device);
+-			NumHats = SDL_JoystickNumHats(Device);
++		memset(ButtonStates, 0, sizeof(ButtonStates));
++		memset(AxisMap, 0, sizeof(AxisMap));
+ 
+-			SetDefaultConfig();
++		if (SDL_IsGameController(DeviceIndex))
++		{
++			Controller = SDL_GameControllerOpen(DeviceIndex);
++			if (Controller != nullptr)
++			{
++				// Discover which of the 6 game controller axes are physically present
++				for (int i = 0; i < 6; ++i)
++				{
++					SDL_GameControllerAxis axis = (SDL_GameControllerAxis)i;
++					if (SDL_GameControllerHasAxis(Controller, axis))
++					{
++						AxisMap[PhysicalAxisCount] = axis;
++						PhysicalAxisCount++;
++					}
++				}
++				SetDefaultConfig();
++			}
+ 		}
+ 	}
++
+ 	~SDLInputJoystick()
+ 	{
+-		if(Device != NULL)
++		if (Controller != nullptr)
++		{
+ 			M_SaveJoystickConfig(this);
+-		SDL_JoystickClose(Device);
++			SDL_GameControllerClose(Controller);
++		}
+ 	}
+ 
+ 	bool IsValid() const
+ 	{
+-		return Device != NULL;
++		return Controller != nullptr;
+ 	}
+ 
+ 	FString GetName()
+ 	{
+-		return SDL_JoystickName(Device);
++		const char* name = SDL_GameControllerName(Controller);
++		return name ? name : "Unknown Controller";
+ 	}
++
+ 	float GetSensitivity()
+ 	{
+ 		return Multiplier;
+ 	}
++
+ 	void SetSensitivity(float scale)
+ 	{
+ 		Multiplier = scale;
+@@ -84,20 +104,24 @@ public:
+ 
+ 	int GetNumAxes()
+ 	{
+-		return NumAxes + NumHats*2;
++		return PhysicalAxisCount;
+ 	}
++
+ 	float GetAxisDeadZone(int axis)
+ 	{
+ 		return Axes[axis].DeadZone;
+ 	}
++
+ 	EJoyAxis GetAxisMap(int axis)
+ 	{
+ 		return Axes[axis].GameAxis;
+ 	}
++
+ 	const char *GetAxisName(int axis)
+ 	{
+ 		return Axes[axis].Name.GetChars();
+ 	}
++
+ 	float GetAxisScale(int axis)
+ 	{
+ 		return Axes[axis].Multiplier;
+@@ -107,10 +131,12 @@ public:
+ 	{
+ 		Axes[axis].DeadZone = clamp(zone, MIN_DEADZONE, 1.f);
+ 	}
++
+ 	void SetAxisMap(int axis, EJoyAxis gameaxis)
+ 	{
+ 		Axes[axis].GameAxis = gameaxis;
+ 	}
++
+ 	void SetAxisScale(int axis, float scale)
+ 	{
+ 		Axes[axis].Multiplier = scale;
+@@ -121,16 +147,19 @@ public:
+ 	{
+ 		return Multiplier == 1.0f;
+ 	}
++
+ 	bool IsAxisDeadZoneDefault(int axis)
+ 	{
+ 		return Axes[axis].DeadZone <= MIN_DEADZONE;
+ 	}
++
+ 	bool IsAxisMapDefault(int axis)
+ 	{
+-		if(axis >= 5)
++		if (axis >= PhysicalAxisCount)
+ 			return Axes[axis].GameAxis == JOYAXIS_None;
+-		return Axes[axis].GameAxis == DefaultAxes[axis];
++		return Axes[axis].GameAxis == DefaultAxes[AxisMap[axis]];
+ 	}
++
+ 	bool IsAxisScaleDefault(int axis)
+ 	{
+ 		return Axes[axis].Multiplier == 1.0f;
+@@ -138,21 +167,28 @@ public:
+ 
+ 	void SetDefaultConfig()
+ 	{
+-		for(int i = 0;i < GetNumAxes();i++)
++		Axes.Clear();
++
++		for(int i = 0; i < PhysicalAxisCount; i++)
+ 		{
+ 			AxisInfo info;
+-			if(i < NumAxes)
+-				info.Name.Format("Axis %d", i+1);
+-			else
+-				info.Name.Format("Hat %d (%c)", (i-NumAxes)/2 + 1, (i-NumAxes)%2 == 0 ? 'x' : 'y');
++			static const char *ControllerAxisNames[] = {
++				"Left Stick X",
++				"Left Stick Y",
++				"Right Stick X",
++				"Right Stick Y",
++				"Left Trigger",
++				"Right Trigger"
++			};
++			
++			SDL_GameControllerAxis physicalAxis = AxisMap[i];
++			info.Name = ControllerAxisNames[physicalAxis];
+ 			info.DeadZone = DEFAULT_DEADZONE;
+ 			info.Multiplier = 1.0f;
+ 			info.Value = 0.0;
+ 			info.ButtonValue = 0;
+-			if(i >= 5)
+-				info.GameAxis = JOYAXIS_None;
+-			else
+-				info.GameAxis = DefaultAxes[i];
++			info.GameAxis = DefaultAxes[physicalAxis];
++			
+ 			Axes.Push(info);
+ 		}
+ 	}
+@@ -174,14 +210,14 @@ public:
+ 	FString GetIdentifier()
+ 	{
+ 		char id[16];
+-		snprintf(id, countof(id), "JS:%d", DeviceIndex);
++		// Rename identifier to avoid loading corrupt raw configurations from raze.ini
++		snprintf(id, countof(id), "GC:%d", DeviceIndex);
+ 		return id;
+ 	}
+ 
+ 	void AddAxes(float axes[NUM_JOYAXIS])
+ 	{
+-		// Add to game axes.
+-		for (int i = 0; i < GetNumAxes(); ++i)
++		for (int i = 0; i < PhysicalAxisCount; ++i)
+ 		{
+ 			if(Axes[i].GameAxis != JOYAXIS_None)
+ 				axes[Axes[i].GameAxis] -= float(Axes[i].Value * Multiplier * Axes[i].Multiplier);
+@@ -192,60 +228,119 @@ public:
+ 	{
+ 		uint8_t buttonstate;
+ 
+-		for (int i = 0; i < NumAxes; ++i)
++		// 1. Process standard physical axes
++		for (int i = 0; i < PhysicalAxisCount; ++i)
+ 		{
+ 			buttonstate = 0;
+ 
+-			Axes[i].Value = SDL_JoystickGetAxis(Device, i)/32767.0;
++			SDL_GameControllerAxis physicalAxis = AxisMap[i];
++			int rawVal = SDL_GameControllerGetAxis(Controller, physicalAxis);
++			double val = rawVal / 32767.0;
++
++			Axes[i].Value = val;
+ 			Axes[i].Value = Joy_RemoveDeadZone(Axes[i].Value, Axes[i].DeadZone, &buttonstate);
++		}
+ 
+-			// Map button to axis
+-			// X and Y are handled differently so if we have 2 or more axes then we'll use that code instead.
+-			if (NumAxes == 1 || (i >= 2 && i < NUM_JOYAXISBUTTONS))
+-			{
+-				Joy_GenerateButtonEvents(Axes[i].ButtonValue, buttonstate, 2, KEY_JOYAXIS1PLUS + i*2);
+-				Axes[i].ButtonValue = buttonstate;
+-			}
++		// Left Stick (Axes 0 and 1) directions map to KEY_PAD_LTHUMB keys
++		int leftXIdx = -1;
++		int leftYIdx = -1;
++		for (int i = 0; i < PhysicalAxisCount; ++i)
++		{
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_LEFTX) leftXIdx = i;
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_LEFTY) leftYIdx = i;
+ 		}
+ 
+-		if(NumAxes > 1)
++		uint8_t lthumbState = 0;
++		double lxVal = (leftXIdx != -1) ? Axes[leftXIdx].Value : 0.0;
++		double lyVal = (leftYIdx != -1) ? Axes[leftYIdx].Value : 0.0;
++		double lxDead = (leftXIdx != -1) ? Axes[leftXIdx].DeadZone : 0.25;
++		double lyDead = (leftYIdx != -1) ? Axes[leftYIdx].DeadZone : 0.25;
++
++		if (lxVal > lxDead)  lthumbState |= 0x01; // Right
++		if (lxVal < -lxDead) lthumbState |= 0x02; // Left
++		if (lyVal > lyDead)  lthumbState |= 0x04; // Down
++		if (lyVal < -lyDead) lthumbState |= 0x08; // Up
++		Joy_GenerateButtonEvents(LThumbState, lthumbState, 4, KEY_PAD_LTHUMB_RIGHT);
++		LThumbState = lthumbState;
++
++		// Right Stick (Axes 2 and 3) directions map to KEY_PAD_RTHUMB keys
++		int rightXIdx = -1;
++		int rightYIdx = -1;
++		for (int i = 0; i < PhysicalAxisCount; ++i)
+ 		{
+-			buttonstate = Joy_XYAxesToButtons(Axes[0].Value, Axes[1].Value);
+-			Joy_GenerateButtonEvents(Axes[0].ButtonValue, buttonstate, 4, KEY_JOYAXIS1PLUS);
+-			Axes[0].ButtonValue = buttonstate;
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_RIGHTX) rightXIdx = i;
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_RIGHTY) rightYIdx = i;
+ 		}
+ 
+-		// Map POV hats to buttons and axes.  Why axes?  Well apparently I have
+-		// a gamepad where the left control stick is a POV hat (instead of the
+-		// d-pad like you would expect, no that's pressure sensitive).  Also
+-		// KDE's joystick dialog maps them to axes as well.
+-		for (int i = 0; i < NumHats; ++i)
++		uint8_t rthumbState = 0;
++		double rxVal = (rightXIdx != -1) ? Axes[rightXIdx].Value : 0.0;
++		double ryVal = (rightYIdx != -1) ? Axes[rightYIdx].Value : 0.0;
++		double rxDead = (rightXIdx != -1) ? Axes[rightXIdx].DeadZone : 0.25;
++		double ryDead = (rightYIdx != -1) ? Axes[rightYIdx].DeadZone : 0.25;
++
++		if (rxVal > rxDead)  rthumbState |= 0x01; // Right
++		if (rxVal < -rxDead) rthumbState |= 0x02; // Left
++		if (ryVal > ryDead)  rthumbState |= 0x04; // Down
++		if (ryVal < -ryDead) rthumbState |= 0x08; // Up
++		Joy_GenerateButtonEvents(RThumbState, rthumbState, 4, KEY_PAD_RTHUMB_RIGHT);
++		RThumbState = rthumbState;
++
++		// 2. Process Triggers (Axes 4 and 5) as Gamepad Trigger Buttons
++		// Left Trigger (Axis 4) -> KEY_PAD_LTRIGGER
++		int ltIdx = -1;
++		for (int i = 0; i < PhysicalAxisCount; ++i)
+ 		{
+-			AxisInfo &x = Axes[NumAxes + i*2];
+-			AxisInfo &y = Axes[NumAxes + i*2 + 1];
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_TRIGGERLEFT) ltIdx = i;
++		}
+ 
+-			buttonstate = SDL_JoystickGetHat(Device, i);
++		double ltVal = SDL_GameControllerGetAxis(Controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT) / 32767.0;
++		if (ltIdx != -1) Axes[ltIdx].Value = ltVal;
++		double ltDead = (ltIdx != -1) ? Axes[ltIdx].DeadZone : 0.25;
++		uint8_t ltState = (ltVal > ltDead) ? 1 : 0;
++		Joy_GenerateButtonEvents(LTriggerState, ltState, 1, KEY_PAD_LTRIGGER);
++		LTriggerState = ltState;
+ 
+-			// If we're going to assume that we can pass SDL's value into
+-			// Joy_GenerateButtonEvents then we might as well assume the format here.
+-			if(buttonstate & 0x1) // Up
+-				y.Value = -1.0;
+-			else if(buttonstate & 0x4) // Down
+-				y.Value = 1.0;
+-			else
+-				y.Value = 0.0;
+-			if(buttonstate & 0x2) // Left
+-				x.Value = 1.0;
+-			else if(buttonstate & 0x8) // Right
+-				x.Value = -1.0;
+-			else
+-				x.Value = 0.0;
++		// Right Trigger (Axis 5) -> KEY_PAD_RTRIGGER
++		int rtIdx = -1;
++		for (int i = 0; i < PhysicalAxisCount; ++i)
++		{
++			if (AxisMap[i] == SDL_CONTROLLER_AXIS_TRIGGERRIGHT) rtIdx = i;
++		}
+ 
+-			if(i < 4)
+-			{
+-				Joy_GenerateButtonEvents(x.ButtonValue, buttonstate, 4, KEY_JOYPOV1_UP + i*4);
+-				x.ButtonValue = buttonstate;
+-			}
++		double rtVal = SDL_GameControllerGetAxis(Controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT) / 32767.0;
++		if (rtIdx != -1) Axes[rtIdx].Value = rtVal;
++		double rtDead = (rtIdx != -1) ? Axes[rtIdx].DeadZone : 0.25;
++		uint8_t rtState = (rtVal > rtDead) ? 1 : 0;
++		Joy_GenerateButtonEvents(RTriggerState, rtState, 1, KEY_PAD_RTRIGGER);
++		RTriggerState = rtState;
++
++		// 3. Process Buttons
++		struct ButtonMapEntry {
++			SDL_GameControllerButton sdlBtn;
++			int keycode;
++		};
++		static const ButtonMapEntry btnMap[] = {
++			{ SDL_CONTROLLER_BUTTON_A,             KEY_PAD_A },             // Pad_A
++			{ SDL_CONTROLLER_BUTTON_B,             KEY_PAD_B },             // Pad_B
++			{ SDL_CONTROLLER_BUTTON_X,             KEY_PAD_X },             // Pad_X
++			{ SDL_CONTROLLER_BUTTON_Y,             KEY_PAD_Y },             // Pad_Y
++			{ SDL_CONTROLLER_BUTTON_LEFTSHOULDER,  KEY_PAD_LSHOULDER },     // LShoulder
++			{ SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, KEY_PAD_RSHOULDER },    // RShoulder
++			{ SDL_CONTROLLER_BUTTON_BACK,          KEY_PAD_BACK },          // Pad_Back
++			{ SDL_CONTROLLER_BUTTON_START,         KEY_PAD_START },         // Pad_Start
++			{ SDL_CONTROLLER_BUTTON_LEFTSTICK,     KEY_PAD_LTHUMB },        // LThumb
++			{ SDL_CONTROLLER_BUTTON_RIGHTSTICK,    KEY_PAD_RTHUMB },        // RThumb
++			{ SDL_CONTROLLER_BUTTON_DPAD_UP,       KEY_PAD_DPAD_UP },       // DPadUp
++			{ SDL_CONTROLLER_BUTTON_DPAD_DOWN,     KEY_PAD_DPAD_DOWN },     // DPadDown
++			{ SDL_CONTROLLER_BUTTON_DPAD_LEFT,     KEY_PAD_DPAD_LEFT },     // DPadLeft
++			{ SDL_CONTROLLER_BUTTON_DPAD_RIGHT,    KEY_PAD_DPAD_RIGHT }     // DPadRight
++		};
++
++		for (size_t i = 0; i < sizeof(btnMap) / sizeof(btnMap[0]); ++i)
++		{
++			uint8_t state = SDL_GameControllerGetButton(Controller, btnMap[i].sdlBtn);
++			Joy_GenerateButtonEvents(ButtonStates[i], state, 1, btnMap[i].keycode);
++			ButtonStates[i] = state;
+ 		}
+ 	}
+ 
+@@ -259,22 +354,35 @@ protected:
+ 		double Value;
+ 		uint8_t ButtonValue;
+ 	};
+-	static const EJoyAxis DefaultAxes[5];
++	static const EJoyAxis DefaultAxes[6];
+ 
+ 	int					DeviceIndex;
+-	SDL_Joystick		*Device;
++	SDL_GameController *Controller;
+ 
+ 	float				Multiplier;
+ 	bool				Enabled;
+ 	TArray<AxisInfo>	Axes;
+-	int					NumAxes;
+-	int					NumHats;
++	SDL_GameControllerAxis AxisMap[6];
++	int                 PhysicalAxisCount;
++	uint8_t             DpadButtonValue;
++	uint8_t             LTriggerState;
++	uint8_t             RTriggerState;
++	uint8_t             ButtonStates[14];
++	uint8_t             LThumbState;
++	uint8_t             RThumbState;
+ 
+ 	friend class SDLInputJoystickManager;
+ };
+ 
+-// [Nash 4 Feb 2024] seems like on Linux, the third axis is actually the Left Trigger, resulting in the player uncontrollably looking upwards.
+-const EJoyAxis SDLInputJoystick::DefaultAxes[5] = {JOYAXIS_Side, JOYAXIS_Forward, JOYAXIS_None, JOYAXIS_Yaw, JOYAXIS_Pitch};
++// Standardized mapping for SDL_GameController (applies to all supported platforms)
++const EJoyAxis SDLInputJoystick::DefaultAxes[6] = {
++	JOYAXIS_Side,      // Axis 0: Left Stick X
++	JOYAXIS_Forward,   // Axis 1: Left Stick Y
++	JOYAXIS_Yaw,       // Axis 2: Right Stick X
++	JOYAXIS_Pitch,     // Axis 3: Right Stick Y
++	JOYAXIS_None,      // Axis 4: Left Trigger
++	JOYAXIS_None       // Axis 5: Right Trigger
++};
+ 
+ class SDLInputJoystickManager
+ {
+@@ -323,8 +431,11 @@ static SDLInputJoystickManager *JoystickManager;
+ void I_StartupJoysticks()
+ {
+ #ifndef NO_SDL_JOYSTICK
+-	if(SDL_InitSubSystem(SDL_INIT_JOYSTICK) >= 0)
++	// Initialize both subsystems simultaneously to satisfy older/restricted platform dependencies
++	if(SDL_InitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) >= 0)
++	{
+ 		JoystickManager = new SDLInputJoystickManager();
++	}
+ #endif
+ }
+ void I_ShutdownInput()
+@@ -332,7 +443,7 @@ void I_ShutdownInput()
+ 	if(JoystickManager)
+ 	{
+ 		delete JoystickManager;
+-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
++		SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+ 	}
+ }
+ 
+diff --git a/source/common/platform/posix/sdl/i_input.cpp b/source/common/platform/posix/sdl/i_input.cpp.new
+index 02cf31e..46f2d81 100644
+--- a/source/common/platform/posix/sdl/i_input.cpp
++++ b/source/common/platform/posix/sdl/i_input.cpp.new
+@@ -3,6 +3,7 @@
+ **
+ **---------------------------------------------------------------------------
+ ** Copyright 2005-2016 Randy Heit
++** Copyright 2026 Daniel Martin
+ ** All rights reserved.
+ **
+ ** Redistribution and use in source and binary forms, with or without
+@@ -460,13 +461,13 @@ void MessagePump (const SDL_Event &sev)
+ 		}
+ 		break;
+ 
+-	case SDL_JOYBUTTONDOWN:
++	/*case SDL_JOYBUTTONDOWN:
+ 	case SDL_JOYBUTTONUP:
+ 		event.type = sev.type == SDL_JOYBUTTONDOWN ? EV_KeyDown : EV_KeyUp;
+ 		event.data1 = KEY_FIRSTJOYBUTTON + sev.jbutton.button;
+ 		if(event.data1 != 0)
+ 			D_PostEvent(&event);
+-		break;
++		break;*/
+ 	}
+ }
+ 
