@@ -32,6 +32,7 @@
 - Simcoupe not starting fullscreen
 - Sonic Mania controllers
 - Taradino blank screen with Wayland
+- Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
 ### Changed / Improved
 - BigPEmu added to capable aarch64 devices
