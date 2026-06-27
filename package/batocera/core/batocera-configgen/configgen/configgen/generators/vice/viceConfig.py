@@ -24,6 +24,16 @@ _SYSTEM_CORE_MAP: Final = {
     'xpet': 'PET',
 }
 
+# Map each core to its emulated video chip(s) as documented in the manual
+_CORE_CHIP_MAP: Final = {
+    'C64':    ['VICII'],
+    'C64DTV': ['VICII'],
+    'PLUS4':  ['TED'],
+    'SCPU64': ['VICII'],
+    'VIC20':  ['VIC'],
+    'PET':    ['Crtc'],
+    'C128':   ['VICII', 'VDC'],
+}
 
 def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str, str], guns: Guns, rom: Path) -> None:
 
@@ -47,16 +57,27 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
     viceConfig.set(systemCore, "SaveResourcesOnExit",    "0")
     viceConfig.set(systemCore, "SoundDeviceName",        "alsa")
 
+    # Determine border and aspect values
     if system.config.get_bool('noborder'):
         aspect_mode = "0"
         border_mode = "3"
     else:
         aspect_mode = "2"
         border_mode = "0"
-    viceConfig.set(systemCore, "SDLGLAspectMode",        aspect_mode)
-    viceConfig.set(systemCore, "VICBorderMode",        border_mode)
 
-    viceConfig.set(systemCore, "VICFullscreen",        "1")
+    # Dynamically apply settings to the correct video chip(s)
+    chips = _CORE_CHIP_MAP.get(systemCore, ['VICII'])
+    for chip in chips:
+        # Fullscreen configurations
+        viceConfig.set(systemCore, f"{chip}Fullscreen", "1")
+        viceConfig.set(systemCore, f"{chip}FullscreenMode", "0")  # 0 = Use desktop resolution
+        
+        # Aspect Ratio Mode
+        viceConfig.set(systemCore, f"{chip}AspectMode", aspect_mode)
+
+        # Border display mode (Only VIC-II, VIC-I, and TED chips support borders)
+        if chip in ['VICII', 'VIC', 'TED']:
+            viceConfig.set(systemCore, f"{chip}BorderMode", border_mode)
 
     if system.config.use_guns and guns:
         if metadata.get("gun_type") == "stack_light_rifle":
