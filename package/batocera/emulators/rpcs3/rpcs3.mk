@@ -56,5 +56,12 @@ endef
 
 RPCS3_POST_INSTALL_TARGET_HOOKS += RPCS3_INSTALL_RPCS3_EXIT
 
+define RPCS3_INSTALL_EVMAPY
+	mkdir -p $(TARGET_DIR)/usr/share/evmapy
+	$(INSTALL) -D -m 0644 $(RPCS3_PKGDIR)/*.keys $(TARGET_DIR)/usr/share/evmapy/
+endef
+
+RPCS3_POST_INSTALL_TARGET_HOOKS += RPCS3_INSTALL_EVMAPY
+
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
