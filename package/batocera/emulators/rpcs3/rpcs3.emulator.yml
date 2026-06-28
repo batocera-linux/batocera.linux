@@ -33,6 +33,9 @@ custom_features:
       Dynamic Interpreter: Interpreter (dynamic)
       Static Interpreter: Interpreter (static)
   rpcs3_spuxfloataccuracy:
+    submenu: CPU
+    prompt: SPU XFloat Accuracy
+    description: Can fix bugs in some games. Only relevant for dynamic or LLVM SPU decoder.
     choices:
       Accurate XFloat: Accurate
       Approximate XFloat: Approximate
