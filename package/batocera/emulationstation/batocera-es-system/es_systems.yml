@@ -1157,7 +1157,7 @@ atari2600:
       stella:     { requireAnyOf: [BR2_PACKAGE_BATOCERA_STELLA]     }
 
 atari5200:
-  name:       Atari 5200
+  name: Atari 5200
   manufacturer: Atari
   release: 1982
   hardware: console
@@ -1165,7 +1165,6 @@ atari5200:
   emulators:
     libretro:
       atari800: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_ATARI800] }
-      a5200:    { requireAnyOf: [BR2_PACKAGE_LIBRETRO_A5200]    }
 
 atari7800:
   name:       Atari 7800
