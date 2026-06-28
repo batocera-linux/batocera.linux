@@ -25,7 +25,13 @@ LIBRETRO_HATARIB_CONF_ENV += \
                 -DCMAKE_SYSTEM_PROCESSOR=$(BR2_ARCH) \
                 -DCMAKE_C_COMPILER=$(TARGET_CC) \
                 -DCMAKE_CXX_COMPILER=$(TARGET_CXX) \
-                -DCMAKE_CROSSCOMPILING=TRUE"
+                -DCMAKE_CROSSCOMPILING=TRUE \
+                -DCMAKE_DISABLE_FIND_PACKAGE_Readline=1 \
+                -DCMAKE_DISABLE_FIND_PACKAGE_X11=1 \
+                -DCMAKE_DISABLE_FIND_PACKAGE_PNG=1 \
+                -DCMAKE_DISABLE_FIND_PACKAGE_PortMidi=1 \
+                -DCMAKE_DISABLE_FIND_PACKAGE_CapsImage=1 \
+                -DENABLE_SMALL_MEM=0"
 
 define LIBRETRO_HATARIB_BUILD_CMDS
     cd $(@D) && $(MAKE) CC=$(TARGET_CC) -f makefile \
