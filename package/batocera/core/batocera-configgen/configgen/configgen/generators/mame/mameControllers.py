@@ -118,8 +118,22 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
-        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
+        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee", "gamate" ]
     if sysName in specialControlList:
+        
+        # Build Gamate bindings
+        if "gamate" not in messControlDict:
+            messControlDict["gamate"] = {
+                "p1_up":     {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_UP",    "mapping": "up",     "useMapping": "JOYSTICK_UP",    "reversed": False, "mask": "1",   "default": "1"},
+                "p1_down":   {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_DOWN",  "mapping": "down",   "useMapping": "JOYSTICK_DOWN",  "reversed": False, "mask": "2",   "default": "2"},
+                "p1_left":   {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_LEFT",  "mapping": "left",   "useMapping": "JOYSTICK_LEFT",  "reversed": False, "mask": "4",   "default": "4"},
+                "p1_right":  {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_RIGHT", "mapping": "right",  "useMapping": "JOYSTICK_RIGHT", "reversed": False, "mask": "8",   "default": "8"},
+                "p1_b":      {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_BUTTON2",        "mapping": "b",      "useMapping": "BUTTON1",        "reversed": False, "mask": "16",  "default": "16"},
+                "p1_a":      {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_BUTTON1",        "mapping": "a",      "useMapping": "BUTTON2",        "reversed": False, "mask": "32",  "default": "32"},
+                "p1_start":  {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_START",          "mapping": "start",  "useMapping": "START",          "reversed": False, "mask": "64",  "default": "64"},
+                "p1_select": {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_SELECT",         "mapping": "select", "useMapping": "COIN",           "reversed": False, "mask": "128", "default": "128"}
+            }
+        
         # Load mess controls from csv
         messControlFile = MAME_DEFAULT_DATA / 'messControls.csv'
         openMessFile = messControlFile.open('r')
@@ -274,19 +288,50 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
             for controlDef in messControlDict[useControls]:
                 thisControl = messControlDict[useControls][controlDef]
                 if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
-                    if thisControl['type'] == 'special':
-                        xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default'], pedalkey))
-                    elif thisControl['type'] == 'main':
-                        xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default'], pedalkey))
+                    
+                    # Resolve input key and reversed flag inline safely
+                    if thisControl['type'] in ['special', 'main', 'combo']:
+                        key_to_use = mappings_use.get(thisControl['useMapping'])
+                        reversed_flag = thisControl['reversed']
+                        if key_to_use is not None:
+                            if key_to_use not in pad.inputs:
+                                rmapping = reverseMapping(key_to_use)
+                                if rmapping in pad.inputs:
+                                    key_to_use = rmapping
+                                    reversed_flag = True
+                            
+                            if key_to_use in pad.inputs:
+                                if thisControl['type'] == 'special':
+                                    xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                                        pad.inputs[key_to_use], reversed_flag, thisControl['mask'], thisControl['default'], pedalkey))
+                                elif thisControl['type'] == 'main':
+                                    xml_input.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
+                                        pad.inputs[key_to_use], reversed_flag, thisControl['mask'], thisControl['default'], pedalkey))
+                                elif thisControl['type'] == 'combo':
+                                    xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
+                                        pad.inputs[key_to_use], reversed_flag, thisControl['mask'], thisControl['default']))
+
                     elif thisControl['type'] == 'analog':
-                        xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
-                            mappings_use[thisControl['decMapping']], pad.inputs[mappings_use[thisControl['useMapping1']]], pad.inputs[mappings_use[thisControl['useMapping2']]], thisControl['reversed'], \
-                            thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
-                    elif thisControl['type'] == 'combo':
-                        xml_input_alt.appendChild(generateComboPortElement(pad, config_alt, thisControl['tag'], pad.index, thisControl['key'], thisControl['kbMapping'], thisControl['mapping'], \
-                            pad.inputs[mappings_use[thisControl['useMapping']]], thisControl['reversed'], thisControl['mask'], thisControl['default']))
+                        key_to_use1 = mappings_use.get(thisControl['useMapping1'])
+                        key_to_use2 = mappings_use.get(thisControl['useMapping2'])
+                        reversed_flag = thisControl['reversed']
+                        
+                        if key_to_use1 is not None and key_to_use2 is not None:
+                            if key_to_use1 not in pad.inputs:
+                                rmapping1 = reverseMapping(key_to_use1)
+                                if rmapping1 in pad.inputs:
+                                    key_to_use1 = rmapping1
+                                    reversed_flag = True
+                            if key_to_use2 not in pad.inputs:
+                                rmapping2 = reverseMapping(key_to_use2)
+                                if rmapping2 in pad.inputs:
+                                    key_to_use2 = rmapping2
+                                    reversed_flag = True
+                                    
+                            if key_to_use1 in pad.inputs and key_to_use2 in pad.inputs:
+                                xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
+                                    mappings_use[thisControl['decMapping']], pad.inputs[key_to_use1], pad.inputs[key_to_use2], reversed_flag, \
+                                    thisControl['mask'], thisControl['default'], thisControl['delta'], thisControl['axis']))
 
     # in case there are more guns than pads, configure them
     if useGuns and len(guns) > len(playersControllers):
