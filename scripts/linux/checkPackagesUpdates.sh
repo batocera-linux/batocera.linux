@@ -11,7 +11,6 @@ PACKAGES_RETROARCH="retroarch
                     slang-shaders"
 
 PACKAGES_LIBRETRO="libretro-81
-                   libretro-a5200
                    libretro-arduous
                    libretro-atari800
                    libretro-beetle-lynx
