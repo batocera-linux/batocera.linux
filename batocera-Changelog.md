@@ -27,6 +27,7 @@
 - Cannonball fullscreen on Wayland
 - Commander Genius fullscreen in Wayland
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
+- Libretro-Hatarib not starting due to a compiled symbol issue
 - Pygame fullscreen with Wayland
 - Raze analog controls and improved controller bindings
 - Simcoupe not starting fullscreen
