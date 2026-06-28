@@ -118,22 +118,8 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
     # Open or create alternate config file for systems with special controllers/settings
     # If the system/game is set to per game config, don't try to open/reset an existing file, only write if it's blank or going to the shared cfg folder
     specialControlList = [ "cdimono1", "apfm1000", "astrocde", "adam", "arcadia", "gamecom", "tutor", "crvision", "bbcb", "bbcm", "bbcm512", "bbcmc", "xegs", \
-        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee", "gamate" ]
+        "socrates", "vgmplay", "pdp1", "vc4000", "fmtmarty", "gp32", "apple2p", "apple2e", "apple2ee" ]
     if sysName in specialControlList:
-        
-        # Build Gamate bindings
-        if "gamate" not in messControlDict:
-            messControlDict["gamate"] = {
-                "p1_up":     {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_UP",    "mapping": "up",     "useMapping": "JOYSTICK_UP",    "reversed": False, "mask": "1",   "default": "1"},
-                "p1_down":   {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_DOWN",  "mapping": "down",   "useMapping": "JOYSTICK_DOWN",  "reversed": False, "mask": "2",   "default": "2"},
-                "p1_left":   {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_LEFT",  "mapping": "left",   "useMapping": "JOYSTICK_LEFT",  "reversed": False, "mask": "4",   "default": "4"},
-                "p1_right":  {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_JOYSTICK_RIGHT", "mapping": "right",  "useMapping": "JOYSTICK_RIGHT", "reversed": False, "mask": "8",   "default": "8"},
-                "p1_b":      {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_BUTTON2",        "mapping": "b",      "useMapping": "BUTTON1",        "reversed": False, "mask": "16",  "default": "16"},
-                "p1_a":      {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_BUTTON1",        "mapping": "a",      "useMapping": "BUTTON2",        "reversed": False, "mask": "32",  "default": "32"},
-                "p1_start":  {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_START",          "mapping": "start",  "useMapping": "START",          "reversed": False, "mask": "64",  "default": "64"},
-                "p1_select": {"type": "special", "player": 1, "tag": ":JOY", "key": "P1_SELECT",         "mapping": "select", "useMapping": "COIN",           "reversed": False, "mask": "128", "default": "128"}
-            }
-        
         # Load mess controls from csv
         messControlFile = MAME_DEFAULT_DATA / 'messControls.csv'
         openMessFile = messControlFile.open('r')
@@ -261,7 +247,11 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
         for mapping in mappings_use:
             if mappings_use[mapping] in pad.inputs:
                 if mapping in [ 'START', 'COIN' ]:
+                    # Generate the standard arcade mapping (e.g. START1, COIN1)
                     xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings, mousemappings, multiMouse, pedalkey))
+                    # Generate the console/MESS mapping (e.g. P1_START, P1_SELECT)
+                    console_type = f"P{nplayer}_START" if mapping == "START" else f"P{nplayer}_SELECT"
+                    xml_input.appendChild(generateSpecialPortElementPlayer(pad, config, 'standard', nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, "", "", gunmappings, mousemappings, multiMouse, pedalkey, port_type=console_type))
                 else:
                     xml_input.appendChild(generatePortElement(pad, config, nplayer, pad.index, mapping, mappings_use[mapping], pad.inputs[mappings_use[mapping]], False, altButtons, gunmappings, isWheel, mousemappings, multiMouse, pedalkey))
             else:
@@ -421,11 +411,16 @@ def generateGunPortElement(config: minidom.Document, nplayer: int, mapping: str,
     xml_newseq.appendChild(value)
     return xml_port
 
-def generateSpecialPortElementPlayer(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, mask: str, default: str, gunmappings: Mapping[str, str], mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None):
+def generateSpecialPortElementPlayer(pad: Controller, config: minidom.Document, tag: str, nplayer: int, padindex: int, mapping: str, key: str, input: Input, reversed: bool, mask: str, default: str, gunmappings: Mapping[str, str], mousemappings: Mapping[str, str], multiMouse: bool, pedalkey: str | None, port_type: str | None = None):
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
-    xml_port.setAttribute("type", mapping+str(nplayer))
+    
+    # Use the custom port type if provided, otherwise default to START1/COIN1 style
+    if port_type is None:
+        port_type = mapping+str(nplayer)
+    xml_port.setAttribute("type", port_type)
+    
     xml_port.setAttribute("mask", mask)
     xml_port.setAttribute("defvalue", default)
     xml_newseq = config.createElement("newseq")
