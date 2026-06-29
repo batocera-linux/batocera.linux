@@ -3,8 +3,8 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Jun 18, 2026
-VPINBALL_VERSION = aa01efa9d006b1ac8f799057d92ff2706c400b39
+# Version: Commits on Jun 30, 2026
+VPINBALL_VERSION = d5b0f51e499d5979cff8945b4c1d3cf46d67b640
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -20,51 +20,26 @@ VPINBALL_CONF_OPTS += -DPOST_BUILD_COPY_EXT_LIBS=OFF
 
 # Handle supported target platforms cleanly using standard Buildroot variables
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE),y)
-    VPX_SOURCE = CMakeLists_bgfx-linux-aarch64.txt
-    VPX_SOURCE_DIR = linux-aarch64
+    VPINBALL_ARCH = aarch64
     VPINBALL_CONF_OPTS += -DBUILD_RK3588=ON
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
-    VPX_SOURCE = CMakeLists_bgfx-linux-aarch64.txt
-    VPX_SOURCE_DIR = linux-aarch64
+    VPINBALL_ARCH = aarch64
     VPINBALL_CONF_OPTS += -DBUILD_RPI=ON
 else ifeq ($(BR2_aarch64),y)
-    VPX_SOURCE = CMakeLists_bgfx-linux-aarch64.txt
-    VPX_SOURCE_DIR = linux-aarch64
+    VPINBALL_ARCH = aarch64
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
-    VPX_SOURCE = CMakeLists_bgfx-linux-x64.txt
-    VPX_SOURCE_DIR = linux-x64
+    VPINBALL_ARCH = x64
 endif
 
-define VPINBALL_CMAKE_HACKS
-    # Copy the correct platform CMakeLists to the root directory
-    cp $(@D)/make/$(VPX_SOURCE) $(@D)/CMakeLists.txt
-
-    # Delete only the bundled libraries we want to override with Buildroot packages
-    rm -rf $(@D)/third-party/include/bgfx
-    rm -rf $(@D)/third-party/include/bx
-    rm -rf $(@D)/third-party/include/bimg
-    rm -rf $(@D)/third-party/include/SDL3
-    rm -rf $(@D)/third-party/include/FreeImage
-
-    # Redirect libwinevbs header paths to staging
-    $(SED) 's:\$${CMAKE_SOURCE_DIR}/third-party/include/libwinevbs/atl/include:$(STAGING_DIR)/usr/include/libwinevbs/atl:g' \
-        $(@D)/CMakeLists.txt
-    $(SED) 's:\$${CMAKE_SOURCE_DIR}/third-party/include/libwinevbs/atlmfc/include:$(STAGING_DIR)/usr/include/libwinevbs/atlmfc:g' \
-        $(@D)/CMakeLists.txt
-    $(SED) 's:\$${CMAKE_SOURCE_DIR}/third-party/include/libwinevbs/wine/include:$(STAGING_DIR)/usr/include/libwinevbs/wine:g' \
-        $(@D)/CMakeLists.txt
-
-    # Redirect target link paths to staging
-    $(SED) 's:\$${CMAKE_SOURCE_DIR}/third-party/runtime-libs/$(VPX_SOURCE_DIR):$(STAGING_DIR)/usr/lib:g' \
-        $(@D)/CMakeLists.txt
-
-    # Redirect plugin library paths to staging
-    for f in $(@D)/make/CMakeLists_plugin_*.txt; do \
-        $(SED) 's:\$${CMAKE_SOURCE_DIR}/third-party/runtime-libs/\$${PluginPlatform}-\$${PluginArch}:$(STAGING_DIR)/usr/lib:g' $$f; \
-    done
-endef
-
-VPINBALL_PRE_CONFIGURE_HOOKS += VPINBALL_CMAKE_HACKS
+# Build against Buildroot's staging tree instead of the bundled third-party/ copies.
+# USE_SYSTEM_LIBS makes the single root CMakeLists.txt search staging first, falling back
+# to the bundled tree for what staging doesn't provide (serum/vni/pupdmd, vendored headers).
+VPINBALL_CONF_OPTS += -DPLATFORM=linux
+VPINBALL_CONF_OPTS += -DARCH=$(VPINBALL_ARCH)
+VPINBALL_CONF_OPTS += -DRENDERER=BGFX
+VPINBALL_CONF_OPTS += -DUSE_SYSTEM_LIBS=ON
+VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_INCLUDE_DIR=$(STAGING_DIR)/usr/include
+VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_LIB_DIR=$(STAGING_DIR)/usr/lib
 
 define VPINBALL_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/vpinball
