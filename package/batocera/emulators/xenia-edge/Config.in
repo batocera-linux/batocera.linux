@@ -1,13 +1,13 @@
 config BR2_PACKAGE_XENIA_EDGE
     bool "xenia-edge"
     select BR2_PACKAGE_FFMPEG
-    select BR2_PACKAGE_IMGUI
     select BR2_PACKAGE_FMT
     select BR2_PACKAGE_LZ4
     select BR2_PACKAGE_PYTHON_TOML
     select BR2_PACKAGE_SDL3
     select BR2_PACKAGE_VULKAN_HEADERS
     select BR2_PACKAGE_VULKAN_LOADER
+    select BR2_PACKAGE_WXWIDGETS
     help
       Xenia is an open source research project for emulating Xbox 360 games on modern PCs.
       Xenia Edge is the native Linux port, running without Wine using Vulkan for graphics
