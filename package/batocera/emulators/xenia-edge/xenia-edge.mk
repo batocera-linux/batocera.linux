@@ -13,7 +13,7 @@ XENIA_EDGE_LICENSE_FILE = LICENSE
 XENIA_EDGE_EMULATOR_INFO = xenia-edge.emulator.yml
 
 XENIA_EDGE_DEPENDENCIES += host-clang host-glslang host-shader-slang
-XENIA_EDGE_DEPENDENCIES += ffmpeg fmt sdl3 glslang imgui
+XENIA_EDGE_DEPENDENCIES += ffmpeg fmt sdl3 glslang wxwidgets
 XENIA_EDGE_DEPENDENCIES += libcurl libgtk3 lz4 python-toml vulkan-headers vulkan-loader
 
 XENIA_EDGE_CMAKE_BACKEND = ninja
@@ -29,6 +29,7 @@ XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_TESTS=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_BUILD_MISC=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_ENABLE_LTO=OFF
 XENIA_EDGE_CONF_OPTS += -DXENIA_USE_SYSTEM_SDL3=ON
+XENIA_EDGE_CONF_OPTS += -DXENIA_USE_SYSTEM_WXWIDGETS=ON
 XENIA_EDGE_CONF_OPTS += -DXENIA_HOST_SHADER_CC=$(@D)/host_tools/xenia-shader-cc
 
 # xenia-shader-cc is a build-time host tool (GLSL/XeSL -> SPIR-V -> embedded

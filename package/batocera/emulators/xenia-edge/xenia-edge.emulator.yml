@@ -3,17 +3,58 @@ shared_features:
   - powermode
   - tdp
   - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
 custom_features:
-  xenia_license:
-    prompt: XBOX LIVE ARCADE
-    description: This option enables the ability to play Xbox Live Arcade games. May cause compatibility issues with non-XBLA games.
+  xenia_edge_render_target_path:
+    submenu: GRAPHICS
+    prompt: RENDER TARGET PATH
+    description: Render target emulation method. Accuracy handles more pixel formats correctly but costs more performance, especially with overdraw-heavy games.
     choices:
-      No licenses enabled: 0
-      XBLA license enabled (Default): 1
-      All possible licenses (Not recommended): -1
-  xenia_resolution:
+      Performance (Default): performance
+      Accuracy: accuracy
+  xenia_edge_widescreen:
+    submenu: GRAPHICS
+    prompt: WIDESCREEN
+    description: Toggle between 16:9 widescreen and original 4:3 aspect ratio.
+    choices:
+      Enabled (Default): true
+      Disabled: false
+  xenia_edge_vsync:
+    submenu: GRAPHICS
+    prompt: VSYNC
+    description: Fix screen tearing. Turn off to allow uncapped frame rates or variable refresh rates (VRR).
+    choices:
+      Enabled (Default): true
+      Disabled: false
+  xenia_edge_vsync_fps:
+    submenu: GRAPHICS
+    prompt: VSYNC FPS LIMIT
+    description: Manually set a framerate cap. Set to 0 to disable. Should match your monitor refresh rate when VSync is enabled.
+    choices:
+      No limit (Default): 0
+      30fps: 30
+      60fps: 60
+      120fps: 120
+      144fps: 144
+      165fps: 165
+  xenia_edge_async_shader_compilation:
+    submenu: GRAPHICS
+    prompt: ASYNC SHADER COMPILATION
+    description: Compile shaders in background threads to avoid stutter. Disabling removes async compilation artifacts but reintroduces stutter on first shader use.
+    choices:
+      Enabled (Default): true
+      Disabled: false
+  xenia_edge_resolution:
+    submenu: GRAPHICS
     prompt: INTERNAL DISPLAY RESOLUTION
-    description: Allow games that support different resolutions to be rendered in a specific resolution.
+    description: Changing this mimics the original Xbox 360 system dashboard resolution. This is not guaranteed to work with all games.
     choices:
       640x480: 0
       640x576: 1
@@ -33,21 +74,40 @@ custom_features:
       1920x540: 15
       1920x1080: 16
       Display Resolution: 17
-  xenia_postprocess_scaling_and_sharpening:
-    prompt: UPSCALING & SHARPENING
-    description: Post-processing filter applied after rendering. CAS adds sharpening only. FSR upscales from a lower resolution for better performance.
+  xenia_edge_resolution_scale:
+    submenu: GRAPHICS
+    prompt: DRAW RESOLUTION MULTIPLIER
+    description: Actively upscale 3D graphics rendering resolution. Higher values increase GPU load.
     choices:
-      Bilinear (Default): bilinear
-      CAS - FidelityFX Sharpening: cas
-      FSR - FidelityFX Super Resolution: fsr
-  xenia_postprocess_antialiasing:
+      Native (Default): 1
+      2x (2K/1440p): 2
+      3x (4K/2160p): 3
+  xenia_edge_guest_refresh_rate:
+    submenu: GRAPHICS
+    prompt: EMULATED GUEST REFRESH RATE
+    description: Adjust the virtual refresh rate of the emulated Xbox 360 display. Necessary for PAL (50Hz) or NTSC (60Hz) target games.
+    choices:
+      60Hz (Default): 60hz
+      50Hz: 50hz
+      Uncapped: uncapped
+  xenia_edge_postprocess_antialiasing:
+    submenu: GRAPHICS
     prompt: ANTI-ALIASING
     description: Post-processing anti-aliasing filter to smooth jagged edges.
     choices:
       None (Default): none
       FXAA: fxaa
       FXAA Extreme: fxaa_extreme
-  xenia_postprocess_ffx_cas_additional_sharpness:
+  xenia_edge_postprocess_scaling_and_sharpening:
+    submenu: GRAPHICS
+    prompt: UPSCALING & SHARPENING
+    description: Post-processing filter applied after rendering. CAS adds sharpening only. FSR upscales from a lower resolution for better performance.
+    choices:
+      Bilinear (Default): bilinear
+      CAS - FidelityFX Sharpening: cas
+      FSR - FidelityFX Super Resolution: fsr
+  xenia_edge_postprocess_ffx_cas_additional_sharpness:
+    submenu: GRAPHICS
     prompt: CAS SHARPNESS
     description: Additional sharpness intensity when using CAS filter. Higher value = more sharpening (0.0 to 1.0).
     choices:
@@ -62,7 +122,8 @@ custom_features:
       "0.8": 0.8
       "0.9": 0.9
       "1.0": 1.0
-  xenia_postprocess_ffx_fsr_sharpness_reduction:
+  xenia_edge_postprocess_ffx_fsr_sharpness_reduction:
+    submenu: GRAPHICS
     prompt: FSR SHARPNESS REDUCTION
     description: Sharpness reduction when using FSR. Lower = sharper, higher = softer (0.0 to 2.0). Default 0.2.
     choices:
@@ -79,181 +140,203 @@ custom_features:
       "1.0": 1.0
       "1.5": 1.5
       "2.0 (Minimum sharpness)": 2.0
-  xenia_vsync:
-    prompt: VSYNC
-    description: Fix screen tearing. With some games you need to turn VSync on in the game's options.
+  xenia_edge_vibration:
+    submenu: CONTROLLERS
+    prompt: CONTROLLER VIBRATION
+    description: Toggle controller rumble/vibration feedback.
     choices:
-      Disabled: false
       Enabled (Default): true
-  xenia_vsync_fps:
-    prompt: VSYNC FPS LIMIT
-    description: Manually set a framerate cap. Set to 0 to disable. Should match your monitor refresh rate when VSync is enabled.
+      Disabled: false
+  xenia_edge_deadzone_left:
+    submenu: CONTROLLERS
+    prompt: LEFT STICK DEADZONE
+    description: Percentage of left stick movement ignored near center. Raise this if you experience stick drift.
     choices:
-      No limit (Default): 0
-      30fps: 30
-      60fps: 60
-      120fps: 120
-      144fps: 144
-      165fps: 165
-  xenia_apu:
+      "0% (Default)": 0.0
+      "5%": 0.05
+      "10%": 0.1
+      "15%": 0.15
+      "20%": 0.2
+      "25%": 0.25
+      "30%": 0.3
+  xenia_edge_deadzone_right:
+    submenu: CONTROLLERS
+    prompt: RIGHT STICK DEADZONE
+    description: Percentage of right stick movement ignored near center. Raise this if you experience stick drift.
+    choices:
+      "0% (Default)": 0.0
+      "5%": 0.05
+      "10%": 0.1
+      "15%": 0.15
+      "20%": 0.2
+      "25%": 0.25
+      "30%": 0.3
+  xenia_edge_apu:
     prompt: AUDIO BACKEND
     description: Audio backend to use. ALSA is the native Linux audio system; SDL is a cross-platform fallback.
     choices:
       ALSA (Default): alsa
       SDL: sdl
-  xenia_headless:
+  xenia_edge_headless:
     prompt: UI PROMPTS
     description: Choose to display UI prompts or accept defaults automatically.
     choices:
       Enabled (Default): false
       Disabled: true
-  xenia_achievement:
+  xenia_edge_achievement:
     prompt: SHOW ACHIEVEMENT MESSAGES
     description: Display in-game achievement notifications.
     choices:
       Disabled (Default): false
       Enabled: true
-  xenia_country:
+  xenia_edge_country:
     prompt: CONSOLE COUNTRY
     description: Change the console's country from the default of the United States.
     choices:
-      United States (Default): United States
-      UAE: UAE
-      Albania: Albania
-      Armenia: Armenia
-      Argentina: Argentina
-      Austria: Austria
-      Australia: Australia
-      Azerbaijan: Azerbaijan
-      Belgium: Belgium
-      Bulgaria: Bulgaria
-      Bahrain: Bahrain
-      Brunei: Brunei
-      Bolivia: Bolivia
-      Brazil: Brazil
-      Belarus: Belarus
-      Belize: Belize
-      Canada: Canada
-      Switzerland: Switzerland
-      Chile: Chile
-      China: China
-      Colombia: Colombia
-      Costa Rica: Costa Rica
-      Czech Republic: Czech Republic
-      Germany: Germany
-      Denmark: Denmark
-      Dominican Republic: Dominican Republic
-      Algeria: Algeria
-      Ecuador: Ecuador
-      Estonia: Estonia
-      Egypt: Egypt
-      Spain: Spain
-      Finland: Finland
-      Faroe Islands: Faroe Islands
-      France: France
-      Great Britain: Great Britain
-      Georgia: Georgia
-      Greece: Greece
-      Guatemala: Guatemala
-      Hong Kong: Hong Kong
-      Honduras: Honduras
-      Croatia: Croatia
-      Hungary: Hungary
-      Indonesia: Indonesia
-      Ireland: Ireland
-      Israel: Israel
-      India: India
-      Iraq: Iraq
-      Iran: Iran
-      Iceland: Iceland
-      Italy: Italy
-      Jamaica: Jamaica
-      Jordan: Jordan
-      Japan: Japan
-      Kenya: Kenya
-      Kyrgyzstan: Kyrgyzstan
-      Korea: Korea
-      Kuwait: Kuwait
-      Kazakhstan: Kazakhstan
-      Lebanon: Lebanon
-      Liechtenstein: Liechtenstein
-      Lithuania: Lithuania
-      Luxembourg: Luxembourg
-      Latvia: Latvia
-      Libya: Libya
-      Morocco: Morocco
-      Monaco: Monaco
-      Macedonia: Macedonia
-      Mongolia: Mongolia
-      Macau: Macau
-      Maldives: Maldives
-      Mexico: Mexico
-      Malaysia: Malaysia
-      Nicaragua: Nicaragua
-      Netherlands: Netherlands
-      Norway: Norway
-      New Zealand: New Zealand
-      Oman: Oman
-      Panama: Panama
-      Peru: Peru
-      Philippines: Philippines
-      Pakistan: Pakistan
-      Poland: Poland
-      Puerto Rico: Puerto Rico
-      Portugal: Portugal
-      Paraguay: Paraguay
-      Qatar: Qatar
-      Romania: Romania
-      Russia: Russia
-      Saudi Arabia: Saudi Arabia
-      Sweden: Sweden
-      Singapore: Singapore
-      Slovenia: Slovenia
-      Slovakia: Slovakia
-      El Salvador: El Salvador
-      Syria: Syria
-      Thailand: Thailand
-      Tunisia: Tunisia
-      Turkey: Turkey
-      Trinidad: Trinidad
-      Taiwan: Taiwan
-      Ukraine: Ukraine
-      Uruguay: Uruguay
-      Uzbekistan: Uzbekistan
-      Venezuela: Venezuela
-      Vietnam: Vietnam
-      Yemen: Yemen
-      South Africa: South Africa
-      Zimbabwe: Zimbabwe
-  xenia_language:
+      United States (Default): 103
+      UAE: 1
+      Albania: 2
+      Armenia: 3
+      Argentina: 4
+      Austria: 5
+      Australia: 6
+      Azerbaijan: 7
+      Belgium: 8
+      Bulgaria: 9
+      Bahrain: 10
+      Brunei: 11
+      Bolivia: 12
+      Brazil: 13
+      Belarus: 14
+      Belize: 15
+      Canada: 16
+      Switzerland: 18
+      Chile: 19
+      China: 20
+      Colombia: 21
+      Costa Rica: 22
+      Czech Republic: 23
+      Germany: 24
+      Denmark: 25
+      Dominican Republic: 26
+      Algeria: 27
+      Ecuador: 28
+      Estonia: 29
+      Egypt: 30
+      Spain: 31
+      Finland: 32
+      Faroe Islands: 33
+      France: 34
+      Great Britain: 35
+      Georgia: 36
+      Greece: 37
+      Guatemala: 38
+      Hong Kong: 39
+      Honduras: 40
+      Croatia: 41
+      Hungary: 42
+      Indonesia: 43
+      Ireland: 44
+      Israel: 45
+      India: 46
+      Iraq: 47
+      Iran: 48
+      Iceland: 49
+      Italy: 50
+      Jamaica: 51
+      Jordan: 52
+      Japan: 53
+      Kenya: 54
+      Kyrgyzstan: 55
+      Korea: 56
+      Kuwait: 57
+      Kazakhstan: 58
+      Lebanon: 59
+      Liechtenstein: 60
+      Lithuania: 61
+      Luxembourg: 62
+      Latvia: 63
+      Libya: 64
+      Morocco: 65
+      Monaco: 66
+      Macedonia: 67
+      Mongolia: 68
+      Macau: 69
+      Maldives: 70
+      Mexico: 71
+      Malaysia: 72
+      Nicaragua: 73
+      Netherlands: 74
+      Norway: 75
+      New Zealand: 76
+      Oman: 77
+      Panama: 78
+      Peru: 79
+      Philippines: 80
+      Pakistan: 81
+      Poland: 82
+      Puerto Rico: 83
+      Portugal: 84
+      Paraguay: 85
+      Qatar: 86
+      Romania: 87
+      Russia: 88
+      Saudi Arabia: 89
+      Sweden: 90
+      Singapore: 91
+      Slovenia: 92
+      Slovakia: 93
+      El Salvador: 95
+      Syria: 96
+      Thailand: 97
+      Tunisia: 98
+      Turkey: 99
+      Trinidad: 100
+      Taiwan: 101
+      Ukraine: 102
+      Uruguay: 104
+      Uzbekistan: 105
+      Venezuela: 106
+      Vietnam: 107
+      Yemen: 108
+      South Africa: 109
+  xenia_edge_language:
     prompt: LANGUAGE
     description: Change the game's language.
     choices:
-      English (Default): English
-      Japanese: Japanese
-      German: German
-      French: French
-      Spanish: Spanish
-      Italian: Italian
-      Korean: Korean
-      Traditional Chinese: TChinese
-      Simplified Chinese: SChinese
-      Portuguese: Portuguese
-      Polish: Polish
-      Russian: Russian
-  xenia_patches:
+      English (Default): 1
+      Japanese: 2
+      German: 3
+      French: 4
+      Spanish: 5
+      Italian: 6
+      Korean: 7
+      Traditional Chinese: 8
+      Portuguese: 9
+      Polish: 11
+      Russian: 12
+      Simplified Chinese: 17
+  xenia_edge_patches:
     prompt: GAME PATCHES
     description: Enable or disable Xenia game patches. These patches can fix graphics and compatibility problems.
     choices:
       Disabled (Default): false
       Enabled: true
-  xenia_cache:
+  xenia_edge_license:
+    prompt: XBOX LIVE ARCADE
+    description: This option enables the ability to play Xbox Live Arcade games. May cause compatibility issues with non-XBLA games.
+    choices:
+      No licenses enabled: 0
+      XBLA license enabled (Default): 1
+      All possible licenses (Not recommended): -1
+  xenia_edge_cache:
+    group: ADVANCED OPTIONS
     prompt: MOUNT CACHE
     description: Enable cache mount. Can improve performance and compatibility in some games.
     choices:
       Enabled (Default): true
       Disabled: false
-  xenia_limit_hard:
+  xenia_edge_limit_hard:
     group: ADVANCED OPTIONS
     prompt: HARD TEXTURE CACHE MEMORY LIMIT
     description: Maximum host texture memory usage (in megabytes) above which textures will be destroyed as soon as possible.
@@ -266,7 +349,7 @@ custom_features:
       4096MB: 4096
       5120MB: 5120
       6144MB: 6144
-  xenia_limit_soft:
+  xenia_edge_limit_soft:
     group: ADVANCED OPTIONS
     prompt: SOFT TEXTURE CACHE MEMORY LIMIT
     description: Maximum host texture memory usage (in megabytes) above which old textures will be destroyed. Set below hard limit.
@@ -277,7 +360,7 @@ custom_features:
       2048MB: 2048
       3072MB: 3072
       4096MB: 4096
-  xenia_limit_soft_lifetime:
+  xenia_edge_limit_soft_lifetime:
     group: ADVANCED OPTIONS
     prompt: SOFT TEXTURE CACHE MEMORY TIMEOUT
     description: Seconds a texture should be unused before it is eligible for deletion when above the soft limit.
@@ -286,7 +369,7 @@ custom_features:
       30s (Default): 30
       45s: 45
       60s: 60
-  xenia_limit_render_to_texture:
+  xenia_edge_limit_render_to_texture:
     group: ADVANCED OPTIONS
     prompt: RENDER-TO-TEXTURE MEMORY BUDGET
     description: Part of the host texture memory budget (in megabytes) reserved for render-to-texture targets.
@@ -295,5 +378,28 @@ custom_features:
       48MB: 48
       72MB: 72
       96MB: 96
+  xenia_edge_occlusion_query:
+    group: ADVANCED OPTIONS
+    prompt: OCCLUSION QUERY MODE
+    description: Controls how visibility effects (lens flares, object culling, auto-exposure) are calculated. Strict is most accurate but can cost performance.
+    choices:
+      Fake (Safe, lowest cost): fake
+      Fast (Default): fast
+      Fast-Alt: fast-alt
+      Strict (Most accurate): strict
+  xenia_edge_precise_interpolation:
+    group: ADVANCED OPTIONS
+    prompt: PRECISE INTERPOLATION
+    description: Manually interpolates pixel shader inputs to exactly match guest hardware. Fixes noise/flicker artifacts in games like Perfect Dark and Tenchu Z. Requires barycentric shader support.
+    choices:
+      Enabled (Default): true
+      Disabled: false
+  xenia_edge_disable_context_promotion:
+    group: ADVANCED OPTIONS
+    prompt: DISABLE CONTEXT PROMOTION
+    description: Disables a CPU optimization that some sports games are sensitive to. Enable this only if a specific game has graphical or physics glitches.
+    choices:
+      Disabled (Default): false
+      Enabled: true
 systems:
   - xbox360

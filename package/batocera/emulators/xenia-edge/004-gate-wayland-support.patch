@@ -1,0 +1,97 @@
+diff --git a/src/xenia/ui/surface_gnulinux.h b/src/xenia/ui/surface_gnulinux.h
+index 72bc465..5c9253c 100644
+--- a/src/xenia/ui/surface_gnulinux.h
++++ b/src/xenia/ui/surface_gnulinux.h
+@@ -10,7 +10,10 @@
+ #ifndef XENIA_UI_SURFACE_GNULINUX_H_
+ #define XENIA_UI_SURFACE_GNULINUX_H_
+ 
++#ifdef GDK_WINDOWING_WAYLAND
+ #include <wayland-client.h>
++#endif
++
+ #include <xcb/xcb.h>
+ #include <memory>
+ 
+@@ -35,6 +38,7 @@ class XcbWindowSurface final : public Surface {
+   xcb_window_t window_;
+ };
+ 
++#ifdef GDK_WINDOWING_WAYLAND
+ class GtkSurfaceFactory;
+ 
+ class WaylandWindowSurface final : public Surface {
+@@ -67,6 +71,7 @@ class WaylandWindowSurface final : public Surface {
+   uint32_t height_;
+   GtkSurfaceFactory* factory_ = nullptr;
+ };
++#endif
+ 
+ // Creates the appropriate Surface (XCB or Wayland-subsurface) for a GTK
+ // widget. Owns any Wayland resources that need to outlive the call.
+@@ -82,17 +87,23 @@ class GtkSurfaceFactory {
+                                   Surface::TypeFlags allowed_types);
+   void OnResize(void* gtk_widget);
+ 
++#ifdef GDK_WINDOWING_WAYLAND
+   void set_wayland_surface(WaylandWindowSurface* s) { wayland_surface_ = s; }
++#endif
+ 
+  private:
++#ifdef GDK_WINDOWING_WAYLAND
+   wl_surface* wl_render_surface_ = nullptr;
+   wl_subsurface* wl_render_subsurface_ = nullptr;
++#endif
+   void* size_allocate_widget_ = nullptr;
+   unsigned long size_allocate_handler_id_ = 0;
++#ifdef GDK_WINDOWING_WAYLAND
+   WaylandWindowSurface* wayland_surface_ = nullptr;
++#endif
+ };
+ 
+ }  // namespace ui
+ }  // namespace xe
+ 
+-#endif  // XENIA_UI_SURFACE_LINUX_H_
++#endif  // XENIA_UI_SURFACE_LINUX_H_
+\ No newline at end of file
+diff --git a/src/xenia/ui/surface_gnulinux.cc b/src/xenia/ui/surface_gnulinux.cc
+index e46dc57..d804b77 100644
+--- a/src/xenia/ui/surface_gnulinux.cc
++++ b/src/xenia/ui/surface_gnulinux.cc
+@@ -36,6 +36,7 @@ bool XcbWindowSurface::GetSizeImpl(uint32_t& width_out,
+   return true;
+ }
+ 
++#ifdef GDK_WINDOWING_WAYLAND
+ bool WaylandWindowSurface::GetSizeImpl(uint32_t& width_out,
+                                        uint32_t& height_out) const {
+   // Return the size provided during construction/updates
+@@ -49,6 +50,7 @@ WaylandWindowSurface::~WaylandWindowSurface() {
+     factory_->set_wayland_surface(nullptr);
+   }
+ }
++#endif
+ 
+ GtkSurfaceFactory::~GtkSurfaceFactory() {
+ #ifdef GDK_WINDOWING_WAYLAND
+diff --git a/src/xenia/ui/vulkan/vulkan_presenter.cc b/src/xenia/ui/vulkan/vulkan_presenter.cc
+index 0960e3e..aa3565c 100644
+--- a/src/xenia/ui/vulkan/vulkan_presenter.cc
++++ b/src/xenia/ui/vulkan/vulkan_presenter.cc
+@@ -610,6 +610,7 @@ VulkanPresenter::ConnectOrReconnectPaintingToSurfaceFromUIThread(
+       } break;
+ #endif
+ #if XE_PLATFORM_GNU_LINUX
++#ifdef GDK_WINDOWING_WAYLAND
+       case Surface::kTypeIndex_WaylandWindow: {
+         auto& wayland_window_surface =
+             static_cast<const WaylandWindowSurface&>(new_surface);
+@@ -624,6 +625,7 @@ VulkanPresenter::ConnectOrReconnectPaintingToSurfaceFromUIThread(
+             instance, &surface_create_info, nullptr,
+             &paint_context_.vulkan_surface);
+       } break;
++#endif
+       case Surface::kTypeIndex_XcbWindow: {
+         auto& xcb_window_surface =
+             static_cast<const XcbWindowSurface&>(new_surface);

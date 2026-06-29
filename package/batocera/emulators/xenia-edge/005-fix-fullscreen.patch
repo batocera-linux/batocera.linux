@@ -1,0 +1,30 @@
+diff --git a/src/xenia/ui/window_wx.cc b/src/xenia/ui/window_wx.cc
+index f785593..b7d472b 100644
+--- a/src/xenia/ui/window_wx.cc
++++ b/src/xenia/ui/window_wx.cc
+@@ -416,6 +416,16 @@ void WxWindow::ApplyNewFullscreen() {
+   if (fullscreen && !frame_->IsFullScreen()) {
+     SaveGeometryToConfig();
+   }
++
++  if (fullscreen) {
++    frame_->SetMenuBar(nullptr);
++  } else {
++    auto* main_menu = static_cast<WxMenuItem*>(GetMainMenu());
++    if (main_menu && main_menu->GetMenuBar()) {
++      frame_->SetMenuBar(main_menu->GetMenuBar());
++    }
++  }
++
+   frame_->ShowFullScreen(fullscreen);
+   if (content_visibility_callback_) {
+     content_visibility_callback_();
+@@ -430,7 +440,7 @@ void WxWindow::EnsureInitialRenderSurfaceSize() {
+   if (!frame_ || !render_panel_) {
+     return;
+   }
+-  if (frame_->IsMaximized() || frame_->IsFullScreen()) {
++  if (frame_->IsMaximized() || IsFullscreen()) {
+     return;
+   }
+   // Match render surface 1:1 with the cvar resolution (no DPI scaling).

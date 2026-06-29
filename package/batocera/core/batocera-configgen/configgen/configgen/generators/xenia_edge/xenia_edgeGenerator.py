@@ -64,81 +64,107 @@ class XeniaEdgeGenerator(Generator):
         config: dict[str, dict[str, Any]] = {}
         if toml_file.is_file():
             with toml_file.open() as f:
-                config = toml.load(f)
+                try:
+                    config = toml.load(f)
+                except Exception as e:
+                    _logger.error("Failed to parse Xenia config TOML: %s", e)
 
-        config['APU'] = {
-            'apu': system.config.get('xenia_apu', 'alsa')
-        }
+        def get_section(name: str) -> dict[str, Any]:
+            if name not in config:
+                config[name] = {}
+            return config[name]
 
-        config['CPU'] = {
-            'break_on_unimplemented_instructions': False
-        }
+        apu_sec = get_section('APU')
+        apu_sec['apu'] = system.config.get('xenia_edge_apu', 'alsa')
 
-        config['Content'] = {
-            'license_mask': system.config.get_int('xenia_license', 1)
-        }
+        cpu_sec = get_section('CPU')
+        cpu_sec['break_on_unimplemented_instructions'] = False
+        cpu_sec['disable_context_promotion'] = system.config.get_bool('xenia_edge_disable_context_promotion', False)
 
-        config['Display'] = {
-            'fullscreen': True,
-            'internal_display_resolution': system.config.get_int('xenia_resolution', 8),
-            'postprocess_scaling_and_sharpening': system.config.get('xenia_postprocess_scaling_and_sharpening', 'bilinear'),
-            'postprocess_antialiasing': system.config.get('xenia_postprocess_antialiasing', 'none'),
-            'postprocess_ffx_cas_additional_sharpness': float(system.config.get('xenia_postprocess_ffx_cas_additional_sharpness', '0.0')),
-            'postprocess_ffx_fsr_sharpness_reduction': float(system.config.get('xenia_postprocess_ffx_fsr_sharpness_reduction', '0.2')),
-        }
+        content_sec = get_section('Content')
+        content_sec['license_mask'] = system.config.get_int('xenia_edge_license', 1)
 
-        if 'General' not in config:
-            config['General'] = {}
-        config['General']['discord'] = False
-        if system.config.get_bool('xenia_patches'):
-            config['General']['apply_patches'] = True
-        elif 'apply_patches' not in config['General']:
-            config['General']['apply_patches'] = False
+        console_sec = get_section('Console')
+        console_sec['internal_display_resolution'] = system.config.get_int('xenia_edge_resolution', 8)
+        console_sec['user_country'] = system.config.get_int('xenia_edge_country', 103)
+        console_sec['user_language'] = system.config.get_int('xenia_edge_language', 1)
+        console_sec['widescreen'] = system.config.get_bool('xenia_edge_widescreen', True)
 
-        if 'GPU' not in config:
-            config['GPU'] = {}
-        config['GPU']['gpu'] = 'vulkan'
-        config['GPU']['vsync'] = system.config.get_bool('xenia_vsync', True)
-        config['GPU']['framerate_limit'] = system.config.get_int('xenia_vsync_fps', 0)
-        config['GPU']['texture_cache_memory_limit_hard'] = system.config.get_int('xenia_limit_hard', 768)
-        config['GPU']['texture_cache_memory_limit_render_to_texture'] = system.config.get_int('xenia_limit_render_to_texture', 24)
-        config['GPU']['texture_cache_memory_limit_soft'] = system.config.get_int('xenia_limit_soft', 384)
-        config['GPU']['texture_cache_memory_limit_soft_lifetime'] = system.config.get_int('xenia_limit_soft_lifetime', 30)
+        display_sec = get_section('Display')
+        display_sec['fullscreen'] = True
+        display_sec['postprocess_scaling_and_sharpening'] = system.config.get('xenia_edge_postprocess_scaling_and_sharpening', 'bilinear')
+        display_sec['postprocess_antialiasing'] = system.config.get('xenia_edge_postprocess_antialiasing', 'none')
+        display_sec['postprocess_ffx_cas_additional_sharpness'] = float(system.config.get('xenia_edge_postprocess_ffx_cas_additional_sharpness', '0.0'))
+        display_sec['postprocess_ffx_fsr_sharpness_reduction'] = float(system.config.get('xenia_edge_postprocess_ffx_fsr_sharpness_reduction', '0.2'))
+        display_sec['present_letterbox'] = True
 
-        config['HID'] = {
-            'hid': 'sdl'
-        }
+        general_sec = get_section('General')
+        general_sec['discord'] = False
+        if system.config.get_bool('xenia_edge_patches'):
+            general_sec['apply_patches'] = True
+        elif 'apply_patches' not in general_sec:
+            general_sec['apply_patches'] = False
 
-        config['Logging'] = {
-            'log_level': 1
-        }
+        gpu_sec = get_section('GPU')
+        gpu_sec['gpu'] = 'vulkan'
 
-        config['Memory'] = {
-            'protect_zero': False
-        }
+        gpu_sec['framerate_limit'] = system.config.get_int('xenia_edge_vsync_fps', 0)
+        gpu_sec['texture_cache_memory_limit_hard'] = system.config.get_int('xenia_edge_limit_hard', 768)
+        gpu_sec['texture_cache_memory_limit_render_to_texture'] = system.config.get_int('xenia_edge_limit_render_to_texture', 24)
+        gpu_sec['texture_cache_memory_limit_soft'] = system.config.get_int('xenia_edge_limit_soft', 384)
+        gpu_sec['texture_cache_memory_limit_soft_lifetime'] = system.config.get_int('xenia_edge_limit_soft_lifetime', 30)
+        gpu_sec['render_target_path'] = system.config.get('xenia_edge_render_target_path', 'performance')
+        gpu_sec['occlusion_query'] = system.config.get('xenia_edge_occlusion_query', 'fast')
+        gpu_sec['precise_interpolation'] = system.config.get_bool('xenia_edge_precise_interpolation', True)
+        gpu_sec['async_shader_compilation'] = system.config.get_bool('xenia_edge_async_shader_compilation', True)
 
-        config['Storage'] = {
-            'storage_root': str(xeniaConfig),
-            'content_root': str(xeniaSaves),
-            'cache_root':   str(xeniaCache),
-            'mount_scratch': True,
-            'mount_cache':   system.config.get_bool('xenia_cache', True)
-        }
+        # Resolution Scaling Multiplier (Sets true upscaling factors)
+        res_scale = system.config.get_int('xenia_edge_resolution_scale', 1)
+        gpu_sec['draw_resolution_scale_x'] = res_scale
+        gpu_sec['draw_resolution_scale_y'] = res_scale
 
-        config['UI'] = {
-            'headless': system.config.get_bool('xenia_headless'),
-            'show_achievement_notification': system.config.get_bool('xenia_achievement')
-        }
+        guest_refresh = system.config.get('xenia_edge_guest_refresh_rate', '60hz')
+        if guest_refresh == 'uncapped':
+            gpu_sec['guest_display_refresh_cap'] = False
+            console_sec['use_50Hz_mode'] = False
+        elif guest_refresh == '50hz':
+            gpu_sec['guest_display_refresh_cap'] = True
+            console_sec['use_50Hz_mode'] = True
+        else:  # 60hz (Default)
+            gpu_sec['guest_display_refresh_cap'] = True
+            console_sec['use_50Hz_mode'] = False
 
-        config['Vulkan'] = {
-            'vulkan_sparse_shared_memory': False
-        }
+        hid_sec = get_section('HID')
+        hid_sec['guide_button'] = False
+        hid_sec['hid'] = 'sdl'
+        hid_sec['left_stick_deadzone_percentage'] = float(system.config.get('xenia_edge_deadzone_left', '0.0'))
+        hid_sec['right_stick_deadzone_percentage'] = float(system.config.get('xenia_edge_deadzone_right', '0.0'))
+        hid_sec['vibration'] = system.config.get_bool('xenia_edge_vibration', True)
 
-        config['XConfig'] = {
-            'user_country':  system.config.get('xenia_country', 'United States'),
-            'user_language': system.config.get('xenia_language', 'English')
-        }
+        linux_sec = get_section('Linux')
+        linux_sec['use_gamemode'] = False
+        linux_sec['use_mangohud'] = False
 
+        memory_sec = get_section('Memory')
+        memory_sec['protect_zero'] = False
+
+        storage_sec = get_section('Storage')
+        storage_sec['storage_root'] = str(xeniaConfig)
+        storage_sec['content_root'] = str(xeniaSaves)
+        storage_sec['cache_root'] = str(xeniaCache)
+        storage_sec['mount_scratch'] = True
+        storage_sec['mount_cache'] = system.config.get_bool('xenia_edge_cache', True)
+
+        ui_sec = get_section('UI')
+        ui_sec['headless'] = system.config.get_bool('xenia_edge_headless')
+        ui_sec['show_achievement_notification'] = system.config.get_bool('xenia_edge_achievement')
+
+        vulkan_sec = get_section('Vulkan')
+        vulkan_sec['vulkan_sparse_shared_memory'] = False
+        vsync_enabled = system.config.get_bool('xenia_edge_vsync', True)
+        vulkan_sec['vulkan_allow_present_mode_immediate'] = not vsync_enabled
+
+        # Save the structured config
         with toml_file.open('w') as f:
             toml.dump(config, f)
 
@@ -157,3 +183,8 @@ class XeniaEdgeGenerator(Generator):
 
     def getMouseMode(self, config, rom):
         return True
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        if config.get("xenia_edge_widescreen") != "False":
+            return 16/9
+        return 4/3

@@ -151,3 +151,31 @@ index 5458f8d..2869d8d 100644
  endif()
  
  # ==============================================================================
+@@ -1162,7 +1178,21 @@ ffmpeg_common(libavformat)
+ # ==============================================================================
+ # wxWidgets
+ # ==============================================================================
++option(XENIA_USE_SYSTEM_WXWIDGETS "Use system-provided wxWidgets instead of building the vendored submodule" OFF)
++
+ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
++  if(XENIA_USE_SYSTEM_WXWIDGETS)
++    find_package(wxWidgets REQUIRED COMPONENTS aui adv core base)
++    add_library(xe-wxWidgets INTERFACE)
++
++    if(TARGET wxWidgets::wxWidgets)
++      target_link_libraries(xe-wxWidgets INTERFACE wxWidgets::wxWidgets)
++    else()
++      target_include_directories(xe-wxWidgets INTERFACE ${wxWidgets_INCLUDE_DIRS})
++      target_link_libraries(xe-wxWidgets INTERFACE ${wxWidgets_LIBRARIES})
++      target_compile_definitions(xe-wxWidgets INTERFACE ${wxWidgets_DEFINITIONS})
++    endif()
++  else()
+     # Build from vendored source — matches what we ship on Windows/macOS, and
+     # on Linux gives us a known-good 3.3 (system 3.2 has GTK3/Wayland issues).
+     # Strip the directory-level /W0 (or -w) so wxWidgets's own /W3 doesn't
+@@ -1292,4 +1325,5 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+     # compiled wx libraries to keep inline assert expansions consistent.
+     target_compile_definitions(xe-wxWidgets INTERFACE
+         $<$<CONFIG:Release>:wxDEBUG_LEVEL=0>)
++  endif()
+ endif()
