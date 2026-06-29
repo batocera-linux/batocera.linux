@@ -561,7 +561,7 @@ case "${ACTION}" in
             if [ -z "$target" ]; then continue; fi
 
             if echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
-                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --on"
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --on --preferred"
                 _log "setOutput: Queuing ON for ${target}"
             else
                 _log "setOutput: Warning: Desired output '${target}' not found. Skipping."
