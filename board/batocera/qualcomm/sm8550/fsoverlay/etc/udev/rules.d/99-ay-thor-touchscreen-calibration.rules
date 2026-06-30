@@ -1,0 +1,11 @@
+# Bind the bottom physical screen (event4 / Bus platform-98c000.i2c)
+# Rotates 90 deg, scales/offsets width by 1240/1920 + 340/1920, scales/offsets height by 0.5 + 0.5
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-98c000.i2c", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="0 0.6458 0.1771 -0.5 0 1.0"
+
+# Bind the top physical screen (event5 / Bus platform-a90000.i2c)
+# Rotates 90 deg, scales height by 0.5
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-a90000.i2c", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="0 1 0 -0.5 0 0.5"

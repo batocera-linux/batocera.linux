@@ -1,0 +1,9 @@
+# Bind the top physical screen (event1 / Bus 3) and invert both axes while scaling Y to the top half
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-fe5c0000.i2c", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="-1 0 1 0 -0.5 0.5"
+
+# Bind the bottom physical screen (event2 / Bus 5) and scale its Y to the bottom half
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-fe5e0000.i2c", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="1 0 0 0 0.5 0.5"

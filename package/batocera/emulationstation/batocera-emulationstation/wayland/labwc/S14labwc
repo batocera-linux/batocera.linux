@@ -99,23 +99,6 @@ start() {
 			}' "${RC_XML_PATH}"
 		fi
 
-		# --- Check for touchscreen and configure it ---
-		TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
-		if [ -n "${TOUCHSCREEN}" ] && [ -n "${PRIMARY_OUT}" ]; then
-			echo "Touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${PRIMARY_OUT}." >>"$display_log"
-
-			# Update the main <touch> tag with the correct deviceName and mapToOutput.
-			sed -i \
-				"/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PRIMARY_OUT}\"|" \
-				"${RC_XML_PATH}"
-		else
-			if [ -z "${PRIMARY_OUT}" ]; then
-				echo "No primary output set. Skipping touchscreen configuration." >>"$display_log"
-			else
-				echo "No touchscreen found. Skipping touchscreen configuration." >>"$display_log"
-			fi
-		fi
-
 		echo "Labwc configuration modification complete." >>"$display_log"
 	else
 		echo "ERROR: ${RC_XML_PATH} not found after copy. Cannot apply settings." >>"$display_log"
