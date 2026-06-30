@@ -740,25 +740,6 @@ case "${ACTION}" in
 
         "${WLR_RANDR}" --output "${PSCREEN}" --transform "${WLR_TRANSFORM}"
 
-        # --- Check for touchscreen ---
-        TOUCHSCREEN=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]; exit}}')
-        if [ -n "${TOUCHSCREEN}" ]; then
-            CONFIG_FILE="${HOME}/.config/labwc/rc.xml"
-
-            if [ ! -f "$CONFIG_FILE" ]; then
-                _log "Touchscreen found, but rc.xml not present at: $CONFIG_FILE"
-                exit 1
-            fi
-
-            _log "Ensuring touch device configuration is correct..."
-
-            # Update the main <touch> tag with the correct deviceName and mapToOutput.
-            sed -i \
-                "/<touch / s|deviceName=\"[^\"]*\"|deviceName=\"${TOUCHSCREEN}\"|; s|mapToOutput=\"[^\"]*\"|mapToOutput=\"${PSCREEN}\"|" \
-                "${CONFIG_FILE}"
-        else
-            _log "No touchscreen found; skipped touchscreen configuration."
-        fi
         _reconfigure_labwc
         ;;
 
