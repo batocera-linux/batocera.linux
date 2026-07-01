@@ -1,17 +1,16 @@
 #!/bin/bash
 
 SYS_CFG="/boot/EFI/batocera/syslinux.cfg"
-ARG="mitigations=off"
 
 usage() {
-    echo "Usage: $0 {off|on|status}"
+    echo "Usage: $0 {off|on|status|info}" >&2
     exit 1
 }
 
 remount_boot_write() {
     echo "Remounting /boot read-write..."
     mount -o remount,rw /boot || {
-        echo "ERROR: failed to remount /boot read-write"
+        echo "ERROR: failed to remount /boot read-write" >&2
         exit 1
     }
 }
@@ -19,7 +18,7 @@ remount_boot_write() {
 remount_boot_read() {
     echo "Remounting /boot read-only..."
     mount -o remount,ro /boot || {
-        echo "WARNING: failed to remount /boot read-only"
+        echo "ERROR: failed to remount /boot read-only" >&2
         return 1
     }
 }
@@ -29,7 +28,7 @@ backup_config() {
     echo "Creating backup: $BACKUP"
 
     cp -a "$SYS_CFG" "$BACKUP" || {
-        echo "ERROR: failed to create backup"
+        echo "ERROR: failed to create backup" >&2
         remount_boot_read
         exit 1
     }
@@ -47,15 +46,10 @@ show_append_line() {
     get_batocera_block | grep -E '^[[:space:]]*APPEND[[:space:]]'
 }
 
-notify_es() {
-    msg="$1"
-    curl -s -X POST "http://127.0.0.1:1234/messagebox" -d "$msg" >/dev/null 2>&1
-}
-
 ACTION="$1"
 
 case "$ACTION" in
-    off|on|status)
+    off|on|status|info)
         ;;
     *)
         usage
@@ -63,12 +57,21 @@ case "$ACTION" in
 esac
 
 if [ ! -f "$SYS_CFG" ]; then
-    echo "ERROR: $SYS_CFG not found"
+    echo "ERROR: $SYS_CFG not found" >&2
     exit 1
 fi
 
 case "$ACTION" in
     status)
+        if has_mitigations_off; then
+            echo "0"
+        else
+            echo "1"
+        fi
+        exit 0
+        ;;
+
+    info)
         if has_mitigations_off; then
             echo "Mitigations are OFF."
         else
@@ -82,7 +85,7 @@ case "$ACTION" in
 
     off)
         if has_mitigations_off; then
-            echo "Mitigations are already off."
+            echo "Mitigations are already OFF."
             show_append_line
             exit 0
         fi
@@ -90,29 +93,27 @@ case "$ACTION" in
         remount_boot_write
         backup_config
 
-        echo "Setting mitigations off..."
+        echo "Setting mitigations OFF..."
 
         sed -i '/^LABEL[[:space:]]\+batocera$/,/^LABEL[[:space:]]/ {
             /^[[:space:]]*APPEND[[:space:]]/ {
                 /(^\|[[:space:]])mitigations=off\([[:space:]]\|$\)/! s/[[:space:]]*$/ mitigations=off/
             }
         }' "$SYS_CFG" || {
-            echo "ERROR: failed to apply change"
+            echo "ERROR: failed to apply change" >&2
             remount_boot_read
             exit 1
         }
 
-        remount_boot_read
+        remount_boot_read || exit 1
 
         echo "Done. Default batocera APPEND line:"
         show_append_line
-
-        notify_es "Reboot to apply changes!"
         ;;
 
     on)
         if ! has_mitigations_off; then
-            echo "Mitigations are already on/default."
+            echo "Mitigations are already ON(default)."
             show_append_line
             exit 0
         fi
@@ -128,20 +129,16 @@ case "$ACTION" in
                 s/[[:space:]]*$//
             }
         }' "$SYS_CFG" || {
-            echo "ERROR: failed to apply change"
+            echo "ERROR: failed to apply change" >&2
             remount_boot_read
             exit 1
         }
 
-        remount_boot_read
+        remount_boot_read || exit 1
 
         echo "Done. Default batocera APPEND line:"
         show_append_line
-
-        notify_es "Reboot to apply changes!"
         ;;
 esac
-
-echo "Reboot to apply."
 
 exit 0
