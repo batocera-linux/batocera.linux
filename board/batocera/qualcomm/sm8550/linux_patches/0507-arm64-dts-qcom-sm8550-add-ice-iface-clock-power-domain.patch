@@ -1,0 +1,38 @@
+From 6a135f4986c0e4c97362ae5154db76eaadf1a692 Mon Sep 17 00:00:00 2001
+From: Harshal Dev <harshal.dev@oss.qualcomm.com>
+Date: Thu, 16 Apr 2026 17:29:19 +0530
+Subject: [PATCH] arm64: dts: qcom: sm8550: add ICE iface clock and power
+ domain
+
+Qualcomm inline crypto engine (ICE) specifies and votes for its own
+resources. Before accessing ICE hardware during probe, to avoid potential
+unclocked register access issues when clk_ignore_unused is not passed, the
+driver should enable the iface clock in addition to the core clock. This can
+only be done if the UFS_PHY_GDSC power domain is enabled.
+
+Specify both the UFS_PHY_GDSC power domain and the iface clock in the ICE node
+for SM8550.
+---
+ arch/arm64/boot/dts/qcom/sm8550.dtsi | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+index f2770521a48d..ec10bba5ca81 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
+@@ -2887,7 +2887,11 @@ ice: crypto@1d88000 {
+ 				     "qcom,inline-crypto-engine";
+ 			reg = <0 0x01d88000 0 0x18000>;
+ 
+-			clocks = <&gcc GCC_UFS_PHY_ICE_CORE_CLK>;
++			clocks = <&gcc GCC_UFS_PHY_ICE_CORE_CLK>,
++				 <&gcc GCC_UFS_PHY_AHB_CLK>;
++			clock-names = "core",
++				      "iface";
++			power-domains = <&gcc UFS_PHY_GDSC>;
+ 		};
+ 
+ 		tcsr_mutex: hwlock@1f40000 {
+-- 
+2.51.0
+

@@ -16,6 +16,9 @@ define BATOCERA_TRIGGERHAPPY_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/etc/triggerhappy/triggers.d
 	cp $(BATOCERA_TRIGGERHAPPY_PKGDIR)/conf/multimedia_keys_disabled.conf \
 	    $(TARGET_DIR)/etc/triggerhappy/triggers.d
+	mkdir -p $(TARGET_DIR)/etc/pm/sleep.d
+	$(INSTALL) -m 0755 $(BATOCERA_TRIGGERHAPPY_PKGDIR)/99triggerhappy-resume \
+	    $(TARGET_DIR)/etc/pm/sleep.d/99triggerhappy-resume
 endef
 
 define BATOCERA_TRIGGERHAPPY_INSTALL_IMAGES_CMDS

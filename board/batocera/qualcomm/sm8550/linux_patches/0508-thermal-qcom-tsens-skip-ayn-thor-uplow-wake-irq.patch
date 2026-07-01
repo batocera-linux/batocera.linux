@@ -1,0 +1,57 @@
+From 2b4adfaf66434bddbde753c3ae7229d8c73a0ea5 Mon Sep 17 00:00:00 2001
+From: jaewun <jaewun@users.noreply.github.com>
+Date: Mon, 11 May 2026 01:20:00 +1200
+Subject: [PATCH] thermal: qcom: tsens: skip AYN Thor uplow wake IRQs
+
+Native s2idle testing on AYN Thor repeatedly resumes immediately with
+pm_wakeup_irq pointing at the SM8550 TSENS uplow/passive threshold IRQ.
+The IRQ wake state exposed under /sys/kernel/irq is read-only on the live
+kernel, so runtime testing cannot disable this wake source.
+
+Keep normal TSENS interrupt handling active and keep critical TSENS wake
+enabled. Only skip enable_irq_wake() for the ordinary "uplow" TSENS IRQs on
+ayn,thor.
+---
+ drivers/thermal/qcom/tsens.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
+index fbdab9d00000..fbdab9d00001 100644
+--- a/drivers/thermal/qcom/tsens.c
++++ b/drivers/thermal/qcom/tsens.c
+@@ -1174,6 +1174,15 @@ static const struct thermal_zone_device_ops tsens_of_ops = {
+ 	.set_trips = tsens_set_trips,
+ };
+ 
++static bool tsens_irq_wake_enabled(const char *irqname)
++{
++	if (!of_machine_is_compatible("ayn,thor"))
++		return true;
++
++	/* Keep critical thermal wake; only passive threshold-window IRQs are noisy. */
++	return strcmp(irqname, "uplow") != 0;
++}
++
+ static int tsens_register_irq(struct tsens_priv *priv, char *irqname,
+ 			      irq_handler_t thread_fn)
+ {
+@@ -1203,11 +1212,15 @@ static int tsens_register_irq(struct tsens_priv *priv, char *irqname,
+ 
+ 		if (ret)
+ 			dev_err(&pdev->dev, "%s: failed to get irq\n",
+ 				__func__);
+-		else
++		else if (tsens_irq_wake_enabled(irqname))
+ 			enable_irq_wake(irq);
++		else
++			dev_info(&pdev->dev,
++				 "leaving TSENS %s IRQ %d as non-wakeup on AYN Thor\n",
++				 irqname, irq);
+ 	}
+ 
+ 	put_device(&pdev->dev);
+ 	return ret;
+ }
+-- 
+2.50.0
+
