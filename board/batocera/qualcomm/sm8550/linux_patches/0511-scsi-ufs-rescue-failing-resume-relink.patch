@@ -1,0 +1,74 @@
+From: jaewun <jaewun@users.noreply.github.com>
+Date: Sun, 7 Jun 2026 14:09:41 +1200
+Subject: [PATCH] scsi: ufs: rescue a failing resume relink by completing the in-flight UIC command
+
+On the AYN Thor's non-MCQ UFS controller almost every deep-resume relink
+succeeds on the first DME_LINKSTARTUP. On the rare resume where the cold
+relink genuinely errors and the link needs rescuing, the PM-resume hardirq
+path acks and read-clears the error but drops the event: the relink's
+in-flight UIC command is never completed, so ufshcd_wait_for_uic_cmd()
+stalls (the full UIC timeout, or forever if a persistently-erroring link
+keeps re-asserting the level IRQ and starves the resuming thread) and the
+resume never completes (hard wedge; this board has no watchdog).
+
+When a resume-time error arrives with no accompanying UIC completion,
+complete the in-flight DME_LINKSTARTUP command with UIC_CMD_RESULT_FAILURE
+so ufshcd_wait_for_uic_cmd() returns promptly and ufshcd_link_startup() /
+ufshcd_reset_and_restore() retry the relink and rescue (or cleanly fail)
+the link. The retry's ufshcd_hba_enable() resets the controller, which
+also clears a persistently-erroring source, so no separate interrupt
+masking is needed. The completion is restricted to UIC_CMD_DME_LINK_STARTUP
+with no uic_async_done in flight, so power-mode UIC commands are untouched.
+Done under host_lock; the error handler is not run inline (reentrant during
+PM).
+
+Signed-off-by: jaewun <jaewun@users.noreply.github.com>
+---
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -7259,6 +7259,44 @@
+ 			ufshcd_readl(hba, REG_UIC_ERROR_CODE_NETWORK_LAYER);
+ 			ufshcd_readl(hba, REG_UIC_ERROR_CODE_TRANSPORT_LAYER);
+ 			ufshcd_readl(hba, REG_UIC_ERROR_CODE_DME);
++
++			/*
++			 * Rare case: the cold relink genuinely fails and the
++			 * link needs rescuing. Propagate the failure to the
++			 * synchronous resume path so it can rescue the link,
++			 * instead of dropping the event and stalling the relink.
++			 *
++			 * If the relink's in-flight UIC command (e.g.
++			 * DME_LINKSTARTUP) is the one that errored -- i.e. this
++			 * error arrives with no accompanying UIC completion --
++			 * complete it with UIC_CMD_RESULT_FAILURE so
++			 * ufshcd_wait_for_uic_cmd() returns promptly and
++			 * ufshcd_link_startup() / ufshcd_reset_and_restore() retry
++			 * the relink and rescue (or cleanly fail) it. The retry's
++			 * ufshcd_hba_enable() resets the controller, which also
++			 * clears a persistently-erroring source, so no separate
++			 * interrupt masking (which could otherwise leak past a
++			 * runtime hibern8-exit resume) is needed. Restricted to
++			 * UIC_CMD_DME_LINK_STARTUP with no uic_async_done in
++			 * flight, so power-mode UIC commands are untouched. We do
++			 * NOT run the error handler inline here (reentrant during
++			 * PM); recovery is the synchronous caller's job.
++			 */
++			spin_lock(hba->host->host_lock);
++			if (!(status & UFSHCD_UIC_MASK) && !hba->uic_async_done &&
++			    hba->active_uic_cmd &&
++			    hba->active_uic_cmd->cmd_active &&
++			    hba->active_uic_cmd->command ==
++				    UIC_CMD_DME_LINK_STARTUP) {
++				struct uic_command *cmd = hba->active_uic_cmd;
++
++				cmd->argument2 = (cmd->argument2 &
++						  ~MASK_UIC_COMMAND_RESULT) |
++						 UIC_CMD_RESULT_FAILURE;
++				cmd->cmd_active = false;
++				complete(&cmd->done);
++			}
++			spin_unlock(hba->host->host_lock);
+ 		}
+ 
+ 		compl_bits = status & (UTP_TRANSFER_REQ_COMPL | UFSHCD_UIC_MASK);
+

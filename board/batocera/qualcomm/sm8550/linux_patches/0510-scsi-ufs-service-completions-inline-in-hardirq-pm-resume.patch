@@ -1,0 +1,76 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: jaewun <jaewun@users.noreply.github.com>
+Date: Sat, 6 Jun 2026 20:40:00 +1200
+Subject: [PATCH] scsi: ufs: service completions inline in hardirq during PM
+ resume on non-MCQ controllers
+
+On a non-MCQ UFSHCI controller ufshcd_intr() defers all interrupt handling to
+the threaded handler, which is not scheduled during the device PM resume phase.
+After a deep system suspend the relink's completed UTP/UIC commands latch in
+REG_INTERRUPT_STATUS but are never serviced (the first device-management
+command waits forever), and a latched UIC_ERROR re-fires the level IRQ forever
+(interrupt storm).
+
+While pm_op_in_progress on a non-MCQ controller, service UTP/UIC/TMF completions
+inline in hardirq and W1C-ack + read-clear the UIC error-code registers so a
+transient resume-time error cannot storm, without invoking the PM-reentrant
+error handler.
+
+Signed-off-by: jaewun <jaewun@users.noreply.github.com>
+---
+ drivers/ufs/core/ufshcd.c | 39 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 38 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/ufs/core/ufshcd.c b/drivers/ufs/core/ufshcd.c
+--- a/drivers/ufs/core/ufshcd.c
++++ b/drivers/ufs/core/ufshcd.c
+@@ -7222,6 +7222,48 @@
+ 	struct ufs_hba *hba = __hba;
+ 	u32 intr_status, enabled_intr_status;
+ 
++	/*
++	 * On this non-MCQ controller interrupt handling is normally deferred to
++	 * the threaded handler, which is not scheduled during the deep-resume PM
++	 * phase. That leaves completed UTP/UIC commands latched in IS but never
++	 * serviced (the relink's first command waits forever), and a latched
++	 * UIC_ERROR re-fires the level IRQ forever (storm). While the controller
++	 * is resuming, service UTP/UIC/TMF completions inline in hardirq, and
++	 * W1C-ack + read-clear the UIC error-code registers so a transient
++	 * resume-time error cannot storm. Do not run ufshcd_check_errors() from
++	 * hardirq (it would schedule the error handler / link recovery, which is
++	 * reentrant during PM).
++	 */
++	if (!hba->mcq_enabled && hba->pm_op_in_progress) {
++		u32 status, compl_bits;
++
++		status = ufshcd_readl(hba, REG_INTERRUPT_STATUS) &
++			 ufshcd_readl(hba, REG_INTERRUPT_ENABLE);
++		if (!status)
++			return IRQ_HANDLED;
++
++		/* W1C exactly the snapshot we read. */
++		ufshcd_writel(hba, status, REG_INTERRUPT_STATUS);
++
++		if (status & UFSHCD_ERROR_MASK) {
++			/* read-to-clear all UIC error-code registers */
++			ufshcd_readl(hba, REG_UIC_ERROR_CODE_PHY_ADAPTER_LAYER);
++			ufshcd_readl(hba, REG_UIC_ERROR_CODE_DATA_LINK_LAYER);
++			ufshcd_readl(hba, REG_UIC_ERROR_CODE_NETWORK_LAYER);
++			ufshcd_readl(hba, REG_UIC_ERROR_CODE_TRANSPORT_LAYER);
++			ufshcd_readl(hba, REG_UIC_ERROR_CODE_DME);
++		}
++
++		compl_bits = status & (UTP_TRANSFER_REQ_COMPL | UFSHCD_UIC_MASK);
++		if (compl_bits & UFSHCD_UIC_MASK)
++			ufshcd_uic_cmd_compl(hba, compl_bits);
++		if (status & UTP_TASK_REQ_COMPL)
++			ufshcd_tmc_handler(hba);
++		if (compl_bits & UTP_TRANSFER_REQ_COMPL)
++			ufshcd_transfer_req_compl(hba);
++		return IRQ_HANDLED;
++	}
++
+ 	/* Move interrupt handling to thread when MCQ & ESI are not enabled */
+ 	if (!hba->mcq_enabled || !hba->mcq_esi_enabled)
+ 		return IRQ_WAKE_THREAD;
+

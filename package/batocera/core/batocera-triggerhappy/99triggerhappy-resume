@@ -1,0 +1,12 @@
+#!/bin/sh
+
+case "$1" in
+    resume|thaw)
+        rm -f /var/run/shutdown-delay.flag /var/run/shutdown-delay.last
+
+        if [ -x /etc/init.d/S50triggerhappy ]; then
+            sleep 1
+            /etc/init.d/S50triggerhappy restart >/dev/null 2>&1 || true
+        fi
+        ;;
+esac

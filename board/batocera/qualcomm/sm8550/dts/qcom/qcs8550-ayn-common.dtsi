@@ -466,9 +466,14 @@
 		regulator-max-microvolt = <3300000>;
 
 		gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-		regulator-always-on;
-		regulator-boot-on;
 		enable-active-high;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&mcu_pwr_active>;
+
+		regulator-state-mem {
+			regulator-off-in-suspend;
+		};
 	};
 
 	vph_pwr: regulator-vph-pwr {
@@ -1581,6 +1586,14 @@
 		pins = "gpio12";
 		function = "gpio";
 		bias-pull-down;
+	};
+
+	mcu_pwr_active: mcu-pwr-active-state {
+		pins = "gpio99";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+		output-low;
 	};
 
 	ts_p_rst_default: ts-p-rst-default-state {
