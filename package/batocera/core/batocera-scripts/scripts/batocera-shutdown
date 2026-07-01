@@ -29,11 +29,11 @@ BATOLED_INIT_SCRIPT="/etc/init.d/S21led-handheld"
 # To find your power button's name, you can run: cat /proc/bus/input/devices
 # Look for an entry with "power" or "pwr" in the name.
 INPUT_WHITELIST_PATTERNS=(
-    "Power"      # Matches "Power Button"
-    "power"      # Matches "powerkey"
-    "pwr"        # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
-    "gpio-keys"  # AYN Thor lid
-    "axp20x-pek" # Anbernic RGCubeXX
+    "Power"         # Matches "Power Button"
+    "power"         # Matches "powerkey"
+    "pwr"           # Matches "rk805 pwrkey", "pmic_pwrkey" (odin2)
+    "gpio-keys-lid" # AYN Thor lid
+    "axp20x-pek"    # Anbernic RGCubeXX
 )
 
 INTERNAL_DISPLAY_PATTERNS=(

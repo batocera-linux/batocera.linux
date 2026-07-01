@@ -13,10 +13,11 @@
 	qcom,msm-id = <603 0x20000>;
 	qcom,board-id = <0x1001f 0>;
 
-	gpio-keys {
+	gpio-keys-ayn {
 		compatible = "gpio-keys";
 
-		pinctrl-0 = <&volume_up_n &key_ayn_n>;
+		pinctrl-0 = <&key_ayn_n>;
+		pinctrl-names = "default";
 
 		key-ayn {
 			label = "AYN Key";
@@ -25,6 +26,10 @@
 			linux,code = <KEY_F24>;
 			linux,can-disable;
 		};
+	};
+
+	gpio-keys-lid {
+		compatible = "gpio-keys";
 
 		hall-lid-sensor {
 			label = "Hall Lid Sensor";
@@ -270,6 +275,10 @@
 
 		touchscreen-size-x = <1080>;
 		touchscreen-size-y = <1920>;
+		touchscreen-swapped-x-y;
+		touchscreen-inverted-x;
+
+		label = "top_touchscreen";
 	};
 };
 
@@ -384,6 +393,10 @@
 
 		touchscreen-size-x = <1080>;
 		touchscreen-size-y = <1240>;
+		touchscreen-swapped-x-y;
+		touchscreen-inverted-x;
+
+		label = "bottom_touchscreen";
 
 		no-regmap-bulk-read;
 	};
