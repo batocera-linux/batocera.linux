@@ -12,6 +12,7 @@
 - Odroid M2 initial support
 ### Added
 - Anbernic RGCubeXX device LED controller support
+- Drastic back for Aarch64 devices
 - NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
