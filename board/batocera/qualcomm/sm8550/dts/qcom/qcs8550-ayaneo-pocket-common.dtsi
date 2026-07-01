@@ -219,6 +219,21 @@
 				sound-dai = <&q6apm>;
 			};
 		};
+
+		dp0-dai-link {
+			link-name = "DP0 Playback";
+			cpu {
+				sound-dai = <&q6apmbedai DISPLAY_PORT_RX_0>;
+			};
+
+			platform {
+				sound-dai = <&q6apm>;
+			};
+
+			codec {
+				sound-dai = <&mdss_dp0>;
+			};
+		};
 	};
 
 	thermal-zones {
@@ -1250,7 +1265,6 @@
 				reg = <1>;
 
 				redriver_ss_in: endpoint {
-					data-lanes = <3 2 1 0>;
 					remote-endpoint = <&usb_dp_qmpphy_out>;
 				};
 			};
@@ -1285,7 +1299,7 @@
 };
 
 &mdss_dp0_out {
-	data-lanes = <0 1>;
+	sound-name-prefix = "Display Port0";
 };
 
 &pcie0 {
