@@ -9,6 +9,7 @@ BATOCERA_CONFIGGEN_SOURCE=
 BATOCERA_CONFIGGEN_SETUP_TYPE = hatch
 BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	python-batocera-common \
+	batocera-launch \
 	python-toml \
 	python-evdev \
 	python-pyudev \

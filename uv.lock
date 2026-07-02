@@ -7,6 +7,9 @@ members = [
     "batocera-common",
     "batocera-configgen",
     "batocera-es-system",
+    "batocera-launch",
+    "batocera-launch-fallout",
+    "batocera-launch-flycast",
     "batocera-linux",
 ]
 constraints = [
@@ -43,42 +46,38 @@ requires-dist = [
 
 [[package]]
 name = "batocera-configgen"
-version = "1.5"
+version = "44.0"
 source = { editable = "package/batocera/core/batocera-configgen/configgen" }
 dependencies = [
-    { name = "batocera-common" },
+    { name = "batocera-launch" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
     { name = "pillow" },
     { name = "pysdl2" },
     { name = "pyudev", marker = "sys_platform == 'linux'" },
-    { name = "pyyaml" },
     { name = "qrcode" },
     { name = "requests" },
-    { name = "ruamel-yaml" },
     { name = "toml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "batocera-common", editable = "python-src/batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
     { name = "pillow" },
     { name = "pysdl2" },
     { name = "pyudev", marker = "sys_platform == 'linux'" },
-    { name = "pyyaml" },
     { name = "qrcode" },
     { name = "requests" },
-    { name = "ruamel-yaml" },
     { name = "toml" },
 ]
 
 [[package]]
 name = "batocera-es-system"
-version = "44.0.0"
+version = "44.0"
 source = { editable = "python-src/batocera-es-system" }
 dependencies = [
     { name = "batocera-common" },
@@ -96,6 +95,47 @@ requires-dist = [
 ]
 
 [[package]]
+name = "batocera-launch"
+version = "44.0"
+source = { editable = "python-src/batocera-launch" }
+dependencies = [
+    { name = "batocera-common" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "batocera-common", editable = "python-src/batocera-common" }]
+
+[[package]]
+name = "batocera-launch-fallout"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-fallout" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-flycast"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-flycast" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
 name = "batocera-linux"
 version = "44.dev0"
 source = { virtual = "." }
@@ -103,6 +143,9 @@ dependencies = [
     { name = "batocera-common" },
     { name = "batocera-configgen" },
     { name = "batocera-es-system" },
+    { name = "batocera-launch" },
+    { name = "batocera-launch-fallout" },
+    { name = "batocera-launch-flycast" },
 ]
 
 [package.dev-dependencies]
@@ -121,6 +164,9 @@ requires-dist = [
     { name = "batocera-common", editable = "python-src/batocera-common" },
     { name = "batocera-configgen", editable = "package/batocera/core/batocera-configgen/configgen" },
     { name = "batocera-es-system", editable = "python-src/batocera-es-system" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-fallout", editable = "python-src/batocera-launch-fallout" },
+    { name = "batocera-launch-flycast", editable = "python-src/batocera-launch-flycast" },
 ]
 
 [package.metadata.requires-dev]

@@ -1,13 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from pathlib import Path
-from typing import IO, TYPE_CHECKING, Any, Final, overload
-
-if TYPE_CHECKING:
-    from _typeshed import OpenBinaryModeUpdating, OpenBinaryModeWriting, OpenTextModeUpdating, OpenTextModeWriting
-    from collections.abc import Generator
-    from io import BufferedRandom, BufferedWriter, TextIOWrapper
+from typing import IO, TYPE_CHECKING, Any, overload
 
 from batocera_common.paths import (
     BATOCERA_CONF as BATOCERA_CONF,
@@ -25,40 +19,34 @@ from batocera_common.paths import (
     SCREENSHOTS as SCREENSHOTS,
     USERDATA as USERDATA,
 )
+from batocera_launch.paths import (
+    BATOCERA_ES_DIR as BATOCERA_ES_DIR,
+    BATOCERA_SHADERS as BATOCERA_SHADERS,
+    CONF_INIT as CONF_INIT,
+    CONFIGGEN_DATA_DIR as CONFIGGEN_DATA_DIR,
+    DATAINIT_DIR as DATAINIT_DIR,
+    DEFAULTS_DIR as DEFAULTS_DIR,
+    ES_GAMES_METADATA as ES_GAMES_METADATA,
+    ES_GUNS_ART_METADATA as ES_GUNS_ART_METADATA,
+    ES_GUNS_METADATA as ES_GUNS_METADATA,
+    ES_SETTINGS as ES_SETTINGS,
+    ES_WHEELS_METADATA as ES_WHEELS_METADATA,
+    EVMAPY as EVMAPY,
+    HOME_INIT as HOME_INIT,
+    SYSTEM_DECORATIONS as SYSTEM_DECORATIONS,
+    SYSTEM_SCRIPTS as SYSTEM_SCRIPTS,
+    USER_DECORATIONS as USER_DECORATIONS,
+    USER_ES_DIR as USER_ES_DIR,
+    USER_SCRIPTS as USER_SCRIPTS,
+    USER_SHADERS as USER_SHADERS,
+    configure_emulator as configure_emulator,
+)
 
-DATAINIT_DIR: Final = BATOCERA_SHARE_DIR / 'datainit'
-
-HOME_INIT: Final = DATAINIT_DIR / 'system'
-CONF_INIT: Final = HOME_INIT / 'configs'
-
-EVMAPY: Final = CONFIGS / 'evmapy'
-
-USER_ES_DIR: Final = CONFIGS / 'emulationstation'
-BATOCERA_ES_DIR: Final = Path('/usr/share/emulationstation')
-CONFIGGEN_DATA_DIR: Final = Path('/usr/share/batocera/configgen/data')
-
-_ES_RESOURCES_DIR: Final = BATOCERA_ES_DIR / 'resources'
-
-ES_SETTINGS: Final = USER_ES_DIR / 'es_settings.cfg'
-ES_GUNS_METADATA: Final = _ES_RESOURCES_DIR / 'gungames.xml'
-ES_WHEELS_METADATA: Final = _ES_RESOURCES_DIR / 'wheelgames.xml'
-ES_GAMES_METADATA: Final = _ES_RESOURCES_DIR / 'gamesdb.xml'
-ES_GUNS_ART_METADATA: Final = CONFIGGEN_DATA_DIR / 'gamesbuttonsdb.xml'
-
-DEFAULTS_DIR: Final = BATOCERA_SHARE_DIR / 'configgen'
-
-USER_SHADERS: Final = USERDATA / 'shaders'
-BATOCERA_SHADERS: Final = BATOCERA_SHARE_DIR / 'shaders'
-
-USER_DECORATIONS: Final = USERDATA / 'decorations'
-SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
-
-USER_SCRIPTS: Final = HOME / 'scripts'
-SYSTEM_SCRIPTS: Final = DEFAULTS_DIR / 'scripts'
-
-
-def configure_emulator(rom: Path, /) -> bool:
-    return str(rom) == 'config'
+if TYPE_CHECKING:
+    from _typeshed import OpenBinaryModeUpdating, OpenBinaryModeWriting, OpenTextModeUpdating, OpenTextModeWriting
+    from collections.abc import Generator
+    from io import BufferedRandom, BufferedWriter, TextIOWrapper
+    from pathlib import Path
 
 
 def mkdir_if_not_exists(dir: Path, /) -> None:
