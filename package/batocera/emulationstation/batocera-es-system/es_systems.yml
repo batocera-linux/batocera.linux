@@ -4602,6 +4602,7 @@ gp32:
   emulators:
     libretro:
       mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      gp32emu: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_GP32EMU] }
     mame:
       mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
   comment_en: |
