@@ -15,7 +15,7 @@ define LIBRETRO_EP128EMU_CORE_BUILD_CMDS
 		CC="$(TARGET_CC)" \
 		CXX="$(TARGET_CXX)" \
 		-C $(@D) \
-		platform="$(LIBRETRO_PLATFORM)"
+		platform="unix"
 endef
 
 define LIBRETRO_EP128EMU_CORE_INSTALL_TARGET_CMDS
