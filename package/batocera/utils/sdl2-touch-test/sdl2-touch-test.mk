@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SDL2_TOUCH_TEST_VERSION = 1.1
+SDL2_TOUCH_TEST_VERSION = 1.2
 SDL2_TOUCH_TEST_SOURCE =
 SDL2_TOUCH_TEST_DEPENDENCIES = sdl2 sdl2_ttf udev
 

@@ -16,19 +16,27 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <libudev.h>
+#include <linux/input.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-// Simple color palette to dynamically distinguish separate displays
+#define MAX_FINGERS 16
+#define MAX_TOUCH_DEVICES 8
+#define DECAY_DELAY_MS 750 // Time in milliseconds lifted fingers persist on screen
+
+// Simple color palette to dynamically distinguish separate displays and touchpoints
 const SDL_Color DISPLAY_COLORS[] = {
-    {180, 0, 0, 255},    // Red (Display 0)
-    {0, 150, 0, 255},    // Green (Display 1)
-    {0, 0, 180, 255},    // Blue (Display 2)
-    {150, 0, 150, 255},  // Purple (Display 3)
-    {0, 150, 150, 255}   // Teal (Display 4)
+    {180, 0, 0, 255},    // Red (Display 0 / Finger 0)
+    {0, 150, 0, 255},    // Green (Display 1 / Finger 1)
+    {0, 0, 180, 255},    // Blue (Display 2 / Finger 2)
+    {150, 0, 150, 255},  // Purple (Display 3 / Finger 3)
+    {0, 150, 150, 255}   // Teal (Display 4 / Finger 4)
 };
 const int NUM_COLORS = 5;
 
@@ -50,6 +58,24 @@ typedef struct {
     int y;
 } PixelPoint;
 
+// Multi-finger tracking structure with release-decay timing
+typedef struct {
+    SDL_FingerID id;
+    SDL_TouchID touch_id;
+    double x;
+    double y;
+    bool active;
+    bool released;
+    Uint32 release_time;
+} TouchFinger;
+
+// Device capability metadata
+typedef struct {
+    SDL_TouchID touch_id;
+    char name[256];
+    int max_points;
+} TouchDeviceCap;
+
 // Cached properties of the matched active udev device
 typedef struct {
     char name[256];
@@ -67,6 +93,7 @@ typedef struct {
 
 // Global flags and state
 bool debug_enabled = false;
+bool multi_touch_mode_enabled = false;
 AppState app_state = STATE_CALIBRATING; // Auto-start directly in calibration mode
 int current_cal_display = 0;
 int calibration_step = 0; // 0 to 3 for 4 calibration targets
@@ -75,6 +102,11 @@ bool all_calibrated = false;
 // Targets and inputs for calibration (in normalized coordinates 0.0 to 1.0)
 Point2D target_points[4];
 Point2D raw_points[4];
+
+// Multi-touch tracking registers
+TouchFinger active_fingers[MAX_FINGERS];
+TouchDeviceCap touch_caps[MAX_TOUCH_DEVICES];
+int num_queried_devices = 0;
 
 // Solved coefficients for x' = A*x + B*y + C and y' = D*x + E*y + F
 double matrix_A = 1.0, matrix_B = 0.0, matrix_C = 0.0;
@@ -156,8 +188,8 @@ void clean_display_name(const char* raw_name, char* clean_name, size_t max_len) 
     }
 }
 
-// Fallback search to resolve physical touch screen hardware under Wayland wrappers
-bool query_udev_fallback(UdevProperties* props) {
+// Fallback index search to map physical touch screen hardware based on display index sequence
+bool query_udev_fallback_index(int target_index, UdevProperties* props) {
     struct udev* udev = udev_new();
     if (!udev) return false;
 
@@ -168,6 +200,7 @@ bool query_udev_fallback(UdevProperties* props) {
     struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
     struct udev_list_entry* entry;
     bool match_found = false;
+    int current_match_idx = 0;
 
     udev_list_entry_foreach(entry, devices) {
         const char* syspath = udev_list_entry_get_name(entry);
@@ -175,22 +208,53 @@ bool query_udev_fallback(UdevProperties* props) {
         if (dev) {
             const char* is_touch = udev_device_get_property_value(dev, "ID_INPUT_TOUCHSCREEN");
             if (is_touch && strcmp(is_touch, "1") == 0) {
-                const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
-                const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
-                const char* devpath = udev_device_get_devpath(dev);
-                const char* devnode = udev_device_get_devnode(dev);
+                if (current_match_idx == target_index) {
+                    const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
+                    const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
+                    const char* devpath = udev_device_get_devpath(dev);
+                    const char* devnode = udev_device_get_devnode(dev);
 
-                memset(props, 0, sizeof(UdevProperties));
-                if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
-                if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
-                if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
-                if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
+                    memset(props, 0, sizeof(UdevProperties));
+                    if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
+                    if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
+                    if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
+                    if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
 
-                match_found = true;
-                udev_device_unref(dev);
-                break;
+                    match_found = true;
+                    udev_device_unref(dev);
+                    break;
+                }
+                current_match_idx++;
             }
             udev_device_unref(dev);
+        }
+    }
+
+    // Safely fallback to the first discovered touchscreen if index bounds mismatch (single-touch dual displays)
+    if (!match_found && current_match_idx > 0) {
+        udev_list_entry_foreach(entry, devices) {
+            const char* syspath = udev_list_entry_get_name(entry);
+            struct udev_device* dev = udev_device_new_from_syspath(udev, syspath);
+            if (dev) {
+                const char* is_touch = udev_device_get_property_value(dev, "ID_INPUT_TOUCHSCREEN");
+                if (is_touch && strcmp(is_touch, "1") == 0) {
+                    const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
+                    const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
+                    const char* devpath = udev_device_get_devpath(dev);
+                    const char* devnode = udev_device_get_devnode(dev);
+
+                    memset(props, 0, sizeof(UdevProperties));
+                    if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
+                    if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
+                    if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
+                    if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
+
+                    match_found = true;
+                    udev_device_unref(dev);
+                    break;
+                }
+                udev_device_unref(dev);
+            }
         }
     }
 
@@ -199,11 +263,10 @@ bool query_udev_fallback(UdevProperties* props) {
     return match_found;
 }
 
-// Query the udev database for the matching touchscreen name
-bool query_udev_device(const char* sdl_name, UdevProperties* props) {
-    // Under Wayland, the device name is abstracted as "wayland_touch". Fallback immediately.
+// Query the udev database for the matching touchscreen name (with index mappings for virtual seats)
+bool query_udev_device(const char* sdl_name, int display_index, UdevProperties* props) {
     if (!sdl_name || strcmp(sdl_name, "wayland_touch") == 0) {
-        return query_udev_fallback(props);
+        return query_udev_fallback_index(display_index, props);
     }
 
     struct udev* udev = udev_new();
@@ -245,7 +308,7 @@ bool query_udev_device(const char* sdl_name, UdevProperties* props) {
     udev_unref(udev);
 
     if (!match_found) {
-        return query_udev_fallback(props);
+        return query_udev_fallback_index(display_index, props);
     }
     return match_found;
 }
@@ -276,6 +339,21 @@ void get_devpath_pattern(const char* devpath, char* buffer, size_t max_len) {
         }
     }
     snprintf(buffer, max_len, "%s", devpath);
+}
+
+// Perform direct hardware ioctl queries to fetch physical multitouch slot capability
+int get_hardware_max_touchpoints(const char* devnode) {
+    if (!devnode || strlen(devnode) == 0) return 1;
+    int fd = open(devnode, O_RDONLY | O_NONBLOCK);
+    if (fd < 0) return 1;
+
+    struct input_absinfo absinfo;
+    int max_points = 1;
+    if (ioctl(fd, EVIOCGABS(ABS_MT_SLOT), &absinfo) >= 0) {
+        max_points = absinfo.maximum + 1;
+    }
+    close(fd);
+    return max_points;
 }
 
 // Perform 4-Point Linear Least Squares Regression using Cramer's Rule
@@ -373,7 +451,7 @@ void print_all_calibration_rules(SDL_Rect* displays, int num_displays, DisplayCa
                i, clean_disp, cal_results[i].touch_name);
 
         UdevProperties props;
-        if (query_udev_device(cal_results[i].touch_name, &props)) {
+        if (query_udev_device(cal_results[i].touch_name, i, &props)) {
             char devpath_pat[256] = "";
             get_devpath_pattern(props.devpath, devpath_pat, sizeof(devpath_pat));
 
@@ -403,6 +481,10 @@ void print_all_calibration_rules(SDL_Rect* displays, int num_displays, DisplayCa
         }
         printf("# -------------------------------------------------------------------------\n\n");
     }
+    printf("  To apply and test these rules on the fly immediately without rebooting:\n");
+    printf("  1. Copy the udev rule block above into: /etc/udev/rules.d/99-touchscreen.rules\n");
+    printf("  2. Run the following command in terminal/SSH:\n");
+    printf("     udevadm control --reload-rules && udevadm trigger\n\n");
     printf("========================================================================\n\n");
 }
 
@@ -511,6 +593,7 @@ void print_help(void) {
     printf("  -h, --help       Show this help manual\n");
     printf("  -d, --debug      Enable verbose input delta and log tracking\n");
     printf("  -s, --skip-cal   Launch directly into touch testing mode (bypasses calibration startup)\n");
+    printf("  -m, --multi-touch Skip calibration and launch directly into multi-touch diagnostic test\n");
     printf("  -i, --index <id> Target a specific display index directly (default is Display 0)\n\n");
     printf("Interactions:\n");
     printf("  In Testing Mode:\n");
@@ -533,7 +616,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // --- WORKAROUND FOR WAYLAND ASYNCHRONOUS OUTPUT ENUMERATION ---
     // Under Wayland, connected displays (outputs) are registered asynchronously as the client 
     // event loop processes registry global events. We must pump events for a brief period 
     // to guarantee all outputs are fully bound and reported by SDL before querying display bounds.
@@ -563,6 +645,9 @@ int main(int argc, char* argv[]) {
         } else if (strcmp(argv[i], "--debug") == 0 || strcmp(argv[i], "-d") == 0) {
             debug_enabled = true;
         } else if (strcmp(argv[i], "--skip-cal") == 0 || strcmp(argv[i], "-s") == 0) {
+            app_state = STATE_TESTING;
+        } else if (strcmp(argv[i], "--multi-touch") == 0 || strcmp(argv[i], "-m") == 0) {
+            multi_touch_mode_enabled = true;
             app_state = STATE_TESTING;
         } else if (strcmp(argv[i], "--index") == 0 || strcmp(argv[i], "-i") == 0) {
             if (i + 1 < argc) {
@@ -603,7 +688,10 @@ int main(int argc, char* argv[]) {
     }
     printf("=========================================================\n\n");
 
-    SDL_Window* window = SDL_CreateWindow("Agnostic SDL Touch Test", 0, 0, total_w, total_h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN);
+    // Restored Single Window across entire combined physical bounds (KM/DRM Framebuffer compliant)
+    SDL_Window* window = SDL_CreateWindow("Agnostic SDL Touch Test", 
+                                          0, 0, total_w, total_h, 
+                                          SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN);
     if (!window) {
         printf("[SDL2_TOUCH_TEST] ERROR: Failed to create window: %s\n", SDL_GetError());
         free(displays);
@@ -619,8 +707,6 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 1;
     }
-
-    // Enable renderer alpha blending for semi-transparent color overlays
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
     // Warm-up and map Wayland Surface (resolves target-drawing initialization errors)
@@ -644,6 +730,12 @@ int main(int argc, char* argv[]) {
         cal_results[i].calibrated = false;
     }
 
+    // Initialize finger registers
+    for (int i = 0; i < MAX_FINGERS; i++) {
+        active_fingers[i].active = false;
+        active_fingers[i].released = false;
+    }
+
     // Configure the baseline targets for the target current_cal_display (safely computed after display sync)
     SDL_Rect bounds = displays[current_cal_display];
     target_points[0] = (Point2D){ (double)(bounds.x + 0.1 * bounds.w) / total_w, (double)(bounds.y + 0.1 * bounds.h) / total_h }; // Top-Left
@@ -657,6 +749,8 @@ int main(int argc, char* argv[]) {
     int last_cal_x = -1, last_cal_y = -1;
 
     while (running) {
+        SDL_Color text_color = {255, 255, 255, 255};
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
@@ -667,6 +761,7 @@ int main(int argc, char* argv[]) {
                     current_cal_display = 0;
                     calibration_step = 0;
                     app_state = STATE_CALIBRATING;
+                    all_calibrated = false;
                 } else if (event.key.keysym.sym == SDLK_r && app_state == STATE_VERIFYING) {
                     app_state = STATE_CALIBRATING;
                     calibration_step = 0;
@@ -698,7 +793,7 @@ int main(int argc, char* argv[]) {
                         last_cal_x = -1; last_cal_y = -1;
                     }
                 }
-            } else if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION) {
+            } else if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION || event.type == SDL_FINGERUP) {
                 const char* active_name = get_touch_name_by_id(event.tfinger.touchId);
                 if (active_name) {
                     strncpy(cal_results[current_cal_display].touch_name, active_name, sizeof(cal_results[current_cal_display].touch_name) - 1);
@@ -757,6 +852,83 @@ int main(int argc, char* argv[]) {
 
                 if (!ui_element_tapped) {
                     if (app_state == STATE_TESTING) {
+                        // Multi-touch tracking logic
+                        if (event.type == SDL_FINGERDOWN) {
+                            // Fetch raw hardware capability values on active touch point initialization
+                            SDL_TouchID t_id = event.tfinger.touchId;
+                            bool found = false;
+                            for (int i = 0; i < num_queried_devices; i++) {
+                                if (touch_caps[i].touch_id == t_id) {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found && num_queried_devices < MAX_TOUCH_DEVICES) {
+                                const char* sdl_name = get_touch_name_by_id(t_id);
+                                UdevProperties props;
+                                int max_pts = 1;
+                                // Corelate active udev index fallback scan mapping Display 0 -> Device 0, Display 1 -> Device 1
+                                if (query_udev_device(sdl_name, current_cal_display, &props)) {
+                                    max_pts = get_hardware_max_touchpoints(props.devnode);
+                                }
+                                touch_caps[num_queried_devices].touch_id = t_id;
+                                strncpy(touch_caps[num_queried_devices].name, sdl_name ? sdl_name : "Unknown", sizeof(touch_caps[num_queried_devices].name) - 1);
+                                touch_caps[num_queried_devices].max_points = max_pts;
+                                num_queried_devices++;
+                            }
+
+                            // Register active finger
+                            int slot = -1;
+                            for (int i = 0; i < MAX_FINGERS; i++) {
+                                if (!active_fingers[i].active) {
+                                    slot = i;
+                                    break;
+                                }
+                            }
+                            if (slot == -1) {
+                                Uint32 oldest_release = 0xFFFFFFFF;
+                                for (int i = 0; i < MAX_FINGERS; i++) {
+                                    if (active_fingers[i].active && active_fingers[i].released) {
+                                        if (active_fingers[i].release_time < oldest_release) {
+                                            oldest_release = active_fingers[i].release_time;
+                                            slot = i;
+                                        }
+                                    }
+                                }
+                            }
+                            if (slot != -1) {
+                                active_fingers[slot].id = event.tfinger.fingerId;
+                                active_fingers[slot].touch_id = event.tfinger.touchId;
+                                active_fingers[slot].x = rx;
+                                active_fingers[slot].y = ry;
+                                active_fingers[slot].active = true;
+                                active_fingers[slot].released = false;
+                            }
+                        } else if (event.type == SDL_FINGERMOTION) {
+                            // Update active finger coordinates
+                            for (int i = 0; i < MAX_FINGERS; i++) {
+                                if (active_fingers[i].active && !active_fingers[i].released &&
+                                    active_fingers[i].id == event.tfinger.fingerId && 
+                                    active_fingers[i].touch_id == event.tfinger.touchId) {
+                                    active_fingers[i].x = rx;
+                                    active_fingers[i].y = ry;
+                                    break;
+                                }
+                            }
+                        } else if (event.type == SDL_FINGERUP) {
+                            // Free active finger slot with a decay delay
+                            for (int i = 0; i < MAX_FINGERS; i++) {
+                                if (active_fingers[i].active && !active_fingers[i].released &&
+                                    active_fingers[i].id == event.tfinger.fingerId && 
+                                    active_fingers[i].touch_id == event.tfinger.touchId) {
+                                    active_fingers[i].released = true;
+                                    active_fingers[i].release_time = SDL_GetTicks();
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Maintain legacy fallback coordinates for backward-compatible rendering logic
                         last_raw_x = (int)(rx * total_w);
                         last_raw_y = (int)(ry * total_h);
 
@@ -769,7 +941,7 @@ int main(int argc, char* argv[]) {
                             }
                         }
 
-                        // Apply the corresponding rounded calibration matrix dynamically per screen in testing mode
+                        // Apply corresponding rounded calibration matrix dynamically per screen in testing mode
                         if (mapped_idx != -1 && cal_results[mapped_idx].calibrated) {
                             double cal_x = smart_round(cal_results[mapped_idx].A) * rx +
                                            smart_round(cal_results[mapped_idx].B) * ry +
@@ -824,12 +996,18 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        // Process release decay timeouts on active touchpoint registers
+        Uint32 now = SDL_GetTicks();
+        for (int i = 0; i < MAX_FINGERS; i++) {
+            if (active_fingers[i].active && active_fingers[i].released) {
+                if (now - active_fingers[i].release_time > DECAY_DELAY_MS) {
+                    active_fingers[i].active = false;
+                    active_fingers[i].released = false;
+                }
+            }
+        }
 
-        SDL_Color text_color = {255, 255, 255, 255};
-
-        // Render base color display boundaries for all screens underneath active states
+        // Render base color display boundaries globally across virtual canvas coordinates
         for (int i = 0; i < num_displays; i++) {
             SDL_Color c = DISPLAY_COLORS[i % NUM_COLORS];
             SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
@@ -844,28 +1022,122 @@ int main(int argc, char* argv[]) {
         }
 
         if (app_state == STATE_TESTING) {
-            if (all_calibrated) {
-                draw_wrapped_text(renderer, font, "CALIBRATION COMPLETE. Swiping test active (Yellow pointer maps calibrated, Gray crosses map raw). Press ESC to exit.",
-                                  total_w / 2, 30, total_w - 40, text_color);
-            } else {
-                draw_wrapped_text(renderer, font, "NORMAL DIAGNOSTIC MODE. Touch to map yellow block. Press 'C' to start 4-point calibration on display 0.",
-                                  total_w / 2, 30, total_w - 40, text_color);
+            // Count active fingers per screen dynamically
+            int active_counts[5] = {0};
+            for (int f = 0; f < MAX_FINGERS; f++) {
+                if (active_fingers[f].active && !active_fingers[f].released) {
+                    int fx = (int)(active_fingers[f].x * total_w);
+                    int fy = (int)(active_fingers[f].y * total_h);
+                    for (int d = 0; d < num_displays; d++) {
+                        if (fx >= displays[d].x && fx < displays[d].x + displays[d].w &&
+                            fy >= displays[d].y && fy < displays[d].y + displays[d].h) {
+                            active_counts[d]++;
+                            break;
+                        }
+                    }
+                }
             }
 
-            if (last_raw_x != -1 && last_raw_y != -1) {
-                if (all_calibrated) {
-                    // Draw raw tracking crosshair
-                    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
-                    SDL_RenderDrawLine(renderer, last_raw_x - 10, last_raw_y, last_raw_x + 10, last_raw_y);
-                    SDL_RenderDrawLine(renderer, last_raw_x, last_raw_y - 10, last_raw_x, last_raw_y + 10);
-                    
-                    // Draw calibrated yellow pointer
-                    SDL_Rect indicator = {last_cal_x - 12, last_cal_y - 12, 24, 24};
-                    SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-                    SDL_RenderFillRect(renderer, &indicator);
+            for (int d = 0; d < num_displays; d++) {
+                if (all_calibrated || multi_touch_mode_enabled) {
+                    if (multi_touch_mode_enabled) {
+                        char hud_buf[256];
+                        int hw_pts = 1;
+                        const char* dev_name = "None Detected";
+                        if (num_queried_devices > 0) {
+                            int dev_idx = (d < num_queried_devices) ? d : (num_queried_devices - 1);
+                            hw_pts = touch_caps[dev_idx].max_points;
+                            dev_name = touch_caps[dev_idx].name;
+                        }
+                        snprintf(hud_buf, sizeof(hud_buf), "Hardware Capability: %s (%d-Point MT) | Active Fingers: %d", 
+                                 dev_name, hw_pts, active_counts[d]);
+                        draw_label(renderer, font, hud_buf, displays[d].x + displays[d].w / 2, displays[d].y + 70, text_color, true);
+
+                        draw_wrapped_text(renderer, font, "MULTI-TOUCH DIAGNOSTIC MODE. Tap with multiple fingers to test hardware limit. Press ESC to exit.",
+                                          displays[d].x + displays[d].w / 2, displays[d].y + 30, displays[d].w - 40, text_color);
+                    } else {
+                        draw_wrapped_text(renderer, font, "CALIBRATION COMPLETE. Swiping test active (Yellow pointer maps calibrated, Gray crosses map raw). Press ESC to exit.",
+                                          displays[d].x + displays[d].w / 2, displays[d].y + 30, displays[d].w - 40, text_color);
+                    }
                 } else {
-                    // Default uncalibrated yellow box
-                    SDL_Rect indicator = {last_raw_x - 12, last_raw_y - 12, 24, 24};
+                    draw_wrapped_text(renderer, font, "NORMAL DIAGNOSTIC MODE. Touch to map yellow block. Press 'C' to start 4-point calibration on display 0.",
+                                      displays[d].x + displays[d].w / 2, displays[d].y + 30, displays[d].w - 40, text_color);
+                }
+            }
+
+            // Render all active/decaying fingers concurrently
+            for (int i = 0; i < MAX_FINGERS; i++) {
+                if (active_fingers[i].active) {
+                    int px, py;
+                    int raw_px = (int)(active_fingers[i].x * total_w);
+                    int raw_py = (int)(active_fingers[i].y * total_h);
+
+                    int matched_d = -1;
+                    for (int d = 0; d < num_displays; d++) {
+                        if (raw_px >= displays[d].x && raw_px < displays[d].x + displays[d].w &&
+                            raw_py >= displays[d].y && raw_py < displays[d].y + displays[d].h) {
+                            matched_d = d;
+                            break;
+                        }
+                    }
+
+                    if (matched_d != -1) {
+                        if (cal_results[matched_d].calibrated) {
+                            double cal_x = smart_round(cal_results[matched_d].A) * active_fingers[i].x +
+                                           smart_round(cal_results[matched_d].B) * active_fingers[i].y +
+                                           smart_round(cal_results[matched_d].C);
+                            double cal_y = smart_round(cal_results[matched_d].D) * active_fingers[i].x +
+                                           smart_round(cal_results[matched_d].E) * active_fingers[i].y +
+                                           smart_round(cal_results[matched_d].F);
+                            
+                            px = (int)(cal_x * total_w);
+                            py = (int)(cal_y * total_h);
+
+                            SDL_SetRenderDrawColor(renderer, 150, 150, 150, active_fingers[i].released ? 80 : 255);
+                            SDL_RenderDrawLine(renderer, raw_px - 10, raw_py, raw_px + 10, raw_py);
+                            SDL_RenderDrawLine(renderer, raw_px, raw_py - 10, raw_px, raw_py + 10);
+                        } else {
+                            px = raw_px;
+                            py = raw_py;
+                        }
+
+                        SDL_Rect finger_box = { px - 15, py - 15, 30, 30 };
+                        SDL_Color finger_col = DISPLAY_COLORS[i % NUM_COLORS];
+
+                        if (active_fingers[i].released) {
+                            // Faded styling overlay for decaying touch release indicators
+                            SDL_SetRenderDrawColor(renderer, finger_col.r, finger_col.g, finger_col.b, 80);
+                            SDL_RenderFillRect(renderer, &finger_box);
+                            SDL_SetRenderDrawColor(renderer, 255, 255, 120, 255);
+                            SDL_RenderDrawRect(renderer, &finger_box);
+                        } else {
+                            // Solid filled styling overlay for active touch inputs
+                            SDL_SetRenderDrawColor(renderer, finger_col.r, finger_col.g, finger_col.b, 255);
+                            SDL_RenderFillRect(renderer, &finger_box);
+                            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                            SDL_RenderDrawRect(renderer, &finger_box);
+                        }
+
+                        // Draw slot ID label shifted upwards in white to ensure complete visibility above finger boundary
+                        char id_lbl[16];
+                        snprintf(id_lbl, sizeof(id_lbl), "#%d", i + 1);
+                        draw_label(renderer, font, id_lbl, px, py - 35, text_color, true);
+                    }
+                }
+            }
+
+            // Single touch legacy fallback rendering
+            if (!all_calibrated && !multi_touch_mode_enabled && last_raw_x != -1 && last_raw_y != -1) {
+                int matched_d = -1;
+                for (int d = 0; d < num_displays; d++) {
+                    if (last_raw_x >= displays[d].x && last_raw_x < displays[d].x + displays[d].w &&
+                        last_raw_y >= displays[d].y && last_raw_y < displays[d].y + displays[d].h) {
+                        matched_d = d;
+                        break;
+                    }
+                }
+                if (matched_d != -1) {
+                    SDL_Rect indicator = { last_raw_x - 12, last_raw_y - 12, 24, 24 };
                     SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
                     SDL_RenderFillRect(renderer, &indicator);
                 }
@@ -886,7 +1158,7 @@ int main(int argc, char* argv[]) {
             int ty = (int)(target_points[calibration_step].y * total_h);
 
             int radius = 20 + (int)(5 * sin(SDL_GetTicks() * 0.01));
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            SDL_SetRenderDrawColor(renderer, 255, 0, 255, 255);
             SDL_RenderDrawLine(renderer, tx - radius, ty, tx + radius, ty);
             SDL_RenderDrawLine(renderer, tx, ty - radius, tx, ty + radius);
 
@@ -896,6 +1168,7 @@ int main(int argc, char* argv[]) {
 
             char step_lbl[32];
             snprintf(step_lbl, sizeof(step_lbl), "Point %d of 4", calibration_step + 1);
+            // Corrected render targets arguments for multi-render loop support
             draw_label(renderer, font, step_lbl, tx, ty - radius - 15, text_color, true);
         } else if (app_state == STATE_VERIFYING) {
             SDL_Rect current_bounds = displays[current_cal_display];
@@ -904,6 +1177,7 @@ int main(int argc, char* argv[]) {
             SDL_Color verify_col = {50, 255, 50, 255};
             draw_thick_border(renderer, current_bounds, 6, verify_col);
 
+            // Fixed: changed target render structure back to "renderer" instead of array variable
             draw_wrapped_text(renderer, font, "CALIBRATION PREVIEW: Drag your finger across the display to test alignment. Tap Red to Retry, or Green to Save.",
                               current_bounds.x + current_bounds.w / 2, current_bounds.y + current_bounds.h / 3, current_bounds.w - 40, text_color);
 
@@ -925,15 +1199,20 @@ int main(int argc, char* argv[]) {
             }
 
             if (last_raw_x != -1 && last_raw_y != -1) {
-                SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
-                SDL_RenderDrawLine(renderer, last_raw_x - 10, last_raw_y, last_raw_x + 10, last_raw_y);
-                SDL_RenderDrawLine(renderer, last_raw_x, last_raw_y - 10, last_raw_x, last_raw_y + 10);
-                draw_label(renderer, font, "Raw", last_raw_x, last_raw_y + 15, text_color, true);
+                int local_raw_x = last_raw_x - current_bounds.x;
+                int local_raw_y = last_raw_y - current_bounds.y;
+                int local_cal_x = last_cal_x - current_bounds.x;
+                int local_cal_y = last_cal_y - current_bounds.y;
 
-                SDL_Rect cal_box = { last_cal_x - 8, last_cal_y - 8, 16, 16 };
+                SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
+                SDL_RenderDrawLine(renderer, local_raw_x - 10, local_raw_y, local_raw_x + 10, local_raw_y);
+                SDL_RenderDrawLine(renderer, local_raw_x, local_raw_y - 10, local_raw_x, local_raw_y + 10);
+                draw_label(renderer, font, "Raw", local_raw_x, local_raw_y + 15, text_color, true);
+
+                SDL_Rect cal_box = { local_cal_x - 8, local_cal_y - 8, 16, 16 };
                 SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
                 SDL_RenderFillRect(renderer, &cal_box);
-                draw_label(renderer, font, "Calibrated", last_cal_x, last_cal_y - 18, text_color, true);
+                draw_label(renderer, font, "Calibrated", local_cal_x, local_cal_y - 18, text_color, true);
             }
         }
 
@@ -943,10 +1222,10 @@ int main(int argc, char* argv[]) {
     if (font) TTF_CloseFont(font);
     TTF_Quit();
 
-    free(cal_results);
-    free(displays);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    free(cal_results);
+    free(displays);
     SDL_Quit();
     printf("\n[SDL2_TOUCH_TEST] Test closed successfully.\n");
     return 0;
