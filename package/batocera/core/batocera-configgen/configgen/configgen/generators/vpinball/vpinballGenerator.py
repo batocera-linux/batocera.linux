@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import configparser
 import logging
-import shutil
 from typing import TYPE_CHECKING
 
 from batocera_common.configparser import CaseSensitiveConfigParser
@@ -35,10 +34,10 @@ class VPinballGenerator(Generator):
         vpinballLogFile        = vpinballConfigPath / "vpinball.log"
         vpinballPinmameIniPath = vpinballConfigPath / "pinmame" / "ini"
 
-        # create vpinball config directory and default config file if they don't exist
+        # create vpinball config directory and a fresh config file if they don't exist
         mkdir_if_not_exists(vpinballConfigPath)
         if not vpinballConfigFile.exists():
-            shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFile)
+            vpinballConfigFile.write_text("")
         mkdir_if_not_exists(vpinballPinmameIniPath)
         if vpinballLogFile.exists():
             vpinballLogFile.rename(vpinballLogFile.with_suffix(f"{vpinballLogFile.suffix}.1"))
@@ -49,8 +48,8 @@ class VPinballGenerator(Generator):
             vpinballSettings.read(vpinballConfigFile)
         except configparser.DuplicateOptionError as e:
             _logger.debug("Error reading VPinballX.ini: %s", e)
-            _logger.debug("*** Using default VPinballX.ini file ***")
-            shutil.copy("/usr/bin/vpinball/assets/Default_VPinballX.ini", vpinballConfigFile)
+            _logger.debug("*** Recreating a fresh VPinballX.ini file ***")
+            vpinballConfigFile.write_text("")
             vpinballSettings = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True)
             vpinballSettings.read(vpinballConfigFile)
 
