@@ -1,0 +1,149 @@
+#!/bin/sh
+# Consolidated Batocera Temperature Sensor Script
+# Usage: batocera-temp [--cpu | --gpu | --battery]
+
+TARGET_MODE="$1"
+
+# Target variables
+BEST_CPU=""
+BEST_ANY=""
+BEST_GPU=""
+BEST_BAT=""
+
+classify_temp() {
+    local label="$1"
+    local file="$2"
+    local v
+
+    IFS= read -r v < "$file" 2>/dev/null || return
+
+    case "$v" in
+        ''|*[!0-9-]*) return ;;
+    esac
+
+    # Convert micro-degrees (uC) to Celsius
+    local c=$(( v / 1000 ))
+
+    # Sanity checks
+    [ "$c" -gt 0 ] 2>/dev/null || return
+    [ "$c" -lt 130 ] 2>/dev/null || return
+
+    # 1. CPU / Generic Fallback (identical to original fallback rules)
+    if [ -z "$BEST_ANY" ] || [ "$c" -gt "$BEST_ANY" ]; then
+        BEST_ANY="$c"
+    fi
+
+    case "$label" in
+        *[Cc][Pp][Uu]*|*[Cc][Ll][Uu][Ss][Tt][Ee][Rr]*)
+            if [ -z "$BEST_CPU" ] || [ "$c" -gt "$BEST_CPU" ]; then
+                BEST_CPU="$c"
+            fi
+            ;;
+    esac
+
+    # 2. GPU Detection
+    case "$label" in
+        *[Gg][Pp][Uu]*|*[Gg][Rr][Aa][Pp][Hh][Ii][Cc][Ss]*)
+            if [ -z "$BEST_GPU" ] || [ "$c" -gt "$BEST_GPU" ]; then
+                BEST_GPU="$c"
+            fi
+            ;;
+    esac
+
+    # 3. Battery Detection (Excludes hot charging chips)
+    case "$label" in
+        *[Bb][Aa][Tt][Tt]*)
+            case "$label" in
+                *[Cc][Hh][Aa][Rr][Gg][Ee]*) ;; # Ignore charger chips
+                *)
+                    if [ -z "$BEST_BAT" ] || [ "$c" -gt "$BEST_BAT" ]; then
+                        BEST_BAT="$c"
+                    fi
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+# Scan only /sys/class/thermal/thermal_zone* to avoid duplicate path scans
+for z in /sys/class/thermal/thermal_zone*; do
+    [ -f "$z/temp" ] || continue
+    [ -f "$z/type" ] || continue
+
+    IFS= read -r label < "$z/type" 2>/dev/null || label=""
+    classify_temp "$label" "$z/temp"
+done
+
+# Scan hardware monitors
+for h in /sys/class/hwmon/hwmon*; do
+    [ -d "$h" ] || continue
+
+    IFS= read -r name < "$h/name" 2>/dev/null || name=""
+
+    # Skip known slow/hanging drivers
+    case "$name" in
+        ath10k_hwmon|ath11k_hwmon|ath12k_hwmon) continue ;;
+    esac
+
+    for t in "$h"/temp*_input; do
+        [ -f "$t" ] || continue
+
+        label_file="${t%_input}_label"
+        if [ -f "$label_file" ]; then
+            IFS= read -r label < "$label_file" 2>/dev/null || label=""
+        else
+            label=""
+        fi
+
+        classify_temp "$name $label" "$t"
+    done
+done
+
+# Output handling based on the argument provided
+case "$TARGET_MODE" in
+    --cpu)
+        if [ -n "$BEST_CPU" ]; then
+            echo "${BEST_CPU}"
+        elif [ -n "$BEST_ANY" ]; then
+            echo "${BEST_ANY}"
+        else
+            echo "0"
+        fi
+        ;;
+    --gpu)
+        if [ -n "$BEST_GPU" ]; then
+            echo "${BEST_GPU}"
+        else
+            echo "0"
+        fi
+        ;;
+    --battery)
+        # Fallback to power_supply subsystem if no thermal zone/hwmon battery was found
+        if [ -z "$BEST_BAT" ]; then
+            for p in /sys/class/power_supply/*; do
+                [ -f "$p/temp" ] || continue
+                IFS= read -r v < "$p/temp" 2>/dev/null || continue
+                case "$v" in ''|*[!0-9-]*) continue ;; esac
+                
+                # power_supply/temp is stored in tenths of a degree (e.g. 275 = 27.5C)
+                c=$(( v / 10 ))
+                if [ "$c" -gt 0 ] && [ "$c" -lt 130 ]; then
+                    BEST_BAT="$c"
+                    break
+                fi
+            done
+        fi
+
+        if [ -n "$BEST_BAT" ]; then
+            echo "${BEST_BAT}"
+        else
+            echo "0"
+        fi
+        ;;
+    *)
+        echo "Usage: $0 [--cpu | --gpu | --battery]"
+        exit 1
+        ;;
+esac
+
+exit 0
