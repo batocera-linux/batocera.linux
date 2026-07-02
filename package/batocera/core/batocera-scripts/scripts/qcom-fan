@@ -81,7 +81,7 @@ def load_config(fname):
 def get_cpu_temp():
     try:
         out = subprocess.check_output(
-            ["batocera-cpu-temp"],
+            ["batocera-temp --cpu"],
             text=True,
             stderr=subprocess.DEVNULL
         ).strip()

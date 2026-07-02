@@ -25,6 +25,43 @@ getCpu() {
 }
 
 # ---------------------------------------------------------------------------
+# GPU: Multi-layered name discovery (PC & ARM support)
+# ---------------------------------------------------------------------------
+get_gpu_name() {
+    local name=""
+
+    # Try Batocera's Vulkan helper (most accurate for modern PC/ARM)
+    if [ "$(batocera-vulkan hasVulkan 2>/dev/null)" = "true" ]; then
+        if [ "$(batocera-vulkan hasDiscrete 2>/dev/null)" = "true" ]; then
+            name=$(batocera-vulkan discreteName 2>/dev/null | tr -d '\n')
+        else
+            name=$(batocera-vulkan defaultName 2>/dev/null | tr -d '\n')
+        fi
+    fi
+
+    # Fallback to glxinfo (requires active display)
+    if [ -z "$name" ] && command -v glxinfo >/dev/null 2>&1; then
+        name=$(DISPLAY=$(getLocalXDisplay) glxinfo 2>/dev/null | awk -F': ' '/OpenGL renderer string:/{print $2}')
+    fi
+
+    # Fallback to lspci (x86 systems)
+    if [ -z "$name" ] && command -v lspci >/dev/null 2>&1; then
+        name=$(lspci 2>/dev/null | grep -iE "vga|3d|display" | head -n1 | cut -d':' -f3- | sed 's/^ //')
+    fi
+
+    # Fallback to common ARM platform paths (Qualcomm Snapdragon/Adreno)
+    if [ -z "$name" ]; then
+        if [ -f /sys/class/kgsl/kgsl-3d0/gpu_model ]; then
+            name=$(cat /sys/class/kgsl/kgsl-3d0/gpu_model 2>/dev/null)
+        elif [ -f /sys/devices/platform/soc/soc:gpu/gpu_model ]; then
+            name=$(cat /sys/devices/platform/soc/soc:gpu/gpu_model 2>/dev/null)
+        fi
+    fi
+
+    echo "$name"
+}
+
+# ---------------------------------------------------------------------------
 # Battery capacity
 # ---------------------------------------------------------------------------
 BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
@@ -252,7 +289,7 @@ fi
 # ---------------------------------------------------------------------------
 # Temperature
 # ---------------------------------------------------------------------------
-echo "Temperature: $(batocera-cpu-temp)C"
+echo "CPU Temperature: $(batocera-temp --cpu)°C"
 
 # ---------------------------------------------------------------------------
 # Memory
@@ -295,6 +332,20 @@ if [ "${FULL_DISPLAY}" -ne 0 ]; then
         fi
     done
     NUM_TOUCH=${#touch_names[@]}
+fi
+
+# ---------------------------------------------------------------------------
+# GPU Info (--full only, bypassed if temp is 0)
+# ---------------------------------------------------------------------------
+if [ "${FULL_DISPLAY}" -ne 0 ]; then
+    GPU_TEMP=$(batocera-temp --gpu 2>/dev/null)
+    if [ -n "${GPU_TEMP}" ] && [ "${GPU_TEMP}" != "0" ]; then
+        GPU_NAME=$(get_gpu_name)
+        if [ -n "${GPU_NAME}" ]; then
+            echo "GPU Name: ${GPU_NAME}"
+        fi
+        echo "GPU Temperature: ${GPU_TEMP}°C"
+    fi
 fi
 
 # ---------------------------------------------------------------------------
@@ -444,18 +495,24 @@ if [[ "${FULL_DISPLAY}" != 0 ]]; then
 
     # Vulkan
     if [ "$(batocera-vulkan hasVulkan 2>/dev/null)" = "true" ]; then
+        echo "Vulkan Supported: Yes"
+        
         if [ "$(batocera-vulkan hasDiscrete 2>/dev/null)" = "true" ]; then
-            echo "Vulkan Driver Name: $(batocera-vulkan discreteName 2>/dev/null | tr -d '\n')"
-            discreteIndex=$(batocera-vulkan discreteIndex 2>/dev/null)
-            apiVersion=$(vulkaninfo 2>/dev/null | \
-                awk "/GPU${discreteIndex}/{found=1} found && /apiVersion/{print \$3; exit}")
-            echo "Vulkan Driver Version: $apiVersion"
+            echo "Vulkan Uses Discrete GPU: Yes"
         else
-            echo "Vulkan Driver Name: $(batocera-vulkan listDevices 2>/dev/null | tr -d '\n')"
-            apiVersion=$(vulkaninfo 2>/dev/null | \
-                awk '/GPU0/{found=1} found && /apiVersion/{print $3; exit}')
-            echo "Vulkan Driver Version: $apiVersion"
+            echo "Vulkan Uses Discrete GPU: No"
         fi
+
+        apiVersion=$(batocera-vulkan vulkanVersion 2>/dev/null)
+        if [ -n "${apiVersion}" ] && [ "${apiVersion}" != "No Vulkan driver found!" ]; then
+            # Format and clean up raw hex/integer indicators if present (e.g. 0x401066 (1.1.102))
+            if [[ "${apiVersion}" =~ \((.+)\) ]]; then
+                apiVersion="${BASH_REMATCH[1]}"
+            fi
+            echo "Vulkan Driver Version: ${apiVersion}"
+        fi
+    else
+        echo "Vulkan Supported: No"
     fi
 fi
 
@@ -540,6 +597,16 @@ for BAT_PATH in /sys/class/power_supply/BAT* /sys/class/power_supply/bat*; do
         fi
     fi
 done
+
+# ---------------------------------------------------------------------------
+# Battery Temperature (--full only, bypassed if 0)
+# ---------------------------------------------------------------------------
+if [ "${FULL_DISPLAY}" -ne 0 ]; then
+    BATT_TEMP=$(batocera-temp --battery 2>/dev/null)
+    if [ -n "${BATT_TEMP}" ] && [ "${BATT_TEMP}" != "0" ]; then
+        echo "Battery Temperature: ${BATT_TEMP}°C"
+    fi
+fi
 
 # ---------------------------------------------------------------------------
 # PAD / controller battery levels

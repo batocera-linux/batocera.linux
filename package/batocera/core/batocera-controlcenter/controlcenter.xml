@@ -136,8 +136,8 @@
 		<feature display="CPU:">
 			<progressbar display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}" min="0" max="100" refresh="1" />
 		</feature>
-		<feature display="Temp:">
-			<text display="${batocera-cpu-temp}C" refresh="3" />
+		<feature display="CPU Temp:">
+			<text display="${batocera-temp --cpu}C" refresh="3" />
 		</feature>
 		<feature display="Resolution:">
 			<text display="${batocera-resolution currentResolution}" />
