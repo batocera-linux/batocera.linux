@@ -264,6 +264,40 @@ MEM_AVAILABLE_MB=$(( MEM_AVAILABLE_KB / 1024 ))
 echo "Available Memory: ${MEM_AVAILABLE_MB}/${MEM_TOTAL_MB} MB"
 
 # ---------------------------------------------------------------------------
+# Pre-detect Touchscreens (Only for --full mode)
+# ---------------------------------------------------------------------------
+touch_names=()
+touch_mt=()
+touch_nodes=()
+NUM_TOUCH=0
+
+if [ "${FULL_DISPLAY}" -ne 0 ]; then
+    for ev in /sys/class/input/event*; do
+        [ -e "$ev" ] || continue
+        # Verify if classified as a touchscreen by udev
+        if udevadm info -q property "$ev" 2>/dev/null | grep -q "ID_INPUT_TOUCHSCREEN=1"; then
+            name="Unknown Touchscreen"
+            [ -f "${ev}/device/name" ] && name=$(cat "${ev}/device/name" 2>/dev/null)
+            touch_names+=("${name}")
+            touch_nodes+=("$(basename "${ev}")")
+            
+            is_mt="No"
+            if [ -f "${ev}/device/capabilities/abs" ]; then
+                abs_hex=$(cat "${ev}/device/capabilities/abs" 2>/dev/null | tr -d ' ')
+                if [ -n "${abs_hex}" ]; then
+                    # Bit 47 corresponds to ABS_MT_SLOT (0x800000000000 in hex)
+                    if (( (0x${abs_hex} & 0x800000000000) != 0 )) 2>/dev/null; then
+                        is_mt="Yes"
+                    fi
+                fi
+            fi
+            touch_mt+=("${is_mt}")
+        fi
+    done
+    NUM_TOUCH=${#touch_names[@]}
+fi
+
+# ---------------------------------------------------------------------------
 # Display server / compositor / outputs
 # ---------------------------------------------------------------------------
 DISPLAY_SERVER=$(batocera-resolution getDisplayMode 2>/dev/null)
@@ -293,6 +327,45 @@ if [ "${NUM_OUTPUTS}" -le 1 ]; then
     DISPLAYRATE=$(get_displayrate "$(batocera-resolution currentMode 2>/dev/null)")
     echo "Display Resolution: ${DISPLAYRES}"
     echo "Display Refresh Rate: ${DISPLAYRATE}Hz"
+    
+    # Interleave matching touchscreen output (singular layout if only 1 screen detected)
+    if [ "${FULL_DISPLAY}" -ne 0 ]; then
+        if [ "${NUM_TOUCH}" -eq 1 ]; then
+            echo "Touchscreen: ${touch_names[0]}"
+            if [ "${touch_mt[0]}" = "Yes" ]; then
+                pts=""
+                if command -v python3 >/dev/null 2>&1; then
+                    pts=$(python3 -c "import os, fcntl, struct; fd=os.open('/dev/input/${touch_nodes[0]}', os.O_RDONLY); buf=bytearray(24); fcntl.ioctl(fd, 0x8018456f, buf); print(struct.unpack('i'*6, buf)[2]+1)" 2>/dev/null)
+                fi
+                if [ -n "${pts}" ]; then
+                    echo "Touchscreen Multi-touch: Yes (${pts} touch points)"
+                else
+                    echo "Touchscreen Multi-touch: Yes"
+                fi
+            else
+                echo "Touchscreen Multi-touch: No"
+            fi
+        elif [ "${NUM_TOUCH}" -gt 1 ]; then
+            idx=1
+            for i in "${!touch_names[@]}"; do
+                echo "Touchscreen Output ${idx}: ${touch_names[$i]}"
+                if [ "${touch_mt[$i]}" = "Yes" ]; then
+                    pts=""
+                    if command -v python3 >/dev/null 2>&1; then
+                        pts=$(python3 -c "import os, fcntl, struct; fd=os.open('/dev/input/${touch_nodes[$i]}', os.O_RDONLY); buf=bytearray(24); fcntl.ioctl(fd, 0x8018456f, buf); print(struct.unpack('i'*6, buf)[2]+1)" 2>/dev/null)
+                    fi
+                    if [ -n "${pts}" ]; then
+                        echo "Touchscreen Multi-touch ${idx}: Yes (${pts} touch points)"
+                    else
+                        echo "Touchscreen Multi-touch ${idx}: Yes"
+                    fi
+                else
+                    echo "Touchscreen Multi-touch ${idx}: No"
+                fi
+                idx=$(( idx + 1 ))
+            done
+        fi
+    fi
 else
     i=1
     for output in ${OUTPUTS}; do
@@ -306,8 +379,52 @@ else
         echo "Display Output ${i}: ${output}"
         echo "Display Resolution ${i}: ${DISPLAYRES}"
         echo "Display Refresh Rate ${i}: ${DISPLAYRATE}Hz"
+        
+        # Interleave matching touchscreen output for index i
+        if [ "${FULL_DISPLAY}" -ne 0 ]; then
+            t_idx=$(( i - 1 ))
+            if [ -n "${touch_names[$t_idx]}" ]; then
+                echo "Touchscreen Output ${i}: ${touch_names[$t_idx]}"
+                if [ "${touch_mt[$t_idx]}" = "Yes" ]; then
+                    pts=""
+                    if command -v python3 >/dev/null 2>&1; then
+                        pts=$(python3 -c "import os, fcntl, struct; fd=os.open('/dev/input/${touch_nodes[$t_idx]}', os.O_RDONLY); buf=bytearray(24); fcntl.ioctl(fd, 0x8018456f, buf); print(struct.unpack('i'*6, buf)[2]+1)" 2>/dev/null)
+                    fi
+                    if [ -n "${pts}" ]; then
+                        echo "Touchscreen Multi-touch ${i}: Yes (${pts} touch points)"
+                    else
+                        echo "Touchscreen Multi-touch ${i}: Yes"
+                    fi
+                else
+                    echo "Touchscreen Multi-touch ${i}: No"
+                fi
+            fi
+        fi
+        
         i=$(( i + 1 ))
     done
+    
+    # Catch-all loop for extra touchscreens if touch count exceeds display count
+    if [ "${FULL_DISPLAY}" -ne 0 ]; then
+        while [ "${i}" -le "${NUM_TOUCH}" ]; do
+            t_idx=$(( i - 1 ))
+            echo "Touchscreen Output ${i}: ${touch_names[$t_idx]}"
+            if [ "${touch_mt[$t_idx]}" = "Yes" ]; then
+                pts=""
+                if command -v python3 >/dev/null 2>&1; then
+                    pts=$(python3 -c "import os, fcntl, struct; fd=os.open('/dev/input/${touch_nodes[$t_idx]}', os.O_RDONLY); buf=bytearray(24); fcntl.ioctl(fd, 0x8018456f, buf); print(struct.unpack('i'*6, buf)[2]+1)" 2>/dev/null)
+                fi
+                if [ -n "${pts}" ]; then
+                    echo "Touchscreen Multi-touch ${i}: Yes (${pts} touch points)"
+                else
+                    echo "Touchscreen Multi-touch ${i}: Yes"
+                fi
+            else
+                echo "Touchscreen Multi-touch ${i}: No"
+            fi
+            i=$(( i + 1 ))
+        done
+    fi
 fi
 
 # ---------------------------------------------------------------------------
