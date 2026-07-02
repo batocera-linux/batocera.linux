@@ -7,6 +7,8 @@
 DRASTIC_VERSION = r2.5.2.2
 DRASTIC_SOURCE = drastic.tar.gz
 DRASTIC_SITE = https://github.com/dmanlfc/drastic/raw/refs/heads/main
+DRASTIC_DEPENDENCIES = sdl2
+
 DRASTIC_EMULATOR_INFO = drastic.emulator.yml
 
 define DRASTIC_BUILD_CMDS
