@@ -140,6 +140,24 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                     gameResolution["height"] = x
                 _logger.debug('resolution: %sx%s', gameResolution["width"], gameResolution["height"])
 
+                try:
+                    res = subprocess.run(
+                        ["/usr/bin/batocera-resolution", "listOutputs"],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        timeout=3
+                    )
+                    outputs = res.stdout.split() if res.returncode == 0 else []
+
+                    if len(outputs) > 1:
+                        _logger.debug("Multiple displays detected (%s). Resetting mouse to primary display", ", ".join(outputs))
+                        subprocess.call(["/usr/bin/hotkeygen", "--reset-mouse"])
+                    else:
+                        _logger.debug("Single display detected (%s). Skipping mouse reset to keep cursor hidden", ", ".join(outputs) if outputs else "default")
+                except Exception as e:
+                    _logger.warning("Failed to check display count or reset mouse: %s", e)
+
                 # savedir: create the save directory if not already done
                 dirname = SAVES / system.name
                 if not dirname.exists():
@@ -218,11 +236,6 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         _logger.error(e)
 
                     with profiler.pause():
-                        try:
-                            _logger.debug("Triggering mouse reset to primary display")
-                            subprocess.call(["/usr/bin/hotkeygen", "--reset-mouse"])
-                        except Exception as e:
-                            _logger.warning("Failed to reset mouse: %s", e)
                         monitor_thread.start()
                         exitCode = runCommand(cmd)
 
