@@ -3,6 +3,8 @@
 GSYSTEM=$1
 GPATH=$2
 
+echo "${GSYSTEM}" > /tmp/es_active_system.txt
+
 txt2http() {
     jq -sRr @uri
 }

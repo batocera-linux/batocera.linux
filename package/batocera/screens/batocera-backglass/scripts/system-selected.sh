@@ -2,6 +2,8 @@
 
 GSYSTEM=$1
 
+echo "${GSYSTEM}" > /tmp/es_active_system.txt
+
 txt2http() {
     jq -sRr @uri
 }

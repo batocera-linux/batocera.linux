@@ -102,6 +102,30 @@ class BackglassAPI(BaseHTTPRequestHandler):
             self.wfile.write(bytes("ERROR\n", "utf-8"))
 
 def handle_api(window):
+    def on_loaded():
+        state_file = "/tmp/es_active_system.txt"
+        if os.path.exists(state_file):
+            try:
+                with open(state_file, "r") as f:
+                    system = f.read().strip()
+                if system:
+                    with urllib.request.urlopen("http://localhost:1234/systems/{}".format(system)) as url:
+                        data = json.load(url)
+                        for prop in ["logo"]:
+                            if prop in data:
+                                for ext in BackglassAPI.imgvideo_extensions:
+                                    if os.path.exists("/userdata/system/backglass/systems/{}/{}.{}".format(system, prop, ext)):
+                                        data[prop] = "http://localhost:2033/static/images/systems/{}/{}.{}".format(system, prop, ext)
+                                        break
+                                else:
+                                    data[prop] = "http://localhost:1234" + data[prop]
+
+                        window.evaluate_js("onSystem(" + json.dumps(data) + ")")
+            except Exception as e:
+                print("Error restoring active state:", e)
+
+    window.events.loaded += on_loaded
+
     webServer = HTTPServer(("localhost", 2033), BackglassAPI)
     print("Server started http://%s:%s" % ("localhost", 2033))
     try:
