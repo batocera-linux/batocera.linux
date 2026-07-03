@@ -98,6 +98,32 @@ start() {
 				/<action name="FocusOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
 			}' "${RC_XML_PATH}"
 		fi
+		
+		# --- Check for touchscreen and configure it ---
+		TOUCHSCREEN_LIST=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]}}')
+		if [ -n "${TOUCHSCREEN_LIST}" ]; then
+			NUM_TOUCH=$(echo "${TOUCHSCREEN_LIST}" | grep -v '^$' | wc -l)
+		else
+			NUM_TOUCH=0
+		fi
+
+		# Always strip any existing <touch> line to keep a clean slate
+		sed -i '/<touch /d' "${RC_XML_PATH}"
+
+		if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${PRIMARY_OUT}" ]; then
+			TOUCHSCREEN="${TOUCHSCREEN_LIST}"
+			echo "One touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${PRIMARY_OUT}." >>"$display_log"
+			sed -i "s|^\([[:space:]]*\)</core>|\1</core>\n\1<touch deviceName=\"${TOUCHSCREEN}\" mapToOutput=\"${PRIMARY_OUT}\" mouseEmulation=\"no\"/>|" "${RC_XML_PATH}"
+		else
+			if [ "${NUM_TOUCH}" -eq 0 ]; then
+				echo "No touchscreen found. Touchscreen configuration omitted/removed." >>"$display_log"
+			elif [ "${NUM_TOUCH}" -gt 1 ]; then
+				echo "Multiple touchscreens detected (${NUM_TOUCH}). Omitting individual touch mapping." >>"$display_log"
+				echo "Use sdl2-touch-test to get the calibration for your touch panels." >>"$display_log"
+			elif [ -z "${PRIMARY_OUT}" ]; then
+				echo "No primary output set. Skipping touchscreen configuration." >>"$display_log"
+			fi
+		fi
 
 		echo "Labwc configuration modification complete." >>"$display_log"
 	else
