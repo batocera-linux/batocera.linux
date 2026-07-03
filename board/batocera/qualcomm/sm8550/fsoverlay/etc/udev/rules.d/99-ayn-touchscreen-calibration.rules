@@ -13,13 +13,3 @@ SUBSYSTEM=="input", KERNEL=="event*", \
   ENV{ID_INPUT_TOUCHSCREEN}=="1", \
   DEVPATH=="*/a90000.i2c/i2c-4/*", \
   ENV{LIBINPUT_CALIBRATION_MATRIX}="1 0 0 0 0.5 0"
-
-# -----------------------------------------------------------------------------
-# AYN Odin 2 Portal touchscreen
-# -----------------------------------------------------------------------------
-
-# Single touchscreen (a90000.i2c -> i2c-3)
-SUBSYSTEM=="input", KERNEL=="event*", \
-  ENV{ID_INPUT_TOUCHSCREEN}=="1", \
-  DEVPATH=="*/a90000.i2c/i2c-3/*", \
-  ENV{LIBINPUT_CALIBRATION_MATRIX}="0 -1 1 1 0 0"
