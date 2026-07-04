@@ -369,24 +369,42 @@ class cubexxled(object):
             if DEBUG:
                 print(f"Error writing to CubeXX hardware: {e}")
 
+    def _get_scaled_brightness(self):
+        b_conf = batoconf("led.brightness")
+        if b_conf is None:
+            return 255
+        try:
+            pct = float(b_conf)
+            if pct <= 100:
+                return int((pct / 100.0) * 255)
+            else:
+                return int(pct)
+        except ValueError:
+            return 255
+
+    def _get_isolated_color(self):
+        # Grabs the theme color and isolates the single dominant primary channel (R, G, or B)
+        # to prevent rapid, multi-channel flashing on native modes.
+        try:
+            r, g, b = [int(x) for x in batoconf_color()]
+            max_val = max(r, g, b)
+            if max_val == 0:
+                return 255, 0, 0 # Fallback default
+            if r == max_val:
+                return max_val, 0, 0
+            elif g == max_val:
+                return 0, max_val, 0
+            else:
+                return 0, 0, max_val
+        except Exception:
+            return 255, 0, 0
+
     def set_color(self, rgb):
         if rgb in ["OFF", "000000"]:
             self.turn_off()
             return
 
-        b_conf = batoconf("led.brightness")
-        if b_conf is None:
-            b_conf = 255
-        else:
-            # Handle config values scaling correctly (percentage to absolute 255 value)
-            try:
-                pct = float(b_conf)
-                if pct <= 100:
-                    b_conf = int((pct / 100.0) * 255)
-                else:
-                    b_conf = int(pct)
-            except ValueError:
-                b_conf = 255
+        b_conf = self._get_scaled_brightness()
 
         if rgb == "ESCOLOR":
             r, g, b = batoconf_color()
@@ -409,15 +427,7 @@ class cubexxled(object):
     def set_color_dec(self, rgb_str):
         try:
             r, g, b = [int(x) for x in rgb_str.split()]
-            b_conf = batoconf("led.brightness") or 255
-            try:
-                pct = float(b_conf)
-                if pct <= 100:
-                    b_conf = int((pct / 100.0) * 255)
-                else:
-                    b_conf = int(pct)
-            except ValueError:
-                b_conf = 255
+            b_conf = self._get_scaled_brightness()
             self.current_color = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
             self._write_hardware(1, b_conf, r, g, b)
         except Exception:
@@ -433,17 +443,17 @@ class cubexxled(object):
         return f"{r} {g} {b}"
 
     def rainbow_effect(self):
-        b_conf = batoconf("led.brightness") or 255
-        # Mode 6 is native Rainbow
-        self._write_hardware(6, b_conf, 0, 0, 0)
+        b_conf = self._get_scaled_brightness()
+        r, g, b = self._get_isolated_color()
+        self._write_hardware(6, b_conf, r, g, b)
 
     def chroma_effect(self):
-        b_conf = batoconf("led.brightness") or 255
-        # Mode 5 is native Chroma
-        self._write_hardware(5, b_conf, 0, 0, 0)
+        b_conf = self._get_scaled_brightness()
+        r, g, b = self._get_isolated_color()
+        self._write_hardware(5, b_conf, r, g, b)
 
     def pulse_effect(self):
-        b_conf = batoconf("led.brightness") or 255
+        b_conf = self._get_scaled_brightness()
         r, g, b = batoconf_color()
         # Mode 3 is a medium speed native Pulse
         # pulsing the user's configured ES color
