@@ -38,6 +38,7 @@
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
 ### Changed / Improved
+- AYN Thor, AYN button now open Batocera Control Center
 - BigPEmu added to capable aarch64 devices
 - Cemu added to capable aarch64 devices
 - New CPU temp helper script - batocera-cpu-temp
