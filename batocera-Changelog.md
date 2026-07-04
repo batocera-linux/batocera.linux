@@ -38,10 +38,10 @@
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
 ### Changed / Improved
-- AYN Thor, AYN button now open Batocera Control Center
+- AYN Thor, AYN button now opens Batocera Control Center
 - BigPEmu added to capable aarch64 devices
 - Cemu added to capable aarch64 devices
-- New CPU temp helper script - batocera-cpu-temp
+- New CPU, GPU & Battery temp helper script - batocera-temp
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
@@ -50,7 +50,8 @@
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
 - Rockcip RK3588 devices moved to the mainline linux kernel:
-  CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5, Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
+  CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5
+  Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - The Force Engine to capable aarch64 devices
 - Vita3k added for capable aarch64 devices
 ### Updated
