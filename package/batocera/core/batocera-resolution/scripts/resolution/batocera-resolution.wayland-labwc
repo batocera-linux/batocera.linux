@@ -481,7 +481,7 @@ case "${ACTION}" in
                 # The variable is already empty, which is what we want.
             fi
             
-            sed -i -e '/<windowRule.*title="backglass"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
+            sed -i -e '/<windowRule.*identifier="batocera-backglass-window"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
                 n
                 s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
             } }' "${RC_XML}"
