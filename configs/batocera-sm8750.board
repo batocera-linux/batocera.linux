@@ -2,11 +2,11 @@ include batocera-board.common
 
 # Target definition
 BR2_aarch64=y
-BR2_cortex_a76_a55=y
+BR2_qualcomm_oryon_1=y
 BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_TOOLCHAIN_BUILDROOT_WCHAR=y
 BR2_PACKAGE_BATOCERA_TARGET_SM8750=y
-BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -march=armv9-a+i8mm+sm4+sha3+rcpc+crypto+nosve+nosve2"
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=oryon-1"
 BR2_TARGET_GENERIC_GETTY_PORT="ttyMSM0"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_TARGET_BATOCERA_IMAGES="qualcomm/sm8750"
