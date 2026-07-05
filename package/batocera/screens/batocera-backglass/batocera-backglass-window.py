@@ -160,5 +160,5 @@ args = parser.parse_args()
 if args.list_missing_customs:
     listMissingCustoms(args.list_missing_customs[0], args.list_missing_customs[1])
 else:
-    window = webview.create_window('backglass', args.www, x=args.x, y=args.y, width=args.width, height=args.height, focus=False)
+    window = webview.create_window('backglass', args.www, x=args.x, y=args.y, width=args.width, height=args.height)
     webview.start(handle_api, window)
