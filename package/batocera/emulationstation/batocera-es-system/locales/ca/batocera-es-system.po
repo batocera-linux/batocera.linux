@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-06 12:45+0200\n"
-"PO-Revision-Date: 2026-06-16 13:27+0200\n"
+"PO-Revision-Date: 2026-06-24 19:47+0200\n"
 "Last-Translator: pedrobarbosa\n"
 "Language-Team: \n"
 "Language: ca\n"
@@ -2654,7 +2654,7 @@ msgstr "PANTALLA PANORÀMICA AUTOMÀTICA"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "AUTOMATIC FRAME DELAY"
-msgstr "RETRÀS DE TAXA DE QUADRES AUTOMÀTICS"
+msgstr "RETRÀS DE FREQÜÈNCIA DE MOSTRATGE AUTOMÀTIC"
 
 #. TRANSLATION: openjkdf2
 msgctxt "game_options"
@@ -3538,8 +3538,8 @@ msgid ""
 "Automatically decrease frame delay temporarily to prevent frame drops. Can "
 "introduce stuttering."
 msgstr ""
-"Disminueix automàticament el retràs de taxa de quadres temporalment per a "
-"evitar salts de quadre. Pot produir quequesa del joc."
+"Disminueix automàticament el retràs de freqüència de mostratge temporalment "
+"per a evitar salts de quadre. Pot produir quequesa del joc."
 
 #. TRANSLATION: pcsx2
 msgctxt "game_options"
@@ -8005,7 +8005,7 @@ msgstr "CD/DVD ACCÈS RÀPID"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "FAST DISK TRANSFER RATE"
-msgstr "TAXA DE TRANFERÈNCIA DE DISC RÀPIDA"
+msgstr "MOSTRATGE DE TRANFERÈNCIA DE DISC RÀPIDA"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -8165,12 +8165,12 @@ msgstr "LÍMIT DE QUADRES"
 #. TRANSLATION: libretro/mupen64plus-next, libretro/parallel_n64
 msgctxt "game_options"
 msgid "FRAME RATE"
-msgstr "TAXA DE REFRESC"
+msgstr "FREQÜÈNCIA DE MOSTRATGE"
 
 #. TRANSLATION: libretro/tyrquake
 msgctxt "game_options"
 msgid "FRAME RATE LIMIT"
-msgstr "LÍMIT DE TAXA DE FOTOGRAMES"
+msgstr "LÍMIT DE FREQÜÈNCIA DE MOSTRATGE"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -8537,9 +8537,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "For emulators and controllers supporting force feedback."
-msgstr ""
-"Per a emuladors i comandaments que suportin informació forçada (force "
-"feedback)."
+msgstr "Per a emuladors i comandaments que suportin force feedback."
 
 #. TRANSLATION: libretro/mesen
 msgctxt "game_options"
@@ -10699,7 +10697,7 @@ msgstr "LÍMIT DE FPS"
 #. TRANSLATION: melonds
 msgctxt "game_options"
 msgid "LIMIT FRAME RATE"
-msgstr "LIMITAR TAXA DE QUADRES"
+msgstr "LIMITAR FREQÜÈNCIA DE MOSTRATGE"
 
 #. TRANSLATION: amiberry
 msgctxt "game_options"
@@ -11760,8 +11758,8 @@ msgstr "Marroc"
 msgctxt "game_options"
 msgid "Most games already have an internal framelimit. Minor performance cost."
 msgstr ""
-"La majoria dels jocs ja tenen un límit de taxa de quadres intern. Cost de "
-"rendiment mínim."
+"La majoria dels jocs ja tenen un límit de freqüència de mostratge intern. "
+"Cost de rendiment mínim."
 
 #. TRANSLATION: libretro/vice_x128, libretro/vice_x64, libretro/vice_x64sc, libretro/vice_xpet, libretro/vice_xplus4, ...
 msgctxt "game_options"
@@ -12478,7 +12476,7 @@ msgstr "BOTÓ DE RECÀRREGA FORA DE PANTALLA"
 #. TRANSLATION: amiberry, libretro/melonds
 msgctxt "game_options"
 msgid "ON"
-msgstr "ENGEGAT"
+msgstr "ENCÈS"
 
 #. TRANSLATION: libretro/melondsds
 msgctxt "game_options"
@@ -12578,12 +12576,12 @@ msgstr "Apagat (més ràpid, inestable)"
 #. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
 msgid "Off at Start"
-msgstr "Apagat al iniciar"
+msgstr "Apagat a l’iniciar"
 
 #. TRANSLATION: libretro/pcsx_rearmed, libretro/virtualjaguar
 msgctxt "game_options"
 msgid "Off is safer, On for specific games."
-msgstr "Apagat és més segur, Engegat per a jocs específics."
+msgstr "Apagat és més segur. Encès, per a jocs específics."
 
 #. TRANSLATION: azahar
 msgctxt "game_options"
@@ -12637,17 +12635,17 @@ msgstr "Oman"
 #. TRANSLATION: azahar, cannonball, dolphin_triforce, drastic, duckstation, ...
 msgctxt "game_options"
 msgid "On"
-msgstr "Engegat"
+msgstr "Encès"
 
 #. TRANSLATION: cemu, libretro/mame, libretro/mamevirtual, libretro/xrick, rpcs3, ...
 msgctxt "game_options"
 msgid "On (Default)"
-msgstr "Engegat (Per defecte)"
+msgstr "Encès (Per defecte)"
 
 #. TRANSLATION: libretro/pcsx_rearmed
 msgctxt "game_options"
 msgid "On (Speed hack)"
-msgstr "Engegat (Truc de velocitat)"
+msgstr "Encès (Truc de velocitat)"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -12657,17 +12655,17 @@ msgstr "Actiu (Només Vulkan)"
 #. TRANSLATION: thextech
 msgctxt "game_options"
 msgid "On (default)"
-msgstr "Engegat (per defecte)"
+msgstr "Encès (per defecte)"
 
 #. TRANSLATION: libretro/81, libretro/genesisplusgx-expanded
 msgctxt "game_options"
 msgid "On (forced)"
-msgstr "Engegat (forçat)"
+msgstr "Encès (forçat)"
 
 #. TRANSLATION: libretro/mame, mame
 msgctxt "game_options"
 msgid "On at Start"
-msgstr "Engegat al iniciar"
+msgstr "Encès a l’iniciar"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
@@ -12682,12 +12680,12 @@ msgstr "A la pantalla 3 si està disponible"
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with game detection message"
-msgstr "Engegat amb missatge de detecció de joc"
+msgstr "Encès amb missatge de detecció de joc"
 
 #. TRANSLATION: libretro/dosbox_pure
 msgctxt "game_options"
 msgid "On with rewind support"
-msgstr "Engegat amb suport de rebobinat"
+msgstr "Encès amb suport de rebobinat"
 
 #. TRANSLATION: rpcs3
 msgctxt "game_options"
@@ -14265,7 +14263,8 @@ msgctxt "game_options"
 msgid ""
 "Reserve a non dead zone at the center of the wheel to go straight ahead (in "
 "degrees)"
-msgstr "Reserva una zona “no-morta” al mig del volant per anar recte (en gras)"
+msgstr ""
+"Reserva una zona “no-morta” al mig del volant per anar recte (en graus)"
 
 #. TRANSLATION: wine
 msgctxt "game_options"
@@ -18080,7 +18079,7 @@ msgstr "V364 NTSC"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "VARIABLE REFRESH RATE"
-msgstr "TAXA DE REFRESC VARIABLE"
+msgstr "FREQÜÈNCIA DE MOSTRATGE VARIABLE"
 
 #. TRANSLATION: libretro/potator
 msgctxt "game_options"
@@ -18170,7 +18169,7 @@ msgstr "AJUSTOS DE VÍDEO"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM BITRATE"
-msgstr "TAXA DE BITS DE TRANSMISSIÓ DE VÍDEO"
+msgstr "FREQÜÈNCIA DE MOSTRATGE DE BITS DE TRANSMISSIÓ DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
@@ -18180,7 +18179,7 @@ msgstr "CÒDEC DE TRANSMISSIÓ DE VÍDEO"
 #. TRANSLATION: moonlight
 msgctxt "game_options"
 msgid "VIDEO STREAM FRAME RATE"
-msgstr "TAXA DE QUADRES DE TRANSMISSIÓ DE VÍDEO"
+msgstr "FREQÜÈNCIA DE MOSTRATGE DE TRANSMISSIÓ DE VÍDEO"
 
 #. TRANSLATION: moonlight
 msgctxt "game_options"
