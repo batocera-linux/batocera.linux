@@ -86,46 +86,6 @@ endif
 # List of packages that are always good to rebuild for versioning/stamps etc
 MANDATORY_REBUILD_PKGS := batocera-es-system batocera-configgen batocera-system batocera-splash
 
-# Lazily evaluated variable to avoid re-evaluation on each use
-# VAR = $(eval VAR := ...)$(VAR)
-
-# List of out-of-tree kernel modules that must be removed if the kernel is reset
-# This list needs to be maintained if new modules are added or removed
-KERNEL_MODULE_PKGS = $(eval KERNEL_MODULE_PKGS := $(sort $(patsubst %.mk,%,$(notdir $(shell grep -rl '\$$(eval \$$(kernel-module))' $(PROJECT_DIR)/package 2>/dev/null)))))$(KERNEL_MODULE_PKGS)
-
-# Across all batocera & buildroot packages find any updates and add to a list to rebuild
-GIT_PACKAGES_TO_REBUILD = $(eval GIT_PACKAGES_TO_REBUILD := $(shell \
-	{ git -C $(PROJECT_DIR) log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; \
-	  git -C $(PROJECT_DIR)/buildroot log --since="$(DAYS) days ago" --name-only --format=%n -- package/ ; } \
-	| grep '^package/' \
-	| while read f; do \
-		dir="$(PROJECT_DIR)/$$f"; \
-		[ -f "$$dir" ] && dir=$$(dirname "$$dir"); \
-		while [ "$$dir" != "$(PROJECT_DIR)/package" ] && [ "$$dir" != "$(PROJECT_DIR)" ]; do \
-			mk=$$(basename "$$dir"); \
-			if ls "$$dir/$$mk.mk" 2>/dev/null | grep -q .; then \
-				echo "$$mk"; break; \
-			fi; \
-			dir=$$(dirname "$$dir"); \
-		done; \
-	done \
-	| sort -u))$(GIT_PACKAGES_TO_REBUILD)
-
-# Base list of all target packages to be reset
-TARGET_PKGS_BASE = $(GIT_PACKAGES_TO_REBUILD) $(MANDATORY_REBUILD_PKGS)
-
-# Check if a kernel package is present and conditionally add 'linux' and kernel modules
-KERNEL_MODULES_TO_RESET = $(if $(filter linux linux-headers,$(TARGET_PKGS_BASE)),linux $(KERNEL_MODULE_PKGS))
-
-# Final list of all target packages to be reset (Base + Conditional Kernel Modules)
-TARGET_PKGS = $(TARGET_PKGS_BASE) $(KERNEL_MODULES_TO_RESET)
-
-# Cheats way, add 'host-' to each target package to ensure we are covered
-HOST_PKGS_TO_RESET = $(addprefix host-,$(TARGET_PKGS))
-
-# Final list is a combination of all target and host packages
-PKGS_TO_RESET = $(sort $(TARGET_PKGS) $(HOST_PKGS_TO_RESET))
-
 # All supported targets based on the board files in configs/, sorted for consistency
 TARGETS := $(sort $(patsubst batocera-%.board,%,$(notdir $(wildcard $(PROJECT_DIR)/configs/*.board))))
 
@@ -354,17 +314,11 @@ ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
 	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)))
-
-	@if [ -n "$(PKGS_TO_RESET)" ]; then \
-		echo "Total packages to reset: $(PKGS_TO_RESET)"; \
-		for pkg in $(PKGS_TO_RESET); do \
-			echo "Surgically removing $$pkg from build and per-package directories..."; \
-			rm -rf $(TARGET_OUTPUT_DIR)/build/$$pkg*; \
-			rm -rf $(TARGET_OUTPUT_DIR)/per-package/$$pkg; \
-		done; \
-	else \
-		echo "No packages to reset."; \
-	fi
+	@python3 $(PROJECT_DIR)/scripts/linux/refresh_resolver.py \
+		--project-dir $(PROJECT_DIR) \
+		--output-dir $(TARGET_OUTPUT_DIR) \
+		--days $(DAYS) \
+		--mandatory "$(MANDATORY_REBUILD_PKGS)"
 
 	@$(call MESSAGE,Removing Host and Target directories)
 	@for dir in include share lib/pkgconfig; do \
