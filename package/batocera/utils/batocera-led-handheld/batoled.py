@@ -12,6 +12,7 @@ Updated for R36 Ultra - @ImanolBarba
 Updated for Legion Go / Go 2 - @dmanlfc
 Updated for LED Mode handling & Chroma - @dmanlfc
 Updated for better LED Mode handling for various devices - @dmanlfc
+Fix strobe effect when changing LED modes on SM8550 devices - @dmanlfc
 """
 import glob
 import os
@@ -24,6 +25,26 @@ EFFECT_STEP = 60     # how many colors in the effect
 EFFECT_DURATION = 2  # how many seconds
 PULSE_DURATION  = 1  # how many seconds
 DEFAULT_ES_COLOR = '255 0 165'
+
+BLOCK_FILE = '/var/run/led-handheld-block'
+LED_CHANGE_TIME = 120
+
+# Ecosystem Interruption Check
+def check_interrupt(expected_mode):
+    # Check if user selected another mode
+    if batoconf("led.mode") != expected_mode:
+        return True
+    # Check if color changes are locked/blocked
+    try:
+        if os.path.exists(BLOCK_FILE):
+            with open(BLOCK_FILE, "r") as fp:
+                line = fp.read().strip()
+                val = float(line)
+                if val > 0 and (time.time() - val) < LED_CHANGE_TIME:
+                    return True
+    except:
+        pass
+    return False
 
 ####################
 # Is your handheld supported by this library?
@@ -699,6 +720,8 @@ class dual_multiled(object):
 
         # Create a chasing color wheel using quadrant phase-shifting (Rainbow)
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
             # Sweep Left Joystick quadrants
             for j, p in enumerate(self.left_paths):
                 val = (float(i) / EFFECT_STEP + float(j) / len(self.left_paths)) % 1.0
@@ -727,7 +750,8 @@ class dual_multiled(object):
             
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
             
-        if batoconf("led.mode") != "rainbow":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
@@ -743,23 +767,29 @@ class dual_multiled(object):
 
         # Cycle all segments in unison through the spectrum (Chroma / Color Cycle) [3]
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
             o = getRainbowRGB(float(i/EFFECT_STEP))
             r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
             self._write_hardware(b_conf, r, g, b)
             time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
             
-        if batoconf("led.mode") != "chroma":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         r, g, b = batoconf_color()
         base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
             o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
             
-        if batoconf("led.mode") != "pulse":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def turn_off(self):
@@ -872,6 +902,8 @@ class multiled(object):
 
         # Sweeping colour wheel across all segments per ring (Rainbow)
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
             # Sweep Left Joystick quadrants
             for j, p in enumerate(self.left_paths):
                 val = (float(i) / EFFECT_STEP + float(j) / len(self.left_paths)) % 1.0
@@ -900,7 +932,8 @@ class multiled(object):
             
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
             
-        if batoconf("led.mode") != "rainbow":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
@@ -916,22 +949,30 @@ class multiled(object):
 
         # Cycle all 18 segments in unison through the spectrum (Chroma)
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
             o = getRainbowRGB(float(i/EFFECT_STEP))
             r, g, b = hex_to_dec(o[0:2]), hex_to_dec(o[2:4]), hex_to_dec(o[4:6])
             self._write_hardware(b_conf, r, g, b)
             
             time.sleep((EFFECT_DURATION * 2) / EFFECT_STEP)
             
-        if batoconf("led.mode") != "chroma":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         prev = self.get_color()
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
             o = getPulseRGB(i, EFFECT_STEP, prev)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def turn_off(self):
         self._write_hardware(0, 0, 0, 0)
@@ -1353,10 +1394,15 @@ class rgbled(object):
     def rainbow_effect(self):
         prev = self.get_color()
         for i in range (0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
             o = getRainbowRGB(float (i/EFFECT_STEP))
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def chroma_effect(self):
         self.rainbow_effect()
@@ -1364,10 +1410,15 @@ class rgbled(object):
     def pulse_effect(self):
         prev = self.get_color()
         for i in range (0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
             o = getPulseRGB(i, EFFECT_STEP, prev)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def turn_off(self):
         self.set_color("000000")
@@ -1547,21 +1598,41 @@ class pwmled(object):
     def rainbow_effect(self):
         prev = self.get_color()
         for i in range (0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
             o = getRainbowRGB(float (i/EFFECT_STEP))
             self.set_color(o)
             time.sleep(EFFECT_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        self.rainbow_effect()
+        prev = self.get_color()
+        for i in range (0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
+            o = getRainbowRGB(float (i/EFFECT_STEP))
+            self.set_color(o)
+            time.sleep(EFFECT_DURATION/EFFECT_STEP)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         prev = self.get_color()
         for i in range (0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
             o = getPulseRGB(i, EFFECT_STEP, prev)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
-        self.set_color(prev)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def turn_off(self):
         self.set_color("000000")
@@ -1586,6 +1657,10 @@ class rgbledaddr(object):
         
         # Determine hardware max brightness (usually 255)
         self.max_val = self._get_hw_max()
+
+        self.rainbow_duration = 10.0
+        self.chroma_duration  = 15.0
+        self.pulse_duration   = 6.0
 
     def _get_hw_max(self):
         test_paths = self.all_r + self.all_g + self.all_b
@@ -1682,6 +1757,8 @@ class rgbledaddr(object):
         
         # Create a chasing color wheel using quadrant phase-shifting (Rainbow)
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
             for j in range(1, num_segments + 1):
                 val = (float(i) / EFFECT_STEP + float(j - 1) / num_segments) % 1.0
                 o = getRainbowRGB(val)
@@ -1700,27 +1777,33 @@ class rgbledaddr(object):
                         with open(f'/sys/class/leds/{side}:b{j}/brightness', 'w') as f: f.write(bs)
                     except:
                         pass
-            time.sleep(EFFECT_DURATION / EFFECT_STEP)
+            time.sleep(self.rainbow_duration / EFFECT_STEP)
             
-        if batoconf("led.mode") != "rainbow":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
         # Cycle all quadrants in unison through the spectrum (Chroma)
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
             o_hex = getRainbowRGB(float(i/EFFECT_STEP))
             r, g, b = hex_to_dec(o_hex[0:2]), hex_to_dec(o_hex[2:4]), hex_to_dec(o_hex[4:6])
             self._write_scaled(r, g, b)
             
-            time.sleep((EFFECT_DURATION * 3) / EFFECT_STEP)
+            time.sleep(self.chroma_duration / EFFECT_STEP)
             
-        if batoconf("led.mode") != "chroma":
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
         # Get the 'base' color from config to pulse against
         r_base, g_base, b_base = batoconf_color()
         for i in range(0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
             # Calculate pulse intensity
             if i < EFFECT_STEP/2:
                 coeff = float(1 - 2*i/EFFECT_STEP)
@@ -1729,7 +1812,11 @@ class rgbledaddr(object):
             
             # Apply pulse coefficient AND brightness factor via _write_scaled
             self._write_scaled(int(int(r_base)*coeff), int(int(g_base)*coeff), int(int(b_base)*coeff))
-            time.sleep(PULSE_DURATION/EFFECT_STEP)
+            time.sleep(self.pulse_duration / EFFECT_STEP)
+            
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def set_brightness(self, b):
         self.set_color("ESCOLOR")

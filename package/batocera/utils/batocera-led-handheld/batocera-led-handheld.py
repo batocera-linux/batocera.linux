@@ -219,13 +219,25 @@ if len(sys.argv) > 1:
         led.turn_off()
     elif sys.argv[1] in ["retroachievement", "rainbow"]:
         if color_changes_allowed():
-            led.rainbow_effect()
+            block_color_changes(True)
+            try:
+                led.rainbow_effect()
+            finally:
+                block_color_changes(False)
     elif sys.argv[1] == "chroma":
         if color_changes_allowed():
-            led.chroma_effect()
+            block_color_changes(True)
+            try:
+                led.chroma_effect()
+            finally:
+                block_color_changes(False)
     elif sys.argv[1] == "pulse":
         if color_changes_allowed():
-            led.pulse_effect()
+            block_color_changes(True)
+            try:
+                led.pulse_effect()
+            finally:
+                block_color_changes(False)
     elif sys.argv[1] == "set_color" and len(sys.argv) > 2:
         if color_changes_allowed():
             led.set_color(sys.argv[2])
