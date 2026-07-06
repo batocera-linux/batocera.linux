@@ -13,6 +13,36 @@ shared_features:
 features:
   - padtokeyboard
 custom_features:
+  etlegacy_scope_style:
+    prompt: SCOPE RETICLE STYLE
+    description: Custom sniper scope reticle design.
+    choices:
+      Default: '0'
+      Cross: '1'
+      3 Posts (T-Shape): '2'
+      Center Dot Only: '3'
+  etlegacy_scope_color:
+    prompt: SCOPE RETICLE COLOUR
+    description: Custom colour for the sniper scope reticle and center dot.
+    choices:
+      Default (Black): '#000000FF'
+      Red: '#FF0000FF'
+      Green: '#00FF00FF'
+      Blue: '#0000FFFF'
+      Yellow: '#FFFF00FF'
+      Cyan: '#00FFFFFF'
+      Magenta: '#FF00FFFF'
+      White: '#FFFFFFFF'
+  etlegacy_zoom_sens:
+    prompt: WEAPON ZOOM SENSITIVITY SCALE
+    description: Scale input sensitivity while using weapon zoom.
+    choices:
+      Default (1.0): '1.0'
+      0.8: '0.8'
+      0.6: '0.6'
+      0.5: '0.5'
+      0.4: '0.4'
+      0.2: '0.2'
   etlegacy_language:
     prompt: LANGUAGE
     description: Change the game's language.

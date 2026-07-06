@@ -65,6 +65,7 @@
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - EDuke32 / Fury to Feb 03, 2026 build
+- ETLegacy to v2.84.0
 - Groovy MAME to 0.288
 - IOQuake3 to Mar 9, 2026
 - Ledspicer to 0.7.6
