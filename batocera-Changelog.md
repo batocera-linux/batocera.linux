@@ -68,6 +68,7 @@
 - ETLegacy to v2.84.0
 - Groovy MAME to 0.288
 - IOQuake3 to Mar 9, 2026
+- Jazz2 to 3.6.0
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
