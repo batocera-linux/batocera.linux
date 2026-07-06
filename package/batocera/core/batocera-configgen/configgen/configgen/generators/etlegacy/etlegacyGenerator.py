@@ -24,7 +24,7 @@ class ETLegacyGenerator(Generator):
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
         etLegacyDir = ROMS / "etlegacy" / "legacy"
-        etLegacyFile = "legacy_2.83-dirty.pk3"
+        etLegacyFile = "legacy_2.84-dirty.pk3"
         etLegacySource = Path("/usr/share/etlegacy") / etLegacyFile
         etLegacyDest = etLegacyDir / etLegacyFile
 
@@ -46,6 +46,17 @@ class ETLegacyGenerator(Generator):
             "seta r_customwidth": f'"{gameResolution["width"]}"'
         }
 
+        # Scope Customization
+        scope_style = system.config.get("etlegacy_scope_style", "0")
+        scope_color = system.config.get("etlegacy_scope_color", "#000000FF")
+        options_to_set["seta cg_scopeReticleStyle"] = scope_style
+        options_to_set["seta cg_scopeReticleColor"] = scope_color
+        options_to_set["seta cg_scopeReticleDotColor"] = scope_color  # Standardizes dot color with reticle
+
+        # Zoom Sensitivity
+        zoom_sens = system.config.get("etlegacy_zoom_sens", "1.0")
+        options_to_set["seta cg_weapzoomSensitivityScale"] = zoom_sens
+        
         # Set language
         language = system.config.get("etlegacy_language", "en")
         options_to_set["seta cl_lang"] = language
