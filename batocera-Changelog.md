@@ -133,7 +133,7 @@
 - Vulkan stack to 1.4.350
 - WINE Mono to 11.1.0
 - WINE Proton to proton-exp-11.0
-- WINE TKG to 11.11
+- WINE TKG to 11.12
 - Wlroots to 0.20.1
 - X86_64 / Zen3 kernel updated to 7.1.2
 
