@@ -110,6 +110,7 @@
 - Allwinner H700 device kernel updated to 7.0.11
 - ALSA UCM configuration to v1.2.16
 - Buildroot to 2026.05.x with supporting package & toolchain updates
+- DXVK to 3.0.1 
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
 - Khadas VIM4 kernel updated to vendor 5.15.y
