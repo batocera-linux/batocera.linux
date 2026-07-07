@@ -93,6 +93,7 @@
 - Mupen64Plus-Core to March 30th, 2026 build
 - OpenMSX to Release 21
 - OpenJK to May 13th, 2026 build
+- OpenJKDF2 to v0.9.9
 - PCSX2 to May 17th, 2026 build
 - Play to 0.77
 - PPSSPP to v1.20.4
