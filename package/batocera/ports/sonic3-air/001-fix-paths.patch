@@ -2,15 +2,15 @@ diff --git a/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp b/Oxyg
 index ed423975..ce65be59 100644
 --- a/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp
 +++ b/Oxygen/oxygenengine/source/oxygen/application/EngineMain.cpp
-@@ -444,7 +444,7 @@ bool EngineMain::initConfigAndSettings(const std::wstring& argumentProjectPath)
- #if (defined(PLATFORM_MAC) || defined(PLATFORM_IOS)) && defined(ENDUSER)
+@@ -523,7 +523,7 @@ void EngineMain::loadConfigJson()
+ 	#if (defined(PLATFORM_MAC) || defined(PLATFORM_IOS)) && defined(ENDUSER)
  		config.loadConfiguration(config.mGameDataPath + L"/config.json");
- #else
+ 	#else
 -		config.loadConfiguration(L"config.json");
 +		config.loadConfiguration(config.mAppDataPath + L"config.json");
- #endif
+ 	#endif
  	}
- 
+ }
 diff --git a/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp b/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp
 index ad0383c1..ff645326 100644
 --- a/Oxygen/oxygenengine/source/oxygen/resources/ResourcesCache.cpp
