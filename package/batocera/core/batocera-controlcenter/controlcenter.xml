@@ -61,7 +61,7 @@
                     <choice display="2 sec"  action="echo 2 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
                     <choice display="5 sec"  action="echo 5 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
                     <choice display="10 sec" action="echo 10 >/tmp/batocera-screenshot-delay" afterclick="bcc_refresh" />
-                    <text display='${printf "after %s sec" $(cat /tmp/batocera-screenshot-delay || echo 1)}' refresh="1" />
+                    <text display='${printf "after %s sec" $(cat /tmp/batocera-screenshot-delay || echo 2)}' refresh="1" />
         </feature>
 	</hgroup>
 
@@ -134,7 +134,7 @@
 
 	<vgroup name="Bottom bar" role="footer">
 		<feature display="CPU:">
-			<progressbar display="${ { head -n1 /proc/stat; sleep 0.2; head -n1 /proc/stat; } | awk '/^cpu /{u=$2-u; s=$4-s; i=$5-i; w=$6-w} END {print int(0.5+100*(u+s+w)/(u+s+i+w))}'}" min="0" max="100" refresh="1" />
+			<progressbar display='${ read -r _ u2 n2 s2 i2 w2 r2 &lt; /proc/stat; F=/tmp/.bcc_cpu_prev; if [ -f "$F" ]; then read -r _ u1 n1 s1 i1 w1 r1 &lt; "$F"; else u1=$u2; s1=$s2; i1=$i2; w1=$w2; fi; echo "cpu $u2 $n2 $s2 $i2 $w2" &gt; "$F"; du=$((u2-u1)); ds=$((s2-s1)); di=$((i2-i1)); dw=$((w2-w1)); t=$((du+ds+di+dw)); if [ "$t" -gt 0 ]; then echo $(( (100*(du+ds+dw)+t/2)/t )); else echo 0; fi }' min="0" max="100" refresh="1" />
 		</feature>
 		<feature display="CPU Temp:">
 			<text display="${batocera-temp --cpu}C" refresh="3" />
