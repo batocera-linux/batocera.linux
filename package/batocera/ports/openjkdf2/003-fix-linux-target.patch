@@ -17,17 +17,18 @@ index 4b607434e8..2a78af55e2 100644
      endif()
      if(TARGET_USE_GAMENETWORKINGSOCKETS)
          target_link_libraries(sith_engine PRIVATE GameNetworkingSockets::GameNetworkingSockets)
-@@ -32,11 +33,4 @@ macro(plat_extra_deps)
+@@ -33,14 +33,6 @@ macro(plat_extra_deps)
          add_definitions(${LIBCURL_STATIC_CFLAGS_OTHER})
      endif()
  
 -    if(TARGET_USE_GAMENETWORKINGSOCKETS)
 -        add_custom_command(
 -            TARGET ${BIN_NAME}
--            POST_BUILD 
+-            POST_BUILD
 -            COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_BINARY_DIR}/GameNetworkingSockets/bin/libGameNetworkingSockets.so ${PROJECT_BINARY_DIR}
 -        )
 -    endif()
--endmacro()
-\ No newline at end of file
-+endmacro()
+-
+     # Strip release binaries
+     if(CMAKE_BUILD_TYPE STREQUAL Release OR CMAKE_BUILD_TYPE STREQUAL MinSizeRel)
+         add_custom_command(
