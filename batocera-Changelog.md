@@ -100,6 +100,7 @@
 - RPCS3 to v.0.0.41
 - ShadPS4 to v.0.16.0
 - Solarus to 2.0.4
+- Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260528
 - Tsugaru to v20251206
 - Vita3k to 10th of June build

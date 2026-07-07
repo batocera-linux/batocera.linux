@@ -1,0 +1,108 @@
+diff --git a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
+index 6e0943b..a1b667d 100644
+--- a/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
++++ b/Oxygen/sonic3air/build/_cmake/CMakeLists.txt
+@@ -12,12 +12,19 @@ project(Sonic3AIR)
+ # Build options
+ option(BUILD_OXYGEN_ENGINEAPP "Build the Oxygen App executable" ON)
+ option(BUILD_OXYGEN_SERVER "Build the Oxygen server executable" OFF)
++option(USE_SYSTEM_SDL "Use system SDL2 library instead of building it from source" OFF)
+ option(BUILD_SDL_STATIC "Build SDL as a static library instead of a shared / dynamic one" ON)
+ option(USE_GLES "Use OpenGLESv2" OFF)
+ option(USE_DISCORD "Use Discord API" ON)
+ option(USE_IMGUI "Use ImGui, required for dev mode and system windows" ON)
+ 
+ 
++if (USE_SYSTEM_SDL)
++	# Disable building static SDL if we are using the system package
++	set(BUILD_SDL_STATIC OFF)
++endif()
++
++
+ if (USE_GLES)
+ 	add_definitions(-DRMX_LINUX_ENFORCE_GLES2)
+ endif()
+@@ -36,6 +43,7 @@ endif()
+ 
+ message(STATUS "BUILD_OXYGEN_ENGINEAPP = ${BUILD_OXYGEN_ENGINEAPP}")
+ message(STATUS "BUILD_OXYGEN_SERVER = ${BUILD_OXYGEN_SERVER}")
++message(STATUS "USE_SYSTEM_SDL = ${USE_SYSTEM_SDL}")
+ message(STATUS "BUILD_SDL_STATIC = ${BUILD_SDL_STATIC}")
+ message(STATUS "USE_GLES = ${USE_GLES}")
+ message(STATUS "USE_DISCORD = ${USE_DISCORD}")
+@@ -88,21 +96,58 @@ find_package(Threads REQUIRED)
+ find_package(OpenGL REQUIRED)
+ 
+ 
+-# SDL2 sources as virtual subdirectory "SDL"
+-if (BUILD_SDL_STATIC)
+-	set(SDL_STATIC ON)
+-	set(SDL_SHARED OFF)
+-	include_directories(SDL/include)
+-else()
+-	set(SDL_STATIC OFF)
+-	set(SDL_SHARED ON)
+-	if (UNIX AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|aarch64)")
++# Determine how to find or build SDL2
++if (USE_SYSTEM_SDL)
++	find_package(SDL2 CONFIG QUIET)
++	if (NOT SDL2_FOUND)
+ 		include(FindPkgConfig)
+-		pkg_check_modules(SDL2 sdl2 REQUIRED)
++		pkg_check_modules(SDL2 sdl2 IMPORTED_TARGET)
++		if (NOT SDL2_FOUND)
++			find_package(SDL2 REQUIRED)
++		endif()
+ 	endif()
+-endif()
+ 
+-add_subdirectory(${WORKSPACE_DIR}/framework/external/sdl/SDL2 SDL)
++	# Create a unified interface target for the system's SDL2 library
++	add_library(SDL2_system INTERFACE)
++	if (TARGET SDL2::SDL2)
++		target_link_libraries(SDL2_system INTERFACE SDL2::SDL2)
++	elseif (TARGET SDL2::SDL2-static)
++		target_link_libraries(SDL2_system INTERFACE SDL2::SDL2-static)
++	elseif (TARGET PkgConfig::SDL2)
++		target_link_libraries(SDL2_system INTERFACE PkgConfig::SDL2)
++	else()
++		# Fall back to variables if no imported target was provided by finders
++		if (SDL2_INCLUDE_DIRS)
++			target_include_directories(SDL2_system INTERFACE ${SDL2_INCLUDE_DIRS})
++		elseif (SDL2_INCLUDE_DIR)
++			target_include_directories(SDL2_system INTERFACE ${SDL2_INCLUDE_DIR})
++		endif()
++		if (SDL2_LIBRARIES)
++			target_link_libraries(SDL2_system INTERFACE ${SDL2_LIBRARIES})
++		elseif (SDL2_LIBRARY)
++			target_link_libraries(SDL2_system INTERFACE ${SDL2_LIBRARY})
++		endif()
++	endif()
++
++	add_library(SDL2 ALIAS SDL2_system)
++	add_library(SDL2-static ALIAS SDL2_system)
++else()
++	# SDL2 sources as virtual subdirectory "SDL"
++	if (BUILD_SDL_STATIC)
++		set(SDL_STATIC ON)
++		set(SDL_SHARED OFF)
++		include_directories(SDL/include)
++	else()
++		set(SDL_STATIC OFF)
++		set(SDL_SHARED ON)
++		if (UNIX AND CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|aarch64)")
++			include(FindPkgConfig)
++			pkg_check_modules(SDL2 sdl2 REQUIRED)
++		endif()
++	endif()
++
++	add_subdirectory(${WORKSPACE_DIR}/framework/external/sdl/SDL2 SDL)
++endif()
+ 
+ 
+ # batocera - use system zlib
+@@ -379,4 +428,3 @@ target_link_libraries(Sonic3AIR oxygen)
+ if (USE_DISCORD)
+ 	target_link_libraries(Sonic3AIR discord_game_sdk_source)
+ endif()
+-

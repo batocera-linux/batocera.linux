@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SONIC3_AIR_VERSION = v25.02.15.0-test
+SONIC3_AIR_VERSION = v26.03.28.0-stable
 SONIC3_AIR_SITE = https://github.com/Eukaryot/sonic3air.git
 SONIC3_AIR_SITE_METHOD = git
 SONIC3_AIR_GIT_SUBMODULES = YES
@@ -14,15 +14,15 @@ SONIC3_AIR_EMULATOR_INFO = sonic3-air.emulator.yml
 # CMakeLists.txt in subfolder
 SONIC3_AIR_SUBDIR = Oxygen/sonic3air/build/_cmake
 
-SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu mesa3d
+SONIC3_AIR_DEPENDENCIES += alsa-lib pulseaudio libcurl libglu mesa3d sdl2
 SONIC3_AIR_DEPENDENCIES += xlib_libXxf86vm xlib_libXcomposite zlib
 
 SONIC3_AIR_SUPPORTS_IN_SOURCE_BUILD = NO
 
 SONIC3_AIR_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SONIC3_AIR_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
+SONIC3_AIR_CONF_OPTS += -DUSE_SYSTEM_SDL=ON
 SONIC3_AIR_CONF_OPTS += -DUSE_DISCORD=OFF
-SONIC3_AIR_CONF_OPTS += -DSDL_PIPEWIRE=OFF -DSDL_PIPEWIRE_SHARED=OFF
 
 define SONIC3_AIR_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/sonic3-air
