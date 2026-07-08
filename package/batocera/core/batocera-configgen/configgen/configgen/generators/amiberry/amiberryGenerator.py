@@ -37,7 +37,8 @@ class AmiberryGenerator(Generator):
             "name": "amiberry",
             "keys": {
                 "exit": "KEY_F9",
-                "menu": "KEY_F8"
+                "menu": "KEY_F8",
+                "pause": "KEY_PAUSE"
             }
         }
 

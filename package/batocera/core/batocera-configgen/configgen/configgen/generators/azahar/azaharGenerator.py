@@ -28,7 +28,12 @@ class AzaharGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "azahar",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "menu": "KEY_F4", "reset": "KEY_F6", "screen_layout": "KEY_F10", "swap_screen": "KEY_F9" }
+            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"],
+                      "menu": "KEY_F4",
+                      "pause": "KEY_F4",
+                      "reset": "KEY_F6",
+                      "screen_layout": "KEY_F10",
+                      "swap_screen": "KEY_F9" }
         }
 
     # Main entry of the module

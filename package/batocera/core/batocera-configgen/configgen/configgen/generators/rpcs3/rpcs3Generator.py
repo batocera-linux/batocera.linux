@@ -345,7 +345,8 @@ class Rpcs3Generator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "rpcs3",
-            "keys": { "exit": "/usr/bin/rpcs3-exit", "menu": ["KEY_LEFTSHIFT", "KEY_F10"] }
+            "keys": { "exit": "/usr/bin/rpcs3-exit", "menu": ["KEY_LEFTSHIFT", "KEY_F10"],
+                      "pause": ["KEY_LEFTCTRL", "KEY_P"] }
         }
 
     def _migrate_dev_hdd0(self) -> None:
