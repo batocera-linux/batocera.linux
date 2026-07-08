@@ -8,6 +8,9 @@
 
 set -euo pipefail
 
+# Fallback to interactive mode (0) if not defined
+NON_INTERACTIVE="${NON_INTERACTIVE:-0}"
+
 # ---- Get Device Architecture ----
 ARCH_FILE="/usr/share/batocera/batocera.arch"
 if [ -f "$ARCH_FILE" ]; then
@@ -60,9 +63,19 @@ if [[ "${1:-}" == "--check-online" ]]; then
 
         if [ "$REMOTE_HASH" != "$LOCAL_HASH" ]; then
             echo "A newer or different ABL bootloader is available online!"
-            read -p "Do you want to download and flash the new ABL update? (y/N): " -n 1 -r
-            echo
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
+            
+            local proceed_download=0
+            if [ "$NON_INTERACTIVE" -eq 1 ]; then
+                proceed_download=1
+            else
+                read -p "Do you want to download and flash the new ABL update? (y/N): " -n 1 -r
+                echo
+                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                    proceed_download=1
+                fi
+            fi
+
+            if [ "$proceed_download" -eq 1 ]; then
                 echo "Downloading new ABL files..."
                 if ! wget -q -O "${SHA256SUM}.tmp" "$REMOTE_SHA_URL" || ! wget -q --show-progress -O "${ELF}.tmp" "$REMOTE_ELF_URL"; then
                     echo "Error: Failed to download files from GitHub. Aborting update."
@@ -165,6 +178,10 @@ UP_TO_DATE=true
 
 if [ "$UP_TO_DATE" = true ]; then
     echo "Both ABL partitions are already up to date."
+    if [ "$NON_INTERACTIVE" -eq 1 ]; then
+        echo "No changes needed. Exiting."
+        exit 0
+    fi
     read -p "Do you still wish to re-flash? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -174,7 +191,8 @@ if [ "$UP_TO_DATE" = true ]; then
 fi
 
 # ---- Disclaimer & Prompt ----
-cat << EOF
+if [ "$NON_INTERACTIVE" -ne 1 ]; then
+    cat << EOF
 ------------------------------------------------------------
 Disclaimer
 Flashing a custom ABL carries inherent risk and may result 
@@ -190,12 +208,13 @@ Created by the ROCKNIX Team for the emulation community.
 ------------------------------------------------------------
 EOF
 
-echo
-read -p "Do you wish to proceed? (Type Y to continue): " -n 1 -r
-echo # Move to a new line
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Update aborted by user."
-    exit 1
+    echo
+    read -p "Do you wish to proceed? (Type Y to continue): " -n 1 -r
+    echo # Move to a new line
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Update aborted by user."
+        exit 1
+    fi
 fi
 
 # ---- Check SHA256 ----
@@ -214,11 +233,19 @@ if [ -z "${SS}" ]; then
 fi
 
 # ---- Flash with Progress Bar ----
-echo "Flashing ABL_A..."
-pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
+if [ "$NON_INTERACTIVE" -eq 1 ]; then
+    # In non-interactive mode, avoid pv progress spamming the logs
+    echo "Flashing ABL_A..."
+    dd if="${ELF}" of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
+    echo "Flashing ABL_B..."
+    dd if="${ELF}" of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
+else
+    echo "Flashing ABL_A..."
+    pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_A}" bs="${SS}" conv=fsync,notrunc status=none
 
-echo "Flashing ABL_B..."
-pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
+    echo "Flashing ABL_B..."
+    pv -s "$FILE_SIZE" "${ELF}" | dd of="${ABL_B}" bs="${SS}" conv=fsync,notrunc status=none
+fi
 
 sync
 
