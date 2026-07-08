@@ -1,0 +1,69 @@
+From 8d7b564417645a11aea95e0e1af52072c7724584 Mon Sep 17 00:00:00 2001
+From: retro98boy <retro98boy@qq.com>
+Date: Mon, 3 Aug 2026 18:41:38 +0800
+Subject: [PATCH 1/2] Revert "Use `crypto_akcipher_sync_encrypt`"
+
+This reverts commit 7c2ebef6665a7c4d93404593454b55874b716091.
+---
+ auth/crypto.c | 34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
+
+diff --git a/auth/crypto.c b/auth/crypto.c
+index 64dd738..a340559 100644
+--- a/auth/crypto.c
++++ b/auth/crypto.c
+@@ -95,20 +95,48 @@ int gip_auth_encrypt_rsa(u8 *key, int key_len,
+ 			 u8 *out, int out_len)
+ {
+ 	struct crypto_akcipher *tfm;
++	struct akcipher_request *req;
++	struct scatterlist src, dest;
++	DECLARE_CRYPTO_WAIT(wait);
++	u8 *buf;
+ 	int err;
+ 
++	buf = kzalloc(out_len, GFP_KERNEL);
++	if (!buf)
++		return -ENOMEM;
++
+ 	tfm = crypto_alloc_akcipher("pkcs1pad(rsa)", 0, 0);
+-	if (IS_ERR(tfm))
+-		return PTR_ERR(tfm);
++	if (IS_ERR(tfm)) {
++		err = PTR_ERR(tfm);
++		goto err_free_buf;
++	}
+ 
+ 	err = crypto_akcipher_set_pub_key(tfm, key, key_len);
+ 	if (err)
+ 		goto err_free_tfm;
+ 
+-	err = crypto_akcipher_sync_encrypt(tfm, in, in_len, out, out_len);
++	req = akcipher_request_alloc(tfm, GFP_KERNEL);
++	if (!req) {
++		err = -ENOMEM;
++		goto err_free_tfm;
++	}
++
++	sg_init_one(&src, in, in_len);
++	sg_init_one(&dest, buf, out_len);
++
++	akcipher_request_set_crypt(req, &src, &dest, in_len, out_len);
++	akcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
++				      crypto_req_done, &wait);
++	err = crypto_wait_req(crypto_akcipher_encrypt(req), &wait);
++	if (!err)
++		memcpy(out, buf, out_len);
++
++	akcipher_request_free(req);
+ 
+ err_free_tfm:
+ 	crypto_free_akcipher(tfm);
++err_free_buf:
++	kfree(buf);
+ 
+ 	return err;
+ }
+-- 
+2.55.0
+

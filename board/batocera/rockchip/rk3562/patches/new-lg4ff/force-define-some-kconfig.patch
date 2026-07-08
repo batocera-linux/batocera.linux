@@ -1,0 +1,36 @@
+diff --git a/hid-lg.c b/hid-lg.c
+index ad11421..d76cbcd 100644
+--- a/hid-lg.c
++++ b/hid-lg.c
+@@ -948,6 +948,7 @@ static struct hid_driver lg_driver = {
+ };
+ module_hid_driver(lg_driver);
+ 
++#define CONFIG_LOGIWHEELS_FF
+ #ifdef CONFIG_LOGIWHEELS_FF
+ int lg4ff_no_autoswitch = 0;
+ module_param_named(lg4ff_no_autoswitch, lg4ff_no_autoswitch, int, S_IRUGO);
+diff --git a/hid-lg.h b/hid-lg.h
+index df1f83e..7359a69 100644
+--- a/hid-lg.h
++++ b/hid-lg.h
+@@ -9,6 +9,7 @@ struct lg_drv_data {
+ 	void *device_props;	/* Device specific properties */
+ };
+ 
++#define CONFIG_LOGITECH_FF
+ #ifdef CONFIG_LOGITECH_FF
+ int lgff_init(struct hid_device *hdev);
+ #else
+diff --git a/hid-lg4ff.h b/hid-lg4ff.h
+index e5c55d5..0086c61 100644
+--- a/hid-lg4ff.h
++++ b/hid-lg4ff.h
+@@ -2,6 +2,7 @@
+ #ifndef __HID_LG4FF_H
+ #define __HID_LG4FF_H
+ 
++#define CONFIG_LOGIWHEELS_FF
+ #ifdef CONFIG_LOGIWHEELS_FF
+ extern int lg4ff_no_autoswitch; /* From hid-lg.c */
+ 

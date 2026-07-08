@@ -31,7 +31,7 @@ cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/extlinux/"  
 
 for dtbo in $DTBOVERLAYS
 do
-	cp "${BINARIES_DIR}/dtbs/${dtbo}"  "${BATOCERA_BINARIES_DIR}/boot/dtbs/rockchip/" || exit 1
+	cp "${BINARIES_DIR}/dtbos/${dtbo}"  "${BATOCERA_BINARIES_DIR}/boot/dtbs/rockchip/" || exit 1
 done
 
 exit 0
