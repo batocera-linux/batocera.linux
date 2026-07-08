@@ -1,0 +1,10 @@
+# Configuration for rt809 driver
+
+#playback
+CTL{reset}="mixer"
+CTL{name}="Playback Path", CTL{value}="SPK_HP"
+
+#record
+CTL{name}="Capture MIC Path", CTL{value}="Main Mic"
+
+RESULT="true", EXIT="return"

@@ -29,4 +29,7 @@ cp "${BINARIES_DIR}/uboot-orangepi-5b/rkspi_loader.img" "${BATOCERA_BINARIES_DIR
 cp "${BINARIES_DIR}/${DTB}"          "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 
+# copy the SPI
+cp "${BINARIES_DIR}/orangepi-5-plus/u-boot-rockchip-spi.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+
 exit 0

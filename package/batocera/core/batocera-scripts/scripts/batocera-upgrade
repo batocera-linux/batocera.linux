@@ -282,13 +282,71 @@ do_update() {
     done
 
     # snapshot to help create .stale file
-    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*)$' | sort)
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*|boot/spi-flash\.log)$' | sort)
 
     # extract file on /boot
     upgmsg "Extracting files ..."
     if ! (cd /boot && xz -dc < "${G_LOCAL_FILE}" | tar xvf - --no-same-owner)
     then
 	return 1
+    fi
+
+    # Flash SPI u-boot if a new binary is present in /boot/boot
+    local SPI_LOG="/boot/boot/spi-flash.log"
+    local SPI_BIN=""
+    if test -f "/boot/boot/u-boot-rockchip-spi.bin"; then
+        SPI_BIN="/boot/boot/u-boot-rockchip-spi.bin"
+    elif test -f "/boot/boot/rkspi_loader.img"; then
+        SPI_BIN="/boot/boot/rkspi_loader.img"
+    fi
+
+    if test -n "${SPI_BIN}"; then
+        upgmsg "New SPI binary found: $(basename "${SPI_BIN}")" 1
+        upgmsg "Flashing... DO NOT POWER OFF THE DEVICE!"
+        echo "=== SPI Flash Update: $(date) ===" >> "${SPI_LOG}"
+        echo "SPI binary found: ${SPI_BIN}" >> "${SPI_LOG}"
+        # ensure MTD devices are populated
+        modprobe spi-nor 2>/dev/null
+        modprobe rockchip-sfc 2>/dev/null
+        sleep 1
+        if test -b /dev/mtdblock0; then
+            echo "SPI flash device found: /dev/mtdblock0" >> "${SPI_LOG}"
+            local SPI_DEV="/dev/mtdblock0"
+            local SPI_SIZE=$(cat /sys/class/block/mtdblock0/size 2>/dev/null)
+            local SPI_BYTES=$((SPI_SIZE * 512))
+            local BIN_SIZE=$(wc -c < "${SPI_BIN}")
+            echo "SPI flash size: ${SPI_BYTES} bytes" >> "${SPI_LOG}"
+            echo "SPI binary size: ${BIN_SIZE} bytes" >> "${SPI_LOG}"
+            
+            if test -n "${SPI_SIZE}" && test "${BIN_SIZE}" -lt "${SPI_BYTES}"; then
+                # Calculate human-readable sizes (MB with up to 1 decimal place, removing trailing .0)
+                local SPI_MB=$(awk "BEGIN {printf \"%.1f\", ${SPI_BYTES} / 1024 / 1024}" | sed 's/\.0$//')
+                local BIN_MB=$(awk "BEGIN {printf \"%.1f\", ${BIN_SIZE} / 1024 / 1024}" | sed 's/\.0$//')
+
+                echo "Size check passed, proceeding with flash..." >> "${SPI_LOG}"
+                
+                upgmsg "Erasing SPI flash (${SPI_MB}MB)..." 0.5
+                dd if=/dev/zero of=${SPI_DEV} bs=4096 2>>"${SPI_LOG}"
+                echo "Erase complete" >> "${SPI_LOG}"
+                
+                upgmsg "Writing SPI binary (${BIN_MB}MB)..." 0.5
+                dd if=${SPI_BIN} of=${SPI_DEV} bs=4096 conv=sync 2>>"${SPI_LOG}"
+                echo "Write complete" >> "${SPI_LOG}"
+                
+                sync
+                echo "Sync complete, removing binary..." >> "${SPI_LOG}"
+                rm -f "${SPI_BIN}"
+                echo "SPI flash successful" >> "${SPI_LOG}"
+                upgmsg "SPI flash successful!" 1
+            else
+                echo "WARNING: size check failed, skipping flash" >> "${SPI_LOG}"
+                echo "  SPI size: ${SPI_BYTES} bytes, binary size: ${BIN_SIZE} bytes" >> "${SPI_LOG}"
+                upgmsg "WARNING: SPI size check failed!" 2
+            fi
+        else
+            echo "WARNING: no SPI flash device found at /dev/mtdblock0, skipping" >> "${SPI_LOG}"
+            upgmsg "WARNING: No SPI flash device found!" 2
+        fi
     fi
 
     # build stale list: entries present before extraction but absent from the new tarball

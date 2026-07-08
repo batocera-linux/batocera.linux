@@ -64,6 +64,10 @@ define UBOOT_RK3588_BUILD_BOOTLOADER
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3588_MAKE_OPTS)
     mkdir -p $(@D)/staging/$(board)
     cp -v $(@D)/u-boot-rockchip.bin $(@D)/staging/$(board)/
+    # Binman generates the SPI binary if CONFIG_ROCKCHIP_SPI_IMAGE is enabled
+    if [ -f $(@D)/u-boot-rockchip-spi.bin ]; then \
+        cp -v $(@D)/u-boot-rockchip-spi.bin $(@D)/staging/$(board)/; \
+    fi
 endef
 
 define UBOOT_RK3588_BUILD_CMDS
@@ -72,11 +76,14 @@ define UBOOT_RK3588_BUILD_CMDS
 endef
 
 define UBOOT_RK3588_INSTALL_IMAGES_CMDS
-    $(foreach pair, $(UBOOT_RK3588_BUILDPAIR), \
-        $(eval board = $(word 1, $(subst /, ,$(pair)))) \
-        mkdir -p $(BINARIES_DIR)/$(board); \
-        cp -v $(@D)/staging/$(board)/u-boot-rockchip.bin $(BINARIES_DIR)/$(board)/u-boot-rockchip.bin; \
-    )
+	$(foreach pair, $(UBOOT_RK3588_BUILDPAIR), \
+		board=$$(echo $(pair) | cut -d'/' -f1); \
+		mkdir -p $(BINARIES_DIR)/$$board; \
+		cp -v $(@D)/staging/$$board/u-boot-rockchip.bin $(BINARIES_DIR)/$$board/; \
+		if [ -f $(@D)/staging/$$board/u-boot-rockchip-spi.bin ]; then \
+			cp -v $(@D)/staging/$$board/u-boot-rockchip-spi.bin $(BINARIES_DIR)/$$board/; \
+		fi; \
+	)
 endef
 
 $(eval $(generic-package))
