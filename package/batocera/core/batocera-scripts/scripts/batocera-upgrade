@@ -349,6 +349,18 @@ do_update() {
         fi
     fi
 
+    # Update ABL if /usr/bin/updateabl exists
+    if test -x "/usr/bin/updateabl"; then
+        local ABL_LOG="/boot/boot/updateabl.log"
+        upgmsg "Updating ABL... DO NOT POWER OFF THE DEVICE!"
+        echo "=== ABL Flash Update: $(date) ===" >> "${ABL_LOG}"
+        if NON_INTERACTIVE=1 /usr/bin/updateabl >> "${ABL_LOG}" 2>&1; then
+            upgmsg "ABL update completed!" 1
+        else
+            upgmsg "WARNING: ABL update failed! See ${ABL_LOG}" 2
+        fi
+    fi
+
     # build stale list: entries present before extraction but absent from the new tarball
     upgmsg "Generating stale file list ..."
     TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
