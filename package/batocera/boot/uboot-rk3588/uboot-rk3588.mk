@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-UBOOT_RK3588_VERSION = 2026.04
+UBOOT_RK3588_VERSION = 2026.07
 UBOOT_RK3588_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_RK3588_SOURCE = u-boot-$(UBOOT_RK3588_VERSION).tar.bz2
 UBOOT_RK3588_LICENSE = GPL-2.0+
@@ -12,7 +12,7 @@ UBOOT_RK3588_LICENSE_FILES = Licenses/README
 UBOOT_RK3588_INSTALL_IMAGES = YES
 
 # Latest RKBin blobs for RK3588
-UBOOT_RK3588_RKBIN_COMMIT = 74213af1e952c4683d2e35952507133b61394862
+UBOOT_RK3588_RKBIN_COMMIT = ecb4fcbe954edf38b3ae037d5de6d9f5bccf81f4
 UBOOT_RK3588_EXTRA_DOWNLOADS = \
     https://github.com/rockchip-linux/rkbin/archive/$(UBOOT_RK3588_RKBIN_COMMIT)/rkbin-$(UBOOT_RK3588_RKBIN_COMMIT).tar.gz
 
@@ -29,8 +29,8 @@ endef
 UBOOT_RK3588_POST_EXTRACT_HOOKS += UBOOT_RK3588_EXTRACT_RKBIN
 
 # RK3588 Specific Blob Paths
-UBOOT_RK3588_BL31 = $(@D)/rkbin/bin/rk35/rk3588_bl31_v1.51.elf
-UBOOT_RK3588_TPL  = $(@D)/rkbin/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.19.bin
+UBOOT_RK3588_BL31 = $(@D)/rkbin/bin/rk35/rk3588_bl31_v1.54.elf
+UBOOT_RK3588_TPL  = $(@D)/rkbin/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.21.bin
 
 UBOOT_RK3588_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \
@@ -61,6 +61,8 @@ define UBOOT_RK3588_BUILD_BOOTLOADER
     @echo "---- Building Mainline U-Boot for $(board) ----"
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3588_MAKE_OPTS) mrproper
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3588_MAKE_OPTS) $(defconfig)
+    $(@D)/scripts/config --file $(@D)/.config --disable CONFIG_TOOLS_MKEFICAPSULE
+    $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3588_MAKE_OPTS) olddefconfig
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3588_MAKE_OPTS)
     mkdir -p $(@D)/staging/$(board)
     cp -v $(@D)/u-boot-rockchip.bin $(@D)/staging/$(board)/
