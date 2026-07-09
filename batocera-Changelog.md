@@ -127,7 +127,7 @@
 - QT to 6.11.1
 - Qualcomm SM6115 device kernel updated to 7.0.11
 - Qualcomm SM8550 device kernel updated to 7.0.11
-- Qualcomm SM8750 device kernel updated to 7.1.2
+- Qualcomm SM8750 device kernel updated to 7.1.3
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.1.3
 - Rocknix ABL to 1.1.4 (SM8x50 devices)
@@ -139,7 +139,7 @@
 - WINE Proton to proton-exp-11.0
 - WINE TKG to 11.12
 - Wlroots to 0.20.1
-- X86_64 / Zen3 kernel updated to 7.1.2
+- X86_64 / Zen3 kernel updated to 7.1.3
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed
