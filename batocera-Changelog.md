@@ -120,6 +120,7 @@
 - DXVK to 3.0.1
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
+- FFMPEG to 8.1.2
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.0
 - Linux Firmware to 20260519

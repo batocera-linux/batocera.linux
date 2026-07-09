@@ -1,0 +1,654 @@
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/AddonVideoCodec.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/AddonVideoCodec.cpp
+index 9b6779e..fb5de86 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/AddonVideoCodec.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/AddonVideoCodec.cpp
+@@ -128,28 +128,28 @@ bool CAddonVideoCodec::CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamI
+     switch (hints.profile)
+     {
+     case 0:
+-    case FF_PROFILE_UNKNOWN:
++    case AV_PROFILE_UNKNOWN:
+       initData.codecProfile = STREAMCODEC_PROFILE::CodecProfileUnknown;
+       break;
+-    case FF_PROFILE_H264_BASELINE:
++    case AV_PROFILE_H264_BASELINE:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileBaseline;
+       break;
+-    case FF_PROFILE_H264_MAIN:
++    case AV_PROFILE_H264_MAIN:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileMain;
+       break;
+-    case FF_PROFILE_H264_EXTENDED:
++    case AV_PROFILE_H264_EXTENDED:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileExtended;
+       break;
+-    case FF_PROFILE_H264_HIGH:
++    case AV_PROFILE_H264_HIGH:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileHigh;
+       break;
+-    case FF_PROFILE_H264_HIGH_10:
++    case AV_PROFILE_H264_HIGH_10:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileHigh10;
+       break;
+-    case FF_PROFILE_H264_HIGH_422:
++    case AV_PROFILE_H264_HIGH_422:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileHigh422;
+       break;
+-    case FF_PROFILE_H264_HIGH_444_PREDICTIVE:
++    case AV_PROFILE_H264_HIGH_444_PREDICTIVE:
+       initData.codecProfile = STREAMCODEC_PROFILE::H264CodecProfileHigh444Predictive;
+       break;
+     default:
+@@ -163,19 +163,19 @@ bool CAddonVideoCodec::CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamI
+     initData.codec = VIDEOCODEC_VP9;
+     switch (hints.profile)
+     {
+-    case FF_PROFILE_UNKNOWN:
++    case AV_PROFILE_UNKNOWN:
+       initData.codecProfile = STREAMCODEC_PROFILE::CodecProfileUnknown;
+       break;
+-    case FF_PROFILE_VP9_0:
++    case AV_PROFILE_VP9_0:
+       initData.codecProfile = STREAMCODEC_PROFILE::VP9CodecProfile0;
+       break;
+-    case FF_PROFILE_VP9_1:
++    case AV_PROFILE_VP9_1:
+       initData.codecProfile = STREAMCODEC_PROFILE::VP9CodecProfile1;
+       break;
+-    case FF_PROFILE_VP9_2:
++    case AV_PROFILE_VP9_2:
+       initData.codecProfile = STREAMCODEC_PROFILE::VP9CodecProfile2;
+       break;
+-    case FF_PROFILE_VP9_3:
++    case AV_PROFILE_VP9_3:
+       initData.codecProfile = STREAMCODEC_PROFILE::VP9CodecProfile3;
+       break;
+     default:
+@@ -186,16 +186,16 @@ bool CAddonVideoCodec::CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamI
+     initData.codec = VIDEOCODEC_AV1;
+     switch (hints.profile)
+     {
+-    case FF_PROFILE_UNKNOWN:
++    case AV_PROFILE_UNKNOWN:
+       initData.codecProfile = STREAMCODEC_PROFILE::CodecProfileUnknown;
+       break;
+-    case FF_PROFILE_AV1_MAIN:
++    case AV_PROFILE_AV1_MAIN:
+       initData.codecProfile = STREAMCODEC_PROFILE::AV1CodecProfileMain;
+       break;
+-    case FF_PROFILE_AV1_HIGH:
++    case AV_PROFILE_AV1_HIGH:
+       initData.codecProfile = STREAMCODEC_PROFILE::AV1CodecProfileHigh;
+       break;
+-    case FF_PROFILE_AV1_PROFESSIONAL:
++    case AV_PROFILE_AV1_PROFESSIONAL:
+       initData.codecProfile = STREAMCODEC_PROFILE::AV1CodecProfileProfessional;
+       break;
+     default:
+diff --git a/xbmc/cores/AudioEngine/Encoders/AEEncoderFFmpeg.h b/xbmc/cores/AudioEngine/Encoders/AEEncoderFFmpeg.h
+index 3274d3a..83604cf 100644
+--- a/xbmc/cores/AudioEngine/Encoders/AEEncoderFFmpeg.h
++++ b/xbmc/cores/AudioEngine/Encoders/AEEncoderFFmpeg.h
+@@ -17,6 +17,10 @@ extern "C" {
+ /* ffmpeg re-defines this, so undef it to squash the warning */
+ #undef restrict
+ 
++#ifndef AV_INPUT_BUFFER_MIN_SIZE
++#define AV_INPUT_BUFFER_MIN_SIZE 16384
++#endif
++
+ class CAEEncoderFFmpeg: public IAEEncoder
+ {
+ public:
+diff --git a/xbmc/cores/VideoPlayer/AudioSinkAE.cpp b/xbmc/cores/VideoPlayer/AudioSinkAE.cpp
+index 7e9fb0a..eda3211 100644
+--- a/xbmc/cores/VideoPlayer/AudioSinkAE.cpp
++++ b/xbmc/cores/VideoPlayer/AudioSinkAE.cpp
+@@ -353,9 +353,9 @@ CAEStreamInfo::DataType CAudioSinkAE::GetPassthroughStreamType(AVCodecID codecId
+       break;
+ 
+     case AV_CODEC_ID_DTS:
+-      if (profile == FF_PROFILE_DTS_HD_HRA)
++      if (profile == AV_PROFILE_DTS_HD_HRA)
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD;
+-      else if (profile == FF_PROFILE_DTS_HD_MA)
++      else if (profile == AV_PROFILE_DTS_HD_MA)
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD_MA;
+       else
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD_CORE;
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.cpp b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.cpp
+index 63fb926..2cc0ee1 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.cpp
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.cpp
+@@ -34,19 +34,19 @@ std::string CDemuxStreamAudio::GetStreamType()
+       //! @todo: With ffmpeg >= 6.1 add new DTSX profile cases
+       switch (profile)
+       {
+-        case FF_PROFILE_DTS_96_24:
++        case AV_PROFILE_DTS_96_24:
+           strInfo = "DTS 96/24 ";
+           break;
+-        case FF_PROFILE_DTS_ES:
++        case AV_PROFILE_DTS_ES:
+           strInfo = "DTS ES ";
+           break;
+-        case FF_PROFILE_DTS_EXPRESS:
++        case AV_PROFILE_DTS_EXPRESS:
+           strInfo = "DTS EXPRESS ";
+           break;
+-        case FF_PROFILE_DTS_HD_MA:
++        case AV_PROFILE_DTS_HD_MA:
+           strInfo = "DTS-HD MA ";
+           break;
+-        case FF_PROFILE_DTS_HD_HRA:
++        case AV_PROFILE_DTS_HD_HRA:
+           strInfo = "DTS-HD HRA ";
+           break;
+         default:
+@@ -68,21 +68,21 @@ std::string CDemuxStreamAudio::GetStreamType()
+     {
+       switch (profile)
+       {
+-        case FF_PROFILE_AAC_LOW:
+-        case FF_PROFILE_MPEG2_AAC_LOW:
++        case AV_PROFILE_AAC_LOW:
++        case AV_PROFILE_MPEG2_AAC_LOW:
+           strInfo = "AAC-LC ";
+           break;
+-        case FF_PROFILE_AAC_HE:
+-        case FF_PROFILE_MPEG2_AAC_HE:
++        case AV_PROFILE_AAC_HE:
++        case AV_PROFILE_MPEG2_AAC_HE:
+           strInfo = "HE-AAC ";
+           break;
+-        case FF_PROFILE_AAC_HE_V2:
++        case AV_PROFILE_AAC_HE_V2:
+           strInfo = "HE-AACv2 ";
+           break;
+-        case FF_PROFILE_AAC_SSR:
++        case AV_PROFILE_AAC_SSR:
+           strInfo = "AAC-SSR ";
+           break;
+-        case FF_PROFILE_AAC_LTP:
++        case AV_PROFILE_AAC_LTP:
+           strInfo = "AAC-LTP ";
+           break;
+         default:
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
+index a1d229b..736cd54 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemux.h
+@@ -78,8 +78,8 @@ public:
+     dvdNavId = 0;
+     demuxerId = -1;
+     codec_fourcc = 0;
+-    profile = FF_PROFILE_UNKNOWN;
+-    level = FF_LEVEL_UNKNOWN;
++    profile = AV_PROFILE_UNKNOWN;
++    level = AV_LEVEL_UNKNOWN;
+     type = STREAM_NONE;
+     source = STREAM_SOURCE_NONE;
+     iDuration = 0;
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxClient.cpp b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxClient.cpp
+index 0cdf8c3..622e010 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxClient.cpp
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxClient.cpp
+@@ -188,7 +188,6 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
+       if (!avcodec_open2(stream->m_context, stream->m_context->codec, nullptr))
+       {
+         avcodec_send_packet(stream->m_context, avpkt);
+-        avcodec_close(stream->m_context);
+       }
+     }
+     av_packet_free(&avpkt);
+@@ -207,7 +206,7 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
+   if (len >= 0)
+   {
+     if (stream->m_context->profile != st->profile &&
+-        stream->m_context->profile != FF_PROFILE_UNKNOWN)
++        stream->m_context->profile != AV_PROFILE_UNKNOWN)
+     {
+       CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - ({}) profile changed from {} to {}", st->uniqueId, st->profile, stream->m_context->profile);
+       st->profile = stream->m_context->profile;
+@@ -216,7 +215,7 @@ bool CDVDDemuxClient::ParsePacket(DemuxPacket* pkt)
+     }
+ 
+     if (stream->m_context->level != st->level &&
+-        stream->m_context->level != FF_LEVEL_UNKNOWN)
++        stream->m_context->level != AV_LEVEL_UNKNOWN)
+     {
+       CLog::Log(LOGDEBUG, "CDVDDemuxClient::ParsePacket - ({}) level changed from {} to {}", st->uniqueId, st->level, stream->m_context->level);
+       st->level = stream->m_context->level;
+diff --git a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+index 174df53..e00b5ea 100644
+--- a/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
++++ b/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxFFmpeg.cpp
+@@ -1630,44 +1630,49 @@ CDemuxStream* CDVDDemuxFFmpeg::AddStream(int streamIdx)
+         st->colorRange = pStream->codecpar->color_range;
+         st->hdr_type = DetermineHdrType(pStream);
+ 
+-        // https://github.com/FFmpeg/FFmpeg/blob/release/5.0/doc/APIchanges
+-        size_t size = 0;
+-        uint8_t* side_data = nullptr;
+-
++        // https://github.com/FFmpeg/FFmpeg/blob/release/7.0/doc/APIchanges
++        const AVPacketSideData* sideData = nullptr;
+         if (st->hdr_type == StreamHdrType::HDR_TYPE_DOLBYVISION)
+         {
+-          side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_DOVI_CONF, &size);
+-          if (side_data && size)
++          sideData = av_packet_side_data_get(pStream->codecpar->coded_side_data,
++                                       pStream->codecpar->nb_coded_side_data,
++                                       AV_PKT_DATA_DOVI_CONF);
++          if (sideData && sideData->size)
+           {
+-            st->dovi = *reinterpret_cast<AVDOVIDecoderConfigurationRecord*>(side_data);
++            st->dovi = *reinterpret_cast<const AVDOVIDecoderConfigurationRecord*>(sideData->data);
+           }
+         }
+ 
+-        side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_MASTERING_DISPLAY_METADATA, &size);
+-        if (side_data && size)
++        sideData = av_packet_side_data_get(pStream->codecpar->coded_side_data,
++                                     pStream->codecpar->nb_coded_side_data,
++                                     AV_PKT_DATA_MASTERING_DISPLAY_METADATA);
++        if (sideData && sideData->size)
+         {
+           st->masteringMetaData = std::make_shared<AVMasteringDisplayMetadata>(
+-              *reinterpret_cast<AVMasteringDisplayMetadata*>(side_data));
++              *reinterpret_cast<const AVMasteringDisplayMetadata*>(sideData->data));
+         }
+ 
+-        side_data = av_stream_get_side_data(pStream, AV_PKT_DATA_CONTENT_LIGHT_LEVEL, &size);
+-        if (side_data && size)
++        sideData = av_packet_side_data_get(pStream->codecpar->coded_side_data,
++                                     pStream->codecpar->nb_coded_side_data,
++                                     AV_PKT_DATA_CONTENT_LIGHT_LEVEL);
++        if (sideData && sideData->size)
+         {
+           st->contentLightMetaData = std::make_shared<AVContentLightMetadata>(
+-              *reinterpret_cast<AVContentLightMetadata*>(side_data));
++              *reinterpret_cast<const AVContentLightMetadata*>(sideData->data));
+         }
+ 
+-        uint8_t* displayMatrixSideData =
+-            av_stream_get_side_data(pStream, AV_PKT_DATA_DISPLAYMATRIX, nullptr);
+-        if (displayMatrixSideData)
+-        {
+-          const double tetha =
+-              av_display_rotation_get(reinterpret_cast<int32_t*>(displayMatrixSideData));
+-          if (!std::isnan(tetha))
+-          {
+-            st->iOrientation = ((static_cast<int>(-tetha) % 360) + 360) % 360;
+-          }
+-        }
++	sideData = av_packet_side_data_get(
++	    pStream->codecpar->coded_side_data,
++	    pStream->codecpar->nb_coded_side_data,
++	    AV_PKT_DATA_DISPLAYMATRIX);
++	if (sideData)
++	{
++	  const double theta = av_display_rotation_get(reinterpret_cast<const int32_t*>(sideData->data));
++	  if (!std::isnan(theta))
++	  {
++	    st->iOrientation = ((static_cast<int>(-theta) % 360) + 360) % 360;
++	  }
++	}
+ 
+         // detect stereoscopic mode
+         std::string stereoMode = GetStereoModeFromMetadata(pStream->metadata);
+@@ -2046,9 +2051,9 @@ std::string CDVDDemuxFFmpeg::GetStreamCodecName(int iStreamId)
+     /* use profile to determine the DTS type */
+     if (stream->codec == AV_CODEC_ID_DTS)
+     {
+-      if (stream->profile == FF_PROFILE_DTS_HD_MA)
++      if (stream->profile == AV_PROFILE_DTS_HD_MA)
+         strName = "dtshd_ma";
+-      else if (stream->profile == FF_PROFILE_DTS_HD_HRA)
++      else if (stream->profile == AV_PROFILE_DTS_HD_HRA)
+         strName = "dtshd_hra";
+       else
+         strName = "dca";
+@@ -2488,7 +2493,9 @@ StreamHdrType CDVDDemuxFFmpeg::DetermineHdrType(AVStream* pStream)
+ {
+   StreamHdrType hdrType = StreamHdrType::HDR_TYPE_NONE;
+ 
+-  if (av_stream_get_side_data(pStream, AV_PKT_DATA_DOVI_CONF, nullptr)) // DoVi
++  if (av_packet_side_data_get(pStream->codecpar->coded_side_data,
++                              pStream->codecpar->nb_coded_side_data,
++                              AV_PKT_DATA_DOVI_CONF)) // DoVi
+     hdrType = StreamHdrType::HDR_TYPE_DOLBYVISION;
+   else if (pStream->codecpar->color_trc == AVCOL_TRC_SMPTE2084) // HDR10
+     hdrType = StreamHdrType::HDR_TYPE_HDR10;
+@@ -2496,7 +2503,9 @@ StreamHdrType CDVDDemuxFFmpeg::DetermineHdrType(AVStream* pStream)
+     hdrType = StreamHdrType::HDR_TYPE_HLG;
+   // file could be SMPTE2086 which FFmpeg currently returns as unknown
+   // so use the presence of static metadata to detect it
+-  else if (av_stream_get_side_data(pStream, AV_PKT_DATA_MASTERING_DISPLAY_METADATA, nullptr))
++  else if (av_packet_side_data_get(pStream->codecpar->coded_side_data,
++                                 pStream->codecpar->nb_coded_side_data,
++                                 AV_PKT_DATA_MASTERING_DISPLAY_METADATA))
+     hdrType = StreamHdrType::HDR_TYPE_HDR10;
+ 
+   return hdrType;
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+index eb2943b..f72e741 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+@@ -547,11 +547,11 @@ void CDVDVideoCodecDRMPRIME::SetPictureParams(VideoPicture* pVideoPicture)
+ 
+   pVideoPicture->colorBits = 8;
+   if (m_pCodecContext->codec_id == AV_CODEC_ID_HEVC &&
+-      m_pCodecContext->profile == FF_PROFILE_HEVC_MAIN_10)
++      m_pCodecContext->profile == AV_PROFILE_HEVC_MAIN_10)
+     pVideoPicture->colorBits = 10;
+   else if (m_pCodecContext->codec_id == AV_CODEC_ID_H264 &&
+-           (m_pCodecContext->profile == FF_PROFILE_H264_HIGH_10 ||
+-            m_pCodecContext->profile == FF_PROFILE_H264_HIGH_10_INTRA))
++           (m_pCodecContext->profile == AV_PROFILE_H264_HIGH_10 ||
++            m_pCodecContext->profile == AV_PROFILE_H264_HIGH_10_INTRA))
+     pVideoPicture->colorBits = 10;
+ 
+   pVideoPicture->hasDisplayMetadata = false;
+@@ -582,8 +582,8 @@ void CDVDVideoCodecDRMPRIME::SetPictureParams(VideoPicture* pVideoPicture)
+ 
+   pVideoPicture->iRepeatPicture = 0;
+   pVideoPicture->iFlags = 0;
+-  pVideoPicture->iFlags |= m_pFrame->interlaced_frame ? DVP_FLAG_INTERLACED : 0;
+-  pVideoPicture->iFlags |= m_pFrame->top_field_first ? DVP_FLAG_TOP_FIELD_FIRST : 0;
++  pVideoPicture->iFlags |= (m_pFrame->flags & AV_FRAME_FLAG_INTERLACED) ? DVP_FLAG_INTERLACED : 0;
++  pVideoPicture->iFlags |= (m_pFrame->flags & AV_FRAME_FLAG_TOP_FIELD_FIRST) ? DVP_FLAG_TOP_FIELD_FIRST : 0;
+   pVideoPicture->iFlags |= m_pFrame->data[0] ? 0 : DVP_FLAG_DROPPED;
+ 
+   if (m_codecControlFlags & DVD_CODEC_CTRL_DROP)
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp
+index d66378f..12380b6 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp
+@@ -258,7 +258,7 @@ enum AVPixelFormat CDVDVideoCodecFFmpeg::GetFormat(struct AVCodecContext * avctx
+   // fix an ffmpeg issue here, it calls us with an invalid profile
+   // then a 2nd call with a valid one
+   if(ctx->m_decoderState != STATE_HW_SINGLE ||
+-     (avctx->codec_id == AV_CODEC_ID_VC1 && avctx->profile == FF_PROFILE_UNKNOWN))
++     (avctx->codec_id == AV_CODEC_ID_VC1 && avctx->profile == AV_PROFILE_UNKNOWN))
+   {
+     AVPixelFormat defaultFmt = avcodec_default_get_format(avctx, fmt);
+     pixFmtName = av_get_pix_fmt_name(defaultFmt);
+@@ -792,12 +792,12 @@ CDVDVideoCodec::VCReturn CDVDVideoCodecFFmpeg::GetPicture(VideoPicture* pVideoPi
+   }
+   m_dropCtrl.Process(framePTS, m_pCodecContext->skip_frame > AVDISCARD_DEFAULT);
+ 
+-  if (m_pDecodedFrame->key_frame)
++  if (m_pDecodedFrame->flags & AV_FRAME_FLAG_KEY)
+   {
+     m_started = true;
+     m_iLastKeyframe = m_pCodecContext->has_b_frames + 2;
+   }
+-  if (m_pDecodedFrame->interlaced_frame)
++  if (m_pDecodedFrame->flags & AV_FRAME_FLAG_INTERLACED)
+     m_interlaced = true;
+   else
+     m_interlaced = false;
+@@ -1013,8 +1013,8 @@ bool CDVDVideoCodecFFmpeg::GetPictureCommon(VideoPicture* pVideoPicture)
+ 
+   pVideoPicture->iRepeatPicture = 0.5 * m_pFrame->repeat_pict;
+   pVideoPicture->iFlags = 0;
+-  pVideoPicture->iFlags |= m_pFrame->interlaced_frame ? DVP_FLAG_INTERLACED : 0;
+-  pVideoPicture->iFlags |= m_pFrame->top_field_first ? DVP_FLAG_TOP_FIELD_FIRST: 0;
++  pVideoPicture->iFlags |= (m_pFrame->flags & AV_FRAME_FLAG_INTERLACED) ? DVP_FLAG_INTERLACED : 0;
++  pVideoPicture->iFlags |= (m_pFrame->flags & AV_FRAME_FLAG_TOP_FIELD_FIRST) ? DVP_FLAG_TOP_FIELD_FIRST : 0;
+ 
+   if (m_codecControlFlags & DVD_CODEC_CTRL_DROP)
+   {
+@@ -1036,11 +1036,11 @@ bool CDVDVideoCodecFFmpeg::GetPictureCommon(VideoPicture* pVideoPicture)
+   else if (m_pCodecContext->pix_fmt == AV_PIX_FMT_YUV420P10)
+     pVideoPicture->colorBits = 10;
+   else if (m_pCodecContext->codec_id == AV_CODEC_ID_HEVC &&
+-           m_pCodecContext->profile == FF_PROFILE_HEVC_MAIN_10)
++           m_pCodecContext->profile == AV_PROFILE_HEVC_MAIN_10)
+     pVideoPicture->colorBits = 10;
+   else if (m_pCodecContext->codec_id == AV_CODEC_ID_H264 &&
+-           (m_pCodecContext->profile == FF_PROFILE_H264_HIGH_10||
+-            m_pCodecContext->profile == FF_PROFILE_H264_HIGH_10_INTRA))
++           (m_pCodecContext->profile == AV_PROFILE_H264_HIGH_10||
++            m_pCodecContext->profile == AV_PROFILE_H264_HIGH_10_INTRA))
+     pVideoPicture->colorBits = 10;
+   else if ((m_pCodecContext->codec_id == AV_CODEC_ID_VP9 ||
+             m_pCodecContext->codec_id == AV_CODEC_ID_AV1) &&
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+index fb7606e..e95d100 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VAAPI.cpp
+@@ -609,7 +609,7 @@ bool CDecoder::Open(AVCodecContext* avctx, AVCodecContext* mainctx, const enum A
+       break;
+     case AV_CODEC_ID_H264:
+     {
+-      if (avctx->profile == FF_PROFILE_H264_CONSTRAINED_BASELINE)
++      if (avctx->profile == AV_PROFILE_H264_CONSTRAINED_BASELINE)
+       {
+         profile = VAProfileH264ConstrainedBaseline;
+         if (!m_vaapiConfig.context->SupportsProfile(profile))
+@@ -617,7 +617,7 @@ bool CDecoder::Open(AVCodecContext* avctx, AVCodecContext* mainctx, const enum A
+       }
+       else
+       {
+-        if(avctx->profile == FF_PROFILE_H264_MAIN)
++        if(avctx->profile == AV_PROFILE_H264_MAIN)
+         {
+           profile = VAProfileH264Main;
+           if (m_vaapiConfig.context->SupportsProfile(profile))
+@@ -631,14 +631,14 @@ bool CDecoder::Open(AVCodecContext* avctx, AVCodecContext* mainctx, const enum A
+     }
+     case AV_CODEC_ID_HEVC:
+     {
+-      if (avctx->profile == FF_PROFILE_HEVC_MAIN_10)
++      if (avctx->profile == AV_PROFILE_HEVC_MAIN_10)
+       {
+         if (!m_capDeepColor)
+           return false;
+ 
+         profile = VAProfileHEVCMain10;
+       }
+-      else if (avctx->profile == FF_PROFILE_HEVC_MAIN)
++      else if (avctx->profile == AV_PROFILE_HEVC_MAIN)
+         profile = VAProfileHEVCMain;
+       else
+         profile = VAProfileNone;
+@@ -655,9 +655,9 @@ bool CDecoder::Open(AVCodecContext* avctx, AVCodecContext* mainctx, const enum A
+     }
+     case AV_CODEC_ID_VP9:
+     {
+-      if (avctx->profile == FF_PROFILE_VP9_0)
++      if (avctx->profile == AV_PROFILE_VP9_0)
+         profile = VAProfileVP9Profile0;
+-      else if (avctx->profile == FF_PROFILE_VP9_2)
++      else if (avctx->profile == AV_PROFILE_VP9_2)
+         profile = VAProfileVP9Profile2;
+       else
+         profile = VAProfileNone;
+@@ -678,9 +678,9 @@ bool CDecoder::Open(AVCodecContext* avctx, AVCodecContext* mainctx, const enum A
+ #if VA_CHECK_VERSION(1, 8, 0)
+     case AV_CODEC_ID_AV1:
+     {
+-      if (avctx->profile == FF_PROFILE_AV1_MAIN)
++      if (avctx->profile == AV_PROFILE_AV1_MAIN)
+         profile = VAProfileAV1Profile0;
+-      else if (avctx->profile == FF_PROFILE_AV1_HIGH)
++      else if (avctx->profile == AV_PROFILE_AV1_HIGH)
+         profile = VAProfileAV1Profile1;
+       else
+         profile = VAProfileNone;
+@@ -3068,8 +3068,10 @@ bool CFFmpegPostproc::AddPicture(CVaapiDecodedPicture &inPic)
+   m_pFilterFrameIn->height = m_config.vidHeight;
+   m_pFilterFrameIn->linesize[0] = image.pitches[0];
+   m_pFilterFrameIn->linesize[1] = image.pitches[1];
+-  m_pFilterFrameIn->interlaced_frame = (inPic.DVDPic.iFlags & DVP_FLAG_INTERLACED) ? 1 : 0;
+-  m_pFilterFrameIn->top_field_first = (inPic.DVDPic.iFlags & DVP_FLAG_TOP_FIELD_FIRST) ? 1 : 0;
++  if (inPic.DVDPic.iFlags & DVP_FLAG_INTERLACED)
++    m_pFilterFrameIn->flags |= AV_FRAME_FLAG_INTERLACED;
++  if (inPic.DVDPic.iFlags & DVP_FLAG_TOP_FIELD_FIRST)
++    m_pFilterFrameIn->flags |= AV_FRAME_FLAG_TOP_FIELD_FIRST;
+ 
+   if (inPic.DVDPic.pts == DVD_NOPTS_VALUE)
+     m_pFilterFrameIn->pts = AV_NOPTS_VALUE;
+@@ -3094,7 +3096,6 @@ bool CFFmpegPostproc::AddPicture(CVaapiDecodedPicture &inPic)
+   m_pFilterFrameIn->linesize[1] = image.pitches[1];
+   m_pFilterFrameIn->data[2] = NULL;
+   m_pFilterFrameIn->data[3] = NULL;
+-  m_pFilterFrameIn->pkt_size = image.data_size;
+ 
+   CheckSuccess(vaUnmapBuffer(m_config.dpy, image.buf), "vaUnmapBuffer");
+   CheckSuccess(vaDestroyImage(m_config.dpy, image.image_id), "vaDestroyImage");
+diff --git a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VDPAU.cpp b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VDPAU.cpp
+index beb3f99..fc5faaa 100644
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/VDPAU.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/VDPAU.cpp
+@@ -922,7 +922,7 @@ bool CDecoder::ConfigVDPAU(AVCodecContext* avctx, int ref_frames)
+   }
+   else if (avctx->codec_id == AV_CODEC_ID_VP9)
+   {
+-    if (avctx->profile != FF_PROFILE_VP9_0)
++    if (avctx->profile != AV_PROFILE_VP9_0)
+       return false;
+ 
+     m_vdpauConfig.maxReferences = 8;
+diff --git a/xbmc/cores/paplayer/VideoPlayerCodec.cpp b/xbmc/cores/paplayer/VideoPlayerCodec.cpp
+index 0a2468f..2eb036e 100644
+--- a/xbmc/cores/paplayer/VideoPlayerCodec.cpp
++++ b/xbmc/cores/paplayer/VideoPlayerCodec.cpp
+@@ -497,9 +497,9 @@ CAEStreamInfo::DataType VideoPlayerCodec::GetPassthroughStreamType(AVCodecID cod
+       break;
+ 
+     case AV_CODEC_ID_DTS:
+-      if (profile == FF_PROFILE_DTS_HD_HRA)
++      if (profile == AV_PROFILE_DTS_HD_HRA)
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD;
+-      else if (profile == FF_PROFILE_DTS_HD_MA)
++      else if (profile == AV_PROFILE_DTS_HD_MA)
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD_MA;
+       else
+         format.m_streamInfo.m_type = CAEStreamInfo::STREAM_TYPE_DTSHD_CORE;
+diff --git a/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp b/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
+index daf66ce..a876a3b 100644
+--- a/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
++++ b/xbmc/cores/VideoPlayer/DVDInputStreams/InputStreamAddon.cpp
+@@ -693,35 +693,35 @@ int CInputStreamAddon::ConvertVideoCodecProfile(STREAMCODEC_PROFILE profile)
+   switch (profile)
+   {
+   case H264CodecProfileBaseline:
+-    return FF_PROFILE_H264_BASELINE;
++    return AV_PROFILE_H264_BASELINE;
+   case H264CodecProfileMain:
+-    return FF_PROFILE_H264_MAIN;
++    return AV_PROFILE_H264_MAIN;
+   case H264CodecProfileExtended:
+-    return FF_PROFILE_H264_EXTENDED;
++    return AV_PROFILE_H264_EXTENDED;
+   case H264CodecProfileHigh:
+-    return FF_PROFILE_H264_HIGH;
++    return AV_PROFILE_H264_HIGH;
+   case H264CodecProfileHigh10:
+-    return FF_PROFILE_H264_HIGH_10;
++    return AV_PROFILE_H264_HIGH_10;
+   case H264CodecProfileHigh422:
+-    return FF_PROFILE_H264_HIGH_422;
++    return AV_PROFILE_H264_HIGH_422;
+   case H264CodecProfileHigh444Predictive:
+-    return FF_PROFILE_H264_HIGH_444_PREDICTIVE;
++    return AV_PROFILE_H264_HIGH_444_PREDICTIVE;
+   case VP9CodecProfile0:
+-    return FF_PROFILE_VP9_0;
++    return AV_PROFILE_VP9_0;
+   case VP9CodecProfile1:
+-    return FF_PROFILE_VP9_1;
++    return AV_PROFILE_VP9_1;
+   case VP9CodecProfile2:
+-    return FF_PROFILE_VP9_2;
++    return AV_PROFILE_VP9_2;
+   case VP9CodecProfile3:
+-    return FF_PROFILE_VP9_3;
++    return AV_PROFILE_VP9_3;
+   case AV1CodecProfileMain:
+-    return FF_PROFILE_AV1_MAIN;
++    return AV_PROFILE_AV1_MAIN;
+   case AV1CodecProfileHigh:
+-    return FF_PROFILE_AV1_HIGH;
++    return AV_PROFILE_AV1_HIGH;
+   case AV1CodecProfileProfessional:
+-    return FF_PROFILE_AV1_PROFESSIONAL;
++    return AV_PROFILE_AV1_PROFESSIONAL;
+   default:
+-    return FF_PROFILE_UNKNOWN;
++    return AV_PROFILE_UNKNOWN;
+   }
+ }
+ 
+@@ -730,48 +730,48 @@ int CInputStreamAddon::ConvertAudioCodecProfile(STREAMCODEC_PROFILE profile)
+   switch (profile)
+   {
+     case AACCodecProfileMAIN:
+-      return FF_PROFILE_AAC_MAIN;
++      return AV_PROFILE_AAC_MAIN;
+     case AACCodecProfileLOW:
+-      return FF_PROFILE_AAC_LOW;
++      return AV_PROFILE_AAC_LOW;
+     case AACCodecProfileSSR:
+-      return FF_PROFILE_AAC_SSR;
++      return AV_PROFILE_AAC_SSR;
+     case AACCodecProfileLTP:
+-      return FF_PROFILE_AAC_LTP;
++      return AV_PROFILE_AAC_LTP;
+     case AACCodecProfileHE:
+-      return FF_PROFILE_AAC_HE;
++      return AV_PROFILE_AAC_HE;
+     case AACCodecProfileHEV2:
+-      return FF_PROFILE_AAC_HE_V2;
++      return AV_PROFILE_AAC_HE_V2;
+     case AACCodecProfileLD:
+-      return FF_PROFILE_AAC_LD;
++      return AV_PROFILE_AAC_LD;
+     case AACCodecProfileELD:
+-      return FF_PROFILE_AAC_ELD;
++      return AV_PROFILE_AAC_ELD;
+     case MPEG2AACCodecProfileLOW:
+-      return FF_PROFILE_MPEG2_AAC_LOW;
++      return AV_PROFILE_MPEG2_AAC_LOW;
+     case MPEG2AACCodecProfileHE:
+-      return FF_PROFILE_MPEG2_AAC_HE;
++      return AV_PROFILE_MPEG2_AAC_HE;
+     case DTSCodecProfile:
+-      return FF_PROFILE_DTS;
++      return AV_PROFILE_DTS;
+     case DTSCodecProfileES:
+-      return FF_PROFILE_DTS_ES;
++      return AV_PROFILE_DTS_ES;
+     case DTSCodecProfile9624:
+-      return FF_PROFILE_DTS_96_24;
++      return AV_PROFILE_DTS_96_24;
+     case DTSCodecProfileHDHRA:
+-      return FF_PROFILE_DTS_HD_HRA;
++      return AV_PROFILE_DTS_HD_HRA;
+     case DTSCodecProfileHDMA:
+-      return FF_PROFILE_DTS_HD_MA;
++      return AV_PROFILE_DTS_HD_MA;
+     case DTSCodecProfileHDExpress:
+-      return FF_PROFILE_DTS_EXPRESS;
++      return AV_PROFILE_DTS_EXPRESS;
+     case DTSCodecProfileHDMAX:
+       //! @todo: with ffmpeg >= 6.1 set the appropriate profile
+-      return FF_PROFILE_UNKNOWN; // FF_PROFILE_DTS_HD_MA_X
++      return AV_PROFILE_UNKNOWN; // AV_PROFILE_DTS_HD_MA_X
+     case DTSCodecProfileHDMAIMAX:
+       //! @todo: with ffmpeg >= 6.1 set the appropriate profile
+-      return FF_PROFILE_UNKNOWN; // FF_PROFILE_DTS_HD_MA_X_IMAX
++      return AV_PROFILE_UNKNOWN; // AV_PROFILE_DTS_HD_MA_X_IMAX
+     case DDPlusCodecProfileAtmos:
+       //! @todo: with ffmpeg >= 6.1 set the appropriate profile
+-      return FF_PROFILE_UNKNOWN; // FF_PROFILE_EAC3_DDP_ATMOS
++      return AV_PROFILE_UNKNOWN; // AV_PROFILE_EAC3_DDP_ATMOS
+     default:
+-      return FF_PROFILE_UNKNOWN;
++      return AV_PROFILE_UNKNOWN;
+   }
+ }
+ 
