@@ -159,9 +159,9 @@ do_help() {
 		  --check-media-upgrade    Searches for upgrade files in media pool
 
 		  --upgrade                Starts the upgrade on CLI and GUI with configed URL
-		       --type <type>       Download stable or buttlerfly
-		       --url <url>         Use dedicated download location
-		       --version <version> Use plain version numbers for ex. 5.27.2, 39 or 44
+		    --type <type>          Download stable or buttlerfly
+		    --url <url>            Use dedicated download location
+		    --version <version>    Use plain version numbers for ex. 5.27.2, 39 or 44
 
 		  --media-upgrade          Try to upgrade with ~/upgrade/boot.tar.xz (default)
 		     --file [file path]    Use a dedicated file location
@@ -449,7 +449,8 @@ G_PRESERVE_UPGRADE_FILES=1
 [ -t 1 ] && TERMINAL=1 || TERMINAL=0
 
 case "${ACTION}" in
-    --media-upgrade) # use local file locations, additional param: A user file! A file found in media pool, tag as: "media"! or the default location /userdata/system/upgrade
+    --media-upgrade|manual) # use local file locations, additional parameters: --file /path/to/file.tar.xz --media
+	[[ "${ACTION}" == "manual" ]] && shift $# #fallback to /userdata/system/upgrade/boot.tar.xz and ignore all CLI commands
 	SWITCH="${1,,}"
 	shift
         case "${SWITCH}" in
@@ -514,8 +515,6 @@ case "${ACTION}" in
         do_help
         exit 0
     ;;
-    *)
-	do_help
-	exit 1
+    *) echo "Usage: $(basename $0) --help for detailed page"; exit 1
 esac
 ###
