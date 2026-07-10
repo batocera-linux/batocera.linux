@@ -25,7 +25,7 @@ TRX_EMULATOR_INFO = trx.emulator.yml
 # meson.build in src subfolder
 TRX_SUBDIR = src
 
-TRX_DEPENDENCIES = ffmpeg libglew pcre2 sdl2 uthash
+TRX_DEPENDENCIES = ffmpeg libglew pcre2 sdl2 uthash lua
 
 TRX_CONF_OPTS = -Dstaticdeps=false
 
