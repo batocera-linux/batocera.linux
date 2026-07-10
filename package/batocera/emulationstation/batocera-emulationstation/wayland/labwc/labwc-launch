@@ -41,16 +41,130 @@ if [ -n "$PRIME_PCI_ID" ]; then
     # Convert "pci-0000_03_00_0" back to "0000:03:00.0" for sysfs matching
     SYSFS_ID=$(echo "$PRIME_PCI_ID" | sed -e 's/^pci-//' -e 's/_/:/g' -e 's/:/./3')
 
+    PRIMARY_CARD=""
     # Find which card matches this PCI ID
     for card in /sys/class/drm/card*; do
         # Check if the device link points to our PCI ID
         if readlink -f "$card/device" | grep -q "$SYSFS_ID"; then
-            CARD_NAME=$(basename "$card")
-            export WLR_DRM_DEVICES="/dev/dri/$CARD_NAME"
-            echo "Forcing Primary GPU: $WLR_DRM_DEVICES ($SYSFS_ID)" >> "$LOG_FILE"
+            PRIMARY_CARD=$(basename "$card")
             break
         fi
     done
+
+    # If a primary card was found, build a multi-GPU device string with detailed logs
+    if [ -n "$PRIMARY_CARD" ]; then
+        
+        # Helper function to query details of a card node from sysfs
+        _get_card_details() {
+            local card_node="$1"
+            local sys_card="/sys/class/drm/${card_node}"
+            
+            local driver_name="unknown"
+            if [ -L "${sys_card}/device/driver" ]; then
+                driver_name=$(basename "$(readlink -f "${sys_card}/device/driver")")
+            fi
+
+            # Check if it is a PCI device
+            if [ -f "${sys_card}/device/vendor" ] && [ -f "${sys_card}/device/device" ]; then
+                local pci_id
+                pci_id=$(basename "$(readlink -f "${sys_card}/device")")
+                local vendor_id
+                vendor_id=$(cat "${sys_card}/device/vendor" | sed 's/^0x//')
+                local dev_id
+                dev_id=$(cat "${sys_card}/device/device" | sed 's/^0x//')
+                
+                local vendor_name="Unknown"
+                case "${vendor_id}" in
+                    "10de") vendor_name="NVIDIA" ;;
+                    "8086") vendor_name="Intel" ;;
+                    "1002") vendor_name="AMD/ATI" ;;
+                    *) vendor_name="0x${vendor_id}" ;;
+                esac
+
+                # Format for PCI GPUs
+                echo "PCI|${vendor_name}|${pci_id}|${vendor_id}:${dev_id}|${driver_name}"
+            else
+                # Format for Platform / SoC GPUs (non-PCI)
+                local platform_id="platform"
+                if [ -L "${sys_card}/device" ]; then
+                    platform_id=$(basename "$(readlink -f "${sys_card}/device")")
+                fi
+                echo "PLATFORM|${platform_id}|${driver_name}"
+            fi
+        }
+
+        WLR_DRM_DEVICES_VAL="/dev/dri/$PRIMARY_CARD"
+
+        echo "Configuring multi-GPU setup:" >> "$LOG_FILE"
+
+        # Get and print primary card details
+        PRIMARY_DETAILS=$(_get_card_details "$PRIMARY_CARD")
+        type=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f1)
+
+        if [ "$type" = "PCI" ]; then
+            p_vend=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f2)
+            p_pci=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f3)
+            p_ids=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f4)
+            p_drv=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f5)
+            echo "  - [PRIMARY RENDERER]  /dev/dri/${PRIMARY_CARD} (${p_vend} @ ${p_pci}) [IDs: ${p_ids} | driver: ${p_drv}]" >> "$LOG_FILE"
+        else
+            p_plat=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f2)
+            p_drv=$(echo "$PRIMARY_DETAILS" | cut -d'|' -f3)
+            echo "  - [PRIMARY RENDERER]  /dev/dri/${PRIMARY_CARD} (Platform @ ${p_plat}) [driver: ${p_drv}]" >> "$LOG_FILE"
+        fi
+
+        # Find and append any other real hardware GPUs for auxiliary display output
+        for card in /sys/class/drm/card*; do
+            [ -e "$card" ] || continue
+            CARD_NAME=$(basename "$card")
+
+            if [ "$CARD_NAME" != "$PRIMARY_CARD" ]; then
+                if [ -L "$card/device" ]; then
+                    WLR_DRM_DEVICES_VAL="${WLR_DRM_DEVICES_VAL}:/dev/dri/$CARD_NAME"
+                    
+                    # Get and print auxiliary card details
+                    SEC_DETAILS=$(_get_card_details "$CARD_NAME")
+                    sec_type=$(echo "$SEC_DETAILS" | cut -d'|' -f1)
+
+                    if [ "$sec_type" = "PCI" ]; then
+                        s_vend=$(echo "$SEC_DETAILS" | cut -d'|' -f2)
+                        s_pci=$(echo "$SEC_DETAILS" | cut -d'|' -f3)
+                        s_ids=$(echo "$SEC_DETAILS" | cut -d'|' -f4)
+                        s_drv=$(echo "$SEC_DETAILS" | cut -d'|' -f5)
+                        echo "  - [AUXILIARY DISPLAY] /dev/dri/${CARD_NAME} (${s_vend} @ ${s_pci}) [IDs: ${s_ids} | driver: ${s_drv}]" >> "$LOG_FILE"
+                    else
+                        s_plat=$(echo "$SEC_DETAILS" | cut -d'|' -f2)
+                        s_drv=$(echo "$SEC_DETAILS" | cut -d'|' -f3)
+                        echo "  - [AUXILIARY DISPLAY] /dev/dri/${CARD_NAME} (Platform @ ${s_plat}) [driver: ${s_drv}]" >> "$LOG_FILE"
+                    fi
+                fi
+            fi
+        done
+
+        export WLR_DRM_DEVICES="$WLR_DRM_DEVICES_VAL"
+        echo "Exporting WLR_DRM_DEVICES=\"$WLR_DRM_DEVICES\"" >> "$LOG_FILE"
+    fi
+fi
+
+# Vulkan wlroots Compatibility Check
+VULKAN_SUPPORTED=false
+if command -v vulkaninfo >/dev/null 2>&1; then
+    VINFO_OUT=$(vulkaninfo 2>/dev/null)
+    if [ $? -eq 0 ] && [ -n "$VINFO_OUT" ]; then
+        # wlroots strictly requires VK_EXT_image_drm_format_modifier and VK_EXT_queue_family_foreign
+        # to initialize its Wayland DRM compositing engine.
+        if echo "$VINFO_OUT" | grep -q "VK_EXT_image_drm_format_modifier" && \
+           echo "$VINFO_OUT" | grep -q "VK_EXT_queue_family_foreign"; then
+            VULKAN_SUPPORTED=true
+        fi
+    fi
+fi
+
+if [ "$VULKAN_SUPPORTED" = "true" ]; then
+    export WLR_RENDERER=vulkan
+    echo "Full wlroots Vulkan requirements met. Exported WLR_RENDERER=vulkan" >> "$LOG_FILE"
+else
+    echo "Missing critical DRM Vulkan extensions (e.g., VK_EXT_image_drm_format_modifier). Falling back to GLES2." >> "$LOG_FILE"
 fi
 
 # Start Labwc with specified environment variable, logging output
