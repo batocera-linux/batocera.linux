@@ -5181,11 +5181,11 @@ traider1:
   platform: pc
   group: ports
   emulators:
-    tr1x:
-      tr1x: { requireAnyOf: [BR2_PACKAGE_TR1X] }
+    trx:
+      trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
   comment_en: |
     The origianl Tomb Raider files should go in this rom folder from your previous Windows installation.
-    You can safetly remove .exe & .dll files which are not necessary for TR1X to run the game.
+    You can safetly remove .exe & .dll files which are not necessary for TRX to run the game.
     We highly recommend your folders are in lowercase to ensure call files are accounted for.
     Then create a launcher file with a .croft extension.
     i.e. Tomb Raider.croft
@@ -5967,8 +5967,8 @@ traider2:
   platform: pc
   group: ports
   emulators:
-    tr2x:
-      tr2x: { requireAnyOf: [BR2_PACKAGE_TR2X] }
+    trx:
+      trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:traider2
   comment_fr: |
@@ -6299,3 +6299,21 @@ tvc:
           bios/ep128emu/roms/tvc22_ext.rom
           bios/ep128emu/roms/tvcfileio.rom
           bios/ep128emu/roms/tvc_dos12d.rom
+
+traider3:
+  name: Tomb Raider 3
+  manufacturer: Ports
+  release: 1997
+  hardware: port
+  extensions: [croft]
+  platform: pc
+  group: ports
+  emulators:
+    trx:
+      trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
+  comment_en: |
+    For more info: https://wiki.batocera.org/systems:traider3
+  comment_fr: |
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider3
+  comment_br: |
+    Para mais informações: https://wiki.batocera.org/systems:traider3

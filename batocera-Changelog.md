@@ -54,6 +54,7 @@
   CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5
   Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - The Force Engine to capable aarch64 devices
+- TR1X & TR2X have merged into the unified TRX which also now supports Tomb Raider 3.
 - Vita3k added for capable aarch64 devices
 ### Updated
 - Azahar to 2125.1.2

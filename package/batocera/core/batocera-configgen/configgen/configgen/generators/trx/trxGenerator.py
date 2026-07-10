@@ -30,22 +30,22 @@ _logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-class TR2XGenerator(Generator):
+class TRXGenerator(Generator):
 
     def getHotkeysContext(self) -> HotkeysContext:
         return {
-            "name": "tr2x",
+            "name": "trx",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"], "save_state": "KEY_F5", "restore_state": "KEY_F6" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
-        tr2xRomPath = rom.parent
-        tr2xConfigPath = tr2xRomPath / "cfg" / "TR2X.json5"
-        tr2xSourcePath = Path("/usr/bin/tr2x")
+        trxRomPath = rom.parent
+        trxConfigPath = trxRomPath / "cfg" / "TRX.json5"
+        trxSourcePath = Path("/usr/bin/trx")
 
         # Copy files & folders if they don't exist
-        for item in tr2xSourcePath.iterdir():
-            dest = tr2xRomPath / item.name
+        for item in trxSourcePath.iterdir():
+            dest = trxRomPath / item.name
             try:
                 if item.is_dir():
                     if not dest.exists():
@@ -65,14 +65,14 @@ class TR2XGenerator(Generator):
                 _logger.debug("Error copying %s -> %s: %s", item, dest, e)
 
         # Configuration
-        mkdir_if_not_exists(tr2xConfigPath.parent)
+        mkdir_if_not_exists(trxConfigPath.parent)
         config_data = {}
 
-        if tr2xConfigPath.exists():
+        if trxConfigPath.exists():
             try:
-                config_data = json.loads(tr2xConfigPath.read_text(encoding="utf-8"))
+                config_data = json.loads(trxConfigPath.read_text(encoding="utf-8"))
             except json.JSONDecodeError:
-                _logger.debug("Invalid JSON format in %s, overwriting with default settings.", tr2xConfigPath)
+                _logger.debug("Invalid JSON format in %s, overwriting with default settings.", trxConfigPath)
 
         # Update settings
         config_data.update(
@@ -83,9 +83,9 @@ class TR2XGenerator(Generator):
             }
         )
 
-        tr2xConfigPath.write_text(json.dumps(config_data, indent=2), encoding="utf-8")
+        trxConfigPath.write_text(json.dumps(config_data, indent=2), encoding="utf-8")
 
-        commandArray = [tr2xRomPath / "TR2X"]
+        commandArray = [trxRomPath / "trx"]
 
         return Command.Command(
             array=commandArray,

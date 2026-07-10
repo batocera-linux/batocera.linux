@@ -12,28 +12,28 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #################################################################################
 #
-# tr2x
+# trx
 #
 ################################################################################
 
-TR2X_VERSION = tr2-0.9.2
-TR2X_SITE = $(call github,LostArtefacts,TRX,$(TR2X_VERSION))
-TR2X_LICENSE = GPL-3.0 license
-TR2X_LICENSE_FILES = COPYING.md
-TR2X_SUPPORTS_IN_SOURCE_BUILD = NO
-TR2X_EMULATOR_INFO = tr2x.emulator.yml
-# meson.build in src/tr2 subfolder
-TR2X_SUBDIR = src/tr2
+TRX_VERSION = trx-1.8.1
+TRX_SITE = $(call github,LostArtefacts,TRX,$(TRX_VERSION))
+TRX_LICENSE = GPL-3.0 license
+TRX_LICENSE_FILES = COPYING.md
+TRX_SUPPORTS_IN_SOURCE_BUILD = NO
+TRX_EMULATOR_INFO = trx.emulator.yml
+# meson.build in src subfolder
+TRX_SUBDIR = src
 
-TR2X_DEPENDENCIES = ffmpeg libglew pcre2 sdl2 uthash
+TRX_DEPENDENCIES = ffmpeg libglew pcre2 sdl2 uthash
 
-TR2X_CONF_OPTS = -Dstaticdeps=false
+TRX_CONF_OPTS = -Dstaticdeps=false
 
 # Use install target commands to get all files & dirs
-define TR2X_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin/tr2x
-	cp -f $(@D)/src/tr2/buildroot-build/TR2X $(TARGET_DIR)/usr/bin/tr2x/
-	cp -rf $(@D)/data/tr2/ship/* $(TARGET_DIR)/usr/bin/tr2x/
+define TRX_INSTALL_TARGET_CMDS
+	mkdir -p $(TARGET_DIR)/usr/bin/trx
+	cp -f $(@D)/src/buildroot-build/TRX $(TARGET_DIR)/usr/bin/trx/
+	cp -rf $(@D)/data/trx/ship/* $(TARGET_DIR)/usr/bin/trx/
 endef
 
 $(eval $(meson-package))
