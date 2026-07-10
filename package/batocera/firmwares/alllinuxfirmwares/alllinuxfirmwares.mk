@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20260519
-ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.gz
+ALLLINUXFIRMWARES_VERSION = 20260622
+ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.xz
 ALLLINUXFIRMWARES_SITE = https://www.kernel.org/pub/linux/kernel/firmware
 
 ifeq ($(BR2_PACKAGE_FIRMWARE_ARMBIAN),y)
