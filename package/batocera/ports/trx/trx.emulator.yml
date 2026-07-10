@@ -1,3 +1,5 @@
+features:
+  - padtokeyboard
 shared_features:
   - powermode
   - tdp
@@ -10,14 +12,7 @@ shared_features:
   - bezel.tattoo_corner
   - bezel.tattoo_file
   - bezel.resize_tattoo
-features:
-  - padtokeyboard
-custom_features:
-  tr1x-expansion:
-    prompt: EXPANSION PACK
-    description: Run the Unfinished expansion pack.
-    choices:
-      Off (Default): 0
-      'On': 1
 systems:
   - traider1
+  - traider2
+  - traider3
