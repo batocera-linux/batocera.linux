@@ -123,7 +123,7 @@
 - FFMPEG to 8.1.2
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.0
-- Linux Firmware to 20260519
+- Linux Firmware to 20260622
 - Mesa3D to 26.1.2
 - Nvidia Open Production driver to 595.84
 - Nvidia 580 Legacy driver to 580.173.02
