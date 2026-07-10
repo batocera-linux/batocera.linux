@@ -1,0 +1,31 @@
+diff --git a/src/stream/DemuxStream.h b/src/stream/DemuxStream.h
+index e66ecf0..00e071f 100644
+--- a/src/stream/DemuxStream.h
++++ b/src/stream/DemuxStream.h
+@@ -80,8 +80,8 @@ public:
+     dvdNavId = 0;
+     demuxerId = -1;
+     codec_fourcc = 0;
+-    profile = FF_PROFILE_UNKNOWN;
+-    level = FF_LEVEL_UNKNOWN;
++    profile = AV_PROFILE_UNKNOWN;
++    level = AV_LEVEL_UNKNOWN;
+     type = INPUTSTREAM_TYPE_NONE;
+     iDuration = 0;
+     pPrivate = NULL;
+diff --git a/src/stream/FFmpegStream.cpp b/src/stream/FFmpegStream.cpp
+index c77e09d..f9cdf6e 100644
+--- a/src/stream/FFmpegStream.cpp
++++ b/src/stream/FFmpegStream.cpp
+@@ -2260,9 +2260,9 @@ std::string FFmpegStream::GetStreamCodecName(int iStreamId)
+     /* use profile to determine the DTS type */
+     if (stream->codec == AV_CODEC_ID_DTS)
+     {
+-      if (stream->profile == FF_PROFILE_DTS_HD_MA)
++      if (stream->profile == AV_PROFILE_DTS_HD_MA)
+         strName = "dtshd_ma";
+-      else if (stream->profile == FF_PROFILE_DTS_HD_HRA)
++      else if (stream->profile == AV_PROFILE_DTS_HD_HRA)
+         strName = "dtshd_hra";
+       else
+         strName = "dca";

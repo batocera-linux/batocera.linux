@@ -1,0 +1,196 @@
+From 22a798e9733c38dab6f76e717fa3c5fd2773f27a Mon Sep 17 00:00:00 2001
+From: Detlev Casanova <detlev.casanova@collabora.com>
+Date: Wed, 9 Jul 2025 15:29:34 -0400
+Subject: [PATCH] wip: hevc: Add support for sps_st_rps control
+
+Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
+---
+ libavcodec/hevc/ps.c           | 17 ++++++----
+ libavcodec/hevc/ps.h           |  4 ++-
+ libavcodec/v4l2_request_hevc.c | 60 +++++++++++++++++++++++++++++++++-
+ 3 files changed, 73 insertions(+), 8 deletions(-)
+
+diff --git a/libavcodec/hevc/ps.c b/libavcodec/hevc/ps.c
+index f18b88489b4..7c56852fe72 100644
+--- a/libavcodec/hevc/ps.c
++++ b/libavcodec/hevc/ps.c
+@@ -103,6 +103,7 @@ int ff_hevc_decode_short_term_rps(GetBitContext *gb, AVCodecContext *avctx,
+     if (rps->rps_predict) {
+         const ShortTermRPS *rps_ridx;
+         uint8_t used[32] = { 0 };
++        uint8_t use_delta[32] = { 0 };
+         int delta_rps;
+ 
+         if (is_slice_header) {
+@@ -128,13 +129,13 @@ int ff_hevc_decode_short_term_rps(GetBitContext *gb, AVCodecContext *avctx,
+         }
+         delta_rps      = (1 - (rps->delta_rps_sign << 1)) * rps->abs_delta_rps;
+         for (i = 0; i <= rps_ridx->num_delta_pocs; i++) {
+-            used[k] = get_bits1(gb);
++            used[i] = get_bits1(gb);
+ 
+-            rps->use_delta = 0;
+-            if (!used[k])
+-                rps->use_delta = get_bits1(gb);
++            use_delta[i] = 1;
++            if (!used[i])
++                use_delta[i] = get_bits1(gb);
+ 
+-            if (used[k] || rps->use_delta) {
++            if (used[i] || use_delta[i]) {
+                 if (i < rps_ridx->num_delta_pocs)
+                     delta_poc = delta_rps + rps_ridx->delta_poc[i];
+                 else
+@@ -186,8 +187,10 @@ int ff_hevc_decode_short_term_rps(GetBitContext *gb, AVCodecContext *avctx,
+             }
+         }
+ 
+-        for (unsigned i = 0; i < FF_ARRAY_ELEMS(used); i++)
++        for (unsigned i = 0; i < FF_ARRAY_ELEMS(used); i++) {
+             rps->used |= (uint32_t)used[i] << i;
++            rps->use_delta |= (uint32_t)use_delta[i] << i;
++        }
+     } else {
+         unsigned int nb_positive_pics;
+ 
+@@ -215,6 +218,7 @@ int ff_hevc_decode_short_term_rps(GetBitContext *gb, AVCodecContext *avctx,
+                 prev -= delta_poc;
+                 rps->delta_poc[i] = prev;
+                 rps->used        |= get_bits1(gb) * (1 << i);
++                rps->delta_poc_s0[i] = delta_poc;
+             }
+             prev = 0;
+             for (i = 0; i < nb_positive_pics; i++) {
+@@ -228,6 +232,7 @@ int ff_hevc_decode_short_term_rps(GetBitContext *gb, AVCodecContext *avctx,
+                 prev += delta_poc;
+                 rps->delta_poc[rps->num_negative_pics + i] = prev;
+                 rps->used                                 |= get_bits1(gb) * (1 << (rps->num_negative_pics + i));
++                rps->delta_poc_s1[i] = delta_poc;
+             }
+         }
+     }
+diff --git a/libavcodec/hevc/ps.h b/libavcodec/hevc/ps.h
+index 6f5b1f87554..373bd9555fb 100644
+--- a/libavcodec/hevc/ps.h
++++ b/libavcodec/hevc/ps.h
+@@ -74,7 +74,10 @@ typedef struct HEVCHdrParams {
+ 
+ typedef struct ShortTermRPS {
+     int32_t delta_poc[32];
++    uint16_t delta_poc_s0[16];
++    uint16_t delta_poc_s1[16];
+     uint32_t used;
++    uint32_t use_delta;
+ 
+     uint8_t delta_idx;
+     uint8_t num_negative_pics;
+@@ -85,7 +88,6 @@ typedef struct ShortTermRPS {
+     unsigned delta_rps_sign:1;
+ 
+     unsigned rps_predict:1;
+-    unsigned use_delta:1;
+ } ShortTermRPS;
+ 
+ typedef struct HEVCWindow {
+diff --git a/libavcodec/v4l2_request_hevc.c b/libavcodec/v4l2_request_hevc.c
+index 761e448a18c..ec6dc57c537 100644
+--- a/libavcodec/v4l2_request_hevc.c
++++ b/libavcodec/v4l2_request_hevc.c
+@@ -25,7 +25,8 @@
+ #include "internal.h"
+ #include "v4l2_request.h"
+ 
+-#define V4L2_HEVC_CONTROLS_MAX 6
++#define V4L2_HEVC_CONTROLS_MAX 7
++#define MAX_EXT_SPS_RPS 65
+ 
+ typedef struct V4L2RequestContextHEVC {
+     V4L2RequestContext base;
+@@ -44,6 +45,8 @@ typedef struct V4L2RequestControlsHEVC {
+     struct v4l2_ctrl_hevc_scaling_matrix scaling_matrix;
+     struct v4l2_ctrl_hevc_slice_params slice_params;
+     struct v4l2_ctrl_hevc_slice_params *frame_slice_params;
++    struct v4l2_ctrl_hevc_ext_sps_st_rps ext_sps_st_rps[MAX_EXT_SPS_RPS];
++    struct v4l2_ctrl_hevc_ext_sps_lt_rps ext_sps_lt_rps[MAX_EXT_SPS_RPS];
+     unsigned int allocated_slice_params;
+     unsigned int num_slice_params;
+     uint32_t *entry_point_offsets;
+@@ -360,6 +363,48 @@ static void fill_sps(struct v4l2_ctrl_hevc_sps *ctrl, const HEVCContext *h)
+         ctrl->flags |= V4L2_HEVC_SPS_FLAG_STRONG_INTRA_SMOOTHING_ENABLED;
+ }
+ 
++static void fill_ext_sps_st_rps (struct v4l2_ctrl_hevc_ext_sps_st_rps *ctrl, const HEVCContext *h)
++{
++    const HEVCPPS *pps = h->pps;
++    const HEVCSPS *sps = pps->sps;
++    int i;
++
++    for (i = 0; i < sps->nb_st_rps; i++) {
++        ctrl[i].flags |=
++          sps->st_rps[i].rps_predict ?
++          V4L2_HEVC_EXT_SPS_ST_RPS_FLAG_INTER_REF_PIC_SET_PRED : 0,
++        ctrl[i].delta_idx_minus1 =
++          sps->st_rps[i].delta_idx - 1;
++        ctrl[i].delta_rps_sign =
++          sps->st_rps[i].delta_rps_sign;
++        ctrl[i].abs_delta_rps_minus1 =
++          sps->st_rps[i].abs_delta_rps - 1;
++        ctrl[i].num_negative_pics =
++          sps->st_rps[i].num_negative_pics;
++        ctrl[i].num_positive_pics =
++          sps->st_rps[i].num_delta_pocs - sps->st_rps[i].num_negative_pics;
++
++        ctrl[i].used_by_curr_pic = sps->st_rps[i].used;
++        ctrl[i].use_delta_flag = sps->st_rps[i].use_delta;
++
++        for (int j = 0; j < 16; j++) {
++            ctrl[i].delta_poc_s0_minus1[j] = sps->st_rps[i].delta_poc_s0[j] - 1;
++            ctrl[i].delta_poc_s1_minus1[j] = sps->st_rps[i].delta_poc_s1[j] - 1;
++        }
++    }
++/*
++  for (i = 0; i < sps->num_long_term_ref_pics_sps; i++) {
++    ext_sps_rps_set = &g_array_index (self->ext_sps_rps,
++      struct v4l2_ctrl_hevc_ext_sps_rps, i);
++
++    ctrl[i]->lt_ref_pic_poc_lsb_sps = sps->lt_ref_pic_poc_lsb_sps[i];
++    ctrl[i]->flags |= sps->used_by_curr_pic_lt_sps_flag[i] ?
++                              V4L2_HEVC_EXT_SPS_RPS_FLAG_USED_LT : 0;
++  }
++*/
++}
++
++
+ static int v4l2_request_hevc_start_frame(AVCodecContext *avctx,
+                                          av_unused const uint8_t *buffer,
+                                          av_unused uint32_t size)
+@@ -377,6 +422,8 @@ static int v4l2_request_hevc_start_frame(AVCodecContext *avctx,
+         return ret;
+ 
+     fill_sps(&controls->sps, h);
++    if (controls->sps.num_short_term_ref_pic_sets)
++        fill_ext_sps_st_rps(controls->ext_sps_st_rps, h);
+     fill_decode_params(&controls->decode_params, h);
+ 
+     if (ctx->has_scaling_matrix) {
+@@ -527,6 +574,17 @@ static int v4l2_request_hevc_queue_decode(AVCodecContext *avctx, bool last_slice
+         .size = sizeof(controls->decode_params),
+     };
+ 
++    if (controls->sps.num_short_term_ref_pic_sets) {
++        printf("%lu, %d\n", sizeof(*controls->ext_sps_st_rps), controls->sps.num_short_term_ref_pic_sets);
++        control[count++] = (struct v4l2_ext_control) {
++            .id = V4L2_CID_STATELESS_HEVC_EXT_SPS_ST_RPS,
++            .ptr = controls->ext_sps_st_rps,
++            .size = sizeof(*controls->ext_sps_st_rps) *
++		    controls->sps.num_short_term_ref_pic_sets,
++        };
++    }
++    // TODO: Add long term
++
+     if (ctx->has_scaling_matrix) {
+         control[count++] = (struct v4l2_ext_control) {
+             .id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX,
+-- 
+GitLab
+

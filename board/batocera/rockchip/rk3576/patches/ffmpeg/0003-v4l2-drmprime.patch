@@ -1,0 +1,812 @@
+From 8d0c529749096e58c1404a526530cb0273f3aafe Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Tue, 24 Apr 2018 23:00:23 -0700
+Subject: [PATCH 1/8] libavcodec: v4l2m2m: output AVDRMFrameDescriptor
+
+This allows for a zero-copy output by exporting the v4l2 buffer then wrapping that buffer
+in the AVDRMFrameDescriptor like it is done in rkmpp.
+
+This has been in use for quite some time with great success on many platforms including:
+ - Amlogic S905
+ - Raspberry Pi
+ - i.MX6
+ - Dragonboard 410c
+
+This was developed in conjunction with Kodi to allow handling the zero-copy buffer rendering.
+A simply utility for testing is also available here: https://github.com/BayLibre/ffmpeg-drm
+
+todo:
+ - allow selecting pixel format output from decoder
+ - allow configuring amount of output and capture buffers
+
+V2:
+ - allow selecting AV_PIX_FMT_DRM_PRIME
+
+V3:
+ - use get_format to select AV_PIX_FMT_DRM_PRIME
+ - use hw_configs
+ - add handling of AV_PIX_FMT_YUV420P format (for raspberry pi)
+ - add handling of AV_PIX_FMT_YUYV422 format (for i.MX6 coda decoder)
+
+V4:
+ - rebased on 4.2.2
+
+V5:
+ - rebased on 4.3
+---
+ libavcodec/v4l2_buffers.c | 153 ++++++++++++++++++++++++++++++++++++--
+ libavcodec/v4l2_buffers.h |   4 +
+ libavcodec/v4l2_context.c |  40 +++++++++-
+ libavcodec/v4l2_m2m.h     |   3 +
+ libavcodec/v4l2_m2m_dec.c |  23 ++++++
+ 5 files changed, 212 insertions(+), 11 deletions(-)
+
+diff --git a/libavcodec/v4l2_buffers.c b/libavcodec/v4l2_buffers.c
+index 077c1ee9449d..863877ce2bb8 100644
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -21,6 +21,7 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
++#include <drm/drm_fourcc.h>
+ #include <linux/videodev2.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+@@ -28,6 +29,7 @@
+ #include <fcntl.h>
+ #include <poll.h>
+ #include "libavcodec/avcodec.h"
++#include "libavutil/hwcontext.h"
+ #include "libavutil/pixdesc.h"
+ #include "libavutil/refstruct.h"
+ #include "v4l2_context.h"
+@@ -233,6 +235,78 @@ static void v4l2_get_interlacing(AVFrame *frame, V4L2Buffer *buf)
+     }
+ }
+ 
++static uint8_t * v4l2_get_drm_frame(V4L2Buffer *avbuf)
++{
++    AVDRMFrameDescriptor *drm_desc = &avbuf->drm_frame;
++    AVDRMLayerDescriptor *layer;
++
++    /* fill the DRM frame descriptor */
++    drm_desc->nb_objects = avbuf->num_planes;
++    drm_desc->nb_layers = 1;
++
++    layer = &drm_desc->layers[0];
++    layer->nb_planes = avbuf->num_planes;
++
++    for (int i = 0; i < avbuf->num_planes; i++) {
++        layer->planes[i].object_index = i;
++        layer->planes[i].offset = 0;
++        layer->planes[i].pitch = avbuf->plane_info[i].bytesperline;
++    }
++
++    switch (avbuf->context->av_pix_fmt) {
++    case AV_PIX_FMT_YUYV422:
++
++        layer->format = DRM_FORMAT_YUYV;
++        layer->nb_planes = 1;
++
++        break;
++
++    case AV_PIX_FMT_NV12:
++    case AV_PIX_FMT_NV21:
++
++        layer->format = avbuf->context->av_pix_fmt == AV_PIX_FMT_NV12 ?
++            DRM_FORMAT_NV12 : DRM_FORMAT_NV21;
++
++        if (avbuf->num_planes > 1)
++            break;
++
++        layer->nb_planes = 2;
++
++        layer->planes[1].object_index = 0;
++        layer->planes[1].offset = avbuf->plane_info[0].bytesperline *
++            avbuf->context->format.fmt.pix.height;
++        layer->planes[1].pitch = avbuf->plane_info[0].bytesperline;
++        break;
++
++    case AV_PIX_FMT_YUV420P:
++
++        layer->format = DRM_FORMAT_YUV420;
++
++        if (avbuf->num_planes > 1)
++            break;
++
++        layer->nb_planes = 3;
++
++        layer->planes[1].object_index = 0;
++        layer->planes[1].offset = avbuf->plane_info[0].bytesperline *
++            avbuf->context->format.fmt.pix.height;
++        layer->planes[1].pitch = avbuf->plane_info[0].bytesperline >> 1;
++
++        layer->planes[2].object_index = 0;
++        layer->planes[2].offset = layer->planes[1].offset +
++            ((avbuf->plane_info[0].bytesperline *
++              avbuf->context->format.fmt.pix.height) >> 2);
++        layer->planes[2].pitch = avbuf->plane_info[0].bytesperline >> 1;
++        break;
++
++    default:
++        drm_desc->nb_layers = 0;
++        break;
++    }
++
++    return (uint8_t *) drm_desc;
++}
++
+ static void v4l2_free_buffer(void *opaque, uint8_t *unused)
+ {
+     V4L2Buffer* avbuf = opaque;
+@@ -257,6 +331,36 @@ static void v4l2_free_buffer(void *opaque, uint8_t *unused)
+     }
+ }
+ 
++static int v4l2_buffer_export_drm(V4L2Buffer* avbuf)
++{
++    struct v4l2_exportbuffer expbuf;
++    int i, ret;
++
++    for (i = 0; i < avbuf->num_planes; i++) {
++        memset(&expbuf, 0, sizeof(expbuf));
++
++        expbuf.index = avbuf->buf.index;
++        expbuf.type = avbuf->buf.type;
++        expbuf.plane = i;
++
++        ret = ioctl(buf_to_m2mctx(avbuf)->fd, VIDIOC_EXPBUF, &expbuf);
++        if (ret < 0)
++            return AVERROR(errno);
++
++        if (V4L2_TYPE_IS_MULTIPLANAR(avbuf->buf.type)) {
++            /* drm frame */
++            avbuf->drm_frame.objects[i].size = avbuf->buf.m.planes[i].length;
++            avbuf->drm_frame.objects[i].fd = expbuf.fd;
++        } else {
++            /* drm frame */
++            avbuf->drm_frame.objects[0].size = avbuf->buf.length;
++            avbuf->drm_frame.objects[0].fd = expbuf.fd;
++        }
++    }
++
++    return 0;
++}
++
+ static int v4l2_buf_increase_ref(V4L2Buffer *in)
+ {
+     V4L2m2mContext *s = buf_to_m2mctx(in);
+@@ -275,6 +379,24 @@ static int v4l2_buf_increase_ref(V4L2Buffer *in)
+     return 0;
+ }
+ 
++static int v4l2_buf_to_bufref_drm(V4L2Buffer *in, AVBufferRef **buf)
++{
++    int ret;
++
++    *buf = av_buffer_create((uint8_t *) &in->drm_frame,
++                            sizeof(in->drm_frame),
++                            v4l2_free_buffer,
++                            in, AV_BUFFER_FLAG_READONLY);
++    if (!*buf)
++        return AVERROR(ENOMEM);
++
++    ret = v4l2_buf_increase_ref(in);
++    if (ret)
++         av_buffer_unref(buf);
++
++    return ret;
++}
++
+ static int v4l2_buf_to_bufref(V4L2Buffer *in, int plane, AVBufferRef **buf)
+ {
+     int ret;
+@@ -324,13 +446,24 @@ static int v4l2_buffer_buf_to_swframe(AVFrame *frame, V4L2Buffer *avbuf)
+ 
+     frame->format = avbuf->context->av_pix_fmt;
+ 
+-    for (i = 0; i < avbuf->num_planes; i++) {
+-        ret = v4l2_buf_to_bufref(avbuf, i, &frame->buf[i]);
++    if (buf_to_m2mctx(avbuf)->output_drm) {
++        /* 1. get references to the actual data */
++        ret = v4l2_buf_to_bufref_drm(avbuf, &frame->buf[0]);
+         if (ret)
+             return ret;
+ 
+-        frame->linesize[i] = avbuf->plane_info[i].bytesperline;
+-        frame->data[i] = frame->buf[i]->data;
++        frame->data[0] = (uint8_t *) v4l2_get_drm_frame(avbuf);
++        frame->format = AV_PIX_FMT_DRM_PRIME;
++    } else {
++        /* 1. get references to the actual data */
++        for (i = 0; i < avbuf->num_planes; i++) {
++            ret = v4l2_buf_to_bufref(avbuf, i, &frame->buf[i]);
++            if (ret)
++                return ret;
++
++            frame->linesize[i] = avbuf->plane_info[i].bytesperline;
++            frame->data[i] = frame->buf[i]->data;
++        }
+     }
+ 
+     /* fixup special cases */
+@@ -566,9 +699,6 @@ int ff_v4l2_buffer_initialize(V4L2Buffer* avbuf, int index)
+ 
+     avbuf->status = V4L2BUF_AVAILABLE;
+ 
+-    if (V4L2_TYPE_IS_OUTPUT(ctx->type))
+-        return 0;
+-
+     if (V4L2_TYPE_IS_MULTIPLANAR(ctx->type)) {
+         avbuf->buf.m.planes = avbuf->planes;
+         avbuf->buf.length   = avbuf->num_planes;
+@@ -578,6 +708,15 @@ int ff_v4l2_buffer_initialize(V4L2Buffer* avbuf, int index)
+         avbuf->buf.length    = avbuf->planes[0].length;
+     }
+ 
++    if (V4L2_TYPE_IS_OUTPUT(ctx->type))
++        return 0;
++
++    if (buf_to_m2mctx(avbuf)->output_drm) {
++        ret = v4l2_buffer_export_drm(avbuf);
++        if (ret)
++                return ret;
++    }
++
+     return ff_v4l2_buffer_enqueue(avbuf);
+ }
+ 
+diff --git a/libavcodec/v4l2_buffers.h b/libavcodec/v4l2_buffers.h
+index e35b16130944..b83f22152c67 100644
+--- a/libavcodec/v4l2_buffers.h
++++ b/libavcodec/v4l2_buffers.h
+@@ -29,6 +29,7 @@
+ #include <linux/videodev2.h>
+ 
+ #include "libavutil/frame.h"
++#include "libavutil/hwcontext_drm.h"
+ #include "packet.h"
+ 
+ enum V4L2Buffer_status {
+@@ -44,6 +45,9 @@ typedef struct V4L2Buffer {
+     /* each buffer needs to have a reference to its context */
+     struct V4L2Context *context;
+ 
++    /* DRM descriptor */
++    AVDRMFrameDescriptor drm_frame;
++
+     /* This object is refcounted per-plane, so we need to keep track
+      * of how many context-refs we are holding.
+      * This pointer is a RefStruct reference. */
+diff --git a/libavcodec/v4l2_context.c b/libavcodec/v4l2_context.c
+index be1df3785b28..4673d025c52d 100644
+--- a/libavcodec/v4l2_context.c
++++ b/libavcodec/v4l2_context.c
+@@ -446,22 +446,54 @@ static int v4l2_release_buffers(V4L2Context* ctx)
+     struct v4l2_requestbuffers req = {
+         .memory = V4L2_MEMORY_MMAP,
+         .type = ctx->type,
+-        .count = 0, /* 0 -> unmaps buffers from the driver */
++        .count = 0, /* 0 -> unmap all buffers from the driver */
+     };
+-    int i, j;
++    int ret, i, j;
+ 
+     for (i = 0; i < ctx->num_buffers; i++) {
+         V4L2Buffer *buffer = &ctx->buffers[i];
+ 
+         for (j = 0; j < buffer->num_planes; j++) {
+             struct V4L2Plane_info *p = &buffer->plane_info[j];
++
++            if (V4L2_TYPE_IS_OUTPUT(ctx->type)) {
++                /* output buffers are not EXPORTED */
++                goto unmap;
++            }
++
++            if (ctx_to_m2mctx(ctx)->output_drm) {
++                /* use the DRM frame to close */
++                if (buffer->drm_frame.objects[j].fd >= 0) {
++                    if (close(buffer->drm_frame.objects[j].fd) < 0) {
++                        av_log(logger(ctx), AV_LOG_ERROR, "%s close drm fd "
++                            "[buffer=%2d, plane=%d, fd=%2d] - %s \n",
++                            ctx->name, i, j, buffer->drm_frame.objects[j].fd,
++                            av_err2str(AVERROR(errno)));
++                    }
++                }
++            }
++unmap:
+             if (p->mm_addr && p->length)
+                 if (munmap(p->mm_addr, p->length) < 0)
+-                    av_log(logger(ctx), AV_LOG_ERROR, "%s unmap plane (%s))\n", ctx->name, av_err2str(AVERROR(errno)));
++                    av_log(logger(ctx), AV_LOG_ERROR, "%s unmap plane (%s))\n",
++                        ctx->name, av_err2str(AVERROR(errno)));
+         }
+     }
+ 
+-    return ioctl(ctx_to_m2mctx(ctx)->fd, VIDIOC_REQBUFS, &req);
++    ret = ioctl(ctx_to_m2mctx(ctx)->fd, VIDIOC_REQBUFS, &req);
++    if (ret < 0) {
++            av_log(logger(ctx), AV_LOG_ERROR, "release all %s buffers (%s)\n",
++                ctx->name, av_err2str(AVERROR(errno)));
++
++            if (ctx_to_m2mctx(ctx)->output_drm)
++                av_log(logger(ctx), AV_LOG_ERROR,
++                    "Make sure the DRM client releases all FB/GEM objects before closing the codec (ie):\n"
++                    "for all buffers: \n"
++                    "  1. drmModeRmFB(..)\n"
++                    "  2. drmIoctl(.., DRM_IOCTL_GEM_CLOSE,... )\n");
++    }
++
++    return ret;
+ }
+ 
+ static inline int v4l2_try_raw_format(V4L2Context* ctx, enum AVPixelFormat pixfmt)
+diff --git a/libavcodec/v4l2_m2m.h b/libavcodec/v4l2_m2m.h
+index 4ba33dc33593..76ddbf1a26a2 100644
+--- a/libavcodec/v4l2_m2m.h
++++ b/libavcodec/v4l2_m2m.h
+@@ -66,6 +66,9 @@ typedef struct V4L2m2mContext {
+ 
+     /* reference back to V4L2m2mPriv */
+     void *priv;
++
++    /* generate DRM frames */
++    int output_drm;
+ } V4L2m2mContext;
+ 
+ typedef struct V4L2m2mPriv {
+diff --git a/libavcodec/v4l2_m2m_dec.c b/libavcodec/v4l2_m2m_dec.c
+index ba1fe769e0fe..08cfb4e5a49f 100644
+--- a/libavcodec/v4l2_m2m_dec.c
++++ b/libavcodec/v4l2_m2m_dec.c
+@@ -23,6 +23,9 @@
+ 
+ #include <linux/videodev2.h>
+ #include <sys/ioctl.h>
++
++#include "libavutil/hwcontext.h"
++#include "libavutil/hwcontext_drm.h"
+ #include "libavutil/pixfmt.h"
+ #include "libavutil/pixdesc.h"
+ #include "libavutil/opt.h"
+@@ -30,6 +33,9 @@
+ #include "codec_internal.h"
+ #include "libavcodec/decode.h"
+ 
++#include "libavcodec/hwaccels.h"
++#include "libavcodec/internal.h"
++
+ #include "v4l2_context.h"
+ #include "v4l2_m2m.h"
+ #include "v4l2_fmt.h"
+@@ -205,6 +211,15 @@ static av_cold int v4l2_decode_init(AVCodecContext *avctx)
+     capture->av_codec_id = AV_CODEC_ID_RAWVIDEO;
+     capture->av_pix_fmt = avctx->pix_fmt;
+ 
++    /* the client requests the codec to generate DRM frames:
++     *   - data[0] will therefore point to the returned AVDRMFrameDescriptor
++     *       check the ff_v4l2_buffer_to_avframe conversion function.
++     *   - the DRM frame format is passed in the DRM frame descriptor layer.
++     *       check the v4l2_get_drm_frame function.
++     */
++    if (ff_get_format(avctx, avctx->codec->pix_fmts) == AV_PIX_FMT_DRM_PRIME)
++        s->output_drm = 1;
++
+     s->avctx = avctx;
+     ret = ff_v4l2_m2m_codec_init(priv);
+     if (ret) {
+@@ -230,6 +245,11 @@ static const AVOption options[] = {
+     { NULL},
+ };
+ 
++static const AVCodecHWConfigInternal *v4l2_m2m_hw_configs[] = {
++    HW_CONFIG_INTERNAL(DRM_PRIME),
++    NULL
++};
++
+ #define M2MDEC_CLASS(NAME) \
+     static const AVClass v4l2_m2m_ ## NAME ## _dec_class = { \
+         .class_name = #NAME "_v4l2m2m_decoder", \
+@@ -255,6 +275,9 @@ static const AVOption options[] = {
+         .caps_internal  = FF_CODEC_CAP_NOT_INIT_THREADSAFE | \
+                           FF_CODEC_CAP_INIT_CLEANUP, \
+         .p.wrapper_name = "v4l2m2m", \
++        .p.pix_fmts     = (const enum AVPixelFormat[]) { AV_PIX_FMT_DRM_PRIME, \
++                                                         AV_PIX_FMT_NONE}, \
++        .hw_configs     = v4l2_m2m_hw_configs, \
+     }
+ 
+ M2MDEC(h264,  "H.264", AV_CODEC_ID_H264,       "h264_mp4toannexb");
+
+From 6e07edda13a1af6202d0edcee5e4a3140e3b3d85 Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Thu, 16 Aug 2018 21:09:40 -0700
+Subject: [PATCH 2/8] libavcodec: v4l2m2m: depends on libdrm
+
+---
+ configure                 | 1 +
+ libavcodec/v4l2_buffers.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 17596942749a..25f05fd2f2a6 100755
+--- a/configure
++++ b/configure
+@@ -4000,6 +4000,7 @@ sndio_indev_deps="sndio"
+ sndio_outdev_deps="sndio"
+ v4l2_indev_deps_any="linux_videodev2_h sys_videoio_h"
+ v4l2_indev_suggest="libv4l2"
++v4l2_outdev_deps="libdrm"
+ v4l2_outdev_deps_any="linux_videodev2_h sys_videoio_h"
+ v4l2_outdev_suggest="libv4l2"
+ vfwcap_indev_deps="vfw32 vfwcap_defines"
+diff --git a/libavcodec/v4l2_buffers.c b/libavcodec/v4l2_buffers.c
+index 863877ce2bb8..b6b1c6b586e2 100644
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -21,7 +21,7 @@
+  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+  */
+ 
+-#include <drm/drm_fourcc.h>
++#include <drm_fourcc.h>
+ #include <linux/videodev2.h>
+ #include <sys/ioctl.h>
+ #include <sys/mman.h>
+
+From 52d0550fba278f41bf5a74a10197286c87c0d44d Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Thu, 16 Aug 2018 21:10:13 -0700
+Subject: [PATCH 3/8] libavcodec: v4l2m2m: set format_modifier to
+ DRM_FORMAT_MOD_LINEAR
+
+---
+ libavcodec/v4l2_buffers.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/libavcodec/v4l2_buffers.c b/libavcodec/v4l2_buffers.c
+index b6b1c6b586e2..40420a50a3b2 100644
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -351,10 +351,12 @@ static int v4l2_buffer_export_drm(V4L2Buffer* avbuf)
+             /* drm frame */
+             avbuf->drm_frame.objects[i].size = avbuf->buf.m.planes[i].length;
+             avbuf->drm_frame.objects[i].fd = expbuf.fd;
++            avbuf->drm_frame.objects[i].format_modifier = DRM_FORMAT_MOD_LINEAR;
+         } else {
+             /* drm frame */
+             avbuf->drm_frame.objects[0].size = avbuf->buf.length;
+             avbuf->drm_frame.objects[0].fd = expbuf.fd;
++            avbuf->drm_frame.objects[0].format_modifier = DRM_FORMAT_MOD_LINEAR;
+         }
+     }
+ 
+
+From 2a9066cf6f683c9855cc9774ea3ee57fa333d2eb Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Thu, 16 Aug 2018 21:10:53 -0700
+Subject: [PATCH 4/8] libavcodec: v4l2m2m: only mmap the buffer when it is
+ output type and drm prime is used
+
+---
+ libavcodec/v4l2_buffers.c | 20 ++++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/libavcodec/v4l2_buffers.c b/libavcodec/v4l2_buffers.c
+index 40420a50a3b2..ad537dcc1184 100644
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -685,14 +685,22 @@ int ff_v4l2_buffer_initialize(V4L2Buffer* avbuf, int index)
+ 
+         if (V4L2_TYPE_IS_MULTIPLANAR(ctx->type)) {
+             avbuf->plane_info[i].length = avbuf->buf.m.planes[i].length;
+-            avbuf->plane_info[i].mm_addr = mmap(NULL, avbuf->buf.m.planes[i].length,
+-                                           PROT_READ | PROT_WRITE, MAP_SHARED,
+-                                           buf_to_m2mctx(avbuf)->fd, avbuf->buf.m.planes[i].m.mem_offset);
++
++            if ((V4L2_TYPE_IS_OUTPUT(ctx->type) && buf_to_m2mctx(avbuf)->output_drm) ||
++                !buf_to_m2mctx(avbuf)->output_drm) {
++                avbuf->plane_info[i].mm_addr = mmap(NULL, avbuf->buf.m.planes[i].length,
++                                               PROT_READ | PROT_WRITE, MAP_SHARED,
++                                               buf_to_m2mctx(avbuf)->fd, avbuf->buf.m.planes[i].m.mem_offset);
++            }
+         } else {
+             avbuf->plane_info[i].length = avbuf->buf.length;
+-            avbuf->plane_info[i].mm_addr = mmap(NULL, avbuf->buf.length,
+-                                          PROT_READ | PROT_WRITE, MAP_SHARED,
+-                                          buf_to_m2mctx(avbuf)->fd, avbuf->buf.m.offset);
++
++            if ((V4L2_TYPE_IS_OUTPUT(ctx->type) && buf_to_m2mctx(avbuf)->output_drm) ||
++                !buf_to_m2mctx(avbuf)->output_drm) {
++                avbuf->plane_info[i].mm_addr = mmap(NULL, avbuf->buf.length,
++                                               PROT_READ | PROT_WRITE, MAP_SHARED,
++                                               buf_to_m2mctx(avbuf)->fd, avbuf->buf.m.offset);
++            }
+         }
+ 
+         if (avbuf->plane_info[i].mm_addr == MAP_FAILED)
+
+From 90acef9ad745d9d1f6ab583f74495b0a67c153ac Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Thu, 16 Aug 2018 21:11:38 -0700
+Subject: [PATCH 5/8] libavcodec: v4l2m2m: allow using software pixel formats
+
+---
+ libavcodec/v4l2_m2m_dec.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/libavcodec/v4l2_m2m_dec.c b/libavcodec/v4l2_m2m_dec.c
+index 08cfb4e5a49f..a500cad0b38b 100644
+--- a/libavcodec/v4l2_m2m_dec.c
++++ b/libavcodec/v4l2_m2m_dec.c
+@@ -217,8 +217,16 @@ static av_cold int v4l2_decode_init(AVCodecContext *avctx)
+      *   - the DRM frame format is passed in the DRM frame descriptor layer.
+      *       check the v4l2_get_drm_frame function.
+      */
+-    if (ff_get_format(avctx, avctx->codec->pix_fmts) == AV_PIX_FMT_DRM_PRIME)
++    switch (ff_get_format(avctx, avctx->codec->pix_fmts)) {
++    case AV_PIX_FMT_DRM_PRIME:
+         s->output_drm = 1;
++        break;
++    case AV_PIX_FMT_NONE:
++        return 0;
++        break;
++    default:
++        break;
++    }
+ 
+     s->avctx = avctx;
+     ret = ff_v4l2_m2m_codec_init(priv);
+@@ -276,6 +284,7 @@ static const AVCodecHWConfigInternal *v4l2_m2m_hw_configs[] = {
+                           FF_CODEC_CAP_INIT_CLEANUP, \
+         .p.wrapper_name = "v4l2m2m", \
+         .p.pix_fmts     = (const enum AVPixelFormat[]) { AV_PIX_FMT_DRM_PRIME, \
++                                                         AV_PIX_FMT_NV12, \
+                                                          AV_PIX_FMT_NONE}, \
+         .hw_configs     = v4l2_m2m_hw_configs, \
+     }
+
+From 0b204bfb795cc19fe0135429e1cf9055d0035f32 Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Mon, 24 Sep 2018 13:39:31 -0700
+Subject: [PATCH 6/8] libavcodec: v4l2m2m: implement hwcontext
+
+---
+ libavcodec/v4l2_buffers.c | 22 ++++++++++++++++++++++
+ libavcodec/v4l2_context.h |  2 ++
+ libavcodec/v4l2_m2m.h     |  2 ++
+ libavcodec/v4l2_m2m_dec.c | 11 +++++++++++
+ 4 files changed, 37 insertions(+)
+
+diff --git a/libavcodec/v4l2_buffers.c b/libavcodec/v4l2_buffers.c
+index ad537dcc1184..0d3029573cda 100644
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -456,6 +456,7 @@ static int v4l2_buffer_buf_to_swframe(AVFrame *frame, V4L2Buffer *avbuf)
+ 
+         frame->data[0] = (uint8_t *) v4l2_get_drm_frame(avbuf);
+         frame->format = AV_PIX_FMT_DRM_PRIME;
++        frame->hw_frames_ctx = av_buffer_ref(avbuf->context->frames_ref);
+     } else {
+         /* 1. get references to the actual data */
+         for (i = 0; i < avbuf->num_planes; i++) {
+@@ -658,6 +659,27 @@ int ff_v4l2_buffer_initialize(V4L2Buffer* avbuf, int index)
+     avbuf->buf.type = ctx->type;
+     avbuf->buf.index = index;
+ 
++    if (buf_to_m2mctx(avbuf)->output_drm) {
++        AVHWFramesContext *hwframes;
++
++        av_buffer_unref(&ctx->frames_ref);
++
++        ctx->frames_ref = av_hwframe_ctx_alloc(buf_to_m2mctx(avbuf)->device_ref);
++        if (!ctx->frames_ref) {
++            ret = AVERROR(ENOMEM);
++            return ret;
++        }
++
++        hwframes = (AVHWFramesContext*)ctx->frames_ref->data;
++        hwframes->format = AV_PIX_FMT_DRM_PRIME;
++        hwframes->sw_format = ctx->av_pix_fmt;
++        hwframes->width = ctx->width;
++        hwframes->height = ctx->height;
++        ret = av_hwframe_ctx_init(ctx->frames_ref);
++        if (ret < 0)
++            return ret;
++    }
++
+     if (V4L2_TYPE_IS_MULTIPLANAR(ctx->type)) {
+         avbuf->buf.length = VIDEO_MAX_PLANES;
+         avbuf->buf.m.planes = avbuf->planes;
+diff --git a/libavcodec/v4l2_context.h b/libavcodec/v4l2_context.h
+index fdd5cf5284d6..858d0eca7435 100644
+--- a/libavcodec/v4l2_context.h
++++ b/libavcodec/v4l2_context.h
+@@ -93,6 +93,8 @@ typedef struct V4L2Context {
+      */
+     int done;
+ 
++    AVBufferRef *frames_ref;
++
+ } V4L2Context;
+ 
+ /**
+diff --git a/libavcodec/v4l2_m2m.h b/libavcodec/v4l2_m2m.h
+index 76ddbf1a26a2..47dfe0905fd1 100644
+--- a/libavcodec/v4l2_m2m.h
++++ b/libavcodec/v4l2_m2m.h
+@@ -67,6 +67,8 @@ typedef struct V4L2m2mContext {
+     /* reference back to V4L2m2mPriv */
+     void *priv;
+ 
++    AVBufferRef *device_ref;
++
+     /* generate DRM frames */
+     int output_drm;
+ } V4L2m2mContext;
+diff --git a/libavcodec/v4l2_m2m_dec.c b/libavcodec/v4l2_m2m_dec.c
+index a500cad0b38b..3512928895f0 100644
+--- a/libavcodec/v4l2_m2m_dec.c
++++ b/libavcodec/v4l2_m2m_dec.c
+@@ -35,6 +35,7 @@
+ 
+ #include "libavcodec/hwaccels.h"
+ #include "libavcodec/internal.h"
++#include "libavcodec/hwconfig.h"
+ 
+ #include "v4l2_context.h"
+ #include "v4l2_m2m.h"
+@@ -228,6 +229,16 @@ static av_cold int v4l2_decode_init(AVCodecContext *avctx)
+         break;
+     }
+ 
++    s->device_ref = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_DRM);
++    if (!s->device_ref) {
++        ret = AVERROR(ENOMEM);
++        return ret;
++    }
++
++    ret = av_hwdevice_ctx_init(s->device_ref);
++    if (ret < 0)
++        return ret;
++
+     s->avctx = avctx;
+     ret = ff_v4l2_m2m_codec_init(priv);
+     if (ret) {
+
+From 1d7da897085e1eb82c93af8037b6bb468b50aa0e Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Wed, 6 May 2020 11:12:58 -0700
+Subject: [PATCH 7/8] libavcodec: v4l2m2m: add option to specify pixel format
+ used by the decoder
+
+---
+ libavcodec/v4l2_context.c | 9 +++++++++
+ libavcodec/v4l2_m2m.h     | 2 ++
+ libavcodec/v4l2_m2m_dec.c | 1 +
+ 3 files changed, 12 insertions(+)
+
+diff --git a/libavcodec/v4l2_context.c b/libavcodec/v4l2_context.c
+index 4673d025c52d..1f1fd6d98255 100644
+--- a/libavcodec/v4l2_context.c
++++ b/libavcodec/v4l2_context.c
+@@ -522,6 +522,8 @@ static inline int v4l2_try_raw_format(V4L2Context* ctx, enum AVPixelFormat pixfm
+ 
+ static int v4l2_get_raw_format(V4L2Context* ctx, enum AVPixelFormat *p)
+ {
++    V4L2m2mContext* s = ctx_to_m2mctx(ctx);
++    V4L2m2mPriv *priv = s->avctx->priv_data;
+     enum AVPixelFormat pixfmt = ctx->av_pix_fmt;
+     struct v4l2_fmtdesc fdesc;
+     int ret;
+@@ -540,6 +542,13 @@ static int v4l2_get_raw_format(V4L2Context* ctx, enum AVPixelFormat *p)
+         if (ret)
+             return AVERROR(EINVAL);
+ 
++        if (priv->pix_fmt != AV_PIX_FMT_NONE) {
++            if (fdesc.pixelformat != ff_v4l2_format_avfmt_to_v4l2(priv->pix_fmt)) {
++                fdesc.index++;
++                continue;
++            }
++        }
++
+         pixfmt = ff_v4l2_format_v4l2_to_avfmt(fdesc.pixelformat, AV_CODEC_ID_RAWVIDEO);
+         ret = v4l2_try_raw_format(ctx, pixfmt);
+         if (ret){
+diff --git a/libavcodec/v4l2_m2m.h b/libavcodec/v4l2_m2m.h
+index 47dfe0905fd1..7b020e237387 100644
+--- a/libavcodec/v4l2_m2m.h
++++ b/libavcodec/v4l2_m2m.h
+@@ -30,6 +30,7 @@
+ #include <linux/videodev2.h>
+ 
+ #include "libavcodec/avcodec.h"
++#include "libavutil/pixfmt.h"
+ #include "v4l2_context.h"
+ 
+ #define container_of(ptr, type, member) ({ \
+@@ -80,6 +81,7 @@ typedef struct V4L2m2mPriv {
+ 
+     int num_output_buffers;
+     int num_capture_buffers;
++    enum AVPixelFormat pix_fmt;
+ } V4L2m2mPriv;
+ 
+ /**
+diff --git a/libavcodec/v4l2_m2m_dec.c b/libavcodec/v4l2_m2m_dec.c
+index 3512928895f0..3ec484b37a6a 100644
+--- a/libavcodec/v4l2_m2m_dec.c
++++ b/libavcodec/v4l2_m2m_dec.c
+@@ -261,6 +261,7 @@ static const AVOption options[] = {
+     V4L_M2M_DEFAULT_OPTS,
+     { "num_capture_buffers", "Number of buffers in the capture context",
+         OFFSET(num_capture_buffers), AV_OPT_TYPE_INT, {.i64 = 20}, 2, INT_MAX, FLAGS },
++    { "pixel_format", "Pixel format to be used by the decoder", OFFSET(pix_fmt), AV_OPT_TYPE_PIXEL_FMT, {.i64 = AV_PIX_FMT_NONE}, AV_PIX_FMT_NONE, AV_PIX_FMT_NB, FLAGS },
+     { NULL},
+ };
+ 
+
+From 99bbab25229ac2d9f543f99fff5e4e38c6fe3a55 Mon Sep 17 00:00:00 2001
+From: Lukas Rusak <lorusak@gmail.com>
+Date: Mon, 24 Sep 2018 13:39:56 -0700
+Subject: [PATCH 8/8] libavcodec: v4l2m2m: implement flush
+
+---
+ libavcodec/v4l2_m2m_dec.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/libavcodec/v4l2_m2m_dec.c b/libavcodec/v4l2_m2m_dec.c
+index 3ec484b37a6a..0dc848fb1cbe 100644
+--- a/libavcodec/v4l2_m2m_dec.c
++++ b/libavcodec/v4l2_m2m_dec.c
+@@ -254,6 +254,41 @@ static av_cold int v4l2_decode_close(AVCodecContext *avctx)
+     return ff_v4l2_m2m_codec_end(avctx->priv_data);
+ }
+ 
++static void v4l2_decode_flush(AVCodecContext *avctx)
++{
++    V4L2m2mPriv *priv = avctx->priv_data;
++    V4L2m2mContext* s = priv->context;
++    V4L2Context* output = &s->output;
++    V4L2Context* capture = &s->capture;
++    int ret, i;
++
++    struct v4l2_decoder_cmd cmd = {
++        .cmd = V4L2_DEC_CMD_START,
++        .flags = 0,
++    };
++
++    ret = ff_v4l2_context_set_status(output, VIDIOC_STREAMOFF);
++    if (ret < 0)
++        av_log(avctx, AV_LOG_ERROR, "VIDIOC_STREAMOFF %s error: %d\n", output->name, ret);
++
++    ret = ff_v4l2_context_set_status(output, VIDIOC_STREAMON);
++    if (ret < 0)
++        av_log(avctx, AV_LOG_ERROR, "VIDIOC_STREAMON %s error: %d\n", output->name, ret);
++
++    for (i = 0; i < output->num_buffers; i++) {
++        if (output->buffers[i].status == V4L2BUF_IN_DRIVER)
++            output->buffers[i].status = V4L2BUF_AVAILABLE;
++    }
++
++    ret = ioctl(s->fd, VIDIOC_DECODER_CMD, &cmd);
++    if (ret < 0)
++        av_log(avctx, AV_LOG_ERROR, "VIDIOC_DECODER_CMD start error: %d\n", errno);
++
++    s->draining = 0;
++    output->done = 0;
++    capture->done = 0;
++}
++
+ #define OFFSET(x) offsetof(V4L2m2mPriv, x)
+ #define FLAGS AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_DECODING_PARAM
+ 
+@@ -290,6 +325,7 @@ static const AVCodecHWConfigInternal *v4l2_m2m_hw_configs[] = {
+         .init           = v4l2_decode_init, \
+         FF_CODEC_RECEIVE_FRAME_CB(v4l2_receive_frame), \
+         .close          = v4l2_decode_close, \
++        .flush          = v4l2_decode_flush, \
+         .bsfs           = bsf_name, \
+         .p.capabilities = AV_CODEC_CAP_HARDWARE | AV_CODEC_CAP_DELAY | AV_CODEC_CAP_AVOID_PROBING, \
+         .caps_internal  = FF_CODEC_CAP_NOT_INIT_THREADSAFE | \

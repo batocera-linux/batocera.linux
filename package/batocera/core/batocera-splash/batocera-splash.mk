@@ -22,19 +22,29 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     # Baseline for modern boards using gpu-next
     BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=auto
-    # Boards requiring a fallback VO (drm/sdl)
+
+    # Legacy Rockchip boards requiring custom fallback (MPP / RGA)
     ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=drm,sdl --hwdec=auto
+    endif
+    # Overrides the RGA option for Mainline rockchip boards (Forces stateless v4l2request)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568)$(BR2_PACKAGE_BATOCERA_TARGET_RK3576),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next --gpu-context=drm --hwdec=v4l2request-copy
+    endif
+    # RPi & Amlogic using the ffmpeg patches (RPi5 cannot hw decode H.264)
+    ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next --gpu-context=drm --hwdec=drm
     endif
     # SM8550 has specific HWDEC overrides
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=v4l2m2m-copy
     endif
+    # H700 devices
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS=--vo=gpu --hwdec=auto
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --hwdec=auto
     endif
     # Targets that should remain empty (handled by internal defaults)
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY)$(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS =
     endif
     # Specific override for Amlogic vendor kernel with Panfrost enabled
