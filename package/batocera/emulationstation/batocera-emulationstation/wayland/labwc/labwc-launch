@@ -24,6 +24,45 @@ mkdir -p /userdata/system/logs
 mkdir -p /var/run
 mkdir -p /var/log
 
+# Helper function to query details of a card node from sysfs
+_get_card_details() {
+    local card_node="$1"
+    local sys_card="/sys/class/drm/${card_node}"
+    
+    local driver_name="unknown"
+    if [ -L "${sys_card}/device/driver" ]; then
+        driver_name=$(basename "$(readlink -f "${sys_card}/device/driver")")
+    fi
+
+    # Check if it is a PCI device
+    if [ -f "${sys_card}/device/vendor" ] && [ -f "${sys_card}/device/device" ]; then
+        local pci_id
+        pci_id=$(basename "$(readlink -f "${sys_card}/device")")
+        local vendor_id
+        vendor_id=$(cat "${sys_card}/device/vendor" | sed 's/^0x//')
+        local dev_id
+        dev_id=$(cat "${sys_card}/device/device" | sed 's/^0x//')
+        
+        local vendor_name="Unknown"
+        case "${vendor_id}" in
+            "10de") vendor_name="NVIDIA" ;;
+            "8086") vendor_name="Intel" ;;
+            "1002") vendor_name="AMD/ATI" ;;
+            *) vendor_name="0x${vendor_id}" ;;
+        esac
+
+        # Format for PCI GPUs
+        echo "PCI|${vendor_name}|${pci_id}|${vendor_id}:${dev_id}|${driver_name}"
+    else
+        # Format for Platform / SoC GPUs (non-PCI)
+        local platform_id="platform"
+        if [ -L "${sys_card}/device" ]; then
+            platform_id=$(basename "$(readlink -f "${sys_card}/device")")
+        fi
+        echo "PLATFORM|${platform_id}|${driver_name}"
+    fi
+}
+
 # GPU Selection Logic
 PRIME_PCI_ID=""
 
@@ -54,45 +93,6 @@ if [ -n "$PRIME_PCI_ID" ]; then
     # If a primary card was found, build a multi-GPU device string with detailed logs
     if [ -n "$PRIMARY_CARD" ]; then
         
-        # Helper function to query details of a card node from sysfs
-        _get_card_details() {
-            local card_node="$1"
-            local sys_card="/sys/class/drm/${card_node}"
-            
-            local driver_name="unknown"
-            if [ -L "${sys_card}/device/driver" ]; then
-                driver_name=$(basename "$(readlink -f "${sys_card}/device/driver")")
-            fi
-
-            # Check if it is a PCI device
-            if [ -f "${sys_card}/device/vendor" ] && [ -f "${sys_card}/device/device" ]; then
-                local pci_id
-                pci_id=$(basename "$(readlink -f "${sys_card}/device")")
-                local vendor_id
-                vendor_id=$(cat "${sys_card}/device/vendor" | sed 's/^0x//')
-                local dev_id
-                dev_id=$(cat "${sys_card}/device/device" | sed 's/^0x//')
-                
-                local vendor_name="Unknown"
-                case "${vendor_id}" in
-                    "10de") vendor_name="NVIDIA" ;;
-                    "8086") vendor_name="Intel" ;;
-                    "1002") vendor_name="AMD/ATI" ;;
-                    *) vendor_name="0x${vendor_id}" ;;
-                esac
-
-                # Format for PCI GPUs
-                echo "PCI|${vendor_name}|${pci_id}|${vendor_id}:${dev_id}|${driver_name}"
-            else
-                # Format for Platform / SoC GPUs (non-PCI)
-                local platform_id="platform"
-                if [ -L "${sys_card}/device" ]; then
-                    platform_id=$(basename "$(readlink -f "${sys_card}/device")")
-                fi
-                echo "PLATFORM|${platform_id}|${driver_name}"
-            fi
-        }
-
         WLR_DRM_DEVICES_VAL="/dev/dri/$PRIMARY_CARD"
 
         echo "Configuring multi-GPU setup:" >> "$LOG_FILE"
@@ -117,6 +117,11 @@ if [ -n "$PRIME_PCI_ID" ]; then
         for card in /sys/class/drm/card*; do
             [ -e "$card" ] || continue
             CARD_NAME=$(basename "$card")
+
+            # Skip sub-devices/connectors containing a hyphen (like card1-HDMI-A-1)
+            if echo "$CARD_NAME" | grep -q '-'; then
+                continue
+            fi
 
             if [ "$CARD_NAME" != "$PRIMARY_CARD" ]; then
                 if [ -L "$card/device" ]; then
@@ -144,18 +149,61 @@ if [ -n "$PRIME_PCI_ID" ]; then
         export WLR_DRM_DEVICES="$WLR_DRM_DEVICES_VAL"
         echo "Exporting WLR_DRM_DEVICES=\"$WLR_DRM_DEVICES\"" >> "$LOG_FILE"
     fi
+else
+    # Detect RPi 4/5 using vc4-drm & v3d
+    VC4_CARD=""
+    V3D_CARD=""
+
+    for card in /sys/class/drm/card*; do
+        [ -e "$card" ] || continue
+        CARD_NAME=$(basename "$card")
+        
+        # Skip sub-devices/connectors containing a hyphen (like card1-HDMI-A-1)
+        if echo "$CARD_NAME" | grep -q '-'; then
+            continue
+        fi
+
+        if [ -L "$card/device/driver" ]; then
+            DRIVER_NAME=$(basename "$(readlink -f "$card/device/driver")")
+            if [ "$DRIVER_NAME" = "vc4" ] || [ "$DRIVER_NAME" = "vc4-drm" ]; then
+                VC4_CARD="/dev/dri/$CARD_NAME"
+            elif [ "$DRIVER_NAME" = "v3d" ]; then
+                V3D_CARD="/dev/dri/$CARD_NAME"
+            fi
+        fi
+    done
+
+    if [ -n "$VC4_CARD" ]; then
+        if [ -n "$V3D_CARD" ]; then
+            # Order them so display controller is first, followed by the renderer.
+            export WLR_DRM_DEVICES="${VC4_CARD}:${V3D_CARD}"
+            echo "Configuring Raspberry Pi / split-GPU layout:" >> "$LOG_FILE"
+            echo "  - [DISPLAY CONNECTOR] ${VC4_CARD} (driver: vc4-drm)" >> "$LOG_FILE"
+            echo "  - [RENDER ACCELERATOR] ${V3D_CARD} (driver: v3d)" >> "$LOG_FILE"
+        else
+            export WLR_DRM_DEVICES="${VC4_CARD}"
+            echo "Configuring Display GPU:" >> "$LOG_FILE"
+            echo "  - [DISPLAY CONNECTOR] ${VC4_CARD} (driver: vc4-drm)" >> "$LOG_FILE"
+        fi
+        echo "Exporting WLR_DRM_DEVICES=\"$WLR_DRM_DEVICES\"" >> "$LOG_FILE"
+    fi
 fi
 
 # Vulkan wlroots Compatibility Check
 VULKAN_SUPPORTED=false
-if command -v vulkaninfo >/dev/null 2>&1; then
-    VINFO_OUT=$(vulkaninfo 2>/dev/null)
-    if [ $? -eq 0 ] && [ -n "$VINFO_OUT" ]; then
-        # wlroots strictly requires VK_EXT_image_drm_format_modifier and VK_EXT_queue_family_foreign
-        # to initialize its Wayland DRM compositing engine.
-        if echo "$VINFO_OUT" | grep -q "VK_EXT_image_drm_format_modifier" && \
-           echo "$VINFO_OUT" | grep -q "VK_EXT_queue_family_foreign"; then
-            VULKAN_SUPPORTED=true
+
+# Only allow Vulkan renderer on x86_64 systems.
+# ARM architectures safely default to GLES2.
+if echo "$(uname -m)" | grep -q "x86_64"; then
+    if command -v vulkaninfo >/dev/null 2>&1; then
+        VINFO_OUT=$(vulkaninfo 2>/dev/null)
+        if [ $? -eq 0 ] && [ -n "$VINFO_OUT" ]; then
+            # wlroots strictly requires VK_EXT_image_drm_format_modifier and VK_EXT_queue_family_foreign
+            # to initialize its Wayland DRM compositing engine.
+            if echo "$VINFO_OUT" | grep -q "VK_EXT_image_drm_format_modifier" && \
+               echo "$VINFO_OUT" | grep -q "VK_EXT_queue_family_foreign"; then
+                VULKAN_SUPPORTED=true
+            fi
         fi
     fi
 fi
@@ -164,7 +212,7 @@ if [ "$VULKAN_SUPPORTED" = "true" ]; then
     export WLR_RENDERER=vulkan
     echo "Full wlroots Vulkan requirements met. Exported WLR_RENDERER=vulkan" >> "$LOG_FILE"
 else
-    echo "Missing critical DRM Vulkan extensions (e.g., VK_EXT_image_drm_format_modifier). Falling back to GLES2." >> "$LOG_FILE"
+    echo "Using default stable GLES2 renderer fallback." >> "$LOG_FILE"
 fi
 
 # Start Labwc with specified environment variable, logging output
