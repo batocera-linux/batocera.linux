@@ -63,11 +63,15 @@ case "$1" in
             echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
         else
             gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller" | head -n 1)
-            if [ -n "$gpu_name" ] || [ "$nvidia_prime" = "true" ]; then
-                echo "" > "/var/tmp/nvidia.prime"
+            if [ -n "$gpu_name" ]; then
+                formatted_info=$(echo "$gpu_name" | awk -F ' ' '{print $1}' | sed -e 's/:/_/g' -e 's/\./_/' -e 's/^/pci-0000_/')               
+                echo "$formatted_info" > "/var/tmp/nvidia.prime"
                 echo "Using $gpu_name as the primary GPU" >> "$nvidia_log"
                 echo "$gpu_name is the primary GPU" >> "$display_log"
                 nvidia_conditions_met=true
+            elif [ "$nvidia_prime" = "true" ]; then
+                # Warning fallback if the setting was forced but no hardware was matched
+                echo "Warning: 'nvidia-prime=true' is set, but no NVIDIA GPU was found." >> "$nvidia_log"
             fi
         fi
 
