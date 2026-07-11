@@ -7,8 +7,8 @@ echo '
                  R E A D Y   T O   R E T R O
 '
 echo
-echo "-- type 'batocera-check-updates' to check for stable branch --"
-echo "-- add 'butterfly' switch to check for latest arch developments  --"
+echo "-- type 'batocera-check-updates' to check the system setted branch --"
+echo "-- usage of 'butterfly' or 'stable' switch will force-check branch --"
 echo
 batocera-info 2>/dev/null
 echo "OS version: $(batocera-version)"

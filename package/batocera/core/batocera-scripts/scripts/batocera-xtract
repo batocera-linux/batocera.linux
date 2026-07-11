@@ -19,7 +19,8 @@
 #           application/x-xz-compressed-tar;application/x-iso;application/zip;
 
 # inital idea and inspired by brunoeduardobrasil, 07/19/2025 cyperghost aka crcerror
-# ec-codes: ec-0 okay, ec-1 error, ec-10 parameter l,s,la,lt,ls used
+# ec-codes: ec-0 okay, ec-10 parameter l,s,la,lt,ls used
+# ec-1 general error -- ec-2 unknown action -- ec-3 destination dir not found
 # ec-11 archives not supported for extraction, ec-12 archives not supported for showing content
 # ec-21 to 29 -- file extraction error zip rar 7z gz iso tar tar.xz tar.gz exe (only InnoSetup)
 
@@ -59,13 +60,12 @@ list_archive () {
             la)# List file + size unsorted original archive content
                printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }'
             ;;
-            lt)# List tallest to smallest file, reverse sort order, strip first column
-               printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }' | sort -nr | awk '{ $1=""; print substr($0,2) }'
+            lt)# List tallest to smallest file, strip first column and ignore entries with / at the end are directories
+               printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }' | sort -nr | awk '!/\/$/ { $1=""; print substr($0,2) }'
             ;;
-            ls)# List smallest to tallest file, reverse sort order, strip first column
-               printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }' | sort -n  | awk '{ $1=""; print substr($0,2) }'
+            ls)# List smallest to tallest file, reverse sort order, strip first column and ignore entries with ending with / are DIRs
+               printf '%s\t%s\t%s\t%s\n' "${array[@]}" | awk -F'\t' '{ print $3"\t"$2 }' | sort -n  | awk '!/\/$/ { $1=""; print substr($0,2) }'
             ;;
-
         esac
         return 10
     fi
