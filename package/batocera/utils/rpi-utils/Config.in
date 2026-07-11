@@ -1,6 +1,7 @@
 config BR2_PACKAGE_RPI_UTILS
 	bool "rpi-utils"
 	select BR2_PACKAGE_DTC
+	select BR2_PACKAGE_NCURSES
 	help
 	  A collection of RPi scripts and simple applications.
 
