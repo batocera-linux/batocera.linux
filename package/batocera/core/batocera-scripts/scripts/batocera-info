@@ -62,6 +62,14 @@ get_gpu_name() {
 }
 
 # ---------------------------------------------------------------------------
+# Convert Celsius to Fahrenheit and format
+# ---------------------------------------------------------------------------
+format_temp() {
+    local c="$1"
+    echo "${c}°C ($(( (c * 9) / 5 + 32 ))°F)"
+}
+
+# ---------------------------------------------------------------------------
 # Battery capacity
 # ---------------------------------------------------------------------------
 BATTERY_DIR=$(ls -d /sys/class/power_supply/*{BAT,bat}* 2>/dev/null | head -1)
@@ -289,7 +297,10 @@ fi
 # ---------------------------------------------------------------------------
 # Temperature
 # ---------------------------------------------------------------------------
-echo "CPU Temperature: $(batocera-temp --cpu)°C"
+CPU_TEMP=$(batocera-temp --cpu 2>/dev/null)
+if [ -n "${CPU_TEMP}" ] && [ "${CPU_TEMP}" != "0" ]; then
+    echo "CPU Temperature: $(format_temp "${CPU_TEMP}")"
+fi
 
 # ---------------------------------------------------------------------------
 # Memory
@@ -344,7 +355,7 @@ if [ "${FULL_DISPLAY}" -ne 0 ]; then
         if [ -n "${GPU_NAME}" ]; then
             echo "GPU Name: ${GPU_NAME}"
         fi
-        echo "GPU Temperature: ${GPU_TEMP}°C"
+        echo "GPU Temperature: $(format_temp "${GPU_TEMP}")"
     fi
 fi
 
@@ -604,7 +615,7 @@ done
 if [ "${FULL_DISPLAY}" -ne 0 ]; then
     BATT_TEMP=$(batocera-temp --battery 2>/dev/null)
     if [ -n "${BATT_TEMP}" ] && [ "${BATT_TEMP}" != "0" ]; then
-        echo "Battery Temperature: ${BATT_TEMP}°C"
+        echo "Battery Temperature: $(format_temp "${BATT_TEMP}")"
     fi
 fi
 
