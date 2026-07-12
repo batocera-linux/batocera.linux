@@ -351,7 +351,7 @@ file_check_sum_on_web() {
 	return 1
     fi
 
-    return 1
+    return 0
 }
 
 upgrade() {
@@ -360,7 +360,7 @@ upgrade() {
 	UPDFILE=$(file_ready_for_update)
 	if test -n "${UPDFILE}"
 	then
-	    echo "Checking sum..." >&2
+	    echo "Checking sum..."
 	    if ! file_check_sum_on_web "${UPDFILE}"
 	    then
 		echo "Invalid checksum." >&2
