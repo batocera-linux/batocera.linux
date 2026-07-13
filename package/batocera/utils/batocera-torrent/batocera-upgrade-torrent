@@ -102,6 +102,7 @@ add_from_http() {
 	    return 1
 	fi
 	# rename it to the version name in output
+	mkdir -p "${G_BASE_DIR}/output" || return 1
 	if ! mv "${G_BASE_DIR}/tmp/boot.tar.xz.tmp" "${G_BASE_DIR}/output/${TARGET_FILE}"
 	then
 	    return 1
