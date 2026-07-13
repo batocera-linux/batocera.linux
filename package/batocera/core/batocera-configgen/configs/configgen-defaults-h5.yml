@@ -4,6 +4,9 @@ default:
     retroarch.menu_driver: xmb
     retroarch.audio_driver: alsathread
 
+nds:
+  emulator: drastic
+  core:     drastic
 amiga500:
   emulator: amiberry
   core:     A500
@@ -55,12 +58,12 @@ naomi2:
 systemsp:
   emulator: flycast
   core:     flycast
-fmtowns:
-  emulator: libretro
-  core:     mame
 flash:
   emulator: lightspark
   core:     lightspark
 cdi:
   emulator: libretro
   core:     same_cdi
+model2:
+  emulator: libretro
+  core:     mame

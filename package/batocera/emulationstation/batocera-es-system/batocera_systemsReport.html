@@ -1,163 +1,701 @@
-<html>
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <script src="https://batocera.org/assets/js/jquery-3.4.1.min.js"></script>
-    <script src="https://batocera.org/assets/js/popper.js@1"></script>
-    <script src="https://batocera.org/assets/js/tippy.js@5"></script>
-    <link rel="stylesheet" href="https://batocera.org/assets/css/backdrop.css" />
-    <script>
-$(function() {
-    $.getJSON("batocera_systemsReport.json", function(data) {
-	var tab = "<table>"
+<title>Batocera Compatibility Matrix</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #f4f4f5;
+  --text: #18181b;
+  --text-soft: #6b6b70;
+  --border: #e1e1e4;
+  --border-soft: #ececee;
+  --accent: #18181b;
+  --accent-soft: #f0f0f2;
+  --good: #2f9350;
+  --warn: #b8892a;
+  --bad: #c9433c;
+  --shadow: 0 1px 2px rgba(20, 20, 22, 0.06), 0 10px 28px -14px rgba(20, 20, 22, 0.22);
+  --focus-ring: 0 0 0 3px rgba(24, 24, 27, 0.3);
+  color-scheme: light;
+}
 
-	// archs
-	tab += "<thead>"
-	tab += "<tr><th>System</th><th>Emulator</th>"
-	$.each(data, function(arch, arch_data) {
-	    tab += "<th class=\"archname\">" + arch + "</th>"
-	})
-	tab += "</tr>"
-	tab += "</thead>"
-
-	// systems
-	var any_arch = ""
-	$.each(data, function(arch, arch_data) {
-	    one_arch = arch
-	})
-
-	tab += "<tbody>"
-	$.each(data[one_arch], function(system, one_arch_system_data) {
-	    // core
-	    var n = 1
-	    $.each(one_arch_system_data["emulators"], function(one_emulator, one_arch_emulator_data) {
-	    	$.each(one_arch_emulator_data, function(one_core, one_arch_core_data) {
-		    tab += "<tr>"
-		    if(n == 1) {
-			// system
-			var nb_system_cores = one_arch_system_data["nb_all_variants"]
-			tab += "<td rowspan=\"" + nb_system_cores + "\"><span data-tippy-content=\"" + system + "\">" + one_arch_system_data.name + "</span></td>"
-		    }
-		    // core
-		    tab += "<td>"
-		    if(one_emulator == one_core) {
-	    		tab += one_emulator
-	    	    } else {
-	    		tab += one_emulator + "/" + one_core
-	    	    }
-		    tab += "</td>"
-
-		    // each arch core
-		    $.each(data, function(arch, arch_data) {
-			$.each(arch_data[system].emulators, function(emulator, emulator_data) {
-			    $.each(emulator_data, function(core, core_data) {
-				if(emulator == one_emulator && core == one_core) {
-				    if(core_data.enabled) {
-					if(arch_data[system].red_flag) {
-					    if(core_data.explanation) {
-	    					tab += "<td class=\"redflagexp\">"
-					    } else {
-						tab += "<td class=\"redflag\">"
-					    }
-					} else {
-					    tab += "<td class=\"greenflag\">"
-					}
-					if(core_data.default && arch_data[system].nb_all_variants != 1) {
-					    tab += "<img src=\"https://batocera.org/images/sys_default.png\" />"
-					}
-					if(core_data.explanation) {
-					    tab += "<span data-tippy-content=\"" + core_data.explanation + "\">.<img src=\"https://batocera.org/images/sys_ok.png\" /></span>"
-					} else {
-					    tab += "<img src=\"https://batocera.org/images/sys_ok.png\" />"
-					}
-	                                $.each(core_data.flags, function(n, flag) {
-					    tab += "<span data-tippy-content=\"" + flag + "\">"
-					    switch(flag) {
-					    case "overclocking":
-						tab += "<img src=\"https://batocera.org/images/sys_overclock.png\" />"
-						break;
-					    case "slow_games":
-						tab += "<img src=\"https://batocera.org/images/sys_depends_games.png\" />"
-						break;
-					    case "opengl3.0":
-						tab += "<img src=\"https://batocera.org/images/sys_opengl.png\" />"
-						break;
-					    default:
-						tab += flag
-					    }
-					    tab += "</span>"
-					})
-					tab += "</td>"
-				    } else {
-	  				if(arch_data[system].red_flag && !core_data.explanation) {
-					    tab += "<td class=\"noreasonflag\"></td>"
-					} else {
-					    tab += "<td></td>"
-					}
-				    }
-				}
-			    })
-			})
-		    })
-
-
-		    tab += "</tr>"
-		    n++
-	    	})
-	    })
-	})
-	tab += "</tbody>"
-
-	tab += "</table>"
-	$("#id_table").html(tab)
-	tippy('[data-tippy-content]')
-    })
-})
-    </script>
-    <style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
 body {
-    background-color: #101050;
-    color: #aaa;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
-table {
-    display: inline-table;
-    border: solid 1px;
-    border-collapse: collapse;
+/* When embedded in an iframe, flow with the page instead of clipping to the
+   viewport — the parent resizes the iframe to match via postMessage (see script). */
+body.embedded {
+  height: auto;
+  overflow: visible;
 }
-table th, table td {
-    border: solid 1px;
-}
-ul {
-  list-style: none;
-}
-.redflag {
-    text-align: center;
-    background-color: #f0a;
-}
-.redflagexp {
-    text-align: center;
-    background-color: #f9d;
-}
-.greenflag {
-    text-align: center;
-}
-.noreasonflag {
-  background-color: #fcf;
-}
-.archname {
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-}
-    </style>
-  </head>
-  <body>
-    <ul>
-    <li><img src="https://batocera.org/images/sys_ok.png" /> Available</li>
-    <li><img src="https://batocera.org/images/sys_default.png" /> Default emulator (when several options are available)</li>
-    <li><img src="https://batocera.org/images/sys_overclock.png" /> Requires overclocking</li>
-    <li><img src="https://batocera.org/images/sys_depends_games.png" /> Low performance for some games</li>
-    <li><img src="https://batocera.org/images/sys_opengl.png" /> Requires a minimum OpenGL version</li>
-    </ul>
+body.embedded .shell { flex: none; height: auto; }
+body.embedded .sidebar { overflow-y: visible; }
+body.embedded .matrix-wrap { overflow-y: visible; }
+.mono { font-variant-numeric: tabular-nums; }
+button, input { font: inherit; color: inherit; }
 
-    <div id="id_table" />
-  </body>
-</html>
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 6px;
+  padding: 6px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex: none;
+}
+.filters-toggle {
+  display: none;
+  align-items: center; gap: 6px;
+  border: 1px solid var(--border); background: var(--surface-raised); border-radius: 6px;
+  padding: 6px 10px; cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--text);
+}
+.filters-toggle svg { width: 15px; height: 15px; }
+.brand { display: flex; align-items: baseline; gap: 9px; white-space: nowrap; }
+.brand .mark {
+  width: 22px; height: 22px; border-radius: 5px;
+  background: var(--accent); color: var(--surface);
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none;
+}
+.brand .mark svg { width: 13px; height: 13px; }
+.topbar h1 { font-size: 16px; font-weight: 700; margin: 0; text-wrap: balance; }
+.topbar .sub { color: var(--text-soft); font-size: 12.5px; white-space: nowrap; }
+.stats { display: flex; gap: 6px; flex-wrap: wrap; }
+.stat {
+  display: flex; align-items: baseline; gap: 6px;
+  padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface-raised); white-space: nowrap;
+}
+.stat .n { font-weight: 700; font-size: 13px; font-variant-numeric: tabular-nums; }
+.stat .l { color: var(--text-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ---------- app shell ---------- */
+.shell { flex: 1; display: flex; min-height: 0; position: relative; }
+.sidebar-backdrop { display: none; }
+.sidebar {
+  width: 280px; flex: none; border-right: 1px solid var(--border);
+  background: var(--surface); overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.sidebar-close { display: none; }
+.filter-group h2 {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--text-soft); margin: 0 0 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.filter-group h2 .count { color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; }
+.search-input {
+  width: 100%; padding: 7px 9px; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface-raised); color: var(--text); margin-bottom: 6px;
+}
+.search-input:focus-visible { outline: none; box-shadow: var(--focus-ring); border-color: var(--accent); }
+.mini-actions { display: flex; gap: 6px; margin-bottom: 6px; }
+.mini-btn {
+  border: 1px solid var(--border); background: var(--surface-raised); border-radius: 5px;
+  padding: 3px 8px; font-size: 11.5px; cursor: pointer; color: var(--text-soft);
+}
+.mini-btn:hover { color: var(--text); border-color: var(--accent); }
+.mini-btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.checklist {
+  max-height: 182px; overflow-y: auto; border: 1px solid var(--border-soft);
+  border-radius: 6px; background: var(--surface-raised);
+}
+.check-row {
+  display: flex; align-items: baseline; gap: 7px; padding: 5px 8px; cursor: pointer;
+  border-bottom: 1px solid var(--border-soft); font-size: 12.5px;
+}
+.check-row:last-child { border-bottom: none; }
+.check-row:hover { background: var(--accent-soft); }
+.check-row input { accent-color: var(--accent); }
+.check-row .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.check-row .name .alias { color: var(--text-soft); font-weight: 400; }
+
+/* ---------- matrix ---------- */
+.matrix-wrap { flex: 1; overflow: auto; position: relative; }
+table.matrix { border-collapse: separate; border-spacing: 0; width: max-content; }
+.matrix thead th {
+  position: sticky; top: 0; background: var(--surface); border-bottom: 2px solid var(--border);
+  padding: 8px 10px; text-align: left; font-weight: 600; font-size: 12px; z-index: 3; white-space: nowrap;
+}
+.matrix thead th.corner { left: 0; z-index: 5; min-width: 230px; }
+.matrix thead th.board-col { text-align: center; min-width: 80px; }
+.matrix thead th.board-col .code { font-weight: 700; color: var(--text); display: block; font-size: 12.5px; }
+.matrix thead th.board-col .alias {
+  display: block; font-weight: 400; color: var(--text-soft); font-size: 10px;
+  white-space: normal; max-width: 100px; margin: 2px auto 0; line-height: 1.25;
+}
+.matrix tbody td.sysname {
+  position: sticky; left: 0; background: var(--surface); border-bottom: 1px solid var(--border-soft);
+  padding: 6px 10px; z-index: 2; min-width: 230px; max-width: 270px;
+}
+.matrix tbody tr:hover td.sysname, .matrix tbody tr:hover td.cell { background: var(--accent-soft); }
+.sysname .name { font-weight: 600; font-size: 12.5px; display: block; }
+.sysname .key { font-size: 10.5px; color: var(--text-soft); }
+.matrix tbody td.cell {
+  border-bottom: 1px solid var(--border-soft); border-left: 1px solid var(--border-soft);
+  text-align: center; padding: 0;
+}
+.cell-btn {
+  width: 100%; height: 100%; min-height: 34px; border: none; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 4px; padding: 6px 8px;
+}
+.cell-btn:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+.cell-btn svg { width: 15px; height: 15px; flex: none; }
+.icon-good { color: var(--good); }
+.icon-warn { color: var(--warn); }
+.icon-bad { color: var(--bad); }
+.icon-none { color: var(--border); }
+.cell-count { font-size: 10.5px; color: var(--text-soft); font-variant-numeric: tabular-nums; }
+
+.empty-state { padding: 60px 20px; text-align: center; color: var(--text-soft); }
+.empty-state strong { color: var(--text); }
+
+/* ---------- legend ---------- */
+.legend {
+  display: flex; gap: 18px; flex-wrap: wrap; padding: 8px 20px;
+  border-bottom: 1px solid var(--border); background: var(--surface-raised);
+  font-size: 12px; color: var(--text-soft); flex: none;
+}
+.legend .row { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.legend svg { width: 14px; height: 14px; flex: none; }
+
+/* ---------- popover ---------- */
+#popover {
+  position: fixed; z-index: 50; max-width: min(320px, 88vw); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow);
+  padding: 10px 12px; font-size: 12px; display: none;
+}
+#popover.show { display: block; }
+#popover h3 { margin: 0 0 6px; font-size: 12.5px; display: flex; align-items: center; gap: 6px; }
+#popover .board-name { color: var(--text-soft); font-weight: 400; }
+#popover .core-row { display: flex; align-items: flex-start; gap: 6px; padding: 4px 0; border-top: 1px solid var(--border-soft); }
+#popover .core-row:first-of-type { border-top: none; }
+#popover .core-row svg { width: 13px; height: 13px; margin-top: 2px; flex: none; }
+#popover .core-name { font-weight: 600; font-size: 12px; }
+#popover .core-name .def-badge {
+  font-size: 9px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text);
+  border: 1px solid var(--text); border-radius: 3px; padding: 0 4px; margin-left: 5px; font-weight: 600;
+}
+#popover .explain { color: var(--text-soft); font-size: 11px; margin-top: 2px; }
+#popover .flags { margin-top: 2px; display: flex; gap: 4px; flex-wrap: wrap; }
+#popover .flag-chip {
+  font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.03em; padding: 1px 5px;
+  border-radius: 3px; background: var(--accent-soft); color: var(--text-soft);
+}
+
+/* ---------- loading / error overlay ---------- */
+#loading {
+  position: absolute; inset: 0; background: var(--bg); z-index: 60;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  padding: 20px; text-align: center;
+}
+#loading.hide { display: none; }
+.spinner {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading .msg { color: var(--text-soft); font-size: 13px; max-width: 420px; }
+#loading .msg.error { color: var(--bad); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- mobile ---------- */
+@media (max-width: 860px) {
+  .filters-toggle { display: inline-flex; }
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; z-index: 41;
+    width: 82vw; max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform 220ms ease;
+    box-shadow: var(--shadow);
+  }
+  @media (prefers-reduced-motion: reduce) { .sidebar { transition: none; } }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-close {
+    display: flex; align-items: center; justify-content: center;
+    margin-left: auto; width: 26px; height: 26px; border: 1px solid var(--border);
+    background: var(--surface-raised); border-radius: 6px; cursor: pointer;
+  }
+  .sidebar-close svg { width: 14px; height: 14px; }
+  .sidebar-header { display: flex; align-items: center; margin-bottom: 2px; }
+  .sidebar-header .title { font-weight: 700; font-size: 13px; }
+  .sidebar-backdrop.show {
+    display: block; position: fixed; inset: 0; background: rgba(10, 10, 12, 0.45); z-index: 40;
+  }
+  .checklist { max-height: 130px; }
+  .topbar { padding: 10px 14px; gap: 4px 10px; }
+  .topbar h1 { font-size: 14.5px; }
+  .topbar .sub { display: none; }
+  .stats { display: none; }
+  .legend { padding: 6px 14px; gap: 12px; font-size: 11px; overflow-x: auto; flex-wrap: nowrap; }
+  .matrix thead th.corner, .matrix tbody td.sysname { min-width: 150px; max-width: 170px; }
+  .matrix thead th.board-col { min-width: 62px; }
+  .matrix thead th, .matrix tbody td.sysname { padding: 6px 7px; }
+}
+</style>
+
+<div class="topbar">
+  <button class="filters-toggle" id="filtersToggle" type="button">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 5h14M6 10h8M8.5 15h3"/></svg>
+    Filters
+  </button>
+</div>
+
+<div class="legend">
+  <span class="row"><svg viewBox="0 0 20 20" fill="none" class="icon-good"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Default emu </span>
+  <span class="row"><svg viewBox="0 0 20 20" fill="none" class="icon-warn"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Alternate emu</span>
+  <span class="row"><svg viewBox="0 0 20 20" fill="none" class="icon-bad"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Not available</span>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="shell">
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="title">Filters</span>
+      <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Close filters">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l10 10M15 5L5 15"/></svg>
+      </button>
+    </div>
+
+    <div class="filter-group">
+      <h2>Architectures <span class="count" id="archCount"></span></h2>
+      <input class="search-input" id="archSearch" type="text" placeholder="Search boards&hellip;" />
+      <div class="mini-actions">
+        <button class="mini-btn" id="archAll">Select shown</button>
+        <button class="mini-btn" id="archNone">Clear</button>
+      </div>
+      <div class="checklist" id="archList"></div>
+    </div>
+
+    <div class="filter-group">
+      <h2>Systems <span class="count" id="sysCount"></span></h2>
+      <input class="search-input" id="sysSearch" type="text" placeholder="Search emulated machines&hellip;" />
+      <div class="mini-actions">
+        <button class="mini-btn" id="sysAll">Select shown</button>
+        <button class="mini-btn" id="sysNone">Clear</button>
+      </div>
+      <div class="checklist" id="sysList"></div>
+    </div>
+
+    <div class="filter-group">
+      <h2>Emulators <span class="count" id="emuCount"></span></h2>
+      <input class="search-input" id="emuSearch" type="text" placeholder="Search emulators&hellip;" />
+      <div class="mini-actions">
+        <button class="mini-btn" id="emuAll">Select shown</button>
+        <button class="mini-btn" id="emuNone">Clear</button>
+      </div>
+      <div class="checklist" id="emuList"></div>
+    </div>
+  </aside>
+
+  <div class="matrix-wrap" id="matrixWrap">
+    <table class="matrix" id="matrixTable"></table>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="msg">Loading compatibility data&hellip;</div>
+  </div>
+</div>
+
+<div id="popover"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var ICON_GOOD = '<svg viewBox="0 0 20 20" fill="none" class="icon-good"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_WARN = '<svg viewBox="0 0 20 20" fill="none" class="icon-warn"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_BAD = '<svg viewBox="0 0 20 20" fill="none" class="icon-bad"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  var ICON_NONE = '<svg viewBox="0 0 20 20" fill="none" class="icon-none"><path d="M6 10h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+
+  // Friendly names for boards whose codename alone means little to most users.
+  // Devices whose codename is already a recognizable product name (e.g. "rock-5b",
+  // "orange-pi-5-plus") are left as-is rather than inventing a redundant alias.
+  var BOARD_ALIASES = {
+    'bcm2711': 'Raspberry Pi 4', 'bcm2712': 'Raspberry Pi 5',
+    'bcm2836': 'Raspberry Pi 2', 'bcm2837': 'Raspberry Pi 3',
+    'x86_64': 'PC (nvidia)', 'x86-64-v3': 'PC (modern CPU)',
+    's812': 'Amlogic S812 TV box',
+    'sm8250': 'Retroid Pocket 5 & Mini', 'sm8550': 'Ayn Thor & Odin2', 'sm8750': 'Snapdragon 8 Elite',
+    'sdm845': 'Snapdragon 845', 'qcs6490': 'Snapdragon QCS6490',
+    'rk3326': 'Rockchip RK3326', 'odin': 'AYN Odin',
+    'tvbox': 'Amlogic S905 TV box', 'tvbox-gen3': 'Amlogic S905X3 TV box',
+  };
+
+  function boardAlias(b) { return BOARD_ALIASES[b] || null; }
+
+  // Default boards to display first
+  var DEFAULT_BOARDS = ['x86-64-v3', 'bcm2712', 'bcm2711', 'sm8550'];
+
+  function getDefaultBoards(boards) {
+    var requested = new URLSearchParams(window.location.search).get('boards');
+    if (requested) {
+      var fromUrl = requested.split(',').map(function (s) { return s.trim(); }).filter(function (b) {
+        return boards.indexOf(b) !== -1;
+      });
+      if (fromUrl.length > 0) return fromUrl;
+    }
+    var curated = DEFAULT_BOARDS.filter(function (b) { return boards.indexOf(b) !== -1; });
+    return curated.length > 0 ? curated : boards.slice(0, Math.min(5, boards.length));
+  }
+
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  var loadingEl = document.getElementById('loading');
+
+  // When embedded in an iframe, switch to a flowing layout (see CSS) and tell the
+  // parent page how tall the content is so it can resize the iframe to fit.
+  var embedded = window.self !== window.top;
+  if (embedded) document.body.classList.add('embedded');
+
+  var reportHeightTimer = null;
+  function reportHeightIfEmbedded() {
+    if (!embedded) return;
+    clearTimeout(reportHeightTimer);
+    reportHeightTimer = setTimeout(function () {
+      parent.postMessage({ type: 'batocera-compat-resize', height: document.documentElement.scrollHeight }, '*');
+    }, 30);
+  }
+  if (embedded) window.addEventListener('resize', reportHeightIfEmbedded);
+
+  fetch('batocera_systemsReport.json')
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+      return res.json();
+    })
+    .then(init)
+    .catch(function (err) {
+      var msgEl = loadingEl.querySelector('.msg');
+      loadingEl.querySelector('.spinner').style.display = 'none';
+      msgEl.classList.add('error');
+      msgEl.innerHTML = 'Could not load batocera_systemsReport.json (' + escapeHtml(err.message) + ').' +
+        '<br/><br/>This page must be served over HTTP from the same directory as the JSON file &mdash; ' +
+        'opening it directly as a local file will not work.';
+    });
+
+  function init(REPORT) {
+    var boards = Object.keys(REPORT).sort();
+
+    var systemMeta = {};
+    boards.forEach(function (b) {
+      var systems = REPORT[b];
+      Object.keys(systems).forEach(function (key) {
+        if (!systemMeta[key]) systemMeta[key] = { key: key, name: systems[key].name || key };
+      });
+    });
+    var systemKeys = Object.keys(systemMeta).sort(function (a, b) {
+      return systemMeta[a].name.localeCompare(systemMeta[b].name);
+    });
+
+    var comboSet = {};
+    boards.forEach(function (b) {
+      var systems = REPORT[b];
+      Object.keys(systems).forEach(function (key) {
+	      var emus = systems[key].emulators || {};
+	      Object.keys(emus).forEach(function (emu) {
+		      Object.keys(emus[emu]).forEach(function (core) { comboSet[emu + '/' + core] = true; });
+	      });
+      });
+    });
+    var emulatorNames = Object.keys(comboSet).sort();
+
+    function comboLabel(combo) {
+      var parts = combo.split('/');
+      return parts[0] === parts[1] ? parts[0] : combo;
+    }
+
+    var state = {
+      selectedBoards: new Set(getDefaultBoards(boards)),
+      selectedSystems: new Set(systemKeys),
+      selectedEmulators: new Set(emulatorNames),
+      sysQuery: '', archQuery: '', emuQuery: '',
+    };
+
+    // ---------------- mobile filter drawer ----------------
+    var sidebarEl = document.getElementById('sidebar');
+    var backdropEl = document.getElementById('sidebarBackdrop');
+
+    function openSidebar() { sidebarEl.classList.add('open'); backdropEl.classList.add('show'); }
+    function closeSidebar() { sidebarEl.classList.remove('open'); backdropEl.classList.remove('show'); }
+
+    document.getElementById('filtersToggle').addEventListener('click', openSidebar);
+    document.getElementById('sidebarClose').addEventListener('click', closeSidebar);
+    backdropEl.addEventListener('click', closeSidebar);
+
+    // ---------------- sidebar: architectures ----------------
+    var archListEl = document.getElementById('archList');
+    var archSearchEl = document.getElementById('archSearch');
+    var archCountEl = document.getElementById('archCount');
+
+    function renderArchList() {
+      var q = state.archQuery.toLowerCase();
+      var filtered = boards.filter(function (b) {
+        var alias = boardAlias(b);
+        return b.toLowerCase().indexOf(q) !== -1 || (alias && alias.toLowerCase().indexOf(q) !== -1);
+      });
+      archListEl.innerHTML = filtered.map(function (b) {
+        var checked = state.selectedBoards.has(b) ? 'checked' : '';
+        var alias = boardAlias(b);
+        return '<label class="check-row"><input type="checkbox" data-board="' + b + '" ' + checked + '/>' +
+          '<span class="name">' + b + (alias ? ' <span class="alias">(' + alias + ')</span>' : '') + '</span></label>';
+      }).join('');
+      archCountEl.textContent = state.selectedBoards.size + ' / ' + boards.length;
+      archListEl.querySelectorAll('input[data-board]').forEach(function (inp) {
+        inp.addEventListener('change', function () {
+          var b = inp.getAttribute('data-board');
+          if (inp.checked) state.selectedBoards.add(b); else state.selectedBoards.delete(b);
+          renderArchList(); renderMatrix();
+        });
+      });
+      return filtered;
+    }
+
+    archSearchEl.addEventListener('input', function () { state.archQuery = archSearchEl.value; renderArchList(); });
+    document.getElementById('archAll').addEventListener('click', function () {
+      renderArchList().forEach(function (b) { state.selectedBoards.add(b); });
+      renderArchList(); renderMatrix();
+    });
+    document.getElementById('archNone').addEventListener('click', function () {
+      state.selectedBoards.clear(); renderArchList(); renderMatrix();
+    });
+
+    // ---------------- sidebar: systems ----------------
+    var sysListEl = document.getElementById('sysList');
+    var sysSearchEl = document.getElementById('sysSearch');
+    var sysCountEl = document.getElementById('sysCount');
+
+    function renderSysList() {
+      var q = state.sysQuery.toLowerCase();
+      var filtered = systemKeys.filter(function (key) {
+        var meta = systemMeta[key];
+        return !q || meta.name.toLowerCase().indexOf(q) !== -1 || key.toLowerCase().indexOf(q) !== -1;
+      });
+      sysListEl.innerHTML = filtered.map(function (key) {
+        var checked = state.selectedSystems.has(key) ? 'checked' : '';
+        return '<label class="check-row"><input type="checkbox" data-sys="' + key + '" ' + checked + '/>' +
+          '<span class="name">' + escapeHtml(systemMeta[key].name) + '</span></label>';
+      }).join('');
+      sysCountEl.textContent = state.selectedSystems.size + ' / ' + systemKeys.length;
+      sysListEl.querySelectorAll('input[data-sys]').forEach(function (inp) {
+        inp.addEventListener('change', function () {
+          var key = inp.getAttribute('data-sys');
+          if (inp.checked) state.selectedSystems.add(key); else state.selectedSystems.delete(key);
+          renderSysList(); renderMatrix();
+        });
+      });
+      return filtered;
+    }
+
+    sysSearchEl.addEventListener('input', function () { state.sysQuery = sysSearchEl.value; renderSysList(); renderMatrix(); });
+    document.getElementById('sysAll').addEventListener('click', function () {
+      renderSysList().forEach(function (key) { state.selectedSystems.add(key); });
+      renderSysList(); renderMatrix();
+    });
+    document.getElementById('sysNone').addEventListener('click', function () {
+      state.selectedSystems.clear(); renderSysList(); renderMatrix();
+    });
+
+    // ---------------- sidebar: emulators ----------------
+    var emuListEl = document.getElementById('emuList');
+    var emuSearchEl = document.getElementById('emuSearch');
+    var emuCountEl = document.getElementById('emuCount');
+
+    function renderEmuList() {
+      var q = state.emuQuery.toLowerCase();
+      var filtered = emulatorNames.filter(function (e) { return e.toLowerCase().indexOf(q) !== -1; });
+      emuListEl.innerHTML = filtered.map(function (e) {
+        var checked = state.selectedEmulators.has(e) ? 'checked' : '';
+        return '<label class="check-row"><input type="checkbox" data-emu="' + e + '" ' + checked + '/>' +
+	  '<span class="name">' + escapeHtml(comboLabel(e)) + '</span></label>';
+      }).join('');
+      emuCountEl.textContent = state.selectedEmulators.size + ' / ' + emulatorNames.length;
+      emuListEl.querySelectorAll('input[data-emu]').forEach(function (inp) {
+        inp.addEventListener('change', function () {
+          var e = inp.getAttribute('data-emu');
+          if (inp.checked) state.selectedEmulators.add(e); else state.selectedEmulators.delete(e);
+          renderEmuList(); renderMatrix();
+        });
+      });
+      return filtered;
+    }
+
+    emuSearchEl.addEventListener('input', function () { state.emuQuery = emuSearchEl.value; renderEmuList(); });
+    document.getElementById('emuAll').addEventListener('click', function () {
+      renderEmuList().forEach(function (e) { state.selectedEmulators.add(e); });
+      renderEmuList(); renderMatrix();
+    });
+    document.getElementById('emuNone').addEventListener('click', function () {
+      state.selectedEmulators.clear(); renderEmuList(); renderMatrix();
+    });
+
+    // ---------------- cell status ----------------
+    function cellStatus(board, sysKey) {
+      var sysData = REPORT[board] && REPORT[board][sysKey];
+      if (!sysData) return { status: 'none', cores: [], enabledCount: 0, allCount: 0 };
+
+      var cores = [];
+      var anyEnabled = false, defaultEnabled = false;
+      Object.keys(sysData.emulators || {}).forEach(function (emu) {
+        var coreMap = sysData.emulators[emu];
+	Object.keys(coreMap).forEach(function (coreName) {
+	if (!state.selectedEmulators.has(emu + '/' + coreName)) return;
+          var c = coreMap[coreName];
+          cores.push({
+            emu: emu, core: coreName, enabled: !!c.enabled, isDefault: !!c.default,
+            explanation: c.explanation || null, flags: c.flags || [],
+          });
+          if (c.enabled) { anyEnabled = true; if (c.default) defaultEnabled = true; }
+        });
+      });
+
+      if (cores.length === 0) return { status: 'none', cores: [], enabledCount: 0, allCount: 0 };
+
+      var enabledCount = cores.filter(function (c) { return c.enabled; }).length;
+      var status = 'bad';
+      if (defaultEnabled) status = 'good'; else if (anyEnabled) status = 'warn';
+
+      return { status: status, cores: cores, enabledCount: enabledCount, allCount: cores.length };
+    }
+
+    // ---------------- matrix render ----------------
+    var tableEl = document.getElementById('matrixTable');
+    var statsEl = document.getElementById('stats');
+
+    function renderMatrix() {
+      var selBoards = Array.from(state.selectedBoards);
+      var rows = systemKeys.filter(function (key) { return state.selectedSystems.has(key); });
+
+      if (selBoards.length === 0) {
+        document.getElementById('matrixWrap').innerHTML =
+          '<div class="empty-state"><strong>No architectures selected.</strong><br/>Pick one or more boards from the sidebar to compare.</div>';
+        updateStats(rows.length, selBoards.length);
+        reportHeightIfEmbedded();
+        return;
+      }
+      if (!document.getElementById('matrixTable')) {
+        document.getElementById('matrixWrap').innerHTML = '<table class="matrix" id="matrixTable"></table>';
+        tableEl = document.getElementById('matrixTable');
+      }
+
+      var thead = '<thead><tr><th class="corner">System</th>' +
+        selBoards.map(function (b) {
+          var alias = boardAlias(b);
+          return '<th class="board-col"><span class="code">' + b + '</span>' + (alias ? '<span class="alias">' + alias + '</span>' : '') + '</th>';
+        }).join('') + '</tr></thead>';
+
+      var tbody = '<tbody>' + rows.map(function (key) {
+        var meta = systemMeta[key];
+        var cellsHtml = selBoards.map(function (b) { return renderCell(b, key, cellStatus(b, key)); }).join('');
+        return '<tr><td class="sysname"><span class="name">' + escapeHtml(meta.name) + '</span><span class="key">' + key + '</span></td>' + cellsHtml + '</tr>';
+      }).join('') + '</tbody>';
+
+      tableEl.innerHTML = thead + tbody;
+      attachCellHandlers();
+      updateStats(rows.length, selBoards.length);
+      reportHeightIfEmbedded();
+    }
+
+    function renderCell(board, sysKey, s) {
+      var icon = s.status === 'good' ? ICON_GOOD : s.status === 'warn' ? ICON_WARN : s.status === 'bad' ? ICON_BAD : ICON_NONE;
+      var countLabel = s.allCount > 1 ? '<span class="cell-count">' + s.enabledCount + '/' + s.allCount + '</span>' : '';
+      return '<td class="cell"><button class="cell-btn" data-board="' + board + '" data-sys="' + sysKey + '">' + icon + countLabel + '</button></td>';
+    }
+
+    function updateStats(sysCount, archCount) {
+      statsEl.innerHTML =
+        '<div class="stat"><span class="n mono">' + archCount + ' / ' + boards.length + '</span><span class="l">architectures</span></div>' +
+        '<div class="stat"><span class="n mono">' + sysCount + ' / ' + systemKeys.length + '</span><span class="l">systems</span></div>';
+    }
+
+    // ---------------- popover (works on hover for mouse, tap for touch) ----------------
+    var popover = document.getElementById('popover');
+    var activeCellBtn = null;
+
+    function attachCellHandlers() {
+      tableEl.querySelectorAll('.cell-btn').forEach(function (btn) {
+        btn.addEventListener('mouseenter', function (e) { showPopoverFor(e); });
+        btn.addEventListener('focus', function (e) { showPopoverFor(e); });
+        btn.addEventListener('mouseleave', function () { if (activeCellBtn === null) hidePopover(); });
+        btn.addEventListener('blur', hidePopover);
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          if (activeCellBtn === btn) { activeCellBtn = null; hidePopover(); }
+          else { activeCellBtn = btn; showPopoverFor(e); }
+        });
+      });
+    }
+
+    document.addEventListener('click', function () { if (activeCellBtn) { activeCellBtn = null; hidePopover(); } });
+
+    function showPopoverFor(e) {
+      var btn = e.currentTarget;
+      var board = btn.getAttribute('data-board');
+      var sysKey = btn.getAttribute('data-sys');
+      var s = cellStatus(board, sysKey);
+      var meta = systemMeta[sysKey];
+
+      var body;
+      if (s.cores.length === 0) {
+        body = '<div class="explain">No emulator targets this system with the current emulator filters.</div>';
+      } else {
+        body = s.cores.map(function (c) {
+          var icon = c.enabled ? (c.isDefault ? ICON_GOOD : ICON_WARN) : ICON_BAD;
+          var defBadge = c.isDefault ? '<span class="def-badge">default</span>' : '';
+          var explain = c.explanation ? '<div class="explain">' + escapeHtml(c.explanation) + '</div>' : '';
+          var flags = c.flags && c.flags.length ? '<div class="flags">' + c.flags.map(function (f) {
+            return '<span class="flag-chip">' + escapeHtml(f) + '</span>';
+          }).join('') + '</div>' : '';
+          return '<div class="core-row">' + icon + '<div><div class="core-name">' + c.emu + '/' + c.core + defBadge + '</div>' + explain + flags + '</div></div>';
+        }).join('');
+      }
+
+      popover.innerHTML = '<h3>' + escapeHtml(meta.name) + ' <span class="board-name">&middot; ' + board + '</span></h3>' + body;
+      popover.classList.add('show');
+      positionPopover(btn);
+    }
+
+    function positionPopover(btn) {
+      var rect = btn.getBoundingClientRect();
+      var pw = Math.min(320, window.innerWidth * 0.88);
+      var left = Math.min(rect.left, window.innerWidth - pw - 16);
+      var top = rect.bottom + 8;
+      if (top + 200 > window.innerHeight) top = rect.top - 8 - popover.offsetHeight;
+      popover.style.left = Math.max(8, left) + 'px';
+      popover.style.top = Math.max(8, top) + 'px';
+    }
+
+    function hidePopover() { popover.classList.remove('show'); }
+
+    // ---------------- render ----------------
+    renderArchList();
+    renderSysList();
+    renderEmuList();
+    renderMatrix();
+    loadingEl.classList.add('hide');
+  }
+})();
+</script>
