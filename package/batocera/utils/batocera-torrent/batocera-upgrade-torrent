@@ -95,6 +95,7 @@ add_from_http() {
     then
 	echo "File ${G_BASE_DIR}/output/${TARGET_FILE} already exists" >&2
     else
+	mkdir -p "${G_BASE_DIR}/tmp" || return 1
 	if ! wget "${G_UPDATEURL}/${G_BOARD}/stable/last/boot.tar.xz" --show-progress -qO "${G_BASE_DIR}/tmp/boot.tar.xz.tmp"
 	then
 	    echo "Unable to download last stable version for ${G_BOARD} as a boot.tar.xz" >&2
@@ -142,6 +143,7 @@ add_from_torrent() {
     fi
 
     # get the torrent file
+    mkdir -p "${G_BASE_DIR}/tmp" || return 1
     if ! wget "${G_UPDATEURL}/${G_BOARD}/stable/last/${TORRENT_FILE}" -qO "${G_BASE_DIR}/tmp/boot.tar.xz.torrent.tmp"
     then
 	echo "Unable to download last stable version for ${G_BOARD} as a torrent" >&2
@@ -274,6 +276,7 @@ check_www() {
     fi
 
     # "${G_BASE_DIR}/batocera/versions" contains the last known web versions
+    mkdir -p "${G_BASE_DIR}/batocera/versions" || return 1
     if ! echo "${WEB_MASTER_VERSION}" > "${G_BASE_DIR}/batocera/versions/${G_BOARD}"
     then
 	return 1
