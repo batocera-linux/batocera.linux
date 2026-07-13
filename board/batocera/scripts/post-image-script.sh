@@ -121,5 +121,31 @@ do
     echo "${CKS}  $(basename "${FILE}")" >> "${BATOCERA_BINARIES_DIR}/SHA256SUMS"
 done
 
+#### torrent #######################
+if grep -q -- '-dev' "${TARGET_DIR}/usr/share/batocera/batocera.version"
+then
+    echo "Skip building torrent on -dev versions" >&2
+else
+    for FILE in "${BATOCERA_BINARIES_DIR}/images/"*"/boot.tar.xz"
+    do
+	# upper dir
+	BOOTDIR=$(dirname "${FILE}")
+	SUBTARGET=$(basename "${BOOTDIR}")
+
+	TORRENT_UPDATE_BOOT_FILE="boot-${SUBTARGET}-${SUFFIXVERSION}.tar.xz"
+
+	echo "creating ${TORRENT_UPDATE_BOOT_FILE}.torrent"
+	(cd "${BOOTDIR}" &&
+	     ln -f "boot.tar.xz" "${TORRENT_UPDATE_BOOT_FILE}" &&
+	     mktorrent -a udp://tracker.opentrackr.org:1337/announce \
+		       -a udp://tracker.openbittorrent.com:6969/announce \
+		       -a udp://tracker.torrent.eu.org:451/announce \
+		       -a udp://open.stealth.si:80/announce \
+		       -a http://tracker.opentrackr.org:1337/announce \
+		       -a http://open.acgnxtracker.com/announce \
+		       -o "${TORRENT_UPDATE_BOOT_FILE}.torrent" "${TORRENT_UPDATE_BOOT_FILE}") || exit 1
+    done
+fi
+
 #### update the target dir with some information files
 cp "${TARGET_DIR}/usr/share/batocera/batocera.version" "${BATOCERA_BINARIES_DIR}" || exit 1

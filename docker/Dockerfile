@@ -49,6 +49,7 @@ PACKAGES=(
     "subversion"
     "wget"
     "unzip"
+    "mktorrent"
 )
 
 if [ "$TARGETPLATFORM" = "linux/amd64" ]; then
