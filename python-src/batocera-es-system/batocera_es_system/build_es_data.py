@@ -41,3 +41,7 @@ def main() -> None:
     _build_es_features(registry, args.output)
     _build_translations(registry, args.keys_dir, args.locales_dir, args.output)
     _build_roms_dir(systems_data, args.roms_dir, args.output)
+
+
+if __name__ == '__main__':
+    main()

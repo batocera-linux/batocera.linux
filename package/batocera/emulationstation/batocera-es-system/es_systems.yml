@@ -3976,20 +3976,6 @@ superbroswar:
   comment_br: |
      Super Mario War - esmague os adversários pisando neles, em um divertido jogo multijogador.
 
-switch:
-  name: Switch
-  manufacturer: Nintendo
-  release: 2017
-  hardware: console
-  platform: switch
-  theme: switch
-  extensions: [xci, nsp]
-  emulators:
-    citron:
-      citron: { requireAnyOf: [BR2_PACKAGE_CITRON] }
-    ryujinx:
-      ryujinx: { requireAnyOf: [BR2_PACKAGE_RYUJINX] }
-
 quake2:
   name: Quake II
   manufacturer: Ports

@@ -7,6 +7,7 @@
 LIBRETRO_GEARCOLECO_VERSION = 1.5.5
 LIBRETRO_GEARCOLECO_SITE = $(call github,drhelius,Gearcoleco,$(LIBRETRO_GEARCOLECO_VERSION))
 LIBRETRO_GEARCOLECO_LICENSE = GPLv3
+LIBRETRO_GEARCOLECO_EMULATOR_INFO = gearcoleco.libretro.core.yml
 
 define LIBRETRO_GEARCOLECO_BUILD_CMDS
     $(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D)/platforms/libretro platform=unix
@@ -20,3 +21,4 @@ define LIBRETRO_GEARCOLECO_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

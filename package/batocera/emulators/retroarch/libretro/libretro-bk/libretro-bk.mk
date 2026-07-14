@@ -8,6 +8,7 @@ LIBRETRO_BK_VERSION = f95d929c8eca6c85075cd5c56a08aac9c58f3802
 LIBRETRO_BK_SITE = $(call github,libretro,bk-emulator,$(LIBRETRO_BK_VERSION))
 LIBRETRO_BK_LICENSE = Non-commercial
 LIBRETRO_BK_DEPENDENCIES = retroarch
+LIBRETRO_BK_EMULATOR_INFO = bk.libretro.core.yml
 
 define LIBRETRO_BK_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
@@ -20,3 +21,4 @@ define LIBRETRO_BK_INSTALL_TARGET_CMDS
 endef
 
 $(eval $(generic-package))
+$(eval $(emulator-info-package))

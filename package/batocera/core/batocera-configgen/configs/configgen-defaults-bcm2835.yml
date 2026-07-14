@@ -8,6 +8,9 @@ default:
     # menu retroarch
     retroarch.menu_driver: rgui
 
+gp32:
+  emulator: libretro
+  core:     gp32emu
 gba:
   emulator: libretro
   core:     gpsp

@@ -4,6 +4,9 @@ default:
     videomode: max-1280x720
     hud_support: true
 
+nds:
+  emulator: drastic
+  core:     drastic
 amiga500:
   emulator: libretro
   core:     uae4arm
@@ -39,3 +42,6 @@ flash:
   emulator: lightspark
   core:     lightspark
 
+model2:
+  emulator: libretro
+  core:     mame

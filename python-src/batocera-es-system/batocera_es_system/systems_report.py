@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
+from collections import defaultdict
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, cast
 from typing_extensions import TypedDict
@@ -182,11 +184,15 @@ def _generate_target_report(
     explanations: _ExplanationsDict,
     configgen_dir: Path,
     all_emulators_by_system: EmulatorsBySystemMapping,
+    missing_by_file: dict[Path, set[str]],
     /,
 ) -> dict[str, _EmulatorsResultDict]:
     target = target_dir.name
 
-    registry = Registry.load_path_file(target_dir / 'info_files.txt')
+    missing: list[Path] = []
+    registry = Registry.load_path_file(target_dir / 'info_files.txt', missing=missing)
+    for missing_file in missing:
+        missing_by_file[missing_file].add(target)
     configgen_defaults = ConfiggenDefaults.for_defaults(
         configgen_dir / 'configgen-defaults.yml', configgen_dir / f'configgen-defaults-{target}.yml'
     )
@@ -216,7 +222,18 @@ def _generate_systems_report(
     results: dict[str, dict[str, _EmulatorsResultDict]] = {}
     explanations = safe_load_yaml(explanations_yml, '_ExplanationsDict') or {}
     es_systems_data = load_es_systems(es_systems_yml)
-    all_emulators = Registry.load_path_file(reports_data_dir / 'all_info_files.txt')
+
+    # tracks, for each emulator-info file referenced by a package that turns out not
+    # to actually exist on disk (e.g. a stale/orphaned package left over from a WIP
+    # rename or an unclean checkout), which target(s) referenced it - "(all)" marks
+    # the arch-independent EMULATOR_INFO_PATHS_ALL registry. Reported at the end
+    # instead of aborting the whole report over one dangling package reference.
+    missing_by_file: dict[Path, set[str]] = defaultdict(set)
+
+    all_missing: list[Path] = []
+    all_emulators = Registry.load_path_file(reports_data_dir / 'all_info_files.txt', missing=all_missing)
+    for missing_file in all_missing:
+        missing_by_file[missing_file].add('(all)')
     all_emulators_by_system = all_emulators.emulators_by_system
 
     for target_dir in reports_data_dir.iterdir():
@@ -224,13 +241,18 @@ def _generate_systems_report(
             continue
 
         target_systems = _generate_target_report(
-            target_dir, es_systems_data, explanations, configgen_dir, all_emulators_by_system
+            target_dir, es_systems_data, explanations, configgen_dir, all_emulators_by_system, missing_by_file
         )
 
         for board in _get_boards_from_config(target_dir / '.config'):
             results[board] = target_systems
 
     output_file.write_text(json.dumps(results, indent=2, sort_keys=True, cls=_SortedListEncoder))
+
+    if missing_by_file:
+        print('warning: ignored missing emulator-info files (stale/orphaned package references):', file=sys.stderr)
+        for missing_file, targets in sorted(missing_by_file.items()):
+            print(f'  {missing_file}: {", ".join(sorted(targets))}', file=sys.stderr)
 
 
 def main() -> None:
@@ -246,3 +268,7 @@ def main() -> None:
     _generate_systems_report(
         args.reports_data_dir, args.es_systems_yml, args.explanations_yml, args.configgen_dir, args.dest
     )
+
+
+if __name__ == '__main__':
+    main()

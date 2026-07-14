@@ -132,3 +132,7 @@ def main() -> None:
     registry = Registry.load_path_file(args.path_info_file)
 
     build(registry, args.keys_dir, args.locales_dir, args.output)
+
+
+if __name__ == '__main__':
+    main()

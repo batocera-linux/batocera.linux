@@ -5,6 +5,9 @@ default:
     retroarch.menu_driver: xmb
     retroarch.audio_driver: alsathread
 
+gp32:
+  emulator: libretro
+  core:     gp32emu
 amiga500:
   emulator: amiberry
   core:     A500
@@ -44,9 +47,6 @@ cplus4:
 fbneo:
   options:
     frameskip: auto
-fmtowns:
-  emulator: libretro
-  core:     mame
 atomiswave:
   emulator: libretro
   core:     flycastvl
