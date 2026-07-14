@@ -49,6 +49,8 @@ do_help() {
     echo "    clean batocera torrent used to share updates/installs" >&2
     echo "    warning: it will remove the downloaded files too" >&2
     echo "batocera-upgrade-torrent --status" >&2
+    echo "    status of download of the current board" >&2
+    echo "batocera-upgrade-torrent --status-all" >&2
     echo "    status of downloads" >&2
     echo "batocera-upgrade-torrent --update" >&2
     echo "    update local information from batocera web servers (check if a new version is available)" >&2
@@ -86,7 +88,7 @@ add_from_http() {
 
     if check_if_torrent_already_exists "${TORRENT_FILE}"
     then
-	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing torrent files." >&2
+	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing files." >&2
 	return 1
     fi
 
@@ -139,7 +141,7 @@ add_from_torrent() {
 
     if check_if_torrent_already_exists "${TORRENT_FILE}"
     then
-	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing torrent files." >&2
+	echo "torrent ${TORRENT_FILE} is already present. Use --clean first to remove existing files." >&2
 	return 1
     fi
 
@@ -206,20 +208,25 @@ board_status() {
 }
 
 do_status() {
+    SBOARD=$1
+    
     find "${G_BASE_DIR}/batocera/versions" -type f |
 	while read TFILE
 	do
 	    BFILE=$(basename "${TFILE}")
-	    VFILE=$(cat "${TFILE}")
-	    TFILE="boot-${BFILE}-${VFILE}.tar.xz"
-	    IMG=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${TFILE}\")")
-	    if test -n "${IMG}" # in case the image was removed
-	    then
-		TSIZE=$(echo "${IMG}" | jq -r ".size_when_done")
-		LSIZE=$(echo "${IMG}" | jq -r ".left_until_done")
-		TDONE=$(expr "${TSIZE}" - "${LSIZE}")
-		PDONE=$(expr "${TDONE}" '*' 100 / "${TSIZE}")
-		printf "%35s %3s%%\n" "${TFILE}" "${PDONE}"
+	    if test -z "${SBOARD}" -o "${BFILE}" == "${SBOARD}"
+	       then
+		   VFILE=$(cat "${TFILE}")
+		   TFILE="boot-${BFILE}-${VFILE}.tar.xz"
+		   IMG=$(transmission-remote -j -l | jq -r ".result.torrents[] | select(.name == \"${TFILE}\")")
+		   if test -n "${IMG}" # in case the image was removed
+		   then
+		       TSIZE=$(echo "${IMG}" | jq -r ".size_when_done")
+		       LSIZE=$(echo "${IMG}" | jq -r ".left_until_done")
+		       TDONE=$(expr "${TSIZE}" - "${LSIZE}")
+		       PDONE=$(expr "${TDONE}" '*' 100 / "${TSIZE}")
+		       printf "%35s %3s%%\n" "${TFILE}" "${PDONE}"
+		   fi
 	    fi
 	done
 }
@@ -509,8 +516,11 @@ case "${ACTION}" in
     "--clean")
 	do_clean "$(local_master_version)" "${G_BOARD}" || exit 1
 	;;
-    "--status")
+    "--status-all")
 	do_status
+	;;
+    "--status")
+	do_status "${G_BOARD}"
 	;;
     "--update")
 	check_www 1 || exit 1
