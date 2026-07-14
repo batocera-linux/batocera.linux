@@ -155,7 +155,7 @@ define MAME_BUILD_CMDS
 	$(MAKE) -j$(MAME_JOBS) -l$(MAME_JOBS) $(MAME_ARCH) \
 	TARGETOS=linux OSD=sdl \
 	TARGET=mame \
-	SUBTARGET=mame \
+	SUBTARGET=tiny \
 	OVERRIDE_CC="$(TARGET_CC)" \
 	OVERRIDE_CXX="$(TARGET_CXX)" \
 	OVERRIDE_LD="$(TARGET_LD)" \
@@ -200,7 +200,7 @@ define MAME_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin/mame/roms
 
 	# Install binaries and default distro
-	$(INSTALL) -D $(@D)/mame	$(TARGET_DIR)/usr/bin/mame/mame
+	$(INSTALL) -D $(@D)/mametiny	$(TARGET_DIR)/usr/bin/mame/mame
 	cp $(@D)/COPYING			$(TARGET_DIR)/usr/bin/mame/
 	cp $(@D)/README.md			$(TARGET_DIR)/usr/bin/mame/
 	cp $(@D)/uismall.bdf		$(TARGET_DIR)/usr/bin/mame/
