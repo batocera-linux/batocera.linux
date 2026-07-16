@@ -56,7 +56,7 @@ class ETLegacyGenerator(Generator):
         # Zoom Sensitivity
         zoom_sens = system.config.get("etlegacy_zoom_sens", "1.0")
         options_to_set["seta cg_weapzoomSensitivityScale"] = zoom_sens
-        
+
         # Set language
         language = system.config.get("etlegacy_language", "en")
         options_to_set["seta cl_lang"] = language

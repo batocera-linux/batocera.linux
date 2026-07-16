@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import logging
 import shutil
 from typing import TYPE_CHECKING, Any, cast
@@ -8,11 +7,13 @@ from typing import TYPE_CHECKING, Any, cast
 import ruamel.yaml
 import ruamel.yaml.util
 
+from batocera_common.configparser import CaseSensitiveConfigParser
+
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config
-from ..Generator import Generator
 from ...utils import vulkan
+from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -30,15 +31,15 @@ _logger = logging.getLogger(__name__)
 def has_opengl_4_4_support() -> bool:
     import platform
     machine = platform.machine().lower()
-        
+
     # ARM systems only natively support OpenGL ES, not desktop OpenGL 4.4
     if "arm" in machine or "aarch64" in machine:
         _logger.debug("ARM system detected. Desktop OpenGL 4.4 is not supported (only OpenGL ES is available).")
         return False
 
     try:
-        import subprocess
         import re
+        import subprocess
         # Query OpenGL version using glxinfo
         res = subprocess.run(["glxinfo", "-B"], capture_output=True, text=True, timeout=2)
         if res.returncode == 0:
@@ -79,8 +80,7 @@ class Vita3kGenerator(Generator):
         mkdir_if_not_exists(vitaGuiConfigs)
 
         # Handle CurrentSettings.ini
-        iniConfig = configparser.ConfigParser()
-        iniConfig.optionxform = str  # Preserve the exact casing of keys
+        iniConfig = CaseSensitiveConfigParser()
 
         if vitaIniFile.is_file():
             iniConfig.read(vitaIniFile)
@@ -122,7 +122,7 @@ class Vita3kGenerator(Generator):
         vita3kymlconfig["show-welcome"] = False
         vita3kymlconfig["check-for-updates-mode"] = 0
         vita3kymlconfig["log-level"] = 6 # None
-        
+
         # Set the renderer
         gfx_backend = system.config.get("vita3k_gfxbackend")
         _logger.debug("User selected graphics backend: %s", gfx_backend)
@@ -175,7 +175,7 @@ class Vita3kGenerator(Generator):
         # Surface Sync
         vita3kymlconfig["disable-surface-sync"] = system.config.get_bool("vita3k_surface", True)
         # Async Pipeline
-        vita3kymlconfig["async-pipeline-compilation"] = system.config.get_bool("vita3k_sync", True)      
+        vita3kymlconfig["async-pipeline-compilation"] = system.config.get_bool("vita3k_sync", True)
         # Fullscreen HD Pixel Perfect
         vita3kymlconfig["fullscreen_hd_res_pixel_perfect"] = system.config.get_bool("vita3k_hd_pixel", False)
         # Rendering Accuracy
@@ -186,7 +186,7 @@ class Vita3kGenerator(Generator):
         vita3kymlconfig["shader-cache"] = system.config.get_bool("vita3k_shader", True)
         # Memory Mapping
         vita3kymlconfig["memory-mapping"] = system.config.get("vita3k_mapping", "double-buffer")
-         
+
         # System Language
         vita3kymlconfig["sys-lang"] = system.config.get_int("vita3k_system_language", 1)
 

@@ -164,7 +164,7 @@ class YmirGenerator(Generator):
         if not config:
             _logger.info("Creating default ymir config at %s", toml_file)
             config = {
-                "ConfigVersion": 4,
+                "ConfigVersion": 4,  # pyright: ignore[reportAssignmentType]
                 "Cartridge": {
                     "AutoLoadGameCarts": True,
                     "Type": "None"

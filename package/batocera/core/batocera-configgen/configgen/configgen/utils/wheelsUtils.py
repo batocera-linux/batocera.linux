@@ -6,7 +6,6 @@ import os
 import re
 import signal
 import subprocess
-from collections.abc import Generator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast

@@ -1,0 +1,25 @@
+files =  { glob = "{python-src,package/batocera/core/batocera-configgen/configgen/configgen}/**/*.{py,pyi}" }
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "ruff-check"
+name = "ruff check"
+language = "system"
+entry = "uv run ruff check --force-exclude"
+require_serial = true
+
+[[repos.hooks]]
+id = "ruff-format"
+name = "ruff format"
+language = "system"
+entry = "uv run ruff format --force-exclude"
+exclude = { glob = "package/batocera/core/batocera-configgen/configgen/configgen/**/*.{py,pyi}" }
+require_serial = true
+
+[[repos.hooks]]
+id = "pyright"
+name = "pyright"
+language = "system"
+entry = "uv run pyright"

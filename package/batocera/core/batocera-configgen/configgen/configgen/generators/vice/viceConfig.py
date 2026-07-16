@@ -71,7 +71,7 @@ def setViceConfig(vice_config_dir: Path, system: Emulator, metadata: Mapping[str
         # Fullscreen configurations
         viceConfig.set(systemCore, f"{chip}Fullscreen", "1")
         viceConfig.set(systemCore, f"{chip}FullscreenMode", "0")  # 0 = Use desktop resolution
-        
+
         # Aspect Ratio Mode
         viceConfig.set(systemCore, f"{chip}AspectMode", aspect_mode)
 

@@ -556,10 +556,16 @@ class MameGenerator(Generator):
                                         autoRunCmd = f"{info.get('value')}\\n"
 
                 # if still undefined, default autoRunCmd based on media type
-                if autoRunCmd == "":
-                    if altromtype == "cass" or (softList and softList.endswith("cass")) or romExt.casefold() == ".cas":
-                        romType = 'cass'
-                        autoRunCmd = 'CLOAD\\n'
+                if (
+                    autoRunCmd == ""
+                    and (
+                        altromtype == "cass"
+                        or (softList and softList.endswith("cass"))
+                        or romExt.casefold() == ".cas"
+                    )
+                ):
+                    romType = 'cass'
+                    autoRunCmd = 'CLOAD\\n'
 
                 # check for a user override
                 autoRunFile = MAME_CONFIG / 'autoload' / f'{system.name}_{romType}_autoload.csv'

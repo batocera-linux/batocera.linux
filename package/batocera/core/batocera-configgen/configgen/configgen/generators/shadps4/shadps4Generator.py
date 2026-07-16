@@ -13,10 +13,9 @@
 #
 from __future__ import annotations
 
-import logging
-import os
-import sys
 import json
+import logging
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -247,7 +246,7 @@ class shadPS4Generator(Generator):
                 eboot_path = rom / "eboot.bin"
             else:
                 eboot_path = rom.parent / "eboot.bin"
-            
+
             commandArray: list[str | Path] = [
                 "/usr/bin/shadps4",
                 "--game",

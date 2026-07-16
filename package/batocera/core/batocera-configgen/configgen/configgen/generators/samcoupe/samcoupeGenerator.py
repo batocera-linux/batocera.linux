@@ -15,7 +15,7 @@ class SamcoupeGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "samcoupe",
-            "keys": { 
+            "keys": {
                 "exit": ["KEY_LEFTCTRL", "KEY_F12"],
                 "menu": "KEY_F10", "pause": "KEY_F10"
             }

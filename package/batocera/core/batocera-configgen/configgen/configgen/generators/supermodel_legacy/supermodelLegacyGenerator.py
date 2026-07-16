@@ -49,7 +49,7 @@ class SupermodelLegacyGenerator(Generator):
         if system.config.get_bool("m3_wideScreen"):
             commandArray.append("-wide-screen")
             commandArray.append("-wide-bg")
-            system.config["bezel"] == "none"
+            system.config["bezel"] = "none"
 
         # quad rendering
         if system.config.get_bool("quadRendering"):
