@@ -1,0 +1,25 @@
+diff --git a/db9_gpio_rpi.c b/db9_gpio_rpi.c
+index b9ccc71..52015c2 100644
+--- a/db9_gpio_rpi.c
++++ b/db9_gpio_rpi.c
+@@ -41,6 +41,20 @@
+ #include <linux/of_device.h>
+ #include <linux/mutex.h>
+ #include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
++#ifndef from_timer
++#define from_timer(var, callback_timer, timer_fieldname) \
++	timer_container_of(var, callback_timer, timer_fieldname)
++#endif
++#endif
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#ifndef del_timer_sync
++#define del_timer_sync(timer) timer_delete_sync(timer)
++#endif
++#endif
++
+ #include <linux/slab.h>
+ #include <asm/io.h>
+ 
