@@ -1,0 +1,25 @@
+diff --git a/gamecon_gpio_rpi.c b/gamecon_gpio_rpi.c.new
+index 687d639..37ebbb6 100644
+--- a/gamecon_gpio_rpi.c
++++ b/gamecon_gpio_rpi.c.new
+@@ -37,6 +37,20 @@
+ #include <linux/slab.h>
+ #include <linux/ioport.h>
+ #include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
++#ifndef from_timer
++#define from_timer(var, callback_timer, timer_fieldname) \
++	timer_container_of(var, callback_timer, timer_fieldname)
++#endif
++#endif
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#ifndef del_timer_sync
++#define del_timer_sync(timer) timer_delete_sync(timer)
++#endif
++#endif
++
+ #include <asm/io.h>
+ 
+ MODULE_AUTHOR("Markus Hiienkari");
