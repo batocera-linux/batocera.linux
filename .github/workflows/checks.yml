@@ -3,19 +3,21 @@ name: Checks
 on:
   push:
     paths:
+      - 'package/batocera/core/batocera-configgen/configgen/configgen/**'
       - 'python-src/**'
       - 'prek.toml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - '.github/workflows/unit-tests.yml'
+      - '.github/workflows/checks.yml'
       - '.github/actions/setup-python/action.yml'
   pull_request:
     paths:
+      - 'package/batocera/core/batocera-configgen/configgen/configgen/**'
       - 'python-src/**'
       - 'prek.toml'
       - 'pyproject.toml'
       - 'uv.lock'
-      - '.github/workflows/unit-tests.yml'
+      - '.github/workflows/checks.yml'
       - '.github/actions/setup-python/action.yml'
 
 concurrency:
