@@ -10,6 +10,8 @@ SUSPEND_FLAG="/tmp/suspend.please"
 
 case "$1" in
 	start)
+		export HOME=/userdata/system
+		export XAUTHORITY=/var/lib/.Xauthority
 		# Clean up any old pipe and create a new one for communication
 		rm -f "${FIFO_PATH}"
 		rm -f "${SUSPEND_FLAG}"
