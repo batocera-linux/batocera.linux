@@ -1,0 +1,25 @@
+diff --git a/xpi_gamecon.c b/xpi_gamecon.c.new
+index 21ed23b..c16e219 100644
+--- a/xpi_gamecon.c
++++ b/xpi_gamecon.c.new
+@@ -4,6 +4,20 @@
+ #include <linux/of_device.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
++#include <linux/version.h>
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 16, 0)
++#ifndef from_timer
++#define from_timer(var, callback_timer, timer_fieldname) \
++	timer_container_of(var, callback_timer, timer_fieldname)
++#endif
++#endif
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
++#ifndef del_timer
++#define del_timer(timer) timer_delete(timer)
++#endif
++#endif
+ 
+ #include <asm/io.h>
+ 

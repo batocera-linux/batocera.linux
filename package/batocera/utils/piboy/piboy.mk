@@ -3,8 +3,8 @@
 # piboy
 #
 ################################################################################
-# Version.: Commits on Nov 1, 2021
-PIBOY_VERSION = a93fe087307d676381c196ba8f098d07190cfcb0
+# Version: Commits on Aug 7, 2022
+PIBOY_VERSION = f30cea1a30e4e9ad8fcf3b7da48f2770b4ea3368
 PIBOY_SITE = $(call github,hancock33,piboycontrols,$(PIBOY_VERSION))
 PIBOY_DEPENDENCIES = linux
 
