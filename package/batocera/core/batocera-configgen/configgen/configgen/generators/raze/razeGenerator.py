@@ -23,7 +23,7 @@ class RazeGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "raze",
-            "keys": { 
+            "keys": {
                 "exit": ["KEY_LEFTALT", "KEY_F4"],
                 "save_state": "KEY_F6",
                 "restore_state": "KEY_F9",
@@ -169,13 +169,12 @@ class RazeGenerator(Generator):
             if not global_settings_found:
                 _logger.debug("Global Settings NOT found")
                 config_file.write("[GlobalSettings]\n")
-                if raze_api and raze_api != "2":
-                    if raze_api == "0":
-                        if architecture in ["x86_64", "amd64", "i686", "i386"]:
-                            line = "gl_es=false\n"
-                        else:
-                            _logger.debug("*** Architecture isn't intel it's: %s therefore es is true ***", architecture)
-                            line = "gl_es=true\n"
+                if raze_api and raze_api != "2" and raze_api == "0":
+                    if architecture in ["x86_64", "amd64", "i686", "i386"]:
+                        line = "gl_es=false\n"
+                    else:
+                        _logger.debug("*** Architecture isn't intel it's: %s therefore es is true ***", architecture)
+                        line = "gl_es=true\n"
                 if raze_api:
                     config_file.write(f"vid_preferbackend={raze_api}\n")
                 else:

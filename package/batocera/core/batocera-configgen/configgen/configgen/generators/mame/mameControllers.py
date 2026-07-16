@@ -278,7 +278,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
             for controlDef in messControlDict[useControls]:
                 thisControl = messControlDict[useControls][controlDef]
                 if nplayer == thisControl['player'] and xml_input_alt is not None and config_alt is not None:
-                    
+
                     # Resolve input key and reversed flag inline safely
                     if thisControl['type'] in ['special', 'main', 'combo']:
                         key_to_use = mappings_use.get(thisControl['useMapping'])
@@ -289,7 +289,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
                                 if rmapping in pad.inputs:
                                     key_to_use = rmapping
                                     reversed_flag = True
-                            
+
                             if key_to_use in pad.inputs:
                                 if thisControl['type'] == 'special':
                                     xml_input_alt.appendChild(generateSpecialPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], thisControl['mapping'], \
@@ -305,7 +305,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
                         key_to_use1 = mappings_use.get(thisControl['useMapping1'])
                         key_to_use2 = mappings_use.get(thisControl['useMapping2'])
                         reversed_flag = thisControl['reversed']
-                        
+
                         if key_to_use1 is not None and key_to_use2 is not None:
                             if key_to_use1 not in pad.inputs:
                                 rmapping1 = reverseMapping(key_to_use1)
@@ -317,7 +317,7 @@ def generatePadsConfig(cfgPath: Path, playersControllers: Controllers, sysName: 
                                 if rmapping2 in pad.inputs:
                                     key_to_use2 = rmapping2
                                     reversed_flag = True
-                                    
+
                             if key_to_use1 in pad.inputs and key_to_use2 in pad.inputs:
                                 xml_input_alt.appendChild(generateAnalogPortElement(pad, config_alt, thisControl['tag'], nplayer, pad.index, thisControl['key'], mappings_use[thisControl['incMapping']], \
                                     mappings_use[thisControl['decMapping']], pad.inputs[key_to_use1], pad.inputs[key_to_use2], reversed_flag, \
@@ -415,12 +415,12 @@ def generateSpecialPortElementPlayer(pad: Controller, config: minidom.Document, 
     # Special button input (ie mouse button to gamepad)
     xml_port = config.createElement("port")
     xml_port.setAttribute("tag", tag)
-    
+
     # Use the custom port type if provided, otherwise default to START1/COIN1 style
     if port_type is None:
         port_type = mapping+str(nplayer)
     xml_port.setAttribute("type", port_type)
-    
+
     xml_port.setAttribute("mask", mask)
     xml_port.setAttribute("defvalue", default)
     xml_newseq = config.createElement("newseq")

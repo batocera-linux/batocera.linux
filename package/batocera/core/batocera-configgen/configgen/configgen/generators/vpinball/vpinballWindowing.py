@@ -127,7 +127,7 @@ def getB2sdmdConfiguration(system: Emulator, screens: list[ScreenInfo], hasDmd: 
     return not hasDmd
 
 def getB2sgrillConfiguration(system: Emulator, screens: list[ScreenInfo]):
-    if system.isOptSet("vpinball_b2sgrill") and not system.getOptBoolean("vpinball_b2sgrill"): # switchon
+    if system.isOptSet("vpinball_b2sgrill") and not system.getOptBoolean("vpinball_b2sgrill"): # switchon  # noqa: SIM103
         return False
     return True
 

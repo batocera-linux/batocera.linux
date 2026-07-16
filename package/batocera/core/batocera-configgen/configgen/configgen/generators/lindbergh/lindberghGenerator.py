@@ -864,12 +864,18 @@ class LindberghGenerator(Generator):
                     del lindberghCtrl_pad["joystick1left"]
 
             # pads without joystick1up, but with a hat
-            if "joystick1up" not in pad.inputs and "up" in pad.inputs and (pad.inputs["up"].type == "hat" or pad.inputs["up"].type == "axis"):
-                if "joystick1up" in lindberghCtrl_pad:
-                    lindberghCtrl_pad["up"] = lindberghCtrl_pad["joystick1up"]
-                    if "down" in lindberghCtrl_pad:
-                        del lindberghCtrl_pad["down"]
-                    del lindberghCtrl_pad["joystick1up"]
+            if (
+                "joystick1up" not in pad.inputs
+                and "up" in pad.inputs
+                and (
+                    pad.inputs["up"].type == "hat"
+                    or pad.inputs["up"].type == "axis"
+                )
+            ) and "joystick1up" in lindberghCtrl_pad:
+                lindberghCtrl_pad["up"] = lindberghCtrl_pad["joystick1up"]
+                if "down" in lindberghCtrl_pad:
+                    del lindberghCtrl_pad["down"]
+                del lindberghCtrl_pad["joystick1up"]
         ###
 
         # choose mapping

@@ -39,7 +39,7 @@ def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
             destination[key] = value
 
 
-def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any]:
+def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any] | None:
     try:
         defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
     except Exception:
@@ -73,7 +73,7 @@ def _load_system_config(system_name: str, /) -> dict[str, Any]:
         system_name,
         DEFAULTS_DIR / 'configgen-defaults.yml',
         DEFAULTS_DIR / 'configgen-defaults-arch.yml'
-    )
+    ) or {'emulator': {}, 'core': {}}
 
     # In the yaml files, the "options" structure is not flat, so we have to flatten it here
     # because the options are flat in batocera.conf to make it easier for end users to edit
@@ -252,7 +252,7 @@ class Emulator:
 
             render_data = _load_defaults(
                 args.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
-            )
+            ) or {}
 
         # es only allow to update systemSettings and gameSettings in fact for the moment
 

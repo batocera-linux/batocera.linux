@@ -74,9 +74,12 @@ def _openzip_file(file_path: Path, valid_extensions: set[str] | None = None, /) 
                 if largest_info is None or info.file_size > largest_info.file_size:
                     largest_info = info
 
-                if valid_extensions and Path(info.filename).suffix.lower().lstrip('.') in valid_extensions:
-                    if best_valid is None or info.file_size > best_valid.file_size:
-                        best_valid = info
+                if (
+                    valid_extensions
+                    and Path(info.filename).suffix.lower().lstrip('.') in valid_extensions
+                    and (best_valid is None or info.file_size > best_valid.file_size)
+                ):
+                    best_valid = info
 
             chosen = best_valid or largest_info
             if chosen is not None:

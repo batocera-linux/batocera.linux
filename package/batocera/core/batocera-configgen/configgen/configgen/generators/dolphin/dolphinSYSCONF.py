@@ -134,7 +134,7 @@ def getSensorBarPosition(config: SystemConfig) -> int:
 
 def update(config: SystemConfig, filepath: Path, gameResolution: Resolution) -> None:
     wii_lang_str = config.get_str("wii_language")
-    if wii_lang_str is not None:
+    if wii_lang_str is not config.MISSING:
         wii_lang = int(wii_lang_str)
     else:
         wii_lang = getWiiLangFromEnvironment()

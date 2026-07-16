@@ -24,11 +24,11 @@ class IOQuake3Generator(Generator):
         source_dir = Path("/usr/bin/ioquake3")
         destination_file = IOQUAKE3_ROMS / "ioquake3"
         source_file = source_dir / "ioquake3"
-        
+
         # therefore copy latest ioquake3 file to rom directory
         if not destination_file.is_file() or source_file.stat().st_mtime > destination_file.stat().st_mtime:
             shutil.copytree(source_dir, IOQUAKE3_ROMS, dirs_exist_ok=True)
-            
+
             # Mark the copied executable file as executable (chmod +x)
             if destination_file.is_file():
                 current_mode = destination_file.stat().st_mode

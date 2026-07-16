@@ -415,7 +415,7 @@ def getGFXBackend(system: Emulator) -> str:
         # Retroarch has flipped between using opengl or gl, correct the setting here if needed.
         if backend == "opengl":
             backend = "gl"
-        
+
         # Force pcsx2 to glcore if it is set to gl, regardless of manual selection
         if system.config.core == 'pcsx2' and backend == 'gl':
             backend = "glcore"

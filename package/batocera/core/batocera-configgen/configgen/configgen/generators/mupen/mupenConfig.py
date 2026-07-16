@@ -85,7 +85,7 @@ def setMupenConfig(iniConfig: CaseSensitiveConfigParser, system: Emulator, contr
     iniConfig.set("Video-General", "Version", "1")
     iniConfig.set("Video-General", "ScreenWidth", str(width))
     iniConfig.set("Video-General", "ScreenHeight", str(height))
-    
+
     # Set fullscreen to True on Wayland, False otherwise (due to issues on Xorg/DRM)
     fullscreen_val = "True" if "WAYLAND_DISPLAY" in os.environ else "False"
     iniConfig.set("Video-General", "Fullscreen", fullscreen_val)

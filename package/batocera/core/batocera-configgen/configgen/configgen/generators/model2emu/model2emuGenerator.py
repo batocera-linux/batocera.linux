@@ -55,8 +55,8 @@ class Model2EmuGenerator(Generator):
             import subprocess
             result = subprocess.run(
                 [
-                    wine_runner.wine, 
-                    "reg", "add", "HKCU\\Software\\Wine\\X11 Driver", 
+                    wine_runner.wine,
+                    "reg", "add", "HKCU\\Software\\Wine\\X11 Driver",
                     "/v", "UseEGL", "/t", "REG_SZ", "/d", "n", "/f"
                 ],
                 env=wine_runner.get_environment(),
