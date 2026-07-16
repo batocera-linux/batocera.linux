@@ -3,8 +3,8 @@
 # wm8960-audio-hat
 #
 ################################################################################
-
-WM8960_AUDIO_HAT_VERSION = b1e4cf2f7def5ff841c593355c9fc31c31062860
+# Version: Commits on Jun 30, 2026 (6.18.x support)
+WM8960_AUDIO_HAT_VERSION = d63599e885121b0a41e7c82c9158b92281e454e8
 WM8960_AUDIO_HAT_SITE = \
     $(call github,waveshareteam,WM8960-Audio-HAT,$(WM8960_AUDIO_HAT_VERSION))
 WM8960_AUDIO_HAT_LICENSE = GPL-3.0

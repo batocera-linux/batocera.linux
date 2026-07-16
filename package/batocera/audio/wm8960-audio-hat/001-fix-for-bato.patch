@@ -1,17 +1,15 @@
-diff --git a/wm8960-soundcard b/wm8960-soundcard.new
-old mode 100755
-new mode 100644
-index 8bc24d80eb..21e41bba7f
+diff --git a/wm8960-soundcard b/wm8960-soundcard
+index 5dd3716..6b3d84e 100644
 --- a/wm8960-soundcard
-+++ b/wm8960-soundcard.new
-@@ -5,25 +5,26 @@ exec 1>/var/log/$(basename $0).log 2>&1
++++ b/wm8960-soundcard
+@@ -5,25 +5,27 @@ exec 1>/var/log/$(basename $0).log 2>&1
  #enable i2c interface
  dtparam i2c_arm=on
  modprobe i2c-dev
 +modprobe snd-soc-wm8960
 +modprobe snd-soc-wm8960-soundcard
  
- sleep 5
+ sleep 6
  for loop in 1 2 3 4 5
  do
 -    is_1a=$(i2cdetect -y  1 0x1a 0x1a | egrep "(1a|UU)" | awk '{print $2}')
@@ -24,9 +22,9 @@ index 8bc24d80eb..21e41bba7f
 -
 -        rm /etc/asound.conf
 -        rm /var/lib/alsa/asound.state
--
 +        
 +        mkdir -p /var/lib/alsa
+ 
          echo "create wm8960-soundcard configure file"
 -        ln -s /etc/wm8960-soundcard/asound.conf /etc/asound.conf
 +        ln -sf /etc/wm8960-soundcard/asound.conf /var/lib/alsa/asound.conf
