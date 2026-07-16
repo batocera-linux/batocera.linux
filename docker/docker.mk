@@ -27,15 +27,19 @@ define RUN_DOCKER
 	$(DOCKER) run -t --init --rm \
 		-v $(PROJECT_DIR):/build \
 		-v $(DL_DIR):/build/buildroot/dl \
-		-v $(OUTPUT_DIR)/$*:/$* \
+		-v $(OUTPUT_DIR)/$(1):/$(1) \
 		-v $(CCACHE_DIR):/home/batocera/.buildroot-ccache \
-		-w /$* \
+		-w /$(1) \
 		-e HOST_UID=$(UID) \
 		-e HOST_GID=$(GID) \
 		$(DOCKER_OPTS) \
 		$(DOCKER_IMAGE)
 endef
 endif
+
+define RUN_DOCKER_TARGET
+	$(call RUN_DOCKER,$*)
+endef
 
 .PHONY: _check_docker
 _check_docker:

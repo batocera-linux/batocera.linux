@@ -43,7 +43,8 @@ BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DIRECT_BUILD   ?=
 DAYS           ?= 1
-SYSTEMS_REPORT_EXCLUDE_TARGETS ?=
+SYSTEMS_REPORT_EXCLUDE_TARGETS ?= bcm2835 jh7110
+SYSTEMS_REPORT_PARALLEL ?= y
 
 ## BEGIN helper macros
 
@@ -83,6 +84,15 @@ MAKE_OPTS  += -j$(MAKE_JLEVEL)
 MAKE_OPTS  += -l$(MAKE_LLEVEL)
 endif
 
+ifeq ($(SYSTEMS_REPORT_PARALLEL),y)
+ifneq ($(PARALLEL_BUILD),y)
+SYSTEMS_REPORT_MAKE_OPTS += BR2_PER_PACKAGE_DIRECTORIES=y
+SYSTEMS_REPORT_MAKE_OPTS += BR2_JLEVEL=$(MAKE_JLEVEL)
+SYSTEMS_REPORT_MAKE_OPTS  += -j$(MAKE_JLEVEL)
+SYSTEMS_REPORT_MAKE_OPTS  += -l$(MAKE_LLEVEL)
+endif
+endif
+
 # List of packages that are always good to rebuild for versioning/stamps etc
 MANDATORY_REBUILD_PKGS := batocera-es-system batocera-configgen batocera-system batocera-splash
 
@@ -98,7 +108,7 @@ SYSTEMS_REPORT_DEFCONFIGS = $(foreach target,$(SYSTEMS_REPORT_TARGETS),$(call ta
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
 define MAKE_BUILDROOT
-	make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$* \
+	make $(MAKE_OPTS) O=$(OUTPUT_DIR)/$(1) \
 		BR2_EXTERNAL=$(PROJECT_DIR) \
 		BR2_DL_DIR=$(DL_DIR) \
 		BR2_CCACHE_DIR=$(CCACHE_DIR) \
@@ -106,11 +116,15 @@ define MAKE_BUILDROOT
 endef
 else # DIRECT_BUILD
 define MAKE_BUILDROOT
-	$(RUN_DOCKER) make $(MAKE_OPTS) O=/$* \
-			BR2_EXTERNAL=/build \
-			-C /build/buildroot
+	$(call RUN_DOCKER,$(1)) make $(MAKE_OPTS) O=/$(1) \
+					BR2_EXTERNAL=/build \
+					-C /build/buildroot
 endef
 endif # DIRECT_BUILD
+
+define MAKE_BUILDROOT_TARGET
+	$(call MAKE_BUILDROOT,$*)
+endef
 
 .PHONY: help
 help:
@@ -163,9 +177,10 @@ help:
 	@echo '  <target>-update-po-files      - update translation files for <target>'
 	@echo
 	@echo 'Systems report:'
-	@echo '  <target>-systems-report       - generate a systems report the buildroot for <target>'
-	@echo '  <target>-systems-report-clean - remove a previously generated systems report'
-	@echo '  <target>-systems-report-serve - serve a generated systems report via HTTP'
+	@echo '  systems-report                - generate a systems report'
+	@echo '  systems-report-clean          - remove a previously generated systems report'
+	@echo '  systems-report-refresh        - clean and generate a systems report'
+	@echo '  systems-report-serve          - serve a generated systems report via HTTP'
 	@echo
 	@echo 'Docker:'
 	@echo '  pull-docker-image             - pull the build Docker image from the registry'
@@ -223,8 +238,6 @@ endif
 target-output-dir = $(OUTPUT_DIR)/$(1)
 target-board-file = $(PROJECT_DIR)/configs/batocera-$(1).board
 target-defconfig = $(PROJECT_DIR)/configs/batocera-$(1)_defconfig
-target-systems-report-dir = $(OUTPUT_DIR)/$(1)/systems-report
-target-systems-report-mk = $(call target-output-dir,$(1))/.systems_report_targets.mk
 
 # File patterns for generated files based on target macros
 TARGET_OUTPUT_DIR_PATTERN = $(call target-output-dir,%)
@@ -235,8 +248,6 @@ TARGET_DEFCONFIG_PATTERN = $(call target-defconfig,%)
 TARGET_OUTPUT_DIR = $(call target-output-dir,$*)
 TARGET_BOARD_FILE = $(call target-board-file,$*)
 TARGET_DEFCONFIG = $(call target-defconfig,$*)
-TARGET_SYSTEMS_REPORT_DIR = $(call target-systems-report-dir,$*)
-TARGET_SYSTEMS_REPORT_MK = $(call target-systems-report-mk,$*)
 
 # Stamp files (used for sequencing)
 CCACHE_DIR_INITIALIZED = $(CCACHE_DIR)/.stamp_initialized
@@ -265,7 +276,7 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 
 %-clean: | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(call MESSAGE,Cleaning buildroot)
-	@$(MAKE_BUILDROOT) clean
+	@$(MAKE_BUILDROOT_TARGET) clean
 	@if [ -f '$(TARGET_DEFCONFIG)' ]; then \
 		echo "Removing config for $*..."; \
 		rm -f '$(TARGET_DEFCONFIG)'; \
@@ -276,38 +287,38 @@ $(TARGET_DEFCONFIG_PATTERN): $(TARGET_BOARD_FILE_PATTERN) \
 
 %-config: %-defconfig | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(TARGET_OUTPUT_DIR_INITIALIZED)
 	@$(call MESSAGE,Generating buildroot makefile)
-	@$(MAKE_BUILDROOT) batocera-$*_defconfig
+	@$(MAKE_BUILDROOT_TARGET) batocera-$*_defconfig
 
 %-build: %-config
 	@$(call MESSAGE,$(or $(BUILD_MESSAGE),Building $(or $(CMD),image)))
-	@$(MAKE_BUILDROOT) $(CMD)
+	@$(MAKE_BUILDROOT_TARGET) $(CMD)
 
 %-source: %-config
 	@$(call MESSAGE,Fetching source code for all packages)
-	@$(MAKE_BUILDROOT) source
+	@$(MAKE_BUILDROOT_TARGET) source
 
 %-show-build-order: %-config
-	@$(MAKE_BUILDROOT) show-build-order
+	@$(MAKE_BUILDROOT_TARGET) show-build-order
 
 %-kernel: %-config
-	@$(MAKE_BUILDROOT) linux-menuconfig
+	@$(MAKE_BUILDROOT_TARGET) linux-menuconfig
 
 # force -j1 or graph-depends python script will bail
 %-graph-depends: %-config
-	@$(MAKE_BUILDROOT) -j1 BR2_GRAPH_OUT=svg graph-depends
+	@$(MAKE_BUILDROOT_TARGET) -j1 BR2_GRAPH_OUT=svg graph-depends
 
 %-shell: %-config
 ifdef BATCH_MODE
 	$(if $(CMD),,$(error CMD is required to use $*-shell in BATCH_MODE))
 endif
 	@$(call MESSAGE,$(if $(CMD),Executing command,Starting interactive shell))
-	@$(RUN_DOCKER) $(CMD)
+	@$(RUN_DOCKER_TARGET) $(CMD)
 
 %-ccache-stats: %-config
-	@$(MAKE_BUILDROOT) ccache-stats
+	@$(MAKE_BUILDROOT_TARGET) ccache-stats
 
 %-build-cmd: %-supported
-	@echo $(MAKE_BUILDROOT)
+	@echo $(MAKE_BUILDROOT_TARGET)
 
 %-clean-for-refresh: %-supported | $(TARGET_OUTPUT_DIR_INITIALIZED)
 ifndef PARALLEL_BUILD
@@ -428,18 +439,80 @@ uart:
 
 %-update-po-files: %-config
 	@$(call MESSAGE,Updating translation files)
-	@$(MAKE_BUILDROOT) update-po-files
+	@$(MAKE_BUILDROOT_TARGET) update-po-files
 
-%-systems-report-clean: %-supported
-	-@rm -rf $(TARGET_SYSTEMS_REPORT_DIR)
+# The systems report is generated by running the `systems-report-data` buildroot Makefile rule (which
+# is defined in external.mk) with `$(OUTPUT_DIR)/systems-report` as the output directory. The last
+# target (zen3, unless excluded) is used as the "board" for the buildroot environment. The generated
+# data is then processed by the `batocera-systems-report` script in the project's virtual environment to
+# produce the final report files.
 
-%-systems-report: $(SYSTEMS_REPORT_DEFCONFIGS) %-config
+ES_SYSTEM_DIR = $(PROJECT_DIR)/package/batocera/emulationstation/batocera-es-system
+CONFIGGEN_DIR = $(PROJECT_DIR)/package/batocera/core/batocera-configgen
+
+SYSTEMS_REPORT_VENV_SCRIPT = $(PROJECT_DIR)/.venv/bin/batocera-systems-report
+SYSTEMS_REPORT_LAST_TARGET = $(lastword $(SYSTEMS_REPORT_TARGETS))
+SYSTEMS_REPORT_DIR = $(OUTPUT_DIR)/systems-report
+SYSTEMS_REPORT_DATADIR = $(SYSTEMS_REPORT_DIR)/data
+
+SYSTEMS_REPORT_DIR_INITIALIZED = $(SYSTEMS_REPORT_DIR)/.stamp_initialized
+SYSTEMS_REPORT_DATADIR_INITIALIZED = $(SYSTEMS_REPORT_DATADIR)/.stamp_initialized
+SYSTEMS_REPORT_MK = $(SYSTEMS_REPORT_DIR)/.systems_report_targets.mk
+SYSTEMS_REPORT_HTML = $(ES_SYSTEM_DIR)/batocera_systemsReport.html
+
+.PHONY: systems-report-config
+systems-report-config: $(SYSTEMS_REPORT_LAST_TARGET)-defconfig | $(DOCKER_IMAGE_AVAILABLE) $(DL_DIR_INITIALIZED) $(CCACHE_DIR_INITIALIZED) $(SYSTEMS_REPORT_DIR_INITIALIZED)
+	@$(call MESSAGE,Generating buildroot makefile)
+
+	$(call MAKE_BUILDROOT,systems-report) batocera-$(SYSTEMS_REPORT_LAST_TARGET)_defconfig
+
+.PHONY: systems-report-data
+systems-report-data: systems-report-config $(SYSTEMS_REPORT_DEFCONFIGS) | $(SYSTEMS_REPORT_DATADIR_INITIALIZED)
+	@$(call MESSAGE,Generating systems report data)
+
+	@# Remove data so buildroot can regenerate it
+	@rm -rf '$(SYSTEMS_REPORT_DATADIR)'/*
+
+	@printf '%s\n' 'SYSTEMS_REPORT_TARGETS := $(SYSTEMS_REPORT_TARGETS)' > '$(SYSTEMS_REPORT_MK)'
+
+	$(call MAKE_BUILDROOT,systems-report) $(SYSTEMS_REPORT_MAKE_OPTS) systems-report-data
+
+.PHONY: systems-report-data-clean
+systems-report-data-clean:
+	rm -rf $(SYSTEMS_REPORT_DATADIR)
+
+.PHONY: systems-report-data-refresh
+systems-report-data-refresh: systems-report-data-clean
+	@$(MAKE) systems-report-data
+
+.PHONY: _check_batocera_systems_report
+_check_batocera_systems_report:
+	$(call REQUIRE,$(SYSTEMS_REPORT_VENV_SCRIPT),Please run "uv sync" to install the virtual environment and dependencies)
+
+.PHONY: systems-report
+systems-report: _check_batocera_systems_report systems-report-data $(SYSTEMS_REPORT_HTML) | $(SYSTEMS_REPORT_DIR_INITIALIZED)
 	@$(call MESSAGE,Generating systems report)
-	@echo "SYSTEMS_REPORT_TARGETS := $(SYSTEMS_REPORT_TARGETS)" > "$(TARGET_SYSTEMS_REPORT_MK)"
-	@$(MAKE_BUILDROOT) systems-report
 
-%-systems-report-serve: | $(TARGET_OUTPUT_DIR_INITIALIZED)
+	$(SYSTEMS_REPORT_VENV_SCRIPT) $(if $(DIRECT_BUILD),,--buildroot-mapping=$(PROJECT_DIR):/build)\
+		$(SYSTEMS_REPORT_DATADIR) \
+		$(ES_SYSTEM_DIR)/es_systems.yml \
+		$(ES_SYSTEM_DIR)/systems-explanations.yml \
+		$(CONFIGGEN_DIR)/configs \
+		$(SYSTEMS_REPORT_DIR)/batocera_systemsReport.json
+
+	cp -f $(SYSTEMS_REPORT_HTML) $(SYSTEMS_REPORT_DIR)/batocera_systemsReport.html
+
+.PHONY: systems-report-clean
+systems-report-clean:
+	rm -rf $(SYSTEMS_REPORT_DIR)
+
+.PHONY: systems-report-refresh
+systems-report-refresh: systems-report-clean
+	@$(MAKE) systems-report
+
+.PHONY: systems-report-serve
+systems-report-serve: | $(SYSTEMS_REPORT_DIR_INITIALIZED)
 	$(call REQUIRE,python3)
-	$(if $(wildcard $(TARGET_SYSTEMS_REPORT_DIR)/*),,$(error $* not built))
+	$(if $(wildcard $(SYSTEMS_REPORT_DIR)/*),,$(error $* not built))
 	@$(call MESSAGE,Serving systems report at $(call TERM_URL,http://localhost:8000/batocera_systemsReport.html))
-	python3 -m http.server --directory $(TARGET_SYSTEMS_REPORT_DIR)/
+	python3 -m http.server --directory $(SYSTEMS_REPORT_DIR)/

@@ -5,6 +5,7 @@ import json
 import re
 import sys
 from collections import defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, cast
 from typing_extensions import TypedDict
@@ -64,6 +65,70 @@ class _SortedListEncoder(json.JSONEncoder):
         return super().encode(sort_lists(o))
 
 
+@dataclass(slots=True)
+class _TargetMissingInfo:
+    files: list[Path] = field(default_factory=cast('type[list[Path]]', list))
+    defaults: dict[str, tuple[str | None, str | None]] = field(
+        default_factory=cast('type[dict[str, tuple[str | None, str | None]]]', dict)
+    )
+
+    def __bool__(self) -> bool:
+        return bool(self.files or self.defaults)
+
+    def add_file(self, missing_file: Path, /) -> None:
+        self.files.append(missing_file)
+
+    def add_default(self, system_name: str, default_emulator: str | None, default_core: str | None, /) -> None:
+        self.defaults[system_name] = (default_emulator, default_core)
+
+
+@dataclass(slots=True)
+class _MissingReport:
+    target_info: dict[str, _TargetMissingInfo] = field(
+        default_factory=lambda: cast('dict[str, _TargetMissingInfo]', defaultdict(_TargetMissingInfo))
+    )
+
+    def get_target_info(self, target: str, /) -> _TargetMissingInfo:
+        return self.target_info[target]
+
+    def add_missing(self, target: str, missing_file: Path, /) -> None:
+        self.target_info[target].add_file(missing_file)
+
+    def add_missing_default(
+        self, target: str, system_name: str, default_emulator: str | None, default_core: str | None, /
+    ) -> None:
+        self.target_info[target].add_default(system_name, default_emulator, default_core)
+
+    def print_missing(self, /) -> bool:
+        if not self.target_info:
+            return False
+
+        has_missing = False
+        missing_by_file: dict[Path, set[str]] = defaultdict(set)
+
+        for target, target_info in self.target_info.items():
+            for missing_file in target_info.files:
+                missing_by_file[missing_file].add(target)
+
+            if target_info.defaults:
+                has_missing = True
+
+                for system_name, (default_emulator, default_core) in target_info.defaults.items():
+                    print(
+                        f'warning: default core ({default_emulator}/{default_core}) not enabled for {target}/{system_name}',
+                        file=sys.stderr,
+                    )
+
+        if missing_by_file:
+            has_missing = True
+
+            print('warning: ignored missing emulator-info files (stale/orphaned package references):', file=sys.stderr)
+            for missing_file, targets in sorted(missing_by_file.items()):
+                print(f'  {missing_file}: {", ".join(sorted(targets))}', file=sys.stderr)
+
+        return has_missing
+
+
 def _has_red_flag(nb_variants: int, nb_explanations: int, nb_all_explanations: int, /) -> bool:
     if nb_variants == 0 and nb_all_explanations == 0:
         return True
@@ -94,6 +159,8 @@ def _generate_target_system_report(
     emulators_metadata: EmulatorsMetadataMapping,
     all_system_emulators: Mapping[str, Mapping[str, EmulatorInfo]],
     /,
+    *,
+    missing_info: _TargetMissingInfo,
 ) -> _EmulatorsResultDict | None:
     nb_variants = 0
     nb_all_variants = 0
@@ -165,7 +232,7 @@ def _generate_target_system_report(
         default_emulator = configgen_defaults.get(system_name, 'emulator')
         default_core = configgen_defaults.get(system_name, 'core')
 
-        raise Exception(f'default core ({default_emulator}/{default_core}) not enabled for {target}/{system_name}')
+        missing_info.add_default(system_name, default_emulator, default_core)
 
     return {
         'name': system_data['name'],
@@ -184,15 +251,19 @@ def _generate_target_report(
     explanations: _ExplanationsDict,
     configgen_dir: Path,
     all_emulators_by_system: EmulatorsBySystemMapping,
-    missing_by_file: dict[Path, set[str]],
     /,
+    *,
+    missing_report: _MissingReport,
+    buildroot_mapping: tuple[Path, Path] | None = None,
 ) -> dict[str, _EmulatorsResultDict]:
     target = target_dir.name
+    missing_info = missing_report.get_target_info(target)
 
-    missing: list[Path] = []
-    registry = Registry.load_path_file(target_dir / 'info_files.txt', missing=missing)
-    for missing_file in missing:
-        missing_by_file[missing_file].add(target)
+    registry = Registry.load_path_file(
+        target_dir / 'info_files.txt',
+        missing=missing_info.files,
+        buildroot_mapping=buildroot_mapping,
+    )
     configgen_defaults = ConfiggenDefaults.for_defaults(
         configgen_dir / 'configgen-defaults.yml', configgen_dir / f'configgen-defaults-{target}.yml'
     )
@@ -210,6 +281,7 @@ def _generate_target_report(
                 configgen_defaults,
                 systems_metadata.get(system_name, {}),
                 all_emulators_by_system.get(system_name, {}),
+                missing_info=missing_info,
             )
         )
         is not None
@@ -217,23 +289,31 @@ def _generate_target_report(
 
 
 def _generate_systems_report(
-    reports_data_dir: Path, es_systems_yml: Path, explanations_yml: Path, configgen_dir: Path, output_file: Path, /
+    reports_data_dir: Path,
+    es_systems_yml: Path,
+    explanations_yml: Path,
+    configgen_dir: Path,
+    output_file: Path,
+    /,
+    *,
+    buildroot_mapping: tuple[Path, Path] | None = None,
 ) -> None:
     results: dict[str, dict[str, _EmulatorsResultDict]] = {}
     explanations = safe_load_yaml(explanations_yml, '_ExplanationsDict') or {}
     es_systems_data = load_es_systems(es_systems_yml)
 
-    # tracks, for each emulator-info file referenced by a package that turns out not
-    # to actually exist on disk (e.g. a stale/orphaned package left over from a WIP
-    # rename or an unclean checkout), which target(s) referenced it - "(all)" marks
+    # tracks, for each target, each emulator-info file referenced by a package that
+    # turns out not to actually exist on disk (e.g. a stale/orphaned package left over
+    # from a WIP rename or an unclean checkout), which target(s) referenced it - "(all)" marks
     # the arch-independent EMULATOR_INFO_PATHS_ALL registry. Reported at the end
     # instead of aborting the whole report over one dangling package reference.
-    missing_by_file: dict[Path, set[str]] = defaultdict(set)
+    missing_report = _MissingReport()
 
-    all_missing: list[Path] = []
-    all_emulators = Registry.load_path_file(reports_data_dir / 'all_info_files.txt', missing=all_missing)
-    for missing_file in all_missing:
-        missing_by_file[missing_file].add('(all)')
+    all_emulators = Registry.load_path_file(
+        reports_data_dir / 'all_info_files.txt',
+        missing=missing_report.get_target_info('(all)').files,
+        buildroot_mapping=buildroot_mapping,
+    )
     all_emulators_by_system = all_emulators.emulators_by_system
 
     for target_dir in reports_data_dir.iterdir():
@@ -241,7 +321,13 @@ def _generate_systems_report(
             continue
 
         target_systems = _generate_target_report(
-            target_dir, es_systems_data, explanations, configgen_dir, all_emulators_by_system, missing_by_file
+            target_dir,
+            es_systems_data,
+            explanations,
+            configgen_dir,
+            all_emulators_by_system,
+            missing_report=missing_report,
+            buildroot_mapping=buildroot_mapping,
         )
 
         for board in _get_boards_from_config(target_dir / '.config'):
@@ -249,10 +335,8 @@ def _generate_systems_report(
 
     output_file.write_text(json.dumps(results, indent=2, sort_keys=True, cls=_SortedListEncoder))
 
-    if missing_by_file:
-        print('warning: ignored missing emulator-info files (stale/orphaned package references):', file=sys.stderr)
-        for missing_file, targets in sorted(missing_by_file.items()):
-            print(f'  {missing_file}: {", ".join(sorted(targets))}', file=sys.stderr)
+    if missing_report.print_missing():
+        sys.exit(1)
 
 
 def main() -> None:
@@ -262,11 +346,32 @@ def main() -> None:
     parser.add_argument('explanations_yml', type=Path, help='explanations.yml definition file')
     parser.add_argument('configgen_dir', type=Path, help='Path to configgen configs directory')
     parser.add_argument('dest', type=Path, help='Output file')
+    parser.add_argument(
+        '-m',
+        '--buildroot-mapping',
+        type=str,
+        help='Mapping of buildroot bind mount to buildroot directory, in the form <buildroot_dir>:<bind_mount>',
+        default=None,
+    )
 
     args = parser.parse_args()
 
+    buildroot_mapping: tuple[Path, Path] | None = None
+
+    if args.buildroot_mapping:
+        if ':' not in args.buildroot_mapping:
+            parser.error('--buildroot-mapping must be in the form <buildroot_dir>:<bind_mount>')
+
+        buildroot_dir, _, bind_mount = cast('tuple[str, str, str]', args.buildroot_mapping.partition(':'))
+        buildroot_mapping = (Path(buildroot_dir).resolve(), Path(bind_mount))
+
     _generate_systems_report(
-        args.reports_data_dir, args.es_systems_yml, args.explanations_yml, args.configgen_dir, args.dest
+        args.reports_data_dir,
+        args.es_systems_yml,
+        args.explanations_yml,
+        args.configgen_dir,
+        args.dest,
+        buildroot_mapping=buildroot_mapping,
     )
 
 
