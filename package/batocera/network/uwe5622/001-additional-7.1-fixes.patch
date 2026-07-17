@@ -1,0 +1,66 @@
+diff --git a/unisocwcn/platform/wcn_boot.c b/unisocwcn/platform/wcn_boot.c
+index ba93db7..9f127cf 100644
+--- a/unisocwcn/platform/wcn_boot.c
++++ b/unisocwcn/platform/wcn_boot.c
+@@ -3363,9 +3363,14 @@ int chip_power_on(int subsys)
+ 	mem_pd_poweroff_deinit();
+ #endif
+ #ifdef CONFIG_WCN_SDIO
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++	if (marlin_dev->int_ap)
++		sdio_pub_int_poweron(true);
++#else
+ 	if (marlin_dev->int_ap > 0)
+ 		sdio_pub_int_poweron(true);
+ #endif
++#endif
+ #endif
+ 
+ 	return 0;
+@@ -3392,8 +3397,13 @@ int chip_power_off(int subsys)
+ #endif
+ 	loopcheck_first_boot_clear();
+ #ifdef CONFIG_WCN_SDIO
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++	if (marlin_dev->int_ap)
++		sdio_pub_int_poweron(false);
++#else
+ 	if (marlin_dev->int_ap > 0)
+ 		sdio_pub_int_poweron(false);
++#endif
+ #endif
+ 
+ 	return 0;
+@@ -4059,9 +4069,17 @@ static int marlin_probe(struct platform_device *pdev)
+ 	sprdwcn_bus_preinit();
+ #ifndef CONFIG_WCN_PCIE
+ #ifdef CONFIG_WCN_SDIO
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++	if (marlin_dev->int_ap) {
++		int irq = gpiod_to_irq(marlin_dev->int_ap);
++		if (irq > 0)
++			sdio_pub_int_init(irq);
++	}
++#else
+ 	if (marlin_dev->int_ap > 0)
+ 		sdio_pub_int_init(marlin_dev->int_ap);
+ #endif
++#endif
+ #ifdef CONFIG_MEM_PD
+ 	mem_pd_init();
+ #endif
+@@ -4137,9 +4155,14 @@ static int marlin_remove(struct platform_device *pdev)
+ 	log_dev_exit();
+ 	proc_fs_exit();
+ #ifdef CONFIG_WCN_SDIO
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
++	if (marlin_dev->int_ap)
++		sdio_pub_int_deinit();
++#else
+ 	if (marlin_dev->int_ap > 0)
+ 		sdio_pub_int_deinit();
+ #endif
++#endif
+ #ifdef CONFIG_MEM_PD
+ 	mem_pd_exit();
+ #endif
