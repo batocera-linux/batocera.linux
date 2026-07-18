@@ -5,7 +5,7 @@
 ################################################################################
 # Align with the wlroots version
 # see https://github.com/labwc/labwc/blob/master/NEWS.md
-LABWC_VERSION = 0.20.0
+LABWC_VERSION = 0.20.1
 LABWC_SITE = $(call github,labwc,labwc,$(LABWC_VERSION))
 LABWC_LICENSE = GPLv2
 LABWC_LICENSE_FILES = LICENSE

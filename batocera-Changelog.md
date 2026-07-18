@@ -123,7 +123,7 @@
 - FAudio to 26.05
 - FFMPEG to 8.1.2
 - Khadas VIM4 kernel updated to vendor 5.15.y
-- LabWC to 0.20.0
+- LabWC to 0.20.1
 - Linux Firmware to 20260622
 - Mesa3D to 26.1.4
 - Nvidia Open Production driver to 610.43.03
@@ -143,7 +143,7 @@
 - WINE Mono to 11.1.0
 - WINE Proton to proton-exp-11.0
 - WINE TKG to 11.12
-- Wlroots to 0.20.1
+- Wlroots to 0.20.2
 - X86_64 / Zen3 kernel updated to 7.1.3
 
 # 2026/05/30 - batocera.linux 43.1
