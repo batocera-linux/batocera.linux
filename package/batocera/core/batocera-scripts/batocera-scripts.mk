@@ -99,6 +99,7 @@ endef
 
 define BATOCERA_SCRIPTS_INSTALL_QCOM
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/qcom-fan                           $(TARGET_DIR)/usr/bin/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-install-internal          $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_ROCKCHIP
