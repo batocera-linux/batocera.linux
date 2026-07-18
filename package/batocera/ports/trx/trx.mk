@@ -16,7 +16,7 @@
 #
 ################################################################################
 
-TRX_VERSION = trx-1.8.1
+TRX_VERSION = trx-1.9.2
 TRX_SITE = $(call github,LostArtefacts,TRX,$(TRX_VERSION))
 TRX_LICENSE = GPL-3.0 license
 TRX_LICENSE_FILES = COPYING.md

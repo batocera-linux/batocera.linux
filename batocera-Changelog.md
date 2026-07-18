@@ -55,7 +55,9 @@
   Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - Select Qualcomm handheld devices can now install batcoera on the internal drive alongside Android (batocera-install-internal)
 - The Force Engine to capable aarch64 devices
-- TR1X & TR2X have merged into the unified TRX which also now supports Tomb Raider 3.
+- TR1X & TR2X have merged into the unified TRX which also now supports Tomb Raider 3
+  As a result your roms in the traider1 & traider2 folders should be moved to the new combined traider folder
+  Ensure you read the info text file in the traider folder
 - Vita3k added for capable aarch64 devices
 ### Updated
 - Azahar to 2125.1.2
@@ -107,6 +109,7 @@
 - Solarus to 2.0.4
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260528
+- TRX to 1.9.2
 - Tsugaru to v20251206
 - Vita3k to 10th of June build
 - VKQuake to 1.34.1
