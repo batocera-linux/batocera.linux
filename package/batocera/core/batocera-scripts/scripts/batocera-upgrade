@@ -354,7 +354,7 @@ do_update() {
         local ABL_LOG="/boot/boot/updateabl.log"
         upgmsg "Updating ABL... DO NOT POWER OFF THE DEVICE!"
         echo "=== ABL Flash Update: $(date) ===" >> "${ABL_LOG}"
-        if NON_INTERACTIVE=1 /usr/bin/updateabl >> "${ABL_LOG}" 2>&1; then
+        if NON_INTERACTIVE=1 /usr/bin/updateabl --check-online >> "${ABL_LOG}" 2>&1; then
             upgmsg "ABL update completed!" 1
         else
             upgmsg "WARNING: ABL update failed! See ${ABL_LOG}" 2

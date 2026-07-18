@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ROCKNIX_ABL_VERSION = 1.1.4
+ROCKNIX_ABL_VERSION = 1.1.5
 ROCKNIX_ABL_SOURCE = rocknix-abl-v$(ROCKNIX_ABL_VERSION).tar.gz
 ROCKNIX_ABL_SITE = https://github.com/ROCKNIX/abl/releases/download/v$(ROCKNIX_ABL_VERSION)
 
