@@ -1,0 +1,10 @@
+comment "uwe5622 needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_UWE5622
+	bool "uwe5622"
+	depends on BR2_LINUX_KERNEL
+	help
+	  UWE5622 driver kept up to date with modern mainline kernels.
+
+	  https://github.com/EvilOlaf/uwe5622
