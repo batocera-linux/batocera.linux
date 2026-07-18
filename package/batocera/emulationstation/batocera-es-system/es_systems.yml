@@ -5158,9 +5158,9 @@ reminiscence:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:reminiscence
 
-traider1:
-  name: Tomb Raider
-  manufacturer: Ports
+traider:
+  name: Tomb Raider I, II & III
+  manufacturer: Core Design
   release: 1996
   hardware: port
   extensions: [croft]
@@ -5170,24 +5170,47 @@ traider1:
     trx:
       trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
   comment_en: |
-    The origianl Tomb Raider files should go in this rom folder from your previous Windows installation.
-    You can safetly remove .exe & .dll files which are not necessary for TRX to run the game.
-    We highly recommend your folders are in lowercase to ensure call files are accounted for.
-    Then create a launcher file with a .croft extension.
-    i.e. Tomb Raider.croft
-    This will allow EmulationStation (ES) to launch the game etc.
+    Tomb Raider unified open-source TRX engine. 
 
-    On first launch (provided you have internet) we will download the music files so don't be alarmed if slow.
-    Subsequent launches will be faster.
+    Original game assets should be placed in their respective subfolders inside `/userdata/roms/traider/games/<game-id>/`. 
 
-    To choose the Unfinished expansion pack, enable the associated ES option.
-    We will download the `Unfinished Expansion pack` if necessary so again the first launch may be slow.
+    Please map your files as follows:
+    - Tomb Raider 1:
+      Level files (.phd) -> games/tr1/levels/
+      FMV files -> games/tr1/fmv/
+      Music files -> games/tr1/music/
+    - TR1: Unfinished Business expansion:
+      Level files (.phd) -> games/tr1-ub/levels/
+    - Tomb Raider 2:
+      Level files (.tr2) -> games/tr2/levels/
+      Main SFX file -> games/tr2/main.sfx
+      FMV files -> games/tr2/fmv/
+      Music files -> games/tr2/music/
+    - TR2: Golden Mask expansion:
+      Level files (.tr2) -> games/tr2-gm/levels/
+      Main SFX file -> games/tr2-gm/main.sfx
+    - Tomb Raider 3:
+      Level files (.tr2) -> games/tr3/levels/
+      Main SFX file -> games/tr3/main.sfx
+      CD Audio file -> games/tr3/audio/cdaudio.wad
+      Cuts files -> games/tr3/cuts/
+      FMV files -> games/tr3/fmv/
+    - TR3: The Lost Artifact expansion:
+      Level files (.tr2) -> games/tr3-la/levels/
+      Main SFX file -> games/tr3-la/main.sfx
 
-    For more info: https://wiki.batocera.org/systems:traider1
+    To launch each game, create a dummy file with a `.croft` extension inside its respective directory.
+    For example:
+    - `/userdata/roms/traider/games/tr1/Tomb Raider I.croft`
+    - `/userdata/roms/traider/games/tr2/Tomb Raider II.croft`
+
+    We highly recommend keeping directory and file names strictly lowercase to ensure matching works as expected on Linux systems.
+
+    For more info: https://wiki.batocera.org/systems:traider
   comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider1
+    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider
   comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:traider1
+    Para mais informações: https://wiki.batocera.org/systems:traider
 
 quake3:
   name: Quake III
@@ -5944,24 +5967,6 @@ lindbergh:
   comment_br: |
     Para mais informações: https://wiki.batocera.org/systems:lindbergh
 
-traider2:
-  name: Tomb Raider 2
-  manufacturer: Ports
-  release: 1997
-  hardware: port
-  extensions: [croft]
-  platform: pc
-  group: ports
-  emulators:
-    trx:
-      trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:traider2
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider2
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:traider2
-
 oricatmos:
   name: Oric Atmos
   manufacturer: Tangerine Computer Systems
@@ -6285,21 +6290,3 @@ tvc:
           bios/ep128emu/roms/tvc22_ext.rom
           bios/ep128emu/roms/tvcfileio.rom
           bios/ep128emu/roms/tvc_dos12d.rom
-
-traider3:
-  name: Tomb Raider 3
-  manufacturer: Ports
-  release: 1997
-  hardware: port
-  extensions: [croft]
-  platform: pc
-  group: ports
-  emulators:
-    trx:
-      trx: { requireAnyOf: [BR2_PACKAGE_TRX] }
-  comment_en: |
-    For more info: https://wiki.batocera.org/systems:traider3
-  comment_fr: |
-    Trouvez la documentation ici: https://wiki.batocera.org/systems:traider3
-  comment_br: |
-    Para mais informações: https://wiki.batocera.org/systems:traider3
