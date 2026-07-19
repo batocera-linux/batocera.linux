@@ -2973,7 +2973,7 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc]
+  extensions: [pc, squashfs]
   emulators:
     mugen:
       wine-tkg: { requireAnyOf: [BR2_PACKAGE_WINE_TKG] }

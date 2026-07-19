@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import logging
 import os
-import subprocess
+import shlex
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ... import Command
 from ...batoceraPaths import mkdir_if_not_exists
 from ...exceptions import BatoceraException
+from ...utils import wine
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
+
+_logger = logging.getLogger(__name__)
 
 def get_mugen_version(settings_path: Path) -> str:
 
@@ -30,10 +34,16 @@ def get_mugen_version(settings_path: Path) -> str:
     return version
 
 class MugenGenerator(Generator):
+    # mugen.cfg is rewritten at each start and the game itself writes back to its own
+    # directory, so a squashfs rom needs a writable overlay
+    def writesToRom(self, config) -> bool:
+        return True
+
     def getHotkeysContext(self) -> HotkeysContext:
+        runner = wine.Runner.default("mugen")
         return {
             "name": "mugen",
-            "keys": {"exit": ["/usr/bin/batocera-wine mugen stop"]}
+            "keys": {"exit": f"WINEPREFIX={shlex.quote(str(runner.bottle_dir))} {shlex.quote(str(runner.wineserver))} -k"}
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
@@ -221,10 +231,30 @@ class MugenGenerator(Generator):
         with settings_path.open("w", encoding="utf-8-sig") as f:
             f.writelines(new_config)
 
-        # Don't use of virtual desktop - fixes handhelds with rotated displays
-        subprocess.run(['/usr/bin/batocera-settings-set', 'mugen.virtual_desktop', '0'], check=True)
+        # mugen only ever runs on wine-tkg, see es_systems.yml
+        wine_runner = wine.Runner.default("mugen")
+        wine_runner.create_bottle()
 
-        environment={}
+        # the engine falls back to no sound at all when a game asks for openal and
+        # it's missing, so install it for every game rather than only the ones that do
+        wine_runner.install_wine_trick('openal')
+
+        game_exe = wine.get_game_exe(rom)
+
+        # mugen is a plain win32 game, no start menu entries wanted
+        dll_overrides = ["winemenubuilder.exe="]
+
+        if dxvk_dlls := wine_runner.install_dxvk():
+            # nvapi is nvidia only and mugen never asks for it, batocera-wine left it off too
+            if graphics := sorted(dll for dll in dxvk_dlls if not dll.startswith(('nvapi', 'nvofapi'))):
+                dll_overrides.append(f"{','.join(graphics)}=n")
+            if nvapi := sorted(dll for dll in dxvk_dlls if dll.startswith(('nvapi', 'nvofapi'))):
+                dll_overrides.append(f"{','.join(nvapi)}=")
+
+        environment = wine_runner.get_environment()
+        environment.update({
+            "WINEDLLOVERRIDES": ";".join(dll_overrides)
+        })
 
         # Ensure NVIDIA driver is used for Vulkan (if applicable)
         if Path("/var/tmp/nvidia.prime").exists():
@@ -238,12 +268,15 @@ class MugenGenerator(Generator):
                 "VK_LAYER_PATH": "/usr/share/vulkan/explicit_layer.d"
             })
 
-        commandArray = ["batocera-wine", "mugen", "play", str(rom)]
-
         return Command.Command(
-            array=commandArray,
+            array=wine_runner.game_command(game_exe),
             env=environment
         )
+
+    # mugen resolves data/, chars/ and stages/ relative to the working directory,
+    # which is the DIR= of an autorun.cmd when the rom has one, like batocera-wine did
+    def executionDirectory(self, config, rom):
+        return wine.get_game_dir(rom)
 
     # No bezels are the rendered display matches the screen resolution
     def getInGameRatio(self, config, gameResolution, rom):
