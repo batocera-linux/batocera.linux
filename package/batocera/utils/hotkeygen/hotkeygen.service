@@ -10,7 +10,8 @@ test -x $DAEMON || exit 0
 
 start() {
         printf "Starting $NAME: "
-        start-stop-daemon --start --quiet -m --pidfile $PIDFILE --exec $DAEMON --background -- $DAEMON_ARGS > /var/log/hotkeygen.log 2>&1 \
+        # use startas, otherwise, start-stop-daemon pid from pid file doesn't match with exec of ps, and you can start multiple time the same service, resulting in several instances
+        start-stop-daemon --start -v -m --pidfile $PIDFILE --startas /usr/bin/python3 --background -- $DAEMON $DAEMON_ARGS > /var/log/hotkeygen.log 2>&1 \
                 && echo "OK" || echo "FAIL"
 }
 

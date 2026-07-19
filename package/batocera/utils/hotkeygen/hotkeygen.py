@@ -524,14 +524,14 @@ class Daemon:
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
-                            input_device = self.input_devices_by_fd[fd]
-                            if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
-                                print(e)
-                                print(f"error on device {input_device.name} ({input_device.path}), closing.")
-                            del self.mappings_by_fd[fd]
-                            del self.input_devices_by_fd[fd]
-                            del self.input_devices[input_device.path]
                             try:
+                                input_device = self.input_devices_by_fd[fd]
+                                if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
+                                    print(e)
+                                    print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                                del self.mappings_by_fd[fd]
+                                del self.input_devices_by_fd[fd]
+                                del self.input_devices[input_device.path]
                                 self.poll.unregister(input_device)
                                 input_device.close()
                             except:
