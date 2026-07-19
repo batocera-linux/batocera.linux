@@ -2,15 +2,20 @@ from __future__ import annotations
 
 import logging
 import os
+import shutil
+import signal
 import subprocess
+import time
+from contextlib import contextmanager
 from dataclasses import InitVar, dataclass, field
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import TYPE_CHECKING, Final, Literal, Self
 
 from ..batoceraPaths import HOME
+from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Generator, Mapping, Sequence
 
 _logger = logging.getLogger(__name__)
 
@@ -18,9 +23,74 @@ WINE_BASE: Final = Path('/usr/wine')
 
 _WINETRICKS: Final = WINE_BASE / 'winetricks'
 _WINE_BOTTLES: Final = HOME / 'wine-bottles'
+_BSOD: Final = Path('/usr/bin/bsod-wine')
+_DXVK: Final = WINE_BASE / 'dxvk'
+# a dxvk unpacked here replaces the shipped one, as it did for batocera-wine
+_USER_DXVK: Final = HOME / 'wine' / 'dxvk'
+
+# the windows directory each dxvk build belongs in
+_DXVK_ARCHS: Final = (('x64', 'system32'), ('x32', 'syswow64'))
+
+# how long to give the wineserver to shut its clients down on its own, before killing it
+_WINESERVER_WAIT_TIMEOUT: Final = 10
+
+# how many times, and how far apart, to kill whatever is still holding the prefix
+_PREFIX_KILL_ATTEMPTS: Final = 10
+_PREFIX_KILL_INTERVAL: Final = 0.2
+
+_PROC: Final = Path('/proc')
 
 type RunnerNames = Literal['wine-tkg', 'wine-proton']
 _DEFAULT_WINE_RUNNER: Final[RunnerNames] = 'wine-tkg'
+
+def get_autorun_vars(rom: Path, /) -> dict[str, str]:
+    # roms built for the batocera-wine era describe themselves in an autorun.cmd,
+    # holding the CMD= to run, the DIR= to run it from, and LANG=/ENV= overrides
+    autorun = rom / "autorun.cmd"
+
+    if not autorun.is_file():
+        return {}
+
+    variables: dict[str, str] = {}
+
+    for line in autorun.read_text(encoding="utf-8-sig", errors="replace").splitlines():
+        key, _, value = line.partition('=')
+        key = key.strip().upper()
+        value = value.strip().strip('"')
+        # like batocera-wine did, the first value of a key wins
+        if key and value and key not in variables:
+            variables[key] = value
+
+    return variables
+
+def resolve_in_rom(rom: Path, name: str, /) -> Path:
+    # autorun.cmd holds a windows path, PureWindowsPath takes the separators apart
+    return rom.joinpath(*PureWindowsPath(name).parts)
+
+def get_game_dir(rom: Path, /) -> Path:
+    # DIR= is the directory the game runs from, and CMD= is relative to it
+    if game_dir := get_autorun_vars(rom).get('DIR'):
+        if (resolved := resolve_in_rom(rom, game_dir)).is_dir():
+            return resolved
+
+        _logger.warning("%s names the directory %s, which doesn't exist", rom / 'autorun.cmd', game_dir)
+
+    return rom
+
+def get_game_exe(rom: Path, /) -> Path:
+    # the rom names what to run in its autorun.cmd, we don't guess: a game is free to
+    # rename its engine, and the other executables next to it are installers and tools
+    autorun = rom / "autorun.cmd"
+
+    if not (cmd := get_autorun_vars(rom).get('CMD')):
+        raise BatoceraException(f"{autorun} doesn't exist or doesn't name the CMD to run")
+
+    if not (exe := resolve_in_rom(get_game_dir(rom), cmd)).is_file():
+        raise BatoceraException(f"The executable {cmd} named by {autorun} doesn't exist")
+
+    _logger.debug("executable %s from autorun.cmd", exe)
+
+    return exe
 
 
 @dataclass
@@ -31,6 +101,7 @@ class Runner:
     bottle_dir: Path = field(init=False)
     wine: Path = field(init=False)
     wine64: Path = field(init=False)
+    wineserver: Path = field(init=False)
 
     __lib: Path = field(init=False)
     __env_path: str = field(init=False)
@@ -66,6 +137,7 @@ class Runner:
 
         self.wine = wine
         self.wine64 = wine64
+        self.wineserver = wine_server_bin / 'wineserver'
         self.bottle_dir = _WINE_BOTTLES / bottle_name
         self.__lib = wine_lib
         self.__env_path = env_path
@@ -94,6 +166,134 @@ class Runner:
 
         _logger.debug(out.decode())
         _logger.error(err.decode())
+
+    def create_bottle(self, /) -> None:
+        # nothing to do, the prefix is already bootstrapped
+        if (self.bottle_dir / 'system.reg').exists():
+            return
+
+        self.bottle_dir.mkdir(parents=True, exist_ok=True)
+
+        # show a please wait screen, bootstrapping a prefix takes a while
+        splash = None
+        if _BSOD.exists():
+            splash = subprocess.Popen([_BSOD])
+
+        try:
+            # winegstreamer is disabled, it makes the bootstrap hang when wine debug is on
+            self.__run_wine_process([self.wine, 'hostname'], environment={'WINEDLLOVERRIDES': 'winegstreamer='})
+        finally:
+            if splash is not None:
+                splash.terminate()
+
+        if not (self.bottle_dir / 'system.reg').exists():
+            shutil.rmtree(self.bottle_dir, ignore_errors=True)
+            raise BatoceraException(f'Failed initialising the wine prefix {self.bottle_dir}')
+
+    def game_command(self, game_exe: Path, /) -> list[str | Path]:
+        return [self.wine, game_exe]
+
+    @contextmanager
+    def running(self, /) -> Generator[None]:
+        # a rom on a squashfs is unmounted the moment the game is over, so leaving this
+        # block may only return once nothing is left holding it, which is what
+        # batocera-wine's stopWineServer did: wine hands the game over to the wineserver
+        # and exits long before the game does, and a game that was killed rather than
+        # closed leaves wine processes behind that the wineserver won't reap
+        try:
+            yield
+        finally:
+            self.__stop_wineserver()
+            self.__kill_prefix_holders()
+
+    def __stop_wineserver(self, /) -> None:
+        env = {**os.environ, 'WINEPREFIX': str(self.bottle_dir), 'PATH': self.__env_path}
+
+        try:
+            # -w waits for the prefix to be done with, and returns once it is
+            subprocess.run([self.wineserver, '-w'], env=env, timeout=_WINESERVER_WAIT_TIMEOUT, check=False)
+        except subprocess.TimeoutExpired:
+            # it isn't going to finish on its own, tell it to kill its clients
+            _logger.debug('wineserver -w timed out for %s, killing the prefix', self.bottle_dir)
+            try:
+                subprocess.run([self.wineserver, '-k'], env=env, timeout=_WINESERVER_WAIT_TIMEOUT, check=False)
+            except (subprocess.TimeoutExpired, OSError) as e:
+                _logger.warning('wineserver -k failed for %s: %s', self.bottle_dir, e)
+        except OSError as e:
+            _logger.warning('wineserver -w failed for %s: %s', self.bottle_dir, e)
+
+    def __prefix_holders(self, /) -> list[int]:
+        # the whole KEY=VALUE record has to match: a substring search would also find
+        # the processes of a bottle whose name merely starts with this one's
+        wanted = f'WINEPREFIX={self.bottle_dir}'.encode()
+        own_pid = os.getpid()
+        holders: list[int] = []
+
+        for entry in _PROC.iterdir():
+            if not entry.name.isdigit() or int(entry.name) == own_pid:
+                continue
+
+            try:
+                environ = (entry / 'environ').read_bytes()
+            except OSError:
+                # the process is gone, or is one we may not look at
+                continue
+
+            if wanted in environ.split(b'\0'):
+                holders.append(int(entry.name))
+
+        return holders
+
+    def __kill_prefix_holders(self, /) -> None:
+        for _ in range(_PREFIX_KILL_ATTEMPTS):
+            if not (holders := self.__prefix_holders()):
+                return
+
+            _logger.debug('killing %s still holding %s', holders, self.bottle_dir)
+
+            for pid in holders:
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except OSError:
+                    # already gone, or not ours to kill
+                    pass
+
+            time.sleep(_PREFIX_KILL_INTERVAL)
+
+        if holders := self.__prefix_holders():
+            _logger.warning('%s is still held by %s', self.bottle_dir, holders)
+
+    def install_dxvk(self, /) -> set[str]:
+        # dxvk isn't built for every architecture, and the dlls it ships change between
+        # releases, so link whatever is actually there rather than a hardcoded list:
+        # symlinking a missing dll would leave a dangling link that wine cannot load
+        overridden: set[str] = set()
+
+        dxvk = _USER_DXVK if _USER_DXVK.is_dir() else _DXVK
+
+        for arch, windows_dir in _DXVK_ARCHS:
+            source_dir = dxvk / arch
+
+            if not source_dir.is_dir():
+                continue
+
+            target_dir = self.bottle_dir / 'drive_c' / 'windows' / windows_dir
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            for dll in sorted(source_dir.glob('*.dll')):
+                link = target_dir / dll.name
+
+                # wine puts its own builtin dll there when it bootstraps the prefix
+                if link.is_symlink() or link.exists():
+                    link.unlink()
+
+                link.symlink_to(dll)
+                overridden.add(dll.stem)
+
+        if overridden:
+            _logger.debug('dxvk: linked %s from %s into %s', ', '.join(sorted(overridden)), dxvk, self.bottle_dir)
+
+        return overridden
 
     def install_wine_trick(
         self,

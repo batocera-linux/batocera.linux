@@ -235,7 +235,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         _logger.error("Failed to draw_gun_borders for gun_borders")
                         _logger.error(e)
 
-                    with profiler.pause():
+                    with profiler.pause(), generator.running(system.config, rom):
                         monitor_thread.start()
                         exitCode = runCommand(cmd)
 
