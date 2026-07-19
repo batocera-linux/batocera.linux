@@ -3,8 +3,8 @@
 # perfected
 #
 ################################################################################
-# Version: Commits on Jul 29, 2024
-PERFECTED_VERSION = 20a7240238f9dcd4864e841343550b18605ac34a
+# Version: Commits on Jun 8, 2026
+PERFECTED_VERSION = 0976ee154cf62d9fb01a5b8456020acf32ff92ac
 PERFECTED_SITE = $(call github,dhewm,dhewm3-sdk,$(PERFECTED_VERSION))
 PERFECTED_LICENSE = GPLv3
 PERFECTED_LICENSE_FILES = COPYING.txt
