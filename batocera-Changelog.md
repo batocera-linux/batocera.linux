@@ -118,6 +118,7 @@
 - X16emu to r49
 - Xemu to v0.8.136
 ### System
+- Allwinner H616 device kernel updated to 7.1.4
 - Allwinner H700 device kernel updated to 7.0.11
 - ALSA UCM configuration to v1.2.16
 - Buildroot to 2026.05.x with supporting package & toolchain updates
@@ -134,10 +135,10 @@
 - QT to 6.11.1
 - Qualcomm SM6115 device kernel updated to 7.0.11
 - Qualcomm SM8550 device kernel updated to 7.0.11
-- Qualcomm SM8750 device kernel updated to 7.1.3
+- Qualcomm SM8750 device kernel updated to 7.1.4
 - Raspberry Pi device kernel updated to 6.18.37
 - Rockchip RK3568 device kernel updated to 7.0.11
-- Rockchip RK3588 mainline device kernel updated to 7.1.3
+- Rockchip RK3588 mainline device kernel updated to 7.1.4
 - Rocknix ABL to 1.1.4 (SM8x50 devices)
 - SwitchRes to 2.2.2
 - RTKit to v0.14
@@ -147,7 +148,7 @@
 - WINE Proton to proton-exp-11.0
 - WINE TKG to 11.12
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.1.3
+- X86_64 / Zen3 kernel updated to 7.1.4
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed
