@@ -43,8 +43,12 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --hwdec=auto
     endif
+    # Allwinner H6 & H616 boards using stateful v4l2m2m decoding over Panfrost/DRM
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next --gpu-context=drm --hwdec=v4l2m2m-copy
+    endif
     # Targets that should remain empty (handled by internal defaults)
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS =
     endif
     # Specific override for Amlogic vendor kernel with Panfrost enabled
