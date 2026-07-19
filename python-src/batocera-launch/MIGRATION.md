@@ -279,7 +279,6 @@ they pull unusual dependencies.
 - [ ] `mame`
 - [ ] `melonds`
 - [ ] `moonlight`
-- [ ] `mugen`
 - [ ] `mupen` (`mupen64plus`)
 - [ ] `openbor`
 - [ ] `openmsx`

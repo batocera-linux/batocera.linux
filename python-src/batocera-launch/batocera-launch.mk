@@ -48,6 +48,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_IORTCW),,iortcw.py) \
 		$(if $(BR2_PACKAGE_JAZZ2_NATIVE),,jazz2_native.py) \
 		$(if $(BR2_PACKAGE_LIGHTSPARK),,lightspark.py) \
+		$(if $(BR2_PACKAGE_BATOCERA_WINE),,mugen.py) \
 		$(if $(BR2_PACKAGE_NANOBOYADVANCE),,nanoboyadvance.py) \
 		$(if $(BR2_PACKAGE_OD_COMMANDER),,odcommander.py) \
 		$(if $(BR2_PACKAGE_BATOCERA_PYGAME),,pygame.py) \
