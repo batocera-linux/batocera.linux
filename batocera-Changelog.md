@@ -67,6 +67,7 @@
 - CDogs to 2.4.0
 - CLK to 2026-04-30
 - CorsixTH to v0.69.2
+- Dhewm3 & Mods to 1.5.5
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - EDuke32 / Fury to Feb 03, 2026 build

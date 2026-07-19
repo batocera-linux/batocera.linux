@@ -3,8 +3,8 @@
 # dentonmod
 #
 ################################################################################
-# Version: Commits on Apr 19, 2024
-DENTONMOD_VERSION = 72d2c417645d47a382b061d2a6db4a46e060145d
+# Version: Commits on Jun 8, 2026
+DENTONMOD_VERSION = 9342a53e63e2b281735241f4bff67bcd7612a7b5
 DENTONMOD_SITE = $(call github,dhewm,dhewm3-sdk,$(DENTONMOD_VERSION))
 DENTONMOD_LICENSE = GPLv3
 DENTONMOD_LICENSE_FILES = COPYING.txt
