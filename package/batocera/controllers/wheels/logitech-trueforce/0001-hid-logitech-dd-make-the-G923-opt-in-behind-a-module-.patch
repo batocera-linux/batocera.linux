@@ -1,0 +1,85 @@
+From e85d0f6e957b569600f934c300237d7efcd9c36d Mon Sep 17 00:00:00 2001
+From: Alexandre Derumier <aderumier@gmail.com>
+Date: Sat, 1 Aug 2026 23:45:15 +0200
+Subject: [PATCH] hid-logitech-dd: make the G923 opt-in behind a module
+ parameter
+
+The belt-driven G923 (c266, c267, c26e) is claimed by hid-logitech
+(lg4ff) and by new-lg4ff as well, so two drivers match one wheel and
+which of them binds is a race with no defined winner. new-lg4ff also
+drives the G29, G27, DFGT and DFP, so keeping it out of the way with a
+blacklist is not an option, and a modprobe load order is only a hint.
+
+Decline the G923 in the probe unless the new g923 parameter is set. The
+ids stay in the table so the module still autoloads and enabling it
+needs no rebuild; the HID core moves on to the next matching driver
+when the probe returns -ENODEV.
+---
+ mainline/hid-logitech-hidpp.c | 37 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/mainline/hid-logitech-hidpp.c b/mainline/hid-logitech-hidpp.c
+index e563258..270a686 100644
+--- a/mainline/hid-logitech-hidpp.c
++++ b/mainline/hid-logitech-hidpp.c
+@@ -158,6 +158,27 @@ module_param(disable_tap_to_click, bool, 0644);
+ MODULE_PARM_DESC(disable_tap_to_click,
+ 	"Disable Tap-To-Click mode reporting for touchpads (only on the K400 currently).");
+ 
++/*
++ * g923: also claim the belt-driven G923 wheels (c266, c267, c26e).
++ *
++ * Off by default. The G923 is already served by hid-logitech (lg4ff) and
++ * by new-lg4ff, which drives it alongside the G29, G27, DFGT and DFP, so
++ * two drivers match the one wheel and which of them binds is a race with
++ * no defined winner. Declining the device here settles that with the
++ * driver itself rather than with a module load order that is only ever a
++ * hint, and leaves the older wheels sharing new-lg4ff untouched.
++ *
++ * The PIDs stay in the id table, so the module still autoloads for a
++ * G923 and turning this on needs no rebuild. hidpp_probe returns -ENODEV
++ * while it is off and the HID core moves on to the next matching driver.
++ * Writable at runtime: it is read at probe, so a change takes effect on
++ * the next plug or rebind, not on the wheel already bound.
++ */
++static bool g923;
++module_param(g923, bool, 0644);
++MODULE_PARM_DESC(g923,
++	"Claim the belt-driven G923 wheels (c266/c267/c26e) too: 0=off (default, left to hid-logitech / new-lg4ff), 1=on.");
++
+ /*
+  * inject_pid: append a USB HID PID (Physical Input Device, Usage Page 0x0F)
+  * output collection to interface 0's report descriptor on RS50 / G Pro
+@@ -15521,6 +15542,17 @@ static int hidpp_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 	int ret;
+ 	unsigned int connect_mask = HID_CONNECT_DEFAULT | HID_CONNECT_DRIVER;
+ 
++	/*
++	 * The G923 is opt-in, see the g923 module parameter. Declining it
++	 * before anything is allocated lets the HID core carry on to
++	 * hid-logitech / new-lg4ff, which is where it belongs by default.
++	 */
++	if (!g923 &&
++	    (hdev->product == USB_DEVICE_ID_LOGITECH_G923_WHEEL ||
++	     hdev->product == USB_DEVICE_ID_LOGITECH_G923_PS_WHEEL ||
++	     hdev->product == USB_DEVICE_ID_LOGITECH_G923_XBOX_WHEEL))
++		return -ENODEV;
++
+ 	/* report_fixup needs drvdata to be set before we call hid_parse */
+ 	hidpp = devm_kzalloc(&hdev->dev, sizeof(*hidpp), GFP_KERNEL);
+ 	if (!hidpp)
+@@ -16070,6 +16102,11 @@ static const struct hid_device_id hidpp_devices[] = {
+ 	{ /* Logitech RS50 Direct Drive Wheel (PlayStation/PC) over USB */
+ 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_RS50),
+ 		.driver_data = HIDPP_QUIRK_CLASS_G920 | HIDPP_QUIRK_DD_FFB },
++	/*
++	 * The three G923 entries below are listed so the module autoloads
++	 * for them, but hidpp_probe declines them unless the g923 module
++	 * parameter is set: they are shared with hid-logitech / new-lg4ff.
++	 */
+ 	{ /* Logitech G923 (PlayStation native / Classic mode) */
+ 	  HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_G923_WHEEL),
+ 	  .driver_data = HIDPP_QUIRK_CLASS_LG4FF },
+-- 
+2.51.0
+
