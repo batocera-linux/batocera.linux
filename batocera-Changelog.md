@@ -76,6 +76,7 @@
 - Jazz2 to 3.6.0
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
+- Libretro-Atari800 to July 15th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
