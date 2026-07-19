@@ -20,8 +20,13 @@ define FIRMWARE_ORANGEPI_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/lib/firmware/ap6275p/fw_syn43711a0_sdio.bin
 	ln -sf /lib/firmware/nvram_ap6611s.txt \
 	    $(TARGET_DIR)/lib/firmware/ap6275p/nvram_ap6611s.txt
-	ln -sf /lib/firmware/clm_syn43711a0.blob\
+	ln -sf /lib/firmware/clm_syn43711a0.blob \
 	    $(TARGET_DIR)/lib/firmware/ap6275p/clm_syn43711a0.blob
+	mkdir -p $(TARGET_DIR)/lib/firmware/uwe5622
+	ln -sf /lib/firmware/wcnmodem.bin \
+	    $(TARGET_DIR)/lib/firmware/uwe5622/wcnmodem.bin
+	ln -sf /lib/firmware/wifi_2355b001_1ant.ini \
+	    $(TARGET_DIR)/lib/firmware/uwe5622/wifi_2355b001_1ant.ini
 endef
 
 $(eval $(generic-package))
