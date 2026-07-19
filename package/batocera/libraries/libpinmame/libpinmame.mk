@@ -3,8 +3,8 @@
 # libpinmame
 #
 ################################################################################
-# Version: Commits on Jul 14, 2026
-LIBPINMAME_VERSION = d17ac8d8885d8469d86b14c8117f1a63bb670919
+# Version: Commits on Jul 19, 2026
+LIBPINMAME_VERSION = 23d01d334e1db120314505086608ed685389a948
 LIBPINMAME_SITE = $(call github,vbousquet,pinmame,$(LIBPINMAME_VERSION))
 LIBPINMAME_LICENSE = BSD-3-Clause
 LIBPINMAME_LICENSE_FILES = LICENSE
