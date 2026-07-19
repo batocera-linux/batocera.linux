@@ -997,6 +997,13 @@ systems = {
                     { "md5": "1e6637f32aa7d1de03510030cac40bcf", "zippedFile": "bk11m_327_basic1.rom", "file": "bios/bk0010.zip", "emulator": "libretro", "core": "mame" },
                     { "md5": "dc52f365d56fa1951f5d35b1101b9e3f", "zippedFile": "bk11m_325_ext.rom",    "file": "bios/bk0010.zip", "emulator": "libretro", "core": "mame" },
                     { "md5": "fe4627d1e3a1535874085050733263e7", "zippedFile": "bk11m_324_bos.rom",    "file": "bios/bk0010.zip", "emulator": "libretro", "core": "mame" }] },
+
+    # ---------- Namco2x6 ---------- #
+    "namco2x6": { "name": "Namco2x6", "biosFiles":  [
+        # Namco System 246
+        { "md5": "52cca0058626569c7a9699838baab2d8", "file": "bios/namco2x6/r27v1602f.7d" },
+        # Namco System 256
+        { "md5": "a58676c6bd79229bda967d07b4ec2e16", "file": "bios/namco2x6/r27v1602f.8g" }] },
 }
 
 class BiosStatus:

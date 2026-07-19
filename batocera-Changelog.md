@@ -1,6 +1,7 @@
 # 2026/xx/xx - batocera.linux 44 - xxxx
 ### Special Notes
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
+- The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
 ### Hardware
 - Anbernic RG-DS initial support
 - Anbernic RG Vita Pro initial support
@@ -22,6 +23,7 @@
 - Box64 userland x86_64 emulator for aarch64
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
+- PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)

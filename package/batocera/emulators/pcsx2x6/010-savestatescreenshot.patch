@@ -1,0 +1,14 @@
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index fe20da7..12c5d93 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -1850,6 +1850,9 @@ bool VMManager::DoSaveState(const char* filename, s32 slot_for_message, bool zip
+ 		ZipSaveState(std::move(elist), std::move(screenshot), std::move(osd_key), filename, slot_for_message);
+ 	}
+ 
++	// screenshot in dirctory
++	GSQueueSnapshot(fmt::format("{}.png", filename));
++
+ 	Host::OnSaveStateSaved(filename);
+ 	return true;
+ }

@@ -49,6 +49,13 @@ ifeq ($(BR2_PACKAGE_PCSX2),y)
   BATOCERA_DESKTOPAPPS_ICONS   += pcsx2.png
 endif
 
+# pcsx2x6
+ifeq ($(BR2_PACKAGE_PCSX2X6),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2x6
+  BATOCERA_DESKTOPAPPS_APPS    += pcsx2x6-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += pcsx2x6.png
+endif
+
 # dolphin
 ifeq ($(BR2_PACKAGE_DOLPHIN_EMU)$(BR2_PACKAGE_XORG7),yy)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-dolphin
@@ -178,13 +185,6 @@ ifeq ($(BR2_PACKAGE_VITA3K),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-vita3k
   BATOCERA_DESKTOPAPPS_APPS    += vita3k-config.desktop
   BATOCERA_DESKTOPAPPS_ICONS   += vita3k.png
-endif
-
-# play!
-ifeq ($(BR2_PACKAGE_PLAY),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-play
-  BATOCERA_DESKTOPAPPS_APPS    += play-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += play.png
 endif
 
 # shadPS4 - QT Launcher
