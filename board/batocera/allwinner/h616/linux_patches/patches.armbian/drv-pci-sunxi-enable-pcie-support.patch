@@ -9,25 +9,25 @@ Signed-off-by: Marvin Wewer <mwewer37@proton.me>
  drivers/pci/Makefile                     |    1 +
  drivers/pci/pcie-sunxi/Kconfig           |   26 +
  drivers/pci/pcie-sunxi/Makefile          |    8 +
- drivers/pci/pcie-sunxi/pcie-sunxi-dma.c  |  198 ++
+ drivers/pci/pcie-sunxi/pcie-sunxi-dma.c  |  197 ++
  drivers/pci/pcie-sunxi/pcie-sunxi-dma.h  |  279 +++
- drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 1233 ++++++++++
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 1232 ++++++++++
  drivers/pci/pcie-sunxi/pcie-sunxi-rc.c   |  854 +++++++
  drivers/pci/pcie-sunxi/pcie-sunxi.h      |  391 +++
  include/sunxi-gpio.h                     |  188 ++
- 10 files changed, 3179 insertions(+)
+ 10 files changed, 3177 insertions(+)
 
 diff --git a/drivers/pci/Kconfig b/drivers/pci/Kconfig
 index 111111111111..222222222222 100644
 --- a/drivers/pci/Kconfig
 +++ b/drivers/pci/Kconfig
-@@ -339,5 +339,6 @@ source "drivers/pci/controller/Kconfig"
+@@ -333,5 +333,6 @@ source "drivers/pci/controller/Kconfig"
  source "drivers/pci/endpoint/Kconfig"
  source "drivers/pci/switch/Kconfig"
  source "drivers/pci/pwrctrl/Kconfig"
 +source "drivers/pci/pcie-sunxi/Kconfig"
  
- endif
+ endif # PCI
 diff --git a/drivers/pci/Makefile b/drivers/pci/Makefile
 index 111111111111..222222222222 100644
 --- a/drivers/pci/Makefile
@@ -91,7 +91,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/pci/pcie-sunxi/pcie-sunxi-dma.c
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,197 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright(c) 2020 - 2023 Allwinner Technology Co.,Ltd. All rights reserved. */
 +/*
@@ -115,7 +115,6 @@ index 000000000000..111111111111
 +#include <linux/miscdevice.h>
 +#include <linux/of_address.h>
 +#include <linux/of_device.h>
-+#include <linux/of_gpio.h>
 +#include <linux/of_pci.h>
 +#include <linux/platform_device.h>
 +#include <linux/poll.h>
@@ -582,7 +581,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
-@@ -0,0 +1,1233 @@
+@@ -0,0 +1,1232 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Copyright(c) 2020 - 2023 Allwinner Technology Co.,Ltd. All rights reserved. */
 +/*
@@ -604,7 +603,6 @@ index 000000000000..111111111111
 +#include <linux/interrupt.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/of_gpio.h>
 +#include <linux/of_device.h>
 +#include <linux/pci.h>
 +#include <linux/platform_device.h>

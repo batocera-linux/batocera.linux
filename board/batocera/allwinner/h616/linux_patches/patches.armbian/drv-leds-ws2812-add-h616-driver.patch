@@ -8,6 +8,11 @@ Subject: Add: ws2812 RGB driver for allwinner H616
  drivers/leds/rgb/Makefile      |   1 +
  drivers/leds/rgb/leds-ws2812.c | 227 ++++++++++
  3 files changed, 235 insertions(+)
+---
+ drivers/leds/rgb/Kconfig       |   7 +
+ drivers/leds/rgb/Makefile      |   1 +
+ drivers/leds/rgb/leds-ws2812.c | 226 ++++++++++
+ 3 files changed, 234 insertions(+)
 
 diff --git a/drivers/leds/rgb/Kconfig b/drivers/leds/rgb/Kconfig
 index 111111111111..222222222222 100644
@@ -39,7 +44,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/leds/rgb/leds-ws2812.c
-@@ -0,0 +1,227 @@
+@@ -0,0 +1,226 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2023, The Linux Foundation. All rights reserved.
@@ -69,7 +74,6 @@ index 000000000000..111111111111
 +#include <linux/interrupt.h>
 +#include <linux/irq.h>
 +#include <linux/gpio.h>
-+#include <linux/of_gpio.h>
 +#include <linux/platform_device.h>
 +#include <linux/miscdevice.h>
 +#include <linux/uaccess.h>
