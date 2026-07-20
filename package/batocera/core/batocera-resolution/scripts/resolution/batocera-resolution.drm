@@ -172,7 +172,21 @@ case "${ACTION}" in
 	MODE=$1
 	if test "${MODE}" != ""
 	   then
-	       echo "${MODE}" | sed -e s+"^\([0-9]*\) .*"+"\1"+ > /var/run/drmConn
+	       if echo "${MODE}" | grep -qE '^[0-9]'
+	       then
+		   # numeric, or "N - NAME" format as returned by listOutputs
+		   echo "${MODE}" | sed -e s+"^\([0-9]*\).*"+"\1"+ > /var/run/drmConn
+	       else
+		   NORM_MODE=$(echo "${MODE}" | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+		   CONNECTORS=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" 2>/dev/null; done | sed -e s+"^\([0-9]*\)\.[0-9]*:\([^ ]*\) .*$"+"\1 \2"+ | sort -u)
+		   MATCHED_CONN=$(echo "${CONNECTORS}" | while read -r CONN NAME; do
+		       NORM_NAME=$(echo "${NAME}" | tr -cd '[:alnum:]' | tr '[:upper:]' '[:lower:]')
+		       case "${NORM_MODE}" in "${NORM_NAME}"*) echo "${CONN}"; break ;; esac
+		   done)
+		   if [ -n "${MATCHED_CONN}" ]; then
+		       echo "${MATCHED_CONN}" > /var/run/drmConn
+		   fi
+	       fi
 	       echo 0 > /var/run/drmMode # reset the drmMode
 	fi
 	f_checkVals
