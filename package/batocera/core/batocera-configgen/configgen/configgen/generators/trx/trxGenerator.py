@@ -57,7 +57,6 @@ class TRXGenerator(Generator):
 
     def _setup_assets(self, trxRomPath: Path) -> None:
         version_file = trxRomPath / "cfg" / ".trx_data_commit"
-        
         local_commit = ""
         if version_file.exists():
             try:
@@ -143,7 +142,6 @@ class TRXGenerator(Generator):
                                 if file_path.is_file():
                                     rel_path = file_path.relative_to(ship_dir)
                                     mapped_rel = rel_path
-                                    
                                     # Apply specific remapping rules matching upstream package scripts
                                     if rel_path.is_relative_to("data/images"):
                                         mapped_rel = Path(f"games/{g}/images") / rel_path.relative_to("data/images")
@@ -172,7 +170,8 @@ class TRXGenerator(Generator):
             _logger.debug("Error during TRX on-demand asset setup: %s", e)
         finally:
             try:
-                yad_proc.stdin.close()
+                if yad_proc.stdin is not None:
+                    yad_proc.stdin.close()
             except Exception:
                 pass
             try:
@@ -190,7 +189,6 @@ class TRXGenerator(Generator):
                 shutil.copytree(item, dest, dirs_exist_ok=True)
             else:
                 shutil.copy2(item, dest)
-        
         # Make sure binary is executable
         trx_bin_dest = trxRomPath / "TRX"
         if trx_bin_dest.exists():
