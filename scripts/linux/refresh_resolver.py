@@ -66,8 +66,12 @@ def parse_mk_dependencies(
     provides_map: dict[str, list[str]] = {}
     kernel_modules: list[str] = []
 
-    # Matches standard out-of-tree kernel modules
-    kernel_module_regex = re.compile(r'\bkernel-module\b')
+    # Match packages using the kernel-module infrastructure or directly
+    # referencing Buildroot's Linux source/version variables.
+    kernel_module_regex = re.compile(
+        r'\$\(\s*eval\s+\$\(\s*kernel-module\s*\)\s*\)'
+        r'|\$\(\s*LINUX_(?:DIR|VERSION(?:_[A-Z0-9_]+)?)\s*\)'
+    )
 
     for pkg_name, path in all_mk_files.items():
         try:
@@ -75,8 +79,7 @@ def parse_mk_dependencies(
         except Exception:
             continue
 
-        # Register if it uses the kernel-module infra, or explicitly references kernel variables
-        if kernel_module_regex.search(content) or 'LINUX_DIR' in content or 'LINUX_VERSION' in content:
+        if kernel_module_regex.search(content):
             kernel_modules.append(pkg_name)
 
         # Normalize line continuations (\ followed by newline)
@@ -136,27 +139,20 @@ def parse_mk_dependencies(
     return dependencies, provides_map, kernel_modules
 
 
-def find_package_for_file(changed_file_path: Path, all_mk_files: Mapping[str, Path], /) -> str | None:
+def find_package_for_file(changed_file_path: Path, package_dirs: Mapping[Path, str], /) -> str | None:
     """Maps a changed file path back to its parent package using a strict subdirectory descendant check."""
     changed_path = changed_file_path.resolve()
 
-    best_pkg: str | None = None
-    best_prefix_len = -1
+    if (pkg_name := package_dirs.get(changed_path)) is not None:
+        return pkg_name
 
-    for pkg_name, mk_path in all_mk_files.items():
-        pkg_dir = mk_path.parent.resolve()
-        try:
-            # Verify if the modified file path sits within this package directory
-            changed_path.relative_to(pkg_dir)
-            prefix_len = len(pkg_dir.parts)
-            # Prefer the most specific/deepest folder match
-            if prefix_len > best_prefix_len:
-                best_prefix_len = prefix_len
-                best_pkg = pkg_name
-        except ValueError:
-            continue
+    # Parents are ordered from nearest to farthest, preserving the previous
+    # most-specific package-directory match without scanning every package.
+    for parent in changed_path.parents:
+        if (pkg_name := package_dirs.get(parent)) is not None:
+            return pkg_name
 
-    return best_pkg
+    return None
 
 
 def get_changed_files(git_root: Path, days: int, /) -> Iterator[Path]:
@@ -319,16 +315,21 @@ def find_package_for_board_or_config(
 def get_git_modified_packages(project_dir: Path, days: int, all_mk_files: Mapping[str, Path], /) -> set[str]:
     modified_pkgs: set[str] = set()
 
+    package_dirs: dict[Path, str] = {}
+
     # Pre-build uppercase to lowercase package map for config-to-package translation
     config_to_pkg: dict[str, str] = {}
-    for pkg_name in all_mk_files:
+    for pkg_name, mk_path in all_mk_files.items():
+        # Preserve the first package for directories containing multiple .mk files,
+        # matching find_package_for_file's previous equal-depth behavior.
+        package_dirs.setdefault(mk_path.parent.resolve(), pkg_name)
         pkg_upper = pkg_name.upper().replace('-', '_')
         config_to_pkg[pkg_upper] = pkg_name
 
     def process_repo(git_root: Path) -> None:
         for changed_file in get_changed_files(git_root, days):
             # Try matching standard packages first
-            if pkg := find_package_for_file(changed_file, all_mk_files):
+            if pkg := find_package_for_file(changed_file, package_dirs):
                 modified_pkgs.add(pkg)
                 continue
 
@@ -363,7 +364,7 @@ def filter_built_packages(packages: Iterable[str], output_dir: Path, /) -> set[s
 
     for pkg in packages:
         pkg_norm = pkg.replace('_', '-').lower()
-        
+
         # Check per-package directories
         matched_per_package = False
         for d in per_package_subdirs:
@@ -588,7 +589,7 @@ def main() -> None:
         print(f'A total of {bold(len(final_packages))} active packages will be reset and rebuilt.')
         print('This is usually triggered by modifications to low-level/core system libraries (such as mesa3d or udev).')
         print('--------------------------------------------------------')
-        
+
         try:
             # Force prompt flush before requesting raw input
             print(
