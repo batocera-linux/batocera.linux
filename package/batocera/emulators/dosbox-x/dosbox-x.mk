@@ -16,6 +16,7 @@ DOSBOX_X_CONF_OPTS = --host="$(GNU_TARGET_NAME)" \
                      --enable-dynrec \
                      --enable-unaligned_memory \
                      --prefix=/usr \
+                     --disable-avcodec \
                      --disable-sdl \
                      --enable-sdl2 \
                      --with-sdl2-prefix="$(STAGING_DIR)/usr"
