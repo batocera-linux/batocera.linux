@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# from: https://forum.puppylinux.com/viewtopic.php?t=9300
+# yad is a fork of zenity, this fixes the argument "mishandling"
+
+exec yad "${@/--file-selection/--file}"
