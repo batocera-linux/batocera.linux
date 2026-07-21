@@ -115,13 +115,13 @@ cores:
           None: 0
           Bilinear (Smooth): 1
           Bilinear (Sharp): 2
-      pcsx2x6_EnableWideScreenPatches:
-        submenu: DISPLAY
-        prompt: ENABLE WIDESCREEN PATCHES
-        description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
-        choices:
-          Disabled: "false"
-          Enabled: "true"
+      #pcsx2x6_EnableWideScreenPatches:
+      #  submenu: DISPLAY
+      #  prompt: ENABLE WIDESCREEN PATCHES
+      #  description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+      #  choices:
+      #    Disabled: "false"
+      #    Enabled: "true"
       pcsx2x6_blur:
         submenu: DISPLAY
         prompt: ANTI-BLUR
@@ -136,13 +136,13 @@ cores:
         choices:
           Disabled: 0
           Enabled: 1
-      pcsx2x6_interlacing_patches:
-        submenu: DISPLAY
-        prompt: INTERLACING PATCHES
-        description: Enable No-interlacing Patches.
-        choices:
-          Disabled: "false"
-          Enabled: "true"
+      #pcsx2x6_interlacing_patches:
+      #  submenu: DISPLAY
+      #  prompt: INTERLACING PATCHES
+      #  description: Enable No-interlacing Patches.
+      #  choices:
+      #    Disabled: "false"
+      #    Enabled: "true"
       pcsx2x6_scaling:
         submenu: DISPLAY
         prompt: INTEGER SCALING
@@ -248,12 +248,12 @@ cores:
         choices:
           Disabled: "false"
           Enabled: "true"
-      pcsx2x6_cheats:
-        prompt: CHEATS
-        description: Automatically loads and applies cheats on game start.
-        choices:
-          Disabled: "false"
-          Enabled: "true"
+      #pcsx2x6_cheats:
+      #  prompt: CHEATS
+      #  description: Automatically loads and applies cheats on game start.
+      #  choices:
+      #    Disabled: "false"
+      #    Enabled: "true"
       pcsx2x6_vuthread:
         submenu: SPEEDHACKS
         group: ADVANCED OPTIONS
@@ -273,24 +273,13 @@ cores:
           "130%": 1
           "180%": 2
           "300%": 3
-      pcsx2x6_texture_replacements:
-        group: ADVANCED OPTIONS
-        prompt: TEXTURE REPLACEMENTS
-        description: Allows user replaceable textures.
-        choices:
-          "Off": "false"
-          "On": "true"
-      pcsx2x6_wheel_type:
-        order: 100
-        group: CONTROLS
-        submenu: WHEELS
-        prompt: WHEEL MODEL
-        description: Playstation 2 wheel type
-        choices:
-          Driving Force: DrivingForce
-          Driving Force Pro: DrivingForcePro
-          GT Force: GTForce
-          Virtual: Virtual
+      #pcsx2x6_texture_replacements:
+      #  group: ADVANCED OPTIONS
+      #  prompt: TEXTURE REPLACEMENTS
+      #  description: Allows user replaceable textures.
+      #  choices:
+      #    "Off": "false"
+      #    "On": "true"
       pcsx2x6_crosshairs:
         order: 99
         group: CONTROLS
