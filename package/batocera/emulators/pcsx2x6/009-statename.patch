@@ -1,0 +1,34 @@
+diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
+index b98f4f6..9f99764 100644
+--- a/pcsx2/VMManager.cpp
++++ b/pcsx2/VMManager.cpp
+@@ -1764,20 +1764,15 @@ bool SaveStateBase::vmFreeze()
+ 
+ std::string VMManager::GetSaveStateFileName(const char* game_serial, u32 game_crc, s32 slot, bool backup)
+ {
+-	std::string filename;
+-	if (std::strlen(game_serial) > 0)
+-	{
+-		if (slot < 0)
+-			filename = fmt::format("{} ({:08X}).resume.p2s", game_serial, game_crc);
+-		else if (backup)
+-			filename = fmt::format("{} ({:08X}).{:02d}.p2s.backup", game_serial, game_crc, slot);
+-		else
+-			filename = fmt::format("{} ({:08X}).{:02d}.p2s", game_serial, game_crc, slot);
+-
+-		filename = Path::Combine(EmuFolders::Savestates, filename);
+-	}
+-
+-	return filename;
++  	if(slot < 0) {
++    		return Path::Combine(EmuFolders::Savestates, std::string(Path::GetFileName(GetDiscPath())) + StringUtil::StdStringFromFormat(".p2s.auto"));
++  	}
++  	else if (backup) {
++  		return Path::Combine(EmuFolders::Savestates, std::string(Path::GetFileName(GetDiscPath())) + StringUtil::StdStringFromFormat(".%02d.p2s.backup", slot));
++  	}
++  	else {
++    		return Path::Combine(EmuFolders::Savestates, std::string(Path::GetFileName(GetDiscPath())) + StringUtil::StdStringFromFormat(".%02d.p2s", slot));
++  	}
+ }
+ 
+ std::string VMManager::GetSaveStateFileName(const char* filename, s32 slot, bool backup)

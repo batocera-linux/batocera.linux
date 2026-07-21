@@ -2291,9 +2291,6 @@ ps2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u] }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2] }
-      play: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PLAY], incompatible_extensions: [m3u, zso] }
-    play:
-      play: { requireAnyOf: [BR2_PACKAGE_PLAY], incompatible_extensions: [m3u, zso] }
   comment_en: |
     For more info: https://wiki.batocera.org/systems:ps2
   comment_fr: |
@@ -5273,22 +5270,45 @@ namco2x6:
   manufacturer: Sony / Namco
   release: 2000
   hardware: arcade
-  extensions: [zip]
+  extensions: [acgame]
   platform: namco, sega, arcade
   emulators:
-    play:
-      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+    pcsx2x6:
+      pcsx2x6: { requireAnyOf: [BR2_PACKAGE_PCSX2X6] }
   comment_en: |
-    The Play! emulator provides `work in progress` support for Namco 246 & 256 systems.
-    Currently you will need a high performance system to be able to emulate supported games.
-    We recommend using the OpenGL API for now.
+    The PCSX2X6 emulator provides `work in progress` support for Namco 246 & 256 arcade systems.
 
-    This rom directory should include a zip file based on the arcade id and a supporting folder with associated .chd file.
-    i.e. Tekken 4 - tekken4.zip
+    This rom directory should include an .acgame file based on the gameid and a supporting files required to play.
+    The .acgame is the rom name EmulationStation uses to help launch the game using PCSX2x6.
+
+    Example:
+    
+    Ridge Racer V Arcade Battle (RRV2 Ver. B).acgame
+
+    [game]
+    name=Ridge Racer V Arcade Battle (RRV2 Ver. B)
+    gameid=NM00001
+    platform=246
+
+    [data]
+    subdir=NM00001
+    elf=proverb.elf
+    dongle=NM00001 RRV2, Ver.B a025531981282a.ps2
+    mediasrc=NM00001 RRV1-A (CD-ROM).chd
+    media=CD
+
+    Based on this .acgame example, we create a subfolder called NM00001
+    Within it, we need the `proverb.elf`, `NM00001 RRV2, Ver.B a025531981282a.ps2` & `NM00001 RRV1-A (CD-ROM).chd` for the game.
+
+    i.e. Ridge Racer V Arcade Battle (RRV2 Ver. B).acgame
                     |
-                    tekken4
+                    NM00001
                     |
-                    ---tef1dvd0.chd
+                    ---proverb.elf
+                    ---NM00001 RRV2, Ver.B a025531981282a.ps2
+                    ---NM00001 RRV1-A (CD-ROM).chd
+
+    You will also need the Namco 246 & 256 BIOS files in the /userdata/bios/namco2x6 directory.
 
     For more info: https://wiki.batocera.org/systems:namco2x6
 
