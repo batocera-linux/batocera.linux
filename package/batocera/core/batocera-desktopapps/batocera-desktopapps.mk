@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_DESKTOPAPPS_VERSION = 1.2
+BATOCERA_DESKTOPAPPS_VERSION = 1.3
 BATOCERA_DESKTOPAPPS_SOURCE =
 
 BATOCERA_DESKTOPAPPS_PKGDIR = \
@@ -34,6 +34,9 @@ ifeq ($(BR2_PACKAGE_YAD),y)
 
   # file-roller integration for pcmanfm - open/list archives
   BATOCERA_DESKTOPAPPS_APPS    += file-roller-mimics.desktop
+
+  # enable zenity scripts, yad is a fork of this
+  BATOCERA_DESKTOPAPPS_SCRIPTS += zenity
 endif
 
 ## System depended applets
