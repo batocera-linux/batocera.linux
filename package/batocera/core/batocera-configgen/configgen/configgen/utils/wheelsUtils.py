@@ -104,6 +104,17 @@ _EMULATOR_MAPPING: Final = {
         "x":  "y",
         "y":  "x",
     },
+    "supermodel": {
+        "JOY1_XAXIS":      "wheel",
+        "JOY1_ZAXIS_POS":  "accelerate",
+        "JOY1_RZAXIS_POS": "brake",
+        "JOY1_BUTTON5":    "upshift",
+        "JOY1_BUTTON6":    "downshift",
+        "JOY1_BUTTON1":    "a",
+        "JOY1_BUTTON2":    "b",
+        "JOY1_BUTTON3":    "x",
+        "JOY1_BUTTON4":    "y",
+    },
 }
 
 
