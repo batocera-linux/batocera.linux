@@ -639,7 +639,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         "SindenBorderEnabled": "false",
         "SindenBorderMode": "0",
         "SindenBorderThickness": "10",
-        
+
         # Player 1 controls
         "P1_Up": f"{p1_sdl}/DPadUp",
         "P1_Down": f"{p1_sdl}/DPadDown",
@@ -734,7 +734,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         "Inufuku_2_P1": f"{p1_sdl}/FaceSouth",
         "Inufuku_3_P1": f"{p1_sdl}/FaceWest",
         "Inufuku_4_P1": f"{p1_sdl}/FaceEast",
-        
+
         # Player 2 controls
         "P2_Up": f"{p2_sdl}/DPadUp",
         "P2_Down": f"{p2_sdl}/DPadDown",
@@ -801,7 +801,7 @@ def configureINI(config_directory: Path, bios_directory: Path, system: Emulator,
         "Inufuku_2_P2": f"{p2_sdl}/FaceSouth",
         "Inufuku_3_P2": f"{p2_sdl}/FaceWest",
         "Inufuku_4_P2": f"{p2_sdl}/FaceEast",
-        
+
         # Generic & Special buttons mapping
         "P1_Button1": f"{p1_sdl}/FaceSouth",
         "Coin1": f"{p1_sdl}/Back",
