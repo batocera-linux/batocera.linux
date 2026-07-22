@@ -131,6 +131,7 @@
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.05
 - FFMPEG to 8.1.2
+- GStreamer codecs to 1.28.5
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1
 - Linux Firmware to 20260622

@@ -1,0 +1,28 @@
+From e2acc2828d2d8e1ba432dc4c918e84058a1d84c8 Mon Sep 17 00:00:00 2001
+From: Steve Lhomme <robux4@ycbcr.xyz>
+Date: Wed, 11 Feb 2026 14:26:56 +0100
+Subject: [PATCH] gstreamer: remove unneeded includes
+
+We don't use anything specific to these headers that is not include by gstvlcpictureplaneallocator.h.
+
+Fixes #29604
+---
+ modules/codec/gstreamer/gstvlcvideopool.h | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/modules/codec/gstreamer/gstvlcvideopool.h b/modules/codec/gstreamer/gstvlcvideopool.h
+index 996665c4a3d..495643d929d 100644
+--- a/modules/codec/gstreamer/gstvlcvideopool.h
++++ b/modules/codec/gstreamer/gstvlcvideopool.h
+@@ -26,9 +26,6 @@
+ #ifndef VLC_GST_VIDEO_POOL_H
+ #define VLC_GST_VIDEO_POOL_H
+ 
+-#include <gst/gstbufferpool.h>
+-#include <gst/video/gstvideopool.h>
+-
+ #include "gstvlcpictureplaneallocator.h"
+ 
+ typedef struct _GstVlcVideoPool GstVlcVideoPool;
+-- 
+GitLab
