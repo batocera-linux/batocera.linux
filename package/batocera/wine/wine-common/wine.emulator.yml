@@ -77,7 +77,7 @@ custom_features:
   enable_win32:
     group: ADVANCED OPTIONS
     prompt: ENABLE WIN32
-    description: Sets Runner to 32bit, works only if there is no prefix for current app is installed.
+    description: Forces a pure 32bit prefix, only if no prefix exists and the runner supports win32.
     choices:
       "Off": 0
       "On": 1
