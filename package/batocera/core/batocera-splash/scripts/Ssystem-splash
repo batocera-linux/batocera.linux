@@ -47,7 +47,18 @@ do_start () {
     if [ -z "${video_rotation}" ]; then
         MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
         if [ -f "${MODEL_CONF}" ]; then
-            video_rotation=$(awk -F'=' '/^display\.rotate\.[^=-]+=/{print $2; exit}' "${MODEL_CONF}" | tr -d '[:space:]')
+            # Match the active connector's own rotate key, not the first one.
+            effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null; done | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+' | head -1)
+            rotation_line=""
+            if [ -n "${effectiveDrmOutput}" ]; then
+                rotation_line=$(grep -E "^display\.rotate\.${effectiveDrmOutput}=" "${MODEL_CONF}" | head -1)
+            fi
+            if [ -z "${rotation_line}" ]; then
+                rotation_line=$(grep -E '^display\.rotate=' "${MODEL_CONF}" | head -1)
+            fi
+            if [ -n "${rotation_line}" ]; then
+                video_rotation=$(echo "${rotation_line}" | cut -d'=' -f2)
+            fi
         fi
     fi
 
