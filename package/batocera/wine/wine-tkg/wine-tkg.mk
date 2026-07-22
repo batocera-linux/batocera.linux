@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WINE_TKG_VERSION = 11.12
+WINE_TKG_VERSION = 11.13
 WINE_TKG_SITE = https://github.com/Kron4ek/wine-tkg
 WINE_TKG_SITE_METHOD = git
 WINE_TKG_LICENSE = LGPL-2.1+

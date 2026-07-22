@@ -120,31 +120,44 @@ setPrefixArch(){
     # Parameter 2 = current WineRunner
     # Parameter 3 = action
 
-    # Set WINEARCH to win32 if term win32 is found in used runner or if it setted as option in ES and if prefix is not already build!
-    # Check usedaArch in userdef.reg, and delete syswow64 symlink from prefix if ACTION=tricks - winetricks checks sys dir and will deny to work!
-
-    # get ES-OPTION
     ENABLE_WIN32="$(get_setting enable_win32 "${SYSTEM}" "${ROMGAMENAME}")"
 
-    # check registry settings in PREFIX for current WINE-RUNNER
+    # Does the selected runner support real WINEARCH=win32 prefixes?
+    # (classic split-arch build has i386-unix; wow64-only builds don't
+    # and don't need it -- they run 32-bit exes inside their normal prefix.)
+    local SUPPORTS_WIN32=0
+    [[ -e "${DIR}/${WINE_VERSION}/lib/wine/i386-unix/wine" ]] && SUPPORTS_WIN32=1
+
     local val
     if [[ -e "${1}/userdef.reg" ]]; then
         if val=$(grep -Po '^#arch=\K.*' "${1}/userdef.reg"); then
             echo "${FUNCNAME[0]}: Found arch '${val}' in Prefix-registry-file"
-            if [[ $val == win32 && $3 == tricks ]]; then 
+            if [[ $val == win32 && $3 == tricks ]]; then
                 test -d "${1}/drive_c/windows/syswow64" && { rm -r -- "$_"; echo "${FUNCNAME[0]}: removed $_"; }
             elif [[ $val != win32 && ${ENABLE_WIN32} -eq 1 ]]; then
                 echo "${FUNCNAME[0]}: Did found '$val' in registry - Prefix can't be set to 32bit!"
             elif [[ $val == win32 ]]; then
+                if [[ ${SUPPORTS_WIN32} -eq 0 ]]; then
+                    echo "${FUNCNAME[0]}: ERROR: Prefix is a real win32 prefix but runner '${WINE_VERSION}' no longer supports WINEARCH=win32. Delete and recreate this prefix, or switch back to a runner that supports it." >&2
+                    return 1
+                fi
                 export WINEARCH=win32
             fi
         fi
     else
         # Missing key, perform further checks and perform a fresh install with createWineDirectory()
         if [[ ${ENABLE_WIN32} == 1 && ! -d "${1}" ]]; then
-            export WINEARCH=win32; val="ENEABLE WIN32 in ES setted 'win32'"
-        elif [[ "${2,,}" =~ ^win32[-_.].*$ && ! -d "${1}" ]]; then 
-            export WINEARCH=win32; val="RUNNER carries 'win32' value"
+            if [[ ${SUPPORTS_WIN32} -eq 1 ]]; then
+                export WINEARCH=win32; val="ENABLE WIN32 in ES setted 'win32'"
+            else
+                val="win64 (ENABLE WIN32 ignored - runner '${WINE_VERSION}' has no true win32 mode; 32-bit apps still run via wow64)"
+            fi
+        elif [[ "${2,,}" =~ ^win32[-_.].*$ && ! -d "${1}" ]]; then
+            if [[ ${SUPPORTS_WIN32} -eq 1 ]]; then
+                export WINEARCH=win32; val="RUNNER carries 'win32' value"
+            else
+                val="win64 (runner name carries 'win32' but current build has no true win32 mode; ignored)"
+            fi
         else
             val=win64
         fi

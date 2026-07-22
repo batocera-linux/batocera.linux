@@ -102,6 +102,8 @@ config BR2_PACKAGE_BATOCERA_WINE_REQUIREMENTS
 	select BR2_PACKAGE_AVAHI_DAEMON # for BR2_PACKAGE_NSS_MDNS
 	select BR2_PACKAGE_NSS_MDNS
 	select BR2_PACKAGE_LIBKRB5
+	select BR2_PACKAGE_ICU
+	select BR2_PACKAGE_WAYLAND
 
 	# packages used by sub libs (gstreamer, ffmpeg, ...)
     select BR2_PACKAGE_X264

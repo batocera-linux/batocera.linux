@@ -151,8 +151,8 @@
 - VKD3D Proton to 3.0.1
 - Vulkan stack to 1.4.350
 - WINE Mono to 11.1.0
-- WINE Proton to proton-exp-11.0
-- WINE TKG to 11.12
+- WINE Proton to proton-11.0-1
+- WINE TKG to 11.13
 - Wlroots to 0.20.2
 - X86_64 / Zen3 kernel updated to 7.1.4
 
