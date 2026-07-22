@@ -1,4 +1,4 @@
-# 2026/xx/xx - batocera.linux 44 - xxxx
+# 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
