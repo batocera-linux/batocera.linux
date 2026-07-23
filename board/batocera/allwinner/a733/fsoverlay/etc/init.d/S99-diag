@@ -1,0 +1,70 @@
+#!/bin/sh
+# A733 display diagnostic — writes to /boot (FAT32, always real partition)
+# so diagnostics survive power cuts and are readable on any PC.
+# /boot is mounted by the initramfs; remount rw briefly to write files.
+
+boot_write() {
+    mount -o remount,rw /boot 2>/dev/null
+    cat > /boot/"$1"
+    sync
+    mount -o remount,ro /boot 2>/dev/null
+}
+
+# Early snapshot: runs immediately before the 50s sleep, capturing mount state
+# and any labwc errors that appeared in the first seconds after init.d finished.
+{
+    date
+    echo "=== mount status ==="
+    cat /proc/mounts | grep -E "userdata|mmcblk|boot|tmpfs"
+    echo ""
+    echo "=== /var/log/labwc.log (early) ==="
+    cat /var/log/labwc.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== /userdata/system/batocera.conf ==="
+    cat /userdata/system/batocera.conf 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== running processes ==="
+    ps 2>&1
+} | boot_write early-diag.txt
+
+sleep 50
+
+# Full snapshot: after labwc and ES have had time to start (or fail)
+{
+    date
+    echo "=== mount status ==="
+    cat /proc/mounts | grep -E "userdata|mmcblk|boot|tmpfs"
+    echo ""
+    echo "=== batocera.conf (video/output keys) ==="
+    batocera-conf 2>/dev/null | grep -iE "video|output|resolution"
+    echo ""
+    echo "=== batocera-drminfo ==="
+    batocera-drminfo 2>&1
+    echo ""
+    echo "=== batocera-resolution listOutputs ==="
+    batocera-resolution listOutputs 2>&1
+    echo ""
+    echo "=== running processes ==="
+    ps 2>&1 | grep -iE "emulation|labwc|batocera|ES|drm"
+    echo ""
+    echo "=== /var/log/labwc.log ==="
+    cat /var/log/labwc.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== /tmp/resize.log (S02resize output) ==="
+    cat /tmp/resize.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== /userdata/system/logs/display.log ==="
+    cat /userdata/system/logs/display.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== ES launch stdout ==="
+    cat /userdata/system/logs/es_launch_stdout.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== ES launch stderr ==="
+    cat /userdata/system/logs/es_launch_stderr.log 2>/dev/null || echo "(not found)"
+    echo ""
+    echo "=== emulationstation.log (last 50 lines) ==="
+    tail -50 /userdata/system/logs/emulationstation.log 2>/dev/null || echo "(not found)"
+} | boot_write diag.txt
+
+# Also persist to /userdata in case SHARE is a real partition
+cp /boot/diag.txt /userdata/diag.txt 2>/dev/null

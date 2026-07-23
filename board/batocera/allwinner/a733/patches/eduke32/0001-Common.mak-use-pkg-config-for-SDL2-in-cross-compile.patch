@@ -1,0 +1,23 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Wed, 14 May 2026 00:00:00 +0000
+Subject: [PATCH] Common.mak: use PKG_CONFIG for SDL2 flags in cross-compile
+
+When cross-compiling, sdl2-config is the host tool and returns host
+paths like -I/usr/include/SDL2. The Buildroot cross-compiler wrapper
+rejects these as unsafe header paths.
+
+Use $(PKG_CONFIG) (set by Buildroot to the sysroot-aware wrapper)
+with a fallback to $(SDLCONFIG) for native builds. The target SDL2
+headers are already present in the cross-compile sysroot.
+---
+ Common.mak | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Common.mak b/Common.mak
+--- a/Common.mak
++++ b/Common.mak
+@@ -948,4 +948,4 @@
+-            SDLCONFIG_CFLAGS := $(strip $(subst -Dmain=SDL_main,,$(shell $(SDLCONFIG) --cflags)))
+-            SDLCONFIG_LIBS := $(strip $(subst -mwindows,,$(shell $(SDLCONFIG) --libs)))
++            SDLCONFIG_CFLAGS := $(strip $(subst -Dmain=SDL_main,,$(shell $(PKG_CONFIG) --cflags sdl2 2>/dev/null || $(SDLCONFIG) --cflags)))
++            SDLCONFIG_LIBS := $(strip $(subst -mwindows,,$(shell $(PKG_CONFIG) --libs sdl2 2>/dev/null || $(SDLCONFIG) --libs)))

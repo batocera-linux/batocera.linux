@@ -1,0 +1,26 @@
+#!/bin/sh
+# Set DP-1 as primary video output before S14labwc reads batocera.conf.
+# USB-C DisplayPort Alt Mode is the only display on A733/Cubie-A7S.
+
+if [ "$1" != "start" ]; then
+    exit 0
+fi
+
+mkdir -p /userdata/system
+CONF=/userdata/system/batocera.conf
+if ! grep -q "^global.videooutput=" "$CONF" 2>/dev/null; then
+    echo "global.videooutput=DP-1" >> "$CONF"
+fi
+
+# Write diagnostics to serial console (ttyAS0).
+# /dev/console = tty1 (display), so stdout here is NOT visible on serial.
+# /boot remount,rw silently fails (bind mount from initramfs), so we use serial.
+{
+    echo "=== S13-videooutput ==="
+    date
+    echo "global.videooutput set to DP-1"
+    echo "=== /proc/mounts (mmcblk/boot/userdata) ==="
+    grep -E "mmcblk|boot|userdata" /proc/mounts
+    echo "=== batocera.conf ==="
+    cat "$CONF" 2>/dev/null || echo "(not found)"
+} > /dev/ttyS0 2>/dev/null
