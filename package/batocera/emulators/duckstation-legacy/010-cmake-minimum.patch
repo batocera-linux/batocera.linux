@@ -1,0 +1,17 @@
+diff --git a/dep/cpuinfo/deps/clog/CMakeLists.txt b/dep/cpuinfo/deps/clog/CMakeLists.txt
+index 0e65a1b..dbbbf41 100644
+--- a/dep/cpuinfo/deps/clog/CMakeLists.txt
++++ b/dep/cpuinfo/deps/clog/CMakeLists.txt
+@@ -1,4 +1,4 @@
+-CMAKE_MINIMUM_REQUIRED(VERSION 3.1 FATAL_ERROR)
++CMAKE_MINIMUM_REQUIRED(VERSION 3.10 FATAL_ERROR)
+ 
+ # ---[ Project and semantic versioning.
+ PROJECT(clog C CXX)
+@@ -39,4 +39,4 @@ ELSE()
+ ENDIF()
+ IF(ANDROID AND NOT CLOG_LOG_TO_STDIO)
+   TARGET_LINK_LIBRARIES(clog PRIVATE log)
+-ENDIF()
+\ No newline at end of file
++ENDIF()
