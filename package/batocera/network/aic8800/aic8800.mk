@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AIC8800_VERSION = 4.0+git20250410.b99ca8b6-5
+AIC8800_VERSION = 5.0+git20260123.5f7be68d-7
 AIC8800_SITE = $(call github,radxa-pkg,aic8800,$(AIC8800_VERSION))
 AIC8800_LICENSE = GPL-3.0
 AIC8800_LICENSE_FILES = LICENSE
@@ -31,6 +31,12 @@ define AIC8800_DEBIAN_PATCHES
 	@$(call MESSAGE,"Patching AIC8800 with debian patches")
 	$(APPLY_PATCHES) $(@D) $(dir $(@D)/debian/patches/series)
 endef
+
+# Fix line ending issues
+define AIC8800_CONVERT_LINE_ENDINGS
+	find $(@D) -type f \( -name "*.c" -o -name "*.h" -o -name "*.patch" \) -exec sed -i 's/\r$$//' {} +
+endef
+AIC8800_POST_EXTRACT_HOOKS += AIC8800_CONVERT_LINE_ENDINGS
 
 # Rock 5c uses aic8800D80 & CoolPi 4b uses aic8800
 define AIC8800_FIRMWARE_ETC_SDIO
