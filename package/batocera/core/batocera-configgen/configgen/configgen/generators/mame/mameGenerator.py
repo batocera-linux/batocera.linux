@@ -857,6 +857,8 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
             return "megadrive"
         if controllerType == "fightstick":
             return "sfstick"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "arcade33top1"
     elif romName in mkList:
         if controllerType in [ "auto", "snes" ]:
             return "mksnes"
@@ -864,6 +866,8 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
             return "mkmegadrive"
         if controllerType == "fightstick":
             return "mkstick"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "mkarcade33"
     elif romName in kiList:
         if controllerType in [ "auto", "snes" ]:
             return "kisnes"
@@ -871,7 +875,11 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
             return "megadrive"
         if controllerType == "fightstick":
             return "sfstick"
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "arcade33top1"
     elif romName in  neogeoList:
+        if controllerType in ["arcade33", "arcade33top1"]:
+            return "neoarcade33"
         return "neomini"
     elif romName in  twinstickList:
         return "twinstick"
@@ -882,5 +890,9 @@ def getMameControlScheme(system: Emulator, rom_path: Path) -> MameControlScheme:
             return "fightstick"
         if controllerType == "megadrive":
             return "mddefault"
-
+        if controllerType == "arcade33":
+            return "arcade33"
+        if controllerType == "arcade33top1":
+            return "arcade33top1"
+            
     return "default"
