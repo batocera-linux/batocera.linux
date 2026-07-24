@@ -76,12 +76,14 @@ define PIPEWIRE_FFMPEG_PLUGINS_INSTALL_TARGET_CMDS
 	$(INSTALL) -d $(TARGET_DIR)/usr/lib/spa-0.2/ffmpeg
 	$(INSTALL) -m 0755 $(@D)/buildroot-build/spa/plugins/ffmpeg/libspa-ffmpeg.so \
 		$(TARGET_DIR)/usr/lib/spa-0.2/ffmpeg/
+	$(INSTALL) -d $(TARGET_DIR)/usr/lib/spa-0.2/videoconvert
 	$(INSTALL) -m 0755 $(@D)/buildroot-build/spa/plugins/videoconvert/libspa-videoconvert.so \
 		$(TARGET_DIR)/usr/lib/spa-0.2/videoconvert/
 endef
 
 ifeq ($(BR2_PACKAGE_LIBSNDFILE),y)
 define PIPEWIRE_FFMPEG_PLUGINS_INSTALL_PW_CAT
+	$(INSTALL) -d $(TARGET_DIR)/usr/bin
 	$(INSTALL) -m 0755 $(@D)/buildroot-build/src/tools/pw-cat \
 		$(TARGET_DIR)/usr/bin/pw-cat
 endef

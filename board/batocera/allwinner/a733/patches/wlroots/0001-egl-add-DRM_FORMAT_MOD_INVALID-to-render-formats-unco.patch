@@ -1,0 +1,53 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Thu, 03 Jul 2026 00:00:00 +0000
+Subject: [PATCH 1/2] egl: add DRM_FORMAT_MOD_INVALID to render formats unconditionally
+
+PowerVR DDK 24.x reports all explicit modifiers as external_only=true,
+so the original condition (modifiers_len==0 || !all_external_only) never
+adds DRM_FORMAT_MOD_INVALID to dmabuf_render_formats.  This leaves the
+render format set empty, causing every wlroots format check to fail with
+"Renderer doesn't support format".
+
+Add INVALID unconditionally — the driver can still render with implicit
+modifiers even when all explicit modifiers are external-only.  Also add
+LINEAR unconditionally when modifiers_len==0 (driver doesn't advertise
+modifiers), consistent with the original intent for modifier-less drivers.
+
+---
+ render/egl.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
+
+diff --git a/render/egl.c b/render/egl.c
+index 1111111..2222222 100644
+--- a/render/egl.c
++++ b/render/egl.c
+@@ -134,23 +134,19 @@ static void egl_init_formats(struct wlr_egl *egl) {
+ 		has_modifiers = has_modifiers || modifiers_len > 0;
+
+-		bool all_external_only = true;
+ 		for (int j = 0; j < modifiers_len; j++) {
+ 			wlr_drm_format_set_add(&egl->dmabuf_texture_formats, fmt,
+ 				modifiers[j]);
+ 			if (!external_only[j]) {
+ 				wlr_drm_format_set_add(&egl->dmabuf_render_formats, fmt,
+ 					modifiers[j]);
+-				all_external_only = false;
+ 			}
+ 		}
+
+-		// EGL always supports implicit modifiers. If at least one modifier supports rendering,
+-		// assume the implicit modifier supports rendering too.
++		// EGL always supports implicit modifiers. Add INVALID unconditionally —
++		// even when all explicit modifiers are external-only (e.g. PVR DDK 24.x),
++		// the driver can still render with implicit modifiers.
+ 		wlr_drm_format_set_add(&egl->dmabuf_texture_formats, fmt,
+ 			DRM_FORMAT_MOD_INVALID);
+-		if (modifiers_len == 0 || !all_external_only) {
+-			wlr_drm_format_set_add(&egl->dmabuf_render_formats, fmt,
+-				DRM_FORMAT_MOD_INVALID);
+-		}
++		wlr_drm_format_set_add(&egl->dmabuf_render_formats, fmt,
++			DRM_FORMAT_MOD_INVALID);
+
+ 		if (modifiers_len == 0) {
+ 			// Assume the linear layout is supported if the driver doesn't

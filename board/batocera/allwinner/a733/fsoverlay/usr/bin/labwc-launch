@@ -1,0 +1,206 @@
+#!/bin/sh
+
+. /etc/profile.d/25-language.sh
+
+# Add the keyboard details to the environment variable
+LABWC_ENV_FILE="/userdata/system/.config/labwc/environment"
+echo "XKB_DEFAULT_LAYOUT=$XKB_DEFAULT_LAYOUT" > "$LABWC_ENV_FILE"
+echo "XKB_DEFAULT_VARIANT=$XKB_DEFAULT_VARIANT" >> "$LABWC_ENV_FILE"
+
+# Allow startup from a user session where WAYLAND_DISPLAY is set,
+# e.g. to restart via /etc/init.d/S31emulationstation start
+unset WAYLAND_DISPLAY
+
+# Log and configuration file paths
+LOG_FILE="/userdata/system/logs/display.log"
+LABWC_CONF_DIR="/userdata/system/.config/labwc"
+LABWC_LOG_FILE="/userdata/system/logs/labwc.log"
+LABWC_GLES2_LOG="/userdata/system/logs/labwc-gles2.log"
+
+mkdir -p /userdata/system/logs
+mkdir -p /var/run
+mkdir -p /var/log
+
+# Helper: write a message to the serial console directly.
+# /dev/console = tty1 (display), so init.d stdout never appears on serial.
+serial() { printf '[labwc-launch] %s\n' "$*" > /dev/ttyS0 2>/dev/null; }
+
+serial "started (pid $$)"
+
+# Wait for the sunxi-drm display device — find the card that owns any DP or eDP
+# connector. PVR GPU also creates a DRM device (no connectors) and may claim
+# card0 first, so we must not hardcode card0.
+i=0
+DISPLAY_CARD=""
+DISPLAY_CONN=""
+while [ $i -lt 60 ]; do
+    for conn in /sys/class/drm/card*-DP-1 /sys/class/drm/card*-eDP-1; do
+        [ -e "$conn" ] && DISPLAY_CARD=$(basename "${conn%%-*}") && DISPLAY_CONN=$(basename "$conn") && break 2
+    done
+    [ $((i % 5)) -eq 0 ] && serial "waiting for display connector (${i}s)... drm: $(ls /sys/class/drm/ 2>/dev/null | tr '\n' ' ')"
+    echo "Waiting for display connector... ($i s)" >> "$LOG_FILE"
+    sleep 1
+    i=$((i + 1))
+done
+if [ -z "$DISPLAY_CARD" ]; then
+    serial "ERROR: no DP-1 or eDP-1 connector found after 60s — aborting"
+    serial "DRM entries: $(ls /sys/class/drm/ 2>/dev/null | tr '\n' ' ')"
+    exit 1
+fi
+serial "display connector: $DISPLAY_CONN on /dev/dri/$DISPLAY_CARD (found at ${i}s)"
+echo "display connector: $DISPLAY_CONN on /dev/dri/$DISPLAY_CARD (found at ${i}s)" >> "$LOG_FILE"
+
+# Derive the Wayland output name from the DRM connector (card1-DP-1 → DP-1)
+WAYLAND_OUTPUT=$(echo "$DISPLAY_CONN" | sed 's/^card[0-9]*-//')
+
+# EDID quirk: some displays have correct timing descriptors but a broken monitor
+# range descriptor that caps the reported max vfreq/hfreq below the mode they
+# describe. The kernel validates timing modes against the range and rejects any
+# mode whose h_freq or v_freq exceeds the range limits — even when the timing
+# descriptor explicitly encodes that mode. We detect known affected displays by
+# their EDID manufacturer ID (bytes 8-9) and write a corrected EDID to the
+# kernel sysfs override before labwc starts. wlroots reads the EDID on connector
+# init, so the override is in place before any mode list is built.
+apply_edid_quirks() {
+    local conn_path="/sys/class/drm/$DISPLAY_CONN"
+    local edid_src="$conn_path/edid"
+    if [ ! -f "$edid_src" ]; then
+        serial "EDID quirk: no edid file at $edid_src — skipping"
+        echo "EDID quirk: no edid file at $edid_src — skipping" >> "$LOG_FILE"
+        return
+    fi
+
+    # Find the writable edid_override node. Kernel 5.5+ may expose it in sysfs;
+    # older BSP kernels may only have it in debugfs. Try both.
+    local card_num
+    card_num=$(echo "$DISPLAY_CARD" | tr -d 'card')
+    local edid_override=""
+    for candidate in \
+        "$conn_path/edid_override" \
+        "/sys/kernel/debug/dri/${card_num}/${WAYLAND_OUTPUT}/edid_override" \
+        "/sys/kernel/debug/dri/${card_num}/edid_override"; do
+        if [ -w "$candidate" ]; then
+            edid_override="$candidate"
+            break
+        fi
+    done
+
+    if [ -z "$edid_override" ]; then
+        serial "EDID quirk: no writable edid_override found — kernel may not support runtime EDID override"
+        echo "EDID quirk: no writable edid_override found (checked sysfs + debugfs)" >> "$LOG_FILE"
+        return
+    fi
+    serial "EDID quirk: override node: $edid_override"
+    echo "EDID quirk: override node: $edid_override" >> "$LOG_FILE"
+
+    # Read manufacturer ID bytes 8-9 as a hex string (2 bytes, no separator)
+    local mfr
+    mfr=$(od -An -tx1 -j8 -N2 "$edid_src" 2>/dev/null | tr -d ' \n')
+    echo "EDID quirk: manufacturer id=$mfr" >> "$LOG_FILE"
+    case "$mfr" in
+        506c)
+            # TCL / Technical Concepts Ltd SmartGlasses: EDID monitor range caps
+            # at 65Hz/70kHz but the two base-block DTDs correctly encode 120Hz
+            # (293.6MHz, h_freq=133kHz). Fix: override with corrected range
+            # (130Hz/160kHz) so the kernel exposes the 120Hz DTD modes.
+            local quirk_edid="/lib/firmware/edid/smartglasses-120hz.bin"
+            if [ -f "$quirk_edid" ]; then
+                cat "$quirk_edid" > "$edid_override" 2>/dev/null \
+                    && serial "EDID quirk: SmartGlasses 120Hz override applied" \
+                    && echo "EDID quirk: SmartGlasses 120Hz override applied" >> "$LOG_FILE" \
+                    || { serial "EDID quirk: SmartGlasses override write failed"; echo "EDID quirk: override write failed" >> "$LOG_FILE"; }
+            else
+                serial "EDID quirk: SmartGlasses firmware file missing: $quirk_edid"
+                echo "EDID quirk: firmware file missing: $quirk_edid" >> "$LOG_FILE"
+            fi
+            ;;
+        *)
+            echo "EDID quirk: manufacturer $mfr — no quirk needed" >> "$LOG_FILE"
+            ;;
+    esac
+}
+apply_edid_quirks
+
+echo "Starting labwc (keyboard: $XKB_DEFAULT_LAYOUT)" >> "$LOG_FILE"
+
+# After labwc is running, prefer 120Hz if the display supports it.
+# Falls back silently to the preferred mode (usually 60Hz) if not.
+prefer_120hz() {
+    local output="$1"
+    local mode_120
+    mode_120=$(WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run \
+               wlr-randr 2>/dev/null | \
+               awk '/^[[:space:]]+[0-9]+x[0-9]+ px,/ {
+                   res=$1; hz=$3
+                   if (int(hz)>=119 && int(hz)<=121) print res "@" hz "Hz"
+               }' | sort -t x -k1 -rn | head -1)
+    if [ -n "$mode_120" ]; then
+        if WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run \
+           wlr-randr --output "$output" --mode "$mode_120" 2>/dev/null; then
+            serial "120Hz mode set: $mode_120 on $output"
+            echo "Refresh: 120Hz set on $output: $mode_120" >> "$LOG_FILE"
+        else
+            serial "120Hz mode rejected by display: $mode_120"
+            echo "Refresh: 120Hz mode $mode_120 rejected on $output" >> "$LOG_FILE"
+        fi
+    else
+        echo "Refresh: no 120Hz mode on $output — using preferred" >> "$LOG_FILE"
+    fi
+}
+
+# pvrsrvkm's render node. sunxi-drm (display) does NOT set DRIVER_RENDER so it
+# gets no renderD node. pvrsrvkm does, and gets the first available minor (128).
+# Do NOT derive by card-number arithmetic — render node minors are assigned by
+# DRIVER_RENDER registration order, not card index.
+PVR_RENDER_NODE=$(ls /dev/dri/renderD* 2>/dev/null | head -1)
+if [ -z "$PVR_RENDER_NODE" ]; then
+    serial "ERROR: no render node found — pvrsrvkm.ko may not be loaded"
+    exit 1
+fi
+serial "PVR render node: $PVR_RENDER_NODE"
+
+# Try GLES2 with the PowerVR DDK. WLR_RENDER_DRM_DEVICE points wlroots at the
+# PVR render node instead of the sunxi-drm render node (which can't do GLES2).
+# If labwc crashes within 5s (EGL init failure), fall back to pixman.
+
+serial "Attempting WLR_RENDERER=gles2 display=/dev/dri/$DISPLAY_CARD render=$PVR_RENDER_NODE"
+echo "=== labwc GLES2 attempt $(date) ===" > "$LABWC_GLES2_LOG"
+LD_LIBRARY_PATH="/usr/local/lib:/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
+LIBGL_DRIVERS_PATH="/usr/local/lib/dri" \
+GBM_BACKENDS_PATH="/usr/local/lib/gbm" \
+MESA_LOADER_DRIVER_OVERRIDE=pvr \
+WLR_RENDERER=gles2 \
+WLR_DRM_DEVICES="/dev/dri/$DISPLAY_CARD" \
+WLR_RENDER_DRM_DEVICE="$PVR_RENDER_NODE" \
+WLR_LIBINPUT_NO_DEVICES=1 \
+WLR_DRM_NO_MODIFIERS=1 \
+    /usr/bin/labwc -d -C $LABWC_CONF_DIR >> "$LABWC_GLES2_LOG" 2>&1 &
+LABWC_PID=$!
+
+sleep 5
+if kill -0 $LABWC_PID 2>/dev/null; then
+    serial "labwc GLES2 alive after 5s — GPU rendering active"
+    cp "$LABWC_GLES2_LOG" "$LABWC_LOG_FILE"
+    prefer_120hz "$WAYLAND_OUTPUT" &
+    wait $LABWC_PID
+    EXIT_CODE=$?
+else
+    serial "labwc GLES2 crashed — falling back to pixman"
+    cp "$LABWC_GLES2_LOG" "$LABWC_LOG_FILE"
+    tail -20 "$LABWC_GLES2_LOG" | while IFS= read -r line; do serial "  $line"; done
+    WLR_RENDERER=pixman WLR_RENDERER_ALLOW_SOFTWARE=1 \
+    WLR_DRM_DEVICES="/dev/dri/$DISPLAY_CARD" WLR_LIBINPUT_NO_DEVICES=1 \
+        /usr/bin/labwc -d -C $LABWC_CONF_DIR >> "$LABWC_LOG_FILE" 2>&1 &
+    LABWC_PID=$!
+    serial "labwc pixman fallback started with PID $LABWC_PID"
+    prefer_120hz "$WAYLAND_OUTPUT" &
+    wait $LABWC_PID
+    EXIT_CODE=$?
+fi
+
+serial "labwc exited with code $EXIT_CODE"
+echo "labwc exited with code $EXIT_CODE" >> "$LOG_FILE"
+if [ $EXIT_CODE -ne 0 ]; then
+    serial "--- last 30 lines of labwc.log ---"
+    tail -30 "$LABWC_LOG_FILE" | while IFS= read -r line; do serial "  $line"; done
+fi

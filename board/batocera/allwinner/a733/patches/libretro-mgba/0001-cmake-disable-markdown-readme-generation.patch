@@ -1,0 +1,24 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Mon, 12 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: disable markdown README generation
+
+In the Flatpak build environment the host markdown binary is visible at
+/run/host/usr/bin/markdown but requires libmarkdown.so.3 which is not
+present inside the Flatpak sandbox. cmake finds the binary via
+find_program(), generates ALL targets for each README*.html, and the
+build then fails at runtime with:
+
+  markdown: error while loading shared libraries: libmarkdown.so.3
+
+Force MARKDOWN to empty so the if(MARKDOWN) guard skips HTML generation
+entirely. The source .md files are still installed as fallback.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1126,1 +1126,1 @@
+-find_program(MARKDOWN NAMES markdown kramdown pandoc)
++set(MARKDOWN "" CACHE FILEPATH "markdown converter" FORCE)

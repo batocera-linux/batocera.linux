@@ -1,0 +1,24 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Sun, 11 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: enable position-independent code globally
+
+LLVM static libraries are compiled without -fPIC by default, but
+LLVM_BUILD_LLVM_DYLIB=ON (set by Buildroot's llvm.mk) links them all
+into libLLVM.so. The linker rejects the resulting non-PIC relocations:
+
+  R_X86_64_TPOFF32 (local-exec TLS) and R_X86_64_PC32 (vtables)
+  can not be used when making a shared object; recompile with -fPIC
+
+Setting CMAKE_POSITION_INDEPENDENT_CODE globally after project() causes
+cmake to add -fPIC to all compilations, making the static library objects
+safe to link into shared libraries.
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -46,0 +46,2 @@
++
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)

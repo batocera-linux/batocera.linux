@@ -1,0 +1,31 @@
+#!/bin/sh
+# Wait for the USB-C DisplayPort Alt Mode connector to show "connected"
+# before S28splash runs.  On cold boot the HUSB311 TypeC controller needs
+# 2-5 s to complete Alt Mode negotiation and fire HPD.  Without this wait
+# S28 finds no connected display and mpv falls through to auto-detection,
+# which fails with "No primary DRM device could be picked".
+
+[ "$1" = "start" ] || exit 0
+
+TIMEOUT=10
+i=0
+
+while [ "$i" -lt "$TIMEOUT" ]; do
+    for f in /sys/class/drm/card*-DP-1/status; do
+        [ -f "$f" ] || continue
+        if [ "$(cat "$f" 2>/dev/null)" = "connected" ]; then
+            # DP-1 sysfs shows connected at CC detection time, but DP link
+            # training + EDID read take another ~5s. Without this wait, S28
+            # plays while the monitor is still dark and the ES Checker fires
+            # a hotplug restart mid-load. Sleep here so the display is fully
+            # negotiated before any video or compositor starts.
+            sleep 5
+            exit 0
+        fi
+    done
+    sleep 1
+    i=$((i + 1))
+done
+
+# Timed out — DP-1 never appeared.  Boot continues; S28 will handle it.
+exit 0

@@ -1,0 +1,27 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Fri, 09 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: replace deprecated OLD policies for CMake 4.0+
+
+CMake 4.0 removed support for setting CMP0025 and CMP0054 to OLD
+behavior. Both are no-ops on Linux (CMP0025 only affects macOS
+Apple Clang detection; CMP0054 NEW is the sane quoting behavior).
+Change both to NEW to allow building with CMake 4.x.
+---
+ source/CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/source/CMakeLists.txt b/source/CMakeLists.txt
+--- a/source/CMakeLists.txt
++++ b/source/CMakeLists.txt
+@@ -9,10 +9,10 @@ message(STATUS "cmake version ${CMAKE_VERSION}")
+ if(POLICY CMP0025)
+-    cmake_policy(SET CMP0025 OLD) # report Apple's Clang as just Clang
++    cmake_policy(SET CMP0025 NEW) # CMake 4.0+ requires NEW; Apple Clang vs Clang only matters on macOS
+ endif()
+ if(POLICY CMP0042)
+     cmake_policy(SET CMP0042 NEW) # MACOSX_RPATH
+ endif()
+ if(POLICY CMP0054)
+-    cmake_policy(SET CMP0054 OLD) # Only interpret if() arguments as variables or keywords when unquoted
++    cmake_policy(SET CMP0054 NEW) # CMake 4.0+ requires NEW; quoted if() args not dereferenced
+ endif()

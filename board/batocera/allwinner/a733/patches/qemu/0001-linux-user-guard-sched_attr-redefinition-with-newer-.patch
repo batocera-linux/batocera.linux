@@ -1,0 +1,38 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Fri, 09 May 2026 00:00:00 +0000
+Subject: [PATCH] linux-user: guard sched_attr against redefinition with newer kernel headers
+
+GCC 15 / Flatpak SDK ships Linux headers that expose struct sched_attr
+via <linux/sched/types.h>, pulled in through:
+  syscall.c -> qemu/osdep.h -> glib-compat.h -> glib.h ->
+  glib/deprecated/gthread.h -> pthread.h -> sched.h ->
+  bits/sched.h -> linux/sched/types.h
+
+syscall.c defined struct sched_attr unconditionally ("sched_attr is not
+defined in glibc"), but that comment is no longer true with newer SDKs.
+Guard with SCHED_ATTR_SIZE_VER0, which linux/sched/types.h always
+defines alongside the struct.
+---
+ linux-user/syscall.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/linux-user/syscall.c b/linux-user/syscall.c
+--- a/linux-user/syscall.c
++++ b/linux-user/syscall.c
+@@ -360,7 +360,9 @@ _syscall3(int, sys_sched_setaffinity, pid_t, pid, unsigned int, len,
+           unsigned long *, user_mask_ptr);
+-/* sched_attr is not defined in glibc */
+-struct sched_attr {
++/* sched_attr may already be defined via linux/sched/types.h in newer SDKs */
++#ifndef SCHED_ATTR_SIZE_VER0
++struct sched_attr {
+     uint32_t size;
+     uint32_t sched_policy;
+     uint64_t sched_flags;
+@@ -370,6 +372,7 @@ struct sched_attr {
+     uint64_t sched_period;
+     uint32_t sched_util_min;
+     uint32_t sched_util_max;
+ };
++#endif
+ #define __NR_sys_sched_getattr __NR_sched_getattr

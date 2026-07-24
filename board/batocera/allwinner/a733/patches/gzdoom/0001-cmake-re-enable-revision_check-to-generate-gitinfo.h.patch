@@ -1,0 +1,27 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Wed, 14 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: re-enable revision_check to generate gitinfo.h
+
+The revision_check custom target was commented out, leaving gitinfo.h
+never generated. gitinfo.cpp includes it unconditionally, so the build
+fails with "gitinfo.h: No such file or directory".
+
+Uncomment the target so cmake generates gitinfo.h at build time via
+UpdateRevision.cmake, which gracefully falls back to hash "0000000"
+when git is unavailable (e.g. in a Buildroot extracted source tree).
+---
+ src/CMakeLists.txt | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -315,4 +315,4 @@
+-#add_custom_target( revision_check ALL
+-#	COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/tools/updaterevision/UpdateRevision.cmake" src/gitinfo.h
+-#	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+-#)
++add_custom_target( revision_check ALL
++	COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/tools/updaterevision/UpdateRevision.cmake" src/gitinfo.h
++	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
++)

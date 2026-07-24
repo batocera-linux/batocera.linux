@@ -1,0 +1,134 @@
+#!/bin/sh
+#
+# enable-powervr-gpu — Install Radxa PowerVR DDK userspace for A733 BXM-4-64
+#
+# Run once after first flash (SSH or serial console):
+#   /usr/local/sbin/enable-powervr-gpu
+#
+# Downloads Imagination's non-redistributable DDK from Radxa's package repo
+# and installs it to /userdata (writable, persists across reboots). The image
+# itself stays clean. Idempotent — re-running finishes a partial install.
+#
+# Validated on A733 hardware by NickAlilovic (Orange Pi 4 Pro): OpenCL,
+# GLES2, Vulkan all load. DDK version 24.2 matches BVNC 36.56.104.183.
+
+set -e
+
+RADXA_BASE="https://radxa-repo.github.io/a733-bullseye"
+DDK_URL="${RADXA_BASE}/pool/main/x/xserver-xorg-img-bxm-1.21.1-2.deb/xserver-xorg-img-bxm_1.21.1-2_arm64.deb"
+DDK_SHA256="c8e606db1abdea40a5b97f7905ea86901b50c5fe1b76a55356ab70dde3304c3a"
+
+PVR_DIR="/userdata/system/lib/pvr"
+FLAG_FILE="/userdata/system/pvr.enabled"
+
+log()  { echo ">> $*"; printf '[enable-powervr-gpu] %s\n' "$*" > /dev/ttyAS0 2>/dev/null || true; }
+die()  { echo "ERROR: $*" >&2; exit 1; }
+
+# Re-run under sudo if not root
+if [ "$(id -u)" -ne 0 ]; then
+    exec sudo -- "$0" "$@"
+fi
+
+# Already installed?
+if [ -f "$FLAG_FILE" ] && [ -d "$PVR_DIR/usr/lib" ]; then
+    log "PowerVR DDK already installed at $PVR_DIR"
+    log "Delete $FLAG_FILE to force reinstall."
+    exit 0
+fi
+
+# Verify pvrsrvkm is loaded (kernel module must be present)
+if ! cat /proc/modules 2>/dev/null | grep -q '^pvrsrvkm'; then
+    log "pvrsrvkm not in /proc/modules — trying modprobe..."
+    modprobe pvrsrvkm 2>/dev/null || die "pvrsrvkm module not found. Check that pvrsrvkm.ko is in the kernel image."
+fi
+log "pvrsrvkm loaded: $(grep '^pvrsrvkm' /proc/modules | head -1)"
+
+# Verify network
+if ! wget -q --spider --timeout=10 "$RADXA_BASE/" 2>/dev/null; then
+    die "No network access to $RADXA_BASE. Connect ethernet and retry."
+fi
+
+log "Downloading Radxa PowerVR DDK userspace (27MB)..."
+TMPDIR_LOCAL="$(mktemp -d)"
+trap 'rm -rf "$TMPDIR_LOCAL"' EXIT
+
+wget -q --show-progress -O "$TMPDIR_LOCAL/pvr.deb" "$DDK_URL" \
+    || curl -fL --progress-bar -o "$TMPDIR_LOCAL/pvr.deb" "$DDK_URL" \
+    || die "Download failed from: $DDK_URL"
+
+# Verify checksum
+ACTUAL_SHA="$(sha256sum "$TMPDIR_LOCAL/pvr.deb" | cut -d' ' -f1)"
+if [ "$ACTUAL_SHA" != "$DDK_SHA256" ]; then
+    die "SHA256 mismatch — expected $DDK_SHA256, got $ACTUAL_SHA. Try again."
+fi
+log "Checksum OK"
+
+log "Extracting DDK to $PVR_DIR..."
+mkdir -p "$PVR_DIR"
+
+# .deb is an ar archive; Batocera has Python 3 but not ar or dpkg-deb.
+# Parse the ar format directly in Python to extract the data.tar member.
+python3 - "$TMPDIR_LOCAL/pvr.deb" "$PVR_DIR" <<'PYEOF'
+import sys, io, tarfile, os, struct
+
+deb_path, out_dir = sys.argv[1], sys.argv[2]
+os.makedirs(out_dir, exist_ok=True)
+
+with open(deb_path, 'rb') as f:
+    magic = f.read(8)
+    if magic != b'!<arch>\n':
+        sys.exit("Not a valid .deb file (bad ar magic)")
+
+    found = False
+    while True:
+        hdr = f.read(60)
+        if len(hdr) < 60:
+            break
+        name = hdr[0:16].decode('ascii', errors='replace').strip().rstrip('/')
+        size = int(hdr[48:58].decode('ascii').strip())
+        data = f.read(size)
+        if size % 2:
+            f.read(1)  # ar padding byte
+
+        if name.startswith('data.tar'):
+            print(f"  extracting {name} ({size // 1048576}MB)...", flush=True)
+            with tarfile.open(fileobj=io.BytesIO(data)) as tar:
+                tar.extractall(out_dir)
+            found = True
+            break
+
+    if not found:
+        sys.exit("data.tar member not found in .deb — corrupt download?")
+
+print("  extraction complete", flush=True)
+PYEOF
+
+log "Extraction done."
+
+# Find the actual lib directory (Radxa package puts libs in aarch64-linux-gnu)
+LIB_PATH="$PVR_DIR/usr/lib/aarch64-linux-gnu"
+if [ ! -d "$LIB_PATH" ]; then
+    # Fallback: look for libGLESv2 anywhere under PVR_DIR
+    LIB_PATH="$(find "$PVR_DIR" -name 'libGLESv2.so*' -printf '%h\n' 2>/dev/null | head -1)"
+    [ -n "$LIB_PATH" ] || die "Could not find GLES libs in extracted package."
+fi
+log "GLES libs at: $LIB_PATH"
+
+# Verify the EGL and GLES libraries are present
+for lib in libEGL.so libGLESv2.so; do
+    if ! find "$LIB_PATH" -name "${lib}*" -maxdepth 2 | grep -q .; then
+        log "WARNING: $lib not found in $LIB_PATH"
+    fi
+done
+
+# Write the flag file (contains the lib path for labwc-launch to read)
+printf '%s\n' "$LIB_PATH" > "$FLAG_FILE"
+log "Flag written: $FLAG_FILE"
+
+log ""
+log "==================================================================="
+log "PowerVR DDK installed. Reboot to activate GPU rendering."
+log "labwc-launch will auto-detect and use WLR_RENDERER=gles2."
+log "If labwc fails to start after reboot, delete $FLAG_FILE"
+log "to fall back to software (pixman) rendering."
+log "==================================================================="

@@ -1,0 +1,6 @@
+#!/bin/sh
+# A733/Cubie-A7S has no /dev/fb0 — the BSP display driver does not register
+# with DRM fbdev emulation even though CONFIG_DRM_FBDEV_EMULATION=y.  The
+# stock S03 wastes 20 s waiting for /dev/fb0 that never arrives.  Skip it;
+# the S28splash video handles branding on this hardware.
+exit 0

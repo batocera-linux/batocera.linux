@@ -1,0 +1,26 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Wed, 14 May 2026 00:00:00 +0000
+Subject: [PATCH] xxd: remove redundant K&R extern declarations for strtol/ftell
+
+GCC 15 defaults to C23, where an empty parameter list () means the
+function takes no arguments. The old K&R-style declarations:
+
+  extern long int strtol();
+  extern long int ftell();
+
+are therefore interpreted as "takes no arguments", conflicting with
+every call site that passes arguments. Both functions are already
+properly declared via the included <stdlib.h> and <stdio.h>; remove
+the redundant extern lines.
+---
+ xxd.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/xxd.c b/xxd.c
+--- a/xxd.c
++++ b/xxd.c
+@@ -142,4 +142,2 @@
+-extern long int strtol();
+-extern long int ftell();
+-
+ char version[] = "xxd v1.11, 8 jun 2013 by Juergen Weigert et al.";

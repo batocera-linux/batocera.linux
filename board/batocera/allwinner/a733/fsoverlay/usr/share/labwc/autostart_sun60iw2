@@ -1,0 +1,12 @@
+#!/bin/sh
+# Play the Batocera splash video before EmulationStation.
+# Runs via labwc autostart after the Wayland compositor is ready and the
+# display is active — mpv renders fullscreen over Wayland so it is visible.
+
+SPLASH=/usr/share/batocera/splash/splash.mp4
+[ -f "$SPLASH" ] || exit 0
+
+mpv --vo=gpu --gpu-context=wayland \
+    --fs --really-quiet --no-terminal --no-input-default-bindings \
+    --no-config --no-sub-auto \
+    "$SPLASH" 2>/dev/null || true
