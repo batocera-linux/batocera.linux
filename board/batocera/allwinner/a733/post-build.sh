@@ -44,21 +44,15 @@ export ARCH=arm64
 export LICHEE_TOOLCHAIN_PATH="${HOST_DIR}"
 export LICHEE_CROSS_COMPILER="aarch64-buildroot-linux-gnu"
 make -C "${GPU_MODULE_DIR}" build \
-    KERNEL_SRC_DIR="${KERNEL_BUILD}" \
-    KERNEL_OUT_DIR="${KERNEL_BUILD}" \
     KERNELDIR="${KERNEL_BUILD}" \
-    KDIR="${KERNEL_BUILD}" \
     ARCH=arm64 \
     CROSS_COMPILE="${CROSS}" \
     LICHEE_TOOLCHAIN_PATH="${HOST_DIR}" \
     LICHEE_CROSS_COMPILER="aarch64-buildroot-linux-gnu" \
-    CPU_ARCH=arm64 \
     GPU_TYPE=bxm \
-    CONFIG_OS_TYPE=linux \
     GPU_BUILD_TYPE=release \
     -j$(nproc)
 
-# Find built .ko files and install them
 KVER=$(cat "${KERNEL_BUILD}/include/config/kernel.release" 2>/dev/null || \
        awk -F\" '/UTS_RELEASE/{print $2}' "${KERNEL_BUILD}/include/generated/utsrelease.h" 2>/dev/null || \
        echo "unknown")
@@ -66,7 +60,6 @@ KVER=$(cat "${KERNEL_BUILD}/include/config/kernel.release" 2>/dev/null || \
 KO_DEST="${TARGET_DIR}/lib/modules/${KVER}/extra"
 mkdir -p "${KO_DEST}"
 
-# Output lands in binary_sunxi_linux_nulldrmws_release/target_aarch64/kbuild/
 KO_SRC=$(find "${GPU_MODULE_DIR}/img-bxm" -name "pvrsrvkm.ko" 2>/dev/null | head -1)
 if [ -z "${KO_SRC}" ]; then
     echo "[post-build] ERROR: pvrsrvkm.ko not found after build"

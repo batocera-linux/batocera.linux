@@ -11,16 +11,3 @@ CONF=/userdata/system/batocera.conf
 if ! grep -q "^global.videooutput=" "$CONF" 2>/dev/null; then
     echo "global.videooutput=DP-1" >> "$CONF"
 fi
-
-# Write diagnostics to serial console (ttyAS0).
-# /dev/console = tty1 (display), so stdout here is NOT visible on serial.
-# /boot remount,rw silently fails (bind mount from initramfs), so we use serial.
-{
-    echo "=== S13-videooutput ==="
-    date
-    echo "global.videooutput set to DP-1"
-    echo "=== /proc/mounts (mmcblk/boot/userdata) ==="
-    grep -E "mmcblk|boot|userdata" /proc/mounts
-    echo "=== batocera.conf ==="
-    cat "$CONF" 2>/dev/null || echo "(not found)"
-} > /dev/ttyS0 2>/dev/null

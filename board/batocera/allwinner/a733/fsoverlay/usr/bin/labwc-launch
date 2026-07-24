@@ -27,35 +27,6 @@ serial() { printf '[labwc-launch] %s\n' "$*" > /dev/ttyS0 2>/dev/null; }
 
 serial "started (pid $$)"
 
-# GPU Selection Logic
-PRIME_PCI_ID=""
-
-# Check which Prime GPU was detected by the startup script
-if [ -f "/var/tmp/nvidia.prime" ]; then
-    PRIME_PCI_ID=$(cat /var/tmp/nvidia.prime)
-elif [ -f "/var/tmp/amd.prime" ]; then
-    PRIME_PCI_ID=$(cat /var/tmp/amd.prime)
-elif [ -f "/var/tmp/intel.prime" ]; then
-    PRIME_PCI_ID=$(cat /var/tmp/intel.prime)
-fi
-
-# If a Prime GPU was identified, we must find its /dev/dri/cardX path
-if [ -n "$PRIME_PCI_ID" ]; then
-    # Convert "pci-0000_03_00_0" back to "0000:03:00.0" for sysfs matching
-    SYSFS_ID=$(echo "$PRIME_PCI_ID" | sed -e 's/^pci-//' -e 's/_/:/g' -e 's/:/./3')
-
-    # Find which card matches this PCI ID
-    for card in /sys/class/drm/card*; do
-        # Check if the device link points to our PCI ID
-        if readlink -f "$card/device" | grep -q "$SYSFS_ID"; then
-            CARD_NAME=$(basename "$card")
-            export WLR_DRM_DEVICES="/dev/dri/$CARD_NAME"
-            echo "Forcing Primary GPU: $WLR_DRM_DEVICES ($SYSFS_ID)" >> "$LOG_FILE"
-            break
-        fi
-    done
-fi
-
 # Wait for the sunxi-drm display device — find the card that owns any DP or eDP
 # connector. PVR GPU also creates a DRM device (no connectors) and may claim
 # card0 first, so we must not hardcode card0.
@@ -192,27 +163,8 @@ serial "PVR render node: $PVR_RENDER_NODE"
 # PVR render node instead of the sunxi-drm render node (which can't do GLES2).
 # If labwc crashes within 5s (EGL init failure), fall back to pixman.
 
-# Pre-flight: write library state to log before launching so we have diagnostics
-# even if labwc crashes before producing any output of its own.
-{
-    echo "=== PVR pre-flight $(date) ==="
-    echo "DISPLAY_CARD=/dev/dri/$DISPLAY_CARD  PVR_RENDER_NODE=$PVR_RENDER_NODE"
-    echo "--- /dev/dri/ ---"
-    ls -la /dev/dri/ 2>&1
-    echo "--- /usr/local/lib/gbm/ ---"
-    ls -la /usr/local/lib/gbm/ 2>&1
-    echo "--- /usr/local/lib/dri/ ---"
-    ls -la /usr/local/lib/dri/ 2>&1
-    echo "--- /usr/local/lib/libEGL* libGLES* ---"
-    ls -la /usr/local/lib/libEGL* /usr/local/lib/libGLES* 2>&1
-    echo "--- /etc/powervr.ini ---"
-    cat /etc/powervr.ini 2>&1
-    echo "--- ldd /usr/bin/labwc ---"
-    LD_LIBRARY_PATH="/usr/local/lib:/usr/lib" ldd /usr/bin/labwc 2>&1
-    echo "=== launching labwc GLES2 ==="
-} > "$LABWC_GLES2_LOG" 2>&1
-
 serial "Attempting WLR_RENDERER=gles2 display=/dev/dri/$DISPLAY_CARD render=$PVR_RENDER_NODE"
+echo "=== labwc GLES2 attempt $(date) ===" > "$LABWC_GLES2_LOG"
 LD_LIBRARY_PATH="/usr/local/lib:/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
 LIBGL_DRIVERS_PATH="/usr/local/lib/dri" \
 GBM_BACKENDS_PATH="/usr/local/lib/gbm" \
