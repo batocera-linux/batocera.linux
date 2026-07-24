@@ -26,6 +26,13 @@ do_start () {
     # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
 
+    # Standard FBV options
+    FBV_OPTS="-f -e -i -y"
+    
+    # Variables for screen dimensions
+    WIDTH=""
+    HEIGHT=""
+
     if [ -r /sys/class/graphics/fb0/modes ]; then
         MODE_STR=$(head -n 1 /sys/class/graphics/fb0/modes)
         RES_DIM=$(echo "$MODE_STR" | sed -n 's/.*:\([0-9][0-9]*\)x\([0-9][0-9]*\).*/\1 \2/p')
@@ -37,12 +44,13 @@ do_start () {
 
             echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}" >> $LOG_FILE
 
-            if [ $((WIDTH * 3)) -eq $((HEIGHT * 4)) ]; then
-                alt_image="/usr/share/batocera/splash/boot-logo-4x3.png"
-                
-                if [ -f "$alt_image" ]; then
-                    echo "4:3 Aspect Ratio detected. Switching to: $alt_image" >> $LOG_FILE
-                    image="$alt_image"
+            # Automatically crops and centers the master 16:9 logo to any display aspect ratio
+            cropped_image="/tmp/boot-logo-cropped.bmp"
+            if [ -f "$image" ] && [ -n "$WIDTH" ] && [ -n "$HEIGHT" ]; then
+                echo "Pre-cropping logo to ${WIDTH}x${HEIGHT} via FFmpeg..." >> $LOG_FILE
+                ffmpeg -y -i "$image" -vf "scale=w=${WIDTH}:h=${HEIGHT}:force_original_aspect_ratio=increase,crop=${WIDTH}:${HEIGHT}" "$cropped_image" >/dev/null 2>&1
+                if [ $? -eq 0 ] && [ -f "$cropped_image" ]; then
+                    image="$cropped_image"
                 fi
             fi
         fi
@@ -53,7 +61,6 @@ do_start () {
         exit 1
     fi
 
-    FBV_OPTS="-f -e -i -y"
     video_rotation=""
     BOOT_CONF="/boot/batocera-boot.conf"
 
@@ -86,6 +93,7 @@ do_start () {
     case "${video_rotation}" in
         1|2|3)
             FBV_OPTS="${FBV_OPTS} -o ${video_rotation}"
+            echo "Applying FBV rotation: -o ${video_rotation}" >> $LOG_FILE
             ;;
     esac
 

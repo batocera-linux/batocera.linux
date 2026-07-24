@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-BATOCERA_SPLASH_VERSION = 5.8
+BATOCERA_SPLASH_VERSION = 5.9
 BATOCERA_SPLASH_SOURCE=
 
 BATOCERA_SPLASH_TGVERSION=$(BATOCERA_SYSTEM_VERSION) $(BATOCERA_SYSTEM_DATE)
@@ -39,13 +39,9 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=v4l2m2m-copy
     endif
-    # H700 devices
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --hwdec=auto
-    endif
-    # Allwinner H6 & H616 boards using stateless v4l2request decoding over Panfrost/DRM
-    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request
+    # Allwinner H6, H616 H700 boards using stateless v4l2request decoding over Panfrost/DRM
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_H700),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request-copy
     endif
     # Targets that should remain empty (handled by internal defaults)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399)$(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
@@ -96,8 +92,6 @@ define BATOCERA_SPLASH_INSTALL_BOOT_LOGO
     mkdir -p $(TARGET_DIR)/usr/share/batocera/splash
     cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo.png" \
         "${TARGET_DIR}/usr/share/batocera/splash/boot-logo.png"
-    cp "$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/images/logo-480p.png" \
-        "${TARGET_DIR}/usr/share/batocera/splash/boot-logo-4x3.png"
 endef
 
 define BATOCERA_SPLASH_INSTALL_VIDEO

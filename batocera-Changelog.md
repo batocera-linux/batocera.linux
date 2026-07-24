@@ -12,6 +12,7 @@
 - Mangmi Air X initial support
 - Odroid M2 initial support
 ### Added
+- Anbernic H700 device hardware acceleration support
 - Anbernic RGCubeXX device LED controller support
 - Drastic back for Aarch64 devices
 - NanoBoyAdvance as an alternative GBA emulator
@@ -43,6 +44,7 @@
 ### Changed / Improved
 - AYN Thor, AYN button now opens Batocera Control Center
 - BigPEmu added to capable aarch64 devices
+- Boot logo and video now scales better to the primary screen being rendered on
 - Cemu added to capable aarch64 devices
 - New CPU, GPU & Battery temp helper script - batocera-temp
 - Raspberry Pi4 now uses LabWC

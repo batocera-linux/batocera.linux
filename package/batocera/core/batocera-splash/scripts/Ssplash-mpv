@@ -109,7 +109,10 @@ do_videostart ()
 
     ## current drm output ##
     effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
-    mpv_video=
+    
+    # Natively crop 16:9 on the GPU presentation plane.
+    mpv_video="--panscan=1.0" 
+    
     video_rotation=$(batocera-settings-get-master "display.rotate.${effectiveDrmOutput}")
     if test -z "${video_rotation}"
     then
@@ -118,7 +121,7 @@ do_videostart ()
     if [[ $? -eq 0 ]]; then
         video_rotation=$(do_angels_conversion $video_rotation)
         # --blend-subtitles=video : rotation of subtitles
-        [[ $? -eq 0 ]] && mpv_video="--video-rotate=${video_rotation} --blend-subtitles=video"
+        [[ $? -eq 0 ]] && mpv_video="${mpv_video} --video-rotate=${video_rotation} --blend-subtitles=video"
     fi
 
     drm_mode="preferred"
