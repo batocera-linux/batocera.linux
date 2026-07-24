@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import mkdir_if_not_exists
 from ..exceptions import BatoceraException
+from .mounts import unmount
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -19,15 +20,12 @@ _OVERLAY_BASE_DIR: Final = Path("/var/run/overlays/")
 
 
 def _unmount_and_remove(mount_point: Path):
-    if mount_point.is_mount():
-        result = subprocess.run(["umount", str(mount_point)], capture_output=True, text=True)
-        if result.returncode != 0:
-            _logger.error("failed unmounting '%s' (rc=%d) because %s",
-                          mount_point, result.returncode, result.stderr.strip())
+    if mount_point.is_mount() and not unmount(mount_point):
+        _logger.error("failed unmounting '%s'", mount_point)
 
-            # Skip the follow-on removal if the umount failed because it might still
-            # be connected to the ROM's save area (system crashing or bad state?).
-            return
+        # Skip the follow-on removal if the umount failed because it might still
+        # be connected to the ROM's save area (system crashing or bad state?).
+        return
 
     shutil.rmtree(mount_point, ignore_errors=True)
 

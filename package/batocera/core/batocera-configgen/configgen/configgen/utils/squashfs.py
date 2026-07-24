@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import logging
 import subprocess
 from contextlib import contextmanager
@@ -8,6 +9,7 @@ from typing import TYPE_CHECKING, Final
 
 from ..batoceraPaths import mkdir_if_not_exists
 from ..exceptions import BatoceraException
+from .mounts import unmount
 
 if TYPE_CHECKING:
     from collections.abc import Generator
@@ -27,14 +29,22 @@ def mount_squashfs(rom: Path, /) -> Generator[Path]:
     # first, try to clean an empty remaining directory (for example because of a crash)
     if mount_point.exists() and mount_point.is_dir():
         _logger.debug("squashfs_rom: %s already exists", mount_point)
-        # try to remove an empty directory, else, run the directory, ignoring the .squashfs
+
+        # a previous run may have left the rom mounted here, after a crash or an unmount
+        # that was refused: take it down rather than running the game off a stale mount,
+        # which isn't necessarily even the same rom
+        if mount_point.is_mount():
+            _logger.debug("squashfs_rom: %s is still mounted, unmounting it first", mount_point)
+            unmount(mount_point)
+
+        # whatever is left is not ours to run the game off: it isn't necessarily even
+        # the same rom, and it would never be unmounted either
         try:
             mount_point.rmdir()
-        except (FileNotFoundError, OSError):
-            _logger.debug("squashfs_rom: failed to rmdir %s", mount_point)
-            yield mount_point
-            # No cleanup is necessary
-            return
+        except FileNotFoundError:
+            pass
+        except OSError as e:
+            raise BatoceraException(f"Unable to clean the mount point {mount_point}") from e
 
     # ok, the base directory doesn't exist, let's create it and mount the squashfs on it
     mount_point.mkdir()
@@ -66,10 +76,10 @@ def mount_squashfs(rom: Path, /) -> Generator[Path]:
         _logger.debug("mount_squashfs: cleaning up %s", mount_point)
 
         # unmount
-        return_code = subprocess.call(["umount", mount_point])
-        if return_code != 0:
+        if not unmount(mount_point):
             _logger.debug("mount_squashfs: unmounting %s failed", mount_point)
             raise BatoceraException(f"Unable to unmount the file {mount_point}")
 
-        # cleaning the empty directory
-        mount_point.rmdir()
+        # cleaning the empty directory, a lazily detached mount may still hold it
+        with contextlib.suppress(OSError):
+            mount_point.rmdir()

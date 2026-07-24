@@ -184,15 +184,17 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
                 # run the emulator
                 _evmapy_instance = evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns)
+                # change directory if wanted. it is restored on the way out: a rom on a
+                # squashfs is unmounted below, and a process sitting in a mount, even
+                # this one, keeps it busy
+                executionDirectory = generator.executionDirectory(system.config, rom)
+
                 with (
                     _evmapy_instance,
-                    set_hotkeygen_context(generator, system)
+                    set_hotkeygen_context(generator, system),
+                    contextlib.chdir(executionDirectory) if executionDirectory is not None
+                    else contextlib.nullcontext()
                 ):
-                    # change directory if wanted
-                    executionDirectory = generator.executionDirectory(system.config, rom)
-                    if executionDirectory is not None:
-                        os.chdir(executionDirectory)
-
                     cmd = generator.generate(system, rom, player_controllers, md, guns, wheels, gameResolution)
 
                     if system.config.get_bool('hud_support'):
