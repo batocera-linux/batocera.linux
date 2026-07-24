@@ -345,7 +345,8 @@ case "${ACTION}" in
             REFRESH_HZ_STR=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
             if [ -n "${REFRESH_HZ_STR}" ]; then
                 # Convert Hz to mHz (multiply by 1000)
-                REFRESH_MHZ=$(printf "%.0f" "$(echo "${REFRESH_HZ_STR} * 1000" | bc 2>/dev/null || echo "0")")
+                REFRESH_MHZ=$(echo "scale=0; (${REFRESH_HZ_STR} * 1000) / 1" | bc 2>/dev/null)
+                if [ -z "${REFRESH_MHZ}" ]; then REFRESH_MHZ="0"; fi
                 echo "${RES_ONLY}.${REFRESH_MHZ}"
             else
                 echo "${RES_ONLY}.0"
@@ -370,7 +371,8 @@ case "${ACTION}" in
             if echo "${mode}" | grep -q '@'; then
                 resolution=$(echo "${mode}" | cut -d'@' -f1)
                 refresh_hz=$(echo "${mode}" | sed 's/.*@\([0-9.]*\)Hz/\1/')
-                refresh_mhz=$(printf "%.0f" "$(echo "${refresh_hz} * 1000" | bc 2>/dev/null || echo "0")")
+                refresh_mhz=$(echo "scale=0; (${refresh_hz} * 1000) / 1" | bc 2>/dev/null)
+                if [ -z "${refresh_mhz}" ]; then refresh_mhz="0"; fi
                 printf "%s.%s:%s %s Hz\n" "${resolution}" "${refresh_mhz}" "${resolution}" "${refresh_hz}"
             else
                 printf "%s.0:%s 0.000 Hz\n" "${mode}" "${mode}"
@@ -394,7 +396,8 @@ case "${ACTION}" in
                 PARTRES=$(echo "${MODE_TO_SET}" | cut -d'.' -f1)
                 PARTMHZ=$(echo "${MODE_TO_SET}" | cut -d'.' -f2-)
                 # Convert mHz back to Hz (divide by 1000)
-                PARTHZ=$(printf "%.6f" "$(echo "${PARTMHZ} / 1000" | bc -l 2>/dev/null || echo "0")")
+                PARTHZ=$(echo "scale=6; ${PARTMHZ} / 1000" | bc 2>/dev/null)
+                if [ -z "${PARTHZ}" ]; then PARTHZ="0.000000"; fi
                 TARGET_MODE="${PARTRES}@${PARTHZ}Hz"
             fi
             "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"
