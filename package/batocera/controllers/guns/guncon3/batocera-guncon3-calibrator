@@ -182,7 +182,7 @@ class Gun:
                         #    print("BTN_LEFT =0")
                     if event.code == ecodes.BTN_1:
                         self.btn_1 = event.value
-                        
+
             if self.btn_cal_pressed and time.time() - self.time1 > 3:
                 #print("CALIBRAR")
                 self.calibrate = 1
@@ -205,8 +205,8 @@ class Gun:
                 print(f"Error reconnecting: {reconnect_error}")
                 with open("/tmp/reconnect_error.log", "a") as log_file:
                     log_file.write(f"Error reconnecting: {reconnect_error}\n")
-                    
-    
+
+
     def stop_reading(self):
         pass
 
@@ -235,29 +235,17 @@ class Gun:
         return self.calibrate
 
 
-def main():
-    if len(sys.argv) != 2 and len(sys.argv) != 3:
-        print("mising device argument")
-        exit(1)
-
-    if len(sys.argv) == 3:
-        bCalibration = int(sys.argv[2])
-    else:
-        bCalibration = ecodes.BTN_RIGHT
-
-    # input
-    device_path = sys.argv[1]
+def process_guncon(device_path, btn_cal=ecodes.BTN_RIGHT):
     print("Dev: " + device_path)
-    print("Btn calibration" + str(bCalibration))
+    print("Btn calibration: " + str(btn_cal))
 
-    gun = Gun(device_path, bCalibration)
-
-
+    gun = Gun(device_path, btn_cal)
     egun = Emulated_gun()
     egun.open(gun.name)
 
     cal = Calibration()
     calibration_step = 0
+
     print("Init while")
     try:
         while True:
@@ -267,7 +255,7 @@ def main():
                 if egun.calibrated == 1:
                     # reset values
                     cal.minX_dev = cal.minY_dev = -32766
-                    cal.maxX_dev = cal.maxY_dev = 36767
+                    cal.maxX_dev = cal.maxY_dev = 32767
                     cal.set_Calibration(egun.path)
                     egun.calibrated = 0
                 if cal.calibration_step == 0:
@@ -276,7 +264,7 @@ def main():
                     egun.calibrated = 0
                     # pos to center
                     points = cal.get_calibration_points()
-                    egun.moveTargetTo(points,gun)
+                    egun.moveTargetTo(points, gun)
                     cal.increment_calibration_step()
                 gun.read_input()
                 g_state = gun.get_state()
@@ -292,7 +280,7 @@ def main():
                         cal.set_dev_value(x_t, y_t)
                     if cal.calibration_step < 5:
                         points = cal.get_calibration_points()
-                        egun.moveTargetTo(points,gun)
+                        egun.moveTargetTo(points, gun)
                     cal.increment_calibration_step()
                     while g_state["btn_trigger"] == 1:
                         gun.read_input()
@@ -315,9 +303,45 @@ def main():
 
     except KeyboardInterrupt:
         gun.stop_reading()
+        egun.close()
+
+
+def main():
+    if len(sys.argv) != 2 and len(sys.argv) != 3:
+        # No specific device provided, auto-detect GunCon3 devices
+        devices = [evdev.InputDevice(path) for path in evdev.list_devices()]
+        guncon3_devices = [dev for dev in devices if "Guncon3" in dev.name]
+
+        if not guncon3_devices:
+            print("No GunCon3 devices found")
+            sys.exit(1)
+
+        print("Found " + str(len(guncon3_devices)) + " GunCon3 devices")
+
+        # Create a thread for each GunCon3 device
+        threads = []
+        for dev in guncon3_devices:
+            print("Starting thread for " + dev.name)
+            t = threading.Thread(target=process_guncon, args=(dev.path, ecodes.BTN_RIGHT))
+            t.start()
+            threads.append(t)
+
+        # Wait for all threads to complete
+        for t in threads:
+            t.join()
+
+        sys.exit(0)
+    else:
+        # Use the provided device path
+        device_path = sys.argv[1]
+
+        if len(sys.argv) == 3:
+            btn_cal = int(sys.argv[2])
+        else:
+            btn_cal = ecodes.BTN_RIGHT
+
+        process_guncon(device_path, btn_cal)
 
 
 if __name__ == "__main__":
     main()
-
-
