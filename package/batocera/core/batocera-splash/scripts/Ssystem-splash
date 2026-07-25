@@ -29,37 +29,8 @@ do_start () {
     # Variables for screen dimensions
     WIDTH=""
     HEIGHT=""
-    
-    if [ -r /sys/class/graphics/fb0/modes ]; then
-        if read -r MODE_STR < /sys/class/graphics/fb0/modes; then
-            DIM_PART=${MODE_STR#*:}
-            WIDTH=${DIM_PART%%x*}
-            remaining=${DIM_PART#*x}
-            HEIGHT=${remaining%%[!0-9]*}
-        fi
 
-        if [ -n "${WIDTH}" ] && [ -n "${HEIGHT}" ]; then
-            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}"
-            # Automatically crops and centers the master 16:9 logo to any display aspect ratio
-            cropped_image="/tmp/boot-logo-cropped.bmp"
-            if [ -f "${image}" ]; then
-                echo "Pre-cropping logo to ${WIDTH}x${HEIGHT} via FFmpeg..."
-                if ffmpeg -y -threads 1 -sws_flags fast_bilinear \
-                    -i "${image}" \
-                    -vf "scale=w=${WIDTH}:h=${HEIGHT}:force_original_aspect_ratio=increase,crop=${WIDTH}:${HEIGHT}" \
-                    "${cropped_image}" >/dev/null 2>&1 \
-                   && [ -f "${cropped_image}" ]; then
-                    image="${cropped_image}"
-                fi
-            fi
-        fi
-    fi
-
-    if ! [ -f "${image}" ]; then
-        echo "Error: Splash image not found at ${image}"
-        exit 1
-    fi
-
+    # Resolve video rotation first so we know how to crop the image
     V_BOARD_MODEL=$(batocera-model)
     video_rotation=""
     BOOT_CONF="/boot/batocera-boot.conf"
@@ -81,8 +52,49 @@ do_start () {
     fi
 
     video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
-
     echo "Final Rotation Value: [${video_rotation}]"
+    
+    # Get the screen's physical dimensions
+    if [ -r /sys/class/graphics/fb0/modes ]; then
+        if read -r MODE_STR < /sys/class/graphics/fb0/modes; then
+            DIM_PART=${MODE_STR#*:}
+            WIDTH=${DIM_PART%%x*}
+            remaining=${DIM_PART#*x}
+            HEIGHT=${remaining%%[!0-9]*}
+        fi
+
+        if [ -n "${WIDTH}" ] && [ -n "${HEIGHT}" ]; then
+            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}"
+            
+            # Determine target size for cropping.
+            # If rotated 90 or 270 degrees (1 or 3), swap width and height.
+            if [ "${video_rotation}" = "1" ] || [ "${video_rotation}" = "3" ]; then
+                CROP_WIDTH="${HEIGHT}"
+                CROP_HEIGHT="${WIDTH}"
+            else
+                CROP_WIDTH="${WIDTH}"
+                CROP_HEIGHT="${HEIGHT}"
+            fi
+
+            # Automatically crops and centers the master logo to target aspect ratio
+            cropped_image="/tmp/boot-logo-cropped.bmp"
+            if [ -f "${image}" ]; then
+                echo "Pre-cropping logo to logical size ${CROP_WIDTH}x${CROP_HEIGHT} via FFmpeg..."
+                if ffmpeg -y -threads 1 -sws_flags fast_bilinear \
+                    -i "${image}" \
+                    -vf "scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=increase,crop=${CROP_WIDTH}:${CROP_HEIGHT}" \
+                    "${cropped_image}" >/dev/null 2>&1 \
+                   && [ -f "${cropped_image}" ]; then
+                    image="${cropped_image}"
+                fi
+            fi
+        fi
+    fi
+
+    if ! [ -f "${image}" ]; then
+        echo "Error: Splash image not found at ${image}"
+        exit 1
+    fi
 
     case "${video_rotation}" in
         1|2|3)
