@@ -6,109 +6,100 @@
 LOG_FILE="/var/log/splash.log"
 
 do_start () {
-    # on some sytems, fb0 is not immediatly loaded, so, keep a chance by waiting a bit
-    # are we sure all boards have fb0 ?!
-    LOG_DIR=$(dirname "${LOG_FILE}")
-    mkdir -p "${LOG_DIR}"
+    LOG_DIR="${LOG_FILE%/*}"
+    [ -d "${LOG_DIR}" ] || mkdir -p "${LOG_DIR}"
     exec >> "${LOG_FILE}" 2>&1
-
-    # wait 20s to create buffer fb0 on fail exit 
-    if ! [ -e /dev/fb0 ]; then
-        inotifywait -t 20 -e create --include '/fb0' /dev || {
-          echo "Error: Framebuffer device /dev/fb0 not found." >> $LOG_FILE;
-          exit 1;
-          }
+    
+    if [ ! -e /dev/fb0 ]; then
+        i=0
+        while [ ! -e /dev/fb0 ] && [ $i -lt 50 ]; do
+            sleep 0.1
+            i=$((i + 1))
+        done
+        if [ ! -e /dev/fb0 ]; then
+            echo "Error: Framebuffer device /dev/fb0 not found."
+            exit 1
+        fi
     fi
-
+    
     # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
-
     # Standard FBV options
-    FBV_OPTS="-f -e -i -y"
-    
+    FBV_OPTS="-f -e -i -y"   
     # Variables for screen dimensions
     WIDTH=""
     HEIGHT=""
-
+    
     if [ -r /sys/class/graphics/fb0/modes ]; then
-        MODE_STR=$(head -n 1 /sys/class/graphics/fb0/modes)
-        RES_DIM=$(echo "$MODE_STR" | sed -n 's/.*:\([0-9][0-9]*\)x\([0-9][0-9]*\).*/\1 \2/p')
-        
-        if [ -n "$RES_DIM" ]; then
-            set -- $RES_DIM
-            WIDTH=$1
-            HEIGHT=$2
+        if read -r MODE_STR < /sys/class/graphics/fb0/modes; then
+            DIM_PART=${MODE_STR#*:}
+            WIDTH=${DIM_PART%%x*}
+            remaining=${DIM_PART#*x}
+            HEIGHT=${remaining%%[!0-9]*}
+        fi
 
-            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}" >> $LOG_FILE
-
+        if [ -n "${WIDTH}" ] && [ -n "${HEIGHT}" ]; then
+            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}"
             # Automatically crops and centers the master 16:9 logo to any display aspect ratio
             cropped_image="/tmp/boot-logo-cropped.bmp"
-            if [ -f "$image" ] && [ -n "$WIDTH" ] && [ -n "$HEIGHT" ]; then
-                echo "Pre-cropping logo to ${WIDTH}x${HEIGHT} via FFmpeg..." >> $LOG_FILE
-                ffmpeg -y -i "$image" -vf "scale=w=${WIDTH}:h=${HEIGHT}:force_original_aspect_ratio=increase,crop=${WIDTH}:${HEIGHT}" "$cropped_image" >/dev/null 2>&1
-                if [ $? -eq 0 ] && [ -f "$cropped_image" ]; then
-                    image="$cropped_image"
+            if [ -f "${image}" ]; then
+                echo "Pre-cropping logo to ${WIDTH}x${HEIGHT} via FFmpeg..."
+                if ffmpeg -y -threads 1 -sws_flags fast_bilinear \
+                    -i "${image}" \
+                    -vf "scale=w=${WIDTH}:h=${HEIGHT}:force_original_aspect_ratio=increase,crop=${WIDTH}:${HEIGHT}" \
+                    "${cropped_image}" >/dev/null 2>&1 \
+                   && [ -f "${cropped_image}" ]; then
+                    image="${cropped_image}"
                 fi
             fi
         fi
     fi
 
-    if ! [ -f "$image" ]; then
-        echo "Error: Splash image not found at ${image}" >> $LOG_FILE
+    if ! [ -f "${image}" ]; then
+        echo "Error: Splash image not found at ${image}"
         exit 1
     fi
 
+    V_BOARD_MODEL=$(batocera-model)
     video_rotation=""
     BOOT_CONF="/boot/batocera-boot.conf"
 
     if [ -f "${BOOT_CONF}" ]; then
-        specific_key=$(grep -oE '^[[:space:]]*display\.rotate\.[^=[:space:]]+' "${BOOT_CONF}" | head -1)
-
+        specific_key=$(awk -F'=' '/^[[:space:]]*display\.rotate\./{print $1; exit}' "${BOOT_CONF}" | tr -d '[:space:]')
         if [ -n "${specific_key}" ]; then
             video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "${specific_key}")
         fi
-
-        if [ -z "${video_rotation}" ]; then
+        [ -z "${video_rotation}" ] && \
             video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
-        fi
     fi
 
     if [ -z "${video_rotation}" ]; then
-        V_BOARD_MODEL=$(batocera-model)
         MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
         if [ -f "${MODEL_CONF}" ]; then
-            # Grep for lines starting with "display.rotate." that do not contain a hyphen in the key part
-            rotation_line=$(grep -E '^display\.rotate\.[^=-]+=' "${MODEL_CONF}" | head -1)
-            if [ -n "${rotation_line}" ]; then
-                video_rotation=$(echo "${rotation_line}" | cut -d'=' -f2)
-            fi
+            video_rotation=$(awk -F'=' '/^display\.rotate\.[^=-]+=/{print $2; exit}' "${MODEL_CONF}" | tr -d '[:space:]')
         fi
     fi
 
-    echo "Final Rotation Value: [${video_rotation}]" >> $LOG_FILE
+    video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
+
+    echo "Final Rotation Value: [${video_rotation}]"
 
     case "${video_rotation}" in
         1|2|3)
             FBV_OPTS="${FBV_OPTS} -o ${video_rotation}"
-            echo "Applying FBV rotation: -o ${video_rotation}" >> $LOG_FILE
+            echo "Applying FBV rotation: -o ${video_rotation}"
             ;;
     esac
 
-    V_BOARD_MODEL=$(batocera-model)
-    MODELOPTS="/etc/opts.$V_BOARD_MODEL"
-    if [ -e "${MODELOPTS}" ]; then
-        . "${MODELOPTS}"
-    fi
+    MODELOPTS="/etc/opts.${V_BOARD_MODEL}"
+    [ -e "${MODELOPTS}" ] && . "${MODELOPTS}"
 
-    echo "Executing Command: fbv ${FBV_OPTS} \"${image}\"" >> $LOG_FILE
-
+    echo "Executing Command: fbv ${FBV_OPTS} \"${image}\""
     fbv ${FBV_OPTS} "${image}" >/dev/null 2>&1
 }
 
 do_stop () {
-    if [ -e /dev/fb0 ]; then
-        dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
-    fi
+    [ -e /dev/fb0 ] && dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
 }
 
 case "$1" in
