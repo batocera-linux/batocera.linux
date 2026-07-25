@@ -69,7 +69,7 @@
 - Box64 0.4.2
 - Cemu to June 23rd, 2026 build
 - CDogs to 2.4.0
-- CLK to 2026-04-30
+- CLK to 2026-07-23
 - CorsixTH to v0.69.2
 - Dhewm3 & Mods to 1.5.5
 - Dolphin-Emu to 2606
