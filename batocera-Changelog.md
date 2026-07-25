@@ -110,6 +110,7 @@
 - Play to 0.77
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
+- Redream to 1.5.0-1155-g0056e35
 - RPCS3 to v.0.0.41
 - ShadPS4 to v.0.16.0
 - Solarus to 2.0.4
