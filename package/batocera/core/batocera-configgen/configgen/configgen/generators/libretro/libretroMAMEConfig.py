@@ -81,6 +81,12 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
             pluginsToLoad += [ "hiscore" ]
         if system.config.get_bool("coindropplugin"):
             pluginsToLoad += [ "coindrop" ]
+        if system.config.core == 'mame' and system.config.get_bool('offscreenreload'):
+            # -offscreen_reload was removed from MAME's core options; the modern
+            # equivalent is the bundled offscreenreload Lua plugin. Restricted to
+            # libretro-mame itself (not mess/mamevirtual/same_cdi, which also route
+            # through this generator).
+            pluginsToLoad += [ "offscreenreload" ]
         if pluginsToLoad:
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
         messMode = -1
@@ -419,10 +425,6 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
                     commandLine += [ '-flop1', f'"{lr_mess_dsk}"' ]
                 else:
                     commandLine += [ '-flop2', f'"{lr_mess_dsk}"' ]
-
-    # Lightgun reload option
-    if system.config.get_bool('offscreenreload'):
-        commandLine += [ "-offscreen_reload" ]
 
     # Art paths - lr-mame displays artwork in the game area and not in the bezel area, so using regular MAME artwork + shaders is not recommended.
     # By default, will ignore standalone MAME's art paths.
