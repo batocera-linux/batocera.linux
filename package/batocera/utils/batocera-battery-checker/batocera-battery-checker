@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 # Function to get the battery percentage
 getBattery() {
     BATT=$(cat /sys/class/power_supply/*{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e 's/^POWER_SUPPLY_CAPACITY=//' | sort -rn | head -1)

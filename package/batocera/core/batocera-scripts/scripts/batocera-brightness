@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_ALL=C
+
 # Find all backlight control directories
 # sort to have the same order than in es and other places
 DISPLAYS=$(find /sys/class/backlight/* | sort 2>/dev/null | grep backlight)

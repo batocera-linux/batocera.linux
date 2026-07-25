@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 do_usage() {
     echo "$1 list"
     echo "$1 get"

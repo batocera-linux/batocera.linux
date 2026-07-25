@@ -17,6 +17,8 @@
 # Thresholds and poll interval can be overridden via environment variables, e.g.:
 #   THRESHOLD_CRITICAL=5 THRESHOLD_LOW=10 THRESHOLD_WARNING=20 /usr/bin/battery_led_status
 
+export LC_ALL=C
+
 LED="/sys/class/leds/rgb:status"
 BAT="/sys/class/power_supply/qcom-battery"
 CHG="/sys/class/power_supply/pmi8998-charger"

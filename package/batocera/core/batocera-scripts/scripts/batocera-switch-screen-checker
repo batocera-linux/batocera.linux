@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
 STATUS_FILE="/var/run/batocera-switch-screen-checker-status"

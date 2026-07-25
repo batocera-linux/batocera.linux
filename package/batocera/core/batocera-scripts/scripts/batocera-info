@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 ### full version (not on login, otherwise you can't log when OpenGL/Vulkan are out of order)
 if test "$1" = "--full"; then
 	FULL_DISPLAY=1

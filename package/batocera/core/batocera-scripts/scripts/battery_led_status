@@ -17,6 +17,8 @@
 # Thresholds and poll interval can be overridden via environment variables, e.g.:
 #   THRESHOLD_CRITICAL=50 THRESHOLD_LOW=80 /usr/bin/battery_led_status
 
+export LC_ALL=C
+
 LED_PATH="/sys/class/leds"
 
 THRESHOLD_LOW=${THRESHOLD_LOW:-20}
