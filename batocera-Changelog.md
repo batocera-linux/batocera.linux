@@ -131,7 +131,7 @@
 - Allwinner H700 device kernel updated to 7.0.11
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
-- DXVK to 3.0.1
+- DXVK to 3.0.2
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.07
 - FFMPEG to 8.1.2
