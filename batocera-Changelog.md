@@ -150,6 +150,7 @@
 - Rockchip RK3568 device kernel updated to 7.0.11
 - Rockchip RK3588 mainline device kernel updated to 7.1.4
 - Rocknix ABL to 1.1.4 (SM8x50 devices)
+- Sound Open Firmware to 2025.12.2
 - SwitchRes to 2.2.2
 - RTKit to v0.14
 - VKD3D Proton to 3.0.1
