@@ -14,6 +14,8 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 
+export LC_ALL=C
+
 do_clean() {
     test -n "${G_GETPERPID}" && kill -9 "${G_GETPERPID}"
     rm -f "/userdata/system/upgrade/upgrade_message.txt"

@@ -3,6 +3,8 @@
 # Start/stop the battery status LED monitor daemon
 #
 
+export LC_ALL=C
+
 # Only start if the system model is the Anbernic RG Vita Pro
 if [ "$(batocera-model 2>/dev/null)" != "Anbernic_RG_Vita_Pro" ]; then
     exit 0

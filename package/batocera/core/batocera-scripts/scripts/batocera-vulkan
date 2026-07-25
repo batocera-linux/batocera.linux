@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 # Ensure a valid display is set
 if [ -z "$WAYLAND_DISPLAY" ]; then
     if [ -z "$DISPLAY" ]; then

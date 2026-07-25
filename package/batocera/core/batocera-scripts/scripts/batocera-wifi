@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export LC_ALL=C
+
 do_help() {
     echo "$0 scanlist" >&2
     echo "$0 list" >&2

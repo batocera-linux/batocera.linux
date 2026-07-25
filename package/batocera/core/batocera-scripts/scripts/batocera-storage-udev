@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LC_ALL=C
+
 ACTION=$1; DEVNAME=$2; DEVTYPE=$3
 DELAY_DIR="/var/run/storage-manager.delay"
 READY_FLAG="/var/run/batocera.share.mounted"

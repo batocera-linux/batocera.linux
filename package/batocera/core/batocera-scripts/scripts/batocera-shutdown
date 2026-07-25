@@ -3,6 +3,8 @@
 # Suspend, shutdown, or fake suspend
 #
 
+export LC_ALL=C
+
 exec 1> >(tee >(logger -t batocera-shutdown -s)) 2>&1
 
 ################################################################################
