@@ -82,10 +82,6 @@ def generateMAMEConfigs(playersControllers: Controllers, system: Emulator, rom: 
         if system.config.get_bool("coindropplugin"):
             pluginsToLoad += [ "coindrop" ]
         if system.config.core == 'mame' and system.config.get_bool('offscreenreload'):
-            # -offscreen_reload was removed from MAME's core options; the modern
-            # equivalent is the bundled offscreenreload Lua plugin. Restricted to
-            # libretro-mame itself (not mess/mamevirtual/same_cdi, which also route
-            # through this generator).
             pluginsToLoad += [ "offscreenreload" ]
         if pluginsToLoad:
             commandLine += [ "-plugins", "-plugin", ",".join(pluginsToLoad) ]
