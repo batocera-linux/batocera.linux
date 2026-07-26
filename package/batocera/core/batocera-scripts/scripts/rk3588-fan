@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+"""
+RK3588 Mainline Fan Service Daemon
+"""
+import os
+import time
+import sys
+import glob
+import subprocess
+from threading import Thread
+
+DEBUG = 0
+CHECK_INTERVAL = 10
+
+# Hardware PWM defaults (can be overridden in fan.conf)
+MIN_PWM = 60  
+MAX_PWM = 255
+
+config_file = '/userdata/system/configs/fan.conf'
+
+# Built-in sensible default thermal curve
+DEFAULT_CURVE = ["80=100", "70=80", "60=60", "50=40", "40=20", "20=0"]
+
+# Read fan % speed from the config file
+def get_fanspeed(tempval, configlist):
+    for curconfig in configlist:
+        curpair = curconfig.split("=")
+        tempcfg = float(curpair[0])
+        fancfg = int(float(curpair[1]))
+        if tempval >= tempcfg:
+            return fancfg
+    return 0
+
+# Load the config file to memory
+def load_config(fname):
+    global MIN_PWM, MAX_PWM
+    newconfig = []
+    try:
+        with open(fname, "r") as fp:
+            for curline in fp:
+                if not curline:
+                    continue
+                tmpline = curline.strip()
+                if not tmpline:
+                    continue
+                if tmpline[0] == "#":
+                    continue
+                tmppair = tmpline.split("=")
+                if len(tmppair) != 2:
+                    continue
+                
+                # Check for hardware override keys
+                key = tmppair[0].lower().strip()
+                val_str = tmppair[1].strip()
+                if key == "min_pwm":
+                    try:
+                        MIN_PWM = int(val_str)
+                    except ValueError:
+                        pass
+                    continue
+                elif key == "max_pwm":
+                    try:
+                        MAX_PWM = int(val_str)
+                    except ValueError:
+                        pass
+                    continue
+                
+                # Parse temperature thresholds
+                try:
+                    tempval = float(tmppair[0])
+                    if tempval < 0 or tempval > 100:
+                        continue
+                except ValueError:
+                    continue
+                try:
+                    fanval = int(float(tmppair[1]))
+                    if fanval < 0 or fanval > 100:
+                        continue
+                except ValueError:
+                    continue
+                newconfig.append("{:5.1f}={}".format(tempval, fanval))
+        if len(newconfig) > 0:
+            newconfig.sort(reverse=True)
+    except Exception:
+        return []
+    return newconfig
+
+def get_cpu_temp():
+    try:
+        out = subprocess.check_output(
+            ["batocera-temp", "--cpu"],
+            text=True,
+            stderr=subprocess.DEVNULL
+        ).strip()
+        return int(out)
+    except Exception:
+        return 55  # Safe fallback temperature
+def find_pwm_path():
+    """Dynamically scan hwmon interfaces for the 'pwmfan' device."""
+    for hwmon_dir in glob.glob("/sys/class/hwmon/hwmon*"):
+        try:
+            with open(os.path.join(hwmon_dir, "name"), "r") as name_file:
+                if name_file.read().strip() == "pwmfan":
+                    pwm_path = os.path.join(hwmon_dir, "pwm1")
+                    if os.path.exists(pwm_path):
+                        return pwm_path
+        except Exception:
+            pass
+    return None
+
+def set_thermal_governor(policy):
+    """Sets the governor policy for all thermal zones (e.g., 'user_space' or 'step_wise')."""
+    for policy_path in glob.glob("/sys/class/thermal/thermal_zone*/policy"):
+        try:
+            with open(policy_path, "w") as pf:
+                pf.write(policy)
+        except Exception:
+            pass
+
+def temp_check():
+    fanconfig = DEFAULT_CURVE
+    tmpconfig = load_config(config_file)
+    if len(tmpconfig) > 0:
+        fanconfig = tmpconfig
+    
+    fan_path = find_pwm_path()
+    if not fan_path:
+        print("Error: Could not dynamically locate 'pwmfan' hwmon node.", file=sys.stderr)
+        sys.exit(1)
+
+    # Force governor to user_space so the kernel does not overwrite manual inputs
+    set_thermal_governor("user_space")
+
+    # Set pwm1_enable to 1 (manual mode)
+    enable_path = fan_path + "_enable"
+    if os.path.exists(enable_path):
+        try:
+            with open(enable_path, "w") as ef:
+                ef.write("1")
+        except Exception as e:
+            if DEBUG:
+                print(f"Warning: Could not set pwm1_enable to manual: {e}")
+
+    prev_pwm_val = -1
+
+    while True:
+        val = get_cpu_temp()
+        target_pct = get_fanspeed(val, fanconfig)
+        
+        # Scale percentage (0-100) to our physical PWM range (MIN_PWM to MAX_PWM)
+        if target_pct == 0:
+            pwm_val = 0
+        else:
+            pwm_val = int(MIN_PWM + (target_pct / 100.0) * (MAX_PWM - MIN_PWM))
+            pwm_val = max(MIN_PWM, min(pwm_val, MAX_PWM))
+
+        if pwm_val != prev_pwm_val:
+            try:
+                if prev_pwm_val == 0 and pwm_val > 0:
+                    with open(fan_path, "w") as fan_file:
+                        fan_file.write(str(MAX_PWM))
+                    time.sleep(0.5)
+
+                if DEBUG:
+                    print(f"Set fan speed {target_pct}% (PWM: {pwm_val}) for temp {val}C")
+                with open(fan_path, "w") as fan_file:
+                    fan_file.write(str(pwm_val))
+                prev_pwm_val = pwm_val
+            except IOError:
+                pass
+
+        time.sleep(CHECK_INTERVAL)
+
+if len(sys.argv) > 1:
+    if str(sys.argv[1]) == "start":
+        try:
+            if not find_pwm_path():
+                sys.exit(1)
+            t = Thread(target=temp_check, daemon=True)
+            t.start()
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+        except Exception:
+            sys.exit(1)
+    elif str(sys.argv[1]) == "stop":
+        try:
+            fan_path = find_pwm_path()
+            if fan_path:
+                with open(fan_path, "w") as fan_file:
+                    fan_file.write("0")
+                enable_path = fan_path + "_enable"
+                if os.path.exists(enable_path):
+                    with open(enable_path, "w") as ef:
+                        ef.write("2")
+            set_thermal_governor("step_wise")
+        except Exception:
+            pass
+else:
+    # Diagnostic helper for terminal / ssh execution
+    val = get_cpu_temp()
+    pwm_path = find_pwm_path()
+    print(f"CPU Temp: {val}C")
+    if pwm_path:
+        print(f"PWM Interface: {pwm_path}")
+        try:
+            with open(pwm_path, "r") as f:
+                print(f"Current PWM: {f.read().strip()}")
+        except Exception:
+            pass
+    else:
+        print("PWM Interface: NOT FOUND (pwmfan driver missing or disabled)")
