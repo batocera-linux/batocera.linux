@@ -160,6 +160,7 @@
 - WINE TKG to 11.13
 - Wlroots to 0.20.2
 - X86_64 / Zen3 kernel updated to 7.1.4
+- Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed
