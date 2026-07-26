@@ -204,6 +204,7 @@ wine_options() {
         ENABLE_NVAPI=1
     fi
 
+    VDESKTOP=""
     if [[ "${VIRTUAL_DESKTOP}" = 1 ]]; then
         VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
     fi
@@ -423,6 +424,11 @@ reg_install() {
             WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE64}" regedit //?/unix/var/run/rawinput.reg &>/dev/null || return 1
         fi
         rm /var/run/rawinput.reg
+    fi
+
+    if [[ "${VIRTUAL_DESKTOP}" = 1 ]]; then
+        # Set virtual desktop background color to solid black (RGB: 0 0 0)
+        WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" reg add "HKEY_CURRENT_USER\Control Panel\Colors" /v "Background" /t REG_SZ /d "0 0 0" /f &>/dev/null
     fi
 
     if [[ -d "$ii" ]]; then
@@ -737,7 +743,7 @@ play_exe() {
     sandboxing_prefix "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
 
-    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${ROMGAMENAME}")
+    (cd "${ROMBASEDIR}" && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" ${VDESKTOP} "${ROMGAMENAME}")
     waitWineServer 0
 }
 
