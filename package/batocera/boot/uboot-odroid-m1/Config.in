@@ -2,7 +2,3 @@ config BR2_PACKAGE_UBOOT_ODROID_M1
     bool "uboot files for HardKernel ODROID M1"
     help
         uboot files for ODROID M1
-
-        Builds the main-stage U-Boot (u-boot.itb) from upstream source
-        using this board's own mainline defconfig, and ships it alongside
-        Hardkernel's prebuilt SPL (idbloader.img).
