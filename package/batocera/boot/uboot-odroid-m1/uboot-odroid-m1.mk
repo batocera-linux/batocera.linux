@@ -29,10 +29,6 @@ define UBOOT_ODROID_M1_EXTRACT_RKBIN
 endef
 UBOOT_ODROID_M1_POST_EXTRACT_HOOKS += UBOOT_ODROID_M1_EXTRACT_RKBIN
 
-# ROCKCHIP_TPL only ever lands in the SPL-stage artifacts, which are discarded
-# here (see INSTALL_IMAGES below). It is passed because the default make target
-# still builds them, and it is pinned to the same DDR blob the previously
-# shipped prebuilt u-boot.itb was verified with.
 UBOOT_ODROID_M1_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \
     HOSTCC="$(HOSTCC)" \
@@ -51,16 +47,10 @@ define UBOOT_ODROID_M1_BUILD_CMDS
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_ODROID_M1_MAKE_OPTS)
 endef
 
-# Only the main-stage FIT is taken from this build. idbloader.img (SPL) stays
-# Hardkernel's own prebuilt blob, committed next to this file: it is the
-# stage the boot ROM itself validates, it is proven on this board, and it is
-# the one piece whose replacement can leave the board unbootable.
 define UBOOT_ODROID_M1_INSTALL_IMAGES_CMDS
     mkdir -p $(BINARIES_DIR)/uboot-odroid-m1
-    $(INSTALL) -D -m 0644 $(@D)/u-boot.itb \
-        $(BINARIES_DIR)/uboot-odroid-m1/u-boot.itb
-    $(INSTALL) -D -m 0644 $(UBOOT_ODROID_M1_PKGDIR)/idbloader.img \
-        $(BINARIES_DIR)/uboot-odroid-m1/idbloader.img
+    $(INSTALL) -D -m 0644 $(@D)/u-boot-rockchip.bin \
+        $(BINARIES_DIR)/uboot-odroid-m1/u-boot-rockchip.bin
 endef
 
 $(eval $(generic-package))
