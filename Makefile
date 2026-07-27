@@ -43,6 +43,7 @@ BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DIRECT_BUILD   ?=
 DAYS           ?= 1
+SINCE          ?= $(DAYS) days ago
 SYSTEMS_REPORT_EXCLUDE_TARGETS ?= bcm2835 jh7110
 SYSTEMS_REPORT_PARALLEL ?= y
 
@@ -150,7 +151,7 @@ help:
 	@echo
 	@echo 'Incremental rebuild:'
 	@echo '  <target>-refresh              - surgically reset recently changed packages and rebuild'
-	@echo '                                  (requires PARALLEL_BUILD=y, uses DAYS=<n> to control scope)'
+	@echo '                                  (requires PARALLEL_BUILD=y, uses SINCE=<n> to control scope)'
 	@echo '  <target>-clean-for-refresh    - reset recently changed packages without rebuilding'
 	@echo
 	@echo 'Deployment:'
@@ -200,7 +201,7 @@ help:
 	@echo '  EXTRA_OPTS="..."              - extra defconfig options (deprecated, use add-defconfig)'
 	@echo '  PKG=<pkg>                     - package name for <target>-pkg'
 	@echo '  CMD=<cmd>                     - command for <target>-shell or <target>-build'
-	@echo '  DAYS=<n>                      - number of days to look back for <target>-refresh (default: 1)'
+	@echo '  SINCE=<n>                     - period of time to look back for <target>-refresh (default: 1 days ago)'
 	@echo '  DEV=<device>                  - device path for <target>-flash and <target>-upgrade'
 	@echo '  DOCKER=<cmd>                  - Docker command to use (default: docker)'
 	@echo '  DOCKER_OPTS="..."             - additional Docker run options'
@@ -324,11 +325,11 @@ endif
 ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
-	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)))
+	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (SINCE=$(SINCE)))
 	@python3 $(PROJECT_DIR)/scripts/linux/refresh_resolver.py \
 		--project-dir $(PROJECT_DIR) \
 		--output-dir $(TARGET_OUTPUT_DIR) \
-		--days $(DAYS) \
+		--since='$(SINCE)' \
 		--mandatory "$(MANDATORY_REBUILD_PKGS)"
 
 	@$(call MESSAGE,Removing Host and Target directories)
