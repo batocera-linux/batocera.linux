@@ -464,16 +464,12 @@
 
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+		startup-delay-us = <10000>;
 
 		gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+		regulator-always-on;
+		regulator-boot-on;
 		enable-active-high;
-
-		pinctrl-names = "default";
-		pinctrl-0 = <&mcu_pwr_active>;
-
-		regulator-state-mem {
-			regulator-off-in-suspend;
-		};
 	};
 
 	vph_pwr: regulator-vph-pwr {
@@ -1093,9 +1089,6 @@
 };
 
 &pcie0 {
-	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
-	perst-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
-
 	pinctrl-0 = <&pcie0_default_state>;
 	pinctrl-names = "default";
 
@@ -1103,6 +1096,9 @@
 };
 
 &pcieport0 {
+	wake-gpios = <&tlmm 96 GPIO_ACTIVE_HIGH>;
+	reset-gpios = <&tlmm 94 GPIO_ACTIVE_LOW>;
+
 	wifi@0 {
 		compatible = "pci17cb,1107";
 		reg = <0x10000 0x0 0x0 0x0 0x0>;
@@ -1586,14 +1582,6 @@
 		pins = "gpio12";
 		function = "gpio";
 		bias-pull-down;
-	};
-
-	mcu_pwr_active: mcu-pwr-active-state {
-		pins = "gpio99";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-		output-low;
 	};
 
 	ts_p_rst_default: ts-p-rst-default-state {
