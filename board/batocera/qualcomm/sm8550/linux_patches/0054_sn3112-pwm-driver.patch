@@ -9,15 +9,15 @@ Signed-off-by: BigfootACA <bigfoot@classfun.cn>
 ---
  drivers/pwm/Kconfig      |  10 ++
  drivers/pwm/Makefile     |   1 +
- drivers/pwm/pwm-sn3112.c | 336 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 347 insertions(+)
+ drivers/pwm/pwm-sn3112.c | 351 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 362 insertions(+)
  create mode 100644 drivers/pwm/pwm-sn3112.c
 
 diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-index 4b956d661755d..b66ca4e4d01cb 100644
+index 3ff72389574d..666666666666 100644
 --- a/drivers/pwm/Kconfig
 +++ b/drivers/pwm/Kconfig
-@@ -557,6 +557,16 @@ config PWM_SL28CPLD
+@@ -651,6 +651,16 @@ config PWM_SL28CPLD
  	  To compile this driver as a module, choose M here: the module
  	  will be called pwm-sl28cpld.
  
@@ -31,9 +31,9 @@ index 4b956d661755d..b66ca4e4d01cb 100644
 +	  To compile this driver as a module, choose M here: the module
 +	  will be called pwm-sn3112.
 +
- config PWM_SPEAR
- 	tristate "STMicroelectronics SPEAr PWM support"
- 	depends on PLAT_SPEAR || COMPILE_TEST
+ config PWM_SOPHGO_SG2042
+ 	tristate "Sophgo SG2042 PWM support"
+ 	depends on ARCH_SOPHGO || COMPILE_TEST
 diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
 index c5ec9e168ee7c..f46223a7b9a52 100644
 --- a/drivers/pwm/Makefile
@@ -51,7 +51,7 @@ new file mode 100644
 index 0000000000000..38ef948602a3c
 --- /dev/null
 +++ b/drivers/pwm/pwm-sn3112.c
-@@ -0,0 +1,336 @@
+@@ -0,0 +1,351 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Driver for SN3112 12-channel 8-bit PWM LED controller
@@ -261,7 +261,7 @@ index 0000000000000..38ef948602a3c
 +{
 +	struct pwm_chip *chip;
 +	struct sn3112 *priv;
-+	int ret, i;
++	int ret, i, retry;
 +
 +	dev_dbg(&client->dev, "probing\n");
 +	chip = devm_pwmchip_alloc(&client->dev, SN3112_CHANNELS, sizeof(*priv));
@@ -305,16 +305,11 @@ index 0000000000000..38ef948602a3c
 +		ret = PTR_ERR(priv->regmap);
 +		dev_err(priv->pdev, "Failed to initialize register map: %d\n",
 +			ret);
-+		return ret;
++		goto err_disable_regulator;
 +	}
 +
 +	i2c_set_clientdata(client, chip);
 +	mutex_init(&priv->lock);
-+
-+	chip->ops = &sn3112_pwm_ops;
-+	ret = pwmchip_add(chip);
-+	if (ret < 0)
-+		return ret;
 +
 +#if IS_ENABLED(CONFIG_GPIOLIB)
 +	/* disable hardware shutdown pin */
@@ -322,16 +317,36 @@ index 0000000000000..38ef948602a3c
 +		gpiod_set_value(priv->sdb, 0);
 +#endif
 +
++	usleep_range(10000, 20000);
++
 +	/* initialize registers */
-+	ret = sn3112_write_all(priv);
++	for (retry = 0; retry < 5; retry++) {
++		ret = sn3112_write_all(priv);
++		if (ret == 0)
++			break;
++		usleep_range(20000, 30000);
++	}
 +	if (ret != 0) {
 +		dev_err(priv->pdev, "Failed to initialize sn3112: %d\n", ret);
-+		return ret;
++		goto err_disable_regulator;
 +	}
++
++	chip->ops = &sn3112_pwm_ops;
++	ret = pwmchip_add(chip);
++	if (ret < 0)
++		goto err_disable_regulator;
 +
 +	dev_info(&client->dev,
 +		 "Found SI-EN SN3112 12-channel 8-bit PWM LED controller\n");
 +	return 0;
++
++err_disable_regulator:
++#if IS_ENABLED(CONFIG_GPIOLIB)
++	if (priv->sdb)
++		gpiod_set_value(priv->sdb, 1);
++#endif
++	regulator_disable(priv->vdd);
++	return ret;
 +}
 +
 +static void sn3112_pwm_remove(struct i2c_client *client)
