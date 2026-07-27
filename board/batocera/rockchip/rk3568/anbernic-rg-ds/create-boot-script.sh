@@ -14,6 +14,7 @@ BINARIES_DIR=$4
 TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux" || exit 1
 
 cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"               || exit 1
@@ -22,7 +23,10 @@ cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocer
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux/"           || exit 1
 
-# Device Trees
+# Device Tree
 cp "${BINARIES_DIR}/rk3568-anbernic-rg-ds.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+
+# SPI
+cp "${BINARIES_DIR}/uboot-rk356x/u-boot-rockchip-spi.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0

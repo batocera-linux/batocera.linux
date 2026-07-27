@@ -48,7 +48,7 @@ define UBOOT_RK3576_BUILD_CMDS
 endef
 
 define UBOOT_RK3576_INSTALL_IMAGES_CMDS
-    mkdir -p $(BINARIES_DIR)/uboot-rk356x
+    mkdir -p $(BINARIES_DIR)/uboot-rk3576
     # u-boot-rockchip.bin contains both the idbloader.img and u-boot.itb
     $(INSTALL) -D -m 0644 $(@D)/u-boot-rockchip.bin \
         $(BINARIES_DIR)/uboot-rk3576/u-boot-rockchip.bin
