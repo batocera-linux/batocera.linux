@@ -284,7 +284,8 @@ do_update() {
     done
 
     # snapshot to help create .stale file
-    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*|boot/spi-flash\.log)$' | sort)
+    # Exclude Pi-specific eeprom files and rpi log from being treated as stale
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
 
     # extract file on /boot
     upgmsg "Extracting files ..."
@@ -360,6 +361,22 @@ do_update() {
             upgmsg "ABL update completed!" 1
         else
             upgmsg "WARNING: ABL update failed! See ${ABL_LOG}" 2
+        fi
+    fi
+
+    # Update Raspberry Pi EEPROM if running on Raspberry Pi 4 or 5
+    if [[ "${G_BOARD}" =~ ^bcm271[12]$ ]]; then
+        if command -v rpi-eeprom-update >/dev/null 2>&1; then
+            mkdir -p /boot/boot
+            local RPI_LOG="/boot/boot/rpi-eeprom.log"
+            upgmsg "Checking Raspberry Pi EEPROM update ..." 1
+            echo "=== Raspberry Pi EEPROM Update: $(date) ===" >> "${RPI_LOG}"
+            if rpi-eeprom-update -a >> "${RPI_LOG}" 2>&1; then
+                upgmsg "Raspberry Pi EEPROM update check completed!" 1
+            else
+                # We continue with the main system upgrade even if EEPROM staging has errors.
+                upgmsg "WARNING: EEPROM update completed with errors. See ${RPI_LOG}" 2
+            fi
         fi
     fi
 
