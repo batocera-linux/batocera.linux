@@ -1,4 +1,17 @@
 #!/bin/bash
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2025+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
 
 export LC_ALL=C
 
@@ -128,6 +141,52 @@ vulkan_version() {
     fi
 }
 
+# Extract only the vulkaninfo block corresponding to the target GPU
+get_gpu_info() {
+    local idx="$1"
+    local next_idx=$((idx + 1))
+    vulkaninfo 2>/dev/null | awk -v start="GPU$idx" -v end="GPU$next_idx" '
+        $0 ~ start { flag=1 }
+        $0 ~ end { flag=0 }
+        flag { print }
+    '
+}
+
+# Check if the active rendering GPU supports Vulkan encoding
+supports_encoding() {
+    # If the system uses a discrete GPU, query its specific extensions
+    local gpu_index=0
+    if [ "$(has_discrete)" = "true" ]; then
+        gpu_index=$(discrete_index)
+    fi
+
+    local EXTS
+    EXTS=$(get_gpu_info "$gpu_index")
+
+    # Base Vulkan video queue extensions must be present
+    if echo "$EXTS" | grep -q "VK_KHR_video_queue" && echo "$EXTS" | grep -q "VK_KHR_video_encode_queue"; then
+        local SUPPORTED_CODECS=""
+
+        # Check codec support
+        if echo "$EXTS" | grep -q "VK_KHR_video_encode_h264"; then
+            SUPPORTED_CODECS="h264_vulkan $SUPPORTED_CODECS"
+        fi
+        if echo "$EXTS" | grep -q "VK_KHR_video_encode_h265"; then
+            SUPPORTED_CODECS="hevc_vulkan $SUPPORTED_CODECS"
+        fi
+        if echo "$EXTS" | grep -q "VK_KHR_video_encode_av1"; then
+            SUPPORTED_CODECS="av1_vulkan $SUPPORTED_CODECS"
+        fi
+
+        # Return space-separated codecs
+        if [ -n "$SUPPORTED_CODECS" ]; then
+            echo "$SUPPORTED_CODECS" | xargs
+            return 0
+        fi
+    fi
+    return 1
+}
+
 # Handle input options
 case "$1" in
     "listDevices")
@@ -157,8 +216,11 @@ case "$1" in
     "vulkanVersion")
         vulkan_version
         ;;
+    "supportsEncoding")
+        supports_encoding
+        ;;
     *)
-        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|defaultName|hasVulkan|vulkanVersion}"
+        echo "Invalid option. Usage: $0 {listDevices|numDevices|hasDiscrete|discreteUUID|discreteName|discreteIndex|defaultName|hasVulkan|vulkanVersion|supportsEncoding}"
         exit 1
         ;;
 esac
