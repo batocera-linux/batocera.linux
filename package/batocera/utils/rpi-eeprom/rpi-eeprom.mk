@@ -17,7 +17,10 @@ define RPI_EEPROM_INSTALL_TARGET_CMDS
     $(INSTALL) -m 0755 -D $(@D)/rpi-eeprom-update $(TARGET_DIR)/usr/bin/rpi-eeprom-update
 	$(INSTALL) -m 0755 -D $(@D)/rpi-eeprom-digest $(TARGET_DIR)/usr/bin/rpi-eeprom-digest
     mkdir -p $(TARGET_DIR)/etc/default
-    $(INSTALL) -m 0755 -D $(@D)/rpi-eeprom-update-default $(TARGET_DIR)/etc/default/rpi-eeprom-update
+    $(INSTALL) -m 0755 -D $(@D)/rpi-eeprom-update-default \
+        $(TARGET_DIR)/etc/default/rpi-eeprom-update
+    sed -i 's|^FIRMWARE_ROOT=.*|FIRMWARE_ROOT=/lib/firmware/raspberrypi/bootloader|' \
+        $(TARGET_DIR)/etc/default/rpi-eeprom-update
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
