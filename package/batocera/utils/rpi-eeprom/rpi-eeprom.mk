@@ -9,7 +9,7 @@ RPI_EEPROM_SITE = $(call github,raspberrypi,rpi-eeprom,$(RPI_EEPROM_VERSION))
 RPI_EEPROM_LICENSE = BSD-3-Clause
 RPI_EEPROM_LICENSE_FILES = LICENCE
 
-RPI_EEPROM_DEPENDENCIES = python3 binutils rpi-utils
+RPI_EEPROM_DEPENDENCIES = python3 binutils rpi-utils flashrom
 
 define RPI_EEPROM_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin
