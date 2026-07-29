@@ -45,6 +45,13 @@ endif
 BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
 
+# logitech direct drive wheels (RS50, G PRO, G923)
+ifeq ($(BR2_PACKAGE_LOGI_WHEEL_GUI),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-logi-wheel
+  BATOCERA_DESKTOPAPPS_APPS    += logi-wheel-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += logi-wheel.png
+endif
+
 # pcsx2
 ifeq ($(BR2_PACKAGE_PCSX2),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2

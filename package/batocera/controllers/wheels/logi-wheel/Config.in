@@ -1,0 +1,35 @@
+config BR2_PACKAGE_LOGI_WHEEL
+	bool "logi-wheel"
+	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+	help
+	    Terminal settings app for the wheels driven by the
+	    logitech-trueforce module (RS50, G PRO, G923): rotation range,
+	    force feedback gains, pedal curves, LIGHTSYNC and the onboard
+	    profile slots, through the driver's wheel_* sysfs knobs.
+
+	    Also installs the two wine helpers the app drives: logi-ffb,
+	    a force feedback proxy for the DirectInput games that need
+	    PROTON_ENABLE_HIDRAW=1, and logi-tf-sim, which synthesizes
+	    TrueForce and the rev lights from the UDP telemetry of a few
+	    PC titles.
+
+	    https://github.com/mescon/logitech-trueforce-linux-driver
+
+if BR2_PACKAGE_LOGI_WHEEL
+
+config BR2_PACKAGE_LOGI_WHEEL_GUI
+	bool "logi-wheel-gui"
+	default y if BR2_PACKAGE_XORG7 && BR2_PACKAGE_HAS_LIBEGL && BR2_PACKAGE_HAS_LIBGLES
+	select BR2_PACKAGE_FONTCONFIG
+	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_XLIB_LIBX11
+	help
+	    Same settings as the terminal app, as a Slint desktop
+	    application. It draws with OpenGL ES through a winit window, so
+	    it needs the X11 session batocera starts for its desktop mode,
+	    where it shows up as logi-wheel-config.
+
+	    Only enable this on a target that has xorg and an EGL / OpenGL
+	    ES stack, it will not build without them.
+
+endif
