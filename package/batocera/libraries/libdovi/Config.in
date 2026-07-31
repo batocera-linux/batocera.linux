@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LIBDOVI
+	bool "libdovi"
+	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  Library to read and write Dolby Vision metadata.
+
+	  https://github.com/quietvoid/dovi_tool/tree/main/dolby_vision

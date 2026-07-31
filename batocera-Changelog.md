@@ -11,6 +11,7 @@
 - AYN Odin 3 initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
+- Retroid Pocket Nova initial support
 ### Added
 - Anbernic H700 device hardware acceleration support
 - Anbernic RGCubeXX device LED controller support
@@ -127,8 +128,8 @@
 - Xemu to v0.8.136
 - Ymir to v0.3.3
 ### System
-- Allwinner H616 device kernel updated to 7.1.4
-- Allwinner H700 device kernel updated to 7.0.11
+- Allwinner H616 device kernel updated to 7.1.5
+- Allwinner H700 device kernel updated to 7.0.14
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.0.2
@@ -143,13 +144,13 @@
 - Nvidia Open Production driver to 610.43.03
 - Nvidia 580 Legacy driver to 580.173.02
 - QT to 6.11.1
-- Qualcomm SM6115 device kernel updated to 7.0.11
-- Qualcomm SM8550 device kernel updated to 7.0.11
-- Qualcomm SM8750 device kernel updated to 7.1.4
-- Raspberry Pi device kernel updated to 6.18.37
-- Rockchip RK3568 device kernel updated to 7.0.11
-- Rockchip RK3588 mainline device kernel updated to 7.1.4
-- Rocknix ABL to 1.1.4 (SM8x50 devices)
+- Qualcomm SM6115 device kernel updated to 7.0.14
+- Qualcomm SM8550 device kernel updated to 7.0.14
+- Qualcomm SM8750 device kernel updated to 7.1.5
+- Raspberry Pi device kernel updated to 6.18.39
+- Rockchip RK3568 device kernel updated to 7.0.14
+- Rockchip RK3588 mainline device kernel updated to 7.1.5
+- Rocknix ABL to 1.1.6 (SM6115 & SM8x50 devices)
 - Sound Open Firmware to 2025.12.2
 - SwitchRes to 2.2.2
 - RTKit to v0.14
@@ -159,7 +160,8 @@
 - WINE Proton to proton-11.0-1
 - WINE TKG to 11.13
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.1.4
+- X86_64 / Zen3 kernel updated to 7.1.5
+- Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed

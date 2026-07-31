@@ -1,0 +1,222 @@
+diff --git a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+index 809fda45b3bd..656ceb1f116e 100644
+--- a/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
++++ b/Documentation/devicetree/bindings/media/rockchip,vdec.yaml
+@@ -18,6 +18,7 @@  properties:
+     oneOf:
+       - const: rockchip,rk3288-vdec
+       - const: rockchip,rk3399-vdec
++      - const: rockchip,rk3568-vdec
+       - const: rockchip,rk3576-vdec
+       - const: rockchip,rk3588-vdec
+       - items:
+@@ -107,6 +108,7 @@  allOf:
+         compatible:
+           contains:
+             enum:
++              - rockchip,rk3568-vdec
+               - rockchip,rk3576-vdec
+               - rockchip,rk3588-vdec
+     then:
+diff --git a/drivers/media/platform/rockchip/rkvdec/rkvdec.c b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
+index a5cf6f3240f8..6e49b129d11f 100644
+--- a/drivers/media/platform/rockchip/rkvdec/rkvdec.c
++++ b/drivers/media/platform/rockchip/rkvdec/rkvdec.c
+@@ -236,6 +236,62 @@  static const struct rkvdec_ctrls rkvdec_hevc_ctrls = {
+ 	.num_ctrls = ARRAY_SIZE(rkvdec_hevc_ctrl_descs),
+ };
+ 
++static const struct rkvdec_ctrl_desc vdpu346_hevc_ctrl_descs[] = {
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_SPS,
++		.cfg.ops = &rkvdec_ctrl_ops,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_PPS,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_SCALING_MATRIX,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_DECODE_MODE,
++		.cfg.min = V4L2_STATELESS_HEVC_DECODE_MODE_FRAME_BASED,
++		.cfg.max = V4L2_STATELESS_HEVC_DECODE_MODE_FRAME_BASED,
++		.cfg.def = V4L2_STATELESS_HEVC_DECODE_MODE_FRAME_BASED,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_START_CODE,
++		.cfg.min = V4L2_STATELESS_HEVC_START_CODE_ANNEX_B,
++		.cfg.def = V4L2_STATELESS_HEVC_START_CODE_ANNEX_B,
++		.cfg.max = V4L2_STATELESS_HEVC_START_CODE_ANNEX_B,
++	},
++	{
++		.cfg.id = V4L2_CID_MPEG_VIDEO_HEVC_PROFILE,
++		.cfg.min = V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN,
++		.cfg.max = V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_10,
++		.cfg.menu_skip_mask =
++			BIT(V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_STILL_PICTURE),
++		.cfg.def = V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN,
++	},
++	{
++		.cfg.id = V4L2_CID_MPEG_VIDEO_HEVC_LEVEL,
++		.cfg.min = V4L2_MPEG_VIDEO_HEVC_LEVEL_1,
++		.cfg.max = V4L2_MPEG_VIDEO_HEVC_LEVEL_5_1,
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_EXT_SPS_ST_RPS,
++		.cfg.ops = &rkvdec_ctrl_ops,
++		.cfg.dims = { 65 },
++	},
++	{
++		.cfg.id = V4L2_CID_STATELESS_HEVC_EXT_SPS_LT_RPS,
++		.cfg.ops = &rkvdec_ctrl_ops,
++		.cfg.dims = { 65 },
++	},
++};
++
++static const struct rkvdec_ctrls vdpu346_hevc_ctrls = {
++	.ctrls = vdpu346_hevc_ctrl_descs,
++	.num_ctrls = ARRAY_SIZE(vdpu346_hevc_ctrl_descs),
++};
++
+ static const struct rkvdec_ctrl_desc vdpu38x_hevc_ctrl_descs[] = {
+ 	{
+ 		.cfg.id = V4L2_CID_STATELESS_HEVC_DECODE_PARAMS,
+@@ -463,6 +519,41 @@  static const struct rkvdec_coded_fmt_desc rk3288_coded_fmts[] = {
+ 	}
+ };
+ 
++static const struct rkvdec_coded_fmt_desc vdpu346_coded_fmts[] = {
++	{
++		.fourcc = V4L2_PIX_FMT_HEVC_SLICE,
++		.frmsize = {
++			.min_width = 64,
++			.max_width = 4096,
++			.step_width = 64,
++			.min_height = 64,
++			.max_height = 2304,
++			.step_height = 16,
++		},
++		.ctrls = &vdpu346_hevc_ctrls,
++		.ops = &rkvdec_vdpu381_hevc_fmt_ops,
++		.num_decoded_fmts = ARRAY_SIZE(rkvdec_hevc_decoded_fmts),
++		.decoded_fmts = rkvdec_hevc_decoded_fmts,
++		.subsystem_flags = VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF,
++	},
++	{
++		.fourcc = V4L2_PIX_FMT_H264_SLICE,
++		.frmsize = {
++			.min_width = 64,
++			.max_width =  4096,
++			.step_width = 64,
++			.min_height = 64,
++			.max_height =  2304,
++			.step_height = 16,
++		},
++		.ctrls = &rkvdec_h264_ctrls,
++		.ops = &rkvdec_vdpu381_h264_fmt_ops,
++		.num_decoded_fmts = ARRAY_SIZE(rkvdec_h264_decoded_fmts),
++		.decoded_fmts = rkvdec_h264_decoded_fmts,
++		.subsystem_flags = VB2_V4L2_FL_SUPPORTS_M2M_HOLD_CAPTURE_BUF,
++	},
++};
++
+ static const struct rkvdec_coded_fmt_desc vdpu381_coded_fmts[] = {
+ 	{
+ 		.fourcc = V4L2_PIX_FMT_HEVC_SLICE,
+@@ -1657,6 +1748,14 @@  static const struct rkvdec_variant_ops vdpu381_variant_ops = {
+ 	.flatten_matrices = transpose_and_flatten_matrices,
+ };
+ 
++static const struct rkvdec_variant vdpu346_variant = {
++	.coded_fmts = vdpu346_coded_fmts,
++	.num_coded_fmts = ARRAY_SIZE(vdpu346_coded_fmts),
++	.rcb_sizes = vdpu381_rcb_sizes,
++	.num_rcb_sizes = ARRAY_SIZE(vdpu381_rcb_sizes),
++	.ops = &vdpu381_variant_ops,
++};
++
+ static const struct rkvdec_variant vdpu381_variant = {
+ 	.coded_fmts = vdpu381_coded_fmts,
+ 	.num_coded_fmts = ARRAY_SIZE(vdpu381_coded_fmts),
+@@ -1705,6 +1804,10 @@  static const struct of_device_id of_rkvdec_match[] = {
+ 		.compatible = "rockchip,rk3399-vdec",
+ 		.data = &rk3399_rkvdec_variant,
+ 	},
++	{
++		.compatible = "rockchip,rk3568-vdec",
++		.data = &vdpu346_variant,
++	},
+ 	{
+ 		.compatible = "rockchip,rk3588-vdec",
+ 		.data = &vdpu381_variant,
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi b/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
+index a2c4957a5899..11536684479b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x-base.dtsi
+@@ -383,6 +383,19 @@  usb2phy1_grf: syscon@fdca8000 {
+ 		reg = <0x0 0xfdca8000 0x0 0x8000>;
+ 	};
+ 
++	sram@fdcc0000 {
++		compatible = "mmio-sram";
++		reg = <0x0 0xfdcc0000 0x0 0xb000>;
++		ranges = <0x0 0x0 0xfdcc0000 0xb000>;
++		#address-cells = <1>;
++		#size-cells = <1>;
++
++		vdec_sram: rkvdec-sram@0 {
++			reg = <0x0 0xb000>;
++			pool;
++		};
++	};
++
+ 	pmucru: clock-controller@fdd00000 {
+ 		compatible = "rockchip,rk3568-pmucru";
+ 		reg = <0x0 0xfdd00000 0x0 0x1000>;
+@@ -619,6 +632,42 @@  vepu_mmu: iommu@fdee0800 {
+ 		#iommu-cells = <0>;
+ 	};
+ 
++	vdec: video-codec@fdf80100 {
++		compatible = "rockchip,rk3568-vdec";
++		reg = <0x0 0xfdf80200 0x0 0x500>,
++		      <0x0 0xfdf80100 0x0 0x100>,
++		      <0x0 0xfdf80700 0x0 0x100>;
++		reg-names = "function", "link", "cache";
++		interrupts = <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>,
++			 <&cru CLK_RKVDEC_CA>, <&cru CLK_RKVDEC_CORE>,
++			 <&cru CLK_RKVDEC_HEVC_CA>;
++		clock-names = "axi", "ahb", "cabac", "core", "hevc_cabac";
++		assigned-clocks = <&cru ACLK_RKVDEC>,
++				  <&cru CLK_RKVDEC_CORE>,
++				  <&cru CLK_RKVDEC_CA>,
++				  <&cru CLK_RKVDEC_HEVC_CA>;
++		assigned-clock-rates = <297000000>, <297000000>,
++				       <297000000>, <600000000>;
++		iommus = <&vdec_mmu>;
++		power-domains = <&power RK3568_PD_RKVDEC>;
++		resets = <&cru SRST_A_RKVDEC>, <&cru SRST_H_RKVDEC>,
++			 <&cru SRST_RKVDEC_CA>, <&cru SRST_RKVDEC_CORE>,
++			 <&cru SRST_RKVDEC_HEVC_CA>;
++		reset-names = "axi", "ahb", "cabac", "core", "hevc_cabac";
++		sram = <&vdec_sram>;
++	};
++
++	vdec_mmu: iommu@fdf80800 {
++		compatible = "rockchip,rk3568-iommu";
++		reg = <0x0 0xfdf80800 0x0 0x40>, <0x0 0xfdf80840 0x0 0x40>;
++		interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&cru ACLK_RKVDEC>, <&cru HCLK_RKVDEC>;
++		clock-names = "aclk", "iface";
++		power-domains = <&power RK3568_PD_RKVDEC>;
++		#iommu-cells = <0>;
++	};
++
+ 	vicap: video-capture@fdfe0000 {
+ 		compatible = "rockchip,rk3568-vicap";
+ 		reg = <0x0 0xfdfe0000 0x0 0x200>;

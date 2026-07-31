@@ -1,19 +1,12 @@
-From: ROCKNIX <local>
-Subject: drm/msm: harden put_iova_spaces and GEM/dmabuf teardown (v7.0+)
-
-drm_gpuvm_bo_find() for vm!=NULL avoids walking obj->gpuva.list twice
-(close/KMS/unpin paths). dma_resv_wait before the final msm_gem_vma_put
-in msm_gem_close; dma_resv_wait in msm_gem_dmabuf_release. Snapshot VMA
-pointers for teardown. Check msm_gem_lock_vm_and_obj() return value.
-
 diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
+index b27abaa13..982c96366 100644
 --- a/drivers/gpu/drm/msm/msm_gem.c
 +++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -53,25 +53,29 @@
+@@ -53,25 +53,29 @@ static void msm_gem_close(struct drm_gem_object *obj, struct drm_file *file)
  {
  	struct msm_context *ctx = file->driver_priv;
  	struct drm_exec exec;
-+	int ret;
++	int ret = 0;
  
  	update_ctx_mem(file, -obj->size);
 -	msm_gem_vma_put(obj);
@@ -42,14 +35,56 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  
  	/*
  	 * TODO we might need to kick this to a queue to avoid blocking
-@@ -80,8 +84,14 @@
+@@ -80,9 +84,58 @@ static void msm_gem_close(struct drm_gem_object *obj, struct drm_file *file)
  	dma_resv_wait_timeout(obj->resv, DMA_RESV_USAGE_BOOKKEEP, false,
  			      MAX_SCHEDULE_TIMEOUT);
  
 -	msm_gem_lock_vm_and_obj(&exec, obj, ctx->vm);
 -	put_iova_spaces(obj, ctx->vm, true, "close");
-+	msm_gem_vma_put(obj);
++	/*
++	 * Merge the KMS-VM teardown (if vma_ref hits 0) with the user-VM
++	 * teardown into ONE combined lock window.  This eliminates the gap
++	 * between two separate lock acquisitions that allowed a concurrent
++	 * msm_gem_vma_put() caller to enter drm_gpuvm_bo_find() while
++	 * kms_vm_bo was being list_del()'d (list.next = LIST_POISON1).
++	 */
++#ifdef CONFIG_DRM_MSM_KMS
++	{
++		struct msm_drm_private *priv = obj->dev->dev_private;
++		bool do_kms = priv->kms &&
++			!atomic_dec_return(&to_msm_bo(obj)->vma_ref);
 +
++		drm_exec_init(&exec, 0, do_kms ? 3 : 2);
++		drm_exec_until_all_locked (&exec) {
++			ret = drm_exec_lock_obj(&exec,
++						drm_gpuvm_resv_obj(ctx->vm));
++			if (!ret && do_kms)
++				ret = drm_exec_lock_obj(
++					&exec,
++					drm_gpuvm_resv_obj(priv->kms->vm));
++			if (!ret &&
++			    obj->resv != drm_gpuvm_resv(ctx->vm) &&
++			    (!do_kms ||
++			     obj->resv != drm_gpuvm_resv(priv->kms->vm)))
++				ret = drm_exec_lock_obj(&exec, obj);
++			drm_exec_retry_on_contention(&exec);
++			if (GEM_WARN_ON(ret))
++				break;
++		}
++		if (!ret) {
++			if (do_kms)
++				put_iova_spaces(obj, priv->kms->vm, true,
++						"close-kms");
++			put_iova_spaces(obj, ctx->vm, true, "close");
++		} else {
++			WARN(1,
++			     "msm_gem_close: lock failed (%d), skipping IOVA teardown\n",
++			     ret);
++		}
++		drm_exec_fini(&exec);
++	}
++#else
++	atomic_dec(&to_msm_bo(obj)->vma_ref);
 +	ret = msm_gem_lock_vm_and_obj(&exec, obj, ctx->vm);
 +	if (!ret)
 +		put_iova_spaces(obj, ctx->vm, true, "close");
@@ -57,17 +92,52 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
 +		WARN(1, "msm_gem_close: lock failed (%d), skipping IOVA teardown\n",
 +		     ret);
  	drm_exec_fini(&exec);     /* drop locks */
++#endif
  }
  
-@@ -106,9 +116,14 @@
+ /*
+@@ -106,9 +159,47 @@ void msm_gem_vma_put(struct drm_gem_object *obj)
  
  #ifdef CONFIG_DRM_MSM_KMS
  	struct drm_exec exec;
++	struct drm_gpuvm_bo *vm_bo;
 +	int ret;
  
 -	msm_gem_lock_vm_and_obj(&exec, obj, priv->kms->vm);
 -	put_iova_spaces(obj, priv->kms->vm, true, "vma_put");
-+	ret = msm_gem_lock_vm_and_obj(&exec, obj, priv->kms->vm);
++	/*
++	 * drm_gpuvm_bo_find() walks obj->gpuva.list, which another thread can
++	 * modify via put_iova_spaces() during handle close.  Take obj->resv
++	 * and every VM resv for this BO (as in msm_gem_free_object()) so KMS
++	 * teardown cannot race with user-VM teardown in msm_gem_close().
++	 */
++	drm_exec_init(&exec, 0, 0);
++	drm_exec_until_all_locked (&exec) {
++		/*
++		 * Always lock obj first: gpuva.list is keyed on obj->resv.
++		 * When obj->resv == kms resv this is the only lock we need.
++		 */
++		ret = drm_exec_lock_obj(&exec, obj);
++		if (!ret && obj->resv != drm_gpuvm_resv(priv->kms->vm))
++			ret = drm_exec_lock_obj(&exec,
++						drm_gpuvm_resv_obj(priv->kms->vm));
++		if (!ret) {
++			drm_gem_for_each_gpuvm_bo(vm_bo, obj) {
++				struct dma_resv *resv = drm_gpuvm_resv(vm_bo->vm);
++
++				if (resv == obj->resv ||
++				    resv == drm_gpuvm_resv(priv->kms->vm))
++					continue;
++				ret = drm_exec_lock_obj(&exec,
++							drm_gpuvm_resv_obj(vm_bo->vm));
++				if (ret)
++					break;
++			}
++		}
++		drm_exec_retry_on_contention(&exec);
++		if (GEM_WARN_ON(ret))
++			break;
++	}
 +	if (!ret)
 +		put_iova_spaces(obj, priv->kms->vm, true, "vma_put");
 +	else
@@ -76,7 +146,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  	drm_exec_fini(&exec);     /* drop locks */
  #endif
  }
-@@ -411,26 +426,101 @@
+@@ -411,26 +502,109 @@ static void
  put_iova_spaces(struct drm_gem_object *obj, struct drm_gpuvm *vm,
  		bool close, const char *reason)
  {
@@ -95,7 +165,15 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
 +	 * walked for purge/evict/free (vm == NULL) where every VM must be hit.
 +	 */
 +	if (vm) {
-+		vm_bo = drm_gpuvm_bo_find(vm, obj);
++		struct drm_gpuvm_bo *candidate;
++
++		vm_bo = NULL;
++		drm_gem_for_each_gpuvm_bo(candidate, obj) {
++			if (candidate->vm == vm) {
++				vm_bo = drm_gpuvm_bo_get(candidate);
++				break;
++			}
++		}
 +		if (!vm_bo)
 +			return;
 +
@@ -128,7 +206,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  			if (close)
 -				msm_gem_vma_close(vma);
 +				msm_gem_vma_close(vas[j]);
-+		}
+ 		}
 +		kfree(vas);
 +		drm_gpuvm_bo_put(vm_bo);
 +		return;
@@ -139,7 +217,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
 +		match++;
 +	if (!match)
 +		return;
-+
+ 
 +	vm_bos = kmalloc_array(match, sizeof(*vm_bos), GFP_KERNEL);
 +	if (!vm_bos) {
 +		WARN(1, "msm: put_iova_spaces OOM (match=%u)\n", match);
@@ -167,8 +245,8 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
 +			WARN(1, "msm: put_iova_spaces vma snapshot OOM (nv=%u)\n", nv);
 +			drm_gpuvm_bo_put(vm_bo);
 +			continue;
- 		}
- 
++		}
++
 +		j = 0;
 +		drm_gpuvm_bo_for_each_va(vma, vm_bo)
 +			vas[j++] = vma;
@@ -187,7 +265,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  }
  
  static struct drm_gpuva *get_vma_locked(struct drm_gem_object *obj,
-@@ -556,8 +646,10 @@
+@@ -556,8 +730,10 @@ int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
  	struct drm_exec exec;
  	int ret;
  
@@ -200,7 +278,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  	drm_exec_fini(&exec);     /* drop locks */
  
  	return ret;
-@@ -579,14 +671,16 @@
+@@ -579,14 +755,16 @@ int msm_gem_get_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm,
  {
  	struct drm_gpuva *vma;
  	struct drm_exec exec;
@@ -224,7 +302,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  	}
  	drm_exec_fini(&exec);     /* drop locks */
  
-@@ -620,17 +714,20 @@
+@@ -620,17 +798,20 @@ int msm_gem_set_iova(struct drm_gem_object *obj,
  	struct drm_exec exec;
  	int ret = 0;
  
@@ -256,7 +334,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  		}
  	}
  	drm_exec_fini(&exec);     /* drop locks */
-@@ -658,14 +755,18 @@
+@@ -658,14 +839,18 @@ void msm_gem_unpin_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm)
  {
  	struct drm_gpuva *vma;
  	struct drm_exec exec;
@@ -281,8 +359,8 @@ diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
  	drm_exec_fini(&exec);     /* drop locks */
  }
  
-
 diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_prime.c
+index 036d34c67..12ae6ef16 100644
 --- a/drivers/gpu/drm/msm/msm_gem_prime.c
 +++ b/drivers/gpu/drm/msm/msm_gem_prime.c
 @@ -5,6 +5,7 @@
@@ -293,7 +371,7 @@ diff --git a/drivers/gpu/drm/msm/msm_gem_prime.c b/drivers/gpu/drm/msm/msm_gem_p
  
  #include <drm/drm_drv.h>
  #include <drm/drm_prime.h>
-@@ -47,6 +48,9 @@
+@@ -47,6 +48,9 @@ static void msm_gem_dmabuf_release(struct dma_buf *dma_buf)
  {
  	struct drm_gem_object *obj = dma_buf->priv;
  

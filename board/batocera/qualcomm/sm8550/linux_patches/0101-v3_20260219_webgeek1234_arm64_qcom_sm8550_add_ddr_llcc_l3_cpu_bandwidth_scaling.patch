@@ -1,46 +1,8 @@
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v3 1/2] dt-bindings: interconnect: OSM L3: Document sm8550
- OSM L3 compatible
+From f8d0bfd9ede0bd878bb778acd3867e8f801ea4c7 Mon Sep 17 00:00:00 2001
 From: Aaron Kling <webgeek1234@gmail.com>
-Date: Thu, 19 Feb 2026 22:07:39 -0600
-Message-Id: <20260219-sm8550-ddr-bw-scaling-v3-1-75c19152e921@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-
-Document the OSM L3 found in the Qualcomm SM8550 platform.
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Signed-off-by: Aaron Kling <webgeek1234@gmail.com>
----
- Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml b/Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml
-index 4b9b98fbe8f22258c209e8337bb4517e5f5888e8..3cbe2c3701f77d5d70082092043f2b2ccbd64905 100644
---- a/Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,osm-l3.yaml
-@@ -34,6 +34,7 @@ properties:
-               - qcom,sm6375-cpucp-l3
-               - qcom,sm8250-epss-l3
-               - qcom,sm8350-epss-l3
-+              - qcom,sm8550-epss-l3
-               - qcom,sm8650-epss-l3
-           - const: qcom,epss-l3
-       - items:
-
--- 
-2.52.0
-
-From git@z Thu Jan  1 00:00:00 1970
-Subject: [PATCH v3 2/2] arm64: dts: qcom: sm8550: add cpu OPP table with
- DDR, LLCC & L3 bandwidths
-From: Aaron Kling <webgeek1234@gmail.com>
-Date: Thu, 19 Feb 2026 22:07:40 -0600
-Message-Id: <20260219-sm8550-ddr-bw-scaling-v3-2-75c19152e921@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Date: Mon, 30 Mar 2026 16:50:20 -0500
+Subject: [PATCH] arm64: dts: qcom: sm8550: add cpu OPP table with DDR, LLCC &
+ L3 bandwidths
 
 Add the OPP tables for each CPU clusters (cpu0-1-2, cpu3-4-5-6 & cpu7)
 to permit scaling the Last Level Cache Controller (LLCC), DDR and L3 cache
@@ -63,13 +25,15 @@ Also add the interconnect entry for each cpu, with 3 different paths:
 
 Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8550-HDK
 Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 Signed-off-by: Aaron Kling <webgeek1234@gmail.com>
+Signed-off-by: map220v <map220v300@gmail.com>
 ---
- arch/arm64/boot/dts/qcom/sm8550.dtsi | 367 +++++++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550.dtsi | 367 +++++++++++++++++++++++++++
  1 file changed, 367 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
-index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d25f3c2a6 100644
+index 3b58b53f87c7..84ecc60fe26a 100644
 --- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
 @@ -17,6 +17,7 @@
@@ -80,10 +44,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  #include <dt-bindings/mailbox/qcom-ipcc.h>
  #include <dt-bindings/power/qcom-rpmpd.h>
  #include <dt-bindings/power/qcom,rpmhpd.h>
-@@ -78,6 +79,13 @@ cpu0: cpu@0 {
+@@ -84,6 +85,13 @@
  			qcom,freq-domain = <&cpufreq_hw 0>;
- 			capacity-dmips-mhz = <1024>;
- 			dynamic-power-coefficient = <100>;
+ 			capacity-dmips-mhz = <326>;
+ 			dynamic-power-coefficient = <251>;
 +			operating-points-v2 = <&cpu0_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -94,10 +58,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_0: l2-cache {
  				compatible = "cache";
-@@ -104,6 +112,13 @@ cpu1: cpu@100 {
+@@ -122,6 +130,13 @@
  			qcom,freq-domain = <&cpufreq_hw 0>;
- 			capacity-dmips-mhz = <1024>;
- 			dynamic-power-coefficient = <100>;
+ 			capacity-dmips-mhz = <326>;
+ 			dynamic-power-coefficient = <251>;
 +			operating-points-v2 = <&cpu0_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -108,10 +72,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_100: l2-cache {
  				compatible = "cache";
-@@ -125,6 +140,13 @@ cpu2: cpu@200 {
+@@ -152,6 +167,13 @@
  			qcom,freq-domain = <&cpufreq_hw 0>;
- 			capacity-dmips-mhz = <1024>;
- 			dynamic-power-coefficient = <100>;
+ 			capacity-dmips-mhz = <326>;
+ 			dynamic-power-coefficient = <251>;
 +			operating-points-v2 = <&cpu0_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -120,12 +84,12 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
 +					<&epss_l3 MASTER_EPSS_L3_APPS
 +					 &epss_l3 SLAVE_EPSS_L3_SHARED>;
  			#cooling-cells = <2>;
- 			l2_200: l2-cache {
- 				compatible = "cache";
-@@ -146,6 +168,13 @@ cpu3: cpu@300 {
+ 		};
+ 
+@@ -173,6 +195,13 @@
  			qcom,freq-domain = <&cpufreq_hw 1>;
- 			capacity-dmips-mhz = <1792>;
- 			dynamic-power-coefficient = <270>;
+ 			capacity-dmips-mhz = <693>;
+ 			dynamic-power-coefficient = <447>;
 +			operating-points-v2 = <&cpu3_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -136,10 +100,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_300: l2-cache {
  				compatible = "cache";
-@@ -167,6 +196,13 @@ cpu4: cpu@400 {
+@@ -203,6 +232,13 @@
  			qcom,freq-domain = <&cpufreq_hw 1>;
- 			capacity-dmips-mhz = <1792>;
- 			dynamic-power-coefficient = <270>;
+ 			capacity-dmips-mhz = <693>;
+ 			dynamic-power-coefficient = <447>;
 +			operating-points-v2 = <&cpu3_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -150,10 +114,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_400: l2-cache {
  				compatible = "cache";
-@@ -188,6 +224,13 @@ cpu5: cpu@500 {
+@@ -233,6 +269,13 @@
  			qcom,freq-domain = <&cpufreq_hw 1>;
- 			capacity-dmips-mhz = <1792>;
- 			dynamic-power-coefficient = <270>;
+ 			capacity-dmips-mhz = <693>;
+ 			dynamic-power-coefficient = <447>;
 +			operating-points-v2 = <&cpu3_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -164,10 +128,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_500: l2-cache {
  				compatible = "cache";
-@@ -209,6 +252,13 @@ cpu6: cpu@600 {
+@@ -263,6 +306,13 @@
  			qcom,freq-domain = <&cpufreq_hw 1>;
- 			capacity-dmips-mhz = <1792>;
- 			dynamic-power-coefficient = <270>;
+ 			capacity-dmips-mhz = <693>;
+ 			dynamic-power-coefficient = <447>;
 +			operating-points-v2 = <&cpu3_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -178,10 +142,10 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_600: l2-cache {
  				compatible = "cache";
-@@ -230,6 +280,13 @@ cpu7: cpu@700 {
+@@ -293,6 +343,13 @@
  			qcom,freq-domain = <&cpufreq_hw 2>;
- 			capacity-dmips-mhz = <1894>;
- 			dynamic-power-coefficient = <588>;
+ 			capacity-dmips-mhz = <1024>;
+ 			dynamic-power-coefficient = <1057>;
 +			operating-points-v2 = <&cpu7_opp_table>;
 +			interconnects = <&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
 +					 &gem_noc SLAVE_LLCC QCOM_ICC_TAG_ACTIVE_ONLY>,
@@ -192,7 +156,7 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  			#cooling-cells = <2>;
  			l2_700: l2-cache {
  				compatible = "cache";
-@@ -397,6 +454,306 @@ memory@a0000000 {
+@@ -463,6 +520,306 @@
  		reg = <0 0xa0000000 0 0>;
  	};
  
@@ -499,7 +463,7 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  	pmu-a510 {
  		compatible = "arm,cortex-a510-pmu";
  		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW &ppi_cluster0>;
-@@ -5437,6 +5794,16 @@ rpmhpd_opp_turbo_l1: opp-416 {
+@@ -5595,6 +5952,16 @@
  			};
  		};
  
@@ -516,7 +480,3 @@ index e3f93f4f412ded9583a6bc9215185a0daf5f1b57..de4d43f7b8d2416997db70c98b0fc36d
  		cpufreq_hw: cpufreq@17d91000 {
  			compatible = "qcom,sm8550-cpufreq-epss", "qcom,cpufreq-epss";
  			reg = <0 0x17d91000 0 0x1000>,
-
--- 
-2.52.0
-

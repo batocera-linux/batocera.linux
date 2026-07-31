@@ -14,21 +14,19 @@ BINARIES_DIR=$4
 TARGET_DIR=$5
 BATOCERA_BINARIES_DIR=$6
 
-mkdir -p "${BATOCERA_BINARIES_DIR}/build-uboot-odroid-m1"     || exit 1
-cp "${BOARD_DIR}/build-uboot.sh"          "${BATOCERA_BINARIES_DIR}/build-uboot-odroid-m1/" || exit 1
-cd "${BATOCERA_BINARIES_DIR}/build-uboot-odroid-m1/" && ./build-uboot.sh "${HOST_DIR}" "${BOARD_DIR}" "${BINARIES_DIR}" || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"          || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux" || exit 1
 
-mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
-mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
+cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"               || exit 1
+cp "${BINARIES_DIR}/initrd.lz4"      "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"          || exit 1
+cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"     || exit 1
+cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
+cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux/"           || exit 1
 
-cp "${BINARIES_DIR}/Image"                  "${BATOCERA_BINARIES_DIR}/boot/boot/linux"                || exit 1
-cp "${BINARIES_DIR}/initrd.lz4"             "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"            || exit 1
-cp "${BINARIES_DIR}/rootfs.squashfs"        "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"      || exit 1
-cp "${BINARIES_DIR}/rufomaculata"           "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
+# Device Tree
+cp "${BINARIES_DIR}/rk3568-odroid-m1.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
-cp "${BINARIES_DIR}/rk3568-odroid-m1.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
-cp "${BOARD_DIR}/boot/extlinux.conf"       "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
-cp "${BOARD_DIR}/boot/boot.scr"            "${BATOCERA_BINARIES_DIR}/boot/"  || exit 1
-cp "${BOARD_DIR}/boot/boot-logo.bmp.gz"    "${BATOCERA_BINARIES_DIR}/boot/"  || exit 1
+# SPI
+cp "${BINARIES_DIR}/uboot-odroid-m1/u-boot-rockchip-spi.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0

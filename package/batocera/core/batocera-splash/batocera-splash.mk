@@ -29,10 +29,14 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     endif
     # Overrides the RGA option for Mainline rockchip boards (Forces stateless v4l2request)
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568)$(BR2_PACKAGE_BATOCERA_TARGET_RK3576),y)
-        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next --gpu-context=drm --hwdec=v4l2request-copy
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request
     endif
-    # RPi & Amlogic using the ffmpeg patches (RPi5 cannot hw decode H.264)
-    ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
+    # RPi use drm-copy
+    ifeq ($(BR2_PACKAGE_BATOCERA_RPI_ANY),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=drm-copy
+    endif
+    # Amlogic using the ffmpeg patches
+    ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next --gpu-context=drm --hwdec=drm
     endif
     # SM8550 has specific HWDEC overrides
@@ -71,8 +75,10 @@ ifeq ($(BATOCERA_SPLASH_MEDIA),video)
     # alternative video
     ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2836)$(BR2_PACKAGE_BATOCERA_TARGET_RK3326)$(BR2_PACKAGE_BATOCERA_TARGET_RK3128)$(BR2_PACKAGE_BATOCERA_TARGET_H3)$(BR2_PACKAGE_BATOCERA_TARGET_JH7110),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-h264-720p30.mp4
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_H700)$(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
+    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_H700)$(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_S812)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-h264-1080p30.mp4
+    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712)$(BR2_PACKAGE_BATOCERA_TARGET_RK3576),y)
+        BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-hevc-1080p60-8bit.mp4
     else
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-hevc-1080p60.mp4
     endif

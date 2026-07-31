@@ -197,6 +197,7 @@
 		sdb-gpios = <&tlmm 55 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vdd_mcu_3v3>;
 		#pwm-cells = <1>;
+		status = "disabled";
 	};
 };
 
@@ -214,7 +215,7 @@
 		pinctrl-1 = <&ts_p_int_sleep>;
 
 		vio-supply = <&vreg_l12b_1p8>;
-		
+
 		syna,startup-delay-ms = <200>;
 		syna,reset-delay-ms = <200>;
 
@@ -243,6 +244,7 @@
 		sdb-gpios = <&tlmm 56 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vdd_mcu_3v3>;
 		#pwm-cells = <1>;
+		status = "disabled";
 	};
 };
 
@@ -320,4 +322,3 @@
 &spk_amp_r {
 	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
 };
-

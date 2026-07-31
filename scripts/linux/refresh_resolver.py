@@ -155,14 +155,14 @@ def find_package_for_file(changed_file_path: Path, package_dirs: Mapping[Path, s
     return None
 
 
-def get_changed_files(git_root: Path, days: int, /) -> Iterator[Path]:
+def get_changed_files(git_root: Path, since: str, /) -> Iterator[Path]:
     """Retrieves both committed files and any uncommitted staged/unstaged/untracked files."""
     changed_files: set[str] = set()
 
-    # Committed files from the last N days
+    # Committed files from the last time period
     try:
         out = subprocess.check_output(
-            ['git', '-C', str(git_root), 'log', f'--since={days} days ago', '--name-only', '--format=%n'],
+            ['git', '-C', str(git_root), 'log', f'--since={since}', '--name-only', '--format=%n'],
             stderr=subprocess.DEVNULL,
             universal_newlines=True,
         )
@@ -220,7 +220,7 @@ def map_config_option_to_package(option: str, config_to_pkg: Mapping[str, str], 
     return None
 
 
-def get_changed_configs_in_file(git_root: Path, file_path: Path, days: int, /) -> set[str]:
+def get_changed_configs_in_file(git_root: Path, file_path: Path, since: str, /) -> set[str]:
     """Extracts changed Buildroot config options from committed logs and uncommitted diffs."""
     changed_options: set[str] = set()
     try:
@@ -229,7 +229,7 @@ def get_changed_configs_in_file(git_root: Path, file_path: Path, days: int, /) -
 
         # Fetch from committed logs
         out_log = subprocess.check_output(
-            ['git', '-C', str(git_root), 'log', '-p', f'--since={days} days ago', '--', str(rel_path)],
+            ['git', '-C', str(git_root), 'log', '-p', f'--since={since}', '--', str(rel_path)],
             stderr=subprocess.DEVNULL,
             universal_newlines=True,
         )
@@ -256,7 +256,7 @@ def find_package_for_board_or_config(
     git_root: Path,
     all_mk_files: Mapping[str, Path],
     config_to_pkg: Mapping[str, str],
-    days: int,
+    since: str,
     /,
 ) -> set[str]:
     """Maps config-level and board-level file modifications back to their respective Buildroot packages."""
@@ -272,7 +272,7 @@ def find_package_for_board_or_config(
         is_config_file = False
 
     if is_config_file:
-        changed_configs = get_changed_configs_in_file(git_root, changed_file, days)
+        changed_configs = get_changed_configs_in_file(git_root, changed_file, since)
         for opt in changed_configs:
             if mapped_pkg := map_config_option_to_package(opt, config_to_pkg):
                 resolved_packages.add(mapped_pkg)
@@ -312,7 +312,7 @@ def find_package_for_board_or_config(
     return resolved_packages
 
 
-def get_git_modified_packages(project_dir: Path, days: int, all_mk_files: Mapping[str, Path], /) -> set[str]:
+def get_git_modified_packages(project_dir: Path, since: str, all_mk_files: Mapping[str, Path], /) -> set[str]:
     modified_pkgs: set[str] = set()
 
     package_dirs: dict[Path, str] = {}
@@ -327,14 +327,14 @@ def get_git_modified_packages(project_dir: Path, days: int, all_mk_files: Mappin
         config_to_pkg[pkg_upper] = pkg_name
 
     def process_repo(git_root: Path) -> None:
-        for changed_file in get_changed_files(git_root, days):
+        for changed_file in get_changed_files(git_root, since):
             # Try matching standard packages first
             if pkg := find_package_for_file(changed_file, package_dirs):
                 modified_pkgs.add(pkg)
                 continue
 
             # Check configuration or board directory mappings
-            extra_pkgs = find_package_for_board_or_config(changed_file, git_root, all_mk_files, config_to_pkg, days)
+            extra_pkgs = find_package_for_board_or_config(changed_file, git_root, all_mk_files, config_to_pkg, since)
             modified_pkgs.update(extra_pkgs)
 
     # Check main repository
@@ -459,7 +459,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--project-dir', type=Path, required=True)
     parser.add_argument('--output-dir', type=Path, required=True)
-    parser.add_argument('--days', type=int, default=1)
+    parser.add_argument('--since', type=str, default='1 days ago')
     parser.add_argument('--mandatory', default='')
     args = parser.parse_args()
 
@@ -476,8 +476,8 @@ def main() -> None:
     print(f'    Detected {len(kernel_modules)} kernel-related modules:')
     print(f'      {", ".join(sorted(kernel_modules))}')
 
-    print(f'\n>>> Detecting packages modified in git over the last {args.days} days...')
-    modified = get_git_modified_packages(project_dir, args.days, all_mk_files)
+    print(f'\n>>> Detecting packages modified in git since {args.since}...')
+    modified = get_git_modified_packages(project_dir, args.since, all_mk_files)
     if modified:
         for m in sorted(modified):
             print(f'      - {m}')
