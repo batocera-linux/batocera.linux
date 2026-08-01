@@ -19,6 +19,9 @@ AGENT_INTERFACE = 'org.bluez.Agent1'
 ADAPTER_INTERFACE = 'org.bluez.Adapter1'
 DEVICE_INTERFACE = 'org.bluez.Device1'
 
+# nintendo controllers refuse a host which is not named like a nintendo console
+BLUETOOTH_ALIAS = "Nintendo Batocera"
+
 STATUS_FILE  = "/var/run/bt_status"
 LISTING_FILE = "/var/run/bt_listing"
 DEVICE_FILE  = "/var/run/bt_device"
@@ -624,6 +627,11 @@ def bind_adapter(path):
       adapterProps.Set(ADAPTER_INTERFACE, "Powered", True)
     # some adapters come back not pairable
     adapterProps.Set(ADAPTER_INTERFACE, "Pairable", True)
+
+    # same as "bluetoothctl system-alias", the adapter is known to be there
+    if prop2str(adapterProps.Get(ADAPTER_INTERFACE, "Alias")) != BLUETOOTH_ALIAS:
+      logging.info("setting the adapter alias to '{}'".format(BLUETOOTH_ALIAS))
+      adapterProps.Set(ADAPTER_INTERFACE, "Alias", BLUETOOTH_ALIAS)
   except Exception as e:
     logging.error("unable to power on the adapter {}: {}".format(path, e))
 
