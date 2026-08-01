@@ -5,8 +5,17 @@
 
 BOARD="$(cat /boot/boot/batocera.board 2>/dev/null)"
 
+# a cancel flag or a lock left by a killed pairing breaks the next one
+clean_runtime_files() {
+    rm -f /var/run/bt_device /var/run/bt_listing /var/run/bt_listing.pid \
+          /var/run/bt_status /var/run/bt_status.tmp /var/run/bt_result /var/run/bt_cancel
+    rm -rf /var/run/bt_discovery.lock
+}
+
 case "$1" in
     start)
+        clean_runtime_files
+
         # Restores old settings saved in userdata
         batocera-bluetooth restore
         enabled="$(/usr/bin/batocera-settings-get controllers.bluetooth.enabled)"
@@ -147,10 +156,13 @@ case "$1" in
     stop)
         start-stop-daemon -K -q -p /var/run/bluetooth-agent.pid
         start-stop-daemon -K -q -p /var/run/bluetoothd.pid
+        # left behind, they would point at some other process later on
+        rm -f /var/run/bluetooth-agent.pid /var/run/bluetoothd.pid
         killall hciattach >/dev/null 2>&1
         killall hciattach_opi >/dev/null 2>&1
         killall brcm_patchram_plus >/dev/null 2>&1
         batocera-bluetooth save
+        # not cleaned here: a pairing may still be waiting for its cancel flag
     ;;
 
     restart|reload)
