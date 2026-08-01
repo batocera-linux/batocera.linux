@@ -518,9 +518,12 @@ def refresh_audio_on_connect(properties):
   # polled from the main loop: sleeping here would freeze the bluez events
   GLib.timeout_add(100, audio_sink_poll, [0])
 
-def refresh_audio_on_disconnect():
-  current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
-  subprocess.run(["batocera-audio", "set", current_output])
+def refresh_audio_on_disconnect(properties):
+  # a joystick disconnecting must not reset the audio output
+  if not isAudioDevice(properties):
+    return
+
+  refresh_audio_output()
   logging.info("Bluetooth audio disconnected. Refreshing audio output.")
 
 class Agent(dbus.service.Object):
