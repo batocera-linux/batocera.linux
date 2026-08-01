@@ -215,8 +215,20 @@ do_stopdevlist() {
 
 do_trust() {
     TRUSTDEV="$1"
-    NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
-    [ -z "$NPID" ] && return 0
+
+    NPID="$(get_bt_agent_pid)"
+    if [ -z "$NPID" ]; then
+        echo "The bluetooth agent is not running" >&2
+        return 1
+    fi
+
+    if [ "$TRUSTDEV" != "input" ]; then
+        TRUSTDEV="$(normalize_addr "$TRUSTDEV")"
+        if ! is_valid_addr "$TRUSTDEV"; then
+            echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
+            return 1
+        fi
+    fi
 
     # Snapshot trusted devices at start (used for both explicit MAC + input mode)
     BASE_TRUSTED="$(
@@ -227,10 +239,6 @@ do_trust() {
 
     touch /var/run/bt_status || return 1
     LAST_MSG="$(cat /var/run/bt_status 2>/dev/null)"
-
-    if [ "$TRUSTDEV" != "input" ]; then
-        echo "$TRUSTDEV" | grep -qE '^([0-9A-F]{2}:){5}[0-9A-F]{2}$' || return 1
-    fi
 
     echo "$TRUSTDEV" > /var/run/bt_device || return 1
 
@@ -348,8 +356,8 @@ do_disable() {
 }
 
 do_connect() {
-    DEV="$1"
-    if ! echo "$DEV" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+    DEV="$(normalize_addr "$1")"
+    if ! is_valid_addr "$DEV"; then
         echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
         return 1
     fi
@@ -370,8 +378,8 @@ do_connect() {
 }
 
 do_disconnect() {
-    DEV="$1"
-    if ! echo "$DEV" | grep -qE "^([0-9A-F]{2}:){5}[0-9A-F]{2}$"; then
+    DEV="$(normalize_addr "$1")"
+    if ! is_valid_addr "$DEV"; then
         echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
         return 1
     fi
