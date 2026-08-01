@@ -24,7 +24,8 @@ DEVICE_FILE  = "/var/run/bt_device"
 
 gadapter = None
 gmainloop = None
-gdiscovering = False
+gdiscovering = False       # discovery is really running on the adapter
+gdiscovery_wanted = False  # discovery was asked by the ui
 gdevices = {}
 glisting_mode = False
 glisting_devs = {}
@@ -101,12 +102,12 @@ def connect_device(path, properties, forceConnect, filter):
     return
   
   if not paired:
-    if connected == False and gdiscovering:
+    # not gdiscovering: the discovery is paused while another device connects
+    if not connected and gdiscovery_wanted:
       doPairing(address, devName, shortDevName)
-    #return
 
   # now it is paired
-  if not trusted and (gdiscovering or forceConnect):
+  if not trusted and (gdiscovery_wanted or forceConnect):
     logging.info("Trusting (" + devName + ")")
     logging_status("Trusting " + shortDevName + "...")
     bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
@@ -128,15 +129,12 @@ def doPairing(address, devName, shortDevName):
     logging_status("Pairing failed (" + shortDevName + ")")
 
 def doConnect(address, devName, shortDevName):
-  global gadapter
-  global gdiscovering
-  
-  try:
-    # discovery stopped during connection to help some devices
-    if gdiscovering:
-      logging.info("Stop discovery")
-      gadapter.StopDiscovery()
+  # discovery stopped during connection to help some devices
+  resume_discovery = gdiscovering
+  if resume_discovery:
+    stop_discovery()
 
+  try:
     device = bluezutils.find_device(address)
     ntry=5
     while ntry > 0:
@@ -147,11 +145,7 @@ def doConnect(address, devName, shortDevName):
         device.Connect()
         logging.info("Connected successfully (" + devName + ")")
         logging_status("Connected successfully (" + shortDevName + ")")
-
-        if gdiscovering:
-          logging.info("Start discovery")
-          gadapter.StartDiscovery()
-          return
+        return
       except dbus.exceptions.DBusException as err:
         logging.info("dbus: " + err.get_dbus_message())
         time.sleep(1)
@@ -161,15 +155,11 @@ def doConnect(address, devName, shortDevName):
     
     logging.info("Connection failed. Give up. (" + devName + ")")
     logging_status("Connection failed. Give up. (" + shortDevName + ")")
-    if gdiscovering:
-      logging.info("Start discovery")
-      gadapter.StartDiscovery()
   except Exception as e:
-    if gdiscovering:
-      logging.info("Start discovery")
-      gadapter.StartDiscovery()
-    # don't raise, while startdiscovery doesn't like it
-    #raise e
+    logging.error("unable to connect {}: {}".format(devName, e))
+  finally:
+    if resume_discovery:
+      start_discovery()
 
 def getDevName(properties):
   #devName = properties["Name"] + " (" + properties["Address"] + ", " + properties["Icon"] + ")"
@@ -360,12 +350,46 @@ def icon2basicname(str):
     return "audio"
   return str
 
-def user_signal_start_discovery(userdata = None):
+def start_discovery():
   global gdiscovering
   global gadapter
+
+  if gdiscovering:
+    return True
+  if gadapter is None:
+    logging.info("Start discovery skipped: no adapter")
+    return False
+
+  try:
+    logging.info("Start discovery")
+    gadapter.StartDiscovery()
+    gdiscovering = True
+    return True
+  except Exception as e:
+    # keep gdiscovering false: pretending to discover breaks the pairing
+    logging.error("Start discovery failed: {}".format(e))
+    return False
+
+def stop_discovery():
+  global gdiscovering
+  global gadapter
+
+  if not gdiscovering:
+    return
+  gdiscovering = False
+
+  if gadapter is None:
+    return
+  try:
+    logging.info("Stop discovery")
+    gadapter.StopDiscovery()
+  except Exception as e:
+    logging.error("Stop discovery failed: {}".format(e))
+
+def user_signal_start_discovery(userdata = None):
   global glisting_mode
   global glisting_devs
-  global gdevices
+  global gdiscovery_wanted
 
   # dispatched by the main loop: dbus calls from a raw signal handler reenter dbus
   if os.path.isfile(LISTING_FILE):
@@ -376,32 +400,21 @@ def user_signal_start_discovery(userdata = None):
     for path in gdevices:
       listing_dev_event(path, gdevices[path], True)
 
-  try:
-    if gdiscovering == False:
-      gdiscovering = True
-      logging.info("Start discovery (signal)")
-      gadapter.StartDiscovery()
-  except:
-    pass
+  gdiscovery_wanted = True
+  start_discovery()
 
   return True # keep the signal handler installed
 
 def user_signal_stop_discovery(userdata = None):
-  global gdiscovering
-  global gadapter
   global glisting_mode
+  global gdiscovery_wanted
 
   if glisting_mode:
     logging.info("listing mode disabled");
   glisting_mode = False
 
-  try:
-    if gdiscovering:
-      gdiscovering = False
-      logging.info("Stop discovery (signal)")
-      gadapter.StopDiscovery()
-  except:
-    pass
+  gdiscovery_wanted = False
+  stop_discovery()
 
   return True # keep the signal handler installed
 
@@ -512,8 +525,6 @@ def do_main_loop(dev_id):
       adapterSetter.Set(ADAPTER_INTERFACE, "Powered", True)
     except:
       pass # hum, not nice
-
-  gdiscovering = False
 
   # events
   # use events while i manage to stop discovery only from the process having started it
