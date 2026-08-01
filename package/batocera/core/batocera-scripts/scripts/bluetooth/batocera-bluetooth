@@ -42,6 +42,15 @@ stop_bt_agent() {
 BCKDIR=/userdata/system/bluetooth
 BCK="$BCKDIR/bluetooth.tar"
 
+# bluez uses uppercase addresses, the command line may not
+normalize_addr() {
+    echo "$1" | tr 'a-f' 'A-F'
+}
+
+is_valid_addr() {
+    echo "$1" | grep -qE '^([0-9A-F]{2}:){5}[0-9A-F]{2}$'
+}
+
 do_save() {
     mkdir -p "$BCKDIR" || return 1
 
@@ -121,10 +130,16 @@ do_list() {
 }
 
 do_remove() {
-    DEV="$1"
+    DEV="$(normalize_addr "$1")"
+
+    # "find -name" takes a pattern: '*' would remove every pairing
+    if ! is_valid_addr "$DEV"; then
+        echo "Invalid device address format. Please use the format XX:XX:XX:XX:XX:XX" >&2
+        return 1
+    fi
 
     # output is never nice
-    (echo "untrust $DEV" ; echo "remove $DEV") | bluetoothctl >/dev/null 2>/dev/null
+    (echo "disconnect $DEV" ; echo "untrust $DEV" ; echo "remove $DEV") | bluetoothctl >/dev/null 2>/dev/null
     find /var/lib/bluetooth -type d -name "$DEV" -prune -exec rm -rf {} + 2>/dev/null
 
     do_save # save
