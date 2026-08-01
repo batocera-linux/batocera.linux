@@ -50,6 +50,29 @@ stop_bt_agent() {
 BCKDIR=/userdata/system/bluetooth
 BCK="$BCKDIR/bluetooth.tar"
 
+# only one discovery session can drive the agent
+BT_LOCK=/var/run/bt_discovery.lock
+
+take_bt_lock() {
+  while ! mkdir "$BT_LOCK" 2>/dev/null; do
+      OPID="$(cat "$BT_LOCK/pid" 2>/dev/null)"
+      # steal the lock of a dead session
+      if [ -z "$OPID" ] || ! kill -0 "$OPID" 2>/dev/null; then
+          rm -rf "$BT_LOCK"
+          continue
+      fi
+      return 1
+  done
+  echo $$ > "$BT_LOCK/pid"
+  return 0
+}
+
+release_bt_lock() {
+  OPID="$(cat "$BT_LOCK/pid" 2>/dev/null)"
+  [ "$OPID" = "$$" ] && rm -rf "$BT_LOCK"
+  return 0
+}
+
 # bluez uses uppercase addresses, the command line may not
 normalize_addr() {
     echo "$1" | tr 'a-f' 'A-F'
@@ -161,13 +184,15 @@ do_devlist() {
         return 1
     fi
 
+    take_bt_lock || { echo "A bluetooth scan is already running" >&2 ; return 1 ; }
+
     # clean any remining previous info
-    : > /var/run/bt_device || return 1
+    : > /var/run/bt_device || { release_bt_lock ; return 1 ; }
 
     # tell listing mode
-    : > /var/run/bt_listing || return 1
+    : > /var/run/bt_listing || { release_bt_lock ; return 1 ; }
 
-    trap stop_bt_agent INT QUIT TERM
+    trap 'stop_bt_agent ; release_bt_lock' INT QUIT TERM
 
     # the agent dumps every known device on the signal, far more than the 10 lines
     # tail -f starts with
@@ -177,6 +202,7 @@ do_devlist() {
     kill -USR1 "$NPID" 2>/dev/null
 
     wait
+    release_bt_lock
 }
 
 do_stopdevlist() {
