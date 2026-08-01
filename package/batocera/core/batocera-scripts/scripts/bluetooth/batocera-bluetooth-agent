@@ -495,6 +495,12 @@ def user_signal_start_discovery(userdata = None):
   gdiscovery_wanted = True
   start_discovery()
 
+  # a known device may stay silent: evaluate it against the filter now
+  filter = getBluetoothWantedAddr()
+  if filter is not None:
+    for path in list(gdevices):
+      connect_device(path, gdevices[path], False, filter)
+
   return True # keep the signal handler installed
 
 def user_signal_stop_discovery(userdata = None):
