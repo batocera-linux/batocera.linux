@@ -360,13 +360,14 @@ def icon2basicname(str):
     return "audio"
   return str
 
-def user_signal_start_discovery(signum, frame):
+def user_signal_start_discovery(userdata = None):
   global gdiscovering
   global gadapter
   global glisting_mode
   global glisting_devs
   global gdevices
 
+  # dispatched by the main loop: dbus calls from a raw signal handler reenter dbus
   if os.path.isfile(LISTING_FILE):
     glisting_mode = True
     logging.info("listing mode enabled");
@@ -383,7 +384,9 @@ def user_signal_start_discovery(signum, frame):
   except:
     pass
 
-def user_signal_stop_discovery(signum, frame):
+  return True # keep the signal handler installed
+
+def user_signal_stop_discovery(userdata = None):
   global gdiscovering
   global gadapter
   global glisting_mode
@@ -399,6 +402,8 @@ def user_signal_stop_discovery(signum, frame):
       gadapter.StopDiscovery()
   except:
     pass
+
+  return True # keep the signal handler installed
 
 def refresh_audio_on_connect(properties):
   # Skip if the device is not an audio device
@@ -512,8 +517,8 @@ def do_main_loop(dev_id):
 
   # events
   # use events while i manage to stop discovery only from the process having started it
-  signal.signal(signal.SIGUSR1, user_signal_start_discovery)
-  signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
+  GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR1, user_signal_start_discovery, None)
+  GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGUSR2, user_signal_stop_discovery, None)
   logging.info("signals set")
   
   gmainloop = GLib.MainLoop()
