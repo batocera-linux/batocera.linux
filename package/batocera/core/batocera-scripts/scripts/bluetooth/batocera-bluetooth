@@ -277,6 +277,10 @@ do_trust() {
             LAST_MSG="$NEW_MSG"
             STATUS_CHANGED=1
             echo "$NEW_MSG"
+            # the ui only reads the output of "trust input"
+            if [ "$TRUSTDEV" != "input" ] && [ -n "$NEW_MSG" ]; then
+                notify_ui "$NEW_MSG"
+            fi
         fi
 
         # Early cancel
