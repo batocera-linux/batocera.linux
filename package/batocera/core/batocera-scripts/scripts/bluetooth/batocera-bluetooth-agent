@@ -22,6 +22,7 @@ DEVICE_INTERFACE = 'org.bluez.Device1'
 STATUS_FILE  = "/var/run/bt_status"
 LISTING_FILE = "/var/run/bt_listing"
 DEVICE_FILE  = "/var/run/bt_device"
+RESULT_FILE  = "/var/run/bt_result"
 
 gadapter = None
 gmainloop = None
@@ -48,6 +49,14 @@ def logging_status(msg):
     os.rename(tmpfile, STATUS_FILE)
   except Exception as e:
     logging.error("unable to update the status file: {}".format(e))
+
+def logging_result(address, result):
+  # batocera-bluetooth waits for this instead of guessing from /var/lib/bluetooth
+  try:
+    with open(RESULT_FILE, "a") as file:
+      file.write("{} {}\n".format(result, address))
+  except Exception as e:
+    logging.error("unable to update the result file: {}".format(e))
 
 def connect_device(path, properties, forceConnect, filter):
   global gdiscovering
@@ -100,6 +109,8 @@ def connect_device(path, properties, forceConnect, filter):
   # skipping connected devices
   if paired and trusted and connected:
     logging.info("Skipping already connected device {}".format(devName));
+    # already usable: tell the caller waiting for it
+    logging_result(address, "connected")
     return
   
   if not paired:
@@ -111,8 +122,11 @@ def connect_device(path, properties, forceConnect, filter):
   if not trusted and (gdiscovery_wanted or forceConnect):
     logging.info("Trusting (" + devName + ")")
     logging_status("Trusting " + shortDevName + "...")
-    bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
-    bluezProps.Set(DEVICE_INTERFACE, "Trusted", True)
+    try:
+      bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+      bluezProps.Set(DEVICE_INTERFACE, "Trusted", True)
+    except Exception as e:
+      logging.error("unable to trust {}: {}".format(devName, e))
 
   # now it is paired and trusted
   # Connect if Trusted and paired
@@ -122,12 +136,13 @@ def connect_device(path, properties, forceConnect, filter):
 def doPairing(address, devName, shortDevName):
   logging.info("Pairing... (" + devName + ")")
   logging_status("Pairing " + shortDevName + "...")
-  device = bluezutils.find_device(address)
   try:
+    device = bluezutils.find_device(address)
     device.Pair()
   except Exception as e:
-    logging.info("Pairing failed (" + devName + ")")
+    logging.info("Pairing failed (" + devName + "): {}".format(e))
     logging_status("Pairing failed (" + shortDevName + ")")
+    logging_result(address, "failed")
 
 def doConnect(address, devName, shortDevName):
   # discovery stopped during connection to help some devices
@@ -146,18 +161,21 @@ def doConnect(address, devName, shortDevName):
         device.Connect()
         logging.info("Connected successfully (" + devName + ")")
         logging_status("Connected successfully (" + shortDevName + ")")
+        logging_result(address, "connected")
         return
       except dbus.exceptions.DBusException as err:
         logging.info("dbus: " + err.get_dbus_message())
         time.sleep(1)
       except Exception as err:
-        logging.info("Connection failed (" + devName + ")")
+        logging.info("Connection failed (" + devName + "): {}".format(err))
         time.sleep(1)
     
     logging.info("Connection failed. Give up. (" + devName + ")")
     logging_status("Connection failed. Give up. (" + shortDevName + ")")
+    logging_result(address, "failed")
   except Exception as e:
     logging.error("unable to connect {}: {}".format(devName, e))
+    logging_result(address, "failed")
   finally:
     if resume_discovery:
       start_discovery()
