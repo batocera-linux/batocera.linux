@@ -444,12 +444,21 @@ def user_signal_start_discovery(userdata = None):
   global gdiscovery_wanted
 
   # dispatched by the main loop: dbus calls from a raw signal handler reenter dbus
-  if os.path.isfile(LISTING_FILE):
+  wanted_listing = os.path.isfile(LISTING_FILE)
+
+  # the same signal starts a pairing while listing: keep the entries already sent
+  if wanted_listing and not glisting_mode:
     glisting_mode = True
-    logging.info("listing mode enabled");
     glisting_devs = {}
+    logging.info("listing mode enabled");
+  elif not wanted_listing and glisting_mode:
+    glisting_mode = False
+    glisting_devs = {}
+    logging.info("listing mode disabled");
+
+  if glisting_mode:
     # initial listing with existing devices
-    for path in gdevices:
+    for path in list(gdevices):
       listing_dev_event(path, gdevices[path], True)
 
   gdiscovery_wanted = True
