@@ -41,7 +41,7 @@ def logging_status(msg):
   with open(STATUS_FILE, "w") as file:
     file.write(msg + "\n")
 
-def connect_device(path, address, properties, forceConnect, filter):
+def connect_device(path, properties, forceConnect, filter):
   global gdiscovering
   global gadapter
 
@@ -51,7 +51,15 @@ def connect_device(path, address, properties, forceConnect, filter):
 
   #
   if filter is None:
-    logging.info("skipping {}. No filter.".format(address))
+    logging.info("skipping {}. No filter.".format(path))
+    return
+
+  # a PropertiesChanged carries only what changed: any property can be missing
+  address = None
+  if "Address" in properties:
+    address = prop2str(properties["Address"])
+  if address is None:
+    logging.info("skipping {}. No Address property.".format(path))
     return
 
   # avoid devices without interesting information
@@ -63,27 +71,27 @@ def connect_device(path, address, properties, forceConnect, filter):
     return
 
   trusted   = prop2str(properties["Trusted"])
-  paired    = prop2str(properties["Paired"])
+  paired    = prop2str(properties["Paired"]) if "Paired" in properties else False
   devName = getDevName(properties)
   shortDevName = getShortDevName(properties)
   connected = prop2str(properties["Connected"])
 
   # skip non input devices
   if "Icon" not in properties:
-    logging.info("Skipping device {} (no type)".format(getDevName(properties)));
+    logging.info("Skipping device {} (no type)".format(devName));
     return
 
-  logging.info("filter={}, Icon={}, Address={}".format(filter, prop2str(properties["Icon"]), prop2str(properties["Address"])))
+  logging.info("filter={}, Icon={}, Address={}".format(filter, prop2str(properties["Icon"]), address))
 
-  if not (filter is not None and (filter == prop2str(properties["Address"]) or (filter == "input" and prop2str(properties["Icon"]).startswith("input")) )):
-    logging.info("Skipping device {} (not {})".format(getDevName(properties), filter));
+  if not (filter == address or (filter == "input" and prop2str(properties["Icon"]).startswith("input"))):
+    logging.info("Skipping device {} (not {})".format(devName, filter));
     return
 
   logging.info("event for " + devName + "(paired=" + bool2str(paired, "paired", "not paired") + ", trusted=" + bool2str(trusted, "trusted", "untrusted") + ", connected=" + bool2str(connected, "connected", "disconnected") + ")")
 
   # skipping connected devices
   if paired and trusted and connected:
-    logging.info("Skipping already connected device {}".format(getDevName(properties)));
+    logging.info("Skipping already connected device {}".format(devName));
     return
   
   if not paired:
@@ -250,10 +258,7 @@ def interfaces_added(path, interfaces):
   if glisting_mode:
     listing_dev_event(path, gdevices[path], True)
 
-  if "Address" in gdevices[path]:
-    connect_device(path, prop2str(properties["Address"]), gdevices[path], False, getBluetoothWantedAddr())
-  else:
-    logging.info("No address. skip.")
+  connect_device(path, gdevices[path], False, getBluetoothWantedAddr())
 
 def interfaces_removed(path, interfaces):
   global gdevices
@@ -293,7 +298,7 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Paired" in changed and changed["Paired"] == True:
     # ok, do as in simple-agent, trust and connect
-    connect_device(path, gdevices[path]["Address"], gdevices[path], True, getBluetoothWantedAddr())
+    connect_device(path, gdevices[path], True, getBluetoothWantedAddr())
     refresh_audio_on_connect(gdevices[path])
     return
   
@@ -307,8 +312,7 @@ def properties_changed(interface, changed, invalidated, path):
     refresh_audio_on_disconnect()
     return
 
-  if "Address" in gdevices[path]:
-    connect_device(path, gdevices[path]["Address"], gdevices[path], False, getBluetoothWantedAddr())
+  connect_device(path, gdevices[path], False, getBluetoothWantedAddr())
 
   refresh_audio_on_connect(gdevices[path])
 
