@@ -341,29 +341,48 @@ def merge2dicts(d1, d2):
   res.update(d2)
   return res
 
+def write_listing_entry(devaddress, devname, devstatus, devtype):
+  try:
+    with open(LISTING_FILE, "a") as file:
+      file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(
+                 devaddress, devname, devstatus, devtype));
+  except Exception as e:
+    logging.error("unable to write the listing entry: {}".format(e))
+
 def listing_dev_event(path, properties, adding):
   global glisting_devs
 
-  # device already here
-  if path in glisting_devs and adding:
-    return
-
-  # device already removed
-  if path not in glisting_devs and not adding:
-    return
-
-  # update list
   if adding:
-    glisting_devs[path] = True
-  else:
-      del glisting_devs[path]
-
-  devstatus = "added"
-  if not adding:
-    devstatus = "removed"
-  with open(LISTING_FILE, "a") as file:
     devaddress, devname, devtype = getDevAddressNameType(properties)
-    file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(devaddress, devname, devstatus, icon2basicname(devtype)));
+
+    # without an address, the ui has nothing to pair
+    if devaddress is None:
+      return
+
+    # the name is resolved later: don't display "None"
+    if devname is None or devname == "":
+      devname = devaddress
+    devtype = icon2basicname(devtype)
+
+    entry = (devaddress, devname, devtype)
+    previous = glisting_devs.get(path)
+
+    # nothing new to tell to the ui
+    if previous == entry:
+      return
+
+    # name/type resolved: replace the entry instead of duplicating it
+    if previous is not None:
+      write_listing_entry(previous[0], previous[1], "removed", previous[2])
+
+    glisting_devs[path] = entry
+    write_listing_entry(entry[0], entry[1], "added", entry[2])
+  else:
+    # device already removed
+    if path not in glisting_devs:
+      return
+    previous = glisting_devs.pop(path)
+    write_listing_entry(previous[0], previous[1], "removed", previous[2])
 
 def icon2basicname(str):
   if str is None:
