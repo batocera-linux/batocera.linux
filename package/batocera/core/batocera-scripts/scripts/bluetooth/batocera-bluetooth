@@ -39,14 +39,27 @@ stop_bt_agent() {
   rm -f /var/run/bt_device /var/run/bt_listing
 }
 
+BCKDIR=/userdata/system/bluetooth
+BCK="$BCKDIR/bluetooth.tar"
+
 do_save() {
-    BCK=/userdata/system/bluetooth/bluetooth.tar
-    (cd /var/lib && tar cf "$BCK" bluetooth)
+    mkdir -p "$BCKDIR" || return 1
+
+    # rename: a power loss must not leave a truncated archive
+    (cd /var/lib && tar cf "$BCK.tmp" bluetooth) || { rm -f "$BCK.tmp" ; return 1 ; }
+    mv -f "$BCK.tmp" "$BCK"
 }
 
 do_restore() {
-    BCK=/userdata/system/bluetooth/bluetooth.tar
-    [ -f "$BCK" ] && (cd /var/lib && tar xf "$BCK")
+    [ -f "$BCK" ] || return 0
+
+    # never extract a truncated archive over the current pairings
+    if ! tar tf "$BCK" >/dev/null 2>&1; then
+        echo "ignoring the corrupted bluetooth backup $BCK" >&2
+        return 1
+    fi
+
+    (cd /var/lib && tar xf "$BCK")
 }
 
 # class of device: major on bits 8-12, minor on bits 2-7
