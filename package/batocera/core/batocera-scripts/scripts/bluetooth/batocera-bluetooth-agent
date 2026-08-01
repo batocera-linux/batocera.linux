@@ -38,8 +38,14 @@ def bool2str(val, valiftrue, valiffalse):
     return valiffalse
 
 def logging_status(msg):
-  with open(STATUS_FILE, "w") as file:
-    file.write(msg + "\n")
+  # rename: batocera-bluetooth must never read a truncated file
+  try:
+    tmpfile = STATUS_FILE + ".tmp"
+    with open(tmpfile, "w") as file:
+      file.write(msg + "\n")
+    os.rename(tmpfile, STATUS_FILE)
+  except Exception as e:
+    logging.error("unable to update the status file: {}".format(e))
 
 def connect_device(path, properties, forceConnect, filter):
   global gdiscovering
