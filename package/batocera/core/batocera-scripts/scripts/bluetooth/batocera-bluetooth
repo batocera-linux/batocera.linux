@@ -260,6 +260,9 @@ do_trust() {
     # the agent reports its outcomes here
     : > /var/run/bt_result || return 1
 
+    # a leftover cancel would abort this pairing at once
+    rm -f /var/run/bt_cancel
+
     echo "$TRUSTDEV" > /var/run/bt_device || return 1
 
     # cleanup
@@ -289,8 +292,9 @@ do_trust() {
             fi
         fi
 
-        # Early cancel
+        # early cancel ; the flag is consumed here, the sender cannot time its removal
         if [ -e /var/run/bt_cancel ]; then
+            rm -f /var/run/bt_cancel
             stop_bt_agent
             echo "Pairing canceled"
             sleep 1.5 # for toast notification
@@ -400,12 +404,15 @@ do_enable() {
 
 do_disable() {
   /usr/bin/batocera-settings-set controllers.bluetooth.enabled 0
+
+  # the pairing loop consumes this flag and exits
+  touch /var/run/bt_cancel
+
+  # a running listing would wait for an agent about to be killed
+  do_stopdevlist
+
   /etc/init.d/S32bluetooth stop
   /etc/init.d/S31sixad stop
-  # set cancel flag for pairing early exit
-  touch /var/run/bt_cancel
-  sleep 0.6 # do_trust loop is 0.5 second, so 0.6 guarentees it'll be seen
-  rm -f /var/run/bt_cancel
 }
 
 do_connect() {
