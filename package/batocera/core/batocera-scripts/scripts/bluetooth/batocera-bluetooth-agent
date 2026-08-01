@@ -341,11 +341,15 @@ def merge2dicts(d1, d2):
   res.update(d2)
   return res
 
+def sanitizeXmlValue(value):
+  # the ui parses name="..." by hand: no quote, no newline
+  return value.replace("\"", "'").replace("<", "(").replace(">", ")").replace("\n", " ").replace("\r", " ")
+
 def write_listing_entry(devaddress, devname, devstatus, devtype):
   try:
     with open(LISTING_FILE, "a") as file:
       file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(
-                 devaddress, devname, devstatus, devtype));
+                 devaddress, sanitizeXmlValue(devname), devstatus, devtype));
   except Exception as e:
     logging.error("unable to write the listing entry: {}".format(e))
 
