@@ -384,6 +384,10 @@ def write_listing_entry(devaddress, devname, devstatus, devtype):
 def listing_dev_event(path, properties, adding):
   global glisting_devs
 
+  # a paired device belongs to the device list, not to the pairing menu
+  if adding and properties.get("Paired", False):
+    adding = False
+
   if adding:
     devaddress, devname, devtype = getDevAddressNameType(properties)
 
