@@ -241,12 +241,18 @@ do_trust() {
         fi
     fi
 
-    # Snapshot trusted devices at start (used for both explicit MAC + input mode)
+    # snapshot: tells a device which was already paired
     BASE_TRUSTED="$(
       find /var/lib/bluetooth/ -type f -name info \
         -exec grep -l '^Trusted=true$' {} + 2>/dev/null \
       | xargs -r -n1 dirname | xargs -r -n1 basename | sort -u
     )"
+
+    # a controller connected before the scan is not a result of it
+    SEEN_CONNECTED=""
+    if [ "$TRUSTDEV" = "input" ]; then
+        SEEN_CONNECTED="$(bluetoothctl devices Connected 2>/dev/null | sed -n 's/^Device \([0-9A-Fa-f:]\{17\}\).*/\1/p' | tr 'a-f' 'A-F' | sort -u)"
+    fi
 
     touch /var/run/bt_status || return 1
     LAST_MSG="$(cat /var/run/bt_status 2>/dev/null)"
@@ -329,27 +335,23 @@ do_trust() {
             fi
         fi
 
-        # Success: first new device (auto pairing controllers)
+        # success: the controllers which connected during the scan (auto pairing)
         if [ "$TRUSTDEV" = "input" ]; then
             if [ $STATUS_CHANGED -eq 1 ] && [ $GRACE_LEFT -gt 0 ]; then
                 GRACE_LEFT=$GRACE_TICKS
             fi
 
-            CUR_TRUSTED="$(
-                find /var/lib/bluetooth/ -type f -name info \
-                -exec grep -l '^Trusted=true$' {} + 2>/dev/null \
-                | xargs -r -n1 dirname | xargs -r -n1 basename | sort -u
-            )"
+            NEW_DEVICE=0
+            for addr in $(sed -n 's/^connected //p' /var/run/bt_result 2>/dev/null | sort -u); do
+                printf '%s\n' "$SEEN_CONNECTED" | grep -Fxq "$addr" && continue
 
-            for addr in $CUR_TRUSTED; do
-                printf '%s\n' "$BASE_TRUSTED" | grep -Fxq "$addr" && continue
-
-                # Each newly paired controller extends the grace window
+                # each new controller extends the grace window
                 CHANGED=1
+                NEW_DEVICE=1
                 GRACE_LEFT=$GRACE_TICKS
 
                 # Mark it seen
-                BASE_TRUSTED="$(printf '%s\n%s' "$BASE_TRUSTED" "$addr")"
+                SEEN_CONNECTED="$(printf '%s\n%s' "$SEEN_CONNECTED" "$addr")"
             done
 
             # Countdown grace window for additional controllers
