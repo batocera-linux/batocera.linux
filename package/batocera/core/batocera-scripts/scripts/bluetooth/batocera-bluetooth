@@ -483,8 +483,12 @@ case "$ACTION" in
         do_list
         ;;
     "trust")
-        TRUSTDEV=$2
-        do_trust "$TRUSTDEV"
+        if [ "$#" -eq 2 ]; then
+            do_trust "$2" || exit 1
+        else
+            do_help "$0"
+            exit 1
+        fi
         ;;
     "remove")
         if [ "$#" -eq 2 ]; then
@@ -495,13 +499,13 @@ case "$ACTION" in
         fi
         ;;
     "save")
-        do_save
+        do_save || exit 1
         ;;
     "restore")
-        do_restore
+        do_restore || exit 1
         ;;
     "start_live_devices"|"live_devices")
-        do_devlist
+        do_devlist || exit 1
         ;;
     "stop_live_devices")
         do_stopdevlist
