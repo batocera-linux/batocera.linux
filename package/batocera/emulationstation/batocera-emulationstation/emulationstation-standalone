@@ -377,28 +377,11 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ### BACKGLASS ###
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
-            # Initialize offsets to 0
-            BGOFFSETX=0
-            BGOFFSETY=0
-
-            # Get resolution/size info
-            PRIMARY_RES=$(batocera-resolution --screen "${settings_output}" currentResolution)
-            BGSIZE=$(batocera-resolution --screen "${settings_output2}" currentResolution | tr "x" " ")
             THEME="$(batocera-settings-get backglass.theme)"
-
-            # Get the device model
-            MODEL="$(batocera-model)"
-
-            # For AYN_Thor, set a vertical (Y) offset (for mouse usage). For all other models, use the default horizontal (X) offset.
-            DISPLAY_POSITION=$(/usr/bin/batocera-settings-get-master "display.position")
-            if [ "${DISPLAY_POSITION}" = "top-bottom" ]; then
-                BGOFFSETY=$(echo "${PRIMARY_RES}" | cut -d x -f 2) # Height of the primary screen
-            else
-                BGOFFSETX=$(echo "${PRIMARY_RES}" | cut -d x -f 1) # Width of the primary screen
-            fi
-            echo "Standalone: Launching backglass on '${settings_output2}' with OffsetX=${BGOFFSETX} and OffsetY=${BGOFFSETY} with Size=${BGSIZE}" >> $log
-            # Launch backglass with the calculated offsets and size
-            batocera-backglass enable ${BGOFFSETX} ${BGOFFSETY} ${BGSIZE} "${THEME}"
+            echo "Standalone: Launching backglass natively on display '${settings_output2}'" >> $log
+            
+            # Directly target the physical display output using the output name
+            batocera-backglass enable "${settings_output2}" "${THEME}"
         fi
     fi
 
