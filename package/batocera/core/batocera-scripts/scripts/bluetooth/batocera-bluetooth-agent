@@ -234,9 +234,29 @@ def getBluetoothWantedAddr():
       logging.info("bt_dev: {}".format(addrDevice))
   return addrDevice
 
+def adapter_added(path):
+  # only bind when there is no working adapter (dongle plugged back)
+  if gadapter is not None:
+    return
+  logging.info("bluetooth adapter added: {}".format(path))
+  bind_adapter(path)
+
+def adapter_removed(path):
+  global gadapter
+  global gdiscovering
+
+  if gadapter is None or gadapter.object_path != path:
+    return
+  logging.info("bluetooth adapter removed: {}".format(path))
+  gadapter = None
+  gdiscovering = False
+
 def interfaces_added(path, interfaces):
   global gdevices
   global glisting_mode
+
+  if ADAPTER_INTERFACE in interfaces:
+    adapter_added(path)
 
   if DEVICE_INTERFACE not in interfaces:
     return
@@ -259,6 +279,9 @@ def interfaces_added(path, interfaces):
 
 def interfaces_removed(path, interfaces):
   global gdevices
+
+  if ADAPTER_INTERFACE in interfaces:
+    adapter_removed(path)
 
   # Remove from gdevices only if the Device1 interface itself is removed
   if DEVICE_INTERFACE in interfaces and path in gdevices:
