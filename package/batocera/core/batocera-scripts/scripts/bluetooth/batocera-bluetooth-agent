@@ -316,25 +316,23 @@ def properties_changed(interface, changed, invalidated, path):
   if propstr != "":
     logging.info("Properties changed: {}".format(propstr))
 
-  if "Paired" in changed and changed["Paired"] == True:
-    # ok, do as in simple-agent, trust and connect
-    connect_device(path, gdevices[path], True, getBluetoothWantedAddr())
-    refresh_audio_on_connect(gdevices[path])
-    return
-  
-  # ok, it is now connected, what else ?
-  if "Connected" in changed and changed["Connected"] == True:
-    refresh_audio_on_connect(gdevices[path])
+  if "Connected" in changed and not changed["Connected"]:
+    logging.info("Skipping (property Connected changed to False)");
+    refresh_audio_on_disconnect(gdevices[path])
     return
 
-  if "Connected" in changed and changed["Connected"] == False:
-    logging.info("Skipping (property Connected changed to False)");
-    refresh_audio_on_disconnect()
+  if "Connected" in changed and changed["Connected"]:
+    refresh_audio_on_connect(gdevices[path])
+
+  if "Paired" in changed and changed["Paired"]:
+    # ok, do as in simple-agent, trust and connect
+    connect_device(path, gdevices[path], True, getBluetoothWantedAddr())
+    return
+
+  if "Connected" in changed:
     return
 
   connect_device(path, gdevices[path], False, getBluetoothWantedAddr())
-
-  refresh_audio_on_connect(gdevices[path])
 
 def merge2dicts(d1, d2):
   res = d1.copy()
@@ -479,24 +477,46 @@ def user_signal_stop_discovery(userdata = None):
 
   return True # keep the signal handler installed
 
+def isAudioDevice(properties):
+  return "Icon" in properties and prop2str(properties["Icon"]).startswith("audio-")
+
+def refresh_audio_output():
+  try:
+    current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
+    subprocess.run(["batocera-audio", "set", current_output])
+  except Exception as e:
+    logging.error("unable to refresh the audio output: {}".format(e))
+
+def audio_sink_poll(state):
+  state[0] = state[0] + 1
+
+  try:
+    sinks = subprocess.check_output(["pactl", "list", "short", "sinks"], encoding='utf-8')
+  except Exception as e:
+    logging.warning("unable to list the audio sinks: {}".format(e))
+    return False
+
+  if "bluez_" in sinks:
+    logging.info("Bluetooth audio sink detected: proceeding with audio refresh.")
+    refresh_audio_output()
+    return False
+
+  # Wait up to 10 seconds for a 'bluez_' to appear
+  if state[0] >= 100:
+    logging.warning("Bluetooth sink not detected within timeout.")
+    return False
+
+  return True # poll again
+
 def refresh_audio_on_connect(properties):
   # Skip if the device is not an audio device
-  if "Icon" not in properties or not prop2str(properties["Icon"]).startswith("audio-"):
+  if not isAudioDevice(properties):
     return
 
   logging.info("Bluetooth audio device connected. Waiting for sink to appear...")
 
-  # Wait up to 10 seconds for a 'bluez_' to appear
-  for i in range(100):
-    sinks = subprocess.check_output(["pactl", "list", "short", "sinks"], encoding='utf-8')
-    if "bluez_" in sinks:
-      current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
-      subprocess.run(["batocera-audio", "set", current_output])
-      logging.info("Bluetooth audio sink detected: proceeding with audio refresh.")
-      return
-    time.sleep(0.1)
-
-  logging.warning("Bluetooth sink not detected within timeout.")
+  # polled from the main loop: sleeping here would freeze the bluez events
+  GLib.timeout_add(100, audio_sink_poll, [0])
 
 def refresh_audio_on_disconnect():
   current_output = subprocess.check_output(["batocera-audio", "get"], encoding='utf-8').strip()
