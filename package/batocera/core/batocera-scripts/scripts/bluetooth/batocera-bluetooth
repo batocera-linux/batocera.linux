@@ -272,10 +272,10 @@ do_trust() {
     # a device discovered a moment ago may stay silent: the agent must look at it now
     kill -USR1 "$NPID" 2>/dev/null
 
-    GRACE_TICKS=20 # 10 seconds
+    GRACE_TICKS=20 # 10 seconds, at one tick per 0.5 second
     GRACE_LEFT=0
     CHANGED=0
-    N=120
+    N=120 # about 60 seconds
     while [ $N -gt 0 ]; do
         STATUS_CHANGED=0
         NEW_MSG="$(cat /var/run/bt_status 2>/dev/null)"
@@ -354,8 +354,8 @@ do_trust() {
                 SEEN_CONNECTED="$(printf '%s\n%s' "$SEEN_CONNECTED" "$addr")"
             done
 
-            # Countdown grace window for additional controllers
-            if [ $GRACE_LEFT -gt 0 ]; then
+            # countdown, but not on the tick which just rearmed the window
+            if [ $GRACE_LEFT -gt 0 ] && [ $NEW_DEVICE -eq 0 ]; then
                 GRACE_LEFT=$((GRACE_LEFT - 1))
                 if [ $GRACE_LEFT -le 0 ]; then
                     stop_bt_agent
