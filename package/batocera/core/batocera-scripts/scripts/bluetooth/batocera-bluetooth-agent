@@ -9,6 +9,7 @@ import dbus.mainloop.glib
 import bluezutils
 import time
 import os
+import sys
 import logging
 import signal
 import subprocess
@@ -491,40 +492,86 @@ class Agent(dbus.service.Object):
   def Cancel(self):
     logging.info("agent: Cancel")
 
-def do_main_loop(dev_id):
+def bind_adapter(path):
   global gadapter
-  global gmainloop
+  global gdiscovering
 
-  # adapter
+  gadapter = dbus.Interface(bus.get_object("org.bluez", path), ADAPTER_INTERFACE)
+  gdiscovering = False
+  logging.info("using bluetooth adapter {}".format(path))
+
+  # power on adapter if needed
   try:
-    adapter = bluezutils.find_adapter(dev_id)
-  except:
-    # try to find any adapter
-    adapter = bluezutils.find_adapter(None)
-  logging.info("adapter found")
+    adapterProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
+    if not adapterProps.Get(ADAPTER_INTERFACE, "Powered"):
+      logging.info("powering on adapter ({})".format(path))
+      adapterProps.Set(ADAPTER_INTERFACE, "Powered", True)
+    # some adapters come back not pairable
+    adapterProps.Set(ADAPTER_INTERFACE, "Pairable", True)
+  except Exception as e:
+    logging.error("unable to power on the adapter {}: {}".format(path, e))
 
-  gadapter = adapter
-  adapters = {}
+  # discovery was running before the adapter went away
+  if gdiscovery_wanted:
+    start_discovery()
 
+def find_adapter_path(dev_id):
+  om = dbus.Interface(bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
+  objects = om.GetManagedObjects()
+
+  adapters = []
+  for path, interfaces in objects.items():
+    if ADAPTER_INTERFACE in interfaces:
+      adapters.append((path, interfaces[ADAPTER_INTERFACE]))
+
+  # the requested adapter, by address or by path
+  if dev_id:
+    for path, properties in adapters:
+      if prop2str(properties.get("Address", "")) == dev_id or path.endswith(dev_id):
+        return path
+
+  # any adapter
+  if adapters:
+    return adapters[0][0]
+
+  return None
+
+def load_known_devices():
   om = dbus.Interface(bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
   objects = om.GetManagedObjects()
   for path, interfaces in objects.items():
     if DEVICE_INTERFACE in interfaces:
       gdevices[path] = interfaces[DEVICE_INTERFACE]
-    if ADAPTER_INTERFACE in interfaces:
-      adapters[path] = interfaces[ADAPTER_INTERFACE]
-  
-  adapter_props = adapters[adapter.object_path]
-  logging.info(adapter_props["Name"] + "(" + adapter_props["Address"] + "), powered=" + str(adapter_props["Powered"]))
 
-  # power on adapter if needed
-  if adapter_props["Powered"] == 0:
+def register_agent():
+  agentpath = "/batocera/agent"
+  obj = bus.get_object("org.bluez", "/org/bluez")
+  manager = dbus.Interface(obj, "org.bluez.AgentManager1")
+  manager.RegisterAgent(agentpath, "NoInputNoOutput")
+  manager.RequestDefaultAgent(agentpath)
+  return Agent(bus, agentpath)
+
+def do_main_loop(dev_id):
+  global gmainloop
+
+  # bluetoothd and the adapter start in parallel with this agent: retry, don't sleep
+  adapter_path = None
+  for ntry in range(60):
     try:
-      logging.info("powering on adapter ("+ adapter_props["Address"] +")")
-      adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
-      adapterSetter.Set(ADAPTER_INTERFACE, "Powered", True)
-    except:
-      pass # hum, not nice
+      adapter_path = find_adapter_path(dev_id)
+      if adapter_path is not None:
+        break
+    except Exception as e:
+      logging.info("unable to list the bluetooth adapters ({})".format(e))
+    logging.info("no bluetooth adapter yet, waiting...")
+    time.sleep(1)
+
+  if adapter_path is None:
+    raise Exception("Bluetooth adapter not found")
+  logging.info("adapter found")
+
+  load_known_devices()
+  bind_adapter(adapter_path)
 
   # events
   # use events while i manage to stop discovery only from the process having started it
@@ -549,17 +596,21 @@ if __name__ == '__main__':
   bus.add_signal_receiver(interfaces_removed, dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesRemoved")
   bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = DEVICE_INTERFACE, path_keyword = "path")
 
-  # register the agent
-  agentpath = "/batocera/agent"
-  obj = bus.get_object("org.bluez", "/org/bluez")
-  manager = dbus.Interface(obj, "org.bluez.AgentManager1")
-  manager.RegisterAgent(agentpath, "NoInputNoOutput")
-  manager.RequestDefaultAgent(agentpath)
-  agent = Agent(bus, agentpath)
+  # bluetoothd can take time to claim the bus name
+  agent = None
+  for ntry in range(60):
+    try:
+      agent = register_agent()
+      break
+    except Exception as e:
+      logging.info("agent registration failed ({}), retrying...".format(e))
+      time.sleep(1)
+
+  if agent is None:
+    logging.error("unable to register the agent on bluetoothd")
+    sys.exit(1)
   logging.info("agent registered")
 
-  # run the agent, allows some tries while hardware can take time to initiate
-  time.sleep(5)
   try:
     do_main_loop(options.dev_id)
   except Exception as e:
