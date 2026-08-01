@@ -58,6 +58,16 @@ def logging_result(address, result):
   except Exception as e:
     logging.error("unable to update the result file: {}".format(e))
 
+def device_matches_filter(properties, filter):
+  if filter is None:
+    return False
+  if "Address" not in properties:
+    return False
+  if filter == prop2str(properties["Address"]):
+    return True
+  # any input device is wanted when pairing controllers
+  return filter == "input" and "Icon" in properties and prop2str(properties["Icon"]).startswith("input")
+
 def connect_device(path, properties, forceConnect, filter):
   global gdiscovering
   global gadapter
@@ -100,7 +110,7 @@ def connect_device(path, properties, forceConnect, filter):
 
   logging.info("filter={}, Icon={}, Address={}".format(filter, prop2str(properties["Icon"]), address))
 
-  if not (filter == address or (filter == "input" and prop2str(properties["Icon"]).startswith("input"))):
+  if not device_matches_filter(properties, filter):
     logging.info("Skipping device {} (not {})".format(devName, filter));
     return
 
@@ -341,6 +351,11 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Connected" in changed and changed["Connected"]:
     refresh_audio_on_connect(gdevices[path])
+
+    # bluez reconnects a known device by itself: the pairing waiting for it must be told
+    filter = getBluetoothWantedAddr()
+    if device_matches_filter(gdevices[path], filter):
+      logging_result(prop2str(gdevices[path]["Address"]), "connected")
 
   if "Paired" in changed and changed["Paired"]:
     # ok, do as in simple-agent, trust and connect
