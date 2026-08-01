@@ -15,6 +15,12 @@ import subprocess
 from gi.repository import GLib
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
+ADAPTER_INTERFACE = 'org.bluez.Adapter1'
+DEVICE_INTERFACE = 'org.bluez.Device1'
+
+STATUS_FILE  = "/var/run/bt_status"
+LISTING_FILE = "/var/run/bt_listing"
+DEVICE_FILE  = "/var/run/bt_device"
 
 gadapter = None
 gdiscovering = False
@@ -31,7 +37,7 @@ def bool2str(val, valiftrue, valiffalse):
     return valiffalse
 
 def logging_status(msg):
-  with open("/var/run/bt_status", "w") as file:
+  with open(STATUS_FILE, "w") as file:
     file.write(msg + "\n")
 
 def connect_device(path, address, properties, forceConnect, filter):
@@ -89,7 +95,7 @@ def connect_device(path, address, properties, forceConnect, filter):
     logging.info("Trusting (" + devName + ")")
     logging_status("Trusting " + shortDevName + "...")
     bluezProps = dbus.Interface(bus.get_object("org.bluez", path), "org.freedesktop.DBus.Properties")
-    bluezProps.Set("org.bluez.Device1", "Trusted", True)
+    bluezProps.Set(DEVICE_INTERFACE, "Trusted", True)
 
   # now it is paired and trusted
   # Connect if Trusted and paired
@@ -214,8 +220,8 @@ def getDevAddressNameType(properties):
 
 def getBluetoothWantedAddr():
   addrDevice = None
-  if os.path.isfile("/var/run/bt_device"):
-    with open("/var/run/bt_device", "r") as file:
+  if os.path.isfile(DEVICE_FILE):
+    with open(DEVICE_FILE, "r") as file:
       addrDevice = file.read().strip()
       if addrDevice == "":
         addrDevice = None
@@ -226,12 +232,12 @@ def interfaces_added(path, interfaces):
   global gdevices
   global glisting_mode
 
-  if "org.bluez.Device1" not in interfaces:
+  if DEVICE_INTERFACE not in interfaces:
     return
-  if not interfaces["org.bluez.Device1"]:
+  if not interfaces[DEVICE_INTERFACE]:
     return
 
-  properties = interfaces["org.bluez.Device1"]
+  properties = interfaces[DEVICE_INTERFACE]
 
   if path in gdevices:
     gdevices[path] = merge2dicts(gdevices[path], properties)
@@ -252,7 +258,7 @@ def interfaces_removed(path, interfaces):
   global gdevices
 
   # Remove from gdevices only if the Device1 interface itself is removed
-  if "org.bluez.Device1" in interfaces and path in gdevices:
+  if DEVICE_INTERFACE in interfaces and path in gdevices:
     listing_dev_event(path, gdevices[path], False)
     del gdevices[path]
 
@@ -269,7 +275,7 @@ def properties_changed(interface, changed, invalidated, path):
   global gdevices
   global glisting_mode
 
-  if interface != "org.bluez.Device1":
+  if interface != DEVICE_INTERFACE:
     return
 
   if path in gdevices:
@@ -330,7 +336,7 @@ def listing_dev_event(path, properties, adding):
   devstatus = "added"
   if not adding:
     devstatus = "removed"
-  with open("/var/run/bt_listing", "a") as file:
+  with open(LISTING_FILE, "a") as file:
     devaddress, devname, devtype = getDevAddressNameType(properties)
     file.write("<device id=\"{}\" name=\"{}\" status=\"{}\" type=\"{}\" />\n".format(devaddress, devname, devstatus, icon2basicname(devtype)));
 
@@ -350,7 +356,7 @@ def user_signal_start_discovery(signum, frame):
   global glisting_devs
   global gdevices
 
-  if os.path.isfile("/var/run/bt_listing"):
+  if os.path.isfile(LISTING_FILE):
     glisting_mode = True
     logging.info("listing mode enabled");
     glisting_devs = {}
@@ -473,10 +479,10 @@ def do_main_loop(dev_id):
   om = dbus.Interface(bus.get_object("org.bluez", "/"), "org.freedesktop.DBus.ObjectManager")
   objects = om.GetManagedObjects()
   for path, interfaces in objects.items():
-    if "org.bluez.Device1" in interfaces:
-      gdevices[path] = interfaces["org.bluez.Device1"]
-    if "org.bluez.Adapter1" in interfaces:
-      adapters[path] = interfaces["org.bluez.Adapter1"]
+    if DEVICE_INTERFACE in interfaces:
+      gdevices[path] = interfaces[DEVICE_INTERFACE]
+    if ADAPTER_INTERFACE in interfaces:
+      adapters[path] = interfaces[ADAPTER_INTERFACE]
   
   adapter_props = adapters[adapter.object_path]
   logging.info(adapter_props["Name"] + "(" + adapter_props["Address"] + "), powered=" + str(adapter_props["Powered"]))
@@ -486,7 +492,7 @@ def do_main_loop(dev_id):
     try:
       logging.info("powering on adapter ("+ adapter_props["Address"] +")")
       adapterSetter = dbus.Interface(bus.get_object("org.bluez", adapter.object_path), "org.freedesktop.DBus.Properties")
-      adapterSetter.Set("org.bluez.Adapter1", "Powered", True)
+      adapterSetter.Set(ADAPTER_INTERFACE, "Powered", True)
     except:
       pass # hum, not nice
 
@@ -513,7 +519,7 @@ if __name__ == '__main__':
 
   bus.add_signal_receiver(interfaces_added,   dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesAdded")
   bus.add_signal_receiver(interfaces_removed, dbus_interface = "org.freedesktop.DBus.ObjectManager", signal_name = "InterfacesRemoved")
-  bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = "org.bluez.Device1", path_keyword = "path")
+  bus.add_signal_receiver(properties_changed, dbus_interface = "org.freedesktop.DBus.Properties",    signal_name = "PropertiesChanged", arg0 = DEVICE_INTERFACE, path_keyword = "path")
 
   # register the agent
   agentpath = "/batocera/agent"
