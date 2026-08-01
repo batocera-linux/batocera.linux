@@ -247,8 +247,10 @@ do_trust() {
 
     if [ "$TRUSTDEV" = "input" ]; then
         rm -f /var/run/bt_listing
-        kill -10 "$NPID" 2>/dev/null
     fi
+
+    # a device discovered a moment ago may stay silent: the agent must look at it now
+    kill -USR1 "$NPID" 2>/dev/null
 
     GRACE_TICKS=20 # 10 seconds
     GRACE_LEFT=0
