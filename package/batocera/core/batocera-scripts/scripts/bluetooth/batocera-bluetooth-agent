@@ -23,6 +23,7 @@ LISTING_FILE = "/var/run/bt_listing"
 DEVICE_FILE  = "/var/run/bt_device"
 
 gadapter = None
+gmainloop = None
 gdiscovering = False
 gdevices = {}
 glisting_mode = False
@@ -422,8 +423,8 @@ class Agent(dbus.service.Object):
   @dbus.service.method(AGENT_INTERFACE, in_signature="", out_signature="")
   def Release(self):
     logging.info("agent: Release")
-    if self.exit_on_release:
-      mainloop.quit()
+    if self.exit_on_release and gmainloop is not None:
+      gmainloop.quit()
   
   @dbus.service.method(AGENT_INTERFACE, in_signature="os", out_signature="")
   def AuthorizeService(self, device, uuid):
@@ -464,6 +465,7 @@ class Agent(dbus.service.Object):
 
 def do_main_loop(dev_id):
   global gadapter
+  global gmainloop
 
   # adapter
   try:
@@ -504,8 +506,8 @@ def do_main_loop(dev_id):
   signal.signal(signal.SIGUSR2, user_signal_stop_discovery)
   logging.info("signals set")
   
-  mainloop = GLib.MainLoop()
-  mainloop.run()
+  gmainloop = GLib.MainLoop()
+  gmainloop.run()
 
 if __name__ == '__main__':
   # options
