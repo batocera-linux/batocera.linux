@@ -1,0 +1,12 @@
+config BR2_PACKAGE_LIBRETRO_FBNEO_KOREAN
+    bool "libretro-fbneo-korean"
+	depends on BR2_INSTALL_LIBSTDCPP
+    help
+      A libretro FBNeo core built from dsno/Zansword's Korean-patched
+      driver fork, for CRC-tolerant Korean-translated arcade ROMs that
+      the standard libretro-fbneo core rejects.
+
+	  https://github.com/Pyohwan/FBNeo/tree/korean-patches
+
+comment "LIBRETRO_FBNEO_KOREAN needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
