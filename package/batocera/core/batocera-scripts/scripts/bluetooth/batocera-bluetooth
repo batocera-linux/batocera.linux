@@ -73,6 +73,17 @@ release_bt_lock() {
   return 0
 }
 
+# the ui only displays what is sent to this endpoint
+notify_ui() {
+    curl -s -m 2 http://localhost:1234/notify -d "$1" >/dev/null 2>&1
+    return 0
+}
+
+# the agent appends "<connected|failed> <address>" per device
+bt_result_is() {
+    grep -qixF "$1 $2" /var/run/bt_result 2>/dev/null
+}
+
 # bluez uses uppercase addresses, the command line may not
 normalize_addr() {
     echo "$1" | tr 'a-f' 'A-F'
@@ -240,6 +251,9 @@ do_trust() {
     touch /var/run/bt_status || return 1
     LAST_MSG="$(cat /var/run/bt_status 2>/dev/null)"
 
+    # the agent reports its outcomes here
+    : > /var/run/bt_result || return 1
+
     echo "$TRUSTDEV" > /var/run/bt_device || return 1
 
     # cleanup
@@ -273,21 +287,41 @@ do_trust() {
             return 0
         fi
 
-        # Success: explicit device(manual pairing)
+        # outcome of a manual pairing ; the agent trusts the device *before* connecting
+        # it, so Trusted=true is not the end of the pairing
         if [ "$TRUSTDEV" != "input" ]; then
-            if is_device_trusted "$TRUSTDEV"; then
+            if bt_result_is "connected" "$TRUSTDEV"; then
                 stop_bt_agent
-
                 DEVNAME="$(get_bt_name "$TRUSTDEV")"
                 [ -z "$DEVNAME" ] && DEVNAME="$TRUSTDEV"
 
                 if printf '%s\n' "$BASE_TRUSTED" | tr 'a-f' 'A-F' | grep -Fxq "$TRUSTDEV"; then
-                    curl -s http://localhost:1234/notify -d "Already paired: $DEVNAME" >/dev/null
+                    notify_ui "Already paired: $DEVNAME"
                 else
                     do_save
+                    notify_ui "Paired: $DEVNAME"
                 fi
 
                 return 0
+            fi
+
+            if bt_result_is "failed" "$TRUSTDEV"; then
+                stop_bt_agent
+                DEVNAME="$(get_bt_name "$TRUSTDEV")"
+                [ -z "$DEVNAME" ] && DEVNAME="$TRUSTDEV"
+
+                # the bonding may have worked even when the connection did not
+                if is_device_trusted "$TRUSTDEV"; then
+                    do_save
+                    echo "Paired, but not connected"
+                    notify_ui "Paired, but not connected: $DEVNAME"
+                else
+                    echo "Pairing failed"
+                    notify_ui "Pairing failed: $DEVNAME"
+                fi
+
+                sleep 1.5 # for toast notification
+                return 1
             fi
         fi
 
@@ -331,9 +365,20 @@ do_trust() {
 
     # Timeout cleanup
     stop_bt_agent
+
+    if [ "$TRUSTDEV" != "input" ]; then
+        DEVNAME="$(get_bt_name "$TRUSTDEV")"
+        [ -z "$DEVNAME" ] && DEVNAME="$TRUSTDEV"
+        echo "Pairing timed out"
+        notify_ui "Pairing timed out: $DEVNAME"
+        sleep 1.5 # for toast notification
+        return 1
+    fi
+
     if [ "$CHANGED" -eq 0 ]; then
         echo "Pairing timed out"
         sleep 1.5 # for toast notification
+        return 1
     fi
 
     return 0
