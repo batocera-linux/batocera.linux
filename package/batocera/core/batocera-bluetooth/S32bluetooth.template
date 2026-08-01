@@ -76,9 +76,10 @@ case "$1" in
                         /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep &
                         sleep 2
                     else
-                        bt_status=$(cat /proc/device-tree/wireless-bluetooth/status)
-                        wifi_chip=$(cat /proc/device-tree/wireless-wlan/wifi_chip_type)
-                        if [[ "${wifi_chip}" == "ap6256" && "${bt_status}" == "okay" ]]; then
+                        bt_status="$(cat /proc/device-tree/wireless-bluetooth/status 2>/dev/null | tr -d '\0')"
+                        wifi_chip="$(cat /proc/device-tree/wireless-wlan/wifi_chip_type 2>/dev/null | tr -d '\0')"
+                        # [[ ]] is a bashism, /bin/sh is dash here (BR2_SYSTEM_BIN_SH_DASH)
+                        if [ "${wifi_chip}" = "ap6256" ] && [ "${bt_status}" = "okay" ]; then
                             brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
                                 --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 &
                             sleep 2
