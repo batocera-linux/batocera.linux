@@ -50,6 +50,9 @@ do_restore() {
 }
 
 do_list() {
+    # one call for all: "bluetoothctl info" costs about a second per device
+    CONNECTED_LIST="$(bluetoothctl devices Connected 2>/dev/null | sed -n 's/^Device \([0-9A-Fa-f:]\{17\}\).*/\1/p' | tr 'a-f' 'A-F')"
+
     find /var/lib/bluetooth/ -type f -name info |
     while IFS= read -r FILE; do
         if grep -qE '^Trusted=true$' "$FILE"; then
@@ -62,7 +65,7 @@ do_list() {
               0x002508|0x000508) DEVTYPE="joystick" ;;
             esac
 
-            if bluetoothctl -- info "$DEVADDR" | grep -q "Connected: yes"; then
+            if printf '%s\n' "$CONNECTED_LIST" | grep -Fxq "$(echo "$DEVADDR" | tr 'a-f' 'A-F')"; then
                 CONNECTED="yes"
             else
                 CONNECTED="no"
