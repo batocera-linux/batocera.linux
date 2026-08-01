@@ -193,19 +193,63 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                     if executionDirectory is not None:
                         os.chdir(executionDirectory)
 
-                    cmd = generator.generate(system, rom, player_controllers, md, guns, wheels, gameResolution)
+                    # Initialize overlay process-tracking and check for active MangoHUD
+                    bezel_proc = None
+                    bezel_log_file = None
+                    mango_active = False
 
                     if system.config.get_bool('hud_support'):
-                        hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
-                        if ((hud := system.config.get('hud')) and hud != "none") or hud_bezel is not None:
-                            cmd.env["MANGOHUD_DLSYM"] = "1"
-                            hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, hud_bezel)
-                            hud_config_file = Path('/var/run/hud.config')
-                            with hud_config_file.open('w') as f:
-                                f.write(hudconfig)
-                            cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
-                            if not generator.hasInternalMangoHUDCall():
-                                cmd.array.insert(0, "mangohud")
+                        hud_setting = system.config.get('hud', 'none')
+                        if hud_setting and hud_setting != "none":
+                            mango_active = True
+
+                    cmd = generator.generate(system, rom, player_controllers, md, guns, wheels, gameResolution)
+
+                    # MangoHUD Setup
+                    if mango_active:
+                        _logger.info("MangoHUD is active. Applying offset configuration.")
+                        cmd.env["MANGOHUD_DLSYM"] = "1"
+
+                        # Generate the configuration passing None for the background image
+                        # but providing the screen resolution so we can offset it
+                        hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, None, gameResolution)
+
+                        hud_config_file = Path('/var/run/hud.config')
+                        with hud_config_file.open('w') as f:
+                            f.write(hudconfig)
+
+                        cmd.env["MANGOHUD_CONFIGFILE"] = hud_config_file
+                        if not generator.hasInternalMangoHUDCall():
+                            cmd.array.insert(0, "mangohud")
+
+                    # Bezel Overlay Setup
+                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+                    if hud_bezel is not None and hud_bezel.exists():
+                        bezel_overlay_script = Path(__file__).parent / "utils" / "bezelOverlay.py"
+
+                        # Bezel log file - turn off in future
+                        bezel_log_path = Path("/userdata/system/logs/bezelOverlay.log")
+                        try:
+                            bezel_log_file = bezel_log_path.open("w")
+                        except Exception:
+                            bezel_log_file = subprocess.DEVNULL
+
+                        _logger.info("Spawning standalone bezel overlay process for: %s", hud_bezel)
+                        try:
+                            overlay_env = dict(os.environ)
+                            bezel_proc = subprocess.Popen([
+                                "python3", str(bezel_overlay_script),
+                                str(hud_bezel),
+                                str(gameResolution["width"]),
+                                str(gameResolution["height"])
+                            ], env=overlay_env, stdout=bezel_log_file, stderr=bezel_log_file)
+
+                            # Give the window a moment to initialize and check if it crashed
+                            time.sleep(0.3)
+                            if bezel_proc.poll() is not None:
+                                _logger.error("Bezel overlay process exited immediately with status: %s. Check %s for details.", bezel_proc.returncode, bezel_log_path)
+                        except Exception as overlay_error:
+                            _logger.error("Could not initialize standalone bezel overlay: %s", overlay_error)
 
                     # generate the gun help
                     try:
@@ -237,6 +281,15 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                     with profiler.pause():
                         monitor_thread.start()
                         exitCode = runCommand(cmd)
+
+                # Terminate standalone bezel overlay (if running) after the emulator exits
+                if bezel_proc:
+                    _logger.info("Terminating standalone bezel overlay process")
+                    bezel_proc.terminate()
+                    try:
+                        bezel_proc.wait(timeout=2)
+                    except subprocess.TimeoutExpired:
+                        bezel_proc.kill()
 
                 # run a script after emulator shuts down
                 callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
@@ -425,7 +478,7 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
         return ""
     return str(string)
 
-def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, bezel: Path | None) -> str:
+def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, bezel: Path | None, gameResolution: Resolution) -> str:
     configstr = ""
 
     if bezel != "" and bezel != "none" and bezel is not None:
@@ -442,6 +495,44 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
             hud_position = "top-right"
         elif hud_corner == "SE":
             hud_position = "bottom-right"
+        elif hud_corner == "SW":
+            hud_position = "bottom-left"
+
+    # Font Scaling Calculations
+    screen_height = gameResolution["height"]
+    screen_width = gameResolution["width"]
+
+    font_size = int(24 * (screen_height / 1080))
+    if font_size < 12:
+        font_size = 12
+    elif font_size > 48:
+        font_size = 48
+
+    game_mode_font_size = int(32 * (screen_height / 1080))
+    if game_mode_font_size < 14:
+        game_mode_font_size = 14
+    elif game_mode_font_size > 64:
+        game_mode_font_size = 64
+
+    configstr += f"font_size={font_size}\nfont_size_text={font_size}\n"
+
+    # Bezel Offset Calculation - may need more work
+    # Assuming standard 4:3 game aspect ratio (1.333) for now.
+    game_ratio = 4.0 / 3.0
+    active_game_width = int(screen_height * game_ratio)
+    pillar_width = (screen_width - active_game_width) // 2
+
+    offset_x = 0
+    if pillar_width > 0:
+        # Push HUD inwards to clear the bezel column
+        if "left" in hud_position:
+            offset_x = pillar_width + 10  # 10px extra margin inside the game window
+        elif "right" in hud_position:
+            offset_x = -(pillar_width + 10)
+
+    configstr += f"position={hud_position}\n"
+    if offset_x != 0:
+        configstr += f"offset_x={offset_x}\n"
 
     emulatorstr = emulator
     if emulator != core and core is not None:
@@ -452,9 +543,9 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
 
     # predefined values
     if mode == "perf":
-        configstr += f"position={hud_position}\nbackground_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
+        configstr += "background_alpha=0.9\nlegacy_layout=false\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%\nfps\ngpu_name\nengine_version\nvulkan_driver\nresolution\nram\ngpu_stats\ngpu_temp\ncpu_stats\ncpu_temp\ncore_load"
     elif mode == "game":
-        configstr += f"position={hud_position}\nbackground_alpha=0\nlegacy_layout=false\nfont_size=32\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
+        configstr += f"background_alpha=0\nlegacy_layout=false\nfont_size={game_mode_font_size}\nimage_max_width=200\nimage=%THUMBNAIL%\ncustom_text=%GAMENAME%\ncustom_text=%SYSTEMNAME%\ncustom_text=%EMULATORCORE%"
     elif mode == "custom" and (hud_custom := system.config.get_str('hud_custom')):
         configstr += hud_custom.replace("\\n", "\n")
     else:
