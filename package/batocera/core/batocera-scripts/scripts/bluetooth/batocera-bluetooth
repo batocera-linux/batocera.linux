@@ -33,9 +33,17 @@ is_device_trusted() {
   grep -q '^Trusted=true$' "$info"
 }
 
-stop_bt_agent() {
+# the pid file survives the agent: only report a live pid
+get_bt_agent_pid() {
   NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
-  [ -n "$NPID" ] && kill -12 "$NPID" 2>/dev/null
+  [ -z "$NPID" ] && return 1
+  kill -0 "$NPID" 2>/dev/null || return 1
+  echo "$NPID"
+}
+
+stop_bt_agent() {
+  NPID="$(get_bt_agent_pid)"
+  [ -n "$NPID" ] && kill -USR2 "$NPID" 2>/dev/null
   rm -f /var/run/bt_device /var/run/bt_listing
 }
 
@@ -147,17 +155,21 @@ do_remove() {
 }
 
 do_devlist() {
+    NPID="$(get_bt_agent_pid)"
+    if [ -z "$NPID" ]; then
+        echo "The bluetooth agent is not running" >&2
+        return 1
+    fi
+
     # clean any remining previous info
-    : > /var/run/bt_device || exit 1
+    : > /var/run/bt_device || return 1
 
     # tell listing mode
-    : > /var/run/bt_listing || exit 1
+    : > /var/run/bt_listing || return 1
 
+    trap stop_bt_agent INT QUIT TERM
 
-    NPID="$(cat /var/run/bluetooth-agent.pid 2>/dev/null)"
-    [ -n "$NPID" ] && trap stop_bt_agent INT QUIT
-
-    [ -n "$NPID" ] && kill -10 "$NPID" 2>/dev/null
+    kill -USR1 "$NPID" 2>/dev/null
     # ok, not 10 lines should happen during this instant (between kill and tail)
     tail -f /var/run/bt_listing &
     echo $! > "/var/run/bt_listing.pid"
