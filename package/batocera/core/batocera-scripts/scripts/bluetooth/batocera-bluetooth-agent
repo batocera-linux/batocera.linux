@@ -389,13 +389,18 @@ def listing_dev_event(path, properties, adding):
     write_listing_entry(previous[0], previous[1], "removed", previous[2])
 
 def icon2basicname(str):
+  # the ui knows audio, keyboard, joystick, mouse and unknown, nothing else
   if str is None:
     return "unknown"
   if str == "input-gaming":
     return "joystick"
+  if str == "input-keyboard":
+    return "keyboard"
+  if str == "input-mouse" or str == "input-tablet":
+    return "mouse"
   if str.startswith("audio-"):
     return "audio"
-  return str
+  return "unknown"
 
 def start_discovery():
   global gdiscovering
