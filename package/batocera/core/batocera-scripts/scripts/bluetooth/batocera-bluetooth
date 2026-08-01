@@ -49,6 +49,33 @@ do_restore() {
     [ -f "$BCK" ] && (cd /var/lib && tar xf "$BCK")
 }
 
+# class of device: major on bits 8-12, minor on bits 2-7
+# the ui knows audio, keyboard, joystick, mouse and unknown
+class2type() {
+    CLASS="$1"
+
+    echo "$CLASS" | grep -qE '^0x[0-9A-Fa-f]{1,6}$' || { echo "unknown" ; return 0 ; }
+
+    MAJOR=$(( ( CLASS >> 8 ) & 0x1F ))
+    MINOR=$(( ( CLASS >> 2 ) & 0x3F ))
+
+    case "$MAJOR" in
+        4) # audio/video
+            echo "audio" ; return 0 ;;
+        5) # peripheral: the 2 upper bits of the minor class flag keyboards and pointing devices
+            case $(( MINOR >> 4 )) in
+                1|3) echo "keyboard" ; return 0 ;;
+                2)   echo "mouse"    ; return 0 ;;
+            esac
+            case $(( MINOR & 0x0F )) in
+                1|2) echo "joystick" ; return 0 ;; # joystick, gamepad
+            esac
+            ;;
+    esac
+
+    echo "unknown"
+}
+
 do_list() {
     # one call for all: "bluetoothctl info" costs about a second per device
     CONNECTED_LIST="$(bluetoothctl devices Connected 2>/dev/null | sed -n 's/^Device \([0-9A-Fa-f:]\{17\}\).*/\1/p' | tr 'a-f' 'A-F')"
@@ -60,10 +87,7 @@ do_list() {
             DEVCLASS="$(grep -E '^Class=' "$FILE" | sed 's/^Class=//')"
             DEVADDR="$(basename "$(dirname "$FILE")")"
 
-            DEVTYPE=""
-            case "$DEVCLASS" in
-              0x002508|0x000508) DEVTYPE="joystick" ;;
-            esac
+            DEVTYPE="$(class2type "$DEVCLASS")"
 
             if printf '%s\n' "$CONNECTED_LIST" | grep -Fxq "$(echo "$DEVADDR" | tr 'a-f' 'A-F')"; then
                 CONNECTED="yes"
