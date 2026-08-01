@@ -82,22 +82,28 @@ do_list() {
 
     find /var/lib/bluetooth/ -type f -name info |
     while IFS= read -r FILE; do
-        if grep -qE '^Trusted=true$' "$FILE"; then
-            DEVNAME="$(grep -E '^Name='  "$FILE" | sed 's/^Name=//')"
-            DEVCLASS="$(grep -E '^Class=' "$FILE" | sed 's/^Class=//')"
-            DEVADDR="$(basename "$(dirname "$FILE")")"
+        # list the bonded devices too, else they can't be removed from the ui
+        grep -qE '^Trusted=true$' "$FILE" \
+            || grep -qE '^\[(LinkKey|LongTermKey|SlaveLongTermKey|PeripheralLongTermKey)\]$' "$FILE" \
+            || continue
 
-            DEVTYPE="$(class2type "$DEVCLASS")"
+        DEVADDR="$(basename "$(dirname "$FILE")")"
+        DEVNAME="$(sed -n 's/^Name=//p' "$FILE" | head -n 1)"
+        DEVCLASS="$(sed -n 's/^Class=//p' "$FILE" | head -n 1)"
 
-            if printf '%s\n' "$CONNECTED_LIST" | grep -Fxq "$(echo "$DEVADDR" | tr 'a-f' 'A-F')"; then
-                CONNECTED="yes"
-            else
-                CONNECTED="no"
-            fi
+        # the ui shows an empty row when the name was never resolved
+        [ -z "$DEVNAME" ] && DEVNAME="$DEVADDR"
 
-            printf '<device id="%s" name="%s" type="%s" connected="%s"/>\n' \
-                   "$DEVADDR" "$DEVNAME" "$DEVTYPE" "$CONNECTED"
+        DEVTYPE="$(class2type "$DEVCLASS")"
+
+        if printf '%s\n' "$CONNECTED_LIST" | grep -Fxq "$(echo "$DEVADDR" | tr 'a-f' 'A-F')"; then
+            CONNECTED="yes"
+        else
+            CONNECTED="no"
         fi
+
+        printf '<device id="%s" name="%s" type="%s" connected="%s"/>\n' \
+               "$DEVADDR" "$DEVNAME" "$DEVTYPE" "$CONNECTED"
     done
 }
 
