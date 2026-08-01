@@ -169,10 +169,13 @@ do_devlist() {
 
     trap stop_bt_agent INT QUIT TERM
 
-    kill -USR1 "$NPID" 2>/dev/null
-    # ok, not 10 lines should happen during this instant (between kill and tail)
-    tail -f /var/run/bt_listing &
+    # the agent dumps every known device on the signal, far more than the 10 lines
+    # tail -f starts with
+    tail -n +1 -f /var/run/bt_listing &
     echo $! > "/var/run/bt_listing.pid"
+
+    kill -USR1 "$NPID" 2>/dev/null
+
     wait
 }
 
