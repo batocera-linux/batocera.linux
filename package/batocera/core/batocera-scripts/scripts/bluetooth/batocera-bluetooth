@@ -244,6 +244,7 @@ do_trust_device() {
     NPID="$(get_bt_agent_pid)"
     if [ -z "$NPID" ]; then
         echo "The bluetooth agent is not running" >&2
+        notify_ui "Bluetooth is not started"
         return 1
     fi
 
