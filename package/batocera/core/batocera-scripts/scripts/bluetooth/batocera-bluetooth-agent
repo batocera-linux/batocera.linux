@@ -69,13 +69,6 @@ def device_matches_filter(properties, filter):
   return filter == "input" and "Icon" in properties and prop2str(properties["Icon"]).startswith("input")
 
 def connect_device(path, properties, forceConnect, filter):
-  global gdiscovering
-  global gadapter
-
-  devName = ""
-  trusted = False
-  connected = False
-
   #
   if filter is None:
     logging.info("skipping {}. No filter.".format(path))
@@ -336,9 +329,10 @@ def properties_changed(interface, changed, invalidated, path):
     gdevices[path] = merge2dicts(gdevices[path], changed)
   else:
     gdevices[path] = changed
+  properties = gdevices[path]
 
   if glisting_mode:
-    listing_dev_event(path, gdevices[path], True)
+    listing_dev_event(path, properties, True)
 
   propstr = propertiesToStr(changed)
   if propstr != "":
@@ -346,26 +340,26 @@ def properties_changed(interface, changed, invalidated, path):
 
   if "Connected" in changed and not changed["Connected"]:
     logging.info("Skipping (property Connected changed to False)");
-    refresh_audio_on_disconnect(gdevices[path])
+    refresh_audio_on_disconnect(properties)
     return
 
   if "Connected" in changed and changed["Connected"]:
-    refresh_audio_on_connect(gdevices[path])
+    refresh_audio_on_connect(properties)
 
     # bluez reconnects a known device by itself: the pairing waiting for it must be told
     filter = getBluetoothWantedAddr()
-    if device_matches_filter(gdevices[path], filter):
-      logging_result(prop2str(gdevices[path]["Address"]), "connected")
+    if device_matches_filter(properties, filter):
+      logging_result(prop2str(properties["Address"]), "connected")
 
   if "Paired" in changed and changed["Paired"]:
     # ok, do as in simple-agent, trust and connect
-    connect_device(path, gdevices[path], True, getBluetoothWantedAddr())
+    connect_device(path, properties, True, getBluetoothWantedAddr())
     return
 
   if "Connected" in changed:
     return
 
-  connect_device(path, gdevices[path], False, getBluetoothWantedAddr())
+  connect_device(path, properties, False, getBluetoothWantedAddr())
 
 def merge2dicts(d1, d2):
   res = d1.copy()
