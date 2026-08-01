@@ -13,7 +13,7 @@ BLOODMOD_DEPENDENCIES = dhewm3 host-libjpeg libcurl libogg libvorbis openal sdl2
 
 define BLOODMOD_INSTALL_TARGET_CMDS 
     mkdir -p $(TARGET_DIR)/usr/lib/dhewm3
-	cp $(@D)/bloodmod.so $(TARGET_DIR)/usr/lib/dhewm3/
+	cp $(@D)/bloodmod*.so $(TARGET_DIR)/usr/lib/dhewm3/
 endef
 
 $(eval $(cmake-package))
