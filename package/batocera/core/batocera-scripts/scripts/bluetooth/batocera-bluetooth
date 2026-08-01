@@ -225,6 +225,20 @@ do_stopdevlist() {
 }
 
 do_trust() {
+    # a manual pairing runs inside a listing session, which already holds the lock
+    if [ "$1" != "input" ]; then
+        do_trust_device "$1"
+        return $?
+    fi
+
+    take_bt_lock || { echo "A bluetooth scan is already running" >&2 ; return 1 ; }
+    do_trust_device "$1"
+    TRUSTRET=$?
+    release_bt_lock
+    return $TRUSTRET
+}
+
+do_trust_device() {
     TRUSTDEV="$1"
 
     NPID="$(get_bt_agent_pid)"
@@ -266,7 +280,7 @@ do_trust() {
     echo "$TRUSTDEV" > /var/run/bt_device || return 1
 
     # cleanup
-    trap stop_bt_agent INT QUIT TERM
+    trap 'stop_bt_agent ; release_bt_lock' INT QUIT TERM
 
     if [ "$TRUSTDEV" = "input" ]; then
         rm -f /var/run/bt_listing
