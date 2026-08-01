@@ -3,7 +3,7 @@
 # Auto connect bluetooth controllers
 #
 
-BOARD=$(cat /boot/boot/batocera.board)
+BOARD="$(cat /boot/boot/batocera.board 2>/dev/null)"
 
 case "$1" in
     start)
@@ -41,7 +41,7 @@ case "$1" in
                 bcm150)
                     # Bluetooth on the OrangePi 4-LTS board is handled by a Spreadtrum (sprd) chip
                     # and requires a custom hciattach_opi binary
-                    if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-800" ]
+                    if [ "${BOARD}" = "orangepi4-lts" ] || [ "${BOARD}" = "orangepi-800" ]
                     then
                         /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
                     else
@@ -70,7 +70,7 @@ case "$1" in
                     sleep 2
                 ;;
                 bcm4345c0)
-                    if [ ${BOARD} = "radxa-zero-3w" ]; then
+                    if [ "${BOARD}" = "radxa-zero-3w" ]; then
                         # it's actually an aic8800 chipset
                         rfkill unblock all
                         /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep &
@@ -86,7 +86,7 @@ case "$1" in
                     fi
                 ;;
                 syn43711a0)
-                    if [ ${BOARD} = "orangepi-5-ultra" ] || [ ${BOARD} = "orangepi-5-max" ]; then
+                    if [ "${BOARD}" = "orangepi-5-ultra" ] || [ "${BOARD}" = "orangepi-5-max" ]; then
                         rfkill unblock all
                         brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
                             --baudrate 1500000 --patchram /lib/firmware/SYN43711A0.hcd /dev/ttyS7 &
@@ -94,7 +94,7 @@ case "$1" in
                     fi
                 ;;
                 aic8800)
-                    if [ ${BOARD} = "coolpi-4b" ]; then
+                    if [ "${BOARD}" = "coolpi-4b" ]; then
                         rfkill unblock all
                         /usr/bin/hciattach -n /dev/ttyS1 any 1500000 &
                         sleep 2
@@ -136,7 +136,7 @@ case "$1" in
                 /usr/bin/batocera-bluetooth-agent &
         fi
         # for OrangePi LTS devices we need to power on the controller & put in pairable mode
-        if [ ${BOARD} = "orangepi4-lts" ] || [ ${BOARD} = "orangepi-3-lts" ] || [ ${BOARD} = "orangepi-zero2" ] || [ ${BOARD} = "orangepi-800" ]
+        if [ "${BOARD}" = "orangepi4-lts" ] || [ "${BOARD}" = "orangepi-3-lts" ] || [ "${BOARD}" = "orangepi-zero2" ] || [ "${BOARD}" = "orangepi-800" ]
         then
             bluetoothctl power on
             bluetoothctl pairable on
