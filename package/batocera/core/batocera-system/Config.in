@@ -635,7 +635,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86-64-v3"										if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sdm845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_SDM845
 	default "qualcomm/qcs6490/dragonq6a"    							if BR2_PACKAGE_BATOCERA_TARGET_QCS6490
-	default "qualcomm/sm6115/mangmi-air-x-mq65 qualcomm/sm6115/mangmi-air-x-mq66"    if BR2_PACKAGE_BATOCERA_TARGET_SM6115
+	default "qualcomm/sm6115"    if BR2_PACKAGE_BATOCERA_TARGET_SM6115
 	default "qualcomm/sm8250"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
 	default "qualcomm/sm8550"    if BR2_PACKAGE_BATOCERA_TARGET_SM8550
 	default "qualcomm/sm8750"    if BR2_PACKAGE_BATOCERA_TARGET_SM8750

@@ -17,12 +17,10 @@
  
  #define BQ256XX_ITERM_MASK		GENMASK(3, 0)
  #define BQ256XX_ITERM_STEP_uA		60000
-@@ -898,8 +901,69 @@
- 
- 	return regmap_update_bits(bq->regmap, BQ256XX_INPUT_CURRENT_LIMIT,
+@@ -1044,6 +1047,67 @@ static int bq256xx_set_input_curr_lim(struct bq256xx_device *bq, int iindpm)
  					BQ256XX_IINDPM_MASK, iindpm_reg_code);
-+}
-+
+ }
+ 
 +static int bq256xx_enable_vbus(struct regulator_dev *rdev)
 +{
 +	struct bq256xx_device *bq = rdev_get_drvdata(rdev);
@@ -50,8 +48,8 @@
 +		return ret;
 +
 +	return !!(val & BQ256XX_OTG_CONFIG);
- }
- 
++}
++
 +static const struct regulator_ops bq256xx_vbus_ops = {
 +	.enable = bq256xx_enable_vbus,
 +	.disable = bq256xx_disable_vbus,
@@ -87,7 +85,7 @@
  static void bq256xx_charger_reset(void *data)
  {
  	struct bq256xx_device *bq = data;
-@@ -1814,6 +1877,10 @@
+@@ -1957,6 +2021,10 @@ static int bq256xx_probe(struct i2c_client *client)
  		}
  	}
  
@@ -98,3 +96,26 @@
  	ret = bq256xx_hw_init(bq);
  	if (ret) {
  		dev_err(dev, "Cannot initialize the chip.\n");
+@@ -2004,6 +2072,14 @@ static const struct acpi_device_id bq256xx_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bq256xx_acpi_match);
+ 
++static void bq256xx_shutdown(struct i2c_client *client)
++{
++	struct bq256xx_device *bq = i2c_get_clientdata(client);
++
++	regmap_update_bits(bq->regmap, BQ256XX_CHARGER_CONTROL_0,
++			   BQ256XX_OTG_CONFIG, 0);
++}
++
+ static struct i2c_driver bq256xx_driver = {
+ 	.driver = {
+ 		.name = "bq256xx-charger",
+@@ -2011,6 +2087,7 @@ static struct i2c_driver bq256xx_driver = {
+ 		.acpi_match_table = bq256xx_acpi_match,
+ 	},
+ 	.probe = bq256xx_probe,
++	.shutdown = bq256xx_shutdown,
+ 	.id_table = bq256xx_i2c_ids,
+ };
+ module_i2c_driver(bq256xx_driver);

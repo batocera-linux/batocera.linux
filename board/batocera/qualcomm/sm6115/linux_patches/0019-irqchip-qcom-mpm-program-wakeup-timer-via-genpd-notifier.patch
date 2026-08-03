@@ -1,0 +1,181 @@
+Subject: [PATCH] irqchip/qcom-mpm: program wakeup timer via genpd and PM notifiers
+
+Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
+
+---
+ drivers/irqchip/irq-qcom-mpm.c | 118 ++++++++++++++++++++++++++++++++++++++++-
+
+--- a/drivers/irqchip/irq-qcom-mpm.c
++++ b/drivers/irqchip/irq-qcom-mpm.c
+@@ -11,17 +11,24 @@
+ #include <linux/io.h>
+ #include <linux/irqchip.h>
+ #include <linux/irqdomain.h>
++#include <linux/ktime.h>
+ #include <linux/mailbox_client.h>
+ #include <linux/module.h>
++#include <linux/notifier.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
++#include <linux/pm_runtime.h>
+ #include <linux/slab.h>
+ #include <linux/soc/qcom/irq.h>
+ #include <linux/spinlock.h>
++#include <linux/suspend.h>
++#include <linux/syscore_ops.h>
+ 
++#include <clocksource/arm_arch_timer.h>
++
+ /*
+  * This is the driver for Qualcomm MPM (MSM Power Manager) interrupt controller,
+  * which is commonly found on Qualcomm SoCs built on the RPM architecture.
+@@ -85,6 +92,9 @@
+ 	unsigned int reg_stride;
+ 	struct irq_domain *domain;
+ 	struct generic_pm_domain genpd;
++	struct device *dev;
++	struct notifier_block genpd_nb;
++	struct notifier_block pm_nb;
+ };
+ 
+ static u32 qcom_mpm_read(struct qcom_mpm_priv *priv, unsigned int reg,
+@@ -292,10 +302,14 @@
+ 	return ret;
+ }
+ 
+-static int mpm_pd_power_off(struct generic_pm_domain *genpd)
++static void qcom_mpm_program_timer(struct qcom_mpm_priv *priv, u64 cval)
+ {
+-	struct qcom_mpm_priv *priv = container_of(genpd, struct qcom_mpm_priv,
+-						  genpd);
++	writel_relaxed(lower_32_bits(cval), priv->base + 0x00);
++	writel_relaxed(upper_32_bits(cval), priv->base + 0x04);
++}
++
++static int qcom_mpm_handover_to_rpm(struct qcom_mpm_priv *priv)
++{
+ 	int i, ret;
+ 
+ 	for (i = 0; i < priv->reg_stride; i++)
+@@ -311,6 +325,79 @@
+ 	return 0;
+ }
+ 
++static int mpm_pd_power_off(struct generic_pm_domain *genpd)
++{
++	struct qcom_mpm_priv *priv = container_of(genpd, struct qcom_mpm_priv,
++						  genpd);
++
++	return qcom_mpm_handover_to_rpm(priv);
++}
++
++static u64 qcom_mpm_next_wakeup(struct device *dev)
++{
++	ktime_t wakeup, now;
++	s64 wakeup_us;
++
++	if (system_state == SYSTEM_SUSPEND)
++		return ~0ULL;
++
++	wakeup = dev_pm_genpd_get_next_hrtimer(dev);
++	if (wakeup == KTIME_MAX)
++		return ~0ULL;
++
++	now = ktime_get();
++	wakeup_us = ktime_us_delta(wakeup, now);
++	if (wakeup_us <= 0)
++		return ~0ULL;
++
++	return arch_timer_read_counter() +
++	       mul_u64_u32_div(wakeup_us, arch_timer_get_rate(), USEC_PER_SEC);
++}
++
++static int qcom_mpm_pd_callback(struct notifier_block *nb,
++				unsigned long action, void *v)
++{
++	struct qcom_mpm_priv *priv = container_of(nb, struct qcom_mpm_priv,
++						  genpd_nb);
++
++	if (action != GENPD_NOTIFY_PRE_OFF)
++		return NOTIFY_OK;
++
++	qcom_mpm_program_timer(priv, qcom_mpm_next_wakeup(priv->dev));
++
++	if (qcom_mpm_handover_to_rpm(priv))
++		return NOTIFY_BAD;
++
++	return NOTIFY_OK;
++}
++
++static int qcom_mpm_pm_notifier(struct notifier_block *nb,
++				unsigned long action, void *v)
++{
++	struct qcom_mpm_priv *priv = container_of(nb, struct qcom_mpm_priv,
++						  pm_nb);
++
++	if (action == PM_SUSPEND_PREPARE || action == PM_HIBERNATION_PREPARE)
++		qcom_mpm_program_timer(priv, ~0ULL);
++
++	return NOTIFY_OK;
++}
++
++static int qcom_mpm_syscore_suspend(void *data)
++{
++	struct qcom_mpm_priv *priv = data;
++
++	return qcom_mpm_handover_to_rpm(priv);
++}
++
++static const struct syscore_ops qcom_mpm_syscore_ops = {
++	.suspend = qcom_mpm_syscore_suspend,
++};
++
++static struct syscore qcom_mpm_syscore = {
++	.ops = &qcom_mpm_syscore_ops,
++};
++
+ static bool gic_hwirq_is_mapped(struct mpm_gic_map *maps, int cnt, u32 hwirq)
+ {
+ 	int i;
+@@ -339,6 +426,8 @@
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
++	priv->dev = dev;
++
+ 	ret = of_property_read_u32(np, "qcom,mpm-pin-count", &pin_cnt);
+ 	if (ret) {
+ 		dev_err(dev, "failed to read qcom,mpm-pin-count: %d\n", ret);
+@@ -469,6 +558,29 @@
+ 		goto remove_domain;
+ 	}
+ 
++	if (of_property_present(np, "power-domains")) {
++		pm_runtime_enable(dev);
++		priv->genpd_nb.notifier_call = qcom_mpm_pd_callback;
++		ret = dev_pm_genpd_add_notifier(dev, &priv->genpd_nb);
++		if (ret) {
++			pm_runtime_disable(dev);
++			dev_err(dev, "failed to add genpd notifier: %d\n", ret);
++			goto remove_domain;
++		}
++
++		priv->pm_nb.notifier_call = qcom_mpm_pm_notifier;
++		ret = register_pm_notifier(&priv->pm_nb);
++		if (ret) {
++			dev_pm_genpd_remove_notifier(dev);
++			pm_runtime_disable(dev);
++			dev_err(dev, "failed to register PM notifier: %d\n", ret);
++			goto remove_domain;
++		}
++
++		qcom_mpm_syscore.data = priv;
++		register_syscore(&qcom_mpm_syscore);
++	}
++
+ 	return 0;
+ 
+ remove_domain:

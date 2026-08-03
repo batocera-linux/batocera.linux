@@ -1,0 +1,27 @@
+Subject: [PATCH] serial: qcom-geni: mask UART IRQ during system suspend
+
+---
+ drivers/tty/serial/qcom_geni_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -1963,6 +1963,8 @@ static int qcom_geni_serial_suspend(struct device *dev)
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ACTIVE_ONLY);
+ 		geni_icc_set_bw(&port->se);
+ 	}
++
++	disable_irq(uport->irq);
+ 	return uart_suspend_port(private_data->drv, uport);
+ }
+
+@@ -1974,6 +1976,8 @@ static int qcom_geni_serial_resume(struct device *dev)
+ 	struct qcom_geni_private_data *private_data = uport->private_data;
+
+ 	ret = uart_resume_port(private_data->drv, uport);
++
++	enable_irq(uport->irq);
+ 	if (uart_console(uport)) {
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
+ 		geni_icc_set_bw(&port->se);
