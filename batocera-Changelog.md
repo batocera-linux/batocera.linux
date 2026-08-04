@@ -11,6 +11,7 @@
 - AYN Odin 3 initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
+- Radxa Rock-5T initial support
 - Retroid Pocket Nova initial support
 ### Added
 - Anbernic H700 device hardware acceleration support
