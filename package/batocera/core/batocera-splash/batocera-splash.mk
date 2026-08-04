@@ -77,10 +77,10 @@ ifeq ($(BATOCERA_SPLASH_MEDIA),video)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-h264-720p30.mp4
     else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837)$(BR2_PACKAGE_BATOCERA_TARGET_BCM2711)$(BR2_PACKAGE_BATOCERA_TARGET_H616)$(BR2_PACKAGE_BATOCERA_TARGET_H700)$(BR2_PACKAGE_BATOCERA_TARGET_XU4)$(BR2_PACKAGE_BATOCERA_TARGET_S812)$(BR2_PACKAGE_BATOCERA_TARGET_RK3568),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-h264-1080p30.mp4
-    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712)$(BR2_PACKAGE_BATOCERA_TARGET_RK3576),y)
-        BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-hevc-1080p60-8bit.mp4
-    else
+    else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
         BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-hevc-1080p60.mp4
+    else 
+        BATO_SPLASH=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-splash/videos/splash-hevc-1080p60-8bit.mp4
     endif
 endif
 
