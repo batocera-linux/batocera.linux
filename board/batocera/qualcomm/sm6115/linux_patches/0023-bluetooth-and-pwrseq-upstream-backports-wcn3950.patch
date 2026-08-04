@@ -1,0 +1,225 @@
+Subject: [PATCH] Bluetooth/pwrseq: upstream backports for WCN3950 BT_EN detection
+
+Combined backport of upstream-track patches:
+
+  1. power: sequencing: introduce pwrseq_is_fixed() API
+     (Manivannan Sadhasivam)
+
+  2. power: sequencing: qcom-wcn: add is_fixed callback to bluetooth
+     target (Manivannan Sadhasivam)
+
+  3. Bluetooth: hci_qca: rename power_ctrl_enabled to bt_en_available
+     (Manivannan Sadhasivam)
+
+  4. Bluetooth: hci_qca: fix the broken BT_EN GPIO detection for QCom
+     WCN devices (Manivannan Sadhasivam)
+
+---
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 34500137d..1c0470966 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2389,7 +2389,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 	struct hci_dev *hdev;
+ 	const struct qca_device_data *data;
+ 	int err;
+-	bool power_ctrl_enabled = true;
++	bool bt_en_available = true;
+ 
+ 	qcadev = devm_kzalloc(&serdev->dev, sizeof(*qcadev), GFP_KERNEL);
+ 	if (!qcadev)
+@@ -2452,16 +2452,13 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 			qcadev->bt_power->pwrseq = devm_pwrseq_get(&serdev->dev,
+ 								   "bluetooth");
+ 
+-			/*
+-			 * Some modules have BT_EN enabled via a hardware pull-up,
+-			 * meaning it is not defined in the DTS and is not controlled
+-			 * through the power sequence. In such cases, fall through
+-			 * to follow the legacy flow.
+-			 */
+ 			if (IS_ERR(qcadev->bt_power->pwrseq))
+-				qcadev->bt_power->pwrseq = NULL;
+-			else
+-				break;
++				return PTR_ERR(qcadev->bt_power->pwrseq);
++
++			if (pwrseq_is_fixed(qcadev->bt_power->pwrseq))
++				bt_en_available = false;
++
++			break;
+ 		}
+ 
+ 		qcadev->bt_power->dev = &serdev->dev;
+@@ -2485,7 +2482,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 		    (data->soc_type == QCA_WCN6750 ||
+ 		     data->soc_type == QCA_WCN6855 ||
+ 		     data->soc_type == QCA_WCN7850))
+-			power_ctrl_enabled = false;
++			bt_en_available = false;
+ 
+ 		qcadev->sw_ctrl = devm_gpiod_get_optional(&serdev->dev, "swctrl",
+ 					       GPIOD_IN);
+@@ -2523,7 +2520,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 		}
+ 
+ 		if (!qcadev->bt_en)
+-			power_ctrl_enabled = false;
++			bt_en_available = false;
+ 
+ 		qcadev->susclk = devm_clk_get_optional_enabled_with_rate(
+ 					&serdev->dev, NULL, SUSCLK_RATE_32KHZ);
+@@ -2541,7 +2538,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
+ 
+ 	hdev = qcadev->serdev_hu.hdev;
+ 
+-	if (power_ctrl_enabled) {
++	if (bt_en_available) {
+ 		hci_set_quirk(hdev, HCI_QUIRK_NON_PERSISTENT_SETUP);
+ 		hdev->shutdown = qca_hci_shutdown;
+ 	}
+diff --git a/drivers/power/sequencing/core.c b/drivers/power/sequencing/core.c
+index 4dff71be1..20af9643f 100644
+--- a/drivers/power/sequencing/core.c
++++ b/drivers/power/sequencing/core.c
+@@ -182,12 +182,14 @@ static void pwrseq_unit_release(struct kref *ref)
+  *               the state lock has been released. It's useful for implementing
+  *               boot-up delays without blocking other users from powering up
+  *               using the same power sequencer.
++ * @is_fixed: Check whether this target is fixed or not.
+  */
+ struct pwrseq_target {
+ 	struct list_head list;
+ 	const char *name;
+ 	struct pwrseq_unit *unit;
+ 	pwrseq_power_state_func post_enable;
++	bool (*is_fixed)(struct pwrseq_device *pwrseq);
+ };
+ 
+ static struct pwrseq_target *
+@@ -206,6 +208,7 @@ pwrseq_target_new(const struct pwrseq_target_data *data)
+ 	}
+ 
+ 	target->post_enable = data->post_enable;
++	target->is_fixed = data->is_fixed;
+ 
+ 	return target;
+ }
+@@ -965,6 +968,36 @@ int pwrseq_power_off(struct pwrseq_desc *desc)
+ }
+ EXPORT_SYMBOL_GPL(pwrseq_power_off);
+ 
++/**
++ * pwrseq_is_fixed() - Check whether the power sequencer is fixed or
++ * controllable.
++ * @desc: Descriptor referencing the power sequencer.
++ *
++ * This API can be used to check whether a specific power sequencer like
++ * 'Bluetooth' is fixed or controllable through properties like 'BT_EN' GPIO.
++ *
++ * Returns: true if fixed, false if controllable.
++ */
++bool pwrseq_is_fixed(struct pwrseq_desc *desc)
++{
++	/*
++	 * If there is no power sequencer, then the consumer cannot control
++	 * the power, so it is effectively fixed.
++	 */
++	if (!desc)
++		return true;
++
++	/*
++	 * If the provider hasn't implemented the callback, assume it acts
++	 * like a controllable power sequencer (for backward compatibility).
++	 */
++	if (!desc->target->is_fixed)
++		return false;
++
++	return desc->target->is_fixed(desc->pwrseq);
++}
++EXPORT_SYMBOL_GPL(pwrseq_is_fixed);
++
+ #if IS_ENABLED(CONFIG_DEBUG_FS)
+ 
+ struct pwrseq_debugfs_count_ctx {
+diff --git a/drivers/power/sequencing/pwrseq-qcom-wcn.c b/drivers/power/sequencing/pwrseq-qcom-wcn.c
+index b55b4317e..56b941cc3 100644
+--- a/drivers/power/sequencing/pwrseq-qcom-wcn.c
++++ b/drivers/power/sequencing/pwrseq-qcom-wcn.c
+@@ -254,10 +254,18 @@ static int pwrseq_qcom_wcn6855_xo_clk_deassert(struct pwrseq_device *pwrseq)
+ 	return pwrseq_qcom_wcn_pwup_delay(pwrseq);
+ }
+ 
++static bool pwrseq_qcom_wcn_bt_is_fixed(struct pwrseq_device *pwrseq)
++{
++	struct pwrseq_qcom_wcn_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
++
++	return !ctx->bt_gpio;
++}
++
+ static const struct pwrseq_target_data pwrseq_qcom_wcn_bt_target_data = {
+ 	.name = "bluetooth",
+ 	.unit = &pwrseq_qcom_wcn_bt_unit_data,
+ 	.post_enable = pwrseq_qcom_wcn_pwup_delay,
++	.is_fixed = pwrseq_qcom_wcn_bt_is_fixed,
+ };
+ 
+ static const struct pwrseq_target_data pwrseq_qcom_wcn_wlan_target_data = {
+@@ -270,6 +278,7 @@ static const struct pwrseq_target_data pwrseq_qcom_wcn_wlan_target_data = {
+ static const struct pwrseq_target_data pwrseq_qcom_wcn3990_bt_target_data = {
+ 	.name = "bluetooth",
+ 	.unit = &pwrseq_qcom_wcn3990_unit_data,
++	.is_fixed = pwrseq_qcom_wcn_bt_is_fixed,
+ };
+ 
+ static const struct pwrseq_target_data pwrseq_qcom_wcn3990_wlan_target_data = {
+@@ -281,6 +290,7 @@ static const struct pwrseq_target_data pwrseq_qcom_wcn6855_bt_target_data = {
+ 	.name = "bluetooth",
+ 	.unit = &pwrseq_qcom_wcn6855_bt_unit_data,
+ 	.post_enable = pwrseq_qcom_wcn6855_xo_clk_deassert,
++	.is_fixed = pwrseq_qcom_wcn_bt_is_fixed,
+ };
+ 
+ static const struct pwrseq_target_data pwrseq_qcom_wcn6855_wlan_target_data = {
+diff --git a/include/linux/pwrseq/consumer.h b/include/linux/pwrseq/consumer.h
+index 7d583b4f2..7c2495888 100644
+--- a/include/linux/pwrseq/consumer.h
++++ b/include/linux/pwrseq/consumer.h
+@@ -22,6 +22,7 @@ devm_pwrseq_get(struct device *dev, const char *target);
+ 
+ int pwrseq_power_on(struct pwrseq_desc *desc);
+ int pwrseq_power_off(struct pwrseq_desc *desc);
++bool pwrseq_is_fixed(struct pwrseq_desc *desc);
+ 
+ #else /* CONFIG_POWER_SEQUENCING */
+ 
+@@ -51,6 +52,11 @@ static inline int pwrseq_power_off(struct pwrseq_desc *desc)
+ 	return -ENOSYS;
+ }
+ 
++static inline bool pwrseq_is_fixed(struct pwrseq_desc *desc)
++{
++	return true;
++}
++
+ #endif /* CONFIG_POWER_SEQUENCING */
+ 
+ #endif /* __POWER_SEQUENCING_CONSUMER_H__ */
+diff --git a/include/linux/pwrseq/provider.h b/include/linux/pwrseq/provider.h
+index 33b3d2c2e..11165e98c 100644
+--- a/include/linux/pwrseq/provider.h
++++ b/include/linux/pwrseq/provider.h
+@@ -43,11 +43,13 @@ struct pwrseq_unit_data {
+  *               the state lock has been released. It's useful for implementing
+  *               boot-up delays without blocking other users from powering up
+  *               using the same power sequencer.
++ * @is_fixed: Callback to check whether this power sequencer is fixed or not.
+  */
+ struct pwrseq_target_data {
+ 	const char *name;
+ 	const struct pwrseq_unit_data *unit;
+ 	pwrseq_power_state_func post_enable;
++	bool (*is_fixed)(struct pwrseq_device *pwrseq);
+ };
+ 
+ /**

@@ -1,0 +1,49 @@
+Subject: [PATCH] Input: pwm-vibra - support a minimum duty cycle
+
+---
+ drivers/input/misc/pwm-vibra.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/input/misc/pwm-vibra.c b/drivers/input/misc/pwm-vibra.c
+--- a/drivers/input/misc/pwm-vibra.c
++++ b/drivers/input/misc/pwm-vibra.c
+@@ -14,6 +14,7 @@
+ #include <linux/gpio/consumer.h>
+ #include <linux/input.h>
+ #include <linux/kernel.h>
++#include <linux/math64.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+@@ -32,6 +33,7 @@
+ 	struct work_struct play_work;
+ 	u16 level;
+ 	u32 direction_duty_cycle;
++	u32 min_duty_cycle;
+ 	bool vcc_on;
+ };
+ 
+@@ -53,7 +55,12 @@
+ 	gpiod_set_value_cansleep(vibrator->enable_gpio, 1);
+ 
+ 	pwm_get_state(vibrator->pwm, &state);
+-	pwm_set_relative_duty_cycle(&state, vibrator->level, 0xffff);
++	if (vibrator->min_duty_cycle && state.period > vibrator->min_duty_cycle)
++		state.duty_cycle = vibrator->min_duty_cycle +
++			div_u64((state.period - vibrator->min_duty_cycle) *
++				vibrator->level, 0xffff);
++	else
++		pwm_set_relative_duty_cycle(&state, vibrator->level, 0xffff);
+ 	state.enabled = true;
+ 
+ 	err = pwm_apply_might_sleep(vibrator->pwm, &state);
+@@ -167,6 +174,9 @@
+ 		return err;
+ 	}
+ 
++	device_property_read_u32(&pdev->dev, "min-duty-cycle-ns",
++				 &vibrator->min_duty_cycle);
++
+ 	vibrator->pwm_dir = devm_pwm_get(&pdev->dev, "direction");
+ 	err = PTR_ERR_OR_ZERO(vibrator->pwm_dir);
+ 	switch (err) {

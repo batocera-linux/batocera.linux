@@ -6,15 +6,14 @@ Subject: [PATCH] add mq66 bm5460bb1 panel
 ---
  drivers/gpu/drm/panel/Kconfig           |  10 +
  drivers/gpu/drm/panel/Makefile          |   1 +
- drivers/gpu/drm/panel/panel-bm5460bb1.c | 421 ++++++++++++++++++++++++
+ drivers/gpu/drm/panel/panel-bm5460bb1.c | 421 ++++++++++++++++++++++++++++++++
  3 files changed, 432 insertions(+)
- create mode 100644 drivers/gpu/drm/panel/panel-bm5460bb1.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 9f5c284c346e..40350a3d1514 100644
+index 9a2c8dc13..18298ab77 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -463,6 +463,16 @@ config DRM_PANEL_MANGMI_HX83112A
+@@ -501,6 +501,16 @@ config DRM_PANEL_MANGMI_HX83112A
  	  Say Y here if you want to enable support for Himax HX83112A-based
  	  display panels, such as the one found in the Fairphone 4 smartphone.
  
@@ -32,20 +31,20 @@ index 9f5c284c346e..40350a3d1514 100644
  	tristate "Mantix MLAF057WE51-X MIPI-DSI LCD panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index a4e6988440eb..a49c799a7d6d 100644
+index 9c44a9212..f27f9c705 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -46,6 +46,7 @@ obj-$(CONFIG_DRM_PANEL_LG_LG4573) += panel-lg-lg4573.o
- obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
+@@ -50,6 +50,7 @@ obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
+ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_HX83112A) += panel-hx83112a.o
 +obj-$(CONFIG_DRM_PANEL_MANGMI_BM5460BB1) += panel-bm5460bb1.o
+ obj-$(CONFIG_DRM_PANEL_MOTOROLA_MOT) += panel-motorola-mot.o
  obj-$(CONFIG_DRM_PANEL_NEC_NL8048HL11) += panel-nec-nl8048hl11.o
  obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3051D) += panel-newvision-nv3051d.o
- obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3052C) += panel-newvision-nv3052c.o
 diff --git a/drivers/gpu/drm/panel/panel-bm5460bb1.c b/drivers/gpu/drm/panel/panel-bm5460bb1.c
 new file mode 100644
-index 000000000000..6a8f46b8aeda
+index 000000000..570b37900
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-bm5460bb1.c
 @@ -0,0 +1,421 @@
@@ -470,6 +469,3 @@ index 000000000000..6a8f46b8aeda
 +MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 +MODULE_DESCRIPTION("DRM driver for bm5460bb1 video mode dsi truly panel");
 +MODULE_LICENSE("GPL");
--- 
-2.54.0
-
