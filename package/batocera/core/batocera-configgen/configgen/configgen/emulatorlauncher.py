@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+from batocera_common.paths import LOGS
+
 from . import profiler
 
 profiler.start()
@@ -195,7 +197,6 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
                     # Initialize overlay process-tracking and check for active MangoHUD
                     bezel_proc = None
-                    bezel_log_file = None
                     mango_active = False
 
                     if system.config.get_bool('hud_support'):
@@ -244,24 +245,24 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                             cmd.array.insert(0, "mangohud")
 
                     if hud_bezel is not None and hud_bezel.exists():
-                        bezel_overlay_script = Path(__file__).parent / "utils" / "bezelOverlay.py"
-
                         # Bezel log file - turn off in future
-                        bezel_log_path = Path("/userdata/system/logs/bezelOverlay.log")
-                        try:
-                            bezel_log_file = bezel_log_path.open("w")
-                        except Exception:
-                            bezel_log_file = subprocess.DEVNULL
+                        bezel_log_path = LOGS / 'bezelOverlay.log'
 
                         _logger.info("Spawning standalone bezel overlay process for: %s", hud_bezel)
                         try:
                             overlay_env = dict(os.environ)
-                            bezel_proc = subprocess.Popen([
-                                "python3", str(bezel_overlay_script),
-                                str(hud_bezel),
-                                str(gameResolution["width"]),
-                                str(gameResolution["height"])
-                            ], env=overlay_env, stdout=bezel_log_file, stderr=bezel_log_file)
+                            bezel_proc = subprocess.Popen(
+                                [
+                                    "/usr/bin/batocera-bezel-overlay",
+                                    # turn off logging in the future
+                                    f"--log-file={bezel_log_path}",
+                                    "--log-level=debug",
+                                    str(hud_bezel),
+                                    str(gameResolution["width"]),
+                                    str(gameResolution["height"])
+                                ],
+                                env=overlay_env
+                            )
 
                             # Give the window a moment to initialize and check if it crashed
                             time.sleep(0.3)

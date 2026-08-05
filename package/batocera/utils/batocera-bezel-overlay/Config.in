@@ -1,0 +1,8 @@
+config BR2_PACKAGE_BATOCERA_BEZEL_OVERLAY
+	bool "batocera bezel overlay"
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_GOBJECT
+	select BR2_PACKAGE_LIBGTK3
+	select BR2_PACKAGE_GTK_LAYER_SHELL
+	help
+	  A utility to display bezels while emulators are running

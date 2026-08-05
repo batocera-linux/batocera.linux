@@ -4,6 +4,7 @@ requires-python = "==3.14.5"
 
 [manifest]
 members = [
+    "batocera-bezel-overlay",
     "batocera-common",
     "batocera-configgen",
     "batocera-es-system",
@@ -14,6 +15,7 @@ constraints = [
     { name = "evdev", specifier = "==1.9.3" },
     { name = "ffmpeg-python", git = "https://github.com/kkroening/ffmpeg-python.git?rev=df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6" },
     { name = "pillow", specifier = "==12.0.0" },
+    { name = "pygobject", specifier = "==3.56.3" },
     { name = "pysdl2", specifier = "==0.9.17" },
     { name = "pyudev", specifier = "==0.24.4" },
     { name = "pyyaml", specifier = "==6.0.3" },
@@ -23,6 +25,17 @@ constraints = [
     { name = "toml", specifier = "==0.10.2" },
     { name = "typing-extensions", specifier = "==4.15.0" },
 ]
+
+[[package]]
+name = "batocera-bezel-overlay"
+version = "44.0"
+source = { editable = "python-src/batocera-bezel-overlay" }
+dependencies = [
+    { name = "pygobject" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pygobject" }]
 
 [[package]]
 name = "batocera-common"
@@ -100,6 +113,7 @@ name = "batocera-linux"
 version = "44.dev0"
 source = { virtual = "." }
 dependencies = [
+    { name = "batocera-bezel-overlay" },
     { name = "batocera-common" },
     { name = "batocera-configgen" },
     { name = "batocera-es-system" },
@@ -109,6 +123,7 @@ dependencies = [
 dev = [
     { name = "coverage" },
     { name = "prek" },
+    { name = "pygobject-stubs" },
     { name = "pyright", extra = ["nodejs"] },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -119,6 +134,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "batocera-bezel-overlay", editable = "python-src/batocera-bezel-overlay" },
     { name = "batocera-common", editable = "python-src/batocera-common" },
     { name = "batocera-configgen", editable = "package/batocera/core/batocera-configgen/configgen" },
     { name = "batocera-es-system", editable = "python-src/batocera-es-system" },
@@ -128,6 +144,7 @@ requires-dist = [
 dev = [
     { name = "coverage", extras = ["toml"], specifier = ">=7.13.4" },
     { name = "prek", specifier = "==0.4.9" },
+    { name = "pygobject-stubs", git = "https://github.com/pygobject/pygobject-stubs.git?rev=959c470767cd44a74912ba182e9fb202d0d96519" },
     { name = "pyright", extras = ["nodejs"], specifier = "==1.1.411" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
@@ -381,12 +398,43 @@ wheels = [
 ]
 
 [[package]]
+name = "pycairo"
+version = "1.29.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/d9/1728840a22a4ef8a8f479b9156aa2943cd98c3907accd3849fb0d5f82bfd/pycairo-1.29.0.tar.gz", hash = "sha256:f3f7fde97325cae80224c09f12564ef58d0d0f655da0e3b040f5807bd5bd3142", size = 665871, upload-time = "2025-11-11T19:13:01.584Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2d/fa/87eaeeb9d53344c769839d7b2854db7ff2cd596211e00dd1b702eeb1838f/pycairo-1.29.0-cp314-cp314-win32.whl", hash = "sha256:69e2a7968a3fbb839736257bae153f547bca787113cc8d21e9e08ca4526e0b6b", size = 767198, upload-time = "2025-11-11T19:12:42.336Z" },
+    { url = "https://files.pythonhosted.org/packages/3c/90/3564d0f64d0a00926ab863dc3c4a129b1065133128e96900772e1c4421f8/pycairo-1.29.0-cp314-cp314-win_amd64.whl", hash = "sha256:e91243437a21cc4c67c401eff4433eadc45745275fa3ade1a0d877e50ffb90da", size = 871579, upload-time = "2025-11-11T19:12:48.982Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/91/93632b6ba12ad69c61991e3208bde88486fdfc152be8cfdd13444e9bc650/pycairo-1.29.0-cp314-cp314-win_arm64.whl", hash = "sha256:b72200ea0e5f73ae4c788cd2028a750062221385eb0e6d8f1ecc714d0b4fdf82", size = 719537, upload-time = "2025-11-11T19:12:55.016Z" },
+    { url = "https://files.pythonhosted.org/packages/93/23/37053c039f8d3b9b5017af9bc64d27b680c48a898d48b72e6d6583cf0155/pycairo-1.29.0-cp314-cp314t-win_amd64.whl", hash = "sha256:5e45fce6185f553e79e4ef1722b8e98e6cde9900dbc48cb2637a9ccba86f627a", size = 874015, upload-time = "2025-11-11T19:12:28.47Z" },
+    { url = "https://files.pythonhosted.org/packages/d7/54/123f6239685f5f3f2edc123f1e38d2eefacebee18cf3c532d2f4bd51d0ef/pycairo-1.29.0-cp314-cp314t-win_arm64.whl", hash = "sha256:caba0837a4b40d47c8dfb0f24cccc12c7831e3dd450837f2a356c75f21ce5a15", size = 721404, upload-time = "2025-11-11T19:12:36.919Z" },
+]
+
+[[package]]
 name = "pygments"
 version = "2.20.0"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c3/b2/bc9c9196916376152d655522fdcebac55e66de6603a76a02bca1b6414f6c/pygments-2.20.0.tar.gz", hash = "sha256:6757cd03768053ff99f3039c1a36d6c0aa0b263438fcab17520b30a303a82b5f", size = 4955991, upload-time = "2026-03-29T13:29:33.898Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f4/7e/a72dd26f3b0f4f2bf1dd8923c85f7ceb43172af56d63c7383eb62b332364/pygments-2.20.0-py3-none-any.whl", hash = "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176", size = 1231151, upload-time = "2026-03-29T13:29:30.038Z" },
+]
+
+[[package]]
+name = "pygobject"
+version = "3.56.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pycairo" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/da/61/978c5fbca34f10a90df362502fbb5a005637909e7b5a0e9212349ea9d010/pygobject-3.56.3.tar.gz", hash = "sha256:12760e4a0e3d04b6eb95e06f7a27e362c826d567ea613373a92c003b6c70d2d6", size = 1411853, upload-time = "2026-05-08T20:46:39.904Z" }
+
+[[package]]
+name = "pygobject-stubs"
+version = "2.17.0"
+source = { git = "https://github.com/pygobject/pygobject-stubs.git?rev=959c470767cd44a74912ba182e9fb202d0d96519#959c470767cd44a74912ba182e9fb202d0d96519" }
+dependencies = [
+    { name = "pygobject" },
+    { name = "typing-extensions" },
 ]
 
 [[package]]
