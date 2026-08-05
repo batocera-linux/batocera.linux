@@ -1,0 +1,8 @@
+config BR2_PACKAGE_SEEKWAVE_SWT6621S
+	bool "seekwave-swt6621s"
+	depends on BR2_LINUX_KERNEL
+	depends on BR2_aarch64
+	help
+	  SeekWave SWT6621S SDIO WiFi/BT driver for KICKPI K3B.
+
+	  https://github.com/retro98boy/seekwave-swt6621s

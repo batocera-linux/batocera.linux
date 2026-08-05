@@ -45,6 +45,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-hugsun-x99/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-evb-rk3399/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rk3128-blobs/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rkbin/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-multiboard/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-bananapi-m7/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-orangepi-5-pro/Config.in"
@@ -57,6 +58,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/rocknix-abl/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-odroid-m2/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rk356x/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rk3562/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/boot/uboot-rk3576/Config.in"
   endmenu
 
@@ -128,6 +130,7 @@ menu "System"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtw88/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rtl8852cu/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/rk915/Config.in"
+    source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/seekwave-swt6621s/Config.in"
     source "$BR2_EXTERNAL_BATOCERA_PATH/package/batocera/network/uwe5622/Config.in"
   endmenu
 
