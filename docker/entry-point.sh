@@ -16,20 +16,10 @@ if [ ! -z "$HOST_UID" ] && [ ! -z "$HOST_GID" ]; then
     # correct ownership)
     chown batocera:batocera /home/batocera
 
-    export HOME=/home/batocera
-
-    # Set $@ to run the docker command as the "batocera" user and group.
-    # NOTE: gosu (like su) resolves HOME/USER/LOGNAME from the target UID's
-    # /etc/passwd entry itself, overriding the HOME exported above. Ubuntu's
-    # official images (24.04/noble onward) ship a built-in "ubuntu" account
-    # already allocated at UID 1000 -- the same UID most single-user Linux
-    # hosts assign their first regular user. useradd -o above only adds a
-    # second passwd entry for that UID rather than replacing the existing
-    # one, so gosu's uid->passwd lookup can resolve to "ubuntu" instead of
-    # "batocera", silently resetting HOME to /home/ubuntu, a path nothing
-    # here mounts -- breaking anything HOME-relative (e.g. ccache's default
-    # cache dir) with no visible error. Re-asserting HOME explicitly after
-    # gosu sidesteps the lookup instead of depending on it.
+    # NOTE: gosu resets HOME from the first /etc/passwd entry matching the
+    # target UID. Ubuntu images include an "ubuntu" user at UID 1000, and
+    # useradd -o adds another entry rather than replacing it, so explicitly
+    # restore HOME after gosu resolves the target user.
     set -- gosu "$HOST_UID":"$HOST_GID" env HOME=/home/batocera "$@"
 fi
 
