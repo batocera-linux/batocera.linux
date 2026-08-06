@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Self, overload
+from typing import TYPE_CHECKING, Final, Self, overload
 
 from .fs.overlayfs import mount_overlayfs
 from .fs.squashfs import mount_squashfs
@@ -10,6 +10,9 @@ from .fs.squashfs import mount_squashfs
 if TYPE_CHECKING:
     from _typeshed import StrPath
     from collections.abc import AsyncGenerator, Callable, Generator, Iterator, Sequence
+
+# a squashed rom, whatever the system calls it: the windows ones name theirs .wsquashfs
+_SQUASHFS_SUFFIXES: Final = ('.squashfs', '.wsquashfs')
 
 
 def _short_name_from_path(path: str | Path) -> str:
@@ -160,7 +163,7 @@ class Rom(Path):
     @classmethod
     @asynccontextmanager
     async def prepare(cls, source: Path, /, *, writable_dir: Path | None = None) -> AsyncGenerator[Self]:
-        if source.suffix == '.squashfs':
+        if source.suffix in _SQUASHFS_SUFFIXES:
             async with mount_squashfs(source) as squashfs_mounted:
                 if writable_dir is None:
                     yield cls(source, squashfs_mounted)
