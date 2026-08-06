@@ -651,6 +651,11 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         if not self.handles_hud:
             command.prepend_args('mangohud')
 
+    async def prepare_gamescope(self, command: Command, /) -> None:
+        from .gamescope import add_gamescope_arguments
+
+        await add_gamescope_arguments(command, self.config, self.resolution)
+
     def prepare_gun_help(self) -> None:
         try:
             generate_gun_help(
@@ -723,6 +728,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
                 bezel = await self.prepare_bezel()
                 await self.prepare_hud(command, bezel)
+
+                # gamescope wraps everything else, so add it last
+                await self.prepare_gamescope(command)
 
                 async with bezel_overlay(bezel, self.resolution):
                     self.prepare_gun_help()
