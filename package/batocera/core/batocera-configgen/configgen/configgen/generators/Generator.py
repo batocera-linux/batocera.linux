@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
+from contextlib import nullcontext
 from typing import TYPE_CHECKING
+
+from ..batoceraPaths import SAVES
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from contextlib import AbstractContextManager
     from pathlib import Path
 
     from ..Command import Command
@@ -38,9 +42,23 @@ class Generator(metaclass=ABCMeta):
     def executionDirectory(self, config: SystemConfig, rom: Path) -> Path | None:
         return None
 
+    # Wraps the run of the command returned by generate(). Emulators that leave processes
+    # of their own behind (wine hands the game over to its wineserver and exits) override
+    # this to clean them up: the rom is only released for good once this exits, which
+    # matters for a rom mounted from a squashfs.
+    def running(self, config: SystemConfig, rom: Path) -> AbstractContextManager[None]:
+        return nullcontext()
+
     # Some systems expect to write into the ROM area, for example: DOS, Amiga, and Wine
     def writesToRom(self, config: SystemConfig) -> bool:
         return False
+
+    # Where the writes of a squashed rom are kept, when writesToRom() asks for an
+    # overlay. They go with the saves of the system, unless the emulator already has a
+    # place of its own for the state of a game: wine keeps a prefix per runner, and a
+    # squashed rom is a prefix.
+    def writableRomDir(self, system: Emulator, rom: Path) -> Path:
+        return SAVES / system.name / rom.stem
 
     # mame or libretro have internal bezels, don't display the one of mangohud
     def supportsInternalBezels(self) -> bool:

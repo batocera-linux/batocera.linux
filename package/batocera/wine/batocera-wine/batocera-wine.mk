@@ -8,6 +8,9 @@ BATOCERA_WINE_VERSION = 1.5
 BATOCERA_WINE_LICENSE = GPL
 BATOCERA_WINE_SOURCE=
 
+# batocera-wine is a python tool built on the wine utils of the configgen
+BATOCERA_WINE_DEPENDENCIES = batocera-configgen
+
 define BATOCERA_WINE_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
 	mkdir -p $(TARGET_DIR)/etc/X11/xorg.conf.d
