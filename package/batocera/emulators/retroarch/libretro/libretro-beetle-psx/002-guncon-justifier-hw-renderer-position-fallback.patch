@@ -1,0 +1,89 @@
+--- a/mednafen/psx/input/guncon.cpp	2026-07-28 05:34:55.752202203 +0100
++++ b/mednafen/psx/input/guncon.cpp	2026-07-28 05:35:07.612470290 +0100
+@@ -191,7 +191,7 @@
+    if(vsync && !prev_vsync)
+       line_counter = 0;
+
+-   if(pixels && pix_clock)
++   if(pix_clock)
+    {
+       const int avs = 16; // Not 16 for PAL, fixme.
+       int32 gx;
+@@ -200,21 +200,32 @@
+       gx = (nom_x * 2 + pix_clock_divider) / (pix_clock_divider * 2);
+       gy = nom_y;
+
+-      for(int32 ix = gx; ix < (gx + (int32)(pix_clock / 762925)); ix++)
++      if(pixels)
+       {
+-         if(ix >= 0 && ix < (int)width && line_counter >= (avs + gy) && line_counter < (avs + gy + 8))
++         for(int32 ix = gx; ix < (gx + (int32)(pix_clock / 762925)); ix++)
+          {
+-            int r, g, b, a;
++            if(ix >= 0 && ix < (int)width && line_counter >= (avs + gy) && line_counter < (avs + gy + 8))
++            {
++               int r, g, b, a;
+
+-            format->DecodeColor(pixels[ix * upscale_factor], r, g, b, a);
++               format->DecodeColor(pixels[ix * upscale_factor], r, g, b, a);
+
+-            if((r + g + b) >= 0x40)	// Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;)
+-            {
+-               hit_x = (int64)(ix + pix_clock_offset) * 8000000 / pix_clock;	// GunCon has what appears to be an 8.00MHz ceramic resonator in it.
+-               hit_y = line_counter;
++               if((r + g + b) >= 0x40)	// Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;)
++               {
++                  hit_x = (int64)(ix + pix_clock_offset) * 8000000 / pix_clock;	// GunCon has what appears to be an 8.00MHz ceramic resonator in it.
++                  hit_y = line_counter;
++               }
+             }
+          }
+       }
++      else if(line_counter == (avs + gy))
++      {
++         // HW renderer has no readable framebuffer to sample brightness
++         // from, so approximate the hit directly from the gun's aim
++         // position instead of genuine light detection.
++         hit_x = (int64)(gx + pix_clock_offset) * 8000000 / pix_clock;
++         hit_y = line_counter;
++      }
+
+       chair_x = gx;
+       chair_y = (avs + gy) - line_counter;
+--- a/mednafen/psx/input/justifier.cpp	2026-07-28 05:34:55.755701533 +0100
++++ b/mednafen/psx/input/justifier.cpp	2026-07-28 05:35:18.517369296 +0100
+@@ -194,7 +194,7 @@
+    if(vsync && !prev_vsync)
+       line_counter = 0;
+
+-   if(pixels && pix_clock)
++   if(pix_clock)
+    {
+       const int avs = 16; // Not 16 for PAL, fixme.
+       int32 gx;
+@@ -209,12 +209,22 @@
+
+       if(!os_shot_counter && need_hit_detect && gxa >= 0 && gxa < (int)width && line_counter >= (avs + gy - 1) && line_counter <= (avs + gy + 1))
+       {
+-         int r, g, b, a;
++         if(pixels)
++         {
++            int r, g, b, a;
+
+-         format->DecodeColor(pixels[gxa * upscale_factor], r, g, b, a);
++            format->DecodeColor(pixels[gxa * upscale_factor], r, g, b, a);
+
+-         if((r + g + b) >= 0x40)	// Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;)
++            if((r + g + b) >= 0x40)	// Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;)
++            {
++               ret = timestamp + (int64)(gxa + pix_clock_offset) * (44100 * 768) / pix_clock - 177;
++            }
++         }
++         else
+          {
++            // HW renderer has no readable framebuffer to sample brightness
++            // from, so approximate the hit directly from the gun's aim
++            // position instead of genuine light detection.
+             ret = timestamp + (int64)(gxa + pix_clock_offset) * (44100 * 768) / pix_clock - 177;
+          }
+       }
