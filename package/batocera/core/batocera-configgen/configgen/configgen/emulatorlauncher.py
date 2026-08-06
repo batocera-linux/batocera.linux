@@ -34,6 +34,7 @@ from .generators import get_generator
 from .gun import Gun
 from .utils import bezels as bezelsUtil, metadata, videoMode, wheelsUtils
 from .utils.evmapy import evmapy
+from .utils.gamescope import add_gamescope_arguments
 from .utils.hotkeygen import set_hotkeygen_context
 from .utils.logger import setup_logging
 from .utils.overlayfs import mount_overlayfs
@@ -277,6 +278,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                     except Exception as e:
                         _logger.error("Failed to draw_gun_borders for gun_borders")
                         _logger.error(e)
+
+                    add_gamescope_arguments(cmd, system, gameResolution)
 
                     with profiler.pause():
                         monitor_thread.start()

@@ -1,0 +1,15 @@
+# LuaJIT has no meson build system of its own, so this uses the meson port
+# maintained in the meson WrapDB. Both files are served from the WrapDB github
+# release so that they have a usable file name in $(DL_DIR).
+[wrap-file]
+directory = LuaJIT-04dca7911ea255f37be799c18d74c305b921c1a6
+source_url = https://github.com/mesonbuild/wrapdb/releases/download/luajit_2.1.1720049189-3/luajit-2.1.1720049189.tar.gz
+source_filename = luajit-2.1.1720049189.tar.gz
+source_hash = 346b028d9ba85e04b7e23a43cc51ec076574d2efc0d271d4355141b0145cd6e0
+patch_url = https://github.com/mesonbuild/wrapdb/releases/download/luajit_2.1.1720049189-3/luajit_2.1.1720049189-3_patch.zip
+patch_filename = luajit_2.1.1720049189-3_patch.zip
+patch_hash = f08a308599ff48ad73a8020ea592f1cd0f0b19bd9e9246a10503888d51889fe3
+wrapdb_version = 2.1.1720049189-3
+
+[provide]
+dependency_names = luajit
