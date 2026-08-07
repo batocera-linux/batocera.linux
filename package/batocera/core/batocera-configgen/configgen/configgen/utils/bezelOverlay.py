@@ -4,17 +4,19 @@ from __future__ import annotations
 import os
 import sys
 
-import gi  # type: ignore  # pyright: ignore[reportMissingImports]
-
-gi.require_version('Gtk', '3.0')
-from gi.repository import GdkPixbuf, Gtk  # type: ignore  # pyright: ignore[reportMissingImports]
-
 # Force GDK backend selection before initializing GTK/GDK modules
 session_type = os.environ.get("XDG_SESSION_TYPE", "x11").lower()
 if "wayland" in session_type:
     os.environ["GDK_BACKEND"] = "wayland"
 else:
     os.environ["GDK_BACKEND"] = "x11"
+
+# We use '# noqa: E402' because these imports must happen after setting GDK_BACKEND
+import gi  # noqa: E402  # type: ignore  # pyright: ignore[reportMissingImports]
+
+gi.require_version('Gtk', '3.0')
+from gi.repository import GdkPixbuf, Gtk  # noqa: E402  # type: ignore  # pyright: ignore[reportMissingImports]
+
 
 class StandaloneBezelOverlay(Gtk.Window):
     def __init__(self, image_path: str, width: int, height: int):
@@ -111,6 +113,7 @@ class StandaloneBezelOverlay(Gtk.Window):
         except (ValueError, ImportError) as e:
             print(f"Wayland GtkLayerShell initialization failed: {e}. Falling back to standard positioning.", file=sys.stderr)
             self.resize(self.target_width, self.target_height)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
