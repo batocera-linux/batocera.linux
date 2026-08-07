@@ -1,0 +1,51 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Wed, 14 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: generate fontconfig.h to avoid shell brace-expansion
+
+FONTS and LOW_DPI_FONTS are passed as cmake compile definitions whose
+values contain {"/path",size} compound initializer syntax. When make
+passes the resulting -DFONTS={...},{...} flag to the shell, bash
+performs brace expansion and splits the single flag into multiple
+tokens including bare integers (e.g. -DFONTS=10). GCC then rejects
+the use of integer 10 where const char* is expected.
+
+Fix: write the values to a generated fontconfig.h at cmake configure
+time (before any shell is involved) and include that header in
+resourceManager.cpp. The -DFONTS/-DLOW_DPI_FONTS compile definitions
+are removed from the target so the shell never sees the braces.
+---
+ CMakeLists.txt      | 13 +++++++++++++
+ resourceManager.cpp |  1 +
+ 2 files changed, 14 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -224,6 +224,15 @@ endif()
+
++# Write FONTS and LOW_DPI_FONTS to a header to avoid bash brace-expansion
++# of -DFONTS={...},{...} flags when make passes them through the shell.
++if(DEFINED FONTS OR DEFINED LOW_DPI_FONTS)
++  file(WRITE "${CMAKE_BINARY_DIR}/fontconfig.h"
++    "#pragma once\n"
++    "#ifndef FONTS\n#define FONTS ${FONTS}\n#endif\n"
++    "#ifndef LOW_DPI_FONTS\n#define LOW_DPI_FONTS ${LOW_DPI_FONTS}\n#endif\n"
++  )
++  target_include_directories(${BIN_TARGET} PRIVATE "${CMAKE_BINARY_DIR}")
++endif()
++
+ # These variables are passed as C macro definitons if they exist.
+ foreach(
+   def_name
+@@ -233,8 +242,6 @@ foreach(
+   RES_DIR
+-  FONTS
+-  LOW_DPI_FONTS
+   FILE_SYSTEM
+
+diff --git a/resourceManager.cpp b/resourceManager.cpp
+--- a/resourceManager.cpp
++++ b/resourceManager.cpp
+@@ -9,0 +9,1 @@
++#include "fontconfig.h"
+ #include "resourceManager.h"

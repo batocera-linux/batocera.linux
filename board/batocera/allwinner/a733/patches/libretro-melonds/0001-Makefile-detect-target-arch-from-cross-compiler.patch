@@ -1,0 +1,29 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Mon, 12 May 2026 00:00:00 +0000
+Subject: [PATCH] Makefile: detect target arch from cross-compiler prefix
+
+When cross-compiling, uname -m returns the HOST architecture (x86_64),
+not the target. This causes the unix platform block to enable desktop
+OpenGL (-lGL, -DHAVE_OPENGL) and set ARCHITECTURE_X64, which then
+requires GL/gl.h — absent from the aarch64 cross-compile sysroot.
+
+Check the CC prefix first so that aarch64 cross-builds correctly set
+ARCH=aarch64, skipping desktop GL and using the aarch64 JIT path.
+---
+ Makefile | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -49,3 +49,9 @@
+ ifeq (,$(ARCH))
+-   ARCH = $(shell uname -m)
++   ifneq (,$(findstring aarch64,$(CC)))
++      ARCH = aarch64
++   else ifneq (,$(findstring arm,$(CC)))
++      ARCH = arm
++   else
++      ARCH = $(shell uname -m)
++   endif
+ endif

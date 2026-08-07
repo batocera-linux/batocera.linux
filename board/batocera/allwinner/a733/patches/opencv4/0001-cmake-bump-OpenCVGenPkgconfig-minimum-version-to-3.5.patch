@@ -1,0 +1,18 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Fri, 09 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: bump OpenCVGenPkgconfig minimum version to 3.5
+
+OpenCVGenPkgconfig.cmake is invoked as a cmake -P script during the
+build phase. CMake 4.0 removed compatibility with cmake_minimum_required
+< 3.5, so the script aborts with an error before generating opencv4.pc.
+Bump the version requirement to 3.5 to match CMake 4.0+ requirements.
+---
+ cmake/OpenCVGenPkgconfig.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cmake/OpenCVGenPkgconfig.cmake b/cmake/OpenCVGenPkgconfig.cmake
+--- a/cmake/OpenCVGenPkgconfig.cmake
++++ b/cmake/OpenCVGenPkgconfig.cmake
+@@ -113,1 +113,1 @@
+-cmake_minimum_required(VERSION 2.8.12.2)
++cmake_minimum_required(VERSION 3.5)

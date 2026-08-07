@@ -1,0 +1,38 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Thu, 03 Jul 2026 00:00:00 +0000
+Subject: [PATCH 2/2] drm_dumb: use DRM_FORMAT_MOD_INVALID so PVR EGL skips explicit modifier
+
+DRM dumb buffers are always linear, but advertising DRM_FORMAT_MOD_LINEAR
+(value 0) in the dmabuf attributes causes wlroots to pass the explicit
+LINEAR modifier to eglCreateImageKHR.  PowerVR DDK 24.x marks LINEAR as
+external_only=true (GPU prefers tiled), so the EGL image is flagged
+external-only and wlroots refuses to use it as an FBO render target,
+logging "DMA-BUF format is external-only" for every mode test — all modes
+fail and the display never modessets.
+
+Use DRM_FORMAT_MOD_INVALID instead.  The wlroots EGL path (egl.c line 796)
+already skips adding modifier attributes to eglCreateImageKHR when the
+modifier is INVALID, so PVR EGL receives no explicit modifier and handles
+the buffer in implicit/no-modifier mode — the same path that worked when
+WLR_EGL_NO_MODIFIERS=1 was set globally.  Combined with patch 0001 which
+adds INVALID to dmabuf_render_formats unconditionally, the external_only
+flag is now false and FBO creation succeeds.
+
+---
+ render/allocator/drm_dumb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/render/allocator/drm_dumb.c b/render/allocator/drm_dumb.c
+index 3333333..4444444 100644
+--- a/render/allocator/drm_dumb.c
++++ b/render/allocator/drm_dumb.c
+@@ -94,7 +94,7 @@ static struct wlr_drm_dumb_buffer *create_buffer(
+ 	buffer->dmabuf = (struct wlr_dmabuf_attributes){
+ 		.width = buffer->width,
+ 		.height = buffer->height,
+ 		.format = format->format,
+-		.modifier = DRM_FORMAT_MOD_LINEAR,
++		.modifier = DRM_FORMAT_MOD_INVALID,
+ 		.n_planes = 1,
+ 		.offset[0] = 0,
+ 		.stride[0] = buffer->stride,

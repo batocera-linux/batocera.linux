@@ -1,0 +1,90 @@
+include batocera-board.common
+
+# Allwinner A733 / Radxa Cubie A7S
+# SoC: sun60iw2 (2x Cortex-A76 + 6x Cortex-A55 @ 2.0GHz)
+# GPU: Imagination PowerVR BXM-4-64 MC1
+# Display: USB-C DisplayPort Alt Mode (eDP 1.4 → Cadence SERDES → HUSB311 TypeC)
+
+# Target architecture
+BR2_aarch64=y
+BR2_cortex_a55=y
+BR2_ARM_FPU_NEON_FP_ARMV8=y
+# Tune for A55 little cores — A76 big cores execute these binaries fine,
+# but A76-only tuning reduces efficiency on the little cores.
+BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mcpu=cortex-a55+crypto -mtune=cortex-a55"
+BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
+
+# Patches and filesystem overlay
+BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/a733/patches"
+BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/a733/fsoverlay"
+BR2_ROOTFS_POST_BUILD_SCRIPT="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/a733/post-build.sh"
+BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
+
+# Linux headers — must match kernel series
+BR2_KERNEL_HEADERS_AS_KERNEL=y
+BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_6_6=y
+
+# Kernel — Radxa 6.6 BSP + allwinner-bsp pre-merged
+# Source: https://github.com/GameOctane/allwinner-a733-linux (branch: a733-batocera-v1)
+#
+# The Radxa 6.6 kernel and allwinner-bsp overlay are pre-merged into a single
+# repository so Buildroot can fetch them with a standard git clone. The BSP
+# drivers (CCU, MMC, display pipeline, USB TypeC, AXP PMIC) and pvrsrvkm.ko
+# (PowerVR GPU) build automatically via drivers-y += bsp/ in the Makefile.
+BR2_LINUX_KERNEL=y
+BR2_LINUX_KERNEL_CUSTOM_GIT=y
+BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/GameOctane/allwinner-a733-linux"
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="a733-batocera-v1"
+# The Radxa BSP kernel uses arch/arm64/configs/defconfig (no prefix).
+# Buildroot's USE_DEFCONFIG would append _defconfig yielding "defconfig_defconfig",
+# so we commit a copy as linux-defconfig.config and select USE_CUSTOM_CONFIG.
+BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
+BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/a733/linux-defconfig.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/a733/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
+BR2_LINUX_KERNEL_DTS_SUPPORT=y
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="allwinner/sun60i-a733-cubie-a7s"
+
+# Bootloader — pre-built blobs from Radxa rsdk-r2
+# The Radxa U-Boot is a heavily customised Android/AIOT fork that does not
+# integrate with Buildroot's BR2_TARGET_UBOOT machinery. Pre-extracted blobs
+# are committed to board/batocera/allwinner/a733/cubie-a7s/boot/ and written
+# to their correct raw SD card offsets by genimage.cfg.
+# Source: https://github.com/radxa-build/radxa-a733/releases/tag/rsdk-r2
+
+# GPU — Imagination PowerVR BXM-4-64 MC1
+# This SoC uses a PowerVR GPU — Panfrost will NOT work here.
+# pvrsrvkm.ko is built from bsp/modules/gpu/ as part of the kernel build.
+# Proprietary userspace DDK (libGLESv2, libVK_IMG, pvr_dri.so, etc.) is
+# provided in fsoverlay/usr/local/lib/ from Radxa's allwinner-target package
+# (Debian Section: free, Maintainer: Allwinnertech).
+# Mesa softpipe provides a software GL fallback for packages that require a
+# Mesa EGL/GLES provider at link time.
+BR2_PACKAGE_MESA3D=y
+BR2_PACKAGE_MESA3D_GALLIUM_DRIVER_SOFTPIPE=y
+BR2_PACKAGE_MESA3D_OPENGL_EGL=y
+BR2_PACKAGE_MESA3D_OPENGL_ES=y
+
+# Wayland compositor via labwc. XWayland excluded: it pulls in libglew via
+# BATOCERA_PORTS_SYSTEMS Kconfig selects which requires BR2_PACKAGE_XORG7.
+BR2_PACKAGE_BATOCERA_WAYLAND_LABWC=y
+BR2_PACKAGE_BATOCERA_XWAYLAND=n
+
+# Splash screen
+BR2_PACKAGE_BATOCERA_SPLASH_MPV=y
+
+# Disable arcade systems — many require hardware GL or x86-only emulators
+BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS=n
+
+# Allwinner A733 (sun60iw2) target
+BR2_PACKAGE_BATOCERA_TARGET_A733=y
+
+# Host tools required by genimage for FAT32 boot partition
+BR2_PACKAGE_HOST_DOSFSTOOLS=y
+BR2_PACKAGE_HOST_MTOOLS=y
+
+# WiFi/BT — AIC8800D80 USB adapter (AIC8800 firmware auto-selected via Config.in)
+BR2_PACKAGE_AIC8800_USB=y
+
+BR2_PACKAGE_LIBRETRO_SAME_CDI=y
+BR2_PACKAGE_ECWOLF=y

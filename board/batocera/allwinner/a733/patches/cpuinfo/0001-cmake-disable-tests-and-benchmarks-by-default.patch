@@ -1,0 +1,28 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Sun, 11 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: disable tests and benchmarks by default
+
+Building tests and benchmarks triggers ExternalProject downloads of
+googletest and googlebenchmark at cmake configure time. Those bundled
+projects have cmake_minimum_required < 3.5, which CMake 4.0 rejects,
+and the sub-cmake is invoked directly (not via the compat wrapper), so
+the policy workaround doesn't reach them.
+
+Disable all three options by default so configure skips the downloads
+entirely. They can still be re-enabled explicitly if needed.
+---
+ CMakeLists.txt | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,6 @@
+ OPTION(CPUINFO_BUILD_TOOLS "Build command-line tools" ON)
+-OPTION(CPUINFO_BUILD_UNIT_TESTS "Build cpuinfo unit tests" ON)
+-OPTION(CPUINFO_BUILD_MOCK_TESTS "Build cpuinfo mock tests" ON)
+-OPTION(CPUINFO_BUILD_BENCHMARKS "Build cpuinfo micro-benchmarks" ON)
++OPTION(CPUINFO_BUILD_UNIT_TESTS "Build cpuinfo unit tests" OFF)
++OPTION(CPUINFO_BUILD_MOCK_TESTS "Build cpuinfo mock tests" OFF)
++OPTION(CPUINFO_BUILD_BENCHMARKS "Build cpuinfo micro-benchmarks" OFF)
+ OPTION(CPUINFO_BUILD_PKG_CONFIG "Build pkg-config manifest" ON)

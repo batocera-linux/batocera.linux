@@ -1,0 +1,35 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Thu, 03 Jul 2026 00:00:00 +0000
+Subject: [PATCH 3/3] linux-dmabuf: skip PRIME import check when driver doesn't support it
+
+pvrsrvkm (PowerVR DDK 24.x) does not implement DRM_IOCTL_PRIME_FD_TO_HANDLE,
+so drmPrimeFDToHandle() returns EINVAL.  wlroots treats this as a hard failure,
+posts a Wayland protocol error to the client (EmulationStation), and ES
+disconnects before it can display anything.
+
+When the DRM device returns EINVAL or ENOSYS, the driver simply doesn't support
+the PRIME FD→handle import path.  Fall through and let EGL decide at
+eglCreateImageKHR time whether it can actually use the buffer — that is the
+authoritative import check anyway.
+
+---
+ types/wlr_linux_dmabuf_v1.c | 7 +++++++
+ 1 file changed, 7 insertions(+), 0 deletions(-)
+
+diff --git a/types/wlr_linux_dmabuf_v1.c b/types/wlr_linux_dmabuf_v1.c
+index 5555555..6666666 100644
+--- a/types/wlr_linux_dmabuf_v1.c
++++ b/types/wlr_linux_dmabuf_v1.c
+@@ -215,6 +215,13 @@ static bool check_import_dmabuf(struct wlr_dmabuf_attributes *attribs, void *da
+ 	for (int i = 0; i < attribs->n_planes; i++) {
+ 		uint32_t handle = 0;
+ 		if (drmPrimeFDToHandle(linux_dmabuf->main_device_fd, attribs->fd[i], &handle) != 0) {
++			if (errno == EINVAL || errno == ENOSYS) {
++				// Driver doesn't support PRIME FD→handle import (e.g. pvrsrvkm).
++				// Skip the check and let EGL decide at import time.
++				wlr_log(WLR_DEBUG, "DRM device doesn't support PRIME FD import check, skipping");
++				return true;
++			}
+ 			wlr_log_errno(WLR_ERROR, "Failed to import DMA-BUF FD for plane %d", i);
+ 			return false;
+ 		}
