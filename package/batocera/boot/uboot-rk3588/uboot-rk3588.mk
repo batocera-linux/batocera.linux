@@ -49,7 +49,7 @@ UBOOT_RK3588_BUILDPAIR += rock-5c/rock-5c-rk3588s_defconfig
 UBOOT_RK3588_BUILDPAIR += orangepi-5-plus/orangepi-5-plus-rk3588_defconfig
 UBOOT_RK3588_BUILDPAIR += khadas-edge2/khadas-edge2-rk3588s_defconfig
 UBOOT_RK3588_BUILDPAIR += coolpi-4b/coolpi-4b-rk3588s_defconfig
-UBOOT_RK3588_BUILDPAIR += gameforce-ace/gameforce-ace-rk3588s_defconfig
+#UBOOT_RK3588_BUILDPAIR += gameforce-ace/gameforce-ace-rk3588s_defconfig
 UBOOT_RK3588_BUILDPAIR += quartzpro64/quartzpro64-rk3588_defconfig
 UBOOT_RK3588_BUILDPAIR += indiedroid-nova/nova-rk3588s_defconfig
 

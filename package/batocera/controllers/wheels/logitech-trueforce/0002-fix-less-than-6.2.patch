@@ -1,0 +1,27 @@
+diff --git a/mainline/hid-logitech-hidpp.c b/mainline/hid-logitech-hidpp.c.new
+index 270a686..a6aa5a0 100644
+--- a/mainline/hid-logitech-hidpp.c
++++ b/mainline/hid-logitech-hidpp.c.new
+@@ -42,8 +42,8 @@
+  * Kernel compatibility macros
+  */
+ 
+-/* usb_set_wireless_status was added in kernel 6.0 */
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
++/* usb_set_wireless_status was added in kernel 6.5 */
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
+ #define usb_set_wireless_status(intf, status) do { } while (0)
+ #define USB_WIRELESS_STATUS_CONNECTED 0
+ #define USB_WIRELESS_STATUS_DISCONNECTED 1
+diff --git a/mainline/dd-lg4ff.c b/mainline/dd-lg4ff.c.new
+index afd9d7c..00428b4 100644
+--- a/mainline/dd-lg4ff.c
++++ b/mainline/dd-lg4ff.c.new
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/bitops.h>
+ #include <linux/bits.h>
++#include <linux/bug.h>
+ #include <linux/fixp-arith.h>
+ #include <linux/hid.h>
+ #include <linux/hrtimer.h>
