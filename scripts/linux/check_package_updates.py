@@ -75,7 +75,7 @@ GROUPS = {
         "gsplus", "hatari", "ikemen", "lexaloffle-pico8", "lexaloffle-voxatron",
         "lightspark", "mame", "melonds", "model2", "openmsx", "pcsx2", "pifba",
         "ppsspp", "python-pygame2", "python-pyxel", "redream", "rpcs3", "ruffle",
-        "ryujinx", "scummvm", "shadps4", "simcoupe", "snes9x", "solarus-engine",
+        "scummvm", "shadps4", "simcoupe", "snes9x", "solarus-engine",
         "sugarbox", "supermodel", "supermodel-es", "thextech", "tsugaru", "vice",
         "vita3k", "vpinball", "x16emu", "xemu", "xemu", "xenia", "xenia-canary"
     ],
