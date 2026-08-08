@@ -5835,7 +5835,7 @@ ps4:
   manufacturer: Sony
   release: 2013
   hardware: console
-  extensions: [ps4]
+  extensions: [ps4, zar]
   emulators:
     shadps4:
       shadps4: { requireAnyOf: [BR2_PACKAGE_SHADPS4] }
@@ -5858,6 +5858,9 @@ ps4:
 
     This .ps4 extension acts as a launcher entry and allows the game to appear correctly in the frontend.
     The games eboot.bin launcher file should be in the root of the directory called .ps4 or alongside the .ps4 file.
+
+    ZArchive files are also supported, copy the .zar file directly to: /userdata/roms/ps4
+    Example: /userdata/roms/ps4/Bloodborne.zar
 
     DLC content will be stored in: /userdata/roms/ps4/DLC
 

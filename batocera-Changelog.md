@@ -115,7 +115,7 @@
 - Python Pyxel to May 9th, 2026 build
 - Redream to 1.5.0-1155-g0056e35
 - RPCS3 to v.0.0.41
-- ShadPS4 to v.0.16.0
+- ShadPS4 to v.0.17.0
 - Solarus to 2.0.4
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260528
