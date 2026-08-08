@@ -242,7 +242,9 @@ class shadPS4Generator(Generator):
                 "/usr/bin/shadPS4QtLauncher"
             ]
         else:
-            if rom.is_dir():
+            if rom.suffix == ".zar":
+                eboot_path = rom
+            elif rom.is_dir():
                 eboot_path = rom / "eboot.bin"
             else:
                 eboot_path = rom.parent / "eboot.bin"
