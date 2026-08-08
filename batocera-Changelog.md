@@ -144,8 +144,8 @@
 - Linux Firmware to 20260622
 - Mesa3D to 26.1.6
 - MangoHud to v0.8.4
-- Nvidia Open Production driver to 610.43.03
-- Nvidia 580 Legacy driver to 580.173.02
+- Nvidia Open Production driver to 610.57.04
+- Nvidia 580 Legacy driver to 580.178.04
 - QT to 6.11.1
 - Qualcomm SM6115 device kernel updated to 7.0.14
 - Qualcomm SM8550 device kernel updated to 7.0.14
