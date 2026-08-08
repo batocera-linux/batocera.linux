@@ -58,7 +58,7 @@
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
 - Rockchip RK3588 devices moved to the mainline linux kernel:
-  CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5
+  CoolPi 4B, FriendlyElec CM3588 NAS, IndieDroid Nova, Khadas Edge2, Orange Pi 5
   Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - Select Qualcomm handheld devices can now install batcoera on the internal drive alongside Android (batocera-install-internal)
 - The Force Engine to capable aarch64 devices
