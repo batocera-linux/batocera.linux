@@ -1,8 +1,7 @@
 diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
-index e7302ec..5033f3e 100644
 --- a/drivers/hid/hid-nintendo.c
 +++ b/drivers/hid/hid-nintendo.c
-@@ -609,6 +609,8 @@ struct joycon_ctlr {
+@@ -589,6 +589,8 @@
  	unsigned int last_input_report_msecs;
  	unsigned int last_subcmd_sent_msecs;
  	unsigned int consecutive_valid_report_deltas;
@@ -11,20 +10,17 @@ index e7302ec..5033f3e 100644
  
  	/* factory calibration data */
  	struct joycon_stick_cal left_stick_cal_x;
-@@ -841,10 +843,11 @@ static void joycon_wait_for_input_report(struct joycon_ctlr *ctlr)
- #define JC_SUBCMD_TX_OFFSET_MS		4
- #define JC_SUBCMD_VALID_DELTA_REQ	3
- #define JC_SUBCMD_RATE_MAX_ATTEMPTS	25
-+#define JC_SUBCMD_RATE_MAX_FAILURES	2
+@@ -823,7 +825,8 @@
  #define JC_SUBCMD_RATE_LIMITER_USB_MS	20
  #define JC_SUBCMD_RATE_LIMITER_BT_MS	60
  #define JC_SUBCMD_RATE_LIMITER_MS(ctlr)	((ctlr)->hdev->bus == BUS_USB ? JC_SUBCMD_RATE_LIMITER_USB_MS : JC_SUBCMD_RATE_LIMITER_BT_MS)
 -static void joycon_enforce_subcmd_rate(struct joycon_ctlr *ctlr)
++#define JC_SUBCMD_RATE_MAX_FAILURES	2
 +static void joycon_enforce_subcmd_rate_strict(struct joycon_ctlr *ctlr)
  {
  	unsigned int current_ms;
  	unsigned long subcmd_delta;
-@@ -872,6 +875,14 @@ static void joycon_enforce_subcmd_rate(struct joycon_ctlr *ctlr)
+@@ -851,6 +854,14 @@
  
  	if (attempts >= JC_SUBCMD_RATE_MAX_ATTEMPTS) {
  		hid_warn(ctlr->hdev, "%s: exceeded max attempts", __func__);
@@ -39,7 +35,7 @@ index e7302ec..5033f3e 100644
  		return;
  	}
  
-@@ -886,6 +897,32 @@ static void joycon_enforce_subcmd_rate(struct joycon_ctlr *ctlr)
+@@ -865,6 +876,32 @@
  	msleep(JC_SUBCMD_TX_OFFSET_MS);
  }
  
