@@ -70,7 +70,7 @@
 - Azahar to 2125.1.2
 - BigPEmu to 1.221
 - Box64 0.4.2
-- Cemu to June 23rd, 2026 build
+- Cemu to August 7th, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-07-23
 - CorsixTH to v0.69.2
