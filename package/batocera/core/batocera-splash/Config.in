@@ -4,8 +4,14 @@ config BR2_PACKAGE_BATOCERA_SPLASH
     select BR2_PACKAGE_LIBDOVI    if BR2_PACKAGE_BATOCERA_SPLASH_MPV
     select BR2_PACKAGE_LIBASS     if BR2_PACKAGE_BATOCERA_SPLASH_MPV
     help
-      Batocera splash
+      Installs the splash screen assets and boot-up scripts for Batocera.linux.
 
+if BR2_PACKAGE_BATOCERA_SPLASH
+
+# Splash Type Choice
+
+# Dictates whether the system displays a static image or runs a hardware-
+# accelerated video player (mpv) during the boot process.
 choice
     prompt "splash type"
     default BR2_PACKAGE_BATOCERA_SPLASH_IMAGE
@@ -14,8 +20,144 @@ choice
 
 config BR2_PACKAGE_BATOCERA_SPLASH_IMAGE
     bool "image"
+    help
+      Displays a static logo image with overlayed build version info.
 
 config BR2_PACKAGE_BATOCERA_SPLASH_MPV
     bool "mpv"
+    help
+      Plays an animated video splash utilizing platform-specific HW decoding.
 
 endchoice
+
+# SPLASH VIDEO GROUPS
+
+# These blocks group target boards based on their performance class and 
+# decoding capabilities. They tell the makefile which pre-compiled video file 
+# format (720p, 1080p, or HEVC) is optimal to install.
+
+# 720p H264 Profile:
+# Group for legacy, low-power, or older SBC targets that perform smoothest 
+# when rendering a lighter 720p @ 30 FPS video profile.
+if BR2_PACKAGE_BATOCERA_TARGET_BCM2835 || \
+   BR2_PACKAGE_BATOCERA_TARGET_BCM2836 || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3326  || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3128  || \
+   BR2_PACKAGE_BATOCERA_TARGET_H3      || \
+   BR2_PACKAGE_BATOCERA_TARGET_JH7110
+config BR2_PACKAGE_BATOCERA_SPLASH_VIDEO_720P30
+	bool
+	default y
+endif
+
+# 1080p H264 Profile:
+# Group for mid-range single board computers (SBCs) capable of stably 
+# decoding full-HD 1080p @ 30 FPS video using the H264 codec.
+if BR2_PACKAGE_BATOCERA_TARGET_BCM2837 || \
+   BR2_PACKAGE_BATOCERA_TARGET_BCM2711 || \
+   BR2_PACKAGE_BATOCERA_TARGET_H616    || \
+   BR2_PACKAGE_BATOCERA_TARGET_H700    || \
+   BR2_PACKAGE_BATOCERA_TARGET_XU4     || \
+   BR2_PACKAGE_BATOCERA_TARGET_S812    || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3568  || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3588  || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
+config BR2_PACKAGE_BATOCERA_SPLASH_VIDEO_1080P30
+	bool
+	default y
+endif
+
+# 1080p HEVC 60fps Profile:
+# Group reserved for high-performance architectures (such as standard x86_64 PC builds)
+# capable of easily handling high-bitrate 1080p @ 60 FPS 10-bit HEVC videos.
+if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+config BR2_PACKAGE_BATOCERA_SPLASH_VIDEO_HEVC_1080P60
+	bool
+	default y
+endif
+
+# A target-specific fallback designed specifically for H3-based devices 
+# (e.g., Capcom Home Arcade), enabling custom Capcom themed assets during boot.
+if BR2_PACKAGE_BATOCERA_TARGET_H3
+config BR2_PACKAGE_BATOCERA_SPLASH_VIDEO_CAPCOM
+	bool
+	default y
+endif
+
+# MPV PLAYER OPTIONS GROUPS
+
+# These groups manage driver-specific configurations passed directly to MPV. 
+# They ensure that MPV matches the precise video-out (vo) and hardware 
+# decoding (hwdec) paths required by individual target kernels.
+
+# Mainline Rockchip Profile:
+# Modern Rockchip devices running mainline Linux kernels which utilize the 
+# stateless V4L2 request API (using '--hwdec=v4l2request').
+if BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3568          || \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3576
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_RK_MAINLINE
+	bool
+	default y
+endif
+
+# Raspberry Pi Profile:
+# Broadcom SoC devices utilizing the custom GPU/DRM copy interface 
+# (using '--hwdec=drm-copy').
+if BR2_PACKAGE_BATOCERA_RPI_ANY
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_RPI
+	bool
+	default y
+endif
+
+# Amlogic Profile:
+# Amlogic architectures using custom ffmpeg and DRM decoding patches 
+# (using '--hwdec=drm').
+if BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_AMLOGIC
+	bool
+	default y
+endif
+
+# Snapdragon Profile:
+# High-end Qualcomm Snapdragon mobile systems requiring specific v4l2m2m-copy 
+# hardware decoding rules.
+if BR2_PACKAGE_BATOCERA_TARGET_SM8250 || \
+   BR2_PACKAGE_BATOCERA_TARGET_SM8550 || \
+   BR2_PACKAGE_BATOCERA_TARGET_SM8750
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_SM8x50
+	bool
+	default y
+endif
+
+# Allwinner Profile (H6, H616, H700):
+# Allwinner chips requiring stateless decoding over the Panfrost GPU/DRM stack 
+# (using '--hwdec=v4l2request-copy').
+if BR2_PACKAGE_BATOCERA_TARGET_H6    || \
+   BR2_PACKAGE_BATOCERA_TARGET_H616  || \
+   BR2_PACKAGE_BATOCERA_TARGET_H700
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_ALLWINNER
+	bool
+	default y
+endif
+
+# Internal Defaults:
+# Specific target chips that perform best with completely unassigned parameters, 
+# allowing MPV to resolve hardware decoding using its built-in internal logic.
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || \
+   BR2_PACKAGE_BATOCERA_TARGET_T527
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_INTERNAL_DEFAULTS
+	bool
+	default y
+endif
+
+# A3GEN2 Override:
+# Amlogic vendor kernel builds running Panfrost that require a fallback 
+# to SDL video output (using '--vo=sdl').
+if BR2_PACKAGE_BATOCERA_TARGET_A3GEN2
+config BR2_PACKAGE_BATOCERA_SPLASH_MPV_A3GEN2
+	bool
+	default y
+endif
+
+endif # BR2_PACKAGE_BATOCERA_SPLASH
