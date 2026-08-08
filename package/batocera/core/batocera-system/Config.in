@@ -579,6 +579,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	                                            BR2_PACKAGE_BATOCERA_TARGET_RK3588 || \
 												BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO || \
 												BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+	# gamescope
+	select BR2_PACKAGE_GAMESCOPE if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	help
 	  Install the batocera.linux system files

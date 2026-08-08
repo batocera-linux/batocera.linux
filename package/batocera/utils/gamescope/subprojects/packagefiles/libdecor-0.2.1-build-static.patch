@@ -1,0 +1,31 @@
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -92,7 +92,7 @@
+ )
+ 
+ ## core decor library
+-libdecor = shared_library(libdecor_name,
++libdecor = library(libdecor_name,
+   sources: [
+     libdecor_sources,
+     libdecor_built_sources,
+@@ -116,11 +116,18 @@
+   ],
+   dependencies: [
+     wayland_client_dep,
++    dl_dep,
++    cursor_settings_dep,
+   ],
+ )
+ 
+ ## decor plugins
+-subdir('plugins')
++# Plugins are dlopen()ed from the installed plugin directory, so they are of no
++# use to a consumer that links libdecor statically. Skipping them also avoids
++# pulling cairo/pango into the build just to produce dead code.
++if get_option('default_library') != 'static'
++  subdir('plugins')
++endif
+ 
+ ## pkg-config file
+ pkg.generate(

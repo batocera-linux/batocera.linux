@@ -1,0 +1,11 @@
+[wrap-file]
+directory = libdecor-0.2.1
+source_url = https://gitlab.freedesktop.org/libdecor/libdecor/-/archive/0.2.1/libdecor-0.2.1.tar.gz
+source_filename = libdecor-0.2.1.tar.gz
+source_hash = ebbb60cb43fefd34d0d4460f0de226fa28ba5b7566f09e0e170481316256e133
+diff_files = libdecor-0.2.1-build-static.patch
+
+# Upstream declares the library with shared_library() and never calls
+# meson.override_dependency(), hence the patch above and the explicit variable.
+[provide]
+libdecor-0 = libdecor_dep
