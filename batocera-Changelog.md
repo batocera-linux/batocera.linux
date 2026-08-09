@@ -115,6 +115,7 @@
 - Python Pyxel to May 9th, 2026 build
 - Redream to 1.5.0-1235-g506c3f1
 - RPCS3 to v.0.0.42
+- ScummVM to v2026.3.0
 - ShadPS4 to v.0.17.0
 - Solarus to 2.0.4
 - Sonic3-Air to v26.03.28.0
