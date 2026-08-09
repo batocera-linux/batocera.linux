@@ -1,0 +1,79 @@
+From: André Braga <code@andrebraga.com>
+Subject: [PATCH] arm64: dts: qcom: cq8725s-ayn: wire USB-C SS through NB7VPQ904M redriver
+
+The AYN CQ8725S routes the Type-C SuperSpeed lanes through an ON Semi
+NB7VPQ904M redriver at i2c5 0x1c, between the USB-C connector and the
+combo USB/DP QMP PHY. The common dtsi wired the connector's SS endpoint
+straight to usb_dp_qmpphy_out, so the redriver stayed in reset and
+never passed the SS/DP lanes; DisplayPort alt-mode output over USB-C
+never came up.
+
+Describe the redriver as a Type-C mux/retimer and route the SS path
+through it (connector -> redriver -> qmpphy).
+
+Signed-off-by: André Braga <code@andrebraga.com>
+---
+ arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi | 35 +++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
+
+--- a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
+@@ -215,7 +215,7 @@
+ 					reg = <1>;
+ 
+ 					pmic_glink_ss_in: endpoint {
+-						remote-endpoint = <&usb_dp_qmpphy_out>;
++						remote-endpoint = <&redriver_ss_out>;
+ 					};
+ 				};
+ 
+@@ -890,6 +890,37 @@
+ 		awinic,sync-flag;
+ 		sound-name-prefix = "SPK_R";
+ 	};
++
++	typec_mux_redriver: typec-mux@1c {
++		compatible = "onnn,nb7vpq904m";
++		reg = <0x1c>;
++
++		vcc-supply = <&vreg_l15b_1p8>;
++
++		retimer-switch;
++		orientation-switch;
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				redriver_ss_out: endpoint {
++					remote-endpoint = <&pmic_glink_ss_in>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				redriver_ss_in: endpoint {
++					remote-endpoint = <&usb_dp_qmpphy_out>;
++				};
++			};
++		};
++	};
+ };
+ 
+ &iris {
+@@ -1222,7 +1253,7 @@
+ };
+ 
+ &usb_dp_qmpphy_out {
+-	remote-endpoint = <&pmic_glink_ss_in>;
++	remote-endpoint = <&redriver_ss_in>;
+ };
+ 
+ &usb_dwc3_hs {
+
+-- 
+2.43.0

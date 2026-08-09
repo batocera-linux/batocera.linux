@@ -5,8 +5,8 @@ Subject: [PATCH 53/54] arm64: dts: qcom: Add AYN CQ8725S Common
 
 Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
- .../boot/dts/qcom/cq8725s-ayn-common.dtsi     | 1260 +++++++++++++++++
- 1 file changed, 1260 insertions(+)
+ .../boot/dts/qcom/cq8725s-ayn-common.dtsi     | 1237 +++++++++++++++++
+ 1 file changed, 1237 insertions(+)
  create mode 100644 arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
 
 diff --git a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
@@ -14,7 +14,7 @@ new file mode 100644
 index 000000000000..6090b5b3c668
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
-@@ -0,0 +1,1260 @@
+@@ -0,0 +1,1237 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2026 Teguh Sobirin.
@@ -1006,29 +1006,6 @@ index 000000000000..6090b5b3c668
 +
 +&pm8550_pwm {
 +	status = "okay";
-+
-+	power_led {
-+		color = <LED_COLOR_ID_RGB>;
-+		label = "power-led";
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		red@1 {
-+			reg = <1>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+
-+		green@2 {
-+			reg = <2>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		blue@3 {
-+			reg = <3>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+	};
 +};
 +
 +&pon_pwrkey {
@@ -1277,3 +1254,4 @@ index 000000000000..6090b5b3c668
 +};
 -- 
 2.43.0
+
