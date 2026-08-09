@@ -1,0 +1,22 @@
+diff --git a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-haptics.c
+index 50b7dfa..4e307b7 100644
+--- a/drivers/input/misc/qcom-hv-haptics.c
++++ b/drivers/input/misc/qcom-hv-haptics.c
+@@ -1337,7 +1337,7 @@ static int haptics_set_vmax_mv(struct haptics_chip *chip, u32 vmax_mv)
+ 		return rc;
+ 	}
+ 
+-	dev_info(chip->dev, "Set Vmax to %u mV\n", vmax_mv);
++	//dev_info(chip->dev, "Set Vmax to %u mV\n", vmax_mv);
+ 
+ 	rc = haptics_check_hpwr_status(chip);
+ 	if (rc < 0)
+@@ -1730,7 +1730,7 @@ static int haptics_wait_brake_complete(struct haptics_chip *chip)
+ 	} while (--timeout);
+ 
+ 	if (timeout == 0) {
+-		dev_warn(chip->dev, "poll HPWR_DISABLED failed after stopped play\n");
++		//dev_warn(chip->dev, "poll HPWR_DISABLED failed after stopped play\n");
+ 		return haptics_toggle_module_enable(chip);
+ 	}
+ 
