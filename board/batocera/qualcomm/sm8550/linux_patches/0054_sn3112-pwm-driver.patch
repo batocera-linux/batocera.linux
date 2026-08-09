@@ -9,8 +9,8 @@ Signed-off-by: BigfootACA <bigfoot@classfun.cn>
 ---
  drivers/pwm/Kconfig      |  10 ++
  drivers/pwm/Makefile     |   1 +
- drivers/pwm/pwm-sn3112.c | 351 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 362 insertions(+)
+ drivers/pwm/pwm-sn3112.c | 348 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 359 insertions(+)
  create mode 100644 drivers/pwm/pwm-sn3112.c
 
 diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
@@ -51,7 +51,7 @@ new file mode 100644
 index 0000000000000..38ef948602a3c
 --- /dev/null
 +++ b/drivers/pwm/pwm-sn3112.c
-@@ -0,0 +1,351 @@
+@@ -0,0 +1,348 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Driver for SN3112 12-channel 8-bit PWM LED controller
@@ -126,14 +126,11 @@ index 0000000000000..38ef948602a3c
 +	else
 +		return -EINVAL;
 +
-+	dev_dbg(priv->pdev, "channel %u enabled %u\n", channel, enabled);
-+	dev_dbg(priv->pdev, "reg %u bit %u\n", reg, bit);
++	/* not set_bit(): a u8 array is not aligned for the 64-bit atomic */
 +	if (enabled)
-+		set_bit(bit, (ulong *)&priv->pwm_en_reg[reg]);
++		priv->pwm_en_reg[reg] |= BIT(bit);
 +	else
-+		clear_bit(bit, (ulong *)&priv->pwm_en_reg[reg]);
-+	dev_dbg(priv->pdev, "set enable reg %u to %u\n", reg,
-+		priv->pwm_en_reg[reg]);
++		priv->pwm_en_reg[reg] &= ~BIT(bit);
 +
 +	if (!write)
 +		return 0;

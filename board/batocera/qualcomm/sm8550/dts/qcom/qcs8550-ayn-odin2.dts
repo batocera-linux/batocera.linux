@@ -197,7 +197,6 @@
 		sdb-gpios = <&tlmm 55 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vdd_mcu_3v3>;
 		#pwm-cells = <1>;
-		status = "disabled";
 	};
 };
 
@@ -244,7 +243,6 @@
 		sdb-gpios = <&tlmm 56 GPIO_ACTIVE_LOW>;
 		vdd-supply = <&vdd_mcu_3v3>;
 		#pwm-cells = <1>;
-		status = "disabled";
 	};
 };
 
@@ -321,4 +319,45 @@
 
 &spk_amp_r {
 	firmware-name = "qcom/sm8550/ayn/odin2/aw883xx_acf.bin";
+};
+
+&tlmm {
+	paddle_keys_default: paddle-keys-default-state {
+		pins = "gpio57", "gpio58";
+		function = "gpio";
+		bias-pull-up;
+		drive-strength = <2>;
+	};
+};
+
+/*
+ * AYN Odin 2 has two extra back buttons (M1, M2) on the lower back of
+ * the device. They are plain active-low SoC TLMM GPIOs (M1 = GPIO_57,
+ * M2 = GPIO_58), not on the gamepad MCU UART and not ADC (despite AYN's
+ * Android "adckey"/keydetect.ko naming). Expose them as a gpio-keys
+ * device emitting BTN_Z (M1) / BTN_C (M2); ROCKNIX's InputPlumber map
+ * (ayn_mcu.yaml) routes BTN_Z -> LeftPaddle2 and BTN_C -> RightPaddle2.
+ * RE'd from the AYN Android keydetect driver (gpio_request 358/359 =
+ * TLMM base 301 + offsets 57/58), same scheme as the AYN Odin 3.
+ */
+/ {
+	gpio-keys-paddles {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&paddle_keys_default>;
+
+		key-paddle-m1 {
+			label = "Back Paddle M1";
+			linux,code = <BTN_Z>;
+			gpios = <&tlmm 57 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+		};
+
+		key-paddle-m2 {
+			label = "Back Paddle M2";
+			linux,code = <BTN_C>;
+			gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+		};
+	};
 };
