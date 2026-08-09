@@ -8,7 +8,7 @@
 #include "qcs8550-retroidpocket-rp6.dts"
 
 / {
-        model = "Retroid Pocket Nova";
+	model = "Retroid Pocket Nova";
 	compatible = "retroidpocket,rpnova", "qcom,qcs8550", "qcom,sm8550";
 };
 
@@ -25,4 +25,11 @@
 		touchscreen-size-y = <960>;
 		/delete-property/ touchscreen-inverted-y;
 	};
+};
+
+&gamepad {
+	invert-x;
+	invert-y;
+	trigger-left-deadzone = <100>;
+	trigger-right-deadzone = <100>;
 };
