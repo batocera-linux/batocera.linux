@@ -205,14 +205,35 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
                     cmd = generator.generate(system, rom, player_controllers, md, guns, wheels, gameResolution)
 
+                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
+
                     # MangoHUD Setup
                     if mango_active:
-                        _logger.info("MangoHUD is active. Applying offset configuration.")
+                        _logger.info("MangoHUD is active. Applying configuration.")
                         cmd.env["MANGOHUD_DLSYM"] = "1"
 
-                        # Generate the configuration passing None for the background image
-                        # but providing the screen resolution so we can offset it
-                        hudconfig = getHudConfig(system, args.systemname, system.config.emulator, effectiveCore, rom, None, gameResolution)
+                        # Determine if a bezel is active for this game/emulator
+                        bezel_val = system.config.get_str('bezel', 'none')
+                        has_bezel = bool(
+                            bezel_val and bezel_val != 'none' and
+                            (hud_bezel is not None or generator.supportsInternalBezels())
+                        )
+
+                        # Fetch the actual game aspect ratio from the generator (e.g. 4/3 or 16/9)
+                        game_ratio = generator.getInGameRatio(system.config, gameResolution, rom)
+
+                        # Generate the configuration passing the active bezel state and game ratio
+                        hudconfig = getHudConfig(
+                            system,
+                            args.systemname,
+                            system.config.emulator,
+                            effectiveCore,
+                            rom,
+                            None,
+                            gameResolution,
+                            game_ratio,
+                            has_bezel
+                        )
 
                         hud_config_file = Path('/var/run/hud.config')
                         with hud_config_file.open('w') as f:
@@ -222,8 +243,6 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         if not generator.hasInternalMangoHUDCall():
                             cmd.array.insert(0, "mangohud")
 
-                    # Bezel Overlay Setup
-                    hud_bezel = getHudBezel(system, generator, rom, gameResolution, system.guns_borders_size_name(guns), system.guns_border_ratio_type(guns))
                     if hud_bezel is not None and hud_bezel.exists():
                         bezel_overlay_script = Path(__file__).parent / "utils" / "bezelOverlay.py"
 
@@ -478,7 +497,17 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
         return ""
     return str(string)
 
-def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, rom: Path, bezel: Path | None, gameResolution: Resolution) -> str:
+def getHudConfig(
+    system: Emulator,
+    systemName: str,
+    emulator: str,
+    core: str,
+    rom: Path,
+    bezel: Path | None,
+    gameResolution: Resolution,
+    game_ratio: float,
+    has_bezel: bool
+) -> str:
     configstr = ""
 
     if bezel != "" and bezel != "none" and bezel is not None:
@@ -516,19 +545,18 @@ def getHudConfig(system: Emulator, systemName: str, emulator: str, core: str, ro
 
     configstr += f"font_size={font_size}\nfont_size_text={font_size}\n"
 
-    # Bezel Offset Calculation - may need more work
-    # Assuming standard 4:3 game aspect ratio (1.333) for now.
-    game_ratio = 4.0 / 3.0
-    active_game_width = int(screen_height * game_ratio)
-    pillar_width = (screen_width - active_game_width) // 2
-
+    # Bezel Offset Calculation
     offset_x = 0
-    if pillar_width > 0:
-        # Push HUD inwards to clear the bezel column
-        if "left" in hud_position:
-            offset_x = pillar_width + 10  # 10px extra margin inside the game window
-        elif "right" in hud_position:
-            offset_x = -(pillar_width + 10)
+    if has_bezel:
+        active_game_width = int(screen_height * game_ratio)
+        pillar_width = (screen_width - active_game_width) // 2
+
+        if pillar_width > 0:
+            # Push HUD inwards to clear the bezel column
+            if "left" in hud_position:
+                offset_x = pillar_width + 10  # 10px extra margin inside the game window
+            elif "right" in hud_position:
+                offset_x = -(pillar_width + 10)
 
     configstr += f"position={hud_position}\n"
     if offset_x != 0:
