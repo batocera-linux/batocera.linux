@@ -1,0 +1,41 @@
+diff --git a/src/egl/main/egldevice.c b/src/egl/main/egldevice.c
+index ebebda4..128a22f 100644
+--- a/src/egl/main/egldevice.c
++++ b/src/egl/main/egldevice.c
+@@ -200,6 +200,7 @@ _eglFindDevice(int fd, bool software)
+ 
+ #ifdef HAVE_LIBDRM
+    drmDevicePtr device;
++   _EGLDevice *first_hw_dev = NULL;
+ 
+    if (drmGetDevice2(fd, 0, &device) != 0) {
+       dev = NULL;
+@@ -209,14 +210,23 @@ _eglFindDevice(int fd, bool software)
+    while (dev->Next) {
+       dev = dev->Next;
+ 
+-      if (_eglDeviceSupports(dev, _EGL_DEVICE_DRM) &&
+-          drmDevicesEqual(device, dev->device) != 0) {
+-         goto cleanup_drm;
++      if (_eglDeviceSupports(dev, _EGL_DEVICE_DRM)) {
++         if (!first_hw_dev)
++            first_hw_dev = dev;
++
++         if (drmDevicesEqual(device, dev->device) != 0) {
++            goto cleanup_drm;
++         }
+       }
+    }
+ 
+-   /* Couldn't find an EGLDevice for the device. */
+-   dev = NULL;
++   /* Fallback for split-GPU (KMSRO) systems like the RPi4. If the display 
++    * device (vc4) doesn't match the render device (v3d) in the list, 
++    * return the first hardware render device instead of falling back to software. */
++   if (first_hw_dev)
++      dev = first_hw_dev;
++   else
++      dev = NULL;
+ 
+ cleanup_drm:
+    drmFreeDevice(&device);
