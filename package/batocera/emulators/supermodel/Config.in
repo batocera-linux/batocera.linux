@@ -1,21 +1,18 @@
 config BR2_PACKAGE_SUPERMODEL
     bool "supermodel"
     depends on BR2_INSTALL_LIBSTDCPP
-    depends on BR2_PACKAGE_XORG7 # libglew
-    depends on BR2_PACKAGE_HAS_LIBGL # libglew
-    select BR2_PACKAGE_SUPERMODEL_COMMON
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_WAYLAND    if BR2_PACKAGE_WAYLAND
     select BR2_PACKAGE_SDL2_NET
     select BR2_PACKAGE_ZLIB
-    select BR2_PACKAGE_LIBGLEW
-    select BR2_PACKAGE_LIBGLU
+    select BR2_PACKAGE_LIBGLEW    if BR2_PACKAGE_BATOCERA_TARGET_X86_64
+    select BR2_PACKAGE_LIBGLU     if BR2_PACKAGE_BATOCERA_TARGET_X86_64
     select BR2_PACKAGE_LIBZIP
     help
-        Supermodel is a SEGA Model 3 emulator that uses the SDL-Library.
-        
-        http://www.supermodel3.com
-        source: https://github.com/trzy/Supermodel
+      Supermodel is a SEGA Model 3 emulator that uses the SDL-Library.
+
+      http://www.supermodel3.com
+      source: https://github.com/trzy/Supermodel
 
 comment "SUPERMODEL needs a toolchain w/ C++"
-    depends on BR2_PACKAGE_XORG7
-	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_HAS_LIBGL
+	depends on !BR2_INSTALL_LIBSTDCPP

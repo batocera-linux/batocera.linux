@@ -76,7 +76,7 @@ GROUPS = {
         "lightspark", "mame", "melonds", "model2", "openmsx", "pcsx2", "pifba",
         "ppsspp", "python-pygame2", "python-pyxel", "redream", "rpcs3", "ruffle",
         "scummvm", "shadps4", "simcoupe", "snes9x", "solarus-engine",
-        "sugarbox", "supermodel", "supermodel-es", "thextech", "tsugaru", "vice",
+        "sugarbox", "supermodel", "thextech", "tsugaru", "vice",
         "vita3k", "vpinball", "x16emu", "xemu", "xemu", "xenia", "xenia-canary"
     ],
     "PORTS": [

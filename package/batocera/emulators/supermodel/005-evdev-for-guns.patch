@@ -20,14 +20,17 @@ diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
 index af02998..3d1eeb6 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
-@@ -73,7 +73,7 @@ endif
- #
- 
- PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) -O3
--PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread
-+PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -ludev
+@@ -86,9 +86,9 @@ ifeq ($(strip $(GLES)),1)
+ 	SUPERMODEL_GLES_BUILD = 1
+ 	PLATFORM_BUILD_SUFFIX = -gles
+ 	PLATFORM_CXXFLAGS += -DSUPERMODEL_GLES -DIMGUI_IMPL_OPENGL_ES3
+-	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread
++	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread -ludev
+ else
+-	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread
++	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -ludev
+ endif
  PLATFORM_BINARY_EXTENSION =
- 
  
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
 index 6c08735..7f84f11 100644

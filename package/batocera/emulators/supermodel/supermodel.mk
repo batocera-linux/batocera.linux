@@ -3,19 +3,28 @@
 # supermodel
 #
 ################################################################################
-
-SUPERMODEL_VERSION = v0.3a-20260726-git-b7d8acd
-SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
-SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net supermodel-common
+# Version: based on v0.3a-20260726
+SUPERMODEL_VERSION = 216f79726f07dcf2cb8444f9f6a51e2c299eeb6b
+SUPERMODEL_SITE = $(call github,dmanlfc,Supermodel,$(SUPERMODEL_VERSION))
+SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net
 SUPERMODEL_LICENSE = GPLv3
-SUPERMODEL_EMULATOR_INFO = supermodel.supermodel.core.yml
+SUPERMODEL_EMULATOR_INFO = supermodel.emulator.yml
 
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64),y)
 ifeq ($(BR2_PACKAGE_LIBGLEW),y)
 SUPERMODEL_DEPENDENCIES += libglew
 endif
-
 ifeq ($(BR2_PACKAGE_LIBGLU),y)
 SUPERMODEL_DEPENDENCIES += libglu
+endif
+else ifeq ($(BR2_PACKAGE_BATOCERA_GLES3),y)
+SUPERMODEL_DEPENDENCIES += libgles
+SUPERMODEL_CONF_OPTS += GLES=1
+endif
+
+ifeq ($(BR2_PACKAGE_WAYLAND),y)
+SUPERMODEL_DEPENDENCIES += wayland
+SUPERMODEL_CONF_OPTS += WAYLAND=1
 endif
 
 define SUPERMODEL_BUILD_CMDS
@@ -24,7 +33,8 @@ define SUPERMODEL_BUILD_CMDS
 	$(SED) "s|CXX = g++|CXX = $(TARGET_CXX)|g" $(@D)/Makefile
 	$(SED) "s|LD = gcc|LD = $(TARGET_CC)|g" $(@D)/Makefile
 	$(SED) "s|sdl2-config|$(STAGING_DIR)/usr/bin/sdl2-config|g" $(@D)/Makefile
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile ARCH=$(BR2_TARGET_OPTIMIZATION)
+	$(TARGET_CONFIGURE_OPTS) $(MAKE) -C $(@D) -f Makefile \
+	    ARCH=$(BR2_TARGET_OPTIMIZATION) $(SUPERMODEL_CONF_OPTS)
 endef
 
 define SUPERMODEL_INSTALL_TARGET_CMDS
@@ -48,9 +58,8 @@ endef
 
 define SUPERMODEL_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy $(TARGET_DIR)/usr/share/supermodel
-	cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/NVRAM \
-	    $(TARGET_DIR)/usr/share/supermodel
-	cp -p $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/supermodel/Supermodel.ini.template \
+	cp -pr $(SUPERMODEL_PKGDIR)/NVRAM $(TARGET_DIR)/usr/share/supermodel
+	cp -p $(SUPERMODEL_PKGDIR)/Supermodel.ini.template \
 	    $(TARGET_DIR)/usr/share/supermodel/Supermodel.ini.template
 endef
 
