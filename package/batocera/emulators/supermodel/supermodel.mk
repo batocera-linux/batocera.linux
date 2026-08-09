@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SUPERMODEL_VERSION = v0.3a-20260528-git-77d28ee
+SUPERMODEL_VERSION = v0.3a-20260726-git-b7d8acd
 SUPERMODEL_SITE = $(call github,trzy,Supermodel,$(SUPERMODEL_VERSION))
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net supermodel-common
 SUPERMODEL_LICENSE = GPLv3
