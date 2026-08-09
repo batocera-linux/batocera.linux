@@ -1,0 +1,26 @@
+Subject: [PATCH] pmdomain: qcom: rpmhpd: don't clamp GMU-managed rails pre-sync_state
+
+Mark gfx/gmxc state_synced from boot so pre-sync votes use the real
+lowest corner instead. These rails carry no bootloader state and
+have no other consumers, so the clamp protects nothing on them.
+
+---
+diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
+--- a/drivers/pmdomain/qcom/rpmhpd.c
++++ b/drivers/pmdomain/qcom/rpmhpd.c
+@@ -120,6 +120,7 @@ static struct rpmhpd gbx = {
+ static struct rpmhpd gfx = {
+ 	.pd = { .name = "gfx", },
+ 	.res_name = "gfx.lvl",
++	.state_synced = true,
+ };
+ 
+ static struct rpmhpd lcx = {
+@@ -225,6 +226,7 @@ static struct rpmhpd qphy = {
+ static struct rpmhpd gmxc = {
+ 	.pd = { .name = "gmxc", },
+ 	.res_name = "gmxc.lvl",
++	.state_synced = true,
+ };
+ 
+ /* Eliza RPMH powerdomains */
