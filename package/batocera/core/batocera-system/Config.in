@@ -340,6 +340,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_NEW_LG4FF			if !BR2_PACKAGE_BATOCERA_TARGET_XU4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && !BR2_PACKAGE_BATOCERA_TARGET_RK3128 && !BR2_PACKAGE_BATOCERA_TARGET_QCS6490 && !BR2_PACKAGE_BATOCERA_TARGET_SM6115 && !BR2_PACKAGE_BATOCERA_TARGET_SM8250 && !BR2_PACKAGE_BATOCERA_TARGET_SM8550 && !BR2_PACKAGE_BATOCERA_TARGET_SM8750 && !BR2_PACKAGE_BATOCERA_TARGET_T527 && !BR2_PACKAGE_BATOCERA_TARGET_SDM845 && !BR2_PACKAGE_BATOCERA_TARGET_H700 # Improved Linux module driver for Logitech driving wheels (the lg4ff is disabled in kernels)
 	select BR2_PACKAGE_HID_T150             if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # Thrustmaster T150 and TMX Force Feedback Wheel Linux drivers
 	select BR2_PACKAGE_HID_TMFF2            if !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 # Thrustmaster T300RS, T248 and (experimental) TX, T128, T-GT II and TS-XW Wheel Linux drivers
+	select BR2_PACKAGE_LOGITECH_TRUEFORCE   if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_1 # Logitech RS50 & G PRO direct drive wheels (force feedback + TrueForce)
+	select BR2_PACKAGE_LOGI_WHEEL           if BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_1 && BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS # terminal settings app for the wheels above
 	select BR2_PACKAGE_HID_NX				if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_7 && !BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4 && !BR2_PACKAGE_BATOCERA_TARGET_BCM2835 && !BR2_PACKAGE_BATOCERA_TARGET_RK3326 # updated nintendo switch controller driver, requires kernel > 4.4
 	select BR2_PACKAGE_JOYCOND				if BR2_PACKAGE_HID_NX || BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_7 # nintendo switch joycon daemon (requires hid-nx or hid-nintendo in kernel 6.7 or later)
 	select BR2_PACKAGE_KEYBOARDTOPADS
@@ -633,7 +635,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 	default "x86-64-v3"										if BR2_PACKAGE_BATOCERA_TARGET_ZEN3
 	default "qualcomm/sdm845/odin"									if BR2_PACKAGE_BATOCERA_TARGET_SDM845
 	default "qualcomm/qcs6490/dragonq6a"    							if BR2_PACKAGE_BATOCERA_TARGET_QCS6490
-	default "qualcomm/sm6115/mangmi-air-x-mq65 qualcomm/sm6115/mangmi-air-x-mq66"    if BR2_PACKAGE_BATOCERA_TARGET_SM6115
+	default "qualcomm/sm6115"    if BR2_PACKAGE_BATOCERA_TARGET_SM6115
 	default "qualcomm/sm8250"    if BR2_PACKAGE_BATOCERA_TARGET_SM8250
 	default "qualcomm/sm8550"    if BR2_PACKAGE_BATOCERA_TARGET_SM8550
 	default "qualcomm/sm8750"    if BR2_PACKAGE_BATOCERA_TARGET_SM8750
@@ -644,10 +646,11 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_S905
 	default "rockchip/rk3399/orangepi-800 rockchip/rk3399/rg552 rockchip/rk3399/rockpro64 rockchip/rk3399/rock960 rockchip/rk3399/orangepi4-lts rockchip/rk3399/rock-pi-4 rockchip/rk3399/rock-4c-plus rockchip/rk3399/nanopi-m4v2 rockchip/rk3399/hugsun-x99" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-	default "rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/mekotronics-r58 rockchip/rk3588/firefly-station-m3" \
+	default "rockchip/rk3588/gameforce-ace rockchip/rk3588/nanopi-m6 rockchip/rk3588/orangepi-5-pro rockchip/rk3588/bananapi-m7 rockchip/rk3588/mekotronics-r58 rockchip/rk3588/firefly-station-m3" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3588
 	default "rockchip/rk3588-sdio/orangepi-5-ultra rockchip/rk3588-sdio/orangepi-5-max" if BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO
-	default "rockchip/rk3588-mainline/rock-5b rockchip/rk3588-mainline/orangepi-5 rockchip/rk3588-mainline/orangepi-5-plus rockchip/rk3588-mainline/odroid-m2 rockchip/rk3588-mainline/friendlyelec-cm3588-nas rockchip/rk3588-mainline/coolpi-4b rockchip/rk3588-mainline/gameforce-ace rockchip/rk3588-mainline/rock-5b-plus rockchip/rk3588-mainline/rock-5c rockchip/rk3588-mainline/rock-5a rockchip/rk3588-mainline/orangepi-5b rockchip/rk3588-mainline/quartzpro64 rockchip/rk3588-mainline/indiedroid-nova rockchip/rk3588-mainline/khadas-edge2" if BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+	default "rockchip/rk3588-mainline/rock-5b rockchip/rk3588-mainline/orangepi-5 rockchip/rk3588-mainline/orangepi-5-plus rockchip/rk3588-mainline/odroid-m2 rockchip/rk3588-mainline/friendlyelec-cm3588-nas rockchip/rk3588-mainline/coolpi-4b rockchip/rk3588-mainline/rock-5b-plus rockchip/rk3588-mainline/rock-5c rockchip/rk3588-mainline/rock-5t rockchip/rk3588-mainline/rock-5a rockchip/rk3588-mainline/orangepi-5b rockchip/rk3588-mainline/quartzpro64 rockchip/rk3588-mainline/indiedroid-nova rockchip/rk3588-mainline/khadas-edge2" \
+													if BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
 	default "rockchip/rk3568/anbernic-rg-ds rockchip/rk3568/radxa-zero-3w rockchip/rk3568/powkiddy-x55 rockchip/rk3568/orangepi-3b rockchip/rk3568/anbernic-rgxx3 rockchip/rk3568/odroid-m1s rockchip/rk3568/odroid-m1 rockchip/rk3568/rock-3a rockchip/rk3568/rock-3c rockchip/rk3568/firefly-station-m2 rockchip/rk3568/firefly-station-p2" \
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3568
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
@@ -1560,7 +1563,9 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 	select BR2_PACKAGE_LIBRETRO_PS2     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
 	# Sony PS3
-	select BR2_PACKAGE_RPCS3			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+	select BR2_PACKAGE_RPCS3			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+										   BR2_PACKAGE_BATOCERA_TARGET_SM8550     || \
+										   BR2_PACKAGE_BATOCERA_TARGET_SM8750
 
 	# Sony PS4
 	select BR2_PACKAGE_SHADPS4			     if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
@@ -1767,6 +1772,7 @@ config BR2_PACKAGE_BATOCERA_DHEWM3
 	select BR2_PACKAGE_DENTONMOD
 	select BR2_PACKAGE_DESOLATED
 	select BR2_PACKAGE_ELDOOM
+	select BR2_PACKAGE_EOC
 	select BR2_PACKAGE_FITZ
 	select BR2_PACKAGE_GRIMM
 	select BR2_PACKAGE_HARDCORPS
@@ -2368,6 +2374,7 @@ config BR2_PACKAGE_BATOCERA_XORG
 	select BR2_PACKAGE_ADWAITA_ICON_THEME_LIGHT	if BR2_PACKAGE_PCMANFM # theme for file manager
 	select BR2_PACKAGE_XTERM			# terminal
 	select BR2_PACKAGE_OPENBOX			# window manager
+	select BR2_PACKAGE_PICOM			# window compositor
 	select BR2_PACKAGE_UNCLUTTER			if !BR2_PACKAGE_BATOCERA_TARGET_X86 # hide mouse
 	select BR2_PACKAGE_TOUCHEGG			# touchscreen extended gestures
 

@@ -11,6 +11,8 @@
 - AYN Odin 3 initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
+- Radxa Rock-5T initial support
+- Retroid Pocket Nova initial support
 ### Added
 - Anbernic H700 device hardware acceleration support
 - Anbernic RGCubeXX device LED controller support
@@ -50,12 +52,13 @@
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
+- MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
 - PCSX2 variant for capable aarch64 devices
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
 - Rockchip RK3588 devices moved to the mainline linux kernel:
-  CoolPi 4B, FriendlyElec CM3588 NAS, GameForce ACE, IndieDroid Nova, Khadas Edge2, Orange Pi 5
+  CoolPi 4B, FriendlyElec CM3588 NAS, IndieDroid Nova, Khadas Edge2, Orange Pi 5
   Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - Select Qualcomm handheld devices can now install batcoera on the internal drive alongside Android (batocera-install-internal)
 - The Force Engine to capable aarch64 devices
@@ -67,7 +70,7 @@
 - Azahar to 2125.1.2
 - BigPEmu to 1.221
 - Box64 0.4.2
-- Cemu to June 23rd, 2026 build
+- Cemu to August 7th, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-07-23
 - CorsixTH to v0.69.2
@@ -110,9 +113,10 @@
 - Play to 0.77
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
-- Redream to 1.5.0-1155-g0056e35
-- RPCS3 to v.0.0.41
-- ShadPS4 to v.0.16.0
+- Redream to 1.5.0-1235-g506c3f1
+- RPCS3 to v.0.0.42
+- ScummVM to v2026.3.0
+- ShadPS4 to v.0.17.0
 - Solarus to 2.0.4
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260528
@@ -127,8 +131,8 @@
 - Xemu to v0.8.136
 - Ymir to v0.3.3
 ### System
-- Allwinner H616 device kernel updated to 7.1.4
-- Allwinner H700 device kernel updated to 7.0.11
+- Allwinner H616 device kernel updated to 7.1.5
+- Allwinner H700 device kernel updated to 7.0.14
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.0.2
@@ -139,17 +143,18 @@
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1
 - Linux Firmware to 20260622
-- Mesa3D to 26.1.5
-- Nvidia Open Production driver to 610.43.03
-- Nvidia 580 Legacy driver to 580.173.02
+- Mesa3D to 26.1.6
+- MangoHud to v0.8.4
+- Nvidia Open Production driver to 610.57.04
+- Nvidia 580 Legacy driver to 580.178.04
 - QT to 6.11.1
-- Qualcomm SM6115 device kernel updated to 7.0.11
-- Qualcomm SM8550 device kernel updated to 7.0.11
-- Qualcomm SM8750 device kernel updated to 7.1.4
-- Raspberry Pi device kernel updated to 6.18.37
-- Rockchip RK3568 device kernel updated to 7.0.11
-- Rockchip RK3588 mainline device kernel updated to 7.1.4
-- Rocknix ABL to 1.1.4 (SM8x50 devices)
+- Qualcomm SM6115 device kernel updated to 7.0.14
+- Qualcomm SM8550 device kernel updated to 7.0.14
+- Qualcomm SM8750 device kernel updated to 7.1.5
+- Raspberry Pi device kernel updated to 6.18.39
+- Rockchip RK3568 device kernel updated to 7.0.14
+- Rockchip RK3588 mainline device kernel updated to 7.1.5
+- Rocknix ABL to 1.1.6 (SM6115 & SM8x50 devices)
 - Sound Open Firmware to 2025.12.2
 - SwitchRes to 2.2.2
 - RTKit to v0.14
@@ -159,7 +164,8 @@
 - WINE Proton to proton-11.0-1
 - WINE TKG to 11.13
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.1.4
+- X86_64 / Zen3 kernel updated to 7.1.5
+- Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed

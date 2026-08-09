@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = v.0.16.0
+SHADPS4_VERSION = v.0.17.0
 SHADPS4_SITE = https://github.com/shadps4-emu/shadPS4
 SHADPS4_SITE_METHOD = git
 SHADPS4_GIT_SUBMODULES = YES
@@ -27,9 +27,10 @@ SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
 
 SHADPS4_EMULATOR_INFO = shadps4.emulator.yml
 
-SHADPS4_DEPENDENCIES += alsa-lib boost ffmpeg fmt glslang jack2 libedit libevdev
-SHADPS4_DEPENDENCIES += libzlib openal openssl pugixml pulseaudio sdl3 udev
-SHADPS4_DEPENDENCIES += vulkan-headers vulkan-validationlayers
+SHADPS4_DEPENDENCIES += alsa-lib boost ffmpeg fmt freetype glslang jack2 libedit
+SHADPS4_DEPENDENCIES += libevdev libminiupnpc libzlib openal openssl pugixml
+SHADPS4_DEPENDENCIES += pulseaudio sdl3 udev vulkan-headers
+SHADPS4_DEPENDENCIES += vulkan-validationlayers
 
 SHADPS4_CMAKE_BACKEND = ninja
 
@@ -40,6 +41,7 @@ SHADPS4_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 SHADPS4_CONF_OPTS += -DCMAKE_INSTALL_PREFIX=/usr
 SHADPS4_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 SHADPS4_CONF_OPTS += -DENABLE_DISCORD_RPC=OFF
+SHADPS4_CONF_OPTS += -DENABLE_SYSTEM_LIBRARIES=ON
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
 SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
 

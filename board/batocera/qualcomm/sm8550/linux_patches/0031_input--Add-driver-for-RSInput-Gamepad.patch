@@ -42,7 +42,7 @@ new file mode 100644
 index 000000000000..913c499ad30a
 --- /dev/null
 +++ b/drivers/input/joystick/rsinput.c
-@@ -0,0 +1,578 @@
+@@ -0,0 +1,592 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * RSInput Gamepad Driver
@@ -477,6 +477,20 @@ index 000000000000..913c499ad30a
 +            axis_righty_max =  range;
 +
 +            dev_info(&serdev->dev, "DT axis-range override applied: ±%u\n", range);
++        }
++    }
++
++    {
++        u32 deadzone;
++
++        if (!device_property_read_u32(&serdev->dev, "trigger-left-deadzone", &deadzone)) {
++            trigger_left_deadzone = deadzone;
++            dev_info(&serdev->dev, "DT trigger-left-deadzone override applied: %u\n", deadzone);
++        }
++
++        if (!device_property_read_u32(&serdev->dev, "trigger-right-deadzone", &deadzone)) {
++            trigger_right_deadzone = deadzone;
++            dev_info(&serdev->dev, "DT trigger-right-deadzone override applied: %u\n", deadzone);
 +        }
 +    }
 +

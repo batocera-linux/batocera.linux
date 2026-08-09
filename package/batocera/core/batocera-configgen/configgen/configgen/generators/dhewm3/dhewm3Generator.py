@@ -109,7 +109,7 @@ class Dhewm3Generator(Generator):
             "/usr/bin/dhewm3", "+set", "fs_basepath", romDir
         ]
 
-        if directory == "perfected_roe" or directory == "sikkmodd3xp":
+        if directory in ("perfected_roe", "sikkmodd3xp", "bloodmod_roe"):
             commandArray.extend(
                 ["+set", "fs_game_base", "d3xp"]
             )

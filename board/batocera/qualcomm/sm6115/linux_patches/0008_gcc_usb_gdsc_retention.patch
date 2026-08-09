@@ -1,0 +1,22 @@
+Subject: [PATCH] clk: qcom: gcc-sm6115: Use retention for USB power domain
+
+The USB subsystem does not expect to lose its state on suspend.
+
+Based on: sc8180x by Val Packett in upstream commit 25bc96f26cd6.
+Upstream-reference: clk: qcom: gcc-sc8180x: Use
+                    retention for USB power domains
+---
+ drivers/clk/qcom/gcc-sm6115.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/clk/qcom/gcc-sm6115.c
++++ b/drivers/clk/qcom/gcc-sm6115.c
+@@ -3210,7 +3210,7 @@
+ 	.pd = {
+ 		.name = "gcc_usb30_prim",
+ 	},
+-	.pwrsts = PWRSTS_OFF_ON,
++	.pwrsts = PWRSTS_RET_ON,
+ };
+ 
+ static struct gdsc gcc_vcodec0_gdsc = {

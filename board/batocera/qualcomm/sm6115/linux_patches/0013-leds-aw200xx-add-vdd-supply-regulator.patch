@@ -1,0 +1,38 @@
+Subject: [PATCH] leds: aw200xx: add vdd-supply and LED_CORE_SUSPENDRESUME
+
+Add optional regulator and set brightness 0 on suspend. 
+
+---
+ drivers/leds/leds-aw200xx.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
+--- a/drivers/leds/leds-aw200xx.c
++++ b/drivers/leds/leds-aw200xx.c
+@@ -18,6 +18,7 @@
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/time.h>
+ #include <linux/units.h>
+ 
+@@ -463,6 +464,7 @@ static int aw200xx_probe_fw(struct device *dev, struct aw200xx *chip)
+ 		led->cdev.brightness_set_blocking = aw200xx_brightness_set;
+ 		led->cdev.max_brightness = AW200XX_FADE_MAX;
+ 		led->cdev.groups = dim_groups;
++		led->cdev.flags |= LED_CORE_SUSPENDRESUME;
+ 		init_data.fwnode = child;
+ 
+ 		ret = devm_led_classdev_register_ext(dev, &led->cdev,
+@@ -567,6 +569,10 @@ static int aw200xx_probe(struct i2c_client *client)
+ 	if (IS_ERR(chip->regmap))
+ 		return PTR_ERR(chip->regmap);
+ 
++	ret = devm_regulator_get_enable_optional(&client->dev, "vdd");
++	if (ret < 0 && ret != -ENODEV)
++		return dev_err_probe(&client->dev, ret, "Failed to enable vdd supply\n");
++
+ 	chip->hwen = devm_gpiod_get_optional(&client->dev, "enable",
+ 					     GPIOD_OUT_HIGH);
+ 	if (IS_ERR(chip->hwen))

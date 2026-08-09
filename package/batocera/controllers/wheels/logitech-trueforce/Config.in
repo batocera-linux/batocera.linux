@@ -1,0 +1,14 @@
+config BR2_PACKAGE_LOGITECH_TRUEFORCE
+	bool "logitech-trueforce"
+	help
+	    Force feedback and TrueForce driver for the Logitech direct
+	    drive wheels (RS50, G PRO Racing Wheel for Xbox/PC and PS/PC).
+
+	    Builds as hid-logitech-dd, which binds only those wheels and
+	    runs alongside the in-tree hid-logitech-hidpp.
+
+	    It also supports the belt driven G923 (PS and Xbox), but that
+	    wheel is left to new-lg4ff (hid-logitech-new) here, so the
+	    driver declines it unless it is loaded with g923=1.
+
+	    https://github.com/mescon/logitech-trueforce-linux-driver

@@ -1,0 +1,1701 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * KONKR Pocket FIT Elite (Snapdragon 8 Elite / SM8750) — ROCKNIX board DTS
+ *
+ * Several nodes are derived from the in-tree AYN Odin 3
+ * (cq8725s-ayn-common.dtsi), which shares the SM8750 platform. Nodes that are
+ * not yet hardware-verified on this board are flagged inline with TODO.
+ *
+ * Copyright (c) 2026 Patrick Hennig <patrick.hennig@fastmail.com>
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+#include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+#include "sm8750.dtsi"
+#include "pm8550.dtsi"
+#define PMK8550VE_SID 8
+#include "pm8550ve.dtsi"
+#include "pmih0108.dtsi"
+#include "pmk8550.dtsi"
+#include "sm8750-pmics.dtsi"
+
+/ {
+	model = "KONKR Pocket FIT Elite";			/* must match the quirks dir name exactly */
+	compatible = "konkr,pocket-fit-elite", "qcom,sm8750";	/* real SM8750 "sun" (not CQ8725S) */
+	chassis-type = "handheld";
+
+	/*
+	 * required for ABL dtb selection ROCKNIX appends ALL SM8750
+	 * board dtbs into one boot image; the ABL picks by qcom,msm-id + board-id.
+	 * Mirrored verbatim from the stock fdt so it matches this hardware exactly.
+	 * SoC IDs 0x26a(618)/0x27f(639) = SM8750 "sun" — distinct from the Odin 3's
+	 * CQ8725S (706), so the two boards never collide. WITHOUT this, a konkr
+	 * device may boot the Odin 3 dtb. (Odin 3 dtb must likewise carry msm-id
+	 * 706.)
+	 */
+	qcom,msm-id = <0x100026a 0x20000>, <0x27f 0x10000>, <0x26a 0x10000>,
+		      <0x27f 0x20000>, <0x26a 0x20000>, <0x100027f 0x10000>,
+		      <0x100026a 0x10000>, <0x100027f 0x20000>;
+	qcom,board-id = <0x2000b 0x0>;
+
+	aliases {
+		serial0 = &uart7;			/* TODO: confirm debug UART pad (ROCKNIX DEBUG_TTY=/dev/ttyMSM0) */
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+
+	};
+
+	/*
+	 * Board fixed clocks. sm8750.dtsi references &xo_board,
+	 * &sleep_clk, &bi_tcxo_div2, &bi_tcxo_ao_div2 and expects the board to
+	 * provide them. Required for the tree to resolve.
+	 */
+	clocks {
+		xo_board: xo-board {
+			compatible = "fixed-clock";
+			clock-frequency = <76800000>;
+			#clock-cells = <0>;
+		};
+
+		sleep_clk: sleep-clk {
+			compatible = "fixed-clock";
+			clock-frequency = <32000>;
+			#clock-cells = <0>;
+		};
+
+		bi_tcxo_div2: bi-tcxo-div2-clk {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&rpmhcc RPMH_CXO_CLK>;
+			clock-mult = <1>;
+			clock-div = <2>;
+		};
+
+		bi_tcxo_ao_div2: bi-tcxo-ao-div2-clk {
+			compatible = "fixed-factor-clock";
+			#clock-cells = <0>;
+			clocks = <&rpmhcc RPMH_CXO_CLK_A>;
+			clock-mult = <1>;
+			clock-div = <2>;
+		};
+	};
+
+	/*
+	 * VPH_PWR rail that feeds the PMICs. Required by the
+	 * apps_rsc regulator block below.
+	 */
+	vph_pwr: vph-pwr-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "vph_pwr";
+		regulator-min-microvolt = <3700000>;
+		regulator-max-microvolt = <3700000>;
+		regulator-always-on;
+		regulator-boot-on;
+	};
+
+	/* Buttons: gpio-keys transcribed from the konkr stock fdt
+	 * gpio_keys node. Volume-up is on pm8550 gpio6 (matches the SM8650 Konkr);
+	 * Volume-DOWN comes from the PMIC resin (&pon_resin below). linux,codes
+	 * are the stock values.
+	 * The stock node ALSO declared AYA(126)/Equal(127)/Left-C(129)/
+	 * Right-C(128) — those four are stale carried-over config: 0 IRQ edges
+	 * even on stock Android, and the stock pads sit at func0 pull-up doing
+	 * nothing. Removed; the extra physical buttons are MCU-side and surface
+	 * through the konkr_sysbtn UART driver (patch 0069) instead. */
+	gpio-keys {
+		compatible = "gpio-keys";
+		/* pull-ups for the remaining TLMM key pins (stock tlmm_key/turbo_key
+		 * states) — without them the active-low keys float dead. */
+		pinctrl-0 = <&volume_up_n &tlmm_key_default &turbo_key_default>;
+		pinctrl-names = "default";
+
+		key-volume-up {
+			label = "Volume Up";
+			linux,code = <KEY_VOLUMEUP>;
+			gpios = <&pm8550_gpios 6 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+			wakeup-source;
+		};
+		key-rc2 {
+			label = "Right-C2";
+			linux,code = <0x36>;			/* stock 0x36 */
+			gpios = <&tlmm 2 GPIO_ACTIVE_LOW>;
+		};
+		key-mode-standard {
+			label = "Mode-Standard";
+			linux,code = <0x190>;			/* stock 0x190 */
+			gpios = <&tlmm 106 GPIO_ACTIVE_LOW>;
+		};
+		key-mode-2 {
+			label = "Mode-2";
+			linux,code = <0x18e>;			/* stock 0x18e */
+			gpios = <&tlmm 107 GPIO_ACTIVE_LOW>;
+		};
+		key-mode-performance {
+			label = "Mode-Performance";
+			linux,code = <0x191>;			/* stock 0x191 */
+			gpios = <&tlmm 108 GPIO_ACTIVE_LOW>;
+		};
+	};
+
+	/* Fan: pwm-fan driven by the pm8550 LPG PWM (channel 3, 50us),
+	 * powered through a fan_vdd(TLMM110)->fan_pwr(TLMM111) regulator chain,
+	 * tach feedback on TLMM67. Transcribed from the konkr stock fdt + modeled
+	 * on the working SM8650 Konkr (G3) fan node. CONFIG_SENSORS_PWM_FAN=m and
+	 * CONFIG_LEDS_QCOM_LPG=y are already enabled in the SM8750 config. */
+	fan: fan {
+		compatible = "pwm-fan";
+		pwms = <&pm8550_pwm 3 50000>;
+		fan-supply = <&fan_pwr>;
+		#cooling-cells = <2>;
+		cooling-levels = <0 64 128 255>;		/* stock 0/0x40/0x80/0xff */
+		interrupts-extended = <&tlmm 67 IRQ_TYPE_EDGE_FALLING>;
+		pinctrl-0 = <&fan_int>, <&pwm_fan_ctrl_active>;
+		pinctrl-1 = <&pwm_fan_ctrl_sleep>;
+		pinctrl-names = "default", "sleep";
+	};
+
+	fan_pwr: fan-pwr-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "fan_pwr";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpios = <&tlmm 111 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		vin-supply = <&fan_vdd>;
+		pinctrl-0 = <&fan_pwr_pins>;
+		pinctrl-names = "default";
+	};
+
+	fan_vdd: fan-vdd-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "fan_vdd";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpios = <&tlmm 110 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		vin-supply = <&vph_pwr>;
+		pinctrl-0 = <&fan_vdd_pins>;
+		pinctrl-names = "default";
+	};
+
+	/*
+	 * USB-C role/orientation via pmic-glink. Verify the
+	 * orientation GPIO for this board.
+	 */
+	pmic-glink {
+		compatible = "qcom,sm8750-pmic-glink", "qcom,sm8550-pmic-glink", "qcom,pmic-glink";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		orientation-gpios = <&tlmm 61 GPIO_ACTIVE_HIGH>;	/* TODO: verify with a flipped cable */
+
+		connector@0 {
+			compatible = "usb-c-connector";
+			reg = <0>;
+			power-role = "dual";
+			data-role = "dual";
+
+			ports {
+				#address-cells = <1>;
+				#size-cells = <0>;
+				port@0 {
+					reg = <0>;
+					pmic_glink_hs_in: endpoint {
+						remote-endpoint = <&usb_dwc3_hs>;
+					};
+				};
+				port@1 {
+					reg = <1>;
+					pmic_glink_ss_in: endpoint {
+						remote-endpoint = <&usb_dp_qmpphy_out>;
+					};
+				};
+				/* SBU → WCD939x USBSS analog-audio Type-C switch
+				 * (headphone path); needs the now-working Type-C connector. */
+				port@2 {
+					reg = <2>;
+					pmic_glink_sbu: endpoint {
+						remote-endpoint = <&wcd_usbss_sbu_mux>;
+					};
+				};
+			};
+		};
+	};
+};
+
+/*
+ * cont_splash region. EVIDENCE-DRIVEN (not a crash-guess): the ABL debug log
+ * says "Splash region not found in device tree, powering down the display and
+ * controller" at kernel hand-off — i.e. without this the bootloader blanks the
+ * panel before the kernel runs, leaving us no on-screen output. Adding it (a)
+ * keeps the display alive so simpledrm/fbcon can render the kernel console on
+ * the panel = our console without a UART, and (b) matches both the stock fdt
+ * (splash_region@0xfc800000, label cont_splash_region) and the working SM8650
+ * AYANEO devices. Address/size mirrored verbatim from the stock dump.
+ *
+ * Other reserved-memory was initially inherited unchanged from sm8750.dtsi;
+ * after the display was ELIMINATED as the crash cause (mdss-disabled isolation
+ * boot still hit EDL), the remaining stock-vs-mainline map divergences are
+ * transcribed below — verbatim stock values, the whole divergence rather
+ * than a subset.
+ */
+/* sm8750.dtsi leaves /reserved-memory unlabeled, so reference it by path.
+ *
+ * No cont_splash region. A `splash_region`/`cont_splash_region` (0xfc800000)
+ * keeps the panel lit for a simpledrm console, but with the real drm/msm
+ * driver that region triggers the
+ * CONTINUOUS-SPLASH HANDOFF: dpu assumes the bootloader left the display clocked
+ * and reaches in to read its registers → if ABL didn't truly leave it clocked,
+ * an unclocked-register access → AHB hang → secure watchdog reset = exactly the
+ * crash at the first MDSS register touch. The working
+ * Odin 3 has NO splash region (clean COLD bring-up). So drop it → drm/msm does a
+ * cold bring-up like the Odin 3. */
+&{/reserved-memory} {
+
+	/* Stock-only gap-filler reservations, copied
+	 * verbatim from the live stock fdt (incl. the unit-address-less names):
+	 *  - lost_reg_mem  fills gpu_micro_code(end 0x9b09c000) → spss@9b0a0000
+	 *  - lost_reg_mem2 fills q6_cdsp_dtb(end 0x9eb80000) → soccp@9ec00000  */
+	lost_reg_mem {
+		reg = <0x0 0x9b09c000 0x0 0x4000>;
+		no-map;
+	};
+	lost_reg_mem2 {
+		reg = <0x0 0x9eb80000 0x0 0x80000>;
+		no-map;
+	};
+};
+
+/* Stock fences 18M for the hypervisor
+ * (gunyah_hyp_region@80000000, reg 0x80000000+0x1200000 — flush against
+ * cpucp@81200000) and has NO separate cpusys_vm node; mainline sm8750.dtsi
+ * declares 14M + a 256K cpusys_vm at 0x80e00000, leaving 0x80e40000-0x81200000
+ * unreserved. Transcribe the stock layout: grow gunyah to 18M, delete the
+ * cpusys_vm node it absorbs (mainline window 0x80e40000-0x81200000 verified
+ * empty, so no overlap; cpusys_vm_mem label is referenced nowhere). */
+&gunyah_hyp_mem {
+	reg = <0x0 0x80000000 0x0 0x1200000>;
+};
+/delete-node/ &cpusys_vm_mem;
+
+&apps_rsc {
+	regulators-0 {
+		compatible = "qcom,pm8550-rpmh-regulators";
+
+		vdd-bob1-supply = <&vph_pwr>;
+		vdd-bob2-supply = <&vph_pwr>;
+		vdd-l1-l4-l10-supply = <&vreg_s3g_1p8>;
+		vdd-l2-l13-l14-supply = <&vreg_bob1>;
+		vdd-l3-supply = <&vreg_s7i_1p2>;
+		vdd-l5-l16-supply = <&vreg_bob1>;
+		vdd-l6-l7-supply = <&vreg_bob1>;
+		vdd-l8-l9-supply = <&vreg_bob1>;
+		vdd-l11-supply = <&vreg_s7i_1p2>;
+		vdd-l12-supply = <&vreg_s3g_1p8>;
+		vdd-l15-supply = <&vreg_s3g_1p8>;
+		vdd-l17-supply = <&vreg_bob2>;
+
+		qcom,pmic-id = "b";
+
+		vreg_bob1: bob1 {
+			regulator-name = "vreg_bob1";
+			regulator-min-microvolt = <3008000>;
+			regulator-max-microvolt = <4000000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_bob2: bob2 {
+			regulator-name = "vreg_bob2";
+			regulator-min-microvolt = <2704000>;
+			regulator-max-microvolt = <3008000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1b_1p8: ldo1 {
+			regulator-name = "vreg_l1b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2b_3p0: ldo2 {
+			regulator-name = "vreg_l2b_3p0";
+			regulator-min-microvolt = <3008000>;
+			regulator-max-microvolt = <3048000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l4b_1p8: ldo4 {
+			regulator-name = "vreg_l4b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l5b_3p1: ldo5 {
+			regulator-name = "vreg_l5b_3p1";
+			regulator-min-microvolt = <3100000>;
+			regulator-max-microvolt = <3148000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l6b_1p8: ldo6 {
+			regulator-name = "vreg_l6b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3008000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l7b_1p8: ldo7 {
+			regulator-name = "vreg_l7b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3008000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+
+		};
+
+		vreg_l8b_1p8: ldo8 {
+			regulator-name = "vreg_l8b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <3008000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l9b_2p9: ldo9 {
+			regulator-name = "vreg_l9b_2p9";
+			regulator-min-microvolt = <2960000>;
+			regulator-max-microvolt = <3008000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l10b_1p8: ldo10 {
+			regulator-name = "vreg_l10b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l11b_1p0: ldo11 {
+			regulator-name = "vreg_l11b_1p0";
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1100000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l12b_1p8: ldo12 {
+			regulator-name = "vreg_l12b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l13b_3p0: ldo13 {
+			regulator-name = "vreg_l13b_3p0";
+			regulator-min-microvolt = <3000000>;
+			regulator-max-microvolt = <3000000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l14b_3p2: ldo14 {
+			regulator-name = "vreg_l14b_3p2";
+			regulator-min-microvolt = <3200000>;
+			regulator-max-microvolt = <3200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l15b_1p8: ldo15 {
+			regulator-name = "vreg_l15b_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l16b_2p8: ldo16 {
+			regulator-name = "vreg_l16b_2p8";
+			regulator-min-microvolt = <2800000>;
+			regulator-max-microvolt = <2800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l17b_2p5: ldo17 {
+			regulator-name = "vreg_l17b_2p5";
+			regulator-min-microvolt = <2504000>;
+			regulator-max-microvolt = <2504000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+	};
+
+	regulators-1 {
+		compatible = "qcom,pm8550ve-rpmh-regulators";
+
+		vdd-l1-supply = <&vreg_s7i_1p2>;
+		vdd-l2-supply = <&vreg_s1d_0p97>;
+		vdd-l3-supply = <&vreg_s1d_0p97>;
+		vdd-s1-supply = <&vph_pwr>;
+		vdd-s3-supply = <&vph_pwr>;
+		vdd-s4-supply = <&vph_pwr>;
+
+		qcom,pmic-id = "d";
+
+		vreg_s1d_0p97: smps1 {
+			regulator-name = "vreg_s1d_0p97";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <1100000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s3d_1p2: smps3 {
+			regulator-name = "vreg_s3d_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1300000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s4d_0p85: smps4 {
+			regulator-name = "vreg_s4d_0p85";
+			regulator-min-microvolt = <852000>;
+			regulator-max-microvolt = <1036000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1d_1p2: ldo1 {
+			regulator-name = "vreg_l1d_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2d_0p88: ldo2 {
+			regulator-name = "vreg_l2d_0p88";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <912000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l3d_0p88: ldo3 {
+			regulator-name = "vreg_l3d_0p88";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <920000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+	};
+
+	regulators-2 {
+		compatible = "qcom,pm8550ve-rpmh-regulators";
+
+		vdd-l1-supply = <&vreg_s1d_0p97>;
+		vdd-l2-supply = <&vreg_s7i_1p2>;
+		vdd-l3-supply = <&vreg_s3g_1p8>;
+		vdd-s5-supply = <&vph_pwr>;
+
+		qcom,pmic-id = "f";
+
+		vreg_s5f_0p85: smps5 {
+			regulator-name = "vreg_s5f_0p85";
+			regulator-min-microvolt = <852000>;
+			regulator-max-microvolt = <1000000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1f_0p88: ldo1 {
+			regulator-name = "vreg_l1f_0p88";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <920000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2f_1p2: ldo2 {
+			regulator-name = "vreg_l2f_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l3f_1p8: ldo3 {
+			regulator-name = "vreg_l3f_1p8";
+			regulator-min-microvolt = <1800000>;
+			regulator-max-microvolt = <1800000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+	};
+
+	regulators-3 {
+		compatible = "qcom,pm8550ve-rpmh-regulators";
+
+		vdd-l1-supply = <&vreg_s1d_0p97>;
+		vdd-l2-supply = <&vreg_s3g_1p8>;
+		vdd-l3-supply = <&vreg_s7i_1p2>;
+		vdd-s1-supply = <&vph_pwr>;
+		vdd-s3-supply = <&vph_pwr>;
+
+		qcom,pmic-id = "g";
+
+		vreg_s1g_0p5: smps1 {
+			regulator-name = "vreg_s1g_0p5";
+			regulator-min-microvolt = <300000>;
+			regulator-max-microvolt = <700000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s3g_1p8: smps3 {
+			regulator-name = "vreg_s3g_1p8";
+			regulator-min-microvolt = <1856000>;
+			regulator-max-microvolt = <2000000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_LPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s4g_0p75: smps4 {
+			regulator-name = "vreg_s4g_0p75";
+			regulator-min-microvolt = <300000>;
+			regulator-max-microvolt = <900000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1g_0p91: ldo1 {
+			regulator-name = "vreg_l1g_0p91";
+			regulator-min-microvolt = <912000>;
+			regulator-max-microvolt = <936000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2g_1p8: ldo2 {
+			regulator-name = "vreg_l2g_1p8";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1860000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l3g_1p2: ldo3 {
+			regulator-name = "vreg_l3g_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1256000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+	};
+
+	regulators-4 {
+		compatible = "qcom,pm8550ve-rpmh-regulators";
+
+		vdd-l1-supply = <&vreg_s7i_1p2>;
+		vdd-l2-supply = <&vreg_s7i_1p2>;
+		vdd-l3-supply = <&vreg_s1d_0p97>;
+		vdd-s7-supply = <&vph_pwr>;
+		vdd-s8-supply = <&vph_pwr>;
+
+		qcom,pmic-id = "i";
+
+		vreg_s7i_1p2: smps7 {
+			regulator-name = "vreg_s7i_1p2";
+			regulator-min-microvolt = <1224000>;
+			regulator-max-microvolt = <1340000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s8i_0p9: smps8 {
+			regulator-name = "vreg_s8i_0p9";
+			regulator-min-microvolt = <900000>;
+			regulator-max-microvolt = <972000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1i_1p2: ldo1 {
+			regulator-name = "vreg_l1i_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2i_1p2: ldo2 {
+			regulator-name = "vreg_l2i_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l3i_0p88: ldo3 {
+			regulator-name = "vreg_l3i_0p88";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <912000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+	};
+
+	regulators-5 {
+		compatible = "qcom,pm8550vs-rpmh-regulators";
+
+		vdd-l1-supply = <&vreg_s1d_0p97>;
+		vdd-l2-supply = <&vreg_s7i_1p2>;
+		vdd-s2-supply = <&vph_pwr>;
+		vdd-s3-supply = <&vph_pwr>;
+		vdd-s4-supply = <&vph_pwr>;
+
+		qcom,pmic-id = "j";
+
+		vreg_s2j_1p1: smps2 {
+			regulator-name = "vreg_s2j_1p1";
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1100000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_s3j_1p1: smps3 {
+			regulator-name = "vreg_s3j_1p1";
+			regulator-min-microvolt = <1000000>;
+			regulator-max-microvolt = <1100000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l1j_0p91: ldo1 {
+			regulator-name = "vreg_l1j_0p91";
+			regulator-min-microvolt = <880000>;
+			regulator-max-microvolt = <920000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+
+		vreg_l2j_1p2: ldo2 {
+			regulator-name = "vreg_l2j_1p2";
+			regulator-min-microvolt = <1200000>;
+			regulator-max-microvolt = <1200000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+			regulator-allow-set-load;
+			regulator-allowed-modes = <RPMH_REGULATOR_MODE_LPM
+						   RPMH_REGULATOR_MODE_HPM>;
+		};
+	};
+};
+
+/* ===================================================================== *
+ *  Display — DSI panel "ar14 1080p 144hz" (same family as sm8650-konkr-pf)
+ *  Values below were derived from the stock device tree unless noted.
+ * ===================================================================== */
+
+&mdss {
+	status = "okay";
+};
+
+&mdss_dp0 {				/* USB-C DisplayPort out */
+	status = "okay";
+};
+
+&mdss_dsi0 {
+	vdda-supply = <&vreg_l3g_1p2>;		/* DSI ctrl analog */
+	status = "okay";
+
+	panel@0 {
+		compatible = "ayaneo,ar14-144hz";	/* panel-ar14-144hz, patch 0055: 1080x1920, 144/120/90/60 Hz, DSC 8bpp v1.1 */
+		reg = <0>;
+
+		/* Panel pinctrl — present in BOTH working refs (Odin 3 SM8750 +
+		 * SM8650 Konkr), absent here. Copied verbatim from the working Odin 3
+		 * (same SoC, same reset pin TLMM98, same mdp_vsync pad gpio86). */
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&disp0_reset_n_active>, <&mdp_vsync_active>;
+		pinctrl-1 = <&disp0_reset_n_suspend>, <&mdp_vsync_suspend>;
+
+		vddio-supply = <&vreg_l12b_1p8>;	/* panel vddio  -> L12B 1.8V */
+		vdd-supply   = <&vreg_l11b_1p0>;	/* panel vdd    -> L11B 1.0-1.1V */
+		vci-supply   = <&vreg_l13b_3p0>;	/* panel vci    -> L13B 3.0V */
+		avdd-supply  = <&sgm3804>;		/* panel avdd/tvdd -> SGM3804 ~5.2V boost */
+
+		reset-gpios = <&tlmm 98 GPIO_ACTIVE_LOW>;	/* reset = TLMM98, seq high10ms/low10ms/high55ms */
+		backlight = <&aw99706_bl>;		/* external backlight (see i2c below) */
+
+		rotation = <90>;			/* portrait panel mounted at 90 degrees in a landscape device */
+
+		port {
+			panel0_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	remote-endpoint = <&panel0_in>;
+	data-lanes = <0 1 2 3>;			/* 4-lane DSI */
+};
+
+&mdss_dsi0_phy {
+	vdds-supply = <&vreg_l3i_0p88>;		/* DSI PHY */
+	status = "okay";
+};
+
+/* ===================================================================== *
+ *  I2C: panel AVDD bias (SGM3804) + backlight (AW99706)
+ *  both on stock qupv3_2 geni i2c@880000 = mainline &i2c8
+ *  (geniqup@8c0000 / i2c@880000 is labelled i2c8 in sm8750.dtsi).
+ * ===================================================================== */
+/* qupv3_2 (the QUP wrapper i2c8 lives under) is status="disabled" in
+ * sm8750.dtsi, so enabling the i2c8 child alone is not enough: without the
+ * parent wrapper the bus never probes → SGM3804 (panel avdd) + AW99706
+ * (backlight) never appear → panel-ar14 defers on 'avdd' → no display
+ * (`ae94000.dsi.0 panel-ar14-144hz: Failed to get supply 'avdd'`). The
+ * Odin 3 enables &qupv3_2 too. */
+&qupv3_2 {
+	status = "okay";
+
+	/* AYANEO MCU/EC UART on geni SE5 @894000 ("ttyHS1" on stock Android).
+	 * Mainline only defines SE5 as i2c13/spi13; the KONKR wires it as a 2-wire
+	 * UART (115200 8N1) to the MCU: RX = KONKR/Home/menu/grip "system" buttons
+	 * (byte-x8 + 64 02 frames), TX = analog-stick RGB (F7 01 R G B .. ED).
+	 * reg/IRQ/clock identical to i2c13; pins/func from the stock fdt
+	 * (qup2_se5: gpio22 TX, gpio23 RX). */
+	uart_mcu: serial@894000 {
+		compatible = "qcom,geni-uart";
+		reg = <0x0 0x00894000 0x0 0x4000>;
+		interrupts = <GIC_SPI 587 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&gcc GCC_QUPV3_WRAP2_S5_CLK>;
+		clock-names = "se";
+		interconnects = <&clk_virt MASTER_QUP_CORE_2 QCOM_ICC_TAG_ALWAYS
+				 &clk_virt SLAVE_QUP_CORE_2 QCOM_ICC_TAG_ALWAYS>,
+				<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ALWAYS
+				 &config_noc SLAVE_QUP_2 QCOM_ICC_TAG_ALWAYS>;
+		interconnect-names = "qup-core", "qup-config";
+		pinctrl-0 = <&qup_uart_mcu_default>;
+		pinctrl-names = "default";
+		status = "okay";
+
+		/* serdev client: konkr_sysbtn binds here, consumes the tty
+		 * (no /dev/ttyHS* for this SE once it does). */
+		mcu {
+			compatible = "konkr,pf-elite-mcu";
+		};
+	};
+};
+
+/* GENI GPI DMA controllers — geni_i2c on some SEs has the FIFO interface
+ * disabled by the SE firmware and then REQUIRES a GPI channel (defers forever
+ * with "Failed to get tx DMA ch" otherwise; &i2c15, the second speaker-amp
+ * bus, lists &gpi_dma2 dmas). Same enable as the working Odin3 (0046). */
+&gpi_dma1 {
+	status = "okay";
+};
+
+&gpi_dma2 {
+	status = "okay";
+};
+
+/* Gamepad — AYANEO SPI MCU on qupv3_1 SE1 (spi@a84000 = mainline &spi1).
+ * Stock driver is tc_mcu_joystick.ko (compatible "mcu,joystick"); replaced by a
+ * clean-room mainline reimplementation (drivers/input/joystick/mcu_joystick.c,
+ * patch 0058). The MCU exposes the pad as 16-bit regs 0x8080-0x8088 (header
+ * "AYANEO" + key/x/y/z/rz/trigger). Pins transcribed from the stock Android fdt:
+ * power=TLMM125, en=TLMM92, irq=TLMM47; the SE's SPI personality, so &i2c1 stays off. */
+&qupv3_1 {
+	status = "okay";
+};
+
+&spi1 {
+	status = "okay";
+
+	joystick@0 {
+		compatible = "mcu,joystick";
+		reg = <0>;
+		spi-max-frequency = <5000000>;
+		/* MCU logic rail = pm_v8i_l2 = pmih0108 ldoi2 (1.2V); already defined
+		 * as vreg_l2i_1p2 in regulators-4. Without this the rail is never
+		 * enabled and the MCU never drives the SPI bus (all-zero reads). */
+		vdd-supply = <&vreg_l2i_1p2>;
+		/* IRQ derived from the gpiod (driver gpiod_to_irq): the line must be
+		 * a plain GPIO so the driver can drive it input during the MCU boot,
+		 * per the stock power-on dance. */
+		irq-gpios = <&tlmm 47 GPIO_ACTIVE_HIGH>;
+		power-gpios = <&tlmm 125 GPIO_ACTIVE_HIGH>;
+		en-gpios = <&tlmm 92 GPIO_ACTIVE_HIGH>;
+		/* Stock timing: gpio47 pull-DOWN during MCU power-on ("default" =
+		 * the stock suspend config), pull-UP ("active") selected by the
+		 * driver after en+50ms, before the 600 ms MCU boot wait. */
+		pinctrl-names = "default", "active";
+		pinctrl-0 = <&mcu_joystick_suspend>;
+		pinctrl-1 = <&mcu_joystick_active>;
+	};
+};
+
+/* Touchscreen = Chipone TDDI (touch half of the display driver IC; powered
+ * by the panel rails, no separate supplies — matches the stock node having
+ * none). On stock it sits on i2c bus 4 addr 0x48, IRQ TLMM 162 (edge),
+ * driver "chipone-tddi" = the Chipone CTS family (chipone_tddi_mmi on Moto,
+ * GPL source exists); no ICNL firmware blob on /vendor, so the firmware is
+ * panel-resident and the driver (patch 0061) stays lean.
+ * Stock node: /soc/qcom,qupv3_1_geni_se@ac0000/i2c@a90000/chipone_tddi@48
+ * (= mainline &i2c4), rst=TLMM161, x/y=1080/1920, pinctrl default=int
+ * input-pull-up, sleep=output-low. Node is inert until the driver lands
+ * (port plan: vendor_dlkm .ko modinfo for chip model + Moto GPL CTS source).
+ * VERIFY at port time: reset polarity, IRQ edge. */
+&i2c4 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	touchscreen@48 {
+		compatible = "chipone-tddi";
+		reg = <0x48>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <162 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&tlmm 161 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <1080>;
+		touchscreen-size-y = <1920>;
+		/* The panel is a portrait phone display mounted at 90° in a
+		 * landscape device; the compositor already rotates (swaps x/y) for
+		 * both display and touch. On device: native-X maps to device-Y and
+		 * was inverted; native-Y maps to device-X and was correct. So invert
+		 * native-X only (no swap — the compositor owns the rotation). */
+		touchscreen-inverted-x;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&ts_int_default>;
+		pinctrl-1 = <&ts_int_sleep>;
+	};
+};
+
+&i2c8 {					/* i2c@880000 — the panel/backlight bus */
+	clock-frequency = <400000>;
+	status = "okay";
+
+	/* Panel AVDD boost/bias — same chip as sm8650-konkr-pf */
+	sgm3804: regulator@3e {
+		compatible = "sgmicro,sgm3804";
+		reg = <0x3e>;
+		regulator-name = "panel-avdd";
+		/* mainline sgm3804-regulator.c is FIXED 5.0V (n_voltages=1,
+		 * min_uV=5000000); demanding 5.2V exact made regulator registration
+		 * fail (-EINVAL). 5.0V matches the driver + the working SM8650 Konkr. */
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		/* SGM3804 dual-rail enables, transcribed from the stock fdt:
+		 * bias-enp-gpio = gpio56, bias-enn-gpio = gpio57 (both active-high).
+		 * The driver's reset_gpio[0]/[1] map to these. TLMM163 is a different
+		 * pin (the panel-power master, see &tlmm), not an SGM3804 enable. */
+		reset-gpios = <&tlmm 56 GPIO_ACTIVE_HIGH>,	/* ENP (positive rail) */
+			      <&tlmm 57 GPIO_ACTIVE_HIGH>;	/* ENN (negative rail) */
+		status = "okay";
+	};
+
+	/*
+	 * Backlight — DIFFERS from sm8650-konkr (which uses silergy,sy7758).
+	 * Driver IS in mainline 7.0.10: drivers/video/backlight/aw99706.c
+	 * (CONFIG_BACKLIGHT_AW99706 — enable it in linux.aarch64.conf).
+	 * All tuning values below are — mapped from the stock node's
+	 * downstream aw,* props to the mainline awinic,* binding.
+	 */
+	aw99706_bl: backlight@76 {
+		compatible = "awinic,aw99706";			/* reg 0x76 */
+		reg = <0x76>;
+		enable-gpios = <&tlmm 164 GPIO_ACTIVE_HIGH>;	/* HWEN = stock aw,hwen-gpio tlmm164 */
+		max-brightness = <4095>;			/* 12-bit (stock aw,max-brightness was 1024 — tunable) */
+		default-brightness = <2047>;
+		awinic,dim-mode = <1>;				/* DC mode (stock aw,dim-mode=1) */
+		awinic,sw-freq-hz = <750000>;			/* stock aw,sw-freq=750(kHz) */
+		awinic,sw-ilmt-microamp = <3000000>;		/* stock aw,sw-ilmt=3000000 */
+		awinic,iled-max-microamp = <7000>;		/* = stock CFG2 ILED_MAX=0x04 (read live off the
+								 * Android device's working AW99706). A value of 20000
+								 * (=CFG2 0x1e) over-drove the string → FLAG fault (0x08) →
+								 * protection shutdown → dark. 7000µA → (7000-5000)/500=4. */
+		awinic,uvlo-thres-microvolt = <2200000>;	/* stock aw,uvlosel=2200(mV) */
+		awinic,ramp-ctl = <2>;				/* stock aw,ramp-ctr=2 (medium filter) */
+		status = "okay";
+	};
+
+	/* Speaker amp (see the &i2c15 comment for the details).
+	 * Probe-verified on hardware: 0x35 = AW88261 chip id 0x2113. The
+	 * stock fdt also declares 0x34 here (sound-channel 0) but the chip is
+	 * NOT POPULATED (chipid read -6 / NAK) — quad-design leftover, node
+	 * dropped. */
+	spk_amp_2: speaker-amp@35 {
+		compatible = "awinic,aw88261";
+		reg = <0x35>;
+		firmware-name = "qcom/sm8750/konkr/pfe/aw88261_acf.bin";
+		#sound-dai-cells = <1>;
+		awinic,audio-channel = <2>;	/* stock sound-channel = 2 */
+		awinic,sync-flag;
+		sound-name-prefix = "SPK2";
+	};
+};
+
+/* ===================================================================== *
+ *  GPU
+ * ===================================================================== */
+/* GPU + GMU (Adreno 830 / gen8). Both are needed for a UI: a display-only
+ * path leaves fb0 unmapped ("framebuffer is not in virtual address space").
+ * Firmware: qcom/gen80000_{gmu.bin,sqe.fw,aqe.fw} + qcom/sm8750 zap. */
+&gpu {
+	status = "okay";
+};
+
+&gmu {
+	status = "okay";
+};
+
+&gpu_zap_shader {
+	/* The SM8750 zap is signed with Qualcomm's generic SecTools test key,
+	 * not per-OEM: this board's blob and the shared qcom/sm8750 one have
+	 * byte-identical ELF and hash-table segments and the same signer, so
+	 * they differ only in signature bytes. Use the shared blob. */
+	firmware-name = "qcom/sm8750/gen80000_zap.mbn";
+};
+
+/* ===================================================================== *
+ *  Storage (UFS) — required to boot
+ * ===================================================================== */
+&ufs_mem_hc {
+	status = "okay";
+
+	/* Supplies transcribed from the konkr stock fdt (matched by rail
+	 * voltage to the mainline PMIC labels): vcc = pm_humu_l17 (2.504V),
+	 * vccq = pm_v8d_l1 (1.2V). vdd-hba is the GCC_UFS_PHY_GDSC power-domain
+	 * already wired in sm8750.dtsi. Without these the ufs-qcom probe fails
+	 * its mandatory regulator_get() and the device never enumerates. */
+	vcc-supply = <&vreg_l17b_2p5>;
+	vcc-max-microamp = <1300000>;
+	vccq-supply = <&vreg_l1d_1p2>;
+	vccq-max-microamp = <1200000>;
+
+	/* UFS device reset (active-low) on the dedicated tlmm "ufs_reset" pad
+	 * (offset 215, the pin after the GPIO range). Without it the eUFS is
+	 * held in POR reset -> DME_LINKSTARTUP times out (link startup -110). */
+	reset-gpios = <&tlmm 215 GPIO_ACTIVE_LOW>;
+};
+
+&ufs_mem_phy {
+	status = "okay";
+
+	/* vdda-phy = pm_v6j_l1 (0.88V), vdda-pll = pm_v8g_l3 (1.2V). */
+	vdda-phy-supply = <&vreg_l1j_0p91>;
+	vdda-pll-supply = <&vreg_l3g_1p2>;
+};
+
+/* ===================================================================== *
+ *  SD card (sdhc_2 / mmc@8804000) — REQUIRED to boot: ROCKNIX boots from
+ *  the microSD (the bootloader's update.sh keys on /dev/mmcblk*), so the
+ *  kernel needs this controller up to find+mount its SYSTEM rootfs.
+ *  Values transcribed from the konkr's stock fdt (sdhci@8804000: cd-gpio
+ *  TLMM55 active-low, vdd=L9 ~2.95V, vdd-io=L8 1.8-2.96V, bus-width 4,
+ *  no-sdio/no-mmc) — and they match the Odin 3 (0046) rail-for-rail.
+ * ===================================================================== */
+&tlmm {
+	/* Without this the kernel resets the SoC inside the sm8750-tlmm
+	 * probe (f100000.pinctrl), confirmed by a named probe-start in the EDL dump.
+	 * Cause: mainline sm8750.dtsi declares NO gpio-reserved-ranges, so the pinctrl
+	 * driver touches GPIOs that THIS device's secure firmware (TZ/XPU) has locked
+	 * → access violation → secure reset (no kernel oops). The konkr's own stock
+	 * fdt reserves them: qcom,gpios-reserved = <0x28 0x29 0x2a 0x2b 0x4a> =
+	 * GPIOs 40,41,42,43,74. Transcribe to the mainline property so the OS skips
+	 * them. */
+	gpio-reserved-ranges = <40 4>, <74 1>;
+
+	/* MCU UART (geni SE5, 2-wire): TX gpio22, RX gpio23 */
+	qup_uart_mcu_default: qup-uart-mcu-default-state {
+		pins = "gpio22", "gpio23";
+		function = "qup2_se5";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	/* Panel-power master enable. The stock panel node declares
+	 * qcom,platform-en-gpio = <0x26 0xa3 0x0> = TLMM163, the panel-power MASTER
+	 * enable; the SM8650 Konkr (same ar14 panel, working) holds its equivalent
+	 * pin output-high via the panel_pwr_active pinctrl. Nothing in our DT drives
+	 * 163, so the panel-power rail (which feeds the AW99706 backlight VIN) only
+	 * survives on the bootloader default and collapses early in boot → the
+	 * AW99706 answers its chip-id once at probe (~0.7s) then goes permanently
+	 * unreachable (NAK), and the backlight never lights. Hog 163 output-high so
+	 * it is asserted at gpiochip registration — before any driver probe — and
+	 * stays up for the life of the system (panel is always on for a handheld). */
+	panel_en_hog: panel-en-hog {
+		gpio-hog;
+		gpios = <163 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "panel-power-en";
+	};
+
+	sdc2_card_det_n: sd-card-det-n-state {
+		pins = "gpio55";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	/* Display panel pinctrl — verbatim from the working Odin 3 (same SoC).
+	 * reset = gpio98 (= our panel reset-gpios); TE/vsync = gpio86 (mdp_vsync). */
+	disp0_reset_n_active: disp0-reset-n-active-state {
+		pins = "gpio98";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+	};
+	disp0_reset_n_suspend: disp0-reset-n-suspend-state {
+		pins = "gpio98";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+	mdp_vsync_active: mdp-vsync-active-state {
+		pins = "gpio86";
+		function = "mdp_vsync";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+	mdp_vsync_suspend: mdp-vsync-suspend-state {
+		pins = "gpio86";
+		function = "mdp_vsync";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	/* Gamepad: stock mcu_joystick pinctrl, verbatim from the stock
+	 * fdt: "active" = gpio47 (MCU irq) bias-pull-up drive 8, "suspend" =
+	 * pull-down drive 2. Stock does NOT select a state at probe (lookup only) —
+	 * the power-on dance selects ACTIVE between en+50 ms and the 600 ms MCU boot
+	 * wait. So the "default" state (auto-applied at probe, i.e. during power-on)
+	 * must be the SUSPEND config, and the driver selects "active" mid-dance. */
+	mcu_joystick_active: mcu-joystick-active-state {
+		pins = "gpio47";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+	mcu_joystick_suspend: mcu-joystick-suspend-state {
+		pins = "gpio47";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	/* Touch: Chipone TDDI int line; stock states verbatim:
+	 * default = ts_int_input_pull_up, sleep = ts_int_output_low. */
+	ts_int_default: ts-int-default-state {
+		pins = "gpio162";
+		function = "gpio";
+		drive-strength = <2>;
+		input-enable;
+		bias-pull-up;
+	};
+	ts_int_sleep: ts-int-sleep-state {
+		pins = "gpio162";
+		function = "gpio";
+		drive-strength = <2>;
+		output-low;
+	};
+
+	/* Speaker I2S pads: SECONDARY MI2S
+	 * on plain TLMM pads, identical to the AYN Odin3 — pinctrl-sm8750.c:
+	 * i2s1_sck=gpio121, i2s1_data0=gpio122, i2s1_ws=gpio123,
+	 * i2s1_data1=gpio124 (NB ws/data1 ordering differs from i2s0).
+	 * Stock Android's idle-vs-playing pad dump: these four flip
+	 * func0 → func1(i2s1) drive-8 no-pull exactly while the aw882xx amps
+	 * play; the PAL speaker backend is "MI2S-LPAIF-RX-SECONDARY".
+	 * Config below = the stock playing state verbatim. */
+	mi2s1_active: mi2s1-active-state {
+		sck-pins {
+			pins = "gpio121";
+			function = "i2s1_sck";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		data0-pins {
+			pins = "gpio122";
+			function = "i2s1_data0";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		ws-pins {
+			pins = "gpio123";
+			function = "i2s1_ws";
+			drive-strength = <8>;
+			bias-disable;
+		};
+
+		data1-pins {
+			pins = "gpio124";
+			function = "i2s1_data1";
+			drive-strength = <8>;
+			bias-disable;
+		};
+	};
+
+	/* [keys] The stock gpio_keys holds ALL its TLMM pins bias-pull-up (the keys
+	 * short to GND, ACTIVE_LOW): tlmm_key_default = gpio2,126-129,
+	 * turbo_key_default = gpio106-108 (verbatim, minus the deprecated
+	 * input-enable — gpio-keys sets the direction itself). Without the pull-ups
+	 * the lines float and no key ever registers an edge. */
+	/* gpio126-129 are deliberately NOT in the key pull-ups: they are dead as
+	 * keys (0 IRQ edges on stock, and stock parks them at func0 pull-up) —
+	 * see the gpio-keys comment. */
+	tlmm_key_default: tlmm-key-default-state {
+		pins = "gpio2";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+	turbo_key_default: turbo-key-default-state {
+		pins = "gpio106", "gpio107", "gpio108";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	/* Fan: tach input (gpio67) + the two fan-power enable pads. */
+	fan_int: fan-int-state {
+		pins = "gpio67";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	fan_pwr_pins: fan-pwr-state {
+		pins = "gpio111";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	fan_vdd_pins: fan-vdd-state {
+		pins = "gpio110";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+};
+
+/* Fan PWM pad + volume-up pad on the pm8550 PMIC GPIOs. */
+&pm8550_gpios {
+	volume_up_n: volume-up-n-state {
+		pins = "gpio6";
+		function = "normal";
+		bias-pull-up;
+		input-enable;
+		power-source = <1>;
+	};
+
+	/* PWM-fan pad, transcribed verbatim from the stock Android fdt
+	 * (pm8550@1/pinctrl@8800/pwm_fan_ctrl): gpio9 func1, power-source = 1,
+	 * drive-strength LOW (=3), output-low active / output-high sleep — BOTH
+	 * states are func1 in stock — "normal" for the sleep state, or a different
+	 * power-source, is wrong. Stock ALSO sets qcom,invert = <1>, but mainline
+	 * qcom-spmi-gpio has no such property and leds-qcom-lpg rejects inverted
+	 * PWM polarity (lpg_pwm_apply: -EINVAL), so the inversion cannot be
+	 * expressed declaratively — polarity is verified empirically by the fan
+	 * sweep test, and patched into a driver only if the sweep proves it wrong. */
+	pwm_fan_ctrl_active: pwm-fan-ctrl-active-state {
+		pins = "gpio9";
+		function = "func1";
+		output-low;
+		bias-disable;
+		power-source = <1>;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
+	};
+
+	pwm_fan_ctrl_sleep: pwm-fan-ctrl-sleep-state {
+		pins = "gpio9";
+		function = "func1";
+		output-high;
+		bias-disable;
+		power-source = <1>;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_LOW>;
+	};
+};
+
+/* Enable the PMIC LPG PWM so the fan's pwms=<&pm8550_pwm 3 ...> has a
+ * provider. Disabled in mainline pm8550.dtsi; leds-qcom-lpg (CONFIG_LEDS_QCOM_LPG=y)
+ * binds on the qcom,pm8350c-pwm compat and registers the pwmchip — 4 channels,
+ * ch3 = fan @ 50000ns, both confirmed against the stock Android fdt
+ * (pwms = <0x661 0x3 0xc350>). Without this the pwm-fan driver defers forever
+ * ("Could not get PWM"). Matches the SM8650 Konkr G3. */
+&pm8550_pwm {
+	status = "okay";
+};
+
+/* Power/volume keys. PMIC PON: power button + resin = Volume Down
+ * (Volume Up is the gpio-key above). Mirrors the Odin 3 / SM8650 Konkr. */
+&pon_pwrkey {
+	status = "okay";
+};
+
+&pon_resin {
+	linux,code = <KEY_VOLUMEDOWN>;
+	status = "okay";
+};
+
+&sdhc_2 {
+	cd-gpios = <&tlmm 55 GPIO_ACTIVE_LOW>;
+
+	vmmc-supply = <&vreg_l9b_2p9>;
+	vqmmc-supply = <&vreg_l8b_1p8>;
+
+	no-sdio;
+	no-mmc;
+
+	pinctrl-0 = <&sdc2_default &sdc2_card_det_n>;
+	pinctrl-1 = <&sdc2_sleep &sdc2_card_det_n>;
+	pinctrl-names = "default", "sleep";
+
+	status = "okay";
+};
+
+/* ===================================================================== *
+ *  USB
+ * ===================================================================== */
+&usb {
+	status = "okay";
+};
+
+&usb_dwc3_hs {
+	remote-endpoint = <&pmic_glink_hs_in>;
+};
+
+&usb_dp_qmpphy_out {
+	remote-endpoint = <&pmic_glink_ss_in>;
+};
+
+/* eUSB2 repeater (pmih0108 PMIC, pmic@7 phy@fd00) — the M31 eUSB2 PHY
+ * needs it (`failed to get repeater` → dwc3 deferred forever otherwise). Supplies
+ * + link transcribed from the Odin3 SM8750 twin (cq8725s 0046). */
+&pmih0108_eusb2_repeater {
+	vdd18-supply = <&vreg_l15b_1p8>;
+	vdd3-supply = <&vreg_l5b_3p1>;
+	status = "okay";
+};
+
+&usb_hsphy {
+	/* m31-eusb2-phy driver wants "vdd"/"vdda12" (NOT vdda-pll); + the
+	 * repeater phandle. Verbatim from Odin3 0046. */
+	vdd-supply = <&vreg_l2d_0p88>;
+	vdda12-supply = <&vreg_l3g_1p2>;
+	phys = <&pmih0108_eusb2_repeater>;
+	status = "okay";
+};
+
+/* WCD939x USBSS — Type-C analog-audio/orientation switch that routes
+ * the 3.5mm/USB-C headset (HPHL/HPHR/MIC/GND) to the WCD codec. The headphone
+ * path runs through this; it attaches to the Type-C connector's SBU port
+ * (see the eUSB2 repeater above). Node verbatim from the Odin3 twin
+ * (cq8725s 0046); reset on tlmm152 (same board family). */
+&i2c3 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	wcd_usbss: typec-mux@e {
+		compatible = "qcom,wcd9395-usbss", "qcom,wcd9390-usbss";
+		reg = <0xe>;
+
+		vdd-supply = <&vreg_l15b_1p8>;
+		reset-gpios = <&tlmm 152 GPIO_ACTIVE_HIGH>;
+
+		mode-switch;
+		orientation-switch;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				wcd_usbss_sbu_mux: endpoint {
+					remote-endpoint = <&pmic_glink_sbu>;
+				};
+			};
+
+			port@1 {
+				reg = <1>;
+				wcd_usbss_headset_out: endpoint {
+				};
+			};
+		};
+	};
+};
+
+&usb_dp_qmpphy {
+	vdda-phy-supply = <&vreg_l3g_1p2>;
+	vdda-pll-supply = <&vreg_l2d_0p88>;
+
+	status = "okay";
+};
+
+/* ===================================================================== *
+ * Audio (LPASS / WCD939x + AW88261) + WiFi/BT (WCN7860), transcribed from
+ * the Odin 3 cq8725s-ayn-common (same SM8750 AYN platform). KONKR
+ * divergences: the stock spk-amp reset GPIOs (128/126) collide with this
+ * board's gpio-keys, so they are omitted; the cq8725s-local pinctrl states
+ * (i2s1_default / wlan_en) are omitted too (the GPIOs still drive). The
+ * firmware (adsp/cdsp mbn, ath12k WCN7860) ships with the image.
+ * ===================================================================== */
+/ {
+	wcd939x: audio-codec {
+		compatible = "qcom,wcd9395-codec", "qcom,wcd9390-codec";
+		/*
+		 * The integrated 3.5mm jack's HP lines run through the WCD939x
+		 * USBSS analog switch.  Point MBHC at it so it can route the
+		 * switch to audio on mechanical insert (no Type-C event fires
+		 * for the dedicated jack).  See patch 0063.
+		 */
+		qcom,usbss = <&wcd_usbss>;
+		qcom,micbias1-microvolt = <1800000>;
+		qcom,micbias2-microvolt = <1800000>;
+		qcom,micbias3-microvolt = <1800000>;
+		qcom,micbias4-microvolt = <1800000>;
+		qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000 500000 500000 500000>;
+		qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
+		qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
+		/*
+		 * Jack switch type = normally-closed (hphl_swh/gnd_swh=0),
+		 * matching the stock fdt (qcom,msm-mbhc-{gnd,hphl}-swh = <0>).
+		 * mainline wcd-mbhc-v2 defaults to normally-OPEN (swh=true) when
+		 * these are absent — which inverts mechanical-insert detection on
+		 * this board, leaving the jack stuck "LINEOUT inserted" even
+		 * unplugged (Elect-Insert IRQ never fires, headphones never route).
+		 */
+		qcom,hphl-jack-type-normally-closed;
+		qcom,ground-jack-type-normally-closed;
+		qcom,rx-device = <&wcd_rx>;
+		qcom,tx-device = <&wcd_tx>;
+		reset-gpios = <&tlmm 101 GPIO_ACTIVE_LOW>;
+		vdd-buck-supply = <&vreg_l15b_1p8>;
+		vdd-rxtx-supply = <&vreg_l15b_1p8>;
+		vdd-io-supply = <&vreg_l15b_1p8>;
+		vdd-mic-bias-supply = <&vreg_bob1>;
+		vdd-px-supply = <&vreg_l2i_1p2>;
+		#sound-dai-cells = <1>;
+	};
+
+	sound {
+		compatible = "qcom,sm8750-sndcard", "qcom,sm8450-sndcard";
+		/* The speakers are on SECONDARY MI2S, as on the Odin3: the stock PAL
+		 * config (resourcemanager_sun_qrd_sku2.xml) routes
+		 * PAL_DEVICE_OUT_SPEAKER to back_end "MI2S-LPAIF-RX-SECONDARY", and
+		 * the playing-state pad dump shows TLMM 121-124 muxed i2s1 while the
+		 * amps play. A SEC "pll lock fail" here means no MI2S IBIT is enabled
+		 * (patch 0060).
+		 * NB the vendor aw-rx-port-id 0x1006 "QUAT" is the amp driver's own
+		 * protection-path bookkeeping, not the PAL route; QUAT intf 3 is
+		 * DSP-rejected; PRIMARY streams but to TLMM i2s0 pads 126-129 that
+		 * stock leaves unmuxed = connected to nothing. */
+		clocks = <&q6prmcc LPASS_CLK_ID_SEC_MI2S_IBIT LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		clock-names = "i2s_clk";
+		assigned-clocks = <&q6prmcc LPASS_CLK_ID_SEC_MI2S_IBIT LPASS_CLK_ATTRIBUTE_COUPLE_NO>;
+		assigned-clock-rates = <1536000>;
+		model = "SM8750-KONKR";
+		audio-routing = "IN1_HPHL", "HPHL_OUT",
+				"IN2_HPHR", "HPHR_OUT",
+				"AMIC2", "MIC BIAS2",
+				"TX SWR_INPUT1", "ADC2_OUTPUT";
+
+		/* Speaker I2S pads: SEC MI2S = TLMM i2s1 (gpio121-124, see
+		 * &tlmm mi2s1_active). Plain TLMM pads — no conflict with the WCD
+		 * SoundWire buses (those live on the LPASS LPI pads, untouched;
+		 * the pad dump confirms LPI 0-5 stay swr during speaker playback). */
+		pinctrl-0 = <&mi2s1_active>;
+		pinctrl-names = "default";
+
+		/*
+		 * Speaker amps: AW88261 on &i2c8 + &i2c15. Probe results on
+		 * hardware: 0x35 on BOTH buses = chip id 0x2113; the 0x34
+		 * positions NAK (-6) = unpopulated quad-design leftovers (stereo
+		 * device). Both live amps are in the codec list.
+		 * Link/stream name must match the SEC cpu dai stream name
+		 * ("Secondary MI2S Playback", q6dsp-lpass-ports.c) — the shipped
+		 * topology binds its BE widget by that name.
+		 */
+		spk-i2s-dai-link {
+			link-name = "Secondary MI2S Playback";
+			cpu { sound-dai = <&q6apmbedai SECONDARY_MI2S_RX>; };
+			codec { sound-dai = <&spk_amp_2 0>, <&spk_amp_3 0>; };
+			platform { sound-dai = <&q6apm>; };
+		};
+
+		/* The speaker bus is TLMM i2s1 (121-124), so there is no
+		 * MI2S-vs-SoundWire LPI pad conflict: the LPI pads 0-5 stay swr
+		 * during speaker playback. */
+		wcd-playback-dai-link {
+			link-name = "WCD Playback";
+			codec { sound-dai = <&wcd939x 0>, <&swr1 0>, <&lpass_rxmacro 0>; };
+			cpu { sound-dai = <&q6apmbedai RX_CODEC_DMA_RX_0>; };
+			platform { sound-dai = <&q6apm>; };
+		};
+
+		wcd-capture-dai-link {
+			link-name = "WCD Capture";
+			codec { sound-dai = <&wcd939x 1>, <&swr2 0>, <&lpass_txmacro 0>; };
+			cpu { sound-dai = <&q6apmbedai TX_CODEC_DMA_TX_3>; };
+			platform { sound-dai = <&q6apm>; };
+		};
+	};
+
+	wcn7860-pmu {
+		compatible = "qcom,wcn7860-pmu";
+		wlan-enable-gpios = <&tlmm 16 GPIO_ACTIVE_HIGH>;
+		bt-enable-gpios = <&pm8550ve_f_gpios 3 GPIO_ACTIVE_HIGH>;
+		vddio-supply = <&vreg_l3f_1p8>;
+		vddio1p2-supply = <&vreg_l2f_1p2>;
+		vddaon-supply = <&vreg_s4d_0p85>;
+		vdddig-supply = <&vreg_s5f_0p85>;
+		vddrfa1p2-supply = <&vreg_s7i_1p2>;
+		vddrfa1p8-supply = <&vreg_s3g_1p8>;
+		clocks = <&rpmhcc RPMH_RF_CLK1>;
+
+		regulators {
+			vreg_pmu_rfa_cmn: ldo0 { regulator-name = "vreg_pmu_rfa_cmn"; };
+			vreg_pmu_aon_0p59: ldo1 { regulator-name = "vreg_pmu_aon_0p59"; };
+			vreg_pmu_wlcx_0p8: ldo2 { regulator-name = "vreg_pmu_wlcx_0p8"; };
+			vreg_pmu_wlmx_0p85: ldo3 { regulator-name = "vreg_pmu_wlmx_0p85"; };
+			vreg_pmu_btcmx_0p85: ldo4 { regulator-name = "vreg_pmu_btcmx_0p85"; };
+			vreg_pmu_rfa_0p8: ldo5 { regulator-name = "vreg_pmu_rfa_0p8"; };
+			vreg_pmu_rfa_1p2: ldo6 { regulator-name = "vreg_pmu_rfa_1p2"; };
+			vreg_pmu_rfa_1p8: ldo7 { regulator-name = "vreg_pmu_rfa_1p8"; };
+			vreg_pmu_pcie_0p9: ldo8 { regulator-name = "vreg_pmu_pcie_0p9"; };
+			vreg_pmu_pcie_1p8: ldo9 { regulator-name = "vreg_pmu_pcie_1p8"; };
+		};
+	};
+};
+
+/* Speaker amps — Awinic AW88261 (chip-id 0x2113 read live off the bus), NOT
+ * the Odin3's aw88166, and NOT on &i2c5: stock i2c5 carries the USB
+ * redriver/chargers/FM radio only. The Odin3 0046 amp addresses match but its
+ * bus does not, and probing them on i2c5 yields GPI "Error in Transaction"
+ * NAKs. Stock fdt defines FOUR aw882xx_smartpa nodes:
+ *   i2c@880000 (= &i2c8):  0x34 sound-channel 0, 0x35 sound-channel 2
+ *   i2c@89c000 (= &i2c15): 0x34 sound-channel 1, 0x35 sound-channel 3
+ * Live i2cdetect on the booted device: i2c8 0x35 ACKs (chip-id 0x2113 ✓);
+ * i2c8 0x34 NAKs — population unknown (quad layout may be partially stuffed).
+ * All four stock positions are declared; the probe results decide the final
+ * dai-link codec list. No reset gpio in stock (matches driver's optional one).
+ * firmware-name points the driver at the device-namespaced cal blob instead
+ * of its "aw88261_acf.bin" default, so the file does not sit in the firmware
+ * root where any other AW88261 board would collide with it. Built into the
+ * kernel via CONFIG_EXTRA_FIRMWARE (package.mk), same mechanism as the konkr
+ * zap: no SYSTEM/rootfs dependency at probe time. */
+&i2c15 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	/* Stock also declares 0x34 here (sound-channel 1) — NOT POPULATED
+	 * (probe NAK), node dropped like i2c8's 0x34. */
+	spk_amp_3: speaker-amp@35 {
+		compatible = "awinic,aw88261";
+		reg = <0x35>;
+		firmware-name = "qcom/sm8750/konkr/pfe/aw88261_acf.bin";
+		#sound-dai-cells = <1>;
+		awinic,audio-channel = <3>;	/* stock sound-channel = 3 */
+		awinic,sync-flag;
+		sound-name-prefix = "SPK3";
+	};
+};
+
+&swr1 {
+	status = "okay";
+
+	/* Master port 9 carries the WCD939x HIFI_PCM headphone stream (384 kHz
+	 * PCM), so the controller needs its per-port PCM format enable set for
+	 * it. Inert unless the HPH PCM mode kcontrols are enabled. */
+	qcom,pcm-ports-mask = <0x200>;
+
+	wcd_rx: codec@0,4 {
+		compatible = "sdw20217010e00";
+		reg = <0 4>;
+		qcom,rx-port-mapping = <1 2 3 4 5 9>;
+	};
+};
+
+&swr2 {
+	status = "okay";
+
+	wcd_tx: codec@0,3 {
+		compatible = "sdw20217010e00";
+		reg = <0 3>;
+		qcom,tx-port-mapping = <2 2 3 4>;
+	};
+};
+
+&lpass_vamacro {
+	qcom,dmic-sample-rate = <4800000>;
+};
+
+&pcie0 {
+	pinctrl-0 = <&pcie0_default_state>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&pcie0_phy {
+	vdda-phy-supply = <&vreg_l1f_0p88>;
+	vdda-pll-supply = <&vreg_l3g_1p2>;
+	status = "okay";
+};
+
+&pcieport0 {
+	wake-gpios = <&tlmm 104 GPIO_ACTIVE_HIGH>;
+	reset-gpios = <&tlmm 102 GPIO_ACTIVE_LOW>;
+
+	wifi@0 {
+		compatible = "pci17cb,110e";
+		reg = <0x10000 0x0 0x0 0x0 0x0>;
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p8-supply = <&vreg_pmu_rfa_1p8>;
+		vddpcie0p9-supply = <&vreg_pmu_pcie_0p9>;
+		vddpcie1p8-supply = <&vreg_pmu_pcie_1p8>;
+	};
+};
+
+&uart14 {
+	/*
+	 * Add the CTS/RTS pins for HW flow control.  sm8750.dtsi wires uart14
+	 * with only the TX/RX group (unlike sm8550/sm8650 which include
+	 * qup_uart14_cts_rts), so the WCN7860 BT UART runs at 3.2 Mbaud with no
+	 * flow control -> RX overruns -> QCA IBS desync + frame-reassembly
+	 * errors -> scans fail.  Wiring CTS/RTS makes the link reliable.
+	 */
+	pinctrl-0 = <&qup_uart14_default>, <&qup_uart14_cts_rts>;
+	pinctrl-names = "default";
+	status = "okay";
+
+	bluetooth {
+		compatible = "qcom,wcn7860-bt";
+		vddrfacmn-supply = <&vreg_pmu_rfa_cmn>;
+		vddaon-supply = <&vreg_pmu_aon_0p59>;
+		vddwlcx-supply = <&vreg_pmu_wlcx_0p8>;
+		vddwlmx-supply = <&vreg_pmu_wlmx_0p85>;
+		vddrfa0p8-supply = <&vreg_pmu_rfa_0p8>;
+		vddrfa1p2-supply = <&vreg_pmu_rfa_1p2>;
+		vddrfa1p8-supply = <&vreg_pmu_rfa_1p8>;
+		max-speed = <3200000>;
+		/* stock BD_ADDR F0:74:E4:8D:15:6D (little-endian); else qca generates one */
+		local-bd-address = [ 6D 15 8D E4 74 F0 ];
+	};
+};
+
+/* Settable wall clock. The pmk8550 RTC counter is write-protected, so
+ * rtc-pm8xxx persists a settable time by storing a signed offset in a PMIC
+ * SDAM nvmem cell. With no "offset" cell wired up, pm8xxx_rtc_update_offset()
+ * returns -ENODEV, every RTC_SET_TIME fails and the clock stays at its
+ * power-on epoch across boots. Spare SDAM scratch at 0xbc, clear of
+ * reboot_reason@48; the SDAM is in the PMIC always-on domain, so the offset
+ * persists. Same wiring the pmk8280-based boards use.
+ *
+ * Done here rather than in the shared pmk8550.dtsi so the other SM8750 board
+ * that includes it is untouched -- that dtsi is mainline's, and this belongs
+ * upstream rather than in a device patch. */
+&pmk8550_sdam_2 {
+	rtc_offset: rtc-offset@bc {
+		reg = <0xbc 0x4>;
+	};
+};
+
+&pmk8550_rtc {
+	nvmem-cells = <&rtc_offset>;
+	nvmem-cell-names = "offset";
+};
+
+&remoteproc_adsp {
+	firmware-name = "qcom/sm8750/konkr/pfe/adsp.mbn",
+			"qcom/sm8750/konkr/pfe/adsp_dtb.mbn";
+	status = "okay";
+};
+
+&remoteproc_cdsp {
+	firmware-name = "qcom/sm8750/konkr/pfe/cdsp.mbn",
+			"qcom/sm8750/konkr/pfe/cdsp_dtb.mbn";
+	status = "okay";
+};

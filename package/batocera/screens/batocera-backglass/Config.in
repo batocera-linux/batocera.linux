@@ -1,3 +1,9 @@
 config BR2_PACKAGE_BATOCERA_BACKGLASS
 	bool "batocera-backglass"
-	select BR2_PACKAGE_PYWEBVIEW
+	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_SDL2_IMAGE
+	select BR2_PACKAGE_SDL2_TTF
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_OPENSSL
+	help
+	  Helper tool to present Backglass media.

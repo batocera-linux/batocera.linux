@@ -134,8 +134,8 @@ cores:
         prompt: VSYNC
         description: Fix screen tearing. CPU heavy.
         choices:
-          Disabled: 0
-          Enabled: 1
+          Disabled: "false"
+          Enabled: "true"
       pcsx2_interlacing_patches:
         submenu: DISPLAY
         prompt: INTERLACING PATCHES

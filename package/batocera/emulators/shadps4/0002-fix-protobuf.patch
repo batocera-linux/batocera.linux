@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d38b447..41d672d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1208,7 +1208,7 @@ add_custom_command(
+     OUTPUT
+         "${SHADNET_PROTO_OUT}/shadnet.pb.cc"
+         "${SHADNET_PROTO_OUT}/shadnet.pb.h"
+-    COMMAND protobuf::protoc
++    COMMAND $<TARGET_FILE:protobuf::protoc>
+         "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet"
+         "--cpp_out=${SHADNET_PROTO_OUT}"
+         "${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet/shadnet.proto"
