@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SCUMMVM_VERSION = v2026.1.0
+SCUMMVM_VERSION = v2026.3.0
 SCUMMVM_SITE = $(call github,scummvm,scummvm,$(SCUMMVM_VERSION))
 SCUMMVM_LICENSE = GPLv2
 SCUMMVM_EMULATOR_INFO = scummvm.emulator.yml
