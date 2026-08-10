@@ -1,243 +1,600 @@
-#!/bin/sh
+#!/usr/bin/env bash
+
+set -euo pipefail
 
 export LC_ALL=C
 
 updateurl="https://updates.batocera.org"
 
-# customizable upgrade url website
-settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url)"
+# Customizable upgrade URL website
+settingsupdateurl="$(/usr/bin/batocera-settings-get updates.url 2>/dev/null || true)"
 test -n "${settingsupdateurl}" && updateurl="${settingsupdateurl}"
 
 IMGFOLDER="/userdata/system/installs"
+BOOT_SRC="/boot"
+USERDATA_SRC="/userdata"
+TMP_BATOCERA="/tmp/batocera"
+TMP_SHARE="/tmp/share"
 
 do_help() {
-	echo "$0 listDisks" >&2
-	echo "$0 listArchs" >&2
-	echo "$0 listFiles" >&2
-	echo "$0 install <disk> <arch|file>" >&2
+    echo "$0 listDisks" >&2
+    echo "$0 listArchs" >&2
+    echo "$0 listFiles" >&2
+    echo "$0 checkDisk <disk>" >&2
+    echo "$0 install <disk> <source: arch|file|'local'> [--install-mode <resize|format>] [--android-size <GB>] [--copy-data <all|bios|none>]" >&2
 }
 
 if [ $# -eq 0 ]; then
-	do_help
-	exit 1
+    do_help
+    exit 1
 fi
 
 ACTION=$1
 shift
 
-determine_part_prefix() {
-    # /dev/mmcblk0p3 => /dev/mmcblk0
-    # /dev/sda1      => /dev/sda
+# Clean /dev/ prefix from input disk paths
+clean_dev_path() {
+    local disk=$1
+    disk="${disk#/dev/}"
+    echo "/dev/$disk"
+}
 
-    # sometimes, it's pX, sometimes just an X : http://www.tldp.org/HOWTO/Partition-Mass-Storage-Definitions-Naming-HOWTO/x160.html
+determine_part_prefix() {
     if echo "${1}" | grep -qE 'p[0-9]$'
     then
-	echo "$1" | sed -e s+'p[0-9]$'+''+
-	return 0
+        echo "$1" | sed -e s+'p[0-9]$'+''+
+        return 0
     fi
     echo "$1" | sed -e s+'[0-9]$'++
 }
 
 disks_to_keep() {
     grep -E '^[^ ]* /boot |^[^ ]* /userdata' /proc/mounts | sed -e s+"^\([^ ]*\) .*$"+'\1'+ |
-	while read X
-	do
-	    determine_part_prefix "${X}"
-	done |
-	sed -e s+'^/dev/'++ |
-	sort -u
+    while read -r X
+    do
+        determine_part_prefix "${X}"
+    done |
+    sed -e s+'^/dev/'++ |
+    sort -u
 }
 
 do_listDisks() {
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
-	grep -E '^TYPE="disk" ' |
-	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
-	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
-	while read XDRIVE XTEXT
-	do
-	    for XKEEP in $(disks_to_keep)
-	    do
-		if test "${XKEEP}" != "${XDRIVE}"
-		then
-		    echo "${XDRIVE} ${XTEXT}"
-		fi
-	    done
-	done
+    grep -E '^TYPE="disk" ' |
+    sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
+    sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
+    while read -r XDRIVE XTEXT
+    do
+        local KEEP=0
+        for XKEEP in $(disks_to_keep)
+        do
+            if test "${XKEEP}" = "${XDRIVE}"
+            then
+                KEEP=1
+                break
+            fi
+        done
+        if [ "$KEEP" -eq 0 ]; then
+            echo "${XDRIVE} ${XTEXT}"
+        fi
+    done
 }
 
 do_listArchs() {
-	wget -qO - "${updateurl}/installs.txt" | sed -e s+'^\([^/]*\)/.*$'+'\1'+ | sort -u
+    wget --no-check-certificate -qO - "${updateurl}/installs.txt" | sed -e s+'^\([^/]*\)/.*$'+'\1'+ | sort -u
 }
 
 do_listFiles() {
     if test -d "${IMGFOLDER}"
     then
-	find "${IMGFOLDER}" -name "*.img.gz" -type f
+        find "${IMGFOLDER}" -name "*.img.gz" -type f
     fi
 }
 
-getPer() {
-    TARVAL=$1
-    TARFILE=$2
+check_power_connected() {
+    local power_connected=1
+    # Check if any batteries are present in the system
+    if ls /sys/class/power_supply/* &>/dev/null; then
+        local has_battery=0
+        local on_ac=0
+        for supply in /sys/class/power_supply/*; do
+            if [ -f "$supply/type" ] && [ -f "$supply/online" ]; then
+                local type
+                type=$(cat "$supply/type")
+                if [[ "$type" == "Battery" ]]; then
+                    has_battery=1
+                elif [[ "$type" == "Mains" || "$type" == "USB" ]]; then
+                    if [ "$(cat "$supply/online")" -eq 1 ]; then
+                        on_ac=1
+                    fi
+                fi
+            fi
+        done
+        if [ "$has_battery" -eq 1 ] && [ "$on_ac" -eq 0 ]; then
+            power_connected=0
+        fi
+    fi
+    echo "$power_connected"
+}
 
+get_essential_size_kb() {
+    local total_kb=0
+    if [ -d "$USERDATA_SRC" ]; then
+        total_kb=$(du -ks "$USERDATA_SRC" | awk '{print $1}')
+        # Subtract excluded folders if they exist
+        for folder in ".cache" "roms"; do
+            if [[ -d "$USERDATA_SRC/$folder" ]]; then
+                local folder_kb
+                folder_kb=$(du -ks "$USERDATA_SRC/$folder" | awk '{print $1}')
+                total_kb=$((total_kb - folder_kb))
+            fi
+        done
+    fi
+    echo "$total_kb"
+}
+
+do_checkDisk() {
+    local disk
+    disk=$(clean_dev_path "$1")
+    
+    if ! test -e "$disk"; then
+        echo "ERROR: Invalid target drive $disk" >&2
+        exit 1
+    fi
+
+    # 1) Detect Power Status (Bypasses only if AC is online)
+    local power_status
+    power_status=$(check_power_connected)
+
+    # 2) Measure Source Boot Size (Ensures target FAT32 partition matches source size)
+    local boot_size_bytes
+    boot_size_bytes=$(df -B1 "$BOOT_SRC" | tail -n 1 | awk '{print $2}')
+    local boot_size_mib=$(( boot_size_bytes / 1024 / 1024 ))
+    if [ "$boot_size_mib" -lt 2048 ]; then
+        # Default fallback to 10GB for modern standard environments if calculated too low
+        boot_size_mib=10240
+    fi
+
+    # 3) Check for Android 'userdata' Partition on target
+    local type="standard"
+    local min_android_gb=1
+    local max_android_gb=1
+    
+    if parted -s "$disk" print &>/dev/null; then
+        mapfile -t ud_line < <(parted -m -s "$disk" unit B print 2>/dev/null | grep ':userdata:' || true)
+        if [[ ${#ud_line[@]} -eq 1 ]]; then
+            type="android_resize"
+            IFS=':' read -r _ UD_STARTB UD_ENDB _ <<< "${ud_line[0]}"
+            local ud_start=${UD_STARTB%B}
+            local ud_end=${UD_ENDB%B}
+            
+            # Compute boundary parameters
+            local ud_start_mb=$(( (ud_start + 1048575) / 1048576 ))
+            local ud_end_mb=$(( ud_end / 1048576 ))
+            local orig_size=$(( (ud_end_mb - ud_start_mb) * 1024**2 ))
+            
+            # Reserve space (Current Boot Size + 2GB minimal Share partition)
+            local reserve=$(( (boot_size_mib * 1024 * 1024) + (2 * 1024**3) ))
+            local max_size=$(( orig_size - reserve ))
+            
+            min_android_gb=1
+            max_android_gb=$(( max_size / 1024**3 ))
+            if [ "$max_android_gb" -lt 1 ]; then
+                max_android_gb=1
+            fi
+        fi
+    fi
+
+    # 4) Calculate Source Userdata Usage
+    local total_userdata_kb=0
+    if [ -d "$USERDATA_SRC" ]; then
+        total_userdata_kb=$(du -ks "$USERDATA_SRC" | awk '{print $1}')
+    fi
+    local essential_userdata_kb
+    essential_userdata_kb=$(get_essential_size_kb)
+
+    # 5) Retrieve overall disk capacity
+    local disk_size_bytes
+    disk_size_bytes=$(blockdev --getsize64 "$disk" 2>/dev/null || echo "0")
+    local disk_size_kb=$(( disk_size_bytes / 1024 ))
+
+    # Output machine-readable variables
+    echo "TYPE=${type}"
+    echo "POWER_CONNECTED=${power_status}"
+    echo "MIN_ANDROID_GB=${min_android_gb}"
+    echo "MAX_ANDROID_GB=${max_android_gb}"
+    echo "SOURCE_BOOT_SIZE_MIB=${boot_size_mib}"
+    echo "TOTAL_USERDATA_KB=${total_userdata_kb}"
+    echo "ESSENTIAL_USERDATA_KB=${essential_userdata_kb}"
+    echo "TARGET_DISK_SIZE_KB=${disk_size_kb}"
+}
+
+getPer() {
+    local tarval=$1
+    local tarfile=$2
     while true
     do
-	CURVAL=$(stat "${TARFILE}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
-	CURVAL=$((CURVAL / 1024 / 1024))
-	PER=$(expr ${CURVAL} '*' 100 / ${TARVAL})
-	echo "downloading >>> ${PER}%"
-	sleep 5
+        local curval
+        curval=$(stat "${tarfile}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
+        curval=$((curval / 1024 / 1024))
+        local per
+        per=$(expr "${curval}" '*' 100 / "${tarval}")
+        echo "downloading >>> ${per}%"
+        sleep 5
     done
 }
 
 do_unmount_disk() {
-    UDSK=$1
-
-    grep "/dev/${UDSK}" /proc/mounts | cut -d ' ' -f 2 |
-	while read X
-	do
-	    umount "${X}"
-	done
-
-    grep -qE "^/dev/${UDSK}" /proc/mounts && return 1
+    local udsk=$1
+    grep "/dev/${udsk}" /proc/mounts | cut -d ' ' -f 2 |
+    while read -r X
+    do
+        umount -f "${X}" || true
+    done
+    grep -qE "^/dev/${udsk}" /proc/mounts && return 1
     return 0
 }
 
 do_install() {
-    INSDISK=$1
-    INSIMG=
-    INSARCH=
+    local insdisk
+    insdisk=$(clean_dev_path "$1")
+    local raw_disk="${1#/dev/}"
+    local insimg_or_arch=$2
 
-    if test -f "${2}"
-    then
-	INSIMG=$2
+    local install_mode="format"
+    local android_size_gb=0
+    local copy_data="none"
+
+    # Shift through options
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --install-mode)
+                install_mode="$2"
+                shift 2
+                ;;
+            --android-size)
+                android_size_gb="$2"
+                shift 2
+                ;;
+            --copy-data)
+                copy_data="$2"
+                shift 2
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    if ! test -e "$insdisk"; then
+        echo "invalid disk ${insdisk}" >&2
+        return 1
+    fi
+
+    # Unmount target mounts
+    if ! do_unmount_disk "${raw_disk}"; then
+        echo "unable to free the disk ${insdisk}" >&2
+        return 1
+    fi
+
+    # Determine boot partition size requirements
+    local boot_size_bytes
+    boot_size_bytes=$(df -B1 "$BOOT_SRC" | tail -n 1 | awk '{print $2}')
+    local boot_size_mib=$(( boot_size_bytes / 1024 / 1024 ))
+    if [ "$boot_size_mib" -lt 2048 ]; then
+        boot_size_mib=10240
+    fi
+
+    if [ "$insimg_or_arch" = "local" ]; then
+        echo "Running local clone process..."
+
+        # Update bootloaders if available
+        if [ -f "/usr/bin/updateabl" ]; then
+            echo "Checking online bootloader requirements..."
+            /usr/bin/updateabl --check-online || echo "Warning: ABL update failed, proceeding with caution."
+        fi
+
+        # Detect destination partitioning scheme based on target block name
+        local is_emmc=false
+        if echo "$insdisk" | grep -qE "mmcblk"; then
+            is_emmc=true
+        fi
+
+        local bt_part_dev
+        local sh_part_dev
+
+        if [ "$install_mode" = "resize" ]; then
+            echo "Entering Android partition resizing mode..."
+            mapfile -t ud_line < <(parted -m -s "$insdisk" unit B print | grep ':userdata:')
+            if [[ ${#ud_line[@]} -ne 1 ]]; then
+                echo "ERROR: Could not find unique userdata partition labeled 'userdata'" >&2
+                return 1
+            fi
+            IFS=':' read -r ud_num ud_startb ud_endb _ <<< "${ud_line[0]}"
+            local ud_start=${ud_startb%B}
+            local ud_end=${ud_endb%B}
+
+            local bt_num=$(( ud_num + 1 ))
+            local sh_num=$(( ud_num + 2 ))
+
+            if [ "$is_emmc" = true ]; then
+                bt_part_dev="${insdisk}p${bt_num}"
+                sh_part_dev="${insdisk}p${sh_num}"
+                local ud_part_dev="${insdisk}p${ud_num}"
+            else
+                bt_part_dev="${insdisk}${bt_num}"
+                sh_part_dev="${insdisk}${sh_num}"
+                local ud_part_dev="${insdisk}${ud_num}"
+            fi
+
+            local ud_start_mb=$(( (ud_start + 1048575) / 1048576 ))
+            local new_ud_end_mb=$(( ud_start_mb + (android_size_gb * 1024) ))
+
+            # Resize the partition
+            echo "Re-partitioning Android userdata space..."
+            parted -s "$insdisk" rm "$ud_num"
+            parted -a optimal -s "$insdisk" mkpart primary ext4 "${ud_start_mb}MiB" "${new_ud_end_mb}MiB"
+            parted -s "$insdisk" name "$ud_num" userdata
+
+            # Clear remnants
+            dd if=/dev/zero of="${ud_part_dev}" bs=1M count=8 &>/dev/null
+
+            # Create Batocera partitions
+            local bt_start_mb=$new_ud_end_mb
+            local bt_end_mb=$(( bt_start_mb + boot_size_mib ))
+
+            echo "Creating BATOCERA system partition..."
+            parted -a optimal -s "$insdisk" mkpart primary fat32 "${bt_start_mb}MiB" "${bt_end_mb}MiB"
+            parted -s "$insdisk" name "$bt_num" BATOCERA
+            parted -s "$insdisk" set "$bt_num" msftdata on
+            parted -s "$insdisk" set "$bt_num" boot on
+
+            echo "Creating SHARE data partition..."
+            parted -a optimal -s "$insdisk" mkpart primary "${bt_end_mb}MiB" 100%
+            parted -s "$insdisk" name "$sh_num" SHARE
+        else
+            echo "Entering fresh target format layout mode..."
+            parted -s "$insdisk" mklabel gpt
+
+            if [ "$is_emmc" = true ]; then
+                bt_part_dev="${insdisk}p1"
+                sh_part_dev="${insdisk}p2"
+            else
+                bt_part_dev="${insdisk}1"
+                sh_part_dev="${insdisk}2"
+            fi
+
+            local bt_end_mb=$(( boot_size_mib + 1 ))
+
+            echo "Creating clean BATOCERA system partition..."
+            parted -a optimal -s "$insdisk" mkpart primary fat32 "1MiB" "${bt_end_mb}MiB"
+            parted -s "$insdisk" name 1 BATOCERA
+            parted -s "$insdisk" set 1 msftdata on
+            parted -s "$insdisk" set 1 boot on
+
+            echo "Creating clean SHARE data partition..."
+            parted -a optimal -s "$insdisk" mkpart primary "${bt_end_mb}MiB" 100%
+            parted -s "$insdisk" name 2 SHARE
+        fi
+
+        # Unmount to prepare formatting
+        umount -f "$bt_part_dev" 2>/dev/null || true
+        umount -f "$sh_part_dev" 2>/dev/null || true
+
+        echo "Formatting system partition as FAT32..."
+        mkfs.vfat -F 32 -n BATOCERA "${bt_part_dev}" &>/dev/null
+
+        local source_fs
+        source_fs=$(findmnt -n -o FSTYPE "$USERDATA_SRC" | tr '[:upper:]' '[:lower:]' || echo "ext4")
+        echo "Formatting SHARE partition to match current format: ${source_fs}..."
+        case "$source_fs" in
+            btrfs)
+                mkfs.btrfs -f -L SHARE "${sh_part_dev}" &>/dev/null
+                ;;
+            ntfs)
+                mkfs.ntfs -f -L SHARE "${sh_part_dev}" &>/dev/null
+                ;;
+            exfat)
+                mkfs.exfat -n SHARE "${sh_part_dev}" &>/dev/null
+                ;;
+            *)
+                mkfs.ext4 -F -q -L SHARE -m 0 "${sh_part_dev}" &>/dev/null
+                ;;
+        esac
+
+        # Mount target partitions
+        mkdir -p "$TMP_BATOCERA" "$TMP_SHARE"
+        mount "${bt_part_dev}" "$TMP_BATOCERA"
+        mount "${sh_part_dev}" "$TMP_SHARE"
+
+        echo "Writing boot system files..."
+        cp -av "$BOOT_SRC"/. "$TMP_BATOCERA"/
+        sync
+
+        # Execute selected cloning mechanism
+        if [ "$copy_data" = "all" ]; then
+            echo "Cloning all user files (including ROMs)..."
+            cp -av "$USERDATA_SRC"/. "$TMP_SHARE"/
+        elif [ "$copy_data" = "bios" ]; then
+            echo "Cloning Settings & BIOS files only (excluding ROMs)..."
+            find "$USERDATA_SRC" -mindepth 1 -maxdepth 1 \
+                ! -name "roms" \
+                ! -name ".cache" \
+                -exec cp -av {} "$TMP_SHARE"/ \;
+        else
+            echo "Clean install selected. Skipping copy."
+        fi
+
+        echo "Synchronizing drive changes..."
+        sync
+        umount "$TMP_BATOCERA"
+        umount "$TMP_SHARE"
+        rmdir "$TMP_BATOCERA" "$TMP_SHARE" 2>/dev/null || true
+
+        # --- SECTOR-SELECTIVE BOOTLOADER CLONE FOR ARM / SBC COMPATIBILITY ---
+        local boot_part_source
+        boot_part_source=$(grep -E '^[^ ]* /boot ' /proc/mounts | awk '{print $1}' || echo "")
+        if [ -n "$boot_part_source" ]; then
+            local source_disk
+            source_disk=$(determine_part_prefix "$boot_part_source")
+            if [ -b "$source_disk" ] && [ -b "$insdisk" ]; then
+                echo "Querying boot partition boundaries on source: ${source_disk}..."
+                if parted -s "$source_disk" print &>/dev/null; then
+                    local start_sector
+                    start_sector=$(parted -m -s "$source_disk" unit s print 2>/dev/null | grep -E '^[0-9]+:' | head -n 1 | cut -d: -f2 | tr -d 's' || echo "")
+                    if [ -n "$start_sector" ] && [ "$start_sector" -gt 64 ]; then
+                        echo "Cloning raw SoC bootloader space (sectors 64 to $((start_sector - 1)))..."
+                        dd if="$source_disk" of="$insdisk" bs=512 skip=64 seek=64 count=$((start_sector - 64)) conv=notrunc &>/dev/null || echo "Warning: Raw bootloader clone step omitted or unsupported."
+                    fi
+                fi
+            fi
+        fi
+
+        # --- SYS_LINUX / INTEL BIOS BOOTLOADER COMPATIBILITY ---
+        if command -v syslinux &>/dev/null; then
+            echo "Installing Syslinux partition bootloader..."
+            syslinux -i "${bt_part_dev}" -d boot/syslinux
+
+            echo "Writing protective MBR boot sector..."
+            if [ -f "/usr/share/syslinux/gptmbr.bin" ]; then
+                dd bs=440 count=1 conv=notrunc if=/usr/share/syslinux/gptmbr.bin of="${insdisk}" 2>/dev/null || true
+            elif [ -f "/usr/lib/syslinux/mbr/gptmbr.bin" ]; then
+                dd bs=440 count=1 conv=notrunc if=/usr/lib/syslinux/mbr/gptmbr.bin of="${insdisk}" 2>/dev/null || true
+            fi
+        fi
+
+        echo "done"
+        return 0
     else
-	INSARCH=$2
+        # Standard Network / Image Flash Install (Original script logic)
+        local insimg=""
+        local insarch=""
+
+        if test -f "${insimg_or_arch}"
+        then
+            insimg=$insimg_or_arch
+        else
+            insarch=$insimg_or_arch
+        fi
+
+        if test -n "${insarch}"
+        then
+            mkdir -p "${IMGFOLDER}/${insarch}" || return 1
+
+            local relativpath
+            relativpath=$(wget --no-check-certificate -qO - "${updateurl}/installs.txt" | grep -E "^${insarch}/" | head -1)
+            local filebasename
+            filebasename=$(basename "${relativpath}")
+            insimg="${IMGFOLDER}/${insarch}/${filebasename}"
+            test -z "${relativpath}" && return 1
+            local url="${updateurl}/${relativpath}"
+
+            echo "url: ${url}"
+            local headers
+            headers=$(curl -k -A "batocera-install.header" -sfIL "${url}")
+            test $? -eq 0 || return 1
+            local bytessize
+            bytessize=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I)
+            local size=$((bytessize / 1024 / 1024))
+            test $? -eq 0 || return 1
+
+            local filethere=0
+            if test -f "${insimg}"
+            then
+                local curval
+                curval=$(stat "${insimg}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
+                if test "${curval}" = "${bytessize}"
+                then
+                    filethere=1
+                fi
+            fi
+
+            if test "${filethere}" = 1
+            then
+                echo "file already downloaded at ${insimg}."
+                echo "skip the download."
+            else
+                echo "need to download ${size}mB"
+
+                for fs in /userdata
+                do
+                    local freespace
+                    freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
+                    test $? -eq 0 || return 1
+                    if test "${size}" -gt "${freespace}"
+                    then
+                        echo "Not enough space on ${fs} to download the update"
+                        return 1
+                    fi
+                done
+
+                touch "${insimg}"
+                getPer "${size}" "${insimg}" &
+                GETPERPID=$!
+
+                if ! curl -k -A "batocera-install" -sfL "${url}" -o "${insimg}"; then
+                    echo "Downloading failed" >&2
+                    kill -9 "${GETPERPID}"
+                    return 1
+                fi
+                kill -9 "${GETPERPID}"
+                wait "${GETPERPID}" 2>/dev/null
+                GETPERPID=
+            fi
+        fi
+
+        echo "Writing downloaded image to disk ${insdisk}, please wait..."
+        if ! zcat "${insimg}" | dd of="${insdisk}" bs=40M
+        then
+            return 1
+        fi
+        echo "synchronizing..."
+        sync
+        echo "done"
+        return 0
     fi
-
-    if ! test -e "/dev/${INSDISK}"
-    then
-	echo "invalid disk ${INSDISK}" >&2
-	return 1
-    fi
-
-    # unmount mounts associated with the disk
-    if ! do_unmount_disk "${INSDISK}"
-    then
-	echo "unable to free the disk ${INSDISK}" >&2
-	return 1
-    fi
-
-    ### DOWNLOADING
-    if test -n "${INSARCH}"
-    then
-	# download directory
-	mkdir -p "${IMGFOLDER}/${INSARCH}" || return 1
-
-	# url
-	RELATIVPATH=$(wget -qO - "${updateurl}/installs.txt" | grep -E "^${INSARCH}/" | head -1)
-	FILEBASENAME=$(basename "${RELATIVPATH}")
-	INSIMG="${IMGFOLDER}/${INSARCH}/${FILEBASENAME}"
-	test -z "${RELATIVPATH}" && return 1
-	url="${updateurl}/${RELATIVPATH}"
-
-	# get size to download
-	echo "url: ${url}"
-	headers=$(curl -A "batocera-install.header" -sfIL ${url})
-	test $? -eq 0 || return 1
-	bytessize=$(echo "$headers" | grep -i "Content-Length: " | tail -1 | sed -e s+'^Content-Length: \([0-9]*\).*$'+'\1'+I) # take the last one in case of redirection
-	size=$((bytessize / 1024 / 1024))
-	test $? -eq 0 || return 1
-
-	FILETHERE=0
-	if test -f "${INSIMG}"
-	then
-	    CURVAL=$(stat "${INSIMG}" | grep -E '^\s*Size:' | sed -e s+'^\s*Size: \([0-9][0-9]*\)\s.*$'+'\1'+)
-	    if test "${CURVAL}" = "${bytessize}"
-	    then
-		FILETHERE=1
-	    fi
-	fi
-    
-	# if the file is already there, skip the download
-	if test "${FILETHERE}" = 1
-	then
-	    echo "file already downloaded at ${INSIMG}."
-	    echo "skip the download."
-	else
-	    echo "need to download ${size}mB"
-
-	    # check free space on fs
-	    for fs in /userdata
-	    do
-		freespace=$(df -m "${fs}" | tail -1 | awk '{print $4}')
-		test $? -eq 0 || return 1
-		if test "${size}" -gt "${freespace}"
-		then
-		    echo "Not enough space on ${fs} to download the update"
-		    return 1
-		fi
-	    done
-
-	    # download
-	    touch "${INSIMG}"
-	    getPer "${size}" "${INSIMG}" &
-	    GETPERPID=$!
-
-	    if ! curl -A "batocera-install" -sfL "${url}" -o "${INSIMG}"
-	    then
-		echo "Downloading failed" >&2
-		kill -9 "${GETPERPID}"
-		return 1
-	    fi
-	    kill -9 "${GETPERPID}"
-	    wait "${GETPERPID}" 2>/dev/null # hide the Killed message
-	    GETPERPID=
-	fi
-    fi
-
-    # install
-    echo "zcat \"${INSIMG}\" | dd of=\"/dev/${INSDISK}\" bs=40M"
-    echo "writing to disk ${INSDISK}, please wait..."
-    if ! zcat "${INSIMG}" | dd of="/dev/${INSDISK}" bs=40M
-    then
-	return 1
-    fi
-    echo "synchronizing..."
-    sync
-    echo "done"
-    return 0
 }
 
 do_clean() {
-    test -n "${GETPERPID}" && kill -9 "${GETPERPID}"
+    test -n "${GETPERPID:-}" && kill -9 "${GETPERPID}" 2>/dev/null || true
+    if mountpoint -q "$TMP_BATOCERA" 2>/dev/null; then umount -f "$TMP_BATOCERA" || true; fi
+    if mountpoint -q "$TMP_SHARE" 2>/dev/null; then umount -f "$TMP_SHARE" || true; fi
+    rmdir "$TMP_BATOCERA" "$TMP_SHARE" 2>/dev/null || true
 }
 trap do_clean EXIT
 
 case "${ACTION}" in
     listDisks)
-	do_listDisks
-	;;
+        do_listDisks
+        ;;
     listArchs)
-	do_listArchs
-	;;
+        do_listArchs
+        ;;
     listFiles)
-	do_listFiles
-	;;
+        do_listFiles
+        ;;
+    checkDisk)
+        if test $# -ne 1
+        then
+            do_help
+            exit 1
+        fi
+        do_checkDisk "${1}"
+        ;;
     install)
-	if test $# -ne 2
-	then
-	    do_help
-	    exit 1
-	fi
-	if ! do_install "${1}" "${2}"
-	then
-	    exit 1
-	fi
-	;;
-	*)
-		do_help
-		>&2 echo "error: invalid command ${ACTION}"
-		exit 1
+        if test $# -lt 2
+        then
+            do_help
+            exit 1
+        fi
+        if ! do_install "$@"
+        then
+            exit 1
+        fi
+        ;;
+    *)
+        do_help
+        >&2 echo "error: invalid command ${ACTION}"
+        exit 1
 esac
 exit 0
