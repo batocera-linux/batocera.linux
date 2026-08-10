@@ -1,13 +1,47 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d38b447..41d672d 100644
+index d38b447..6bc0c3a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -246,6 +246,7 @@ if (ENABLE_SYSTEM_LIBRARIES)
+     find_package(miniz 3.1 CONFIG)
+     find_package(nlohmann_json 3.12 CONFIG)
+     find_package(PNG 1.6 MODULE)
++    find_package(Protobuf CONFIG REQUIRED)
+     find_package(OpenAL CONFIG)
+     find_package(LibreSSL 4.3.1 MODULE)
+     find_package(RenderDoc 1.6.0 MODULE)
 @@ -1208,7 +1208,7 @@ add_custom_command(
      OUTPUT
          "${SHADNET_PROTO_OUT}/shadnet.pb.cc"
          "${SHADNET_PROTO_OUT}/shadnet.pb.h"
 -    COMMAND protobuf::protoc
-+    COMMAND $<TARGET_FILE:protobuf::protoc>
++    COMMAND "${SHADPS4_PROTOC_EXECUTABLE}"
          "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet"
          "--cpp_out=${SHADNET_PROTO_OUT}"
          "${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet/shadnet.proto"
+@@ -1256,5 +1256,5 @@ target_link_libraries(shadps4 PRIVATE Cpp_Httplib miniupnpc::miniupnpc)
+ target_link_libraries(shadps4 PRIVATE Freetype::Freetype)
+-target_link_libraries(shadps4 PRIVATE libprotobuf)
++target_link_libraries(shadps4 PRIVATE protobuf::libprotobuf)
+ target_link_libraries(shadps4 PRIVATE ZArchive::zarchive)
+ target_include_directories(shadps4 PRIVATE "${SHADNET_PROTO_OUT}")
+ 
+diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
+index 7b8175f..062582d 100644
+--- a/externals/CMakeLists.txt
++++ b/externals/CMakeLists.txt
+@@ -384,5 +384,6 @@ endif()
+ 
+ # protobuf
++if (NOT ENABLE_SYSTEM_LIBRARIES)
+ set(protobuf_BUILD_TESTS              OFF CACHE INTERNAL "")
+ set(protobuf_BUILD_EXAMPLES           OFF CACHE INTERNAL "")
+ set(protobuf_BUILD_PROTOC_BINARIES    ON  CACHE INTERNAL "")
+@@ -394,6 +395,7 @@ if(MSVC)
+ set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
+ endif()
+ add_subdirectory(protobuf EXCLUDE_FROM_ALL)
++endif()
+ 
+ # zstd (dependency of ZArchive)
+ if (NOT TARGET libzstd_static)
