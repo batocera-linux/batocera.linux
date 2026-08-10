@@ -4,8 +4,8 @@
 #
 ################################################################################
 # Last update: Commits on Aug 9, 2026 (OpenGL ES 3.x support)
-BATOCERA_EMULATIONSTATION_VERSION = 3fcb65d0fc7fe8bf35607afe3a7b8a3760e46606
-BATOCERA_EMULATIONSTATION_SITE = https://github.com/dmanlfc/batocera-emulationstation
+BATOCERA_EMULATIONSTATION_VERSION = 321430b7026d144938ed63ee5f48e6d01eb81b0c
+BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
 BATOCERA_EMULATIONSTATION_GIT_SUBMODULES = YES
