@@ -29,174 +29,6 @@
 ;
 
 
-[ daytona2 ]
-MusicVolume = 120
-SoundVolume = 100
-Balance = -10
-InputJoy1XSaturation = 165
-
-[ dayto2pe ]
-MusicVolume = 120
-SoundVolume = 100
-Balance = -10
-InputJoy1XSaturation = 165
-
-[ dirtdvls ]
-MusicVolume = 100
-SoundVolume = 130
-Balance = -20
-InputJoy1XSaturation = 118
-
-[ getbassur ]
-WideScreen =0
-WideBackground = 0
-MusicVolume = 100
-SoundVolume = 110
-Balance = 10
-
-[ eca ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = -35
-
-[ fvipers2 ]
-LegacySoundDSP = 1
-MusicVolume = 100
-SoundVolume = 170
-Balance = 10
-
-[ harley ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 10
-
-[ lamachin ]
-MusicVolume = 100
-SoundVolume = 115
-Balance = 0
-InputSystem=rawinput
-
-[ lemans24 ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = 0
-InputJoy1XSaturation = 120
-
-[ lostwsga ]
-MusicVolume = 100
-SoundVolume = 105
-Balance = 20
-InputSystem=sdl
-CrosshairStyle = bmp
-
-[ magtruck ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 15
-
-[ mgtrkbad ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 15
-
-[ oceanhun ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 0
-InputSystem=rawinput
-
-[ oceanhuna ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 0
-InputSystem=rawinput
-
-[ scud ]
-MusicVolume = 200
-SoundVolume = 60
-Balance = 0
-InputJoy1XSaturation = 170
-
-[ scudplus ]
-MusicVolume = 200
-SoundVolume = 60
-Balance = 0
-InputJoy1XSaturation = 170
-
-[ skichamp ]
-MusicVolume = 100
-SoundVolume = 200
-Balance = 10
-ForceFeedback=1
-
-[ spikeofe ]
-MusicVolume = 120
-SoundVolume = 120
-Balance = 0
-
-[ spikeout ]
-MusicVolume = 90
-SoundVolume = 90
-Balance = 0
-
-[ srally2 ]
-LegacySoundDSP = 1
-SoundVolume = 155
-MusicVolume = 140
-Balance = 15
-PowerPCFrequency = 70
-InputJoy1XSaturation = 155
-
-[ srally2dx ]
-LegacySoundDSP = 1
-SoundVolume = 155
-MusicVolume = 140
-Balance = 15
-PowerPCFrequency = 70
-InputJoy1XSaturation = 155
-
-[ swtrilgy ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 0
-InputSystem=rawinput
-
-[ vf3 ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = -5
-
-[ vf3tb ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = -5
-
-[ von2 ]
-MusicVolume = 100
-SoundVolume = 100
-Balance = 0
-
-[ vs2 ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = -10
-WideScreen = 0
-WideBackground = 0
-
-[ vs298 ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = -10
-WideScreen = 0
-WideBackground = 0
-
-[ vs2v991 ]
-MusicVolume = 100
-SoundVolume = 110
-Balance = -10
-WideScreen = 0
-WideBackground = 0
-
 [ Global ]
 
 ; Graphics
@@ -229,95 +61,93 @@ PortIn = 1970
 PortOut = 1971
 AddressOut = "127.0.0.1"
 
-; Common
-InputStart1 = "KEY_1,JOY1_BUTTON8"
+; Common / System Controls
+InputStart1 = "KEY_1,JOY1_BUTTON8"          ; Start Button
 InputStart2 = "KEY_2,JOY2_BUTTON8"
-InputCoin1 = "KEY_3,JOY1_BUTTON7"
+InputCoin1 = "KEY_3,JOY1_BUTTON7"           ; Select / Back Button
 InputCoin2 = "KEY_4,JOY2_BUTTON7"
 InputServiceA = "KEY_5"
 InputServiceB = "KEY_7"
 InputTestA = "KEY_6"
 InputTestB = "KEY_8"
 
-; 4-way digital joysticks (Fighting Vipers 2, Spikeout, Spikeout Final Edition, Virtua Fighter 3, Virtua Striker 2)
-InputJoyUp = "JOY1_YAXIS_NEG,JOY1_POV1_UP"
-InputJoyDown = "JOY1_YAXIS_POS,JOY1_POV1_DOWN"
-InputJoyLeft = "JOY1_XAXIS_NEG,JOY1_POV1_LEFT"
-InputJoyRight = "JOY1_XAXIS_POS,JOY1_POV1_RIGHT"
-InputJoyUp2 = "JOY2_YAXIS_NEG,JOY2_POV1_UP"
-InputJoyDown2 = "JOY2_YAXIS_POS,JOY2_POV1_DOWN"
-InputJoyLeft2 = "JOY2_XAXIS_NEG,JOY2_POV1_LEFT"
-InputJoyRight2 = "JOY2_XAXIS_POS,JOY2_POV1_RIGHT"
+; 4-way digital joysticks
+InputJoyUp = "KEY_UP,JOY1_UP"
+InputJoyDown = "KEY_DOWN,JOY1_DOWN"
+InputJoyLeft = "KEY_LEFT,JOY1_LEFT"
+InputJoyRight = "KEY_RIGHT,JOY1_RIGHT"
+InputJoyUp2 = "JOY2_UP"
+InputJoyDown2 = "JOY2_DOWN"
+InputJoyLeft2 = "JOY2_LEFT"
+InputJoyRight2 = "JOY2_RIGHT"
 
-; Fighting game buttons (Fighting Vipers 2, Virtua Fighter 3)
-InputPunch = "JOY1_BUTTON3"
-InputKick = "JOY1_BUTTON1"
-InputGuard = "JOY1_BUTTON2"
-InputEscape = "JOY1_BUTTON4"
+; Fighting game buttons (Virtua Fighter 3)
+InputPunch = "KEY_A,JOY1_BUTTON3"           ; X / Square Button
+InputKick = "KEY_S,JOY1_BUTTON4"            ; Y / Triangle Button
+InputGuard = "KEY_D,JOY1_BUTTON1"           ; A / Cross Button
+InputEscape = "KEY_F,JOY1_BUTTON2"          ; B / Circle Button
 InputPunch2 = "JOY2_BUTTON3"
-InputKick2 = "JOY2_BUTTON1"
-InputGuard2 = "JOY2_BUTTON4"
-InputEscape2 = "JOY2_BUTTON3"
+InputKick2 = "JOY2_BUTTON4"
+InputGuard2 = "JOY2_BUTTON1"
+InputEscape2 = "JOY2_BUTTON2"
 
 ; Spikeout buttons
-InputShift = "JOY1_BUTTON2,JOY1_BUTTON6"
-InputBeat = "JOY1_BUTTON1"
-InputCharge = "JOY1_BUTTON3"
-InputJump = "JOY1_BUTTON4"
+InputShift = "KEY_A,JOY1_BUTTON1"           ; A / Cross Button
+InputBeat = "KEY_S,JOY1_BUTTON3"            ; X / Square Button
+InputCharge = "KEY_D,JOY1_BUTTON4"          ; Y / Triangle Button
+InputJump = "KEY_F,JOY1_BUTTON2"            ; B / Circle Button
 
 ; Virtua Striker buttons
-InputShortPass = "JOY1_BUTTON3"
-InputLongPass = "JOY1_BUTTON1"
-InputShoot = "JOY1_BUTTON2"
-InputShortPass2 = "JOY2_BUTTON3"
-InputLongPass2 = "JOY2_BUTTON1"
+InputShortPass = "KEY_A,JOY1_BUTTON1"       ; A / Cross Button
+InputLongPass = "KEY_S,JOY1_BUTTON3"        ; X / Square Button
+InputShoot = "KEY_D,JOY1_BUTTON2"           ; B / Circle Button
+InputShortPass2 = "JOY2_BUTTON1"
+InputLongPass2 = "JOY2_BUTTON3"
 InputShoot2 = "JOY2_BUTTON2"
 
 ; Steering wheel
-InputSteeringLeft = "NONE"          ; digital, turn wheel left
-InputSteeringRight = "NONE"         ; digital, turn wheel right
-InputSteering = "JOY1_XAXIS"        ; analog, full steering range
+InputSteeringLeft = "KEY_LEFT"
+InputSteeringRight = "KEY_RIGHT"
+InputSteering = "JOY1_XAXIS"                ; Left Stick X-Axis
 
 ; Pedals
-InputAccelerator = "JOY1_RZAXIS_POS"
-InputBrake = "JOY1_ZAXIS_POS"
+InputAccelerator = "KEY_UP,JOY1_RZAXIS_POS" ; Right Trigger (RT / R2)
+InputBrake = "KEY_DOWN,JOY1_ZAXIS_POS"      ; Left Trigger (LT / L2)
 
-; Up/down shifter manual transmission (all racers - Dirt Devils, ECA, Harley-Davidson, Le Mans 24 are shift manual only)
-InputGearShiftUp = "JOY1_BUTTON6"           ; sequential shift up
-InputGearShiftDown = "JOY1_BUTTON5"         ; sequential shift down
+; Up/down sequential transmission
+InputGearShiftUp = "KEY_Y,JOY1_BUTTON6"     ; Right Bumper (RB / R1)
+InputGearShiftDown = "KEY_H,JOY1_BUTTON5"   ; Left Bumper (LB / L1)
 
-; 4-Speed manual transmission (Daytona 2, Sega Rally 2, Scud Race)
-InputGearShift1 = "JOY1_BUTTON3"
-InputGearShift2 = "JOY1_BUTTON1"
-InputGearShift3 = "JOY1_BUTTON4"
-InputGearShift4 = "JOY1_BUTTON2"
-InputGearShiftN = "NONE"
+; 4-Speed manual transmission (Mapped to Right Analog Stick H-Pattern)
+InputGearShift1 = "KEY_Q,JOY1_RXAXIS_NEG"   ; Right Stick Left  (1st Gear)
+InputGearShift2 = "KEY_W,JOY1_RYAXIS_POS"   ; Right Stick Down  (2nd Gear)
+InputGearShift3 = "KEY_E,JOY1_RYAXIS_NEG"   ; Right Stick Up    (3rd Gear)
+InputGearShift4 = "KEY_R,JOY1_RXAXIS_POS"   ; Right Stick Right (4th Gear)
+InputGearShiftN = "NONE"                    ; Neutral handled automatically
 
-; VR4 view change buttons (Daytona 2, Le Mans 24, Scud Race)
-InputVR1 = "JOY1_POV1_UP"
-InputVR2 = "JOY1_POV1_DOWN"
-InputVR3 = "JOY1_POV1_LEFT"
-InputVR4 = "JOY1_POV1_RIGHT"
+; VR4 view change buttons (Mapped to D-Pad)
+InputVR1 = "KEY_A,JOY1_POV1_UP"             ; D-Pad Up
+InputVR2 = "KEY_S,JOY1_POV1_DOWN"           ; D-Pad Down
+InputVR3 = "KEY_D,JOY1_POV1_LEFT"           ; D-Pad Left
+InputVR4 = "KEY_F,JOY1_POV1_RIGHT"          ; D-Pad Right
 
-; Single view change button (Dirt Devils, ECA, Harley-Davidson, Sega Rally 2)
-InputViewChange = "JOY1_POV1_UP"
+; Single view change button (Sega Rally 2, Dirt Devils, ECA, Harley-Davidson)
+InputViewChange = "KEY_A,JOY1_BUTTON1"      ; A / Cross Button
 
-; Handbrake (Sega Rally 2)
-InputHandBrake = "JOY1_RYAXIS_POS"
-
-; Harley-Davidson controls
-InputRearBrake = "JOY1_BUTTON1"
-InputMusicSelect = "JOY1_BUTTON2"
+; Handbrake & Motorcycle Brakes
+InputHandBrake = "KEY_S,JOY1_BUTTON2"       ; B / Circle Button
+InputRearBrake = "KEY_S,JOY1_BUTTON2"       ; B / Circle Button
+InputMusicSelect = "KEY_D,JOY1_BUTTON4"     ; Y / Triangle Button
 
 ; Virtual On macros
-InputTwinJoyTurnLeft = "JOY1_RXAXIS_NEG"
-InputTwinJoyTurnRight = "JOY1_RXAXIS_POS"
-InputTwinJoyForward = "JOY1_YAXIS_NEG"
-InputTwinJoyReverse = "JOY1_YAXIS_POS"
-InputTwinJoyStrafeLeft = "JOY1_XAXIS_NEG"
-InputTwinJoyStrafeRight = "JOY1_XAXIS_POS"
-InputTwinJoyJump = "JOY1_BUTTON4"
-InputTwinJoyCrouch = "JOY1_BUTTON1"
+InputTwinJoyTurnLeft = "KEY_Q,JOY1_RXAXIS_NEG"
+InputTwinJoyTurnRight = "KEY_W,JOY1_RXAXIS_POS"
+InputTwinJoyForward = "KEY_UP,JOY1_YAXIS_NEG"
+InputTwinJoyReverse = "KEY_DOWN,JOY1_YAXIS_POS"
+InputTwinJoyStrafeLeft = "KEY_LEFT,JOY1_XAXIS_NEG"
+InputTwinJoyStrafeRight = "KEY_RIGHT,JOY1_XAXIS_POS"
+InputTwinJoyJump = "KEY_E,JOY1_BUTTON1"
+InputTwinJoyCrouch = "KEY_R,JOY1_BUTTON2"
 
 ; Virtual On individual joystick mapping
 InputTwinJoyLeft1 = "NONE"
@@ -330,104 +160,98 @@ InputTwinJoyDown1 = "NONE"
 InputTwinJoyDown2 = "NONE"
 
 ; Virtual On buttons
-InputTwinJoyShot1 = "JOY1_ZAXIS_POS"
-InputTwinJoyShot2 = "JOY1_RZAXIS_POS"
-InputTwinJoyTurbo1 = "JOY1_BUTTON3,JOY1_BUTTON5"
-InputTwinJoyTurbo2 = "JOY1_BUTTON2,JOY1_BUTTON6"
+InputTwinJoyShot1 = "KEY_A,JOY1_BUTTON5"   ; LB / L1
+InputTwinJoyShot2 = "KEY_S,JOY1_BUTTON6"   ; RB / R1
+InputTwinJoyTurbo1 = "KEY_Z,JOY1_BUTTON1"  ; A / Cross Button
+InputTwinJoyTurbo2 = "KEY_X,JOY1_BUTTON2"  ; B / Circle Button
 
 ; Analog joystick (Star Wars Trilogy)
-InputAnalogJoyLeft = "NONE"             ; digital, move left
-InputAnalogJoyRight = "NONE"            ; digital, move right
-InputAnalogJoyUp = "NONE"               ; digital, move up
-InputAnalogJoyDown = "NONE"             ; digital, move down
-InputAnalogJoyX = "JOY1_XAXIS_INV,MOUSE_XAXIS_INV"   ; analog, full X axis
-InputAnalogJoyY = "JOY1_YAXIS_INV,MOUSE_YAXIS_INV"   ; analog, full Y axis
-InputAnalogJoyTrigger = "JOY1_ZAXIS_NEG,JOY1_BUTTON3,MOUSE_LEFT_BUTTON"
-InputAnalogJoyEvent = "JOY1_BUTTON1,MOUSE_RIGHT_BUTTON"
-InputAnalogJoyTrigger2 = "NONE"
+InputAnalogJoyLeft = "KEY_LEFT"
+InputAnalogJoyRight = "KEY_RIGHT"
+InputAnalogJoyUp = "KEY_UP"
+InputAnalogJoyDown = "KEY_DOWN"
+InputAnalogJoyX = "JOY1_XAXIS,MOUSE_XAXIS"  ; Left Stick X
+InputAnalogJoyY = "JOY1_YAXIS,MOUSE_YAXIS"  ; Left Stick Y
+InputAnalogJoyTrigger = "KEY_A,JOY1_RZAXIS_POS,MOUSE_LEFT_BUTTON" ; Right Trigger
+InputAnalogJoyEvent = "KEY_S,JOY1_ZAXIS_POS,MOUSE_RIGHT_BUTTON"   ; Left Trigger
+InputAnalogJoyTrigger2 = "KEY_D,JOY1_BUTTON1"
 InputAnalogJoyEvent2 = "NONE"
 
-; Light guns (Lost World-only applies when set to 'gun' in Games.xml)
-InputGunLeft = "NONE"                 ; digital, move gun left
-InputGunRight = "NONE"                ; digital, move gun right
-InputGunUp = "NONE"                   ; digital, move gun up
-InputGunDown = "NONE"                 ; digital, move gun down
-InputGunX = "JOY1_XAXIS,MOUSE_XAXIS"    ; analog, full X axis
-InputGunY = "JOY1_YAXIS,MOUSE_YAXIS"    ; analog, full Y axis
-InputTrigger = "JOY1_ZAXIS_NEG,JOY1_BUTTON3,MOUSE_LEFT_BUTTON"
-InputOffscreen = "JOY1_BUTTON1,MOUSE_RIGHT_BUTTON"    ; point off-screen
-InputAutoTrigger = 1                    ; automatic reload when off-screen
+; Light guns (The Lost World)
+InputGunLeft = "KEY_LEFT"
+InputGunRight = "KEY_RIGHT"
+InputGunUp = "KEY_UP"
+InputGunDown = "KEY_DOWN"
+InputGunX = "MOUSE_XAXIS,JOY1_RXAXIS"       ; Right Stick Aiming
+InputGunY = "MOUSE_YAXIS,JOY1_RYAXIS"
+InputTrigger = "KEY_A,JOY1_RZAXIS_POS,MOUSE_LEFT_BUTTON" ; Right Trigger
+InputOffscreen = "KEY_S,JOY1_ZAXIS_POS,MOUSE_RIGHT_BUTTON" ; Left Trigger (Reload)
+InputAutoTrigger = 0
 InputGunLeft2 = "NONE"
 InputGunRight2 = "NONE"
 InputGunUp2 = "NONE"
 InputGunDown2 = "NONE"
-InputGunX2 = "JOY2_XAXIS"
-InputGunY2 = "JOY2_YAXIS"
-InputTrigger2 = "JOY2_ZAXIS_NEG,JOY2_BUTTON3"
-InputOffscreen2 = "JOY2_BUTTON1"
-InputAutoTrigger2 = 1
+InputGunX2 = "JOY2_RXAXIS"
+InputGunY2 = "JOY2_RYAXIS"
+InputTrigger2 = "JOY2_RZAXIS_POS"
+InputOffscreen2 = "JOY2_ZAXIS_POS"
+InputAutoTrigger2 = 0
 
-; Analog guns (Ocean Hunter, LA Machineguns, Lost World-only applies when set to 'analog_gun' in Games.xml)
-InputAnalogGunLeft = "NONE"               ; digital, move gun left
-InputAnalogGunRight = "NONE"              ; digital, move gun right
-InputAnalogGunUp = "NONE"                 ; digital, move gun up
-InputAnalogGunDown = "NONE"               ; digital, move gun down
-InputAnalogGunX = "JOY1_XAXIS,MOUSE_XAXIS"    ; analog, full X axis
-InputAnalogGunY = "JOY1_YAXIS,MOUSE_YAXIS"    ; analog, full Y axis
-InputAnalogTriggerLeft = "JOY1_ZAXIS_NEG,JOY1_BUTTON3,MOUSE_LEFT_BUTTON"    ;Lost World trigger
-InputAnalogTriggerRight = "JOY1_BUTTON1,MOUSE_RIGHT_BUTTON"    ;Lost World off-screen
+; Analog guns (Ocean Hunter, LA Machineguns)
+InputAnalogGunLeft = "KEY_LEFT"
+InputAnalogGunRight = "KEY_RIGHT"
+InputAnalogGunUp = "KEY_UP"
+InputAnalogGunDown = "KEY_DOWN"
+InputAnalogGunX = "MOUSE_XAXIS,JOY1_RXAXIS"
+InputAnalogGunY = "MOUSE_YAXIS,JOY1_RYAXIS"
+InputAnalogTriggerLeft = "KEY_A,JOY1_RZAXIS_POS,MOUSE_LEFT_BUTTON"
+InputAnalogTriggerRight = "KEY_S,JOY1_ZAXIS_POS,MOUSE_RIGHT_BUTTON"
 InputAnalogGunLeft2 = "NONE"
 InputAnalogGunRight2 = "NONE"
 InputAnalogGunUp2 = "NONE"
 InputAnalogGunDown2 = "NONE"
-InputAnalogGunX2 = "JOY2_XAXIS"
-InputAnalogGunY2 = "JOY2_YAXIS"
-InputAnalogTriggerLeft2 = "JOY2_ZAXIS_NEG,JOY2_BUTTON3"    ;Lost World trigger
-InputAnalogTriggerRight2 = "JOY2_BUTTON1"    ;Lost World off-screen
+InputAnalogGunX2 = "NONE"
+InputAnalogGunY2 = "NONE"
+InputAnalogTriggerLeft2 = "NONE"
+InputAnalogTriggerRight2 = "NONE"
 
 ; Ski Champ controls
-InputSkiLeft = "NONE"
-InputSkiRight = "NONE"
-InputSkiUp = "NONE"
-InputSkiDown = "NONE"
+InputSkiLeft = "KEY_LEFT"
+InputSkiRight = "KEY_RIGHT"
+InputSkiUp = "KEY_UP"
+InputSkiDown = "KEY_DOWN"
 InputSkiX = "JOY1_XAXIS"
-InputSkiY = "JOY1_RXAXIS"
-InputSkiPollLeft = "JOY1_ZAXIS_POS"
-InputSkiPollRight = "JOY1_RZAXIS_POS"
-InputSkiSelect1 = "JOY1_BUTTON3"
-InputSkiSelect2 = "JOY1_BUTTON1"
-InputSkiSelect3 = "JOY1_BUTTON2"
+InputSkiY = "JOY1_YAXIS"
+InputSkiPollLeft = "KEY_A,JOY1_BUTTON1"
+InputSkiPollRight = "KEY_S,JOY1_BUTTON2"
+InputSkiSelect1 = "KEY_Q,JOY1_BUTTON3"
+InputSkiSelect2 = "KEY_W,JOY1_BUTTON4"
+InputSkiSelect3 = "KEY_E,JOY1_BUTTON5"
 
 ; Magical Truck Adventure controls
-InputMagicalLeverUp1 = "NONE"
-InputMagicalLeverDown1 = "NONE"
+InputMagicalLeverUp1 = "KEY_UP"
+InputMagicalLeverDown1 = "KEY_DOWN"
 InputMagicalLeverUp2 = "NONE"
 InputMagicalLeverDown2 = "NONE"
 InputMagicalLever1 = "JOY1_YAXIS"
 InputMagicalLever2 = "JOY2_YAXIS"
-InputMagicalPedal1 = "JOY1_BUTTON1"
-InputMagicalPedal2 = "JOY2_BUTTON1"
+InputMagicalPedal1 = "KEY_A,JOY1_BUTTON1"
+InputMagicalPedal2 = "KEY_S,JOY2_BUTTON1"
 
 ; Sega Bass Fishing / Get Bass controls
-InputFishingRodLeft = "NONE"
-InputFishingRodRight = "NONE"
-InputFishingRodUp = "NONE"
-InputFishingRodDown = "NONE"
-InputFishingStickLeft = "NONE"
-InputFishingStickRight = "NONE"
-InputFishingStickUp = "NONE"
-InputFishingStickDown = "NONE"
+InputFishingRodLeft = "KEY_LEFT"
+InputFishingRodRight = "KEY_RIGHT"
+InputFishingRodUp = "KEY_UP"
+InputFishingRodDown = "KEY_DOWN"
+InputFishingStickLeft = "KEY_A"
+InputFishingStickRight = "KEY_D"
+InputFishingStickUp = "KEY_W"
+InputFishingStickDown = "KEY_S"
 InputFishingRodX = "JOY1_XAXIS"
 InputFishingRodY = "JOY1_YAXIS"
 InputFishingStickX = "JOY1_RXAXIS"
 InputFishingStickY = "JOY1_RYAXIS"
-InputFishingReel = "JOY1_RZAXIS_POS"
-InputFishingCast = "JOY1_BUTTON3"
-InputFishingSelect = "JOY1_BUTTON1"
-InputFishingTension = "NONE"
-
-
-InputJoy1XDeadZone=7
-InputJoy1YDeadZone=7
-InputJoy2XDeadZone=7
-InputJoy2YDeadZone=7
+InputFishingReel = "KEY_SPACE,JOY1_RZAXIS_POS"
+InputFishingCast = "KEY_Z,JOY1_BUTTON1"
+InputFishingSelect = "KEY_X,JOY1_BUTTON2"
+InputFishingTension = "KEY_T,JOY1_ZAXIS_POS"

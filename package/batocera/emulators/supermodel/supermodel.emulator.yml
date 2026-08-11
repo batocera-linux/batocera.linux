@@ -18,29 +18,64 @@ shared_features:
   - wheel_midzone
 custom_features:
   engine3D:
-    group: ADVANCED OPTIONS
+    group: GRAPHICS
     prompt: 3D ENGINE
-    description: Enable the legacy or the new 3D engine (choose legacy on X86 for older GPUs).
+    description: Enable the legacy or the new 3D engine. Choose Legacy on x86 for older GPUs. (Not supported on ARM/GLES systems).
     choices:
       Legacy3D: legacy3d
       New3D: new3d
   quadRendering:
-    group: ADVANCED OPTIONS
+    group: GRAPHICS
     prompt: QUAD RENDERING
-    description: Enable proper quad rendering (for higher end X86 systems).
+    description: Enable proper quad rendering (for higher end x86 systems. Automatically disabled on ARM/GLES systems).
     choices:
       'Off': 0
       'On': 1
   m3_wideScreen:
+    group: GRAPHICS
     prompt: WIDESCREEN HACK (GLITCHY)
     description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
     choices:
       'Off': 0
       'On': 1
+  m3_supersampling:
+    group: GRAPHICS
+    prompt: SUPERSAMPLING
+    description: Render 3D graphics at a higher resolution for cleaner edges and anti-aliasing.
+    choices:
+      'Off (1x)': 1
+      '2x': 2
+      '3x': 3
+      '4x': 4
+      '5x': 5
+      '6x': 6
+      '7x': 7
+      '8x': 8
+  m3_stretch:
+    group: GRAPHICS
+    prompt: STRETCH TO FIT
+    description: Stretch the viewport to fill your display, ignoring the native aspect ratio.
+    choices:
+      'Off': 0
+      'On': 1
+  m3_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Sync frame rate with your monitor's refresh rate to prevent tearing. Disable for VRR (G-Sync/FreeSync) displays.
+    choices:
+      'On': 1
+      'Off': 0
+  m3_true_hz:
+    group: GRAPHICS
+    prompt: ACCURATE REFRESH RATE
+    description: Force the internal engine to run at the precise arcade speed of 57.524 Hz. Requires a VRR display for smooth pacing.
+    choices:
+      'Off (60Hz)': 0
+      'On (57.524Hz)': 1
   crt_colour:
-    group: ADVANCED OPTIONS
-    prompt: CRT COLOUR
-    description: CRT-like colour adaption. Requires New 3D engine.
+    group: GRAPHICS
+    prompt: CRT COLOUR EMULATION
+    description: CRT-like colour adaptation. Requires New 3D engine.
     choices:
       None (Default): 0
       ARI/D93 (recommended for all JP developed games): 1
@@ -49,13 +84,21 @@ custom_features:
       BT601_525/D65 (recommended for all US developed games): 4
       BT601_625/D65 (recommended for all EUR/AUS developed games): 5
   upscale_mode:
-    prompt: UPSCALE MODE
-    description: Upscale filter used for the 2D layers. Requires New 3D engine.
+    group: GRAPHICS
+    prompt: 2D LAYER UPSCALE FILTER
+    description: Upscaling filter used for 2D UI layers and backgrounds. Requires New 3D engine.
     choices:
       None/Sharp Pixels: 0
       Biquintic: 1
       Bilinear (Default): 2
       Bicubic: 3
+  m3_no_white_flash:
+    group: GRAPHICS
+    prompt: DISABLE WHITE FLASHES
+    description: Prevents bright white transitions during scene changes in games like Daytona 2 or Scud Race.
+    choices:
+      'No': 0
+      'Yes': 1
   crosshairs:
     group: LIGHT GUN
     prompt: SHOW LIGHT GUN CROSSHAIRS
@@ -74,11 +117,11 @@ custom_features:
   ppcFreq:
     group: ADVANCED OPTIONS
     prompt: ADJUST POWERPC FREQUENCY
-    description: Change the speed of the emulated PowerPC chip (fixes some issues).
+    description: Change the speed of the emulated PowerPC chip (fixes sound or speed issues in some games).
     choices:
       "10": 10
       "20": 20
-      "50": 30
+      "30": 30
       "40": 40
       50 (Default): 50
       "60": 60
@@ -91,6 +134,20 @@ custom_features:
       "130": 130
       "140": 140
       "150": 150
+  m3_scsp:
+    group: AUDIO
+    prompt: SCSP SOUND ENGINE
+    description: Select the SCSP sound emulator. The new engine offers greater accuracy, while legacy uses less CPU.
+    choices:
+      'New (MAME-based)': new
+      'Legacy (ElSemi)': legacy
+  m3_audio_channels:
+    group: AUDIO
+    prompt: AUDIO CHANNELS
+    description: Choose the number of audio channels. The soundcard must support the number of channels selected.
+    choices:
+      'Stereo (2)': 2
+      'Surround (4)': 4
   m3_outputs:
     group: CABINET OUTPUTS
     prompt: CABINET OUTPUTS
