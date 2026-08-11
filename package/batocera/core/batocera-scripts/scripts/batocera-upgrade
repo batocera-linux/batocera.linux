@@ -91,7 +91,7 @@ download_upgrades() {
 	#get md5sum file (optional)
 	curl -A "batocera-upgrade.md5" -sfL "${URL}.md5" -o "${G_LOCAL_FILE}.md5"
 	touch "${G_LOCAL_FILE}"
-	# use real size as download info, faktor 105 for real filsize instead of estimated filespace
+	# use real size as download info, factor 105 for real filesize instead of estimated filespace
 	do_badgeines $((SIZE * 100 / 105 )) &
 	G_GETPERPID=$!
 	curl -A "batocera-upgrade" -sfL "${URL}" -o "${G_LOCAL_FILE}" || return 1
@@ -161,7 +161,7 @@ do_help() {
 		  --check-media-upgrade    Searches for upgrade files in media pool
 
 		  --upgrade                Starts the upgrade on CLI and GUI with configed URL
-		       --type <type>       Download stable or buttlerfly
+		       --type <type>       Download stable or butterfly
 		       --url <url>         Use dedicated download location
 		       --version <version> Use plain version numbers for ex. 5.27.2, 39 or 44
 
@@ -405,7 +405,7 @@ do_update() {
 	then
             if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
             then
-		echo "Outch" >&2
+		echo "Ouch" >&2
             fi
 	fi
     done
