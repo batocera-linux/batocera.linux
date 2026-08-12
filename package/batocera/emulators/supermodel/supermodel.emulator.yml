@@ -51,6 +51,20 @@ custom_features:
       '6x': 6
       '7x': 7
       '8x': 8
+  m3_renderscale:
+    group: GRAPHICS
+    prompt: RENDER SCALE
+    description: Controls the New3D rendering resolution (1x scale = 496x384). Default is 0 (Set Resolution) on x86_64 and 1 on ARM. Requires New3D engine.
+    choices:
+      '0 (Set Resolution)': 0
+      '1': 1
+      '2': 2
+      '3': 3
+      '4': 4
+      '5': 5
+      '6': 6
+      '7': 7
+      '8': 8
   m3_stretch:
     group: GRAPHICS
     prompt: STRETCH TO FIT
