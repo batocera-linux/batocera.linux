@@ -222,6 +222,11 @@ ifeq ($(BR2_PACKAGE_YAD),y)
   BATOCERA_DESKTOPAPPS_TOOLBOX += ps3.toolbox
   BATOCERA_DESKTOPAPPS_ACTIONS += ps3.toolbox.pkgtosquashfs.desktop
 
+  # shadps4
+  # convert PS4 .pkg files into per-game .zar archives
+  BATOCERA_DESKTOPAPPS_TOOLBOX += ps4.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += ps4.toolbox.pkgtozar.desktop
+
   # wine
   ifeq ($(BR2_PACKAGE_WINE_TKG),y)
     BATOCERA_DESKTOPAPPS_TOOLBOX += wine.toolbox

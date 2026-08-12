@@ -1,0 +1,2243 @@
+#!/usr/bin/env python3
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+#
+# This toolbox scans a Batocera PS4 roms directory for .pkg files, groups every
+# package sharing a title id, and converts each game into a shadPS4 .zar
+# (ZArchive) named "<game name> (<region>) [version] [TITLEID].zar".
+#
+# Base game and updates are merged into the archive (shadPS4 overlays a patch
+# onto /app0 anyway); DLC is written as folders under <roms>/DLC/<TITLEID>/,
+# which is the addon install dir the shadPS4 generator configures, because
+# shadPS4 only detects additional content in real directories.
+#
+# PKG parsing and key derivation follow shadPS4's own implementation
+# (src/core/file_format/pkg.cpp, src/core/crypto/crypto.cpp), and the .zar
+# writer the ZArchive format shadPS4 vendors as externals/zarchive.
+#
+# Ported from https://github.com/aderumier/shadps4_pkg_to_zar for BATOCERA.
+#
+
+from __future__ import annotations
+
+import argparse
+import ctypes
+import ctypes.util
+import hashlib
+import hmac
+import os
+import re
+import struct
+import sys
+import threading
+import unicodedata
+import zlib
+from collections import defaultdict
+from dataclasses import dataclass, field
+from typing import BinaryIO, Callable, Dict, Iterator, List, Optional, Tuple
+
+ROMS_PS4 = "/userdata/roms/ps4"
+DLC_DIRNAME = "DLC"
+
+
+# ──────────────────────────────────────────────────────────────────
+# AES backend (OpenSSL through ctypes: AES-128-CBC and AES-128-XTS)
+# ──────────────────────────────────────────────────────────────────
+
+def _load_library(names):
+    for name in names:
+        try:
+            return ctypes.CDLL(name)
+        except OSError:
+            continue
+    found = ctypes.util.find_library(names[-1])
+    if found:
+        return ctypes.CDLL(found)
+    return None
+
+
+class _OpenSSL:
+    """The handful of libcrypto EVP calls the PKG decryption needs."""
+
+    _instance = None
+
+    def __init__(self):
+        lib = _load_library(["libcrypto.so.3", "libcrypto.so.1.1", "libcrypto.so", "crypto"])
+        if lib is None:
+            raise PkgError("libcrypto (OpenSSL) not found; cannot decrypt PKG data")
+        lib.EVP_CIPHER_CTX_new.restype = ctypes.c_void_p
+        lib.EVP_CIPHER_CTX_free.argtypes = [ctypes.c_void_p]
+        lib.EVP_CIPHER_CTX_set_padding.argtypes = [ctypes.c_void_p, ctypes.c_int]
+        lib.EVP_aes_128_cbc.restype = ctypes.c_void_p
+        lib.EVP_aes_128_xts.restype = ctypes.c_void_p
+        lib.EVP_DecryptInit_ex.argtypes = [ctypes.c_void_p] * 5
+        lib.EVP_DecryptUpdate.argtypes = [
+            ctypes.c_void_p, ctypes.c_void_p, ctypes.POINTER(ctypes.c_int),
+            ctypes.c_void_p, ctypes.c_int,
+        ]
+        self.lib = lib
+
+    @classmethod
+    def get(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    def new_ctx(self, cipher, key, iv):
+        ctx = ctypes.c_void_p(self.lib.EVP_CIPHER_CTX_new())
+        if not ctx:
+            raise PkgError("EVP_CIPHER_CTX_new failed")
+        if self.lib.EVP_DecryptInit_ex(ctx, ctypes.c_void_p(cipher), None, key, iv) != 1:
+            self.lib.EVP_CIPHER_CTX_free(ctx)
+            raise PkgError("EVP_DecryptInit_ex failed")
+        self.lib.EVP_CIPHER_CTX_set_padding(ctx, 0)
+        return ctx
+
+    def free_ctx(self, ctx):
+        self.lib.EVP_CIPHER_CTX_free(ctx)
+
+    def update(self, ctx, data, out, outl):
+        if self.lib.EVP_DecryptUpdate(ctx, out, ctypes.byref(outl), data, len(data)) != 1:
+            raise PkgError("EVP_DecryptUpdate failed")
+        return out.raw[:outl.value]
+
+
+def _aes_cbc_decrypt(key: bytes, iv: bytes, data: bytes) -> bytes:
+    """Decrypt an AES-128-CBC buffer whose length is already block aligned."""
+    ssl = _OpenSSL.get()
+    ctx = ssl.new_ctx(ssl.lib.EVP_aes_128_cbc(), key, iv)
+    try:
+        out = ctypes.create_string_buffer(len(data) + 16)
+        return ssl.update(ctx, data, out, ctypes.c_int(0))
+    finally:
+        ssl.free_ctx(ctx)
+
+
+class _XtsDecryptor:
+    """AES-128-XTS over fixed 0x1000-byte sectors, as used by the PFS image."""
+
+    def __init__(self, data_key: bytes, tweak_key: bytes) -> None:
+        self._ssl = _OpenSSL.get()
+        self._ctx = self._ssl.new_ctx(
+            self._ssl.lib.EVP_aes_128_xts(), data_key + tweak_key, bytes(16))
+        self._out = ctypes.create_string_buffer(XTS_SECTOR_SIZE + 16)
+        self._outl = ctypes.c_int(0)
+
+    def __del__(self):
+        ctx = getattr(self, "_ctx", None)
+        if ctx is not None:
+            self._ssl.free_ctx(ctx)
+            self._ctx = None
+
+    def decrypt(self, data: bytes, first_sector: int) -> bytes:
+        if len(data) % XTS_SECTOR_SIZE:
+            raise PkgError("XTS input must be a multiple of the sector size")
+        view = memoryview(data)
+        parts = []
+        for i in range(len(data) // XTS_SECTOR_SIZE):
+            tweak = (first_sector + i).to_bytes(16, "little")
+            if self._ssl.lib.EVP_DecryptInit_ex(self._ctx, None, None, None, tweak) != 1:
+                raise PkgError("EVP_DecryptInit_ex failed to reset the XTS tweak")
+            sector = bytes(view[i * XTS_SECTOR_SIZE:(i + 1) * XTS_SECTOR_SIZE])
+            parts.append(self._ssl.update(self._ctx, sector, self._out, self._outl))
+        return b"".join(parts)
+
+
+# ──────────────────────────────────────────────────────────────────
+# zstd backend (stdlib on python 3.14, otherwise libzstd through ctypes)
+# ──────────────────────────────────────────────────────────────────
+
+class _LibZstd:
+    """ZSTD_compress/ZSTD_decompress from libzstd, for pythons without _zstd."""
+
+    _instance = None
+
+    def __init__(self):
+        lib = _load_library(["libzstd.so.1", "libzstd.so", "zstd"])
+        if lib is None:
+            raise ZArchiveError(
+                "no zstd support: neither the python zstd module nor libzstd was found")
+        lib.ZSTD_compressBound.restype = ctypes.c_size_t
+        lib.ZSTD_compressBound.argtypes = [ctypes.c_size_t]
+        lib.ZSTD_compress.restype = ctypes.c_size_t
+        lib.ZSTD_compress.argtypes = [
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t, ctypes.c_int,
+        ]
+        lib.ZSTD_decompress.restype = ctypes.c_size_t
+        lib.ZSTD_decompress.argtypes = [
+            ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t,
+        ]
+        lib.ZSTD_isError.restype = ctypes.c_uint
+        lib.ZSTD_isError.argtypes = [ctypes.c_size_t]
+        lib.ZSTD_getErrorName.restype = ctypes.c_char_p
+        lib.ZSTD_getErrorName.argtypes = [ctypes.c_size_t]
+        self.lib = lib
+
+    @classmethod
+    def get(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    def _check(self, size):
+        if self.lib.ZSTD_isError(size):
+            raise ZArchiveError(
+                f"zstd error: {self.lib.ZSTD_getErrorName(size).decode('utf-8', 'replace')}")
+        return size
+
+    def compress(self, data: bytes, level: int) -> bytes:
+        bound = self.lib.ZSTD_compressBound(len(data))
+        dst = ctypes.create_string_buffer(bound)
+        size = self._check(self.lib.ZSTD_compress(dst, bound, data, len(data), level))
+        return dst.raw[:size]
+
+    def decompress(self, data: bytes, size: int) -> bytes:
+        dst = ctypes.create_string_buffer(size)
+        got = self._check(self.lib.ZSTD_decompress(dst, size, data, len(data)))
+        return dst.raw[:got]
+
+def _make_compressor(level: int) -> Callable[[bytes], bytes]:
+    """Return a ``bytes -> bytes`` zstd compressor from whatever backend exists.
+
+    The reference ZArchive implementation calls ``ZSTD_compress(..., level)``,
+    so any backend producing a standard single frame is interchangeable here.
+    """
+    try:
+        from compression import zstd
+    except ImportError:
+        pass
+    else:
+        return lambda data: zstd.compress(data, level)
+
+    try:
+        import zstandard
+    except ImportError:
+        pass
+    else:
+        return zstandard.ZstdCompressor(level=level).compress
+
+    lib = _LibZstd.get()
+    return lambda data: lib.compress(data, level)
+
+
+def _zstd_decompress(data: bytes, size: int) -> bytes:
+    """Decompress one zstd frame known to expand to at most ``size`` bytes."""
+    try:
+        from compression import zstd
+    except ImportError:
+        pass
+    else:
+        return zstd.decompress(data)
+
+    try:
+        import zstandard
+    except ImportError:
+        pass
+    else:
+        return zstandard.ZstdDecompressor().decompress(data, max_output_size=size)
+
+    return _LibZstd.get().decompress(data, size)
+
+
+# ──────────────────────────────────────────────────────────────────
+# RSA keysets and PKG entry names (from shadPS4 src/core/crypto/keys.h)
+# ──────────────────────────────────────────────────────────────────
+
+
+# PkgDerivedKey3Keyset (validated: n == p*q and d*e == 1 mod lcm(p-1,q-1))
+PkgDerivedKey3Keyset_N = 0xd212fc335f6ddb831609628b0356273782d477853529392d526b8c4c8cfb06c1845be7d4f7bcd24e6245cd2abbd77776453655273fb3f5f98eda4befaa59aeb39bea5498d206326a58312ae0d44f90b50a7decf43a9c52672d99318e0c43e682fe0746e12e50d41f2d2f7ed908ba06b3bf2e203f4e3ffe44ffaa50435791699449158282e40f4c8d9d2cc95b1d64bf888bd4c594e76547841ee57910fb989347b97d8512a640982cf792bc951932ede890560d65c1aa78c62e54fd5f54a1f67ee5e05f61c120b4b9b4330870e4df8956ed012946775f8cb8a9f51e2eb3b9bfe009b78d28d4a6c3b81e1f07ebb4120b95b88530fddc3913d07cdc8fedf9c9a3c1
+PkgDerivedKey3Keyset_D = 0x32d903908fbdb08f572b285e0b8db3ea5cd17ea890888cdd6a80bbb1dfc1f70daa32f0b77ccb88800e8b64b0be4cd60e9b8c1e2a64e1f35cd77601415e935c94fedd4662c31b5ae2a0bc2debc3980aa7b7856970682b644ab31fcc7ddc7c26f477f65cf2ae5a442dd3ab16620419bafb90ffe23050896ecb56b2ebc09116925e308eaec7945dfd35e120f8ad3ebc08bfc036749fd5bb5208fd0666f37ab304f475295de95faa1030b20f5a1ac12ab3fecb21ad80ec8f20091cdbc55894c29cc6ce82653e5790bca98b06b4f072f677df9864f1ecfe372dbcae8c08811fc3c9891ac742824b2edc8e8d73ceb1cc01d90870873c4408ec498f815ae240ff77fc0d
+PkgDerivedKey3Keyset_E = 65537
+
+# FakeKeyset (validated: n == p*q and d*e == 1 mod lcm(p-1,q-1))
+FakeKeyset_N = 0xc6cf71e7e59af0d12a2c458bf92a0ec143058bc37117801dcd497dde359d259ba0d7a0f27d6c087eaa5502682b23c644b84418eb56cf16a24803c9e74f87eb3d30c31588bf20e79dff770cde1d241e63a94f8abf5bbe601968333bfced9f474e5ff8eacb3d00bd6701f92c6dc6ac1364e76714f3dc52696ab9832c4230131bb2d8a5020d79ed96b10df8cc0cdf81954f035809570e80692efeff5277ea7528a8fbc9bebf9fbbb7798e1805e180bd50349481d353c269a2d24ccf6cf4572c104a3ffb22fd8b97e2c95ba62bcdd61b6bdb687f4bc2a05034c005e58def2467ff9340cf2d62a2a050b1f13aa83dfd80d1f9b80522afc8354590588ee33a7cbd3e27
+FakeKeyset_D = 0x7f76cd0ee2d4de051cc6d9a80e8dfa7bca1eaa271a40f8f1228735dddbfdeef8c2bcbd01fb8be23e63b2b1225c56496e11be07440b9a2666d1492c8fd31bcfa4a1b8d1fba49ed2212883098af6a00ba3d60f9b6368ccbc0c4e145b27a4a9f42bb9b87bc0e651ad1d77d46bb9ce20d126667e5e9ea2e96b90f373b8528f4411030c1397393d132258d5438249da6e7ca1c58ca5b009e0ce3ddff49d3c9715e26ac72b3c509323dbba4a226644ac78bb0e1a2743b57167aff4ab48469373d042ab9363e56c9ade5024c0237d99793f2207e0c148561bdf830912b42d456bc9c06885999079961ad7f54d1f3783404aec3937a680927dc580c7d66ffe8a7989c6b1
+FakeKeyset_E = 65537
+
+PKG_ENTRY_NAMES = {
+    0x0001: "digests",
+    0x0010: "entry_keys",
+    0x0020: "image_key",
+    0x0080: "general_digests",
+    0x0100: "metas",
+    0x0200: "entry_names",
+    0x0400: "license.dat",
+    0x0401: "license.info",
+    0x0402: "nptitle.dat",
+    0x0403: "npbind.dat",
+    0x0404: "selfinfo.dat",
+    0x0406: "imageinfo.dat",
+    0x0407: "target-deltainfo.dat",
+    0x0408: "origin-deltainfo.dat",
+    0x0409: "psreserved.dat",
+    0x1000: "param.sfo",
+    0x1001: "playgo-chunk.dat",
+    0x1002: "playgo-chunk.sha",
+    0x1003: "playgo-manifest.xml",
+    0x1004: "pronunciation.xml",
+    0x1005: "pronunciation.sig",
+    0x1006: "pic1.png",
+    0x1007: "pubtoolinfo.dat",
+    0x1008: "app/playgo-chunk.dat",
+    0x1009: "app/playgo-chunk.sha",
+    0x100A: "app/playgo-manifest.xml",
+    0x100B: "shareparam.json",
+    0x100C: "shareoverlayimage.png",
+    0x100D: "save_data.png",
+    0x100E: "shareprivacyguardimage.png",
+    0x1200: "icon0.png",
+    0x1201: "icon0_00.png",
+    0x1202: "icon0_01.png",
+    0x1203: "icon0_02.png",
+    0x1204: "icon0_03.png",
+    0x1205: "icon0_04.png",
+    0x1206: "icon0_05.png",
+    0x1207: "icon0_06.png",
+    0x1208: "icon0_07.png",
+    0x1209: "icon0_08.png",
+    0x120A: "icon0_09.png",
+    0x120B: "icon0_10.png",
+    0x120C: "icon0_11.png",
+    0x120D: "icon0_12.png",
+    0x120E: "icon0_13.png",
+    0x120F: "icon0_14.png",
+    0x1210: "icon0_15.png",
+    0x1211: "icon0_16.png",
+    0x1212: "icon0_17.png",
+    0x1213: "icon0_18.png",
+    0x1214: "icon0_19.png",
+    0x1215: "icon0_20.png",
+    0x1216: "icon0_21.png",
+    0x1217: "icon0_22.png",
+    0x1218: "icon0_23.png",
+    0x1219: "icon0_24.png",
+    0x121A: "icon0_25.png",
+    0x121B: "icon0_26.png",
+    0x121C: "icon0_27.png",
+    0x121D: "icon0_28.png",
+    0x121E: "icon0_29.png",
+    0x121F: "icon0_30.png",
+    0x1220: "pic0.png",
+    0x1240: "snd0.at9",
+    0x1241: "pic1_00.png",
+    0x1242: "pic1_01.png",
+    0x1243: "pic1_02.png",
+    0x1244: "pic1_03.png",
+    0x1245: "pic1_04.png",
+    0x1246: "pic1_05.png",
+    0x1247: "pic1_06.png",
+    0x1248: "pic1_07.png",
+    0x1249: "pic1_08.png",
+    0x124A: "pic1_09.png",
+    0x124B: "pic1_10.png",
+    0x124C: "pic1_11.png",
+    0x124D: "pic1_12.png",
+    0x124E: "pic1_13.png",
+    0x124F: "pic1_14.png",
+    0x1250: "pic1_15.png",
+    0x1251: "pic1_16.png",
+    0x1252: "pic1_17.png",
+    0x1253: "pic1_18.png",
+    0x1254: "pic1_19.png",
+    0x1255: "pic1_20.png",
+    0x1256: "pic1_21.png",
+    0x1257: "pic1_22.png",
+    0x1258: "pic1_23.png",
+    0x1259: "pic1_24.png",
+    0x125A: "pic1_25.png",
+    0x125B: "pic1_26.png",
+    0x125C: "pic1_27.png",
+    0x125D: "pic1_28.png",
+    0x125E: "pic1_29.png",
+    0x125F: "pic1_30.png",
+    0x1260: "changeinfo/changeinfo.xml",
+    0x1261: "changeinfo/changeinfo_00.xml",
+    0x1262: "changeinfo/changeinfo_01.xml",
+    0x1263: "changeinfo/changeinfo_02.xml",
+    0x1264: "changeinfo/changeinfo_03.xml",
+    0x1265: "changeinfo/changeinfo_04.xml",
+    0x1266: "changeinfo/changeinfo_05.xml",
+    0x1267: "changeinfo/changeinfo_06.xml",
+    0x1268: "changeinfo/changeinfo_07.xml",
+    0x1269: "changeinfo/changeinfo_08.xml",
+    0x126A: "changeinfo/changeinfo_09.xml",
+    0x126B: "changeinfo/changeinfo_10.xml",
+    0x126C: "changeinfo/changeinfo_11.xml",
+    0x126D: "changeinfo/changeinfo_12.xml",
+    0x126E: "changeinfo/changeinfo_13.xml",
+    0x126F: "changeinfo/changeinfo_14.xml",
+    0x1270: "changeinfo/changeinfo_15.xml",
+    0x1271: "changeinfo/changeinfo_16.xml",
+    0x1272: "changeinfo/changeinfo_17.xml",
+    0x1273: "changeinfo/changeinfo_18.xml",
+    0x1274: "changeinfo/changeinfo_19.xml",
+    0x1275: "changeinfo/changeinfo_20.xml",
+    0x1276: "changeinfo/changeinfo_21.xml",
+    0x1277: "changeinfo/changeinfo_22.xml",
+    0x1278: "changeinfo/changeinfo_23.xml",
+    0x1279: "changeinfo/changeinfo_24.xml",
+    0x127A: "changeinfo/changeinfo_25.xml",
+    0x127B: "changeinfo/changeinfo_26.xml",
+    0x127C: "changeinfo/changeinfo_27.xml",
+    0x127D: "changeinfo/changeinfo_28.xml",
+    0x127E: "changeinfo/changeinfo_29.xml",
+    0x127F: "changeinfo/changeinfo_30.xml",
+    0x1280: "icon0.dds",
+    0x1281: "icon0_00.dds",
+    0x1282: "icon0_01.dds",
+    0x1283: "icon0_02.dds",
+    0x1284: "icon0_03.dds",
+    0x1285: "icon0_04.dds",
+    0x1286: "icon0_05.dds",
+    0x1287: "icon0_06.dds",
+    0x1288: "icon0_07.dds",
+    0x1289: "icon0_08.dds",
+    0x128A: "icon0_09.dds",
+    0x128B: "icon0_10.dds",
+    0x128C: "icon0_11.dds",
+    0x128D: "icon0_12.dds",
+    0x128E: "icon0_13.dds",
+    0x128F: "icon0_14.dds",
+    0x1290: "icon0_15.dds",
+    0x1291: "icon0_16.dds",
+    0x1292: "icon0_17.dds",
+    0x1293: "icon0_18.dds",
+    0x1294: "icon0_19.dds",
+    0x1295: "icon0_20.dds",
+    0x1296: "icon0_21.dds",
+    0x1297: "icon0_22.dds",
+    0x1298: "icon0_23.dds",
+    0x1299: "icon0_24.dds",
+    0x129A: "icon0_25.dds",
+    0x129B: "icon0_26.dds",
+    0x129C: "icon0_27.dds",
+    0x129D: "icon0_28.dds",
+    0x129E: "icon0_29.dds",
+    0x129F: "icon0_30.dds",
+    0x12A0: "pic0.dds",
+    0x12C0: "pic1.dds",
+    0x12C1: "pic1_00.dds",
+    0x12C2: "pic1_01.dds",
+    0x12C3: "pic1_02.dds",
+    0x12C4: "pic1_03.dds",
+    0x12C5: "pic1_04.dds",
+    0x12C6: "pic1_05.dds",
+    0x12C7: "pic1_06.dds",
+    0x12C8: "pic1_07.dds",
+    0x12C9: "pic1_08.dds",
+    0x12CA: "pic1_09.dds",
+    0x12CB: "pic1_10.dds",
+    0x12CC: "pic1_11.dds",
+    0x12CD: "pic1_12.dds",
+    0x12CE: "pic1_13.dds",
+    0x12CF: "pic1_14.dds",
+    0x12D0: "pic1_15.dds",
+    0x12D1: "pic1_16.dds",
+    0x12D2: "pic1_17.dds",
+    0x12D3: "pic1_18.dds",
+    0x12D4: "pic1_19.dds",
+    0x12D5: "pic1_20.dds",
+    0x12D6: "pic1_21.dds",
+    0x12D7: "pic1_22.dds",
+    0x12D8: "pic1_23.dds",
+    0x12D9: "pic1_24.dds",
+    0x12DA: "pic1_25.dds",
+    0x12DB: "pic1_26.dds",
+    0x12DC: "pic1_27.dds",
+    0x12DD: "pic1_28.dds",
+    0x12DE: "pic1_29.dds",
+    0x12DF: "pic1_30.dds",
+    0x1400: "trophy/trophy00.trp",
+    0x1401: "trophy/trophy01.trp",
+    0x1402: "trophy/trophy02.trp",
+    0x1403: "trophy/trophy03.trp",
+    0x1404: "trophy/trophy04.trp",
+    0x1405: "trophy/trophy05.trp",
+    0x1406: "trophy/trophy06.trp",
+    0x1407: "trophy/trophy07.trp",
+    0x1408: "trophy/trophy08.trp",
+    0x1409: "trophy/trophy09.trp",
+    0x140A: "trophy/trophy10.trp",
+    0x140B: "trophy/trophy11.trp",
+    0x140C: "trophy/trophy12.trp",
+    0x140D: "trophy/trophy13.trp",
+    0x140E: "trophy/trophy14.trp",
+    0x140F: "trophy/trophy15.trp",
+    0x1410: "trophy/trophy16.trp",
+    0x1411: "trophy/trophy17.trp",
+    0x1412: "trophy/trophy18.trp",
+    0x1413: "trophy/trophy19.trp",
+    0x1414: "trophy/trophy20.trp",
+    0x1415: "trophy/trophy21.trp",
+    0x1416: "trophy/trophy22.trp",
+    0x1417: "trophy/trophy23.trp",
+    0x1418: "trophy/trophy24.trp",
+    0x1419: "trophy/trophy25.trp",
+    0x141A: "trophy/trophy26.trp",
+    0x141B: "trophy/trophy27.trp",
+    0x141C: "trophy/trophy28.trp",
+    0x141D: "trophy/trophy29.trp",
+    0x141E: "trophy/trophy30.trp",
+    0x141F: "trophy/trophy31.trp",
+    0x1420: "trophy/trophy32.trp",
+    0x1421: "trophy/trophy33.trp",
+    0x1422: "trophy/trophy34.trp",
+    0x1423: "trophy/trophy35.trp",
+    0x1424: "trophy/trophy36.trp",
+    0x1425: "trophy/trophy37.trp",
+    0x1426: "trophy/trophy38.trp",
+    0x1427: "trophy/trophy39.trp",
+    0x1428: "trophy/trophy40.trp",
+    0x1429: "trophy/trophy41.trp",
+    0x142A: "trophy/trophy42.trp",
+    0x142B: "trophy/trophy43.trp",
+    0x142C: "trophy/trophy44.trp",
+    0x142D: "trophy/trophy45.trp",
+    0x142E: "trophy/trophy46.trp",
+    0x142F: "trophy/trophy47.trp",
+    0x1430: "trophy/trophy48.trp",
+    0x1431: "trophy/trophy49.trp",
+    0x1432: "trophy/trophy50.trp",
+    0x1433: "trophy/trophy51.trp",
+    0x1434: "trophy/trophy52.trp",
+    0x1435: "trophy/trophy53.trp",
+    0x1436: "trophy/trophy54.trp",
+    0x1437: "trophy/trophy55.trp",
+    0x1438: "trophy/trophy56.trp",
+    0x1439: "trophy/trophy57.trp",
+    0x143A: "trophy/trophy58.trp",
+    0x143B: "trophy/trophy59.trp",
+    0x143C: "trophy/trophy60.trp",
+    0x143D: "trophy/trophy61.trp",
+    0x143E: "trophy/trophy62.trp",
+    0x143F: "trophy/trophy63.trp",
+    0x1440: "trophy/trophy64.trp",
+    0x1441: "trophy/trophy65.trp",
+    0x1442: "trophy/trophy66.trp",
+    0x1443: "trophy/trophy67.trp",
+    0x1444: "trophy/trophy68.trp",
+    0x1445: "trophy/trophy69.trp",
+    0x1446: "trophy/trophy70.trp",
+    0x1447: "trophy/trophy71.trp",
+    0x1448: "trophy/trophy72.trp",
+    0x1449: "trophy/trophy73.trp",
+    0x144A: "trophy/trophy74.trp",
+    0x144B: "trophy/trophy75.trp",
+    0x144C: "trophy/trophy76.trp",
+    0x144D: "trophy/trophy77.trp",
+    0x144E: "trophy/trophy78.trp",
+    0x144F: "trophy/trophy79.trp",
+    0x1450: "trophy/trophy80.trp",
+    0x1451: "trophy/trophy81.trp",
+    0x1452: "trophy/trophy82.trp",
+    0x1453: "trophy/trophy83.trp",
+    0x1454: "trophy/trophy84.trp",
+    0x1455: "trophy/trophy85.trp",
+    0x1456: "trophy/trophy86.trp",
+    0x1457: "trophy/trophy87.trp",
+    0x1458: "trophy/trophy88.trp",
+    0x1459: "trophy/trophy89.trp",
+    0x145A: "trophy/trophy90.trp",
+    0x145B: "trophy/trophy91.trp",
+    0x145C: "trophy/trophy92.trp",
+    0x145D: "trophy/trophy93.trp",
+    0x145E: "trophy/trophy94.trp",
+    0x145F: "trophy/trophy95.trp",
+    0x1460: "trophy/trophy96.trp",
+    0x1461: "trophy/trophy97.trp",
+    0x1462: "trophy/trophy98.trp",
+    0x1463: "trophy/trophy99.trp",
+    0x1600: "keymap_rp/001.png",
+    0x1601: "keymap_rp/002.png",
+    0x1602: "keymap_rp/003.png",
+    0x1603: "keymap_rp/004.png",
+    0x1604: "keymap_rp/005.png",
+    0x1605: "keymap_rp/006.png",
+    0x1606: "keymap_rp/007.png",
+    0x1607: "keymap_rp/008.png",
+    0x1608: "keymap_rp/009.png",
+    0x1609: "keymap_rp/010.png",
+    0x1610: "keymap_rp/00/001.png",
+    0x1611: "keymap_rp/00/002.png",
+    0x1612: "keymap_rp/00/003.png",
+    0x1613: "keymap_rp/00/004.png",
+    0x1614: "keymap_rp/00/005.png",
+    0x1615: "keymap_rp/00/006.png",
+    0x1616: "keymap_rp/00/007.png",
+    0x1617: "keymap_rp/00/008.png",
+    0x1618: "keymap_rp/00/009.png",
+    0x1619: "keymap_rp/00/010.png",
+    0x1620: "keymap_rp/01/001.png",
+    0x1621: "keymap_rp/01/002.png",
+    0x1622: "keymap_rp/01/003.png",
+    0x1623: "keymap_rp/01/004.png",
+    0x1624: "keymap_rp/01/005.png",
+    0x1625: "keymap_rp/01/006.png",
+    0x1626: "keymap_rp/01/007.png",
+    0x1627: "keymap_rp/01/008.png",
+    0x1628: "keymap_rp/01/009.png",
+    0x1629: "keymap_rp/01/010.png",
+    0x1630: "keymap_rp/02/001.png",
+    0x1631: "keymap_rp/02/002.png",
+    0x1632: "keymap_rp/02/003.png",
+    0x1633: "keymap_rp/02/004.png",
+    0x1634: "keymap_rp/02/005.png",
+    0x1635: "keymap_rp/02/006.png",
+    0x1636: "keymap_rp/02/007.png",
+    0x1637: "keymap_rp/02/008.png",
+    0x1638: "keymap_rp/02/009.png",
+    0x1639: "keymap_rp/02/010.png",
+    0x1640: "keymap_rp/03/001.png",
+    0x1641: "keymap_rp/03/002.png",
+    0x1642: "keymap_rp/03/003.png",
+    0x1643: "keymap_rp/03/004.png",
+    0x1644: "keymap_rp/03/005.png",
+    0x1645: "keymap_rp/03/006.png",
+    0x1646: "keymap_rp/03/007.png",
+    0x1647: "keymap_rp/03/008.png",
+    0x1648: "keymap_rp/03/0010.png",
+    0x1650: "keymap_rp/04/001.png",
+    0x1651: "keymap_rp/04/002.png",
+    0x1652: "keymap_rp/04/003.png",
+    0x1653: "keymap_rp/04/004.png",
+    0x1654: "keymap_rp/04/005.png",
+    0x1655: "keymap_rp/04/006.png",
+    0x1656: "keymap_rp/04/007.png",
+    0x1657: "keymap_rp/04/008.png",
+    0x1658: "keymap_rp/04/009.png",
+    0x1659: "keymap_rp/04/010.png",
+    0x1660: "keymap_rp/05/001.png",
+    0x1661: "keymap_rp/05/002.png",
+    0x1662: "keymap_rp/05/003.png",
+    0x1663: "keymap_rp/05/004.png",
+    0x1664: "keymap_rp/05/005.png",
+    0x1665: "keymap_rp/05/006.png",
+    0x1666: "keymap_rp/05/007.png",
+    0x1667: "keymap_rp/05/008.png",
+    0x1668: "keymap_rp/05/009.png",
+    0x1669: "keymap_rp/05/010.png",
+    0x1670: "keymap_rp/06/001.png",
+    0x1671: "keymap_rp/06/002.png",
+    0x1672: "keymap_rp/06/003.png",
+    0x1673: "keymap_rp/06/004.png",
+    0x1674: "keymap_rp/06/005.png",
+    0x1675: "keymap_rp/06/006.png",
+    0x1676: "keymap_rp/06/007.png",
+    0x1677: "keymap_rp/06/008.png",
+    0x1678: "keymap_rp/06/009.png",
+    0x1679: "keymap_rp/06/010.png",
+    0x1680: "keymap_rp/07/001.png",
+    0x1681: "keymap_rp/07/002.png",
+    0x1682: "keymap_rp/07/003.png",
+    0x1683: "keymap_rp/07/004.png",
+    0x1684: "keymap_rp/07/005.png",
+    0x1685: "keymap_rp/07/006.png",
+    0x1686: "keymap_rp/07/007.png",
+    0x1687: "keymap_rp/07/008.png",
+    0x1688: "keymap_rp/07/009.png",
+    0x1689: "keymap_rp/07/010.png",
+    0x1690: "keymap_rp/08/001.png",
+    0x1691: "keymap_rp/08/002.png",
+    0x1692: "keymap_rp/08/003.png",
+    0x1693: "keymap_rp/08/004.png",
+    0x1694: "keymap_rp/08/005.png",
+    0x1695: "keymap_rp/08/006.png",
+    0x1696: "keymap_rp/08/007.png",
+    0x1697: "keymap_rp/08/008.png",
+    0x1698: "keymap_rp/08/009.png",
+    0x1699: "keymap_rp/08/010.png",
+    0x16A0: "keymap_rp/09/001.png",
+    0x16A1: "keymap_rp/09/002.png",
+    0x16A2: "keymap_rp/09/003.png",
+    0x16A3: "keymap_rp/09/004.png",
+    0x16A4: "keymap_rp/09/005.png",
+    0x16A5: "keymap_rp/09/006.png",
+    0x16A6: "keymap_rp/09/007.png",
+    0x16A7: "keymap_rp/09/008.png",
+    0x16A8: "keymap_rp/09/009.png",
+    0x16A9: "keymap_rp/09/010.png",
+    0x16B0: "keymap_rp/10/001.png",
+    0x16B1: "keymap_rp/10/002.png",
+    0x16B2: "keymap_rp/10/003.png",
+    0x16B3: "keymap_rp/10/004.png",
+    0x16B4: "keymap_rp/10/005.png",
+    0x16B5: "keymap_rp/10/006.png",
+    0x16B6: "keymap_rp/10/007.png",
+    0x16B7: "keymap_rp/10/008.png",
+    0x16B8: "keymap_rp/10/009.png",
+    0x16B9: "keymap_rp/10/010.png",
+    0x16C0: "keymap_rp/11/001.png",
+    0x16C1: "keymap_rp/11/002.png",
+    0x16C2: "keymap_rp/11/003.png",
+    0x16C3: "keymap_rp/11/004.png",
+    0x16C4: "keymap_rp/11/005.png",
+    0x16C5: "keymap_rp/11/006.png",
+    0x16C6: "keymap_rp/11/007.png",
+    0x16C7: "keymap_rp/11/008.png",
+    0x16C8: "keymap_rp/11/009.png",
+    0x16C9: "keymap_rp/11/010.png",
+    0x16D0: "keymap_rp/12/001.png",
+    0x16D1: "keymap_rp/12/002.png",
+    0x16D2: "keymap_rp/12/003.png",
+    0x16D3: "keymap_rp/12/004.png",
+    0x16D4: "keymap_rp/12/005.png",
+    0x16D5: "keymap_rp/12/006.png",
+    0x16D6: "keymap_rp/12/007.png",
+    0x16D7: "keymap_rp/12/008.png",
+    0x16D8: "keymap_rp/12/009.png",
+    0x16D9: "keymap_rp/12/010.png",
+    0x16E0: "keymap_rp/13/001.png",
+    0x16E1: "keymap_rp/13/002.png",
+    0x16E2: "keymap_rp/13/003.png",
+    0x16E3: "keymap_rp/13/004.png",
+    0x16E4: "keymap_rp/13/005.png",
+    0x16E5: "keymap_rp/13/006.png",
+    0x16E6: "keymap_rp/13/007.png",
+    0x16E7: "keymap_rp/13/008.png",
+    0x16E8: "keymap_rp/13/009.png",
+    0x16E9: "keymap_rp/13/010.png",
+    0x16F0: "keymap_rp/14/001.png",
+    0x16F1: "keymap_rp/14/002.png",
+    0x16F2: "keymap_rp/14/003.png",
+    0x16F3: "keymap_rp/14/004.png",
+    0x16F4: "keymap_rp/14/005.png",
+    0x16F5: "keymap_rp/14/006.png",
+    0x16F6: "keymap_rp/14/007.png",
+    0x16F7: "keymap_rp/14/008.png",
+    0x16F8: "keymap_rp/14/009.png",
+    0x16F9: "keymap_rp/14/010.png",
+    0x1700: "keymap_rp/15/001.png",
+    0x1701: "keymap_rp/15/002.png",
+    0x1702: "keymap_rp/15/003.png",
+    0x1703: "keymap_rp/15/004.png",
+    0x1704: "keymap_rp/15/005.png",
+    0x1705: "keymap_rp/15/006.png",
+    0x1706: "keymap_rp/15/007.png",
+    0x1707: "keymap_rp/15/008.png",
+    0x1708: "keymap_rp/15/009.png",
+    0x1709: "keymap_rp/15/010.png",
+    0x1710: "keymap_rp/16/001.png",
+    0x1711: "keymap_rp/16/002.png",
+    0x1712: "keymap_rp/16/003.png",
+    0x1713: "keymap_rp/16/004.png",
+    0x1714: "keymap_rp/16/005.png",
+    0x1715: "keymap_rp/16/006.png",
+    0x1716: "keymap_rp/16/007.png",
+    0x1717: "keymap_rp/16/008.png",
+    0x1718: "keymap_rp/16/009.png",
+    0x1719: "keymap_rp/16/010.png",
+    0x1720: "keymap_rp/17/001.png",
+    0x1721: "keymap_rp/17/002.png",
+    0x1722: "keymap_rp/17/003.png",
+    0x1723: "keymap_rp/17/004.png",
+    0x1724: "keymap_rp/17/005.png",
+    0x1725: "keymap_rp/17/006.png",
+    0x1726: "keymap_rp/17/007.png",
+    0x1727: "keymap_rp/17/008.png",
+    0x1728: "keymap_rp/17/009.png",
+    0x1729: "keymap_rp/17/010.png",
+    0x1730: "keymap_rp/18/001.png",
+    0x1731: "keymap_rp/18/002.png",
+    0x1732: "keymap_rp/18/003.png",
+    0x1733: "keymap_rp/18/004.png",
+    0x1734: "keymap_rp/18/005.png",
+    0x1735: "keymap_rp/18/006.png",
+    0x1736: "keymap_rp/18/007.png",
+    0x1737: "keymap_rp/18/008.png",
+    0x1738: "keymap_rp/18/009.png",
+    0x1739: "keymap_rp/18/010.png",
+    0x1740: "keymap_rp/19/001.png",
+    0x1741: "keymap_rp/19/002.png",
+    0x1742: "keymap_rp/19/003.png",
+    0x1743: "keymap_rp/19/004.png",
+    0x1744: "keymap_rp/19/005.png",
+    0x1745: "keymap_rp/19/006.png",
+    0x1746: "keymap_rp/19/007.png",
+    0x1747: "keymap_rp/19/008.png",
+    0x1748: "keymap_rp/19/009.png",
+    0x1749: "keymap_rp/19/010.png",
+    0x1750: "keymap_rp/20/001.png",
+    0x1751: "keymap_rp/20/002.png",
+    0x1752: "keymap_rp/20/003.png",
+    0x1753: "keymap_rp/20/004.png",
+    0x1754: "keymap_rp/20/005.png",
+    0x1755: "keymap_rp/20/006.png",
+    0x1756: "keymap_rp/20/007.png",
+    0x1757: "keymap_rp/20/008.png",
+    0x1758: "keymap_rp/20/009.png",
+    0x1759: "keymap_rp/20/010.png",
+    0x1760: "keymap_rp/21/001.png",
+    0x1761: "keymap_rp/21/002.png",
+    0x1762: "keymap_rp/21/003.png",
+    0x1763: "keymap_rp/21/004.png",
+    0x1764: "keymap_rp/21/005.png",
+    0x1765: "keymap_rp/21/006.png",
+    0x1766: "keymap_rp/21/007.png",
+    0x1767: "keymap_rp/21/008.png",
+    0x1768: "keymap_rp/21/009.png",
+    0x1769: "keymap_rp/21/010.png",
+    0x1770: "keymap_rp/22/001.png",
+    0x1771: "keymap_rp/22/002.png",
+    0x1772: "keymap_rp/22/003.png",
+    0x1773: "keymap_rp/22/004.png",
+    0x1774: "keymap_rp/22/005.png",
+    0x1775: "keymap_rp/22/006.png",
+    0x1776: "keymap_rp/22/007.png",
+    0x1777: "keymap_rp/22/008.png",
+    0x1778: "keymap_rp/22/009.png",
+    0x1779: "keymap_rp/22/010.png",
+    0x1780: "keymap_rp/23/001.png",
+    0x1781: "keymap_rp/23/002.png",
+    0x1782: "keymap_rp/23/003.png",
+    0x1783: "keymap_rp/23/004.png",
+    0x1784: "keymap_rp/23/005.png",
+    0x1785: "keymap_rp/23/006.png",
+    0x1786: "keymap_rp/23/007.png",
+    0x1787: "keymap_rp/23/008.png",
+    0x1788: "keymap_rp/23/009.png",
+    0x1789: "keymap_rp/23/010.png",
+    0x1790: "keymap_rp/24/001.png",
+    0x1791: "keymap_rp/24/002.png",
+    0x1792: "keymap_rp/24/003.png",
+    0x1793: "keymap_rp/24/004.png",
+    0x1794: "keymap_rp/24/005.png",
+    0x1795: "keymap_rp/24/006.png",
+    0x1796: "keymap_rp/24/007.png",
+    0x1797: "keymap_rp/24/008.png",
+    0x1798: "keymap_rp/24/009.png",
+    0x1799: "keymap_rp/24/010.png",
+    0x17A0: "keymap_rp/25/001.png",
+    0x17A1: "keymap_rp/25/002.png",
+    0x17A2: "keymap_rp/25/003.png",
+    0x17A3: "keymap_rp/25/004.png",
+    0x17A4: "keymap_rp/25/005.png",
+    0x17A5: "keymap_rp/25/006.png",
+    0x17A6: "keymap_rp/25/007.png",
+    0x17A7: "keymap_rp/25/008.png",
+    0x17A8: "keymap_rp/25/009.png",
+    0x17A9: "keymap_rp/25/010.png",
+    0x17B0: "keymap_rp/26/001.png",
+    0x17B1: "keymap_rp/26/002.png",
+    0x17B2: "keymap_rp/26/003.png",
+    0x17B3: "keymap_rp/26/004.png",
+    0x17B4: "keymap_rp/26/005.png",
+    0x17B5: "keymap_rp/26/006.png",
+    0x17B6: "keymap_rp/26/007.png",
+    0x17B7: "keymap_rp/26/008.png",
+    0x17B8: "keymap_rp/26/009.png",
+    0x17B9: "keymap_rp/26/010.png",
+    0x17C0: "keymap_rp/27/001.png",
+    0x17C1: "keymap_rp/27/002.png",
+    0x17C2: "keymap_rp/27/003.png",
+    0x17C3: "keymap_rp/27/004.png",
+    0x17C4: "keymap_rp/27/005.png",
+    0x17C5: "keymap_rp/27/006.png",
+    0x17C6: "keymap_rp/27/007.png",
+    0x17C7: "keymap_rp/27/008.png",
+    0x17C8: "keymap_rp/27/009.png",
+    0x17C9: "keymap_rp/27/010.png",
+    0x17D0: "keymap_rp/28/001.png",
+    0x17D1: "keymap_rp/28/002.png",
+    0x17D2: "keymap_rp/28/003.png",
+    0x17D3: "keymap_rp/28/004.png",
+    0x17D4: "keymap_rp/28/005.png",
+    0x17D5: "keymap_rp/28/006.png",
+    0x17D6: "keymap_rp/28/007.png",
+    0x17D7: "keymap_rp/28/008.png",
+    0x17D8: "keymap_rp/28/009.png",
+    0x17D9: "keymap_rp/28/010.png",
+    0x17E0: "keymap_rp/29/001.png",
+    0x17E1: "keymap_rp/29/002.png",
+    0x17E2: "keymap_rp/29/003.png",
+    0x17E3: "keymap_rp/29/004.png",
+    0x17E4: "keymap_rp/29/005.png",
+    0x17E5: "keymap_rp/29/006.png",
+    0x17E6: "keymap_rp/29/007.png",
+    0x17E7: "keymap_rp/29/008.png",
+    0x17E8: "keymap_rp/29/009.png",
+    0x17E9: "keymap_rp/29/010.png",
+    0x17F0: "keymap_rp/30/001.png",
+    0x17F1: "keymap_rp/30/002.png",
+    0x17F2: "keymap_rp/30/003.png",
+    0x17F3: "keymap_rp/30/004.png",
+    0x17F4: "keymap_rp/30/005.png",
+    0x17F5: "keymap_rp/30/006.png",
+    0x17F6: "keymap_rp/30/007.png",
+    0x17F7: "keymap_rp/30/008.png",
+    0x17F8: "keymap_rp/30/009.png",
+    0x17F9: "keymap_rp/30/010.png",
+}
+
+
+# ──────────────────────────────────────────────────────────────────
+# PS4 PKG reader (ported from shadPS4 pkg.cpp / crypto.cpp)
+# ──────────────────────────────────────────────────────────────────
+
+
+PKG_MAGIC = 0x7F434E54
+PFSC_MAGIC = b"PFSC"
+PKG_HEADER_SIZE = 0x1000
+PKG_ENTRY_SIZE = 32
+
+XTS_SECTOR_SIZE = 0x1000
+PFSC_BLOCK_SIZE = 0x10000
+INODE_STRIDE = 0xA8
+INODE_PARSED_SIZE = 104
+
+PFS_FILE = 2
+PFS_DIR = 3
+PFS_CURRENT_DIR = 4
+PFS_PARENT_DIR = 5
+
+# PKG entries holding encrypted NP data, decrypted in place on extraction.
+NP_ENTRY_IDS = (0x400, 0x401, 0x402, 0x403)
+
+ENTRY_ID_ENTRY_KEYS = 0x10
+ENTRY_ID_IMAGE_KEY = 0x20
+
+
+class PkgError(Exception):
+    """Raised when a PKG cannot be parsed or decrypted."""
+
+
+# --------------------------------------------------------------------------
+# small crypto helpers
+# --------------------------------------------------------------------------
+
+def _rsa_raw_decrypt(ciphertext: bytes, n: int, d: int) -> bytes:
+    """RSAES-PKCS1-v1_5 decryption with the well-known private keys."""
+    if len(ciphertext) != 256:
+        raise PkgError(f"expected a 256-byte RSA block, got {len(ciphertext)}")
+    plain = pow(int.from_bytes(ciphertext, "big"), d, n).to_bytes(256, "big")
+    # Strip the PKCS#1 v1.5 type-2 padding: 00 02 <random, no zero> 00 <msg>
+    if plain[0] == 0x00 and plain[1] == 0x02:
+        sep = plain.find(b"\x00", 2)
+        if sep >= 0:
+            return plain[sep + 1:]
+    # Some tools feed blocks whose padding does not validate; fall back to the
+    # raw result rather than failing outright.
+    return plain
+
+
+# --------------------------------------------------------------------------
+# structures
+# --------------------------------------------------------------------------
+
+@dataclass
+class PkgEntry:
+    id: int
+    filename_offset: int
+    flags1: int
+    flags2: int
+    offset: int
+    size: int
+    raw: bytes  # the 32 on-disk bytes, needed as IV key material
+
+    @property
+    def name(self) -> str:
+        return PKG_ENTRY_NAMES.get(self.id, str(self.id))
+
+
+@dataclass
+class Inode:
+    mode: int
+    nlink: int
+    flags: int
+    size: int
+    size_compressed: int
+    blocks: int
+    loc: int
+
+    @property
+    def is_dir(self) -> bool:
+        return bool(self.mode & 0o40000)
+
+    @property
+    def is_file(self) -> bool:
+        return bool(self.mode & 0o100000)
+
+
+@dataclass
+class PfsFile:
+    """A file inside the PKG, either from the PFS image or the PKG entry table."""
+
+    path: str
+    size: int
+    inode: Optional[int] = None      # set for PFS files
+    entry: Optional[PkgEntry] = None  # set for sce_sys metadata entries
+
+
+@dataclass
+class PkgInfo:
+    content_id: str = ""
+    title_id: str = ""
+    title: str = ""
+    app_version: str = ""
+    category: str = ""
+    drm_type: int = 0
+    content_type: int = 0
+    content_flags: List[str] = field(default_factory=list)
+    pkg_size: int = 0
+
+
+CONTENT_FLAGS = (
+    (0x00100000, "FIRST_PATCH"),
+    (0x00200000, "PATCHGO"),
+    (0x00400000, "REMASTER"),
+    (0x00800000, "PS_CLOUD"),
+    (0x02000000, "GD_AC"),
+    (0x04000000, "NON_GAME"),
+    (0x08000000, "UNKNOWN_0x8000000"),
+    (0x40000000, "SUBSEQUENT_PATCH"),
+    (0x41000000, "DELTA_PATCH"),
+    (0x60000000, "CUMULATIVE_PATCH"),
+)
+
+
+def parse_sfo(data: bytes) -> Dict[str, object]:
+    """Parse a ``param.sfo`` into a plain dict."""
+    if len(data) < 20 or data[:4] != b"\x00PSF":
+        return {}
+    key_table, data_table, count = struct.unpack_from("<III", data, 8)
+    result: Dict[str, object] = {}
+    for i in range(count):
+        base = 20 + i * 16
+        if base + 16 > len(data):
+            break
+        key_off, fmt, length, _max_len, data_off = struct.unpack_from("<HHIII", data, base)
+        key_start = key_table + key_off
+        key_end = data.find(b"\x00", key_start)
+        if key_end < 0:
+            continue
+        key = data[key_start:key_end].decode("utf-8", "replace")
+        raw = data[data_table + data_off:data_table + data_off + length]
+        if fmt == 0x0404:  # integer
+            if len(raw) >= 4:
+                result[key] = struct.unpack("<I", raw[:4])[0]
+        else:  # utf-8, possibly nul-terminated
+            result[key] = raw.split(b"\x00", 1)[0].decode("utf-8", "replace")
+    return result
+
+
+# --------------------------------------------------------------------------
+# reader
+# --------------------------------------------------------------------------
+
+class PkgReader:
+    """Opens a PKG and exposes its contents as a flat list of files."""
+
+    def __init__(self, path: str) -> None:
+        self._path = path
+        self._file = open(path, "rb")
+        try:
+            self._parse_header()
+            self._read_entries()
+            self._derive_keys()
+            self._load_pfsc()
+            self._read_inodes()
+            self._build_file_list()
+        except Exception:
+            self._file.close()
+            raise
+
+    # -- lifecycle ---------------------------------------------------------
+
+    def close(self) -> None:
+        self._file.close()
+
+    def __enter__(self) -> "PkgReader":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    # -- header ------------------------------------------------------------
+
+    def _parse_header(self) -> None:
+        self._file.seek(0, 2)
+        self._file_size = self._file.tell()
+        self._file.seek(0)
+        hdr = self._file.read(PKG_HEADER_SIZE)
+        if len(hdr) < PKG_HEADER_SIZE:
+            raise PkgError("file is too small to be a PKG")
+
+        magic, = struct.unpack_from(">I", hdr, 0x00)
+        if magic != PKG_MAGIC:
+            raise PkgError(f"bad PKG magic {magic:#010x} (expected {PKG_MAGIC:#010x})")
+
+        self.entry_count, = struct.unpack_from(">I", hdr, 0x10)
+        self.entry_table_offset, = struct.unpack_from(">I", hdr, 0x18)
+        self.content_offset, self.content_size = struct.unpack_from(">QQ", hdr, 0x30)
+        self.content_id = hdr[0x40:0x64].split(b"\x00", 1)[0].decode("utf-8", "replace")
+        self.drm_type, self.content_type, self.content_flags = struct.unpack_from(">III", hdr, 0x70)
+        self.pfs_image_offset, self.pfs_image_size = struct.unpack_from(">QQ", hdr, 0x410)
+        self.pkg_size, = struct.unpack_from(">Q", hdr, 0x430)
+        self.pfs_signed_size, self.pfs_cache_size = struct.unpack_from(">II", hdr, 0x438)
+
+        # The title id is the 9 characters at offset 7 of the content id.
+        self.title_id = self.content_id[7:16] if len(self.content_id) >= 16 else ""
+
+        if self.pkg_size > self._file_size:
+            raise PkgError(
+                f"PKG claims to be {self.pkg_size} bytes but the file is "
+                f"{self._file_size}; it is probably truncated or split"
+            )
+        if self.content_offset + self.content_size > self.pkg_size:
+            raise PkgError("content extends past the end of the PKG")
+
+    def _read_entries(self) -> None:
+        self._file.seek(self.entry_table_offset)
+        blob = self._file.read(self.entry_count * PKG_ENTRY_SIZE)
+        if len(blob) < self.entry_count * PKG_ENTRY_SIZE:
+            raise PkgError("PKG entry table is truncated")
+        self.entries: List[PkgEntry] = []
+        for i in range(self.entry_count):
+            raw = blob[i * PKG_ENTRY_SIZE:(i + 1) * PKG_ENTRY_SIZE]
+            eid, name_off, f1, f2, off, size = struct.unpack_from(">6I", raw, 0)
+            self.entries.append(PkgEntry(eid, name_off, f1, f2, off, size, raw))
+
+    # -- key derivation ----------------------------------------------------
+
+    def _read_at(self, offset: int, size: int) -> bytes:
+        self._file.seek(offset)
+        data = self._file.read(size)
+        if len(data) < size:
+            raise PkgError(f"unexpected end of file reading {size} bytes at {offset:#x}")
+        return data
+
+    def _derive_keys(self) -> None:
+        entry_keys = next((e for e in self.entries if e.id == ENTRY_ID_ENTRY_KEYS), None)
+        image_key = next((e for e in self.entries if e.id == ENTRY_ID_IMAGE_KEY), None)
+        if entry_keys is None or image_key is None:
+            raise PkgError(
+                "PKG is missing the ENTRY_KEYS (0x10) or IMAGE_KEY (0x20) entry; "
+                "it cannot be decrypted"
+            )
+
+        # ENTRY_KEYS: seed digest (32), 7 digests (32 each), 7 RSA blocks (256 each).
+        blob = self._read_at(entry_keys.offset, 32 + 7 * 32 + 7 * 256)
+        key1_base = 32 + 7 * 32
+        key1_3 = blob[key1_base + 3 * 256:key1_base + 4 * 256]
+        dk3 = _rsa_raw_decrypt(
+            key1_3, PkgDerivedKey3Keyset_N, PkgDerivedKey3Keyset_D
+        )[:32]
+
+        # IMAGE_KEY: AES-CBC over the 256-byte blob, keyed by sha256(entry||dk3).
+        imgkeydata = self._read_at(image_key.offset, 256)
+        iv_key = self._iv_key_for(image_key, dk3)
+        img_key = _aes_cbc_decrypt(iv_key[16:32], iv_key[0:16], imgkeydata)
+        self.ekpfs = _rsa_raw_decrypt(img_key, FakeKeyset_N, FakeKeyset_D)[:32]
+        self._dk3 = dk3
+
+        # The PFS data/tweak keys come from HMAC-SHA256(ekpfs, u32le(1) || seed).
+        seed = self._read_at(self.pfs_image_offset + 0x370, 16)
+        digest = hmac.new(self.ekpfs, struct.pack("<I", 1) + seed, hashlib.sha256).digest()
+        self.tweak_key = digest[0:16]
+        self.data_key = digest[16:32]
+        self._xts = _XtsDecryptor(self.data_key, self.tweak_key)
+
+    @staticmethod
+    def _iv_key_for(entry: PkgEntry, dk3: bytes) -> bytes:
+        return hashlib.sha256(entry.raw + dk3).digest()
+
+    # -- PFS image access --------------------------------------------------
+
+    def _read_pfs(self, offset: int, size: int) -> bytes:
+        """Read ``size`` decrypted bytes at ``offset`` within the PFS image."""
+        if size <= 0:
+            return b""
+        first_sector = offset // XTS_SECTOR_SIZE
+        lead = offset - first_sector * XTS_SECTOR_SIZE
+        span = lead + size
+        sectors = (span + XTS_SECTOR_SIZE - 1) // XTS_SECTOR_SIZE
+        want = sectors * XTS_SECTOR_SIZE
+        self._file.seek(self.pfs_image_offset + first_sector * XTS_SECTOR_SIZE)
+        raw = self._file.read(want)
+        if len(raw) < want:
+            # A trailing partial sector at the end of the image still has to be
+            # a whole sector for XTS, so pad it out.
+            raw += bytes(want - len(raw))
+        return self._xts.decrypt(raw, first_sector)[lead:lead + size]
+
+    def _load_pfsc(self) -> None:
+        if not self.pfs_image_size:
+            raise PkgError("PKG has no PFS image")
+
+        # The PFSC container starts at a 0x10000 boundary somewhere after the
+        # PFS superblock; scan for its magic the same way shadPS4 does.
+        self.pfsc_offset = -1
+        limit = min(self.pfs_image_size, max(self.pfs_cache_size * 2, 64 << 20))
+        for probe in range(0x20000, limit, 0x10000):
+            if self._read_pfs(probe, 4) == PFSC_MAGIC:
+                self.pfsc_offset = probe
+                break
+        if self.pfsc_offset < 0:
+            raise PkgError(
+                "could not locate the PFSC header; the PKG may use keys this "
+                "tool does not have, or is not a fake-signed/retail PKG"
+            )
+
+        hdr = self._read_pfs(self.pfsc_offset, 48)
+        (_magic, _unk4, _unk8, _block_sz, self.pfsc_block_size,
+         block_offsets, _data_start, data_length) = struct.unpack("<iiiiqqQq", hdr)
+
+        if self.pfsc_block_size <= 0:
+            raise PkgError(f"invalid PFSC block size {self.pfsc_block_size}")
+        self.num_blocks = data_length // self.pfsc_block_size
+
+        # The sector map holds num_blocks+1 offsets so each block's compressed
+        # length is the difference between consecutive entries.
+        map_bytes = self._read_pfs(self.pfsc_offset + block_offsets, (self.num_blocks + 1) * 8)
+        self.sector_map = list(struct.unpack(f"<{self.num_blocks + 1}Q", map_bytes))
+
+    def _read_pfsc_block(self, index: int) -> bytes:
+        """Return one decompressed PFSC block (always ``pfsc_block_size`` long)."""
+        if index < 0 or index + 1 >= len(self.sector_map):
+            raise PkgError(f"PFSC block {index} is out of range")
+        start = self.sector_map[index]
+        size = self.sector_map[index + 1] - start
+        block_size = self.pfsc_block_size
+        if size == 0:
+            # Sparse block.
+            return bytes(block_size)
+        if size < 0 or size > block_size:
+            raise PkgError(f"PFSC block {index} has an invalid size {size}")
+        data = self._read_pfs(self.pfsc_offset + start, size)
+        if size == block_size:
+            return data
+        out = zlib.decompressobj().decompress(data, block_size)
+        if len(out) < block_size:
+            out += bytes(block_size - len(out))
+        return out
+
+    # -- inodes and directory tree ----------------------------------------
+
+    def _read_inodes(self) -> None:
+        superblock = self._read_pfsc_block(0)
+        self.dinode_count, = struct.unpack_from("<q", superblock, 0x30)
+        self.superroot_ino, = struct.unpack_from("<q", superblock, 0x48)
+
+        occupied = -(-(self.dinode_count * INODE_STRIDE) // self.pfsc_block_size)
+        self.inodes: List[Inode] = []
+        for block_index in range(1, occupied + 1):
+            block = self._read_pfsc_block(block_index)
+            stop = False
+            for pos in range(0, self.pfsc_block_size - INODE_PARSED_SIZE + 1, INODE_STRIDE):
+                (mode, nlink, flags, size, size_c) = struct.unpack_from("<HHIqq", block, pos)
+                if mode == 0:
+                    stop = True
+                    break
+                blocks, loc = struct.unpack_from("<II", block, pos + 96)
+                self.inodes.append(Inode(mode, nlink, flags, size, size_c, blocks, loc))
+            if stop:
+                break
+
+    def _read_inode_data(self, inode: Inode) -> bytes:
+        """Read a (small) inode's contents fully — used for directory blocks."""
+        chunks = []
+        for j in range(inode.blocks):
+            chunks.append(self._read_pfsc_block(inode.loc + j))
+        return b"".join(chunks)[:inode.size]
+
+    def _read_dirents(self, ino: int) -> List[Tuple[int, int, str]]:
+        """Return ``(inode, type, name)`` for each entry of a directory inode."""
+        if ino >= len(self.inodes):
+            raise PkgError(f"directory inode {ino} is out of range")
+        data = self._read_inode_data(self.inodes[ino])
+        entries: List[Tuple[int, int, str]] = []
+        block_size = self.pfsc_block_size
+        # Dirents never straddle a block boundary, so parse block by block.
+        for block_start in range(0, len(data), block_size):
+            pos = block_start
+            end = min(block_start + block_size, len(data))
+            while pos + 16 <= end:
+                child, dtype, namelen, entsize = struct.unpack_from("<iiii", data, pos)
+                if entsize <= 0:
+                    break
+                if child != 0 and 0 < namelen <= entsize - 16:
+                    name = data[pos + 16:pos + 16 + namelen].decode("utf-8", "replace")
+                    entries.append((child, dtype, name))
+                pos += entsize
+        return entries
+
+    def _build_file_list(self) -> None:
+        """Walk the PFS tree and the PKG entry table into a flat file list."""
+        self.files: List[PfsFile] = []
+        seen_paths: Dict[str, int] = {}
+
+        root_ino = self._find_game_root()
+        if root_ino is None:
+            raise PkgError(
+                "could not find the 'uroot' directory in the PFS image; the "
+                "filesystem layout was not understood and no game files would "
+                "be extracted"
+            )
+        self._walk(root_ino, "", seen_paths, set())
+
+        # sce_sys metadata from the PKG entry table. PFS entries win on a
+        # collision, matching the order shadPS4's extractor writes them in.
+        for entry in self.entries:
+            path = f"sce_sys/{entry.name}"
+            if path in seen_paths:
+                continue
+            seen_paths[path] = len(self.files)
+            self.files.append(PfsFile(path=path, size=entry.size, entry=entry))
+
+    def _find_game_root(self) -> Optional[int]:
+        """Locate the ``uroot`` directory, which maps to the game's /app0."""
+        superroot = self.superroot_ino
+        if superroot >= len(self.inodes):
+            superroot = 0
+        try:
+            entries = self._read_dirents(superroot)
+        except (PkgError, zlib.error):
+            return None
+        for child, dtype, name in entries:
+            if name == "uroot" and dtype == PFS_DIR:
+                return child
+        # Fall back to any directory that is not ., .. or the path table.
+        for child, dtype, name in entries:
+            if dtype == PFS_DIR and name not in (".", "..", "flat_path_table"):
+                return child
+        return None
+
+    def _walk(self, ino: int, prefix: str, seen: Dict[str, int], visited: set) -> None:
+        if ino in visited:
+            return
+        visited.add(ino)
+        for child, dtype, name in self._read_dirents(ino):
+            if dtype in (PFS_CURRENT_DIR, PFS_PARENT_DIR) or name in (".", ".."):
+                continue
+            if name == "flat_path_table":
+                continue
+            # Names come from untrusted package data and are later joined onto
+            # host paths, so reject anything that could escape the target dir.
+            if "/" in name or "\\" in name or "\x00" in name or name.strip() in ("", "."):
+                continue
+            path = f"{prefix}{name}"
+            if dtype == PFS_DIR:
+                self._walk(child, path + "/", seen, visited)
+            elif dtype == PFS_FILE:
+                if child >= len(self.inodes):
+                    continue
+                if path in seen:
+                    continue
+                seen[path] = len(self.files)
+                self.files.append(
+                    PfsFile(path=path, size=self.inodes[child].size, inode=child)
+                )
+
+    # -- extraction --------------------------------------------------------
+
+    def read_file(self, item: PfsFile) -> Iterator[bytes]:
+        """Yield the decrypted, decompressed contents of a file in chunks."""
+        if item.inode is not None:
+            yield from self._read_pfs_file(self.inodes[item.inode])
+        elif item.entry is not None:
+            yield self._read_entry(item.entry)
+        else:
+            raise PkgError(f"file {item.path} has no source")
+
+    def _read_pfs_file(self, inode: Inode) -> Iterator[bytes]:
+        remaining = inode.size
+        for j in range(inode.blocks):
+            if remaining <= 0:
+                break
+            block = self._read_pfsc_block(inode.loc + j)
+            if len(block) > remaining:
+                block = block[:remaining]
+            remaining -= len(block)
+            yield block
+        if remaining > 0:
+            # Fewer blocks than the size claims; pad so the archive entry's
+            # length still matches what we declared.
+            yield bytes(remaining)
+
+    def _read_entry(self, entry: PkgEntry) -> bytes:
+        if entry.id not in NP_ENTRY_IDS:
+            return self._read_at(entry.offset, entry.size)
+
+        # The stored ciphertext is padded up to the AES block size even though
+        # the entry records the logical length, so read the full final block
+        # rather than zero-filling it (zero-filling corrupts the last block).
+        padded_size = (entry.size + 15) & ~15
+        self._file.seek(entry.offset)
+        data = self._file.read(padded_size)
+        if len(data) < padded_size:
+            data += bytes(padded_size - len(data))
+        iv_key = self._iv_key_for(entry, self._dk3)
+        return _aes_cbc_decrypt(iv_key[16:32], iv_key[0:16], data)[:entry.size]
+
+    # -- summary -----------------------------------------------------------
+
+    def info(self) -> PkgInfo:
+        sfo_data = b""
+        for item in self.files:
+            if item.path == "sce_sys/param.sfo":
+                sfo_data = b"".join(self.read_file(item))
+                break
+        sfo = parse_sfo(sfo_data)
+        return PkgInfo(
+            content_id=self.content_id,
+            title_id=str(sfo.get("TITLE_ID", self.title_id)),
+            title=str(sfo.get("TITLE", "")),
+            app_version=str(sfo.get("APP_VER", "")),
+            category=str(sfo.get("CATEGORY", "")),
+            drm_type=self.drm_type,
+            content_type=self.content_type,
+            content_flags=[n for bit, n in CONTENT_FLAGS if self.content_flags & bit],
+            pkg_size=self.pkg_size,
+        )
+
+
+# ──────────────────────────────────────────────────────────────────
+# ZArchive writer (Exzap's .zar format, as vendored by shadPS4)
+# ──────────────────────────────────────────────────────────────────
+
+
+BLOCK_SIZE = 64 * 1024
+ENTRIES_PER_OFFSET_RECORD = 16
+
+FOOTER_MAGIC = 0x169F52D6
+FOOTER_VERSION1 = 0x61BF3A01
+FOOTER_SIZE = 144
+
+MAX_FILE_SIZE = (1 << 48) - 1
+MAX_NAME_LEN = 0x7FFF
+
+# Names of 128 bytes or more are stored with a two-byte length prefix. Every
+# released ZArchive reader (upstream and the copy shadPS4 vendors) decodes that
+# prefix wrongly -- zarchivereader.cpp reads the first byte twice instead of
+# reading the second -- so such a name comes back empty and breaks lookups for
+# its whole parent directory. We refuse to emit one rather than produce an
+# archive the emulator cannot open.
+MAX_READABLE_NAME_LEN = 127
+
+# ZArchive compares node names case-insensitively, but only folds plain ASCII.
+_ASCII_FOLD = bytes.maketrans(bytes(range(0x41, 0x5B)), bytes(range(0x61, 0x7B)))
+
+_footer_struct = struct.Struct(">12Q32sQII")
+assert _footer_struct.size == FOOTER_SIZE
+
+_entry_struct = struct.Struct(">4I")
+_record_struct = struct.Struct(">Q16H")
+
+
+class ZArchiveError(Exception):
+    """Raised when an archive cannot be built as requested."""
+
+
+class _ThreadedCompressor:
+    """Per-thread compressor instances, since backends are not thread-safe."""
+
+    def __init__(self, level: int) -> None:
+        self._level = level
+        self._local = threading.local()
+
+    def __call__(self, data: bytes) -> bytes:
+        fn = getattr(self._local, "fn", None)
+        if fn is None:
+            fn = self._local.fn = _make_compressor(self._level)
+        return fn(data)
+
+
+# --------------------------------------------------------------------------
+# tree
+# --------------------------------------------------------------------------
+
+class _Node:
+    __slots__ = ("is_file", "name_index", "subnodes", "offset", "size", "start_index")
+
+    def __init__(self, is_file: bool, name_index: int) -> None:
+        self.is_file = is_file
+        self.name_index = name_index
+        self.subnodes: List["_Node"] = []
+        self.offset = 0
+        self.size = 0
+        self.start_index = 0
+
+
+class ZArchiveWriter:
+    """Builds a ``.zar`` archive by streaming file data into it.
+
+    Usage::
+
+        with ZArchiveWriter(open("out.zar", "wb")) as w:
+            w.start_file("sce_sys/param.sfo")
+            w.append(data)
+            w.finalize()
+    """
+
+    def __init__(
+        self,
+        stream: BinaryIO,
+        level: int = 6,
+        jobs: int = 1,
+        allow_long_names: bool = False,
+    ) -> None:
+        self._stream = stream
+        self._allow_long_names = allow_long_names
+        self._sha = hashlib.sha256()
+        self._out_offset = 0        # bytes written to the output file
+        self._input_offset = 0      # offset within the virtual uncompressed stream
+        self._write_buffer = bytearray()
+        self._records: List[List] = []
+        self._blocks_written = 0
+        self._finalized = False
+
+        self._root = _Node(False, 0xFFFFFFFF)
+        self._names: List[bytes] = []
+        self._name_lookup: dict = {}
+        self._name_offsets: List[int] = []
+        self._current_file: Optional[_Node] = None
+
+        self._sections: dict = {}
+
+        # Blocks are compressed in batches so that a thread pool can be used;
+        # zstd releases the GIL, so this scales reasonably well.
+        self._compress = _ThreadedCompressor(level)
+        self._pool = None
+        self._batch_limit = 1
+        if jobs > 1:
+            from concurrent.futures import ThreadPoolExecutor
+
+            self._pool = ThreadPoolExecutor(max_workers=jobs)
+            self._batch_limit = jobs * 4
+        self._pending: List[bytes] = []
+
+    # -- context manager ---------------------------------------------------
+
+    def __enter__(self) -> "ZArchiveWriter":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def close(self) -> None:
+        if self._pool is not None:
+            self._pool.shutdown()
+            self._pool = None
+
+    # -- tree construction -------------------------------------------------
+
+    @staticmethod
+    def _split_path(path: str) -> List[bytes]:
+        parts = []
+        for part in path.replace("\\", "/").split("/"):
+            if part:
+                parts.append(part.encode("utf-8"))
+        return parts
+
+    def _create_name_entry(self, name: bytes) -> int:
+        # Note: dedup is case-sensitive here, matching the reference writer,
+        # even though sibling lookup below is case-insensitive.
+        index = self._name_lookup.get(name)
+        if index is None:
+            limit = MAX_NAME_LEN if self._allow_long_names else MAX_READABLE_NAME_LEN
+            if len(name) > limit:
+                shown = name.decode("utf-8", "replace")
+                if len(shown) > 50:
+                    shown = shown[:24] + "..." + shown[-23:]
+                raise ZArchiveError(
+                    f"the name {shown!r} is {len(name)} bytes; single file and "
+                    f"folder names must be at most {limit} bytes for ZArchive "
+                    f"readers to parse them (the total path length is not "
+                    f"limited, only each name between slashes)"
+                )
+            index = len(self._names)
+            self._names.append(name)
+            self._name_lookup[name] = index
+        return index
+
+    def _find_subnode(self, parent: _Node, name: bytes) -> Optional[_Node]:
+        folded = name.translate(_ASCII_FOLD)
+        for node in parent.subnodes:
+            if self._names[node.name_index].translate(_ASCII_FOLD) == folded:
+                return node
+        return None
+
+    def _make_dirs(self, parts: List[bytes]) -> _Node:
+        node = self._root
+        for part in parts:
+            child = self._find_subnode(node, part)
+            if child is None:
+                child = _Node(False, self._create_name_entry(part))
+                node.subnodes.append(child)
+            elif child.is_file:
+                raise ZArchiveError(
+                    f"cannot create directory {part!r}: a file with that name exists"
+                )
+            node = child
+        return node
+
+    def make_dir(self, path: str) -> None:
+        """Create a directory (and any missing parents)."""
+        self._make_dirs(self._split_path(path))
+
+    def start_file(self, path: str) -> None:
+        """Begin a new file; subsequent :meth:`append` calls write into it.
+
+        Unlike the reference writer, missing parent directories are created
+        automatically.
+        """
+        if self._finalized:
+            raise ZArchiveError("archive already finalized")
+        parts = self._split_path(path)
+        if not parts:
+            raise ZArchiveError("empty file path")
+        parent = self._make_dirs(parts[:-1])
+        name = parts[-1]
+        if self._find_subnode(parent, name) is not None:
+            raise ZArchiveError(f"duplicate entry: {path}")
+        node = _Node(True, self._create_name_entry(name))
+        node.offset = self._input_offset
+        parent.subnodes.append(node)
+        self._current_file = node
+
+    # -- data --------------------------------------------------------------
+
+    def _output(self, data: bytes) -> None:
+        self._stream.write(data)
+        self._out_offset += len(data)
+        if self._sha is not None:
+            self._sha.update(data)
+
+    def _emit_block(self, raw: bytes, compressed: bytes) -> None:
+        base_offset = self._out_offset
+        if len(compressed) >= BLOCK_SIZE:
+            # Storing the block compressed would not pay off.
+            size = BLOCK_SIZE
+            self._output(raw)
+        else:
+            size = len(compressed)
+            self._output(compressed)
+
+        if self._blocks_written % ENTRIES_PER_OFFSET_RECORD == 0:
+            self._records.append([base_offset, [0] * ENTRIES_PER_OFFSET_RECORD])
+        self._records[-1][1][self._blocks_written % ENTRIES_PER_OFFSET_RECORD] = size - 1
+        self._blocks_written += 1
+
+    def _flush_pending(self) -> None:
+        if not self._pending:
+            return
+        if self._pool is None or len(self._pending) == 1:
+            results = [self._compress(block) for block in self._pending]
+        else:
+            results = list(self._pool.map(self._compress, self._pending))
+        for raw, compressed in zip(self._pending, results):
+            self._emit_block(raw, compressed)
+        self._pending.clear()
+
+    def _store_block(self, raw: bytes) -> None:
+        self._pending.append(raw)
+        if len(self._pending) >= self._batch_limit:
+            self._flush_pending()
+
+    def append(self, data: bytes) -> None:
+        """Append data to the file opened by the last :meth:`start_file`."""
+        if self._finalized:
+            raise ZArchiveError("archive already finalized")
+        total = len(data)
+        view = memoryview(data)
+        pos = 0
+        buf = self._write_buffer
+        while pos < total:
+            if not buf and total - pos >= BLOCK_SIZE:
+                # Block-aligned run: hand it straight to the compressor.
+                self._store_block(bytes(view[pos:pos + BLOCK_SIZE]))
+                pos += BLOCK_SIZE
+                continue
+            take = min(BLOCK_SIZE - len(buf), total - pos)
+            buf += view[pos:pos + take]
+            pos += take
+            if len(buf) == BLOCK_SIZE:
+                self._store_block(bytes(buf))
+                del buf[:]
+
+        if self._current_file is not None:
+            self._current_file.size += total
+            if self._current_file.size > MAX_FILE_SIZE:
+                raise ZArchiveError("file exceeds the 2^48 byte ZArchive limit")
+        self._input_offset += total
+
+    # -- finalization ------------------------------------------------------
+
+    def finalize(self) -> None:
+        """Flush buffered data and write the metadata sections and footer."""
+        if self._finalized:
+            return
+
+        # Detach the active file so the tail padding is not counted into it.
+        self._current_file = None
+        if self._write_buffer:
+            self.append(bytes(BLOCK_SIZE - len(self._write_buffer)))
+        self._flush_pending()
+        self._finalized = True
+
+        self._sections["data"] = (0, self._out_offset)
+
+        while self._out_offset % 8:
+            self._output(b"\0")
+
+        self._write_offset_records()
+        self._write_name_table()
+        self._write_file_tree()
+        self._sections["meta_dir"] = (self._out_offset, 0)
+        self._sections["meta"] = (self._out_offset, 0)
+        self._write_footer()
+
+    def _write_offset_records(self) -> None:
+        start = self._out_offset
+        out = bytearray()
+        for base_offset, sizes in self._records:
+            out += _record_struct.pack(base_offset, *sizes)
+        self._output(bytes(out))
+        self._sections["offsets"] = (start, self._out_offset - start)
+
+    def _write_name_table(self) -> None:
+        start = self._out_offset
+        out = bytearray()
+        offset = 0
+        self._name_offsets = [0] * len(self._names)
+        for i, name in enumerate(self._names):
+            self._name_offsets[i] = offset
+            # Length prefix: one byte, or two when the length needs >7 bits.
+            if len(name) >= 0x80:
+                out.append((len(name) & 0x7F) | 0x80)
+                out.append(len(name) >> 7)
+                offset += 2
+            else:
+                out.append(len(name) & 0x7F)
+                offset += 1
+            out += name
+            offset += len(name)
+        self._output(bytes(out))
+        self._sections["names"] = (start, self._out_offset - start)
+
+    def _sort_key(self, node: _Node) -> bytes:
+        return self._names[node.name_index].translate(_ASCII_FOLD)
+
+    def _write_file_tree(self) -> None:
+        # First pass: sort siblings and assign each directory its child range.
+        # The reader binary-searches within that range, so the order matters.
+        queue = [self._root]
+        next_index = 1  # index 0 is the root itself
+        while queue:
+            node = queue.pop(0)
+            if node.is_file:
+                node.start_index = 0xFFFFFFFF
+                continue
+            node.subnodes.sort(key=self._sort_key)
+            node.start_index = next_index
+            next_index += len(node.subnodes)
+            queue.extend(node.subnodes)
+
+        # Second pass: serialize in the same breadth-first order.
+        start = self._out_offset
+        out = bytearray()
+        queue = [self._root]
+        while queue:
+            node = queue.pop(0)
+            if node is self._root:
+                name_offset = 0x7FFFFFFF
+            else:
+                name_offset = self._name_offsets[node.name_index]
+            flag = name_offset & 0x7FFFFFFF
+            if node.is_file:
+                flag |= 0x80000000
+                a = node.offset & 0xFFFFFFFF
+                b = node.size & 0xFFFFFFFF
+                c = ((node.size >> 16) & 0xFFFF0000) | ((node.offset >> 32) & 0xFFFF)
+            else:
+                a = node.start_index
+                b = len(node.subnodes)
+                c = 0
+            out += _entry_struct.pack(flag, a, b, c)
+            queue.extend(node.subnodes)
+        self._output(bytes(out))
+        self._sections["tree"] = (start, self._out_offset - start)
+
+    def _pack_footer(self, integrity_hash: bytes, total_size: int) -> bytes:
+        order = ("data", "offsets", "names", "tree", "meta_dir", "meta")
+        values = []
+        for key in order:
+            offset, size = self._sections[key]
+            values += [offset, size]
+        return _footer_struct.pack(
+            *values, integrity_hash, total_size, FOOTER_VERSION1, FOOTER_MAGIC
+        )
+
+    def _write_footer(self) -> None:
+        total_size = self._out_offset + FOOTER_SIZE
+        # The integrity hash covers everything written plus the footer itself
+        # with the hash field zeroed out.
+        self._sha.update(self._pack_footer(b"\0" * 32, total_size))
+        digest = self._sha.digest()
+        self._sha = None  # the footer bytes themselves are not hashed
+        self._output(self._pack_footer(digest, total_size))
+
+# ──────────────────────────────────────────────────────────────────
+# ZArchive reader (only what merging into an existing archive needs)
+# ──────────────────────────────────────────────────────────────────
+
+class ZArchiveReader:
+    """Reads back a ``.zar`` so its files can be streamed into a new one."""
+
+    def __init__(self, path: str) -> None:
+        self._f = open(path, "rb")
+        try:
+            self._f.seek(0, 2)
+            size = self._f.tell()
+            self._f.seek(size - FOOTER_SIZE)
+            fields = _footer_struct.unpack(self._f.read(FOOTER_SIZE))
+            if fields[15] != FOOTER_MAGIC or fields[14] != FOOTER_VERSION1:
+                raise ZArchiveError(f"{path} is not a ZArchive file")
+            if fields[13] != size:
+                raise ZArchiveError(
+                    f"{path} is truncated: the footer says {fields[13]} bytes, "
+                    f"the file is {size}")
+
+            _data_off, _data_size, off_off, off_size, names_off, names_size, \
+                tree_off, tree_size = fields[0:8]
+
+            self._f.seek(off_off)
+            raw = self._f.read(off_size)
+            self._records = []
+            for i in range(0, len(raw), _record_struct.size):
+                values = _record_struct.unpack_from(raw, i)
+                self._records.append((values[0], values[1:]))
+
+            self._f.seek(names_off)
+            self._names = self._f.read(names_size)
+
+            self._f.seek(tree_off)
+            raw = self._f.read(tree_size)
+            self._tree = [_entry_struct.unpack_from(raw, i)
+                          for i in range(0, len(raw), _entry_struct.size)]
+        except BaseException:
+            self._f.close()
+            raise
+
+    def close(self) -> None:
+        self._f.close()
+
+    def __enter__(self) -> "ZArchiveReader":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> None:
+        self.close()
+
+    def _name(self, offset: int) -> str:
+        first = self._names[offset]
+        if first & 0x80:
+            length = (first & 0x7F) | (self._names[offset + 1] << 7)
+            offset += 2
+        else:
+            length = first & 0x7F
+            offset += 1
+        return self._names[offset:offset + length].decode("utf-8", "replace")
+
+    def walk(self) -> Iterator[Tuple[str, int, int]]:
+        """Yield ``(path, offset, size)`` for every file in the archive."""
+        yield from self._walk(0, "")
+
+    def _walk(self, index: int, prefix: str) -> Iterator[Tuple[str, int, int]]:
+        flag, first, count, _c = self._tree[index]
+        if flag & 0x80000000:
+            return
+        for i in range(first, first + count):
+            cflag, a, b, c = self._tree[i]
+            name = self._name(cflag & 0x7FFFFFFF)
+            path = f"{prefix}{name}"
+            if cflag & 0x80000000:
+                yield path, a | ((c & 0xFFFF) << 32), b | ((c & 0xFFFF0000) << 16)
+            else:
+                yield from self._walk(i, path + "/")
+
+    def _block(self, index: int) -> bytes:
+        record, sub = divmod(index, ENTRIES_PER_OFFSET_RECORD)
+        base, sizes = self._records[record]
+        offset = base + sum(sizes[i] + 1 for i in range(sub))
+        size = sizes[sub] + 1
+        self._f.seek(offset)
+        raw = self._f.read(size)
+        if size == BLOCK_SIZE:
+            return raw
+        return _zstd_decompress(raw, BLOCK_SIZE)
+
+    def read_stream(self, offset: int, size: int) -> Iterator[bytes]:
+        """Yield the contents of one file, block by block."""
+        while size > 0:
+            index, within = divmod(offset, BLOCK_SIZE)
+            step = min(size, BLOCK_SIZE - within)
+            yield self._block(index)[within:within + step]
+            offset += step
+            size -= step
+
+# ──────────────────────────────────────────────────────────────────
+# Filename helpers
+# ──────────────────────────────────────────────────────────────────
+
+_ILLEGAL_MAP = {ord(c): "" for c in '<>:"/\\|?*'}
+_ILLEGAL_MAP.update({c: " " for c in list(range(0x20)) + [0x7F]})
+
+REGION_BY_CONTENT_ID = {"U": "US", "E": "EU", "J": "JP", "H": "ASIA",
+                        "K": "ASIA", "A": "ASIA", "I": "INT", "C": "CN"}
+
+
+def safe_filename(name: str) -> str:
+    """Reduce an SFO title to something every filesystem will accept."""
+    name = unicodedata.normalize("NFKD", name.translate(_ILLEGAL_MAP))
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    return re.sub(r"\s+", " ", name).strip().rstrip(" .")
+
+
+def region_from_content_id(content_id: str) -> str:
+    """PS4 content ids start with UP/EP/JP/HP…, one letter per region."""
+    if content_id:
+        return REGION_BY_CONTENT_ID.get(content_id[0].upper(), "")
+    return ""
+
+
+def version_key(app_ver: str) -> Tuple[int, ...]:
+    """Sortable key for an APP_VER like ``01.05``."""
+    parts = []
+    for chunk in app_ver.replace("-", ".").split("."):
+        digits = "".join(c for c in chunk if c.isdigit())
+        parts.append(int(digits) if digits else 0)
+    return tuple(parts) if parts else (0,)
+
+
+def format_version(app_ver: str) -> str:
+    """``01.05`` -> ``1.05``, keeping the sub-version digits intact."""
+    app_ver = app_ver.strip()
+    if not app_ver:
+        return ""
+    head, sep, tail = app_ver.partition(".")
+    head = head.lstrip("0") or "0"
+    return f"{head}{sep}{tail}" if sep else head
+
+
+def format_archive_name(title_id: str, name: str, region: str, version: str = "") -> str:
+    """Build "<name> (<region>) [v1.05] [TITLEID].zar"."""
+    parts = []
+    if name:
+        base = safe_filename(name)
+        if len(base.encode("utf-8")) > 160:
+            while len(base.encode("utf-8")) > 160:
+                base = base[:-1]
+            base = base.rstrip(" .")
+        if region:
+            base = f"{base} ({region})"
+        parts.append(base)
+    shown = format_version(version)
+    if shown:
+        parts.append(f"[v{shown}]")
+    parts.append(f"[{title_id}]")
+    return " ".join(parts) + ".zar"
+
+
+def human(size: float) -> str:
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if abs(size) < 1024 or unit == "TB":
+            return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
+        size /= 1024
+    return f"{size:.1f} TB"
+
+
+class Progress:
+    """Percentage reporter, one line per step so it reads well in a log window."""
+
+    def __init__(self, total: int, step: int = 10) -> None:
+        self.total = total
+        self.done = 0
+        self.step = step
+        self._next = step
+
+    def advance(self, count: int) -> None:
+        self.done += count
+        if not self.total:
+            return
+        pct = min(self.done * 100 // self.total, 100)
+        if pct < self._next:
+            return
+        while self._next <= pct:
+            self._next += self.step
+        print(f"    {pct:3d}%  {human(self.done)}")
+        sys.stdout.flush()
+
+
+# ──────────────────────────────────────────────────────────────────
+# Packages
+# ──────────────────────────────────────────────────────────────────
+
+ENTITLEMENT_LABEL_OFFSET = 20
+
+ROLE_BASE = "base"
+ROLE_UPDATE = "update"
+ROLE_DLC = "dlc"
+
+
+@dataclass
+class PkgSource:
+    path: str
+    info: PkgInfo
+
+    @property
+    def role(self) -> str:
+        category = (self.info.category or "").lower()
+        if category.startswith("gp"):
+            return ROLE_UPDATE
+        if category.startswith("ac"):
+            return ROLE_DLC
+        return ROLE_BASE
+
+    @property
+    def entitlement(self) -> str:
+        label = self.info.content_id[ENTITLEMENT_LABEL_OFFSET:]
+        return safe_filename(label) or safe_filename(self.info.title_id) or "addcont"
+
+    def describe(self) -> str:
+        bits = [self.role]
+        version = format_version(self.info.app_version)
+        if version:
+            bits.append(f"v{version}")
+        if self.role == ROLE_DLC:
+            bits.append(self.entitlement)
+        return ", ".join(bits)
+
+
+def scan_groups(root_dir: str) -> Dict[str, List[PkgSource]]:
+    """Group the .pkg files at the top level of root_dir by title id."""
+    groups: Dict[str, List[PkgSource]] = defaultdict(list)
+
+    for entry in sorted(os.listdir(root_dir)):
+        path = os.path.join(root_dir, entry)
+        if not os.path.isfile(path) or not entry.lower().endswith(".pkg"):
+            continue
+        try:
+            with PkgReader(path) as reader:
+                info = reader.info()
+        except Exception as exc:
+            print(f"[skip] {entry}: not a readable PS4 PKG ({exc})")
+            continue
+        if not info.title_id:
+            print(f"[skip] {entry}: could not determine the title id")
+            continue
+        groups[info.title_id].append(PkgSource(path, info))
+
+    return groups
+
+
+def find_existing_archive(root_dir: str, title_id: str) -> Optional[str]:
+    """Return the .zar already holding this title id, if there is one."""
+    suffix = f"[{title_id}].zar"
+    for entry in sorted(os.listdir(root_dir)):
+        if entry.endswith(suffix) and os.path.isfile(os.path.join(root_dir, entry)):
+            return os.path.join(root_dir, entry)
+    return None
+
+
+def merge_layers(archive: Optional["ZArchiveReader"], readers: List["PkgReader"]) -> Dict:
+    """Overlay the existing archive then each package, later layers winning.
+
+    Keyed case-insensitively because ZArchive resolves names that way, so two
+    files differing only in case would collide inside the archive.
+    """
+    merged = {}
+    if archive is not None:
+        for path, offset, size in archive.walk():
+            merged[path.lower()] = (
+                path, size,
+                lambda a=archive, o=offset, s=size: a.read_stream(o, s),
+            )
+    for reader in readers:
+        for item in reader.files:
+            merged[item.path.lower()] = (
+                item.path, item.size,
+                lambda r=reader, i=item: r.read_file(i),
+            )
+    return merged
+
+
+def write_archive(out_path: str, merged: Dict, level: int, jobs: int, meter: Progress) -> None:
+    """Stream every merged file into a new .zar, atomically replacing out_path."""
+    building = out_path + ".building"
+    try:
+        with open(building, "wb") as out_file:
+            with ZArchiveWriter(out_file, level=level, jobs=jobs) as writer:
+                for path, size, factory in merged.values():
+                    writer.start_file(path)
+                    written = 0
+                    for chunk in factory():
+                        writer.append(chunk)
+                        written += len(chunk)
+                        meter.advance(len(chunk))
+                    if written != size:
+                        print(f"    [warn] {path}: wrote {written} bytes, expected {size}")
+                writer.finalize()
+        os.replace(building, out_path)
+    except BaseException:
+        if os.path.exists(building):
+            os.remove(building)
+        raise
+
+
+def extract_dlc(source: PkgSource, dlc_root: str) -> str:
+    """Write one DLC package out as the folder layout shadPS4 scans for."""
+    dest = os.path.join(dlc_root, safe_filename(source.info.title_id) or "UNKNOWN",
+                        source.entitlement)
+    with PkgReader(source.path) as reader:
+        meter = Progress(sum(item.size for item in reader.files))
+        for item in reader.files:
+            target = os.path.join(dest, *item.path.split("/"))
+            os.makedirs(os.path.dirname(target), exist_ok=True)
+            with open(target, "wb") as out:
+                for chunk in reader.read_file(item):
+                    out.write(chunk)
+                    meter.advance(len(chunk))
+    return dest
+
+
+def process_group(title_id: str, sources: List[PkgSource], root_dir: str,
+                  keep_sources: bool = False, level: int = 6, jobs: int = 1) -> bool:
+    app_sources = sorted(
+        (s for s in sources if s.role != ROLE_DLC),
+        key=lambda s: (s.role == ROLE_UPDATE, version_key(s.info.app_version)),
+    )
+    dlc_sources = [s for s in sources if s.role == ROLE_DLC]
+    existing = find_existing_archive(root_dir, title_id)
+
+    named = app_sources[0] if app_sources else dlc_sources[0]
+    version = max((s.info.app_version for s in app_sources), key=version_key, default="")
+    out_name = format_archive_name(
+        title_id, named.info.title, region_from_content_id(named.info.content_id), version)
+    out_path = os.path.join(root_dir, out_name)
+
+    print(f"\n=== {title_id} → {out_name if app_sources else os.path.basename(existing or out_name)} ===")
+    for source in sources:
+        print(f"    pkg {os.path.basename(source.path)} ({source.describe()})")
+    if existing:
+        print(f"[merge] merging into the existing {os.path.basename(existing)}")
+
+    consumed = []
+    archive = None
+    readers = []
+    try:
+        if app_sources:
+            if existing:
+                archive = ZArchiveReader(existing)
+            readers = [PkgReader(s.path) for s in app_sources]
+            merged = merge_layers(archive, readers)
+            meter = Progress(sum(size for _path, size, _factory in merged.values()))
+            write_archive(out_path, merged, level, jobs, meter)
+            consumed += [s.path for s in app_sources]
+        elif not existing:
+            print(f"[warn] {title_id}: DLC only and no game archive to add it to")
+
+        for source in dlc_sources:
+            dest = extract_dlc(source, os.path.join(root_dir, DLC_DIRNAME))
+            print(f"    dlc {os.path.relpath(dest, root_dir)}")
+            consumed.append(source.path)
+    except Exception as exc:
+        print(f"[error] {title_id}: {exc}")
+        return False
+    finally:
+        for reader in readers:
+            reader.close()
+        if archive is not None:
+            archive.close()
+
+    if app_sources:
+        if existing and os.path.realpath(existing) != os.path.realpath(out_path):
+            os.remove(existing)
+            print(f"    replaced {os.path.basename(existing)}")
+        size_mb = os.path.getsize(out_path) / (1024 ** 2)
+        print(f"[{'updated' if existing else 'created'}] {out_name} ({size_mb:.1f} MB)")
+
+    if keep_sources:
+        print("    keeping source .pkg files (--keep)")
+        return True
+
+    for path in consumed:
+        try:
+            os.remove(path)
+            print(f"    deleted {os.path.basename(path)}")
+        except OSError as exc:
+            print(f"    [warn] could not delete {os.path.basename(path)}: {exc}")
+
+    return True
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Convert PS4 .pkg files into per-game shadPS4 .zar archives.")
+    parser.add_argument("folder", nargs="?", default=os.getcwd(),
+                        help=f"PS4 roms folder to scan (must be {ROMS_PS4})")
+    parser.add_argument("-k", "--keep", action="store_true",
+                        help="keep the source .pkg files instead of deleting them")
+    parser.add_argument("-l", "--level", type=int, default=6,
+                        help="zstd compression level (default: 6, matching ZArchive)")
+    parser.add_argument("-j", "--jobs", type=int, default=min(8, os.cpu_count() or 1),
+                        help="compression threads (default: number of CPUs, capped at 8)")
+    args = parser.parse_args()
+
+    root_dir = args.folder
+    if not root_dir or root_dir == ".":
+        root_dir = os.getcwd()
+    root_dir = os.path.realpath(root_dir)
+
+    if not os.path.isdir(root_dir):
+        print(f"Error: folder '{root_dir}' does not exist.")
+        return 1
+
+    if root_dir != ROMS_PS4:
+        print(f"Error: this action is only supported for {ROMS_PS4}")
+        print(f"Current folder: {root_dir}")
+        return 1
+
+    try:
+        _OpenSSL.get()
+        _make_compressor(1)
+    except (PkgError, ZArchiveError) as exc:
+        print(f"Error: {exc}")
+        return 1
+
+    print(f"Scanning folder : {root_dir}")
+    print("-" * 60)
+
+    groups = scan_groups(root_dir)
+    if not groups:
+        print("No PS4 .pkg files found.")
+        return 0
+
+    print(f"\n{len(groups)} game(s) found, {sum(len(v) for v in groups.values())} .pkg")
+    if args.keep:
+        print("Keep mode       : source .pkg files will NOT be deleted")
+    print("-" * 60)
+
+    created = 0
+    for title_id in sorted(groups):
+        if process_group(title_id, groups[title_id], root_dir,
+                         keep_sources=args.keep, level=args.level,
+                         jobs=max(1, args.jobs)):
+            created += 1
+
+    print("\n" + "-" * 60)
+    print(f"Done! {created} game(s) converted.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
