@@ -323,6 +323,11 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns, playersControllers: C
             return f"{default_keys},{pad_bind}" if default_keys else pad_bind
         return default_keys
 
+    p1_start: str | None = None
+    p1_select: str | None = None
+    p2_start: str | None = None
+    p2_select: str | None = None
+
     # Dynamically bind Player 1
     if pad1:
         p1_start = get_pad_input(pad1, "start")
