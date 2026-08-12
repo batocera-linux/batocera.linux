@@ -3,8 +3,8 @@
 # libvni
 #
 ################################################################################
-# Version: Commits on Jun 10, 2026
-LIBVNI_VERSION = 7258e2fa0d086e1224d6510d44a61879e6b344b1
+# Version: Commits on Aug 12, 2026
+LIBVNI_VERSION = cef652e8e543ced5ec9af7663014b240a2a99ebd
 LIBVNI_SITE = $(call github,PPUC,libvni,$(LIBVNI_VERSION))
 LIBVNI_LICENSE = GPLv2
 LIBVNI_LICENSE_FILES = LICENSE.md
