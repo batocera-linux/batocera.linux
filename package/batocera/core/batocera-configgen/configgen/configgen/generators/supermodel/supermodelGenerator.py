@@ -139,6 +139,12 @@ class SupermodelGenerator(Generator):
         if (ss := system.config.get("m3_supersampling")) and ss != "1":  # 1 represents "Off"
             commandArray.append(f"-ss={ss}")
 
+        # Render scale (defaults to 1 for ARM, 0 for x86_64)
+        default_renderscale = "1" if is_arm else "0"
+        renderscale = system.config.get("m3_renderscale", default_renderscale)
+        if renderscale != "0":
+            commandArray.append(f"-render-scale={renderscale}")
+
         # Stretch to fill
         if system.config.get_bool("m3_stretch"):
             commandArray.append("-stretch")
