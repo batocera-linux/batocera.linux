@@ -1,0 +1,55 @@
+diff --git a/deps/Framework/src/vulkan/Instance.cpp b/deps/Framework/src/vulkan/Instance.cpp
+index 8a3b7b36ac..b39cb766f7 100644
+--- a/deps/Framework/src/vulkan/Instance.cpp
++++ b/deps/Framework/src/vulkan/Instance.cpp
+@@ -1,6 +1,7 @@
+ #include "vulkan/VulkanDef.h"
+ #include "vulkan/Instance.h"
+ #include "vulkan/Loader.h"
++#include <stdexcept>
+ 
+ #define SET_PROC_ADDR(functionName) this->functionName = reinterpret_cast<PFN_##functionName>(CLoader::GetInstance().vkGetInstanceProcAddr(m_handle, #functionName));
+ 
+diff --git a/Source/hdd/ApaDefs.h b/Source/hdd/ApaDefs.h
+index ae9b5bcc58..1bba3b951e 100644
+--- a/Source/hdd/ApaDefs.h
++++ b/Source/hdd/ApaDefs.h
+@@ -1,4 +1,5 @@
+ #pragma once
++#include <cstdint>
+ 
+ namespace Hdd
+ {
+diff --git a/Source/hdd/ApaReader.cpp b/Source/hdd/ApaReader.cpp
+index bf9b586142..e7dfbf8fae 100644
+--- a/Source/hdd/ApaReader.cpp
++++ b/Source/hdd/ApaReader.cpp
+@@ -2,6 +2,7 @@
+ #include <cassert>
+ #include <cstring>
+ #include "HddDefs.h"
++#include <cstdint>
+ 
+ using namespace Hdd;
+ 
+diff --git a/Source/hdd/PfsDefs.h b/Source/hdd/PfsDefs.h
+index 5557e2d5ba..1a13bdbf93 100644
+--- a/Source/hdd/PfsDefs.h
++++ b/Source/hdd/PfsDefs.h
+@@ -1,3 +1,4 @@
++#include <cstdint>
+ #pragma once
+ 
+ namespace Hdd
+diff --git a/Source/hdd/PfsReader.cpp b/Source/hdd/PfsReader.cpp
+index 3db9fdcc80..74248692c9 100644
+--- a/Source/hdd/PfsReader.cpp
++++ b/Source/hdd/PfsReader.cpp
+@@ -3,6 +3,7 @@
+ #include <cstring>
+ #include "HddDefs.h"
+ #include "StringUtils.h"
++#include <cstdint>
+ 
+ using namespace Hdd;
+ 

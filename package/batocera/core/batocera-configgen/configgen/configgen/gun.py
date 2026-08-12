@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final, cast
 
-from .batoceraPaths import BATOCERA_SHARE_DIR, CONFIGS, SAVES, mkdir_if_not_exists
+from .batoceraPaths import BATOCERA_SHARE_DIR, SAVES, mkdir_if_not_exists
 
 if TYPE_CHECKING:
     from .Emulator import Emulator
@@ -186,12 +186,6 @@ class Gun:
                 src = dir / 'NVDATA' / f'{rom.stem}.nv'
                 dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
                 _copy_file(src, dst)
-
-            elif system.name == 'namco2x6':  # noqa: SIM102
-                if emulator == 'play':
-                    src = dir / 'play' / rom.stem
-                    dst = CONFIGS / 'play' / 'Play Data Files' / 'arcadesaves' / f'{rom.stem}.backupram'
-                    _copy_file(src, dst)
 
         return cls.get_all()
 

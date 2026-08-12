@@ -1,0 +1,10 @@
+--- a/CMakeLists.txt	2022-07-06 17:20:45.649840228 +0200
++++ b/CMakeLists.txt	2022-07-06 17:21:21.050594954 +0200
+@@ -60,6 +60,7 @@
+ endif()
+ 
+ if(BUILD_PLAY)
++        add_compile_options(-fPIC)
+ 	if(TARGET_PLATFORM_UNIX OR TARGET_PLATFORM_MACOS OR TARGET_PLATFORM_WIN32 OR USE_QT)
+ 		add_subdirectory(Source/ui_qt/)
+ 		add_subdirectory(tools/ElfView)

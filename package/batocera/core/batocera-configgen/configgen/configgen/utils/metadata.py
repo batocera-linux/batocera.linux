@@ -25,6 +25,7 @@ _ARCADE_SYSTEMS: Final = {
     'hikaru',
     'gaelco',
     'cave3rd',
+    'namco14x',
     'namco2x6',
     'namco22',
 }

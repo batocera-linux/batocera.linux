@@ -26,6 +26,7 @@
 - Box64 userland x86_64 emulator for aarch64
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
+- Namco14x system with Play! Emulator
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed

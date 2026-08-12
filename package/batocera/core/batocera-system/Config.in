@@ -1018,6 +1018,9 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	# Namco System246 and System256
 	select BR2_PACKAGE_PCSX2X6    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
 
+	# Namco System147 and System148
+	select BR2_PACKAGE_PLAY       if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY
+
 	help
 	  Arcade cores/emulators
 

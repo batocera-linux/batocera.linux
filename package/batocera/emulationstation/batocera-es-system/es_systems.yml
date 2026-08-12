@@ -5264,6 +5264,37 @@ quake3:
 
     Para mais informações: https://wiki.batocera.org/systems:ioquake3
 
+namco14x:
+  name: Namco System 147/148
+  manufacturer: Sony / Namco
+  release: 2004
+  hardware: arcade
+  extensions: [zip, squashfs]
+  platform: namco, arcade
+  emulators:
+    play:
+      play: { requireAnyOf: [BR2_PACKAGE_PLAY] }
+  comment_en: |
+    The Play! emulator provides `work in progress` support for Namco 147 & 148 arcade systems.
+
+    This rom directory should include a zip file based on the arcade id and a supporting folder with
+    the associated NAND dump.
+
+    i.e. akaievo.zip
+                    |
+                    akaievo
+                    |
+                    ---kp012b_k9k8g08u0b.ic31
+
+    Alternatively both can be packed together in a squashfs named after the arcade id.
+
+    i.e. mksquashfs akaievo.zip akaievo akaievo.squashfs
+
+    The arcade id has to match one of the arcade definitions shipped with Play!, they are listed in
+    /usr/share/arcadedefs.
+
+    For more info: https://wiki.batocera.org/systems:namco14x
+
 namco2x6:
   name: Namco System 246/256
   manufacturer: Sony / Namco
