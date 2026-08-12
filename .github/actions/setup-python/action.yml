@@ -15,4 +15,4 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: uv sync --locked --all-extras --dev
+      run: uv sync --locked --all-extras --dev --no-install-package pygobject --no-install-package pycairo

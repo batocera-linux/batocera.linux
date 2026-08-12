@@ -4,8 +4,9 @@ version = "44.dev0"
 requires-python = "==3.14.5"
 dependencies = [
     "batocera-common",
+    "batocera-bezel-overlay",
     "batocera-configgen",
-    "batocera-es-system"
+    "batocera-es-system",
 ]
 
 [dependency-groups]
@@ -18,6 +19,7 @@ dev = [
     "pytest-cov>=7.0.0",
     "pytest-xdist>=3.8.0",
     "coverage[toml]>=7.13.4",
+    "pygobject-stubs @ git+https://github.com/pygobject/pygobject-stubs.git@959c470767cd44a74912ba182e9fb202d0d96519",
 ]
 
 [tool.uv]
@@ -37,10 +39,13 @@ constraint-dependencies = [
     "toml==0.10.2",
     "typing-extensions==4.15.0",
     "ffmpeg-python @ git+https://github.com/kkroening/ffmpeg-python.git@df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6",
+    "pygobject==3.56.3",
 ]
+config-settings-package = { pygobject-stubs = { config = "Gtk3,Gdk3" } }
 
 [tool.uv.sources]
 batocera-common = { workspace = true }
+batocera-bezel-overlay = { workspace = true }
 batocera-configgen = { workspace = true }
 batocera-es-system = { workspace = true }
 

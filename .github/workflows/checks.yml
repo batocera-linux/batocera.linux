@@ -34,7 +34,8 @@ jobs:
         uses: './.github/actions/setup-python'
 
       - name: Run tests
-        # For example, using `pytest`
+        env:
+          UV_NO_SYNC: 1
         run: uv run py.test python-src
 
   lint:
@@ -46,4 +47,6 @@ jobs:
         uses: './.github/actions/setup-python'
 
       - name: Prek hooks
+        env:
+          UV_NO_SYNC: 1
         run: uv run prek --show-diff-on-failure --color=always --all-files
