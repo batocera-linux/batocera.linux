@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=Create PS3 .squashfs from PSN .pkg/.rap files
+Folders=/userdata/roms*;
+Basenames=ps3;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=inode/directory
+Exec=bash -c 'python3 /usr/share/file-manager/actions/toolbox/ps3.toolbox "%f" 2>&1 | yad --text-info --wrap --width=900 --height=600 --title="PS3 PSN pkg → squashfs"'
