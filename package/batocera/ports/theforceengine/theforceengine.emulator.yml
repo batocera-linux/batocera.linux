@@ -68,15 +68,15 @@ custom_features:
       GPU / OpenGL (Default): 1
   force_colour:
     submenu: GRAPHICS
-    prompt: COLOUR MODE
+    prompt: COLOR MODE
     choices:
       8-bit (Classic): 0
       8-bit Interpolated: 1
-      True Colour: 2
+      True Color: 2
   force_hd:
     submenu: GRAPHICS
     prompt: HD TEXTURES
-    description: Choose to render high definition graphics textures. Requires OpenGL, True Colour and the enhanced.gob file.
+    description: Choose to render high definition graphics textures. Requires OpenGL, True Color and the enhanced.gob file.
     choices:
       Disabled (Default): 0
       Enabled: 1
