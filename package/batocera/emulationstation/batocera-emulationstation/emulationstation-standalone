@@ -2,7 +2,6 @@
 
 BOOTCONF="/boot/batocera-boot.conf"
 REBOOT_FLAG=/var/run/emulationstation-standalone
-DOCKED_FLAG="/var/run/batocera-docked"
 log="/userdata/system/logs/display.log"
 
 if [ "$1" = "--stop-rebooting" ]; then
@@ -63,15 +62,31 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
     
-    # Use --init to get the current screens (also detects docked state)
+    # Use --init to get the current screens
     batocera-switch-screen-checker --init
 
     # Check for docked mode
-    DOCKED_OUTPUT=""
-    if [ -f "${DOCKED_FLAG}" ]; then
-        DOCKED_OUTPUT=$(cat "${DOCKED_FLAG}")
-        echo "Standalone: Docked mode active. External output: ${DOCKED_OUTPUT}" >> "$log"
+    # if there is a mixed of handheld and external screens, just take one of the external screens as docked output (could be extended to several later if that's a use case)
+    DOCKED_OUTPUT1=""
+    # search for handheld and external screens
+    AVSCREENS_HANDHELD_LAST=
+    AVSCREENS_EXTERNAL_LAST=
+    for AVSCREEN in $(batocera-resolution listOutputs)
+    do
+	AVSCREEN_IS_HANDHELD=$(batocera-settings-get-master display.handheld.${AVSCREEN})
+	if test "${AVSCREEN_IS_HANDHELD}" = 1
+	then
+	    AVSCREENS_HANDHELD_LAST=${AVSCREEN}
+	else
+	    AVSCREENS_EXTERNAL_LAST=${AVSCREEN}
+	fi
+    done
+    if test -n "${AVSCREENS_HANDHELD_LAST}" -a -n "${AVSCREENS_EXTERNAL_LAST}"
+    then
+	DOCKED_OUTPUT1="${AVSCREENS_EXTERNAL_LAST}"
+	echo "Standalone: Docked mode active. External output: ${DOCKED_OUTPUT1}" >> "$log"
     fi
+    ###
 
     # Attempt to get video outputs from master settings first
     settings_output=$(batocera-settings-get-master global.videooutput)
@@ -183,10 +198,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # We set the output to enable screens...
     echo "Standalone: --- Enabling Outputs ---" >> "$log"
-    if [ -n "${DOCKED_OUTPUT}" ]; then
-        echo "Standalone: Docked mode - enabling external output only: ${DOCKED_OUTPUT}" >> "$log"
-        batocera-resolution setOutput "${DOCKED_OUTPUT}"
-        settings_output="${DOCKED_OUTPUT}"
+    if [ -n "${DOCKED_OUTPUT1}" ]; then
+        echo "Standalone: Docked mode - enabling external output only: ${DOCKED_OUTPUT1}" >> "$log"
+        batocera-resolution setOutput "${DOCKED_OUTPUT1}"
+        settings_output="${DOCKED_OUTPUT1}"
         settings_output2=""
         settings_output3=""
     else
@@ -199,9 +214,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
     
     ### RESOLUTION ###
     echo "Standalone: --- Applying Resolutions ---" >> "$log"
-    if [ -n "${DOCKED_OUTPUT}" ]; then
-        echo "Standalone: Docked mode - applying minTomaxResolution for ${DOCKED_OUTPUT}." >> "$log"
-        batocera-resolution --screen "${DOCKED_OUTPUT}" minTomaxResolution
+    if [ -n "${DOCKED_OUTPUT1}" ]; then
+        echo "Standalone: Docked mode - applying minTomaxResolution for ${DOCKED_OUTPUT1}." >> "$log"
+        batocera-resolution --screen "${DOCKED_OUTPUT1}" minTomaxResolution
     else
         ## The resolution for the first screen is on the boot file so that it is easier to change it
         ## It is not needed for other screens
@@ -301,12 +316,12 @@ while [ -e "${REBOOT_FLAG}" ]; do
         # we can correctly position them next to each other
         echo "Standalone: --- Repositioning Outputs ---" >> "$log"
         display_position=$(/usr/bin/batocera-settings-get-master "display.position")
-        if [ -n "${display_position}" ] && [ -z "${DOCKED_OUTPUT}" ]; then
+        if [ -n "${display_position}" ] && [ -z "${DOCKED_OUTPUT1}" ]; then
             batocera-resolution repositionOutputs "${display_position}" "${settings_output}" "${settings_output2}" "${settings_output3}"
         fi
     fi
     if which xrandr; then # if xrandr available
-	if [ -z "${DOCKED_OUTPUT}" ]; then
+	if [ -z "${DOCKED_OUTPUT1}" ]; then
 	    # Now that all screens are enabled, rotated, resized... we reenable cause it may change the position in case of multi screens
 	    if [ -n "${settings_output2}" -o -n "${settings_output3}" ]; then
 		batocera-resolution setOutput "${settings_output}" "${settings_output2}" "${settings_output3}" # empty or invalid values defaults to the first valid
