@@ -479,7 +479,7 @@ def user_signal_start_discovery(userdata = None):
   start_discovery()
 
   filter = getBluetoothWantedAddr()
-  if filter is not None:
+  if filter is not None and filter != "input":
     for path in list(gdevices):
       connect_device(path, gdevices[path], False, filter)
 
