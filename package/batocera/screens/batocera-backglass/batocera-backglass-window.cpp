@@ -489,10 +489,21 @@ int main(int argc, char* argv[]) {
     std::string target_display_name = "";
     std::string theme_path = "";
 
+    int win_x = 0;
+    int win_y = 0;
+    int win_width  = 800;
+    int win_height = 600;
+
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg == "--output" && i + 1 < argc) {
-            target_display_name = argv[++i];
+        if (arg == "-x" && i + 1 < argc) {
+	  win_x = atoi(argv[++i]);
+	} else if (arg == "-y" && i + 1 < argc) {
+	  win_y = atoi(argv[++i]);
+	} else if (arg == "--width" && i + 1 < argc) {
+	  win_width = atoi(argv[++i]);
+	} else if (arg == "--height" && i + 1 < argc) {
+	  win_height = atoi(argv[++i]);
         } else if (arg == "--www" && i + 1 < argc) {
             theme_path = argv[++i];
         }
@@ -555,57 +566,14 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    int win_x = 0;
-    int win_y = 0;
-    int win_w = 800;
-    int win_h = 600;
-
-    if (!target_display_name.empty()) {
-        int num_displays = SDL_GetNumVideoDisplays();
-        int matched_index = -1;
-
-        std::string s_target = target_display_name;
-        std::transform(s_target.begin(), s_target.end(), s_target.begin(), ::tolower);
-
-        for (int i = 0; i < num_displays; ++i) {
-            const char* name = SDL_GetDisplayName(i);
-            if (name) {
-                std::string s_name(name);
-                std::transform(s_name.begin(), s_name.end(), s_name.begin(), ::tolower);
-                if (s_name.find(s_target) != std::string::npos || s_target.find(s_name) != std::string::npos) {
-                    matched_index = i;
-                    break;
-                }
-            }
-        }
-
-        if (matched_index != -1) {
-            SDL_Rect bounds;
-            if (SDL_GetDisplayBounds(matched_index, &bounds) == 0) {
-                win_x = bounds.x;
-                win_y = bounds.y;
-                win_w = bounds.w;
-                win_h = bounds.h;
-            }
-        }
-    } else {
-        SDL_Rect bounds;
-        if (SDL_GetDisplayBounds(0, &bounds) == 0) {
-            win_x = bounds.x;
-            win_y = bounds.y;
-            win_w = bounds.w;
-            win_h = bounds.h;
-        }
-    }
-
-    SDL_Window* window = SDL_CreateWindow("backglass", win_x, win_y, win_w, win_h, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+    SDL_Window* window = SDL_CreateWindow("backglass", win_x, win_y, win_width, win_height, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
     if (!window) return 1;
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) return 1;
 
-    int header_font_size = std::max(24, (int)(win_h * 0.10f));
-    int desc_font_size   = std::max(16, (int)(win_h * 0.04f));
+    int header_font_size = std::max(24, (int)(win_height * 0.10f));
+    int desc_font_size   = std::max(16, (int)(win_height * 0.04f));
 
     TTF_Font* font_header = nullptr;
     TTF_Font* font_desc = nullptr;
