@@ -7,11 +7,11 @@ if TYPE_CHECKING:
 
     from ...Emulator import Emulator
 
-
 def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulator) -> None:
-    # Tables are organised by folders containing the vpx file, and sub-folders with the roms, altcolor, altsound,...
-    # We keep a switch to allow users with the old unique pinmame to be able to continue using vpinball (switchon)
-    vpinballSettings.set("Standalone", "PinMAMEPath", system.config.get_bool("vpinball_folders", True, return_values=("./", "")))
+    # init sections
+    for section in ["Player", "Plugin.AltSound"]:
+        if not vpinballSettings.has_section(section):
+            vpinballSettings.add_section(section)
 
     # Ball trail
     balltrail = system.config.get("vpinball_balltrail", "0")
@@ -26,10 +26,6 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
 
     # vsync
     vpinballSettings.set("Player", "SyncMode", system.config.get("vpinball_vsync", "2"))
-
-    # avoid default keys like q while it differs depending on the keyboard mapping (making hotkeys fail)
-    # 62 = F4 : https://github.com/vpinball/vpinball/tree/standalone/standalone#keyboard
-    vpinballSettings.set("Player", "ExitGameKey", "62")
 
     # presets
     if (presets := system.config.get("vpinball_presets")) != "manual":
@@ -96,23 +92,11 @@ def configureOptions(vpinballSettings: CaseSensitiveConfigParser, system: Emulat
     vpinballSettings.set("Player", "ScreenPlayerY",     screen_y)
     vpinballSettings.set("Player", "ScreenPlayerZ",     screen_z)
 
-    # Altcolor (switchon)
-    vpinballSettings.set("Standalone", "AltColor", system.config.get_bool("vpinball_altcolor", True, return_values=("1", "0")))
-
     # Sound balance
     vpinballSettings.set("Player", "MusicVolume", system.config.get("vpinball_musicvolume", ""))
     vpinballSettings.set("Player", "SoundVolume", system.config.get("vpinball_soundvolume", ""))
-
-    # Altsound
-    vpinballSettings.set("Standalone", "AltSound", system.config.get_bool("vpinball_altsound", True, return_values=("1", "0")))
 
     # select which ID for sounddevices by running:
     # /usr/bin/vpinball/VPinballX_BGFX -listsnd
     vpinballSettings.set("Player", "SoundDevice", system.config.get("vpinball_sounddevice", ""))
     vpinballSettings.set("Player", "SoundDeviceBG", system.config.get("vpinball_sounddevicebg", ""))
-
-    # Don't use SDL "Add credit" with the South button/plunger and pad2key default mapping
-    vpinballSettings.set("Player", "JoyAddCreditKey", system.config.get_bool("vpinball_pad_add_credit", return_values=("", "0")))
-
-    # PBWEnabled. Accelerometer (helps with some controllers equipped with accelerometers)
-    vpinballSettings.set("Player", "PBWEnabled", system.config.get_bool("vpinball_pbw", True, return_values=("", "0")))
