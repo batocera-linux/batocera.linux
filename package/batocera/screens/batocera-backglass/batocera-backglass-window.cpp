@@ -587,6 +587,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    SDL_SetHint(SDL_HINT_X11_WINDOW_TYPE, "_NET_WM_WINDOW_TYPE_DESKTOP"); // put the windows as much possible in the background
     SDL_Window* window = SDL_CreateWindow("backglass", win_x, win_y, win_width, win_height, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
     if (!window) return 1;
 
