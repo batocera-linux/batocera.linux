@@ -124,7 +124,7 @@ case "${ACTION}" in
 	echo "${X} ${Y} ${WIDTH} ${HEIGHT} ${THEME}" > "${PARAMSFILE}" || exit 1
 
         # Launch again with the native configuration target parameters
-        batocera-backglass-window --x "${X}" --y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
+        batocera-backglass-window -x "${X}" -y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
         echo "$!" > "${PIDFILE}"
         ;;
 
