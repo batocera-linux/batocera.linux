@@ -485,6 +485,27 @@ void renderDescriptionText(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rec
     SDL_RenderSetClipRect(renderer, NULL);
 }
 
+SDL_Texture* IMG_LoadTexture_at_resolution(SDL_Renderer* renderer, const std::string& path, int width, int height) {
+  SDL_RWops* rwops = SDL_RWFromFile(path.c_str(), "rb");
+  if(rwops) {
+    if(IMG_isSVG(rwops)) {
+      SDL_Texture* tex = NULL;
+      SDL_Surface* surface = IMG_LoadSizedSVG_RW(rwops, width, height);
+      if (surface) {
+	tex = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+      }
+      SDL_RWclose(rwops);
+      return tex;
+    } else {
+      SDL_RWclose(rwops);
+      return IMG_LoadTexture(renderer, path.c_str());
+    }
+  } else {
+    return NULL;
+  }
+}
+
 int main(int argc, char* argv[]) {
     std::string target_display_name = "";
     std::string theme_path = "";
@@ -657,11 +678,11 @@ int main(int argc, char* argv[]) {
             SDL_GetWindowSize(window, &winW, &winH);
             SDL_Color whiteColor = {255, 255, 255, 255};
 
-            if (!sys_logo_path.empty()) tex_sys_logo = IMG_LoadTexture(renderer, sys_logo_path.c_str());
-            if (!game_thumbnail_path.empty()) tex_game_thumbnail = IMG_LoadTexture(renderer, game_thumbnail_path.c_str());
-            if (!game_fanart_path.empty()) tex_game_fanart = IMG_LoadTexture(renderer, game_fanart_path.c_str());
-            if (!game_image_path.empty()) tex_game_image = IMG_LoadTexture(renderer, game_image_path.c_str());
-            if (!game_marquee_path.empty()) tex_game_marquee = IMG_LoadTexture(renderer, game_marquee_path.c_str());
+            if (!sys_logo_path.empty()) tex_sys_logo = IMG_LoadTexture_at_resolution(renderer, sys_logo_path, winW, winH);
+            if (!game_thumbnail_path.empty()) tex_game_thumbnail = IMG_LoadTexture_at_resolution(renderer, game_thumbnail_path, winW, winH);
+            if (!game_fanart_path.empty()) tex_game_fanart = IMG_LoadTexture_at_resolution(renderer, game_fanart_path, winW, winH);
+            if (!game_image_path.empty()) tex_game_image = IMG_LoadTexture_at_resolution(renderer, game_image_path, winW, winH);
+            if (!game_marquee_path.empty()) tex_game_marquee = IMG_LoadTexture_at_resolution(renderer, game_marquee_path, winW, winH);
 
             if (!sys_fullname.empty()) tex_sys_fullname = createTextTexture(renderer, font_header, sys_fullname, whiteColor, (int)(winW * 0.9f));
             if (!game_name.empty()) tex_game_name = createTextTexture(renderer, font_header, game_name, whiteColor, (int)(winW * 0.9f));
