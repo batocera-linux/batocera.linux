@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import platform
 import shutil
 from pathlib import Path
@@ -12,12 +13,14 @@ from ... import Command
 from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
 from ...controller import Controller, Controllers, generate_sdl_game_controller_config
 from ...gun import Guns, guns_need_crosses
+from ...utils import vulkan
 from ..Generator import Generator
 
 if TYPE_CHECKING:
     from ...Emulator import Emulator
     from ...types import HotkeysContext
 
+_logger = logging.getLogger(__name__)
 
 SUPERMODEL_SHARE: Final = Path("/usr/share/supermodel")
 SUPERMODEL_CONFIG: Final = CONFIGS / "supermodel"
@@ -112,6 +115,23 @@ class SupermodelGenerator(Generator):
         # Configure audio channels (defaults to Stereo / 2-channel)
         audio_channels = system.config.get("m3_audio_channels", "2")
         commandArray: list[str | Path] = ["supermodel", "-fullscreen", f"-channels={audio_channels}"]
+
+        # Graphics Backend selection (OpenGL or Vulkan)
+        graphics_backend = system.config.get("graphics_backend")
+        if graphics_backend == "Vulkan":
+            if vulkan.is_available():
+                vulkan_version = vulkan.get_version()
+                if vulkan_version >= "1.1":
+                    _logger.debug("Vulkan driver is available. Using Vulkan version: %s", vulkan_version)
+                    commandArray.append("-graphics-backend=Vulkan")
+                else:
+                    _logger.debug("Vulkan version %s is lower than 1.1! Falling back to OpenGL.", vulkan_version)
+                    commandArray.append("-graphics-backend=OpenGL")
+            else:
+                _logger.debug("*** Vulkan driver is not available on the system! Falling back to OpenGL. ***")
+                commandArray.append("-graphics-backend=OpenGL")
+        elif graphics_backend:
+            commandArray.append(f"-graphics-backend={graphics_backend}")
 
         # 3D Engine selection (force New3D on ARM/GLES devices to prevent exit)
         if is_arm or system.config.get("engine3D") == "new3d":

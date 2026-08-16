@@ -24,6 +24,13 @@ custom_features:
     choices:
       Legacy3D: legacy3d
       New3D: new3d
+  graphics_backend:
+    group: GRAPHICS
+    prompt: GRAPHICS API
+    description: Select the graphics rendering backend (requires New3D engine). Vulkan can provide improved performance and lower CPU overhead on supported GPUs.
+    choices:
+      OpenGL (Default): OpenGL
+      Vulkan: Vulkan
   quadRendering:
     group: GRAPHICS
     prompt: QUAD RENDERING

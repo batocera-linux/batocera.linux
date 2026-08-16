@@ -24,11 +24,11 @@ index af02998..3d1eeb6 100644
  	SUPERMODEL_GLES_BUILD = 1
  	PLATFORM_BUILD_SUFFIX = -gles
  	PLATFORM_CXXFLAGS += -DSUPERMODEL_GLES -DIMGUI_IMPL_OPENGL_ES3
--	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread
-+	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread -ludev
+-	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread $(PLATFORM_LDFLAGS_EXTRA)
++	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGLESv2 -lz -lm -lstdc++ -lpthread -ludev $(PLATFORM_LDFLAGS_EXTRA)
  else
--	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread
-+	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -ludev
+-	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread $(PLATFORM_LDFLAGS_EXTRA)
++	PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -ludev $(PLATFORM_LDFLAGS_EXTRA)
  endif
  PLATFORM_BINARY_EXTENSION =
  
