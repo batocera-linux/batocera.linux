@@ -3,8 +3,8 @@
 # bgfx
 #
 ################################################################################
-# Version: Commits on Aug 12, 2026
-BGFX_VERSION = v1.153.9398-566
+# Version: Commits on Aug 31, 2026
+BGFX_VERSION = v1.157.9447-569
 BGFX_SITE = https://github.com/bkaradzic/bgfx.cmake
 BGFX_SITE_METHOD = git
 BGFX_GIT_SUBMODULES = YES
@@ -35,7 +35,7 @@ BGFX_CONF_OPTS += -DBGFX_WITH_WAYLAND=OFF
 endif
 
 # patch version details from vpinball - platforms/config.sh
-BGFX_PATCH_VERSION = 93b82acafc49fc90d13848e2c764b655adccc8ad
+BGFX_PATCH_VERSION = b85f38efb832c2c2d462d386ade8278349f804a2
 BGFX_PATCH_SOURCE = $(BGFX_PATCH_VERSION).tar.gz
 BGFX_EXTRA_DOWNLOADS = \
     $(addprefix \
