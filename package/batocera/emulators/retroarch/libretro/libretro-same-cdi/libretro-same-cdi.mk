@@ -10,23 +10,34 @@ LIBRETRO_SAME_CDI_LICENSE = GPL
 LIBRETRO_SAME_CDI_DEPENDENCIES += retroarch
 LIBRETRO_SAME_CDI_EMULATOR_INFO = same_cdi.libretro.core.yml
 
+# GCC 15 C++ / <cstdint> & sol2 -Wtemplate-body fixes
+LIBRETRO_SAME_CDI_CXXFLAGS = $(TARGET_CXXFLAGS) -include cstdint -Wno-template-body
+
 ifeq ($(BR2_x86_64),y)
 LIBRETRO_SAME_CDI_EXTRA_ARGS += LIBRETRO_CPU=x86_64 PLATFORM=x64
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_SAME_CDI_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU= PLATFORM=arm64 ARCHITECTURE= NOASM=1
 endif
 
+LIBRETRO_SAME_CDI_EXTRA_ARGS += \
+	OVERRIDE_CXXFLAGS="$(LIBRETRO_SAME_CDI_CXXFLAGS)" \
+	NOWERROR=1 PRECOMPILE=0
+
 define LIBRETRO_SAME_CDI_BUILD_CMDS
-	# First, we need to build genie for host
+	# First, we need to build genie for host with precompiled headers disabled
 	cd $(@D); \
 	PATH="$(HOST_DIR)/bin:$$PATH" \
 	$(MAKE) TARGETOS=linux OSD=sdl genie \
 	TARGET=mame SUBTARGET=tiny \
 	NO_USE_PORTAUDIO=1 NO_X11=1 USE_SDL=0 \
-	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM=""
+	USE_QTDEBUG=0 DEBUG=0 IGNORE_GIT=1 MPARAM="" \
+	NOWERROR=1 PRECOMPILE=0
 
 	# Then build lr-same-cdi for target
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+	$(TARGET_CONFIGURE_OPTS) \
+	CFLAGS="$(TARGET_CFLAGS)" \
+	CXXFLAGS="$(LIBRETRO_SAME_CDI_CXXFLAGS)" \
+	$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	$(LIBRETRO_SAME_CDI_EXTRA_ARGS) \
 	GIT_VERSION="" -C $(@D) -f Makefile.libretro
 endef

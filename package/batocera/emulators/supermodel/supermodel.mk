@@ -3,8 +3,8 @@
 # supermodel
 #
 ################################################################################
-# Version: based on v0.3a-20260726 (Commits on Aug 16, 2026)
-SUPERMODEL_VERSION = f16a4d3571930a911e145b36590bb0cc2b9a88e7
+# Version: based on v0.3a-20260726 (Commits on Aug 17, 2026)
+SUPERMODEL_VERSION = 6db4c4fba968c0da3d7785152fe89d100962684b
 SUPERMODEL_SITE = $(call github,dmanlfc,Supermodel,$(SUPERMODEL_VERSION))
 SUPERMODEL_DEPENDENCIES = sdl2 zlib libzip sdl2_net
 SUPERMODEL_LICENSE = GPLv3

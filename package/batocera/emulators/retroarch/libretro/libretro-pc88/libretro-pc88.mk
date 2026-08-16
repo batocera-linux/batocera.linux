@@ -12,6 +12,12 @@ LIBRETRO_PC88_EMULATOR_INFO = quasi88.libretro.core.yml
 
 LIBRETRO_PC88_PLATFORM = $(LIBRETRO_PLATFORM)
 
+# GCC 15 / C23 compatibility flags
+LIBRETRO_PC88_CFLAGS = $(TARGET_CFLAGS) -std=gnu17 \
+	-Wno-error=incompatible-pointer-types \
+	-Wno-error=implicit-function-declaration \
+	-Wno-error=int-conversion
+
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
 LIBRETRO_PC88_PLATFORM = unix-rpi1
 else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
@@ -25,8 +31,10 @@ LIBRETRO_PC88_PLATFORM = unix-rpi5
 endif
 
 define LIBRETRO_PC88_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
-	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_PC88_PLATFORM)"
+	$(TARGET_CONFIGURE_OPTS) \
+		CFLAGS="$(LIBRETRO_PC88_CFLAGS)" \
+		$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
+		-C $(@D)/ -f Makefile platform="$(LIBRETRO_PC88_PLATFORM)"
 endef
 
 define LIBRETRO_PC88_INSTALL_TARGET_CMDS
