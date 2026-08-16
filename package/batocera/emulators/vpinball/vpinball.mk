@@ -3,8 +3,9 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Aug 12, 2026
-VPINBALL_VERSION = 9d7446764a614c5c80bda46557d46bd652cf563e
+# Version: Commits on Sep 2, 2026
+VPINBALL_VERSION = ff8ceb44bd699a5d481492143b1c06b6f1a7e4d9
+VPINBALL_REVISION = 5554
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
@@ -40,6 +41,13 @@ VPINBALL_CONF_OPTS += -DRENDERER=BGFX
 VPINBALL_CONF_OPTS += -DUSE_SYSTEM_LIBS=ON
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_INCLUDE_DIR=$(STAGING_DIR)/usr/include
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_LIB_DIR=$(STAGING_DIR)/usr/lib
+
+define VPINBALL_SET_GIT_VERSION
+	$(SED) 's/9999/$(VPINBALL_REVISION)/;s/unknown/$(shell echo $(VPINBALL_VERSION) | cut -c1-9)/' \
+		$(@D)/src/core/git_version.h
+endef
+
+VPINBALL_POST_EXTRACT_HOOKS += VPINBALL_SET_GIT_VERSION
 
 define VPINBALL_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/vpinball
