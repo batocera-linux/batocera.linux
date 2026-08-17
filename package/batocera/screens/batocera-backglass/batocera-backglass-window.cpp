@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <mutex>
@@ -14,6 +15,20 @@
 #include <algorithm>
 #include <regex>
 #include <cmath>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+struct AnimFrame {
+    SDL_Texture* texture;
+    int delayMS;
+};
+
+struct Anim {
+  std::vector<AnimFrame> frames;
+  int currentFrame;
+  int lastUpdateTick;
+};
 
 enum DisplayMode { MODE_SYSTEM, MODE_GAME };
 
@@ -384,6 +399,58 @@ void serverThreadFunc(int port) {
 
 // NATIVE GRAPHICS HELPERS
 
+void LoadAnimatedGIF(std::vector<AnimFrame>& frames, SDL_Renderer* renderer, const std::string& path) {
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (!file.is_open()) return;
+
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    std::vector<char> buffer(size);
+    if (!file.read(buffer.data(), size)) return;
+
+    int x, y, comp;
+    int* delays = nullptr;
+    int num_frames = 0;
+
+    unsigned char* data = stbi_load_gif_from_memory(
+        reinterpret_cast<unsigned char*>(buffer.data()),
+        static_cast<int>(size),
+        &delays,
+        &x, &y, &num_frames, &comp, 4 // 4 channels (RGBA)
+    );
+
+    if (!data) return;
+
+    size_t frameSize = x * y * 4;
+    for (int i = 0; i < num_frames; ++i) {
+        unsigned char* framePixelData = data + (i * frameSize);
+
+        SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+            framePixelData,
+            x, y,
+            32,
+            x * 4,
+            SDL_PIXELFORMAT_ABGR8888
+        );
+
+        if (surface) {
+            SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+
+            if (texture) {
+                int delay = (delays && delays[i] > 0) ? delays[i] : 100; // 100ms is not specified
+                frames.push_back({texture, delay});
+            }
+        }
+    }
+
+    STBI_FREE(data);
+    if (delays) {
+        STBI_FREE(delays);
+    }
+}
+
 void renderImage(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect boundary, const std::string& objectFit, float innerScale = 1.0f) {
     if (!texture) return;
 
@@ -506,6 +573,63 @@ SDL_Texture* IMG_LoadTexture_at_resolution(SDL_Renderer* renderer, const std::st
   }
 }
 
+void IMG_LoadAnimTexture_at_resolution(std::vector<AnimFrame> & anim, SDL_Renderer* renderer, const std::string& path, int width, int height) {
+  SDL_RWops* rwops = SDL_RWFromFile(path.c_str(), "rb");
+  if(rwops) {
+    if(IMG_isSVG(rwops)) {
+      SDL_Texture* tex = NULL;
+      SDL_Surface* surface = IMG_LoadSizedSVG_RW(rwops, width, height);
+      if (surface) {
+	tex = SDL_CreateTextureFromSurface(renderer, surface);
+	if(tex) {
+	  AnimFrame af;
+	  af.texture = tex;
+	  af.delayMS = 0;
+	  anim.push_back(af);
+	}
+	SDL_FreeSurface(surface);
+      }
+      SDL_RWclose(rwops);
+    } else if(IMG_isGIF(rwops)) {
+      LoadAnimatedGIF(anim, renderer, path);
+    } else {
+      SDL_RWclose(rwops);
+
+      SDL_Texture* tex = NULL;
+      tex = IMG_LoadTexture(renderer, path.c_str());
+      if(tex) {
+	AnimFrame af;
+	af.texture = tex;
+	af.delayMS = 0;
+	anim.push_back(af);
+      }
+    }
+  }
+}
+
+void free_AnimFrames(Anim& anim) {
+  for(const auto& frame : anim.frames) {
+    SDL_DestroyTexture(frame.texture);
+  }
+  anim.frames.clear();
+}
+
+void initAnim(Anim& anim, Uint32 ticks) {
+  anim.currentFrame = 0;
+  anim.lastUpdateTick = ticks;
+}
+
+void updateAnim(Anim& anim, Uint32 ticks) {
+  if(anim.frames[anim.currentFrame].delayMS <= 0) return; // can't forward
+  if(anim.frames.size() == 1)                     return; // can't forward
+
+  while(anim.lastUpdateTick + anim.frames[anim.currentFrame].delayMS < ticks) {
+    anim.lastUpdateTick += anim.frames[anim.currentFrame].delayMS;
+    anim.currentFrame++;
+    if(anim.currentFrame >= anim.frames.size()) anim.currentFrame = 0; // reset to the beginning
+  }
+}
+
 int main(int argc, char* argv[]) {
     std::string target_display_name = "";
     std::string theme_path = "";
@@ -624,11 +748,11 @@ int main(int argc, char* argv[]) {
     std::string game_image_path = "";
     std::string game_marquee_path = "";
 
-    SDL_Texture* tex_sys_logo = nullptr;
-    SDL_Texture* tex_game_thumbnail = nullptr;
-    SDL_Texture* tex_game_fanart = nullptr;
-    SDL_Texture* tex_game_image = nullptr;
-    SDL_Texture* tex_game_marquee = nullptr;
+    Anim tex_sys_logo;
+    Anim tex_game_thumbnail;
+    Anim tex_game_fanart;
+    Anim tex_game_image;
+    Anim tex_game_marquee;
 
     SDL_Texture* tex_sys_fullname = nullptr;
     SDL_Texture* tex_game_name = nullptr;
@@ -666,11 +790,11 @@ int main(int argc, char* argv[]) {
             // Re-sync delta timer dynamically on game switch
             start_time = SDL_GetTicks();
 
-            if (tex_sys_logo) { SDL_DestroyTexture(tex_sys_logo); tex_sys_logo = nullptr; }
-            if (tex_game_thumbnail) { SDL_DestroyTexture(tex_game_thumbnail); tex_game_thumbnail = nullptr; }
-            if (tex_game_fanart) { SDL_DestroyTexture(tex_game_fanart); tex_game_fanart = nullptr; }
-            if (tex_game_image) { SDL_DestroyTexture(tex_game_image); tex_game_image = nullptr; }
-            if (tex_game_marquee) { SDL_DestroyTexture(tex_game_marquee); tex_game_marquee = nullptr; }
+            free_AnimFrames(tex_sys_logo);
+            free_AnimFrames(tex_game_thumbnail);
+            free_AnimFrames(tex_game_fanart);
+            free_AnimFrames(tex_game_image);
+	    free_AnimFrames(tex_game_marquee);
             if (tex_sys_fullname) { SDL_DestroyTexture(tex_sys_fullname); tex_sys_fullname = nullptr; }
             if (tex_game_name) { SDL_DestroyTexture(tex_game_name); tex_game_name = nullptr; }
             if (tex_game_desc) { SDL_DestroyTexture(tex_game_desc); tex_game_desc = nullptr; }
@@ -679,11 +803,26 @@ int main(int argc, char* argv[]) {
             SDL_GetWindowSize(window, &winW, &winH);
             SDL_Color whiteColor = {255, 255, 255, 255};
 
-            if (!sys_logo_path.empty()) tex_sys_logo = IMG_LoadTexture_at_resolution(renderer, sys_logo_path, winW, winH);
-            if (!game_thumbnail_path.empty()) tex_game_thumbnail = IMG_LoadTexture_at_resolution(renderer, game_thumbnail_path, winW, winH);
-            if (!game_fanart_path.empty()) tex_game_fanart = IMG_LoadTexture_at_resolution(renderer, game_fanart_path, winW, winH);
-            if (!game_image_path.empty()) tex_game_image = IMG_LoadTexture_at_resolution(renderer, game_image_path, winW, winH);
-            if (!game_marquee_path.empty()) tex_game_marquee = IMG_LoadTexture_at_resolution(renderer, game_marquee_path, winW, winH);
+            if (!sys_logo_path.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_sys_logo.frames, renderer, sys_logo_path, winW, winH);
+	      initAnim(tex_sys_logo, SDL_GetTicks());
+	    }
+            if (!game_thumbnail_path.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_thumbnail.frames, renderer, game_thumbnail_path, winW, winH);
+	      initAnim(tex_game_thumbnail, SDL_GetTicks());
+	    }
+            if (!game_fanart_path.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_fanart.frames, renderer, game_fanart_path, winW, winH);
+	      initAnim(tex_game_fanart, SDL_GetTicks());
+	    }
+            if (!game_image_path.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_image.frames, renderer, game_image_path, winW, winH);
+	      initAnim(tex_game_image, SDL_GetTicks());
+	    }
+            if (!game_marquee_path.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_marquee.frames, renderer, game_marquee_path, winW, winH);
+	      initAnim(tex_game_marquee, SDL_GetTicks());
+	    }
 
             if (!sys_fullname.empty()) tex_sys_fullname = createTextTexture(renderer, font_header, sys_fullname, whiteColor, (int)(winW * 0.9f));
             if (!game_name.empty()) tex_game_name = createTextTexture(renderer, font_header, game_name, whiteColor, (int)(winW * 0.9f));
@@ -697,14 +836,16 @@ int main(int argc, char* argv[]) {
 
         int winW, winH;
         SDL_GetWindowSize(window, &winW, &winH);
-        
+
+	Uint64 ticks = SDL_GetTicks();
         // Calculate the absolute elapsed seconds cleanly using the GPU timer offset
-        float elapsed_seconds = (float)(SDL_GetTicks() - start_time) / 1000.0f;
+        float elapsed_seconds = (float)(ticks - start_time) / 1000.0f;
 
         if (current_mode == MODE_SYSTEM) {
-            if (tex_sys_logo) {
+            if (!tex_sys_logo.frames.empty()) {
                 SDL_Rect boundary = {0, 0, winW, winH};
-                renderImage(renderer, tex_sys_logo, boundary, "contain", 0.95f);
+		updateAnim(tex_sys_logo, ticks);
+                renderImage(renderer, tex_sys_logo.frames[tex_sys_logo.currentFrame].texture, boundary, "contain", 0.95f);
             } else if (tex_sys_fullname) {
                 SDL_Rect boundary = {0, 0, winW, winH};
                 renderHeaderText(renderer, tex_sys_fullname, boundary);
@@ -712,36 +853,40 @@ int main(int argc, char* argv[]) {
         } 
         else {
             if (g_current_theme == "backglass-boxart") {
-                if (tex_game_thumbnail) {
+                if (!tex_game_thumbnail.frames.empty()) {
                     SDL_Rect boundary = {0, 0, winW, winH};
-                    renderImage(renderer, tex_game_thumbnail, boundary, "contain");
+		    updateAnim(tex_game_thumbnail, ticks);
+                    renderImage(renderer, tex_game_thumbnail.frames[tex_game_thumbnail.currentFrame].texture, boundary, "contain");
                 } else if (tex_game_name) {
                     SDL_Rect boundary = {0, 0, winW, (int)(winH * 0.25f)};
                     renderHeaderText(renderer, tex_game_name, boundary);
                 }
             } 
             else if (g_current_theme == "backglass-fanart") {
-                if (tex_game_fanart) {
+                if (!tex_game_fanart.frames.empty()) {
                     SDL_Rect boundary = {0, 0, winW, winH};
-                    renderImage(renderer, tex_game_fanart, boundary, "fill");
+		    updateAnim(tex_game_fanart, ticks);
+                    renderImage(renderer, tex_game_fanart.frames[tex_game_fanart.currentFrame].texture, boundary, "fill");
                 } else if (tex_game_name) {
                     SDL_Rect boundary = {0, 0, winW, (int)(winH * 0.25f)};
                     renderHeaderText(renderer, tex_game_name, boundary);
                 }
             } 
             else if (g_current_theme == "backglass-image") {
-                if (tex_game_image) {
+                if (!tex_game_image.frames.empty()) {
                     SDL_Rect boundary = {0, 0, winW, winH};
-                    renderImage(renderer, tex_game_image, boundary, "contain");
+		    updateAnim(tex_game_image, ticks);
+                    renderImage(renderer, tex_game_image.frames[tex_game_image.currentFrame].texture, boundary, "contain");
                 } else if (tex_game_name) {
                     SDL_Rect boundary = {0, 0, winW, (int)(winH * 0.25f)};
                     renderHeaderText(renderer, tex_game_name, boundary);
                 }
             } 
             else if (g_current_theme == "backglass-marquee") {
-                if (tex_game_marquee) {
+	      if (!tex_game_marquee.frames.empty()) {
                     SDL_Rect boundary = {0, 0, winW, winH};
-                    renderImage(renderer, tex_game_marquee, boundary, "contain");
+		    updateAnim(tex_game_marquee, ticks);
+                    renderImage(renderer, tex_game_marquee.frames[tex_game_marquee.currentFrame].texture, boundary, "contain");
                 } else if (tex_game_name) {
                     SDL_Rect boundary = {0, 0, winW, (int)(winH * 0.25f)};
                     renderHeaderText(renderer, tex_game_name, boundary);
@@ -749,16 +894,18 @@ int main(int argc, char* argv[]) {
             } 
             else {
                 SDL_Rect topRect = {0, 0, winW, (int)(winH * 0.25f)};
-                if (tex_game_marquee) {
-                    renderImage(renderer, tex_game_marquee, topRect, "contain");
+                if (!tex_game_marquee.frames.empty()) {
+		  updateAnim(tex_game_marquee, ticks);
+		  renderImage(renderer, tex_game_marquee.frames[tex_game_marquee.currentFrame].texture, topRect, "contain");
                 } else if (tex_game_name) {
                     renderHeaderText(renderer, tex_game_name, topRect);
                 }
 
                 if (winW >= winH) {
                     SDL_Rect imgRect = {0, (int)(winH * 0.25f), (int)(winW * 0.6f), (int)(winH * 0.75f)};
-                    if (tex_game_image) {
-                        renderImage(renderer, tex_game_image, imgRect, "contain", 0.95f);
+                    if (!tex_game_image.frames.empty()) {
+		      updateAnim(tex_game_image, ticks);
+                        renderImage(renderer, tex_game_image.frames[tex_game_image.currentFrame].texture, imgRect, "contain", 0.95f);
                     }
 
                     if (tex_game_desc) {
@@ -775,8 +922,9 @@ int main(int argc, char* argv[]) {
                 } 
                 else {
                     SDL_Rect imgRect = {0, (int)(winH * 0.25f), winW, (int)(winH * 0.55f)};
-                    if (tex_game_image) {
-                        renderImage(renderer, tex_game_image, imgRect, "contain", 0.95f);
+                    if (!tex_game_image.frames.empty()) {
+		        updateAnim(tex_game_image, ticks);
+                        renderImage(renderer, tex_game_image.frames[tex_game_image.currentFrame].texture, imgRect, "contain", 0.95f);
                     }
 
                     if (tex_game_desc) {
@@ -798,11 +946,11 @@ int main(int argc, char* argv[]) {
         SDL_Delay(16);
     }
 
-    if (tex_sys_logo) SDL_DestroyTexture(tex_sys_logo);
-    if (tex_game_thumbnail) SDL_DestroyTexture(tex_game_thumbnail);
-    if (tex_game_fanart) SDL_DestroyTexture(tex_game_fanart);
-    if (tex_game_image) SDL_DestroyTexture(tex_game_image);
-    if (tex_game_marquee) SDL_DestroyTexture(tex_game_marquee);
+    free_AnimFrames(tex_sys_logo);
+    free_AnimFrames(tex_game_thumbnail);
+    free_AnimFrames(tex_game_fanart);
+    free_AnimFrames(tex_game_image);
+    free_AnimFrames(tex_game_marquee);
     if (tex_sys_fullname) SDL_DestroyTexture(tex_sys_fullname);
     if (tex_game_name) SDL_DestroyTexture(tex_game_name);
     if (tex_game_desc) SDL_DestroyTexture(tex_game_desc);
