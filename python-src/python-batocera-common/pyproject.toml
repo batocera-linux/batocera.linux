@@ -1,6 +1,7 @@
 [project]
 name = "batocera-common"
 version = '44.0'
+requires-python = "==3.14.5"
 dependencies = [
     'typing-extensions',
     'PyYAML',
@@ -13,17 +14,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 include = ["/batocera_common"]
-
-[tool.pyright]
-extends = "../../pyproject.toml"
-
-[tool.ruff]
-extend = "../../pyproject.toml"
-
-target-version = "py314"
-
-[tool.ruff.lint]
-ignore = ["SIM105", "SIM108", "E501", "RUF051"]
 
 [tool.pytest]
 minversion = "9.0"

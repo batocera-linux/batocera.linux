@@ -15,9 +15,6 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 include = ["/batocera_bezel_overlay"]
 
-[tool.pyright]
-extends = "../../pyproject.toml"
-
 [tool.ruff]
 extend = "../../pyproject.toml"
 
