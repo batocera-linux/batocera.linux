@@ -61,8 +61,8 @@ _evmapy_instance = None
 def main(args: argparse.Namespace, maxnbplayers: int) -> int:
     original_rom = args.rom
 
-    # squashfs roms if squashed
-    if original_rom.suffix == ".squashfs":
+    # squashfs roms if squashed, the windows systems name theirs .wsquashfs
+    if original_rom.suffix in ('.squashfs', '.wsquashfs'):
         with mount_squashfs(original_rom) as squash_rom:
             return start_rom(args, maxnbplayers, squash_rom, original_rom)
     else:
@@ -105,8 +105,8 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
         generator = get_generator(system.config.emulator, system.config.core)
 
         with (
-            mount_overlayfs(rom, SAVES / system.name / original_rom.stem)
-            if original_rom.suffix == ".squashfs" and generator.writesToRom(system.config)
+            mount_overlayfs(rom, generator.writableRomDir(system, original_rom))
+            if original_rom.suffix in ('.squashfs', '.wsquashfs') and generator.writesToRom(system.config)
             else contextlib.nullcontext(rom)
         ) as rom:
             # the resolution must be changed before configuration while the configuration may depend on it (ie bezels)
@@ -186,10 +186,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
 
                 # run the emulator
                 _evmapy_instance = evmapy(systemName, system.config.emulator, effectiveCore, original_rom, player_controllers, guns)
-                with (
-                    _evmapy_instance,
-                    set_hotkeygen_context(generator, system)
-                ):
+                with _evmapy_instance:
                     # change directory if wanted
                     executionDirectory = generator.executionDirectory(system.config, rom)
                     if executionDirectory is not None:
@@ -298,7 +295,14 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
                         _logger.error("Failed to draw_gun_borders for gun_borders")
                         _logger.error(e)
 
-                    with profiler.pause():
+                    # the hotkeys are set once the generator has run: an emulator that
+                    # exits through a command rather than a key only knows which one
+                    # after it has decided how to run the game
+                    with (
+                        set_hotkeygen_context(generator, system),
+                        profiler.pause(),
+                        generator.running(system.config, rom),
+                    ):
                         monitor_thread.start()
                         exitCode = runCommand(cmd)
 
