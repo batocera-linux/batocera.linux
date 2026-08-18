@@ -38,3 +38,6 @@ class FlatpakGenerator(Generator):
             "name": "flatpak",
             "keys": { "exit": "flatpak kill $(flatpak ps --columns=application | head -n 1)" }
         }
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16 / 9
