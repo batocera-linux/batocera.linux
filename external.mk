@@ -18,7 +18,12 @@ ROOTFS_SQUASHFS_ARGS += -wildcards -e $(BATOCERA_RUFOMACULATA_DIRS)
 
 include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-boot.mk
 include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-emulator-info.mk
-include $(sort $(wildcard $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*.mk $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*/*.mk))
+include $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/pkg-local-python.mk
+include $(sort $(wildcard $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*.mk \
+			  $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*.mk \
+			  $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*.mk \
+			  $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/*/*/*/*/*.mk \
+			  $(BR2_EXTERNAL_BATOCERA_PATH)/python-src/*/*.mk))
 
 UPDATE_PO_FILES_BUILD_DIR := $(BUILD_DIR)/batocera-locale-update
 
