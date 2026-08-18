@@ -5,6 +5,8 @@ Subject: [PATCH] drm/msm/a8xx: add Adreno 830 (SM8750/Odin3) catalog entry
 (chip 0x44050000). Without it the GPU is 'Unknown GPU revision' and
 never binds -> no Vulkan -> sway can't render -> no GUI. Carry the
 a830 reglists + catalog entry on top of 7.1's a8xx support.
+
+[Modified 8/9/2026 Rocknix: to match downstream and odin 3]
 ---
 diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
 index 550ff3a9b82e..a97bf2c0c89d 100644
@@ -283,7 +285,7 @@ index 550ff3a9b82e..a97bf2c0c89d 100644
  static const struct adreno_reglist_pipe a840_nonctxt_regs[] = {
  	{ REG_A8XX_CP_SMMU_STREAM_ID_LPAC, 0x00000101, BIT(PIPE_NONE) },
  	{ REG_A8XX_GRAS_DBG_ECO_CNTL, 0x00000800, BIT(PIPE_BV) | BIT(PIPE_BR) },
-@@ -2150,6 +2416,43 @@ static const struct adreno_info a8xx_gpus[] = {
+@@ -2150,6 +2416,49 @@ static const struct adreno_info a8xx_gpus[] = {
  			{ 357, 2 },
  			{ 284, 3 },
  		),
@@ -318,12 +320,18 @@ index 550ff3a9b82e..a97bf2c0c89d 100644
 +					.name = "ACV",
 +					.fixed = true,
 +					.perfmode = BIT(2),
-+					.perfmode_bw = 8171875,
++					.perfmode_bw = 10687500,
 +				},
 +				{ /* sentinel */ },
 +			},
 +		},
 +		.preempt_record_size = 13536 * SZ_1K,
++		.speedbins = ADRENO_SPEEDBINS(
++			{ 0xbe, 0 },
++			{ 0xdd, 1 },
++			{ 0xe8, 2 },
++			{ 0xf2, 3 },
++		),
  	}, {
  		.chip_ids = ADRENO_CHIP_IDS(0x44050a01),
  		.family = ADRENO_8XX_GEN2,

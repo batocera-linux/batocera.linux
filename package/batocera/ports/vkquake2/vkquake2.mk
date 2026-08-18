@@ -21,7 +21,7 @@ else ifeq ($(BR2_x86_64),y)
     VKQUAKE2_ARCH = x64
 endif
 
-VKQUAKE2_BASE_CFLAGS = -I$(STAGING_DIR)/usr/include -Dstricmp=strcasecmp -D_GNU_SOURCE
+VKQUAKE2_BASE_CFLAGS = -I$(STAGING_DIR)/usr/include -Dstricmp=strcasecmp -D_GNU_SOURCE -std=gnu17
 VKQUAKE2_BASE_CFLAGS += -Wno-format-truncation -Wno-unused-result -Wno-format-overflow
 
 VKQUAKE2_MAKE_OPTS = $(TARGET_CONFIGURE_OPTS) \

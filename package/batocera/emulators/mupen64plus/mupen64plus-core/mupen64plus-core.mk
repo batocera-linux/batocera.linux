@@ -12,8 +12,8 @@ MUPEN64PLUS_CORE_DEPENDENCIES = host-nasm sdl2 alsa-lib freetype dejavu
 MUPEN64PLUS_CORE_INSTALL_STAGING = YES
 MUPEN64PLUS_CORE_EMULATOR_INFO = mupen64plus.emulator.yml
 
-# GCC 14 compatibility flags
 MUPEN64PLUS_CORE_CFLAGS = $(TARGET_CFLAGS) \
+	-std=gnu17 \
 	-Wno-error=implicit-function-declaration \
 	-Wno-error=int-conversion \
 	-Wno-error=incompatible-pointer-types \

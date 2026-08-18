@@ -36,16 +36,17 @@ Signed-off-by: Anze <aanzdev@gmail.com>
 ---
 --- a/drivers/usb/typec/mux.c	2026-07-27 17:07:50.988901877 +0200
 +++ b/drivers/usb/typec/mux.c	2026-07-27 17:07:51.010296597 +0200
-@@ -57,6 +57,8 @@
- 	 */
+@@ -58,6 +58,9 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
  	dev = class_find_device(&typec_mux_class, NULL, fwnode,
  				switch_fwnode_match);
+ 
 +	if (!dev)
 +		return ERR_PTR(-EPROBE_DEFER);
- 
++
  	/* Skip duplicates */
  	for (i = 0; i < TYPEC_MUX_MAX_DEVS; i++)
-@@ -65,7 +67,7 @@
+ 		if (to_typec_switch_dev(dev) == sw_devs[i]) {
+@@ -65,7 +68,7 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
  			return NULL;
  		}
  
@@ -54,7 +55,7 @@ Signed-off-by: Anze <aanzdev@gmail.com>
  }
  
  /**
-@@ -79,7 +81,7 @@
+@@ -79,7 +82,7 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
   */
  struct typec_switch *fwnode_typec_switch_get(struct fwnode_handle *fwnode)
  {
@@ -63,26 +64,19 @@ Signed-off-by: Anze <aanzdev@gmail.com>
  	struct typec_switch *sw;
  	int count;
  	int err;
-@@ -292,6 +294,8 @@
- 
+@@ -291,7 +294,10 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
  	dev = class_find_device(&typec_mux_class, NULL, fwnode,
  				mux_fwnode_match);
+ 
+-	return dev ? to_typec_mux_dev(dev) : ERR_PTR(-EPROBE_DEFER);
 +	if (!dev)
 +		return ERR_PTR(-EPROBE_DEFER);
- 
- 	/* Skip duplicates */
- 	for (i = 0; i < TYPEC_MUX_MAX_DEVS; i++)
-@@ -300,8 +304,7 @@
- 			return NULL;
- 		}
- 
--
--	return dev ? to_typec_mux_dev(dev) : ERR_PTR(-EPROBE_DEFER);
++
 +	return to_typec_mux_dev(dev);
  }
  
  /**
-@@ -315,7 +318,7 @@
+@@ -305,7 +311,7 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
   */
  struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode)
  {
