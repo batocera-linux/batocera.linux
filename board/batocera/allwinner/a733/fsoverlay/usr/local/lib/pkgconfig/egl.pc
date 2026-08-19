@@ -1,0 +1,11 @@
+prefix=/usr/local
+includedir=${prefix}/include
+libdir=${prefix}/lib
+
+Name: egl
+Description: Mesa EGL Library
+Version: 24.0.1
+Requires.private: libdrm >=  2.4.75
+Libs: -L${libdir} -lEGL
+Libs.private: -lpthread -pthread -lm -ldl
+Cflags: -I${includedir}

@@ -1,0 +1,24 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Sun, 11 May 2026 00:00:00 +0000
+Subject: [PATCH] cmake: enable position-independent code globally
+
+Clang static libraries are compiled without -fPIC by default, but
+LLVM_BUILD_LLVM_DYLIB=ON causes libclang.so and libclang-cpp.so to be
+built from those static library objects. The linker rejects non-PIC
+vtable relocations (R_X86_64_PC32) and TLS relocations (R_X86_64_TPOFF32):
+
+  relocation R_X86_64_PC32 against symbol can not be used when making
+  a shared object; recompile with -fPIC
+
+Setting CMAKE_POSITION_INDEPENDENT_CODE globally causes cmake to add
+-fPIC to all compilations, making the static library objects safe to
+link into shared libraries.
+---
+ CMakeLists.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,0 +1,1 @@
++set(CMAKE_POSITION_INDEPENDENT_CODE ON)

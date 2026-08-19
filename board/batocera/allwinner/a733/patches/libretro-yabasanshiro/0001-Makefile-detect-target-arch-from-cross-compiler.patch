@@ -1,0 +1,35 @@
+From: Jason Germino <jasongermino@gmail.com>
+Date: Tue, 13 May 2026 00:00:00 +0000
+Subject: [PATCH] Makefile: detect target arch from cross-compiler prefix
+
+When cross-compiling, uname -a returns the HOST kernel string (Linux
+x86_64), so platform defaults to unix without any ARM flags. This
+leaves FORCE_GLES=0, causing Makefile.common to link -lGL and define
+-DHAVE_LIBGL unconditionally, which pulls in GL/gl.h — absent from the
+aarch64 cross-compile sysroot.
+
+Check the CC prefix after platform detection so that aarch64
+cross-builds set FORCE_GLES=1 (GLES3 path), USE_AARCH64_DRC=1, and
+disable HAVE_SSE, matching the intent of the explicit arm64 platform
+case.
+---
+ yabause/src/libretro/Makefile | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -49,3 +49,12 @@
+ else ifneq (,$(findstring armv,$(platform)))
+ 	override platform += unix
+ endif
++
++ifeq ($(platform),unix)
++   ifneq (,$(findstring aarch64,$(CC)))
++      FORCE_GLES = 1
++      USE_AARCH64_DRC = 1
++      DYNAREC_DEVMIYAX = 1
++      HAVE_SSE = 0
++      FLAGS += -DAARCH64
++   endif
++endif
