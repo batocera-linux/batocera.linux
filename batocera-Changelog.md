@@ -135,7 +135,7 @@
 - Ymir to v0.3.3
 ### System
 - Allwinner H616 device kernel updated to 7.1.5
-- Allwinner H700 device kernel updated to 7.0.14
+- Allwinner H700 device kernel updated to 7.1.9
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.0.2
@@ -146,7 +146,7 @@
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1
 - Linux Firmware to 20260622
-- Mesa3D to 26.1.6
+- Mesa3D to 26.2.0
 - MangoHud to v0.8.4
 - Nvidia Open Production driver to 610.57.04
 - Nvidia 580 Legacy driver to 580.178.04
