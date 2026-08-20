@@ -79,6 +79,7 @@
 - ECWolf to Feb 23, 2026 build
 - EDuke32 / Fury to Feb 03, 2026 build
 - ETLegacy to v2.84.0
+- Flycast to v2.7
 - Groovy MAME to 0.288
 - IOQuake3 to Mar 9, 2026
 - Jazz2 to 3.6.0
@@ -86,6 +87,7 @@
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Atari800 to July 15th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
+- Libretro-Flycast to v2.7
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
 - Libretro-MAME to 0.288
