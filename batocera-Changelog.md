@@ -81,7 +81,7 @@
 - EDuke32 / Fury to Feb 03, 2026 build
 - ETLegacy to v2.84.0
 - Flycast to v2.7
-- Groovy MAME to 0.288
+- Groovy MAME to 0.289
 - IOQuake3 to Mar 9, 2026
 - Jazz2 to 3.6.0
 - Ledspicer to 0.7.6
@@ -91,7 +91,7 @@
 - Libretro-Flycast to v2.7
 - Libretro-Hatari to April 21st, 2026 build
 - Libretro-HatariB to February 14th, 2026 build
-- Libretro-MAME to 0.288
+- Libretro-MAME to 0.289
 - Libretro-PC88 to April 21st, 2026 build
 - Libretro-PC98 to May 9th, 2026 build
 - Libretro-PCSX to May 15th, 2026 build

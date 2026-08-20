@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version: GroovyMAME 0.288 - Switchres 2.22d
-MAME_VERSION = gm0288sr222d
+MAME_VERSION = gm0289sr222e
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
 MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd 
