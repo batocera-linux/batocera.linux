@@ -68,7 +68,7 @@
   Ensure you read the info text file in the traider folder
 - Vita3k added for capable aarch64 devices
 ### Updated
-- Azahar to 2125.1.2
+- Azahar to 2126.0
 - BigPEmu to 1.221
 - Box64 0.4.2
 - Cemu to August 7th, 2026 build
