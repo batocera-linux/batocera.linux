@@ -641,7 +641,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        if (arg == "-x" && i + 1 < argc) {
+	if (arg == "-x" && i + 1 < argc) {
 	  win_x = atoi(argv[++i]);
 	} else if (arg == "-y" && i + 1 < argc) {
 	  win_y = atoi(argv[++i]);
@@ -711,8 +711,13 @@ int main(int argc, char* argv[]) {
         }
     }
 
+#if HAVE_XORG == 1
     SDL_SetHint(SDL_HINT_X11_WINDOW_TYPE, "_NET_WM_WINDOW_TYPE_DESKTOP"); // put the windows as much possible in the background
     SDL_Window* window = SDL_CreateWindow("backglass", win_x, win_y, win_width, win_height, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
+# else
+    // no size to make full screen according to the screen set
+    SDL_Window* window = SDL_CreateWindow("backglass", 0, 0, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+#endif
     if (!window) return 1;
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);

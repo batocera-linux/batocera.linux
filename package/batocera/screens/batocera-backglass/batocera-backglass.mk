@@ -13,9 +13,16 @@ BATOCERA_BACKGLASS_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf libcurl openssl
 BACKGLASS_PATH = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass
 
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+    BATOCERA_BACKGLASS_CXXFLAGS = -DHAVE_XORG=1
+else
+    BATOCERA_BACKGLASS_CXXFLAGS = -DHAVE_XORG=0
+endif
+
 define BATOCERA_BACKGLASS_BUILD_CMDS
 	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(TARGET_LDFLAGS) \
 		-o $(@D)/batocera-backglass-window \
+		$(BATOCERA_BACKGLASS_CXXFLAGS) \
 		$(BACKGLASS_PATH)/batocera-backglass-window.cpp \
 		-lSDL2 -lSDL2_image -lSDL2_ttf -lcurl -lcrypto -lpthread
 endef
