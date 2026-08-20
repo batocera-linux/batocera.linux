@@ -22,7 +22,7 @@
 &uart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart5_ph_pins>;
-	status = "okay";	
+	status = "okay";
 };
 
 &leds {
@@ -30,7 +30,7 @@
 		function = LED_FUNCTION_KBD_BACKLIGHT;
 		color = <LED_COLOR_ID_RGB>;
 		gpios = <&pio 8 7 GPIO_ACTIVE_HIGH>; /* PI7 */
-	};	
+	};
 };
 
 &panel {

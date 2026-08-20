@@ -248,19 +248,19 @@ index 7dcf72646ca..22276255a7b 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
 @@ -40,6 +40,7 @@ obj-$(CONFIG_DRM_PANEL_LG_LB035Q02) += panel-lg-lb035q02.o
- obj-$(CONFIG_DRM_PANEL_LG_LG4573) += panel-lg-lg4573.o
  obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
+ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
 +obj-$(CONFIG_DRM_PANEL_MIPI) += panel-mipi.o
+ obj-$(CONFIG_DRM_PANEL_MOTOROLA_MOT) += panel-motorola-mot.o
  obj-$(CONFIG_DRM_PANEL_NEC_NL8048HL11) += panel-nec-nl8048hl11.o
  obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3051D) += panel-newvision-nv3051d.o
- obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3052C) += panel-newvision-nv3052c.o
 diff --git a/drivers/gpu/drm/panel/panel-mipi.c b/drivers/gpu/drm/panel/panel-mipi.c
 new file mode 100644
 index 00000000000..a4da1fd2e1e
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-mipi.c
-@@ -0,0 +1,1181 @@
+@@ -0,0 +1,1173 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Generic MIPI-DSI/DPI(+SPI) Panel Driver
@@ -921,12 +921,6 @@ index 00000000000..a4da1fd2e1e
 +	drm_display_info_set_bus_formats(&connector->display_info,
 +					 &mipi->bus_format, 1);
 +
-+	/*
-+	 * TODO: Remove once all drm drivers call
-+	 * drm_connector_set_orientation_from_panel()
-+	 */
-+	drm_connector_set_panel_orientation(connector, mipi->orientation);
-+
 +	return count;
 +}
 +
@@ -1236,9 +1230,9 @@ index 00000000000..a4da1fd2e1e
 +	struct panel_mipi *mipi;
 +	int err;
 +
-+	mipi = devm_kzalloc(dev, sizeof(*mipi), GFP_KERNEL);
-+	if (!mipi)
-+		return -ENOMEM;
++	mipi = devm_drm_panel_alloc(dev, __typeof(*mipi), panel, &panel_mipi_funcs, connector_type);
++	if (IS_ERR(mipi))
++		return PTR_ERR(mipi);
 +
 +	mutex_init(&mipi->lock);
 +
@@ -1277,8 +1271,6 @@ index 00000000000..a4da1fd2e1e
 +		return err;
 +
 +	/* DRM panel setup */
-+	drm_panel_init(&mipi->panel, dev, &panel_mipi_funcs, connector_type);
-+
 +	err = panel_mipi_set_backlight(&mipi->panel, dev, mipi);
 +	if (err)
 +		return dev_err_probe(dev, err, "Failed to set backlight\n");

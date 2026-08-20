@@ -3,9 +3,19 @@ From: Philippe Simons <simons.philippe@gmail.com>
 Date: Thu, 23 Jan 2025 23:41:16 +0100
 Subject: [PATCH 9/9] rg35xx: enable pwm backlight
 
+Drive the backlight from PWM0 (PD28) instead of switching it with a GPIO.
+
+sun50i-h616.dtsi now carries a pwm0_pin for PD28, but the board keeps its own
+lcd_backlight_pin node: 0140 and 0150 anchor their &pio hunks on it, and the
+&pwm override has to stay at the end of the file because 0140's trailing
+context needs &r_i2c to follow the &pio block directly.
+
+The parent clock, the shared pair prescaler and the per-channel divider are
+picked by the driver from the requested waveform, so the
+allwinner,pwm-paired-channel-clock-* properties are gone.
 ---
- .../sun50i-h700-anbernic-rg35xx-2024.dts       | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ .../sun50i-h700-anbernic-rg35xx-2024.dts       | 16 ++++++++++++----
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
 index 5d2b13aa7..3397cad0c 100644
@@ -37,14 +47,12 @@ index 5d2b13aa7..3397cad0c 100644
  };
  
  &r_i2c {
-@@ -458,3 +464,9 @@ &usbotg {
+@@ -458,3 +464,7 @@ &usbotg {
  &usbphy {
  	status = "okay";
  };
 +
 +&pwm {
-+	allwinner,pwm-paired-channel-clock-sources = "hosc", "hosc", "hosc";
-+	allwinner,pwm-paired-channel-clock-prescales = <0>, <0>, <0>;
 +	status = "okay";
 +};
 -- 

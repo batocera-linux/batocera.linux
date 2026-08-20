@@ -5,8 +5,8 @@ Subject: [PATCH] dts: Enable hdmi sound
 
 ---
  .../arm64/boot/dts/allwinner/sun50i-h616.dtsi | 68 +++++++++++++++++++
- .../sun50i-h700-anbernic-rg35xx-2024.dts      | 13 ++++
- 2 files changed, 81 insertions(+)
+ .../sun50i-h700-anbernic-rg35xx-2024.dts      | 12 ++++
+ 2 files changed, 80 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
 index 8118e40d2..f630f779b 100644
@@ -91,8 +91,8 @@ diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts 
 index 9e18fb2a8..db64d1406 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
-@@ -615,3 +615,16 @@ &pwm {
- 	allwinner,pwm-paired-channel-clock-prescales = <0>, <0>, <0>;
+@@ -616,3 +616,16 @@ &usbphy {
+ &pwm {
  	status = "okay";
  };
 +
