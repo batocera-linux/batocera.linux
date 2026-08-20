@@ -15,6 +15,7 @@ custom_features:
     prompt: SCREEN LAYOUT
     description: Arrange the dual screen layout. Separate windows can be changed with Hotkey+R2.
     choices:
+      Bottom/Top: 0-true
       Top Only: 1-false
       Bottom Only: 1-true
       Large Top: 2-false
@@ -25,9 +26,9 @@ custom_features:
       Hybrid Screen Top: 5-false
       Hybrid Screen Bottom: 5-true
   azahar_large_screen_proportion:
-      prompt: SCREEN PROPORTION
-      description: Determines the proportion of the larger screen relative to the smaller one.
-      choices:
+    prompt: SCREEN PROPORTION
+    description: Determines the proportion of the larger screen relative to the smaller one.
+    choices:
         "2":            2
         "3":            3
         "4 (Default)":  4
@@ -48,10 +49,20 @@ custom_features:
       8x (3200x1920): 8
       9x (3600x2160): 9
       10x (4000x2400): 10
-  azahar_use_vsync_new:
+  azahar_texture_filter:
+    submenu: GRAPHICS
+    prompt: TEXTURE FILTER
+    description: Enhance low-resolution textures using scaling algorithms.
+    choices:
+      None (Default): 0
+      Anime4K: 1
+      Bicubic: 2
+      ScaleForce: 3
+      xBRZ: 4
+  azahar_use_vsync:
     submenu: GRAPHICS
     prompt: VSYNC
-    description: Fix screen tearing. CPU heavy.
+    description: Synchronize framerate with display refresh rate.
     choices:
       'Off': 0
       'On': 1
@@ -65,50 +76,67 @@ custom_features:
   azahar_accurate_multiplication:
     submenu: GRAPHICS
     prompt: ACCURATE MULTIPLICATION
-    description: Some applications requires this to be enabled for the hardware shader to render properly. However this would reduce performance in most applications.
+    description: Fixes rendering glitches in games like Luigi's Mansion and Pokemon, but costs performance.
     choices:
-      'Off' : 0
+      'Off': 0
       'On': 1
   azahar_use_shader_jit:
     submenu: GRAPHICS
     prompt: SHADER JIT
-    description: Use the JIT engine instead of the interpreter for software shader emulation. Enable this for better performance.
+    description: Use JIT compiler for shader emulation.
     choices:
-      'Off' : 0
+      'Off': 0
       'On': 1
   azahar_async_shader_compilation:
     submenu: GRAPHICS
-    prompt: ENABLE ASYNC SHADER COMPILATION
-    description: Compile shaders using background threads to avoid shader compilation stutter. May cause graphical glitches.
+    prompt: ASYNC SHADER COMPILATION
+    description: Compile shaders in background threads to avoid stuttering.
     choices:
       'Off': 0
       'On': 1
   azahar_async_presentation:
     submenu: GRAPHICS
-    prompt: ENABLE ASYNC PRESENTATION
-    description: Perform presentation on separate threads. Improves performance when using Vulkan in most applications. Adds ~1 frame of input lag.
+    prompt: ASYNC PRESENTATION
+    description: Separate display presentation from emulation threads (best with Vulkan).
     choices:
       'Off': 0
       'On': 1
   azahar_use_disk_shader_cache:
     submenu: GRAPHICS
     prompt: DISK SHADER CACHE
-    description: Reduce stutter that happens when compiling shaders. Requires hardware shader to be enabled.
+    description: Cache compiled shaders to storage to eliminate future stutter.
     choices:
       'Off': 0
-      'On': 1
+      'On (Default)': 1
   azahar_custom_textures:
     submenu: GRAPHICS
     prompt: LOAD CUSTOM TEXTURES
-    description: Preloading is impossible from ES.
     choices:
       'Off': 0
       'On': 1-normal
       Preload: 1-preload
+  azahar_audio_stretching:
+    submenu: AUDIO
+    prompt: AUDIO TIME STRETCHING
+    description: Dynamically timestretch audio to prevent crackling on frame drops.
+    choices:
+      'Off': 0
+      'On (Default)': 1
+  azahar_cpu_clock:
+    group: ADVANCED OPTIONS
+    prompt: CPU CLOCK PERCENTAGE
+    description: Overclock emulated 3DS CPU to improve framerates or run 60 FPS mods.
+    choices:
+      50%: 50
+      100% (Default): 100
+      150%: 150
+      200%: 200
+      300%: 300
+      400%: 400
   azahar_is_new_3ds:
     group: ADVANCED OPTIONS
     prompt: NEW 3DS MODE
-    description: The New 3DS has a faster processor, ZL/ZR buttons and a C-stick.
+    description: Emulate New 3DS processor speed and additional controls (C-stick, ZL/ZR).
     choices:
       'Off': 0
       'On': 1

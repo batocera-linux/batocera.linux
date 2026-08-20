@@ -115,6 +115,13 @@ class AzaharGenerator(Generator):
         azaharConfig.set("System", "region_value", str(getAzaharLangFromEnvironment()))
         azaharConfig.set("System", r"region_value\default", "false")
 
+        ## [CORE]
+        if not azaharConfig.has_section("Core"):
+            azaharConfig.add_section("Core")
+        # CPU Clock Percentage
+        azaharConfig.set("Core", "cpu_clock_percentage", system.config.get("azahar_cpu_clock", "100"))
+        azaharConfig.set("Core", r"cpu_clock_percentage\default", "false")
+
         ## [UI]
         if not azaharConfig.has_section("UI"):
             azaharConfig.add_section("UI")
@@ -123,25 +130,25 @@ class AzaharGenerator(Generator):
         azaharConfig.set("UI", r"fullscreen\default", "false")
 
         # Batocera - Defaults
-        azaharConfig.set("UI", "displayTitleBars", "false")
-        azaharConfig.set("UI", r"displayTitleBars\default", "false")
-        azaharConfig.set("UI", "firstStart", "false")
-        azaharConfig.set("UI", r"firstStart\default", "false")
-        azaharConfig.set("UI", "hideInactiveMouse", "true")
-        azaharConfig.set("UI", r"hideInactiveMouse\default", "false")
+        azaharConfig.set("UI", "display_titlebar", "false")
+        azaharConfig.set("UI", r"display_titlebar\default", "false")
+        azaharConfig.set("UI", "first_start", "false")
+        azaharConfig.set("UI", r"first_start\default", "false")
+        azaharConfig.set("UI", "hide_mouse", "true")
+        azaharConfig.set("UI", r"hide_mouse\default", "false")
         azaharConfig.set("UI", "enable_discord_presence", "false")
         azaharConfig.set("UI", r"enable_discord_presence\default", "false")
 
         # Remove pop-up prompt on start
-        azaharConfig.set("UI", "calloutFlags", "1")
-        azaharConfig.set("UI", r"calloutFlags\default", "false")
+        azaharConfig.set("UI", "callout_flags", "1")
+        azaharConfig.set("UI", r"callout_flags\default", "false")
         # Close without confirmation
-        azaharConfig.set("UI", "confirmClose", "false")
-        azaharConfig.set("UI", r"confirmClose\default", "false")
+        azaharConfig.set("UI", "confirm_before_closing", "false")
+        azaharConfig.set("UI", r"confirm_before_closing\default", "false")
 
         # screenshots
-        azaharConfig.set("UI", r"Paths\screenshotPath", "/userdata/screenshots")
-        azaharConfig.set("UI", r"Paths\screenshotPath\default", "false")
+        azaharConfig.set("UI", r"Paths\screenshot_path", "/userdata/screenshots")
+        azaharConfig.set("UI", r"Paths\screenshot_path\default", "false")
 
         ## [MISCELLANEOUS]
         if not azaharConfig.has_section("Miscellaneous"):
@@ -155,22 +162,22 @@ class AzaharGenerator(Generator):
             azaharConfig.add_section("Renderer")
         # Hardware Shader
         azaharConfig.set("Renderer", "use_hw_shader", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"use_hw_shader\default", system.config.get_bool("azahar_use_hw_shader", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"use_hw_shader\default", "false")
         # Accurate Multiplication
         azaharConfig.set("Renderer", "shaders_accurate_mul", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"shaders_accurate_mul\default", system.config.get_bool("azahar_accurate_multiplication", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"shaders_accurate_mul\default", "false")
         # Shader JIT
         azaharConfig.set("Renderer", "use_shader_jit", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"use_hw_shader_jit\default", system.config.get_bool("azahar_use_shader_jit", True, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"use_shader_jit\default", "false")
         # Async Shader Compilation
         azaharConfig.set("Renderer", "async_shader_compilation", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"async_shader_compilation\default", system.config.get_bool("azahar_async_shader_compilation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"async_shader_compilation\default", "false")
         # Async Presentation
         azaharConfig.set("Renderer", "async_presentation", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"async_presentation\default", system.config.get_bool("azahar_async_presentation", False, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"async_presentation\default", "false")
         # Software, OpenGL (default) or Vulkan
         azaharConfig.set("Renderer", "graphics_api", system.config.get("azahar_graphics_api", "1"))
-        azaharConfig.set("Renderer", r"graphics_api\default", "true")
+        azaharConfig.set("Renderer", r"graphics_api\default", "false")
         # Set Vulkan as necessary
         if system.config.get("azahar_graphics_api") == "2" and vulkan.is_available():
             _logger.debug("Vulkan driver is available on the system.")
@@ -186,11 +193,21 @@ class AzaharGenerator(Generator):
             else:
                 _logger.debug("Discrete GPU is not available on the system. Using default.")
         # Use VSYNC
-        azaharConfig.set("Renderer", "use_vsync_new", system.config.get_bool("azahar_use_vsync_new", True, return_values=("true", "false")))
-        azaharConfig.set("Renderer", r"use_vsync_new\default", "false")
+        azaharConfig.set("Renderer", "use_vsync", system.config.get_bool("azahar_use_vsync", True, return_values=("true", "false")))
+        azaharConfig.set("Renderer", r"use_vsync\default", "false")
         # Resolution Factor
         azaharConfig.set("Renderer", "resolution_factor", system.config.get("azahar_resolution_factor", "1"))
         azaharConfig.set("Renderer", r"resolution_factor\default", "false")
+        # Texture Filter
+        azaharConfig.set("Renderer", "texture_filter", system.config.get("azahar_texture_filter", "0"))
+        azaharConfig.set("Renderer", r"texture_filter\default", "false")
+
+        ## [AUDIO]
+        if not azaharConfig.has_section("Audio"):
+            azaharConfig.add_section("Audio")
+        # Audio Stretching
+        azaharConfig.set("Audio", "enable_audio_stretching", system.config.get_bool("azahar_audio_stretching", True, return_values=("true", "false")))
+        azaharConfig.set("Audio", r"enable_audio_stretching\default", "false")
 
         ## [WEB SERVICE]
         if not azaharConfig.has_section("WebService"):
