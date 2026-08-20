@@ -146,7 +146,7 @@
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1
 - Linux Firmware to 20260622
-- Mesa3D to 26.2.0
+- Mesa3D to 26.2.1
 - MangoHud to v0.8.4
 - Nvidia Open Production driver to 610.57.04
 - Nvidia 580 Legacy driver to 580.178.04
