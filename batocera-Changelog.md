@@ -124,7 +124,7 @@
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260726-git-b7d8acd
 - TheXTech to v1.3.7.3-1
-- TRX to 1.9.2
+- TRX to 1.10.2
 - Tsugaru to v20251206
 - Vita3k to 10th of June build
 - VKQuake to 1.34.1
