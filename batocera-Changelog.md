@@ -67,6 +67,7 @@
   As a result your roms in the traider1 & traider2 folders should be moved to the new combined traider folder
   Ensure you read the info text file in the traider folder
 - Vita3k added for capable aarch64 devices
+- PCEngine / PCEngineCD: added Libretro-Beetle-PCE (not "Fast") for capable aarch64 devices
 ### Updated
 - Azahar to 2126.0
 - BigPEmu to 1.221
@@ -87,6 +88,8 @@
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Atari800 to July 15th, 2026 build
+- Libretro-Beetle-PCE to April 11th, 2026 build
+- Libretro-Beetle-PCE-Fast to Aug 14th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Flycast to v2.7
 - Libretro-Hatari to April 21st, 2026 build
