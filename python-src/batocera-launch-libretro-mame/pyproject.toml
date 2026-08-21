@@ -1,0 +1,21 @@
+[project]
+name = "batocera-launch-libretro-mame"
+version = '44.0'
+dependencies = [
+    'batocera-common',
+    'batocera-launch',
+    'batocera-launch-libretro',
+    'batocera-launch-mame-common',
+]
+
+[project.entry-points."batocera_launch_libretro.cores"]
+mame = 'batocera_launch_libretro_mame:Mame'
+mess = 'batocera_launch_libretro_mame:Mame'
+mamevirtual = 'batocera_launch_libretro_mame:Mame'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_launch_libretro_mame"]

@@ -8,4 +8,4 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-emulatorlauncher -system ps3 -rom config -emulator rpcs3
+batocera-launch -system ps3 -rom config -emulator rpcs3

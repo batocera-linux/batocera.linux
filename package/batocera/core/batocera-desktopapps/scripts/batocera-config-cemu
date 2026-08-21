@@ -5,6 +5,6 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-emulatorlauncher -system wiiu -rom config
+batocera-launch -system wiiu -rom config
 
 exit 0

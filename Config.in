@@ -741,3 +741,23 @@ menu "Database"
 endmenu
 
 endmenu
+
+# Include hidden batocera-launch packages
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-fallout/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-cdogs/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-cgenius/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-drastic/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-flycast/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-kodi/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-libretro/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-libretro-fbneo/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-libretro-mame/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-libretro-scummvm/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-mame/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-mame-common/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-openjazz/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-openjk/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-openjkdf2/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-openmohaa/Config.in"
+source "$BR2_EXTERNAL_BATOCERA_PATH/python-src/batocera-launch-rpcs3/Config.in"

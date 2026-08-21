@@ -8,11 +8,29 @@ members = [
     "batocera-common",
     "batocera-configgen",
     "batocera-es-system",
+    "batocera-launch",
+    "batocera-launch-cdogs",
+    "batocera-launch-cgenius",
+    "batocera-launch-drastic",
+    "batocera-launch-fallout",
+    "batocera-launch-flycast",
+    "batocera-launch-kodi",
+    "batocera-launch-libretro",
+    "batocera-launch-libretro-mame",
+    "batocera-launch-mame",
+    "batocera-launch-mame-common",
+    "batocera-launch-openjazz",
+    "batocera-launch-openjk",
+    "batocera-launch-openjkdf2",
+    "batocera-launch-openmohaa",
+    "batocera-launch-rpcs3",
+    "batocera-test-support",
 ]
 constraints = [
     { name = "configobj", specifier = "==5.0.8" },
     { name = "evdev", specifier = "==1.9.3" },
     { name = "ffmpeg-python", git = "https://github.com/kkroening/ffmpeg-python.git?rev=df129c7ba30aaa9ffffb81a48f53aa7253b0b4e6" },
+    { name = "hatchling", specifier = "==1.29.0" },
     { name = "pillow", specifier = "==12.0.0" },
     { name = "pygobject", specifier = "==3.56.3" },
     { name = "pysdl2", specifier = "==0.9.17" },
@@ -29,6 +47,7 @@ constraints = [
 dev = [
     { name = "coverage", extras = ["toml"], specifier = "==7.15.4" },
     { name = "prek", specifier = "==0.4.14" },
+    { name = "pyfakefs", specifier = "==6.2.0" },
     { name = "pygobject-stubs", git = "https://github.com/pygobject/pygobject-stubs.git?rev=959c470767cd44a74912ba182e9fb202d0d96519" },
     { name = "pyright", extras = ["nodejs"], specifier = "==1.1.411" },
     { name = "pytest", specifier = "==9.1.1" },
@@ -68,42 +87,38 @@ requires-dist = [
 
 [[package]]
 name = "batocera-configgen"
-version = "1.5"
+version = "44.0"
 source = { editable = "package/batocera/core/batocera-configgen/configgen" }
 dependencies = [
-    { name = "batocera-common" },
+    { name = "batocera-launch" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
     { name = "pillow" },
     { name = "pysdl2" },
     { name = "pyudev", marker = "sys_platform == 'linux'" },
-    { name = "pyyaml" },
     { name = "qrcode" },
     { name = "requests" },
-    { name = "ruamel-yaml" },
     { name = "toml" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
     { name = "pillow" },
     { name = "pysdl2" },
     { name = "pyudev", marker = "sys_platform == 'linux'" },
-    { name = "pyyaml" },
     { name = "qrcode" },
     { name = "requests" },
-    { name = "ruamel-yaml" },
     { name = "toml" },
 ]
 
 [[package]]
 name = "batocera-es-system"
-version = "44.0.0"
+version = "44.0"
 source = { editable = "python-src/batocera-es-system" }
 dependencies = [
     { name = "batocera-common" },
@@ -119,6 +134,261 @@ requires-dist = [
     { name = "ruamel-yaml" },
     { name = "typing-extensions" },
 ]
+
+[[package]]
+name = "batocera-launch"
+version = "44.0"
+source = { editable = "python-src/batocera-launch" }
+dependencies = [
+    { name = "batocera-common" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "batocera-common", editable = "python-src/python-batocera-common" }]
+
+[[package]]
+name = "batocera-launch-cdogs"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-cdogs" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-cgenius"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-cgenius" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "configobj" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "configobj" },
+]
+
+[[package]]
+name = "batocera-launch-drastic"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-drastic" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-fallout"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-fallout" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-flycast"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-flycast" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-kodi"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-kodi" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-libretro"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-libretro" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-libretro-mame"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-libretro-mame" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "batocera-launch-libretro" },
+    { name = "batocera-launch-mame-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-libretro", editable = "python-src/batocera-launch-libretro" },
+    { name = "batocera-launch-mame-common", editable = "python-src/batocera-launch-mame-common" },
+]
+
+[[package]]
+name = "batocera-launch-mame"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-mame" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "batocera-launch-mame-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-mame-common", editable = "python-src/batocera-launch-mame-common" },
+]
+
+[[package]]
+name = "batocera-launch-mame-common"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-mame-common" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-openjazz"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-openjazz" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-openjk"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-openjk" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-openjkdf2"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-openjkdf2" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-openmohaa"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-openmohaa" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-rpcs3"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-rpcs3" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-test-support"
+version = "44.0"
+source = { editable = "python-src/batocera-test-support" }
+dependencies = [
+    { name = "pytest" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pytest" }]
 
 [[package]]
 name = "certifi"
@@ -375,6 +645,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/5e/91/93632b6ba12ad69c61991e3208bde88486fdfc152be8cfdd13444e9bc650/pycairo-1.29.0-cp314-cp314-win_arm64.whl", hash = "sha256:b72200ea0e5f73ae4c788cd2028a750062221385eb0e6d8f1ecc714d0b4fdf82", size = 719537, upload-time = "2025-11-11T19:12:55.016Z" },
     { url = "https://files.pythonhosted.org/packages/93/23/37053c039f8d3b9b5017af9bc64d27b680c48a898d48b72e6d6583cf0155/pycairo-1.29.0-cp314-cp314t-win_amd64.whl", hash = "sha256:5e45fce6185f553e79e4ef1722b8e98e6cde9900dbc48cb2637a9ccba86f627a", size = 874015, upload-time = "2025-11-11T19:12:28.47Z" },
     { url = "https://files.pythonhosted.org/packages/d7/54/123f6239685f5f3f2edc123f1e38d2eefacebee18cf3c532d2f4bd51d0ef/pycairo-1.29.0-cp314-cp314t-win_arm64.whl", hash = "sha256:caba0837a4b40d47c8dfb0f24cccc12c7831e3dd450837f2a356c75f21ce5a15", size = 721404, upload-time = "2025-11-11T19:12:36.919Z" },
+]
+
+[[package]]
+name = "pyfakefs"
+version = "6.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/98/0d/c80012ee6e885c293ad63c5f5b049d3ef3fd2b32bbe6fa8739145f392ec6/pyfakefs-6.2.0.tar.gz", hash = "sha256:e59a36db447bf509ce9c97ab3d1510c08cc51895c5311325a560a5e5b5dc1940", size = 228273, upload-time = "2026-04-12T13:38:50.411Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b2/80/97571ac8295289c267367b7b60aadeae1a9a841e83f0a96ad9b65d1dd3c0/pyfakefs-6.2.0-py3-none-any.whl", hash = "sha256:0968a49db692694ffed420e54a9f1cbae4636637b880e8ab09c8ccc0f11bd7ae", size = 241113, upload-time = "2026-04-12T13:38:48.927Z" },
 ]
 
 [[package]]

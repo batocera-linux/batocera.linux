@@ -4,6 +4,7 @@ config BR2_PACKAGE_OPENJKDF2
 	select BR2_PACKAGE_LIBFREEGLUT
 	select BR2_PACKAGE_OPENAL
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_BATOCERA_LAUNCH_OPENJKDF2
 	help
 	  A cross-platform reimplementation of
 	  Jedi Knight Dark Forces 2 written in C.

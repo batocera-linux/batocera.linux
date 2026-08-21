@@ -1,0 +1,76 @@
+[project]
+name = "batocera-launch"
+version = '44.0'
+dependencies = [
+    'batocera-common',
+]
+
+[project.scripts]
+batocera-launch = "batocera_launch.cli:main"
+
+[project.entry-points."batocera_launch.emulators"]
+lexaloffle = 'batocera_launch.emulators.lexaloffle:Lexaloffle'
+sh = 'batocera_launch.emulators.sh:Sh'
+
+abuse = 'batocera_launch.emulators.abuse:Abuse'
+bstone = 'batocera_launch.emulators.bstone:BStone'
+cannonball = 'batocera_launch.emulators.cannonball:Cannonball'
+catacombgl = 'batocera_launch.emulators.catacombgl:CatacombGL'
+corsixth = 'batocera_launch.emulators.corsixth:CorsixTH'
+devilutionx = 'batocera_launch.emulators.devilutionx:DevilutionX'
+dhewm3 = 'batocera_launch.emulators.dhewm3:Dhewm3'
+dosbox = 'batocera_launch.emulators.dosbox:DosBox'
+dosbox_staging = 'batocera_launch.emulators.dosbox_staging:DosBoxStaging'
+dosboxx = 'batocera_launch.emulators.dosboxx:DosBoxx'
+dxx-rebirth = 'batocera_launch.emulators.dxx_rebirth:DXXRebirth'
+easyrpg = 'batocera_launch.emulators.easyrpg:EasyRPG'
+ecwolf = 'batocera_launch.emulators.ecwolf:ECWolf'
+etlegacy = 'batocera_launch.emulators.etlegacy:ETLegacy'
+flatpak = 'batocera_launch.emulators.flatpak:Flatpak'
+gsplus = 'batocera_launch.emulators.gsplus:GSplus'
+hcl = 'batocera_launch.emulators.hcl:Hcl'
+hurrican = 'batocera_launch.emulators.hurrican:Hurrican'
+ikemen = 'batocera_launch.emulators.ikemen:Ikemen'
+iortcw = 'batocera_launch.emulators.iortcw:IORTCW'
+jazz2-native = 'batocera_launch.emulators.jazz2_native:Jazz2_Native'
+lightspark = 'batocera_launch.emulators.lightspark:Lightspark'
+nanoboyadvance = 'batocera_launch.emulators.nanoboyadvance:Nanoboyadvance'
+odcommander = 'batocera_launch.emulators.odcommander:ODCommander'
+pygame = 'batocera_launch.emulators.pygame:Pygame'
+pyxel = 'batocera_launch.emulators.pyxel:Pyxel'
+ruffle = 'batocera_launch.emulators.ruffle:Ruffle'
+samcoupe = 'batocera_launch.emulators.samcoupe:Samcoupe'
+scummvm = 'batocera_launch.emulators.scummvm:ScummVM'
+sdlpop = 'batocera_launch.emulators.sdlpop:SdlPop'
+solarus = 'batocera_launch.emulators.solarus:Solarus'
+sonic-mania = 'batocera_launch.emulators.sonic_mania:SonicMania'
+sonic2013 = 'batocera_launch.emulators.sonicretro:SonicRetro'
+sonic3-air = 'batocera_launch.emulators.sonic3_air:Sonic3AIR'
+soniccd = 'batocera_launch.emulators.sonicretro:SonicRetro'
+steam = 'batocera_launch.emulators.steam:Steam'
+stella = 'batocera_launch.emulators.stella:Stella'
+taradino = 'batocera_launch.emulators.taradino:Taradino'
+theforceengine = 'batocera_launch.emulators.theforceengine:TheForceEngine'
+thextech = 'batocera_launch.emulators.thextech:TheXTech'
+tic80 = 'batocera_launch.emulators.tic80:Tic80'
+trx = 'batocera_launch.emulators.trx:TRX'
+tsugaru = 'batocera_launch.emulators.tsugaru:Tsugaru'
+tyrian = 'batocera_launch.emulators.tyrian:Tyrian'
+uqm = 'batocera_launch.emulators.uqm:Uqm'
+vkquake = 'batocera_launch.emulators.vkquake:VKQuake'
+vkquake2 = 'batocera_launch.emulators.vkquake2:VKQuake2'
+x16emu = 'batocera_launch.emulators.x16emu:X16emu'
+xash3d_fwgs = 'batocera_launch.emulators.xash3d_fwgs:Xash3dFwgs'
+xroar = 'batocera_launch.emulators.xroar:Xroar'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_launch"]
+
+[tool.pytest]
+minversion = "9.0"
+addopts = ["--import-mode=importlib", "--cov=batocera_launch", "--cov-branch", "--cov-report=term"]
+strict = true

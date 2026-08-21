@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import InitVar, dataclass, field
-from typing import TYPE_CHECKING, Any, Final, NotRequired, Self, overload
+from typing import TYPE_CHECKING, Any, NotRequired, Self, overload
 from typing_extensions import Sentinel, TypedDict
 
 from batocera_common.yaml import safe_load_yaml
@@ -56,7 +56,7 @@ class DefaultsDict(TypedDict):
     core: str | None
 
 
-MISSING: Final = Sentinel('MISSING')
+MISSING = Sentinel('MISSING')
 
 
 def get_deep_value(mapping: Mapping[str, Any], first_key: str, /, *keys: str) -> Any | MISSING:
@@ -95,7 +95,7 @@ def to_xml_attribute(name: str, string: str | int | None, /) -> str:
     return f' {name}="{protect_xml(string)}"' if string else ''
 
 
-_NOTHING: Final = Sentinel('_NOTHING')
+_NOTHING = Sentinel('_NOTHING')
 
 
 @dataclass(slots=True)

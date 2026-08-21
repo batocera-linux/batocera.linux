@@ -1,16 +1,14 @@
 [project]
 name = "batocera-configgen"
-version = '1.5'
+version = '44.0'
 dependencies = [
-    'batocera-common',
-    'PyYAML',
+    'batocera-launch',
     'toml',
     'evdev; sys_platform == "linux"',
     'pyudev; sys_platform == "linux"',
     'configobj',
     'ffmpeg-python',
     'pillow',
-    'ruamel.yaml',
     'requests',
     'qrcode',
     'pysdl2',
@@ -18,6 +16,9 @@ dependencies = [
 
 [project.scripts]
 emulatorlauncher = "configgen.emulatorlauncher:launch"
+
+[project.entry-points."batocera_launch.emulators"]
+configgen = 'configgen.launch:Configgen'
 
 [build-system]
 requires = ["hatchling"]

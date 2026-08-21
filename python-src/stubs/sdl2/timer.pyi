@@ -1,0 +1,26 @@
+from ctypes import _CFuncPtr, c_int, c_void_p
+
+__all__ = [
+    'SDL_TICKS_PASSED',
+    'SDL_AddTimer',
+    'SDL_Delay',
+    'SDL_GetPerformanceCounter',
+    'SDL_GetPerformanceFrequency',
+    'SDL_GetTicks',
+    'SDL_GetTicks64',
+    'SDL_RemoveTimer',
+    'SDL_TimerCallback',
+    'SDL_TimerID',
+]
+
+SDL_TimerID = c_int
+SDL_TimerCallback: type[_CFuncPtr]
+
+def SDL_TICKS_PASSED(A: int, B: int) -> bool: ...
+def SDL_GetTicks() -> int: ...
+def SDL_GetTicks64() -> int: ...
+def SDL_GetPerformanceCounter() -> int: ...
+def SDL_GetPerformanceFrequency() -> int: ...
+def SDL_Delay(ms: int, /) -> None: ...
+def SDL_AddTimer(interval: int, callback: _CFuncPtr, param: c_void_p | int | None, /) -> int: ...
+def SDL_RemoveTimer(id: int, /) -> int: ...
