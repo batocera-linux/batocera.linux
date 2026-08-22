@@ -1,0 +1,113 @@
+#!/bin/sh
+#
+# Battery LED status monitor for AYN Odin 3 (Qualcomm LPG Tri-Color LED)
+#
+# Colors & Behaviors:
+#   Green        = Normal (>20%)
+#   Orange       = Warning (<=20% and >10%) - Mixed Red + Green
+#   Red          = Low battery (<=10%)
+#   Flash Red    = Critical battery (<=5%)
+#   Flash Green  = Charging
+#   Flash Orange = Fake Suspend active (on battery)
+#   Flash Green  = Fake Suspend active (charging)
+#   Flash Red    = Fake Suspend active (low battery <=10%)
+#
+
+LED_GREEN="/sys/class/leds/green:power"
+LED_RED="/sys/class/leds/red:status"
+LED_BLUE="/sys/class/leds/blue:indicator"
+
+BAT_CAP="/sys/class/power_supply/battery/capacity"
+BAT_STATUS="/sys/class/power_supply/battery/status"
+
+THRESHOLD_WARNING=${THRESHOLD_WARNING:-20}
+THRESHOLD_LOW=${THRESHOLD_LOW:-10}
+THRESHOLD_CRITICAL=${THRESHOLD_CRITICAL:-5}
+POLL_INTERVAL=${POLL_INTERVAL:-1}
+
+# Set brightness using 0-255 range
+set_led() {
+  local g=${1:-0} r=${2:-0} b=${3:-0}
+  echo "${g}" > "${LED_GREEN}/brightness" 2>/dev/null
+  echo "${r}" > "${LED_RED}/brightness" 2>/dev/null
+  echo "${b}" > "${LED_BLUE}/brightness" 2>/dev/null
+}
+
+led_green()  { set_led 255 0 0; }
+led_red()    { set_led 0 255 0; }
+led_orange() { set_led 50 255 0; }   # Mix Red + slight Green for Orange/Amber
+led_off()    { set_led 0 0 0; }
+
+BLINK_TOGGLE=0
+
+led_blink_red() {
+  if [ "${BLINK_TOGGLE}" = "1" ]; then led_red; else led_off; fi
+}
+
+led_blink_green() {
+  if [ "${BLINK_TOGGLE}" = "1" ]; then led_green; else led_off; fi
+}
+
+led_blink_orange() {
+  if [ "${BLINK_TOGGLE}" = "1" ]; then led_orange; else led_off; fi
+}
+
+get_state() {
+  local capacity=${1}
+  if   [ "${capacity}" -le "${THRESHOLD_CRITICAL}" ]; then
+    echo "blink_red"
+  elif [ "${capacity}" -le "${THRESHOLD_LOW}" ]; then
+    echo "red"
+  elif [ "${capacity}" -le "${THRESHOLD_WARNING}" ]; then
+    echo "orange"
+  else
+    echo "green"
+  fi
+}
+
+PREV_STATE=""
+
+while true; do
+  CAP=$(cat "${BAT_CAP}" 2>/dev/null || echo 100)
+  STATUS=$(cat "${BAT_STATUS}" 2>/dev/null || echo "Discharging")
+
+  # Flip toggle for blinking states
+  if [ "${BLINK_TOGGLE}" = "1" ]; then
+    BLINK_TOGGLE=0
+  else
+    BLINK_TOGGLE=1
+  fi
+
+  STATE=$(get_state "${CAP}")
+
+  # Charging state override
+  if [ "${STATUS}" = "Charging" ]; then
+    STATE="blink_green"
+  fi
+
+  # Fake suspend overrides
+  if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
+    if [ "${CAP}" -le "${THRESHOLD_LOW}" ]; then
+      STATE="blink_red"
+    elif [ "${STATUS}" = "Charging" ]; then
+      STATE="blink_green"
+    else
+      STATE="blink_orange"
+    fi
+  fi
+
+  # Apply LED state
+  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" = "blink_green" ] || [ "${STATE}" = "blink_orange" ] || [ "${STATE}" != "${PREV_STATE}" ]; then
+    case ${STATE} in
+      green)        led_green        ;;
+      orange)       led_orange       ;;
+      red)          led_red          ;;
+      blink_red)    led_blink_red    ;;
+      blink_green)  led_blink_green  ;;
+      blink_orange) led_blink_orange ;;
+    esac
+    PREV_STATE="${STATE}"
+  fi
+
+  sleep ${POLL_INTERVAL}
+done
