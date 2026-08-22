@@ -51,6 +51,8 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
+GAME_LAUNCH_WAIT_FILE = Path("/tmp/es-gamelaunch.wait")
+
 # A lock to safely modify the active controller list from multiple threads
 _player_controllers_lock = threading.Lock()
 # A global variable to hold the current, up-to-date list of player controllers
@@ -717,6 +719,31 @@ def runCommand(command: Command) -> int:
 
     if not command.array:
         raise BadCommandLineArguments
+
+    if GAME_LAUNCH_WAIT_FILE.exists():
+        try:
+            subprocess.run(
+                [
+                    "inotifywait",
+                    "-q",
+                    "-t", "5",
+                    "-e", "delete_self",
+                    "-e", "move_self",
+                    str(GAME_LAUNCH_WAIT_FILE),
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                timeout=6,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+
+        if GAME_LAUNCH_WAIT_FILE.exists():
+            _logger.warning(
+                "EmulationStation launch transition wait did not complete normally. "
+                "Continuing game launch."
+            )
 
     proc = subprocess.Popen(["nice", "-n", "-4", *command.array], env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     exitcode = 0
