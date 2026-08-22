@@ -52,31 +52,23 @@ case "${ACTION}" in
         fi
 
         # Load parameter cache or assign CLI arguments directly
-	if test $# -le 1 -a -f "${PARAMSFILE}" # ok, we can reuse the last used parameters (to make easy restart)
-	then
-	    read -r X Y WIDTH HEIGHT THEME < "${PARAMSFILE}"
-	else
-	    #
-	    X=$1
-	    Y=$2
-	    WIDTH=$3
-	    HEIGHT=$4
-	    THEME=$5 # can be empty
-	    shift
-	    shift
-	    shift
-	    shift
-	    shift
-	    if test -z "${X}" -o -z "${Y}" -o -z "${WIDTH}" -o -z "${HEIGHT}"
-	    then
-		echo "${0} X Y WIDTH HEIGHT"
-		exit 1
-	    fi
-	    echo "${X} ${Y} ${WIDTH} ${HEIGHT} ${THEME}" > "${PARAMSFILE}" || exit 1
-	fi
+        if test $# -eq 0 -a -f "${PARAMSFILE}"
+        then
+            read -r OUTPUT THEME < "${PARAMSFILE}"
+        else
+            OUTPUT=$1
+            THEME=$2
+            if test -z "${OUTPUT}"
+            then
+                echo "Usage: ${0} enable <output_device> [theme]"
+                exit 1
+            fi
+            THEME=$(getTheme "${THEME}")
+            echo "${OUTPUT} ${THEME}" > "${PARAMSFILE}" || exit 1
+        fi
 
         # Fire background native renderer directly to the targeted connector display
-        batocera-backglass-window -x "${X}" -y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
+        batocera-backglass-window --output "${OUTPUT}" --www "${THEME}" &
         echo "$!" > "${PIDFILE}"
 
         # Register hook scripts directly inside EmulationStation
@@ -113,7 +105,7 @@ case "${ACTION}" in
 
         if test -f "${PARAMSFILE}"
         then
-	    read -r X Y WIDTH HEIGHT THEME < "${PARAMSFILE}"
+            read -r OUTPUT THEME < "${PARAMSFILE}"
         fi
 
         # Pull system settings overrides if chosen
@@ -121,10 +113,10 @@ case "${ACTION}" in
         THEME=$(getTheme "${THEME}")
 
         # Update params cache
-	echo "${X} ${Y} ${WIDTH} ${HEIGHT} ${THEME}" > "${PARAMSFILE}" || exit 1
+        echo "${OUTPUT} ${THEME}" > "${PARAMSFILE}" || exit 1
 
         # Launch again with the native configuration target parameters
-        batocera-backglass-window -x "${X}" -y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
+        batocera-backglass-window --output "${OUTPUT}" --www "${THEME}" &
         echo "$!" > "${PIDFILE}"
         ;;
 
