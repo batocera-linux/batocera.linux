@@ -20,6 +20,7 @@ _ARCADE_SYSTEMS: Final = {
     'neogeo',
     'triforce',
     'hypseus-singe',
+    'model1',
     'model2',
     'model3',
     'hikaru',
