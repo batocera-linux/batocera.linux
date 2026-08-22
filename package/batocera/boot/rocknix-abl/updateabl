@@ -181,26 +181,58 @@ get_part_hash() {
 # ---- Power Check ----
 check_power() {
     local power_connected=0
-    # Check all power supplies for a 'Mains' or 'USB' source that is 'online'
+    local max_battery=0
+    local has_battery=0
+
+    # Scan power supplies for AC power or battery capacity
     for supply in /sys/class/power_supply/*; do
+        [ -d "$supply" ] || continue
+
+        # Check for connected AC / USB charger
         if [ -f "$supply/online" ] && [ -f "$supply/type" ]; then
-            type=$(cat "$supply/type")
-            online=$(cat "$supply/online")
+            type=$(cat "$supply/type" 2>/dev/null || true)
+            online=$(cat "$supply/online" 2>/dev/null || true)
             if [[ "$type" == "Mains" || "$type" == "USB" ]] && [ "$online" -eq 1 ]; then
                 power_connected=1
-                break
+            fi
+        fi
+
+        # Check battery capacity percentage
+        if [ -f "$supply/capacity" ]; then
+            has_battery=1
+            cap=$(cat "$supply/capacity" 2>/dev/null || echo 0)
+            if [ "$cap" -gt "$max_battery" ]; then
+                max_battery=$cap
             fi
         fi
     done
 
-    if [ "$power_connected" -eq 0 ]; then
-        echo "------------------------------------------------------------"
-        echo " ERROR: DEVICE IS NOT ON AC POWER "
-        echo " To prevent bricking during the ABL flash, please plug in "
-        echo " your charger/power cable before attempting to flash. "
-        echo "------------------------------------------------------------"
-        exit 1
+    # Allow if plugged into AC/USB power
+    if [ "$power_connected" -eq 1 ]; then
+        return 0
     fi
+
+    # Allow if on battery and capacity is >= 10%
+    if [ "$has_battery" -eq 1 ]; then
+        if [ "$max_battery" -ge 10 ]; then
+            return 0
+        else
+            echo "------------------------------------------------------------"
+            echo " ERROR: BATTERY LEVEL TOO LOW (${max_battery}%) "
+            echo " To prevent bricking during the ABL flash, your battery must "
+            echo " be at least 10% or plugged into AC power. "
+            echo "------------------------------------------------------------"
+            exit 1
+        fi
+    fi
+
+    # Fallback error if power status could not be determined
+    echo "------------------------------------------------------------"
+    echo " ERROR: DEVICE IS NOT ON AC POWER "
+    echo " To prevent bricking during the ABL flash, please plug in "
+    echo " your charger/power cable before attempting to flash. "
+    echo "------------------------------------------------------------"
+    exit 1
 }
 
 # Run the power check
