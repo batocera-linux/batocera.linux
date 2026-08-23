@@ -29,7 +29,7 @@ fi
 
 # add SM6115 & SM8650 for future device support
 case "$HW_DEVICE" in
-  SM6115|SM8250|SM8550|SM8650)
+  SM6115|SM8250|SM8550|SM8650|SM8750)
     ;;
   *)
     echo "This script is not compatible with device: $HW_DEVICE"
