@@ -385,6 +385,14 @@ class Rpcs3Generator(Generator):
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
 
+        # RPCS3 requires a 32 GiB virtual address allocation on startup.
+        # Ensure memory overcommit is not strictly blocked (mode 2).
+        try:
+            with open("/proc/sys/vm/overcommit_memory", "w") as f:
+                f.write("1\n")
+        except Exception:
+            _logger.warning("Failed to set vm.overcommit_memory to 1", exc_info=True)
+
         self._migrate_dev_hdd0()
 
         mkdir_if_not_exists(RPCS3_DEV_HDD0_DIR)
@@ -464,7 +472,7 @@ class Rpcs3Generator(Generator):
         # Set the SPU Decoder based on config
         rpcs3ymlconfig["Core"]["SPU Decoder"] = system.config.get("rpcs3_spudecoder", "Recompiler (LLVM)")
         # Set the SPU XFloat Accuracy based on config
-        rpcs3ymlconfig["Core"]["XFloat Accuracy"] = system.config.get("rpcs3_spuxfloataccuracy", "Approximate")
+        rpcs3ymlconfig["Core"]["SPU XFloat Accuracy"] = system.config.get("rpcs3_spuxfloataccuracy", "Approximate")
         # Set the Default Core Values we need
         # Force to True for now to account for updates where exiting config file present. (True results in less stutter when a SPU module is in cache)
         rpcs3ymlconfig["Core"]["SPU Cache"] = True
@@ -474,11 +482,17 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Core"]["SPU loop detection"] = system.config.get_bool("rpcs3_spuloopdetection")
         # SPU Block Size
         rpcs3ymlconfig["Core"]["SPU Block Size"] = system.config.get("rpcs3_spublocksize", "Safe")
+        # Thread Scheduler Mode
+        rpcs3ymlconfig["Core"]["Thread Scheduler Mode"] = system.config.get("rpcs3_thread_scheduler", "Operating System")
+        # Clocks scale
+        rpcs3ymlconfig["Core"]["Clocks scale"] = system.config.get_int("rpcs3_clocks_scale", 100)
         # Max Power Saving CPU-Preemptions
         # values are maximum yields per frame threshold
         rpcs3ymlconfig["Core"]["Max CPU Preempt Count"] = system.config.get_int("rpcs3_maxcpu_preemptcount", 0)
         # Sleep Timers Accuracy
         rpcs3ymlconfig["Core"]["Sleep Timers Accuracy"] = system.config.get("rpcs3_sleep_timers_accuracy", "As Host")
+        # RSX FIFO Fetch Accuracy
+        rpcs3ymlconfig["Core"]["RSX FIFO Fetch Accuracy"] = system.config.get("rpcs3_rsx_fifo", "Atomic")
 
         # -= [Video] =-
         # gfx backend - default to Vulkan
@@ -511,25 +525,30 @@ class Rpcs3Generator(Generator):
         # If not set, see if the screen ratio is closer to 4:3 or 16:9 and pick that.
         rpcs3ymlconfig["Video"]["Aspect ratio"] = system.config.get("rpcs3_ratio") or Rpcs3Generator.getClosestRatio(gameResolution)
         # Shader compilation
-        rpcs3ymlconfig["Video"]["Shader Mode"] = system.config.get("rpcs3_shadermode", "Async Shader Recompiler")
+        rpcs3ymlconfig["Video"]["Shader Mode"] = system.config.get("rpcs3_shadermode", "Async with Shader Interpreter")
         # Vsync
-        rpcs3ymlconfig["Video"]["VSync"] = system.config.get("rpcs3_vsync", "Full")
+        rpcs3ymlconfig["Video"].pop("VSync", None)
+        rpcs3ymlconfig["Video"]["VSync Mode"] = system.config.get("rpcs3_vsync", "Disabled")
         # Stretch to display area
         rpcs3ymlconfig["Video"]["Stretch To Display Area"] = system.config.get_bool("rpcs3_stretchdisplay")
         # Frame Limit
-        # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60")
+        # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60", "120", "Display", "PS3 Native", "Infinite")
         # Second Frame Limit can be any float/integer. 0 = disabled.
         match system.config.get("rpcs3_framelimit"):
             case system.config.MISSING:
                 rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
                 rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
             # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
-            case "Off" | "30" | "50" | "59.94" | "60" as framelimit:
+            case "Off" | "30" | "50" | "59.94" | "60" | "120" | "Display" | "Auto" | "PS3 Native" | "Infinite" as framelimit:
                 rpcs3ymlconfig["Video"]["Frame limit"] = framelimit
                 rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
             case _ as framelimit:
-                rpcs3ymlconfig["Video"]["Second Frame Limit"] = framelimit
-                rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
+                try:
+                    rpcs3ymlconfig["Video"]["Second Frame Limit"] = float(framelimit)
+                    rpcs3ymlconfig["Video"]["Frame limit"] = "Off"
+                except (ValueError, TypeError):
+                    rpcs3ymlconfig["Video"]["Frame limit"] = "Auto"
+                    rpcs3ymlconfig["Video"]["Second Frame Limit"] = 0
         # Write Color Buffers (Deadstorm Pirates needs it for Target Hitting)
         rpcs3ymlconfig["Video"]["Write Color Buffers"] = (
             system.config.get_bool("rpcs3_colorbuffers")
@@ -548,15 +567,22 @@ class Rpcs3Generator(Generator):
             case "Approximate":
                 rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
                 rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+                rpcs3ymlconfig["Video"]["Disable ZCull Occlusion Queries"] = False
             case "Relaxed":
                 rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
                 rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = True
+                rpcs3ymlconfig["Video"]["Disable ZCull Occlusion Queries"] = False
+            case "Disable":
+                rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = False
+                rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+                rpcs3ymlconfig["Video"]["Disable ZCull Occlusion Queries"] = True
             case _:
                 rpcs3ymlconfig["Video"]["Accurate ZCULL stats"] = True
                 rpcs3ymlconfig["Video"]["Relaxed ZCULL Sync"] = False
+                rpcs3ymlconfig["Video"]["Disable ZCull Occlusion Queries"] = False
 
         # Shader Precision
-        rpcs3ymlconfig["Video"]["Shader Precision"] = system.config.get("rpcs3_shader", "High")
+        rpcs3ymlconfig["Video"]["Shader Precision"] = system.config.get("rpcs3_shader", "Auto")
         # Internal resolution (CHANGE AT YOUR OWN RISK)
         rpcs3ymlconfig["Video"]["Resolution"] = "1280x720"
         # Resolution scaling
@@ -565,12 +591,18 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Video"]["Minimum Scalable Dimension"] = int(system.config.get_float("rpcs3_resolution_scale_threshold", 16))
         # Output Scaling
         rpcs3ymlconfig["Video"]["Output Scaling Mode"] = system.config.get("rpcs3_scaling", "Bilinear")
+        # CAS Sharpening
+        rpcs3ymlconfig["Video"]["FidelityFX CAS Sharpening Intensity"] = system.config.get_int("rpcs3_fsr_sharpening", 50)
         # Number of Shader Compilers
         rpcs3ymlconfig["Video"]["Shader Compiler Threads"] = system.config.get_int("rpcs3_num_compilers", 0)
         # Multithreaded RSX
         rpcs3ymlconfig["Video"]["Multithreaded RSX"] = system.config.get_bool("rpcs3_rsx")
         # Write Depth Buffer
         rpcs3ymlconfig["Video"]["Write Depth Buffer"] = system.config.get_bool("rpcs3_write_depth_buffers")
+        # Read Depth Buffer
+        rpcs3ymlconfig["Video"]["Read Depth Buffer"] = system.config.get_bool("rpcs3_read_depth_buffers")
+        # Strict Rendering Mode
+        rpcs3ymlconfig["Video"]["Strict Rendering Mode"] = system.config.get_bool("rpcs3_strict")
         # Force CPU blit emulation
         rpcs3ymlconfig["Video"]["Force CPU Blit"] = system.config.get_bool("rpcs3_force_cpu_blit_emulation")
 
@@ -578,7 +610,11 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Video"]["Vulkan"] = {}
 
         # Async Texture Streaming
-        rpcs3ymlconfig["Video"]["Vulkan"]["Asynchronous Texture Streaming 2"] = system.config.get_bool("rpcs3_async_texture")
+        rpcs3ymlconfig["Video"]["Vulkan"].pop("Asynchronous Texture Streaming 2", None)
+        rpcs3ymlconfig["Video"]["Vulkan"]["Asynchronous Texture Streaming"] = system.config.get_bool("rpcs3_async_texture")
+        # Asynchronous Queue Scheduler
+        if system.config.get("rpcs3_vk_async_scheduler"):
+            rpcs3ymlconfig["Video"]["Vulkan"]["Asynchronous Queue Scheduler"] = system.config.get("rpcs3_vk_async_scheduler")
 
         # -= [Audio] =-
         # defaults
@@ -591,7 +627,7 @@ class Rpcs3Generator(Generator):
         # audio buffering
         rpcs3ymlconfig["Audio"]["Enable Buffering"] = system.config.get_bool("rpcs3_audiobuffer", True)
         # audio buffer duration
-        rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = system.config.get_int("rpcs3_audiobuffer_duration", 100)
+        rpcs3ymlconfig["Audio"]["Desired Audio Buffer Duration"] = system.config.get_int("rpcs3_audiobuffer_duration", 34)
         # time stretching
         if system.config.get_bool("rpcs3_timestretch"):
             rpcs3ymlconfig["Audio"]["Enable Time Stretching"] = True
@@ -602,6 +638,8 @@ class Rpcs3Generator(Generator):
         rpcs3ymlconfig["Audio"]["Time Stretching Threshold"] = system.config.get_int("rpcs3_timestretch_threshold", 75)
 
         # -= [Input/Output] =-
+        # Pad handler mode
+        rpcs3ymlconfig["Input/Output"]["Pad handler mode"] = system.config.get("rpcs3_pad_mode", "Single-threaded")
         # gun stuff
         if system.config.use_guns and guns:
             rpcs3ymlconfig["Input/Output"]["Move"] = "Gun"

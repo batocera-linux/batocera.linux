@@ -6,6 +6,8 @@ TARGET_MODE="$1"
 
 # Target variables
 BEST_CPU=""
+CPU_SUM=0
+CPU_COUNT=0
 BEST_ANY=""
 BEST_GPU=""
 BEST_BAT=""
@@ -35,6 +37,8 @@ classify_temp() {
 
     case "$label" in
         *[Cc][Pp][Uu]*|*[Cc][Ll][Uu][Ss][Tt][Ee][Rr]*)
+            CPU_SUM=$(( CPU_SUM + c ))
+            CPU_COUNT=$(( CPU_COUNT + 1 ))
             if [ -z "$BEST_CPU" ] || [ "$c" -gt "$BEST_CPU" ]; then
                 BEST_CPU="$c"
             fi
@@ -102,7 +106,9 @@ done
 # Output handling based on the argument provided
 case "$TARGET_MODE" in
     --cpu)
-        if [ -n "$BEST_CPU" ]; then
+        if [ "$CPU_COUNT" -gt 0 ]; then
+            echo "$(( CPU_SUM / CPU_COUNT ))"
+        elif [ -n "$BEST_CPU" ]; then
             echo "${BEST_CPU}"
         elif [ -n "$BEST_ANY" ]; then
             echo "${BEST_ANY}"
