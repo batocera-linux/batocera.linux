@@ -155,7 +155,7 @@ std::string getJsonValue(const std::string& json, const std::string& key) {
 
 std::string resolveAsset(const std::string& system, const std::string& path, const std::string& prop, const std::string& es_val) {
     std::string shortname = gameShortName(path);
-    std::vector<std::string> extensions = {"png", "jpg", "gif"};
+    std::vector<std::string> extensions = {"gif", "png", "jpg"};
     for (const auto& ext : extensions) {
         std::string local_path = "/userdata/system/backglass/systems/" + system + "/games/" + prop + "/" + shortname + "." + ext;
         if (FILE* f = fopen(local_path.c_str(), "r")) {
@@ -194,7 +194,7 @@ std::string resolveAsset(const std::string& system, const std::string& path, con
 }
 
 std::string resolveSystemLogo(const std::string& system, const std::string& es_val) {
-    std::vector<std::string> extensions = {"png", "jpg", "gif"};
+    std::vector<std::string> extensions = {"gif", "png", "jpg"};
     for (const auto& ext : extensions) {
         std::string local_path = "/userdata/system/backglass/systems/" + system + "/logo." + ext;
         if (FILE* f = fopen(local_path.c_str(), "r")) {
