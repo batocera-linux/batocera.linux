@@ -1,0 +1,13 @@
+diff --git a/src/engine/cosmos/input.cpp b/src/engine/cosmos/input.cpp
+index cd07ca7..3374a32 100644
+--- a/src/engine/cosmos/input.cpp
++++ b/src/engine/cosmos/input.cpp
+@@ -15,7 +15,7 @@
+ #include "demo.h"
+ #include "config.h"
+ 
+-#include <engine/core/mode/CGameMode.h>
++#include <engine/core/mode/CGamePlayMode.h>
+ #include <engine/core/VGamepads/vgamepadsimple.h>
+ 
+ #include <base/CInput.h>
