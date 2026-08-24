@@ -80,7 +80,7 @@
 - Dolphin-Emu to 2606
 - ECWolf to Feb 23, 2026 build
 - EDuke32 / Fury to Feb 03, 2026 build
-- ETLegacy to v2.84.0
+- ETLegacy to v2.85.0
 - Flycast to v2.7
 - Groovy MAME to 0.289
 - IOQuake3 to Mar 9, 2026
