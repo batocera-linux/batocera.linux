@@ -146,7 +146,7 @@
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.0.2
 - DXVK-NVAPI to v0.9.2
-- FAudio to 26.07
+- FAudio to 26.08
 - FFMPEG to 8.1.2
 - GStreamer codecs to 1.28.5
 - Khadas VIM4 kernel updated to vendor 5.15.y
