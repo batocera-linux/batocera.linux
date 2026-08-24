@@ -71,6 +71,7 @@
 ### Updated
 - Azahar to 2126.0
 - BigPEmu to 1.221
+- Blake Stone to v1.3.4
 - Box64 0.4.2
 - Cemu to August 7th, 2026 build
 - CDogs to 2.4.0

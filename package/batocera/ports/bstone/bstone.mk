@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-BSTONE_VERSION = v1.2.15
+BSTONE_VERSION = v1.3.4
 BSTONE_SITE = $(call github,bibendovsky,bstone,$(BSTONE_VERSION))
 BSTONE_SUPPORTS_IN_SOURCE_BUILD = NO
 BSTONE_LICENSE = GPLv2 & MIT
