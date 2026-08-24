@@ -4,6 +4,7 @@ import logging
 import re
 import shutil
 import struct
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from ruamel.yaml import YAML
@@ -31,7 +32,6 @@ from .rpcs3Paths import (
 )
 
 if TYPE_CHECKING:
-    from pathlib import Path
 
     from ...types import HotkeysContext, Resolution
 
@@ -388,7 +388,7 @@ class Rpcs3Generator(Generator):
         # RPCS3 requires a 32 GiB virtual address allocation on startup.
         # Ensure memory overcommit is not strictly blocked (mode 2).
         try:
-            with open("/proc/sys/vm/overcommit_memory", "w") as f:
+            with Path("/proc/sys/vm/overcommit_memory").open("w") as f:
                 f.write("1\n")
         except Exception:
             _logger.warning("Failed to set vm.overcommit_memory to 1", exc_info=True)
