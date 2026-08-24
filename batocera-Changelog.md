@@ -130,7 +130,7 @@
 - TRX to 1.10.2
 - Tsugaru to v20251206
 - Vita3k to 10th of June build
-- VKQuake to 1.34.1
+- VKQuake to 1.35.0
 - VKQuake3 to 1.36
 - Winetricks to 20260125
 - X16emu to r49
