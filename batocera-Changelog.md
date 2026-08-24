@@ -84,7 +84,7 @@
 - Flycast to v2.7
 - Groovy MAME to 0.289
 - IOQuake3 to Mar 9, 2026
-- Jazz2 to 3.6.0
+- Jazz2 to 3.8.0
 - Ledspicer to 0.7.6
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Atari800 to July 15th, 2026 build
