@@ -22,6 +22,7 @@ class BezelInfo(TypedDict):
 
 
 class ScreenInfo(TypedDict):
+    name: str
     width: int
     height: int
     x: int

@@ -256,6 +256,10 @@ case "${ACTION}" in
         echo "sway"
         ;;
 
+    "configureWindow")
+	# not implemented (see labwc if needed)
+	;;
+
     *)
         f_usage
         echo "error: invalid command ${ACTION}" >&2

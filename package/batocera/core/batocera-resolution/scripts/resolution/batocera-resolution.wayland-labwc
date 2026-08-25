@@ -491,52 +491,6 @@ case "${ACTION}" in
                 s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
             } }' "${RC_XML}"
          
-            # Set the main azahar window to the primary output
-            if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting main azahar window to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule identifier="azahar"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                    n
-                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
-                } }' "${RC_XML}"
-            fi
-
-            # Set the azahar Secondary Window to the secondary output
-            AZAHAR_SECONDARY_OUT=""
-            if [ -n "${SECONDARY_OUT}" ]; then
-                _log "Setting azahar Secondary Window to output: ${SECONDARY_OUT}"
-                AZAHAR_SECONDARY_OUT="${SECONDARY_OUT}"
-            else
-                _log "No secondary output. Clearing azahar Secondary Window output rule."
-            fi
-
-            sed -i -e '/<windowRule.*identifier="azahar".*title=".*Secondary Window.*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                n
-                s#\s*<output>.*</output>#        <output>'"${AZAHAR_SECONDARY_OUT}"'</output>#
-            } }' "${RC_XML}"
-
-            # Set the primary melonDS window [w1] to the primary output
-            if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting melonDS [w1] window to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule.*identifier="net.kuribo64.melonDS".*title="\*w1\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                    n
-                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
-                } }' "${RC_XML}"
-            fi
-
-            # Set the secondary melonDS window [w2] to the secondary output
-            MELONDS_SECONDARY_OUT=""
-            if [ -n "${SECONDARY_OUT}" ]; then
-                _log "Setting melonDS [w2] window to output: ${SECONDARY_OUT}"
-                MELONDS_SECONDARY_OUT="${SECONDARY_OUT}"
-            else
-                _log "No secondary output. Clearing melonDS [w2] window output rule."
-            fi
-
-            sed -i -e '/<windowRule.*identifier="net.kuribo64.melonDS".*title="\*w2\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                n
-                s#\s*<output>.*</output>#        <output>'"${MELONDS_SECONDARY_OUT}"'</output>#
-            } }' "${RC_XML}"
-
             # Set batocera-flash-screen (OSD) to the primary output
             if [ -n "${PRIMARY_OUT}" ]; then
                 _log "Setting batocera-flash-screen (OSD) window to output: ${PRIMARY_OUT}"
@@ -815,6 +769,9 @@ case "${ACTION}" in
     "supportSystemReflection")
         exit 0
         ;;
+    "configureWindow")
+	labwc-configure-window $*
+	;;
     *)
         f_usage
         exit 1

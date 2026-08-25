@@ -7,6 +7,7 @@ import toml
 from ... import Command
 from ...batoceraPaths import BIOS, CHEATS, CONFIGS, ROMS, SAVES, mkdir_if_not_exists
 from ...controller import Controller
+from ...utils import videoMode
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -233,6 +234,11 @@ class MelonDSGenerator(Generator):
         # Write updated configuration back to the file
         with configFileName.open("w") as toml_file:
             toml.dump(config, toml_file)
+
+        # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
+        screens = videoMode.getScreensInfos(system.config)
+        videoMode.configureWindow(screens, identifier="net.kuribo64.melonDS", title="*w1*", output="primary")
+        videoMode.configureWindow(screens, identifier="net.kuribo64.melonDS", title="*w2*", output="backglass")
 
         commandArray = ["/usr/bin/melonDS", "-f", rom]
         return Command.Command(
