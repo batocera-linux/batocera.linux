@@ -15,7 +15,7 @@ from batocera_es_system.es_systems import load_es_systems
 from batocera_es_system.registry import EmulatorInfo, EmulatorsBySystemMapping, EmulatorsMetadataMapping, Registry
 from batocera_es_system.shared import (
     MISSING,
-    ConfiggenDefaults,
+    Defaults,
     SystemDict,
     SystemsData,
     get_deep_value,
@@ -155,7 +155,7 @@ def _generate_target_system_report(
     system_name: str,
     system_data: SystemDict,
     explanations: _ExplanationsDict,
-    configgen_defaults: ConfiggenDefaults,
+    defaults: Defaults,
     emulators_metadata: EmulatorsMetadataMapping,
     all_system_emulators: Mapping[str, Mapping[str, EmulatorInfo]],
     /,
@@ -229,8 +229,8 @@ def _generate_target_system_report(
         return None
 
     if nb_variants > 0 and not default_found:
-        default_emulator = configgen_defaults.get(system_name, 'emulator')
-        default_core = configgen_defaults.get(system_name, 'core')
+        default_emulator = defaults.get(system_name, 'emulator')
+        default_core = defaults.get(system_name, 'core')
 
         missing_info.add_default(system_name, default_emulator, default_core)
 
@@ -249,7 +249,7 @@ def _generate_target_report(
     target_dir: Path,
     es_systems_data: SystemsData,
     explanations: _ExplanationsDict,
-    configgen_dir: Path,
+    defaults_dir: Path,
     all_emulators_by_system: EmulatorsBySystemMapping,
     /,
     *,
@@ -264,10 +264,8 @@ def _generate_target_report(
         missing=missing_info.files,
         buildroot_mapping=buildroot_mapping,
     )
-    configgen_defaults = ConfiggenDefaults.for_defaults(
-        configgen_dir / 'configgen-defaults.yml', configgen_dir / f'configgen-defaults-{target}.yml'
-    )
-    systems_metadata = registry.get_systems_metadata(configgen_defaults)
+    defaults = Defaults.for_defaults(defaults_dir / 'config.yml', defaults_dir / f'config-{target}.yml')
+    systems_metadata = registry.get_systems_metadata(defaults)
 
     return {
         system_name: target_system_report
@@ -278,7 +276,7 @@ def _generate_target_report(
                 system_name,
                 system_data,
                 explanations,
-                configgen_defaults,
+                defaults,
                 systems_metadata.get(system_name, {}),
                 all_emulators_by_system.get(system_name, {}),
                 missing_info=missing_info,
@@ -292,7 +290,7 @@ def _generate_systems_report(
     reports_data_dir: Path,
     es_systems_yml: Path,
     explanations_yml: Path,
-    configgen_dir: Path,
+    defaults_dir: Path,
     output_file: Path,
     /,
     *,
@@ -324,7 +322,7 @@ def _generate_systems_report(
             target_dir,
             es_systems_data,
             explanations,
-            configgen_dir,
+            defaults_dir,
             all_emulators_by_system,
             missing_report=missing_report,
             buildroot_mapping=buildroot_mapping,
@@ -344,7 +342,7 @@ def main() -> None:
     parser.add_argument('reports_data_dir', type=Path, help='Directory containing reports data directories')
     parser.add_argument('es_systems_yml', type=Path, help='es_systems.yml definition file')
     parser.add_argument('explanations_yml', type=Path, help='explanations.yml definition file')
-    parser.add_argument('configgen_dir', type=Path, help='Path to configgen configs directory')
+    parser.add_argument('defaults_dir', type=Path, help='Path to batocera-launch defaults directory')
     parser.add_argument('dest', type=Path, help='Output file')
     parser.add_argument(
         '-m',
@@ -369,7 +367,7 @@ def main() -> None:
         args.reports_data_dir,
         args.es_systems_yml,
         args.explanations_yml,
-        args.configgen_dir,
+        args.defaults_dir,
         args.dest,
         buildroot_mapping=buildroot_mapping,
     )

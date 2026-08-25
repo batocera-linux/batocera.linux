@@ -1,0 +1,18 @@
+[project]
+name = "batocera-launch-cgenius"
+version = '44.0'
+dependencies = [
+    'batocera-common',
+    'batocera-launch',
+    'configobj',
+]
+
+[project.entry-points."batocera_launch.emulators"]
+cgenius = 'batocera_launch_cgenius:CGenius'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_launch_cgenius"]

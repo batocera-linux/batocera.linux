@@ -2,92 +2,31 @@ from __future__ import annotations
 
 import logging
 import xml.etree.ElementTree as ET
-from collections.abc import Mapping
 from dataclasses import InitVar, dataclass, field
 from typing import TYPE_CHECKING, Any
 
-import yaml
+from batocera_launch.config.defaults import load_defaults, load_system_defaults
 
-from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, DEFAULTS_DIR, ES_SETTINGS, USER_SHADERS
+from .batoceraPaths import BATOCERA_CONF, BATOCERA_SHADERS, ES_SETTINGS, USER_SHADERS
 from .config import Config, SystemConfig
 from .exceptions import MissingEmulator
 from .settings.unixSettings import UnixSettings
 
 if TYPE_CHECKING:
-    from argparse import Namespace
+    from collections.abc import Mapping
     from pathlib import Path
     from warnings import deprecated
+
+    from batocera_launch.cli.arguments import Arguments
 
     from .gun import Guns
 
 _logger = logging.getLogger(__name__)
 
-# adapted from https://gist.github.com/angstwad/bf22d1822c38a92ec0a9
-def _dict_merge(destination: dict[str, Any], source: Mapping[str, Any]) -> None:
-    """Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
-    updating only top-level keys, dict_merge recurses down into dicts nested
-    to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
-    ``dct``.
-    :param destination: dict onto which the merge is executed
-    :param source: dict merged into destination
-    :return: None
-    """
-    for key, value in source.items():
-        if key in destination and isinstance(destination[key], dict) and isinstance(value, Mapping):
-            _dict_merge(destination[key], value)
-        else:
-            destination[key] = value
-
-
-def _load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /) -> dict[str, Any] | None:
-    try:
-        defaults = yaml.load(default_yml.read_text(), Loader=yaml.CLoader)
-    except Exception:
-        return None
-
-    arch_defaults: dict[str, Any] = {}
-    if default_arch_yml.exists():
-        loaded_arch_defaults = yaml.load(default_arch_yml.read_text(), Loader=yaml.CLoader)
-        if loaded_arch_defaults is not None:
-            arch_defaults = loaded_arch_defaults
-
-    config: dict[str, Any] = {}
-
-    if 'default' in defaults:
-        config = defaults['default']
-
-    if 'default' in arch_defaults:
-        _dict_merge(config, arch_defaults['default'])
-
-    if system_name in defaults:
-        _dict_merge(config, defaults[system_name])
-
-    if system_name in arch_defaults:
-        _dict_merge(config, arch_defaults[system_name])
-
-    return config
-
-
-def _load_system_config(system_name: str, /) -> dict[str, Any]:
-    defaults = _load_defaults(
-        system_name,
-        DEFAULTS_DIR / 'configgen-defaults.yml',
-        DEFAULTS_DIR / 'configgen-defaults-arch.yml'
-    ) or {'emulator': {}, 'core': {}}
-
-    # In the yaml files, the "options" structure is not flat, so we have to flatten it here
-    # because the options are flat in batocera.conf to make it easier for end users to edit
-    data: dict[str, Any] = {'emulator': defaults['emulator'], 'core': defaults['core']}
-
-    if 'options' in defaults:
-        _dict_merge(data, defaults['options'])
-
-    return data
-
 
 @dataclass(slots=True)
 class Emulator:
-    args: InitVar[Namespace]
+    args: InitVar[Arguments]
     rom: InitVar[Path]
 
     name: str = field(init=False)
@@ -115,12 +54,12 @@ class Emulator:
 
         return vals
 
-    def __post_init__(self, args: Namespace, rom: Path, /) -> None:
+    def __post_init__(self, args: Arguments, rom: Path, /) -> None:
         self.name = args.system
-        self.game_info_xml = args.gameinfoxml
+        self.game_info_xml = str(args.gameinfoxml)
 
         # read the configuration from the system name
-        system_data = _load_system_config(args.system)
+        system_data = load_system_defaults(args.system)
 
         # sanitize rule by EmulationStation
         # see FileData::getConfigurationName() on batocera-emulationstation
@@ -239,7 +178,7 @@ class Emulator:
         if args.state_filename is not None:
             system_data['state_filename'] = args.state_filename
 
-        self.config = SystemConfig(system_data)
+        self.config = SystemConfig(system_data, args.system)
 
         render_data: dict[str, Any] = {}
         if (shader_set := self.config.get('shaderset')) is not self.config.MISSING:
@@ -250,7 +189,7 @@ class Emulator:
                 if not rendering_defaults.exists():
                     rendering_defaults = BATOCERA_SHADERS / 'configs' / shader_set / 'rendering-defaults.yml'
 
-            render_data = _load_defaults(
+            render_data = load_defaults(
                 args.system, rendering_defaults, rendering_defaults.with_name('rendering-defaults-arch.yml')
             ) or {}
 

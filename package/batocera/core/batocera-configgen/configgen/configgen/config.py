@@ -128,6 +128,8 @@ class Config:
 
 @dataclass
 class SystemConfig(Config):
+    system: str
+
     @property
     def emulator(self) -> str:
         return self.data['emulator']

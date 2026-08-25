@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import csv
 import logging
 import re
 import subprocess
@@ -9,7 +8,8 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from ..batoceraPaths import DEFAULTS_DIR
+from batocera_launch import get_decoration_id
+
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
@@ -215,27 +215,7 @@ def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
     if emulator not in [ 'mame', 'retroarch' ]:
         return "standalone"
 
-    if systemName not in [ 'lynx', 'wswan', 'wswanc', 'mame', 'fbneo', 'naomi', 'atomiswave', 'nds', '3ds', 'vectrex', 'dice' ]:
-        return "0"
-
-    # Look for external file, exit if not set up
-    specialFile = DEFAULTS_DIR / 'data' / 'special' / f'{systemName}.csv'
-    if not specialFile.exists():
-        return "0"
-
-    romCompare = Path(rom).stem.casefold()
-
-    # Load the file, read it in
-    # Each file will be a csv with each row being the standard (ie No-Intro) filename, angle of rotation (90 or 270)
-    # Case indifferent, rom file name and filenames in list will be folded
-    openFile = specialFile.open('r')
-    with openFile:
-        specialList = csv.reader(openFile, delimiter=';')
-        for row in specialList:
-            if row[0].casefold() == romCompare:
-                return str(row[1])
-
-    return "0"
+    return get_decoration_id(systemName, Path(rom).stem)
 
 def configureWindow(screens, identifier=None, title=None, output=None, toogleFullscreen=None):
     # default to the primary screen

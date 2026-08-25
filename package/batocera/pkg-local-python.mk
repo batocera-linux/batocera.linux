@@ -15,7 +15,8 @@ $(2)_SOURCE =
 $(2)_OVERRIDE_SRCDIR ?= $$($(2)_PKGDIR)
 $(2)_OVERRIDE_SRCDIR_RSYNC_EXCLUSIONS ?= --exclude=".*" --exclude="**/__pycache__/" \
 					 --exclude="dist" --exclude="*.mk" --exclude="Config.in" \
-					 --exclude="**/py.typed" --exclude="tests"
+					 --exclude="**/py.typed" --exclude="tests" \
+					 $($(2)_LOCAL_PYTHON_EXCLUSIONS:%=--exclude="%")
 
 $(call inner-python-package,$(1),$(2),$(3),$(4))
 endef

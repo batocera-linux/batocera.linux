@@ -12,7 +12,7 @@ from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
 if TYPE_CHECKING:
     from _typeshed import StrPath
 
-    from batocera_es_system.shared import ConfiggenDefaults
+    from batocera_es_system.shared import Defaults
 
 
 class KeysActionBase(TypedDict):
@@ -699,14 +699,14 @@ class Registry:
 
         return emulators_by_system
 
-    def get_systems_metadata(self, configgen_defaults: ConfiggenDefaults, /) -> SystemsMetadataMapping:
+    def get_systems_metadata(self, defaults: Defaults, /) -> SystemsMetadataMapping:
         system_core_data: SystemsMetadataDict = defaultdict(lambda: defaultdict(dict))
 
         for system, emulator_name, _, core_name in self._iter_system_emulator_cores():
             system_core_data[system.name][emulator_name][core_name] = {
                 'incompatible_extensions': system.exclude_extensions or [],
-                'default': emulator_name == configgen_defaults.get(system.name, 'emulator')
-                and core_name == configgen_defaults.get(system.name, 'core'),
+                'default': emulator_name == defaults.get(system.name, 'emulator')
+                and core_name == defaults.get(system.name, 'core'),
             }
 
         return system_core_data
