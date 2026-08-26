@@ -69,6 +69,7 @@ static void (*p_glDisable)(GLenum) = NULL;
 #define SHADER_QUILEZ 3
 #define SHADER_SCANLINES 4
 #define SHADER_LCD3X 5
+#define SHADER_LCD1X_NDS_COLOR 6
 
 static int shader_mode = SHADER_NONE;
 static int gl_renderer_desktop = 0; // 1 when SDL uses "opengl" renderer (not "opengles2")
@@ -104,8 +105,8 @@ static int mic_enabled = 0;
 static float mic_baseline = 0.0f;
 static int mic_baseline_samples = 0;
 
-static SDL_Texture* screens[4];
-static SDL_Texture* stylus_tex[2];
+static SDL_Texture* screens[4] = {NULL, NULL, NULL, NULL};
+static SDL_Texture* stylus_tex[2] = {NULL, NULL};
 static SDL_Rect touch_rect_storage = {0};
 static SDL_Rect* touch_rect = NULL;
 
@@ -201,7 +202,7 @@ static void init_gl_funcs(void) {
 // Shader GLSL sources
 // ---------------------------------------------------------------------------
 
-// Vertex shader shared by both filter shaders
+// Vertex shader shared by all filter shaders
 static const char *VERT_SRC =
     "attribute vec2 a_position;\n"
     "attribute vec2 a_texcoord;\n"
@@ -209,6 +210,15 @@ static const char *VERT_SRC =
     "void main() {\n"
     "    gl_Position = vec4(a_position, 0.0, 1.0);\n"
     "    v_texcoord = a_texcoord;\n"
+    "}\n";
+
+// Passthrough linear shader for SHADER_NONE
+static const char *FRAG_NONE =
+    "precision mediump float;\n"
+    "varying vec2 v_texcoord;\n"
+    "uniform sampler2D u_texture;\n"
+    "void main() {\n"
+    "    gl_FragColor = SWIZ(texture2D(u_texture, v_texcoord));\n"
     "}\n";
 
 // Themaister sharp-bilinear with minimum prescale of 2.
@@ -284,6 +294,37 @@ static const char *FRAG_LCD3X =
     "    mask *= mix(0.5, 1.0, step(1.0, py));\n"
     "    color.rgb = min(color.rgb * mask * 2.0, vec3(1.0));\n"
     "    gl_FragColor = color;\n"
+    "}\n";
+
+// lcd1x-nds-color: nearest-neighbour base with DS Phat colour correction, 2D LCD pixel
+// grid (3-pixel period, 80% gap), and subtle RGB subpixel column tint.
+// Colour correction matrix adapted from jdgleaver/drastic_ds_shaders, itself derived
+// from hunterk/Pokefan531's nds-color.glsl (public domain).
+static const char *FRAG_LCD1X_NDS_COLOR =
+    "precision mediump float;\n"
+    "varying vec2 v_texcoord;\n"
+    "uniform sampler2D u_texture;\n"
+    "uniform vec2 u_texture_size;\n"
+    "void main() {\n"
+    "    vec2 uv = (floor(v_texcoord * u_texture_size) + 0.5) / u_texture_size;\n"
+    "    vec3 colour = pow(SWIZ(texture2D(u_texture, uv)).rgb, vec3(1.91));\n"
+    "    colour = clamp(colour * 0.89, 0.0, 1.0);\n"
+    "    colour = pow(\n"
+    "        mat3( 0.87,  0.10,  0.10,\n"
+    "              0.255, 0.645, 0.17,\n"
+    "             -0.125, 0.255, 0.73) * colour,\n"
+    "        vec3(1.0 / 1.91));\n"
+    "    float px = mod(floor(gl_FragCoord.x), 3.0);\n"
+    "    float py = mod(floor(gl_FragCoord.y), 3.0);\n"
+    "    float gap = mix(0.80, 1.0, step(1.0, px)) * mix(0.80, 1.0, step(1.0, py));\n"
+    "    colour *= gap;\n"
+    "    vec3 col_r = vec3(1.0,  0.90, 0.90);\n"
+    "    vec3 col_g = vec3(0.90, 1.0,  0.90);\n"
+    "    vec3 col_b = vec3(0.90, 0.90, 1.0 );\n"
+    "    vec3 subpx = mix(col_r, col_g, step(1.0, px));\n"
+    "    subpx = mix(subpx, col_b, step(2.0, px));\n"
+    "    colour *= subpx;\n"
+    "    gl_FragColor = vec4(colour, 1.0);\n"
     "}\n";
 
 // Sharp-shimmerless: nearest-neighbor within source texels; boundary-crossing output
@@ -384,22 +425,23 @@ static GLuint make_gl_program(const char *vert_src, const char *frag_src) {
 
 // Called from SDL_CreateRenderer once the GLES2 context is live
 static void init_shader_program(void) {
-    if (shader_mode == SHADER_NONE) return;
     init_gl_funcs();
-    fprintf(stderr, "[drastouch] init_shader: mode=%d glCreateShader=%s\n",
-            shader_mode, p_glCreateShader ? "ok" : "NULL");
-    if (!p_glCreateShader) { shader_mode = SHADER_NONE; return; }
+    if (!p_glCreateShader) return;
+
     const char *frag;
     switch (shader_mode) {
         case SHADER_SHARP_SHIMMERLESS: frag = FRAG_SHARP_SHIMMERLESS; break;
         case SHADER_QUILEZ:            frag = FRAG_QUILEZ;            break;
         case SHADER_SCANLINES:         frag = FRAG_SCANLINES;         break;
         case SHADER_LCD3X:             frag = FRAG_LCD3X;             break;
-        default:                       frag = FRAG_SHARP_BILINEAR;    break;
+        case SHADER_LCD1X_NDS_COLOR:   frag = FRAG_LCD1X_NDS_COLOR;   break;
+        case SHADER_SHARP_BILINEAR:    frag = FRAG_SHARP_BILINEAR;    break;
+        case SHADER_NONE:              frag = FRAG_NONE;              break;
+        default:                       frag = FRAG_NONE;              break;
     }
     shader_program = make_gl_program(VERT_SRC, frag);
-    fprintf(stderr, "[drastouch] shader_program=%u\n", shader_program);
-    if (!shader_program) { shader_mode = SHADER_NONE; return; }
+    if (!shader_program) return;
+
     loc_texture      = p_glGetUniformLocation(shader_program, "u_texture");
     loc_texture_size = p_glGetUniformLocation(shader_program, "u_texture_size");
     loc_output_size  = p_glGetUniformLocation(shader_program, "u_output_size");
@@ -423,24 +465,79 @@ static int run_shader_copy(SDL_Renderer *r, SDL_Texture *texture,
     // Convert dstrect from logical SDL coords to physical GL pixels
     int out_w, out_h;
     SDL_GetRendererOutputSize(r, &out_w, &out_h);
-    float sx = (logical_width  > 0) ? (float)out_w / logical_width  : 1.0f;
-    float sy = (logical_height > 0) ? (float)out_h / logical_height : 1.0f;
-    int gl_w = (int)(dstrect->w * sx);
-    int gl_h = (int)(dstrect->h * sy);
-    // GL origin is bottom-left; SDL origin is top-left
-    int gl_x = (int)(dstrect->x * sx);
-    int gl_y = out_h - (int)(dstrect->y * sy) - gl_h;
+
+    int gl_x, gl_y, gl_w, gl_h;
+
+    // Detect active layout mode
+    int is_horizontal = (logical_width >= 512 && logical_height <= 192);
+    int is_single     = (logical_width <= 256 && logical_height <= 192);
+    int is_stacked    = (logical_height > 192 && !is_horizontal);
+
+    if (has_display_rects && num_displays > 1 && xy_idx == 2) {
+        if (is_horizontal) {
+            // Horizontal layout: two 4:3 screens side-by-side on Display 0 (960x720 each), centered vertically at Y=180
+            int half_w = display0_rect.w / 2; // 960px
+            int screen_h = (half_w * 3) / 4;  // 720px
+            int offset_y = display0_rect.y + (display0_rect.h - screen_h) / 2; // 180px
+
+            gl_w = half_w;
+            gl_h = screen_h;
+            gl_y = out_h - offset_y - screen_h; // GL bottom-left Y
+
+            if (dstrect->x >= (logical_width / 2)) {
+                // Right screen (Touchscreen / Bottom screen)
+                gl_x = display0_rect.x + half_w;
+            } else {
+                // Left screen (Top screen)
+                gl_x = display0_rect.x;
+            }
+        } else if (is_single) {
+            // Single screen: 4:3 pillarboxed on Display 0 (1440x1080)
+            int top_w = (display0_rect.h * 4) / 3;
+            if (top_w > display0_rect.w) top_w = display0_rect.w;
+
+            gl_x = display0_rect.x + (display0_rect.w - top_w) / 2;
+            gl_w = top_w;
+            gl_h = display0_rect.h;
+            gl_y = out_h - display0_rect.y - gl_h;
+        } else if (is_stacked) {
+            // Stacked dual screen
+            if (dstrect->y + dstrect->h / 2 >= logical_height / 2) {
+                // Bottom screen mapped to Display 1
+                gl_x = display1_rect.x;
+                gl_w = display1_rect.w;
+                gl_h = display1_rect.h;
+                gl_y = out_h - display1_rect.y - gl_h;
+            } else {
+                // Top screen mapped to Display 0 (4:3 pillarboxed)
+                int top_w = (display0_rect.h * 4) / 3;
+                if (top_w > display0_rect.w) top_w = display0_rect.w;
+
+                gl_x = display0_rect.x + (display0_rect.w - top_w) / 2;
+                gl_w = top_w;
+                gl_h = display0_rect.h;
+                gl_y = out_h - display0_rect.y - gl_h;
+            }
+        } else {
+            goto generic_viewport;
+        }
+    } else {
+generic_viewport:
+        {
+            float sx = (logical_width  > 0) ? (float)out_w / logical_width  : 1.0f;
+            float sy = (logical_height > 0) ? (float)out_h / logical_height : 1.0f;
+            gl_w = (int)(dstrect->w * sx);
+            gl_h = (int)(dstrect->h * sy);
+            gl_x = (int)(dstrect->x * sx);
+            gl_y = out_h - (int)(dstrect->y * sy) - gl_h;
+        }
+    }
 
     if (gl_w < 32 || gl_h < 32) goto fallback;
 
     // Bind source texture to GL_TEXTURE_2D via SDL
     GLfloat texw = 1.0f, texh = 1.0f;
     if (SDL_GL_BindTexture(texture, &texw, &texh) != 0) {
-        static int bind_fail_logged = 0;
-        if (!bind_fail_logged) {
-            fprintf(stderr, "[drastouch] SDL_GL_BindTexture failed: %s\n", SDL_GetError());
-            bind_fail_logged = 1;
-        }
         goto fallback;
     }
 
@@ -570,21 +667,23 @@ SDL_Window* SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
 }
 
 void SDL_SetWindowSize(SDL_Window* window, int w, int h) {
-    static int init_resize = 2;
+    real_SDL_SetWindowSize(window, phys_width, phys_height);
 
-    if (init_resize > 0) {
-        real_SDL_SetWindowSize(window, w, h);
-        init_resize -= 1;
+    // Synthesize SDL_WINDOWEVENT_RESIZED to prevent DraStic from blocking/hanging
+    if (real_SDL_PushEvent) {
+        SDL_Event ev;
+        memset(&ev, 0, sizeof(ev));
+        ev.type = SDL_WINDOWEVENT;
+        ev.window.windowID = SDL_GetWindowID(window);
+        ev.window.data1 = phys_width;
+        ev.window.data2 = phys_height;
+
+        ev.window.event = SDL_WINDOWEVENT_RESIZED;
+        real_SDL_PushEvent(&ev);
+
+        ev.window.event = SDL_WINDOWEVENT_SIZE_CHANGED;
+        real_SDL_PushEvent(&ev);
     }
-
-    // Force window size to fill AFTER DraStic does its weird init thing
-    if (init_resize == 0) {
-        real_SDL_SetWindowSize(window, phys_width, phys_height);
-        init_resize = -1;
-    } else if (init_resize == -1) {
-        real_SDL_SetWindowSize(window, phys_width, phys_height); // Lock at full desktop height
-    }
-
 }
 
 SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, Uint32 flags) {
@@ -603,11 +702,10 @@ SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, Uint32 flags) {
 }
 
 int SDL_RenderSetLogicalSize(SDL_Renderer* renderer, int w, int h) {
-    int result = real_SDL_RenderSetLogicalSize(renderer, w, h);
     // Also store it here so run_shader_copy can convert logical→physical coords
     logical_width = w;
     logical_height = h;
-    return result;
+    return real_SDL_RenderSetLogicalSize(renderer, w, h);
 }
 
 void SDL_RenderPresent(SDL_Renderer *r) {
@@ -622,24 +720,29 @@ SDL_Texture* SDL_CreateTexture(SDL_Renderer *renderer, Uint32 format, int type, 
         if (w == 512 && h == 384) {
             ds_screen_width = 512;
             ds_screen_height = 384;
-            if (!screens[0]) screens[0] = texture;
-            else if (!screens[1]) screens[1] = texture;
-        } else if (w == 256 && h == 192 && !screens[0]) {
-            if (!screens[2]) screens[2] = texture;
-            else if (!screens[3]) screens[3] = texture;
+            // Clear old 256 textures on resolution switch to prevent stale slot aliasing
+            screens[2] = NULL;
+            screens[3] = NULL;
+            if (!screens[0] || screens[0] == texture) { screens[0] = texture; }
+            else { screens[1] = texture; }
+        } else if (w == 256 && h == 192) {
+            ds_screen_width = 256;
+            ds_screen_height = 192;
+            // Clear old 512 textures on resolution switch
+            screens[0] = NULL;
+            screens[1] = NULL;
+            if (!screens[2] || screens[2] == texture) { screens[2] = texture; }
+            else { screens[3] = texture; }
         }
     }
     if (w == 32 && h == 32) {
-        if (!stylus_tex[0]) stylus_tex[0] = texture;
-        else if (!stylus_tex[1]) stylus_tex[1] = texture;
+        if (!stylus_tex[0]) { stylus_tex[0] = texture; }
+        else if (!stylus_tex[1]) { stylus_tex[1] = texture; }
     }
     return texture;
 }
 
 int SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect *srcrect, const SDL_Rect *dstrect) {
-    SDL_Rect override_dst_storage;
-    const SDL_Rect *final_dst = dstrect;
-
     int is_ds_screen = 0;
     for (int i = 0; i < 4; i++) {
         if (screens[i] && texture == screens[i]) {
@@ -648,93 +751,80 @@ int SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect 
         }
     }
 
-    // Only override the bottom screen layout to map to the secondary display
-    if (is_ds_screen && has_display_rects && num_displays > 1 && logical_width > 0 && logical_height > 0 && dstrect) {
-        int is_bottom_screen = 0;
+    int is_horizontal = (logical_width >= 512 && logical_height <= 192);
+    int is_single     = (logical_width <= 256 && logical_height <= 192);
+    int is_stacked    = (logical_height > 192 && !is_horizontal);
 
-        if (xy_idx == 2) { // Vertically stacked layout
-            if (dstrect->y + dstrect->h / 2 >= logical_height / 2) {
-                is_bottom_screen = 1;
-            }
-        } else if (xy_idx == 1) { // Horizontally side-by-side layout
-            if (dstrect->x + dstrect->w / 2 >= logical_width / 2) {
-                is_bottom_screen = 1;
-            }
-        }
-
-        if (is_bottom_screen) {
-            SDL_Rect target_bounds = display1_rect;
-
-            int out_w = 0, out_h = 0;
-            SDL_GetRendererOutputSize(renderer, &out_w, &out_h);
-
-            float scale_x = (float)out_w / logical_width;
-            float scale_y = (float)out_h / logical_height;
-            float scale = (scale_x < scale_y) ? scale_x : scale_y;
-
-            if (scale > 0.0f) {
-                float vp_x = (out_w - logical_width * scale) / 2.0f;
-                float vp_y = (out_h - logical_height * scale) / 2.0f;
-
-                // Reverse-scale physical bounds back to SDL's logical space mapping
-                override_dst_storage.x = (int)roundf(((float)target_bounds.x - vp_x) / scale);
-                override_dst_storage.y = (int)roundf(((float)target_bounds.y - vp_y) / scale);
-                override_dst_storage.w = (int)roundf((float)target_bounds.w / scale);
-                override_dst_storage.h = (int)roundf((float)target_bounds.h / scale);
-
-                final_dst = &override_dst_storage;
-            }
-        }
-    }
-
-    if ((screens[0] && texture == screens[0] && ds_screen_width == 512) ||
-        (screens[3] && texture == screens[3] && ds_screen_width == 256)) {
-        
+    // Update physical touchscreen mapping across all modes and display configurations
+    if (dstrect) {
         if (has_display_rects && num_displays > 1) {
-            // Directly align the physical touchscreen area with the bounds of Display 1
-            touch_rect_storage = display1_rect;
+            // Dual-screen hardware (AYN Thor, RG-DS)
+            if (is_horizontal) {
+                // Touchscreen mapped to the right screen on Display 0 (960x720)
+                int half_w = display0_rect.w / 2;
+                int screen_h = (half_w * 3) / 4;
+                int offset_y = display0_rect.y + (display0_rect.h - screen_h) / 2;
+                if (dstrect->x >= (logical_width / 2)) {
+                    touch_rect_storage.x = display0_rect.x + half_w;
+                    touch_rect_storage.y = offset_y;
+                    touch_rect_storage.w = half_w;
+                    touch_rect_storage.h = screen_h;
+                    touch_rect = &touch_rect_storage;
+                }
+            } else if (is_single) {
+                // Touchscreen mapped to centered 4:3 area on Display 0
+                int top_w = (display0_rect.h * 4) / 3;
+                if (top_w > display0_rect.w) top_w = display0_rect.w;
+                touch_rect_storage.x = display0_rect.x + (display0_rect.w - top_w) / 2;
+                touch_rect_storage.y = display0_rect.y;
+                touch_rect_storage.w = top_w;
+                touch_rect_storage.h = display0_rect.h;
+                touch_rect = &touch_rect_storage;
+            } else if (is_stacked && ((screens[0] && texture == screens[0] && ds_screen_width == 512) ||
+                                      (screens[3] && texture == screens[3] && ds_screen_width == 256))) {
+                // Dual-screen bottom touchscreen mapped to Display 1
+                touch_rect_storage = display1_rect;
+                touch_rect = &touch_rect_storage;
+            }
         } else {
-            // Fallback to original conversion calculation if layout boundaries are uninitialized
-            if (logical_width > 0 && logical_height > 0) {
-                int output_w, output_h;
-                SDL_GetRendererOutputSize(renderer, &output_w, &output_h);
-                float scale_x = (float)output_w / logical_width;
-                float scale_y = (float)output_h / logical_height;
+            // Single-display hardware fallback (calculates touch area from dstrect)
+            if ((screens[0] && texture == screens[0] && ds_screen_width == 512) ||
+                (screens[3] && texture == screens[3] && ds_screen_width == 256) ||
+                is_single) {
+                if (logical_width > 0 && logical_height > 0) {
+                    int output_w, output_h;
+                    SDL_GetRendererOutputSize(renderer, &output_w, &output_h);
+                    float scale_x = (float)output_w / logical_width;
+                    float scale_y = (float)output_h / logical_height;
 
-                touch_rect_storage.x = (int)(final_dst->x * scale_x);
-                touch_rect_storage.y = (int)(final_dst->y * scale_y);
-                touch_rect_storage.w = (int)(final_dst->w * scale_x);
-                touch_rect_storage.h = (int)(final_dst->h * scale_y);
-            } else {
-                // Fallback and hope they're right
-                touch_rect_storage.x = final_dst->x;
-                touch_rect_storage.y = final_dst->y;
-                touch_rect_storage.w = final_dst->w;
-                touch_rect_storage.h = final_dst->h;
+                    touch_rect_storage.x = (int)(dstrect->x * scale_x);
+                    touch_rect_storage.y = (int)(dstrect->y * scale_y);
+                    touch_rect_storage.w = (int)(dstrect->w * scale_x);
+                    touch_rect_storage.h = (int)(dstrect->h * scale_y);
+                } else {
+                    touch_rect_storage = *dstrect;
+                }
+                touch_rect = &touch_rect_storage;
             }
         }
-        touch_rect = &touch_rect_storage;
     }
 
     // Make stylus fully transparent for actual touchscreens
     if (actual_touch && (texture == stylus_tex[0] || texture == stylus_tex[1]))
         SDL_SetTextureAlphaMod(texture, 0);
 
-    // Apply pixel shader to DS screen textures when one is configured.
-    // Cap at 2 shader passes per frame so menu overlays (drawn after the two NDS
-    // screens) fall through to normal SDL rendering without breaking blending.
-    // Skip when rendering into a texture target — viewport math uses screen size.
-    if (shader_program && final_dst && shader_frame_calls < 2 &&
+    // Apply hardware rendering pass
+    if (shader_program && dstrect && shader_frame_calls < 2 &&
         SDL_GetRenderTarget(renderer) == NULL) {
         for (int i = 0; i < 4; i++) {
             if (screens[i] && texture == screens[i]) {
                 shader_frame_calls++;
-                return run_shader_copy(renderer, texture, srcrect, final_dst);
+                return run_shader_copy(renderer, texture, srcrect, dstrect);
             }
         }
     }
 
-    return real_SDL_RenderCopy(renderer, texture, srcrect, final_dst);
+    return real_SDL_RenderCopy(renderer, texture, srcrect, dstrect);
 }
 
 void mic_audio_callback(void* userdata, Uint8* stream, int len) {
@@ -798,11 +888,11 @@ int SDL_PollEvent(SDL_Event* event) {
                 int x = (int)(event->tfinger.x * phys_width);
                 int y = (int)(event->tfinger.y * phys_height);
 
-                if (!touch_rect) return 0;
+                if (!touch_rect) continue;
 
                 if (x < touch_rect->x || x > touch_rect->x + touch_rect->w ||
                     y < touch_rect->y || y > touch_rect->y + touch_rect->h) {
-                    return 0; // Outside valid coords, don't convert
+                    continue; // Skip without aborting the event queue
                 }
 
                 // Scale to native virtual touchscreen
@@ -833,11 +923,11 @@ int SDL_PollEvent(SDL_Event* event) {
                 int x = (int)(event->tfinger.x * phys_width);
                 int y = (int)(event->tfinger.y * phys_height);
 
-                if (!touch_rect) return 0;
+                if (!touch_rect) continue;
 
                 if (x < touch_rect->x || x > touch_rect->x + touch_rect->w ||
                     y < touch_rect->y || y > touch_rect->y + touch_rect->h)
-                    return 0;
+                    continue;
 
                 x = ((x - touch_rect->x) * 256) / touch_rect->w;
                 y = ((y - touch_rect->y) * 192) / touch_rect->h;
@@ -914,6 +1004,10 @@ static void init(void) {
             shader_mode = SHADER_LCD3X;
         else if (strcmp(shader_str, "sharp-shimmerless") == 0)
             shader_mode = SHADER_SHARP_SHIMMERLESS;
+        else if (strcmp(shader_str, "lcd1x-nds-color") == 0)
+            shader_mode = SHADER_LCD1X_NDS_COLOR;
+        else if (strcmp(shader_str, "none") == 0)
+            shader_mode = SHADER_NONE;
     }
 
     // Resolve microphone logic safely
