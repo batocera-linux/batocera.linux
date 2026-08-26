@@ -1,3 +1,7 @@
+BATOCERA_ARCH = $(call qstrip,$(BR2_BATOCERA_ARCH))
+BATOCERA_TARGET = $(call qstrip,$(BR2_BATOCERA_TARGET))
+BATOCERA_GPU = $(call qstrip,$(BR2_BATOCERA_GPU))
+
 # Directories that are included in the rufomaculata squashfs image. These
 # are also excluded from the main squashfs image, so that they are only
 # included once in batocera. The variable is exported so it can be used in

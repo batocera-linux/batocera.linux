@@ -17,7 +17,7 @@ HOST_BATOCERA_ES_SYSTEM_DEPENDENCIES = host-python-batocera-common
 
 $(eval $(call register,_shared.emulator.yml _global.emulator.yml lexaloffle.emulator.yml sh.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,tdp._shared.emulator.yml))
-$(eval $(call register-if-none-of,$(BATOCERA_SYSTEM_ARCH),s905 bcm2835 bcm2836,hud._shared.emulator.yml))
+$(eval $(call register-if-none-of,$(BATOCERA_ARCH),s905 bcm2835 bcm2836,hud._shared.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_STELLA,stella.emulator.yml))
 
 define BATOCERA_ES_SYSTEM_EXTRACT_CMDS
@@ -36,7 +36,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		--configgen=$(STAGING_DIR)/usr/share/batocera/configgen \
 		--keys-dir=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera \
 		--output=$(BATOCERA_ES_SYSTEM_DIR) \
-		--arch=$(BATOCERA_SYSTEM_ARCH) \
+		--arch=$(BATOCERA_ARCH) \
 		$(BATOCERA_ES_SYSTEM_DIR)/info_files.txt
 
 	$(call BATOCERA_ES_SYSTEM_BUILD_PO_FILES,$(BATOCERA_ES_SYSTEM_DIR),$(BATOCERA_ES_SYSTEM_DIR)/locales)

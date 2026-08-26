@@ -194,12 +194,13 @@ $(eval $(generic-package))
 $(eval $(emulator-info-package))
 
 LIBRETRO_PLATFORM = unix
+
 ifeq ($(BR2_arm),y)
     LIBRETRO_PLATFORM += armv7
-endif
-ifeq ($(BR2_aarch64),y)
+else ifeq ($(BR2_arm64),y)
     LIBRETRO_PLATFORM += arm64
 endif
+
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
     LIBRETRO_PLATFORM += neon
 endif
