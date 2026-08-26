@@ -10,7 +10,14 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 
 from ... import Command
-from ...batoceraPaths import CONFIGS, SAVES, ensure_parents_and_open, mkdir_if_not_exists
+from ...batoceraPaths import (
+    CONFIGS,
+    LOGS,
+    SAVES,
+    SCREENSHOTS,
+    ensure_parents_and_open,
+    mkdir_if_not_exists,
+)
 from ...controller import Controller, Controllers, generate_sdl_game_controller_config
 from ...gun import Guns, guns_need_crosses
 from ...utils import vulkan
@@ -25,6 +32,7 @@ _logger = logging.getLogger(__name__)
 SUPERMODEL_SHARE: Final = Path("/usr/share/supermodel")
 SUPERMODEL_CONFIG: Final = CONFIGS / "supermodel"
 SUPERMODEL_SAVES: Final = SAVES / "supermodel"
+SUPERMODEL_SCREENSHOTS: Final = SCREENSHOTS / "supermodel"
 
 
 def get_pad_input(
@@ -212,7 +220,7 @@ class SupermodelGenerator(Generator):
         # Set Resolution
         commandArray.append(f"-res={gameResolution['width']},{gameResolution['height']}")
         # Logs
-        commandArray.extend(["-log-output=/userdata/system/logs/Supermodel.log", rom])
+        commandArray.extend([f"-log-output={LOGS / 'Supermodel.log'}", rom])
         # Copy nvram files as needed
         copy_nvram_files()
         # Copy gun asset files as needed
@@ -226,6 +234,7 @@ class SupermodelGenerator(Generator):
         return Command.Command(
             array=commandArray,
             env={
+                "SUPERMODEL_CONFIG_PATH": SUPERMODEL_CONFIG,
                 "SDL_GAMECONTROLLERCONFIG": generate_sdl_game_controller_config(playersControllers),
                 "SDL_JOYSTICK_HIDAPI": "0",
             },
@@ -289,6 +298,11 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns, playersControllers: C
     templateFile = SUPERMODEL_SHARE / "Supermodel.ini.template"
     targetFile = SUPERMODEL_CONFIG / "Supermodel.ini"
 
+    # Ensure required target directories exist
+    mkdir_if_not_exists(SUPERMODEL_SAVES / "Saves")
+    mkdir_if_not_exists(SUPERMODEL_SCREENSHOTS)
+    mkdir_if_not_exists(SUPERMODEL_CONFIG / "Analysis")
+
     # template
     templateConfig = CaseSensitiveConfigParser(interpolation=None)
     templateConfig.read(templateFile, encoding="utf_8_sig")
@@ -301,10 +315,18 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns, playersControllers: C
         for key, value in templateConfig.items(section):
             targetConfig.set(section, key, value)
 
-    # Network Outputs configuration (MAME-compatible outputs)
     if not targetConfig.has_section("Global"):
         targetConfig.add_section("Global")
 
+    # Batocera directory path configuration
+    targetConfig.set("Global", "AnalysisPath", str(SUPERMODEL_CONFIG / "Analysis"))
+    targetConfig.set("Global", "NVRAMPath", str(SUPERMODEL_SAVES / "NVRAM"))
+    targetConfig.set("Global", "SavesPath", str(SUPERMODEL_SAVES / "Saves"))
+    targetConfig.set("Global", "ScreenshotsPath", str(SUPERMODEL_SCREENSHOTS))
+    targetConfig.set("Global", "AssetsPath", str(SUPERMODEL_CONFIG / "Assets"))
+    targetConfig.set("Global", "LogPath", str(LOGS))
+
+    # Network Outputs configuration (MAME-compatible outputs)
     m3_outputs = system.config.get("m3_outputs", "none")
     targetConfig.set("Global", "Outputs", m3_outputs)
 
@@ -469,7 +491,7 @@ def configPadsIni(system: Emulator, rom: Path, guns: Guns, playersControllers: C
     # Evdev for guns or sdlgamepad for controllers
     for section in targetConfig.sections():
         if section.strip() in ["Global", rom.stem]:
-            # for an input sytem
+            # for an input system
             if section.strip() != "Global":
                 targetConfig.set(section, "InputSystem", "to be defined")
             for key, _ in targetConfig.items(section):
