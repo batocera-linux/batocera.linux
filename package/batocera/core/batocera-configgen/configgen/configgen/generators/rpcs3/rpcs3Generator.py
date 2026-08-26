@@ -5,7 +5,6 @@ import logging
 import re
 import shutil
 import struct
-import urllib.error
 import urllib.request
 from multiprocessing import Process
 from pathlib import Path
