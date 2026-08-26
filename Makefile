@@ -106,6 +106,9 @@ SYSTEMS_REPORT_TARGETS := $(filter-out $(SYSTEMS_REPORT_EXCLUDE_TARGETS) x86_wow
 # All defconfig files for systems report targets, generated from the board files
 SYSTEMS_REPORT_DEFCONFIGS = $(foreach target,$(SYSTEMS_REPORT_TARGETS),$(call target-defconfig,$(target)))
 
+# Pass the git commit from the host so builds in git worktrees have the hash in the container
+GIT_COMMIT := $(shell git -C $(PROJECT_DIR) rev-parse --short HEAD 2>/dev/null || echo unknown)
+
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
 define MAKE_BUILDROOT
@@ -113,12 +116,14 @@ define MAKE_BUILDROOT
 		BR2_EXTERNAL=$(PROJECT_DIR) \
 		BR2_DL_DIR=$(DL_DIR) \
 		BR2_CCACHE_DIR=$(CCACHE_DIR) \
+		BATOCERA_GIT_COMMIT=$(GIT_COMMIT) \
 		-C $(PROJECT_DIR)/buildroot
 endef
 else # DIRECT_BUILD
 define MAKE_BUILDROOT
 	$(call RUN_DOCKER,$(1)) make $(MAKE_OPTS) O=/$(1) \
 					BR2_EXTERNAL=/build \
+					BATOCERA_GIT_COMMIT=$(GIT_COMMIT) \
 					-C /build/buildroot
 endef
 endif # DIRECT_BUILD
@@ -313,7 +318,7 @@ ifdef BATCH_MODE
 	$(if $(CMD),,$(error CMD is required to use $*-shell in BATCH_MODE))
 endif
 	@$(call MESSAGE,$(if $(CMD),Executing command,Starting interactive shell))
-	@$(RUN_DOCKER_TARGET) $(CMD)
+	@$(call RUN_DOCKER,$*,-e BATOCERA_GIT_COMMIT=$(GIT_COMMIT)) $(CMD)
 
 %-ccache-stats: %-config
 	@$(MAKE_BUILDROOT_TARGET) ccache-stats

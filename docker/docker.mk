@@ -32,7 +32,7 @@ define RUN_DOCKER
 		-w /$(1) \
 		-e HOST_UID=$(UID) \
 		-e HOST_GID=$(GID) \
-		$(DOCKER_OPTS) \
+		$(2) $(DOCKER_OPTS) \
 		$(DOCKER_IMAGE)
 endef
 endif
