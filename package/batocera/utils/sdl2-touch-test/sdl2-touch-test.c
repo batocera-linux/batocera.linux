@@ -84,10 +84,19 @@ typedef struct {
     char devpath[256];
 } UdevProperties;
 
+// Hardware touch listener structure for live physical device correlation
+typedef struct {
+    int fd;
+    char devnode[128];
+    UdevProperties props;
+} HardwareTouchDevice;
+
 // Struct to store calibration data dynamically for each screen
 typedef struct {
     double A, B, C, D, E, F;
     char touch_name[256];
+    UdevProperties udev_props;
+    bool has_udev_props;
     bool calibrated;
 } DisplayCalibration;
 
@@ -107,6 +116,10 @@ Point2D raw_points[4];
 TouchFinger active_fingers[MAX_FINGERS];
 TouchDeviceCap touch_caps[MAX_TOUCH_DEVICES];
 int num_queried_devices = 0;
+
+// Hardware touch device listeners
+HardwareTouchDevice hw_touch_devices[MAX_TOUCH_DEVICES];
+int num_hw_devices = 0;
 
 // Solved coefficients for x' = A*x + B*y + C and y' = D*x + E*y + F
 double matrix_A = 1.0, matrix_B = 0.0, matrix_C = 0.0;
@@ -188,10 +201,38 @@ void clean_display_name(const char* raw_name, char* clean_name, size_t max_len) 
     }
 }
 
-// Fallback index search to map physical touch screen hardware based on display index sequence
-bool query_udev_fallback_index(int target_index, UdevProperties* props) {
+// Helper to safely extract kernel device name from device or parent input node
+static void extract_device_properties(struct udev_device* dev, UdevProperties* props) {
+    memset(props, 0, sizeof(UdevProperties));
+
+    const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
+    if (!kernel_name) {
+        struct udev_device* parent = udev_device_get_parent_with_subsystem_devtype(dev, "input", NULL);
+        if (parent) {
+            kernel_name = udev_device_get_sysattr_value(parent, "name");
+        }
+    }
+    if (!kernel_name) {
+        struct udev_device* parent = udev_device_get_parent(dev);
+        if (parent) {
+            kernel_name = udev_device_get_sysattr_value(parent, "name");
+        }
+    }
+
+    const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
+    const char* devpath = udev_device_get_devpath(dev);
+    const char* devnode = udev_device_get_devnode(dev);
+
+    if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
+    if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
+    if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
+    if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
+}
+
+// Initialize and open all physical touchscreen input nodes to detect touches in real time
+void init_hardware_touch_devices(void) {
     struct udev* udev = udev_new();
-    if (!udev) return false;
+    if (!udev) return;
 
     struct udev_enumerate* enumerate = udev_enumerate_new(udev);
     udev_enumerate_add_match_subsystem(enumerate, "input");
@@ -199,106 +240,25 @@ bool query_udev_fallback_index(int target_index, UdevProperties* props) {
 
     struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
     struct udev_list_entry* entry;
-    bool match_found = false;
-    int current_match_idx = 0;
 
     udev_list_entry_foreach(entry, devices) {
         const char* syspath = udev_list_entry_get_name(entry);
         struct udev_device* dev = udev_device_new_from_syspath(udev, syspath);
         if (dev) {
-            const char* is_touch = udev_device_get_property_value(dev, "ID_INPUT_TOUCHSCREEN");
-            if (is_touch && strcmp(is_touch, "1") == 0) {
-                if (current_match_idx == target_index) {
-                    const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
-                    const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
-                    const char* devpath = udev_device_get_devpath(dev);
-                    const char* devnode = udev_device_get_devnode(dev);
-
-                    memset(props, 0, sizeof(UdevProperties));
-                    if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
-                    if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
-                    if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
-                    if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
-
-                    match_found = true;
-                    udev_device_unref(dev);
-                    break;
-                }
-                current_match_idx++;
-            }
-            udev_device_unref(dev);
-        }
-    }
-
-    // Safely fallback to the first discovered touchscreen if index bounds mismatch (single-touch dual displays)
-    if (!match_found && current_match_idx > 0) {
-        udev_list_entry_foreach(entry, devices) {
-            const char* syspath = udev_list_entry_get_name(entry);
-            struct udev_device* dev = udev_device_new_from_syspath(udev, syspath);
-            if (dev) {
+            const char* devnode = udev_device_get_devnode(dev);
+            if (devnode && strncmp(devnode, "/dev/input/event", 16) == 0) {
                 const char* is_touch = udev_device_get_property_value(dev, "ID_INPUT_TOUCHSCREEN");
                 if (is_touch && strcmp(is_touch, "1") == 0) {
-                    const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
-                    const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
-                    const char* devpath = udev_device_get_devpath(dev);
-                    const char* devnode = udev_device_get_devnode(dev);
-
-                    memset(props, 0, sizeof(UdevProperties));
-                    if (kernel_name) strncpy(props->name, kernel_name, sizeof(props->name) - 1);
-                    if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
-                    if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
-                    if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
-
-                    match_found = true;
-                    udev_device_unref(dev);
-                    break;
+                    if (num_hw_devices < MAX_TOUCH_DEVICES) {
+                        int fd = open(devnode, O_RDONLY | O_NONBLOCK);
+                        if (fd >= 0) {
+                            hw_touch_devices[num_hw_devices].fd = fd;
+                            strncpy(hw_touch_devices[num_hw_devices].devnode, devnode, sizeof(hw_touch_devices[num_hw_devices].devnode) - 1);
+                            extract_device_properties(dev, &hw_touch_devices[num_hw_devices].props);
+                            num_hw_devices++;
+                        }
+                    }
                 }
-                udev_device_unref(dev);
-            }
-        }
-    }
-
-    udev_enumerate_unref(enumerate);
-    udev_unref(udev);
-    return match_found;
-}
-
-// Query the udev database for the matching touchscreen name (with index mappings for virtual seats)
-bool query_udev_device(const char* sdl_name, int display_index, UdevProperties* props) {
-    if (!sdl_name || strcmp(sdl_name, "wayland_touch") == 0) {
-        return query_udev_fallback_index(display_index, props);
-    }
-
-    struct udev* udev = udev_new();
-    if (!udev) return false;
-
-    struct udev_enumerate* enumerate = udev_enumerate_new(udev);
-    udev_enumerate_add_match_subsystem(enumerate, "input");
-    udev_enumerate_scan_devices(enumerate);
-
-    struct udev_list_entry* devices = udev_enumerate_get_list_entry(enumerate);
-    struct udev_list_entry* entry;
-    bool match_found = false;
-
-    udev_list_entry_foreach(entry, devices) {
-        const char* syspath = udev_list_entry_get_name(entry);
-        struct udev_device* dev = udev_device_new_from_syspath(udev, syspath);
-        if (dev) {
-            const char* kernel_name = udev_device_get_sysattr_value(dev, "name");
-            if (kernel_name && strcmp(kernel_name, sdl_name) == 0) {
-                const char* id_path = udev_device_get_property_value(dev, "ID_PATH");
-                const char* devpath = udev_device_get_devpath(dev);
-                const char* devnode = udev_device_get_devnode(dev);
-
-                memset(props, 0, sizeof(UdevProperties));
-                strncpy(props->name, kernel_name, sizeof(props->name) - 1);
-                if (id_path) strncpy(props->id_path, id_path, sizeof(props->id_path) - 1);
-                if (devpath) strncpy(props->devpath, devpath, sizeof(props->devpath) - 1);
-                if (devnode) strncpy(props->devnode, devnode, sizeof(props->devnode) - 1);
-
-                match_found = true;
-                udev_device_unref(dev);
-                break;
             }
             udev_device_unref(dev);
         }
@@ -306,36 +266,64 @@ bool query_udev_device(const char* sdl_name, int display_index, UdevProperties* 
 
     udev_enumerate_unref(enumerate);
     udev_unref(udev);
-
-    if (!match_found) {
-        return query_udev_fallback_index(display_index, props);
-    }
-    return match_found;
 }
 
-// Extract a clean DEVPATH matcher from absolute system paths
+// Clean up all opened hardware touch device file descriptors
+void cleanup_hardware_touch_devices(void) {
+    for (int i = 0; i < num_hw_devices; i++) {
+        if (hw_touch_devices[i].fd >= 0) {
+            close(hw_touch_devices[i].fd);
+            hw_touch_devices[i].fd = -1;
+        }
+    }
+}
+
+// Deterministically detect which physical hardware touch device is sending events right now
+int detect_active_hardware_touch_device(void) {
+    int active_idx = -1;
+    for (int i = 0; i < num_hw_devices; i++) {
+        if (hw_touch_devices[i].fd < 0) continue;
+        struct input_event ev[64];
+        ssize_t bytes = read(hw_touch_devices[i].fd, ev, sizeof(ev));
+        if (bytes > 0) {
+            int count = (int)(bytes / sizeof(struct input_event));
+            for (int j = 0; j < count; j++) {
+                if (ev[j].type == EV_ABS || (ev[j].type == EV_KEY && ev[j].code == BTN_TOUCH)) {
+                    active_idx = i;
+                    break;
+                }
+            }
+        }
+    }
+    return active_idx;
+}
+
+// Extract a clean DEVPATH matcher preserving the physical device chip address
 void get_devpath_pattern(const char* devpath, char* buffer, size_t max_len) {
     if (!devpath || strlen(devpath) == 0) {
         strncpy(buffer, "*", max_len);
         return;
     }
 
-    const char* i2c_ptr = strstr(devpath, ".i2c");
-    if (i2c_ptr) {
-        const char* start = i2c_ptr;
-        while (start > devpath && *(start - 1) != '/') {
-            start--;
-        }
-        const char* i2c_bus = strstr(i2c_ptr, "/i2c-");
-        if (i2c_bus) {
-            const char* end = strchr(i2c_bus + 5, '/');
-            if (end) {
-                size_t segment_len = end - start;
-                if (segment_len < max_len - 5) {
-                    snprintf(buffer, max_len, "*/%.*s/*", (int)segment_len, start);
-                    return;
-                }
+    const char* input_ptr = strstr(devpath, "/input/input");
+    if (input_ptr) {
+        const char* start = strstr(devpath, ".i2c");
+        if (start) {
+            while (start > devpath && *(start - 1) != '/') {
+                start--;
             }
+        } else {
+            start = strstr(devpath, "platform/");
+            if (start) {
+                start += 9;
+            } else {
+                start = devpath;
+            }
+        }
+        size_t segment_len = input_ptr - start;
+        if (segment_len < max_len - 5) {
+            snprintf(buffer, max_len, "*/%.*s/*", (int)segment_len, start);
+            return;
         }
     }
     snprintf(buffer, max_len, "%s", devpath);
@@ -447,20 +435,30 @@ void print_all_calibration_rules(SDL_Rect* displays, int num_displays, DisplayCa
         char clean_disp[128];
         clean_display_name(SDL_GetDisplayName(i), clean_disp, sizeof(clean_disp));
 
-        printf("# Calibration for Display %d (%s) using Touch Device '%s':\n", 
-               i, clean_disp, cal_results[i].touch_name);
-
         UdevProperties props;
-        if (query_udev_device(cal_results[i].touch_name, i, &props)) {
+        bool udev_found = false;
+
+        // Use the live physical hardware correlation captured during touch calibration
+        if (cal_results[i].has_udev_props) {
+            props = cal_results[i].udev_props;
+            udev_found = true;
+        }
+
+        const char* display_touch_name = (udev_found && strlen(props.name) > 0) ? props.name : cal_results[i].touch_name;
+
+        printf("# Calibration for Display %d (%s) using Touch Device '%s':\n", 
+               i, clean_disp, display_touch_name);
+
+        if (udev_found) {
             char devpath_pat[256] = "";
             get_devpath_pattern(props.devpath, devpath_pat, sizeof(devpath_pat));
 
-            if (strlen(props.id_path) > 0) {
-                printf("# Option A (Recommended: Match strictly by hardware connection port path):\n");
+            if (strlen(props.name) > 0) {
+                printf("# Option A (Recommended: Match strictly by kernel device name):\n");
                 printf("SUBSYSTEM==\"input\", KERNEL==\"event*\", \\\n");
                 printf("  ENV{ID_INPUT_TOUCHSCREEN}==\"1\", \\\n");
-                printf("  ENV{ID_PATH}==\"%s\", \\\n", props.id_path);
-                // Print with %g representation to drop redundant decimal trailing zeros
+                printf("  ATTRS{name}==\"%s\", \\\n", props.name);
+                printf("  ENV{WL_OUTPUT}=\"%s\", \\\n", clean_disp);
                 printf("  ENV{LIBINPUT_CALIBRATION_MATRIX}=\"%g %g %g %g %g %g\"\n\n",
                        smart_round(cal_results[i].A), smart_round(cal_results[i].B), smart_round(cal_results[i].C),
                        smart_round(cal_results[i].D), smart_round(cal_results[i].E), smart_round(cal_results[i].F));
@@ -470,11 +468,24 @@ void print_all_calibration_rules(SDL_Rect* displays, int num_displays, DisplayCa
             printf("SUBSYSTEM==\"input\", KERNEL==\"event*\", \\\n");
             printf("  ENV{ID_INPUT_TOUCHSCREEN}==\"1\", \\\n");
             printf("  DEVPATH==\"%s\", \\\n", devpath_pat);
+            printf("  ENV{WL_OUTPUT}=\"%s\", \\\n", clean_disp);
             printf("  ENV{LIBINPUT_CALIBRATION_MATRIX}=\"%g %g %g %g %g %g\"\n\n",
                    smart_round(cal_results[i].A), smart_round(cal_results[i].B), smart_round(cal_results[i].C),
                    smart_round(cal_results[i].D), smart_round(cal_results[i].E), smart_round(cal_results[i].F));
+
+            if (strlen(props.id_path) > 0) {
+                printf("# Option C (Hardware connection port path):\n");
+                printf("SUBSYSTEM==\"input\", KERNEL==\"event*\", \\\n");
+                printf("  ENV{ID_INPUT_TOUCHSCREEN}==\"1\", \\\n");
+                printf("  ENV{ID_PATH}==\"%s\", \\\n", props.id_path);
+                printf("  ENV{WL_OUTPUT}=\"%s\", \\\n", clean_disp);
+                printf("  ENV{LIBINPUT_CALIBRATION_MATRIX}=\"%g %g %g %g %g %g\"\n\n",
+                       smart_round(cal_results[i].A), smart_round(cal_results[i].B), smart_round(cal_results[i].C),
+                       smart_round(cal_results[i].D), smart_round(cal_results[i].E), smart_round(cal_results[i].F));
+            }
         } else {
             printf("# WARNING: Could not correlate SDL hardware name with udev directly.\n");
+            printf("ENV{WL_OUTPUT}=\"%s\", \\\n", clean_disp);
             printf("ENV{LIBINPUT_CALIBRATION_MATRIX}=\"%g %g %g %g %g %g\"\n\n",
                    smart_round(cal_results[i].A), smart_round(cal_results[i].B), smart_round(cal_results[i].C),
                    smart_round(cal_results[i].D), smart_round(cal_results[i].E), smart_round(cal_results[i].F));
@@ -688,12 +699,16 @@ int main(int argc, char* argv[]) {
     }
     printf("=========================================================\n\n");
 
+    // Initialize non-blocking hardware evdev listeners for live touchscreen correlation
+    init_hardware_touch_devices();
+
     // Restored Single Window across entire combined physical bounds (KM/DRM Framebuffer compliant)
     SDL_Window* window = SDL_CreateWindow("Agnostic SDL Touch Test", 
                                           0, 0, total_w, total_h, 
                                           SDL_WINDOW_BORDERLESS | SDL_WINDOW_SHOWN);
     if (!window) {
         printf("[SDL2_TOUCH_TEST] ERROR: Failed to create window: %s\n", SDL_GetError());
+        cleanup_hardware_touch_devices();
         free(displays);
         SDL_Quit();
         return 1;
@@ -702,6 +717,7 @@ int main(int argc, char* argv[]) {
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer) {
         printf("[SDL2_TOUCH_TEST] ERROR: Failed to create renderer: %s\n", SDL_GetError());
+        cleanup_hardware_touch_devices();
         SDL_DestroyWindow(window);
         free(displays);
         SDL_Quit();
@@ -727,6 +743,7 @@ int main(int argc, char* argv[]) {
     DisplayCalibration* cal_results = calloc(num_displays, sizeof(DisplayCalibration));
     for (int i = 0; i < num_displays; i++) {
         strncpy(cal_results[i].touch_name, "Generic Touch Screen", sizeof(cal_results[i].touch_name) - 1);
+        cal_results[i].has_udev_props = false;
         cal_results[i].calibrated = false;
     }
 
@@ -765,6 +782,8 @@ int main(int argc, char* argv[]) {
                 } else if (event.key.keysym.sym == SDLK_r && app_state == STATE_VERIFYING) {
                     app_state = STATE_CALIBRATING;
                     calibration_step = 0;
+                    last_raw_x = -1; last_raw_y = -1;
+                    last_cal_x = -1; last_cal_y = -1;
                 } else if (event.key.keysym.sym == SDLK_RETURN && app_state == STATE_VERIFYING) {
                     cal_results[current_cal_display].A = matrix_A;
                     cal_results[current_cal_display].B = matrix_B;
@@ -778,6 +797,8 @@ int main(int argc, char* argv[]) {
                         current_cal_display++;
                         calibration_step = 0;
                         app_state = STATE_CALIBRATING;
+                        last_raw_x = -1; last_raw_y = -1;
+                        last_cal_x = -1; last_cal_y = -1;
 
                         SDL_Rect next_bounds = displays[current_cal_display];
                         target_points[0] = (Point2D){ (double)(next_bounds.x + 0.1 * next_bounds.w) / total_w, (double)(next_bounds.y + 0.1 * next_bounds.h) / total_h };
@@ -794,9 +815,17 @@ int main(int argc, char* argv[]) {
                     }
                 }
             } else if (event.type == SDL_FINGERDOWN || event.type == SDL_FINGERMOTION || event.type == SDL_FINGERUP) {
-                const char* active_name = get_touch_name_by_id(event.tfinger.touchId);
-                if (active_name) {
-                    strncpy(cal_results[current_cal_display].touch_name, active_name, sizeof(cal_results[current_cal_display].touch_name) - 1);
+                // Poll physical evdev nodes to correlate hardware device directly to active display
+                int active_hw = detect_active_hardware_touch_device();
+                if (active_hw >= 0) {
+                    memcpy(&cal_results[current_cal_display].udev_props, &hw_touch_devices[active_hw].props, sizeof(UdevProperties));
+                    strncpy(cal_results[current_cal_display].touch_name, hw_touch_devices[active_hw].props.name, sizeof(cal_results[current_cal_display].touch_name) - 1);
+                    cal_results[current_cal_display].has_udev_props = true;
+                } else if (!cal_results[current_cal_display].has_udev_props) {
+                    const char* active_name = get_touch_name_by_id(event.tfinger.touchId);
+                    if (active_name) {
+                        strncpy(cal_results[current_cal_display].touch_name, active_name, sizeof(cal_results[current_cal_display].touch_name) - 1);
+                    }
                 }
 
                 double rx = event.tfinger.x;
@@ -809,16 +838,29 @@ int main(int argc, char* argv[]) {
                     SDL_Rect retry_btn = { cur_bounds.x + cur_bounds.w / 4 - 80, cur_bounds.y + cur_bounds.h / 2 + 40, 160, 45 };
                     SDL_Rect accept_btn = { cur_bounds.x + 3 * cur_bounds.w / 4 - 80, cur_bounds.y + cur_bounds.h / 2 + 40, 160, 45 };
 
-                    int tx = (int)(rx * total_w);
-                    int ty = (int)(ry * total_h);
+                    // Compute calibrated screen coordinates for accurate button touch verification
+                    double cal_x = smart_round(matrix_A) * rx + smart_round(matrix_B) * ry + smart_round(matrix_C);
+                    double cal_y = smart_round(matrix_D) * rx + smart_round(matrix_E) * ry + smart_round(matrix_F);
+                    int cal_tx = (int)(cal_x * total_w);
+                    int cal_ty = (int)(cal_y * total_h);
 
-                    if (tx >= retry_btn.x && tx < retry_btn.x + retry_btn.w &&
-                        ty >= retry_btn.y && ty < retry_btn.y + retry_btn.h) {
+                    int raw_tx = (int)(rx * total_w);
+                    int raw_ty = (int)(ry * total_h);
+
+                    // Check both calibrated and raw coordinate hits to ensure reliable button tapping
+                    bool hit_retry = (cal_tx >= retry_btn.x && cal_tx < retry_btn.x + retry_btn.w && cal_ty >= retry_btn.y && cal_ty < retry_btn.y + retry_btn.h) ||
+                                     (raw_tx >= retry_btn.x && raw_tx < retry_btn.x + retry_btn.w && raw_ty >= retry_btn.y && raw_ty < retry_btn.y + retry_btn.h);
+
+                    bool hit_accept = (cal_tx >= accept_btn.x && cal_tx < accept_btn.x + accept_btn.w && cal_ty >= accept_btn.y && cal_ty < accept_btn.y + accept_btn.h) ||
+                                      (raw_tx >= accept_btn.x && raw_tx < accept_btn.x + accept_btn.w && raw_ty >= accept_btn.y && raw_ty < accept_btn.y + accept_btn.h);
+
+                    if (hit_retry) {
                         ui_element_tapped = true;
                         app_state = STATE_CALIBRATING;
                         calibration_step = 0;
-                    } else if (tx >= accept_btn.x && tx < accept_btn.x + accept_btn.w &&
-                               ty >= accept_btn.y && ty < accept_btn.y + accept_btn.h) {
+                        last_raw_x = -1; last_raw_y = -1;
+                        last_cal_x = -1; last_cal_y = -1;
+                    } else if (hit_accept) {
                         ui_element_tapped = true;
 
                         cal_results[current_cal_display].A = matrix_A;
@@ -833,6 +875,8 @@ int main(int argc, char* argv[]) {
                             current_cal_display++;
                             calibration_step = 0;
                             app_state = STATE_CALIBRATING;
+                            last_raw_x = -1; last_raw_y = -1;
+                            last_cal_x = -1; last_cal_y = -1;
 
                             SDL_Rect next_bounds = displays[current_cal_display];
                             target_points[0] = (Point2D){ (double)(next_bounds.x + 0.1 * next_bounds.w) / total_w, (double)(next_bounds.y + 0.1 * next_bounds.h) / total_h };
@@ -864,15 +908,19 @@ int main(int argc, char* argv[]) {
                                 }
                             }
                             if (!found && num_queried_devices < MAX_TOUCH_DEVICES) {
-                                const char* sdl_name = get_touch_name_by_id(t_id);
-                                UdevProperties props;
+                                const char* dev_name = "Unknown";
                                 int max_pts = 1;
-                                // Corelate active udev index fallback scan mapping Display 0 -> Device 0, Display 1 -> Device 1
-                                if (query_udev_device(sdl_name, current_cal_display, &props)) {
-                                    max_pts = get_hardware_max_touchpoints(props.devnode);
+
+                                if (cal_results[current_cal_display].has_udev_props) {
+                                    dev_name = cal_results[current_cal_display].udev_props.name;
+                                    max_pts = get_hardware_max_touchpoints(cal_results[current_cal_display].udev_props.devnode);
+                                } else {
+                                    const char* sdl_name = get_touch_name_by_id(t_id);
+                                    if (sdl_name) dev_name = sdl_name;
                                 }
+
                                 touch_caps[num_queried_devices].touch_id = t_id;
-                                strncpy(touch_caps[num_queried_devices].name, sdl_name ? sdl_name : "Unknown", sizeof(touch_caps[num_queried_devices].name) - 1);
+                                strncpy(touch_caps[num_queried_devices].name, dev_name, sizeof(touch_caps[num_queried_devices].name) - 1);
                                 touch_caps[num_queried_devices].max_points = max_pts;
                                 num_queried_devices++;
                             }
@@ -1199,20 +1247,15 @@ int main(int argc, char* argv[]) {
             }
 
             if (last_raw_x != -1 && last_raw_y != -1) {
-                int local_raw_x = last_raw_x - current_bounds.x;
-                int local_raw_y = last_raw_y - current_bounds.y;
-                int local_cal_x = last_cal_x - current_bounds.x;
-                int local_cal_y = last_cal_y - current_bounds.y;
-
                 SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
-                SDL_RenderDrawLine(renderer, local_raw_x - 10, local_raw_y, local_raw_x + 10, local_raw_y);
-                SDL_RenderDrawLine(renderer, local_raw_x, local_raw_y - 10, local_raw_x, local_raw_y + 10);
-                draw_label(renderer, font, "Raw", local_raw_x, local_raw_y + 15, text_color, true);
+                SDL_RenderDrawLine(renderer, last_raw_x - 10, last_raw_y, last_raw_x + 10, last_raw_y);
+                SDL_RenderDrawLine(renderer, last_raw_x, last_raw_y - 10, last_raw_x, last_raw_y + 10);
+                draw_label(renderer, font, "Raw", last_raw_x, last_raw_y + 15, text_color, true);
 
-                SDL_Rect cal_box = { local_cal_x - 8, local_cal_y - 8, 16, 16 };
+                SDL_Rect cal_box = { last_cal_x - 8, last_cal_y - 8, 16, 16 };
                 SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
                 SDL_RenderFillRect(renderer, &cal_box);
-                draw_label(renderer, font, "Calibrated", local_cal_x, local_cal_y - 18, text_color, true);
+                draw_label(renderer, font, "Calibrated", last_cal_x, last_cal_y - 18, text_color, true);
             }
         }
 
@@ -1222,6 +1265,7 @@ int main(int argc, char* argv[]) {
     if (font) TTF_CloseFont(font);
     TTF_Quit();
 
+    cleanup_hardware_touch_devices();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     free(cal_results);
