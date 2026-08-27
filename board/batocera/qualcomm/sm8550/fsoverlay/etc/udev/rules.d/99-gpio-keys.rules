@@ -1,0 +1,1 @@
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ATTRS{name}=="gpio-keys", ENV{ID_INPUT_JOYSTICK}="0"
