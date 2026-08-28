@@ -45,7 +45,7 @@ class CemuGenerator(Generator):
         mkdir_if_not_exists(CEMU_BIOS)
         mkdir_if_not_exists(CEMU_CONFIG)
 
-        #graphic packs
+        # graphic packs
         mkdir_if_not_exists(CEMU_SAVES / "graphicPacks")
         mkdir_if_not_exists(CEMU_CONTROLLER_PROFILES)
 
@@ -162,17 +162,19 @@ class CemuGenerator(Generator):
 
         # Async VULKAN Shader compilation
         CemuGenerator.setSectionConfig(config, graphic_root, "AsyncCompile", system.config.get_bool("cemu_async", True, return_values=("true", "false")))
+        # Full sync at GX2DrawDone()
+        CemuGenerator.setSectionConfig(config, graphic_root, "GX2DrawdoneSync", system.config.get_bool("cemu_gx2drawdone", False, return_values=("true", "false")))
         # Vsync
-        CemuGenerator.setSectionConfig(config, graphic_root, "VSync", system.config.get("cemu_vsync", "0"))  # 0 = Off
+        CemuGenerator.setSectionConfig(config, graphic_root, "VSync", system.config.get("cemu_vsync", "1"))  # 1 = On
         # Upscale Filter
         CemuGenerator.setSectionConfig(config, graphic_root, "UpscaleFilter", system.config.get("cemu_upscale", "2"))  # 2 = Hermite
         # Downscale Filter
         CemuGenerator.setSectionConfig(config, graphic_root, "DownscaleFilter", system.config.get("cemu_downscale", "0"))  # 0 = Bilinear
-        # Aspect Ratio
-        CemuGenerator.setSectionConfig(config, graphic_root, "FullscreenScaling", system.config.get("cemu_aspect", "0"))  # 0 = Bilinear
+        # Fullscreen Scaling (Aspect Ratio fitting)
+        CemuGenerator.setSectionConfig(config, graphic_root, "FullscreenScaling", system.config.get("cemu_aspect", "0"))  # 0 = Keep Aspect Ratio
 
         ## [GRAPHICS OVERLAYS] - Currently disbaled! Causes crash
-        # Performance - alternative to MongHud
+        # Performance - alternative to MangoHud
         CemuGenerator.setSectionConfig(config, graphic_root, "Overlay", "")
         overlay_root = CemuGenerator.getRoot(config, "Overlay")
         # Display FPS / CPU / GPU / RAM
@@ -219,14 +221,13 @@ class CemuGenerator(Generator):
         ## [AUDIO]
         CemuGenerator.setSectionConfig(config, xml_root, "Audio", "")
         audio_root = CemuGenerator.getRoot(config, "Audio")
-        # Use cubeb (curently the only option for linux)
+        # Use cubeb (currently the only option for linux)
         CemuGenerator.setSectionConfig(config, audio_root, "api", "3")
         # Turn audio ONLY on TV
         CemuGenerator.setSectionConfig(config, audio_root, "TVChannels", system.config.get("cemu_audio_channels", "1"))  # 1 = Stereo
         # Set volume to the max
         CemuGenerator.setSectionConfig(config, audio_root, "TVVolume", "100")
         # Set the audio device - we choose the 1st device as this is more likely the answer
-        # pactl list sinks-raw | sed -e s+"^sink=[0-9]* name=\([^ ]*\) .*"+"\1"+ | sed 1q | tr -d '\n'
         proc = subprocess.run(["/usr/bin/cemu/get-audio-device"], stdout=subprocess.PIPE)
         cemuAudioDevice = proc.stdout.decode('utf-8')
         _logger.debug("*** audio device = %s ***", cemuAudioDevice)
@@ -237,14 +238,16 @@ class CemuGenerator(Generator):
             _logger.debug("*** use config audio device ***")
 
         # Save the config file
-        # TODO: python 3 - workaround to encode files in utf-8
         with codecs.open(str(configFile), "w", "utf-8") as xml:
-            dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minicom adds them...
+            dom_string = os.linesep.join([s for s in config.toprettyxml().splitlines() if s.strip()]) # remove ugly empty lines while minidom adds them...
             xml.write(dom_string)
 
     # Show mouse for touchscreen actions
     def getMouseMode(self, config, rom):
         return config.get_bool('cemu_touchpad')
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16/9
 
     @staticmethod
     def getRoot(config: minidom.Document, name: str) -> minidom.Element:
