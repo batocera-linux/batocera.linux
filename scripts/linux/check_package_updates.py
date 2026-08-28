@@ -85,7 +85,7 @@ GROUPS = {
         "devilutionx", "dhewm3", "dxx-rebirth", "ecwolf", "eduke32", "eldoom",
         "etlegacy", "fallout1-ce", "fallout2-ce", "fitz", "grimm",
         "gzdoom", "hardcorps", "hcl", "hurrican", "ioquake3", "iortcw", "jazz2-native",
-        "lindbergh-loader", "openmohaa", "openjazz", "openjk", "openjkdf2", "perfected",
+        "linuxloader", "openmohaa", "openjazz", "openjk", "openjkdf2", "perfected",
         "raze", "realgibs", "rivensin", "sdlpop", "sikkmod", "sonic3-air", "sonic2013",
         "soniccd", "sonic-mania", "taradino", "theforceengine", "trx", "tyrian",
         "uqm", "hlsdk-xash3d", "hlsdk-xash3d-dmc", "hlsdk-xash3d-opfor",

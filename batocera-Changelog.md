@@ -53,6 +53,7 @@
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
+- Lindbergh Loader has transtioned to LinuxLoader for Lindbergh roms
 - MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
 - PCSX2 variant for capable aarch64 devices
@@ -114,6 +115,7 @@
 - Libretro-SuperBrosWar to December 12th, 2025 build
 - Libretro-VitaQuake2 to April 10th, 2026 build
 - Lightspark to 0.9.0
+- LinuxLoader to v3.0.10
 - Moonlight-QT to Jun 26, 2026 build
 - Mupen64Plus-Core to March 30th, 2026 build
 - OpenMSX to Release 21
