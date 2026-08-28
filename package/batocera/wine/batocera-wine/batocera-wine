@@ -145,7 +145,7 @@ setPrefixArch(){
             fi
         fi
     else
-        # Missing key, perform further checks and perform a fresh install with createWineDirectory()
+        # Missing key, perform further checks and perform a fresh install with createOrUpdatePrefix()
         if [[ ${ENABLE_WIN32} == 1 && ! -d "${1}" ]]; then
             if [[ ${SUPPORTS_WIN32} -eq 1 ]]; then
                 export WINEARCH=win32; val="ENABLE WIN32 in ES setted 'win32'"
@@ -165,16 +165,21 @@ setPrefixArch(){
     echo "${FUNCNAME[0]}: Environment Prefix setted -> $val"
 }
 
+# Wait $1s (0: no limit) for the wineserver of $2 (default: the running game prefix)
 waitWineServer() {
-    local ret=0 pid=$(pgrep -o -f "${WINESERVER}")
-    [[ -z "$pid" ]] && { echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} no process '${WINESERVER}' found - finished with hotkey?" >&2; return 0; }
-    #from: https://unix.stackexchange.com/a/427133
-    #timeout will report not 0 if setted value is reached
-    echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} wait WineServer: [$pid] ${WINESERVER}"
-    timeout "$1" tail -q --pid=$pid -f /dev/null
+    local ret=0
+    local PREFIX="${2:-${WINEPOINT}}"
+
+    echo "${FUNCNAME[0]}: Called by ${FUNCNAME[1]} wait WineServer: ${WINESERVER}"
+    WINEPREFIX="${PREFIX}" timeout "$1" "${WINESERVER}" -w
     ret=$?
-    echo "${FUNCNAME[0]}: Finished waiting for WineServer [$pid] with errorcode($ret)"
-    return $ret
+    if [[ ${ret} -eq 124 ]]; then
+        echo "${FUNCNAME[0]}: WineServer still running after ${1}s" >&2
+    else
+        echo "${FUNCNAME[0]}: Finished waiting for WineServer with errorcode($ret)"
+    fi
+
+    return ${ret}
 }
 
 wine_options() {
@@ -274,6 +279,12 @@ wine_options() {
 
     export WINE_ENABLE_HIDRAW=0
     [[ "${ENABLE_HIDRAW}" = 1 ]] && WINE_ENABLE_HIDRAW=1
+
+    #ge-proton11 force hidraw by default and don't report any sony gamepad through sdl
+    if grep -aq "hidraw handles native reports" "${WINE_LIB64_DIR}/x86_64-unix/winebus.so" 2>/dev/null; then
+        [[ -z "${ENABLE_HIDRAW}" ]] && WINE_ENABLE_HIDRAW=1
+        [[ "${WINE_ENABLE_HIDRAW}" = 1 ]] && export PROTON_SONY_HIDRAW_XINPUT=1
+    fi
 
     export WINE_FULLSCREEN_FSR=0
     [[ "${FSR}" = 1 ]] && unset WINE_FULLSCREEN_FSR
@@ -464,7 +475,7 @@ reg_install() {
 
 fonts_install() {
     WINEPREFIX=$1
-    local i; local ii
+    local i; local ii; local font; local dst
     ii="${USER_DIR}/fonts"
     if [[ -d "$ii" ]]; then
         readarray -t i < <(find "$ii" -maxdepth 1 -type f \( -iname "*.ttf" -o -iname "*.ttc" \) -printf "%p\n")
@@ -478,18 +489,97 @@ fonts_install() {
         done
         rmdir "$ii" || { echo "${FUNCNAME[0]}: Place only ttf and ttc-files to $ii" >&2; }
     fi
+
+    CUSTOM_RUNNER_FONTS="${DIR}/${WINE_VERSION}/share/fonts"
+    if [[ -d "${CUSTOM_RUNNER_FONTS}" ]]; then
+        mkdir -p "${WINEPREFIX}/drive_c/windows/Fonts" || return 1
+        for font in "${CUSTOM_RUNNER_FONTS}"/*.tt[fc]; do
+            [[ -e "${font}" ]] || continue
+            dst="${WINEPREFIX}/drive_c/windows/Fonts/${font##*/}"
+            [[ -e "${dst}" && ! -L "${dst}" ]] && continue
+            ln -sf "${font}" "${dst}" || return 1
+        done
+    fi
+
+    return 0
+}
+
+# different runners version have different directory layout
+find_runner_dll_dir() {
+    local COMPONENT="$1"
+    local ARCH="$2"
+    local WINE_ROOT="${DIR}/${WINE_VERSION}"
+    local LIB_DIR; local ALT_DIR; local i
+
+    if [[ "${ARCH}" == "i386-windows" ]]; then
+        LIB_DIR="${WINE_LIB32_DIR}"
+        ALT_DIR="${WINE_ROOT}/lib"
+    else
+        LIB_DIR="${WINE_LIB64_DIR}"
+        ALT_DIR="${WINE_ROOT}/lib64"
+    fi
+
+    for i in "${WINE_LIB64_DIR}/${COMPONENT}/${ARCH}" \
+             "${WINE_ROOT}/lib/${COMPONENT}/${ARCH}" \
+             "${LIB_DIR}/${COMPONENT}" \
+             "${ALT_DIR}/${COMPONENT}"; do
+        if [[ -d "$i" ]]; then
+            echo "$i"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+
+
+#wine-tkg && wine-proton have wined3d dll statically linked.
+#ge-proton need to manually add libvkd3d && icu.
+#https://github.com/bottlesdevs/Bottles/issues/3485
+geproton_libs_install() {
+    WINEPREFIX=$1
+    local SYS32="${WINEPREFIX}/drive_c/windows/system32"
+    local WOW64="${WINEPREFIX}/drive_c/windows/syswow64"
+    local SRC
+
+    if [[ "${WINEARCH}" == "win32" ]]; then
+        WOW64="${SYS32}"
+        mkdir -p "${SYS32}" || return 1
+    else
+        mkdir -p "${SYS32}" "${WOW64}" || return 1
+        if SRC=$(find_runner_dll_dir vkd3d x86_64-windows); then
+            ln -sf "${SRC}"/*.dll "${SYS32}" || return 1
+        fi
+        if SRC=$(find_runner_dll_dir icu x86_64-windows); then
+            ln -sf "${SRC}"/*.dll "${SYS32}" || return 1
+        fi
+    fi
+
+    if SRC=$(find_runner_dll_dir vkd3d i386-windows); then
+        ln -sf "${SRC}"/*.dll "${WOW64}" || return 1
+    fi
+    if SRC=$(find_runner_dll_dir icu i386-windows); then
+        ln -sf "${SRC}"/*.dll "${WOW64}" || return 1
+    fi
+
     return 0
 }
 
 dxvk_install() {
     export WINEDLLOVERRIDES="winemenubuilder.exe="
     WINEPREFIX=$1
+    local SRC; local DDRAW_DIR
+
+    # find if custom runner have his own dxvk version
+    CUSTOM_RUNNER_DXVK=$(find_runner_dll_dir dxvk x86_64-windows) || CUSTOM_RUNNER_DXVK=""
 
     # install dxvk only on system where it is available (aka, not x86)
-    [[ -e "/usr/wine/dxvk" ]] || return 0
+    [[ -e "/usr/wine/dxvk" || -n "${CUSTOM_RUNNER_DXVK}" ]] || return 0
 
     DXVK=$(get_setting dxvk "${SYSTEM}" "${ROMGAMENAME}")
     DXVK_HUD=$(get_setting dxvk_hud "${SYSTEM}" "${ROMGAMENAME}")
+    D7VK=$(get_setting d7vk "${SYSTEM}" "${ROMGAMENAME}")
 
     if [[ "${DXVK_HUD}" = 1 ]]; then
 	    export DXVK_HUD=1
@@ -497,7 +587,26 @@ dxvk_install() {
 
     if [[ "${DXVK}" = 1 ]]; then
         mkdir -p "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
-        if [[ -e "/userdata/system/wine/dxvk" ]]; then
+        if [[ -n "${CUSTOM_RUNNER_DXVK}" ]]; then
+            echo "Creating links using ${CUSTOM_RUNNER_DXVK}, dlls shipped by ${WINE_VERSION}"
+            ln -sf "${CUSTOM_RUNNER_DXVK}/"{d3d8.dll,d3d9.dll,d3d10core.dll,d3d11.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            if SRC=$(find_runner_dll_dir dxvk i386-windows); then
+                ln -sf "${SRC}/"{d3d8.dll,d3d9.dll,d3d10core.dll,d3d11.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+            fi
+            # d3d12 comes from vkd3d-proton, nvapi from dxvk-nvapi, both optional
+            if SRC=$(find_runner_dll_dir vkd3d-proton x86_64-windows); then
+                ln -sf "${SRC}/"{d3d12.dll,d3d12core.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            fi
+            if SRC=$(find_runner_dll_dir vkd3d-proton i386-windows); then
+                ln -sf "${SRC}/"{d3d12.dll,d3d12core.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+            fi
+            if SRC=$(find_runner_dll_dir nvapi x86_64-windows); then
+                ln -sf "${SRC}/"{nvapi64.dll,nvofapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+            fi
+            if SRC=$(find_runner_dll_dir nvapi i386-windows); then
+                ln -sf "${SRC}/nvapi.dll" "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+            fi
+        elif [[ -e "/userdata/system/wine/dxvk" ]]; then
             echo "Creating links using /userdata, Linux File System required !!!"
             ln -sf "/userdata/system/wine/dxvk/x64/"{d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi64.dll,nvofapi64.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
             ln -sf "/userdata/system/wine/dxvk/x32/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll,nvapi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
@@ -511,6 +620,25 @@ dxvk_install() {
         echo "Creating links using ${DIR}/${WINE_VERSION}, Linux File System required !!!"
         ln -sf "${WINE_LIB64_DIR}/x86_64-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
         ln -sf "${WINE_LIB32_DIR}/i386-windows/"{d3d8.dll,d3d12.dll,d3d12core.dll,d3d11.dll,d3d10core.dll,d3d9.dll,dxgi.dll} "${WINEPREFIX}/drive_c/windows/syswow64" || return 1
+    fi
+
+    # d7vk translates ddraw to vulkan, 32bit only: syswow64 in win64, system32 in win32
+    DDRAW_DIR="${WINEPREFIX}/drive_c/windows/syswow64"
+    [[ "${WINEARCH}" == "win32" ]] && DDRAW_DIR="${WINEPREFIX}/drive_c/windows/system32"
+
+    if [[ "${D7VK}" = 1 ]]; then
+        if SRC=$(find_runner_dll_dir d7vk i386-windows); then
+            ln -sf "${SRC}/ddraw.dll" "${DDRAW_DIR}/ddraw.dll" || return 1
+        elif [[ -e "/userdata/system/wine/dxvk/x32/ddraw.dll" ]]; then
+            ln -sf "/userdata/system/wine/dxvk/x32/ddraw.dll" "${DDRAW_DIR}/ddraw.dll" || return 1
+        else
+            ln -sf "/usr/wine/dxvk/x32/ddraw.dll" "${DDRAW_DIR}/ddraw.dll" || return 1
+        fi
+        ln -sf "${WINE_LIB32_DIR}/i386-windows/ddraw.dll" "${DDRAW_DIR}/ddraw_.dll" || return 1
+        export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};ddraw=n,b"
+    else
+        ln -sf "${WINE_LIB32_DIR}/i386-windows/ddraw.dll" "${DDRAW_DIR}/ddraw.dll" || return 1
+        rm -f "${DDRAW_DIR}/ddraw_.dll"
     fi
 
     if [[ "${DXVK}" = 1 ]]; then
@@ -603,28 +731,56 @@ saveFilesToUserdata() {
     fi
 }
 
-createWineDirectory() {
+createOrUpdatePrefix() {
     WINEPREFIX=$1
-    # already created
-    [[ -e "${WINEPREFIX}" ]] && return 0
+    local INF="${DIR}/${WINE_VERSION}/share/wine/wine.inf"
+    local OVERRIDES=""
 
-    # please wait screen
-    bsod-wine&
-    BSODPID=$!
+    if [[ ! -e "${WINEPREFIX}" ]]; then
+        # please wait screen
+        bsod-wine&
+        BSODPID=$!
 
-    mkdir -p "${WINEPREFIX}" || return 1
+        mkdir -p "${WINEPREFIX}" || return 1
 
-    # Workaround wine bottle creation issue with debug enabled
-    export WINEDLLOVERRIDES="winegstreamer="
+        # Workaround wine bottle creation issue with debug enabled
+        export WINEDLLOVERRIDES="winegstreamer="
 
-    if ! WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" hostname; then
-	    rm -rf "${WINEPREFIX}"
-	    kill -15 "${BSODPID}"
-        echo "+++ Failed initialising ${WINEPREFIX} +++"
-	    return 1
+        if ! WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" wineboot -u; then
+            rm -rf "${WINEPREFIX}"
+            kill -15 "${BSODPID}"
+            echo "+++ Failed initialising ${WINEPREFIX} +++"
+            return 1
+        fi
+        waitWineServer 0 "${WINEPREFIX}"
+
+        kill -15 "${BSODPID}"
+        geproton_libs_install "${WINEPREFIX}" || return 1
+
+        return 0
     fi
 
-    kill -15 "${BSODPID}"
+
+    local STAMP="$(cat "${WINEPREFIX}/.update-timestamp" 2>/dev/null)"
+    local INF_TS="$(stat -c %Y "${INF}" 2>/dev/null)"
+
+    if [[ -f "${INF}" ]] && [[ "${STAMP}" != "${INF_TS}" ]]; then
+        echo "${FUNCNAME[0]}: runner changed (${STAMP:-none} != ${INF_TS}), updating the prefix"
+        # our links are all recreated below
+        find "${WINEPREFIX}/drive_c/windows/system32" "${WINEPREFIX}/drive_c/windows/syswow64" \
+            -maxdepth 1 -type l -delete 2>/dev/null
+
+        geproton_libs_install "${WINEPREFIX}" || return 1
+
+        # avoid error if dotnet tricks is installed keeping wine-mono out
+        grep -q '"\*mscoree"="native"' "${WINEPREFIX}/user.reg" 2>/dev/null && OVERRIDES="mscoree,mshtml="
+
+        WINEPREFIX="${WINEPREFIX}" WINEDLLOVERRIDES="${OVERRIDES}" ${CMD_PREFIX} "${WINE}" wineboot -u
+        waitWineServer 0 "${WINEPREFIX}"
+
+        # wine writes it only when it updates by itself, else we update every launch
+        echo "${INF_TS}" > "${WINEPREFIX}/.update-timestamp"
+    fi
 
     return 0
 }
@@ -660,6 +816,7 @@ play_wine() {
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     wine_options "${WINEPOINT}"
+    createOrUpdatePrefix "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
@@ -690,7 +847,7 @@ play_pc() {
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     wine_options "${WINEPOINT}"
-    createWineDirectory "${WINEPOINT}" || return 1
+    createOrUpdatePrefix "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
@@ -735,7 +892,7 @@ play_exe() {
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     wine_options "${WINEPOINT}"
-    createWineDirectory "${WINEPOINT}" || return 1
+    createOrUpdatePrefix "${WINEPOINT}" || return 1
     redist_install "${WINEPOINT}" || return 1
     msi_install "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
@@ -755,7 +912,7 @@ play_winetgz() {
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
     wine_options "${WINEPOINT}"
     if [[ ! -e "${WINEPOINT}" ]]; then
-        createWineDirectory "${WINEPOINT}" || return 1
+        createOrUpdatePrefix "${WINEPOINT}" || return 1
         (cd "${WINEPOINT}" && gunzip -c "${GAMENAME}" | tar xf -) || return 1
     fi
 
@@ -851,6 +1008,7 @@ play_squashfs() {
     WINE_SAVEDIR=$(getWine_var "${WINEPOINT}" "SAVEDIR" "")
     WINE_SAVEFILES=$(getWine_var "${WINEPOINT}" "SAVEFILES" "")
 
+    createOrUpdatePrefix "${WINEPOINT}" || return 1
     reg_install "${WINEPOINT}" || return 1
     fonts_install "${WINEPOINT}" || return 1
     dxvk_install "${WINEPOINT}" || return 1
@@ -915,7 +1073,7 @@ install_exe_msi() {
     WINEPOINT="$3"
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
-    createWineDirectory "${WINEPOINT}"
+    createOrUpdatePrefix "${WINEPOINT}"
 
     [[ "${GAMEEXT}" == "exe" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" "${GAMENAME}"
     [[ "${GAMEEXT}" == "msi" ]] && WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${MSIEXEC}" -i "${GAMENAME}"
@@ -937,7 +1095,7 @@ install_iso() {
     fi
 
     setPrefixArch "${WINEPOINT}" "${WINE_VERSION}"
-    createWineDirectory "${WINEPOINT}"
+    createOrUpdatePrefix "${WINEPOINT}"
 
     if mkdir -p "${WINEPOINT}/dosdevices" && rm -f "${WINEPOINT}/dosdevices/d:" && ln -sf "${GAMEISOMOUNT}" "${WINEPOINT}/dosdevices/d:"; then
 	    WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" explorer "d:"
@@ -1075,6 +1233,10 @@ init_wine() {
     ## Export Wine libs
     PATH=$PATH:PATH=$PATH:${DIR}/${WINE_VERSION}/bin
     export LD_LIBRARY_PATH="/lib32:${WINE_LIB32_DIR}/i386-unix:/lib:/usr/lib:${WINE_LIB64_DIR}/x86_64-unix"
+    #Append custom runner libs when present
+    if [[ -d "${DIR}/${WINE_VERSION}/lib/x86_64-linux-gnu" ]]; then
+        export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${DIR}/${WINE_VERSION}/lib/x86_64-linux-gnu:${DIR}/${WINE_VERSION}/lib/i386-linux-gnu"
+    fi
     export GST_PLUGIN_SYSTEM_PATH_1_0="/usr/lib/gstreamer-1.0:/lib32/gstreamer-1.0"
     export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin:/userdata/system/.cache/gstreamer-1.0/registry..bin"
     export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
@@ -1179,7 +1341,7 @@ case "${ACTION}" in
             "wtqz"|"pc"|"exe"|"wsquashfs")
                 l_PREFIX="${WINE_BOTTLE_DIR}/${WINE_VERSION}/${ROMGAMENAME}.wine"
                 setPrefixArch "${l_PREFIX}" "${WINE_VERSION}" "${ACTION}"
-                test -d "${l_PREFIX}" && echo "WINEPREFIX: '$_' already found!" || { createWineDirectory "$_" && echo "WINEPREFIX: '$_' created!"; }
+                test -d "${l_PREFIX}" && echo "WINEPREFIX: '$_' already found!" || { createOrUpdatePrefix "$_" && echo "WINEPREFIX: '$_' created!"; }
                 ;;
              *) echo "Fullpath for game needed, or extension is unknown ... Exit now!"; exit 1
         esac

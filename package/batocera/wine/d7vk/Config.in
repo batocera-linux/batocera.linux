@@ -1,0 +1,14 @@
+config BR2_PACKAGE_D7VK
+	bool "d7vk"
+    depends on BR2_i386 || BR2_x86_64
+	# Wine unconditionally builds shared libraries
+	depends on !BR2_STATIC_LIBS
+	depends on BR2_PACKAGE_SPIRV_HEADERS
+	help
+      D7VK is a Vulkan-based translation layer for DirectDraw and
+      Direct3D up to 7, a DXVK fork, for runners not shipping it.
+
+	  https://github.com/WinterSnowfall/d7vk
+
+comment "d7vk needs a toolchain w/ dynamic library"
+	depends on BR2_STATIC_LIBS
