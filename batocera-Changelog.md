@@ -138,6 +138,7 @@
 - Winetricks to 20260125
 - X16emu to r49
 - Xemu to v0.8.136
+- Xenia Edge to 28th of August build
 - Ymir to v0.3.3
 ### System
 - Allwinner H616 device kernel updated to 7.1.5
