@@ -1,0 +1,130 @@
+diff --git a/src/loader/input/evdevInput.h b/src/loader/input/evdevInput.h
+index 91cf798..ce3bdd8 100644
+--- a/src/loader/input/evdevInput.h
++++ b/src/loader/input/evdevInput.h
+@@ -5,7 +5,7 @@
+ 
+ #define SIZE 300
+ #define CONTROLLER_THREAD_MAX 256
+-#define MAX_INPUTS 512
++#define MAX_INPUTS 768 // KEY_MAX : some events have this
+ 
+ typedef struct
+ {
+@@ -114,4 +114,4 @@ typedef struct
+ ControllerStatus initEvdevControllers(Controllers *controllers);
+ ControllerStatus stopEvdevControllers(Controllers *controllers);
+ ControllerStatus loadEvdevControllers(Controllers *controllers);
+-#endif
+\ No newline at end of file
++#endif
+diff --git a/src/loader/input/evdevInput.c b/src/loader/input/evdevInput.c
+index fbacca3..4fb3b65 100644
+--- a/src/loader/input/evdevInput.c
++++ b/src/loader/input/evdevInput.c
+@@ -1080,11 +1080,17 @@ ControllerStatus loadEvdevControllers(Controllers *controllers)
+ 
+         if (test_bit(EV_ABS, bit[0]))
+         {
+-            ioctl(controller, EVIOCGBIT(EV_ABS, KEY_MAX), bit[EV_ABS]);
+-            for (int code = 0; code < KEY_MAX; code++)
++            ioctl(controller, EVIOCGBIT(EV_ABS, ABS_MAX), bit[EV_ABS]);
++            for (int code = 0; code < ABS_MAX; code++)
+             {
+                 if (test_bit(code, bit[EV_ABS]))
+                 {
++                    if (controllers->controller[i].inputCount >= MAX_INPUTS)
++                    { // the number of input is limited
++                        fprintf(stderr, "warning, maximum number of inputs reached !\n");
++                        break;
++                    }
++
+                     controllers->controller[i].enabled = 1;
+                     ControllerInput *controllerInput = &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
+                     controllerInput->evType = EV_ABS;
+@@ -1422,38 +1428,57 @@ void *controllerThread(void *_args)
+                         }
+                     }
+ 
+-                    if (event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++                    // handle the deadzone part separatly for switches to avoid cases when the switch is an axe and not coming back completly (from 255 to 126 (128 is the middle))
++                    // relax the button
++                    if ((scaled > 0.4 && scaled < 0.6) && !args->controller->absTriggers[event.code].isAnalogue)
+                     {
+                         if (args->controller->absTriggers[event.code].minEnabled)
+                         {
+-                            int channel = args->controller->absTriggers[event.code].minChannel;
++                            setSwitch(args->controller->absTriggers[event.code].minPlayer,
++                                      args->controller->absTriggers[event.code].minChannel, 0);
++                        }
+ 
+-                            if (args->controller->absTriggers[event.code].isAnalogue)
+-                            {
+-                                setAnalogue(channel, scaled < 0.2 ? 0.0 : pow(2, jvsBits) * 1.0);
+-                            }
+-                            else
+-                            {
+-                                setSwitch(args->controller->absTriggers[event.code].minPlayer,
+-                                          args->controller->absTriggers[event.code].minChannel, scaled < 0.2 ? 1 : 0);
+-                            }
++                        if (args->controller->absTriggers[event.code].maxEnabled)
++                        {
++                            setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++                                      args->controller->absTriggers[event.code].maxChannel, 0);
+                         }
+                     }
+-
+-                    if (event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++                    else
+                     {
+-                        if (args->controller->absTriggers[event.code].maxEnabled)
++                        if (event.value <= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
+                         {
+-                            int channel = args->controller->absTriggers[event.code].maxChannel;
+-
+-                            if (args->controller->absTriggers[event.code].isAnalogue)
++                            if (args->controller->absTriggers[event.code].minEnabled)
+                             {
+-                                setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) : 0.0);
++                                int channel = args->controller->absTriggers[event.code].minChannel;
++
++                                if (args->controller->absTriggers[event.code].isAnalogue)
++                                {
++                                    setAnalogue(channel, scaled < 0.2 ? 0.0 : pow(2, jvsBits) * 1.0);
++                                }
++                                else
++                                {
++                                    setSwitch(args->controller->absTriggers[event.code].minPlayer,
++                                              args->controller->absTriggers[event.code].minChannel, scaled < 0.2 ? 1 : 0);
++                                }
+                             }
+-                            else
++                        }
++
++                        if (event.value >= ((args->controller->absMin[event.code] + args->controller->absMax[event.code]) / 2))
++                        {
++                            if (args->controller->absTriggers[event.code].maxEnabled)
+                             {
+-                                setSwitch(args->controller->absTriggers[event.code].maxPlayer,
+-                                          args->controller->absTriggers[event.code].maxChannel, scaled > 0.8 ? 1 : 0);
++                                int channel = args->controller->absTriggers[event.code].maxChannel;
++
++                                if (args->controller->absTriggers[event.code].isAnalogue)
++                                {
++                                    setAnalogue(channel, scaled > 0.8 ? pow(2, jvsBits) : 0.0);
++                                }
++                                else
++                                {
++                                    setSwitch(args->controller->absTriggers[event.code].maxPlayer,
++                                              args->controller->absTriggers[event.code].maxChannel, scaled > 0.8 ? 1 : 0);
++                                }
+                             }
+                         }
+                     }
+@@ -1875,4 +1900,4 @@ ControllerStatus initEvdevControllers(Controllers *controllers)
+ #endif
+     return CONTROLLER_STATUS_SUCCESS;
+ }
+-#endif
+\ No newline at end of file
++#endif

@@ -197,9 +197,9 @@ ifeq ($(BR2_PACKAGE_SHADPS4),y)
   BATOCERA_DESKTOPAPPS_ICONS   += shadps4.png
 endif
 
-# lindbergh loader
-ifeq ($(BR2_PACKAGE_LINDBERGH_LOADER),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-lindbergh
+# linuxloader
+ifeq ($(BR2_PACKAGE_LINUXLOADER),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-linuxloader
 endif
 
 ## Context Menu Actions

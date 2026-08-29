@@ -1,8 +1,8 @@
 #!/bin/bash
 
-EMU_DIR="/usr/bin/lindbergh"
-CONF_BASE="/userdata/system/configs/lindbergh"
-CONFIG_INI="$CONF_BASE/lindbergh.ini"
+EMU_DIR="/usr/bin/linuxloader"
+CONF_BASE="/userdata/system/configs/linuxloader"
+CONFIG_INI="$CONF_BASE/linuxloader.ini"
 CONTROLS_INI="$CONF_BASE/controls.ini"
 
 show_help() {
@@ -20,7 +20,7 @@ Note:
   Default Controls: $CONTROLS_INI
 
 Example:
-  $(basename "$0") /userdata/roms/lindbergh/Hummer --create
+  $(basename "$0") /userdata/roms/lindbergh/Hummer --create config
 EOF
     exit 0
 }
@@ -58,9 +58,9 @@ export PIPEWIRE_MODULE_DIR="/lib32/pipewire-0.3:/usr/lib/pipewire-0.3"
 cd "$EMU_DIR" || exit 1
 
 # Preload the library
-export LD_PRELOAD="${EMU_DIR}/lindbergh.so"
+export LD_PRELOAD="${EMU_DIR}/linuxloader.so"
 
-exec "${EMU_DIR}/lindbergh" \
+exec "${EMU_DIR}/linuxloader" \
     -c "$CONFIG_INI" \
     -o "$CONTROLS_INI" \
     "$@"

@@ -1,7 +1,7 @@
-config BR2_PACKAGE_LINDBERGH_LOADER
-    bool "lindbergh-loader"
-	depends on BR2_PACKAGE_HAS_LIBGL
-	depends on BR2_PACKAGE_XORG7
+config BR2_PACKAGE_LINUXLOADER
+    bool "linuxloader"
+    depends on BR2_PACKAGE_HAS_LIBGL
+    depends on BR2_PACKAGE_XORG7
     depends on BR2_PACKAGE_LIBBSD_ARCH_SUPPORTS
     select BR2_PACKAGE_ALSA_LIB
     select BR2_PACKAGE_ALSA_PLUGINS
@@ -23,13 +23,14 @@ config BR2_PACKAGE_LINDBERGH_LOADER
     select BR2_PACKAGE_SDL3_TTF
     select BR2_PACKAGE_UTIL_LINUX_LIBUUID
     select BR2_PACKAGE_XCB_PROTO
-	select BR2_PACKAGE_XCB_UTIL
+    select BR2_PACKAGE_XCB_UTIL
     select BR2_PACKAGE_XCB_UTIL_CURSOR
-	select BR2_PACKAGE_XCB_UTIL_IMAGE
+    select BR2_PACKAGE_XCB_UTIL_IMAGE
     select BR2_PACKAGE_XCB_UTIL_KEYSYMS
-	select BR2_PACKAGE_XCB_UTIL_RENDERUTIL
+    select BR2_PACKAGE_XCB_UTIL_RENDERUTIL
     select BR2_PACKAGE_XCB_UTIL_WM
     select BR2_PACKAGE_XLIB_LIBICE
+    select BR2_PACKAGE_XLIB_LIBXCURSOR
     select BR2_PACKAGE_XLIB_LIBXSCRNSAVER
     select BR2_PACKAGE_XLIB_LIBSM
     select BR2_PACKAGE_XLIB_LIBX11
@@ -42,7 +43,7 @@ config BR2_PACKAGE_LINDBERGH_LOADER
     help
       A SEGA Lindbergh Emulator for Linux. 
 
-      https://github.com/lindbergh-loader/lindbergh-loader
+      https://github.com/lindbergh-loader/linuxloader
 
-comment "lindbergh-loader depends on X.org and needs an OpenGL backend"
+comment "linux-loader depends on X.org and needs an OpenGL backend"
 	depends on !BR2_PACKAGE_XORG7 || !BR2_PACKAGE_HAS_LIBGL
