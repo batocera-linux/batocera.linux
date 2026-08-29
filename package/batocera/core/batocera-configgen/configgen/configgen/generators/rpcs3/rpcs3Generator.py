@@ -690,6 +690,10 @@ class Rpcs3Generator(Generator):
             rpcs3ymlconfig["Input/Output"]["Camera"] = "Fake"
             rpcs3ymlconfig["Input/Output"]["Camera type"] = "PS Eye"
             self._generateGunConfig()
+        elif rpcs3ymlconfig["Input/Output"].get("Move") == "Gun":
+            rpcs3ymlconfig["Input/Output"]["Move"] = "Null"
+            rpcs3ymlconfig["Input/Output"]["Camera"] = "Null"
+            rpcs3ymlconfig["Input/Output"]["Camera type"] = "Unknown"
         # Gun crosshairs
         rpcs3ymlconfig["Input/Output"]["Show move cursor"] = system.config.get_bool("rpcs3_crosshairs")
 
