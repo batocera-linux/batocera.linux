@@ -7,7 +7,7 @@ config BR2_PACKAGE_SOLARUS_ENGINE
 	depends on BR2_TOOLCHAIN_HAS_THREADS_NPTL # openal
 	depends on !BR2_STATIC_LIBS # SDL2
 	depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
-	
+
 	select BR2_PACKAGE_GLM
 	select BR2_PACKAGE_LIBMODPLUG
 	select BR2_PACKAGE_LIBOGG
@@ -24,7 +24,7 @@ config BR2_PACKAGE_SOLARUS_ENGINE
 	  in C++. It can run games scripted in Lua. This engine is used
 	  by our Zelda fangames. Solarus is licensed under GPL v3.
 
-	  http://www.solarus-games.org
+	  https://www.solarus-games.org
 	  https://github.com/solarus-games/solarus
 
 comment "solarus needs OpenGL and a toolchain w/ C++, gcc >= 4.9, NPTL, dynamic library, and luajit or lua 5.1"
