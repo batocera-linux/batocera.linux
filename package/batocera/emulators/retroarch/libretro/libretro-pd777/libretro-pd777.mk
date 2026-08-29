@@ -3,8 +3,8 @@
 # libretro-pd777
 #
 ################################################################################
-# Version: Commits on May 16, 2026
-LIBRETRO_PD777_VERSION = 2700b18ca2ee7c4ef5318849f0a623c452ca8101
+# Version: Commits on Aug 21, 2026
+LIBRETRO_PD777_VERSION = 4c8d1759cfbaad84f8ff0eae62b3e017daa6fbb1
 LIBRETRO_PD777_SITE = $(call github,mittonk,pd777,$(LIBRETRO_PD777_VERSION))
 LIBRETRO_PD777_LICENSE = MIT
 LIBRETRO_PD777_DEPENDENCIES += retroarch

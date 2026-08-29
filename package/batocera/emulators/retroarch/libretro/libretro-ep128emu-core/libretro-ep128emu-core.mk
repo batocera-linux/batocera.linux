@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_EP128EMU_CORE_VERSION = core_v1.2.11
+LIBRETRO_EP128EMU_CORE_VERSION = core_v1.2.13
 LIBRETRO_EP128EMU_CORE_SITE = $(call github,libretro,ep128emu-core,$(LIBRETRO_EP128EMU_CORE_VERSION))
 LIBRETRO_EP128EMU_CORE_SITE_METHOD = tar
 LIBRETRO_EP128EMU_CORE_LICENSE = GPL-2.0
