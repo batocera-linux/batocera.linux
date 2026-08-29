@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Final
 from ... import Command
 from ...batoceraPaths import CONFIGS, mkdir_if_not_exists
 from ...controller import generate_sdl_game_controller_config, write_sdl_controller_db
+from ...exceptions import BatoceraException
 from ...settings.unixSettings import UnixSettings
 from ..Generator import Generator
 from ..libretro import libretroControllers
@@ -29,6 +30,21 @@ _BIOS_DIR: Final = Path('/userdata/bios/amiga')
 _LOG_FILE: Final = Path('/userdata/system/logs/amiberry.log')
 _AMIBERRY_BIN: Final = Path('/usr/bin/amiberry')
 _AMIBERRY_DATA: Final = Path('/usr/share/amiberry/data')
+
+#default cpu model for each system
+_MODEL_CPU: Final = {
+    'A500':  '68000',
+    'A500+': '68000',
+    'A1200': '68020',
+    'A4000': '68030',
+    'CD32':  '68020',
+    'CDTV':  '68000',
+}
+
+# accelerator cards presets hints : (cpu, cpu multiplier, zorro III fast ram in MB)
+_ACCELERATORS: Final[dict[str, tuple[str, int, int]]] = {
+    'tf330': ('68030', 14, 128),
+}
 
 class AmiberryGenerator(Generator):
 
@@ -184,6 +200,70 @@ class AmiberryGenerator(Generator):
             if amiberry_resolution := system.config.get('amiberry_resolution'):
                 commandArray.append("-s")
                 commandArray.append(f"gfx_resolution={amiberry_resolution}")
+
+            # accelerator hint in rom filename like [TF330] change cpu,frequency && z3 memory
+            default_cpu, default_multiplier, default_z3_fastram = '', 0, 0
+            for accelerator, specs in _ACCELERATORS.items():
+                if accelerator in rom.stem.lower():
+                    _logger.debug("%s found in the rom name, %s at x%s with %sMB of zorro III fast ram", accelerator, *specs)
+                    default_cpu, default_multiplier, default_z3_fastram = specs
+                    break
+
+            amiberry_cpu = system.config.get('amiberry_cpu', default_cpu)
+            amiberry_z3_fastram = system.config.get_int('amiberry_z3_fastram', default_z3_fastram)
+
+            cpu = amiberry_cpu or _MODEL_CPU.get(system.config.core, '')
+            wants_z3 = amiberry_z3_fastram > 0
+
+            # Zorro III fast ram need a 32bit cpu >= 68020
+            if wants_z3 and cpu in ('', '68000', '68010'):
+                raise BatoceraException(
+                    f"Zorro III fast ram needs a 68020 or better, {cpu or system.config.core} only addresses 24 bits: set amiberry_cpu"
+                )
+
+            # cpu override different than default cpu machine model
+            if amiberry_cpu:
+                commandArray.append("-s")
+                commandArray.append(f"cpu_model={amiberry_cpu}")
+
+            if amiberry_cpu or wants_z3:
+                commandArray.append("-s")
+                commandArray.append(f"cpu_24bit_addressing={'true' if cpu in ('68000', '68010') else 'false'}")
+
+            # cpu frenquency multiplier
+            if amiberry_cpu_multiplier := system.config.get_int('amiberry_cpu_multiplier', default_multiplier):
+                commandArray.append("-s")
+                commandArray.append(f"cpu_multiplier={amiberry_cpu_multiplier}")
+
+            # left to the model preset by default: it is what gives a 68020 or
+            # a 68030 its real instruction timings. Turning it off falls back to
+            # 68000 timings scaled down (adjust_cycles), which is *slower* on a
+            # big cpu, and is only worth it together with the jit.
+            match system.config.get('amiberry_cycle_exact'):
+                case 'on':
+                    commandArray.append("-s")
+                    commandArray.append("cpu_cycle_exact=true")
+                    commandArray.append("-s")
+                    commandArray.append("blitter_cycle_exact=true")
+                case 'off':
+                    commandArray.append("-s")
+                    commandArray.append("cpu_cycle_exact=false")
+                    commandArray.append("-s")
+                    commandArray.append("blitter_cycle_exact=false")
+
+            #default fastram to 8MB
+            commandArray.append("-s")
+            commandArray.append("fastmem_size=8")
+
+            #extra fastram on zorro III bus
+            if wants_z3:
+                commandArray.append("-s")
+                commandArray.append(f"z3mem_size={amiberry_z3_fastram}")
+
+            # disable cdrom seek && transfert delays
+            if system.config.get_bool('amiberry_cd_turbo'):
+                commandArray.append("-s")
+                commandArray.append("cd_speed=0")
 
 
             # Scaling method
