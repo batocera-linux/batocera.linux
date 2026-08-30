@@ -72,17 +72,18 @@ class CGeniusGenerator(Generator):
         # render resolution
         match system.config.get("cgenius_render"):
             case "240":
-                config["Video"]["gameHeight"] = "240"
-                config["Video"]["gameWidth"] = "320"
+                gameWidth, gameHeight = "320", "240"
             case "360":
-                config["Video"]["gameHeight"] = "360"
-                config["Video"]["gameWidth"] = "640"
+                gameWidth, gameHeight = "640", "360"
             case "480":
-                config["Video"]["gameHeight"] = "480"
-                config["Video"]["gameWidth"] = "640"
+                gameWidth, gameHeight = "640", "480"
             case _:
-                config["Video"]["gameHeight"] = "200"
-                config["Video"]["gameWidth"] = "320"
+                gameWidth, gameHeight = "320", "200"
+        for engineSection in ("Launcher", "Vorticon", "Galaxy", "Cosmos"):
+            if engineSection not in config:
+                config[engineSection] = {}
+            config[engineSection]["gameWidth"] = gameWidth
+            config[engineSection]["gameHeight"] = gameHeight
         # mouse
         config["Video"]["ShowCursor"] = system.config.get("cgenius_cursor", "false")
 
