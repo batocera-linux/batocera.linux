@@ -17,7 +17,13 @@ getBattery() {
 
 # Function to check if the ayn power supply is connected
 is_power_connected() {
-    PLUGGED=$(cat /sys/class/power_supply/*/online 2>/dev/null | grep -E "^1")
+    if compgen -G "/sys/class/power_supply/*/online" > /dev/null; then
+        PLUGGED=$(cat /sys/class/power_supply/*/online 2>/dev/null | grep -E "^1")
+    else
+        # No power_supply devices at all (e.g. desktop SBCs) - treat as
+        # AC-connected instead of falsely reporting "on battery".
+        PLUGGED="1"
+    fi
     if [ -n "${PLUGGED}" ]; then
         echo 1  # Power supply is connected
     else
