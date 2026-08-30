@@ -2,15 +2,15 @@ diff --git a/libretro/main.cpp b/libretro/main.cpp
 index d04d4effd7..c58e14d48b 100644
 --- a/libretro/main.cpp
 +++ b/libretro/main.cpp
-@@ -1666,7 +1666,7 @@ void retro_init(void)
- 		environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &system_base);
- 
+@@ -2348,7 +2348,7 @@ void retro_init(void)
  		FileSystem::FindResultsArray results;
--		if (FileSystem::FindFiles(Path::Combine(system_base, "/pcsx2/bios").c_str(), "*", FILESYSTEM_FIND_FILES, &results))
-+		if (FileSystem::FindFiles(Path::Combine(system_base, "/ps2").c_str(), "*", FILESYSTEM_FIND_FILES, &results))
+ 		char bios_dir[PCSX2_PATH_MAX];
+ 
+-		pcsx2_path_join(bios_dir, sizeof(bios_dir), system_base, "pcsx2/bios");
++		pcsx2_path_join(bios_dir, sizeof(bios_dir), system_base, "ps2");
+ 		if (FileSystem::FindFiles(bios_dir, "*", FILESYSTEM_FIND_FILES, &results))
  		{
  			u32 version, region;
- 			static constexpr u32 MIN_BIOS_SIZE = 4 * _1mb;
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
 index a5e87e6e6d..e25b15203d 100644
 --- a/pcsx2/Pcsx2Config.cpp

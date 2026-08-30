@@ -3,8 +3,8 @@
 # libretro-xmil
 #
 ################################################################################
-# Version: Commits on Nov 1, 2023
-LIBRETRO_XMIL_VERSION = 04b3c90af710b66b31df3c9621fa8da13b24e123
+# Version: Commits on Aug 23, 2026
+LIBRETRO_XMIL_VERSION = 3106aa54ffb244cca4019a6e95dacaa698781bc3
 LIBRETRO_XMIL_SITE_METHOD=git
 LIBRETRO_XMIL_SITE=https://github.com/libretro/xmil-libretro
 LIBRETRO_XMIL_GIT_SUBMODULES=YES

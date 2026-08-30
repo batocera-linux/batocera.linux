@@ -3,21 +3,23 @@
 # libretro-vba-m
 #
 ################################################################################
-# Version: Commits on Feb 28, 2024
-LIBRETRO_VBA_M_VERSION = 215e3c5ae9b1e3d32a708f729f481f429c00eef9
+# Version: Commits on Aug 28, 2026
+LIBRETRO_VBA_M_VERSION = 2acf41f88cca73174de3f4cda1e834c08a48a804
 LIBRETRO_VBA_M_SITE = $(call github,visualboyadvance-m,visualboyadvance-m,$(LIBRETRO_VBA_M_VERSION))
-LIBRETRO_VBA_M_DEPENDENCIES += retroarch
+LIBRETRO_VBA_M_DEPENDENCIES += retroarch zlib host-zip
 LIBRETRO_VBA_M_EMULATOR_INFO = vba-m.libretro.core.yml
 
-define LIBRETRO_VBA_M_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/src/libretro -f Makefile platform="unix"  \
-        CURRENT_COMMIT="-$(shell echo $(LIBRETRO_VBA_M_VERSION) | cut -c 1-7)"
-endef
+LIBRETRO_VBA_M_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
+LIBRETRO_VBA_M_CONF_OPTS += -DENABLE_LIBRETRO=ON
+LIBRETRO_VBA_M_CONF_OPTS += -DENABLE_WX=OFF
+LIBRETRO_VBA_M_CONF_OPTS += -DENABLE_SDL=OFF
+LIBRETRO_VBA_M_CONF_OPTS += -DENABLE_LINK=OFF
+LIBRETRO_VBA_M_CONF_OPTS += -DCOMMITHASH=$(shell echo $(LIBRETRO_VBA_M_VERSION) | cut -c 1-7)
 
 define LIBRETRO_VBA_M_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/src/libretro/vbam_libretro.so \
+	$(INSTALL) -D $(@D)/vbam_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/vba-m_libretro.so
 endef
 
-$(eval $(generic-package))
+$(eval $(cmake-package))
 $(eval $(emulator-info-package))
