@@ -8,7 +8,7 @@ BATOCERA_BACKGLASS_VERSION = 1.0
 BATOCERA_BACKGLASS_LICENSE = GPL
 BATOCERA_BACKGLASS_SOURCE =
 
-BATOCERA_BACKGLASS_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf libcurl openssl
+BATOCERA_BACKGLASS_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf libcurl openssl dejavu noto-cjk-fonts
 
 BACKGLASS_PATH = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass

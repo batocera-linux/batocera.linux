@@ -5,5 +5,7 @@ config BR2_PACKAGE_BATOCERA_BACKGLASS
 	select BR2_PACKAGE_SDL2_TTF
 	select BR2_PACKAGE_LIBCURL
 	select BR2_PACKAGE_OPENSSL
+	select BR2_PACKAGE_DEJAVU
+	select BR2_PACKAGE_NOTO_CJK_FONTS
 	help
 	  Helper tool to present Backglass media.

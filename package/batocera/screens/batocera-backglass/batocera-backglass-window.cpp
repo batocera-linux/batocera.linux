@@ -489,7 +489,43 @@ void renderImage(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect boundary
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 }
 
-SDL_Texture* createTextTexture(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, SDL_Color color, int wrapWidth) {
+static std::vector<Uint32> utf8ToCodepoints(const std::string& s) {
+    std::vector<Uint32> out;
+    size_t i = 0;
+    while (i < s.size()) {
+        unsigned char c = (unsigned char)s[i];
+        Uint32 cp = 0;
+        int extra = 0;
+        if ((c & 0x80) == 0x00)      { cp = c;        extra = 0; }
+        else if ((c & 0xE0) == 0xC0) { cp = c & 0x1F; extra = 1; }
+        else if ((c & 0xF0) == 0xE0) { cp = c & 0x0F; extra = 2; }
+        else if ((c & 0xF8) == 0xF0) { cp = c & 0x07; extra = 3; }
+        else { i++; continue; }
+        if (i + extra >= s.size()) break;
+        bool valid = true;
+        for (int k = 1; k <= extra; k++) {
+            unsigned char cc = (unsigned char)s[i + k];
+            if ((cc & 0xC0) != 0x80) { valid = false; break; }
+            cp = (cp << 6) | (cc & 0x3F);
+        }
+        if (valid) out.push_back(cp);
+        i += extra + 1;
+    }
+    return out;
+}
+
+static TTF_Font* pickFontForText(TTF_Font* primary, TTF_Font* fallback, const std::string& text) {
+    if (!fallback) return primary;
+    if (!primary) return fallback;
+    for (Uint32 cp : utf8ToCodepoints(text)) {
+        if (cp < 0x20) continue;
+        if (!TTF_GlyphIsProvided32(primary, cp)) return fallback;
+    }
+    return primary;
+}
+
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, TTF_Font* font, const std::string& text, SDL_Color color, int wrapWidth, TTF_Font* fallbackFont = nullptr) {
+    font = pickFontForText(font, fallbackFont, text);
     if (!font || text.empty()) return nullptr;
     SDL_Surface* surface = TTF_RenderUTF8_Blended_Wrapped(font, text.c_str(), color, wrapWidth);
     if (!surface) return nullptr;
@@ -735,6 +771,15 @@ int main(int argc, char* argv[]) {
         font_desc = TTF_OpenFont(font_path_desc.c_str(), desc_font_size);
     }
 
+    const char* FALLBACK_FONT_PATH = "/usr/share/fonts/truetype/noto/NotoSansKR-VF.ttf";
+    TTF_Font* font_header_fallback = nullptr;
+    TTF_Font* font_desc_fallback = nullptr;
+    if (FILE* f = fopen(FALLBACK_FONT_PATH, "r")) {
+        fclose(f);
+        font_header_fallback = TTF_OpenFont(FALLBACK_FONT_PATH, header_font_size);
+        font_desc_fallback = TTF_OpenFont(FALLBACK_FONT_PATH, desc_font_size);
+    }
+
     restoreActiveState();
 
     std::thread server_thread(serverThreadFunc, 2033);
@@ -829,11 +874,11 @@ int main(int argc, char* argv[]) {
 	      initAnim(tex_game_marquee, SDL_GetTicks());
 	    }
 
-            if (!sys_fullname.empty()) tex_sys_fullname = createTextTexture(renderer, font_header, sys_fullname, whiteColor, (int)(winW * 0.9f));
-            if (!game_name.empty()) tex_game_name = createTextTexture(renderer, font_header, game_name, whiteColor, (int)(winW * 0.9f));
+            if (!sys_fullname.empty()) tex_sys_fullname = createTextTexture(renderer, font_header, sys_fullname, whiteColor, (int)(winW * 0.9f), font_header_fallback);
+            if (!game_name.empty()) tex_game_name = createTextTexture(renderer, font_header, game_name, whiteColor, (int)(winW * 0.9f), font_header_fallback);
             
             int desc_wrap_width = (winW >= winH) ? (int)(winW * 0.4f * 0.90f) : (int)(winW * 0.80f);
-            if (!game_desc.empty()) tex_game_desc = createTextTexture(renderer, font_desc, game_desc, whiteColor, desc_wrap_width);
+            if (!game_desc.empty()) tex_game_desc = createTextTexture(renderer, font_desc, game_desc, whiteColor, desc_wrap_width, font_desc_fallback);
         }
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
