@@ -197,8 +197,19 @@ class TRXGenerator(Generator):
         # Download missing/outdated assets on demand
         self._setup_assets(trxRomPath)
 
+        # Detect mod from the launcher file's parent folder
+        valid_mods = {
+            "tr1", "tr1-ub", "tr1-demo-pc", "tr1-level",
+            "tr2", "tr2-gm", "tr2-level",
+            "tr3", "tr3-la", "tr3-level"
+        }
+        mod = rom.parent.name if rom.parent.name in valid_mods else "tr1"
+
+        # Each engine (TR1/TR2/TR3) keeps its own settings file, named TR<N>X.json5
+        engine_version = mod[2] if len(mod) > 2 and mod[2].isdigit() else "1"
+
         # Create or update display settings configuration
-        trxConfigPath = trxRomPath / "cfg" / "shell.json5"
+        trxConfigPath = trxRomPath / "cfg" / f"TR{engine_version}X.json5"
         mkdir_if_not_exists(trxConfigPath.parent)
         config_data = {}
 
@@ -226,14 +237,6 @@ class TRXGenerator(Generator):
             trxConfigPath.write_text(json.dumps(config_data, indent=2), encoding="utf-8")
         except Exception as e:
             _logger.debug("Error writing configuration file %s: %s", trxConfigPath, e)
-
-        # Detect mod from the launcher file's parent folder
-        valid_mods = {
-            "tr1", "tr1-ub", "tr1-demo-pc", "tr1-level",
-            "tr2", "tr2-gm", "tr2-level",
-            "tr3", "tr3-la", "tr3-level"
-        }
-        mod = rom.parent.name if rom.parent.name in valid_mods else "tr1"
 
         return Command.Command(
             array=[trx_bin_dest, "--mod", mod],

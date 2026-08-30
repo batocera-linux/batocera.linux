@@ -56,11 +56,12 @@ def _write_int(writer: IO[bytes], data: int, /) -> None:
 @dataclass(slots=True)
 class _OpenJazzConfig:
     path: Path
-    version: int = 6
+    version: int = 7
     video_width: int = 640
     video_height: int = 480
     fullscreen: bool = True
     video_scale: int = 1
+    scale_method: int = 0
     keys: list[int] = field(default_factory=lambda: [
         1073741906,  # Up
         1073741905,  # Down
@@ -148,18 +149,20 @@ class _OpenJazzConfig:
     many_birds: bool = False
     leave_unneeded: bool = False
     slow_motion: bool = False
-    scale_2x: bool = True
+    hud_fps: bool = False
 
     def save(self) -> None:
         _logger.info("Saving configuration")
         try:
             with self.path.open('wb') as f:
                 # Version
-                _write_char(f, 6)
+                _write_char(f, 7)
 
                 _write_short(f, self.video_width)
                 _write_short(f, self.video_height)
-                _write_char(f, (self.video_scale << 1) | self.fullscreen)
+                _write_char(f, self.fullscreen)
+                _write_char(f, self.video_scale)
+                _write_char(f, self.scale_method)
 
                 for key in self.keys:
                     _write_int(f, key)
@@ -183,7 +186,7 @@ class _OpenJazzConfig:
 
                 _write_char(f, self.music_volume)
                 _write_char(f, self.sound_volume)
-                _write_char(f, self.many_birds | (self.leave_unneeded << 1) | (self.slow_motion << 2) | (self.scale_2x << 3))
+                _write_char(f, self.many_birds | (self.leave_unneeded << 1) | (self.slow_motion << 2) | (self.hud_fps << 3))
         except Exception:
             _logger.exception("Error saving configuration")
 
@@ -209,14 +212,9 @@ class _OpenJazzConfig:
                 video_width = _read_short(f)
                 video_height = _read_short(f)
 
-                video_options = _read_char(f)
-
-                fullscreen = bool(video_options & 1)
-
-                if video_options >= 10:
-                    video_options = 2
-
-                video_scale = video_options >> 1
+                fullscreen = bool(_read_char(f))
+                video_scale = _read_char(f)
+                scale_method = _read_char(f)
 
                 keys = [_read_int(f) for _ in range(_CONTROLS - 4)]
                 buttons = [_read_int(f) for _ in range(_CONTROLS)]
@@ -234,7 +232,7 @@ class _OpenJazzConfig:
                 many_birds = bool(opts & 1)
                 leave_unneeded = bool(opts & 2)
                 slow_motion = bool(opts & 4)
-                scale_2x = not bool(opts & 8)
+                hud_fps = bool(opts & 8)
 
                 return cls(
                     path,
@@ -243,6 +241,7 @@ class _OpenJazzConfig:
                     video_height=video_height,
                     fullscreen=fullscreen,
                     video_scale=video_scale,
+                    scale_method=scale_method,
                     keys=keys,
                     buttons=buttons,
                     axes=axes,
@@ -254,7 +253,7 @@ class _OpenJazzConfig:
                     many_birds=many_birds,
                     leave_unneeded=leave_unneeded,
                     slow_motion=slow_motion,
-                    scale_2x=scale_2x,
+                    hud_fps=hud_fps,
                 )
         except Exception:
             _logger.exception('Error loading configuration')
@@ -275,6 +274,7 @@ class OpenJazzGenerator(Generator):
         _logger.info("Resolution: %sx%s", cfg.video_width, cfg.video_height)
         _logger.info("Fullscreen: %s", cfg.fullscreen)
         _logger.info("Video Scale: %s", cfg.video_scale)
+        _logger.info("Scale Method: %s", cfg.scale_method)
         _logger.info("Character Name: %s", cfg.character_name)
         _logger.info("Character Colors: %s", cfg.character_colors)
         _logger.info("Music Volume: %s", cfg.music_volume)
@@ -282,7 +282,7 @@ class OpenJazzGenerator(Generator):
         _logger.info("Many Birds: %s", cfg.many_birds)
         _logger.info("Leave Unneeded: %s", cfg.leave_unneeded)
         _logger.info("Slow Motion: %s", cfg.slow_motion)
-        _logger.info("Scale2x: %s", cfg.scale_2x)
+        _logger.info("HUD FPS: %s", cfg.hud_fps)
         _logger.info("Controls Configuration:")
         _logger.info("Keys: %s", cfg.keys)
         _logger.info("Buttons: %s", cfg.buttons)
@@ -335,6 +335,12 @@ class OpenJazzGenerator(Generator):
         ).split('x')
         cfg.video_width = int(width_str)
         cfg.video_height = int(height_str)
+
+        # Scaler: 0=None, 1=Bilinear, 2=Scale2x, 3=hqx
+        cfg.scale_method = int(system.config.get("jazz_scaler", "0"))
+
+        # Integer pixel-scale factor (clamped 1-4 by the engine)
+        cfg.video_scale = int(system.config.get("jazz_video_scale", "1"))
 
         # Save the changes
         cfg.save()

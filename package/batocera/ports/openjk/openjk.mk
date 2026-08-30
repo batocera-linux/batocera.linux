@@ -16,8 +16,8 @@
 # openjk
 #
 ################################################################################
-# Version: Commits on May 13, 2026
-OPENJK_VERSION = 8cce3ea23125f56200b553cd0b149af617adf397
+# Version: Commits on July 11, 2026
+OPENJK_VERSION = 1a6a643427aa347553e9073dac5570b33337c4d9
 OPENJK_SITE = https://github.com/JACoders/OpenJK
 OPENJK_SITE_METHOD = git
 OPENJK_SUPPORTS_IN_SOURCE_BUILD = NO

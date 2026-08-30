@@ -3,8 +3,8 @@
 # ioquake3
 #
 ################################################################################
-# Version: Commits on Mar 9, 2026
-IOQUAKE3_VERSION = 5956299e80b29ef3891bcec8e99cd3e680f34b1a
+# Version: Commits on Jul 16, 2026
+IOQUAKE3_VERSION = 588393618dbc82e7207c21c6ddecca229944a03a
 IOQUAKE3_SITE = $(call github,ioquake,ioq3,$(IOQUAKE3_VERSION))
 IOQUAKE3_LICENSE = GPL-2.0
 IOQUAKE3_LICENSE_FILE = COPYING.txt

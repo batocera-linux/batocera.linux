@@ -34,6 +34,7 @@
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
 - Commander Genius fullscreen in Wayland
+- Commander Genius render resolution option not taking effect in-game
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
 - Mupen64 not starting fullscreen with Wayland
@@ -74,20 +75,24 @@
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
 - Box64 0.4.2
+- CatacombGL to Jun 20, 2026 build
 - Cemu to August 7th, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-07-23
 - Commander Genius to v3.6.3
-- CorsixTH to v0.70.0
+- CorsixTH to v0.70.1
 - DevilutionX to 1.5.5
 - Dhewm3 & Mods to 1.5.5
 - Dolphin-Emu to 2606
+- DXX-Rebirth to Aug 23, 2026 build
 - ECWolf to Feb 23, 2026 build
-- EDuke32 / Fury to Feb 03, 2026 build
+- EDuke32 / Fury to Aug 07, 2026 build
 - ETLegacy to v2.85.0
 - Flycast to v2.7
 - Groovy MAME to 0.289
-- IOQuake3 to Mar 9, 2026
+- Hurrican to Apr 5, 2026 build
+- Hydra Castle Labyrinth to Aug 11, 2026 build
+- IOQuake3 to Jul 16, 2026
 - Jazz2 to 3.8.0
 - Ledspicer to 0.7.6
 - Libretro-81 to April 20th, 2026 build
@@ -207,8 +212,9 @@
 - LinuxLoader to v3.0.10
 - Moonlight-QT to Jun 26, 2026 build
 - Mupen64Plus-Core to March 30th, 2026 build
+- OpenJazz to Mar 01, 2026 build
 - OpenMSX to Release 21
-- OpenJK to May 13th, 2026 build
+- OpenJK to Jul 11th, 2026 build
 - OpenJKDF2 to v0.9.9
 - PCSX2 to 2.8.0
 - Play to 0.77
@@ -224,11 +230,14 @@
 - TheXTech to v1.3.7.3-1
 - TRX to 1.10.2
 - Tsugaru to v20251206
+- Ur-Quan Masters to Aug 21, 2026 build
 - Vita3k to 10th of June build
-- VKQuake to 1.35.0
+- VKQuake to 1.36.0
+- vkQuake2 to Aug 5, 2026 build
 - VKQuake3 to 1.36
 - Winetricks to 20260125
 - X16emu to r49
+- Xash3D-FWGS (Half-Life engine + HLSDK mobile_hacks/dmc/opfor) to Aug 27, 2026 build
 - Xemu to v0.8.136
 - Xenia to v1.0.2844
 - Xenia Canary to August 29th, 2026 build

@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPENJAZZ_VERSION = 20240919
+OPENJAZZ_VERSION = 20260301
 OPENJAZZ_SITE = $(call github,AlisterT,openjazz,$(OPENJAZZ_VERSION))
 OPENJAZZ_DEPENDENCIES = sdl2
 OPENJAZZ_LICENSE = GPLv2

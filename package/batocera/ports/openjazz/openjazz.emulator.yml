@@ -33,5 +33,21 @@ custom_features:
       2560 x 1440: 2560x1440
       2560 x 1600: 2560x1600
       3840 x 2160: 3840x2160
+  jazz_scaler:
+    prompt: SCALER
+    description: Enhancement. Pixel-art scaling filter applied to the low-resolution game image before it's stretched to fill the render resolution.
+    choices:
+      None (Default): "0"
+      Bilinear: "1"
+      Scale2x: "2"
+      HQX: "3"
+  jazz_video_scale:
+    prompt: INTEGER SCALE FACTOR
+    description: Enhancement. Pixel-doubles the game image by this integer factor before applying the scaler, as long as it still fits the render resolution.
+    choices:
+      1x (Default): "1"
+      2x: "2"
+      3x: "3"
+      4x: "4"
 systems:
   - openjazz
