@@ -69,7 +69,7 @@ def device_matches_filter(properties, filter):
 
 def connect_device(path, properties, forceConnect, filter):
   #
-  if filter is None:
+  if filter is None and not forceConnect:
     logging.info("skipping {}. No filter.".format(path))
     return
 
@@ -101,7 +101,7 @@ def connect_device(path, properties, forceConnect, filter):
 
   logging.info("filter={}, Icon={}, Address={}".format(filter, prop2str(properties["Icon"]), address))
 
-  if not device_matches_filter(properties, filter):
+  if not forceConnect and not device_matches_filter(properties, filter):
     logging.info("Skipping device {} (not {})".format(devName, filter));
     return
 
@@ -114,8 +114,9 @@ def connect_device(path, properties, forceConnect, filter):
     return
   
   if not paired:
-    if not connected and gdiscovery_wanted:
+    if not connected and (gdiscovery_wanted or filter == address):
       doPairing(address, devName, shortDevName)
+    return
 
   # now it is paired
   if not trusted and (gdiscovery_wanted or forceConnect):
