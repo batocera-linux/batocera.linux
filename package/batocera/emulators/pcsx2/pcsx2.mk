@@ -3,9 +3,9 @@
 # pcsx2
 #
 ################################################################################
-# Version: Commits on June 23, 2026
+
 ifeq ($(BR2_x86_64),y)
-PCSX2_VERSION = 95535215aa8be77ee0bb1556d940a761d895abb6
+PCSX2_VERSION = v2.8.0
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 else
 # Version: Commits on June 23, 2026
