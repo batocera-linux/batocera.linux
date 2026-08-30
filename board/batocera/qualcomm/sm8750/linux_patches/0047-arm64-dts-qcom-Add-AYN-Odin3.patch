@@ -1,34 +1,33 @@
-From d0bd1239126dbd52b2bad91de1db0020de26977c Mon Sep 17 00:00:00 2001
 From: Teguh Sobirin <teguh@sobir.in>
-Date: Wed, 15 Apr 2026 17:59:10 +0800
-Subject: [PATCH 54/54] arm64: dts: qcom: Add AYN Odin3
+Subject: [PATCH] arm64: dts: qcom: Add AYN Odin3
 
 Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+[Anze: expose the two back paddles (M1 left / M2 right) as gpio-keys.
+They are plain active-low SoC TLMM GPIOs 3 / 7 (not on the gamepad MCU
+UART, not ADC), reverse-engineered from AYN's Android keydetect.ko
+(gpio_request 515/519 = TLMM base 512 + offsets 3/7). They emit
+BTN_Z / BTN_C - the codes AYN's own firmware uses and which the
+existing InputPlumber map (ayn_mcu.yaml) already routes to
+Left/RightPaddle1.]
 ---
- arch/arm64/boot/dts/qcom/Makefile             |   1 +
- .../arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts | 369 ++++++++++++++++++
- 2 files changed, 370 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
-
 diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index b2771eb4664b..9f75e347e639 100644
+index 4ba8e730641..4ca5d0b88a6 100644
 --- a/arch/arm64/boot/dts/qcom/Makefile
 +++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -13,6 +13,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= apq8039-t2.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= apq8094-sony-xperia-kitakami-karin_windy.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= apq8096-db820c.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= apq8096sg-db820c.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= apq8096-ifc6640.dtb
+@@ -4,6 +4,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc.dtb
+ apq8016-sbc-d3-camera-mezzanine-dtbs	:= apq8016-sbc.dtb apq8016-sbc-d3-camera-mezzanine.dtbo
+ apq8016-sbc-usb-host-dtbs		:= apq8016-sbc.dtb apq8016-sbc-usb-host.dtbo
+ 
 +dtb-$(CONFIG_ARCH_QCOM)	+= cq8725s-ayn-odin3.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= eliza-mtp.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= glymur-crd.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= hamoa-iot-evk.dtb
+ dtb-$(CONFIG_ARCH_QCOM) += sar2130p-qar2130p.dtb
+ 
+ dtb-$(CONFIG_ARCH_QCOM)	+= apq8016-sbc-d3-camera-mezzanine.dtb
 diff --git a/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts b/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
 new file mode 100644
-index 000000000000..8d92b2c95158
+index 00000000000..421d73d4aa5
 --- /dev/null
 +++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
-@@ -0,0 +1,369 @@
+@@ -0,0 +1,352 @@
 +// SPDX-License-Identifier: BSD-3-Clause
 +/*
 + * Copyright (c) 2026 Teguh Sobirin.
@@ -62,62 +61,6 @@ index 000000000000..8d92b2c95158
 +
 +		gpio = <&tlmm 97 GPIO_ACTIVE_HIGH>;
 +		enable-active-high;
-+	};
-+
-+	multi-ledr1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r1";
-+		leds = <&ledr_r4>, <&ledr_g4>, <&ledr_b4>;
-+	};
-+
-+	multi-ledl1 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l1";
-+		leds = <&ledl_r4>, <&ledl_g4>, <&ledl_b4>;
-+	};
-+
-+	multi-ledr2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r2";
-+		leds = <&ledr_r1>, <&ledr_g1>, <&ledr_b1>;
-+	};
-+
-+	multi-ledl2 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l2";
-+		leds = <&ledl_r1>, <&ledl_g1>, <&ledl_b1>;
-+	};
-+
-+	multi-ledr3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r3";
-+		leds = <&ledr_r2>, <&ledr_g2>, <&ledr_b2>;
-+	};
-+
-+	multi-ledl3 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l3";
-+		leds = <&ledl_r2>, <&ledl_g2>, <&ledl_b2>;
-+	};
-+
-+	multi-ledr4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "r4";
-+		leds = <&ledr_r3>, <&ledr_g3>, <&ledr_b3>;
-+	};
-+
-+	multi-ledl4 {
-+		compatible = "leds-group-multicolor";
-+		color = <LED_COLOR_ID_RGB>;
-+		function = "l4";
-+		leds = <&ledl_r3>, <&ledl_g3>, <&ledl_b3>;
 +	};
 +};
 +
@@ -397,6 +340,43 @@ index 000000000000..8d92b2c95158
 +		bias-pull-down;
 +		drive-strength = <2>;
 +	};
++
++	paddle_keys_default: paddle-keys-default-state {
++		pins = "gpio3", "gpio7";
++		function = "gpio";
++		bias-pull-up;
++		drive-strength = <2>;
++	};
 +};
--- 
-2.43.0
++
++/*
++ * AYN Odin 3 has two extra back paddles (M1, M2) below the shoulder
++ * triggers. They are plain active-low SoC TLMM GPIOs (M1 = GPIO_3,
++ * M2 = GPIO_7), not on the gamepad MCU UART and not ADC (despite AYN's
++ * Android "adckey"/keydetect.ko naming). Expose them as a gpio-keys
++ * device emitting BTN_Z (M1, left) / BTN_C (M2, right); ROCKNIX's
++ * InputPlumber map (ayn_mcu.yaml) already routes BTN_Z -> LeftPaddle1 and
++ * BTN_C -> RightPaddle1. RE'd from the AYN Android keydetect driver
++ * (gpio_request 515/519 = TLMM base 512 + offsets 3/7).
++ */
++/ {
++	gpio-keys-paddles {
++		compatible = "gpio-keys";
++		pinctrl-names = "default";
++		pinctrl-0 = <&paddle_keys_default>;
++
++		key-paddle-m1 {
++			label = "Back Paddle M1";
++			linux,code = <BTN_Z>;
++			gpios = <&tlmm 3 GPIO_ACTIVE_LOW>;
++			debounce-interval = <15>;
++		};
++
++		key-paddle-m2 {
++			label = "Back Paddle M2";
++			linux,code = <BTN_C>;
++			gpios = <&tlmm 7 GPIO_ACTIVE_LOW>;
++			debounce-interval = <15>;
++		};
++	};
++};

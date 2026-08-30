@@ -535,60 +535,60 @@ index f707ae8..ddc7fdb 100644
 +		if (pad->is_connected() && !pad->is_copilot() && is_input_allowed())
 +		{
 +			const auto& cfg = ::at32(g_cfg_usio.players, pad_number);
-+			cfg->handle_input(pad, false, [&](usio_btn btn, pad_button /*pad_btn*/, u16 /*value*/, bool pressed, bool& /*abort*/)
++			cfg->handle_input(pad, false, [&](const auto& value, bool& /*abort*/)
 +				{
-+					switch (btn)
++					switch (value.btn)
 +					{
 +					case usio_btn::test:
 +						if (!p1)
 +							break;
-+						if (pressed && !status.test_key_pressed)
++						if (value.pressed && !status.test_key_pressed)
 +							status.test_on = !status.test_on;
-+						status.test_key_pressed = pressed;
++						status.test_key_pressed = value.pressed;
 +						break;
 +					case usio_btn::coin:
 +						// No coin2 game exists, so either player's coin button inserts a coin.
-+						if (pressed && !status.coin_key_pressed)
++						if (value.pressed && !status.coin_key_pressed)
 +							status.coin_counter++;
-+						status.coin_key_pressed = pressed;
++						status.coin_key_pressed = value.pressed;
 +						break;
 +					case usio_btn::service:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_service;
 +						break;
 +					case usio_btn::up:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_menu_up; // Menu Up
 +						break;
 +					case usio_btn::down:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_menu_dn; // Menu Down
 +						break;
 +					case usio_btn::left:
-+						if (pressed)
++						if (value.pressed)
 +						{
 +							input |= bit_decide; // Enter / decide
 +							wheel_left = true; // Dead Storm: steer left (either player drives the shared wheel)
 +						}
 +						break;
 +					case usio_btn::right:
-+						if (pressed)
++						if (value.pressed)
 +							wheel_right = true; // Dead Storm: steer right (either player drives the shared wheel)
 +						break;
 +					case usio_btn::enter:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_start; // Start
 +						break;
 +					case usio_btn::tekken_button1:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_trig_l; // Trigger (fire)
 +						break;
 +					case usio_btn::tekken_button2:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_trig_r; // Trigger Right
 +						break;
 +					case usio_btn::tekken_button3:
-+						if (pressed)
++						if (value.pressed)
 +							input |= bit_switch; // Dark Escape 2D/3D switch
 +						break;
 +					default:
@@ -735,33 +735,35 @@ index f707ae8..ddc7fdb 100644
  		auto& status = m_io_status[player / 2];
  		auto& input = digital_input[player / 2];
  
-@@ -328,11 +631,21 @@ void usb_device_usio::translate_input_tekken()
- 					status.test_key_pressed = pressed;
+@@ -328,12 +631,22 @@ void usb_device_usio::translate_input_tekken()
+ 					status.test_key_pressed = value.pressed;
  					break;
  				case usio_btn::coin:
 -					if (player % 2 != 0)
 -						break;
--					if (pressed && !status.coin_key_pressed) // Ensure only one coin is inserted each time the Coin button is pressed
+-					if (value.pressed && !status.coin_key_pressed) // Ensure only one coin is inserted each time the Coin button is pressed
 -						status.coin_counter++;
--					status.coin_key_pressed = pressed;
+-					status.coin_key_pressed = value.pressed;
+-					break;
 +					// Two coin slots per board: the first player on the board feeds
 +					// coin1, the second (Tekken P2) feeds coin2. Each slot keeps its
 +					// own debounce so one press inserts exactly one coin.
 +					if (player % 2 == 0)
 +					{
-+						if (pressed && !status.coin_key_pressed)
++						if (value.pressed && !status.coin_key_pressed)
 +							status.coin_counter++;
-+						status.coin_key_pressed = pressed;
++						status.coin_key_pressed = value.pressed;
 +					}
 +					else
 +					{
-+						if (pressed && !status.coin_key_pressed2)
++						if (value.pressed && !status.coin_key_pressed2)
 +							status.coin_counter2++;
-+						status.coin_key_pressed2 = pressed;
++						status.coin_key_pressed2 = value.pressed;
 +					}
- 					break;
++ 					break;
  				case usio_btn::service:
- 					if (player % 2 == 0 && pressed)
+ 					if (player % 2 == 0 && value.pressed)
+ 						input |= 0x4000;
 @@ -341,7 +654,7 @@ void usb_device_usio::translate_input_tekken()
  				case usio_btn::enter:
  					if (pressed)
@@ -809,7 +811,7 @@ index f707ae8..ddc7fdb 100644
  					}
 @@ -381,26 +694,26 @@ void usb_device_usio::translate_input_tekken()
  				case usio_btn::tekken_button1:
- 					if (pressed)
+ 					if (value.pressed)
  					{
 -						input |= 0x20000ULL << shift;
 +						input |= (m_is_tekken6 ? 0x200ULL : 0x20000ULL) << shift;
@@ -818,27 +820,27 @@ index f707ae8..ddc7fdb 100644
  					}
  					break;
  				case usio_btn::tekken_button2:
- 					if (pressed)
+ 					if (value.pressed)
 -						input |= 0x10000ULL << shift;
 +						input |= (m_is_tekken6 ? 0x100ULL : 0x10000ULL) << shift;
  					break;
  				case usio_btn::tekken_button3:
- 					if (pressed)
+ 					if (value.pressed)
 -						input |= 0x40000000ULL << shift;
 +						input |= (m_is_tekken6 ? 0x800000ULL : 0x40000000ULL) << shift;
  					break;
  				case usio_btn::tekken_button4:
- 					if (pressed)
+ 					if (value.pressed)
 -						input |= 0x20000000ULL << shift;
 +						input |= (m_is_tekken6 ? 0x400000ULL : 0x20000000ULL) << shift;
  					break;
  				case usio_btn::tekken_button5:
- 					if (pressed)
+ 					if (value.pressed)
 -						input |= 0x80000000ULL << shift;
 +						input |= (m_is_tekken6 ? 0x200000ULL : 0x80000000ULL) << shift;
  					break;
  				case usio_btn::card_tapping:
- 					if (pressed)
+ 					if (value.pressed)
 @@ -427,8 +740,14 @@ void usb_device_usio::translate_input_tekken()
  
  	for (usz i = 0; i < 2; i++)

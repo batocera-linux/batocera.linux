@@ -1,0 +1,66 @@
+#!/bin/bash
+
+EMU_DIR="/usr/bin/linuxloader"
+CONF_BASE="/userdata/system/configs/linuxloader"
+CONFIG_INI="$CONF_BASE/linuxloader.ini"
+CONTROLS_INI="$CONF_BASE/controls.ini"
+
+show_help() {
+    cat << EOF
+Usage: $(basename "$0") [GAME_PATH] [FLAGS...]
+
+Arguments:
+  GAME_PATH    Optional. Path to the game directory.
+  FLAGS        Optional. Additional flags passed to the emulator.
+
+Note: 
+  Config (-c) and Control (-o) paths are handled automatically.
+  You do not need to specify them.
+  Default Config:   $CONFIG_INI
+  Default Controls: $CONTROLS_INI
+
+Example:
+  $(basename "$0") /userdata/roms/lindbergh/Hummer --create config
+EOF
+    exit 0
+}
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    show_help
+fi
+
+# logic: If $1 is a directory, use it as GAME_PATH and shift arguments.
+if [[ -d "$1" ]]; then
+    GAME_PATH="$1"
+    shift
+else
+    GAME_PATH=""
+fi
+
+# Ensure DISPLAY is set
+if [[ -z "${DISPLAY}" ]]; then
+    export DISPLAY=$(getLocalXDisplay 2>/dev/null || echo :0.0)
+fi
+
+# Build LD_LIBRARY_PATH
+LD_PATH="/lib32:/lib32/extralibs:/lib:/usr/lib:${EMU_DIR}"
+[[ -n "${GAME_PATH}" ]] && LD_PATH="${LD_PATH}:${GAME_PATH}"
+export LD_LIBRARY_PATH="$LD_PATH"
+
+# User-specified Environment Variables
+export GST_PLUGIN_SYSTEM_PATH_1_0="/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0"
+export GST_REGISTRY_1_0="/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin"
+export LIBGL_DRIVERS_PATH="/lib32/dri:/usr/lib/dri"
+export SPA_PLUGIN_DIR="/lib32/spa-0.2:/usr/lib/spa-0.2"
+export PIPEWIRE_MODULE_DIR="/lib32/pipewire-0.3:/usr/lib/pipewire-0.3"
+
+# Switch to emulator directory
+cd "$EMU_DIR" || exit 1
+
+# Preload the library
+export LD_PRELOAD="${EMU_DIR}/linuxloader.so"
+
+exec "${EMU_DIR}/linuxloader" \
+    -c "$CONFIG_INI" \
+    -o "$CONTROLS_INI" \
+    "$@"

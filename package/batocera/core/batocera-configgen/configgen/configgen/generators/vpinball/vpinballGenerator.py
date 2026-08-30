@@ -16,7 +16,6 @@ from . import vpinballOptions, vpinballWindowing
 if TYPE_CHECKING:
     from ...types import HotkeysContext
 
-
 _logger = logging.getLogger(__name__)
 
 class VPinballGenerator(Generator):
@@ -24,21 +23,20 @@ class VPinballGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "vpinball",
-            "keys": { "exit": "KEY_F4", "coin": "KEY_5", "menu": "KEY_ESC", "pause": "KEY_ESC", "reset": "KEY_F3" }
+            "keys": { "exit": "KEY_ESC", "menu": "KEY_F12", "reset": "KEY_F3", "pause": "KEY_P", "coin": "KEY_5" }
         }
 
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         # files
-        vpinballConfigPath     = CONFIGS / "vpinball"
-        vpinballConfigFile     = vpinballConfigPath  / "VPinballX.ini"
-        vpinballLogFile        = vpinballConfigPath / "vpinball.log"
-        vpinballPinmameIniPath = vpinballConfigPath / "pinmame" / "ini"
+        vpinballConfigPath         = CONFIGS / "vpinball"
+        vpinballConfigFile         = vpinballConfigPath  / "VPinballX.ini"
+        vpinballConfigFileOverride = vpinballConfigPath  / "VPinballX_override.ini"
+        vpinballLogFile            = vpinballConfigPath / "vpinball.log"
 
-        # create vpinball config directory and a fresh config file if they don't exist
+        ## create vpinball config directory and a fresh config file if they don't exist
         mkdir_if_not_exists(vpinballConfigPath)
         if not vpinballConfigFile.exists():
             vpinballConfigFile.write_text("")
-        mkdir_if_not_exists(vpinballPinmameIniPath)
         if vpinballLogFile.exists():
             vpinballLogFile.rename(vpinballLogFile.with_suffix(f"{vpinballLogFile.suffix}.1"))
 
@@ -53,28 +51,53 @@ class VPinballGenerator(Generator):
             vpinballSettings = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True)
             vpinballSettings.read(vpinballConfigFile)
 
-        # init sections
-        if not vpinballSettings.has_section("Standalone"):
-            vpinballSettings.add_section("Standalone")
-        if not vpinballSettings.has_section("Player"):
-            vpinballSettings.add_section("Player")
-        if not vpinballSettings.has_section("TableOverride"):
-            vpinballSettings.add_section("TableOverride")
+        # plugins to enable
+        for plugin in ["Plugin.AltSound",
+                       "Plugin.B2SLegacy",
+                       "Plugin.DMDUtil",
+                       "Plugin.FlexDMD",
+                       "Plugin.PinMAME",
+                       "Plugin.PUP",
+                       "Plugin.ScoreView",
+                       "Plugin.Serum",
+                       "Plugin.WMP",
+                       "Plugin.VNI",
+                       "Plugin.vpx",
+                       "Plugin.DOF",
+                       "Plugin.Inspector"]:
+            if not vpinballSettings.has_section(plugin):
+                vpinballSettings.add_section(plugin)
+            vpinballSettings.set(plugin, "Enable","1")
+
+        # Altsound
+        vpinballSettings.set("Plugin.AltSound", "Enable", system.config.get_bool("vpinball_altsound", True, return_values=("1", "0")))
+
+        # DMDServer
+        hasDmd = (batoceraServices.getServiceStatus("dmd_real") == "started")
+        if hasDmd:
+            vpinballSettings.set("Plugin.DMDUtil", "Enable","1")
+            vpinballSettings.set("Plugin.DMDUtil", "DMDServer","1")
+        else:
+            vpinballSettings.set("Plugin.DMDUtil", "Enable","0")
+            vpinballSettings.set("Plugin.DMDUtil", "DMDServer","0")
 
         # options
         vpinballOptions.configureOptions(vpinballSettings, system)
 
-        # dmd
-        hasDmd = (batoceraServices.getServiceStatus("dmd_real") == "started")
-
         # windows
         vpinballWindowing.configureWindowing(vpinballSettings, system, gameResolution, hasDmd)
 
-        # DMDServer
-        if hasDmd:
-            vpinballSettings.set("Standalone", "DMDServer","1")
+        # Override values
+        if vpinballConfigFileOverride.exists():
+            try:
+                _logger.debug("reading VPinballX_override.ini")
+                vpinballSettingsOverride = CaseSensitiveConfigParser(interpolation=None, allow_no_value=True)
+                vpinballSettingsOverride.read(vpinballConfigFileOverride)
+                VPinballGenerator.overrideIniWith(vpinballSettings, vpinballSettingsOverride)
+            except Exception as e:
+                _logger.debug("Error reading VPinballX_override.ini: %s", e)
         else:
-            vpinballSettings.set("Standalone", "DMDServer","0")
+            _logger.debug("no VPinballX_override.ini found")
 
         # Save VPinballX.ini
         with vpinballConfigFile.open('w') as configfile:
@@ -93,3 +116,12 @@ class VPinballGenerator(Generator):
 
     def getInGameRatio(self, config, gameResolution, rom):
         return 16/9
+
+    @staticmethod
+    def overrideIniWith(vpinballSettings, vpinballSettingsOverride):
+        for section in vpinballSettingsOverride.sections():
+            if not vpinballSettings.has_section(section):
+                vpinballSettings.add_section(section)
+            for option, value in vpinballSettingsOverride.items(section):
+                vpinballSettings.set(section, option, value)
+                _logger.debug("Override value: [%s] %s = %s", section, option, value)

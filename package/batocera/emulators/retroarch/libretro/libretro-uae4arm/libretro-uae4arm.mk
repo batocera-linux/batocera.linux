@@ -3,8 +3,8 @@
 # libretro-uae4arm
 #
 ################################################################################
-# Last commit: April 22, 2022
-LIBRETRO_UAE4ARM_VERSION = 177c2f0e892adf2603ada9b150e31beffe0f76c3
+# Last commit: May 8, 2026
+LIBRETRO_UAE4ARM_VERSION = 276979efa4f862d1f84afeff5a2e794de4744024
 LIBRETRO_UAE4ARM_SITE = $(call github,chips-fr,uae4arm-rpi,$(LIBRETRO_UAE4ARM_VERSION))
 LIBRETRO_UAE4ARM_LICENSE = GPLv2
 

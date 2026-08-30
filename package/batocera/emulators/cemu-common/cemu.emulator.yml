@@ -20,26 +20,33 @@ custom_features:
     description: Choose which graphics API library to use.
     choices:
       OpenGL: 0
-      Vulkan (Default): 1
+      Vulkan: 1
   cemu_async:
     group: ADVANCED OPTIONS
     prompt: ASYNC SHADER COMPILE (VULKAN ONLY)
     description: Speed up shader compilation.
     choices:
-      'Off': false
-      On (Default): true
+      Off: false
+      On: true
+  cemu_gx2drawdone:
+    group: ADVANCED OPTIONS
+    prompt: FULL SYNC AT GX2DRAWDONE
+    description: Improves accuracy and fixes game-specific glitches at the cost of some performance.
+    choices:
+      Disabled: false
+      Enabled: true
   cemu_rumble:
     prompt: RUMBLE
     description: Set the controller rumble strength if supported.
     choices:
-      Off (Default): 0
+      Off: 0
       25%: 0.25
       50%: 0.5
       75%: 0.75
       100%: 1
   cemu_controller_combination:
     prompt: CONTROLLER COMBINATION
-    description: Pro Controller required for games that require shake motions.
+    description: Configure emulated controller layout. Choose Wiimote configurations for games requiring motion/shake.
     choices:
       GamePad + 4 Pro Controller: 0
       GamePad + 4 Sideway Wiimote: 1
@@ -68,20 +75,20 @@ custom_features:
     prompt: AUDIO CHANNELS
     description: Choose the audio output type.
     choices:
-      Stereo (Default): 1
+      Stereo: 1
       Surround: 2
   cemu_audio_config:
     group: ADVANCED OPTIONS
     prompt: AUDIO OUTPUT
-    description: Have Batocera set the first audio output device.
+    description: Have Batocera automatically set the primary audio output device.
     choices:
       Set in Config - choose if no audio output: false
-      Batocera sets first audio device (Default): true
+      Batocera sets first audio device: true
   cemu_vsync:
     prompt: VSYNC
-    description: Fix screen tearing.
+    description: Synchronize frame rate with monitor refresh rate to eliminate screen tearing.
     choices:
-      Off (Default): 0
+      Off: 0
       Double buffering: 1
       Triple buffering: 2
   cemu_upscale:
@@ -91,48 +98,48 @@ custom_features:
     choices:
       Bilinear: 0
       Bicubic: 1
-      Hermite (Default): 2
+      Hermite: 2
       Nearest Neighbour: 3
   cemu_downscale:
     group: ADVANCED OPTIONS
     prompt: DOWNSCALE FILTER
     description: Choose downscaling method.
     choices:
-      Bilinear (Default): 0
+      Bilinear: 0
       Bicubic: 1
       Hermite: 2
       Nearest Neighbour: 3
   cemu_aspect:
-    prompt: ASPECT RATIO
-    description: Change the output resolution ratio.
+    prompt: FULLSCREEN SCALING
+    description: Controls how the game scales to fit your display when the screen aspect ratio doesn't match the game.
     choices:
-      Keep Aspect Ration (Default): 0
-      Stretch: 1
+      Keep Aspect Ratio: 0
+      Stretch to Fill: 1
   cemu_touchpad:
-    prompt: ENABLE MOUSE
-    description: Enable mouse input to simulate touchscreen.
+    prompt: TOUCHSCREEN EMULATION
+    description: Enable mouse or touchpad input to simulate the Wii U GamePad touchscreen.
     choices:
-      Disabled (Default): 0
+      Disabled: 0
       Enabled: 1
   cemu_overlay:
     group: ADVANCED OPTIONS
     prompt: ENABLE PERFORMANCE OVERLAY
     description: Enable Cemu's performance overlay.
     choices:
-      Disabled (Default): false
+      Disabled: false
       Enabled: true
   cemu_notifications:
     group: ADVANCED OPTIONS
     prompt: ENABLE NOTIFICATIONS
     description: Enable notifications of cache, controller events etc.
     choices:
-      Disabled (Default): false
+      Disabled: false
       Enabled: true
   cemu_gamepad:
     prompt: ENABLE GAMEPAD VIEW
     description: Enable gamepad view for games that have interaction across two screens. Use Hotkey+R2 to switch screens.
     choices:
-      Disabled (Default): false
+      Disabled: false
       Enabled: true
 systems:
   - wiiu

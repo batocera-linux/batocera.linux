@@ -47,7 +47,7 @@ custom_features:
   drastic_fix2d:
     group: ADVANCED OPTIONS
     prompt: KEEP MAIN SCREEN ON TOP
-    description: Force 3D geometry to always render on the top screen. Useful for single-screen devices/games.
+    description: Force 3D geometry to always render on the top screen. Useful for single-screen devices/games. Can cause issues with intro videos.
     choices:
       'Off': 0
       'On': 1
@@ -68,6 +68,7 @@ custom_features:
       'Quilez': 'quilez'
       'Scanlines': 'scanlines'
       'LCD 3x': 'lcd3x'
+      'LCD 1x NDS Color': 'lcd1x-nds-color'
   drastic_mic_threshold:
     prompt: MICROPHONE SENSITIVITY
     description: Enable physical mic blowing. Higher sensitivity triggers more easily.

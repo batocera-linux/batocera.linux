@@ -1,38 +1,47 @@
 #!/usr/bin/env python3
-"""
-Retroid Pocket Mini Fan Service Daemon
-Written for Batocera - @lbrpdx
+"""Qualcomm Mini Fan Service Daemon.
+
+Written for Batocera - @lbrpdx & @dmanlfc
 
 In order to configure your own temperature/fan mapping
 edit a file /userdata/system/configs/fan.conf with:
 
 # temperatures are in Celsius
 # fan_speed are from 0-100 percent of max speed
-# syntax is: temp_threashold=fan_speed
+# syntax is: temp_threshold=fan_speed
 # default is:
 # 20=0
-# 30=20
-# 40=30
-# 50=40
-# 60=60
-# 70=80
-# 80=100
-
+# 30=5
+# 40=10
+# 45=15
+# 50=20
+# 55=25
+# 60=30
+# 65=35
+# 70=50
+# 75=65
+# 80=75
+# 85=80
+# 90=90
+# 100=100
 """
-import os
-import time
-import sys
-import glob
+
+from __future__ import annotations
+
 import subprocess
+import sys
+import time
+from pathlib import Path
 from threading import Thread
 
 DEBUG = 0
-CHECK_INTERVAL = 10 # seconds between two temperature checks
+CHECK_INTERVAL = 10  # seconds between two temperature checks
 
-config_file='/userdata/system/configs/fan.conf'
+CONFIG_FILE = "/userdata/system/configs/fan.conf"
+
 
 # Read fan % speed from the config file
-def get_fanspeed(tempval, configlist):
+def get_fanspeed(tempval: float, configlist: list[str]) -> int:
     for curconfig in configlist:
         curpair = curconfig.split("=")
         tempcfg = float(curpair[0])
@@ -41,70 +50,82 @@ def get_fanspeed(tempval, configlist):
             return fancfg
     return 0
 
+
 # Load the config file to memory
-def load_config(fname):
+def load_config(fname: str | Path) -> list[str]:
     newconfig = []
     try:
-        with open(fname, "r") as fp:
+        with Path(fname).open(encoding="utf-8") as fp:
             for curline in fp:
                 if not curline:
                     continue
                 tmpline = curline.strip()
-                if not tmpline:
-                    continue
-                if tmpline[0] == "#":
+                if not tmpline or tmpline.startswith("#"):
                     continue
                 tmppair = tmpline.split("=")
                 if len(tmppair) != 2:
                     continue
-                tempval = 0
-                fanval = 0
                 try:
                     tempval = float(tmppair[0])
-                    if tempval < 0 or tempval > 100:
+                    if not (0 <= tempval <= 100):
                         continue
-                except:
+                except ValueError:
                     continue
                 try:
                     fanval = int(float(tmppair[1]))
-                    if fanval < 0 or fanval > 100:
+                    if not (0 <= fanval <= 100):
                         continue
-                except:
+                except ValueError:
                     continue
-                newconfig.append("{:5.1f}={}".format(tempval, fanval))
-        if len(newconfig) > 0:
+                newconfig.append(f"{tempval:5.1f}={fanval}")
+        if newconfig:
             newconfig.sort(reverse=True)
-    except:
+    except OSError:
         return []
     return newconfig
 
-def get_cpu_temp():
+
+def get_cpu_temp() -> int:
     try:
         out = subprocess.check_output(
-            ["batocera-temp --cpu"],
+            ["batocera-temp", "--cpu"],
             text=True,
-            stderr=subprocess.DEVNULL
+            stderr=subprocess.DEVNULL,
         ).strip()
         return int(out)
-    except Exception:
-        return 50 # Fallback safety temperature
+    except (subprocess.SubprocessError, ValueError, OSError):
+        return 50  # Fallback safety temperature
+
 
 # Check the current temperature and adjust fan speed
-def temp_check():
-    fanconfig = ["80=100", "70=80", "60=60", "50=40", "40=30", "30=20", "20=0"] # Default values
-    tmpconfig = load_config(config_file)
-    if len(tmpconfig) > 0:
+def temp_check() -> None:
+    fanconfig = [
+        "100=100",
+        "90=90",
+        "85=80",
+        "80=75",
+        "75=65",
+        "70=50",
+        "65=35",
+        "60=30",
+        "55=25",
+        "50=20",
+        "45=15",
+        "40=10",
+        "30=5",
+        "20=0",
+    ]
+    tmpconfig = load_config(CONFIG_FILE)
+    if tmpconfig:
         fanconfig = tmpconfig
     prevblock = -1
-    
+
     try:
-        fan_find = glob.glob("/sys/class/hwmon/hwmon*/pwm1")[0] 
-        # Attempt to set pwm1_enable to 1 (manual mode) so speed writes work
-        enable_path = fan_find + "_enable"
-        if os.path.exists(enable_path):
-            with open(enable_path, "w") as enable_file:
-                enable_file.write("1")
-    except IndexError:
+        pwm_path = next(Path("/sys/class/hwmon").glob("hwmon*/pwm1"))
+        enable_path = pwm_path.with_name(f"{pwm_path.name}_enable")
+        if enable_path.exists():
+            enable_path.write_text("1", encoding="utf-8")
+    except StopIteration:
         print("Error: no fan control found.")
         sys.exit(1)
 
@@ -115,41 +136,43 @@ def temp_check():
             time.sleep(CHECK_INTERVAL)
         prevblock = block
         try:
-            num = int(block*2.55)
+            num = int(block * 2.55)
             if DEBUG:
                 print(f"Set fan speed {block}% ({num}) for temp {val}C ")
-            with open(fan_find, "w") as fan_file:
-                fan_file.write("%i"%num)
-        except IOError:
+            pwm_path.write_text(f"{num}", encoding="utf-8")
+        except OSError:
             pass
         time.sleep(CHECK_INTERVAL)
 
-# argument: start, stop, or no argument = show temp
-if len(sys.argv)>1:
-    if str(sys.argv[1]) == "start":
-        try:
-            t = Thread(target=temp_check, daemon=True)
-            t.start()
-            # Keep main thread alive while background thread runs
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            print("Daemon stopped manually.")
-        except Exception as e:
-            print(f"Could not launch daemon: {e}")
-            sys.exit(1)
-    elif str(sys.argv[1]) == "stop":
-        try:
-            # Force fan stop and restore auto control if supported
-            fan_find = glob.glob("/sys/class/hwmon/hwmon*/pwm1")[0] 
-            with open(fan_find, "w") as fan_file:
-                fan_file.write("0")
-            enable_path = fan_find + "_enable"
-            if os.path.exists(enable_path):
-                with open(enable_path, "w") as enable_file:
-                    enable_file.write("2") # Back to auto mode
-        except Exception as e:
-            print(f"Could not stop fan: {e}")
-else:
-    val = get_cpu_temp()
-    print(f"Temp: {val}C")
+
+def main() -> None:
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "start":
+            try:
+                t = Thread(target=temp_check, daemon=True)
+                t.start()
+                # Keep main thread alive while background thread runs
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("Daemon stopped manually.")
+            except Exception as e:
+                print(f"Could not launch daemon: {e}")
+                sys.exit(1)
+        elif sys.argv[1] == "stop":
+            try:
+                # Force fan stop and restore auto control if supported
+                pwm_path = next(Path("/sys/class/hwmon").glob("hwmon*/pwm1"))
+                pwm_path.write_text("0", encoding="utf-8")
+                enable_path = pwm_path.with_name(f"{pwm_path.name}_enable")
+                if enable_path.exists():
+                    enable_path.write_text("2", encoding="utf-8")  # Back to auto mode
+            except Exception as e:
+                print(f"Could not stop fan: {e}")
+    else:
+        val = get_cpu_temp()
+        print(f"Temp: {val}C")
+
+
+if __name__ == "__main__":
+    main()

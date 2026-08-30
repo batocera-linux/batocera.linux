@@ -1,0 +1,46 @@
+diff --git a/src/renderer/Window.cpp b/src/renderer/Window.cpp
+index ad608f8..d3646af 100644
+--- a/src/renderer/Window.cpp
++++ b/src/renderer/Window.cpp
+@@ -80,12 +80,17 @@ Window::Window(const string& title, const Settings& settings, VPXWindowId window
+    
+    // Both fullscreen and windowed modes are anchored to a user selected display
+    const string configuredDisplay = settings.GetWindow_Display((int)m_windowId);
+-   const DisplayConfig selectedDisplay = GetDisplayConfig(configuredDisplay);
++   DisplayConfig selectedDisplay = GetDisplayConfig(configuredDisplay);
+    if (configuredDisplay.empty())
+    {
+       PLOGI << "No display configured. Using display \"" << selectedDisplay.displayName << "\".";
+-   }
+-   else if (selectedDisplay.displayName != configuredDisplay)
++   } else if(configuredDisplay == "absolute") {
++     // GetDisplayConfig will set the primary one
++     // displayConf.display = displayIDs[i];
++     selectedDisplay.left = settings.GetWindow_WndX(m_windowId);
++     selectedDisplay.top = settings.GetWindow_WndY(m_windowId);
++     PLOGI << "Absolute display configured. Using display \"" << selectedDisplay.displayName << "\".";
++   } else if (selectedDisplay.displayName != configuredDisplay)
+    {
+       PLOGW << "The selected display \"" << configuredDisplay << "\" is not available. Using display \"" << selectedDisplay.displayName << "\" instead.";
+    }
+@@ -146,6 +151,12 @@ Window::Window(const string& title, const Settings& settings, VPXWindowId window
+          m_height = static_cast<int>(roundf(static_cast<float>(settings.GetWindow_Height(m_windowId)) / selectedDisplay.videomode.pixelDensity));
+       }
+ 
++      if(configuredDisplay == "absolute") {
++	m_width  = settings.GetWindow_Width(m_windowId);
++	m_height = settings.GetWindow_Height(m_windowId);
++      }
++
++      if(configuredDisplay != "absolute") {
+       // Constrain window to screen
+       if (m_width > selectedDisplay.videomode.width)
+       {
+@@ -174,6 +185,7 @@ Window::Window(const string& title, const Settings& settings, VPXWindowId window
+          if (0 <= yn && yn + m_height <= selectedDisplay.videomode.height)
+             wnd_y = selectedDisplay.top + yn;
+       }
++      }
+    }
+ 
+    if (m_refreshrate <= 0)

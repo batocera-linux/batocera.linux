@@ -10,7 +10,8 @@ config BR2_PACKAGE_CORSIXTH
 	select BR2_PACKAGE_SDL2_MIXER
 	select BR2_PACKAGE_FFMPEG
 	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_RTMIDI
 	help
 	  Open source clone of Theme Hospital
-	  
+
 	  https://github.com/CorsixTH/CorsixTH

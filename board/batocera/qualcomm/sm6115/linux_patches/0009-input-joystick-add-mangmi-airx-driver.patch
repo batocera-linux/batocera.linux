@@ -1,0 +1,690 @@
+From f407e141317fd71496caddaf9cfcf33febbdf014 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Fri, 2 Jan 2026 21:22:34 +0100
+Subject: [PATCH] input:joystick: add mangmi airx driver
+
+---
+
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 7755e5b454d2..bf12c66e6a9f 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -332,6 +332,15 @@ config JOYSTICK_WALKERA0701
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called walkera0701.
+
++config JOYSTICK_MANGMI
++	tristate "Mangmi game controller"
++	depends on SERIAL_DEV_BUS
++	help
++	  Say Y here if you want to use the Mangmi game controller with your computer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called mangmi.
++
+ config JOYSTICK_MAPLE
+ 	tristate "Dreamcast control pad"
+ 	depends on MAPLE
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 9976f596a920..a117fed293ec 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -22,6 +22,7 @@ obj-$(CONFIG_JOYSTICK_GUILLEMOT)	+= guillemot.o
+ obj-$(CONFIG_JOYSTICK_IFORCE)		+= iforce/
+ obj-$(CONFIG_JOYSTICK_INTERACT)		+= interact.o
+ obj-$(CONFIG_JOYSTICK_JOYDUMP)		+= joydump.o
++obj-$(CONFIG_JOYSTICK_MANGMI)		+= mangmi.o
+ obj-$(CONFIG_JOYSTICK_MAGELLAN)		+= magellan.o
+ obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
+ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
+diff --git a/drivers/input/joystick/mangmi.c b/drivers/input/joystick/mangmi.c
+new file mode 100644
+--- /dev/null
++++ b/drivers/input/joystick/mangmi.c
+@@ -0,0 +1,646 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * MANGMI Air X Joypad Driver
++ *
++ * Copyright (c) 2025, ROCKNIX <https://rocknix.org>
++ *
++ * Packet synchronization modeled after twidjoy.c and sermouse.c:
++ * - Header byte validation at rx_idx == 0 (twidjoy pattern)
++ * - Timeout-based resync when packet assembly stalls (sermouse pattern)
++ */
++
++#include <linux/errno.h>
++#include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/init.h>
++#include <linux/input.h>
++#include <linux/jiffies.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/serdev.h>
++#include <linux/slab.h>
++#include <linux/delay.h>
++#include <linux/unaligned.h>
++#include <linux/workqueue.h>
++
++#define DRIVER_NAME         "mangmi-air-x-joypad"
++#define MCU_PKT_LEN         64
++#define MCU_HEADER_BYTE     0x00
++#define MCU_PKT_TIMEOUT_MS  100
++#define MCU_BAUDRATE        4000000
++#define MCU_INIT_RETRIES    3
++#define MCU_INIT_RETRY_MS   100
++#define MCU_WARMUP_MS       100
++
++#define MANGMI_ADC_LO       900
++#define MANGMI_ADC_HI       3300
++#define MANGMI_ADC_CENTER   2100
++#define MANGMI_ADC_HALFSPAN 1200 /* (MANGMI_ADC_HI - MANGMI_ADC_LO) / 2 */
++
++#define MANGMI_TRIG_LO      2900
++#define MANGMI_TRIG_HI      4000
++#define MANGMI_TRIG_SPAN    (MANGMI_TRIG_HI - MANGMI_TRIG_LO)
++
++#define INT_SIGN(X) ((X > 0) - (X < 0))
++
++/* Same sysfs ABI as retroid/rsinput for GPcal (gamepadcalibration). */
++static int update_params;
++static int trigger_left_max = 0x610;
++static int trigger_left_deadzone;
++static int trigger_left_antideadzone;
++static int trigger_right_max = 0x610;
++static int trigger_right_deadzone;
++static int trigger_right_antideadzone;
++static int axis_leftx_min = -0x580;
++static int axis_leftx_center;
++static int axis_leftx_max = 0x580;
++static int axis_leftx_deadzone;
++static int axis_leftx_antideadzone;
++static int axis_lefty_min = -0x580;
++static int axis_lefty_center;
++static int axis_lefty_max = 0x580;
++static int axis_lefty_deadzone;
++static int axis_lefty_antideadzone;
++static int axis_rightx_min = -0x580;
++static int axis_rightx_center;
++static int axis_rightx_max = 0x580;
++static int axis_rightx_deadzone;
++static int axis_rightx_antideadzone;
++static int axis_righty_min = -0x580;
++static int axis_righty_center;
++static int axis_righty_max = 0x580;
++static int axis_righty_deadzone;
++static int axis_righty_antideadzone;
++
++module_param(update_params, int, 0660);
++module_param(trigger_left_max, int, 0660);
++module_param(trigger_left_deadzone, int, 0660);
++module_param(trigger_left_antideadzone, int, 0660);
++module_param(trigger_right_max, int, 0660);
++module_param(trigger_right_deadzone, int, 0660);
++module_param(trigger_right_antideadzone, int, 0660);
++module_param(axis_leftx_min, int, 0660);
++module_param(axis_leftx_center, int, 0660);
++module_param(axis_leftx_max, int, 0660);
++module_param(axis_leftx_deadzone, int, 0660);
++module_param(axis_leftx_antideadzone, int, 0660);
++module_param(axis_lefty_min, int, 0660);
++module_param(axis_lefty_center, int, 0660);
++module_param(axis_lefty_max, int, 0660);
++module_param(axis_lefty_deadzone, int, 0660);
++module_param(axis_lefty_antideadzone, int, 0660);
++module_param(axis_rightx_min, int, 0660);
++module_param(axis_rightx_center, int, 0660);
++module_param(axis_rightx_max, int, 0660);
++module_param(axis_rightx_deadzone, int, 0660);
++module_param(axis_rightx_antideadzone, int, 0660);
++module_param(axis_righty_min, int, 0660);
++module_param(axis_righty_center, int, 0660);
++module_param(axis_righty_max, int, 0660);
++module_param(axis_righty_deadzone, int, 0660);
++module_param(axis_righty_antideadzone, int, 0660);
++
++
++#define MASK_HAT_RIGHT      0x08
++#define MASK_HAT_LEFT       0x04
++#define MASK_HAT_DOWN       0x02
++#define MASK_HAT_UP         0x01
++#define MASK_BTN_THUMBL     0x40
++#define MASK_BTN_THUMBR     0x80
++
++#define MASK_BTN_TL         0x01
++#define MASK_BTN_TR         0x02
++#define MASK_BTN_A          0x10
++#define MASK_BTN_B          0x20
++#define MASK_BTN_X          0x40
++#define MASK_BTN_Y          0x80
++
++struct mcu_joy_drv {
++	struct serdev_device *serdev;
++	struct input_dev *input;
++
++	/* Hardware Control GPIOs */
++	struct gpio_desc *boot0_gpio;
++	struct gpio_desc *boot1_gpio;
++	struct gpio_desc *reset_gpio;
++	struct gpio_desc *power_gpio;
++	struct gpio_desc *stick_en_gpio;
++
++	/* Input Interrupt GPIOs */
++	struct gpio_desc *btn_start;
++	struct gpio_desc *btn_select;
++	struct gpio_desc *btn_mode;
++	struct gpio_desc *btn_back;
++
++	u8 rx_buf[MCU_PKT_LEN];
++	int rx_idx;
++	unsigned long rx_start;
++	unsigned long warmup_until;
++
++	struct workqueue_struct *init_wq;
++	struct work_struct init_work;
++	bool mcu_ready;
++
++	u8 last_pkt[MCU_PKT_LEN];
++	bool last_pkt_valid;
++
++	u8 last_btn_state;
++};
++
++static void mangmi_set_axis_absinfo(struct input_dev *idev)
++{
++	input_set_abs_params(idev, ABS_X,
++			     INT_SIGN(axis_leftx_min) * (abs(axis_leftx_min) - axis_leftx_antideadzone),
++			     INT_SIGN(axis_leftx_max) * (abs(axis_leftx_max) - axis_leftx_antideadzone),
++			     4, 0);
++	input_set_abs_params(idev, ABS_Y,
++			     INT_SIGN(axis_lefty_min) * (abs(axis_lefty_min) - axis_lefty_antideadzone),
++			     INT_SIGN(axis_lefty_max) * (abs(axis_lefty_max) - axis_lefty_antideadzone),
++			     4, 0);
++	input_set_abs_params(idev, ABS_RX,
++			     INT_SIGN(axis_rightx_min) * (abs(axis_rightx_min) - axis_rightx_antideadzone),
++			     INT_SIGN(axis_rightx_max) * (abs(axis_rightx_max) - axis_rightx_antideadzone),
++			     4, 0);
++	input_set_abs_params(idev, ABS_RY,
++			     INT_SIGN(axis_righty_min) * (abs(axis_righty_min) - axis_righty_antideadzone),
++			     INT_SIGN(axis_righty_max) * (abs(axis_righty_max) - axis_righty_antideadzone),
++			     4, 0);
++	input_set_abs_params(idev, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 2, 30);
++	input_set_abs_params(idev, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 2, 30);
++	input_set_abs_params(idev, ABS_HAT0X, -1, 1, 0, 0);
++	input_set_abs_params(idev, ABS_HAT0Y, -1, 1, 0, 0);
++}
++
++static int32_t mangmi_stick_from_adc(u16 raw, bool invert_y)
++{
++	int32_t adc = raw;
++
++	if (invert_y)
++		adc = (MANGMI_ADC_LO + MANGMI_ADC_HI) - adc;
++
++	adc -= MANGMI_ADC_CENTER;
++	adc = clamp(adc, -1500L, 1500L);
++
++	return (int32_t)DIV_ROUND_CLOSEST(adc * (int64_t)0x580, MANGMI_ADC_HALFSPAN);
++}
++
++static void mcu_report_gpio_buttons(struct mcu_joy_drv *drv)
++{
++	struct input_dev *dev = drv->input;
++	u8 state = 0, changed;
++
++	if (drv->btn_start  && gpiod_get_value_cansleep(drv->btn_start))  state |= BIT(0);
++	if (drv->btn_select && gpiod_get_value_cansleep(drv->btn_select)) state |= BIT(1);
++	if (drv->btn_mode   && gpiod_get_value_cansleep(drv->btn_mode))   state |= BIT(2);
++	if (drv->btn_back   && gpiod_get_value_cansleep(drv->btn_back))   state |= BIT(3);
++
++	changed = state ^ drv->last_btn_state;
++	if (!changed)
++		return;
++
++	if (changed & BIT(0))
++		input_report_key(dev, BTN_START,  !!(state & BIT(0)));
++	if (changed & BIT(1))
++		input_report_key(dev, BTN_SELECT, !!(state & BIT(1)));
++	if (changed & BIT(2))
++		input_report_key(dev, BTN_MODE,   !!(state & BIT(2)));
++	if (changed & BIT(3))
++		input_report_key(dev, BTN_BACK, !!(state & BIT(3)));
++
++	input_sync(dev);
++	drv->last_btn_state = state;
++}
++
++static irqreturn_t mcu_gpio_btn_handler(int irq, void *dev_id)
++{
++	mcu_report_gpio_buttons(dev_id);
++	return IRQ_HANDLED;
++}
++
++static void mcu_process_packet(struct mcu_joy_drv *drv, const u8 *data)
++{
++	struct input_dev *dev = drv->input;
++	u16 raw_val;
++	int32_t raw_axis;
++	int32_t x, y, rx, ry, z, rz;
++	int32_t rl, rr;
++
++	if (!dev)
++		return;
++
++	/* Drop settling frames after (re)init to avoid a phantom trigger. */
++	if (time_before(jiffies, drv->warmup_until))
++		return;
++
++	if (update_params) {
++		mangmi_set_axis_absinfo(dev);
++		update_params = 0;
++		drv->last_pkt_valid = false;
++	}
++
++	if (drv->last_pkt_valid &&
++	    !memcmp(data, drv->last_pkt, MCU_PKT_LEN))
++		return;
++	memcpy(drv->last_pkt, data, MCU_PKT_LEN);
++	drv->last_pkt_valid = true;
++
++	/* D-Pad */
++	{
++		int hat_x = !!(data[2] & MASK_HAT_RIGHT) - !!(data[2] & MASK_HAT_LEFT);
++		int hat_y = !!(data[2] & MASK_HAT_DOWN) - !!(data[2] & MASK_HAT_UP);
++
++		input_report_abs(dev, ABS_HAT0X, hat_x);
++		input_report_abs(dev, ABS_HAT0Y, hat_y);
++	}
++
++	/* Thumb Sticks (Click) */
++	input_report_key(dev, BTN_THUMBL, !!(data[2] & MASK_BTN_THUMBL));
++	input_report_key(dev, BTN_THUMBR, !!(data[2] & MASK_BTN_THUMBR));
++
++	/* Face Buttons & Shoulders */
++	input_report_key(dev, BTN_A, !!(data[3] & MASK_BTN_A));
++	input_report_key(dev, BTN_B, !!(data[3] & MASK_BTN_B));
++	input_report_key(dev, BTN_X, !!(data[3] & MASK_BTN_X));
++	input_report_key(dev, BTN_Y, !!(data[3] & MASK_BTN_Y));
++	input_report_key(dev, BTN_TL, !!(data[3] & MASK_BTN_TL));
++	input_report_key(dev, BTN_TR, !!(data[3] & MASK_BTN_TR));
++
++	/* Left Stick */
++	raw_val = get_unaligned_le16(&data[6]);
++	raw_axis = mangmi_stick_from_adc(raw_val, false);
++	x = raw_axis + axis_leftx_center;
++	x = (abs(x) < axis_leftx_deadzone) ? 0 :
++	    INT_SIGN(x) * (abs(x) - axis_leftx_antideadzone);
++	input_report_abs(dev, ABS_X, x);
++
++	raw_val = get_unaligned_le16(&data[8]);
++	raw_axis = mangmi_stick_from_adc(raw_val, true);
++	y = raw_axis + axis_lefty_center;
++	y = (abs(y) < axis_lefty_deadzone) ? 0 :
++	    INT_SIGN(y) * (abs(y) - axis_lefty_antideadzone);
++	input_report_abs(dev, ABS_Y, y);
++
++	/* Right Stick */
++	raw_val = get_unaligned_le16(&data[10]);
++	raw_axis = mangmi_stick_from_adc(raw_val, false);
++	rx = raw_axis + axis_rightx_center;
++	rx = (abs(rx) < axis_rightx_deadzone) ? 0 :
++	     INT_SIGN(rx) * (abs(rx) - axis_rightx_antideadzone);
++	input_report_abs(dev, ABS_RX, rx);
++
++	raw_val = get_unaligned_le16(&data[12]);
++	raw_axis = mangmi_stick_from_adc(raw_val, true);
++	ry = raw_axis + axis_righty_center;
++	ry = (abs(ry) < axis_righty_deadzone) ? 0 :
++	     INT_SIGN(ry) * (abs(ry) - axis_righty_antideadzone);
++	input_report_abs(dev, ABS_RY, ry);
++
++	/* Analog Triggers */
++	rl = ((u32)data[14] << 8) | data[4];
++	rl = clamp(rl, (int32_t)MANGMI_TRIG_LO, (int32_t)MANGMI_TRIG_HI);
++	z = DIV_ROUND_CLOSEST((rl - MANGMI_TRIG_LO) * (int64_t)trigger_left_max, MANGMI_TRIG_SPAN);
++	z = (z < trigger_left_deadzone) ? 0 : z - trigger_left_antideadzone;
++	input_report_abs(dev, ABS_Z, z);
++
++	rr = ((u32)data[15] << 8) | data[5];
++	rr = clamp(rr, (int32_t)MANGMI_TRIG_LO, (int32_t)MANGMI_TRIG_HI);
++	rz = DIV_ROUND_CLOSEST((rr - MANGMI_TRIG_LO) * (int64_t)trigger_right_max, MANGMI_TRIG_SPAN);
++	rz = (rz < trigger_right_deadzone) ? 0 : rz - trigger_right_antideadzone;
++	input_report_abs(dev, ABS_RZ, rz);
++
++	input_sync(dev);
++}
++
++static size_t mcu_joy_receive_buf(struct serdev_device *serdev,
++				  const u8 *data, size_t count)
++{
++	struct mcu_joy_drv *drv = serdev_device_get_drvdata(serdev);
++	size_t i;
++
++	if (!READ_ONCE(drv->mcu_ready))
++		return count;
++
++	if (drv->rx_idx > 0 &&
++	    time_after(jiffies, drv->rx_start + msecs_to_jiffies(MCU_PKT_TIMEOUT_MS)))
++		drv->rx_idx = 0;
++
++	for (i = 0; i < count; i++) {
++		if (drv->rx_idx == 0) {
++			if (data[i] != MCU_HEADER_BYTE)
++				continue;
++			drv->rx_start = jiffies;
++		}
++
++		drv->rx_buf[drv->rx_idx++] = data[i];
++
++		if (drv->rx_idx < MCU_PKT_LEN)
++			continue;
++
++		mcu_process_packet(drv, drv->rx_buf);
++		drv->rx_idx = 0;
++	}
++
++	return count;
++}
++
++static const struct serdev_device_ops mcu_joy_serdev_ops = {
++	.receive_buf = mcu_joy_receive_buf,
++	.write_wakeup = serdev_device_write_wakeup,
++};
++
++static int mcu_hw_init(struct mcu_joy_drv *drv)
++{
++	int error;
++
++	error = serdev_device_set_parity(drv->serdev, SERDEV_PARITY_NONE);
++	if (error)
++		return error;
++
++	serdev_device_set_flow_control(drv->serdev, false);
++	serdev_device_set_baudrate(drv->serdev, MCU_BAUDRATE);
++
++	if (drv->power_gpio)
++		gpiod_set_value_cansleep(drv->power_gpio, 1);
++	if (drv->stick_en_gpio)
++		gpiod_set_value_cansleep(drv->stick_en_gpio, 1);
++
++	msleep(10);
++
++	if (drv->boot0_gpio)
++		gpiod_set_value_cansleep(drv->boot0_gpio, 1);
++	if (drv->boot1_gpio)
++		gpiod_set_value_cansleep(drv->boot1_gpio, 1);
++
++	if (drv->reset_gpio) {
++		gpiod_set_value_cansleep(drv->reset_gpio, 1);
++		msleep(20);
++		gpiod_set_value_cansleep(drv->reset_gpio, 0);
++	}
++
++	msleep(20);
++
++	drv->rx_idx = 0;
++	drv->warmup_until = jiffies + msecs_to_jiffies(MCU_WARMUP_MS);
++	WRITE_ONCE(drv->mcu_ready, true);
++
++	return 0;
++}
++
++static int mcu_hw_init_retry(struct mcu_joy_drv *drv)
++{
++	int error, attempt;
++
++	for (attempt = 1; attempt <= MCU_INIT_RETRIES; attempt++) {
++		error = mcu_hw_init(drv);
++		if (!error)
++			return 0;
++		dev_warn(&drv->serdev->dev,
++			 "MCU init attempt %d/%d failed: %d\n",
++			 attempt, MCU_INIT_RETRIES, error);
++		if (attempt < MCU_INIT_RETRIES)
++			msleep(MCU_INIT_RETRY_MS);
++	}
++	return error;
++}
++
++static void mcu_joy_init_work(struct work_struct *work)
++{
++	struct mcu_joy_drv *drv = container_of(work, struct mcu_joy_drv,
++					       init_work);
++	int error;
++
++	error = mcu_hw_init_retry(drv);
++	if (error)
++		dev_err(&drv->serdev->dev,
++			"Deferred MCU init failed after retries: %d\n", error);
++}
++
++static void mcu_hw_shutdown(struct mcu_joy_drv *drv)
++{
++	WRITE_ONCE(drv->mcu_ready, false);
++	drv->last_pkt_valid = false;
++
++	if (drv->stick_en_gpio)
++		gpiod_set_value_cansleep(drv->stick_en_gpio, 0);
++	if (drv->power_gpio)
++		gpiod_set_value_cansleep(drv->power_gpio, 0);
++
++	msleep(50);
++}
++
++static void mcu_joy_destroy_init_wq(void *data)
++{
++	struct mcu_joy_drv *drv = data;
++
++	cancel_work_sync(&drv->init_work);
++	if (drv->init_wq)
++		destroy_workqueue(drv->init_wq);
++}
++
++static int mcu_joy_probe(struct serdev_device *serdev)
++{
++	struct mcu_joy_drv *drv;
++	struct input_dev *input;
++	int error;
++
++	drv = devm_kzalloc(&serdev->dev, sizeof(*drv), GFP_KERNEL);
++	if (!drv)
++		return -ENOMEM;
++	serdev_device_set_drvdata(serdev, drv);
++	drv->serdev = serdev;
++	INIT_WORK(&drv->init_work, mcu_joy_init_work);
++
++	drv->init_wq = alloc_ordered_workqueue("mangmi_airx_init", WQ_FREEZABLE);
++	if (!drv->init_wq)
++		return -ENOMEM;
++	error = devm_add_action_or_reset(&serdev->dev, mcu_joy_destroy_init_wq, drv);
++	if (error)
++		return error;
++
++	{
++		struct { const char *con; struct gpio_desc **out; enum gpiod_flags f; } gpios[] = {
++			{ "mcu-boot0",  &drv->boot0_gpio,    GPIOD_OUT_LOW },
++			{ "mcu-boot1",  &drv->boot1_gpio,    GPIOD_OUT_LOW },
++			{ "mcu-reset",  &drv->reset_gpio,    GPIOD_OUT_LOW },
++			{ "mcu-power",  &drv->power_gpio,    GPIOD_OUT_LOW },
++			{ "stick-en",   &drv->stick_en_gpio, GPIOD_OUT_LOW },
++			{ "mcu-start",  &drv->btn_start,     GPIOD_IN },
++			{ "mcu-select", &drv->btn_select,    GPIOD_IN },
++			{ "mcu-mode",   &drv->btn_mode,      GPIOD_IN },
++			{ "mcu-back",   &drv->btn_back,      GPIOD_IN },
++		};
++		size_t i;
++
++		for (i = 0; i < ARRAY_SIZE(gpios); i++) {
++			*gpios[i].out = devm_gpiod_get_optional(&serdev->dev,
++								gpios[i].con,
++								gpios[i].f);
++			if (IS_ERR(*gpios[i].out))
++				return dev_err_probe(&serdev->dev,
++						     PTR_ERR(*gpios[i].out),
++						     "%s GPIO\n",
++						     gpios[i].con);
++		}
++	}
++
++	input = devm_input_allocate_device(&serdev->dev);
++	if (!input)
++		return -ENOMEM;
++	drv->input = input;
++
++	input->name = "MANGMI Air X Joypad";
++	input->phys = "mangmi-air-x/input0";
++	input->id.bustype = BUS_HOST;
++	input->id.vendor = 0x4001;
++	input->id.product = 0x0428;
++	input->id.version = 0x0100;
++
++	input_set_capability(input, EV_KEY, BTN_A);
++	input_set_capability(input, EV_KEY, BTN_B);
++	input_set_capability(input, EV_KEY, BTN_X);
++	input_set_capability(input, EV_KEY, BTN_Y);
++	input_set_capability(input, EV_KEY, BTN_TL);
++	input_set_capability(input, EV_KEY, BTN_TR);
++	input_set_capability(input, EV_KEY, BTN_THUMBL);
++	input_set_capability(input, EV_KEY, BTN_THUMBR);
++	input_set_capability(input, EV_KEY, BTN_SELECT);
++	input_set_capability(input, EV_KEY, BTN_START);
++	input_set_capability(input, EV_KEY, BTN_MODE);
++	input_set_capability(input, EV_KEY, BTN_BACK);
++
++	mangmi_set_axis_absinfo(input);
++
++	error = input_register_device(input);
++	if (error)
++		return error;
++
++	{
++		u8 state = 0;
++
++		if (drv->btn_start  && gpiod_get_value_cansleep(drv->btn_start))  state |= BIT(0);
++		if (drv->btn_select && gpiod_get_value_cansleep(drv->btn_select)) state |= BIT(1);
++		if (drv->btn_mode   && gpiod_get_value_cansleep(drv->btn_mode))   state |= BIT(2);
++		if (drv->btn_back   && gpiod_get_value_cansleep(drv->btn_back))   state |= BIT(3);
++		drv->last_btn_state = state;
++	}
++
++	{
++		const struct { struct gpio_desc *gpio; const char *name; } btns[] = {
++			{ drv->btn_start,  "btn-start"  },
++			{ drv->btn_select, "btn-select" },
++			{ drv->btn_mode,   "btn-mode"   },
++			{ drv->btn_back,   "btn-back"   },
++		};
++		size_t i;
++		int irq;
++
++		for (i = 0; i < ARRAY_SIZE(btns); i++) {
++			if (!btns[i].gpio)
++				continue;
++			irq = gpiod_to_irq(btns[i].gpio);
++			if (irq < 0)
++				return irq;
++			error = devm_request_threaded_irq(&serdev->dev, irq, NULL,
++							  mcu_gpio_btn_handler,
++							  IRQF_TRIGGER_RISING |
++							  IRQF_TRIGGER_FALLING |
++							  IRQF_ONESHOT,
++							  btns[i].name, drv);
++			if (error)
++				return error;
++		}
++	}
++
++	serdev_device_set_client_ops(serdev, &mcu_joy_serdev_ops);
++	error = devm_serdev_device_open(&serdev->dev, serdev);
++	if (error)
++		return dev_err_probe(&serdev->dev, error, "UART open failed\n");
++
++	error = mcu_hw_init_retry(drv);
++	if (error)
++		return dev_err_probe(&serdev->dev, error, "MCU init failed\n");
++
++	return 0;
++}
++
++static void mcu_joy_remove(struct serdev_device *serdev)
++{
++	struct mcu_joy_drv *drv = serdev_device_get_drvdata(serdev);
++
++	mcu_hw_shutdown(drv);
++}
++
++static void mcu_joy_report_neutral(struct mcu_joy_drv *drv)
++{
++	struct input_dev *dev = drv->input;
++	static const unsigned int keys[] = {
++		BTN_A, BTN_B, BTN_X, BTN_Y, BTN_TL, BTN_TR,
++		BTN_THUMBL, BTN_THUMBR, BTN_SELECT, BTN_START,
++		BTN_MODE, BTN_BACK,
++	};
++	size_t i;
++
++	if (!dev)
++		return;
++
++	for (i = 0; i < ARRAY_SIZE(keys); i++)
++		input_report_key(dev, keys[i], 0);
++
++	input_report_abs(dev, ABS_X, 0);
++	input_report_abs(dev, ABS_Y, 0);
++	input_report_abs(dev, ABS_RX, 0);
++	input_report_abs(dev, ABS_RY, 0);
++	input_report_abs(dev, ABS_Z, 0);
++	input_report_abs(dev, ABS_RZ, 0);
++	input_report_abs(dev, ABS_HAT0X, 0);
++	input_report_abs(dev, ABS_HAT0Y, 0);
++	input_sync(dev);
++}
++
++static int mcu_joy_suspend(struct device *dev)
++{
++	struct mcu_joy_drv *drv = dev_get_drvdata(dev);
++
++	cancel_work_sync(&drv->init_work);
++
++	mcu_hw_shutdown(drv);
++
++	mcu_joy_report_neutral(drv);
++	drv->last_btn_state = 0;
++	return 0;
++}
++
++static int mcu_joy_resume(struct device *dev)
++{
++	struct mcu_joy_drv *drv = dev_get_drvdata(dev);
++
++	mcu_report_gpio_buttons(drv);
++
++	queue_work(drv->init_wq, &drv->init_work);
++	return 0;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(mcu_joy_pm_ops, mcu_joy_suspend, mcu_joy_resume);
++
++static const struct of_device_id mcu_joy_of_match[] = {
++	{ .compatible = "rocknix,mangmi-air-x-joypad" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mcu_joy_of_match);
++
++static struct serdev_device_driver mcu_joy_driver = {
++	.driver = {
++		.name = DRIVER_NAME,
++		.of_match_table = mcu_joy_of_match,
++		.pm = pm_sleep_ptr(&mcu_joy_pm_ops),
++	},
++	.probe = mcu_joy_probe,
++	.remove = mcu_joy_remove,
++};
++
++module_serdev_device_driver(mcu_joy_driver);
++
++MODULE_AUTHOR("ROCKNIX");
++MODULE_DESCRIPTION("MANGMI Air X Joypad Driver");
++MODULE_LICENSE("GPL");

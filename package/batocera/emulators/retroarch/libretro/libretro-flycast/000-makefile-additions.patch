@@ -15,7 +15,7 @@ index f1cdda8..fd407b4 100644
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -172,6 +178,22 @@ elseif(LIBRETRO)
+@@ -219,6 +219,22 @@ elseif(LIBRETRO)
  	set(CMAKE_SHARED_LIBRARY_PREFIX "")
  	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
  	target_compile_definitions(${PROJECT_NAME} PRIVATE LIBRETRO)
@@ -35,7 +35,6 @@ index f1cdda8..fd407b4 100644
 +		set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
 +		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -mcpu=cortex-a73 -mtune=cortex-a73.cortex-a53")
 +	endif()
- 	target_compile_options(${PROJECT_NAME} PRIVATE -Wno-misleading-indentation)
  	if(APPLE)
  		find_library(FOUNDATION Foundation)
  		target_link_libraries(${PROJECT_NAME} PRIVATE ${FOUNDATION})

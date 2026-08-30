@@ -1,0 +1,25 @@
+From: ROCKNIX <noreply@rocknix.org>
+Date: Thu, 4 Jun 2026 00:00:00 +0000
+Subject: [PATCH] backlight: aw99706: write CFG7=0x05 for the KONKR panel
+
+The KONKR Pocket FIT Elite panel needs CFG7 = 0x05 (read live off the stock
+vendor driver's working config); mainline leaves CFG7 at its POR value 0x04
+and the backlight never illuminates. Apply it at the end of hw_init.
+---
+--- a/drivers/video/backlight/aw99706.c
++++ b/drivers/video/backlight/aw99706.c
+@@ -290,6 +290,14 @@
+ 		}
+ 	}
+ 
++	/* [konkr] Match the stock vendor config: CFG7 = 0x05 (mainline leaves it
++	 * at POR 0x04). Read live off the working Android AW99706 — it is the only
++	 * config register the stock driver sets that this driver doesn't, and with
++	 * it at POR the panel backlight stays dark. */
++	ret = aw99706_i2c_write(aw, AW99706_CFG7_REG, 0x05);
++	if (ret < 0)
++		return ret;
++
+ 	return 0;
+ }
+ 

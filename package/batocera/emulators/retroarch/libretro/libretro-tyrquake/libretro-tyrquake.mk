@@ -3,12 +3,15 @@
 # libretro-tyrquake
 #
 ################################################################################
-# Version: Commits on Oct 31, 2023
-LIBRETRO_TYRQUAKE_VERSION = df0d3afb623b143beb76a5b1adf2d377953bfdf2
+# Version: Commits on Jul 15, 2026
+LIBRETRO_TYRQUAKE_VERSION = e57bb11597e8a00380f30f2627d219da960cf69a
 LIBRETRO_TYRQUAKE_SITE = $(call github,libretro,tyrquake,$(LIBRETRO_TYRQUAKE_VERSION))
 LIBRETRO_TYRQUAKE_LICENSE = GPLv2
 LIBRETRO_TYRQUAKE_DEPENDENCIES += retroarch
 LIBRETRO_TYRQUAKE_EMULATOR_INFO = tyrquake.libretro.core.yml
+
+# GCC 15 / C23 compatibility
+LIBRETRO_TYRQUAKE_CFLAGS = $(TARGET_CFLAGS) -std=gnu17
 
 LIBRETRO_TYRQUAKE_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -35,8 +38,11 @@ LIBRETRO_TYRQUAKE_PLATFORM = unix
 endif
 
 define LIBRETRO_TYRQUAKE_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile platform="$(LIBRETRO_TYRQUAKE_PLATFORM)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_TYRQUAKE_VERSION) | cut -c 1-7)"
+	$(TARGET_CONFIGURE_OPTS) \
+		CFLAGS="$(LIBRETRO_TYRQUAKE_CFLAGS)" \
+		$(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ -f Makefile \
+		platform="$(LIBRETRO_TYRQUAKE_PLATFORM)" \
+		GIT_VERSION="-$(shell echo $(LIBRETRO_TYRQUAKE_VERSION) | cut -c 1-7)"
 endef
 
 define LIBRETRO_TYRQUAKE_INSTALL_TARGET_CMDS

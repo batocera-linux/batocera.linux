@@ -27,9 +27,3 @@ build-backend = "hatchling.build"
 include = [
     "/configgen",
 ]
-
-[tool.pyright]
-extends = "../../../../../pyproject.toml"
-
-[tool.ruff]
-extend = "../../../../../pyproject.toml"

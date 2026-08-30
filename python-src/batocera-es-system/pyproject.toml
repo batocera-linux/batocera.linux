@@ -24,9 +24,3 @@ allow-direct-references = true
 include = [
     "/batocera_es_system",
 ]
-
-[tool.pyright]
-extends = "../../pyproject.toml"
-
-[tool.ruff]
-extend = "../../pyproject.toml"

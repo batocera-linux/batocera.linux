@@ -30,6 +30,7 @@ BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 # Build the DTB from the kernel sources
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="rockchip/rk3588s-nanopi-m6 rockchip/rk3588-bananapi-m7 rockchip/rk3588s-orangepi-5-pro rockchip/rk3588-blueberry-edge-v12-linux rockchip/rk3588s-roc-pc"
+BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/dts/rk3588s-gameforce-ace.dts"
 # Use 'extreme' ZSTD compression for a smaller image, but a bit more CPU to decompress
 BR2_TARGET_ROOTFS_SQUASHFS4_ZSTD=y
 # Support DTB overlays
@@ -54,6 +55,7 @@ BR2_PACKAGE_UBOOT_RK3588=y
 BR2_PACKAGE_UBOOT_BANANAPI_M7=y
 BR2_PACKAGE_UBOOT_ORANGEPI_5_PRO=y
 BR2_PACKAGE_UBOOT_NANOPI_M6=y
+BR2_PACKAGE_UBOOT_GAMEFORCE_ACE=y
 
 # U-Boot dependency
 BR2_TARGET_UBOOT_NEEDS_GNUTLS=y

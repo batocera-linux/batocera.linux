@@ -2866,7 +2866,6 @@ model3:
   emulators:
     supermodel:
       supermodel:        { requireAnyOf: [BR2_PACKAGE_SUPERMODEL] }
-      supermodel-legacy: { requireAnyOf: [BR2_PACKAGE_SUPERMODEL_LEGACY] }
 
   comment_en: |
     ## SEGA MODEL 3 IMPORTANT INFO ##
@@ -5835,7 +5834,7 @@ ps4:
   manufacturer: Sony
   release: 2013
   hardware: console
-  extensions: [ps4]
+  extensions: [ps4, zar]
   emulators:
     shadps4:
       shadps4: { requireAnyOf: [BR2_PACKAGE_SHADPS4] }
@@ -5858,6 +5857,9 @@ ps4:
 
     This .ps4 extension acts as a launcher entry and allows the game to appear correctly in the frontend.
     The games eboot.bin launcher file should be in the root of the directory called .ps4 or alongside the .ps4 file.
+
+    ZArchive files are also supported, copy the .zar file directly to: /userdata/roms/ps4
+    Example: /userdata/roms/ps4/Bloodborne.zar
 
     DLC content will be stored in: /userdata/roms/ps4/DLC
 
@@ -5929,8 +5931,8 @@ lindbergh:
   extensions: [game]
   platform: lindbergh, arcade
   emulators:
-    lindbergh-loader:
-      lindbergh-loader: { requireAnyOf: [BR2_PACKAGE_LINDBERGH_LOADER] }
+    linuxloader:
+      linuxloader: { requireAnyOf: [BR2_PACKAGE_LINUXLOADER] }
   comment_en: |
     Sega Lindbergh requires good knowledge of rom dumps.
     We strongly recommend you read the wiki before asking for support.
@@ -5978,8 +5980,8 @@ lindbergh:
 
     The Game ID naming helps identify gun & steering wheel games as well as scrapers.
 
-    Lindbergh loader compatibility list is here:
-    https://github.com/lindbergh-loader/lindbergh-loader/blob/master/docs/guide.md
+    LinuxLoader compatibility list is here:
+    https://github.com/lindbergh-loader/linuxloader/blob/main/docs/guide-linux.md
 
     For more info: https://wiki.batocera.org/systems:lindbergh
   comment_fr: |

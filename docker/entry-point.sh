@@ -16,10 +16,11 @@ if [ ! -z "$HOST_UID" ] && [ ! -z "$HOST_GID" ]; then
     # correct ownership)
     chown batocera:batocera /home/batocera
 
-    export HOME=/home/batocera
-
-    # Set $@ to run the docker command as the "batocera" user and group
-    set -- gosu "$HOST_UID":"$HOST_GID" "$@"
+    # NOTE: gosu resets HOME from the first /etc/passwd entry matching the
+    # target UID. Ubuntu images include an "ubuntu" user at UID 1000, and
+    # useradd -o adds another entry rather than replacing it, so explicitly
+    # restore HOME after gosu resolves the target user.
+    set -- gosu "$HOST_UID":"$HOST_GID" env HOME=/home/batocera "$@"
 fi
 
 exec "$@"

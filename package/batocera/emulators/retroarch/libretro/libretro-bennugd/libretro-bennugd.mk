@@ -3,8 +3,8 @@
 # libretro-bennugd
 #
 ################################################################################
-# Version: Commits on Mar 7, 2025
-LIBRETRO_BENNUGD_VERSION = 84c186a700d7cd7ad5a6aa921d7dc489b12c2f9f
+# Version: Commits on Aug 14, 2026
+LIBRETRO_BENNUGD_VERSION = 5fba764ac709545d4b0d3b28deff2ec0c7d1a91b
 LIBRETRO_BENNUGD_SITE = https://github.com/diekleinekuh/BennuGD_libretro.git
 LIBRETRO_BENNUGD_SITE_METHOD = git
 LIBRETRO_BENNUGD_GIT_SUBMODULES = YES

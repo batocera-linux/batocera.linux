@@ -3,6 +3,7 @@ config BR2_PACKAGE_RPI_EEPROM
 	depends on BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_BINUTILS
 	select BR2_PACKAGE_BINUTILS_TARGET
+	select BR2_PACKAGE_FLASHROM
 	select BR2_PACKAGE_RPI_UTILS
 	help
 	  Installation scripts and binaries for the Raspberry Pi 4

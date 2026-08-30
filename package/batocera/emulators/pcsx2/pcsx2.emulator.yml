@@ -35,7 +35,7 @@ cores:
       pcsx2_osd_messages:
         submenu: DISPLAY
         prompt: OSD MESSAGES
-        description: Display on screen information like savestate, config warning etc...
+        description: Display on screen information like savestate, config warning, etc.
         choices:
           Enabled (Default): "true"
           Disabled: "false"
@@ -134,8 +134,8 @@ cores:
         prompt: VSYNC
         description: Fix screen tearing. CPU heavy.
         choices:
-          Disabled: 0
-          Enabled: 1
+          Disabled: "false"
+          Enabled: "true"
       pcsx2_interlacing_patches:
         submenu: DISPLAY
         prompt: INTERLACING PATCHES
@@ -216,7 +216,7 @@ cores:
       pcsx2_dithering:
         submenu: RENDERING
         prompt: DITHERING
-        description: Reduces banding between colours and improves the preceived colour depth.
+        description: Reduces banding between colors and improves the preceived color depth.
         choices:
           "Off": 0
           Unscaled (Default): 1

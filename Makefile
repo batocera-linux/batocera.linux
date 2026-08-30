@@ -43,6 +43,7 @@ BATCH_MODE     ?=
 PARALLEL_BUILD ?=
 DIRECT_BUILD   ?=
 DAYS           ?= 1
+SINCE          ?= $(DAYS) days ago
 SYSTEMS_REPORT_EXCLUDE_TARGETS ?= bcm2835 jh7110
 SYSTEMS_REPORT_PARALLEL ?= y
 
@@ -105,6 +106,9 @@ SYSTEMS_REPORT_TARGETS := $(filter-out $(SYSTEMS_REPORT_EXCLUDE_TARGETS) x86_wow
 # All defconfig files for systems report targets, generated from the board files
 SYSTEMS_REPORT_DEFCONFIGS = $(foreach target,$(SYSTEMS_REPORT_TARGETS),$(call target-defconfig,$(target)))
 
+# Pass the git commit from the host so builds in git worktrees have the hash in the container
+GIT_COMMIT := $(shell git -C $(PROJECT_DIR) rev-parse --short HEAD 2>/dev/null || echo unknown)
+
 # define build command based on whether we are building direct or inside a docker build container
 ifdef DIRECT_BUILD
 define MAKE_BUILDROOT
@@ -112,12 +116,14 @@ define MAKE_BUILDROOT
 		BR2_EXTERNAL=$(PROJECT_DIR) \
 		BR2_DL_DIR=$(DL_DIR) \
 		BR2_CCACHE_DIR=$(CCACHE_DIR) \
+		BATOCERA_GIT_COMMIT=$(GIT_COMMIT) \
 		-C $(PROJECT_DIR)/buildroot
 endef
 else # DIRECT_BUILD
 define MAKE_BUILDROOT
 	$(call RUN_DOCKER,$(1)) make $(MAKE_OPTS) O=/$(1) \
 					BR2_EXTERNAL=/build \
+					BATOCERA_GIT_COMMIT=$(GIT_COMMIT) \
 					-C /build/buildroot
 endef
 endif # DIRECT_BUILD
@@ -150,7 +156,7 @@ help:
 	@echo
 	@echo 'Incremental rebuild:'
 	@echo '  <target>-refresh              - surgically reset recently changed packages and rebuild'
-	@echo '                                  (requires PARALLEL_BUILD=y, uses DAYS=<n> to control scope)'
+	@echo '                                  (requires PARALLEL_BUILD=y, uses SINCE=<n> to control scope)'
 	@echo '  <target>-clean-for-refresh    - reset recently changed packages without rebuilding'
 	@echo
 	@echo 'Deployment:'
@@ -200,7 +206,7 @@ help:
 	@echo '  EXTRA_OPTS="..."              - extra defconfig options (deprecated, use add-defconfig)'
 	@echo '  PKG=<pkg>                     - package name for <target>-pkg'
 	@echo '  CMD=<cmd>                     - command for <target>-shell or <target>-build'
-	@echo '  DAYS=<n>                      - number of days to look back for <target>-refresh (default: 1)'
+	@echo '  SINCE=<n>                     - period of time to look back for <target>-refresh (default: 1 days ago)'
 	@echo '  DEV=<device>                  - device path for <target>-flash and <target>-upgrade'
 	@echo '  DOCKER=<cmd>                  - Docker command to use (default: docker)'
 	@echo '  DOCKER_OPTS="..."             - additional Docker run options'
@@ -312,7 +318,7 @@ ifdef BATCH_MODE
 	$(if $(CMD),,$(error CMD is required to use $*-shell in BATCH_MODE))
 endif
 	@$(call MESSAGE,$(if $(CMD),Executing command,Starting interactive shell))
-	@$(RUN_DOCKER_TARGET) $(CMD)
+	@$(call RUN_DOCKER,$*,-e BATOCERA_GIT_COMMIT=$(GIT_COMMIT)) $(CMD)
 
 %-ccache-stats: %-config
 	@$(MAKE_BUILDROOT_TARGET) ccache-stats
@@ -324,11 +330,11 @@ endif
 ifndef PARALLEL_BUILD
 	$(error PARALLEL_BUILD=y must be set for $*-refresh)
 endif
-	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (DAYS=$(DAYS)))
+	@$(call MESSAGE,Refresh & Targeted Rebuild Trigger (SINCE=$(SINCE)))
 	@python3 $(PROJECT_DIR)/scripts/linux/refresh_resolver.py \
 		--project-dir $(PROJECT_DIR) \
 		--output-dir $(TARGET_OUTPUT_DIR) \
-		--days $(DAYS) \
+		--since='$(SINCE)' \
 		--mandatory "$(MANDATORY_REBUILD_PKGS)"
 
 	@$(call MESSAGE,Removing Host and Target directories)

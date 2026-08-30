@@ -104,6 +104,7 @@ find_best_vaapi_device() {
 }
 
 auto_detect_encoder() {
+    # VA-API Check
     local VA_RESULT VA_ENC VA_DEV
     VA_RESULT=$(find_best_vaapi_device)
     VA_ENC=$(echo "$VA_RESULT" | cut -d'|' -f1)
@@ -111,13 +112,34 @@ auto_detect_encoder() {
 
     if [ "$VA_ENC" != "none" ]; then
         echo "$VA_ENC|$VA_DEV"
-    elif has_nvidia_gpu; then
+        return
+    fi
+
+    # NVIDIA NVENC Check
+    if has_nvidia_gpu; then
         log "Selected NVENC (NVIDIA)"
         echo "hevc_nvenc|none"
-    else
-        log "Selected libx264 (Software)"
-        echo "libx264|none"
+        return
     fi
+
+    # Vulkan Check
+    if command -v batocera-vulkan >/dev/null 2>&1; then
+        local VULKAN_CODECS
+        VULKAN_CODECS=$(batocera-vulkan supportsEncoding)
+        if [ -n "$VULKAN_CODECS" ]; then
+            for enc in hevc_vulkan av1_vulkan h264_vulkan; do
+                if echo "$VULKAN_CODECS" | grep -q "$enc" && ffmpeg -encoders 2>/dev/null | grep -q "$enc"; then
+                    log "Selected Vulkan Encoder: $enc"
+                    echo "$enc|vulkan"
+                    return
+                fi
+            done
+        fi
+    fi
+
+    # Software Fallback
+    log "Selected libx264 (Software)"
+    echo "libx264|none"
 }
 
 # --- Audio Detection ---
@@ -178,18 +200,23 @@ case "$1" in
                 kill -2 "$PID" 2>/dev/null
             done
 
-            # Clean up any stray X11 ffmpeg tasks safely
-            pkill -2 -f "ffmpeg.*x11grab" 2>/dev/null
-
             # Wait for all processes to exit before removing PID file
             for PID in "${PIDS_ARRAY[@]}"; do
                 waited=0
                 while kill -0 "$PID" 2>/dev/null; do
                     sleep 0.1
                     waited=$((waited + 1))
-                    [ "$waited" -ge 50 ] && { log "PID $PID did not exit cleanly, sending SIGTERM"; kill -15 "$PID" 2>/dev/null; break; }
+                    if [ "$waited" -ge 50 ]; then
+                        log "PID $PID did not exit cleanly, sending SIGTERM"
+                        kill -15 "$PID" 2>/dev/null
+                        break
+                    fi
                 done
             done
+
+            # Sanitary cleanup for strays after wait windows have expired
+            pkill -15 -f "ffmpeg.*x11grab" 2>/dev/null
+
             rm -f "$PID_FILE"
         fi
         ;;
@@ -247,8 +274,12 @@ case "$1" in
         fi
 
         # Construct hardware-specific Video Output parameters
+        HW_INIT=()
         VID_OUT=()
-        if echo "$ENCODER" | grep -q "vaapi"; then
+        if echo "$ENCODER" | grep -q "vulkan"; then
+            HW_INIT=(-init_hw_device "vulkan=vk" -filter_hw_device "vk")
+            VID_OUT=(-vf "format=nv12,hwupload" -c:v "$ENCODER" -qp "$V_QUAL")
+        elif echo "$ENCODER" | grep -q "vaapi"; then
             VID_OUT=(-vaapi_device "$SELECTED_DEVICE" -vf "format=nv12,hwupload" -c:v "$ENCODER" -global_quality "$V_QUAL")
         elif echo "$ENCODER" | grep -q "nvenc"; then
             VID_OUT=(-vf "format=nv12" -c:v "$ENCODER" -rc vbr -cq "$CRF" -preset slow)
@@ -264,7 +295,8 @@ case "$1" in
         # Launch FFmpeg
         log "Executing FFmpeg with encoder $ENCODER"
 
-        ffmpeg "${X11_IN[@]}" \
+        ffmpeg "${HW_INIT[@]}" \
+               "${X11_IN[@]}" \
                "${AUDIO_IN[@]}" \
                "${VID_OUT[@]}" \
                "${AUDIO_OUT[@]}" \

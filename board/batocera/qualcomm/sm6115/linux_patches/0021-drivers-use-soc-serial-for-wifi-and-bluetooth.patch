@@ -1,0 +1,298 @@
+From 2135a72efbe41ec801da83be868d2d076dd911e7 Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Thu, 8 Jan 2026 00:34:32 +0000
+Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
+
+---
+ drivers/bluetooth/btqca.c             | 106 +++++++++++++++++++++++++++++-
+ drivers/bluetooth/btqca.h             |   1 +
+ drivers/net/wireless/ath/ath10k/mac.c |  92 +++++++++++++++++++++-
+ drivers/soc/qcom/socinfo.c            |  10 +++
+ 4 files changed, 205 insertions(+), 4 deletions(-)
+
+--- a/drivers/bluetooth/btqca.c	2026-04-12 13:48:06
++++ b/drivers/bluetooth/btqca.c	2026-04-26 21:59:35
+@@ -12,7 +12,109 @@
+ #include <net/bluetooth/hci_core.h>
+ 
+ #include "btqca.h"
++
++extern const char *qcom_serial_number;
++
++/* Define a static, predefined BD_ADDR structure */
++static const bdaddr_t static_bdaddr = {
++	.b = { 0x00, 0x03, 0x7F, 0x33, 0x22, 0x11 }
++};
++
++/**
++ * generate_bdaddr_from_serial - Generates a BD_ADDR using the serial number
++ * @bdaddr: Pointer to bdaddr_t structure to populate
++ *
++ * This function sets the first 3 bytes to 00:03:7F and the last 3 bytes
++ * are derived from the last 6 characters of qcom_serial_number in reversed order.
++ *
++ * Returns 0 on success, negative error code on failure.
++ */
++static int generate_bdaddr_from_serial(struct hci_dev *hdev, bdaddr_t *bdaddr)
++{
++	size_t serial_len;
++	const char *serial = qcom_serial_number;
++	char last6[7] = {0}; // 6 characters + null terminator
++	int i;
++	int ret;
++
++	if (!serial) {
++		bt_dev_err(hdev, "qcom_serial_number is NULL");
++		return -EINVAL;
++	}
++
++	serial_len = strlen(serial);
++	if (serial_len < 6) {
++		bt_dev_err(hdev, "qcom_serial_number is too short: %zu characters", serial_len);
++		return -EINVAL;
++	}
++
++	// Extract the last 6 characters
++	strncpy(last6, serial + serial_len - 6, 6);
++
++	// Initialize the first 3 bytes
++	bdaddr->b[5] = 0x00;
++	bdaddr->b[4] = 0x03;
++	bdaddr->b[3] = 0x7F;
++
++	// Convert the last 6 characters into 3 bytes in reversed order
++	for (i = 0; i < 3; i++) {
++		char byte_str[3] = {0};
++		u8 byte_val;
++
++		byte_str[0] = last6[i * 2];
++		byte_str[1] = last6[i * 2 + 1];
++
++		if (!isxdigit(byte_str[0]) || !isxdigit(byte_str[1])) {
++			bt_dev_err(hdev, "Invalid hex characters in serial number: %c%c",
++					   byte_str[0], byte_str[1]);
++			return -EINVAL;
++		}
+ 
++		ret = kstrtou8(byte_str, 16, &byte_val);
++		if (ret < 0) {
++			bt_dev_err(hdev, "Failed to convert hex string to u8: %c%c",
++					   byte_str[0], byte_str[1]);
++			return ret;
++		}
++
++		bdaddr->b[i] = byte_val; // Assign to bytes 0,1,2 (reversed order)
++	}
++
++	bt_dev_info(hdev, "Generated BD_ADDR: %pMR", bdaddr);
++
++	return 0;
++}
++
++/**
++ * qca_setup_bdaddr_from_serial - program a serial-derived BD_ADDR into the chip.
++ *
++ */
++int qca_setup_bdaddr_from_serial(struct hci_dev *hdev)
++{
++	bdaddr_t generated;
++	int err;
++
++	err = generate_bdaddr_from_serial(hdev, &generated);
++	if (err) {
++		bt_dev_warn(hdev, "serial BD_ADDR generation failed (%d); using fallback",
++			    err);
++		bacpy(&generated, &static_bdaddr);
++	}
++
++	err = qca_set_bdaddr(hdev, &generated);
++	if (err) {
++		bt_dev_err(hdev, "Failed to set the generated BD_ADDR");
++		return err;
++	}
++
++	bacpy(&hdev->public_addr, &generated);
++	bacpy(&hdev->bdaddr, &generated);
++	bt_dev_info(hdev, "BD_ADDR set to %pMR", &hdev->public_addr);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(qca_setup_bdaddr_from_serial);
++
+ int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
+ 			 enum qca_btsoc_type soc_type)
+ {
+@@ -697,7 +799,7 @@
+ }
+ EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
+ 
+-static int qca_check_bdaddr(struct hci_dev *hdev, const struct qca_fw_config *config)
++static int __maybe_unused qca_check_bdaddr(struct hci_dev *hdev, const struct qca_fw_config *config)
+ {
+ 	struct hci_rp_read_bd_addr *bda;
+ 	struct sk_buff *skb;
+@@ -1007,7 +1109,7 @@
+ 		break;
+ 	}
+ 
+-	err = qca_check_bdaddr(hdev, &config);
++	err = qca_setup_bdaddr_from_serial(hdev);
+ 	if (err)
+ 		return err;
+ 
+--- a/drivers/bluetooth/btqca.h	2026-04-12 13:48:06
++++ b/drivers/bluetooth/btqca.h	2026-04-26 21:59:35
+@@ -170,6 +170,7 @@
+ 			 enum qca_btsoc_type);
+ int qca_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr);
+ int qca_send_pre_shutdown_cmd(struct hci_dev *hdev);
++int qca_setup_bdaddr_from_serial(struct hci_dev *hdev);
+ #else
+ 
+ static inline int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+--- a/drivers/net/wireless/ath/ath10k/mac.c	2026-04-12 13:48:06
++++ b/drivers/net/wireless/ath/ath10k/mac.c	2026-04-26 21:58:50
+@@ -28,7 +28,87 @@
+ #include "wmi-ops.h"
+ #include "wow.h"
+ #include "leds.h"
++
++extern const char *qcom_serial_number;
++
++/* Define a small struct for storing a 6-byte MAC address array */
++struct macaddr_t {
++	u8 b[ETH_ALEN];
++};
++
++/**
++ * generate_macaddr_from_serial - Generates a MAC_ADDR using the serial number
++ * @macaddr: Pointer to macaddr_t structure to populate
++ *
++ * This function sets the first 3 bytes to 00:03:7F and the last 3 bytes
++ * are derived from the last 6 characters of qcom_serial_number.
++ *
++ * Returns 0 on success, negative error code on failure.
++ */
++static int generate_macaddr_from_serial(struct ath10k *ar, struct macaddr_t *macaddr)
++{
++	size_t serial_len;
++	const char *serial = qcom_serial_number;
++	char last6[7] = {0}; // 6 characters + null terminator
++	int i;
++	int ret;
++
++	if (!serial) {
++		ath10k_err(ar, "qcom_serial_number is NULL\n");
++		return -EINVAL;
++	}
++
++	serial_len = strlen(serial);
++	if (serial_len < 6) {
++		ath10k_err(ar, "qcom_serial_number is too short: %zu characters\n", serial_len);
++		return -EINVAL;
++	}
++
++	// Extract the last 6 characters
++	strncpy(last6, serial + serial_len - 6, 6);
++
++	// Initialize the first 3 bytes
++	macaddr->b[5] = 0x00;
++	macaddr->b[4] = 0x03;
++	macaddr->b[3] = 0x7F;
++
++	// Convert the last 6 characters into 3 bytes
++	for (i = 0; i < 3; i++) {
++		char byte_str[3] = {0};
++		u8 byte_val;
+ 
++		byte_str[0] = last6[i * 2];
++		byte_str[1] = last6[i * 2 + 1];
++
++		if (!isxdigit(byte_str[0]) || !isxdigit(byte_str[1])) {
++			ath10k_err(ar, "Invalid hex characters in serial number: %c%c\n",
++				   byte_str[0], byte_str[1]);
++			return -EINVAL;
++		}
++
++		ret = kstrtou8(byte_str, 16, &byte_val);
++		if (ret < 0) {
++			ath10k_err(ar, "Failed to convert hex string to u8: %c%c\n",
++				   byte_str[0], byte_str[1]);
++			return ret;
++		}
++
++		macaddr->b[2 - i] = byte_val; // Assign to bytes 2,1,0
++	}
++
++	ath10k_info(ar, "Generated MAC_ADDR: %pM\n", macaddr->b);
++
++	return 0;
++}
++
++static void ath10k_reverse_mac(u8 *dst, const u8 *src)
++{
++	int i;
++
++	for (i = 0; i < ETH_ALEN; i++)
++		dst[i] = src[ETH_ALEN - 1 - i];
++}
++
+ /*********/
+ /* Rates */
+ /*********/
+@@ -9995,10 +10075,18 @@
+ 	struct ieee80211_supported_band *band;
+ 	void *channels;
+ 	int ret;
++	struct macaddr_t generated_macaddr;
+ 
+ 	if (!is_valid_ether_addr(ar->mac_addr)) {
+-		ath10k_warn(ar, "invalid MAC address; choosing random\n");
+-		eth_random_addr(ar->mac_addr);
++		ret = generate_macaddr_from_serial(ar, &generated_macaddr);
++		if (ret == 0) {
++			/* If successful, use the newly generated MAC address. */
++			ath10k_reverse_mac(ar->mac_addr, generated_macaddr.b);
++			ath10k_info(ar, "MAC_ADDR set to %pM from serial\n", ar->mac_addr);
++		} else {
++			ath10k_warn(ar, "invalid MAC address and serial generation failed; choosing random\n");
++			eth_random_addr(ar->mac_addr);
++		}
+ 	}
+ 	SET_IEEE80211_PERM_ADDR(ar->hw, ar->mac_addr);
+ 
+--- a/drivers/soc/qcom/socinfo.c	2026-04-12 13:48:06
++++ b/drivers/soc/qcom/socinfo.c	2026-04-26 21:58:50
+@@ -224,6 +224,10 @@
+ };
+ #endif /* CONFIG_DEBUG_FS */
+ 
++/* Global variable to hold the serial number */
++const char *qcom_serial_number;
++EXPORT_SYMBOL(qcom_serial_number);
++
+ struct qcom_socinfo {
+ 	struct soc_device *soc_dev;
+ 	struct soc_device_attribute attr;
+@@ -891,6 +895,9 @@
+ 							le32_to_cpu(info->serial_num));
+ 		if (!qs->attr.serial_number)
+ 			return -ENOMEM;
++
++		/* Assign the serial number to the global variable */
++		qcom_serial_number = qs->attr.serial_number;
+ 	}
+ 
+ 	qs->soc_dev = soc_device_register(&qs->attr);
+@@ -914,6 +921,9 @@
+ 	soc_device_unregister(qs->soc_dev);
+ 
+ 	socinfo_debugfs_exit(qs);
++
++	/* Clear the global serial number */
++	qcom_serial_number = NULL;
+ }
+ 
+ static struct platform_driver qcom_socinfo_driver = {
+-- 
+2.34.1

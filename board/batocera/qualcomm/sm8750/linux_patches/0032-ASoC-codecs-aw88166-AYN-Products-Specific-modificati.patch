@@ -6,6 +6,7 @@ Subject: [PATCH 34/58] ASoC: codecs: aw88166: AYN Products Specific
 
 - AYN Products have problem with regmap_raw_write under i2c_hub_*
 - Add .ops in aw88166_dai
+- Add firmware-name support in device tree
 - Add device match table, so can be loaded as module
 
 Signed-off-by: Teguh Sobirin <teguh@sobir.in>
@@ -156,3 +157,4 @@ index daee4de9e3b0..8c23c6db2547 100644
  	.id_table = aw88166_i2c_id,
 -- 
 2.43.0
+

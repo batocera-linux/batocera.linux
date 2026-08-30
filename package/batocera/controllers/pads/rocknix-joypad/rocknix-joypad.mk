@@ -3,8 +3,8 @@
 # rocknix-joypad
 #
 ################################################################################
-# Version: Commits on Jan 21, 2026
-ROCKNIX_JOYPAD_VERSION = 7647fdb0fc89cd69b284903bf7707e861df5dc7e
+# Version: Commits on Aug 14, 2026
+ROCKNIX_JOYPAD_VERSION = 1dd1115c8d231ba934253efb91ffb0c6ad8e993d
 ROCKNIX_JOYPAD_SITE = $(call github,ROCKNIX,rocknix-joypad,$(ROCKNIX_JOYPAD_VERSION))
 ROCKNIX_JOYPAD_DEPENDENCIES = 
 

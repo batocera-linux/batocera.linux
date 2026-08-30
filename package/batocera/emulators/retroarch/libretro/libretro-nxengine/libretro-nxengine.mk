@@ -3,8 +3,8 @@
 # libretro-nxengine
 #
 ################################################################################
-# Version: Commits on Feb 21, 2023
-LIBRETRO_NXENGINE_VERSION = 1f371e51c7a19049e00f4364cbe9c68ca08b303a
+# Version: Commits on Aug 22, 2026
+LIBRETRO_NXENGINE_VERSION = fd1c0686f8b4c0aea9b5addbc077e3ad7da23bb7
 LIBRETRO_NXENGINE_SITE = $(call github,libretro,nxengine-libretro,$(LIBRETRO_NXENGINE_VERSION))
 LIBRETRO_NXENGINE_LICENSE = GPLv3
 LIBRETRO_NXENGINE_DEPENDENCIES += retroarch

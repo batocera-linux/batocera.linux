@@ -3,8 +3,8 @@
 # libretro-vircon32
 #
 ################################################################################
-# Version: 1.3 Commits on Aug 29, 2024
-LIBRETRO_VIRCON32_VERSION = v1.3
+# Version: 1.6 Commits on Feb 18, 2026
+LIBRETRO_VIRCON32_VERSION = v1.6
 LIBRETRO_VIRCON32_SITE = https://github.com/vircon32/vircon32-libretro
 LIBRETRO_VIRCON32_SITE_METHOD = git
 LIBRETRO_VIRCON32_GIT_SUBMODULES = YES

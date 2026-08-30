@@ -1,0 +1,45 @@
+#!/bin/bash
+
+MODEL=$(batocera-model)
+
+start() {
+    if [[ "$MODEL" == "MANGMI_Air_X_MQ65" || "$MODEL" == "MANGMI_Air_X_MQ66" || "$MODEL" == "MANGMI_Air_X_MQ66B" ]]; then
+        echo "Starting fan control daemon for $MODEL..."
+        /usr/bin/mangmi_fan_control.py &
+    else
+        echo "Skipping fan control: Model '$MODEL' does not require this service."
+    fi
+}
+
+stop() {
+    if [[ "$MODEL" == "MANGMI_Air_X_MQ65" || "$MODEL" == "MANGMI_Air_X_MQ66" || "$MODEL" == "MANGMI_Air_X_MQ66B" ]]; then
+        echo "Stopping fan control daemon..."
+        pkill -f mangmi_fan_control.py
+        # Force the fan off to prevent it running indefinitely
+        if [ -f /sys/devices/platform/gpio-fan/hwmon/hwmon20/pwm1 ]; then
+            echo 0 > /sys/devices/platform/gpio-fan/hwmon/hwmon20/pwm1
+        fi
+    fi
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart|reload)
+        restart
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?

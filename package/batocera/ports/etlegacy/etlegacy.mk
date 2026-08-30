@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-ETLEGACY_VERSION = v2.84.0
+ETLEGACY_VERSION = v2.85.0
 ETLEGACY_SITE = https://github.com/etlegacy/etlegacy.git
 ETLEGACY_SITE_METHOD = git
 ETLEGACY_GIT_SUBMODULES = YES
@@ -54,7 +54,7 @@ endif
 
 define ETLEGACY_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/share/etlegacy
-	cp $(@D)/buildroot-build/legacy/legacy_2.84-dirty.pk3 \
+	cp $(@D)/buildroot-build/legacy/legacy_*.pk3 \
 	    $(TARGET_DIR)/usr/share/etlegacy
     cp $(@D)/buildroot-build/etl \
 	    $(TARGET_DIR)/usr/bin/etl

@@ -37,6 +37,55 @@ custom_features:
       Pixelated (Nearest): pixelated
       Smooth (Linear): smooth
       Integer: integer
+  amiberry_cpu:
+    group: ADVANCED OPTIONS
+    prompt: CPU MODEL
+    description: Override the CPU that comes with the selected Amiga model.
+    choices:
+      "68000": "68000"
+      "68010": "68010"
+      "68020": "68020"
+      "68030": "68030"
+      "68040": "68040"
+      "68060": "68060"
+  amiberry_cpu_multiplier:
+    group: ADVANCED OPTIONS
+    prompt: CPU CLOCK
+    description: Increase cpu frequency.
+    choices:
+      ' 3.54 MHz': 1
+      ' 7.09 MHz (A500 speed)': 2
+      14.18 MHz (A1200 speed): 4
+      28.37 MHz: 8
+      35.46 MHz: 10
+      42.56 MHz: 12
+      49.66 MHz (50MHz accelerator): 14
+      56.75 MHz: 16
+  amiberry_cycle_exact:
+    group: ADVANCED OPTIONS
+    prompt: CYCLE EXACT
+    description: Accurate cpu and blitter timings.
+    choices:
+      "ON (Default)": "on"
+      "OFF": "off"
+  amiberry_z3_fastram:
+    group: ADVANCED OPTIONS
+    prompt: ZORRO III FAST RAM
+    description: Extra memory over the 8MB default fastram. Need a 32bit cpu >= 68020.
+    choices:
+      8 MB: 8
+      16 MB: 16
+      32 MB: 32
+      64 MB: 64
+      128 MB: 128
+      256 MB: 256
+  amiberry_cd_turbo:
+    group: ADVANCED OPTIONS
+    prompt: TURBO CD SPEED
+    description: Read CD images faster than the real drive.
+    choices:
+      "OFF (Default)": False
+      "ON": True
   amiberry_scandoubler:
     group: ADVANCED OPTIONS
     prompt: REMOVE INTERLACE ARTIFACTS

@@ -1,0 +1,34 @@
+ASoC: aw88395: lib: skip monitor sections when parsing V1 ACF headers
+
+Vendor-tool-generated ACF firmware files routinely carry an
+ACF_SEC_TYPE_MONITOR section per device. The V1 header scene-count
+pass already excludes monitor sections, but the parse pass iterates
+every DDE matching the device and aw_dev_parse_data_by_sec_type_v1()
+fails the whole parse with "unsupported SEC_TYPE [10]" when it
+reaches one. The V0 path skips monitor sections explicitly; make the
+V1 path do the same. Seen with the AW88261 ACF shipped on the KONKR
+Pocket FIT Elite.
+
+diff --git a/sound/soc/codecs/aw88395/aw88395_lib.c b/sound/soc/codecs/aw88395/aw88395_lib.c
+index 056adbc..a2325dd 100644
+--- a/sound/soc/codecs/aw88395/aw88395_lib.c
++++ b/sound/soc/codecs/aw88395/aw88395_lib.c
+@@ -863,6 +863,18 @@ static int aw_dev_parse_data_by_sec_type_v1(struct aw_device *aw_dev,
+ 		prof_info->prof_desc[*cur_scene_id].id = cfg_dde->dev_profile;
+ 		(*cur_scene_id)++;
+ 		break;
++	case ACF_SEC_TYPE_MONITOR:
++		/*
++		 * Monitor configuration is not implemented for V1 ACF
++		 * headers, but vendor-tool-generated ACF files routinely
++		 * carry a monitor section per device. The scene-count pass
++		 * (aw_get_dev_scene_count_v1() /
++		 * aw_get_default_scene_count_v1()) already excludes monitor
++		 * sections, so skip them here too instead of failing the
++		 * whole parse.
++		 */
++		dev_dbg(aw_dev->dev, "skip monitor section");
++		break;
+ 	default:
+ 		dev_err(aw_dev->dev, "unsupported SEC_TYPE [%d]", cfg_dde->data_type);
+ 		return -EINVAL;

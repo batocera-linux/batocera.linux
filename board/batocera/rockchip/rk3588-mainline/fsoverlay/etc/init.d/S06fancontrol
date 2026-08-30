@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Starts RK3588 fan control daemon on Batocera
+#
+
+start() {
+	printf "Starting fan daemon: "
+	start-stop-daemon -S -b -m -q -p /var/run/rk3588-fan.pid --exec /usr/bin/rk3588-fan -- start
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+}
+
+stop() {
+	printf "Stopping fan daemon: "
+	/usr/bin/rk3588-fan stop
+	start-stop-daemon -K -q -p /var/run/rk3588-fan.pid
+	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	rm -f /var/run/rk3588-fan.pid
+}
+
+restart() {
+	stop
+	sleep 1
+	start
+}
+
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart|reload)
+  	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 # this list can be found in es_system.yml
 # at this stage we don't know if arcade will be kept as one system only in metadata, so i hardcode this list for now
 _ARCADE_SYSTEMS: Final = {
-    'lindbergh',
+    'linuxloader',
     'naomi',
     'naomi2',
     'atomiswave',

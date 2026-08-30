@@ -21,6 +21,9 @@ HLSDK_XASH3D_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium
 HLSDK_XASH3D_LICENSE = Half Life 1 SDK LICENSE
 HLSDK_XASH3D_LICENSE_FILES = LICENSE
 
+# GCC 15 / C23 compatibility fix
+HLSDK_XASH3D_CONF_ENV = CFLAGS="$(TARGET_CFLAGS) -std=gnu17"
+
 HLSDK_XASH3D_CONF_OPTS += --build-type=release
 
 ifeq ($(BR2_ARCH_IS_64),y)

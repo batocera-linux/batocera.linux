@@ -131,6 +131,34 @@
 	axis-range = <1024>;
 };
 
+&{/gpio-keys} {
+	pinctrl-0 = <&volume_up_n>, <&paddle_keys_default>;
+
+	key-paddle-left {
+		label = "Back Paddle Left";
+		debounce-interval = <15>;
+		gpios = <&tlmm 57 GPIO_ACTIVE_LOW>;
+		linux,code = <BTN_Z>;
+	};
+
+	key-paddle-right {
+		label = "Back Paddle Right";
+		debounce-interval = <15>;
+		gpios = <&tlmm 58 GPIO_ACTIVE_LOW>;
+		linux,code = <BTN_C>;
+	};
+};
+
+&tlmm {
+	paddle_keys_default: paddle-keys-default-state {
+		pins = "gpio57", "gpio58";
+		function = "gpio";
+		bias-pull-up;
+		drive-strength = <2>;
+		input-enable;
+	};
+};
+
 &mdss_dsi0 {
 	vdda-supply = <&vreg_l3e_1p2>;
 	status = "okay";

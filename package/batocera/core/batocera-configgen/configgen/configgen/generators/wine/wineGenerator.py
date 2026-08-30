@@ -69,3 +69,6 @@ class WineGenerator(Generator):
 
     def getMouseMode(self, config, rom):
         return config.get_bool('force_mouse')
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16 / 9

@@ -1,0 +1,35 @@
+diff --git a/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts b/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
+index 421d73d..9af2218 100644
+--- a/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
++++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-odin3.dts
+@@ -34,6 +34,30 @@ vdd_disp_2v8: vdd-disp-2v8-regulator {
+ 	};
+ };
+ 
++&pm8550_pwm {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	led@1 {
++		reg = <1>;
++		color = <LED_COLOR_ID_RED>;
++		label = "red:status";
++	};
++
++	led@2 {
++		reg = <2>;
++		color = <LED_COLOR_ID_GREEN>;
++		label = "green:power";
++	};
++
++	led@3 {
++		reg = <3>;
++		color = <LED_COLOR_ID_BLUE>;
++		label = "blue:indicator";
++	};
++};
++
+ &i2c4 {
+ 	clock-frequency = <400000>;
+ 	status = "okay";

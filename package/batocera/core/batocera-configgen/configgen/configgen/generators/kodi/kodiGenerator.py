@@ -7,8 +7,10 @@ from ..Generator import Generator
 from . import kodiConfig
 
 if TYPE_CHECKING:
-    from ...types import HotkeysContext
+    from pathlib import Path
 
+    from ...config import SystemConfig
+    from ...types import HotkeysContext, Resolution
 
 class KodiGenerator(Generator):
 
@@ -24,3 +26,6 @@ class KodiGenerator(Generator):
             "name": "kodi",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
+
+    def getInGameRatio(self, config: SystemConfig, gameResolution: Resolution, rom: Path) -> float:
+        return gameResolution["width"] / gameResolution["height"]

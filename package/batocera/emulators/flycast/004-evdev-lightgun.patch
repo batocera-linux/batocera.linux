@@ -256,16 +256,16 @@ diff --git a/core/sdl/sdl.cpp b/core/sdl/sdl.cpp
  }
  
  void input_sdl_quit()
-@@ -284,6 +288,9 @@ void input_sdl_quit()
+@@ -300,6 +300,9 @@ void input_sdl_quit()
  	EventManager::unlisten(Event::Pause, emuEventCallback);
  	EventManager::unlisten(Event::Resume, emuEventCallback);
  	SDLGamepad::closeAllGamepads();
 +#if !defined(_WIN32) && !defined(__APPLE__) && !defined(__SWITCH__)
 +	EvdevLightgun::term();
 +#endif
- 	SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC);
- }
- 
+ 	for (auto [id, mouse] : sdl_mice)
+ 		GamepadDevice::Unregister(mouse);
+ 	sdl_mice.clear();
 diff --git a/core/sdl/CMakeLists.txt b/core/sdl/CMakeLists.txt
 --- a/core/sdl/CMakeLists.txt
 +++ b/core/sdl/CMakeLists.txt

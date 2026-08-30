@@ -1,0 +1,22 @@
+[project]
+name = "batocera-bezel-overlay"
+version = '44.0'
+dependencies = [
+    'pygobject',
+]
+
+[project.scripts]
+batocera-bezel-overlay = "batocera_bezel_overlay.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_bezel_overlay"]
+
+[tool.ruff]
+extend = "../../pyproject.toml"
+
+[tool.ruff.lint.per-file-ignores]
+"batocera_bezel_overlay/_layer_shell.pyi" = ["PYI052"]

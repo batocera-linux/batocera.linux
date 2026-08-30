@@ -1,0 +1,871 @@
+From: ROCKNIX <noreply@rocknix.org>
+Date: Thu, 5 Jun 2026 00:00:00 +0000
+Subject: [PATCH] input: joystick: add AYANEO SPI MCU gamepad driver
+
+Reverse-engineered from the stock tc_mcu_joystick.ko. The wire
+protocol is the MCU's to dictate: a frame is eleven one-word SPI
+messages, each under its own chip select, ~20 us apart. Shorter gaps
+(0-15 us) survive a gentle 8-frame probe and then corrupt the stream
+within a second of sustained 250 Hz traffic, and a whole frame sent
+under one chip select gets no answer at any clock from 1 MHz down to
+250 kHz. The gap is spun instead of slept (saves ~2500 hrtimer
+interrupts/s) and the MCU is told to slow to ~37 frames/s once the
+pad has sat untouched for 10 s, so an idle pad costs ~450
+interrupts/s instead of ~5500; any input restores 250 Hz at once.
+---
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 0da3c0f44..edfdad333 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -426,4 +426,15 @@
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called adafruit-seesaw.
+ 
++config JOYSTICK_MCU
++	tristate "AYANEO SPI MCU gamepad"
++	depends on SPI
++	help
++	  Driver for the AYANEO MCU-based gamepad on Qualcomm SM8750
++	  handhelds (KONKR Pocket FIT Elite etc.), attached over SPI with a
++	  16-bit register protocol. Provides the analog sticks, D-pad and
++	  buttons.
++
++	  To compile as a module choose M: the module is called mcu_joystick.
++
+ endif
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 3de503e29..3b7688cda 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -42,3 +42,4 @@
+ obj-$(CONFIG_JOYSTICK_WALKERA0701)	+= walkera0701.o
+ obj-$(CONFIG_JOYSTICK_XPAD)		+= xpad.o
+ obj-$(CONFIG_JOYSTICK_ZHENHUA)		+= zhenhua.o
++obj-$(CONFIG_JOYSTICK_MCU)		+= mcu_joystick.o
+diff --git a/drivers/input/joystick/mcu_joystick.c b/drivers/input/joystick/mcu_joystick.c
+new file mode 100644
+--- /dev/null
++++ b/drivers/input/joystick/mcu_joystick.c
+@@ -0,0 +1,822 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * AYANEO SPI MCU gamepad driver (KONKR Pocket FIT Elite / AYN AYANEO SM8750 family)
++ *
++ * Clean-room reimplementation of the stock vendor module `tc_mcu_joystick.ko`
++ * (GPL, author "whale xiao"), reverse-engineered from its disassembly. The MCU
++ * exposes the controller over SPI as a bank of 16-bit registers:
++ *
++ *   reg 0x8080..0x8082 : frame header magic, ASCII "AYANEO"
++ *                        (0x4159 'AY', 0x414e 'AN', 0x454f 'EO')
++ *   reg 0x8083         : key      (16-bit button bitmap)
++ *   reg 0x8084         : x        (left stick X)
++ *   reg 0x8085         : y        (left stick Y)
++ *   reg 0x8086         : z        (right stick X)
++ *   reg 0x8087         : rz       (right stick Y)
++ *   reg 0x8088         : trigger  (analog triggers)
++ *
++ * Each register access is a 16-bit-word SPI transfer (the stock "w16r16"
++ * primitive): one spi_sync message per word (own CS), bits_per_word=16 with
++ * NATIVE-endian u16 buffers (the SPI core transmits >8-bit words MSB-first
++ * from CPU-native memory; the stock driver passes plain u16 arrays), ~20 us
++ * between words (stock default delay). Words with bit15 clear are COMMANDS
++ * (rx discarded): 0x7000|rate sets the irq rate, 0x7f01 is the per-frame
++ * keepalive/ACK.
++ *
++ * IMPORTANT (confirmed on stock Android via dmesg — "Head check: 0x000000"
++ * on a WORKING system): the MCU returns ZEROS until the init commands have
++ * been sent. The init header read failing is NORMAL; the commands must be
++ * sent unconditionally, after which the polled data frames carry the
++ * "AYANEO" magic and validate. The stock data frame reads the 6 data regs
++ * FIRST and the 3 header regs LAST (0x8083..0x8088, 0x8080..0x8082); frames
++ * whose header doesn't validate are discarded, not reported.
++ * An IRQ on irq-gpio signals a fresh frame; we also poll as a fallback.
++ *
++ * The Y/RY axis inversion and the trigger split are decoded from the stock
++ * xpad_irq_handler's input_event calls and verified against stock Android
++ * getevent. The key-bit -> BTN_* map was measured per-button on hardware
++ * (the stock-disasm bit grouping was
++ * wrong): bits 0-3 A/B/X/Y, bits 4-7 dpad U/D/L/R, bits 8-9 L1/R1,
++ * bits 10-11 L3/R3, bits 12-13 START/SELECT, bit 14 the "back" extra
++ * (-> BTN_MODE/guide), bit 15 unused. The device's other extra buttons
++ * (KONKR, L4/R4, rear paddles, ...) set NO MCU bit here — they arrive over
++ * the separate MCU UART and are handled by the konkr_sysbtn driver.
++ *
++ * If the MCU stops answering (header gone — e.g. when an unacknowledged
++ * read races the poll stream), the poll path auto-recovers:
++ * release all inputs, re-send the init commands, and after repeated
++ * failures redo the full power-on dance.
++ */
++#include <linux/bitops.h>
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/input.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/mutex.h>
++#include <linux/of.h>
++#include <linux/pinctrl/consumer.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++#include <linux/workqueue.h>
++
++#define MCU_REG_HEADER		0x8080	/* first of 3 header regs */
++#define MCU_REG_KEY		0x8083
++#define MCU_REG_X		0x8084
++#define MCU_REG_Y		0x8085
++#define MCU_REG_Z		0x8086
++#define MCU_REG_RZ		0x8087
++#define MCU_REG_TRIGGER		0x8088
++#define MCU_NREGS		9	/* 0x8080..0x8088 */
++
++#define MCU_HDR0		0x4159	/* "AY" */
++#define MCU_HDR1		0x414e	/* "AN" */
++#define MCU_HDR2		0x454f	/* "EO" */
++
++#define MCU_CMD_IRQ_RATE	0x7000	/* | rate byte (0 outside irq mode) */
++#define MCU_CMD_START		0x7f01	/* per-frame keepalive/ACK (stock sends
++					 * it after EVERY poll read, plus once
++					 * at power-up) */
++
++/*
++ * The rate byte of MCU_CMD_IRQ_RATE stretches the MCU's frame period.
++ * Measured: period ~= 3.3 ms + N * 0.24 ms, so 0 is the native 250 Hz,
++ * 0x32 gives ~67 frames/s, 0xfa ~16/s. It kicks in right away and rate
++ * 0 undoes it. Even a controller nobody is holding costs ~3000
++ * interrupts/s at 250 Hz (GPIO edge + the per-word SPI completions), so
++ * once the pad has been quiet for a while we send 0x64 and run at
++ * ~37 frames/s. That 27 ms period sits well inside MCU_IRQ_OK_MS, so
++ * the poll fallback stays put. The price is one late frame: the first
++ * press after idling can take up to ~27 ms to show up, and that same
++ * frame puts the rate back to 250 Hz.
++ */
++#define MCU_CMD_IDLE_RATE	(MCU_CMD_IRQ_RATE | 0x64)
++#define MCU_IDLE_AFTER_MS	10000
++#define MCU_STICK_DEADBAND	256	/* raw stick counts (~0.8% of range) */
++#define MCU_STICK_NEUTRAL	2048	/* "released" threshold for idle entry */
++
++/*
++ * Rumble: the stock driver's ff path writes the (u16>>8) strong/weak FF
++ * magnitudes to two 7-bit write registers (a write word = (reg << 8) | val,
++ * bit15 clear; cf. the keepalive 0x7f01 = write reg 0x7f val 0x01).
++ * Reversed from tc_mcu_joystick.ko mcu_joystick_ff_play/report_work.
++ */
++#define MCU_REG_RUMBLE_STRONG	0x60
++#define MCU_REG_RUMBLE_WEAK	0x61
++#define MCU_WRITE_WORD(reg, val)	((((reg) & 0x7f) << 8) | ((val) & 0xff))
++
++#define MCU_XFER_GAP_US		20	/* stock inter-word delay (probe sets 0x14) */
++
++/* stock xpad_set_up_abs: sticks are SIGNED s16 centered at 0 (so all-zero
++ * data at rest is NORMAL); triggers are two u8s packed into the 16-bit
++ * trigger reg, 0..255 each */
++#define MCU_AXIS_MIN		(-32768)
++#define MCU_AXIS_MAX		32767
++#define MCU_AXIS_FUZZ		16
++#define MCU_AXIS_FLAT		128
++#define MCU_TRIG_MAX		255
++
++#define MCU_POLL_MS		16	/* ~60 Hz fallback poll (only when the IRQ is quiet) */
++#define MCU_IRQ_OK_MS		50	/* if the IRQ delivered a frame within this
++					 * window it is healthy; the fallback poll
++					 * then skips its redundant SPI read and
++					 * only re-arms as a wedge watchdog */
++
++#define MCU_DEAD_FRAMES		30	/* consecutive bad poll frames (~0.5 s)
++					 * before declaring the MCU wedged */
++#define MCU_REINITS_BEFORE_DANCE 3	/* command re-sends before a full
++					 * power cycle */
++
++/* key bitmap -> input event. Map measured per-button on hardware (not
++ * derived from the stock disassembly, whose bit grouping turned out wrong). */
++struct mcu_btn {
++	u8 bit;
++	u16 code;
++};
++
++static const struct mcu_btn mcu_btn_map[] = {
++	{ 0,  BTN_SOUTH },	/* 0x130, A */
++	{ 1,  BTN_EAST },	/* 0x131, B */
++	{ 2,  BTN_NORTH },	/* 0x133, X */
++	{ 3,  BTN_WEST },	/* 0x134, Y */
++	{ 8,  BTN_TL },		/* 0x136, L1 */
++	{ 9,  BTN_TR },		/* 0x137, R1 */
++	{ 10, BTN_THUMBL },	/* 0x13d, L3 */
++	{ 11, BTN_THUMBR },	/* 0x13e, R3 */
++	{ 12, BTN_START },	/* 0x13b */
++	{ 13, BTN_SELECT },	/* 0x13a */
++	{ 14, BTN_MODE },	/* 0x13c, "back" extra -> guide */
++};
++
++/* dpad bits -> HAT axes (measured) */
++#define MCU_DPAD_UP	BIT(4)
++#define MCU_DPAD_DOWN	BIT(5)
++#define MCU_DPAD_LEFT	BIT(6)
++#define MCU_DPAD_RIGHT	BIT(7)
++
++struct mcu_joystick {
++	struct spi_device *spi;
++	struct input_dev *input;
++	struct gpio_desc *power_gpio;
++	struct gpio_desc *en_gpio;
++	struct gpio_desc *irq_gpio;
++	struct regulator *vdd;
++	struct pinctrl *pctl;
++	struct pinctrl_state *pctl_active;
++	struct mutex io_lock;
++	struct delayed_work poll_work;
++	struct work_struct ff_work;	/* rumble: deferred SPI write (play is atomic) */
++	u8 ff_strong;
++	u8 ff_weak;
++	bool gap_sleep;			/* watchdog fallback: sleep the inter-word gap */
++	u16 last_frame[MCU_NREGS];	/* previous frame, for change detection */
++	bool have_last;
++	unsigned long last_change;	/* jiffies of the last detected change */
++	bool rate_idle;			/* MCU slowed to MCU_CMD_IDLE_RATE */
++	int irq;
++	unsigned long last_irq_frame;	/* jiffies of the last frame read by mcu_irq */
++	unsigned int bad_frames;
++	unsigned int reinit_fails;
++	bool dead;
++};
++
++/*
++ * One 16-bit word on the wire with its own CS assertion (the stock driver
++ * issues one spi_sync message per word): bits_per_word=16 with native-endian
++ * u16 buffers, exactly like the stock w16r16_seq.
++ */
++static int mcu_xfer_word(struct mcu_joystick *mcu, u16 tx, u16 *rx)
++{
++	u16 txw = tx, rxw = 0;
++	struct spi_transfer xfer = {
++		.tx_buf = &txw,
++		.rx_buf = &rxw,
++		.len = 2,
++		.bits_per_word = 16,
++	};
++	int ret;
++
++	ret = spi_sync_transfer(mcu->spi, &xfer, 1);
++	if (rx)
++		*rx = rxw;
++	return ret;
++}
++
++/*
++ * Read a register sequence. The MCU uses a PIPELINED full-duplex protocol
++ * (reverse-engineered from the stock w16r16_seq): each 16-bit transfer writes
++ * the next register address on MOSI while clocking the PREVIOUS register's
++ * value in on MISO. So N registers take N+1 transfers, each its own CS with a
++ * ~20 us gap; out[i] is the value read on transfer i+1.
++ */
++static int mcu_read_seq(struct mcu_joystick *mcu, const u16 *addrs,
++			u16 *out, int n)
++{
++	int i, ret = 0;
++
++	mutex_lock(&mcu->io_lock);
++	for (i = 0; i <= n; i++) {
++		u16 rx;
++
++		ret = mcu_xfer_word(mcu, i < n ? addrs[i] : 0, &rx);
++		if (ret)
++			break;
++		if (i > 0)
++			out[i - 1] = rx;
++		/*
++		 * Don't sleep the gap, spin it. usleep_range() here costs
++		 * an hrtimer interrupt per word, ~2500/s at the full frame
++		 * rate, and the wire looks the same either way. The 20 us
++		 * has to stay though: shorter gaps hold up for a few
++		 * frames, then the stream corrupts under real traffic. A
++		 * whole frame under one chip select gets no answer at all,
++		 * at any SPI clock we tried. If frames go bad anyway the
++		 * watchdog sets gap_sleep and we sleep like stock again,
++		 * permanently.
++		 */
++		if (mcu->gap_sleep)
++			usleep_range(MCU_XFER_GAP_US, MCU_XFER_GAP_US + 2);
++		else
++			udelay(MCU_XFER_GAP_US);
++	}
++	mutex_unlock(&mcu->io_lock);
++	return ret;
++}
++
++/*
++ * Stock read_data frame layout: the 6 data regs FIRST, the 3 header regs
++ * LAST. regs[0..5] = key,x,y,z,rz,trigger; regs[6..8] = "AYANEO" header.
++ */
++static const u16 mcu_frame_addrs[MCU_NREGS] = {
++	MCU_REG_KEY, MCU_REG_X, MCU_REG_Y, MCU_REG_Z, MCU_REG_RZ,
++	MCU_REG_TRIGGER,
++	MCU_REG_HEADER, MCU_REG_HEADER + 1, MCU_REG_HEADER + 2,
++};
++
++#define MCU_FRAME_KEY	0
++#define MCU_FRAME_X	1
++#define MCU_FRAME_Y	2
++#define MCU_FRAME_Z	3
++#define MCU_FRAME_RZ	4
++#define MCU_FRAME_TRIG	5
++#define MCU_FRAME_HDR	6
++
++static int mcu_read_frame(struct mcu_joystick *mcu, u16 regs[MCU_NREGS])
++{
++	return mcu_read_seq(mcu, mcu_frame_addrs, regs, MCU_NREGS);
++}
++
++static bool mcu_frame_hdr_ok(const u16 regs[MCU_NREGS])
++{
++	return regs[MCU_FRAME_HDR] == MCU_HDR0 &&
++	       regs[MCU_FRAME_HDR + 1] == MCU_HDR1 &&
++	       regs[MCU_FRAME_HDR + 2] == MCU_HDR2;
++}
++
++/* command word (bit15 clear): single transfer, response discarded */
++static int mcu_write_word(struct mcu_joystick *mcu, u16 word)
++{
++	int ret;
++
++	mutex_lock(&mcu->io_lock);
++	ret = mcu_xfer_word(mcu, word, NULL);
++	mutex_unlock(&mcu->io_lock);
++	return ret;
++}
++
++/*
++ * Rumble. input_ff_create_memless calls the play callback from a softirq
++ * (the ff-memless timer), so it cannot sleep — stash the magnitudes and defer
++ * the SPI writes to a work item. The MCU takes two write registers: 0x60 =
++ * strong, 0x61 = weak (each the u16 FF magnitude scaled to its high byte).
++ */
++static void mcu_ff_work(struct work_struct *work)
++{
++	struct mcu_joystick *mcu = container_of(work, struct mcu_joystick, ff_work);
++
++	mcu_write_word(mcu, MCU_WRITE_WORD(MCU_REG_RUMBLE_STRONG, mcu->ff_strong));
++	mcu_write_word(mcu, MCU_WRITE_WORD(MCU_REG_RUMBLE_WEAK, mcu->ff_weak));
++}
++
++static int mcu_ff_play(struct input_dev *in, void *data, struct ff_effect *eff)
++{
++	struct mcu_joystick *mcu = data;
++
++	if (eff->type != FF_RUMBLE)
++		return 0;
++
++	mcu->ff_strong = eff->u.rumble.strong_magnitude >> 8;
++	mcu->ff_weak = eff->u.rumble.weak_magnitude >> 8;
++	schedule_work(&mcu->ff_work);
++	return 0;
++}
++
++/* stock init order: irq-rate command (rate 0 outside irq mode), then the
++ * 0x7f01 "go"; data regs only update once these have been sent */
++static void mcu_send_init_cmds(struct mcu_joystick *mcu)
++{
++	mcu_write_word(mcu, MCU_CMD_IRQ_RATE);
++	mcu_write_word(mcu, MCU_CMD_START);
++	/* rate is back at 250 Hz now, reset the idle tracking */
++	mcu->rate_idle = false;
++	mcu->have_last = false;
++	mcu->last_change = jiffies;
++}
++
++/*
++ * Decides when to slow the MCU down and when to bring it back. A frame
++ * is "activity" if buttons, dpad or triggers changed at all, or a stick
++ * moved more than a small deadband. Nothing changed for
++ * MCU_IDLE_AFTER_MS and the pad fully released -> drop the rate; the
++ * first frame that differs -> back to full rate. The released check is
++ * there because holding a stick at full tilt for a minute straight is
++ * still playing, that must never idle. Only the frame paths call this
++ * (threaded IRQ and poll work, both process context), so a race just
++ * means one extra rate command. Harmless.
++ */
++static const int mcu_stick_regs[] = {
++	MCU_FRAME_X, MCU_FRAME_Y, MCU_FRAME_Z, MCU_FRAME_RZ,
++};
++
++static bool mcu_frame_changed(struct mcu_joystick *mcu,
++			      const u16 regs[MCU_NREGS])
++{
++	int i;
++
++	if (!mcu->have_last)
++		return true;
++	if (regs[MCU_FRAME_KEY] != mcu->last_frame[MCU_FRAME_KEY] ||
++	    regs[MCU_FRAME_TRIG] != mcu->last_frame[MCU_FRAME_TRIG])
++		return true;
++	for (i = 0; i < ARRAY_SIZE(mcu_stick_regs); i++)
++		if (abs((s16)regs[mcu_stick_regs[i]] -
++			(s16)mcu->last_frame[mcu_stick_regs[i]]) > MCU_STICK_DEADBAND)
++			return true;
++	return false;
++}
++
++static bool mcu_frame_neutral(const u16 regs[MCU_NREGS])
++{
++	int i;
++
++	if (regs[MCU_FRAME_KEY] || regs[MCU_FRAME_TRIG])
++		return false;
++	for (i = 0; i < ARRAY_SIZE(mcu_stick_regs); i++)
++		if (abs((s16)regs[mcu_stick_regs[i]]) > MCU_STICK_NEUTRAL)
++			return false;
++	return true;
++}
++
++static void mcu_rate_update(struct mcu_joystick *mcu, const u16 regs[MCU_NREGS])
++{
++	bool changed = mcu_frame_changed(mcu, regs);
++
++	memcpy(mcu->last_frame, regs, sizeof(mcu->last_frame));
++	mcu->have_last = true;
++
++	if (changed) {
++		mcu->last_change = jiffies;
++		if (mcu->rate_idle) {
++			mcu->rate_idle = false;
++			mcu_write_word(mcu, MCU_CMD_IRQ_RATE);
++		}
++		return;
++	}
++
++	if (!mcu->rate_idle && mcu_frame_neutral(regs) &&
++	    time_after(jiffies, mcu->last_change +
++		       msecs_to_jiffies(MCU_IDLE_AFTER_MS))) {
++		mcu->rate_idle = true;
++		mcu_write_word(mcu, MCU_CMD_IDLE_RATE);
++	}
++}
++
++/*
++ * Debug knob: poke a raw command word at the MCU from userspace. The
++ * 0x7000|rate experiments were all done through this. Root-only,
++ * write-only. A bad word might wedge the MCU; the poll watchdog picks
++ * that up.
++ */
++static ssize_t cmd_store(struct device *dev, struct device_attribute *attr,
++			 const char *buf, size_t count)
++{
++	struct mcu_joystick *mcu = spi_get_drvdata(to_spi_device(dev));
++	u16 word;
++	int ret;
++
++	ret = kstrtou16(buf, 0, &word);
++	if (ret)
++		return ret;
++	dev_info(dev, "debug cmd word 0x%04x\n", word);
++	ret = mcu_write_word(mcu, word);
++	return ret ?: count;
++}
++static DEVICE_ATTR_WO(cmd);
++
++static struct attribute *mcu_attrs[] = {
++	&dev_attr_cmd.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(mcu);
++
++/*
++ * Power-on sequence, transcribed from the stock mcu_joystick_power() "on"
++ * path (disasm): power(125)=1 → 2-3 ms → en(92)=1 → 50 ms →
++ * pinctrl_select_state(ACTIVE) [gpio47 pull-up] → irq(47) direction_input →
++ * msleep(600) [MCU boot]. Entered with power/en driven LOW for 100 ms first
++ * so a warm or wedged MCU gets a real power cycle.
++ */
++static void mcu_power_dance(struct mcu_joystick *mcu)
++{
++	gpiod_set_value_cansleep(mcu->en_gpio, 0);
++	gpiod_set_value_cansleep(mcu->power_gpio, 0);
++	msleep(100);
++	gpiod_set_value_cansleep(mcu->power_gpio, 1);
++	usleep_range(2000, 3000);
++	gpiod_set_value_cansleep(mcu->en_gpio, 1);
++	usleep_range(50000, 51000);
++	if (mcu->pctl_active &&
++	    pinctrl_select_state(mcu->pctl, mcu->pctl_active))
++		dev_warn(&mcu->spi->dev, "failed to select active pinctrl\n");
++	gpiod_direction_input(mcu->irq_gpio);
++	msleep(600);
++}
++
++static void mcu_report(struct mcu_joystick *mcu, const u16 regs[MCU_NREGS])
++{
++	struct input_dev *in = mcu->input;
++	u16 key = regs[MCU_FRAME_KEY];
++	int i;
++
++	/* stock: X/RX as-is, Y/RY bitwise-inverted (mvn + sxth) */
++	input_report_abs(in, ABS_X,  (s16)regs[MCU_FRAME_X]);
++	input_report_abs(in, ABS_Y,  (s16)~regs[MCU_FRAME_Y]);
++	input_report_abs(in, ABS_RX, (s16)regs[MCU_FRAME_Z]);
++	input_report_abs(in, ABS_RY, (s16)~regs[MCU_FRAME_RZ]);
++	/* trigger reg: low byte = left (ABS_Z), high byte = right (ABS_RZ);
++	 * stock also reports digital TL2/TR2 at full deflection */
++	input_report_abs(in, ABS_Z,  regs[MCU_FRAME_TRIG] & 0xff);
++	input_report_abs(in, ABS_RZ, regs[MCU_FRAME_TRIG] >> 8);
++	input_report_key(in, BTN_TL2, (regs[MCU_FRAME_TRIG] & 0xff) == 0xff);
++	input_report_key(in, BTN_TR2, (regs[MCU_FRAME_TRIG] >> 8) == 0xff);
++
++	for (i = 0; i < ARRAY_SIZE(mcu_btn_map); i++)
++		input_report_key(in, mcu_btn_map[i].code,
++				 !!(key & BIT(mcu_btn_map[i].bit)));
++
++	input_report_abs(in, ABS_HAT0X,
++			 !!(key & MCU_DPAD_RIGHT) - !!(key & MCU_DPAD_LEFT));
++	input_report_abs(in, ABS_HAT0Y,
++			 !!(key & MCU_DPAD_DOWN) - !!(key & MCU_DPAD_UP));
++
++	input_sync(in);
++}
++
++/* release everything — a wedged MCU otherwise leaves the last state (e.g. a
++ * held dpad direction) latched in evdev forever */
++static void mcu_report_idle(struct mcu_joystick *mcu)
++{
++	struct input_dev *in = mcu->input;
++	int i;
++
++	input_report_abs(in, ABS_X, 0);
++	input_report_abs(in, ABS_Y, 0);
++	input_report_abs(in, ABS_RX, 0);
++	input_report_abs(in, ABS_RY, 0);
++	input_report_abs(in, ABS_Z, 0);
++	input_report_abs(in, ABS_RZ, 0);
++	input_report_abs(in, ABS_HAT0X, 0);
++	input_report_abs(in, ABS_HAT0Y, 0);
++	input_report_key(in, BTN_TL2, 0);
++	input_report_key(in, BTN_TR2, 0);
++	for (i = 0; i < ARRAY_SIZE(mcu_btn_map); i++)
++		input_report_key(in, mcu_btn_map[i].code, 0);
++	input_sync(in);
++}
++
++/* returns true if the frame header validated */
++static bool mcu_poll_once(struct mcu_joystick *mcu)
++{
++	u16 regs[MCU_NREGS];
++
++	if (mcu_read_frame(mcu, regs))
++		return false;
++
++	/*
++	 * The stock poll loop sends 0x7f01 after EVERY frame read (disasm:
++	 * poll_work_handler = read_data → w16r16({0x7f01},1) → report → requeue)
++	 * — it is a per-frame keepalive/ACK, not a one-time "go". Without it
++	 * the MCU keeps answering the header but never updates the data regs.
++	 */
++	mcu_write_word(mcu, MCU_CMD_START);
++
++	/* stock read_data: discard frames without the header magic */
++	if (!mcu_frame_hdr_ok(regs)) {
++		dev_dbg(&mcu->spi->dev, "head check failed: %04x %04x %04x\n",
++			regs[MCU_FRAME_HDR], regs[MCU_FRAME_HDR + 1],
++			regs[MCU_FRAME_HDR + 2]);
++		return false;
++	}
++
++	mcu_report(mcu, regs);
++	mcu_rate_update(mcu, regs);
++	return true;
++}
++
++static irqreturn_t mcu_irq(int irq, void *data)
++{
++	struct mcu_joystick *mcu = data;
++
++	if (mcu_poll_once(mcu))
++		mcu->last_irq_frame = jiffies;
++	return IRQ_HANDLED;
++}
++
++static void mcu_poll_work(struct work_struct *work)
++{
++	struct mcu_joystick *mcu =
++		container_of(work, struct mcu_joystick, poll_work.work);
++
++	/*
++	 * The MCU free-runs its frame IRQ at ~250 Hz; while it is delivering
++	 * frames, mcu_irq already reads each frame and sends the per-frame
++	 * keepalive, so a poll read here is pure duplicate SPI traffic (and the
++	 * extra keepalive even pokes the MCU for more frames). Skip the read
++	 * while the IRQ is healthy and just re-arm as a wedge watchdog; only
++	 * fall back to active polling once the IRQ has gone quiet.
++	 */
++	if (mcu->irq > 0 &&
++	    time_before(jiffies, mcu->last_irq_frame + msecs_to_jiffies(MCU_IRQ_OK_MS))) {
++		schedule_delayed_work(&mcu->poll_work, msecs_to_jiffies(MCU_IRQ_OK_MS));
++		return;
++	}
++
++	if (mcu_poll_once(mcu)) {
++		mcu->bad_frames = 0;
++		mcu->reinit_fails = 0;
++		if (mcu->dead) {
++			mcu->dead = false;
++			dev_info(&mcu->spi->dev, "MCU recovered\n");
++		}
++	} else if (++mcu->bad_frames >= MCU_DEAD_FRAMES) {
++		/*
++		 * Sustained header loss: the MCU wedged or rebooted (it
++		 * answers zeros until re-initialized). Recover instead of
++		 * discarding frames forever with stale input state latched.
++		 */
++		mcu->bad_frames = 0;
++		if (!mcu->dead) {
++			mcu->dead = true;
++			mcu_report_idle(mcu);
++		}
++		if (!mcu->gap_sleep) {
++			/*
++			 * Maybe the busy-wait gap broke the stream: go
++			 * back to sleeping it (for good) before assuming
++			 * the MCU itself is wedged.
++			 */
++			mcu->gap_sleep = true;
++			dev_warn(&mcu->spi->dev,
++				 "frames went bad; sleeping the inter-word gap\n");
++		} else if (mcu->reinit_fails++ < MCU_REINITS_BEFORE_DANCE) {
++			dev_warn_ratelimited(&mcu->spi->dev,
++					     "MCU silent; re-sending init commands (%u)\n",
++					     mcu->reinit_fails);
++			mcu_send_init_cmds(mcu);
++		} else {
++			dev_warn_ratelimited(&mcu->spi->dev,
++					     "MCU still silent; full power cycle\n");
++			mcu_power_dance(mcu);
++			mcu_send_init_cmds(mcu);
++			mcu->reinit_fails = 0;
++		}
++	}
++	schedule_delayed_work(&mcu->poll_work, msecs_to_jiffies(MCU_POLL_MS));
++}
++
++static int mcu_joystick_probe(struct spi_device *spi)
++{
++	struct device *dev = &spi->dev;
++	struct mcu_joystick *mcu;
++	struct input_dev *in;
++	u16 regs[MCU_NREGS];
++	int i, ret;
++
++	mcu = devm_kzalloc(dev, sizeof(*mcu), GFP_KERNEL);
++	if (!mcu)
++		return -ENOMEM;
++
++	mcu->spi = spi;
++	mutex_init(&mcu->io_lock);
++	spi_set_drvdata(spi, mcu);
++
++	/*
++	 * The MCU runs in SPI mode 3 (CPOL=1/CPHA=1) — confirmed from the stock
++	 * tc_mcu_joystick.ko (probe: `str w8,[spi,#0x3c0]` with w8=3 = spi->mode,
++	 * right before spi_setup). The first cut used MODE_0.
++	 */
++	spi->mode = SPI_MODE_3;
++	spi->bits_per_word = 16;
++	ret = spi_setup(spi);
++	if (ret)
++		return dev_err_probe(dev, ret, "spi_setup failed\n");
++
++	mcu->vdd = devm_regulator_get_optional(dev, "vdd");
++	if (IS_ERR(mcu->vdd)) {
++		if (PTR_ERR(mcu->vdd) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
++		mcu->vdd = NULL;
++	}
++	if (mcu->vdd) {
++		ret = regulator_enable(mcu->vdd);
++		if (ret)
++			return dev_err_probe(dev, ret, "vdd enable failed\n");
++	}
++
++	mcu->power_gpio = devm_gpiod_get_optional(dev, "power", GPIOD_OUT_LOW);
++	if (IS_ERR(mcu->power_gpio))
++		return PTR_ERR(mcu->power_gpio);
++	mcu->en_gpio = devm_gpiod_get_optional(dev, "en", GPIOD_OUT_LOW);
++	if (IS_ERR(mcu->en_gpio))
++		return PTR_ERR(mcu->en_gpio);
++	mcu->irq_gpio = devm_gpiod_get(dev, "irq", GPIOD_IN);
++	if (IS_ERR(mcu->irq_gpio))
++		return dev_err_probe(dev, PTR_ERR(mcu->irq_gpio), "irq gpio\n");
++
++	/*
++	 * At probe the stock only LOOKS UP its pinctrl states — gpio47 stays
++	 * in the reset-ish pull-down ("suspend") config until the power dance
++	 * selects ACTIVE; our DT "default" state mirrors that.
++	 */
++	mcu->pctl = devm_pinctrl_get(dev);
++	if (IS_ERR(mcu->pctl))
++		mcu->pctl = NULL;
++	if (mcu->pctl) {
++		mcu->pctl_active = pinctrl_lookup_state(mcu->pctl, "active");
++		if (IS_ERR(mcu->pctl_active))
++			mcu->pctl_active = NULL;
++	}
++
++	mcu_power_dance(mcu);
++
++	in = devm_input_allocate_device(dev);
++	if (!in)
++		return -ENOMEM;
++	mcu->input = in;
++	in->name = "AYANEO MCU Gamepad";
++	in->phys = "mcu-joystick/input0";
++	in->id.bustype = BUS_SPI;
++	in->dev.parent = dev;
++
++	input_set_abs_params(in, ABS_X,  MCU_AXIS_MIN, MCU_AXIS_MAX, MCU_AXIS_FUZZ, MCU_AXIS_FLAT);
++	input_set_abs_params(in, ABS_Y,  MCU_AXIS_MIN, MCU_AXIS_MAX, MCU_AXIS_FUZZ, MCU_AXIS_FLAT);
++	input_set_abs_params(in, ABS_RX, MCU_AXIS_MIN, MCU_AXIS_MAX, MCU_AXIS_FUZZ, MCU_AXIS_FLAT);
++	input_set_abs_params(in, ABS_RY, MCU_AXIS_MIN, MCU_AXIS_MAX, MCU_AXIS_FUZZ, MCU_AXIS_FLAT);
++	input_set_abs_params(in, ABS_Z,  0, MCU_TRIG_MAX, 0, 0);
++	input_set_abs_params(in, ABS_RZ, 0, MCU_TRIG_MAX, 0, 0);
++	input_set_abs_params(in, ABS_HAT0X, -1, 1, 0, 0);
++	input_set_abs_params(in, ABS_HAT0Y, -1, 1, 0, 0);
++	for (i = 0; i < ARRAY_SIZE(mcu_btn_map); i++)
++		input_set_capability(in, EV_KEY, mcu_btn_map[i].code);
++	input_set_capability(in, EV_KEY, BTN_TL2);
++	input_set_capability(in, EV_KEY, BTN_TR2);
++
++	/* rumble (FF_RUMBLE via the memless core; play deferred to ff_work) */
++	INIT_WORK(&mcu->ff_work, mcu_ff_work);
++	input_set_capability(in, EV_FF, FF_RUMBLE);
++	ret = input_ff_create_memless(in, mcu, mcu_ff_play);
++	if (ret)
++		return dev_err_probe(dev, ret, "ff create failed\n");
++
++	ret = input_register_device(in);
++	if (ret)
++		return dev_err_probe(dev, ret, "input register failed\n");
++
++	/*
++	 * Stock init order (power_work_handler): header read (INFORMATIONAL —
++	 * the working stock system logs "Head check: 0x000000" here, the MCU
++	 * returns zeros until the commands below are sent) → irq-rate command
++	 * (rate 0 outside irq mode) → the 0x7f01 "go" command → start polling.
++	 * Do NOT gate anything on the pre-command header value.
++	 */
++	{
++		static const u16 hdr_addrs[3] = {
++			MCU_REG_HEADER, MCU_REG_HEADER + 1, MCU_REG_HEADER + 2,
++		};
++		u16 hdr[3] = {};
++
++		ret = mcu_read_seq(mcu, hdr_addrs, hdr, 3);
++		dev_dbg(dev, "init head check (ret=%d): %04x %04x %04x (zeros are normal pre-command)\n",
++			ret, hdr[0], hdr[1], hdr[2]);
++	}
++	mcu_send_init_cmds(mcu);
++
++	/* one full frame post-command */
++	ret = mcu_read_frame(mcu, regs);
++	dev_dbg(dev, "post-init frame (ret=%d): key %04x xy %04x %04x zrz %04x %04x trig %04x | hdr %04x %04x %04x%s\n",
++		 ret, regs[MCU_FRAME_KEY], regs[MCU_FRAME_X], regs[MCU_FRAME_Y],
++		 regs[MCU_FRAME_Z], regs[MCU_FRAME_RZ], regs[MCU_FRAME_TRIG],
++		 regs[MCU_FRAME_HDR], regs[MCU_FRAME_HDR + 1],
++		 regs[MCU_FRAME_HDR + 2],
++		 (!ret && mcu_frame_hdr_ok(regs)) ? " (AYANEO OK!)" : "");
++
++	mcu->irq = gpiod_to_irq(mcu->irq_gpio);
++	if (mcu->irq > 0) {
++		ret = devm_request_threaded_irq(dev, mcu->irq, NULL, mcu_irq,
++						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
++						"mcu-joystick", mcu);
++		if (ret)
++			return dev_err_probe(dev, ret, "irq request failed\n");
++	}
++
++	/* poll fallback (and primary path if no irq wired); also the recovery
++	 * watchdog — it re-inits a silent MCU */
++	INIT_DELAYED_WORK(&mcu->poll_work, mcu_poll_work);
++	schedule_delayed_work(&mcu->poll_work, msecs_to_jiffies(MCU_POLL_MS));
++
++	return 0;
++}
++
++static void mcu_joystick_remove(struct spi_device *spi)
++{
++	struct mcu_joystick *mcu = spi_get_drvdata(spi);
++
++	cancel_delayed_work_sync(&mcu->poll_work);
++	if (mcu->vdd)
++		regulator_disable(mcu->vdd);
++}
++
++/*
++ * Without these ops the poll/watchdog work keeps running into the suspended
++ * SPI controller ("Attempted to sync while suspend"), thrashing init commands
++ * and full power cycles against a dead bus for the whole suspend window, and
++ * the gamepad only comes back if the watchdog happens to win afterwards.
++ */
++static int mcu_joystick_suspend(struct device *dev)
++{
++	struct mcu_joystick *mcu = spi_get_drvdata(to_spi_device(dev));
++
++	if (mcu->irq > 0)
++		disable_irq(mcu->irq);
++	cancel_delayed_work_sync(&mcu->poll_work);
++	cancel_work_sync(&mcu->ff_work);
++
++	/* stop any running rumble and release latched input state */
++	mcu_write_word(mcu, MCU_WRITE_WORD(MCU_REG_RUMBLE_STRONG, 0));
++	mcu_write_word(mcu, MCU_WRITE_WORD(MCU_REG_RUMBLE_WEAK, 0));
++	mcu_report_idle(mcu);
++
++	return 0;
++}
++
++static int mcu_joystick_resume(struct device *dev)
++{
++	struct mcu_joystick *mcu = spi_get_drvdata(to_spi_device(dev));
++	u16 regs[MCU_NREGS];
++
++	/*
++	 * Vendor resume recipe: re-send the irq-rate + start commands. If the
++	 * MCU lost power across the suspend it answers zeros — give it the
++	 * full power-on sequence then.
++	 */
++	mcu_send_init_cmds(mcu);
++	if (mcu_read_frame(mcu, regs) || !mcu_frame_hdr_ok(regs)) {
++		dev_info(dev, "resume: MCU silent after init cmds, power cycling\n");
++		mcu_power_dance(mcu);
++		mcu_send_init_cmds(mcu);
++	}
++
++	mcu->bad_frames = 0;
++	mcu->reinit_fails = 0;
++
++	if (mcu->irq > 0)
++		enable_irq(mcu->irq);
++	schedule_delayed_work(&mcu->poll_work, msecs_to_jiffies(MCU_POLL_MS));
++
++	return 0;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(mcu_joystick_pm_ops, mcu_joystick_suspend,
++				mcu_joystick_resume);
++
++static const struct of_device_id mcu_joystick_of_match[] = {
++	{ .compatible = "mcu,joystick" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, mcu_joystick_of_match);
++
++static struct spi_driver mcu_joystick_driver = {
++	.driver = {
++		.name = "mcu-joystick",
++		.of_match_table = mcu_joystick_of_match,
++		.pm = pm_sleep_ptr(&mcu_joystick_pm_ops),
++		.dev_groups = mcu_groups,
++	},
++	.probe = mcu_joystick_probe,
++	.remove = mcu_joystick_remove,
++};
++module_spi_driver(mcu_joystick_driver);
++
++MODULE_DESCRIPTION("AYANEO SPI MCU gamepad driver");
++MODULE_LICENSE("GPL");

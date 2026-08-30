@@ -3,16 +3,17 @@
 # xenia-canary
 #
 ################################################################################
-# Version: Commits on December 4, 2025
-XENIA_CANARY_SOURCE = xenia_canary_windows.zip
-XENIA_CANARY_VERSION = f85f4c3
+# Version: Commits on Aug 29, 2026
+XENIA_CANARY_SOURCE = xenia_canary_windows.7z
+XENIA_CANARY_VERSION = 0c843ef
 XENIA_CANARY_SITE = \
-    https://github.com/xenia-canary/xenia-canary-releases/releases/download/$(XENIA_CANARY_VERSION)
+    https://github.com/xenia-canary/xenia-canary/releases/download/$(XENIA_CANARY_VERSION)
 XENIA_CANARY_LICENSE = BSD
 XENIA_CANARY_LICENSE_FILE = LICENSE
 XENIA_CANARY_EMULATOR_INFO = xenia-canary.emulator.yml
 
 XENIA_CANARY_DEPENDENCIES = python-toml
+XENIA_CANARY_EXTRACT_DEPENDENCIES = host-p7zip
 
 # ugly hack becuase the is no version in the source file
 define XENIA_CANARY_CLEAR_DL
@@ -22,7 +23,8 @@ define XENIA_CANARY_CLEAR_DL
 endef
 
 define XENIA_CANARY_EXTRACT_CMDS
-	mkdir -p $(@D) && cd $(@D) && $(UNZIP) -d $(@D) $(DL_DIR)/$(XENIA_CANARY_DL_SUBDIR)/$(XENIA_CANARY_SOURCE)
+	mkdir -p $(@D) && cd $(@D) && $(HOST_DIR)/usr/bin/7zr x -y \
+	    $(DL_DIR)/$(XENIA_CANARY_DL_SUBDIR)/$(XENIA_CANARY_SOURCE)
 endef
 
 define XENIA_CANARY_INSTALL_TARGET_CMDS

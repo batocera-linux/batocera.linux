@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 _LEGACY_GENERATOR_MAP: Final[dict[str, dict[str, tuple[str, str]]]] = {
     'duckstation': {
         'duckstation-legacy': ('duckstation_legacy.duckstationLegacyGenerator', 'DuckstationLegacyGenerator'),
-    },
-    'supermodel': {
-        'supermodel-legacy': ('supermodel_legacy.supermodelLegacyGenerator', 'SupermodelLegacyGenerator'),
     }
 }
 
@@ -44,7 +41,7 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'ioquake3': ('ioquake3.ioquake3Generator', 'IOQuake3Generator'),
     'iortcw': ('iortcw.iortcwGenerator', 'IORTCWGenerator'),
     'jazz2-native': ('jazz2_native.jazz2_nativeGenerator', 'Jazz2_NativeGenerator'),
-    'lindbergh-loader': ('lindbergh.lindberghGenerator', 'LindberghGenerator'),
+    'linuxloader': ('linuxloader.linuxloaderGenerator', 'LinuxLoaderGenerator'),
     'melonds': ('melonds.melondsGenerator', 'MelonDSGenerator'),
     'model2emu': ('model2emu.model2emuGenerator', 'Model2EmuGenerator'),
     'mupen64plus': ('mupen.mupenGenerator', 'MupenGenerator'),

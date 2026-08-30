@@ -3,8 +3,8 @@
 # libretro-bk
 #
 ################################################################################
-# Version: Commits on Jan 25, 2026
-LIBRETRO_BK_VERSION = f95d929c8eca6c85075cd5c56a08aac9c58f3802
+# Version: Commits on Apr 20, 2026
+LIBRETRO_BK_VERSION = fe64da42ee463c1b2f4d0566e4d0f7a9667506f6
 LIBRETRO_BK_SITE = $(call github,libretro,bk-emulator,$(LIBRETRO_BK_VERSION))
 LIBRETRO_BK_LICENSE = Non-commercial
 LIBRETRO_BK_DEPENDENCIES = retroarch

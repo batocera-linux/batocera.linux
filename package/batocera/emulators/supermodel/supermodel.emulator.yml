@@ -1,0 +1,205 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  engine3D:
+    group: GRAPHICS
+    prompt: 3D ENGINE
+    description: Enable the legacy or the new 3D engine. Choose Legacy on x86 for older GPUs. (Not supported on ARM/GLES systems).
+    choices:
+      Legacy3D: legacy3d
+      New3D: new3d
+  graphics_backend:
+    group: GRAPHICS
+    prompt: GRAPHICS API
+    description: Select the graphics rendering backend (requires New3D engine). Vulkan can provide improved performance and lower CPU overhead on supported GPUs.
+    choices:
+      OpenGL (Default): OpenGL
+      Vulkan: Vulkan
+  quadRendering:
+    group: GRAPHICS
+    prompt: QUAD RENDERING
+    description: Enable proper quad rendering (for higher end x86 systems. Automatically disabled on ARM/GLES systems).
+    choices:
+      'Off': 0
+      'On': 1
+  m3_wideScreen:
+    group: GRAPHICS
+    prompt: WIDESCREEN HACK (GLITCHY)
+    description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
+    choices:
+      'Off': 0
+      'On': 1
+  m3_supersampling:
+    group: GRAPHICS
+    prompt: SUPERSAMPLING
+    description: Render 3D graphics at a higher resolution for cleaner edges and anti-aliasing.
+    choices:
+      'Off (1x)': 1
+      '2x': 2
+      '3x': 3
+      '4x': 4
+      '5x': 5
+      '6x': 6
+      '7x': 7
+      '8x': 8
+  m3_renderscale:
+    group: GRAPHICS
+    prompt: RENDER SCALE
+    description: Controls the New3D rendering resolution (1x scale = 496x384). Default is 0 (Set Resolution) on x86_64 and 1 on ARM. Requires New3D engine.
+    choices:
+      '0 (Set Resolution)': 0
+      '1': 1
+      '2': 2
+      '3': 3
+      '4': 4
+      '5': 5
+      '6': 6
+      '7': 7
+      '8': 8
+  m3_stretch:
+    group: GRAPHICS
+    prompt: STRETCH TO FIT
+    description: Stretch the viewport to fill your display, ignoring the native aspect ratio.
+    choices:
+      'Off': 0
+      'On': 1
+  m3_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Sync frame rate with your monitor's refresh rate to prevent tearing. Disable for VRR (G-Sync/FreeSync) displays.
+    choices:
+      'On': 1
+      'Off': 0
+  m3_true_hz:
+    group: GRAPHICS
+    prompt: ACCURATE REFRESH RATE
+    description: Force the internal engine to run at the precise arcade speed of 57.524 Hz. Requires a VRR display for smooth pacing.
+    choices:
+      'Off (60Hz)': 0
+      'On (57.524Hz)': 1
+  crt_colour:
+    group: GRAPHICS
+    prompt: CRT COLOR EMULATION
+    description: CRT-like color adaptation. Requires New 3D engine.
+    choices:
+      None (Default): 0
+      ARI/D93 (recommended for all JP developed games): 1
+      PVM_20M2U/D93: 2
+      BT601_525/D93: 3
+      BT601_525/D65 (recommended for all US developed games): 4
+      BT601_625/D65 (recommended for all EUR/AUS developed games): 5
+  upscale_mode:
+    group: GRAPHICS
+    prompt: 2D LAYER UPSCALE FILTER
+    description: Upscaling filter used for 2D UI layers and backgrounds. Requires New 3D engine.
+    choices:
+      None/Sharp Pixels: 0
+      Biquintic: 1
+      Bilinear (Default): 2
+      Bicubic: 3
+  m3_no_white_flash:
+    group: GRAPHICS
+    prompt: DISABLE WHITE FLASHES
+    description: Prevents bright white transitions during scene changes in games like Daytona 2 or Scud Race.
+    choices:
+      'No': 0
+      'Yes': 1
+  crosshairs:
+    group: LIGHT GUN
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    description: Enable crosshairs in shooting games for the selected players.
+    choices:
+      None: 0
+      P1 only: 1
+      P2 only: 2
+      P1 & P2: 3
+  forceFeedback:
+    prompt: RUMBLE
+    description: Only some games feature rumble. Not compatible with all controllers.
+    choices:
+      'Off': 0
+      'On': 1
+  ppcFreq:
+    group: ADVANCED OPTIONS
+    prompt: ADJUST POWERPC FREQUENCY
+    description: Change the speed of the emulated PowerPC chip (fixes sound or speed issues in some games).
+    choices:
+      "10": 10
+      "20": 20
+      "30": 30
+      "40": 40
+      50 (Default): 50
+      "60": 60
+      "70": 70
+      "80": 80
+      "90": 90
+      "100": 100
+      "110": 110
+      "120": 120
+      "130": 130
+      "140": 140
+      "150": 150
+  m3_scsp:
+    group: AUDIO
+    prompt: SCSP SOUND ENGINE
+    description: Select the SCSP sound emulator. The new engine offers greater accuracy, while legacy uses less CPU.
+    choices:
+      'New (MAME-based)': new
+      'Legacy (ElSemi)': legacy
+  m3_audio_channels:
+    group: AUDIO
+    prompt: AUDIO CHANNELS
+    description: Choose the number of audio channels. The soundcard must support the number of channels selected.
+    choices:
+      'Stereo (2)': 2
+      'Surround (4)': 4
+  m3_outputs:
+    group: CABINET OUTPUTS
+    prompt: CABINET OUTPUTS
+    description: Send cabinet and lamp output signals via network to external tools like MAME Hooker.
+    choices:
+      'Off': none
+      'On': net
+  m3_outputs_lf:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS USE LINE FEED
+    description: Terminate network message packets with a line feed (\n) character.
+    choices:
+      'Off': 0
+      'On': 1
+  m3_outputs_tcp:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS TCP PORT
+    description: The TCP port used to send network output packets. Leave at default (0) to disable.
+    choices:
+      '0 (Disabled)': 0
+      '8000': 8000
+      '8001': 8001
+      '15124': 15124
+  m3_outputs_udp:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS UDP BROADCAST PORT
+    description: The UDP broadcast port used to send network output packets. Leave at default (0) to disable.
+    choices:
+      '0 (Disabled)': 0
+      '8000': 8000
+      '8001': 8001
+      '15126': 15126
+systems:
+  - model3

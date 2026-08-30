@@ -44,13 +44,20 @@
 		#cooling-cells = <2>;
 	};
 
-	vibrator {
-		compatible = "clk-vibrator";
+	clk_pwm: pwm {
+		compatible = "clk-pwm";
+		#pwm-cells = <2>;
 		clocks = <&gcc GCC_GP1_CLK>;
-		vcc-supply = <&vibra_vcc>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&gpio_clk_pins>;
-		vibration-frequency-hz = <10000>;
+	};
+
+	vibrator {
+		compatible = "pwm-vibrator";
+		pwms = <&clk_pwm 0 25000>;
+		pwm-names = "enable";
+		min-duty-cycle-ns = <10000>;
+		vcc-supply = <&vibra_vcc>;
 	};
 
 	led_vdd: regulator-led-vdd {
@@ -563,7 +570,6 @@
 		interrupts-extended = <&tlmm 70 IRQ_TYPE_EDGE_FALLING>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&chg_int_default>, <&chg_en_default>;
-		wakeup-source;
 
 		input-voltage-limit-microvolt = <4500000>;
 
@@ -727,7 +733,6 @@
 
 &mdss {
 	status = "okay";
-
 	interconnects = <&mmrt_virt MASTER_MDP_PORT0 RPM_ACTIVE_TAG
 			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>,
 			<&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
@@ -794,6 +799,7 @@
 
 &pon_pwrkey {
 	status = "okay";
+	wakeup-source;
 };
 
 &pon_resin {
@@ -812,10 +818,10 @@
 		clock-names = "se";
 		power-domains = <&rpmpd SM6115_VDDCX>;
 		operating-points-v2 = <&qup_opp_table>;
-		interconnects = <&clk_virt MASTER_QUP_CORE_0 RPM_ALWAYS_TAG
-				 &clk_virt SLAVE_QUP_CORE_0 RPM_ALWAYS_TAG>,
-				<&bimc MASTER_AMPSS_M0 RPM_ALWAYS_TAG
-				 &config_noc SLAVE_QUP_0 RPM_ALWAYS_TAG>;
+		interconnects = <&clk_virt MASTER_QUP_CORE_0 RPM_ACTIVE_TAG
+				 &clk_virt SLAVE_QUP_CORE_0 RPM_ACTIVE_TAG>,
+				<&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
+				 &config_noc SLAVE_QUP_0 RPM_ACTIVE_TAG>;
 		interconnect-names = "qup-core", "qup-config";
 		pinctrl-0 = <&qup_uart0_active>;
 		pinctrl-1 = <&qup_uart0_sleep>;
@@ -826,11 +832,29 @@
 &remoteproc_adsp {
 	firmware-name = "qcom/qrb4210/adsp.mbn";
 	status = "okay";
+
+	interrupts-extended = <&intc GIC_SPI 282 IRQ_TYPE_EDGE_RISING>,
+			      <&adsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
+			      <&adsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
+			      <&adsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
+			      <&adsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>,
+			      <&adsp_smp2p_in 7 IRQ_TYPE_EDGE_RISING>;
+	interrupt-names = "wdog", "fatal", "ready",
+			  "handover", "stop-ack", "shutdown-ack";
 };
 
 &remoteproc_cdsp {
 	firmware-name = "qcom/qrb4210/cdsp.mbn";
 	status = "okay";
+
+	interrupts-extended = <&intc GIC_SPI 265 IRQ_TYPE_EDGE_RISING>,
+			      <&cdsp_smp2p_in 0 IRQ_TYPE_EDGE_RISING>,
+			      <&cdsp_smp2p_in 1 IRQ_TYPE_EDGE_RISING>,
+			      <&cdsp_smp2p_in 2 IRQ_TYPE_EDGE_RISING>,
+			      <&cdsp_smp2p_in 3 IRQ_TYPE_EDGE_RISING>,
+			      <&cdsp_smp2p_in 7 IRQ_TYPE_EDGE_RISING>;
+	interrupt-names = "wdog", "fatal", "ready",
+			  "handover", "stop-ack", "shutdown-ack";
 };
 
 &remoteproc_mpss {
@@ -990,7 +1014,7 @@
 		};
 
 		vreg_l23a_3p3: l23 {
-			regulator-min-microvolt = <3312000>;
+			regulator-min-microvolt = <3200000>;
 			regulator-max-microvolt = <3312000>;
 			regulator-allow-set-load;
 		};
@@ -1034,7 +1058,51 @@
         mmc-hs400-1_8v;
         mmc-hs400-enhanced-strobe;
 
+        interconnects = <&system_noc MASTER_SDCC_1 RPM_ALWAYS_TAG
+                         &bimc SLAVE_EBI_CH0 RPM_ALWAYS_TAG>,
+                        <&bimc MASTER_AMPSS_M0 RPM_ALWAYS_TAG
+                         &config_noc SLAVE_SDCC_1 RPM_ALWAYS_TAG>;
+
         status = "okay";
+};
+
+&scm {
+	qcom,dload-mode = <&tcsr_regs 0x13000>;
+
+	interconnects = <&system_noc MASTER_CRYPTO_CORE0 RPM_ACTIVE_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+
+&{/smp2p-mpss} {
+	wlan_smp2p_in: wlan-wpss-to-ap {
+		qcom,entry-name = "wlan";
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
+
+	ipa_smp2p_out: ipa-1-out {
+		qcom,entry-name = "ipa";
+		#qcom,smem-state-cells = <1>;
+	};
+
+	ipa_smp2p_in: ipa-1-in {
+		qcom,entry-name = "ipa";
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
+};
+
+&{/smp2p-cdsp} {
+	cdsp_rdbg_smp2p_out: rdbg5-out {
+		qcom,entry-name = "rdbg";
+		#qcom,smem-state-cells = <1>;
+	};
+
+	cdsp_rdbg_smp2p_in: rdbg5-in {
+		qcom,entry-name = "rdbg";
+		interrupt-controller;
+		#interrupt-cells = <2>;
+	};
 };
 
 &sdhc_2 {
@@ -1052,6 +1120,11 @@
 	sd-uhs-sdr50;
 	sd-uhs-sdr104;
 	sd-uhs-ddr50;
+
+	interconnects = <&system_noc MASTER_SDCC_2 RPM_ALWAYS_TAG
+			 &bimc SLAVE_EBI_CH0 RPM_ALWAYS_TAG>,
+			<&bimc MASTER_AMPSS_M0 RPM_ALWAYS_TAG
+			 &config_noc SLAVE_SDCC_2 RPM_ALWAYS_TAG>;
 
 	status = "okay";
 };
@@ -1211,7 +1284,7 @@
 			pins = "gpio22", "gpio25", "gpio26", "gpio27", "gpio28";
 			function = "gpio";
 			drive-strength = <2>;
-			bias-disable;
+			bias-pull-up;
 		};
 
 		btn_pins {
@@ -1374,15 +1447,8 @@
 		pins = "gpio69";
 		function = "gpio";
 		drive-strength = <2>;
-		bias-disable;
-	};
-
-	ts_reset_default: ts-reset-default-state {
-		pins = "gpio68";
-		function = "gpio";
-		drive-strength = <2>;
-		bias-disable;
-		output-low;
+		bias-pull-up;
+		input-enable;
 	};
 
 	tcpc_irq_default: tcpc-irq-default-state {
@@ -1418,6 +1484,8 @@
 &usb_dwc3 {
 	dr_mode = "otg";
 	maximum-speed = "super-speed";
+	/delete-property/ snps,dis_u2_susphy_quirk;
+    /delete-property/ snps,dis_enblslpm_quirk;
 
 	ports {
 		port@0 {
@@ -1686,4 +1754,110 @@
 	operating-points-v2 = <&cpu4_opp_table>;
 	interconnects = <&bimc MASTER_AMPSS_M0 RPM_ACTIVE_TAG
 			 &bimc SLAVE_EBI_CH0 RPM_ACTIVE_TAG>;
+};
+
+&soc {
+	psci_suspend_fallback: psci-suspend-fallback {
+		compatible = "qcom,psci-suspend-fallback";
+		qcom,suspend-state-id = <0x42000343>;
+		qcom,mpm-vmpm = <&apss_mpm>;
+	};
+};
+
+&cluster_0_sleep_0 {
+	arm,psci-suspend-param = <0x41000023>;
+};
+
+&cluster_1_sleep_0 {
+	arm,psci-suspend-param = <0x41000023>;
+};
+
+&cluster_0_sleep_1 {
+	arm,psci-suspend-param = <0x41000043>;
+	entry-latency-us = <640>;
+	exit-latency-us = <1664>;
+	min-residency-us = <8094>;
+};
+
+&cluster_1_sleep_1 {
+	arm,psci-suspend-param = <0x41000043>;
+	entry-latency-us = <800>;
+	exit-latency-us = <2118>;
+	min-residency-us = <7376>;
+};
+
+&little_cpu_sleep_0 {
+	entry-latency-us = <297>;
+	exit-latency-us = <324>;
+	min-residency-us = <1110>;
+};
+
+&big_cpu_sleep_0 {
+	entry-latency-us = <290>;
+	exit-latency-us = <376>;
+	min-residency-us = <1182>;
+};
+
+&{/cpus/domain-idle-states} {
+	cci_ret: cci-ret {
+		compatible = "domain-idle-state";
+		idle-state-name = "cci-ret";
+		arm,psci-suspend-param = <0x42000043>;
+		entry-latency-us = <108>;
+		exit-latency-us = <450>;
+		min-residency-us = <153>;
+	};
+
+	cci_pc: cci-pc {
+		compatible = "domain-idle-state";
+		idle-state-name = "cci-pc";
+		arm,psci-suspend-param = <0x42000343>;
+		entry-latency-us = <10831>;
+		exit-latency-us = <4506>;
+		min-residency-us = <15338>;
+	};
+};
+
+&{/psci} {
+	cci_ret_pd: power-domain-cci-ret {
+		#power-domain-cells = <0>;
+		power-domains = <&cci_pc_pd>;
+		domain-idle-states = <&cci_ret>;
+	};
+
+	cci_pc_pd: power-domain-cci-pc {
+		#power-domain-cells = <0>;
+		domain-idle-states = <&cci_pc>;
+	};
+};
+
+&cluster_0_pd { power-domains = <&cci_ret_pd>; };
+&cluster_1_pd { power-domains = <&cci_ret_pd>; };
+
+&mpm { power-domains = <&cci_pc_pd>; };
+
+&pm6125_rtc {
+	status = "okay";
+};
+
+&rpmpd_opp_table {
+	rpmpd_opp_retention: opp0a {
+		opp-level = <RPM_SMD_LEVEL_RETENTION>;
+	};
+
+	rpmpd_opp_retention_plus: opp0b {
+		opp-level = <RPM_SMD_LEVEL_RETENTION_PLUS>;
+	};
+};
+
+&qup_opp_table {
+	opp-75000000 {
+		required-opps = <&rpmpd_opp_retention>;
+	};
+};
+
+&mdp_opp_table {
+	opp-192000000 {
+		required-opps = <&rpmpd_opp_retention>;
+	};
 };

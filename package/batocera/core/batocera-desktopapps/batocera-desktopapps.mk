@@ -45,6 +45,13 @@ endif
 BATOCERA_DESKTOPAPPS_APPS    += xwiishowir.desktop
 BATOCERA_DESKTOPAPPS_ICONS   += xwiishowir.png
 
+# logitech direct drive wheels (RS50, G PRO, G923)
+ifeq ($(BR2_PACKAGE_LOGI_WHEEL_GUI),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-logi-wheel
+  BATOCERA_DESKTOPAPPS_APPS    += logi-wheel-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += logi-wheel.png
+endif
+
 # pcsx2
 ifeq ($(BR2_PACKAGE_PCSX2),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-pcsx2
@@ -141,13 +148,6 @@ ifeq ($(BR2_PACKAGE_CITRON),y)
   BATOCERA_DESKTOPAPPS_ICONS   += citron.png
 endif
 
-# ryujinx
-ifeq ($(BR2_PACKAGE_RYUJINX),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-ryujinx
-  BATOCERA_DESKTOPAPPS_APPS    += ryujinx-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += ryujinx.png
-endif
-
 # demul
 ifeq ($(BR2_PACKAGE_DEMUL),y)
   BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-demul
@@ -197,9 +197,9 @@ ifeq ($(BR2_PACKAGE_SHADPS4),y)
   BATOCERA_DESKTOPAPPS_ICONS   += shadps4.png
 endif
 
-# lindbergh loader
-ifeq ($(BR2_PACKAGE_LINDBERGH_LOADER),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-lindbergh
+# linuxloader
+ifeq ($(BR2_PACKAGE_LINUXLOADER),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-linuxloader
 endif
 
 ## Context Menu Actions
@@ -217,6 +217,15 @@ ifeq ($(BR2_PACKAGE_YAD),y)
   # psn launchers for rpcs3 installed psn titles
   BATOCERA_DESKTOPAPPS_TOOLBOX += psnlauncher.toolbox
   BATOCERA_DESKTOPAPPS_ACTIONS += psnlauncher.toolbox.psnfromdir.desktop
+
+  # pack PSN .pkg/.rap files into per-game .squashfs images
+  BATOCERA_DESKTOPAPPS_TOOLBOX += ps3.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += ps3.toolbox.pkgtosquashfs.desktop
+
+  # shadps4
+  # convert PS4 .pkg files into per-game .zar archives
+  BATOCERA_DESKTOPAPPS_TOOLBOX += ps4.toolbox
+  BATOCERA_DESKTOPAPPS_ACTIONS += ps4.toolbox.pkgtozar.desktop
 
   # wine
   ifeq ($(BR2_PACKAGE_WINE_TKG),y)

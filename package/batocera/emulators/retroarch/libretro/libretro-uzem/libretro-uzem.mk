@@ -3,8 +3,8 @@
 # libretro-uzem
 #
 ################################################################################
-# Version: Commits on Apr 14, 2022
-LIBRETRO_UZEM_VERSION = 08e39e19167727c89fb995e3fa70dde252e6aab0
+# Version: Commits on Aug 23, 2026
+LIBRETRO_UZEM_VERSION = d991ee94547c8294abc1c4cb73d63116aa58b5bc
 LIBRETRO_UZEM_SITE = $(call github,libretro,libretro-uzem,$(LIBRETRO_UZEM_VERSION))
 LIBRETRO_UZEM_LICENSE = MIT
 LIBRETRO_UZEM_DEPENDENCIES += retroarch

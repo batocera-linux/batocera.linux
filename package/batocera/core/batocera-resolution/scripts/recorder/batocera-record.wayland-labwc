@@ -77,6 +77,17 @@ vainfo_check_device() {
     echo "$output"
 }
 
+# Find a suitable DRM render node for Vulkan
+find_best_vulkan_device() {
+    for dev in /dev/dri/renderD*; do
+        if [ -e "$dev" ]; then
+            echo "$dev"
+            return
+        fi
+    done
+    echo "none"
+}
+
 # Check for encoder support first on all available render nodes
 find_best_vaapi_device() {
     log "Searching for Encoder hardware..."
@@ -139,6 +150,25 @@ auto_detect_encoder() {
             log "Detection: Selected NVENC H264"
             echo "h264_nvenc|none"
             return
+        fi
+    fi
+
+    # Vulkan Check
+    if command -v batocera-vulkan >/dev/null 2>&1; then
+        local VULKAN_CODECS
+        VULKAN_CODECS=$(batocera-vulkan supportsEncoding)
+        if [ -n "$VULKAN_CODECS" ]; then
+            local VULKAN_DEV
+            VULKAN_DEV=$(find_best_vulkan_device)
+            if [ "$VULKAN_DEV" != "none" ]; then
+                for enc in hevc_vulkan av1_vulkan h264_vulkan; do
+                    if echo "$VULKAN_CODECS" | grep -q "$enc" && ffmpeg -encoders 2>/dev/null | grep -q "$enc"; then
+                        log "Detection: Selected Vulkan ($enc) on $VULKAN_DEV"
+                        echo "$enc|$VULKAN_DEV"
+                        return
+                    fi
+                done
+            fi
         fi
     fi
 
@@ -223,13 +253,11 @@ case "$1" in
 
             log "Stopping recording (PIDs: ${PIDS_ARRAY[*]})"
             for PID in "${PIDS_ARRAY[@]}"; do
+                # Send a single SIGINT to trigger graceful exit
                 kill -2 "$PID" 2>/dev/null
             done
 
-            # Also clean up any stray wf-recorder processes not in PID file
-            pkill -2 -x wf-recorder 2>/dev/null
-
-            # Wait for all processes to exit before removing PID file
+            # Wait for all processes to exit gracefully
             for PID in "${PIDS_ARRAY[@]}"; do
                 waited=0
                 while kill -0 "$PID" 2>/dev/null; do
@@ -242,6 +270,10 @@ case "$1" in
                     fi
                 done
             done
+
+            # Last-resort sanitary cleanup for strays
+            pkill -15 -x wf-recorder 2>/dev/null
+
             rm -f "$PID_FILE"
         fi
         ;;
@@ -276,8 +308,8 @@ case "$1" in
         SELECTED_DEVICE=$(echo "$DETECTION_DATA" | cut -d'|' -f2)
         log "Executing wf-recorder with encoder $ENCODER"
 
-        # VAAPI cannot mix its hardware filter chain with the CPU-side
-        # transpose filter that wf-recorder inserts for rotated displays.
+        # Hardware filters cannot mix with the CPU-side transpose
+        # filter that wf-recorder inserts for rotated displays.
         PRIMARY=$(batocera-resolution currentOutput)
         SCREEN_TRANSFORM=$(wlr-randr 2>/dev/null | awk -v out="$PRIMARY" '
             $0 ~ out { found=1 }
@@ -290,14 +322,16 @@ case "$1" in
             90|270|flipped-90|flipped-270) IS_ROTATED=1 ;;
         esac
 
-        if [ "$IS_ROTATED" = "1" ] && echo "$ENCODER" | grep -q "vaapi"; then
-            log "Rotated display detected with VAAPI encoder — falling back to libx264 (software)"
+        if [ "$IS_ROTATED" = "1" ] && echo "$ENCODER" | grep -E -q "vaapi|vulkan"; then
+            log "Rotated display detected with hardware encoder ($ENCODER) — falling back to libx264 (software)"
             ENCODER="libx264"
             SELECTED_DEVICE="none"
         fi
 
         # Build encoder flags
-        if echo "$ENCODER" | grep -q "vaapi"; then
+        if echo "$ENCODER" | grep -q "vulkan"; then
+            ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "qp=$V_QUAL" -F "format=nv12,hwupload")
+        elif echo "$ENCODER" | grep -q "vaapi"; then
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
         elif echo "$ENCODER" | grep -q "nvenc"; then
             ENC_FLAGS=(-c "$ENCODER" -p "rc=vbr" -p "cq=$CRF")

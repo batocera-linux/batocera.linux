@@ -13,11 +13,6 @@ shared_features:
   - bezel.tattoo_file
   - bezel.resize_tattoo
 custom_features:
-  vpinball_folders:
-    group: EXPERT SETTINGS
-    prompt: PER TABLE FOLDER
-    description: Per Table Folder requires all files to be in the associated rom table folder. If disabled, consult the Wiki for further details.
-    preset: switchauto
   vpinball_balltrail:
     group: DISPLAY
     prompt: BALL TRAIL STRENGTH
@@ -67,48 +62,13 @@ custom_features:
       Low-end Computer: lowend
       High-end Computer: highend
       Manual: manual
-  vpinball_altcolor:
-    group: DISPLAY
-    prompt: ALTCOLOR
-    description: Alternative Coloured Dot Matrix Display (needs additional file).
-    preset: switchauto
   vpinball_playfield:
     group: WINDOWS POSITIONS
     prompt: PLAYFIELD
     description: Playfield configuration
     choices:
       Manual: manual
-  vpinball_pinmame:
-    group: WINDOWS POSITIONS
-    prompt: PINMAME DMD
-    description: Extra DMD (Dot Matrix Display) window to display the score for tables with a pinmame rom. By default, settings come from the VPinballX.ini configuration file.
-    choices:
-      Top-Right Position, Small: topright_small
-      Top-Right Position, Medium: topright_medium
-      Top-Right Position, Large: topright_large
-      Top-Left Position, Small: topleft_small
-      Top-Left Position, Medium: topleft_medium
-      Top-Left Position, Large: topleft_large
-      On screen 2 if available: screen2
-      On screen 3 if available: screen3
-      Disabled: disabled
-      Manual: manual
-  vpinball_flexdmd:
-    group: WINDOWS POSITIONS
-    prompt: FLEX DMD
-    description: Extra DMD (Dot Matrix Display) window to display the score for tables without a rom. By default, settings come from the VPinballX.ini configuration file.
-    choices:
-      Top-Right Position, Small: topright_small
-      Top-Right Position, Medium: topright_medium
-      Top-Right Position, Large: topright_large
-      Top-Left Position, Small: topleft_small
-      Top-Left Position, Medium: topleft_medium
-      Top-Left Position, Large: topleft_large
-      On screen 2 if available: screen2
-      On screen 3 if available: screen3
-      Disabled: disabled
-      Manual: manual
-  vpinball_b2s:
+  vpinball_backglass:
     group: WINDOWS POSITIONS
     prompt: BACKGLASS (B2S)
     description: Upright glass panel displaying some illuminated artwork. By default, settings come from the VPinballX.ini configuration file.
@@ -122,16 +82,6 @@ custom_features:
       On screen 2 if available: screen2
       Disabled: disabled
       Manual: manual
-  vpinball_b2sdmd:
-    group: WINDOWS POSITIONS
-    prompt: DISPLAY BACKGLASS DMD
-    description: When the Backglass is activated, display the small additional part with the scores.
-    preset: switchauto
-  vpinball_b2sgrill:
-    group: WINDOWS POSITIONS
-    prompt: DISPLAY BACKGLASS GRILL
-    description: When the Backglass is activated, display the grill.
-    preset: switchauto
   vpinball_dmdsize:
     group: WINDOWS POSITIONS
     prompt: DMD SIZE
@@ -141,7 +91,7 @@ custom_features:
       128x32: 128x32
       192x64: 192x64
       256x64: 256x64
-  vpinball_inverseplayfieldandb2s:
+  vpinball_inverseplayfieldandbackglass:
     group: WINDOWS POSITIONS
     prompt: INVERSE PLAYFIELD AND B2S
     description: Inverse the Backglass and the Playfield. Usefull to use the Backglass as main screen for other emulators.
@@ -225,20 +175,5 @@ custom_features:
       80%: "80"
       90%: "90"
       100%: "100"
-  vpinball_altsound:
-    group: AUDIO
-    prompt: ALTERNATIVE SOUND
-    description: Alternative sounds for the table (needs additional files).
-    preset: switchauto
-  vpinball_pad_add_credit:
-    prompt: USE JOYPAD SOUTH BUTTON TO ADD CREDIT
-    group: EXPERT SETTINGS
-    description: This should not be necessary, unless you are not using the default pad2key mapping.
-    preset: switchauto
-  vpinball_pbw:
-    group: EXPERT SETTINGS
-    prompt: ACCELEROMETER
-    description: Internal accelerometer. Disable if you experience random tilts or unexpected ball behavior.
-    preset: switchauto
 systems:
   - vpinball

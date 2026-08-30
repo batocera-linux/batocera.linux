@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SOLARUS_ENGINE_VERSION = v2.0.4
+SOLARUS_ENGINE_VERSION = v2.1.3
 SOLARUS_ENGINE_SITE = https://gitlab.com/solarus-games/solarus
 SOLARUS_ENGINE_SITE_METHOD=git
 SOLARUS_ENGINE_EMULATOR_INFO = solarus.emulator.yml

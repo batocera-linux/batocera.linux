@@ -1,0 +1,25 @@
+From e79ba5f211f9ec8869ed2e506a4b1562437f4d6e Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 1 Apr 2026 21:54:05 +0200
+Subject: [PATCH] Update dram_sun50i_h616.c
+
+---
+ arch/arm/mach-sunxi/dram_sun50i_h616.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-sunxi/dram_sun50i_h616.c b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+index 3345c9b8e82..42a0550e015 100644
+--- a/arch/arm/mach-sunxi/dram_sun50i_h616.c
++++ b/arch/arm/mach-sunxi/dram_sun50i_h616.c
+@@ -975,7 +975,7 @@ static bool mctl_phy_init(const struct dram_para *para,
+ 		val = para->tpr6 & 0xff;
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR3:
+-		val = para->tpr6 >> 8 & 0xff;
++		val = para->tpr6 >> 16 & 0xff;
+ 		break;
+ 	case SUNXI_DRAM_TYPE_LPDDR4:
+ 		val = para->tpr6 >> 24 & 0xff;
+-- 
+2.53.0
+

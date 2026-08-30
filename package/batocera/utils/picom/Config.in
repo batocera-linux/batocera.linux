@@ -1,0 +1,23 @@
+config BR2_PACKAGE_PICOM
+    bool "picom"
+    select BR2_PACKAGE_LIBCONFIG
+    select BR2_PACKAGE_LIBEV
+    select BR2_PACKAGE_LIBXCB
+    select BR2_PACKAGE_PIXMAN
+    select BR2_PACKAGE_UTHASH
+    select BR2_PACKAGE_XCB_UTIL
+    select BR2_PACKAGE_XCB_UTIL_IMAGE
+    select BR2_PACKAGE_XCB_UTIL_RENDERUTIL
+    select BR2_PACKAGE_XLIB_LIBX11
+    select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+    select BR2_PACKAGE_XLIB_LIBXDAMAGE
+    select BR2_PACKAGE_XLIB_LIBXEXT
+    select BR2_PACKAGE_XLIB_LIBXFIXES
+    select BR2_PACKAGE_XLIB_LIBXPRESENT
+    select BR2_PACKAGE_XLIB_LIBXRANDR
+    select BR2_PACKAGE_XLIB_LIBXRENDER
+    select BR2_PACKAGE_XORGPROTO
+    help
+      A lightweight compositor for X11 with animation support.
+
+      https://picom.app/

@@ -3,8 +3,8 @@
 # libretro-freechaf
 #
 ################################################################################
-# Version: Commits on Jun 28, 2024
-LIBRETRO_FREECHAF_VERSION = cdb8ad6fcecb276761b193650f5ce9ae8b878067
+# Version: Commits on Apr 20, 2026
+LIBRETRO_FREECHAF_VERSION = 76c7a84f1f7e80f3e6f2bba96fe100cb24e99124
 LIBRETRO_FREECHAF_SITE_METHOD=git
 LIBRETRO_FREECHAF_SITE=https://github.com/libretro/FreeChaF.git
 LIBRETRO_FREECHAF_GIT_SUBMODULES=YES

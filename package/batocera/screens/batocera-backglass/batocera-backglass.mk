@@ -6,40 +6,41 @@
 
 BATOCERA_BACKGLASS_VERSION = 1.0
 BATOCERA_BACKGLASS_LICENSE = GPL
-BATOCERA_BACKGLASS_SOURCE=
+BATOCERA_BACKGLASS_SOURCE =
+
+BATOCERA_BACKGLASS_DEPENDENCIES = sdl2 sdl2_image sdl2_ttf libcurl openssl dejavu noto-cjk-fonts
 
 BACKGLASS_PATH = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/screens/batocera-backglass
 
+ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
+    BATOCERA_BACKGLASS_CXXFLAGS = -DHAVE_XORG=1
+else
+    BATOCERA_BACKGLASS_CXXFLAGS = -DHAVE_XORG=0
+endif
+
+define BATOCERA_BACKGLASS_BUILD_CMDS
+	$(TARGET_CXX) $(TARGET_CXXFLAGS) $(TARGET_LDFLAGS) \
+		-o $(@D)/batocera-backglass-window \
+		$(BATOCERA_BACKGLASS_CXXFLAGS) \
+		$(BACKGLASS_PATH)/batocera-backglass-window.cpp \
+		-lSDL2 -lSDL2_image -lSDL2_ttf -lcurl -lcrypto -lpthread
+endef
+
 define BATOCERA_BACKGLASS_INSTALL_TARGET_CMDS
-    # script
-    mkdir -p $(TARGET_DIR)/usr/bin
-    install -m 0755 $(BACKGLASS_PATH)/batocera-backglass.sh \
-        $(TARGET_DIR)/usr/bin/batocera-backglass
-    install -m 0755 $(BACKGLASS_PATH)/batocera-backglass-window.py \
-        $(TARGET_DIR)/usr/bin/batocera-backglass-window
+	# Install main bash controls script
+	mkdir -p $(TARGET_DIR)/usr/bin
+	install -m 0755 $(BACKGLASS_PATH)/batocera-backglass.sh \
+		$(TARGET_DIR)/usr/bin/batocera-backglass
+	
+	# Install the compiled native backglass execution window binary
+	install -m 0755 $(@D)/batocera-backglass-window \
+		$(TARGET_DIR)/usr/bin/batocera-backglass-window
 
-    # hooks
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/scripts
-    $(INSTALL) -m 0755 -D $(BACKGLASS_PATH)/scripts/*.sh \
-        $(TARGET_DIR)/usr/share/batocera-backglass/scripts/
-
-    # default web page
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-default
-    cp -pr $(BACKGLASS_PATH)/www/backglass-default/*.{js,css,htm} \
-        $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-default/
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-image
-    cp -pr $(BACKGLASS_PATH)/www/backglass-image/*.{js,css,htm} \
-        $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-image/
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-marquee
-    cp -pr $(BACKGLASS_PATH)/www/backglass-marquee/*.{js,css,htm} \
-        $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-marquee/
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-boxart
-    cp -pr $(BACKGLASS_PATH)/www/backglass-boxart/*.{js,css,htm} \
-        $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-boxart/
-    mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-fanart
-    cp -pr $(BACKGLASS_PATH)/www/backglass-fanart/*.{js,css,htm} \
-        $(TARGET_DIR)/usr/share/batocera-backglass/www/backglass-fanart/
+	# Install hook wrappers
+	mkdir -p $(TARGET_DIR)/usr/share/batocera-backglass/scripts
+	$(INSTALL) -m 0755 -D $(BACKGLASS_PATH)/scripts/*.sh \
+		$(TARGET_DIR)/usr/share/batocera-backglass/scripts/
 endef
 
 $(eval $(generic-package))

@@ -1,0 +1,7 @@
+config BR2_PACKAGE_UBOOT_GAMEFORCE_ACE
+    bool "uboot-gameforce-ace"
+    help
+      U-Boot files for the Gameforce Ace handheld.
+      Currently uses OrangePi 5 until mainline is fixed.
+
+      https://github.com/orangepi-xunlong/orangepi-build
