@@ -2,7 +2,7 @@ diff --git a/Makefile b/Makefile
 index 3269005..a215089 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -58,6 +58,14 @@ else ifneq (,$(findstring rpi,$(platform)))
+@@ -58,8 +58,16 @@ else ifneq (,$(findstring rpi,$(platform)))
     override platform += unix
  else ifneq (,$(findstring odroid,$(platform)))
     override platform += unix
@@ -14,6 +14,8 @@ index 3269005..a215089 100644
 +   override platform += unix
 +   else ifneq (,$(findstring h5,$(platform)))
 +   override platform += unix
+ else ifneq (,$(findstring webos,$(platform)))
+    override platform += unix
  endif
  
  # system platform
