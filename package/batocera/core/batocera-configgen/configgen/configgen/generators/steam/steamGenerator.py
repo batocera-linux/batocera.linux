@@ -37,3 +37,6 @@ class SteamGenerator(Generator):
             "name": "steam",
             "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
         }
+
+    def getInGameRatio(self, config, gameResolution, rom):
+        return 16 / 9
