@@ -3,8 +3,8 @@
 # libretro-swanstation
 #
 ################################################################################
-# Version: Commits on Aug 2, 2025
-LIBRETRO_SWANSTATION_VERSION = 4d309c05fd7bdc503d91d267bd542edb8d192b09
+# Version: Commits on Aug 11, 2026
+LIBRETRO_SWANSTATION_VERSION = 7f69c199ed88d5723f71dd3a6e9c1b7a45b535a6
 LIBRETRO_SWANSTATION_SITE = $(call github,libretro,swanstation,$(LIBRETRO_SWANSTATION_VERSION))
 LIBRETRO_SWANSTATION_LICENSE = GPLv2
 LIBRETRO_SWANSTATION_DEPENDENCIES = fmt boost ffmpeg retroarch

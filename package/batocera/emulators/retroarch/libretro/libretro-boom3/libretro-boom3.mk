@@ -3,8 +3,8 @@
 # libretro-boom3
 #
 ################################################################################
-# Version: Commits on Aug 10, 2022
-LIBRETRO_BOOM3_VERSION = 0bea79abf5ec8262dfe9af73cb8c54ea6e2aeb98
+# Version: Commits on Aug 28, 2026
+LIBRETRO_BOOM3_VERSION = fedc738f0b1f82754db21d36a60a9a8c9fae6688
 LIBRETRO_BOOM3_SITE = $(call github,libretro,boom3,$(LIBRETRO_BOOM3_VERSION))
 LIBRETRO_BOOM3_LICENSE = GPLv3
 LIBRETRO_BOOM3_LICENSE_FILES = COPYING.txt

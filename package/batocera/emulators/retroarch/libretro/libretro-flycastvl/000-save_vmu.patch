@@ -35,10 +35,10 @@ diff --git a/core/nullDC.cpp b/core/nullDC.cpp
 index 8560b24..afd3a44 100644
 --- a/core/nullDC.cpp
 +++ b/core/nullDC.cpp
-@@ -483,7 +483,7 @@ void dc_run()
+@@ -523,7 +523,7 @@ void dc_term()
+ 	extern void common_libretro_cleanup(void);
+ 	common_libretro_cleanup();
  
- void dc_term()
- {
 -	SaveRomFiles(get_writable_data_path(""));
 +	SaveRomFiles(get_writable_data_save(""));
  	sh4_cpu.Term();
