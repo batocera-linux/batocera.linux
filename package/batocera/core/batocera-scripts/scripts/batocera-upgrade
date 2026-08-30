@@ -213,7 +213,8 @@ do_version_update() {
 # Upgrade Check, get updated url from ES call
 do_upgradecheck_0() {
     local update_url="${1}"
-    local available=$(wget -qO- ${update_url})
+    local available
+    available=$(wget -qO- ${update_url})
     if [ "$?" != "0" ]; then
         echo "Unable to access the url" >&2
         return 2
