@@ -7,7 +7,8 @@ LOG="/tmp/resize.log"
 test "$1" != "start" && exit 0
 
 # Get the active console. If it fails, default to tty1 as a fallback.
-ACTIVE_TTY_PATH="/dev/tty$(fgconsole 2>/dev/null || echo /dev/tty1)"
+TTY_NUM="$(fgconsole 2>/dev/null)"
+ACTIVE_TTY_PATH="/dev/tty${TTY_NUM:-1}"
 echo "Detected active console: ${ACTIVE_TTY_PATH}" >> "$LOG"
 
 # true if triggers are not available or not set to do so
