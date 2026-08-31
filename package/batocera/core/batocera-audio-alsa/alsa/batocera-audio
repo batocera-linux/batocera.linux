@@ -15,6 +15,11 @@ case "${ACTION}" in
 
 	"get")	
 		batocera-settings -command load -key audio.device	
+		;;
+
+	"get-active")
+	        # hum, how to get the current active (not the one from the configuration)
+		batocera-settings -command load -key audio.device
 	;;	
 
 	"set")	
