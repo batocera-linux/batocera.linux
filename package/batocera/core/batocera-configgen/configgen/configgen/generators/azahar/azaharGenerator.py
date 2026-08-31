@@ -9,7 +9,7 @@ from batocera_common.configparser import CaseSensitiveRawConfigParser
 from ... import Command
 from ...batoceraPaths import CACHE, CONFIGS, SAVES, ensure_parents_and_open
 from ...controller import Controller, generate_sdl_game_controller_config
-from ...utils import vulkan
+from ...utils import videoMode, vulkan
 from ..Generator import Generator
 
 if TYPE_CHECKING:
@@ -39,6 +39,11 @@ class AzaharGenerator(Generator):
     # Main entry of the module
     def generate(self, system, rom, playersControllers, metadata, guns, wheels, gameResolution):
         AzaharGenerator.writeAZAHARConfig(CONFIGS / "azahar-emu" / "qt-config.ini", system, playersControllers)
+
+        # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
+        screens = videoMode.getScreensInfos(system.config)
+        videoMode.configureWindow(screens, identifier="azahar", output="primary")
+        videoMode.configureWindow(screens, identifier="azahar", title="*Secondary Window*", output="backglass", toogleFullscreen=True)
 
         commandArray = ['/usr/bin/azahar', rom]
 

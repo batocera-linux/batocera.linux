@@ -91,7 +91,12 @@ case "${ACTION}" in
 	;;
     "getDisplayMode")
         echo "tvservice"
-    ;;
+	;;
+
+    "configureWindow")
+	# not needed on tvservice
+	;;
+
 	*)
 		f_usage
 		>&2 echo "error: invalid command ${ACTION}"

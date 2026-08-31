@@ -469,6 +469,10 @@ case "${ACTION}" in
         echo "openbox"
         ;;
 
+    "configureWindow")
+	# nothing to do, on xorg, configuring windows is done at application level
+	;;
+
     *)
         f_usage
         >&2 echo "error: invalid command ${ACTION}"

@@ -64,6 +64,7 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
     vo1 = getCurrentOutput()
     resolution1 = getCurrentResolution()
     res.append({
+        "name": vo1,
         "width": resolution1["width"],
         "height": resolution1["height"],
         "x": 0,
@@ -85,6 +86,7 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
         try:
             resolution2 = getCurrentResolution(vo2)
             res.append({
+                "name": vo2,
                 "width": resolution2["width"],
                 "height": resolution2["height"],
                 "x": resolution1["width"],
@@ -107,6 +109,7 @@ def getScreensInfos(config: SystemConfig) -> list[ScreenInfo]:
         try:
             resolution3 = getCurrentResolution(vo3)
             res.append({
+                "name": vo3,
                 "width": resolution3["width"],
                 "height": resolution3["height"],
                 # if resolution2 can't be determined, place screen3 where screen2 would be
@@ -233,3 +236,30 @@ def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
                 return str(row[1])
 
     return "0"
+
+def configureWindow(screens, identifier=None, title=None, output=None, toogleFullscreen=None):
+    # default to the primary screen
+    output_name = ""
+    if output is not None:
+        output_name = screens[0]["name"]
+        if output == "backglass" and len(screens) >= 2:
+            output_name = screens[1]["name"]
+
+    params = ["/usr/bin/labwc-configure-window"]
+    if identifier is not None:
+        params.extend(["--identifier", identifier])
+    if title is not None:
+        params.extend(["--title", title])
+    if output is not None:
+        params.extend(["--output", output_name])
+    if toogleFullscreen is not None:
+        if toogleFullscreen:
+            params.extend(["--toggle-fullscreen", "true"])
+        else:
+            params.extend(["--toggle-fullscreen", "false"])
+    res = subprocess.run(params)
+
+
+    _logger.info("configuring window %s", params)
+    if res.returncode != 0:
+        _logger.error("configuring window %s / %s failed", identifier, title)

@@ -34,4 +34,10 @@ else
 LABWC_CONF_OPTS += -Dsvg=disabled
 endif
 
+define LABWC_BATOCERA_TOOLS_INSTALL
+	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/labwc/labwc-configure-window.py $(TARGET_DIR)/usr/bin/labwc-configure-window
+endef
+
+LABWC_POST_INSTALL_TARGET_HOOKS += LABWC_BATOCERA_TOOLS_INSTALL
+
 $(eval $(meson-package))
