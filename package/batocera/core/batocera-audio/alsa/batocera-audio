@@ -35,6 +35,10 @@ case "${ACTION}" in
         /usr/bin/batocera-settings-get audio.device
         ;;
 
+    get-active)
+	LC_ALL=C pactl list sinks-raw | grep -E '^[^ ]* name="'"${DEFAULT_SINK}"'"' | sed -e s+"^sink=\"[0-9]*\" name=\"\([^ ]*\)\" .* description=\"\(.*\)\"$"+"\1\t\2"+
+        ;;
+
     set)
         MODE="$2"
         case "${MODE}" in
@@ -88,6 +92,10 @@ case "${ACTION}" in
 
     get-profile)
         /usr/bin/batocera-settings-get audio.profile
+        ;;
+
+    get-profile-active)
+	LC_ALL=C pactl list cards-profiles-raw | grep 'active="1"' | sed -E 's/^card="[0-9]+" name="(.*)" profile="(.*)" available="[01]" active="[01]" description="(.*)"$/\2@\1\t\3/'
         ;;
 
     set-profile)
