@@ -55,6 +55,9 @@ endef
 define BATOCERA_CONFIGGEN_ES_HOOKS
 	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/powermode_launch_hooks.sh \
 	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/powermode_launch_hooks.sh
+
+	install -D -m 0755 $(BATOCERA_CONFIGGEN_PKGDIR)/scripts/adhoc_hooks.sh \
+	    $(TARGET_DIR)/usr/share/batocera/configgen/scripts/adhoc_hooks.sh
 endef
 
 define BATOCERA_CONFIGGEN_X86_HOOKS

@@ -27,7 +27,7 @@ for existing_key in ${existing_specific_keys}; do
 done
 
 # Sync current values from master config
-KEYS_TO_CHECK="wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key wifi.country splash.screen.enabled system.timezone es.resolution display.rotate system.hostname luks.enabled"
+KEYS_TO_CHECK="wifi.enabled wifi.ssid wifi.key wifi2.ssid wifi2.key wifi3.ssid wifi3.key wifi.hidden.ssid wifi.hidden.key wifi.adhoc.ssid wifi.adhoc.key wifi.country splash.screen.enabled system.timezone es.resolution display.rotate system.hostname luks.enabled"
 if [ -n "${correct_specific_key}" ]; then
     KEYS_TO_CHECK="${KEYS_TO_CHECK} ${correct_specific_key}"
 fi
