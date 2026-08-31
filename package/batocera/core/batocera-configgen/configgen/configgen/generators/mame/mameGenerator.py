@@ -19,6 +19,7 @@ from ...batoceraPaths import (
     BIOS,
     CONFIGS,
     DEFAULTS_DIR,
+    ES_SETTINGS,
     ROMS,
     SAVES,
     SCREENSHOTS,
@@ -147,7 +148,17 @@ class MameGenerator(Generator):
         commandArray += [ "-cheatpath",    MAME_CHEATS ]       # Should this point to path containing the cheat.7z file
 
         # Logs and Swithres ini read by default (including its own verbose)
-        commandArray += [ "-verbose" ]
+        # Use full MAME logging when debug logging is enabled, else oslog. Verbose logging also enables debug pop up messages during gameplay.
+        try:
+            logLevel = next((
+                entry.get("value")
+                for entry in ET.parse(ES_SETTINGS).getroot().iter("string")
+                if entry.get("name") == "LogLevel"
+            ), None)
+        except (ET.ParseError, OSError):
+            logLevel = None
+
+        commandArray += [ "-verbose" if logLevel == "debug" else "-oslog" ]
         commandArray += [ "-switchres_ini" ]
 
         # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
