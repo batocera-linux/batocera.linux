@@ -65,6 +65,13 @@ def configureWindowing(vpinballSettings: CaseSensitiveConfigParser, system: Emul
     if backglass_config != "manual":
         configureBackglass(vpinballSettings, backglass_config, screens, backglassScreen, Rscreen, gameResolution, dmdsize)
 
+    # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
+    videoMode.configureWindows(
+        'vpinball',
+        videoMode.findScreen(screens, 'primary' if playFieldScreen == 0 else 'secondary'),
+        videoMode.findScreen(screens, 'primary' if backglassScreen == 0 else 'secondary')
+    )
+
 def getBackglassConfiguration(system: Emulator, screens: list[ScreenInfo]):
     val = ""
     if system.isOptSet("vpinball_backglass"):
@@ -84,8 +91,6 @@ def configurePlayfield(vpinballSettings: CaseSensitiveConfigParser, screens: lis
     vpinballSettings.set("Player", "PlayfieldWndY",    str(screens[playFieldScreen]["y"]))
     vpinballSettings.set("Player", "PlayfieldWidth",   str(screens[playFieldScreen]["width"]))
     vpinballSettings.set("Player", "PlayfieldHeight",  str(screens[playFieldScreen]["height"]))
-    # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
-    videoMode.configureWindow(screens, identifier="VPinballX_BGFX", title="Visual Pinball Player", output="backglass" if playFieldScreen == 1 else "primary")
 
 def getDMDWindowSize(system: Emulator, gameResolution: Resolution):
     if not system.isOptSet("vpinball_dmdsize"):
@@ -117,8 +122,6 @@ def configureBackglass(vpinballSettings: CaseSensitiveConfigParser, backglass_co
         vpinballSettings.set("Backglass", "BackglassWndY",   str(screens[backglassScreen]["y"]))
         vpinballSettings.set("Backglass", "BackglassWidth",  str(screens[backglassScreen]["width"]))
         vpinballSettings.set("Backglass", "BackglassHeight", str(screens[backglassScreen]["height"]))
-        # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
-        videoMode.configureWindow(screens, identifier="VPinballX_BGFX", title="Visual Pinball Backglass", output="backglass" if backglassScreen == 1 else "primary")
     else:
         if backglass_config == "topright_small":
             width = small
@@ -144,9 +147,6 @@ def configureBackglass(vpinballSettings: CaseSensitiveConfigParser, backglass_co
         vpinballSettings.set("Backglass", "BackglassWndY",    ConvertToPixel(gameResolution["height"], y))
         vpinballSettings.set("Backglass", "BackglassWidth",   ConvertToPixel(gameResolution["width"],  width))
         vpinballSettings.set("Backglass", "BackglassHeight",  ConvertToPixel(gameResolution["height"], height))
-        # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
-        # this position by coordonates should not work for now. to be done correctly later.
-        videoMode.configureWindow(screens, identifier="VPinballX_BGFX", title="Visual Pinball Backglass", output="backglass" if backglassScreen == 1 else "primary")
 
 # Extra_windows (backglass)
 # VideogetCurrentResolution to convert from percentage to pixel value

@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from batocera_launch.config.labwc import LABWC_BIN, LabWCConfig
-from batocera_launch.types import Resolution, ScreenInfo
+from batocera_labwc.config import LABWC_BIN, LabWCConfig
 
 if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
@@ -28,12 +27,20 @@ _EXISTING_RULES_RC_XML = """\
   <windowRules>
     <windowRule identifier="azahar">
       <action name="MoveToOutput"><output>HDMI-1</output></action>
+      <action name="FocusOutput"><output>HDMI-1</output></action>
     </windowRule>
     <windowRule identifier="azahar" title="*Secondary Window*">
       <action name="MoveToOutput"><output>HDMI-2</output></action>
       <action name="ToggleFullscreen" />
     </windowRule>
   </windowRules>
+</labwc_config>
+"""
+
+_EXISTING_TOUCH_RC_XML = """\
+<?xml version='1.0' encoding='utf-8'?>
+<labwc_config>
+  <touch deviceName="old-touch" mapToOutput="HDMI-0" mouseEmulation="no" />
 </labwc_config>
 """
 
@@ -47,11 +54,8 @@ def rc_path(fs: FakeFilesystem) -> Path:
 
 
 @pytest.fixture
-def screens() -> list[ScreenInfo]:
-    return [
-        ScreenInfo('HDMI-A-1', Resolution(1920, 1080), 0, 0),
-        ScreenInfo('HDMI-A-2', Resolution(1280, 720), 1920, 0),
-    ]
+def labwc_pid(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('LABWC_PID', '12345')
 
 
 def _find_rule(root: ET.Element[str], /, *, identifier: str | None = None, title: str | None = None) -> ET.Element[str]:
@@ -71,14 +75,26 @@ def _find_rule(root: ET.Element[str], /, *, identifier: str | None = None, title
     return rule
 
 
-def _output_name(rule: ET.Element[str]) -> str | None:
-    action = rule.find('./action[@name="MoveToOutput"]/output')
+def _action_output_name(rule: ET.Element[str], action_name: str) -> str | None:
+    action = rule.find(f'./action[@name="{action_name}"]/output')
 
     return action.text if action is not None else None
 
 
+def _output_name(rule: ET.Element[str]) -> str | None:
+    return _action_output_name(rule, 'MoveToOutput')
+
+
+def _focus_output_name(rule: ET.Element[str]) -> str | None:
+    return _action_output_name(rule, 'FocusOutput')
+
+
 def _has_fullscreen(rule: ET.Element[str]) -> bool:
     return rule.find('./action[@name="ToggleFullscreen"]') is not None
+
+
+def _touch_elements(root: ET.Element[str]) -> list[ET.Element[str]]:
+    return root.findall('./touch')
 
 
 class TestLabWCConfigLoad:
@@ -126,6 +142,7 @@ class TestLabWCConfigWindowRule:
         rule = config.window_rule(identifier='azahar')
 
         assert _output_name(rule.element) == 'HDMI-1'
+        assert _focus_output_name(rule.element) == 'HDMI-1'
 
     def test_finds_existing_window_rule_by_identifier_and_title(self, rc_path: Path) -> None:
         rc_path.write_text(_EXISTING_RULES_RC_XML)
@@ -138,48 +155,57 @@ class TestLabWCConfigWindowRule:
 
 
 class TestWindowRuleMoveToOutput:
-    def test_move_to_output_primary(self, rc_path: Path, screens: list[ScreenInfo]) -> None:
+    def test_move_to_output_sets_output_name(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
+        config.window_rule(identifier='azahar').move_to_output('HDMI-A-1')
 
         rule = _find_rule(config.root, identifier='azahar')
 
         assert _output_name(rule) == 'HDMI-A-1'
 
-    def test_move_to_output_backglass_uses_second_screen(self, rc_path: Path, screens: list[ScreenInfo]) -> None:
-        config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar', title='*Secondary Window*').move_to_output(screens, 'backglass')
-
-        rule = _find_rule(config.root, identifier='azahar', title='*Secondary Window*')
-
-        assert _output_name(rule) == 'HDMI-A-2'
-
-    def test_move_to_output_backglass_falls_back_to_primary_on_single_screen(self, rc_path: Path) -> None:
-        single_screen = [ScreenInfo('HDMI-A-1', Resolution(1920, 1080), 0, 0)]
-        config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar', title='*Secondary Window*').move_to_output(single_screen, 'backglass')
-
-        rule = _find_rule(config.root, identifier='azahar', title='*Secondary Window*')
-
-        assert _output_name(rule) == 'HDMI-A-1'
-
-    def test_move_to_output_none_removes_action(self, rc_path: Path, screens: list[ScreenInfo]) -> None:
+    def test_move_to_output_none_removes_action(self, rc_path: Path) -> None:
         rc_path.write_text(_EXISTING_RULES_RC_XML)
         config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar').move_to_output(screens, None)
+        config.window_rule(identifier='azahar').move_to_output(None)
 
         rule = _find_rule(config.root, identifier='azahar')
 
         assert _output_name(rule) is None
 
-    def test_move_to_output_updates_existing_output(self, rc_path: Path, screens: list[ScreenInfo]) -> None:
+    def test_move_to_output_updates_existing_output(self, rc_path: Path) -> None:
         rc_path.write_text(_EXISTING_RULES_RC_XML)
         config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
+        config.window_rule(identifier='azahar').move_to_output('HDMI-A-1')
 
         rule = _find_rule(config.root, identifier='azahar')
 
         assert _output_name(rule) == 'HDMI-A-1'
+
+
+class TestWindowRuleFocusOutput:
+    def test_focus_output_sets_output_name(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.window_rule(identifier='emulationstation').focus_output('HDMI-A-1')
+
+        rule = _find_rule(config.root, identifier='emulationstation')
+
+        assert _focus_output_name(rule) == 'HDMI-A-1'
+
+    def test_focus_output_none_removes_action(self, rc_path: Path) -> None:
+        rc_path.write_text(_EXISTING_RULES_RC_XML)
+        config = LabWCConfig(path=rc_path)
+        config.window_rule(identifier='azahar').focus_output(None)
+
+        rule = _find_rule(config.root, identifier='azahar')
+
+        assert _focus_output_name(rule) is None
+
+    def test_supports_method_chaining_with_move_to_output(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        rule = config.window_rule(identifier='emulationstation').focus_output('HDMI-A-1').move_to_output('HDMI-A-1')
+
+        assert _focus_output_name(rule.element) == 'HDMI-A-1'
+        assert _output_name(rule.element) == 'HDMI-A-1'
 
 
 class TestWindowRuleToggleFullscreen:
@@ -200,11 +226,11 @@ class TestWindowRuleToggleFullscreen:
 
         assert not _has_fullscreen(rule)
 
-    def test_supports_method_chaining(self, rc_path: Path, screens: list[ScreenInfo]) -> None:
+    def test_supports_method_chaining(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
         rule = (
             config.window_rule(identifier='azahar', title='*Secondary Window*')
-            .move_to_output(screens, 'backglass')
+            .move_to_output('HDMI-A-2')
             .toggle_fullscreen()
         )
 
@@ -212,13 +238,47 @@ class TestWindowRuleToggleFullscreen:
         assert _has_fullscreen(rule.element)
 
 
-class TestLabWCConfigSave:
-    def test_writes_xml_and_reconfigures_labwc(
-        self, rc_path: Path, screens: list[ScreenInfo], mocker: MockerFixture
-    ) -> None:
-        mock_run = mocker.patch('subprocess.run')
+class TestLabWCConfigSetTouchscreen:
+    def test_set_touchscreen_creates_touch_element(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
+        config.set_touchscreen(name='touch-panel', map_to_output_name='HDMI-A-1')
+
+        touch_elements = _touch_elements(config.root)
+
+        assert len(touch_elements) == 1
+        assert touch_elements[0].get('deviceName') == 'touch-panel'
+        assert touch_elements[0].get('mapToOutput') == 'HDMI-A-1'
+        assert touch_elements[0].get('mouseEmulation') == 'no'
+
+    def test_set_touchscreen_replaces_existing_entries(self, rc_path: Path) -> None:
+        rc_path.write_text(_EXISTING_TOUCH_RC_XML)
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreen(name='new-touch', map_to_output_name='HDMI-A-2')
+
+        touch_elements = _touch_elements(config.root)
+
+        assert len(touch_elements) == 1
+        assert touch_elements[0].get('deviceName') == 'new-touch'
+        assert touch_elements[0].get('mapToOutput') == 'HDMI-A-2'
+
+    def test_set_touchscreen_clear_removes_existing_entries(self, rc_path: Path) -> None:
+        rc_path.write_text(_EXISTING_TOUCH_RC_XML)
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreen()
+
+        assert _touch_elements(config.root) == []
+
+    def test_set_touchscreen_requires_both_name_and_output(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreen(name='touch-panel', map_to_output_name=None)
+
+        assert _touch_elements(config.root) == []
+
+
+class TestLabWCConfigSave:
+    def test_writes_xml(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.window_rule(identifier='azahar').move_to_output('HDMI-A-1')
         config.save()
 
         saved = ET.parse(rc_path).getroot()
@@ -226,15 +286,21 @@ class TestLabWCConfigSave:
 
         assert _output_name(rule) == 'HDMI-A-1'
         assert rc_path.read_text().startswith("<?xml version='1.0' encoding='utf-8'?>")
-        mock_run.assert_called_once_with([LABWC_BIN, '--reconfigure'], check=True)
 
-    def test_azahar_window_rules(self, rc_path: Path, screens: list[ScreenInfo], mocker: MockerFixture) -> None:
-        mocker.patch('subprocess.run')
+    def test_save_does_not_reconfigure(self, rc_path: Path, mocker: MockerFixture) -> None:
+        mock_run = mocker.patch('subprocess.run')
         config = LabWCConfig(path=rc_path)
-        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
+        config.save()
+
+        mock_run.assert_not_called()
+        assert rc_path.read_text().startswith("<?xml version='1.0' encoding='utf-8'?>")
+
+    def test_azahar_window_rules(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.window_rule(identifier='azahar').move_to_output('HDMI-A-1')
         (
             config.window_rule(identifier='azahar', title='*Secondary Window*')
-            .move_to_output(screens, 'backglass')
+            .move_to_output('HDMI-A-2')
             .toggle_fullscreen()
         )
         config.save()
@@ -248,16 +314,43 @@ class TestLabWCConfigSave:
         assert _has_fullscreen(secondary)
         assert not _has_fullscreen(primary)
 
+
+class TestLabWCConfigReconfigure:
+    @pytest.mark.usefixtures('labwc_pid')
+    def test_reconfigure_calls_labwc_when_labwc_pid_set(self, mocker: MockerFixture) -> None:
+        mock_run = mocker.patch('subprocess.run')
+
+        LabWCConfig.reconfigure()
+
+        mock_run.assert_called_once_with([LABWC_BIN, '--reconfigure'], check=True)
+
+    def test_reconfigure_skips_when_labwc_pid_unset(
+        self,
+        mocker: MockerFixture,
+        monkeypatch: pytest.MonkeyPatch,
+        caplog: pytest.LogCaptureFixture,
+    ) -> None:
+        monkeypatch.delenv('LABWC_PID', raising=False)
+        mock_run = mocker.patch('subprocess.run')
+
+        with caplog.at_level('WARNING'):
+            LabWCConfig.reconfigure()
+
+        mock_run.assert_not_called()
+        assert 'LABWC_PID not set, skipping labwc reconfigure' in caplog.text
+
+    @pytest.mark.usefixtures('labwc_pid')
     def test_labwc_reconfigure_failure_is_logged_not_raised(
-        self, rc_path: Path, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
+        self,
+        mocker: MockerFixture,
+        caplog: pytest.LogCaptureFixture,
     ) -> None:
         mocker.patch(
             'subprocess.run',
             side_effect=subprocess.CalledProcessError(1, 'labwc'),
         )
-        config = LabWCConfig(path=rc_path)
 
         with caplog.at_level('ERROR'):
-            config.save()
+            LabWCConfig.reconfigure()
 
         assert 'failed to reconfigure labwc' in caplog.text

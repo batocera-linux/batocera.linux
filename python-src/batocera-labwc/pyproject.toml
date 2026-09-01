@@ -1,0 +1,21 @@
+[project]
+name = "batocera-labwc"
+version = '44.0'
+dependencies = [
+    'batocera-common',
+]
+
+[project.scripts]
+batocera-labwc-config = "batocera_labwc.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_labwc"]
+
+[tool.pytest]
+minversion = "9.0"
+addopts = ["--import-mode=importlib", "--cov=batocera_labwc", "--cov-branch", "--cov-report=term"]
+strict = true

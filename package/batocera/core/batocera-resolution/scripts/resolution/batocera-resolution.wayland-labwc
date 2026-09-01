@@ -33,17 +33,20 @@ _reconfigure_labwc() {
 
     if [ -n "${LABWC_PID}" ]; then
         _log "Found running labwc PID: ${LABWC_PID}. Executing Reconfigure action."
+
+        _log "Triggering labwc reconfigure: $*"
         # Set the environment variable just for this command
-        LABWC_PID="${LABWC_PID}" labwc --reconfigure
+        LABWC_PID="${LABWC_PID}" batocera-labwc-config --reconfigure "$@"
     else
         _log "Could not find running labwc process to trigger reconfigure action."
+        batocera-labwc-config --reconfigure "$@"
     fi
 }
 
 # Extract output block for a specific screen
 _get_screen_block() {
     local screen_name="$1"
-    
+
     if [ -z "${screen_name}" ]; then
         _log "_get_screen_block: Error: screen_name is empty."
         return 1
@@ -54,7 +57,7 @@ _get_screen_block() {
         $0 ~ "^" screen " " {
             in_block = 1
         }
-        
+
         # Rule 2: If we are already in a block, and we find a new screen header
         # (a line that is NOT indented and NOT our original screen name), we must exit the block.
         # This rule MUST come before the print rule.
@@ -74,29 +77,29 @@ _get_current_mode_string() {
     local screen_block
     local modes_section
     local current_mode
-    
+
     if [ -z "${screen_name}" ]; then
         _log "_get_current_mode_string: Error: screen_name is empty."
         return 1
     fi
-    
+
     screen_block=$(_get_screen_block "${screen_name}")
     if [ $? -ne 0 ]; then
         _log "Error: Failed to get screen block for screen '${screen_name}'"
         return 1
     fi
-    
+
     # Extract just the Modes section
     modes_section=$(echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | sed '$d')
-    
+
     # Find the line with (current)
     current_mode=$(echo "${modes_section}" | grep -E '\(preferred, current\)|\s\(current\)')
-    
+
     if [ -n "${current_mode}" ]; then
         # Parse the mode line: "    1920x1080 px, 60.000000 Hz (current)"
         resolution=$(echo "${current_mode}" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\).*/\1/p')
         refresh=$(echo "${current_mode}" | sed -n 's/.*[[:space:]]\([0-9]*\.[0-9]*\)[[:space:]]*Hz.*/\1/p')
-        
+
         if [ -n "${resolution}" ] && [ -n "${refresh}" ]; then
             printf "%s@%sHz\n" "${resolution}" "${refresh}"
         fi
@@ -108,22 +111,22 @@ _get_current_transform() {
     local screen_block
     local transform_line
     local transform_val
-    
-    if [ -z "${screen_name}" ]; then 
+
+    if [ -z "${screen_name}" ]; then
         _log "_get_current_transform: Error: screen_name empty."
         return 1
     fi
-    
+
     screen_block=$(_get_screen_block "${screen_name}")
     if [ $? -ne 0 ]; then
         _log "Error: Failed to get screen block for screen '${screen_name}'"
         return 1
     fi
-    
+
     # Extract transform line
     transform_line=$(echo "${screen_block}" | grep "^[[:space:]]*Transform:")
     transform_val=$(echo "${transform_line}" | sed 's/^[[:space:]]*Transform:[[:space:]]*//')
-    
+
     case "${transform_val}" in
         "normal"|"flipped"|"") echo "0" ;;
         "90") echo "1" ;;
@@ -138,17 +141,17 @@ _get_available_modes() {
     local screen_name="$1"
     local screen_block
     local modes_section
-    
+
     if [ -z "${screen_name}" ]; then
         return 1
     fi
-    
+
     screen_block=$(_get_screen_block "${screen_name}")
     if [ $? -ne 0 ]; then
         _log "Error: Failed to get screen block for screen '${screen_name}'"
         return 1
     fi
-    
+
     # Extract modes section and process each mode line
     echo "${screen_block}" | sed -n '/^  Modes:/,/^  [^[:space:]]/p' | \
         sed '1d;$d' | \
@@ -157,7 +160,7 @@ _get_available_modes() {
         while IFS= read -r mode_line; do
             resolution=$(echo "${mode_line}" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\).*/\1/p')
             refresh=$(echo "${mode_line}" | sed -n 's/.*[[:space:]]\([0-9]*\.[0-9]*\)[[:space:]]*Hz.*/\1/p')
-            
+
             if [ -n "${resolution}" ] && [ -n "${refresh}" ]; then
                 printf "%s@%sHz\n" "${resolution}" "${refresh}"
             elif [ -n "${resolution}" ]; then
@@ -171,12 +174,12 @@ f_minTomaxResolution() {
     local MAXWIDTH MAXHEIGHT MAX_PIXELS
     local CURRENT_MODE_STR CURRENT_RESOLUTION
     local CURRENTWIDTH CURRENTHEIGHT CURRENT_PIXELS
-    
-    if [ -z "${PSCREEN}" ]; then 
+
+    if [ -z "${PSCREEN}" ]; then
         _log "f_minTomaxResolution: PSCREEN is empty."
         exit 1
     fi
-    
+
     # Parse max resolution parameter
     if [ -n "${MAX_RES_PARAM}" ] && echo "${MAX_RES_PARAM}" | grep -qE '^[0-9]+x[0-9]+$'; then
         MAXWIDTH=$(echo "${MAX_RES_PARAM}" | cut -dx -f1)
@@ -186,9 +189,9 @@ f_minTomaxResolution() {
         MAXHEIGHT=1080
     fi
     MAX_PIXELS=$((MAXWIDTH * MAXHEIGHT))
-    
+
     _log "f_minTomaxResolution: Target max ${MAXWIDTH}x${MAXHEIGHT} (Total pixels: ${MAX_PIXELS}) for PSCREEN='${PSCREEN}'"
-    
+
     # Get current mode
     CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
     _log "Current mode: ${CURRENT_MODE_STR}"
@@ -196,18 +199,18 @@ f_minTomaxResolution() {
         _log "f_minTomaxResolution: Could not get current mode for PSCREEN='${PSCREEN}'. Aborting."
         exit 1
     fi
-    
+
     CURRENT_RESOLUTION=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
     CURRENTWIDTH=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f1)
     CURRENTHEIGHT=$(echo "${CURRENT_RESOLUTION}" | cut -dx -f2)
     CURRENT_PIXELS=$((CURRENTWIDTH * CURRENTHEIGHT))
-    
+
     # It checks total pixels, which is safe for portrait and landscape screens.
     if [ "${CURRENT_PIXELS}" -le "${MAX_PIXELS}" ]; then
         _log "f_minTomaxResolution: Current resolution is within limits. Nothing to do."
         exit 0
     fi
-    
+
     BEST_MODE=$(_get_available_modes "${PSCREEN}" | {
         _BEST_MODE_SUB=""
         _BEST_AREA_SUB=0
@@ -216,11 +219,11 @@ f_minTomaxResolution() {
             resolution=$(echo "${mode}" | cut -d'@' -f1)
             width=$(echo "${resolution}" | cut -dx -f1)
             height=$(echo "${resolution}" | cut -dx -f2)
-            
+
             if ! echo "${width}" | grep -qE '^[0-9]+$' || ! echo "${height}" | grep -qE '^[0-9]+$'; then
                 continue
             fi
-            
+
             area=$((width * height))
             if [ "${area}" -le "${MAX_PIXELS}" ]; then
                 if [ "${area}" -gt "${_BEST_AREA_SUB}" ]; then
@@ -231,7 +234,7 @@ f_minTomaxResolution() {
         done
         echo "${_BEST_MODE_SUB}"
     })
-    
+
     if [ -n "${BEST_MODE}" ]; then
         _log "f_minTomaxResolution: Best mode found: ${BEST_MODE}. Setting it."
         if "${WLR_RANDR}" --output "${PSCREEN}" --mode "${BEST_MODE}"; then
@@ -270,7 +273,7 @@ _detect_primary_screen() {
 
     # Get list of all screens
     screen_list=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
-    
+
     # Try to find enabled screen first
     for screen in ${screen_list}; do
         if _get_screen_block "${screen}" | grep -q "^[[:space:]]*Enabled:[[:space:]]*yes"; then
@@ -278,7 +281,7 @@ _detect_primary_screen() {
             return 0
         fi
     done
-    
+
     # Fallback to first screen
     echo "${screen_list}" | head -n1
 }
@@ -333,15 +336,15 @@ shift # Remove action from arguments, rest are parameters for the action
 
 case "${ACTION}" in
     "currentMode")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "currentMode: PSCREEN is empty, cannot get mode."
             echo "unknown.0"
             exit 1
         fi
-        
+
         CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
         _log "currentMode: '${CURRENT_MODE_STR}'"
-        
+
         if [ -n "${CURRENT_MODE_STR}" ]; then
             RES_ONLY=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
             REFRESH_HZ_STR=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
@@ -361,14 +364,14 @@ case "${ACTION}" in
         ;;
 
     "listModes")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "listModes: PSCREEN is empty, cannot list modes."
             exit 1
         fi
-        
+
         echo "max-1920x1080:maximum 1920x1080"
         echo "max-640x480:maximum 640x480"
-        
+
         _get_available_modes "${PSCREEN}" | while IFS= read -r mode; do
             if echo "${mode}" | grep -q '@'; then
                 resolution=$(echo "${mode}" | cut -d'@' -f1)
@@ -383,11 +386,11 @@ case "${ACTION}" in
         ;;
 
     "setMode")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "setMode: PSCREEN is empty, cannot set mode."
             exit 1
         fi
-        
+
         MODE_TO_SET=$1
         if echo "${MODE_TO_SET}" | grep -qE '^max-'; then
             SPMODE=$(echo "${MODE_TO_SET}" | sed -e 's+^max-++')
@@ -407,12 +410,12 @@ case "${ACTION}" in
         ;;
 
     "currentResolution")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "currentResolution: PSCREEN is empty."
             echo "unknown"
             exit 1
         fi
-        
+
         CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
         if [ -n "${CURRENT_MODE_STR}" ]; then
             RAW_RESOLUTION=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
@@ -421,9 +424,9 @@ case "${ACTION}" in
             echo "unknown"
             exit 1
         fi
-        
+
         RAW_ROTATION=$(_get_current_transform "${PSCREEN}")
-        
+
         # Swap width/height for 90/270 degree rotations
         if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
             WIDTH=$(echo "${RAW_RESOLUTION}" | cut -dx -f1)
@@ -439,13 +442,13 @@ case "${ACTION}" in
         ;;
 
     "currentOutput")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             echo "unknown"
-        else 
+        else
             echo "${PSCREEN}"
         fi
         ;;
-    
+
     "minTomaxResolution" | "minTomaxResolution-secure")
         f_minTomaxResolution "$1"
         ;;
@@ -460,57 +463,9 @@ case "${ACTION}" in
             PRIMARY_OUT=$1
             SECONDARY_OUT=$2
 
-            # Set EmulationStation to the primary output
-            if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting emulationstation window to output: ${PRIMARY_OUT}"               
-                # Update FocusOutput for emulationstation
-                sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="FocusOutput">/ {
-                    n
-                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
-                } }' "${RC_XML}"
-                
-                # Update MoveToOutput for emulationstation
-                sed -i -e '/<windowRule.*identifier="emulationstation"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                    n
-                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
-                } }' "${RC_XML}"
-            fi
-
-            # Set backglass to the secondary output, or clear if no secondary output
-            BACKGLASS_OUT=""
-            if [ -n "${SECONDARY_OUT}" ]; then
-                _log "Setting backglass window to output: ${SECONDARY_OUT}"
-                BACKGLASS_OUT="${SECONDARY_OUT}"
-            else
-                _log "No secondary output. Clearing backglass window output rule."
-                # The variable is already empty, which is what we want.
-            fi
-            
-            sed -i -e '/<windowRule.*identifier="batocera-backglass-window"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                n
-                s#\s*<output>.*</output>#        <output>'"${BACKGLASS_OUT}"'</output>#
-            } }' "${RC_XML}"
-         
-            # Set batocera-flash-screen (OSD) to the primary output
-            if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting batocera-flash-screen (OSD) window to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule identifier="batocera-flash-screen\*"/,/\/windowRule>/ { /<action name="MoveToOutput">/ {
-                    n
-                    s#\s*<output>.*</output>#        <output>'"${PRIMARY_OUT}"'</output>#
-                } }' "${RC_XML}"
-            fi
-
-            # Set the catch-all wildcard windowRule to the primary output
-            if [ -n "${PRIMARY_OUT}" ]; then
-                _log "Setting wildcard catch-all window rule to output: ${PRIMARY_OUT}"
-                sed -i -e '/<windowRule identifier="\*">/,/\/windowRule>/ {
-                    /<action name="MoveToOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
-                    /<action name="FocusOutput">/,+1 s#<output>.*</output>#<output>'"${PRIMARY_OUT}"'</output>#;
-                }' "${RC_XML}"
-            fi
-            
             # Trigger labwc to reload the configuration
-            _reconfigure_labwc
+            _log "Reconfiguring LabWC: primary='${PRIMARY_OUT}' secondary='${SECONDARY_OUT}'"
+            _reconfigure_labwc --primary="${PRIMARY_OUT}" --secondary="${SECONDARY_OUT}"
         fi
 
         ALL_OUTPUTS=$("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1)
@@ -556,7 +511,7 @@ case "${ACTION}" in
             _log "setOutput: Successfully configured outputs."
         fi
         ;;
-        
+
     "repositionOutputs")
         # This function arranges the specified outputs.
         # For the top-bottom devices (i.e. AYN_Thor), it stacks them vertically, centering them.
@@ -651,7 +606,7 @@ case "${ACTION}" in
 
                 RAW_RESOLUTION=$(echo "${TARGET_RESOLUTION_STR}" | cut -d'@' -f1)
                 RAW_ROTATION=$(_get_current_transform "${target}")
-                
+
                 # Use the effective width (swapped for 90/270 degree rotations)
                 if [ "${RAW_ROTATION}" = "1" ] || [ "${RAW_ROTATION}" = "3" ]; then
                     # Rotated 90 or 270 degrees, so height becomes the effective width
@@ -682,7 +637,7 @@ case "${ACTION}" in
         ;;
 
     "setRotation")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "setRotation: PSCREEN is empty."
             exit 1
         fi
@@ -709,15 +664,10 @@ case "${ACTION}" in
             NUM_TOUCH=0
         fi
 
-        CONFIG_FILE="${HOME}/.config/labwc/rc.xml"
-
-        # Always strip any existing <touch> line to keep a clean slate
-        sed -i '/<touch /d' "${CONFIG_FILE}"
-
+        TOUCHSCREEN=""
         if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${PSCREEN}" ]; then
             TOUCHSCREEN="${TOUCHSCREEN_LIST}"
             _log "One touchscreen '${TOUCHSCREEN}' found. Ensuring touch device configuration is correct..."
-            sed -i "s|^\([[:space:]]*\)</core>|\1</core>\n\1<touch deviceName=\"${TOUCHSCREEN}\" mapToOutput=\"${PSCREEN}\" mouseEmulation=\"no\"/>|" "${CONFIG_FILE}"
         else
             if [ "${NUM_TOUCH}" -eq 0 ]; then
                 _log "No touchscreen found; skipped touchscreen configuration."
@@ -729,26 +679,26 @@ case "${ACTION}" in
             fi
         fi
 
-        _reconfigure_labwc
+        _reconfigure_labwc --touchscreen="${TOUCHSCREEN}" --primary="${PSCREEN}"
         ;;
 
     "getRotation")
-        if [ -z "${PSCREEN}" ]; then 
+        if [ -z "${PSCREEN}" ]; then
             _log "getRotation: PSCREEN is empty."
             echo "unknown"
             exit 1
         fi
         _get_current_transform "${PSCREEN}"
         ;;
-    
+
     "refreshRate")
         if [ -z "${PSCREEN}" ]; then
             _log "refreshRate: PSCREEN is empty."
             exit 1
         fi
-        
+
         CURRENT_MODE_STR=$(_get_current_mode_string "${PSCREEN}")
-        
+
         if [ -n "${CURRENT_MODE_STR}" ]; then
             REFRESH_RATE=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
             if [ -n "${REFRESH_RATE}" ]; then
@@ -770,7 +720,7 @@ case "${ACTION}" in
         exit 0
         ;;
     "configureWindow")
-	labwc-configure-window $*
+	batocera-labwc-config --reconfigure "$@"
 	;;
     *)
         f_usage

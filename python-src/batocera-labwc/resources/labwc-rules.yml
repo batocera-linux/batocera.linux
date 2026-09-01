@@ -1,0 +1,61 @@
+main:
+  - identifier: emulationstation
+    actions:
+      - name: FocusOutput
+        output: primary
+      - name: MoveToOutput
+        output: primary
+  - identifier: batocera-backglass-window
+    actions:
+      - name: MoveToOutput
+        output: secondary
+  - title: Batocera Control Center
+    actions:
+      - name: MoveToOutput
+        output: secondary
+  - identifier: "batocera-flash-screen*"
+    actions:
+      - name: MoveToOutput
+        output: primary
+  - identifier: "*"
+    actions:
+      - name: MoveToOutput
+        output: primary
+      - name: FocusOutput
+        output: primary
+
+azahar:
+  - identifier: azahar
+    actions:
+      - name: MoveToOutput
+        output: primary
+  - identifier: azahar
+    title: "*Secondary Window*"
+    actions:
+      - name: MoveToOutput
+        output: secondary|primary
+      - name: ToggleFullscreen
+
+melonds:
+  - identifier: net.kuribo64.melonDS
+    title: "*w1*"
+    actions:
+      - name: MoveToOutput
+        output: primary
+  - identifier: net.kuribo64.melonDS
+    title: "*w2*"
+    actions:
+      - name: MoveToOutput
+        output: secondary|primary
+
+vpinball:
+  - identifier: VPinballX_BGFX
+    title: Visual Pinball Player
+    actions:
+      - name: MoveToOutput
+        output: primary|secondary
+  - identifier: VPinballX_BGFX
+    title: Visual Pinball Backglass
+    actions:
+      - name: MoveToOutput
+        output: secondary|primary

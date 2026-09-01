@@ -29,7 +29,7 @@ from .devices.evmapy import EvmapyManager
 from .devices.gun import Gun, guns_need_crosses
 from .devices.hotkeygen import HotkeygenManager, reset_mouse as _hotkeygen_reset_mouse
 from .devices.mouse import prepare_mouse
-from .devices.video import list_outputs, prepare_resolution
+from .devices.video import get_screens, list_outputs, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .draw.gun_borders import create_gun_border_image
@@ -44,7 +44,7 @@ from .draw.pil import (
 from .exceptions import UnknownEmulator
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .rom import Rom
-from .types import BezelFiles, BezelInfo
+from .types import BezelFiles, BezelInfo, ScreenInfo
 
 if TYPE_CHECKING:
     from collections.abc import Container, Iterator, Mapping
@@ -338,6 +338,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 )
 
         return None
+
+    @cached_property
+    def screens(self) -> asyncio.Future[list[ScreenInfo]]:
+        return asyncio.ensure_future(get_screens(self.config))
 
     def get_games_metadata(self, metadata_file: Path) -> dict[str, str]:
         return get_games_meta_data(metadata_file, self.system, self.rom)
@@ -684,7 +688,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
         return chdir(execution_path)
 
-    async def prepare_labwc(self) -> None:
+    async def configure_windows(self) -> None:
         return None
 
     @abstractmethod
@@ -712,10 +716,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 if self.needs_sdl_controller_db:
                     self.write_sdl_controller_db()
 
-                command = await self.configure()
-
-                if 'LABWC_PID' in os.environ:
-                    await self.prepare_labwc()
+                _, command = await group_tasks(self.configure_windows(), self.configure())
 
                 if self.needs_sdl_game_controller_config:
                     command.update_env(SDL_GAMECONTROLLERCONFIG=self.get_sdl_game_controller_config())

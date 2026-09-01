@@ -1,20 +1,18 @@
 from __future__ import annotations
 
 import logging
+import os
 import subprocess
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Self
 
+from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import HOME
 
-from ..devices.video import find_screen
-
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
-
-    from ..types import ScreenInfo
+    from collections.abc import Mapping
 
 _logger = logging.getLogger(__name__)
 
@@ -66,13 +64,19 @@ def _set_action(
 class WindowRule:
     element: ET.Element[str]
 
-    def move_to_output(self, screens: Sequence[ScreenInfo], name: str | None = None, /) -> Self:
-        screen = find_screen(screens, name) if name is not None else None
-
-        if screen is None:
+    def move_to_output(self, output_name: str | None = None, /) -> Self:
+        if output_name is None:
             _remove_action(self.element, 'MoveToOutput')
         else:
-            _set_action(self.element, 'MoveToOutput', child=('output', screen.name))
+            _set_action(self.element, 'MoveToOutput', child=('output', output_name))
+
+        return self
+
+    def focus_output(self, output_name: str | None = None, /) -> Self:
+        if output_name is None:
+            _remove_action(self.element, 'FocusOutput')
+        else:
+            _set_action(self.element, 'FocusOutput', child=('output', output_name))
 
         return self
 
@@ -85,14 +89,31 @@ class WindowRule:
         return self
 
 
-@dataclass(slots=True)
+@cached_dataclass
 class LabWCConfig:
     path: Path = RC_XML
     tree: ET.ElementTree[ET.Element[str]] = field(init=False)
     root: ET.Element[str] = field(init=False)
 
     _window_rules_cache: dict[tuple[str | None, str | None], WindowRule] = field(init=False)
-    _window_rules_element: ET.Element[str] | None = field(init=False, default=None)
+
+    @cached_property
+    def window_rules_element(self) -> ET.Element[str]:
+        element = self.root.find('./windowRules')
+
+        if element is None:
+            element = ET.SubElement(self.root, 'windowRules')
+
+        return element
+
+    @cached_property
+    def core_element(self) -> ET.Element[str]:
+        element = self.root.find('./core')
+
+        if element is None:
+            element = ET.SubElement(self.root, 'core')
+
+        return element
 
     def __post_init__(self) -> None:
         try:
@@ -107,14 +128,16 @@ class LabWCConfig:
 
         self._window_rules_cache = {}
 
-    def _get_window_rules_element(self) -> ET.Element[str]:
-        if self._window_rules_element is None:
-            self._window_rules_element = self.root.find('./windowRules')
+    def set_touchscreen(self, name: str | None = None, map_to_output_name: str | None = None) -> None:
+        # Always strip any existing <touch> elements to keep a clean slate
+        for touch_element in self.root.findall('./touch'):
+            self.root.remove(touch_element)
 
-            if self._window_rules_element is None:
-                self._window_rules_element = ET.SubElement(self.root, 'windowRules')
-
-        return self._window_rules_element
+        if name is not None and map_to_output_name is not None:
+            touch_element = ET.SubElement(self.root, 'touch')
+            touch_element.set('deviceName', name)
+            touch_element.set('mapToOutput', map_to_output_name)
+            touch_element.set('mouseEmulation', 'no')
 
     def window_rule(self, /, *, identifier: str | None = None, title: str | None = None) -> WindowRule:
         if identifier is None and title is None:
@@ -132,7 +155,7 @@ class LabWCConfig:
             element = self.root.find(f'./windowRules/windowRule{attribute_query}')
 
             if element is None:
-                element = ET.SubElement(self._get_window_rules_element(), 'windowRule')
+                element = ET.SubElement(self.window_rules_element, 'windowRule')
 
             if identifier is not None:
                 element.set('identifier', identifier)
@@ -148,7 +171,12 @@ class LabWCConfig:
         ET.indent(self.tree, space='  ')
         self.tree.write(self.path, encoding='utf-8', xml_declaration=True, short_empty_elements=True)
 
-        try:
-            subprocess.run([LABWC_BIN, '--reconfigure'], check=True)
-        except subprocess.CalledProcessError:
-            _logger.exception('failed to reconfigure labwc.')
+    @staticmethod
+    def reconfigure() -> None:
+        if 'LABWC_PID' in os.environ:
+            try:
+                subprocess.run([LABWC_BIN, '--reconfigure'], check=True)
+            except subprocess.CalledProcessError:
+                _logger.exception('failed to reconfigure labwc.')
+        else:
+            _logger.warning('LABWC_PID not set, skipping labwc reconfigure.')

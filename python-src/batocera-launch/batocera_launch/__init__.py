@@ -8,7 +8,6 @@ from .config.config import (
     UIMode as UIMode,
 )
 from .config.decoration_id import get_decoration_id as get_decoration_id
-from .config.labwc import LabWCConfig as LabWCConfig
 from .config.libretro import LibretroConfig as LibretroConfig
 from .devices.controller import (
     Controller as Controller,

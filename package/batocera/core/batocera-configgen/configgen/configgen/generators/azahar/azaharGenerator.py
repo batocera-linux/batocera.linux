@@ -42,8 +42,7 @@ class AzaharGenerator(Generator):
 
         # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
         screens = videoMode.getScreensInfos(system.config)
-        videoMode.configureWindow(screens, identifier="azahar", output="primary")
-        videoMode.configureWindow(screens, identifier="azahar", title="*Secondary Window*", output="backglass", toogleFullscreen=True)
+        videoMode.configureWindows('azahar', videoMode.findScreen(screens, "primary"), videoMode.findScreen(screens, "secondary"))
 
         commandArray = ['/usr/bin/azahar', rom]
 

@@ -7,8 +7,8 @@ from batocera_common.configparser import CaseSensitiveRawConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES, SCREENSHOTS
 from batocera_common.vulkan import get_discrete_gpu_index, has_discrete_gpu, is_available
-from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping, LabWCConfig
-from batocera_launch.devices.video import get_screens
+from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping
+from batocera_launch.devices.video import configure_windows, find_screen
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -142,17 +142,11 @@ class Azahar(Emulator):
     def needs_mouse(self) -> bool:
         return self.config.get_str('azahar_screen_layout') != '1-false'
 
-    async def prepare_labwc(self) -> None:
+    async def configure_windows(self) -> None:
         # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
-        screens = await get_screens(self.config)
+        screens = await self.screens
 
-        config = LabWCConfig()
-        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
-        config.window_rule(identifier='azahar', title='*Secondary Window*').move_to_output(
-            screens, 'backglass'
-        ).toggle_fullscreen()
-
-        config.save()
+        await configure_windows('azahar', find_screen(screens, 'primary'), find_screen(screens, 'secondary'))
 
     def _write_config(self) -> None:
         config_file = self.config_dir / 'qt-config.ini'

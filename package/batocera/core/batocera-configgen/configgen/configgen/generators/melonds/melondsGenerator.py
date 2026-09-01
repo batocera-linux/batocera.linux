@@ -237,8 +237,7 @@ class MelonDSGenerator(Generator):
 
         # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
         screens = videoMode.getScreensInfos(system.config)
-        videoMode.configureWindow(screens, identifier="net.kuribo64.melonDS", title="*w1*", output="primary")
-        videoMode.configureWindow(screens, identifier="net.kuribo64.melonDS", title="*w2*", output="backglass")
+        videoMode.configureWindows('melonds', videoMode.findScreen(screens, "primary"), videoMode.findScreen(screens, "secondary"))
 
         commandArray = ["/usr/bin/melonDS", "-f", rom]
         return Command.Command(

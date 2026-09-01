@@ -6,13 +6,15 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 from batocera_launch import get_decoration_id
 
 from ..exceptions import BatoceraException
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from ..config import SystemConfig
     from ..types import Resolution, ScreenInfo
 
@@ -217,29 +219,25 @@ def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
 
     return get_decoration_id(systemName, Path(rom).stem)
 
-def configureWindow(screens, identifier=None, title=None, output=None, toogleFullscreen=None):
-    # default to the primary screen
-    output_name = ""
-    if output is not None:
-        output_name = screens[0]["name"]
-        if output == "backglass" and len(screens) >= 2:
-            output_name = screens[1]["name"]
+def findScreen(screens: Sequence[ScreenInfo], output: Literal['primary', 'secondary'], /) -> ScreenInfo | None:
+    if output == 'secondary':
+        return screens[1] if len(screens) > 1 else None
 
-    params = ["/usr/bin/labwc-configure-window"]
-    if identifier is not None:
-        params.extend(["--identifier", identifier])
-    if title is not None:
-        params.extend(["--title", title])
-    if output is not None:
-        params.extend(["--output", output_name])
-    if toogleFullscreen is not None:
-        if toogleFullscreen:
-            params.extend(["--toggle-fullscreen", "true"])
-        else:
-            params.extend(["--toggle-fullscreen", "false"])
-    res = subprocess.run(params)
+    return screens[0]
 
+def configureWindows(rule_set: str, primary: ScreenInfo | None, secondary: ScreenInfo | None, /) -> None:
+    params = [
+        'batocera-resolution',
+        'configureWindow',
+        '--primary',
+        '' if primary is None else primary['name'],
+        '--secondary',
+        '' if secondary is None else secondary['name'],
+        rule_set
+    ]
+    _logger.info('configuring window %s', params)
 
-    _logger.info("configuring window %s", params)
-    if res.returncode != 0:
-        _logger.error("configuring window %s / %s failed", identifier, title)
+    try:
+        subprocess.run(params, check=True)
+    except Exception:
+        _logger.exception('Failed to configure windows')
