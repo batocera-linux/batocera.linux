@@ -255,6 +255,7 @@
 - Xenia to v1.0.2844
 - Xenia Canary to August 29th, 2026 build
 - Xenia Edge to 28th of August build
+- XRoar to v1.12.1
 - Ymir to v0.3.3
 ### System
 - Allwinner H616 device kernel updated to 7.1.5
