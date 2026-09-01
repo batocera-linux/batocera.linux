@@ -1,0 +1,13 @@
+Fix glXCreateContext always returning SDL's context, losing all pbuffer 3D.
+
+--- a/src/loader/graphics/glxBridge.c
++++ b/src/loader/graphics/glxBridge.c
+@@ -558,7 +558,7 @@
+ 
+     GLXContext ctx = NULL;
+     static int ctxCnt = 0;
+-    if (ctx == NULL)
++    if (ctxCnt == 0)
+         ctx = (GLXContext)getSDLContext();
+     else
+         ctx = _glXCreateContext(dpy, vis, shareList, direct);
