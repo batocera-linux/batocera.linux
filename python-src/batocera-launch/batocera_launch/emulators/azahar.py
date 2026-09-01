@@ -8,7 +8,7 @@ from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES, SCREENSHOTS
 from batocera_common.vulkan import get_discrete_gpu_index, has_discrete_gpu, is_available
 from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping, LabWCConfig
-from batocera_launch.devices.video import find_screen, get_screens
+from batocera_launch.devices.video import get_screens
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -145,13 +145,13 @@ class Azahar(Emulator):
     async def prepare_labwc(self) -> None:
         # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
         screens = await get_screens(self.config)
-        primary = find_screen(screens, 'primary')
-        backglass = find_screen(screens, 'backglass')
 
         config = LabWCConfig()
-        config.set_move_to_output(identifier='azahar', output=primary)
-        config.set_move_to_output(identifier='azahar', title='*Secondary Window*', output=backglass)
-        config.set_toggle_fullscreen(identifier='azahar', title='*Secondary Window*')
+        config.window_rule(identifier='azahar').move_to_output(screens, 'primary')
+        config.window_rule(identifier='azahar', title='*Secondary Window*').move_to_output(
+            screens, 'backglass'
+        ).toggle_fullscreen()
+
         config.save()
 
     def _write_config(self) -> None:

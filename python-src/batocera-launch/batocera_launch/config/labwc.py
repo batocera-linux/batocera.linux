@@ -5,12 +5,14 @@ import subprocess
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Self
 
 from batocera_common.paths import HOME
 
+from ..devices.video import find_screen
+
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
     from ..types import ScreenInfo
 
@@ -61,12 +63,35 @@ def _set_action(
 
 
 @dataclass(slots=True)
+class WindowRule:
+    element: ET.Element[str]
+
+    def move_to_output(self, screens: Sequence[ScreenInfo], name: str | None = None, /) -> Self:
+        screen = find_screen(screens, name) if name is not None else None
+
+        if screen is None:
+            _remove_action(self.element, 'MoveToOutput')
+        else:
+            _set_action(self.element, 'MoveToOutput', child=('output', screen.name))
+
+        return self
+
+    def toggle_fullscreen(self, fullscreen: bool = True, /) -> Self:
+        if not fullscreen:
+            _remove_action(self.element, 'ToggleFullscreen')
+        else:
+            _set_action(self.element, 'ToggleFullscreen')
+
+        return self
+
+
+@dataclass(slots=True)
 class LabWCConfig:
     path: Path = RC_XML
     tree: ET.ElementTree[ET.Element[str]] = field(init=False)
     root: ET.Element[str] = field(init=False)
 
-    _window_rules_cache: dict[tuple[str | None, str | None], ET.Element[str]] = field(init=False)
+    _window_rules_cache: dict[tuple[str | None, str | None], WindowRule] = field(init=False)
     _window_rules_element: ET.Element[str] | None = field(init=False, default=None)
 
     def __post_init__(self) -> None:
@@ -91,13 +116,11 @@ class LabWCConfig:
 
         return self._window_rules_element
 
-    def _get_window_rule(self, /, *, identifier: str | None = None, title: str | None = None) -> ET.Element[str]:
+    def window_rule(self, /, *, identifier: str | None = None, title: str | None = None) -> WindowRule:
         if identifier is None and title is None:
             raise ValueError('Either identifier or title must be provided.')
 
-        window_rule = self._window_rules_cache.get((identifier, title))
-
-        if window_rule is None:
+        if (identifier, title) not in self._window_rules_cache:
             attribute_query = ''
 
             if identifier is not None:
@@ -106,40 +129,20 @@ class LabWCConfig:
             if title is not None:
                 attribute_query = f'{attribute_query}[@title="{title}"]'
 
-            window_rule = self.root.find(f'./windowRules/windowRule{attribute_query}')
+            element = self.root.find(f'./windowRules/windowRule{attribute_query}')
 
-            if window_rule is None:
-                window_rule = ET.SubElement(self._get_window_rules_element(), 'windowRule')
+            if element is None:
+                element = ET.SubElement(self._get_window_rules_element(), 'windowRule')
 
             if identifier is not None:
-                window_rule.set('identifier', identifier)
+                element.set('identifier', identifier)
 
             if title is not None:
-                window_rule.set('title', title)
+                element.set('title', title)
 
-            self._window_rules_cache[(identifier, title)] = window_rule
+            self._window_rules_cache[(identifier, title)] = WindowRule(element)
 
-        return window_rule
-
-    def set_move_to_output(
-        self, /, *, identifier: str | None = None, title: str | None = None, output: ScreenInfo | None
-    ) -> None:
-        window_rule = self._get_window_rule(identifier=identifier, title=title)
-
-        if output is None:
-            _remove_action(window_rule, 'MoveToOutput')
-        else:
-            _set_action(window_rule, 'MoveToOutput', child=('output', output.name))
-
-    def set_toggle_fullscreen(
-        self, /, *, identifier: str | None = None, title: str | None = None, fullscreen: bool = True
-    ) -> None:
-        window_rule = self._get_window_rule(identifier=identifier, title=title)
-
-        if not fullscreen:
-            _remove_action(window_rule, 'ToggleFullscreen')
-        else:
-            _set_action(window_rule, 'ToggleFullscreen')
+        return self._window_rules_cache[(identifier, title)]
 
     def save(self) -> None:
         ET.indent(self.tree, space='  ')
