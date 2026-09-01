@@ -154,10 +154,10 @@ class Supermodel(Emulator):
         else:
             args.extend(['-multi-texture', '-legacy3d'])
 
-        # SCSP Sound Engine selection
-        if self.config.get_str('m3_scsp') == 'legacy':
+        # SCSP Sound Engine selection, left to the ini (per-game LegacySoundDSP) unless chosen
+        if (scsp := self.config.get_str('m3_scsp')) == 'legacy':
             args.append('-legacy-scsp')
-        else:
+        elif scsp:
             args.append('-new-scsp')
 
         # Widescreen
@@ -315,6 +315,10 @@ class Supermodel(Emulator):
         target_config.set('Global', 'AssetsPath', str(self.config_dir / 'Assets'))
         target_config.set('Global', 'LogPath', str(LOGS))
 
+        # set explicitly: the template has no InputSystem key for the loop below to update
+        use_guns = self.config.use_guns and bool(self.guns)
+        target_config.set('Global', 'InputSystem', 'evdev' if use_guns else 'sdlgamepad')
+
         # Network Outputs configuration (MAME-compatible outputs)
         m3_outputs = self.config.get_str('m3_outputs', 'none')
         target_config.set('Global', 'Outputs', m3_outputs)
@@ -334,6 +338,14 @@ class Supermodel(Emulator):
         # Locate Player 1 and Player 2 controllers
         pad1 = next((pad for pad in self.controllers if pad.player_number == 1), None)
         pad2 = next((pad for pad in self.controllers if pad.player_number == 2), None)
+
+        # template per-game steering saturation targets JOY1 and is tuned for gamepads, not wheels
+        game_section = next((section for section in target_config.sections() if section.strip() == self.rom.stem), None)
+        if game_section is not None and target_config.has_option(game_section, 'InputJoy1XSaturation'):
+            saturation = target_config.get(game_section, 'InputJoy1XSaturation')
+            target_config.remove_option(game_section, 'InputJoy1XSaturation')
+            if pad1 is not None and not (self.config.use_wheels and pad1.device_path in self.wheels):
+                target_config.set(game_section, f'InputJoy{pad1.index + 1}XSaturation', saturation)
 
         p1_start: str | None = None
         p1_select: str | None = None
@@ -463,7 +475,6 @@ class Supermodel(Emulator):
             target_config.set('Global', 'InputShoot2', p2_east)
 
         # Evdev for guns or sdlgamepad for controllers
-        use_guns = self.config.use_guns and bool(self.guns)
         for section in target_config.sections():
             if section.strip() not in ('Global', self.rom.stem):
                 continue
