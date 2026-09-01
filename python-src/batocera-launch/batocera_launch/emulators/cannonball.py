@@ -1,17 +1,24 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
+from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS
 from batocera_launch import Command, Emulator, HotkeysContext
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @cached_dataclass
 class Cannonball(Emulator):
     needs_sdl_game_controller_config = True
     needs_sdl_controller_db = True
-    sdl_controller_db_path = CONFIGS / 'cannonball' / 'gamecontrollerdb.txt'
+
+    @cached_property
+    def sdl_controller_db_path(self) -> Path:
+        return self.config_dir / 'gamecontrollerdb.txt'
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:

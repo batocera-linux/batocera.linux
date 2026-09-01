@@ -14,14 +14,16 @@ from batocera_launch import (
 )
 
 _BINARY_SRC: Final = Path('/usr/bin/sonic-mania')
-_ROM_DIR: Final = ROMS / 'sonic-mania'
 
 
 @cached_dataclass
 class SonicMania(Emulator):
     needs_sdl_game_controller_config = True
     needs_sdl_controller_db = True
-    sdl_controller_db_path = _ROM_DIR / 'gamecontrollerdb.txt'
+
+    @cached_property
+    def sdl_controller_db_path(self) -> Path:
+        return self.roms_dir / 'gamecontrollerdb.txt'
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -34,16 +36,20 @@ class SonicMania(Emulator):
             },
         }
 
+    @cached_property
+    def roms_dir(self) -> Path:
+        return ROMS / 'sonic-mania'
+
     @property
     def execution_path(self) -> Path | None:
-        return _ROM_DIR
+        return self.roms_dir
 
     @cached_property
     def in_game_ratio(self) -> float:
         return 16 / 9
 
     async def configure(self) -> Command:
-        destination_file = _ROM_DIR / 'sonic-mania'
+        destination_file = self.roms_dir / 'sonic-mania'
         if not destination_file.exists():
             shutil.copy(_BINARY_SRC, destination_file)
 
@@ -75,7 +81,7 @@ class SonicMania(Emulator):
             'sfxVolume': '1.000000',
         }
 
-        with (_ROM_DIR / 'Settings.ini').open('w') as configfile:
+        with (self.roms_dir / 'Settings.ini').open('w') as configfile:
             config.write(configfile)
 
         return Command(

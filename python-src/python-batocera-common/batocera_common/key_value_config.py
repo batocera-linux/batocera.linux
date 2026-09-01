@@ -4,14 +4,14 @@ import logging
 import re
 from configparser import UNNAMED_SECTION
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import TYPE_CHECKING, Final, overload
+from typing_extensions import Sentinel
 
 from .configparser import CaseSensitiveConfigParser
 
 if TYPE_CHECKING:
-    from _typeshed import StrPath
     from collections.abc import Iterator
+    from pathlib import Path
 
 _logger: Final = logging.getLogger(__name__)
 _sub_re: Final = re.compile(r'[^A-Za-z0-9-\.]+')
@@ -25,9 +25,14 @@ def _section_re(section: str, /) -> re.Pattern[str]:
     return re.compile(rf'^{_protect_string(section)}\.(.+)')
 
 
+_MISSING = Sentinel('_MISSING')
+
+
 @dataclass(slots=True)
 class KeyValueConfig:
-    separator: str = field(default='')
+    path: Path | None = None
+    read_encoding: str | None = field(kw_only=True, default='latin1')
+    separator: str = field(kw_only=True, default='')
 
     __config: CaseSensitiveConfigParser = field(init=False)
 
@@ -35,27 +40,45 @@ class KeyValueConfig:
         self.__config = CaseSensitiveConfigParser(interpolation=None, strict=False, allow_unnamed_section=True)
         self.__config.add_section(UNNAMED_SECTION)
 
-    def read(self, path: StrPath, /, *, encoding: str | None = 'latin1') -> None:
-        try:
-            self.__config.read_string(Path(path).read_text(encoding=encoding), source=str(path))
-        except OSError as e:
-            _logger.error(str(e))
+        if self.path is not None:
+            self.read()
 
-    def write(self, path: StrPath, /, *, encoding: str | None = None) -> None:
-        with Path(path).open('w', encoding=encoding) as fp:
+    def read(self, path: Path | None = None, /, *, encoding: str | _MISSING | None = _MISSING) -> None:
+        path = self.path if path is None else path
+
+        if path is None:
+            raise ValueError('path must be provided')
+
+        if encoding is _MISSING:
+            encoding = self.read_encoding
+
+        try:
+            self.__config.read_string(path.read_text(encoding=encoding), source=str(path))
+        except OSError:
+            _logger.exception('error reading %s', path)
+
+    def write(self, path: Path | None = None, /, *, encoding: str | None = None) -> None:
+        path = self.path if path is None else path
+
+        if path is None:
+            raise ValueError('path must be provided')
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with path.open('w', encoding=encoding) as fp:
             try:
                 for key, value in self.__config.items(UNNAMED_SECTION):
                     fp.write(f'{key}{self.separator}={self.separator}{value!s}\n')
             except Exception:
                 # PSX Mednafen writes beetle_psx_hw_cpu_freq_scale = "100%(native)"
                 # Python 2.7 is EOL and ConfigParser 2.7 takes "%(" as a won't fix error
-                _logger.error('Wrong value detected (after % char maybe?), ignoring.')
+                _logger.exception('Wrong value detected (after % char maybe?), ignoring.')
 
     def __getitem__(self, key: str) -> str:
         return self.__config.get(UNNAMED_SECTION, key)
 
-    def __setitem__(self, key: str, value: str) -> None:
-        self.__config.set(UNNAMED_SECTION, key, value)
+    def __setitem__(self, key: str, value: object) -> None:
+        self.__config.set(UNNAMED_SECTION, key, str(value))
 
     def __delitem__(self, key: str) -> None:
         self.__config.remove_option(UNNAMED_SECTION, key)

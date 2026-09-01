@@ -15,6 +15,13 @@ class TestKeyValueConfigGetSet:
         config['foo'] = 'bar'
         assert config['foo'] == 'bar'
 
+    def test_setitem_coerces_non_string_values(self) -> None:
+        config = KeyValueConfig()
+        config['count'] = 42
+        config['enabled'] = True
+        assert config['count'] == '42'
+        assert config['enabled'] == 'True'
+
     def test_get_with_default(self) -> None:
         config = KeyValueConfig()
         assert config.get('missing') is None
@@ -62,7 +69,7 @@ class TestKeyValueConfigReadWrite:
 
     def test_write_with_separator(self) -> None:
         path = Path('/config.cfg')
-        config = KeyValueConfig(' ')
+        config = KeyValueConfig(separator=' ')
         config['key'] = 'value'
         config.write(path)
 
@@ -70,7 +77,7 @@ class TestKeyValueConfigReadWrite:
 
     def test_read_missing_file_does_not_raise(self) -> None:
         config = KeyValueConfig()
-        config.read('/does/not/exist.cfg')
+        config.read(Path('/does/not/exist.cfg'))
         assert config.get('anything') is None
 
     def test_read_updates_existing_keys(self) -> None:
@@ -93,6 +100,80 @@ class TestKeyValueConfigReadWrite:
         config.read(path)
 
         assert config['name'] == 'café'
+
+    def test_read_without_path_raises(self) -> None:
+        config = KeyValueConfig()
+
+        with pytest.raises(ValueError, match='path must be provided'):
+            config.read()
+
+    def test_write_without_path_raises(self) -> None:
+        config = KeyValueConfig()
+
+        with pytest.raises(ValueError, match='path must be provided'):
+            config.write()
+
+
+class TestKeyValueConfigPathBound:
+    def test_loads_on_init(self) -> None:
+        path = Path('/config.cfg')
+        path.write_text('key=value\n', encoding='latin1')
+
+        config = KeyValueConfig(path)
+
+        assert config['key'] == 'value'
+
+    def test_write_uses_bound_path(self) -> None:
+        path = Path('/nested/dir/config.cfg')
+        config = KeyValueConfig(path)
+        config['key'] = 'value'
+        config.write()
+
+        assert path.read_text() == 'key=value\n'
+        assert path.parent.is_dir()
+
+    def test_read_uses_bound_path(self) -> None:
+        path = Path('/config.cfg')
+        path.write_text('key=value\n', encoding='latin1')
+
+        config = KeyValueConfig(path)
+        config['key'] = 'stale'
+        config.read()
+
+        assert config['key'] == 'value'
+
+    def test_bound_roundtrip_with_separator(self) -> None:
+        path = Path('/configs/amiberry.conf')
+        config = KeyValueConfig(path, separator=' ')
+        config['default_quit_key'] = 'F9'
+        config.write()
+
+        loaded = KeyValueConfig(path, separator=' ')
+        assert loaded['default_quit_key'] == 'F9'
+        assert path.read_text() == 'default_quit_key = F9\n'
+
+    def test_read_encoding_override_on_read(self) -> None:
+        path = Path('/config.cfg')
+        path.write_text('key=café\n', encoding='utf-8')
+
+        config = KeyValueConfig()
+        config.read(path, encoding='utf-8')
+
+        assert config['key'] == 'café'
+
+    def test_read_encoding_from_instance(self) -> None:
+        path = Path('/config.cfg')
+        path.write_bytes(b'name=caf\xe9\n')
+
+        config = KeyValueConfig(read_encoding='latin1')
+        config.read(path)
+
+        assert config['name'] == 'café'
+
+    def test_missing_bound_file_on_init_does_not_raise(self) -> None:
+        config = KeyValueConfig(Path('/does/not/exist.cfg'))
+
+        assert config.get('anything') is None
 
 
 class TestKeyValueConfigSection:

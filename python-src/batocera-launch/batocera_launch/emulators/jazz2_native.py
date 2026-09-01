@@ -11,7 +11,10 @@ from batocera_launch import Command, Emulator, HotkeysContext
 class Jazz2_Native(Emulator):
     needs_sdl_game_controller_config = True
     needs_sdl_controller_db = True
-    sdl_controller_db_path = Path('/usr/share/jazz2/gamecontrollerdb.txt')
+
+    @cached_property
+    def sdl_controller_db_path(self) -> Path:
+        return Path('/usr/share/jazz2/gamecontrollerdb.txt')
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
