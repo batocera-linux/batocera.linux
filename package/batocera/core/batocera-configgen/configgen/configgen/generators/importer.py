@@ -25,7 +25,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'dhewm3': ('dhewm3.dhewm3Generator', 'Dhewm3Generator'),
     'dosbox': ('dosbox.dosboxGenerator', 'DosBoxGenerator'),
     'dosbox_staging': ('dosboxstaging.dosboxstagingGenerator', 'DosBoxStagingGenerator'),
-    'dosboxx': ('dosboxx.dosboxxGenerator', 'DosBoxxGenerator'),
     'dxx-rebirth': ('dxx_rebirth.dxx_rebirthGenerator', 'DXX_RebirthGenerator'),
     'easyrpg': ('easyrpg.easyrpgGenerator', 'EasyRPGGenerator'),
     'ecwolf': ('ecwolf.ecwolfGenerator', 'ECWolfGenerator'),
