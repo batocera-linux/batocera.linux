@@ -267,7 +267,6 @@ they pull unusual dependencies.
 - [ ] `bigpemu`
 - [ ] `citron`
 - [ ] `demul`
-- [ ] `dolphin`
 - [ ] `duckstation`
 - [ ] `duckstation_legacy` (emulator `duckstation`, core `duckstation-legacy`)
 - [ ] `fsuae`

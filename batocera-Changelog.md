@@ -93,7 +93,7 @@
 - CorsixTH to v0.70.1
 - DevilutionX to 1.5.5
 - Dhewm3 & Mods to 1.5.5
-- Dolphin-Emu to 2606
+- Dolphin-Emu to 2609
 - DXX-Rebirth to Aug 23, 2026 build
 - ECWolf to Feb 23, 2026 build
 - EDuke32 / Fury to Aug 07, 2026 build
