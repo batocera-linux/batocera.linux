@@ -19,7 +19,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'bstone': ('bstone.bstoneGenerator', 'BstoneGenerator'),
     'catacombgl': ('catacombgl.catacombglGenerator', 'CatacombGLGenerator'),
     'cgenius': ('cgenius.cgeniusGenerator', 'CGeniusGenerator'),
-    'clk': ('clk.clkGenerator', 'ClkGenerator'),
     'corsixth': ('corsixth.corsixthGenerator', 'CorsixTHGenerator'),
     'devilutionx': ('devilutionx.devilutionxGenerator', 'DevilutionXGenerator'),
     'dhewm3': ('dhewm3.dhewm3Generator', 'Dhewm3Generator'),
