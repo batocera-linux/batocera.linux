@@ -1,0 +1,61 @@
+Fix a 64-bit underflow in toDecode that memsets past decoded_audio.
+
+FAudio_INTERNAL_MixSource() computes the number of samples still to decode as
+
+    toDecode = (fixed_offset >> FIXED_PRECISION) + 1 - voice->src.totalSamples;
+
+in uint64_t. When totalSamples has already reached or passed that offset the
+subtraction wraps to a colossal value instead of yielding zero.
+
+Nothing catches it downstream.
+
+Fix the subtraction so it cannot wrap - callers already handle toDecode == 0 -
+and clamp in DecodeBuffers() as well, so the buffer bound holds in release
+builds where the assert is gone.
+
+--- a/src/FAudio_internal.c
++++ b/src/FAudio_internal.c
+@@ -646,6 +646,15 @@
+ 	/* This should never go past the max ratio size */
+ 	FAudio_assert(*toDecode <= voice->src.decodeSamples);
+ 
++	/* decoded_audio only holds decodeSamples frames, and the trailing
++	 * FAudio_zero() below fills everything up to *toDecode. Release builds
++	 * define NDEBUG, so the assert above is compiled out and an oversized
++	 * value here writes straight past the end of the buffer. Clamp instead. */
++	if (*toDecode > voice->src.decodeSamples)
++	{
++		*toDecode = voice->src.decodeSamples;
++	}
++
+ 	while (decoded < *toDecode && voice->src.queued_buffer_count)
+ 	{
+ 		float *dst = voice->audio->decoded_audio + (decoded * voice->src.format->nChannels);
+@@ -933,6 +942,7 @@
+ 	/* Iterators */
+ 	uint32_t i;
+ 	/* Decode/Resample variables */
++	uint64_t needed;
+ 	uint64_t toDecode;
+ 	uint64_t toResample;
+ 	/* Output mix variables */
+@@ -1006,8 +1016,17 @@
+ 		fixed_offset = (fixed_offset + FIXED_FRACTION_MASK) & ~FIXED_FRACTION_MASK;
+ 
+ 		/* The number of samples we need is that offset, plus one
+-		 * (for 0-indexing; we are converting an offset to a count). */
+-		toDecode = (fixed_offset >> FIXED_PRECISION) + 1 - voice->src.totalSamples;
++		 * (for 0-indexing; we are converting an offset to a count).
++		 *
++		 * totalSamples can already be at or past that offset, in which
++		 * case there is nothing left to decode. Subtracting unsigned
++		 * would wrap to a colossal value, which survives the 64-bit
++		 * bounds check in FAudio_INTERNAL_DecodeBuffers() and then gets
++		 * truncated to 32 bits for the trailing FAudio_zero(), producing
++		 * a negative-looking length and a memset far past the end of
++		 * decoded_audio. Callers already handle toDecode == 0. */
++		needed = (fixed_offset >> FIXED_PRECISION) + 1;
++		toDecode = (needed > voice->src.totalSamples) ? (needed - voice->src.totalSamples) : 0;
+ 	}
+ 
+ 	/* First voice callback */
