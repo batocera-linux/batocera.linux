@@ -30,28 +30,36 @@ do_start () {
     WIDTH=""
     HEIGHT=""
 
-    # Resolve video rotation first so we know how to crop the image
+    # Detect active DRM connector type (batocera-drminfo returns "EDP", "DSI", "HDMIA", etc.)
+    effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
+
     V_BOARD_MODEL=$(batocera-model)
     video_rotation=""
     BOOT_CONF="/boot/batocera-boot.conf"
+    MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
 
-    if [ -f "${BOOT_CONF}" ]; then
-        specific_key=$(awk -F'=' '/^[[:space:]]*display\.rotate\./{print $1; exit}' "${BOOT_CONF}" | tr -d '[:space:]')
-        if [ -n "${specific_key}" ]; then
-            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "${specific_key}")
+    # Check connector-specific settings
+    if [ -n "${effectiveDrmOutput}" ]; then
+        if [ -f "${BOOT_CONF}" ]; then
+            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate.${effectiveDrmOutput}")
         fi
-        [ -z "${video_rotation}" ] && \
-            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
+        if [ -z "${video_rotation}" ] && [ -f "${MODEL_CONF}" ]; then
+            video_rotation=$(grep -iE "^display\.rotate\.${effectiveDrmOutput}=" "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
+        fi
     fi
 
+    # Fall back to generic global settings
     if [ -z "${video_rotation}" ]; then
-        MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
-        if [ -f "${MODEL_CONF}" ]; then
-            video_rotation=$(awk -F'=' '/^display\.rotate\.[^=-]+=/{print $2; exit}' "${MODEL_CONF}" | tr -d '[:space:]')
+        if [ -f "${BOOT_CONF}" ]; then
+            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
+        fi
+        if [ -z "${video_rotation}" ] && [ -f "${MODEL_CONF}" ]; then
+            video_rotation=$(grep -iE '^display\.rotate=' "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
         fi
     fi
 
     video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
+    echo "Active DRM Output: [${effectiveDrmOutput}]"
     echo "Final Rotation Value: [${video_rotation}]"
     
     # Get the screen's physical dimensions
