@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-HOST_SHADER_SLANG_VERSION = v2026.8
+HOST_SHADER_SLANG_VERSION = v2026.16.1
 HOST_SHADER_SLANG_SITE = https://github.com/shader-slang/slang.git
 HOST_SHADER_SLANG_SITE_METHOD = git
 HOST_SHADER_SLANG_GIT_SUBMODULES = YES
