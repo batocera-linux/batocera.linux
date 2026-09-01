@@ -66,8 +66,7 @@ _logger: Final = logging.getLogger(__name__)
 @cached_dataclass
 class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     needs_sdl_game_controller_config: ClassVar[bool] = False
-    needs_sdl_controller_db: ClassVar[bool] = False
-    sdl_controller_db_path: ClassVar[Path] = Path('/tmp/gamecontrollerdb.txt')
+    needs_sdl_controller_db: ClassVar[bool] = False  # Override sdl_controller_db_path to write to a different path
     sdl_game_controller_config_ignore_buttons: ClassVar[Container[str] | None] = None
 
     config: SystemConfig
@@ -169,6 +168,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     @property
     def es_settings(self) -> ESSettings:
         return self.config.es_settings
+
+    @cached_property
+    def sdl_controller_db_path(self) -> Path:
+        return Path('/tmp/gamecontrollerdb.txt')
 
     @cached_property
     @abstractmethod
@@ -688,6 +691,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         )
 
     def write_sdl_controller_db(self) -> None:
+        self.sdl_controller_db_path.parent.mkdir(parents=True, exist_ok=True)
         self.sdl_controller_db_path.write_text(self.get_sdl_game_controller_config())
 
     async def run(self) -> int:

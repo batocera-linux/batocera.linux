@@ -267,15 +267,16 @@ def generate_sdl_game_controller_config(
 
 def write_sdl_controller_db(
     controllers: Controllers,
-    outputFile: str | Path = '/tmp/gamecontrollerdb.txt',
+    output_file: str | Path = '/tmp/gamecontrollerdb.txt',
     /,
 ) -> Path:
-    outputFile = Path(outputFile)
+    output_file = Path(output_file)
+    output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    with outputFile.open('w') as text_file:
+    with output_file.open('w') as text_file:
         text_file.write(generate_sdl_game_controller_config(controllers))
 
-    return outputFile
+    return output_file
 
 
 type Controllers = Sequence[Controller]

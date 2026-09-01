@@ -144,10 +144,7 @@ def _is_radeon_prime_disabled() -> bool:
     if not _BATOCERA_BOOT_CONF.is_file():
         return False
 
-    config = KeyValueConfig()
-    config.read(_BATOCERA_BOOT_CONF)
-
-    value = config.get('radeon-prime')
+    value = KeyValueConfig(_BATOCERA_BOOT_CONF).get('radeon-prime')
 
     return value is not None and value.strip() == 'false'
 

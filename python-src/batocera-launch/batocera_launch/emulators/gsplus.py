@@ -109,8 +109,7 @@ class GSplus(Emulator):
         self.config_dir.mkdir(parents=True, exist_ok=True)
         config_file = self.config_dir / 'config.txt'
 
-        config = KeyValueConfig(' ')
-        config.read(config_file)
+        config = KeyValueConfig(config_file, separator=' ')
 
         if self.rom.suffix.lower() in _FLOPPY_SUFFIXES:
             config['s6d1'] = str(self.rom)
@@ -127,6 +126,6 @@ class GSplus(Emulator):
             config[key] = value
 
         config['g_cfg_rom_path'] = str(BIOS / self.config.get_str('gsplus_bios_filename', 'ROM.03'))
-        config.write(config_file)
+        config.write()
 
         return Command(['GSplus', '-fullscreen'])

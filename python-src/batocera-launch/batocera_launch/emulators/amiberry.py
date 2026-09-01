@@ -1,29 +1,30 @@
 from __future__ import annotations
 
-import io
 import logging
 import zipfile
-from dataclasses import InitVar, dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
-from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
+from batocera_common.key_value_config import KeyValueConfig
 from batocera_common.paths import BIOS, CONFIGS, LOGS, SAVES, SCREENSHOTS
-from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
-from batocera_launch.devices.controller import write_sdl_controller_db
-
-if TYPE_CHECKING:
-    from batocera_launch import Controller, Controllers, Input, SystemConfig
+from batocera_launch import (
+    BatoceraException,
+    Command,
+    Controller,
+    Emulator,
+    HotkeysContext,
+    Input,
+    LibretroConfig,
+)
 
 _logger = logging.getLogger(__name__)
 
 _AMIBERRY_BIN: Final = Path('/usr/bin/amiberry')
 _AMIBERRY_DATA: Final = Path('/usr/share/amiberry/data')
+
 # saves/bios are shared across all amiga500/amiga1200/amigacd32/amigacdtv systems,
 # deliberately not per-system (self.saves_dir / self.bios_dir)
-_SAVES_DIR: Final = SAVES / 'amiga'
-_BIOS_DIR: Final = BIOS / 'amiga'
 _LOG_FILE: Final = LOGS / 'amiberry.log'
 
 # default cpu model for each system
@@ -42,52 +43,13 @@ _ACCELERATORS: Final[dict[str, tuple[str, int, int]]] = {
 }
 
 
-@dataclass(slots=True)
-class _UnixSettings:
-    """Minimal port of the old configgen ``UnixSettings``: a flat, unsectioned
-    ``key = value`` settings file that preserves entries it doesn't manage
-    (amiberry.conf/overlay.cfg both carry state that isn't fully owned by us)."""
-
-    settings_path: InitVar[Path]
-    separator: str = field(default='', kw_only=True)
-    path: Path = field(init=False)
-    _config: CaseSensitiveConfigParser = field(init=False)
-
-    def __post_init__(self, settings_path: Path) -> None:
-        self.path = settings_path
-        self._config = CaseSensitiveConfigParser(interpolation=None, strict=False)
-        try:
-            file = io.StringIO()
-            file.write('[DEFAULT]\n')
-            with self.path.open(encoding='latin1') as f:
-                file.write(f.read())
-            file.seek(0)
-            self._config.read_file(file)
-        except OSError as e:
-            _logger.debug('%s not read: %s', self.path, e)
-
-    def save(self, name: str, value: object) -> None:
-        self._config.set('DEFAULT', name, str(value))
-
-    def disable_all(self, name: str) -> None:
-        for key, _ in list(self._config.items('DEFAULT')):
-            if key[: len(name)] == name:
-                self._config.remove_option('DEFAULT', key)
-
-    def write(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        with self.path.open('w') as fp:
-            for key, value in self._config.items('DEFAULT'):
-                fp.write(f'{key}{self.separator}={self.separator}{value}\n')
-
-
 # --- Retroarch-style controller config, ported from configgen's libretroControllers.py -----
 # Amiberry reads a retroarch-formatted overlay.cfg for its own controller mapping, hence the
 # reuse of the same key names/format used for libretro cores. This is amiberry-specific here
 # (not shared with the still-unmigrated retroarch generator); amiberry always calls this with
 # lightgun support enabled, so (unlike the old generic helper) that's not a parameter here.
 
-_RETROARCH_DIRS: Final = {'up': 'up', 'down': 'down', 'left': 'left', 'right': 'right'}
+_RETROARCH_DIRS: Final = ('up', 'down', 'left', 'right')
 _RETROARCH_JOYSTICKS: Final = {
     'joystick1up': 'l_y',
     'joystick1left': 'l_x',
@@ -135,123 +97,6 @@ def _get_analog_mode(controller: Controller, /) -> str:
         if dirkey in controller.inputs and controller.inputs[dirkey].type in ('button', 'hat'):
             return '1'
     return '0'
-
-
-def _generate_controller_config(controller: Controller, config: SystemConfig, /) -> dict[str, object]:
-    # Map an emulationstation button name to the corresponding retroarch name
-    retroarch_btns = {
-        'a': 'a',
-        'b': 'b',
-        'x': 'x',
-        'y': 'y',
-        'pageup': 'l',
-        'pagedown': 'r',
-        'l2': 'l2',
-        'r2': 'r2',
-        'l3': 'l3',
-        'r3': 'r3',
-        'start': 'start',
-        'select': 'select',
-    }
-    # X Y L1 L2  ---> X Y R1 L1
-    # A B R1 R2  ---> A B R2 L2
-    if config.get('altlayout') == 'fightstick':
-        retroarch_btns['pageup'] = 'l2'
-        retroarch_btns['pagedown'] = 'l'
-        retroarch_btns['l2'] = 'r2'
-        retroarch_btns['r2'] = 'r'
-
-    retroarch_gun_btns = {
-        'a': 'aux_a',
-        'b': 'aux_b',
-        'y': 'aux_c',
-        'pageup': 'offscreen_shot',
-        'pagedown': 'trigger',
-        'start': 'start',
-        'select': 'select',
-    }
-
-    result: dict[str, object] = {}
-    for btnkey, btnvalue in retroarch_btns.items():
-        if btnkey in controller.inputs:
-            input = controller.inputs[btnkey]
-            result[f'input_player{controller.player_number}_{btnvalue}_{_TYPE_TO_NAME[input.type]}'] = (
-                _get_config_value(input)
-            )
-    for btnkey, btnvalue in retroarch_gun_btns.items():
-        if btnkey in controller.inputs:
-            input = controller.inputs[btnkey]
-            result[f'input_player{controller.player_number}_gun_{btnvalue}_{_TYPE_TO_NAME[input.type]}'] = (
-                _get_config_value(input)
-            )
-    for dirkey, dirvalue in _RETROARCH_DIRS.items():
-        if dirkey in controller.inputs:
-            input = controller.inputs[dirkey]
-            result[f'input_player{controller.player_number}_{dirvalue}_{_TYPE_TO_NAME[input.type]}'] = (
-                _get_config_value(input)
-            )
-            result[f'input_player{controller.player_number}_gun_dpad_{dirvalue}_{_TYPE_TO_NAME[input.type]}'] = (
-                _get_config_value(input)
-            )
-    for jskey, jsvalue in _RETROARCH_JOYSTICKS.items():
-        if jskey in controller.inputs:
-            input = controller.inputs[jskey]
-            if input.value == '-1':
-                result[f'input_player{controller.player_number}_{jsvalue}_minus_axis'] = f'-{input.id}'
-                result[f'input_player{controller.player_number}_{jsvalue}_plus_axis'] = f'+{input.id}'
-            else:
-                result[f'input_player{controller.player_number}_{jsvalue}_minus_axis'] = f'+{input.id}'
-                result[f'input_player{controller.player_number}_{jsvalue}_plus_axis'] = f'-{input.id}'
-    # note: the old generic helper skips writing mouse_index when lightgun support is
-    # requested; amiberry always requests it, so mouse_index is never written here either.
-    return result
-
-
-def _write_controller_config(retroconfig: _UnixSettings, controller: Controller, config: SystemConfig, /) -> None:
-    for key, value in _generate_controller_config(controller, config).items():
-        retroconfig.save(key, value)
-    retroconfig.save(f'input_player{controller.player_number}_joypad_index', controller.index)
-    retroconfig.save(f'input_player{controller.player_number}_analog_dpad_mode', _get_analog_mode(controller))
-
-
-def _write_hotkey_config(retroconfig: _UnixSettings, controllers: Controllers, /) -> None:
-    if controllers and 'hotkey' in controllers[0].inputs and controllers[0].inputs['hotkey'].type == 'button':
-        retroconfig.save('input_enable_hotkey_btn', controllers[0].inputs['hotkey'].id)
-
-
-def _clean_controller_config(retroconfig: _UnixSettings, /) -> None:
-    retroconfig.disable_all('input_player')
-    for name in _CLEARED_INPUT_PREFIXES:
-        retroconfig.disable_all(f'input_{name}')
-
-
-def _write_controllers_config(retroconfig: _UnixSettings, config: SystemConfig, controllers: Controllers, /) -> None:
-    _clean_controller_config(retroconfig)
-
-    # hotkeys, forced to match with the hotkeys system
-    retroconfig.save('input_enable_hotkey', '"shift"')
-    retroconfig.save('input_menu_toggle', '"f1"')
-    retroconfig.save('input_fps_toggle', '"f2"')
-    retroconfig.save('input_exit_emulator', '"escape"')
-    retroconfig.save('input_pause_toggle', '"p"')
-    retroconfig.save('input_save_state', '"f3"')
-    retroconfig.save('input_load_state', '"f4"')
-    retroconfig.save('input_state_slot_decrease', '"f5"')
-    retroconfig.save('input_state_slot_increase', '"f6"')
-    retroconfig.save('input_ai_service', '"f9"')
-    retroconfig.save('input_reset', '"f10"')
-    retroconfig.save('input_rewind', '"f11"')
-
-    # See if FF is toggle or hold
-    ff_action = 'toggle_fast_forward' if config.get_bool('toggle_fast_forward') else 'hold_fast_forward'
-    retroconfig.save(f'input_{ff_action}', '"f12"')
-    retroconfig.save('input_screenshot', '"nul"')
-    retroconfig.save('input_audio_mute', '"nul"')
-    retroconfig.save('input_grab_mouse_toggle', '"nul"')
-
-    for controller in controllers:
-        _write_controller_config(retroconfig, controller, config)
-    _write_hotkey_config(retroconfig, controllers)
 
 
 # --- ROM handling, ported verbatim from amiberryGenerator ----------------------------------
@@ -326,6 +171,27 @@ def _floppies_from_rom(rom: Path, /) -> list[Path]:
 @cached_dataclass
 class Amiberry(Emulator):
     needs_sdl_game_controller_config = True
+    needs_sdl_controller_db = True
+
+    @cached_property
+    def sdl_controller_db_path(self) -> Path:
+        return self.retroarch_inputs_dir / 'gamecontrollerdb.txt'
+
+    @cached_property
+    def bios_dir(self) -> Path:
+        return BIOS / 'amiga'
+
+    @cached_property
+    def saves_dir(self) -> Path:
+        return SAVES / 'amiga'
+
+    @cached_property
+    def retroarch_dir(self) -> Path:
+        return self.config_dir / 'retroarch'
+
+    @cached_property
+    def retroarch_inputs_dir(self) -> Path:
+        return self.retroarch_dir / 'inputs'
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -338,51 +204,158 @@ class Amiberry(Emulator):
             },
         }
 
+    def _write_controller_config(self, retroconfig: LibretroConfig, controller: Controller, /) -> None:
+        # Map an emulationstation button name to the corresponding retroarch name
+        retroarch_btns = {
+            'a': 'a',
+            'b': 'b',
+            'x': 'x',
+            'y': 'y',
+            'pageup': 'l',
+            'pagedown': 'r',
+            'l2': 'l2',
+            'r2': 'r2',
+            'l3': 'l3',
+            'r3': 'r3',
+            'start': 'start',
+            'select': 'select',
+        }
+        # X Y L1 L2  ---> X Y R1 L1
+        # A B R1 R2  ---> A B R2 L2
+        if self.config.get('altlayout') == 'fightstick':
+            retroarch_btns['pageup'] = 'l2'
+            retroarch_btns['pagedown'] = 'l'
+            retroarch_btns['l2'] = 'r2'
+            retroarch_btns['r2'] = 'r'
+
+        retroarch_gun_btns = {
+            'a': 'aux_a',
+            'b': 'aux_b',
+            'y': 'aux_c',
+            'pageup': 'offscreen_shot',
+            'pagedown': 'trigger',
+            'start': 'start',
+            'select': 'select',
+        }
+
+        for btnkey, btnvalue in retroarch_btns.items():
+            if (input := controller.inputs.get(btnkey)) is not None:
+                retroconfig.set(
+                    f'input_player{controller.player_number}_{btnvalue}_{_TYPE_TO_NAME[input.type]}',
+                    _get_config_value(input),
+                )
+
+        for btnkey, btnvalue in retroarch_gun_btns.items():
+            if (input := controller.inputs.get(btnkey)) is not None:
+                retroconfig.set(
+                    f'input_player{controller.player_number}_gun_{btnvalue}_{_TYPE_TO_NAME[input.type]}',
+                    _get_config_value(input),
+                )
+
+        for direction in _RETROARCH_DIRS:
+            if (input := controller.inputs.get(direction)) is not None:
+                retroconfig.set(
+                    f'input_player{controller.player_number}_{direction}_{_TYPE_TO_NAME[input.type]}',
+                    _get_config_value(input),
+                )
+                retroconfig.set(
+                    f'input_player{controller.player_number}_gun_dpad_{direction}_{_TYPE_TO_NAME[input.type]}',
+                    _get_config_value(input),
+                )
+
+        for jskey, jsvalue in _RETROARCH_JOYSTICKS.items():
+            if (input := controller.inputs.get(jskey)) is not None:
+                if input.value == '-1':
+                    retroconfig.set(f'input_player{controller.player_number}_{jsvalue}_minus_axis', f'-{input.id}')
+                    retroconfig.set(f'input_player{controller.player_number}_{jsvalue}_plus_axis', f'+{input.id}')
+                else:
+                    retroconfig.set(f'input_player{controller.player_number}_{jsvalue}_minus_axis', f'+{input.id}')
+                    retroconfig.set(f'input_player{controller.player_number}_{jsvalue}_plus_axis', f'-{input.id}')
+
+        # note: the old generic helper skips writing mouse_index when lightgun support is
+        # requested; amiberry always requests it, so mouse_index is never written here either.
+        retroconfig.set(f'input_player{controller.player_number}_joypad_index', controller.index)
+        retroconfig.set(f'input_player{controller.player_number}_analog_dpad_mode', _get_analog_mode(controller))
+
+    def _write_controllers_config(self, config_path: Path, /) -> None:
+        retroconfig = LibretroConfig(config_path, self.config)
+
+        # Clean the config
+        retroconfig.remove_all_starting_with('input_player')
+        for name in _CLEARED_INPUT_PREFIXES:
+            retroconfig.remove_all_starting_with(f'input_{name}')
+
+        # hotkeys, forced to match with the hotkeys system
+        retroconfig.set('input_enable_hotkey', 'shift')
+        retroconfig.set('input_menu_toggle', 'f1')
+        retroconfig.set('input_fps_toggle', 'f2')
+        retroconfig.set('input_exit_emulator', 'escape')
+        retroconfig.set('input_pause_toggle', 'p')
+        retroconfig.set('input_save_state', 'f3')
+        retroconfig.set('input_load_state', 'f4')
+        retroconfig.set('input_state_slot_decrease', 'f5')
+        retroconfig.set('input_state_slot_increase', 'f6')
+        retroconfig.set('input_ai_service', 'f9')
+        retroconfig.set('input_reset', 'f10')
+        retroconfig.set('input_rewind', 'f11')
+
+        # See if FF is toggle or hold
+        ff_action = 'toggle_fast_forward' if self.config.get_bool('toggle_fast_forward') else 'hold_fast_forward'
+        retroconfig.set(f'input_{ff_action}', 'f12')
+        retroconfig.set('input_screenshot', 'nul')
+        retroconfig.set('input_audio_mute', 'nul')
+        retroconfig.set('input_grab_mouse_toggle', 'nul')
+
+        for controller in self.controllers:
+            self._write_controller_config(retroconfig, controller)
+
+        if (
+            self.controllers
+            and 'hotkey' in self.controllers[0].inputs
+            and self.controllers[0].inputs['hotkey'].type == 'button'
+        ):
+            # Write the hotkey config for controller 1
+            retroconfig.set('input_enable_hotkey_btn', self.controllers[0].inputs['hotkey'].id)
+
+        retroconfig.write()
+
     async def configure(self) -> Command:
-        retroarch_dir = self.config_dir / 'retroarch'
-        retroarch_custom = retroarch_dir / 'overlay.cfg'
-        retroarch_inputs_dir = retroarch_dir / 'inputs'
+        retroarch_custom = self.retroarch_dir / 'overlay.cfg'
         plugins_dir = self.config_dir / 'plugins'
         whdboot_dir = self.config_dir / 'whdboot'
 
-        retroarch_dir.mkdir(parents=True, exist_ok=True)
         plugins_dir.mkdir(parents=True, exist_ok=True)
 
-        retroconfig = _UnixSettings(retroarch_custom, separator=' ')
-        amiberryconf = _UnixSettings(self.config_dir / 'amiberry.conf', separator=' ')
-        amiberryconf.save('default_quit_key', 'F9')
-        amiberryconf.save('default_open_gui_key', 'F8')
-        amiberryconf.save('saveimage_dir', _SAVES_DIR)
-        amiberryconf.save('savestate_dir', _SAVES_DIR)
-        amiberryconf.save('screenshot_dir', SCREENSHOTS)
-        amiberryconf.save('nvram_dir', _SAVES_DIR / 'nvram')
-        amiberryconf.save('rom_path', _BIOS_DIR)
-        amiberryconf.save('whdboot_path', whdboot_dir)
-        amiberryconf.save('logfile_path', _LOG_FILE)
-        amiberryconf.save('controllers_path', retroarch_inputs_dir)
-        amiberryconf.save('retroarch_config', retroarch_custom)
-        amiberryconf.save(
-            'default_vkbd_enabled', self.config.get_bool('amiberry_virtual_keyboard', return_values=(1, 0))
-        )
+        amiberryconf = KeyValueConfig(self.config_dir / 'amiberry.conf', separator=' ')
+
+        amiberryconf['default_quit_key'] = 'F9'
+        amiberryconf['default_open_gui_key'] = 'F8'
+        amiberryconf['saveimage_dir'] = self.saves_dir
+        amiberryconf['savestate_dir'] = self.saves_dir
+        amiberryconf['screenshot_dir'] = SCREENSHOTS
+        amiberryconf['nvram_dir'] = self.saves_dir / 'nvram'
+        amiberryconf['rom_path'] = self.bios_dir
+        amiberryconf['whdboot_path'] = whdboot_dir
+        amiberryconf['logfile_path'] = _LOG_FILE
+        amiberryconf['controllers_path'] = self.retroarch_inputs_dir
+        amiberryconf['retroarch_config'] = retroarch_custom
+        amiberryconf['default_vkbd_enabled'] = self.config.get_bool('amiberry_virtual_keyboard', return_values=(1, 0))
+
         # NOTE: as of amiberry v8.3.0 upstream treats default_vkbd_hires as a legacy,
         # accepted-but-never-applied key (the bitmap "hi-res keyboard" concept was dropped
         # from the rewritten virtual keyboard) -- amiberry_hires_keyboard is effectively a
         # no-op now. Kept as a harmless write pending a decision on removing the .yml option.
-        amiberryconf.save(
-            'default_vkbd_hires', self.config.get_bool('amiberry_hires_keyboard', return_values=(1, 0))
-        )
-        amiberryconf.save('default_vkbd_transparency', self.config.get_str('amiberry_vkbd_transparency', '60'))
-        amiberryconf.save('default_vkbd_language', self.config.get_str('amiberry_vkbd_language', 'US'))
-        amiberryconf.save('default_vkbd_toggle', 'leftstick')
-        amiberryconf.save('default_fullscreen_mode', '2')
-        amiberryconf.save(
-            'default_auto_crop', self.config.get_bool('amiberry_auto_crop', return_values=('true', 'false'))
-        )
+        amiberryconf['default_vkbd_hires'] = self.config.get_bool('amiberry_hires_keyboard', return_values=(1, 0))
+        amiberryconf['default_vkbd_transparency'] = self.config.get_str('amiberry_vkbd_transparency', '60')
+        amiberryconf['default_vkbd_language'] = self.config.get_str('amiberry_vkbd_language', 'US')
+        amiberryconf['default_vkbd_toggle'] = 'leftstick'
+        amiberryconf['default_fullscreen_mode'] = '2'
+        amiberryconf['default_auto_crop'] = self.config.get_bool('amiberry_auto_crop', return_values=('true', 'false'))
         # NOTE: there is no amiberry.conf "default_keep_aspect" key upstream -- gfx_keep_aspect
         # is a per-config UAE option only, applied on the command line below instead.
-        amiberryconf.save('shader', self.config.get_str('amiberry_shader', 'none'))
+        amiberryconf['shader'] = self.config.get_str('amiberry_shader', 'none')
 
-        amiberryconf.save('write_logfile', 'yes')
+        amiberryconf['write_logfile'] = 'yes'
         amiberryconf.write()
 
         rom_type = _get_rom_type(self.rom)
@@ -421,18 +394,14 @@ class Amiberry(Emulator):
             args.append(f'amiberry.floppy_path={self.rom.parent}')
 
         # controller
-        _write_controllers_config(retroconfig, self.config, self.controllers)
-        retroconfig.write()
-
-        retroarch_inputs_dir.mkdir(parents=True, exist_ok=True)
-        write_sdl_controller_db(self.controllers, retroarch_inputs_dir / 'gamecontrollerdb.txt')
+        self._write_controllers_config(retroarch_custom)
 
         is_player2 = False
         for pad in self.controllers:
             replacements = {f'_player{pad.player_number}_': '_'}
             # amiberry remove / included in pads names like "USB Downlo01.80 PS3/USB Corded Gamepad"
             padfilename = pad.real_name.replace('/', '')
-            player_input_filename = retroarch_inputs_dir / f'{padfilename}.cfg'
+            player_input_filename = self.retroarch_inputs_dir / f'{padfilename}.cfg'
             with retroarch_custom.open() as infile, player_input_filename.open('w') as outfile:
                 for line in infile:
                     for src, target in replacements.items():
@@ -532,7 +501,7 @@ class Amiberry(Emulator):
 
         if amiberry_cpu or wants_z3:
             args.append('-s')
-            args.append(f"cpu_24bit_addressing={'true' if cpu in ('68000', '68010') else 'false'}")
+            args.append(f'cpu_24bit_addressing={"true" if cpu in ("68000", "68010") else "false"}')
 
         # cpu frenquency multiplier
         if amiberry_cpu_multiplier := self.config.get_int('amiberry_cpu_multiplier', default_multiplier):
@@ -543,16 +512,16 @@ class Amiberry(Emulator):
         # instruction timings. Turning it off falls back to 68000 timings scaled down
         # (adjust_cycles), which is *slower* on a big cpu, and is only worth it together with the jit.
         match self.config.get_str('amiberry_cycle_exact'):
-            case 'on':
-                args.append('-s')
-                args.append('cpu_cycle_exact=true')
-                args.append('-s')
-                args.append('blitter_cycle_exact=true')
             case 'off':
                 args.append('-s')
                 args.append('cpu_cycle_exact=false')
                 args.append('-s')
                 args.append('blitter_cycle_exact=false')
+            case _:  # on
+                args.append('-s')
+                args.append('cpu_cycle_exact=true')
+                args.append('-s')
+                args.append('blitter_cycle_exact=true')
 
         # default fastram to 8MB
         args.append('-s')
@@ -570,9 +539,6 @@ class Amiberry(Emulator):
 
         # Scaling method
         match self.config.get_str('amiberry_scalingmethod'):
-            case 'none':
-                args.append('-s')
-                args.append('amiberry.scaling_method=-1')
             case 'pixelated':
                 args.append('-s')
                 args.append('amiberry.scaling_method=0')
@@ -582,6 +548,9 @@ class Amiberry(Emulator):
             case 'integer':
                 args.append('-s')
                 args.append('amiberry.scaling_method=2')
+            case _:  # none
+                args.append('-s')
+                args.append('amiberry.scaling_method=-1')
 
         # display vertical centering
         args.append('-s')

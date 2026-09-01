@@ -7,8 +7,6 @@ from os import environ
 from typing import TYPE_CHECKING, Final, cast
 from xml.dom import minidom
 
-import pyudev
-
 from batocera_common import vulkan
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CACHE, CONFIGS, SAVES
@@ -192,15 +190,17 @@ def _lang_from_environment() -> str:
     return 'en_US'
 
 
-def _cemu_lang(lang: str) -> int:
+def _cemu_lang(lang: str, /) -> int:
     return _AVAILABLE_LANGUAGES.get(lang, _AVAILABLE_LANGUAGES['en_US'])
 
 
-def _is_wiimote(pad: Controller) -> bool:
+def _is_wiimote(pad: Controller, /) -> bool:
     return pad.real_name == _WIIMOTE_NAME
 
 
-def _find_wiimote_type(pad: Controller) -> str:
+def _find_wiimote_type(pad: Controller, /) -> str:
+    import pyudev
+
     context = pyudev.Context()
     device = pyudev.Devices.from_device_file(context, pad.device_path)
     names: list[str] = []
@@ -220,7 +220,7 @@ def _find_wiimote_type(pad: Controller) -> str:
     return _WIIMOTE_TYPE_CORE
 
 
-def _xml_root(config: minidom.Document, name: str) -> minidom.Element:
+def _xml_root(config: minidom.Document, name: str, /) -> minidom.Element:
     xml_section = config.getElementsByTagName(name)
 
     if len(xml_section) == 0:
@@ -231,7 +231,7 @@ def _xml_root(config: minidom.Document, name: str) -> minidom.Element:
     return xml_section[0]
 
 
-def _set_xml_value(config: minidom.Document, xml_section: minidom.Element, name: str, value: str) -> None:
+def _set_xml_value(config: minidom.Document, xml_section: minidom.Element, name: str, value: str, /) -> None:
     xml_elt = xml_section.getElementsByTagName(name)
     if len(xml_elt) == 0:
         element = config.createElement(name)
@@ -384,9 +384,7 @@ class Cemu(Emulator):
         # Vsync
         _set_xml_value(config, graphic_root, 'VSync', self.config.get_str('cemu_vsync', '1'))  # 1 = On
         # Upscale Filter
-        _set_xml_value(
-            config, graphic_root, 'UpscaleFilter', self.config.get_str('cemu_upscale', '2')
-        )  # 2 = Hermite
+        _set_xml_value(config, graphic_root, 'UpscaleFilter', self.config.get_str('cemu_upscale', '2'))  # 2 = Hermite
         # Downscale Filter
         _set_xml_value(
             config, graphic_root, 'DownscaleFilter', self.config.get_str('cemu_downscale', '0')
@@ -503,9 +501,10 @@ class Cemu(Emulator):
                     controller_type = _WIIMOTE
                 case '4':
                     controller_type = _CLASSIC
-                case '0' | None:
+                case _:  # '0' or None
                     if nplayer == 0:
                         controller_type = _GAMEPAD
+
             ET.SubElement(root, 'type').text = controller_type
 
             if _is_wiimote(pad):
@@ -519,9 +518,7 @@ class Cemu(Emulator):
             ET.SubElement(controller_node, 'api').text = api
             ET.SubElement(controller_node, 'uuid').text = f'{guid_n[pad.index]}_{pad.guid}'  # controller guid
             ET.SubElement(controller_node, 'display_name').text = pad.real_name  # controller name
-            ET.SubElement(controller_node, 'rumble').text = self.config.get_str(
-                'cemu_rumble', '0'
-            )  # % chosen
+            ET.SubElement(controller_node, 'rumble').text = self.config.get_str('cemu_rumble', '0')  # % chosen
             for name in ('axis', 'rotation', 'trigger'):
                 analog = ET.SubElement(controller_node, name)
                 ET.SubElement(analog, 'deadzone').text = _DEFAULT_DEADZONE

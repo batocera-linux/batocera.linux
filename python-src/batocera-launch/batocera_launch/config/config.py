@@ -172,8 +172,7 @@ class SystemConfig(Config):
     @classmethod
     def load(cls, args: Arguments, /) -> Self:
         # load configuration from batocera.conf
-        user_config = KeyValueConfig()
-        user_config.read(BATOCERA_CONF)
+        user_config = KeyValueConfig(BATOCERA_CONF)
 
         rom = args.rom
 

@@ -43,10 +43,7 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
 
     exit_code = 0
     try:
-        config = KeyValueConfig()
-        config.read(BATOCERA_CONF)
-
-        if config.get('configgen') == '1':
+        if KeyValueConfig(BATOCERA_CONF).get('configgen') == '1':
             _logger.debug('Using legacy configgen')
             exit_code = _run_legacy(args, profiler)
         else:
