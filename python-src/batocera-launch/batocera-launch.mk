@@ -18,6 +18,7 @@ BATOCERA_LAUNCH_INSTALL_STAGING = YES
 BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 	$(addprefix batocera_launch/emulators/, \
 		$(if $(BR2_PACKAGE_ABUSE),,abuse.py) \
+		$(if $(BR2_PACKAGE_AMIBERRY),,amiberry.py) \
 		$(if $(BR2_PACKAGE_APPLEWIN),,applewin.py) \
 		$(if $(BR2_PACKAGE_AZAHAR),,azahar.py) \
 		$(if $(BR2_PACKAGE_BSTONE),,bstone.py) \

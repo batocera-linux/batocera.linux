@@ -71,6 +71,7 @@
 - Vita3k added for capable aarch64 devices
 - PCEngine / PCEngineCD: added Libretro-Beetle-PCE (not "Fast") for capable aarch64 devices
 ### Updated
+- Amiberry to v8.3.0
 - Azahar to 2126.0
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
