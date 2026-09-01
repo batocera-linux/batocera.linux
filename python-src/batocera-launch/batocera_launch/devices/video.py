@@ -34,6 +34,16 @@ async def get_current_mode() -> str:  # noqa: RET503
         raise AssertionError('unreachable')
 
 
+async def get_refresh_rate() -> str:  # noqa: RET503
+    proc = await run('batocera-resolution', 'refreshRate', shell=True)
+
+    for val in proc.stdout.decode().splitlines():
+        return val  # return the first line
+
+    if TYPE_CHECKING:
+        raise AssertionError('unreachable')
+
+
 async def min_to_max_resolution() -> None:
     await run('batocera-resolution', 'minToMaxResolution', shell=True)
 
