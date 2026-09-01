@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-REDREAM_VERSION = 1.5.0-1239-ge06df78
+REDREAM_VERSION = 1.5.0-1240-gc41f7f2
 REDREAM_SITE = https://redream.io/download
 REDREAM_EMULATOR_INFO = redream.emulator.yml
 
