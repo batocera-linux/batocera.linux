@@ -160,8 +160,6 @@ class Azahar(Emulator):
         if not azahar_config.has_section('Layout'):
             azahar_config.add_section('Layout')
         # Screen Layout
-        azahar_config.set('Layout', 'custom_layout', 'false')
-        azahar_config.set('Layout', r'custom_layout\default', 'false')
         layout_option, swap_screen = self.config.get_str('azahar_screen_layout', '0-false').split('-')
         azahar_config.set('Layout', 'swap_screen', swap_screen)
         azahar_config.set('Layout', r'swap_screen\default', 'false')
@@ -309,12 +307,6 @@ class Azahar(Emulator):
             self.config.get_bool('azahar_audio_stretching', True, return_values=('true', 'false')),
         )
         azahar_config.set('Audio', r'enable_audio_stretching\default', 'false')
-
-        ## [WEB SERVICE]
-        if not azahar_config.has_section('WebService'):
-            azahar_config.add_section('WebService')
-        azahar_config.set('WebService', 'enable_telemetry', 'false')
-        azahar_config.set('WebService', r'enable_telemetry\default', 'false')
 
         ## [UTILITY]
         if not azahar_config.has_section('Utility'):
