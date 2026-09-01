@@ -1,16 +1,8 @@
 #!/usr/bin/env python
-# ruff: noqa: E402
 
 from __future__ import annotations
 
-from batocera_common.paths import LOGS
-
-from . import profiler
-
-profiler.start()
-
 ### import always needed ###
-import argparse
 import contextlib
 import ctypes
 import json
@@ -22,22 +14,22 @@ import threading
 import time
 from copy import deepcopy
 from pathlib import Path
-from sys import exit
-from typing import TYPE_CHECKING, Any, cast
+from typing import IO, TYPE_CHECKING, Any, cast
 
 import pyudev
 import sdl2
 
-from .batoceraPaths import BATOCERA_SHARE_DIR, ES_GAMES_METADATA, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
+from batocera_common.paths import LOGS
+
+from .batoceraPaths import ES_GAMES_METADATA, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
-from .exceptions import BadCommandLineArguments, BaseBatoceraException, BatoceraException, UnexpectedEmulatorExit
+from .exceptions import BadCommandLineArguments, UnexpectedEmulatorExit
 from .generators import get_generator
 from .gun import Gun
 from .utils import bezels as bezelsUtil, metadata, videoMode, wheelsUtils
 from .utils.evmapy import evmapy
 from .utils.hotkeygen import set_hotkeygen_context
-from .utils.logger import setup_logging
 from .utils.overlayfs import mount_overlayfs
 from .utils.squashfs import mount_squashfs
 
@@ -45,11 +37,15 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from types import FrameType
 
+    from batocera_launch.cli.arguments import Arguments
+    from batocera_launch.profiler import Profiler
+
     from .Command import Command
     from .generators.Generator import Generator
     from .types import Resolution
 
 _logger = logging.getLogger(__name__)
+_emulator_logger = logging.getLogger('emulator')
 
 # A lock to safely modify the active controller list from multiple threads
 _player_controllers_lock = threading.Lock()
@@ -58,20 +54,31 @@ _active_player_controllers = []
 # Global reference to the evmapy configurator instance
 _evmapy_instance = None
 
-def main(args: argparse.Namespace, maxnbplayers: int) -> int:
+def signal_handler(signal: int, frame: FrameType | None):
+    global proc
+    _logger.debug('Exiting')
+    if proc:
+        _logger.debug('killing proc')
+        proc.kill()
+
+def main(args: Arguments, profiler: Profiler, /) -> int:
+    global proc
+    proc = None
+    signal.signal(signal.SIGINT, signal_handler)
+
     original_rom = args.rom
 
     # squashfs roms if squashed
     if original_rom.suffix == ".squashfs":
         with mount_squashfs(original_rom) as squash_rom:
-            return start_rom(args, maxnbplayers, squash_rom, original_rom)
+            return start_rom(args, profiler, squash_rom, original_rom)
     else:
-        return start_rom(args, maxnbplayers, original_rom, original_rom)
+        return start_rom(args, profiler, original_rom, original_rom)
 
-def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_rom: Path) -> int:
+def start_rom(args: Arguments, profiler: Profiler, rom: Path, original_rom: Path) -> int:
     global _active_player_controllers, _evmapy_instance
 
-    player_controllers = Controller.load_for_players(maxnbplayers, args)
+    player_controllers = Controller.load_for_players(args.players)
 
     # Initialize the global state with the initial controller list
     with _player_controllers_lock:
@@ -98,7 +105,7 @@ def start_rom(args: argparse.Namespace, maxnbplayers: int, rom: Path, original_r
     # metadata
     md = metadata.get_games_meta_data(ES_GAMES_METADATA, systemName, rom)
 
-    guns = Gun.get_and_precalibrate_all(system, rom)
+    guns = Gun.get_and_precalibrate_all(system.config, rom)
 
     with wheelsUtils.configure_wheels(player_controllers, system, md) as (player_controllers, wheels):
         # find the generator
@@ -500,7 +507,7 @@ def hudConfig_protectStr(string: str | Path | None) -> str:
 
 def getHudConfig(
     system: Emulator,
-    systemName: str,
+    systemName: str | None,
     emulator: str,
     core: str,
     rom: Path,
@@ -703,6 +710,10 @@ def _controller_monitor_thread():
     if we_initialized_sdl:
         sdl2.SDL_QuitSubSystem(sdl2.SDL_INIT_JOYSTICK)
 
+def _log_emulator_stream(stream: IO[bytes], level: int, prefix: str, /) -> None:
+    for raw in iter(stream.readline, b''):
+        _emulator_logger.log(level, '%s %s', prefix, raw.decode(errors='backslashreplace').rstrip())
+
 def runCommand(command: Command) -> int:
     global proc
 
@@ -719,13 +730,19 @@ def runCommand(command: Command) -> int:
         raise BadCommandLineArguments
 
     proc = subprocess.Popen(["nice", "-n", "-4", *command.array], env=command.env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    threads = [
+        threading.Thread(target=_log_emulator_stream, args=(proc.stdout, logging.DEBUG, "[stdout]")),
+        threading.Thread(target=_log_emulator_stream, args=(proc.stderr, logging.ERROR, "[stderr]")),
+    ]
+
+    for thread in threads:
+        thread.start()
+
     exitcode = 0
 
     try:
-        out, err = proc.communicate()
-        exitcode = proc.returncode
-        _logger.debug(out.decode(errors='backslashreplace'))
-        _logger.error(err.decode(errors='backslashreplace'))
+        exitcode = proc.wait()
     except BrokenPipeError:
         # Seeing BrokenPipeError? This is probably caused by head truncating output in the front-end
         # Examine es-core/src/platform.cpp::runSystemCommand for additional context
@@ -734,93 +751,11 @@ def runCommand(command: Command) -> int:
         _logger.error("emulator exited")
 
         raise UnexpectedEmulatorExit from e
+    finally:
+        for thread in threads:
+            thread.join()
 
     return exitcode
-
-def signal_handler(signal: int, frame: FrameType | None):
-    global proc
-    _logger.debug('Exiting')
-    if proc:
-        _logger.debug('killing proc')
-        proc.kill()
-
-def launch() -> None:
-    with setup_logging():
-        global proc
-        proc = None
-        signal.signal(signal.SIGINT, signal_handler)
-
-        batocera_version = 'UNKNOWN'
-        if (version_file := BATOCERA_SHARE_DIR / 'batocera.version').exists():
-            batocera_version = version_file.read_text().strip()
-        _logger.info('Batocera version: %s', batocera_version)
-
-        parser = argparse.ArgumentParser(description='emulator-launcher script')
-
-        maxnbplayers = 8
-        for p in range(1, maxnbplayers+1):
-            parser.add_argument(f"-p{p}index"     , help=f"player{p} controller index"            , type=int, required=False)
-            parser.add_argument(f"-p{p}guid"      , help=f"player{p} controller SDL2 guid"        , type=str, required=False)
-            parser.add_argument(f"-p{p}name"      , help=f"player{p} controller name"             , type=str, required=False)
-            parser.add_argument(f"-p{p}devicepath", help=f"player{p} controller device"           , type=str, required=False)
-            parser.add_argument(f"-p{p}nbbuttons" , help=f"player{p} controller number of buttons", type=int, required=False)
-            parser.add_argument(f"-p{p}nbhats"    , help=f"player{p} controller number of hats"   , type=int, required=False)
-            parser.add_argument(f"-p{p}nbaxes"    , help=f"player{p} controller number of axes"   , type=int, required=False)
-
-        parser.add_argument("-system",         help="select the system to launch", type=str, required=True)
-        parser.add_argument("-rom",            help="rom absolute path",           type=Path, required=True)
-        parser.add_argument("-emulator",       help="force emulator",              type=str, required=False)
-        parser.add_argument("-core",           help="force emulator core",         type=str, required=False)
-        parser.add_argument("-netplaymode",    help="host/client",                 type=str, required=False)
-        parser.add_argument("-netplaypass",    help="enable spectator mode",       type=str, required=False)
-        parser.add_argument("-netplayip",      help="remote ip",                   type=str, required=False)
-        parser.add_argument("-netplayport",    help="remote port",                 type=str, required=False)
-        parser.add_argument("-netplaysession", help="netplay session",             type=str, required=False)
-        parser.add_argument("-state_slot",     help="state slot",                  type=str, required=False)
-        parser.add_argument("-state_filename", help="state filename",              type=str, required=False)
-        parser.add_argument("-autosave",       help="autosave",                    type=str, required=False)
-        parser.add_argument("-systemname",     help="system fancy name",           type=str, required=False)
-        parser.add_argument("-gameinfoxml",    help="game info xml",               type=str, nargs='?', default='/dev/null', required=False)
-        parser.add_argument("-lightgun",       help="configure lightguns",         action="store_true")
-        parser.add_argument("-wheel",          help="configure wheel",             action="store_true")
-        parser.add_argument("-trackball",      help="configure trackball",         action="store_true")
-        parser.add_argument("-spinner",        help="configure spinner",           action="store_true")
-
-        args = parser.parse_args()
-        exitcode = 0
-        try:
-            exitcode = main(args, maxnbplayers)
-        except BaseBatoceraException as e:
-            _logger.exception("configgen exception: ")
-            exitcode = e.exit_code
-
-            if isinstance(e, BatoceraException):
-                Path('/tmp/launch_error.log').write_text(e.args[0])
-        except Exception:
-            _logger.exception("configgen exception: ")
-
-        profiler.stop()
-
-        time.sleep(1) # this seems to be required so that the gpu memory is restituated and available for es
-
-        if exitcode < 0:
-            signal_number = exitcode * -1
-
-            if signal_number < signal.NSIG:
-                signal_description = signal.strsignal(signal_number)
-
-                if signal_description and ':' not in signal_description:
-                    signal_description = f'{signal_description}: {signal_number}'
-
-                _logger.debug("Emulator terminated by signal (%s)", signal_description)
-                exitcode = 0
-
-        _logger.debug("Exiting configgen with status %s", exitcode)
-
-        exit(exitcode)
-
-if __name__ == '__main__':
-    launch()
 
 # Local Variables:
 # tab-width:4

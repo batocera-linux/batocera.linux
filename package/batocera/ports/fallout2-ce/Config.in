@@ -1,6 +1,7 @@
 config BR2_PACKAGE_FALLOUT2_CE
 	bool "fallout2-ce"
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_BATOCERA_LAUNCH_FALLOUT
 	help
 	  Fallout 2 CE - Open Source Fallout 2 engine
 

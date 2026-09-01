@@ -10,7 +10,7 @@ from ...batoceraPaths import CONFIGS, ensure_parents_and_open, mkdir_if_not_exis
 from ...controller import generate_sdl_game_controller_config
 from ..Generator import Generator
 from . import flycastControllers
-from .flycastPaths import FLYCAST_BIOS, FLYCAST_CONFIG, FLYCAST_SAVES, FLYCAST_VMU_BLANK, FLYCAST_VMUA1, FLYCAST_VMUA2
+from .flycastPaths import FLYCAST_BIOS, FLYCAST_CONFIG, FLYCAST_SAVES, FLYCAST_VMUA1, FLYCAST_VMUA2
 
 if TYPE_CHECKING:
     from ...types import HotkeysContext
@@ -176,12 +176,18 @@ class FlycastGenerator(Generator):
         # internal config
         mkdir_if_not_exists(FLYCAST_SAVES)
 
-        # vmuA1
-        if not FLYCAST_VMUA1.is_file():
-            copyfile(FLYCAST_VMU_BLANK, FLYCAST_VMUA1)
-        # vmuA2
-        if not FLYCAST_VMUA2.is_file():
-            copyfile(FLYCAST_VMU_BLANK, FLYCAST_VMUA2)
+        if not FLYCAST_VMUA1.is_file() or not FLYCAST_VMUA2.is_file():
+            from importlib import resources
+
+            from batocera_launch_flycast.emulator import VMU_BLANK
+
+            with resources.as_file(VMU_BLANK) as vmu_blank:
+                # vmuA1
+                if not FLYCAST_VMUA1.is_file():
+                    copyfile(vmu_blank, FLYCAST_VMUA1)
+                # vmuA2
+                if not FLYCAST_VMUA2.is_file():
+                    copyfile(vmu_blank, FLYCAST_VMUA2)
 
         # the command to run
         commandArray = ['/usr/bin/flycast', rom]

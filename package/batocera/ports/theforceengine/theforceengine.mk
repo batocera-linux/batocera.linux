@@ -12,7 +12,7 @@ THEFORCEENGINE_LICENSE = GPLv2
 THEFORCEENGINE_LICENSE_FILE = LICENSE
 THEFORCEENGINE_EMULATOR_INFO = theforceengine.emulator.yml
 
-# be sure to update configgen if the patch version changes
+# be sure to update batocera-launch if the patch version changes
 THEFORCEENGINE_PATCH_VERSION = df_patch4
 THEFORCEENGINE_PATCH_SOURCE = $(THEFORCEENGINE_PATCH_VERSION).zip
 THEFORCEENGINE_EXTRA_DOWNLOADS = \

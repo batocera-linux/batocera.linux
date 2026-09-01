@@ -7,7 +7,7 @@
 MAME_VERSION = gm0289sr222f
 MAME_SITE = $(call github,antonioginer,GroovyMAME,$(MAME_VERSION))
 MAME_DEPENDENCIES += alsa-lib expat flac fontconfig glm jpeg libpng lua
-MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd 
+MAME_DEPENDENCIES += pulseaudio rapidjson sdl2 sdl2_ttf sqlite zlib zstd
 
 $(eval $(call register,mame.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,bgfxbackend.mame.emulator.yml))
@@ -263,9 +263,9 @@ define MAME_INSTALL_TARGET_CMDS
 
 	# gameStop script when exiting a rotated screen (xorg)
 	if [ "$(BR2_PACKAGE_XSERVER_XORG_SERVER)" = "y" ]; then \
-		mkdir -p $(TARGET_DIR)/usr/share/batocera/configgen/scripts; \
+		mkdir -p $(TARGET_DIR)/usr/share/batocera/launch/scripts; \
 		cp $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/mame/rotation_fix.sh \
-			$(TARGET_DIR)/usr/share/batocera/configgen/scripts/rotation_fix.sh; \
+			$(TARGET_DIR)/usr/share/batocera/launch/scripts/rotation_fix.sh; \
 	fi
 
 	# Copy user -autoboot_command overrides (batocera.linux/batocera.linux#11706)

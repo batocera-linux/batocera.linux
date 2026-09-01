@@ -7,7 +7,7 @@
 BATOCERA_ES_SYSTEM_SOURCE=
 BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR=
 BATOCERA_ES_SYSTEM_INSTALL_STAGING = YES
-BATOCERA_ES_SYSTEM_DEPENDENCIES = host-batocera-es-system batocera-configgen host-gettext
+BATOCERA_ES_SYSTEM_DEPENDENCIES = host-batocera-es-system batocera-launch host-gettext
 
 HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR=$(BR2_EXTERNAL_BATOCERA_PATH)/python-src/batocera-es-system
 HOST_BATOCERA_ES_SYSTEM_OVERRIDE_SRCDIR_RSYNC_EXCLUSIONS=--exclude=".*" --exclude="**/__pycache__/" --exclude="dist"
@@ -33,7 +33,7 @@ define BATOCERA_ES_SYSTEM_BUILD_CMDS
 		--es-systems-yml=$(BATOCERA_ES_SYSTEM_PKGDIR)/es_systems.yml \
 		--locales-dir=$(BATOCERA_ES_SYSTEM_PKGDIR)/locales \
 		--roms-dir=$(BATOCERA_ES_SYSTEM_PKGDIR)/roms \
-		--configgen=$(STAGING_DIR)/usr/share/batocera/configgen \
+		--defaults=$(STAGING_DIR)/usr/share/batocera/launch/defaults \
 		--keys-dir=$(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera \
 		--output=$(BATOCERA_ES_SYSTEM_DIR) \
 		--arch=$(BATOCERA_ARCH) \

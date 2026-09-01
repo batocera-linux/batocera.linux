@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 _DEFAULT_PARENTPATH: Final = '/userdata/roms'
-_DEFAULT_COMMAND: Final = 'emulatorlauncher %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%'
+_DEFAULT_COMMAND: Final = 'batocera-launch %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%'
 
 
 def _extensions_to_xml(values: Iterable[str], /) -> str:

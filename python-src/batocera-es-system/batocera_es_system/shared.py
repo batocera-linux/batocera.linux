@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import deque
 from dataclasses import InitVar, dataclass, field
-from typing import TYPE_CHECKING, Any, Final, NotRequired, Self, overload
+from typing import TYPE_CHECKING, Any, NotRequired, Self, overload
 from typing_extensions import Sentinel, TypedDict
 
 from batocera_common.yaml import safe_load_yaml
@@ -48,7 +48,7 @@ type SystemsData = dict[str, SystemDict]
 type SystemsDataMapping = Mapping[str, SystemDict]
 
 
-# es_systems.yml plus configgen defaults
+# es_systems.yml plus batocera-launch defaults
 
 
 class DefaultsDict(TypedDict):
@@ -56,7 +56,7 @@ class DefaultsDict(TypedDict):
     core: str | None
 
 
-MISSING: Final = Sentinel('MISSING')
+MISSING = Sentinel('MISSING')
 
 
 def get_deep_value(mapping: Mapping[str, Any], first_key: str, /, *keys: str) -> Any | MISSING:
@@ -95,7 +95,7 @@ def to_xml_attribute(name: str, string: str | int | None, /) -> str:
     return f' {name}="{protect_xml(string)}"' if string else ''
 
 
-_NOTHING: Final = Sentinel('_NOTHING')
+_NOTHING = Sentinel('_NOTHING')
 
 
 @dataclass(slots=True)
@@ -167,7 +167,7 @@ def wrap_tag(
 
 
 @dataclass(slots=True)
-class ConfiggenDefaults:
+class Defaults:
     defaults: dict[str, DefaultDict]
     arch_defaults: dict[str, DefaultDict]
 
@@ -187,4 +187,4 @@ class ConfiggenDefaults:
 
     @classmethod
     def for_directory(cls, directory: Path, /) -> Self:
-        return cls.for_defaults(directory / 'configgen-defaults.yml', directory / 'configgen-defaults-arch.yml')
+        return cls.for_defaults(directory / 'config.yml', directory / 'config-arch.yml')

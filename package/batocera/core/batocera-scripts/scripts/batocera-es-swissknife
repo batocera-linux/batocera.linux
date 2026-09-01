@@ -22,7 +22,7 @@ local cpids="$(pgrep -P $1)"
 
 # Emulator currently running?
 function check_emurun() {
-    echo $(pgrep -f -n emulatorlauncher || echo 0)
+    echo $(pgrep -x -n batocera-launch || echo 0)
 }
 
 # Emulationstation currently running?
