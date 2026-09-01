@@ -7,14 +7,11 @@ from batocera_common.configparser import CaseSensitiveRawConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES, SCREENSHOTS
 from batocera_common.vulkan import get_discrete_gpu_index, has_discrete_gpu, is_available
-from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input
-from batocera_launch.config.labwc import LabWCConfig
+from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping, LabWCConfig
 from batocera_launch.devices.video import find_screen, get_screens
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from batocera_launch import InputMapping
 
 _logger = logging.getLogger(__name__)
 
