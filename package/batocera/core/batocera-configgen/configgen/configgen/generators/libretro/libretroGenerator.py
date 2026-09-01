@@ -271,10 +271,6 @@ class LibretroGenerator(Generator):
             # creating the new 'rom_path' variable by combining the directory path and the first line
             rom = rom.parent / first_line
             _logger.debug("New rom path: %s", rom)
-            # choose core based on new rom directory
-            directory_parts = rom.parent.parts
-            if "d3xp" in directory_parts:
-                system.config['core'] = "boom3_xp"
             retroarchCore = RETROARCH_CORES / f"{system.config.core}_libretro.so"
             commandArray = [RETROARCH_BIN, "-L", retroarchCore, "--config", system.config['configfile']]
         # super mario wars - verify assets from Content Downloader
