@@ -40,6 +40,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_ETLEGACY),,etlegacy.py) \
 		$(if $(BR2_PACKAGE_PIFBA),,fba2x.py) \
 		$(if $(BR2_PACKAGE_FLATPAK),,flatpak.py) \
+		$(if $(BR2_PACKAGE_FSUAE),,fsuae.py) \
 		$(if $(BR2_PACKAGE_GSPLUS),,gsplus.py) \
 		$(if $(BR2_PACKAGE_HATARI),,hatari.py) \
 		$(if $(BR2_PACKAGE_HCL),,hcl.py) \

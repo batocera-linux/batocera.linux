@@ -269,7 +269,6 @@ they pull unusual dependencies.
 - [ ] `demul`
 - [ ] `duckstation`
 - [ ] `duckstation_legacy` (emulator `duckstation`, core `duckstation-legacy`)
-- [ ] `fsuae`
 - [ ] `gzdoom`
 - [ ] `hypseus_singe` (`hypseus-singe`)
 - [ ] `libretro`
