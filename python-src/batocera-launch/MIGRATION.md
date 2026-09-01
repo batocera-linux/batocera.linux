@@ -276,7 +276,6 @@ they pull unusual dependencies.
 - [ ] `libretro`
 - [ ] `linuxloader`
 - [ ] `mame`
-- [ ] `melonds`
 - [ ] `moonlight`
 - [ ] `mugen`
 - [ ] `mupen` (`mupen64plus`)
