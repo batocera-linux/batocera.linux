@@ -99,7 +99,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             self.rom = await self.__stack.enter_async_context(
                 Rom.prepare(
                     self.config.rom,
-                    writable_dir=(SAVES / self.config.system / self.config.rom.stem) if self.needs_overlayfs else None,
+                    writable_dir=self.writable_overlayfs_dir if self.needs_overlayfs else None,
                 )
             )
 
@@ -180,6 +180,11 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     @property
     def execution_path(self) -> Path | None:
         return None
+
+    @cached_property
+    def writable_overlayfs_dir(self) -> Path:
+        # NOTE: self.rom IS NOT SET when this is first used, so self.config.rom MUST be used
+        return SAVES / self.system / self.config.rom.stem
 
     @cached_property
     def roms_dir(self) -> Path:

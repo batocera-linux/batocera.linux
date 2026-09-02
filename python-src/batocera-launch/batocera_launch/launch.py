@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Final
 
 import uvloop
 
+from batocera_common.exceptions import flatten_exception_group
 from batocera_common.key_value_config import KeyValueConfig
 from batocera_common.paths import BATOCERA_CONF, BATOCERA_SHARE_DIR
 
@@ -48,14 +49,21 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
             exit_code = _run_legacy(args, profiler)
         else:
             exit_code = uvloop.run(_run(args, profiler))
-    except BaseBatoceraException as e:
+    except* Exception as group:
         _logger.exception('batocera-launch exception')
-        exit_code = e.exit_code
 
-        if isinstance(e, BatoceraException):
-            Path('/tmp/launch_error.log').write_text(e.args[0])
-    except Exception:
-        _logger.exception('batocera-launch exception')
+        batocera_exceptions = group.subgroup(BaseBatoceraException)
+        if batocera_exceptions is not None:
+            base_batocera_exceptions = flatten_exception_group(batocera_exceptions)
+            first_batocera_exception = next(
+                (e for e in base_batocera_exceptions if isinstance(e, BatoceraException)), None
+            )
+
+            if first_batocera_exception is not None:
+                exit_code = first_batocera_exception.exit_code
+                Path('/tmp/launch_error.log').write_text(first_batocera_exception.args[0])
+            else:
+                exit_code = base_batocera_exceptions[0].exit_code
 
     # this seems to be required so that the gpu memory is resituated and available for ES
     time.sleep(1)

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
-from batocera_common.asyncio import run
+from batocera_common.fs import MountFailedError, manage_mount, unmount
 from batocera_common.paths import ROM_OVERLAY_DIR
 
 from ..exceptions import BatoceraException
-from .mounts import unmount
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
@@ -21,12 +21,15 @@ _logger = logging.getLogger(__name__)
 
 
 async def _unmount_and_remove(mount_point: Path, /) -> None:
-    if mount_point.is_mount() and not await unmount(mount_point):
-        _logger.error("failed unmounting '%s'", mount_point)
+    if mount_point.is_mount():
+        try:
+            await unmount(mount_point)
+        except Exception:
+            _logger.exception("failed unmounting '%s'", mount_point)
 
-        # Skip the follow-on removal if the umount failed because it might still
-        # be connected to the ROM's save area (system crashing or bad state?).
-        return
+            # Skip the follow-on removal if the umount failed because it might still
+            # be connected to the ROM's save area (system crashing or bad state?).
+            return
 
     shutil.rmtree(mount_point, ignore_errors=True)
 
@@ -40,27 +43,6 @@ def _escape_value(value: StrPath, /, *, include_colons: bool = False) -> str:
         return result.replace(':', r'\:')
 
     return result
-
-
-async def _mount(read_only_dir: Path, writable_upper_dir: Path, writable_work_dir: Path, mount_point: Path, /) -> bool:
-    components = ','.join(
-        (
-            f'lowerdir={_escape_value(read_only_dir, include_colons=True)}',
-            f'upperdir={_escape_value(writable_upper_dir)}',
-            f'workdir={_escape_value(writable_work_dir)}',
-        )
-    )
-
-    try:
-        await run('mount', '-t', 'overlay', 'overlay', '-o', components, mount_point, text=True, check=True)
-    except Exception:
-        _logger.exception("failed mounting '%s' with components '%s'", mount_point, components)
-
-        return False
-
-    _logger.debug("mounted '%s' with components '%s'", mount_point, components)
-
-    return True
 
 
 @asynccontextmanager
@@ -126,16 +108,39 @@ async def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /) -> AsyncGe
     await _unmount_and_remove(mount_point)
     mount_point.mkdir(parents=True, exist_ok=True)
 
-    if not await _mount(read_only_dir, writable_upper_dir, writable_work_dir, mount_point):
-        raise BatoceraException(f"Unable to setup writable overlay for '{read_only_dir}'")
+    components = ','.join(
+        (
+            f'lowerdir={_escape_value(read_only_dir, include_colons=True)}',
+            f'upperdir={_escape_value(writable_upper_dir)}',
+            f'workdir={_escape_value(writable_work_dir)}',
+        )
+    )
+
     try:
-        yield (mount_point / maybe_rom_file) if maybe_rom_file else mount_point
+        async with manage_mount(
+            'overlay', mount_point, type='overlay', options=components, raise_on_unmount_failure=False
+        ) as mount_point:
+            _logger.debug("mounted '%s' with components '%s'", mount_point, components)
+
+            yield (mount_point / maybe_rom_file) if maybe_rom_file else mount_point
+
+    except MountFailedError as e:
+        if e.mount_point == mount_point:
+            _logger.exception("failed mounting '%s' with components '%s'", mount_point, components)
+            raise BatoceraException(f"Unable to setup writable overlay for '{read_only_dir}'") from e
+        raise
 
     finally:
         _logger.debug("cleaning up '%s'", mount_point)
-        await _unmount_and_remove(mount_point)
 
-        has_writes = writable_upper_dir.is_dir() and any(writable_upper_dir.iterdir())
+        if not mount_point.is_mount():
+            shutil.rmtree(mount_point, ignore_errors=True)
+
+        if writable_upper_dir.is_dir():
+            with os.scandir(writable_upper_dir) as entries:
+                has_writes = bool(next(entries, None))
+        else:
+            has_writes = False
 
         _logger.debug("%s save directory '%s'", 'keeping populated' if has_writes else 'removing empty', writable_dir)
 
