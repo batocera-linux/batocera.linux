@@ -95,7 +95,7 @@ endif
 endif
 
 # List of packages that are always good to rebuild for versioning/stamps etc
-MANDATORY_REBUILD_PKGS := batocera-es-system batocera-launch batocera-configgen batocera-system batocera-splash
+MANDATORY_REBUILD_PKGS := batocera-es-system batocera-launch python-batocera-common batocera-configgen batocera-system batocera-splash
 
 # All supported targets based on the board files in configs/, sorted for consistency
 TARGETS := $(sort $(patsubst batocera-%.board,%,$(notdir $(wildcard $(PROJECT_DIR)/configs/*.board))))
