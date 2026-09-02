@@ -789,7 +789,8 @@ def createLibretroConfig(
         "mame078plus"   : { "default" : { "device":   4, "p1": 0, "p2": 1 } },
         "flycast"       : { "default" : { "device":   4, "p1": 0, "p2": 1, "p3": 2, "p4": 3 } },
         "flycastvl"     : { "default" : { "device":   4, "p1": 0, "p2": 1, "p3": 2, "p4": 3 } },
-        "mednafen_psx"  : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
+        "mednafen_psx"  : { "default" : { "device": 260, "p1": 0, "p2": 1,
+                                          "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ]} },
         "pcsx_rearmed"  : { "default" : { "device": 260, "p1": 0, "p2": 1,
                                           "gameDependant": [ { "key": "type", "value": "justifier", "mapkey": "device", "mapvalue": "516" } ]} },
         "swanstation"   : { "default" : { "device": 260, "p1": 0, "p2": 1 } },
@@ -907,6 +908,18 @@ def configureGunInputsForPlayer(
     # custom mapping by core to match more with avaible gun batocera buttons
     # different mapping for ps1 which has only 3 buttons and maps on aux_a and aux_b not available on all guns
     if core == "pcsx_rearmed":
+        if "gun_type" in metadata and metadata["gun_type"] == "justifier":
+            retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = ''
+            retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = 2
+            pedalconfig = f'input_player{n}_gun_aux_a'
+        else:
+            retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = ''
+            retroarchConfig[f'input_player{n}_gun_start_mbtn'         ] = ''
+            retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = 2
+            pedalconfig = f'input_player{n}_gun_aux_a'
+            retroarchConfig[f'input_player{n}_gun_aux_b_mbtn'         ] = 3
+
+    if core == "mednafen_psx":
         if "gun_type" in metadata and metadata["gun_type"] == "justifier":
             retroarchConfig[f'input_player{n}_gun_offscreen_shot_mbtn'] = ''
             retroarchConfig[f'input_player{n}_gun_aux_a_mbtn'         ] = 2
