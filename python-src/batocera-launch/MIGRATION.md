@@ -277,7 +277,6 @@ they pull unusual dependencies.
 - [ ] `linuxloader`
 - [ ] `mame`
 - [ ] `melonds`
-- [ ] `model2emu`
 - [ ] `moonlight`
 - [ ] `mugen`
 - [ ] `mupen` (`mupen64plus`)
