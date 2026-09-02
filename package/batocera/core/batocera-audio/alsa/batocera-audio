@@ -21,6 +21,7 @@ export XDG_RUNTIME_DIR=/var/run
 # Set variables
 MAX_VOLUME="$(/usr/bin/batocera-settings-get audio.volume.boost)" || MAX_VOLUME=100
 DEFAULT_SINK=$(LC_ALL=C pactl info | grep -E '^Default Sink: ' | sed -e s+"^Default Sink: "+""+ | head -1)
+DEFAULT_CARD=$(echo "${DEFAULT_SINK}" | sed -e s+'\.[^\.]*$'+''+ -e s+"^alsa_output"+"alsa_card"+)
 DETECT_VOLUME=$(LC_ALL=C pactl list sinks-raw | grep -E '^[^ ]* name="'"${DEFAULT_SINK}"'"' | sed -e s+"^.* volume=\"\([0-9]*\)\" .*$"+'\1'+)
 
 ACTION="$1"
@@ -32,10 +33,6 @@ case "${ACTION}" in
         ;;
 
     get)
-        /usr/bin/batocera-settings-get audio.device
-        ;;
-
-    get-active)
 	LC_ALL=C pactl list sinks-raw | grep -E '^[^ ]* name="'"${DEFAULT_SINK}"'"' | sed -e s+"^sink=\"[0-9]*\" name=\"\([^ ]*\)\" .* description=\"\(.*\)\"$"+"\1\t\2"+
         ;;
 
@@ -91,11 +88,7 @@ case "${ACTION}" in
         ;;
 
     get-profile)
-        /usr/bin/batocera-settings-get audio.profile
-        ;;
-
-    get-profile-active)
-	LC_ALL=C pactl list cards-profiles-raw | grep 'active="1"' | sed -E 's/^card="[0-9]+" name="(.*)" profile="(.*)" available="[01]" active="[01]" description="(.*)"$/\2@\1\t\3/'
+	LC_ALL=C pactl list cards-profiles-raw | grep 'active="1"' | grep -E '^[^ ]* name="'"${DEFAULT_CARD}"'"' | sed -E 's/^card="[0-9]+" name="(.*)" profile="(.*)" available="[01]" active="[01]" description="(.*)"$/\2@\1\t\3/'
         ;;
 
     set-profile)
