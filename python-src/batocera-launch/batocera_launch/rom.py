@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Self, overload
 
+from .fs.overlayfs import mount_overlayfs
 from .fs.squashfs import mount_squashfs
 
 if TYPE_CHECKING:
@@ -160,7 +161,11 @@ class Rom(Path):
     @asynccontextmanager
     async def prepare(cls, source: Path, /, *, writable_dir: Path | None = None) -> AsyncGenerator[Self]:
         if source.suffix == '.squashfs':
-            async with mount_squashfs(source, writable_dir=writable_dir) as prepared:
-                yield cls(source, prepared)
+            async with mount_squashfs(source) as squashfs_mounted:
+                if writable_dir is None:
+                    yield cls(source, squashfs_mounted)
+                else:
+                    async with mount_overlayfs(squashfs_mounted, writable_dir) as overlay_mounted:
+                        yield cls(source, overlay_mounted)
         else:
             yield cls(source, None)
