@@ -109,18 +109,18 @@
 				action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
 		<feature display="Audio Output">
-				<choice_cmd display="${batocera-audio list | cut -f 2}"
+				<choice_cmd display="${batocera-audio list | grep -vE '^auto' | cut -f 2}"
 					    action="batocera-audio set"
-					    action_arg="${batocera-audio list | cut -f 1}"
+					    action_arg="${batocera-audio list | grep -vE '^auto' | cut -f 1}"
 					    cache="10" />
-				<text display="${batocera-audio get-active | cut -f 2}" refresh="5" />
+				<text display="${batocera-audio get | cut -f 2}" refresh="3" />
 		</feature>
 		<feature display="Audio Profile">
-				<choice_cmd display="${batocera-audio list-profiles | cut -f 2}"
+				<choice_cmd display="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 2}"
 					    action="batocera-audio set-profile"
-					    action_arg="${batocera-audio list-profiles | cut -f 1}"
+					    action_arg="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 1}"
 					    cache="10" />
-				<text display="${batocera-audio get-profile-active | cut -f 2}" refresh="5" />
+				<text display="${batocera-audio get-profile | cut -f 2}" refresh="3" />
 		</feature>
 		<feature display="Network IP address:">
 			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
