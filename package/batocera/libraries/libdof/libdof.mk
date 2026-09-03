@@ -3,8 +3,8 @@
 # libdof
 #
 ################################################################################
-# Version: Commits on Jul 14, 2026
-LIBDOF_VERSION = eef645d9f5df618290962946c9e3e8ed30886639
+# Version: Commits on Sep 2, 2026
+LIBDOF_VERSION = afc2be6e79644a78670be2f4de3e83daa0baaa5f
 LIBDOF_SITE = $(call github,vpinball,libdof,$(LIBDOF_VERSION))
 LIBDOF_LICENSE = BSD-3-Clause
 LIBDOF_LICENSE_FILES = LICENSE
