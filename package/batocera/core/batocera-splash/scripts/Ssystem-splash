@@ -9,7 +9,7 @@ do_start () {
     LOG_DIR="${LOG_FILE%/*}"
     [ -d "${LOG_DIR}" ] || mkdir -p "${LOG_DIR}"
     exec >> "${LOG_FILE}" 2>&1
-    
+
     if [ ! -e /dev/fb0 ]; then
         i=0
         while [ ! -e /dev/fb0 ] && [ $i -lt 50 ]; do
@@ -21,11 +21,11 @@ do_start () {
             exit 1
         fi
     fi
-    
+
     # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
     # Standard FBV options
-    FBV_OPTS="-f -e -i -y"   
+    FBV_OPTS="-f -e -i -y"
     # Variables for screen dimensions
     WIDTH=""
     HEIGHT=""
@@ -61,7 +61,7 @@ do_start () {
     video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
     echo "Active DRM Output: [${effectiveDrmOutput}]"
     echo "Final Rotation Value: [${video_rotation}]"
-    
+
     # Get the screen's physical dimensions
     if [ -r /sys/class/graphics/fb0/modes ]; then
         if read -r MODE_STR < /sys/class/graphics/fb0/modes; then
@@ -73,7 +73,7 @@ do_start () {
 
         if [ -n "${WIDTH}" ] && [ -n "${HEIGHT}" ]; then
             echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}"
-            
+
             # Determine target size for cropping.
             # If rotated 90 or 270 degrees (1 or 3), swap width and height.
             if [ "${video_rotation}" = "1" ] || [ "${video_rotation}" = "3" ]; then
