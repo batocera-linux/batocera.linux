@@ -7,7 +7,7 @@ import subprocess
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 from batocera_common.asyncio import run
 
@@ -188,11 +188,27 @@ async def get_screens(config: SystemConfig, /) -> list[ScreenInfo]:
     return infos
 
 
-def find_screen(screens: Sequence[ScreenInfo], output: str, /) -> ScreenInfo | None:
-    if output == 'backglass' and len(screens) > 1:
-        return screens[1]
+def find_screen(screens: Sequence[ScreenInfo], output: Literal['primary', 'secondary'], /) -> ScreenInfo | None:
+    if output == 'secondary':
+        return screens[1] if len(screens) > 1 else None
 
     return screens[0]
+
+
+async def configure_windows(rule_set: str, primary: ScreenInfo | None, secondary: ScreenInfo | None, /) -> None:
+    try:
+        await run(
+            'batocera-resolution',
+            'configureWindow',
+            '--primary',
+            '' if primary is None else primary.name,
+            '--secondary',
+            '' if secondary is None else secondary.name,
+            rule_set,
+            check=True,
+        )
+    except Exception:
+        _logger.exception('Failed to configure windows')
 
 
 @dataclass(slots=True, frozen=True)

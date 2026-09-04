@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Self, TypedDict, cast
 _logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping, Sequence
+    from collections.abc import Sequence
     from pathlib import Path
 
 
@@ -16,6 +16,14 @@ if TYPE_CHECKING:
 class Resolution:
     width: int
     height: int
+
+
+class ScreenInfoDict(TypedDict):
+    name: str
+    width: int
+    height: int
+    x: int
+    y: int
 
 
 @dataclass(slots=True, frozen=True)
@@ -26,7 +34,7 @@ class ScreenInfo:
     y: int
 
     @classmethod
-    def from_configgen(cls, *infos: Mapping[str, Any]) -> list[Self]:
+    def from_dict(cls, *infos: ScreenInfoDict) -> list[Self]:
         return [
             cls(
                 name=info['name'],

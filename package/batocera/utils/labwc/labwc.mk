@@ -9,7 +9,7 @@ LABWC_VERSION = 0.20.1
 LABWC_SITE = $(call github,labwc,labwc,$(LABWC_VERSION))
 LABWC_LICENSE = GPLv2
 LABWC_LICENSE_FILES = LICENSE
-LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo 
+LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo
 LABWC_DEPENDENCIES += libxkbcommon libxml2 pango wayland wayland-protocols wlroots
 LABWC_CONF_OPTS = \
 	-Dman-pages=disabled \
@@ -33,11 +33,5 @@ LABWC_DEPENDENCIES += librsvg
 else
 LABWC_CONF_OPTS += -Dsvg=disabled
 endif
-
-define LABWC_BATOCERA_TOOLS_INSTALL
-	$(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/labwc/labwc-configure-window.py $(TARGET_DIR)/usr/bin/labwc-configure-window
-endef
-
-LABWC_POST_INSTALL_TARGET_HOOKS += LABWC_BATOCERA_TOOLS_INSTALL
 
 $(eval $(meson-package))

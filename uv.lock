@@ -8,6 +8,7 @@ members = [
     "batocera-common",
     "batocera-configgen",
     "batocera-es-system",
+    "batocera-labwc",
     "batocera-launch",
     "batocera-launch-cdogs",
     "batocera-launch-cgenius",
@@ -212,6 +213,17 @@ requires-dist = [
     { name = "ruamel-yaml" },
     { name = "typing-extensions" },
 ]
+
+[[package]]
+name = "batocera-labwc"
+version = "44.0"
+source = { editable = "python-src/batocera-labwc" }
+dependencies = [
+    { name = "batocera-common" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "batocera-common", editable = "python-src/python-batocera-common" }]
 
 [[package]]
 name = "batocera-launch"
