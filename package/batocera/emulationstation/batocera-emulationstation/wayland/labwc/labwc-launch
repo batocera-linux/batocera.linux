@@ -6,6 +6,7 @@ export LC_ALL=C
 
 # Add the keyboard details to the environment variable
 LABWC_ENV_FILE="/userdata/system/.config/labwc/environment"
+[ "$XKB_DEFAULT_LAYOUT" = "en" ] && XKB_DEFAULT_LAYOUT="us"
 echo "XKB_DEFAULT_LAYOUT=$XKB_DEFAULT_LAYOUT" > "$LABWC_ENV_FILE"
 echo "XKB_DEFAULT_VARIANT=$XKB_DEFAULT_VARIANT" >> "$LABWC_ENV_FILE"
 
@@ -91,6 +92,32 @@ if [ -n "$PRIME_PCI_ID" ]; then
             break
         fi
     done
+
+    # If an internal display (eDP, LVDS, or DSI) is connected on another card, or if the Prime
+    # card has no connected displays, select the card that actually drives the display
+    HAS_INTERNAL_CARD=""
+    for panel in /sys/class/drm/card*-eDP*/status \
+                 /sys/class/drm/card*-LVDS*/status \
+                 /sys/class/drm/card*-DSI*/status; do
+        if [ -f "$panel" ] && grep -q "^connected" "$panel" 2>/dev/null; then
+            HAS_INTERNAL_CARD=$(basename "$panel" | cut -d'-' -f1)
+            break
+        fi
+    done
+
+    if [ -n "$HAS_INTERNAL_CARD" ]; then
+        PRIMARY_CARD="$HAS_INTERNAL_CARD"
+    elif ! grep -q "^connected" /sys/class/drm/${PRIMARY_CARD}-*/status 2>/dev/null; then
+        for card in /sys/class/drm/card*; do
+            [ -e "$card" ] || continue
+            c_name=$(basename "$card")
+            case "$c_name" in *-*) continue ;; esac
+            if [ "$c_name" != "$PRIMARY_CARD" ] && grep -q "^connected" /sys/class/drm/${c_name}-*/status 2>/dev/null; then
+                PRIMARY_CARD="$c_name"
+                break
+            fi
+        done
+    fi
 
     # If a primary card was found, build a multi-GPU device string with detailed logs
     if [ -n "$PRIMARY_CARD" ]; then
@@ -210,10 +237,16 @@ if echo "$(uname -m)" | grep -q "x86_64"; then
     fi
 fi
 
+# Multi-GPU setups cannot use wlroots Vulkan renderer due to cross-GPU format modifier limitations
+if echo "$WLR_DRM_DEVICES" | grep -q ":"; then
+    VULKAN_SUPPORTED=false
+fi
+
 if [ "$VULKAN_SUPPORTED" = "true" ]; then
     export WLR_RENDERER=vulkan
     echo "Full wlroots Vulkan requirements met. Exported WLR_RENDERER=vulkan" >> "$LOG_FILE"
 else
+    unset WLR_RENDERER
     echo "Using default stable GLES2 renderer fallback." >> "$LOG_FILE"
 fi
 
