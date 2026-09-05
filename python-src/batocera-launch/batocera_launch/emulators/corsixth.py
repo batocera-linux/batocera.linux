@@ -89,6 +89,7 @@ class CorsixTH(Emulator):
                     f'use_new_graphics = {self.config.get_str("cth_new_graphics", "true")}',
                     f'free_build_mode = {self.config.get_str("cth_free_build_mode", "false")}',
                     f'play_intro = {self.config.get_str("cth_play_intro", "true")}',
+                    'player_name = [[PLAYER]]',
                     f'language = [[{language}]]',
                     f'audio_music = {audio_music}',
                     '',
