@@ -2,6 +2,14 @@ shared_features:
   - powermode
   - tdp
   - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
 features:
   - padtokeyboard
 custom_features:
@@ -17,6 +25,34 @@ custom_features:
     choices:
       Disabled (Default): "false"
       Enabled: "true"
+  cth_resolution:
+    prompt: GAME RESOLUTION
+    description: Resolution used by the game. Defaults to the current screen resolution. Values below 640 x 480 are raised by the game.
+    choices:
+      640x480 (4:3): 640x480
+      800x600 (4:3): 800x600
+      1024x768 (4:3): 1024x768
+      1280x960 (4:3): 1280x960
+      1600x1200 (4:3): 1600x1200
+      1920x1440 (4:3): 1920x1440
+      1280x1024 (5:4): 1280x1024
+      1280x720 (16:9): 1280x720
+      1366x768 (16:9): 1366x768
+      1600x900 (16:9): 1600x900
+      1920x1080 (16:9): 1920x1080
+      2560x1440 (16:9): 2560x1440
+      3840x2160 (16:9): 3840x2160
+      1280x800 (16:10): 1280x800
+      1440x900 (16:10): 1440x900
+      1680x1050 (16:10): 1680x1050
+      1920x1200 (16:10): 1920x1200
+  cth_ui_scale:
+    prompt: INTERFACE SCALE
+    description: Scale the user interface for higher resolution displays. Values too large for the screen resolution are reduced by the game.
+    choices:
+      1x (Default): "1"
+      2x: "2"
+      3x: "3"
   cth_play_intro:
     prompt: PLAY INTRO MOVIE
     description: Enable or Disable Intro movie (Enabled by default).
