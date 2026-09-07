@@ -17,6 +17,8 @@
 ### Added
 - Anbernic H700 device hardware acceleration support
 - Anbernic RGCubeXX device LED controller support
+- Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
+- Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
 - Drastic back for Aarch64 devices
 - NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
@@ -24,6 +26,8 @@
 - ES setting to determnine mitigations On|Off(Default On)
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
 - ES can now display Unicode for ID3 tags of songs played
+- Es now supports correctly Arabic and Hebrew glyph rendering
+- bcc : audio devices can now be switch from the bcc menu (while playing games for example)
 - Box64 userland x86_64 emulator for aarch64
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
@@ -45,6 +49,7 @@
 - Taradino blank screen with Wayland
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
+- VPinball now support multiscreens correctly on wayland
 ### Changed / Improved
 - AYN Thor, AYN button now opens Batocera Control Center
 - BigPEmu added to capable aarch64 devices
