@@ -29,6 +29,7 @@
 - Libretro-Azahar
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - Xenia-Edge for x864_64 and select aarch64 devices
+- armsx2 for SM8250, SM8550 and SM8750
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Cannonball coin is now the Select button

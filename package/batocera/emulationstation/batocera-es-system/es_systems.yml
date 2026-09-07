@@ -2289,6 +2289,8 @@ ps2:
   emulators:
     pcsx2:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_PCSX2], incompatible_extensions: [m3u] }
+    armsx2:
+      armsx2: { requireAnyOf: [BR2_PACKAGE_ARMSX2], incompatible_extensions: [m3u] }
     libretro:
       pcsx2: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_PS2] }
   comment_en: |
