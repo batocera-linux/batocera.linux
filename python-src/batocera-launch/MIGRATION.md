@@ -38,7 +38,8 @@ Use a separate `python-src/batocera-launch-<name>/` package when the port has:
   pcsx2, …)
 
 Existing packages today include: `cdogs`, `cgenius`, `drastic`, `fallout`,
-`flycast`, `kodi`, `openjazz`, `openjk`, `openjkdf2`, `openmohaa`, `rpcs3`.
+`flycast`, `kodi`, `openjazz`, `openjk`, `openjkdf2`, `openmohaa`, `rpcs3`,
+`wine`.
 
 Thin launchers (command + env/SDL, or a single-file INI/JSON writer comparable
 to GSplus / NanoBoyAdvance / Sonic Retro) should be inlined even if they are
@@ -53,7 +54,7 @@ more than a few dozen lines.
 | `getMouseMode(config, rom)` | `@property def needs_mouse(self) -> bool` | Default `False`. May depend on `self.config` / `self.rom`. |
 | `executionDirectory(config, rom)` | `@property def execution_path(self) -> Path \| None` | Default `None`. Base class `chdir`s here before run. |
 | `getResolutionMode(config)` | `@property def target_video_mode(self) -> str` | Default `self.config.video_mode` (from `videomode`). |
-| `writesToRom(config)` | `@property def needs_overlayfs(self) -> bool` | When `True`, squashfs ROMs get a writable overlay under `SAVES / system / rom.stem`. |
+| `writesToRom(config)` | `@property def needs_overlayfs(self) -> bool` | When `True`, squashfs ROMs get a writable overlay under `SAVES / system / rom.stem`. Override `@cached_property writable_overlayfs_dir` to keep the writes elsewhere (wine keeps them with the prefix of the rom); `self.rom` is not set yet there, use `self.config.rom`. |
 | `supportsInternalBezels()` | `@property def handles_bezels(self) -> bool` | Skips mangohud/external bezel overlay. |
 | `hasInternalMangoHUDCall()` | `@property def handles_hud(self) -> bool` | Skips prepending `mangohud` to the command. |
 | `getInGameRatio(config, gameResolution, rom)` | `@cached_property def in_game_ratio(self) -> float` | Default `4/3`. Use `self.resolution` if needed. |
@@ -278,7 +279,6 @@ they pull unusual dependencies.
 - [ ] `mame`
 - [ ] `melonds`
 - [ ] `moonlight`
-- [ ] `mugen`
 - [ ] `mupen` (`mupen64plus`)
 - [ ] `openbor`
 - [ ] `openmsx`
@@ -291,7 +291,6 @@ they pull unusual dependencies.
 - [ ] `vice`
 - [ ] `vita3k`
 - [ ] `vpinball`
-- [ ] `wine`
 - [ ] `xemu`
 - [ ] `xenia` (`xenia-canary`)
 - [ ] `xenia_edge` (`xenia-edge`)

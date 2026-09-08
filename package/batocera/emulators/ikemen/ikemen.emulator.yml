@@ -12,5 +12,13 @@ shared_features:
   - bezel.tattoo_corner
   - bezel.tattoo_file
   - bezel.resize_tattoo
+custom_features:
+  scale_internal_resolution:
+    submenu: VIDEO
+    prompt: SCALE INTERNAL RESOLUTION
+    description: Render the game at the screen resolution rather than the internal one its motif was drawn for, which stretches it to the screen's aspect.
+    choices:
+      "OFF": false
+      "ON": true
 systems:
   - ikemen

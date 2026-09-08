@@ -21,6 +21,7 @@ members = [
     "batocera-launch-openjkdf2",
     "batocera-launch-openmohaa",
     "batocera-launch-rpcs3",
+    "batocera-launch-wine",
 ]
 constraints = [
     { name = "aiohttp", specifier = "==3.13.5" },
@@ -405,6 +406,21 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp" },
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-wine"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-wine" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
 ]
