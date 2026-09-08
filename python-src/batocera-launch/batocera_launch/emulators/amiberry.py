@@ -381,6 +381,10 @@ class Amiberry(Emulator):
         elif rom_type == 'UAE':
             args.append('-f')
             args.append(self.rom)
+            args.append('-s')
+            args.append(f'amiberry.hardfile_path={self.roms_dir}')
+            args.append('-s')
+            args.append(f'amiberry.cd_path={self.roms_dir}')
         elif rom_type == 'CD':
             args.append('--cdimage')
             args.append(self.rom)
