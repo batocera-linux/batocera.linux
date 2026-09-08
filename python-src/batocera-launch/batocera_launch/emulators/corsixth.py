@@ -74,6 +74,10 @@ class CorsixTH(Emulator):
             )
             audio_music = 'nil'
 
+        width, height = self.config.get_str(
+            'cth_resolution', f'{self.resolution.width}x{self.resolution.height}'
+        ).split('x')
+
         config_file = self.config_dir / 'config.txt'
         config_file.write_text(
             '\n'.join(
@@ -84,8 +88,9 @@ class CorsixTH(Emulator):
                     f'savegames = [[{self.saves_dir}]]',
                     f'screenshots = [[{SCREENSHOTS}]]',
                     'fullscreen = true',
-                    f'width = {self.resolution.width}',
-                    f'height = {self.resolution.height}',
+                    f'width = {width}',
+                    f'height = {height}',
+                    f'ui_scale = {self.config.get_str("cth_ui_scale", "1")}',
                     f'use_new_graphics = {self.config.get_str("cth_new_graphics", "true")}',
                     f'free_build_mode = {self.config.get_str("cth_free_build_mode", "false")}',
                     f'play_intro = {self.config.get_str("cth_play_intro", "true")}',
