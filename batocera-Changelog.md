@@ -1,6 +1,7 @@
 # 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
+- SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
 ### Hardware
 - Anbernic RG-DS initial support
@@ -17,23 +18,24 @@
 ### Added
 - Anbernic H700 device hardware acceleration support
 - Anbernic RGCubeXX device LED controller support
-- Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
-- Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
+- Armsx2 for SM8250, SM8550 and SM8750
+- BCC: audio devices can now be switch from the bcc menu (while playing games for example)
+- Box64 userland x86_64 emulator for aarch64
 - Drastic back for Aarch64 devices
-- NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
 - ES can now display Unicode for ID3 tags of songs played
-- Es now supports correctly Arabic and Hebrew glyph rendering
-- bcc : audio devices can now be switch from the bcc menu (while playing games for example)
-- Box64 userland x86_64 emulator for aarch64
+- ES now supports correctly Arabic and Hebrew glyph rendering
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
+- NanoBoyAdvance as an alternative GBA emulator
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
+- SM2-Emu emulator for Model 2 games
+- Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
+- Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
 - Xenia-Edge for x864_64 and select aarch64 devices
-- armsx2 for SM8250, SM8550 and SM8750
 ### Fixed
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Cannonball coin is now the Select button

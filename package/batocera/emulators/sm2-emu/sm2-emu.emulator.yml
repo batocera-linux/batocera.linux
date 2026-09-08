@@ -1,0 +1,87 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  sm2_graphics_backend:
+    group: GRAPHICS
+    prompt: GRAPHICS API
+    description: Choose the rendering backend. Software is the current best option for Arm systems.
+    choices:
+      OpenGL: opengl
+      Vulkan: vulkan
+      Software: software
+  sm2_render_scale:
+    group: GRAPHICS
+    prompt: RENDER SCALE
+    description: Internal 3D render scale. OpenGL/Vulkan only, ignored on Software.
+    choices:
+      1x (Default): 1
+      2x: 2
+      3x: 3
+      4x: 4
+  sm2_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Sync to the display refresh to prevent tearing. Disable for VRR displays.
+    choices:
+      'On': 1
+      Off (Default): 0
+  sm2_lightgun_recoil:
+    group: LIGHT GUN
+    prompt: GUN RECOIL
+    description: Fire the gun's recoil motor on each shot, for guns that have one.
+    choices:
+      Off: 0
+      On (Default): 1
+  sm2_lightgun_recoil_strength:
+    group: LIGHT GUN
+    prompt: GUN RECOIL STRENGTH
+    choices:
+      Light: 30
+      Medium (Default): 60
+      Strong: 90
+  sm2_wheel_ffb:
+    group: WHEEL
+    prompt: WHEEL FORCE FEEDBACK
+    description: Synthesised centring resistance on wheels that support it.
+    choices:
+      Off: 0
+      On (Default): 1
+  sm2_wheel_ffb_strength:
+    group: WHEEL
+    prompt: WHEEL FORCE FEEDBACK STRENGTH
+    choices:
+      Light: 15
+      Medium (Default): 30
+      Strong: 50
+  sm2_wheel_rumble:
+    group: WHEEL
+    prompt: WHEEL ROAD RUMBLE
+    description: Synthesised road/engine vibration while driving.
+    choices:
+      Off: 0
+      On (Default): 1
+  sm2_wheel_rumble_strength:
+    group: WHEEL
+    prompt: WHEEL RUMBLE STRENGTH
+    choices:
+      Light: 20
+      Medium (Default): 40
+      Strong: 60
+systems:
+  - model2
