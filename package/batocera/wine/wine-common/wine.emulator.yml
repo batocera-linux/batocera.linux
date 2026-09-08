@@ -46,6 +46,13 @@ custom_features:
     choices:
       "Off": 0
       "On": 1
+  d7vk:
+    group: ADVANCED OPTIONS
+    prompt: D7VK
+    description: Translate DirectDraw and Direct3D up to 7 to Vulkan.
+    choices:
+      Off (Default): 0
+      "On": 1
   ntsync:
     group: ADVANCED OPTIONS
     prompt: NTSYNC
