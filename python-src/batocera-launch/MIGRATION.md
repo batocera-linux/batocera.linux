@@ -276,7 +276,6 @@ they pull unusual dependencies.
 - [ ] `ppsspp`
 - [ ] `supermodel`
 - [ ] `vpinball`
-- [ ] `ymir`
 
 ## Reference files
 
