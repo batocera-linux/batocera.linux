@@ -82,6 +82,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_TSUGARU),,tsugaru.py) \
 		$(if $(BR2_PACKAGE_TYRIAN),,tyrian.py) \
 		$(if $(BR2_PACKAGE_UQM),,uqm.py) \
+		$(if $(BR2_PACKAGE_VICE),,vice.py) \
 		$(if $(BR2_PACKAGE_VITA3K),,vita3k.py) \
 		$(if $(BR2_PACKAGE_VKQUAKE),,vkquake.py) \
 		$(if $(BR2_PACKAGE_VKQUAKE2),,vkquake2.py) \
