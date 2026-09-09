@@ -3,8 +3,8 @@
 # mupen64plus-core
 #
 ################################################################################
-# Version: Commits on Mar 30, 2026
-MUPEN64PLUS_CORE_VERSION = 53a08fceb71653000dd6640cac05eb390fba7885
+# Version: Commits on Sep 5, 2026
+MUPEN64PLUS_CORE_VERSION = cf00a1d1b4138a8e04cde47aabcd00ea9a047f57
 MUPEN64PLUS_CORE_SITE = \
     $(call github,mupen64plus,mupen64plus-core,$(MUPEN64PLUS_CORE_VERSION))
 MUPEN64PLUS_CORE_LICENSE = GPLv2

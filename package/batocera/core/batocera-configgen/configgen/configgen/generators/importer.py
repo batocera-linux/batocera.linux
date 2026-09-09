@@ -33,7 +33,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'iortcw': ('iortcw.iortcwGenerator', 'IORTCWGenerator'),
     'jazz2-native': ('jazz2_native.jazz2_nativeGenerator', 'Jazz2_NativeGenerator'),
     'linuxloader': ('linuxloader.linuxloaderGenerator', 'LinuxLoaderGenerator'),
-    'mupen64plus': ('mupen.mupenGenerator', 'MupenGenerator'),
     'openjazz': ('openjazz.openjazzGenerator', 'OpenJazzGenerator'),
     'openjk': ('openjk.openjkGenerator', 'OpenJKGenerator'),
     'openjkdf2': ('openjkdf2.openjkdf2Generator', 'OpenJKDF2Generator'),

@@ -37,8 +37,9 @@ Use a separate `python-src/batocera-launch-<name>/` package when the port has:
 - A large, self-contained engine of its own (libretro, mame, rpcs3, dolphin,
   pcsx2, …)
 
-Existing packages today include: `cdogs`, `cgenius`, `drastic`, `fallout`,
-`flycast`, `kodi`, `openjazz`, `openjk`, `openjkdf2`, `openmohaa`, `rpcs3`.
+Existing packages today include: `cdogs`, `cgenius`, `dolphin`, `drastic`,
+`fallout`, `flycast`, `kodi`, `mupen64plus`, `openjazz`, `openjk`, `openjkdf2`,
+`openmohaa`, `rpcs3`.
 
 Thin launchers (command + env/SDL, or a single-file INI/JSON writer comparable
 to GSplus / NanoBoyAdvance / Sonic Retro) should be inlined even if they are
@@ -275,7 +276,6 @@ they pull unusual dependencies.
 - [ ] `libretro`
 - [ ] `linuxloader`
 - [ ] `mame`
-- [ ] `mupen` (`mupen64plus`)
 - [ ] `pcsx2`
 - [ ] `pcsx2x6`
 - [ ] `ppsspp`
