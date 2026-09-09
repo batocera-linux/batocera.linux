@@ -4,7 +4,15 @@ export LC_ALL=C
 
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
+
+# list of current detected screens. Always sort to be able to diff.
+# the status file is for the switch only, to handle the internal changes (diff)
+# the query file is to query es (or any) to switch on an other configuration
+# query file auto  : for automatic detection, es will prefer its configuration
+# query file force : force a query, whatever es configuration is
 STATUS_FILE="/var/run/batocera-switch-screen-checker-status"
+QUERY_FILE_AUTO="/var/run/batocera-switch-screen-checker-query-auto"
+QUERY_FILE_FORCE="/var/run/batocera-switch-screen-checker-query-force"
 
 _wait_for_emulationstation() {
     local timeout=3; local waited=0
@@ -29,32 +37,108 @@ case "$1" in
         echo "${OUTPUT_LIST}" | sort > "${STATUS_FILE}"
         exit 0
         ;;
+    "--switch-get")
+	OUTPUT1=$(batocera-resolution currentOutput)
+	echo "${OUTPUT1};${OUTPUT1}"
+	;;
+    "--switch-list")
+	mapfile -t OUTPUTS < <(batocera-resolution listOutputs)
+	NBOUTPUTS=${#OUTPUTS[@]}
+	case "${NBOUTPUTS}" in
+	    1)
+		echo "${OUTPUTS[0]};${OUTPUTS[0]}"
+		;;
+	    2)
+		echo "${OUTPUTS[0]} ${OUTPUTS[1]};${OUTPUTS[0]} x ${OUTPUTS[1]}"
+		echo "${OUTPUTS[1]} ${OUTPUTS[0]};${OUTPUTS[1]} x ${OUTPUTS[0]}"
+		echo "${OUTPUTS[0]} none;${OUTPUTS[0]}"
+		echo "${OUTPUTS[1]} none;${OUTPUTS[1]}"
+		;;
+	    3)
+		echo "${OUTPUTS[0]} ${OUTPUTS[1]} none;${OUTPUTS[0]} x ${OUTPUTS[1]}"
+		echo "${OUTPUTS[0]} ${OUTPUTS[2]} none;${OUTPUTS[0]} x ${OUTPUTS[2]}"
+		echo "${OUTPUTS[1]} ${OUTPUTS[0]} none;${OUTPUTS[1]} x ${OUTPUTS[0]}"
+		echo "${OUTPUTS[1]} ${OUTPUTS[2]} none;${OUTPUTS[1]} x ${OUTPUTS[2]}"
+		echo "${OUTPUTS[2]} ${OUTPUTS[0]} none;${OUTPUTS[2]} x ${OUTPUTS[0]}"
+		echo "${OUTPUTS[2]} ${OUTPUTS[1]} none;${OUTPUTS[2]} x ${OUTPUTS[1]}"
+		echo "${OUTPUTS[0]} none none;${OUTPUTS[0]}"
+		echo "${OUTPUTS[1]} none none;${OUTPUTS[1]}"
+		echo "${OUTPUTS[2]} none none;${OUTPUTS[2]}"
+		;;
+	    *)
+		for i in "${!OUTPUTS[@]}"
+		do
+		    echo "OUTPUTS[${i}];OUTPUTS[${i}]"
+		done
+		;;
+	esac
+	;;
+    "--switch")
+	shift
+
+	# hum, explode the $1 parameter to $2 and $3 if all is passed to $1 as a single parameter (to be removed if bcc can call with several paramters)
+	test -z "$2" -a -z "$3" && set -- $1
+
+	SWITCH_SCREEN1=$1
+	SWITCH_SCREEN2=$2
+	SWITCH_SCREEN3=$3
+
+	rm -f "${QUERY_FILE_AUTO}" # remove any old query file
+	echo "${SWITCH_SCREEN1}"  > "${QUERY_FILE_FORCE}"
+	echo "${SWITCH_SCREEN2}" >> "${QUERY_FILE_FORCE}"
+	echo "${SWITCH_SCREEN3}" >> "${QUERY_FILE_FORCE}"
+
+	echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
+	curl http://localhost:1234/quit
+	;;
     *)
         # This script's only job is to trigger an ES restart.
         # The main standalone script will handle all display logic.
 
-        # Check for the existence of /tmp/no-hotplug
-        if [ -f "/tmp/no-hotplug" ]; then
-            # this is not a hotplug event, exit
-            rm /tmp/no-hotplug
+        # Check for the existence of the status file (so that nothing happen before es start)
+        if [ ! -f "${STATUS_FILE}" ]; then
             exit 0
         fi
 
         # Debounce lock to avoid multiple udev triggers
-        if [ -f "${DEBOUNCE_LOCK}" ]; then
+        if ! mkdir "${DEBOUNCE_LOCK}"; then
             exit 0
         fi
-        touch "${DEBOUNCE_LOCK}"
-        (sleep 5; rm -f "${DEBOUNCE_LOCK}") &
+        (sleep 3; rmdir "${DEBOUNCE_LOCK}") & # 3 sec is already a lot. If you plug, unplug during this time, the unplug will not be considered.
 
         echo "Checker: Hotplug event detected. Waiting for EmulationStation..." >> "$LOG"
-
         if ! _wait_for_emulationstation; then
-            rm -f "${DEBOUNCE_LOCK}"
+            rmdir "${DEBOUNCE_LOCK}"
             exit 1
         fi
 
-        echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
-        curl http://localhost:1234/quit
+	# compute delta of plugged screens
+	# if no delta between screens plugged is observed, ignore the event, something not related to plugged screens
+	DELTAANY=$(batocera-resolution listOutputs | sort | diff "${STATUS_FILE}" - | grep -E '^[<>]' | sed -e s/"^[<>] "//)
+	NDELTAANY=$(echo "${DELTAANY}" | wc -l)
+	DELTANEW=$(batocera-resolution listOutputs | sort | diff "${STATUS_FILE}" - | grep -E '^>' | sed -e s/"^> "//)
+	NDELTANEW=$(echo "${DELTANEW}" | wc -l)
+
+	if test "${NDELTAANY}" -ge 1 -a "${DELTAANY}" != ""
+	then
+	    # reinit status
+	    batocera-resolution listOutputs | sort > "${STATUS_FILE}"
+	    rm -f "${QUERY_FILE_AUTO}" # remove any old query file
+	    rm -f "${QUERY_FILE_FORCE}" # remove any old query file
+
+	    # if one screen is just plug, request this one (only)
+	    if test "${NDELTAANY}" -eq 1
+	    then
+		echo "${DELTANEW}" > "${QUERY_FILE_AUTO}"
+	    fi
+
+	    # don't quit if there is no more output (the tv in standby and no more visible)
+	    LST_OUTPUTS=$(cat "${STATUS_FILE}")
+	    if test -n "${LST_OUTPUTS}"
+	    then
+		echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
+		curl http://localhost:1234/quit
+	    fi
+	fi
         ;;
 esac
