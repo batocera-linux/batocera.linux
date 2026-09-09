@@ -41,7 +41,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'openmohaa': ('openmohaa.openmohaaGenerator', 'OpenMOHAAGenerator'),
     'ppsspp': ('ppsspp.ppssppGenerator', 'PPSSPPGenerator'),
     'sdlpop': ('sdlpop.sdlpopGenerator', 'SdlPopGenerator'),
-    'shadps4': ('shadps4.shadps4Generator', 'shadPS4Generator'),
     'sonic-mania': ('sonic_mania.sonic_maniaGenerator', 'SonicManiaGenerator'),
     'sonic2013': ('sonicretro.sonicretroGenerator', 'SonicRetroGenerator'),
     'sonic3-air': ('sonic3_air.sonic3_airGenerator', 'Sonic3AIRGenerator'),
