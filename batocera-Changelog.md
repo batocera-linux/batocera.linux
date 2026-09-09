@@ -232,7 +232,7 @@
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
 - Redream to 1.5.0-1240
-- RPCS3 to v.0.0.42
+- RPCS3 to Sep 7th, 2026 build
 - ScummVM to v2026.3.0
 - ShadPS4 to v.0.17.0
 - Solarus to 2.1.3
