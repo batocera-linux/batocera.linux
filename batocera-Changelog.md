@@ -103,6 +103,7 @@
 - Groovy MAME to 0.289
 - Hurrican to Apr 5, 2026 build
 - Hydra Castle Labyrinth to Aug 11, 2026 build
+- Hypseus Singe to 3.0.2
 - IOQuake3 to Jul 16, 2026
 - Jazz2 to 3.8.0
 - Ledspicer to 0.7.6

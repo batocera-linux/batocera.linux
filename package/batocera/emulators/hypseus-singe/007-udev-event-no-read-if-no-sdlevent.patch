@@ -1,47 +1,46 @@
-diff --git a/src/io/input.cpp b/src/io/input.cpp
-index b2f9c65..9551d00 100644
 --- a/src/io/input.cpp
 +++ b/src/io/input.cpp
-@@ -611,6 +611,9 @@ void SDL_check_input()
+@@ -1187,6 +1187,9 @@
          process_event(&event);
      }
  
-+    // processes non sdl events
++    // processes non sdl events (e.g. manymouse/udev gun polling)
 +    process_event(NULL);
 +
      // added by JFA for -idleexit
      if (get_idleexit() > 0 && elapsed_ms_time(idle_timer) > get_idleexit())
          set_quitflag();
-@@ -648,6 +651,8 @@ void process_event(SDL_Event *event)
+@@ -1228,6 +1231,8 @@
  {
      unsigned int i = 0;
  
-+    if(event != NULL) {
++    if (event != NULL) {
 +
      // by RDG2010
      // make things easier to read...
-     SDL_Keycode keyPressed = event->key.keysym.sym;
-@@ -812,6 +817,7 @@ void process_event(SDL_Event *event)
-     default:
+     SDL_Keycode keyPressed = event->key.key;
+@@ -1469,6 +1474,8 @@
          break;
      }
-+    }
  
++    } // if (event != NULL)
++
      if (g_game->get_mouse_enabled())
      {
-@@ -821,6 +827,7 @@ void process_event(SDL_Event *event)
- 
-         } else {
- 
-+	   if(event != NULL) {
-            switch (event->type) {
-            case SDL_MOUSEBUTTONDOWN:
-                for (i = 0; i < (sizeof(mouse_buttons_map) / sizeof(int)); i++) {
-@@ -843,6 +850,7 @@ void process_event(SDL_Event *event)
-                        event->motion.xrel, event->motion.yrel, NOMOUSE);
-                break;
-           }
-+	  }
-        }
+         if (g_mouse_mode == MANY_MOUSE)
+@@ -1478,6 +1485,7 @@
+         }
+         else
+         {
++            if (event != NULL) {
+             switch (event->type)
+             {
+                 case SDL_EVENT_MOUSE_BUTTON_DOWN:
+@@ -1561,6 +1569,7 @@
+                     break;
+                 }
+             }
++            } // if (event != NULL)
+         }
      }
  

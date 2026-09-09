@@ -267,7 +267,6 @@ they pull unusual dependencies.
 - [ ] `citron`
 - [ ] `duckstation`
 - [ ] `duckstation_legacy` (emulator `duckstation`, core `duckstation-legacy`)
-- [ ] `hypseus_singe` (`hypseus-singe`)
 - [ ] `libretro`
 - [ ] `linuxloader`
 - [ ] `mame`
