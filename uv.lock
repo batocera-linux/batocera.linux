@@ -12,6 +12,7 @@ members = [
     "batocera-launch",
     "batocera-launch-cdogs",
     "batocera-launch-cgenius",
+    "batocera-launch-dolphin",
     "batocera-launch-drastic",
     "batocera-launch-fallout",
     "batocera-launch-flycast",
@@ -270,6 +271,21 @@ requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
     { name = "configobj" },
+]
+
+[[package]]
+name = "batocera-launch-dolphin"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-dolphin" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
 ]
 
 [[package]]
