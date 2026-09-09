@@ -279,7 +279,6 @@ they pull unusual dependencies.
 - [ ] `openmsx`
 - [ ] `pcsx2`
 - [ ] `pcsx2x6`
-- [ ] `play`
 - [ ] `ppsspp`
 - [ ] `shadps4`
 - [ ] `supermodel`
