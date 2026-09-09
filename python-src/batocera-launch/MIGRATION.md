@@ -277,7 +277,6 @@ they pull unusual dependencies.
 - [ ] `ppsspp`
 - [ ] `supermodel`
 - [ ] `vice`
-- [ ] `vita3k`
 - [ ] `vpinball`
 - [ ] `xemu`
 - [ ] `ymir`

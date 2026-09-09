@@ -245,7 +245,7 @@
 - TRX to 1.10.2
 - Tsugaru to v20260522
 - Ur-Quan Masters to Aug 21, 2026 build
-- Vita3k to 10th of June build
+- Vita3k to Sep 8, 2026 build
 - VKQuake to 1.36.0
 - vkQuake2 to Aug 5, 2026 build
 - VKQuake3 to 1.36
