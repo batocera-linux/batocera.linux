@@ -7,11 +7,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, NotRequired, TypedDict, cast
 
 from ... import controllersConfig
-from ...batoceraPaths import DEFAULTS_DIR, ES_GAMES_METADATA, SAVES, mkdir_if_not_exists
+from ...batoceraPaths import CONFIGS, DEFAULTS_DIR, ES_GAMES_METADATA, SAVES, mkdir_if_not_exists
 from ...controller import Controller
 from ...settings.unixSettings import UnixSettings
 from ...utils import bezels as bezelsUtil, esSettings, metadata as metadataUtils, videoMode, vulkan
-from ..hatari.hatariGenerator import HATARI_CONFIG
 from . import libretroMAMEConfig, libretroOptions
 from .libretroPaths import (
     RETROARCH_CONFIG,
@@ -148,7 +147,7 @@ def createLibretroConfig(
 
     # Create/update hatari.cfg
     if system.name == 'atarist':
-        libretroOptions.generateHatariConf(HATARI_CONFIG / 'hatari.cfg')
+        libretroOptions.generateHatariConf(CONFIGS / 'hatari' / 'hatari.cfg')
 
     if system.config.core in [ 'mame', 'mess', 'mamevirtual', 'same_cdi' ]:
         libretroMAMEConfig.generateMAMEConfigs(controllers, system, rom, guns)
