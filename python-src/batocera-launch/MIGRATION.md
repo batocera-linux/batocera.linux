@@ -286,9 +286,7 @@ they pull unusual dependencies.
 - [ ] `vice`
 - [ ] `vita3k`
 - [ ] `vpinball`
-- [ ] `wine`
 - [ ] `xemu`
-- [ ] `xenia` (`xenia-canary`)
 - [ ] `xenia_edge` (`xenia-edge`)
 - [ ] `ymir`
 
