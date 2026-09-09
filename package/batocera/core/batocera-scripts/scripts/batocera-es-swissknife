@@ -117,7 +117,9 @@ case ${1,,} in
           test "${BOARD}" = "rpi4" && BOARD=rpi464 # "temporarily" download on rpi464 for rpi4
 
         if [[ "${1,,}" == "--update" && $ret -eq 0 ]]; then
-            URL="https://updates.batocera.org/$BOARD/$BRANCH/last/batocera.version"
+            UPDATEURL="$(/usr/bin/batocera-settings-get updates.url)"
+            [[ -n "${UPDATEURL}" ]] || UPDATEURL="https://updates.batocera.org"
+            URL="$UPDATEURL/$BOARD/$BRANCH/last/batocera.version"
             NET_VER=$(wget -q -O - "$URL")
             [[ $? -eq 0 ]] || NET_VER="Connection failed!"
             echo "Installed:   $VER"
