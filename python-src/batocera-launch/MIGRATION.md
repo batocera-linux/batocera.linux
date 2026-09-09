@@ -277,7 +277,6 @@ they pull unusual dependencies.
 - [ ] `pcsx2`
 - [ ] `pcsx2x6`
 - [ ] `ppsspp`
-- [ ] `shadps4`
 - [ ] `supermodel`
 - [ ] `vice`
 - [ ] `vita3k`

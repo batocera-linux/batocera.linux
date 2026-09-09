@@ -64,6 +64,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_SIMCOUPE),,samcoupe.py) \
 		$(if $(BR2_PACKAGE_SCUMMVM),,scummvm.py) \
 		$(if $(BR2_PACKAGE_SDLPOP),,sdlpop.py) \
+		$(if $(BR2_PACKAGE_SHADPS4),,shadps4.py) \
 		$(if $(BR2_PACKAGE_SOLARUS_ENGINE),,solarus.py) \
 		$(if $(BR2_PACKAGE_SONIC3_AIR),,sonic3_air.py) \
 		$(if $(BR2_PACKAGE_SONIC_MANIA),,sonic_mania.py) \
