@@ -75,6 +75,8 @@ class Sm2Emu(Emulator):
             'wheel_ffb_strength': self.config.get_str('sm2_wheel_ffb_strength', '30'),
             'wheel_rumble': _ini_bool(self.config.get_bool('sm2_wheel_rumble', True)),
             'wheel_rumble_strength': self.config.get_str('sm2_wheel_rumble_strength', '40'),
+            'pad_rumble': _ini_bool(self.config.get_bool('sm2_pad_rumble', True)),
+            'pad_rumble_strength': self.config.get_str('sm2_pad_rumble_strength', '60'),
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),

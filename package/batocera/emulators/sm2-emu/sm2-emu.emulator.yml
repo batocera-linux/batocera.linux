@@ -83,5 +83,19 @@ custom_features:
       Light: 20
       Medium (Default): 40
       Strong: 60
+  sm2_pad_rumble:
+    group: GAMEPAD
+    prompt: GAMEPAD RUMBLE
+    description: The game's jolts plus a buzz rising with steering, on a regular gamepad. Driving games only.
+    choices:
+      Off: 0
+      On (Default): 1
+  sm2_pad_rumble_strength:
+    group: GAMEPAD
+    prompt: GAMEPAD RUMBLE STRENGTH
+    choices:
+      Light: 30
+      Medium (Default): 60
+      Strong: 90
 systems:
   - model2
