@@ -16,6 +16,7 @@
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
+		<tab display="Outputs" target="Outputs" />
 		<tab display="Record" target="Record" />
 	</feature>
 
@@ -108,20 +109,6 @@
 			<switch value="${batocera-audio getSystemMute}" refresh="2"
 				action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
-		<feature display="Audio Output">
-				<choice_cmd display="${batocera-audio list | grep -vE '^auto' | cut -f 2}"
-					    action="batocera-audio set"
-					    action_arg="${batocera-audio list | grep -vE '^auto' | cut -f 1}"
-					    cache="10" />
-				<text display="${batocera-audio get | cut -f 2}" refresh="3" />
-		</feature>
-		<feature display="Audio Profile">
-				<choice_cmd display="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 2}"
-					    action="batocera-audio set-profile"
-					    action_arg="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 1}"
-					    cache="10" />
-				<text display="${batocera-audio get-profile | cut -f 2}" refresh="3" />
-		</feature>
 		<feature display="Network IP address:">
 			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
 		</feature>
@@ -146,6 +133,29 @@
 		</feature>
 	</hgroup>
 
+	<hgroup name="Outputs" display="Outputs">
+	  <feature display="Audio Output">
+	    <choice_cmd display="${batocera-audio list | grep -vE '^auto' | cut -f 2}"
+			action="batocera-audio set"
+			action_arg="${batocera-audio list | grep -vE '^auto' | cut -f 1}"
+			cache="10" />
+	    <text display="${batocera-audio get | cut -f 2}" refresh="3" />
+	  </feature>
+	  <feature display="Audio Profile">
+	    <choice_cmd display="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 2}"
+			action="batocera-audio set-profile"
+			action_arg="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 1}"
+			cache="10" />
+	    <text display="${batocera-audio get-profile | cut -f 2}" refresh="3" />
+	  </feature>
+	  <feature display="Video Output" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | grep -E '^null$' &amp;&amp; batocera-resolution listOutputs | wc -l | grep -vE '^[01]$' }">
+	    <choice_cmd display="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 2}"
+			action="batocera-switch-screen-checker --switch"
+			action_arg="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 1}"
+			cache="10" />
+	    <text display="${batocera-switch-screen-checker --switch-get | cut -d ';' -f 2}" refresh="3" />
+	  </feature>
+	</hgroup>
 	<vgroup name="Bottom bar" role="footer">
 		<feature display="CPU:">
 			<progressbar display='${ read -r _ u2 n2 s2 i2 w2 r2 &lt; /proc/stat; F=/tmp/.bcc_cpu_prev; if [ -f "$F" ]; then read -r _ u1 n1 s1 i1 w1 r1 &lt; "$F"; else u1=$u2; s1=$s2; i1=$i2; w1=$w2; fi; echo "cpu $u2 $n2 $s2 $i2 $w2" &gt; "$F"; du=$((u2-u1)); ds=$((s2-s1)); di=$((i2-i1)); dw=$((w2-w1)); t=$((du+ds+di+dw)); if [ "$t" -gt 0 ]; then echo $(( (100*(du+ds+dw)+t/2)/t )); else echo 0; fi }' min="0" max="100" refresh="1" />

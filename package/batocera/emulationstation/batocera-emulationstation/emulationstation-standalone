@@ -41,6 +41,9 @@ _wait_for_compositor() {
     return 1
 }
 
+# Use --init to get the current screens ; init only once
+batocera-switch-screen-checker --init
+
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
     echo "Standalone: --- Top of display configuration loop ---" >> "$log"
@@ -61,9 +64,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
-    
-    # Use --init to get the current screens
-    batocera-switch-screen-checker --init
 
     # Check for docked mode
     # if there is a mixed of handheld and external screens, just take one of the external screens as docked output (could be extended to several later if that's a use case)
@@ -101,29 +101,42 @@ while [ -e "${REBOOT_FLAG}" ]; do
         settings_output3=$(batocera-settings-get global.videooutput3)
     fi
 
-    # If no video output settings are found, check for the screen checker's status file.
+    # If no video output settings are found, check for the screen checker's query file auto.
+    # or if query file force is found (the user wants to force a configuration)
+    DO_QUERY_FILE=
     if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
-        echo "Standalone: No video output settings found, checking for screen checker baseline..." >> "$log"
-        status_file="/var/run/batocera-switch-screen-checker-status"
-        if [ -f "$status_file" ]; then
-            echo "Standalone: Found screen checker status file. Reading outputs." >> "$log"
-            # Read all lines from the status file into an array
-            mapfile -t outputs < "$status_file"
-            # Assign outputs from the array to the settings variables
-            # The -n check ensures we only assign if the value is not null
-            if [ -n "${outputs[0]}" ]; then
-                settings_output="${outputs[0]}"
-            fi
-            if [ -n "${outputs[1]}" ]; then
-                settings_output2="${outputs[1]}"
-            fi
-            if [ -n "${outputs[2]}" ]; then
-                settings_output3="${outputs[2]}"
-            fi
-            echo "Standalone: Assigned from file - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
-        else
-            echo "Standalone: Screen checker status file not found. No outputs assigned." >> "$log"
+        echo "Standalone: No video output settings found, checking for query file auto..." >> "$log"
+        query_file_auto="/var/run/batocera-switch-screen-checker-query-auto"
+        if [ -f "$query_file_auto" ]; then
+	    echo "Standalone: query file auto found..." >> "$log"
+	    DO_QUERY_FILE="$query_file_auto"
+	fi
+    fi
+
+    # when the user query for a specific configuration, force it !
+    query_file_force="/var/run/batocera-switch-screen-checker-query-force"
+    if [ -f "$query_file_force" ]; then
+	echo "Standalone: query file force found..." >> "$log"
+	DO_QUERY_FILE="$query_file_force"
+    fi
+    
+    if [ -n "${DO_QUERY_FILE}" ]; then
+        echo "Standalone: Found screen checker query file. Reading outputs." >> "$log"
+        # Read all lines from the query file into an array
+        mapfile -t outputs < "${DO_QUERY_FILE}"
+        # Assign outputs from the array to the settings variables
+        # The -n check ensures we only assign if the value is not null
+        if [ -n "${outputs[0]}" ]; then
+            settings_output="${outputs[0]}"
         fi
+        if [ -n "${outputs[1]}" ]; then
+            settings_output2="${outputs[1]}"
+        fi
+        if [ -n "${outputs[2]}" ]; then
+            settings_output3="${outputs[2]}"
+        fi
+        echo "Standalone: Assigned from file - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
+	rm -f "${DO_QUERY_FILE}" # remove once done
     else
         echo "Standalone: Using pre-configured video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
     fi
@@ -142,7 +155,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         fi
     fi
     # Validate output 2
-    if [ -n "${settings_output2}" ]; then
+    if [ -n "${settings_output2}" -a "${settings_output2}" != "none" ]; then
         if [ -z "${settings_output}" -o "${settings_output}" = "${settings_output2}" ]; then
             settings_output2=
         else
@@ -153,7 +166,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         fi
     fi
     # Validate output 3
-    if [ -n "${settings_output3}" ]; then
+    if [ -n "${settings_output3}" -a "${settings_output3}" != "none" ]; then
         if [ -z "${settings_output}" -o -z "${settings_output2}" -o "${settings_output}" = "${settings_output3}" -o "${settings_output2}" = "${settings_output3}" ]; then
             settings_output3=
         else
@@ -195,6 +208,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
             fi
         fi
     fi
+
+    # if output2/output3 are set to none, now, it is time to make them empty, they will not be auto filled now
+    test "${settings_output2}" = "none" && settings_output2=
+    test "${settings_output3}" = "none" && settings_output3=
 
     # We set the output to enable screens...
     echo "Standalone: --- Enabling Outputs ---" >> "$log"
