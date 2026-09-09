@@ -48,7 +48,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'vkquake': ('vkquake.vkquakeGenerator', 'VKQuakeGenerator'),
     'vkquake2': ('vkquake2.vkquake2Generator', 'VKQuake2Generator'),
     'vkquake3': ('ioquake3.ioquake3Generator', 'IOQuake3Generator'),
-    'vpinball': ('vpinball.vpinballGenerator', 'VPinballGenerator'),
     'xash3d_fwgs': ('xash3d_fwgs.xash3dFwgsGenerator', 'Xash3dFwgsGenerator'),
     'yquake2': ('yquake2.yquake2Generator', 'YQuake2Generator'),
 }
