@@ -43,6 +43,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_FLATPAK),,flatpak.py) \
 		$(if $(BR2_PACKAGE_FSUAE),,fsuae.py) \
 		$(if $(BR2_PACKAGE_GSPLUS),,gsplus.py) \
+		$(if $(BR2_PACKAGE_GZDOOM),,gzdoom.py) \
 		$(if $(BR2_PACKAGE_HATARI),,hatari.py) \
 		$(if $(BR2_PACKAGE_HCL),,hcl.py) \
 		$(if $(BR2_PACKAGE_HURRICAN),,hurrican.py) \
