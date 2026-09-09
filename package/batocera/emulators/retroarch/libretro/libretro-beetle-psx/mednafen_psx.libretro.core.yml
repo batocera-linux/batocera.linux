@@ -9,13 +9,16 @@ shared_features:
   - wheel_midzone
 custom_features:
   beetle_psx_hw_skip_bios:
+    group: BEETLE SPECIFIC
+    submenu: System
     prompt: SHOW BIOS BOOTLOGO
     description: Enhancement. Skipping it can break some games.
     choices:
       Show: disabled
       Skip: enabled
   beetle_psx_hw_cpu_freq_scale:
-    group: ADVANCED OPTIONS
+    group: BEETLE SPECIFIC
+    submenu: System
     prompt: OVERCLOCK (UNSTABLE)
     description: Enhancement. Reduces system slowdown. Causes issues in some games.
     choices:
@@ -24,7 +27,7 @@ custom_features:
       70%: 70%
       80%: 80%
       90%: 90%
-      100%(native): 100%(native)
+      100% (Native): 100%(native)
       110%: 110%
       120%: 120%
       130%: 130%
@@ -38,7 +41,7 @@ custom_features:
       250%: 250%
       300%: 300%
       350%: 350%
-      4000%: 400%
+      400%: 400%
       450%: 450%
       500%: 500%
       550%: 550%
@@ -46,7 +49,31 @@ custom_features:
       650%: 650%
       700%: 700%
       750%: 750%
+  beetle_psx_hw_cd_access_method:
+    group: BEETLE SPECIFIC
+    submenu: System
+    prompt: CD ACCESS METHOD
+    description: Asynchronous can reduce stuttering on slow storage. Pre-Cache loads the whole disk image at launch (needs enough RAM, falls back to Synchronous for physical media). Restart required.
+    choices:
+      Synchronous: sync
+      Asynchronous: async
+      Pre-Cache: precache
+  beetle_psx_hw_cd_fastload:
+    group: BEETLE SPECIFIC
+    submenu: System
+    prompt: CD LOADING SPEED
+    description: Above 2x (Native) can greatly reduce loading times but may introduce timing errors; some games may misbehave above a certain value.
+    choices:
+      2x (Native): 2x(native)
+      4x: 4x
+      6x: 6x
+      8x: 8x
+      10x: 10x
+      12x: 12x
+      14x: 14x
   beetle_psx_hw_internal_resolution:
+    group: BEETLE SPECIFIC
+    submenu: Video
     prompt: RENDERING RESOLUTION
     description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
     choices:
@@ -55,33 +82,228 @@ custom_features:
       4x (1280x960): 4x
       8x (2560x1920): 8x
       16x (5120x3840): 16x
+  beetle_psx_hw_aspect_ratio:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: CORE ASPECT RATIO
+    description: Ignored when Widescreen Hack is enabled.
+    choices:
+      Corrected: corrected
+      Uncorrected: uncorrected
+      Force 4:3: '4:3'
+      Force NTSC: ntsc
+  beetle_psx_hw_renderer:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: RENDERER
+    description: Hardware (Auto) picks Vulkan or OpenGL based on the video driver. Software is the most accurate but slowest at higher internal resolutions. Restart required.
+    choices:
+      Hardware (Auto): hardware
+      Hardware (OpenGL): hardware_gl
+      Hardware (Vulkan): hardware_vk
+      Software: software
+  beetle_psx_hw_renderer_software_fb:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: SOFTWARE FRAMEBUFFER
+    description: Accurately emulates framebuffer effects (motion blur, FF7 battle swirl) on hardware renderers. Disabling can improve performance but may cause graphical errors.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_depth:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: INTERNAL COLOR DEPTH
+    description: Higher color depth reduces banding without dithering. Recommended to disable Dithering Pattern when set to 32 bpp.
+    choices:
+      16 bpp (Native): 16bpp(native)
+      32 bpp: 32bpp
+  beetle_psx_hw_dither_mode:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: DITHERING PATTERN
+    description: Internal Resolution scales dithering to the rendering resolution. Recommended to disable when running at 32 bpp.
+    choices:
+      1x (Native): 1x(native)
+      Internal Resolution: internal resolution
+      'Off': disabled
+  beetle_psx_hw_filter:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: TEXTURE FILTERING
+    description: Nearest emulates original hardware. Bilinear/3-Point smooth via blurring. SABR/xBR/JINC2 are upscaling filters. Hardware renderers only.
+    choices:
+      Nearest: nearest
+      SABR: SABR
+      xBR: xBR
+      Bilinear: bilinear
+      3-Point: 3-point
+      JINC2: JINC2
+  beetle_psx_hw_filter_exclude_sprite:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: EXCLUDE SPRITES FROM FILTERING (VULKAN)
+    description: Prevents seams in 2D sprite-rendered backgrounds. Vulkan renderer only.
+    choices:
+      'Off': disabled
+      Opaque Only: opaque
+      Opaque and Semi-Transparent: all
+  beetle_psx_hw_filter_exclude_2d_polygon:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: EXCLUDE 2D POLYGONS FROM FILTERING (VULKAN)
+    description: 2D polygons are detected with a heuristic and there may be glitches. Vulkan renderer only.
+    choices:
+      'Off': disabled
+      Opaque Only: opaque
+      Opaque and Semi-Transparent: all
+  beetle_psx_hw_adaptive_smoothing:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: ADAPTIVE SMOOTHING (VULKAN)
+    description: Smooths 2D artwork and UI without blurring 3D objects. Vulkan renderer only.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_super_sampling:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: SUPERSAMPLING (VULKAN)
+    description: Downsamples upscaled internal resolution back to native, anti-aliasing 3D objects. Vulkan renderer only.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_msaa:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: MULTI-SAMPLED ANTI ALIASING (VULKAN)
+    description: Improves the appearance of 3D objects. Vulkan renderer only.
+    choices:
+      1x: 1x
+      2x: 2x
+      4x: 4x
+      8x: 8x
+      16x: 16x
+  beetle_psx_hw_mdec_yuv:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: MDEC YUV CHROMA FILTER (VULKAN)
+    description: Reduces macroblocking artifacts in FMV playback. Vulkan renderer only.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_pal_video_timing_override:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: PAL VIDEO TIMING OVERRIDE
+    description: PAL games often run slower than their NTSC counterparts. Overrides PAL timings to attempt the NTSC framerate instead.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_frame_duping:
+    group: BEETLE SPECIFIC
+    submenu: Video
+    prompt: FRAME DUPING (SPEEDUP)
+    description: Small performance increase by repeating the previous frame if the core has nothing new to display.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_pgxp_mode:
+    group: BEETLE SPECIFIC
+    submenu: PGXP (Precision Geometry Transform Pipeline)
+    prompt: PGXP OPERATION MODE
+    description: Subpixel-precise 3D rendering, reducing jitter/distortion. Memory Only is recommended; Memory + CPU can cause geometry errors.
+    choices:
+      'Off': disabled
+      Memory Only: memory only
+      Memory + CPU (Buggy): memory + CPU
+  beetle_psx_hw_pgxp_2d_tol:
+    group: BEETLE SPECIFIC
+    submenu: PGXP (Precision Geometry Transform Pipeline)
+    prompt: PGXP 2D GEOMETRY TOLERANCE
+    description: Tolerance for keeping PGXP values on geometries without proper depth information.
+    choices:
+      'Off': disabled
+      0px: 0px
+      1px: 1px
+      2px: 2px
+      3px: 3px
+      4px: 4px
+      5px: 5px
+      6px: 6px
+      7px: 7px
+      8px: 8px
+  beetle_psx_hw_pgxp_nclip:
+    group: BEETLE SPECIFIC
+    submenu: PGXP (Precision Geometry Transform Pipeline)
+    prompt: PGXP PRIMITIVE CULLING
+    description: Reduces holes in PGXP geometries. Known to cause lock-ups in some games.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_pgxp_vertex:
+    group: BEETLE SPECIFIC
+    submenu: PGXP (Precision Geometry Transform Pipeline)
+    prompt: PGXP VERTEX CACHE
+    description: Caches PGXP-enhanced vertex positions. May cause glitches from false cache hits. Only applies when PGXP Operation Mode is enabled, hardware renderers only.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_pgxp_texture:
+    group: BEETLE SPECIFIC
+    submenu: PGXP (Precision Geometry Transform Pipeline)
+    prompt: PGXP PERSPECTIVE CORRECT TEXTURING
+    description: Fixes affine texture warping/distortion. Only applies when PGXP Operation Mode is enabled.
+    choices:
+      'Off': disabled
+      'On': enabled
+  beetle_psx_hw_line_render:
+    group: BEETLE SPECIFIC
+    submenu: Emulation Hacks
+    prompt: LINE-TO-QUAD HACK
+    description: Fixes horizontal-line rendering (e.g. Doom, Hexen) on hardware renderers and upscaled resolutions. Aggressive is needed for some titles (Dark Forces, Duke Nukem) but may glitch others.
+    choices:
+      Default: default
+      Aggressive: aggressive
+      'Off': disabled
   beetle_psx_hw_widescreen_hack:
+    group: BEETLE SPECIFIC
+    submenu: Emulation Hacks
     prompt: WIDESCREEN HACK (GLITCHY)
     description: Enhancement. Only works with a 16/9 ratio and bezels disabled.
     choices:
       'Off': disabled
       'On': enabled
-  beetle_psx_hw_frame_duping:
-    group: ADVANCED OPTIONS
-    prompt: FRAME DUPING (SPEED UP)
-    description: Small performance increase (may drop frames).
+  beetle_psx_hw_widescreen_hack_aspect_ratio:
+    group: BEETLE SPECIFIC
+    submenu: Emulation Hacks
+    prompt: WIDESCREEN HACK ASPECT RATIO
+    description: Aspect ratio used by the Widescreen Hack.
     choices:
-      'Off': disabled
-      'On': enabled
+      '16:9': '16:9'
+      '16:10': '16:10'
+      '18:9': '18:9'
+      '19:9': '19:9'
+      '20:9': '20:9'
+      '21:9': '21:9'
+      '32:9': '32:9'
   beetle_psx_hw_cpu_dynarec:
-    group: ADVANCED OPTIONS
+    group: BEETLE SPECIFIC
+    submenu: Emulation Hacks
     prompt: CPU DYNAREC (SPEED UP)
-    description: Much faster than interpreter (but may have issues).
+    description: Dynamically recompile CPU instructions to native instructions. Much faster than interpreter, but CPU timing is less accurate, and may have bugs.
     choices:
-      Disabled (Beatle Interpreter): disabled
+      Disabled (Beetle Interpreter): disabled
       Max Performance: execute
-      Cycle Timing Check: execute_once
+      Cycle Timing Check: execute_one
       Lightrec Interpreter: run_interpreter
   beetle_psx_hw_dynarec_invalidate:
-    group: ADVANCED OPTIONS
+    group: BEETLE SPECIFIC
+    submenu: Emulation Hacks
     prompt: DYNAREC CODE INVALIDATION
+    description: Some games require 'Full' invalidation, some require 'DMA Only'.
     choices:
-      Full (more compatible): full
+      Full (Default): full
       DMA Only (Slightly Faster): dma
   multitap_mednafen:
     prompt: MULTITAP
@@ -117,5 +339,11 @@ custom_features:
       NeGcon (Rumble): 1285
       Justifier: 516
       PlayStation Mouse: 258
+  beetle_psx_hw_analog_calibration:
+    prompt: ANALOG SELF-CALIBRATION
+    description: For DualShock, Analog Controller, Analog Joystick or neGcon, dynamically calibrates analog input range. Useful for games (e.g. Mega Man Legends 2) expecting larger values than modern controllers provide.
+    choices:
+      'Off': disabled
+      'On': enabled
 systems:
   - psx
