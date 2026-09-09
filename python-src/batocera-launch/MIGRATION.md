@@ -273,7 +273,6 @@ they pull unusual dependencies.
 - [ ] `linuxloader`
 - [ ] `mame`
 - [ ] `moonlight`
-- [ ] `mugen`
 - [ ] `mupen` (`mupen64plus`)
 - [ ] `openbor`
 - [ ] `openmsx`
