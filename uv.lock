@@ -21,6 +21,7 @@ members = [
     "batocera-launch-openjk",
     "batocera-launch-openjkdf2",
     "batocera-launch-openmohaa",
+    "batocera-launch-pcsx2",
     "batocera-launch-rpcs3",
 ]
 constraints = [
@@ -397,6 +398,21 @@ requires-dist = [
 name = "batocera-launch-openmohaa"
 version = "44.0"
 source = { editable = "python-src/batocera-launch-openmohaa" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-pcsx2"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-pcsx2" }
 dependencies = [
     { name = "batocera-common" },
     { name = "batocera-launch" },

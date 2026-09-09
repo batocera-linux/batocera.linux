@@ -5,11 +5,11 @@
 ################################################################################
 
 ifeq ($(BR2_x86_64),y)
-PCSX2_VERSION = v2.8.0
+PCSX2_VERSION = v2.8.2
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 else
-# Version: Commits on June 23, 2026
-PCSX2_VERSION = 9e71f836a003bea564523abf1b38c4f5ef54a137
+# Version: Commits on July 2, 2026
+PCSX2_VERSION = 8fb3bc617caffbdaa2b9e49f0cec0ab099387df2
 PCSX2_SITE = https://git.sr.ht/~bmdhacks/pcsx2
 endif
 

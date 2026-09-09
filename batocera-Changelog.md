@@ -229,7 +229,7 @@
 - OpenMSX to Release 21
 - OpenJK to Jul 11th, 2026 build
 - OpenJKDF2 to v0.9.9
-- PCSX2 to 2.8.0
+- PCSX2 to 2.8.2
 - Play to 0.77
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
