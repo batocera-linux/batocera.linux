@@ -272,7 +272,6 @@ they pull unusual dependencies.
 - [ ] `linuxloader`
 - [ ] `mame`
 - [ ] `mupen` (`mupen64plus`)
-- [ ] `openmsx`
 - [ ] `pcsx2`
 - [ ] `pcsx2x6`
 - [ ] `ppsspp`
