@@ -281,7 +281,6 @@ they pull unusual dependencies.
 - [ ] `vita3k`
 - [ ] `vpinball`
 - [ ] `xemu`
-- [ ] `xenia_edge` (`xenia-edge`)
 - [ ] `ymir`
 
 ## Reference files
