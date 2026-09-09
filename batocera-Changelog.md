@@ -221,7 +221,8 @@
 - Libretro-Yabasanshiro to August 23rd, 2026 build
 - Lightspark to 0.9.0
 - LinuxLoader to v3.0.10
-- Moonlight-QT to Jun 26, 2026 build
+- Moonlight-Embedded to Jun 5, 2026 build
+- Moonlight-QT to Sep 8, 2026 build
 - Mupen64Plus-Core to March 30th, 2026 build
 - OpenJazz to Mar 01, 2026 build
 - OpenMSX to Release 21
