@@ -75,6 +75,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_SONIC2013)$(BR2_PACKAGE_SONICCD),,sonicretro.py) \
 		$(if $(BR2_PACKAGE_BATOCERA_STEAM),,steam.py) \
 		$(if $(BR2_PACKAGE_STELLA),,stella.py) \
+		$(if $(BR2_PACKAGE_SUPERMODEL),,supermodel.py) \
 		$(if $(BR2_PACKAGE_TARADINO),,taradino.py) \
 		$(if $(BR2_PACKAGE_THEFORCEENGINE),,theforceengine.py) \
 		$(if $(BR2_PACKAGE_THEXTECH),,thextech.py) \
