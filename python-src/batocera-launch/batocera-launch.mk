@@ -21,6 +21,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_AMIBERRY),,amiberry.py) \
 		$(if $(BR2_PACKAGE_APPLEWIN),,applewin.py) \
 		$(if $(BR2_PACKAGE_AZAHAR),,azahar.py) \
+		$(if $(BR2_PACKAGE_BIGPEMU),,bigpemu.py) \
 		$(if $(BR2_PACKAGE_BSTONE),,bstone.py) \
 		$(if $(BR2_PACKAGE_CANNONBALL),,cannonball.py) \
 		$(if $(BR2_PACKAGE_CATACOMBGL),,catacombgl.py) \
