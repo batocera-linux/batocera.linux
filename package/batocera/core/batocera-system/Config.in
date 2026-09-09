@@ -1086,13 +1086,11 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	select BR2_PACKAGE_HYPSEUS_SINGE_BEZELS    # ALL
 
 	# Standalone Sega Model 2 emulator
-	select BR2_PACKAGE_SM2_EMU			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
-	                                       BR2_PACKAGE_BATOCERA_GLES3 || \
-										   BR2_PACKAGE_BATOCERA_VULKAN
+	select BR2_PACKAGE_SM2_EMU			if BR2_PACKAGE_BATOCERA_VULKAN
 
 	# Standalone Sega Model 3 emulator
 	select BR2_PACKAGE_SUPERMODEL		    if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
-	                                           BR2_PACKAGE_BATOCERA_GLES3
+	                                           BR2_PACKAGE_BATOCERA_VULKAN
 
 	# DICE for machines without a CPU
 	select BR2_PACKAGE_LIBRETRO_DICE    if !BR2_PACKAGE_BATOCERA_TARGET_BCM2835
