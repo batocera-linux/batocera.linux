@@ -3,8 +3,8 @@
 # moonlight-qt
 #
 ################################################################################
-# Version: Commits on Jun 26, 2026
-MOONLIGHT_QT_VERSION = e223bf9a1beffdda71df31a22321f45d16c9f3fe
+# Version: Commits on Sep 8, 2026
+MOONLIGHT_QT_VERSION = 14c26d8c7de8fd9cbde67dac8b47601faad46c6c
 MOONLIGHT_QT_SITE = https://github.com/moonlight-stream/moonlight-qt
 MOONLIGHT_QT_SITE_METHOD = git
 MOONLIGHT_QT_GIT_SUBMODULES = YES

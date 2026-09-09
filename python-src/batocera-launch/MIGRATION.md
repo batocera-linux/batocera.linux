@@ -271,7 +271,6 @@ they pull unusual dependencies.
 - [ ] `libretro`
 - [ ] `linuxloader`
 - [ ] `mame`
-- [ ] `moonlight`
 - [ ] `mupen` (`mupen64plus`)
 - [ ] `openbor`
 - [ ] `openmsx`
