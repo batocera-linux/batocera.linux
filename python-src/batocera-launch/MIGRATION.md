@@ -278,7 +278,6 @@ they pull unusual dependencies.
 - [ ] `supermodel`
 - [ ] `vice`
 - [ ] `vpinball`
-- [ ] `xemu`
 - [ ] `ymir`
 
 ## Reference files

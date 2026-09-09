@@ -86,6 +86,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_VKQUAKE2),,vkquake2.py) \
 		$(if $(BR2_PACKAGE_X16EMU),,x16emu.py) \
 		$(if $(BR2_PACKAGE_XASH3D_FWGS),,xash3d_fwgs/) \
+		$(if $(BR2_PACKAGE_XEMU),,xemu.py) \
 		$(if $(BR2_PACKAGE_XENIA)$(BR2_PACKAGE_XENIA_CANARY),,xenia.py) \
 		$(if $(BR2_PACKAGE_XENIA_EDGE),,xenia_edge.py) \
 		$(if $(BR2_PACKAGE_XROAR),,xroar.py) \
