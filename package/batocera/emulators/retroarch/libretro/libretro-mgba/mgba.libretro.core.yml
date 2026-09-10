@@ -30,6 +30,9 @@ systems:
           'Off': false
           'On': GBC
   - name: gba
+    exclude_extensions:
+      - tar
+      - rar
     custom_features:
       solar_sensor_level:
         group: ADVANCED OPTIONS

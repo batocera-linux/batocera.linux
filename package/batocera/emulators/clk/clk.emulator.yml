@@ -13,7 +13,17 @@ shared_features:
   - bezel.tattoo_file
   - bezel.resize_tattoo
 systems:
-  - enterprise
+  - name: enterprise
+    exclude_extensions:
+      - img
+      - dsk
+      - tap
+      - dtf
+      - trn
+      - 128
+      - cas
+      - cdt
+      - tzx
   - name: amstradcpc
     exclude_extensions:
       - m3u
@@ -47,3 +57,4 @@ systems:
   - name: zxspectrum
     exclude_extensions:
       - 7z
+  - bbcmicro
