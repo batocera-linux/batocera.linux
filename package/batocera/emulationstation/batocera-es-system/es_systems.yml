@@ -3184,17 +3184,17 @@ model2:
   manufacturer: Sega
   release: 1993
   hardware: arcade
-  extensions: [zip]
+  extensions: [zip, 7z]
   platform: model2, arcade
   emulators:
     sm2-emu:
       sm2-emu: { requireAnyOf: [BR2_PACKAGE_SM2_EMU] }
     libretro:
       archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_LIBRETRO_MAME], incompatible_extensions: [7z] }
     mame:
       archs_include: [x86_64, x86-64-v3]
-      mame: { requireAnyOf: [BR2_PACKAGE_MAME] }
+      mame: { requireAnyOf: [BR2_PACKAGE_MAME], incompatible_extensions: [7z] }
 
 scv:
   name:       Super Cassette Vision
