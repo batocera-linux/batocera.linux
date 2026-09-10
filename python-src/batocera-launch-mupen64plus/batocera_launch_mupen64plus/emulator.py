@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING
 
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import BIOS, SCREENSHOTS
+from batocera_common.paths import BIOS, CONFIGS, SAVES, SCREENSHOTS
 from batocera_launch import Command, Emulator, HotkeysContext
 
-from . import controllers
-from .paths import MUPEN64PLUS_CONFIG, MUPEN64PLUS_CUSTOM_CFG, MUPEN64PLUS_SAVES
+from .controllers import Mupen64PlusControllersMixin
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -31,7 +30,7 @@ def _clean_hotkey_config(ini_config: CaseSensitiveConfigParser, /) -> None:
 
 
 @cached_dataclass
-class Mupen64Plus(Emulator):
+class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {
@@ -45,13 +44,21 @@ class Mupen64Plus(Emulator):
             },
         }
 
+    # This deliberately doesn't match the emulator's own launch name ("mupen64plus") -
+    # kept as the historical directory name ("mupen64") so existing users' configs
+    # and input mappings aren't silently relocated.
     @cached_property
     def config_dir(self) -> Path:
-        return MUPEN64PLUS_CONFIG
+        return CONFIGS / 'mupen64'
 
+    # This deliberately is static so existing user's save states aren't silently relocated
     @cached_property
     def saves_dir(self) -> Path:
-        return MUPEN64PLUS_SAVES
+        return SAVES / 'n64'
+
+    @cached_property
+    def custom_cfg(self) -> Path:
+        return self.config_dir / 'mupen64plus.cfg'
 
     @cached_property
     def in_game_ratio(self) -> float:
@@ -64,14 +71,14 @@ class Mupen64Plus(Emulator):
         # Read the configuration file
         ini_config = CaseSensitiveConfigParser(interpolation=None)
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        if MUPEN64PLUS_CUSTOM_CFG.exists():
-            ini_config.read(MUPEN64PLUS_CUSTOM_CFG)
+        if self.custom_cfg.exists():
+            ini_config.read(self.custom_cfg)
 
         self._set_mupen_config(ini_config)
-        controllers.set_controllers_config(ini_config, self.controllers, self.config, self.wheels)
+        self.set_controllers_config(ini_config)
 
         # Save the ini file
-        with MUPEN64PLUS_CUSTOM_CFG.open('w') as config_file:
+        with self.custom_cfg.open('w') as config_file:
             ini_config.write(config_file)
 
         # Command
@@ -82,9 +89,9 @@ class Mupen64Plus(Emulator):
             '--gfx',
             f'/usr/lib/mupen64plus/mupen64plus-video-{self.core}.so',
             '--configdir',
-            MUPEN64PLUS_CONFIG,
+            self.config_dir,
             '--datadir',
-            MUPEN64PLUS_CONFIG,
+            self.config_dir,
         ]
 
         # state_filename option
@@ -110,9 +117,9 @@ class Mupen64Plus(Emulator):
             'Core', 'Version', '1.01'
         )  # Version is important for the .ini creation otherwise, mupen remove the section
         ini_config.set('Core', 'ScreenshotPath', str(SCREENSHOTS))
-        ini_config.set('Core', 'SaveStatePath', str(MUPEN64PLUS_SAVES))
-        ini_config.set('Core', 'SaveSRAMPath', str(MUPEN64PLUS_SAVES))
-        ini_config.set('Core', 'SharedDataPath', str(MUPEN64PLUS_CONFIG))
+        ini_config.set('Core', 'SaveStatePath', str(self.saves_dir))
+        ini_config.set('Core', 'SaveSRAMPath', str(self.saves_dir))
+        ini_config.set('Core', 'SharedDataPath', str(self.config_dir))
         ini_config.set('Core', 'SaveFilenameFormat', '1000')  # forces savesstates with rom name
         # TODO : Miss Mupen64Plus\hires_texture
 
