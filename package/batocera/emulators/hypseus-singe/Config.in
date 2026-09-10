@@ -1,8 +1,9 @@
 config BR2_PACKAGE_HYPSEUS_SINGE
     bool "hypseus-singe"
-    select BR2_PACKAGE_SDL2
-    select BR2_PACKAGE_SDL2_IMAGE
-    select BR2_PACKAGE_SDL2_TTF
+    select BR2_PACKAGE_SDL3
+    select BR2_PACKAGE_SDL3_IMAGE
+    select BR2_PACKAGE_SDL3_MIXER
+    select BR2_PACKAGE_SDL3_TTF
     select BR2_PACKAGE_ZLIB
     select BR2_PACKAGE_LIBOGG
     select BR2_PACKAGE_LIBVORBIS

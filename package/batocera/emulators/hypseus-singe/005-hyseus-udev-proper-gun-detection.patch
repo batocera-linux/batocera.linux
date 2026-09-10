@@ -1,59 +1,23 @@
-From 8066a5eca448d8dd6c9858db5ad89f3b221d2599 Mon Sep 17 00:00:00 2001
-From: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
-Date: Sun, 26 May 2024 09:10:14 +0000
-Subject: [PATCH] 005-hyseus-udev-proper-gun-detection
-
-Signed-off-by: Nicolas Adenis-Lamarre <nicolas.adenis.lamarre@gmail.com>
----
- src/CMakeLists.txt               |   3 +-
- src/cmake/modules/FindUdev.cmake |  15 +++
- src/manymouse/linux_evdev.c      | 173 ++++++++++++++++++++++++++-----
- 3 files changed, 164 insertions(+), 27 deletions(-)
- create mode 100644 src/cmake/modules/FindUdev.cmake
-
-diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 6a85063..13a86bf 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -105,13 +105,14 @@
- find_package(SDL2_IMAGE REQUIRED)
- find_package(SDL2_MIXER REQUIRED)
+@@ -111,6 +111,7 @@
+ find_package(SDL3_image CONFIG REQUIRED)
+ find_package(SDL3_mixer CONFIG REQUIRED)
  find_package(Vorbis REQUIRED)
 +find_package(Udev REQUIRED)
-
- if(APPLE)
-     set( SDL2_LIBRARIES ${SDL2_LIBRARY} )
- endif(APPLE)
-
+ 
+ message(STATUS "SDL3 version: ${SDL3_VERSION}")
+ message(STATUS "SDL3_ttf version: ${SDL3_ttf_VERSION}")
+@@ -147,7 +148,7 @@
+ add_dependencies( sound vldp )
+ 
  add_executable( hypseus hypseus.cpp globals.h )
--target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} )
-+target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${LIBZIP_LIBRARY} ${UDEV_LIBRARY} )
-
+-target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} SDL3::SDL3 SDL3::Headers SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer ${LIBZIP_LIBRARY} )
++target_link_libraries( hypseus plog io timer sound video cpu game ${Vorbis_Enc_LIBRARY} Vorbis::vorbis ${OGG_LIBRARIES} ${VORBISFILE_LIBRARIES} ${Vorbis_File_LIBRARY} SDL3::SDL3 SDL3::Headers SDL3_ttf::SDL3_ttf SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer ${LIBZIP_LIBRARY} ${UDEV_LIBRARY} )
+ 
  if(ASAN)
      target_link_options(hypseus PRIVATE -fsanitize=address -fno-omit-frame-pointer -g)
-diff --git a/src/cmake/modules/FindUdev.cmake b/src/cmake/modules/FindUdev.cmake
-new file mode 100644
-index 0000000..161027f
---- /dev/null
-+++ b/src/cmake/modules/FindUdev.cmake
-@@ -0,0 +1,15 @@
-+
-+if(UDEV_INCLUDE_DIR)
-+  # Already in cache, be silent
-+  set(UDEV_FIND_QUIETLY TRUE)
-+endif(UDEV_INCLUDE_DIR)
-+
-+find_path(UDEV_INCLUDE_DIR libudev.h)
-+
-+find_library(UDEV_LIBRARY NAMES udev)
-+
-+include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(Udev DEFAULT_MSG
-+                                  UDEV_LIBRARY UDEV_INCLUDE_DIR)
-+
-+mark_as_advanced(UDEV_LIBRARY UDEV_INCLUDE_DIR)
-diff --git a/src/manymouse/linux_evdev.c b/src/manymouse/linux_evdev.c
-index a8da4fb..2053006 100644
+
 --- a/src/manymouse/linux_evdev.c
 +++ b/src/manymouse/linux_evdev.c
 @@ -25,6 +25,66 @@
@@ -120,10 +84,10 @@ index a8da4fb..2053006 100644
 +}
 +
 +
- /* linux allows 32 evdev nodes currently. */
- #define MAX_MICE 32
+ /* linux allows 16 evdev nodes currently. */
+ #define MAX_MICE 16
  typedef struct
-@@ -222,21 +282,7 @@ static int init_mouse(const char *fname, int fd)
+@@ -222,21 +282,7 @@
  /* Return a file descriptor if this is really a mouse, -1 otherwise. */
  static int open_if_mouse(const char *fname)
  {
@@ -145,7 +109,7 @@ index a8da4fb..2053006 100644
  
      if ((fd = open(fname, O_RDONLY | O_NONBLOCK)) == -1)
          return 0;
-@@ -267,25 +313,99 @@ static int linux_evdev_init(const unsigned char filter)
+@@ -267,25 +313,99 @@
      DIR *dirp;
      struct dirent *dent;
      int i;
@@ -176,7 +140,7 @@ index a8da4fb..2053006 100644
 +	const char         *name = udev_list_entry_get_name(item);
 +	struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
 +	const char      *devnode = udev_device_get_devnode(dev);
-+	
++
 +	if (devnode != NULL && sorted_count < 8) {
 +	  sorted[sorted_count].devnode = devnode;
 +	  sorted[sorted_count].item = item;
@@ -205,7 +169,7 @@ index a8da4fb..2053006 100644
 +	  const char         *name = udev_list_entry_get_name(item);
 +	  struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
 +	  const char      *devnode = udev_device_get_devnode(dev);
-+	
++
 +	  if (devnode != NULL && sorted_count < 8) {
 +	    sorted[sorted_count].devnode = devnode;
 +	    sorted[sorted_count].item = item;
@@ -236,15 +200,15 @@ index a8da4fb..2053006 100644
 +       * and create a udev_device object (dev) representing it. */
 +      struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
 +      const char *devnode     = udev_device_get_devnode(dev);
- 
--    } /* while */
++
 +      if (devnode) {
 +	if (open_if_mouse(devnode))
 +	  available_mice++;
 +	udev_device_unref(dev);
 +      }
 +    }
-+
+ 
+-    } /* while */
 +    if(enumerate != NULL) {
 +      udev_enumerate_unref(enumerate);
 +    }
@@ -257,3 +221,21 @@ index a8da4fb..2053006 100644
  
      /* Sort devices based on eventfile number (from first to most recently registered) */
      if (available_mice)
+--- /dev/null	2026-09-05 04:03:50.042439576 +1000
++++ b/src/cmake/modules/FindUdev.cmake
+@@ -0,0 +1,15 @@
++
++if(UDEV_INCLUDE_DIR)
++  # Already in cache, be silent
++  set(UDEV_FIND_QUIETLY TRUE)
++endif(UDEV_INCLUDE_DIR)
++
++find_path(UDEV_INCLUDE_DIR libudev.h)
++
++find_library(UDEV_LIBRARY NAMES udev)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(Udev DEFAULT_MSG
++                                  UDEV_LIBRARY UDEV_INCLUDE_DIR)
++
++mark_as_advanced(UDEV_LIBRARY UDEV_INCLUDE_DIR)

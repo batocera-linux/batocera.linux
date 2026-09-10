@@ -1,25 +1,23 @@
-diff --git a/src/vldp/vldp.h b/src/vldp/vldp.h
-index a59c723..3c986dc 100644
 --- a/src/vldp/vldp.h
 +++ b/src/vldp/vldp.h
-@@ -34,6 +34,8 @@ extern "C" {
- // Ubuntu Linux complains with plain <SDL.h>
- #include <SDL2/SDL.h> // only used for threading
+@@ -32,6 +32,8 @@
+ 
+ #include <SDL3/SDL.h>
  
 +#include <mpeg2dec/mpeg2.h>
 +
  struct yuv_buf {
      uint8_t *Y;     // Y channel
      uint8_t *U;     // U channel
-diff --git a/src/vldp/vldp_internal.h b/src/vldp/vldp_internal.h
-index cd046fe..67cea2d 100644
+
 --- a/src/vldp/vldp_internal.h
 +++ b/src/vldp/vldp_internal.h
-@@ -27,7 +27,6 @@
+@@ -27,8 +27,6 @@
  
  #include "vldp.h" // for the VLDP_BOOL definition and SDL.h
  
 -#include <mpeg2.h>
- 
+-
  // this is which version of the .dat file format we are using
- #define DAT_VERSION 2
+ #define DAT_VERSION 3
+ 

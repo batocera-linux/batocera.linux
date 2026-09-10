@@ -47,6 +47,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_HATARI),,hatari.py) \
 		$(if $(BR2_PACKAGE_HCL),,hcl.py) \
 		$(if $(BR2_PACKAGE_HURRICAN),,hurrican.py) \
+		$(if $(BR2_PACKAGE_HYPSEUS_SINGE),,hypseus_singe.py) \
 		$(if $(BR2_PACKAGE_IKEMEN),,ikemen.py) \
 		$(if $(BR2_PACKAGE_IOQUAKE3)$(BR2_PACKAGE_VKQUAKE3),,ioquake3.py) \
 		$(if $(BR2_PACKAGE_IORTCW),,iortcw.py) \
