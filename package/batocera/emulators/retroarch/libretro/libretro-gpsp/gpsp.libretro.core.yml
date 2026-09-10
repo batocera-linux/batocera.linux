@@ -4,4 +4,7 @@ shared_features:
   - rewind
   - autosave
 systems:
-  - gba
+  - name: gba
+    exclude_extensions:
+      - tar
+      - rar

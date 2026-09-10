@@ -36,6 +36,9 @@ systems:
           'Off': disabled
           'On': enabled
   - name: gba
+    exclude_extensions:
+      - tar
+      - rar
     custom_features:
       solarsensor:
         group: ADVANCED OPTIONS
