@@ -92,6 +92,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_XENIA)$(BR2_PACKAGE_XENIA_CANARY),,xenia.py) \
 		$(if $(BR2_PACKAGE_XENIA_EDGE),,xenia_edge.py) \
 		$(if $(BR2_PACKAGE_XROAR),,xroar.py) \
+		$(if $(BR2_PACKAGE_YMIR),,ymir.py) \
 		$(if $(BR2_PACKAGE_YQUAKE2),,yquake2.py))
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
