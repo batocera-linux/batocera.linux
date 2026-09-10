@@ -280,7 +280,6 @@ they pull unusual dependencies.
 - [ ] `pcsx2x6`
 - [ ] `ppsspp`
 - [ ] `supermodel`
-- [ ] `vpinball`
 
 ## Reference files
 
