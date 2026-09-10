@@ -275,7 +275,6 @@ they pull unusual dependencies.
 - [ ] `pcsx2x6`
 - [ ] `ppsspp`
 - [ ] `supermodel`
-- [ ] `vice`
 - [ ] `vpinball`
 - [ ] `ymir`
 
