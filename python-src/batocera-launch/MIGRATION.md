@@ -270,16 +270,11 @@ Large multi-module generators (dolphin, pcsx2, libretro, mame, linuxloader, …)
 should become packages; smaller single-module ones should be inlined unless
 they pull unusual dependencies.
 
-- [ ] `citron`
 - [ ] `duckstation`
 - [ ] `duckstation_legacy` (emulator `duckstation`, core `duckstation-legacy`)
 - [ ] `libretro`
 - [ ] `linuxloader`
 - [ ] `mame`
-- [ ] `pcsx2`
-- [ ] `pcsx2x6`
-- [ ] `ppsspp`
-- [ ] `supermodel`
 
 ## Reference files
 
