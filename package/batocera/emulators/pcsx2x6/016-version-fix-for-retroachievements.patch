@@ -1,7 +1,7 @@
---- pcsx2-v2.4.0/pcsx2/BuildVersion.cpp	2025-06-29 12:47:12.000000000 -0700
-+++ pcsx2-v2.4.0-lbrpdx/pcsx2/BuildVersion.cpp	2025-10-03 08:39:48.770869570 -0700
+--- pcsx2x6-v0.2.22/pcsx2/BuildVersion.cpp	2025-06-29 12:47:12.000000000 -0700
++++ pcsx2x6-v0.2.22-batocera/pcsx2/BuildVersion.cpp	2026-09-10 00:00:00.000000000 -0700
 @@ -5,12 +5,12 @@
- 
+
  namespace BuildVersion
  {
 -	const char* GitTag = GIT_TAG;
@@ -11,12 +11,12 @@
 -	int GitTagLo = GIT_TAG_LO;
 -	const char* GitRev = GIT_REV;
 -	const char* GitHash = GIT_HASH;
-+	const char* GitTag = "v2.5.229";
++	const char* GitTag = "v0.2.22";
 +	bool GitTaggedCommit = 1;
-+	int GitTagHi = 2;
-+	int GitTagMid = 5;
-+	int GitTagLo = 229;
-+	const char* GitRev = "v2.5.229";
-+	const char* GitHash = "8fb2940f25876d404b0a7b9ec39d55b2b3abe9b9";
++	int GitTagHi = 0;
++	int GitTagMid = 2;
++	int GitTagLo = 22;
++	const char* GitRev = "v0.2.22";
++	const char* GitHash = "64f063a6351549b0de9c97971636b23360dbcdab";
  	const char* GitDate = GIT_DATE;
  } // namespace BuildVersion

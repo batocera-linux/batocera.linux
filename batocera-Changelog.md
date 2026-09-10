@@ -230,6 +230,7 @@
 - OpenJK to Jul 11th, 2026 build
 - OpenJKDF2 to v0.9.9
 - PCSX2 to 2.8.2
+- PCSX2x6 to v0.2.22
 - Play to 0.77
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
