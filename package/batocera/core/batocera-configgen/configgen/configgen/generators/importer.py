@@ -38,7 +38,6 @@ _GENERATOR_MAP: Final[dict[str, tuple[str, str]]] = {
     'openjk': ('openjk.openjkGenerator', 'OpenJKGenerator'),
     'openjkdf2': ('openjkdf2.openjkdf2Generator', 'OpenJKDF2Generator'),
     'openmohaa': ('openmohaa.openmohaaGenerator', 'OpenMOHAAGenerator'),
-    'ppsspp': ('ppsspp.ppssppGenerator', 'PPSSPPGenerator'),
     'sdlpop': ('sdlpop.sdlpopGenerator', 'SdlPopGenerator'),
     'sonic-mania': ('sonic_mania.sonic_maniaGenerator', 'SonicManiaGenerator'),
     'sonic2013': ('sonicretro.sonicretroGenerator', 'SonicRetroGenerator'),
