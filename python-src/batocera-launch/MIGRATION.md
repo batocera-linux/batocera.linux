@@ -59,7 +59,7 @@ more than a few dozen lines.
 | `getInGameRatio(config, gameResolution, rom)` | `@cached_property def in_game_ratio(self) -> float` | Default `4/3`. Use `self.resolution` if needed. |
 | Manual `SDL_GAMECONTROLLERCONFIG=generate_sdl_game_controller_config(...)` in `Command` env | `needs_sdl_game_controller_config = True` (class var) | Base class injects the env var after `configure()`. |
 | Manual `write_sdl_controller_db(...)` | `needs_sdl_controller_db = True` (+ optional `sdl_controller_db_path` override) | Base class writes the DB before `configure()`. |
-| LabWC / window-manager setup scattered in `generate` | `async def prepare_labwc(self) -> None` | Called when `LABWC_PID` is in the environment. Prefer `LabWCConfig`. |
+| LabWC / window-manager setup scattered in `generate` | `async def configure_windows(self) -> None` | Runs in parallel with `configure()`. Declare rules in the `.emulator.yml`'s `labwc.window_rules` (built into `<name>.labwc-rules.yml`) and call `await configure_windows(name, find_screen(await self.screens, 'primary'), find_screen(await self.screens, 'secondary'))` from `batocera_launch.devices.video`; see `emulators/azahar.py` / `emulators/melonds.py`. |
 | Special decoration IDs (MAME-style) | mixin `SpecialDecorationsMixin` | Overrides `decoration_id` from ROM stem metadata. |
 
 ### `generate()` argument → `self` attribute
@@ -172,7 +172,12 @@ over module-level path constants so cores that share a class can diverge cleanly
    ```
    For a directory module, use a trailing slash: `xash3d_fwgs/`.
 6. Port comments that explain non-obvious behavior.
-7. Run `ruff check` / `ruff format` and `pyright` on the new module.
+7. From the repo root, run `uv run prek --show-diff-on-failure --color=always --all-files`
+   (installs `ruff` + `pyright` pinned to the versions in the root
+   `pyproject.toml` dev group on first run). This lints/typechecks the *whole*
+   tree, not just the new module. `ruff-format` auto-applies its fixes to disk
+   and reports "Failed" for that reason alone; re-run to confirm clean, then
+   stage whatever it changed.
 8. Remove the generator from the [todo list](#todo-remaining-generators) below.
 
 Until the entry point is registered, launches for that emulator id still use
