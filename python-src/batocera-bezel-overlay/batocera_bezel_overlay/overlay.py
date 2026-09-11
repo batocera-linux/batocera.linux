@@ -4,13 +4,14 @@ import logging
 import sys
 from typing import ClassVar
 
+import cairo
 import gi
 
 try:
     gi.require_version('GdkPixbuf', '2.0')
     gi.require_version('Gtk', '3.0')
 
-    from gi.repository import GdkPixbuf, Gtk
+    from gi.repository import GdkPixbuf, GLib, Gtk
 except (ImportError, ValueError) as exc:
     print('Error: Dependencies not met.', exc)
     sys.exit(1)
@@ -104,6 +105,28 @@ class WaylandOverlay(Overlay):
 
     window_type: ClassVar[Gtk.WindowType] = Gtk.WindowType.TOPLEVEL
 
+    def _apply_input_passthrough(self) -> bool:
+        """Make the mapped layer surface ignore pointer and touch input."""
+        if gdk_window := self.get_window():
+            try:
+                gdk_window.input_shape_combine_region(cairo.Region(), 0, 0)
+                # Commit the updated input region after GtkLayerShell has mapped
+                # and configured the Wayland surface.
+                gdk_window.invalidate_rect(None, False)
+                _log.debug('Wayland input pass-through configured successfully.')
+            except Exception:
+                _log.exception('Failed to configure Wayland input pass-through')
+
+        # GLib.idle_add expects False to remove the callback.
+        return False
+
+    def do_map(self) -> None:
+        Gtk.Window.do_map(self)
+
+        # GtkLayerShell configures the wl_surface during mapping. Applying the
+        # empty input region afterwards prevents it from being overwritten.
+        GLib.idle_add(self._apply_input_passthrough)
+
     def setup(self, dimensions: tuple[int, int], /) -> None:
         """Bind window overlay parameters using GtkLayerShell on Wayland."""
 
@@ -122,7 +145,7 @@ class WaylandOverlay(Overlay):
             GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.LEFT, True)
             GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.RIGHT, True)
 
-        except ValueError, ImportError:
+        except (ValueError, ImportError):
             _log.exception(
                 'Wayland GtkLayerShell initialization failed. Falling back to standard positioning.',
             )
