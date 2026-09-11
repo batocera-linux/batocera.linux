@@ -34,6 +34,47 @@ custom_features:
       2x: 2
       3x: 3
       4x: 4
+  sm2_scaling_method:
+    group: GRAPHICS
+    prompt: SCALING METHOD
+    description: How the finished frame is magnified to the window.
+    choices:
+      Nearest: nearest
+      Bilinear: bilinear
+      Sharp Bilinear (Default): sharp
+      Integer: integer
+  sm2_aspect_mode:
+    group: GRAPHICS
+    prompt: ASPECT RATIO
+    description: Which rectangle the frame is fit into.
+    choices:
+      4:3 (Default): '4:3'
+      Square Pixel: square
+      Stretch: stretch
+  sm2_texture_filter:
+    group: GRAPHICS
+    prompt: 3D TEXTURE FILTER
+    description: Anisotropic sharpens obliquely-viewed surfaces. OpenGL/Vulkan only, falls back to Faithful where unsupported.
+    choices:
+      Faithful (Default): faithful
+      Anisotropic: anisotropic
+  sm2_anisotropy:
+    group: GRAPHICS
+    prompt: ANISOTROPIC LEVEL
+    description: Only applies when 3D texture filter is set to Anisotropic. Clamped to the GPU's max.
+    choices:
+      2x: 2
+      4x (Default): 4
+      8x: 8
+      16x: 16
+  sm2_upscale_2d:
+    group: GRAPHICS
+    prompt: 2D UPSCALE FILTER
+    description: Edge-directed pixel-art filters over the 2D tilemap layers. OpenGL/Vulkan only, falls back to Faithful where unsupported.
+    choices:
+      Faithful (Default): faithful
+      xBR: xbr
+      ScaleFX: scalefx
   sm2_vsync:
     group: GRAPHICS
     prompt: VSYNC
@@ -97,5 +138,40 @@ custom_features:
       Light: 30
       Medium (Default): 60
       Strong: 90
+  sm2_crt_enabled:
+    group: CRT FILTER
+    prompt: CRT FILTER
+    description: Cosmetic scanline/mask/glow/curvature filter over the finished frame.
+    choices:
+      Off (Default): 0
+      'On': 1
+  sm2_crt_scanline_strength:
+    group: CRT FILTER
+    prompt: SCANLINE STRENGTH
+    choices:
+      Light: 20
+      Medium (Default): 40
+      Strong: 60
+  sm2_crt_mask_strength:
+    group: CRT FILTER
+    prompt: MASK STRENGTH
+    choices:
+      Light: 15
+      Medium (Default): 30
+      Strong: 45
+  sm2_crt_glow_strength:
+    group: CRT FILTER
+    prompt: GLOW STRENGTH
+    choices:
+      Light: 10
+      Medium (Default): 20
+      Strong: 30
+  sm2_crt_curvature:
+    group: CRT FILTER
+    prompt: CURVATURE
+    choices:
+      Off (Default): 0
+      Light: 15
+      Strong: 30
 systems:
   - model2
