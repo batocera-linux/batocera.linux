@@ -65,7 +65,6 @@
 - Lindbergh Loader has transtioned to LinuxLoader for Lindbergh roms
 - MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
-- PCSX2 variant for capable aarch64 devices
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
 - Rockchip RK3588 devices moved to the mainline linux kernel:

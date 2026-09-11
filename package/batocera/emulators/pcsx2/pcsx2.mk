@@ -4,15 +4,8 @@
 #
 ################################################################################
 
-ifeq ($(BR2_x86_64),y)
 PCSX2_VERSION = v2.8.2
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
-else
-# Version: Commits on July 2, 2026
-PCSX2_VERSION = 8fb3bc617caffbdaa2b9e49f0cec0ab099387df2
-PCSX2_SITE = https://git.sr.ht/~bmdhacks/pcsx2
-endif
-
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
 PCSX2_LICENSE = GPLv3
@@ -30,12 +23,6 @@ PCSX2_DEPENDENCIES += rapidyaml shaderc sdl3 webp wxwidgets xorgproto yaml-cpp z
 PCSX2_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang
 PCSX2_CONF_OPTS += -DCMAKE_CXX_COMPILER=$(HOST_DIR)/bin/clang++
 PCSX2_CONF_OPTS += -DCMAKE_EXE_LINKER_FLAGS="-lm -lstdc++"
-
-ifeq ($(BR2_aarch64),y)
-PCSX2_CONF_OPTS += -DCMAKE_C_FLAGS="$(TARGET_CFLAGS)"
-PCSX2_CONF_OPTS += -DCMAKE_CXX_FLAGS="$(TARGET_CXXFLAGS) -Wno-c++11-narrowing -Wno-narrowing"
-endif
-
 PCSX2_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
 PCSX2_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 PCSX2_CONF_OPTS += -DENABLE_TESTS=OFF
