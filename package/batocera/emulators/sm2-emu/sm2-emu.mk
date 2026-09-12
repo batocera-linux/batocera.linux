@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SM2_EMU_VERSION = v0.9.6
+SM2_EMU_VERSION = b7714c40d17864afd7c0c640d20a7d6b50c80972
 SM2_EMU_SITE = https://github.com/dmanlfc/sm2-emu.git
 SM2_EMU_SITE_METHOD = git
 SM2_EMU_GIT_SUBMODULES = YES
@@ -33,6 +33,13 @@ SM2_EMU_CONF_OPTS += -DSM2_BUILD_VULKAN=ON
 else
 SM2_EMU_CONF_OPTS += -DSM2_BUILD_VULKAN=OFF
 endif
+
+define SM2_EMU_INSTALL_NVRAM
+	mkdir -p $(TARGET_DIR)/usr/share/sm2-emu/nvram
+	$(TAR) -xJf $(SM2_EMU_PKGDIR)/nvram.tar.xz -C $(TARGET_DIR)/usr/share/sm2-emu/nvram
+endef
+
+SM2_EMU_POST_INSTALL_TARGET_HOOKS += SM2_EMU_INSTALL_NVRAM
 
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
