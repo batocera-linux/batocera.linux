@@ -11,6 +11,7 @@
 - Anbernic RG40xx-V-v2-panel variant support
 - AYN Odin initial support
 - AYN Odin 3 initial support
+- KICKPI K3B initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
 - Radxa Rock-5T initial support
