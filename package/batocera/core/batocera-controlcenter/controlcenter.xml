@@ -148,7 +148,7 @@
 			cache="10" />
 	    <text display="${batocera-audio get-profile | cut -f 2}" refresh="3" />
 	  </feature>
-	  <feature display="Video Output" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | grep -E '^null$' &amp;&amp; batocera-resolution listOutputs | wc -l | grep -vE '^[01]$' }">
+	  <feature display="Video Output" if="${curl http://127.0.0.1:1234/runningGame 2&gt;/dev/null | jq -r '.systemName' | grep -qE '^null$' &amp;&amp; batocera-resolution listOutputs | wc -l | grep -vE '^[01]$' }" refresh="5">
 	    <choice_cmd display="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 2}"
 			action="batocera-switch-screen-checker --switch"
 			action_arg="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 1}"

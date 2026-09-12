@@ -405,6 +405,33 @@ while [ -e "${REBOOT_FLAG}" ]; do
         [ -e /userdata/system/custom-es-config ] && bash /userdata/system/custom-es-config &
         ###################
     fi
+
+    # same for labwc : to be moved in batocera-resolution
+    if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
+	TOUCHSCREEN=""
+	TOUCHSCREEN_LIST=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]}}')
+	if [ -n "${TOUCHSCREEN_LIST}" ]; then
+	    NUM_TOUCH=$(echo "${TOUCHSCREEN_LIST}" | grep -v '^$' | wc -l)
+	else
+	    NUM_TOUCH=0
+	fi
+	if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${settings_output}" ]; then
+	    TOUCHSCREEN="${TOUCHSCREEN_LIST}"
+	    echo "One touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${settings_output}." >>"$display_log"
+	else
+	    if [ "${NUM_TOUCH}" -eq 0 ]; then
+		echo "No touchscreen found. Touchscreen configuration omitted/removed." >>"$display_log"
+	    elif [ "${NUM_TOUCH}" -gt 1 ]; then
+		echo "Multiple touchscreens detected (${NUM_TOUCH}). Omitting individual touch mapping." >>"$display_log"
+		echo "Use sdl2-touch-test to get the calibration for your touch panels." >>"$display_log"
+	    elif [ -z "${settings_output}" ]; then
+		echo "No primary output set. Skipping touchscreen configuration." >>"$display_log"
+	    fi
+	fi
+	# apply rules to es, backglass, bcc, ...
+	batocera-labwc-config --primary="${settings_output}" --secondary="${settings_output2}" --touchscreen="${TOUCHSCREEN}"
+    fi
+
     CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
 
     # Launch automatically a game only the first time
