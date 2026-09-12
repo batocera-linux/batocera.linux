@@ -17,4 +17,8 @@ type MameControlScheme = Literal[
     'mkstick',
     'kisnes',
     'mddefault',
+    'arcade33',
+    'mkarcade33',
+    'neoarcade33',
+    'arcade33top1',
 ]
