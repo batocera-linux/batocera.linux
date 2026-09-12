@@ -1,27 +1,32 @@
 from __future__ import annotations
 
-import platform
-from typing import TYPE_CHECKING
+import logging
+import shutil
+from pathlib import Path
+from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SCREENSHOTS
+from batocera_common.vulkan import (
+    get_discrete_gpu_name as vulkan_get_discrete_gpu_name,
+    get_version as vulkan_get_version,
+    has_discrete_gpu as vulkan_has_discrete_gpu,
+    is_available as vulkan_is_available,
+)
 from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
 
-if TYPE_CHECKING:
-    from pathlib import Path
+_logger: Final = logging.getLogger(__name__)
+
+_NVRAM_SRC: Final = Path('/usr/share/sm2-emu/nvram')
 
 
 def _ini_bool(value: bool) -> str:
     return 'true' if value else 'false'
 
 
-def _default_graphics_backend() -> str:
-    return 'software' if not platform.machine().lower().startswith('x86') else 'vulkan'
-
-
 def _merge_ini(existing_text: str, managed: dict[str, str]) -> str:
     """Update `managed` keys in place, leave every other line (wheel calibration,
-    window size, gpu) untouched."""
+    window size) untouched."""
     remaining = dict(managed)
     lines: list[str] = []
 
@@ -35,6 +40,40 @@ def _merge_ini(existing_text: str, managed: dict[str, str]) -> str:
 
     lines.extend(f'{key} = {value}' for key, value in remaining.items())
     return '\n'.join((*lines, ''))
+
+
+def _resolve_graphics_backend(requested: str) -> str:
+    if requested != 'vulkan':
+        return requested
+
+    if not vulkan_is_available():
+        _logger.debug('Vulkan driver is not available on the system. Falling back to OpenGL.')
+        return 'opengl'
+
+    vulkan_version = vulkan_get_version()
+    if vulkan_version >= '1.3':
+        _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_version)
+        return 'vulkan'
+
+    _logger.debug('Vulkan version %s is lower than 1.3. Falling back to OpenGL.', vulkan_version)
+    return 'opengl'
+
+
+def _resolve_gpu(backend: str) -> str:
+    if backend != 'vulkan' or not vulkan_has_discrete_gpu():
+        return ''
+
+    return vulkan_get_discrete_gpu_name() or ''
+
+
+def _seed_nvram(dest_dir: Path) -> None:
+    if not _NVRAM_SRC.is_dir():
+        return
+
+    for item in _NVRAM_SRC.iterdir():
+        dest = dest_dir / item.name
+        if not dest.exists():
+            shutil.copy2(item, dest)
 
 
 @cached_dataclass
@@ -60,8 +99,10 @@ class Sm2Emu(Emulator):
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.nvram_dir.mkdir(parents=True, exist_ok=True)
         self.screenshot_dir.mkdir(parents=True, exist_ok=True)
+        _seed_nvram(self.nvram_dir)
 
         use_guns = self.config.use_guns
+        graphics_backend = _resolve_graphics_backend(self.config.get_str('sm2_graphics_backend', 'opengl'))
 
         managed = {
             'fullscreen': 'true',
@@ -80,7 +121,8 @@ class Sm2Emu(Emulator):
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),
-            'graphics_backend': self.config.get_str('sm2_graphics_backend', _default_graphics_backend()),
+            'graphics_backend': graphics_backend,
+            'gpu': _resolve_gpu(graphics_backend),
             'render_scale': self.config.get_str('sm2_render_scale', '1'),
             'scaling_method': self.config.get_str('sm2_scaling_method', 'sharp'),
             'aspect_mode': self.config.get_str('sm2_aspect_mode', '4:3'),
