@@ -2,6 +2,7 @@
 
 config_script="batocera-config"
 log="/userdata/system/logs/batocera.log"
+config_log="/userdata/system/logs/batocera.conf.log"
 
 ba_keyboard_lang() {
     settings_lang="$(/usr/bin/batocera-settings-get system.language || echo 'en_US')"
@@ -59,15 +60,22 @@ ba_es_core_dump() {
     sysctl -wq kernel.core_pattern=/userdata/system/logs/core.%e
 }
 
+ba_batocera_conf() {
+    # Remove carriage return characters from Windows files
+    dos2unix -k -q /userdata/system/batocera.conf
+    # start the daemon and log every access to batocera.conf and source its PID (the daemon PID can't be catched with $!)
+    inotifywait -d -o "${config_log}" --timefmt "%D %T" --format "%T: %w %e" /userdata/system/batocera.conf
+    pgrep -f "inotifywait -d -o ${config_log}" > /var/run/batocera.conf.log.pid    
+}
+
 case "$1" in
   start)
     printf "Starting system: "
-    # Remove carriage return characters from Windows files
-    dos2unix /userdata/system/batocera.conf
 
     export MESA_SHADER_CACHE_DIR="/userdata/system/.cache"
 
     # configure
+    ba_batocera_conf &
     ba_keyboard_lang &
     ba_timezone &
     ba_hostname &
@@ -75,6 +83,11 @@ case "$1" in
     echo "done."
     ;;
   stop)
+    #stop the log-daemon of batocera.conf and limit log-file to 1000 lines
+    kill $(cat /var/run/batocera.conf.log.pid)
+    echo "--- ^^ STOP ^^ --" >> "${config_log}"
+    tail -n 1000 "${config_log}" > "${config_log}.tmp"
+    mv "${config_log}.tmp" "${config_log}"
     ;;
   restart|reload)
     ;;
