@@ -200,7 +200,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
     # If screen2 is empty, take the first one found which is not screen1
     if [ -z "${settings_output2}" ]; then
-        user_output2="$(batocera-settings-get global.videooutput2)"
+        user_output2="$(batocera-settings-get-master global.videooutput2)"
         if [ "${user_output2}" != "none" ]; then
             settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
             if [ -n "${settings_output2}" ]; then
