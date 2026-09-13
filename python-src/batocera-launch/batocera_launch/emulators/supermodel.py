@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import platform
+import re
 import shutil
 from pathlib import Path
 from shutil import copyfile
@@ -27,9 +28,29 @@ _AXIS_NAMES: Final = {
     3: 'RXAXIS',
     4: 'RYAXIS',
     5: 'RZAXIS',
+    6: 'SLIDER1',
+    7: 'SLIDER2',
 }
 
 _HAT_DIRECTIONS: Final = {'1': 'UP', '2': 'RIGHT', '4': 'DOWN', '8': 'LEFT'}
+
+# binding axis names to calibration key ids, eg. RZAXIS -> InputJoy1RZMinVal
+_INI_AXIS_IDS: Final = {
+    'XAXIS': 'X',
+    'YAXIS': 'Y',
+    'ZAXIS': 'Z',
+    'RXAXIS': 'RX',
+    'RYAXIS': 'RY',
+    'RZAXIS': 'RZ',
+    'SLIDER1': 'S1',
+    'SLIDER2': 'S2',
+}
+
+_JOY_AXIS_BINDING: Final = re.compile(r'^JOY(\d+)_([A-Z0-9]+?)(?:_POS|_NEG|_INV)?$')
+
+# pedals, in the order _get_pad_input() resolves them
+_ACCELERATOR_INPUTS: Final = ['r2', 'right_trigger']
+_BRAKE_INPUTS: Final = ['l2', 'left_trigger']
 
 
 def _get_pad_input(
@@ -54,13 +75,15 @@ def _get_pad_input(
     if input is None:
         return None
 
-    prefix = f'JOY{pad.player_number}'
+    # supermodel numbers joysticks in sdl order, whichever input system is in use
+    prefix = f'JOY{pad.index + 1}'
 
     if input.type == 'button':
         return f'{prefix}_BUTTON{int(input.id) + 1}'
 
     if input.type == 'axis':
-        axis_name = _AXIS_NAMES.get(int(input.id), f'AXIS{input.id}')
+        # supermodel's AXISn names are 1 based, unlike the sdl axis index
+        axis_name = _AXIS_NAMES.get(int(input.id), f'AXIS{int(input.id) + 1}')
 
         if full_axis:
             return f'{prefix}_{axis_name}'
@@ -85,6 +108,42 @@ def _build_binding(default_keys: str, pad_bind: str | None, /) -> str:
             return default_keys
         return f'{default_keys},{pad_bind}' if default_keys else pad_bind
     return default_keys
+
+
+def _find_pad_input_name(pad: Controller, names: list[str], /) -> str | None:
+    return next((name for name in names if name in pad.inputs), None)
+
+
+def _set_pedal_calibration(
+    target_config: CaseSensitiveConfigParser,
+    pad: Controller,
+    binding: str | None,
+    input_name: str,
+    is_reversed: bool,
+    /,
+    *,
+    gamepad_mode: bool,
+) -> None:
+    """Writes a pedal's raw range; MinVal > MaxVal makes Supermodel invert the axis."""
+    if binding is None or (match := _JOY_AXIS_BINDING.match(binding)) is None:
+        return
+    if (axis_id := _INI_AXIS_IDS.get(match.group(2))) is None:
+        return
+
+    # the sdl game controller mapping already inverts inputs recorded with a negative value
+    if gamepad_mode and int(pad.inputs[input_name].value) < 0:
+        is_reversed = not is_reversed
+
+    # sdlgamepad reports triggers as 0..32767, raw sdl/evdev joystick axes as -32768..32767
+    released = 0 if gamepad_mode else -32768
+    rest = 32767 if is_reversed else released
+    pressed = released if is_reversed else 32767
+
+    key = f'InputJoy{match.group(1)}{axis_id}'
+    target_config.set('Global', f'{key}MinVal', str(rest))
+    target_config.set('Global', f'{key}OffVal', str(rest))
+    target_config.set('Global', f'{key}MaxVal', str(pressed))
+    _logger.info('supermodel: %s of %s calibrated %s to %s..%s', input_name, pad.real_name, key, rest, pressed)
 
 
 @cached_dataclass
@@ -154,10 +213,10 @@ class Supermodel(Emulator):
         else:
             args.extend(['-multi-texture', '-legacy3d'])
 
-        # SCSP Sound Engine selection
-        if self.config.get_str('m3_scsp') == 'legacy':
+        # SCSP Sound Engine selection, left to the ini (per-game LegacySoundDSP) unless chosen
+        if (scsp := self.config.get_str('m3_scsp')) == 'legacy':
             args.append('-legacy-scsp')
-        else:
+        elif scsp:
             args.append('-new-scsp')
 
         # Widescreen
@@ -315,6 +374,18 @@ class Supermodel(Emulator):
         target_config.set('Global', 'AssetsPath', str(self.config_dir / 'Assets'))
         target_config.set('Global', 'LogPath', str(LOGS))
 
+        # evdev for guns, raw sdl joystick for wheels (all axes, real ranges), sdlgamepad otherwise
+        use_guns = self.config.use_guns and bool(self.guns)
+        if use_guns:
+            input_system = 'evdev'
+        elif self.config.use_wheels and any(pad.device_path in self.wheels for pad in self.controllers):
+            input_system = 'sdl'
+        else:
+            input_system = 'sdlgamepad'
+        gamepad_mode = input_system == 'sdlgamepad'
+        # set explicitly: the template has no InputSystem key for the loop below to update
+        target_config.set('Global', 'InputSystem', input_system)
+
         # Network Outputs configuration (MAME-compatible outputs)
         m3_outputs = self.config.get_str('m3_outputs', 'none')
         target_config.set('Global', 'Outputs', m3_outputs)
@@ -335,6 +406,22 @@ class Supermodel(Emulator):
         pad1 = next((pad for pad in self.controllers if pad.player_number == 1), None)
         pad2 = next((pad for pad in self.controllers if pad.player_number == 2), None)
 
+        # template per-game steering saturation targets JOY1 and is tuned for gamepads, not wheels
+        game_section = next((section for section in target_config.sections() if section.strip() == self.rom.stem), None)
+        if game_section is not None and target_config.has_option(game_section, 'InputJoy1XSaturation'):
+            saturation = target_config.get(game_section, 'InputJoy1XSaturation')
+            target_config.remove_option(game_section, 'InputJoy1XSaturation')
+            if pad1 is not None and not (self.config.use_wheels and pad1.device_path in self.wheels):
+                target_config.set(game_section, f'InputJoy{pad1.index + 1}XSaturation', saturation)
+
+        def fallback(pad: Controller, part: str) -> str | None:
+            # raw joysticks have no standard layout, so only sdlgamepad gets guessed bindings
+            return f'JOY{pad.index + 1}_{part}' if gamepad_mode else None
+
+        def set_input(key: str, binding: str | None) -> None:
+            if binding:
+                target_config.set('Global', key, binding)
+
         p1_start: str | None = None
         p1_select: str | None = None
         p1_south: str | None = None
@@ -346,33 +433,41 @@ class Supermodel(Emulator):
         if pad1:
             p1_start = _get_pad_input(pad1, 'start')
             p1_select = _get_pad_input(pad1, 'select')
-            p1_up = _get_pad_input(pad1, 'up') or 'JOY1_POV1_UP'
-            p1_down = _get_pad_input(pad1, 'down') or 'JOY1_POV1_DOWN'
-            p1_left = _get_pad_input(pad1, 'left') or 'JOY1_POV1_LEFT'
-            p1_right = _get_pad_input(pad1, 'right') or 'JOY1_POV1_RIGHT'
+            p1_up = _get_pad_input(pad1, 'up') or fallback(pad1, 'POV1_UP')
+            p1_down = _get_pad_input(pad1, 'down') or fallback(pad1, 'POV1_DOWN')
+            p1_left = _get_pad_input(pad1, 'left') or fallback(pad1, 'POV1_LEFT')
+            p1_right = _get_pad_input(pad1, 'right') or fallback(pad1, 'POV1_RIGHT')
 
-            p1_south = _get_pad_input(pad1, 'b') or 'JOY1_BUTTON1'
-            p1_east = _get_pad_input(pad1, 'a') or 'JOY1_BUTTON2'
-            p1_west = _get_pad_input(pad1, 'y') or 'JOY1_BUTTON3'
-            p1_north = _get_pad_input(pad1, 'x') or 'JOY1_BUTTON4'
+            p1_south = _get_pad_input(pad1, 'b') or fallback(pad1, 'BUTTON1')
+            p1_east = _get_pad_input(pad1, 'a') or fallback(pad1, 'BUTTON2')
+            p1_west = _get_pad_input(pad1, 'y') or fallback(pad1, 'BUTTON3')
+            p1_north = _get_pad_input(pad1, 'x') or fallback(pad1, 'BUTTON4')
 
-            p1_l1 = _get_pad_input(pad1, ['pageup', 'l1', 'left_shoulder']) or 'JOY1_BUTTON5'
-            p1_r1 = _get_pad_input(pad1, ['pagedown', 'r1', 'right_shoulder']) or 'JOY1_BUTTON6'
-            p1_l2 = _get_pad_input(pad1, ['l2', 'left_trigger'], force_pos=True) or 'JOY1_ZAXIS_POS'
-            p1_r2 = _get_pad_input(pad1, ['r2', 'right_trigger'], force_pos=True) or 'JOY1_RZAXIS_POS'
+            p1_l1 = _get_pad_input(pad1, ['pageup', 'l1', 'left_shoulder']) or fallback(pad1, 'BUTTON5')
+            p1_r1 = _get_pad_input(pad1, ['pagedown', 'r1', 'right_shoulder']) or fallback(pad1, 'BUTTON6')
+            p1_l2 = _get_pad_input(pad1, ['l2', 'left_trigger'], force_pos=True) or fallback(pad1, 'ZAXIS_POS')
+            p1_r2 = _get_pad_input(pad1, ['r2', 'right_trigger'], force_pos=True) or fallback(pad1, 'RZAXIS_POS')
 
-            p1_lstick_x = _get_pad_input(pad1, ['joystick1left', 'joystick1right'], full_axis=True) or 'JOY1_XAXIS'
-            p1_lstick_y = _get_pad_input(pad1, ['joystick1up', 'joystick1down'], full_axis=True) or 'JOY1_YAXIS'
-            p1_rstick_x = _get_pad_input(pad1, ['joystick2left', 'joystick2right'], full_axis=True) or 'JOY1_RXAXIS'
-            p1_rstick_y = _get_pad_input(pad1, ['joystick2up', 'joystick2down'], full_axis=True) or 'JOY1_RYAXIS'
+            p1_lstick_x = _get_pad_input(pad1, ['joystick1left', 'joystick1right'], full_axis=True) or fallback(
+                pad1, 'XAXIS'
+            )
+            p1_lstick_y = _get_pad_input(pad1, ['joystick1up', 'joystick1down'], full_axis=True) or fallback(
+                pad1, 'YAXIS'
+            )
+            p1_rstick_x = _get_pad_input(pad1, ['joystick2left', 'joystick2right'], full_axis=True) or fallback(
+                pad1, 'RXAXIS'
+            )
+            p1_rstick_y = _get_pad_input(pad1, ['joystick2up', 'joystick2down'], full_axis=True) or fallback(
+                pad1, 'RYAXIS'
+            )
 
-            p1_rstick_left = _get_pad_input(pad1, 'joystick2left') or 'JOY1_RXAXIS_NEG'
-            p1_rstick_down = _get_pad_input(pad1, 'joystick2down') or 'JOY1_RYAXIS_POS'
-            p1_rstick_up = _get_pad_input(pad1, 'joystick2up') or 'JOY1_RYAXIS_NEG'
-            p1_rstick_right = _get_pad_input(pad1, 'joystick2right') or 'JOY1_RXAXIS_POS'
+            p1_rstick_left = _get_pad_input(pad1, 'joystick2left') or fallback(pad1, 'RXAXIS_NEG')
+            p1_rstick_down = _get_pad_input(pad1, 'joystick2down') or fallback(pad1, 'RYAXIS_POS')
+            p1_rstick_up = _get_pad_input(pad1, 'joystick2up') or fallback(pad1, 'RYAXIS_NEG')
+            p1_rstick_right = _get_pad_input(pad1, 'joystick2right') or fallback(pad1, 'RXAXIS_POS')
 
-            target_config.set('Global', 'InputStart1', _build_binding('KEY_1', p1_start or 'JOY1_BUTTON8'))
-            target_config.set('Global', 'InputCoin1', _build_binding('KEY_3', p1_select or 'JOY1_BUTTON7'))
+            target_config.set('Global', 'InputStart1', _build_binding('KEY_1', p1_start or fallback(pad1, 'BUTTON8')))
+            target_config.set('Global', 'InputCoin1', _build_binding('KEY_3', p1_select or fallback(pad1, 'BUTTON7')))
 
             target_config.set('Global', 'InputJoyUp', _build_binding('KEY_UP', p1_up))
             target_config.set('Global', 'InputJoyDown', _build_binding('KEY_DOWN', p1_down))
@@ -393,9 +488,18 @@ class Supermodel(Emulator):
             target_config.set('Global', 'InputLongPass', _build_binding('KEY_S', p1_west))
             target_config.set('Global', 'InputShoot', _build_binding('KEY_D', p1_east))
 
-            target_config.set('Global', 'InputSteering', p1_lstick_x)
-            target_config.set('Global', 'InputAccelerator', _build_binding('KEY_UP,JOY1_RZAXIS_POS', p1_r2))
-            target_config.set('Global', 'InputBrake', _build_binding('KEY_DOWN,JOY1_ZAXIS_POS', p1_l2))
+            set_input('InputSteering', p1_lstick_x)
+            target_config.set('Global', 'InputAccelerator', _build_binding('KEY_UP', p1_r2))
+            target_config.set('Global', 'InputBrake', _build_binding('KEY_DOWN', p1_l2))
+
+            # raw axes rest at one end of -32768..32767, so pedals need their range declared
+            if not gamepad_mode or (self.config.use_wheels and pad1.device_path in self.wheels):
+                relaxed = pad1.get_mapping_axis_relaxed_values()
+                for binding, names in ((p1_r2, _ACCELERATOR_INPUTS), (p1_l2, _BRAKE_INPUTS)):
+                    if (name := _find_pad_input_name(pad1, names)) and (axis := relaxed.get(name)):
+                        _set_pedal_calibration(
+                            target_config, pad1, binding, name, axis['reversed'], gamepad_mode=gamepad_mode
+                        )
 
             target_config.set('Global', 'InputGearShiftUp', _build_binding('KEY_Y', p1_r1))
             target_config.set('Global', 'InputGearShiftDown', _build_binding('KEY_H', p1_l1))
@@ -435,35 +539,34 @@ class Supermodel(Emulator):
         if pad2:
             p2_start = _get_pad_input(pad2, 'start')
             p2_select = _get_pad_input(pad2, 'select')
-            p2_up = _get_pad_input(pad2, 'up') or 'JOY2_POV1_UP'
-            p2_down = _get_pad_input(pad2, 'down') or 'JOY2_POV1_DOWN'
-            p2_left = _get_pad_input(pad2, 'left') or 'JOY2_POV1_LEFT'
-            p2_right = _get_pad_input(pad2, 'right') or 'JOY2_POV1_RIGHT'
+            p2_up = _get_pad_input(pad2, 'up') or fallback(pad2, 'POV1_UP')
+            p2_down = _get_pad_input(pad2, 'down') or fallback(pad2, 'POV1_DOWN')
+            p2_left = _get_pad_input(pad2, 'left') or fallback(pad2, 'POV1_LEFT')
+            p2_right = _get_pad_input(pad2, 'right') or fallback(pad2, 'POV1_RIGHT')
 
-            p2_south = _get_pad_input(pad2, 'b') or 'JOY2_BUTTON1'
-            p2_east = _get_pad_input(pad2, 'a') or 'JOY2_BUTTON2'
-            p2_west = _get_pad_input(pad2, 'y') or 'JOY2_BUTTON3'
-            p2_north = _get_pad_input(pad2, 'x') or 'JOY2_BUTTON4'
+            p2_south = _get_pad_input(pad2, 'b') or fallback(pad2, 'BUTTON1')
+            p2_east = _get_pad_input(pad2, 'a') or fallback(pad2, 'BUTTON2')
+            p2_west = _get_pad_input(pad2, 'y') or fallback(pad2, 'BUTTON3')
+            p2_north = _get_pad_input(pad2, 'x') or fallback(pad2, 'BUTTON4')
 
-            target_config.set('Global', 'InputStart2', _build_binding('KEY_2', p2_start or 'JOY2_BUTTON8'))
-            target_config.set('Global', 'InputCoin2', _build_binding('KEY_4', p2_select or 'JOY2_BUTTON7'))
+            target_config.set('Global', 'InputStart2', _build_binding('KEY_2', p2_start or fallback(pad2, 'BUTTON8')))
+            target_config.set('Global', 'InputCoin2', _build_binding('KEY_4', p2_select or fallback(pad2, 'BUTTON7')))
 
-            target_config.set('Global', 'InputJoyUp2', p2_up)
-            target_config.set('Global', 'InputJoyDown2', p2_down)
-            target_config.set('Global', 'InputJoyLeft2', p2_left)
-            target_config.set('Global', 'InputJoyRight2', p2_right)
+            set_input('InputJoyUp2', p2_up)
+            set_input('InputJoyDown2', p2_down)
+            set_input('InputJoyLeft2', p2_left)
+            set_input('InputJoyRight2', p2_right)
 
-            target_config.set('Global', 'InputPunch2', p2_west)
-            target_config.set('Global', 'InputKick2', p2_north)
-            target_config.set('Global', 'InputGuard2', p2_south)
-            target_config.set('Global', 'InputEscape2', p2_east)
+            set_input('InputPunch2', p2_west)
+            set_input('InputKick2', p2_north)
+            set_input('InputGuard2', p2_south)
+            set_input('InputEscape2', p2_east)
 
-            target_config.set('Global', 'InputShortPass2', p2_south)
-            target_config.set('Global', 'InputLongPass2', p2_west)
-            target_config.set('Global', 'InputShoot2', p2_east)
+            set_input('InputShortPass2', p2_south)
+            set_input('InputLongPass2', p2_west)
+            set_input('InputShoot2', p2_east)
 
         # Evdev for guns or sdlgamepad for controllers
-        use_guns = self.config.use_guns and bool(self.guns)
         for section in target_config.sections():
             if section.strip() not in ('Global', self.rom.stem):
                 continue
@@ -474,7 +577,7 @@ class Supermodel(Emulator):
 
             for key, _ in target_config.items(section):
                 if key == 'InputSystem':
-                    target_config.set(section, key, 'evdev' if use_guns else 'sdlgamepad')
+                    target_config.set(section, key, input_system)
                 elif use_guns:
                     # Player 1 gun bindings
                     if key == 'InputAnalogJoyX':

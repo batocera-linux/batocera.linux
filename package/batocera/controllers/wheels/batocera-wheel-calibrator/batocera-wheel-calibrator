@@ -16,6 +16,7 @@
 #
 
 import sys
+import errno
 import evdev
 from evdev import ecodes
 import select
@@ -45,16 +46,74 @@ for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
     if code != args.axis:
         evabs.append((code, inf))
 evabs.append((args.axis, evdev.AbsInfo(value=0, min=args.minimum, max=args.maximum, fuzz=0, flat=0, resolution=0)))
-target = evdev.UInput(name="virtual wheel", events={ ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys})
+events = { ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys }
+uinput_args = {}
+# expose the wheel's force feedback so games see a haptic device, effects are forwarded to the wheel
+has_ff = ecodes.EV_FF in input.capabilities() and input.ff_effects_count > 0
+if has_ff:
+    events[ecodes.EV_FF] = input.capabilities()[ecodes.EV_FF]
+    uinput_args["max_effects"] = input.ff_effects_count
+target = evdev.UInput(name="virtual wheel", events=events, **uinput_args)
 print(target.device.path)
 sys.stdout.close() # to not block processes that tries to read the stdout
+
+# virtual effect id -> physical effect id
+effects = {}
+
+def ff_error(e):
+    return -(e.errno or errno.EIO)
+
+def upload_effect(request_id):
+    upload = target.begin_upload(request_id)
+    effect = upload.effect
+    virtual_id = effect.id
+    try:
+        # update the physical effect already backing this id, or create a new one
+        effect.id = effects.get(virtual_id, -1)
+        effects[virtual_id] = input.upload_effect(effect)
+        upload.retval = 0
+    except OSError as e:
+        upload.retval = ff_error(e)
+    effect.id = virtual_id
+    target.end_upload(upload)
+
+def erase_effect(request_id):
+    erase = target.begin_erase(request_id)
+    try:
+        if (physical_id := effects.pop(erase.effect_id, None)) is not None:
+            input.erase_effect(physical_id)
+        erase.retval = 0
+    except OSError as e:
+        erase.retval = ff_error(e)
+    target.end_erase(erase)
+
+def forward_ff():
+    for event in target.read():
+        if event.type == ecodes.EV_UINPUT:
+            if event.code == ecodes.UI_FF_UPLOAD:
+                upload_effect(event.value)
+            elif event.code == ecodes.UI_FF_ERASE:
+                erase_effect(event.value)
+        elif event.type == ecodes.EV_FF:
+            # gain and autocenter are device wide, any other code plays or stops an effect
+            code = event.code if event.code in (ecodes.FF_GAIN, ecodes.FF_AUTOCENTER) else effects.get(event.code)
+            if code is not None:
+                try:
+                    input.write(ecodes.EV_FF, code, event.value)
+                except OSError:
+                    pass  # a failed effect must not stop steering
 
 # duplicate events
 poll = select.poll()
 poll.register(input.fd, select.POLLIN)
+if has_ff:
+    poll.register(target.fd, select.POLLIN)
 try:
     while True:
-        if poll.poll(1000):
+        for (fd, _) in poll.poll(1000):
+            if fd == target.fd:
+                forward_ff()
+                continue
             for event in input.read():
                 if event.type == ecodes.EV_ABS and event.code == args.axis:
                     if event.value >= -mimidzone and event.value <= mimidzone:

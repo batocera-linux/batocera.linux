@@ -200,9 +200,9 @@ async def configure_wheels(
             )
 
             # try to write range directly in physical wheel if the driver supports it
-            range_path = Path(device.sysfs_path) / 'range'
-            if os.access(range_path, os.F_OK | os.R_OK | os.W_OK):
+            if (range_path := _find_range_path(device.sysfs_path)) is not None:
                 range_path.write_text(str(wanted_ra))
+                _logger.info('wheel range set to %s through %s', wanted_ra, range_path)
                 ra = wanted_ra
 
             # no need new device in some cases
@@ -212,6 +212,7 @@ async def configure_wheels(
                 )
                 if reconfigure_result is not None:
                     # replace sdl guid by virtualwheel guid for correct sdl mapping
+                    controller.physical_guid = controller.guid  # save the physical guid for the sdl2 cache
                     controller.guid = '03000000010000000100000001000000'
                     newdev, p = reconfigure_result
                     _logger.info(
@@ -295,6 +296,14 @@ async def configure_wheels(
         except Exception:
             _logger.error('hum, unable to reset wheel controllers !')
             # don't fail
+
+
+def _find_range_path(sysfs_path: str, /) -> Path | None:
+    hid_dir = Path(sysfs_path)
+    # some drivers (hid-logitech-dd) expose range on another usb interface of the same wheel
+    hid_id = hid_dir.name.rsplit('.', 1)[0]
+    candidates = [hid_dir / 'range', *sorted(hid_dir.parent.parent.glob(f'*/{hid_id}.*/range'))]
+    return next((path for path in candidates if os.access(path, os.F_OK | os.R_OK | os.W_OK)), None)
 
 
 async def _reconfigure_angle_rotation(
