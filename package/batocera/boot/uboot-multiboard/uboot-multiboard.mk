@@ -60,7 +60,7 @@ endif
 
 # Find any common config fragments and patches in package dir.
 UBOOT_MULTIBOARD_CNF_FRAGS_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/*.config.fragment)
-UBOOT_MULTIBOARD_PATCHES_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/*.patch)
+UBOOT_MULTIBOARD_PATCHES_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/patches/*.patch)
 
 # Find any SoC level config fragments and patches in SoC dir (if it exists).
 UBOOT_MULTIBOARD_CNF_FRAGS_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/*.config.fragment)
