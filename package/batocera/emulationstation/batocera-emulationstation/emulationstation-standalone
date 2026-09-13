@@ -93,14 +93,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
     settings_output2=$(batocera-settings-get-master global.videooutput2)
     settings_output3=$(batocera-settings-get-master global.videooutput3)
 
-    # If master settings are not found, try the regular settings
-    if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
-        echo "Standalone: Master video outputs not found, trying default" >> "$log"
-        settings_output=$(batocera-settings-get global.videooutput)
-        settings_output2=$(batocera-settings-get global.videooutput2)
-        settings_output3=$(batocera-settings-get global.videooutput3)
-    fi
-
     # If no video output settings are found, check for the screen checker's query file auto.
     # or if query file force is found (the user wants to force a configuration)
     DO_QUERY_FILE=
@@ -200,7 +192,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
     # If screen2 is empty, take the first one found which is not screen1
     if [ -z "${settings_output2}" ]; then
-        user_output2="$(batocera-settings-get global.videooutput2)"
+        user_output2="$(batocera-settings-get-master global.videooutput2)"
         if [ "${user_output2}" != "none" ]; then
             settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
             if [ -n "${settings_output2}" ]; then
@@ -258,7 +250,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             fi
         fi
         if [ -n "${settings_output3}" ]; then
-            bootresolution3="$(batocera-settings-get es.resolution3)"
+            bootresolution3="$(batocera-settings-get-master es.resolution3)"
             if [ -z "${bootresolution3}" ]; then
                 echo "Standalone: No resolution for '${settings_output3}'. Using minTomaxResolution-secure." >> "$log"
                 batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
@@ -304,7 +296,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output2}")
         fi
         if [ -z "${display_rotate2}" ]; then
-            display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+            display_rotate2="$(/usr/bin/batocera-settings-get-master display.rotate2)"
         fi
         if [ -n "${display_rotate2}" ] && batocera-resolution --screen "${settings_output2}" supportSystemRotation; then
             echo "Standalone: Applying system rotation '${display_rotate2}' for '${settings_output2}'." >> "$log"
@@ -318,7 +310,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output3}")
         fi
         if [ -z "${display_rotate3}" ]; then
-            display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+            display_rotate3="$(/usr/bin/batocera-settings-get-master display.rotate3)"
         fi
         if [ -n "${display_rotate3}" ] && batocera-resolution --screen "${settings_output3}" supportSystemRotation; then
             echo "Standalone: Applying system rotation '${display_rotate3}' for '${settings_output3}'." >> "$log"
