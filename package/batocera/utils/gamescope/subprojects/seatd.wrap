@@ -1,0 +1,10 @@
+[wrap-file]
+directory = seatd-0.9.0
+source_url = https://git.sr.ht/~kennylevinsen/seatd/archive/0.9.0.tar.gz
+source_filename = seatd-0.9.0.tar.gz
+source_hash = 4276d1380c67e30a63c289b35f7bf955e126e6daf3596cd5aa6080670aa1214c
+
+# The subproject is named "seatd" because that is the fallback name the wlroots
+# subproject uses when it looks up libseat.
+[provide]
+dependency_names = libseat
