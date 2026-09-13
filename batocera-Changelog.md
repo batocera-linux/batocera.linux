@@ -243,6 +243,7 @@
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260726-git-b7d8acd
 - TheXTech to v1.3.7.3-1
+- TIC-80 to v1.2.0
 - TRX to 1.10.2
 - Tsugaru to v20260522
 - Ur-Quan Masters to Aug 21, 2026 build

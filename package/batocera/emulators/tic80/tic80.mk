@@ -3,8 +3,8 @@
 # tic80
 #
 ################################################################################
-# Version: Stable release v1.1.2837 (October 22, 2024)
-TIC80_VERSION = v1.1.2837
+
+TIC80_VERSION = v1.2.0
 TIC80_SITE = https://github.com/nesbox/TIC-80.git
 TIC80_SITE_METHOD = git
 TIC80_GIT_SUBMODULES = YES
@@ -20,6 +20,7 @@ TIC80_CONF_OPTS += -DBUILD_PLAYER=OFF
 TIC80_CONF_OPTS += -DBUILD_SOKOL=OFF
 TIC80_CONF_OPTS += -DBUILD_SDL=ON
 TIC80_CONF_OPTS += -DBUILD_DEMO_CARTS=OFF
+TIC80_CONF_OPTS += -DPREFER_SYSTEM_LIBRARIES=ON
 
 ifeq ($(BR2_PACKAGE_LIBGLES),y)
 TIC80_CONF_OPTS += -DBUILD_WITH_GLES=ON
