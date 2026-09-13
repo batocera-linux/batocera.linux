@@ -112,6 +112,7 @@ class _ControllerChanges(TypedDict, total=False):
     axis_count: int
     physical_device_path: str | None
     physical_index: int | None
+    physical_guid: str | None
 
 
 @dataclass(slots=True, kw_only=True)
@@ -128,6 +129,7 @@ class Controller:
     axis_count: int
     physical_device_path: str | None = None
     physical_index: int | None = None
+    physical_guid: str | None = None
 
     inputs_: InitVar[InputMapping | Iterable[tuple[str, Input]] | None] = None
     inputs: InputDict = field(init=False)
@@ -180,8 +182,12 @@ class Controller:
     def get_mapping_axis_relaxed_values(self) -> dict[str, _RelaxedDict]:
         import evdev
 
+        # es wrote the cache for the physical pad, not for a virtual wheel
+        guid = self.physical_guid or self.guid
+        device_path = self.physical_device_path or self.device_path
+
         # read the sdl2 cache if possible for axis
-        cache_file = Path(HOME / '.sdl2' / f'{self.guid}_{self.name}.cache')
+        cache_file = Path(HOME / '.sdl2' / f'{guid}_{self.name}.cache')
         if not cache_file.exists():
             return {}
 
@@ -191,7 +197,7 @@ class Controller:
         relaxed_values: list[int] = [int(cache_content[i]) for i in range(1, n + 1)]
 
         # get full list of axis (in case one is not used in es)
-        caps = evdev.InputDevice(self.device_path).capabilities()
+        caps = evdev.InputDevice(device_path).capabilities()
         code_values: dict[int, int] = {}
         i = 0
         for code, _ in caps[evdev.ecodes.EV_ABS]:

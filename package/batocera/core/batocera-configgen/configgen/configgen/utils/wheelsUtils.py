@@ -201,6 +201,7 @@ def configure_wheels(
                 reconfigure_result = _reconfigure_angle_rotation(controller, ra, wanted_ra, wanted_deadzone, wanted_midzone)
                 if reconfigure_result is not None:
                     # replace sdl guid by virtualwheel guid for correct sdl mapping
+                    controller.physical_guid = controller.guid  # save the physical guid for the sdl2 cache
                     controller.guid = "03000000010000000100000001000000"
                     newdev, p = reconfigure_result
                     _logger.info("replacing device %s by device %s for player %s", controller.device_path, newdev, controller.player_number)

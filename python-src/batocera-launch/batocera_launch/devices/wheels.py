@@ -212,6 +212,7 @@ async def configure_wheels(
                 )
                 if reconfigure_result is not None:
                     # replace sdl guid by virtualwheel guid for correct sdl mapping
+                    controller.physical_guid = controller.guid  # save the physical guid for the sdl2 cache
                     controller.guid = '03000000010000000100000001000000'
                     newdev, p = reconfigure_result
                     _logger.info(
