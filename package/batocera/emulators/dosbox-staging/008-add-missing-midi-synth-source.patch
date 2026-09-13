@@ -1,0 +1,12 @@
+diff --git a/src/midi/meson.build b/src/midi/meson.build
+--- a/src/midi/meson.build
++++ b/src/midi/meson.build
+@@ -3,6 +3,7 @@ libmidi_sources = [
+     'coreaudio.cpp',
+     'coremidi.cpp',
+     'fluidsynth.cpp',
+     'midi.cpp',
++    'midi_synth.cpp',
+     'mt32.cpp',
+     'mt32_lasynth_model.cpp',
+     'soundcanvas.cpp',

@@ -1,13 +1,12 @@
 diff --git a/meson.build b/meson.build
-index e2056aae9..7f6394240 100644
 --- a/meson.build
 +++ b/meson.build
-@@ -429,29 +429,8 @@ can_trust_system_speexdsp = (
- 
+@@ -849,30 +849,9 @@ can_trust_system_speexdsp = (
+
  # Test the library. Trust is dropped if the test fails.
  if can_trust_system_speexdsp
 -    system_speexdsp_test = cxx.run(
--        files('contrib/check-speexdsp/test_speexdsp_float_api.cpp'),
+-        files('extras/check-speexdsp/test_speexdsp_float_api.cpp'),
 -        dependencies: speexdsp_dep,
 -        name: 'SpeexDSP system library has reliable floating-point API',
 -    )
@@ -17,10 +16,10 @@ index e2056aae9..7f6394240 100644
 -    )
 -    if can_trust_system_speexdsp
 -        speexdsp_summary_msg = 'system library'
-+   speexdsp_summary_msg = 'built-in'
-     endif
--endif
--
+-    endif
++    speexdsp_summary_msg = 'system library'
+ endif
+
 -# Use the wrap if the system doesn't have SpeexDSP, we couldn't test it, or testing failed
 -if not can_trust_system_speexdsp
 -    speexdsp_dep = subproject(
@@ -30,6 +29,7 @@ index e2056aae9..7f6394240 100644
 -    speexdsp_summary_msg = 'built-in'
 -endif
 -summary('SpeexDSP provider', speexdsp_summary_msg)
- 
+-
  # File-descriptor manipulation routines, such as FD_ZERO, are used
  # by Enet, slirp, and ManyMouse's X11 interface. Unfortunately these
+ # routines aren't universally available, such as on Android.
