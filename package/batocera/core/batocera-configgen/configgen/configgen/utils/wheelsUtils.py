@@ -191,9 +191,9 @@ def configure_wheels(
             _logger.info("wheel rotation angle is %s ; wanted wheel rotation angle is %s ; wanted deadzone is %s ; wanted midzone is %s", ra, wanted_ra, wanted_deadzone, wanted_midzone)
 
             # try to write range directly in physical wheel if the driver supports it
-            range_path = Path(device["sysfs_path"]) / "range"
-            if os.access(range_path, os.F_OK | os.R_OK | os.W_OK):
+            if (range_path := _find_range_path(device["sysfs_path"])) is not None:
                 range_path.write_text(str(wanted_ra))
+                _logger.info("wheel range set to %s through %s", wanted_ra, range_path)
                 ra = wanted_ra
 
             # no need new device in some cases
@@ -277,6 +277,14 @@ def configure_wheels(
         except Exception:
             _logger.error("hum, unable to reset wheel controllers !")
             # don't fail
+
+
+def _find_range_path(sysfs_path: str) -> Path | None:
+    hid_dir = Path(sysfs_path)
+    # some drivers (hid-logitech-dd) expose range on another usb interface of the same wheel
+    hid_id = hid_dir.name.rsplit(".", 1)[0]
+    candidates = [hid_dir / "range", *sorted(hid_dir.parent.parent.glob(f"*/{hid_id}.*/range"))]
+    return next((path for path in candidates if os.access(path, os.F_OK | os.R_OK | os.W_OK)), None)
 
 
 def _reconfigure_angle_rotation(
