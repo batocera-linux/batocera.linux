@@ -44,7 +44,7 @@ ifeq ($(BR2_arm)$(BR2_aarch64),y)
         $(@D)/dsp56k $(@D)/matrox $(@D)/yamaha
     
     # Prune other ARM SoC vendors if building a specific ARM target
-    ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
+    ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3562)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
          ALLLINUXFIRMWARES_REMOVE_DIRS += \
             $(@D)/rockchip $(@D)/amlogic $(@D)/meson $(@D)/sunxi \
             $(@D)/nxp $(@D)/imx $(@D)/starfive $(@D)/powervr \

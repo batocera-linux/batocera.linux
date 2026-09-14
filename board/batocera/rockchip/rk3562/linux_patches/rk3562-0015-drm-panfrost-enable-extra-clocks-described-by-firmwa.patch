@@ -1,0 +1,154 @@
+From 5398a7d9e670e913f1c9aefb00fd075278c22d7b Mon Sep 17 00:00:00 2001
+From: retro98boy <retro98boy@qq.com>
+Date: Sun, 2 Aug 2026 19:23:33 +0800
+Subject: [PATCH 15/18] drm/panfrost: enable extra clocks described by firmware
+
+Some platforms describe more clocks than panfrost's primary GPU clock and
+optional bus clock. If those clocks are left disabled, the GPU may hang
+when the driver starts accessing registers after probe.
+
+Keep the existing clock handling intact: the first clock remains
+pfdev->clock and the named bus clock still uses pfdev->bus_clock. Collect
+the remaining named clocks from firmware and enable them as a bulk group.
+
+This lets platforms such as RK3562 provide the extra GPU clocks they need
+without hard-coding SoC-specific clock names or changing existing gpu/bus
+based devices.
+---
+ drivers/gpu/drm/panfrost/panfrost_device.c | 80 ++++++++++++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_device.h |  2 +
+ 2 files changed, 82 insertions(+)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
+index dedc13e56..24cd938f1 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.c
++++ b/drivers/gpu/drm/panfrost/panfrost_device.c
+@@ -3,6 +3,7 @@
+ /* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+ 
+ #include <linux/clk.h>
++#include <linux/of.h>
+ #include <linux/reset.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
+@@ -35,9 +36,69 @@ static void panfrost_reset_fini(struct panfrost_device *pfdev)
+ 	reset_control_assert(pfdev->rstc);
+ }
+ 
++static bool panfrost_is_extra_clock(int index, const char *id)
++{
++	/*
++	 * The first clock is the GPU core clock handled through pfdev->clock.
++	 * The optional "bus" clock is kept on the existing dedicated path.
++	 */
++	return (index > 0) && id && (strcmp(id, "bus") != 0);
++}
++
++static int panfrost_extra_clocks_init(struct panfrost_device *pfdev)
++{
++	struct device_node *np = pfdev->base.dev->of_node;
++	int count, i;
++
++	if (!np)
++		return 0;
++
++	count = of_count_phandle_with_args(np, "clocks", "#clock-cells");
++	if (count == -ENOENT)
++		return 0;
++	if (count < 0)
++		return count;
++	if (count <= 1)
++		return 0;
++
++	pfdev->extra_clocks = devm_kcalloc(pfdev->base.dev, count - 1,
++					   sizeof(*pfdev->extra_clocks),
++					   GFP_KERNEL);
++	if (!pfdev->extra_clocks)
++		return -ENOMEM;
++
++	for (i = 0; i < count; i++) {
++		const char *id;
++		struct clk *clk;
++
++		if (of_property_read_string_index(np, "clock-names", i, &id))
++			continue;
++
++		if (!panfrost_is_extra_clock(i, id))
++			continue;
++
++		clk = devm_clk_get_optional(pfdev->base.dev, id);
++		if (IS_ERR(clk)) {
++			dev_err(pfdev->base.dev, "get %s failed %ld\n",
++				id, PTR_ERR(clk));
++			return PTR_ERR(clk);
++		}
++
++		if (!clk)
++			continue;
++
++		pfdev->extra_clocks[pfdev->num_extra_clocks].id = id;
++		pfdev->extra_clocks[pfdev->num_extra_clocks].clk = clk;
++		pfdev->num_extra_clocks++;
++	}
++
++	return 0;
++}
++
+ static int panfrost_clk_init(struct panfrost_device *pfdev)
+ {
+ 	int err;
++	int i;
+ 	unsigned long rate;
+ 
+ 	pfdev->clock = devm_clk_get(pfdev->base.dev, NULL);
+@@ -70,8 +131,26 @@ static int panfrost_clk_init(struct panfrost_device *pfdev)
+ 			goto disable_clock;
+ 	}
+ 
++	err = panfrost_extra_clocks_init(pfdev);
++	if (err)
++		goto disable_bus_clock;
++
++	for (i = 0; i < pfdev->num_extra_clocks; i++) {
++		rate = clk_get_rate(pfdev->extra_clocks[i].clk);
++		dev_info(pfdev->base.dev, "%s rate = %lu\n",
++			 pfdev->extra_clocks[i].id,
++			 rate);
++	}
++
++	err = clk_bulk_prepare_enable(pfdev->num_extra_clocks,
++				      pfdev->extra_clocks);
++	if (err)
++		goto disable_bus_clock;
++
+ 	return 0;
+ 
++disable_bus_clock:
++	clk_disable_unprepare(pfdev->bus_clock);
+ disable_clock:
+ 	clk_disable_unprepare(pfdev->clock);
+ 
+@@ -80,6 +159,7 @@ static int panfrost_clk_init(struct panfrost_device *pfdev)
+ 
+ static void panfrost_clk_fini(struct panfrost_device *pfdev)
+ {
++	clk_bulk_disable_unprepare(pfdev->num_extra_clocks, pfdev->extra_clocks);
+ 	clk_disable_unprepare(pfdev->bus_clock);
+ 	clk_disable_unprepare(pfdev->clock);
+ }
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
+index 0f3992412..4a457b4ad 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.h
++++ b/drivers/gpu/drm/panfrost/panfrost_device.h
+@@ -136,6 +136,8 @@ struct panfrost_device {
+ 	void __iomem *iomem;
+ 	struct clk *clock;
+ 	struct clk *bus_clock;
++	struct clk_bulk_data *extra_clocks;
++	int num_extra_clocks;
+ 	struct regulator_bulk_data *regulators;
+ 	struct reset_control *rstc;
+ 	/* pm_domains for devices with more than one. */
+-- 
+2.55.0
+
