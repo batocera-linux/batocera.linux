@@ -13,9 +13,15 @@ shared_features:
   - bezel.tattoo_corner
   - bezel.tattoo_file
   - bezel.resize_tattoo
+file_extensions:
+  - pc
+  - dos
+  - squashfs
+  - dosz
+  - m3u
+  - iso
+  - cue
 systems:
   - name: dos
     as_emulator: dosboxx
     as_core: dosbox-x
-    exclude_extensions:
-      - zip

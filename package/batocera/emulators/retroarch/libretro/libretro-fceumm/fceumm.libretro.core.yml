@@ -89,6 +89,17 @@ custom_features:
       NES Gamepad: 513
       NES Zapper: 258
       Arkanoid paddle: 514
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - fds
-  - nes
+  - name: fds
+    file_extensions:
+      add:
+        - fds
+  - name: nes
+    file_extensions:
+      add:
+        - nes
+        - unif
+        - unf

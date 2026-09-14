@@ -129,5 +129,10 @@ custom_features:
     prompt: SHOW POINTER
     description: You can hide the pointer on touchscreen devices.
     preset: switchauto
+# automatic install & run of pkg, zip & vpk is not working
+# vpk's don't seem to work with vita3k currently
+file_extensions:
+  - zip
+  - psvita
 systems:
   - psvita

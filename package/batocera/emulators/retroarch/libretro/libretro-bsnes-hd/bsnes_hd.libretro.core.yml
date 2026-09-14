@@ -14,8 +14,16 @@ custom_features:
       NTSC (RGB): NTSC (RGB)
       NTSC (S-Video): NTSC (S-Video)
       NTSC (Composite): NTSC (Composite)
+file_extensions:
+  - zip
+  - 7z
 systems:
   - name: sgb-msu1
+    file_extensions:
+      add:
+        - gb
+        - gbc
+        - squashfs
     custom_features:
       bsnes_sgb_bios:
         group: ADVANCED OPTIONS
@@ -26,6 +34,16 @@ systems:
           Super Game Boy 2: SGB2.sfc
 
   - name: snes
+    file_extensions:
+      add:
+        - smc
+        - fig
+        - sfc
+        - gd3
+        - gd7
+        - dx2
+        - bsx
+        - swc
     custom_features:
       bsnes_mode7_scale:
         group: ADVANCED OPTIONS
@@ -67,6 +85,10 @@ systems:
           Only for Mode 7 scenes: Mode 7
           Enable for all scenes: all
   - name: snes-msu1
+    file_extensions:
+      - smc
+      - sfc
+      - squashfs
     custom_features:
       bsnes_mode7_scale:
         group: ADVANCED OPTIONS

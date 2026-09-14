@@ -4,14 +4,24 @@ features:
 shared_features:
   - rewind
   - autosave
+file_extensions:
+  - dsk
+  - rom
+  - zip
+  - 7z
+  - cas
+  - m3u
 systems:
   - name: msx1
-    exclude_extensions:
-      - ogv
-      - openmsx
+    file_extensions:
+      add:
+        - mx1
   - name: msx2
-    exclude_extensions:
-      - openmsx
+    file_extensions:
+      add:
+        - mx2
+        - ogv
   - name: msx2+
-    exclude_extensions:
-      - openmsx
+    file_extensions:
+      add:
+        - mx2

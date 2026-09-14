@@ -86,8 +86,37 @@ custom_features:
       RGB: rgb
       S-Video: s-video
       Composite: composite
+file_extensions:
+  - smc
+  - sfc
 systems:
-  - snes
-  - snes-msu1
-  - satellaview
-  - sufami
+  - name: snes
+    file_extensions:
+      add:
+        - fig
+        - gd3
+        - gd7
+        - dx2
+        - bsx
+        - swc
+        - zip
+        - 7z
+  - name: snes-msu1
+    file_extensions:
+      add:
+        - squashfs
+  - name: satellaview
+    file_extensions:
+      add:
+        - bs
+        - zip
+        - 7z
+        - squashfs
+  - name: sufami
+    file_extensions:
+      add:
+        - st
+        - fig
+        - bs
+        - zip
+        - 7z

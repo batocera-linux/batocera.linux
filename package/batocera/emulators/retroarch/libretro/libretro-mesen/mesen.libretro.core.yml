@@ -95,6 +95,17 @@ custom_features:
     choices:
       Before NMI: Before NMI (Recommended)
       After NMI: After NMI
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - fds
-  - nes
+  - name: fds
+    file_extensions:
+      add:
+        - fds
+  - name: nes
+    file_extensions:
+      add:
+        - nes
+        - unif
+        - unf

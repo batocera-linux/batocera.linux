@@ -66,10 +66,29 @@ custom_features:
     choices:
       Enabled: True
       Disabled: False
+file_extensions:
+  - wav
+  - cas
+  - rom
+  - zip
+  - 7z
 systems:
-  - coco
-  - dragon64
+  - name: coco
+    file_extensions:
+      add:
+        - dsk
+        - ccc
+  - name: dragon64
+    file_extensions:
+      add:
+        - dsk
+        - dmk
+        - ccc
+        - bin
   - name: mc10
+    file_extensions:
+      add:
+        - bin
     custom_features:
       xroar_ram:
         prompt: RAM Size

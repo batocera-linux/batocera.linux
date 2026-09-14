@@ -21,35 +21,50 @@ custom_features:
     choices:
       NO (DEFAULT): 0
       'YES': 1
+file_extensions:
+  - d64
+  - prg
+  - zip
 systems:
   - name: c128
     as_core: x128
-    exclude_extensions:
-      - m3u
-      - 7z
+    file_extensions:
+      add:
+        - d81
+        - lnx
   - name: c20
     as_core: xvic
-    exclude_extensions:
-      - m3u
-      - 7z
-      - 20
-      - 40
-      - 60
+    file_extensions: &c20
+      add:
+        - rom
+        - a0
+        - b0
+        - crt
+        - d81
+        - tap
+        - t64
   - name: c64
     as_core:
       - x64
       - x64dtv
       - xscpu64
-    exclude_extensions:
-      - m3u
-      - 7z
+    file_extensions:
+      add:
+        - d71
+        - d81
+        - crt
+        - tap
+        - t64
+        - nib
+        - g64
   - name: cplus4
     as_core: xplus4
-    exclude_extensions:
-      - m3u
-      - 7z
+    file_extensions:
+      add:
+        - tap
   - name: pet
     as_core: xpet
-    exclude_extensions:
-      - m3u
-      - 7z
+    file_extensions:
+      values: *c20
+      remove:
+        - rom

@@ -92,5 +92,17 @@ custom_features:
     description: Activate Doom DOS original music and throttle the Doom frame rate.
     preset: switchauto
 systems:
-  - jaguar
-  - jaguarcd
+  - name: jaguar
+    file_extensions:
+      - j64
+      - jag
+      - cof
+      - abs
+      - rom
+      - zip
+      - 7z
+  - name: jaguarcd
+    file_extensions:
+      - cue
+      - cdi
+      - bigpimg
