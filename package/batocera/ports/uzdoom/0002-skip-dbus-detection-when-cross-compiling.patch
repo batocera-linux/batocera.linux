@@ -1,0 +1,12 @@
+diff --git a/libraries/ZWidget/CMakeLists.txt b/libraries/ZWidget/CMakeLists.txt
+--- a/libraries/ZWidget/CMakeLists.txt
++++ b/libraries/ZWidget/CMakeLists.txt
+@@ -1,7 +1,7 @@
+ cmake_minimum_required(VERSION 3.11)
+ project(zwidget)
+ 
+-if (UNIX AND NOT APPLE)
++if (UNIX AND NOT APPLE AND NOT CMAKE_CROSSCOMPILING)
+ 	include(FindPkgConfig)
+ 	pkg_check_modules(DBUS dbus-1)
+ 	if (!DBUS_FOUND)

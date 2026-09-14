@@ -43,7 +43,6 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_FLATPAK),,flatpak.py) \
 		$(if $(BR2_PACKAGE_FSUAE),,fsuae.py) \
 		$(if $(BR2_PACKAGE_GSPLUS),,gsplus.py) \
-		$(if $(BR2_PACKAGE_GZDOOM),,gzdoom.py) \
 		$(if $(BR2_PACKAGE_HATARI),,hatari.py) \
 		$(if $(BR2_PACKAGE_HCL),,hcl.py) \
 		$(if $(BR2_PACKAGE_HURRICAN),,hurrican.py) \
@@ -85,6 +84,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_TSUGARU),,tsugaru.py) \
 		$(if $(BR2_PACKAGE_TYRIAN),,tyrian.py) \
 		$(if $(BR2_PACKAGE_UQM),,uqm.py) \
+		$(if $(BR2_PACKAGE_UZDOOM),,uzdoom.py) \
 		$(if $(BR2_PACKAGE_VICE),,vice.py) \
 		$(if $(BR2_PACKAGE_VITA3K),,vita3k.py) \
 		$(if $(BR2_PACKAGE_VKQUAKE),,vkquake.py) \

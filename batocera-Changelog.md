@@ -1,5 +1,6 @@
 # 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
+- GZDoom has been replaced by UZDoom, a continuation of ZDoom and GZDoom - existing gzdoom ROM folders, .gzdoom mod files, and configs need to be renamed to uzdoom
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 - SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
