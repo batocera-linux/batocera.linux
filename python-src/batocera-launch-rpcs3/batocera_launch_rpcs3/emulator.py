@@ -836,7 +836,7 @@ class RPCS3(Emulator):
                 # Output Scaling
                 'Output Scaling Mode': self.config.get('rpcs3_scaling', 'Bilinear'),
                 # CAS Sharpening
-                'FidelityFX CAS Sharpening Intensity': self.config.get_int('rpcs3_fsr_sharpening', 50),
+                'FidelityFX CAS Sharpening Intensity': int(self.config.get_float('rpcs3_fsr_sharpening', 50)),
                 # Number of Shader Compilers
                 'Shader Compiler Threads': self.config.get_int('rpcs3_num_compilers', 0),
                 # Multithreaded RSX
