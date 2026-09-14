@@ -1,0 +1,16 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -458,7 +458,11 @@
+ # Find common external dependencies
+ find_package(PkgConfig REQUIRED)
+ find_package(SDL2 CONFIG REQUIRED)
+-find_package(SDL2_image CONFIG REQUIRED)
++find_package(SDL2_image CONFIG QUIET)
++if (NOT SDL2_image_FOUND)
++  pkg_check_modules(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
++  add_library(SDL2_image::SDL2_image ALIAS PkgConfig::SDL2_IMAGE)
++endif()
+ find_package(iir REQUIRED)
+ find_package(PNG REQUIRED)
+ find_package(OpenGL REQUIRED)

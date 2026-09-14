@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -475,6 +475,8 @@
+ )
+ if (OPT_DEBUGGER)
+   set_target_properties( dosbox PROPERTIES OUTPUT_NAME dosbox_with_debugger)
++else()
++  set_target_properties( dosbox PROPERTIES OUTPUT_NAME dosbox-staging)
+ endif()
+
+ # Bundle licenses, but skip the ones that are not relevant for
