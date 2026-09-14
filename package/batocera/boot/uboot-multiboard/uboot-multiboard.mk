@@ -12,8 +12,8 @@ endif
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
-UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools
-UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
+UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools host-util-linux
+UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls host-dtc
 UBOOT_MULTIBOARD_INSTALL_IMAGES = YES
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_H3),y)
