@@ -3519,36 +3519,36 @@ arduboy:
   hardware: portable
   extensions: [hex, zip, 7z]
 
-gzdoom:
-  name: GZDoom
+uzdoom:
+  name: UZDoom
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [wad, iwad, pwad, gzdoom]
+  extensions: [wad, iwad, pwad, uzdoom]
   platform: pc
   group: ports
   comment_en: |
-    Custom mods can be used by creating a new text file named after the game with the extension ''.gzdoom''. For example:
-    Aliens Eradication.gzdoom, which contains this single line of text:
+    Custom mods can be used by creating a new text file named after the game with the extension ''.uzdoom''. For example:
+    Aliens Eradication.uzdoom, which contains this single line of text:
     -iwad DOOM2.WAD -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
     Note: The command must be on one line and the casing of the filenames and extensions must match exactly.
 
-    Additional music can be added to /userdata/system/configs/gzdoom in the fm_banks & soundfonts folders respectively.
+    Additional music can be added to /userdata/system/configs/uzdoom in the fm_banks & soundfonts folders respectively.
 
-    More info: https://wiki.batocera.org/systems:gzdoom
+    More info: https://wiki.batocera.org/systems:uzdoom
   comment_pt: |
     Mettez vos fichiers rom et mod dans ce répertoire.
 
-    L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
-    c'est-à-dire que Aliens Eradication.gzdoom doit contenir une ligne comme celle-ci :
+    L'utilisation de l'extension .uzdoom vous permet d'ajouter des mods personnalisés.
+    c'est-à-dire que Aliens Eradication.uzdoom doit contenir une ligne comme celle-ci :
     -iwad DOOM2.WAD -fichier ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
+    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .uzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
 
-    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
+    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/uzdoom dans les dossiers fm_banks et soundfonts respectivement.
 
-    Plus d'infos : https://wiki.batocera.org/systems:gzdoom
+    Plus d'infos : https://wiki.batocera.org/systems:uzdoom
 
 corsixth:
   name: CorsixTH
