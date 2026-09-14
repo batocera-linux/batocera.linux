@@ -3,8 +3,14 @@ features:
 shared_features:
   - rewind
   - autosave
+file_extensions:
+  - zip
+  - 7z
 systems:
   - name: gb
+    file_extensions:
+      add:
+        - gb
     custom_features:
       palettes:
         prompt: GB COLORIZATION
@@ -27,6 +33,9 @@ systems:
           'Off': disabled
           'On': enabled
   - name: gbc
+    file_extensions:
+      add:
+        - gbc
     custom_features:
       gbcoloroption_gbc:
         group: ADVANCED OPTIONS
@@ -36,9 +45,9 @@ systems:
           'Off': disabled
           'On': enabled
   - name: gba
-    exclude_extensions:
-      - tar
-      - rar
+    file_extensions:
+      add:
+        - gba
     custom_features:
       solarsensor:
         group: ADVANCED OPTIONS

@@ -3,8 +3,9 @@ features:
 shared_features:
   - rewind
   - autosave
+file_extensions:
+  - gba
+  - zip
+  - 7z
 systems:
-  - name: gba
-    exclude_extensions:
-      - tar
-      - rar
+  - gba

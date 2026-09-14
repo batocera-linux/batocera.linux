@@ -54,11 +54,8 @@ custom_features:
     choices:
       'On': 1
       Off (Default): 0
+file_extensions:
+  - chd
+  - iso
 systems:
-  - name: cdi
-    exclude_extensions:
-      - cue
-      - toc
-      - nrg
-      - gdi
-      - cdr
+  - cdi

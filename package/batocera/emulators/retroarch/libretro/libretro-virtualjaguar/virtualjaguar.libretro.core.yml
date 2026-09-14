@@ -26,6 +26,15 @@ custom_features:
       'On': enabled
 systems:
   - name: jaguar
-    exclude_extensions:
-      - 7z
-  - jaguarcd
+    file_extensions:
+      - j64
+      - jag
+      - cof
+      - abs
+      - rom
+      - zip
+  - name: jaguarcd
+    file_extensions:
+      - cue
+      - cdi
+      - bigpimg

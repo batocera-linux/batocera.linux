@@ -12,6 +12,15 @@ custom_features:
       Manual: manual
       Portrait: portrait
       Landscape: landscape
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - wswan
-  - wswanc
+  - name: wswan
+    file_extensions:
+      add:
+        - ws
+  - name: wswanc
+    file_extensions:
+      add:
+        - wsc

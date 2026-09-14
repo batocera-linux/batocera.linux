@@ -13,10 +13,16 @@ shared_features:
   - bezel.tattoo_corner
   - bezel.tattoo_file
   - bezel.resize_tattoo
+file_extensions:
+  - pc
+  - dos
+  - squashfs
+  - dosz
+  - m3u
+  - iso
+  - cue
 systems:
-  - name: dos
-    exclude_extensions:
-      - zip
+  - dos
 custom_features:
   dosbox_staging_writes_to_rom:
     prompt: Enable writable overlay for squashfs ROMs

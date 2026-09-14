@@ -29,23 +29,13 @@ custom_features:
     choices:
       NO (DEFAULT): 0
       'YES': 1
+file_extensions:
+  - bin
+  - m3u
+  - cue
+  - d88
+  - d77
+  - xdf
+  - iso
 systems:
-  - name: fmtowns
-    exclude_extensions:
-      - chd
-      - toc
-      - nrg
-      - gdi
-      - cdr
-      - mfi
-      - dfi
-      - hfe
-      - mfm
-      - td0
-      - imd
-      - 1dd
-      - cqm
-      - cqi
-      - dsk
-      - zip
-      - 7z
+  - fmtowns

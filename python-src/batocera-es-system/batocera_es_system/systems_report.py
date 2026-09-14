@@ -12,7 +12,12 @@ from typing_extensions import TypedDict
 
 from batocera_common.yaml import safe_load_yaml
 from batocera_es_system.es_systems import load_es_systems
-from batocera_es_system.registry import EmulatorInfo, EmulatorsBySystemMapping, EmulatorsMetadataMapping, Registry
+from batocera_es_system.registry import (
+    EmulatorInfo,
+    EmulatorsBySystemMapping,
+    Registry,
+    SystemMetadata,
+)
 from batocera_es_system.shared import (
     MISSING,
     Defaults,
@@ -156,7 +161,7 @@ def _generate_target_system_report(
     system_data: SystemDict,
     explanations: _ExplanationsDict,
     defaults: Defaults,
-    emulators_metadata: EmulatorsMetadataMapping,
+    system_metadata: SystemMetadata | None,
     all_system_emulators: Mapping[str, Mapping[str, EmulatorInfo]],
     /,
     *,
@@ -172,7 +177,7 @@ def _generate_target_system_report(
 
     for emulator_name, emulators_by_core in sorted(all_system_emulators.items()):
         cores_report: dict[str, _ResultCoreDict] = {}
-        cores_metadata = emulators_metadata.get(emulator_name, {})
+        cores_metadata = system_metadata.emulators.get(emulator_name, {}) if system_metadata else {}
 
         for core_name, _ in sorted(emulators_by_core.items()):
             core_metadata = cores_metadata.get(core_name)
@@ -216,10 +221,10 @@ def _generate_target_system_report(
 
                 core_report['flags'] = flags
 
-                if core_metadata['default']:
+                if core_metadata.default:
                     default_found = True
 
-                core_report['default'] = core_metadata['default']
+                core_report['default'] = core_metadata.default
             elif explanation is not None:
                 nb_all_explanations += 1
 
@@ -277,7 +282,7 @@ def _generate_target_report(
                 system_data,
                 explanations,
                 defaults,
-                systems_metadata.get(system_name, {}),
+                systems_metadata.get(system_name),
                 all_emulators_by_system.get(system_name, {}),
                 missing_info=missing_info,
             )

@@ -25,16 +25,45 @@ custom_features:
     choices:
       Floppy Disk Image: disk
       Hard Disk Image: hda
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - colecovision
+  - name: colecovision
+    file_extensions:
+      add:
+        - bin
+        - col
+        - rom
   - name: msx1
-    exclude_extensions:
-      - m3u
+    file_extensions: &msx1
+      add:
+        - dsk
+        - mx1
+        - rom
+        - cas
+        - ogv
+        - openmsx
   - name: msx2
-    exclude_extensions:
-      - m3u
+    file_extensions: &msx2
+      values: *msx1
+      remove:
+        - mx1
+      add:
+        - mx2
   - name: msx2+
-    exclude_extensions:
-      - m3u
-  - msxturbor
-  - spectravideo
+    file_extensions: &msx2plus
+      values: *msx2
+      remove:
+        - ogv
+  - name: msxturbor
+    file_extensions:
+      values: *msx2plus
+      remove:
+        - cas
+      add:
+        - m3u
+  - name: spectravideo
+    file_extensions:
+      add:
+        - cas
