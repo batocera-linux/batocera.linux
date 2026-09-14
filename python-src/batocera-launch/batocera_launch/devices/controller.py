@@ -6,8 +6,6 @@ from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
 
-from batocera_common.paths import HOME
-
 from ..exceptions import BatoceraException
 from ..paths import SYSTEM_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
@@ -183,38 +181,29 @@ class Controller:
         import evdev
 
         # es wrote the cache for the physical pad, not for a virtual wheel
-        guid = self.physical_guid or self.guid
         device_path = self.physical_device_path or self.device_path
 
-        # read the sdl2 cache if possible for axis
-        cache_file = Path(HOME / '.sdl2' / f'{guid}_{self.name}.cache')
-        if not cache_file.exists():
+        try:
+            input_device = evdev.InputDevice(device_path)
+        except OSError:
             return {}
 
-        cache_content = cache_file.read_text(encoding='utf-8').splitlines()
-        n = int(cache_content[0])  # number of lines of the cache
-
-        relaxed_values: list[int] = [int(cache_content[i]) for i in range(1, n + 1)]
-
-        # get full list of axis (in case one is not used in es)
-        caps = evdev.InputDevice(device_path).capabilities()
-        code_values: dict[int, int] = {}
-        i = 0
-        for code, _ in caps[evdev.ecodes.EV_ABS]:
-            if code < evdev.ecodes.ABS_HAT0X:
-                code_values[code] = relaxed_values[i]
-                i = i + 1
+        # Read each axis's current value straight from the device rather than a
+        # cached SDL snapshot (~/.sdl2/<guid>_<name>.cache): the cache can be
+        # stale, never written yet, or captured before the device settled
+        absinfo_by_code = dict(input_device.capabilities().get(evdev.ecodes.EV_ABS, []))
 
         # dict with es input names
         res: dict[str, _RelaxedDict] = {}
         for x, input in self.inputs.items():
             if input.type == 'axis':
-                # sdl values : from -32000 to 32000 / do not put < 0 cause a wheel/pad could be not correctly centered
-                # 3 possible initial positions <1----------------|-------2-------|----------------3>
-                if (val := code_values.get(int(cast('str', input.code)))) is not None:
-                    res[x] = {'centered': val > -4000 and val < 4000, 'reversed': val > 4000}
-                else:
+                info = absinfo_by_code.get(int(cast('str', input.code)))
+                if info is None or info.max == info.min:
                     res[x] = {'centered': True, 'reversed': False}
+                    continue
+                # 3 possible initial positions <1----------------|-------2-------|----------------3>
+                frac = (info.value - info.min) / (info.max - info.min)  # 0.0 at min .. 1.0 at max
+                res[x] = {'centered': 0.44 < frac < 0.56, 'reversed': frac > 0.56}
         return res
 
     # Create a controller array with the player id as a key

@@ -263,9 +263,12 @@ class Supermodel(Emulator):
         elif guns_need_crosses(self.guns):
             args.append('-crosshairs=1' if len(self.guns) == 1 else '-crosshairs=3')
 
-        # Force feedback
+        # Force feedback (the template bakes ForceFeedback = 1, so the "off" case must
+        # be passed explicitly or the ini's default silently wins)
         if self.config.get_bool('forceFeedback'):
             args.append('-force-feedback')
+        else:
+            args.append('-no-force-feedback')
 
         # PowerPC frequency
         if freq := self.config.get_str('ppcFreq'):
@@ -447,6 +450,8 @@ class Supermodel(Emulator):
             p1_r1 = _get_pad_input(pad1, ['pagedown', 'r1', 'right_shoulder']) or fallback(pad1, 'BUTTON6')
             p1_l2 = _get_pad_input(pad1, ['l2', 'left_trigger'], force_pos=True) or fallback(pad1, 'ZAXIS_POS')
             p1_r2 = _get_pad_input(pad1, ['r2', 'right_trigger'], force_pos=True) or fallback(pad1, 'RZAXIS_POS')
+            p1_l3 = _get_pad_input(pad1, 'l3') or fallback(pad1, 'BUTTON9')
+            p1_r3 = _get_pad_input(pad1, 'r3') or fallback(pad1, 'BUTTON10')
 
             p1_lstick_x = _get_pad_input(pad1, ['joystick1left', 'joystick1right'], full_axis=True) or fallback(
                 pad1, 'XAXIS'
@@ -488,12 +493,14 @@ class Supermodel(Emulator):
             target_config.set('Global', 'InputLongPass', _build_binding('KEY_S', p1_west))
             target_config.set('Global', 'InputShoot', _build_binding('KEY_D', p1_east))
 
+            is_wheel_pad = self.config.use_wheels and pad1.device_path in self.wheels
+
             set_input('InputSteering', p1_lstick_x)
             target_config.set('Global', 'InputAccelerator', _build_binding('KEY_UP', p1_r2))
             target_config.set('Global', 'InputBrake', _build_binding('KEY_DOWN', p1_l2))
 
             # raw axes rest at one end of -32768..32767, so pedals need their range declared
-            if not gamepad_mode or (self.config.use_wheels and pad1.device_path in self.wheels):
+            if not gamepad_mode or is_wheel_pad:
                 relaxed = pad1.get_mapping_axis_relaxed_values()
                 for binding, names in ((p1_r2, _ACCELERATOR_INPUTS), (p1_l2, _BRAKE_INPUTS)):
                     if (name := _find_pad_input_name(pad1, names)) and (axis := relaxed.get(name)):
@@ -504,20 +511,39 @@ class Supermodel(Emulator):
             target_config.set('Global', 'InputGearShiftUp', _build_binding('KEY_Y', p1_r1))
             target_config.set('Global', 'InputGearShiftDown', _build_binding('KEY_H', p1_l1))
 
-            target_config.set('Global', 'InputGearShift1', _build_binding('KEY_Q', p1_rstick_left))
-            target_config.set('Global', 'InputGearShift2', _build_binding('KEY_W', p1_rstick_down))
-            target_config.set('Global', 'InputGearShift3', _build_binding('KEY_E', p1_rstick_up))
-            target_config.set('Global', 'InputGearShift4', _build_binding('KEY_R', p1_rstick_right))
+            if is_wheel_pad:
+                # A wheel has no second stick for the 4-speed H-pattern (gamepad default,
+                # below) or a d-pad free for view-select (it's needed for gears instead), so
+                # re-lay these onto what a wheel actually has: the d-pad and face buttons/l3/r3
+                target_config.set('Global', 'InputGearShift1', _build_binding('KEY_Q', p1_left))
+                target_config.set('Global', 'InputGearShift2', _build_binding('KEY_W', p1_down))
+                target_config.set('Global', 'InputGearShift3', _build_binding('KEY_E', p1_up))
+                target_config.set('Global', 'InputGearShift4', _build_binding('KEY_R', p1_right))
 
-            target_config.set('Global', 'InputVR1', _build_binding('KEY_A', p1_up))
-            target_config.set('Global', 'InputVR2', _build_binding('KEY_S', p1_down))
-            target_config.set('Global', 'InputVR3', _build_binding('KEY_D', p1_left))
-            target_config.set('Global', 'InputVR4', _build_binding('KEY_F', p1_right))
+                target_config.set('Global', 'InputVR1', _build_binding('KEY_A', p1_south))
+                target_config.set('Global', 'InputVR2', _build_binding('KEY_S', p1_east))
+                target_config.set('Global', 'InputVR3', _build_binding('KEY_D', p1_north))
+                target_config.set('Global', 'InputVR4', _build_binding('KEY_F', p1_west))
 
-            target_config.set('Global', 'InputViewChange', _build_binding('KEY_A', p1_south))
-            target_config.set('Global', 'InputHandBrake', _build_binding('KEY_S', p1_east))
-            target_config.set('Global', 'InputRearBrake', _build_binding('KEY_S', p1_east))
-            target_config.set('Global', 'InputMusicSelect', _build_binding('KEY_D', p1_north))
+                target_config.set('Global', 'InputViewChange', _build_binding('KEY_A', p1_south))
+                target_config.set('Global', 'InputHandBrake', _build_binding('KEY_S', p1_l3))
+                target_config.set('Global', 'InputRearBrake', _build_binding('KEY_S', p1_l3))
+                target_config.set('Global', 'InputMusicSelect', _build_binding('KEY_D', p1_r3))
+            else:
+                target_config.set('Global', 'InputGearShift1', _build_binding('KEY_Q', p1_rstick_left))
+                target_config.set('Global', 'InputGearShift2', _build_binding('KEY_W', p1_rstick_down))
+                target_config.set('Global', 'InputGearShift3', _build_binding('KEY_E', p1_rstick_up))
+                target_config.set('Global', 'InputGearShift4', _build_binding('KEY_R', p1_rstick_right))
+
+                target_config.set('Global', 'InputVR1', _build_binding('KEY_A', p1_up))
+                target_config.set('Global', 'InputVR2', _build_binding('KEY_S', p1_down))
+                target_config.set('Global', 'InputVR3', _build_binding('KEY_D', p1_left))
+                target_config.set('Global', 'InputVR4', _build_binding('KEY_F', p1_right))
+
+                target_config.set('Global', 'InputViewChange', _build_binding('KEY_A', p1_south))
+                target_config.set('Global', 'InputHandBrake', _build_binding('KEY_S', p1_east))
+                target_config.set('Global', 'InputRearBrake', _build_binding('KEY_S', p1_east))
+                target_config.set('Global', 'InputMusicSelect', _build_binding('KEY_D', p1_north))
 
             if not (self.config.use_guns and self.guns):
                 target_config.set('Global', 'InputAnalogJoyX', _build_binding('MOUSE_XAXIS', p1_lstick_x))
