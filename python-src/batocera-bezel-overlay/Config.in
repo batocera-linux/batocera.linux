@@ -3,6 +3,6 @@ config BR2_PACKAGE_BATOCERA_BEZEL_OVERLAY
 	select BR2_PACKAGE_PYTHON3
 	select BR2_PACKAGE_PYTHON_GOBJECT
 	select BR2_PACKAGE_LIBGTK3
-	select BR2_PACKAGE_GTK_LAYER_SHELL
+	select BR2_PACKAGE_GTK_LAYER_SHELL if BR2_PACKAGE_WAYLAND
 	help
 	  A utility to display bezels while emulators are running
