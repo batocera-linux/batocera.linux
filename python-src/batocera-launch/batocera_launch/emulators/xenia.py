@@ -150,10 +150,10 @@ class Xenia(Emulator):
                 'xenia_postprocess_scaling_and_sharpening', 'bilinear'
             ),
             'postprocess_antialiasing': self.config.get_str('xenia_postprocess_antialiasing', 'none'),
-            'postprocess_ffx_cas_additional_sharpness': self.config.get(
+            'postprocess_ffx_cas_additional_sharpness': self.config.get_float(
                 'xenia_postprocess_ffx_cas_additional_sharpness', 0.0
             ),
-            'postprocess_ffx_fsr_sharpness_reduction': self.config.get(
+            'postprocess_ffx_fsr_sharpness_reduction': self.config.get_float(
                 'xenia_postprocess_ffx_fsr_sharpness_reduction', 0.2
             ),
         }
