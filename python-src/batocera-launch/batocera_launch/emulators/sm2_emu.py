@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import shutil
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SCREENSHOTS
@@ -15,9 +15,25 @@ from batocera_common.vulkan import (
 )
 from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
 
+if TYPE_CHECKING:
+    from batocera_launch import Controller
+
 _logger: Final = logging.getLogger(__name__)
 
 _NVRAM_SRC: Final = Path('/usr/share/sm2-emu/nvram')
+
+_GEAR_UP_INPUTS: Final = ['pagedown', 'r1', 'right_shoulder']  # right paddle
+_GEAR_DOWN_INPUTS: Final = ['pageup', 'l1', 'left_shoulder']  # left paddle
+
+
+def _wheel_button_id(pad: Controller | None, name_or_names: str | list[str], /) -> int:
+    if pad is None:
+        return -1
+    names = [name_or_names] if isinstance(name_or_names, str) else name_or_names
+    for name in names:
+        if (input := pad.inputs.get(name)) is not None and input.type == 'button':
+            return int(input.id)
+    return -1
 
 
 def _ini_bool(value: bool) -> str:
@@ -104,6 +120,32 @@ class Sm2Emu(Emulator):
         use_guns = self.config.use_guns
         graphics_backend = _resolve_graphics_backend(self.config.get_str('sm2_graphics_backend', 'opengl'))
 
+        wheel = next(
+            (pad for pad in self.controllers if self.config.use_wheels and pad.device_path in self.wheels), None
+        )
+        es_wheel_rotation = self.config.get_str('wheel_rotation') if 'wheel_rotation' in self.config else None
+
+        wheel_managed = (
+            {
+                'wheel_button_start': str(_wheel_button_id(wheel, 'start')),
+                'wheel_button_coin': str(_wheel_button_id(wheel, 'select')),
+                'wheel_button_1': str(_wheel_button_id(wheel, 'b')),
+                'wheel_button_2': str(_wheel_button_id(wheel, 'a')),
+                'wheel_button_3': str(_wheel_button_id(wheel, 'y')),
+                'wheel_button_4': str(_wheel_button_id(wheel, 'x')),
+                'wheel_button_gear_up': str(_wheel_button_id(wheel, _GEAR_UP_INPUTS)),
+                'wheel_button_gear_down': str(_wheel_button_id(wheel, _GEAR_DOWN_INPUTS)),
+                'wheel_button_test': str(_wheel_button_id(wheel, 'test')),
+                'wheel_button_service': str(_wheel_button_id(wheel, 'service')),
+                'wheel_button_menu': str(_wheel_button_id(wheel, 'hotkey')),
+            }
+            if wheel is not None
+            else {}
+        )
+        if es_wheel_rotation is not None:
+            wheel_managed['wheel_steer_degrees'] = es_wheel_rotation
+            wheel_managed['wheel_lock_degrees'] = es_wheel_rotation
+
         managed = {
             'fullscreen': 'true',
             'vsync': _ini_bool(self.config.get_bool('sm2_vsync', False)),
@@ -116,6 +158,7 @@ class Sm2Emu(Emulator):
             'wheel_ffb_strength': self.config.get_str('sm2_wheel_ffb_strength', '30'),
             'wheel_rumble': _ini_bool(self.config.get_bool('sm2_wheel_rumble', True)),
             'wheel_rumble_strength': self.config.get_str('sm2_wheel_rumble_strength', '40'),
+            **wheel_managed,
             'pad_rumble': _ini_bool(self.config.get_bool('sm2_pad_rumble', True)),
             'pad_rumble_strength': self.config.get_str('sm2_pad_rumble_strength', '60'),
             'rom_dir': str(self.roms_dir),
