@@ -7,12 +7,7 @@ from typing import TYPE_CHECKING, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SCREENSHOTS
-from batocera_common.vulkan import (
-    get_discrete_gpu_name as vulkan_get_discrete_gpu_name,
-    get_version as vulkan_get_version,
-    has_discrete_gpu as vulkan_has_discrete_gpu,
-    is_available as vulkan_is_available,
-)
+from batocera_common.vulkan import VulkanInfo, get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
 
 if TYPE_CHECKING:
@@ -58,28 +53,28 @@ def _merge_ini(existing_text: str, managed: dict[str, str]) -> str:
     return '\n'.join((*lines, ''))
 
 
-def _resolve_graphics_backend(requested: str) -> str:
+async def _resolve_graphics_backend(requested: str) -> tuple[str, VulkanInfo | None]:
     if requested != 'vulkan':
-        return requested
+        return requested, None
 
-    if not vulkan_is_available():
+    vulkan_info = await get_vulkan_info()
+    if not vulkan_info:
         _logger.debug('Vulkan driver is not available on the system. Falling back to OpenGL.')
-        return 'opengl'
+        return 'opengl', None
 
-    vulkan_version = vulkan_get_version()
-    if vulkan_version >= '1.3':
-        _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_version)
-        return 'vulkan'
+    if vulkan_info.version is not None and vulkan_info.version >= '1.3':
+        _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_info.version)
+        return 'vulkan', vulkan_info
 
-    _logger.debug('Vulkan version %s is lower than 1.3. Falling back to OpenGL.', vulkan_version)
-    return 'opengl'
+    _logger.debug('Vulkan version %s is lower than 1.3. Falling back to OpenGL.', vulkan_info.version)
+    return 'opengl', None
 
 
-def _resolve_gpu(backend: str) -> str:
-    if backend != 'vulkan' or not vulkan_has_discrete_gpu():
+def _resolve_gpu(backend: str, vulkan_info: VulkanInfo | None) -> str:
+    if backend != 'vulkan' or not vulkan_info or not (discrete_gpu := vulkan_info.active_discrete_gpu):
         return ''
 
-    return vulkan_get_discrete_gpu_name() or ''
+    return discrete_gpu.name or ''
 
 
 def _seed_nvram(dest_dir: Path) -> None:
@@ -118,7 +113,9 @@ class Sm2Emu(Emulator):
         _seed_nvram(self.nvram_dir)
 
         use_guns = self.config.use_guns
-        graphics_backend = _resolve_graphics_backend(self.config.get_str('sm2_graphics_backend', 'opengl'))
+        graphics_backend, vulkan_info = await _resolve_graphics_backend(
+            self.config.get_str('sm2_graphics_backend', 'opengl')
+        )
 
         wheel = next(
             (pad for pad in self.controllers if self.config.use_wheels and pad.device_path in self.wheels), None
@@ -165,7 +162,7 @@ class Sm2Emu(Emulator):
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),
             'graphics_backend': graphics_backend,
-            'gpu': _resolve_gpu(graphics_backend),
+            'gpu': _resolve_gpu(graphics_backend, vulkan_info),
             'render_scale': self.config.get_str('sm2_render_scale', '1'),
             'scaling_method': self.config.get_str('sm2_scaling_method', 'sharp'),
             'aspect_mode': self.config.get_str('sm2_aspect_mode', '4:3'),

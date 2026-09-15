@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.configparser import CaseSensitiveRawConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES, SCREENSHOTS
-from batocera_common.vulkan import get_discrete_gpu_index, has_discrete_gpu, is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping
 from batocera_launch.devices.video import configure_windows, find_screen
 
@@ -148,7 +148,7 @@ class Azahar(Emulator):
 
         await configure_windows('azahar', find_screen(screens, 'primary'), find_screen(screens, 'secondary'))
 
-    def _write_config(self) -> None:
+    async def _write_config(self) -> None:
         config_file = self.config_dir / 'qt-config.ini'
 
         # ini file
@@ -270,14 +270,13 @@ class Azahar(Emulator):
         azahar_config.set('Renderer', 'graphics_api', self.config.get_str('azahar_graphics_api', '1'))
         azahar_config.set('Renderer', r'graphics_api\default', 'false')
         # Set Vulkan as necessary
-        if self.config.get_str('azahar_graphics_api') == '2' and is_available():
+        if self.config.get_str('azahar_graphics_api') == '2' and (vulkan_info := await get_vulkan_info()):
             _logger.debug('Vulkan driver is available on the system.')
-            if has_discrete_gpu():
+            if discrete_gpu := vulkan_info.active_discrete_gpu:
                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                discrete_index = get_discrete_gpu_index()
-                if discrete_index:
-                    _logger.debug('Using Discrete GPU Index: %s for Azahar', discrete_index)
-                    azahar_config.set('Renderer', 'physical_device', discrete_index)
+                if discrete_gpu.index:
+                    _logger.debug('Using Discrete GPU Index: %s for Azahar', discrete_gpu.index)
+                    azahar_config.set('Renderer', 'physical_device', str(discrete_gpu.index))
                     azahar_config.set('Renderer', r'physical_device\default', 'false')
                 else:
                     _logger.debug("Couldn't get discrete GPU index")
@@ -375,7 +374,7 @@ class Azahar(Emulator):
             azahar_config.write(fp)
 
     async def configure(self) -> Command:
-        self._write_config()
+        await self._write_config()
 
         return Command(
             ['/usr/bin/azahar', self.rom],

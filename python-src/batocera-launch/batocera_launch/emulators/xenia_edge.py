@@ -8,7 +8,7 @@ import toml
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES
-from batocera_common.vulkan import get_version as vulkan_get_version, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 from batocera_launch.paths import configure_emulator
 
@@ -42,12 +42,13 @@ class XeniaEdge(Emulator):
         return 16 / 9 if self.config.get_bool('xenia_edge_widescreen', True) else 4 / 3
 
     async def configure(self) -> Command:
-        if not vulkan_is_available():
+        vulkan_info = await get_vulkan_info()
+
+        if not vulkan_info:
             raise BatoceraException('Vulkan driver required by xenia-edge is not available on the system')
 
-        vulkan_version = vulkan_get_version()
-        if vulkan_version <= '1.3':
-            _logger.warning('Vulkan version %s may not meet xenia-edge requirements (1.3+)', vulkan_version)
+        if vulkan_info.version is not None and vulkan_info.version <= '1.3':
+            _logger.warning('Vulkan version %s may not meet xenia-edge requirements (1.3+)', vulkan_info.version)
 
         xenia_cache = CACHE / 'xenia-edge'
 

@@ -7,7 +7,7 @@ from typing import Any, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, ROMS
-from batocera_common.vulkan import get_discrete_gpu_index, get_version, has_discrete_gpu, is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 from batocera_launch.paths import configure_emulator
 
@@ -140,22 +140,19 @@ class Shadps4(Emulator):
         _SAVES.mkdir(parents=True, exist_ok=True)
         (self.config_dir / 'input_config').mkdir(parents=True, exist_ok=True)  # fixes hang if not present
 
-        if not is_available():
+        vulkan_info = await get_vulkan_info()
+
+        if not vulkan_info:
             raise BatoceraException('Vulkan driver required is not available on the system')
 
         discrete_index = -1
-        vulkan_version = get_version()
-        if vulkan_version > '1.3':
+        vulkan_version = vulkan_info.version
+        if vulkan_version is not None and vulkan_version > '1.3':
             _logger.debug('Using Vulkan version: %s', vulkan_version)
-            if has_discrete_gpu():
+            if discrete_gpu := vulkan_info.active_discrete_gpu:
                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                gpu_index = get_discrete_gpu_index()
-                if gpu_index is not None:
-                    _logger.debug('Using Discrete GPU Index: %s for shadPS4', gpu_index)
-                    discrete_index = int(gpu_index)
-                else:
-                    _logger.debug("Couldn't get discrete GPU index")
-                    discrete_index = 0
+                _logger.debug('Using Discrete GPU Index: %s for shadPS4', discrete_gpu.index)
+                discrete_index = discrete_gpu.index
             else:
                 _logger.debug('Discrete GPU is not available on the system. Using default.')
         else:
