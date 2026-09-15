@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, SAVES
-from batocera_common.vulkan import get_discrete_gpu_name, has_discrete_gpu, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Controller, Emulator, HotkeysContext
 from batocera_launch.paths import CONF_INIT
 
@@ -225,7 +225,7 @@ class PPSSPP(Emulator):
             retroach_file.parent.mkdir(parents=True, exist_ok=True)
             retroach_file.write_text(token)
 
-    def _write_config(self) -> None:
+    async def _write_config(self) -> None:
         config_file = self.psp_system_dir / 'ppsspp.ini'
         ini_config = CaseSensitiveConfigParser(interpolation=None)
         if config_file.exists():
@@ -244,14 +244,13 @@ class PPSSPP(Emulator):
         # If Vulkan
         if gfxbackend == 'VULKAN':
             # Check if we have a discrete GPU & if so, set the Name
-            if vulkan_is_available():
+            if vulkan_info := await get_vulkan_info():
                 _logger.debug('Vulkan driver is available on the system.')
-                if has_discrete_gpu():
+                if discrete_gpu := vulkan_info.active_discrete_gpu:
                     _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                    discrete_name = get_discrete_gpu_name()
-                    if discrete_name:
-                        _logger.debug('Using Discrete GPU Name: %s for PPSSPP', discrete_name)
-                        ini_config.set('Graphics', 'VulkanDevice', discrete_name)
+                    if discrete_gpu.name:
+                        _logger.debug('Using Discrete GPU Name: %s for PPSSPP', discrete_gpu.name)
+                        ini_config.set('Graphics', 'VulkanDevice', discrete_gpu.name)
                     else:
                         _logger.debug("Couldn't get discrete GPU Name")
                 else:
@@ -449,7 +448,7 @@ class PPSSPP(Emulator):
             ini_config.write(fp)
 
     async def configure(self) -> Command:
-        self._write_config()
+        await self._write_config()
 
         # Remove the old gamecontrollerdb.txt file
         dbpath = self.config_dir / 'gamecontrollerdb.txt'

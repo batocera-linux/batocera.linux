@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import LOGS, SAVES, SCREENSHOTS
-from batocera_common.vulkan import get_version as vulkan_get_version, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
 
 if TYPE_CHECKING:
@@ -193,13 +193,12 @@ class Supermodel(Emulator):
         # Graphics Backend selection (OpenGL or Vulkan)
         graphics_backend = self.config.get_str('graphics_backend')
         if graphics_backend == 'Vulkan':
-            if vulkan_is_available():
-                vulkan_version = vulkan_get_version()
-                if vulkan_version >= '1.1':
-                    _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_version)
+            if vulkan_info := await get_vulkan_info():
+                if vulkan_info.version is not None and vulkan_info.version >= '1.1':
+                    _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_info.version)
                     args.append('-graphics-backend=Vulkan')
                 else:
-                    _logger.debug('Vulkan version %s is lower than 1.1! Falling back to OpenGL.', vulkan_version)
+                    _logger.debug('Vulkan version %s is lower than 1.1! Falling back to OpenGL.', vulkan_info.version)
                     args.append('-graphics-backend=OpenGL')
             else:
                 _logger.debug('*** Vulkan driver is not available on the system! Falling back to OpenGL. ***')

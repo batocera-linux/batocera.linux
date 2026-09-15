@@ -7,9 +7,9 @@ from os import environ
 from typing import TYPE_CHECKING, Final, cast
 from xml.dom import minidom
 
-from batocera_common import vulkan
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CACHE, CONFIGS, SAVES
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext
 from batocera_launch.paths import configure_emulator
 
@@ -278,7 +278,7 @@ class Cemu(Emulator):
     def controller_profiles_dir(self) -> Path:
         return self.config_dir / 'controllerProfiles'
 
-    def _write_settings_xml(self) -> None:
+    async def _write_settings_xml(self) -> None:
         config_file = self.config_dir / 'settings.xml'
 
         config = minidom.Document()
@@ -351,12 +351,11 @@ class Cemu(Emulator):
         # Only set the graphics `device` if Vulkan
         if api_value == '1':
             # Check if we have a discrete GPU & if so, set the UUID
-            if vulkan.is_available():
+            if vulkan_info := await get_vulkan_info():
                 _logger.debug('Vulkan driver is available on the system.')
-                if vulkan.has_discrete_gpu():
-                    discrete_uuid = vulkan.get_discrete_gpu_uuid()
-                    if discrete_uuid:
-                        discrete_uuid_num = discrete_uuid.replace('-', '')
+                if discrete_gpu := vulkan_info.active_discrete_gpu:
+                    if discrete_gpu.uuid:
+                        discrete_uuid_num = discrete_gpu.uuid.replace('-', '')
                         _logger.debug('Using Discrete GPU UUID: %s for Cemu', discrete_uuid_num)
                         _set_xml_value(config, graphic_root, 'device', discrete_uuid_num)
                     else:
@@ -551,7 +550,7 @@ class Cemu(Emulator):
         self.controller_profiles_dir.mkdir(parents=True, exist_ok=True)
 
         # Create the settings file
-        self._write_settings_xml()
+        await self._write_settings_xml()
 
         # Set-up the controllers
         self._write_controller_config()

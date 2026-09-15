@@ -12,7 +12,7 @@ import toml
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES
-from batocera_common.vulkan import get_version as vulkan_get_version, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_common.wine import WINE_BASE, Runner
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 from batocera_launch.paths import configure_emulator
@@ -56,20 +56,20 @@ class Xenia(Emulator):
         return True
 
     async def configure(self) -> Command:
-        if not vulkan_is_available():
+        vulkan_info = await get_vulkan_info()
+        if not vulkan_info:
             raise BatoceraException('Vulkan driver required is not available on the system')
 
         is_canary = self.core == 'xenia-canary'
 
-        vulkan_version = vulkan_get_version()
-        if vulkan_version > '1.3':
-            _logger.debug('Using Vulkan version: %s', vulkan_version)
+        if vulkan_info.version is not None and vulkan_info.version > '1.3':
+            _logger.debug('Using Vulkan version: %s', vulkan_info.version)
         elif self.config.get('xenia_api') == 'D3D12':
-            _logger.debug('Vulkan version %s is not compatible with Xenia when using D3D12', vulkan_version)
+            _logger.debug('Vulkan version %s is not compatible with Xenia when using D3D12', vulkan_info.version)
             _logger.debug('You may have performance & graphical errors, switching to native Vulkan')
             self.config['xenia_api'] = 'Vulkan'
         else:
-            _logger.debug('Vulkan version %s is not recommended with Xenia', vulkan_version)
+            _logger.debug('Vulkan version %s is not recommended with Xenia', vulkan_info.version)
 
         # Set here (not just on the launch command's own env below) since
         # install_wine_trick() below inherits the process environment, not

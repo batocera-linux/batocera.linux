@@ -10,7 +10,7 @@ from pathlib import Path, PureWindowsPath
 from batocera_common.configparser import CaseSensitiveRawConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, SAVES
-from batocera_common.vulkan import is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_common.wine import WINE_BASE, Runner
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 
@@ -38,7 +38,7 @@ class Demul(Emulator):
         return 16 / 9 if self.config.get_int('demulRatio', 1) in (0, 2) else 4 / 3
 
     async def configure(self) -> Command:
-        if not vulkan_is_available():
+        if not await get_vulkan_info():
             raise BatoceraException('Vulkan driver required is not available on the system')
 
         wine_runner = Runner.default('demul')

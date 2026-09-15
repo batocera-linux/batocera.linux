@@ -10,7 +10,7 @@ from typing import Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CACHE, CONFIGS, ROMS
-from batocera_common.vulkan import get_discrete_gpu_name, has_discrete_gpu, is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Controllers, Emulator, HotkeysContext, SystemConfig
 from batocera_launch.paths import DATAINIT_DIR, configure_emulator
 
@@ -80,7 +80,7 @@ class Pcsx2x6(Emulator):
 
         # Config files
         _configure_reg(self.config_dir)
-        _configure_ini(self.config_dir, self.config, self.rom, self.controllers)
+        await _configure_ini(self.config_dir, self.config, self.rom, self.controllers)
         _configure_audio(self.config_dir)
 
         command_array: list[str | Path] = (
@@ -146,7 +146,7 @@ def _configure_audio(config_directory: Path) -> None:
         f.write('HostApi=alsa\n')
 
 
-def _configure_ini(
+async def _configure_ini(
     config_directory: Path,
     config: SystemConfig,
     rom: Path,
@@ -304,7 +304,7 @@ def _configure_ini(
 
     # Renderer
     # Check Vulkan first to be sure
-    if is_available():
+    if vulkan_info := await get_vulkan_info():
         _logger.debug('Vulkan driver is available on the system.')
         renderer = '-1'
 
@@ -315,12 +315,11 @@ def _configure_ini(
                 _logger.debug('User selected Software! Man you must have a fast CPU!')
             elif gfxbackend == '14':
                 _logger.debug('User selected Vulkan')
-                if has_discrete_gpu():
+                if discrete_gpu := vulkan_info.active_discrete_gpu:
                     _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                    discrete_name = get_discrete_gpu_name()
-                    if discrete_name:
-                        _logger.debug('Using Discrete GPU Name: %s for PCSX2x6', discrete_name)
-                        pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', discrete_name)
+                    if discrete_gpu.name:
+                        _logger.debug('Using Discrete GPU Name: %s for PCSX2x6', discrete_gpu.name)
+                        pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', discrete_gpu.name)
                     else:
                         _logger.debug("Couldn't get discrete GPU Name")
                         pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
