@@ -162,6 +162,7 @@ async def configure_wheels(
 
     # reconfigure wheel min/max/deadzone
     procs: list[asyncio.subprocess.Process] = []
+    saved_ranges: list[tuple[Path, str]] = []
     recompute_sdl_ids = False
     new_pads: list[str] = []
     for controller in controllers:
@@ -201,6 +202,7 @@ async def configure_wheels(
 
             # try to write range directly in physical wheel if the driver supports it
             if (range_path := _find_range_path(device.sysfs_path)) is not None:
+                saved_ranges.append((range_path, str(ra)))
                 range_path.write_text(str(wanted_ra))
                 _logger.info('wheel range set to %s through %s', wanted_ra, range_path)
                 ra = wanted_ra
@@ -296,6 +298,16 @@ async def configure_wheels(
         except Exception:
             _logger.error('hum, unable to reset wheel controllers !')
             # don't fail
+        _restore_wheel_ranges(saved_ranges)
+
+
+def _restore_wheel_ranges(saved_ranges: Iterable[tuple[Path, str]], /) -> None:
+    for range_path, original in saved_ranges:
+        try:
+            range_path.write_text(original)
+            _logger.info('wheel range restored to %s through %s', original, range_path)
+        except OSError:
+            _logger.error('unable to restore the range of %s', range_path)
 
 
 def _find_range_path(sysfs_path: str, /) -> Path | None:
