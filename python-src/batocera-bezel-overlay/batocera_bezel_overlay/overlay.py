@@ -145,7 +145,7 @@ class WaylandOverlay(Overlay):
             GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.LEFT, True)
             GtkLayerShell.set_anchor(self, GtkLayerShell.Edge.RIGHT, True)
 
-        except (ValueError, ImportError):
+        except ValueError, ImportError:
             _log.exception(
                 'Wayland GtkLayerShell initialization failed. Falling back to standard positioning.',
             )
