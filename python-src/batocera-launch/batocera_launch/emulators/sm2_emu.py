@@ -95,7 +95,12 @@ class Sm2Emu(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'sm2-emu',
-            'keys': {'exit': 'KEY_F9', 'screenshot': 'KEY_F12'},
+            'keys': {
+                'exit': 'KEY_F9',
+                'screenshot': 'KEY_F12',
+                'save_state': 'KEY_F6',
+                'restore_state': 'KEY_F7',
+            },
         }
 
     @cached_property
