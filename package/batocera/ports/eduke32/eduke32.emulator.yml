@@ -18,6 +18,10 @@ custom_features:
       Skip: 1
       Show (Default): 0
 systems:
-  - eduke32
+  - name: eduke32
+    file_extensions:
+      - eduke32
   - name: fury
     as_core: fury
+    file_extensions:
+      - grp

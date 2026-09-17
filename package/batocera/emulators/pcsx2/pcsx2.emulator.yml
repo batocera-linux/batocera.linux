@@ -320,7 +320,16 @@ cores:
         choices:
           "Off": 0
           "On": 1
+file_extensions:
+  - iso
+  - mdf
+  - nrg
+  - bin
+  - img
+  - dump
+  - gz
+  - cso
+  - chd
+  - zso
 systems:
-  - name: ps2
-    exclude_extensions:
-      - m3u
+  - ps2

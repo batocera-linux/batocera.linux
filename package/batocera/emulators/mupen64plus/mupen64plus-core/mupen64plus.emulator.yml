@@ -258,20 +258,23 @@ custom_features:
       15%: 0.15
       20%: 0.2
       25%: 0.25
+file_extensions:
+  - z64
+  - n64
 systems:
   - name: n64
     as_core:
       - glide64mk2
       - gliden64
       - rice
-    exclude_extensions:
-      - zip
-      - 7z
+    file_extensions:
+      add:
+        - v64
   - name: n64dd
     as_core:
       - glide64mk2
       - gliden64
       - rice
-    exclude_extensions:
-      - zip
-      - 7z
+    file_extensions:
+      add:
+        - ndd  # d64 : Not supported yet

@@ -3,7 +3,6 @@ snes:
   manufacturer: Nintendo
   release: 1990
   hardware: console
-  extensions: [smc, fig, sfc, gd3, gd7, dx2, bsx, swc, zip, 7z]
   group:      snes
   comment_en: |
     For more info: https://wiki.batocera.org/systems:snes
@@ -17,7 +16,6 @@ snes-msu1:
   manufacturer: Nintendo
   release: 1991
   hardware: console
-  extensions: [smc, sfc, squashfs]
   group:      snes
 
 c64:
@@ -25,7 +23,6 @@ c64:
   manufacturer: Commodore
   release: 1982
   hardware: computer
-  extensions: [d64, d71, d81, crt, prg, tap, t64, m3u, zip, 7z, nib, g64]
   platform:   c64
   group:      c64
 
@@ -34,7 +31,6 @@ cplus4:
   manufacturer: Commodore
   release: 1984
   hardware: computer
-  extensions: [d64, prg, tap, m3u, zip, 7z]
   platform:   cplus4
   group:      c64
 
@@ -43,7 +39,6 @@ c128:
   manufacturer: Commodore
   release: 1985
   hardware: computer
-  extensions: [d64, d81, prg, lnx, m3u, zip, 7z]
   platform:   c64
 
 c20:
@@ -51,7 +46,6 @@ c20:
   manufacturer: Commodore
   release: 1980
   hardware: computer
-  extensions: [20, 40, 60, rom, a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   c20
 
 pet:
@@ -59,7 +53,6 @@ pet:
   manufacturer: Commodore
   release: 1977
   hardware: computer
-  extensions: [a0, b0, crt, d64, d81, prg, tap, t64, m3u, zip, 7z]
   platform:   pet
 
 amiga500:
@@ -67,7 +60,6 @@ amiga500:
   manufacturer: Commodore
   release: 1987
   hardware: computer
-  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip, raw, scp]
   platform:     amiga
   group:        amiga
   comment_en:  |
@@ -82,7 +74,6 @@ amiga1200:
   manufacturer: Commodore
   release: 1992
   hardware: computer
-  extensions:   [adf, uae, ipf, dms, dmz, adz, lha, hdf, exe, m3u, zip, raw, scp]
   platform:     amiga
   group:        amiga
   comment_en:  |
@@ -97,21 +88,18 @@ amigacd32:
   manufacturer: Commodore
   release: 1994
   hardware: console
-  extensions:   [bin, cue, iso, chd]
 
 amigacdtv:
   name:       Amiga CDTV
   manufacturer: Commodore
   release: 1991
   hardware: console
-  extensions:   [bin, cue, iso, chd, m3u]
 
 nes:
   name:       Nintendo Entertainment System
   manufacturer: Nintendo
   release: 1983
   hardware: console
-  extensions: [nes, unif, unf, zip, 7z]
   group:      nes
   comment_en: |
     For more info: https://wiki.batocera.org/systems:nes
@@ -125,7 +113,6 @@ n64:
   manufacturer: Nintendo
   release: 1996
   hardware: console
-  extensions: [z64, n64, v64, zip, 7z]
   comment_en: |
     If Mupen64Plus standalone cannot load your zipped ROMs (black screen, then return to menu), try unzipping your ROMs.
     For more info: https://wiki.batocera.org/systems:n64
@@ -140,14 +127,12 @@ n64dd:
   manufacturer: Nintendo
   release: 1999
   hardware: console
-  extensions: [z64, n64, ndd, zip, 7z] # d64 : Not supported yet
 
 gba:
   name:       Game Boy Advance
   manufacturer: Nintendo
   release: 2001
   hardware: portable
-  extensions: [gba, zip, 7z, tar, rar]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gba
   comment_fr: |
@@ -160,7 +145,6 @@ gbc:
   manufacturer: Nintendo
   release: 1998
   hardware: portable
-  extensions: [gbc, zip, 7z]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gbc
   comment_fr: |
@@ -173,7 +157,6 @@ gb:
   manufacturer: Nintendo
   release: 1989
   hardware: portable
-  extensions: [gb, zip, 7z]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gb
   comment_fr: |
@@ -186,7 +169,6 @@ sgb:
   manufacturer: Nintendo
   release: 1994
   hardware: console
-  extensions: [gb, gbc, zip, 7z]
   group:      snes
 
 sgb-msu1:
@@ -194,7 +176,6 @@ sgb-msu1:
   manufacturer: Nintendo
   release: 1994
   hardware: console
-  extensions: [gb, gbc, zip, 7z, squashfs]
   group:      snes
 
 gbc2players:
@@ -202,7 +183,6 @@ gbc2players:
   manufacturer: Nintendo
   release: 1998
   hardware: portable
-  extensions: [gbc, gb2, gbc2, zip, 7z]
   platform:   gbc
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gbc2players
@@ -216,7 +196,6 @@ gb2players:
   manufacturer: Nintendo
   release: 1989
   hardware: portable
-  extensions: [gb, gb2, gbc2, zip, 7z]
   platform:   gb
   comment_en: |
     For more info: https://wiki.batocera.org/systems:gb2players
@@ -230,14 +209,12 @@ nds:
   manufacturer: Nintendo
   release: 2004
   hardware: portable
-  extensions: [nds, bin, zip, 7z]
 
 fds:
   name:       Family Computer Disk System
   manufacturer: Nintendo
   release: 1986
   hardware: console
-  extensions: [fds, zip, 7z]
   group:      nes
 
 virtualboy:
@@ -245,14 +222,12 @@ virtualboy:
   manufacturer: Nintendo
   release: 1995
   hardware: console
-  extensions: [vb, zip, 7z]
 
 lcdgames:
   name:       LCD Games
   manufacturer: Various
   release: 1979
   hardware: portable
-  extensions: [mgw, zip, 7z]
   group:      lcdgames
 
 gameandwatch:
@@ -260,7 +235,6 @@ gameandwatch:
   manufacturer: Nintendo
   release: 1980
   hardware: portable
-  extensions: [mgw, zip, 7z]
   group:      lcdgames
 
 dreamcast:
@@ -268,7 +242,6 @@ dreamcast:
   manufacturer: Sega
   release: 1998
   hardware: console
-  extensions: [cdi, cue, gdi, chd, m3u]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:dreamcast
   comment_fr: |
@@ -281,7 +254,6 @@ naomi:
   manufacturer: Sega
   release: 1998
   hardware: arcade
-  extensions: [lst, bin, dat, zip, 7z]
   platform:   naomi, arcade
 
 atomiswave:
@@ -289,7 +261,6 @@ atomiswave:
   manufacturer: Sammy
   release: 2003
   hardware: arcade
-  extensions: [lst, bin, dat, zip, 7z]
   platform:   atomiswave, arcade
 
 systemsp:
@@ -297,7 +268,6 @@ systemsp:
   manufacturer: Sega
   release: 2004
   hardware: arcade
-  extensions: [lst, bin, dat, zip, 7z]
   platform:   systemsp, arcade
 
 megadrive:
@@ -305,7 +275,6 @@ megadrive:
   manufacturer: Sega
   release: 1988
   hardware: console
-  extensions: [bin, gen, md, sg, smd, zip, 7z]
   platform:   genesis, megadrive
   group:      megadrive
   comment_en: |
@@ -320,7 +289,6 @@ megacd:
   manufacturer: Sega
   release: 1991
   hardware: console
-  extensions: [cue, iso, chd, m3u]
   platform:   megacd
   theme:      megacd
 
@@ -329,7 +297,6 @@ sega32x:
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [32x, chd, smd, bin, md, zip, 7z]
   group:      megadrive
 
 megadrive-msu:
@@ -337,7 +304,6 @@ megadrive-msu:
   manufacturer: Sega
   release: 2020
   hardware: console
-  extensions: [md, zip, 7z, squashfs]
   platform:   genesis, megadrive
   group:      megadrive
   theme: megadrive-msu
@@ -347,14 +313,12 @@ mastersystem:
   manufacturer: Sega
   release: 1985
   hardware: console
-  extensions: [bin, sms, zip, 7z]
 
 pico:
   name:       Sega Pico
   manufacturer: Sega
   release: 1993
   hardware: console
-  extensions: [bin, md, zip, 7z]
   group:      megadrive
 
 gamegear:
@@ -362,14 +326,12 @@ gamegear:
   manufacturer: Sega
   release: 1990
   hardware: portable
-  extensions: [bin, gg, zip, 7z]
 
 sg1000:
   name:       SG-1000
   manufacturer: Sega
   release: 1983
   hardware: console
-  extensions: [bin, sg, zip, 7z]
   platform:   sg-1000
   theme:      sg-1000
 
@@ -378,7 +340,6 @@ multivision:
   manufacturer: Tsukuda Original
   release: 1983
   hardware: console
-  extensions: [bin, sg, zip, 7z]
   platform: sg-1000
   theme: multivision
 
@@ -387,7 +348,6 @@ sc3000:
   manufacturer: Sega
   release: 1983
   hardware: computer
-  extensions: [bin, sg, wav, cas, bit, zip, 7z]
   platform: sc-3000
   theme: sc-3000
   comment_en: |
@@ -399,7 +359,6 @@ segaai:
   manufacturer: Sega
   release: 1986
   hardware: computer
-  extensions: [bin, wav, flac, cas, zip, 7z]
   platform:   segaai
   theme:      segaai
   comment_en: |
@@ -411,7 +370,6 @@ beena:
   manufacturer: Sega
   release: 2005
   hardware: console
-  extensions: [bin, zip, 7z]
   platform:   beena
   theme:      beena
   comment_en: |
@@ -423,7 +381,6 @@ psp:
   manufacturer: Sony
   release: 2004
   hardware: portable
-  extensions: [iso, cso, pbp, chd, zip]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:psp
   comment_fr: |
@@ -436,7 +393,6 @@ psx:
   manufacturer: Sony
   release: 1994
   hardware: console
-  extensions: [cue, img, mdf, pbp, toc, cbn, m3u, ccd, chd, iso]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:psx
   comment_fr: |
@@ -449,14 +405,12 @@ pcengine:
   manufacturer: NEC
   release: 1987
   hardware: console
-  extensions: [pce, bin, zip, 7z]
 
 pcenginecd:
   name:       PC Engine CD
   manufacturer: NEC
   release: 1988
   hardware: console
-  extensions: [pce, cue, ccd, iso, img, chd]
   theme:      pce-cd
 
 supergrafx:
@@ -464,21 +418,18 @@ supergrafx:
   manufacturer: NEC
   release: 1989
   hardware: console
-  extensions: [pce, sgx, cue, ccd, chd, zip, 7z]
 
 pcfx:
   name:       PC-FX
   manufacturer: NEC
   release: 1994
   hardware: console
-  extensions: [cue, ccd, toc, chd, zip, 7z, m3u]
 
 scummvm:
   name:       ScummVM
   manufacturer: LucasArts
   release: 1987
   hardware: computer
-  extensions: [scummvm, squashfs]
   platform:   scummvm
   comment_en: |
     Put scummvm games in this folder.
@@ -519,7 +470,6 @@ dos:
   manufacturer: Microsoft
   release: 1981
   hardware: computer
-  extensions: [pc, dos, zip, squashfs, dosz, m3u, iso, cue]
   theme:      pc
   platform:   pc
   comment_en: |
@@ -594,7 +544,6 @@ devilutionx:
   manufacturer: Ports
   release: 1996
   hardware: port
-  extensions: [mpq]
   platform: pc
   group: ports
   comment_en: |
@@ -635,7 +584,6 @@ fbneo:
   manufacturer: Arcade
   release: 2019
   hardware: arcade
-  extensions: [zip, 7z]
   platform:   arcade
   comment_en: |
     ROMs must come from the FBNeo romset version 1.0.0.0
@@ -661,7 +609,6 @@ mame:
   manufacturer: Arcade
   release: 1997
   hardware: arcade
-  extensions: [zip, 7z]
   platform:   arcade
 
   comment_en: |
@@ -703,7 +650,6 @@ neogeo:
   manufacturer: SNK
   release: 1990
   hardware: console
-  extensions: [7z, zip]
   platform:   neogeo, arcade
 
 neogeocd:
@@ -711,14 +657,12 @@ neogeocd:
   manufacturer: SNK
   release: 1994
   hardware: console
-  extensions: [cue, iso, chd]
 
 colecovision:
   name:       ColecoVision
   manufacturer: Coleco
   release: 1982
   hardware: console
-  extensions: [bin, col, rom, zip, 7z]
   comment_en: |
     ## BIOS ##
 
@@ -792,7 +736,6 @@ atari800:
   manufacturer: Atari
   release: 1979
   hardware: computer
-  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z, m3u]
   group:      atari8bit
 
 xegs:
@@ -800,7 +743,6 @@ xegs:
   manufacturer: Atari
   release: 1987
   hardware: computer
-  extensions: [atr, dsk, xfd, bin, rom, car, zip, 7z]
   group:      atari8bit
   comment_en: |
     Requires MAME BIOS file xegs.zip
@@ -814,28 +756,24 @@ atari2600:
   manufacturer: Atari
   release: 1977
   hardware: console
-  extensions: [a26, bin, zip, 7z]
 
 atari5200:
   name: Atari 5200
   manufacturer: Atari
   release: 1982
   hardware: console
-  extensions: [rom, xfd, atr, atx, cdm, cas, car, bin, a52, xex, zip, 7z]
 
 atari7800:
   name:       Atari 7800
   manufacturer: Atari
   release: 1986
   hardware: console
-  extensions: [a78, bin, zip, 7z]
 
 lynx:
   name: Atari Lynx
   manufacturer: Atari
   release: 1989
   hardware: portable
-  extensions: [bll, lnx, lyx, o, zip, 7z]
   theme: atarilynx
   platform: atarilynx
 
@@ -844,21 +782,18 @@ ngp:
   manufacturer: SNK
   release: 1998
   hardware: portable
-  extensions: [ngp, zip, 7z]
 
 ngpc:
   name:       Neo-Geo Pocket Color
   manufacturer: SNK
   release: 1999
   hardware: portable
-  extensions: [ngc, zip, 7z]
 
 wswan:
   name:       WonderSwan
   manufacturer: Bandai
   release: 1999
   hardware: portable
-  extensions: [ws, zip, 7z]
   theme:      wonderswan
   platform:   wonderswan
 
@@ -867,7 +802,6 @@ wswanc:
   manufacturer: Bandai
   release: 2000
   hardware: portable
-  extensions: [wsc, zip, 7z]
   theme:      wonderswancolor
   platform:   wonderswancolor
 
@@ -876,7 +810,6 @@ prboom:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [wad, iwad, pwad]
   platform: pc
   group: ports
   comment_en: |
@@ -900,7 +833,6 @@ quake:
   manufacturer: Ports
   release: 1996
   hardware: port
-  extensions: [quake]
   platform: pc
   group: ports
   comment_en: |
@@ -958,7 +890,6 @@ mrboom:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [libretro]
   platform: pc
   group: ports
   comment_en: |
@@ -973,7 +904,6 @@ tic80:
   manufacturer: Fantasy
   release: 2016
   hardware: console
-  extensions: [tic]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:tic80
   comment_fr: |
@@ -986,7 +916,6 @@ pico8:
   manufacturer: Fantasy
   release: 2015
   hardware: console
-  extensions: [p8, png, m3u]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:pico8
   comment_fr: |
@@ -999,21 +928,18 @@ lowresnx:
   manufacturer: Fantasy
   release: 2018
   hardware: console
-  extensions: [nx, zip, 7z]
 
 wasm4:
   name:       wasm4
   manufacturer: Fantasy
   release: 2021
   hardware: console
-  extensions: [wasm]
 
 pyxel:
   name:       pyxel
   manufacturer: Fantasy
   release: 2021
   hardware: console
-  extensions: [py, pyxapp]
   comment_en: |
     Fantasy console with many games available from https://github.com/kitao/pyxel/wiki/Pyxel-User-Examples
   comment_fr: |
@@ -1024,21 +950,18 @@ vircon32:
   manufacturer: Fantasy
   release: 2022
   hardware: console
-  extensions: [v32, zip]
 
 channelf:
   name:       Channel-F
   manufacturer: Fairchild
   release: 1976
   hardware: console
-  extensions: [zip, rom, bin, chf]
 
 cannonball:
   name:       Cannonball
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [cannonball]
   platform: pc
   group: ports
   comment_en: |
@@ -1059,7 +982,6 @@ sdlpop:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [sdlpop]
   platform: pc
   group: ports
   comment_en: |
@@ -1074,14 +996,12 @@ vectrex:
   manufacturer: MB
   release: 1982
   hardware: console
-  extensions: [bin, gam, vec, zip, 7z]
 
 lutro:
   name:       Lutro
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [lutro, zip, 7z]
   group: ports
   comment_en: |
     LUA demo games on github:
@@ -1111,7 +1031,6 @@ cavestory:
   manufacturer: Daisuke "Pixel" Amaya
   release: 2004
   hardware: port
-  extensions: [exe]
   platform: pc
   group: ports
   comment_en: |
@@ -1138,7 +1057,6 @@ atarist:
   manufacturer: Atari
   release: 1985
   hardware: computer
-  extensions: [st, msa, stx, dim, ipf, m3u, zip, 7z, hd, gemdos]
   comment_en: |
     To enable GEMDOS support,
     Create a directory within the roms folder that has a .gemdos extension.
@@ -1153,7 +1071,6 @@ amstradcpc:
   manufacturer: Amstrad
   release: 1984
   hardware: computer
-  extensions: [dsk, sna, tap, cdt, voc, m3u, zip, 7z]
   comment_en: |
     To enable gamepad support, go in RetroArch menu with "Hotkey + B", then switch this option:
     "Quick Menu/Core Input Options/User 1 Device type: Retropad" with "Amstrad Joystick"
@@ -1169,7 +1086,6 @@ pcw:
   manufacturer: Amstrad
   release: 1985
   hardware: computer
-  extensions: [mfi, dfi, mfm, td0, imd, 86f, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   comment_en: |
     Requires MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
     Games are floppy disk images (.dsk). Most games are self-booting and don't require a separate system disk.
@@ -1179,7 +1095,6 @@ msx1:
   manufacturer: Microsoft
   release: 1983
   hardware: computer
-  extensions: [dsk, mx1, rom, zip, 7z, cas, m3u, ogv, openmsx]
   platform: msx
   comment_en: |
     ## BIOS ##
@@ -1272,7 +1187,6 @@ msx2:
   manufacturer: Microsoft
   release: 1985
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, ogv, openmsx]
   platform: msx2
   comment_en: |
     ## BIOS ##
@@ -1364,7 +1278,6 @@ msx2+:
   manufacturer: Microsoft
   release: 1988
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, cas, m3u, openmsx]
   platform: msx2+
   comment_en: |
     ## BIOS ##
@@ -1456,7 +1369,6 @@ msxturbor:
   manufacturer: Microsoft
   release: 1990
   hardware: computer
-  extensions: [dsk, mx2, rom, zip, 7z, openmsx, m3u]
   platform: msxturbor
 
 mz2000:
@@ -1464,7 +1376,6 @@ mz2000:
   manufacturer: Sharp
   release: 1982
   hardware: computer
-  extensions: [mzf, mzt, m12, wav, d88, dsk, zip, 7z]
   comment_en: |
           Requires MAME BIOS file mz2000.zip
           Using software list mode is recommended.
@@ -1474,7 +1385,6 @@ mz2500:
   manufacturer: Sharp
   release: 1985
   hardware: computer
-  extensions: [d88, dsk, mfi, dfi, hfe, mfm, td0, imd, d77, 1dd, cqm, cqi, zip, 7z]
   comment_en: |
           Requires MAME BIOS file mz2500.zip
           Using software list mode is recommended.
@@ -1484,7 +1394,6 @@ mz700:
   manufacturer: Sharp
   release: 1982
   hardware: computer
-  extensions: [mzf, mzt, m12, wav, zip, 7z]
   comment_en: |
           Requires MAME BIOS file mz700.zip
           Using software list mode is recommended.
@@ -1494,7 +1403,6 @@ mz800:
   manufacturer: Sharp
   release: 1984
   hardware: computer
-  extensions: [mzf, mzt, m12, wav, zip, 7z]
   comment_en: |
           Requires MAME BIOS file mz800.zip
           Using software list mode is recommended.
@@ -1504,7 +1412,6 @@ mz80k:
   manufacturer: Sharp
   release: 1978
   hardware: computer
-  extensions: [mzf, mzt, m12, wav, zip, 7z]
   comment_en: |
           Requires MAME BIOS file mz80k.zip
           Using software list mode is recommended.
@@ -1514,7 +1421,6 @@ odyssey2:
   manufacturer: Magnavox - Philips
   release: 1978
   hardware: console
-  extensions: [bin, zip, 7z]
   theme:      odyssey2
 
 videopacplus:
@@ -1523,7 +1429,6 @@ videopacplus:
   release: 1983
   hardware: console
   platform: videopac
-  extensions: [bin, zip, 7z]
   path:       videopacplus
 
 zx81:
@@ -1531,7 +1436,6 @@ zx81:
   manufacturer: Sinclair
   release: 1981
   hardware: computer
-  extensions: [tzx, p, zip, 7z]
   comment_en: |
     To enable your gamepad support, go in retroarch menu with "Hotkey+B", then switch this option:
     "Settings/Input/Input User 1 Binds/User 1 Device type: Retropad" with "Cursor Joystick"
@@ -1544,7 +1448,6 @@ bk:
   manufacturer: Elektronika
   release: 1985
   hardware: computer
-  extensions: [bin, img, dsk, bkd, zip, 7z]
   comment_en: |
     BK-0010/0011 was a Soviet home computer series from Elektronika.
     Supports BK-0010, BK-0010.01, BK-0011(M) and Terak 8510/a emulation.
@@ -1558,7 +1461,6 @@ zxspectrum:
   manufacturer: Sinclair
   release: 1982
   hardware: computer
-  extensions: [tzx, tap, z80, rzx, scl, trd, dsk, zip, 7z]
   comment_en: |
     ## Input Devices ##
 
@@ -1615,7 +1517,6 @@ moonlight:
   manufacturer: Misc. System
   release:
   hardware: system
-  extensions: [moonlight]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:moonlight
   comment_fr: |
@@ -1628,21 +1529,18 @@ apple2:
   manufacturer: Apple
   release: 1977
   hardware: computer
-  extensions: [nib, do, po, dsk, mfi, dfi, rti, edd, woz, wav, zip, 7z, chd, hdv, 2mg]
 
 saturn:
   name: Saturn
   manufacturer: Sega
   release: 1994
   hardware: console
-  extensions: [cue, ccd, m3u, chd, iso, zip, mds]
 
 jaguar:
   name: Jaguar
   manufacturer: Atari
   release: 1993
   hardware: console
-  extensions: [j64, jag, cof, abs, rom, zip, 7z]
   group: jaguar
   platform: jaguar
   theme: atarijaguar
@@ -1652,7 +1550,6 @@ jaguarcd:
   manufacturer: Atari
   release: 1995
   hardware: console
-  extensions: [cue, cdi, bigpimg]
   group: jaguar
   platform: jaguar
   theme: atarijaguarcd
@@ -1662,7 +1559,6 @@ gamecube:
   manufacturer: Nintendo
   release: 2001
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, rvz, elf, dol, m3u, json]
   platform: gc
   theme: gc
   comment_en: |
@@ -1685,7 +1581,6 @@ triforce:
   manufacturer: Namco, Sega, Nintendo
   release: 2003
   hardware: arcade
-  extensions: [iso, rvz]
   platform: triforce, arcade
   comment_en: |
     Triforce is an arcade machine based on the GameCube's hardware.
@@ -1703,7 +1598,6 @@ wii:
   manufacturer: Nintendo
   release: 2006
   hardware: console
-  extensions: [gcm, iso, gcz, ciso, wbfs, wad, rvz, elf, dol, m3u, json]
   comment_en: |
     To use a virtual horizontal wiimote, include ".side." in the filename (for example ".side.iso").
     You can choose the axis controls among i(nfrared), s(wing), t(ilt) or n(unchuk) :
@@ -1734,7 +1628,6 @@ ps2:
   manufacturer: Sony
   release: 2000
   hardware: console
-  extensions: [iso, mdf, nrg, bin, img, dump, gz, cso, chd, m3u, zso]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:ps2
   comment_fr: |
@@ -1747,7 +1640,6 @@ ps3:
   manufacturer: Sony
   release: 2006
   hardware: console
-  extensions: [ps3, psn, iso, squashfs]
   comment_en: |
     You must first load the firmware by running rpcs3-config from menu>f1>Applications then File>Install firmware.
     PS3 roms are directories must be renamed to end with .ps3.
@@ -1774,42 +1666,36 @@ ps3:
   manufacturer: Panasonic - Sanyo - Goldstar
   release: 1993
   hardware: console
-  extensions: [iso, chd, cue]
 
 intellivision:
   name:       Mattel Intellivision
   manufacturer: Mattel
   release: 1979
   hardware: console
-  extensions: [int, bin, rom, zip, 7z]
 
 x68000:
   name:       Sharp X68000
   manufacturer: Sharp
   release: 1987
   hardware: computer
-  extensions: [dim, img, d88, 88d, hdm, dup, 2hd, xdf, hdf, cmd, m3u, zip, 7z]
 
 x1:
   name:       Sharp X1
   manufacturer: Sharp
   release: 1982
   hardware: computer
-  extensions: [dx1, zip, 2d, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, 7z]
 
 3ds:
   name: 3DS
   manufacturer: Nintendo
   release: 2011
   hardware: portable
-  extensions: [3ds, cci, cxi, cia, axf, elf, app, squashfs, zcci, zcia, zcxi]
 
 openbor:
   name: OpenBOR
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [pak]
   comment_en: |
     Note: For some games to work, pak files cannot be renamed and need to be in a folder called Paks.
 
@@ -1824,7 +1710,6 @@ satellaview:
   manufacturer: Nintendo
   release: 1995
   hardware: console
-  extensions: [bs, smc, sfc, zip, 7z, squashfs]
   group:      snes
 
 sufami:
@@ -1832,7 +1717,6 @@ sufami:
   manufacturer: Bandai
   release: 1996
   hardware: console
-  extensions: [st, fig, bs, smc, sfc, zip, 7z]
   group:      snes
 
 pokemini:
@@ -1840,21 +1724,18 @@ pokemini:
   manufacturer: Nintendo
   release: 2001
   hardware: portable
-  extensions: [min, zip, 7z]
 
 gx4000:
   name:       GX4000
   manufacturer: Amstrad
   release: 1991
   hardware: console
-  extensions: [dsk, m3u, cpr, zip, 7z]
 
 daphne:
   name: Daphne
   manufacturer: Arcade
   release: 1983
   hardware: arcade
-  extensions: [daphne, squashfs]
   platform: alg, daphne, arcade
   comment_en: |
     Daphne supports these specific laser games games only:
@@ -1913,7 +1794,6 @@ singe:
   manufacturer: Arcade
   release: 1990
   hardware: arcade
-  extensions: [daphne, squashfs]
   platform: alg, daphne, arcade
   comment_en: |
     Singe supports American Laser Games, Action Max and fan made Singe & Singe 2 games.
@@ -1939,7 +1819,6 @@ dice:
   manufacturer: Arcade
   release: 1972
   hardware: arcade
-  extensions: [zip, dmy]
   platform: dice, arcade
   comment_en: |
     Games without any ROM component use .dmy files as dummy launchers.
@@ -1955,7 +1834,6 @@ thextech:
   manufacturer: Wohlstand
   release: 2020
   hardware: port
-  extensions: [smbx, squashfs]
   comment_en: |
     TheXTech works with the latest game assets available here:
     https://github.com/TheXTech/TheXTech/releases
@@ -1976,14 +1854,12 @@ thomson:
   manufacturer: Thomson
   release: 1984
   hardware: computer
-  extensions: [fd, sap, k7, m7, m5, rom, zip]
 
 pc88:
   name:       PC-8800
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [cmt, d88, u88, m3u]
   platform:   pc88
 
 pc98:
@@ -1991,7 +1867,6 @@ pc98:
   manufacturer: NEC
   release: 1982
   hardware: computer
-  extensions: [d98, zip, 98d, fdi, fdd, 2hd, tfd, d88, 88d, hdm, xdf, dup, cmd, hdi, thd, nhd, hdd, hdn, m3u]
   platform:   pc98
 
 fmtowns:
@@ -1999,7 +1874,6 @@ fmtowns:
   manufacturer: Fujitsu
   release: 1987
   hardware: computer
-  extensions: [bin, m3u, cue, d88, d77, xdf, iso, chd, toc, nrg, gdi, cdr, mfi, dfi, hfe, mfm, td0, imd, 1dd, cqm, cqi, dsk, zip, 7z]
   platform:   fmtowns
 
 ports:
@@ -2007,7 +1881,7 @@ ports:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [sh, squashfs]
+  file_extensions: [sh, squashfs]
   platform: pc
   group: ports
   path: ports
@@ -2033,7 +1907,6 @@ windows:
   manufacturer: Microsoft
   release: 1992
   hardware: computer
-  extensions: [pc, exe, wine, wsquashfs, wtgz]
   platform:   windows
   theme:      windows
   comment_en: |
@@ -2048,7 +1921,6 @@ windows_installers:
   manufacturer: Microsoft
   release: 1992
   hardware: computer
-  extensions: [exe, iso, msi]
   platform:   windows
   group:      windows
   comment_en: |
@@ -2063,7 +1935,6 @@ halflife:
   manufacturer: Ports
   release: 1998
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -2102,7 +1973,6 @@ wiiu:
   manufacturer: Nintendo
   release: 2012
   hardware: console
-  extensions: [wua, wup, wud, wux, rpx, squashfs, wuhb]
   platform:   wiiu
   theme:      wiiu
   comment_en: |
@@ -2117,14 +1987,12 @@ solarus:
   manufacturer: Solarus Team
   release: 2011
   hardware: port
-  extensions: [zip, solarus]
 
 easyrpg:
   name:       EasyRPG
   manufacturer: EasyRPG Team
   release: 2000
   hardware: port
-  extensions: [easyrpg, squashfs, zip]
   comment_en: |
           The EasyRPG engine supports RPG Maker 2000 and 2003 games, you have to put the game's entire folder inside, and add .easyrpg to its name. The game folder is the one containing the RPG_RT.ldb file.
   comment_br: |
@@ -2135,7 +2003,6 @@ cgenius:
   manufacturer: The Commander Genius Team
   release: 1990
   hardware: port
-  extensions: [cgenius]
   platform: pc
   group: ports
   comment_en: |
@@ -2162,7 +2029,6 @@ pygame:
   manufacturer: Pygame Team
   release: 2000
   hardware: library
-  extensions: [pygame]
   platform:   pygame
   theme:      pygame
   comment_en: |
@@ -2178,7 +2044,7 @@ imageviewer:
   release:
   theme: screenshots
   hardware: system
-  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm]
+  file_extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm]
   path:       /userdata/screenshots
   platform:   imageviewer
   force:      True
@@ -2188,7 +2054,7 @@ recordings:
   manufacturer: Misc. System
   release:
   hardware: system
-  extensions: [mkv, mp4, avi, webm, mp3, wav, ogg, flac]
+  file_extensions: [mkv, mp4, avi, webm, mp3, wav, ogg, flac]
   path:       /userdata/recordings
   platform:   imageviewer
   force:      True
@@ -2198,7 +2064,7 @@ library:
   manufacturer: Misc. System
   release:
   hardware: system
-  extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm, cbz, mp3, wav, ogg, flac, mod, xm, stm, s3m, far, it, 669, mtm]
+  file_extensions: [jpg, jpeg, png, bmp, psd, tga, gif, hdr, pic, ppm, pgm, mkv, pdf, mp4, avi, webm, cbz, mp3, wav, ogg, flac, mod, xm, stm, s3m, far, it, '669', mtm]
   path:       /userdata/library
   platform:   imageviewer
   force:      True
@@ -2208,7 +2074,6 @@ model3:
   manufacturer: Sega
   release: 1996
   hardware: arcade
-  extensions: [zip]
   platform: model3, arcade
 
   comment_en: |
@@ -2313,14 +2178,12 @@ mugen:
   manufacturer: Elecbyte
   release: 1999
   hardware: port
-  extensions: [pc]
 
 ikemen:
   name:       IKEMEN
   manufacturer: Elecbyte
   release: 2021
   hardware: port
-  extensions: [ikemen, pc]
   comment_en: |
     IKEMEN Go is a reimplementation of IKEMEN, an engine which extends the capacities of MUGEN for fighting games
   comment_fr: |
@@ -2331,14 +2194,12 @@ flash:
   manufacturer: Adobe
   release: 1996
   hardware: port
-  extensions: [swf]
 
 xbox:
   name:       Xbox
   manufacturer: Microsoft
   release: 2003
   hardware: console
-  extensions: [iso, squashfs]
   comment_en: |
     For more info: https://wiki.batocera.org/systems:xbox
   comment_fr: |
@@ -2351,7 +2212,6 @@ flatpak:
   manufacturer:
   release:
   hardware:
-  extensions: [flatpak]
   platform: pc
   group: ports
   comment_en: |
@@ -2382,7 +2242,6 @@ steam:
   manufacturer: Valve
   release:
   hardware:
-  extensions: [steam]
   platform: windows
   comment_en: |
           Play Steam.
@@ -2396,14 +2255,13 @@ supervision:
   manufacturer: Watara
   release: 1992
   hardware: portable
-  extensions: [sv, zip, 7z]
 
 gong:
   name:       Pong
   manufacturer: Ports
   release: 1972
   hardware: console
-  extensions: [game]
+  file_extensions: [game]
   group: ports
   comment_en: |
     This system is a standalone libretro game. No rom required.
@@ -2417,7 +2275,6 @@ ecwolf:
   manufacturer: Ports
   release: 2013
   hardware: port
-  extensions: [ecwolf, pk3, squashfs]
   platform: pc
   group: ports
 
@@ -2426,14 +2283,12 @@ cassettevision:
   manufacturer: Epoch
   release: 1981
   hardware: console
-  extensions: [zip, bin777]
 
 sonicretro:
   name:       Sonic Retro Engine
   manufacturer: Sega
   release: 2021
   hardware: port
-  extensions: [son, scd]
   group: ports
   comment_en: |
     ---------------------
@@ -2489,7 +2344,6 @@ model2:
   manufacturer: Sega
   release: 1993
   hardware: arcade
-  extensions: [zip, 7z]
   platform: model2, arcade
 
 scv:
@@ -2497,14 +2351,12 @@ scv:
   manufacturer: Epoch
   release: 1984
   hardware: console
-  extensions: [bin, zip, "0"]
 
 apple2gs:
   name:      Apple IIGS
   manufacturer: Apple
   release: 1986
   hardware: computer
-  extensions: [2mg, do, nib, po, dsk]
   comment_en: |
           If your game does not start using LR-Mame. Ensure you choose the right floppy type for the rom extension.
           i.e. some extensions require you to choose the 3 1/2 inch floppy drive (Drive 3).
@@ -2517,14 +2369,12 @@ uzebox:
   manufacturer: Atmel
   release: 2008
   hardware: console
-  extensions: [uze, bin, zip]
 
 cdi:
   name:       CD-i
   manufacturer: Philips
   release: 1990
   hardware: console
-  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
   comment_en: |
           Requires MAME BIOS file cdimono1.zip
   comment_br: |
@@ -2535,7 +2385,6 @@ advision:
   manufacturer: Entex
   release: 1982
   hardware: console
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file advision.zip
   comment_br: |
@@ -2546,28 +2395,24 @@ tvgames:
   manufacturer: Various
   release: 2002
   hardware: console
-  extensions: [zip, 7z]
 
 megaduck:
   name:       Mega Duck / Cougar Boy
   manufacturer: Welback Holdings
   release: 1993
   hardware: portable
-  extensions:  [bin, zip, 7z]
 
 pv1000:
   name:       PV-1000
   manufacturer: Casio
   release: 1983
   hardware: console
-  extensions: [bin, zip, 7z]
 
 pv2000:
   name:       PV-2000
   manufacturer: Casio
   release: 1983
   hardware: console
-  extensions: [bin, cas, zip, 7z]
   comment_en: |
           Requires MAME BIOS file pv2000.zip
   comment_br: |
@@ -2578,7 +2423,6 @@ pc80:
   manufacturer: NEC
   release: 1979
   hardware: computer
-  extensions: [d77, d88, 1dd, dsk, n80, bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file pc8001mk2sr.zip
   comment_br: |
@@ -2589,7 +2433,6 @@ gamate:
   manufacturer: Bitcorp
   release: 1990
   hardware: portable
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file gamate.zip
   comment_br: |
@@ -2601,7 +2444,6 @@ crvision:
   release: 1982
   hardware: console
   theme: creativision
-  extensions: [bin, rom, zip, 7z]
   comment_en: |
           Requires MAME BIOS file crvision.zip
   comment_br: |
@@ -2612,7 +2454,6 @@ ctvboy:
   manufacturer: Gakken
   release: 1983
   hardware: console
-  extensions: [bin, zip, 7z]
   comment_en: |
           MAME 0.262+ required
 
@@ -2621,7 +2462,6 @@ laser310:
   manufacturer: VTech
   release: 1984
   hardware: computer
-  extensions: [vz, wav, cas, zip, 7z]
   comment_en: |
           Requires MAME BIOS file laser310.zip
           Using snapshot (.vz) files is recommended.
@@ -2634,7 +2474,6 @@ socrates:
   manufacturer: VTech
   release: 1988
   hardware: console
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file socrates.zip
           Software list mode recommended
@@ -2647,7 +2486,6 @@ vsmile:
   manufacturer: VTech
   release: 2005
   hardware: console
-  extensions: [u1, u3, bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file vsmile.zip
   comment_br: |
@@ -2658,7 +2496,6 @@ supracan:
   manufacturer: Funtech Entertainment
   release: 1995
   hardware: console
-  extensions: [bin, zip, 7z]
   comment_en: |
           Sound support is preliminary
   comment_br: |
@@ -2669,7 +2506,6 @@ gamecom:
   manufacturer: Tiger Electronics
   release: 1997
   hardware: portable
-  extensions: [bin, tgc, zip, 7z]
   comment_en: |
           Requires MAME BIOS file gamecom.zip
   comment_br: |
@@ -2680,7 +2516,6 @@ gamepock:
   manufacturer: Epoch
   release: 1984
   hardware: portable
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file gamepock.zip
   comment_br: |
@@ -2691,7 +2526,6 @@ fm7:
   manufacturer: Fujitsu
   release: 1982
   hardware: computer
-  extensions: [wav, t77, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, zip, 7z]
   comment_en: |
           Requires MAME BIOS file fm7.zip, and optionally fm77av.zip for FM-77AV support.
   comment_br: |
@@ -2702,7 +2536,6 @@ archimedes:
   manufacturer: Acorn Computers
   release: 1987
   hardware: computer
-  extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, adf, apd, jfd, ads, adm, adl, ssd, bbc, dsd, st, msa, chd, zip, 7z]
   comment_en: |
           Requires MAME BIOS files aa310.zip and archimedes_keyboard.zip
           Using software list mode is recommended.
@@ -2717,7 +2550,6 @@ atom:
   manufacturer: Acorn Computers
   release: 1979
   hardware: computer
-  extensions: [wav, tap, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, 40t, atm, bin, rom, zip, 7z]
   comment_en: |
           Requires MAME BIOS file atom.zip
           Using software list mode is recommended. Software list cassettes don't work but floppies do.
@@ -2732,7 +2564,6 @@ electron:
   manufacturer: Acorn Computers
   release: 1983
   hardware: computer
-  extensions: [wav, csw, uef, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ssd, bbc, img, dsd, adf, ads, adm, adl, rom, bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS files electron.zip, electron64.zip, electron_plus1.zip, electron_plus3.zip
           Using software list mode (cassette) is recommended.
@@ -2747,7 +2578,6 @@ apfm1000:
   manufacturer: APF Electronics
   release: 1978
   hardware: console
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file apfm1000.zip
   comment_br: |
@@ -2759,7 +2589,6 @@ bbcmicro:
   release: 1981
   hardware: computer
   theme: bbcmicro
-  extensions: [mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, 360, ipf, ssd, bbc, dsd, adf, ads, adm, adl, fsd, wav, tap, bin, zip, 7z]
   comment_en: |
           MAME requires MAME BIOS files bbcb.zip, bbc_acorn8271.zip, & saa5050.zip
           Also sample pack bbc.zip in bios/mame/samples
@@ -2773,7 +2602,6 @@ camplynx:
   manufacturer: Camputers
   release: 1983
   hardware: computer
-  extensions: [wav, tap, ldf, zip, 7z]
   comment_en: |
           Requires MAME BIOS files lynx128k.zip, lynx96k.zip, lynx48k.zip
           Using software list mode is recommended.
@@ -2786,7 +2614,6 @@ adam:
   manufacturer: Coleco
   release: 1983
   hardware: computer
-  extensions: [wav, ddp, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, rom, col, bin, zip, 7z]
   comment_en: |
           Requires the following MAME BIOS files:
           adam.zip, adam_ddp.zip, adam_fdc.zip, adam_kb.zip, & adam_prn.zip
@@ -2799,21 +2626,18 @@ arcadia:
   manufacturer: Emerson
   release: 1982
   hardware: console
-  extensions: [bin, zip, 7z]
 
 sv8000:
   name:       Super Vision 8000
   manufacturer: Bandai
   release: 1979
   hardware: console
-  extensions: [bin, zip, 7z]
 
 gmaster:
   name:       Game Master
   manufacturer: Hartung
   release: 1990
   hardware: portable
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file gmaster.zip
   comment_br: |
@@ -2825,7 +2649,6 @@ astrocade:
   release: 1978
   hardware: console
   theme: astrocade
-  extensions: [bin, zip, 7z]
   comment_en: |
           Requires MAME BIOS file astrocde.zip
   comment_br: |
@@ -2836,7 +2659,6 @@ ti99:
   manufacturer: Texas Instruments
   release: 1981
   hardware: computer
-  extensions: [rpk, wav, zip, 7z]
   comment_en: |
           Requires MAME BIOS file ti99_4a.zip
           Cartridges need to be in .rpk format and unzipped if not using software lists.
@@ -2849,7 +2671,6 @@ tutor:
   manufacturer: Tomy
   release: 1983
   hardware: computer
-  extensions: [bin, wav, zip, 7z]
   comment_en: |
           Requires MAME BIOS file tutor.zip
           To get through the loading menu, R1 will move down and A/East will select.
@@ -2862,7 +2683,6 @@ coco:
   manufacturer: Tandy Radio Shack
   release: 1980
   hardware: computer
-  extensions: [wav, cas, dsk, ccc, rom, zip, 7z]
   comment_en: |
           MAME requires BIOS file coco.zip and coco3.zip
 
@@ -2891,7 +2711,6 @@ cgenie:
   manufacturer: EACA
   release: 1982
   hardware: computer
-  extensions: [cas, wav, zip, 7z]
   comment_en: |
           MAME requires BIOS file cgenie.zip
   comment_br: |
@@ -2902,7 +2721,6 @@ dragon64:
   manufacturer: Dragon Data
   release: 1983
   hardware: computer
-  extensions: [wav, cas, dsk, dmk, ccc, rom, bin, zip, 7z]
   comment_en: |
           MAME requires BIOS file dragon64.zip (or dragon32.zip for Dragon 32)
 
@@ -2928,7 +2746,6 @@ mc10:
   manufacturer: Tandy Radio Shack
   release: 1983
   hardware: computer
-  extensions: [wav, cas, rom, bin, zip, 7z]
   comment_en: |
           MAME requires BIOS file mc10.zip
 
@@ -2940,7 +2757,6 @@ trs80:
   manufacturer: Tandy Radio Shack
   release: 1977
   hardware: computer
-  extensions: [cmd, cas, dsk, dmk, bas, wav, zip, 7z]
   comment_en: |
           MAME requires BIOS file trs80.zip (Model I), trs80m3.zip (Model III), or trs80m4.zip (Model 4)
 
@@ -2964,14 +2780,12 @@ vc4000:
   manufacturer: Interton
   release: 1978
   hardware: console
-  extensions: [bin, rom, pgm, tvc, zip, 7z]
 
 vgmplay:
   name:       Video Game Music Player
   manufacturer: Various
   release: 1980
   hardware: computer
-  extensions: [vgm, vgz, zip, 7z]
   comment_en: |
           Software lists recommended. QSound can be CPU-intensive.
           Use the File Manager in the MAME menu to change tracks.
@@ -2984,7 +2798,6 @@ superbroswar:
   manufacturer: Ports
   release: 2006
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3000,7 +2813,6 @@ quake2:
   manufacturer: Ports
   release: 1997
   hardware: port
-  extensions: [quake2, zip, 7zip]
   platform: pc
   group: ports
   comment_en: |
@@ -3035,7 +2847,7 @@ j2me:
   manufacturer: Sun
   release: 2001
   hardware: portable
-  extensions: [jar]
+  file_extensions: [jar]
 
 zc210:
   name:       Zelda Classic
@@ -3043,7 +2855,6 @@ zc210:
   release: 1999
   hardware: console
   theme: zeldac
-  extensions: [qst]
   platform: pc
 
 vemulator:
@@ -3051,14 +2862,13 @@ vemulator:
   manufacturer: Sega
   release: 1998
   hardware: console
-  extensions: [vms, dci, bin]
+  file_extensions: [vms, dci, bin]
 
 openjazz:
   name: Jazz Jackrabbit
   manufacturer: Ports
   release: 1994
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3077,7 +2887,6 @@ tyrian:
   manufacturer: Ports
   release: 1995
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3092,7 +2901,6 @@ hurrican:
   manufacturer: Ports
   release: 2007
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3107,7 +2915,6 @@ hcl:
   manufacturer: Ports
   release: 2011
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3122,14 +2929,12 @@ samcoupe:
   manufacturer: Miles Gordon Technology
   release: 1989
   hardware: computer
-  extensions: [cpm, dsk, sad, mgt, sdf, td0, sbt, zip]
 
 abuse:
   name:       Abuse
   manufacturer: Ports
   release: 1996
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3146,7 +2951,6 @@ cdogs:
   manufacturer: Ports
   release: 1997
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3161,7 +2965,6 @@ xrick:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [zip]
   platform: pc
   group: ports
   comment_en: |
@@ -3178,7 +2981,6 @@ macintosh:
   manufacturer: Apple
   release: 1984
   hardware: computer
-  extensions: [dsk, zip, 7z, mfi, dfi, hfe, mfm, td0, imd, d77, d88, 1dd, cqm, cqi, dsk, ima, img, ufi, ipf, dc42, woz, 2mg, 360, chd, cue, toc, nrg, gdi, iso, cdr, hd, hdv, 2mg, hdi]
   comment_en: |
           MAME requires a number of BIOS and device files, place in the bios folder in zip format.
           Boot disks are from MAME's software lists, floppy images need to be extracted and renamed.
@@ -3215,7 +3017,6 @@ naomi2:
   manufacturer: Sega
   release: 2000
   hardware: arcade
-  extensions: [zip, 7z]
   platform: naomi2, arcade
   comment_en: |
     ---------------------------------
@@ -3233,7 +3034,6 @@ hikaru:
   manufacturer: Sega
   release: 1999
   hardware: arcade
-  extensions: [zip, 7z]
   platform: hikaru, arcade
   comment_en: |
     ---------------------------------
@@ -3299,7 +3099,6 @@ gaelco:
   manufacturer: Sega
   release: 1999
   hardware: arcade
-  extensions: [zip, 7z]
   platform: gaelco, arcade
   comment_en: |
     ---------------------------------
@@ -3362,7 +3161,6 @@ cave3rd:
   manufacturer: Sega
   release: 2004
   hardware: arcade
-  extensions: [zip, 7z]
   platform: cave3rd, arcade
   comment_en: |
     ---------------------------------
@@ -3448,7 +3246,6 @@ pdp1:
   manufacturer: Digital Equipment Corporation
   release: 1961
   hardware: computer
-  extensions: [zip, 7z, tap, rim, drm]
   comment_en: |
     Use Control-Enter or Start to start after loading. Loading may take some time,
     if the green lights are blinking, it is loading.
@@ -3465,7 +3262,6 @@ xbox360:
   manufacturer: Microsoft
   release: 2005
   hardware: console
-  extensions: [iso, xex, xbox360, zar]
   comment_en: |
     Xenia and Xenia Canary run under WINE and require Vulkan 1.3+. An internet connection is needed to create the initial WINE bottle.
     Xenia Edge is a native Linux port — no WINE required, uses Vulkan directly.
@@ -3483,7 +3279,6 @@ ngage:
   manufacturer: Nokia
   release: 2003
   hardware: portable
-  extensions: [n-gage, sisx, sis, zip]
   platform: ngage
   theme: ngage
 
@@ -3492,7 +3287,6 @@ odcommander:
   manufacturer: Ports
   release: 2022
   hardware: port
-  extensions: [odc]
   group: ports
   comment_en: |
     A two-pane file manager in the style of Norton/Midnight Commander.
@@ -3506,7 +3300,6 @@ gp32:
   manufacturer: GamePark
   release: 2001
   hardware: portable
-  extensions: [smc, zip, 7z]
   comment_en: |
           Requires MAME BIOS file gp32.zip
   comment_br: |
@@ -3517,45 +3310,42 @@ arduboy:
   manufacturer: Kevin Bates
   release: 2015
   hardware: portable
-  extensions: [hex, zip, 7z]
 
-gzdoom:
-  name: GZDoom
+uzdoom:
+  name: UZDoom
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [wad, iwad, pwad, gzdoom]
   platform: pc
   group: ports
   comment_en: |
-    Custom mods can be used by creating a new text file named after the game with the extension ''.gzdoom''. For example:
-    Aliens Eradication.gzdoom, which contains this single line of text:
+    Custom mods can be used by creating a new text file named after the game with the extension ''.uzdoom''. For example:
+    Aliens Eradication.uzdoom, which contains this single line of text:
     -iwad DOOM2.WAD -file ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
     Note: The command must be on one line and the casing of the filenames and extensions must match exactly.
 
-    Additional music can be added to /userdata/system/configs/gzdoom in the fm_banks & soundfonts folders respectively.
+    Additional music can be added to /userdata/system/configs/uzdoom in the fm_banks & soundfonts folders respectively.
 
-    More info: https://wiki.batocera.org/systems:gzdoom
+    More info: https://wiki.batocera.org/systems:uzdoom
   comment_pt: |
     Mettez vos fichiers rom et mod dans ce répertoire.
 
-    L'utilisation de l'extension .gzdoom vous permet d'ajouter des mods personnalisés.
-    c'est-à-dire que Aliens Eradication.gzdoom doit contenir une ligne comme celle-ci :
+    L'utilisation de l'extension .uzdoom vous permet d'ajouter des mods personnalisés.
+    c'est-à-dire que Aliens Eradication.uzdoom doit contenir une ligne comme celle-ci :
     -iwad DOOM2.WAD -fichier ALIENS_ERADICATION_TC_2_0.pk3 ERADICATION_MAPSET_2_0.wad
 
-    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .gzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
+    Remarque : Assurez-vous que la commande complète figure sur une seule ligne dans le fichier .uzdoom et que les noms de fichiers et les extensions correspondent exactement à vos fichiers.
 
-    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/gzdoom dans les dossiers fm_banks et soundfonts respectivement.
+    De la musique supplémentaire peut être ajoutée à /userdata/system/configs/uzdoom dans les dossiers fm_banks et soundfonts respectivement.
 
-    Plus d'infos : https://wiki.batocera.org/systems:gzdoom
+    Plus d'infos : https://wiki.batocera.org/systems:uzdoom
 
 corsixth:
   name: CorsixTH
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -3571,7 +3361,6 @@ eduke32:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [ eduke32 ]
   platform: pc
   group: ports
   comment_en: |
@@ -3656,7 +3445,6 @@ fury:
   manufacturer: Ports
   release: 2019
   hardware: port
-  extensions: [grp]
   platform: pc
   group: ports
   comment_en: |
@@ -3683,7 +3471,6 @@ raze:
   manufacturer: Ports
   release:
   hardware: port
-  extensions: [ raze ]
   platform: pc
   group: ports
   comment_en: |
@@ -3875,14 +3662,11 @@ raze:
 
     Mais informações em: https://wiki.batocera.org/systems:raze
 
-# automatic install & run of pkg, zip & vpk is not working
-# vpk's don't seem to work with vita3k currently
 psvita:
   name: PlayStation Vita
   manufacturer: Sony
   release: 2012
   hardware: portable
-  extensions: [zip, psvita]
   comment_en: |
     The world's first emulator for the PlayStation Vita.
 
@@ -3986,7 +3770,6 @@ doom3:
   manufacturer: Ports
   release: 2004
   hardware: port
-  extensions: [d3]
   platform: pc
   group: ports
   comment_en: |
@@ -4035,7 +3818,6 @@ reminiscence:
   manufacturer: Ports
   release: 1992
   hardware: port
-  extensions: [rem]
   platform: pc
   group: ports
   comment_en: |
@@ -4050,13 +3832,12 @@ traider:
   manufacturer: Core Design
   release: 1996
   hardware: port
-  extensions: [croft]
   platform: pc
   group: ports
   comment_en: |
-    Tomb Raider unified open-source TRX engine. 
+    Tomb Raider unified open-source TRX engine.
 
-    Original game assets should be placed in their respective subfolders inside `/userdata/roms/traider/games/<game-id>/`. 
+    Original game assets should be placed in their respective subfolders inside `/userdata/roms/traider/games/<game-id>/`.
 
     Please map your files as follows:
     - Tomb Raider 1:
@@ -4101,7 +3882,6 @@ quake3:
   manufacturer: Ports
   release: 1999
   hardware: port
-  extensions: [ quake3 ]
   platform: pc
   group: ports
   comment_en: |
@@ -4152,7 +3932,6 @@ namco2x6:
   manufacturer: Sony / Namco
   release: 2000
   hardware: arcade
-  extensions: [acgame]
   platform: namco, sega, arcade
   comment_en: |
     The PCSX2X6 emulator provides `work in progress` support for Namco 246 & 256 arcade systems.
@@ -4161,7 +3940,7 @@ namco2x6:
     The .acgame is the rom name EmulationStation uses to help launch the game using PCSX2x6.
 
     Example:
-    
+
     Ridge Racer V Arcade Battle (RRV2 Ver. B).acgame
 
     [game]
@@ -4196,21 +3975,18 @@ namco3xx:
   manufacturer: Namco
   release: 2007
   hardware: arcade
-  extensions: [squashfs]
 
 vis:
   name: Tandy Video Information System
   manufacturer: Tandy / Memorex
   release: 1992
   hardware: computer
-  extensions: [chd, cue, toc, nrg, gdi, iso, cdr]
 
 vpinball:
   name: Visual Pinball X
   manufacturer: Randy Davis
   release: 2000
   hardware: pinball
-  extensions: [vpx]
   comment_en: |
     Visual Pinball X - Standalone
     -----------------------------
@@ -4287,7 +4063,6 @@ spectravideo:
   manufacturer: Spectravideo
   release: 1983
   hardware: computer
-  extensions: [zip, 7z, cas]
   platform: spectravideo
   theme: spectravideo
 
@@ -4296,7 +4071,6 @@ theforceengine:
   manufacturer: Ports
   release: 1995
   hardware: port
-  extensions: [tfe]
   platform: pc
   group: ports
   comment_en: |
@@ -4344,7 +4118,6 @@ rtcw:
   manufacturer: Ports
   release: 2001
   hardware: port
-  extensions: [rtcw]
   platform: pc
   group: ports
   theme: rtcw
@@ -4374,7 +4147,6 @@ fallout1-ce:
   manufacturer: Ports
   release: 1997
   hardware: port
-  extensions: [f1ce]
   platform: pc
   group: ports
   comment_en: |
@@ -4400,7 +4172,6 @@ fallout2-ce:
   manufacturer: Ports
   release: 1998
   hardware: port
-  extensions: [f2ce]
   platform: pc
   group: ports
   comment_en: |
@@ -4426,7 +4197,6 @@ dxx-rebirth:
   manufacturer: Ports
   release: 1998
   hardware: port
-  extensions: [d1x, d2x]
   platform: pc
   group: ports
   comment_en: |
@@ -4461,7 +4231,6 @@ etlegacy:
   manufacturer: Ports
   release: 2010
   hardware: port
-  extensions: [etl]
   platform: pc
   group: ports
   comment_en: |
@@ -4492,7 +4261,6 @@ sonic3-air:
   manufacturer: Sega
   release: 2019
   hardware: port
-  extensions: [s3air]
   platform: pc
   group: ports
   comment_en: |
@@ -4512,7 +4280,6 @@ sonic-mania:
   manufacturer: Sega
   release: 2017
   hardware: port
-  extensions: [sman]
   platform: pc
   group: ports
   comment_en: |
@@ -4551,7 +4318,6 @@ uqm:
   manufacturer: Ports
   release: 1992
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -4564,7 +4330,6 @@ chihiro:
   release: 2002
   hardware: arcade
   platform: chihiro
-  extensions: [iso]
   comment_en: |
     Place your Xbox compatible Chihiro roms in here.
     Currently support ISO's are:
@@ -4595,7 +4360,6 @@ rott:
   manufacturer: Ports
   release: 1994
   hardware: port
-  extensions: [rott]
   platform: pc
   group: ports
   comment_en: |
@@ -4620,14 +4384,12 @@ rx78:
   manufacturer: Bandai
   release: 1983
   hardware: computer
-  extensions: [bin, zip, 7z]
 
 commanderx16:
   name: Commander X16
   manufacturer: The 8-Bit Guy
   release: 2019
   hardware: computer
-  extensions: [bas, img, prg]
   platform: commanderx16
   comment_en: |
     Extract your Commander X16 games here in their own directory.
@@ -4658,7 +4420,6 @@ ps4:
   manufacturer: Sony
   release: 2013
   hardware: console
-  extensions: [ps4, zar]
   comment_en: |
     PS4 emulation is very experiemental & requires a highly specified x86_64 PC.
     Ideally your CPU supports the AVX2 instruction set and your GPU must support Vulkan 1.3 or later.
@@ -4699,7 +4460,6 @@ jazz2:
   manufacturer: Ports
   release: 1998
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -4718,7 +4478,6 @@ catacomb:
   manufacturer: Ports
   release: 1991
   hardware: port
-  extensions: [game]
   platform: pc
   group: ports
   comment_en: |
@@ -4743,7 +4502,6 @@ lindbergh:
   manufacturer: Sega
   release: 2005
   hardware: arcade
-  extensions: [game]
   platform: lindbergh, arcade
   comment_en: |
     Sega Lindbergh requires good knowledge of rom dumps.
@@ -4807,7 +4565,6 @@ oricatmos:
   release: 1984
   hardware: computer
   theme: oric
-  extensions: [tap, dsk, zip]
 
   comment_en: |
     Emulator for Oric Atmos (and Oric 1)
@@ -4823,7 +4580,6 @@ bstone:
   manufacturer: Ports
   release: 1993
   hardware: port
-  extensions: [bstone]
   platform: pc
   group: ports
   comment_en: |
@@ -4849,7 +4605,6 @@ jkdf2:
   manufacturer: Ports
   release: 1993
   hardware: port
-  extensions: [jedi]
   platform: pc
   group: ports
   comment_en: |
@@ -4876,7 +4631,6 @@ jknight:
   manufacturer: Ports
   release: 2003
   hardware: port
-  extensions: [jedi]
   platform: pc
   group: ports
   comment_en: |
@@ -4916,7 +4670,6 @@ mohaa:
   manufacturer: Ports
   release: 2002
   hardware: port
-  extensions: [mohaa]
   platform: pc
   group: ports
   comment_en: |
@@ -4947,7 +4700,6 @@ namco22:
   manufacturer: Namco
   release: 1992
   hardware: arcade
-  extensions: [zip, 7z]
   platform: namco, arcade
   comment_en: |
     Add your MAME compatible Namco System 22 roms here.
@@ -4957,7 +4709,6 @@ bennugd:
   manufacturer: SplinterGU
   release: 2008
   hardware: computer
-  extensions: [dcb, dat]
   platform: pc
   comment_en: |
     Add your Bennu Game Development compatible games here.
@@ -4976,7 +4727,6 @@ loopy:
   manufacturer: Casio
   release: 1995
   hardware: console
-  extensions: [bin, ic1, zip, 7z]
   theme: loopy
   comment_en: |
           Requires MAME BIOS file:
@@ -4993,7 +4743,6 @@ pc60:
   manufacturer: NEC
   release: 1981
   hardware: computer
-  extensions: [bin, cas, p6, d77, d88, dsk, 1dd, mfi, dfi, mfm, td0, imd, cqm, cqi, xdf, hdm, 2hd, fdi, zip, 7z]
   comment_en: |
     Requires MAME BIOS files (depending on model):
     bios/pc6001.zip (PC-6001)
@@ -5014,7 +4763,6 @@ enterprise:
   manufacturer: Enterprise Computers
   release: 1985
   hardware: computer
-  extensions: [bas, com, zip, img, dsk, tap, dtf, trn, 128, cas, cdt, tzx]
   comment_en: |
           Requires ep128emu BIOS files:
           bios/ep128emu/roms/exos21.rom (Expandible OS 2.1)
@@ -5052,7 +4800,6 @@ tvc:
   manufacturer: Videoton
   release: 1986
   hardware: computer
-  extensions: [cas, tap, dsk, img, zip]
   comment_en: |
           Requires ep128emu BIOS files:
           bios/ep128emu/roms/tvc22_sys.rom (TVC system BIOS)

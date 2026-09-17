@@ -34,6 +34,20 @@ custom_features:
       English (Default): english
       Spanish: spanish
       French: french
+file_extensions:
+  - dsk
+  - m3u
+  - zip
+  - 7z
 systems:
-  - amstradcpc
-  - gx4000
+  - name: amstradcpc
+    file_extensions:
+      add:
+        - sna
+        - tap
+        - cdt
+        - voc
+  - name: gx4000
+    file_extensions:
+      add:
+        - cpr

@@ -13,17 +13,27 @@ shared_features:
 features:
   - padtokeyboard
 custom_features:
-  gz_api:
+  uz_api:
     prompt: GRAPHICS API
     description: Choose which graphics API library to use.
     choices:
       OpenGL (Default): 0
       Vulkan: 1
-  gz_vsync:
+  uz_vsync:
     prompt: VSYNC
     description: Fix screen tearing. With Some games you need to turn VSync on in the games options.
     choices:
       Disabled: false
       Enabled: true
+  nologo:
+    prompt: SKIP INTRO VIDEOS
+    choices:
+      Show (Default): 0
+      Skip: 1
+file_extensions:
+  - wad
+  - iwad
+  - pwad
+  - uzdoom
 systems:
-  - gzdoom
+  - uzdoom

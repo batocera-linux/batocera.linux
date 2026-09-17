@@ -212,6 +212,12 @@ custom_features:
     choices:
       Default Only: default
       Modern Fightstick Style: fightstick
+file_extensions:
+  - lst
+  - bin
+  - dat
+  - zip
+  - 7z
 systems:
   - name: atomiswave
     custom_features:
@@ -229,6 +235,15 @@ systems:
         choices:
           Horizontal: horizontal
           Vertical: vertical
-  - dreamcast
-  - naomi2
+  - name: dreamcast
+    file_extensions:
+      - cdi
+      - cue
+      - gdi
+      - chd
+      - m3u
+  - name: naomi2
+    file_extensions:
+      - zip
+      - 7z
   - systemsp

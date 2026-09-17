@@ -149,20 +149,38 @@ custom_features:
     description: Set the on-screen keyboard transparency (0-100%).
     preset: sliderauto
     preset_parameters: 0 100 5 60
+file_extensions:
+  - adf
+  - uae
+  - ipf
+  - dms
+  - dmz
+  - adz
+  - lha
+  - hdf
+  - exe
+  - zip
+  - raw
+  - scp
 systems:
   - name: amiga500
     as_core:
       - A500
       - A500+
-    exclude_extensions:
-      - m3u
   - name: amiga1200
     as_core:
       - A1200
       - A4000
-    exclude_extensions:
-      - m3u
   - name: amigacd32
     as_core: CD32
+    file_extensions: &amigacd32
+      - bin
+      - cue
+      - iso
+      - chd
   - name: amigacdtv
     as_core: CDTV
+    file_extensions:
+      values: *amigacd32
+      add:
+        - m3u

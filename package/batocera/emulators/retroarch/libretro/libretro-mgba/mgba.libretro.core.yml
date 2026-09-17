@@ -10,8 +10,14 @@ custom_features:
     choices:
       Show: false
       Skip: true
+file_extensions:
+  - zip
+  - 7z
 systems:
   - name: gb
+    file_extensions:
+      add:
+        - gb
     custom_features:
       color_correction:
         group: ADVANCED OPTIONS
@@ -21,6 +27,9 @@ systems:
           'Off': false
           'On': GBA
   - name: gbc
+    file_extensions:
+      add:
+        - gbc
     custom_features:
       color_correction:
         group: ADVANCED OPTIONS
@@ -30,9 +39,9 @@ systems:
           'Off': false
           'On': GBC
   - name: gba
-    exclude_extensions:
-      - tar
-      - rar
+    file_extensions:
+      add:
+        - gba
     custom_features:
       solar_sensor_level:
         group: ADVANCED OPTIONS
@@ -66,6 +75,10 @@ systems:
           "9": 9
           "10": 10
   - name: sgb
+    file_extensions:
+      add:
+        - gb
+        - gbc
     custom_features:
       sgb_borders:
         group: ADVANCED OPTIONS

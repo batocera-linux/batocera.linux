@@ -84,11 +84,11 @@ GROUPS = {
         "cdogs", "cdoom", "cgenius", "corsixth", "d3le", "dentonmod", "desolated",
         "devilutionx", "dhewm3", "dxx-rebirth", "ecwolf", "eduke32", "eldoom",
         "etlegacy", "fallout1-ce", "fallout2-ce", "fitz", "grimm",
-        "gzdoom", "hardcorps", "hcl", "hurrican", "ioquake3", "iortcw", "jazz2-native",
+        "hardcorps", "hcl", "hurrican", "ioquake3", "iortcw", "jazz2-native",
         "linuxloader", "openmohaa", "openjazz", "openjk", "openjkdf2", "perfected",
         "raze", "realgibs", "rivensin", "sdlpop", "sikkmod", "sonic3-air", "sonic2013",
         "soniccd", "sonic-mania", "taradino", "theforceengine", "trx", "tyrian",
-        "uqm", "hlsdk-xash3d", "hlsdk-xash3d-dmc", "hlsdk-xash3d-opfor",
+        "uqm", "uzdoom", "hlsdk-xash3d", "hlsdk-xash3d-dmc", "hlsdk-xash3d-opfor",
         "xash3d-fwgs", "vkquake", "vkquake2", "vkquake3", "yquake2", "yquake2-xatrix",
         "yquake2-rogue", "yquake2-zaero"
     ],

@@ -21,24 +21,13 @@ class DefaultDict(TypedDict):
 # es_systems.yml definitions
 
 
-class CoreDict(TypedDict):
-    requireAnyOf: list[str]
-    incompatible_extensions: NotRequired[list[str]]
-
-
-class EmulatorDict(TypedDict, extra_items=CoreDict):
-    archs_include: NotRequired[list[str]]
-    archs_exclude: NotRequired[list[str]]
-
-
 class SystemDict(TypedDict, extra_items=str):
     name: str
     manufacturer: str
     release: int
     hardware: str
     path: NotRequired[str | None]
-    extensions: list[str]
-    emulators: NotRequired[dict[str, EmulatorDict]]
+    file_extensions: NotRequired[list[str]]
     platform: NotRequired[str | None]
     group: NotRequired[str | None]
     theme: NotRequired[str]

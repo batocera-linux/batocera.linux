@@ -66,11 +66,30 @@ custom_features:
       400%: 400%
       500%: 500%
       1000%: 1000%
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - gb
-  - gbc
-  - satellaview
+  - name: gb
+    file_extensions:
+      add:
+        - gb
+  - name: gbc
+    file_extensions:
+      add:
+        - gbc
+  - name: satellaview
+    file_extensions:
+      add:
+        - bs
+        - smc
+        - sfc
+        - squashfs
   - name: sgb
+    file_extensions:
+      add:
+        - gb
+        - gbc
     custom_features:
       mesen-s_sgb2:
         group: ADVANCED OPTIONS
@@ -79,4 +98,14 @@ systems:
         choices:
           'On': enabled
           'Off': disabled
-  - snes
+  - name: snes
+    file_extensions:
+      add:
+        - smc
+        - fig
+        - sfc
+        - gd3
+        - gd7
+        - dx2
+        - bsx
+        - swc

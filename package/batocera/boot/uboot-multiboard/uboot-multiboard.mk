@@ -12,8 +12,8 @@ endif
 UBOOT_MULTIBOARD_SITE = https://ftp.denx.de/pub/u-boot
 UBOOT_MULTIBOARD_DL_SUBDIR = uboot
 UBOOT_MULTIBOARD_SOURCE = u-boot-$(UBOOT_MULTIBOARD_VERSION).tar.bz2
-UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools
-UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls
+UBOOT_MULTIBOARD_DEPENDENCIES = host-python3 host-python-setuptools host-util-linux
+UBOOT_MULTIBOARD_DEPENDENCIES += host-swig host-openssl host-gnutls host-dtc
 UBOOT_MULTIBOARD_INSTALL_IMAGES = YES
 
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_H3),y)
@@ -60,11 +60,11 @@ endif
 
 # Find any common config fragments and patches in package dir.
 UBOOT_MULTIBOARD_CNF_FRAGS_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/*.config.fragment)
-UBOOT_MULTIBOARD_PATCHES_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/*.patch)
+UBOOT_MULTIBOARD_PATCHES_COMMON = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/patches/*.patch)
 
 # Find any SoC level config fragments and patches in SoC dir (if it exists).
 UBOOT_MULTIBOARD_CNF_FRAGS_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/*.config.fragment)
-UBOOT_MULTIBOARD_PATCHES_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/*.patch)
+UBOOT_MULTIBOARD_PATCHES_SOC = $(wildcard $(UBOOT_MULTIBOARD_PKGDIR)/$(UBOOT_MULTIBOARD_SOC_DIR)/patches/*.patch)
 
 define UBOOT_MULTIBOARD_CALL_STEP_FOR_CONFIGS
 	$(foreach config,$(call qstrip,$(BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS)),

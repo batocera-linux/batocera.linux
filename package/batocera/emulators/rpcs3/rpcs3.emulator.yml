@@ -484,6 +484,13 @@ custom_features:
     prompt: RUMBLE
     description: Enable controller rumble capabilities if supported by the controller.
     preset: switchon
+file_extensions:
+  - squashfs
 systems:
-  - ps3
+  - name: ps3
+    file_extensions:
+      add:
+        - ps3
+        - psn
+        - iso
   - namco3xx

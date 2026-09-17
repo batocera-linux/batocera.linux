@@ -88,6 +88,11 @@ custom_features:
     prompt: UDP BIND ADDRESS
     description: Local address and port to receive packets on. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
     preset: input
+file_extensions:
+  - iso
 systems:
   - chihiro
-  - xbox
+  - name: xbox
+    file_extensions:
+      add:
+        - squashfs

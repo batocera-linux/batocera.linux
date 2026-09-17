@@ -22,41 +22,14 @@ custom_features:
       ROM.00: ROM.00
       APPLE2GS.ROM: APPLE2GS.ROM
       APPLE2GS-BIOS.ROM: APPLE2GS-BIOS.ROM
+file_extensions:
+  - do
+  - nib
+  - po
+  - dsk
 systems:
-  - name: apple2
-    exclude_extensions:
-      - mfi
-      - dfi
-      - rti
-      - edd
-      - woz
-      - wav
-      - zip
-      - 7z
-      - chd
-      - hdv
-      - 2mg
+  - apple2
   - name: apple2gs
-    exclude_extensions:
-      - mfi
-      - dfi
-      - rti
-      - edd
-      - woz
-      - hfe
-      - mfm
-      - td0
-      - imd
-      - d77
-      - d88
-      - 1dd
-      - cqm
-      - cqui
-      - ima
-      - img
-      - ufi
-      - 360
-      - ipf
-      - dc42
-      - zip
-      - 7z
+    file_extensions:
+      add:
+        - 2mg

@@ -17,5 +17,17 @@ custom_features:
       PCE Joypad: 1
       PCE Mouse: 2
 systems:
-  - pcengine
-  - pcenginecd
+  - name: pcengine
+    file_extensions:
+      - pce
+      - bin
+      - zip
+      - 7z
+  - name: pcenginecd
+    file_extensions:
+      - pce
+      - cue
+      - ccd
+      - iso
+      - img
+      - chd

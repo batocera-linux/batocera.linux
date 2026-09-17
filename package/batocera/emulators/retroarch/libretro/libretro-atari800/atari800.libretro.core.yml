@@ -1,7 +1,23 @@
 features:
   - padtokeyboard
+file_extensions:
+  - rom
+  - xfd
+  - atr
+  - atx
+  - cdm
+  - cas
+  - car
+  - bin
+  - a52
+  - xex
+  - zip
+  - 7z
 systems:
   - name: atari800
+    file_extensions:
+      add:
+        - m3u
     custom_features:
       atari800_system:
         group: ADVANCED OPTIONS

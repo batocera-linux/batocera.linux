@@ -1,0 +1,183 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,6 +55,8 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+ include( FindPackageHandleStandardArgs )
+
+ # Support cross compiling
++option(TOOLS_ONLY "Only build the tools, not uzdoom itself (useful for cross-compiling)" OFF)
++
+ option( FORCE_CROSSCOMPILE "Turn on cross compiling." NO )
+ if( FORCE_CROSSCOMPILE )
+ 	set( CMAKE_CROSSCOMPILING TRUE )
+@@ -250,7 +252,9 @@ endmacro()
+ option( NO_OPENAL "Disable OpenAL sound support" OFF )
+
+ find_package( BZip2 )
+-find_package( VPX )
++if(NOT TOOLS_ONLY)
++	find_package( VPX )
++endif()
+
+ if (CURL_REQUIRED)
+ 	find_package( CURL )
+@@ -390,39 +394,41 @@ set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEB_C_FLAGS} -D_DEBUG" )
+ option(FORCE_INTERNAL_BZIP2 "Use internal bzip2")
+ option(FORCE_INTERNAL_CPPDAP "Use internal cppdap" ON)
+
+-if (HAVE_VULKAN)
+-	add_subdirectory( libraries/ZVulkan )
+-endif()
++if(NOT TOOLS_ONLY)
++	if (HAVE_VULKAN)
++		add_subdirectory( libraries/ZVulkan )
++	endif()
+
+-if( MSVC )
+-	set(ABSL_MSVC_STATIC_RUNTIME ON)
+-endif()
+-add_subdirectory( libraries/abseil )
+-
+-set(ZWIDGET_BUILD_EXAMPLE OFF CACHE INTERNAL "" FORCE)
+-add_subdirectory( libraries/ZWidget )
+-
+-add_subdirectory( libraries/webp )
+-
+-if( HAVE_VM_JIT AND UNIX )
+-	check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
+-	if( NOT HAVE_BACKTRACE )
+-		set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
+-		check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
+-		if( HAVE_LIBEXECINFO )
+-			set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
+-		else( HAVE_LIBEXECINFO )
+-			set( HAVE_VM_JIT NO )
+-		endif( HAVE_LIBEXECINFO )
+-		set( CMAKE_REQUIRED_FLAGS )
+-	endif( NOT HAVE_BACKTRACE )
+-endif( HAVE_VM_JIT AND UNIX )
+-
+-if( ${HAVE_VM_JIT} )
+-	set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
+-	add_subdirectory( libraries/asmjit )
+-	set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
+-	set( ASMJIT_LIBRARIES asmjit )
++	if( MSVC )
++		set(ABSL_MSVC_STATIC_RUNTIME ON)
++	endif()
++	add_subdirectory( libraries/abseil )
++
++	set(ZWIDGET_BUILD_EXAMPLE OFF CACHE INTERNAL "" FORCE)
++	add_subdirectory( libraries/ZWidget )
++
++	add_subdirectory( libraries/webp )
++
++	if( HAVE_VM_JIT AND UNIX )
++		check_symbol_exists( "backtrace" "execinfo.h" HAVE_BACKTRACE )
++		if( NOT HAVE_BACKTRACE )
++			set( CMAKE_REQUIRED_FLAGS "-lexecinfo" )
++			check_symbol_exists( "backtrace" "execinfo.h" HAVE_LIBEXECINFO )
++			if( HAVE_LIBEXECINFO )
++				set( ALL_C_FLAGS "${ALL_C_FLAGS} -lexecinfo" )
++			else( HAVE_LIBEXECINFO )
++				set( HAVE_VM_JIT NO )
++			endif( HAVE_LIBEXECINFO )
++			set( CMAKE_REQUIRED_FLAGS )
++		endif( NOT HAVE_BACKTRACE )
++	endif( HAVE_VM_JIT AND UNIX )
++
++	if( ${HAVE_VM_JIT} )
++		set( SKIP_INSTALL_ALL TRUE ) # Avoid installing asmjit alongside zdoom
++		add_subdirectory( libraries/asmjit )
++		set( ASMJIT_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libraries/asmjit )
++		set( ASMJIT_LIBRARIES asmjit )
++	endif()
+ endif()
+
+ if( BZIP2_FOUND AND NOT FORCE_INTERNAL_BZIP2 )
+@@ -435,23 +441,27 @@ else()
+ 	set( BZIP2_LIBRARY bz2 )
+ endif()
+
+-if ( CPPDAP_FOUND AND NOT FORCE_INTERNAL_CPPDAP )
+-	message( STATUS "Using system cppdap library, includes found at ${CPPDAP_INCLUDE_DIR}" )
+-else()
+-	message( STATUS "Using internal cppdap library" )
+-	add_subdirectory( libraries/cppdap )
+-	set( CPPDAP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/cppdap" )
+-	set( CPPDAP_LIBRARIES cppdap )
+-	set( CPPDAP_LIBRARY cppdap )
+-	set( CPPDAP_FOUND TRUE )
++if(NOT TOOLS_ONLY)
++	if ( CPPDAP_FOUND AND NOT FORCE_INTERNAL_CPPDAP )
++		message( STATUS "Using system cppdap library, includes found at ${CPPDAP_INCLUDE_DIR}" )
++	else()
++		message( STATUS "Using internal cppdap library" )
++		add_subdirectory( libraries/cppdap )
++		set( CPPDAP_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/cppdap" )
++		set( CPPDAP_LIBRARIES cppdap )
++		set( CPPDAP_LIBRARY cppdap )
++		set( CPPDAP_FOUND TRUE )
++	endif()
+ endif()
+
+ # ZMUSIC
+-set( BUILD_SHARED_LIBS OFF CACHE INTERNAL "" FORCE )
+-add_subdirectory( libraries/ZMusic )
+-set( ZMUSIC_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libraries/zmusic" )
+-set( ZMUSIC_INCLUDE_DIR ${ZMUSIC_ROOT_PATH}/include )
+-set( ZMUSIC_LIBRARIES zmusic )
++if(NOT TOOLS_ONLY)
++	set( BUILD_SHARED_LIBS OFF CACHE INTERNAL "" FORCE )
++	add_subdirectory( libraries/ZMusic )
++	set( ZMUSIC_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/libraries/zmusic" )
++	set( ZMUSIC_INCLUDE_DIR ${ZMUSIC_ROOT_PATH}/include )
++	set( ZMUSIC_LIBRARIES zmusic )
++endif()
+
+ set( LZMA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libraries/lzma/C" )
+
+@@ -462,26 +472,30 @@ if( NOT CMAKE_CROSSCOMPILING )
+ endif()
+
+ # Install the entire docs directory in the distributed zip package
+-if( WIN32 )
+-	set( INSTALL_DOCS_PATH docs CACHE STRING "Directory where the documentation will be placed during install." )
+-else()
+-	set( INSTALL_DOCS_PATH share/doc/${ZDOOM_EXE_NAME} CACHE STRING "Directory where the zdoom documentation will be placed during install." )
++if(NOT TOOLS_ONLY)
++	if( WIN32 )
++		set( INSTALL_DOCS_PATH docs CACHE STRING "Directory where the documentation will be placed during install." )
++	else()
++		set( INSTALL_DOCS_PATH share/doc/${ZDOOM_EXE_NAME} CACHE STRING "Directory where the zdoom documentation will be placed during install." )
++	endif()
++	install(DIRECTORY docs/
++			DESTINATION ${INSTALL_DOCS_PATH}
++			COMPONENT "Documentation")
+ endif()
+-install(DIRECTORY docs/
+-		DESTINATION ${INSTALL_DOCS_PATH}
+-		COMPONENT "Documentation")
+
+ option( DYN_OPENAL "Dynamically load OpenAL" ON )
+ option( BUILD_NONFREE "Build non-free assets used by commercial games" ON )
+
+-add_subdirectory( src )
+ add_subdirectory( libraries/lzma )
+ add_subdirectory( tools )
+-add_subdirectory( wadsrc )
+-add_subdirectory( wadsrc_bm )
+-add_subdirectory( wadsrc_lights )
+-add_subdirectory( wadsrc_extra )
+-add_subdirectory( wadsrc_widepix )
++if(NOT TOOLS_ONLY)
++	add_subdirectory( src )
++	add_subdirectory( wadsrc )
++	add_subdirectory( wadsrc_bm )
++	add_subdirectory( wadsrc_lights )
++	add_subdirectory( wadsrc_extra )
++	add_subdirectory( wadsrc_widepix )
++endif()
+
+ if( ZMUSIC_SYSTEM_INSTALL )
+ 	# Internal ZMusic library provides miniz target, miniz.h file in partuclar

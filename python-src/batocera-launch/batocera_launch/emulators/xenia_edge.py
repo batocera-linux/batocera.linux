@@ -8,7 +8,7 @@ import toml
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES
-from batocera_common.vulkan import get_version as vulkan_get_version, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 from batocera_launch.paths import configure_emulator
 
@@ -42,12 +42,13 @@ class XeniaEdge(Emulator):
         return 16 / 9 if self.config.get_bool('xenia_edge_widescreen', True) else 4 / 3
 
     async def configure(self) -> Command:
-        if not vulkan_is_available():
+        vulkan_info = await get_vulkan_info()
+
+        if not vulkan_info:
             raise BatoceraException('Vulkan driver required by xenia-edge is not available on the system')
 
-        vulkan_version = vulkan_get_version()
-        if vulkan_version <= '1.3':
-            _logger.warning('Vulkan version %s may not meet xenia-edge requirements (1.3+)', vulkan_version)
+        if vulkan_info.version is not None and vulkan_info.version <= '1.3':
+            _logger.warning('Vulkan version %s may not meet xenia-edge requirements (1.3+)', vulkan_info.version)
 
         xenia_cache = CACHE / 'xenia-edge'
 
@@ -100,10 +101,10 @@ class XeniaEdge(Emulator):
                     'xenia_edge_postprocess_scaling_and_sharpening', 'bilinear'
                 ),
                 'postprocess_antialiasing': self.config.get_str('xenia_edge_postprocess_antialiasing', 'none'),
-                'postprocess_ffx_cas_additional_sharpness': self.config.get(
+                'postprocess_ffx_cas_additional_sharpness': self.config.get_float(
                     'xenia_edge_postprocess_ffx_cas_additional_sharpness', 0.0
                 ),
-                'postprocess_ffx_fsr_sharpness_reduction': self.config.get(
+                'postprocess_ffx_fsr_sharpness_reduction': self.config.get_float(
                     'xenia_edge_postprocess_ffx_fsr_sharpness_reduction', 0.2
                 ),
                 'present_letterbox': True,
@@ -133,8 +134,8 @@ class XeniaEdge(Emulator):
             HID={
                 'guide_button': False,
                 'hid': 'sdl',
-                'left_stick_deadzone_percentage': self.config.get('xenia_edge_deadzone_left', 0.0),
-                'right_stick_deadzone_percentage': self.config.get('xenia_edge_deadzone_right', 0.0),
+                'left_stick_deadzone_percentage': self.config.get_float('xenia_edge_deadzone_left', 0.0),
+                'right_stick_deadzone_percentage': self.config.get_float('xenia_edge_deadzone_right', 0.0),
                 'vibration': self.config.get_bool('xenia_edge_vibration', True),
             },
             Linux={'use_gamemode': False, 'use_mangohud': False},

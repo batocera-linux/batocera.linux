@@ -8,7 +8,7 @@ from typing import Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES
-from batocera_common.vulkan import get_discrete_gpu_index, has_discrete_gpu, is_available as vulkan_is_available
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext
 
 from . import controllers, sysconf
@@ -123,10 +123,12 @@ class Dolphin(Emulator):
         )
         settings.set('Core', 'MMU', str(self.config.get_bool('enable_mmu')))
 
+        vulkan_info = await get_vulkan_info()
+
         # Backend - Default OpenGL
         if self.config.get('gfxbackend') == 'Vulkan':
             settings.set('Core', 'GFXBackend', 'Vulkan')
-            if not vulkan_is_available():
+            if not vulkan_info:
                 _logger.debug('Vulkan driver is not available on the system. Using OpenGL instead.')
                 settings.set('Core', 'GFXBackend', 'OGL')
         else:
@@ -206,16 +208,12 @@ class Dolphin(Emulator):
                 gfx.add_section(section)
 
         # Set Vulkan adapter
-        if vulkan_is_available():
+        if vulkan_info:
             _logger.debug('Vulkan driver is available on the system.')
-            if has_discrete_gpu():
+            if discrete_gpu := vulkan_info.active_discrete_gpu:
                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                discrete_index = get_discrete_gpu_index()
-                if discrete_index:
-                    _logger.debug('Using Discrete GPU Index: %s for Dolphin', discrete_index)
-                    gfx.set('Hardware', 'Adapter', discrete_index)
-                else:
-                    _logger.debug("Couldn't get discrete GPU index")
+                _logger.debug('Using Discrete GPU Index: %s for Dolphin', discrete_gpu.index)
+                gfx.set('Hardware', 'Adapter', str(discrete_gpu.index))
             else:
                 _logger.debug('Discrete GPU is not available on the system. Using default.')
 

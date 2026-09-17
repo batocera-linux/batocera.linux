@@ -1,0 +1,38 @@
+With PREFER_SYSTEM_LIBRARIES=ON, cmake/zip.cmake finds any zip.h + libzip.so
+and treats them as kubazip (kuba--/zip). Buildroot's libzip installs the same
+names but a completely different API, so studio sources fail to compile
+(ZIP_DEFAULT_COMPRESSION_LEVEL, zip_entry_*, struct zip_t vs zip_t).
+
+Only accept a system zip when the header exposes the kubazip API; otherwise
+fall back to vendor/zip.
+
+diff --git a/cmake/zip.cmake b/cmake/zip.cmake
+--- a/cmake/zip.cmake
++++ b/cmake/zip.cmake
+@@ -5,7 +5,16 @@
+ if(PREFER_SYSTEM_LIBRARIES)
+     find_path(zip_INCLUDE_DIR NAMES zip.h PATH_SUFFIXES zip)
+     find_library(zip_LIBRARY NAMES zip)
+-    if(zip_INCLUDE_DIR AND zip_LIBRARY)
++    # libzip also ships zip.h / libzip.so; only accept kuba--/zip (kubazip)
++    set(_zip_is_kubazip FALSE)
++    if(zip_INCLUDE_DIR AND EXISTS "${zip_INCLUDE_DIR}/zip.h")
++        file(STRINGS "${zip_INCLUDE_DIR}/zip.h" _zip_kubazip_marker
++            REGEX "ZIP_DEFAULT_COMPRESSION_LEVEL" LIMIT_COUNT 1)
++        if(_zip_kubazip_marker)
++            set(_zip_is_kubazip TRUE)
++        endif()
++    endif()
++    if(_zip_is_kubazip AND zip_LIBRARY)
+         add_library(zip UNKNOWN IMPORTED GLOBAL)
+         set_target_properties(zip PROPERTIES
+             IMPORTED_LOCATION "${zip_LIBRARY}"
+@@ -14,6 +23,8 @@
+         message(STATUS "Use system library: kubazip")
+         return()
+     else()
++        unset(zip_INCLUDE_DIR CACHE)
++        unset(zip_LIBRARY CACHE)
+         message(WARNING "System library kubazip not found")
+     endif()
+ endif()

@@ -13,11 +13,7 @@ import ruamel.yaml.util
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES
-from batocera_common.vulkan import (
-    get_discrete_gpu_index,
-    has_discrete_gpu,
-    is_available as vulkan_is_available,
-)
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext
 
 if TYPE_CHECKING:
@@ -141,18 +137,14 @@ class Vita3k(Emulator):
                 use_vulkan = True
 
         if use_vulkan:
-            if vulkan_is_available():
+            if vulkan_info := await get_vulkan_info():
                 _logger.debug('Vulkan driver is available on the system.')
                 config['backend-renderer'] = 'Vulkan'
 
-                if has_discrete_gpu():
+                if discrete_gpu := vulkan_info.active_discrete_gpu:
                     _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                    discrete_index = get_discrete_gpu_index()
-                    if discrete_index:
-                        _logger.debug('Using Discrete GPU Index: %s for Vita3K', discrete_index)
-                        config['gpu-idx'] = discrete_index
-                    else:
-                        _logger.debug("Couldn't get discrete GPU index")
+                    _logger.debug('Using Discrete GPU Index: %s for Vita3K', discrete_gpu.index)
+                    config['gpu-idx'] = str(discrete_gpu.index)
                 else:
                     _logger.debug('Discrete GPU is not available on the system. Using default.')
                     config['gpu-idx'] = 0

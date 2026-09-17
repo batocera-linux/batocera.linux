@@ -73,6 +73,17 @@ custom_features:
       Autodetect: automatic
       NTSC (NES): ntsc
       Famicom (FDS): famicom
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - fds
-  - nes
+  - name: fds
+    file_extensions:
+      add:
+        - fds
+  - name: nes
+    file_extensions:
+      add:
+        - nes
+        - unif
+        - unf

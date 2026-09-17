@@ -8,12 +8,7 @@ from typing import Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, SAVES
-from batocera_common.vulkan import (
-    get_default_gpu_name,
-    get_discrete_gpu_name,
-    has_discrete_gpu,
-    is_available as vulkan_is_available,
-)
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext
 
 _logger = logging.getLogger(__name__)
@@ -95,19 +90,19 @@ class Xemu(Emulator):
             _logger.debug('Chihiro system, defaulting to OpenGL due to a Xemu bug')
         ini_config.set('display', 'renderer', f'"{renderer}"')
 
-        if renderer == 'VULKAN' and vulkan_is_available():
+        if renderer == 'VULKAN' and (vulkan_info := await get_vulkan_info()):
             gpu_name = None
-            if has_discrete_gpu():
+            if discrete_gpu := vulkan_info.active_discrete_gpu:
                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                gpu_name = get_discrete_gpu_name()
+                gpu_name = discrete_gpu.name
                 if gpu_name:
                     _logger.debug('Using Discrete GPU Name: %s for Xemu', gpu_name)
                 else:
                     _logger.debug("Discrete GPU detected but couldn't get name.")
 
-            if not gpu_name:
+            if not gpu_name and vulkan_info.default_gpu:
                 _logger.debug('Using default GPU for Xemu')
-                gpu_name = get_default_gpu_name()
+                gpu_name = vulkan_info.default_gpu.name
 
             # empty string is the worst-case fallback: it triggers xemu's own auto-detection
             ini_config.set('display.vulkan', 'preferred_physical_device', f'"{gpu_name}"' if gpu_name else '""')

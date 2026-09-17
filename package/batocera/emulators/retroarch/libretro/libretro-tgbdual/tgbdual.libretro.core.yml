@@ -11,6 +11,17 @@ custom_features:
     choices:
       'On': 1
       'Off': 0
+file_extensions:
+  - gb2
+  - gbc2
+  - zip
+  - 7z
 systems:
-  - gb2players
-  - gbc2players
+  - name: gb2players
+    file_extensions:
+      add:
+        - gb
+  - name: gbc2players
+    file_extensions:
+      add:
+        - gbc
