@@ -34,6 +34,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_DOSBOX),,dosbox.py) \
 		$(if $(BR2_PACKAGE_DOSBOX_STAGING),,dosbox_staging.py) \
 		$(if $(BR2_PACKAGE_DOSBOX_X),,dosboxx.py) \
+		$(if $(BR2_PACKAGE_DUCKSTATION)$(BR2_PACKAGE_DUCKSTATION_LEGACY),,duckstation.py) \
 		$(if $(BR2_PACKAGE_DXX_REBIRTH),,dxx_rebirth.py) \
 		$(if $(BR2_PACKAGE_EASYRPG_PLAYER),,easyrpg.py) \
 		$(if $(BR2_PACKAGE_ECWOLF),,ecwolf.py) \
