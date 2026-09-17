@@ -238,7 +238,7 @@
 - PPSSPP to v1.20.4
 - Python Pyxel to May 9th, 2026 build
 - Redream to 1.5.0-1240
-- RPCS3 to Sep 7th, 2026 build
+- RPCS3 to Sep 17th, 2026 build
 - Ruffle to 17th of September 2026 nightly build
 - ScummVM to v2026.3.0
 - ShadPS4 to v.0.18.0
