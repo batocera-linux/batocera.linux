@@ -261,7 +261,7 @@
 - Xash3D-FWGS (Half-Life engine + HLSDK mobile_hacks/dmc/opfor) to Aug 27, 2026 build
 - Xemu to v0.8.136
 - Xenia to v1.0.2844
-- Xenia Canary to August 29th, 2026 build
+- Xenia Canary to September 16th, 2026 build
 - Xenia Edge to 9th of September build
 - XRoar to v1.12.1
 - Ymir to v0.3.3
