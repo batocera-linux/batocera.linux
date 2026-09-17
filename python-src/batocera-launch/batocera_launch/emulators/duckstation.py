@@ -42,7 +42,15 @@ _BIOS_LISTS: Final[Mapping[str, Sequence[str]]] = {
         'scph102a.bin',
         'scph102b.bin',
     ],
-    'NTSCJ': ['scph100.bin', 'scph1000.bin', 'scph3000.bin', 'scph3500.bin', 'scph5500.bin', 'scph7000.bin', 'scph7003.bin'],
+    'NTSCJ': [
+        'scph100.bin',
+        'scph1000.bin',
+        'scph3000.bin',
+        'scph3500.bin',
+        'scph5500.bin',
+        'scph7000.bin',
+        'scph7003.bin',
+    ],
     'Uni': ['psxonpsp660.bin', 'ps1_rom.bin'],
 }
 
@@ -365,6 +373,8 @@ class Duckstation(Emulator):
                 enable_vram_write_replacements = 'false'
             case 'preload':
                 preload_textures = 'true'
+            case _:
+                pass
 
         settings.set('TextureReplacements', 'EnableVRAMWriteReplacements', enable_vram_write_replacements)
         settings.set('TextureReplacements', 'PreloadTextures', preload_textures)
