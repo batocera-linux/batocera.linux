@@ -148,7 +148,6 @@ class XeniaEdge(Emulator):
                 'mount_cache': self.config.get_bool('xenia_edge_cache', True),
             },
             UI={
-                'headless': self.config.get_bool('xenia_edge_headless'),
                 'show_achievement_notification': self.config.get_bool('xenia_edge_achievement'),
             },
             Vulkan={
