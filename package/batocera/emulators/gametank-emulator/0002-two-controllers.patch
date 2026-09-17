@@ -1,0 +1,211 @@
+From 7550fbf787e0bfeb58b373a107bb7075687e4ee5 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Thu, 17 Sep 2026 22:03:23 +1000
+Subject: [PATCH] Route each connected pad to its own controller port
+
+Only one controller was opened and every joystick binding drove port 1.
+Track up to two pads and pick the port from the device the event came from.
+---
+ src/joystick_adapter.cpp | 114 +++++++++++++++++++++++++++++----------
+ src/joystick_adapter.h   |   8 ++-
+ 2 files changed, 93 insertions(+), 29 deletions(-)
+
+diff --git a/src/joystick_adapter.cpp b/src/joystick_adapter.cpp
+index 4d34ba2..59cbe74 100644
+--- a/src/joystick_adapter.cpp
++++ b/src/joystick_adapter.cpp
+@@ -8,19 +8,74 @@
+ #include "imgui/backends/imgui_impl_sdl2.h"
+ #endif
+ 
++// The pad an event came from decides which port it drives, so the joystick
++// bindings are all kept in their player 1 form and shifted here.
++static GameTankButtons::ButtonId slot_button(GameTankButtons::ButtonId button, int slot) {
++	return (GameTankButtons::ButtonId)((button % BUTTON_COUNT) + (slot * BUTTON_COUNT));
++}
++
++int JoystickAdapter::ControllerSlot(SDL_JoystickID which) {
++	for(int slot = 0; slot < MAX_CONTROLLERS; ++slot) {
++		if((gGameControllers[slot] != NULL) && (gGameControllerIds[slot] == which)) {
++			return slot;
++		}
++	}
++	return -1;
++}
++
++void JoystickAdapter::OpenController(int deviceIndex) {
++	if(ControllerSlot(SDL_JoystickGetDeviceInstanceID(deviceIndex)) >= 0) {
++		return;
++	}
++
++	for(int slot = 0; slot < MAX_CONTROLLERS; ++slot) {
++		if(gGameControllers[slot] != NULL) {
++			continue;
++		}
++
++		SDL_GameController* controller = SDL_GameControllerOpen(deviceIndex);
++		if(controller == NULL) {
++			return;
++		}
++
++		gGameControllers[slot] = controller;
++		gGameControllerIds[slot] = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
++		printf("Joystick found for player %d\n", slot + 1);
++		RefreshImguiGamepads();
++		return;
++	}
++}
++
++void JoystickAdapter::RefreshImguiGamepads() {
++#ifndef WASM_BUILD
++	SDL_GameController* openControllers[MAX_CONTROLLERS];
++	int count = 0;
++
++	for(int slot = 0; slot < MAX_CONTROLLERS; ++slot) {
++		if(gGameControllers[slot] != NULL) {
++			openControllers[count++] = gGameControllers[slot];
++		}
++	}
++
++	if(count > 0) {
++		ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode_Manual, openControllers, count);
++	} else {
++		ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode_Manual);
++	}
++#endif
++}
++
+ JoystickAdapter::JoystickAdapter() {
+ 
+ 	load_joystick_config(this->bindings);
+ 
+ 	if(!EmulatorConfig::noJoystick) {
+ 		SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
+-		if(SDL_NumJoysticks() > 0) {
+-			printf("Joystick found\n");
+-			gGameController = SDL_GameControllerOpen(0);
+-			gGameControllerId = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gGameController));
+-#ifndef WASM_BUILD
+-			ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode_Manual, &gGameController, 1);
+-#endif
++		int numJoysticks = SDL_NumJoysticks();
++		if(numJoysticks > 0) {
++			for(int i = 0; i < numJoysticks; ++i) {
++				OpenController(i);
++			}
+ 		} else {
+ 			printf("Joystick NOT found\n");
+ 		}
+@@ -28,9 +83,11 @@ JoystickAdapter::JoystickAdapter() {
+ }
+ 
+ JoystickAdapter::~JoystickAdapter() {
+-	if(gGameController != NULL) {
+-		SDL_GameControllerClose(gGameController);
+-		gGameController = NULL;
++	for(int slot = 0; slot < MAX_CONTROLLERS; ++slot) {
++		if(gGameControllers[slot] != NULL) {
++			SDL_GameControllerClose(gGameControllers[slot]);
++			gGameControllers[slot] = NULL;
++		}
+ 	}
+ }
+ 
+@@ -90,24 +147,27 @@ void JoystickAdapter::update(SDL_Event *e, bool managementOnly) {
+ 		select status - bit 7
+ 	*/
+ 
+-	if((e->type == SDL_CONTROLLERDEVICEADDED) && (gGameController == NULL)) {
+-		gGameController = SDL_GameControllerOpen(e->cdevice.which);
+-		gGameControllerId = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gGameController));
+-#ifndef WASM_BUILD		
+-		ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode_Manual, &gGameController, 1);
+-#endif
++	if(e->type == SDL_CONTROLLERDEVICEADDED) {
++		OpenController(e->cdevice.which);
+ 	}
+ 
+-	if((e->type == SDL_CONTROLLERDEVICEREMOVED) && (gGameController != NULL)) {
+-		if(e->cdevice.which == gGameControllerId) {
+-			SDL_GameControllerClose(gGameController);
+-			gGameController = NULL;
+-#ifndef WASM_BUILD
+-			ImGui_ImplSDL2_SetGamepadMode(ImGui_ImplSDL2_GamepadMode_Manual);
+-#endif
++	if(e->type == SDL_CONTROLLERDEVICEREMOVED) {
++		int removedSlot = ControllerSlot(e->cdevice.which);
++		if(removedSlot >= 0) {
++			SDL_GameControllerClose(gGameControllers[removedSlot]);
++			gGameControllers[removedSlot] = NULL;
++			gGameControllerIds[removedSlot] = 0;
++			RefreshImguiGamepads();
+ 		}
+ 	}
+ 
++	int eventSlot = -1;
++	if((e->type == SDL_CONTROLLERBUTTONDOWN) || (e->type == SDL_CONTROLLERBUTTONUP)) {
++		eventSlot = ControllerSlot(e->cbutton.which);
++	} else if(e->type == SDL_CONTROLLERAXISMOTION) {
++		eventSlot = ControllerSlot(e->caxis.which);
++	}
++
+ 	uint16_t buttonMask = 0;
+ 	GameTankButtons::ButtonId buttonId = GameTankButtons::NO_BUTTON;
+ 	for (InputBinding binding : this->bindings) {
+@@ -164,9 +224,9 @@ void JoystickAdapter::update(SDL_Event *e, bool managementOnly) {
+ 				}
+ 			}
+ 		}*/ else if (binding.type == BindingTypes::JOYSTICK_BUTTON) {
+-			if((e->type == SDL_CONTROLLERBUTTONDOWN) || (e->type == SDL_CONTROLLERBUTTONUP)) {
++			if((eventSlot >= 0) && ((e->type == SDL_CONTROLLERBUTTONDOWN) || (e->type == SDL_CONTROLLERBUTTONUP))) {
+ 				if((binding.host_input.joy_button) == (e->cbutton.button)) {
+-					buttonId = binding.button;
++					buttonId = slot_button(binding.button, eventSlot);
+ 					if(e->type == SDL_CONTROLLERBUTTONDOWN) {
+ 						++button_press_counts[buttonId];
+ 					} else if(e->type == SDL_CONTROLLERBUTTONUP) {
+@@ -190,7 +250,7 @@ void JoystickAdapter::update(SDL_Event *e, bool managementOnly) {
+ 				}
+ 			}
+ 		} else if (binding.type == BindingTypes::JOYSTICK_AXIS) {
+-			if(e->type == SDL_CONTROLLERAXISMOTION) {
++			if((eventSlot >= 0) && (e->type == SDL_CONTROLLERAXISMOTION)) {
+ 				if(e->caxis.axis == binding.host_input.axis.axis) {
+ 					uint16_t clearMask = 0;
+ 					buttonMask = 0;
+@@ -207,7 +267,7 @@ void JoystickAdapter::update(SDL_Event *e, bool managementOnly) {
+ 							clearMask = button_masks[binding.button % BUTTON_COUNT];
+ 						}
+ 					}
+-					if(binding.button < BUTTON_COUNT) {
++					if(eventSlot == 0) {
+ 						pad1Mask |= buttonMask;
+ 						pad1Mask &= ~clearMask;
+ 					} else {
+diff --git a/src/joystick_adapter.h b/src/joystick_adapter.h
+index b299aeb..f351099 100644
+--- a/src/joystick_adapter.h
++++ b/src/joystick_adapter.h
+@@ -56,6 +56,7 @@ typedef struct InputBinding {
+ } InputBinding;
+ 
+ #define BUTTON_COUNT 8
++#define MAX_CONTROLLERS 2
+ 
+ class JoystickAdapter {
+ private:
+@@ -69,9 +70,12 @@ private:
+ 		0, 0, 0, 0, 0, 0, 0, 0,
+ 		0, 0, 0, 0, 0, 0, 0, 0,
+ 	};
+-	SDL_GameController* gGameController = NULL;
+-	SDL_JoystickID gGameControllerId = 0;
++	SDL_GameController* gGameControllers[MAX_CONTROLLERS] = { NULL, NULL };
++	SDL_JoystickID gGameControllerIds[MAX_CONTROLLERS] = { 0, 0 };
+ 	uint8_t currentPaddleValue[4] = {128, 128, 128, 128};
++	int ControllerSlot(SDL_JoystickID which);
++	void OpenController(int deviceIndex);
++	void RefreshImguiGamepads();
+ public:
+ 	JoystickAdapter();
+ 	~JoystickAdapter();
