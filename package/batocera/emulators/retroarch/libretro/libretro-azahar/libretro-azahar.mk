@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LIBRETRO_AZAHAR_VERSION = 2126.0
+LIBRETRO_AZAHAR_VERSION = 2126.1.1
 LIBRETRO_AZAHAR_SITE = https://github.com/azahar-emu/azahar
 LIBRETRO_AZAHAR_SITE_METHOD = git
 LIBRETRO_AZAHAR_GIT_SUBMODULES = YES

@@ -3,8 +3,8 @@
 # libretro-superbroswar
 #
 ################################################################################
-# Version: Commits on Jul 27, 2026
-LIBRETRO_SUPERBROSWAR_VERSION = f43233e75573a9e0067793c5fce957a1ebc6b1ae
+# Version: Commits on Sep 1, 2026
+LIBRETRO_SUPERBROSWAR_VERSION = 7f94e03163e1641ecd2a5703eb9ca7e1312b5e8d
 LIBRETRO_SUPERBROSWAR_SITE = https://github.com/libretro/superbroswar-libretro.git
 LIBRETRO_SUPERBROSWAR_SITE_METHOD = git
 LIBRETRO_SUPERBROSWAR_LICENSE = GPLv3

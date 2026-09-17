@@ -110,47 +110,48 @@
 - Ledspicer to 0.7.6
 - Libretro-81 to April 20th, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
-- Libretro-Atari800 to August 15th, 2026 build
-- Libretro-Azahar to 2126.0
+- Libretro-Atari800 to September 1st, 2026 build
+- Libretro-Azahar to 2126.1.1
 - Libretro-Beetle-Lynx to April 20th, 2026 build
 - Libretro-Beetle-NGP to June 14th, 20026 build
-- Libretro-Beetle-PCE to April 11th, 2026 build
-- Libretro-Beetle-PCE-Fast to August 28th, 2026 build
-- Libretro-Beetle-PCFX to August 23rd, 2026 build
-- Libretro-Beetle-PSX to August 23rd, 2026 build
-- Libretro-Beetle-Saturn to August 11th, 2026 build
+- Libretro-Beetle-PCE to September 4th, 2026 build
+- Libretro-Beetle-PCE-Fast to September 11th, 2026 build
+- Libretro-Beetle-PCFX to September 4th, 2026 build
+- Libretro-Beetle-PSX to September 7th, 2026 build
+- Libretro-Beetle-Saturn to September 6th, 2026 build
 - Libretro-Beetle-SuperGrafx to April 20th, 2026 build
 - Libretro-Beetle-VB to August 23rd, 2026 build
 - Libretro-Beetle-WSwan to July 31st, 2026 build
 - Libretro-BennuGD to August 29th, 2026 build
-- Libretro-BK to April 20th, 2026 build
-- Libretro-Blastem to August 13th, 2026 build
+- Libretro-BK to September 4th, 2026 build
+- Libretro-Blastem to September 2nd, 2026 build
 - Libretro-BlueMSX to August 23rd, 2026 build
-- Libretro-Boom3 to August 28th, 2026 build
-- Libretro-Bsnes to August 12th, 2026 build
+- Libretro-Boom3 to September 3rd, 2026 build
+- Libretro-Bsnes to September 4th, 2026 build
 - Libretro-Bsnes-HD to December 5th, 2025 build
-- Libretro-Cap32 to April 6th, 2026 build
+- Libretro-Cap32 to August 30th, 2026 build
 - Libretro-Chailove to July 26th, 2026 build
 - Libretro-Craft to April 20th, 2026 build
 - Libretro-Desmume to August 23rd, 2026 build
-- Libretro-Dinothawr to August 26th, 2026 build
-- Libretro-Dolphin to August 27th, 2026 build
+- Libretro-Dinothawr to September 3rd, 2026 build
+- Libretro-Dolphin to September 14th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Ecwolf to August 20th, 2026 build
+- Libretro-EmuSCV to August 12th, 2026 build
 - Libretro-Ep128emu-Core to core_v1.2.13
 - Libretro-Fake08 to June 13th, 2026 build
 - Libretro-FBAlpha to July 28th, 2026 build
-- Libretro-FBNeo to August 27th, 2026 build
+- Libretro-FBNeo to September 4th, 2026 build
 - Libretro-Fceumm to August 22nd, 2026 build
 - Libretro-Flycast to v2.7
 - Libretro-FlycastVL to July 6th, 2026 build
-- Libretro-FMSX to June 4th, 2026 build
+- Libretro-FMSX to September 6th, 2026 build
 - Libretro-Freechaf to April 20th, 2026 build
 - Libretro-Freeintv to August 11th, 2026 build
-- Libretro-Fuse to August 12th, 2026 build
+- Libretro-Fuse to September 6th, 2026 build
 - Libretro-Gambatte to August 21st, 2026 build
-- Libretro-Gearcoleco to 1.6.12
-- Libretro-Gearsystem to August 29th, 2026 build
+- Libretro-Gearcoleco to 1.7.0
+- Libretro-Gearsystem to September 16th, 2026 build
 - Libretro-GenesisPlusGX to August 4th, 2026 build
 - Libretro-GenesisPlusGX-Expanded to March 30th, 2026 build
 - Libretro-GenesisPlusGX-Wide to July 28th, 2026 build
@@ -158,65 +159,66 @@
 - Libretro-GW to April 20th, 2026 build
 - Libretro-Handy to April 20th, 2026 build
 - Libretro-Hatari to August 29th, 2026 build
-- Libretro-HatariB to August 29th, 2026 build
+- Libretro-HatariB to September 16th, 2026 build
 - Libretro-Holani to 1.0.0
-- Libretro-iMame to July 28th, 2026 build
-- Libretro-Kronos to March 12th, 2025 build
+- Libretro-iMame to September 1st, 2026 build
+- Libretro-Kronos to September 1st, 2026 build
 - Libretro-Lowres-NX to March 31st, 2026 build
 - Libretro-Lutro to August 17th, 2026 build
 - Libretro-MAME to 0.289
-- Libretro-MAME2003-Plus to August 29th, 2026 build
+- Libretro-MAME2003-Plus to September 15th, 2026 build
 - Libretro-Melonds to July 19th, 2026 build
 - Libretro-Melonds-DS to v1.3.1
 - Libretro-Mesen to April 20th, 2026 build
 - Libretro-Mesen-S to August 23rd, 2026 build
-- Libretro-MGBA to August 27th, 2026 build
+- Libretro-MGBA to September 16th, 2026 build
 - Libretro-MiniVMac to April 20th, 2026 build
-- Libretro-Mupen64plus-Next to August 6th, 2026 build
+- Libretro-Mupen64plus-Next to September 12th, 2026 build
 - Libretro-NeoCD to August 30th, 2026 build
-- Libretro-Nestopia to August 30th, 2026 build
+- Libretro-Nestopia to September 13th, 2026 build
 - Libretro-NXEngine to August 22nd, 2026 build
+- Libretro-O2EM to July 21st, 2026 build
 - Libretro-Opera to August 21st, 2026 build
-- Libretro-Parallel-N64 to August 30th, 2026 build
-- Libretro-PC88 to July 22nd, 2026 build
-- Libretro-PC98 to August 23rd, 2026 build
-- Libretro-PCSX to August 26th, 2026 build
-- Libretro-PD777 to August 21st, 2026 build
-- Libretro-Picodrive to August 20th, 2026 build
+- Libretro-Parallel-N64 to September 3rd, 2026 build
+- Libretro-PC88 to September 6th, 2026 build
+- Libretro-PC98 to September 5th, 2026 build
+- Libretro-PCSX to September 5th, 2026 build
+- Libretro-PD777 to September 11th, 2026 build
+- Libretro-Picodrive to September 4th, 2026 build
 - Libretro-Play to 0.77
-- Libretro-Pocketsnes to June 25th, 2026 build
+- Libretro-Pocketsnes to September 6th, 2026 build
 - Libretro-Pokemini to July 31st, 2026 build
-- Libretro-Prboom to August 20th, 2026 build
+- Libretro-Prboom to September 15th, 2026 build
 - Libretro-ppsspp to 1.20.4
 - Libretro-ProSystem to August 22nd, 2026 build
-- Libretro-PS2 to August 29th, 2026 build
-- Libretro-PUAE to July 30th, 2026 build
+- Libretro-PS2 to September 17th, 2026 build
+- Libretro-PUAE to September 6th, 2026 build
 - Libretro-PX68k to August 22nd, 2026 build
 - Libretro-Reminiscence to July 21st, 2026 build
-- Libretro-Same-CDI to August 16th, 2026 build
+- Libretro-Same-CDI to September 2nd, 2026 build
 - Libretro-SameDuck to December 10th, 2023 build
-- Libretro-ScummVM to August 26th, 2026 build
-- Libretro-SMSPlus-GX to June 25th, 2026 build
+- Libretro-ScummVM to September 15th, 2026 build
+- Libretro-SMSPlus-GX to September 4th, 2026 build
 - Libretro-Snes9x to August 16th, 2026 build
-- Libretro-Snes9x-Next to August 16th, 2026 build
-- Libretro-Stella to August 30th, 2026 build
-- Libretro-Stella2014 to July 6th, 2026 build
-- Libretro-SuperBrosWar to July 27th, 2026 build
+- Libretro-Snes9x-Next to September 15th, 2026 build
+- Libretro-Stella to September 16th, 2026 build
+- Libretro-Stella2014 to September 4th, 2026 build
+- Libretro-SuperBrosWar to September 1st, 2026 build
 - Libretro-SuperFlappyBirds to June 12th, 2026 build
 - Libretro-Swanstation to August 11th, 2026 build
 - Libretro-Tgbdual to August 23rd, 2026 build
 - Libretro-Theodore to August 17th, 2026 build
-- Libretro-Tic80 to July 6th, 2026 build
+- Libretro-Tic80 to September 16th, 2026 build
 - Libretro-Tyrquake to July 15th, 2026 build
-- Libretro-Uae4arm to May 8th, 2026 build
+- Libretro-Uae4arm to September 7th, 2026 build
 - Libretro-Uzem to August 23rd, 2026 build
-- Libretro-VBA-M to August 28th, 2026 build
+- Libretro-VBA-M to September 14th, 2026 build
 - Libretro-Vecx to April 11th, 2026 build
 - Libretro-Vemulator to August 23rd, 2026 build
 - Libretro-Vice to August 1st, 2026 build
 - Libretro-Vircon32 to v1.6
-- Libretro-VirtualJaguar to August 26th, 2026 build
-- Libretro-VitaQuake2 to July 28th, 2026 build
+- Libretro-VirtualJaguar to September 5th, 2026 build
+- Libretro-VitaQuake2 to September 6th, 2026 build
 - Libretro-Watara to June 4th, 2026 build
 - Libretro-Xmil to August 23rd, 2026 build
 - Libretro-Xrick to July 28th, 2026 build

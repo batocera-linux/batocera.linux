@@ -3,10 +3,10 @@
 # libretro-kronos
 #
 ################################################################################
-# Version: Commits on Mar 12, 2025
+# Version: Commits on Sep 1, 2026
 # Need to use this branch : https://github.com/libretro/yabause/tree/kronos
 LIBRETRO_KRONOS_BRANCH = kronos
-LIBRETRO_KRONOS_VERSION = 6709c1dd0e26094f005b19c6e473c30809718b78
+LIBRETRO_KRONOS_VERSION = 3791ffb2221fda61d70aec5cca376418caf05669
 LIBRETRO_KRONOS_SITE = $(call github,libretro,yabause,$(LIBRETRO_KRONOS_VERSION))
 LIBRETRO_KRONOS_LICENSE = BSD-3-Clause
 LIBRETRO_KRONOS_DEPENDENCIES += mesa3d
