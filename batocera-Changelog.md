@@ -29,6 +29,7 @@
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
 - ES can now display Unicode for ID3 tags of songs played
 - ES now supports correctly Arabic and Hebrew glyph rendering
+- GameTank console support through GameTankEmulator
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
 - NanoBoyAdvance as an alternative GBA emulator

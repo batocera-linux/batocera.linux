@@ -1,0 +1,51 @@
+features:
+  - padtokeyboard
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  gametank_palette:
+    prompt: COLOUR PALETTE
+    description: Match the colours to the way the console's video output looks on a real display.
+    choices:
+      Unscaled capture (Default): capture
+      Full contrast: contrast
+      Cheap HDMI converter: hdmi
+      Flawed theory (legacy): legacy
+  gametank_renderer:
+    prompt: RENDERER
+    description: Use the software renderer when the hardware one misbehaves.
+    choices:
+      Hardware (Default): hardware
+      Software: software
+  gametank_instantblits:
+    prompt: INSTANT BLITS
+    description: Finish each blit immediately rather than over the cycles the real hardware takes.
+    choices:
+      "Off": 0
+      "On": 1
+  gametank_paddle:
+    prompt: PADDLE EMULATION
+    description: Drive the GameTank paddle with the mouse, for the games that use it.
+    choices:
+      "Off": 0
+      "On": 1
+  gametank_sound:
+    prompt: AUDIO COPROCESSOR
+    description: Turn off to silence the audio coprocessor entirely.
+    choices:
+      "On": 1
+      "Off": 0
+file_extensions:
+  - gtr
+systems:
+  - gametank
