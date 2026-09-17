@@ -87,7 +87,7 @@
 - Blake Stone to v1.3.4
 - Box64 0.4.4
 - CatacombGL to Jun 20, 2026 build
-- Cemu to Aug 22, 2026 build
+- Cemu to Sep 10, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-07-23
 - Commander Genius to v3.6.3
