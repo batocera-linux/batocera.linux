@@ -101,10 +101,10 @@ class XeniaEdge(Emulator):
                     'xenia_edge_postprocess_scaling_and_sharpening', 'bilinear'
                 ),
                 'postprocess_antialiasing': self.config.get_str('xenia_edge_postprocess_antialiasing', 'none'),
-                'postprocess_ffx_cas_additional_sharpness': self.config.get(
+                'postprocess_ffx_cas_additional_sharpness': self.config.get_float(
                     'xenia_edge_postprocess_ffx_cas_additional_sharpness', 0.0
                 ),
-                'postprocess_ffx_fsr_sharpness_reduction': self.config.get(
+                'postprocess_ffx_fsr_sharpness_reduction': self.config.get_float(
                     'xenia_edge_postprocess_ffx_fsr_sharpness_reduction', 0.2
                 ),
                 'present_letterbox': True,
@@ -134,8 +134,8 @@ class XeniaEdge(Emulator):
             HID={
                 'guide_button': False,
                 'hid': 'sdl',
-                'left_stick_deadzone_percentage': self.config.get('xenia_edge_deadzone_left', 0.0),
-                'right_stick_deadzone_percentage': self.config.get('xenia_edge_deadzone_right', 0.0),
+                'left_stick_deadzone_percentage': self.config.get_float('xenia_edge_deadzone_left', 0.0),
+                'right_stick_deadzone_percentage': self.config.get_float('xenia_edge_deadzone_right', 0.0),
                 'vibration': self.config.get_bool('xenia_edge_vibration', True),
             },
             Linux={'use_gamemode': False, 'use_mangohud': False},
