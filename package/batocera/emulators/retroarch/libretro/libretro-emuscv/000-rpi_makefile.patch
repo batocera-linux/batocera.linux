@@ -1,9 +1,7 @@
-diff --git a/Makefile.libretro b/Makefile.libretro
-index a15d2c9..4ee05a5 100755
 --- a/Makefile.libretro
 +++ b/Makefile.libretro
-@@ -83,16 +83,16 @@ ifneq (,$(findstring unix,$(platform)))
- # ---FOR TEST ---
+@@ -76,16 +76,16 @@
+ # Raspberry Pi
  	ifneq (,$(findstring rpi,$(platform)))
  		PLATFORM_DEFINES += -D_RASPBERRYPI
 -		CFLAGS += -fomit-frame-pointer -ffast-math -marm
@@ -22,7 +20,7 @@ index a15d2c9..4ee05a5 100755
  		else ifneq (,$(findstring rpi2,$(platform)))
  			PLATFORM_DEFINES += -D_RASPBERRYPI2
  			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_LOW
-@@ -100,11 +100,15 @@ ifneq (,$(findstring unix,$(platform)))
+@@ -93,11 +93,15 @@
  		else ifneq (,$(findstring rpi3,$(platform)))
  			PLATFORM_DEFINES += -D_RASPBERRYPI3
  			PLATFORM_DEFINES += -D_RESOLUTION_AUTO_MEDIUM
