@@ -224,7 +224,7 @@
 - Libretro-Xmil to August 23rd, 2026 build
 - Libretro-Xrick to July 28th, 2026 build
 - Libretro-Yabasanshiro to August 23rd, 2026 build
-- Lightspark to 0.9.0
+- Lightspark to Sep 14, 2026 build
 - LinuxLoader to v3.0.10
 - Moonlight-Embedded to Jun 5, 2026 build
 - Moonlight-QT to Sep 8, 2026 build

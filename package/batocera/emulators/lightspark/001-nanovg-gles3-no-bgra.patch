@@ -1,0 +1,16 @@
+--- a/src/3rdparty/nanovg/src/nanovg_gl.h
++++ b/src/3rdparty/nanovg/src/nanovg_gl.h
+@@ -980,7 +980,13 @@
+ #endif
+ 
+ 	if (tex->type == NVG_TEXTURE_RGBA)
++#ifndef NANOVG_GLES3
+ 		glTexSubImage2D(GL_TEXTURE_2D, 0, x,y, w,h, GL_BGRA, GL_UNSIGNED_BYTE, data);  // Lightspark always delivers images in BGRA format
++#else
++		// GLES has no GL_BGRA; the R/B swizzle set in glnvg__renderCreateTexture
++		// already gives this texture BGRA channel order.
++		glTexSubImage2D(GL_TEXTURE_2D, 0, x,y, w,h, GL_RGBA, GL_UNSIGNED_BYTE, data);
++#endif
+ 	else
+ #if defined(NANOVG_GLES2) || defined(NANOVG_GL2)
+ 		glTexSubImage2D(GL_TEXTURE_2D, 0, x,y, w,h, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
