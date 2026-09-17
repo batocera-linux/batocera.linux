@@ -1,5 +1,3 @@
-diff --git a/qt/CMakeLists.txt b/qt/CMakeLists.txt
-index 3fde0482eb..80b0a987a6 100644
 --- a/qt/CMakeLists.txt
 +++ b/qt/CMakeLists.txt
 @@ -1,6 +1,9 @@
@@ -12,7 +10,7 @@ index 3fde0482eb..80b0a987a6 100644
  include(GNUInstallDirs)
  
  set(CMAKE_CXX_STANDARD 20)
-@@ -118,16 +121,43 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+@@ -117,16 +120,43 @@
          ../external/glad/src/wgl.c
          src/resources/snes9x_win32.rc)
  else()
@@ -62,7 +60,7 @@ index 3fde0482eb..80b0a987a6 100644
  
      pkg_check_modules(PULSEAUDIO libpulse)
      if(PULSEAUDIO_FOUND)
-@@ -137,21 +167,7 @@ else()
+@@ -136,21 +166,7 @@
          list(APPEND PLATFORM_SOURCES ../common/audio/s9x_sound_driver_pulse.cpp)
      endif()
  
@@ -84,8 +82,8 @@ index 3fde0482eb..80b0a987a6 100644
 +    list(APPEND PLATFORM_SOURCES ../external/glad/src/egl.c)
  endif()
  
- find_package(SDL3 QUIET)
-@@ -264,9 +280,12 @@ list(APPEND LIBS
+ set(USE_SYSTEM_SDL3 CACHE BOOL OFF)
+@@ -267,9 +283,12 @@
  if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
      list(APPEND DEFINES "VK_USE_PLATFORM_WIN32_KHR")
  else()
@@ -101,11 +99,9 @@ index 3fde0482eb..80b0a987a6 100644
  endif()
  
  list(APPEND DEFINES
-diff --git a/qt/src/EmuCanvasOpenGL.cpp b/qt/src/EmuCanvasOpenGL.cpp
-index eb41fe0ff6..3d5349ba99 100644
 --- a/qt/src/EmuCanvasOpenGL.cpp
 +++ b/qt/src/EmuCanvasOpenGL.cpp
-@@ -6,10 +6,14 @@
+@@ -4,10 +4,14 @@
  #include "common/video/opengl/opengl_context.hpp"
  
  #ifndef _WIN32
@@ -122,15 +118,15 @@ index eb41fe0ff6..3d5349ba99 100644
  #else
  #include "common/video/opengl/wgl_context.hpp"
  #endif
-@@ -138,6 +142,7 @@ bool EmuCanvasOpenGL::createContext()
-     auto pni = QGuiApplication::platformNativeInterface();
+@@ -142,6 +146,7 @@
+     auto app = reinterpret_cast<QGuiApplication *>(QGuiApplication::instance());
      QGuiApplication::sync();
  #ifndef _WIN32
 +#ifdef USE_WAYLAND
      if (platform == "wayland")
      {
-         auto display = (wl_display *)pni->nativeResourceForWindow("display", main_window->windowHandle());
-@@ -154,7 +159,9 @@ bool EmuCanvasOpenGL::createContext()
+         auto iface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
+@@ -159,7 +164,9 @@
  
          context.reset(wayland_egl_context);
      }
@@ -139,9 +135,9 @@ index eb41fe0ff6..3d5349ba99 100644
 +#ifdef USE_X11
 +    if (platform == "xcb")
      {
-         auto display = (Display *)pni->nativeResourceForWindow("display", windowHandle());
-         auto xid = (Window)winId();
-@@ -169,6 +176,7 @@ bool EmuCanvasOpenGL::createContext()
+         auto iface = app->nativeInterface<QNativeInterface::QX11Application>();
+         auto display = iface->display();
+@@ -175,6 +182,7 @@
  
          context.reset(glx_context);
      }
@@ -149,13 +145,13 @@ index eb41fe0ff6..3d5349ba99 100644
  #else
      auto hwnd = winId();
      auto wgl_context = new WGLContext();
-@@ -316,10 +324,14 @@ void EmuCanvasOpenGL::resizeEvent(QResizeEvent *event)
+@@ -322,10 +330,14 @@
      int s = devicePixelRatio();
      auto platform = QGuiApplication::platformName();
  #ifndef _WIN32
 +#ifdef USE_WAYLAND
      if (QGuiApplication::platformName() == "wayland")
-         ((WaylandEGLContext *)context.get())->resize({ x() - main_window->x(), y() - main_window->y(), width(), height(), s });
+         ((WaylandEGLContext *)context.get())->resize({ x() - parent->x(), y() - parent->y(), width(), height(), s });
 -    else if (platform == "xcb")
 +#endif
 +#ifdef USE_X11
@@ -165,19 +161,17 @@ index eb41fe0ff6..3d5349ba99 100644
  #else
      ((WGLContext *)context.get())->resize();
  #endif
-diff --git a/qt/src/EmuCanvasVulkan.cpp b/qt/src/EmuCanvasVulkan.cpp
-index 670aabd74d..c417ffec0d 100644
 --- a/qt/src/EmuCanvasVulkan.cpp
 +++ b/qt/src/EmuCanvasVulkan.cpp
-@@ -104,6 +104,7 @@ bool EmuCanvasVulkan::createContext()
+@@ -93,6 +93,7 @@
          return false;
      }
  #else
 +#ifdef USE_WAYLAND
      if (platform == "wayland")
      {
-         wayland_surface = std::make_unique<WaylandSurface>();
-@@ -121,7 +122,9 @@ bool EmuCanvasVulkan::createContext()
+         auto native_interface = app->nativeInterface<QNativeInterface::QWaylandApplication>();
+@@ -115,7 +116,9 @@
              return false;
          }
      }
@@ -186,33 +180,33 @@ index 670aabd74d..c417ffec0d 100644
 +#ifdef USE_X11
 +    if (platform == "xcb")
      {
-         auto display = (Display *)pni->nativeResourceForWindow("display", window);
-         auto xid = (Window)winId();
-@@ -134,6 +137,7 @@ bool EmuCanvasVulkan::createContext()
-             return false;
+         auto native_interface = app->nativeInterface<QNativeInterface::QX11Application>();
+         auto display = native_interface->display();
+@@ -130,6 +133,7 @@
          }
      }
-+#endif
  #endif
++#endif
  
-     if (config->display_messages == EmuConfig::eOnscreen)
-@@ -241,6 +245,7 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
-     context->swapchain->set_vsync(config->enable_vsync);
+     if (config.display_messages == EmuConfig::eOnscreen)
+         initImGui();
+@@ -231,6 +235,7 @@
+     context->swapchain->set_vsync(config.enable_vsync);
  
  #ifndef _WIN32
 +#ifdef USE_WAYLAND
      if (platform == "wayland")
      {
          WaylandSurface::Metrics m = {
-@@ -257,6 +262,7 @@ void EmuCanvasVulkan::resizeEvent(QResizeEvent *event)
-         wayland_surface->resize(m);
+@@ -248,6 +253,7 @@
          return;
      }
-+#endif
  #endif
++#endif
  
      context->swapchain->check_and_resize(event->size().width() * devicePixelRatio(), event->size().height() * devicePixelRatio());
-@@ -296,7 +302,12 @@ void EmuCanvasVulkan::deinit()
+ }
+@@ -286,7 +292,12 @@
      shader_chain.reset();
      context.reset();
  #ifndef _WIN32
@@ -226,8 +220,6 @@ index 670aabd74d..c417ffec0d 100644
  #endif
  }
  
-diff --git a/qt/src/EmuCanvasVulkan.hpp b/qt/src/EmuCanvasVulkan.hpp
-index fbb72be468..c49179ee8a 100644
 --- a/qt/src/EmuCanvasVulkan.hpp
 +++ b/qt/src/EmuCanvasVulkan.hpp
 @@ -7,8 +7,10 @@
@@ -241,7 +233,7 @@ index fbb72be468..c49179ee8a 100644
  
  class EmuCanvasVulkan : public EmuCanvas
  {
-@@ -45,6 +47,8 @@ class EmuCanvasVulkan : public EmuCanvas
+@@ -45,6 +47,8 @@
      QString platform;
  
  #ifndef _WIN32
@@ -250,19 +242,17 @@ index fbb72be468..c49179ee8a 100644
  #endif
 +#endif
  };
-diff --git a/qt/src/EmuMainWindow.cpp b/qt/src/EmuMainWindow.cpp
-index 1e063a405b..e10ec72591 100644
 --- a/qt/src/EmuMainWindow.cpp
 +++ b/qt/src/EmuMainWindow.cpp
-@@ -377,6 +377,7 @@ void EmuMainWindow::resizeToMultiple(int multiple)
+@@ -356,6 +356,7 @@
  void EmuMainWindow::setBypassCompositor(bool bypass)
  {
  #ifndef _WIN32
 +#ifdef USE_X11
      if (QGuiApplication::platformName() == "xcb")
      {
-         auto pni = QGuiApplication::platformNativeInterface();
-@@ -388,6 +389,7 @@ void EmuMainWindow::setBypassCompositor(bool bypass)
+         uint32_t value = bypass;
+@@ -366,6 +367,7 @@
          XChangeProperty(display, xid, net_wm_bypass_compositor, 6, 32, PropModeReplace, (unsigned char *)&value, 1);
      }
  #endif
