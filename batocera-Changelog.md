@@ -81,6 +81,7 @@
 ### Updated
 - Amiberry to v8.3.0
 - AppleWin to Sep 6, 2026 build
+- Armsx2 to September 17, 2026 build
 - Azahar to 2126.1.1
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
