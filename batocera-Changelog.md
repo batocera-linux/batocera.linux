@@ -159,7 +159,7 @@
 - Libretro-GPSP to August 25th, 2026 build
 - Libretro-GW to April 20th, 2026 build
 - Libretro-Handy to April 20th, 2026 build
-- Libretro-Hatari to August 29th, 2026 build
+- Libretro-Hatari to September 8th, 2026 build
 - Libretro-HatariB to September 16th, 2026 build
 - Libretro-Holani to 1.0.0
 - Libretro-iMame to September 1st, 2026 build

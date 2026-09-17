@@ -3,41 +3,21 @@
 # libretro-hatari
 #
 ################################################################################
-# Version: Commits on Aug 29, 2026
-LIBRETRO_HATARI_VERSION = 94f627fd3a2abc07b492a4957d258668955ec763
+# Version: Commits on Sep 8, 2026
+LIBRETRO_HATARI_VERSION = 5831f66e05ae19435bd9d8ef1c6f9c93998ff6f4
 LIBRETRO_HATARI_SITE = $(call github,libretro,hatari,$(LIBRETRO_HATARI_VERSION))
 LIBRETRO_HATARI_DEPENDENCIES = libcapsimage zlib retroarch
 LIBRETRO_HATARI_EMULATOR_INFO = hatari.libretro.core.yml
 LIBRETRO_HATARI_LICENSE = GPLv2
 
-LIBRETRO_HATARI_PLATFORM = $(LIBRETRO_PLATFORM)
-
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2835),y)
-LIBRETRO_HATARI_PLATFORM = rpi1
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
-LIBRETRO_HATARI_PLATFORM = rpi2
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2837),y)
-LIBRETRO_HATARI_PLATFORM = rpi3_64
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2711),y)
-LIBRETRO_HATARI_PLATFORM = rpi4
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2712),y)
-LIBRETRO_HATARI_PLATFORM = rpi5
-else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_S812),y)
-LIBRETRO_HATARI_PLATFORM = armv
-else ifeq ($(BR2_aarch64),y)
-LIBRETRO_HATARI_PLATFORM = unix
-endif
-
-define LIBRETRO_HATARI_BUILD_CMDS
-	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" -C $(@D)/ \
-	    -f Makefile.libretro platform="$(LIBRETRO_HATARI_PLATFORM)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_HATARI_VERSION) | cut -c 1-7)"
-endef
+LIBRETRO_HATARI_CONF_OPTS += -DENABLE_LIBRETRO=ON
+LIBRETRO_HATARI_CONF_OPTS += -DENABLE_HATARI=OFF
+LIBRETRO_HATARI_CONF_OPTS += -DENABLE_TOOLS=OFF
 
 define LIBRETRO_HATARI_INSTALL_TARGET_CMDS
-	$(INSTALL) -D $(@D)/hatari_libretro.so \
+	$(INSTALL) -D $(@D)/src/hatari_libretro.so \
 		$(TARGET_DIR)/usr/lib/libretro/hatari_libretro.so
 endef
 
-$(eval $(generic-package))
+$(eval $(cmake-package))
 $(eval $(emulator-info-package))
