@@ -81,7 +81,7 @@
 ### Updated
 - Amiberry to v8.3.0
 - AppleWin to Aug 29, 2026 build
-- Azahar to 2126.1
+- Azahar to 2126.1.1
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
 - Box64 0.4.4
