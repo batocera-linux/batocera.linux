@@ -36,10 +36,12 @@
 - NanoBoyAdvance as an alternative GBA emulator
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - SM2-Emu emulator for Model 2 games
+- Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
+- Bauh not starting with Python 3.14
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
@@ -278,6 +280,7 @@
 - DXVK-NVAPI to v0.9.2
 - FAudio to 26.09
 - FFMPEG to 8.1.2
+- Flatpak to 1.18.2
 - GStreamer codecs to 1.28.5
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1

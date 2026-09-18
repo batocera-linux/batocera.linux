@@ -10,10 +10,43 @@ batocera-mouse show
 chown -R root:audio /var/run/pulse
 chmod -R g+rwX /var/run/pulse
 
+: > $log
+
+steam_id="com.valvesoftware.Steam"
+mkdir -p /userdata/saves/flatpak/data/.cache/.flatpak-helper/monitor
+
+if ! flatpak info --system "$steam_id" > /dev/null 2>&1; then
+    echo "Steam is not installed, installing it from Flathub." >> $log
+    (
+        flatpak remote-add --system --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo &&
+        flatpak install --system --noninteractive -y flathub "$steam_id"
+    ) >> $log 2>&1 &
+    install_pid=$!
+
+    # yad reads the log separately so a failed dialog can't kill the install
+    tail -n 0 -F --pid=$install_pid $log 2>/dev/null | sed -u 's/^/# /' | \
+        DISPLAY=$(getLocalXDisplay) yad --progress --pulsate --no-buttons --center --width=500 \
+            --title="Steam" --text="Installing Steam, this can take several minutes..." &
+    yad_pid=$!
+
+    wait $install_pid
+    install_status=$?
+    kill $yad_pid 2>/dev/null
+
+    if [ $install_status -ne 0 ]; then
+        echo "Steam installation failed." >> $log
+        DISPLAY=$(getLocalXDisplay) yad --center --title="Steam" --button=OK \
+            --text="Steam could not be installed.\nCheck your network connection and ${log}"
+        batocera-mouse hide
+        exit 1
+    fi
+    echo "Steam installed successfully." >> $log
+fi
+
 # remove steam root restriction
 file_path=$(find /userdata/saves/flatpak/binaries/app -name "bin_steam.sh" 2>/dev/null)
 if [ -n "$file_path" ]; then
-    echo "File bin_steam.sh found at: $file_path" > $log
+    echo "File bin_steam.sh found at: $file_path" >> $log
     # Check if the line "# Don't allow running as root" exists in the file
     if grep -q "# Don't allow running as root" "$file_path"; then
         # Create a temporary file
@@ -45,9 +78,12 @@ if [ "$current_owner:$current_group" != "root:root" ]; then
     chown -R root:root "$target_dir"
 fi
 
+# Steam's bootstrap is untarred as root, which tries to restore file owners.
+STEAM_ENV="--env=TAR_OPTIONS=--no-same-owner"
+
 if test -z "${GAME}"
 then
-    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -bigpicture
+    DISPLAY=$(getLocalXDisplay) flatpak run ${STEAM_ENV} com.valvesoftware.Steam -bigpicture
 else
     # Steam has no option to exit when quitting a game. We previously used to monitor the
     # console output of the steam command, but that is no longer reliable:
@@ -57,12 +93,12 @@ else
     # This should allow our steam command to actually finish.
     log_file="$target_dir/.var/app/com.valvesoftware.Steam/.local/share/Steam/logs/console_log.txt"
     (
-        grep -q -E '^\[.*\] (Exiting app|Game process removed)' <(tail -f -n 0 "$log_file")
+        grep -q -E '^\[.*\] (Exiting app|Game process removed)' <(tail -F -n 0 "$log_file" 2>/dev/null)
         DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
     ) &
     log_watcher_pid=$!
 
-    DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -silent ${GAME}
+    DISPLAY=$(getLocalXDisplay) flatpak run ${STEAM_ENV} com.valvesoftware.Steam -silent ${GAME}
     # Kill our background log watching subshell if it's still there.
     kill "$log_watcher_pid"
 fi
