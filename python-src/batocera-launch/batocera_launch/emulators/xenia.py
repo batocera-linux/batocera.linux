@@ -142,7 +142,8 @@ class Xenia(Emulator):
         config['CPU'] = {'break_on_unimplemented_instructions': False}  # hack, needed for certain games
         # default 1 = the full-version license, generally XBLA's first slot
         config['Content'] = {'license_mask': self.config.get_int('xenia_license', 1)}
-        config['D3D12'] = {'d3d12_readback_resolve': self.config.get_bool('xenia_readback_resolve')}
+        if not is_canary:
+            config['D3D12'] = {'d3d12_readback_resolve': self.config.get_bool('xenia_readback_resolve')}
         config['Display'] = {
             'fullscreen': True,
             'internal_display_resolution': self.config.get_int('xenia_resolution', 8),
@@ -164,12 +165,14 @@ class Xenia(Emulator):
             'framerate_limit': self.config.get_int('xenia_vsync_fps', 0),
             'clear_memory_page_state': self.config.get_bool('xenia_page_state'),
             'render_target_path_d3d12': self.config.get_str('xenia_target_path', 'rtv'),
-            'query_occlusion_fake_sample_count': self.config.get_int('xenia_query_occlusion', 1000),
             'texture_cache_memory_limit_hard': self.config.get_int('xenia_limit_hard', 768),
             'texture_cache_memory_limit_render_to_texture': self.config.get_int('xenia_limit_render_to_texture', 24),
             'texture_cache_memory_limit_soft': self.config.get_int('xenia_limit_soft', 384),
             'texture_cache_memory_limit_soft_lifetime': self.config.get_int('xenia_limit_soft_lifetime', 30),
         }
+        if not is_canary:
+            config['GPU']['query_occlusion_fake_sample_count'] = self.config.get_int('xenia_query_occlusion', 1000)
+
         config['General'] = {
             'discord': False,
             'apply_patches': self.config.get_bool('xenia_patches'),
