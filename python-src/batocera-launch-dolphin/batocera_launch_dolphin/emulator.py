@@ -257,7 +257,7 @@ class Dolphin(Emulator):
             gfx.set('Hacks', 'EFBToTextureEnable', 'True')
             gfx.set('Hacks', 'SkipDuplicateXFBs', 'True')
             gfx.set('Hacks', 'XFBToTextureEnable', 'True')
-            gfx.set('Enhancements', 'ForceFiltering', 'True')
+            gfx.set('Enhancements', 'ForceTextureFiltering', '2')  # 2 = Linear
             gfx.set('Enhancements', 'ArbitraryMipmapDetection', 'True')
             gfx.set('Enhancements', 'DisableCopyFilter', 'True')
             gfx.set('Enhancements', 'ForceTrueColor', 'True')
@@ -274,7 +274,13 @@ class Dolphin(Emulator):
                 ):
                     gfx.remove_option('Hacks', opt)
             if gfx.has_section('Enhancements'):
-                for opt in ('ForceFiltering', 'ArbitraryMipmapDetection', 'DisableCopyFilter', 'ForceTrueColor'):
+                for opt in (
+                    'ForceFiltering',
+                    'ForceTextureFiltering',
+                    'ArbitraryMipmapDetection',
+                    'DisableCopyFilter',
+                    'ForceTrueColor',
+                ):
                     gfx.remove_option('Enhancements', opt)
 
         gfx.set('Hacks', 'VISkip', str(self.config.get_bool('vbi_hack')))
@@ -334,7 +340,6 @@ class Dolphin(Emulator):
         rac_config.add_section('Achievements')
         if self.config.get_bool('retroachievements'):
             rac_config.set('Achievements', 'Enabled', 'True')
-            rac_config.set('Achievements', 'AchievementsEnabled', 'True')
             rac_config.set('Achievements', 'Username', self.config.get('retroachievements.username', ''))
             rac_config.set('Achievements', 'ApiToken', self.config.get('retroachievements.token', ''))
             rac_config.set('Achievements', 'HardcoreEnabled', self.config.get('retroachievements.hardcore', 'False'))
@@ -354,7 +359,6 @@ class Dolphin(Emulator):
             )
         else:
             rac_config.set('Achievements', 'Enabled', 'False')
-            rac_config.set('Achievements', 'AchievementsEnabled', 'False')
         with (DOLPHIN_CONFIG / 'RetroAchievements.ini').open('w') as fp:
             rac_config.write(fp)
 

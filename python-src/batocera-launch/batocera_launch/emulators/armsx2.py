@@ -291,12 +291,9 @@ class Armsx2(Emulator):
         pcsx2_ini_config.set('Folders', 'MemoryCards', '../../../saves/ps2/armsx2')
         pcsx2_ini_config.set('Folders', 'Logs', '../../logs')
         pcsx2_ini_config.set('Folders', 'Cheats', '../../../cheats/ps2')
-        pcsx2_ini_config.set('Folders', 'CheatsWS', '../../../cheats/ps2/cheats_ws')
-        pcsx2_ini_config.set('Folders', 'CheatsNI', '../../../cheats/ps2/cheats_ni')
         pcsx2_ini_config.set('Folders', 'Cache', '../../cache/ps2')
         pcsx2_ini_config.set('Folders', 'Textures', 'textures')
         pcsx2_ini_config.set('Folders', 'InputProfiles', 'inputprofiles')
-        pcsx2_ini_config.set('Folders', 'Videos', '../../../saves/ps2/armsx2/videos')
 
         # create cache folder
         (CACHE / 'ps2').mkdir(parents=True, exist_ok=True)
@@ -349,11 +346,6 @@ class Armsx2(Emulator):
             )
             pcsx2_ini_config.set(
                 'Achievements',
-                'RichPresence',
-                self.config.get_bool('retroachievements.richpresence', return_values=('true', 'false')),
-            )
-            pcsx2_ini_config.set(
-                'Achievements',
                 'Leaderboards',
                 self.config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
             )
@@ -368,7 +360,6 @@ class Armsx2(Emulator):
                 self.config.get_bool('retroachievements.unofficial', return_values=('true', 'false')),
             )
         # set other settings
-        pcsx2_ini_config.set('Achievements', 'TestMode', 'false')
         pcsx2_ini_config.set('Achievements', 'UnofficialTestMode', 'false')
         pcsx2_ini_config.set('Achievements', 'Notifications', 'true')
         pcsx2_ini_config.set('Achievements', 'SoundEffects', 'true')
@@ -536,7 +527,6 @@ class Armsx2(Emulator):
         pcsx2_ini_config.set('Hotkeys', 'ToggleFullscreen', 'Keyboard/Alt & Keyboard/Return')
         pcsx2_ini_config.set('Hotkeys', 'CycleAspectRatio', 'Keyboard/F6')
         pcsx2_ini_config.set('Hotkeys', 'CycleInterlaceMode', 'Keyboard/F5')
-        pcsx2_ini_config.set('Hotkeys', 'CycleMipmapMode', 'Keyboard/Insert')
         pcsx2_ini_config.set('Hotkeys', 'GSDumpMultiFrame', 'Keyboard/Control & Keyboard/Shift & Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'Screenshot', 'Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'GSDumpSingleFrame', 'Keyboard/Shift & Keyboard/F8')
