@@ -20,6 +20,10 @@ _NVRAM_SRC: Final = Path('/usr/share/sm2-emu/nvram')
 _GEAR_UP_INPUTS: Final = ['pagedown', 'r1', 'right_shoulder']  # right paddle
 _GEAR_DOWN_INPUTS: Final = ['pageup', 'l1', 'left_shoulder']  # left paddle
 
+_STEER_INPUTS: Final = ['joystick1left', 'joystick1right']
+_ACCEL_INPUTS: Final = ['r2', 'right_trigger']
+_BRAKE_INPUTS: Final = ['l2', 'left_trigger']
+
 
 def _wheel_button_id(pad: Controller | None, name_or_names: str | list[str], /) -> int:
     if pad is None:
@@ -29,6 +33,38 @@ def _wheel_button_id(pad: Controller | None, name_or_names: str | list[str], /) 
         if (input := pad.inputs.get(name)) is not None and input.type == 'button':
             return int(input.id)
     return -1
+
+
+def _wheel_axis_input(pad: Controller, names: list[str], /) -> tuple[str, int] | None:
+    for name in names:
+        if (input := pad.inputs.get(name)) is not None and input.type == 'axis':
+            return name, int(input.id)
+    return None
+
+
+def _wheel_axes(pad: Controller, /) -> dict[str, str]:
+    steer = _wheel_axis_input(pad, _STEER_INPUTS)
+    accel = _wheel_axis_input(pad, _ACCEL_INPUTS)
+    brake = _wheel_axis_input(pad, _BRAKE_INPUTS)
+    if steer is None and accel is None and brake is None:
+        return {}  # nothing mapped, keep sm2-emu's auto-detect / gui calibration
+
+    relaxed = pad.get_mapping_axis_relaxed_values()
+
+    def axis_id(found: tuple[str, int] | None) -> str:
+        return str(found[1]) if found is not None else '-1'
+
+    # sm2-emu inverts a pedal that rests at the positive end, which is es's 'reversed'
+    def inverted(found: tuple[str, int] | None) -> str:
+        return _ini_bool(found is not None and (axis := relaxed.get(found[0])) is not None and axis['reversed'])
+
+    return {
+        'wheel_steer_axis': axis_id(steer),
+        'wheel_accel_axis': axis_id(accel),
+        'wheel_brake_axis': axis_id(brake),
+        'wheel_accel_invert': inverted(accel),
+        'wheel_brake_invert': inverted(brake),
+    }
 
 
 def _ini_bool(value: bool) -> str:
@@ -140,6 +176,7 @@ class Sm2Emu(Emulator):
                 'wheel_button_test': str(_wheel_button_id(wheel, 'test')),
                 'wheel_button_service': str(_wheel_button_id(wheel, 'service')),
                 'wheel_button_menu': str(_wheel_button_id(wheel, 'hotkey')),
+                **_wheel_axes(wheel),
             }
             if wheel is not None
             else {}
