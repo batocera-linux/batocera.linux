@@ -220,26 +220,6 @@ custom_features:
       Any: any
       RTV (Default): rtv
       ROV: rov
-  xenia_query_occlusion:
-    group: ADVANCED OPTIONS
-    prompt: QUERY OCCLUSION
-    description: The sample count of every tile will be incremented on every EVENT_WRITE_ZPD by this number. Setting this to 0 means everything is reported as occluded.
-    choices:
-      "0": 0
-      "10": 10
-      "50": 50
-      "100": 100
-      "250": 250
-      "500": 500
-      "750": 750
-      1000 (Default): 1000
-  xenia_readback_resolve:
-    group: ADVANCED OPTIONS
-    prompt: READBACK RESOLVE
-    description: D3D12, read render-to-texture results on the CPU. Needed in some games, but causes mid-frame synchronization, so it has a huge performance impact.
-    choices:
-      Disabled: false
-      Enabled: true
   xenia_limit_hard:
     group: ADVANCED OPTIONS
     prompt: HARD TEXTURE CACHE MEMORY LIMIT
