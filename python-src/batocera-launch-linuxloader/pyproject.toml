@@ -4,7 +4,7 @@ version = '44.0'
 dependencies = [
     'batocera-common',
     'batocera-launch',
-    'evdev',
+    'evdev; sys_platform == "linux"',
     'requests',
 ]
 

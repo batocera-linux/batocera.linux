@@ -358,7 +358,7 @@ source = { editable = "python-src/batocera-launch-linuxloader" }
 dependencies = [
     { name = "batocera-common" },
     { name = "batocera-launch" },
-    { name = "evdev" },
+    { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "requests" },
 ]
 
@@ -366,7 +366,7 @@ dependencies = [
 requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
-    { name = "evdev" },
+    { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "requests" },
 ]
 
