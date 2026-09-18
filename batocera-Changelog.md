@@ -274,9 +274,9 @@
 - Allwinner H700 device kernel updated to 7.1.9
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
-- DXVK to 3.0.2
+- DXVK to 3.1.1
 - DXVK-NVAPI to v0.9.2
-- FAudio to 26.08
+- FAudio to 26.09
 - FFMPEG to 8.1.2
 - GStreamer codecs to 1.28.5
 - Khadas VIM4 kernel updated to vendor 5.15.y
@@ -301,9 +301,9 @@
 - RTKit to v0.14
 - VKD3D Proton to 3.0.1
 - Vulkan stack to 1.4.350
-- WINE Mono to 11.1.0
+- WINE Mono to 11.3.0
 - WINE Proton to proton-11.0-1
-- WINE TKG to 11.16
+- WINE TKG to 11.17
 - Wlroots to 0.20.2
 - X86_64 / Zen3 kernel updated to 7.1.9
 - Xone to v0.5.8
