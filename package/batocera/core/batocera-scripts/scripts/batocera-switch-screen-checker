@@ -5,6 +5,11 @@ export LC_ALL=C
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
 
+# for xorg while this script is called from udev
+export XAUTHORITY=/var/lib/.Xauthority
+export DISPLAY=$(getLocalXDisplay)
+#
+
 # list of current detected screens. Always sort to be able to diff.
 # the status file is for the switch only, to handle the internal changes (diff)
 # the query file is to query es (or any) to switch on an other configuration
