@@ -9,10 +9,17 @@ LOG_FILE="/var/log/batocera-storage.log"
 POOL_PATH="/userdata/roms"
 CONFIG_KEY="mergerfs.roms"
 BOOT_CONF_FILE="/boot/batocera-boot.conf"
-MERGERFS_OPTS="-o cache.files=partial,dropcacheonclose=true,category.create=eplfs,allow_other,inodecalc=path-hash,moveonenospc=true,minfreespace=4G"
+
+# SD card's factory-demo gamelist (S12populateshare) masks the real one
+# after a reflash - category.search=newest picks the newer copy instead.
+MERGERFS_OPTS="-o cache.files=partial,dropcacheonclose=true,category.create=eplfs,category.search=newest,allow_other,inodecalc=path-hash,moveonenospc=true,minfreespace=4G"
 
 # --- HELPERS ---
 log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
+
+ensure_fuse_loaded() {
+    [ -e /dev/fuse ] || modprobe fuse 2>>"$LOG_FILE"
+}
 
 log_initial_info() {
     local INIT_LOCK_DIR="/tmp/batocera-storage.init.lock"
@@ -174,6 +181,30 @@ get_unique_id() {
     fi
 }
 
+get_partition_unique_id() {
+    local dev_path="/dev/$1"
+    local id=$(blkid -s UUID -o value "$dev_path")
+    [ -n "$id" ] && { echo "$id"; return; }
+    id=$(blkid -s PARTUUID -o value "$dev_path")
+    [ -n "$id" ] && { echo "$id"; return; }
+    # unformatted - fall back to devname
+    echo "$1"
+}
+
+is_valid_roms_dir() {
+    local candidate="$1"
+    local reference="/usr/share/batocera/datainit/roms"
+    [ -d "$candidate" ] || return 1
+    [ -d "$reference" ] || return 0  # no reference to check against, accept any roms/ dir
+    local sysdir sysname
+    for sysdir in "$candidate"/*/; do
+        [ -d "$sysdir" ] || continue
+        sysname=$(basename "$sysdir")
+        [ -d "$reference/$sysname" ] && return 0
+    done
+    return 1
+}
+
 mount_partition() {
     local PART_DEV=$1
     local IGNORE_AUTOMATION=$2
@@ -182,7 +213,8 @@ mount_partition() {
     local FSTYPE=$(blkid -s TYPE -o value "$PART_DEV")
     if [ -z "$FSTYPE" ] || [[ "$FSTYPE" == "swap" ]]; then return 1; fi
 
-    local EXISTING_MOUNT=$(grep "^$PART_DEV " /proc/mounts | awk '{print $2}')
+    # bind-mounted at 2+ points (e.g. S20biosunion) -> head -1
+    local EXISTING_MOUNT=$(grep "^$PART_DEV " /proc/mounts | awk '{print $2}' | head -1)
     local MOUNT_POINT=""
 
     if [ -n "$EXISTING_MOUNT" ]; then
@@ -238,7 +270,7 @@ mount_partition() {
     fi
 
     # Check Content & Merge
-    if [ -d "$MOUNT_POINT/roms" ]; then
+    if is_valid_roms_dir "$MOUNT_POINT/roms"; then
         log_msg "VALID: [$PART_DEV] /roms found at $MOUNT_POINT"
         
         if [ "$IGNORE_AUTOMATION" = true ]; then
@@ -277,7 +309,7 @@ mount_partition() {
             local SIZE_CLEAN=$(echo "$SIZE" | tr ':' '_')
             [ -z "$MODEL_CLEAN" ] && MODEL_CLEAN="Generic Drive"
 
-            local UNIQUE_ID=$(get_unique_id "$PARENT")
+            local UNIQUE_ID=$(get_partition_unique_id "$PART_NAME")
             send_notification "REQUEST_MERGE:$PART_NAME:$MODEL_CLEAN:$SIZE_CLEAN:$MOUNT_POINT:$UNIQUE_ID"
             return 2
         fi
@@ -549,20 +581,26 @@ case "$COMMAND" in
     fi
 
     # Check Pending Flag
-    PENDING_FLAG="/tmp/storage.pending.$PARENT_DISK"
+    PENDING_FLAG="/tmp/storage.pending.$DEVNAME"
     if [ -f "$PENDING_FLAG" ]; then
-        log_msg "SKIP: [$DEVNAME] Pending flag exists for '$PARENT_DISK'."
+        log_msg "SKIP: [$DEVNAME] Pending flag exists."
         exit 0
     fi
 
     # Check Ignore List (Disables Automation only)
     IGNORE_AUTOMATION=false
     UNIQUE_ID=$(get_unique_id "$PARENT_DISK")
-    CLEAN_ID=${UNIQUE_ID%:*} 
-    
-    if [ -n "$UNIQUE_ID" ] && [ -f "$BOOT_CONF_FILE" ]; then
+    CLEAN_ID=${UNIQUE_ID%:*}
+
+    PART_UNIQUE_ID=""
+    [ "$DEVNAME" != "$PARENT_DISK" ] && PART_UNIQUE_ID=$(get_partition_unique_id "$DEVNAME")
+
+    if [ -f "$BOOT_CONF_FILE" ]; then
         IGNORED_LIST=$(batocera-settings-get -f "$BOOT_CONF_FILE" "ignore.drives")
-        if [[ " $IGNORED_LIST " == *" $UNIQUE_ID "* ]] || [[ " $IGNORED_LIST " == *" $CLEAN_ID "* ]]; then
+        if [ -n "$PART_UNIQUE_ID" ] && [[ " $IGNORED_LIST " == *" $PART_UNIQUE_ID "* ]]; then
+            log_msg "INFO: [$DEVNAME] Partition (ID: $PART_UNIQUE_ID) is in boot config ignore list. Automation disabled."
+            IGNORE_AUTOMATION=true
+        elif [ -n "$UNIQUE_ID" ] && { [[ " $IGNORED_LIST " == *" $UNIQUE_ID "* ]] || [[ " $IGNORED_LIST " == *" $CLEAN_ID "* ]]; }; then
             log_msg "INFO: [$DEVNAME] Disk '$PARENT_DISK' (ID: $UNIQUE_ID) is in boot config ignore list. Automation disabled."
             IGNORE_AUTOMATION=true
         fi
@@ -653,7 +691,8 @@ case "$COMMAND" in
     FINAL_OPTS="${MERGERFS_OPTS},nonempty"
 
     log_msg "REFRESH: Executing mergerfs with: $VALID_BRANCHES"
-    
+
+    ensure_fuse_loaded
     /usr/bin/mergerfs $FINAL_OPTS "$VALID_BRANCHES" "$POOL_PATH" 2>> "$LOG_FILE"
     
     if [ $? -eq 0 ]; then
@@ -675,8 +714,8 @@ case "$COMMAND" in
     DEVICE="/dev/$DEVNAME"
     
     if [[ "$DEVNAME" =~ ^sd[a-z][0-9]*$ ]]; then PARENT_DISK="${DEVNAME%%[0-9]*}"; else PARENT_DISK=$(lsblk -no pkname "$DEVICE" 2>/dev/null); [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEVNAME"; fi
-    
-    rm -f "/tmp/storage.pending.$PARENT_DISK"
+
+    rm -f "/tmp/storage.pending.$DEVNAME"
     PARENT_LOCK="/tmp/storage.runtime.disk.$PARENT_DISK"
     mkdir "$PARENT_LOCK" 2>/dev/null || true
     trap "rmdir '$PARENT_LOCK' 2>/dev/null" EXIT
@@ -727,7 +766,7 @@ case "$COMMAND" in
     sleep 2
 
     # Manually Mount
-    mount_partition "$NEW_PART" "false" "/tmp/storage.pending.$PARENT_DISK"
+    mount_partition "$NEW_PART" "false" "/tmp/storage.pending.$(basename "$NEW_PART")"
     RET=$?
 
     if [ $RET -ne 0 ] && [ $RET -ne 2 ]; then
@@ -769,8 +808,8 @@ case "$COMMAND" in
         PARENT_DISK=$(lsblk -no pkname "$DEV_SOURCE" 2>/dev/null)
         [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEV_NAME"
     fi
-    
-    rm -f "/tmp/storage.pending.$PARENT_DISK"
+
+    rm -f "/tmp/storage.pending.$DEV_NAME"
 
     if ! is_mounted "$MOUNT_POINT"; then
         REAL_PATH=$(readlink -f "$MOUNT_POINT")
@@ -825,6 +864,7 @@ case "$COMMAND" in
     BRANCHES_CMD="$BASE_DIR:$FULL_BRANCHES"
     
     log_msg "MERGE: Executing mergerfs..."
+    ensure_fuse_loaded
     /usr/bin/mergerfs $MERGERFS_OPTS "$BRANCHES_CMD" "$POOL_PATH"
     
     if [ $? -eq 0 ]; then
@@ -845,11 +885,11 @@ case "$COMMAND" in
     if [[ "$DEVNAME" =~ ^sd[a-z][0-9]*$ ]]; then PARENT_DISK="${DEVNAME%%[0-9]*}"; else PARENT_DISK=$(lsblk -no pkname "/dev/$DEVNAME" 2>/dev/null); [ -z "$PARENT_DISK" ] && PARENT_DISK="$DEVNAME"; fi
     
     # Check if this specific partition node was mounted
-    MOUNT_POINT=$(grep "^/dev/$DEVNAME " /proc/mounts | awk '{print $2}')
+    MOUNT_POINT=$(grep "^/dev/$DEVNAME " /proc/mounts | awk '{print $2}' | head -1)
     
     if [ -z "$MOUNT_POINT" ]; then
-        # If not mounted, just clear the pending flag for the parent and exit
-        rm -f "/tmp/storage.pending.$PARENT_DISK"
+        # If not mounted, just clear this partition's pending flag and exit
+        rm -f "/tmp/storage.pending.$DEVNAME"
         exit 0
     fi
 
@@ -913,7 +953,8 @@ case "$COMMAND" in
         send_notification "NOTIFY:Rebuilding Pool..."
 
         mkdir -p "$BASE_DIR"
-        BRANCHES_CMD="$BASE_DIR:$CLEAN_CONFIG"       
+        BRANCHES_CMD="$BASE_DIR:$CLEAN_CONFIG"
+        ensure_fuse_loaded
         /usr/bin/mergerfs $MERGERFS_OPTS "$BRANCHES_CMD" "$POOL_PATH"
         
         if [ $? -eq 0 ]; then
@@ -985,15 +1026,29 @@ case "$COMMAND" in
         D=$(basename "$dev")
         [ "$D" != "$(get_parent_disk $D)" ] && continue
         ID=$(get_unique_id "$D")
+        MATCH=false
         if [[ "$ID" == "$UNIQUE_ID" ]] || [[ "${ID%:*}" == "$UNIQUE_ID" ]]; then
+            # ignore.drives may hold an older disk-scoped id
+            MATCH=true
+        else
+            for part in /sys/class/block/$D/$D*; do
+                [ -e "$part" ] || continue
+                P=$(basename "$part")
+                [ "$P" == "$D" ] && continue
+                PID=$(get_partition_unique_id "$P")
+                [ "$PID" == "$UNIQUE_ID" ] && { MATCH=true; break; }
+            done
+        fi
+        if [ "$MATCH" = true ]; then
              rm -f "/tmp/storage.pending.$D"
-             $0 detect "$D" &            
+             $0 detect "$D" &
              # Trigger detection for every partition on this disk
              # This ensures handle_partition_event runs and mounts the volumes
              for part in /sys/class/block/$D/$D*; do
                  [ -e "$part" ] || continue
                  P=$(basename "$part")
                  [ "$P" == "$D" ] && continue
+                 rm -f "/tmp/storage.pending.$P"
                  log_msg "IGNORE: Re-triggering partition detection for $P"
                  $0 detect "$P" &
              done
