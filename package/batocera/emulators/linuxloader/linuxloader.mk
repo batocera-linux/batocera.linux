@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-LINUXLOADER_VERSION = v3.0.10
+LINUXLOADER_VERSION = v3.0.12
 LINUXLOADER_SITE = $(call github,lindbergh-loader,linuxloader,$(LINUXLOADER_VERSION))
 LINUXLOADER_LICENSE = CC-BY-SA-4.0
 LINUXLOADER_LICENSE_FILES = LICENSE.md
