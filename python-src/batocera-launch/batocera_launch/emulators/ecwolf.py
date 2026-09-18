@@ -63,6 +63,11 @@ class ECWolf(Emulator):
                 # If first parameter isn't an argument then assume it's a path
                 if extra and '--' not in extra[0]:
                     dataset_dir = Path(extra[0])
+
+                    # Resolve relative paths against the rom file's directory
+                    if not dataset_dir.is_absolute():
+                        dataset_dir = cwd / dataset_dir
+
                     extra = extra[1:]
                     if dataset_dir.is_dir():
                         cwd = dataset_dir
