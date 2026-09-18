@@ -378,8 +378,8 @@ _DUALSHOCK_CONFIG: Final[dict[str, Any]] = {
     'Use LED as a battery indicator': False,
     'LED battery indicator brightness': 10,
     'Player LED enabled': True,
-    'Enable Large Vibration Motor': 'true',
-    'Enable Small Vibration Motor': 'true',
+    'Large Vibration Motor Multiplier': 100,
+    'Small Vibration Motor Multiplier': 100,
     'Switch Vibration Motors': False,
     'Mouse Movement Mode': 'Relative',
     'Mouse Deadzone X Axis': 60,
@@ -452,8 +452,8 @@ _EVDEV_CONFIG_TAIL: Final[dict[str, Any]] = {
     'Use LED as a battery indicator': False,
     'LED battery indicator brightness': 50,
     'Player LED enabled': True,
-    'Enable Large Vibration Motor': 'true',
-    'Enable Small Vibration Motor': 'true',
+    'Large Vibration Motor Multiplier': 100,
+    'Small Vibration Motor Multiplier': 100,
     'Switch Vibration Motors': False,
     'Mouse Movement Mode': 'Relative',
     'Mouse Deadzone X Axis': 60,
@@ -532,8 +532,8 @@ _SDL_CONFIG: Final[dict[str, Any]] = {
     'Use LED as a battery indicator': False,
     'LED battery indicator brightness': 10,
     'Player LED enabled': True,
-    'Enable Large Vibration Motor': 0,
-    'Enable Small Vibration Motor': 0,
+    'Large Vibration Motor Multiplier': 0,
+    'Small Vibration Motor Multiplier': 0,
     'Switch Vibration Motors': False,
     'Mouse Movement Mode': 'Relative',
     'Mouse Deadzone X Axis': 60,
@@ -578,8 +578,8 @@ def generate_controllers_config(
             count = sony_counts[prefix] = sony_counts.get(prefix, 0) + 1
 
             pad_config = dict(_DUALSHOCK_CONFIG)
-            pad_config['Enable Large Vibration Motor'] = rumble
-            pad_config['Enable Small Vibration Motor'] = rumble
+            pad_config['Large Vibration Motor Multiplier'] = 100 if rumble else 0
+            pad_config['Small Vibration Motor Multiplier'] = 100 if rumble else 0
 
             controllers_config[f'Player {nplayer} Input'] = {
                 'Handler': handler,
@@ -610,8 +610,8 @@ def generate_controllers_config(
                             pad_config[pair[0]] = pair[1]
 
             pad_config.update(_EVDEV_CONFIG_TAIL)
-            pad_config['Enable Large Vibration Motor'] = rumble
-            pad_config['Enable Small Vibration Motor'] = rumble
+            pad_config['Large Vibration Motor Multiplier'] = 100 if rumble else 0
+            pad_config['Small Vibration Motor Multiplier'] = 100 if rumble else 0
 
             controllers_config[f'Player {nplayer} Input'] = {
                 'Handler': 'Evdev',
@@ -628,8 +628,8 @@ def generate_controllers_config(
 
             pad_config = dict(_SDL_CONFIG)
             motor = 100 if rumble else 0
-            pad_config['Enable Large Vibration Motor'] = motor
-            pad_config['Enable Small Vibration Motor'] = motor
+            pad_config['Large Vibration Motor Multiplier'] = motor
+            pad_config['Small Vibration Motor Multiplier'] = motor
 
             controllers_config[f'Player {nplayer} Input'] = {
                 'Handler': 'SDL',
