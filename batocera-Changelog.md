@@ -227,7 +227,7 @@
 - Libretro-Xrick to July 28th, 2026 build
 - Libretro-Yabasanshiro to August 23rd, 2026 build
 - Lightspark to Sep 14, 2026 build
-- LinuxLoader to v3.0.10
+- LinuxLoader to v3.0.12
 - Moonlight-Embedded to Jun 5, 2026 build
 - Moonlight-QT to Sep 8, 2026 build
 - Mupen64Plus core to Sep 5th, 2026 build; audio-sdl, input-sdl, rsp-hle, ui-console, video-glide64mk2 & video-rice plugins to Jun 23rd, 2026 build

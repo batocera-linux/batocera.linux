@@ -17,6 +17,7 @@ members = [
     "batocera-launch-fallout",
     "batocera-launch-flycast",
     "batocera-launch-kodi",
+    "batocera-launch-linuxloader",
     "batocera-launch-mupen64plus",
     "batocera-launch-openjazz",
     "batocera-launch-openjk",
@@ -348,6 +349,25 @@ dependencies = [
 requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-linuxloader"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-linuxloader" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "evdev" },
+    { name = "requests" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "evdev" },
+    { name = "requests" },
 ]
 
 [[package]]
