@@ -6,6 +6,9 @@ config BR2_PACKAGE_BATOCERA_LAUNCH
 	select BR2_PACKAGE_PYTHON_TYPING_EXTENSIONS
 	select BR2_PACKAGE_PYTHON_BATOCERA_COMMON
 	select BR2_PACKAGE_PYTHON_UVLOOP
+	select BR2_PACKAGE_PYTHON_AIOHTTP
+	select BR2_PACKAGE_PYTHON_AIODNS # part of the "speedups" optional dependencies for aiohttp
+	select BR2_PACKAGE_PYTHON_BROTLI # part of the "speedups" optional dependencies for aiohttp
 	select BR2_PACKAGE_PYTHON_EVDEV
 	select BR2_PACKAGE_PYTHON_PYUDEV # for guns
 	select BR2_PACKAGE_PYTHON_TOML

@@ -32,7 +32,7 @@ from .devices.mouse import prepare_mouse
 from .devices.video import get_screens, list_outputs, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
-from .draw.gun_borders import create_gun_border_image
+from .draw.gun_borders import create_gun_border_image, draw_gun_borders, get_gun_border_dimensions
 from .draw.gun_help import generate_gun_help
 from .draw.pil import (
     add_qr_code,
@@ -49,6 +49,8 @@ from .types import BezelFiles, BezelInfo, ScreenInfo
 if TYPE_CHECKING:
     from collections.abc import Container, Iterator, Mapping
     from types import TracebackType
+
+    import aiohttp
 
     from .cli.arguments import Arguments
     from .command import Command
@@ -85,6 +87,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     wheels: DeviceInfoMapping = field(init=False, default=cast('DeviceInfoMapping', None))
     resolution: Resolution = field(init=False, default=cast('Resolution', None))
 
+    __client_session: aiohttp.ClientSession | None = field(init=False, default=None)
     __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack)
 
     def __post_init__(self) -> None:
@@ -94,6 +97,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     async def __aenter__(self) -> Self:
         await self.__stack.__aenter__()
+
+        self.__stack.push_async_callback(self.__close_client_session)
 
         try:
             self.rom = await self.__stack.enter_async_context(
@@ -227,6 +232,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         return 4 / 3
 
     @cached_property
+    def guns_need_borders(self) -> bool:
+        return any(gun.needs_borders for gun in self.guns)
+
+    @cached_property
     def guns_borders_size(self) -> str | None:
         borders_size: str = self.config.get('controllers.guns.borderssize', 'medium')
 
@@ -244,11 +253,14 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         if borders_mode == 'force':
             return borders_size
 
-        for gun in self.guns:
-            if gun.needs_borders:
-                return borders_size
+        if self.guns_need_borders:
+            return borders_size
 
         return None
+
+    @cached_property
+    def gun_border_dimensions(self) -> tuple[int, int] | None:
+        return get_gun_border_dimensions(self.guns_borders_size)
 
     @cached_property
     def guns_border_ratio(self) -> str | None:
@@ -343,6 +355,19 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     def screens(self) -> asyncio.Future[list[ScreenInfo]]:
         return asyncio.ensure_future(get_screens(self.config))
 
+    @property
+    def client_session(self) -> aiohttp.ClientSession:
+        if self.__client_session is None:
+            import aiohttp
+
+            self.__client_session = aiohttp.ClientSession()
+
+        return self.__client_session
+
+    async def __close_client_session(self) -> None:
+        if self.__client_session is not None:
+            await self.__client_session.close()
+
     def get_games_metadata(self, metadata_file: Path) -> dict[str, str]:
         return get_games_meta_data(metadata_file, self.system, self.rom)
 
@@ -354,13 +379,13 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         bezel = self.config.get_str('bezel', 'none')
         bezel_tattoo = self.config.get_str('bezel.tattoo', '0')
         bezel_qrcode = self.config.get_str('bezel.qrcode', '0')
-        gun_borders_size = self.guns_borders_size
+        gun_borders_dimensions = self.gun_border_dimensions
 
         if (
             (not bezel or bezel == 'none')
             and (not bezel_tattoo or bezel_tattoo == '0')
             and (not bezel_qrcode or bezel_qrcode == '0')
-            and gun_borders_size is None
+            and gun_borders_dimensions is None
         ):
             return None
 
@@ -517,14 +542,14 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             overlay_png_path = output_png_file
 
         # borders
-        if gun_borders_size is not None:
+        if gun_borders_dimensions is not None:
             _logger.debug('Draw gun borders')
             output_png_file = Path('/tmp/bezel_gunborders.png')
             _logger.debug('Gun border ratio = %s', self.guns_border_ratio)
             create_gun_border_image(
                 overlay_png_path,
                 output_png_file,
-                gun_borders_size,
+                gun_borders_dimensions,
                 self.guns_border_ratio,
                 inner_color=self.gun_borders_color,
             )
@@ -667,14 +692,12 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _logger.debug('skipping drawing gun borders for emulator %s', self.config.emulator)
             return
 
-        gun_borders_size = self.guns_borders_size
-        if gun_borders_size is not None:
+        gun_borders_dimensions = self.gun_border_dimensions
+        if gun_borders_dimensions is not None:
             _logger.debug('using gun borders for emulator %s', self.name)
 
             try:
-                from .draw.gun_borders import draw_gun_borders
-
-                draw_gun_borders(gun_borders_size, self.gun_borders_color, self.guns_border_ratio)
+                draw_gun_borders(gun_borders_dimensions, self.gun_borders_color, self.guns_border_ratio)
             except Exception:
                 _logger.exception('Failed to draw gun borders')
 

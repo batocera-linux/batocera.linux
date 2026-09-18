@@ -4,6 +4,9 @@ config BR2_PACKAGE_PYTHON_BATOCERA_COMMON
 	select BR2_PACKAGE_PYTHON_PYYAML
 	select BR2_PACKAGE_PYTHON_RUAMEL_YAML
 	select BR2_PACKAGE_PYTHON_TYPING_EXTENSIONS
+	select BR2_PACKAGE_PYTHON_AIOHTTP
+	select BR2_PACKAGE_PYTHON_AIODNS # part of the "speedups" optional dependencies for aiohttp
+	select BR2_PACKAGE_PYTHON_BROTLI # part of the "speedups" optional dependencies for aiohttp
 	select BR2_PACKAGE_SDL3
 	help
 	  Common python functionality for Batocera

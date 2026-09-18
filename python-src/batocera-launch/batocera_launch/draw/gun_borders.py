@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Final
-
-from ..devices.x11 import Display, ShapeKind, WindowAttributes, XSetWindowAttributes
-from .pil import get_image_size
+from typing import TYPE_CHECKING, Final, overload
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from ..devices.x11 import Display
 
 _BORDER_COLOR_VALUES: Final = {
     'white': 0xFFFFFF,
@@ -31,10 +30,21 @@ _BORDER_PRESETS: Final = {
 }
 
 
+@overload
+def get_gun_border_dimensions(border_size: None, /) -> None: ...
+@overload
+def get_gun_border_dimensions(border_size: str, /) -> tuple[int, int]: ...
+def get_gun_border_dimensions(border_size: str | None, /) -> tuple[int, int] | None:
+    if border_size is not None:
+        return _BORDER_PRESETS.get(border_size, (0, 0))
+
+    return None
+
+
 def create_gun_border_image(
     input_png: Path,
     output_path: Path,
-    border_size: str,
+    border_dimensions: tuple[int, int],
     border_ratio: str | None,
     /,
     *,
@@ -59,8 +69,10 @@ def create_gun_border_image(
 
     from PIL import Image, ImageDraw
 
+    from .pil import get_image_size
+
     w, h = get_image_size(input_png)
-    inner_percent, outer_percent = _BORDER_PRESETS.get(border_size, (0, 0))
+    inner_percent, outer_percent = border_dimensions
 
     # Calculate new width for 4:3 aspect ratio if a widescreen resolution
     if abs(w / h - 4 / 3) < 0.01:
@@ -127,6 +139,8 @@ def _create_click_through_rectangle(display: Display, x: int, y: int, width: int
     if width <= 0 or height <= 0:
         return
 
+    from ..devices.x11 import ShapeKind, WindowAttributes, XSetWindowAttributes
+
     attributes = XSetWindowAttributes()
     attributes.background_pixel = color
     attributes.override_redirect = 1
@@ -164,10 +178,10 @@ def _draw_border(
     )
 
 
-def draw_gun_borders(border_size: str, border_color: str, border_ratio: str | None, /) -> None:
+def draw_gun_borders(border_dimensions: tuple[int, int], border_color: str, border_ratio: str | None, /) -> None:
     from ..devices.x11 import open_display
 
-    inner_percent, outer_percent = _BORDER_PRESETS.get(border_size, (2, 0))
+    inner_percent, outer_percent = border_dimensions
 
     with open_display() as display:
         screen_width = display.screen_width
@@ -198,7 +212,7 @@ def draw_gun_borders(border_size: str, border_color: str, border_ratio: str | No
         )
 
 
-if __name__ == '__main__':
+def _main() -> None:
     import signal
     import sys
 
@@ -221,7 +235,11 @@ if __name__ == '__main__':
         else:
             i += 1
 
-    draw_gun_borders(border_size, border_color, border_ratio)
+    draw_gun_borders(get_gun_border_dimensions(border_size), border_color, border_ratio)
 
     while True:
         signal.pause()
+
+
+if __name__ == '__main__':
+    _main()

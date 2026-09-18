@@ -38,8 +38,8 @@ Use a separate `python-src/batocera-launch-<name>/` package when the port has:
   pcsx2, …)
 
 Existing packages today include: `cdogs`, `cgenius`, `dolphin`, `drastic`,
-`fallout`, `flycast`, `kodi`, `mupen64plus`, `openjazz`, `openjk`, `openjkdf2`,
-`openmohaa`, `rpcs3`.
+`fallout`, `flycast`, `kodi`, `linuxloader`, `mupen64plus`, `openjazz`, `openjk`,
+`openjkdf2`, `openmohaa`, `rpcs3`.
 
 Thin launchers (command + env/SDL, or a single-file INI/JSON writer comparable
 to GSplus / NanoBoyAdvance / Sonic Retro) should be inlined even if they are
@@ -266,14 +266,13 @@ Check off and remove an item when its port is registered. Where the entry-point
 name differs from the generator directory, it is noted in parentheses
 (from `importer.py`).
 
-Large multi-module generators (dolphin, pcsx2, libretro, mame, linuxloader, …)
+Large multi-module generators (dolphin, pcsx2, libretro, mame, …)
 should become packages; smaller single-module ones should be inlined unless
 they pull unusual dependencies.
 
 - [ ] `duckstation`
 - [ ] `duckstation_legacy` (emulator `duckstation`, core `duckstation-legacy`)
 - [ ] `libretro`
-- [ ] `linuxloader`
 - [ ] `mame`
 
 ## Reference files

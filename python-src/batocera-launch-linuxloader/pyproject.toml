@@ -5,7 +5,6 @@ dependencies = [
     'batocera-common',
     'batocera-launch',
     'evdev; sys_platform == "linux"',
-    'requests',
 ]
 
 [project.entry-points."batocera_launch.emulators"]

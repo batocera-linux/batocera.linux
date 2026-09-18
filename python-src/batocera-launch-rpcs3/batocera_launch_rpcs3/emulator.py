@@ -21,6 +21,7 @@ from batocera_common.fs import directory_differences
 from batocera_common.paths import BIOS, CACHE, CONFIGS
 from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
+from batocera_launch.asyncio import download
 from batocera_launch.paths import configure_emulator
 
 from .controllers import generate_controllers_config
@@ -416,40 +417,24 @@ def _merge_patch_config(config_file: Path, data: Mapping[str, Any], /) -> None:
         yaml.dump(existing, config_file)  # pyright: ignore
 
 
-async def _fetch_compatibility_database(target_path: Path, /) -> None:
-    """Download RPCS3 compatibility database to /tmp/rpcs3, compare, and update if changed."""
-    tmp_dir = Path('/tmp/rpcs3')
-    tmp_file = tmp_dir / target_path.name
+async def _fetch_compatibility_database(client_session: aiohttp.ClientSession, target_path: Path, /) -> None:
+    """Download RPCS3 compatibility database if needed."""
 
     try:
-        tmp_dir.mkdir(parents=True, exist_ok=True)
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-
-        async with (
-            aiohttp.ClientSession() as session,
-            session.get(
-                'https://api.rpcs3.net/config/?api=v1',
-                headers={'User-Agent': 'RPCS3/Batocera'},
-                timeout=aiohttp.ClientTimeout(total=15),
-            ) as response,
-        ):
-            tmp_file.write_bytes(await response.read())
-
-        # If destination doesn't exist or content has changed, overwrite it
-        if not target_path.exists() or not filecmp.cmp(tmp_file, target_path, shallow=False):
-            shutil.move(tmp_file, target_path)
-            _logger.debug('Updated RPCS3 compatibility database at %s', target_path)
-        else:
-            _logger.debug('RPCS3 compatibility database is already up to date')
-            tmp_file.unlink(missing_ok=True)
-
-    except Exception as e:
-        _logger.debug('Could not update RPCS3 compatibility database: %s', e)
-        if tmp_file.exists():
-            try:
-                tmp_file.unlink()
-            except OSError:
-                pass
+        async with download(
+            client_session,
+            'https://api.rpcs3.net/config/?api=v1',
+            target_path.parent,
+            headers={'User-Agent': 'RPCS3/Batocera'},
+            timeout=aiohttp.ClientTimeout(total=15),
+        ) as temp_file:
+            if not target_path.exists() or not filecmp.cmp(temp_file, target_path, shallow=False):
+                temp_file.move(target_path)
+                _logger.debug('Updated RPCS3 compatibility database at %s', target_path)
+            else:
+                _logger.debug('RPCS3 compatibility database is already up to date')
+    except Exception:
+        _logger.exception('Could not update RPCS3 compatibility database')
 
 
 @dataclass(slots=True)
@@ -480,7 +465,7 @@ class RPCS3(Emulator):
     async def __aenter__(self) -> Self:
         # Start downloading the compatibility database ASAP in the background
         self.compatibility_database_task = asyncio.create_task(
-            _fetch_compatibility_database(self.config_dir / 'GuiConfigs' / 'config_database.dat')
+            _fetch_compatibility_database(self.client_session, self.config_dir / 'GuiConfigs' / 'config_database.dat')
         )
 
         try:

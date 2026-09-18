@@ -13,6 +13,7 @@
 #
 from __future__ import annotations
 
+import asyncio
 import filecmp
 import logging
 import os
@@ -21,294 +22,184 @@ import shutil
 import socket
 import stat
 import tarfile
-from contextlib import contextmanager
+from dataclasses import field
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-from typing import IO, Any, ClassVar, Final, Literal
-
-from evdev import ecodes
+from typing import TYPE_CHECKING, Final, Self
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SAVES
 from batocera_launch import (
-    BatoceraException,
     Command,
-    Controller,
     Emulator,
     HotkeysContext,
-    InvalidConfiguration,
 )
+from batocera_launch.asyncio import download
+
+from .config import Configuration
+from .controllers import ControllersMixin
+
+if TYPE_CHECKING:
+    from types import TracebackType
 
 _logger = logging.getLogger(__name__)
 
-# same inner/outer percentages configgen's gunBordersSize returned
-_BORDER_SIZES: Final = {'thin': (1, 0), 'medium': (2, 0), 'big': (2, 1)}
+_SOURCE_DIR: Final = Path('/usr/bin/linuxloader')
+_EEPROM_URL: Final = 'https://raw.githubusercontent.com/batocera-linux/lindbergh-eeprom/main/lindbergh-eeprom.tar.xz'
+_EXECUTABLE_FILES: Final = [
+    'a.elf',
+    'abc',
+    'apacheM.elf',
+    'chopperM.elf',
+    'drive.elf',
+    'dsr',
+    'gsevo',
+    'hod4M.elf',
+    'hodexRI.elf',
+    'hummer_Master.elf',
+    'id4.elf',
+    'id5.elf',
+    'Jennifer',
+    'lgj_final',
+    'lgjsp_app',
+    'main.exe',
+    'mj4',
+    'q2satl_lind',
+    'ramboM.elf',
+    'vf5',
+    'vsg',
+    'vt3',
+    'vt3_Lindbergh',
+]
 
 
-@contextmanager
-def _download(url: str, directory: Path, /):
-    import requests  # slow to import, so only when actually downloading
+def _get_ip_address(destination: str = '1.1.1.1', port: int = 80) -> str | None:
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            s.connect((destination, port))
+            return s.getsockname()[0]
+    except Exception as e:
+        _logger.debug('Error retrieving IP address: %s', e)
+        return None
 
-    _logger.debug('Downloading %s to %s...', url, directory)
 
-    with NamedTemporaryFile(dir=directory) as file, requests.get(url, stream=True) as response:
-        response.raise_for_status()
-
-        for chunk in response.iter_content(chunk_size=8192):
-            file.write(chunk)
-
-        file.seek(0)
-
-        yield file
+def _resolve_real_rom_path(rom_dir: Path, /) -> Path:
+    try:
+        rom_dir_str = str(rom_dir)
+        with Path('/proc/mounts').open() as f:
+            for line in f:
+                parts = line.split()
+                if len(parts) < 3 or parts[2] != 'fuse.mergerfs':
+                    continue
+                mount_point = parts[1]
+                if not rom_dir_str.startswith(mount_point + '/') and rom_dir_str != mount_point:
+                    continue
+                branches_raw = parts[0]
+                relative = rom_dir_str[len(mount_point) :]
+                _logger.debug(
+                    'mergerfs mount=%s source=%s relative=%s',
+                    mount_point,
+                    branches_raw,
+                    relative,
+                )
+                for branch in branches_raw.split(':'):
+                    branch = branch.strip()
+                    if not branch:
+                        continue
+                    # Ensure absolute path
+                    if not branch.startswith('/'):
+                        branch = '/' + branch
+                    candidate = Path(branch.rstrip('/') + relative)
+                    _logger.debug('trying candidate: %s', candidate)
+                    if candidate.is_dir():
+                        _logger.debug('resolved %s -> %s', rom_dir, candidate)
+                        return candidate
+    except Exception as e:
+        _logger.debug('failed, using original path: %s', e)
+    return rom_dir
 
 
 @cached_dataclass
-class LinuxLoader(Emulator):
+class LinuxLoader(ControllersMixin, Emulator):
     needs_sdl_game_controller_config = True
 
-    LINUXLOADER_SAVES: Final = SAVES / 'lindbergh'
+    eeprom_task: asyncio.Task[None] = field(init=False)
 
-    CONF_KEYS: ClassVar = {
-        'WIDTH': True,
-        'HEIGHT': True,
-        'FULLSCREEN': True,
-        'INPUT_MODE': True,
-        'NO_SDL': True,
-        'REGION': True,
-        'FREEPLAY': True,
-        'EMULATE_JVS': True,
-        'EMULATE_RIDEBOARD': True,
-        'EMULATE_DRIVEBOARD': True,
-        'EMULATE_MOTIONBOARD': True,
-        'JVS_PATH': True,
-        'SERIAL_1_PATH': True,
-        'SERIAL_2_PATH': True,
-        'SRAM_PATH': True,
-        'EEPROM_PATH': True,
-        'LIBCG_PATH': True,
-        'GPU_VENDOR': True,
-        'DEBUG_MSGS': True,
-        'BORDER_ENABLED': True,
-        'WHITE_BORDER_PERCENTAGE': True,
-        'BLACK_BORDER_PERCENTAGE': True,
-        'HUMMER_FLICKER_FIX': True,
-        'KEEP_ASPECT_RATIO': True,
-        'OUTRUN_LENS_GLARE_ENABLED': True,
-        'SKIP_OUTRUN_CABINET_CHECK': True,
-        'FPS_LIMITER_ENABLED': True,
-        'FPS_TARGET': True,
-        'FPS_OVERLAY_ENABLED': True,
-        'FPS_OVERLAY_POSITION': True,
-        'LGJ_RENDER_WITH_MESA': True,
-        'PRIMEVAL_HUNT_SCREEN_MODE': True,
-        'MJ4_ENABLED_ALL_THE_TIME': True,
-        'LINDBERGH_COLOUR': True,
-        'TEST_KEY': True,
-        'PLAYER_1_START_KEY': True,
-        'PLAYER_1_SERVICE_KEY': True,
-        'PLAYER_1_COIN_KEY': True,
-        'PLAYER_1_UP_KEY': True,
-        'PLAYER_1_DOWN_KEY': True,
-        'PLAYER_1_LEFT_KEY': True,
-        'PLAYER_1_RIGHT_KEY': True,
-        'PLAYER_1_BUTTON_1_KEY': True,
-        'PLAYER_1_BUTTON_2_KEY': True,
-        'PLAYER_1_BUTTON_3_KEY': True,
-        'PLAYER_1_BUTTON_4_KEY': True,
-        'TEST_BUTTON': True,
-        'PLAYER_1_BUTTON_START': True,
-        'PLAYER_1_BUTTON_SERVICE': True,
-        'PLAYER_1_BUTTON_UP': True,
-        'PLAYER_1_BUTTON_DOWN': True,
-        'PLAYER_1_BUTTON_LEFT': True,
-        'PLAYER_1_BUTTON_RIGHT': True,
-        'PLAYER_1_BUTTON_1': True,
-        'PLAYER_1_BUTTON_2': True,
-        'PLAYER_1_BUTTON_3': True,
-        'PLAYER_1_BUTTON_4': True,
-        'PLAYER_1_BUTTON_5': True,
-        'PLAYER_1_BUTTON_6': True,
-        'PLAYER_1_BUTTON_7': True,
-        'PLAYER_1_BUTTON_8': True,
-        'PLAYER_2_BUTTON_START': True,
-        'PLAYER_2_BUTTON_SERVICE': True,
-        'PLAYER_2_BUTTON_UP': True,
-        'PLAYER_2_BUTTON_DOWN': True,
-        'PLAYER_2_BUTTON_LEFT': True,
-        'PLAYER_2_BUTTON_RIGHT': True,
-        'PLAYER_2_BUTTON_1': True,
-        'PLAYER_2_BUTTON_2': True,
-        'PLAYER_2_BUTTON_3': True,
-        'PLAYER_2_BUTTON_4': True,
-        'PLAYER_2_BUTTON_5': True,
-        'PLAYER_2_BUTTON_6': True,
-        'PLAYER_2_BUTTON_7': True,
-        'PLAYER_2_BUTTON_8': True,
-        'ANALOGUE_1': True,
-        'ANALOGUE_2': True,
-        'ANALOGUE_3': True,
-        'ANALOGUE_4': True,
-        'ANALOGUE_5': True,
-        'ANALOGUE_6': True,
-        'ANALOGUE_7': True,
-        'ANALOGUE_8': True,
-        'ANALOGUE_1+': True,
-        'ANALOGUE_2+': True,
-        'ANALOGUE_3+': True,
-        'ANALOGUE_4+': True,
-        'ANALOGUE_1-': True,
-        'ANALOGUE_2-': True,
-        'ANALOGUE_3-': True,
-        'ANALOGUE_4-': True,
-        'ANALOGUE_DEADZONE_1': True,
-        'ANALOGUE_DEADZONE_2': True,
-        'ANALOGUE_DEADZONE_3': True,
-        'ANALOGUE_DEADZONE_4': True,
-        'ANALOGUE_DEADZONE_5': True,
-        'ANALOGUE_DEADZONE_6': True,
-        'ANALOGUE_DEADZONE_7': True,
-        'ANALOGUE_DEADZONE_8': True,
-        'EMULATE_HW210_CARDREADER': True,
-        'CARDFILE_01': True,
-        'CARDFILE_02': True,
-        'CPU_FREQ_GHZ': True,
-        'OR2_IPADDRESS': True,
-        'PLAYER_1_COIN': True,
-        'BOOST_RENDER_RES': True,
-        'HIDE_CURSOR': True,
-        'EMULATE_ID_CARDREADER': True,
-        'EMULATE_TOUCHSCREEN': True,
-        'ID_CARDFILE_AUTOLOAD': True,
-        'ID_CARDFOLDER': True,
-        'DISABLE_BUILTIN_FONT': True,
-        'DISABLE_BUILTIN_LOGOS': True,
-        'CUSTOM_CURSOR_ENABLED': True,
-        'CUSTOM_CURSOR': True,
-        'CUSTOM_CURSOR_WIDTH': True,
-        'CUSTOM_CURSOR_HEIGHT': True,
-        'TOUCH_CURSOR': True,
-        'TOUCH_CURSOR_WIDTH': True,
-        'TOUCH_CURSOR_HEIGHT': True,
-        'PRIMEVAL_HUNT_TEST_SCREEN_SINGLE': True,
-        'RAMBO_GUNS_SWITCH': True,
-        'ID5_CHINESE_LANGUAGE': True,
-        'ID_STEERING_REDUCTION_PERCENTAGE': True,
-        'ENABLE_CROSSHAIRS': True,
-        'P1_CROSSHAIR_PATH': True,
-        'P2_CROSSHAIR_PATH': True,
-        'CUSTOM_CROSSHAIRS_WIDTH': True,
-        'CUSTOM_CROSSHAIRS_HEIGHT': True,
-        'GSEVO_CROSSHAIR_ALWAYS_ON': True,
-        'GSEVO_CROSSHAIR_ALWAYS_OFF': True,
-        'ENABLE_NETWORK_PATCHES': True,
-        'NIC_NAME': True,
-        'OR2_NETMASK': True,
-        'ID_IP_SEAT_1': True,
-        'ID_IP_SEAT_2': True,
-        'IP_CAB1': True,
-        'IP_CAB2': True,
-        'IP_CAB3': True,
-        'IP_CAB4': True,
-        '2SPICY_IP_CAB1': True,
-        '2SPICY_IP_CAB2': True,
-        'SRTV_IPADDRESS': True,
-        'EXIT_GAME': True,
-    }
+    async def __aenter__(self) -> Self:
+        ### Setup eeprom files as necessary
+        self.eeprom_task = asyncio.create_task(self._setup_eeprom())
+
+        try:
+            return await super().__aenter__()
+        except BaseException:
+            # Cancel the task if the context manager fails to enter (e.g. KeyboardInterrupt)
+            self.eeprom_task.cancel()
+            try:
+                # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
+                await self.eeprom_task
+            except asyncio.CancelledError:
+                pass
+
+            raise
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+        /,
+    ) -> bool | None:
+        # Cancel the task if the context manager exits
+        self.eeprom_task.cancel()
+        try:
+            # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
+            await self.eeprom_task
+        except asyncio.CancelledError:
+            pass
+
+        return await super().__aexit__(exc_type, exc_value, traceback)
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
-        return {'name': 'linuxloader', 'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'coin': 'KEY_5'}}
+        return {
+            'name': 'linuxloader',
+            'keys': {
+                'exit': ['KEY_LEFTALT', 'KEY_F4'],
+                'coin': 'KEY_5',
+            },
+        }
 
-    @staticmethod
-    def resolve_real_rom_path(rom_dir: Path) -> Path:
-        try:
-            rom_dir_str = str(rom_dir)
-            with Path('/proc/mounts').open() as f:
-                for line in f:
-                    parts = line.split()
-                    if len(parts) < 3 or parts[2] != 'fuse.mergerfs':
-                        continue
-                    mount_point = parts[1]
-                    if not rom_dir_str.startswith(mount_point + '/') and rom_dir_str != mount_point:
-                        continue
-                    branches_raw = parts[0]
-                    relative = rom_dir_str[len(mount_point) :]
-                    _logger.debug(
-                        'resolve_real_rom_path: mergerfs mount=%s source=%s relative=%s',
-                        mount_point,
-                        branches_raw,
-                        relative,
-                    )
-                    for branch in branches_raw.split(':'):
-                        branch = branch.strip()
-                        if not branch:
-                            continue
-                        # Ensure absolute path
-                        if not branch.startswith('/'):
-                            branch = '/' + branch
-                        candidate = Path(branch.rstrip('/') + relative)
-                        _logger.debug('resolve_real_rom_path: trying candidate: %s', candidate)
-                        if candidate.is_dir():
-                            _logger.debug('resolve_real_rom_path: resolved %s -> %s', rom_dir, candidate)
-                            return candidate
-        except Exception as e:
-            _logger.debug('resolve_real_rom_path: failed, using original path: %s', e)
-        return rom_dir
+    @cached_property
+    def saves_dir(self) -> Path:
+        return SAVES / 'lindbergh'
+
+    @cached_property
+    def in_game_ratio(self) -> float:
+        return 16 / 9
+
+    @property
+    def execution_path(self) -> Path | None:
+        return _SOURCE_DIR
 
     async def configure(self) -> Command:
-        romDir = self.rom.parent
-        romName = self.rom.name
-        shortRomName = Path(romName.lower()).stem
-        _logger.debug('ROM path: %s', romDir)
+        rom_dir = self.rom.parent
+        rom_name = self.rom.name
+        short_rom_name = Path(rom_name.lower()).stem
+        _logger.debug('ROM path: %s', rom_dir)
 
         # check for mergerfs path
-        romDir = self.resolve_real_rom_path(romDir)
-        _logger.debug('Effective ROM path is: %s', romDir)
-
-        source_dir = Path('/usr/bin/linuxloader')
-
-        ### Setup eeprom files as necessary
-        self.setup_eeprom()
+        rom_dir = _resolve_real_rom_path(rom_dir)
+        _logger.debug('Effective ROM path is: %s', rom_dir)
 
         ### conf file
-        self.setup_config(source_dir, romDir, romName)
+        self._setup_config(rom_dir, rom_name)
 
         ### libraries
-        self.setup_libraries(romDir, romName)
-
-        # Change to the source binary path before launching
-        os.chdir(source_dir)
+        self._setup_libraries(rom_dir, rom_name)
 
         # Check for known executable files and make them executable if needed
         # Details in the mainShared.c file
-        executable_files = [
-            'a.elf',
-            'abc',
-            'apacheM.elf',
-            'chopperM.elf',
-            'drive.elf',
-            'dsr',
-            'gsevo',
-            'hod4M.elf',
-            'hodexRI.elf',
-            'hummer_Master.elf',
-            'id4.elf',
-            'id5.elf',
-            'Jennifer',
-            'lgj_final',
-            'lgjsp_app',
-            'main.exe',
-            'mj4',
-            'q2satl_lind',
-            'ramboM.elf',
-            'vf5',
-            'vsg',
-            'vt3',
-            'vt3_Lindbergh',
-        ]
-
-        for exe_file in executable_files:
-            file_path = romDir / exe_file
+        for exe_file in _EXECUTABLE_FILES:
+            file_path = rom_dir / exe_file
             # Check if file is executable
             if file_path.exists() and not os.access(file_path, os.X_OK):
                 # Add executable permission (equivalent to chmod +x)
@@ -319,8 +210,8 @@ class LinuxLoader(Emulator):
 
         environment: dict[str, str | Path] = {
             # Libraries
-            'LD_LIBRARY_PATH': f'/lib32:/lib32/extralibs:/lib:/usr/lib:{source_dir}:{romDir}',
-            'LD_PRELOAD': f'{source_dir}/linuxloader.so',
+            'LD_LIBRARY_PATH': f'/lib32:/lib32/extralibs:/lib:/usr/lib:{_SOURCE_DIR}:{rom_dir}',
+            'LD_PRELOAD': _SOURCE_DIR / 'linuxloader.so',
             # Graphics
             'GST_PLUGIN_SYSTEM_PATH_1_0': '/lib32/gstreamer-1.0:/usr/lib/gstreamer-1.0',
             'GST_REGISTRY_1_0': '/userdata/system/.cache/gstreamer-1.0/registry..bin:/userdata/system/.cache/gstreamer-1.0/registry.x86_64.bin',
@@ -333,20 +224,20 @@ class LinuxLoader(Emulator):
         }
 
         # ALSA SDL driver causes hangs during race start in OutRun but it's needed for other roms.
-        if not shortRomName.startswith('outr'):
+        if not short_rom_name.startswith('outr'):
             environment['SDL_AUDIODRIVER'] = 'alsa'
 
         # Run command - Use -c * -o for ini files and -g for the game folder
-        config_file = '/userdata/system/configs/linuxloader/linuxloader.ini'
-        controller_file = '/userdata/system/configs/linuxloader/controls.ini'
+        config_file = self.config_dir / 'linuxloader.ini'
+        controller_file = self.config_dir / 'controls.ini'
         command_array: list[str | Path] = [
-            str(source_dir / 'linuxloader'),
+            _SOURCE_DIR / 'linuxloader',
             '-c',
             config_file,
             '-o',
             controller_file,
             '-g',
-            str(romDir),
+            rom_dir,
         ]
 
         if self.config.get_bool('linuxloader_zink'):
@@ -356,321 +247,254 @@ class LinuxLoader(Emulator):
         if self.config.get_bool('linuxloader_test'):
             command_array.append('-t')
 
-        return Command(command_array, env=environment)
+        return Command(command_array, env=environment, wait_for=self.eeprom_task)
 
-    @staticmethod
-    def extract_tar_xz(file_path: IO[bytes], extract_to: Path) -> None:
-        _logger.debug('Extracting the file...')
-        with tarfile.open(fileobj=file_path, mode='r:xz') as tar:
-            for member in tar.getmembers():
-                file_path_to_extract = extract_to / member.name
-                if not file_path_to_extract.exists():
-                    tar.extract(member, path=extract_to)
-                else:
-                    _logger.debug('Skipping %s, file already exists.', member.name)
-        _logger.debug('Files extracted to %s', extract_to)
+    async def _setup_eeprom(self) -> None:
+        self.saves_dir.mkdir(parents=True, exist_ok=True)
 
-    @cached_property
-    def in_game_ratio(self) -> float:
-        return 16 / 9
-
-    def loadConf(self, configFile: Path, /) -> dict[str, Any]:
-        try:
-            with configFile.open('r') as file:
-                lines = file.readlines()
-        except FileNotFoundError:
-            _logger.debug('Configuration file %s not found.', configFile)
-            lines = []
-
-        conf: dict[str, Any] = {'raw': lines, 'keys': {}}
-
-        # find keys and values
-        pattern = re.compile(r'^\s*(#?)\s*([A-Z0-9_\s]+[A-Z0-9_])\s*=\s*(.*)$')
-
-        # analyze lines
-        for n, line in enumerate(lines):
-            matches = pattern.match(line)
-            if matches:
-                key = matches.group(2).strip()
-
-                if key in self.CONF_KEYS:
-                    if key in conf['keys']:  # take care of duplicated keys
-                        # if the 1st one is commented, prefer the last one
-                        if conf['keys'][key]['commented']:
-                            conf['keys'][key] = {
-                                'value': matches.group(3).strip(),
-                                'commented': matches.group(1) == '#',
-                                'line': n,
-                                'modified': False,
-                            }
-                        else:
-                            # if the previous is not commented, prefer the last one if not commented and comment the previous
-                            if matches.group(1) != '#':
-                                lines[conf['keys'][key]['line']] = f'# {lines[conf["keys"][key]["line"]]}'
-                                conf['keys'][key] = {
-                                    'value': matches.group(3).strip(),
-                                    'commented': matches.group(1) == '#',
-                                    'line': n,
-                                    'modified': False,
-                                }
-                    else:
-                        conf['keys'][key] = {
-                            'value': matches.group(3).strip(),
-                            'commented': matches.group(1) == '#',
-                            'line': n,
-                            'modified': False,
-                        }
-                else:
-                    print(f'CONF: ignoring key /{key}/')
-            else:
-                strippedLine = line.rstrip()
-                if strippedLine != '':
-                    print(f'CONF: ignoring line {strippedLine}')
-
-        return conf
-
-    def setConf(self, conf: dict[str, Any], key: str, value: Any, /) -> None:
-        if key not in self.CONF_KEYS:
-            raise InvalidConfiguration(f'unknown conf key {key}')
-
-        # new line
-        if key not in conf['keys']:
-            conf['keys'][key] = {'line': len(conf['raw'])}
-            conf['raw'].append('###')
-
-        conf['keys'][key]['value'] = str(value)
-        conf['keys'][key]['modified'] = True
-        conf['keys'][key]['commented'] = False
-
-    def commentConf(self, conf: dict[str, Any], key: str, /) -> None:
-        if key not in self.CONF_KEYS:
-            raise InvalidConfiguration(f'unknown conf key {key}')
-
-        if key in conf['keys']:
-            conf['keys'][key]['modified'] = True
-            conf['keys'][key]['commented'] = True
-
-    def saveConf(self, conf: dict[str, Any], targetFile: Path, /) -> None:
-        # update with modified lines
-        for key in conf['keys']:
-            if conf['keys'][key]['modified']:
-                nline = conf['keys'][key]['line']
-                # Updated for INI format (KEY = VALUE)
-                line = f'{key} = {conf["keys"][key]["value"]}\n'
-                if conf['keys'][key]['commented']:
-                    line = f'# {line}'
-                conf['raw'][nline] = line
+        last_extracted = self.saves_dir / '.eeprom.extracted'
+        etag_file = self.saves_dir / '.eeprom.etag'
 
         try:
-            with targetFile.open('w') as file:
-                file.writelines(conf['raw'])
-            _logger.debug('Configuration file %s updated successfully.', targetFile)
-        except Exception as e:
-            _logger.debug('Error updating configuration file: %s', e)
+            last_extracted_files = last_extracted.read_text().strip().splitlines() if last_extracted.exists() else []
+            has_missing_files = not last_extracted_files or any(
+                not Path(path).exists() for path in last_extracted_files
+            )
+            etag = etag_file.read_text().strip() if etag_file.exists() and not has_missing_files else None
 
-    def buildConfFile(self, conf: dict[str, Any], romDir: Path, romName: str, /) -> None:
-        self.setConf(conf, 'WIDTH', self.resolution.width)
-        self.setConf(conf, 'HEIGHT', self.resolution.height)
-        self.setConf(conf, 'FULLSCREEN', 'true' if self.config.get_bool('linuxloader_fullscreen', True) else 'false')
-        self.setConf(conf, 'REGION', self.config.get('linuxloader_region', 'EX'))
-        self.setConf(conf, 'FPS_TARGET', self.config.get('linuxloader_fps', '60.0'))
-        self.setConf(
-            conf, 'FPS_LIMITER_ENABLED', 'true' if self.config.get_bool('linuxloader_limit', True) else 'false'
+            # Download the file
+            async with download(
+                self.client_session,
+                _EEPROM_URL,
+                self.saves_dir,
+                etag=etag,
+            ) as (fetched, etag_received):
+                if fetched is None:
+                    return
+
+                _logger.debug('Extracting the file...')
+
+                extracted_files: list[str] = []
+
+                with tarfile.open(fetched, mode='r:xz') as tar:
+                    for member in tar.getmembers():
+                        extracted_files.append(f'{self.saves_dir / member.name}')
+                        tar.extract(member, path=self.saves_dir)
+
+                last_extracted.write_text('\n'.join(extracted_files))
+
+                if etag_received is not None:
+                    etag_file.write_text(etag_received)
+
+                _logger.debug('Files extracted to %s', self.saves_dir)
+        except Exception:
+            _logger.exception('An error occurred')
+
+    def _build_conf_file(self, conf: Configuration, rom_dir: Path, rom_name: str) -> None:
+        conf.set('WIDTH', self.resolution.width)
+        conf.set('HEIGHT', self.resolution.height)
+        conf.set(
+            'FULLSCREEN',
+            'true' if self.config.get_bool('linuxloader_fullscreen', True) else 'false',
         )
-        self.setConf(conf, 'FREEPLAY', 'true' if self.config.get_bool('linuxloader_freeplay') else 'false')
-        self.setConf(conf, 'KEEP_ASPECT_RATIO', 'true' if self.config.get_bool('linuxloader_aspect', True) else 'false')
-        self.setConf(conf, 'DEBUG_MSGS', 'true' if self.config.get_bool('linuxloader_debug') else 'false')
-        self.setConf(conf, 'HUMMER_FLICKER_FIX', 'true' if self.config.get_bool('linuxloader_hummer') else 'false')
-        self.setConf(
-            conf, 'OUTRUN_LENS_GLARE_ENABLED', 'true' if self.config.get_bool('linuxloader_lens', True) else 'false'
+        conf.set('REGION', self.config.get_str('linuxloader_region', 'EX'))
+        conf.set('FPS_TARGET', self.config.get_str('linuxloader_fps', '60.0'))
+        conf.set(
+            'FPS_LIMITER_ENABLED',
+            'true' if self.config.get_bool('linuxloader_limit', True) else 'false',
         )
-        self.setConf(conf, 'BOOST_RENDER_RES', 'true' if self.config.get_bool('linuxloader_boost') else 'false')
-        self.setConf(
-            conf,
+        conf.set('FREEPLAY', 'true' if self.config.get_bool('linuxloader_freeplay') else 'false')
+        conf.set(
+            'KEEP_ASPECT_RATIO',
+            'true' if self.config.get_bool('linuxloader_aspect', True) else 'false',
+        )
+        conf.set('DEBUG_MSGS', 'true' if self.config.get_bool('linuxloader_debug') else 'false')
+        conf.set('HUMMER_FLICKER_FIX', 'true' if self.config.get_bool('linuxloader_hummer') else 'false')
+        conf.set(
+            'OUTRUN_LENS_GLARE_ENABLED',
+            'true' if self.config.get_bool('linuxloader_lens', True) else 'false',
+        )
+        conf.set('BOOST_RENDER_RES', 'true' if self.config.get_bool('linuxloader_boost') else 'false')
+        # disable by default, otherwise no FFB
+        conf.set(
             'SKIP_OUTRUN_CABINET_CHECK',
-            'false' if 'outrun' in romName.lower() or 'outr2sdx' in romName.lower() else 'true',
-        )  # disable by default, otherwise no FFB
-        self.setConf(conf, 'SRAM_PATH', f'"{self.LINUXLOADER_SAVES}/sram.bin.{Path(romName).stem.lower()}"')
-        self.setConf(conf, 'EEPROM_PATH', f'"{self.LINUXLOADER_SAVES}/eeprom.bin.{Path(romName).stem.lower()}"')
-        self.setConf(conf, 'HIDE_CURSOR', 'true' if self.config.get_bool('linuxloader_hide_cursor', True) else 'false')
-        self.setConf(
-            conf, 'DISABLE_BUILTIN_FONT', 'true' if self.config.get_bool('linuxloader_disable_font') else 'false'
+            'false' if 'outrun' in rom_name.lower() or 'outr2sdx' in rom_name.lower() else 'true',
         )
-        self.setConf(
-            conf, 'DISABLE_BUILTIN_LOGOS', 'true' if self.config.get_bool('linuxloader_disable_logos') else 'false'
+        conf.set('SRAM_PATH', f'"{self.saves_dir}/sram.bin.{Path(rom_name).stem.lower()}"')
+        conf.set('EEPROM_PATH', f'"{self.saves_dir}/eeprom.bin.{Path(rom_name).stem.lower()}"')
+        conf.set(
+            'HIDE_CURSOR',
+            'true' if self.config.get_bool('linuxloader_hide_cursor', True) else 'false',
         )
-        self.setConf(
-            conf,
+        conf.set(
+            'DISABLE_BUILTIN_FONT',
+            'true' if self.config.get_bool('linuxloader_disable_font') else 'false',
+        )
+        conf.set(
+            'DISABLE_BUILTIN_LOGOS',
+            'true' if self.config.get_bool('linuxloader_disable_logos') else 'false',
+        )
+        conf.set(
             'ENABLE_NETWORK_PATCHES',
             'true' if self.config.get_bool('linuxloader_network_patches', True) else 'false',
         )
-        self.setConf(conf, 'ENABLE_CROSSHAIRS', 'true' if self.config.get_bool('linuxloader_crosshairs') else 'false')
+        conf.set('ENABLE_CROSSHAIRS', 'true' if self.config.get_bool('linuxloader_crosshairs') else 'false')
 
         # Cg Shader Compiler Library Path
         if any(
-            keyword in romName.lower()
+            keyword in rom_name.lower()
             for keyword in ('harley', 'hdkotr', 'spicy', 'rambo', 'hotdex', 'dead ex', 'initiad', 'letsgoju', 'tennis')
         ):
-            self.setConf(conf, 'LIBCG_PATH', f'"{romDir}/libCg.so"')
+            conf.set('LIBCG_PATH', f'"{rom_dir}/libCg.so"')
 
         ## -= Additional game specific options =-
 
         # Driveboard emulation for FFB on gamepad
         has_ffb = (
-            'outr' in romName.lower()
-            or 'hummer' in romName.lower()
-            or 'rtuned' in romName.lower()
-            or 'segartv' in romName.lower()
+            'outr' in rom_name.lower()
+            or 'hummer' in rom_name.lower()
+            or 'rtuned' in rom_name.lower()
+            or 'segartv' in rom_name.lower()
         )
-        self.setConf(
-            conf, 'EMULATE_DRIVEBOARD', 'true' if has_ffb and self.config.get_bool('linuxloader_ffb', True) else 'auto'
+        conf.set(
+            'EMULATE_DRIVEBOARD',
+            'true' if has_ffb and self.config.get_bool('linuxloader_ffb', True) else 'auto',
         )
 
         # enabling network patches blocks hdkotr from booting, checking network with a timeout error
-        if 'harley' in romName.lower() or 'hdkotr' in romName.lower():
-            self.setConf(conf, 'ENABLE_NETWORK_PATCHES', 'false')
+        if 'harley' in rom_name.lower() or 'hdkotr' in rom_name.lower():
+            conf.set('ENABLE_NETWORK_PATCHES', 'false')
 
         # Virtua Tennis / R-Tuned / Initial D - Card Reader
-        if ('tennis' in romName.lower() or 'rtuned' in romName.lower()) and self.config.get_bool(
+        if ('tennis' in rom_name.lower() or 'rtuned' in rom_name.lower()) and self.config.get_bool(
             'linuxloader_card', True
         ):
-            self.setConf(conf, 'EMULATE_HW210_CARDREADER', 'true')
-            self.setConf(conf, 'CARDFILE_01', 'Card_01.crd')
-            self.setConf(conf, 'CARDFILE_02', 'Card_02.crd')
-            self.setConf(conf, 'ID_CARDFOLDER', f'"{self.LINUXLOADER_SAVES}"')
+            conf.set('EMULATE_HW210_CARDREADER', 'true')
+            conf.set('CARDFILE_01', 'Card_01.crd')
+            conf.set('CARDFILE_02', 'Card_02.crd')
+            conf.set('ID_CARDFOLDER', f'"{self.saves_dir}"')
         else:
-            self.setConf(conf, 'EMULATE_HW210_CARDREADER', 'false')
+            conf.set('EMULATE_HW210_CARDREADER', 'false')
 
-        if 'initiad' in romName.lower() and self.config.get_bool('linuxloader_card', True):
-            self.setConf(conf, 'EMULATE_ID_CARDREADER', 'true')
-            self.setConf(conf, 'ID_CARDFILE_AUTOLOAD', 'true')
-            self.setConf(conf, 'ID_CARDFOLDER', f'"{self.LINUXLOADER_SAVES}"')
+        if 'initiad' in rom_name.lower() and self.config.get_bool('linuxloader_card', True):
+            conf.set('EMULATE_ID_CARD_READER', 'true')
+            conf.set('ID_CARDFILE_AUTOLOAD', 'true')
+            conf.set('ID_CARDFOLDER', f'"{self.saves_dir}"')
         else:
-            self.setConf(conf, 'EMULATE_ID_CARDREADER', 'false')
+            conf.set('EMULATE_ID_CARD_READER', 'false')
 
         # Rambo switch
-        if 'rambo' in romName.lower():
-            self.setConf(
-                conf, 'RAMBO_GUNS_SWITCH', 'true' if self.config.get_bool('linuxloader_rambo_switch') else 'false'
+        if 'rambo' in rom_name.lower():
+            conf.set(
+                'RAMBO_GUNS_SWITCH',
+                'true' if self.config.get_bool('linuxloader_rambo_switch') else 'false',
             )
 
         # House of the Dead 4 - CPU speed
-        cpu_speed = self.config.get('linuxloader_speed')
-        if 'hotd4' in romName.lower() and cpu_speed:
-            cpu_speed = float(cpu_speed)
-            _logger.debug('Current CPU Speed : %.2f GHz', cpu_speed)
-            self.setConf(conf, 'CPU_FREQ_GHZ', f'{cpu_speed:.1f}')
+        cpu_speed = self.config.get_str('linuxloader_speed')
+        if 'hotd4' in rom_name.lower() and cpu_speed:
+            cpu_speed_f = float(cpu_speed)
+            _logger.debug('Current CPU Speed : %.2f GHz', cpu_speed_f)
+            conf.set('CPU_FREQ_GHZ', f'{cpu_speed_f:.1f}')
         else:
-            self.commentConf(conf, 'CPU_FREQ_GHZ')
+            conf.comment('CPU_FREQ_GHZ')
 
         # OutRun 2 - Network
-        ip = self.get_ip_address()
-        if not ip:
-            _logger.debug('Primary destination unreachable. Trying fallback...')
-            ip = self.get_ip_address(destination='8.8.8.8')
-        if ip:
-            _logger.debug('Current IP Address: %s', ip)
-            if 'outr2sdx' in romName.lower() and self.config.get_bool('linuxloader_ip'):
-                self.setConf(conf, 'OR2_IPADDRESS', f'"{ip}"')
-                self.setConf(conf, 'OR2_NETMASK', '255.255.255.0')
-        else:
-            _logger.debug('Unable to retrieve IP address.')
+        if 'outr2sdx' in rom_name.lower() and self.config.get_bool('linuxloader_ip'):
+            ip = _get_ip_address()
+            if not ip:
+                _logger.debug('Primary destination unreachable. Trying fallback...')
+                ip = _get_ip_address(destination='8.8.8.8')
+
+            if ip:
+                _logger.debug('Current IP Address: %s', ip)
+                conf.set('OR2_IPADDRESS', f'"{ip}"')
+                conf.set('OR2_NETMASK', '255.255.255.0')
+            else:
+                _logger.debug('Unable to retrieve IP address.')
 
         # Primeval Hunt mode (touch screen)
-        if 'primevah' in romName.lower() or 'primehunt' in romName.lower():
-            self.setConf(conf, 'PRIMEVAL_HUNT_SCREEN_MODE', self.config.get('linuxloader_hunt', '1'))
-            self.setConf(conf, 'EMULATE_TOUCHSCREEN', 'true')
+        if 'primevah' in rom_name.lower() or 'primehunt' in rom_name.lower():
+            conf.set('PRIMEVAL_HUNT_SCREEN_MODE', self.config.get_str('linuxloader_hunt', '1'))
+            conf.set('EMULATE_TOUCHSCREEN', 'true')
 
         ## Guns
         if self.config.use_guns and self.guns:
-            need_guns_border = any(gun.needs_borders for gun in self.guns)
-            if need_guns_border:
-                bordersInnerSize, bordersOuterSize = _BORDER_SIZES.get(self.guns_borders_size or '', (0, 0))
-                self.setConf(conf, 'WHITE_BORDER_PERCENTAGE', bordersInnerSize)
-                self.setConf(conf, 'BLACK_BORDER_PERCENTAGE', bordersOuterSize)
-            self.setConf(conf, 'BORDER_ENABLED', 'true' if need_guns_border else 'false')
-            if 'letsgojusp' in romName.lower():
-                self.setConf(conf, 'BORDER_ENABLED', 'false')
+            if (border_dimensions := self.gun_border_dimensions) is not None:
+                borders_inner_size, borders_outer_size = border_dimensions
+                conf.set('WHITE_BORDER_PERCENTAGE', borders_inner_size)
+                conf.set('BLACK_BORDER_PERCENTAGE', borders_outer_size)
+
+            conf.set('BORDER_ENABLED', 'true' if border_dimensions is not None else 'false')
+
+            if 'letsgojusp' in rom_name.lower():
+                conf.set('BORDER_ENABLED', 'false')
         else:
-            self.setConf(conf, 'BORDER_ENABLED', 'false')
+            conf.set('BORDER_ENABLED', 'false')
 
         # Crosshairs (ghostsev; hotd4; hotd4sp; primevil, rambo)
-        crosshairs = self.config.get('linuxloader_crosshairs') == '1'
-        self.setConf(
-            conf, 'P1_CROSSHAIR_PATH', '/usr/bin/linuxloader/crosshairs/p1_crosshair.png' if crosshairs else ''
+        crosshairs = self.config.get_str('linuxloader_crosshairs') == '1'
+        conf.set(
+            'P1_CROSSHAIR_PATH',
+            '/usr/bin/linuxloader/crosshairs/p1_crosshair.png' if crosshairs else '',
         )
-        self.setConf(
-            conf, 'P2_CROSSHAIR_PATH', '/usr/bin/linuxloader/crosshairs/p2_crosshair.png' if crosshairs else ''
+        conf.set(
+            'P2_CROSSHAIR_PATH',
+            '/usr/bin/linuxloader/crosshairs/p2_crosshair.png' if crosshairs else '',
         )
-        if 'ghostsev' in romName.lower():
-            self.setConf(conf, 'CUSTOM_CROSSHAIRS_WIDTH', '28')
-            self.setConf(conf, 'CUSTOM_CROSSHAIRS_HEIGHT', '28')
+        if 'ghostsev' in rom_name.lower():
+            conf.set('CUSTOM_CROSSHAIRS_WIDTH', '28')
+            conf.set('CUSTOM_CROSSHAIRS_HEIGHT', '28')
         else:
-            self.setConf(conf, 'CUSTOM_CROSSHAIRS_WIDTH', '64')
-            self.setConf(conf, 'CUSTOM_CROSSHAIRS_HEIGHT', '64')
+            conf.set('CUSTOM_CROSSHAIRS_WIDTH', '64')
+            conf.set('CUSTOM_CROSSHAIRS_HEIGHT', '64')
 
-        self.setup_controllers(conf, romName)
+        self._setup_controllers(conf, rom_name)
 
-    def setup_eeprom(self):
-        DOWNLOADED_FLAG: Final = self.LINUXLOADER_SAVES / 'downloadedv43.txt'
-        RAW_URL: Final = (
-            'https://raw.githubusercontent.com/batocera-linux/lindbergh-eeprom/main/lindbergh-eeprom.tar.xz'
-        )
-
-        self.LINUXLOADER_SAVES.mkdir(parents=True, exist_ok=True)
-        if not DOWNLOADED_FLAG.exists():
-            try:
-                # Download the file
-                with _download(RAW_URL, self.LINUXLOADER_SAVES) as downloaded:
-                    # Extract the file
-                    self.extract_tar_xz(downloaded, self.LINUXLOADER_SAVES)
-                    # Create the downloaded.txt flag file so we don't download again
-                    DOWNLOADED_FLAG.write_text('Download and extraction successful.\n')
-                    _logger.debug('Created flag file: %s', DOWNLOADED_FLAG)
-
-            except Exception:
-                _logger.exception('An error occurred')
-
-    def setup_libraries(self, romDir: Path, romName: str) -> None:
+    def _setup_libraries(self, rom_dir: Path, rom_name: str) -> None:
         # Setup some library quirks for GPU support (NVIDIA?)
         source = Path('/lib32/libkswapapi.so')
         if source.exists():
-            destination = Path(romDir) / 'libGLcore.so.1'
+            destination = Path(rom_dir) / 'libGLcore.so.1'
             if not destination.exists():
                 shutil.copy2(source, destination)
                 _logger.debug('Copied: %s from %s', destination, source)
 
         # -= Game specific library versions =-
-        if any(keyword in romName.lower() for keyword in ('harley', 'hdkotr', 'spicy', 'rambo', 'hotdex', 'dead ex')):
-            destCg = Path(romDir) / 'libCg.so'
-            destCgGL = Path(romDir) / 'libCgGL.so'
-            srcCg = Path('/lib32/extralibs/libCg.so.harley')
-            srcCgGL = Path('/lib32/extralibs/libCgGL.so.harley')
-            if srcCg.exists() and (not destCg.exists() or not filecmp.cmp(srcCg, destCg, shallow=False)):
-                shutil.copy2(srcCg, destCg)
-                _logger.debug('Copied: %s', destCg)
-            if srcCgGL.exists() and (not destCgGL.exists() or not filecmp.cmp(srcCgGL, destCgGL, shallow=False)):
-                shutil.copy2(srcCgGL, destCgGL)
-                _logger.debug('Copied: %s', destCgGL)
+        if any(keyword in rom_name.lower() for keyword in ('harley', 'hdkotr', 'spicy', 'rambo', 'hotdex', 'dead ex')):
+            dest_cg = Path(rom_dir) / 'libCg.so'
+            dest_cg_gl = Path(rom_dir) / 'libCgGL.so'
+            src_cg = Path('/lib32/extralibs/libCg.so.harley')
+            src_cg_gl = Path('/lib32/extralibs/libCgGL.so.harley')
+            if src_cg.exists() and (not dest_cg.exists() or not filecmp.cmp(src_cg, dest_cg, shallow=False)):
+                shutil.copy2(src_cg, dest_cg)
+                _logger.debug('Copied: %s', dest_cg)
+            if src_cg_gl.exists() and (
+                not dest_cg_gl.exists() or not filecmp.cmp(src_cg_gl, dest_cg_gl, shallow=False)
+            ):
+                shutil.copy2(src_cg_gl, dest_cg_gl)
+                _logger.debug('Copied: %s', dest_cg_gl)
 
         # fixes shadows and textures, the bundled libs are known-bad.
         # Scan first; if diff, overwrite
-        elif any(keyword in romName.lower() for keyword in ('initiad', 'letsgoju', 'tennis')):
-            destCg = Path(romDir) / 'libCg.so'
-            destCgGL = Path(romDir) / 'libCgGL.so'
-            srcCg = Path('/lib32/extralibs/libCg.so.other')
-            srcCgGL = Path('/lib32/extralibs/libCgGL.so.other')
-            if srcCg.exists() and (not destCg.exists() or not filecmp.cmp(srcCg, destCg, shallow=False)):
-                shutil.copy2(srcCg, destCg)
-                _logger.debug('Overwriting bad lib: %s', destCg)
-            if srcCgGL.exists() and (not destCgGL.exists() or not filecmp.cmp(srcCgGL, destCgGL, shallow=False)):
-                shutil.copy2(srcCgGL, destCgGL)
-                _logger.debug('Overwriting bad lib: %s', destCgGL)
+        elif any(keyword in rom_name.lower() for keyword in ('initiad', 'letsgoju', 'tennis')):
+            dest_cg = Path(rom_dir) / 'libCg.so'
+            dest_cg_gl = Path(rom_dir) / 'libCgGL.so'
+            src_cg = Path('/lib32/extralibs/libCg.so.other')
+            src_cg_gl = Path('/lib32/extralibs/libCgGL.so.other')
+            if src_cg.exists() and (not dest_cg.exists() or not filecmp.cmp(src_cg, dest_cg, shallow=False)):
+                shutil.copy2(src_cg, dest_cg)
+                _logger.debug('Overwriting bad lib: %s', dest_cg)
+            if src_cg_gl.exists() and (
+                not dest_cg_gl.exists() or not filecmp.cmp(src_cg_gl, dest_cg_gl, shallow=False)
+            ):
+                shutil.copy2(src_cg_gl, dest_cg_gl)
+                _logger.debug('Overwriting bad lib: %s', dest_cg_gl)
 
         # Remove legacy/conflicting files from the ROM directory
         legacy_files = ['libsegaapi.so', 'lindbergh', 'lindbergh.conf', 'lindbergh.so', 'lindbergh.ini']
         for legacy_file in legacy_files:
-            legacy_path = romDir / legacy_file
+            legacy_path = rom_dir / legacy_file
             if legacy_path.exists():
                 try:
                     legacy_path.unlink()
@@ -678,625 +502,55 @@ class LinuxLoader(Emulator):
                 except Exception as e:
                     _logger.debug('Could not remove legacy file %s: %s', legacy_path, e)
 
-    def setup_config(self, source_dir: Path, romDir: Path, romName: str, /) -> None:
-        LINUXLOADER_CONFIG_FILE = Path('/userdata/system/configs/linuxloader/linuxloader.ini')
-        LINUXLOADER_CONTROLS_FILE = Path('/userdata/system/configs/linuxloader/controls.ini')
-        LINUXLOADER_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    def _setup_config(self, rom_dir: Path, rom_name: str) -> None:
+        linuxloader_config_file = self.config_dir / 'linuxloader.ini'
+        linuxloader_controls_file = self.config_dir / 'controls.ini'
+        self.config_dir.mkdir(parents=True, exist_ok=True)
 
         # get an initial version if no version is here - Sync linuxloader.ini
-        source_file = source_dir / 'linuxloader.ini'
+        source_file = _SOURCE_DIR / 'linuxloader.ini'
         if (
-            not LINUXLOADER_CONFIG_FILE.exists()
-            or source_file.stat().st_mtime > LINUXLOADER_CONFIG_FILE.stat().st_mtime
+            not linuxloader_config_file.exists()
+            or source_file.stat().st_mtime > linuxloader_config_file.stat().st_mtime
         ):
-            shutil.copy2(source_file, LINUXLOADER_CONFIG_FILE)
+            shutil.copy2(source_file, linuxloader_config_file)
             _logger.debug('Updated linuxloader.ini')
 
         # Sync controls.ini
-        source_controls = source_dir / 'controls.ini'
+        source_controls = _SOURCE_DIR / 'controls.ini'
         if (
-            not LINUXLOADER_CONTROLS_FILE.exists()
-            or source_controls.stat().st_mtime > LINUXLOADER_CONTROLS_FILE.stat().st_mtime
+            not linuxloader_controls_file.exists()
+            or source_controls.stat().st_mtime > linuxloader_controls_file.stat().st_mtime
         ):
-            shutil.copy2(source_controls, LINUXLOADER_CONTROLS_FILE)
+            shutil.copy2(source_controls, linuxloader_controls_file)
             _logger.debug('Updated controls.ini')
 
         ### Adjust controls.ini (SDL mode) ###
-        content = LINUXLOADER_CONTROLS_FILE.read_text()
+        content = linuxloader_controls_file.read_text()
 
         # Steering deadzone - lower for driving games, mandatory for ID4/5
-        steer_deadzone = '800' if 'initiad' in romName.lower() else '1000'
+        steer_deadzone = '800' if 'initiad' in rom_name.lower() else '1000'
         content = re.sub(r'Steer_DeadZone\s*=\s*\d+', f'Steer_DeadZone = {steer_deadzone}', content)
 
         # Test and Service buttons - same as evdev (dpad down / facebutton down)
         if self.config.get_bool('linuxloader_test'):
             content = re.sub(r'Test\s*=\s*.*', 'Test = KEY_T, GC0_BUTTON_A, JOY0_BUTTON_0', content)
-            content = re.sub(r'P1_Service\s*=\s*.*', 'P1_Service = KEY_S, GC0_BUTTON_DPDOWN, JOY0_HAT0_DOWN', content)
+            content = re.sub(
+                r'P1_Service\s*=\s*.*',
+                'P1_Service = KEY_S, GC0_BUTTON_DPDOWN, JOY0_HAT0_DOWN',
+                content,
+            )
         else:
             content = re.sub(r'Test\s*=\s*.*', 'Test = KEY_T', content)
-            content = re.sub(r'P1_Service\s*=\s*.*', 'P1_Service = KEY_S, JOY0_BUTTON_10, GC0_BUTTON_BACK', content)
+            content = re.sub(
+                r'P1_Service\s*=\s*.*',
+                'P1_Service = KEY_S, JOY0_BUTTON_10, GC0_BUTTON_BACK',
+                content,
+            )
 
-        LINUXLOADER_CONTROLS_FILE.write_text(content)
+        linuxloader_controls_file.write_text(content)
 
         # load and modify it if needed and save it
-        conf = self.loadConf(LINUXLOADER_CONFIG_FILE)
-        self.buildConfFile(conf, romDir, romName)
-        self.saveConf(conf, LINUXLOADER_CONFIG_FILE)
-
-    def get_ip_address(self, destination: str = '1.1.1.1', port: int = 80) -> Any | None:
-        try:
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-                s.connect((destination, port))
-                return s.getsockname()[0]
-        except Exception as e:
-            _logger.debug('Error retrieving IP address: %s', e)
-            return None
-
-    def setup_controllers(self, conf: dict[str, Any], romName: str, /) -> None:
-        # 1: SDL, 2: EVDEV
-        if self.config.get('linuxloader_controller') == '1':
-            input_mode = 1
-        else:
-            input_mode = 2
-
-        shortRomName = Path(romName.lower()).stem
-
-        self.setConf(conf, 'INPUT_MODE', input_mode)
-
-        # comment all player values
-        for key in list(conf['keys'].keys()):
-            if key.startswith(('PLAYER_', 'ANALOGUE_')) or key == 'TEST_BUTTON':
-                self.commentConf(conf, key)
-
-        # configure self.guns
-        if input_mode == 2 and self.config.use_guns:
-            self.setup_guns_evdev(conf, shortRomName)
-
-        # joysticks
-        if input_mode == 2:
-            self.setup_joysticks_evdev(conf, shortRomName)
-
-        # map service and test buttons for tests mode
-        if self.config.get_bool('linuxloader_test') and input_mode == 2:
-            self.setup_test_mode_evdev(conf)
-
-    def setup_test_mode_evdev(self, conf: dict[str, Any], /) -> None:
-        for pad in self.controllers[:1]:
-            input_name = 'b'
-            if input_name in pad.inputs and pad.inputs[input_name].type == 'button':
-                self.setConf(conf, 'TEST_BUTTON', f'{pad.device_path}:KEY:{pad.inputs[input_name].code}')
-            input_name = 'down'
-            if input_name in pad.inputs and pad.inputs[input_name].type == 'hat':  # noqa: SIM102
-                if pad.inputs[input_name].value == '4':  # down
-                    # 16 is the HAT0 code, MAX for down/right
-                    input_value = f'ABS:{16 + 1 + int(pad.inputs[input_name].id) * 2}:MAX'
-                    self.setConf(conf, 'PLAYER_1_BUTTON_SERVICE', f'{pad.device_path}:{input_value}')
-            if input_name in pad.inputs and pad.inputs[input_name].type == 'axis':
-                relaxValues = pad.get_mapping_axis_relaxed_values()
-                if input_name in relaxValues and relaxValues[input_name]['reversed']:
-                    input_value = f'ABS_NEG:{pad.inputs[input_name].code}'
-                else:
-                    input_value = f'ABS:{pad.inputs[input_name].code}'
-                self.setConf(conf, 'PLAYER_1_BUTTON_SERVICE', f'{pad.device_path}:{input_value}:MAX')
-
-    def setup_joysticks_evdev(self, conf: dict[str, Any], shortRomName: str, /) -> None:
-        # button that are common to all players
-        noPlayerButton = {
-            'TEST_BUTTON': True,
-            'ANALOGUE_1': True,
-            'ANALOGUE_2': True,
-            'ANALOGUE_3': True,
-            'ANALOGUE_4': True,
-            'ANALOGUE_5': True,
-            'ANALOGUE_6': True,
-            'ANALOGUE_7': True,
-            'ANALOGUE_8': True,
-        }
-
-        # configure joysticks if no gun configured for the user
-        nplayer = 1
-        continuePlayers = True
-        for pad in self.controllers:
-            # Handle two players / controllers only, don't do if already configured for self.guns
-            if nplayer <= 2 and continuePlayers and not (self.config.use_guns and len(self.guns) >= nplayer):
-                relaxValues = pad.get_mapping_axis_relaxed_values()
-
-                ### choose the adapted mapping
-                if self.config.use_wheels:
-                    if pad.device_path in self.wheels:
-                        linuxloaderCtrl = self.getMappingForJoystickOrWheel(shortRomName, 'wheel', nplayer, pad, True)
-                        _logger.debug('linuxloader wheel mapping for player %s', nplayer)
-                    else:
-                        linuxloaderCtrl = self.getMappingForJoystickOrWheel(shortRomName, 'pad', nplayer, pad, False)
-                        _logger.debug('linuxloader pad mapping for player %s (not a wheel device)', nplayer)
-                elif self.config.use_guns:
-                    linuxloaderCtrl = self.getMappingForJoystickOrWheel(shortRomName, 'gun', nplayer, pad, False)
-                    _logger.debug('linuxloader gun mapping for player %s', nplayer)
-                else:
-                    linuxloaderCtrl = self.getMappingForJoystickOrWheel(shortRomName, 'pad', nplayer, pad, False)
-                    _logger.debug('linuxloader pad mapping for player %s', nplayer)
-
-                # some games must be configured for player 1 only (cause it uses some buttons of the player 2), so stop after player 1
-                if nplayer == 1:
-                    for input_name in linuxloaderCtrl:
-                        if linuxloaderCtrl[input_name].endswith('_ON_PLAYER_2'):
-                            continuePlayers = False
-
-                # checker on buttons mapping (just to control we have no duplicates)
-                x = {}
-                for input_name in linuxloaderCtrl:
-                    if linuxloaderCtrl[input_name] in x:
-                        raise InvalidConfiguration(
-                            f'duplicate configuration key for {input_name} with value {linuxloaderCtrl[input_name]}'
-                        )
-                    x[linuxloaderCtrl[input_name]] = True
-
-                ### configure each input
-                controller_name = pad.device_path
-                for input_name in linuxloaderCtrl:
-                    # coin is only for player 1
-                    if linuxloaderCtrl[input_name] == 'COIN' and nplayer > 1:
-                        continue
-
-                    input_base_name = input_name
-                    if input_name == 'joystick1right':
-                        input_base_name = 'joystick1left'
-                    if input_name == 'joystick1down':
-                        input_base_name = 'joystick1up'
-                    if input_name == 'joystick2right':
-                        input_base_name = 'joystick2left'
-                    if input_name == 'joystick2down':
-                        input_base_name = 'joystick2up'
-
-                    if input_base_name in pad.inputs and (
-                        pad.inputs[input_base_name].code is not None or pad.inputs[input_base_name].type == 'hat'
-                    ):
-                        button_name = linuxloaderCtrl[input_name]
-
-                        # some buttons of player1 are mapped on the player2...
-                        player_input = nplayer
-                        if button_name.endswith('_ON_PLAYER_2'):
-                            button_name = button_name[:-12]
-                            player_input = 2
-                        ###
-
-                        if pad.inputs[input_base_name].type == 'button':
-                            input_value = f'KEY:{pad.inputs[input_base_name].code}'
-                            if button_name in noPlayerButton:
-                                if nplayer == 1:
-                                    self.setConf(conf, f'{button_name}', f'{controller_name}:{input_value}')
-                            else:
-                                if button_name.startswith('ANALOGUE_'):
-                                    if nplayer == 1:
-                                        self.setConf(conf, f'{button_name}', f'{controller_name}:{input_value}')
-                                else:
-                                    self.setConf(
-                                        conf, f'PLAYER_{player_input}_{button_name}', f'{controller_name}:{input_value}'
-                                    )
-                        elif pad.inputs[input_base_name].type == 'axis':
-                            if input_name in relaxValues and relaxValues[input_name]['reversed']:
-                                input_value = f'ABS_NEG:{pad.inputs[input_base_name].code}'
-                            else:
-                                input_value = f'ABS:{pad.inputs[input_base_name].code}'
-                            if button_name.startswith('ANALOGUE_'):
-                                if nplayer == 1:
-                                    self.setConf(conf, f'{button_name}', f'{controller_name}:{input_value}')
-                            else:
-                                # here
-                                minmax_value = 'MAX'
-                                if (
-                                    input_name == 'joystick1left'
-                                    or input_name == 'joystick1up'
-                                    or input_name == 'joystick2left'
-                                    or input_name == 'joystick2up'
-                                    or input_name == 'left'
-                                    or input_name == 'up'
-                                ):
-                                    minmax_value = 'MIN'
-                                # reversed axis
-                                if input_name in relaxValues and relaxValues[input_name]['reversed']:
-                                    if minmax_value == 'MAX':
-                                        minmax_value = 'MIN'
-                                    else:
-                                        minmax_value = 'MAX'
-                                # set
-                                self.setConf(
-                                    conf,
-                                    f'PLAYER_{player_input}_{button_name}',
-                                    f'{controller_name}:{input_value}:{minmax_value}',
-                                )
-                        elif pad.inputs[input_base_name].type == 'hat':
-                            if (
-                                pad.inputs[input_base_name].value == '1' or pad.inputs[input_base_name].value == '4'
-                            ):  # up or down
-                                # 16 is the HAT0 code
-                                input_value = f'ABS:{16 + 1 + int(pad.inputs[input_base_name].id) * 2}'
-                            else:
-                                input_value = f'ABS:{16 + int(pad.inputs[input_base_name].id) * 2}'
-                            if button_name.startswith('ANALOGUE_'):
-                                if nplayer == 1:
-                                    self.setConf(conf, f'{button_name}', f'{controller_name}:{input_value}')
-                            else:
-                                if (
-                                    pad.inputs[input_base_name].value == '1' or pad.inputs[input_base_name].value == '8'
-                                ):  # up or left
-                                    input_value += ':MIN'
-                                else:
-                                    input_value += ':MAX'
-                                self.setConf(
-                                    conf, f'PLAYER_{player_input}_{button_name}', f'{controller_name}:{input_value}'
-                                )
-                        else:
-                            raise BatoceraException(f'invalid input type: {pad.inputs[input_base_name].type}')
-                nplayer += 1
-
-    def getMappingForJoystickOrWheel(  # noqa: RET503
-        self,
-        shortRomName: str,
-        deviceType: Literal['wheel', 'gun', 'pad'],
-        nplayer: int,
-        pad: Controller,
-        isRealWheel: bool,
-        /,
-    ) -> dict[str, str]:
-        linuxloaderCtrl_pad = {
-            'a': 'BUTTON_2',
-            'b': 'BUTTON_1',
-            'x': 'BUTTON_4',
-            'y': 'BUTTON_3',
-            'start': 'BUTTON_START',
-            'select': 'COIN',
-            'up': 'BUTTON_UP',
-            'down': 'BUTTON_DOWN',
-            'left': 'BUTTON_LEFT',
-            'right': 'BUTTON_RIGHT',
-            'joystick1up': 'ANALOGUE_2',
-            'joystick1left': 'ANALOGUE_1',
-            'pageup': 'BUTTON_5',
-            'pagedown': 'BUTTON_6',
-            'l2': 'BUTTON_7',
-            'r2': 'BUTTON_8',
-            'l3': 'BUTTON_SERVICE',
-        }
-
-        linuxloaderCtrl_pad_driving = {
-            'x': 'BUTTON_DOWN',  # view change
-            'pageup': 'BUTTON_DOWN_ON_PLAYER_2',  # gear down
-            'pagedown': 'BUTTON_UP_ON_PLAYER_2',  # gear up
-            'l2': 'ANALOGUE_3',  # brake
-            'r2': 'ANALOGUE_2',  # gas
-        }
-
-        linuxloaderCtrl_pad_abc = {
-            'a': 'BUTTON_1',  # gun trigger
-            'b': 'BUTTON_2',  # missile
-            'x': 'BUTTON_3',  # climax switch
-            'r2': 'ANALOGUE_3',  # throttle
-        }
-
-        # the same mapping for a wheel or a pad for a wheel game should do the job
-        linuxloaderCtrl_wheel = {
-            'a': 'BUTTON_2',
-            'b': 'BUTTON_1',
-            'x': 'BUTTON_4',
-            'y': 'BUTTON_3',
-            'start': 'BUTTON_START',
-            'select': 'COIN',
-            'left': 'BUTTON_LEFT',
-            'right': 'BUTTON_RIGHT',
-            'joystick1left': 'ANALOGUE_1',
-            'pageup': 'BUTTON_DOWN',  # gear down
-            'pagedown': 'BUTTON_UP',  # gear up
-            'l2': 'ANALOGUE_3',
-            'r2': 'ANALOGUE_2',
-            'l3': 'BUTTON_SERVICE',
-        }
-
-        linuxloaderCtrl_gun = {
-            'a': 'BUTTON_2',
-            'b': 'BUTTON_1',
-            'x': 'BUTTON_4',
-            'y': 'BUTTON_3',
-            'start': 'BUTTON_START',
-            'select': 'COIN',
-            'up': 'BUTTON_UP',
-            'down': 'BUTTON_DOWN',
-            'left': 'BUTTON_LEFT',
-            'right': 'BUTTON_RIGHT',
-            'joystick1up': 'ANALOGUE_2',
-            'joystick1left': 'ANALOGUE_1',
-            'pageup': 'BUTTON_5',
-            'pagedown': 'BUTTON_6',
-            'l2': 'BUTTON_7',
-            'r2': 'BUTTON_8',
-            'l3': 'BUTTON_SERVICE',
-        }
-
-        # mapping specific to games - wheel
-        _logger.debug('linuxloader mapping for game %s', shortRomName)
-
-        if shortRomName == 'hdkotr' or 'harley' in shortRomName:
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_2'  # change view
-            linuxloaderCtrl_wheel['l2'] = 'ANALOGUE_4'
-            linuxloaderCtrl_wheel['r2'] = 'ANALOGUE_1'
-            linuxloaderCtrl_wheel['joystick1left'] = 'ANALOGUE_2'
-            del linuxloaderCtrl_wheel['a']
-            del linuxloaderCtrl_wheel['y']
-            linuxloaderCtrl_wheel['pageup'] = 'BUTTON_4'
-            linuxloaderCtrl_wheel['pagedown'] = 'BUTTON_3'
-
-        if shortRomName == 'rtuned':
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_DOWN'  # change view
-            linuxloaderCtrl_wheel['a'] = 'BUTTON_RIGHT'  # boost 1
-            linuxloaderCtrl_wheel['y'] = 'BUTTON_1_ON_PLAYER_2'  # boost 2
-            del linuxloaderCtrl_wheel['right']
-
-        if shortRomName.startswith('initiad'):
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_1'  # change view
-            linuxloaderCtrl_wheel['up'] = 'BUTTON_UP'  # menu up
-            linuxloaderCtrl_wheel['down'] = 'BUTTON_DOWN'  # menu down
-            del linuxloaderCtrl_wheel['b']
-
-        if shortRomName.startswith('hummer'):
-            linuxloaderCtrl_wheel['a'] = 'BUTTON_DOWN_ON_PLAYER_2'  # boost
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_DOWN'  # change view
-            del linuxloaderCtrl_wheel['pageup']
-
-        if shortRomName.startswith('segartv'):
-            linuxloaderCtrl_wheel['a'] = 'BUTTON_1_ON_PLAYER_2'  # boost
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_DOWN'  # change view
-            del linuxloaderCtrl_wheel['pageup']
-
-        if shortRomName.startswith('outr'):
-            linuxloaderCtrl_wheel['x'] = 'BUTTON_DOWN'  # view change
-
-        # button up/down on player 2
-        if shortRomName == 'rtuned' or shortRomName.startswith(('segartv', 'outr', 'initiad')):
-            linuxloaderCtrl_wheel['pageup'] = 'BUTTON_DOWN_ON_PLAYER_2'
-            linuxloaderCtrl_wheel['pagedown'] = 'BUTTON_UP_ON_PLAYER_2'
-
-        # mapping specific to games - pad with dict for driving + ABC
-
-        if shortRomName.startswith('outr'):
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['down']
-
-        if shortRomName.startswith('hummer'):
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            linuxloaderCtrl_pad['a'] = 'BUTTON_DOWN_ON_PLAYER_2'  # boost
-            linuxloaderCtrl_pad['pageup'] = 'BUTTON_5'
-            linuxloaderCtrl_pad['pagedown'] = 'BUTTON_6'
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['down']
-
-        if shortRomName.startswith('initiad'):
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            linuxloaderCtrl_pad['x'] = 'BUTTON_1'  # view change (not BUTTON_DOWN)
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['b']
-
-        if shortRomName == 'rtuned':
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            linuxloaderCtrl_pad['a'] = 'BUTTON_RIGHT'  # boost
-            linuxloaderCtrl_pad['y'] = 'BUTTON_1_ON_PLAYER_2'  # boost 2
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['right']
-            del linuxloaderCtrl_pad['down']
-
-        if shortRomName.startswith('segartv'):
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            linuxloaderCtrl_pad['a'] = 'BUTTON_1_ON_PLAYER_2'  # boost
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['down']
-
-        if shortRomName == 'hdkotr' or 'harley' in shortRomName:
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_driving)
-            linuxloaderCtrl_pad['joystick1left'] = 'ANALOGUE_2'  # steer (swapped)
-            linuxloaderCtrl_pad['r2'] = 'ANALOGUE_1'  # gas (swapped)
-            linuxloaderCtrl_pad['l2'] = 'ANALOGUE_4'  # brake (swapped)
-            linuxloaderCtrl_pad['x'] = 'BUTTON_2'  # view change
-            linuxloaderCtrl_pad['pageup'] = 'BUTTON_4'  # gear down
-            linuxloaderCtrl_pad['pagedown'] = 'BUTTON_3'  # gear up
-            del linuxloaderCtrl_pad['joystick1up']
-            del linuxloaderCtrl_pad['a']
-            del linuxloaderCtrl_pad['y']
-
-        if shortRomName.startswith('abcli'):
-            linuxloaderCtrl_pad.update(linuxloaderCtrl_pad_abc)
-            del linuxloaderCtrl_pad['l2']
-            del linuxloaderCtrl_pad['y']
-        ###
-
-        # remap buttons if for non real wheel
-        if deviceType == 'wheel' and not isRealWheel:
-            x = None
-            y = None
-            l = None  # noqa: E741
-            r = None
-            if 'x' in linuxloaderCtrl_wheel:
-                x = linuxloaderCtrl_wheel['x']
-                del linuxloaderCtrl_wheel['x']
-            if 'y' in linuxloaderCtrl_wheel:
-                y = linuxloaderCtrl_wheel['y']
-                del linuxloaderCtrl_wheel['y']
-            if 'pageup' in linuxloaderCtrl_wheel:
-                l = linuxloaderCtrl_wheel['pageup']  # noqa: E741
-                del linuxloaderCtrl_wheel['pageup']
-            if 'pagedown' in linuxloaderCtrl_wheel:
-                r = linuxloaderCtrl_wheel['pagedown']
-                del linuxloaderCtrl_wheel['pagedown']
-            if x is not None:
-                linuxloaderCtrl_wheel['pageup'] = x  # view     ## free x and y for gear up/down
-            if y is not None:
-                linuxloaderCtrl_wheel['b'] = y  # action 2 ## free x and y for gear up/down
-            if r is not None:
-                linuxloaderCtrl_wheel['x'] = r
-            if l is not None:
-                linuxloaderCtrl_wheel['y'] = l
-        ####
-
-        # pads without l2, but with l as a button, important for wheel
-        if 'l2' not in pad.inputs and 'pageup' in pad.inputs and pad.inputs['pageup'].type == 'button':
-            linuxloaderCtrl_wheel['pageup'] = linuxloaderCtrl_wheel['l2']
-            del linuxloaderCtrl_wheel['l2']
-        # pads without r2, but with r as a button
-        if 'r2' not in pad.inputs and 'pagedown' in pad.inputs and pad.inputs['pagedown'].type == 'button':
-            linuxloaderCtrl_wheel['pagedown'] = linuxloaderCtrl_wheel['r2']
-            del linuxloaderCtrl_wheel['r2']
-
-        # some pads have not analog axis, on some games, prefer the dpad
-        if not shortRomName.startswith('vf5') and not shortRomName.startswith('vt'):  # all but vf5 and vt3
-            # pads without joystick1left, but with a hat
-            if (
-                'joystick1left' not in pad.inputs
-                and 'left' in pad.inputs
-                and (pad.inputs['left'].type == 'hat' or pad.inputs['left'].type == 'axis')
-            ):
-                if 'joystick1left' in linuxloaderCtrl_wheel:
-                    linuxloaderCtrl_wheel['left'] = linuxloaderCtrl_wheel['joystick1left']
-                    if 'right' in linuxloaderCtrl_wheel:
-                        del linuxloaderCtrl_wheel['right']
-                    del linuxloaderCtrl_wheel['joystick1left']
-                if 'joystick1left' in linuxloaderCtrl_pad:
-                    linuxloaderCtrl_pad['left'] = linuxloaderCtrl_pad['joystick1left']
-                    if 'right' in linuxloaderCtrl_pad:
-                        del linuxloaderCtrl_pad['right']
-                    del linuxloaderCtrl_pad['joystick1left']
-
-            # pads without joystick1up, but with a hat
-            if (
-                'joystick1up' not in pad.inputs
-                and 'up' in pad.inputs
-                and (pad.inputs['up'].type == 'hat' or pad.inputs['up'].type == 'axis')
-            ) and 'joystick1up' in linuxloaderCtrl_pad:
-                linuxloaderCtrl_pad['up'] = linuxloaderCtrl_pad['joystick1up']
-                if 'down' in linuxloaderCtrl_pad:
-                    del linuxloaderCtrl_pad['down']
-                del linuxloaderCtrl_pad['joystick1up']
-        ###
-
-        # choose mapping
-        if deviceType == 'gun':
-            # adjustment for player 2 gun
-            for x in linuxloaderCtrl_gun:
-                if linuxloaderCtrl_gun[x] == 'ANALOGUE_1' and nplayer == 2:
-                    linuxloaderCtrl_gun[x] = 'ANALOGUE_3'
-                if linuxloaderCtrl_gun[x] == 'ANALOGUE_2' and nplayer == 2:
-                    linuxloaderCtrl_gun[x] = 'ANALOGUE_4'
-            return linuxloaderCtrl_gun
-
-        if deviceType == 'wheel':
-            return linuxloaderCtrl_wheel
-
-        if deviceType == 'pad':
-            return linuxloaderCtrl_pad
-
-    def setup_guns_evdev(self, conf: dict[str, Any], shortRomName: str, /) -> None:
-        nplayer = 1
-
-        # common batocera mapping
-        mappings_codes = {
-            'left': ecodes.BTN_LEFT,
-            'right': ecodes.BTN_RIGHT,
-            'middle': ecodes.BTN_MIDDLE,
-            '1': ecodes.BTN_1,
-            '2': ecodes.BTN_2,
-            '3': ecodes.BTN_3,
-            '4': ecodes.BTN_4,
-            '5': ecodes.BTN_5,
-            '6': ecodes.BTN_6,
-            '7': ecodes.BTN_7,
-            '8': ecodes.BTN_8,
-        }
-
-        # linuxloader gun mapping
-        mappings_actions = {
-            'left': 'BUTTON_1',  # trigger = BUTTON_1
-            'middle': 'BUTTON_START',
-            '1': 'COIN',
-            'right': 'BUTTON_3',  # action = BUTTON_3
-            '2': 'BUTTON_2',  # optional reload in most case = BUTTON_2
-            '3': 'BUTTON_4',
-            '4': 'BUTTON_5',
-            '5': 'BUTTON_UP',
-            '6': 'BUTTON_DOWN',
-            '7': 'BUTTON_LEFT',
-            '8': 'BUTTON_RIGHT',
-        }
-
-        if shortRomName == '2spicy':
-            mappings_actions['right'] = 'BUTTON_2'
-            del mappings_actions['2']
-
-        if shortRomName == 'ghostsev':
-            mappings_actions['right'] = 'BUTTON_3'  # Action
-            mappings_actions['2'] = 'BUTTON_4'  # Cycle firerate
-            del mappings_actions['3']
-
-        if shortRomName == 'hotdex':
-            mappings_actions['right'] = 'BUTTON_LEFT'
-            del mappings_actions['7']
-            del mappings_actions['8']
-
-        if shortRomName == 'hotd4sp':
-            mappings_actions['2'] = 'BUTTON_4'
-            del mappings_actions['3']
-
-        if shortRomName == 'letsgojusp':
-            # if there is only one gun, let the player1 able to press BUTTON_4 of player 2 (required)
-            if len(self.guns) == 1:
-                mappings_actions['7'] = 'BUTTON_4'
-                del mappings_actions['3']
-                mapping = '8'
-                action = 'BUTTON_4'
-                if mapping in mappings_codes:
-                    gun = self.guns[0]
-                    code = mappings_codes[mapping]
-                    self.setConf(conf, f'PLAYER_2_{action}', f'{gun.node}:KEY:{code}')
-                    del mappings_actions[mapping]
-            elif len(self.guns) > 1:
-                mappings_actions['right'] = 'BUTTON_4'
-                del mappings_actions['3']
-
-        if shortRomName == 'letsgoju' and len(self.guns) == 1:
-            mapping = 'right'
-            action = 'BUTTON_START'
-            if mapping in mappings_codes:
-                gun = self.guns[0]
-                code = mappings_codes[mapping]
-                self.setConf(conf, f'PLAYER_2_{action}', f'{gun.node}:KEY:{code}')
-                del mappings_actions[mapping]
-
-        for nplayer, gun in enumerate(self.guns[:2], start=1):
-            _logger.debug('linuxloader gun for player %s', nplayer)
-            xplayer = 1 + (nplayer - 1) * 2
-            yplayer = 1 + (nplayer - 1) * 2 + 1
-            evplayer = gun.node
-            self.setConf(conf, f'ANALOGUE_{xplayer}', f'{evplayer}:ABS:0')
-            self.setConf(conf, f'ANALOGUE_{yplayer}', f'{evplayer}:ABS:1')
-
-            # reverse axis for let's go jungle
-            if shortRomName in ('letsgoju', 'letsgojua'):  # not for the special version
-                self.setConf(conf, f'ANALOGUE_{xplayer}', f'{evplayer}:ABS_NEG:1')
-                self.setConf(conf, f'ANALOGUE_{yplayer}', f'{evplayer}:ABS_NEG:0')
-
-            # add shake for hotd4
-            if shortRomName.startswith('hotd4'):
-                xplayerp4 = xplayer + 4
-                yplayerp4 = yplayer + 4
-                self.setConf(conf, f'ANALOGUE_{xplayerp4}', f'{evplayer}:ABS:0:SHAKE')
-                self.setConf(conf, f'ANALOGUE_{yplayerp4}', f'{evplayer}:ABS:1:SHAKE')
-
-            for mapping in mappings_actions:
-                if mapping in gun.buttons and mapping in mappings_codes:
-                    code = mappings_codes[mapping]
-                    action = mappings_actions[mapping]
-
-                    # in hotdex, player2 reload is on button right (and button left for player 1...)
-                    if shortRomName == 'hotdex' and nplayer == 2 and mapping == 'right':
-                        action = 'BUTTON_RIGHT'
-                        nplayer = 1
-
-                    if not (action == 'COIN' and nplayer != 1):  # COIN is only for player 1
-                        self.setConf(conf, f'PLAYER_{nplayer}_{action}', f'{evplayer}:KEY:{code}')
+        conf = Configuration(linuxloader_config_file)
+        self._build_conf_file(conf, rom_dir, rom_name)
+        conf.save()
