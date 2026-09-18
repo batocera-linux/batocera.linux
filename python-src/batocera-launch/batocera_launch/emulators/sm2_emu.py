@@ -72,8 +72,6 @@ def _ini_bool(value: bool) -> str:
 
 
 def _merge_ini(existing_text: str, managed: dict[str, str]) -> str:
-    """Update `managed` keys in place, leave every other line (wheel calibration,
-    window size) untouched."""
     remaining = dict(managed)
     lines: list[str] = []
 
@@ -175,7 +173,7 @@ class Sm2Emu(Emulator):
                 'wheel_button_gear_down': str(_wheel_button_id(wheel, _GEAR_DOWN_INPUTS)),
                 'wheel_button_test': str(_wheel_button_id(wheel, 'test')),
                 'wheel_button_service': str(_wheel_button_id(wheel, 'service')),
-                'wheel_button_menu': str(_wheel_button_id(wheel, 'hotkey')),
+                'wheel_button_menu': '-1',
                 **_wheel_axes(wheel),
             }
             if wheel is not None
@@ -187,6 +185,8 @@ class Sm2Emu(Emulator):
 
         managed = {
             'fullscreen': 'true',
+            'window_width': str(self.resolution.width),
+            'window_height': str(self.resolution.height),
             'vsync': _ini_bool(self.config.get_bool('sm2_vsync', False)),
             'show_fps': 'false',  # covered by the hud/hud_corner features instead
             'lightgun': _ini_bool(use_guns),
