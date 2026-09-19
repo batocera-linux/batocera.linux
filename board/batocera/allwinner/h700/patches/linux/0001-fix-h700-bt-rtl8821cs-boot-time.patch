@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+index 950dbd3..292caba 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+@@ -39,6 +39,7 @@ &uart1 {
+ 	pinctrl-0 = <&uart1_pins>, <&uart1_rts_cts_pins>;
+ 	uart-has-rtscts;
+ 	status = "okay";
++	startup-delay-ms = <200>;
+ 
+ 	bluetooth {
+ 		compatible = "realtek,rtl8821cs-bt", "realtek,rtl8723bs-bt";
