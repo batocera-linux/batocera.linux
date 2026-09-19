@@ -35,6 +35,7 @@
 - Libretro-Azahar
 - NanoBoyAdvance as an alternative GBA emulator
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
+- RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
