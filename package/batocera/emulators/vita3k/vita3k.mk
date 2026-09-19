@@ -30,8 +30,7 @@ VITA3K_CONF_OPTS += -DCMAKE_C_COMPILER=$(HOST_DIR)/bin/clang \
                     -DCMAKE_BUILD_TYPE=Release \
                     -DBUILD_SHARED_LIBS=OFF \
                     -DUSE_DISCORD_RICH_PRESENCE=OFF \
-                    -DVITA3K_FORCE_SYSTEM_BOOST=ON \
-                    -DSDL_HIDAPI=OFF
+                    -DVITA3K_FORCE_SYSTEM_BOOST=ON
 
 ifeq ($(BR2_X86_CPU_HAS_AVX2),y)
 VITA3K_CONF_OPTS += -DXXH_X86DISPATCH_ALLOW_AVX=ON
