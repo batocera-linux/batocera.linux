@@ -23,6 +23,30 @@ custom_features:
     choices:
       Disabled: n
       Enabled: y
+  smania_ratio:
+    prompt: GAME ASPECT RATIO
+    description: Widescreen or the original 4:3 view.
+    choices:
+      "16:9": "16:9"
+      "4:3": "4:3"
+  smania_shader:
+    prompt: SCREEN SHADER
+    description: Apply one of the game's built-in shaders.
+    choices:
+      None: "0"
+      Clean: "1"
+      CRT Yeetron: "2"
+      CRT Yee64: "3"
+      YUV 420: "4"
+      YUV 422: "5"
+      YUV 444: "6"
+      RGB Image: "7"
+  smania_devmenu:
+    prompt: DEVELOPER MENU
+    description: Allow opening the developer menu.
+    choices:
+      "Off": n
+      "On": y
   smania_language:
     prompt: LANGUAGE
     description: Change the game's language.
