@@ -602,7 +602,11 @@ start_es() {
 # Don't wait on ES here: the gui action runs synchronously from ES.
 do_shutdown() {
 	if pidof emulationstation >/dev/null; then
-		batocera-es-swissknife --emukill >/dev/null 2>&1
+		# Only while a game runs: with no game, hotkeygen's ES context would send ES an exit key
+		HTTP_STATUS=$(curl -s --connect-timeout 2 --max-time 5 -o /dev/null -w "%{http_code}" "http://localhost:1234/runningGame")
+		if [ $? -eq 0 ] && [ "${HTTP_STATUS}" != "201" ]; then
+			hotkeygen --send exit
+		fi
 		curl -sf --connect-timeout 2 --max-time 5 -o /dev/null "http://localhost:1234/shutdown" && return
 	fi
 	/sbin/shutdown -P -h now
