@@ -53,6 +53,7 @@
 - Libretro-Hatarib not starting due to a compiled symbol issue
 - MAME black screen on exit with a rotated display when CRT switchres is off
 - Mupen64 not starting fullscreen with Wayland
+- Power button shutdown now closes the running game and shuts down through EmulationStation, saving gamelists
 - Pygame fullscreen with Wayland
 - Raze analog controls and improved controller bindings
 - Simcoupe not starting fullscreen
