@@ -726,6 +726,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         self.sdl_controller_db_path.parent.mkdir(parents=True, exist_ok=True)
         self.sdl_controller_db_path.write_text(self.get_sdl_game_controller_config())
 
+    async def before_run(self, command: Command, /) -> None:
+        """Hook for subclasses or mixins to run code before the emulator is executed."""
+
     async def run(self) -> int:
         # SDL VSync is a big deal on OGA and RPi4
         os.environ.update({'SDL_RENDER_VSYNC': self.config.get_bool('sdlvsync', True, return_values=('1', '0'))})
@@ -755,6 +758,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
                     with self.profiler.pause():
                         async with evmapy_manager.monitor_controllers():
+                            await self.before_run(command)
                             return await command.run()
 
     @staticmethod
@@ -780,12 +784,3 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         emulator_cls = Emulator._load_class(system_config.emulator)
 
         return emulator_cls(system_config, profiler)
-
-
-@cached_dataclass
-class SpecialDecorationsMixin(Emulator):
-    @cached_property
-    def decoration_id(self) -> str:
-        from .config.decoration_id import get_decoration_id
-
-        return get_decoration_id(self.system, self.rom.stem)

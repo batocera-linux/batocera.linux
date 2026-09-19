@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import asyncio
 import filecmp
 import logging
 import re
 import shutil
 from collections.abc import Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final, Self, cast
+from typing import Any, Final, cast
 
 import aiohttp
 from ruamel.yaml import YAML
@@ -20,15 +19,12 @@ from batocera_common.dict import merge
 from batocera_common.fs import directory_differences
 from batocera_common.paths import BIOS, CACHE, CONFIGS
 from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
-from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
+from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext, ParallelStartupTaskMixin
 from batocera_launch.asyncio import download
 from batocera_launch.paths import configure_emulator
 
 from .controllers import generate_controllers_config
 from .sfo import SFO
-
-if TYPE_CHECKING:
-    from types import TracebackType
 
 _logger = logging.getLogger(__name__)
 
@@ -417,26 +413,6 @@ def _merge_patch_config(config_file: Path, data: Mapping[str, Any], /) -> None:
         yaml.dump(existing, config_file)  # pyright: ignore
 
 
-async def _fetch_compatibility_database(client_session: aiohttp.ClientSession, target_path: Path, /) -> None:
-    """Download RPCS3 compatibility database if needed."""
-
-    try:
-        async with download(
-            client_session,
-            'https://api.rpcs3.net/config/?api=v1',
-            target_path.parent,
-            headers={'User-Agent': 'RPCS3/Batocera'},
-            timeout=aiohttp.ClientTimeout(total=15),
-        ) as temp_file:
-            if not target_path.exists() or not filecmp.cmp(temp_file, target_path, shallow=False):
-                temp_file.move(target_path)
-                _logger.debug('Updated RPCS3 compatibility database at %s', target_path)
-            else:
-                _logger.debug('RPCS3 compatibility database is already up to date')
-    except Exception:
-        _logger.exception('Could not update RPCS3 compatibility database')
-
-
 @dataclass(slots=True)
 class RPCS3Command(Command):
     async def run(self) -> int:
@@ -459,44 +435,26 @@ class RPCS3Command(Command):
 
 
 @cached_dataclass
-class RPCS3(Emulator):
-    compatibility_database_task: asyncio.Task[None] = field(init=False)
-
-    async def __aenter__(self) -> Self:
+class RPCS3(ParallelStartupTaskMixin, Emulator):
+    async def parallel_startup_task(self) -> None:
         # Start downloading the compatibility database ASAP in the background
-        self.compatibility_database_task = asyncio.create_task(
-            _fetch_compatibility_database(self.client_session, self.config_dir / 'GuiConfigs' / 'config_database.dat')
-        )
+        database_path = self.config_dir / 'GuiConfigs' / 'config_database.dat'
 
         try:
-            return await super().__aenter__()
-        except BaseException:
-            # Cancel the task if the context manager fails to enter (e.g. KeyboardInterrupt)
-            self.compatibility_database_task.cancel()
-            try:
-                # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
-                await self.compatibility_database_task
-            except asyncio.CancelledError:
-                pass
-
-            raise
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-        /,
-    ) -> bool | None:
-        # Cancel the task if the context manager exits
-        self.compatibility_database_task.cancel()
-        try:
-            # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
-            await self.compatibility_database_task
-        except asyncio.CancelledError:
-            pass
-
-        return await super().__aexit__(exc_type, exc_value, traceback)
+            async with download(
+                self.client_session,
+                'https://api.rpcs3.net/config/?api=v1',
+                database_path.parent,
+                headers={'User-Agent': 'RPCS3/Batocera'},
+                timeout=aiohttp.ClientTimeout(total=15),
+            ) as temp_file:
+                if not database_path.exists() or not filecmp.cmp(temp_file, database_path, shallow=False):
+                    temp_file.move(database_path)
+                    _logger.debug('Updated RPCS3 compatibility database at %s', database_path)
+                else:
+                    _logger.debug('RPCS3 compatibility database is already up to date')
+        except Exception:
+            _logger.exception('Could not update RPCS3 compatibility database')
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -987,6 +945,4 @@ class RPCS3(Emulator):
                 'XDG_CACHE_HOME': CACHE,
                 'LC_ALL': 'C',
             },
-            # Wait for the compatibility database update to finish (or fail) before running the command
-            self.compatibility_database_task,
         )

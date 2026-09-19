@@ -28,7 +28,7 @@ from .devices.gun import (
     guns_need_crosses as guns_need_crosses,
 )
 from .devices.input import Input as Input, InputDict as InputDict, InputMapping as InputMapping
-from .emulator import Emulator as Emulator, SpecialDecorationsMixin as SpecialDecorationsMixin
+from .emulator import Emulator as Emulator
 from .exceptions import (
     BadCommandLineArguments as BadCommandLineArguments,
     BatoceraException as BatoceraException,
@@ -38,10 +38,13 @@ from .exceptions import (
     UnexpectedEmulatorExit as UnexpectedEmulatorExit,
     UnknownEmulator as UnknownEmulator,
 )
+from .parallel_startup_task_mixin import ParallelStartupTaskMixin as ParallelStartupTaskMixin
 from .rom import Rom as Rom
+from .special_decorations_mixin import SpecialDecorationsMixin as SpecialDecorationsMixin
 from .types import (
     BezelFiles as BezelFiles,
     BezelInfo as BezelInfo,
     HotkeysContext as HotkeysContext,
     Resolution as Resolution,
+    ScreenInfo as ScreenInfo,
 )

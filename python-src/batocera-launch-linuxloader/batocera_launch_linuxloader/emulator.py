@@ -13,7 +13,6 @@
 #
 from __future__ import annotations
 
-import asyncio
 import filecmp
 import logging
 import os
@@ -22,9 +21,8 @@ import shutil
 import socket
 import stat
 import tarfile
-from dataclasses import field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, Self
+from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SAVES
@@ -32,14 +30,12 @@ from batocera_launch import (
     Command,
     Emulator,
     HotkeysContext,
+    ParallelStartupTaskMixin,
 )
 from batocera_launch.asyncio import download
 
 from .config import Configuration
 from .controllers import ControllersMixin
-
-if TYPE_CHECKING:
-    from types import TracebackType
 
 _logger = logging.getLogger(__name__)
 
@@ -119,44 +115,8 @@ def _resolve_real_rom_path(rom_dir: Path, /) -> Path:
 
 
 @cached_dataclass
-class LinuxLoader(ControllersMixin, Emulator):
+class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
     needs_sdl_game_controller_config = True
-
-    eeprom_task: asyncio.Task[None] = field(init=False)
-
-    async def __aenter__(self) -> Self:
-        ### Setup eeprom files as necessary
-        self.eeprom_task = asyncio.create_task(self._setup_eeprom())
-
-        try:
-            return await super().__aenter__()
-        except BaseException:
-            # Cancel the task if the context manager fails to enter (e.g. KeyboardInterrupt)
-            self.eeprom_task.cancel()
-            try:
-                # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
-                await self.eeprom_task
-            except asyncio.CancelledError:
-                pass
-
-            raise
-
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: TracebackType | None,
-        /,
-    ) -> bool | None:
-        # Cancel the task if the context manager exits
-        self.eeprom_task.cancel()
-        try:
-            # await the task and suppress the CancelledError to ensure aiohttp cleanup happens
-            await self.eeprom_task
-        except asyncio.CancelledError:
-            pass
-
-        return await super().__aexit__(exc_type, exc_value, traceback)
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -247,9 +207,10 @@ class LinuxLoader(ControllersMixin, Emulator):
         if self.config.get_bool('linuxloader_test'):
             command_array.append('-t')
 
-        return Command(command_array, env=environment, wait_for=self.eeprom_task)
+        return Command(command_array, env=environment)
 
-    async def _setup_eeprom(self) -> None:
+    async def parallel_startup_task(self) -> None:
+        # Set up eeprom files as necessary
         self.saves_dir.mkdir(parents=True, exist_ok=True)
 
         last_extracted = self.saves_dir / '.eeprom.extracted'

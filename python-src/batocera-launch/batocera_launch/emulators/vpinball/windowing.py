@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from batocera_common.configparser import CaseSensitiveConfigParser
-    from batocera_launch import Resolution, SystemConfig
-    from batocera_launch.types import ScreenInfo
+    from batocera_launch import Resolution, ScreenInfo, SystemConfig
 
 
 def configure_ini(
