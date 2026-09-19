@@ -38,6 +38,7 @@
 - RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games
 - Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
+- Steam Controller (2026) support on x86_64 / Zen3
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
@@ -292,7 +293,7 @@
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.1
 - Linux Firmware to 20260810
-- Mesa3D to 26.2.1
+- Mesa3D to 26.2.3
 - MangoHud to v0.8.4
 - Nvidia Open Production driver to 615.71.09
 - Nvidia 580 Legacy driver to 580.178.04
@@ -315,7 +316,7 @@
 - WINE Proton to proton-11.0-1
 - WINE TKG to 11.17
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.1.9
+- X86_64 / Zen3 kernel updated to 7.2.6
 - Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1

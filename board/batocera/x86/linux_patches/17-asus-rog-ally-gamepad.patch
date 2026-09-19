@@ -74,10 +74,10 @@ Signed-off-by: Luke D. Jones <luke@ljones.dev>
  create mode 100644 drivers/hid/hid-asus-ally.h
 
 diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index f8a56d6312425a..d477df3a3f356a 100644
+index 48934c4f3..ff0edc1b1 100644
 --- a/drivers/hid/Kconfig
 +++ b/drivers/hid/Kconfig
-@@ -164,6 +164,15 @@ config HID_ASUS
+@@ -200,6 +200,15 @@ config HID_ASUS
  	- GL553V series
  	- GL753V series
  
@@ -94,11 +94,11 @@ index f8a56d6312425a..d477df3a3f356a 100644
  	tristate "Aureal"
  	help
 diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index 496dab54c73a82..5fa65e1e1e3b97 100644
+index 23e6e3dd0..b0660a20d 100644
 --- a/drivers/hid/Makefile
 +++ b/drivers/hid/Makefile
-@@ -31,6 +31,7 @@ obj-$(CONFIG_HID_APPLE)		+= hid-apple.o
- obj-$(CONFIG_HID_APPLEIR)	+= hid-appleir.o
+@@ -34,6 +34,7 @@ obj-$(CONFIG_HID_APPLETB_BL)	+= hid-appletb-bl.o
+ obj-$(CONFIG_HID_APPLETB_KBD)	+= hid-appletb-kbd.o
  obj-$(CONFIG_HID_CREATIVE_SB0540)	+= hid-creative-sb0540.o
  obj-$(CONFIG_HID_ASUS)		+= hid-asus.o
 +obj-$(CONFIG_HID_ASUS_ALLY)	+= hid-asus-ally.o
@@ -107,7 +107,7 @@ index 496dab54c73a82..5fa65e1e1e3b97 100644
  obj-$(CONFIG_HID_BETOP_FF)	+= hid-betopff.o
 diff --git a/drivers/hid/hid-asus-ally.c b/drivers/hid/hid-asus-ally.c
 new file mode 100644
-index 00000000000000..42a703c157f527
+index 000000000..42a703c15
 --- /dev/null
 +++ b/drivers/hid/hid-asus-ally.c
 @@ -0,0 +1,2316 @@
@@ -2429,7 +2429,7 @@ index 00000000000000..42a703c157f527
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/hid/hid-asus-ally.h b/drivers/hid/hid-asus-ally.h
 new file mode 100644
-index 00000000000000..252d9f126e32fb
+index 000000000..252d9f126
 --- /dev/null
 +++ b/drivers/hid/hid-asus-ally.h
 @@ -0,0 +1,544 @@
@@ -2978,12 +2978,12 @@ index 00000000000000..252d9f126e32fb
 +	btn_pair_side_right = 0x01,
 +};
 diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-index 9540e3e19cce80..7c5269cd4d766f 100644
+index c22c1021e..fe7766451 100644
 --- a/drivers/hid/hid-asus.c
 +++ b/drivers/hid/hid-asus.c
-@@ -52,6 +52,10 @@ MODULE_DESCRIPTION("Asus HID Keyboard and TouchPad");
- #define FEATURE_KBD_LED_REPORT_ID1 0x5d
- #define FEATURE_KBD_LED_REPORT_ID2 0x5e
+@@ -65,6 +65,10 @@ MODULE_DESCRIPTION("Asus HID Keyboard and TouchPad");
+ /* Special key codes */
+ #define ASUS_FAN_CTRL_KEY_CODE 0xae
  
 +#define ALLY_CFG_INTF_IN_ADDRESS 0x83
 +#define ALLY_CFG_INTF_OUT_ADDRESS 0x04
@@ -2992,7 +2992,7 @@ index 9540e3e19cce80..7c5269cd4d766f 100644
  #define SUPPORT_KBD_BACKLIGHT BIT(0)
  
  #define MAX_TOUCH_MAJOR 8
-@@ -1003,6 +1008,17 @@ static int asus_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -1388,6 +1392,17 @@ static int asus_probe(struct hid_device *hdev, const struct hid_device_id *id)
  
  	drvdata->quirks = id->driver_data;
  
