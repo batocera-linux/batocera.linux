@@ -211,6 +211,7 @@ class Sm2Emu(Emulator):
             'texture_filter': self.config.get_str('sm2_texture_filter', 'faithful'),
             'anisotropy': self.config.get_str('sm2_anisotropy', '4'),
             'upscale_2d': self.config.get_str('sm2_upscale_2d', 'faithful'),
+            'translucency': self.config.get_str('sm2_translucency', 'stipple'),
             'crt_enabled': _ini_bool(self.config.get_bool('sm2_crt_enabled', False)),
             'crt_scanline_strength': self.config.get_str('sm2_crt_scanline_strength', '40'),
             'crt_mask_strength': self.config.get_str('sm2_crt_mask_strength', '30'),
