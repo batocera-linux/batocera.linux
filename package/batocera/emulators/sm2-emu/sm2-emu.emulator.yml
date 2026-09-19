@@ -73,6 +73,13 @@ custom_features:
       Faithful (Default): faithful
       xBR: xbr
       ScaleFX: scalefx
+  sm2_translucency:
+    group: GRAPHICS
+    prompt: TRANSLUCENCY
+    description: The hardware draws see-through surfaces as a checkerboard. Blended draws the 50% see-through it's trying to achieve. OpenGL/Vulkan only.
+    choices:
+      Stipple (Default): stipple
+      Blended: blended
   sm2_vsync:
     group: GRAPHICS
     prompt: VSYNC
