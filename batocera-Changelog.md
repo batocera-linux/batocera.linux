@@ -37,6 +37,7 @@
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games
+- Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
@@ -59,6 +60,7 @@
 - SC-3000 games not scrapable (now scraped as SG-1000)
 - Simcoupe not starting fullscreen
 - Sonic Mania controllers
+- Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches
 - Taradino blank screen with Wayland
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
