@@ -56,6 +56,7 @@
 - Power button shutdown now closes the running game and shuts down through EmulationStation, saving gamelists
 - Pygame fullscreen with Wayland
 - Raze analog controls and improved controller bindings
+- SC-3000 games not scrapable (now scraped as SG-1000)
 - Simcoupe not starting fullscreen
 - Sonic Mania controllers
 - Taradino blank screen with Wayland
