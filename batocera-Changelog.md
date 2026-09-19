@@ -51,6 +51,7 @@
 - Dolphin Wii Remotes 2-4 set to None when using pad profiles
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
+- MAME black screen on exit with a rotated display when CRT switchres is off
 - Mupen64 not starting fullscreen with Wayland
 - Pygame fullscreen with Wayland
 - Raze analog controls and improved controller bindings
