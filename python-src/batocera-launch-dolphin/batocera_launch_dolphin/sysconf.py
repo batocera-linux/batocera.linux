@@ -9,8 +9,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from batocera_launch import Resolution
-    from batocera_launch.config.config import SystemConfig
+    from batocera_launch import Resolution, SystemConfig
 
 _logger = logging.getLogger(__name__)
 
