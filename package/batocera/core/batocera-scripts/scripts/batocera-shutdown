@@ -598,6 +598,16 @@ start_es() {
 	/etc/init.d/S31emulationstation resume
 }
 
+# Go through ES's own shutdown when it is running, so it fires its shutdown event and saves gamelists.
+# Don't wait on ES here: the gui action runs synchronously from ES.
+do_shutdown() {
+	if pidof emulationstation >/dev/null; then
+		batocera-es-swissknife --emukill >/dev/null 2>&1
+		curl -sf --connect-timeout 2 --max-time 5 -o /dev/null "http://localhost:1234/shutdown" && return
+	fi
+	/sbin/shutdown -P -h now
+}
+
 stop_other_services() {
 	/etc/init.d/S03system-splash stop
     if [ -f /etc/init.d/S13irqbalance ]; then
@@ -710,7 +720,7 @@ while true; do
         echo "Fake suspend timeout reached. Shutting down."
         batocera-wifi enable
         sleep 5
-        /sbin/shutdown -P -h now
+        /usr/bin/batocera-shutdown shutdown
         exit 0
     fi
 
@@ -720,7 +730,7 @@ while true; do
         echo "Low battery (\${BATTERY_LEVEL}%) detected. Shutting down."
         batocera-wifi enable
         sleep 5
-        /sbin/shutdown -P -h now
+        /usr/bin/batocera-shutdown shutdown
         exit 0
     fi
 done
@@ -955,7 +965,7 @@ udevadm monitor --udev \
                     echo "INFO: [undock-monitor] Game running at escalation timeout. Forcing shutdown."
                     batocera-wifi enable
                     sleep 5
-                    /sbin/shutdown -P -h now
+                    /usr/bin/batocera-shutdown shutdown
                 else
                     echo "INFO: [undock-monitor] Countdown elapsed. Escalating to full fake suspend."
                     /usr/bin/batocera-shutdown 1
@@ -995,7 +1005,12 @@ stop_undock_monitor() {
 ################################################################################
 
 SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
-SETACTION=$1 # 1 for press, 0 for release & gui from, well the GUI :-)
+SETACTION=$1 # 1 for press, 0 for release, gui from, well the GUI :-), shutdown from the monitors
+
+if [ "${SETACTION}" = "shutdown" ]; then
+    do_shutdown
+    exit 0
+fi
 
 # --- Handle Direct Action Mode for the GUI ---
 if [ "${SETACTION}" = "gui" ]; then
@@ -1014,14 +1029,14 @@ if [ "${SETACTION}" = "gui" ]; then
                 echo "Power connected, ignoring fake suspend."
             elif [ "$(get_battery_level)" -le 10 ]; then
                 echo "Battery too low for fake suspend, shutting down instead."
-                /sbin/shutdown -P -h now
+                do_shutdown
             else
                 do_fake_suspend
             fi
             ;;
         *)
             # Default action if mode is unset or invalid is shutdown.
-            /sbin/shutdown -P -h now
+            do_shutdown
             ;;
     esac
     exit 0
@@ -1054,7 +1069,7 @@ if [ "${SUSPEND_MODE}" = "fake" ]; then
                 else
                     if [ "$(get_battery_level)" -le 10 ]; then
                         echo "Battery too low for fake suspend, shutting down instead."
-                        /sbin/shutdown -P -h now
+                        do_shutdown
                     else
                         do_fake_suspend
                     fi
@@ -1084,7 +1099,7 @@ do_es_menu() {
 if [ "${SETACTION}" = "1" ]; then
     ### when the button is pressed, if there is no configuration, shutdown immediatly, else wait the release event
     if [ "${SUSPEND_MODE}" = "" ] && [ "${SHUTDOWNDELAY}" = "0" ]; then
-		/sbin/shutdown -P -h now
+		do_shutdown
     else
 		touch "/var/run/shutdown-delay.flag"
 		SLEEPTIME=$(expr "${SHUTDOWNDELAY}" + 1)
@@ -1134,7 +1149,7 @@ else
 				pm-is-supported --hibernate && pm-hibernate
 				;;
 			*)
-				/sbin/shutdown -P -h now
+				do_shutdown
 				;;
 		esac
     fi
