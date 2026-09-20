@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /*
- * Mangmi Pocket Max (SM8250 / kona).
+ * Mangmi Air Y Pro (SM8250 / kona).
  */
 
 /dts-v1/;
@@ -16,8 +16,8 @@
 #include "pm8150l.dtsi"
 
 / {
-	model = "MANGMI Pocket Max";
-	compatible = "mangmi,pocket-max", "qcom,sm8250";
+	model = "MANGMI Air Y Pro";
+	compatible = "mangmi,air-y-pro", "qcom,sm8250";
 
 	qcom,msm-id = <356 0x20001>;
 	qcom,board-id = <0x10008 0x00>;
@@ -30,9 +30,9 @@
 
 	battery: battery {
 		compatible = "simple-battery";
-		charge-full-design-microamp-hours = <9998000>;
+		charge-full-design-microamp-hours = <5000000>;
 		voltage-min-design-microvolt = <3400000>;
-		voltage-max-design-microvolt = <4250000>;
+		voltage-max-design-microvolt = <4400000>;
 		constant-charge-current-max-microamp = <2000000>;
 	};
 
@@ -42,7 +42,7 @@
 
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		cooling-levels = <0 51 77 102 128 153 179 204 255>;
+		cooling-levels = <0 32 64 128 255>;
 		#cooling-cells = <2>;
 		fan-supply = <&vreg_fan_pwr>;
 		pwms = <&pm8150l_lpg 4 40000>;
@@ -62,12 +62,27 @@
 	gpio-keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
-		pinctrl-0 = <&volume_up_default>;
+		pinctrl-0 = <&back_key_default>, <&rocker_key_pins>;
 
-		key-vol-up {
-			label = "Volume Up";
-			linux,code = <KEY_VOLUMEUP>;
+		key-back {
+			label = "Back";
+			linux,code = <KEY_BACK>;
 			gpios = <&pm8150_gpios 6 GPIO_ACTIVE_LOW>;
+		};
+
+		/* Rocker, one contact per direction. */
+		key-rocker-up {
+			label = "Volume Up (rocker)";
+			linux,code = <KEY_VOLUMEUP>;
+			gpios = <&tlmm 111 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+		};
+
+		key-rocker-down {
+			label = "Volume Down (rocker)";
+			linux,code = <KEY_VOLUMEDOWN>;
+			gpios = <&tlmm 118 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
 		};
 	};
 
@@ -163,19 +178,6 @@
 		gpio = <&tlmm 14 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
-	};
-
-	vreg_disp_avdd: display-avdd-regulator {
-		compatible = "regulator-fixed";
-		regulator-name = "display_panel_avdd";
-		regulator-min-microvolt = <5500000>;
-		regulator-max-microvolt = <5500000>;
-		gpio = <&tlmm 61 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-		regulator-boot-on;
-		regulator-enable-ramp-delay = <233>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&disp_avdd_active>;
 	};
 
 	vreg_vibrator_en: vibrator-en-regulator {
@@ -567,7 +569,6 @@
 		reg = <0x5e>;
 		interrupt-parent = <&tlmm>;
 		interrupts = <113 IRQ_TYPE_EDGE_FALLING>;
-		status = "disabled";
 	};
 };
 
@@ -650,23 +651,23 @@
 	status = "okay";
 	clock-frequency = <400000>;
 
-	touchscreen@38 {
-		compatible = "focaltech,ft5452";
-		reg = <0x38>;
+	touchscreen@58 {
+		compatible = "hynitron,cst66xx";
+		reg = <0x58>;
 
 		interrupt-parent = <&tlmm>;
 		interrupts = <39 IRQ_TYPE_EDGE_FALLING>;
 		reset-gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
 
-		vcc-supply = <&vreg_l13a_ts_3p0>;
+		vdd-supply = <&vreg_l13a_ts_3p0>;
 		iovcc-supply = <&vreg_l1c_1p8>;
 
 		pinctrl-0 = <&ts_int_active &ts_reset_active>;
 		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
 		pinctrl-names = "default", "sleep";
 
-		touchscreen-size-x = <1080>;
-		touchscreen-size-y = <1920>;
+		touchscreen-size-x = <1280>;
+		touchscreen-size-y = <960>;
 	};
 };
 
@@ -689,20 +690,20 @@
 
 	panel@0 {
 		reg = <0>;
-		compatible = "mangmi,pocket-max-panel";
+		compatible = "mangmi,air-y-pro-panel";
 
-		pinctrl-0 = <&dsi_rst_active>, <&dsi_te_active>;
-		pinctrl-1 = <&dsi_rst_suspend>, <&dsi_te_suspend>;
+		pinctrl-0 = <&dsi_rst_active>;
+		pinctrl-1 = <&dsi_rst_suspend>;
 		pinctrl-names = "default", "sleep";
 
+		backlight = <&pm8150l_wled>;
+
 		vddio-supply = <&vreg_l14a_1p8>;
-		vdd-supply = <&vreg_l11c_3p3>;
 		disp-supply = <&vreg_panel_en>;
-		blvdd-supply = <&vreg_disp_avdd>;
+		/* AVDD and AVEE come out of one LCDB switch, so there is one supply */
+		lab-supply = <&panel_bias>;
 
 		reset-gpios = <&tlmm 74 GPIO_ACTIVE_LOW>;
-
-		rotation = <270>;
 
 		port {
 			panel0_in: endpoint {
@@ -770,7 +771,7 @@
 };
 
 &pm8150_gpios {
-	volume_up_default: volume-up-default {
+	back_key_default: back-key-default {
 		pins = "gpio6";
 		function = "normal";
 		bias-pull-up;
@@ -909,8 +910,26 @@
 	};
 };
 
+&pm8150l_lcdb {
+	status = "okay";
+
+	/* one switch driving AVDD at +5.5V and AVEE at -5.5V */
+	panel_bias: bias {
+		regulator-name = "panel_bias";
+		regulator-min-microvolt = <5500000>;
+		regulator-max-microvolt = <5500000>;
+	};
+};
+
 &pm8150l_lpg {
 	status = "okay";
+};
+
+&pm8150l_wled {
+	status = "okay";
+
+	default-brightness = <1000>;
+	max-brightness = <2539>;
 };
 
 &pon_pwrkey {
@@ -967,7 +986,7 @@
 
 &sound {
 	compatible = "qcom,sm8250-sndcard";
-	model = "PocketMax";
+	model = "AirYPro";
 	audio-routing =
 		"SpkrLeft IN", "WSA_SPK1 OUT",
 		"SpkrRight IN", "WSA_SPK2 OUT",
@@ -1102,7 +1121,7 @@
 	pinctrl-0 = <&qup_spi19_cs>, <&qup_spi19_data_clk>;
 
 	joypad@0 {
-		compatible = "mangmi,pocket-max-joypad", "spi,mcu_joystick";
+		compatible = "mangmi,air-y-pro-joypad";
 		reg = <0>;
 		spi-max-frequency = <2000000>;
 
@@ -1115,14 +1134,10 @@
 		mcu-boot0-gpios = <&tlmm 48 GPIO_ACTIVE_LOW>;
 		mcu-boot1-gpios = <&tlmm 50 GPIO_ACTIVE_LOW>;
 		stick-en-gpios = <&tlmm 72 GPIO_ACTIVE_LOW>;
-		hall-l-power-gpios = <&tlmm 87 GPIO_ACTIVE_LOW>;
-		hall-r-power-gpios = <&tlmm 31 GPIO_ACTIVE_LOW>;
 		key-back-gpios = <&tlmm 4 GPIO_ACTIVE_LOW>;
 		key-home-gpios = <&tlmm 15 GPIO_ACTIVE_LOW>;
 		key-select-gpios = <&tlmm 83 GPIO_ACTIVE_LOW>;
 		key-start-gpios = <&tlmm 84 GPIO_ACTIVE_LOW>;
-		key-m1-gpios = <&tlmm 111 GPIO_ACTIVE_LOW>;
-		key-m2-gpios = <&tlmm 118 GPIO_ACTIVE_LOW>;
 		key-irq-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
 		adc-irq-gpios = <&tlmm 64 GPIO_ACTIVE_HIGH>;
 	};
@@ -1131,7 +1146,7 @@
 &tlmm {
 	mcu_key_pins: mcu-key-pins-state {
 		key-pins {
-			pins = "gpio4", "gpio15", "gpio83", "gpio84", "gpio111", "gpio118";
+			pins = "gpio4", "gpio15", "gpio83", "gpio84";
 			function = "gpio";
 			drive-strength = <4>;
 			bias-pull-up;
@@ -1145,11 +1160,18 @@
 		};
 
 		ctrl-pins {
-			pins = "gpio31", "gpio42", "gpio43", "gpio48", "gpio50", "gpio72", "gpio87";
+			pins = "gpio42", "gpio43", "gpio48", "gpio50", "gpio72";
 			function = "gpio";
 			drive-strength = <2>;
 			bias-disable;
 		};
+	};
+
+	rocker_key_pins: rocker-key-pins-state {
+		pins = "gpio111", "gpio118";
+		function = "gpio";
+		drive-strength = <4>;
+		bias-pull-up;
 	};
 
 	bt_en_state: bt-default-state {
@@ -1158,13 +1180,6 @@
 		drive-strength = <16>;
 		output-low;
 		bias-pull-up;
-	};
-
-	disp_avdd_active: disp-avdd-active-state {
-		pins = "gpio61";
-		function = "gpio";
-		drive-strength = <8>;
-		bias-disable;
 	};
 
 	dsi_rst_active: dsi-rst-active-state {
@@ -1177,20 +1192,6 @@
 	dsi_rst_suspend: dsi-rst-suspend-state {
 		pins = "gpio74";
 		function = "gpio";
-		drive-strength = <2>;
-		bias-pull-down;
-	};
-
-	dsi_te_active: dsi-te-active-state {
-		pins = "gpio66";
-		function = "mdp_vsync";
-		drive-strength = <2>;
-		bias-pull-down;
-	};
-
-	dsi_te_suspend: dsi-te-suspend-state {
-		pins = "gpio66";
-		function = "mdp_vsync";
 		drive-strength = <2>;
 		bias-pull-down;
 	};
@@ -1247,6 +1248,7 @@
 		function = "gpio";
 		drive-strength = <2>;
 		bias-pull-down;
+		output-low;
 	};
 
 	wcd_default: wcd-default-state {
@@ -1350,5 +1352,3 @@
 &wsamacro {
 	status = "okay";
 };
-
-#include "sm8250-pwm-fan-cooling.dtsi"

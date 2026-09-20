@@ -1,7 +1,9 @@
 diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi linux/arch/arm64/boot/dts/qcom/sm8250.dtsi
---- linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-12-18 16:18:44.484425346 +0000
-+++ linux/arch/arm64/boot/dts/qcom/sm8250.dtsi	2025-12-18 16:19:20.500969202 +0000
-@@ -3150,6 +3150,8 @@
+diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+index 06e911c90..338133d6b 100644
+--- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -3255,6 +3255,8 @@ stm@6002000 {
  			clocks = <&aoss_qmp>;
  			clock-names = "apb_pclk";
  
@@ -10,10 +12,11 @@ diff -rupbN linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi linux/arch/arm64/boo
  			out-ports {
  				port {
  					stm_out: endpoint {
-diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_qca.c
---- linux.orig/drivers/bluetooth/hci_qca.c	2025-12-18 16:18:44.908431750 +0000
-+++ linux/drivers/bluetooth/hci_qca.c	2025-12-18 16:19:20.500969202 +0000
-@@ -857,8 +857,8 @@ static void device_woke_up(struct hci_ua
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 1222f9780..266254ad2 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -860,8 +860,8 @@ static void device_woke_up(struct hci_uart *hu)
  	switch (qca->tx_ibs_state) {
  	case HCI_IBS_TX_AWAKE:
  		/* Expect one if we send 2 WAKEs */
@@ -24,7 +27,7 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		break;
  
  	case HCI_IBS_TX_WAKING:
-@@ -875,8 +875,8 @@ static void device_woke_up(struct hci_ua
+@@ -878,8 +878,8 @@ static void device_woke_up(struct hci_uart *hu)
  
  	case HCI_IBS_TX_ASLEEP:
  	default:
@@ -35,7 +38,7 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		break;
  	}
  
-@@ -1281,7 +1281,7 @@ static int qca_recv(struct hci_uart *hu,
+@@ -1288,7 +1288,7 @@ static int qca_recv(struct hci_uart *hu, const void *data, int count)
  				  qca_recv_pkts, ARRAY_SIZE(qca_recv_pkts));
  	if (IS_ERR(qca->rx_skb)) {
  		int err = PTR_ERR(qca->rx_skb);
@@ -44,10 +47,11 @@ diff -rupbN linux.orig/drivers/bluetooth/hci_qca.c linux/drivers/bluetooth/hci_q
  		qca->rx_skb = NULL;
  		return err;
  	}
-diff -rupbN linux.orig/drivers/clk/qcom/clk-alpha-pll.c linux/drivers/clk/qcom/clk-alpha-pll.c
---- linux.orig/drivers/clk/qcom/clk-alpha-pll.c	2025-12-18 16:18:44.964432595 +0000
-+++ linux/drivers/clk/qcom/clk-alpha-pll.c	2025-12-18 16:19:20.500969202 +0000
-@@ -1816,7 +1816,7 @@ static int __alpha_pll_trion_set_rate(st
+diff --git a/drivers/clk/qcom/clk-alpha-pll.c b/drivers/clk/qcom/clk-alpha-pll.c
+index f8313f9d0..54bbab5d4 100644
+--- a/drivers/clk/qcom/clk-alpha-pll.c
++++ b/drivers/clk/qcom/clk-alpha-pll.c
+@@ -1820,7 +1820,7 @@ static int __alpha_pll_trion_set_rate(struct clk_hw *hw, unsigned long rate,
  	udelay(1);
  	regmap_read(pll->clkr.regmap, PLL_MODE(pll), &val);
  	if (!(val & latch_ack)) {
@@ -56,9 +60,10 @@ diff -rupbN linux.orig/drivers/clk/qcom/clk-alpha-pll.c linux/drivers/clk/qcom/c
  		return -EINVAL;
  	}
  
-diff -rupbN linux.orig/drivers/firmware/psci/psci.c linux/drivers/firmware/psci/psci.c
---- linux.orig/drivers/firmware/psci/psci.c	2025-12-18 16:18:45.108434770 +0000
-+++ linux/drivers/firmware/psci/psci.c	2025-12-18 16:19:20.500969202 +0000
+diff --git a/drivers/firmware/psci/psci.c b/drivers/firmware/psci/psci.c
+index e73bae6cb..5681dca02 100644
+--- a/drivers/firmware/psci/psci.c
++++ b/drivers/firmware/psci/psci.c
 @@ -167,9 +167,9 @@ int psci_set_osi_mode(bool enable)
  			PSCI_1_0_SUSPEND_MODE_PC;
  
@@ -72,10 +77,11 @@ diff -rupbN linux.orig/drivers/firmware/psci/psci.c linux/drivers/firmware/psci/
  	return psci_to_linux_errno(err);
  }
  
-diff -rupbN linux.orig/drivers/remoteproc/remoteproc_core.c linux/drivers/remoteproc/remoteproc_core.c
---- linux.orig/drivers/remoteproc/remoteproc_core.c	2025-12-18 16:18:46.720459115 +0000
-+++ linux/drivers/remoteproc/remoteproc_core.c	2025-12-18 16:19:20.500969202 +0000
-@@ -1301,7 +1301,7 @@ static int rproc_start(struct rproc *rpr
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index 527996e8e..38cebb31b 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -1291,7 +1291,7 @@ static int rproc_start(struct rproc *rproc, const struct firmware *fw)
  	/* power up the remote processor */
  	ret = rproc->ops->start(rproc);
  	if (ret) {
@@ -84,10 +90,11 @@ diff -rupbN linux.orig/drivers/remoteproc/remoteproc_core.c linux/drivers/remote
  		goto unprepare_subdevices;
  	}
  
-diff -rupbN linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c linux/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c
---- linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2025-12-18 16:18:46.940462438 +0000
-+++ linux/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c	2025-12-18 16:19:20.500969202 +0000
-@@ -380,7 +380,7 @@ static irqreturn_t qcom_pmic_typec_pdphy
+diff --git a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c
+index 926fa017e..a68f499fe 100644
+--- a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c
++++ b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c
+@@ -379,7 +379,7 @@ static irqreturn_t qcom_pmic_typec_pdphy_isr(int irq, void *dev_id)
  
  	switch (irq_data->virq) {
  	case PMIC_PDPHY_SIG_TX_IRQ:
@@ -96,10 +103,11 @@ diff -rupbN linux.orig/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_pdphy.c linux
  		break;
  	case PMIC_PDPHY_SIG_RX_IRQ:
  		schedule_work(&pmic_typec_pdphy->reset_work);
-diff -rupbN linux.orig/net/core/sock.c linux/net/core/sock.c
---- linux.orig/net/core/sock.c	2025-12-18 16:18:47.456470231 +0000
-+++ linux/net/core/sock.c	2025-12-18 16:30:47.559323819 +0000
-@@ -1554,8 +1554,8 @@ set_sndbuf:
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 1ad41904d..84a17f02c 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1566,8 +1566,8 @@ int sk_setsockopt(struct sock *sk, int level, int optname,
  	case SO_PASSSEC:
  		if (IS_ENABLED(CONFIG_SECURITY_NETWORK) && sk_may_scm_recv(sk))
  			sk->sk_scm_security = valbool;
@@ -110,7 +118,7 @@ diff -rupbN linux.orig/net/core/sock.c linux/net/core/sock.c
  		break;
  
  	case SO_PASSPIDFD:
-@@ -1990,7 +1990,7 @@ int sk_getsockopt(struct sock *sk, int l
+@@ -2002,7 +2002,7 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
  
  	case SO_PASSSEC:
  		if (!IS_ENABLED(CONFIG_SECURITY_NETWORK) || !sk_may_scm_recv(sk))
@@ -119,10 +127,11 @@ diff -rupbN linux.orig/net/core/sock.c linux/net/core/sock.c
  
  		v.val = sk->sk_scm_security;
  		break;
-diff -rupbN linux.orig/sound/soc/codecs/lpass-va-macro.c linux/sound/soc/codecs/lpass-va-macro.c
---- linux.orig/sound/soc/codecs/lpass-va-macro.c	2025-12-18 16:18:47.640473009 +0000
-+++ linux/sound/soc/codecs/lpass-va-macro.c	2025-12-18 16:19:20.500969202 +0000
-@@ -1531,7 +1531,7 @@ static int va_macro_probe(struct platfor
+diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+index 58a579882..3be43b8dd 100644
+--- a/sound/soc/codecs/lpass-va-macro.c
++++ b/sound/soc/codecs/lpass-va-macro.c
+@@ -1565,7 +1565,7 @@ static int va_macro_probe(struct platform_device *pdev)
  	ret = of_property_read_u32(dev->of_node, "qcom,dmic-sample-rate",
  				   &sample_rate);
  	if (ret) {
@@ -131,12 +140,13 @@ diff -rupbN linux.orig/sound/soc/codecs/lpass-va-macro.c linux/sound/soc/codecs/
  		va->dmic_clk_div = VA_MACRO_CLK_DIV_2;
  	} else {
  		ret = va_macro_validate_dmic_sample_rate(sample_rate, va);
-diff -rupbN linux.orig/sound/soc/qcom/qdsp6/q6asm.c linux/sound/soc/qcom/qdsp6/q6asm.c
---- linux.orig/sound/soc/qcom/qdsp6/q6asm.c	2025-12-18 16:18:47.696473855 +0000
-+++ linux/sound/soc/qcom/qdsp6/q6asm.c	2025-12-18 16:19:20.500969202 +0000
-@@ -655,8 +655,8 @@ static int32_t q6asm_stream_callback(str
- 			}
- 			break;
+diff --git a/sound/soc/qcom/qdsp6/q6asm.c b/sound/soc/qcom/qdsp6/q6asm.c
+index de0bd8fd0..99a9b0034 100644
+--- a/sound/soc/qcom/qdsp6/q6asm.c
++++ b/sound/soc/qcom/qdsp6/q6asm.c
+@@ -658,8 +658,8 @@ static int32_t q6asm_stream_callback(struct apr_device *adev,
+ 			/* response as result of close stream */
+ 			goto done;
  		default:
 -			dev_err(ac->dev, "command[0x%x] not expecting rsp\n",
 -				result->opcode);
@@ -145,7 +155,7 @@ diff -rupbN linux.orig/sound/soc/qcom/qdsp6/q6asm.c linux/sound/soc/qcom/qdsp6/q
  			break;
  		}
  
-@@ -782,8 +782,8 @@ static int q6asm_srvc_callback(struct ap
+@@ -779,8 +779,8 @@ static int q6asm_srvc_callback(struct apr_device *adev,
  			wake_up(&a->mem_wait);
  			break;
  		default:

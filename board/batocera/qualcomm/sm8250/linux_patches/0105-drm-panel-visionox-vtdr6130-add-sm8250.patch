@@ -1,0 +1,157 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Jacob Pyke <github@pyk.ee>
+Date: Thu, 27 Aug 2026 21:27:32 +1000
+Subject: [PATCH] drm/panel: visionox-vtdr6130-cog: add sm8250 support
+
+Some Retroid Pocket Flip 2 and RP5 units use a Visionox VTDR6130
+panel instead of the CH13726A panel currently described by Armada.
+
+The affected unit's Android device tree selects the VTDR6130 COG
+command-mode panel and uses the same initialization sequence, display
+modes, and DSC configuration as the existing Pocket 6 driver.
+
+Add a compatible for the Flip 2/RP5 panel and select the four
+regulator supplies exposed by the SM8250 device tree.
+
+Correct the missing F0 byte in the vendor page-selection command to
+match the Android initialization sequence.
+
+Co-authored-by: spycat88 <spycat88@users.noreply.github.com>
+Signed-off-by: Jacob Pyke <github@pyk.ee>
+---
+ .../drm/panel/panel-visionox-vtdr6130-cog.c   | 65 +++++++++++++++----
+ 1 file changed, 52 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
+index e9766ab..1a1db84 100644
+--- a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
++++ b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
+@@ -48,9 +48,21 @@ struct panel_desc {
+ 	int (*init_sequence)(struct panel_info *pinfo);
+ 
+ 	struct drm_dsc_config dsc;
++
++	const struct regulator_bulk_data *supplies;
++	unsigned int num_supplies;
++};
++
++/* SM8250 regulators */
++static const struct regulator_bulk_data sm8250_panel_supplies[] = {
++	{ .supply = "vdd1v2" },
++	{ .supply = "vddio" },
++	{ .supply = "vdd" },
++	{ .supply = "avdd" },
+ };
+ 
+-static const struct regulator_bulk_data panel_supplies[] = {
++/* SM8550 regulators */
++static const struct regulator_bulk_data sm8550_panel_supplies[] = {
+ 	{ .supply = "vdd" },
+ 	{ .supply = "vddio" },
+ 	{ .supply = "vci" },
+@@ -143,7 +155,7 @@ static int vtdr6130_rp6_init_sequence(struct panel_info *pinfo)
+ 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+ 	}
+ 
+-	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xAA, 0x10);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xF0, 0xAA, 0x10);
+ 
+ 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB1, 
+ 				0x02, 0x16, 0x00, 0x14, 0x00, 0x1C, 0x00, 0x02,
+@@ -249,6 +261,32 @@ static struct panel_desc vtdr6130_rp6_desc = {
+ 		.bits_per_pixel = 8 << 4,
+ 		.block_pred_enable = true,
+ 	},
++	.supplies = sm8550_panel_supplies,
++	.num_supplies = ARRAY_SIZE(sm8550_panel_supplies),
++};
++
++static struct panel_desc vtdr6130_sm8250_desc = {
++	.modes = vtdr6130_rp6_modes,
++	.num_modes = ARRAY_SIZE(vtdr6130_rp6_modes),
++	.width_mm = 120,
++	.height_mm = 68,
++	.bpc = 8,
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags =  MIPI_DSI_MODE_NO_EOT_PACKET | MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_LPM,
++	.init_sequence = vtdr6130_rp6_init_sequence,
++	.dsc = {
++		.dsc_version_major = 0x1,
++		.dsc_version_minor = 0x1,
++		.slice_height = 12,
++		.slice_width = 540,
++		.slice_count = 2,
++		.bits_per_component = 8,
++		.bits_per_pixel = 8 << 4,
++		.block_pred_enable = true,
++	},
++	.supplies = sm8250_panel_supplies,
++	.num_supplies = ARRAY_SIZE(sm8250_panel_supplies),
+ };
+ 
+ static void vtdr6130_reset(struct panel_info *pinfo)
+@@ -266,7 +304,7 @@ static int vtdr6130_prepare(struct drm_panel *panel)
+ 	struct panel_info *pinfo = to_panel_info(panel);
+ 	int ret;
+ 
+-    ret = regulator_bulk_enable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
++	ret = regulator_bulk_enable(pinfo->desc->num_supplies, pinfo->supplies);
+ 	if (ret < 0) {
+ 		dev_err(panel->dev, "failed to enable regulators: %d\n", ret);
+ 		return ret;
+@@ -276,7 +314,7 @@ static int vtdr6130_prepare(struct drm_panel *panel)
+ 
+ 	ret = pinfo->desc->init_sequence(pinfo);
+ 	if (ret < 0) {
+-        regulator_bulk_disable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
++		regulator_bulk_disable(pinfo->desc->num_supplies, pinfo->supplies);
+ 		dev_err(panel->dev, "failed to initialize panel: %d\n", ret);
+ 		return ret;
+ 	}
+@@ -304,7 +342,7 @@ static int vtdr6130_unprepare(struct drm_panel *panel)
+ 	struct panel_info *pinfo = to_panel_info(panel);
+ 
+ 	gpiod_set_value_cansleep(pinfo->reset_gpio, 1);
+-    regulator_bulk_disable(ARRAY_SIZE(panel_supplies), pinfo->supplies);
++	regulator_bulk_disable(pinfo->desc->num_supplies, pinfo->supplies);
+ 
+ 	return 0;
+ }
+@@ -432,20 +470,19 @@ static int vtdr6130_probe(struct mipi_dsi_device *dsi)
+ 	if (IS_ERR(pinfo))
+ 		return PTR_ERR(pinfo);
+ 
+-	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
+-	panel_supplies, &pinfo->supplies);
+-	if (ret < 0){
++	pinfo->desc = (struct panel_desc *)of_device_get_match_data(dev);
++	if (!pinfo->desc)
++		return -ENODEV;
++
++	ret = devm_regulator_bulk_get_const(dev, pinfo->desc->num_supplies,
++					    pinfo->desc->supplies, &pinfo->supplies);
++	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "Failed to get regulators\n");
+-	}
+ 
+ 	pinfo->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(pinfo->reset_gpio))
+ 		return dev_err_probe(dev, PTR_ERR(pinfo->reset_gpio), "failed to get reset gpio\n");
+ 
+-	pinfo->desc = (struct panel_desc *)of_device_get_match_data(dev);
+-	if (!pinfo->desc)
+-		return -ENODEV;
+-
+ 	pinfo->dsi = dsi;
+ 	mipi_dsi_set_drvdata(dsi, pinfo);
+ 
+@@ -481,6 +518,8 @@ static int vtdr6130_probe(struct mipi_dsi_device *dsi)
+ 
+ static const struct of_device_id vtdr6130_of_match[] = {
+ 	{ .compatible = "vtdr6130,rp6", .data = &vtdr6130_rp6_desc },
++	{ .compatible = "vtdr6130,rp5", .data = &vtdr6130_sm8250_desc },
++	{ .compatible = "vtdr6130,rpflip2", .data = &vtdr6130_sm8250_desc },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, vtdr6130_of_match);
