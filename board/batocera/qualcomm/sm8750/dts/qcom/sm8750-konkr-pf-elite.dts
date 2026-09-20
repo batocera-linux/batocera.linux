@@ -794,7 +794,8 @@
 		vddio-supply = <&vreg_l12b_1p8>;	/* panel vddio  -> L12B 1.8V */
 		vdd-supply   = <&vreg_l11b_1p0>;	/* panel vdd    -> L11B 1.0-1.1V */
 		vci-supply   = <&vreg_l13b_3p0>;	/* panel vci    -> L13B 3.0V */
-		avdd-supply  = <&sgm3804>;		/* panel avdd/tvdd -> SGM3804 ~5.2V boost */
+		avdd-supply  = <&sgm3804_pos>;		/* panel avdd/tvdd -> SGM3804 positive rail */
+		avee-supply  = <&sgm3804_neg>;		/* panel avee -> SGM3804 negative rail */
 
 		reset-gpios = <&tlmm 98 GPIO_ACTIVE_LOW>;	/* reset = TLMM98, seq high10ms/low10ms/high55ms */
 		backlight = <&aw99706_bl>;		/* external backlight (see i2c below) */
@@ -949,23 +950,32 @@
 	clock-frequency = <400000>;
 	status = "okay";
 
-	/* Panel AVDD boost/bias — same chip as sm8650-konkr-pf */
-	sgm3804: regulator@3e {
+	/* Panel AVDD boost/bias — same chip as sm8650-konkr-pf.
+	 * Bindings: Documentation/devicetree/bindings/regulator/sgmicro,sgm3804.yaml
+	 * — one child regulator per rail, each with its own enable-gpios. The
+	 * enables are transcribed from the stock fdt: bias-enp-gpio = gpio56,
+	 * bias-enn-gpio = gpio57 (both active-high). TLMM163 is a different pin
+	 * (the panel-power master, see &tlmm), not an SGM3804 enable.
+	 * 5.0V matches the working SM8650 Konkr; the driver programs the rails
+	 * over i2c (4.0-6.3V in 100mV steps), so the stock 5.2V is expressible
+	 * here if the panel ever wants it. */
+	regulator@3e {
 		compatible = "sgmicro,sgm3804";
 		reg = <0x3e>;
-		regulator-name = "panel-avdd";
-		/* mainline sgm3804-regulator.c is FIXED 5.0V (n_voltages=1,
-		 * min_uV=5000000); demanding 5.2V exact made regulator registration
-		 * fail (-EINVAL). 5.0V matches the driver + the working SM8650 Konkr. */
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		/* SGM3804 dual-rail enables, transcribed from the stock fdt:
-		 * bias-enp-gpio = gpio56, bias-enn-gpio = gpio57 (both active-high).
-		 * The driver's reset_gpio[0]/[1] map to these. TLMM163 is a different
-		 * pin (the panel-power master, see &tlmm), not an SGM3804 enable. */
-		reset-gpios = <&tlmm 56 GPIO_ACTIVE_HIGH>,	/* ENP (positive rail) */
-			      <&tlmm 57 GPIO_ACTIVE_HIGH>;	/* ENN (negative rail) */
-		status = "okay";
+
+		sgm3804_pos: pos {
+			regulator-name = "panel-avdd-pos";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			enable-gpios = <&tlmm 56 GPIO_ACTIVE_HIGH>;	/* ENP */
+		};
+
+		sgm3804_neg: neg {
+			regulator-name = "panel-avdd-neg";
+			regulator-min-microvolt = <5000000>;
+			regulator-max-microvolt = <5000000>;
+			enable-gpios = <&tlmm 57 GPIO_ACTIVE_HIGH>;	/* ENN */
+		};
 	};
 
 	/*

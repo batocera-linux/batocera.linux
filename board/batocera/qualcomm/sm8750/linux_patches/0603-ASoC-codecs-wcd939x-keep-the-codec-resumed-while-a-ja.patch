@@ -31,9 +31,11 @@ device.
 
 Signed-off-by: Anze <aanzdev@gmail.com>
 ---
+diff --git a/sound/soc/codecs/wcd939x.c b/sound/soc/codecs/wcd939x.c
+index 2d0c3ec77..cb119f85c 100644
 --- a/sound/soc/codecs/wcd939x.c
 +++ b/sound/soc/codecs/wcd939x.c
-@@ -3396,11 +3396,25 @@ static int wcd939x_codec_set_jack(struct snd_soc_component *comp,
+@@ -3391,11 +3391,25 @@ static int wcd939x_codec_set_jack(struct snd_soc_component *comp,
  {
  	struct wcd939x_priv *wcd = dev_get_drvdata(comp->dev);
  

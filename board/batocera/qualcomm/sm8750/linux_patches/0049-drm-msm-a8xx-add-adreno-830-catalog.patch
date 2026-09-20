@@ -9,12 +9,12 @@ a830 reglists + catalog entry on top of 7.1's a8xx support.
 [Modified 8/9/2026 Rocknix: to match downstream and odin 3]
 ---
 diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-index 550ff3a9b82e..a97bf2c0c89d 100644
+index 3e6f409d1..bfc6d87b6 100644
 --- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
 +++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-@@ -1799,6 +1799,272 @@ static const struct adreno_reglist_pipe x285_dyn_pwrup_reglist_regs[] = {
+@@ -2054,6 +2054,272 @@ static const struct adreno_reglist_pipe a810_dyn_pwrup_reglist_regs[] = {
  };
- DECLARE_ADRENO_REGLIST_PIPE_LIST(x285_dyn_pwrup_reglist);
+ DECLARE_ADRENO_REGLIST_PIPE_LIST(a810_dyn_pwrup_reglist);
  
 +static const struct adreno_reglist_pipe a830_nonctxt_regs[] = {
 +	{ REG_A8XX_CP_SMMU_STREAM_ID_LPAC, 0x00000101, BIT(PIPE_NONE) },
@@ -285,7 +285,7 @@ index 550ff3a9b82e..a97bf2c0c89d 100644
  static const struct adreno_reglist_pipe a840_nonctxt_regs[] = {
  	{ REG_A8XX_CP_SMMU_STREAM_ID_LPAC, 0x00000101, BIT(PIPE_NONE) },
  	{ REG_A8XX_GRAS_DBG_ECO_CNTL, 0x00000800, BIT(PIPE_BV) | BIT(PIPE_BR) },
-@@ -2150,6 +2416,49 @@ static const struct adreno_info a8xx_gpus[] = {
+@@ -2405,6 +2671,49 @@ static const struct adreno_info a8xx_gpus[] = {
  			{ 357, 2 },
  			{ 284, 3 },
  		),
@@ -336,10 +336,10 @@ index 550ff3a9b82e..a97bf2c0c89d 100644
  		.chip_ids = ADRENO_CHIP_IDS(0x44050a01),
  		.family = ADRENO_8XX_GEN2,
 diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-index c0ee544ce257..2dd009b1ced5 100644
+index 1f201322c..827b20613 100644
 --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
 +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-@@ -601,6 +601,11 @@ static inline int adreno_is_x285(struct adreno_gpu *gpu)
+@@ -597,6 +597,11 @@ static inline int adreno_is_x285(struct adreno_gpu *gpu)
  	return gpu->info->chip_ids[0] == 0x44070001;
  }
  
@@ -351,6 +351,3 @@ index c0ee544ce257..2dd009b1ced5 100644
  static inline int adreno_is_a840(struct adreno_gpu *gpu)
  {
  	return gpu->info->chip_ids[0] == 0x44050a01;
--- 
-2.43.0
-

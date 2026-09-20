@@ -19,9 +19,11 @@ partner advertises no USB data.
 
 Signed-off-by: Anze <aanzdev@gmail.com>
 ---
+diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
+index 49f1c5372..7505d160d 100644
 --- a/drivers/usb/typec/ucsi/ucsi.c
 +++ b/drivers/usb/typec/ucsi/ucsi.c
-@@ -1196,10 +1196,8 @@
+@@ -1366,10 +1366,8 @@ static void ucsi_partner_change(struct ucsi_connector *con)
  			typec_partner_set_usb_mode(con->partner, USB_MODE_USB4);
  	}
  

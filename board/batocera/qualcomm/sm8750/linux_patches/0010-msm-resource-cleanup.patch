@@ -1,0 +1,478 @@
+From 2f02429bcbd2dc0235d9654456db87c6f5e9122a Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 20:20:07 -0300
+Subject: [PATCH 1/7] drm/msm/dpu: release topology on reservation failure to
+ avoid persistent failure due to partial reservation
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+index 0f4921b1a892..f8d8c2d7f9d6 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+@@ -1442,6 +1442,7 @@ static int dpu_crtc_assign_resources(struct drm_crtc *crtc,
+ 		return PTR_ERR(global_state);
+ 
+ 	dpu_rm_release(global_state, crtc);
++	cstate->num_mixers = 0;
+ 
+ 	if (!crtc_state->enable)
+ 		return 0;
+@@ -1449,8 +1450,14 @@ static int dpu_crtc_assign_resources(struct drm_crtc *crtc,
+ 	topology = dpu_crtc_get_topology(crtc, dpu_kms, crtc_state);
+ 	ret = dpu_rm_reserve(&dpu_kms->rm, global_state,
+ 			     crtc_state->crtc, &topology);
+-	if (ret)
++	if (ret) {
++		/*
++		 * Release on reserve failure to since partial reservation will prevent
++		 * future reservation from working.
++		 */
++		dpu_rm_release(global_state, crtc);
+ 		return ret;
++	}
+ 
+ 	cstate = to_dpu_crtc_state(crtc_state);
+ 
+-- 
+2.54.0
+
+
+From 6a92dfa8cb99a772076f7106bccda0c2f0469dd9 Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 20:33:56 -0300
+Subject: [PATCH 2/7] drm/msm/dpu: reset unassigned resource slots to NULL on
+ topology update
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 22 ++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index eba1d52211f6..334a49106e6f 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1206,9 +1206,13 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
+ 						       ARRAY_SIZE(hw_pp));
+ 	}
+ 
+-	for (i = 0; i < num_cwb; i++) {
+-		dpu_enc->hw_cwb[i] = to_dpu_hw_cwb(hw_cwb[i]);
+-		cwb_mask |= BIT(dpu_enc->hw_cwb[i]->idx - CWB_0);
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_cwb); i++) {
++		if (i < num_cwb) {
++			dpu_enc->hw_cwb[i] = to_dpu_hw_cwb(hw_cwb[i]);
++			cwb_mask |= BIT(dpu_enc->hw_cwb[i]->idx - CWB_0);
++		} else {
++			dpu_enc->hw_cwb[i] = NULL;
++		}
+ 	}
+ 
+ 	dpu_enc->cwb_mask = cwb_mask;
+@@ -1216,16 +1220,20 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
+ 	num_ctl = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+ 		drm_enc->crtc, DPU_HW_BLK_CTL, hw_ctl, ARRAY_SIZE(hw_ctl));
+ 
+-	for (i = 0; i < MAX_CHANNELS_PER_ENC; i++)
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_pp); i++)
+ 		dpu_enc->hw_pp[i] = i < num_pp ? to_dpu_hw_pingpong(hw_pp[i])
+ 						: NULL;
+ 
+ 	num_dsc = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+ 						drm_enc->crtc, DPU_HW_BLK_DSC,
+ 						hw_dsc, ARRAY_SIZE(hw_dsc));
+-	for (i = 0; i < num_dsc; i++) {
+-		dpu_enc->hw_dsc[i] = to_dpu_hw_dsc(hw_dsc[i]);
+-		dsc_mask |= BIT(dpu_enc->hw_dsc[i]->idx - DSC_0);
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_dsc); i++) {
++		if (i < num_dsc) {
++			dpu_enc->hw_dsc[i] = to_dpu_hw_dsc(hw_dsc[i]);
++			dsc_mask |= BIT(dpu_enc->hw_dsc[i]->idx - DSC_0);
++		} else {
++			dpu_enc->hw_dsc[i] = NULL;
++		}
+ 	}
+ 
+ 	dpu_enc->dsc_mask = dsc_mask;
+-- 
+2.54.0
+
+
+From fdb0918d013279b25659caa7ba42649aedd4ba2d Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 21:07:49 -0300
+Subject: [PATCH 3/7] drm/msm/dpu: save layer mixers in encoder mode set and
+ perform clean up on them instead of newly assigned ones
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c   | 87 ++++++++++++++-----
+ .../gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h  | 19 +---
+ 2 files changed, 64 insertions(+), 42 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 334a49106e6f..bc1f1dacddbc 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -133,6 +133,7 @@ enum dpu_enc_rc_states {
+  * @cur_master:		Pointer to the current master in this mode. Optimization
+  *			Only valid after enable. Cleared as disable.
+  * @cur_slave:		As above but for the slave encoder.
++ * @hw_mixer:		Handle to the layer mixers used for the display.
+  * @hw_pp:		Handle to the pingpong blocks used for the display. No.
+  *			pingpong blocks can be different than num_phys_encs.
+  * @hw_cwb:		Handle to the CWB muxes used for concurrent writeback
+@@ -182,6 +183,7 @@ struct dpu_encoder_virt {
+ 	struct dpu_encoder_phys *phys_encs[MAX_PHYS_ENCODERS_PER_VIRTUAL];
+ 	struct dpu_encoder_phys *cur_master;
+ 	struct dpu_encoder_phys *cur_slave;
++	struct dpu_hw_mixer *hw_mixer[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_pingpong *hw_pp[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_cwb *hw_cwb[MAX_CWB_PER_ENC];
+ 	struct dpu_hw_dsc *hw_dsc[MAX_CHANNELS_PER_ENC];
+@@ -1157,11 +1159,12 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
+ 	struct msm_drm_private *priv;
+ 	struct dpu_kms *dpu_kms;
+ 	struct dpu_global_state *global_state;
++	struct dpu_hw_blk *hw_lm[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_blk *hw_pp[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_blk *hw_ctl[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_blk *hw_dsc[MAX_CHANNELS_PER_ENC];
+ 	struct dpu_hw_blk *hw_cwb[MAX_CHANNELS_PER_ENC];
+-	int num_ctl, num_pp, num_dsc, num_pp_per_intf;
++	int num_ctl, num_lm, num_pp, num_dsc, num_pp_per_intf;
+ 	int num_cwb = 0;
+ 	bool is_cwb_encoder;
+ 	unsigned int dsc_mask = 0;
+@@ -1190,6 +1193,14 @@ static void dpu_encoder_virt_atomic_mode_set(struct drm_encoder *drm_enc,
+ 	trace_dpu_enc_mode_set(DRMID(drm_enc));
+ 
+ 	/* Query resource that have been reserved in atomic check step. */
++
++	num_lm = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
++		drm_enc->crtc, DPU_HW_BLK_LM, hw_lm, ARRAY_SIZE(hw_lm));
++
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_mixer); i++)
++		dpu_enc->hw_mixer[i] = i < num_lm ? to_dpu_hw_mixer(hw_lm[i])
++						: NULL;
++
+ 	if (is_cwb_encoder) {
+ 		num_pp = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+ 						       drm_enc->crtc,
+@@ -2186,42 +2197,42 @@ void dpu_encoder_kickoff(struct drm_encoder *drm_enc)
+ 
+ static void dpu_encoder_helper_reset_mixers(struct dpu_encoder_phys *phys_enc)
+ {
+-	int i, num_lm;
+-	struct dpu_global_state *global_state;
+-	struct dpu_hw_blk *hw_lm[2];
+-	struct dpu_hw_mixer *hw_mixer[2];
++	int i;
+ 	struct dpu_hw_ctl *ctl = phys_enc->hw_ctl;
++	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(phys_enc->parent);;
+ 
+ 	/* reset all mixers for this encoder */
+ 	if (ctl->ops.clear_all_blendstages)
+ 		ctl->ops.clear_all_blendstages(ctl);
+ 
+-	global_state = dpu_kms_get_existing_global_state(phys_enc->dpu_kms);
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_mixer); i++) {
++		if (dpu_enc->hw_mixer[i]) {
++			if (ctl->ops.update_pending_flush_mixer)
++				ctl->ops.update_pending_flush_mixer(ctl, dpu_enc->hw_mixer[i]->idx);
+ 
+-	num_lm = dpu_rm_get_assigned_resources(&phys_enc->dpu_kms->rm, global_state,
+-		phys_enc->parent->crtc, DPU_HW_BLK_LM, hw_lm, ARRAY_SIZE(hw_lm));
++			/* clear all blendstages */
++			if (ctl->ops.setup_blendstage)
++				ctl->ops.setup_blendstage(ctl, dpu_enc->hw_mixer[i]->idx, NULL);
+ 
+-	for (i = 0; i < num_lm; i++) {
+-		hw_mixer[i] = to_dpu_hw_mixer(hw_lm[i]);
+-		if (ctl->ops.update_pending_flush_mixer)
+-			ctl->ops.update_pending_flush_mixer(ctl, hw_mixer[i]->idx);
++			if (dpu_enc->hw_mixer[i]->ops.clear_all_blendstages)
++				dpu_enc->hw_mixer[i]->ops.clear_all_blendstages(dpu_enc->hw_mixer[i]);
+ 
+-		/* clear all blendstages */
+-		if (ctl->ops.setup_blendstage)
+-			ctl->ops.setup_blendstage(ctl, hw_mixer[i]->idx, NULL);
++			if (dpu_enc->hw_mixer[i]->ops.setup_blendstage)
++				dpu_enc->hw_mixer[i]->ops.setup_blendstage(dpu_enc->hw_mixer[i], dpu_enc->hw_mixer[i]->idx, NULL);
++		}
++	}
+ 
+-		if (hw_mixer[i]->ops.clear_all_blendstages)
+-			hw_mixer[i]->ops.clear_all_blendstages(hw_mixer[i]);
++	if (ctl->ops.clear_all_blendstages)
++		ctl->ops.clear_all_blendstages(ctl);
+ 
+-		if (ctl->ops.set_active_lms)
+-			ctl->ops.set_active_lms(ctl, NULL);
++	if (ctl->ops.set_active_lms)
++		ctl->ops.set_active_lms(ctl, NULL);
+ 
+-		if (ctl->ops.set_active_fetch_pipes)
+-			ctl->ops.set_active_fetch_pipes(ctl, NULL);
++	if (ctl->ops.set_active_fetch_pipes)
++		ctl->ops.set_active_fetch_pipes(ctl, NULL);
+ 
+-		if (ctl->ops.set_active_pipes)
+-			ctl->ops.set_active_pipes(ctl, NULL);
+-	}
++	if (ctl->ops.set_active_pipes)
++		ctl->ops.set_active_pipes(ctl, NULL);
+ }
+ 
+ static void dpu_encoder_dsc_pipe_clr(struct dpu_hw_ctl *ctl,
+@@ -2907,6 +2918,34 @@ enum dpu_intf_mode dpu_encoder_get_intf_mode(struct drm_encoder *encoder)
+ 	return INTF_MODE_NONE;
+ }
+ 
++/**
++ * dpu_encoder_helper_get_3d_blend_mode - get 3D blend mode for the DPU encoder
++ * @phys_enc: Pointer to physical encoder structure
++ */
++enum dpu_3d_blend_mode dpu_encoder_helper_get_3d_blend_mode(
++		struct dpu_encoder_phys *phys_enc)
++{
++	struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(phys_enc->parent);
++	int i, num_mixers = 0;
++
++	if (!phys_enc || phys_enc->enable_state == DPU_ENC_DISABLING)
++		return BLEND_3D_NONE;
++
++	for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_mixer); i++) {
++		if (!dpu_enc->hw_mixer[i])
++			break;
++		num_mixers++;
++	}
++
++	/* Use merge_3d unless DSC MERGE topology is used */
++	if (phys_enc->split_role == ENC_ROLE_SOLO &&
++	    num_mixers == CRTC_DUAL_MIXERS &&
++	    !dpu_encoder_use_dsc_merge(phys_enc->parent))
++		return BLEND_3D_H_ROW_INT;
++
++	return BLEND_3D_NONE;
++}
++
+ /**
+  * dpu_encoder_helper_get_cwb_mask - get CWB blocks mask for the DPU encoder
+  * @phys_enc: Pointer to physical encoder structure
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
+index 61b22d949454..10fd1431db12 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys.h
+@@ -290,24 +290,7 @@ struct dpu_encoder_phys *dpu_encoder_phys_wb_init(struct drm_device *dev,
+ 
+ void dpu_encoder_helper_trigger_start(struct dpu_encoder_phys *phys_enc);
+ 
+-static inline enum dpu_3d_blend_mode dpu_encoder_helper_get_3d_blend_mode(
+-		struct dpu_encoder_phys *phys_enc)
+-{
+-	struct dpu_crtc_state *dpu_cstate;
+-
+-	if (!phys_enc || phys_enc->enable_state == DPU_ENC_DISABLING)
+-		return BLEND_3D_NONE;
+-
+-	dpu_cstate = to_dpu_crtc_state(phys_enc->parent->crtc->state);
+-
+-	/* Use merge_3d unless DSC MERGE topology is used */
+-	if (phys_enc->split_role == ENC_ROLE_SOLO &&
+-	    dpu_cstate->num_mixers == CRTC_DUAL_MIXERS &&
+-	    !dpu_encoder_use_dsc_merge(phys_enc->parent))
+-		return BLEND_3D_H_ROW_INT;
+-
+-	return BLEND_3D_NONE;
+-}
++enum dpu_3d_blend_mode dpu_encoder_helper_get_3d_blend_mode(struct dpu_encoder_phys *phys_enc);
+ 
+ unsigned int dpu_encoder_helper_get_cwb_mask(struct dpu_encoder_phys *phys_enc);
+ 
+-- 
+2.54.0
+
+
+From ce9885f79d008118c6304ba3ffca3d5264a20b91 Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 21:09:46 -0300
+Subject: [PATCH 4/7] drm/msm/dpu: perform setup_dither clean up the same way
+ it was set up
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index bc1f1dacddbc..93062539242b 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -1321,7 +1321,7 @@ static void _dpu_encoder_virt_enable_helper(struct drm_encoder *drm_enc)
+ 	if (dpu_enc->disp_info.intf_type == INTF_DSI &&
+ 			!WARN_ON(dpu_enc->num_phys_encs == 0)) {
+ 		unsigned bpc = dpu_enc->connector->display_info.bpc;
+-		for (i = 0; i < MAX_CHANNELS_PER_ENC; i++) {
++		for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_pp); i++) {
+ 			if (!dpu_enc->hw_pp[i])
+ 				continue;
+ 			_dpu_encoder_setup_dither(dpu_enc->hw_pp[i], bpc);
+@@ -2314,8 +2314,10 @@ void dpu_encoder_helper_phys_cleanup(struct dpu_encoder_phys *phys_enc)
+ 		}
+ 	}
+ 
+-	if (phys_enc->hw_pp && phys_enc->hw_pp->ops.setup_dither)
+-		phys_enc->hw_pp->ops.setup_dither(phys_enc->hw_pp, NULL);
++	if (dpu_enc->disp_info.intf_type == INTF_DSI)
++		for (i = 0; i < ARRAY_SIZE(dpu_enc->hw_pp); i++)
++			if (dpu_enc->hw_pp[i] && dpu_enc->hw_pp[i]->ops.setup_dither)
++				dpu_enc->hw_pp[i]->ops.setup_dither(dpu_enc->hw_pp[i], NULL);
+ 
+ 	if (dpu_enc->cwb_mask)
+ 		dpu_encoder_helper_phys_setup_cwb(phys_enc, false);
+-- 
+2.54.0
+
+
+From 71bb5baff40e80e6d38cff88aa38b50a447c50a5 Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 21:17:58 -0300
+Subject: [PATCH 5/7] drm/msm/dpu: use cached pingpongs from encoder atomic set
+ in cwb setup
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 22 ++-------------------
+ 1 file changed, 2 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index 93062539242b..f0f92a875ee2 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -2374,11 +2374,6 @@ void dpu_encoder_helper_phys_setup_cwb(struct dpu_encoder_phys *phys_enc,
+ 	struct dpu_hw_ctl *hw_ctl;
+ 	struct dpu_hw_cwb_setup_cfg cwb_cfg;
+ 
+-	struct dpu_kms *dpu_kms;
+-	struct dpu_global_state *global_state;
+-	struct dpu_hw_blk *rt_pp_list[MAX_CHANNELS_PER_ENC];
+-	int num_pp;
+-
+ 	if (!phys_enc->hw_wb)
+ 		return;
+ 
+@@ -2390,18 +2385,6 @@ void dpu_encoder_helper_phys_setup_cwb(struct dpu_encoder_phys *phys_enc,
+ 		return;
+ 	}
+ 
+-	dpu_kms = phys_enc->dpu_kms;
+-	global_state = dpu_kms_get_existing_global_state(dpu_kms);
+-	num_pp = dpu_rm_get_assigned_resources(&dpu_kms->rm, global_state,
+-					       phys_enc->parent->crtc,
+-					       DPU_HW_BLK_PINGPONG, rt_pp_list,
+-					       ARRAY_SIZE(rt_pp_list));
+-
+-	if (num_pp == 0 || num_pp > MAX_CHANNELS_PER_ENC) {
+-		DPU_DEBUG_ENC(dpu_enc, "invalid num_pp %d\n", num_pp);
+-		return;
+-	}
+-
+ 	/*
+ 	 * The CWB mux supports using LM or DSPP as tap points. For now,
+ 	 * always use LM tap point
+@@ -2414,9 +2397,8 @@ void dpu_encoder_helper_phys_setup_cwb(struct dpu_encoder_phys *phys_enc,
+ 			continue;
+ 
+ 		if (enable) {
+-			struct dpu_hw_pingpong *hw_pp =
+-					to_dpu_hw_pingpong(rt_pp_list[i]);
+-			cwb_cfg.pp_idx = hw_pp->idx;
++			cwb_cfg.pp_idx = i < ARRAY_SIZE(dpu_enc->hw_pp) && dpu_enc->hw_pp[i] ?
++					dpu_enc->hw_pp[i]->idx : PINGPONG_NONE;
+ 		} else {
+ 			cwb_cfg.pp_idx = PINGPONG_NONE;
+ 		}
+-- 
+2.54.0
+
+
+From 571a73cfd042e4ff27b2d88035dcb00a9247467a Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 21:23:04 -0300
+Subject: [PATCH 6/7] drm/msm/dpu: use common helper cleanup function in cmd
+ mode disable
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c          |  2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c | 10 +---------
+ 2 files changed, 2 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+index f0f92a875ee2..2756c5702f34 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+@@ -2345,7 +2345,7 @@ void dpu_encoder_helper_phys_cleanup(struct dpu_encoder_phys *phys_enc)
+ 		dpu_enc->dsc = NULL;
+ 	}
+ 
+-	intf_cfg.stream_sel = 0; /* Don't care value for video mode */
++	intf_cfg.stream_sel = 0; /* Ignored by reset_intf_cfg */
+ 	intf_cfg.mode_3d = dpu_encoder_helper_get_3d_blend_mode(phys_enc);
+ 	intf_cfg.dsc = dpu_encoder_helper_get_dsc(phys_enc);
+ 	intf_cfg.cwb = dpu_enc->cwb_mask;
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+index 93db1484f606..8b60b747d4aa 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_cmd.c
+@@ -532,7 +532,6 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
+ {
+ 	struct dpu_encoder_phys_cmd *cmd_enc =
+ 		to_dpu_encoder_phys_cmd(phys_enc);
+-	struct dpu_hw_ctl *ctl;
+ 
+ 	if (phys_enc->enable_state == DPU_ENC_DISABLED) {
+ 		DPU_ERROR_CMDENC(cmd_enc, "already disabled\n");
+@@ -560,14 +559,7 @@ static void dpu_encoder_phys_cmd_disable(struct dpu_encoder_phys *phys_enc)
+ 			phys_enc->hw_pp->ops.disable_tearcheck(phys_enc->hw_pp);
+ 	}
+ 
+-	if (phys_enc->hw_intf->ops.bind_pingpong_blk) {
+-		phys_enc->hw_intf->ops.bind_pingpong_blk(
+-				phys_enc->hw_intf,
+-				PINGPONG_NONE);
+-
+-		ctl = phys_enc->hw_ctl;
+-		ctl->ops.update_pending_flush_intf(ctl, phys_enc->hw_intf->idx);
+-	}
++	dpu_encoder_helper_phys_cleanup(phys_enc);
+ 
+ 	phys_enc->enable_state = DPU_ENC_DISABLED;
+ }
+-- 
+2.54.0
+
+
+From 6e4fa646696679dc25cc21431d2e4457d01d9232 Mon Sep 17 00:00:00 2001
+From: JS Deck <jsdeckerido@gmail.com>
+Date: Sun, 10 May 2026 21:26:03 -0300
+Subject: [PATCH 7/7] drm/msm/dpu: reset DSC_CMN_MAIN_CNF in dsc disable
+
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc_1_2.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc_1_2.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc_1_2.c
+index b3395e9c34a1..b8a330d813e6 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc_1_2.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dsc_1_2.c
+@@ -78,6 +78,7 @@ static void dpu_hw_dsc_disable_1_2(struct dpu_hw_dsc *hw_dsc)
+ 
+ 	hw = &hw_dsc->hw;
+ 	sblk = hw_dsc->caps->sblk;
++	DPU_REG_WRITE(hw, DSC_CMN_MAIN_CNF, 0);
+ 	DPU_REG_WRITE(hw, sblk->ctl.base + DSC_CFG, 0);
+ 
+ 	DPU_REG_WRITE(hw, sblk->enc.base + ENC_DF_CTRL, 0);
+-- 
+2.54.0
+

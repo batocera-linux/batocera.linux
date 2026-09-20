@@ -7,6 +7,7 @@ floor is a corner logic can run at.
 
 ---
 diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
+index ffc46de8d..729949804 100644
 --- a/drivers/pmdomain/qcom/rpmhpd.c
 +++ b/drivers/pmdomain/qcom/rpmhpd.c
 @@ -42,6 +42,7 @@
@@ -33,8 +34,8 @@ diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
 +	.skip_retention_level = true,
  };
  
- static struct rpmhpd lcx = {
-@@ -225,6 +229,8 @@ static struct rpmhpd qphy = {
+ static struct rpmhpd gfx1 = {
+@@ -235,6 +239,8 @@ static struct rpmhpd qphy = {
  static struct rpmhpd gmxc = {
  	.pd = { .name = "gmxc", },
  	.res_name = "gmxc.lvl",
@@ -43,7 +44,7 @@ diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
  };
  
  /* Eliza RPMH powerdomains */
-@@ -936,6 +942,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
+@@ -975,6 +981,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
  
  	if (pd->state_synced) {
  		to_active_sleep(pd, corner, &this_active_corner, &this_sleep_corner);

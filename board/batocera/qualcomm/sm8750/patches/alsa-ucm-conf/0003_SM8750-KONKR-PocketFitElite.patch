@@ -1,0 +1,136 @@
+Add UCM profile for the KONKR Pocket FIT Elite (SM8750)
+
+From ROCKNIX. The card is not built yet (only the AYN Odin 3 dtb is),
+so this is here for when it is.
+
+diff --git a/ucm2/KONKR/PocketFitElite/HiFi.conf b/ucm2/KONKR/PocketFitElite/HiFi.conf
+new file mode 100644
+index 0000000..3b7a0cc
+--- /dev/null
++++ b/ucm2/KONKR/PocketFitElite/HiFi.conf
+@@ -0,0 +1,78 @@
++# HiFi use case for the KONKR Pocket FIT Elite (SM8750)
++#
++# Two things differ from the AYN Odin3 profile this is derived from:
++#
++#   * "Headphones" is defined once, on PlaybackPCM hw:${CardId},1 -- the
++#     WCD939x HPH path. (The Odin3 profile defines it twice, the second time
++#     on ,0, which is the MI2S/speaker PCM; ALSA keeps the last definition.)
++#
++#   * The HPH path is switched to PCM (HiFi) mode, matching stock Android. In
++#     the default PDM mode the codec's legacy PDM receive path puts a constant
++#     hiss on the 3.5mm jack; in PCM mode the stream rides SoundWire port 9 as
++#     384 kHz PCM and the codec runs its own interpolator/compander, which is
++#     silent. Needs device patches 0072 (lpass-rx-macro), 0073 (wcd939x) and
++#     0074 (soundwire qcom PCM port format enable), plus qcom,pcm-ports-mask
++#     on &swr1 in the board DTS.
++#
++#     Ordering matters: the HPH and COMP switches connect their SoundWire
++#     ports when set, so the PCM mode flags have to be in place before the
++#     wcd939x enable sequence brings those switches up -- hence the explicit
++#     sequence here rather than only the shared includes.
++
++SectionVerb {
++	EnableSequence [
++		cset "name='SECONDARY_MI2S_RX Audio Mixer MultiMedia1' 1"
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer TX_CODEC_DMA_TX_3' 1"
++	]
++
++	Include.wcde.File "/codecs/wcd939x/DefaultEnableSeq.conf"
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker playback"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	# rx-macro routing first, then the PCM mode flags, then the wcd939x
++	# bring-up (which is what actually connects the HPH SoundWire ports).
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++
++	EnableSequence [
++		cset "name='HPH PCM Switch' 1"
++		cset "name='RX_HPH PCM Switch' 1"
++	]
++
++	Include.wcdhpe.File "/codecs/wcd939x/HeadphoneEnableSeq.conf"
++
++	Include.wcdhpd.File "/codecs/wcd939x/HeadphoneDisableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	DisableSequence [
++		cset "name='HPH PCM Switch' 0"
++		cset "name='RX_HPH PCM Switch' 0"
++	]
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP Digital"
++		JackControl "Headphone Jack"
++		JackHWMute "Speaker"
++	}
++}
+diff --git a/ucm2/KONKR/PocketFitElite/KONKR-PocketFitElite.conf b/ucm2/KONKR/PocketFitElite/KONKR-PocketFitElite.conf
+new file mode 100644
+index 0000000..e8431cd
+--- /dev/null
++++ b/ucm2/KONKR/PocketFitElite/KONKR-PocketFitElite.conf
+@@ -0,0 +1,33 @@
++# Use case configuration for the KONKR Pocket FIT Elite (SM8750)
++#
++# Derived from the AYN Odin3 profile (same SoC, same WCD939x codec); the
++# card-level setup is identical, so only HiFi.conf diverges.
++
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/KONKR/PocketFitElite/HiFi.conf"
++	Comment "HiFi quality Music."
++}
++
++BootSequence [
++	cset "name='RX_RX0 Digital Volume' 84"
++	cset "name='RX_RX1 Digital Volume' 84"
++	cset "name='HPHL Volume' 20"
++	cset "name='HPHR Volume' 20"
++	cset "name='ADC2 Volume' 10"
++]
++
++LibraryConfig.remap.Config {
++
++	ctl.default.map {
++		"name='HP Volume'" {
++			"name='HPHL Volume'".vindex.0 0
++			"name='HPHR Volume'".vindex.1 0
++		}
++	}
++}
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wcd-init.File "/codecs/wcd939x/init.conf"
+diff --git a/ucm2/conf.d/sm8750/SM8750-KONKR.conf b/ucm2/conf.d/sm8750/SM8750-KONKR.conf
+new file mode 120000
+index 0000000..a65165e
+--- /dev/null
++++ b/ucm2/conf.d/sm8750/SM8750-KONKR.conf
+@@ -0,0 +1 @@
++../../KONKR/PocketFitElite/KONKR-PocketFitElite.conf
+\ No newline at end of file

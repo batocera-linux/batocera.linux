@@ -16,9 +16,11 @@ Signed-off-by: André Braga <code@andrebraga.com>
  arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi | 35 +++++++--
  1 file changed, 33 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
+index 6090b5b3c..fc16d0432 100644
 --- a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
 +++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
-@@ -215,7 +215,7 @@
+@@ -213,7 +213,7 @@ port@1 {
  					reg = <1>;
  
  					pmic_glink_ss_in: endpoint {
@@ -27,7 +29,7 @@ Signed-off-by: André Braga <code@andrebraga.com>
  					};
  				};
  
-@@ -890,6 +890,37 @@
+@@ -888,6 +888,37 @@ spk_amp_r: spk_amp_r@35 {
  		awinic,sync-flag;
  		sound-name-prefix = "SPK_R";
  	};
@@ -65,7 +67,7 @@ Signed-off-by: André Braga <code@andrebraga.com>
  };
  
  &iris {
-@@ -1222,7 +1253,7 @@
+@@ -1220,7 +1251,7 @@ &usb_dp_qmpphy {
  };
  
  &usb_dp_qmpphy_out {
@@ -74,6 +76,3 @@ Signed-off-by: André Braga <code@andrebraga.com>
  };
  
  &usb_dwc3_hs {
-
--- 
-2.43.0
