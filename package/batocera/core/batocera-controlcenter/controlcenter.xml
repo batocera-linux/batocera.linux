@@ -106,16 +106,10 @@
 				<button display="Bright +" action="batocera-brightness + 10" />
 		</feature>
 		<feature display="Mute Sound" group="Audio/Video">
-			<switch value="${batocera-audio getSystemMute}" refresh="2"
-				action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
+                       <switch value="${batocera-audio getSystemMute}" refresh="2"
+                               action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
-		<feature display="Network IP address:">
-			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
-		</feature>
-		<feature display="Free data storage:">
-			<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
-		</feature>
-		<feature display="Plane Mode" group="Audio/Video">
+		<feature display="Plane Mode">
 			<switch value="${batocera-planemode status}"
 			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left"/>
 		</feature>
@@ -131,6 +125,16 @@
 			<choice display="Saver"        action="batocera-power-mode Powersaver" />
 			<text display="${cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" refresh="1" />
 		</feature>
+
+		<vgroup>
+		  <feature display="Network IP address:">
+			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
+		  </feature>
+		  <feature display="Free data storage:">
+			<text display="${df -h $(batocera-part share) | awk '/\/userdata$/ {print $4}'}" refresh="10" align="left" />
+		  </feature>
+		</vgroup>
+
 	</hgroup>
 
 	<hgroup name="Outputs" display="Outputs">
