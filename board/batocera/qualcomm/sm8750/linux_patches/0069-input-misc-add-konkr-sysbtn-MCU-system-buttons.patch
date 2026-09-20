@@ -20,9 +20,10 @@ reboot.
 
 ---
 diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index 1f6c57dba..c0383376f 100644
 --- a/drivers/input/misc/Kconfig
 +++ b/drivers/input/misc/Kconfig
-@@ -1003,4 +1003,17 @@
+@@ -993,4 +993,17 @@ config INPUT_STPMIC1_ONKEY
  	  To compile this driver as a module, choose M here: the
  	  module will be called stpmic1_onkey.
  
@@ -41,9 +42,10 @@ diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
 +
  endif
 diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index 2281d6803..314d56864 100644
 --- a/drivers/input/misc/Makefile
 +++ b/drivers/input/misc/Makefile
-@@ -50,6 +50,7 @@
+@@ -50,6 +50,7 @@ obj-$(CONFIG_INPUT_IQS269A)		+= iqs269a.o
  obj-$(CONFIG_INPUT_IQS626A)		+= iqs626a.o
  obj-$(CONFIG_INPUT_IQS7222)		+= iqs7222.o
  obj-$(CONFIG_INPUT_KEYSPAN_REMOTE)	+= keyspan_remote.o
@@ -52,6 +54,8 @@ diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
  obj-$(CONFIG_INPUT_M68K_BEEP)		+= m68kspkr.o
  obj-$(CONFIG_INPUT_MAX7360_ROTARY)	+= max7360-rotary.o
 diff --git a/drivers/input/misc/konkr_sysbtn.c b/drivers/input/misc/konkr_sysbtn.c
+new file mode 100644
+index 000000000..c9b8b513b
 --- /dev/null
 +++ b/drivers/input/misc/konkr_sysbtn.c
 @@ -0,0 +1,686 @@

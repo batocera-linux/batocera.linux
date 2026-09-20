@@ -1,4 +1,43 @@
-diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-haptics.c
+diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index c0383376f..1089bb694 100644
+--- a/drivers/input/misc/Kconfig
++++ b/drivers/input/misc/Kconfig
+@@ -236,6 +236,20 @@ config INPUT_PMIC8XXX_PWRKEY
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called pmic8xxx-pwrkey.
+ 
++config INPUT_QCOM_HV_HAPTICS
++	tristate "QTI High Voltage Haptics support"
++	depends on MFD_SPMI_PMIC
++   depends on ARCH_QCOM || COMPILE_TEST
++   depends on QCOM_SMEM
++   depends on QCOM_RPROC_COMMON
++	help
++	  This option enables device driver support for the high voltage haptics
++	  peripheral found on Qualcomm Technologies, Inc. PMICs.  The high voltage
++	  haptics peripheral is capable of driving either LRA or ERM vibrators with
++	  drive voltage up to 10 V, and its 5 integrated pattern sources can be used
++	  for playing different vibration effects. To compile this driver as a module,
++	  choose M here: the module will be called qcom-hv-haptics.
++
+ config INPUT_SPARCSPKR
+ 	tristate "SPARC Speaker support"
+ 	depends on PCI && SPARC64
+diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index 314d56864..689d5bc1c 100644
+--- a/drivers/input/misc/Makefile
++++ b/drivers/input/misc/Makefile
+@@ -67,6 +67,7 @@ obj-$(CONFIG_INPUT_PF1550_ONKEY)	+= pf1550-onkey.o
+ obj-$(CONFIG_INPUT_PM8941_PWRKEY)	+= pm8941-pwrkey.o
+ obj-$(CONFIG_INPUT_PM8XXX_VIBRATOR)	+= pm8xxx-vibrator.o
+ obj-$(CONFIG_INPUT_PMIC8XXX_PWRKEY)	+= pmic8xxx-pwrkey.o
++obj-$(CONFIG_INPUT_QCOM_HV_HAPTICS)	+= qcom-hv-haptics.o
+ obj-$(CONFIG_INPUT_POWERMATE)		+= powermate.o
+ obj-$(CONFIG_INPUT_PWM_BEEPER)		+= pwm-beeper.o
+ obj-$(CONFIG_INPUT_PWM_VIBRA)		+= pwm-vibra.o
+diff --git a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-haptics.c
+new file mode 100644
+index 000000000..a6e50d50e
 --- /dev/null
 +++ b/drivers/input/misc/qcom-hv-haptics.c
 @@ -0,0 +1,6736 @@
@@ -2123,7 +2162,7 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
 +	}
 +
 +	haptics_read(chip, chip->hbst_addr_base, 0x09, &val, 1);
-+	dev_err(chip->dev, "haptics_enable_play, 0xf209=0x%x\n", val);
++	dev_dbg(chip->dev, "haptics_enable_play, 0xf209=0x%x\n", val);
 +
 +	if (!en)
 +		haptics_wait_brake_complete(chip);
@@ -6738,90 +6777,11 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
 +
 +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. High-Voltage Haptics driver");
 +MODULE_LICENSE("GPL");
-diff -Naur a/include/linux/soc/qcom/qcom_hv_haptics.h b/include/linux/soc/qcom/qcom_hv_haptics.h
+diff --git a/include/dt-bindings/input/qcom,hv-haptics.h b/include/dt-bindings/input/qcom,hv-haptics.h
+new file mode 100644
+index 000000000..8453d2ae9
 --- /dev/null
-+++ b/include/linux/soc/qcom/qcom_hv_haptics.h
-@@ -0,0 +1,41 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+
-+#ifndef _QCOM_HV_HAPTICS_H
-+#define _QCOM_HV_HAPTICS_H
-+
-+#include <linux/input.h>
-+#include <linux/remoteproc/qcom_rproc.h>
-+#include <linux/platform_device.h>
-+
-+#if IS_ENABLED(CONFIG_INPUT_QCOM_HV_HAPTICS)
-+bool qcom_haptics_vi_sense_is_enabled(void);
-+
-+int qcom_spmi_haptics_global_upload(struct ff_effect *effect);
-+int qcom_spmi_haptics_global_playback(int effect_id, int val);
-+int qcom_spmi_haptics_global_set_gain(u16 gain);
-+#else
-+static inline bool qcom_haptics_vi_sense_is_enabled(void)
-+{
-+	return false;
-+}
-+
-+static inline int qcom_spmi_haptics_global_upload(struct ff_effect *effect)
-+{
-+    return 0;
-+}
-+
-+static inline int qcom_spmi_haptics_global_playback(int effect_id, int val)
-+{
-+    return 0;
-+}
-+
-+static inline int qcom_spmi_haptics_global_set_gain(u16 gain)
-+{
-+    return 0;
-+}
-+#endif
-+
-+#endif
-\ No newline at end of file
-diff -Naur a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
---- a/drivers/input/misc/Kconfig	2025-03-22 22:54:28.000000000 +0300
-+++ b/drivers/input/misc/Kconfig	2025-03-30 00:33:07.140188820 +0300
-@@ -214,6 +214,20 @@
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called pmic8xxx-pwrkey.
- 
-+config INPUT_QCOM_HV_HAPTICS
-+	tristate "QTI High Voltage Haptics support"
-+	depends on MFD_SPMI_PMIC
-+   depends on ARCH_QCOM || COMPILE_TEST
-+   depends on QCOM_SMEM
-+   depends on QCOM_RPROC_COMMON
-+	help
-+	  This option enables device driver support for the high voltage haptics
-+	  peripheral found on Qualcomm Technologies, Inc. PMICs.  The high voltage
-+	  haptics peripheral is capable of driving either LRA or ERM vibrators with
-+	  drive voltage up to 10 V, and its 5 integrated pattern sources can be used
-+	  for playing different vibration effects. To compile this driver as a module,
-+	  choose M here: the module will be called qcom-hv-haptics.
-+
- config INPUT_SPARCSPKR
- 	tristate "SPARC Speaker support"
- 	depends on PCI && SPARC64
-diff -Naur a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
---- a/drivers/input/misc/Makefile	2025-03-22 22:54:28.000000000 +0300
-+++ b/drivers/input/misc/Makefile	2025-03-30 00:33:07.144188820 +0300
-@@ -65,6 +65,7 @@
- obj-$(CONFIG_INPUT_PM8941_PWRKEY)	+= pm8941-pwrkey.o
- obj-$(CONFIG_INPUT_PM8XXX_VIBRATOR)	+= pm8xxx-vibrator.o
- obj-$(CONFIG_INPUT_PMIC8XXX_PWRKEY)	+= pmic8xxx-pwrkey.o
-+obj-$(CONFIG_INPUT_QCOM_HV_HAPTICS)	+= qcom-hv-haptics.o
- obj-$(CONFIG_INPUT_POWERMATE)		+= powermate.o
- obj-$(CONFIG_INPUT_PWM_BEEPER)		+= pwm-beeper.o
- obj-$(CONFIG_INPUT_PWM_VIBRA)		+= pwm-vibra.o
-diff -Naur a/include/dt-bindings/input/qcom,hv-haptics.h b/include/dt-bindings/input/qcom,hv-haptics.h
---- a/include/dt-bindings/input/qcom,hv-haptics.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/include/dt-bindings/input/qcom,hv-haptics.h	2025-03-30 00:33:40.960189233 +0300
++++ b/include/dt-bindings/input/qcom,hv-haptics.h
 @@ -0,0 +1,37 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
@@ -6860,9 +6820,11 @@ diff -Naur a/include/dt-bindings/input/qcom,hv-haptics.h b/include/dt-bindings/i
 +#define S_PERIOD_F_32KHZ		11
 +#define S_PERIOD_F_44P1KHZ		12
 +#define S_PERIOD_F_48KHZ		13
-diff -Naur a/include/linux/qpnp/qpnp-pbs.h b/include/linux/qpnp/qpnp-pbs.h
---- a/include/linux/qpnp/qpnp-pbs.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/include/linux/qpnp/qpnp-pbs.h	2025-03-30 00:47:04.476199042 +0300
+diff --git a/include/linux/qpnp/qpnp-pbs.h b/include/linux/qpnp/qpnp-pbs.h
+new file mode 100644
+index 000000000..1834381a2
+--- /dev/null
++++ b/include/linux/qpnp/qpnp-pbs.h
 @@ -0,0 +1,33 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
@@ -6897,9 +6859,11 @@ diff -Naur a/include/linux/qpnp/qpnp-pbs.h b/include/linux/qpnp/qpnp-pbs.h
 +#endif
 +
 +#endif
-diff -Naur a/include/linux/soc/qcom/battery_charger.h b/include/linux/soc/qcom/battery_charger.h
---- a/include/linux/soc/qcom/battery_charger.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/include/linux/soc/qcom/battery_charger.h	2025-03-30 00:48:07.628199813 +0300
+diff --git a/include/linux/soc/qcom/battery_charger.h b/include/linux/soc/qcom/battery_charger.h
+new file mode 100644
+index 000000000..47382d8e0
+--- /dev/null
++++ b/include/linux/soc/qcom/battery_charger.h
 @@ -0,0 +1,45 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/*
@@ -6946,9 +6910,59 @@ diff -Naur a/include/linux/soc/qcom/battery_charger.h b/include/linux/soc/qcom/b
 +#endif
 +
 +#endif
-diff -Naur a/include/trace/events/qcom_haptics.h b/include/trace/events/qcom_haptics.h
---- a/include/trace/events/qcom_haptics.h	1970-01-01 03:00:00.000000000 +0300
-+++ b/include/trace/events/qcom_haptics.h	2025-03-30 00:49:12.224200601 +0300
+diff --git a/include/linux/soc/qcom/qcom_hv_haptics.h b/include/linux/soc/qcom/qcom_hv_haptics.h
+new file mode 100644
+index 000000000..e32deab3a
+--- /dev/null
++++ b/include/linux/soc/qcom/qcom_hv_haptics.h
+@@ -0,0 +1,41 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2024, Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++#ifndef _QCOM_HV_HAPTICS_H
++#define _QCOM_HV_HAPTICS_H
++
++#include <linux/input.h>
++#include <linux/remoteproc/qcom_rproc.h>
++#include <linux/platform_device.h>
++
++#if IS_ENABLED(CONFIG_INPUT_QCOM_HV_HAPTICS)
++bool qcom_haptics_vi_sense_is_enabled(void);
++
++int qcom_spmi_haptics_global_upload(struct ff_effect *effect);
++int qcom_spmi_haptics_global_playback(int effect_id, int val);
++int qcom_spmi_haptics_global_set_gain(u16 gain);
++#else
++static inline bool qcom_haptics_vi_sense_is_enabled(void)
++{
++	return false;
++}
++
++static inline int qcom_spmi_haptics_global_upload(struct ff_effect *effect)
++{
++    return 0;
++}
++
++static inline int qcom_spmi_haptics_global_playback(int effect_id, int val)
++{
++    return 0;
++}
++
++static inline int qcom_spmi_haptics_global_set_gain(u16 gain)
++{
++    return 0;
++}
++#endif
++
++#endif
+\ No newline at end of file
+diff --git a/include/trace/events/qcom_haptics.h b/include/trace/events/qcom_haptics.h
+new file mode 100644
+index 000000000..883f6e3b4
+--- /dev/null
++++ b/include/trace/events/qcom_haptics.h
 @@ -0,0 +1,98 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
 +/*

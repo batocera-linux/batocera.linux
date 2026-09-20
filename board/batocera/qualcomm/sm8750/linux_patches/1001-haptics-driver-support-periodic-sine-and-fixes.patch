@@ -20,7 +20,7 @@
  			goto restore;
 @@ -2121,9 +2125,12 @@
  	haptics_read(chip, chip->hbst_addr_base, 0x09, &val, 1);
- 	dev_err(chip->dev, "haptics_enable_play, 0xf209=0x%x\n", val);
+ 	dev_dbg(chip->dev, "haptics_enable_play, 0xf209=0x%x\n", val);
  
 -	if (!en)
 +	if (!en) {

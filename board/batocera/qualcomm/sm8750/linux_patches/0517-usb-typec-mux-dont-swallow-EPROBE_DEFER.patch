@@ -17,13 +17,23 @@ and returns NULL. The caller reads that as "no such connection" instead
 of the -EPROBE_DEFER it used to get, so the connector is created WITHOUT
 its mux, permanently: the DP lanes and the AUX/SBU pair are never routed.
 
-The arrays are also uninitialised stack (`struct typec_mux_dev
-*mux_devs[TYPEC_MUX_MAX_DEVS];`), yet the dedup loop reads every slot
-before fwnode_connection_find_matches() has filled them, so a valid mux
+The arrays are also uninitialised stack (`struct typec_switch_dev
+*sw_devs[TYPEC_MUX_MAX_DEVS];`), yet the dedup loop reads every slot
+before fwnode_connection_find_matches() has filled them, so a valid switch
 can be dropped by a chance comparison against stack garbage.
 
+7.2 fixed the typec_mux_match() half upstream: the dedup loop is gone from
+it and fwnode_typec_mux_get() passes NULL as the match data now. The
+typec_switch_match() half is unchanged, so only that one is patched here.
+
 Bail out with -EPROBE_DEFER before the dedup loop when no device was
-found, and zero-initialise both arrays.
+found, and zero-initialise the array.
+
+[7.1.6: mux half dropped. typec_mux_match() lost its dedup loop and
+fwnode_typec_mux_get() was rewritten (kzalloc_obj + bounded for-loop
+that only reads populated slots) between 7.1.3 and 7.1.6, so that half
+of this bug no longer exists upstream. typec_switch_match() and
+fwnode_typec_switch_get() are unchanged and still carry it -- kept.]
 
 Device-observed on an AYN Odin 3 (SM8750): dock DisplayPort output died
 with the 7.0.11 -> 7.1.3 bump. The firmware enters DP alt mode correctly
@@ -32,56 +42,20 @@ clocks and PHY - then the very first DPCD read times out
 (drm_dp_dpcd_probe ... AUX -> (ret=-110)), link_ready stays false and the
 connector reports disconnected, because nothing ever routed the lanes.
 
+[batocera: 7.2.6 already carries the EPROBE_DEFER bail-out upstream;
+only the uninitialised sw_devs[] array is still unfixed, so just that
+hunk remains here.]
+
 Signed-off-by: Anze <aanzdev@gmail.com>
 ---
---- a/drivers/usb/typec/mux.c	2026-07-27 17:07:50.988901877 +0200
-+++ b/drivers/usb/typec/mux.c	2026-07-27 17:07:51.010296597 +0200
-@@ -58,6 +58,9 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
- 	dev = class_find_device(&typec_mux_class, NULL, fwnode,
- 				switch_fwnode_match);
- 
-+	if (!dev)
-+		return ERR_PTR(-EPROBE_DEFER);
-+
- 	/* Skip duplicates */
- 	for (i = 0; i < TYPEC_MUX_MAX_DEVS; i++)
- 		if (to_typec_switch_dev(dev) == sw_devs[i]) {
-@@ -65,7 +68,7 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
- 			return NULL;
- 		}
- 
--	return dev ? to_typec_switch_dev(dev) : ERR_PTR(-EPROBE_DEFER);
-+	return to_typec_switch_dev(dev);
- }
- 
- /**
-@@ -79,7 +82,7 @@ static void *typec_switch_match(const struct fwnode_handle *fwnode,
+--- a/drivers/usb/typec/mux.c
++++ b/drivers/usb/typec/mux.c
+@@ -79,7 +81,7 @@
   */
  struct typec_switch *fwnode_typec_switch_get(struct fwnode_handle *fwnode)
  {
 -	struct typec_switch_dev *sw_devs[TYPEC_MUX_MAX_DEVS];
 +	struct typec_switch_dev *sw_devs[TYPEC_MUX_MAX_DEVS] = {};
  	struct typec_switch *sw;
- 	int count;
- 	int err;
-@@ -291,7 +294,10 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
- 	dev = class_find_device(&typec_mux_class, NULL, fwnode,
- 				mux_fwnode_match);
- 
--	return dev ? to_typec_mux_dev(dev) : ERR_PTR(-EPROBE_DEFER);
-+	if (!dev)
-+		return ERR_PTR(-EPROBE_DEFER);
-+
-+	return to_typec_mux_dev(dev);
- }
- 
- /**
-@@ -305,7 +311,7 @@ static void *typec_mux_match(const struct fwnode_handle *fwnode,
-  */
- struct typec_mux *fwnode_typec_mux_get(struct fwnode_handle *fwnode)
- {
--	struct typec_mux_dev *mux_devs[TYPEC_MUX_MAX_DEVS];
-+	struct typec_mux_dev *mux_devs[TYPEC_MUX_MAX_DEVS] = {};
- 	struct typec_mux *mux;
  	int count;
  	int err;

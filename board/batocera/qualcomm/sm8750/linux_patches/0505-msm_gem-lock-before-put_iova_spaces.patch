@@ -1,5 +1,5 @@
 diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index b27abaa13..982c96366 100644
+index efd3d3c9a..a0a71e11c 100644
 --- a/drivers/gpu/drm/msm/msm_gem.c
 +++ b/drivers/gpu/drm/msm/msm_gem.c
 @@ -53,25 +53,29 @@ static void msm_gem_close(struct drm_gem_object *obj, struct drm_file *file)
@@ -265,7 +265,7 @@ index b27abaa13..982c96366 100644
  }
  
  static struct drm_gpuva *get_vma_locked(struct drm_gem_object *obj,
-@@ -556,8 +730,10 @@ int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
+@@ -559,8 +733,10 @@ int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
  	struct drm_exec exec;
  	int ret;
  
@@ -278,7 +278,7 @@ index b27abaa13..982c96366 100644
  	drm_exec_fini(&exec);     /* drop locks */
  
  	return ret;
-@@ -579,14 +755,16 @@ int msm_gem_get_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm,
+@@ -582,14 +758,16 @@ int msm_gem_get_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm,
  {
  	struct drm_gpuva *vma;
  	struct drm_exec exec;
@@ -302,7 +302,7 @@ index b27abaa13..982c96366 100644
  	}
  	drm_exec_fini(&exec);     /* drop locks */
  
-@@ -620,17 +798,20 @@ int msm_gem_set_iova(struct drm_gem_object *obj,
+@@ -623,17 +801,20 @@ int msm_gem_set_iova(struct drm_gem_object *obj,
  	struct drm_exec exec;
  	int ret = 0;
  
@@ -334,7 +334,7 @@ index b27abaa13..982c96366 100644
  		}
  	}
  	drm_exec_fini(&exec);     /* drop locks */
-@@ -658,14 +839,18 @@ void msm_gem_unpin_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm)
+@@ -661,14 +842,18 @@ void msm_gem_unpin_iova(struct drm_gem_object *obj, struct drm_gpuvm *vm)
  {
  	struct drm_gpuva *vma;
  	struct drm_exec exec;

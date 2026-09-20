@@ -10,7 +10,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  3 files changed, 209 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
-index dfbbac92242a..dbe838040a67 100644
+index 4a66b52bf..4cba0710f 100644
 --- a/drivers/bluetooth/btqca.c
 +++ b/drivers/bluetooth/btqca.c
 @@ -13,6 +13,78 @@
@@ -52,8 +52,8 @@ index dfbbac92242a..dbe838040a67 100644
 +		return -EINVAL;
 +	}
 +
-+	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	// Extract the last 6 characters (last6 is zero-initialised, stays NUL-terminated)
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	bdaddr->b[5] = 0x00;
@@ -92,7 +92,7 @@ index dfbbac92242a..dbe838040a67 100644
  int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
  			 enum qca_btsoc_type soc_type)
  {
-@@ -668,7 +740,7 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+@@ -699,7 +771,7 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
  }
  EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
  
@@ -101,7 +101,7 @@ index dfbbac92242a..dbe838040a67 100644
  {
  	struct hci_rp_read_bd_addr *bda;
  	struct sk_buff *skb;
-@@ -739,6 +811,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+@@ -775,6 +847,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
  	u8 rom_ver = 0;
  	u32 soc_ver;
  	u16 boardid = 0;
@@ -109,7 +109,7 @@ index dfbbac92242a..dbe838040a67 100644
  
  	bt_dev_dbg(hdev, "QCA setup on UART");
  
-@@ -918,9 +991,30 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
+@@ -1021,9 +1094,30 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
  		break;
  	}
  
@@ -142,48 +142,13 @@ index dfbbac92242a..dbe838040a67 100644
  
  	bt_dev_info(hdev, "QCA setup on UART is completed");
  
-diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
-index ecfd3da9d5e8..238f804e7fe0 100644
---- a/drivers/soc/qcom/socinfo.c
-+++ b/drivers/soc/qcom/socinfo.c
-@@ -163,6 +163,10 @@ struct smem_image_version {
- };
- #endif /* CONFIG_DEBUG_FS */
- 
-+/* Global variable to hold the serial number */
-+const char *qcom_serial_number;
-+EXPORT_SYMBOL(qcom_serial_number);
-+
- struct qcom_socinfo {
- 	struct soc_device *soc_dev;
- 	struct soc_device_attribute attr;
-@@ -795,6 +799,9 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
- 							le32_to_cpu(info->serial_num));
- 		if (!qs->attr.serial_number)
- 			return -ENOMEM;
-+
-+		/* Assign the serial number to the global variable */
-+		qcom_serial_number = qs->attr.serial_number;
- 	}
- 
- 	qs->soc_dev = soc_device_register(&qs->attr);
-@@ -818,6 +825,9 @@ static void qcom_socinfo_remove(struct platform_device *pdev)
- 	soc_device_unregister(qs->soc_dev);
- 
- 	socinfo_debugfs_exit(qs);
-+
-+	/* Clear the global serial number */
-+	qcom_serial_number = NULL;
- }
- 
- static struct platform_driver qcom_socinfo_driver = {
 diff --git a/drivers/net/wireless/ath/ath12k/mac.c b/drivers/net/wireless/ath/ath12k/mac.c
-index d493ec812055..0e535e96e27b 100644
+index a09288906..5cfc7c1a4 100644
 --- a/drivers/net/wireless/ath/ath12k/mac.c
 +++ b/drivers/net/wireless/ath/ath12k/mac.c
-@@ -159,6 +159,91 @@ static const struct ieee80211_channel ath12k_6ghz_channels[] = {
- 	CHAN6G(233, 7115, 0),
- };
+@@ -176,6 +176,91 @@ static const struct ieee80211_channel ath12k_6ghz_channels[] = {
+ 	{ .bitrate = (bps), .hw_value = (code), .hw_value_short = (code_short),\
+ 	  .flags = IEEE80211_RATE_SHORT_PREAMBLE }
  
 +extern const char *qcom_serial_number;
 +
@@ -225,8 +190,8 @@ index d493ec812055..0e535e96e27b 100644
 +		return -EINVAL;
 +	}
 +
-+	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	// Extract the last 6 characters (last6 is zero-initialised, stays NUL-terminated)
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	macaddr->b[5] = 0x00;
@@ -273,7 +238,7 @@ index d493ec812055..0e535e96e27b 100644
  static struct ieee80211_rate ath12k_legacy_rates[] = {
  	{ .bitrate = 10,
  	  .hw_value = ATH12K_HW_RATE_CCK_LP_1M },
-@@ -9533,6 +9618,7 @@ static int ath12k_mac_hw_register(struct ath12k_hw *ah)
+@@ -14779,6 +14864,7 @@ static int ath12k_mac_hw_register(struct ath12k_hw *ah)
  	struct ath12k_base *ab = ar->ab;
  	struct ath12k_pdev *pdev;
  	struct ath12k_pdev_cap *cap;
@@ -281,7 +246,7 @@ index d493ec812055..0e535e96e27b 100644
  	static const u32 cipher_suites[] = {
  		WLAN_CIPHER_SUITE_TKIP,
  		WLAN_CIPHER_SUITE_CCMP,
-@@ -9556,11 +9642,17 @@ static int ath12k_mac_hw_register(struct ath12k_hw *ah)
+@@ -14802,11 +14888,17 @@ static int ath12k_mac_hw_register(struct ath12k_hw *ah)
  		u32 ht_cap_info = 0;
  
  		pdev = ar->pdev;
@@ -303,3 +268,38 @@ index d493ec812055..0e535e96e27b 100644
  		}
  
  		ret = ath12k_mac_setup_register(ar, &ht_cap_info, hw->wiphy->bands);
+diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+index 3e26a9712..5e513fc17 100644
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -237,6 +237,10 @@ struct smem_image_version {
+ };
+ #endif /* CONFIG_DEBUG_FS */
+ 
++/* Global variable to hold the serial number */
++const char *qcom_serial_number;
++EXPORT_SYMBOL(qcom_serial_number);
++
+ struct qcom_socinfo {
+ 	struct soc_device *soc_dev;
+ 	struct soc_device_attribute attr;
+@@ -926,6 +930,9 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
+ 							le32_to_cpu(info->serial_num));
+ 		if (!qs->attr.serial_number)
+ 			return -ENOMEM;
++
++		/* Assign the serial number to the global variable */
++		qcom_serial_number = qs->attr.serial_number;
+ 	}
+ 
+ 	qs->soc_dev = soc_device_register(&qs->attr);
+@@ -949,6 +956,9 @@ static void qcom_socinfo_remove(struct platform_device *pdev)
+ 	soc_device_unregister(qs->soc_dev);
+ 
+ 	socinfo_debugfs_exit(qs);
++
++	/* Clear the global serial number */
++	qcom_serial_number = NULL;
+ }
+ 
+ static struct platform_driver qcom_socinfo_driver = {

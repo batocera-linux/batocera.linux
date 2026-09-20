@@ -4,17 +4,17 @@ Date: Tue, 13 Jan 2026 20:48:26 +0100
 Subject: [PATCH] gpu:drm:panel:add pocket fit panel
 
 ---
- drivers/gpu/drm/panel/Kconfig            |  13 +
+ drivers/gpu/drm/panel/Kconfig            |  16 +
  drivers/gpu/drm/panel/Makefile           |   1 +
- drivers/gpu/drm/panel/panel-ar14-144hz.c | 481 +++++++++++++++++++++++
- 3 files changed, 495 insertions(+)
+ drivers/gpu/drm/panel/panel-ar14-144hz.c | 550 +++++++++++++++++++++++
+ 3 files changed, 567 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-ar14-144hz.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index 407c5f6a268b..6481e0100061 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -17,6 +17,19 @@ config DRM_PANEL_ABT_Y030XX067A
+@@ -17,6 +17,22 @@ config DRM_PANEL_ABT_Y030XX067A
  	  Y030XX067A 320x480 3.0" panel as found in the YLM RG-280M, RG-300
  	  and RG-99 handheld gaming consoles.
  
@@ -24,6 +24,9 @@ index 407c5f6a268b..6481e0100061 100644
 +	depends on DRM_MIPI_DSI
 +	depends on BACKLIGHT_CLASS_DEVICE
 +	select VIDEOMODE_HELPERS
++	select DRM_KMS_HELPER
++	select DRM_DISPLAY_HELPER
++	select DRM_DISPLAY_DSC_HELPER
 +	help
 +	  Say Y here if you want to enable support for Ayaneo Pocket FIT
 +	  1080x1920 144Hz video mode display panels. These panels are
@@ -47,10 +50,10 @@ index 3615a761b44f..5ae127482f10 100644
  obj-$(CONFIG_DRM_PANEL_AUO_A030JTN01) += panel-auo-a030jtn01.o
 diff --git a/drivers/gpu/drm/panel/panel-ar14-144hz.c b/drivers/gpu/drm/panel/panel-ar14-144hz.c
 new file mode 100644
-index 000000000000..0685888ab89f
+index 000000000000..5d59730eddb0
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ar14-144hz.c
-@@ -0,0 +1,551 @@
+@@ -0,0 +1,550 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright (c) 2026 Philippe Simons <simons.philippe@gmail.com>
 +// Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
@@ -85,6 +88,7 @@ index 000000000000..0685888ab89f
 +	{ .supply = "vci" },
 +	{ .supply = "vdd" },
 +	{ .supply = "avdd" },
++	{ .supply = "avee" },
 +};
 +
 +static inline
@@ -395,13 +399,14 @@ index 000000000000..0685888ab89f
 +
 +/*
 + * The vendor panel config declares ONE base timing (144 Hz) plus
-+ * qcom,dsi-supported-dfps-list = <144 120 90 60> with
-+ * dfps_immediate_porch_mode_vfp: lower refresh rates run the SAME pixel
-+ * clock with a stretched vertical front porch. The modes below mirror
-+ * that scheme (constant clock, VFP-only changes), 144 Hz preferred.
++ * qcom,dsi-supported-dfps-list = <144 120 90 60>, with the immediate-porch
++ * VFP DFPS mode: every lower rate runs the SAME pixel clock and only
++ * stretches the vertical front porch. These modes mirror that scheme, so a
++ * modeset between them never reprograms the DSI PHY. 144 Hz stays first and
++ * is therefore the preferred mode.
 + */
 +static const struct drm_display_mode panel_ar14_144hz_modes[] = {
-+	{ /* 144 Hz — the vendor base timing */
++	{ /* 144 Hz - the vendor base timing */
 +		.clock = (1080 + 32 + 4 + 32) * (1920 + 38 + 4 + 32) * 144 / 1000,
 +		.hdisplay = 1080,
 +		.hsync_start = 1080 + 32,
@@ -411,11 +416,8 @@ index 000000000000..0685888ab89f
 +		.vsync_start = 1920 + 38,
 +		.vsync_end = 1920 + 38 + 4,
 +		.vtotal = 1920 + 38 + 4 + 32,
-+		.width_mm = 74,
-+		.height_mm = 132,
-+		.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
 +	},
-+	{ /* 120 Hz — VFP stretched, same pixel clock */
++	{ /* 120 Hz - VFP stretched, same pixel clock */
 +		.clock = (1080 + 32 + 4 + 32) * (1920 + 38 + 4 + 32) * 144 / 1000,
 +		.hdisplay = 1080,
 +		.hsync_start = 1080 + 32,
@@ -425,11 +427,8 @@ index 000000000000..0685888ab89f
 +		.vsync_start = 1920 + 437,
 +		.vsync_end = 1920 + 437 + 4,
 +		.vtotal = 1920 + 437 + 4 + 32,
-+		.width_mm = 74,
-+		.height_mm = 132,
-+		.type = DRM_MODE_TYPE_DRIVER,
 +	},
-+	{ /* 90 Hz — VFP stretched, same pixel clock */
++	{ /* 90 Hz - VFP stretched, same pixel clock */
 +		.clock = (1080 + 32 + 4 + 32) * (1920 + 38 + 4 + 32) * 144 / 1000,
 +		.hdisplay = 1080,
 +		.hsync_start = 1080 + 32,
@@ -439,11 +438,8 @@ index 000000000000..0685888ab89f
 +		.vsync_start = 1920 + 1234,
 +		.vsync_end = 1920 + 1234 + 4,
 +		.vtotal = 1920 + 1234 + 4 + 32,
-+		.width_mm = 74,
-+		.height_mm = 132,
-+		.type = DRM_MODE_TYPE_DRIVER,
 +	},
-+	{ /* 60 Hz — VFP stretched, same pixel clock */
++	{ /* 60 Hz - VFP stretched, same pixel clock */
 +		.clock = (1080 + 32 + 4 + 32) * (1920 + 38 + 4 + 32) * 144 / 1000,
 +		.hdisplay = 1080,
 +		.hsync_start = 1080 + 32,
@@ -453,9 +449,6 @@ index 000000000000..0685888ab89f
 +		.vsync_start = 1920 + 2830,
 +		.vsync_end = 1920 + 2830 + 4,
 +		.vtotal = 1920 + 2830 + 4 + 32,
-+		.width_mm = 74,
-+		.height_mm = 132,
-+		.type = DRM_MODE_TYPE_DRIVER,
 +	},
 +};
 +
@@ -470,25 +463,35 @@ index 000000000000..0685888ab89f
 +				      struct drm_connector *connector)
 +{
 +	unsigned int i;
-+	int count = 0;
 +
 +	for (i = 0; i < ARRAY_SIZE(panel_ar14_144hz_modes); i++) {
++		const struct drm_display_mode *m = &panel_ar14_144hz_modes[i];
 +		struct drm_display_mode *mode;
 +
-+		mode = drm_mode_duplicate(connector->dev,
-+					  &panel_ar14_144hz_modes[i]);
-+		if (!mode)
-+			return count;
++		mode = drm_mode_duplicate(connector->dev, m);
++		if (!mode) {
++			dev_err(panel->dev, "failed to add mode %ux%u@%u\n",
++				m->hdisplay, m->vdisplay, drm_mode_vrefresh(m));
++			return -ENOMEM;
++		}
++
++		mode->type = DRM_MODE_TYPE_DRIVER;
++		if (i == 0)
++			mode->type |= DRM_MODE_TYPE_PREFERRED;
 +
 +		drm_mode_set_name(mode);
 +		drm_mode_probed_add(connector, mode);
-+		count++;
 +	}
 +
-+	connector->display_info.width_mm = panel_ar14_144hz_modes[0].width_mm;
-+	connector->display_info.height_mm = panel_ar14_144hz_modes[0].height_mm;
++	/*
++	 * Real measured panel size. This feeds the synthesized EDID only --
++	 * SteamUI's scale comes from gamescope's fake wl_output mm, not from
++	 * here, so do not treat these numbers as a UI-size control.
++	 */
++	connector->display_info.width_mm = 74;
++	connector->display_info.height_mm = 132;
 +
-+	return count;
++	return ARRAY_SIZE(panel_ar14_144hz_modes);
 +}
 +
 +static const struct drm_panel_funcs panel_ar14_144hz_panel_funcs = {
@@ -504,9 +507,10 @@ index 000000000000..0685888ab89f
 +	struct panel_ar14_144hz *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct panel_ar14_144hz, panel,
++				   &panel_ar14_144hz_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ret = devm_regulator_bulk_get_const(&dsi->dev,
 +					    ARRAY_SIZE(ar14_supplies),
@@ -533,8 +537,6 @@ index 000000000000..0685888ab89f
 +	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 +			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
-+	drm_panel_init(&ctx->panel, dev, &panel_ar14_144hz_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +	ctx->panel.prepare_prev_first = true;
 +
 +	ret = drm_panel_of_backlight(&ctx->panel);
@@ -602,3 +604,6 @@ index 000000000000..0685888ab89f
 +MODULE_AUTHOR("ROCKNIX");
 +MODULE_DESCRIPTION("DRM driver for ar14 1080p 144hz video mode dsi panel");
 +MODULE_LICENSE("GPL");
+-- 
+2.52.0
+

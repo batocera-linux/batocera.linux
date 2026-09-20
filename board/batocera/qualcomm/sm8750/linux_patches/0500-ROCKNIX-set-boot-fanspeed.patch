@@ -1,7 +1,8 @@
-diff -rupbN linux.orig/drivers/hwmon/pwm-fan.c linux/drivers/hwmon/pwm-fan.c
---- linux.orig/drivers/hwmon/pwm-fan.c	2024-10-19 13:35:29.516991617 +0000
-+++ linux/drivers/hwmon/pwm-fan.c	2024-11-18 15:41:47.343729846 +0000
-@@ -530,7 +530,7 @@ static int pwm_fan_probe(struct platform
+diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
+index 37f37813e..744bcc6f7 100644
+--- a/drivers/hwmon/pwm-fan.c
++++ b/drivers/hwmon/pwm-fan.c
+@@ -565,7 +565,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
  	 * Set duty cycle to maximum allowed and enable PWM output as well as
  	 * the regulator. In case of error nothing is changed
  	 */
