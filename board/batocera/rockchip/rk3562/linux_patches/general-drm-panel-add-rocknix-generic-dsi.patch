@@ -10,18 +10,21 @@ RG Vita Pro LCD to probe, letting rockchip-drm bind and bring up display.
 
 Driver by Danil Zagoskin (ROCKNIX); Kconfig/Makefile added for mainline.
 
+Adapted for the refcounted panel allocation in 7.2 (devm_drm_panel_alloc
+replaces devm_kzalloc + the removed drm_panel_init).
+
 Signed-off-by: crackerjacques <jack@supremeoverlordjabs.co>
 ---
  drivers/gpu/drm/panel/Kconfig                     |  11 +
  drivers/gpu/drm/panel/Makefile                    |   1 +
- drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c | 699 ++++++++++
- 3 files changed, 711 insertions(+)
+ drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c | 697 ++++++++++
+ 3 files changed, 709 insertions(+)
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index 111111111111..222222222222 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -772,6 +772,17 @@ config DRM_PANEL_RENESAS_R69328
+@@ -812,6 +812,17 @@ config DRM_PANEL_RENESAS_R69328
  	  This panel controller can be found in LG Optimus 4X P895 smartphone
  	  in combination with LCD panel.
  
@@ -43,7 +46,7 @@ diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
 index 111111111111..222222222222 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -77,6 +77,7 @@ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM692E5) += panel-raydium-rm692e5.o
+@@ -79,6 +79,7 @@ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM692E5) += panel-raydium-rm692e5.o
  obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM69380) += panel-raydium-rm69380.o
  obj-$(CONFIG_DRM_PANEL_RENESAS_R61307) += panel-renesas-r61307.o
  obj-$(CONFIG_DRM_PANEL_RENESAS_R69328) += panel-renesas-r69328.o
@@ -56,7 +59,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c
-@@ -0,0 +1,699 @@
+@@ -0,0 +1,697 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Generic MIPI-DSI panel driver
@@ -635,9 +638,10 @@ index 000000000000..111111111111
 +    struct generic_panel *ctx;
 +    int ret;
 +
-+    ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+    if (!ctx)
-+        return -ENOMEM;
++    ctx = devm_drm_panel_alloc(dev, struct generic_panel, panel,
++                               &generic_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++    if (IS_ERR(ctx))
++        return PTR_ERR(ctx);
 +
 +    ctx->enable_gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_LOW);
 +    if (IS_ERR(ctx->enable_gpio)) {
@@ -693,9 +697,6 @@ index 000000000000..111111111111
 +    mipi_dsi_set_drvdata(dsi, ctx);
 +
 +    dev_info(dev, "lanes %d, format %d, mode %lx\n", dsi->lanes, dsi->format, dsi->mode_flags);
-+
-+    drm_panel_init(&ctx->panel, &dsi->dev, &generic_panel_funcs,
-+               DRM_MODE_CONNECTOR_DSI);
 +
 +    ret = drm_panel_of_backlight(&ctx->panel);
 +    if (ret)
