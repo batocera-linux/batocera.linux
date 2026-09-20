@@ -1,0 +1,128 @@
+shared_features:
+  - powermode
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+custom_features:
+  opengoal_speedrunner_mode:
+    group: GAME
+    prompt: SPEEDRUNNER MODE
+    description: Shows the in-game timer and disables anything that would invalidate a run.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_aspect:
+    group: GRAPHICS
+    prompt: ASPECT RATIO
+    description: Left alone the game fills the display. A fixed ratio crops or pillarboxes to that shape instead.
+    choices:
+      '4:3': '4:3'
+      '16:9': '16:9'
+  opengoal_fps:
+    group: GRAPHICS
+    prompt: TARGET FRAME RATE
+    description: The game is uncapped, this is the rate it aims for.
+    choices:
+      '30': '30'
+      60 (Default): '60'
+      '100': '100'
+      '150': '150'
+  opengoal_msaa:
+    group: GRAPHICS
+    prompt: ANTI-ALIASING
+    description: Multisample anti-aliasing. Costs fill rate, so drop it on weaker GPUs.
+    choices:
+      Off (Default): '1'
+      2x: '2'
+      4x: '4'
+      8x: '8'
+  opengoal_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Sync to the display refresh to prevent tearing. Disable for VRR displays.
+    choices:
+      On (Default): 'true'
+      'Off': 'false'
+  opengoal_letterbox:
+    group: GRAPHICS
+    prompt: LETTERBOX
+    description: Pad the frame to the chosen aspect instead of stretching it to the window.
+    choices:
+      On (Default): 'true'
+      'Off': 'false'
+  opengoal_ps2_lod:
+    group: PS2 FIDELITY
+    prompt: ORIGINAL LOD DISTANCES
+    description: Off pushes the level-of-detail transitions further out than the PS2 did.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_ps2_parts:
+    group: PS2 FIDELITY
+    prompt: ORIGINAL PARTICLE CAP
+    description: Off raises the PS2's particle limit.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_ps2_shadow:
+    group: PS2 FIDELITY
+    prompt: ORIGINAL SHADOWS
+    description: Off casts shadows from objects the PS2 could not afford to.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_force_envmap:
+    group: PS2 FIDELITY
+    prompt: FORCE ENVIRONMENT MAPPING
+    description: Keeps reflections at full strength instead of fading them with distance.
+    choices:
+      On (Default): 'true'
+      'Off': 'false'
+  opengoal_ps2_read_speed:
+    group: PS2 FIDELITY
+    prompt: EMULATE DVD LOADING
+    description: Reproduces the original disc read speed, including the loading pauses it caused.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_ps2_hints:
+    group: PS2 FIDELITY
+    prompt: ORIGINAL HINTS
+    description: Off enables the extra gameplay hints added by the PC port.
+    choices:
+      On (Default): 'true'
+      'Off': 'false'
+  opengoal_hinttitles:
+    group: SUBTITLES
+    prompt: HINT SUBTITLES
+    description: Subtitle the spoken hints that play outside cutscenes.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+  opengoal_subtitle_speaker:
+    group: SUBTITLES
+    prompt: SPEAKER NAMES
+    description: Name the speaker alongside each subtitle.
+    choices:
+      Offscreen Only (Default): auto
+      Always: 'true'
+      Never: 'false'
+  opengoal_verbose_log:
+    submenu: ADVANCED OPTIONS
+    prompt: VERBOSE LOGGING
+    description: Write debug-level runtime logging to the batocera launch log. Useful when a game will not boot.
+    choices:
+      Off (Default): 'false'
+      'On': 'true'
+file_extensions:
+  - iso
+  - squashfs
+systems:
+  - opengoal

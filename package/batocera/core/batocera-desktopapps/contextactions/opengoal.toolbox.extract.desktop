@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Action
+Name=OpenGOAL: Extract Game
+Folders=*/opengoal*;
+Basenames=*.squashfs;
+Profiles=Batocera
+SelectionCount==1
+
+[X-Action-Profile Batocera]
+MimeTypes=all/allfiles
+Exec=/usr/share/file-manager/actions/toolbox/opengoal.toolbox --extract-game %d %b

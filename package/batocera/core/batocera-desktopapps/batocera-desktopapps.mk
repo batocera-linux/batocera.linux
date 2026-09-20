@@ -232,6 +232,14 @@ ifeq ($(BR2_PACKAGE_YAD),y)
     BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
   endif
 
+  # opengoal
+  # pack a built Jak game into a .squashfs that replaces its disc image
+  ifeq ($(BR2_PACKAGE_OPENGOAL),y)
+    BATOCERA_DESKTOPAPPS_TOOLBOX += opengoal.toolbox
+    BATOCERA_DESKTOPAPPS_ACTIONS += opengoal.toolbox.squashfs.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += opengoal.toolbox.extract.desktop
+  endif
+
   # dosbox
   ifeq ($(BR2_PACKAGE_DOSBOX),y)
     BATOCERA_DESKTOPAPPS_TOOLBOX += dos.toolbox

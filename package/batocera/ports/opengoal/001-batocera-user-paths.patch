@@ -1,0 +1,100 @@
+diff --git a/common/util/FileUtil.cpp b/common/util/FileUtil.cpp
+index 932a34f4..4d1122b6 100644
+--- a/common/util/FileUtil.cpp
++++ b/common/util/FileUtil.cpp
+@@ -61,6 +61,8 @@ struct {
+   bool initialized = false;
+   fs::path path_to_data_folder;
+   fs::path user_config_dir_override = "";
++  fs::path user_saves_dir_override = "";
++  fs::path user_screenshots_dir_override = "";
+   // by default - if the config dir is overridden, we don't use the default save location
+   bool use_overridden_config_dir_for_saves = true;
+ } g_file_path_info;
+@@ -96,6 +98,9 @@ fs::path get_user_settings_dir(GameVersion game_version) {
+ }
+ 
+ fs::path get_user_memcard_dir(GameVersion game_version) {
++  if (!g_file_path_info.user_saves_dir_override.empty()) {
++    return g_file_path_info.user_saves_dir_override;
++  }
+   auto game_version_name = game_version_names[game_version];
+   auto config_dir = get_user_config_dir();
+   if (!g_file_path_info.user_config_dir_override.empty() &&
+@@ -106,6 +111,9 @@ fs::path get_user_memcard_dir(GameVersion game_version) {
+ }
+ 
+ fs::path get_user_screenshots_dir(GameVersion game_version) {
++  if (!g_file_path_info.user_screenshots_dir_override.empty()) {
++    return g_file_path_info.user_screenshots_dir_override;
++  }
+   auto game_version_name = game_version_names[game_version];
+   auto config_dir = get_user_config_dir();
+   if (!g_file_path_info.user_config_dir_override.empty()) {
+@@ -243,6 +251,14 @@ void override_user_config_dir(fs::path user_config_dir_override,
+   g_file_path_info.use_overridden_config_dir_for_saves = use_overridden_config_dir_for_saves;
+ }
+ 
++void override_user_saves_dir(const fs::path& user_saves_dir_override) {
++  g_file_path_info.user_saves_dir_override = user_saves_dir_override;
++}
++
++void override_user_screenshots_dir(const fs::path& user_screenshots_dir_override) {
++  g_file_path_info.user_screenshots_dir_override = user_screenshots_dir_override;
++}
++
+ fs::path get_jak_project_dir() {
+   ASSERT(g_file_path_info.initialized);
+   return g_file_path_info.path_to_data_folder;
+diff --git a/common/util/FileUtil.h b/common/util/FileUtil.h
+index 16875c77..c9e382e6 100644
+--- a/common/util/FileUtil.h
++++ b/common/util/FileUtil.h
+@@ -46,6 +46,8 @@ std::optional<std::string> try_get_project_path_from_path(const std::string& pat
+ bool setup_project_path(std::optional<fs::path> project_path_override, bool skip_logs = false);
+ void override_user_config_dir(fs::path user_config_dir_override,
+                               bool use_overridden_config_dir_for_saves);
++void override_user_saves_dir(const fs::path& user_saves_dir_override);
++void override_user_screenshots_dir(const fs::path& user_screenshots_dir_override);
+ std::string get_file_path(const std::vector<std::string>& path);
+ void write_binary_file(const std::string& name, const void* data, size_t size);
+ void write_binary_file(const fs::path& name, const void* data, size_t size);
+diff --git a/game/main.cpp b/game/main.cpp
+index 035ea2c1..d589005b 100644
+--- a/game/main.cpp
++++ b/game/main.cpp
+@@ -104,6 +104,8 @@ int main(int argc, char** argv) {
+   int port_number = -1;
+   fs::path project_path_override;
+   fs::path user_config_dir_override;
++  fs::path user_saves_dir_override;
++  fs::path user_screenshots_dir_override;
+   std::vector<std::string> game_args;
+   CLI::App app{"OpenGOAL Game Runtime"};
+   app.add_flag("--version", show_version, "Display the built revision");
+@@ -131,6 +133,10 @@ int main(int argc, char** argv) {
+                  "Specify the location of the 'data/' folder");
+   app.add_option("--config-path", user_config_dir_override,
+                  "Override the location where all user configuration and saves are saved");
++  app.add_option("--saves-path", user_saves_dir_override,
++                 "Override the location where saves are stored");
++  app.add_option("--screenshots-path", user_screenshots_dir_override,
++                 "Override the location where screenshots are stored");
+   app.footer(game_arg_documentation());
+   app.add_option("Game Args", game_args,
+                  "Remaining arguments (after '--') that are passed-through to the game itself");
+@@ -151,6 +157,14 @@ int main(int argc, char** argv) {
+     lg::info("Overriding config directory with: {}", user_config_dir_override.string());
+     file_util::override_user_config_dir(user_config_dir_override, !disable_save_location_override);
+   }
++  if (!user_saves_dir_override.empty()) {
++    lg::info("Overriding saves directory with: {}", user_saves_dir_override.string());
++    file_util::override_user_saves_dir(user_saves_dir_override);
++  }
++  if (!user_screenshots_dir_override.empty()) {
++    lg::info("Overriding screenshots directory with: {}", user_screenshots_dir_override.string());
++    file_util::override_user_screenshots_dir(user_screenshots_dir_override);
++  }
+ 
+   if (show_version) {
+     lg::print("{}", build_revision());
