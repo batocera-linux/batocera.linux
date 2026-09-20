@@ -12,12 +12,12 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  create mode 100644 drivers/gpu/drm/panel/panel-chipone-icna35xx.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 3eac4d0f8..2a670240f 100644
+index 3bcf710414dd..cc2b93322628 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -116,6 +116,17 @@ config DRM_PANEL_CHIPWEALTH_CH13726A
- 	  Say Y here if you want to enable support for ChipWealth
- 	  CH13726A-based display panels.
+@@ -115,6 +115,17 @@ config DRM_PANEL_BOE_XM91080G
+ 	  Say Y if you want to enable support for panels based on the
+ 	  Xm-Plus XM91080G controller.
  
 +config DRM_PANEL_CHIPONE_ICNA35XX
 +	tristate "Chipone ICNA35XX panel driver"
@@ -32,12 +32,12 @@ index 3eac4d0f8..2a670240f 100644
 +
  config DRM_PANEL_EBBG_FT8719
  	tristate "EBBG FT8719 panel driver"
- 	depends on GPIOLIB
+ 	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index c2c5cf817..d39a8f82f 100644
+index 4b64459f88b5..339a5cb9f31b 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TD4320) += panel-boe-td4320.o
+@@ -9,6 +9,7 @@
  obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
@@ -47,7 +47,6 @@ index c2c5cf817..d39a8f82f 100644
  obj-$(CONFIG_DRM_PANEL_LVDS) += panel-lvds.o
 diff --git a/drivers/gpu/drm/panel/panel-chipone-icna35xx.c b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
 new file mode 100644
-index 000000000..f14c802e1
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
 @@ -0,0 +1,573 @@
