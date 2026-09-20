@@ -6,7 +6,7 @@ import yaml
 
 from batocera_common.dict import merge
 
-from ..paths import DEFAULTS_DIR
+from ..paths import LAUNCH_DEFAULTS_DIR
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -39,7 +39,7 @@ def load_defaults(system_name: str, default_yml: Path, default_arch_yml: Path, /
 
 
 def load_system_defaults(system_name: str, /) -> dict[str, Any]:
-    defaults = load_defaults(system_name, DEFAULTS_DIR / 'config.yml', DEFAULTS_DIR / 'config-arch.yml')
+    defaults = load_defaults(system_name, LAUNCH_DEFAULTS_DIR / 'config.yml', LAUNCH_DEFAULTS_DIR / 'config-arch.yml')
 
     # In the yaml files, the "options" structure is not flat, so we have to flatten it here
     # because the options are flat in batocera.conf to make it easier for end users to edit

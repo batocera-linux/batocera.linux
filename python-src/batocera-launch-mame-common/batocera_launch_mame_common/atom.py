@@ -10,10 +10,22 @@ _logger = logging.getLogger(__name__)
 
 # The comprehensive list of known floppy disk extensions for the Atom system
 _ATOM_FLOPPY_EXTENSIONS: Final = {
-    '.mfi', '.dfi', '.hfe', '.mfm', '.td0', '.imd', '.d77', '.d88',
-    '.1dd', '.cqm', '.cqi', '.dsk', '.40t'
+    '.mfi',
+    '.dfi',
+    '.hfe',
+    '.mfm',
+    '.td0',
+    '.imd',
+    '.d77',
+    '.d88',
+    '.1dd',
+    '.cqm',
+    '.cqi',
+    '.dsk',
+    '.40t',
 }
 _7Z_EXECUTABLE: Final = Path('/usr/bin/7z')
+
 
 def is_atom_floppy(rom: Path, /) -> bool:
     extension = rom.suffix.casefold()

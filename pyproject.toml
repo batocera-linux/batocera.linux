@@ -44,6 +44,7 @@ config-settings-package = { pygobject-stubs = { config = "Gtk3,Gdk3" } }
 batocera-common = { workspace = true }
 batocera-launch = { workspace = true }
 hotkeygen = { workspace = true }
+batocera-launch-mame-common = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -167,6 +168,7 @@ known-first-party = [
     "batocera_common",
     "batocera_labwc",
     "batocera_launch",
+    "batocera_launch_mame_common",
     "configgen",
     "batocera_es_system"
 ]

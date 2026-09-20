@@ -2,14 +2,17 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Self, overload
+from typing import TYPE_CHECKING, NewType, Self, overload
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
     from collections.abc import AsyncGenerator, Callable, Generator, Iterator, Sequence
 
 
-def _short_name_from_path(path: str | Path) -> str:
+ShortGameID = NewType('ShortGameID', str)
+
+
+def _short_name_from_path(path: str | Path) -> ShortGameID:
     redname = Path(path).stem.lower()
     inpar = False
     inblock = False
@@ -25,7 +28,7 @@ def _short_name_from_path(path: str | Path) -> str:
             inblock = True
         elif c == ']':
             inblock = False
-    return ret
+    return ShortGameID(ret)
 
 
 class Rom(Path):
@@ -47,8 +50,22 @@ class Rom(Path):
         return self._source.stem
 
     @property
-    def short_id(self) -> str:
+    def short_id(self) -> ShortGameID:
+        if (short_id := self.prepared_short_id) is not None:
+            return short_id
+
+        return self.source_short_id
+
+    @property
+    def source_short_id(self) -> ShortGameID:
         return _short_name_from_path(self._source)
+
+    @property
+    def prepared_short_id(self) -> ShortGameID | None:
+        if self._prepared is None:
+            return None
+
+        return _short_name_from_path(self._prepared)
 
     @property
     def source(self) -> Path:
