@@ -347,7 +347,7 @@
 };
 
 &i2c_hub_3 {
-	clock-frequency = <100000>;
+	clock-frequency = <400000>;
 	status = "okay";
 	touchscreen@38 {
 		compatible = "focaltech,ft5426";
@@ -369,8 +369,6 @@
 		touchscreen-size-x = <1080>;
 		touchscreen-size-y = <1920>;
 		touchscreen-inverted-y;
-
-		no-regmap-bulk-read;
         };
 };
 
