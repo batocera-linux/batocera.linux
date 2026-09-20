@@ -32,19 +32,9 @@ from .devices.mouse import prepare_mouse
 from .devices.video import get_screens, list_outputs, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
-from .draw.gun_borders import create_gun_border_image, draw_gun_borders, get_gun_border_dimensions
-from .draw.gun_help import generate_gun_help
-from .draw.pil import (
-    add_qr_code,
-    add_tattoo_image,
-    create_transparent_image,
-    get_image_size,
-    resize_image,
-)
 from .exceptions import UnknownEmulator
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .rom import Rom
-from .types import BezelFiles, BezelInfo, ScreenInfo
 
 if TYPE_CHECKING:
     from collections.abc import Container, Iterator, Mapping
@@ -60,7 +50,7 @@ if TYPE_CHECKING:
     from .devices.device import DeviceInfoMapping
     from .devices.gun import Guns
     from .profiler import Profiler
-    from .types import HotkeysContext, Resolution
+    from .types import BezelFiles, HotkeysContext, Resolution, ScreenInfo
 
 _logger: Final = logging.getLogger(__name__)
 
@@ -260,6 +250,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     @cached_property
     def gun_border_dimensions(self) -> tuple[int, int] | None:
+        from .draw.gun_borders import get_gun_border_dimensions
+
         return get_gun_border_dimensions(self.guns_borders_size)
 
     @cached_property
@@ -341,6 +333,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         for png, bezel_game, override in candidates():
             if png.exists():
                 _logger.debug('Original bezel file used: %s', png)
+                from .types import BezelFiles
+
                 return BezelFiles(
                     png,
                     png.with_suffix('.info'),
@@ -394,7 +388,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             overlay_png_path = Path('/tmp/bezel_transhud_black.png')
             overlay_info_path = Path('/tmp/bezel_transhud_black.info')
 
+            from .draw.pil import create_transparent_image
+
             create_transparent_image(overlay_png_path, self.resolution.width, self.resolution.height)
+
             overlay_info_path.write_text(
                 f'{{ "width":{self.resolution.width}, "height":{self.resolution.height}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000 }}'
             )
@@ -407,11 +404,15 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             overlay_png_path = self.bezel_files.png
             overlay_info_path = self.bezel_files.info
 
+        from .types import BezelInfo
+
         bezel_info = BezelInfo.load_from_json(overlay_info_path)
         bezel_width = bezel_info.width
         bezel_height = bezel_info.height
 
         if bezel_width is None or bezel_height is None:
+            from .draw.pil import get_image_size
+
             bezel_width, bezel_height = get_image_size(overlay_png_path)
             _logger.info('bezel size read from %s', overlay_png_path)
 
@@ -519,6 +520,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _logger.debug('bezel needs to be resized')
             output_png_file = Path('/tmp/bezel.png')
             try:
+                from .draw.pil import resize_image
+
                 resize_image(
                     overlay_png_path,
                     output_png_file,
@@ -533,12 +536,20 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
         if bezel_tattoo != '0':
             output_png_file = Path('/tmp/bezel_tattooed.png')
+
+            from .draw.pil import add_tattoo_image
+
             add_tattoo_image(overlay_png_path, output_png_file, self.config)
+
             overlay_png_path = output_png_file
 
         if bezel_qrcode != '0' and (cheevos_id := self.game_info.get('cheevosId', '0')) != '0':
             output_png_file = Path('/tmp/bezel_qrcode.png')
+
+            from .draw.pil import add_qr_code
+
             add_qr_code(overlay_png_path, output_png_file, cheevos_id, self.config.get_str('bezel.qrcode_corner', 'NE'))
+
             overlay_png_path = output_png_file
 
         # borders
@@ -546,6 +557,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _logger.debug('Draw gun borders')
             output_png_file = Path('/tmp/bezel_gunborders.png')
             _logger.debug('Gun border ratio = %s', self.guns_border_ratio)
+
+            from .draw.gun_borders import create_gun_border_image
+
             create_gun_border_image(
                 overlay_png_path,
                 output_png_file,
@@ -678,6 +692,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     def prepare_gun_help(self) -> None:
         try:
+            from .draw.gun_help import generate_gun_help
+
             generate_gun_help(
                 self.config.use_guns,
                 self.guns,
@@ -697,6 +713,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _logger.debug('using gun borders for emulator %s', self.name)
 
             try:
+                from .draw.gun_borders import draw_gun_borders
+
                 draw_gun_borders(gun_borders_dimensions, self.gun_borders_color, self.guns_border_ratio)
             except Exception:
                 _logger.exception('Failed to draw gun borders')

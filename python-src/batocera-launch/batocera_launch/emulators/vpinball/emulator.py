@@ -7,8 +7,7 @@ from typing import TYPE_CHECKING
 from batocera_common.asyncio import run
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_launch import Command, Emulator, HotkeysContext
-from batocera_launch.devices.video import configure_windows, find_screen
+from batocera_launch import Command, Emulator, HotkeysContext, configure_windows, find_screen
 
 from . import options, windowing
 

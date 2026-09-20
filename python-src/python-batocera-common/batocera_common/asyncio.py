@@ -11,8 +11,6 @@ from dataclasses import dataclass
 from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Concatenate, Final, Literal, cast, overload
 
-import aiohttp
-
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine
     from pathlib import Path
@@ -308,6 +306,8 @@ async def create_ready_task[**P, R](
 
 
 async def is_connected_to_internet() -> bool:
+    import aiohttp
+
     async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
         try:
             async with session.head('https://one.one.one.one'):

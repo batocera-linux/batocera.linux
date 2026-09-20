@@ -19,8 +19,7 @@ from batocera_common.dict import merge
 from batocera_common.fs import directory_differences
 from batocera_common.paths import BIOS, CACHE, CONFIGS
 from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
-from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext, ParallelStartupTaskMixin
-from batocera_launch.asyncio import download
+from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext, ParallelStartupTaskMixin, download
 from batocera_launch.paths import configure_emulator
 
 from .controllers import generate_controllers_config

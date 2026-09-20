@@ -15,8 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from batocera_launch import Controller, Controllers, Emulator, Guns
-    from batocera_launch.devices.device import DeviceInfoMapping
+    from batocera_launch import Controller, Controllers, DeviceInfoMapping, Emulator, Guns
 
 _logger = logging.getLogger(__name__)
 

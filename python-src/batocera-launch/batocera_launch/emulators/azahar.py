@@ -7,8 +7,16 @@ from batocera_common.configparser import CaseSensitiveRawConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS, SAVES, SCREENSHOTS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Controller, Emulator, HotkeysContext, Input, InputMapping
-from batocera_launch.devices.video import configure_windows, find_screen
+from batocera_launch import (
+    Command,
+    Controller,
+    Emulator,
+    HotkeysContext,
+    Input,
+    InputMapping,
+    configure_windows,
+    find_screen,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
