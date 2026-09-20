@@ -1,0 +1,13 @@
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index d353837..be9fb4e 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -989,6 +989,8 @@ static int h5_btrtl_setup(struct h5 *h5)
+ 
+ static void h5_btrtl_open(struct h5 *h5)
+ {
++        msleep(500); // it seems an extra sleep before helps to avoid the random loading at boot time (the later seems to late)
++
+ 	/*
+ 	 * Since h5_btrtl_resume() does a device_reprobe() the suspend handling
+ 	 * done by the hci_suspend_notifier is not necessary; it actually causes
