@@ -31,8 +31,8 @@ from batocera_launch import (
     Emulator,
     HotkeysContext,
     ParallelStartupTaskMixin,
+    download,
 )
-from batocera_launch.asyncio import download
 
 from .config import Configuration
 from .controllers import ControllersMixin

@@ -6,8 +6,7 @@ import toml
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CHEATS, CONFIGS, ROMS, SAVES
-from batocera_launch import Command, Controller, Emulator, HotkeysContext
-from batocera_launch.devices.video import configure_windows, find_screen
+from batocera_launch import Command, Controller, Emulator, HotkeysContext, configure_windows, find_screen
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -1,0 +1,7 @@
+config BR2_PACKAGE_PYTHON_LAZY_LOADER
+	bool "python-lazy-loader"
+	select BR2_PACKAGE_PYTHON_PACKAGING
+	help
+	  A small library that allows you to lazily load Python modules and packages.
+
+	  https://github.com/scientific-python/lazy-loader

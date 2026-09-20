@@ -13,7 +13,6 @@ from batocera_launch.paths import CONF_INIT
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from batocera_launch.devices.controller import Controller as ControllerType
 
 _logger = logging.getLogger(__name__)
 
@@ -113,7 +112,7 @@ def _option_value(config: CaseSensitiveConfigParser, section: str, option: str, 
     return value
 
 
-def _generate_controller_config(controls_ini: Path, controls_init: Path, controller: ControllerType, /) -> None:
+def _generate_controller_config(controls_ini: Path, controls_init: Path, controller: Controller, /) -> None:
     config = CaseSensitiveConfigParser(interpolation=None)
     config.read(controls_init)
     # As we start with the default ini file, no need to create the section
