@@ -1,7 +1,7 @@
-Subject: [PATCH] input: joystick: add MANGMI Pocket Max SPI joypad
-
+Subject: [PATCH] input: joystick: add MANGMI Pocket Max / Air Y Pro SPI joypad
+ 
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 7755e5b454d2..cae1087e2c7b 100644
+index 132a44428..c2c0d0f51 100644
 --- a/drivers/input/joystick/Kconfig
 +++ b/drivers/input/joystick/Kconfig
 @@ -166,6 +166,15 @@ config JOYSTICK_MAGELLAN
@@ -9,19 +9,19 @@ index 7755e5b454d2..cae1087e2c7b 100644
  	  module will be called magellan.
  
 +config JOYSTICK_MANGMI_POCKET_MAX
-+	tristate "MANGMI Pocket Max SPI joypad"
++	tristate "MANGMI Pocket SPI joypad"
 +	depends on SPI
 +	help
 +	  Say Y here to enable support for the SPI MCU gamepad on the
-+	  MANGMI Pocket Max handheld (SM8250): sticks, dpad, A/B/X/Y,
-+	  shoulders, stick clicks, and the GPIO Select/Start/Home/Back/M1/M2
-+	  buttons.
++	  MANGMI Pocket Max and Air Y Pro handhelds (SM8250):
++	  sticks, dpad, A/B/X/Y, shoulders, stick clicks, triggers and
++	  the GPIO Select/Start/Home/Back/M1/M2 buttons.
 +
  config JOYSTICK_SPACEORB
  	tristate "SpaceTec SpaceOrb/Avenger 6dof controllers"
  	select SERIO
 diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 9976f596a920..07dd3a7331cf 100644
+index ccbed1baf..7dc13d7b2 100644
 --- a/drivers/input/joystick/Makefile
 +++ b/drivers/input/joystick/Makefile
 @@ -23,6 +23,7 @@ obj-$(CONFIG_JOYSTICK_IFORCE)		+= iforce/
@@ -31,19 +31,21 @@ index 9976f596a920..07dd3a7331cf 100644
 +obj-$(CONFIG_JOYSTICK_MANGMI_POCKET_MAX)	+= mangmi-pocket-max.o
  obj-$(CONFIG_JOYSTICK_MAPLE)		+= maplecontrol.o
  obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
- obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
+ obj-$(CONFIG_JOYSTICK_RETROID)		+= retroid.o
 diff --git a/drivers/input/joystick/mangmi-pocket-max.c b/drivers/input/joystick/mangmi-pocket-max.c
 new file mode 100644
-index 000000000000..82570eff2fbe
+index 000000000..0ea0346c7
 --- /dev/null
 +++ b/drivers/input/joystick/mangmi-pocket-max.c
-@@ -0,0 +1,581 @@
+@@ -0,0 +1,742 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * MANGMI Pocket Max Joypad Driver SPI
++ * MANGMI Pocket handheld Joypad Driver SPI
 + *
 + * Reverse-engineered from the vendor "spi,mcu_joystick" driver on the Pocket
-+ * Max SM8250 kernel.
++ * Max SM8250 kernel. The same MCU protocol is used by the Air Y Pro,
++ * which wires up four ADC channels and digital L2/R2 instead of six channels
++ * and analog triggers.
 + */
 +
 +#include <linux/bitops.h>
@@ -51,12 +53,14 @@ index 000000000000..82570eff2fbe
 +#include <linux/gpio/consumer.h>
 +#include <linux/input.h>
 +#include <linux/interrupt.h>
++#include <linux/jiffies.h>
 +#include <linux/math.h>
 +#include <linux/minmax.h>
 +#include <linux/module.h>
 +#include <linux/mutex.h>
 +#include <linux/of.h>
 +#include <linux/spi/spi.h>
++#include <linux/workqueue.h>
 +
 +#define DRIVER_NAME		"mangmi-pocket-max-joypad"
 +
@@ -65,7 +69,7 @@ index 000000000000..82570eff2fbe
 +
 +#define MCU_KEY_BITS		16
 +#define MCU_KEY_INVALID		0xffff
-+#define MCU_ADC_CH		6
++#define MCU_ADC_MAX_CH		6
 +#define MCU_ADC_MAX		4095
 +#define MCU_CMD_DELAY_US	100
 +#define MCU_WORD_DELAY_US	1000
@@ -80,7 +84,10 @@ index 000000000000..82570eff2fbe
 +#define MCU_BRAKE_MAX		1910
 +#define MCU_GAS_MAX		1758
 +#define MCU_CMD_SET_ADC_TIME	8
++#define MCU_CMD_SET_MCU_TIME	9
 +#define MCU_ADC_TIMER_DEFAULT	2
++#define MCU_WD_POLL_MS		1000
++#define MCU_WD_SILENT_MS	5000
 +
 +#define INT_SIGN(x)		(((x) > 0) - ((x) < 0))
 +
@@ -151,24 +158,93 @@ index 000000000000..82570eff2fbe
 +	s8 dir;
 +};
 +
-+static const struct mcu_key mcu_keymap[MCU_KEY_BITS] = {
++/* Bits 2..5 carry Select/Home/Back/Start, which are read from GPIOs instead. */
++static const struct mcu_key pmax_keymap[MCU_KEY_BITS] = {
 +	[0]  = { .kind = K_DPAD_X, .dir = +1 },		/* dpad right */
 +	[1]  = { .kind = K_DPAD_Y, .dir = +1 },		/* dpad down  */
 +	[6]  = { .code = BTN_THUMBL, .kind = K_KEY },	/* L3 */
 +	[7]  = { .kind = K_DPAD_X, .dir = -1 },		/* dpad left  */
 +	[8]  = { .kind = K_DPAD_Y, .dir = -1 },		/* dpad up    */
 +	[9]  = { .code = BTN_TL,    .kind = K_KEY },	/* L1 */
-+	[10] = { .code = BTN_NORTH, .kind = K_KEY },	/* X */
-+	[11] = { .code = BTN_WEST,  .kind = K_KEY },	/* Y */
++	[10] = { .code = BTN_NORTH, .kind = K_KEY },	/* Y */
++	[11] = { .code = BTN_WEST,  .kind = K_KEY },	/* X */
 +	[12] = { .code = BTN_SOUTH, .kind = K_KEY },	/* A */
 +	[13] = { .code = BTN_EAST,  .kind = K_KEY },	/* B */
 +	[14] = { .code = BTN_TR,    .kind = K_KEY },	/* R1 */
 +	[15] = { .code = BTN_THUMBR, .kind = K_KEY },	/* R3 */
 +};
 +
++static const struct mcu_key airy_keymap[MCU_KEY_BITS] = {
++	[0]  = { .kind = K_DPAD_X, .dir = +1 },		/* dpad right */
++	[1]  = { .kind = K_DPAD_Y, .dir = +1 },		/* dpad down  */
++	[2]  = { .code = BTN_TL2,   .kind = K_KEY },	/* L2 */
++	[3]  = { .code = BTN_TR2,   .kind = K_KEY },	/* R2 */
++	[6]  = { .code = BTN_THUMBL, .kind = K_KEY },	/* L3 */
++	[7]  = { .kind = K_DPAD_X, .dir = -1 },		/* dpad left  */
++	[8]  = { .kind = K_DPAD_Y, .dir = -1 },		/* dpad up    */
++	[9]  = { .code = BTN_TL,    .kind = K_KEY },	/* L1 */
++	[10] = { .code = BTN_NORTH, .kind = K_KEY },	/* X */
++	[11] = { .code = BTN_WEST,  .kind = K_KEY },	/* Y */
++	[12] = { .code = BTN_SOUTH, .kind = K_KEY },	/* B */
++	[13] = { .code = BTN_EAST,  .kind = K_KEY },	/* A */
++	[14] = { .code = BTN_TR,    .kind = K_KEY },	/* R1 */
++	[15] = { .code = BTN_THUMBR, .kind = K_KEY },	/* R3 */
++};
++
++/* ch_tl/ch_tr are negative when the triggers are digital instead of analog. */
++struct mcu_variant {
++	const char *name;
++	const char *phys;
++	u16 product;
++	const struct mcu_key *keymap;
++	u8 nr_adc;
++	u8 ch_lx, ch_ly, ch_rx, ch_ry;
++	s8 ch_tl, ch_tr;
++	bool inv_lx, inv_ly, inv_rx, inv_ry;
++};
++
++static const struct mcu_variant pmax_variant = {
++	.name    = "MANGMI Pocket Max Joypad",
++	.phys    = "mangmi-pocket-max/input0",
++	.product = 0x0429,
++	.keymap  = pmax_keymap,
++	.nr_adc  = 6,
++	.ch_lx   = 1,
++	.ch_ly   = 2,
++	.ch_rx   = 4,
++	.ch_ry   = 5,
++	.ch_tl   = 0,
++	.ch_tr   = 3,
++	.inv_rx  = true,
++	.inv_ry  = true,
++};
++
++static const struct mcu_variant airy_variant = {
++	.name    = "MANGMI Air Y Pro Joypad",
++	.phys    = "mangmi-air-y-pro/input0",
++	.product = 0x042a,
++	.keymap  = airy_keymap,
++	.nr_adc  = 4,
++	.ch_lx   = 0,
++	.ch_ly   = 1,
++	.ch_rx   = 2,
++	.ch_ry   = 3,
++	.ch_tl   = -1,
++	.ch_tr   = -1,
++	.inv_lx  = true,
++	.inv_ly  = true,
++	.inv_rx  = true,
++	.inv_ry  = true,
++};
++
++static int mcu_raw(u16 raw, bool invert)
++{
++	return invert ? (MCU_ADC_MAX - (int)raw) : (int)raw;
++}
++
 +static int mcu_stick(u16 raw, int center, bool invert)
 +{
-+	int v = invert ? (MCU_ADC_MAX - (int)raw) : (int)raw;
++	int v = mcu_raw(raw, invert);
 +
 +	v -= center;
 +	v = clamp(v, -MCU_MAP_CLAMP, MCU_MAP_CLAMP);
@@ -200,6 +276,7 @@ index 000000000000..82570eff2fbe
 +#define MCU_NR_GPIO_BTN		ARRAY_SIZE(mcu_gpio_btns)
 +
 +struct pmax_joypad {
++	const struct mcu_variant *var;
 +	struct spi_device *spi;
 +	struct input_dev *input;
 +	struct mutex lock;
@@ -221,6 +298,10 @@ index 000000000000..82570eff2fbe
 +	u16 adc_timer;
 +
 +	int cx, cy, cz, crz;
++
++	struct delayed_work watchdog;
++	unsigned long last_adc;
++	bool wd_stop;
 +};
 +
 +static int mcu_read(struct pmax_joypad *jp, u8 cmd, u16 *buf, int n)
@@ -254,37 +335,45 @@ index 000000000000..82570eff2fbe
 +{
 +	u16 cmd = MCU_CMD_SET_ADC_TIME;
 +	u16 val = jp->adc_timer;
++	u16 start = MCU_CMD_SET_MCU_TIME;
 +
 +	mutex_lock(&jp->lock);
 +	if (!spi_write(jp->spi, &cmd, sizeof(cmd))) {
 +		usleep_range(MCU_CMD_DELAY_US, MCU_CMD_DELAY_US + 10);
 +		spi_write(jp->spi, &val, sizeof(val));
 +	}
++	usleep_range(MCU_CMD_DELAY_US, MCU_CMD_DELAY_US + 10);
++	spi_write(jp->spi, &start, sizeof(start));
 +	mutex_unlock(&jp->lock);
 +}
 +
 +static void mcu_autocenter(struct pmax_joypad *jp)
 +{
-+	u16 a[MCU_ADC_CH], b[MCU_ADC_CH];
-+	int i;
++	const struct mcu_variant *var = jp->var;
++	u16 a[MCU_ADC_MAX_CH], b[MCU_ADC_MAX_CH];
++	int c, i;
 +
-+	if (mcu_read(jp, MCU_CMD_READ_ADC, a, MCU_ADC_CH))
++	if (mcu_read(jp, MCU_CMD_READ_ADC, a, var->nr_adc))
 +		return;
 +	usleep_range(5000, 6000);
-+	if (mcu_read(jp, MCU_CMD_READ_ADC, b, MCU_ADC_CH))
++	if (mcu_read(jp, MCU_CMD_READ_ADC, b, var->nr_adc))
 +		return;
-+	for (i = 0; i < MCU_ADC_CH; i++)
++	for (i = 0; i < var->nr_adc; i++)
 +		if (!a[i] || a[i] > MCU_ADC_MAX || abs((int)a[i] - (int)b[i]) > 40)
 +			return;
 +
-+	if (abs((int)a[1] - MCU_CENTER_X) < 500)
-+		jp->cx = a[1];
-+	if (abs((int)a[2] - MCU_CENTER_Y) < 500)
-+		jp->cy = a[2];
-+	if (abs((MCU_ADC_MAX - (int)a[4]) - MCU_CENTER_Z) < 500)
-+		jp->cz = MCU_ADC_MAX - a[4];
-+	if (abs((MCU_ADC_MAX - (int)a[5]) - MCU_CENTER_RZ) < 500)
-+		jp->crz = MCU_ADC_MAX - a[5];
++	c = mcu_raw(a[var->ch_lx], var->inv_lx);
++	if (abs(c - MCU_CENTER_X) < 500)
++		jp->cx = c;
++	c = mcu_raw(a[var->ch_ly], var->inv_ly);
++	if (abs(c - MCU_CENTER_Y) < 500)
++		jp->cy = c;
++	c = mcu_raw(a[var->ch_rx], var->inv_rx);
++	if (abs(c - MCU_CENTER_Z) < 500)
++		jp->cz = c;
++	c = mcu_raw(a[var->ch_ry], var->inv_ry);
++	if (abs(c - MCU_CENTER_RZ) < 500)
++		jp->crz = c;
 +}
 +
 +static void mcu_report_keys(struct pmax_joypad *jp, u16 keys)
@@ -294,7 +383,7 @@ index 000000000000..82570eff2fbe
 +	int bit;
 +
 +	for (bit = 0; bit < MCU_KEY_BITS; bit++) {
-+		const struct mcu_key *k = &mcu_keymap[bit];
++		const struct mcu_key *k = &jp->var->keymap[bit];
 +		bool pressed = keys & BIT(bit);
 +
 +		switch (k->kind) {
@@ -335,8 +424,10 @@ index 000000000000..82570eff2fbe
 +	return IRQ_HANDLED;
 +}
 +
-+static void mcu_set_axis_absinfo(struct input_dev *dev)
++static void mcu_set_axis_absinfo(struct pmax_joypad *jp)
 +{
++	struct input_dev *dev = jp->input;
++
 +	input_set_abs_params(dev, ABS_X,
 +		INT_SIGN(axis_leftx_min) * (abs(axis_leftx_min) - axis_leftx_antideadzone),
 +		INT_SIGN(axis_leftx_max) * (abs(axis_leftx_max) - axis_leftx_antideadzone), axis_fuzz, 0);
@@ -349,8 +440,14 @@ index 000000000000..82570eff2fbe
 +	input_set_abs_params(dev, ABS_RY,
 +		INT_SIGN(axis_righty_min) * (abs(axis_righty_min) - axis_righty_antideadzone),
 +		INT_SIGN(axis_righty_max) * (abs(axis_righty_max) - axis_righty_antideadzone), axis_fuzz, 0);
-+	input_set_abs_params(dev, ABS_HAT2X, 0, trigger_left_max - trigger_left_antideadzone, trigger_fuzz, 30);
-+	input_set_abs_params(dev, ABS_HAT2Y, 0, trigger_right_max - trigger_right_antideadzone, trigger_fuzz, 30);
++	if (jp->var->ch_tl >= 0)
++		input_set_abs_params(dev, ABS_HAT2X, 0,
++				     trigger_left_max - trigger_left_antideadzone,
++				     trigger_fuzz, 30);
++	if (jp->var->ch_tr >= 0)
++		input_set_abs_params(dev, ABS_HAT2Y, 0,
++				     trigger_right_max - trigger_right_antideadzone,
++				     trigger_fuzz, 30);
 +	input_set_abs_params(dev, ABS_HAT0X, -1, 1, 0, 0);
 +	input_set_abs_params(dev, ABS_HAT0Y, -1, 1, 0, 0);
 +}
@@ -358,15 +455,16 @@ index 000000000000..82570eff2fbe
 +static irqreturn_t mcu_adc_irq(int irq, void *data)
 +{
 +	struct pmax_joypad *jp = data;
++	const struct mcu_variant *var = jp->var;
 +	struct input_dev *dev = jp->input;
-+	u16 adc[MCU_ADC_CH];
++	u16 adc[MCU_ADC_MAX_CH];
 +	bool all_zero = true;
 +	int i, v;
 +
-+	if (mcu_read(jp, MCU_CMD_READ_ADC, adc, MCU_ADC_CH))
++	if (mcu_read(jp, MCU_CMD_READ_ADC, adc, var->nr_adc))
 +		return IRQ_HANDLED;
 +
-+	for (i = 0; i < MCU_ADC_CH; i++) {
++	for (i = 0; i < var->nr_adc; i++) {
 +		if (adc[i] > MCU_ADC_MAX)
 +			return IRQ_HANDLED;
 +		if (adc[i])
@@ -375,31 +473,39 @@ index 000000000000..82570eff2fbe
 +	if (all_zero)
 +		return IRQ_HANDLED;
 +
++	jp->last_adc = jiffies;
++
 +	if (update_params) {
-+		mcu_set_axis_absinfo(dev);
++		mcu_set_axis_absinfo(jp);
 +		update_params = 0;
 +	}
 +
-+	v = mcu_stick(adc[1], jp->cx, false) + axis_leftx_center;
++	v = mcu_stick(adc[var->ch_lx], jp->cx, var->inv_lx) + axis_leftx_center;
 +	v = abs(v) < axis_leftx_deadzone ? 0 : INT_SIGN(v) * (abs(v) - axis_leftx_antideadzone);
 +	input_report_abs(dev, ABS_X, v);
 +
-+	v = mcu_stick(adc[2], jp->cy, false) + axis_lefty_center;
++	v = mcu_stick(adc[var->ch_ly], jp->cy, var->inv_ly) + axis_lefty_center;
 +	v = abs(v) < axis_lefty_deadzone ? 0 : INT_SIGN(v) * (abs(v) - axis_lefty_antideadzone);
 +	input_report_abs(dev, ABS_Y, v);
 +
-+	v = mcu_stick(adc[4], jp->cz, true) + axis_rightx_center;
++	v = mcu_stick(adc[var->ch_rx], jp->cz, var->inv_rx) + axis_rightx_center;
 +	v = abs(v) < axis_rightx_deadzone ? 0 : INT_SIGN(v) * (abs(v) - axis_rightx_antideadzone);
 +	input_report_abs(dev, ABS_RX, v);
 +
-+	v = mcu_stick(adc[5], jp->crz, true) + axis_righty_center;
++	v = mcu_stick(adc[var->ch_ry], jp->crz, var->inv_ry) + axis_righty_center;
 +	v = abs(v) < axis_righty_deadzone ? 0 : INT_SIGN(v) * (abs(v) - axis_righty_antideadzone);
 +	input_report_abs(dev, ABS_RY, v);
 +
-+	input_report_abs(dev, ABS_HAT2X,
-+			 mcu_trigger(adc[0], trigger_left_max, trigger_left_deadzone, trigger_left_antideadzone));
-+	input_report_abs(dev, ABS_HAT2Y,
-+			 mcu_trigger(adc[3], trigger_right_max, trigger_right_deadzone, trigger_right_antideadzone));
++	if (var->ch_tl >= 0)
++		input_report_abs(dev, ABS_HAT2X,
++				 mcu_trigger(adc[var->ch_tl], trigger_left_max,
++					     trigger_left_deadzone,
++					     trigger_left_antideadzone));
++	if (var->ch_tr >= 0)
++		input_report_abs(dev, ABS_HAT2Y,
++				 mcu_trigger(adc[var->ch_tr], trigger_right_max,
++					     trigger_right_deadzone,
++					     trigger_right_antideadzone));
 +
 +	input_sync(dev);
 +	return IRQ_HANDLED;
@@ -433,7 +539,7 @@ index 000000000000..82570eff2fbe
 +	gpiod_set_raw_value_cansleep(jp->hall_l_gpio, 1);
 +	gpiod_set_raw_value_cansleep(jp->hall_r_gpio, 1);
 +	gpiod_set_raw_value_cansleep(jp->boot0_gpio, 1);
-+	gpiod_set_raw_value_cansleep(jp->boot1_gpio, 1);
++	gpiod_set_raw_value_cansleep(jp->boot1_gpio, 0);
 +
 +	msleep(20);
 +	gpiod_set_raw_value_cansleep(jp->reset_gpio, 0);
@@ -447,6 +553,30 @@ index 000000000000..82570eff2fbe
 +	gpiod_set_raw_value_cansleep(jp->hall_l_gpio, 0);
 +	gpiod_set_raw_value_cansleep(jp->hall_r_gpio, 0);
 +	gpiod_set_raw_value_cansleep(jp->power_gpio, 0);
++}
++
++static void mcu_kick(struct pmax_joypad *jp)
++{
++	gpiod_set_raw_value_cansleep(jp->reset_gpio, 1);
++	usleep_range(5000, 5200);
++	gpiod_set_raw_value_cansleep(jp->reset_gpio, 0);
++	msleep(100);
++	mcu_init(jp);
++}
++
++static void mcu_watchdog(struct work_struct *work)
++{
++	struct pmax_joypad *jp = container_of(to_delayed_work(work),
++					      struct pmax_joypad, watchdog);
++
++	if (time_after(jiffies, jp->last_adc + msecs_to_jiffies(MCU_WD_SILENT_MS)))
++		mcu_kick(jp);
++
++	mutex_lock(&jp->lock);
++	if (!jp->wd_stop)
++		queue_delayed_work(system_freezable_wq, &jp->watchdog,
++				   msecs_to_jiffies(MCU_WD_POLL_MS));
++	mutex_unlock(&jp->lock);
 +}
 +
 +static struct gpio_desc *mcu_get_gpio(struct device *dev, const char *con,
@@ -469,6 +599,10 @@ index 000000000000..82570eff2fbe
 +	jp = devm_kzalloc(dev, sizeof(*jp), GFP_KERNEL);
 +	if (!jp)
 +		return -ENOMEM;
++
++	jp->var = spi_get_device_match_data(spi);
++	if (!jp->var)
++		return -ENODEV;
 +
 +	jp->spi = spi;
 +	mutex_init(&jp->lock);
@@ -498,21 +632,21 @@ index 000000000000..82570eff2fbe
 +		return -ENOMEM;
 +	jp->input = input;
 +
-+	input->name = "MANGMI Pocket Max Joypad";
-+	input->phys = "mangmi-pocket-max/input0";
++	input->name = jp->var->name;
++	input->phys = jp->var->phys;
 +	input->id.bustype = BUS_SPI;
 +	input->id.vendor  = 0x4001;
-+	input->id.product = 0x0429;
++	input->id.product = jp->var->product;
 +	input->id.version = 0x0100;
 +
 +	for (bit = 0; bit < MCU_KEY_BITS; bit++)
-+		if (mcu_keymap[bit].kind == K_KEY)
-+			input_set_capability(input, EV_KEY, mcu_keymap[bit].code);
++		if (jp->var->keymap[bit].kind == K_KEY)
++			input_set_capability(input, EV_KEY, jp->var->keymap[bit].code);
 +	for (i = 0; i < MCU_NR_GPIO_BTN; i++)
 +		if (jp->btn_gpio[i])
 +			input_set_capability(input, EV_KEY, mcu_gpio_btns[i].code);
 +
-+	mcu_set_axis_absinfo(input);
++	mcu_set_axis_absinfo(jp);
 +
 +	ret = input_register_device(input);
 +	if (ret)
@@ -565,6 +699,11 @@ index 000000000000..82570eff2fbe
 +					     mcu_gpio_btns[i].con);
 +	}
 +
++	jp->last_adc = jiffies;
++	INIT_DELAYED_WORK(&jp->watchdog, mcu_watchdog);
++	queue_delayed_work(system_freezable_wq, &jp->watchdog,
++			   msecs_to_jiffies(MCU_WD_POLL_MS));
++
 +	return 0;
 +}
 +
@@ -572,6 +711,10 @@ index 000000000000..82570eff2fbe
 +{
 +	struct pmax_joypad *jp = spi_get_drvdata(spi);
 +
++	mutex_lock(&jp->lock);
++	jp->wd_stop = true;
++	mutex_unlock(&jp->lock);
++	cancel_delayed_work_sync(&jp->watchdog);
 +	mcu_power_off(jp);
 +}
 +
@@ -579,6 +722,10 @@ index 000000000000..82570eff2fbe
 +{
 +	struct pmax_joypad *jp = spi_get_drvdata(to_spi_device(dev));
 +
++	mutex_lock(&jp->lock);
++	jp->wd_stop = true;
++	mutex_unlock(&jp->lock);
++	cancel_delayed_work_sync(&jp->watchdog);
 +	disable_irq(jp->key_irq);
 +	disable_irq(jp->adc_irq);
 +	mcu_power_off(jp);
@@ -593,17 +740,30 @@ index 000000000000..82570eff2fbe
 +	mcu_init(jp);
 +	enable_irq(jp->key_irq);
 +	enable_irq(jp->adc_irq);
++	jp->last_adc = jiffies;
++	jp->wd_stop = false;
++	queue_delayed_work(system_freezable_wq, &jp->watchdog,
++			   msecs_to_jiffies(MCU_WD_POLL_MS));
 +	return 0;
 +}
 +
 +static DEFINE_SIMPLE_DEV_PM_OPS(pmax_pm_ops, pmax_suspend, pmax_resume);
 +
 +static const struct of_device_id pmax_of_match[] = {
-+	{ .compatible = "mangmi,pocket-max-joypad" },
-+	{ .compatible = "spi,mcu_joystick" },
++	{ .compatible = "mangmi,pocket-max-joypad", .data = &pmax_variant },
++	{ .compatible = "mangmi,air-y-pro-joypad",  .data = &airy_variant },
++	{ .compatible = "spi,mcu_joystick",         .data = &pmax_variant },
 +	{ }
 +};
 +MODULE_DEVICE_TABLE(of, pmax_of_match);
++
++static const struct spi_device_id pmax_spi_id[] = {
++	{ "pocket-max-joypad", (kernel_ulong_t)&pmax_variant },
++	{ "air-y-pro-joypad",  (kernel_ulong_t)&airy_variant },
++	{ "mcu_joystick",      (kernel_ulong_t)&pmax_variant },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, pmax_spi_id);
 +
 +static struct spi_driver pmax_driver = {
 +	.driver = {
@@ -613,9 +773,10 @@ index 000000000000..82570eff2fbe
 +	},
 +	.probe = pmax_probe,
 +	.remove = pmax_remove,
++	.id_table = pmax_spi_id,
 +};
 +module_spi_driver(pmax_driver);
 +
 +MODULE_AUTHOR("ROCKNIX");
-+MODULE_DESCRIPTION("MANGMI Pocket Max Joypad");
++MODULE_DESCRIPTION("MANGMI Pocket Max / Air Y Pro Joypad");
 +MODULE_LICENSE("GPL");

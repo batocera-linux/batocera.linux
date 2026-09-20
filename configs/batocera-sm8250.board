@@ -15,14 +15,14 @@ BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2
 # Kernel
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_VERSION=y
-BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="7.0.14"
-BR2_KERNEL_HEADERS_7_0=y
+BR2_LINUX_KERNEL_CUSTOM_VERSION_VALUE="7.2.6"
+BR2_KERNEL_HEADERS_7_2=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8250/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8250/linux_sm8250-defconfig.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
-BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sm8250-retroidpocket-flip2 qcom/sm8250-retroidpocket-rp5 qcom/sm8250-retroidpocket-rpmini qcom/sm8250-retroidpocket-rpminiv2"
+BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/sm8250-retroidpocket-flip2 qcom/sm8250-retroidpocket-flip2-visionox qcom/sm8250-retroidpocket-rp5 qcom/sm8250-retroidpocket-rp5-visionox qcom/sm8250-retroidpocket-rpmini qcom/sm8250-retroidpocket-rpminiv2 qcom/sm8250-mangmi-air-y-pro qcom/sm8250-mangmi-pocket-max qcom/sm8250-ayn-thorlite"
 BR2_LINUX_KERNEL_CUSTOM_DTS_PATH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8250/dts/*"
 
 # System

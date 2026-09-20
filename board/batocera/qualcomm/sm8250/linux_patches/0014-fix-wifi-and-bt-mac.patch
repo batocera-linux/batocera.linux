@@ -41,7 +41,7 @@ diff -rupbN linux.orig/drivers/bluetooth/btqca.c linux/drivers/bluetooth/btqca.c
 +	}
 +
 +	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	bdaddr->b[5] = 0x00;
@@ -178,7 +178,7 @@ diff -rupbN linux.orig/drivers/net/wireless/ath/ath11k/mac.c linux/drivers/net/w
 +	}
 +
 +	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	macaddr->b[5] = 0x00;

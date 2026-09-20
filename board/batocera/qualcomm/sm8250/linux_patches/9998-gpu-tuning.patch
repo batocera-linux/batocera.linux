@@ -1,0 +1,166 @@
+GPU tuning for SM8250: frequency ladder, ACD, and memory bandwidth.
+
+
+1. Overclock and use KonaBess frequency lader
+Matches speedbin extracted from stock firmware and included extra steps in the
+ladder that are exposed in android by KonaBess mod.
+
+
+2. Enalbe ACD
+Enable ACD it was not enabled before. 
+
+
+3. Allow voting for memory bandwidth
+Matches stock memory bandwith votes. 
+
+Idle voted at higher bandwidth now may have negative effect
+on battery life. 
+
+--- linux.orig/arch/arm64/boot/dts/qcom/sm8250.dtsi
++++ linux/arch/arm64/boot/dts/qcom/sm8250.dtsi
+@@ -2939,6 +2939,9 @@
+ 
+ 			iommus = <&adreno_smmu 0 0x401>;
+ 
++			interconnects = <&gem_noc MASTER_GRAPHICS_3D 0 &mc_virt SLAVE_EBI_CH0 0>;
++			interconnect-names = "gfx-mem";
++
+ 			operating-points-v2 = <&gpu_opp_table>;
+ 
+ 			qcom,gmu = <&gmu>;
+@@ -2955,47 +2958,125 @@
+ 
+ 			gpu_opp_table: opp-table {
+ 				compatible = "operating-points-v2";
++
++				opp-925000000 {
++					opp-hz = /bits/ 64 <925000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-905000000 {
++					opp-hz = /bits/ 64 <905000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-855000000 {
++					opp-hz = /bits/ 64 <855000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
+ 
++				opp-800000000 {
++					opp-hz = /bits/ 64 <800000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-750000000 {
++					opp-hz = /bits/ 64 <750000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-725000000 {
++					opp-hz = /bits/ 64 <725000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-700000000 {
++					opp-hz = /bits/ 64 <700000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_TURBO>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
+ 				opp-670000000 {
+ 					opp-hz = /bits/ 64 <670000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
+-					opp-supported-hw = <0xa>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
++				};
++
++				opp-650000000 {
++					opp-hz = /bits/ 64 <650000000>;
++					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
++					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
+ 				};
+ 
+ 				opp-587000000 {
+ 					opp-hz = /bits/ 64 <587000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_NOM>;
+ 					opp-supported-hw = <0xb>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <8171875>;
+ 				};
+ 
+ 				opp-525000000 {
+ 					opp-hz = /bits/ 64 <525000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L2>;
+ 					opp-supported-hw = <0xf>;
++					qcom,opp-acd-level = <0x802b5ffd>;
++					opp-peak-kBps = <6074218>;
+ 				};
+ 
+ 				opp-490000000 {
+ 					opp-hz = /bits/ 64 <490000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
+ 					opp-supported-hw = <0xf>;
++					qcom,opp-acd-level = <0xa02b5ffd>;
++					opp-peak-kBps = <6074218>;
+ 				};
+ 
+ 				opp-441600000 {
+ 					opp-hz = /bits/ 64 <441600000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L0>;
+ 					opp-supported-hw = <0xf>;
++					qcom,opp-acd-level = <0xa02b5ffd>;
++					opp-peak-kBps = <6074218>;
+ 				};
+ 
+ 				opp-400000000 {
+ 					opp-hz = /bits/ 64 <400000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
+ 					opp-supported-hw = <0xf>;
++					qcom,opp-acd-level = <0xa02b5ffd>;
++					opp-peak-kBps = <3972656>;
+ 				};
+ 
+ 				opp-305000000 {
+ 					opp-hz = /bits/ 64 <305000000>;
+ 					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
+ 					opp-supported-hw = <0xf>;
++					qcom,opp-acd-level = <0xa02b5ffd>;
++					opp-peak-kBps = <1761718>;
+ 				};
+ 			};
+ 		};
+@@ -3025,6 +3106,8 @@
+ 			power-domain-names = "cx", "gx";
+ 
+ 			iommus = <&adreno_smmu 5 0x400>;
++
++			qcom,qmp = <&aoss_qmp>;
+ 
+ 			operating-points-v2 = <&gmu_opp_table>;
+ 
