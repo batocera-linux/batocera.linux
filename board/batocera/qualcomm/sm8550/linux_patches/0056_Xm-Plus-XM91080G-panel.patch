@@ -12,12 +12,12 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  create mode 100644 drivers/gpu/drm/panel/panel-boe-xm91080g.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index c667f5e4424f..3bcf710414dd 100644
+index 54d816121..5657fc360 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -105,6 +105,16 @@ config DRM_PANEL_BOE_TV101WUM_LL2
- 	  Say Y here if you want to support for BOE TV101WUM-LL2
- 	  WUXGA PANEL DSI Video Mode panel
+@@ -136,6 +136,16 @@ config DRM_PANEL_CHIPWEALTH_CH13726A
+ 	  Say Y here if you want to enable support for ChipWealth
+ 	  CH13726A-based display panels.
  
 +config DRM_PANEL_BOE_XM91080G
 +	tristate "Xm-Plus XM91080G-based panels"
@@ -31,25 +31,25 @@ index c667f5e4424f..3bcf710414dd 100644
 +
  config DRM_PANEL_EBBG_FT8719
  	tristate "EBBG FT8719 panel driver"
- 	depends on OF
+ 	depends on GPIOLIB
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 5306d33caead..4b64459f88b5 100644
+index c63f80902..8ffbe4746 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TD4320) += panel-boe-td4320.o
+@@ -11,6 +11,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TD4320) += panel-boe-td4320.o
  obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
 +obj-$(CONFIG_DRM_PANEL_BOE_XM91080G) += panel-boe-xm91080g.o
+ obj-$(CONFIG_DRM_PANEL_CHIPWEALTH_CH13726A) += panel-chipwealth-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
  obj-$(CONFIG_DRM_PANEL_LVDS) += panel-lvds.o
- obj-$(CONFIG_DRM_PANEL_SIMPLE) += panel-simple.o
 diff --git a/drivers/gpu/drm/panel/panel-boe-xm91080g.c b/drivers/gpu/drm/panel/panel-boe-xm91080g.c
 new file mode 100644
-index 000000000000..bd8e0f8562c8
+index 000000000..f750b1fc7
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-boe-xm91080g.c
-@@ -0,0 +1,388 @@
+@@ -0,0 +1,386 @@
 +/*
 + * Xm-Plus XM91080G Driver IC panels driver
 + *
@@ -363,9 +363,10 @@ index 000000000000..bd8e0f8562c8
 +	struct xm91080g *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct xm91080g, panel,
++				   &xm91080g_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(xm91080g_supplies),
 +		xm91080g_supplies, &ctx->supplies);
@@ -384,9 +385,6 @@ index 000000000000..bd8e0f8562c8
 +	dsi->lanes = 4;
 +	dsi->format = MIPI_DSI_FMT_RGB888;
 +	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST;
-+
-+	drm_panel_init(&ctx->panel, dev, &xm91080g_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +
 +    ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
 +    if (ret < 0) {
@@ -439,6 +437,3 @@ index 000000000000..bd8e0f8562c8
 +MODULE_DESCRIPTION("DRM driver for Xm-Plus XM91080G based MIPI DSI panels");
 +MODULE_LICENSE("GPL");
 \ No newline at end of file
--- 
-2.34.1
-

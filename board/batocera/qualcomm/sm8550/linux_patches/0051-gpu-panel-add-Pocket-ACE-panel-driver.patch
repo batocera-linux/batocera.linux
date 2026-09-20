@@ -74,6 +74,7 @@ index 000000000000..fe76ac9fab2c
 +
 +static const struct regulator_bulk_data panel_supplies[] = {
 +	{ .supply = "avdd" },
++	{ .supply = "avee" },
 +	{ .supply = "vci" },
 +	{ .supply = "vddio" },
 +};
@@ -203,9 +204,10 @@ index 000000000000..fe76ac9fab2c
 +	struct ar06_4inch *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct ar06_4inch, panel,
++				   &ar06_4inch_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
 +		panel_supplies, &ctx->supplies);
@@ -233,8 +235,6 @@ index 000000000000..fe76ac9fab2c
 +		return ret;
 +	}
 +
-+	drm_panel_init(&ctx->panel, dev, &ar06_4inch_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +	ctx->panel.prepare_prev_first = true;
 +
 +	ret = drm_panel_of_backlight(&ctx->panel);

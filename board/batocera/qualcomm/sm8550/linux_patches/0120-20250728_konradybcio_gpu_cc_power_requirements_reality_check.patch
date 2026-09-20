@@ -13,22 +13,23 @@ function. Ensure that's conveyed to the OS.
 
 Fixes: 9f7579423d2d ("arm64: dts: qcom: sm8550: Add graphics clock controller")
 Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+[Modified 8/9/2026 Rocknix: drop RPMHPD_GFX, GX rail is GMU owned confirmed in
+downstream kernel.]
 ---
- arch/arm64/boot/dts/qcom/sm8550.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/qcom/sm8550.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm8550.dtsi b/arch/arm64/boot/dts/qcom/sm8550.dtsi
 index 45713d46f3c52487d2638b7ab194c111f58679ce..28eade49526dc9bb0a7b211f96dd350873489029 100644
 --- a/arch/arm64/boot/dts/qcom/sm8550.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm8550.dtsi
-@@ -2572,6 +2572,12 @@ gpucc: clock-controller@3d90000 {
+@@ -2572,6 +2572,11 @@ gpucc: clock-controller@3d90000 {
  			clocks = <&bi_tcxo_div2>,
  				 <&gcc GCC_GPU_GPLL0_CLK_SRC>,
  				 <&gcc GCC_GPU_GPLL0_DIV_CLK_SRC>;
 +
 +			power-domains = <&rpmhpd RPMHPD_CX>,
 +					<&rpmhpd RPMHPD_MX>,
-+					<&rpmhpd RPMHPD_GFX>,
 +					<&rpmhpd RPMHPD_MXC>;
 +
  			#clock-cells = <1>;
