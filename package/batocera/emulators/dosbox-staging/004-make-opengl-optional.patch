@@ -1,0 +1,25 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -465,7 +465,9 @@
+ endif()
+ find_package(iir REQUIRED)
+ find_package(PNG REQUIRED)
+-find_package(OpenGL REQUIRED)
++if (C_OPENGL)
++  find_package(OpenGL REQUIRED)
++endif()
+ find_package(MT32Emu REQUIRED)
+ find_package(FluidSynth REQUIRED CONFIG)
+ if (C_ALSA)
+diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -17,5 +17,5 @@
+ )
+ 
+ target_link_libraries(libdosboxcommon PRIVATE
+-  OpenGL::GL
+-  $<IF:$<BOOL:${C_OPENGL}>,libglad,>)
++  $<$<BOOL:${C_OPENGL}>:OpenGL::GL>
++  $<$<BOOL:${C_OPENGL}>:libglad>)
