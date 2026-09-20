@@ -1,0 +1,61 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Sun, 21 Sep 2026 00:00:00 +1000
+Subject: [PATCH] drm/msm/dsi: round the byte clock against the DSI PHY PLL
+
+Linux 7.2.6 added a clk_round_rate() on the byte clock to
+dsi_calc_clk_rate_6g() and stores the result back into
+msm_host->byte_clk_rate.
+
+That helper is reached from msm_dsi_host_get_phy_clk_req(), which
+dsi_mgr_phy_enable() calls *before* msm_dsi_phy_enable() and before
+msm_dsi_host_power_on() -> dsi_link_clk_set_rate_6g_v2_9() switches
+byte_src onto the PHY PLL.  At that point disp_cc_mdss_byte0_clk_src is
+still on its boot parent, and clk_byte2_determine_rate() rounds against
+whatever that current parent is - it never considers reparenting.  On
+SM8750 the boot parent is BI_TCXO, so the round returns 19.2 MHz,
+byte_clk_rate collapses from ~72.8 MHz to 19.2 MHz and the PHY is
+programmed for a 153.6 Mbps link.  Nothing returns an error: the OPP
+lookup still ceils to the 140.63 MHz entry and every call succeeds, but
+the panel never lights up.
+
+This is made permanent on this board by
+0048-drm-msm-dsi-reparent-byte-pixel-src-to-xo-on-disable.patch, which
+deliberately parks byte_src/pixel_src back on XO on every power off.
+
+Round against the DSI PHY PLL byte clock instead - that is the parent the
+RCG is switched to a moment later, and its whole chain down to the VCO is
+CLK_SET_RATE_PARENT, so the rounding is meaningful.  Hosts without a
+dsi_pll_byte clock (pre-v2.9) keep the upstream behaviour.
+
+Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
+---
+--- a/drivers/gpu/drm/msm/dsi/dsi_host.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
+@@ -676,6 +676,7 @@
+ int dsi_calc_clk_rate_6g(struct msm_dsi_host *msm_host, bool is_bonded_dsi)
+ {
+ 	long rounded_byte_clk_rate;
++	struct clk *round_clk;
+ 
+ 	if (!msm_host->mode) {
+ 		pr_err("%s: mode not set\n", __func__);
+@@ -684,7 +685,18 @@
+ 
+ 	dsi_calc_pclk(msm_host, is_bonded_dsi);
+ 
+-	rounded_byte_clk_rate = clk_round_rate(msm_host->byte_clk,
++	/*
++	 * This runs from msm_dsi_host_get_phy_clk_req(), i.e. before the PHY
++	 * PLL is enabled and before dsi_link_clk_set_rate_6g_v2_9() reparents
++	 * byte_src onto it, so the byte clock is still fed by its boot parent
++	 * (XO).  Rounding through it would return the XO rate, which then gets
++	 * handed to the PHY as the target bit clock - the link comes up at
++	 * ~153 Mbps and the panel stays dark.  Round against the DSI PHY PLL
++	 * byte clock instead, which is the parent the RCG actually ends up on.
++	 */
++	round_clk = msm_host->dsi_pll_byte_clk ? : msm_host->byte_clk;
++
++	rounded_byte_clk_rate = clk_round_rate(round_clk,
+ 					       msm_host->byte_clk_rate);
+ 	if (rounded_byte_clk_rate < 0) {
+ 		pr_err("%s: failed to round byte clock rate, %ld\n",
