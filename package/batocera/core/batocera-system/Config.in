@@ -1414,6 +1414,9 @@ config BR2_PACKAGE_BATOCERA_PORTS_SYSTEMS
 	# Medal of Honor: Allied Assault
 	select BR2_PACKAGE_OPENMOHAA    if BR2_x86_64
 
+	# OpenGOAL (Jak and Daxter trilogy)
+	select BR2_PACKAGE_OPENGOAL    if BR2_x86_64
+
 	help
 	  Ports
 

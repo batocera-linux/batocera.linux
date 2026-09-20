@@ -34,6 +34,7 @@
 - Legion Go / Go 2 LED controller support
 - Libretro-Azahar
 - NanoBoyAdvance as an alternative GBA emulator
+- OpenGOAL for the Jak and Daxter trilogy, built from your own PS2 disc image
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games

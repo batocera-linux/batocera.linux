@@ -4839,3 +4839,45 @@ gametank:
           Trouvez la documentation ici: https://wiki.batocera.org/systems:gametank
   comment_br: |
           Para mais informações: https://wiki.batocera.org/systems:gametank
+
+opengoal:
+  name: OpenGOAL
+  manufacturer: Naughty Dog
+  release: 2001
+  hardware: port
+  platform: pc
+  group: ports
+  comment_en: |
+          OpenGOAL is a native PC port of the Jak and Daxter trilogy, decompiled from the
+          PlayStation 2 originals. No game data is included - you must supply your own disc.
+
+          Put an ISO of a disc you own in this folder, one per game:
+          - Jak and Daxter: The Precursor Legacy (SCUS-97124, SCES-50361, SCPS-15021, SCPS-56003)
+          - Jak II (SCUS-97265, SCES-51608, SCPS-15057, SCKA-20010)
+          - Jak 3 (SCUS-97330, SCUS-97516, SCES-52460, SCKA-20040)
+
+          The first launch decompiles and recompiles the whole game from the disc. This takes a
+          long time and a lot of free space - around 4GB for Jak and Daxter, and 11GB each for
+          Jak II and Jak 3. The game starts on its own once it finishes. The result is kept in a
+          folder of the same name beside the disc image, and later launches reuse it.
+
+          Once that folder exists the disc image is no longer needed, and packing the folder into
+          a .squashfs roughly halves it. ES lists the .squashfs as the game just like the disc
+          image. To do that, open the file manager (Applications > File Manager, or F1 from the
+          system list), go to /userdata/roms/opengoal, right-click the folder and pick
+          "OpenGOAL: Squash Game". It offers to delete the folder and the disc image once the
+          .squashfs is written. "OpenGOAL: Extract Game" on a .squashfs unpacks it again.
+
+          A folder or .squashfs built by a different OpenGOAL version is rebuilt automatically,
+          as long as it still carries its iso_data.
+
+          Settings live in /userdata/system/configs/OpenGOAL, saves in /userdata/saves/opengoal
+          and screenshots in /userdata/screenshots/opengoal.
+
+          Jak II is complete but still considered beta upstream, and Jak 3 is incomplete.
+
+          For more info: https://wiki.batocera.org/systems:opengoal
+  comment_fr: |
+          Trouvez la documentation ici: https://wiki.batocera.org/systems:opengoal
+  comment_br: |
+          Para mais informações: https://wiki.batocera.org/systems:opengoal
