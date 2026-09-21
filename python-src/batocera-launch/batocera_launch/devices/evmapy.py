@@ -94,6 +94,7 @@ def _keys_mouse_action_to_evmapy_action(
 class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
     # evmapy is a process that map pads to keyboards (for pygame for example)
     __started: bool = field(init=False, default=False)
+    __start_task: asyncio.Task[object] | None = field(init=False, default=None)
     system_name: str = field(init=False)
     emulator: str = field(init=False)
     core: str = field(init=False)
@@ -114,9 +115,14 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
     async def __aenter__(self) -> Self:
         if await self.__prepare():
             self.__started = True
-            await run('batocera-evmapy', 'start', capture_output=False)
+            self.__start_task = asyncio.create_task(run('batocera-evmapy', 'start', capture_output=False))
 
         return self
+
+    async def __wait_started(self) -> None:
+        if (task := self.__start_task) is not None:
+            self.__start_task = None
+            await task
 
     async def __aexit__(
         self,
@@ -127,11 +133,14 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
     ) -> None:
         if self.__started:
             self.__started = False
+            with contextlib.suppress(Exception):
+                await self.__wait_started()
             await run('batocera-evmapy', 'stop', capture_output=False)
             await run('batocera-evmapy', 'clear', capture_output=False)
 
     @contextlib.asynccontextmanager
     async def monitor_controllers(self) -> AsyncGenerator[None]:
+        await self.__wait_started()
         task = await create_ready_task(self._monitor_controllers_loop)
         try:
             yield

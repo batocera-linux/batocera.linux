@@ -7,9 +7,6 @@ import struct
 from pathlib import Path
 from typing import TYPE_CHECKING, NotRequired, TypedDict, cast
 
-import qrcode
-from PIL import Image, ImageDraw, ImageFont, ImageOps
-
 from ..batoceraPaths import BATOCERA_SHARE_DIR, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
 from ..exceptions import BatoceraException
 from . import metadata
@@ -18,6 +15,7 @@ from .videoMode import getAltDecoration
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from PIL import Image
     from PIL.ImageFile import ImageFile
     from qrcode.image.pil import PilImage
 
@@ -147,6 +145,8 @@ def fast_image_size(image_file: str | Path) -> tuple[int, int]:
         return struct.unpack('>ii', head[16:24]) #image width, height
 
 def resizeImage(input_png: str | Path, output_png: str | Path, screen_width: int, screen_height: int, bezel_stretch: bool = False) -> None:
+    from PIL import Image
+
     imgin = Image.open(input_png)
     fillcolor = 'black'
     _logger.debug("Resizing bezel: image mode %s", imgin.mode)
@@ -157,6 +157,8 @@ def resizeImage(input_png: str | Path, output_png: str | Path, screen_width: int
         imgout.save(output_png, mode="RGBA", format="PNG")
 
 def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, screen_height: int, bezel_width: int, bezel_height: int, bezel_stretch: bool = False) -> None:
+    from PIL import Image, ImageOps
+
     imgin = Image.open(input_png)
     fillcolor = 'black'
     _logger.debug("Padding bezel: image mode %s", imgin.mode)
@@ -170,6 +172,9 @@ def padImage(input_png: str | Path, output_png: str | Path, screen_width: int, s
         imgout.save(output_png, mode="RGBA", format="PNG")
 
 def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: Emulator):
+    import qrcode
+    from PIL import Image
+
     url = f"https://retroachievements.org/game/{code}"
 
     bxsize = 3
@@ -198,6 +203,8 @@ def addQRCode(input_png: str | Path, output_png: str | Path, code: str, system: 
     newBezel.save(output_png)
 
 def tatooImage(input_png: Path, output_png: Path, system: Emulator) -> None:
+    from PIL import Image
+
     tattoo_file: ImageFile | None = None
 
     if system.config['bezel.tattoo'] == 'system':
@@ -267,6 +274,8 @@ def tatooImage(input_png: Path, output_png: Path, system: Emulator) -> None:
     imgnew.save(output_png, mode="RGBA", format="PNG")
 
 def alphaPaste(input_png: str | Path, output_png: str | Path, imgin: ImageFile, fillcolor: str, screensize: tuple[int, int], bezel_stretch: bool) -> None:
+    from PIL import Image, ImageOps
+
     # screensize=(screen_width, screen_height)
     imgin = Image.open(input_png)
     # TheBezelProject have Palette + alpha, not RGBA. PIL can't convert from P+A to RGBA.
@@ -306,6 +315,8 @@ def gunBordersSize(bordersSize: str | None) -> tuple[int, int]:
     return 0, 0
 
 def gunBorderImage(input_png: str | Path, output_png: str | Path, aspect_ratio: str | None, innerBorderSizePer: int = 2, outerBorderSizePer: int = 3, innerBorderColor: str = "#ffffff", outerBorderColor: str = "#000000") -> int:
+    from PIL import Image, ImageDraw
+
     # good default border that works in most circumstances is:
     #
     # 2% of the screen width in white.  Surrounded by 3% screen width of
@@ -322,7 +333,6 @@ def gunBorderImage(input_png: str | Path, output_png: str | Path, aspect_ratio: 
     # If all the games are drawn with the border this way then the settings
     # are static and the adjustment only needs to be calculated once.
 
-    from PIL import ImageDraw
     w,h = fast_image_size(input_png)
 
     # Calculate new width for 4:3 aspect ratio if a widescreen resolution
@@ -386,7 +396,8 @@ def gunsBordersColorFomConfig(config: SystemConfig) -> str:
     return "#ffffff"
 
 def createTransparentBezel(output_png: Path, width: int, height: int) -> None:
-    from PIL import ImageDraw
+    from PIL import Image, ImageDraw
+
     imgnew = Image.new("RGBA", (width,height), (0,0,0,0))
     ImageDraw.Draw(imgnew)
     imgnew.save(output_png, mode="RGBA", format="PNG")
@@ -415,6 +426,8 @@ def png_to_png_with_texts(
     width: int | None = None,
     height: int | None = None,
 ) -> None:
+    from PIL import Image, ImageDraw, ImageFont
+
     img_big = Image.open(input_png_path)
     ratio = img_big.width / img_big.height
 
