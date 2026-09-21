@@ -1,0 +1,56 @@
+From ad111f940747bf946a1d4740dd376ed0bcc3239e Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Sat, 16 Nov 2024 12:21:41 +0000
+Subject: [PATCH] arm64: dts: rockchip: add device tree for powkiddy x35s
+
+---
+ .../dts/rockchip/rk3566-powkiddy-x35s.dts     | 37 +++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x35s.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x35s.dts b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x35s.dts
+new file mode 100644
+index 000000000000..bca48d258af8
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x35s.dts
+@@ -0,0 +1,37 @@
++#include "rk3566-powkiddy-x55.dts"
++
++/ {
++	model = "Powkiddy x35s";
++	compatible = "powkiddy,x35s", "rockchip,rk3566";
++};
++
++&battery {
++	charge-full-design-microamp-hours = <3000000>;
++};
++
++&joypad {
++	invert-absx;
++	invert-absy;
++	sw5 {
++		label = "GPIO BTN-B";
++		linux,code = <BTN_SOUTH>;
++	};
++	sw6 {
++		label = "GPIO BTN-A";
++		linux,code = <BTN_EAST>;
++	};
++	sw7 {
++		label = "GPIO BTN-X";
++		linux,code = <BTN_NORTH>;
++	};
++	sw8 {
++		label = "GPIO BTN-Y";
++		linux,code = <BTN_WEST>;
++	};
++};
++
++&panel {
++	compatible = "rocknix,generic-dsi";
++	panel_description = "G size=70,52 delays=60,60,60,120,20 format=rgb888 lanes=4 flags=0xe03", "M clock=30000 horizontal=640,150,50,150 vertical=480,20,6,12 default=1 # fps=58.500059 (target=58.500059)", "M clock=30000 horizontal=640,150,61,150 vertical=480,20,88,12 # fps=49.950050 (target=49.950050)", "M clock=30000 horizontal=640,150,60,150 vertical=480,20,88,12 # fps=50.000000 (target=50.000000)", "M clock=30010 horizontal=640,150,72,150 vertical=480,20,81,12 # fps=50.006999 (target=50.007000)", "M clock=30130 horizontal=640,150,60,150 vertical=480,20,12,12 # fps=57.500000 (target=57.500000)", "M clock=35920 horizontal=640,150,59,150 vertical=480,20,90,12 # (CAN FAIL) fps=59.727502 (target=59.727500)", "M clock=31440 horizontal=640,150,61,150 vertical=480,20,12,12 # (CAN FAIL) fps=59.940060 (target=59.940060)", "M clock=31080 horizontal=640,150,60,150 vertical=480,20,6,12 # (CAN FAIL) fps=60.000000 (target=60.000000)", "M clock=32750 horizontal=640,150,96,150 vertical=480,20,14,12 # (CAN FAIL) fps=60.098801 (target=60.098800)", "M clock=45250 horizontal=640,150,66,150 vertical=480,20,84,12 # (CAN FAIL) fps=75.469999 (target=75.470000)", "M clock=46620 horizontal=640,150,60,150 vertical=480,20,6,12 # (CAN FAIL) fps=90.000000 (target=90.000000)", "M clock=62160 horizontal=640,150,60,150 vertical=480,20,6,12 # (CAN FAIL) fps=120.000000 (target=120.000000)", "I seq=b9f11283", "I seq=b1000000da80", "I seq=b2000370", "I seq=b31010fcfc03ff00000000", "I seq=b480", "I seq=b50606", "I seq=b6a9a9", "I seq=b825622003", "I seq=ba338105f90e0e2000000000000000442500900a0000014f01000037", "I seq=bc47", "I seq=bf021100", "I seq=c0737350500000127000", "I seq=c125c0323277e4ffffcccc7777", "I seq=c68200bfff00ff", "I seq=c7b8000a000000", "I seq=c810401e02", "I seq=cc0b", "I seq=e0000a0f293c3f4138080c0f121412131219000a0f293c3f4138080c0f121412131219", "I seq=e307070b0b0b0b00000000ff00c010", "I seq=e9c8100a0000f0811231234f86f0814708000010000000000010000000888808f8f4466002288888888818f8f557711338888800000001000000000000000000", "I seq=ea001a0000000000000000000088f818f88331177558888888f808f88220066448888823000002fe00000000000000000000000000000000000000000000", "I seq=efffff01", "I seq=11 wait=250", "I seq=29 wait=50";
++	rotation = <0>;
++};
+-- 
+2.34.1
+

@@ -1,0 +1,62 @@
+From fd8f6f25d5c6678b64c2608019bc893f7c7023d6 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 30 Oct 2024 20:52:32 -0500
+Subject: [PATCH] arm64: dts: rockchip: Correct boot enabled regulators for
+ RGxx3
+
+Correct the RGxx3 series so that only regulators that are enabled at
+boot (programmed by the OTP of the PMIC) are set with
+regulator-boot-on.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+index a695c5831083..8cfc4ae1f9d3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+@@ -108,7 +108,6 @@ vcc3v3_lcd0_n: regulator-vcc3v3-lcd0 {
+ 		enable-active-high;
+ 		pinctrl-0 = <&vcc_lcd_h>;
+ 		pinctrl-names = "default";
+-		regulator-boot-on;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-name = "vcc3v3_lcd0_n";
+@@ -134,7 +133,6 @@ vcc_wifi: regulator-vcc-wifi {
+ 		pinctrl-0 = <&vcc_wifi_h>;
+ 		pinctrl-names = "default";
+ 		regulator-always-on;
+-		regulator-boot-on;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-name = "vcc_wifi";
+@@ -315,7 +313,6 @@ regulator-state-mem {
+ 
+ 			vccio_acodec: LDO_REG4 {
+ 				regulator-always-on;
+-				regulator-boot-on;
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vccio_acodec";
+@@ -360,7 +357,6 @@ regulator-state-mem {
+ 
+ 			vcc1v8_dvp: LDO_REG8 {
+ 				regulator-always-on;
+-				regulator-boot-on;
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc1v8_dvp";
+@@ -382,7 +378,6 @@ regulator-state-mem {
+ 
+ 			dcdc_boost: BOOST {
+ 				regulator-always-on;
+-				regulator-boot-on;
+ 				regulator-min-microvolt = <4700000>;
+ 				regulator-max-microvolt = <5400000>;
+ 				regulator-name = "boost";
+-- 
+2.34.1
+

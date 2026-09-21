@@ -1,0 +1,28 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] ASoC: codecs: aw88166: quieten the remaining log spam
+
+On top of ROCKNIX's reduce-log-spam patch, which leaves two messages at
+error level. Both fire for the same reason as the rest: the amp is probed
+or stopped while no I2S clock is running, which is normal while idle.
+The patch's own "start failure" error still reports a genuine failure.
+---
+--- a/sound/soc/codecs/aw88166.c	2026-09-22 00:13:42.834085887 +1000
++++ b/sound/soc/codecs/aw88166.c	2026-09-22 00:13:42.892665223 +1000
+@@ -180,7 +180,7 @@
+ 		dev_dbg(aw_dev->dev, "mode1 check iis failed try switch to mode2 check");
+ 		ret = aw_dev_check_mode2_pll(aw_dev);
+ 		if (ret) {
+-			dev_err(aw_dev->dev, "mode2 check iis failed");
++			dev_dbg(aw_dev->dev, "mode2 check iis failed");
+ 			return ret;
+ 		}
+ 	}
+@@ -1220,7 +1220,7 @@
+ 
+ 	aw_dev_get_int_status(aw_dev, &reg_val);
+ 	if (reg_val & AW88166_BIT_SYSINT_CHECK) {
+-		dev_err(aw_dev->dev, "pa stop check fail:0x%04x\n", reg_val);
++		dev_dbg(aw_dev->dev, "pa stop check fail:0x%04x\n", reg_val);
+ 		return -EINVAL;
+ 	}
+ 

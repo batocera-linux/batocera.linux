@@ -1,0 +1,114 @@
+From b5a7c375e179995648e60634714d68e020f6976f Mon Sep 17 00:00:00 2001
+From: spycat88 <spycat88@users.noreply.github.com>
+Date: Mon, 7 Oct 2024 03:04:40 +0100
+Subject: [PATCH] arm64: dts: rockchip: add device tree for powkiddy rgb20 pro
+
+---
+ .../rockchip/rk3566-powkiddy-rgb20-pro.dts    | 95 +++++++++++++++++++
+ 1 file changed, 95 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb20-pro.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb20-pro.dts b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb20-pro.dts
+new file mode 100644
+index 000000000000..11c6f53beba5
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb20-pro.dts
+@@ -0,0 +1,95 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2024-present ROCKNIX (https://github.com/ROCKNIX)
++ */
++
++/dts-v1/;
++
++#include "rk3566-powkiddy-rk2023.dts"
++
++/ {
++	compatible = "powkiddy,rgb20-pro", "rockchip,rk3566";
++	model = "Powkiddy RGB20 Pro";
++};
++
++&battery {
++	charge-full-design-microamp-hours = <5000000>;
++	factory-internal-resistance-micro-ohms = <110000>;
++	voltage-max-design-microvolt = <4148000>;
++	voltage-min-design-microvolt = <3500000>;
++
++	ocv-capacity-table-0 =  <4148000 100>, <4076000 95>, <4056000 90>, <40410000 85>,
++				<4030000 80>, <4015000 75>, <3993000 70>, <3964000 65>,
++				<3929000 60>, <3889000 55>, <3864000 50>, <3846000 45>,
++				<3827000 40>, <3806000 35>, <3780000 30>, <3740000 25>,
++				<3687000 20>, <3636000 15>, <3592000 10>, <3548000 5>,
++				<3500000 0>;
++};
++
++&cru {
++	assigned-clocks = <&pmucru CLK_RTC_32K>, <&cru PLL_GPLL>,
++			  <&pmucru PLL_PPLL>, <&cru PLL_VPLL>;
++	assigned-clock-rates = <32768>, <1200000000>,
++			       <200000000>, <102000000>;
++};
++
++&dsi0 {
++        panel: panel@0 {
++		compatible = "rocknix,generic-dsi";
++		panel_description =
++			"G size=65,49 delays=200,150,36,36,20 format=rgb888 lanes=4 flags=0xe03",
++
++			"M clock=51072 horizontal=1024,20,4,20 vertical=768,15,3,11 default=1",
++			"M clock=51312 horizontal=1024,20,30,20 vertical=768,15,145,11",
++			"M clock=51072 horizontal=1024,20,56,20 vertical=768,15,118,11",
++			"M clock=52162 horizontal=1024,20,54,20 vertical=768,15,139,11",
++			"M clock=51152 horizontal=1024,20,48,20 vertical=768,15,6,11",
++			"M clock=62932 horizontal=1024,20,29,20 vertical=768,15,170,11",
++			"M clock=59842 horizontal=1024,20,20,20 vertical=768,15,127,11",
++			"M clock=51312 horizontal=1024,20,5,20 vertical=768,15,6,11",
++			"M clock=54600 horizontal=1024,20,48,20 vertical=768,15,23,11",
++			"M clock=65390 horizontal=1024,20,15,20 vertical=768,15,9,11",
++			"M clock=77040 horizontal=1024,20,6,20 vertical=768,15,6,11",
++			"M clock=102720 horizontal=1024,20,6,20 vertical=768,15,6,11",
++
++			"I seq=df9168f9",
++			"I seq=de00",
++			"I seq=b2007e",
++			"I seq=b3007e",
++			"I seq=c1001000000000",
++			"I seq=bb02240761194444",
++			"I seq=be1af2",
++			"I seq=c310175a175a0505050515153105df",
++			"I seq=c4118000df090614",
++			"I seq=ce0003030303030303030303030303030303030303030f03",
++			"I seq=cf00014001ca01ca01ca",
++			"I seq=d0001f1f1f1f1f1f1f1f1f1f03010507090b1e151f1f151f",
++			"I seq=d1001f1f1f1f1f1f1f1f1f1f02000406080a1e151f1f151f",
++			"I seq=d2001f1f1f1f1f1f1f1f1f1f00020a0806041f151f1f151e",
++			"I seq=d3001f1f1f1f1f1f1f1f1f1f01030b0907051f151f1f151e",
++			"I seq=d43000000400060000000000030300110001c0040101118001c00501010000000400061802e3",
++			"I seq=d56873000808000300",
++			"I seq=b700d80000d800",
++			"I seq=c87f695a4e4a3b402a4443446351594c483a280f7f695a4e4a3b402a4443446351594c483a280f",
++			"I seq=de02",
++			"I seq=bb005b5c41",
++			"I seq=b5005a0a",
++			"I seq=c622",
++			"I seq=d712",
++			"I seq=de00",
++			"I seq=3500",
++			"I seq=11 wait=250",
++			"I seq=29 wait=250";
++        };
++};
++
++&joypad {
++	pwms = <&pwm5 0 1000000000 0>;
++	pwm-names = "enable";
++	rumble-boost-weak = <0x0000>;
++	rumble-boost-strong = <0x0000>;
++};
++
++&pwm5 {
++	status = "okay";
++};
+-- 
+2.34.1
+
