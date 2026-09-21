@@ -123,3 +123,4 @@ include = ["/batocera_launch"]
 minversion = "9.0"
 addopts = ["--import-mode=importlib", "--cov=batocera_launch", "--cov-branch", "--cov-report=term"]
 strict = true
+asyncio_mode = "auto"

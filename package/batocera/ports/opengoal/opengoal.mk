@@ -41,6 +41,8 @@ define OPENGOAL_INSTALL_TARGET_CMDS
 		$(@D)/buildroot-build/goalc/goalc \
 		$(@D)/buildroot-build/decompiler/extractor
 
+	echo '$(OPENGOAL_VERSION)' > $(OPENGOAL_TARGET)/version
+
 	cp -r $(@D)/decompiler/config $(OPENGOAL_TARGET)/data/decompiler/
 	cp -r $(@D)/goal_src $(OPENGOAL_TARGET)/data/
 	cp -r $(@D)/custom_assets $(OPENGOAL_TARGET)/data/

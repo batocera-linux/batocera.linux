@@ -27,13 +27,13 @@
 pgrep -x pcmanfm >/dev/null && [[ -n "$1" ]] || { echo "error: No instance of PCManFM found... exit now!"; exit 1; }
 
 Squash_Game() {
-  local gname="${2%.*}.squashfs"
+  local gname="$2.squashfs"
   cd "$1" || exit 1
 
-  [[ -d "$2/out" ]] || { echo "error: '$2' holds no built game, launch the disc image first" | yad --text-info --wrap --fontname="${f[2]}"; exit 1; }
+  [[ -f "$2/opengoal-build.json" ]] || { echo "error: '$2' holds no built game, launch the disc image first" | yad --text-info --wrap --fontname="${f[2]}"; exit 1; }
   [[ -e "$gname" ]] && gname="$(printf '%x' $(date +%s))_$gname"
 
-  mksquashfs "${2}" "${gname}" -comp zstd -percentage | yad --progress --text="<span font='${f[0]}'>Creating $gname${fx}" --auto-close
+  mksquashfs "${2}" "${gname}" -comp zstd -e decompiler_out -percentage | yad --progress --text="<span font='${f[0]}'>Creating $gname${fx}" --auto-close
   [[ -s "$gname" ]] || exit 1
 
   Remove_Sources "$2" "$gname"

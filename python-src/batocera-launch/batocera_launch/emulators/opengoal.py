@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import logging
 import re
+import shutil
+from contextlib import suppress
+from dataclasses import field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
 
@@ -19,11 +22,13 @@ _logger: Final = logging.getLogger(__name__)
 
 _INSTALL_DIR: Final = Path('/usr/bin/opengoal')
 _SHIPPED_DATA: Final = _INSTALL_DIR / 'data'
+_RELEASE_FILE: Final = _INSTALL_DIR / 'version'
 
 _GAMES: Final = ('jak1', 'jak2', 'jak3')
 
 _RUNTIME_PROJECT_DIRS: Final = ('goal_src', 'decompiler', 'game', 'custom_assets')
 _GAME_PROJECT_DIRS: Final = ('iso_data', 'decompiler_out', 'out')
+_PLAY_PROJECT_DIRS: Final = ('iso_data', 'out')
 
 _SERIAL_GAMES: Final = {
     'SCUS-97124': 'jak1',
@@ -51,9 +56,11 @@ _ASPECT_STATES: Final = {
     '16:9': ('aspect16x9 4 3 #f', '#t'),
 }
 
-# SYSTEM.CNF's boot line, which names the ELF after the disc serial
-_BOOT_SERIAL_RE: Final = re.compile(rb'cdrom0:\\?([A-Z]{4}_\d{3}\.\d{2})')
-_SERIAL_SEARCH_BYTES: Final = 16 << 20
+_ELF_NAME_RE: Final = re.compile(r'([A-Z]{4})_(\d{3})\.(\d{2})')
+
+_ISO_SECTOR: Final = 2048
+_ISO_FIRST_DESCRIPTOR: Final = 16
+_ISO_MAX_DESCRIPTORS: Final = 32
 
 _PCKERNEL_VERSION_RE: Final = re.compile(
     r'\(defconstant\s+PC_KERNEL_VERSION\s+\(static-pckernel-version\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*\)'
@@ -73,64 +80,60 @@ def _pckernel_version(goal_src: Path, game: str, /) -> int | None:
     return major << 48 | minor << 32 | revision << 16 | build
 
 
-def _built_games(project_dir: Path, /) -> list[str]:
-    return [game for game in _GAMES if (project_dir / 'out' / game / 'iso' / 'KERNEL.CGO').is_file()]
-
-
-def _extracted_games(project_dir: Path, /) -> list[str]:
-    return [game for game in _GAMES if (project_dir / 'iso_data' / game / 'DGO').is_dir()]
-
-
-def _rom_project_dir(rom: Path, /) -> Path | None:
-    if not rom.is_dir():
-        return None
-
-    for candidate in (rom / 'data', rom):
-        if any((candidate / directory).is_dir() for directory in _GAME_PROJECT_DIRS):
-            return candidate
+def _serial_from_elf_name(name: str, /) -> str | None:
+    if match := _ELF_NAME_RE.fullmatch(name.split(';', 1)[0]):
+        return f'{match.group(1)}-{match.group(2)}{match.group(3)}'
 
     return None
 
 
-def _disc_serial(iso_data: Path, /) -> str | None:
-    if (buildinfo := iso_data / 'buildinfo.json').is_file():
-        try:
-            entries = json.loads(buildinfo.read_text())
-        except OSError, ValueError:
-            entries = None
+def _iso_root_directory(iso: Path, /) -> bytes | None:
+    with iso.open('rb') as f:
+        for index in range(_ISO_FIRST_DESCRIPTOR, _ISO_FIRST_DESCRIPTOR + _ISO_MAX_DESCRIPTORS):
+            f.seek(index * _ISO_SECTOR)
+            descriptor = f.read(_ISO_SECTOR)
 
-        if isinstance(entries, list):
-            for entry in cast('list[dict[str, str]]', entries):
-                if serial := entry.get('serial'):
-                    return serial
+            if len(descriptor) < _ISO_SECTOR or descriptor[1:6] != b'CD001' or descriptor[0] == 255:
+                return None
 
-    # BOOT2 = cdrom0:\SCES_503.61;1
-    if (system_cnf := iso_data / 'SYSTEM.CNF').is_file():
-        try:
-            text = system_cnf.read_text(errors='replace')
-        except OSError:
-            return None
+            if descriptor[0] == 1:
+                record = descriptor[156:190]
+                extent = int.from_bytes(record[2:6], 'little')
+                size = int.from_bytes(record[10:14], 'little')
 
-        if match := re.search(r'([A-Z]{4})_(\d{3})\.(\d{2})', text):
-            return f'{match.group(1)}-{match.group(2)}{match.group(3)}'
+                f.seek(extent * _ISO_SECTOR)
+                return f.read(min(size, 1 << 20))
 
     return None
 
 
 def _iso_serial(iso: Path, /) -> str | None:
-    """The disc serial, read out of an ISO without extracting it."""
     try:
-        with iso.open('rb') as f:
-            carry = b''
-            while len(carry) < _SERIAL_SEARCH_BYTES:
-                chunk = f.read(1 << 20)
-                if not chunk:
-                    return None
-                if match := _BOOT_SERIAL_RE.search(carry + chunk):
-                    return match.group(1).decode().replace('_', '-').replace('.', '')
-                carry = chunk[-64:]
+        directory = _iso_root_directory(iso)
     except OSError:
         return None
+
+    if directory is None:
+        return None
+
+    offset = 0
+    while offset < len(directory):
+        length = directory[offset]
+
+        if length == 0:
+            offset = (offset // _ISO_SECTOR + 1) * _ISO_SECTOR
+            continue
+
+        if length < 34 or offset + length > len(directory):
+            return None
+
+        name_length = directory[offset + 32]
+        name = directory[offset + 33 : offset + 33 + name_length].decode('ascii', errors='replace')
+
+        if serial := _serial_from_elf_name(name):
+            return serial
+
+        offset += length
 
     return None
 
@@ -144,21 +147,20 @@ def _read_json(path: Path, /) -> dict[str, object] | None:
     return cast('dict[str, object]', loaded) if isinstance(loaded, dict) else None
 
 
-def _recorded_version(marker: Path, /) -> int | None:
-    try:
-        recorded = json.loads(marker.read_text())
-    except OSError, ValueError:
+def _read_build(built_dir: Path, /) -> tuple[str, str] | None:
+    if (marker := _read_json(built_dir / _BUILD_MARKER)) is None:
         return None
 
-    if not isinstance(recorded, dict):
+    game = marker.get('game')
+    release = marker.get('release')
+
+    if game not in _GAMES or not isinstance(release, str) or not release:
         return None
 
-    version = cast('dict[str, str]', recorded).get('pc_kernel_version')
-
-    try:
-        return int(version, 16) if isinstance(version, str) else None
-    except ValueError:
+    if not (built_dir / 'out' / game / 'iso' / 'KERNEL.CGO').is_file():
         return None
+
+    return game, release
 
 
 def _link_or_replace(link: Path, target: Path, /) -> None:
@@ -228,6 +230,8 @@ def _merge_pc_settings(existing_text: str, version: int, managed: Mapping[str, s
 class OpenGOAL(Emulator):
     needs_sdl_game_controller_config = True
 
+    _repacked: tuple[str, str] | None = field(init=False, default=None)
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {
@@ -276,17 +280,16 @@ class OpenGOAL(Emulator):
     def screenshots_dir(self) -> Path:
         return SCREENSHOTS / self.name
 
-    def _prepare_project_dir(self, rom_project_dir: Path | None, /) -> None:
+    def _prepare_project_dir(self, supplied: Path | None, /) -> None:
         self.project_dir.mkdir(parents=True, exist_ok=True)
         (self.project_dir / 'log').mkdir(exist_ok=True)
 
         for directory in _RUNTIME_PROJECT_DIRS:
             _link_or_replace(self.project_dir / directory, _SHIPPED_DATA / directory)
 
-        for directory in _GAME_PROJECT_DIRS:
+        for directory in _PLAY_PROJECT_DIRS:
             target = _game_data_target(
-                self.data_dir / directory,
-                rom_project_dir / directory if rom_project_dir is not None else None,
+                self.data_dir / directory, supplied / directory if supplied is not None else None
             )
             target.mkdir(parents=True, exist_ok=True)
             _link_or_replace(self.project_dir / directory, target)
@@ -294,35 +297,17 @@ class OpenGOAL(Emulator):
     def _built_data_dir(self) -> Path:
         return (self.project_dir / 'out').resolve().parent
 
-    def _record_build(self, game: str, /) -> str:
-        if (version := _pckernel_version(_SHIPPED_DATA / 'goal_src', game)) is not None:
-            marker = self.data_dir / _BUILD_MARKER
-            marker.write_text(json.dumps({'game': game, 'pc_kernel_version': f'{version:#x}'}, indent=2))
+    @cached_property
+    def _release(self) -> str:
+        try:
+            release = _RELEASE_FILE.read_text().strip()
+        except OSError:
+            release = ''
 
-        return game
+        if not release:
+            raise BatoceraException(f'the installed OpenGOAL does not say which release it is ({_RELEASE_FILE})')
 
-    def _matches_runtime(self, built_dir: Path, game: str, /) -> bool:
-        built_version = _recorded_version(built_dir / _BUILD_MARKER)
-
-        if built_version is None and (goal_src := built_dir / 'goal_src').is_dir():
-            built_version = _pckernel_version(goal_src, game)
-
-        runtime_version = _pckernel_version(_SHIPPED_DATA / 'goal_src', game)
-
-        if built_version is None or runtime_version is None:
-            _logger.debug('no version to check %s against, using its built data as-is', built_dir)
-            return True
-
-        if built_version != runtime_version:
-            _logger.info(
-                '%s was built for PC kernel version %#x, this runtime is %#x - rebuilding from iso_data',
-                built_dir,
-                built_version,
-                runtime_version,
-            )
-            return False
-
-        return True
+        return release
 
     def _ensure_writable_outputs(self) -> None:
         for directory in ('decompiler_out', 'out'):
@@ -330,17 +315,14 @@ class OpenGOAL(Emulator):
             target.mkdir(parents=True, exist_ok=True)
             _link_or_replace(self.project_dir / directory, target)
 
-    async def _extract(self, source: Path, game: str | None, /, *, folder: bool) -> bool:
+    async def _build(self, source: Path, game: str, /, *, folder: bool) -> None:
         self._ensure_writable_outputs()
 
-        flags = ['-d', '-c'] if folder else ['-e', '-d', '-c']
-        args = [str(source), '--proj-path', str(self.project_dir), *flags]
+        marker = self.data_dir / _BUILD_MARKER
+        marker.unlink(missing_ok=True)
 
-        if folder:
-            args.append('-f')
-
-        if game is not None:
-            args += ['-g', game]
+        args = [str(source), '--proj-path', str(self.project_dir), '-g', game, '-d', '-c']
+        args += ['-f'] if folder else ['-e', '-v']
 
         _logger.info(
             'Building the game from %s. This decompiles and recompiles the whole game and takes a '
@@ -352,50 +334,118 @@ class OpenGOAL(Emulator):
         result = await run(_INSTALL_DIR / 'extractor', *args, capture_output=False)
 
         if result.returncode:
-            _logger.error('extractor failed with exit code %s, see %s', result.returncode, self.project_dir / 'log')
-            return False
+            raise BatoceraException(
+                f'OpenGOAL could not build {game} from {self.rom.source} (extractor exit code {result.returncode}), '
+                f'see {self.project_dir / "log"}'
+            )
 
-        return True
+        marker.write_text(json.dumps({'game': game, 'release': self._release}, indent=2))
+
+        if _read_build(self.data_dir) is None:
+            raise BatoceraException(f'the extractor finished but left no {game} build in {self.data_dir}')
 
     async def _resolve_game(self) -> str:
-        rom_project_dir = _rom_project_dir(self.rom)
-        self._prepare_project_dir(rom_project_dir)
+        if self.rom.prepared is not None:
+            return await self._resolve_build()
 
-        def first(games: list[str], /) -> str | None:
-            return games[0] if games else None
+        if self.rom.is_file():
+            return await self._resolve_disc()
 
-        if (game := first(_built_games(self.project_dir))) is not None and self._matches_runtime(
-            self._built_data_dir(), game
-        ):
-            return game
+        raise BatoceraException(f'{self.rom.source} is neither a disc image nor a .squashfs of a built game')
 
-        if (game := first(_extracted_games(self.project_dir))) is not None:
-            iso_data = self.project_dir / 'iso_data' / game
-            if await self._extract(iso_data, game, folder=True):
-                return self._record_build(game)
+    async def _resolve_disc(self) -> str:
+        serial = _iso_serial(self.rom)
 
-        # the extractor validates the disc against -g before it corrects the game from the
-        # serial, and -g defaults to jak1, so jak2 and jak3 have to be named up front
-        if (
-            self.rom.is_file()
-            and await self._extract(self.rom, _SERIAL_GAMES.get(_iso_serial(self.rom) or ''), folder=False)
-            and (game := first(_built_games(self.project_dir))) is not None
-        ):
-            return self._record_build(game)
+        if (game := _SERIAL_GAMES.get(serial or '')) is None:
+            raise BatoceraException(
+                f'{self.rom.source} is not a supported Jak PS2 disc image (serial {serial or "unknown"})'
+            )
 
-        # a bare disc folder, not yet arranged as iso_data/<game>
-        if (self.rom / 'DGO').is_dir():
-            serial = _disc_serial(self.rom)
+        self._prepare_project_dir(None)
 
-            if (game := _SERIAL_GAMES.get(serial or '')) is None:
-                raise BatoceraException(
-                    f'{self.rom.source} is not a Jak disc OpenGOAL knows (serial {serial or "unknown"})'
-                )
+        if _read_build(self._built_data_dir()) != (game, self._release):
+            await self._build(self.rom, game, folder=False)
 
-            if await self._extract(self.rom, game, folder=True):
-                return self._record_build(game)
+        return game
 
-        raise BatoceraException(f'no playable OpenGOAL game data could be produced from {self.rom.source}')
+    async def _resolve_build(self) -> str:
+        if (build := _read_build(self.rom)) is None:
+            raise BatoceraException(f'{self.rom.source} is not a finished OpenGOAL build')
+
+        game, _ = build
+        current = (game, self._release)
+
+        if build == current:
+            self._drop_local_build(current)
+
+        self._prepare_project_dir(self.rom)
+
+        if _read_build(self._built_data_dir()) != current:
+            _logger.info('%s was built by another OpenGOAL version, rebuilding it', self.rom.source)
+
+            if not (self.project_dir / 'iso_data' / game / 'DGO').is_dir():
+                raise BatoceraException(f'{self.rom.source} has no iso_data to rebuild {game} from')
+
+            await self._build(self.project_dir / 'iso_data' / game, game, folder=True)
+
+        if build != current:
+            await self._repack(current)
+
+        return game
+
+    async def _repack(self, current: tuple[str, str], /) -> None:
+        source = self.rom.source
+        staging = source.with_name(f'.{source.name}.new')
+        staging.unlink(missing_ok=True)
+
+        _logger.info('Repacking %s with the rebuilt game', source)
+
+        result = await run(
+            'mksquashfs',
+            self.rom / 'iso_data',
+            self.data_dir / 'out',
+            self.data_dir / _BUILD_MARKER,
+            staging,
+            '-comp',
+            'zstd',
+            '-noappend',
+            '-no-progress',
+            '-quiet',
+        )
+
+        if result.returncode or _read_build(self.data_dir) != current:
+            staging.unlink(missing_ok=True)
+            _logger.warning(
+                'could not repack %s (%s), playing from %s and trying again next launch',
+                source,
+                result.stderr.decode(errors='replace').strip(),
+                self.data_dir,
+            )
+            return
+
+        staging.replace(source)
+        self._repacked = current
+
+    def _drop_local_build(self, current: tuple[str, str], /) -> None:
+        if _read_build(self.data_dir) != current or _has_content(self.data_dir / 'iso_data'):
+            return
+
+        _logger.info('Removing %s, the .squashfs holds the same build', self.data_dir)
+
+        (self.data_dir / _BUILD_MARKER).unlink(missing_ok=True)
+
+        for directory in _GAME_PROJECT_DIRS:
+            shutil.rmtree(self.data_dir / directory, ignore_errors=True)
+
+        with suppress(OSError):
+            self.data_dir.rmdir()
+
+    async def run(self) -> int:
+        try:
+            return await super().run()
+        finally:
+            if self._repacked is not None:
+                self._drop_local_build(self._repacked)
 
     def _write_settings(self, game: str, /) -> None:
         settings_dir = self._settings_dir(game)
@@ -423,11 +473,8 @@ class OpenGOAL(Emulator):
         path.write_text(json.dumps(settings, indent=2))
 
     def _write_pc_settings(self, game: str, path: Path, /) -> None:
-        version = _pckernel_version(_SHIPPED_DATA / 'goal_src', game)
-
-        if version is None:
-            _logger.warning('could not read the PC kernel version for %s, leaving pc-settings.gc alone', game)
-            return
+        if (version := _pckernel_version(_SHIPPED_DATA / 'goal_src', game)) is None:
+            raise BatoceraException(f'the installed OpenGOAL has no PC kernel version for {game}')
 
         aspect = self.config.get_str('opengoal_aspect', 'auto')
         # use-vis? has to stay after aspect-state, whose handler resets it on the way past

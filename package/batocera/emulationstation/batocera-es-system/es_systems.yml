@@ -4861,15 +4861,16 @@ opengoal:
           Jak II and Jak 3. The game starts on its own once it finishes. The result is kept in a
           folder of the same name beside the disc image, and later launches reuse it.
 
-          Once that folder exists the disc image is no longer needed, and packing the folder into
-          a .squashfs roughly halves it. ES lists the .squashfs as the game just like the disc
-          image. To do that, open the file manager (Applications > File Manager, or F1 from the
+          Packing that folder into a .squashfs roughly halves it, and once packed neither the
+          folder nor the disc image is needed. ES lists the .squashfs as the game just like the
+          disc image. To do that, open the file manager (Applications > File Manager, or F1 from the
           system list), go to /userdata/roms/opengoal, right-click the folder and pick
           "OpenGOAL: Squash Game". It offers to delete the folder and the disc image once the
           .squashfs is written. "OpenGOAL: Extract Game" on a .squashfs unpacks it again.
 
-          A folder or .squashfs built by a different OpenGOAL version is rebuilt automatically,
-          as long as it still carries its iso_data.
+          When OpenGOAL is updated, the next launch rebuilds the game from the disc data it
+          carries and, for a .squashfs, repacks it in place - nothing to do by hand, it just
+          takes as long as the first launch did.
 
           Settings live in /userdata/system/configs/OpenGOAL, saves in /userdata/saves/opengoal
           and screenshots in /userdata/screenshots/opengoal.
