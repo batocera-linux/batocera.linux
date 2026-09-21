@@ -1,0 +1,35 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] clk: qcom: dispcc-sm4450: splash quiesce + DSI RCG parent enable
+
+
+--- a/drivers/clk/qcom/dispcc-sm4450.c	2026-08-28 20:15:32.774930415 -0700
++++ b/drivers/clk/qcom/dispcc-sm4450.c	2026-08-28 20:15:47.958645847 -0700
+@@ -4,6 +4,8 @@
+  */
+ 
+ #include <linux/clk-provider.h>
++#include <linux/delay.h>
++#include <linux/io.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+@@ -194,7 +196,8 @@
+ 		.name = "disp_cc_mdss_byte0_clk_src",
+ 		.parent_data = disp_cc_parent_data_0,
+ 		.num_parents = ARRAY_SIZE(disp_cc_parent_data_0),
+-		.flags = CLK_SET_RATE_PARENT,
++		/* Parent DSI PHY PLL must be running for RCG update */
++		.flags = CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE,
+ 		.ops = &clk_byte2_ops,
+ 	},
+ };
+@@ -248,7 +251,8 @@
+ 		.name = "disp_cc_mdss_pclk0_clk_src",
+ 		.parent_data = disp_cc_parent_data_0,
+ 		.num_parents = ARRAY_SIZE(disp_cc_parent_data_0),
+-		.flags = CLK_SET_RATE_PARENT,
++		/* Parent DSI PHY PLL must be running for RCG update */
++		.flags = CLK_SET_RATE_PARENT | CLK_OPS_PARENT_ENABLE,
+ 		.ops = &clk_pixel_ops,
+ 	},
+ };

@@ -7,6 +7,7 @@
 ### Hardware
 - Anbernic RG-DS initial support
 - Anbernic RG-DS Plus initial support
+- Anbernic RG55G1 initial support
 - Anbernic RG-SP initial support
 - Anbernic RG Vita Pro initial support
 - Anbernic RG40xx-H-v2-panel variant support

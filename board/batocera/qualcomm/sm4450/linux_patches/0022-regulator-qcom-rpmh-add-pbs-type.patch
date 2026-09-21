@@ -1,0 +1,83 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] regulator: qcom-rpmh: add PBS trigger resource type
+
+Some AOP firmwares sequence rail power through dedicated PBS trigger
+resources. Identical to downstream.
+
+--- a/drivers/regulator/qcom-rpmh-regulator.c	2026-08-28 19:23:14.336211582 -0700
++++ b/drivers/regulator/qcom-rpmh-regulator.c	2026-08-28 19:45:28.522913918 -0700
+@@ -26,10 +26,14 @@
+  *		and mode of LDO, SMPS, and BOB type PMIC regulators.
+  * @XOB:	RPMh XOB accelerator which supports voting on the enable state
+  *		of PMIC regulators.
++ * @PBS:	RPMh PBS accelerator which supports voting on the enable state
++ *		of PBS trigger resources. The resource is a
++ *		single enable register at offset 0.
+  */
+ enum rpmh_regulator_type {
+ 	VRM,
+ 	XOB,
++	PBS,
+ };
+ 
+ /**
+@@ -62,6 +66,7 @@
+ 
+ #define RPMH_REGULATOR_REG_VRM_VOLTAGE		0x0
+ #define RPMH_REGULATOR_REG_ENABLE		0x4
++#define RPMH_REGULATOR_REG_PBS_ENABLE		0x0
+ #define RPMH_REGULATOR_REG_VRM_MODE		0x8
+ 
+ #define PMIC4_LDO_MODE_RETENTION		4
+@@ -183,6 +188,7 @@
+ 	int				index;
+ 	const char			*supply_name;
+ 	const struct rpmh_vreg_hw_data	*hw_data;
++	const char			*resource_name;
+ };
+ 
+ /**
+@@ -265,7 +271,8 @@
+ {
+ 	struct rpmh_vreg *vreg = rdev_get_drvdata(rdev);
+ 	struct tcs_cmd cmd = {
+-		.addr = vreg->addr + RPMH_REGULATOR_REG_ENABLE,
++		.addr = vreg->addr + (vreg->hw_data->regulator_type == PBS ?
++			RPMH_REGULATOR_REG_PBS_ENABLE : RPMH_REGULATOR_REG_ENABLE),
+ 		.data = enable,
+ 	};
+ 	int ret;
+@@ -468,7 +475,10 @@
+ 		return -EINVAL;
+ 	}
+ 
+-	if (strnlen(pmic_id, PMIC_ID_LEN) > 1 && strnstr(pmic_id, "_E", PMIC_ID_LEN)) {
++	if (rpmh_data->resource_name) {
++		scnprintf(rpmh_resource_name, sizeof(rpmh_resource_name),
++			  "%s", rpmh_data->resource_name);
++	} else if (strnlen(pmic_id, PMIC_ID_LEN) > 1 && strnstr(pmic_id, "_E", PMIC_ID_LEN)) {
+ 		rsc_name = vreg_rsc_name_lookup[rpmh_data->vreg_hw_type].rsc_name_fmt;
+ 		scnprintf(rpmh_resource_name, sizeof(rpmh_resource_name),
+ 			  rsc_name, rpmh_data->index, pmic_id);
+@@ -512,7 +522,7 @@
+ 	if (!init_data)
+ 		return -ENOMEM;
+ 
+-	if (rpmh_data->hw_data->regulator_type == XOB &&
++	if (rpmh_data->hw_data->regulator_type != VRM &&
+ 	    init_data->constraints.min_uV &&
+ 	    init_data->constraints.min_uV == init_data->constraints.max_uV) {
+ 		vreg->rdesc.fixed_uV = init_data->constraints.min_uV;
+@@ -777,6 +787,12 @@
+ 	/* LVS hardware does not support voltage or mode configuration. */
+ };
+ 
++static const struct rpmh_vreg_hw_data pmic5_pbs = {
++	.regulator_type = PBS,
++	.ops = &rpmh_regulator_xob_ops,
++	/* PBS trigger resources only support enable voting at offset 0. */
++};
++
+ static const struct rpmh_vreg_hw_data pmic5_pldo = {
+ 	.regulator_type = VRM,
+ 	.ops = &rpmh_regulator_vrm_drms_ops,

@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Tue, 22 Sep 2026 19:30:00 +0100
+Subject: [PATCH] ASoC: codecs: wcd937x: fix the HPHL/HPHR Volume dB scale
+
+The headphone PA gain is a 0..20 attenuator in 1.5 dB steps (-30 dB to
+0 dB), the same block wcd938x describes with
+DECLARE_TLV_DB_SCALE(line_gain, -3000, 150, 0). wcd937x instead
+advertises 0 dB to +1.4 dB in 0.07 dB steps with value 0 as mute.
+
+PipeWire/PulseAudio size the hardware volume range from that TLV, so on
+the Anbernic RG 55G1 the sink's 0 dB "base volume" lands at 95% (register
+1, really -28.5 dB) and 100% at register 20 (0 dB): a 28.5 dB jump in
+the top 5% of the slider, with everything below it needlessly attenuated.
+Describe the range the hardware actually has.
+
+--- a/sound/soc/codecs/wcd937x.c
++++ b/sound/soc/codecs/wcd937x.c
+@@ -113,7 +113,7 @@
+ };
+ 
+ static const SNDRV_CTL_TLVD_DECLARE_DB_MINMAX(ear_pa_gain, 600, -1800);
+-static const DECLARE_TLV_DB_SCALE(line_gain, 0, 7, 1);
++static const DECLARE_TLV_DB_SCALE(line_gain, -3000, 150, 0);
+ static const DECLARE_TLV_DB_SCALE(analog_gain, 0, 25, 1);
+ 
+ struct wcd937x_mbhc_zdet_param {

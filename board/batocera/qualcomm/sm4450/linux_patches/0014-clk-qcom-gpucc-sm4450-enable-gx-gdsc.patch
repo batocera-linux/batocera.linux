@@ -1,0 +1,13 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] clk: qcom: gpucc-sm4450: let the kernel enable the GX GDSC
+
+--- a/drivers/clk/qcom/gpucc-sm4450.c
++++ b/drivers/clk/qcom/gpucc-sm4450.c
+@@ -687,7 +687,6 @@
+ 	.reset_count = 3,
+ 	.pd = {
+ 		.name = "gpu_gx_gdsc",
+-		.power_on = gdsc_gx_do_nothing_enable,
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
+ 	.flags = CLAMP_IO | AON_RESET | SW_RESET | POLL_CFG_GDSCR,
