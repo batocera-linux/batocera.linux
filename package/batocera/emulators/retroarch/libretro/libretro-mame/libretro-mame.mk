@@ -15,7 +15,7 @@ $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY,sega-ar
 
 # Limit number of jobs not to eat too much RAM....
 total_memory_kb := $(shell grep MemTotal /proc/meminfo | awk '{print $$2}')
-memory_based_jobs := $(shell echo $$(( $(total_memory_kb) / 1024 / 1024 / 2 + 1)))
+memory_based_jobs := $(shell echo $$(( $(total_memory_kb) / 1024 / 1024 / 4 + 1)))
 cpu_threads := $(shell nproc)
 jobs := $(shell echo $$(( $(memory_based_jobs) < $(cpu_threads) ? $(memory_based_jobs) : $(cpu_threads) )))
 LIBRETRO_MAME_JOBS := $(jobs)
