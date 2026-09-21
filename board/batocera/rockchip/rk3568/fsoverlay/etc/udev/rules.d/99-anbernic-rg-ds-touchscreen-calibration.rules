@@ -1,3 +1,7 @@
+# Anbernic RG DS / RG DS Plus dual screen touch calibration.
+# The RG DS has a touchscreen on each screen; the RG DS Plus only has one, on
+# the bottom screen (i2c5 / fe5e0000), so the first rule never matches there.
+
 # Bind the top physical screen (event1 / Bus 3) and invert both axes while scaling Y to the top half
 SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
   ENV{ID_PATH}=="platform-fe5c0000.i2c", \

@@ -1,0 +1,29 @@
+From 06f2ffe51d378e0289becbdec854884b54adb6d4 Mon Sep 17 00:00:00 2001
+From: sydarn <sydarn@proton.me>
+Date: Sun, 31 Mar 2024 19:31:03 +0200
+Subject: [PATCH] drm/panel: st7703: request higher pixelclock for RGB30
+
+HACK: Note that this actually doesn't alter the assigned pixel
+clocks, but for some reason it seems to resolve the one pixel row
+wrap around issue. This has to be investigated later, but it seems
+to improve. Albeit now the wrong refresh rate will be reported.
+---
+ drivers/gpu/drm/panel/panel-sitronix-st7703.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7703.c b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+index 9b42898cab29..7b66cdf445bd 100644
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+@@ -490,7 +490,7 @@ static const struct drm_display_mode rgb30panel_mode = {
+ 	.vsync_start	= 720 + 15,
+ 	.vsync_end	= 720 + 15 + 3,
+ 	.vtotal		= 720 + 15 + 3 + 11,
+-	.clock		= 36570,
++	.clock		= 37000,
+ 	.flags		= DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+ 	.width_mm	= 76,
+ 	.height_mm	= 76,
+-- 
+2.34.1
+

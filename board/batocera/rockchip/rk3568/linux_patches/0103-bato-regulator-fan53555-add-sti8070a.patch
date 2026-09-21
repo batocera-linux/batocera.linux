@@ -1,0 +1,33 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] regulator: fan53555: accept the STI8070A on the Silergy path
+
+The Anbernic RG DS Plus fits an STI8070A as vdd_cpu. It is register
+compatible with the Silergy SYR82x, and Anbernic's own device tree drives
+it as "silergy,syr827", but it reports die ID 13, so the Silergy setup
+rejects it, vdd_cpu never registers and cpufreq-dt defers forever.
+
+Use the SYR82x voltage table for it, which is what the vendor device tree
+assumes (regulator-min-microvolt = 712500).
+---
+ drivers/regulator/fan53555.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/regulator/fan53555.c b/drivers/regulator/fan53555.c
+--- a/drivers/regulator/fan53555.c
++++ b/drivers/regulator/fan53555.c
+@@ -118,6 +118,7 @@
+ enum {
+ 	SILERGY_SYR82X = 8,
+ 	SILERGY_SYR83X = 9,
++	SILERGY_STI8070A = 13,
+ };
+ 
+ struct fan53555_device_info {
+@@ -395,6 +396,7 @@
+ 	switch (di->chip_id) {
+ 	case SILERGY_SYR82X:
+ 	case SILERGY_SYR83X:
++	case SILERGY_STI8070A:
+ 		di->vsel_min = 712500;
+ 		di->vsel_step = 12500;
+ 		break;

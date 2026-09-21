@@ -3,10 +3,11 @@
 # Start/stop the battery status LED monitor daemon
 #
 
-# Only start if the system model is the Anbernic RG DS
-if [ "$(batocera-model 2>/dev/null)" != "Anbernic_RG_DS" ]; then
-    exit 0
-fi
+# Only start if the system model is an Anbernic RG DS
+case "$(batocera-model 2>/dev/null)" in
+    Anbernic_RG_DS|Anbernic_RG_DS_Plus) ;;
+    *) exit 0 ;;
+esac
 
 DAEMON="/usr/bin/battery_led_status"
 PIDFILE="/var/run/battery-led-status.pid"
