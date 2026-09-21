@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
 from batocera_launch.emulators.opengoal import (
-    _built_games,
-    _disc_serial,
-    _extracted_games,
+    _GAMES,
+    _SERIAL_GAMES,
+    _SHIPPED_DATA,
     _game_data_target,
     _iso_serial,
     _link_or_replace,
     _pckernel_version,
-    _recorded_version,
-    _rom_project_dir,
+    _read_build,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 pytestmark = pytest.mark.usefixtures('fs')
 
@@ -28,87 +31,23 @@ def _write(path: Path, content: str = '') -> Path:
     return path
 
 
-class TestRomProjectDir:
-    def test_finds_a_release_layout(self) -> None:
-        (_ROM / 'data' / 'out' / 'jak1').mkdir(parents=True)
-
-        assert _rom_project_dir(_ROM) == _ROM / 'data'
-
-    def test_finds_a_bare_project_layout(self) -> None:
-        (_ROM / 'iso_data' / 'jak1').mkdir(parents=True)
-
-        assert _rom_project_dir(_ROM) == _ROM
-
-    def test_ignores_a_directory_with_no_game_data(self) -> None:
-        (_ROM / 'goal_src').mkdir(parents=True)
-
-        assert _rom_project_dir(_ROM) is None
-
-    def test_ignores_a_file(self) -> None:
-        assert _rom_project_dir(_write(_ROM.with_suffix('.iso'))) is None
-
-
-class TestGameDetection:
-    def test_a_game_counts_as_built_only_with_its_boot_dgo(self) -> None:
-        (_PROJECT / 'out' / 'jak1' / 'iso').mkdir(parents=True)
-
-        assert _built_games(_PROJECT) == []
-
-        _write(_PROJECT / 'out' / 'jak1' / 'iso' / 'KERNEL.CGO')
-
-        assert _built_games(_PROJECT) == ['jak1']
-
-    def test_a_disc_folder_is_recognised_by_its_dgo_directory(self) -> None:
-        (_PROJECT / 'iso_data' / 'jak2' / 'DGO').mkdir(parents=True)
-
-        assert _extracted_games(_PROJECT) == ['jak2']
-
-    def test_nothing_is_detected_in_an_empty_project(self) -> None:
-        _PROJECT.mkdir(parents=True)
-
-        assert _built_games(_PROJECT) == []
-        assert _extracted_games(_PROJECT) == []
-
-
-class TestDiscSerial:
-    def test_reads_the_serial_the_extractor_recorded(self) -> None:
-        _write(_ROM / 'buildinfo.json', '[\n  {\n    "elf_hash": 1,\n    "serial": "SCES-50361"\n  }\n]')
-
-        assert _disc_serial(_ROM) == 'SCES-50361'
-
-    def test_falls_back_to_the_boot_elf_name(self) -> None:
-        _write(_ROM / 'SYSTEM.CNF', 'BOOT2 = cdrom0:\\SCES_503.61;1\nVER = 1.00\n')
-
-        assert _disc_serial(_ROM) == 'SCES-50361'
-
-    def test_survives_a_corrupt_buildinfo(self) -> None:
-        _write(_ROM / 'buildinfo.json', 'not json')
-        _write(_ROM / 'SYSTEM.CNF', 'BOOT2 = cdrom0:\\SCUS_971.24;1\n')
-
-        assert _disc_serial(_ROM) == 'SCUS-97124'
-
-    def test_returns_nothing_when_the_disc_is_unidentifiable(self) -> None:
-        _ROM.mkdir(parents=True)
-
-        assert _disc_serial(_ROM) is None
-
-
+@pytest.mark.parametrize('game', _GAMES)
 class TestPckernelVersion:
-    def test_packs_the_four_parts_the_way_the_game_does(self) -> None:
+    def test_packs_the_four_parts_the_way_the_game_does(self, game: str) -> None:
         _write(
-            Path('/goal_src/jak1/pc/pckernel-impl.gc'),
+            _SHIPPED_DATA / 'goal_src' / game / 'pc' / 'pckernel-impl.gc',
             ';; comment\n(defconstant PC_KERNEL_VERSION (static-pckernel-version 1 10 4 0))\n',
         )
 
-        assert _pckernel_version(Path('/goal_src'), 'jak1') == 0x1000A00040000
+        assert _pckernel_version(_SHIPPED_DATA / 'goal_src', game) == 0x1000A00040000
 
-    def test_returns_nothing_when_the_source_is_missing(self) -> None:
-        assert _pckernel_version(Path('/goal_src'), 'jak1') is None
+    def test_returns_nothing_when_the_source_is_missing(self, game: str) -> None:
+        assert _pckernel_version(_SHIPPED_DATA / 'goal_src', game) is None
 
 
 class TestLinkOrReplace:
     def test_creates_the_link(self) -> None:
-        target = Path('/usr/bin/opengoal/data/goal_src')
+        target = _SHIPPED_DATA / 'goal_src'
         target.mkdir(parents=True)
         _PROJECT.mkdir(parents=True)
 
@@ -128,10 +67,11 @@ class TestLinkOrReplace:
 
         assert str((_PROJECT / 'goal_src').readlink()) == str(new)
 
-    def test_leaves_a_real_directory_alone(self) -> None:
-        target = Path('/usr/bin/opengoal/data/out')
+    @pytest.mark.parametrize('game', _GAMES)
+    def test_leaves_a_real_directory_alone(self, game: str) -> None:
+        target = _SHIPPED_DATA / 'out'
         target.mkdir(parents=True)
-        built = _write(_PROJECT / 'out' / 'jak1' / 'iso' / 'KERNEL.CGO')
+        built = _write(_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO')
 
         _link_or_replace(_PROJECT / 'out', target)
 
@@ -139,44 +79,74 @@ class TestLinkOrReplace:
         assert built.is_file()
 
 
-class TestRecordedVersion:
-    def test_reads_the_stamp_left_by_an_earlier_build(self) -> None:
-        marker = _write(
-            _ROM / 'opengoal-build.json', '{\n  "game": "jak1",\n  "pc_kernel_version": "0x1000a00040000"\n}'
-        )
+@pytest.mark.parametrize('game', _GAMES)
+class TestReadBuild:
+    def _built(self, game: str, release: str = 'v1.2.3') -> Path:
+        _write(_PROJECT / 'opengoal-build.json', f'{{"game": "{game}", "release": "{release}"}}')
+        _write(_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO')
+        return _PROJECT
 
-        assert _recorded_version(marker) == 0x1000A00040000
+    def test_reads_the_game_and_version_of_a_finished_build(self, game: str) -> None:
+        assert _read_build(self._built(game)) == (game, 'v1.2.3')
 
-    def test_returns_nothing_when_there_is_no_stamp(self) -> None:
-        assert _recorded_version(_ROM / 'opengoal-build.json') is None
+    def test_the_built_game_has_to_be_the_one_the_marker_names(self, game: str) -> None:
+        other = _GAMES[(_GAMES.index(game) + 1) % len(_GAMES)]
+        self._built(game)
+        _write(_PROJECT / 'opengoal-build.json', f'{{"game": "{other}", "release": "v1.2.3"}}')
 
-    def test_returns_nothing_for_a_corrupt_stamp(self) -> None:
-        assert _recorded_version(_write(_ROM / 'opengoal-build.json', 'not json')) is None
+        assert _read_build(_PROJECT) is None
 
-    def test_returns_nothing_for_an_unparseable_version(self) -> None:
-        marker = _write(_ROM / 'opengoal-build.json', '{"pc_kernel_version": "nonsense"}')
+    def test_an_unfinished_build_has_no_marker(self, game: str) -> None:
+        _write(_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO')
 
-        assert _recorded_version(marker) is None
+        assert _read_build(_PROJECT) is None
+
+    def test_a_marker_without_its_built_game_is_not_a_build(self, game: str) -> None:
+        self._built(game)
+        (_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO').unlink()
+
+        assert _read_build(_PROJECT) is None
+
+    def test_rejects_a_game_opengoal_does_not_ship(self, game: str) -> None:
+        assert _read_build(self._built(f'{game}-unknown')) is None
+
+    def test_rejects_a_corrupt_marker(self, game: str) -> None:
+        _write(_PROJECT / 'opengoal-build.json', 'not json')
+        _write(_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO')
+
+        assert _read_build(_PROJECT) is None
+
+    def test_rejects_a_marker_without_a_release(self, game: str) -> None:
+        assert _read_build(self._built(game, release='')) is None
+
+    def test_rejects_a_marker_from_before_releases_were_recorded(self, game: str) -> None:
+        _write(_PROJECT / 'opengoal-build.json', f'{{"game": "{game}", "pc_kernel_version": "0x1000a00040000"}}')
+        _write(_PROJECT / 'out' / game / 'iso' / 'KERNEL.CGO')
+
+        assert _read_build(_PROJECT) is None
 
 
 class TestGameDataTarget:
-    def test_uses_what_the_rom_ships_when_nothing_was_built_here(self) -> None:
+    @pytest.mark.parametrize('game', _GAMES)
+    def test_uses_what_the_rom_ships_when_nothing_was_built_here(self, game: str) -> None:
         supplied = _ROM / 'out'
-        (supplied / 'jak1').mkdir(parents=True)
+        (supplied / game).mkdir(parents=True)
 
         assert _game_data_target(_PROJECT / 'out', supplied) == supplied
 
-    def test_prefers_a_rebuild_over_the_stale_data_the_rom_ships(self) -> None:
+    @pytest.mark.parametrize('game', _GAMES)
+    def test_prefers_a_rebuild_over_the_stale_data_the_rom_ships(self, game: str) -> None:
         supplied = _ROM / 'out'
-        (supplied / 'jak1').mkdir(parents=True)
+        (supplied / game).mkdir(parents=True)
         local = _PROJECT / 'out'
-        _write(local / 'jak1' / 'iso' / 'KERNEL.CGO')
+        _write(local / game / 'iso' / 'KERNEL.CGO')
 
         assert _game_data_target(local, supplied) == local
 
-    def test_ignores_an_empty_local_directory(self) -> None:
+    @pytest.mark.parametrize('game', _GAMES)
+    def test_ignores_an_empty_local_directory(self, game: str) -> None:
         supplied = _ROM / 'out'
-        (supplied / 'jak1').mkdir(parents=True)
+        (supplied / game).mkdir(parents=True)
         local = _PROJECT / 'out'
         local.mkdir(parents=True)
 
@@ -186,29 +156,39 @@ class TestGameDataTarget:
         assert _game_data_target(_PROJECT / 'out', None) == _PROJECT / 'out'
 
 
+@pytest.mark.parametrize('serial', sorted(_SERIAL_GAMES))
 class TestIsoSerial:
-    def test_reads_the_serial_from_the_boot_line(self) -> None:
-        iso = _ROM.with_suffix('.iso')
-        iso.parent.mkdir(parents=True, exist_ok=True)
-        iso.write_bytes(b'\x00' * 4096 + b'BOOT2 = cdrom0:\\SCES_516.08;1\r\nVER = 1.00\r\n')
+    def test_reads_the_serial_from_the_boot_elf_name(self, serial: str, write_ps2_disc: Callable[..., Path]) -> None:
+        assert _iso_serial(write_ps2_disc(_ROM.with_suffix('.iso'), serial)) == serial
 
-        assert _iso_serial(iso) == 'SCES-51608'
+    def test_finds_the_elf_past_the_first_directory_sector(
+        self, serial: str, write_ps2_disc: Callable[..., Path]
+    ) -> None:
+        iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial, pad_first_sector=True)
 
-    def test_finds_a_serial_split_across_the_read_boundary(self) -> None:
-        iso = _ROM.with_suffix('.iso')
-        iso.parent.mkdir(parents=True, exist_ok=True)
-        boot = b'cdrom0:\\SCES_524.60;1'
-        # straddle the 1MiB chunk edge
-        iso.write_bytes(b'\x00' * ((1 << 20) - 10) + boot)
+        assert _iso_serial(iso) == serial
 
-        assert _iso_serial(iso) == 'SCES-52460'
-
-    def test_returns_nothing_without_a_boot_line(self) -> None:
-        iso = _ROM.with_suffix('.iso')
-        iso.parent.mkdir(parents=True, exist_ok=True)
-        iso.write_bytes(b'\x00' * 8192)
+    def test_ignores_a_name_that_only_contains_the_serial(
+        self, serial: str, write_ps2_disc: Callable[..., Path]
+    ) -> None:
+        iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial, elf_suffix='.BAK')
 
         assert _iso_serial(iso) is None
 
-    def test_returns_nothing_for_a_missing_file(self) -> None:
-        assert _iso_serial(_ROM.with_suffix('.iso')) is None
+    def test_returns_nothing_for_a_truncated_root_directory(
+        self, serial: str, write_ps2_disc: Callable[..., Path]
+    ) -> None:
+        iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial)
+        iso.write_bytes(iso.read_bytes()[: 20 * 2048 + 34 * 2 + 20])
+
+        assert _iso_serial(iso) is None
+
+    def test_returns_nothing_for_a_file_that_is_not_an_iso(self, serial: str) -> None:
+        iso = _ROM.with_suffix('.iso')
+        iso.parent.mkdir(parents=True, exist_ok=True)
+        iso.write_bytes(f'BOOT2 = cdrom0:\\{serial};1\n'.encode() + b'\x00' * 65536)
+
+        assert _iso_serial(iso) is None
+
+    def test_returns_nothing_for_a_missing_file(self, serial: str) -> None:
+        assert _iso_serial(_ROM.with_suffix(f'.{serial}.iso')) is None
