@@ -285,8 +285,9 @@ do_update() {
     done
 
     # snapshot to help create .stale file
-    # Exclude Pi-specific eeprom files and rpi log from being treated as stale
-    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
+    # Exclude Pi-specific eeprom files, rpi log and user boot files (boot-custom.sh hook,
+    # Pi autoboot.txt) from being treated as stale
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|boot-custom\.sh|autoboot\.txt|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
 
     # extract file on /boot
     upgmsg "Extracting files ..."
