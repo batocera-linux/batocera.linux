@@ -1,0 +1,25 @@
+Subject: [PATCH] Bluetooth: hci_qca: keep IBS disabled for WCN3950
+
+---
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2034,7 +2034,8 @@
+ 	ret = qca_uart_setup(hdev, qca_baudrate, soc_type, ver,
+ 			firmware_name, rampatch_name);
+ 	if (!ret) {
+-		clear_bit(QCA_IBS_DISABLED, &qca->flags);
++		if (soc_type != QCA_WCN3950)
++			clear_bit(QCA_IBS_DISABLED, &qca->flags);
+ 		qca_debugfs_init(hdev);
+ 		hu->hdev->hw_error = qca_hw_error;
+ 		hu->hdev->reset = qca_reset;
+@@ -2668,6 +2669,9 @@
+ 	if (test_bit(QCA_ROM_FW, &qca->flags))
+ 		return 0;
+ 
++	if (qca_soc_type(hu) == QCA_WCN3950)
++		return 0;
++
+ 	/* During SSR after memory dump collection, controller will be
+ 	 * powered off and then powered on.If controller is powered off
+ 	 * during SSR then we should wait until SSR is completed.

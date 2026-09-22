@@ -20,6 +20,8 @@ import time
 
 from batocera_common.paths import BATOCERA_CONF
 
+SYSCONFIGS = "/usr/share/batocera/sysconfigs/batocera.conf"
+
 DEBUG = 0            # set to 1 for debugging
 EFFECT_STEP = 60     # how many colors in the effect
 EFFECT_DURATION = 2  # how many seconds
@@ -97,20 +99,52 @@ def batocera_model():
             m = f.readline().strip()
             if m == 'htr3212-pwm':
                 return("pwm")
+    # Anbernic RG 55G1 / SM4450 joystick RGB check (singleadc-joypad driver)
+    l = '/sys/devices/platform/singleadc-joypad/led_switch'
+    if os.path.exists(l):
+        return("rg55g1")
     return "Unsupported"
 
 
 ####################
 # Get a value from batocera.conf
-def batoconf(key):
-    with open(BATOCERA_CONF) as f:
-        for line in f:
-            if not line.startswith(key+"="):
-                continue
-            rest = line.split("=", 1)[1]
-            nocomment = rest.split("#", 1)[0].strip()
-            return(nocomment) # First one is enough
+def _conf_lookup(path, key):
+    try:
+        with open(path) as f:
+            for line in f:
+                if not line.startswith(key+"="):
+                    continue
+                rest = line.split("=", 1)[1]
+                nocomment = rest.split("#", 1)[0].strip()
+                return(nocomment) # First one is enough
+    except OSError:
+        pass
     return None
+
+def _board_model():
+    # same normalisation as batocera-settings-get-master
+    for path in ["/sys/firmware/devicetree/base/model", "/sys/devices/virtual/dmi/id/product_name"]:
+        try:
+            with open(path) as f:
+                model = f.read().strip("\x00\n")
+            if model:
+                return "".join(c if c.isalnum() else "_" for c in model)
+        except OSError:
+            continue
+    return None
+
+def batoconf(key):
+    # user value first, then the board's sysconfig defaults, like
+    # batocera-settings-get-master does for the shell scripts
+    val = _conf_lookup(BATOCERA_CONF, key)
+    if val is not None and val != "auto":
+        return val
+    model = _board_model()
+    if model is not None:
+        val = _conf_lookup(f"{SYSCONFIGS}.{model}", key)
+        if val is not None and val != "auto":
+            return val
+    return _conf_lookup(SYSCONFIGS, key)
 
 def batoconf_color():
     rgb = batoconf("led.colour")
@@ -1647,6 +1681,160 @@ class pwmled(object):
         return (batoconf("led.brightness") or "100", str(self.period))
 
 ####################
+# Anbernic RG 55G1 (SM4450): single non-addressable RGB output per joystick,
+# driven through the singleadc-joypad kernel driver's own named sysfs
+# attributes rather than the standard Linux LED class. Brightness is a real
+# hardware register here (led_level, 0-100), unlike most other handhelds in
+# this file where brightness is faked by scaling the RGB values in software.
+class rg55g1led(object):
+    BASE = '/sys/devices/platform/singleadc-joypad'
+
+    def __init__(self):
+        # every CLI call is a fresh process, so pick the current colour up
+        # from the driver rather than assuming black
+        self.r = self._read('custum_rgb_r')
+        self.g = self._read('custum_rgb_g')
+        self.b = self._read('custum_rgb_b')
+
+    def _read(self, name):
+        try:
+            with open(f'{self.BASE}/{name}', 'r') as f:
+                return int(f.read().strip())
+        except Exception as e:
+            if (DEBUG):
+                print(f'Error reading {name}: {e}')
+            return 0
+
+    def _write(self, name, value):
+        try:
+            with open(f'{self.BASE}/{name}', 'w') as f:
+                f.write(str(value))
+        except Exception as e:
+            if (DEBUG):
+                print(f'Error writing {name}: {e}')
+
+    def _get_brightness_pct(self):
+        val = batoconf("led.brightness")
+        if val is None: return 100
+        try:
+            return max(0, min(100, int(float(val))))
+        except: return 100
+
+    def _apply(self, r, g, b):
+        self.r, self.g, self.b = int(r), int(g), int(b)
+        self._write('led_level', self._get_brightness_pct())
+        self._write('custum_rgb_r', self.r)
+        self._write('custum_rgb_g', self.g)
+        self._write('custum_rgb_b', self.b)
+        self._write('led_mode', 1)
+        time.sleep(0.02)  # settle delay before commit, matches the stock driver's own timing
+        self._write('led_set', 1)
+
+    def set_color (self, rgb):
+        if len(rgb) != 6 and rgb not in [ "PULSE", "RAINBOW", "CHROMA", "OFF", "ESCOLOR" ]:
+            print (f'Error Color {rgb} is invalid')
+            return
+        if rgb == "PULSE":
+            self.pulse_effect()
+            return
+        elif rgb == "RAINBOW":
+            self.rainbow_effect()
+            return
+        elif rgb == "CHROMA":
+            self.chroma_effect()
+            return
+        elif rgb == "OFF":
+            self.turn_off()
+            return
+
+        if rgb == "ESCOLOR":
+            r, g, b = batoconf_color()
+        else:
+            r, g, b = hex_to_dec(rgb[0:2]), hex_to_dec(rgb[2:4]), hex_to_dec(rgb[4:6])
+
+        self._write('led_switch', 1)
+        self._apply(r, g, b)
+
+    def get_color (self) -> str:
+        return f'{dec_to_hex(self.r)}{dec_to_hex(self.g)}{dec_to_hex(self.b)}'
+
+    def set_color_dec (self, rgb):
+        int_list = [int(x) for x in rgb.split()]
+        if len(int_list) != 3:
+            print (f'Argument expects three ints for R G B, not {rgb}')
+            return (1)
+        self._write('led_switch', 1)
+        self._apply(*int_list)
+
+    def get_color_dec (self) -> str:
+        return f'{self.r} {self.g} {self.b}'
+
+    def chroma_effect(self):
+        for i in range (0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
+            o = getRainbowRGB(float (i/EFFECT_STEP))
+            self.set_color(o)
+            time.sleep(EFFECT_DURATION/EFFECT_STEP)
+
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
+
+    def rainbow_effect(self):
+        # Each stick ring has 8 addressable segments (MCU mode 5, 16 RGB
+        # slots: 0-7 left, 8-15 right), so sweep a phase-shifted colour
+        # wheel around both rings like the other multi-segment handhelds.
+        segments = os.path.exists(f'{self.BASE}/led_segments')
+        if segments:
+            self._write('led_switch', 1)
+            self._write('led_level', self._get_brightness_pct())
+            self._write('led_mode', 5)
+        for i in range (0, EFFECT_STEP):
+            if check_interrupt("rainbow"):
+                break
+            if segments:
+                ring = [getRainbowRGB((float(i) / EFFECT_STEP + float(j) / 8) % 1.0) for j in range(8)]
+                self._write('led_segments', " ".join(ring + ring))
+                self._write('led_set', 1)
+            else:
+                # kernel without per-segment support: uniform cycle instead
+                self.set_color(getRainbowRGB(float (i/EFFECT_STEP)))
+            time.sleep(EFFECT_DURATION/EFFECT_STEP)
+
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
+
+    def pulse_effect(self):
+        prev = self.get_color()
+        for i in range (0, EFFECT_STEP):
+            if check_interrupt("pulse"):
+                break
+            o = getPulseRGB(i, EFFECT_STEP, prev)
+            self.set_color(o)
+            time.sleep(PULSE_DURATION/EFFECT_STEP)
+
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
+
+    def turn_off(self):
+        self.r = self.g = self.b = 0
+        self._write('led_switch', 0)
+        self._write('led_set', 1)  # nothing reaches the MCU until committed
+
+    def set_brightness (self, b):
+        self._write('led_level', int(b))
+        self._write('led_set', 1)
+
+    def set_brightness_conf (self):
+        self.set_brightness(self._get_brightness_pct())
+
+    def get_brightness (self):
+        return (batoconf("led.brightness") or "100", "100")
+
+####################
 # Handhelds that use a direct RGB interface with each LED addressable (i.e. Ayn Thor)
 class rgbledaddr(object):
     def __init__(self):
@@ -1854,6 +2042,8 @@ class led(object):
             return rgvitaproled()
         elif m == "r36ultra":
             return r36ultraled()
+        elif m == "rg55g1":
+            return rg55g1led()
         else:
             print(m)
 

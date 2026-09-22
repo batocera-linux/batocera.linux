@@ -18,7 +18,7 @@ LIBRETRO_VIRTUALJAGUAR_EXTRA_ARGS =
 # explicitly here.
 #
 # Batocera enables this core on x86 (zen3, x86_64, x86_wow64) and aarch64
-# boards only (bcm2712, s922x, a3gen2, rk3576/3588, qcs6490, sm6115/8250/8550/8750).
+# boards only (bcm2712, s922x, a3gen2, rk3576/3588, qcs6490, sm4450/6115/8250/8550/8750).
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_ANY),y)
 LIBRETRO_VIRTUALJAGUAR_EXTRA_ARGS += BLITTER_SIMD=sse2
 else ifeq ($(BR2_aarch64),y)

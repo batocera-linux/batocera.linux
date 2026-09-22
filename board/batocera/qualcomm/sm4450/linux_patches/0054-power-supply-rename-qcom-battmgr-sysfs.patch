@@ -1,0 +1,52 @@
+From 8e26a0351df39f12276bad9b47e73672f1457e55 Mon Sep 17 00:00:00 2001
+From: John Williams <porschemad911@gmail.com>
+Date: Wed, 16 Sep 2026 23:53:34 +1000
+Subject: [PATCH] power:supply: rename qcom battmgr sysfs
+
+---
+ drivers/power/supply/qcom_battmgr.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/power/supply/qcom_battmgr.c b/drivers/power/supply/qcom_battmgr.c
+index 490137a23d00..a64386105d2f 100644
+--- a/drivers/power/supply/qcom_battmgr.c
++++ b/drivers/power/supply/qcom_battmgr.c
+@@ -818,7 +818,7 @@ static const enum power_supply_property sc8280xp_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sc8280xp_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sc8280xp_bat_props,
+ 	.num_properties = ARRAY_SIZE(sc8280xp_bat_props),
+@@ -853,7 +853,7 @@ static const enum power_supply_property x1e80100_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc x1e80100_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = x1e80100_bat_props,
+ 	.num_properties = ARRAY_SIZE(x1e80100_bat_props),
+@@ -887,7 +887,7 @@ static const enum power_supply_property sm8350_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sm8350_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sm8350_bat_props,
+ 	.num_properties = ARRAY_SIZE(sm8350_bat_props),
+@@ -921,7 +921,7 @@ static const enum power_supply_property sm8550_bat_props[] = {
+ };
+ 
+ static const struct power_supply_desc sm8550_bat_psy_desc = {
+-	.name = "qcom-battmgr-bat",
++	.name = "battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties = sm8550_bat_props,
+ 	.num_properties = ARRAY_SIZE(sm8550_bat_props),
+-- 
+2.47.3
+

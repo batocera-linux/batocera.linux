@@ -1,0 +1,14 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] pmdomain: qcom: rpmhpd: add LCX to SM4450
+
+
+--- a/drivers/pmdomain/qcom/rpmhpd.c
++++ b/drivers/pmdomain/qcom/rpmhpd.c
+@@ -452,6 +452,7 @@
+ 	[RPMHPD_CX] = &cx,
+ 	[RPMHPD_CX_AO] = &cx_ao,
+ 	[RPMHPD_EBI] = &ebi,
++	[RPMHPD_LCX] = &lcx,
+ 	[RPMHPD_LMX] = &lmx,
+ 	[RPMHPD_MSS] = &mss,
+ 	[RPMHPD_MX] = &mx,
