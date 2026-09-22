@@ -24,6 +24,7 @@ from batocera_common.paths import BIOS, CONFIGS, ROMS, SAVES
 from .asyncio import script_caller
 from .config.config import SystemConfig
 from .config.metadata import get_games_meta_data
+from .cpu import resolve_cpu_cluster
 from .devices.controller import Controller, generate_sdl_game_controller_config
 from .devices.evmapy import EvmapyManager
 from .devices.gun import Gun, guns_need_crosses
@@ -58,6 +59,8 @@ _logger: Final = logging.getLogger(__name__)
 @cached_dataclass
 class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     needs_sdl_game_controller_config: ClassVar[bool] = False
+    # Default for the cpucluster setting: 'all', or 'fast' for emulators bound by one core.
+    cpu_cluster: ClassVar[str] = 'all'
     needs_sdl_controller_db: ClassVar[bool] = False  # Override sdl_controller_db_path to write to a different path
     sdl_game_controller_config_ignore_buttons: ClassVar[Container[str] | None] = None
 
@@ -776,6 +779,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
                     with self.profiler.pause():
                         async with evmapy_manager.monitor_controllers():
+                            command.cpu_affinity = resolve_cpu_cluster(
+                                self.config.get_str('cpucluster', self.cpu_cluster)
+                            )
                             await self.before_run(command)
                             return await command.run()
 
