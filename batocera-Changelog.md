@@ -1,5 +1,6 @@
 # 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
+- Samba no longer maps unknown usernames to guest: Windows 11 24H2+ blocks unsigned guest sessions without prompting, so Windows now asks for credentials - log in as root with the root password ("linux" unless security is enabled)
 - GZDoom has been replaced by UZDoom, a continuation of ZDoom and GZDoom - existing gzdoom ROM folders, .gzdoom mod files, and configs need to be renamed to uzdoom
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 - SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
@@ -30,6 +31,7 @@
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
+- ES setting to choose which CPU cores an emulator runs on (fast or all), keeping emulators off the slow efficiency cores of big.LITTLE devices by default
 - ES can now display Unicode for ID3 tags of songs played
 - ES now supports correctly Arabic and Hebrew glyph rendering
 - GameTank console support through GameTankEmulator
@@ -47,6 +49,7 @@
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
+- Samba wide symbolic links under /userdata (e.g. to external drives) being silently disabled, and secure mode granting guest access to the share
 - Bauh not starting with Python 3.14
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Cannonball coin is now the Select button
