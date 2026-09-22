@@ -182,6 +182,7 @@ else
     # Detect RPi 4/5 using vc4-drm & v3d
     VC4_CARD=""
     V3D_CARD=""
+    RP1_CARDS=""
 
     for card in /sys/class/drm/card*; do
         [ -e "$card" ] || continue
@@ -196,6 +197,8 @@ else
             DRIVER_NAME=$(basename "$(readlink -f "$card/device/driver")")
             if [ "$DRIVER_NAME" = "vc4" ] || [ "$DRIVER_NAME" = "vc4-drm" ]; then
                 VC4_CARD="/dev/dri/$CARD_NAME"
+            elif echo "$DRIVER_NAME" | grep -q "^drm-rp1-"; then
+                RP1_CARDS="${RP1_CARDS}:/dev/dri/$CARD_NAME"
             elif [ "$DRIVER_NAME" = "v3d" ]; then
                 V3D_CARD="/dev/dri/$CARD_NAME"
             fi
@@ -205,12 +208,12 @@ else
     if [ -n "$VC4_CARD" ]; then
         if [ -n "$V3D_CARD" ]; then
             # Order them so display controller is first, followed by the renderer.
-            export WLR_DRM_DEVICES="${VC4_CARD}:${V3D_CARD}"
+            export WLR_DRM_DEVICES="${VC4_CARD}${RP1_CARDS}:${V3D_CARD}"
             echo "Configuring Raspberry Pi / split-GPU layout:" >> "$LOG_FILE"
             echo "  - [DISPLAY CONNECTOR] ${VC4_CARD} (driver: vc4-drm)" >> "$LOG_FILE"
             echo "  - [RENDER ACCELERATOR] ${V3D_CARD} (driver: v3d)" >> "$LOG_FILE"
         else
-            export WLR_DRM_DEVICES="${VC4_CARD}"
+            export WLR_DRM_DEVICES="${VC4_CARD}${RP1_CARDS}"
             echo "Configuring Display GPU:" >> "$LOG_FILE"
             echo "  - [DISPLAY CONNECTOR] ${VC4_CARD} (driver: vc4-drm)" >> "$LOG_FILE"
         fi
