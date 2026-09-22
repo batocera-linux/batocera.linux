@@ -107,6 +107,8 @@ class WaylandOverlay(Overlay):
 
     def _apply_input_passthrough(self) -> bool:
         """Make the mapped layer surface ignore pointer and touch input."""
+        # Buildroot disables PyCairo support in python-gobject, so Cairo regions
+        # cannot be passed through GI. Call the native GDK/Cairo APIs directly.
         try:
             gdk_window = self.get_window()
             if gdk_window is None:
