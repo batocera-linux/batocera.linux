@@ -123,6 +123,14 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY		|| \
 	default y
 endif
 
+# CPUs with fast and slow cores (big.LITTLE). Implied by buildroot's paired CPU
+# selections; a board built for a single core type sets it in its .board file.
+config BR2_PACKAGE_BATOCERA_CPU_BIG_LITTLE
+	bool "target has big.LITTLE cores"
+	default y if BR2_cortex_a15_a7 || BR2_cortex_a17_a7 || BR2_cortex_a57_a53 || \
+		     BR2_cortex_a72_a53 || BR2_cortex_a73_a35 || BR2_cortex_a73_a53 || \
+		     BR2_cortex_a75_a55 || BR2_cortex_a76_a55
+
 config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
 	bool "batocera is limited to abandoned systems"
 
