@@ -124,6 +124,7 @@ def _seed_nvram(dest_dir: Path) -> None:
 @cached_dataclass
 class Sm2Emu(Emulator):
     needs_sdl_game_controller_config = True
+    cpu_cluster = 'fast'  # one interpreter thread; little cores only slow it
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:

@@ -4,6 +4,7 @@ import asyncio
 import logging
 import os
 import signal
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final, cast
 
@@ -12,7 +13,7 @@ from batocera_common.asyncio import env_to_fspath
 from .exceptions import BadCommandLineArguments, UnexpectedEmulatorExit
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, MutableMapping, MutableSequence
+    from collections.abc import Awaitable, Generator, MutableMapping, MutableSequence
     from pathlib import Path
 
 _logger: Final = logging.getLogger(__name__)
@@ -24,6 +25,30 @@ async def _log_emulator_output(stream: asyncio.StreamReader, level: int, prefix:
         _emulator_logger.log(level, '%s %s', prefix, line.decode(errors='backslashreplace').rstrip())
 
 
+@contextmanager
+def _cpu_affinity(cpus: frozenset[int] | None, /) -> Generator[None]:
+    """Narrow this thread's affinity so the child spawned inside inherits it."""
+    if not cpus:
+        yield
+        return
+
+    original = os.sched_getaffinity(0)
+    wanted = cpus & original
+
+    if not wanted:
+        _logger.warning('None of the requested CPUs %s are available, not restricting affinity', sorted(cpus))
+        yield
+        return
+
+    _logger.debug('Restricting emulator to CPUs %s', sorted(wanted))
+    os.sched_setaffinity(0, wanted)
+
+    try:
+        yield
+    finally:
+        os.sched_setaffinity(0, original)
+
+
 @dataclass(slots=True)
 class Command:
     args: MutableSequence[str | Path]
@@ -32,6 +57,9 @@ class Command:
     # Can be used to wait for something to complete (like background task for downloading a file) before running
     # the command
     wait_for: Awaitable[object] | None = None
+
+    # Confine the emulator to these CPUs; None inherits the launcher's affinity.
+    cpu_affinity: frozenset[int] | None = None
 
     def __post_init__(self) -> None:
         self.args = list(self.args)
@@ -55,15 +83,16 @@ class Command:
         if self.wait_for is not None:
             await self.wait_for
 
-        proc = await asyncio.create_subprocess_exec(
-            'nice',
-            '-n',
-            '-4',
-            *self.args,
-            env=env_to_fspath(env),
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
+        with _cpu_affinity(self.cpu_affinity):
+            proc = await asyncio.create_subprocess_exec(
+                'nice',
+                '-n',
+                '-4',
+                *self.args,
+                env=env_to_fspath(env),
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
 
         def _signal_handler() -> None:
             if proc.returncode is None:

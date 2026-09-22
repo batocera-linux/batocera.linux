@@ -1,0 +1,9 @@
+custom_features:
+  cpucluster:
+    group: POWER OPTIONS
+    prompt: CPU CORES
+    description: Which cores the emulator may run on. Fast cores keeps it off the slow efficiency cores of a big.LITTLE CPU, for emulators bound by a single thread.
+    choices:
+      All cores: all
+      Fast cores: fast
+    before: videomode
