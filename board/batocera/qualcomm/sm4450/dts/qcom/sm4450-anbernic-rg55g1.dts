@@ -1590,8 +1590,7 @@
 				pinctrl-0 = <&panel_reset_default>;
 				pinctrl-names = "default";
 
-				// Batocera - labwc rotates the single output itself (display.rotate)
-				// rotation = <90>;
+				rotation = <90>;
 
 				port {
 					panel_in: endpoint {
