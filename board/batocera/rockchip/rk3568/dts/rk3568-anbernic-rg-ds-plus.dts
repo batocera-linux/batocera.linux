@@ -61,7 +61,8 @@
 		io-channel-names = "amux_adc";
 		io-channels = <&saradc 3>;
 		amux-count = <4>;
-		amux-channel-mapping = <1 0 2 3>;
+		// Batocera - single stick is on amux ch1 (X) / ch2 (Y), keep it off the right stick axes
+		amux-channel-mapping = <0 3 2 1>;
 		amux-a-gpios = <&gpio3 RK_PC2 GPIO_ACTIVE_LOW>;
 		amux-b-gpios = <&gpio3 RK_PC3 GPIO_ACTIVE_LOW>;
 		amux-en-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_LOW>;
