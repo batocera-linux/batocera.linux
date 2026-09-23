@@ -27,6 +27,25 @@ splash_default_rpi ()
     kill -9 $PID 2>/dev/null
 }
 
+splash_stop ()
+{
+    # Stop the player and wait until it is really gone: S31emulationstation
+    # starts the compositor right after us and needs the DRM master mpv still
+    # holds. Remove the pid file, so "S28splash stop" at shutdown can't hit a
+    # recycled pid.
+    local pid n=0
+    pid=$(cat /var/run/user-splash.pid 2>/dev/null)
+    start-stop-daemon -K -q -p /var/run/user-splash.pid
+    if [ -n "$pid" ]; then
+        while kill -0 "$pid" 2>/dev/null && [ $n -lt 50 ]; do
+            sleep 0.1
+            n=$((n+1))
+        done
+        kill -9 "$pid" 2>/dev/null
+    fi
+    rm -f /var/run/user-splash.pid
+}
+
 #### MAIN ####
 
 ARCH=$(cat /usr/share/batocera/batocera.arch)
@@ -58,19 +77,19 @@ case $1 in
                 # Play video as long as possible, ideal for fast boards
                 #
                 [ $picture -eq 0 ] && splash_autoplay
-                start-stop-daemon -K -q -p /var/run/user-splash.pid
+                splash_stop
             ;;
             [0-90]*)
                 # Stop as long as setted. 90s max for video, 10s max for images
                 sleeptimer=$(echo "$splash_setting" | grep -Eo [0-9] | tr -d "\n")
                 [ $picture -eq 1 -a $sleeptimer -gt 10 ] && sleeptimer=10
                 sleep $sleeptimer
-                start-stop-daemon -K -q -p /var/run/user-splash.pid
+                splash_stop
             ;;
             fastboot|*)
                 # fastboot or invalid settings
                 #
-                start-stop-daemon -K -q -p /var/run/user-splash.pid
+                splash_stop
             ;;
         esac
     ;;
