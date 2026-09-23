@@ -71,8 +71,11 @@ class Sh(Emulator):
         if not exec_line:
             raise BatoceraException(f'Missing Exec key in {self.rom}')
 
-        args = [_FIELD_CODE.sub(lambda m: '%' if m[1] == '%' else '', arg) for arg in shlex.split(exec_line)]
-        return [arg for arg in args if arg]
+        return [
+            arg_replaced
+            for arg in shlex.split(exec_line)
+            if (arg_replaced := _FIELD_CODE.sub(lambda m: '%' if m[1] == '%' else '', arg))
+        ]
 
     async def configure(self) -> Command:
         if self.is_desktop_entry:
