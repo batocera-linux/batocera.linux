@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from batocera_common.asyncio import create_ready_task, group_tasks, parallel
+from batocera_common.asyncio import cancel_all, create_ready_task, group_tasks, iterate_queue, parallel
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -233,3 +233,72 @@ class TestCreateReadyTask:
 
         with pytest.raises(RuntimeError, match='boom'):
             await task
+
+
+class TestIterateQueue:
+    async def test_yields_items_in_order_and_marks_them_done(self) -> None:
+        queue = asyncio.Queue[int]()
+        queue.put_nowait(1)
+        queue.put_nowait(2)
+        iterator = cast('AsyncGenerator[int]', iterate_queue(queue))
+
+        assert await anext(iterator) == 1
+
+        join_task = asyncio.create_task(queue.join())
+        await asyncio.sleep(0)
+        assert not join_task.done()
+
+        assert await anext(iterator) == 2
+        await asyncio.sleep(0)
+        assert not join_task.done()
+
+        await iterator.aclose()
+        await join_task
+
+    async def test_marks_item_done_when_iteration_raises(self) -> None:
+        queue = asyncio.Queue[str]()
+        queue.put_nowait('item')
+        iterator = cast('AsyncGenerator[str]', iterate_queue(queue))
+
+        assert await anext(iterator) == 'item'
+
+        with pytest.raises(RuntimeError, match='boom'):
+            await iterator.athrow(RuntimeError('boom'))
+
+        await queue.join()
+
+
+class TestCancelAll:
+    async def test_cancels_tasks_and_waits_for_cleanup(self) -> None:
+        started = [asyncio.Event(), asyncio.Event()]
+        cleaned_up = [asyncio.Event(), asyncio.Event()]
+
+        async def worker(index: int) -> None:
+            started[index].set()
+            try:
+                await asyncio.Event().wait()
+            finally:
+                cleaned_up[index].set()
+
+        tasks = [asyncio.create_task(worker(index)) for index in range(2)]
+        await asyncio.gather(*(event.wait() for event in started))
+
+        await cancel_all(*tasks)
+
+        assert all(task.cancelled() for task in tasks)
+        assert all(event.is_set() for event in cleaned_up)
+
+    async def test_accepts_completed_tasks_and_suppresses_failures(self) -> None:
+        async def succeed() -> None:
+            return
+
+        async def fail() -> None:
+            raise RuntimeError('boom')
+
+        tasks = [asyncio.create_task(succeed()), asyncio.create_task(fail())]
+        await asyncio.sleep(0)
+
+        await cancel_all(*tasks)
+
+        assert tasks[0].result() is None
+        assert isinstance(tasks[1].exception(), RuntimeError)

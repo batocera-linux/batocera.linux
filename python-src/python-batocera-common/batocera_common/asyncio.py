@@ -12,7 +12,7 @@ from subprocess import CalledProcessError
 from typing import TYPE_CHECKING, Any, Concatenate, Final, Literal, cast, overload
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine
+    from collections.abc import AsyncGenerator, AsyncIterator, Awaitable, Callable, Coroutine
     from pathlib import Path
     from subprocess import _ENV
 
@@ -319,3 +319,24 @@ async def is_connected_to_internet() -> bool:
             except aiohttp.ClientError, TimeoutError:
                 _logger.error('Not connected to the internet')
                 return False
+
+
+async def iterate_queue[T](queue: asyncio.Queue[T], /) -> AsyncIterator[T]:
+    """Yield items from an asyncio.Queue as they become available."""
+
+    while True:
+        item = await queue.get()
+
+        try:
+            yield item
+        finally:
+            queue.task_done()
+
+
+async def cancel_all(*tasks: asyncio.Task[Any]) -> None:
+    """Cancel all tasks and wait for them to finish."""
+
+    for task in tasks:
+        task.cancel()
+
+    await asyncio.gather(*tasks, return_exceptions=True)
