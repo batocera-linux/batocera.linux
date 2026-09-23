@@ -60,6 +60,12 @@ case "$1" in
 
 	suspend)
 		echo "Suspending EmulationStation process only..."
+		# without this pipe the launcher relaunches ES as soon as it quits
+		if [ ! -p "${FIFO_PATH}" ]; then
+			echo "Warning: ${FIFO_PATH} was missing, recreating it" >&2
+			rm -f "${FIFO_PATH}"
+			mkfifo -m 666 "${FIFO_PATH}"
+		fi
 		# Create the suspend flag file before telling ES to quit.
 		touch "${SUSPEND_FLAG}"
 		# Now, tell the running ES process to quit gracefully.

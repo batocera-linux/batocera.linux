@@ -5,7 +5,13 @@
 
 export LC_ALL=C
 
-exec 1> >(tee >(logger -t batocera-shutdown -s)) 2>&1
+SHUTDOWN_LOGFILE="/userdata/system/logs/batocera-shutdown.log"
+exec 1> >(while IFS= read -r line; do printf '%s %s\n' "$(date '+%H:%M:%S.%3N')" "${line}"; done | tee -a "${SHUTDOWN_LOGFILE}" | logger -t batocera-shutdown -s) 2>&1
+
+# callers other than triggerhappy may lack the session environment
+[ -z "${XDG_RUNTIME_DIR}" ] && [ -f /etc/profile.d/xdg.sh ] && . /etc/profile.d/xdg.sh
+[ -z "${DBUS_SESSION_BUS_ADDRESS}" ] && [ -f /etc/profile.d/dbus.sh ] && . /etc/profile.d/dbus.sh
+[ -z "${HOME}" ] && export HOME=/userdata/system
 
 ################################################################################
 # FAKE SUSPEND/RESUME HELPER FUNCTIONS
@@ -290,8 +296,13 @@ display_on() {
             outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
 
             if [ -n "${outputs_to_enable}" ]; then
-                echo "INFO: Restoring displays using 'batocera-resolution setOutput ${outputs_to_enable}'"
-                batocera-resolution setOutput ${outputs_to_enable}
+                # ES relaunches and runs setOutput itself
+                local wlr_args=""
+                for output in ${outputs_to_enable}; do
+                    wlr_args="${wlr_args} --output ${output} --on"
+                done
+                echo "INFO: Restoring displays with 'wlr-randr${wlr_args}'"
+                wlr-randr ${wlr_args}
             fi
             # Clean up the state file after use.
             rm -f "${ACTIVE_DISPLAYS_FILE}"
@@ -590,11 +601,24 @@ enable_bluetooth() {
 }
 
 # --- EmulationStation Functions
+log_state() {
+	local es_pid standalone_pid
+	es_pid=$(pidof emulationstation)
+	standalone_pid=$(pgrep -o -f emulationstation-standalone)
+	echo "STATE[$1]: es=${es_pid:-none} standalone=${standalone_pid:-none}" \
+	     "fifo=$([ -p /tmp/es-resume.fifo ] && echo yes || echo MISSING)" \
+	     "suspend.please=$([ -e /tmp/suspend.please ] && echo yes || echo no)" \
+	     "fake_flag=$([ -e "${FAKE_SUSPEND_FLAG}" ] && echo yes || echo no)"
+}
+
 stop_es() {
+	log_state "before stop_es"
 	/etc/init.d/S31emulationstation suspend
+	log_state "after stop_es"
 }
 
 start_es() {
+	log_state "before start_es"
 	/etc/init.d/S31emulationstation resume
 }
 
@@ -762,36 +786,40 @@ PLUGGED_SCREEN_OFF_FLAG="/var/run/batocera-plugged-screen-off.flag"
 # --- Main Fake Suspend/Resume Action Groups ---
 do_fake_suspend() {
     echo "--- Entering Fake Suspend ---"
-	block_input
-	stop_other_services
+	log_state "enter"
+	display_off
 	suspend_led_daemon
+	block_input
+	mute_audio
+	stop_other_services
 	disable_wifi
 	disable_bluetooth
 	set_low_power_governor
 	set_low_power_tdp
-	mute_audio
 	park_cores
-	display_off
 	sleep 1s
 	stop_es
 	# restart triggerhappy to fix hung state from gui standby
 	/etc/init.d/S50triggerhappy restart
 	touch "${FAKE_SUSPEND_FLAG}"
     start_background_monitor
+	log_state "suspended"
 	echo "--- Fake Suspend Complete ---"
 }
 
 do_fake_resume() {
     echo "--- Resuming from Fake Suspend ---"
     stop_background_monitor
-	unblock_input
-	display_on
-	unmute_audio
+	# unclamp the CPU before touching the display
 	unpark_cores
 	restore_default_governor
-	restore_default_tdp
-	start_es
+	log_state "resume"
+	unblock_input
 	resume_led_daemon
+	display_on
+	start_es
+	unmute_audio
+	restore_default_tdp
 	enable_bluetooth
 	enable_wifi
 	start_other_services
@@ -1010,6 +1038,7 @@ stop_undock_monitor() {
 
 SUSPEND_MODE="$(/usr/bin/batocera-settings-get-master system.suspendmode)"
 SETACTION=$1 # 1 for press, 0 for release, gui from, well the GUI :-), shutdown from the monitors
+echo "called with '${SETACTION}' (mode=${SUSPEND_MODE}) by $(ps -o comm= -p ${PPID} 2>/dev/null || echo unknown)[${PPID}]"
 
 if [ "${SETACTION}" = "shutdown" ]; then
     do_shutdown
