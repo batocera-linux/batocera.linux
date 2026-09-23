@@ -29,6 +29,17 @@ define UBOOT_RK3576_EXTRACT_RKBIN
 endef
 UBOOT_RK3576_POST_EXTRACT_HOOKS += UBOOT_RK3576_EXTRACT_RKBIN
 
+# Anbernic RG Vita Pro board DT (RK806 PMIC, for charge-only boot) and defconfig
+define UBOOT_RK3576_COPY_BOARD_FILES
+    cp -f $(UBOOT_RK3576_PKGDIR)/rk3576-anbernic-rg-vita-pro.dts \
+        $(@D)/arch/arm/dts/rk3576-anbernic-rg-vita-pro.dts
+    cp -f $(UBOOT_RK3576_PKGDIR)/rk3576-anbernic-rg-vita-pro-u-boot.dtsi \
+        $(@D)/arch/arm/dts/rk3576-anbernic-rg-vita-pro-u-boot.dtsi
+    cp -f $(UBOOT_RK3576_PKGDIR)/rk3576-anbernic-rg-vita-pro_defconfig \
+        $(@D)/configs/rk3576-anbernic-rg-vita-pro_defconfig
+endef
+UBOOT_RK3576_POST_EXTRACT_HOOKS += UBOOT_RK3576_COPY_BOARD_FILES
+
 UBOOT_RK3576_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \
     HOSTCC="$(HOSTCC)" \
@@ -38,9 +49,10 @@ UBOOT_RK3576_MAKE_OPTS = \
     ROCKCHIP_TPL=$(@D)/rkbin/bin/rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
 
 define UBOOT_RK3576_CONFIGURE_CMDS
-    # Using generic-rk3576_defconfig as the baseline configuration
+    # Based on generic-rk3576_defconfig, plus the Anbernic RG Vita Pro's own
+    # DT (RK806 PMIC) and CONFIG_ROCKCHIP_RK8XX_DISABLE_BOOT_ON_POWERON
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3576_MAKE_OPTS) \
-        generic-rk3576_defconfig
+        rk3576-anbernic-rg-vita-pro_defconfig
     # Disable CONFIG_TOOLS_MKEFICAPSULE to bypass GnuTLS linker issues
     $(@D)/scripts/config --file $(@D)/.config --disable CONFIG_TOOLS_MKEFICAPSULE
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK3576_MAKE_OPTS) olddefconfig
