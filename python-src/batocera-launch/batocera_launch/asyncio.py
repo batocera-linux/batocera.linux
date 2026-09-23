@@ -10,7 +10,7 @@ from typing_extensions import Sentinel
 
 from batocera_common.asyncio import run
 
-from .paths import SYSTEM_SCRIPTS, USER_SCRIPTS
+from .paths import USER_SCRIPTS
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Iterable, Mapping
@@ -43,15 +43,13 @@ async def script_caller(events: tuple[Iterable[str], Iterable[str]], /, *args: s
         after_events = [after_events]
 
     for event in before_events:
-        for directory in (SYSTEM_SCRIPTS, USER_SCRIPTS):
-            await call_script(directory, event, args)
+        await call_script(USER_SCRIPTS, event, args)
 
     try:
         yield
     finally:
         for event in after_events:
-            for directory in (USER_SCRIPTS, SYSTEM_SCRIPTS):
-                await call_script(directory, event, args)
+            await call_script(USER_SCRIPTS, event, args)
 
 
 _MISSING = Sentinel('_MISSING')
