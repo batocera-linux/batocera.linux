@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import ctypes
 import logging
 import sys
 from typing import ClassVar
 
-import cairo
 import gi
 
 try:
@@ -107,15 +107,70 @@ class WaylandOverlay(Overlay):
 
     def _apply_input_passthrough(self) -> bool:
         """Make the mapped layer surface ignore pointer and touch input."""
-        if gdk_window := self.get_window():
+        # Buildroot disables PyCairo support in python-gobject, so Cairo regions
+        # cannot be passed through GI. Call the native GDK/Cairo APIs directly.
+        try:
+            gdk_window = self.get_window()
+            if gdk_window is None:
+                _log.error('Wayland input pass-through: no Gdk.Window available')
+                return False
+
+            capsule = gdk_window.__gpointer__  # pyright: ignore[reportUnknownVariableType, reportUnknownMemberType, reportAttributeAccessIssue]
+
+            pyapi = ctypes.pythonapi
+            pyapi.PyCapsule_GetName.argtypes = [ctypes.py_object]
+            pyapi.PyCapsule_GetName.restype = ctypes.c_char_p
+            pyapi.PyCapsule_GetPointer.argtypes = [
+                ctypes.py_object,
+                ctypes.c_char_p,
+            ]
+            pyapi.PyCapsule_GetPointer.restype = ctypes.c_void_p
+
+            capsule_name = pyapi.PyCapsule_GetName(capsule)
+            gdk_ptr = pyapi.PyCapsule_GetPointer(capsule, capsule_name)
+
+            libcairo = ctypes.CDLL('libcairo.so.2')
+            libgdk = ctypes.CDLL('libgdk-3.so.0')
+
+            libcairo.cairo_region_create.argtypes = []
+            libcairo.cairo_region_create.restype = ctypes.c_void_p
+            libcairo.cairo_region_destroy.argtypes = [ctypes.c_void_p]
+            libcairo.cairo_region_destroy.restype = None
+
+            libgdk.gdk_window_input_shape_combine_region.argtypes = [
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_int,
+                ctypes.c_int,
+            ]
+            libgdk.gdk_window_input_shape_combine_region.restype = None
+
+            libgdk.gdk_window_invalidate_rect.argtypes = [
+                ctypes.c_void_p,
+                ctypes.c_void_p,
+                ctypes.c_int,
+            ]
+            libgdk.gdk_window_invalidate_rect.restype = None
+
+            region = libcairo.cairo_region_create()
             try:
-                gdk_window.input_shape_combine_region(cairo.Region(), 0, 0)
-                # Commit the updated input region after GtkLayerShell has mapped
-                # and configured the Wayland surface.
-                gdk_window.invalidate_rect(None, False)
-                _log.debug('Wayland input pass-through configured successfully.')
-            except Exception:
-                _log.exception('Failed to configure Wayland input pass-through')
+                libgdk.gdk_window_input_shape_combine_region(
+                    gdk_ptr,
+                    region,
+                    0,
+                    0,
+                )
+                libgdk.gdk_window_invalidate_rect(
+                    gdk_ptr,
+                    None,
+                    0,
+                )
+            finally:
+                libcairo.cairo_region_destroy(region)
+
+            _log.debug('Wayland input pass-through configured successfully.')
+        except Exception:
+            _log.exception('Failed to configure Wayland input pass-through')
 
         # GLib.idle_add expects False to remove the callback.
         return False
