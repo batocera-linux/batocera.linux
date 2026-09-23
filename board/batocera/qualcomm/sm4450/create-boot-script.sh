@@ -32,7 +32,7 @@ for dtb in "${BINARIES_DIR}"/*.dtb; do
 done
 
 # Define the Kernel command line
-CMDLINE="label=BATOCERA rootwait quiet loglevel=0 console=ttyMSM0,115200n8 vt.global_cursor_default=0"
+CMDLINE="label=BATOCERA rootwait quiet loglevel=0 console=ttyMSM0,115200n8 vt.global_cursor_default=0 mem_sleep_default=s2idle"
 
 MKBOOTIMG="${HOST_DIR}/usr/bin/mkbootimg.py"
 

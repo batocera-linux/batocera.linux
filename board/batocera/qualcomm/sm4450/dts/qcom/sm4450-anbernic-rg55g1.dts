@@ -50,6 +50,10 @@
 		compatible = "pwm-backlight";
 		/* Stock Android: PM6450 LPG channel 0, 100 us period. */
 		pwms = <&pm6450_pwm 0 100000>;
+		// Batocera - the LED driver only shuts down with the PWM pin held low, so park it as a GPIO when off
+		pinctrl-0 = <&backlight_pwm_default>;
+		pinctrl-1 = <&backlight_pwm_sleep>;
+		pinctrl-names = "default", "sleep";
 
 		brightness-levels = <4095 0>;
 		num-interpolated-steps = <4095>;
@@ -2644,13 +2648,19 @@
 				qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
 				bias-disable;
 			};
+
+			backlight_pwm_sleep: backlight-pwm-sleep-state {
+				pins = "gpio7";
+				function = "normal";
+				output-low;
+				power-source = <1>;
+				bias-disable;
+			};
 		};
 
 		pm6450_pwm: pwm {
 			compatible = "qcom,pm6450-pwm";
 			#pwm-cells = <2>;
-			pinctrl-0 = <&backlight_pwm_default>;
-			pinctrl-names = "default";
 		};
 	};
 
