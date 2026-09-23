@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import re
 import subprocess
 from contextlib import asynccontextmanager
@@ -231,24 +232,44 @@ _OPENGL_VENDOR_RE: Final = re.compile(r'^OpenGL vendor string: (?P<vendor>.*)$')
 _OPENGL_VERSION_RE: Final = re.compile(r'^OpenGL version string: (?P<version>\d+\.\d+)\b')
 
 
-async def get_gl_info() -> GLInfo:
-    vendor = 'unknown'
+_PCI_GPU_VENDORS: Final = {'0x10de': 'nvidia', '0x1002': 'amd', '0x8086': 'intel'}
+
+
+def _pci_gpu_vendor() -> str:
+    for path in sorted(Path('/sys/class/drm').glob('card[0-9]*/device/vendor')):
+        try:
+            vendor = path.read_text().strip()
+        except OSError:
+            continue
+
+        if vendor in _PCI_GPU_VENDORS:
+            return _PCI_GPU_VENDORS[vendor]
+
+    return 'unknown'
+
+
+def gl_info() -> GLInfo:
+    vendor = _pci_gpu_vendor()
     version = 0
 
-    if _GLXINFO_BIN.exists():
+    # glxinfo needs an X client, which on wayland means spawning Xwayland: only worth it where the version matters
+    if _GLXINFO_BIN.exists() and (not os.environ.get('WAYLAND_DISPLAY') or vendor in ('nvidia', 'amd')):
         try:
-            proc = await run('glxinfo -B', text=True, check=True)
+            output = subprocess.run(['glxinfo', '-B'], capture_output=True, text=True, check=True).stdout
 
-            for line in proc.stdout.splitlines():
+            for line in output.splitlines():
                 if match := _OPENGL_VENDOR_RE.match(line):
                     vendor = match.group('vendor').strip().casefold()
                 if match := _OPENGL_VERSION_RE.match(line):
-                    version_str = match.group('version').strip()
-                    version = float(version_str)
+                    version = float(match.group('version').strip())
         except Exception:
             pass
 
     return GLInfo(vendor=vendor, version=version)
+
+
+async def get_gl_info() -> GLInfo:
+    return await asyncio.to_thread(gl_info)
 
 
 @asynccontextmanager

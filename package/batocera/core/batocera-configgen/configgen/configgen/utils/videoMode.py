@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 import re
 import subprocess
-import sys
 import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal
@@ -181,33 +180,15 @@ def changeMouse(mode: bool) -> None:
     proc.communicate()
 
 def getGLVersion() -> float:
-    try:
-        # optim for most sbc having not glxinfo
-        if not _GLXINFO_BIN.exists():
-            return 0
+    from batocera_launch.devices.video import gl_info
 
-        glxVerCmd = 'glxinfo | grep "OpenGL version"'
-        glVerOutput = subprocess.check_output(glxVerCmd, shell=True).decode(sys.stdout.encoding)
-        glVerString = glVerOutput.split()
-        glVerTemp = glVerString[3].split(".")
-        if len(glVerTemp) > 2:
-            del glVerTemp[2:]
-        return float('.'.join(glVerTemp))
-    except Exception:
-        return 0
+    return gl_info().version
 
 def getGLVendor() -> str:
-    try:
-        # optim for most sbc having not glxinfo
-        if not _GLXINFO_BIN.exists():
-            return "unknown"
+    from batocera_launch.devices.video import gl_info
 
-        glxVendCmd = 'glxinfo | grep "OpenGL vendor string"'
-        glVendOutput = subprocess.check_output(glxVendCmd, shell=True).decode(sys.stdout.encoding)
-        glVendString = glVendOutput.split()
-        return glVendString[3].casefold()
-    except Exception:
-        return "unknown"
+    # the first word, as the old glxinfo | grep parsing returned it
+    return gl_info().vendor.split()[0] if gl_info().vendor else "unknown"
 
 def getAltDecoration(systemName: str, rom: str | Path, emulator: str) -> str:
     # Returns an ID for games that need rotated bezels/shaders or have special art
