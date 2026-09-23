@@ -1,0 +1,46 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Wed, 23 Sep 2026 22:40:00 +1000
+Subject: [PATCH] backlight: pwm_bl: select the pinctrl sleep state while off
+
+Some LED drivers only shut down once the PWM line is held low, and a
+disabled PWM output may float or keep pulsing instead. Park the pin
+through the device's sleep pinctrl state when the backlight is powered
+off and restore the default state when it comes back on.
+
+Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
+---
+ drivers/video/backlight/pwm_bl.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -8,6 +8,7 @@
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/module.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+ #include <linux/platform_device.h>
+@@ -43,6 +44,8 @@
+ 	if (pb->enabled)
+ 		return;
+ 
++	pinctrl_pm_select_default_state(pb->dev);
++
+ 	if (pb->power_supply) {
+ 		err = regulator_enable(pb->power_supply);
+ 		if (err < 0)
+@@ -69,6 +72,8 @@
+ 
+ 	if (pb->power_supply)
+ 		regulator_disable(pb->power_supply);
++
++	pinctrl_pm_select_sleep_state(pb->dev);
+ 	pb->enabled = false;
+ }
+ 
+-- 
+2.43.0
+
