@@ -245,7 +245,6 @@ class Drastic(Emulator):
             'controls_a[CONTROL_INDEX_UI_PAGE_UP]': '331',
             'controls_a[CONTROL_INDEX_UI_PAGE_DOWN]': '334',
             'controls_a[CONTROL_INDEX_UI_SWITCH]': '481',
-            'firmware.language': str(_LANGUAGE_MAPPING.get(self.config.get_str('system.language', 'en_US'), 1)),
             **_read_existing_config(config_file),
         }
 
@@ -259,6 +258,13 @@ class Drastic(Emulator):
             except ValueError:
                 screen_orientation = '0'
 
+        language_override = self.config.get_int('drastic_language', -1)
+        firmware_language = (
+            language_override
+            if language_override >= 0
+            else _LANGUAGE_MAPPING.get(self.config.get_str('system.language', 'en_US'), 1)
+        )
+
         # Enforce front-end menu settings
         config.update(
             {
@@ -268,6 +274,7 @@ class Drastic(Emulator):
                 'hires_3d': str(self.config.get_int('drastic_hires', 0)),
                 'threaded_3d': str(self.config.get_int('drastic_threaded', 0)),
                 'screen_orientation': screen_orientation,
+                'firmware.language': str(firmware_language),
             }
         )
 

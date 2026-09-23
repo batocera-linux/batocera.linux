@@ -70,6 +70,17 @@ custom_features:
       'Scanlines': 'scanlines'
       'LCD 3x': 'lcd3x'
       'LCD 1x NDS Color': 'lcd1x-nds-color'
+  drastic_language:
+    submenu: FIRMWARE SETTINGS
+    prompt: LANGUAGE
+    description: Select the firmware language.
+    choices:
+      Japanese: 0
+      English (Default): 1
+      French: 2
+      German: 3
+      Italian: 4
+      Spanish: 5
   drastic_mic_threshold:
     prompt: MICROPHONE SENSITIVITY
     description: Enable physical mic blowing. Higher sensitivity triggers more easily.
