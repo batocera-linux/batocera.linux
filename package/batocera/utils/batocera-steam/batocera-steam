@@ -92,15 +92,19 @@ else
     # We thus monitor the log and when the game process exits, we request steam to stop.
     # This should allow our steam command to actually finish.
     log_file="$target_dir/.var/app/com.valvesoftware.Steam/.local/share/Steam/logs/console_log.txt"
+    # Redirected so an orphaned tail (grep already matched, but tail is idle in read() and
+    # never notices the broken pipe) can't keep our end of emulatorlauncher's pipe open forever.
     (
         grep -q -E '^\[.*\] (Exiting app|Game process removed)' <(tail -F -n 0 "$log_file" 2>/dev/null)
         DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
-    ) &
+    ) </dev/null >>"$log" 2>&1 &
     log_watcher_pid=$!
 
     DISPLAY=$(getLocalXDisplay) flatpak run ${STEAM_ENV} com.valvesoftware.Steam -silent ${GAME}
-    # Kill our background log watching subshell if it's still there.
-    kill "$log_watcher_pid"
+    # Kill the watcher subshell and its tail/grep children (process substitution spawns them
+    # outside the subshell, so killing just the subshell leaves them running).
+    pkill -P "$log_watcher_pid" 2>/dev/null
+    kill "$log_watcher_pid" 2>/dev/null
 fi
 
 batocera-mouse hide
