@@ -21,7 +21,7 @@ import sdl2
 
 from batocera_common.paths import LOGS
 
-from .batoceraPaths import ES_GAMES_METADATA, SAVES, SYSTEM_SCRIPTS, USER_SCRIPTS
+from .batoceraPaths import ES_GAMES_METADATA, SAVES, USER_SCRIPTS
 from .controller import Controller
 from .Emulator import Emulator
 from .exceptions import BadCommandLineArguments, UnexpectedEmulatorExit
@@ -188,7 +188,6 @@ def start_rom(args: Arguments, profiler: Profiler, rom: Path, original_rom: Path
                 os.environ.update({'SDL_RENDER_VSYNC': system.config["sdlvsync"]})
 
                 # run a script before emulator starts
-                callExternalScripts(SYSTEM_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
                 callExternalScripts(USER_SCRIPTS, "gameStart", [systemName, system.config.emulator, effectiveCore, rom])
 
                 # run the emulator
@@ -320,7 +319,6 @@ def start_rom(args: Arguments, profiler: Profiler, rom: Path, original_rom: Path
 
                 # run a script after emulator shuts down
                 callExternalScripts(USER_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
-                callExternalScripts(SYSTEM_SCRIPTS, "gameStop", [systemName, system.config.emulator, effectiveCore, rom])
 
             finally:
                 # always restore the resolution

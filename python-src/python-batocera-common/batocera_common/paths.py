@@ -21,3 +21,5 @@ BATOCERA_CONF: Final = HOME / 'batocera.conf'
 
 SQUASHFS_DIR: Final = Path('/var/run/squashfs')
 ROM_OVERLAY_DIR: Final = Path('/var/run/overlays')
+
+SYSCONFIG: Final = BATOCERA_SHARE_DIR / 'sysconfigs' / 'batocera.conf'

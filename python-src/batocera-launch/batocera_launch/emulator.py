@@ -34,6 +34,7 @@ from .devices.video import get_screens, list_outputs, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
+from .hooks import Hooks
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .rom import Rom
 
@@ -82,16 +83,21 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     __client_session: aiohttp.ClientSession | None = field(init=False, default=None)
     __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack)
+    __hooks: Hooks = field(init=False)
 
     def __post_init__(self) -> None:
         self.system = self.config.system
         self.fancy_system_name = self.config.cli_args.systemname
         self.game_info_path = self.config.cli_args.gameinfoxml
+        self.__hooks = Hooks(self.config)
 
     async def __aenter__(self) -> Self:
         await self.__stack.__aenter__()
 
         self.__stack.push_async_callback(self.__close_client_session)
+
+        # Fired first so governors are switching while the rest of the launch is prepared
+        self.__hooks.start()
 
         try:
             self.rom = await self.__stack.enter_async_context(
@@ -136,6 +142,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
             return self
         except BaseException:
+            self.__hooks.stop()
             await self.__stack.__aexit__(*sys.exc_info())
             raise
 
@@ -146,6 +153,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         traceback: TracebackType | None,
         /,
     ) -> bool | None:
+        self.__hooks.stop()
         return await self.__stack.__aexit__(exc_type, exc_value, traceback)
 
     @property

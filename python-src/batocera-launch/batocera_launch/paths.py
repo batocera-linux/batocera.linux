@@ -38,7 +38,6 @@ USER_DECORATIONS: Final = USERDATA / 'decorations'
 SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
 
 USER_SCRIPTS: Final = HOME / 'scripts'
-SYSTEM_SCRIPTS: Final = LAUNCH_SHARE_DIR / 'scripts'
 
 PRECALIBRATION_DIR: Final = BATOCERA_SHARE_DIR / 'guns-precalibration'
 

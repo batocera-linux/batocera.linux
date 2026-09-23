@@ -15,7 +15,7 @@ from .defaults import load_defaults, load_system_defaults
 from .es_settings import ESSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator, KeysView, MutableMapping, ValuesView
+    from collections.abc import Iterator, KeysView, Mapping, MutableMapping, ValuesView
     from pathlib import Path
 
     from ..cli.arguments import Arguments
@@ -127,6 +127,10 @@ class Config:
 class SystemConfig(Config):
     cli_args: Arguments
     es_settings: ESSettings
+    user_config: KeyValueConfig
+    # game, folder and system sections of batocera.conf, most specific first, and the global section
+    system_settings: Mapping[str, str]
+    global_settings: Mapping[str, str]
     system: str
     rom: Path
     emulator: str
@@ -180,12 +184,13 @@ class SystemConfig(Config):
         # see FileData::getConfigurationName() on batocera-emulationstation
         settings_name = rom.name.replace('=', '').replace('#', '')
 
-        user_settings = ChainMap(
+        system_settings = ChainMap(
             user_config.section(f'{args.system}["{settings_name}"]'),  # game-specific
             user_config.section(f'{args.system}.folder["{rom.parent}"]'),  # folder-specific
             user_config.section(args.system),
-            user_config.section('global'),
         )
+        global_settings = user_config.section('global')
+        user_settings = ChainMap(system_settings, global_settings)
 
         # A few emulators have config options named "language", so "system.language" is chosen
         # in order to prevent conflicts with config options from es_features.yaml
@@ -225,6 +230,9 @@ class SystemConfig(Config):
             data,
             cli_args=args,
             es_settings=es_settings,
+            user_config=user_config,
+            system_settings=system_settings,
+            global_settings=global_settings,
             system=args.system,
             rom=rom,
             emulator=emulator,

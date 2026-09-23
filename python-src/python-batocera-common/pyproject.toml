@@ -11,6 +11,9 @@ dependencies = [
     'brotli',
 ]
 
+[project.scripts]
+batocera-power-mode = "batocera_common.power:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
