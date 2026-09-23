@@ -2,11 +2,6 @@ BATOCERA_ARCH = $(call qstrip,$(BR2_BATOCERA_ARCH))
 BATOCERA_TARGET = $(call qstrip,$(BR2_BATOCERA_TARGET))
 BATOCERA_GPU = $(call qstrip,$(BR2_BATOCERA_GPU))
 
-# Targets whose CPU mixes fast and slow cores (big.LITTLE). Emulator info files that
-# only make sense there are registered with register-if-one-of against this list.
-BATOCERA_BIG_LITTLE_ARCHS := odroidux4 qcs6490 rk3399 rk3576 rk3588 rk3588-mainline rk3588-sdio \
-	s922x sdm845 sm4450 sm6115 sm8250 sm8550 sm8750
-
 # Directories that are included in the rufomaculata squashfs image. These
 # are also excluded from the main squashfs image, so that they are only
 # included once in batocera. The variable is exported so it can be used in
