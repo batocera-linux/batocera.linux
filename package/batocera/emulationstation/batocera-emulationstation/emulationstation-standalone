@@ -493,8 +493,11 @@ while [ -e "${REBOOT_FLAG}" ]; do
         echo "Standalone: ES suspend requested. Waiting for resume signal." >> "$log"
         rm -f "/tmp/suspend.please"
         # The 'read' command will block the script until 'resume' is called.
-        read < "/tmp/es-resume.fifo"
-        echo "Standalone: Resume signal received. Continuing loop." >> "$log"
+        if read < "/tmp/es-resume.fifo"; then
+            echo "Standalone: Resume signal received. Continuing loop." >> "$log"
+        else
+            echo "Standalone: WARNING: resume pipe read failed ($(date '+%H:%M:%S')), relaunching ES without a resume signal." >> "$log"
+        fi
     fi
     GAMELAUNCH=0
 done
