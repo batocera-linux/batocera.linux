@@ -22,7 +22,8 @@ For porting a configgen generator into an `Emulator` subclass, see
 | `batocera_launch/cli/` | Argument parsing and main |
 | `batocera_launch/config/` | System config, LabWC, libretro helpers, … |
 | `batocera_launch/devices/` | Controllers, guns, wheels, video, mouse, … |
-| `resources/` | Default options, scripts, and data installed on target |
+| `batocera_launch/plugins/` | Plugins with game start/stop hooks, registered as `batocera_launch.plugins` entry points |
+| `resources/` | Default options and data installed on target |
 | `tests/` | pytest suite |
 | `batocera-launch.mk` | Buildroot package; excludes unused in-tree emulators |
 
