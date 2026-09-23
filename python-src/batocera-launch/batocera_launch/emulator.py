@@ -97,7 +97,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             self.rom = await self.__stack.enter_async_context(
                 Rom.prepare(
                     self.config.rom,
-                    writable_dir=self.writable_overlayfs_dir if self.needs_overlayfs else None,
+                    writable_dir=self.writable_overlayfs_dir,
+                    needs_overlayfs=self.needs_overlayfs,
                 )
             )
 
@@ -216,8 +217,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     def handles_hud(self) -> bool:
         return False
 
-    @property
-    def needs_overlayfs(self) -> bool:
+    def needs_overlayfs(self, rom: Path, /) -> bool:
         return False
 
     @cached_property

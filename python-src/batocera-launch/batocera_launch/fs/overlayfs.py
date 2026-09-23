@@ -46,7 +46,7 @@ def _escape_value(value: StrPath, /, *, include_colons: bool = False) -> str:
 
 
 @asynccontextmanager
-async def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /) -> AsyncGenerator[Path]:
+async def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /, *, required: bool = True) -> AsyncGenerator[Path]:
     """
     The Linux kernel's overlay file system (overlayfs) creates a virtual file
     system mount point based on a "stack" of two or more of underlying directory
@@ -125,10 +125,17 @@ async def mount_overlayfs(read_only_dir: Path, writable_dir: Path, /) -> AsyncGe
             yield (mount_point / maybe_rom_file) if maybe_rom_file else mount_point
 
     except MountFailedError as e:
-        if e.mount_point == mount_point:
+        if e.mount_point != mount_point:
+            raise
+
+        if required:
             _logger.exception("failed mounting '%s' with components '%s'", mount_point, components)
             raise BatoceraException(f"Unable to setup writable overlay for '{read_only_dir}'") from e
-        raise
+
+        # Upper filesystem likely can't back an overlayfs upper layer (no RENAME_WHITEOUT/xattr
+        # support, e.g. CIFS/NFS saves). Run off the read-only lower layer instead of failing the launch.
+        _logger.warning("failed mounting '%s' with components '%s'; continuing read-only", mount_point, components)
+        yield (read_only_dir / maybe_rom_file) if maybe_rom_file else read_only_dir
 
     finally:
         _logger.debug("cleaning up '%s'", mount_point)

@@ -135,8 +135,7 @@ class GeneratorEmulator(Emulator):
     def handles_hud(self) -> bool:
         return self.generator.hasInternalMangoHUDCall()
 
-    @property
-    def needs_overlayfs(self) -> bool:
+    def needs_overlayfs(self, rom: Path, /) -> bool:
         return self.generator.writesToRom(self.configgen_system.config)
 
     @cached_property

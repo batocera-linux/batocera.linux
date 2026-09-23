@@ -474,9 +474,11 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
     def in_game_ratio(self) -> float:
         return 16 / 9
 
-    @property
-    def needs_overlayfs(self) -> bool:
-        return True
+    def needs_overlayfs(self, rom: Path, /) -> bool:
+        # A PSN squashfs (dev_hdd0/game/<ID> layout) writes trophy/save data straight into
+        # that tree via the dev_hdd0 redirect below. A disc-dump squashfs (PS3_GAME/USRDIR)
+        # never writes through its rom, so it doesn't need one.
+        return (rom / 'dev_hdd0' / 'game').is_dir()
 
     @property
     def closest_screen_ratio(self) -> str:
