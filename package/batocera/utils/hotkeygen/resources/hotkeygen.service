@@ -5,6 +5,8 @@ DAEMON=/usr/bin/$NAME
 PIDFILE=/var/run/$NAME.pid
 DAEMON_ARGS=--permanent
 
+. /etc/profile.d/dbus.sh
+
 # Sanity checks
 test -x $DAEMON || exit 0
 
