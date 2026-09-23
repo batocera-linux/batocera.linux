@@ -1,0 +1,28 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+#include "rk3576-u-boot.dtsi"
+
+&i2c1 {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&i2c1m0_xfer {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&pcfg_pull_none_smt {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&pmic {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
+
+&pmic_regulators {
+	bootph-pre-ram;
+	bootph-some-ram;
+};
