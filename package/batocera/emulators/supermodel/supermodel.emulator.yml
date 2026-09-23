@@ -18,17 +18,10 @@ shared_features:
   - wheel_deadzone
   - wheel_midzone
 custom_features:
-  engine3D:
-    group: GRAPHICS
-    prompt: 3D ENGINE
-    description: Enable the legacy or the new 3D engine. Choose Legacy on x86 for older GPUs. (Not supported on ARM/GLES systems).
-    choices:
-      Legacy3D: legacy3d
-      New3D: new3d
   graphics_backend:
     group: GRAPHICS
     prompt: GRAPHICS API
-    description: Select the graphics rendering backend (requires New3D engine). Vulkan can provide improved performance and lower CPU overhead on supported GPUs.
+    description: Select the graphics rendering backend. Vulkan can provide improved performance and lower CPU overhead on supported GPUs.
     choices:
       OpenGL (Default): OpenGL
       Vulkan: Vulkan
@@ -62,7 +55,7 @@ custom_features:
   m3_renderscale:
     group: GRAPHICS
     prompt: RENDER SCALE
-    description: Controls the New3D rendering resolution (1x scale = 496x384). Default is 0 (Set Resolution) on x86_64 and 1 on ARM. Requires New3D engine.
+    description: Controls the rendering resolution (1x scale = 496x384). Default is 0 (Set Resolution) on x86_64 and 1 on ARM.
     choices:
       '0 (Set Resolution)': 0
       '1': 1

@@ -206,11 +206,8 @@ class Supermodel(Emulator):
         elif graphics_backend:
             args.append(f'-graphics-backend={graphics_backend}')
 
-        # 3D Engine selection (force New3D on ARM/GLES devices to prevent exit)
-        if is_arm or self.config.get_str('engine3D') == 'new3d':
-            args.append('-new3d')
-        else:
-            args.extend(['-multi-texture', '-legacy3d'])
+        # Legacy3D was removed; New3D is the only supported renderer now.
+        args.append('-new3d')
 
         # SCSP Sound Engine selection, left to the ini (per-game LegacySoundDSP) unless chosen
         if (scsp := self.config.get_str('m3_scsp')) == 'legacy':
