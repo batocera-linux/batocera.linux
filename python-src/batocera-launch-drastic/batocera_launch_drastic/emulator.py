@@ -171,6 +171,7 @@ class Drastic(Emulator):
 
     @property
     def execution_path(self) -> Path | None:
+        self.config_dir.mkdir(parents=True, exist_ok=True)
         return self.config_dir
 
     async def configure(self) -> Command:
