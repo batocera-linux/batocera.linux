@@ -38,8 +38,7 @@ class DosBoxStaging(Emulator):
     def needs_mouse(self) -> bool:
         return True
 
-    @property
-    def needs_overlayfs(self) -> bool:
+    def needs_overlayfs(self, rom: Path, /) -> bool:
         return self.config.get_bool('dosbox_staging_writes_to_rom')
 
     async def configure(self) -> Command:
