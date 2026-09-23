@@ -74,6 +74,7 @@
 - VPinball now support multiscreens correctly on wayland
 ### Changed / Improved
 - AYN Thor, AYN button now opens Batocera Control Center
+- Brightness cycle buttons on handhelds now open the Batocera Control Center instead (brightness is adjustable from there)
 - BigPEmu added to capable aarch64 devices
 - Boot logo and video now scales better to the primary screen being rendered on
 - Cemu added to capable aarch64 devices
