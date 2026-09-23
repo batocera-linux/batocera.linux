@@ -2044,6 +2044,8 @@
 			reset-gpios = <&tlmm 12 GPIO_ACTIVE_LOW>;
 
 			vcc-supply = <&vreg_l4e_3p0>;
+			// Batocera - IO runs off the panel 1.8V rail, hold it or the touch dies with the display
+			iovcc-supply = <&vreg_panel_1p8>;
 
 			pinctrl-0 = <&ts_active>;
 			pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
