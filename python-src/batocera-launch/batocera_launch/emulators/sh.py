@@ -21,6 +21,10 @@ if TYPE_CHECKING:
 _FIELD_CODE: Final = re.compile(r'%(.)')
 
 
+def _strip_field_codes(arg: str) -> str:
+    return _FIELD_CODE.sub(lambda m: '%' if m[1] == '%' else '', arg)
+
+
 @cached_dataclass
 class Sh(Emulator):
     needs_sdl_game_controller_config = True
@@ -71,11 +75,7 @@ class Sh(Emulator):
         if not exec_line:
             raise BatoceraException(f'Missing Exec key in {self.rom}')
 
-        return [
-            arg_replaced
-            for arg in shlex.split(exec_line)
-            if (arg_replaced := _FIELD_CODE.sub(lambda m: '%' if m[1] == '%' else '', arg))
-        ]
+        return [stripped for arg in shlex.split(exec_line) if (stripped := _strip_field_codes(arg))]
 
     async def configure(self) -> Command:
         if self.is_desktop_entry:
