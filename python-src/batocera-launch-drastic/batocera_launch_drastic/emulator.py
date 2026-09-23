@@ -113,12 +113,12 @@ def _controls_b_from_inputs(inputs: InputDict, /) -> dict[str, str]:
     mappings['controls_b[CONTROL_INDEX_B]'] = _button_or_hat_value(inputs, 'b')
     mappings['controls_b[CONTROL_INDEX_X]'] = _button_or_hat_value(inputs, 'x')
     mappings['controls_b[CONTROL_INDEX_Y]'] = _button_or_hat_value(inputs, 'y')
-    mappings['controls_b[CONTROL_INDEX_L]'] = _button_or_hat_value(inputs, 'l2')
-    mappings['controls_b[CONTROL_INDEX_R]'] = _button_or_hat_value(inputs, 'r2')
+    mappings['controls_b[CONTROL_INDEX_L]'] = _button_or_hat_value(inputs, 'pageup')
+    mappings['controls_b[CONTROL_INDEX_R]'] = _button_or_hat_value(inputs, 'pagedown')
     mappings['controls_b[CONTROL_INDEX_START]'] = _button_or_hat_value(inputs, 'start')
     mappings['controls_b[CONTROL_INDEX_SELECT]'] = _button_or_hat_value(inputs, 'select')
-    mappings['controls_b[CONTROL_INDEX_SWAP_SCREENS]'] = _button_or_hat_value(inputs, 'pageup')
-    mappings['controls_b[CONTROL_INDEX_FAST_FORWARD]'] = _button_or_hat_value(inputs, 'pagedown')
+    mappings['controls_b[CONTROL_INDEX_SWAP_SCREENS]'] = _button_or_hat_value(inputs, 'l2')
+    mappings['controls_b[CONTROL_INDEX_FAST_FORWARD]'] = _button_or_hat_value(inputs, 'r2')
 
     if 'joystick1left' in inputs and 'joystick1up' in inputs:
         x_axis_id = int(inputs['joystick1left'].id)
