@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from batocera_common.fs import directory_differences
+from batocera_common.fs import atomic_write, directory_differences
 
 pytestmark = pytest.mark.usefixtures('fs')
 
@@ -12,6 +12,66 @@ pytestmark = pytest.mark.usefixtures('fs')
 def _write(path: Path, content: str = '') -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content)
+
+
+class TestAtomicWrite:
+    def test_creates_file_with_content(self) -> None:
+        path = Path('/data/config.txt')
+        path.parent.mkdir(parents=True)
+
+        with atomic_write(path) as tmp_path:
+            assert tmp_path != path
+            assert not path.exists()
+            tmp_path.write_text('hello')
+
+        assert path.read_text() == 'hello'
+        assert not tmp_path.exists()
+
+    def test_overwrites_existing_file(self) -> None:
+        path = Path('/data/config.txt')
+        _write(path, 'old')
+
+        with atomic_write(path) as tmp_path:
+            tmp_path.write_text('new')
+
+        assert path.read_text() == 'new'
+        assert not tmp_path.exists()
+
+    def test_does_not_replace_target_when_body_raises(self) -> None:
+        path = Path('/data/config.txt')
+        _write(path, 'original')
+
+        with pytest.raises(RuntimeError, match='boom'), atomic_write(path) as tmp_path:  # ruff: ignore[pytest-raises-with-multiple-statements]
+            tmp_path.write_text('partial')
+            raise RuntimeError('boom')
+
+        assert path.read_text() == 'original'
+        assert not tmp_path.exists()
+
+    def test_does_not_create_target_when_body_raises(self) -> None:
+        path = Path('/data/config.txt')
+        path.parent.mkdir(parents=True)
+
+        with pytest.raises(RuntimeError, match='boom'), atomic_write(path) as tmp_path:  # ruff: ignore[pytest-raises-with-multiple-statements]
+            tmp_path.write_text('partial')
+            raise RuntimeError('boom')
+
+        assert not path.exists()
+        assert not tmp_path.exists()
+
+    def test_uses_explicit_temporary_directory(self) -> None:
+        path = Path('/data/config.txt')
+        tmp_dir = Path('/tmp/atomic')
+        path.parent.mkdir(parents=True)
+        tmp_dir.mkdir(parents=True)
+
+        with atomic_write(path, directory=tmp_dir) as tmp_path:
+            assert tmp_path.parent == tmp_dir
+            tmp_path.write_text('hello')
+
+        assert path.read_text() == 'hello'
+        assert not tmp_path.exists()
+        assert list(tmp_dir.iterdir()) == []
 
 
 class TestDirectoryDifferencesBool:

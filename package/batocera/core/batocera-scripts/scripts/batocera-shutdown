@@ -644,6 +644,7 @@ stop_other_services() {
     if [ -f /etc/init.d/S25lircd ]; then
         /etc/init.d/S25lircd stop
     fi
+	/etc/init.d/S30hotkeygen stop
 	/etc/init.d/S32bluetooth stop
 	/etc/init.d/S49ntp stop
 	/etc/init.d/S50avahi-daemon stop
@@ -652,7 +653,6 @@ stop_other_services() {
 	if [ -f /etc/init.d/S90battery_checker ]; then
 		/etc/init.d/S90battery_checker stop
     fi
-	/etc/init.d/S90hotkeygen stop
 	/etc/init.d/S91smb stop
 	/etc/init.d/S97joycond stop
 }
@@ -664,6 +664,7 @@ start_other_services() {
     if [ -f /etc/init.d/S25lircd ]; then
         /etc/init.d/S25lircd start
     fi
+	/etc/init.d/S30hotkeygen start
 	/etc/init.d/S32bluetooth start
 	/etc/init.d/S49ntp start
 	/etc/init.d/S50avahi-daemon start
@@ -672,7 +673,6 @@ start_other_services() {
 	    /etc/init.d/S90battery_checker start
     fi
 	/etc/init.d/S60nfs start
-    /etc/init.d/S90hotkeygen start
     /etc/init.d/S91smb start
     /etc/init.d/S97joycond start
 }
