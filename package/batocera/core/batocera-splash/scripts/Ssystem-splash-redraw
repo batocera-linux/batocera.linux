@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Redraw the boot logo once the GPU drivers are loaded (udev has settled).
+# S03system-splash draws on the firmware framebuffer (efifb/vesafb); a DRM
+# driver that registers its own fbdev replaces it and fbcon clears the screen,
+# which leaves it black until the splash video or the frontend starts.
+# Only redraw when the framebuffer changed since S03 drew the logo.
+
+FB_STATE="/var/run/system-splash.fb"
+
+[ "$1" = "start" ] || exit 0
+[ -e /dev/fb0 ] || exit 0
+
+# no state: S03 is still drawing (on the current fb0) or didn't draw at all
+[ -f "${FB_STATE}" ] || exit 0
+[ "$(cat "${FB_STATE}")" = "$(cat /proc/fb)" ] && exit 0
+
+/etc/init.d/S03system-splash start
+
+exit 0

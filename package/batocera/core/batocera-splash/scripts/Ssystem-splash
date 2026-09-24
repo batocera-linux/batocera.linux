@@ -4,6 +4,8 @@
 # It shows the unique BATOCERA logo in early boot stage
 
 LOG_FILE="/var/log/splash.log"
+# which framebuffer the logo was drawn on, read by S06system-splash-redraw
+FB_STATE="/var/run/system-splash.fb"
 
 do_start () {
     LOG_DIR="${LOG_FILE%/*}"
@@ -18,6 +20,7 @@ do_start () {
         done
         if [ ! -e /dev/fb0 ]; then
             echo "Error: Framebuffer device /dev/fb0 not found."
+            echo none > "${FB_STATE}"
             exit 1
         fi
     fi
@@ -114,8 +117,10 @@ do_start () {
     MODELOPTS="/etc/opts.${V_BOARD_MODEL}"
     [ -e "${MODELOPTS}" ] && . "${MODELOPTS}"
 
+    fb_drawn=$(cat /proc/fb)
     echo "Executing Command: fbv ${FBV_OPTS} \"${image}\""
     fbv ${FBV_OPTS} "${image}" >/dev/null 2>&1
+    echo "${fb_drawn}" > "${FB_STATE}"
 }
 
 do_stop () {
