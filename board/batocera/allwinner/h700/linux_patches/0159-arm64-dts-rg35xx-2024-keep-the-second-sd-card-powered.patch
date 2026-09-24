@@ -1,0 +1,26 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: rg35xx-2024: Keep the second SD card powered
+
+The second SD slot's supply (vcc3v3-mmc2, PE4) is switched off when the
+card is powered down for system suspend, but the slot's pins stay
+pulled up from the always-on vcc-io rail, so the card is back-powered
+through its I/O lines for the whole sleep and can come up busy.
+
+Keep the supply on, as Anbernic's firmware effectively does: its device
+tree names PE4 "pwr-gpios", which the vendor driver never reads, so the
+card is never switched off there. The boot slot is powered from vcc-io
+directly and does not show the problem.
+
+Assisted-by: Claude:claude-opus-5
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -334,6 +334,8 @@
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-name = "vcc3v3-mmc2";
++		/* The card is back-powered through its pulled-up I/O pins when this is off. */
++		regulator-always-on;
+ 	};
+ 
+ 	reg_usb0_vbus: regulator-usb0-vbus {

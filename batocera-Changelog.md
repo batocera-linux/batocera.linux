@@ -21,7 +21,9 @@
 - Radxa Rock-5T initial support
 - Retroid Pocket Nova initial support
 ### Added
+- Anbernic H700 device deep sleep suspend, replacing fake suspend
 - Anbernic H700 device hardware acceleration support
+- Anbernic RG35XX Plus battery backed real-time clock
 - Anbernic RGCubeXX device LED controller support
 - Armsx2 for SM8250, SM8550 and SM8750
 - BCC: audio devices can now be switch from the bcc menu (while playing games for example)
@@ -290,7 +292,7 @@
 - Ymir to v0.3.3
 ### System
 - Allwinner H616 device kernel updated to 7.1.5
-- Allwinner H700 device kernel updated to 7.1.9
+- Allwinner H700 device kernel updated to 7.2.6
 - ALSA UCM configuration to v1.2.16.1
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.1.1

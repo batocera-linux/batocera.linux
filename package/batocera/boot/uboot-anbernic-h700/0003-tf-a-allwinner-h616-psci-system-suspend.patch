@@ -1,0 +1,434 @@
+From: Kailash R S <kailashrs@users.noreply.github.com>
+Subject: [PATCH] allwinner: h616: PSCI SYSTEM_SUSPEND via an SRAM stub
+
+From kailashrs' H700_rocknix_enhancement. BL31 copies a stub into SRAM A1
+and jumps to it with the MMU off; it puts DRAM into self-refresh, waits
+in WFI and re-initialises DRAM on wake without touching its contents.
+
+Enabled with SUNXI_SYSTEM_SUSPEND=1 SUNXI_SUSPEND_STUB=<path>, optionally
+SUNXI_SUSPEND_STUB2 for a second memory type: one BL31 serves every
+bootloader build, so TF-A picks the stub whose DRAM type and clock match
+at boot and leaves system suspend unavailable when none does. Unset, the
+build is unchanged.
+
+Ported to TF-A 2.14: pwr_domain_pwr_down_wfi is now pwr_domain_pwr_down,
+which may return and leaves the final WFI to the PSCI core.
+
+---
+diff -Nur a/tf-a/plat/allwinner/common/include/sunxi_private.h b/tf-a/plat/allwinner/common/include/sunxi_private.h
+--- a/tf-a/plat/allwinner/common/include/sunxi_private.h
++++ b/tf-a/plat/allwinner/common/include/sunxi_private.h
+@@ -42,6 +42,16 @@
+ #endif
+ int sunxi_validate_ns_entrypoint(uintptr_t ns_entrypoint);
+ 
++#if defined(SUNXI_SYSTEM_SUSPEND) && SUNXI_SYSTEM_SUSPEND
++#define SUNXI_HAS_SYSTEM_SUSPEND	1
++bool sunxi_system_suspend_init(uintptr_t warm_entrypoint);
++bool sunxi_system_suspend_available(void);
++void __dead2 sunxi_system_suspend_enter(void);
++void sunxi_system_suspend_finish(void);
++#else
++#define SUNXI_HAS_SYSTEM_SUSPEND	0
++#endif
++
+ int sunxi_pmic_setup(uint16_t socid, const void *fdt);
+ void sunxi_security_setup(void);
+ 
+diff -Nur a/tf-a/plat/allwinner/common/sunxi_native_pm.c b/tf-a/plat/allwinner/common/sunxi_native_pm.c
+--- a/tf-a/plat/allwinner/common/sunxi_native_pm.c
++++ b/tf-a/plat/allwinner/common/sunxi_native_pm.c
+@@ -74,7 +74,55 @@
+ 	.validate_ns_entrypoint		= sunxi_validate_ns_entrypoint,
+ };
+ 
++#if SUNXI_HAS_SYSTEM_SUSPEND
++#define SUNXI_SYSTEM_PWR_STATE(state) \
++	((state)->pwr_domain_state[PLAT_MAX_PWR_LVL])
++
++/* Nothing to do: the GIC and its CPU interface stay up so the wake IRQ can end the stub's WFI. */
++static void sunxi_pwr_domain_suspend(const psci_power_state_t *target_state)
++{
++}
++
++static void sunxi_pwr_domain_suspend_finish(const psci_power_state_t *target_state)
++{
++	sunxi_system_suspend_finish();
++}
++
++static void sunxi_pwr_domain_pwr_down(const psci_power_state_t *target_state)
++{
++	if (is_local_state_off(SUNXI_SYSTEM_PWR_STATE(target_state)) != 0) {
++		sunxi_system_suspend_enter();
++	}
++}
++
++static void sunxi_get_sys_suspend_power_state(psci_power_state_t *req_state)
++{
++	for (unsigned int i = 0U; i <= PLAT_MAX_PWR_LVL; ++i) {
++		req_state->pwr_domain_state[i] = PLAT_MAX_OFF_STATE;
++	}
++}
++
++static const plat_psci_ops_t sunxi_native_suspend_psci_ops = {
++	.pwr_domain_on			= sunxi_pwr_domain_on,
++	.pwr_domain_off			= sunxi_pwr_domain_off,
++	.pwr_domain_suspend		= sunxi_pwr_domain_suspend,
++	.pwr_domain_on_finish		= sunxi_pwr_domain_on_finish,
++	.pwr_domain_suspend_finish	= sunxi_pwr_domain_suspend_finish,
++	.pwr_domain_pwr_down		= sunxi_pwr_domain_pwr_down,
++	.system_off			= sunxi_system_off,
++	.system_reset			= sunxi_system_reset,
++	.validate_ns_entrypoint		= sunxi_validate_ns_entrypoint,
++	.get_sys_suspend_power_state	= sunxi_get_sys_suspend_power_state,
++};
++#endif /* SUNXI_HAS_SYSTEM_SUSPEND */
++
+ void sunxi_set_native_psci_ops(const plat_psci_ops_t **psci_ops)
+ {
++#if SUNXI_HAS_SYSTEM_SUSPEND
++	if (sunxi_system_suspend_available()) {
++		*psci_ops = &sunxi_native_suspend_psci_ops;
++		return;
++	}
++#endif
+ 	*psci_ops = &sunxi_native_psci_ops;
+ }
+diff -Nur a/tf-a/plat/allwinner/common/sunxi_pm.c b/tf-a/plat/allwinner/common/sunxi_pm.c
+--- a/tf-a/plat/allwinner/common/sunxi_pm.c
++++ b/tf-a/plat/allwinner/common/sunxi_pm.c
+@@ -64,7 +64,15 @@
+ 		INFO("PSCI: Suspend is available via SCPI\n");
+ 		psci_is_scpi = true;
+ 	} else {
++#if SUNXI_HAS_SYSTEM_SUSPEND
++		if (sunxi_system_suspend_init(sec_entrypoint)) {
++			INFO("PSCI: System suspend is available via SRAM stub\n");
++		} else {
++			INFO("PSCI: Suspend is unavailable\n");
++		}
++#else
+ 		INFO("PSCI: Suspend is unavailable\n");
++#endif
+ 		sunxi_set_native_psci_ops(psci_ops);
+ 	}
+ 
+diff -Nur a/tf-a/plat/allwinner/sun50i_h616/include/sunxi_suspend_params.h b/tf-a/plat/allwinner/sun50i_h616/include/sunxi_suspend_params.h
+--- a/tf-a/plat/allwinner/sun50i_h616/include/sunxi_suspend_params.h
++++ b/tf-a/plat/allwinner/sun50i_h616/include/sunxi_suspend_params.h
+@@ -0,0 +1,50 @@
++/* SPDX-License-Identifier: BSD-3-Clause */
++/*
++ * Interface between TF-A BL31 and the H616 SRAM suspend stub.
++ *
++ * The stub is linked to run from SRAM A1 (0x20000). BL31 copies the stub
++ * image there, fills in the "in" fields of the parameter block located at
++ * SUNXI_SUSPEND_PARAMS_OFFSET, turns the MMU off and jumps to the start of
++ * the image. The stub puts DRAM into self-refresh, gates clocks, waits for
++ * an interrupt, restores DRAM and jumps to resume_entry. SRAM keeps its
++ * contents, so BL31 can read the "out" fields after resume.
++ */
++
++#ifndef SUNXI_SUSPEND_PARAMS_H
++#define SUNXI_SUSPEND_PARAMS_H
++
++#define SUNXI_SUSPEND_STUB_BASE		0x00020000
++#define SUNXI_SUSPEND_PARAMS_OFFSET	0x10
++
++#define SUNXI_SUSPEND_MAGIC		0x50535553	/* "SUSP" */
++#define SUNXI_SUSPEND_VERSION		1
++
++/* flags (in) */
++#define SUNXI_SUSPEND_FLAG_DEBUG_UART	(1 << 0)
++
++/* status (out) */
++#define SUNXI_SUSPEND_STATUS_NONE	0	/* stub did not run */
++#define SUNXI_SUSPEND_STATUS_OK		1	/* went through self-refresh */
++#define SUNXI_SUSPEND_STATUS_ERR_CONFIG	2	/* DRAM state unexpected, skipped */
++#define SUNXI_SUSPEND_STATUS_ERR_SR	3	/* self-refresh entry failed, skipped */
++
++#ifndef __ASSEMBLER__
++#include <stdint.h>
++
++struct sunxi_suspend_params {
++	uint32_t magic;		/* build: SUNXI_SUSPEND_MAGIC */
++	uint32_t version;	/* build: SUNXI_SUSPEND_VERSION */
++	uint32_t dram_type;	/* build: DRAM type the stub was built for */
++	uint32_t dram_clk;	/* build: DRAM clock in MHz */
++	uint64_t resume_entry;	/* in: BL31 warm boot entry point */
++	uint32_t flags;		/* in: SUNXI_SUSPEND_FLAG_* */
++	uint32_t status;	/* out: SUNXI_SUSPEND_STATUS_* */
++	uint32_t stage;		/* out: last progress code */
++	uint32_t wake_irq;	/* out: first pending GIC interrupt after WFI */
++	uint64_t dram_size;	/* out: detected DRAM size in bytes */
++	uint32_t dram_cfg;	/* out: cols | rows << 8 | ranks << 16 | full << 24 */
++	uint32_t reserved;
++};
++#endif /* __ASSEMBLER__ */
++
++#endif /* SUNXI_SUSPEND_PARAMS_H */
+diff -Nur a/tf-a/plat/allwinner/sun50i_h616/platform.mk b/tf-a/plat/allwinner/sun50i_h616/platform.mk
+--- a/tf-a/plat/allwinner/sun50i_h616/platform.mk
++++ b/tf-a/plat/allwinner/sun50i_h616/platform.mk
+@@ -23,3 +23,31 @@
+ 				drivers/allwinner/sunxi_rsb.c		\
+ 				drivers/mentor/i2c/mi2cv.c		\
+ 				${AW_PLAT}/${PLAT}/sunxi_h616_dtb.c
++
++# SUNXI_SYSTEM_SUSPEND=1 SUNXI_SUSPEND_STUB=<path>/suspend_stub.bin
++SUNXI_SYSTEM_SUSPEND	?=	0
++SUNXI_SUSPEND_DEBUG	?=	0
++$(eval $(call assert_boolean,SUNXI_SYSTEM_SUSPEND))
++$(eval $(call assert_boolean,SUNXI_SUSPEND_DEBUG))
++$(eval $(call add_define,SUNXI_SYSTEM_SUSPEND))
++$(eval $(call add_define,SUNXI_SUSPEND_DEBUG))
++
++ifeq (${SUNXI_SYSTEM_SUSPEND},1)
++    ifeq (${SUNXI_SUSPEND_STUB},)
++        $(error "SUNXI_SYSTEM_SUSPEND=1 needs SUNXI_SUSPEND_STUB=<path to suspend_stub.bin>")
++    endif
++SUNXI_SUSPEND_STUB_ABS	:=	$(abspath ${SUNXI_SUSPEND_STUB})
++$(eval $(call add_define_val,SUNXI_SUSPEND_STUB_BIN,\"${SUNXI_SUSPEND_STUB_ABS}\"))
++
++# A second stub for another memory type, picked at runtime by the DRAM check.
++ifneq (${SUNXI_SUSPEND_STUB2},)
++SUNXI_SUSPEND_STUB2_ABS	:=	$(abspath ${SUNXI_SUSPEND_STUB2})
++$(eval $(call add_define_val,SUNXI_SUSPEND_STUB2_BIN,\"${SUNXI_SUSPEND_STUB2_ABS}\"))
++${BUILD_PLAT}/bl31/sunxi_suspend_stub.o: ${SUNXI_SUSPEND_STUB2_ABS}
++endif
++
++BL31_SOURCES		+=	${AW_PLAT}/${PLAT}/sunxi_suspend.c	\
++				${AW_PLAT}/${PLAT}/sunxi_suspend_stub.S
++
++${BUILD_PLAT}/bl31/sunxi_suspend_stub.o: ${SUNXI_SUSPEND_STUB_ABS}
++endif
+diff -Nur a/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend.c b/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend.c
+--- a/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend.c
++++ b/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend.c
+@@ -0,0 +1,174 @@
++/*
++ * Copyright (c) 2026, ARM Limited and Contributors. All rights reserved.
++ *
++ * SPDX-License-Identifier: BSD-3-Clause
++ *
++ * PSCI SYSTEM_SUSPEND for the H616/H700 without a management processor.
++ * The sequence runs from SRAM A1; see sunxi_suspend_params.h.
++ */
++
++#include <string.h>
++
++#include <platform_def.h>
++
++#include <arch_helpers.h>
++#include <common/debug.h>
++#include <drivers/console.h>
++#include <lib/mmio.h>
++#include <lib/utils_def.h>
++
++#include <sunxi_mmap.h>
++#include <sunxi_private.h>
++#include <sunxi_suspend_params.h>
++
++#define SUNXI_DRAM_CTL0_BASE		0x047fb000
++#define SUNXI_DRAM_MSTR_REG		(SUNXI_DRAM_CTL0_BASE + 0x000)
++#define SUNXI_CCU_PLL_DDR0_REG		(SUNXI_CCU_BASE + 0x010)
++
++/* Leave 8 KiB of SRAM A1 for the stub's stack and .bss; stub.lds asserts the fit. */
++#define SUNXI_SUSPEND_STUB_MAX_SIZE	(SUNXI_SRAM_A1_SIZE - 0x2000)
++
++extern const uint8_t sunxi_suspend_stub_start[];
++extern const uint8_t sunxi_suspend_stub_end[];
++#ifdef SUNXI_SUSPEND_STUB2_BIN
++extern const uint8_t sunxi_suspend_stub2_start[];
++extern const uint8_t sunxi_suspend_stub2_end[];
++#endif
++
++/*
++ * One BL31 is shared by every bootloader build, so it carries a stub per
++ * memory type and picks the one the running DRAM matches.
++ */
++static const struct {
++	const uint8_t *start;
++	const uint8_t *end;
++} stubs[] = {
++	{ sunxi_suspend_stub_start, sunxi_suspend_stub_end },
++#ifdef SUNXI_SUSPEND_STUB2_BIN
++	{ sunxi_suspend_stub2_start, sunxi_suspend_stub2_end },
++#endif
++};
++
++void __dead2 sunxi_suspend_jump(uintptr_t entry);
++
++static bool suspend_available;
++static const uint8_t *stub_start;
++static size_t stub_len;
++static uintptr_t warm_entrypoint;
++
++static struct sunxi_suspend_params *sram_params(void)
++{
++	return (struct sunxi_suspend_params *)(SUNXI_SUSPEND_STUB_BASE +
++					       SUNXI_SUSPEND_PARAMS_OFFSET);
++}
++
++static uint32_t dram_type_to_mstr(uint32_t type)
++{
++	switch (type) {
++	case 3:	return BIT_32(0);	/* DDR3 */
++	case 4:	return BIT_32(4);	/* DDR4 */
++	case 7:	return BIT_32(3);	/* LPDDR3 */
++	case 8:	return BIT_32(5);	/* LPDDR4 */
++	default: return 0U;
++	}
++}
++
++bool sunxi_system_suspend_init(uintptr_t entrypoint)
++{
++	uint32_t mstr = mmio_read_32(SUNXI_DRAM_MSTR_REG);
++	uint32_t pll_n = ((mmio_read_32(SUNXI_CCU_PLL_DDR0_REG) >> 8) & 0xffU) + 1U;
++
++	for (unsigned int i = 0U; i < ARRAY_SIZE(stubs); i++) {
++		struct sunxi_suspend_params params;
++		size_t size = (size_t)(stubs[i].end - stubs[i].start);
++
++		if ((size < SUNXI_SUSPEND_PARAMS_OFFSET + sizeof(params)) ||
++		    (size > SUNXI_SUSPEND_STUB_MAX_SIZE)) {
++			WARN("PSCI: suspend stub %u missing or the wrong size (%zu bytes)\n",
++			     i, size);
++			continue;
++		}
++
++		memcpy(&params, stubs[i].start + SUNXI_SUSPEND_PARAMS_OFFSET,
++		       sizeof(params));
++		if ((params.magic != SUNXI_SUSPEND_MAGIC) ||
++		    (params.version != SUNXI_SUSPEND_VERSION)) {
++			WARN("PSCI: suspend stub %u has a bad header\n", i);
++			continue;
++		}
++
++		/*
++		 * The stub re-trains DRAM with the parameters it was built
++		 * with, so it may only run on the memory it was built for.
++		 */
++		if ((mstr & 0x3fU) != dram_type_to_mstr(params.dram_type)) {
++			continue;
++		}
++
++		if (pll_n != (params.dram_clk * 2U / 24U)) {
++			continue;
++		}
++
++		stub_start = stubs[i].start;
++		stub_len = size;
++		warm_entrypoint = entrypoint;
++		suspend_available = true;
++
++		NOTICE("PSCI: System suspend available (SRAM stub %zu bytes, DRAM type %u @ %u MHz)\n",
++		       size, params.dram_type, params.dram_clk);
++
++		return true;
++	}
++
++	NOTICE("PSCI: No suspend stub matches this DRAM (MSTR 0x%x, %u MHz), system suspend disabled\n",
++	       mstr, pll_n * 12U);
++
++	return false;
++}
++
++bool sunxi_system_suspend_available(void)
++{
++	return suspend_available;
++}
++
++void __dead2 sunxi_system_suspend_enter(void)
++{
++	struct sunxi_suspend_params *params = sram_params();
++
++	memcpy((void *)SUNXI_SUSPEND_STUB_BASE, stub_start, stub_len);
++
++	params->resume_entry = warm_entrypoint;
++	params->flags = 0U;
++#if SUNXI_SUSPEND_DEBUG
++	params->flags |= SUNXI_SUSPEND_FLAG_DEBUG_UART;
++#endif
++	params->status = SUNXI_SUSPEND_STATUS_NONE;
++
++	NOTICE("PSCI: System suspend\n");
++	console_flush();
++
++	sunxi_suspend_jump(SUNXI_SUSPEND_STUB_BASE);
++}
++
++void sunxi_system_suspend_finish(void)
++{
++	const struct sunxi_suspend_params *params = sram_params();
++
++	switch (params->status) {
++	case SUNXI_SUSPEND_STATUS_OK:
++		NOTICE("PSCI: Resumed from system suspend (wake IRQ %u, DRAM 0x%llx, cfg 0x%x)\n",
++		       params->wake_irq, (unsigned long long)params->dram_size,
++		       params->dram_cfg);
++		break;
++	case SUNXI_SUSPEND_STATUS_ERR_CONFIG:
++		WARN("PSCI: System suspend skipped: unexpected DRAM configuration\n");
++		break;
++	case SUNXI_SUSPEND_STATUS_ERR_SR:
++		WARN("PSCI: System suspend skipped: DRAM did not enter self-refresh\n");
++		break;
++	default:
++		WARN("PSCI: System suspend stub did not report (status %u, stage 0x%x)\n",
++		     params->status, params->stage);
++		break;
++	}
++}
+diff -Nur a/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend_stub.S b/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend_stub.S
+--- a/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend_stub.S
++++ b/tf-a/plat/allwinner/sun50i_h616/sunxi_suspend_stub.S
+@@ -0,0 +1,48 @@
++/*
++ * Copyright (c) 2026, ARM Limited and Contributors. All rights reserved.
++ *
++ * SPDX-License-Identifier: BSD-3-Clause
++ */
++
++#include <arch.h>
++#include <asm_macros.S>
++
++	.globl	sunxi_suspend_stub_start
++	.globl	sunxi_suspend_stub_end
++#ifdef SUNXI_SUSPEND_STUB2_BIN
++	.globl	sunxi_suspend_stub2_start
++	.globl	sunxi_suspend_stub2_end
++#endif
++	.globl	sunxi_suspend_jump
++
++	.section .rodata.sunxi_suspend_stub, "a"
++	.align	3
++sunxi_suspend_stub_start:
++	.incbin	SUNXI_SUSPEND_STUB_BIN
++sunxi_suspend_stub_end:
++
++#ifdef SUNXI_SUSPEND_STUB2_BIN
++	.align	3
++sunxi_suspend_stub2_start:
++	.incbin	SUNXI_SUSPEND_STUB2_BIN
++sunxi_suspend_stub2_end:
++#endif
++
++/* -----------------------------------------------------------------
++ * void sunxi_suspend_jump(uintptr_t entry)
++ *
++ * Turn the MMU and data cache off and branch to the SRAM stub. BL31 is
++ * identity mapped, so execution continues at the same address with the
++ * MMU off. Does not return; the stub comes back via the warm boot entry.
++ * -----------------------------------------------------------------
++ */
++func sunxi_suspend_jump
++	msr	daifset, #(DAIF_FIQ_BIT | DAIF_IRQ_BIT | DAIF_ABT_BIT | DAIF_DBG_BIT)
++	mov	x19, x0
++	mrs	x1, sctlr_el3
++	mov_imm	x2, (SCTLR_M_BIT | SCTLR_C_BIT)
++	bic	x1, x1, x2
++	msr	sctlr_el3, x1
++	isb
++	br	x19
++endfunc sunxi_suspend_jump
