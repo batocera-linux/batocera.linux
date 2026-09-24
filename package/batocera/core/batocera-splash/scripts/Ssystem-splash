@@ -4,42 +4,80 @@
 # It shows the unique BATOCERA logo in early boot stage
 
 LOG_FILE="/var/log/splash.log"
-STOP_FILE="/var/run/system-splash.stop"
+START_FILE="/var/run/system-splash.ready"
+FB_NAME="/sys/class/graphics/fb0/name"
+DAEMON="[ $(basename $0) ]:"
+
+# remove trigger, first argument needs word 'exit', second is return code, if both left empty then return with ec from file romaval only
+# exit code 0-okay, 1-general error, 2-error dev/fb0, 3-error trigger timeout, 4-error unknown, 11-error in do_rmtrigger for second argument
+do_rmtrigger () {
+    local ret=0 # return value, for filecheck only
+    [ -e "${START_FILE}" ] && rm -f "${START_FILE}" && echo "${DAEMON} Removed trigger file!" || {
+        ret=1
+        echo "${DAEMON} Failed to remove trigger file!"
+    }
+
+    if [ "$1" = "exit" ]; then
+        { [ "$2" -lt 10 ] && ret=$2 || ret=11; } 2>/dev/null # sloppy number check but okay
+        echo "${DAEMON} Exiting script with ec: [${ret}]"
+        exit $ret
+    fi
+
+    return $ret
+}
 
 do_start () {
+    local checkname fbname
     LOG_DIR="${LOG_FILE%/*}"
     [ -d "${LOG_DIR}" ] || mkdir -p "${LOG_DIR}"
     exec >> "${LOG_FILE}" 2>&1
-    
-    if [ ! -e /dev/fb0 ]; then
-        i=0
-        while [ ! -e /dev/fb0 ] && [ $i -lt 50 ]; do
-            sleep 0.1
-            i=$((i + 1))
-        done
-        if [ ! -e /dev/fb0 ]; then
-            echo "Error: Framebuffer device /dev/fb0 not found."
-            exit 1
-        fi
-    fi
 
-    draw_logo || exit 1
+    echo "${DAEMON} Starting ..."
+    # wait 20s to create framebuffer in /dev/fb0, on fail exit 
+    if ! [ -e /dev/fb0 ]; then
+        inotifywait -t 20 -e create --include '/fb0' /dev || {
+            echo "${DAEMON} Error! Framebuffer device /dev/fb0 not found."
+            do_rmtrigger exit 2
+        }
+    fi
+    draw_logo || do_rmtrigger exit 1
 
     # the gpu driver replaces the firmware framebuffer, clearing the screen
-    fbname=""
-    [ -r /sys/class/graphics/fb0/name ] && read -r fbname < /sys/class/graphics/fb0/name
-    i=0
-    while [ $i -lt 120 ] && [ ! -e "${STOP_FILE}" ]; do
-        sleep 0.5
-        i=$((i + 1))
-        newname=""
-        [ -r /sys/class/graphics/fb0/name ] && read -r newname < /sys/class/graphics/fb0/name
-        if [ -n "${newname}" ] && [ "${newname}" != "${fbname}" ]; then
-            fbname="${newname}"
-            echo "Framebuffer changed to ${fbname}, redrawing."
-            draw_logo || exit 1
+    [ -r "${FB_NAME}" ] && read -r fbname < "${FB_NAME}"
+    [ -n "${fbname}" ] && echo "${DAEMON} Established '/dev/fb0', device name is '${fbname}'" || echo "${DAEMON} Error: Can't read from '${FB_NAME}'" 
+    
+    # watch 2 events: system-splash.ready gets deleted or fb0-name opens
+    # - delete_self for trigger, if user_splash services are reached
+    # - open for fb-device tree (modify seems not work with sysfs in current kernel) 
+    inotifywait -t 60 -e delete_self,open "${START_FILE}" "${FB_NAME}" || {
+        case $? in
+            2) echo "${DAEMON} Error! Timeout reached: Trigger '${START_FILE}' or '${FB_NAME}' left unchanged!" ;;
+            1) echo "${DAEMON} Error! Watched file '${START_FILE}' or '${FB_NAME}' not found!" ;;
+        esac
+        # remove trigger and exit
+        do_rmtrigger exit 3
+    }
+
+    # check 2 events, trigger removed then finish or poll a few seconds and force redrawing
+    # Just secure and watch the change in fb-name at least 20s or wait until trigger is removed
+    local i=0
+    while [ -e "${START_FILE}" ] && [ $i -le 20 ]; do 
+        [ -r "${FB_NAME}" ] && read -r checkname < "${FB_NAME}"
+        if [ -n "${checkname}" ] && [ "${checkname}" != "${fbname}" ]; then
+            echo "${DAEMON} Framebuffer changed to ${checkname}, redrawing in iteration [$i]."
+            draw_logo || do_rmtrigger exit 1
+            fbname="${checkname}"
         fi
+        sleep 1
+        i=$((i+1))
     done
+
+    # remove trigger and exit
+    if ! [ -e "${START_FILE}" ]; then
+        echo "${DAEMON} Finished with success!"
+        exit 0
+    fi
+    do_rmtrigger exit 4
 }
 
 draw_logo () {
@@ -80,8 +118,8 @@ draw_logo () {
     fi
 
     video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
-    echo "Active DRM Output: [${effectiveDrmOutput}]"
-    echo "Final Rotation Value: [${video_rotation}]"
+    echo "${DAEMON} Active DRM Output: [${effectiveDrmOutput}]"
+    echo "${DAEMON} Final Rotation Value: [${video_rotation}]"
     
     # Get the screen's physical dimensions
     if [ -r /sys/class/graphics/fb0/modes ]; then
@@ -93,7 +131,7 @@ draw_logo () {
         fi
 
         if [ -n "${WIDTH}" ] && [ -n "${HEIGHT}" ]; then
-            echo "Resolution detected via modes: ${WIDTH}x${HEIGHT}"
+            echo "${DAEMON} Resolution detected via modes: ${WIDTH}x${HEIGHT}"
             
             # Determine target size for cropping.
             # If rotated 90 or 270 degrees (1 or 3), swap width and height.
@@ -108,7 +146,7 @@ draw_logo () {
             # Automatically crops and centers the master logo to target aspect ratio
             cropped_image="/tmp/boot-logo-cropped.bmp"
             if [ -f "${image}" ]; then
-                echo "Pre-cropping logo to logical size ${CROP_WIDTH}x${CROP_HEIGHT} via FFmpeg..."
+                echo "${DAEMON} Pre-cropping logo to logical size ${CROP_WIDTH}x${CROP_HEIGHT} via FFmpeg..."
                 if ffmpeg -y -threads 1 -sws_flags fast_bilinear \
                     -i "${image}" \
                     -vf "scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=increase,crop=${CROP_WIDTH}:${CROP_HEIGHT}" \
@@ -121,31 +159,33 @@ draw_logo () {
     fi
 
     if ! [ -f "${image}" ]; then
-        echo "Error: Splash image not found at ${image}"
+        echo "${DAEMON} Error! Splash image not found at ${image}"
         return 1
     fi
 
     case "${video_rotation}" in
         1|2|3)
             FBV_OPTS="${FBV_OPTS} -o ${video_rotation}"
-            echo "Applying FBV rotation: -o ${video_rotation}"
+            echo "${DAEMON} Applying FBV rotation: -o ${video_rotation}"
             ;;
     esac
 
     MODELOPTS="/etc/opts.${V_BOARD_MODEL}"
     [ -e "${MODELOPTS}" ] && . "${MODELOPTS}"
 
-    echo "Executing Command: fbv ${FBV_OPTS} \"${image}\""
+    echo "${DAEMON} Executing Command: fbv ${FBV_OPTS} \"${image}\""
     fbv ${FBV_OPTS} "${image}" >/dev/null 2>&1
 }
 
 do_stop () {
-    touch "${STOP_FILE}"
     [ -e /dev/fb0 ] && dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
+    # remove trigger only
+    do_rmtrigger
 }
 
 case "$1" in
     start)
+        touch "${START_FILE}"
         do_start &
         ;;
     stop)
@@ -153,8 +193,8 @@ case "$1" in
         ;;
     *)
         echo "Usage: $0 {start|stop}"
-        exit 1
         ;;
 esac
 
 exit $?
+# read log: /var/log/splash.log to retain exit code
