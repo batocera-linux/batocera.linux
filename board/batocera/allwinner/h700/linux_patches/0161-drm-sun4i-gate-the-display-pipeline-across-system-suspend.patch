@@ -1,0 +1,622 @@
+From: Kailash <6493816+kailashrs@users.noreply.github.com>
+Subject: [PATCH] drm/sun4i: gate the display pipeline across system suspend
+
+Nothing released the DE, mixer, TCON or tcon-top clocks on the way into
+suspend, so the whole display block stayed clocked while the system
+slept. Suspend the modeset state first, then the TCON, then the engines,
+unwinding in reverse if a step fails. The mixer saves its global control
+and clock registers and drops RT_EN before its clocks go; the DE2 CCU and
+tcon-top release their bus clocks in suspend_late. Gated on the DE33 and
+H616 TCON compatibles, so other SoCs are unaffected.
+
+Measured on RG34XX-SP in deep sleep: DE_CLK 0x80000000 -> 0, TCON_LCD0_CLK
+0x80000000 -> 0, DE and TCON_LCD bus gates 0x00010001 -> 0x00010000.
+
+Origin: kailashrs/H700_rocknix_enhancement 77df6bbdc
+Assisted-by: Claude:claude-opus-5
+---
+--- a/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
++++ b/drivers/clk/sunxi-ng/ccu-sun8i-de2.c
+@@ -286,14 +286,64 @@
+ 	.writeable_reg	= sun8i_de2_ccu_regmap_accessible_reg,
+ };
+ 
++struct sunxi_de2_clk_state {
++	struct clk *bus;
++	struct clk *mod;
++	bool system_pm;
++	bool suspended;
++};
++
++static int __maybe_unused sunxi_de2_clk_suspend_late(struct device *dev)
++{
++	struct sunxi_de2_clk_state *state = dev_get_drvdata(dev);
++
++	if (!state->system_pm || state->suspended)
++		return 0;
++
++	/* Normal DRM suspend has quiesced all consumers. Keep registers retained. */
++	clk_disable_unprepare(state->mod);
++	clk_disable_unprepare(state->bus);
++	state->suspended = true;
++	return 0;
++}
++
++static int __maybe_unused sunxi_de2_clk_resume_early(struct device *dev)
++{
++	struct sunxi_de2_clk_state *state = dev_get_drvdata(dev);
++	int ret;
++
++	if (!state->suspended)
++		return 0;
++	ret = clk_prepare_enable(state->bus);
++	if (ret)
++		return ret;
++	ret = clk_prepare_enable(state->mod);
++	if (ret) {
++		clk_disable_unprepare(state->bus);
++		return ret;
++	}
++	state->suspended = false;
++	return 0;
++}
++
++static const struct dev_pm_ops sunxi_de2_clk_pm_ops = {
++	.suspend_late = pm_sleep_ptr(sunxi_de2_clk_suspend_late),
++	.resume_early = pm_sleep_ptr(sunxi_de2_clk_resume_early),
++};
++
+ static int sunxi_de2_clk_probe(struct platform_device *pdev)
+ {
+ 	struct clk *bus_clk, *mod_clk;
++	struct sunxi_de2_clk_state *state;
+ 	struct reset_control *rstc;
+ 	void __iomem *reg;
+ 	const struct sunxi_ccu_desc *ccu_desc;
+ 	int ret;
+ 
++	state = devm_kzalloc(&pdev->dev, sizeof(*state), GFP_KERNEL);
++	if (!state)
++		return -ENOMEM;
++
+ 	ccu_desc = of_device_get_match_data(&pdev->dev);
+ 	if (!ccu_desc)
+ 		return -EINVAL;
+@@ -358,6 +408,12 @@
+ 			goto err_assert_reset;
+ 	}
+ 
++	state->bus = bus_clk;
++	state->mod = mod_clk;
++	state->system_pm = of_device_is_compatible(pdev->dev.of_node,
++						 "allwinner,sun50i-h616-de33-clk");
++	platform_set_drvdata(pdev, state);
++
+ 	ret = devm_sunxi_ccu_probe(&pdev->dev, reg, ccu_desc);
+ 	if (ret)
+ 		goto err_assert_reset;
+@@ -414,6 +470,7 @@
+ 	.probe	= sunxi_de2_clk_probe,
+ 	.driver	= {
+ 		.name	= "sunxi-de2-clks",
++		.pm	= pm_sleep_ptr(&sunxi_de2_clk_pm_ops),
+ 		.of_match_table	= sunxi_de2_clk_ids,
+ 	},
+ };
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -31,6 +31,7 @@
+ #include "sun4i_framebuffer.h"
+ #include "sun4i_tcon.h"
+ #include "sun8i_tcon_top.h"
++#include "sunxi_engine.h"
+ 
+ static int drm_sun4i_gem_dumb_create(struct drm_file *file_priv,
+ 				     struct drm_device *drm,
+@@ -78,6 +79,7 @@
+ 	drm->dev_private = drv;
+ 	INIT_LIST_HEAD(&drv->frontend_list);
+ 	INIT_LIST_HEAD(&drv->engine_list);
++	INIT_LIST_HEAD(&drv->engine_pm_list);
+ 	INIT_LIST_HEAD(&drv->tcon_list);
+ 
+ 	ret = of_reserved_mem_device_init(dev);
+@@ -344,16 +346,64 @@
+ }
+ 
+ #ifdef CONFIG_PM_SLEEP
++static int sun4i_drv_resume_resources(struct drm_device *drm)
++{
++	struct sun4i_drv *drv = drm->dev_private;
++	struct sunxi_engine_pm *pm;
++	struct sun4i_tcon *tcon;
++	int ret;
++
++	list_for_each_entry(pm, &drv->engine_pm_list, list) {
++		ret = pm->resume(pm->engine);
++		if (ret)
++			return ret;
++	}
++	list_for_each_entry(tcon, &drv->tcon_list, list) {
++		ret = sun4i_tcon_resume(tcon);
++		if (ret)
++			return ret;
++	}
++	return 0;
++}
++
+ static int sun4i_drv_drm_sys_suspend(struct device *dev)
+ {
+ 	struct drm_device *drm = dev_get_drvdata(dev);
++	struct sun4i_drv *drv = drm->dev_private;
++	struct sunxi_engine_pm *pm;
++	struct sun4i_tcon *tcon;
++	int ret, restore_ret;
+ 
+-	return drm_mode_config_helper_suspend(drm);
++	ret = drm_mode_config_helper_suspend(drm);
++	if (ret)
++		return ret;
++
++	list_for_each_entry(tcon, &drv->tcon_list, list)
++		sun4i_tcon_suspend(tcon);
++	list_for_each_entry(pm, &drv->engine_pm_list, list) {
++		ret = pm->suspend(pm->engine);
++		if (ret)
++			goto err_restore;
++	}
++	return 0;
++
++err_restore:
++	restore_ret = sun4i_drv_resume_resources(drm);
++	if (!restore_ret)
++		restore_ret = drm_mode_config_helper_resume(drm);
++	if (restore_ret)
++		dev_err(dev, "Display suspend rollback failed: %d\n", restore_ret);
++	return ret;
+ }
+ 
+ static int sun4i_drv_drm_sys_resume(struct device *dev)
+ {
+ 	struct drm_device *drm = dev_get_drvdata(dev);
++	int ret;
++
++	ret = sun4i_drv_resume_resources(drm);
++	if (ret)
++		return ret;
+ 
+ 	return drm_mode_config_helper_resume(drm);
+ }
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.h
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.h
+@@ -15,6 +15,7 @@
+ 
+ struct sun4i_drv {
+ 	struct list_head	engine_list;
++	struct list_head	engine_pm_list;
+ 	struct list_head	frontend_list;
+ 	struct list_head	tcon_list;
+ };
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.c
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.c
+@@ -40,6 +40,20 @@
+ #include "sun8i_tcon_top.h"
+ #include "sunxi_engine.h"
+ 
++/* PM state, kept out of the exported struct sun4i_tcon. */
++struct sun4i_tcon_pm {
++	struct sun4i_tcon tcon;
++	int irq;
++	bool system_pm;
++	bool clocks_enabled;
++	bool clocks_suspended;
++};
++
++static struct sun4i_tcon_pm *sun4i_tcon_pm(struct sun4i_tcon *tcon)
++{
++	return container_of(tcon, struct sun4i_tcon_pm, tcon);
++}
++
+ static struct drm_connector *sun4i_tcon_get_connector(const struct drm_encoder *encoder)
+ {
+ 	struct drm_connector *connector;
+@@ -781,17 +795,74 @@
+ 	return IRQ_HANDLED;
+ }
+ 
++static void sun4i_tcon_disable_clocks(void *data)
++{
++	struct sun4i_tcon *tcon = data;
++
++	if (!sun4i_tcon_pm(tcon)->clocks_enabled)
++		return;
++	if (tcon->quirks->has_channel_0)
++		clk_disable_unprepare(tcon->sclk0);
++	clk_disable_unprepare(tcon->clk);
++	sun4i_tcon_pm(tcon)->clocks_enabled = false;
++}
++
++static int sun4i_tcon_enable_clocks(struct sun4i_tcon *tcon)
++{
++	int ret;
++
++	ret = clk_prepare_enable(tcon->clk);
++	if (ret)
++		return ret;
++	if (tcon->quirks->has_channel_0) {
++		ret = clk_prepare_enable(tcon->sclk0);
++		if (ret) {
++			clk_disable_unprepare(tcon->clk);
++			return ret;
++		}
++	}
++	sun4i_tcon_pm(tcon)->clocks_enabled = true;
++	return 0;
++}
++
++void sun4i_tcon_suspend(struct sun4i_tcon *tcon)
++{
++	if (!sun4i_tcon_pm(tcon)->system_pm || sun4i_tcon_pm(tcon)->clocks_suspended)
++		return;
++
++	/* Drain handlers before either TCON or its associated mixer loses clocks. */
++	disable_irq(sun4i_tcon_pm(tcon)->irq);
++	sun4i_tcon_disable_clocks(tcon);
++	sun4i_tcon_pm(tcon)->clocks_suspended = true;
++}
++
++int sun4i_tcon_resume(struct sun4i_tcon *tcon)
++{
++	int ret;
++
++	if (!sun4i_tcon_pm(tcon)->clocks_suspended)
++		return 0;
++	ret = sun4i_tcon_enable_clocks(tcon);
++	if (ret)
++		return ret;
++	sun4i_tcon_pm(tcon)->clocks_suspended = false;
++	enable_irq(sun4i_tcon_pm(tcon)->irq);
++	return 0;
++}
++
+ static int sun4i_tcon_init_clocks(struct device *dev,
+ 				  struct sun4i_tcon *tcon)
+ {
+-	tcon->clk = devm_clk_get_enabled(dev, "ahb");
++	int ret;
++
++	tcon->clk = devm_clk_get(dev, "ahb");
+ 	if (IS_ERR(tcon->clk)) {
+ 		dev_err(dev, "Couldn't get the TCON bus clock\n");
+ 		return PTR_ERR(tcon->clk);
+ 	}
+ 
+ 	if (tcon->quirks->has_channel_0) {
+-		tcon->sclk0 = devm_clk_get_enabled(dev, "tcon-ch0");
++		tcon->sclk0 = devm_clk_get(dev, "tcon-ch0");
+ 		if (IS_ERR(tcon->sclk0)) {
+ 			dev_err(dev, "Couldn't get the TCON channel 0 clock\n");
+ 			return PTR_ERR(tcon->sclk0);
+@@ -806,7 +877,11 @@
+ 		}
+ 	}
+ 
+-	return 0;
++	ret = sun4i_tcon_enable_clocks(tcon);
++	if (ret)
++		return ret;
++
++	return devm_add_action_or_reset(dev, sun4i_tcon_disable_clocks, tcon);
+ }
+ 
+ static int sun4i_tcon_init_irq(struct device *dev,
+@@ -826,6 +901,7 @@
+ 		return ret;
+ 	}
+ 
++	sun4i_tcon_pm(tcon)->irq = irq;
+ 	return 0;
+ }
+ 
+@@ -1114,6 +1190,7 @@
+ 	struct sunxi_engine *engine;
+ 	struct device_node *remote;
+ 	struct sun4i_tcon *tcon;
++	struct sun4i_tcon_pm *pm;
+ 	struct reset_control *edp_rstc;
+ 	bool has_lvds_rst, has_lvds_alt, can_lvds;
+ 	int ret;
+@@ -1124,9 +1201,12 @@
+ 		return -EPROBE_DEFER;
+ 	}
+ 
+-	tcon = devm_kzalloc(dev, sizeof(*tcon), GFP_KERNEL);
+-	if (!tcon)
++	pm = devm_kzalloc(dev, sizeof(*pm), GFP_KERNEL);
++	if (!pm)
+ 		return -ENOMEM;
++	pm->system_pm = of_device_is_compatible(dev->of_node, "allwinner,sun50i-h616-tcon-lcd") ||
++			of_device_is_compatible(dev->of_node, "allwinner,sun50i-h616-tcon-tv");
++	tcon = &pm->tcon;
+ 	dev_set_drvdata(dev, tcon);
+ 	tcon->drm = drm;
+ 	tcon->dev = dev;
+--- a/drivers/gpu/drm/sun4i/sun4i_tcon.h
++++ b/drivers/gpu/drm/sun4i/sun4i_tcon.h
+@@ -293,6 +293,9 @@
+ struct drm_bridge *sun4i_tcon_find_bridge(struct device_node *node);
+ struct drm_panel *sun4i_tcon_find_panel(struct device_node *node);
+ 
++void sun4i_tcon_suspend(struct sun4i_tcon *tcon);
++int sun4i_tcon_resume(struct sun4i_tcon *tcon);
++
+ void sun4i_tcon_enable_vblank(struct sun4i_tcon *tcon, bool enable);
+ void sun4i_tcon_mode_set(struct sun4i_tcon *tcon,
+ 			 const struct drm_encoder *encoder,
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.c
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.c
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/component.h>
++#include <linux/delay.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -413,6 +414,77 @@
+ 			 interlaced ? "on" : "off");
+ }
+ 
++/* H616/DE33 only. The DRM master has disabled planes and TCON IRQs. */
++static int sun50i_mixer_suspend(struct sunxi_engine *engine)
++{
++	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++	int ret;
++
++	if (mixer->clocks_suspended)
++		return 0;
++
++	ret = regmap_read(mixer->top_regs, SUN8I_MIXER_GLOBAL_CTL,
++			  &mixer->saved_global_ctl);
++	if (ret)
++		return ret;
++	ret = regmap_read(mixer->top_regs, SUN50I_MIXER_GLOBAL_CLK,
++			  &mixer->saved_global_clk);
++	if (ret)
++		return ret;
++	ret = regmap_update_bits(mixer->top_regs, SUN8I_MIXER_GLOBAL_CTL,
++				 SUN8I_MIXER_GLOBAL_CTL_RT_EN, 0);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(mixer->top_regs, SUN50I_MIXER_GLOBAL_CLK, 0);
++	if (ret) {
++		regmap_write(mixer->top_regs, SUN8I_MIXER_GLOBAL_CTL,
++			     mixer->saved_global_ctl);
++		return ret;
++	}
++
++	/* OEM manager shutdown allows 5 ms for the disable to settle. */
++	usleep_range(5000, 6000);
++
++	/* Keep reset deasserted: configuration and plane mappings are retained. */
++	clk_disable_unprepare(mixer->mod_clk);
++	clk_disable_unprepare(mixer->bus_clk);
++	mixer->clocks_suspended = true;
++	return 0;
++}
++
++static int sun50i_mixer_resume(struct sunxi_engine *engine)
++{
++	struct sun8i_mixer *mixer = engine_to_sun8i_mixer(engine);
++	int ret;
++
++	if (!mixer->clocks_suspended)
++		return 0;
++
++	ret = clk_prepare_enable(mixer->bus_clk);
++	if (ret)
++		return ret;
++	ret = clk_prepare_enable(mixer->mod_clk);
++	if (ret)
++		goto err_bus;
++	ret = regmap_write(mixer->top_regs, SUN50I_MIXER_GLOBAL_CLK,
++			   mixer->saved_global_clk);
++	if (ret)
++		goto err_mod;
++	ret = regmap_write(mixer->top_regs, SUN8I_MIXER_GLOBAL_CTL,
++			   mixer->saved_global_ctl);
++	if (ret)
++		goto err_mod;
++
++	mixer->clocks_suspended = false;
++	return 0;
++err_mod:
++	clk_disable_unprepare(mixer->mod_clk);
++err_bus:
++	clk_disable_unprepare(mixer->bus_clk);
++	return ret;
++}
++
+ static const struct sunxi_engine_ops sun8i_engine_ops = {
+ 	.commit		= sun8i_mixer_commit,
+ 	.layers_init	= sun8i_layers_init,
+@@ -608,7 +680,9 @@
+ 		ret = PTR_ERR(mixer->bus_clk);
+ 		goto err_assert_reset;
+ 	}
+-	clk_prepare_enable(mixer->bus_clk);
++	ret = clk_prepare_enable(mixer->bus_clk);
++	if (ret)
++		goto err_assert_reset;
+ 
+ 	mixer->mod_clk = devm_clk_get(dev, "mod");
+ 	if (IS_ERR(mixer->mod_clk)) {
+@@ -625,7 +699,9 @@
+ 	if (mixer->cfg->mod_rate)
+ 		clk_set_rate(mixer->mod_clk, mixer->cfg->mod_rate);
+ 
+-	clk_prepare_enable(mixer->mod_clk);
++	ret = clk_prepare_enable(mixer->mod_clk);
++	if (ret)
++		goto err_disable_bus_clk;
+ 
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
+ 		struct platform_device *pdev;
+@@ -648,13 +724,20 @@
+ 		data = platform_get_drvdata(pdev);
+ 		if (!data) {
+ 			put_device(&pdev->dev);
+-			return -EPROBE_DEFER;
++			ret = -EPROBE_DEFER;
++			goto err_disable_mod_clk;
+ 		}
+ 
+ 		mixer->planes_dev = &pdev->dev;
+ 	}
+ 
+ 	list_add_tail(&mixer->engine.list, &drv->engine_list);
++	if (mixer->cfg->de_type == SUN8I_MIXER_DE33) {
++		mixer->pm.engine = &mixer->engine;
++		mixer->pm.suspend = sun50i_mixer_suspend;
++		mixer->pm.resume = sun50i_mixer_resume;
++		list_add_tail(&mixer->pm.list, &drv->engine_pm_list);
++	}
+ 
+ 	/* Reset registers and disable unused sub-engines */
+ 	if (mixer->cfg->de_type == SUN8I_MIXER_DE3) {
+@@ -703,9 +786,13 @@
+ 	struct sun8i_mixer *mixer = dev_get_drvdata(dev);
+ 
+ 	list_del(&mixer->engine.list);
++	if (mixer->cfg->de_type == SUN8I_MIXER_DE33)
++		list_del(&mixer->pm.list);
+ 
+-	clk_disable_unprepare(mixer->mod_clk);
+-	clk_disable_unprepare(mixer->bus_clk);
++	if (!mixer->clocks_suspended) {
++		clk_disable_unprepare(mixer->mod_clk);
++		clk_disable_unprepare(mixer->bus_clk);
++	}
+ 	reset_control_assert(mixer->reset);
+ }
+ 
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -206,6 +206,7 @@
+ 
+ struct sun8i_mixer {
+ 	struct sunxi_engine		engine;
++	struct sunxi_engine_pm		pm;
+ 
+ 	const struct sun8i_mixer_cfg	*cfg;
+ 
+@@ -216,6 +217,9 @@
+ 
+ 	struct regmap			*top_regs;
+ 	struct device			*planes_dev;
++	bool				clocks_suspended;
++	u32				saved_global_ctl;
++	u32				saved_global_clk;
+ };
+ 
+ enum {
+--- a/drivers/gpu/drm/sun4i/sun8i_tcon_top.c
++++ b/drivers/gpu/drm/sun4i/sun8i_tcon_top.c
+@@ -219,6 +219,8 @@
+ 	if (ret)
+ 		goto err_unregister_gates;
+ 
++	tcon_top->system_pm = of_device_is_compatible(dev->of_node,
++						     "allwinner,sun50i-h616-tcon-top");
+ 	dev_set_drvdata(dev, tcon_top);
+ 
+ 	return 0;
+@@ -246,8 +248,10 @@
+ 		if (clk_data->hws[i])
+ 			clk_hw_unregister_gate(clk_data->hws[i]);
+ 
+-	clk_disable_unprepare(tcon_top->bus);
++	if (!tcon_top->suspended)
++		clk_disable_unprepare(tcon_top->bus);
+ 	reset_control_assert(tcon_top->rst);
++	dev_set_drvdata(dev, NULL);
+ }
+ 
+ static const struct component_ops sun8i_tcon_top_ops = {
+@@ -297,11 +301,43 @@
+ MODULE_DEVICE_TABLE(of, sun8i_tcon_top_of_table);
+ EXPORT_SYMBOL(sun8i_tcon_top_of_table);
+ 
++static int __maybe_unused sun8i_tcon_top_suspend_late(struct device *dev)
++{
++	struct sun8i_tcon_top *top = dev_get_drvdata(dev);
++
++	if (!top || !top->system_pm || top->suspended)
++		return 0;
++
++	clk_disable_unprepare(top->bus);
++	top->suspended = true;
++	return 0;
++}
++
++static int __maybe_unused sun8i_tcon_top_resume_early(struct device *dev)
++{
++	struct sun8i_tcon_top *top = dev_get_drvdata(dev);
++	int ret;
++
++	if (!top || !top->suspended)
++		return 0;
++	ret = clk_prepare_enable(top->bus);
++	if (ret)
++		return ret;
++	top->suspended = false;
++	return 0;
++}
++
++static const struct dev_pm_ops sun8i_tcon_top_pm_ops = {
++	.suspend_late = pm_sleep_ptr(sun8i_tcon_top_suspend_late),
++	.resume_early = pm_sleep_ptr(sun8i_tcon_top_resume_early),
++};
++
+ static struct platform_driver sun8i_tcon_top_platform_driver = {
+ 	.probe		= sun8i_tcon_top_probe,
+ 	.remove		= sun8i_tcon_top_remove,
+ 	.driver		= {
+ 		.name		= "sun8i-tcon-top",
++		.pm		= pm_sleep_ptr(&sun8i_tcon_top_pm_ops),
+ 		.of_match_table	= sun8i_tcon_top_of_table,
+ 	},
+ };
+--- a/drivers/gpu/drm/sun4i/sun8i_tcon_top.h
++++ b/drivers/gpu/drm/sun4i/sun8i_tcon_top.h
+@@ -28,6 +28,8 @@
+ 	struct clk_hw_onecell_data	*clk_data;
+ 	void __iomem			*regs;
+ 	struct reset_control		*rst;
++	bool				system_pm;
++	bool				suspended;
+ 
+ 	/*
+ 	 * spinlock is used to synchronize access to same
+--- a/drivers/gpu/drm/sun4i/sunxi_engine.h
++++ b/drivers/gpu/drm/sun4i/sunxi_engine.h
+@@ -144,6 +144,18 @@
+ 	struct list_head		list;
+ };
+ 
++/*
++ * Engines that gate their clocks across system suspend register these with
++ * the DRM master, which suspends them after the TCONs and resumes them
++ * first: a TCON IRQ handler may touch its engine.
++ */
++struct sunxi_engine_pm {
++	struct sunxi_engine *engine;
++	int (*suspend)(struct sunxi_engine *engine);
++	int (*resume)(struct sunxi_engine *engine);
++	struct list_head list;
++};
++
+ /**
+  * sunxi_engine_commit() - commit all changes of the engine
+  * @engine:	pointer to the engine

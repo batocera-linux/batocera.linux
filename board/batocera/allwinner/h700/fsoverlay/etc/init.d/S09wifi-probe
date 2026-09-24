@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# The RTL8821CS can fail its first probe on SDIO data errors during the
+# firmware download; binding it again succeeds.
+
+wifi_probe_retry() {
+    for try in 1 2 3; do
+        sleep 10
+        for dev in /sys/bus/sdio/devices/*; do
+            [ -e "${dev}/driver" ] && continue
+            case "$(cat "${dev}/modalias" 2>/dev/null)" in
+                sdio:*v024CdC821*) ;;
+                *) continue ;;
+            esac
+            basename "${dev}" > /sys/bus/sdio/drivers/rtw88_8821cs/bind 2>/dev/null
+        done
+    done
+}
+
+case "$1" in
+    start)
+        wifi_probe_retry &
+        ;;
+esac
+
+exit 0

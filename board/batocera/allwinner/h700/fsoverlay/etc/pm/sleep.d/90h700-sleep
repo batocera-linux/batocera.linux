@@ -1,0 +1,17 @@
+#!/bin/bash
+
+case "$1" in
+    suspend|hibernate)
+        amixer -q -c0 sset DAC off
+        /etc/init.d/S02led-status stop
+        for led in "green:power" "red:status"; do
+            [ -e "/sys/class/leds/${led}/brightness" ] && echo 0 > "/sys/class/leds/${led}/brightness"
+        done
+        ;;
+    resume|thaw)
+        amixer -q -c0 sset DAC on
+        /etc/init.d/S02led-status start
+        ;;
+esac
+
+exit 0

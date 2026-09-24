@@ -1,0 +1,22 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: h616: mark the 480 MHz OPP as the suspend OPP
+
+cpufreq-dt takes policy->suspend_freq from an OPP tagged opp-suspend and
+cpufreq_generic_suspend() drops the CPUs to it from dpm_suspend(), which
+runs for s2idle as well. Tag the lowest OPP so the H700 sleeps at
+480 MHz / 0.9 V regardless of the governor userspace left behind.
+
+The dtsi is shared by every H616/H618 board; the tag is harmless there,
+it only matters once a board suspends.
+
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616-cpu-opp.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616-cpu-opp.dtsi
+@@ -12,6 +12,7 @@
+ 			opp-microvolt = <900000>;
+ 			clock-latency-ns = <244144>; /* 8 32k periods */
+ 			opp-supported-hw = <0x3f>;
++			opp-suspend;
+ 		};
+ 
+ 		opp-600000000 {

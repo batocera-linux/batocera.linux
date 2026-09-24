@@ -1,0 +1,37 @@
+From: Philippe Simons <simons.philippe@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: rg35xx-plus: add PCF8563 RTC
+
+The RG35XX Plus has a NXP PCF8563 RTC on the same bus as the AXP717 PMIC.
+It is battery backed, so alias it to rtc0 and the SoC RTC to rtc1, making
+the PCF8563 the hctosys device.
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-plus.dts
+@@ -9,6 +9,11 @@
+ 	model = "Anbernic RG35XX Plus";
+ 	compatible = "anbernic,rg35xx-plus", "allwinner,sun50i-h700";
+ 
++	aliases {
++		rtc0 = &pcf8563;
++		rtc1 = &rtc;
++	};
++
+ 	wifi_pwrseq: pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		clocks = <&rtc CLK_OSC32K_FANOUT>;
+@@ -37,6 +42,14 @@
+ 	};
+ };
+ 
++&r_i2c {
++	pcf8563: rtc@51 {
++		compatible = "nxp,pcf8563";
++		reg = <0x51>;
++		#clock-cells = <0>;
++	};
++};
++
+ /* Bluetooth RTL8821CS */
+ &uart1 {
+ 	pinctrl-names = "default";

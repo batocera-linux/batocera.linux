@@ -1,0 +1,57 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] Input: axp20x-pek - do not report the key press that woke the system
+
+When the power key is the wakeup source, the press is delivered to
+userspace after resume and systemd-logind suspends the system straight
+back to sleep.
+
+The AXP288 clears the pending PEK bits from its noirq resume callback,
+but that only works for a real suspend-to-RAM where the IRQ thread
+cannot run until the devices are back. Under s2idle the nested
+regmap-irq thread runs as soon as the PMIC interrupt fires and calls
+this handler while the system is still officially suspended, so
+anything done at resume time is too late.
+
+Drop the press while pm_suspend_in_progress(): the interrupt has already
+done its job as a wakeup source. The release is still reported. The same
+handler serves it, and the input core ignores an event that matches the
+current key state, so swallowing it would leave KEY_POWER held down and
+the next press would never reach userspace.
+
+Seen on the Anbernic RG35XX H (H700 + AXP717): every power-key wake from
+s2idle was followed by "Power key pressed short" / "Suspending..." from
+systemd-logind in the same second.
+
+---
+--- a/drivers/input/misc/axp20x-pek.c
++++ b/drivers/input/misc/axp20x-pek.c
+@@ -26,6 +26,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
++#include <linux/suspend.h>
+ 
+ #define AXP20X_PEK_STARTUP_MASK		(0xc0)
+ #define AXP20X_PEK_SHUTDOWN_MASK	(0x03)
+@@ -204,10 +205,19 @@
+ 	 * The power-button is connected to ground so a falling edge (dbf)
+ 	 * means it is pressed.
+ 	 */
+-	if (irq == axp20x_pek->irq_dbf)
++	if (irq == axp20x_pek->irq_dbf) {
++		/*
++		 * A press that woke the system has done its job; reporting it
++		 * would suspend again at once. The release is still reported so
++		 * the key is not left held.
++		 */
++		if (pm_suspend_in_progress())
++			return IRQ_HANDLED;
++
+ 		input_report_key(idev, KEY_POWER, true);
+-	else if (irq == axp20x_pek->irq_dbr)
++	} else if (irq == axp20x_pek->irq_dbr) {
+ 		input_report_key(idev, KEY_POWER, false);
++	}
+ 
+ 	input_sync(idev);
+ 

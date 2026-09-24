@@ -260,7 +260,7 @@ new file mode 100644
 index 00000000000..a4da1fd2e1e
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-mipi.c
-@@ -0,0 +1,1173 @@
+@@ -0,0 +1,1179 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Generic MIPI-DSI/DPI(+SPI) Panel Driver
@@ -920,6 +920,12 @@ index 00000000000..a4da1fd2e1e
 +	connector->display_info.bus_flags = mipi->bus_flags;
 +	drm_display_info_set_bus_formats(&connector->display_info,
 +					 &mipi->bus_format, 1);
++
++	/*
++	 * TODO: Remove once all drm drivers call
++	 * drm_connector_set_orientation_from_panel()
++	 */
++	drm_connector_set_panel_orientation(connector, mipi->orientation);
 +
 +	return count;
 +}
