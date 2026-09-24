@@ -261,11 +261,11 @@ from disassembly of SGM41515 datasheet and vendor driver.
  };
  
 @@ -1775,6 +1979,7 @@
- 	{ "bq25611d", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25611D] },
- 	{ "bq25618", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25618] },
- 	{ "bq25619", (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25619] },
-+	{ "sgm41515", (kernel_ulong_t)&bq256xx_chip_info_tbl[SGM41515] },
- 	{}
+ 	{ .name = "bq25611d", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25611D] },
+ 	{ .name = "bq25618", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25618] },
+ 	{ .name = "bq25619", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25619] },
++	{ .name = "sgm41515", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[SGM41515] },
+ 	{ }
  };
  MODULE_DEVICE_TABLE(i2c, bq256xx_i2c_ids);
 @@ -1787,6 +1992,7 @@

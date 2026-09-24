@@ -53,7 +53,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
 +	}
 +
 +	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	bdaddr->b[5] = 0x00;
@@ -193,7 +193,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
 +	}
 +
 +	// Extract the last 6 characters
-+	strncpy(last6, serial + serial_len - 6, 6);
++	memcpy(last6, serial + serial_len - 6, 6);
 +
 +	// Initialize the first 3 bytes
 +	macaddr->b[5] = 0x00;
