@@ -4,6 +4,7 @@
 # It shows the unique BATOCERA logo in early boot stage
 
 LOG_FILE="/var/log/splash.log"
+STOP_FILE="/var/run/system-splash.stop"
 
 do_start () {
     LOG_DIR="${LOG_FILE%/*}"
@@ -21,7 +22,27 @@ do_start () {
             exit 1
         fi
     fi
-    
+
+    draw_logo || exit 1
+
+    # the gpu driver replaces the firmware framebuffer, clearing the screen
+    fbname=""
+    [ -r /sys/class/graphics/fb0/name ] && read -r fbname < /sys/class/graphics/fb0/name
+    i=0
+    while [ $i -lt 120 ] && [ ! -e "${STOP_FILE}" ]; do
+        sleep 0.5
+        i=$((i + 1))
+        newname=""
+        [ -r /sys/class/graphics/fb0/name ] && read -r newname < /sys/class/graphics/fb0/name
+        if [ -n "${newname}" ] && [ "${newname}" != "${fbname}" ]; then
+            fbname="${newname}"
+            echo "Framebuffer changed to ${fbname}, redrawing."
+            draw_logo || exit 1
+        fi
+    done
+}
+
+draw_logo () {
     # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
     # Standard FBV options
@@ -101,7 +122,7 @@ do_start () {
 
     if ! [ -f "${image}" ]; then
         echo "Error: Splash image not found at ${image}"
-        exit 1
+        return 1
     fi
 
     case "${video_rotation}" in
@@ -119,6 +140,7 @@ do_start () {
 }
 
 do_stop () {
+    touch "${STOP_FILE}"
     [ -e /dev/fb0 ] && dd if=/dev/zero of=/dev/fb0 >/dev/null 2>&1
 }
 
