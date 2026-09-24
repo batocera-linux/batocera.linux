@@ -52,6 +52,7 @@
 - Samba wide symbolic links under /userdata (e.g. to external drives) being silently disabled, and secure mode granting guest access to the share
 - Bauh not starting with Python 3.14
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
+- Boot logo disappearing once the graphics driver replaces the firmware framebuffer, leaving a black screen until the splash video starts
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
 - Commander Genius fullscreen in Wayland
