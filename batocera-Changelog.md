@@ -272,6 +272,7 @@
 - TRX to 1.11.1
 - Tsugaru to v20260522
 - Ur-Quan Masters to Aug 21, 2026 build
+- UZDoom to 5.0.3
 - Visual Pinball to Sep 16, 2026 build
 - Vita3k to Sep 17, 2026 build
 - VKQuake to 1.36.0

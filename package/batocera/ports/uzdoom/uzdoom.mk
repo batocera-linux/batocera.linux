@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-UZDOOM_VERSION = 5.0.1
-UZDOOM_HASH = b92a836 # get from the tag
+UZDOOM_VERSION = 5.0.3
+UZDOOM_HASH = 7910df7 # get from the tag
 UZDOOM_SITE = https://github.com/UZDoom/UZDoom.git
 UZDOOM_SITE_METHOD = git
 UZDOOM_LICENSE = GPLv3
