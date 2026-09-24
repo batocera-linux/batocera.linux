@@ -102,7 +102,7 @@
 - Amiberry to v8.3.0
 - AppleWin to Sep 6, 2026 build
 - Armsx2 to 2.7
-- Azahar to 2126.1.1
+- Azahar to 2126.1.2
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
 - Box64 0.4.4
@@ -132,7 +132,7 @@
 - Libretro-81 to April 20th, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
 - Libretro-Atari800 to September 1st, 2026 build
-- Libretro-Azahar to 2126.1.1
+- Libretro-Azahar to 2126.1.2
 - Libretro-Beetle-Lynx to April 20th, 2026 build
 - Libretro-Beetle-NGP to June 14th, 20026 build
 - Libretro-Beetle-PCE to September 4th, 2026 build
