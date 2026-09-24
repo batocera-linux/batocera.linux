@@ -237,11 +237,12 @@ case "$1" in
         printf 'Starting %s: ' "$DAEMON"
         if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
-            touch /var/run/system-splash.stop
+            # remove the file-flag to release system-splash service
+            [[ -f /var/run/system-splash.ready ]] && rm -f /var/run/system-splash.ready
             do_start
             echo "OK"
-	else
-	    echo "SKIPPED"
+        else
+            echo "SKIPPED"
         fi
         ;;
     stop)
