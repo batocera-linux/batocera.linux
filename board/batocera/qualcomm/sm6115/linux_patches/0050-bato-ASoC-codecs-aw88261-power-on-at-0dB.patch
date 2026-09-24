@@ -1,0 +1,19 @@
+ASoC: codecs: aw88261: power on at 0dB
+
+Upstream 7.2 starts the amplifier attenuated (AW88261_CTL_DEFAULT_VOL, -22.5dB
+as stored) and expects userspace to raise PCM Playback Volume. Batocera runs
+these boards on the PipeWire pro-audio profile, so the UCM sequences that set
+it never run and the speakers came up quieter than on 7.1. Start at 0dB as
+the old series did.
+
+--- a/sound/soc/codecs/aw88261.c
++++ b/sound/soc/codecs/aw88261.c
+@@ -1281,7 +1281,7 @@
+ 	aw_dev->prof_info.prof_type = AW88395_DEV_NONE_TYPE_ID;
+ 	aw_dev->channel = 0;
+ 	aw_dev->fw_status = AW88261_DEV_FW_FAILED;
+-	aw_dev->volume_desc.ctl_volume = AW88261_CTL_DEFAULT_VOL;
++	aw_dev->volume_desc.ctl_volume = 0;
+ 	aw_dev->volume_desc.mute_volume = AW88261_MUTE_VOL;
+ 	aw88261_parse_channel_dt(aw88261);
+ 
