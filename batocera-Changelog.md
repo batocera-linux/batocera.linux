@@ -144,7 +144,7 @@
 - Libretro-Beetle-WSwan to July 31st, 2026 build
 - Libretro-BennuGD to August 29th, 2026 build
 - Libretro-BK to September 4th, 2026 build
-- Libretro-Blastem to September 2nd, 2026 build
+- Libretro-Blastem to September 20th, 2026 build
 - Libretro-BlueMSX to August 23rd, 2026 build
 - Libretro-Boom3 to September 3rd, 2026 build
 - Libretro-Bsnes to September 4th, 2026 build
