@@ -3,8 +3,8 @@
 # rpcs3
 #
 ################################################################################
-# Version: Commits on Sep 17, 2026
-RPCS3_VERSION = 92721aedfe9dda00caae25a7aaf7e6b7d07213d0
+# Version: Commits on Sep 24, 2026
+RPCS3_VERSION = c82221f292880272d11302ecf1206f81a970a5ab
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
@@ -12,8 +12,8 @@ RPCS3_LICENSE = GPLv2
 RPCS3_EMULATOR_INFO = rpcs3.emulator.yml
 RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
 
-# Version: Commits on Sep 18, 2026
-RPCS3_TRANSLATIONS_VERSION = 53cb606b2b3cb75951665e97111c85461de8269d
+# Version: Commits on Sep 24, 2026
+RPCS3_TRANSLATIONS_VERSION = 9d7a7b45d59e4e15d9922e8231606dbdccb41f44
 RPCS3_EXTRA_DOWNLOADS = \
     https://github.com/RPCS3/rpcs3_translations/archive/$(RPCS3_TRANSLATIONS_VERSION).tar.gz
 
