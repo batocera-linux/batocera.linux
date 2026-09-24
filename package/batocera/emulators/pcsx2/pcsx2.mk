@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-PCSX2_VERSION = v2.8.2
+PCSX2_VERSION = v2.9.81
 PCSX2_SITE = https://github.com/pcsx2/pcsx2.git
 PCSX2_SITE_METHOD = git
 PCSX2_GIT_SUBMODULES = YES
@@ -14,7 +14,7 @@ PCSX2_EMULATOR_INFO = pcsx2.emulator.yml
 
 PCSX2_SUPPORTS_IN_SOURCE_BUILD = NO
 
-PCSX2_DEPENDENCIES += alsa-lib ecm fmt freetype host-clang host-libcurl kddockwidgets
+PCSX2_DEPENDENCIES += alsa-lib ecm ffmpeg fmt freetype host-clang host-libcurl kddockwidgets
 PCSX2_DEPENDENCIES += libaio libbacktrace libcurl libgtk3 libpcap libpng libsamplerate
 PCSX2_DEPENDENCIES += libsoundtouch plutosvg portaudio qt6base qt6svg qt6tools
 PCSX2_DEPENDENCIES += rapidyaml shaderc sdl3 webp wxwidgets xorgproto yaml-cpp zlib
