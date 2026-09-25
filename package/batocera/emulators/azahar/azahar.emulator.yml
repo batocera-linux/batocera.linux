@@ -14,7 +14,7 @@ shared_features:
 custom_features:
   azahar_screen_layout:
     prompt: SCREEN LAYOUT
-    description: Arrange the dual screen layout. Separate windows can be changed with Hotkey+R2.
+    description: Arrange the dual screen layout. Defaults to separate windows when a second screen is connected. Separate windows can be changed with Hotkey+R2.
     choices:
       Bottom/Top: 0-true
       Top Only: 1-false
