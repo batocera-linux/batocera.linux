@@ -8,6 +8,7 @@ from pathlib import Path
 from batocera_common.paths import BATOCERA_SHARE_DIR
 
 from .config import RC_XML, LabWCConfig
+from .outputs import layout_box
 from .types import LabWCRule, Output
 
 
@@ -58,8 +59,11 @@ def _apply_rules(config: LabWCConfig, rules: list[LabWCRule], primary: str, seco
                         window_rule.focus_output(output or None)
                     elif output:
                         window_rule.focus_output(output)
-                case 'ToggleFullscreen':  # pragma: no branch
+                case 'ToggleFullscreen':
                     window_rule.toggle_fullscreen(action.get('value', True))
+                case 'SpanOutputs':  # pragma: no branch
+                    # labwc shrinks a new window to one output, so size it over the whole layout afterwards
+                    window_rule.span(layout_box((primary, secondary)) if primary and secondary else None)
 
 
 def main() -> None:

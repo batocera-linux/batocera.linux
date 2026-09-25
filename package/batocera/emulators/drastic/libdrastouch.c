@@ -627,9 +627,9 @@ SDL_Window* SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
             last_width = bounds.w;
             last_height = bounds.h;
             if (bounds.w + bounds.x > total_width)
-                total_width += bounds.w;
+                total_width = bounds.w + bounds.x;
             if (bounds.h + bounds.y > total_height)
-                total_height += bounds.h;
+                total_height = bounds.h + bounds.y;
 
             if (i == 0) {
                 display0_rect = bounds;
@@ -638,6 +638,14 @@ SDL_Window* SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
                 has_display_rects = 1;
             }
         }
+    }
+
+    // SDL numbers displays in the order they appeared, so a hotplugged top screen can come second
+    if (has_display_rects && (display1_rect.y < display0_rect.y ||
+                              (display1_rect.y == display0_rect.y && display1_rect.x < display0_rect.x))) {
+        SDL_Rect top = display1_rect;
+        display1_rect = display0_rect;
+        display0_rect = top;
     }
 
     // Record screen size for rect tracking/conversion
@@ -874,6 +882,25 @@ void mic_audio_callback(void* userdata, Uint8* stream, int len) {
     }
 }
 
+// SDL's renderer rewrites fingers into its letterboxed logical viewport, map them back to window pixels
+static void finger_to_window(float fx, float fy, int* x, int* y) {
+    int lw = 0, lh = 0;
+    if (renderer)
+        SDL_RenderGetLogicalSize(renderer, &lw, &lh);
+
+    if (lw > 0 && lh > 0) {
+        SDL_Rect vp;
+        float sx, sy;
+        SDL_RenderGetViewport(renderer, &vp);
+        SDL_RenderGetScale(renderer, &sx, &sy);
+        *x = (int)((vp.x + fx * vp.w) * sx);
+        *y = (int)((vp.y + fy * vp.h) * sy);
+    } else {
+        *x = (int)(fx * phys_width);
+        *y = (int)(fy * phys_height);
+    }
+}
+
 int SDL_PollEvent(SDL_Event* event) {
     // Loop required to filter events we don't want to pass along
     while (1) {
@@ -885,8 +912,8 @@ int SDL_PollEvent(SDL_Event* event) {
                 if (!actual_touch)
                     actual_touch = 1;
 
-                int x = (int)(event->tfinger.x * phys_width);
-                int y = (int)(event->tfinger.y * phys_height);
+                int x, y;
+                finger_to_window(event->tfinger.x, event->tfinger.y, &x, &y);
 
                 if (!touch_rect) continue;
 
@@ -920,8 +947,8 @@ int SDL_PollEvent(SDL_Event* event) {
                 break;
             }
             case SDL_FINGERMOTION: {
-                int x = (int)(event->tfinger.x * phys_width);
-                int y = (int)(event->tfinger.y * phys_height);
+                int x, y;
+                finger_to_window(event->tfinger.x, event->tfinger.y, &x, &y);
 
                 if (!touch_rect) continue;
 

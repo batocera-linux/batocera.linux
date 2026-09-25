@@ -9,6 +9,7 @@ import pytest
 from batocera_common.paths import BATOCERA_SHARE_DIR
 from batocera_labwc.cli import main
 from batocera_labwc.config import LabWCConfig
+from batocera_labwc.outputs import Box
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -105,6 +106,11 @@ _RULE_SETS: dict[str, str] = {
     - name: MoveToOutput
       output: secondary|primary
       remove_if_missing: true
+""",
+    'span': """\
+- identifier: drastic
+  actions:
+    - name: SpanOutputs
 """,
     'invalid': """\
 - actions:
@@ -560,6 +566,43 @@ class TestMain:
         )
 
         assert _touch_elements(ET.parse(rc_path).getroot()) == []
+
+    def test_span_outputs_covers_both_screens(
+        self,
+        rc_path: Path,
+        rules_dir: Path,
+        run_main: Callable[..., None],
+        mocker: MockerFixture,
+    ) -> None:
+        layout_box = mocker.patch('batocera_labwc.cli.layout_box', return_value=Box(0, 0, 1024, 1536))
+
+        run_main('--config-path', str(rc_path), '--primary', 'DSI-2', '--secondary', 'DSI-1', 'span')
+
+        rule = _find_rule(ET.parse(rc_path).getroot(), identifier='drastic')
+
+        layout_box.assert_called_once_with(('DSI-2', 'DSI-1'))
+        move_to = rule.find('./action[@name="MoveTo"]')
+        resize_to = rule.find('./action[@name="ResizeTo"]')
+        assert move_to is not None
+        assert resize_to is not None
+        assert (move_to.get('x'), move_to.get('y')) == ('0', '0')
+        assert (resize_to.get('width'), resize_to.get('height')) == ('1024', '1536')
+
+    def test_span_outputs_removed_without_secondary(
+        self,
+        rc_path: Path,
+        rules_dir: Path,
+        run_main: Callable[..., None],
+        mocker: MockerFixture,
+    ) -> None:
+        mocker.patch('batocera_labwc.cli.layout_box', return_value=Box(0, 0, 1024, 1536))
+        run_main('--config-path', str(rc_path), '--primary', 'DSI-2', '--secondary', 'DSI-1', 'span')
+
+        run_main('--config-path', str(rc_path), '--primary', 'DSI-2', '--secondary', '', 'span')
+
+        rule = _find_rule(ET.parse(rc_path).getroot(), identifier='drastic')
+        assert rule.find('./action[@name="MoveTo"]') is None
+        assert rule.find('./action[@name="ResizeTo"]') is None
 
     def test_reconfigure_after_save(
         self,
