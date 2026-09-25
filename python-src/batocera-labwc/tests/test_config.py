@@ -266,6 +266,48 @@ class TestLabWCConfigSetTouchscreen:
 
         assert _touch_elements(config.root) == []
 
+    def test_set_touchscreens_maps_each_device_with_calibration(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreens([('bottom-touch', 'DSI-1', 0), ('top-touch', 'DP-1', 1)])
+
+        touch_elements = _touch_elements(config.root)
+
+        assert [(t.get('deviceName'), t.get('mapToOutput')) for t in touch_elements] == [
+            ('bottom-touch', 'DSI-1'),
+            ('top-touch', 'DP-1'),
+        ]
+        matrices = {
+            d.get('category'): d.findtext('./calibrationMatrix') for d in config.root.findall('./libinput/device')
+        }
+        assert matrices == {'bottom-touch': '1 0 0 0 1 0', 'top-touch': '0 1 0 -1 0 1'}
+
+    def test_set_touchscreens_removes_stale_calibration(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreens([('top-touch', 'DP-1', 1)])
+        config.set_touchscreens([('bottom-touch', 'DSI-1', 0)])
+
+        assert [t.get('deviceName') for t in _touch_elements(config.root)] == ['bottom-touch']
+        assert [d.get('category') for d in config.root.findall('./libinput/device')] == ['bottom-touch']
+
+    def test_set_touchscreen_leaves_calibration_to_udev(self, rc_path: Path) -> None:
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreens([('top-touch', 'DP-1', 1)])
+        config.set_touchscreen(name='touch-panel', map_to_output_name='DSI-1')
+
+        assert [t.get('deviceName') for t in _touch_elements(config.root)] == ['touch-panel']
+        assert config.root.find('./libinput') is None
+
+    def test_set_touchscreens_keeps_unrelated_libinput_devices(self, rc_path: Path) -> None:
+        rc_path.write_text(
+            "<labwc_config><libinput><device category='touchpad'><tap>yes</tap></device></libinput></labwc_config>"
+        )
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreens([('top-touch', 'DP-1', 3)])
+        config.set_touchscreen()
+
+        devices = config.root.findall('./libinput/device')
+        assert [d.get('category') for d in devices] == ['touchpad']
+
 
 class TestLabWCConfigSave:
     def test_writes_xml(self, rc_path: Path) -> None:

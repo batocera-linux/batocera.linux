@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Hand the add-on screen back to hotplug detection after the splash
+echo "detect" > /sys/class/drm/card0-DP-1/status
+
+# Let a connected screen reach labwc before ES picks its outputs
+for i in $(seq 20); do
+    [ "$(cat /sys/class/drm/card0-DP-1/status)" = "connected" ] || break
+    wlr-randr | grep -q '^DP-1 ' && break
+    sleep 0.1
+done
