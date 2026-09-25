@@ -115,6 +115,21 @@ std::string httpGet(const std::string& url) {
     return readBuffer;
 }
 
+void sendEsInput(const std::string& name) {
+    std::thread([name]() {
+        CURL* curl = curl_easy_init();
+        if (curl) {
+            std::string readBuffer;
+            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:1234/input");
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, name.c_str());
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+            curl_easy_perform(curl);
+            curl_easy_cleanup(curl);
+        }
+    }).detach();
+}
+
 std::string getJsonValue(const std::string& json, const std::string& key) {
     std::string search_key = "\"" + key + "\"";
     size_t pos = json.find(search_key);
@@ -787,6 +802,9 @@ int main(int argc, char* argv[]) {
 
     bool running = true;
     SDL_Event event;
+    bool swipe_active = false;
+    SDL_FingerID swipe_finger = 0;
+    float swipe_x = 0, swipe_y = 0;
 
     DisplayMode current_mode = MODE_SYSTEM;
     std::string sys_fullname = "";
@@ -814,6 +832,27 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
+            } else if (event.type == SDL_FINGERDOWN && !swipe_active) {
+                swipe_active = true;
+                swipe_finger = event.tfinger.fingerId;
+                swipe_x = event.tfinger.x;
+                swipe_y = event.tfinger.y;
+            } else if (event.type == SDL_FINGERMOTION && swipe_active && event.tfinger.fingerId == swipe_finger) {
+                int w, h;
+                SDL_GetWindowSize(window, &w, &h);
+                float dx = (event.tfinger.x - swipe_x) * w;
+                float dy = (event.tfinger.y - swipe_y) * h;
+                // one step per tenth of the short side travelled, re-anchored so a held finger keeps stepping
+                if (std::max(std::fabs(dx), std::fabs(dy)) >= 0.1f * std::min(w, h)) {
+                    if (std::fabs(dx) > std::fabs(dy))
+                        sendEsInput(dx < 0 ? "right" : "left");
+                    else
+                        sendEsInput(dy < 0 ? "down" : "up");
+                    swipe_x = event.tfinger.x;
+                    swipe_y = event.tfinger.y;
+                }
+            } else if (event.type == SDL_FINGERUP && event.tfinger.fingerId == swipe_finger) {
+                swipe_active = false;
             }
         }
 
