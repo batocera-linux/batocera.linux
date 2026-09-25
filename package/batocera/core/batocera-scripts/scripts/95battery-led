@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PIDFILE="/var/run/battery-led-status.pid"
+STANDBY_FLAG="/var/run/battery-led-standby"
+
+case "$1" in
+    suspend|hibernate)
+        [ -f "${PIDFILE}" ] || exit 0
+        /etc/init.d/S02led-status stop >/dev/null
+        touch "${STANDBY_FLAG}"
+        /usr/bin/battery_led_status standby
+        ;;
+    resume|thaw)
+        [ -f "${STANDBY_FLAG}" ] || exit 0
+        rm -f "${STANDBY_FLAG}"
+        /etc/init.d/S02led-status start >/dev/null
+        ;;
+esac
+
+exit 0

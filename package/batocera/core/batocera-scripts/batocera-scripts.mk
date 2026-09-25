@@ -99,6 +99,8 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-temp                      $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-mitigations               $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/battery_led_status                 $(TARGET_DIR)/usr/bin/
+    mkdir -p $(TARGET_DIR)/etc/pm/sleep.d
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/95battery-led                      $(TARGET_DIR)/etc/pm/sleep.d/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-architecture-compatibility             $(TARGET_DIR)/usr/bin/
 endef
 

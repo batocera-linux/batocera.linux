@@ -81,6 +81,14 @@ get_upper_state() {
   fi
 }
 
+led_yellow() { led_upper amber; led_lower 0; }
+
+# solid colour held through a real suspend, set by the pm sleep hook
+if [ "$1" = "standby" ]; then
+  led_yellow
+  exit 0
+fi
+
 PREV_UPPER=""
 PREV_LOWER=""
 PREV_BRI=""
