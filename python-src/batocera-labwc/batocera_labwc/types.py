@@ -22,7 +22,11 @@ class ToggleFullscreenAction(TypedDict):
     value: NotRequired[bool]
 
 
+class SpanOutputsAction(TypedDict):
+    name: Literal['SpanOutputs']
+
+
 class LabWCRule(TypedDict):
     identifier: NotRequired[str]
     title: NotRequired[str]
-    actions: list[MoveToOutputAction | FocusOutputAction | ToggleFullscreenAction]
+    actions: list[MoveToOutputAction | FocusOutputAction | ToggleFullscreenAction | SpanOutputsAction]

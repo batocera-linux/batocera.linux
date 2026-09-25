@@ -14,6 +14,8 @@ from batocera_common.paths import HOME
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from .outputs import Box
+
 _logger = logging.getLogger(__name__)
 
 RC_XML: Final = HOME / '.config' / 'labwc' / 'rc.xml'
@@ -85,6 +87,16 @@ class WindowRule:
             _remove_action(self.element, 'ToggleFullscreen')
         else:
             _set_action(self.element, 'ToggleFullscreen')
+
+        return self
+
+    def span(self, box: Box | None = None, /) -> Self:
+        if box is None:
+            _remove_action(self.element, 'MoveTo')
+            _remove_action(self.element, 'ResizeTo')
+        else:
+            _set_action(self.element, 'MoveTo', attributes={'x': str(box.x), 'y': str(box.y)})
+            _set_action(self.element, 'ResizeTo', attributes={'width': str(box.width), 'height': str(box.height)})
 
         return self
 

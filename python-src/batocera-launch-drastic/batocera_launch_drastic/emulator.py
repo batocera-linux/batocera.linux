@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_launch import Command, Emulator, HotkeysContext, InputDict
+from batocera_launch import Command, Emulator, HotkeysContext, InputDict, configure_windows, find_screen
 
 _SHARE_DIR: Final = Path('/usr/share/drastic')
 
@@ -173,6 +173,11 @@ class Drastic(Emulator):
     def execution_path(self) -> Path | None:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         return self.config_dir
+
+    async def configure_windows(self) -> None:
+        screens = await self.screens
+
+        await configure_windows('drastic', find_screen(screens, 'primary'), find_screen(screens, 'secondary'))
 
     async def configure(self) -> Command:
         bin_path = self.config_dir / 'drastic'
