@@ -1,0 +1,74 @@
+MangoHud matches the device driver name msm_dpu against the fdinfo drm-driver
+field, which the mainline msm kernel driver reports as "msm", so every GPU fd
+is dropped and load reads 0. Also read the clock from devfreq and the
+temperature from the gpu thermal zone.
+
+--- a/src/gpu_fdinfo.cpp
++++ b/src/gpu_fdinfo.cpp
+@@ -55,7 +55,7 @@
+                 client_id = val;
+         }
+ 
+-        if (!driver.empty() && driver == module) {
++        if (!driver.empty() && driver == fdinfo_driver()) {
+             total++;
+             SPDLOG_TRACE(
+                 "driver = \"{}\", pdev = \"{}\", "
+@@ -67,7 +67,7 @@
+ 
+         if (
+             driver.empty() || client_id.empty() ||
+-            driver != module || pdev != pci_dev ||
++            driver != fdinfo_driver() || pdev != pci_dev ||
+             client_ids.find(client_id) != client_ids.end()
+         )
+             continue;
+@@ -175,7 +175,7 @@
+ {
+     std::string hwmon;
+ 
+-    if (module == "msm")
++    if (module == "msm" || module == "msm_dpu")
+         hwmon = find_hwmon_sensor_dir("gpu");
+     else if (module == "panfrost" || module == "panthor")
+         hwmon = find_hwmon_sensor_dir("gpu_thermal");
+@@ -539,6 +539,28 @@
+     if (module == "panfrost" || module == "panthor")
+         return get_gpu_clock_mali();
+ 
++    // mainline msm has no kgsl clock_mhz, the gpu devfreq reports Hz
++    if (module == "msm_dpu") {
++        if (!gpu_clock_stream.is_open()) {
++            for (const auto& entry : fs::directory_iterator("/sys/class/devfreq")) {
++                auto name = entry.path().filename().string();
++                if (name.size() > 4 && name.compare(name.size() - 4, 4, ".gpu") == 0) {
++                    gpu_clock_stream.open(entry.path() / "cur_freq");
++                    break;
++                }
++            }
++        }
++
++        if (!gpu_clock_stream.is_open())
++            return 0;
++
++        std::string hz;
++        gpu_clock_stream.seekg(0);
++        std::getline(gpu_clock_stream, hz);
++
++        return hz.empty() ? 0 : std::stoll(hz) / 1'000'000;
++    }
++
+     if (!gpu_clock_stream.is_open())
+         return 0;
+ 
+--- a/src/gpu_fdinfo.h
++++ b/src/gpu_fdinfo.h
+@@ -44,6 +44,8 @@
+     pid_t pid = getpid();
+ 
+     const std::string module;
++    // the msm_dpu device reports "msm" as drm-driver in fdinfo
++    std::string fdinfo_driver() const { return module == "msm_dpu" ? "msm" : module; }
+     const std::string pci_dev;
+     const std::string drm_node;
+ 
