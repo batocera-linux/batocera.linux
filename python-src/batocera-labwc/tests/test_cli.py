@@ -604,6 +604,44 @@ class TestMain:
         assert rule.find('./action[@name="MoveTo"]') is None
         assert rule.find('./action[@name="ResizeTo"]') is None
 
+    def test_touchscreen_map_sets_each_device(
+        self,
+        rc_path: Path,
+        run_main: Callable[..., None],
+    ) -> None:
+        run_main(
+            '--config-path',
+            str(rc_path),
+            '--touchscreen-map',
+            'bottom-touch',
+            'DSI-1',
+            '0',
+            '--touchscreen-map',
+            'top-touch',
+            'DP-1',
+            '1',
+        )
+
+        root = ET.parse(rc_path).getroot()
+
+        assert [(t.get('deviceName'), t.get('mapToOutput')) for t in _touch_elements(root)] == [
+            ('bottom-touch', 'DSI-1'),
+            ('top-touch', 'DP-1'),
+        ]
+        assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '0 1 0 -1 0 1'
+
+    def test_touchscreen_map_unknown_rotation_is_identity(
+        self,
+        rc_path: Path,
+        run_main: Callable[..., None],
+    ) -> None:
+        run_main('--config-path', str(rc_path), '--touchscreen-map', 'top-touch', 'DP-1', 'unknown')
+
+        root = ET.parse(rc_path).getroot()
+
+        assert [t.get('mapToOutput') for t in _touch_elements(root)] == ['DP-1']
+        assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '1 0 0 0 1 0'
+
     def test_reconfigure_after_save(
         self,
         rc_path: Path,

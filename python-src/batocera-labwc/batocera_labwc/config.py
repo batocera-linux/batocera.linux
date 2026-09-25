@@ -12,7 +12,7 @@ from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import HOME
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Mapping, Sequence
 
     from .outputs import Box
 
@@ -20,6 +20,14 @@ _logger = logging.getLogger(__name__)
 
 RC_XML: Final = HOME / '.config' / 'labwc' / 'rc.xml'
 LABWC_BIN: Final = Path('/usr/bin/labwc')
+
+# keyed by batocera rotation (wlroots transform, anticlockwise)
+_TOUCH_CALIBRATION: Final = {
+    0: '1 0 0 0 1 0',
+    1: '0 1 0 -1 0 1',
+    2: '-1 0 1 0 -1 1',
+    3: '0 -1 1 1 0 0',
+}
 
 
 def _remove_action(window_rule: ET.Element[str], action_name: str, /) -> bool:
@@ -132,15 +140,41 @@ class LabWCConfig:
         self._window_rules_cache = {}
 
     def set_touchscreen(self, name: str | None = None, map_to_output_name: str | None = None) -> None:
-        # Always strip any existing <touch> elements to keep a clean slate
+        if name is not None and map_to_output_name is not None:
+            self.set_touchscreens([(name, map_to_output_name, None)])
+        else:
+            self.set_touchscreens([])
+
+    def set_touchscreens(self, mappings: Sequence[tuple[str, str, int | None]]) -> None:
+        # Always strip any existing <touch> elements, and the calibration written for them, to keep a clean slate
+        libinput = self.root.find('./libinput')
+
         for touch_element in self.root.findall('./touch'):
+            if libinput is not None:
+                for device in libinput.findall('./device'):
+                    if device.get('category') == touch_element.get('deviceName'):
+                        libinput.remove(device)
             self.root.remove(touch_element)
 
-        if name is not None and map_to_output_name is not None:
+        if libinput is not None and len(libinput) == 0:
+            self.root.remove(libinput)
+            libinput = None
+
+        for name, output, rotation in mappings:
             touch_element = ET.SubElement(self.root, 'touch')
             touch_element.set('deviceName', name)
-            touch_element.set('mapToOutput', map_to_output_name)
+            touch_element.set('mapToOutput', output)
             touch_element.set('mouseEmulation', 'no')
+
+            if rotation is None:
+                continue
+
+            # labwc maps touch onto the output box without applying its transform, and an explicit
+            # matrix also replaces any udev one written for a touchscreen spanning the whole layout
+            if libinput is None:
+                libinput = ET.SubElement(self.root, 'libinput')
+            device = ET.SubElement(libinput, 'device', {'category': name})
+            ET.SubElement(device, 'calibrationMatrix').text = _TOUCH_CALIBRATION[rotation % 4]
 
     def window_rule(self, /, *, identifier: str | None = None, title: str | None = None) -> WindowRule:
         if identifier is None and title is None:

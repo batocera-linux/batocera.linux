@@ -74,6 +74,13 @@ def main() -> None:
     parser.add_argument('--secondary', type=str, help='secondary output screen')
     parser.add_argument('--touchscreen', type=str, help='touchscreen device')
     parser.add_argument(
+        '--touchscreen-map',
+        nargs=3,
+        action='append',
+        metavar=('DEVICE', 'OUTPUT', 'ROTATION'),
+        help='map a touchscreen device to an output, rotation 0-3 (repeatable)',
+    )
+    parser.add_argument(
         'rule_set',
         type=str,
         nargs='?',
@@ -89,6 +96,7 @@ def main() -> None:
         and args.primary is None
         and args.secondary is None
         and args.touchscreen is None
+        and args.touchscreen_map is None
     ):
         LabWCConfig.reconfigure()
         return
@@ -101,6 +109,14 @@ def main() -> None:
 
     if args.touchscreen is not None:
         config.set_touchscreen(name=args.touchscreen or None, map_to_output_name=args.primary or None)
+    elif args.touchscreen_map is not None:
+        config.set_touchscreens(
+            [
+                (name, output, int(rotation) if rotation.isdigit() else 0)
+                for name, output, rotation in args.touchscreen_map
+                if name and output
+            ]
+        )
 
     config.save()
 

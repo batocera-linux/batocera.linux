@@ -16,6 +16,7 @@ f_usage() {
     echo "${0} currentResolution" >&2
     echo "${0} listOutputs" >&2
     echo "${0} currentOutput" >&2
+    echo "${0} outputModel" >&2
     echo "${0} setOutput <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
     echo "${0} repositionOutputs <left-right|top-bottom> <PRIMARY_OUTPUT> [SECOND_OUTPUT] [THIRD_OUTPUT]" >&2
     echo "${0} minTomaxResolution [<MAX_RESOLUTION>]" >&2
@@ -447,6 +448,10 @@ case "${ACTION}" in
         else
             echo "${PSCREEN}"
         fi
+        ;;
+
+    "outputModel")
+        _get_screen_block "${PSCREEN}" | sed -n 's/^[[:space:]]*Model:[[:space:]]*//p' | head -1 | sed -e 's/[^A-Za-z0-9]/_/g'
         ;;
 
     "minTomaxResolution" | "minTomaxResolution-secure")
