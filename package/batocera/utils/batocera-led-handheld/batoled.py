@@ -1794,7 +1794,10 @@ class rg55g1led(object):
             if check_interrupt("rainbow"):
                 break
             if segments:
-                ring = [getRainbowRGB((float(i) / EFFECT_STEP + float(j) / 8) % 1.0) for j in range(8)]
+                # the MCU ignores led_level in segment mode, so scale the colours
+                pct = self._get_brightness_pct()
+                ring = [''.join(dec_to_hex(hex_to_dec(c[k:k+2]) * pct // 100) for k in (0, 2, 4))
+                        for c in (getRainbowRGB((float(i) / EFFECT_STEP + float(j) / 8) % 1.0) for j in range(8))]
                 self._write('led_segments', " ".join(ring + ring))
                 self._write('led_set', 1)
             else:
