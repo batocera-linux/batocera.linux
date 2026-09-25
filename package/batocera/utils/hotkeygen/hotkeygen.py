@@ -402,6 +402,8 @@ class Daemon:
     def __handle_actions(self, action: str, device: pyudev.Device) -> None:
         if device.device_node is not None and device.device_node.startswith("/dev/input/event"):
             if action == "add":
+                # A device can be added twice at boot, drop the old entry so its fd leaves the poll
+                self.__forget_device(device.device_node)
                 input_device = evdev.InputDevice(device.device_node)
 
                 if input_device.name != DEVICE_NAME:
@@ -420,16 +422,23 @@ class Daemon:
                             self.mappings_by_fd[input_device.fileno()] = mapping
                             self.poll.register(input_device, select.POLLIN)
             elif action == "remove":
-                input_device = self.input_devices.get(device.device_node)
+                if gdebug and device.device_node in self.input_devices:
+                    print(f"Removing device {device.device_node}: {self.input_devices[device.device_node].name}")
+                self.__forget_device(device.device_node)
 
-                if input_device is not None:
-                    if gdebug:
-                        print(f"Removing device {device.device_node}: {input_device.name}")
+    def __forget_device(self, device_node: str) -> None:
+        input_device = self.input_devices.pop(device_node, None)
+        if input_device is None:
+            return
 
-                    self.poll.unregister(input_device)
-                    del self.mappings_by_fd[input_device.fileno()]
-                    del self.input_devices_by_fd[input_device.fileno()]
-                    del self.input_devices[device.device_node]
+        fd = input_device.fileno()
+        try:
+            self.poll.unregister(fd)
+        except KeyError:
+            pass
+        self.mappings_by_fd.pop(fd, None)
+        self.input_devices_by_fd.pop(fd, None)
+        input_device.close()
 
     def __handle_event(self, event: evdev.InputEvent, action: str, begin: bool) -> None:
         if self.context is not None and action in self.context["keys"]:
@@ -500,6 +509,14 @@ class Daemon:
                 self.__reload_devices_configs()
 
             for fd, _ in self.poll.poll(1000):
+                # Drop fds we no longer track, poll would return them forever and spin the loop
+                if fd != self.monitor.fileno() and fd not in self.input_devices_by_fd:
+                    try:
+                        self.poll.unregister(fd)
+                    except KeyError:
+                        pass
+                    continue
+
                 try:
                     if fd == self.monitor.fileno():
                         (action, device) = self.monitor.receive_device()
@@ -524,18 +541,11 @@ class Daemon:
                     else:
                         # error on a single device
                         if fd in self.input_devices_by_fd:
-                            try:
-                                input_device = self.input_devices_by_fd[fd]
-                                if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
-                                    print(e)
-                                    print(f"error on device {input_device.name} ({input_device.path}), closing.")
-                                del self.mappings_by_fd[fd]
-                                del self.input_devices_by_fd[fd]
-                                del self.input_devices[input_device.path]
-                                self.poll.unregister(input_device)
-                                input_device.close()
-                            except:
-                                pass
+                            input_device = self.input_devices_by_fd[fd]
+                            if not (isinstance(e, OSError) and e.errno == errno.ENODEV):
+                                print(e)
+                                print(f"error on device {input_device.name} ({input_device.path}), closing.")
+                            self.__forget_device(input_device.path)
         # never happening, but should be done to quit
         self.target.close()
 
