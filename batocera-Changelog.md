@@ -44,6 +44,7 @@
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games
+- libretro-anybor : for openbor games (support all openbor versions)
 - Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
 - Steam Controller (2026) support on x86_64 / Zen3
 - Steam is installed automatically from Flathub the first time it is launched
