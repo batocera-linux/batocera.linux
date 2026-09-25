@@ -1,0 +1,13 @@
+Name the cw2015 power supply "battery" so EmulationStation finds it.
+
+--- a/drivers/power/supply/cw2015_battery.c	2026-09-26 10:48:31.283507814 +1000
++++ b/drivers/power/supply/cw2015_battery.c	2026-09-26 10:48:31.285345338 +1000
+@@ -549,7 +549,7 @@
+ };
+ 
+ static const struct power_supply_desc cw2015_bat_desc = {
+-	.name		= "cw2015-battery",
++	.name		= "battery",
+ 	.type		= POWER_SUPPLY_TYPE_BATTERY,
+ 	.properties	= cw_battery_properties,
+ 	.num_properties	= ARRAY_SIZE(cw_battery_properties),

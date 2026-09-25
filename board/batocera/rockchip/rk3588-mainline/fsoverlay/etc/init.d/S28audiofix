@@ -3,17 +3,14 @@
 MODEL=$(batocera-model)
 
 start() {
-    if [[ "$MODEL" == "GameForce_ACE" ]]; then
-        echo "Enabling OUT2 Switch for GameForce ACE"
-        amixer -c 0 cset name='OUT2 Switch' on
+    if [[ "$MODEL" == "Gameforce_Ace" ]]; then
+        echo "Setting Output 2 volume for GameForce ACE"
+        amixer -c 0 set 'Output 2' 18
     fi
 }
 
 stop() {
-    if [[ "$MODEL" == "GameForce_ACE" ]]; then
-        echo "Disabling OUT2 Switch for GameForce ACE"
-        amixer -c 0 cset name='OUT2 Switch' off
-    fi
+    :
 }
 
 case "$1" in
@@ -34,4 +31,3 @@ case "$1" in
 esac
 
 exit 0
-
