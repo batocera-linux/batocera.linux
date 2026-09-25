@@ -1,0 +1,20 @@
+#!/bin/sh
+
+case "$1" in
+  start)
+    V_BOARD_MODEL=$(cat /sys/firmware/devicetree/base/model 2>/dev/null | tr -d '\0' | sed -e s+"[^A-Za-z0-9]"+"_"+g)
+
+    # Keep the add-on screen dark until labwc so the splash stays on the internal panel
+    if [ "$V_BOARD_MODEL" = "Retroid_Pocket_5" ] && [ -w /sys/class/drm/card0-DP-1/status ]; then
+        echo "off" > /sys/class/drm/card0-DP-1/status
+    fi
+    ;;
+  stop|restart|status)
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
