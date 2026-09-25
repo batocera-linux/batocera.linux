@@ -352,6 +352,8 @@
 	touchscreen@38 {
 		compatible = "focaltech,ft5426";
 		reg = <0x38>;
+		/* batocera - fixed input name, the ft5x06 id register varies by panel */
+		label = "Retroid Pocket Touchscreen";
 		#address-cells = <1>;
 		#size-cells = <0>;
 

@@ -6,5 +6,15 @@ display.rotate.DSI=3
 # Rotate Wayland LabWC
 display.rotate.DSI-1=1
 
+# The add-on top screen is primary when attached
+global.videooutput=DP-1
+global.videooutput2=DSI-1
+display.position=top-bottom
+
+# Add-on top screen, matched by its EDID model so a TV on DP-1 is left alone
+display.rotate.Lontium=1
+display.touchscreen.Lontium=RetroidPocket RDS Touchscreen
+display.touchscreen.DSI-1=Retroid Pocket Touchscreen
+
 # default suspend on handled boards
 system.suspendmode=suspend

@@ -125,6 +125,23 @@
 		};
 	};
 
+	/* batocera - SBU/AUX mux on tlmm 8 and 9 */
+	typec_sbu_mux: usb-c-sbu-mux {
+		compatible = "gpio-sbu-mux";
+
+		select-gpios = <&tlmm 8 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+
+		mode-switch;
+		orientation-switch;
+
+		port {
+			sbu_mux_usb_con: endpoint {
+				remote-endpoint = <&pm8150b_typec_sbu>;
+			};
+		};
+	};
+
 	vbat: vbat-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "VBAT";
@@ -790,51 +807,7 @@
 	};
 };
 
-&i2c15 {
-	status = "okay";
-
-	typec-mux@1c {
-		compatible = "onnn,nb7vpq904m";
-		reg = <0x1c>;
-
-	 	enable-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
-
-		vcc-supply = <&vreg_s4a_1p8>;
-
-		retimer-switch;
-		orientation-switch;
-
-		ports {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			port@0 {
-				reg = <0>;
-
-				redriver_usb_con_ss: endpoint {
-					remote-endpoint = <&pm8150b_typec_mux_in>;
-				};
-			};
-
-			port@1 {
-				reg = <1>;
-
-				redriver_phy_con_ss: endpoint {
-					remote-endpoint = <&usb_1_qmpphy_out>;
-					data-lanes = <0 1 2 3>;
-				};
-			};
-
-			port@2 {
-				reg = <2>;
-
-				redriver_usb_con_sbu: endpoint {
-					remote-endpoint = <&pm8150b_typec_sbu_out>;
-				};
-			};
-		};
-	};
-};
+/* batocera - removed the nb7vpq904m retimer on i2c15, nothing answers at 0x1c */
 
 &mdss {
 	status = "okay";
@@ -1008,6 +981,8 @@
 		data-role = "dual";
 		try-power-role = "sink";
 		self-powered;
+		/* batocera - without it VBUS is never switched on as a source */
+		vbus-supply = <&pm8150b_vbus>;
 
 		source-pdos = <PDO_FIXED(5000, 3000,
 					 PDO_FIXED_DUAL_ROLE |
@@ -1041,16 +1016,17 @@
 
 			port@1 {
 				reg = <1>;
+				/* batocera - SuperSpeed goes straight to the PHY, no retimer */
 				pm8150b_typec_mux_in: endpoint {
-					remote-endpoint = <&redriver_usb_con_ss>;
+					remote-endpoint = <&usb_1_qmpphy_out>;
 				};
 			};
 
 			port@2 {
 				reg = <2>;
-
-				pm8150b_typec_sbu_out: endpoint {
-					remote-endpoint = <&redriver_usb_con_sbu>;
+				/* batocera - SBU goes to the GPIO mux */
+				pm8150b_typec_sbu: endpoint {
+					remote-endpoint = <&sbu_mux_usb_con>;
 				};
 			};
 		};
@@ -1530,8 +1506,9 @@
 	remote-endpoint = <&mdss_dp_out>;
 };
 
+/* batocera - connector straight to the PHY, no retimer */
 &usb_1_qmpphy_out {
-	remote-endpoint = <&redriver_phy_con_ss>;
+	remote-endpoint = <&pm8150b_typec_mux_in>;
 };
 
 &venus {

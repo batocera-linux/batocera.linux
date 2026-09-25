@@ -21,9 +21,13 @@ case "$1" in
         echo "AYN: FAILED - /sys/class/drm/card0-DSI-1/status never appeared!" >> /dev/kmsg
     fi
     # Keep the add-on screen dark until labwc so the splash stays on the internal panel
-    if [ "$V_BOARD_MODEL" = "Retroid_Pocket_Nova" ] && [ -w /sys/class/drm/card0-DP-1/status ]; then
-        echo "off" > /sys/class/drm/card0-DP-1/status
-    fi
+    case "$V_BOARD_MODEL" in
+      Retroid_Pocket_Nova|Retroid_Pocket_6|Retroid_Pocket_6_TOP_DPAD)
+        if [ -w /sys/class/drm/card0-DP-1/status ]; then
+            echo "off" > /sys/class/drm/card0-DP-1/status
+        fi
+        ;;
+    esac
     ;;
   stop|restart|status)
     ;;
