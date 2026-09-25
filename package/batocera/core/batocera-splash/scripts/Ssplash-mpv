@@ -106,6 +106,8 @@ do_videostart ()
             mpv_audio=--no-audio
 	fi
     fi
+    # set by S10splash-early when the configured audio output isn't there yet
+    [[ "${SPLASH_NO_AUDIO}" = 1 ]] && mpv_audio=--no-audio
 
     ## current drm output ##
     effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
@@ -237,6 +239,11 @@ case "$1" in
         printf 'Starting %s: ' "$DAEMON"
         if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
+            # once per boot: S10splash-early may have started it already
+            if ! mkdir /var/run/splash.started 2>/dev/null; then
+                echo "ALREADY STARTED (splash.screen.early)"
+                exit 0
+            fi
             touch /var/run/system-splash.stop
             do_start
             echo "OK"

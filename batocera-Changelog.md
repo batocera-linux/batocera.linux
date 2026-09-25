@@ -45,6 +45,7 @@
 - RPCS3 interface translations
 - SM2-Emu emulator for Model 2 games
 - Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
+- Splash: optionally start it while network shares are mounted (splash.screen.early=1 in batocera-boot.conf)
 - Steam Controller (2026) support on x86_64 / Zen3
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
