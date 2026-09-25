@@ -27,6 +27,15 @@ _HAT_MASKS: Final = {
 
 _DEFAULT_CODE: Final = '65535'
 
+# Keys hotkeygen sends for the drastic context, as ASCII or 256 + SDL scancode
+_HOTKEY_CONTROLS: Final = {
+    'controls_a[CONTROL_INDEX_MENU]': '314',
+    'controls_a[CONTROL_INDEX_SAVE_STATE]': '318',
+    'controls_a[CONTROL_INDEX_LOAD_STATE]': '320',
+    'controls_a[CONTROL_INDEX_FAST_FORWARD]': '9',
+    'controls_a[CONTROL_INDEX_SWAP_SCREENS]': '315',
+}
+
 _CONTROLS_B_UNBOUND: Final = {
     'controls_b[CONTROL_INDEX_UP]': _DEFAULT_CODE,
     'controls_b[CONTROL_INDEX_DOWN]': _DEFAULT_CODE,
@@ -130,12 +139,8 @@ def _controls_b_from_inputs(inputs: InputDict, /) -> dict[str, str]:
 
     mappings['controls_b[CONTROL_INDEX_TOUCH_CURSOR_PRESS]'] = _button_or_hat_value(inputs, 'l3')
 
-    menu_val = _button_or_hat_value(inputs, 'r3')
-    if menu_val == _DEFAULT_CODE:
-        menu_val = _button_or_hat_value(inputs, 'hotkey')
-    if menu_val == _DEFAULT_CODE:
-        menu_val = _button_or_hat_value(inputs, 'select')
-    mappings['controls_b[CONTROL_INDEX_MENU]'] = menu_val
+    # the hotkey button alone must not open the menu, hotkeygen sends F1 for the menu combo
+    mappings['controls_b[CONTROL_INDEX_MENU]'] = _button_or_hat_value(inputs, 'r3')
 
     mappings['controls_b[CONTROL_INDEX_UI_UP]'] = mappings['controls_b[CONTROL_INDEX_UP]']
     mappings['controls_b[CONTROL_INDEX_UI_DOWN]'] = mappings['controls_b[CONTROL_INDEX_DOWN]']
@@ -230,11 +235,7 @@ class Drastic(Emulator):
             'controls_a[CONTROL_INDEX_TOUCH_CURSOR_LEFT]': _DEFAULT_CODE,
             'controls_a[CONTROL_INDEX_TOUCH_CURSOR_RIGHT]': _DEFAULT_CODE,
             'controls_a[CONTROL_INDEX_TOUCH_CURSOR_PRESS]': _DEFAULT_CODE,
-            'controls_a[CONTROL_INDEX_MENU]': '109',
-            'controls_a[CONTROL_INDEX_SAVE_STATE]': '318',
-            'controls_a[CONTROL_INDEX_LOAD_STATE]': '320',
-            'controls_a[CONTROL_INDEX_FAST_FORWARD]': '8',
-            'controls_a[CONTROL_INDEX_SWAP_SCREENS]': '115',
+            **_HOTKEY_CONTROLS,
             'controls_a[CONTROL_INDEX_SWAP_ORIENTATION_A]': '97',
             'controls_a[CONTROL_INDEX_SWAP_ORIENTATION_B]': '100',
             'controls_a[CONTROL_INDEX_LOAD_GAME]': _DEFAULT_CODE,
@@ -280,6 +281,7 @@ class Drastic(Emulator):
                 'threaded_3d': str(self.config.get_int('drastic_threaded', 0)),
                 'screen_orientation': screen_orientation,
                 'firmware.language': str(firmware_language),
+                **_HOTKEY_CONTROLS,
             }
         )
 
