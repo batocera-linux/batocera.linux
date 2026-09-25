@@ -1,24 +1,20 @@
 #!/bin/sh
 #
-# Battery LED status monitor for Anbernic RG 55G1 (3x binary GPIO LEDs)
+# Battery LED status monitor for AYN sm8550 handhelds (Qualcomm LPG RGB power LED)
 #
-# Colors & Behaviors:
+# Colours & Behaviours:
 #   Green        = Normal (>20%)
-#   Orange       = Warning (<=20% and >10%) - Red + Green together
+#   Orange       = Warning (<=20% and >10%)
 #   Red          = Low battery (<=10%)
 #   Flash Red    = Critical battery (<=5%)
 #   Flash Green  = Charging
 #   Flash Orange = Fake Suspend active (on battery)
 #   Flash Green  = Fake Suspend active (charging)
 #   Flash Red    = Fake Suspend active (low battery <=10%)
+#   Yellow       = Standby (real suspend)
 #
-# These LEDs are plain on/off (max_brightness=1), unlike the AYN Odin 3's
-# PWM-dimmable ones this script is adapted from - so "orange" is just
-# red+green both on together, not a weighted mix.
 
-LED_GREEN="/sys/class/leds/green:indicator"
-LED_RED="/sys/class/leds/red:indicator"
-LED_BLUE="/sys/class/leds/blue:indicator"
+LED="/sys/class/leds/power-led"
 
 BAT_CAP="/sys/class/power_supply/battery/capacity"
 BAT_STATUS="/sys/class/power_supply/battery/status"
@@ -28,17 +24,16 @@ THRESHOLD_LOW=${THRESHOLD_LOW:-10}
 THRESHOLD_CRITICAL=${THRESHOLD_CRITICAL:-5}
 POLL_INTERVAL=${POLL_INTERVAL:-1}
 
-# LEDs are binary: 0 or 1
+MAX=$(cat "${LED}/max_brightness")
+
 set_led() {
-  local g=${1:-0} r=${2:-0} b=${3:-0}
-  echo "${g}" > "${LED_GREEN}/brightness" 2>/dev/null
-  echo "${r}" > "${LED_RED}/brightness" 2>/dev/null
-  echo "${b}" > "${LED_BLUE}/brightness" 2>/dev/null
+  echo "${1} ${2} ${3}" > "${LED}/multi_intensity" 2>/dev/null
 }
 
-led_green()  { set_led 1 0 0; }
-led_red()    { set_led 0 1 0; }
-led_orange() { set_led 1 1 0; }   # Red + Green together
+led_green()  { set_led 0 "${MAX}" 0; }
+led_red()    { set_led "${MAX}" 0 0; }
+led_orange() { set_led "${MAX}" $((MAX / 5)) 0; }
+led_yellow() { set_led "${MAX}" "${MAX}" 0; }
 led_off()    { set_led 0 0 0; }
 
 BLINK_TOGGLE=0
@@ -68,7 +63,8 @@ get_state() {
   fi
 }
 
-led_yellow() { set_led 1 1 0; }
+echo none > "${LED}/trigger"
+echo "${MAX}" > "${LED}/brightness"
 
 # solid colour held through a real suspend, set by the pm sleep hook
 if [ "$1" = "standby" ]; then
@@ -82,7 +78,6 @@ while true; do
   CAP=$(cat "${BAT_CAP}" 2>/dev/null || echo 100)
   STATUS=$(cat "${BAT_STATUS}" 2>/dev/null || echo "Discharging")
 
-  # Flip toggle for blinking states
   if [ "${BLINK_TOGGLE}" = "1" ]; then
     BLINK_TOGGLE=0
   else
@@ -91,12 +86,10 @@ while true; do
 
   STATE=$(get_state "${CAP}")
 
-  # Charging state override
   if [ "${STATUS}" = "Charging" ]; then
     STATE="blink_green"
   fi
 
-  # Fake suspend overrides
   if [ -f "/var/run/batocera-fake-suspend.flag" ]; then
     if [ "${CAP}" -le "${THRESHOLD_LOW}" ]; then
       STATE="blink_red"
@@ -107,18 +100,20 @@ while true; do
     fi
   fi
 
-  # Apply LED state
-  if [ "${STATE}" = "blink_red" ] || [ "${STATE}" = "blink_green" ] || [ "${STATE}" = "blink_orange" ] || [ "${STATE}" != "${PREV_STATE}" ]; then
-    case ${STATE} in
-      green)        led_green        ;;
-      orange)       led_orange       ;;
-      red)          led_red          ;;
-      blink_red)    led_blink_red    ;;
-      blink_green)  led_blink_green  ;;
-      blink_orange) led_blink_orange ;;
-    esac
-    PREV_STATE="${STATE}"
-  fi
+  case ${STATE} in
+    blink_*) ;;
+    "${PREV_STATE}") sleep ${POLL_INTERVAL}; continue ;;
+  esac
+
+  case ${STATE} in
+    green)        led_green        ;;
+    orange)       led_orange       ;;
+    red)          led_red          ;;
+    blink_red)    led_blink_red    ;;
+    blink_green)  led_blink_green  ;;
+    blink_orange) led_blink_orange ;;
+  esac
+  PREV_STATE="${STATE}"
 
   sleep ${POLL_INTERVAL}
 done
