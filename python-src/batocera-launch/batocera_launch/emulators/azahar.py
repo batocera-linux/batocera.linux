@@ -215,6 +215,8 @@ class Azahar(Emulator):
         azahar_config.set('UI', r'first_start\default', 'false')
         azahar_config.set('UI', 'hide_mouse', 'true')
         azahar_config.set('UI', r'hide_mouse\default', 'false')
+        azahar_config.set('UI', 'confirmClose', 'false')
+        azahar_config.set('UI', r'confirmClose\default', 'false')
         azahar_config.set('UI', 'enable_discord_presence', 'false')
         azahar_config.set('UI', r'enable_discord_presence\default', 'false')
 
