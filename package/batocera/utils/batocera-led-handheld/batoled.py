@@ -1781,6 +1781,13 @@ class rg55g1led(object):
         if current_mode not in ["rainbow", "chroma", "pulse"]:
             self.set_color("ESCOLOR")
 
+    def _write_rainbow(self, phase, pct):
+        # the MCU ignores led_level in segment mode, so scale the colours
+        ring = [''.join(dec_to_hex(hex_to_dec(c[k:k+2]) * pct // 100) for k in (0, 2, 4))
+                for c in (getRainbowRGB((phase + j / 8) % 1.0) for j in range(8))]
+        self._write('led_segments', " ".join(ring + ring))
+        self._write('led_set', 1)
+
     def rainbow_effect(self):
         # Each stick ring has 8 addressable segments (MCU mode 5, 16 RGB
         # slots: 0-7 left, 8-15 right), so sweep a phase-shifted colour
@@ -1794,12 +1801,7 @@ class rg55g1led(object):
             if check_interrupt("rainbow"):
                 break
             if segments:
-                # the MCU ignores led_level in segment mode, so scale the colours
-                pct = self._get_brightness_pct()
-                ring = [''.join(dec_to_hex(hex_to_dec(c[k:k+2]) * pct // 100) for k in (0, 2, 4))
-                        for c in (getRainbowRGB((float(i) / EFFECT_STEP + float(j) / 8) % 1.0) for j in range(8))]
-                self._write('led_segments', " ".join(ring + ring))
-                self._write('led_set', 1)
+                self._write_rainbow(float(i) / EFFECT_STEP, self._get_brightness_pct())
             else:
                 # kernel without per-segment support: uniform cycle instead
                 self.set_color(getRainbowRGB(float (i/EFFECT_STEP)))
@@ -1828,6 +1830,9 @@ class rg55g1led(object):
         self._write('led_set', 1)  # nothing reaches the MCU until committed
 
     def set_brightness (self, b):
+        if self._read('led_mode') == 5:
+            self._write_rainbow(0.0, max(0, min(100, int(b))))
+            return
         self._write('led_level', int(b))
         self._write('led_set', 1)
 
