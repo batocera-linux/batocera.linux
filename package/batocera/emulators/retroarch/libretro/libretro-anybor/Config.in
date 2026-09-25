@@ -1,0 +1,15 @@
+config BR2_PACKAGE_LIBRETRO_ANYBOR
+    bool "libretro-anybor"
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_LIBPNG
+	select BR2_PACKAGE_LIBOGG
+	select BR2_PACKAGE_LIBVORBIS
+	select BR2_PACKAGE_LIBVPX
+	help
+	  A libretro openbor emulator
+
+	  http://www.libretro.com
+
+comment "LIBRETRO_ANYBOR needs a toolchain w/ C++"
+	depends on !BR2_INSTALL_LIBSTDCPP
