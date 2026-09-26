@@ -1,0 +1,24 @@
+Always prefer the SD card for the next stage, eMMC recovery is not easy on this handheld, and select the board target.
+
+--- a/configs/gameforce-ace-rk3588s_defconfig
++++ b/configs/gameforce-ace-rk3588s_defconfig
+@@ -4,6 +4,7 @@
+ CONFIG_ARCH_ROCKCHIP=y
+ CONFIG_DEFAULT_DEVICE_TREE="rockchip/rk3588s-gameforce-ace"
+ CONFIG_ROCKCHIP_RK3588=y
++CONFIG_TARGET_GAMEFORCE_ACE_RK3588S=y
+ CONFIG_SPL_SERIAL=y
+ CONFIG_SYS_LOAD_ADDR=0xc00800
+ CONFIG_DEBUG_UART_BASE=0xFEB50000
+--- a/arch/arm/dts/rk3588s-gameforce-ace-u-boot.dtsi
++++ b/arch/arm/dts/rk3588s-gameforce-ace-u-boot.dtsi
+@@ -0,0 +1,9 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++#include "rk3588s-u-boot.dtsi"
++
++/ {
++	chosen {
++		u-boot,spl-boot-order = &sdmmc, &sdhci;
++	};
++};
