@@ -310,6 +310,7 @@
 - Nvidia Open Production driver to 615.71.09
 - Nvidia 580 Legacy driver to 580.178.04
 - QT to 6.11.1
+- Qualcomm SM4450 device kernel updated to 7.2.8
 - Qualcomm SM6115 device kernel updated to 7.2.8
 - Qualcomm SM8250 device kernel updated to 7.2.8
 - Qualcomm SM8550 device kernel updated to 7.2.8
