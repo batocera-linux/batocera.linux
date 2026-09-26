@@ -1,0 +1,62 @@
+Index: linux-7.2/drivers/gpu/drm/i915/display/intel_display_params.h
+===================================================================
+--- linux-7.2.orig/drivers/gpu/drm/i915/display/intel_display_params.h
++++ linux-7.2/drivers/gpu/drm/i915/display/intel_display_params.h
+@@ -50,6 +50,7 @@ struct drm_printer;
+ 	param(bool, psr_safest_params, false, 0400) \
+ 	param(bool, enable_psr2_sel_fetch, true, 0400) \
+ 	param(int, enable_dmc_wl, -1, 0400) \
++	param(bool, no_ytiled_scanout, false, 0400) \
+ 
+ #define MEMBER(T, member, ...) T member;
+ struct intel_display_params {
+Index: linux-7.2/drivers/gpu/drm/i915/display/intel_display_params.c
+===================================================================
+--- linux-7.2.orig/drivers/gpu/drm/i915/display/intel_display_params.c
++++ linux-7.2/drivers/gpu/drm/i915/display/intel_display_params.c
+@@ -139,6 +139,13 @@ intel_display_param_named_unsafe(enable_
+ 	"(-1=use per-chip default, 0=disabled, 1=enabled, 2=match any register, 3=always locked) "
+ 	"Default: -1");
+ 
++intel_display_param_named_unsafe(no_ytiled_scanout, bool, 0400,
++	"Advertise only LINEAR/X_TILED scanout modifiers on DISPLAY_VER 9. "
++	"Y/Yf tiled scanout is rejected in IF-ID interlace mode, and the "
++	"modifier is chosen at buffer allocation time, so this is what makes "
++	"interlaced (480i) modes usable on gen9. No effect on other platforms. "
++	"Default: false");
++
+ __maybe_unused
+ static void _param_print_bool(struct drm_printer *p, const char *driver_name,
+ 			      const char *name, bool val)
+Index: linux-7.2/drivers/gpu/drm/i915/display/intel_fb.c
+===================================================================
+--- linux-7.2.orig/drivers/gpu/drm/i915/display/intel_fb.c
++++ linux-7.2/drivers/gpu/drm/i915/display/intel_fb.c
+@@ -557,6 +557,27 @@ static bool plane_has_modifier(struct in
+ 		return false;
+ 
+ 	/*
++	 * The display engine rejects Y/Yf tiled scanout (and the CCS variants,
++	 * which are Y based) in IF-ID interlace mode, see the "Y/Yf tiling not
++	 * supported in IF-ID mode" check in skl_plane_check(). Userspace picks
++	 * a modifier when it allocates the buffer, long before any interlaced
++	 * mode is set, and gen9 Mesa/glamor prefers Y tiling -- so an
++	 * interlaced modeset then fails the atomic check with -EINVAL and there
++	 * is nothing left to fall back to.
++	 *
++	 * Advertising only LINEAR/X_TILED makes the scanout buffer interlace
++	 * capable from the start. It also costs Y tiling and render compression
++	 * for everything else on this platform, which is why it is opt-in
++	 * rather than the default: it is only worth it if the machine actually
++	 * drives an interlaced display, such as a 15kHz CRT.
++	 */
++	if (display->params.no_ytiled_scanout &&
++	    DISPLAY_VER(display) == 9 &&
++	    md->modifier != DRM_FORMAT_MOD_LINEAR &&
++	    md->modifier != I915_FORMAT_MOD_X_TILED)
++		return false;
++
++	/*
+ 	 * Separate AuxCCS and Flat CCS modifiers to be run only on platforms
+ 	 * where supported.
+ 	 */
