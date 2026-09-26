@@ -7,10 +7,19 @@ case "$1" in
         for led in "green:power" "red:status"; do
             [ -e "/sys/class/leds/${led}/brightness" ] && echo 0 > "/sys/class/leds/${led}/brightness"
         done
+        # the stick LED daemon only resends on a colour change, so restart it across sleep
+        if [ -f /var/run/led-handheld.pid ]; then
+            /etc/init.d/S21led-handheld stop
+            touch /var/run/led-handheld-sleep
+        fi
         ;;
     resume|thaw)
         amixer -q -c0 sset DAC on
         /etc/init.d/S02led-status start
+        if [ -f /var/run/led-handheld-sleep ]; then
+            rm -f /var/run/led-handheld-sleep
+            /etc/init.d/S21led-handheld start
+        fi
         ;;
 esac
 
