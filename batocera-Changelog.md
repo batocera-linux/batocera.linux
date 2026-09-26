@@ -302,6 +302,7 @@
 - FFMPEG to 8.1.2
 - Flatpak to 1.18.2
 - GStreamer codecs to 1.28.5
+- H700 device kernel updated to 7.2.8
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.2
 - Linux Firmware to 20260810
