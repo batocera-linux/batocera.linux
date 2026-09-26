@@ -1,2 +1,7 @@
 config BR2_PACKAGE_HID_TMFF2
 	bool "hid-tmff2"
+	help
+	  Force feedback driver for the Thrustmaster T300RS, T248
+	  and (experimental) TX, T128, T-GT II and TS-XW wheels.
+
+	  https://github.com/Kimplul/hid-tmff2

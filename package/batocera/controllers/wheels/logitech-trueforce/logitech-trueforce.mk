@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-LOGITECH_TRUEFORCE_VERSION = v0.24.0
+LOGITECH_TRUEFORCE_VERSION = v0.42.4
 LOGITECH_TRUEFORCE_SITE = $(call github,mescon,logitech-trueforce-linux-driver,$(LOGITECH_TRUEFORCE_VERSION))
 LOGITECH_TRUEFORCE_LICENSE = GPL-2.0, GPL-2.0+ (mainline/dd-lg4ff.c)
 LOGITECH_TRUEFORCE_LICENSE_FILES = COPYING
