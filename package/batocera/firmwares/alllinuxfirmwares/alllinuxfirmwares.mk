@@ -57,6 +57,11 @@ ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_EXTRALINUXFIRMWARES
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/brcm
 endif
 
+# the rpi package ships these too, keep its newer firmware and matching clm_blob
+ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/cypress/cyfmac43430-sdio.* $(@D)/cypress/cyfmac43455-sdio.*
+endif
+
 # Remove snadragon SoC folder if not a Qualcomm board
 # Preserves ath10k/11k/12k wifi separately
 ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_QUALCOMM_ANY),y)
