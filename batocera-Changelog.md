@@ -332,7 +332,7 @@
 - WINE Proton to proton-11.0-1
 - WINE TKG to 11.17
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.2.6
+- X86_64 / Zen3 kernel updated to 7.2.8
 - Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1
