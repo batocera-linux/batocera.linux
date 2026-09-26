@@ -27,12 +27,16 @@ custom_features:
   sm2_render_scale:
     group: GRAPHICS
     prompt: RENDER SCALE
-    description: Internal 3D render scale. OpenGL/Vulkan only, ignored on Software.
+    description: Internal 3D render scale. OpenGL/Vulkan only, ignored on Software. Reduced automatically if the GPU can't render that size.
     choices:
       1x (Default): 1
       2x: 2
       3x: 3
       4x: 4
+      5x: 5
+      6x: 6
+      7x: 7
+      8x (4K): 8
   sm2_scaling_method:
     group: GRAPHICS
     prompt: SCALING METHOD
