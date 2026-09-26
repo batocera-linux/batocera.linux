@@ -201,7 +201,7 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                 _logger.info('--- Joystick Event Detected: %s on %s ---', device.action, device.sys_path)
                 reconfigure_needed = False
 
-                sdl3.update_joysticks()
+                sdl3.pump_events()
                 joystick_ids = sdl3.get_joystick_ids()
 
                 online_controllers_map: dict[str, Path] = {}
@@ -223,7 +223,7 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                 for i, initial_controller in enumerate(initial_controllers_snapshot):
                     if initial_controller and initial_controller.guid in online_controllers_map:
                         new_path = online_controllers_map[initial_controller.guid]
-                        if initial_controller.device_path != new_path:
+                        if initial_controller.device_path != str(new_path):
                             _logger.info(
                                 '>>> [Revival] Player %s (GUID: %s) path has changed.',
                                 initial_controller.player_number,

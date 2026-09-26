@@ -55,6 +55,10 @@ _SDL_WasInit: Final = _function[[int], int](_sdl3.SDL_WasInit, argtypes=[_SDL_In
 _SDL_QuitSubSystem: Final = _function[[int], None](_sdl3.SDL_QuitSubSystem, argtypes=[_SDL_InitFlags], restype=None)
 _SDL_Quit: Final = _function[[], None](_sdl3.SDL_Quit, argtypes=[], restype=None)
 _SDL_UpdateJoysticks: Final = _function[[], None](_sdl3.SDL_UpdateJoysticks, argtypes=[], restype=None)
+_SDL_PumpEvents: Final = _function[[], None](_sdl3.SDL_PumpEvents, argtypes=[], restype=None)
+_SDL_FlushEvents: Final = _function[[int, int], None](
+    _sdl3.SDL_FlushEvents, argtypes=[ctypes.c_uint32, ctypes.c_uint32], restype=None
+)
 _SDL_GetJoysticks: Final = _function[
     ['ctypes._CArgObject'],  # pyright: ignore[reportGeneralTypeIssues]
     'ctypes._Pointer[_SDL_JoystickID]',
@@ -122,6 +126,11 @@ def quit() -> None:
 
 def update_joysticks() -> None:
     _SDL_UpdateJoysticks()
+
+
+def pump_events() -> None:
+    _SDL_PumpEvents()
+    _SDL_FlushEvents(0, 0xFFFF)
 
 
 def get_joystick_ids() -> list[JoystickID]:
