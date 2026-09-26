@@ -317,6 +317,7 @@
 - Qualcomm SM8550 device kernel updated to 7.2.8
 - Qualcomm SM8750 device kernel updated to 7.2.8
 - Raspberry Pi device kernel updated to 6.18.39
+- Rockchip RK3562 device kernel updated to 7.2.8
 - Rockchip RK3568 device kernel updated to 7.0.14
 - Rockchip RK3588 mainline device kernel updated to 7.2.8
 - Rocknix ABL to 1.1.6 (SM6115 & SM8x50 devices)
