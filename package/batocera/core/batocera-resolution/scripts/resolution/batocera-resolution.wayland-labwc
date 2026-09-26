@@ -170,6 +170,22 @@ _get_available_modes() {
         done | sort -u | sort -Vr
 }
 
+# --preferred fails outright when no mode carries the preferred flag, so fall back to the best listed mode
+_get_enable_args() {
+    local mode
+
+    if _get_screen_block "$1" | grep -q "(preferred"; then
+        echo "--output $1 --on --preferred"
+        return
+    fi
+    mode=$(_get_available_modes "$1" | head -n1)
+    if [ -n "${mode}" ]; then
+        echo "--output $1 --on --mode ${mode}"
+    else
+        echo "--output $1 --on"
+    fi
+}
+
 f_minTomaxResolution() {
     local MAX_RES_PARAM="$1"
     local MAXWIDTH MAXHEIGHT MAX_PIXELS
@@ -482,7 +498,7 @@ case "${ACTION}" in
             if [ -z "$target" ]; then continue; fi
 
             if echo "${ALL_OUTPUTS}" | grep -wq "${target}"; then
-                CMD_ARGS_VAR="${CMD_ARGS_VAR} --output ${target} --on --preferred"
+                CMD_ARGS_VAR="${CMD_ARGS_VAR} $(_get_enable_args "${target}")"
                 _log "setOutput: Queuing ON for ${target}"
             else
                 _log "setOutput: Warning: Desired output '${target}' not found. Skipping."
@@ -510,7 +526,7 @@ case "${ACTION}" in
             _log "setOutput: The main wlr-randr command failed. Trying fallback."
             # Fallback for safety: just try to enable the primary (the first argument).
             if [ -n "$1" ]; then
-                "${WLR_RANDR}" --output "$1" --on
+                eval "${WLR_RANDR} $(_get_enable_args "$1")"
             fi
         else
             _log "setOutput: Successfully configured outputs."
