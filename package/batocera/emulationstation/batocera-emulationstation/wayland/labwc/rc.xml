@@ -63,11 +63,10 @@
     </context>
   </mouse>
   <windowRules>
-  <windowRule identifier="*">
-    <action name="serverDecoration" decoration="no" />
-    <action name="MoveToOutput"><output></output></action>
-    <action name="FocusOutput"><output></output></action>
-  </windowRule>
+    <windowRule identifier="*" serverDecoration="no">
+      <action name="MoveToOutput"><output></output></action>
+      <action name="FocusOutput"><output></output></action>
+    </windowRule>
     <windowRule identifier="emulationstation">
       <action name="FocusOutput">
         <output></output>
@@ -102,17 +101,14 @@
     <windowRule identifier="steam_proton" title="Demul">
       <action name="ToggleFullscreen" />
     </windowRule>
-    <windowRule identifier="x16emu" title="Commander X16">
+    <windowRule identifier="x16emu" title="Commander X16" serverDecoration="no">
       <action name="ToggleFullscreen" />
-      <action name="serverDecoration" decoration="no" />
     </windowRule>
-    <windowRule identifier="retrotrivia.pygame">
+    <windowRule identifier="retrotrivia.pygame" serverDecoration="no">
       <action name="ToggleFullscreen" />
-      <action name="serverDecoration" decoration="no" />
     </windowRule>
-    <windowRule identifier="CGeniusExe" title="Commander Genius">
+    <windowRule identifier="CGeniusExe" title="Commander Genius" serverDecoration="no">
       <action name="ToggleFullscreen" />
-      <action name="serverDecoration" decoration="no" />
     </windowRule>
     <windowRule identifier="xterm" serverDecoration="yes" />
     <windowRule identifier="batocera-config-*" serverDecoration="yes" />
