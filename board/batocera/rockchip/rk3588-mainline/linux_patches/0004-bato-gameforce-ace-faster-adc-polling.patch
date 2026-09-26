@@ -1,0 +1,24 @@
+Poll the Ace sticks and triggers every 10 ms instead of 60 ms.
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-gameforce-ace.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-gameforce-ace.dts
+@@ -52,7 +52,8 @@
+ 		compatible = "adc-joystick";
+ 		io-channels = <&saradc 2>, <&saradc 3>,
+ 			      <&saradc 4>, <&saradc 5>;
+-		poll-interval = <60>;
++		/* batocera - poll at 100 Hz */
++		poll-interval = <10>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
+@@ -94,7 +95,8 @@
+ 		compatible = "adc-joystick";
+ 		io-channels = <&ti_adc 6>,
+ 			      <&ti_adc 7>;
+-		poll-interval = <60>;
++		/* batocera - poll at 100 Hz */
++		poll-interval = <10>;
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
