@@ -1,0 +1,78 @@
+From 0b888bf115612074df99654140a1980111c29748 Mon Sep 17 00:00:00 2001
+From: Antoine Cotten <tonio.cotten@gmail.com>
+Date: Fri, 7 Jul 2017 15:17:47 +0200
+Subject: [PATCH] Apply patch from Debian bug #867258
+
+Compile fix with kernel 4.12
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=867258
+---
+ src/wl/sys/wl_cfg80211_hybrid.c | 29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
+
+diff --git a/src/wl/sys/wl_cfg80211_hybrid.c b/src/wl/sys/wl_cfg80211_hybrid.c
+index c46944a..1a9840a 100644
+--- a/src/wl/sys/wl_cfg80211_hybrid.c
++++ b/src/wl/sys/wl_cfg80211_hybrid.c
+@@ -53,7 +53,11 @@ u32 wl_dbg_level = WL_DBG_ERR;
+ #endif
+ 
+ static s32 wl_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
+-           enum nl80211_iftype type, u32 *flags, struct vif_params *params);
++           enum nl80211_iftype type,
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
++           u32 *flags,
++#endif
++	   struct vif_params *params);
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 6, 0)
+ static s32
+ wl_cfg80211_scan(struct wiphy *wiphy,
+@@ -466,8 +470,11 @@ wl_dev_ioctl(struct net_device *dev, u32 cmd, void *arg, u32 len)
+ 
+ static s32
+ wl_cfg80211_change_iface(struct wiphy *wiphy, struct net_device *ndev,
+-                         enum nl80211_iftype type, u32 *flags,
+-   struct vif_params *params)
++                         enum nl80211_iftype type,
++#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 12, 0)
++                         u32 *flags,
++#endif
++                         struct vif_params *params)
+ {
+ 	struct wl_cfg80211_priv *wl = wiphy_to_wl(wiphy);
+ 	struct wireless_dev *wdev;
+@@ -2387,6 +2394,15 @@ wl_bss_roaming_done(struct wl_cfg80211_priv *wl, struct net_device *ndev,
+                     const wl_event_msg_t *e, void *data)
+ {
+ 	struct wl_cfg80211_connect_info *conn_info = wl_to_conn(wl);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++	struct cfg80211_roam_info roam_info = {
++		.bssid = wl->profile->bssid,
++		.req_ie = conn_info->req_ie,
++		.req_ie_len = conn_info->req_ie_len,
++		.resp_ie = conn_info->resp_ie,
++		.resp_ie_len = conn_info->resp_ie_len,
++	};
++#endif
+ 	s32 err = 0;
+ 
+ 	err = wl_get_assoc_ies(wl);
+@@ -2401,12 +2417,17 @@ wl_bss_roaming_done(struct wl_cfg80211_priv *wl, struct net_device *ndev,
+ 		return err;
+ 
+ 	cfg80211_roamed(ndev,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
++			&roam_info,
++#else
+ #if LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)
+ 			&wl->conf->channel,	 
+ #endif
+ 			(u8 *)&wl->bssid,
+ 			conn_info->req_ie, conn_info->req_ie_len,
+-			conn_info->resp_ie, conn_info->resp_ie_len, GFP_KERNEL);
++			conn_info->resp_ie, conn_info->resp_ie_len,
++#endif
++			GFP_KERNEL);
+ 	WL_DBG(("Report roaming result\n"));
+ 
+ 	set_bit(WL_STATUS_CONNECTED, &wl->status);
+

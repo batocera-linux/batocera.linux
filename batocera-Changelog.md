@@ -33,6 +33,7 @@
 - Armsx2 for SM8250, SM8550 and SM8750
 - BCC: audio devices can now be switch from the bcc menu (while playing games for example)
 - Box64 userland x86_64 emulator for aarch64
+- Broadcom STA (wl) wifi driver for older Macs, enable with broadcom-wl=true in batocera-boot.conf
 - Drastic back for Aarch64 devices
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
