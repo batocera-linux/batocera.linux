@@ -3,16 +3,17 @@ from __future__ import annotations
 import asyncio
 import filecmp
 import logging
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from subprocess import CalledProcessError
+from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
 from .asyncio import run
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Iterator
+    from collections.abc import AsyncGenerator, Generator, Iterator
 
 
 _logger = logging.getLogger(__name__)
@@ -256,3 +257,53 @@ async def manage_mount(
                     ) from None
                 else:
                     raise
+
+
+@contextmanager
+def atomic_write(
+    path: Path,
+    /,
+    directory: Path | None = None,
+    *,
+    mode: str = 'w',
+    encoding: str | None = None,
+) -> Generator[Path]:
+    """Write ``path`` atomically via a temporary file in the same directory.
+
+    Yields a temporary path for the caller to write. On successful exit the
+    temporary file is moved onto ``path`` (replacing it if it already exists).
+    If the body raises, the temporary file is deleted and ``path`` is left
+    unchanged — including when ``path`` did not exist yet.
+
+    Prefer a ``directory`` on the same filesystem as ``path`` so the final
+    move stays atomic; the default is ``path.parent``.
+
+    Args:
+        path: Final destination path.
+        directory: Directory for the temporary file. Defaults to
+            ``path.parent``.
+        mode: Mode passed to :class:`~tempfile.NamedTemporaryFile` when
+            creating the temporary file.
+        encoding: Encoding passed to :class:`~tempfile.NamedTemporaryFile`
+            when creating the temporary file.
+
+    Yields:
+        Path to the temporary file. Write content here (for example with
+        :meth:`pathlib.Path.write_text`); do not write ``path`` directly.
+
+    Raises:
+        OSError: Creating the temporary file or moving it onto ``path`` failed.
+    """
+    directory = directory or path.parent
+
+    with NamedTemporaryFile(mode=mode, encoding=encoding, dir=directory, delete=False) as tmp_file:
+        tmp_file.close()  # close the file so that it can be opened through Path() methods when yielded
+        tmp_path = Path(tmp_file.name)
+
+        try:
+            yield tmp_path
+
+            tmp_path.move(path)
+        except BaseException:
+            tmp_path.unlink(missing_ok=True)
+            raise

@@ -12,7 +12,15 @@ class Context:
     @property
     def run_path(self) -> str: ...
     log_priority: int
-    def list_devices(self, **kwargs: object) -> Enumerator: ...
+    def list_devices(
+        self,
+        *,
+        subsystem: str | bytes | None = None,
+        sys_name: str | bytes | None = None,
+        tag: str | bytes | None = None,
+        parent: Device | None = None,
+        **kwargs: type[int | bool] | str | bytes | object,
+    ) -> Enumerator: ...
 
 class Enumerator:
     context: Context
