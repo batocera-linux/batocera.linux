@@ -1,6 +1,10 @@
 # 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
-- Samba no longer maps unknown usernames to guest: Windows 11 24H2+ blocks unsigned guest sessions without prompting, so Windows now asks for credentials - log in as root with the root password ("linux" unless security is enabled)
+- From v44 you can use `batocera-upgrade --update-bootloader` to flash required bootloader and firmware manually
+  SPI u-boot, Qualcomm ABL, Raspberry Pi EEPROM, H700 u-boot
+- Samba no longer maps unknown usernames to guest
+  Windows 11 24H2+ blocks unsigned guest sessions without prompting, so Windows now asks for credentials
+  Log in as root with the root password ("linux" unless security is enabled)
 - GZDoom has been replaced by UZDoom, a continuation of ZDoom and GZDoom - existing gzdoom ROM folders, .gzdoom mod files, and configs need to be renamed to uzdoom
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 - SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems

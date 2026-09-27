@@ -168,6 +168,8 @@ do_help() {
 		  --media-upgrade          Try to upgrade with ~/upgrade/boot.tar.xz (default)
 		     --file [file path]    Use a dedicated file location
 		     --media               Use files in media pools, fallback to default
+
+		  --update-bootloader      Flash the bootloader and firmware of the installed version
 _EOF_
 }
 
@@ -296,6 +298,66 @@ do_update() {
 	return 1
     fi
 
+    do_bootloader_update
+
+    # build stale list: entries present before extraction but absent from the new tarball
+    upgmsg "Generating stale file list ..."
+    TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
+    comm -23 \
+	 <(echo "$BOOT_BEFORE") \
+	 <(echo "$TARBALL_CONTENTS") \
+	 > /boot/boot.stale
+
+    STALE_COUNT=$(wc -l < /boot/boot.stale)
+    if [ "$STALE_COUNT" -eq 0 ]; then
+	upgmsg "No stale files detected ... proceed" 0.5
+	rm -f /boot/boot.stale
+    else
+	upgmsg "Stale files to be removed on next boot (${STALE_COUNT})" 1
+	cat /boot/boot.stale
+    fi
+
+    # restore boot files
+    upgmsg "Restoring config files ..." 0.5
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}.upgrade"
+	then
+            if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
+            then
+		echo "Ouch" >&2
+            fi
+	fi
+    done
+
+    # remount /boot in ro
+    upgmsg "Doing final cleanups ..." 0.5
+    if ! mount -o remount,ro /boot
+    then
+	return 1
+    fi
+
+    # a sync with some cleanups of downloaded and created files
+    G_PRESERVE_UPGRADE_FILES=
+    do_clean ${TERMINAL}
+    sync
+
+    # exit from ES-badge without additional messages
+    [ $TERMINAL -eq 0 ] && return 0
+
+    # verify update is for same board, provide a warning if not
+    NEWBOARD=$(cat /boot/boot/batocera.board)
+    if [ "${G_BOARD}" != "${NEWBOARD}" ]
+    then
+	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
+    fi
+
+    echo; echo "Done. Please reboot the system so that the changes take effect!"
+    return 0
+}
+
+# Flash bootloaders and firmware shipped in /boot
+do_bootloader_update() {
     # Flash SPI u-boot if a new binary is present in /boot/boot
     local SPI_LOG="/boot/boot/spi-flash.log"
     local SPI_BIN=""
@@ -411,61 +473,6 @@ do_update() {
             fi
         fi
     fi
-
-    # build stale list: entries present before extraction but absent from the new tarball
-    upgmsg "Generating stale file list ..."
-    TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
-    comm -23 \
-	 <(echo "$BOOT_BEFORE") \
-	 <(echo "$TARBALL_CONTENTS") \
-	 > /boot/boot.stale
-
-    STALE_COUNT=$(wc -l < /boot/boot.stale)
-    if [ "$STALE_COUNT" -eq 0 ]; then
-	upgmsg "No stale files detected ... proceed" 0.5
-	rm -f /boot/boot.stale
-    else
-	upgmsg "Stale files to be removed on next boot (${STALE_COUNT})" 1
-	cat /boot/boot.stale
-    fi
-
-    # restore boot files
-    upgmsg "Restoring config files ..." 0.5
-    for BOOTFILE in ${BOOTFILES}
-    do
-	if test -e "/boot/${BOOTFILE}.upgrade"
-	then
-            if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
-            then
-		echo "Ouch" >&2
-            fi
-	fi
-    done
-
-    # remount /boot in ro
-    upgmsg "Doing final cleanups ..." 0.5
-    if ! mount -o remount,ro /boot
-    then
-	return 1
-    fi
-
-    # a sync with some cleanups of downloaded and created files
-    G_PRESERVE_UPGRADE_FILES=
-    do_clean ${TERMINAL}
-    sync
-
-    # exit from ES-badge without additional messages
-    [ $TERMINAL -eq 0 ] && return 0
-
-    # verify update is for same board, provide a warning if not
-    NEWBOARD=$(cat /boot/boot/batocera.board)
-    if [ "${G_BOARD}" != "${NEWBOARD}" ]
-    then
-	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
-    fi
-
-    echo; echo "Done. Please reboot the system so that the changes take effect!"
-    return 0
 }
 
 #####################################################
@@ -574,6 +581,12 @@ case "${ACTION}" in
         download_upgrades ${TERMINAL} "${G_DWD_HTTP_DIR}" "${SIZE}" || { echo "Error: Connection failed '${G_DWD_HTTP_DIR}'"; exit 1; }
         validate_checksum || exit 1
 	do_update         || exit 1
+    ;;
+    --update-bootloader) # Flash from the installed /boot any extra bootloader or firmware files
+	mount -o remount,rw /boot || exit 1
+	do_bootloader_update
+	mount -o remount,ro /boot
+	sync
     ;;
     --help|-h) # Dedicated help page
         do_help
