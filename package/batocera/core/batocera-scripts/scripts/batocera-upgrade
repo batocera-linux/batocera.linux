@@ -287,7 +287,7 @@ do_update() {
     # snapshot to help create .stale file
     # Exclude Pi-specific eeprom files, rpi log and user boot files (boot-custom.sh hook,
     # Pi autoboot.txt) from being treated as stale
-    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|boot-custom\.sh|autoboot\.txt|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|boot-custom\.sh|autoboot\.txt|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|boot/u-boot-sunxi\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
 
     # extract file on /boot
     upgmsg "Extracting files ..."
@@ -378,6 +378,36 @@ do_update() {
             else
                 # We continue with the main system upgrade even if EEPROM staging has errors.
                 upgmsg "WARNING: EEPROM update completed with errors. See ${RPI_LOG}" 2
+            fi
+        fi
+    fi
+
+    # Update Allwinner u-boot at 8K on the boot disk, only over an existing SPL
+    local SUNXI_BIN="/boot/boot/u-boot-sunxi-with-spl.bin"
+    if test -f "${SUNXI_BIN}"; then
+        local SUNXI_LOG="/boot/boot/u-boot-sunxi.log"
+        local BOOT_PART=$(grep -m1 -E '^[^ ]+ /boot ' /proc/mounts | cut -d' ' -f1)
+        local BOOT_DISK="/dev/$(lsblk -no PKNAME "${BOOT_PART}" 2>/dev/null)"
+        local PART_START=$(cat "/sys/class/block/$(basename "${BOOT_PART}")/start" 2>/dev/null)
+        local BIN_SIZE=$(wc -c < "${SUNXI_BIN}")
+        local BIN_LEN=$(( (BIN_SIZE + 1023) / 1024 ))
+        echo "=== u-boot Update: $(date) ===" >> "${SUNXI_LOG}"
+        echo "disk: ${BOOT_DISK}, partition start: ${PART_START}, binary: ${BIN_SIZE} bytes" >> "${SUNXI_LOG}"
+        if ! test -b "${BOOT_DISK}" || test -z "${PART_START}" || test $((8192 + BIN_SIZE)) -gt $((PART_START * 512)); then
+            echo "WARNING: no room before the boot partition, skipping" >> "${SUNXI_LOG}"
+            upgmsg "WARNING: u-boot update skipped! See ${SUNXI_LOG}" 2
+        elif test "$(dd if="${BOOT_DISK}" bs=1 skip=8196 count=8 2>/dev/null)" != "eGON.BT0"; then
+            echo "WARNING: no SPL at 8K on ${BOOT_DISK}, skipping" >> "${SUNXI_LOG}"
+            upgmsg "WARNING: u-boot update skipped! See ${SUNXI_LOG}" 2
+        elif dd if="${BOOT_DISK}" bs=1k skip=8 count=${BIN_LEN} 2>/dev/null | head -c "${BIN_SIZE}" | cmp -s - "${SUNXI_BIN}"; then
+            echo "u-boot already up to date" >> "${SUNXI_LOG}"
+        else
+            upgmsg "Updating u-boot... DO NOT POWER OFF THE DEVICE!"
+            if dd if="${SUNXI_BIN}" of="${BOOT_DISK}" bs=1k seek=8 conv=fsync,notrunc 2>>"${SUNXI_LOG}"; then
+                echo "u-boot update successful" >> "${SUNXI_LOG}"
+                upgmsg "u-boot update completed!" 1
+            else
+                upgmsg "WARNING: u-boot update failed! See ${SUNXI_LOG}" 2
             fi
         fi
     fi

@@ -23,6 +23,7 @@
 ### Added
 - Anbernic H700 device deep sleep suspend, replacing fake suspend
 - Anbernic H700 device hardware acceleration support
+- Anbernic H700 device u-boot is now updated by system upgrades, needed for deep sleep
 - Anbernic RG35XX Plus battery backed real-time clock
 - Anbernic RGCubeXX device LED controller support
 - Armsx2 for SM8250, SM8550 and SM8750
