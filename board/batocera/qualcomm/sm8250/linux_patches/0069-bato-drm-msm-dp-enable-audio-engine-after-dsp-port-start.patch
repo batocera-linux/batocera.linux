@@ -1,0 +1,74 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] drm/msm/dp: enable the audio engine after the DSP port start
+
+The q6afe DP port start only completes once the DSP sees the DP audio
+engine change state. Enabling the engine at hw_params, before the DSP has
+the start command, hangs the start about half the time (AFE port 0x6020
+-110). Enable it once the start has been sent.
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_audio.c b/drivers/gpu/drm/msm/dp/dp_audio.c
+index 41018e82e..88c7577e9 100644
+--- a/drivers/gpu/drm/msm/dp/dp_audio.c
++++ b/drivers/gpu/drm/msm/dp/dp_audio.c
+@@ -7,6 +7,7 @@
+ #define pr_fmt(fmt)	"[drm-dp] %s: " fmt, __func__
+ 
+ #include <linux/platform_device.h>
++#include <linux/workqueue.h>
+ 
+ #include <drm/display/drm_dp_helper.h>
+ #include <drm/drm_edid.h>
+@@ -25,6 +26,9 @@ struct msm_dp_audio_private {
+ 
+ 	u32 channels;
+ 
++	struct msm_dp *msm_dp_display;
++	struct delayed_work enable_work;
++
+ 	struct msm_dp_audio msm_dp_audio;
+ };
+ 
+@@ -252,6 +256,15 @@ static void msm_dp_audio_enable(struct msm_dp_audio_private *audio, bool enable)
+ 	wmb();
+ }
+ 
++static void msm_dp_audio_enable_work(struct work_struct *work)
++{
++	struct msm_dp_audio_private *audio = container_of(to_delayed_work(work),
++			struct msm_dp_audio_private, enable_work);
++
++	if (audio->msm_dp_display->power_on)
++		msm_dp_audio_enable(audio, true);
++}
++
+ static struct msm_dp_audio_private *msm_dp_audio_get_data(struct msm_dp *msm_dp_display)
+ {
+ 	struct msm_dp_audio *msm_dp_audio;
+@@ -300,7 +313,10 @@ int msm_dp_audio_prepare(struct drm_bridge *bridge,
+ 	msm_dp_audio_setup_sdp(audio);
+ 	msm_dp_audio_setup_acr(audio);
+ 	msm_dp_audio_safe_to_exit_level(audio);
+-	msm_dp_audio_enable(audio, true);
++	/* The DSP port start waits for the engine to switch on after it. */
++	audio->msm_dp_display = msm_dp_display;
++	if (!(msm_dp_read_link(audio, MMSS_DP_AUDIO_CFG) & BIT(0)))
++		schedule_delayed_work(&audio->enable_work, msecs_to_jiffies(30));
+ 	msm_dp_display_signal_audio_start(msm_dp_display);
+ 	msm_dp_display->audio_enabled = true;
+ 
+@@ -332,6 +348,7 @@ void msm_dp_audio_shutdown(struct drm_bridge *bridge,
+ 	if (!msm_dp_display->audio_enabled)
+ 		return;
+ 
++	cancel_delayed_work_sync(&audio->enable_work);
+ 	msm_dp_audio_enable(audio, false);
+ 	/* signal the dp display to safely shutdown clocks */
+ 	msm_dp_display_signal_audio_complete(msm_dp_display);
+@@ -358,6 +375,7 @@ struct msm_dp_audio *msm_dp_audio_get(struct platform_device *pdev,
+ 
+ 	audio->pdev = pdev;
+ 	audio->link_base = link_base;
++	INIT_DELAYED_WORK(&audio->enable_work, msm_dp_audio_enable_work);
+ 
+ 	msm_dp_audio = &audio->msm_dp_audio;
+ 
