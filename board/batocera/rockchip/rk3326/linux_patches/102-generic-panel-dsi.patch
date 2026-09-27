@@ -1,9 +1,38 @@
+diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
+index 3eac4d0f8..2b05911a1 100644
+--- a/drivers/gpu/drm/panel/Kconfig
++++ b/drivers/gpu/drm/panel/Kconfig
+@@ -1348,4 +1348,12 @@ config DRM_PANEL_XINPENG_XPP055C272
+ 	  Say Y here if you want to enable support for the Xinpeng
+ 	  XPP055C272 controller for 720x1280 LCD panels with MIPI/RGB/SPI
+ 	  system interfaces.
++
++config DRM_PANEL_GENERIC_DSI
++    tristate "Generic MIPI-DSI panel driver"
++    depends on OF
++    depends on DRM_MIPI_DSI
++    depends on BACKLIGHT_CLASS_DEVICE
++    help
++      Say Y here if you want to enable the generic DSI panel driver.
+ endmenu
+diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
+index c2c5cf817..db4fe4062 100644
+--- a/drivers/gpu/drm/panel/Makefile
++++ b/drivers/gpu/drm/panel/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_DRM_PANEL_EBBG_FT8719) += panel-ebbg-ft8719.o
+ obj-$(CONFIG_DRM_PANEL_ELIDA_KD35T133) += panel-elida-kd35t133.o
+ obj-$(CONFIG_DRM_PANEL_FEIXIN_K101_IM2BA02) += panel-feixin-k101-im2ba02.o
+ obj-$(CONFIG_DRM_PANEL_FEIYANG_FY07024DI26A30D) += panel-feiyang-fy07024di26a30d.o
++obj-$(CONFIG_DRM_PANEL_GENERIC_DSI) += panel-generic-dsi.o
+ obj-$(CONFIG_DRM_PANEL_FOCALTECH_OTA7290B) += panel-focaltech-ota7290b.o
+ obj-$(CONFIG_DRM_PANEL_HIMAX_HX8279) += panel-himax-hx8279.o
+ obj-$(CONFIG_DRM_PANEL_HIMAX_HX83102) += panel-himax-hx83102.o
 diff --git a/drivers/gpu/drm/panel/panel-generic-dsi.c b/drivers/gpu/drm/panel/panel-generic-dsi.c
 new file mode 100644
-index 0000000000..46e1fb97ee
+index 000000000..956264da3
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-generic-dsi.c
-@@ -0,0 +1,682 @@
+@@ -0,0 +1,695 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Generic MIPI-DSI panel driver
@@ -17,6 +46,7 @@ index 0000000000..46e1fb97ee
 +
 +#include <linux/delay.h>
 +#include <linux/gpio/consumer.h>
++#include <linux/hex.h>
 +#include <linux/media-bus-format.h>
 +#include <linux/module.h>
 +#include <linux/firmware.h>
@@ -70,6 +100,7 @@ index 0000000000..46e1fb97ee
 +struct generic_panel {
 +    struct device *dev;
 +    struct drm_panel panel;
++    struct gpio_desc *enable_gpio;
 +    struct gpio_desc *reset_gpio;
 +    struct regulator *vdd;
 +    struct regulator *iovcc;
@@ -398,22 +429,29 @@ index 0000000000..46e1fb97ee
 +    if (!ctx->prepared)
 +        return 0;
 +
++    /*
++     * Both DCS writes below are best-effort: a failure here (DSI bus
++     * busy/timeout, which is more likely to happen right as the rest of
++     * the pipeline is changing state during suspend) must not abort the
++     * power-down that follows. Bailing out here used to leave the panel
++     * powered on with ctx->prepared still true, which also made the next
++     * prepare() a no-op - so a single failed DCS write during suspend
++     * could leave the screen stuck on/corrupted until reboot instead of
++     * just for that one suspend cycle.
++     */
 +    ret = mipi_dsi_dcs_set_display_off(dsi);
 +    if (ret < 0)
 +        dev_err(ctx->dev, "failed to set display off: %d\n", ret);
 +
 +    ret = mipi_dsi_dcs_enter_sleep_mode(dsi);
-+    if (ret < 0) {
++    if (ret < 0)
 +        dev_err(ctx->dev, "failed to enter sleep mode: %d\n", ret);
-+        return ret;
-+    }
 +
++    if (ctx->enable_gpio) { gpiod_set_value_cansleep(ctx->enable_gpio, 0); }
 +    gpiod_set_value_cansleep(ctx->reset_gpio, 1);
 +
 +    regulator_disable(ctx->iovcc);
 +    regulator_disable(ctx->vdd);
-+
-+    gpiod_set_value_cansleep(ctx->reset_gpio, 1);
 +
 +    ctx->prepared = false;
 +
@@ -442,6 +480,7 @@ index 0000000000..46e1fb97ee
 +        goto disable_vdd;
 +    }
 +
++    if (ctx->enable_gpio) { gpiod_set_value_cansleep(ctx->enable_gpio, 1); }
 +    msleep(ctx->delays.prepare);
 +
 +    gpiod_set_value_cansleep(ctx->reset_gpio, 1);
@@ -569,9 +608,17 @@ index 0000000000..46e1fb97ee
 +    struct generic_panel *ctx;
 +    int ret;
 +
-+    ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+    if (!ctx)
-+        return -ENOMEM;
++    ctx = devm_drm_panel_alloc(dev, struct generic_panel, panel,
++                               &generic_panel_funcs,
++                               DRM_MODE_CONNECTOR_DSI);
++    if (IS_ERR(ctx))
++        return PTR_ERR(ctx);
++
++    ctx->enable_gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_LOW);
++    if (IS_ERR(ctx->enable_gpio)) {
++        dev_err(dev, "cannot get enable gpio\n");
++	ctx->enable_gpio = NULL;
++    }
 +
 +    ctx->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 +    if (IS_ERR(ctx->reset_gpio)) {
@@ -622,9 +669,6 @@ index 0000000000..46e1fb97ee
 +
 +    dev_info(dev, "lanes %d, format %d, mode %lx\n", dsi->lanes, dsi->format, dsi->mode_flags);
 +
-+    drm_panel_init(&ctx->panel, &dsi->dev, &generic_panel_funcs,
-+               DRM_MODE_CONNECTOR_DSI);
-+
 +    ret = drm_panel_of_backlight(&ctx->panel);
 +    if (ret)
 +        return ret;
@@ -644,7 +688,6 @@ index 0000000000..46e1fb97ee
 +static void generic_panel_shutdown(struct mipi_dsi_device *dsi)
 +{
 +    struct generic_panel *ctx = mipi_dsi_get_drvdata(dsi);
-+    int ret;
 +
 +    drm_panel_unprepare(&ctx->panel);
 +
@@ -685,33 +728,3 @@ index 0000000000..46e1fb97ee
 +MODULE_AUTHOR("Danil Zagoskin <z@gosk.in>");
 +MODULE_DESCRIPTION("DRM driver for generic MIPI DSI panel");
 +MODULE_LICENSE("GPL v2");
-+
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 09b9f7ff93..48ea9596b4 100644
---- a/drivers/gpu/drm/panel/Kconfig
-+++ b/drivers/gpu/drm/panel/Kconfig
-@@ -1132,4 +1132,12 @@ config DRM_PANEL_XINPENG_XPP055C272
- 	  Say Y here if you want to enable support for the Xinpeng
- 	  XPP055C272 controller for 720x1280 LCD panels with MIPI/RGB/SPI
- 	  system interfaces.
-+
-+config DRM_PANEL_GENERIC_DSI
-+    tristate "Generic MIPI-DSI panel driver"
-+    depends on OF
-+    depends on DRM_MIPI_DSI
-+    depends on BACKLIGHT_CLASS_DEVICE
-+    help
-+      Say Y here if you want to enable the generic DSI panel driver.
- endmenu
-diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 957555b499..8302cde2cb 100644
---- a/drivers/gpu/drm/panel/Makefile
-+++ b/drivers/gpu/drm/panel/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_DRM_PANEL_EBBG_FT8719) += panel-ebbg-ft8719.o
- obj-$(CONFIG_DRM_PANEL_ELIDA_KD35T133) += panel-elida-kd35t133.o
- obj-$(CONFIG_DRM_PANEL_FEIXIN_K101_IM2BA02) += panel-feixin-k101-im2ba02.o
- obj-$(CONFIG_DRM_PANEL_FEIYANG_FY07024DI26A30D) += panel-feiyang-fy07024di26a30d.o
-+obj-$(CONFIG_DRM_PANEL_GENERIC_DSI) += panel-generic-dsi.o
- obj-$(CONFIG_DRM_PANEL_HIMAX_HX8279) += panel-himax-hx8279.o
- obj-$(CONFIG_DRM_PANEL_HIMAX_HX83102) += panel-himax-hx83102.o
- obj-$(CONFIG_DRM_PANEL_HIMAX_HX83112A) += panel-himax-hx83112a.o

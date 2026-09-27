@@ -1,0 +1,237 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2019 Hardkernel Co., Ltd
+ * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
+ * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
+ */
+
+/dts-v1/;
+#include "rk3326-odroid-go.dtsi"
+#include "retrogame_joypad_s2_f1.dtsi"
+
+/ {
+	model = "ODROID-GO Advance Black Edition";
+	compatible = "hardkernel,rk3326-odroid-go2-v11", "rockchip,rk3326";
+
+	aliases {
+		mmc1 = &sdio;
+	};
+
+	gpio_keys: volume-keys {
+		compatible = "gpio-keys";
+		autorepeat;
+		pinctrl-0 = <&btn_pins_vol>;
+		pinctrl-names = "default";
+
+		volume-up-button {
+			label = "VOLUMEUP";
+			linux,code = <KEY_VOLUMEUP>;
+			gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
+
+		};
+		volume-down-button {
+			label = "VOLUMEDOWN";
+			linux,code = <KEY_VOLUMEDOWN>;
+			gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
+
+		};
+	};
+
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <3000000>;
+		charge-term-current-microamp = <300000>;
+		constant-charge-current-max-microamp = <2000000>;
+		constant-charge-voltage-max-microvolt = <4200000>;
+		factory-internal-resistance-micro-ohms = <180000>;
+		voltage-max-design-microvolt = <4100000>;
+		voltage-min-design-microvolt = <3500000>;
+
+		ocv-capacity-celsius = <20>;
+		ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
+					<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
+					<3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
+					<3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
+					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+					<3574170 0>;
+	};
+
+	wifi_pwrseq: wifi-pwrseq {
+		compatible = "mmc-pwrseq-simple";
+		pinctrl-names = "default";
+		pinctrl-0 = <&wifi_pwrseq_pins>;
+		reset-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
+		post-power-on-delay-ms = <300>;
+		power-off-delay-us = <200000>;
+	};
+};
+
+&joypad {
+	compatible = "rocknix-joypad";
+	joypad-name = "odroidgo2_v11_joypad";
+	/* IDs from odroidgo2_v11_joypad */
+	joypad-bustype = <0x0019>; /* BUS_HOST */
+	joypad-vendor = <0x0001>;
+	joypad-product = <0x0002>;
+	joypad-revision = <0x0101>;
+	status = "okay";
+
+	/* gpio pincontrol setup */
+	pinctrl-names = "default";
+	pinctrl-0 = <&btn_pins>;
+
+	/* JOY_X, JOY_Y Channel define */
+	io-channel-names = "joy_x", "joy_y";
+	io-channels = <&saradc 1>, <&saradc 2>;
+	abs-left-first;
+
+	/* adc channel count */
+	button-adc-count = <2>;
+
+	/* adc calculate scale */
+	button-adc-scale = <1>;
+
+	/* adc deadzone range  */
+	button-adc-deadzone = <20>;
+
+	invert-absx = <1>;
+	invert-absy = <0>;
+
+	/*
+	  specifies fuzz value that is used to filter noise from
+	  the event stream.
+	*/
+	button-adc-fuzz = <32>;
+	button-adc-flat = <32>;
+
+	/* poll device interval (ms), adc read interval */
+	poll-interval = <10>;
+
+	/* gpio button auto repeat set value : default disable */
+	/*
+		autorepeat;
+	*/
+
+	/*
+	      *** ODROIDGO2-Advance Switch layoout ***
+	|------------------------------------------------|
+	| sw15                                      sw16 |
+	|        sw20                         sw21       |
+	|------------------------------------------------|
+	|     sw1      |-------------------|      sw8    |
+	|  sw3   sw4   |                   |   sw7   sw5 |
+	|     sw2      |    LCD Display    |      sw6    |
+	|              |                   |             |
+	|              |-------------------|             |
+	|         sw9 sw10   vol- vol+   sw13 sw14       |
+	|------------------------------------------------|
+	*/
+	/*
+	    joypad driver is poll-device driver.
+	    poll-device is does not support wakeup-source.
+	*/
+	up    { gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>; };
+	down  { gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>; };
+	left  { gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>; };
+	right { gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>; };
+
+	a     { gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>; };
+	b     { gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>; };
+	x     { gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>; };
+	y     { gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>; };
+
+	tl    { gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>; };
+	tr    { gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>; };
+	tl2   { gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>; };
+	tr2   { gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>; };
+
+	select{ gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>; };
+	start { gpios = <&gpio2 RK_PA5 GPIO_ACTIVE_LOW>; };
+
+	thumbl{ gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>; };
+	thumbr{ gpios = <&gpio2 RK_PA4 GPIO_ACTIVE_LOW>; };
+
+	/delete-node/ mode;
+};
+
+#include "rk3326-panel-elida-kd35t133.dtsi"
+&internal_display {
+	iovcc-supply = <&vcc_lcd>;
+	vdd-supply = <&vcc_lcd>;
+	rotation = <270>;
+};
+
+&rk817 {
+	regulators {
+		vcc_wifi: LDO_REG9 {
+			regulator-name = "vcc_wifi";
+			regulator-min-microvolt = <3300000>;
+			regulator-max-microvolt = <3300000>;
+			regulator-always-on;
+			regulator-boot-on;
+
+			regulator-state-mem {
+				regulator-off-in-suspend;
+				regulator-suspend-microvolt = <3300000>;
+			};
+		};
+	};
+};
+
+&rk817_charger {
+	monitored-battery = <&battery>;
+};
+
+&sdio {
+	#address-cells = <1>;
+	#size-cells = <0>;
+	bus-width = <4>;
+	cap-sd-highspeed;
+	cap-sdio-irq;
+	disable-wp;
+	keep-power-in-suspend;
+	non-removable;
+	vmmc-supply = <&vcc_wifi>;
+	mmc-pwrseq = <&wifi_pwrseq>;
+	status = "okay";
+
+	esp8089: wifi@1 {
+		compatible = "esp,esp8089";
+		reg = <1>;
+		esp,crystal-26M-en = <1>;
+	};
+};
+
+&pinctrl {
+	btns {
+		btn_pins: btn-pins {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		btn_pins_vol: btn-pins-vol {
+			rockchip,pins = <2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	wifi {
+		wifi_pwrseq_pins: wifi-pwrseq-pins {
+			rockchip,pins = <3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB6 RK_FUNC_GPIO &pcfg_output_high>;
+		};
+	};
+};

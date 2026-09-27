@@ -1,0 +1,129 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * # Copyright (C) 2022-24 JELOS (https://github.com/JustEnoughLinuxOS)
+ */
+
+/dts-v1/;
+#include "rk3326-gameconsole-r3xs.dtsi"
+#include "rk3326-device-group-r36.dtsi"
+
+/ {
+	model = "Game Console R33S";
+	compatible = "gameconsole,r33s", "rockchip,rk3326";
+
+	rocknix,device_switch {
+		this = "r33s";
+	};
+
+	builtin_gamepad: r33s_joypad {
+		compatible = "rocknix-singleadc-joypad";
+		pinctrl-names = "default";
+		pinctrl-0 = <&btn_pins>;
+		joypad-name = "r33s_joypad";
+		joypad-product = <0x0AA2>;
+		joypad-revision = <0x0100>;
+		joypad-vendor = <0x0001>;
+
+		status = "okay";
+		amux-count = <0>;
+		/* poll device interval (ms), adc read interval */
+		poll-interval = <10>;	
+		pwms = <&pwm0 0 1000000000 0>;
+		pwm-names = "enable";
+		rumble-boost-weak = <0x0000>;
+		rumble-boost-strong = <0x0000>;
+
+		button-sw1 {
+			gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
+			label = "DPAD-UP";
+			linux,code = <BTN_DPAD_UP>;
+		};
+		button-sw2 {
+			gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
+			label = "DPAD-DOWN";
+			linux,code = <BTN_DPAD_DOWN>;
+		};
+		button-sw3 {
+			gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
+			label = "DPAD-LEFT";
+			linux,code = <BTN_DPAD_LEFT>;
+		};
+		button-sw4 {
+			gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
+			label = "DPAD-RIGHT";
+			linux,code = <BTN_DPAD_RIGHT>;
+		};
+		button-sw5 {
+			gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
+			label = "BTN-A";
+			linux,code = <BTN_EAST>;
+		};
+		button-sw6 {
+			gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
+			label = "BTN-B";
+			linux,code = <BTN_SOUTH>;
+		};
+		button-sw7 {
+			gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
+			label = "BTN-Y";
+			linux,code = <BTN_WEST>;
+		};
+		button-sw8 {
+			gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
+			label = "BTN-X";
+			linux,code = <BTN_NORTH>;
+		};
+		button-sw9 {
+			gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
+			label = "TOP-LEFT";
+			linux,code = <BTN_TL>;
+		};
+		button-sw10 {
+			gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
+			label = "TOP-RIGHT";
+			linux,code = <BTN_TR>;
+		};
+		button-sw11 {
+			gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
+			label = "SELECT";
+			linux,code = <BTN_SELECT>;
+		};
+		button-sw12 {
+			gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+			label = "TOP-RIGHT 2";
+			linux,code = <BTN_TR2>;
+		};
+		button-sw13 {
+			gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
+			label = "TOP-LEFT 2";
+			linux,code = <BTN_TL2>;
+		};
+		button-sw14 {
+			gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+			label = "START";
+			linux,code = <BTN_START>;
+		};
+	};
+};
+
+&pinctrl {
+	btns {
+		btn_pins: btn-pins {
+				rockchip,pins =	<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+						<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+						<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+						<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+						<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+						<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+						<3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+						<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		
+	};
+};

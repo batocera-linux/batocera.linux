@@ -1,0 +1,379 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2019 Hardkernel Co., Ltd
+ * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
+ * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
+ */
+
+/dts-v1/;
+#include "rk3326-odroid-go.dtsi"
+
+/ {
+	model = "Powkiddy RGB20S";
+	compatible = "powkiddy,rgb20s", "rockchip,rk3326";
+
+       aliases {
+               mmc0 = &sdio;
+               mmc1 = &sdmmc;
+       };
+
+        gpio-keys-vol {
+                compatible = "gpio-keys";
+                autorepeat;
+                pinctrl-0 = <&btn_pins_vol>;
+                pinctrl-names = "default";
+
+                button-vol-down {
+                        gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
+                        label = "VOLUMEDOWN";
+                        linux,code = <KEY_VOLUMEDOWN>;
+                };
+
+                button-volume-up {
+                        gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
+                        label = "VOLUMEUP";
+                        linux,code = <KEY_VOLUMEUP>;
+                };
+        };
+
+	joypad: joypad {
+                compatible = "rocknix-singleadc-joypad";
+
+                pwms = <&pwm0 0 200000000 0>;
+                pwm-names = "enable";
+                rumble-boost-weak = <0x0000>;
+                rumble-boost-strong = <0x0000>;
+
+                joypad-name = "r36s_Gamepad";
+                joypad-product = <0x1188>;
+                joypad-revision = <0x0188>;
+                joypad-vendor = <0x0001>;
+
+		status = "okay";
+
+		/* gpio pincontrol setup */
+                pinctrl-names = "default";
+                pinctrl-0 = <&btn_pins>;
+                pinctrl-1 = <&pwm0_pin>;
+
+		/* Analog mux define */
+		io-channel-names = "amux_adc";
+		io-channels = <&saradc 1>;
+
+		/* adc mux channel count */
+		amux-count = <4>;
+		/* non-default wiring */
+		amux-channel-mapping = <0 1 2 3>;
+		/* adc mux select(a,b) gpio */
+		amux-a-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+		amux-b-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+		/* adc mux enable gpio */
+		amux-en-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
+
+		/* adc calculate scale */
+		button-adc-scale = <2>;
+
+		/* adc deadzone range  */
+		button-adc-deadzone = <64>;
+
+		/*
+		  specifies fuzz value that is used to filter noise from
+		  the event stream.
+		*/
+		button-adc-fuzz = <32>;
+		button-adc-flat = <32>;
+
+		/*
+		  Analog Stick data tuning value(precent)
+		  p = positive direction, n = negative direction
+		  report value = (real_adc_data * tuning_value) / 100
+		*/
+		abs_x-p-tuning = <400>;
+		abs_x-n-tuning = <400>;
+
+		abs_y-p-tuning = <400>;
+		abs_y-n-tuning = <400>;
+
+		abs_rx-p-tuning = <400>;
+		abs_rx-n-tuning = <400>;
+
+		abs_ry-p-tuning = <400>;
+		abs_ry-n-tuning = <400>;
+
+		/* poll device interval (ms), adc read interval */
+		poll-interval = <10>;
+
+		/* required for RG351MP */
+		invert-absx;
+		invert-absy;
+
+		/* gpio button auto repeat set value : default disable */
+		/*
+			autorepeat;
+		*/
+
+                /*
+                    joypad driver is poll-device driver.
+                    poll-device is does not support wakeup-source.
+		*/
+                sw1 {
+                        gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-UP";
+                        linux,code = <BTN_DPAD_UP>; // 0x220
+                };
+                sw2 {
+                        gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-DOWN";
+                        linux,code = <BTN_DPAD_DOWN>; // 0x221
+                };
+                sw3 {
+                        gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-LEFT";
+                        linux,code = <BTN_DPAD_LEFT>; // 0x222
+                };
+                sw4 {
+                        gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-RIGHT";
+                        linux,code = <BTN_DPAD_RIGHT>; // 0x223
+                };
+                sw5 {
+                        gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO KEY BTN-A";
+                        linux,code = <BTN_EAST>; // 0x131
+                };
+                sw6 {
+                        gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-B";
+                        linux,code = <BTN_SOUTH>; // 0x130
+                };
+                sw7 {
+                        gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-Y";
+                        linux,code = <BTN_WEST>; // 0x134
+                };
+                sw8 {
+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-X";
+                        linux,code = <BTN_NORTH>; // 0x133
+                };
+                sw11 {
+                        gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN_THUMBL";
+                        linux,code = <BTN_THUMBL>; // 0x2c2
+                };
+                sw12 {
+                        gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN_THUMBR";
+                        linux,code = <BTN_THUMBR>; // 0x2c3
+                };
+		
+                sw13 {
+                        gpios = <&gpio2 RK_PA4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN_FN";
+                        linux,code = <BTN_MODE>; // 0x2c4
+                };
+		
+                sw15 {
+                        gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-LEFT";
+                        linux,code = <BTN_TL>; // 0x02
+                };
+                sw16 {
+                        gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-RIGHT";
+                        linux,code = <BTN_TR>; // 0x05
+                };
+                sw19 {
+                        gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN_SELECT";
+                        linux,code = <BTN_SELECT>;
+                };
+                sw20 {
+                        gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-RIGHT2";
+                        linux,code = <BTN_TR2>;
+                };
+                sw21 {
+                        gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-LEFT2";
+                        linux,code = <BTN_TL2>;
+                };
+                sw22 {
+                        gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN_START";
+                        linux,code = <BTN_START>;
+                };
+        };
+
+        battery: battery {
+               compatible = "simple-battery";
+               charge-full-design-microamp-hours = <3500000>;
+               charge-term-current-microamp = <350000>;
+               constant-charge-current-max-microamp = <2000000>;
+               constant-charge-voltage-max-microvolt = <4200000>;
+               factory-internal-resistance-micro-ohms = <180000>;
+               voltage-max-design-microvolt = <4100000>;
+               voltage-min-design-microvolt = <3500000>;
+
+               ocv-capacity-celsius = <20>;
+               ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
+                                       <3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
+                                       <3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
+                                       <3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
+                                       <3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+                                       <3574170 0>;
+       };
+};
+
+/* conflicts with pwm vibration motor */
+/delete-node/ &vcc_host;
+
+/* Device only has 1 LED compared to Odroid Go Advance */
+/delete-node/ &gpio_led;
+
+&internal_display {
+//	compatible = "anbernic,rg351v-panel", "newvision,nv3051d";
+	// compatible = "powkiddy,rk2023-panel", "newvision,nv3051d";
+	compatible = "rocknix,generic-dsi";
+	iovcc-supply = <&vcc_lcd>;
+	vdd-supply = <&vcc_lcd>;
+	panel_description =
+	"G size=52,70 delays=2,1,20,120,20 format=rgb888 lanes=4 flags=0xe03",
+	
+	"M clock=26400 horizontal=640,119,2,119 vertical=480,13,2,5 default=1",
+	"M clock=27300 horizontal=640,207,24,207 vertical=480,13,9,5",
+	"M clock=26400 horizontal=640,207,2,207 vertical=480,13,2,5",
+	"M clock=27140 horizontal=640,119,45,119 vertical=480,13,90,5",
+	"M clock=26450 horizontal=640,119,42,119 vertical=480,13,2,5",
+	"M clock=28520 horizontal=640,119,3,119 vertical=480,13,44,5",
+	"M clock=31440 horizontal=640,119,39,119 vertical=480,13,74,5",
+	"M clock=26440 horizontal=640,31,30,31 vertical=480,13,103,5",
+	"M clock=31970 horizontal=640,31,36,31 vertical=480,13,76,5",
+	// "M clock=31680 horizontal=640,31,2,31 vertical=480,13,2,5", 
+	"M clock=42240 horizontal=640,31,2,31 vertical=480,13,2,5",
+	
+	"I seq=ff30", "I seq=ff52", "I seq=ff01",
+	"I seq=e300",
+	"I seq=400a",
+	"I seq=0340", "I seq=0400", "I seq=0503",
+	"I seq=2412", "I seq=251e", "I seq=2628", "I seq=2752",
+	"I seq=2857", "I seq=2901", "I seq=2adf",
+	"I seq=389c", "I seq=39a7", "I seq=3a53",
+	"I seq=4400",
+	"I seq=493c",
+	"I seq=59fe", "I seq=5c00",
+	"I seq=9177", "I seq=9277",
+	"I seq=a055", "I seq=a150", "I seq=a49c", "I seq=a702",
+	"I seq=a801", "I seq=a901", "I seq=aafc", "I seq=ab28", "I seq=ac06", "I seq=ad06", "I seq=ae06", "I seq=af03",
+	"I seq=b008", "I seq=b126", "I seq=b228", "I seq=b328", "I seq=b433", "I seq=b508", "I seq=b626", "I seq=b708",
+	"I seq=b826",
+	"I seq=ff30", "I seq=ff52", "I seq=ff02",
+	"I seq=b00b", "I seq=b116", "I seq=b217", "I seq=b32c", "I seq=b432", "I seq=b53b", "I seq=b629", "I seq=b740",
+	"I seq=b80d", "I seq=b905", "I seq=ba12", "I seq=bb10", "I seq=bc12", "I seq=bd15", "I seq=be19", "I seq=bf0e",
+	"I seq=c016", "I seq=c10a",
+	"I seq=d00c", "I seq=d117", "I seq=d214", "I seq=d32e", "I seq=d432", "I seq=d53c", "I seq=d622", "I seq=d73d",
+	"I seq=d80d", "I seq=d907", "I seq=da13", "I seq=db13", "I seq=dc11", "I seq=dd15", "I seq=de19", "I seq=df10",
+	"I seq=e017", "I seq=e10a",
+	"I seq=ff30", "I seq=ff52", "I seq=ff03",
+	"I seq=002a", "I seq=012a", "I seq=022a", "I seq=032a", "I seq=0461", "I seq=0580", "I seq=06c7", "I seq=0701",
+	"I seq=0882", "I seq=0983",
+	"I seq=302a", "I seq=312a", "I seq=322a", "I seq=332a", "I seq=3461", "I seq=35c5", "I seq=3680", "I seq=3723",
+	"I seq=4082", "I seq=4183", "I seq=4280", "I seq=4381", "I seq=4411", "I seq=45e6", "I seq=46e5", "I seq=4711",
+	"I seq=48e8", "I seq=49e7",
+	"I seq=5002", "I seq=5101", "I seq=5204", "I seq=5303", "I seq=5411", "I seq=55ea", "I seq=56e9", "I seq=5711",
+	"I seq=58ec", "I seq=59eb",
+	"I seq=7e02", "I seq=7f80",
+	"I seq=e05a",
+	"I seq=b100", "I seq=b40e", "I seq=b50f", "I seq=b604", "I seq=b707",
+	"I seq=b806", "I seq=b905", "I seq=ba0f",
+	"I seq=c700",
+	"I seq=ca0e", "I seq=cb0f", "I seq=cc04", "I seq=cd07", "I seq=ce06", "I seq=cf05",
+	"I seq=d00f",
+	"I seq=810f", "I seq=840e", "I seq=850f", "I seq=8607", "I seq=8704",
+	"I seq=8805", "I seq=8906", "I seq=8a00",
+	"I seq=970f",
+	"I seq=9a0e", "I seq=9b0f", "I seq=9c07", "I seq=9d04", "I seq=9e05", "I seq=9f06",
+	"I seq=a000",
+	"I seq=ff30", "I seq=ff52", "I seq=ff02",
+	"I seq=0101", "I seq=02da", "I seq=03ba", "I seq=04a8", "I seq=059a", "I seq=0670", "I seq=07ff",
+	"I seq=0891", "I seq=0990", "I seq=0aff", "I seq=0b8f", "I seq=0c60", "I seq=0d58", "I seq=0e48", "I seq=0f38",
+	"I seq=102b",
+	"I seq=ff30", "I seq=ff52", "I seq=ff00",
+	"I seq=3602",
+	"I seq=3a70",
+	"I seq=11 wait=200",
+	"I seq=29 wait=10";
+};
+
+&io_domains {
+	vccio1-supply = <&vccio_sd>;
+};
+
+/delete-node/ &pwm_led;
+
+&pwm0 {
+	status = "okay";
+};
+
+/delete-node/ &pwm3;
+
+&rk817_charger {
+       /* This device does not have a current sense resistor */
+       rockchip,resistor-sense-micro-ohms = <0>;
+       monitored-battery = <&battery>;
+};
+
+&sdio {
+	cap-sd-highspeed;
+	card-detect-delay = <200>;
+	cd-gpios = <&gpio3 RK_PB6 GPIO_ACTIVE_LOW>; /*[> CD GPIO <]*/
+	sd-uhs-sdr12;
+	sd-uhs-sdr25;
+	sd-uhs-sdr50;
+	sd-uhs-sdr104;
+	vmmc-supply = <&vcc_sd>;
+	vqmmc-supply = <&vccio_sd>;
+	status = "okay";
+};
+
+&vcc_sd {
+	regulator-max-microvolt = <3000000>;
+	regulator-min-microvolt = <1800000>;
+};
+
+&vccio_sd {
+	regulator-max-microvolt = <1800000>;
+};
+
+&pinctrl {
+        btns {
+                btn_pins_vol: btn-pins-vol {
+                        rockchip,pins = <2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
+                                        <2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
+                };
+
+		btn_pins: btn-pins {
+			rockchip,pins = <1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+        };
+};
+
+&sfc {
+	status = "disabled";
+};

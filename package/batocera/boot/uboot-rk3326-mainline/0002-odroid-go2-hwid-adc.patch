@@ -1,0 +1,52 @@
+odroid_go2: export the raw hwid ADC value and fall back to a generic board
+
+diff --git a/board/hardkernel/odroid_go2/go2.c b/board/hardkernel/odroid_go2/go2.c
+--- a/board/hardkernel/odroid_go2/go2.c
++++ b/board/hardkernel/odroid_go2/go2.c
+@@ -27,6 +27,7 @@
+ 	OGA = 1,
+ 	OGA_V11,
+ 	OGS,
++	GENERIC,
+ };
+ 
+ /*
+@@ -52,8 +53,16 @@
+ 		"ODROID-GO Super",
+ 		DTB_DIR "rk3326-odroid-go3.dtb",
+ 	},
++	[GENERIC] = {
++		65000,
++		"rk3326-generic",
++		"UNKNOWN",
++		DTB_DIR "rk3326-generic.dtb",
++	},
+ };
+ 
++static u32 hwid_adc;
++
+ static int oga_read_board_id(void)
+ {
+ 	u32 adc_info;
+@@ -64,6 +73,7 @@
+ 		printf("Read SARADC failed with error %d\n", ret);
+ 		return ret;
+ 	}
++	hwid_adc = adc_info;
+ 
+ 	/*
+ 	 * Get the correct device from the table. The ADC value is
+@@ -91,10 +101,13 @@
+ 	int board_id;
+ 
+ 	board_id = oga_read_board_id();
++	if (board_id == -ENODEV)
++		board_id = GENERIC;
+ 	if (board_id < 0)
+ 		return board_id;
+ 	gd->board_type = board_id;
+ 
++	env_set_ulong("hwid_adc", hwid_adc);
+ 	env_set("board", oga_model_details[board_id].board);
+ 	env_set("board_name", oga_model_details[board_id].board_name);
+ 	env_set("fdtfile", oga_model_details[board_id].fdtfile);

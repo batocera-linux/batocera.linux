@@ -1,0 +1,39 @@
+From: Jianqun Xu <jay.xu@rock-chips.com>
+Date: Wed, 29 Dec 2021 04:24:01 +0000
+Subject: [PATCH] power/avs: rockchip-io-domain: px30s not support pmuio1 1v8
+ mode
+
+Change-Id: I6e9a4d189788d4c0f8f900adf14bbcd4af44fb8c
+Signed-off-by: Jianqun Xu <jay.xu@rock-chips.com>
+
+Ported from rockchip-linux/kernel commit
+779017748410791afb5315d2748fff8280ef74f3 to mainline 6.12, using the
+shared soc_is_px30s() helper (see 026-px30s-cpuinfo-soc-detection.patch)
+instead of an inline check. Confirmed reachable on this board: its
+devicetree has pmuio1-supply set on &pmu_io_domains.
+
+---
+--- a/drivers/soc/rockchip/io-domain.c
++++ b/drivers/soc/rockchip/io-domain.c
+@@ -14,6 +14,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/rockchip/cpu.h>
+ 
+ #define MAX_SUPPLIES		16
+ 
+@@ -656,6 +657,13 @@
+ 		if (!supply_name)
+ 			continue;
+ 
++		/*
++		 * Ported from the vendor kernel's 779017748410 ("power/avs:
++		 * rockchip-io-domain: px30s not support pmuio1 1v8 mode").
++		 */
++		if (soc_is_px30s() && !strcmp(supply_name, "pmuio1"))
++			continue;
++
+ 		reg = devm_regulator_get_optional(iod->dev, supply_name);
+ 		if (IS_ERR(reg)) {
+ 			ret = PTR_ERR(reg);

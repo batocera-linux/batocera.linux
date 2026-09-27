@@ -1,0 +1,43 @@
+diff --git a/ucm2/conf.d/simple-card/rk817_r36s.conf b/ucm2/conf.d/simple-card/rk817_r36s.conf
+new file mode 100644
+--- /dev/null
++++ b/ucm2/conf.d/simple-card/rk817_r36s.conf
+@@ -0,0 +1,6 @@
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/Rockchip/rk817-sound/HiFi-r36s.conf"
++	Comment "Play HiFi quality music"
++}
+diff --git a/ucm2/Rockchip/rk817-sound/HiFi-r36s.conf b/ucm2/Rockchip/rk817-sound/HiFi-r36s.conf
+new file mode 100644
+--- /dev/null
++++ b/ucm2/Rockchip/rk817-sound/HiFi-r36s.conf
+@@ -0,0 +1,27 @@
++# Speaker and jack share the HP outputs and the jack detect never changes.
++# The hardware level stays below speaker amp clipping, PipeWire scales in software.
++
++SectionDevice."Speaker" {
++	Comment "Speaker"
++
++	EnableSequence [
++		cset "name='Playback Mux' HP"
++		cset "name='Master Playback Volume' 215"
++	]
++
++	Value {
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId}"
++	}
++}
++
++SectionDevice."Mic" {
++	Comment "Microphone"
++
++	Value {
++		CapturePriority 100
++		CapturePCM "hw:${CardId}"
++		CaptureMixerElem "Mic Capture Gain"
++		CaptureMasterElem "Master Capture Volume"
++	}
++}

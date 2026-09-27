@@ -1,0 +1,98 @@
+From: Guochun Huang <hero.huang@rock-chips.com>
+Date: Wed, 8 Feb 2023 03:00:53 +0000
+Subject: [PATCH] phy/rockchip: inno-dsidphy: add support px30s
+
+Change-Id: I275d589f56e5963649aee9397eba3a9994e5901d
+Signed-off-by: Guochun Huang <hero.huang@rock-chips.com>
+
+Ported from rockchip-linux/kernel commit
+b6de31a0225481b3eb3a8d0b232e5d46c8de83f6 to mainline 6.12. PX30S has a
+different, higher-capability DPHY IP revision than base PX30
+(2.5GHz-capable vs 1GHz-capable) with genuinely different analog
+bias/timing calibration values; this adds the "rockchip,px30s-dsi-dphy"
+compatible (mapped to the vendor's 2.5GHz timing table) plus a
+soc_is_px30s() runtime-detection override at probe time (see
+026-px30s-cpuinfo-soc-detection.patch).
+
+---
+--- a/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
+@@ -18,6 +18,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/reset.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/time64.h>
+ 
+ #include <linux/phy/phy.h>
+@@ -221,5 +221,13 @@
+ 	const struct inno_mipi_dphy_timing *inno_mipi_dphy_timing_table;
+ 	const unsigned int num_timings;
+ 	enum phy_max_rate max_rate;
++	/*
++	 * PX30S needs pin_txclkesc/pin_txbyteclk invert explicitly disabled,
++	 * gated on soc_type == PX30S rather than max_rate (shared with
++	 * RK3568/RV1126). Confirmed via register dump: stock firmware leaves
++	 * INVERT_TXCLKESC at 0; without this write it stays at whatever
++	 * U-Boot left it (1, inverted) on this board.
++	 */
++	bool invert_txclkesc_disable;
+ 	unsigned int max_lanes;
+ };
+@@ -380,6 +389,12 @@
+ 	/* Select MIPI mode */
+ 	phy_update_bits(inno, REGISTER_PART_LVDS, 0x03,
+ 			MODE_ENABLE_MASK, MIPI_MODE_ENABLE);
++
++	/* set pin_txclkesc_0 pin_txbyteclk invert disable */
++	if (inno->pdata->invert_txclkesc_disable)
++		phy_update_bits(inno, REGISTER_PART_DIGITAL, 0x01,
++				INVERT_TXCLKESC_MASK, INVERT_TXCLKESC_DISABLE);
++
+ 	/* Configure PLL */
+ 	phy_update_bits(inno, REGISTER_PART_ANALOG, 0x03,
+ 			REG_PREDIV_MASK, REG_PREDIV(inno->pll.prediv));
+@@ -688,6 +703,13 @@
+ 	.max_rate = MAX_2_5GHZ,
+ };
+ 
++static const struct inno_video_phy_plat_data px30s_video_phy_plat_data = {
++	.inno_mipi_dphy_timing_table = inno_mipi_dphy_timing_table_max_2_5ghz,
++	.num_timings = ARRAY_SIZE(inno_mipi_dphy_timing_table_max_2_5ghz),
++	.max_rate = MAX_2_5GHZ,
++	.invert_txclkesc_disable = true,
++};
++
+ static int inno_dsidphy_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -702,6 +724,10 @@
+ 
+ 	inno->dev = dev;
+ 	inno->pdata = of_device_get_match_data(inno->dev);
++	/* Override to the PX30S plat_data on real PX30S silicon regardless of
++	 * compatible string, matching vendor commit b6de31a02254. */
++	if (soc_is_px30s())
++		inno->pdata = &px30s_video_phy_plat_data;
+ 	platform_set_drvdata(pdev, inno);
+ 
+ 	inno->phy_base = devm_platform_ioremap_resource(pdev, 0);
+@@ -762,6 +788,18 @@
+ 		.compatible = "rockchip,px30-dsi-dphy",
+ 		.data = &max_1ghz_video_phy_plat_data,
+ 	}, {
++		/*
++		 * PX30S (== RK3326S) has a different DPHY IP revision than
++		 * base PX30 - 2.5GHz-capable rather than 1GHz, with genuinely
++		 * different analog bias/timing calibration (vendor's
++		 * soc_is_px30s() swaps in its own timing table for this
++		 * reason). The plain "rockchip,px30-dsi-dphy" (max_1ghz) table
++		 * skips the PLL post-divider enable, the clock-lane VOD range
++		 * register, and high-order bits of several timing counters.
++		 */
++		.compatible = "rockchip,px30s-dsi-dphy",
++		.data = &px30s_video_phy_plat_data,
++	}, {
+ 		.compatible = "rockchip,rk3128-dsi-dphy",
+ 		.data = &max_1ghz_video_phy_plat_data,
+ 	}, {

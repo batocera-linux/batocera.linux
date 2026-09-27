@@ -86,6 +86,8 @@ do_root() {
             # skip empty lines and comments
             case "$stalepath" in
                 ''|\#*) continue ;;
+                # user files an older batocera-upgrade listed as stale
+                overlays/mipi-panel.dtbo) continue ;;
             esac
             fullpath="/boot_root/${stalepath}"
             if test -e "$fullpath" || test -L "$fullpath"

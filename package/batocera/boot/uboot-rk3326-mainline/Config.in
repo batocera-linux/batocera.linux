@@ -1,0 +1,18 @@
+config BR2_PACKAGE_UBOOT_RK3326_MAINLINE
+	bool "uboot-rk3326-mainline"
+	help
+	  Mainline U-Boot for the RK3326 handhelds the legacy u-boot
+	  cannot tell apart (EE clones, RGB10X, RGB20S, XU Mini M,
+	  G350, R36 Ultra, GKD Pixel2).
+
+	  https://www.denx.de/wiki/U-Boot
+
+if BR2_PACKAGE_UBOOT_RK3326_MAINLINE
+
+config BR2_PACKAGE_UBOOT_RK3326_MAINLINE_UART5
+	bool "Use UART5 for debug console"
+	help
+	  Select this if your RK3326-based handheld is a clone
+	  that uses UART5 for the debug console (e.g., K36 clones).
+
+endif

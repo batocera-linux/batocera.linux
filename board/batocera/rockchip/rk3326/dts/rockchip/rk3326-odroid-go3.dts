@@ -1,0 +1,290 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2019 Hardkernel Co., Ltd
+ * Copyright (c) 2020 Theobroma Systems Design und Consulting GmbH
+ * Copyright (c) 2022 Maya Matuszczyk <maccraft123mc@gmail.com>
+ */
+
+/dts-v1/;
+#include "rk3326-odroid-go.dtsi"
+
+/ {
+	model = "ODROID-GO Super";
+	compatible = "hardkernel,rk3326-odroid-go3", "rockchip,rk3326";
+
+	joypad: odroidgo3-joypad {
+		compatible = "rocknix-singleadc-joypad";
+
+		joypad-name = "odroidgo3_joypad";
+		joypad-vendor = <0x0001>;
+		joypad-product = <0x0001>;
+		joypad-revision = <0x0101>;
+
+		status = "okay";
+                /*
+                  - odroidgo3-joypad sysfs list -
+		   * for poll device interval(ms)
+		   /sys/devices/platform/odroidgo3_joypad/poll_interval [rw]
+		   ex) echo 20 > poll_interval
+                   * for button-adc-fuzz
+		   /sys/devices/platform/odroidgo3_joypad/adc_fuzz [r]
+                   * for button-adc-flat
+		   /sys/devices/platform/odroidgo3_joypad/adc_flat [r]
+
+		   * for report control(1:enable, 0:disable)
+		   /sys/devices/platform/odroidgo3_joypad/enable [rw]
+		   * for adc calibration value setup(current adcs value -> cal value)
+		   /sys/devices/platform/odroidgo3_joypad/adc_cal [rw]
+		   ex) echo 0 > adc_cal
+		   * for amux data debug
+		   * Joypad driver is disabled when using this sysfs.
+		   /sys/devices/platform/odroidgo3_joypad/amux_debug [rw]
+		   ex) echo 0 > amux_debug --> select amux channel
+		   ex) cat amux_debug --> get adc data of seleted channel
+                */
+
+		/* gpio pincontrol setup */
+                pinctrl-names = "default";
+                pinctrl-0 = <&btn_pins>;
+
+		/* Analog mux define */
+		io-channel-names = "amux_adc";
+		io-channels = <&saradc 1>;
+
+		/* adc mux channel count */
+		amux-count = <4>;
+		/* adc mux select(a,b) gpio */
+		amux-a-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+		amux-b-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+		/* adc mux enable gpio */
+		amux-en-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
+
+		/* adc calculate scale */
+		button-adc-scale = <2>;
+
+		/* adc deadzone range  */
+		button-adc-deadzone = <64>;
+
+		/*
+		  specifies fuzz value that is used to filter noise from
+		  the event stream.
+		*/
+		button-adc-fuzz = <32>;
+		button-adc-flat = <32>;
+
+		/*
+		  Analog Stick data tuning value(precent)
+		  p = positive direction, n = negative direction
+		  report value = (real_adc_data * tuning_value) / 100
+		*/
+		abs_x-p-tuning = <180>;
+		abs_x-n-tuning = <180>;
+
+		abs_y-p-tuning = <180>;
+		abs_y-n-tuning = <170>;
+
+		abs_rx-p-tuning = <180>;
+		abs_rx-n-tuning = <180>;
+
+		abs_ry-p-tuning = <180>;
+		abs_ry-n-tuning = <170>;
+
+		/* poll device interval (ms), adc read interval */
+		poll-interval = <10>;
+
+		/* gpio button auto repeat set value : default disable */
+		/*
+			autorepeat;
+		*/
+
+		/*
+		      *** ODROIDGO3-Advance Switch layoout ***
+		|------------------------------------------------|
+		| sw15  sw21        sw10   sw9        sw20  sw16 |
+		|------------------------------------------------|
+		|      sw19                            sw22      |
+		|              |-------------------|             |
+		|     sw1      |                   |      sw8    |
+		|  sw3   sw4   |                   |   sw7   sw5 |
+		|     sw2      |    LCD Display    |      sw6    |
+		|              |                   |             |
+		|              |                   |             |
+		|              |-------------------|             |
+		|  sw11 sw12        | sd-slot |       sw13 sw14  |
+		|-------------------|         |------------------|
+		*/
+                /*
+                    joypad driver is poll-device driver.
+                    poll-device is does not support wakeup-source.
+		*/
+                sw1 {
+                        gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-UP";
+                        linux,code = <BTN_DPAD_UP>; // 0x220
+                };
+                sw2 {
+                        gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-DOWN";
+                        linux,code = <BTN_DPAD_DOWN>; // 0x221
+                };
+                sw3 {
+                        gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-LEFT";
+                        linux,code = <BTN_DPAD_LEFT>; // 0x222
+                };
+                sw4 {
+                        gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO DPAD-RIGHT";
+                        linux,code = <BTN_DPAD_RIGHT>; // 0x223
+                };
+                sw5 {
+                        gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO KEY BTN-A";
+                        linux,code = <BTN_EAST>; // 0x131
+                };
+                sw6 {
+                        gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-B";
+                        linux,code = <BTN_SOUTH>; // 0x130
+                };
+                sw7 {
+                        gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-Y";
+                        linux,code = <BTN_WEST>; // 0x134
+                };
+                sw8 {
+                        gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO BTN-X";
+                        linux,code = <BTN_NORTH>; // 0x133
+                };
+                sw11 {
+                        gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F3";
+                        linux,code = <BTN_TRIGGER_HAPPY3>; // 0x2c2
+                };
+                sw12 {
+                        gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F4";
+                        linux,code = <BTN_THUMBL>; // 0x2c3
+                };
+                sw13 {
+                        gpios = <&gpio2 RK_PA4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F5";
+                        linux,code = <BTN_THUMBR>; // 0x2c4
+                };
+                sw14 {
+                        gpios = <&gpio2 RK_PA5 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F6";
+                        linux,code = <BTN_TRIGGER_HAPPY6>; // 0x13c
+                };
+                sw15 {
+                        gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-LEFT";
+                        linux,code = <BTN_TL>; // 0x02
+                };
+                sw16 {
+                        gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-RIGHT";
+                        linux,code = <BTN_TR>; // 0x05
+                };
+                sw19 {
+                        gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F1";
+                        linux,code = <BTN_SELECT>;
+                };
+                sw20 {
+                        gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-RIGHT2";
+                        linux,code = <BTN_TR2>;
+                };
+                sw21 {
+                        gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
+                        label = "GPIO TOP-LEFT2";
+                        linux,code = <BTN_TL2>;
+                };
+                sw22 {
+                        gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
+                        label = "GPIO F2";
+                        linux,code = <BTN_START>;
+                };
+        };
+
+	battery: battery {
+		compatible = "simple-battery";
+		charge-full-design-microamp-hours = <4000000>;
+		charge-term-current-microamp = <300000>;
+		constant-charge-current-max-microamp = <2000000>;
+		constant-charge-voltage-max-microvolt = <4200000>;
+		factory-internal-resistance-micro-ohms = <180000>;
+		voltage-max-design-microvolt = <4100000>;
+		voltage-min-design-microvolt = <3500000>;
+
+		ocv-capacity-celsius = <20>;
+		ocv-capacity-table-0 =  <4046950 100>, <4001920 95>, <3967900 90>, <3919950 85>,
+					<3888450 80>, <3861850 75>, <3831540 70>, <3799130 65>,
+					<3768190 60>, <3745650 55>, <3726610 50>, <3711630 45>,
+					<3696720 40>, <3685660 35>, <3674950 30>, <3663050 25>,
+					<3649470 20>, <3635260 15>, <3616920 10>, <3592440 5>,
+					<3574170 0>;
+	};
+
+	gpio-keys-vol {
+		compatible = "gpio-keys";
+		autorepeat;
+		pinctrl-0 = <&btn_pins_vol>;
+		pinctrl-names = "default";
+
+		button-vol-down {
+			gpios = <&gpio2 RK_PA1 GPIO_ACTIVE_LOW>;
+			label = "VOLUMEDOWN";
+			linux,code = <KEY_VOLUMEDOWN>;
+		};
+
+		button-volume-up {
+			gpios = <&gpio2 RK_PA0 GPIO_ACTIVE_LOW>;
+			label = "VOLUMEUP";
+			linux,code = <KEY_VOLUMEUP>;
+		};
+	};
+};
+
+&internal_display {
+	compatible = "elida,kd50t048a", "sitronix,st7701";
+	reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
+	IOVCC-supply = <&vcc_lcd>;
+	VCC-supply = <&vcc_lcd>;
+	rotation = <270>;
+};
+
+&rk817_charger {
+	monitored-battery = <&battery>;
+};
+
+&pinctrl {
+	btns {
+		btn_pins: btn-pins {
+			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+					<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		btn_pins_vol: btn-pins-vol {
+			rockchip,pins = <2 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
+					<2 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
