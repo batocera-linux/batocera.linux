@@ -4,11 +4,11 @@
 # This file is part of the batocera distribution (https://batocera.org).
 # Copyright (c) 2022 Nicolas Adenis-Lamarre.
 #
-# This program is free software: you can redistribute it and/or modify  
-# it under the terms of the GNU General Public License as published by  
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, version 3.
 #
-# You should have received a copy of the GNU General Public License 
+# You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 # YOU MUST KEEP THIS HEADER AS IT IS
@@ -78,14 +78,31 @@ target = evdev.UInput(name=input.name+" calibrated", events={
 needSync = False
 calibration_timeChecker = None
 calibration_mode = False
-calibration_step = 0
+calibration_step = 0    # 0=idle, 1=center, 2..(1+len(CALIB_POINTS))=one of CALIB_POINTS
+calibration_retry = False
 pLast = [0, 0]
 pCenter = [0, 0]
-pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
+# per-axis, per-side half-window in raw units: pWindow[axis][side], axis 0=x/1=y, side 0=negative(up/left)/1=positive(down/right)
+# kept independent per side because the reachable aiming range is rarely symmetric around
+# the screen center (sensor bar placement, seating distance, IR camera's narrow vertical
+# field of view when tilted down, ...): a single symmetric window under- or over-shoots
+# one side, which is what made parts of the screen (typically low on the screen) unreachable
+pWindow = [
+    [(absVals[0][1]-absVals[0][0])//2, (absVals[0][1]-absVals[0][0])//2], # x: left, right
+    [(absVals[1][1]-absVals[1][0])//2, (absVals[1][1]-absVals[1][0])//2], # y: up, down
+]
+
+# name, axis, side, primary target (output position shown to the player), retry target (closer to center, for small rooms)
+CALIB_POINTS = [
+    ("top",    1, 0, [outputSize[0]//2, 0],             [outputSize[0]//2, outputSize[1]//4]),
+    ("bottom", 1, 1, [outputSize[0]//2, outputSize[1]],  [outputSize[0]//2, outputSize[1]*3//4]),
+    ("left",   0, 0, [0, outputSize[1]//2],              [outputSize[0]//4, outputSize[1]//2]),
+    ("right",  0, 1, [outputSize[0], outputSize[1]//2],  [outputSize[0]*3//4, outputSize[1]//2]),
+]
 
 def moveTargetTo(fromPosition, toPosition):
-    currentPosition = fromPosition
-    while fromPosition[0] != toPosition[0] or fromPosition[1] != toPosition[1] :
+    currentPosition = list(fromPosition)
+    while currentPosition[0] != toPosition[0] or currentPosition[1] != toPosition[1] :
         if currentPosition[0] < toPosition[0]:
             currentPosition[0] = currentPosition[0] +1
         if currentPosition[0] > toPosition[0]:
@@ -106,17 +123,18 @@ def failAnimation(originalPosition):
         target.syn()
         time.sleep(0.01) # x1000 = 1 second
 
-def saveCalibration(devpath, key, pCenter, pInputWindow):
+def saveCalibration(devpath, key, pCenter, pWindow):
+    content = "{} {} {} {} {} {}".format(pCenter[0], pCenter[1], pWindow[0][0], pWindow[0][1], pWindow[1][0], pWindow[1][1])
     # save a general file, available after boot
     if not os.path.exists("/userdata/system/configs/gun-calibrator"):
         os.makedirs("/userdata/system/configs/gun-calibrator")
     with open('/userdata/system/configs/gun-calibrator/{}.conf'.format(key), 'w') as fd:
-        fd.write("{} {} {} {}".format(pCenter[0], pCenter[1], pInputWindow[0], pInputWindow[1]))
+        fd.write(content)
     # save for multiple guns, not available after boot
     with open('/var/run/gun-calibrator.conf.{}'.format(os.path.basename(devpath)), 'w') as fd:
-        fd.write("{} {} {} {}".format(pCenter[0], pCenter[1], pInputWindow[0], pInputWindow[1]))
+        fd.write(content)
 
-def readCalibration(devpath, key, pCenter, pInputWindow):
+def readCalibration(devpath, key, pCenter, pWindow):
     try:
         path = None
         # prefer the on configured for the given input
@@ -125,23 +143,23 @@ def readCalibration(devpath, key, pCenter, pInputWindow):
         pathSystem = '/userdata/system/configs/gun-calibrator/{}.conf'.format(key)
         if os.path.exists(pathLast):
             path = pathLast
-        elif os.path.exists(pastSystem):
+        elif os.path.exists(pathSystem):
             path = pathSystem
         else:
-            return pCenter, pInputWindow
-        
+            return pCenter, pWindow
+
         with open(path, 'r') as fd:
             content = fd.readlines()
-        vals = content[0].split()
+        vals = [int(v) for v in content[0].split()]
 
-        if vals[2] == 0 or vals[3] == 0: # invalid values
-            return pCenter, pInputWindow
+        if len(vals) != 6 or 0 in vals[2:6]: # invalid, or written by an older (symmetric-only) calibrator
+            return pCenter, pWindow
 
-        return [int(vals[0]), int(vals[1])], [int(vals[2]), int(vals[3])]
+        return [vals[0], vals[1]], [[vals[2], vals[3]], [vals[4], vals[5]]]
     except:
-        return pCenter, pInputWindow
+        return pCenter, pWindow
 
-pCenter, pInputWindow = readCalibration(devpath, inputkey, pCenter, pInputWindow)
+pCenter, pWindow = readCalibration(devpath, inputkey, pCenter, pWindow)
 
 def calibrationFailed(val):
     if (val[0] == 1 and val[1] == 1023) or (val[0] == 0 and val[1] == 0): # generally, what we get meaning nothing : no point detected
@@ -150,6 +168,22 @@ def calibrationFailed(val):
     # should we care about other points if too distant from the first one ?
     print("calibration with x={}, y={}".format(val[0], val[1]))
     return False
+
+def rawCenter(axis):
+    return absVals[axis][0] + (absVals[axis][1]-absVals[axis][0])//2 + pCenter[axis]
+
+def advanceToNextPoint(pointIndex):
+    global calibration_step, calibration_mode
+    nextIndex = pointIndex + 1
+    if nextIndex < len(CALIB_POINTS):
+        calibration_step = 2 + nextIndex
+        moveTargetTo(CALIB_POINTS[pointIndex][3], CALIB_POINTS[nextIndex][3])
+    else:
+        calibration_step = 0
+        calibration_mode = False
+        saveCalibration(devpath, inputkey, pCenter, pWindow)
+        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
+        target.syn()
 
 try:
         while True:
@@ -163,6 +197,7 @@ try:
                                 pLast[1] = event.value
                             elif event.type == ecodes.EV_KEY and event.code == ecodes.BTN_LEFT and event.value == 1:
                                 if calibration_step == 1:
+                                    # center point
                                     if calibrationFailed(pLast):
                                         calibration_step = 0
                                         calibration_mode = False
@@ -171,39 +206,31 @@ try:
                                         target.syn()
                                     else:
                                         pCenter = [pLast[0]-(absVals[0][1] - absVals[0][0])//2, pLast[1]-(absVals[1][1] - absVals[1][0])//2]
+                                        calibration_retry = False
                                         calibration_step = 2
-                                    moveTargetTo([outputSize[0]//2, outputSize[1]//2], [0, 0])
-                                elif calibration_step == 2:
+                                        moveTargetTo([outputSize[0]//2, outputSize[1]//2], CALIB_POINTS[0][3])
+                                else:
+                                    # one of the CALIB_POINTS edges (top/bottom/left/right), sampled
+                                    # independently so asymmetric aiming ranges are captured instead
+                                    # of assumed
+                                    pointIndex = calibration_step - 2
+                                    name, axis, side, primaryTarget, retryTarget = CALIB_POINTS[pointIndex]
                                     if calibrationFailed(pLast):
-                                        # hum, retry in step 3
-                                        calibration_step = 3
-                                        moveTargetTo([0, 0], [outputSize[0]//4, outputSize[1]//4])
+                                        if not calibration_retry:
+                                            # too far / too close for this room: retry closer to the center
+                                            calibration_retry = True
+                                            moveTargetTo(primaryTarget, retryTarget)
+                                        else:
+                                            # keep the default window for this side and move on rather
+                                            # than aborting the whole calibration over one bad side
+                                            calibration_retry = False
+                                            advanceToNextPoint(pointIndex)
                                     else:
-                                        pInputWindow = [((absVals[0][1] - absVals[0][0])//2 + pCenter[0] - pLast[0])*2, ((absVals[1][1] - absVals[1][0])//2 + pCenter[1] - pLast[1])*2]
-                                        if pInputWindow[0] == 0 or pInputWindow[1] == 0: # calibration failed, reset to defaults
-                                            pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
-                                        calibration_step = 0
-                                        calibration_mode = False
-                                        saveCalibration(devpath, inputkey, pCenter, pInputWindow)
-                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
-                                        target.syn()
-                                elif calibration_step == 3: # step 3 in case of error (not far enough from the tv)
-                                    if calibrationFailed(pLast):
-                                        pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
-                                        calibration_step = 0
-                                        calibration_mode = False
-                                        failAnimation([outputSize[0]//4, outputSize[1]//4])
-                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
-                                        target.syn()
-                                    else:
-                                        pInputWindow = [((absVals[0][1] - absVals[0][0])//2 + pCenter[0] - (pLast[0]-((absVals[0][1] - absVals[0][0])//2+pCenter[0]-pLast[0])))*2, ((absVals[1][1] - absVals[1][0])//2 + pCenter[1] - (pLast[1]-((absVals[1][1] - absVals[1][0])//2+pCenter[1]-pLast[1])))*2]
-                                        if pInputWindow[0] == 0 or pInputWindow[1] == 0: # calibration failed, reset to defaults
-                                            pInputWindow = [absVals[0][1]-absVals[0][0], absVals[1][1]-absVals[1][0]]
-                                        calibration_step = 0
-                                        calibration_mode = False
-                                        saveCalibration(devpath, inputkey, pCenter, pInputWindow)
-                                        target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 0)
-                                        target.syn()
+                                        newWindow = abs(rawCenter(axis) - pLast[axis])
+                                        if newWindow != 0: # 0 would mean calibration failed, keep the default
+                                            pWindow[axis][side] = newWindow
+                                        calibration_retry = False
+                                        advanceToNextPoint(pointIndex)
                             else:
                                 target.write(event.type, event.code, event.value)
                                 target.syn()
@@ -213,23 +240,29 @@ try:
                             calibration_mode = True
                             calibration_timeChecker  = None
                             calibration_step = 1
+                            calibration_retry = False
                             target.write(ecodes.EV_KEY, ecodes.KEY_CONFIG, 1)
                             target.syn()
                             moveTargetTo([outputSize[0]//2, 0], [outputSize[0]//2, outputSize[1]//2])
-        
+
                     # could be enabled by the timeChecker
                     if calibration_mode is False:
                         # normal event read
                         for event in input.read():
                             if event.type == ecodes.EV_ABS and event.code == ecodes.ABS_X:
-                                val = int((event.value - pCenter[0] - absVals[0][0] - (absVals[0][1]-absVals[0][0]-pInputWindow[0])//2) * outputSize[0] / pInputWindow[0])
-                                if val >= 0 and val <= outputSize[0]: # protect in case
-                                    target.write(ecodes.EV_ABS, ecodes.ABS_X, val)
+                                offset = event.value - rawCenter(0)
+                                side = 0 if offset < 0 else 1
+                                val = int(outputSize[0]//2 + offset * (outputSize[0]//2) / pWindow[0][side])
+                                val = max(0, min(outputSize[0], val)) # clamp instead of dropping: an
+                                # out-of-window aim should stick to the screen edge, not freeze the cursor
+                                target.write(ecodes.EV_ABS, ecodes.ABS_X, val)
                                 needSync = True
                             elif event.type == ecodes.EV_ABS and event.code == ecodes.ABS_Y:
-                                val = int((event.value - pCenter[1] - absVals[1][0] - (absVals[1][1]-absVals[1][0]-pInputWindow[1])//2) * outputSize[1] / pInputWindow[1])
-                                if val >= 0 and val <= outputSize[1]:
-                                    target.write(ecodes.EV_ABS, ecodes.ABS_Y, val)
+                                offset = event.value - rawCenter(1)
+                                side = 0 if offset < 0 else 1
+                                val = int(outputSize[1]//2 + offset * (outputSize[1]//2) / pWindow[1][side])
+                                val = max(0, min(outputSize[1], val))
+                                target.write(ecodes.EV_ABS, ecodes.ABS_Y, val)
                                 needSync = True
                             elif event.type == ecodes.EV_SYN:
                                 if needSync:
@@ -249,7 +282,7 @@ try:
                                 needSync = True
 except KeyboardInterrupt:
     poll.unregister(input.fd)
-    target.close()    
+    target.close()
 except Exception as e:
     import traceback
     with open('/var/run/gun-calibrator.crash', 'w') as fd:
