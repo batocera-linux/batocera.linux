@@ -953,6 +953,8 @@
 
 &pm8150b_charger {
 	monitored-battery = <&battery>;
+	/* batocera - lets the charger resume USBIN once the port stops sourcing VBUS */
+	vbus-supply = <&pm8150b_vbus>;
 	status = "okay";
 };
 
