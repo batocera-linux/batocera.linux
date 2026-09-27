@@ -47,9 +47,9 @@ case "$1" in
 			killall -9 "$COMPOSITOR" 2>/dev/null
 		fi
 
-		# Kill ES after 20 seconds if still active also
+		# Kill ES after 20 seconds if still active also, if timeout errors out (usually 124) use SIGKILL
 		if pidof emulationstation >/dev/null; then
-		    timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
+			timeout 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null || kill -9 $(pidof emulationstation)
 		fi
 		
 		# Clean up the communication pipe and the ready-flag on a full system stop
