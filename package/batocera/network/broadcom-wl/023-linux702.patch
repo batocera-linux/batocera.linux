@@ -1,0 +1,70 @@
+diff -Nurp a/src/shared/linux_osl.c b/src/shared/linux_osl.c
+--- a/src/shared/linux_osl.c
++++ b/src/shared/linux_osl.c
+@@ -471,8 +471,12 @@ osl_debug_malloc(osl_t *osh, uint size,
+ 	if (!basename)
+ 		basename = file;
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++	strscpy(p->file, basename, BCM_MEM_FILENAME_LEN);
++#else
+ 	strncpy(p->file, basename, BCM_MEM_FILENAME_LEN);
+ 	p->file[BCM_MEM_FILENAME_LEN - 1] = '\0';
++#endif
+ 
+ 	if (osh) {
+ 		p->prev = NULL;
+@@ -860,7 +864,12 @@ osl_strcpy(char *d, const char *s)
+ char*
+ osl_strncpy(char *d, const char *s, uint n)
+ {
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++	strscpy_pad(d, s, n);
++	return (d);
++#else
+ 	return (strncpy(d, s, n));
++#endif
+ }
+ 
+ char*
+diff -Nurp a/src/wl/sys/wl_linux.c b/src/wl/sys/wl_linux.c
+--- a/src/wl/sys/wl_linux.c
++++ b/src/wl/sys/wl_linux.c
+@@ -1315,8 +1315,12 @@ wl_alloc_linux_if(wl_if_t *wlif)
+ 	bzero(dev, sizeof(struct net_device));
+ 	ether_setup(dev);
+ 
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++	strscpy(dev->name, intf_name, IFNAMSIZ);
++#else
+ 	strncpy(dev->name, intf_name, IFNAMSIZ-1);
+ 	dev->name[IFNAMSIZ-1] = '\0';
++#endif
+ 
+ 	priv_link = MALLOC(wl->osh, sizeof(priv_link_t));
+ 	if (!priv_link) {
+@@ -1533,8 +1537,12 @@ wl_get_driver_info(struct net_device *de
+ #endif
+ 	bzero(info, sizeof(struct ethtool_drvinfo));
+ 	snprintf(info->driver, sizeof(info->driver), "wl%d", wl->pub->unit);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++	strscpy(info->version, EPI_VERSION_STR, sizeof(info->version));
++#else
+ 	strncpy(info->version, EPI_VERSION_STR, sizeof(info->version));
+ 	info->version[(sizeof(info->version))-1] = '\0';
++#endif
+ }
+ 
+ static int
+@@ -3021,7 +3029,11 @@ _wl_add_monitor_if(wl_task_t *task)
+ 	}
+ 
+ 	ASSERT(strlen(wlif->name) > 0);
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
++	memcpy(wlif->dev->name, wlif->name, strlen(wlif->name));
++#else
+ 	strncpy(wlif->dev->name, wlif->name, strlen(wlif->name));
++#endif
+ 
+ 	wl->monitor_dev = dev;
+ 	if (wl->monitor_type == 1)

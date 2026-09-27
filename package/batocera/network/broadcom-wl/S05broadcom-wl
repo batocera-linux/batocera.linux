@@ -1,0 +1,17 @@
+#!/bin/sh
+
+test "$1" = "start" || exit 0
+
+grep -qE "^[ ]*broadcom-wl[ ]*=[ ]*true[ ]*$" /boot/batocera-boot.conf || exit 0
+
+mkdir -p /var/run/broadcom-wl
+cat > /var/run/broadcom-wl/modprobe.conf <<EOC
+blacklist b43
+blacklist b43legacy
+blacklist bcma
+blacklist ssb
+blacklist brcmsmac
+EOC
+
+# wl is blacklisted against alias loading; load it by name before udev so it binds first
+modprobe wl

@@ -1,0 +1,31 @@
+From 933540c63f33e6ac2825d65c4b681ef3387d9146 Mon Sep 17 00:00:00 2001
+From: Antoine Cotten <hello@acotten.com>
+Date: Mon, 15 Aug 2022 17:53:51 +0200
+Subject: [PATCH] cfg80211_roam_info compat for MLO APIs in Linux >= 6.0
+
+The 'bssid' struct field is now under 'links.bssid'.
+
+See also: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=efbabc11650040c64884ff3019b88c7bcc0ceb1d
+
+Original patch by Joan Bruguera:
+https://gist.github.com/joanbm/207210d74637870c01ef5a3c262a597d
+---
+ src/wl/sys/wl_cfg80211_hybrid.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/wl/sys/wl_cfg80211_hybrid.c b/src/wl/sys/wl_cfg80211_hybrid.c
+index 5e9e6d3..5ec35c5 100644
+--- a/src/wl/sys/wl_cfg80211_hybrid.c
++++ b/src/wl/sys/wl_cfg80211_hybrid.c
+@@ -2412,7 +2412,11 @@ wl_bss_roaming_done(struct wl_cfg80211_priv *wl, struct net_device *ndev,
+ 	struct wl_cfg80211_connect_info *conn_info = wl_to_conn(wl);
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+ 	struct cfg80211_roam_info roam_info = {
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 0, 0)
+ 		.bssid = wl->profile->bssid,
++#else
++		.links[0].bssid = wl->profile->bssid,
++#endif
+ 		.req_ie = conn_info->req_ie,
+ 		.req_ie_len = conn_info->req_ie_len,
+ 		.resp_ie = conn_info->resp_ie,
