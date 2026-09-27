@@ -1,0 +1,31 @@
+From: xenocideend (with Claude Opus 5.5) <xenocideend@gmail.com>
+Subject: [PATCH] power: supply: qcom_pm8150b_charger: fix float voltage and
+ charge current
+
+---
+--- a/drivers/power/supply/qcom_pm8150b_charger.c
++++ b/drivers/power/supply/qcom_pm8150b_charger.c
+@@ -884,12 +884,22 @@
+ 		return dev_err_probe(chip->dev, rc,
+ 				     "Failed to init status change work\n");
+ 
+-	rc = (chip->batt_info->voltage_max_design_uv - 3487500) / 7500 + 1;
++	rc = clamp(chip->batt_info->voltage_max_design_uv, 3600000, 4450000);
++	rc = (rc - 3600000) / 10000;
+ 	rc = regmap_update_bits(chip->regmap, chip->base + FLOAT_VOLTAGE_CFG,
+ 				FLOAT_VOLTAGE_SETTING_MASK, rc);
+ 	if (rc < 0)
+ 		return dev_err_probe(chip->dev, rc, "Couldn't set vbat max\n");
+ 
++	rc = chip->batt_info->constant_charge_current_max_ua;
++	if (rc <= 0)
++		rc = min(chip->batt_info->charge_full_design_uah / 2, 3000000);
++	rc = regmap_update_bits(chip->regmap,
++				chip->base + FAST_CHARGE_CURRENT_CFG,
++				FAST_CHARGE_CURRENT_SETTING_MASK, rc / 50000);
++	if (rc < 0)
++		return dev_err_probe(chip->dev, rc, "Couldn't set charge current\n");
++
+ 	rc = smb5_init_irq(chip, &irq, "bat-ov", smb5_handle_batt_overvoltage);
+ 	if (rc < 0)
+ 		return rc;
