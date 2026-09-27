@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SM2_EMU_VERSION = v0.9.16
+SM2_EMU_VERSION = v0.9.18
 SM2_EMU_SITE = https://github.com/dmanlfc/sm2-emu.git
 SM2_EMU_SITE_METHOD = git
 SM2_EMU_GIT_SUBMODULES = YES
