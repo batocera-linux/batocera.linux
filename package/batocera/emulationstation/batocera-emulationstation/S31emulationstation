@@ -39,6 +39,7 @@ case "$1" in
 		fi
 
 		# Send the standard terminate signal (SIGTERM) to other processes.
+		ES_PID=$(pidof -s emulationstation)
 		killall touchegg         2>/dev/null
 		killall emulationstation 2>/dev/null
 
@@ -48,8 +49,8 @@ case "$1" in
 		fi
 
 		# Kill ES after 20 seconds if still active also
-		if pidof emulationstation >/dev/null; then
-		    timeout -k 5 20 tail -q --pid=$(pidof emulationstation) -f /dev/null 2>/dev/null
+		if [ -n "$ES_PID" ]; then
+			timeout 20 tail -s 0.1 -q --pid=$ES_PID -f /dev/null 2>/dev/null || kill -9 $ES_PID 2>/dev/null
 		fi
 		
 		# Clean up the communication pipe and the ready-flag on a full system stop
