@@ -22,6 +22,7 @@ endif
 define LIBRETRO_ANYBOR_BUILD_CMDS
 	$(TARGET_CONFIGURE_OPTS) $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_ANYBOR_PLATFORM)" \
+	    ANYBOR_BUILD_ARGS=--host \
         GIT_VERSION="-$(shell echo $(LIBRETRO_ANYBOR_VERSION) | cut -c 1-7)"
 endef
 
