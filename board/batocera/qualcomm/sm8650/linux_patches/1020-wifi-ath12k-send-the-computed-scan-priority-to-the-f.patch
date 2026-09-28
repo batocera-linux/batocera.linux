@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Edouard Durand <edouard.durand@gmail.com>
+Date: Fri, 15 Aug 2026 14:30:00 +0800
+Subject: [PATCH] wifi: ath12k: send the computed scan priority to the
+ firmware
+
+The firmware schedules every scan through one queue and runs its
+offloaded 11d country scan at MEDIUM priority. The driver knows this:
+ath12k_wmi_send_scan_start_cmd() computes a priority for each hardware
+scan, LOW as the baseline and MEDIUM while an 11d scan is about to run,
+precisely so host scans are not starved by the 11d service. But it only
+writes the result into arg->scan_priority; cmd->scan_priority is never
+assigned, so every hardware scan reaches the firmware as priority 0,
+WMI_SCAN_PRIORITY_VERY_LOW, one step below even the intended baseline.
+ath11k assigns the same computation to the command it sends; the copy
+was lost in the ath12k rework.
+
+On a WCN7850 station that blocks and unblocks rfkill on every resume,
+the consequence is a scan refusal storm at every bring-up. The first
+hardware scan arms and starts the 11d scan; every scan submitted while
+that MEDIUM scan is pending is refused with WMI_SCAN_EVENT_START_FAILED
+reason WMI_SCAN_REASON_INTERNAL_FAILURE. The driver reports the refused
+scan to mac80211 as an aborted scan, so iwd abandons its quick
+reconnect plan, falls back to full sweeps with growing backoff, and
+reassociation takes 4.4 to 8 seconds, degrading as refusals accumulate.
+Resending a refused start changes nothing, on the same vdev or a
+recycled one: the resend is still priority 0. A refused scan was
+observed to recover only once something else flushed the queue, which
+is why the failure looked timing-dependent and was misattributed to the
+11d start/stop churn.
+
+Measured on an AYN Odin 2 (WCN7850 hw2.0), rfkill block/unblock cycles
+against the same AP from a fresh boot, reconnect time from radio
+unblock to DHCP address. Before, five cycles: 4459, 4442, 5929, 5856,
+7962 ms, nine scan refusals, degrading as they accumulate. After, ten
+cycles: nine land between 1021 and 1041 ms and zero scan refusals over
+the whole boot; the one outlier (10.4 s) shows no refusal either and
+matches a connection-manager stall that predates this change.
+
+With the priority on the wire, the first scan after bring-up goes out
+at MEDIUM, coexists with the 11d scan instead of losing to it, and iwd
+connects from its first quick scan every time.
+
+Signed-off-by: Edouard Durand <edouard.durand@gmail.com>
+---
+ drivers/net/wireless/ath/ath12k/wmi.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/ath/ath12k/wmi.c b/drivers/net/wireless/ath/ath12k/wmi.c
+--- a/drivers/net/wireless/ath/ath12k/wmi.c
++++ b/drivers/net/wireless/ath/ath12k/wmi.c
+@@ -2626,6 +2626,7 @@
+ 		arg->scan_priority = WMI_SCAN_PRIORITY_MEDIUM;
+ 	else
+ 		arg->scan_priority = WMI_SCAN_PRIORITY_LOW;
++	cmd->scan_priority = cpu_to_le32(arg->scan_priority);
+ 	cmd->notify_scan_events = cpu_to_le32(arg->notify_scan_events);
+ 
+ 	ath12k_wmi_copy_scan_event_cntrl_flags(cmd, arg);

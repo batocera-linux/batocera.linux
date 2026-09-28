@@ -1,0 +1,89 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2023, Linaro Limited
+ * Copyright (c) 2025, Kancy Joe <kancy2333@outlook.com>
+ */
+
+/dts-v1/;
+
+#include "sm8650-ayaneo-common.dtsi"
+
+/ {
+	model = "KONKR Pocket FIT";
+	compatible = "konkr,pocket-fit", "qcom,sm8650";
+};
+
+&mdss_dsi0 {
+	status = "okay";
+	vdda-supply = <&vreg_l3i_1p2>;
+
+	panel@0 {
+		status = "okay";
+		compatible = "ayaneo,ar14-144hz";
+		reg = <0>;
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&disp0_reset_n_active>, <&mdp_vsync_active>;
+		pinctrl-1 = <&disp0_reset_n_suspend>, <&mdp_vsync_suspend>;
+
+		vddio-supply = <&vreg_l12b_1p8>;
+		vci-supply = <&vreg_l13b_3p0>;
+		vdd-supply = <&vreg_l11b_1p2>;
+		avdd-supply = <&sgm3804_pos>;
+		avee-supply = <&sgm3804_neg>;
+
+		reset-gpios = <&tlmm 133 GPIO_ACTIVE_LOW>;
+		backlight = <&sy7758_bl>;
+		rotation = <90>;
+
+		port {
+			panel0_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	remote-endpoint = <&panel0_in>;
+	data-lanes = <0 1 2 3>;
+};
+
+&mdss_dsi0_phy {
+	vdds-supply = <&vreg_l1i_0p88>;
+
+	status = "okay";
+};
+
+/*
+ * Touchscreen: ChipOne ICNL9922C TDDI controller.
+ *
+ * Wiring taken verbatim from the stock Android devicetree
+ * (qupv3_1 i2c@a90000 -> mainline &i2c4, device @0x48):
+ *   - IRQ:   TLMM gpio162  (ts_irq_default pin state, defined in the dtsi)
+ *   - reset: TLMM gpio161  (ts_reset_default pin state, defined in the dtsi)
+ *   - power: shared with the panel rails (TDDI), already enabled above,
+ *            so no dedicated regulator supply is needed here.
+ *
+ * Properties use the vendor "chipone-tddi" binding to match the ported
+ * chipone_tddi driver. These may be migrated to a mainline-style binding
+ * (interrupts + reset-gpios) once the driver port is finalized.
+ */
+&i2c4 {
+	touchscreen@48 {
+		compatible = "chipone-tddi";
+		reg = <0x48>;
+
+		interrupt-parent = <&tlmm>;
+		interrupts = <162 IRQ_TYPE_EDGE_FALLING>;
+
+		chipone,irq-gpio = <&tlmm 162 GPIO_ACTIVE_HIGH>;
+		chipone,rst-gpio = <&tlmm 161 GPIO_ACTIVE_HIGH>;
+		chipone,x-res = <1080>;
+		chipone,y-res = <1920>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&ts_irq_default>, <&ts_reset_default>;
+
+		status = "okay";
+	};
+};

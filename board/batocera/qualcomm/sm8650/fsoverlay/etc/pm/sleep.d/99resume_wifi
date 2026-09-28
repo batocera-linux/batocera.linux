@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# workaround for wifi not working after standby / sleep
+
+wifi_toggle() {
+    batocera-wifi disable
+    batocera-wifi enable
+}
+
+case "$1" in
+    resume|thaw)
+        wifi_toggle
+        ;;
+esac
+
+exit 0

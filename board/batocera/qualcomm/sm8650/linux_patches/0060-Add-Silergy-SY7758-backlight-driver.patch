@@ -1,0 +1,369 @@
+From d9d50c0a2ea16ee03a127b08680907b4bf5c6e60 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sat, 5 Jul 2025 22:56:35 +0200
+Subject: [PATCH] Add Silergy SY7758 backlight driver
+
+---
+ drivers/video/backlight/Kconfig  |   8 ++
+ drivers/video/backlight/Makefile |   1 +
+ drivers/video/backlight/sy7758.c | 167 +++++++++++++++++++++++++++++++
+ 3 files changed, 176 insertions(+)
+ create mode 100644 drivers/video/backlight/sy7758.c
+
+diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
+index d9374d208cee..35773c0f2a00 100644
+--- a/drivers/video/backlight/Kconfig
++++ b/drivers/video/backlight/Kconfig
+@@ -441,6 +441,14 @@ config BACKLIGHT_SKY81452
+ 	  To compile this driver as a module, choose M here: the module will
+ 	  be called sky81452-backlight
+ 
++config BACKLIGHT_SY7758
++	tristate "Backlight Driver for Silergy SY7758"
++	depends on I2C
++	select REGMAP_I2C
++	help
++		Say Y to enable the backlight driver for the Silergy SY7758
++		backlight controller.
++
+ config BACKLIGHT_TPS65217
+ 	tristate "TPS65217 Backlight"
+ 	depends on MFD_TPS65217
+diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight/Makefile
+index dfbb169bf6ea..b187cd6024ef 100644
+--- a/drivers/video/backlight/Makefile
++++ b/drivers/video/backlight/Makefile
+@@ -55,6 +55,7 @@ obj-$(CONFIG_BACKLIGHT_QCOM_WLED)	+= qcom-wled.o
+ obj-$(CONFIG_BACKLIGHT_RT4831)		+= rt4831-backlight.o
+ obj-$(CONFIG_BACKLIGHT_SAHARA)		+= kb3886_bl.o
+ obj-$(CONFIG_BACKLIGHT_SKY81452)	+= sky81452-backlight.o
++obj-$(CONFIG_BACKLIGHT_SY7758)		+= sy7758.o
+ obj-$(CONFIG_BACKLIGHT_TPS65217)	+= tps65217_bl.o
+ obj-$(CONFIG_BACKLIGHT_WM831X)		+= wm831x_bl.o
+ obj-$(CONFIG_BACKLIGHT_ARCXCNN) 	+= arcxcnn_bl.o
+diff --git a/drivers/video/backlight/sy7758.c b/drivers/video/backlight/sy7758.c
+new file mode 100644
+index 000000000000..7abad41b9641
+--- /dev/null
++++ b/drivers/video/backlight/sy7758.c
+@@ -0,0 +1,317 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Backlight driver for the Silergy sy7758
++ *
++ * Copyright (C) 2025 Kancy Joe <kancy2333@outlook.com>
++ */
++#include <linux/backlight.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/of.h>
++#include <linux/err.h>
++#include <linux/bits.h>
++#include <linux/regmap.h>
++#include <linux/bitfield.h>
++#include <linux/gpio/consumer.h>
++#include <linux/regulator/consumer.h>
++
++#define DEFAULT_BRIGHTNESS 1024
++#define MAX_BRIGHTNESS 4080
++#define REG_MAX 0xAE
++
++/* registers */
++#define REG_BRT_8BIT 0x00
++#define REG_DEV_CTL 0x01
++#define REG_STATUS 0x02
++#define REG_DEV_ID 0x03
++#define REG_DIRECT_CTL 0x04
++#define REG_STATUS2 0x05
++#define REG_BRT_12BIT_L 0x10
++#define REG_BRT_12BIT_H 0x11
++#define REG_LED_ENABLE 0x16
++
++/* otp memory */
++#define REG_OTP_CFG98 0x98
++#define REG_OTP_CFG9E 0x9E
++#define REG_OTP_CFG0 0xA0
++#define REG_OTP_CFG1 0xA1
++#define REG_OTP_CFG2 0xA2
++#define REG_OTP_CFG3 0xA3
++#define REG_OTP_CFG4 0xA4
++#define REG_OTP_CFG5 0xA5
++#define REG_OTP_CFG6 0xA6
++#define REG_OTP_CFG7 0xA7
++#define REG_OTP_CFG9 0xA9
++#define REG_OTP_CFGA 0xAA
++#define REG_OTP_CFGE 0xAE
++
++/* bit/field define */
++#define BIT_DEV_CTL_FAST BIT(7)
++#define MSK_DEV_CTL_BRT_MODE GENMASK(2, 1)
++#define BIT_DEV_CTL_BL_CTLB BIT(0)
++
++#define BIT_STATUS_OPEN BIT(7)
++#define BIT_STATUS_SHORT BIT(6)
++#define BIT_STATUS_VREF_OK BIT(5)
++#define BIT_STATUS_VBST_OK BIT(4)
++#define BIT_STATUS_OVP BIT(3)
++#define BIT_STATUS_OCP BIT(2)
++#define BIT_STATUS_TSD BIT(1)
++#define BIT_STATUS_UVLO BIT(0)
++
++#define MSK_DIRECT_CTL_OUT GENMASK(5, 0)
++
++#define BIT_STATUS2_OCP50MS_LATCH BIT(0)
++#define BIT_STATUS2_OCP2 BIT(0)
++
++#define MSK_BRT_12BIT_L GENMASK(7, 0)
++#define MSK_BRT_12BIT_H GENMASK(3, 0)
++#define MSK_LED_ENABLE GENMASK(5, 0)
++
++#define BIT_CFG98_IBST_LIM_2X BIT(7)
++#define BIT_CFG98_A0_FSETB BIT(0)
++
++#define BIT_CFG9E_VBST_RANGE BIT(5)
++#define MSK_CFG9E_HEADROOM_OFFSET GENMASK(3, 0)
++
++#define MSK_CFG0_CURRENT_LOW GENMASK(7, 0)
++
++#define BIT_CFG1_PDET_STDBY BIT(7)
++#define MSK_CFG1_CURRENT_MAX GENMASK(6, 4)
++#define MSK_CFG1_CURRENT_HIGH GENMASK(3, 0)
++
++#define BIT_CFG2_UVLO_EN BIT(5)
++#define BIT_CFG2_UVLO_TH BIT(4)
++#define BIT_CFG2_BL_ON BIT(3)
++#define BIT_CFG2_ISET_EN BIT(2)
++#define BIT_CFG2_BST_ESET_EN BIT(1)
++
++#define MSK_CFG3_SLOPE GENMASK(6, 4)
++#define MSK_CFG3_FILTER GENMASK(3, 2)
++#define MSK_CFG3_PWM_INPUT_HYSTERESIS GENMASK(1, 0)
++#define MSK_CFG4_PWM_TO_I_TH GENMASK(7, 4)
++
++#define BIT_CFG5_PWM_DIRECT BIT(7)
++#define MSK_CFG5_PS_MODE GENMASK(6, 4)
++#define MSK_CFG5_PWM_FREQ GENMASK(3, 0)
++
++#define MSK_CFG6_BST_FREQ GENMASK(7, 6)
++#define MSK_CFG6_VBST GENMASK(5, 0)
++
++#define BIT_CFG7_EN_DRV3 BIT(5)
++#define BIT_CFG7_EN_DRV2 BIT(4)
++#define MSK_CFG7_IBST_LIM GENMASK(1, 0)
++
++#define MSK_CFG9_VBST_MAX GENMASK(7, 5)
++#define BIT_CFG9_JUMP_EN BIT(4)
++#define MSK_CFG9_JUMP_TH GENMASK(3, 2)
++#define MSK_CFG9_JUMP_VOLTAGE GENMASK(1, 0)
++
++#define BIT_CFGA_SSCLK_EN BIT(7)
++#define BIT_CFGA_ADAPTIVE BIT(3)
++#define MSK_CFGA_DRIVER_HEADROOM GENMASK(2, 0)
++#define MSK_CFGE_STEP_UP GENMASK(7, 6)
++#define MSK_CFGE_STEP_DN GENMASK(5, 4)
++#define MSK_CFGE_LED_FAULT_TH GENMASK(3, 2)
++#define MSK_CFGE_LED_COMP_HYST GENMASK(1, 0)
++
++struct sy7758 {
++	struct i2c_client *client;
++	struct regmap *regmap;
++	bool led_on;
++};
++
++static int sy7758_init(struct sy7758 *sydev);
++
++static const struct regmap_config sy7758_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = REG_MAX,
++};
++
++static int sy7758_write(struct sy7758 *sydev, unsigned int reg,
++			unsigned int val)
++{
++	return regmap_write(sydev->regmap, reg, val);
++}
++
++static int sy7758_read(struct sy7758 *sydev, unsigned int reg,
++		       unsigned int *val)
++{
++	return regmap_read(sydev->regmap, reg, val);
++}
++
++static int
++sy7758_backlight_update_status(struct backlight_device *backlight_dev)
++{
++	struct sy7758 *sydev = bl_get_data(backlight_dev);
++	unsigned int brightness = backlight_get_brightness(backlight_dev);
++	bool blank = backlight_is_blank(backlight_dev);
++	int ret = 0;
++
++	// Init if not already
++	if (!sydev->led_on && brightness > 0) {
++		// Turn on
++		ret = sy7758_init(sydev);
++		if (unlikely(ret < 0))
++			return ret;
++		sydev->led_on = true;
++	} else if (blank || brightness == 0) {
++		// Turn off
++		brightness = 0;
++		sydev->led_on = false;
++	}
++
++	/* Set brightness */
++	ret |= sy7758_write(sydev, REG_BRT_12BIT_L,
++			    FIELD_PREP(MSK_BRT_12BIT_L, brightness & 0xff));
++	ret |= sy7758_write(sydev, REG_BRT_12BIT_H,
++			    FIELD_PREP(MSK_BRT_12BIT_H,
++				       (brightness >> 8) & 0xf));
++
++	return ret;
++}
++
++static const struct backlight_ops sy7758_backlight_ops = {
++	.options = BL_CORE_SUSPENDRESUME,
++	.update_status = sy7758_backlight_update_status,
++};
++
++static struct backlight_device *
++sy7758_register_backlight(struct device *dev,
++			  struct sy7758 *sydev,
++			  struct backlight_properties *props)
++{
++	return devm_backlight_device_register(dev, "sy7758-backlight",
++					       dev, sydev,
++					       &sy7758_backlight_ops, props);
++}
++
++static int sy7758_init(struct sy7758 *sydev)
++{
++	int ret = 0;
++	/* Init seq */
++	ret |= sy7758_write(sydev, REG_DEV_CTL,
++			    BIT_DEV_CTL_FAST | BIT_DEV_CTL_BL_CTLB |
++				    FIELD_PREP(MSK_DEV_CTL_BRT_MODE, 2));
++	ret |= sy7758_write(sydev, REG_BRT_12BIT_L,
++			    FIELD_PREP(MSK_BRT_12BIT_L,
++				       DEFAULT_BRIGHTNESS & 0xff));
++	ret |= sy7758_write(sydev, REG_BRT_12BIT_H,
++			    FIELD_PREP(MSK_BRT_12BIT_H,
++				       (DEFAULT_BRIGHTNESS >> 8)));
++	ret |= sy7758_write(sydev, REG_OTP_CFG5,
++			    FIELD_PREP(MSK_CFG5_PS_MODE, 6) |
++				    FIELD_PREP(MSK_CFG5_PWM_FREQ, 4));
++	ret |= sy7758_write(sydev, REG_OTP_CFG0,
++			    FIELD_PREP(MSK_CFG0_CURRENT_LOW, 85));
++	ret |= sy7758_write(sydev, REG_OTP_CFG1,
++			    BIT_CFG1_PDET_STDBY |
++				    FIELD_PREP(MSK_CFG1_CURRENT_MAX, 1) |
++				    FIELD_PREP(MSK_CFG1_CURRENT_HIGH, 10));
++	ret |= sy7758_write(sydev, REG_OTP_CFG9,
++			    FIELD_PREP(MSK_CFG9_VBST_MAX, 4));
++	ret |= sy7758_write(sydev, REG_OTP_CFG2,
++			    BIT_CFG2_BL_ON | BIT_CFG2_UVLO_EN);
++
++	if (ret < 0) {
++		sydev->led_on = false;
++		return ret;
++	}
++
++	sydev->led_on = true;
++	return ret;
++}
++
++static int sy7758_probe(struct i2c_client *client)
++{
++	struct backlight_device *backlight_dev;
++	struct backlight_properties props;
++	struct sy7758 *sydev;
++	unsigned int dev_id;
++	int ret;
++	struct device *dev = &client->dev;
++
++	sydev = devm_kzalloc(dev, sizeof(*sydev), GFP_KERNEL);
++	if (!sydev)
++		return -ENOMEM;
++
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret,
++			     "failed to enable vdd supply\n");
++
++	/* Initialize regmap */
++	sydev->client = client;
++	sydev->regmap = devm_regmap_init_i2c(client, &sy7758_regmap_config);
++	if (IS_ERR(sydev->regmap))
++		return dev_err_probe(dev, PTR_ERR(sydev->regmap),
++				     "failed to init regmap\n");
++
++	/* try read and check device id */
++	ret = sy7758_read(sydev, REG_DEV_ID, &dev_id);
++	if (ret < 0) {
++		dev_err_probe(dev, ret, "failed to read device id\n");
++		return -EPROBE_DEFER;
++	}
++	if (dev_id != 0x63) {
++		dev_err(dev, "unexpected device id: 0x%02x\n", dev_id);
++		return -ENODEV;
++	}
++
++	memset(&props, 0, sizeof(props));
++	props.type = BACKLIGHT_RAW;
++	props.max_brightness = MAX_BRIGHTNESS;
++	props.brightness = DEFAULT_BRIGHTNESS;
++	props.scale = BACKLIGHT_SCALE_LINEAR;
++
++	backlight_dev = sy7758_register_backlight(dev, sydev, &props);
++	if (IS_ERR(backlight_dev))
++		return dev_err_probe(dev, PTR_ERR(backlight_dev),
++			     "failed to register backlight device\n");
++
++	ret = sy7758_init(sydev);
++	if (unlikely(ret < 0))
++		return dev_err_probe(dev, ret,
++			     "failed to initialize sy7758\n");
++
++	i2c_set_clientdata(client, backlight_dev);
++	backlight_update_status(backlight_dev);
++
++	return 0;
++}
++
++static void sy7758_remove(struct i2c_client *client)
++{
++	struct backlight_device *backlight_dev = i2c_get_clientdata(client);
++
++	backlight_dev->props.brightness = 0;
++	backlight_update_status(backlight_dev);
++}
++
++static const struct i2c_device_id sy7758_ids[] = { { "sy7758" }, {} };
++MODULE_DEVICE_TABLE(i2c, sy7758_ids);
++
++static const struct of_device_id sy7758_match_table[] = {
++	{
++		.compatible = "silergy,sy7758",
++	},
++	{},
++};
++MODULE_DEVICE_TABLE(of, sy7758_match_table);
++
++static struct i2c_driver sy7758_driver = {
++	.driver = {
++		.name = "sy7758",
++		.of_match_table = sy7758_match_table,
++	},
++	.probe = sy7758_probe,
++	.remove = sy7758_remove,
++	.id_table = sy7758_ids,
++};
++
++module_i2c_driver(sy7758_driver);
++
++MODULE_DESCRIPTION("Silergy sy7758 Backlight Driver");
++MODULE_AUTHOR("Kancy Joe <kancy2333@outlook.com>");
++MODULE_LICENSE("GPL");
+-- 
+2.50.0
+
