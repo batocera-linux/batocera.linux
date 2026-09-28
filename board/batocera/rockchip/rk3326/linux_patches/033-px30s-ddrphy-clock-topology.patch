@@ -1,0 +1,141 @@
+From: Elaine Zhang <zhangqing@rock-chips.com>
+Date: Tue, 10 Aug 2021 11:16:34 +0800
+Subject: [PATCH] clk: rockchip: px30: support px30s
+
+Change-Id: Id86199e066e254279d59a76aaed02f657b40e0c7
+Signed-off-by: Elaine Zhang <zhangqing@rock-chips.com>
+
+Ported from rockchip-linux/kernel commit
+f89c8138cab33025cc4fbc8c40756f89f5ba0d09 to mainline 6.12. Only the
+clk_ddrphy1x/clk_stdby_2wrap/clk_otp_usr topology split is ported here
+- the unrelated SRST_I2S0_RX_S/SRST_DCF_P_S dt-bindings additions from
+the same upstream commit aren't referenced by this hunk and are
+dropped.
+
+Every other PX30S-specific subsystem difference from the vendor BSP
+already has a corresponding patch in this series using soc_is_px30s()
+(023-025, 027-028) - this was the one gap: clk-px30.c still
+unconditionally used vanilla PX30's DDR PHY clock topology for PX30S
+boards too.
+
+On vanilla PX30, clk_ddrphy1x and clk_stdby_2wrap are both fixed /4
+derivatives of a clk_ddrphy4x parent (so they run at the same rate as
+each other). On PX30S there is no clk_ddrphy4x at all: clk_ddrphy1x is
+its own independently muxed/divided composite clock, and
+clk_stdby_2wrap is a /4 of clk_ddrphy1x itself - a quarter of its rate,
+not the same rate. The OTP clock chain differs too: vanilla derives
+clk_otp_usr from an intermediate clk_otp fed by xin24m; PX30S drives
+clk_otp_usr directly from a mux between xin24m and gpll, with no
+intermediate clk_otp at all.
+
+soc_is_px30s() falls back to of_machine_is_compatible() when
+rockchip_soc_id hasn't been set yet, but that fallback checks for the
+literal "rockchip,px30s" compatible string, which no board in this
+tree uses (they use "rockchip,rk3326" instead) - so it would evaluate
+false this early. clk-px30.c's init runs via CLK_OF_DECLARE, called
+from of_clk_init() long before pure_initcall (when
+rockchip_soc_id_init() would otherwise run on its own). Matching the
+vendor source exactly, rockchip_soc_id_init() is called explicitly
+here first - it's idempotent (returns immediately if rockchip_soc_id
+is already set) and, this early, still correctly detects PX30 vs
+PX30S via a direct DDR_GRF register read gated on cpu_is_px30()'s
+of_machine_is_compatible() check, which does include "rockchip,rk3326"
+and works fine at this point in boot.
+
+---
+--- a/drivers/clk/rockchip/clk-px30.c
++++ b/drivers/clk/rockchip/clk-px30.c
+@@ -8,6 +8,7 @@
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/syscore_ops.h>
+ #include <dt-bindings/clock/px30-cru.h>
+ #include "clk.h"
+@@ -145,6 +146,7 @@
+ PNAME(mux_gpll_cpll_p)		= { "gpll", "dummy_cpll" };
+ PNAME(mux_gpll_npll_p)		= { "gpll", "npll" };
+ PNAME(mux_gpll_xin24m_p)		= { "gpll", "xin24m"};
++PNAME(mux_xin24m_gpll_p)		= { "xin24m", "gpll"};
+ PNAME(mux_gpll_cpll_npll_p)		= { "gpll", "dummy_cpll", "npll" };
+ PNAME(mux_gpll_cpll_npll_xin24m_p)	= { "gpll", "dummy_cpll", "npll", "xin24m" };
+ PNAME(mux_gpll_xin24m_npll_p)		= { "gpll", "xin24m", "npll"};
+@@ -335,12 +337,6 @@
+ 			PX30_CLKGATE_CON(0), 13, GFLAGS),
+ 	COMPOSITE_NOGATE(SCLK_DDRCLK, "sclk_ddrc", mux_ddrphy_p, CLK_IGNORE_UNUSED,
+ 			PX30_CLKSEL_CON(2), 7, 1, MFLAGS, 0, 3, DFLAGS | CLK_DIVIDER_POWER_OF_TWO),
+-	COMPOSITE_NOGATE(0, "clk_ddrphy4x", mux_ddrphy_p, CLK_IGNORE_UNUSED,
+-			PX30_CLKSEL_CON(2), 7, 1, MFLAGS, 0, 3, DFLAGS),
+-	FACTOR_GATE(0, "clk_ddrphy1x", "clk_ddrphy4x", CLK_IGNORE_UNUSED, 1, 4,
+-			PX30_CLKGATE_CON(0), 14, GFLAGS),
+-	FACTOR_GATE(0, "clk_stdby_2wrap", "clk_ddrphy4x", CLK_IGNORE_UNUSED, 1, 4,
+-			PX30_CLKGATE_CON(1), 0, GFLAGS),
+ 	COMPOSITE_NODIV(0, "clk_ddrstdby", mux_ddrstdby_p, CLK_IGNORE_UNUSED,
+ 			PX30_CLKSEL_CON(2), 4, 1, MFLAGS,
+ 			PX30_CLKGATE_CON(1), 13, GFLAGS),
+@@ -767,12 +763,6 @@
+ 	COMPOSITE_NOMUX(SCLK_SARADC, "clk_saradc", "xin24m", 0,
+ 			PX30_CLKSEL_CON(55), 0, 11, DFLAGS,
+ 			PX30_CLKGATE_CON(12), 10, GFLAGS),
+-	COMPOSITE_NOMUX(SCLK_OTP, "clk_otp", "xin24m", 0,
+-			PX30_CLKSEL_CON(56), 0, 3, DFLAGS,
+-			PX30_CLKGATE_CON(12), 11, GFLAGS),
+-	COMPOSITE_NOMUX(SCLK_OTP_USR, "clk_otp_usr", "clk_otp", 0,
+-			PX30_CLKSEL_CON(56), 4, 2, DFLAGS,
+-			PX30_CLKGATE_CON(13), 6, GFLAGS),
+
+ 	GATE(0, "clk_cpu_boost", "xin24m", CLK_IGNORE_UNUSED,
+ 			PX30_CLKGATE_CON(12), 12, GFLAGS),
+@@ -999,6 +989,36 @@
+ 	"pclk_usb_grf",
+ };
+
++static struct rockchip_clk_branch px30_clk_ddrphy_otp[] __initdata = {
++	COMPOSITE_NOGATE(0, "clk_ddrphy4x", mux_ddrphy_p, CLK_IGNORE_UNUSED,
++			PX30_CLKSEL_CON(2), 7, 1, MFLAGS, 0, 3, DFLAGS),
++	FACTOR_GATE(0, "clk_ddrphy1x", "clk_ddrphy4x", CLK_IGNORE_UNUSED, 1, 4,
++			PX30_CLKGATE_CON(0), 14, GFLAGS),
++	FACTOR_GATE(0, "clk_stdby_2wrap", "clk_ddrphy4x",
++			CLK_IGNORE_UNUSED, 1, 4,
++			PX30_CLKGATE_CON(1), 0, GFLAGS),
++
++	COMPOSITE_NOMUX(SCLK_OTP, "clk_otp", "xin24m", 0,
++			PX30_CLKSEL_CON(56), 0, 3, DFLAGS,
++			PX30_CLKGATE_CON(12), 11, GFLAGS),
++	COMPOSITE_NOMUX(SCLK_OTP_USR, "clk_otp_usr", "clk_otp", 0,
++			PX30_CLKSEL_CON(56), 4, 2, DFLAGS,
++			PX30_CLKGATE_CON(13), 6, GFLAGS),
++};
++
++static struct rockchip_clk_branch px30s_clk_ddrphy_otp[] __initdata = {
++	COMPOSITE(0, "clk_ddrphy1x", mux_ddrphy_p, CLK_IGNORE_UNUSED,
++			PX30_CLKSEL_CON(2), 7, 1, MFLAGS, 0, 3, DFLAGS,
++			PX30_CLKGATE_CON(0), 14, GFLAGS),
++	FACTOR_GATE(0, "clk_stdby_2wrap", "clk_ddrphy1x",
++			CLK_IGNORE_UNUSED, 1, 4,
++			PX30_CLKGATE_CON(1), 0, GFLAGS),
++
++	COMPOSITE(SCLK_OTP_USR, "clk_otp_usr", mux_xin24m_gpll_p, 0,
++			PX30_CLKSEL_CON(56), 8, 1, MFLAGS, 0, 8, DFLAGS,
++			PX30_CLKGATE_CON(12), 11, GFLAGS),
++};
++
+ static void __init px30_clk_init(struct device_node *np)
+ {
+ 	struct rockchip_clk_provider *ctx;
+@@ -1026,6 +1046,14 @@
+ 	rockchip_clk_register_branches(ctx, px30_clk_branches,
+ 				       ARRAY_SIZE(px30_clk_branches));
+
++	rockchip_soc_id_init();
++	if (soc_is_px30s())
++		rockchip_clk_register_branches(ctx, px30s_clk_ddrphy_otp,
++					       ARRAY_SIZE(px30s_clk_ddrphy_otp));
++	else
++		rockchip_clk_register_branches(ctx, px30_clk_ddrphy_otp,
++					       ARRAY_SIZE(px30_clk_ddrphy_otp));
++
+ 	rockchip_clk_register_armclk(ctx, ARMCLK, "armclk",
+ 				     mux_armclk_p, ARRAY_SIZE(mux_armclk_p),
+ 				     &px30_cpuclk_data, px30_cpuclk_rates,

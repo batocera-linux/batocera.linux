@@ -15,27 +15,11 @@ checked by dw_mmc and sdio_cis patches.
 
 Signed-off-by: Imanol-Mikel Barba <imanol@local>
 ---
- drivers/mmc/core/host.c  | 2 ++
- include/linux/mmc/host.h | 1 +
- 2 files changed, 3 insertions(+)
-
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 111111111111..222222222222 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -465,6 +465,7 @@ struct mmc_host {
- #define MMC_CAP2_CRYPTO		0
- #endif
- #define MMC_CAP2_ALT_GPT_TEGRA	(1 << 28)	/* Host with eMMC that has GPT entry at a non-standard location */
-+#define MMC_CAP2_WIFI_RK915	(1 << 29)	/* Rockchip RK915 WiFi SDIO quirks */
- 
- 	int			fixed_drv_type;	/* fixed driver type for non-removable media */
- 
 diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index 333333333333..444444444444 100644
+index 828078b3f..2ab0cc684 100644
 --- a/drivers/mmc/core/host.c
 +++ b/drivers/mmc/core/host.c
-@@ -405,6 +405,8 @@ int mmc_of_parse(struct mmc_host *host)
+@@ -397,6 +397,8 @@ int mmc_of_parse(struct mmc_host *host)
  		host->caps2 |= MMC_CAP2_NO_SD;
  	if (device_property_read_bool(dev, "no-mmc"))
  		host->caps2 |= MMC_CAP2_NO_MMC;
@@ -44,6 +28,15 @@ index 333333333333..444444444444 100644
  	if (device_property_read_bool(dev, "no-mmc-hs400"))
  		host->caps2 &= ~(MMC_CAP2_HS400_1_8V | MMC_CAP2_HS400_1_2V |
  				 MMC_CAP2_HS400_ES);
--- 
-2.45.0
-
+diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
+index ba84f02c2..438ae5cf1 100644
+--- a/include/linux/mmc/host.h
++++ b/include/linux/mmc/host.h
+@@ -463,6 +463,7 @@ struct mmc_host {
+ #define MMC_CAP2_CRYPTO		0
+ #endif
+ #define MMC_CAP2_ALT_GPT_TEGRA	(1 << 28)	/* Host with eMMC that has GPT entry at a non-standard location */
++#define MMC_CAP2_WIFI_RK915	(1 << 29)	/* Rockchip RK915 WiFi SDIO quirks */
+ 
+ 	bool			uhs2_sd_tran;	/* UHS-II flag for SD_TRAN state */
+ 	bool			uhs2_app_cmd;	/* UHS-II flag for APP command */

@@ -1,0 +1,93 @@
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -196,7 +196,9 @@
+  * this in the preprocessor, but we can live with this because they're
+  * unreleased.  Really, we need to have autoconf for the kernel.
+  */
++#ifndef unreachable
+ #define unreachable() __builtin_unreachable()
++#endif
+ 
+ /* Mark a function definition as prohibited from being cloned. */
+ #define __noclone	__attribute__((__noclone__))
+--- a/include/u-boot/rsa.h
++++ b/include/u-boot/rsa.h
+@@ -82,7 +82,7 @@
+ }
+ #endif
+ 
+-#if IMAGE_ENABLE_VERIFY
++#if IMAGE_ENABLE_VERIFY || defined(USE_HOSTCC)
+ /**
+  * rsa_verify() - Verify a signature against some data
+  *
+--- a/lib/rsa/rsa-sign.c
++++ b/lib/rsa/rsa-sign.c
+@@ -416,7 +417,7 @@
+ 		goto err_create;
+ 	}
+ 	EVP_MD_CTX_init(context);
+-	if (!EVP_SignInit(context, checksum_algo->calculate_sign())) {
++	if (!EVP_SignInit(context, EVP_get_digestbyname(checksum_algo->name))) {
+ 		ret = rsa_err("Signer setup failed");
+ 		goto err_sign;
+ 	}
+--- a/tools/Makefile
++++ b/tools/Makefile
+@@ -94,7 +94,7 @@
+ # common objs for dumpimage and mkimage
+ dumpimage-mkimage-objs := aisimage.o \
+ 			atmelimage.o \
+-			$(FIT_SIG_OBJS-y) \
++			common/image-sig.o \
+ 			common/bootm.o \
+ 			lib/crc32.o \
+ 			default_image.o \
+@@ -127,7 +127,10 @@
+ 			$(LIBFDT_OBJS) \
+ 			gpimage.o \
+ 			gpimage-common.o \
+-			$(RSA_OBJS-y)
++			lib/rsa/rsa-sign.o \
++			lib/rsa/rsa-verify.o \
++			lib/rsa/rsa-checksum.o \
++			lib/rsa/rsa-mod-exp.o
+ 
+ dumpimage-objs := $(dumpimage-mkimage-objs) dumpimage.o
+ mkimage-objs   := $(dumpimage-mkimage-objs) mkimage.o
+@@ -155,7 +158,6 @@
+ endif
+ 
+ # MXSImage needs LibSSL
+-ifneq ($(CONFIG_MX23)$(CONFIG_MX28)$(CONFIG_ARMADA_38X)$(CONFIG_ARMADA_39X)$(CONFIG_FIT_SIGNATURE),)
+ HOSTLOADLIBES_mkimage += \
+ 	$(shell pkg-config --libs libssl libcrypto 2> /dev/null || echo "-lssl -lcrypto")
+ 
+@@ -166,7 +168,6 @@
+ HOSTCFLAGS_image-sig.o += -Wno-deprecated-declarations
+ HOSTCFLAGS_rsa-sign.o += -Wno-deprecated-declarations
+ endif
+-endif
+ 
+ HOSTCFLAGS_fit_image.o += -DMKIMAGE_DTC=\"$(CONFIG_MKIMAGE_DTC_PATH)\"
+ 
+@@ -216,7 +217,7 @@
+ HOSTCFLAGS_sha256.o := -pedantic
+ 
+ quiet_cmd_wrap = WRAP    $@
+-cmd_wrap = echo "\#include <../$(patsubst $(obj)/%,%,$@)>" >$@
++cmd_wrap = echo "\#include <../$(patsubst $(obj)/%,%,$@)>" >$@; touch $@
+ 
+ $(obj)/lib/%.c $(obj)/common/%.c $(obj)/env/%.c:
+ 	$(call cmd,wrap)
+@@ -259,7 +260,9 @@
+ 		-I$(srctree)/tools \
+ 		-DUSE_HOSTCC \
+ 		-D__KERNEL_STRICT_NAMES \
+-		-D_GNU_SOURCE
++		-D_GNU_SOURCE \
++		-Wno-format-overflow \
++		-Wno-deprecated-declarations
+ 
+ __build:	$(LOGO-y)
+ 

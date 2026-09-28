@@ -1,0 +1,235 @@
+Ported from the vendor BSP kernel (rockchip-linux/kernel,
+drivers/nvmem/rockchip-otp.c), which selects a distinct active/standby
+OTP read protocol for PX30S at runtime:
+
+	data = of_device_get_match_data(dev);
+	...
+	if (soc_is_px30s() || soc_is_rk3308bs())
+		data = &px30s_data;
+
+Mainline's rockchip-otp.c has no such override and always uses the plain
+PX30 SBPI/user-mode read path, regardless of whether the chip is actually
+PX30S - even on the vendor's own PX30S boards, which still use the
+generic "rockchip,px30-otp" compatible and rely entirely on this runtime
+check rather than a distinct compatible string. Ported using the shared
+soc_is_px30s() helper (see 026-px30s-cpuinfo-soc-detection.patch) instead
+of an inline per-file check.
+
+Adapted to mainline's rockchip-otp.c, which has been refactored since the
+vendor tree branched: clk_bulk_prepare_enable/disable now happens once in
+the shared rockchip_otp_read() wrapper rather than per reg_read
+implementation, and rockchip_otp_wait_status() already takes a register
+argument, so the vendor's separate px30s_otp_wait_status() collapses into
+reuse of the existing helper.
+
+This affects nvmem cells consumed by cpu0_opp_table/px30s_cpu0_opp_table
+("cpu_leakage", "performance") for Rockchip's AVS voltage-bin selection -
+moot on its own since mainline doesn't implement AVS at all, but the OTP
+read path itself was still wrong for this silicon and worth fixing
+correctly rather than leaving in place.
+
+---
+--- a/drivers/nvmem/rockchip-otp.c
++++ b/drivers/nvmem/rockchip-otp.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/nvmem-provider.h>
+ #include <linux/reset.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+@@ -32,6 +33,25 @@
+ #define OTPC_SBPI_CMD0_OFFSET		0x1000
+ #define OTPC_SBPI_CMD1_OFFSET		0x1004
+
++#define OTPC_MODE_CTRL			0x2000
++#define OTPC_IRQ_ST			0x2008
++#define OTPC_ACCESS_ADDR		0x200c
++#define OTPC_RD_DATA			0x2010
++#define OTPC_REPR_RD_TRANS_NUM		0x2020
++
++#define OTPC_DEEP_STANDBY		0x0
++#define OTPC_STANDBY			0x1
++#define OTPC_ACTIVE			0x2
++#define OTPC_READ_ACCESS		0x3
++#define OTPC_TRANS_NUM			0x1
++#define OTPC_RDM_IRQ_ST			BIT(0)
++#define OTPC_STB2ACT_IRQ_ST		BIT(7)
++#define OTPC_DP2STB_IRQ_ST		BIT(8)
++#define OTPC_ACT2STB_IRQ_ST		BIT(9)
++#define OTPC_STB2DP_IRQ_ST		BIT(10)
++#define PX30S_NBYTES			4
++#define PX30S_NO_SECURE_OFFSET		224
++
+ /* OTP Register bits and masks */
+ #define OTPC_USER_ADDR_MASK		GENMASK(31, 16)
+ #define OTPC_USE_USER			BIT(0)
+@@ -184,6 +204,137 @@
+ 	return ret;
+ }
+
++/*
++ * PX30S uses a different OTPC than plain PX30: reads have to walk the
++ * controller through an active/standby power-state machine (deep-standby ->
++ * standby -> active before reading, then back down afterwards) instead of
++ * the SBPI/user-mode register dance px30_otp_read() uses. Ported from the
++ * vendor BSP kernel (rockchip-linux/kernel, drivers/nvmem/rockchip-otp.c),
++ * adapted to this driver's clk handling (clk_bulk_prepare_enable/disable
++ * already happens in the shared rockchip_otp_read() wrapper here, unlike
++ * the vendor driver where each reg_read implementation does its own).
++ */
++static int px30s_otp_active(struct rockchip_otp *otp)
++{
++	int ret = 0;
++	u32 mode;
++
++	mode = readl(otp->base + OTPC_MODE_CTRL);
++
++	switch (mode) {
++	case OTPC_DEEP_STANDBY:
++		writel(OTPC_STANDBY, otp->base + OTPC_MODE_CTRL);
++		ret = rockchip_otp_wait_status(otp, OTPC_IRQ_ST, OTPC_DP2STB_IRQ_ST);
++		if (ret < 0) {
++			dev_err(otp->dev, "timeout during wait dp2stb\n");
++			return ret;
++		}
++		fallthrough;
++	case OTPC_STANDBY:
++		writel(OTPC_ACTIVE, otp->base + OTPC_MODE_CTRL);
++		ret = rockchip_otp_wait_status(otp, OTPC_IRQ_ST, OTPC_STB2ACT_IRQ_ST);
++		if (ret < 0) {
++			dev_err(otp->dev, "timeout during wait stb2act\n");
++			return ret;
++		}
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++static int px30s_otp_standby(struct rockchip_otp *otp)
++{
++	int ret = 0;
++	u32 mode;
++
++	mode = readl(otp->base + OTPC_MODE_CTRL);
++
++	switch (mode) {
++	case OTPC_ACTIVE:
++		writel(OTPC_STANDBY, otp->base + OTPC_MODE_CTRL);
++		ret = rockchip_otp_wait_status(otp, OTPC_IRQ_ST, OTPC_ACT2STB_IRQ_ST);
++		if (ret < 0) {
++			dev_err(otp->dev, "timeout during wait act2stb\n");
++			return ret;
++		}
++		fallthrough;
++	case OTPC_STANDBY:
++		writel(OTPC_DEEP_STANDBY, otp->base + OTPC_MODE_CTRL);
++		ret = rockchip_otp_wait_status(otp, OTPC_IRQ_ST, OTPC_STB2DP_IRQ_ST);
++		if (ret < 0) {
++			dev_err(otp->dev, "timeout during wait stb2dp\n");
++			return ret;
++		}
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++static int px30s_otp_read(void *context, unsigned int offset,
++			  void *val, size_t bytes)
++{
++	struct rockchip_otp *otp = context;
++	unsigned int addr_start, addr_end, addr_offset, addr_len;
++	int ret, i = 0;
++	u32 out_value;
++	u8 *buf;
++
++	if (offset >= otp->data->size)
++		return -ENOMEM;
++	if (offset + bytes > otp->data->size)
++		bytes = otp->data->size - offset;
++
++	ret = rockchip_otp_reset(otp);
++	if (ret) {
++		dev_err(otp->dev, "failed to reset otp phy\n");
++		return ret;
++	}
++
++	ret = px30s_otp_active(otp);
++	if (ret)
++		return ret;
++
++	addr_start = round_down(offset, PX30S_NBYTES) / PX30S_NBYTES;
++	addr_end = round_up(offset + bytes, PX30S_NBYTES) / PX30S_NBYTES;
++	addr_offset = offset % PX30S_NBYTES;
++	addr_len = addr_end - addr_start;
++	addr_start += PX30S_NO_SECURE_OFFSET;
++
++	buf = kzalloc(array_size(addr_len, PX30S_NBYTES), GFP_KERNEL);
++	if (!buf) {
++		ret = -ENOMEM;
++		goto read_end;
++	}
++
++	while (addr_len--) {
++		writel(OTPC_TRANS_NUM, otp->base + OTPC_REPR_RD_TRANS_NUM);
++		writel(addr_start++, otp->base + OTPC_ACCESS_ADDR);
++		writel(OTPC_READ_ACCESS, otp->base + OTPC_MODE_CTRL);
++		ret = rockchip_otp_wait_status(otp, OTPC_IRQ_ST, OTPC_RDM_IRQ_ST);
++		if (ret < 0) {
++			dev_err(otp->dev, "timeout during wait rd\n");
++			goto free_buf;
++		}
++		out_value = readl(otp->base + OTPC_RD_DATA);
++		memcpy(&buf[i], &out_value, PX30S_NBYTES);
++		i += PX30S_NBYTES;
++	}
++	memcpy(val, buf + addr_offset, bytes);
++
++free_buf:
++	kfree(buf);
++read_end:
++	px30s_otp_standby(otp);
++
++	return ret;
++}
++
+ static int rk3588_otp_read(void *context, unsigned int offset,
+ 			   void *val, size_t bytes)
+ {
+@@ -274,6 +425,13 @@
+ 	.reg_read = px30_otp_read,
+ };
+
++static const struct rockchip_data px30s_data = {
++	.size = 0x80,
++	.clks = px30_otp_clocks,
++	.num_clks = ARRAY_SIZE(px30_otp_clocks),
++	.reg_read = px30s_otp_read,
++};
++
+ static const struct rockchip_data rk3576_data = {
+ 	.size = 0x100,
+ 	.read_offset = 0x700,
+@@ -327,6 +485,15 @@
+ 	if (!data)
+ 		return dev_err_probe(dev, -EINVAL, "failed to get match data\n");
+
++	/*
++	 * PX30S boards, including ours, still use the plain "rockchip,px30-otp"
++	 * compatible in their devicetree - the vendor BSP always overrides the
++	 * match-data at runtime instead of using a distinct compatible string,
++	 * so mirror that here rather than requiring a devicetree change.
++	 */
++	if (soc_is_px30s())
++		data = &px30s_data;
++
+ 	otp = devm_kzalloc(&pdev->dev, sizeof(struct rockchip_otp),
+ 			   GFP_KERNEL);
+ 	if (!otp)

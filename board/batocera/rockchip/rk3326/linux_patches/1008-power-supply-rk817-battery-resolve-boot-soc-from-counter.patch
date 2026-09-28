@@ -1,0 +1,359 @@
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 3 Sep 2026 10:00:00 -0500
+Subject: [PATCH 2/2] power: supply: rk817-battery: Resolve boot state of
+ charge from the columb counter
+
+The boot state of charge comes from PWRON_VOL when OFF_CNT reads three
+or more and from the columb counter otherwise, and both fail in the
+field.
+
+PWRON_VOL is sampled at the power-on instant. A power-on caused by
+plugging in a charger samples under charge current: on an RG353M it
+read above the pack's maximum design voltage while the pack was at
+74%. An RG DS was seen holding 2.63V in the register while running.
+Either becomes a wrong percentage on every boot that reaches it.
+
+A negative counter was clamped to zero and reported as 0%.
+
+The counter itself keeps counting while the system is off: the same
+RG353M, saved at 74% and charged for 1.5 hours powered off, booted
+with the counter at full. The BSP driver relies on this: it reads
+OFF_CNT into a flag it never uses, consults PWRON_VOL only when
+BAT_CON marks a new battery, and adopts the counter when it diverges
+from the saved capacity ("system halt last time").
+
+Do the same. Keep the PWRON_VOL lookup for the first boot. Otherwise
+take the counter, capped at full, unless it reads zero or negative,
+in which case keep the saved soc, which is at most one update
+interval old. Then read the
+relax voltage pair every update interval and, while the battery is
+resting and the pair disagrees with the tracked soc by more than 5%,
+re-init the counter from it. The pair is a true open circuit voltage,
+so this corrects a counter that is wrong by any amount, and it is the
+mechanism the BSP driver uses at resume.
+
+Expose PWRON_VOL as POWER_SUPPLY_PROP_VOLTAGE_BOOT and the current
+rested pair as POWER_SUPPLY_PROP_VOLTAGE_OCV, -ENODATA while the
+battery is not resting.
+
+Log the counter, saved soc and battery voltage at boot, as the BSP logs
+its saved and present capacity, so a counter that diverged from the
+saved soc is visible.
+
+Fixes: 11cb8da0189b ("power: supply: Add charger driver for Rockchip RK817")
+Suggested-by: Jacob Cook <jacobmcook1984@gmail.com>
+Co-developed-by: Jacob Cook <jacobmcook1984@gmail.com>
+Signed-off-by: Jacob Cook <jacobmcook1984@gmail.com>
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Assisted-by: Claude:claude-5-fable
+---
+--- a/drivers/power/supply/rk817_charger.c
++++ b/drivers/power/supply/rk817_charger.c
+@@ -95,6 +95,15 @@
+ 	int bat_voltage_min_design_uv;
+ 	int bat_voltage_max_design_uv;
+ 
++	/* Battery voltage the PMIC sampled when the system powered on. */
++	int boot_voltage_uv;
++
++	/* Rested voltage the gauge latched, 0 if it took no usable pair. */
++	int relax_voltage_uv;
++
++	/* Retained for the ocv-capacity table the recalibration needs. */
++	struct power_supply_battery_info *bat_info;
++
+ 	/* Values updated periodically by driver for display. */
+ 	int charge_now_uah;
+ 	int volt_avg_uv;
+@@ -332,6 +341,42 @@
+ 	return 0;
+ }
+ 
++/* Calibrated microvolts from one of the gas gauge's 16 bit voltage registers. */
++static int rk817_bat_voltage_uv(struct rk817_charger *charger, unsigned int reg)
++{
++	u8 bulk_reg[2];
++
++	regmap_bulk_read(charger->rk808->regmap, reg, bulk_reg, 2);
++
++	return (charger->voltage_k * get_unaligned_be16(bulk_reg)) +
++		1000 * charger->voltage_b;
++}
++
++/*
++ * Voltage the gauge latched while the battery was resting. Relax mode only
++ * samples below RELAX_THRE_CUR, so this is a true open circuit voltage with
++ * no resistance term. Returns 0 unless the battery is resting now and the
++ * latched pair is inside the pack's design range.
++ */
++static int rk817_bat_relax_voltage_uv(struct rk817_charger *charger)
++{
++	unsigned int need = RK817_RELAX_STS | RK817_RELAX_VOL_UPD;
++	int ret, sts, vol;
++
++	ret = regmap_read(charger->rk808->regmap, RK817_GAS_GAUGE_GG_STS, &sts);
++	if (ret < 0 || (sts & need) != need)
++		return 0;
++
++	vol = max(rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_RELAX_VOL1_H),
++		  rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_RELAX_VOL2_H));
++
++	if (vol < charger->bat_voltage_min_design_uv ||
++	    vol > charger->bat_voltage_max_design_uv)
++		return 0;
++
++	return vol;
++}
++
+ static void rk817_read_props(struct rk817_charger *charger)
+ {
+ 	int tmp, reg;
+@@ -367,11 +412,8 @@
+ 	charger->soc = charger->charge_now_uah * 100 / charger->fcc_mah;
+ 
+ 	/* Update reported voltage. */
+-	regmap_bulk_read(charger->rk808->regmap, RK817_GAS_GAUGE_BAT_VOL_H,
+-			 bulk_reg, 2);
+-	tmp = get_unaligned_be16(bulk_reg);
+-	charger->volt_avg_uv = (charger->voltage_k * tmp) + 1000 *
+-				charger->voltage_b;
++	charger->volt_avg_uv = rk817_bat_voltage_uv(charger,
++						    RK817_GAS_GAUGE_BAT_VOL_H);
+ 
+ 	/*
+ 	 * Update reported current. Note value from registers is a signed 16
+@@ -430,6 +472,8 @@
+ 		charger->charger_input_volt_avg_uv = 0;
+ 	}
+ 
++	charger->relax_voltage_uv = rk817_bat_relax_voltage_uv(charger);
++
+ 	/* Calibrate battery capacity and soc. */
+ 	rk817_bat_calib_cap(charger);
+ }
+@@ -516,6 +560,14 @@
+ 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
+ 		val->intval = charger->volt_avg_uv;
+ 		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_BOOT:
++		val->intval = charger->boot_voltage_uv;
++		break;
++	case POWER_SUPPLY_PROP_VOLTAGE_OCV:
++		if (!charger->relax_voltage_uv)
++			return -ENODATA;
++		val->intval = charger->relax_voltage_uv;
++		break;
+ 	case POWER_SUPPLY_PROP_CURRENT_AVG:
+ 		val->intval = charger->cur_avg_ua;
+ 		break;
+@@ -654,6 +706,8 @@
+ 	POWER_SUPPLY_PROP_CHARGE_NOW,
+ 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
+ 	POWER_SUPPLY_PROP_VOLTAGE_AVG,
++	POWER_SUPPLY_PROP_VOLTAGE_BOOT,
++	POWER_SUPPLY_PROP_VOLTAGE_OCV,
+ 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
+ 	POWER_SUPPLY_PROP_CURRENT_AVG,
+ 	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+@@ -746,15 +800,50 @@
+ 	return 0;
+ }
+ 
++/*
++ * The relax pair is a true rested voltage: where it disagrees with the
++ * tracked soc by more than 5% (chosen arbitrarily), re-init the counter
++ * from it.
++ */
++static void rk817_bat_ocv_recalibrate(struct rk817_charger *charger)
++{
++	struct rk808 *rk808 = charger->rk808;
++	int ocv_soc, charge_now_adc;
++	u8 bulk_reg[4];
++
++	if (!charger->battery_present)
++		return;
++
++	if (!charger->relax_voltage_uv)
++		return;
++
++	ocv_soc = power_supply_batinfo_ocv2cap(charger->bat_info,
++					       charger->relax_voltage_uv,
++					       20) * 1000;
++	if (ocv_soc < 0 || abs(ocv_soc - charger->soc) <= 5000)
++		return;
++
++	dev_info(charger->dev,
++		 "OCV %duV disagrees with soc, recalibrating (%d -> %d)\n",
++		 charger->relax_voltage_uv, charger->soc, ocv_soc);
++	charger->soc = ocv_soc;
++	charge_now_adc = CHARGE_TO_ADC(ocv_soc * charger->fcc_mah / 100000,
++				       charger->res_div);
++	put_unaligned_be32(charge_now_adc, bulk_reg);
++	regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_INIT_H3,
++			  bulk_reg, 4);
++	rk817_record_battery_nvram_values(charger);
++}
++
+ static int
+ rk817_read_or_set_full_charge_on_boot(struct rk817_charger *charger,
+ 				struct power_supply_battery_info *bat_info)
+ {
+ 	struct rk808 *rk808 = charger->rk808;
+-	u8 bulk_reg[4];
+-	u32 boot_voltage, boot_charge_mah;
+-	int ret, reg, off_time, tmp;
++	u32 boot_charge_mah;
++	int ret, reg, tmp;
+ 	bool first_boot;
++	u8 bulk_reg[4];
+ 
+ 	/*
+ 	 * Check if the battery is uninitalized. If it is, the columb counter
+@@ -764,25 +853,22 @@
+ 	if (ret < 0)
+ 		return ret;
+ 	first_boot = reg & RK817_BAT_CON;
+-	/*
+-	 * If the battery is uninitialized, use the poweron voltage and an ocv
+-	 * lookup to guess our charge. The number won't be very accurate until
+-	 * we hit either our minimum voltage (0%) or full charge (100%).
+-	 */
++
++	/* PWRON_VOL only refreshes on a real power-on; bound it to the pack. */
++	charger->boot_voltage_uv =
++		clamp(rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_PWRON_VOL_H),
++		      bat_info->voltage_min_design_uv,
++		      bat_info->voltage_max_design_uv);
++
+ 	if (first_boot) {
+-		regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_PWRON_VOL_H,
+-				 bulk_reg, 2);
+-		tmp = get_unaligned_be16(bulk_reg);
+-		boot_voltage = (charger->voltage_k * tmp) +
+-				1000 * charger->voltage_b;
+ 		/*
+-		 * Since only implementation has no working thermistor, assume
+-		 * 20C for OCV lookup. If lookup fails, report error with OCV
+-		 * table.
++		 * Nothing has been saved yet, so estimate from the boot
++		 * voltage with an ocv lookup. Since only implementation has
++		 * no working thermistor, assume 20C for that lookup.
+ 		 */
+ 		charger->soc = power_supply_batinfo_ocv2cap(bat_info,
+-							    boot_voltage,
+-							    20) * 1000;
++						charger->boot_voltage_uv,
++						20) * 1000;
+ 		if (charger->soc < 0)
+ 			charger->soc = 0;
+ 
+@@ -803,39 +889,31 @@
+ 		if (ret < 0)
+ 			return ret;
+ 
++		/*
++		 * The columb counter keeps counting while the system is off,
++		 * so take it, capped at full, unless it reads invalid; the
++		 * saved soc is then at most one update interval old. A counter
++		 * that is merely wrong is corrected by the next rested relax
++		 * pair.
++		 */
+ 		regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+ 				 bulk_reg, 4);
+ 		tmp = get_unaligned_be32(bulk_reg);
+-		if (tmp < 0)
+-			tmp = 0;
+-		boot_charge_mah = ADC_TO_CHARGE_UAH(tmp,
+-						    charger->res_div) / 1000;
+-		/*
+-		 * Check if the columb counter has been off for more than 30
+-		 * minutes as it tends to drift downward. If so, re-init soc
+-		 * with the boot voltage instead. Note the unit values for the
+-		 * OFF_CNT register appear to be in decaminutes and stops
+-		 * counting at 2550 (0xFF) minutes. BSP kernel used OCV, but
+-		 * for me occasionally that would show invalid values. Boot
+-		 * voltage is only accurate for me on first poweron (not
+-		 * reboots), but we shouldn't ever encounter an OFF_CNT more
+-		 * than 0 on a reboot anyway.
+-		 */
+-		regmap_read(rk808->regmap, RK817_GAS_GAUGE_OFF_CNT, &off_time);
+-		if (off_time >= 3) {
+-			regmap_bulk_read(rk808->regmap,
+-					 RK817_GAS_GAUGE_PWRON_VOL_H,
+-					 bulk_reg, 2);
+-			tmp = get_unaligned_be16(bulk_reg);
+-			boot_voltage = (charger->voltage_k * tmp) +
+-					1000 * charger->voltage_b;
+-			charger->soc =
+-				power_supply_batinfo_ocv2cap(bat_info,
+-							     boot_voltage,
+-							     20) * 1000;
++		dev_info(charger->dev,
++			 "boot: counter %d uAh, saved soc %d, fcc %d mAh, battery %d uV\n",
++			 tmp > 0 ? ADC_TO_CHARGE_UAH(tmp, charger->res_div) : 0,
++			 charger->soc, charger->fcc_mah,
++			 rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_BAT_VOL_H));
++		if (tmp > 0) {
++			boot_charge_mah = ADC_TO_CHARGE_UAH(tmp,
++							    charger->res_div) / 1000;
++			if (boot_charge_mah > charger->fcc_mah)
++				boot_charge_mah = charger->fcc_mah;
++			charger->soc = boot_charge_mah * 100000 /
++				       charger->fcc_mah;
+ 		} else {
+-			charger->soc = (boot_charge_mah * 1000 * 100 /
+-					charger->fcc_mah);
++			dev_info(charger->dev,
++				 "columb counter invalid, keeping saved soc\n");
+ 		}
+ 	}
+ 
+@@ -1044,6 +1122,7 @@
+ 	charger = container_of(work, struct rk817_charger, work.work);
+ 
+ 	rk817_read_props(charger);
++	rk817_bat_ocv_recalibrate(charger);
+ 
+ 	/* Run every 8 seconds like the BSP driver did. */
+ 	queue_delayed_work(system_percpu_wq, &charger->work, msecs_to_jiffies(8000));
+@@ -1056,6 +1135,13 @@
+ 	of_node_put(node);
+ }
+ 
++static void rk817_put_battery_info(void *data)
++{
++	struct rk817_charger *charger = data;
++
++	power_supply_put_battery_info(charger->bat_ps, charger->bat_info);
++}
++
+ static int rk817_charger_probe(struct platform_device *pdev)
+ {
+ 	struct rk808 *rk808 = dev_get_drvdata(pdev->dev.parent);
+@@ -1172,7 +1258,14 @@
+ 	if (ret)
+ 		return ret;
+ 
+-	power_supply_put_battery_info(charger->bat_ps, bat_info);
++	/*
++	 * Keep the battery info: the periodic recalibration needs its
++	 * ocv-capacity table for as long as the driver is bound.
++	 */
++	charger->bat_info = bat_info;
++	ret = devm_add_action_or_reset(dev, rk817_put_battery_info, charger);
++	if (ret)
++		return ret;
+ 
+ 	plugin_irq = platform_get_irq(pdev, 0);
+ 	if (plugin_irq < 0)
+--- a/include/linux/mfd/rk808.h
++++ b/include/linux/mfd/rk808.h
+@@ -1211,6 +1211,8 @@
+ 
+ #define RK817_GAS_GAUGE_RELAX_THRE_H	0x58
+ #define RK817_GAS_GAUGE_RELAX_THRE_L	0x59
++#define RK817_GAS_GAUGE_RELAX_VOL1_H	0x5a
++#define RK817_GAS_GAUGE_RELAX_VOL2_H	0x5c
+ #define RK817_GAS_GAUGE_OCV_THRE_VOL	0x62
+ #define RK817_GAS_GAUGE_OCV_VOL_H	0x63
+ #define RK817_GAS_GAUGE_OCV_VOL_L	0x64

@@ -22,4 +22,19 @@ diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
 -  OpenGL::GL
 -  $<IF:$<BOOL:${C_OPENGL}>,libglad,>)
 +  $<$<BOOL:${C_OPENGL}>:OpenGL::GL>
-+  $<$<BOOL:${C_OPENGL}>:libglad>)
++  libglad)
+diff --git a/src/gui/render/shader.cpp b/src/gui/render/shader.cpp
+--- a/src/gui/render/shader.cpp
++++ b/src/gui/render/shader.cpp
+@@ -203,4 +203,11 @@
+ 	}
+ }
+ 
++#else
++
++bool Shader::BuildShaderProgram(const std::string&)
++{
++	return false;
++}
++
+ #endif

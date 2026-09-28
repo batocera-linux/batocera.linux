@@ -1,0 +1,101 @@
+From: Jianwei Zheng <jianwei.zheng@rock-chips.com>
+Date: Tue, 7 Dec 2021 08:30:21 +0000
+Subject: [PATCH] phy: rockchip: inno-usb2: support rk3326s and px30s tuning
+
+Tuing pre-emphasis and turn off differential receiver in suspend mode
+for rk3326s and px30s SoCs.
+
+Fix some pc can not recognize the device when using 5m cable, so tuning
+usb phy squelch trigger point configure to 100mv for px30s.
+
+Signed-off-by: Jianwei Zheng <jianwei.zheng@rock-chips.com>
+Change-Id: Ida216e8951c1f1dad19fa3ff4c31ede6a53b3458
+
+Ported from rockchip-linux/kernel commit
+711167d7b0b2200e747309ac6edc2d52f3d12946 to mainline 6.12, scoped to
+only the soc_is_px30s() branch (see
+026-px30s-cpuinfo-soc-detection.patch) - deliberately not wiring in the
+vendor's parallel non-PX30S branch, to avoid changing behavior for
+other RK3328-family boards sharing the same rk3328_phy_cfgs[] table.
+
+---
+--- a/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
++++ b/drivers/phy/rockchip/phy-rockchip-inno-usb2.c
+@@ -23,6 +23,7 @@
+ #include <linux/power_supply.h>
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/usb/of.h>
+ #include <linux/usb/otg.h>
+@@ -1705,6 +1706,61 @@
+ 	{ /* sentinel */ }
+ };
+ 
++/*
++ * Ported from vendor commit 711167d7b0b2 ("support rk3326s and px30s
++ * tuning") - PX30S needs different pre-emphasis/squelch tuning than base
++ * PX30/RK3328 to fix some hosts not recognizing the device over a 5m
++ * cable. Scoped to soc_is_px30s() only, since rk3328_phy_cfgs is shared
++ * with other boards this hasn't been tested on.
++ */
++static int rk3328_usb2phy_tuning(struct rockchip_usb2phy *rphy)
++{
++	int ret;
++
++	if (!soc_is_px30s())
++		return 0;
++
++	/* Enable otg port pre-emphasis during non-chirp phase */
++	ret = regmap_update_bits(rphy->grf, 0x8000, GENMASK(2, 0), BIT(2));
++	if (ret)
++		return ret;
++
++	/* Set otg port squelch trigger point configure to 100mv */
++	ret = regmap_update_bits(rphy->grf, 0x8004, GENMASK(7, 5), 0x40);
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(rphy->grf, 0x8008, BIT(0), 0x1);
++	if (ret)
++		return ret;
++
++	/* Turn off otg port differential receiver in suspend mode */
++	ret = regmap_update_bits(rphy->grf, 0x8030, BIT(2), 0);
++	if (ret)
++		return ret;
++
++	/* Enable host port pre-emphasis during non-chirp phase */
++	ret = regmap_update_bits(rphy->grf, 0x8400, GENMASK(2, 0), BIT(2));
++	if (ret)
++		return ret;
++
++	/* Set host port squelch trigger point configure to 100mv */
++	ret = regmap_update_bits(rphy->grf, 0x8404, GENMASK(7, 5), 0x40);
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(rphy->grf, 0x8408, BIT(0), 0x1);
++	if (ret)
++		return ret;
++
++	/* Turn off host port differential receiver in suspend mode */
++	ret = regmap_update_bits(rphy->grf, 0x8430, BIT(2), 0);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ static const struct rockchip_usb2phy_cfg rk3328_phy_cfgs[] = {
+ 	{
+ 		.reg = 0x100,
+@@ -1751,6 +1807,7 @@
+ 			.vdm_src_en	= { 0x0108, 12, 12, 0, 1 },
+ 			.vdp_src_en	= { 0x0108, 11, 11, 0, 1 },
+ 		},
++		.phy_tuning	= rk3328_usb2phy_tuning,
+ 	},
+ 	{ /* sentinel */ }
+ };

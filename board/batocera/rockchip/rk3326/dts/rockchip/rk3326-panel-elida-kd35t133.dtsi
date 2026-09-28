@@ -1,0 +1,41 @@
+/*
+  Replacement for in-tree driver panel-elida-kd35t133.c
+  (compatible = "elida,kd35t133")
+*/
+
+&dsi {
+    panel@0 {
+        compatible = "rocknix,generic-dsi";
+        panel_description =
+            "G size=42,82 delays=2,1,20,120,20 format=rgb888 lanes=1 flags=0xe03",
+
+            "M clock=17000 horizontal=320,130,4,130 vertical=480,2,1,2 default=1", // fps=60.019771
+            "M clock=17000 horizontal=320,130,15,130 vertical=480,2,88,2", // fps=49.950050
+            "M clock=17010 horizontal=320,130,20,130 vertical=480,2,83,2", // fps=50.000000
+            "M clock=17200 horizontal=320,130,12,130 vertical=480,2,97,2", // fps=50.006978
+            "M clock=17020 horizontal=320,130,12,130 vertical=480,2,16,2", // fps=57.500000
+            "M clock=18500 horizontal=320,130,22,130 vertical=480,2,76,2", // fps=54.876602
+            "M clock=19060 horizontal=320,130,29,130 vertical=480,2,40,2", // fps=59.727497
+            "M clock=18900 horizontal=320,130,5,130 vertical=480,2,55,2",  // fps=59.940060
+            "M clock=17460 horizontal=320,130,20,130 vertical=480,2,1,2",  // fps=60.000000
+            "M clock=19100 horizontal=320,130,30,130 vertical=480,2,37,2", // fps=60.098801
+            "M clock=25090 horizontal=320,130,30,130 vertical=480,2,61,2", // fps=75.469995
+            "M clock=26190 horizontal=320,130,20,130 vertical=480,2,1,2",  // fps=90.000000
+            "M clock=34920 horizontal=320,130,20,130 vertical=480,2,1,2",  // fps=120.000000
+
+            "I seq=11 wait=250",
+            "I seq=e0001318040f063a564d030a06303e0f",
+            "I seq=e100131801110638344d060d0b31370f",
+            "I seq=c01817",
+            "I seq=c141",
+            "I seq=c5001a80",
+            "I seq=3648",
+            "I seq=3a55",
+            "I seq=b000", "I seq=b1a0", "I seq=b402",
+            "I seq=b62002",
+            "I seq=e900",
+            "I seq=f7a9512c82",
+            "I seq=21",
+            "I seq=29 wait=50";
+    };
+};

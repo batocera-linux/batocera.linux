@@ -1,0 +1,55 @@
+usb: dwc2: track vbus-supply enable state
+
+--- a/drivers/usb/dwc2/core.h	2026-07-10 08:33:09
++++ b/drivers/usb/dwc2/core.h	2026-07-10 08:33:09
+@@ -1080,6 +1080,7 @@
+ 	struct dwc2_hsotg_plat *plat;
+ 	struct regulator_bulk_data supplies[DWC2_NUM_SUPPLIES];
+ 	struct regulator *vbus_supply;
++	bool vbus_supply_enabled;
+ 	struct regulator *usb33d;
+ 
+ 	spinlock_t lock;
+--- a/drivers/usb/dwc2/hcd.c	2026-07-10 08:33:09
++++ b/drivers/usb/dwc2/hcd.c	2026-07-10 08:33:09
+@@ -133,18 +133,34 @@
+ 
+ static int dwc2_vbus_supply_init(struct dwc2_hsotg *hsotg)
+ {
+-	if (hsotg->vbus_supply)
+-		return regulator_enable(hsotg->vbus_supply);
++	int ret;
+ 
+-	return 0;
++	/*
++	 * Track the regulator state ourselves: with usb role switch based
++	 * role changes the init/exit calls do not always pair up.
++	 */
++	if (!hsotg->vbus_supply || hsotg->vbus_supply_enabled)
++		return 0;
++
++	ret = regulator_enable(hsotg->vbus_supply);
++	if (!ret)
++		hsotg->vbus_supply_enabled = true;
++
++	return ret;
+ }
+ 
+ static int dwc2_vbus_supply_exit(struct dwc2_hsotg *hsotg)
+ {
+-	if (hsotg->vbus_supply)
+-		return regulator_disable(hsotg->vbus_supply);
++	int ret;
+ 
+-	return 0;
++	if (!hsotg->vbus_supply || !hsotg->vbus_supply_enabled)
++		return 0;
++
++	ret = regulator_disable(hsotg->vbus_supply);
++	if (!ret)
++		hsotg->vbus_supply_enabled = false;
++
++	return ret;
+ }
+ 
+ /**

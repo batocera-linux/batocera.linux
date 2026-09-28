@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (c) 2020 Fuzhou Rockchip Electronics Co., Ltd
+ */
+
+#include "px30.dtsi"
+
+/ {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x4000000>;	/* 64 MiB */
+			linux,cma-default;
+		};
+	};
+};
+
+&display_subsystem {
+	ports = <&vopb_out>;
+};
+
+/delete-node/ &dsi_in_vopl;
+/delete-node/ &lvds_vopl_in;
+/delete-node/ &vopl;
+/delete-node/ &vopl_mmu;
+
+&cpu0_opp_table {
+	/delete-node/ opp-600000000;
+	/delete-node/ opp-816000000;
+	/delete-node/ opp-1200000000;
+
+	opp-1416000000 {
+		opp-hz = /bits/ 64 <1416000000>;
+		opp-microvolt = <1350000 1350000 1350000>;
+		clock-latency-ns = <40000>;
+		turbo-mode;
+	};
+};
+
+&gpu_opp_table {
+	/delete-node/ opp-200000000;
+	/delete-node/ opp-300000000;
+	/delete-node/ opp-400000000;
+	/delete-node/ opp-480000000;
+
+	opp-560000000 {
+		opp-hz = /bits/ 64 <560000000>;
+		opp-microvolt = <1150000>;
+	};
+};
+
+&gpu {
+	clock-names = "bus";
+	resets = <&cru SRST_GPU>;
+	power_policy = "coarse_demand";
+
+	power_model@0 {
+		compatible = "arm,mali-simple-power-model";
+		static-coefficient = <100000>;
+		dynamic-coefficient = <953>;
+		ts = <(-108890) 63610 (-1355) 20>;
+		thermal-zone = "gpu-thermal";
+	};
+
+	power_model@1 {
+		compatible = "arm,mali-g31-power-model";
+		scale = <5>;
+	};
+};
+
+&usb20_otg {
+	usb-role-switch;
+	role-switch-default-mode = "host";
+};

@@ -1,0 +1,239 @@
+From: Finley Xiao <finley.xiao@rock-chips.com>
+Date: Mon, 30 Aug 2021 09:55:37 +0000
+Subject: [PATCH] thermal: rockchip: Support the px30s SoC in thermal driver
+
+There are two Temperature Sensor on px30s, channel 0 is for CPU,
+channel 1 is for GPU.
+
+set trim for px30s.
+
+Change-Id: I25e16c8d398634d83a3611fa829ee2e9dd974538
+Signed-off-by: Finley Xiao <finley.xiao@rock-chips.com>
+
+Ported from rockchip-linux/kernel commit
+bc7c0c8e19f4caa34ac139d571153c90dd7437b8 to mainline 6.12, adding a
+soc_is_px30s() runtime-detection override (see
+026-px30s-cpuinfo-soc-detection.patch) alongside this driver's
+existing px30s-tsadc devicetree-compatible match, as a defensive
+belt-and-suspenders measure.
+
+---
+--- a/drivers/thermal/rockchip_thermal.c
++++ b/drivers/thermal/rockchip_thermal.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/thermal.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/pinctrl/consumer.h>
+@@ -57,12 +58,17 @@
+  * @length: size of conversion table
+  * @data_mask: mask to apply on data inputs
+  * @mode: sort mode of this adc variant (incrementing or decrementing)
++ * @kNum: linear conversion slope, used instead of the table/id lookup when
++ *	  non-zero (e.g. PX30S, which has no discrete calibration table)
++ * @bNum: linear conversion intercept, paired with kNum
+  */
+ struct chip_tsadc_table {
+ 	const struct tsadc_table *id;
+ 	unsigned int length;
+ 	u32 data_mask;
+ 	enum adc_sort_mode mode;
++	int kNum;
++	int bNum;
+ };
+ 
+ /**
+@@ -91,11 +97,20 @@
+ 	enum tshut_mode tshut_mode;
+ 	enum tshut_polarity tshut_polarity;
+ 
++	/* Time (us) to wait for a conversion to complete after enabling the
++	 * ADC, before the first reading is valid (e.g. PX30S needs ~2100us;
++	 * chips that don't set this need no extra delay) */
++	int conversion_time;
++
+ 	/* Chip-wide methods */
+ 	void (*initialize)(struct regmap *grf,
+ 			   void __iomem *reg, enum tshut_polarity p);
+ 	void (*irq_ack)(void __iomem *reg);
+ 	void (*control)(void __iomem *reg, bool on);
++	/* Override the tsadc clock rate away from whatever the devicetree's
++	 * assigned-clock-rates says, for chips that require a specific rate
++	 * (e.g. PX30S needs 4MHz) */
++	int (*set_clk_rate)(struct platform_device *pdev);
+ 
+ 	/* Per-sensor methods */
+ 	int (*get_temp)(const struct chip_tsadc_table *table,
+@@ -228,7 +243,13 @@
+ #define GRF_TSADC_TESTBIT_L			0x0e648
+ #define GRF_TSADC_TESTBIT_H			0x0e64c
+ 
++#define PX30_GRF_SOC_CON0			0x0400
+ #define PX30_GRF_SOC_CON2			0x0408
++#define PX30S_TSADC_TDC_MODE			(0x10001 << 4)
++#define PX30S_TSADC_TRIM			(0xf0007 << 0)
++
++#define MIN_TEMP				(-40000)
++#define MAX_TEMP				(125000)
+ 
+ #define RK3568_GRF_TSADC_CON			0x0600
+ #define RK3568_GRF_TSADC_ANA_REG0		(0x10001 << 0)
+@@ -554,6 +575,9 @@
+ 	unsigned int denom;
+ 	u32 error = table->data_mask;
+ 
++	if (table->kNum)
++		return DIV_ROUND_UP(temp / 100 * table->kNum, 10000) + table->bNum;
++
+ 	low = 0;
+ 	high = (table->length - 1) - 1; /* ignore the last check for table */
+ 	mid = (high + low) / 2;
+@@ -607,6 +631,13 @@
+ 	unsigned int num;
+ 	unsigned long denom;
+ 
++	if (table->kNum) {
++		*temp = (((int)code - table->bNum) * 10000 / table->kNum) * 100;
++		if (*temp < MIN_TEMP || *temp > MAX_TEMP)
++			return -EAGAIN;
++		return 0;
++	}
++
+ 	WARN_ON(table->length < 2);
+ 
+ 	switch (table->mode) {
+@@ -773,6 +804,14 @@
+ 	regmap_write(grf, PX30_GRF_SOC_CON2, GRF_CON_TSADC_CH_INV);
+ }
+ 
++static void rk_tsadcv9_initialize(struct regmap *grf, void __iomem *regs,
++				  enum tshut_polarity tshut_polarity)
++{
++	rk_tsadcv2_initialize(grf, regs, tshut_polarity);
++	regmap_write(grf, PX30_GRF_SOC_CON0, PX30S_TSADC_TDC_MODE);
++	regmap_write(grf, PX30_GRF_SOC_CON0, PX30S_TSADC_TRIM);
++}
++
+ static void rk_tsadcv7_initialize(struct regmap *grf, void __iomem *regs,
+ 				  enum tshut_polarity tshut_polarity)
+ {
+@@ -1085,6 +1124,65 @@
+ 	},
+ };
+ 
++static int rk_tsadcv1_set_clk_rate(struct platform_device *pdev)
++{
++	struct clk *clk;
++	int error;
++
++	clk = devm_clk_get(&pdev->dev, "tsadc");
++	if (IS_ERR(clk)) {
++		error = PTR_ERR(clk);
++		dev_err(&pdev->dev, "failed to get tsadc clock\n");
++		return error;
++	}
++	error = clk_set_rate(clk, 4000000);
++	if (error < 0) {
++		devm_clk_put(&pdev->dev, clk);
++		dev_err(&pdev->dev,
++			"failed to set tsadc clk rate to 4000000Hz\n");
++		return error;
++	}
++	devm_clk_put(&pdev->dev, clk);
++
++	return 0;
++}
++
++/*
++ * PX30S is a distinct chip variant from plain PX30 (detected via a
++ * DDR_GRF_CON1 register bit, see rockchip,px30s-tsadc in the devicetree
++ * binding), with a different ADC init sequence (rk_tsadcv9_initialize vs
++ * rk_tsadcv4_initialize), a required 4MHz tsadc clock rate rather than
++ * whatever the devicetree assigns, a mandatory ~2.1ms settle time after
++ * enabling the ADC before the first reading is valid, and a linear
++ * code<->temperature conversion (kNum/bNum) rather than a discrete lookup
++ * table. Without all of these, raw ADC reads come back stuck at 0.
++ */
++static const struct rockchip_tsadc_chip px30s_tsadc_data = {
++	/* cpu, gpu */
++	.chn_offset = 0,
++	.chn_num = 2, /* 2 channels for tsadc */
++	.conversion_time = 2100, /* us */
++
++	.tshut_mode = TSHUT_MODE_CRU, /* default TSHUT via CRU */
++	.tshut_temp = 95000,
++
++	.initialize = rk_tsadcv9_initialize,
++	.irq_ack = rk_tsadcv3_irq_ack,
++	.control = rk_tsadcv2_control,
++	.get_temp = rk_tsadcv2_get_temp,
++	.set_alarm_temp = rk_tsadcv2_alarm_temp,
++	.set_tshut_temp = rk_tsadcv2_tshut_temp,
++	.set_tshut_mode = rk_tsadcv2_tshut_mode,
++	.set_clk_rate = rk_tsadcv1_set_clk_rate,
++
++	.table = {
++		.kNum = 2699,
++		.bNum = 2796,
++		.data_mask = TSADCV2_DATA_MASK,
++		.mode = ADC_INCREMENT,
++	},
++};
++
+ static const struct rockchip_tsadc_chip rv1108_tsadc_data = {
+ 	/* cpu */
+ 	.chn_offset = 0,
+@@ -1310,6 +1408,9 @@
+ 	{	.compatible = "rockchip,px30-tsadc",
+ 		.data = (void *)&px30_tsadc_data,
+ 	},
++	{	.compatible = "rockchip,px30s-tsadc",
++		.data = (void *)&px30s_tsadc_data,
++	},
+ 	{
+ 		.compatible = "rockchip,rv1108-tsadc",
+ 		.data = (void *)&rv1108_tsadc_data,
+@@ -1534,6 +1635,10 @@
+ 	thermal->chip = device_get_match_data(&pdev->dev);
+ 	if (!thermal->chip)
+ 		return -EINVAL;
++	/* Override to the PX30S table on real PX30S silicon regardless of
++	 * compatible string, matching vendor commit bc7c0c8e19f4. */
++	if (soc_is_px30s())
++		thermal->chip = &px30s_tsadc_data;
+ 
+ 	thermal->sensors = devm_kcalloc(&pdev->dev, thermal->chip->chn_num,
+ 					sizeof(*thermal->sensors), GFP_KERNEL);
+@@ -1554,6 +1659,9 @@
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(thermal->clk),
+ 				     "failed to get tsadc clock.\n");
+ 
++	if (thermal->chip->set_clk_rate)
++		thermal->chip->set_clk_rate(pdev);
++
+ 	thermal->pclk = devm_clk_get_enabled(&pdev->dev, "apb_pclk");
+ 	if (IS_ERR(thermal->pclk))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(thermal->pclk),
+@@ -1587,6 +1695,9 @@
+ 				     "failed to request tsadc irq.\n");
+ 
+ 	thermal->chip->control(thermal->regs, true);
++	if (thermal->chip->conversion_time)
++		usleep_range(thermal->chip->conversion_time,
++			     thermal->chip->conversion_time + 50);
+ 
+ 	for (i = 0; i < thermal->chip->chn_num; i++) {
+ 		rockchip_thermal_toggle_sensor(&thermal->sensors[i], true);
+@@ -1671,6 +1782,9 @@
+ 	}
+ 
+ 	thermal->chip->control(thermal->regs, true);
++	if (thermal->chip->conversion_time)
++		usleep_range(thermal->chip->conversion_time,
++			     thermal->chip->conversion_time + 50);
+ 
+ 	for (i = 0; i < thermal->chip->chn_num; i++)
+ 		rockchip_thermal_toggle_sensor(&thermal->sensors[i], true);

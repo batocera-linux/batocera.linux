@@ -1,0 +1,106 @@
+Subject: [PATCH] input: pwm-vibra: kick PWM out of stuck boot-inherited state before disabling
+
+Not ported from upstream - written directly while diagnosing the GKD
+Pixel 2's rumble motor running constantly from boot (rk3326s-gkd-pixel2.dts,
+PX30S). This channel can power up already latched in a stuck-on state
+(enabled, 100% duty), and this driver's probe-time disable (state.enabled
+= false with whatever duty_cycle pwm_init_state() inherited from that
+boot state) never clears it - confirmed via direct register readback
+that the "disabled" write is genuinely applied in software, yet the
+physical output never changes.
+
+Extensive live-hardware testing (raw register writes, and a real
+FF_RUMBLE upload/play/stop cycle through the evdev ioctl path) found
+that once the channel is driven through a real, substantial duty
+change - not just toggling the enable bit - a subsequent disable takes
+hold correctly. The very first transition away from the exact
+boot-inherited register state is the only one that's broken; every
+transition after that behaves normally.
+
+Fix: at probe, ramp the duty cycle down from 90% (skipping the
+redundant 100% step, since that's already where the boot-inherited
+state sits) to 0% in ten steps over a fixed 250ms, then disable -
+forcing that first real transition automatically before userspace ever
+sees the device, instead of leaving it to whatever the boot state
+happened to be. A gradual ramp rather than a hard stop, and a fixed
+duration rather than one scaled to the configured period, were both
+chosen after real-hardware listening tests: long enough to hold
+regardless of period, gradual enough to feel like a deliberate fade
+rather than a jarring pulse.
+
+Scoped to soc_is_px30s() (the shared helper from
+026-px30s-cpuinfo-soc-detection.patch) since PX30S/GKD Pixel 2 is the
+only silicon confirmed to hit this symptom - every other board using
+this shared mainline driver keeps the original, unmodified plain
+disable.
+
+---
+--- a/drivers/input/misc/pwm-vibra.c
++++ b/drivers/input/misc/pwm-vibra.c
+@@ -11,6 +11,7 @@
+  *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
+  */
+
++#include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/input.h>
+ #include <linux/kernel.h>
+@@ -20,6 +21,7 @@
+ #include <linux/property.h>
+ #include <linux/pwm.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/rockchip/cpu.h>
+ #include <linux/slab.h>
+
+ struct pwm_vibrator {
+@@ -129,7 +131,7 @@
+ {
+ 	struct pwm_vibrator *vibrator;
+ 	struct pwm_state state;
+-	int err;
++	int err, i;
+
+ 	vibrator = devm_kzalloc(&pdev->dev, sizeof(*vibrator), GFP_KERNEL);
+ 	if (!vibrator)
+@@ -157,9 +159,40 @@
+
+ 	INIT_WORK(&vibrator->play_work, pwm_vibrator_play_work);
+
+-	/* Sync up PWM state and ensure it is off. */
+ 	pwm_init_state(vibrator->pwm, &state);
++
++	if (soc_is_px30s()) {
++		/*
++		 * This channel can power up already latched in a stuck-on
++		 * state (enabled, 100% duty) that a plain disable never
++		 * clears - the very first transition away from that
++		 * boot-inherited state needs a real, substantial duty change
++		 * to actually take hold in hardware. Ramp down from 90% duty
++		 * (skipping the redundant 100% step, since that's already
++		 * where the boot-inherited state sits) to 0% over a fixed
++		 * 250ms before disabling - long enough to hold on any
++		 * board's period, gradual enough to feel like a deliberate
++		 * fade rather than an abrupt jolt. Scoped to PX30S, the only
++		 * silicon variant confirmed to hit this symptom (GKD
++		 * Pixel 2) - other boards using this driver keep the plain
++		 * disable below unchanged.
++		 */
++		state.enabled = true;
++		for (i = 0; i < 10; i++) {
++			state.duty_cycle = state.period * (9 - i) / 10;
++			err = pwm_apply_might_sleep(vibrator->pwm, &state);
++			if (err) {
++				dev_err(&pdev->dev,
++					"failed to kick pwm state: %d\n",
++					err);
++				return err;
++			}
++			msleep(25);
++		}
++	}
++
+ 	state.enabled = false;
++	state.duty_cycle = 0;
+ 	err = pwm_apply_might_sleep(vibrator->pwm, &state);
+ 	if (err) {
+ 		dev_err(&pdev->dev, "failed to apply initial PWM state: %d\n",

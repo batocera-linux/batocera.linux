@@ -22,14 +22,11 @@ Both changes are gated behind MMC_CAP2_WIFI_RK915 (set via the
 
 Signed-off-by: Imanol-Mikel Barba <imanol@local>
 ---
- drivers/mmc/host/dw_mmc.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
 diff --git a/drivers/mmc/host/dw_mmc.c b/drivers/mmc/host/dw_mmc.c
-index 555555555555..666666666666 100644
+index d734d0104..95a6b9fb6 100644
 --- a/drivers/mmc/host/dw_mmc.c
 +++ b/drivers/mmc/host/dw_mmc.c
-@@ -267,6 +267,11 @@
+@@ -254,6 +254,11 @@ static u32 dw_mci_prepare_command(struct mmc_host *mmc, struct mmc_command *cmd)
  	else if (cmd->opcode != MMC_SEND_STATUS && cmd->data)
  		cmdr |= SDMMC_CMD_PRV_DAT_WAIT;
  
@@ -41,16 +38,13 @@ index 555555555555..666666666666 100644
  	if (cmd->opcode == SD_SWITCH_VOLTAGE) {
  		u32 clk_en_a;
  
-@@ -1263,7 +1268,8 @@
+@@ -1173,7 +1178,8 @@ static void dw_mci_setup_bus(struct dw_mci *host, bool force_clkinit)
  
  		/* enable clock; only low power if no SDIO */
- 		clk_en_a = SDMMC_CLKEN_ENABLE << slot->id;
--		if (!test_bit(DW_MMC_CARD_NO_LOW_PWR, &slot->flags))
-+		if (!test_bit(DW_MMC_CARD_NO_LOW_PWR, &slot->flags) &&
-+		    !(slot->mmc->caps2 & MMC_CAP2_WIFI_RK915))
- 			clk_en_a |= SDMMC_CLKEN_LOW_PWR << slot->id;
+ 		clk_en_a = SDMMC_CLKEN_ENABLE;
+-		if (!test_bit(DW_MMC_CARD_NO_LOW_PWR, &host->flags))
++		if (!test_bit(DW_MMC_CARD_NO_LOW_PWR, &host->flags) &&
++		    !(host->mmc->caps2 & MMC_CAP2_WIFI_RK915))
+ 			clk_en_a |= SDMMC_CLKEN_LOW_PWR;
  		mci_writel(host, CLKENA, clk_en_a);
  
--- 
-2.45.0
-
