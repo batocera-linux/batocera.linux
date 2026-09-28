@@ -31,6 +31,11 @@ disks_to_keep() {
 	sort -u
 }
 
+# Android internal storage (UFS LUNs or eMMC) holding bootloaders and firmware
+is_android_disk() {
+    lsblk -nro PARTLABEL "/dev/$1" 2>/dev/null | grep -qE '^(xbl|abl|cdt|ddr|modem|persist|fsg|super|metadata)(_[ab])?$'
+}
+
 do_listDisks() {
     echo "INTERNAL INTERNAL"
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
@@ -39,6 +44,7 @@ do_listDisks() {
 	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
 	while read XDRIVE XTEXT
 	do
+	    is_android_disk "${XDRIVE}" && continue
 	    for XKEEP in $(disks_to_keep)
 	    do
 		if test "${XKEEP}" != "${XDRIVE}"
