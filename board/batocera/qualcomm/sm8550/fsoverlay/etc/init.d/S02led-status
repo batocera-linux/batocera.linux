@@ -6,7 +6,7 @@
 export LC_ALL=C
 
 case "$(batocera-model 2>/dev/null)" in
-    AYN_Odin_2|AYN_Odin_2_Mini|AYN_Odin_2_Portal|AYN_Thor) ;;
+    AYN_Odin_2|AYN_Odin_2_Mini|AYN_Odin_2_Portal|AYN_Thor|AYANEO_Pocket_DS) ;;
     *) exit 0 ;;
 esac
 

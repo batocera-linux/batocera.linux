@@ -1,0 +1,27 @@
+#!/bin/sh
+
+PIDFILE=/var/run/ayaneo-pad-merge.pid
+
+exec 9>/var/run/ayaneo-pad-merge.lock
+flock 9
+
+[ -e "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null && exit 0
+
+PAD=
+KEYS=
+for DEV in /sys/class/input/event*; do
+    case "$(readlink -f "$DEV")" in */virtual/*) continue ;; esac
+    case "$(cat "$DEV/device/name" 2>/dev/null)" in
+        "AYANEO Controller") PAD=/dev/input/${DEV##*/} ;;
+        "AYANEO DEVICE") KEYS=/dev/input/${DEV##*/} ;;
+    esac
+done
+[ -n "$PAD" ] && [ -n "$KEYS" ] || exit 0
+
+# BTN_5 goes above the pad's own buttons so their SDL indexes, and so the GUID's mapping, stay the same
+setsid evsieve --input "$PAD" grab persist=exit \
+    --input "$KEYS" domain=keys grab persist=exit \
+    --map btn:5@keys btn:trigger_happy1@pad --block @keys \
+    --output name="AYANEO Controller" device-id=4001:0428 bus=3 version=0111 \
+    >/dev/null 2>/var/log/ayaneo-pad-merge.log </dev/null 9>&- &
+echo $! > "$PIDFILE"

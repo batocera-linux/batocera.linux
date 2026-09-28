@@ -6,19 +6,32 @@ case "$1" in
 
     # Log the detected model to dmesg so we can debug it
     echo "AYN: Boot script started. Detected model: '$V_BOARD_MODEL'" >> /dev/kmsg
-    if [ "$V_BOARD_MODEL" = "AYN_Thor" ]; then
-        echo "AYN: Thor model detected, waiting for DRM..." >> /dev/kmsg
+    case "$V_BOARD_MODEL" in
+      AYN_Thor) BOTTOM_PANEL=DSI-1 ;;
+      AYANEO_Pocket_DS) BOTTOM_PANEL=DSI-2 ;;
+    esac
+    if [ -n "$BOTTOM_PANEL" ]; then
+        echo "AYN: $V_BOARD_MODEL detected, waiting for DRM..." >> /dev/kmsg
         for i in 1 2 3 4 5 6 7 8 9 10; do
-            if [ -w /sys/class/drm/card0-DSI-1/status ]; then
-                echo "off" > /sys/class/drm/card0-DSI-1/status
+            if [ -w /sys/class/drm/card0-$BOTTOM_PANEL/status ]; then
+                echo "off" > /sys/class/drm/card0-$BOTTOM_PANEL/status
                 sleep 0.1
-                echo "AYN: SUCCESS - DSI-1 disabled successfully!" >> /dev/kmsg
+                # fbdev sized the console to the smaller cloned panel, grow it to the full buffer
+                python3 -c '
+import fcntl, struct
+with open("/dev/fb0", "r+b") as f:
+    b = bytearray(160)
+    fcntl.ioctl(f, 0x4600, b)
+    b[0:8] = b[8:16]
+    fcntl.ioctl(f, 0x4601, b)
+' 2>/dev/null
+                echo "AYN: SUCCESS - $BOTTOM_PANEL disabled successfully!" >> /dev/kmsg
                 exit 0
             fi
             sleep 0.2
         done
 
-        echo "AYN: FAILED - /sys/class/drm/card0-DSI-1/status never appeared!" >> /dev/kmsg
+        echo "AYN: FAILED - /sys/class/drm/card0-$BOTTOM_PANEL/status never appeared!" >> /dev/kmsg
     fi
     # Keep the add-on screen dark until labwc so the splash stays on the internal panel
     case "$V_BOARD_MODEL" in

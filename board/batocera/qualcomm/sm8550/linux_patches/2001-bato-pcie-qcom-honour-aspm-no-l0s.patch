@@ -1,0 +1,22 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] PCI: qcom: honour the aspm-no-l0s DT property
+
+Some boards log a flood of correctable AER errors with L0s enabled on a
+link that is fine on other boards with the same SoC. Clear L0s from the
+root port's link capabilities when the controller node has aspm-no-l0s.
+
+---
+diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
+index 0ad66c62c..85400dabd 100644
+--- a/drivers/pci/controller/dwc/pcie-qcom.c
++++ b/drivers/pci/controller/dwc/pcie-qcom.c
+@@ -344,7 +344,8 @@ static void qcom_pcie_clear_aspm_l0s(struct dw_pcie *pci)
+ 	u16 offset;
+ 	u32 val;
+ 
+-	if (!pcie->cfg->no_l0s)
++	if (!pcie->cfg->no_l0s &&
++	    !of_property_read_bool(pci->dev->of_node, "aspm-no-l0s"))
+ 		return;
+ 
+ 	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);

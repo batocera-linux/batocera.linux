@@ -17,6 +17,7 @@
 - Anbernic RG Vita Pro initial support
 - Anbernic RG40xx-H-v2-panel variant support
 - Anbernic RG40xx-V-v2-panel variant support
+- Ayaneo Pocket DS initial support
 - AYN Odin initial support
 - AYN Odin 3 initial support
 - GameKiddy GKD Pixel2 initial support

@@ -1,0 +1,3 @@
+# Fold the AYANEO DEVICE button into the AYANEO Controller, hide the raw pad behind the merged one
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ENV{ID_VENDOR_ID}=="4001", ENV{ID_MODEL_ID}=="0428", ENV{ID_INPUT_JOYSTICK}="0", RUN+="/usr/bin/ayaneo-pad-merge"
+SUBSYSTEM=="input", KERNEL=="event*", ACTION=="add", ENV{ID_VENDOR_ID}=="1c4f", ENV{ID_MODEL_ID}=="0002", ATTRS{name}=="AYANEO DEVICE", RUN+="/usr/bin/ayaneo-pad-merge"
