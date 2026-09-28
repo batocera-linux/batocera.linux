@@ -54,10 +54,35 @@
 		enable-active-high;
 	};
 
+	/* batocera - hall lid sensor on eGPIO 166, which Android reads through the sensor hub */
+	gpio-keys-lid {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&hall_lid_default>;
+		pinctrl-names = "default";
+
+		hall-lid-sensor {
+			label = "Hall Lid Sensor";
+			gpios = <&tlmm 166 GPIO_ACTIVE_LOW>;
+			linux,input-type = <EV_SW>;
+			linux,code = <SW_LID>;
+			debounce-interval = <100>;
+			linux,can-disable;
+			wakeup-source;
+		};
+	};
+
 };
 
 &tlmm {
 	gpio-reserved-ranges = <32 4>;
+
+	/* batocera - hall lid sensor, push-pull output */
+	hall_lid_default: hall-lid-default-state {
+		pins = "gpio166";
+		function = "gpio";
+		bias-disable;
+	};
+
     panel_pwr_active: panel-pwr-active-state {
         pins = "gpio152", "gpio153";
         function = "gpio";
@@ -278,4 +303,9 @@
 &mdss_dsi1_phy {
 	vdds-supply = <&vreg_l1e_0p88>;
 	status = "okay";
+};
+
+/* batocera - L0s on the WiFi link floods correctable AER errors */
+&pcie0 {
+	aspm-no-l0s;
 };

@@ -1,0 +1,23 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] Input: goodix - don't fail suspend when screen-off is NACKed
+
+Some GT911 boards NACK the screen-off command after INT is pulled low,
+which aborts system suspend. Carry on instead: resume already resets and
+reconfigures the controller when it doesn't answer.
+
+---
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -1499,9 +1499,9 @@
+ 	error = goodix_i2c_write_u8(ts->client, GOODIX_REG_COMMAND,
+ 				    GOODIX_CMD_SCREEN_OFF);
+ 	if (error) {
+-		goodix_irq_direction_input(ts);
+-		goodix_request_irq(ts);
+-		return -EAGAIN;
++		/* Some boards NACK screen-off; resume resets the controller when it doesn't answer */
++		dev_warn(dev, "screen-off failed: %d\n", error);
++		return 0;
+ 	}
+ 
+ 	/*
