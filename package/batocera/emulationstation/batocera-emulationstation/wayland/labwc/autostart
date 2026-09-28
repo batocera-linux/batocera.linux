@@ -14,6 +14,17 @@ while ! wlr-randr > /dev/null 2>&1; do
   fi
 done
 
+# The splash left its output disconnected, reconnect it now labwc owns the display
+if output=$(batocera-settings-get-master splash.screen.output); then
+    for status in /sys/class/drm/card*-"${output}"/status; do
+        [ -w "$status" ] && echo detect > "$status"
+    done
+    for i in $(seq 20); do
+        wlr-randr | grep -q "^${output} " && break
+        sleep 0.1
+    done
+fi
+
 # Device quirks
 BATOCERA_MODEL=$(batocera-model)
 test -e "/usr/share/labwc/autostart_${BATOCERA_MODEL}" && "/usr/share/labwc/autostart_${BATOCERA_MODEL}"

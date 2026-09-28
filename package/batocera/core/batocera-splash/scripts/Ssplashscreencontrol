@@ -11,6 +11,8 @@ splash_autoplay ()
         sleep 1
         count=$((count+1))
         kill -0 $PID 2>/dev/null || break
+        # mpv holds the last frame for a splash output instead of exiting
+        [ -n "$SPLASH_OUTPUT" ] && grep -q "\[vf\] filter output EOF" /userdata/system/logs/mpv.log 2>/dev/null && break
     done
 }
 
@@ -33,7 +35,13 @@ splash_stop ()
     # starts the compositor right after us and needs the DRM master mpv still
     # holds. Remove the pid file, so "S28splash stop" at shutdown can't hit a
     # recycled pid.
-    local pid n=0
+    local pid n=0 status
+    # Disconnect the splash output while mpv is still master, the labwc autostart reconnects it
+    if [ -n "$SPLASH_OUTPUT" ]; then
+        for status in /sys/class/drm/card*-"${SPLASH_OUTPUT}"/status; do
+            [ -w "$status" ] && echo off > "$status"
+        done
+    fi
     pid=$(cat /var/run/user-splash.pid 2>/dev/null)
     start-stop-daemon -K -q -p /var/run/user-splash.pid
     if [ -n "$pid" ]; then
@@ -49,6 +57,7 @@ splash_stop ()
 #### MAIN ####
 
 ARCH=$(cat /usr/share/batocera/batocera.arch)
+SPLASH_OUTPUT=$(/usr/bin/batocera-settings-get-master splash.screen.output)
 
 case $1 in
     start)
