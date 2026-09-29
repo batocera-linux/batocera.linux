@@ -18,6 +18,8 @@ members = [
     "batocera-launch-flycast",
     "batocera-launch-kodi",
     "batocera-launch-linuxloader",
+    "batocera-launch-mame",
+    "batocera-launch-mame-common",
     "batocera-launch-mupen64plus",
     "batocera-launch-openjazz",
     "batocera-launch-openjk",
@@ -197,6 +199,7 @@ version = "44.0"
 source = { editable = "package/batocera/core/batocera-configgen/configgen" }
 dependencies = [
     { name = "batocera-launch" },
+    { name = "batocera-launch-mame-common" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
@@ -211,6 +214,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-mame-common", editable = "python-src/batocera-launch-mame-common" },
     { name = "configobj" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
     { name = "ffmpeg-python" },
@@ -399,6 +403,40 @@ requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
     { name = "evdev", marker = "sys_platform == 'linux'" },
+]
+
+[[package]]
+name = "batocera-launch-mame"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-mame" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "batocera-launch-mame-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-mame-common", editable = "python-src/batocera-launch-mame-common" },
+]
+
+[[package]]
+name = "batocera-launch-mame-common"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-mame-common" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "lazy-loader" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "lazy-loader" },
 ]
 
 [[package]]

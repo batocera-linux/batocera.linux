@@ -28,6 +28,8 @@ from .devices.gun import (
 )
 from .devices.input import Input as Input, InputDict as InputDict, InputMapping as InputMapping
 from .devices.video import configure_windows as configure_windows, find_screen as find_screen
+from .draw.gun_borders import create_gun_border_image as create_gun_border_image
+from .draw.pil import create_transparent_image as create_transparent_image, get_image_size as get_image_size
 from .emulator import Emulator as Emulator
 from .exceptions import (
     BadCommandLineArguments as BadCommandLineArguments,
@@ -39,7 +41,7 @@ from .exceptions import (
     UnknownEmulator as UnknownEmulator,
 )
 from .parallel_startup_task_mixin import ParallelStartupTaskMixin as ParallelStartupTaskMixin
-from .rom import Rom as Rom
+from .rom import Rom as Rom, ShortGameID as ShortGameID
 from .special_decorations_mixin import SpecialDecorationsMixin as SpecialDecorationsMixin
 from .types import (
     BezelFiles as BezelFiles,

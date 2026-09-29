@@ -10,6 +10,7 @@ BATOCERA_CONFIGGEN_SETUP_TYPE = hatch
 BATOCERA_CONFIGGEN_DEPENDENCIES = \
 	python-batocera-common \
 	batocera-launch \
+	batocera-launch-mame-common \
 	python-toml \
 	python-evdev \
 	python-pyudev \

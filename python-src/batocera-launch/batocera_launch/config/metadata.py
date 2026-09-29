@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from ..rom import Rom
+    from ..rom import ShortGameID
+
 
 _logger = logging.getLogger(__name__)
 
@@ -42,14 +43,13 @@ def _update_metadata_from_element(md: dict[str, str], element: ET.Element, /, ex
             _logger.info('found game metadata %s=%s%s', key, attrib_value, extra_log_text)
 
 
-def get_games_meta_data(db_xml: str | Path, system: str, rom: Rom) -> dict[str, str]:
+def get_games_meta_data(db_xml: str | Path, system: str, game_id: ShortGameID, /) -> dict[str, str]:
     # load the database
     tree = ET.parse(db_xml)
     root: ET.Element = tree.getroot()
-    game = rom.short_id
     md: dict[str, str] = {}
 
-    _logger.info('looking for game metadata (%s, %s) in %s', system, game, db_xml)
+    _logger.info('looking for game metadata (%s, %s) in %s', system, game_id, db_xml)
 
     target_system = 'arcade' if system in _ARCADE_SYSTEMS else system
 
@@ -62,7 +62,7 @@ def get_games_meta_data(db_xml: str | Path, system: str, rom: Rom) -> dict[str, 
             _update_metadata_from_element(md, default_element, extra_log_text=' (system level)')
 
         for game_element in system_element.iterfind('./game[@id!="default"]'):
-            if game_element.attrib['id'] not in game:
+            if game_element.attrib['id'] not in game_id:
                 continue
             _update_metadata_from_element(md, game_element)
             return md

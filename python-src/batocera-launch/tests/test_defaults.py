@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from batocera_launch.config.defaults import load_defaults, load_system_defaults
-from batocera_launch.paths import DEFAULTS_DIR
+from batocera_launch.paths import LAUNCH_DEFAULTS_DIR
 
 if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
@@ -180,7 +180,7 @@ nes:
 class TestLoadSystemDefaults:
     def test_flattens_options_into_top_level(self) -> None:
         _write_yaml(
-            DEFAULTS_DIR / 'config.yml',
+            LAUNCH_DEFAULTS_DIR / 'config.yml',
             """\
 default:
   emulator: libretro
@@ -205,7 +205,7 @@ nes:
 
     def test_merges_arch_overrides_when_present(self) -> None:
         _write_yaml(
-            DEFAULTS_DIR / 'config.yml',
+            LAUNCH_DEFAULTS_DIR / 'config.yml',
             """\
 default:
   emulator: libretro
@@ -218,7 +218,7 @@ n64:
 """,
         )
         _write_yaml(
-            DEFAULTS_DIR / 'config-arch.yml',
+            LAUNCH_DEFAULTS_DIR / 'config-arch.yml',
             """\
 default:
   options:
@@ -238,10 +238,10 @@ n64:
         }
 
     def test_real_defaults_resources(self, fs: FakeFilesystem) -> None:
-        fs.add_real_directory(_REAL_DEFAULTS_DIR, target_path=DEFAULTS_DIR)  # pyright: ignore
+        fs.add_real_directory(_REAL_DEFAULTS_DIR, target_path=LAUNCH_DEFAULTS_DIR)  # pyright: ignore
         fs.add_real_file(  # pyright: ignore
             _REAL_DEFAULTS_DIR / 'config-x86_64.yml',
-            target_path=DEFAULTS_DIR / 'config-arch.yml',
+            target_path=LAUNCH_DEFAULTS_DIR / 'config-arch.yml',
         )
 
         nes = load_system_defaults('nes')

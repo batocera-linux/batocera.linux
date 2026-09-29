@@ -6,12 +6,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
-from contextlib import (
-    AbstractAsyncContextManager,
-    AbstractContextManager,
-    AsyncExitStack,
-    chdir,
-)
+from contextlib import AbstractAsyncContextManager, AbstractContextManager, AsyncExitStack, chdir
 from dataclasses import field
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final, Self, cast
@@ -35,7 +30,7 @@ from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
-from .rom import Rom
+from .rom import Rom, ShortGameID
 
 if TYPE_CHECKING:
     from collections.abc import Container, Iterator, Mapping
@@ -159,6 +154,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     @property
     def core(self) -> str:
         return self.config.core
+
+    @cached_property
+    def rom_short_id(self) -> ShortGameID:
+        return self.rom.source_short_id
 
     @property
     def render_config(self) -> Config:
@@ -366,7 +365,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             await self.__client_session.close()
 
     def get_games_metadata(self, metadata_file: Path) -> dict[str, str]:
-        return get_games_meta_data(metadata_file, self.system, self.rom)
+        return get_games_meta_data(metadata_file, self.system, self.rom_short_id)
 
     async def prepare_bezel(self) -> Path | None:
         if self.handles_bezels:

@@ -3,6 +3,7 @@ name = "batocera-configgen"
 version = '44.0'
 dependencies = [
     'batocera-launch',
+    'batocera-launch-mame-common',
     'toml',
     'evdev; sys_platform == "linux"',
     'pyudev; sys_platform == "linux"',
