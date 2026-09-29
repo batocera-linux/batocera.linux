@@ -1,0 +1,379 @@
+From: ROCKNIX <noreply@rocknix.org>
+Date: Sat, 6 Jun 2026 00:00:00 +0000
+Subject: [PATCH] input: touchscreen: add Chipone ICNL99xx TDDI driver
+
+Lean driver for the Chipone ICNL99xx (TDDI) in-cell touch controller, as
+found on the KONKR Pocket FIT Elite (ICNL9922C @ i2c4 0x48). The chip runs
+resident firmware, so the driver only does normal-mode touch reporting.
+Protocol ("TCS" command layer) reversed from the vendor chipone_tddi.ko.
+pm: a PM notifier masks the IRQ at PM_SUSPEND_PREPARE and resets the
+chip + unmasks at PM_POST_SUSPEND — the panel (and the touch IC with it)
+suspends before an i2c-client dev_pm_ops hook runs, so the INT glitch
+already had the threaded handler stuck in a dead-bus I2C read (~1.7 s
+GPI timeout) on every suspend entry.
+---
+diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+--- a/drivers/input/touchscreen/Kconfig
++++ b/drivers/input/touchscreen/Kconfig
+@@ -210,6 +210,18 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called chipone_icn8505.
+ 
++config TOUCHSCREEN_CHIPONE_TDDI
++	tristate "Chipone ICNL99xx TDDI touchscreen controller"
++	depends on I2C
++	help
++	  Say Y here if you have a Chipone ICNL99xx (e.g. ICNL9922C) TDDI
++	  in-cell touchscreen, as found on the KONKR Pocket FIT Elite.
++
++	  If unsure, say N.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called chipone-tddi.
++
+ config TOUCHSCREEN_CY8CTMA140
+ 	tristate "cy8ctma140 touchscreen"
+ 	depends on I2C
+diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+--- a/drivers/input/touchscreen/Makefile
++++ b/drivers/input/touchscreen/Makefile
+@@ -23,6 +23,7 @@
+ obj-$(CONFIG_TOUCHSCREEN_BU21029)	+= bu21029_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_CHIPONE_ICN8318)	+= chipone_icn8318.o
+ obj-$(CONFIG_TOUCHSCREEN_CHIPONE_ICN8505)	+= chipone_icn8505.o
++obj-$(CONFIG_TOUCHSCREEN_CHIPONE_TDDI)	+= chipone-tddi.o
+ obj-$(CONFIG_TOUCHSCREEN_CY8CTMA140)	+= cy8ctma140.o
+ obj-$(CONFIG_TOUCHSCREEN_CY8CTMG110)	+= cy8ctmg110_ts.o
+ obj-$(CONFIG_TOUCHSCREEN_CYTTSP_CORE)	+= cyttsp_core.o
+diff --git a/drivers/input/touchscreen/chipone-tddi.c b/drivers/input/touchscreen/chipone-tddi.c
+new file mode 100644
+--- /dev/null
++++ b/drivers/input/touchscreen/chipone-tddi.c
+@@ -0,0 +1,327 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Chipone ICNL99xx (TDDI) touchscreen driver — lean mainline port.
++ *
++ * Target: KONKR Pocket FIT Elite, panel touch IC = ICNL9922C on i2c4 @ 0x48,
++ * IRQ TLMM 162 (falling edge), reset TLMM 161 (active-low). The controller
++ * runs resident firmware (no host firmware download), so this driver only
++ * does normal-mode touch reporting — no flashing / factory-test paths.
++ *
++ * Protocol reversed from the stock vendor module chipone_tddi.ko v3.4.7
++ * ("TCS" command layer) + the public ICNT8xxx CTS source (reporting/struct):
++ *
++ *   TCS read transaction (cts_tcs_read in the vendor .ko):
++ *     - build a 6-byte command header:
++ *         [cmd_lo, cmd_hi, len_lo, len_hi, checksum, 0x01]
++ *       checksum = ~(cmd_lo + cmd_hi + len_lo + len_hi) & 0xff
++ *     - I2C write the 6 header bytes to addr 0x48
++ *     - I2C read `len` payload bytes back
++ *   The "touch info" command is 0x4103, payload length 117 (0x75). The first
++ *   bytes of the payload are { u8 vkey_state; u8 num_msg; msgs[]; } where each
++ *   msg is 7 bytes { u8 id; __le16 x; __le16 y; u8 pressure; u8 event; } —
++ *   identical to the public cts_device_touch_msg layout (confirmed against the
++ *   .ko's cts_plat_process_touch_msg disassembly: stride 7, x@+1, y@+3,
++ *   pressure@+5, event@+6, standard MT-B reporting).
++ */
++
++#include <linux/bitops.h>
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/i2c.h>
++#include <linux/input.h>
++#include <linux/input/mt.h>
++#include <linux/input/touchscreen.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/property.h>
++#include <linux/suspend.h>
++#include <linux/unaligned.h>
++
++#define CTS_TCS_CMD_TOUCH_INFO		0x4103
++#define CTS_TCS_CMD_FW_VER		0x4005
++#define CTS_TCS_HDR_FLAG		BIT(14)	/* cmd carries a packet header */
++
++#define CTS_TOUCH_INFO_LEN		117	/* 0x75, from cts_tcs_get_touchinfo */
++#define CTS_MAX_TOUCH			10
++
++/* offsets within the touch-info payload */
++#define CTS_TI_NUM_MSG			1
++#define CTS_TI_MSGS			2
++#define CTS_MSG_STRIDE			7
++#define CTS_MSG_ID			0
++#define CTS_MSG_X			1	/* __le16 */
++#define CTS_MSG_Y			3	/* __le16 */
++#define CTS_MSG_PRESSURE		5
++#define CTS_MSG_EVENT			6
++
++/* msg event codes */
++#define CTS_EV_NONE			0
++#define CTS_EV_DOWN			1
++#define CTS_EV_MOVE			2
++#define CTS_EV_STAY			3
++#define CTS_EV_UP			4
++
++struct chipone_tddi {
++	struct i2c_client *client;
++	struct input_dev *input;
++	struct gpio_desc *reset_gpio;
++	struct touchscreen_properties props;
++	struct notifier_block pm_nb;
++};
++
++/*
++ * One TCS read: write the 6-byte command header, then read `len` payload
++ * bytes. Mirrors cts_tcs_read() in the vendor module.
++ */
++static int chipone_tcs_read(struct chipone_tddi *cts, u16 cmd,
++			    u8 *buf, size_t len)
++{
++	u8 hdr[6];
++	u8 cmd_lo = cmd & 0xff;
++	u8 cmd_hi = (cmd >> 8) & 0xff;
++	u8 len_lo = len & 0xff;
++	u8 len_hi = (len >> 8) & 0xff;
++	struct i2c_msg msgs[2] = {
++		{
++			.addr  = cts->client->addr,
++			.flags = 0,
++			.len   = sizeof(hdr),
++			.buf   = hdr,
++		},
++		{
++			.addr  = cts->client->addr,
++			.flags = I2C_M_RD,
++			.len   = len,
++			.buf   = buf,
++		},
++	};
++	int ret;
++
++	int tries;
++
++	hdr[0] = cmd_lo;
++	hdr[1] = cmd_hi;
++	hdr[2] = len_lo;
++	hdr[3] = len_hi;
++	hdr[4] = (u8)~(cmd_lo + cmd_hi + len_lo + len_hi);
++	hdr[5] = 0x01;
++
++	/*
++	 * The chip NAKs (-EIO) if polled while its report buffer is being
++	 * updated, and is not ready immediately after reset. The vendor driver
++	 * retries the transfer 3x with a delay; mirror that — but only for
++	 * NAKs. Controller-level failures (-ETIMEDOUT with the IC unpowered,
++	 * e.g. panel off) cost ~2.5 s per attempt and never recover.
++	 */
++	for (tries = 0; tries < 3; tries++) {
++		ret = i2c_transfer(cts->client->adapter, msgs,
++				   ARRAY_SIZE(msgs));
++		if (ret == ARRAY_SIZE(msgs))
++			return 0;
++		if (ret < 0 && ret != -EIO)
++			return ret;
++		usleep_range(5000, 6000);
++	}
++
++	return ret < 0 ? ret : -EIO;
++}
++
++static void chipone_report_touch(struct chipone_tddi *cts, const u8 *info)
++{
++	struct input_dev *input = cts->input;
++	unsigned int num = info[CTS_TI_NUM_MSG];
++	unsigned int i;
++	int contacts = 0;
++
++	if (num > CTS_MAX_TOUCH)
++		num = CTS_MAX_TOUCH;
++
++	for (i = 0; i < num; i++) {
++		const u8 *m = info + CTS_TI_MSGS + i * CTS_MSG_STRIDE;
++		u8 id = m[CTS_MSG_ID];
++		u8 event = m[CTS_MSG_EVENT];
++		bool down = event != CTS_EV_UP && event != CTS_EV_NONE;
++		u16 x, y;
++
++		if (id >= CTS_MAX_TOUCH)
++			continue;
++
++		input_mt_slot(input, id);
++		input_mt_report_slot_state(input, MT_TOOL_FINGER, down);
++		if (!down)
++			continue;
++
++		contacts++;
++		x = get_unaligned_le16(&m[CTS_MSG_X]);
++		y = get_unaligned_le16(&m[CTS_MSG_Y]);
++		touchscreen_report_pos(input, &cts->props, x, y, true);
++		input_report_abs(input, ABS_MT_PRESSURE, m[CTS_MSG_PRESSURE]);
++		input_report_abs(input, ABS_MT_TOUCH_MAJOR, m[CTS_MSG_PRESSURE]);
++	}
++
++	input_mt_sync_frame(input);
++	input_report_key(input, BTN_TOUCH, contacts > 0);
++	input_sync(input);
++}
++
++static irqreturn_t chipone_tddi_irq(int irq, void *dev_id)
++{
++	struct chipone_tddi *cts = dev_id;
++	u8 info[CTS_TOUCH_INFO_LEN];
++	int ret;
++
++	ret = chipone_tcs_read(cts, CTS_TCS_CMD_TOUCH_INFO,
++			       info, sizeof(info));
++	if (ret) {
++		dev_err_ratelimited(&cts->client->dev,
++				    "touch-info read failed: %d\n", ret);
++		return IRQ_HANDLED;
++	}
++
++	chipone_report_touch(cts, info);
++	return IRQ_HANDLED;
++}
++
++static void chipone_tddi_reset(struct chipone_tddi *cts)
++{
++	if (!cts->reset_gpio)
++		return;
++
++	gpiod_set_value_cansleep(cts->reset_gpio, 1);
++	usleep_range(1000, 2000);
++	gpiod_set_value_cansleep(cts->reset_gpio, 0);
++	/* firmware boot time before the chip answers on I2C */
++	msleep(50);
++}
++
++/*
++ * TDDI: the touch IC is part of the display driver IC and powers down with
++ * the panel. Once the DRM side suspends, the INT line glitches and any I2C
++ * transfer just times out at the controller (~1.7 s, plus a failed GPI
++ * CH STOP). The panel suspends BEFORE an i2c-client dev_pm_ops suspend
++ * hook would run, so masking the IRQ there is too late — the glitch has
++ * already launched the threaded handler into the dead-bus read, and
++ * disable_irq() then waits out the timeout, stalling every suspend entry.
++ * Mask at PM_SUSPEND_PREPARE instead (panel still on, nothing in flight)
++ * and re-init at PM_POST_SUSPEND (panel guaranteed back up).
++ */
++static int chipone_pm_notify(struct notifier_block *nb, unsigned long action,
++			     void *data)
++{
++	struct chipone_tddi *cts = container_of(nb, struct chipone_tddi, pm_nb);
++
++	switch (action) {
++	case PM_SUSPEND_PREPARE:
++		disable_irq(cts->client->irq);
++		break;
++	case PM_POST_SUSPEND:
++		chipone_tddi_reset(cts);
++		enable_irq(cts->client->irq);
++		break;
++	}
++
++	return NOTIFY_DONE;
++}
++
++static void chipone_unregister_pm_notifier(void *data)
++{
++	struct chipone_tddi *cts = data;
++
++	unregister_pm_notifier(&cts->pm_nb);
++}
++
++static int chipone_tddi_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;
++	struct chipone_tddi *cts;
++	u8 fw_ver[4];
++	int ret;
++
++	cts = devm_kzalloc(dev, sizeof(*cts), GFP_KERNEL);
++	if (!cts)
++		return -ENOMEM;
++
++	cts->client = client;
++	i2c_set_clientdata(client, cts);
++
++	cts->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(cts->reset_gpio))
++		return dev_err_probe(dev, PTR_ERR(cts->reset_gpio),
++				     "failed to get reset gpio\n");
++
++	chipone_tddi_reset(cts);
++
++	/*
++	 * Sanity probe: read the firmware version (TCS cmd 0x4005, 4-byte
++	 * payload to match the vendor module's checksum/length). Non-fatal —
++	 * the touch-info IRQ path is what matters and we don't want a strict
++	 * sanity read to block bring-up.
++	 */
++	ret = chipone_tcs_read(cts, CTS_TCS_CMD_FW_VER, fw_ver, sizeof(fw_ver));
++	if (ret)
++		dev_warn(dev, "fw-version read failed (%d), continuing\n", ret);
++	else
++		dev_info(dev, "ICNL99xx TDDI touch, fw 0x%04x\n",
++			 get_unaligned_le16(fw_ver));
++
++	cts->input = devm_input_allocate_device(dev);
++	if (!cts->input)
++		return -ENOMEM;
++
++	cts->input->name = "Chipone TDDI Touchscreen";
++	cts->input->id.bustype = BUS_I2C;
++
++	input_set_abs_params(cts->input, ABS_MT_POSITION_X, 0, 0, 0, 0);
++	input_set_abs_params(cts->input, ABS_MT_POSITION_Y, 0, 0, 0, 0);
++	input_set_abs_params(cts->input, ABS_MT_PRESSURE, 0, 255, 0, 0);
++	input_set_abs_params(cts->input, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
++
++	touchscreen_parse_properties(cts->input, true, &cts->props);
++	if (!cts->props.max_x || !cts->props.max_y)
++		return dev_err_probe(dev, -EINVAL,
++				     "touchscreen-size-x/y missing\n");
++
++	ret = input_mt_init_slots(cts->input, CTS_MAX_TOUCH,
++				  INPUT_MT_DIRECT | INPUT_MT_DROP_UNUSED);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to init MT slots\n");
++
++	ret = devm_request_threaded_irq(dev, client->irq, NULL,
++					chipone_tddi_irq, IRQF_ONESHOT,
++					dev_name(dev), cts);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to request irq\n");
++
++	ret = input_register_device(cts->input);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to register input\n");
++
++	cts->pm_nb.notifier_call = chipone_pm_notify;
++	ret = register_pm_notifier(&cts->pm_nb);
++	if (ret)
++		return ret;
++
++	return devm_add_action_or_reset(dev, chipone_unregister_pm_notifier,
++					cts);
++}
++
++
++static const struct of_device_id chipone_tddi_of_match[] = {
++	{ .compatible = "chipone-tddi" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, chipone_tddi_of_match);
++
++static struct i2c_driver chipone_tddi_driver = {
++	.driver = {
++		.name = "chipone-tddi",
++		.of_match_table = chipone_tddi_of_match,
++	},
++	.probe = chipone_tddi_probe,
++};
++module_i2c_driver(chipone_tddi_driver);
++
++MODULE_DESCRIPTION("Chipone ICNL99xx TDDI touchscreen driver");
++MODULE_LICENSE("GPL");

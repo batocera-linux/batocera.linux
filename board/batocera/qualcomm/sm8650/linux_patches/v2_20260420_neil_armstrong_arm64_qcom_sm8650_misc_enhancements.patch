@@ -1,0 +1,378 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 1/3] arm64: dts: qcom: sm8650: update the cpus
+ capacity-dmips-mhz
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Mon, 20 Apr 2026 21:26:51 +0200
+Message-Id: <20260420-topic-sm8650-upstream-cpu-props-v2-1-689e07d8ab8c@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+After some more advanced benchmarks with Integer, Floaring Point,
+Encryption, Compression, NEON, ... on the A520, A720 and X4 cpus,
+the median gain with the same frequency range is:
+- 281% of A720 over A520
+- 126% of X4 over A720
+
+When adjusted with the frequency delta, we get better values
+describing the difference in capacity, showing the weakness of
+the A520 designed for very small tasks while the A720 and X4
+are much more powerful.
+
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sm8650.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+index 1604bc8cff37..42977b04346a 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+@@ -153,7 +153,7 @@ cpu2: cpu@200 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_200>;
+-			capacity-dmips-mhz = <1792>;
++			capacity-dmips-mhz = <2909>;
+ 			dynamic-power-coefficient = <238>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 3>;
+@@ -189,7 +189,7 @@ cpu3: cpu@300 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_300>;
+-			capacity-dmips-mhz = <1792>;
++			capacity-dmips-mhz = <2909>;
+ 			dynamic-power-coefficient = <238>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 3>;
+@@ -225,7 +225,7 @@ cpu4: cpu@400 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_400>;
+-			capacity-dmips-mhz = <1792>;
++			capacity-dmips-mhz = <2909>;
+ 			dynamic-power-coefficient = <238>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 3>;
+@@ -261,7 +261,7 @@ cpu5: cpu@500 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_500>;
+-			capacity-dmips-mhz = <1792>;
++			capacity-dmips-mhz = <2909>;
+ 			dynamic-power-coefficient = <238>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 1>;
+@@ -297,7 +297,7 @@ cpu6: cpu@600 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_600>;
+-			capacity-dmips-mhz = <1792>;
++			capacity-dmips-mhz = <2909>;
+ 			dynamic-power-coefficient = <238>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 1>;
+@@ -333,7 +333,7 @@ cpu7: cpu@700 {
+ 
+ 			enable-method = "psci";
+ 			next-level-cache = <&l2_700>;
+-			capacity-dmips-mhz = <1894>;
++			capacity-dmips-mhz = <3591>;
+ 			dynamic-power-coefficient = <588>;
+ 
+ 			qcom,freq-domain = <&cpufreq_hw 2>;
+
+-- 
+2.34.1
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 2/3] arm64: dts: qcom: sm8650: add CPU cache size
+ properties
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Mon, 20 Apr 2026 21:26:52 +0200
+Message-Id: <20260420-topic-sm8650-upstream-cpu-props-v2-2-689e07d8ab8c@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Add the L1 cache size and its line size (cache-size and
+cache-line-size) with the corresponding L1-I cache and L1-D cache.
+
+L1 cache is unified, but clidr_el1 register (get_cache_type) tells that
+L1 cache is separated (CACHE_TYPE_SEPARATE), add i-cache-line-size and
+d-cache-line-size and cache-line-size of L3 cache is specified.
+
+All cache line sizes were confirmed by checking ccsidr_el1.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+---
+ arch/arm64/boot/dts/qcom/sm8650.dtsi | 56 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+index 42977b04346a..c5358894fbb3 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+@@ -75,6 +75,11 @@ cpu0: cpu@0 {
+ 			compatible = "arm,cortex-a520";
+ 			reg = <0 0>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 0>;
+ 
+ 			power-domains = <&cpu_pd0>;
+@@ -103,11 +108,15 @@ l2_0: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 
+ 				l3_0: l3-cache {
+ 					compatible = "cache";
+ 					cache-level = <3>;
+ 					cache-unified;
++					cache-size = <12582912>;
++					cache-line-size = <64>;
+ 				};
+ 			};
+ 		};
+@@ -117,6 +126,11 @@ cpu1: cpu@100 {
+ 			compatible = "arm,cortex-a520";
+ 			reg = <0 0x100>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 0>;
+ 
+ 			power-domains = <&cpu_pd1>;
+@@ -146,6 +160,11 @@ cpu2: cpu@200 {
+ 			compatible = "arm,cortex-a720";
+ 			reg = <0 0x200>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 3>;
+ 
+ 			power-domains = <&cpu_pd2>;
+@@ -174,6 +193,8 @@ l2_200: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+@@ -182,6 +203,11 @@ cpu3: cpu@300 {
+ 			compatible = "arm,cortex-a720";
+ 			reg = <0 0x300>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 3>;
+ 
+ 			power-domains = <&cpu_pd3>;
+@@ -210,6 +236,8 @@ l2_300: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+@@ -218,6 +246,11 @@ cpu4: cpu@400 {
+ 			compatible = "arm,cortex-a720";
+ 			reg = <0 0x400>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 3>;
+ 
+ 			power-domains = <&cpu_pd4>;
+@@ -246,6 +279,8 @@ l2_400: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+@@ -254,6 +289,11 @@ cpu5: cpu@500 {
+ 			compatible = "arm,cortex-a720";
+ 			reg = <0 0x500>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 1>;
+ 
+ 			power-domains = <&cpu_pd5>;
+@@ -282,6 +322,8 @@ l2_500: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+@@ -290,6 +332,11 @@ cpu6: cpu@600 {
+ 			compatible = "arm,cortex-a720";
+ 			reg = <0 0x600>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 1>;
+ 
+ 			power-domains = <&cpu_pd6>;
+@@ -318,6 +365,8 @@ l2_600: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <524288>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+@@ -326,6 +375,11 @@ cpu7: cpu@700 {
+ 			compatible = "arm,cortex-x4";
+ 			reg = <0 0x700>;
+ 
++			i-cache-size = <65536>;
++			i-cache-line-size = <64>;
++			d-cache-size = <65536>;
++			d-cache-line-size = <64>;
++
+ 			clocks = <&cpufreq_hw 2>;
+ 
+ 			power-domains = <&cpu_pd7>;
+@@ -354,6 +408,8 @@ l2_700: l2-cache {
+ 				cache-level = <2>;
+ 				cache-unified;
+ 				next-level-cache = <&l3_0>;
++				cache-size = <2097152>;
++				cache-line-size = <64>;
+ 			};
+ 		};
+ 
+
+-- 
+2.34.1
+
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH v2 3/3] arm64: dts: qcom: sm8650: fix soundwire ports
+ properties
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Date: Mon, 20 Apr 2026 21:26:53 +0200
+Message-Id: <20260420-topic-sm8650-upstream-cpu-props-v2-3-689e07d8ab8c@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Since commit 9e53a66a2f2f ("soundwire: qcom: deprecate qcom,din/out-ports"),
+the ports are checked against the actul hardware configuration, leading to:
+qcom-soundwire 6ad0000.soundwire: din-ports (0) mismatch with controller (1)
+qcom-soundwire 6d30000.soundwire: dout-ports (0) mismatch with controller (1)
+
+Fix the ports count and properties of the corresponding soundwire
+controllers.
+
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+---
+ arch/arm64/boot/dts/qcom/sm8650.dtsi | 42 ++++++++++++++++++------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+index c5358894fbb3..2cccfbc6d008 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
+@@ -4730,18 +4730,18 @@ swr1: soundwire@6ad0000 {
+ 			pinctrl-0 = <&rx_swr_active>;
+ 			pinctrl-names = "default";
+ 
+-			qcom,din-ports = <0>;
++			qcom,din-ports = <1>;
+ 			qcom,dout-ports = <11>;
+ 
+-			qcom,ports-sinterval =		/bits/ 16 <0x03 0x1f 0x1f 0x07 0x03 0xff 0xff 0x31 0xff 0xff 0xff>;
+-			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x09 0x01 0xff 0xff 0x00 0xff 0xff 0xff>;
+-			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00 0xff 0xff 0x00 0xff 0xff 0xff>;
+-			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff 0xff 0xff 0x00 0xff 0xff 0xff>;
+-			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff 0xff 0xff 0x0f 0xff 0xff 0xff>;
+-			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff 0xff 0xff 0x18 0xff 0xff 0xff>;
+-			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff 0xff 0xff 0x01 0xff 0xff 0xff>;
+-			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0x01 0x03 0xff 0xff 0x00 0xff 0xff 0xff>;
+-			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00 0xff 0xff 0x01 0xff 0xff 0xff>;
++			qcom,ports-sinterval =		/bits/ 16 <0x03 0x1f 0x1f 0x07 0x03 0xff 0xff 0x31 0xff 0xff 0xff 0xff>;
++			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x0b 0x09 0x01 0xff 0xff 0x00 0xff 0xff 0xff 0xff>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x0b 0x00 0x00 0xff 0xff 0x00 0xff 0xff 0xff 0xff>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0x03 0xff 0xff 0xff 0xff 0xff 0x00 0xff 0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0x06 0xff 0xff 0xff 0xff 0xff 0x0f 0xff 0xff 0xff 0xff>;
++			qcom,ports-word-length =	/bits/ 8 <0x01 0x07 0x04 0xff 0xff 0xff 0xff 0x18 0xff 0xff 0xff 0xff>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0x00 0x01 0xff 0xff 0xff 0xff 0x01 0xff 0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0x01 0x03 0xff 0xff 0x00 0xff 0xff 0xff 0xff>;
++			qcom,ports-lane-control =	/bits/ 8 <0x01 0x00 0x00 0x00 0x00 0xff 0xff 0x01 0xff 0xff 0xff 0xff>;
+ 
+ 			#address-cells = <2>;
+ 			#size-cells = <0>;
+@@ -4827,17 +4827,17 @@ swr2: soundwire@6d30000 {
+ 			pinctrl-names = "default";
+ 
+ 			qcom,din-ports = <4>;
+-			qcom,dout-ports = <0>;
+-
+-			qcom,ports-sinterval-low =	/bits/ 8 <0x01 0x01 0x03 0x03>;
+-			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x01 0x01>;
+-			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00 0x00>;
+-			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff 0xff>;
+-			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff 0xff>;
+-			qcom,ports-word-length =	/bits/ 8 <0xff 0xff 0xff 0xff>;
+-			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff 0xff>;
+-			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff>;
+-			qcom,ports-lane-control =	/bits/ 8 <0x01 0x02 0x00 0x00>;
++			qcom,dout-ports = <1>;
++
++			qcom,ports-sinterval-low =	/bits/ 8 <0x00 0x01 0x01 0x03 0x03>;
++			qcom,ports-offset1 =		/bits/ 8 <0x00 0x00 0x00 0x01 0x01>;
++			qcom,ports-offset2 =		/bits/ 8 <0x00 0x00 0x00 0x00 0x00>;
++			qcom,ports-hstart =		/bits/ 8 <0xff 0xff 0xff 0xff 0xff>;
++			qcom,ports-hstop =		/bits/ 8 <0xff 0xff 0xff 0xff 0xff>;
++			qcom,ports-word-length =	/bits/ 8 <0xff 0xff 0xff 0xff 0xff>;
++			qcom,ports-block-pack-mode =	/bits/ 8 <0xff 0xff 0xff 0xff 0xff>;
++			qcom,ports-block-group-count =	/bits/ 8 <0xff 0xff 0xff 0xff 0xff>;
++			qcom,ports-lane-control =	/bits/ 8 <0xff 0x01 0x02 0x00 0x00>;
+ 
+ 			#address-cells = <2>;
+ 			#size-cells = <0>;
+
+-- 
+2.34.1
+

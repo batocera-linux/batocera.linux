@@ -1,0 +1,3 @@
+# An always-reporting pad behind the uPD720201 leaves a wake pending and the controller refuses to suspend.
+# Set on the root hubs, the driver enables wakeup on the PCI function when it binds.
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{devpath}=="0", ATTRS{vendor}=="0x1912", ATTRS{device}=="0x0014", RUN+="/bin/sh -c 'echo disabled > /sys%p/../power/wakeup'"

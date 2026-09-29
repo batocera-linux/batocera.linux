@@ -1,0 +1,145 @@
+diff --git a/ucm2/Qualcomm/sm8650/APS2/SM8650-APS2.conf b/ucm2/Qualcomm/sm8650/APS2/SM8650-APS2.conf
+new file mode 100644
+index 0000000..e4054ba
+--- /dev/null
++++ b/ucm2/Qualcomm/sm8650/APS2/SM8650-APS2.conf
+@@ -0,0 +1,13 @@
++Syntax 4
++
++SectionUseCase."HiFi" {
++	File "/Qualcomm/sm8650/APS2/HiFi.conf"
++	Comment "HiFi quality Music."
++}
++
++Include.card-init.File "/lib/card-init.conf"
++Include.ctl-remap.File "/lib/ctl-remap.conf"
++Include.wcd-init.File "/codecs/wcd939x/init.conf"
++Include.wsam-init.File "/codecs/qcom-lpass/wsa-macro/init.conf"
++Include.rxm-init.File "/codecs/qcom-lpass/rx-macro/init.conf"
++Include.wsa-init.File "/codecs/wsa884x/two-speakers/init.conf"
+diff --git a/ucm2/Qualcomm/sm8650/APS2/HiFi.conf b/ucm2/Qualcomm/sm8650/APS2/HiFi.conf
+new file mode 100644
+index 0000000..dc5211e
+--- /dev/null
++++ b/ucm2/Qualcomm/sm8650/APS2/HiFi.conf
+@@ -0,0 +1,112 @@
++SectionVerb {
++	EnableSequence [
++		cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia1' 0"
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 1"
++		cset "name='WSA_CODEC_DMA_RX_0 Audio Mixer MultiMedia2' 1"
++		cset "name='MultiMedia3 Mixer TX_CODEC_DMA_TX_3' 1"
++		cset "name='MultiMedia4 Mixer VA_CODEC_DMA_TX_0' 1"
++	]
++
++	Include.wcde.File "/codecs/wcd939x/DefaultEnableSeq.conf"
++	Include.wsae.File "/codecs/wsa884x/two-speakers/DefaultEnableSeq.conf"
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."Speaker" {
++	Comment "Speaker playback"
++
++	Include.wcdspk1e.File "/codecs/qcom-lpass/wsa-macro/SpeakerEnableSeq.conf"
++	Include.wcdspk1d.File "/codecs/qcom-lpass/wsa-macro/SpeakerDisableSeq.conf"
++	Include.wsaspkd.File "/codecs/wsa884x/two-speakers/SpeakerSeq.conf"
++
++	Value {
++		PlaybackChannels 2
++		PlaybackPriority 100
++		PlaybackPCM "hw:${CardId},1"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "Speakers"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	EnableSequence [
++		cset "name='RX_CODEC_DMA_RX_0 Audio Mixer MultiMedia1' 1"
++		cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia1' 0"
++	]
++
++	Include.wcdhpe.File "/codecs/wcd939x/HeadphoneEnableSeq.conf"
++	Include.wcdhpd.File "/codecs/wcd939x/HeadphoneDisableSeq.conf"
++	Include.rxmhpe.File "/codecs/qcom-lpass/rx-macro/HeadphoneEnableSeq.conf"
++	Include.rxmhpd.File "/codecs/qcom-lpass/rx-macro/HeadphoneDisableSeq.conf"
++
++	Value {
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},0"
++		PlaybackMixer "default:${CardId}"
++		PlaybackMixerElem "HP"
++		JackControl "Headset Jack"
++		JackHWMute "Speaker"
++	}
++}
++
++#SectionDevice."Headset" {
++#	Comment "Headset microphone"
++#
++#	#ConflictingDevice [
++#	#	"Mic"
++#	#]
++#
++#	Include.wcdmice.File "/codecs/wcd939x/HeadphoneMicEnableSeq.conf"
++#	Include.wcdmicd.File "/codecs/wcd939x/HeadphoneMicDisableSeq.conf"
++#	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/SoundwireMic1EnableSeq.conf"
++#	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/SoundwireMicDisableSeq.conf"
++#
++#	Value {
++#		CaptureChannels 1
++#		CapturePriority 200
++#		CapturePCM "hw:${CardId},2"
++#		CaptureMixerElem "ADC2"
++#		JackControl "Headset Jack"
++#	}
++#}
++
++#SectionDevice."Mic" {
++#	Comment "Bottom Microphone"
++#
++#	Include.txmhpe.File "/codecs/qcom-lpass/tx-macro/SoundwireMic8EnableSeq.conf"
++#	Include.txmhpd.File "/codecs/qcom-lpass/tx-macro/SoundwireMicDisableSeq.conf"
++#
++#	Value {
++#		CaptureChannels 1
++#		CapturePriority 100
++#		CapturePCM "hw:${CardId},3"
++#		CaptureMixerElem "SMIC8"
++#	}
++#}
++
++SectionDevice."HDMI0" {
++        Comment "DisplayPort 0 playback"
++
++        ConflictingDevice [
++                "Headphones"
++        ]
++
++        EnableSequence [
++                cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia1' 1"
++        ]
++
++        DisableSequence [
++                cset "name='DISPLAY_PORT_RX_0 Audio Mixer MultiMedia1' 0"
++        ]
++
++        Value {
++                PlaybackPriority 200
++                PlaybackPCM "hw:${CardId},0"
++                JackControl "DP0 Jack"
++        }
++}
+diff --git a/ucm2/conf.d/sm8650/SM8650-APS2.conf b/ucm2/conf.d/sm8650/SM8650-APS2.conf
+new file mode 120000
+index 0000000..414976a
+--- /dev/null
++++ b/ucm2/conf.d/sm8650/SM8650-APS2.conf
+@@ -0,0 +1 @@
++../../Qualcomm/sm8650/APS2/SM8650-APS2.conf
+\ No newline at end of file
