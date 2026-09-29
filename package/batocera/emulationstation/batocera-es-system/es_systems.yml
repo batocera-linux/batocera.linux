@@ -4331,25 +4331,31 @@ chihiro:
   hardware: arcade
   platform: chihiro
   comment_en: |
-    Place your Xbox compatible Chihiro roms in here.
-    Currently support ISO's are:
-    - Ghost Squad
-    - Outrun 2
-    - Virtual Cop 3
+    Place your Chihiro netboot images (.bin) in here.
+    Make them from the game dumps with Chihiro-netboot: https://github.com/Tovarichtch/chihiro-netboot
 
-    You will also need the Cerbios flashrom in your bios directory.
-    - Most modern Cerbios versions will work with the udma variants not being necessary.
+    Extract MAME's chihiro.zip into bios/chihiro:
+    - chihiro_xbox_bios.bin
+    - fpr21042_m29w160et.bin
+    - ic10_g24lc64.bin
+    - ic11_24lc024.bin
+    - pc20_g24lc64.bin
+    Linked cabinets and the network titles (OutRun 2 SP, Gundam) also need the network firmware bios/chihiro/ver1305.bin.
+
+    Hi-scores and cabinet settings are kept in saves/chihiro, cards in saves/chihiro/cards.
 
     For more info: https://wiki.batocera.org/systems:chihiro
   comment_fr: |
-    Placez vos roms Chihrio compatible XBOX ici.
-    Actuellement les ISO supportés sont:
-    - Ghost Squad
-    - Outrun 2
-    - Virtual Cop 3
+    Placez vos images netboot Chihiro (.bin) ici.
+    Créez-les à partir des dumps avec Chihiro-netboot : https://github.com/Tovarichtch/chihiro-netboot
 
-    Vous aurez besoin également du flashrom Cerbios, à mettre dans le dossier bios.
-    - La plupart des versions modernes de Cerbios fonctionneront, les variantes udma n'étant pas nécessaires.
+    Extrayez le chihiro.zip de MAME dans bios/chihiro :
+    - chihiro_xbox_bios.bin
+    - fpr21042_m29w160et.bin
+    - ic10_g24lc64.bin
+    - ic11_24lc024.bin
+    - pc20_g24lc64.bin
+    Les bornes reliées et les jeux réseau (OutRun 2 SP, Gundam) ont aussi besoin du firmware réseau bios/chihiro/ver1305.bin.
 
     Pour plus d'informations consultez la documentation ici: https://wiki.batocera.org/systems:chihiro
   comment_br: |
