@@ -7,7 +7,7 @@
 LIBRETRO_SAME_CDI_VERSION = 9a589f6ba8c35f5310853f63420d9dab1df63492
 LIBRETRO_SAME_CDI_SITE = $(call github,libretro,same_cdi,$(LIBRETRO_SAME_CDI_VERSION))
 LIBRETRO_SAME_CDI_LICENSE = GPL
-LIBRETRO_SAME_CDI_DEPENDENCIES += retroarch
+LIBRETRO_SAME_CDI_DEPENDENCIES += retroarch batocera-launch-libretro-mame
 LIBRETRO_SAME_CDI_EMULATOR_INFO = same_cdi.libretro.core.yml
 
 # GCC 15 C++ / <cstdint> & sol2 -Wtemplate-body fixes

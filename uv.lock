@@ -17,6 +17,8 @@ members = [
     "batocera-launch-fallout",
     "batocera-launch-flycast",
     "batocera-launch-kodi",
+    "batocera-launch-libretro",
+    "batocera-launch-libretro-mame",
     "batocera-launch-linuxloader",
     "batocera-launch-mame",
     "batocera-launch-mame-common",
@@ -387,6 +389,40 @@ dependencies = [
 requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-libretro"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-libretro" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-libretro-mame"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-libretro-mame" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "batocera-launch-libretro" },
+    { name = "batocera-launch-mame-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "batocera-launch-libretro", editable = "python-src/batocera-launch-libretro" },
+    { name = "batocera-launch-mame-common", editable = "python-src/batocera-launch-mame-common" },
 ]
 
 [[package]]

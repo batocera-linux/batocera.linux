@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import BIOS, CHEATS, CONFIGS, ROMS, SAVES
 from batocera_launch import Emulator, HotkeysContext, SpecialDecorationsMixin
 from batocera_launch_mame_common import (
     MameControlScheme,
@@ -11,14 +10,14 @@ from batocera_launch_mame_common import (
     load_all_mame_control_mappings,
     load_mame_control_scheme,
 )
-from batocera_launch_mame_common.paths import MAME_BIN_DIR
+from batocera_launch_mame_common.paths import MAME_BIN_DIR, MAMEPathsMixin
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
 @cached_dataclass
-class MAMEBase(SpecialDecorationsMixin, Emulator):
+class MAMEBase(MAMEPathsMixin, SpecialDecorationsMixin, Emulator):  # pyright: ignore[reportIncompatibleVariableOverride]
     @property
     def handles_bezels(self) -> bool:
         return True
@@ -27,26 +26,6 @@ class MAMEBase(SpecialDecorationsMixin, Emulator):
     def execution_path(self) -> Path | None:
         # Change directory to MAME folder (allows data plugin to load properly)
         return MAME_BIN_DIR
-
-    @cached_property
-    def roms_dir(self) -> Path:
-        return ROMS / 'mame'
-
-    @cached_property
-    def bios_dir(self) -> Path:
-        return BIOS / 'mame'
-
-    @cached_property
-    def config_dir(self) -> Path:
-        return CONFIGS / 'mame'
-
-    @cached_property
-    def saves_dir(self) -> Path:
-        return SAVES / 'mame'
-
-    @cached_property
-    def cheats_dir(self) -> Path:
-        return CHEATS / 'mame'
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:

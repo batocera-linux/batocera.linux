@@ -53,44 +53,91 @@ def _load_autorun_override(toml_path: Path, rom_name: str, /) -> str | None:
     return _load_autorun_csv_override(toml_path.with_suffix('.csv'), rom_name)
 
 
-def _get_coco_autorun_command(
-    config_dir: Path, system_name: str, rom_name: str, rom_extension: str, alt_rom_type: str | None, soft_list: str, /
+def get_coco_autorun_command(
+    config_dir: Path,
+    system_name: str,
+    rom: Rom,
+    alt_rom_type: str | None,
+    soft_list: str,
+    /,
 ) -> tuple[str, int]:
     rom_type = 'cart'
     autorun_cmd = ''
 
     # if using software list, use "usage" for autoRunCmd (if provided)
-    if (usage := _get_soft_list_usage(soft_list, rom_name)) is not None:
+    if (usage := _get_soft_list_usage(soft_list, rom.stem)) is not None:
         autorun_cmd = usage
 
     # if still undefined, default autoRunCmd based on media type
     if not autorun_cmd:
-        if alt_rom_type == 'cass' or (soft_list and soft_list.endswith('cass')) or rom_extension.casefold() == '.cas':
+        if alt_rom_type == 'cass' or (soft_list and soft_list.endswith('cass')) or rom.suffix.casefold() == '.cas':
             rom_type = 'cass'
-            if rom_name.casefold().endswith('.bas'):
+            if rom.stem.casefold().endswith('.bas'):
                 autorun_cmd = r'CLOAD:RUN\n'
             else:
                 autorun_cmd = r'CLOADM:EXEC\n'
-        if (
-            (alt_rom_type == 'flop1')
-            or (soft_list and soft_list.endswith('flop'))
-            or rom_extension.casefold() == '.dsk'
-        ):
+        if (alt_rom_type == 'flop1') or (soft_list and soft_list.endswith('flop')) or rom.suffix.casefold() == '.dsk':
             rom_type = 'flop'
-            if rom_name.casefold().endswith('.bas'):
-                autorun_cmd = rf'RUN "{rom_name}"\n'
+            if rom.stem.casefold().endswith('.bas'):
+                autorun_cmd = rf'RUN "{rom.stem}"\n'
             else:
-                autorun_cmd = rf'LOADM "{rom_name}":EXEC\n'
+                autorun_cmd = rf'LOADM "{rom.stem}":EXEC\n'
 
     # check for a user override
     if (
         override := _load_autorun_override(
-            config_dir / 'autoload' / f'{system_name}_{rom_type}_autoload.toml', rom_name
+            config_dir / 'autoload' / f'{system_name}_{rom_type}_autoload.toml', rom.stem
         )
     ) is not None:
         autorun_cmd = rf'{override}\n'
 
     return autorun_cmd, 2
+
+
+def get_fm7_autorun_command(alt_rom_type: str | None, soft_list: str, /) -> tuple[str, int]:
+    # fm7 boots floppies, needs cassette loading
+    if alt_rom_type == 'cass' or (soft_list and soft_list[-4:] == 'cass'):
+        return r'LOADM”“,,R\n', 5
+
+    return '', 0
+
+
+def get_atom_autorun_command(
+    rom: Rom,
+    mess_system: MessSystemInfo,
+    alt_rom_type: str | None,
+    soft_list: str,
+    /,
+    *,
+    autorun_delay: int = 1,
+) -> tuple[str, int]:
+    autorun_cmd = mess_system.auto_run or ''
+
+    # Check if the media being used is a floppy type
+    if ((alt_rom_type == 'flop1') or (soft_list and soft_list.endswith('flop')) or is_atom_floppy(rom)) and (
+        override := _load_autorun_override(MAME_DATA_DIR / 'atom_flop_autoload.toml', rom.stem)
+    ) is not None:
+        autorun_cmd = rf'{override}\n'
+
+    return autorun_cmd, autorun_delay
+
+
+def get_generic_autorun_command(
+    rom: Rom,
+    mess_system: MessSystemInfo,
+    alt_rom_type: str | None,
+    soft_list: str,
+    /,
+) -> tuple[str, int]:
+    # Check for an override file, otherwise use generic (if it exists)
+    autorun_cmd = mess_system.auto_run or ''
+    autorun_delay = 0
+
+    if (override := _load_autorun_override(MAME_DATA_DIR / f'{soft_list}_autoload.toml', rom.stem)) is not None:
+        autorun_cmd = rf'{override}\n'
+        autorun_delay = 3
+
+    return autorun_cmd, autorun_delay
 
 
 def get_autorun_command(
@@ -102,9 +149,6 @@ def get_autorun_command(
     soft_list: str,
     /,
 ) -> tuple[str, int]:
-    rom_name = rom.stem
-    rom_extension = rom.suffix
-
     # Autostart computer games where applicable
     # bbc has different boots for floppy & cassette, no special boot for carts
     if system_name == 'bbcmicro':
@@ -121,25 +165,22 @@ def get_autorun_command(
 
     # fm7 boots floppies, needs cassette loading
     if system_name == 'fm7':
-        if alt_rom_type == 'cass' or (soft_list and soft_list[-4:] == 'cass'):
-            return r'LOADM”“,,R\n', 5
-
-        return '', 0
+        return get_fm7_autorun_command(alt_rom_type, soft_list)
 
     if system_name in ('coco', 'dragon64'):
-        return _get_coco_autorun_command(config_dir, system_name, rom_name, rom_extension, alt_rom_type, soft_list)
+        return get_coco_autorun_command(config_dir, system_name, rom, alt_rom_type, soft_list)
 
     if system_name == 'mc10':
         rom_type = 'cart'
         autorun_cmd = ''
 
         # if using software list, use "usage" for autoRunCmd (if provided)
-        if (usage := _get_soft_list_usage(soft_list, rom_name)) is not None:
+        if (usage := _get_soft_list_usage(soft_list, rom.stem)) is not None:
             autorun_cmd = usage
 
         # if still undefined, default autoRunCmd based on media type
         if not autorun_cmd and (
-            alt_rom_type == 'cass' or (soft_list and soft_list.endswith('cass')) or rom_extension.casefold() == '.cas'
+            alt_rom_type == 'cass' or (soft_list and soft_list.endswith('cass')) or rom.suffix.casefold() == '.cas'
         ):
             rom_type = 'cass'
             autorun_cmd = r'CLOAD\n'
@@ -147,7 +188,7 @@ def get_autorun_command(
         # check for a user override
         if (
             override := _load_autorun_override(
-                config_dir / 'autoload' / f'{system_name}_{rom_type}_autoload.toml', rom_name
+                config_dir / 'autoload' / f'{system_name}_{rom_type}_autoload.toml', rom.stem
             )
         ) is not None:
             autorun_cmd = rf'{override}\n'
@@ -155,23 +196,6 @@ def get_autorun_command(
         return autorun_cmd, 2
 
     if system_name == 'atom':
-        autorun_delay = 1
-        autorun_cmd = mess_system.auto_run or ''
+        return get_atom_autorun_command(rom, mess_system, alt_rom_type, soft_list)
 
-        # Check if the media being used is a floppy type
-        if ((alt_rom_type == 'flop1') or (soft_list and soft_list.endswith('flop')) or is_atom_floppy(rom)) and (
-            override := _load_autorun_override(MAME_DATA_DIR / 'atom_flop_autoload.toml', rom_name)
-        ) is not None:
-            autorun_cmd = rf'{override}\n'
-
-        return autorun_cmd, autorun_delay
-
-    # Check for an override file, otherwise use generic (if it exists)
-    autorun_cmd = mess_system.auto_run or ''
-    autorun_delay = 0
-
-    if (override := _load_autorun_override(MAME_DATA_DIR / f'{soft_list}_autoload.toml', rom_name)) is not None:
-        autorun_cmd = rf'{override}\n'
-        autorun_delay = 3
-
-    return autorun_cmd, autorun_delay
+    return get_generic_autorun_command(rom, mess_system, alt_rom_type, soft_list)
