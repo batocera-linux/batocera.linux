@@ -10,7 +10,7 @@
 - SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
 - Sega Chihiro now runs using Tovarichtch's Xemu Chihiro fork
-  Games meed to be .bin netboot images made with Chihiro-netboot
+  Games need to be .bin netboot images made with Chihiro-netboot
   BIOS files come from MAME's chihiro.zip, extracted into bios/chihiro
 ### Hardware
 - Anbernic RG-DS initial support
