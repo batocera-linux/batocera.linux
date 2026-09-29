@@ -1,0 +1,26 @@
+diff --git a/ui/xemu-input.c b/ui/xemu-input.c
+index 48109707c6..65f234fc5c 100644
+--- a/ui/xemu-input.c
++++ b/ui/xemu-input.c
+@@ -477,10 +477,6 @@ void xemu_input_init(void)
+     int port = xemu_input_get_controller_default_bind_port(new_con, 0);
+     if (port >= 0) {
+         xemu_input_bind(port, new_con, 0);
+-        char buf[128];
+-        snprintf(buf, sizeof(buf), "Connected '%s' to port %d", new_con->name, 
+-                 port+1);
+-        xemu_queue_notification(buf);
+         xemu_input_rebind_xmu(port);
+     }
+ 
+@@ -654,10 +650,6 @@ static void xemu_input_register_controller(ControllerState *new_con)
+     }
+ 
+     if (did_bind) {
+-        char buf[128];
+-        snprintf(buf, sizeof(buf), "Connected '%s' to port %d",
+-                 new_con->name, port + 1);
+-        xemu_queue_notification(buf);
+         xemu_input_rebind_xmu(port);
+     }
+ }

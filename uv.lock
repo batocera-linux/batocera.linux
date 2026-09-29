@@ -27,6 +27,7 @@ members = [
     "batocera-launch-openmohaa",
     "batocera-launch-pcsx2",
     "batocera-launch-rpcs3",
+    "batocera-launch-xemu-chihiro",
     "hotkeygen",
 ]
 constraints = [
@@ -544,6 +545,23 @@ requires-dist = [
     { name = "aiohttp" },
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "batocera-launch", editable = "python-src/batocera-launch" },
+]
+
+[[package]]
+name = "batocera-launch-xemu-chihiro"
+version = "44.0"
+source = { editable = "python-src/batocera-launch-xemu-chihiro" }
+dependencies = [
+    { name = "batocera-common" },
+    { name = "batocera-launch" },
+    { name = "toml" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "batocera-common", editable = "python-src/python-batocera-common" },
+    { name = "batocera-launch", editable = "python-src/batocera-launch" },
+    { name = "toml" },
 ]
 
 [[package]]

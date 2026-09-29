@@ -1,0 +1,189 @@
+shared_features:
+  - powermode
+  - cpucluster
+  - tdp
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  xemu_chihiro_api:
+    group: GRAPHICS
+    prompt: GRAPHICS API
+    description: Choose which graphics API library to use.
+    choices:
+      OpenGL (Default): OPENGL
+      Vulkan: VULKAN
+  xemu_chihiro_render:
+    group: GRAPHICS
+    prompt: RENDERING RESOLUTION
+    choices:
+      1x (640x480): 1
+      2x (1280x960): 2
+      3x (1920x1440): 3
+      4x (2560x1920): 4
+      5x (3200x2400): 5
+      6x (3840x2880): 6
+  xemu_chihiro_scaling:
+    group: GRAPHICS
+    prompt: SCALING MODE
+    description: Choose the scaling mode for the game screen.
+    choices:
+      Original resolution: center
+      Scale to best fit (Default): scale
+      Stretch to full: stretch
+  xemu_chihiro_aspect:
+    group: GRAPHICS
+    prompt: ASPECT RATIO
+    description: Change the output resolution ratio.
+    choices:
+      Native: native
+      4x3: 4x3
+      16x9: 16x9
+  xemu_chihiro_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Fix screen tearing.
+    choices:
+      'Off': "false"
+      On (Default): "true"
+  xemu_chihiro_gamma:
+    group: GRAPHICS
+    prompt: CRT GAMMA
+    description: Darken the picture the way a cabinet monitor does.
+    choices:
+      Off (Default): "1.0"
+      "1.1": "1.1"
+      "1.2": "1.2"
+      "1.3": "1.3"
+      "1.4": "1.4"
+      "1.5": "1.5"
+  xemu_chihiro_use_dsp:
+    prompt: USE DSP AUDIO
+    description: Improve audio accuracy (experimental).
+    choices:
+      Enabled: "true"
+      Disabled (Default): "false"
+  xemu_chihiro_freeplay:
+    group: CABINET
+    prompt: FREE PLAY
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  xemu_chihiro_region:
+    group: CABINET
+    prompt: REGION
+    description: The cabinet's region. If a game does not support it, the first region it does support is used, checking Export, then USA, then Japan.
+    choices:
+      Export (Default): ex
+      USA: us
+      Japan: jp
+  xemu_chihiro_card_reader:
+    group: CABINET
+    prompt: CARD READER
+    description: Emulate the card reader of Ghost Squad, Gundam and the Maximum Tune games. Cards are kept in saves/chihiro/cards.
+    choices:
+      On (Default): "true"
+      'Off': "false"
+  xemu_chihiro_ffb:
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: FORCE FEEDBACK
+    description: Drive board force feedback on a wheel, rumble on a pad (OutRun 2, Maximum Tune).
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  xemu_chihiro_ffb_strength:
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: FORCE FEEDBACK STRENGTH
+    choices:
+      25%: "25"
+      50%: "50"
+      75%: "75"
+      100% (Default): "100"
+      125%: "125"
+      150%: "150"
+      200%: "200"
+  xemu_chihiro_ffb_invert:
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: INVERT FORCE FEEDBACK
+    description: Enable if the wheel is pushed away from centre instead of towards it.
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  xemu_chihiro_wheel_weight:
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: WHEEL WEIGHT
+    description: How heavy the wheel turns while the game drives it.
+    choices:
+      20%: "20"
+      40% (Default): "40"
+      60%: "60"
+      80%: "80"
+      100%: "100"
+  xemu_chihiro_wheel_autocenter:
+    group: CONTROLS
+    submenu: WHEELS
+    prompt: WHEEL AUTO-CENTRE
+    description: Spring the wheel back to centre while the game is not driving it.
+    choices:
+      Off: "0"
+      25%: "25"
+      50% (Default): "50"
+      75%: "75"
+      100%: "100"
+  xemu_chihiro_link:
+    group: NETWORK
+    submenu: CABINET LINK
+    prompt: LINK CABINETS
+    description: Link up to 4 cabinets (Ollie King, OutRun 2, OutRun 2 SP, Maximum Tune 1 & 2). Needs ver1305.bin in bios/chihiro.
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  xemu_chihiro_link_cabinets:
+    group: NETWORK
+    submenu: CABINET LINK
+    prompt: NUMBER OF CABINETS
+    choices:
+      2 (Default): "2"
+      "3": "3"
+      "4": "4"
+  xemu_chihiro_link_cabinet:
+    group: NETWORK
+    submenu: CABINET LINK
+    prompt: THIS CABINET
+    description: Cabinet 1 is the host, the others connect to it.
+    choices:
+      1 (Default): "1"
+      "2": "2"
+      "3": "3"
+      "4": "4"
+  xemu_chihiro_link_host:
+    group: NETWORK
+    submenu: CABINET LINK
+    prompt: HOST ADDRESS
+    description: The address of cabinet 1. Leave empty on cabinet 1.
+    preset: input
+  xemu_chihiro_link_port:
+    group: NETWORK
+    submenu: CABINET LINK
+    prompt: LINK PORT
+    description: Leave empty for the default 9100.
+    preset: input
+file_extensions:
+  - bin
+systems:
+  - chihiro

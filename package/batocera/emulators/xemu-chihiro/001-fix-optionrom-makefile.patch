@@ -1,0 +1,13 @@
+diff --git a/pc-bios/optionrom/Makefile b/pc-bios/optionrom/Makefile
+index 30771f8..1055073 100644
+--- a/pc-bios/optionrom/Makefile
++++ b/pc-bios/optionrom/Makefile
+@@ -41,7 +41,7 @@
+ pvh.img: pvh.o pvh_main.o
+ 
+ %.o: %.S
+-	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<,Assembling)
++	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -o $@ $<,Assembling)
+ 
+ %.o: %.c
+ 	$(call quiet-command,$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@,Compiling)

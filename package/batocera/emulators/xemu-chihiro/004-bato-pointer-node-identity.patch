@@ -1,0 +1,36 @@
+diff --git a/ui/xemu-pointer-evdev.c b/ui/xemu-pointer-evdev.c
+index d235691439..434db8ea54 100644
+--- a/ui/xemu-pointer-evdev.c
++++ b/ui/xemu-pointer-evdev.c
+@@ -95,10 +95,19 @@ static void trim(char *s)
+     }
+ }
+ 
++/* A "node:" selection also names a device by its event node, whatever
++ * identity it was given, so twins can be told apart before the scan. */
++static bool pointer_is(const Pointer *p, const char *identity)
++{
++    return strcmp(p->info.identity, identity) == 0 ||
++           (p->fd >= 0 && strncmp(identity, "node:", 5) == 0 &&
++            strcmp(p->node, identity + 5) == 0);
++}
++
+ static Pointer *find_identity(const char *identity)
+ {
+     for (int i = 0; i < npointers; i++) {
+-        if (strcmp(pointers[i].info.identity, identity) == 0) {
++        if (pointer_is(&pointers[i], identity)) {
+             return &pointers[i];
+         }
+     }
+@@ -514,8 +523,8 @@ void xemu_pointer_set_grab(bool on, const char *id1, const char *id2)
+         if (p->fd < 0) {
+             continue;
+         }
+-        bool want = on && ((id1 && strcmp(p->info.identity, id1) == 0) ||
+-                           (id2 && strcmp(p->info.identity, id2) == 0));
++        bool want = on && ((id1 && pointer_is(p, id1)) ||
++                           (id2 && pointer_is(p, id2)));
+         if (want == p->grabbed) {
+             continue;
+         }

@@ -9,6 +9,9 @@
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
 - SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
+- Sega Chihiro now runs using Tovarichtch's Xemu Chihiro fork
+  Games meed to be .bin netboot images made with Chihiro-netboot
+  BIOS files come from MAME's chihiro.zip, extracted into bios/chihiro
 ### Hardware
 - Anbernic RG-DS initial support
 - Anbernic RG-DS Plus initial support
@@ -58,6 +61,7 @@
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
+- Xemu Chihiro fork for the Sega Chihiro, with light guns, wheels with force feedback, card readers and linked cabinets
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
 - Samba wide symbolic links under /userdata (e.g. to external drives) being silently disabled, and secure mode granting guest access to the share

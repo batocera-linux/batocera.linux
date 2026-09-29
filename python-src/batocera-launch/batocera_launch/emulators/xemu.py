@@ -30,7 +30,6 @@ class Xemu(Emulator):
 
     @cached_property
     def saves_dir(self) -> Path:
-        # shared between the xbox and chihiro systems - same HDD image either way
         return _XEMU_SAVES
 
     @cached_property
@@ -71,11 +70,7 @@ class Xemu(Emulator):
         ini_config.set('general', 'screenshot_dir', '"/userdata/screenshots"')
 
         ini_config.set('sys', 'mem_limit', f'"{self.config.get_str("xemu_memory", "64")}"')
-        if self.system == 'chihiro':
-            ini_config.set('sys', 'mem_limit', '"128"')
-            ini_config.set('sys.files', 'flashrom_path', '"/userdata/bios/cerbios.bin"')
-        else:
-            ini_config.set('sys.files', 'flashrom_path', '"/userdata/bios/Complex_4627.bin"')
+        ini_config.set('sys.files', 'flashrom_path', '"/userdata/bios/Complex_4627.bin"')
 
         ini_config.set('sys.files', 'bootrom_path', '"/userdata/bios/mcpx_1.0.bin"')
         ini_config.set('sys.files', 'hdd_path', '"/userdata/saves/xbox/xbox_hdd.qcow2"')
@@ -85,9 +80,6 @@ class Xemu(Emulator):
         ini_config.set('audio', 'use_dsp', self.config.get_str('xemu_use_dsp', 'false'))
 
         renderer = self.config.get_str('xemu_api', 'VULKAN')
-        if self.system == 'chihiro':
-            renderer = 'OPENGL'
-            _logger.debug('Chihiro system, defaulting to OpenGL due to a Xemu bug')
         ini_config.set('display', 'renderer', f'"{renderer}"')
 
         if renderer == 'VULKAN' and (vulkan_info := await get_vulkan_info()):
