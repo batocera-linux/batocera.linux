@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Optional (splash.screen.early=1 in batocera-boot.conf): with sharedevice=NETWORK,
+# start the splash as soon as S11share has mounted the internal partition instead
+# of after the network shares. Only when the splash and batocera.conf are not on
+# the share (no SHARE@ or SPLASH@ entry).
+
+BOOT_CONF="/boot/batocera-boot.conf"
+
+[ "$1" = "start" ] || exit 0
+[ -x /etc/init.d/S28splash ] || exit 0
+
+SHAREDEVICE=$(grep -E '^[ ]*sharedevice=' "${BOOT_CONF}" | head -n1 | cut -d'=' -f2)
+[ "${SHAREDEVICE}" = "NETWORK" ] || exit 0
+grep -qE '^[ ]*splash.screen.early[ ]*=[ ]*1[ ]*$' "${BOOT_CONF}" || exit 0
+grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "${BOOT_CONF}" || exit 0
+# the whole userdata or the user splash comes from the network share
+grep -qE '^[ ]*sharenetwork_(smb|nfs)[0-9][ ]*=[ ]*(SHARE|SPLASH)@' "${BOOT_CONF}" && exit 0
+
+# Set the configured audio output like S27audioconfig does, but wait at most
+# 5 s for it and don't retry; without it the splash plays muted.
+set_audio() {
+    . /etc/profile.d/xdg.sh
+    . /etc/profile.d/dbus.sh
+    local PROFILE DEVICE n=0
+
+    PROFILE=$(/usr/bin/batocera-settings-get-master audio.profile)
+    DEVICE=$(/usr/bin/batocera-settings-get-master audio.device)
+    if [ -n "${PROFILE}" ] && [ "${PROFILE}" != "auto" ]; then
+        batocera-audio set-profile "${PROFILE}" >/dev/null 2>&1
+    fi
+    if [ -z "${DEVICE}" ] || [ "${DEVICE}" = "auto" ]; then
+        return 0
+    fi
+    while [ $n -lt 10 ]; do
+        if pactl list sinks short 2>/dev/null | awk '{print $2}' | grep -qF "${DEVICE}"; then
+            batocera-audio set "${DEVICE}" >/dev/null 2>&1
+            return $?
+        fi
+        sleep 0.5
+        n=$((n+1))
+    done
+    return 1
+}
+
+early_start() {
+    local n=0
+    # wait (max 60 s) until S11share has mounted the internal partition
+    while ! grep -q ' /userdata ' /proc/mounts; do
+        [ $n -ge 120 ] && return 0
+        sleep 0.5
+        n=$((n+1))
+    done
+    mkdir -p /userdata/system/logs
+    set_audio || export SPLASH_NO_AUDIO=1
+    /etc/init.d/S28splash start
+}
+
+early_start </dev/null >/dev/null 2>&1 &
+
+exit 0

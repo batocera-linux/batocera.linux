@@ -47,6 +47,11 @@ case "$1" in
         printf 'Starting %s: ' "$DAEMON"
         if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
+            # once per boot: S10splash-early may have started it already
+            if ! mkdir /var/run/splash.started 2>/dev/null; then
+                echo "ALREADY STARTED (splash.screen.early)"
+                exit 0
+            fi
             touch /var/run/system-splash.stop
             do_start
             echo "OK"
