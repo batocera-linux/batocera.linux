@@ -287,9 +287,6 @@ define NVIDIA580_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	ln -sf libglxserver_nvidia.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
 
-# firmware
-    mkdir -p $(TARGET_DIR)/lib/firmware/nvidia/$(NVIDIA580_LEGACY_DRIVER_VERSION)
-	$(INSTALL) -D -m 0644 $(@D)/firmware/* $(TARGET_DIR)/lib/firmware/nvidia/$(NVIDIA580_LEGACY_DRIVER_VERSION)
 
 endef
 
