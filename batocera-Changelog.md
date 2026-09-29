@@ -309,6 +309,7 @@
 - Allwinner H616 device kernel updated to 7.1.5
 - Allwinner H700 device kernel updated to 7.2.6
 - ALSA UCM configuration to v1.2.16.1
+- Bluez to 5.87
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.1.1
 - DXVK-NVAPI to v0.9.2
