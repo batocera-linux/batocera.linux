@@ -98,7 +98,12 @@ class XemuChihiro(Emulator):
         _section(config, 'sys')['default_machine'] = 'chihiro'
         _section(config, 'sys.files')['dvd_path'] = str(self.rom)
 
-        _section(config, 'perf')['cache_shaders'] = True
+        perf = _section(config, 'perf')
+        perf['cache_shaders'] = True
+        perf['optimizations'] = self.config.get_bool('xemu_chihiro_gpu_boost', True)
+        perf['native_sse'] = self.config.get_bool('xemu_chihiro_cpu_boost', True)
+        perf['real_hw_speed'] = self.config.get_bool('xemu_chihiro_real_hw_speed')
+        perf['shader_seeding'] = self.config.get_bool('xemu_chihiro_shader_seeding', True)
         _section(config, 'audio')['use_dsp'] = self.config.get_bool('xemu_chihiro_use_dsp')
 
         await self._configure_display(config)

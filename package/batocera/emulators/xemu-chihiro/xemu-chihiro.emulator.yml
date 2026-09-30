@@ -68,6 +68,34 @@ custom_features:
       "1.3": "1.3"
       "1.4": "1.4"
       "1.5": "1.5"
+  xemu_chihiro_gpu_boost:
+    group: ADVANCED OPTIONS
+    prompt: GPU BOOST
+    description: Use the tuned GPU emulation. Off falls back to the stock one.
+    choices:
+      On (Default): "true"
+      'Off': "false"
+  xemu_chihiro_cpu_boost:
+    group: ADVANCED OPTIONS
+    prompt: CPU BOOST
+    description: Faster CPU and audio emulation paths.
+    choices:
+      On (Default): "true"
+      'Off': "false"
+  xemu_chihiro_real_hw_speed:
+    group: ADVANCED OPTIONS
+    prompt: REAL HARDWARE SPEED
+    description: Pace the GPU like the real cabinet instead of running it uncapped. Needs GPU boost.
+    choices:
+      Off (Default): "false"
+      'On': "true"
+  xemu_chihiro_shader_seeding:
+    group: ADVANCED OPTIONS
+    prompt: SMOOTH FIRST PLAY
+    description: Compile the game's known shaders during boot to avoid stutter. Needs GPU boost.
+    choices:
+      On (Default): "true"
+      'Off': "false"
   xemu_chihiro_use_dsp:
     prompt: USE DSP AUDIO
     description: Improve audio accuracy (experimental).
