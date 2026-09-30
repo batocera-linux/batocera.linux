@@ -82,14 +82,15 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                 '-cheat',
                 '-cheatpath',
                 self.cheats_dir,
-                # Use full MAME logging when debug logging is enabled, else oslog. Verbose
-                # logging also enables debug pop up messages during gameplay.
-                '-verbose' if self.es_settings.get_str('LogLevel') == 'debug' else '-oslog',
                 # MAME saves a lot of stuff, we need to map this on /userdata/saves/mame/<subfolder> for each one
                 '-nvram_directory',
                 self.saves_dir / 'nvram',
             ]
         )
+
+        # -verbose also enables debug pop up messages during gameplay
+        if self.es_settings.get_str('LogLevel') == 'debug':
+            args.extend(['-verbose', '-oslog'])
 
         # Set custom config path if option is selected or default path if not
         custom_cfg = self.config.get_bool('customcfg')
