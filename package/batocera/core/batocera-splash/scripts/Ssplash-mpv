@@ -292,13 +292,13 @@ case "$1" in
     start)
         printf 'Starting %s: ' "$DAEMON"
         enable_splash_output
+        rm -f /var/run/system-splash.ready
         if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
-            touch /var/run/system-splash.stop
             do_start
             echo "OK"
-	else
-	    echo "SKIPPED"
+        else
+            echo "SKIPPED"
         fi
         ;;
     stop)
