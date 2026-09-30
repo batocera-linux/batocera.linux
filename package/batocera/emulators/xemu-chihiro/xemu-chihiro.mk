@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_CHIHIRO_VERSION = d37c80e49158e03ac7119bb79035784056de4794
+XEMU_CHIHIRO_VERSION = 0d44d803b2ad22c26c907844fe81d40fbd6ffdfa
 XEMU_CHIHIRO_SITE = https://github.com/Tovarichtch/xemu.git
 XEMU_CHIHIRO_SITE_METHOD = git
 XEMU_CHIHIRO_GIT_SUBMODULES = YES
