@@ -12,6 +12,8 @@ exports.author = { name = 'Ian Murray' }
 -- For future expansion: add sounds for different coin levels, use coinCount to select.
 
 local coindrop = exports
+
+local reset_subscription, frame_subscription, stop_subscription
 function coindrop.startplugin()
 	local coinPorts = {}
 	local coinCount = nil
@@ -47,7 +49,6 @@ function coindrop.startplugin()
 		useaplay = nil
 		pluginFolder = nil
 		coinPorts = {}
-		emu.register_frame(nil)
 	end
 
 	function is_linux()
@@ -58,6 +59,7 @@ function coindrop.startplugin()
 		math.randomseed(os.time())
 		math.random(); math.random(); math.random()
 		coinCount = 0
+		coinPorts = {}
 		useaplay = is_linux()
 		pluginFolder = get_plugin_path()
 
@@ -110,9 +112,9 @@ function coindrop.startplugin()
 		end
 	end
 
-	emu.register_start(init_plugin)
-	emu.register_frame(process_frame)
-	emu.register_stop(cleanup)
+	reset_subscription = emu.add_machine_reset_notifier(init_plugin)
+	frame_subscription = emu.add_machine_frame_notifier(process_frame)
+	stop_subscription = emu.add_machine_stop_notifier(cleanup)
 end
 
 return exports
