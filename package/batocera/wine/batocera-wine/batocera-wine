@@ -692,7 +692,7 @@ saveFilesToUserdata() {
     WINE_SAVEDIR="$2"
     WINE_SAVEFILES="$3"
 
-    [[ -z "${WINE_SAVEDIR}" && -z "${WINE_SAVEFILES}" ]] && return 0 #No argument in autorun.cmd -> return
+    [[ -z "${WINE_SAVEDIR}" ]] && return 0 #No argument in autorun.cmd -> return
 
     #Prepare for Savegames Files or Folders, SYSTEM_SAVEDIR and WINE_SAVEDIR are needed here
     mkdir -p "${SYSTEM_SAVEDIR}"                                         #Create dir to store our savegames in /userdata
@@ -702,7 +702,7 @@ saveFilesToUserdata() {
     WINE_SAVEDIR="$(basename "${WINE_SAVEDIR}")"                         #Savegamedir itself, content is copied/linked
     echo "Preparing Savefiles: WINE_SAVEDIR: ${WINE_SAVEDIR} -> SYSTEM_SAVEDIR: ${SYSTEM_SAVEDIR}"
 
-    if [[ -n "${WINE_SAVEDIR}" ]]; then
+    if [[ -z "${WINE_SAVEFILES}" ]]; then
         #Copy existing savedir content and link whole wine_savedir directory, check if dir is a symlink or not
         if [[ ! -L "${WINE_SAVEDIR}" && -d "${WINE_SAVEDIR}" ]]; then
             cp -r "${WINE_SAVEDIR}/." "${SYSTEM_SAVEDIR}" || { echo "${FUNCNAME[0]}: Error in copying files ${WINE_SAVEDIR} -> ${SYSTEM_SAVEDIR}" >&2; return 1; }
@@ -711,8 +711,8 @@ saveFilesToUserdata() {
         [[ ! -L "${WINE_SAVEDIR}" ]] && ln -s "${SYSTEM_SAVEDIR}" "${WINE_SAVEDIR}"
         popd >/dev/null
 
-    elif [[ -n "${WINE_SAVEFILES}" ]]; then
-        mkdir "${WINE_SAVEDIR}"
+    else
+        mkdir -p "${WINE_SAVEDIR}"
         pushd "${WINE_SAVEDIR}" >/dev/null                               #You are working inside the game saves dir
         #split the files list to array with ; delimiter
         IFS=';' read -r -a SAVEFILES_ARRAY <<< "${WINE_SAVEFILES}"
