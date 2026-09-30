@@ -1,0 +1,29 @@
+--- a/rpcs3/Emu/RSX/Overlays/overlay_fonts.cpp
++++ b/rpcs3/Emu/RSX/Overlays/overlay_fonts.cpp
+@@ -132,6 +132,7 @@
+ #else
+ 				result.font_names.emplace_back("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"); // ubuntu
+ 				result.font_names.emplace_back("/usr/share/fonts/TTF/DejaVuSans.ttf");             // arch
++				result.font_names.emplace_back("/usr/share/fonts/dejavu/DejaVuSans.ttf");          // batocera
+ #endif
+ 				// Attempt to load a font from dev_flash as a last resort
+ 				result.font_names.emplace_back("SCE-PS3-VR-R-LATIN.TTF");
+@@ -154,6 +155,8 @@
+ 				result.font_names.emplace_back("simsunb.ttc");
+ 				result.font_names.emplace_back("simsun.ttc");
+ 				result.font_names.emplace_back("SimsunExtG.ttf");
++#elif !defined(__APPLE__)
++				result.font_names.emplace_back("/usr/share/fonts/truetype/droid/DroidSansFallback.ttf");
+ #endif
+ 				break;
+ 			}
+@@ -168,6 +171,9 @@
+ 				// Known system font as last fallback
+ 				result.font_names.emplace_back("Malgun Gothic.ttf");
+ 				result.font_names.emplace_back("malgun.ttf");
++#if !defined(_WIN32) && !defined(__APPLE__)
++				result.font_names.emplace_back("/usr/share/fonts/truetype/droid/DroidSansFallback.ttf");
++#endif
+ 				break;
+ 			}
+ 			}

@@ -202,9 +202,9 @@ custom_features:
     prompt: SHADER COMPILATION MODE
     description: Method used to compile graphics shaders.
     choices:
-      Async with Shader Interpreter (Default): Async with Shader Interpreter
-      Async Shader Recompiler: Async Shader Recompiler
-      Legacy Single Threaded: Shader Recompiler
+      Async with Shader Interpreter (Default): Async Recompiler with Shader Interpreter
+      Async Shader Recompiler: Async Recompiler (multi-threaded)
+      Legacy Single Threaded: Legacy Recompiler (single-threaded)
       Shader Interpreter only: Shader Interpreter only
   rpcs3_num_compilers:
     submenu: RENDER
