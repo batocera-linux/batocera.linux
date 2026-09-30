@@ -451,6 +451,18 @@ static void init_shader_program(void) {
 // Per-frame shader render pass
 // ---------------------------------------------------------------------------
 
+// Logical rect to output pixels through SDL's letterboxed logical viewport
+static void logical_to_output(SDL_Renderer *r, const SDL_Rect *src, SDL_Rect *dst) {
+    SDL_Rect vp;
+    float sx, sy;
+    SDL_RenderGetViewport(r, &vp);
+    SDL_RenderGetScale(r, &sx, &sy);
+    dst->x = (int)((vp.x + src->x) * sx);
+    dst->y = (int)((vp.y + src->y) * sy);
+    dst->w = (int)(src->w * sx);
+    dst->h = (int)(src->h * sy);
+}
+
 // Replace SDL_RenderCopy for a single DS screen texture with a GLES2 shader pass
 static int run_shader_copy(SDL_Renderer *r, SDL_Texture *texture,
                            const SDL_Rect *srcrect, const SDL_Rect *dstrect) {
@@ -524,12 +536,12 @@ static int run_shader_copy(SDL_Renderer *r, SDL_Texture *texture,
     } else {
 generic_viewport:
         {
-            float sx = (logical_width  > 0) ? (float)out_w / logical_width  : 1.0f;
-            float sy = (logical_height > 0) ? (float)out_h / logical_height : 1.0f;
-            gl_w = (int)(dstrect->w * sx);
-            gl_h = (int)(dstrect->h * sy);
-            gl_x = (int)(dstrect->x * sx);
-            gl_y = out_h - (int)(dstrect->y * sy) - gl_h;
+            SDL_Rect out;
+            logical_to_output(r, dstrect, &out);
+            gl_x = out.x;
+            gl_w = out.w;
+            gl_h = out.h;
+            gl_y = out_h - out.y - gl_h;
         }
     }
 
@@ -800,15 +812,7 @@ int SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect 
                 (screens[3] && texture == screens[3] && ds_screen_width == 256) ||
                 is_single) {
                 if (logical_width > 0 && logical_height > 0) {
-                    int output_w, output_h;
-                    SDL_GetRendererOutputSize(renderer, &output_w, &output_h);
-                    float scale_x = (float)output_w / logical_width;
-                    float scale_y = (float)output_h / logical_height;
-
-                    touch_rect_storage.x = (int)(dstrect->x * scale_x);
-                    touch_rect_storage.y = (int)(dstrect->y * scale_y);
-                    touch_rect_storage.w = (int)(dstrect->w * scale_x);
-                    touch_rect_storage.h = (int)(dstrect->h * scale_y);
+                    logical_to_output(renderer, dstrect, &touch_rect_storage);
                 } else {
                     touch_rect_storage = *dstrect;
                 }
