@@ -20,9 +20,31 @@ _logger: Final = logging.getLogger(__name__)
 _emulator_logger: Final = logging.getLogger('emulator')
 
 
+_MAX_LOGGED_LINES_PER_SECOND: Final = 200
+
+
 async def _log_emulator_output(stream: asyncio.StreamReader, level: int, prefix: str) -> None:
+    # Logging is synchronous, so a flooding emulator would otherwise block on its pipe.
+    loop = asyncio.get_running_loop()
+    window_start = loop.time()
+    logged = suppressed = 0
+
     while line := await stream.readline():
-        _emulator_logger.log(level, '%s %s', prefix, line.decode(errors='backslashreplace').rstrip())
+        now = loop.time()
+        if now - window_start >= 1:
+            if suppressed:
+                _emulator_logger.log(level, '%s (%d lines suppressed)', prefix, suppressed)
+            window_start = now
+            logged = suppressed = 0
+
+        if logged < _MAX_LOGGED_LINES_PER_SECOND:
+            logged += 1
+            _emulator_logger.log(level, '%s %s', prefix, line.decode(errors='backslashreplace').rstrip())
+        else:
+            suppressed += 1
+
+    if suppressed:
+        _emulator_logger.log(level, '%s (%d lines suppressed)', prefix, suppressed)
 
 
 @contextmanager
