@@ -96,14 +96,14 @@
         </hgroup>
 	<hgroup name="System" display="System">
 		<feature>
-				<button display="Vol -" action="batocera-audio setSystemVolume -5" />
-				<progressbar display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" />
-				<button display="Vol +" action="batocera-audio setSystemVolume +5" />
+				<button display="Vol -" action="batocera-audio setSystemVolume -5" updateids="volumebar" />
+				<progressbar id="volumebar" display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" />
+				<button display="Vol +" action="batocera-audio setSystemVolume +5" updateids="volumebar" />
 		</feature>
 		<feature if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
-				<button display="Bright -" action="batocera-brightness - 10" />
-				<progressbar display="${batocera-brightness}" min="0" max="100" refresh="1" />
-				<button display="Bright +" action="batocera-brightness + 10" />
+				<button display="Bright -" action="batocera-brightness - 10" updateids="brightnessbar" />
+				<progressbar id="brightnessbar" display="${batocera-brightness}" min="0" max="100" refresh="1" />
+				<button display="Bright +" action="batocera-brightness + 10" updateids="brightnessbar" />
 		</feature>
 		<feature display="Mute Sound" group="Audio/Video">
                        <switch value="${batocera-audio getSystemMute}" refresh="2"
