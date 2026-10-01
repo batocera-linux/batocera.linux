@@ -422,7 +422,7 @@ def getGFXBackend(system: Emulator) -> str:
             core = system.config.core
             if backend == "gl" and core in [ 'kronos', 'mupen64plus-next', 'melonds', 'beetle-psx-hw' ]:
                 backend = "glcore"
-            if backend == "glcore" and core in [ 'parallel_n64', 'yabasanshiro', 'boom3' ]:
+            if backend == "glcore" and core in [ 'yabasanshiro', 'boom3' ]:
                 backend = "gl"
 
         return backend
