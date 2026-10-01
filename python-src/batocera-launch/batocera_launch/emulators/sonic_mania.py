@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import filecmp
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
@@ -95,7 +96,7 @@ class SonicMania(Emulator):
 
     async def configure(self) -> Command:
         destination_file = self.roms_dir / 'sonic-mania'
-        if not destination_file.exists():
+        if not destination_file.exists() or not filecmp.cmp(_BINARY_SRC, destination_file, shallow=False):
             shutil.copy(_BINARY_SRC, destination_file)
 
         # The screen shaders only work through the GLShaders mod
