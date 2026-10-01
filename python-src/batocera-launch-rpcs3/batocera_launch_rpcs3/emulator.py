@@ -30,6 +30,13 @@ _logger = logging.getLogger(__name__)
 _BIN_PATH: Final = Path('/usr/bin/rpcs3')
 _OVERCOMMIT_PATH: Final = Path('/proc/sys/vm/overcommit_memory')
 
+# Shader Mode values saved before RPCS3 renamed them
+_LEGACY_SHADER_MODES: Final = {
+    'Async with Shader Interpreter': 'Async Recompiler with Shader Interpreter',
+    'Async Shader Recompiler': 'Async Recompiler (multi-threaded)',
+    'Shader Recompiler': 'Legacy Recompiler (single-threaded)',
+}
+
 # USB device tuning for the arcade PS3 titles (System 357/369, Taiko, ...) shipped as a
 # PSN squashfs. These all share the SCEEXE000 title-id, so they cannot be told apart by
 # their dev_hdd0/game/<id> directory; instead they are matched on the PARAM.SFO TITLE.
@@ -710,6 +717,9 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
 
         time_stretch = self.config.get_bool('rpcs3_timestretch')
 
+        shader_mode = self.config.get('rpcs3_shadermode', 'Async Recompiler with Shader Interpreter')
+        shader_mode = _LEGACY_SHADER_MODES.get(shader_mode, shader_mode)
+
         config: dict[str, Any] = {
             'Core': {
                 # Set the PPU Decoder based on config
@@ -744,7 +754,7 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
                 # If not set, see if the screen ratio is closer to 4:3 or 16:9 and pick that.
                 'Aspect ratio': self.config.get('rpcs3_ratio') or self.closest_screen_ratio,
                 # Shader compilation
-                'Shader Mode': self.config.get('rpcs3_shadermode', 'Async with Shader Interpreter'),
+                'Shader Mode': shader_mode,
                 # Vsync
                 'VSync Mode': self.config.get('rpcs3_vsync', 'Disabled'),
                 # Stretch to display area
@@ -936,8 +946,11 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
             args.append('--no-gui')
 
         # firmware not installed and available : instead of starting the game, install it
-        if _get_firmware_version(self.config_dir) is None and (BIOS / 'PS3UPDAT.PUP').exists():
-            args = [_BIN_PATH, '--installfw', BIOS / 'PS3UPDAT.PUP']
+        if _get_firmware_version(self.config_dir) is None:
+            if (BIOS / 'PS3UPDAT.PUP').exists():
+                args = [_BIN_PATH, '--installfw', BIOS / 'PS3UPDAT.PUP']
+            elif rom_name:
+                raise BatoceraException('PS3 firmware missing: add PS3UPDAT.PUP to the bios folder')
 
         return RPCS3Command(
             args,
