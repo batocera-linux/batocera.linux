@@ -3,7 +3,7 @@ new file mode 100644
 index 0000000..74e1be2
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-generic-dsi.c
-@@ -0,0 +1,690 @@
+@@ -0,0 +1,693 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Generic MIPI-DSI panel driver
@@ -573,9 +573,15 @@ index 0000000..74e1be2
 +    struct generic_panel *ctx;
 +    int ret;
 +
-+    ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+    if (!ctx)
-+        return -ENOMEM;
++    /*
++     * drm_panel_init() was removed in 7.2; this allocator initialises
++     * the embedded drm_panel and makes it refcounted.
++     */
++    ctx = devm_drm_panel_alloc(dev, struct generic_panel, panel,
++                               &generic_panel_funcs,
++                               DRM_MODE_CONNECTOR_DSI);
++    if (IS_ERR(ctx))
++        return PTR_ERR(ctx);
 +
 +    ctx->enable_gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_LOW);
 +    if (IS_ERR(ctx->enable_gpio)) {
@@ -631,9 +637,6 @@ index 0000000..74e1be2
 +    mipi_dsi_set_drvdata(dsi, ctx);
 +
 +    dev_info(dev, "lanes %d, format %d, mode %lx\n", dsi->lanes, dsi->format, dsi->mode_flags);
-+
-+    drm_panel_init(&ctx->panel, &dsi->dev, &generic_panel_funcs,
-+               DRM_MODE_CONNECTOR_DSI);
 +
 +    ret = drm_panel_of_backlight(&ctx->panel);
 +    if (ret)
@@ -715,10 +718,10 @@ diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
 index 957555b499..8302cde2cb 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_DRM_PANEL_EBBG_FT8719) += panel-ebbg-ft8719.o
- obj-$(CONFIG_DRM_PANEL_ELIDA_KD35T133) += panel-elida-kd35t133.o
+@@ -19,6 +19,7 @@ obj-$(CONFIG_DRM_PANEL_ELIDA_KD35T133) += panel-elida-kd35t133.o
  obj-$(CONFIG_DRM_PANEL_FEIXIN_K101_IM2BA02) += panel-feixin-k101-im2ba02.o
  obj-$(CONFIG_DRM_PANEL_FEIYANG_FY07024DI26A30D) += panel-feiyang-fy07024di26a30d.o
+ obj-$(CONFIG_DRM_PANEL_FOCALTECH_OTA7290B) += panel-focaltech-ota7290b.o
 +obj-$(CONFIG_DRM_PANEL_GENERIC_DSI) += panel-generic-dsi.o
  obj-$(CONFIG_DRM_PANEL_HIMAX_HX8279) += panel-himax-hx8279.o
  obj-$(CONFIG_DRM_PANEL_HIMAX_HX83102) += panel-himax-hx83102.o

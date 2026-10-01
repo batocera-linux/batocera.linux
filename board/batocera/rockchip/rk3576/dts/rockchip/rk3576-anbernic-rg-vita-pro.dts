@@ -1020,7 +1020,8 @@
 
 	husb311: typec-portc@4e {
 		status = "okay";
-		compatible = "hynetek,husb311";
+		/* batocera - rt1711h fallback, upstream 7.2 binds husb311 through it */
+		compatible = "hynetek,husb311", "richtek,rt1711h";
 		reg = <0x4e>;
 		interrupt-parent = <&gpio0>;
 		interrupts = <RK_PD1 IRQ_TYPE_LEVEL_LOW>;

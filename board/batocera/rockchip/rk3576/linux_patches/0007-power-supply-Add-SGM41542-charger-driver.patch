@@ -20,9 +20,10 @@
  	depends on I2C
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
-@@ -104,5 +104,6 @@ obj-$(CONFIG_CHARGER_BQ25980)	+= bq25980_charger.o
+@@ -108,6 +108,7 @@ obj-$(CONFIG_CHARGER_BQ25980)	+= bq25980_charger.o
  obj-$(CONFIG_CHARGER_BQ256XX)	+= bq256xx_charger.o
  obj-$(CONFIG_CHARGER_RK817)	+= rk817_charger.o
+ obj-$(CONFIG_CHARGER_S2M)	+= s2m-charger.o
 +obj-$(CONFIG_CHARGER_SGM41542)	+= sgm41542_charger.o
  obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
  obj-$(CONFIG_CHARGER_TPS65090)	+= tps65090-charger.o
