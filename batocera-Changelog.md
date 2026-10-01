@@ -36,6 +36,7 @@
 - Anbernic RG35XX Plus battery backed real-time clock
 - Anbernic RGCubeXX device LED controller support
 - Armsx2 for SM8250, SM8550 and SM8750
+- Battery, charger and power button support for Intel Atom laptops and tablets with the X-Powers AXP288 PMIC
 - BCC: audio devices can now be switch from the bcc menu (while playing games for example)
 - Box64 userland x86_64 emulator for aarch64
 - Broadcom STA (wl) wifi driver for older Macs, enable with broadcom-wl=true in batocera-boot.conf
