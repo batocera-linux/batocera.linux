@@ -57,7 +57,7 @@ class Demul(Emulator):
         if not filecmp.cmp(source_emu / 'demul.exe', emupath / 'demul.exe'):
             _sync_directories(source_emu, emupath)
 
-        wine_runner.install_wine_trick('d3dcompiler_47')
+        wine_runner.install_wine_trick('d3dcompiler_47', environment={'WINEARCH': 'win32'})
 
         # Handle DLLs (DXVK). Since we use WINEARCH=win32, 32-bit DLLs go into system32.
         for dll in ('d3d11.dll', 'dxgi.dll', 'd3dcompiler_43.dll', 'd3dcompiler_47.dll'):
