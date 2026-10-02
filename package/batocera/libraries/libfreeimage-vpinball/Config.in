@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBFREEIMAGE_VPINBALL
+    bool "libfreeimage-vpinball"
+    help
+      toxie's FreeImage fork, built static into a private staging
+      prefix for Visual Pinball only.
+
+      https://github.com/toxieainc/freeimage

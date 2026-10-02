@@ -3,8 +3,8 @@
 # libzedmd
 #
 ################################################################################
-# Version: Commits on Sep 30, 2026
-LIBZEDMD_VERSION = 0b0f561b4bf2996de625c3ce5f94a2592b8455f6
+# Version: Commits on Oct 11, 2026
+LIBZEDMD_VERSION = f064cf6e18a3b64c43b5278a59f4a0545befbb67
 LIBZEDMD_SITE = $(call github,PPUC,libzedmd,$(LIBZEDMD_VERSION))
 LIBZEDMD_LICENSE = GPLv3
 LIBZEDMD_LICENSE_FILES = LICENSE
