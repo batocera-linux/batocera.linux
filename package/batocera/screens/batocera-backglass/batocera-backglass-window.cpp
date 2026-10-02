@@ -15,6 +15,9 @@
 #include <algorithm>
 #include <regex>
 #include <cmath>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -38,15 +41,15 @@ std::string g_pending_theme = "backglass-default";
 
 // System State Variables
 std::string g_pending_sys_fullname = "";
-std::string g_pending_sys_logo = "";
+std::vector<std::string> g_pending_sys_logo;
 
 // Game State Variables
 std::string g_pending_game_name = "";
 std::string g_pending_game_desc = "";
-std::string g_pending_game_thumbnail = "";
-std::string g_pending_game_fanart = "";
-std::string g_pending_game_image = "";
-std::string g_pending_game_marquee = "";
+std::vector<std::string> g_pending_game_thumbnail;
+std::vector<std::string> g_pending_game_fanart;
+std::vector<std::string> g_pending_game_image;
+std::vector<std::string> g_pending_game_marquee;
 
 bool g_pending_update = false;
 
@@ -168,21 +171,45 @@ std::string getJsonValue(const std::string& json, const std::string& key) {
     return clean_val;
 }
 
-std::string resolveAsset(const std::string& system, const std::string& path, const std::string& prop, const std::string& es_val) {
+std::vector<std::string> resolveAsset(const std::string& system, const std::string& path, const std::string& prop, const std::string& es_val) {
+    std::vector<std::string> paths;
     std::string shortname = gameShortName(path);
+
+    fs::path custom_dir_path = "/userdata/system/backglass/systems/" + system + "/games/" + prop;
+    std::string pattern_str = "^" + shortname + "_[0-9]+\\.(gif|png|jpg)$";
+    std::regex file_regex(pattern_str);
+
     std::vector<std::string> extensions = {"gif", "png", "jpg"};
     for (const auto& ext : extensions) {
-        std::string local_path = "/userdata/system/backglass/systems/" + system + "/games/" + prop + "/" + shortname + "." + ext;
-        if (FILE* f = fopen(local_path.c_str(), "r")) {
-            fclose(f);
-            return local_path;
-        }
+      std::string local_path = (custom_dir_path / (shortname + "." + ext)).string();
+      if (FILE* f = fopen(local_path.c_str(), "r")) {
+	fclose(f);
+	paths.push_back(local_path);
+      }	
     }
+    // the same with _[0-9]+
+    if (fs::exists(custom_dir_path) && fs::is_directory(custom_dir_path)) {
+      for(const auto& entry : fs::directory_iterator(custom_dir_path)) {
+	if (entry.is_regular_file()) {
+	  std::string filename = entry.path().filename().string();
+	  if (std::regex_match(filename, file_regex)) {
+	    paths.push_back(entry.path().string());
+	  }
+	}
+      }
+    }
+    
+    // returns if some custom images are found
+    if(paths.size() > 0) {
+      return paths;
+    }
+    
     if (!es_val.empty()) {
         if (es_val.rfind("/userdata/", 0) == 0) {
             if (FILE* f = fopen(es_val.c_str(), "r")) {
                 fclose(f);
-                return es_val;
+		paths.push_back(es_val);
+                return paths;
             }
         }
         if (es_val[0] == '/') {
@@ -200,28 +227,53 @@ std::string resolveAsset(const std::string& system, const std::string& path, con
                 }
                 curl_easy_cleanup(curl);
             }
-            return temp_path;
+	    paths.push_back(temp_path);
+	    return paths;
         } else {
-            return es_val;
+	  paths.push_back(es_val);
+	  return paths;
         }
     }
-    return "";
+    return paths;
 }
 
-std::string resolveSystemLogo(const std::string& system, const std::string& es_val) {
+std::vector<std::string> resolveSystemLogo(const std::string& system, const std::string& es_val) {
+    std::vector<std::string> paths;
+    fs::path custom_dir_path = "/userdata/system/backglass/systems/" + system;
+    std::string pattern_str = "^logo_[0-9]+\\.(gif|png|jpg)$";
+    std::regex file_regex(pattern_str);
+
     std::vector<std::string> extensions = {"gif", "png", "jpg"};
     for (const auto& ext : extensions) {
-        std::string local_path = "/userdata/system/backglass/systems/" + system + "/logo." + ext;
-        if (FILE* f = fopen(local_path.c_str(), "r")) {
-            fclose(f);
-            return local_path;
-        }
+      std::string local_path = (custom_dir_path / ("logo." + ext)).string();
+      if (FILE* f = fopen(local_path.c_str(), "r")) {
+	fclose(f);
+	paths.push_back(local_path);
+      }
     }
+    // the same with _[0-9]+
+    if (fs::exists(custom_dir_path) && fs::is_directory(custom_dir_path)) {
+      for(const auto& entry : fs::directory_iterator(custom_dir_path)) {
+	if (entry.is_regular_file()) {
+	  std::string filename = entry.path().filename().string();
+	  if (std::regex_match(filename, file_regex)) {
+	    paths.push_back(entry.path().string());
+	  }
+	}
+      }
+    }
+    
+    // returns if some custom images are found
+    if(paths.size() > 0) {
+      return paths;
+    }
+
     if (!es_val.empty()) {
         if (es_val.rfind("/userdata/", 0) == 0) {
             if (FILE* f = fopen(es_val.c_str(), "r")) {
                 fclose(f);
-                return es_val;
+		paths.push_back(es_val);
+		return paths;
             }
         }
         if (es_val[0] == '/') {
@@ -239,12 +291,14 @@ std::string resolveSystemLogo(const std::string& system, const std::string& es_v
                 }
                 curl_easy_cleanup(curl);
             }
-            return temp_path;
+	    paths.push_back(temp_path);
+	    return paths;
         } else {
-            return es_val;
+	    paths.push_back(es_val);
+	    return paths;
         }
     }
-    return "";
+    return paths;
 }
 
 void restoreActiveState() {
@@ -259,7 +313,7 @@ void restoreActiveState() {
                 std::string es_url = "http://localhost:1234/systems/" + system;
                 std::string json_data = httpGet(es_url);
                 std::string es_val = getJsonValue(json_data, "logo");
-                std::string resolved_img = resolveSystemLogo(system, es_val);
+                std::vector<std::string> resolved_img = resolveSystemLogo(system, es_val);
                 std::string system_fullname = getJsonValue(json_data, "fullname");
 
                 {
@@ -345,10 +399,10 @@ void serverThreadFunc(int port) {
                         std::string game_name = getJsonValue(json_data, "name");
                         std::string game_desc = getJsonValue(json_data, "desc");
 
-                        std::string res_thumbnail = resolveAsset(system_val, path_val, "thumbnail", getJsonValue(json_data, "thumbnail"));
-                        std::string res_fanart    = resolveAsset(system_val, path_val, "fanart", getJsonValue(json_data, "fanart"));
-                        std::string res_image     = resolveAsset(system_val, path_val, "image", getJsonValue(json_data, "image"));
-                        std::string res_marquee   = resolveAsset(system_val, path_val, "marquee", getJsonValue(json_data, "marquee"));
+			std::vector<std::string> res_thumbnail = resolveAsset(system_val, path_val, "thumbnail", getJsonValue(json_data, "thumbnail"));
+                        std::vector<std::string> res_fanart    = resolveAsset(system_val, path_val, "fanart", getJsonValue(json_data, "fanart"));
+                        std::vector<std::string> res_image     = resolveAsset(system_val, path_val, "image", getJsonValue(json_data, "image"));
+                        std::vector<std::string> res_marquee   = resolveAsset(system_val, path_val, "marquee", getJsonValue(json_data, "marquee"));
 
                         {
                             std::lock_guard<std::mutex> lock(g_mutex);
@@ -366,7 +420,7 @@ void serverThreadFunc(int port) {
                         std::string es_url = "http://localhost:1234/systems/" + system_val;
                         std::string json_data = httpGet(es_url);
 
-                        std::string resolved_img = resolveSystemLogo(system_val, getJsonValue(json_data, "logo"));
+			std::vector<std::string> resolved_img = resolveSystemLogo(system_val, getJsonValue(json_data, "logo"));
                         std::string system_fullname = getJsonValue(json_data, "fullname");
 
                         {
@@ -624,7 +678,7 @@ SDL_Texture* IMG_LoadTexture_at_resolution(SDL_Renderer* renderer, const std::st
   }
 }
 
-void IMG_LoadAnimTexture_at_resolution(std::vector<AnimFrame> & anim, SDL_Renderer* renderer, const std::string& path, int width, int height) {
+void IMG_LoadAnimTexture_at_resolution_one(std::vector<AnimFrame> & anim, SDL_Renderer* renderer, const std::string& path, int width, int height, int defaultDelayMS) {
   SDL_RWops* rwops = SDL_RWFromFile(path.c_str(), "rb");
   if(rwops) {
     if(IMG_isSVG(rwops)) {
@@ -635,7 +689,7 @@ void IMG_LoadAnimTexture_at_resolution(std::vector<AnimFrame> & anim, SDL_Render
 	if(tex) {
 	  AnimFrame af;
 	  af.texture = tex;
-	  af.delayMS = 0;
+	  af.delayMS = defaultDelayMS;
 	  anim.push_back(af);
 	}
 	SDL_FreeSurface(surface);
@@ -651,10 +705,19 @@ void IMG_LoadAnimTexture_at_resolution(std::vector<AnimFrame> & anim, SDL_Render
       if(tex) {
 	AnimFrame af;
 	af.texture = tex;
-	af.delayMS = 0;
+	af.delayMS = defaultDelayMS;
 	anim.push_back(af);
       }
     }
+  }
+}
+
+void IMG_LoadAnimTexture_at_resolution(std::vector<AnimFrame> & anim, SDL_Renderer* renderer, const std::vector<std::string>& pathes, int width, int height) {
+  int defaultDelayMS = 0;
+  if(pathes.size() > 1) defaultDelayMS = 2000;
+
+  for (const auto& path : pathes) {
+    IMG_LoadAnimTexture_at_resolution_one(anim, renderer, path, width, height, defaultDelayMS);
   }
 }
 
@@ -808,13 +871,13 @@ int main(int argc, char* argv[]) {
 
     DisplayMode current_mode = MODE_SYSTEM;
     std::string sys_fullname = "";
-    std::string sys_logo_path = "";
+    std::vector<std::string> sys_logo_pathes;
     std::string game_name = "";
     std::string game_desc = "";
-    std::string game_thumbnail_path = "";
-    std::string game_fanart_path = "";
-    std::string game_image_path = "";
-    std::string game_marquee_path = "";
+    std::vector<std::string> game_thumbnail_pathes;
+    std::vector<std::string> game_fanart_pathes;
+    std::vector<std::string> game_image_pathes;
+    std::vector<std::string> game_marquee_pathes;
 
     Anim tex_sys_logo;
     Anim tex_game_thumbnail;
@@ -862,13 +925,13 @@ int main(int argc, char* argv[]) {
             if (g_pending_update) {
                 current_mode = g_pending_mode;
                 sys_fullname = g_pending_sys_fullname;
-                sys_logo_path = g_pending_sys_logo;
+                sys_logo_pathes = g_pending_sys_logo;
                 game_name = g_pending_game_name;
                 game_desc = g_pending_game_desc;
-                game_thumbnail_path = g_pending_game_thumbnail;
-                game_fanart_path = g_pending_game_fanart;
-                game_image_path = g_pending_game_image;
-                game_marquee_path = g_pending_game_marquee;
+                game_thumbnail_pathes = g_pending_game_thumbnail;
+                game_fanart_pathes = g_pending_game_fanart;
+                game_image_pathes = g_pending_game_image;
+                game_marquee_pathes = g_pending_game_marquee;
 
                 update_needed = true;
                 g_pending_update = false;
@@ -892,24 +955,24 @@ int main(int argc, char* argv[]) {
             SDL_GetWindowSize(window, &winW, &winH);
             SDL_Color whiteColor = {255, 255, 255, 255};
 
-            if (!sys_logo_path.empty()) {
-	      IMG_LoadAnimTexture_at_resolution(tex_sys_logo.frames, renderer, sys_logo_path, winW, winH);
+            if (!sys_logo_pathes.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_sys_logo.frames, renderer, sys_logo_pathes, winW, winH);
 	      initAnim(tex_sys_logo, SDL_GetTicks());
 	    }
-            if (!game_thumbnail_path.empty()) {
-	      IMG_LoadAnimTexture_at_resolution(tex_game_thumbnail.frames, renderer, game_thumbnail_path, winW, winH);
+            if (!game_thumbnail_pathes.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_thumbnail.frames, renderer, game_thumbnail_pathes, winW, winH);
 	      initAnim(tex_game_thumbnail, SDL_GetTicks());
 	    }
-            if (!game_fanart_path.empty()) {
-	      IMG_LoadAnimTexture_at_resolution(tex_game_fanart.frames, renderer, game_fanart_path, winW, winH);
+            if (!game_fanart_pathes.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_fanart.frames, renderer, game_fanart_pathes, winW, winH);
 	      initAnim(tex_game_fanart, SDL_GetTicks());
 	    }
-            if (!game_image_path.empty()) {
-	      IMG_LoadAnimTexture_at_resolution(tex_game_image.frames, renderer, game_image_path, winW, winH);
+            if (!game_image_pathes.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_image.frames, renderer, game_image_pathes, winW, winH);
 	      initAnim(tex_game_image, SDL_GetTicks());
 	    }
-            if (!game_marquee_path.empty()) {
-	      IMG_LoadAnimTexture_at_resolution(tex_game_marquee.frames, renderer, game_marquee_path, winW, winH);
+            if (!game_marquee_pathes.empty()) {
+	      IMG_LoadAnimTexture_at_resolution(tex_game_marquee.frames, renderer, game_marquee_pathes, winW, winH);
 	      initAnim(tex_game_marquee, SDL_GetTicks());
 	    }
 
