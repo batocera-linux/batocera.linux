@@ -152,9 +152,10 @@ def _read_build(built_dir: Path, /) -> tuple[str, str] | None:
         return None
 
     game = marker.get('game')
-    release = marker.get('release')
+    # builds made before the release was recorded are rebuilt like any other build from another version
+    release = marker.get('release', '')
 
-    if game not in _GAMES or not isinstance(release, str) or not release:
+    if game not in _GAMES or not isinstance(release, str):
         return None
 
     if not (built_dir / 'out' / game / 'iso' / 'KERNEL.CGO').is_file():
