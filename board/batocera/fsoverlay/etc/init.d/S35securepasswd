@@ -33,5 +33,8 @@ echo "batocera::::::::" >> /run/batocera.shadow # required for su for flatpak/ba
 # secure samba
 mkdir -p /var/lib/samba/private /var/lock/samba
 printf "$MASTERPASSWD\n$MASTERPASSWD\n" | smbpasswd -a -s root > /dev/null
+if [ "$enabled" != "1" ]; then
+    printf "\n\n" | smbpasswd -a -s nobody > /dev/null
+fi
 
 echo "done."
