@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import logging
 import shutil
 import xml.etree.ElementTree as ET
 import zipfile
@@ -10,6 +12,13 @@ from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 from batocera_launch.paths import SYSTEM_ES_DIR, USER_ES_DIR
+
+_logger = logging.getLogger(__name__)
+
+# CLK looks for its ROMs as <rompath>/<machine>/<name>; Batocera names the same dumps differently.
+_BIOS_ALIASES: Final = {
+    'AtariST/tos100.img': ('tos100uk.img', 'c87a52c277f7952b41c639fc7bf0a43b'),
+}
 
 # Static temp file for extraction; CLK doesn't support zipped roms.
 _TMP_DIR: Final = Path('/tmp/clk_extracted')
@@ -97,6 +106,19 @@ def _openzip_file(file_path: Path, valid_extensions: set[str] | None = None, /) 
         return _TMP_DIR / chosen.filename
 
 
+def _link_bios_aliases() -> None:
+    for clk_name, (batocera_name, md5) in _BIOS_ALIASES.items():
+        target = BIOS / clk_name
+        source = BIOS / batocera_name
+
+        if target.exists() or not source.is_file() or hashlib.md5(source.read_bytes()).hexdigest() != md5:
+            continue
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to(Path('..') / batocera_name)
+        _logger.debug('Linked %s to %s', target, source)
+
+
 @cached_dataclass
 class Clk(Emulator):
     needs_sdl_game_controller_config = True
@@ -113,6 +135,8 @@ class Clk(Emulator):
 
         if rom is None:
             raise BatoceraException(f'ROM is a directory: {self.rom}')
+
+        _link_bios_aliases()
 
         args: list[str | Path] = ['clksignal', rom, f'--rompath={BIOS}/']
 
