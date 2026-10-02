@@ -35,7 +35,7 @@ class SteamGenerator(Generator):
     def getHotkeysContext(self) -> HotkeysContext:
         return {
             "name": "steam",
-            "keys": { "exit": ["KEY_LEFTALT", "KEY_F4"] }
+            "keys": { "exit": "batocera-steam-exit", "close": ["KEY_LEFTALT", "KEY_F4"] }
         }
 
     def getInGameRatio(self, config, gameResolution, rom):

@@ -16,6 +16,9 @@ define BATOCERA_STEAM_INSTALL_TARGET_CMDS
 	install -m 0755 \
 	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/batocera-steam/batocera-steam-update \
 		$(TARGET_DIR)/usr/bin/
+	install -m 0755 \
+	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/utils/batocera-steam/batocera-steam-exit \
+	    $(TARGET_DIR)/usr/bin/
 endef
 
 $(eval $(generic-package))
