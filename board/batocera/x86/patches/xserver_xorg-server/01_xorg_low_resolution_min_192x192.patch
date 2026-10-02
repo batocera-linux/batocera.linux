@@ -1,0 +1,14 @@
+Index: xorg-server-21.1.24/hw/xfree86/drivers/modesetting/drmmode_display.c
+===================================================================
+--- xorg-server-21.1.24.orig/hw/xfree86/drivers/modesetting/drmmode_display.c
++++ xorg-server-21.1.24/hw/xfree86/drivers/modesetting/drmmode_display.c
+@@ -3690,8 +3690,8 @@ drmmode_pre_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int cpp)
+ 
+     xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, MS_LOGLEVEL_DEBUG,
+                    "Up to %d crtcs needed for screen.\n", crtcs_needed);
+ 
+-    xf86CrtcSetSizeRange(pScrn, 320, 200, mode_res->max_width,
++    xf86CrtcSetSizeRange(pScrn, 192, 192, mode_res->max_width,
+                          mode_res->max_height);
+     for (i = 0; i < mode_res->count_crtcs; i++)
+         if (!xf86IsEntityShared(pScrn->entityList[0]) ||
