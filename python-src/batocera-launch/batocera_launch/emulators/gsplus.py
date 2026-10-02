@@ -94,7 +94,7 @@ class GSplus(Emulator):
         return {
             'name': 'gsplus',
             'keys': {
-                'exit': ['KEY_LEFTSHIFT', 'KEY_F6'],
+                'exit': ['KEY_LEFTALT', 'KEY_F4'],
                 'menu': 'KEY_F4',
                 'pause': 'KEY_F4',
             },
