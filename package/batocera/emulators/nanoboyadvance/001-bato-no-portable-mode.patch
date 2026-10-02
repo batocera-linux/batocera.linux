@@ -1,0 +1,11 @@
+--- a/src/platform/qt/CMakeLists.txt
++++ b/src/platform/qt/CMakeLists.txt
+@@ -6,7 +6,7 @@
+ cmake_dependent_option(MACOS_BUILD_APP_BUNDLE "Package as an app bundle" ON APPLE OFF)
+ cmake_dependent_option(WINDOWS_DEPLOY_QT "Deploys Qt and other libraries on Windows" ON WIN32 OFF)
+ 
+-cmake_dependent_option(PORTABLE_MODE "Enable portable mode" OFF MACOS_BUILD_APP_BUNDLE ON)
++option(PORTABLE_MODE "Enable portable mode" OFF)
+ 
+ set(CMAKE_AUTOMOC ON)
+ find_package(Qt6 COMPONENTS Core Gui Widgets OpenGL REQUIRED)
