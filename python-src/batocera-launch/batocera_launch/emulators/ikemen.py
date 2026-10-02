@@ -97,6 +97,8 @@ class Ikemen(Emulator):
         conf['KeyConfig'] = _KEY_MAPPING
         conf['JoystickConfig'] = _JOY_MAPPING
         conf['Fullscreen'] = True
+        # the multisampled framebuffer is incomplete with Mesa and leaves a black screen
+        conf['MSAA'] = False
 
         config_path.write_text(json.dumps(conf, indent=2))
 
