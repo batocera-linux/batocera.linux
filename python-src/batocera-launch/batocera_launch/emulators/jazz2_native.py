@@ -29,7 +29,7 @@ class Jazz2_Native(Emulator):
 
     async def configure(self) -> Command:
         return Command(
-            ['jazz2'],
+            ['jazz2', '/fullscreen'],
             env={
                 'XDG_CONFIG_HOME': CONFIGS,
                 'XDG_CACHE_HOME': CACHE,
