@@ -22,7 +22,7 @@ class DosBoxx(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'dosboxx',
-            'keys': {'exit': ['KEY_LEFTCTRL', 'KEY_F9']},
+            'keys': {'exit': ['KEY_LEFTCTRL', 'KEY_PAUSE']},
         }
 
     @cached_property
@@ -47,6 +47,11 @@ class DosBoxx(Emulator):
             ini_settings.add_section('sdl')
         ini_settings.set('sdl', 'output', 'opengl')
 
+        # never ask for a working directory, there is nobody to answer the dialog
+        if not ini_settings.has_section('dosbox'):
+            ini_settings.add_section('dosbox')
+        ini_settings.set('dosbox', 'working directory option', 'noprompt')
+
         with custom_config_file.open('w') as config:
             ini_settings.write(config)
 
@@ -68,7 +73,7 @@ class DosBoxx(Emulator):
             args.extend(
                 [
                     '-c',
-                    f'mount c {self.rom}',
+                    f'mount c "{self.rom}"',
                     '-c',
                     'c:',
                     '-c',
