@@ -1,0 +1,16 @@
+--- a/pico/cd/mcd.c
++++ b/pico/cd/mcd.c
+@@ -111,8 +111,12 @@
+   // use Pico.sv.data for RAM cart
+   if (Pico.romsize == 0) {
+     if (PicoIn.opt & POPT_EN_MCD_RAMCART) {
+-      if (Pico.sv.data == NULL)
++      // cart detection may have left a smaller buffer here
++      if (Pico.sv.data == NULL || Pico.sv.size != 0x12000) {
++        free(Pico.sv.data);
+         Pico.sv.data = calloc(1, 0x12000);
++        Pico.sv.size = Pico.sv.data ? 0x12000 : 0;
++      }
+     }
+     else if (Pico.sv.data != NULL) {
+       free(Pico.sv.data);
