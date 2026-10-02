@@ -333,7 +333,7 @@
 - Qualcomm SM8250 device kernel updated to 7.2.8
 - Qualcomm SM8550 device kernel updated to 7.2.8
 - Qualcomm SM8750 device kernel updated to 7.2.8
-- Raspberry Pi device kernel updated to 6.18.53
+- Raspberry Pi device kernel updated to 6.18.54
 - Rockchip RK3326 device kernel updated to 7.2.8
 - Rockchip RK3562 device kernel updated to 7.2.8
 - Rockchip RK3568 device kernel updated to 7.2.8
