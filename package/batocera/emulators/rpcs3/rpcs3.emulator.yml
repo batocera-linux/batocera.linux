@@ -379,6 +379,13 @@ custom_features:
     choices:
       'Off': "0"
       'On': "1"
+  rpcs3_firmware_update:
+    group: ADVANCED OPTIONS
+    prompt: FIRMWARE UPDATES
+    description: Downloads newer PS3 firmware from Sony while a game runs and installs it on the next launch. Missing firmware is always downloaded.
+    choices:
+      'Off (Default)': "0"
+      'On': "1"
   rpcs3_crosshairs:
     order: 99
     group: CONTROLS

@@ -169,10 +169,6 @@ systems = {
     # use the last USA bios which can run NTSC and PAL games
     "ps2": { "name": "PS2", "biosFiles": [  { "md5": "21038400dc633070a78ad53090c53017", "file": "bios/ps2/ps2-0230a-20080220.bin" } ] },
 
-    # https://www.playstation.com/en-us/support/system-updates/ps3/
-    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
-    "namco3xx": { "name": "Namco 3xx", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
-
     # ---------- Nintendo ---------- #
     # https://docs.libretro.com/library/fceumm/#bios
     "fds":         { "name": "Nintendo Family Computer Disk System", "biosFiles": [ { "md5": "ca30b50f880eb660a320674ed365ef7a", "file": "bios/disksys.rom" } ] },
