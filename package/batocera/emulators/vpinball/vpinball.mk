@@ -3,20 +3,20 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Oct 3, 2026
-VPINBALL_VERSION = 28fe41f8e74bb7a08de4a1b08623452152bef8a8
-VPINBALL_REVISION = 5997
+# Version: Commits on Oct 10, 2026
+VPINBALL_VERSION = 38666e208498fc4ec771f6559810d72f817fcb0f
+VPINBALL_REVISION = 6138
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
 VPINBALL_DEPENDENCIES = host-libcurl host-cmake libfreeimage libpinmame
 VPINBALL_DEPENDENCIES += libdmdutil libdof sdl3 sdl3_image sdl3_ttf
-VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs
+VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs openxr-sdk vulkan-headers
+VPINBALL_DEPENDENCIES += libspatialaudio zlib
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 VPINBALL_EMULATOR_INFO = vpinball.emulator.yml
 
 VPINBALL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-VPINBALL_CONF_OPTS += -DENABLE_XR=OFF
 VPINBALL_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 VPINBALL_CONF_OPTS += -DPOST_BUILD_COPY_EXT_LIBS=OFF
 

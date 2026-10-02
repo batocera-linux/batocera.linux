@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBMYSOFA
+    bool "libmysofa"
+    select BR2_PACKAGE_ZLIB
+    help
+      Reader for AES SOFA (Spatially Oriented Format for Acoustics) files.
+
+      https://github.com/hoene/libmysofa
