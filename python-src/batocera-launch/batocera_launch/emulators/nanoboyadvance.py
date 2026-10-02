@@ -58,11 +58,12 @@ def _build_toml(
     solar_sensor_level: int,
 ) -> str:
     return f"""\
+fast_forward_speed = 2
+
 [general]
 bios_path = {_quoted(bios_path)}
 bios_skip = {_bool(bios_skip)}
 save_folder = {_quoted(save_folder)}
-fast_forward_speed = 2
 
 [cartridge]
 save_type = "detect"
@@ -136,6 +137,8 @@ class Nanoboyadvance(Emulator):
 
     async def configure(self) -> Command:
         self.config_dir.mkdir(parents=True, exist_ok=True)
+        # saves are only written here when the folder exists, otherwise they land next to the rom
+        self.saves_dir.mkdir(parents=True, exist_ok=True)
 
         (self.config_dir / 'config.toml').write_text(
             _build_toml(
