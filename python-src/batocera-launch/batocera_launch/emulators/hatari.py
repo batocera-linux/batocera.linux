@@ -67,7 +67,7 @@ def _find_best_tos(bios_dir: Path, machine: str, tos_version: str, language: str
             if tos_path.exists():
                 _logger.debug('tos filename: %s', tos_path.name)
                 return tos_path
-            _logger.warning('tos filename %s not found', tos_path.name)
+            _logger.debug('tos filename %s not found', tos_path.name)
 
     raise BatoceraException(f'No bios found for machine {machine}')
 
