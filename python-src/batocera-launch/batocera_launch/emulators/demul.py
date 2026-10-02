@@ -16,6 +16,31 @@ from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 
 _logger = logging.getLogger(__name__)
 
+_OLD_GPU_SYSTEMS = ('cave3rd', 'gaelco')
+
+
+# The fullscreen toggle keeps the origin the compositor gave the small window, and Demul moves it back whenever the
+# game changes resolution. Keep the plugin window centred on the screen for as long as it exists: Demul sizes it for
+# the game's aspect and letterboxes inside it.
+_CENTRE_WINDOW = r"""
+n=0
+while [ -z "$win" ] && [ $n -lt 20 ]; do
+    win=$(xdotool search --onlyvisible --name gpuDX11 | head -n 1)
+    n=$((n + 1))
+    [ -z "$win" ] && sleep 1
+done
+[ -n "$win" ] || exit 0
+set -- $(xdotool getdisplaygeometry)
+while geometry=$(xdotool getwindowgeometry --shell "$win" 2>/dev/null); do
+    eval "$geometry"
+    x=$((($1 - WIDTH) / 2))
+    y=$(($2 - HEIGHT))
+    y=$((y / 2))
+    [ "$X" = "$x" ] && [ "$Y" = "$y" ] || xdotool windowmove "$win" "$x" "$y"
+    sleep 1
+done
+"""
+
 
 def _sync_directories(source_dir: Path, dest_dir: Path, /) -> None:
     dcmp = filecmp.dircmp(source_dir, dest_dir)
@@ -36,6 +61,26 @@ class Demul(Emulator):
     @cached_property
     def in_game_ratio(self) -> float:
         return 16 / 9 if self.config.get_int('demulRatio', 1) in (0, 2) else 4 / 3
+
+    @cached_property
+    def gpu_resolution(self) -> tuple[int, int]:
+        # Gaelco's plugin takes its window and render size from this, and draws the picture to fill it. Under Wayland
+        # that is a window, so give it the largest box with the chosen aspect that fits the screen. Xorg is fullscreen.
+        width, height = self.resolution.width, self.resolution.height
+
+        if (
+            self.system == 'gaelco'
+            and 'WAYLAND_DISPLAY' in os.environ
+            and (ratio := self.config.get_int('demulRatio', 1)) != 0
+        ):
+            target = 4 / 3 if ratio == 1 else 16 / 9
+
+            if width / height > target:
+                width = round(height * target)
+            else:
+                height = round(width / target)
+
+        return width, height
 
     async def configure(self) -> Command:
         if not await get_vulkan_info():
@@ -98,8 +143,8 @@ class Demul(Emulator):
         config.set('plugins', 'spu', 'spuDemul.dll')
         config.set('plugins', 'pad', 'padDemul.dll')
         config.set('plugins', 'net', 'netDemul.dll')
-        # Gaelco won't work with the new DX11 plugin
-        config.set('plugins', 'gpu', 'gpuDX11old.dll' if self.system == 'gaelco' else 'gpuDX11.dll')
+        # Gaelco won't work with the new DX11 plugin, and for cave3rd it crashes at start-up
+        config.set('plugins', 'gpu', 'gpuDX11old.dll' if self.system in _OLD_GPU_SYSTEMS else 'gpuDX11.dll')
         if self.rom.suffix.lower() in ('.zip', '.7z'):
             config.set('plugins', 'gdr', 'gdrImage.dll')
 
@@ -107,7 +152,7 @@ class Demul(Emulator):
             config.write(fp)
 
         # Adjust fullscreen & resolution in gpuDX11.ini (or old)
-        gpu_config_file = emupath / ('gpuDX11old.ini' if self.system == 'gaelco' else 'gpuDX11.ini')
+        gpu_config_file = emupath / ('gpuDX11old.ini' if self.system in _OLD_GPU_SYSTEMS else 'gpuDX11.ini')
         gpu_config = CaseSensitiveRawConfigParser()
         if gpu_config_file.exists():
             with gpu_config_file.open(encoding='utf_8_sig') as fp:
@@ -122,8 +167,8 @@ class Demul(Emulator):
 
         if not gpu_config.has_section('resolution'):
             gpu_config.add_section('resolution')
-        gpu_config.set('resolution', 'Width', str(self.resolution.width))
-        gpu_config.set('resolution', 'Height', str(self.resolution.height))
+        gpu_config.set('resolution', 'Width', str(self.gpu_resolution[0]))
+        gpu_config.set('resolution', 'Height', str(self.gpu_resolution[1]))
 
         with gpu_config_file.open('w', encoding='utf_8_sig') as fp:
             gpu_config.write(fp)
@@ -150,6 +195,7 @@ class Demul(Emulator):
             trigger_cmd = 'sleep 5 && export DISPLAY=:0 && xdotool getactivewindow key F3'
             if 'WAYLAND_DISPLAY' not in os.environ:
                 trigger_cmd += ' && xdotool getactivewindow key alt+Return'
+            trigger_cmd += f' && {_CENTRE_WINDOW}'
 
             try:
                 subprocess.Popen(
