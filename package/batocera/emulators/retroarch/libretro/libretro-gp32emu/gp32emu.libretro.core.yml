@@ -1,5 +1,14 @@
 shared_features:
   - autosave
+custom_features:
+  gp32emu_boot_mode:
+    group: ADVANCED OPTIONS
+    prompt: BOOT MODE
+    description: Start the game directly, or go through the GP32 firmware menu (needs gp32166m.bin).
+    choices:
+      Game directly: direct_hle
+      Firmware menu: require_bios
+      Firmware menu if the BIOS is present: auto
 file_extensions:
   - smc
   - zip
