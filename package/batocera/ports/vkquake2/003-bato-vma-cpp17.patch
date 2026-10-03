@@ -1,0 +1,12 @@
+diff --git a/linux/Makefile b/linux/Makefile
+--- a/linux/Makefile
++++ b/linux/Makefile
+@@ -106,7 +106,7 @@
+ SHLIBEXT=so
+ 
+ SHLIBCFLAGS=-fPIC -std=c99
+-SHLIBCPPFLAGS=-fPIC -std=c++11
++SHLIBCPPFLAGS=-fPIC -std=c++17
+ SHLIBLDFLAGS=-shared
+ 
+ DO_CC=$(CC) $(CFLAGS) -o $@ -c $<

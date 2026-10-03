@@ -1,0 +1,50 @@
+diff --git a/ref_vk/qvk.h b/ref_vk/qvk.h
+--- a/ref_vk/qvk.h
++++ b/ref_vk/qvk.h
+@@ -203,6 +203,8 @@
+ #define NUM_DYNBUFFERS 2
+ // Vulkan constants: number of image semaphores (introduced with VulkanSDK 1.3.275)
+ #define NUM_IMG_SEMAPHORES (NUM_CMDBUFFERS+1)
++// Vulkan constants: upper bound for the swapchain image count
++#define MAX_SWAPCHAIN_IMAGES 16
+ 
+ // check if the system supports either VK_EXT_DEBUG_UTILS or VK_EXT_DEBUG_REPORT
+ #ifdef VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+diff --git a/ref_vk/vk_common.c b/ref_vk/vk_common.c
+--- a/ref_vk/vk_common.c
++++ b/ref_vk/vk_common.c
+@@ -122,7 +122,7 @@
+ // semaphore: signal when next image is available for rendering
+ VkSemaphore vk_imageAvailableSemaphores[NUM_IMG_SEMAPHORES];
+ // semaphore: signal when rendering to current command buffer is complete
+-VkSemaphore vk_renderFinishedSemaphores[NUM_IMG_SEMAPHORES];
++VkSemaphore vk_renderFinishedSemaphores[MAX_SWAPCHAIN_IMAGES];
+ // tracker variables
+ VkCommandBuffer vk_activeCmdbuffer = VK_NULL_HANDLE;
+ // index of active command buffer
+@@ -1521,6 +1521,9 @@
+ 		for (int i = 0; i < NUM_IMG_SEMAPHORES; ++i)
+ 		{
+ 			vkDestroySemaphore(vk_device.logical, vk_imageAvailableSemaphores[i], NULL);
++		}
++		for (int i = 0; i < MAX_SWAPCHAIN_IMAGES; ++i)
++		{
+ 			vkDestroySemaphore(vk_device.logical, vk_renderFinishedSemaphores[i], NULL);
+ 		}
+ 		if (vk_malloc != VK_NULL_HANDLE)
+@@ -1817,9 +1820,14 @@
+ 	for (int i = 0; i < NUM_IMG_SEMAPHORES; ++i)
+ 	{
+ 		VK_VERIFY(vkCreateSemaphore(vk_device.logical, &sCreateInfo, NULL, &vk_imageAvailableSemaphores[i]));
+-		VK_VERIFY(vkCreateSemaphore(vk_device.logical, &sCreateInfo, NULL, &vk_renderFinishedSemaphores[i]));
+ 
+ 		QVk_DebugSetObjectName((uint64_t)vk_imageAvailableSemaphores[i], VK_OBJECT_TYPE_SEMAPHORE, va("Semaphore: image available #%d", i));
++	}
++	// render finished semaphores are indexed by swapchain image, which can outnumber the frames in flight
++	for (int i = 0; i < MAX_SWAPCHAIN_IMAGES; ++i)
++	{
++		VK_VERIFY(vkCreateSemaphore(vk_device.logical, &sCreateInfo, NULL, &vk_renderFinishedSemaphores[i]));
++
+ 		QVk_DebugSetObjectName((uint64_t)vk_renderFinishedSemaphores[i], VK_OBJECT_TYPE_SEMAPHORE, va("Semaphore: render finished #%d", i));
+ 	}
+ 	ri.Con_Printf(PRINT_ALL, "...created synchronization objects\n");
