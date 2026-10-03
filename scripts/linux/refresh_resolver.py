@@ -312,8 +312,70 @@ def find_package_for_board_or_config(
     return resolved_packages
 
 
-def get_git_modified_packages(project_dir: Path, since: str, all_mk_files: Mapping[str, Path], /) -> set[str]:
-    modified_pkgs: set[str] = set()
+CHANGE_YML, CHANGE_INSTALL, CHANGE_BUILD = range(3)
+
+
+def read_mk(mk_path: Path, /) -> str:
+    try:
+        return re.sub(r'\\\s*\n', ' ', mk_path.read_text(errors='ignore'))
+    except Exception:
+        return ''
+
+
+def get_registered_emulator_info(content: str, pkg_dir: Path, /) -> set[Path]:
+    names: set[str] = set()
+    for line in content.splitlines():
+        if 'register' in line or '_EMULATOR_INFO' in line:
+            names.update(re.findall(r'[\w.+-]+\.yml', line))
+
+    return {pkg_dir / name for name in names}
+
+
+def split_install_text(content: str, /) -> tuple[str, str]:
+    """Splits a .mk into the text of its install steps and everything else."""
+    hooks: set[str] = set()
+    for m in re.finditer(r'^\s*\w+_(?:PRE|POST)_INSTALL\w*_HOOKS\s*\+?=\s*(.*)$', content, re.MULTILINE):
+        hooks.update(m.group(1).split())
+
+    install: list[str] = []
+    other: list[str] = []
+    block: str | None = None
+    in_install = False
+    for line in content.splitlines():
+        if block is None:
+            if m := re.match(r'^\s*define\s+(\S+)', line):
+                block = m.group(1)
+                in_install = block in hooks or bool(
+                    re.search(r'_INSTALL(?:_TARGET|_STAGING|_IMAGES)?_CMDS$|_INSTALL_INIT_\w+$', block)
+                )
+            else:
+                other.append(line)
+        elif re.match(r'^\s*endef\b', line):
+            block = None
+        elif in_install:
+            install.append(line.split('#')[0])
+        else:
+            other.append(line)
+
+    return '\n'.join(install), '\n'.join(other)
+
+
+def reference_kind(texts: tuple[str, str], needle: str, /) -> int | None:
+    install, other = texts
+    pattern = re.compile(rf'(?<![\w.-]){re.escape(needle)}(?![\w.-])')
+    if pattern.search(other):
+        return CHANGE_BUILD
+    if pattern.search(install):
+        return CHANGE_INSTALL
+    return None
+
+
+def get_git_modified_packages(
+    project_dir: Path, since: str, all_mk_files: Mapping[str, Path], /
+) -> tuple[set[str], set[str], set[str]]:
+    """Returns the modified packages, those with only registered yml changes and those with only install-time file changes."""
+    change_level: dict[str, int] = {}
+    mk_texts: dict[str, tuple[str, set[Path], tuple[str, str]]] = {}
 
     package_dirs: dict[Path, str] = {}
 
@@ -326,16 +388,48 @@ def get_git_modified_packages(project_dir: Path, since: str, all_mk_files: Mappi
         pkg_upper = pkg_name.upper().replace('-', '_')
         config_to_pkg[pkg_upper] = pkg_name
 
+    batocera_dir = (project_dir / 'package' / 'batocera').resolve()
+    batocera_pkgs = [pkg for pkg, path in all_mk_files.items() if path.resolve().is_relative_to(batocera_dir)]
+
+    def mk_info(pkg: str) -> tuple[str, set[Path], tuple[str, str]]:
+        if pkg not in mk_texts:
+            content = read_mk(all_mk_files[pkg])
+            pkg_dir = all_mk_files[pkg].parent.resolve()
+            mk_texts[pkg] = (content, get_registered_emulator_info(content, pkg_dir), split_install_text(content))
+        return mk_texts[pkg]
+
+    def mark(pkg: str, level: int) -> None:
+        change_level[pkg] = max(change_level.get(pkg, level), level)
+
     def process_repo(git_root: Path) -> None:
         for changed_file in get_changed_files(git_root, since):
             # Try matching standard packages first
             if pkg := find_package_for_file(changed_file, package_dirs):
-                modified_pkgs.add(pkg)
+                changed_path = changed_file.resolve()
+                _, registered_yml, install_texts = mk_info(pkg)
+                if changed_path in registered_yml:
+                    mark(pkg, CHANGE_YML)
+                    continue
+
+                top = changed_path.relative_to(all_mk_files[pkg].parent.resolve()).parts[0]
+                if changed_path.name.endswith(('.mk', '.hash', '.patch')) or top.startswith('Config.'):
+                    mark(pkg, CHANGE_BUILD)
+                else:
+                    mark(pkg, reference_kind(install_texts, top) or CHANGE_BUILD)
+
+                # Other packages can install the same helper files straight from this package directory.
+                if changed_path.is_relative_to(batocera_dir):
+                    needle = str((all_mk_files[pkg].parent.resolve() / top).relative_to(project_dir))
+                    for other_pkg in batocera_pkgs:
+                        if other_pkg != pkg and needle in mk_info(other_pkg)[0]:
+                            if (level := reference_kind(mk_info(other_pkg)[2], needle)) is not None:
+                                mark(other_pkg, level)
                 continue
 
             # Check configuration or board directory mappings
             extra_pkgs = find_package_for_board_or_config(changed_file, git_root, all_mk_files, config_to_pkg, since)
-            modified_pkgs.update(extra_pkgs)
+            for extra_pkg in extra_pkgs:
+                mark(extra_pkg, CHANGE_BUILD)
 
     # Check main repository
     process_repo(project_dir)
@@ -345,7 +439,20 @@ def get_git_modified_packages(project_dir: Path, since: str, all_mk_files: Mappi
     if buildroot_dir.is_dir():
         process_repo(buildroot_dir)
 
-    return modified_pkgs
+    modified_pkgs = set(change_level)
+    yml_only = {pkg for pkg, level in change_level.items() if level == CHANGE_YML}
+    install_only = {pkg for pkg, level in change_level.items() if level == CHANGE_INSTALL}
+    return modified_pkgs, yml_only, install_only
+
+
+def collect_install_stamps(packages: Collection[str], output_dir: Path, /) -> list[Path]:
+    build_dir = output_dir / 'build'
+    return sorted(
+        stamp
+        for path in collect_paths_to_delete(packages, output_dir)
+        if path.parent == build_dir
+        for stamp in path.glob('.stamp_*installed')
+    )
 
 
 def filter_built_packages(packages: Iterable[str], output_dir: Path, /) -> set[str]:
@@ -477,7 +584,7 @@ def main() -> None:
     print(f'      {", ".join(sorted(kernel_modules))}')
 
     print(f'\n>>> Detecting packages modified in git since {args.since}...')
-    modified = get_git_modified_packages(project_dir, args.since, all_mk_files)
+    modified, yml_only, install_only = get_git_modified_packages(project_dir, args.since, all_mk_files)
     if modified:
         for m in sorted(modified):
             print(f'      - {m}')
@@ -490,8 +597,22 @@ def main() -> None:
         for m in sorted(mandatory):
             print(f'      - {m}')
 
+    # batocera-es-system reads registered ymls straight from the package directories.
+    if 'batocera-es-system' in mandatory and (yml_only := yml_only - mandatory):
+        print('\n>>> Skipping packages with only emulator info yml changes (picked up by batocera-es-system):')
+        for m in sorted(yml_only):
+            print(f'      - {m}')
+        modified -= yml_only
+
+    if reinstall := install_only - mandatory:
+        print('\n>>> Reinstalling packages whose only changes are files copied at install time:')
+        for m in sorted(reinstall):
+            print(f'      - {m}')
+        modified -= reinstall
+        reinstall |= {f'host-{pkg}' for pkg in reinstall}
+
     seed_packages = modified.union(mandatory)
-    if not seed_packages:
+    if not seed_packages and not reinstall:
         print('\nNo seed packages found to reset. Aborting.')
         sys.exit(0)
 
@@ -570,7 +691,7 @@ def main() -> None:
 
     # Filter built packages
     final_packages = filter_built_packages(to_reset, output_dir)
-    if not final_packages:
+    if not final_packages and not filter_built_packages(reinstall, output_dir):
         print('\nNo active build outputs found on disk matching the affected packages. Nothing to reset.')
         sys.exit(0)
 
@@ -609,6 +730,7 @@ def main() -> None:
             sys.exit(1)
 
     paths_to_delete = collect_paths_to_delete(final_packages, output_dir)
+    reinstall_stamps = collect_install_stamps(filter_built_packages(reinstall - final_packages, output_dir), output_dir)
 
     print('\n========================================================')
     print('Surgical Refresh Deletion Plan')
@@ -636,6 +758,12 @@ def main() -> None:
         print(f'    {bold("Reason:")} {reason_chain}')
         print('--------------------------------------------------------')
 
+    if reinstall_stamps:
+        print('The following install stamps will be removed to rerun only the install step:')
+        for stamp in reinstall_stamps:
+            print(f'  - {stamp.relative_to(project_dir) if stamp.is_relative_to(project_dir) else stamp}')
+        print('--------------------------------------------------------')
+
     try:
         # Force prompt flush before requesting raw input
         print('Do you want to proceed with this refresh? [y/N]: ', end='', flush=True)
@@ -655,6 +783,9 @@ def main() -> None:
             rel_path = path
         print(f'    Removing: {rel_path}')
         remove_directory(path)
+
+    for stamp in reinstall_stamps:
+        stamp.unlink(missing_ok=True)
 
     print('\nSurgical package reset complete.')
 
