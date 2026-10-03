@@ -11,7 +11,9 @@ class Flatpak(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'flatpak',
-            'keys': {'exit': 'flatpak kill $(flatpak ps --columns=application | head -n 1)'},
+            'keys': {
+                'exit': 'export XDG_RUNTIME_DIR=/var/run; flatpak kill $(flatpak ps --columns=application | head -n 1)'
+            },
         }
 
     @property
