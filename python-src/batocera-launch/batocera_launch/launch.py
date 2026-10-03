@@ -27,10 +27,21 @@ async def _run(args: Arguments, profiler: Profiler, /) -> int:
         return await emulator.run()
 
 
-def _run_legacy(args: Arguments, profiler: Profiler, /) -> int:
+async def _run_legacy(args: Arguments, profiler: Profiler, /) -> int:
     from configgen.emulatorlauncher import main  # pyright: ignore
 
-    return main(args, profiler)
+    from .config.config import SystemConfig
+    from .plugins import HookContext, PluginManager
+
+    plugins = PluginManager(HookContext(SystemConfig.load(args)))
+    plugins.start()
+
+    try:
+        await plugins.ready()
+        # configgen installs its own SIGINT handler, so it stays on the main thread
+        return main(args, profiler)
+    finally:
+        await plugins.stop()
 
 
 def launch(args: Arguments, profiler: Profiler, /) -> None:
@@ -45,7 +56,7 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
     try:
         if KeyValueConfig(BATOCERA_CONF).get('configgen') == '1':
             _logger.debug('Using legacy configgen')
-            exit_code = _run_legacy(args, profiler)
+            exit_code = uvloop.run(_run_legacy(args, profiler))
         else:
             exit_code = uvloop.run(_run(args, profiler))
     except* Exception as group:

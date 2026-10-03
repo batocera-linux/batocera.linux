@@ -99,6 +99,7 @@
 - Boot logo and video now scales better to the primary screen being rendered on
 - Cemu added to capable aarch64 devices
 - New CPU, GPU & Battery temp helper script - batocera-temp
+- Power mode, TDP and GPU governor game hooks are now batocera-launch plugins
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
