@@ -5,6 +5,7 @@ import logging
 import shutil
 import xml.etree.ElementTree as ET
 import zipfile
+import zlib
 from pathlib import Path
 from typing import Final
 
@@ -18,6 +19,17 @@ _logger = logging.getLogger(__name__)
 # CLK looks for its ROMs as <rompath>/<machine>/<name>; Batocera names the same dumps differently.
 _BIOS_ALIASES: Final = {
     'AtariST/tos100.img': ('tos100uk.img', 'c87a52c277f7952b41c639fc7bf0a43b'),
+}
+
+# ...and some it wants as a single image that Batocera only has as the separate chips of the MAME set. The chips are
+# interleaved byte by byte, in this order, to make the image.
+_BIOS_FROM_CHIPS: Final = {
+    'Archimedes/ROM311': (
+        'aa310.zip',
+        ('0296,041-02.rom', '0296,042-02.rom', '0296,043-02.rom', '0296,044-02.rom'),
+        0x54C0C963,
+    ),
+    'Macintosh/mac512k.rom': ('mac512k.zip', ('342-0220-b.u6d', '342-0221-b.u8d'), 0xCF759E0D),
 }
 
 # Static temp file for extraction; CLK doesn't support zipped roms.
@@ -119,6 +131,32 @@ def _link_bios_aliases() -> None:
         _logger.debug('Linked %s to %s', target, source)
 
 
+def _build_bios_from_chips() -> None:
+    for clk_name, (zip_name, chips, crc32) in _BIOS_FROM_CHIPS.items():
+        target = BIOS / clk_name
+        source = BIOS / zip_name
+
+        if target.exists() or not source.is_file():
+            continue
+
+        try:
+            with zipfile.ZipFile(source) as archive:
+                data = [archive.read(chip) for chip in chips]
+        except KeyError, zipfile.BadZipFile, OSError:
+            continue
+
+        image = bytearray(sum(len(chip) for chip in data))
+        for index, chip in enumerate(data):
+            image[index :: len(data)] = chip
+
+        if zlib.crc32(image) != crc32:
+            continue
+
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(image)
+        _logger.debug('Built %s from %s', target, source)
+
+
 @cached_dataclass
 class Clk(Emulator):
     needs_sdl_game_controller_config = True
@@ -137,13 +175,14 @@ class Clk(Emulator):
             raise BatoceraException(f'ROM is a directory: {self.rom}')
 
         _link_bios_aliases()
+        _build_bios_from_chips()
 
         args: list[str | Path] = ['clksignal', rom, f'--rompath={BIOS}/']
 
         if self.system in _SVIDEO_SYSTEMS:
-            args.append('--output=SVideo')
+            args.append('--display=SVideo')
         if self.system in _RGB_SYSTEMS:
-            args.append('--output=RGB')
+            args.append('--display=RGB')
         if self.system in _QUICKLOAD_SYSTEMS:
             args.append('--accelerate-media-loading')
 
