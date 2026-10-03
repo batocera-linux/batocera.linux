@@ -2,14 +2,25 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Self, cast
 
 import pytest
 
-from batocera_common.asyncio import cancel_all, create_ready_task, group_tasks, iterate_queue, parallel
+from batocera_common.asyncio import (
+    _INTERNET_CHECK_TIMEOUT,
+    cancel_all,
+    create_ready_task,
+    group_tasks,
+    is_connected_to_internet,
+    iterate_queue,
+    parallel,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
+
+_CLOUDFLARE = 'https://one.one.one.one'
+_GOOGLE = 'https://dns.google'
 
 
 class TestParallel:
@@ -302,3 +313,86 @@ class TestCancelAll:
 
         assert tasks[0].result() is None
         assert isinstance(tasks[1].exception(), RuntimeError)
+
+
+class _StubResponse:
+    def __init__(self, outcome: BaseException | None, /) -> None:
+        self._outcome = outcome
+
+    async def __aenter__(self) -> Self:
+        if self._outcome is not None:
+            raise self._outcome
+        return self
+
+    async def __aexit__(self, *exc_info: object) -> None:
+        return None
+
+
+class _StubSession:
+    """Stands in for aiohttp.ClientSession, replaying a scripted outcome per URL."""
+
+    def __init__(self, outcomes: dict[str, BaseException | None], /) -> None:
+        self._outcomes = outcomes
+        self.requested: list[str] = []
+        self.timeout: float | None = None
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *exc_info: object) -> None:
+        return None
+
+    def head(self, url: str, /) -> _StubResponse:
+        self.requested.append(url)
+        return _StubResponse(self._outcomes[url])
+
+
+def _stub_session(
+    monkeypatch: pytest.MonkeyPatch,
+    outcomes: dict[str, BaseException | None],
+    /,
+) -> _StubSession:
+    import aiohttp
+
+    session = _StubSession(outcomes)
+
+    def make_session(*, timeout: float) -> _StubSession:
+        session.timeout = timeout
+        return session
+
+    def make_timeout(*, total: float) -> float:
+        return total
+
+    monkeypatch.setattr(aiohttp, 'ClientSession', make_session)
+    monkeypatch.setattr(aiohttp, 'ClientTimeout', make_timeout)
+    return session
+
+
+class TestIsConnectedToInternet:
+    async def test_returns_true_on_first_probe(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        session = _stub_session(monkeypatch, {_CLOUDFLARE: None, _GOOGLE: TimeoutError()})
+
+        assert await is_connected_to_internet() is True
+        assert session.requested == [_CLOUDFLARE]
+
+    async def test_falls_back_to_second_probe(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        session = _stub_session(monkeypatch, {_CLOUDFLARE: TimeoutError(), _GOOGLE: None})
+
+        assert await is_connected_to_internet() is True
+        assert session.requested == [_CLOUDFLARE, _GOOGLE]
+
+    async def test_returns_false_when_every_probe_fails(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        session = _stub_session(monkeypatch, {_CLOUDFLARE: TimeoutError(), _GOOGLE: TimeoutError()})
+
+        assert await is_connected_to_internet() is False
+        assert session.requested == [_CLOUDFLARE, _GOOGLE]
+
+    async def test_budget_covers_a_tls_handshake(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        # One second used to be tight enough to report a false negative on slow hardware.
+        session = _stub_session(monkeypatch, {_CLOUDFLARE: None})
+
+        await is_connected_to_internet()
+
+        assert session.timeout == _INTERNET_CHECK_TIMEOUT
+        assert session.timeout is not None
+        assert session.timeout >= 5
