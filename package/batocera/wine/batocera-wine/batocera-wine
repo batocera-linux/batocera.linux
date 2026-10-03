@@ -442,6 +442,19 @@ reg_install() {
         WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" reg add "HKEY_CURRENT_USER\Control Panel\Colors" /v "Background" /t REG_SZ /d "0 0 0" /f &>/dev/null
     fi
 
+    # Wine picks its own Wayland driver whenever Wayland is running, the SDL 1.2 games Mugen runs need XWayland's X11 driver
+    if [[ "${SYSTEM}" = "mugen" && "${SYSTEM_DISPLAY_MODE}" = "wayland" ]]; then
+        if [[ "${WAYLAND_DRIVER}" != "native" ]]; then
+            if ! grep -q '^"Graphics"="x11"' "${WINEPOINT}/user.reg" 2>/dev/null; then
+                WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_CURRENT_USER\Software\Wine\Drivers" /v "Graphics" /t REG_SZ /d "x11" /f &>/dev/null
+                waitWineServer 0
+            fi
+        elif grep -q '^"Graphics"="x11"' "${WINEPOINT}/user.reg" 2>/dev/null; then
+            WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg delete "HKEY_CURRENT_USER\Software\Wine\Drivers" /v "Graphics" /f &>/dev/null
+            waitWineServer 0
+        fi
+    fi
+
     if [[ -d "$ii" ]]; then
         readarray -t i < <(find "$ii" -maxdepth 1 -type f -iname "*.reg" -printf "%p\n")
         [[ "${#i[@]}" -eq 0 ]] && { rmdir "$ii"; echo "${FUNCNAME[0]}: Place only reg-files to $ii" >&2; return 0; }
