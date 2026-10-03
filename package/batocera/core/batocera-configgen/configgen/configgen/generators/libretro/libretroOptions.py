@@ -2003,6 +2003,14 @@ def _81_options(
         _set(coreSettings, '81_highres', 'WRX')
 
 
+# GP32
+def _gp32emu_options(
+    coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
+) -> None:
+    # Boot the card straight into the game, the firmware menu waits for the player to pick it
+    _set(coreSettings, 'gp32emu_boot_mode', system.config.get('gp32emu_boot_mode', 'direct_hle'))
+
+
 # Sinclair ZX Spectrum
 def _fuse_options(
     coreSettings: UnixSettings, system: Emulator, rom: Path, guns: Guns, wheels: DeviceInfoMapping, /,
@@ -2506,6 +2514,7 @@ _option_functions: dict[str, Callable[[UnixSettings, Emulator, Path, Guns, Devic
     'beetle-saturn': _beetle_saturn_options,
     'px68k': _px68k_options,
     '81': _81_options,
+    'gp32emu': _gp32emu_options,
     'fuse': _fuse_options,
     'fbneo': _fbneo_options,
     'neocd': _neocd_options,
