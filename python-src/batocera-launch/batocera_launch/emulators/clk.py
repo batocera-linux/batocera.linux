@@ -32,6 +32,15 @@ _BIOS_FROM_CHIPS: Final = {
     'Macintosh/mac512k.rom': ('mac512k.zip', ('342-0220-b.u6d', '342-0221-b.u8d'), 0xCF759E0D),
 }
 
+# ...and the Electron's two ROMs, which the MAME set only has joined in one image: BASIC II, then the operating system.
+_BIOS_FROM_IMAGE: Final = {
+    'electron.zip': (
+        'os_basic.ic2',
+        {'Acorn/basic.rom': (0, 0x79434781), 'Electron/os.rom': (0x4000, 0x406A42CE)},
+    ),
+}
+_BIOS_IMAGE_PART_SIZE: Final = 0x4000
+
 # Static temp file for extraction; CLK doesn't support zipped roms.
 _TMP_DIR: Final = Path('/tmp/clk_extracted')
 _QUICKLOAD_SYSTEMS: Final = {
@@ -157,6 +166,31 @@ def _build_bios_from_chips() -> None:
         _logger.debug('Built %s from %s', target, source)
 
 
+def _build_bios_from_image() -> None:
+    for zip_name, (member, parts) in _BIOS_FROM_IMAGE.items():
+        source = BIOS / zip_name
+
+        if not source.is_file() or all((BIOS / name).exists() for name in parts):
+            continue
+
+        try:
+            with zipfile.ZipFile(source) as archive:
+                image = archive.read(member)
+        except KeyError, zipfile.BadZipFile, OSError:
+            continue
+
+        for name, (offset, crc32) in parts.items():
+            target = BIOS / name
+            part = image[offset : offset + _BIOS_IMAGE_PART_SIZE]
+
+            if target.exists() or zlib.crc32(part) != crc32:
+                continue
+
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(part)
+            _logger.debug('Built %s from %s', target, source)
+
+
 @cached_dataclass
 class Clk(Emulator):
     needs_sdl_game_controller_config = True
@@ -176,6 +210,7 @@ class Clk(Emulator):
 
         _link_bios_aliases()
         _build_bios_from_chips()
+        _build_bios_from_image()
 
         args: list[str | Path] = ['clksignal', rom, f'--rompath={BIOS}/']
 
