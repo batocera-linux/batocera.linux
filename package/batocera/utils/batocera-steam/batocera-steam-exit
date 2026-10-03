@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# flatpak only lists what runs in the runtime dir ES launched it with, hotkeygen has none
+export XDG_RUNTIME_DIR=/var/run
+
 steam_id="com.valvesoftware.Steam"
 
 steam_running() {
