@@ -311,7 +311,7 @@
 - Ymir to v0.3.3
 ### System
 - Allwinner H616 device kernel updated to 7.2.8
-- Allwinner H700 device kernel updated to 7.2.6
+- Allwinner H700 device kernel updated to 7.2.8
 - ALSA UCM configuration to v1.2.16.1
 - Bluez to 5.87
 - Buildroot to 2026.05.x with supporting package & toolchain updates
