@@ -110,6 +110,8 @@ class Libretro(SpecialDecorationsMixin, Emulator):
     lr_core: Core = field(init=False)
 
     def __post_init__(self) -> None:
+        super().__post_init__()
+
         # Fix for the removed MESS/MAMEVirtual cores
         if self.config.core in {'mess', 'mamevirtual'}:
             self.config['core'] = 'mame'
