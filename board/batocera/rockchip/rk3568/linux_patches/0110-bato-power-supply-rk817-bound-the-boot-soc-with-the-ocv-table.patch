@@ -1,0 +1,86 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] power: supply: rk817-charger: bound the boot soc with the ocv table
+
+The boot state of charge comes from the columb counter, but the gauge
+re-derives its own count from an ocv model whenever the pack rests
+(GG_STS.OCV_UPD), so the counter can boot far from the truth. A GKD
+Pixel2 came back from four hours powered off reading 31% with the pack
+at 4.27V open circuit, and an RG353M booted on the charger at 25% at
+4.125V; both had saved close to 94% and ran at a third of their real
+charge until a full charge reset them.
+
+  boot: counter 544036 uAh, saved soc 94480, fcc 1730 mAh, battery 4269990 uV
+
+The ocv table bounds the state of charge from the terminal voltage
+however the count was reached. Under load that voltage sits below the
+open circuit voltage, so the table is a floor: a counter a tenth of the
+pack below it is wrong, and the saved soc is kept. Under charge the
+table is a ceiling, so the saved soc is kept only if the counter fell a
+tenth of the pack below it and the ceiling allows that saved value; a
+pack that really drained reads low, the ceiling rejects the stale save,
+and the counter stands.
+
+Also log the raw OFF_CNT, documented as decaminutes.
+
+Assisted-by: Claude:claude-5-fable
+---
+--- a/drivers/power/supply/rk817_charger.c
++++ b/drivers/power/supply/rk817_charger.c
+@@ -854,8 +854,8 @@
+ {
+ 	struct rk808 *rk808 = charger->rk808;
+ 	u32 boot_charge_mah;
+-	int ret, reg, tmp;
+-	bool first_boot;
++	int ret, reg, tmp, off_cnt, bat_uv, boot_soc, table_soc;
++	bool first_boot, keep_saved;
+ 	u8 bulk_reg[4];
+ 
+ 	/*
+@@ -912,18 +912,41 @@
+ 		regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+ 				 bulk_reg, 4);
+ 		tmp = get_unaligned_be32(bulk_reg);
++		regmap_read(rk808->regmap, RK817_GAS_GAUGE_OFF_CNT, &off_cnt);
++		bat_uv = rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_BAT_VOL_H);
+ 		dev_info(charger->dev,
+-			 "boot: counter %d uAh, saved soc %d, fcc %d mAh, battery %d uV\n",
++			 "boot: counter %d uAh, saved soc %d, fcc %d mAh, battery %d uV, off_cnt %d\n",
+ 			 tmp > 0 ? ADC_TO_CHARGE_UAH(tmp, charger->res_div) : 0,
+-			 charger->soc, charger->fcc_mah,
+-			 rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_BAT_VOL_H));
++			 charger->soc, charger->fcc_mah, bat_uv, off_cnt);
+ 		if (tmp > 0) {
+ 			boot_charge_mah = ADC_TO_CHARGE_UAH(tmp,
+ 							    charger->res_div) / 1000;
+ 			if (boot_charge_mah > charger->fcc_mah)
+ 				boot_charge_mah = charger->fcc_mah;
+-			charger->soc = boot_charge_mah * 100000 /
+-				       charger->fcc_mah;
++			boot_soc = boot_charge_mah * 100000 / charger->fcc_mah;
++
++			/*
++			 * The gauge re-derives this count from its own ocv
++			 * model while the pack rests, so bound it with the ocv
++			 * table: under load the terminal voltage sits below the
++			 * open circuit voltage, making the table a floor, and
++			 * under charge above it, making it a ceiling on any
++			 * saved soc that would displace the counter.
++			 */
++			table_soc = power_supply_batinfo_ocv2cap(bat_info, bat_uv,
++								 20) * 1000;
++			if (charger->plugged_in)
++				keep_saved = boot_soc < charger->soc - 10000 &&
++					     charger->soc <= table_soc + 10000;
++			else
++				keep_saved = boot_soc < table_soc - 10000;
++
++			if (keep_saved)
++				dev_info(charger->dev,
++					 "counter %d, voltage allows %d, keeping saved soc %d\n",
++					 boot_soc, table_soc, charger->soc);
++			else
++				charger->soc = boot_soc;
+ 		} else {
+ 			dev_info(charger->dev,
+ 				 "columb counter invalid, keeping saved soc\n");
