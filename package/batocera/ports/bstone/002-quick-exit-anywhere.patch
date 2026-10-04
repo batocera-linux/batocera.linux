@@ -1,0 +1,17 @@
+diff --git a/src/bstone/src/id_in.cpp b/src/bstone/src/id_in.cpp
+--- a/src/bstone/src/id_in.cpp
++++ b/src/bstone/src/id_in.cpp
+@@ -516,6 +516,13 @@
+ 	// Check for special keys
+ 	if (e.is_pressed)
+ 	{
++		const auto& quick_exit_binding = in_bindings[e_bi_quick_exit];
++
++		if (quick_exit_binding[0] == key || quick_exit_binding[1] == key)
++		{
++			Quit();
++		}
++
+ 		const auto& grab_mouse_binding = in_bindings[e_bi_grab_mouse];
+ 
+ 		if (grab_mouse_binding[0] == key || grab_mouse_binding[1] == key)
