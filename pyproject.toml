@@ -50,7 +50,6 @@ batocera-launch-mame-common = { workspace = true }
 [tool.uv.workspace]
 members = [
     'python-src/*',
-    './package/batocera/core/batocera-configgen/configgen',
     './package/batocera/utils/hotkeygen',
 ]
 exclude = ['python-src/stubs', 'python-src/scripts']
@@ -77,7 +76,6 @@ exclude_also = [
 [tool.pyright]
 include = [
     "python-src",
-    "package/batocera/core/batocera-configgen/configgen",
     "package/batocera/utils/hotkeygen",
 ]
 exclude = [
@@ -109,44 +107,6 @@ deprecateTypingAliases = true
 
 enableTypeIgnoreComments = false  # Force pyright: ignore comments
 
-[[tool.pyright.executionEnvironments]]
-# pyright doesn't allow setting typeCheckingMode per environment, so we
-# set it to strict globally and disable specific reports for configgen
-root = 'package/batocera/core/batocera-configgen/configgen'
-
-reportMissingTypeStubs = "none"
-reportConstantRedefinition = "none"
-reportDuplicateImport = "none"
-reportIncompleteStub = "none"
-reportInconsistentConstructor = "none"
-reportInvalidStubStatement = "none"
-reportMatchNotExhaustive = "none"
-reportMissingParameterType = "none"
-reportMissingTypeArgument = "none"
-reportTypeCommentUsage = "none"
-reportUnknownArgumentType = "none"
-reportUnknownLambdaType = "none"
-reportUnknownMemberType = "none"
-reportUnknownParameterType = "none"
-reportUnknownVariableType = "none"
-reportUnnecessaryCast = "none"
-reportUnnecessaryComparison = "none"
-reportUnnecessaryContains = "none"
-reportUnnecessaryIsInstance = "none"
-reportUnusedClass = "none"
-reportUnusedFunction = "none"
-reportUntypedBaseClass = "none"
-reportUntypedClassDecorator = "none"
-reportUntypedFunctionDecorator = "none"
-reportUntypedNamedTuple = "none"
-reportAssertAlwaysTrue = "warning"
-reportInvalidStringEscapeSequence = "warning"
-reportInvalidTypeVarUse = "warning"
-reportSelfClsParameterName = "warning"
-reportUnsupportedDunderAll = "warning"
-reportUnusedExpression = "warning"
-reportWildcardImportFromLibrary = "warning"
-
 [tool.ruff]
 extend-exclude = [".venv*", "buildroot*", "output", "dl"]
 line-length = 120
@@ -171,7 +131,6 @@ known-first-party = [
     "batocera_launch",
     "batocera_launch_libretro",
     "batocera_launch_mame_common",
-    "configgen",
     "batocera_es_system"
 ]
 combine-as-imports = true

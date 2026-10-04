@@ -519,8 +519,8 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
 
     @cached_property
     def is_psn_squashfs(self) -> bool:
-        # Detect PSN game packed as a squashfs: emulatorlauncher has already mounted the
-        # squashfs and (via writesToRom=True) created a writable overlayfs, so rom is
+        # Detect PSN game packed as a squashfs: batocera-launch has already mounted the
+        # squashfs and (via needs_overlayfs=True) created a writable overlayfs, so rom is
         # /var/run/overlays/<stem> mirroring the dev_hdd0 layout.
         return self.rom.is_dir() and str(self.rom).startswith('/var/run/') and self.rom_game_dir.is_dir()
 

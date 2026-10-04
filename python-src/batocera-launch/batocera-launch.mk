@@ -12,7 +12,10 @@ BATOCERA_LAUNCH_DEPENDENCIES = \
 	python-pyudev \
 	python-toml \
 	python-pillow \
-	python-qrcode
+	python-qrcode \
+	python3-configobj \
+	batocera-bezel-overlay \
+	hotkeygen
 BATOCERA_LAUNCH_INSTALL_STAGING = YES
 
 BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \

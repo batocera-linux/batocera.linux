@@ -1,16 +1,12 @@
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import re
-from functools import cache
 from pathlib import Path
 from typing import Final
 
-import uvloop
-
-from .asyncio import run, run_in_new_uvloop
+from .asyncio import run
 from .dataclasses import cached_dataclass, cached_property
 from .key_value_config import KeyValueConfig
 
@@ -172,48 +168,3 @@ async def get_vulkan_info() -> VulkanInfo | None:
         return None
 
     return _parse_vulkaninfo(proc.stdout)
-
-
-@cache
-def _get_cached_vulkan_info() -> VulkanInfo | None:
-    try:
-        asyncio.get_running_loop()
-    except RuntimeError:
-        return uvloop.run(get_vulkan_info())
-
-    return run_in_new_uvloop(get_vulkan_info())
-
-
-def is_available() -> bool:
-    info = _get_cached_vulkan_info()
-    return info is not None and bool(info.gpus)
-
-
-def has_discrete_gpu() -> bool:
-    info = _get_cached_vulkan_info()
-    return info is not None and info.active_discrete_gpu is not None
-
-
-def get_discrete_gpu_index() -> str | None:
-    info = _get_cached_vulkan_info()
-    return None if info is None or info.discrete_gpu is None else str(info.discrete_gpu.index)
-
-
-def get_discrete_gpu_name() -> str | None:
-    info = _get_cached_vulkan_info()
-    return None if info is None or info.discrete_gpu is None else (info.discrete_gpu.name or None)
-
-
-def get_default_gpu_name() -> str | None:
-    info = _get_cached_vulkan_info()
-    return None if info is None or info.default_gpu is None else (info.default_gpu.name or None)
-
-
-def get_discrete_gpu_uuid() -> str | None:
-    info = _get_cached_vulkan_info()
-    return None if info is None or info.discrete_gpu is None else info.discrete_gpu.uuid
-
-
-def get_version() -> str:
-    info = _get_cached_vulkan_info()
-    return '' if info is None or info.active_gpu is None else (info.active_gpu.api_version or '')
