@@ -44,9 +44,10 @@ class ESSettings:
 
     @classmethod
     def load(cls) -> ESSettings:
+        document: ET.ElementTree[ET.Element[str]]
         try:
             document = ET.parse(ES_SETTINGS)
         except Exception:
-            document = ET.ElementTree[ET.Element[str]](ET.Element('config'))
+            document = ET.ElementTree(ET.Element('config'))
 
         return cls(document=document)
