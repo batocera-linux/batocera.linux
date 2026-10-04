@@ -8,9 +8,9 @@ from typing import TYPE_CHECKING, Final
 import uvloop
 
 from batocera_common.exceptions import flatten_exception_group
-from batocera_common.key_value_config import KeyValueConfig
-from batocera_common.paths import BATOCERA_CONF, BATOCERA_SHARE_DIR
+from batocera_common.paths import BATOCERA_SHARE_DIR
 
+from .emulator import Emulator
 from .exceptions import BaseBatoceraException, BatoceraException
 
 if TYPE_CHECKING:
@@ -21,16 +21,8 @@ _logger: Final = logging.getLogger(__name__)
 
 
 async def _run(args: Arguments, profiler: Profiler, /) -> int:
-    from .emulator import Emulator
-
     async with Emulator.create(args, profiler) as emulator:
         return await emulator.run()
-
-
-def _run_legacy(args: Arguments, profiler: Profiler, /) -> int:
-    from configgen.emulatorlauncher import main  # pyright: ignore
-
-    return main(args, profiler)
 
 
 def launch(args: Arguments, profiler: Profiler, /) -> None:
@@ -43,11 +35,7 @@ def launch(args: Arguments, profiler: Profiler, /) -> None:
 
     exit_code = 0
     try:
-        if KeyValueConfig(BATOCERA_CONF).get('configgen') == '1':
-            _logger.debug('Using legacy configgen')
-            exit_code = _run_legacy(args, profiler)
-        else:
-            exit_code = uvloop.run(_run(args, profiler))
+        exit_code = uvloop.run(_run(args, profiler))
     except* Exception as group:
         _logger.exception('batocera-launch exception')
 

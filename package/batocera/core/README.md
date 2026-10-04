@@ -5,7 +5,6 @@ Batocera's essential packages. These include the makefiles to compile the packag
 ## Directory navigation
 
  - `batocera-audio` All of the audio handling. This is where Pipewire is configured.
- - `batocera-configgen` The master folder that contains the config generators and their build configs.
  - `batocera-controller-overlays` The "system controller" tattoos.
  - `batocera-desktopapps` The "Applications" found when pressing F1 in the system list. These allow the user to manually configure standalone emulators or use certain utility applications.
  - `batocera-drm` For devices that use `drm` instead of `xrandr` to resize the screen, this package required.

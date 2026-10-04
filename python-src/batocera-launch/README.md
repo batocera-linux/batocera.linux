@@ -6,10 +6,7 @@ classes) with an async `Emulator` base class that owns ROM preparation,
 controllers, guns, wheels, resolution, bezels, HUD, hotkeys, and process
 execution.
 
-CLI entry points: `batocera-launch` and `emulatorlauncher` (same main).
-
-For porting a configgen generator into an `Emulator` subclass, see
-[MIGRATION.md](MIGRATION.md).
+CLI entry point: `batocera-launch`
 
 ## Layout
 
@@ -37,12 +34,7 @@ group `batocera_launch.emulators` (`Emulator._load_class`):
 
 1. Look up an entry point named like `system_config.emulator`.
 2. If found, load and use that class.
-3. Otherwise load the special `configgen` entry point
-   (`configgen.launch:GeneratorEmulator`), which wraps a legacy `Generator`.
-4. If `configgen` is also missing, raise `UnknownEmulator`.
-
-Setting `configgen=1` in batocera.conf forces the entire legacy
-`configgen.emulatorlauncher` path instead of batocera-launch.
+4. Otherwise, raise `UnknownEmulator`.
 
 ## In-tree vs separate packages
 

@@ -3,17 +3,20 @@ name = "batocera-launch"
 version = '44.0'
 dependencies = [
     'uvloop',
+    'lazy-loader',
     'batocera-common',
     'hotkeygen',
     'aiohttp',
     'aiodns',
     'brotli',
-    'lazy-loader',
+    'configobj',
+    'pillow',
+    'qrcode',
+    'toml',
 ]
 
 [project.scripts]
 batocera-launch = "batocera_launch.cli.main:main"
-emulatorlauncher = "batocera_launch.cli.main:main"
 batocera-joysticks-hotkeys = "batocera_launch.joysticks_hotkeys:main"
 
 [project.entry-points."batocera_launch.emulators"]

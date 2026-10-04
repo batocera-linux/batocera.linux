@@ -110,11 +110,6 @@ DISCRETE_GPU = vulkan.VulkanGPU(
 )
 
 
-@pytest.fixture(autouse=True)
-def reset_vulkan_info_cache() -> None:
-    vulkan._get_cached_vulkan_info.cache_clear()
-
-
 @pytest.fixture
 def mock_vulkaninfo(request: pytest.FixtureRequest, mocker: pytest_mock.MockFixture, fs: FakeFilesystem) -> AsyncMock:
     from batocera_common.asyncio import AsyncCompletedProcess
@@ -175,7 +170,6 @@ async def test_get_vulkan_info_no_gpus() -> None:
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 @pytest.mark.usefixtures('mock_vulkaninfo')
 async def test_get_vulkan_info_summary() -> None:
-
     info = await vulkan.get_vulkan_info()
 
     assert info is not None
@@ -193,6 +187,32 @@ async def test_get_vulkan_info_summary() -> None:
     assert info.active_discrete_gpu == info.discrete_gpu
     assert info.active_gpu == info.discrete_gpu
     assert info.version == '1.4.328'
+
+
+@pytest.mark.parametrize('mock_vulkaninfo', ['hybrid'], indirect=True)
+@pytest.mark.usefixtures('mock_vulkaninfo')
+@pytest.mark.parametrize('radeon_prime_disabled', [False, True])
+async def test_get_vulkan_info_hybrid(fs: FakeFilesystem, radeon_prime_disabled: bool) -> None:
+    if radeon_prime_disabled:
+        fs.create_file(  # pyright: ignore[reportUnknownMemberType]
+            '/boot/batocera-boot.conf', contents='radeon-prime=false\n'
+        )
+
+    info = await vulkan.get_vulkan_info()
+
+    assert info is not None
+    assert info.gpus == (INTEGRATED_GPU, DISCRETE_GPU)
+    assert info.devices == [INTEGRATED_GPU.name, DISCRETE_GPU.name]
+    assert info.default_gpu == INTEGRATED_GPU
+    assert info.discrete_gpu == DISCRETE_GPU
+    if radeon_prime_disabled:
+        assert info.active_discrete_gpu is None
+        assert info.active_gpu == INTEGRATED_GPU
+        assert info.version == INTEGRATED_GPU.api_version
+    else:
+        assert info.active_discrete_gpu == DISCRETE_GPU
+        assert info.active_gpu == DISCRETE_GPU
+        assert info.version == DISCRETE_GPU.api_version
 
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['full'], indirect=True)
@@ -333,31 +353,3 @@ def test_vulkan_info_discrete_gpu_without_active_discrete(fs: FakeFilesystem) ->
     assert info.discrete_gpu.name == 'AMD Radeon RX 7900 XTX (RADV NAVI31)'
     assert info.discrete_gpu.index == 1
     assert info.discrete_gpu.uuid == '00000000-2d00-0000-0000-000000000000'
-
-
-@pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
-@pytest.mark.usefixtures('mock_vulkaninfo')
-def test_sync_helpers() -> None:
-    assert vulkan.is_available() is True
-    assert vulkan.has_discrete_gpu() is True
-    assert vulkan.get_discrete_gpu_index() == '0'
-    assert vulkan.get_discrete_gpu_name() == 'AMD Radeon RX 7900 XTX (RADV NAVI31)'
-    assert vulkan.get_default_gpu_name() == 'AMD Radeon RX 7900 XTX (RADV NAVI31)'
-    assert vulkan.get_discrete_gpu_uuid() == '00000000-2d00-0000-0000-000000000000'
-    assert vulkan.get_version() == '1.4.328'
-
-
-@pytest.mark.parametrize('mock_vulkaninfo', ['hybrid'], indirect=True)
-@pytest.mark.usefixtures('mock_vulkaninfo')
-def test_sync_helpers_respect_radeon_prime(fs: FakeFilesystem) -> None:
-    fs.create_file(  # pyright: ignore[reportUnknownMemberType]
-        '/boot/batocera-boot.conf', contents='radeon-prime=false\n'
-    )
-
-    assert vulkan.is_available() is True
-    assert vulkan.has_discrete_gpu() is False
-    assert vulkan.get_discrete_gpu_name() == 'AMD Radeon RX 7900 XTX (RADV NAVI31)'
-    assert vulkan.get_discrete_gpu_index() == '1'
-    assert vulkan.get_discrete_gpu_uuid() == '00000000-2d00-0000-0000-000000000000'
-    assert vulkan.get_default_gpu_name() == 'Intel(R) UHD Graphics 630'
-    assert vulkan.get_version() == '1.3.280'

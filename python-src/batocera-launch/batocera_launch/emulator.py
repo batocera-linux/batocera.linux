@@ -796,9 +796,6 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             except Exception as e:
                 raise UnknownEmulator from e
 
-        if 'configgen' in emulators.names:
-            return emulators['configgen'].load()
-
         raise UnknownEmulator
 
     @staticmethod
