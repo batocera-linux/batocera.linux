@@ -1,3 +1,5 @@
-# Common configs for all boards
 CONFIG_BOOTDELAY=1
 CONFIG_IDENT_STRING=" Batocera.linux"
+# Default is "usb start" when CONFIG_USB_KEYBOARD=y, which slows down boot
+CONFIG_PREBOOT=""
+# CONFIG_TOOLS_MKEFICAPSULE is not set
