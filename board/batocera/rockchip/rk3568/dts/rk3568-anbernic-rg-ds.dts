@@ -443,10 +443,11 @@
 };
 
 &cru {
+	// Batocera - give VP0 its own PLL, one VPLL shared by both panels hangs suspend
 	assigned-clocks = <&pmucru CLK_RTC_32K>, <&cru PLL_GPLL>,
-			  <&pmucru PLL_PPLL>, <&cru PLL_VPLL>;
+			  <&pmucru PLL_PPLL>, <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
 	assigned-clock-rates = <32768>, <1200000000>,
-			       <200000000>, <292500000>;
+			       <200000000>, <816000000>, <816000000>;
 };
 
 &dsi0 {
@@ -1170,7 +1171,8 @@
 
 &vop {
 	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>;
-	assigned-clock-parents = <&cru PLL_VPLL>, <&cru PLL_VPLL>;
+	// Batocera - VP0 on HPLL
+	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>;
 	status = "okay";
 };
 
