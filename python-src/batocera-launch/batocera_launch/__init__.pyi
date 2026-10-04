@@ -27,9 +27,20 @@ from .devices.gun import (
     guns_need_crosses as guns_need_crosses,
 )
 from .devices.input import Input as Input, InputDict as InputDict, InputMapping as InputMapping
-from .devices.video import configure_windows as configure_windows, find_screen as find_screen
+from .devices.video import (
+    configure_windows as configure_windows,
+    find_screen as find_screen,
+    get_gl_info as get_gl_info,
+    supports_system_rotation as supports_system_rotation,
+)
 from .draw.gun_borders import create_gun_border_image as create_gun_border_image
-from .draw.pil import create_transparent_image as create_transparent_image, get_image_size as get_image_size
+from .draw.pil import (
+    add_qr_code as add_qr_code,
+    add_tattoo_image as add_tattoo_image,
+    create_transparent_image as create_transparent_image,
+    get_image_size as get_image_size,
+    pad_image as pad_image,
+)
 from .emulator import Emulator as Emulator
 from .exceptions import (
     BadCommandLineArguments as BadCommandLineArguments,

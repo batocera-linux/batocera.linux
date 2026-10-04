@@ -7,7 +7,8 @@
 RETROARCH_VERSION = 4b74434a30c534c763b60ba4cc16f6a94a611c5f
 RETROARCH_SITE = $(call github,libretro,RetroArch,$(RETROARCH_VERSION))
 RETROARCH_LICENSE = GPLv3+
-RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-fonts
+RETROARCH_DEPENDENCIES = host-pkgconf dejavu retroarch-assets flac noto-cjk-fonts \
+			 batocera-launch-libretro
 # install in staging for debugging (gdb)
 RETROARCH_INSTALL_STAGING = YES
 

@@ -1,5 +1,11 @@
 from .atom import is_atom_floppy as is_atom_floppy
-from .autorun import get_autorun_command as get_autorun_command
+from .autorun import (
+    get_atom_autorun_command as get_atom_autorun_command,
+    get_autorun_command as get_autorun_command,
+    get_coco_autorun_command as get_coco_autorun_command,
+    get_fm7_autorun_command as get_fm7_autorun_command,
+    get_generic_autorun_command as get_generic_autorun_command,
+)
 from .control_config import (
     ControlConfig as ControlConfig,
     get_input_definition as get_input_definition,
@@ -21,6 +27,7 @@ from .mess_controls import (
     MessControlMapping as MessControlMapping,
     MessMainMapping as MessMainMapping,
     MessSpecialMapping as MessSpecialMapping,
+    get_mess_control_scheme as get_mess_control_scheme,
     load_mess_system_controls as load_mess_system_controls,
 )
 from .mess_system_info import MessSystemInfo as MessSystemInfo

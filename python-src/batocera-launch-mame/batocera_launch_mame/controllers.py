@@ -10,6 +10,7 @@ from batocera_launch_mame_common import (
     MessComboMapping,
     MessMainMapping,
     get_input_definition,
+    get_mess_control_scheme,
     has_stick,
     load_mame_control_mapping,
     load_mess_system_controls,
@@ -25,9 +26,6 @@ if TYPE_CHECKING:
 
 _logger: Final = logging.getLogger(__name__)
 
-_BBC_SYSTEMS: Final = frozenset({'bbcb', 'bbcm', 'bbcm512', 'bbcmc'})
-_APPLE2_SYSTEMS: Final = frozenset({'apple2p', 'apple2e', 'apple2ee'})
-
 _PEDAL_KEYS: Final = {1: 'c', 2: 'v', 3: 'b', 4: 'n'}
 _UI_PORTS: tuple[tuple[str, str, str], ...] = (
     ('UI_DOWN', 'DOWN', 'JOYSTICK_DOWN'),
@@ -35,14 +33,6 @@ _UI_PORTS: tuple[tuple[str, str, str], ...] = (
     ('UI_UP', 'UP', 'JOYSTICK_UP'),
     ('UI_RIGHT', 'RIGHT', 'JOYSTICK_RIGHT'),
 )
-
-
-def _mess_use_controls(mess_system_name: str, special_controller: str, /) -> str:
-    if mess_system_name in _BBC_SYSTEMS:
-        return 'bbc' if special_controller == 'none' else f'bbc-{special_controller}'
-    if mess_system_name in _APPLE2_SYSTEMS:
-        return 'apple2' if special_controller == 'none' else f'apple2-{special_controller}'
-    return mess_system_name
 
 
 def _resolve_pad_key(controller: Controller, key: str, /) -> tuple[str, bool] | None:
@@ -65,7 +55,7 @@ class MAMEControllers(MAMEBase):
         default_control_config = ControlConfig(config_dir / 'default.cfg')
         overwrite_mame = not (default_control_config.exists() and custom_cfg)
 
-        use_controls = _mess_use_controls(mess_system_name, special_controller)
+        use_controls = get_mess_control_scheme(mess_system_name, special_controller)
         _logger.debug('Using %s for controller config.', use_controls)
 
         default_control_config.initialize_crosshairs(self.config.get_str('mame_crosshair'))

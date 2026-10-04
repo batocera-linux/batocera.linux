@@ -1,6 +1,10 @@
 config BR2_PACKAGE_LIBRETRO_SAME_CDI
-    bool "libretro-same-cdi"
-    help
-      A libretro CD-i emulator core (branched from MAME)
-        
-      http://www.libretro.com
+	bool "libretro-same-cdi"
+	depends on BR2_PACKAGE_PYTHON_BATOCERA_COMMON
+	depends on BR2_PACKAGE_BATOCERA_LAUNCH
+	depends on BR2_PACKAGE_BATOCERA_LAUNCH_LIBRETRO
+	select BR2_PACKAGE_BATOCERA_LAUNCH_LIBRETRO_MAME
+	help
+	  A libretro CD-i emulator core (branched from MAME)
+
+	  http://www.libretro.com

@@ -33,6 +33,9 @@ _SPECIAL_CONTROLS: Final = {
     'apple2ee',
 }
 
+_BBC_SYSTEMS: Final = frozenset({'bbcb', 'bbcm', 'bbcm512', 'bbcmc'})
+_APPLE2_SYSTEMS: Final = frozenset({'apple2p', 'apple2e', 'apple2ee'})
+
 
 @dataclass(slots=True, frozen=True)
 class _BaseMessControl:
@@ -121,6 +124,16 @@ def _dict_to_mess_control_mapping(control_dict: dict[str, Any]) -> MessControlMa
             )
         case _:
             raise InvalidConfiguration(f'Unknown control mapping type: {control_dict["type"]}')
+
+
+def get_mess_control_scheme(mess_system_name: str, mess_control_type: str, /) -> str:
+    if mess_system_name in _BBC_SYSTEMS:
+        return 'bbc' if mess_control_type == 'none' else f'bbc-{mess_control_type}'
+
+    if mess_system_name in _APPLE2_SYSTEMS:
+        return 'apple2' if mess_control_type == 'none' else f'apple2-{mess_control_type}'
+
+    return mess_system_name
 
 
 def load_mess_system_controls(mess_system_name: str, control_scheme: str, /) -> dict[str, MessControlMapping] | None:
