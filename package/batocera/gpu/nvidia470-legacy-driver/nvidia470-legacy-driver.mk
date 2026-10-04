@@ -217,6 +217,8 @@ define NVIDIA470_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
 		$(TARGET_DIR)/usr/share/nvidia/X11/10-nvidia470-legacy-drm-outputclass.conf
+	$(INSTALL) -D -m 0644 $(@D)/nvidia-application-profiles-$(NVIDIA470_LEGACY_DRIVER_VERSION)-rc \
+		$(TARGET_DIR)/usr/share/nvidia/nvidia-application-profiles-$(NVIDIA470_LEGACY_DRIVER_VERSION)-rc
 
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(NVIDIA470_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(NVIDIA470_LEGACY_DRIVER_VERSION)
