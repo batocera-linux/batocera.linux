@@ -192,6 +192,7 @@ class Sm2Emu(Emulator):
             'show_fps': 'false',  # covered by the hud/hud_corner features instead
             'lightgun': _ini_bool(use_guns),
             'lightgun_crosshair': _ini_bool(use_guns and guns_need_crosses(self.guns)),
+            'lightgun_hide_flash': _ini_bool(self.config.get_bool('sm2_lightgun_hide_flash', False)),
             'lightgun_recoil': _ini_bool(self.config.get_bool('sm2_lightgun_recoil', True)),
             'lightgun_recoil_strength': self.config.get_str('sm2_lightgun_recoil_strength', '60'),
             'wheel_ffb': _ini_bool(self.config.get_bool('sm2_wheel_ffb', True)),
