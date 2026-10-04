@@ -54,6 +54,9 @@ NVIDIA_OPEN_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-egl-gbm.so.1.1.3 \
 	libnvidia-egl-wayland.so.1.1.20 \
+	libnvidia-egl-wayland2.so.1.0.2 \
+	libnvidia-egl-xcb.so.1.0.6 \
+	libnvidia-egl-xlib.so.1.0.6 \
 	libnvidia-glcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
@@ -61,6 +64,7 @@ NVIDIA_OPEN_DRIVER_LIBS_MISC = \
 	libnvidia-rtcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-tls.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-ml.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
+	libnvidia-present.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-wayland-client.so.$(NVIDIA_OPEN_DRIVER_VERSION)
 
 NVIDIA_OPEN_DRIVER_LIBS_VDPAU = \
@@ -79,6 +83,9 @@ NVIDIA_OPEN_DRIVER_32 = \
 	$(NVIDIA_OPEN_DRIVER_LIBS_GLES) \
 	libnvidia-allocator.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
+	libnvidia-egl-wayland2.so.1.0.2 \
+	libnvidia-egl-xcb.so.1.0.6 \
+	libnvidia-egl-xlib.so.1.0.6 \
 	libnvidia-glcore.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
@@ -270,15 +277,23 @@ define NVIDIA_OPEN_DRIVER_INSTALL_TARGET_CMDS
 # batocera install files needed by libglvnd etc
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia.json \
 		$(TARGET_DIR)/usr/share/glvnd/egl_vendor.d/10_nvidia_production.json
+	$(INSTALL) -D -m 0644 $(@D)/09_nvidia_wayland2.json \
+		$(TARGET_DIR)/usr/share/egl/egl_external_platform.d/09_nvidia_wayland2.json
 	$(INSTALL) -D -m 0644 $(@D)/10_nvidia_wayland.json \
 		$(TARGET_DIR)/usr/share/egl/egl_external_platform.d/10_nvidia_wayland.json
 	$(INSTALL) -D -m 0644 $(@D)/15_nvidia_gbm.json \
 	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/15_nvidia_gbm.json
+	$(INSTALL) -D -m 0644 $(@D)/20_nvidia_xcb.json \
+	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/20_nvidia_xcb.json
+	$(INSTALL) -D -m 0644 $(@D)/20_nvidia_xlib.json \
+	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/20_nvidia_xlib.json
 
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
 		$(TARGET_DIR)/usr/share/nvidia/X11/10-nvidia-production-drm-outputclass.conf
+	$(INSTALL) -D -m 0644 $(@D)/nvidia-application-profiles-$(NVIDIA_OPEN_DRIVER_VERSION)-rc \
+		$(TARGET_DIR)/usr/share/nvidia/nvidia-application-profiles-$(NVIDIA_OPEN_DRIVER_VERSION)-rc
 
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(NVIDIA_OPEN_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(NVIDIA_OPEN_DRIVER_VERSION)
