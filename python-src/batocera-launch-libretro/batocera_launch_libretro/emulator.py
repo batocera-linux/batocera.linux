@@ -6,10 +6,10 @@ from dataclasses import field
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from batocera_common import vulkan
 from batocera_common.asyncio import is_connected_to_internet
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, OVERLAYS
+from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import (
     BezelInfo,
     Command,
@@ -646,17 +646,14 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
         # needed for the ozone menu
         custom_config.set('video_driver', gfx_backend)
+
         # Set Vulkan
-        if self.config.get('gfxbackend') == 'vulkan' and vulkan.is_available():
+        if self.config.get('gfxbackend') == 'vulkan' and (vulkan_info := await get_vulkan_info()):
             _logger.debug('Vulkan driver is available on the system.')
-            if vulkan.has_discrete_gpu():
+            if vulkan_info.active_discrete_gpu:
                 _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                discrete_index = vulkan.get_discrete_gpu_index()
-                if discrete_index:
-                    _logger.debug('Using Discrete GPU Index: %s for RetroArch', discrete_index)
-                    custom_config.set('vulkan_gpu_index', discrete_index)
-                else:
-                    _logger.debug("Couldn't get discrete GPU index")
+                _logger.debug('Using Discrete GPU Index: %s for RetroArch', vulkan_info.active_discrete_gpu.index)
+                custom_config.set('vulkan_gpu_index', vulkan_info.active_discrete_gpu.index)
             else:
                 _logger.debug('Discrete GPU is not available on the system. Using default.')
 
