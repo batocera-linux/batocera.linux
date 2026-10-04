@@ -32,6 +32,7 @@ _ARCADE_SYSTEMS: Final = {
     'cave3rd',
     'namco2x6',
     'namco22',
+    'chihiro',
 }
 
 
