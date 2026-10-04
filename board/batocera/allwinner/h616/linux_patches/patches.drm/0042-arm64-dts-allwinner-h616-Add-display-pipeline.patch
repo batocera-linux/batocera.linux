@@ -45,7 +45,7 @@ index 111111111111..222222222222 100644
 +			compatible = "allwinner,sun50i-h616-de33",
 +				     "allwinner,sun50i-a64-de2";
 +			reg = <0x1000000 0x400000>;
-+			allwinner,sram = <&de3_sram 1>;
++			allwinner,sram = <&sram_c 1>;
 +			#address-cells = <1>;
 +			#size-cells = <1>;
 +			ranges = <0 0x1000000 0x400000>;
@@ -120,19 +120,6 @@ index 111111111111..222222222222 100644
  		gpu: gpu@1800000 {
  			compatible = "allwinner,sun50i-h616-mali",
  				     "arm,mali-bifrost";
-@@ -188,6 +273,12 @@ sram_c: sram@28000 {
- 				#address-cells = <1>;
- 				#size-cells = <1>;
- 				ranges = <0 0x00028000 0x30000>;
-+
-+				de3_sram: sram-section@0 {
-+					compatible = "allwinner,sun50i-h616-sram-c",
-+						     "allwinner,sun50i-a64-sram-c";
-+					reg = <0x0000 0x1e000>;
-+				};
- 			};
- 		};
- 
 @@ -929,6 +1020,225 @@ ohci3: usb@5311400 {
  			status = "disabled";
  		};

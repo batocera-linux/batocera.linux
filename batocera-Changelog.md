@@ -310,7 +310,7 @@
 - XRoar to v1.12.1
 - Ymir to v0.3.3
 ### System
-- Allwinner H616 device kernel updated to 7.1.5
+- Allwinner H616 device kernel updated to 7.2.8
 - Allwinner H700 device kernel updated to 7.2.6
 - ALSA UCM configuration to v1.2.16.1
 - Bluez to 5.87

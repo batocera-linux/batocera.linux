@@ -42,9 +42,6 @@ patches.megous/goodix-7.1/0001-Input-goodix-Add-config-debugfs-file.patch
 patches.megous/goodix-7.1/0002-Input-goodix-Add-option-to-power-off-the-controller-.patch
 patches.megous/goodix-7.1/0003-Input-goodix-Try-to-keep-regulator-enable-disable-ba.patch
 patches.megous/goodix-7.1/0004-input-touchscreen-goodix-Respect-IRQ-flags-from-DT-w.patch
-patches.megous/stk3310-7.1/0001-iio-light-stk3310-Implement-vdd-supply-and-power-it-.patch
-patches.megous/stk3310-7.1/0002-iio-light-stk3310-Add-support-for-I2C-regulator.patch
-patches.megous/stk3310-7.1/0003-iio-stk3310-Fix-regulator-disable-enable-order.patch
 patches.megous/ebaz4205-7.1/0001-Add-minimal-EBAZ4205-defconfig.patch
 patches.megous/ebaz4205-7.1/0002-dt-bindings-Add-Zynq-clocks.patch
 patches.megous/ebaz4205-7.1/0003-arm-xilinx-ebaz4205-Add-test-config-for-various-PL-p.patch
@@ -67,18 +64,6 @@ patches.megous/a711-chgled-7.1/0001-dt-bindings-leds-Add-a-binding-for-AXP813-ch
 patches.megous/a711-chgled-7.1/0002-leds-axp20x-Support-charger-LED-on-AXP20x-like-PMICs.patch
 patches.megous/a711-chgled-7.1/0003-ARM-dts-axp813-Add-charger-LED.patch
 patches.megous/a711-chgled-7.1/0004-ARM-dts-sun8i-a83t-tbs-a711-Enable-charging-LED.patch
-patches.megous/a711-cams-7.1/0001-MAINTAINERS-Add-entry-for-Himax-HM5065.patch
-patches.megous/a711-cams-7.1/0002-dt-bindings-media-Add-bindings-for-Himax-HM5065-came.patch
-patches.megous/a711-cams-7.1/0003-hm5065-yaml-bindings-wip.patch
-patches.megous/a711-cams-7.1/0004-media-hm5065-Add-subdev-driver-for-Himax-HM5065-came.patch
-patches.megous/a711-cams-7.1/0005-media-i2c-gc2145-Move-upstream-driver-out-of-the-way.patch
-patches.megous/a711-cams-7.1/0006-media-gc2145-Galaxycore-camera-module-driver.patch
-patches.megous/a711-cams-7.1/0007-media-gc2145-Added-BGGR-bayer-mode.patch
-patches.megous/a711-cams-7.1/0008-media-gc2145-Disable-debug-output.patch
-patches.megous/a711-cams-7.1/0009-media-gc2145-Add-PIXEL_RATE-HBLANK-and-VBLANK-contro.patch
-patches.megous/a711-cams-7.1/0010-media-gc2145-implement-system-suspend.patch
-patches.megous/a711-cams-7.1/0011-media-gc2145-fix-white-balance-colors.patch
-patches.megous/a711-cams-7.1/0012-media-i2c-gc2145-Parse-and-register-properties.patch
 patches.megous/a83t-suspend-7.1/0001-mailbox-Allow-to-run-mailbox-while-timekeeping-is-su.patch
 patches.megous/a83t-suspend-7.1/0002-ARM-sunxi-Add-experimental-suspend-to-memory-impleme.patch
 patches.megous/a83t-suspend-7.1/0003-ARM-sunxi-sunxi_cpu0_hotplug_support_set-is-not-supp.patch
@@ -182,7 +167,6 @@ patches.megous/rp64-7.1/0002-arm64-dts-rk3399-rockpro64-Add-Type-C-OTG-Alt-DP-su
 patches.megous/fixes-7.1/0001-ARM-dts-sun8i-a83t-Add-missing-GPU-trip-point.patch
 patches.megous/fixes-7.1/0002-arm64-dts-sun50i-h5-Add-missing-GPU-trip-point.patch
 patches.megous/fixes-7.1/0003-arm64-dts-allwinner-a64-Fix-LRADC-compatible.patch
-patches.megous/fixes-7.1/0004-media-cedrus-Fix-failure-to-clean-up-hardware-on-pro.patch
 patches.megous/fixes-7.1/0005-ASoC-rockchip-Fix-doubling-of-playback-speed-after-s.patch
 patches.megous/fixes-7.1/0006-usb-musb-sunxi-Avoid-enabling-host-side-code-on-SoCs.patch
 patches.megous/fixes-7.1/0007-arm64-dts-allwinner-Enforce-consistent-MMC-numbering.patch
@@ -420,7 +404,6 @@ patches.armbian/arm-dts-h3-nanopi-neo-air-Add-regulator-camera-wifi-bluetooth-o.
 patches.armbian/arm-dts-h3-orangepi-2-Add-regulator-vdd-cpu.patch
 patches.armbian/arm-dts-sun4i-a10-cubieboard-green-LED-mmc0-default-trigger.patch
 patches.armbian/arm-dts-sun4i-a10-emac-enable-dma.patch
-patches.armbian/arm-dts-sun4i-a10-fix-pmu-interrupt.patch
 patches.armbian/arm-dts-sun4i-a10-pcduino-add-hdmi.patch
 patches.armbian/arm-dts-sun5i-a13-olinuxino-Add-panel-lcd-olinuxino-4.3-needed-.patch
 patches.armbian/arm-dts-sun5i-a13-olinuxino-micro-add-panel-lcd-olinuxino-4.3.patch
