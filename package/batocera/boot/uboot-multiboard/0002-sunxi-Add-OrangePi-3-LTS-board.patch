@@ -1,4 +1,4 @@
-From 65a3bafb3f5a8c83b678b59cb4b7bb87d12e7cd0 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@gmail.com>
 Date: Tue, 7 Feb 2023 17:43:14 +0100
 Subject: [PATCH] sunxi: Add OrangePi 3 LTS board
@@ -7,16 +7,15 @@ Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 ---
  arch/arm/dts/Makefile                     |   1 +
  arch/arm/dts/sun50i-h6-orangepi-3-lts.dts | 313 ++++++++++++++++++++++
- configs/orangepi_3_lts_defconfig          |  19 ++
- 3 files changed, 333 insertions(+)
+ configs/orangepi_3_lts_defconfig          |  17 ++
+ 3 files changed, 331 insertions(+)
  create mode 100644 arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
  create mode 100644 configs/orangepi_3_lts_defconfig
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 965895bc2a3c..501400635fa9 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
-@@ -702,6 +702,7 @@ dtb-$(CONFIG_MACH_SUN50I_H5) += \
+@@ -645,6 +645,7 @@ dtb-$(CONFIG_MACH_SUN50I_H5) += \
  dtb-$(CONFIG_MACH_SUN50I_H6) += \
  	sun50i-h6-beelink-gs1.dtb \
  	sun50i-h6-orangepi-3.dtb \
@@ -26,7 +25,6 @@ index 965895bc2a3c..501400635fa9 100644
  	sun50i-h6-pine-h64.dtb \
 diff --git a/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts b/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
 new file mode 100644
-index 000000000000..6a5df1103a90
 --- /dev/null
 +++ b/arch/arm/dts/sun50i-h6-orangepi-3-lts.dts
 @@ -0,0 +1,313 @@
@@ -345,22 +343,19 @@ index 000000000000..6a5df1103a90
 +};
 diff --git a/configs/orangepi_3_lts_defconfig b/configs/orangepi_3_lts_defconfig
 new file mode 100644
-index 000000000000..41a9af4ef67a
 --- /dev/null
 +++ b/configs/orangepi_3_lts_defconfig
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,17 @@
 +CONFIG_ARM=y
 +CONFIG_ARCH_SUNXI=y
 +CONFIG_DEFAULT_DEVICE_TREE="sun50i-h6-orangepi-3-lts"
 +CONFIG_SPL=y
 +CONFIG_MACH_SUN50I_H6=y
 +CONFIG_SUNXI_DRAM_H6_LPDDR3=y
-+CONFIG_MMC0_CD_PIN="PF6"
 +CONFIG_MMC_SUNXI_SLOT_EXTRA=2
++CONFIG_SPL_SUNXI_LED_STATUS=y
++CONFIG_SPL_SUNXI_LED_STATUS_GPIO=356
 +# CONFIG_SYS_MALLOC_CLEAR_ON_INIT is not set
-+CONFIG_SPL_STACK=0x118000
-+CONFIG_SYS_PBSIZE=1024
-+CONFIG_SYS_BOOTM_LEN=0x2000000
 +CONFIG_PHY_SUN50I_USB3=y
 +CONFIG_USB_XHCI_HCD=y
 +CONFIG_USB_XHCI_DWC3=y
@@ -368,6 +363,3 @@ index 000000000000..41a9af4ef67a
 +CONFIG_USB_OHCI_HCD=y
 +CONFIG_USB_DWC3=y
 +# CONFIG_USB_DWC3_GADGET is not set
--- 
-2.39.1
-

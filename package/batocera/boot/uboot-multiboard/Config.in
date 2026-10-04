@@ -1,14 +1,13 @@
 config BR2_PACKAGE_UBOOT_MULTIBOARD
   bool "U-Boot for multiple boards"
   select BR2_TARGET_ARM_TRUSTED_FIRMWARE if !BR2_PACKAGE_BATOCERA_TARGET_H3
-  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_LATEST_VERSION 
+  select BR2_TARGET_ARM_TRUSTED_FIRMWARE_LATEST_VERSION
   select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL32 \
     if BR2_PACKAGE_BATOCERA_TARGET_RK3288
   select BR2_TARGET_ARM_TRUSTED_FIRMWARE_BL31 if \
     !BR2_PACKAGE_BATOCERA_TARGET_RK3288 && !BR2_PACKAGE_BATOCERA_TARGET_H3
   select BR2_TARGET_ARM_TRUSTED_FIRMWARE_NEEDS_ARM32_TOOLCHAIN \
     if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-  select BR2_TARGET_UBOOT_NO_SCP if BR2_PACKAGE_BATOCERA_TARGET_H5 || BR2_PACKAGE_BATOCERA_TARGET_H6 || BR2_PACKAGE_BATOCERA_TARGET_H616
   select BR2_PACKAGE_HOST_UTIL_LINUX_LIBUUID
   select BR2_PACKAGE_HOST_UTIL_LINUX
   help
@@ -21,17 +20,15 @@ if BR2_PACKAGE_UBOOT_MULTIBOARD
 config BR2_PACKAGE_UBOOT_MULTIBOARD_CONFIGS
   string "U-Boot configs"
   default "miqi-rk3288 tinker-s-rk3288" if BR2_PACKAGE_BATOCERA_TARGET_RK3288
-  default "orangepi-rk3399 rock960-rk3399 rock-pi-4-rk3399 rock-4c-plus-rk3399 rockpro64-rk3399" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
-  default "libretech_all_h3_cc_h3 orangepi_one orangepi_pc orangepi_pc_plus orangepi_plus2e bananapi_m2_zero" if BR2_PACKAGE_BATOCERA_TARGET_H3
+  default "rock-pi-4-rk3399 rock-4c-plus-rk3399 rockpro64-rk3399" if BR2_PACKAGE_BATOCERA_TARGET_RK3399
+  default "libretech_all_h3_cc_h3 orangepi_one orangepi_pc orangepi_plus2e bananapi_m2_zero" if BR2_PACKAGE_BATOCERA_TARGET_H3
   default "libretech_all_h3_cc_h5 orangepi_pc2"                              if BR2_PACKAGE_BATOCERA_TARGET_H5
   default "orangepi_3 orangepi_3_lts orangepi_one_plus"                      if BR2_PACKAGE_BATOCERA_TARGET_H6
-  default "orangepi_zero2 orangepi_zero3 x96_mate"			     if BR2_PACKAGE_BATOCERA_TARGET_H616
+  default "orangepi_zero2 orangepi_zero3 x96_mate"                           if BR2_PACKAGE_BATOCERA_TARGET_H616
   default ""
   help
     Names of U-Boot defconfigs to build without the _defconfig part.
-    These also define the directory to search for board specific
-    patches and config fragment files, and they also define the
-    install directory name.
+    They also name the install directory.
 
 config BR2_PACKAGE_UBOOT_MULTIBOARD_BINARIES
   string "U-Boot binaries"
