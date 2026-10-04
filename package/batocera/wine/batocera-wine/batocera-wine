@@ -472,6 +472,11 @@ reg_install() {
         rmdir  "$ii" || { echo "${FUNCNAME[0]}: Place only reg-files to $ii" >&2; }
     fi
 
+    if [[ "${NVAPI}" = 1 && -e "/usr/lib/nvidia/wine/nvngx.dll" ]] && ! grep -q 'NGXCore' "${WINEPOINT}/system.reg"; then
+        WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_LOCAL_MACHINE\Software\NVIDIA Corporation\Global\NGXCore" /v "FullPath" /t REG_SZ /d "C:\Windows\System32" /f
+        waitWineServer 0
+    fi
+
     if [[ "${WINE_ENABLE_HIDRAW}" = 1 ]]; then
         if ! grep -q "\"DisableHidraw\"=dword:00000000" "${WINEPOINT}/system.reg"; then
             WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\winebus" /v "DisableHidraw" /t REG_DWORD /d 0 /f
@@ -667,6 +672,10 @@ dxvk_install() {
     if [[ "${NVAPI}" = 1 ]]; then
         export DXVK_ENABLE_NVAPI=1
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};nvapi,nvapi64=n"
+        # NVIDIA's NGX core for Wine, needed by games for DLSS
+        if [[ -e "/usr/lib/nvidia/wine/nvngx.dll" && "${WINEARCH}" != "win32" ]]; then
+            ln -sf /usr/lib/nvidia/wine/{_nvngx.dll,nvngx.dll,nvngx_dlssg.dll} "${WINEPREFIX}/drive_c/windows/system32" || return 1
+        fi
     else
         export DXVK_ENABLE_NVAPI=0
         export WINEDLLOVERRIDES="${WINEDLLOVERRIDES};nvapi64,nvapi="

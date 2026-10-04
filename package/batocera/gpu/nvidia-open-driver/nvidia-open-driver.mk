@@ -288,6 +288,11 @@ define NVIDIA_OPEN_DRIVER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 0644 $(@D)/20_nvidia_xlib.json \
 	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/20_nvidia_xlib.json
 
+# batocera NGX core for wine, linked into prefixes by batocera-wine
+	$(INSTALL) -D -m 0644 $(@D)/_nvngx.dll $(TARGET_DIR)/usr/lib/nvidia/wine/_nvngx.dll
+	$(INSTALL) -D -m 0644 $(@D)/nvngx.dll $(TARGET_DIR)/usr/lib/nvidia/wine/nvngx.dll
+	$(INSTALL) -D -m 0644 $(@D)/nvngx_dlssg.dll $(TARGET_DIR)/usr/lib/nvidia/wine/nvngx_dlssg.dll
+
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
