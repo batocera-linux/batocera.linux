@@ -55,7 +55,15 @@ class Vita3k(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'vita3k',
-            'keys': {'exit': ['KEY_LEFTCTRL', 'KEY_F12']},
+            'keys': {
+                # Vita3K can hang while it stops a running app, so kill it when Ctrl+F12 did not close it
+                'exit': (
+                    'hotkeygen --send close; '
+                    'for i in $(seq 10); do pidof Vita3K >/dev/null || exit 0; sleep 0.5; done; '
+                    'kill -9 $(pidof Vita3K)'
+                ),
+                'close': ['KEY_LEFTCTRL', 'KEY_F12'],
+            },
         }
 
     @cached_property
