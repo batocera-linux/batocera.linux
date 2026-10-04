@@ -63,6 +63,7 @@
 - Steam is installed automatically from Flathub the first time it is launched
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
 - Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
+- Wine DLSS support for NVIDIA RTX GPUs when NVAPI is enabled
 - Xemu Chihiro fork for the Sega Chihiro, with light guns, wheels with force feedback, card readers and linked cabinets
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
