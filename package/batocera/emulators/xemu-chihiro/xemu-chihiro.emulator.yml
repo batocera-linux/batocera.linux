@@ -129,8 +129,8 @@ custom_features:
     prompt: FORCE FEEDBACK
     description: Drive board force feedback on a wheel, rumble on a pad (OutRun 2, Maximum Tune).
     choices:
-      Off (Default): "false"
-      'On': "true"
+      On (Default): "true"
+      'Off': "false"
   xemu_chihiro_ffb_strength:
     group: CONTROLS
     submenu: WHEELS
@@ -173,6 +173,14 @@ custom_features:
       50% (Default): "50"
       75%: "75"
       100%: "100"
+  xemu_chihiro_crosshairs:
+    group: CONTROLS
+    submenu: LIGHT GUNS
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    description: Auto shows them only for the guns that need one.
+    choices:
+      'Off': "false"
+      'On': "true"
   xemu_chihiro_link:
     group: NETWORK
     submenu: CABINET LINK

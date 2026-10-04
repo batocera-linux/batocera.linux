@@ -160,7 +160,7 @@ class XemuChihiro(Emulator):
         # batocera draws the gun borders
         settings['sinden_border'] = False
 
-        settings['force_feedback'] = self.config.get_bool('xemu_chihiro_ffb')
+        settings['force_feedback'] = self.config.get_bool('xemu_chihiro_ffb', True)
         settings['ffb_strength'] = self.config.get_int('xemu_chihiro_ffb_strength', 100)
         settings['ffb_invert'] = self.config.get_bool('xemu_chihiro_ffb_invert')
         settings['wheel_weight'] = self.config.get_int('xemu_chihiro_wheel_weight', 40)
@@ -197,6 +197,7 @@ class XemuChihiro(Emulator):
         # a grab would hide the gun buttons from evmapy
         settings['pointer_grab'] = False
 
+        crosshairs = self.config.get_bool('xemu_chihiro_crosshairs', self.guns_need_crosses)
         jvs = _section(config, 'chihiro.jvs')
         jvs_p2 = _section(config, 'chihiro.jvs_p2')
         for player, (section, crosshair) in enumerate(((jvs, 'p1_crosshair.png'), (jvs_p2, 'p2_crosshair.png'))):
@@ -205,9 +206,7 @@ class XemuChihiro(Emulator):
                 section['pointer_device'] = f'node:{gun.node}'
             else:
                 section['pointer_device'] = 'mouse' if player == 0 else ''
-            section['crosshair_path'] = (
-                str(_CROSSHAIRS / crosshair) if gun is not None and self.guns_need_crosses else ''
-            )
+            section['crosshair_path'] = str(_CROSSHAIRS / crosshair) if gun is not None and crosshairs else ''
 
         for path, keys in DEPRECATED.items():
             section = _section(config, path)

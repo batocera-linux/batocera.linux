@@ -158,6 +158,10 @@ class ControlsBuilder:
         bindings = {path: dict(values) for path, values in _PAD.items()}
         if self._wheel is not None:
             self._bind_wheel(bindings, self._wheel)
+        if len(self._controllers) > 1:
+            card = self._controllers[1].inputs.get('x')
+            if card is not None and card.type == 'button':
+                bindings['chihiro.jvs_p2']['card_in'] = _JOY_PORT_STRIDE + _JOY_BUTTON + int(card.id)
         for player, gun in enumerate(self._guns[:2]):
             self._bind_gun(bindings, player, gun)
         return bindings
@@ -221,7 +225,7 @@ class ControlsBuilder:
         if player == 0:
             _update(bindings, 'chihiro.jvs', start=start, coin=coin, card_in=card)
             _update(bindings, 'chihiro.jvs.hotd3', trigger=trigger, body_button=body)
-            _update(bindings, 'chihiro.jvs.vc3', trigger=trigger, body_button=body, pedal=extra)
+            _update(bindings, 'chihiro.jvs.vc3', trigger=trigger, body_button=extra, pedal=body)
             _update(bindings, 'chihiro.jvs.gs', trigger=trigger, body_button=body, change=extra)
         else:
             _update(
@@ -233,8 +237,8 @@ class ControlsBuilder:
                 hotd3_trigger=trigger,
                 hotd3_body_button=body,
                 vc3_trigger=trigger,
-                vc3_body_button=body,
-                vc3_pedal=extra,
+                vc3_body_button=extra,
+                vc3_pedal=body,
                 gs_trigger=trigger,
                 gs_body_button=body,
                 gs_change=extra,
