@@ -158,7 +158,7 @@ class Mugen(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'mugen',
-            'keys': {'exit': ['/usr/bin/batocera-wine mugen stop']},
+            'keys': {'exit': '/usr/bin/batocera-wine mugen stop'},
         }
 
     @cached_property
