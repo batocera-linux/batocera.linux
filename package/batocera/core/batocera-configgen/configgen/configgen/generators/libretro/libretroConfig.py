@@ -79,21 +79,21 @@ systemNetplayModes = {'host', 'client', 'spectator'}
 coreForceSlangShaders = { 'mupen64plus-next' }
 
 def connected_to_internet() -> bool:
-    # Try Cloudflare one.one.one.one first
-    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "one.one.one.one"]
-    process = subprocess.Popen(cmd)
-    process.wait()
-    if process.returncode == 0:
-        _logger.debug("Connected to the internet")
-        return True
+    # Literal addresses behind Cloudflare's one.one.one.one and Google's dns.google.
+    # Using them directly (with ping -n) keeps a DNS round-trip out of the timeout budget.
+    for host in ("1.1.1.1", "8.8.8.8"):
+        try:
+            # -W gives ping its own per-packet deadline, so the outer timeout only
+            # guards against a wedged process rather than racing a healthy reply.
+            completed = subprocess.run(["ping", "-n", "-c", "1", "-W", "2", "-t", "255", host],
+                                       timeout=5, capture_output=True, check=False)
+        except subprocess.TimeoutExpired:
+            _logger.debug("Timed out pinging %s", host)
+            continue
 
-    # Try dns.google if one.one.one.one fails
-    cmd = ["timeout", "1", "ping", "-c", "1", "-t", "255", "dns.google"]
-    process = subprocess.Popen(cmd)
-    process.wait()
-    if process.returncode == 0:
-        _logger.debug("Connected to the internet")
-        return True
+        if completed.returncode == 0:
+            _logger.debug("Connected to the internet via %s", host)
+            return True
 
     _logger.error("Not connected to the internet")
     return False

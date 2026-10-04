@@ -18,6 +18,9 @@ if TYPE_CHECKING:
 
 _logger: Final = logging.getLogger(__name__)
 
+# Seconds allowed for each is_connected_to_internet() probe.
+_INTERNET_CHECK_TIMEOUT: Final = 5
+
 
 def run_in_new_uvloop[T](coro: Awaitable[T], /) -> T:
     """Run a coroutine in a fresh thread with its own uvloop."""
@@ -306,19 +309,27 @@ async def create_ready_task[**P, R](
 
 
 async def is_connected_to_internet() -> bool:
+    """Report whether the internet looks reachable, by probing two public resolvers.
+
+    Falls back from Cloudflare to Google so a single unreachable resolver does not
+    read as a total outage.
+    """
     import aiohttp
 
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
-        try:
-            async with session.head('https://one.one.one.one'):
-                return True
-        except aiohttp.ClientError, TimeoutError:
+    # A full TCP + TLS handshake has to fit in this budget. One second was tight
+    # enough to report a false negative on slow hardware.
+    timeout = aiohttp.ClientTimeout(total=_INTERNET_CHECK_TIMEOUT)
+
+    async with aiohttp.ClientSession(timeout=timeout) as session:
+        for url in ('https://one.one.one.one', 'https://dns.google'):
             try:
-                async with session.head('https://dns.google'):
+                async with session.head(url):
                     return True
             except aiohttp.ClientError, TimeoutError:
-                _logger.error('Not connected to the internet')
-                return False
+                _logger.debug('Failed to reach %s', url)
+
+    _logger.error('Not connected to the internet')
+    return False
 
 
 async def iterate_queue[T](queue: asyncio.Queue[T], /) -> AsyncIterator[T]:
