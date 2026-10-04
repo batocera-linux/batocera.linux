@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from batocera_common.dataclasses import cached_property
+from batocera_common.dataclasses import cached_dataclass, cached_property
 
 from ..core import Core
 
 
+@cached_dataclass
 class Snes9xControllersMixin(Core):
     @cached_property
     def player1_device_type(self) -> str | None:
