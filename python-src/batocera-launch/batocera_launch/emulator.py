@@ -30,6 +30,7 @@ from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
+from .plugins import HookContext, PluginManager
 from .rom import Rom, ShortGameID
 
 if TYPE_CHECKING:
@@ -77,16 +78,21 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     __client_session: aiohttp.ClientSession | None = field(init=False, default=None)
     __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack)
+    __plugins: PluginManager = field(init=False)
 
     def __post_init__(self) -> None:
         self.system = self.config.system
         self.fancy_system_name = self.config.cli_args.systemname
         self.game_info_path = self.config.cli_args.gameinfoxml
+        self.__plugins = PluginManager(HookContext(self.config))
 
     async def __aenter__(self) -> Self:
         await self.__stack.__aenter__()
 
         self.__stack.push_async_callback(self.__close_client_session)
+
+        # Started first so governors are switching while the rest of the launch is prepared
+        self.__plugins.start()
 
         try:
             self.rom = await self.__stack.enter_async_context(
@@ -131,7 +137,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
             return self
         except BaseException:
-            await self.__stack.__aexit__(*sys.exc_info())
+            try:
+                await self.__stack.__aexit__(*sys.exc_info())
+            finally:
+                await self.__plugins.stop()
             raise
 
     async def __aexit__(
@@ -141,7 +150,11 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         traceback: TracebackType | None,
         /,
     ) -> bool | None:
-        return await self.__stack.__aexit__(exc_type, exc_value, traceback)
+        try:
+            return await self.__stack.__aexit__(exc_type, exc_value, traceback)
+        finally:
+            # after the stack so the display mode is restored before a hook touches it
+            await self.__plugins.stop()
 
     @property
     def name(self) -> str:
@@ -775,6 +788,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
                     if self.config.use_guns and self.guns:
                         self.draw_gun_borders()
+
+                    await self.__plugins.ready()
 
                     with self.profiler.pause():
                         async with evmapy_manager.monitor_controllers():

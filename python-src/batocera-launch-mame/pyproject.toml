@@ -10,6 +10,9 @@ dependencies = [
 [project.entry-points."batocera_launch.emulators"]
 mame = 'batocera_launch_mame:MAME'
 
+[project.entry-points."batocera_launch.plugins"]
+mame-rotation = 'batocera_launch_mame.rotation:MameRotationPlugin'
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
