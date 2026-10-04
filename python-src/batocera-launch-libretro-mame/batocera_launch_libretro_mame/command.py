@@ -62,7 +62,10 @@ def _apple2gs_flop_type(rom: Path, /) -> str:
             if len(file_list) == 1:
                 rom_extension = Path(file_list[0]).suffix.lower()
 
-    if rom_extension in {'.2mg', '.2img', '.img', '.image'}:
+    # 5.25" images are at most 140 KB, anything bigger is a 3.5" disk
+    if rom_extension in {'.2mg', '.2img', '.img', '.image'} or (
+        rom.suffix.lower() != '.zip' and rom.stat().st_size > 143360
+    ):
         return '-flop3'
 
     return '-flop1'
