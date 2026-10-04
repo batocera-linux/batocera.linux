@@ -106,6 +106,13 @@ custom_features:
       Light: 30
       Medium (Default): 60
       Strong: 90
+  sm2_lightgun_hide_flash:
+    group: LIGHT GUN
+    prompt: HIDE GUN FLASH
+    description: Hide the white screen flash on each shot in House of the Dead and Virtua Cop.
+    choices:
+      Off (Default): 0
+      'On': 1
   sm2_wheel_ffb:
     group: WHEEL
     prompt: WHEEL FORCE FEEDBACK
