@@ -140,6 +140,12 @@ def cached_dataclass[T](
             cached_prop.slot_descriptor = descriptor
             setattr(new_cls, key, cached_prop)
 
+            # slots=True builds a new class, so a zero-argument super() would still point at the old one
+            func = cached_prop.func
+            if '__class__' in func.__code__.co_freevars and func.__closure__:
+                cell = func.__closure__[func.__code__.co_freevars.index('__class__')]
+                cell.cell_contents = new_cls
+
         return new_cls
 
     if cls is None:
