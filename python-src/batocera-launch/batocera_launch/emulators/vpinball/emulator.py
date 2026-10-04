@@ -111,6 +111,15 @@ class VPinball(Emulator):
         # options
         options.configure_options(settings, self.config)
 
+        # the pad is remapped to keys, so VPX's "apply default layout" prompt only swallows the first exit key
+        if not settings.has_section('Input'):
+            settings.add_section('Input')
+        seen: dict[str, int] = {}
+        for controller in self.controllers:
+            if controller.type == 'joystick':
+                seen[controller.guid] = n = seen.get(controller.guid, 0) + 1
+                settings.set('Input', f'Device.SDLJoy_{controller.guid}_{n}.NoAutoLayout', '1')
+
         # windows
         screens = await self.screens
         windowing.configure_ini(settings, self.config, self.resolution, screens)
