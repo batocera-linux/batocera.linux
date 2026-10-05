@@ -413,9 +413,11 @@ class Supermodel(Emulator):
             if pad1 is not None and not (self.config.use_wheels and pad1.device_path in self.wheels):
                 target_config.set(game_section, f'InputJoy{pad1.index + 1}XSaturation', saturation)
 
-        def fallback(pad: Controller, part: str) -> str | None:
-            # raw joysticks have no standard layout, so only sdlgamepad gets guessed bindings
-            return f'JOY{pad.index + 1}_{part}' if gamepad_mode else None
+        def pad_input(pad: Controller, names: str | list[str], standard: str, /, **kwargs: bool) -> str | None:
+            # sdlgamepad uses the standard layout; the sdl mapping from the es config maps raw ids onto it
+            if gamepad_mode:
+                return f'JOY{pad.index + 1}_{standard}'
+            return _get_pad_input(pad, names, **kwargs)
 
         def set_input(key: str, binding: str | None) -> None:
             if binding:
@@ -430,45 +432,37 @@ class Supermodel(Emulator):
 
         # Dynamically bind Player 1
         if pad1:
-            p1_start = _get_pad_input(pad1, 'start')
-            p1_select = _get_pad_input(pad1, 'select')
-            p1_up = _get_pad_input(pad1, 'up') or fallback(pad1, 'POV1_UP')
-            p1_down = _get_pad_input(pad1, 'down') or fallback(pad1, 'POV1_DOWN')
-            p1_left = _get_pad_input(pad1, 'left') or fallback(pad1, 'POV1_LEFT')
-            p1_right = _get_pad_input(pad1, 'right') or fallback(pad1, 'POV1_RIGHT')
+            p1_start = pad_input(pad1, 'start', 'BUTTON8')
+            p1_select = pad_input(pad1, 'select', 'BUTTON7')
+            p1_up = pad_input(pad1, 'up', 'POV1_UP')
+            p1_down = pad_input(pad1, 'down', 'POV1_DOWN')
+            p1_left = pad_input(pad1, 'left', 'POV1_LEFT')
+            p1_right = pad_input(pad1, 'right', 'POV1_RIGHT')
 
-            p1_south = _get_pad_input(pad1, 'b') or fallback(pad1, 'BUTTON1')
-            p1_east = _get_pad_input(pad1, 'a') or fallback(pad1, 'BUTTON2')
-            p1_west = _get_pad_input(pad1, 'y') or fallback(pad1, 'BUTTON3')
-            p1_north = _get_pad_input(pad1, 'x') or fallback(pad1, 'BUTTON4')
+            p1_south = pad_input(pad1, 'b', 'BUTTON1')
+            p1_east = pad_input(pad1, 'a', 'BUTTON2')
+            p1_west = pad_input(pad1, 'y', 'BUTTON3')
+            p1_north = pad_input(pad1, 'x', 'BUTTON4')
 
-            p1_l1 = _get_pad_input(pad1, ['pageup', 'l1', 'left_shoulder']) or fallback(pad1, 'BUTTON5')
-            p1_r1 = _get_pad_input(pad1, ['pagedown', 'r1', 'right_shoulder']) or fallback(pad1, 'BUTTON6')
-            p1_l2 = _get_pad_input(pad1, ['l2', 'left_trigger'], force_pos=True) or fallback(pad1, 'ZAXIS_POS')
-            p1_r2 = _get_pad_input(pad1, ['r2', 'right_trigger'], force_pos=True) or fallback(pad1, 'RZAXIS_POS')
-            p1_l3 = _get_pad_input(pad1, 'l3') or fallback(pad1, 'BUTTON9')
-            p1_r3 = _get_pad_input(pad1, 'r3') or fallback(pad1, 'BUTTON10')
+            p1_l1 = pad_input(pad1, ['pageup', 'l1', 'left_shoulder'], 'BUTTON5')
+            p1_r1 = pad_input(pad1, ['pagedown', 'r1', 'right_shoulder'], 'BUTTON6')
+            p1_l2 = pad_input(pad1, ['l2', 'left_trigger'], 'ZAXIS_POS', force_pos=True)
+            p1_r2 = pad_input(pad1, ['r2', 'right_trigger'], 'RZAXIS_POS', force_pos=True)
+            p1_l3 = pad_input(pad1, 'l3', 'BUTTON9')
+            p1_r3 = pad_input(pad1, 'r3', 'BUTTON10')
 
-            p1_lstick_x = _get_pad_input(pad1, ['joystick1left', 'joystick1right'], full_axis=True) or fallback(
-                pad1, 'XAXIS'
-            )
-            p1_lstick_y = _get_pad_input(pad1, ['joystick1up', 'joystick1down'], full_axis=True) or fallback(
-                pad1, 'YAXIS'
-            )
-            p1_rstick_x = _get_pad_input(pad1, ['joystick2left', 'joystick2right'], full_axis=True) or fallback(
-                pad1, 'RXAXIS'
-            )
-            p1_rstick_y = _get_pad_input(pad1, ['joystick2up', 'joystick2down'], full_axis=True) or fallback(
-                pad1, 'RYAXIS'
-            )
+            p1_lstick_x = pad_input(pad1, ['joystick1left', 'joystick1right'], 'XAXIS', full_axis=True)
+            p1_lstick_y = pad_input(pad1, ['joystick1up', 'joystick1down'], 'YAXIS', full_axis=True)
+            p1_rstick_x = pad_input(pad1, ['joystick2left', 'joystick2right'], 'RXAXIS', full_axis=True)
+            p1_rstick_y = pad_input(pad1, ['joystick2up', 'joystick2down'], 'RYAXIS', full_axis=True)
 
-            p1_rstick_left = _get_pad_input(pad1, 'joystick2left') or fallback(pad1, 'RXAXIS_NEG')
-            p1_rstick_down = _get_pad_input(pad1, 'joystick2down') or fallback(pad1, 'RYAXIS_POS')
-            p1_rstick_up = _get_pad_input(pad1, 'joystick2up') or fallback(pad1, 'RYAXIS_NEG')
-            p1_rstick_right = _get_pad_input(pad1, 'joystick2right') or fallback(pad1, 'RXAXIS_POS')
+            p1_rstick_left = pad_input(pad1, 'joystick2left', 'RXAXIS_NEG')
+            p1_rstick_down = pad_input(pad1, 'joystick2down', 'RYAXIS_POS')
+            p1_rstick_up = pad_input(pad1, 'joystick2up', 'RYAXIS_NEG')
+            p1_rstick_right = pad_input(pad1, 'joystick2right', 'RXAXIS_POS')
 
-            target_config.set('Global', 'InputStart1', _build_binding('KEY_1', p1_start or fallback(pad1, 'BUTTON8')))
-            target_config.set('Global', 'InputCoin1', _build_binding('KEY_3', p1_select or fallback(pad1, 'BUTTON7')))
+            target_config.set('Global', 'InputStart1', _build_binding('KEY_1', p1_start))
+            target_config.set('Global', 'InputCoin1', _build_binding('KEY_3', p1_select))
 
             target_config.set('Global', 'InputJoyUp', _build_binding('KEY_UP', p1_up))
             target_config.set('Global', 'InputJoyDown', _build_binding('KEY_DOWN', p1_down))
@@ -559,20 +553,20 @@ class Supermodel(Emulator):
 
         # Dynamically bind Player 2
         if pad2:
-            p2_start = _get_pad_input(pad2, 'start')
-            p2_select = _get_pad_input(pad2, 'select')
-            p2_up = _get_pad_input(pad2, 'up') or fallback(pad2, 'POV1_UP')
-            p2_down = _get_pad_input(pad2, 'down') or fallback(pad2, 'POV1_DOWN')
-            p2_left = _get_pad_input(pad2, 'left') or fallback(pad2, 'POV1_LEFT')
-            p2_right = _get_pad_input(pad2, 'right') or fallback(pad2, 'POV1_RIGHT')
+            p2_start = pad_input(pad2, 'start', 'BUTTON8')
+            p2_select = pad_input(pad2, 'select', 'BUTTON7')
+            p2_up = pad_input(pad2, 'up', 'POV1_UP')
+            p2_down = pad_input(pad2, 'down', 'POV1_DOWN')
+            p2_left = pad_input(pad2, 'left', 'POV1_LEFT')
+            p2_right = pad_input(pad2, 'right', 'POV1_RIGHT')
 
-            p2_south = _get_pad_input(pad2, 'b') or fallback(pad2, 'BUTTON1')
-            p2_east = _get_pad_input(pad2, 'a') or fallback(pad2, 'BUTTON2')
-            p2_west = _get_pad_input(pad2, 'y') or fallback(pad2, 'BUTTON3')
-            p2_north = _get_pad_input(pad2, 'x') or fallback(pad2, 'BUTTON4')
+            p2_south = pad_input(pad2, 'b', 'BUTTON1')
+            p2_east = pad_input(pad2, 'a', 'BUTTON2')
+            p2_west = pad_input(pad2, 'y', 'BUTTON3')
+            p2_north = pad_input(pad2, 'x', 'BUTTON4')
 
-            target_config.set('Global', 'InputStart2', _build_binding('KEY_2', p2_start or fallback(pad2, 'BUTTON8')))
-            target_config.set('Global', 'InputCoin2', _build_binding('KEY_4', p2_select or fallback(pad2, 'BUTTON7')))
+            target_config.set('Global', 'InputStart2', _build_binding('KEY_2', p2_start))
+            target_config.set('Global', 'InputCoin2', _build_binding('KEY_4', p2_select))
 
             set_input('InputJoyUp2', p2_up)
             set_input('InputJoyDown2', p2_down)
