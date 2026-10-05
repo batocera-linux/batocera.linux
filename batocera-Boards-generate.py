@@ -37,9 +37,6 @@ for x in images_infos_dict:
 for x in genimages_dict:
     if x not in images_infos_dict:
         print(f"genimage.cfg without image.infos ({x})")
-#
-exit(0)
-raise Exception("ooops")
 
 print("<?php")
 print("$boards = [")
