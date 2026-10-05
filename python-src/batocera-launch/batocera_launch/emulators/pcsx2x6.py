@@ -9,9 +9,17 @@ from typing import Final
 
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import BIOS, CACHE, CONFIGS, ROMS
+from batocera_common.paths import BIOS, CACHE, CONFIGS, ROMS, SAVES
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Controllers, Emulator, HotkeysContext, SystemConfig
+from batocera_launch import (
+    Command,
+    Controllers,
+    Emulator,
+    Guns,
+    HotkeysContext,
+    SystemConfig,
+    guns_need_crosses,
+)
 from batocera_launch.paths import DATAINIT_DIR, configure_emulator
 
 _logger = logging.getLogger(__name__)
@@ -19,6 +27,22 @@ _logger = logging.getLogger(__name__)
 _PCSX2X6_BIN_DIR: Final = Path('/usr/pcsx2x6/bin')
 _PCSX2X6_RESOURCES_DIR: Final = _PCSX2X6_BIN_DIR / 'resources'
 _PCSX2X6_BIOS: Final = BIOS / 'namco2x6'
+_PCSX2X6_MEMCARDS: Final = SAVES / 'namco2x6' / 'pcsx2x6'
+
+_EVDEV_POINTER_PROPERTIES: Final = (
+    'ID_INPUT_MOUSE',
+    'ID_INPUT_TOUCHPAD',
+    'ID_INPUT_TOUCHSCREEN',
+    'ID_INPUT_TABLET',
+    'ID_INPUT_GUN',
+)
+_EVDEV_MAX_POINTERS: Final = 8
+_EVDEV_BUTTONS: Final = {
+    'left': 'LeftButton',
+    'right': 'RightButton',
+    'middle': 'MiddleButton',
+    **{str(n): f'Button{4 + n}' for n in range(1, 9)},
+}
 
 
 def _gfx_ratio_from_config(config: SystemConfig) -> str:
@@ -80,8 +104,9 @@ class Pcsx2x6(Emulator):
 
         # Config files
         _configure_reg(self.config_dir)
-        await _configure_ini(self.config_dir, self.config, self.rom, self.controllers)
+        await _configure_ini(self.config_dir, self.config, self.rom, self.controllers, self.guns)
         _configure_audio(self.config_dir)
+        _install_dongle(self.rom)
 
         command_array: list[str | Path] = (
             ['/usr/pcsx2x6/bin/pcsx2x6-qt']
@@ -125,6 +150,43 @@ def _configure_reg(config_directory: Path) -> None:
         f.write('RunWizard=0\n')
 
 
+def _install_dongle(rom: Path) -> None:
+    # pcsx2x6 only looks for the dongle in its memory card folder
+    acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
+    try:
+        acgame.read(rom, encoding='utf-8')
+    except Exception as e:
+        _logger.warning('Could not read %s: %s', rom, e)
+        return
+
+    gameid = acgame.get('game', 'gameid', fallback='')
+    dongle = acgame.get('data', 'dongle', fallback=f'{gameid}.ps2')
+    source = rom.parent / acgame.get('data', 'subdir', fallback=gameid) / dongle
+    if source.is_file():
+        _PCSX2X6_MEMCARDS.mkdir(parents=True, exist_ok=True)
+        shutil.copy(source, _PCSX2X6_MEMCARDS / dongle)
+
+
+def _evdev_pointer_slots() -> dict[str, int]:
+    import pyudev
+
+    nodes = [
+        device.device_node
+        for device in pyudev.Context().list_devices(subsystem='input')
+        if device.device_node is not None
+        and device.device_node.startswith('/dev/input/event')
+        and any(device.properties.get(name, '').startswith('1') for name in _EVDEV_POINTER_PROPERTIES)
+    ]
+    return {node: slot for slot, node in enumerate(nodes[:_EVDEV_MAX_POINTERS])}
+
+
+def _add_binding(config: CaseSensitiveConfigParser, section: str, key: str, binding: str) -> None:
+    # pcsx2x6 reads a repeated key as one more binding of the same input;
+    # configparser can't write a key twice, hence the newline
+    current = config.get(section, key, fallback='')
+    config.set(section, key, f'{current}\n{key} = {binding}' if current else binding)
+
+
 def _configure_audio(config_directory: Path) -> None:
     config_file_name = config_directory / 'inis' / 'spu2-x.ini'
     config_file_name.parent.mkdir(parents=True, exist_ok=True)
@@ -151,6 +213,7 @@ async def _configure_ini(
     config: SystemConfig,
     rom: Path,
     controllers: Controllers,
+    guns: Guns,
 ) -> None:
     config_file_name = config_directory / 'inis' / 'PCSX2.ini'
 
@@ -160,7 +223,7 @@ async def _configure_ini(
         with config_file_name.open('w') as f:
             f.write('[UI]\n')
 
-    pcsx2x6_ini_config = CaseSensitiveConfigParser(interpolation=None)
+    pcsx2x6_ini_config = CaseSensitiveConfigParser(interpolation=None, strict=False)
 
     if config_file_name.is_file():
         pcsx2x6_ini_config.read(config_file_name)
@@ -440,6 +503,8 @@ async def _configure_ini(
     pcsx2x6_ini_config.set('InputSources', 'Keyboard', 'true')
     pcsx2x6_ini_config.set('InputSources', 'Mouse', 'true')
     pcsx2x6_ini_config.set('InputSources', 'SDL', 'true')
+    pcsx2x6_ini_config.set('InputSources', 'Evdev', 'true' if guns else 'false')
+    pcsx2x6_ini_config.remove_section('Evdev')
 
     ## [Hotkeys]
     if not pcsx2x6_ini_config.has_section('Hotkeys'):
@@ -667,12 +732,44 @@ async def _configure_ini(
         'Inufuku_4_P2': f'{p2_sdl}/FaceEast',
         # Generic & Special buttons mapping
         'P1_Button1': f'{p1_sdl}/FaceSouth',
+        'P2_Button1': f'{p2_sdl}/FaceSouth',
+        'P1_Service': f'{p1_sdl}/LeftStick',
+        'P2_Service': f'{p2_sdl}/LeftStick',
+        'ToggleTestMode': f'{p1_sdl}/RightStick',
         'Coin1': f'{p1_sdl}/Back',
         'P1_Start': f'{p1_sdl}/Start',
+        'P2_Start': f'{p2_sdl}/Start',
     }
 
     for k, v in jvs_mappings.items():
         pcsx2x6_ini_config.set('JVS', k, v)
+
+    if pad2 is not None:
+        _add_binding(pcsx2x6_ini_config, 'JVS', 'Coin1', f'{p2_sdl}/Back')
+
+    slots = _evdev_pointer_slots() if guns else {}
+    crosshair = config.get_bool('pcsx2x6_crosshairs', guns_need_crosses(guns))
+    for player, gun in enumerate(guns[:2], start=1):
+        if (slot := slots.get(gun.node)) is None:
+            continue
+
+        usb = f'USB{player}'
+        pcsx2x6_ini_config.add_section(usb)
+        pcsx2x6_ini_config.set(usb, 'guncon2_Pointer', f'Pointer-{slot}')
+        pcsx2x6_ini_config.set(
+            usb, 'guncon2_cursor_path', str(_PCSX2X6_RESOURCES_DIR / 'crosshairs' / 'default.png') if crosshair else ''
+        )
+        pcsx2x6_ini_config.set(usb, 'guncon2_cursor_color', '#0000ff' if player == 1 else '#ff0000')
+
+        for section, key, button in (
+            (usb, 'guncon2_Trigger', 'left'),
+            (usb, 'guncon2_A', 'right'),
+            ('JVS', f'P{player}_Start', 'middle'),
+            ('JVS', 'Coin1', '1'),
+            ('JVS', f'P{player}_Button1', '2'),
+        ):
+            if button in gun.buttons:
+                _add_binding(pcsx2x6_ini_config, section, key, f'EvdevMouse-{slot}/{_EVDEV_BUTTONS[button]}')
 
     ## [GameList]
     if not pcsx2x6_ini_config.has_section('GameList'):

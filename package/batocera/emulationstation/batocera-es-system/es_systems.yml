@@ -3939,9 +3939,87 @@ namco2x6:
     This rom directory should include an .acgame file based on the gameid and a supporting files required to play.
     The .acgame is the rom name EmulationStation uses to help launch the game using PCSX2x6.
 
+    Name the .acgame file as suggested below:
+
+    Game                                                             Game ID   Filename
+    ----                                                           | ------- | --------
+    Ace Driver 3: Final Turn                                       | NM00047 | acedriv3.acgame
+    Battle Gear 3 (Ver.2.01A)                                      | NM00010 | batlgr3.acgame
+    Battle Gear 3 Tuned                                            | NM00015 | batlgr3t.acgame
+    Bloody Roar 3 (bootleg)                                        | NM00002 | bldyr3b.acgame
+    Capcom Fighting Jam (JAM1 Ver. A)                              | NM00018 | fghtjam.acgame
+    Cobra: The Arcade (CBR1 Ver. B)                                | NM00021 | cobrata.acgame
+    Dragon Chronicles (DC001 Ver. A)                               | NM00014 | dragchrn.acgame
+    Dragon Chronicle Online: Great Sky Battle                      | NM00020 | dragchro.acgame
+    Druaga Online: The Story of Aon                                | NM00028 | druagaol.acgame
+    Fate: Unlimited Codes (FUD1 ver. A)                            | NM00048 | fateulc.acgame
+                          (bootleg)                                |         | fateulcb.acgame
+    Gundam Seed: Federation vs. Z.A.F.T. (SED1 Ver. A)             | NM00024 | gundzaft.acgame
+    Gundam Seed Destiny: Federation vs. Z.A.F.T. II                | NM00034 | gundzft2.acgame
+    Gundam vs. Gundam (GVS1 Ver. A)                                | NM00043 | gdvsgd.acgame
+    Gundam vs. Gundam Next                                         | NM00052 | gdvsgdnx.acgame
+    Kinnikuman Muscle Grand Prix (KN1 Ver. A)                      | NM00029 | kinniku.acgame
+    Kinnikuman Muscle Grand Prix 2 (KN2 Ver. A)                    | NM00040 | kinniku2.acgame
+    Minna de Kitaeru Zenno Training (Ver. 1.50)                    | NM00036 | minnadk.acgame
+    Mobile Suit Z-Gundam: A.E.U.G. vs Titans (ZGA1 Ver. A)         | NM00013 | zgundm.acgame
+    Mobile Suit Z-Gundam: A.E.U.G. vs Titans DX (ZDX1 Ver. A)      | NM00017 | zgundmdx.acgame
+    MotoGP (MGP1004-NA-B)                                          | NM00039 | motogp.acgame
+    Netchuu Pro Yakyuu 2002 (NPY1 Ver. C)                          | NM00009 | netchu02c.acgame
+                            (NPY1 Ver. B)                          |         | netchu02b.acgame
+    Pride GP 2003 (PR21 Ver. A)                                    | NM00011 | prdgp03.acgame
+    Quiz and Variety Suku Suku Inufuku 2 (IN2 Ver. A)              | NM00037 | sukuinuf.acgame
+    Quiz Mobile Suit Gundam: Monsenshi (QG1 Ver. A)                | NM00030 | qgundam.acgame
+    Ridge Racer V Arcade Battle (RRV3 Ver. A)                      | NM00001 | rrvac.acgame
+                                (RRV2 Ver. A)                      |         | rrvac2.acgame
+                                (RRV1 Ver. A)                      |         | rrvac1.acgame
+    Sengoku Basara X Cross                                         | NM00042 | sbxc.acgame
+    Smash Court Pro Tournament (SCP1)                              | NM00006 | scptour.acgame
+    Soul Calibur II (SC23 Ver. A)                                  | NM00007 | soulclb2.acgame
+                    (SC22 Ver. A)                                  |         | soulcl2a.acgame
+                    (SC21 Ver. A)                                  |         | soulcl2b.acgame
+                    (SC23 world version)                           |         | soulcl2w.acgame
+    Soul Calibur III: Arcade Edition (SC31001-NA-A key, NA-B disc) | NM00031 | soulclb3.acgame
+                                     (SC31002-NA-A key, NA-B disc) |         | soulclb3a.acgame
+                                     (SC31002-NA-A key, NA-A disc) |         | soulclb3b.acgame
+    Super Dragon Ball Z (DB1 Ver. B)                               | NM00027 | superdbz.acgame
+    Taiko no Tatsujin 7 (TK71-NA-A)                                | NM00023 | taiko7.acgame
+    Taiko no Tatsujin 8 (TK8100-1-NA-A)                            | NM00033 | taiko8.acgame
+    Taiko no Tatsujin 9 (TK91001-NA-A)                             | NM00038 | taiko9.acgame
+    Taiko no Tatsujin 10 (T101001-NA-A)                            | NM00041 | taiko10.acgame
+    Taiko no Tatsujin 11 (T111001-NA-A)                            | NM00044 | taiko11.acgame
+    Taiko no Tatsujin 11 Asian Edition                             | NM00046 | taiko11a.acgame
+                                       (Taiwan)                    | NM00045 | taiko11t.acgame
+    Taiko no Tatsujin 12                                           | NM00051 | taiko12.acgame
+    Taiko no Tatsujin 12 Asian Edition                             | NM00054 | taiko12a.acgame
+                                       (Taiwan)                    | NM00053 | taiko12t.acgame
+    Taiko no Tatsujin 13                                           | NM00056 | taiko13.acgame
+    Taiko no Tatsujin 14                                           | NM00057 | taiko14.acgame
+    Technic Beat                                                   | NM10003 | techbeat.acgame
+    Tekken 4 (TEF3 Ver. C)                                         | NM00004 | tekken4.acgame
+             (TEF2 Ver. A)                                         |         | tekken4a.acgame
+             (TEF1 Ver. A)                                         |         | tekken4b.acgame
+             (TEF1 Ver. C)                                         |         | tekken4c.acgame
+    Tekken 5.1 (TE51 Ver. B)                                       | NM00019 | tekken51.acgame
+               (TE53 Ver. B)                                       |         | tekken51b.acgame
+    Tekken 5 Dark Resurrection (TED1 Ver. A)                       | NM00026 | tekken5d.acgame
+    The Battle of Yu Yu Hakusho: Shitou! Ankoku Bujutsukai!        | NM00035 | yuyuhaku.acgame
+    The Idolmaster                                                 | NM00022 | idolmstr.acgame
+    Time Crisis 3 (TST1)                                           | NM00012 | timecrs3.acgame
+                  (TST2 Ver. A)                                    |         | timecrs3e.acgame
+                  (TST3 Ver. A)                                    |         | timecrs3u.acgame
+    Time Crisis 4 (World, TSF1002-NA-A)                            | NM00032 | timecrs4.acgame
+                  (Japan, TSF1001-NA-A)                            |         | timecrs4j.acgame
+    Vampire Night (VPN3 Ver. B)                                    | NM00003 | vnight.acgame
+    Wangan Midnight (WMN1 Ver. A)                                  | NM00008 | wanganmd.acgame
+    Wangan Midnight R (WMR1 Ver. A)                                | NM00005 | wanganmr.acgame
+    Zoids Infinity                                                 | NM00016 | zoidsinf.acgame
+    Zoids Infinity EX Plus (ver. 2.10)                             | NM00025 | zoidiexp.acgame
+
+    The naming helps identify gun & steering wheel games as well as scrapers.
+
     Example:
 
-    Ridge Racer V Arcade Battle (RRV2 Ver. B).acgame
+    rrvac2.acgame
 
     [game]
     name=Ridge Racer V Arcade Battle (RRV2 Ver. B)
@@ -3958,7 +4036,7 @@ namco2x6:
     Based on this .acgame example, we create a subfolder called NM00001
     Within it, we need the `proverb.elf`, `NM00001 RRV2, Ver.B a025531981282a.ps2` & `NM00001 RRV1-A (CD-ROM).chd` for the game.
 
-    i.e. Ridge Racer V Arcade Battle (RRV2 Ver. B).acgame
+    i.e. rrvac2.acgame
                     |
                     NM00001
                     |
@@ -4334,6 +4412,32 @@ chihiro:
     Place your Chihiro netboot images (.bin) in here.
     Make them from the game dumps with Chihiro-netboot: https://github.com/Tovarichtch/chihiro-netboot
 
+    Here are the working games and their filenames at the time of writing:
+
+    Game                                                         Filename
+    ----                                                       | --------
+    Crazy Taxi High Roller (Rev B) (GDX-0002B)                 | crtaxihr.bin
+    Ghost Squad (Rev A) (GDX-0012A)                            | ghostsqu.bin
+                (GDX-0012)                                     | ghostsqo.bin
+    Gundam Battle Operating Simulator (GDX-0013)               | gundamos.bin
+    Ollie King (GDX-0007)                                      | ollie.bin
+    OutRun 2 (Rev A) (GDX-0004A)                               | outr2.bin
+    OutRun 2 Special Tours (Rev A) (GDX-0014A)                 | outr2st.bin
+                           (GDX-0014)                          | outr2sto.bin
+                           (Japan, Rev A) (GDX-0011A)          | outr2stj.bin
+                           (Japan) (GDX-0011)                  | outr2stjo.bin
+    The House of the Dead III (GDX-0001)                       | hotd3.bin
+    Virtua Cop 3 (Rev B) (GDX-0003B)                           | vcop3.bin
+                 (Rev A) (GDX-0003A)                           | vcop3a.bin
+    Wangan Midnight Maximum Tune (Export, Rev B) (GDX-0009B)   | wangmid.bin
+                                 (Japan, Rev B) (GDX-0008B)    | wangmidj.bin
+    Wangan Midnight Maximum Tune 2 (Export, Rev A) (GDX-0016A) | wangmid2.bin
+                                   (Export) (GDX-0016)         | wangmid2o.bin
+                                   (Japan, Rev A) (GDX-0015A)  | wangmid2ja.bin
+                                   (Japan) (GDX-0015)          | wangmid2j.bin
+
+    The naming helps identify gun & steering wheel games as well as scrapers.
+
     Extract MAME's chihiro.zip into bios/chihiro:
     - chihiro_xbox_bios.bin
     - fpr21042_m29w160et.bin
@@ -4348,6 +4452,32 @@ chihiro:
   comment_fr: |
     Placez vos images netboot Chihiro (.bin) ici.
     Créez-les à partir des dumps avec Chihiro-netboot : https://github.com/Tovarichtch/chihiro-netboot
+
+    Voici les jeux qui fonctionnent et leurs noms de fichier au moment de la rédaction :
+
+    Jeu                                                          Fichier
+    ----                                                       | --------
+    Crazy Taxi High Roller (Rev B) (GDX-0002B)                 | crtaxihr.bin
+    Ghost Squad (Rev A) (GDX-0012A)                            | ghostsqu.bin
+                (GDX-0012)                                     | ghostsqo.bin
+    Gundam Battle Operating Simulator (GDX-0013)               | gundamos.bin
+    Ollie King (GDX-0007)                                      | ollie.bin
+    OutRun 2 (Rev A) (GDX-0004A)                               | outr2.bin
+    OutRun 2 Special Tours (Rev A) (GDX-0014A)                 | outr2st.bin
+                           (GDX-0014)                          | outr2sto.bin
+                           (Japan, Rev A) (GDX-0011A)          | outr2stj.bin
+                           (Japan) (GDX-0011)                  | outr2stjo.bin
+    The House of the Dead III (GDX-0001)                       | hotd3.bin
+    Virtua Cop 3 (Rev B) (GDX-0003B)                           | vcop3.bin
+                 (Rev A) (GDX-0003A)                           | vcop3a.bin
+    Wangan Midnight Maximum Tune (Export, Rev B) (GDX-0009B)   | wangmid.bin
+                                 (Japan, Rev B) (GDX-0008B)    | wangmidj.bin
+    Wangan Midnight Maximum Tune 2 (Export, Rev A) (GDX-0016A) | wangmid2.bin
+                                   (Export) (GDX-0016)         | wangmid2o.bin
+                                   (Japan, Rev A) (GDX-0015A)  | wangmid2ja.bin
+                                   (Japan) (GDX-0015)          | wangmid2j.bin
+
+    Ces noms servent à reconnaître les jeux de tir et de course, et aux scrapeurs.
 
     Extrayez le chihiro.zip de MAME dans bios/chihiro :
     - chihiro_xbox_bios.bin
