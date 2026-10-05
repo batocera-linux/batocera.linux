@@ -422,6 +422,23 @@ class TestCachedPropertyInheritance:
         assert parent.doubled == 10
         assert child.doubled == 20
 
+    def test_super_in_overridden_cached_property(self) -> None:
+        @cached_dataclass
+        class Parent:
+            x: int
+
+            @cached_property
+            def doubled(self) -> int:
+                return self.x * 2
+
+        @cached_dataclass
+        class Child(Parent):
+            @cached_property
+            def doubled(self) -> int:
+                return super().doubled + 1
+
+        assert Child(x=5).doubled == 11
+
 
 class TestCachedPropertyDoc:
     def test_preserves_docstring(self) -> None:
