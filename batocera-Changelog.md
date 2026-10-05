@@ -231,7 +231,7 @@
 - Libretro-Play to 0.77
 - Libretro-Pocketsnes to September 6th, 2026 build
 - Libretro-Pokemini to July 31st, 2026 build
-- Libretro-Prboom to September 15th, 2026 build
+- Libretro-Prboom to October 5th, 2026 build
 - Libretro-ppsspp to 1.20.4
 - Libretro-ProSystem to August 22nd, 2026 build
 - Libretro-PS2 to September 17th, 2026 build
