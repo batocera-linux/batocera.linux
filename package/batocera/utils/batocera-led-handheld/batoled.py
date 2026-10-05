@@ -674,10 +674,23 @@ class dual_multiled(object):
             
         self.all_paths = self.left_paths + self.right_paths
         self.max_val = 255
+        # the group lists its channels in DT order, which is not always red green blue
+        try:
+            with open(self.all_paths[0] + 'multi_index', 'r') as f:
+                self.colour_index = f.readline().split()
+        except Exception:
+            self.colour_index = ['red', 'green', 'blue']
+
+    def _intensity(self, r, g, b):
+        values = {'red': r, 'green': g, 'blue': b}
+        return ' '.join(str(values.get(c, 0)) for c in self.colour_index)
+
+    def _rgb(self, intensity):
+        values = dict(zip(self.colour_index, intensity.split()))
+        return values['red'], values['green'], values['blue']
 
     def _write_hardware(self, brightness, r, g, b):
-        # Driver expects "Blue Green Red" format
-        color_str = f"{r} {g} {b}"
+        color_str = self._intensity(r, g, b)
         for p in self.all_paths:
             try:
                 with open(p + 'brightness', 'w') as f:
@@ -726,7 +739,7 @@ class dual_multiled(object):
             return "000000"
         try:
             with open(self.all_paths[0] + 'multi_intensity', 'r') as f:
-                r, g, b = f.readline().strip().split()
+                r, g, b = self._rgb(f.readline().strip())
                 return f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         except Exception:
             return "000000"
@@ -736,7 +749,7 @@ class dual_multiled(object):
             return "0 0 0"
         try:
             with open(self.all_paths[0] + 'multi_intensity', 'r') as f:
-                r, g, b = f.readline().strip().split()
+                r, g, b = self._rgb(f.readline().strip())
                 return f"{r} {g} {b}"
         except Exception:
             return "0 0 0"
@@ -765,7 +778,7 @@ class dual_multiled(object):
                     with open(p + 'brightness', 'w') as f:
                         f.write(str(b_conf))
                     with open(p + 'multi_intensity', 'w') as f:
-                        f.write(f"{r} {g} {b}")
+                        f.write(self._intensity(r, g, b))
                 except Exception:
                     pass
 
@@ -778,7 +791,7 @@ class dual_multiled(object):
                     with open(p + 'brightness', 'w') as f:
                         f.write(str(b_conf))
                     with open(p + 'multi_intensity', 'w') as f:
-                        f.write(f"{r} {g} {b}")
+                        f.write(self._intensity(r, g, b))
                 except Exception:
                     pass
             
