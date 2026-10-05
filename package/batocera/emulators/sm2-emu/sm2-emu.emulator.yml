@@ -93,49 +93,49 @@ custom_features:
       'On': 1
       Off (Default): 0
   sm2_lightgun_recoil:
-    group: LIGHT GUN
+    group: LIGHT GUNS
     prompt: GUN RECOIL
     description: Fire the gun's recoil motor on each shot, for guns that have one.
     choices:
       Off: 0
       On (Default): 1
   sm2_lightgun_recoil_strength:
-    group: LIGHT GUN
+    group: LIGHT GUNS
     prompt: GUN RECOIL STRENGTH
     choices:
       Light: 30
       Medium (Default): 60
       Strong: 90
   sm2_lightgun_hide_flash:
-    group: LIGHT GUN
+    group: LIGHT GUNS
     prompt: HIDE GUN FLASH
     description: Hide the white screen flash on each shot in House of the Dead and Virtua Cop.
     choices:
       Off (Default): 0
       'On': 1
   sm2_wheel_ffb:
-    group: WHEEL
+    group: WHEELS
     prompt: WHEEL FORCE FEEDBACK
     description: Synthesised centring resistance on wheels that support it.
     choices:
       Off: 0
       On (Default): 1
   sm2_wheel_ffb_strength:
-    group: WHEEL
+    group: WHEELS
     prompt: WHEEL FORCE FEEDBACK STRENGTH
     choices:
       Light: 30
       Medium (Default): 50
       Strong: 70
   sm2_wheel_rumble:
-    group: WHEEL
+    group: WHEELS
     prompt: WHEEL ROAD RUMBLE
     description: Synthesised road/engine vibration while driving.
     choices:
       Off: 0
       On (Default): 1
   sm2_wheel_rumble_strength:
-    group: WHEEL
+    group: WHEELS
     prompt: WHEEL RUMBLE STRENGTH
     choices:
       Light: 20
