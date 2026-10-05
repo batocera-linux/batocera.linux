@@ -202,6 +202,7 @@ class Sm2Emu(Emulator):
             **wheel_managed,
             'pad_rumble': _ini_bool(self.config.get_bool('sm2_pad_rumble', True)),
             'pad_rumble_strength': self.config.get_str('sm2_pad_rumble_strength', '60'),
+            'pad_stick_sensitivity': str(round(self.config.get_float('sm2_pad_stick_sensitivity', 100))),
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),

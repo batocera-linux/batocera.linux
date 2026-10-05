@@ -155,6 +155,12 @@ custom_features:
       Light: 30
       Medium (Default): 60
       Strong: 90
+  sm2_pad_stick_sensitivity:
+    group: GAMEPAD
+    prompt: STICK SENSITIVITY
+    description: Response of a stick's travel. Full deflection is always full lock, under 100% the middle of the travel does less, over it does more.
+    preset: sliderauto
+    preset_parameters: 25 300 5 %
   sm2_crt_enabled:
     group: CRT FILTER
     prompt: CRT FILTER
