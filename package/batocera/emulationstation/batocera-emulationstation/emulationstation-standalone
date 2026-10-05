@@ -435,9 +435,9 @@ while [ -e "${REBOOT_FLAG}" ]; do
 	    TOUCH_DEVICE=$(_output_setting display.touchscreen "${TOUCH_OUTPUT}")
 	    if [ -n "${TOUCH_DEVICE}" ]; then
 		echo "Touchscreen '${TOUCH_DEVICE}' mapped to output ${TOUCH_OUTPUT}." >>"$log"
-		# a digitiser that already reports in the rotated frame overrides the output rotation
+		# wlroots rotates a mapped touchscreen with its output, so only a digitiser that already reports in the rotated frame needs a matrix
 		TOUCH_ROTATION=$(_output_setting display.touchrotate "${TOUCH_OUTPUT}")
-		[ -z "${TOUCH_ROTATION}" ] && TOUCH_ROTATION=$(batocera-resolution --screen "${TOUCH_OUTPUT}" getRotation)
+		[ -z "${TOUCH_ROTATION}" ] && TOUCH_ROTATION=0
 		TOUCHSCREEN_MAP+=(--touchscreen-map "${TOUCH_DEVICE}" "${TOUCH_OUTPUT}" "${TOUCH_ROTATION}")
 	    fi
 	done
