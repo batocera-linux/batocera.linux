@@ -15,7 +15,7 @@ class Vitaquake2(Core):
     @cached_property
     def _mission(self) -> tuple[str, Path]:
         # vitaquake2 - choose core based on directory
-        name = self.rom.name.lower()
+        name = self.config.rom.name.lower()
 
         if 'reckoning' in name:
             return 'vitaquake2-xatrix', ROMS / 'quake2' / 'xatrix' / 'pak0.pak'

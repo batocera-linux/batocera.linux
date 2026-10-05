@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 class Boom3(GLOverrideMixin, Core):
     @cached_property
     def _resolved_rom(self) -> Path:
-        with self.rom.open() as file:
+        with self.config.rom.open() as file:
             first_line = file.readline().strip()
 
-        return self.rom.parent / first_line
+        return self.config.rom.parent / first_line
 
     @cached_property
     def library_prefix(self) -> str:
