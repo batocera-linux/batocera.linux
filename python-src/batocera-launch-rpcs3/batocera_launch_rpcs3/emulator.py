@@ -21,6 +21,7 @@ from batocera_common.fs import directory_differences
 from batocera_common.paths import CACHE, CONFIGS
 from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext, ParallelStartupTaskMixin, download
+from batocera_launch.devices.video import get_current_output, list_wayland_outputs
 from batocera_launch.paths import configure_emulator
 
 from . import firmware
@@ -957,6 +958,11 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
 
         if not self.config.get_bool('rpcs3_gui') and rom_name:
             args.append('--no-gui')
+
+        # RPCS3 opens the game window on Qt's first screen, not the one labwc placed it on
+        outputs = await list_wayland_outputs()
+        if len(outputs) > 1 and (primary := await get_current_output()) in outputs:
+            args += ['--game-screen', str(outputs.index(primary))]
 
         env: dict[str, str | Path] = {
             'XDG_CONFIG_HOME': CONFIGS,
