@@ -116,7 +116,7 @@ custom_features:
   sm2_wheel_ffb:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK
-    description: Synthesised centring resistance on wheels that support it.
+    description: The game's own drive board forces, its springs, friction and impacts, on wheels that support it.
     choices:
       Off: 0
       On (Default): 1
@@ -129,8 +129,8 @@ custom_features:
       Strong: 70
   sm2_wheel_rumble:
     group: WHEELS
-    prompt: WHEEL ROAD RUMBLE
-    description: Synthesised road/engine vibration while driving.
+    prompt: WHEEL RUMBLE
+    description: Vibrates on the game's impacts, for wheels without force feedback.
     choices:
       Off: 0
       On (Default): 1
@@ -141,10 +141,17 @@ custom_features:
       Light: 20
       Medium (Default): 40
       Strong: 60
+  sm2_wheel_rumble_engine:
+    group: WHEELS
+    prompt: WHEEL ENGINE VIBRATION
+    description: An added vibration that grows with the throttle. It is not from the game. Turn it off to feel only the game's force feedback.
+    choices:
+      Off: 0
+      On (Default): 1
   sm2_pad_rumble:
     group: GAMEPAD
     prompt: GAMEPAD RUMBLE
-    description: The game's jolts plus a buzz rising with steering, on a regular gamepad. Driving games only.
+    description: Vibrates on the game's impacts in driving games.
     choices:
       Off: 0
       On (Default): 1
@@ -155,6 +162,13 @@ custom_features:
       Light: 30
       Medium (Default): 60
       Strong: 90
+  sm2_pad_rumble_cornering:
+    group: GAMEPAD
+    prompt: GAMEPAD STEERING VIBRATION
+    description: An added vibration that grows as you steer. It is not from the game. Turn it off to feel only the game's force feedback.
+    choices:
+      Off: 0
+      On (Default): 1
   sm2_pad_stick_sensitivity:
     group: GAMEPAD
     prompt: STICK SENSITIVITY
