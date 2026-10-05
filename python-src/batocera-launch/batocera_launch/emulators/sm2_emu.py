@@ -196,7 +196,7 @@ class Sm2Emu(Emulator):
             'lightgun_recoil': _ini_bool(self.config.get_bool('sm2_lightgun_recoil', True)),
             'lightgun_recoil_strength': self.config.get_str('sm2_lightgun_recoil_strength', '60'),
             'wheel_ffb': _ini_bool(self.config.get_bool('sm2_wheel_ffb', True)),
-            'wheel_ffb_strength': self.config.get_str('sm2_wheel_ffb_strength', '30'),
+            'wheel_ffb_strength': self.config.get_str('sm2_wheel_ffb_strength', '50'),
             'wheel_rumble': _ini_bool(self.config.get_bool('sm2_wheel_rumble', True)),
             'wheel_rumble_strength': self.config.get_str('sm2_wheel_rumble_strength', '40'),
             **wheel_managed,
