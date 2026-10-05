@@ -21,7 +21,7 @@ _logger = logging.getLogger(__name__)
 RC_XML: Final = HOME / '.config' / 'labwc' / 'rc.xml'
 LABWC_BIN: Final = Path('/usr/bin/labwc')
 
-# keyed by batocera rotation (wlroots transform, anticlockwise)
+# keyed by the batocera rotation a digitiser already reports in; each matrix undoes the wlroots output transform for it
 _TOUCH_CALIBRATION: Final = {
     0: '1 0 0 0 1 0',
     1: '0 1 0 -1 0 1',
@@ -169,8 +169,7 @@ class LabWCConfig:
             if rotation is None:
                 continue
 
-            # labwc maps touch onto the output box without applying its transform, and an explicit
-            # matrix also replaces any udev one written for a touchscreen spanning the whole layout
+            # an explicit matrix also replaces any udev one written for a touchscreen spanning the whole layout
             if libinput is None:
                 libinput = ET.SubElement(self.root, 'libinput')
             device = ET.SubElement(libinput, 'device', {'category': name})
