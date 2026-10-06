@@ -10,10 +10,6 @@ LIBRETRO_MUPEN64PLUS_NEXT_LICENSE = GPLv2
 LIBRETRO_MUPEN64PLUS_NEXT_DEPENDENCIES = host-nasm retroarch
 LIBRETRO_MUPEN64PLUS_NEXT_EMULATOR_INFO = mupen64plus-next.libretro.core.yml
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-LIBRETRO_MUPEN64PLUS_DEPENDENCIES += rpi-userland
-endif
-
 # GCC 15 / C23 & <cstdint> / stdint.h compatibility flags
 LIBRETRO_MUPEN64PLUS_NEXT_TARGET_CFLAGS = $(TARGET_CFLAGS) -std=gnu17 \
 	-Wno-error=incompatible-pointer-types \

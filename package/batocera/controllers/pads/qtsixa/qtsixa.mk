@@ -12,13 +12,6 @@ QTSIXA_INCLUDES =-I$(STAGING_DIR)/usr/include
 QTSIXA_CFLAGS = -D__ARM_PCS_VFP -DARM_ARCH -Wall $(QTSIXA_INCLUDES)
 QTSIXA_LIBS = -ldl -lpthread -lz -L$(STAGING_DIR)/usr/lib -lrt -lusb -lbluetooth
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-	QTSIXA_DEPENDENCIES += rpi-userland
-	QTSIXA_INCLUDES +=-I$(STAGING_DIR)/usr/include/interface/vcos/pthreads -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux
-	QTSIXA_CFLAGS += -DRPI_BUILD
-	QTSIXA_LIBS += -lbcm_host -lvcos -lvchiq_arm -lvchostif
-endif
-
 define QTSIXA_BUILD_CMDS
 	$(MAKE) CC="$(TARGET_CC)" \
 		CFLAGS="$(TARGET_CFLAGS) $(QTSIXA_CFLAGS)" \

@@ -122,10 +122,6 @@ ifeq ($(BR2_PACKAGE_GLSLANG),y)
     RETROARCH_DEPENDENCIES += glslang
 endif
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-    RETROARCH_CONF_OPTS += --enable-videocore
-endif
-
 ifeq ($(BR2_ARM_FPU_NEON_VFPV4)$(BR2_ARM_FPU_NEON)$(BR2_ARM_FPU_NEON_FP_ARMV8),y)
     RETROARCH_CONF_OPTS += --enable-neon
 endif
@@ -205,10 +201,6 @@ endif
 ifeq ($(BR2_ARM_CPU_HAS_NEON),y)
     LIBRETRO_PLATFORM += neon
 endif
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-    LIBRETRO_PLATFORM += rpi armv
-endif
-
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_BCM2836),y)
     LIBRETRO_PLATFORM += rpi2
 endif
