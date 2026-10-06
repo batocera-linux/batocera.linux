@@ -1,0 +1,128 @@
+From eb9f35f876272d1648cc12acf7dbb9cc2c8251f6 Mon Sep 17 00:00:00 2001
+From: Joel Selvaraj <joelselvaraj.oss@gmail.com>
+Date: Mon, 19 Sep 2022 05:53:20 -0500
+Subject: [PATCH] ASoC: codecs: wcd934x: fix unbalanced micbias enable
+ and disable
+
+The micbias enable and disable causes the following crash when pluging
+the headphones multiple times:
+
+[  270.900505] ------------[ cut here ]------------
+[  270.900514] ln_bb_clk2 already disabled
+[  270.900576] WARNING: CPU: 0 PID: 1136 at drivers/clk/clk.c:963 clk_core_disable+0xb0/0xbc
+[  270.900620] Modules linked in: nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject
+nft_ct nf_conntrack nf_defrag_ipv4 nf_defrag_ipv6 nf_tables libcrc32c nfnetlink q6asm_dai
+q6routing q6afe_dai q6adm q6asm snd_q6dsp_common ipv6 snd_soc_wcd934x gpio_wcd934x
+soundwire_qcom snd_soc_wcd_mbhc venus_enc venus_dec videobuf2_dma_contig videobuf2_memops
+q6voice_dai q6voice q6afe wcd934x regmap_slimbus q6core q6mvm q6cvp q6cvs q6voice_common
+venus_core hci_uart v4l2_mem2mem videobuf2_v4l2 btbcm snd_soc_sdm845 videobuf2_common
+ath10k_snoc btqca videodev fastrpc snd_soc_qcom_common bluetooth soundwire_bus ath10k_core
+qrtr_smd mc snd_soc_rt5663 mac80211 ecdh_generic leds_qcom_lpg snd_soc_rl6231 crct10dif_ce
+snd_soc_tas2559 qcom_spmi_haptics ecc joydev qcom_spmi_rradc led_class_multicolor camcc_sdm845
+rtc_pm8xxx libarc4 reset_qcom_pdc ath ipa qcom_rng qcom_q6v5_mss qrtr cfg80211 qcom_q6v5_pas
+rfkill slim_qcom_ngd_ctrl qcom_q6v5 qcom_sysmon qcom_common icc_osm_l3 qcom_glink_smem qcom_pil_info
+[  270.901085]  qcom_wdt icc_bwmon nt36xxx qcom_fg qcom_pmi8998_charger i2c_qcom_geni gpi
+[  270.901135] CPU: 0 PID: 1136 Comm: irq/197-wcd934x Not tainted 6.0.0-rc5-sdm845 #4
+[  270.901151] Hardware name: Xiaomi Pocophone F1 (Tianma) (DT)
+[  270.901163] pstate: 604000c5 (nZCv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  270.901178] pc : clk_core_disable+0xb0/0xbc
+[  270.901190] lr : clk_core_disable+0xb0/0xbc
+[  270.901199] sp : ffff800009ad3bd0
+[  270.901205] x29: ffff800009ad3bd0 x28: 0000000000000000 x27: 0000000000000000
+[  270.901226] x26: ffffbcf7bb9761c0 x25: ffffbcf7bb976380 x24: ffffbcf7730e9240
+[  270.901245] x23: ffff790dc5715680 x22: ffff790dc77ca080 x21: 0000000000000000
+[  270.901265] x20: ffff790dc0c0d800 x19: ffff790dc0c0d800 x18: fffffffffffec818
+[  270.901284] x17: 0000000000000001 x16: ffffbcf7bbf14084 x15: 0000000000000028
+[  270.901303] x14: fffffffffffec840 x13: 0a64656c62617369 x12: 642079646165726c
+[  270.901323] x11: 656820747563205b x10: fffffffffffe0000 x9 : ffff800009ad3bd0
+[  270.901342] x8 : ffffbcf7bce81508 x7 : ffff800009ad39d0 x6 : 00000000fffff2ca
+[  270.901359] x5 : ffff790eb6762a50 x4 : 0000000000000000 x3 : ffffbc16f9b8b000
+[  270.901376] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff790dc537c9c0
+[  270.901395] Call trace:
+[  270.901401]  clk_core_disable+0xb0/0xbc
+[  270.901414]  clk_disable+0x30/0x4c
+[  270.901428]  __wcd934x_cdc_mclk_enable.part.0+0xfc/0x114 [snd_soc_wcd934x]
+[  270.901647]  wcd934x_mbhc_request_micbias+0x9c/0xb4 [snd_soc_wcd934x]
+[  270.901688]  wcd_micbias_disable+0x34/0xa0 [snd_soc_wcd_mbhc]
+[  270.901735]  wcd_mbhc_report_plug+0x58/0x304 [snd_soc_wcd_mbhc]
+[  270.901754]  wcd_mbhc_mech_plug_detect_irq+0x118/0x300 [snd_soc_wcd_mbhc]
+[  270.901773]  handle_nested_irq+0xc4/0x14c
+[  270.901797]  regmap_irq_thread+0x240/0x714
+[  270.901823]  irq_thread_fn+0x2c/0xa0
+[  270.901838]  irq_thread+0x154/0x21c
+[  270.901852]  kthread+0x108/0x10c
+[  270.901868]  ret_from_fork+0x10/0x20
+[  270.901888] ---[ end trace 0000000000000000 ]---
+
+This also makes the headphones to not work afterwards.
+Fix it by tracking the micbias status and disable only if it is enabled.
+
+Signed-off-by: Joel Selvaraj <joelselvaraj.oss@gmail.com>
+---
+ sound/soc/codecs/wcd-mbhc-v2.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/codecs/wcd-mbhc-v2.c b/sound/soc/codecs/wcd-mbhc-v2.c
+index bb0c8478a8eb..35f74213a31f 100644
+--- a/sound/soc/codecs/wcd-mbhc-v2.c
++++ b/sound/soc/codecs/wcd-mbhc-v2.c
+@@ -69,6 +69,7 @@ struct wcd_mbhc {
+ 	bool extn_cable_hph_rem;
+ 	bool force_linein;
+ 	bool impedance_detect;
++	bool micbias_enabled;
+ 	unsigned long event_state;
+ 	unsigned long jiffies_atreport;
+ 	/* impedance of hphl and hphr */
+@@ -197,7 +198,7 @@ int wcd_mbhc_event_notify(struct wcd_mbhc *mbhc, unsigned long event)
+ 		 * make sure current source is enabled so as to detect
+ 		 * button press/release events
+ 		 */
+-		if (mbhc->mbhc_cb->mbhc_micbias_control/* && !mbhc->micbias_enable*/) {
++		if (mbhc->mbhc_cb->mbhc_micbias_control && mbhc->micbias_enabled) {
+ 			if (wcd_mbhc_read_field(mbhc, WCD_MBHC_FSM_EN))
+ 				wcd_mbhc_write_field(mbhc, WCD_MBHC_BTN_ISRC_CTL, 3);
+ 		}
+@@ -277,8 +278,10 @@ static void wcd_micbias_disable(struct wcd_mbhc *mbhc)
+ {
+ 	struct snd_soc_component *component = mbhc->component;
+ 
+-	if (mbhc->mbhc_cb->mbhc_micbias_control)
++	if (mbhc->mbhc_cb->mbhc_micbias_control && mbhc->micbias_enabled) {
+ 		mbhc->mbhc_cb->mbhc_micbias_control(component, MIC_BIAS_2, MICB_DISABLE);
++		mbhc->micbias_enabled = false;
++	}
+ 
+ 	if (mbhc->mbhc_cb->mbhc_micb_ctrl_thr_mic)
+ 		mbhc->mbhc_cb->mbhc_micb_ctrl_thr_mic(component, MIC_BIAS_2, false);
+@@ -506,6 +509,7 @@ static void wcd_mbhc_adc_detect_plug_type(struct wcd_mbhc *mbhc)
+ 	if (mbhc->mbhc_cb->mbhc_micbias_control) {
+ 		mbhc->mbhc_cb->mbhc_micbias_control(component, MIC_BIAS_2,
+ 						    MICB_ENABLE);
++		mbhc->micbias_enabled = true;
+ 		wcd_schedule_hs_detect_plug(mbhc, &mbhc->correct_plug_swch);
+ 	}
+ }
+@@ -1297,8 +1301,10 @@ static void wcd_correct_swch_plug(struct work_struct *work)
+ 		wcd_mbhc_adc_update_fsm_source(mbhc, plug_type);
+ 
+ exit:
+-	if (mbhc->mbhc_cb->mbhc_micbias_control/* &&  !mbhc->micbias_enable*/)
++	if (mbhc->mbhc_cb->mbhc_micbias_control && mbhc->micbias_enabled) {
+ 		mbhc->mbhc_cb->mbhc_micbias_control(component, MIC_BIAS_2, MICB_DISABLE);
++		mbhc->micbias_enabled = false;
++	}
+ 
+ 	/*
+ 	 * If plug type is corrected from special headset to headphone,
+@@ -1525,6 +1531,7 @@ struct wcd_mbhc *wcd_mbhc_init(struct snd_soc_component *component,
+ 	mbhc->mbhc_cb = mbhc_cb;
+ 	mbhc->fields = fields;
+ 	mbhc->mbhc_detection_logic = WCD_DETECTION_ADC;
++	mbhc->micbias_enabled = false;
+ 
+ 	if (mbhc_cb->compute_impedance)
+ 		mbhc->impedance_detect = impedance_det_en;
+-- 
+GitLab
+

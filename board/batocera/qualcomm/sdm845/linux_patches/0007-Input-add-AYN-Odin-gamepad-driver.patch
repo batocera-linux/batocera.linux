@@ -6,7 +6,7 @@ Subject: [PATCH 4/5] Input: add AYN Odin gamepad driver
 ---
  drivers/input/joystick/Kconfig        |   8 +
  drivers/input/joystick/Makefile       |   1 +
- drivers/input/joystick/odin-gamepad.c | 360 ++++++++++++++++++++++++++
+ drivers/input/joystick/odin-gamepad.c | 359 ++++++++++++++++++++++++++
  3 files changed, 868 insertions(+)
  create mode 100644 drivers/input/joystick/odin-gamepad.c
 
@@ -46,7 +46,7 @@ new file mode 100644
 index 0000000..d008308
 --- /dev/null
 +++ b/drivers/input/joystick/odin-gamepad.c
-@@ -0,0 +1,360 @@
+@@ -0,0 +1,359 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * AYN Odin ADC joysticks and GPIO buttons driver.
@@ -62,7 +62,6 @@ index 0000000..d008308
 +#include <linux/input.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/of_gpio.h>
 +#include <linux/platform_device.h>
 +#include <linux/property.h>
 +#include <linux/slab.h>

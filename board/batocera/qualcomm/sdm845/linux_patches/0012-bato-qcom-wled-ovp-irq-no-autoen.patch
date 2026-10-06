@@ -1,0 +1,47 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] backlight: qcom-wled: request the ovp irq disabled
+
+The ovp irq was only disabled at probe when the module was off, so a
+bootloader-enabled WLED got a second enable_irq() from wled_ovp_work on
+the first brightness update. Request it with IRQF_NO_AUTOEN and leave
+enabling to wled_module_enable().
+
+---
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1627,7 +1627,6 @@
+ 				  struct platform_device *pdev)
+ {
+ 	int rc;
+-	u32 val;
+ 
+ 	wled->ovp_irq = platform_get_irq_byname(pdev, "ovp");
+ 	if (wled->ovp_irq < 0) {
+@@ -1635,8 +1634,10 @@
+ 		return 0;
+ 	}
+ 
++	/* Enabled by wled_module_enable() once the module is switched on. */
+ 	rc = devm_request_threaded_irq(wled->dev, wled->ovp_irq, NULL,
+-				       wled_ovp_irq_handler, IRQF_ONESHOT,
++				       wled_ovp_irq_handler,
++				       IRQF_ONESHOT | IRQF_NO_AUTOEN,
+ 				       "wled_ovp_irq", wled);
+ 	if (rc < 0) {
+ 		dev_err(wled->dev, "Unable to request ovp_irq (err:%d)\n",
+@@ -1645,15 +1646,6 @@
+ 		return 0;
+ 	}
+ 
+-	rc = regmap_read(wled->regmap, wled->ctrl_addr +
+-			 WLED3_CTRL_REG_MOD_EN, &val);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Keep OVP irq disabled until module is enabled */
+-	if (!(val & WLED3_CTRL_REG_MOD_EN_MASK))
+-		disable_irq(wled->ovp_irq);
+-
+ 	return 0;
+ }
+ 

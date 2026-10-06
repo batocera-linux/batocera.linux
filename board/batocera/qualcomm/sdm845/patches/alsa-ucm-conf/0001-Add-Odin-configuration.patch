@@ -19,7 +19,7 @@ new file mode 100644
 index 0000000..6e432c1
 --- /dev/null
 +++ b/ucm2/Odin/HiFi.conf
-@@ -0,0 +1,81 @@
+@@ -0,0 +1,103 @@
 +SectionVerb {
 +
 +	EnableSequence [
@@ -32,26 +32,10 @@ index 0000000..6e432c1
 +		cset "name='SLIM RX4 MUX' ZERO"
 +		cset "name='SLIM RX5 MUX' ZERO"
 +		cset "name='AIF1_CAP Mixer SLIM TX0' 1"
-+		cset "name='RX INT7_1 MIX1 INP0' RX1"
-+		cset "name='RX INT8_1 MIX1 INP0' RX2"
-+		cset "name='RX INT1_2 MUX' RX1"
-+		cset "name='RX INT2_2 MUX' RX2"
 +		cset "name='CDC_IF TX0 MUX' DEC0"
-+		cset "name='SpkrLeft COMP Switch' 1"
-+		cset "name='SpkrLeft BOOST Switch' 1"
-+		cset "name='SpkrLeft DAC Switch' 1"
-+		cset "name='SpkrLeft VISENSE Switch' 0"
-+		cset "name='SpkrRight COMP Switch' 1"
-+		cset "name='SpkrRight BOOST Switch' 1"
-+		cset "name='SpkrRight DAC Switch' 1"
-+		cset "name='SpkrRight VISENSE Switch' 0"
 +	]
 +
 +	DisableSequence [
-+		cset "name='RX INT7_1 MIX1 INP0' ZERO"
-+		cset "name='RX INT8_1 MIX1 INP0' ZERO"
-+		cset "name='RX INT1_2 MUX' ZERO"
-+		cset "name='RX INT2_2 MUX' ZERO"
 +		cset "name='CDC_IF TX0 MUX' ZERO"
 +		cset "name='SLIMBUS_0_RX Audio Mixer MultiMedia1' 0"
 +	]
@@ -65,6 +49,8 @@ index 0000000..6e432c1
 +	Comment "Speaker playback"
 +
 +	EnableSequence [
++		cset "name='RX INT7_1 MIX1 INP0' RX1"
++		cset "name='RX INT8_1 MIX1 INP0' RX2"
 +		cset "name='COMP7 Switch' 1"
 +		cset "name='COMP8 Switch' 1"
 +		cset "name='RX7 Digital Volume' 100"
@@ -74,11 +60,13 @@ index 0000000..6e432c1
 +		cset "name='SpkrLeft DAC Switch' 1"
 +		cset "name='SpkrLeft VISENSE Switch' 0"
 +		cset "name='SpkrLeft PA Volume' 12"
++		cset "name='SpkrLeft Smart Boost Level' 15"
 +		cset "name='SpkrRight COMP Switch' 1"
 +		cset "name='SpkrRight BOOST Switch' 1"
 +		cset "name='SpkrRight DAC Switch' 1"
 +		cset "name='SpkrRight VISENSE Switch' 0"
 +		cset "name='SpkrRight PA Volume' 12"
++		cset "name='SpkrRight Smart Boost Level' 15"
 +	]
 +
 +	DisableSequence [
@@ -94,11 +82,45 @@ index 0000000..6e432c1
 +		cset "name='RX8 Digital Volume' 0"
 +		cset "name='COMP7 Switch' 0"
 +		cset "name='COMP8 Switch' 0"
++		cset "name='RX INT7_1 MIX1 INP0' ZERO"
++		cset "name='RX INT8_1 MIX1 INP0' ZERO"
 +	]
 +
 +	Value {
 +		PlaybackPriority 100
 +		PlaybackPCM "hw:${CardId},0"
++	}
++}
++
++SectionDevice."Headphones" {
++	Comment "Headphones playback"
++
++	EnableSequence [
++		cset "name='RX INT1_2 MUX' RX1"
++		cset "name='RX INT2_2 MUX' RX2"
++		cset "name='RX1 Digital Volume' 90"
++		cset "name='RX2 Digital Volume' 90"
++		cset "name='COMP1 Switch' 1"
++		cset "name='COMP2 Switch' 1"
++		cset "name='RX INT1 DEM MUX' CLSH_DSM_OUT"
++		cset "name='RX INT2 DEM MUX' CLSH_DSM_OUT"
++	]
++
++	DisableSequence [
++		cset "name='RX INT1_2 MUX' ZERO"
++		cset "name='RX INT2_2 MUX' ZERO"
++		cset "name='RX1 Digital Volume' 84"
++		cset "name='RX2 Digital Volume' 84"
++		cset "name='COMP1 Switch' 0"
++		cset "name='COMP2 Switch' 0"
++		cset "name='RX INT1 DEM MUX' NORMAL_DSM_OUT"
++		cset "name='RX INT2 DEM MUX' NORMAL_DSM_OUT"
++	]
++
++	Value {
++		PlaybackPriority 200
++		PlaybackPCM "hw:${CardId},0"
++		JackControl "Headphone Jack"
 +	}
 +}
 diff --git a/ucm2/Odin/Odin.conf b/ucm2/Odin/Odin.conf
