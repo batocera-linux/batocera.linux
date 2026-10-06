@@ -1,0 +1,485 @@
+From d03ac59196d7a5f38a03c20b1f8aeba5d5ba14a7 Mon Sep 17 00:00:00 2001
+From: brooksytech <1673861+brooksytech@users.noreply.github.com>
+Date: Wed, 24 Jan 2024 21:50:05 +0000
+Subject: [PATCH] input: add input-polldev driver
+
+---
+ drivers/input/Kconfig         |  13 ++
+ drivers/input/Makefile        |   1 +
+ drivers/input/input-polldev.c | 362 ++++++++++++++++++++++++++++++++++
+ include/linux/input-polldev.h |  58 ++++++
+ 4 files changed, 434 insertions(+)
+ create mode 100644 drivers/input/input-polldev.c
+ create mode 100644 include/linux/input-polldev.h
+
+diff --git a/drivers/input/Kconfig b/drivers/input/Kconfig
+index 3bdbd34314b3..779daf5009c1 100644
+--- a/drivers/input/Kconfig
++++ b/drivers/input/Kconfig
+@@ -51,6 +51,19 @@ config INPUT_FF_MEMLESS
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ff-memless.
+ 
++config INPUT_POLLDEV
++	tristate "Polled input device skeleton"
++	help
++	  Say Y here if you are using a driver for an input
++	  device that periodically polls hardware state. This
++	  option is only useful for out-of-tree drivers since
++	  in-tree drivers select it automatically.
++
++	  If unsure, say N.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called input-polldev.
++
+ config INPUT_SPARSEKMAP
+ 	tristate "Sparse keymap support library"
+ 	help
+diff --git a/drivers/input/Makefile b/drivers/input/Makefile
+index c78753274921..e92c29174c36 100644
+--- a/drivers/input/Makefile
++++ b/drivers/input/Makefile
+@@ -10,6 +10,7 @@ input-core-y := input.o input-compat.o input-mt.o input-poller.o ff-core.o
+ input-core-y += touchscreen.o
+ 
+ obj-$(CONFIG_INPUT_FF_MEMLESS)	+= ff-memless.o
++obj-$(CONFIG_INPUT_POLLDEV)	+= input-polldev.o
+ obj-$(CONFIG_INPUT_SPARSEKMAP)	+= sparse-keymap.o
+ obj-$(CONFIG_INPUT_MATRIXKMAP)	+= matrix-keymap.o
+ obj-$(CONFIG_INPUT_VIVALDIFMAP)	+= vivaldi-fmap.o
+diff --git a/drivers/input/input-polldev.c b/drivers/input/input-polldev.c
+new file mode 100644
+index 000000000000..9bf1c9aeb4c4
+--- /dev/null
++++ b/drivers/input/input-polldev.c
+@@ -0,0 +1,362 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Generic implementation of a polled input device
++
++ * Copyright (c) 2007 Dmitry Torokhov
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/jiffies.h>
++#include <linux/slab.h>
++#include <linux/mutex.h>
++#include <linux/workqueue.h>
++#include <linux/module.h>
++#include <linux/input-polldev.h>
++
++MODULE_AUTHOR("Dmitry Torokhov <dtor@mail.ru>");
++MODULE_DESCRIPTION("Generic implementation of a polled input device");
++MODULE_LICENSE("GPL v2");
++
++static void input_polldev_queue_work(struct input_polled_dev *dev)
++{
++	unsigned long delay;
++
++	delay = msecs_to_jiffies(dev->poll_interval);
++	if (delay >= HZ)
++		delay = round_jiffies_relative(delay);
++
++	queue_delayed_work(system_freezable_wq, &dev->work, delay);
++}
++
++static void input_polled_device_work(struct work_struct *work)
++{
++	struct input_polled_dev *dev =
++		container_of(work, struct input_polled_dev, work.work);
++
++	dev->poll(dev);
++	input_polldev_queue_work(dev);
++}
++
++static int input_open_polled_device(struct input_dev *input)
++{
++	struct input_polled_dev *dev = input_get_drvdata(input);
++
++	if (dev->open)
++		dev->open(dev);
++
++	/* Only start polling if polling is enabled */
++	if (dev->poll_interval > 0) {
++		dev->poll(dev);
++		input_polldev_queue_work(dev);
++	}
++
++	return 0;
++}
++
++static void input_close_polled_device(struct input_dev *input)
++{
++	struct input_polled_dev *dev = input_get_drvdata(input);
++
++	cancel_delayed_work_sync(&dev->work);
++
++	if (dev->close)
++		dev->close(dev);
++}
++
++/* SYSFS interface */
++
++static ssize_t input_polldev_get_poll(struct device *dev,
++				      struct device_attribute *attr, char *buf)
++{
++	struct input_polled_dev *polldev = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", polldev->poll_interval);
++}
++
++static ssize_t input_polldev_set_poll(struct device *dev,
++				struct device_attribute *attr, const char *buf,
++				size_t count)
++{
++	struct input_polled_dev *polldev = dev_get_drvdata(dev);
++	struct input_dev *input = polldev->input;
++	unsigned int interval;
++	int err;
++
++	err = kstrtouint(buf, 0, &interval);
++	if (err)
++		return err;
++
++	if (interval < polldev->poll_interval_min)
++		return -EINVAL;
++
++	if (interval > polldev->poll_interval_max)
++		return -EINVAL;
++
++	mutex_lock(&input->mutex);
++
++	polldev->poll_interval = interval;
++
++	if (input->users) {
++		cancel_delayed_work_sync(&polldev->work);
++		if (polldev->poll_interval > 0)
++			input_polldev_queue_work(polldev);
++	}
++
++	mutex_unlock(&input->mutex);
++
++	return count;
++}
++
++static DEVICE_ATTR(poll, S_IRUGO | S_IWUSR, input_polldev_get_poll,
++					    input_polldev_set_poll);
++
++
++static ssize_t input_polldev_get_max(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	struct input_polled_dev *polldev = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", polldev->poll_interval_max);
++}
++
++static DEVICE_ATTR(max, S_IRUGO, input_polldev_get_max, NULL);
++
++static ssize_t input_polldev_get_min(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	struct input_polled_dev *polldev = dev_get_drvdata(dev);
++
++	return sprintf(buf, "%d\n", polldev->poll_interval_min);
++}
++
++static DEVICE_ATTR(min, S_IRUGO, input_polldev_get_min, NULL);
++
++static struct attribute *sysfs_attrs[] = {
++	&dev_attr_poll.attr,
++	&dev_attr_max.attr,
++	&dev_attr_min.attr,
++	NULL
++};
++
++static struct attribute_group input_polldev_attribute_group = {
++	.attrs = sysfs_attrs
++};
++
++static const struct attribute_group *input_polldev_attribute_groups[] = {
++	&input_polldev_attribute_group,
++	NULL
++};
++
++/**
++ * input_allocate_polled_device - allocate memory for polled device
++ *
++ * The function allocates memory for a polled device and also
++ * for an input device associated with this polled device.
++ */
++struct input_polled_dev *input_allocate_polled_device(void)
++{
++	struct input_polled_dev *dev;
++
++	dev = kzalloc(sizeof(struct input_polled_dev), GFP_KERNEL);
++	if (!dev)
++		return NULL;
++
++	dev->input = input_allocate_device();
++	if (!dev->input) {
++		kfree(dev);
++		return NULL;
++	}
++
++	return dev;
++}
++EXPORT_SYMBOL(input_allocate_polled_device);
++
++struct input_polled_devres {
++	struct input_polled_dev *polldev;
++};
++
++static int devm_input_polldev_match(struct device *dev, void *res, void *data)
++{
++	struct input_polled_devres *devres = res;
++
++	return devres->polldev == data;
++}
++
++static void devm_input_polldev_release(struct device *dev, void *res)
++{
++	struct input_polled_devres *devres = res;
++	struct input_polled_dev *polldev = devres->polldev;
++
++	dev_dbg(dev, "%s: dropping reference/freeing %s\n",
++		__func__, dev_name(&polldev->input->dev));
++
++	input_put_device(polldev->input);
++	kfree(polldev);
++}
++
++static void devm_input_polldev_unregister(struct device *dev, void *res)
++{
++	struct input_polled_devres *devres = res;
++	struct input_polled_dev *polldev = devres->polldev;
++
++	dev_dbg(dev, "%s: unregistering device %s\n",
++		__func__, dev_name(&polldev->input->dev));
++	input_unregister_device(polldev->input);
++
++	/*
++	 * Note that we are still holding extra reference to the input
++	 * device so it will stick around until devm_input_polldev_release()
++	 * is called.
++	 */
++}
++
++/**
++ * devm_input_allocate_polled_device - allocate managed polled device
++ * @dev: device owning the polled device being created
++ *
++ * Returns prepared &struct input_polled_dev or %NULL.
++ *
++ * Managed polled input devices do not need to be explicitly unregistered
++ * or freed as it will be done automatically when owner device unbinds
++ * from * its driver (or binding fails). Once such managed polled device
++ * is allocated, it is ready to be set up and registered in the same
++ * fashion as regular polled input devices (using
++ * input_register_polled_device() function).
++ *
++ * If you want to manually unregister and free such managed polled devices,
++ * it can be still done by calling input_unregister_polled_device() and
++ * input_free_polled_device(), although it is rarely needed.
++ *
++ * NOTE: the owner device is set up as parent of input device and users
++ * should not override it.
++ */
++struct input_polled_dev *devm_input_allocate_polled_device(struct device *dev)
++{
++	struct input_polled_dev *polldev;
++	struct input_polled_devres *devres;
++
++	devres = devres_alloc(devm_input_polldev_release, sizeof(*devres),
++			      GFP_KERNEL);
++	if (!devres)
++		return NULL;
++
++	polldev = input_allocate_polled_device();
++	if (!polldev) {
++		devres_free(devres);
++		return NULL;
++	}
++
++	polldev->input->dev.parent = dev;
++	polldev->devres_managed = true;
++
++	devres->polldev = polldev;
++	devres_add(dev, devres);
++
++	return polldev;
++}
++EXPORT_SYMBOL(devm_input_allocate_polled_device);
++
++/**
++ * input_free_polled_device - free memory allocated for polled device
++ * @dev: device to free
++ *
++ * The function frees memory allocated for polling device and drops
++ * reference to the associated input device.
++ */
++void input_free_polled_device(struct input_polled_dev *dev)
++{
++	if (dev) {
++		if (dev->devres_managed)
++			WARN_ON(devres_destroy(dev->input->dev.parent,
++						devm_input_polldev_release,
++						devm_input_polldev_match,
++						dev));
++		input_put_device(dev->input);
++		kfree(dev);
++	}
++}
++EXPORT_SYMBOL(input_free_polled_device);
++
++/**
++ * input_register_polled_device - register polled device
++ * @dev: device to register
++ *
++ * The function registers previously initialized polled input device
++ * with input layer. The device should be allocated with call to
++ * input_allocate_polled_device(). Callers should also set up poll()
++ * method and set up capabilities (id, name, phys, bits) of the
++ * corresponding input_dev structure.
++ */
++int input_register_polled_device(struct input_polled_dev *dev)
++{
++	struct input_polled_devres *devres = NULL;
++	struct input_dev *input = dev->input;
++	int error;
++
++	if (dev->devres_managed) {
++		devres = devres_alloc(devm_input_polldev_unregister,
++				      sizeof(*devres), GFP_KERNEL);
++		if (!devres)
++			return -ENOMEM;
++
++		devres->polldev = dev;
++	}
++
++	input_set_drvdata(input, dev);
++	INIT_DELAYED_WORK(&dev->work, input_polled_device_work);
++
++	if (!dev->poll_interval)
++		dev->poll_interval = 500;
++	if (!dev->poll_interval_max)
++		dev->poll_interval_max = dev->poll_interval;
++
++	input->open = input_open_polled_device;
++	input->close = input_close_polled_device;
++
++	input->dev.groups = input_polldev_attribute_groups;
++
++	error = input_register_device(input);
++	if (error) {
++		devres_free(devres);
++		return error;
++	}
++
++	/*
++	 * Take extra reference to the underlying input device so
++	 * that it survives call to input_unregister_polled_device()
++	 * and is deleted only after input_free_polled_device()
++	 * has been invoked. This is needed to ease task of freeing
++	 * sparse keymaps.
++	 */
++	input_get_device(input);
++
++	if (dev->devres_managed) {
++		dev_dbg(input->dev.parent, "%s: registering %s with devres.\n",
++			__func__, dev_name(&input->dev));
++		devres_add(input->dev.parent, devres);
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL(input_register_polled_device);
++
++/**
++ * input_unregister_polled_device - unregister polled device
++ * @dev: device to unregister
++ *
++ * The function unregisters previously registered polled input
++ * device from input layer. Polling is stopped and device is
++ * ready to be freed with call to input_free_polled_device().
++ */
++void input_unregister_polled_device(struct input_polled_dev *dev)
++{
++	if (dev->devres_managed)
++		WARN_ON(devres_destroy(dev->input->dev.parent,
++					devm_input_polldev_unregister,
++					devm_input_polldev_match,
++					dev));
++
++	input_unregister_device(dev->input);
++}
++EXPORT_SYMBOL(input_unregister_polled_device);
+diff --git a/include/linux/input-polldev.h b/include/linux/input-polldev.h
+new file mode 100644
+index 000000000000..14821fd231c0
+--- /dev/null
++++ b/include/linux/input-polldev.h
+@@ -0,0 +1,58 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _INPUT_POLLDEV_H
++#define _INPUT_POLLDEV_H
++
++/*
++ * Copyright (c) 2007 Dmitry Torokhov
++ */
++
++#include <linux/input.h>
++#include <linux/workqueue.h>
++
++/**
++ * struct input_polled_dev - simple polled input device
++ * @private: private driver data.
++ * @open: driver-supplied method that prepares device for polling
++ *	(enabled the device and maybe flushes device state).
++ * @close: driver-supplied method that is called when device is no
++ *	longer being polled. Used to put device into low power mode.
++ * @poll: driver-supplied method that polls the device and posts
++ *	input events (mandatory).
++ * @poll_interval: specifies how often the poll() method should be called.
++ *	Defaults to 500 msec unless overridden when registering the device.
++ * @poll_interval_max: specifies upper bound for the poll interval.
++ *	Defaults to the initial value of @poll_interval.
++ * @poll_interval_min: specifies lower bound for the poll interval.
++ *	Defaults to 0.
++ * @input: input device structure associated with the polled device.
++ *	Must be properly initialized by the driver (id, name, phys, bits).
++ *
++ * Polled input device provides a skeleton for supporting simple input
++ * devices that do not raise interrupts but have to be periodically
++ * scanned or polled to detect changes in their state.
++ */
++struct input_polled_dev {
++	void *private;
++
++	void (*open)(struct input_polled_dev *dev);
++	void (*close)(struct input_polled_dev *dev);
++	void (*poll)(struct input_polled_dev *dev);
++	unsigned int poll_interval; /* msec */
++	unsigned int poll_interval_max; /* msec */
++	unsigned int poll_interval_min; /* msec */
++
++	struct input_dev *input;
++
++/* private: */
++	struct delayed_work work;
++
++	bool devres_managed;
++};
++
++struct input_polled_dev *input_allocate_polled_device(void);
++struct input_polled_dev *devm_input_allocate_polled_device(struct device *dev);
++void input_free_polled_device(struct input_polled_dev *dev);
++int input_register_polled_device(struct input_polled_dev *dev);
++void input_unregister_polled_device(struct input_polled_dev *dev);
++
++#endif
+-- 
+2.34.1
+

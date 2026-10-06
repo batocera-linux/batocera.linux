@@ -2,17 +2,24 @@ from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Mapping
+from copy import deepcopy
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, ReadOnly, Self, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, Self, TypedDict, Unpack, cast
 
-from batocera_common.yaml import safe_dump_yaml12, safe_load_yaml12
+from batocera_common.yaml import safe_load_yaml12
 
 if TYPE_CHECKING:
     from _typeshed import StrPath
 
-    from batocera_es_system.shared import ConfiggenDefaults
+    from batocera_es_system.shared import Defaults
+
+
+class FileExtensionsDict(TypedDict):
+    values: NotRequired[list[str] | FileExtensionsDict]
+    add: NotRequired[list[str]]
+    remove: NotRequired[list[str]]
 
 
 class KeysActionBase(TypedDict):
@@ -67,11 +74,12 @@ class InfoDict(TypedDict):
 class SystemInfoDict(InfoDict):
     name: str
     disabled: NotRequired[bool]
-    exclude_extensions: NotRequired[list[str]]
+    file_extensions: NotRequired[list[str] | FileExtensionsDict]
 
 
 class CoreInfoDict(InfoDict):
     systems: NotRequired[list[str | SystemInfoDict]]
+    file_extensions: NotRequired[list[str] | FileExtensionsDict]
 
 
 class EmulatorSystemInfoDict(SystemInfoDict):
@@ -82,6 +90,7 @@ class EmulatorSystemInfoDict(SystemInfoDict):
 class EmulatorInfoDict(InfoDict):
     cores: NotRequired[dict[str, CoreInfoDict]]
     systems: NotRequired[list[str | EmulatorSystemInfoDict]]
+    file_extensions: NotRequired[list[str]]
 
 
 class CommentDict(TypedDict):
@@ -109,37 +118,11 @@ class _FeatureBase:
 
         yield self.prompt
 
-    def _to_dict(self) -> dict[str, object]:
-        data: dict[str, object] = {
-            'prompt': self.prompt,
-        }
-
-        if self.description or self.description is None:
-            data['description'] = self.description
-        if self.group is not None:
-            data['group'] = self.group
-        if self.submenu is not None:
-            data['submenu'] = self.submenu
-        if self.order is not None:
-            data['order'] = self.order
-
-        return data
-
 
 @dataclass(slots=True)
 class PresetFeature(_FeatureBase):
     preset: str
     preset_parameters: str | None
-
-    def _to_dict(self) -> dict[str, object]:
-        data = super(PresetFeature, self)._to_dict()
-
-        data['preset'] = self.preset
-
-        if self.preset_parameters is not None:
-            data['preset_parameters'] = self.preset_parameters
-
-        return data
 
     @classmethod
     def from_dict(cls, data: CustomFeaturePresetDict, /) -> Self:
@@ -161,13 +144,6 @@ class ChoiceFeature(_FeatureBase):
     def _get_translatable_strings(self) -> Iterator[str]:
         yield from super(ChoiceFeature, self)._get_translatable_strings()
         yield from self.choices
-
-    def _to_dict(self) -> dict[str, object]:
-        data = super(ChoiceFeature, self)._to_dict()
-
-        data['choices'] = self.choices
-
-        return data
 
     @classmethod
     def from_dict(cls, data: CustomFeatureChoicesDict, /) -> Self:
@@ -239,12 +215,43 @@ class HasFeatures(Protocol):
     features: list[str] | None
 
 
+def _resolve_file_extensions(
+    file_extensions: list[str] | FileExtensionsDict | None,
+    parent_file_extensions: list[str] | None = None,
+    /,
+) -> list[str]:
+    if isinstance(file_extensions, list):
+        return list(file_extensions)  # make a copy
+
+    parent_file_extensions = list(parent_file_extensions) if parent_file_extensions is not None else []
+
+    if file_extensions is None:
+        return parent_file_extensions
+
+    values = file_extensions.get('values', parent_file_extensions)
+    add = file_extensions.get('add', [])
+    remove = file_extensions.get('remove', [])
+
+    resolved_values = _resolve_file_extensions(values, parent_file_extensions)
+
+    result = [value for value in resolved_values if value not in remove]
+    seen = set(result)
+
+    for add_value in add:
+        if add_value not in seen:
+            result.append(add_value)
+            seen.add(add_value)
+
+    return result
+
+
 @dataclass(slots=True)
 class _BaseInfo[I: InfoDict]:
     features: list[str] | None
     shared_features: list[str] | None
     custom_features: dict[str, CustomFeature] | None
     keys: KeysConfigDict | None
+    file_extensions: list[str] | FileExtensionsDict | None
 
     def _get_translatable_strings(self) -> Iterator[str]:
         if self.custom_features:
@@ -261,20 +268,17 @@ class _BaseInfo[I: InfoDict]:
             self.custom_features = _extend_custom_features(self.custom_features, extension['custom_features'])
         if 'keys' in extension:
             self.keys = extension['keys']
+        if 'file_extensions' in extension:
+            new_extensions = deepcopy(extension['file_extensions'])
 
-    def _to_dict(self) -> dict[str, object]:
-        data: dict[str, object] = {}
+            if (
+                not isinstance(new_extensions, list)
+                and 'values' not in new_extensions
+                and self.file_extensions is not None
+            ):
+                new_extensions['values'] = deepcopy(self.file_extensions)
 
-        if self.features is not None:
-            data['features'] = self.features
-        if self.shared_features is not None:
-            data['shared_features'] = self.shared_features
-        if self.custom_features is not None:
-            data['custom_features'] = {key: value._to_dict() for key, value in self.custom_features.items()}
-        if self.keys is not None:
-            data['keys'] = self.keys
-
-        return data
+            self.file_extensions = new_extensions
 
 
 @dataclass(slots=True)
@@ -283,7 +287,6 @@ class SystemInfo(_BaseInfo[SystemInfoDict | EmulatorSystemInfoDict]):
     disabled: bool | None
     as_emulator: str | None
     as_core: list[str] | None
-    exclude_extensions: list[str] | None
 
     def extend(self, extension: SystemInfoDict | EmulatorSystemInfoDict, /) -> None:
         super(SystemInfo, self).extend(extension)
@@ -295,20 +298,15 @@ class SystemInfo(_BaseInfo[SystemInfoDict | EmulatorSystemInfoDict]):
         if 'as_core' in extension:
             as_core = extension['as_core']
             self.as_core = (self.as_core or []).extend([as_core] if isinstance(as_core, str) else as_core)
-        if 'exclude_extensions' in extension:
-            self.exclude_extensions = (self.exclude_extensions or []) + extension['exclude_extensions']
 
-    def _to_dict(self) -> dict[str, object]:
-        data = super(SystemInfo, self)._to_dict()
+    def resolve_file_extensions(self, emulator: EmulatorInfo, core: CoreInfo | None = None, /) -> list[str]:
+        if isinstance(self.file_extensions, list):
+            return list(self.file_extensions)
 
-        if self.as_emulator is not None:
-            data['as_emulator'] = self.as_emulator
-        if self.as_core:
-            data['as_core'] = self.as_core[0] if len(self.as_core) == 1 else self.as_core
-        if self.exclude_extensions is not None:
-            data['exclude_extensions'] = self.exclude_extensions
+        if core is not None:
+            return _resolve_file_extensions(self.file_extensions, core.resolve_file_extensions(emulator))
 
-        return {'name': self.name, **data}
+        return _resolve_file_extensions(self.file_extensions, emulator.resolve_file_extensions())
 
     @classmethod
     def from_data(cls, data: str | SystemInfoDict | EmulatorSystemInfoDict, /) -> Self:
@@ -321,8 +319,8 @@ class SystemInfo(_BaseInfo[SystemInfoDict | EmulatorSystemInfoDict]):
                 disabled=None,
                 as_emulator=None,
                 as_core=None,
-                exclude_extensions=None,
                 keys=None,
+                file_extensions=None,
             )
 
         return cls.from_dict(data)
@@ -338,8 +336,8 @@ class SystemInfo(_BaseInfo[SystemInfoDict | EmulatorSystemInfoDict]):
             disabled=data.get('disabled'),
             as_emulator=data.get('as_emulator'),
             as_core=[as_core] if isinstance(as_core, str) else as_core,
-            exclude_extensions=data.get('exclude_extensions'),
             keys=data.get('keys'),
+            file_extensions=data.get('file_extensions'),
         )
 
 
@@ -371,17 +369,6 @@ class _FileInfoBase[I: CoreInfoDict | EmulatorInfoDict](_BaseInfo[I]):
     @property
     def filename(self) -> str:
         raise NotImplementedError
-
-    def write(self, dest: Path, /) -> None:
-        safe_dump_yaml12(self._to_dict(), dest / self.filename)
-
-    def _to_dict(self) -> dict[str, object]:
-        data = super(_FileInfoBase, self)._to_dict()
-
-        if self.systems:
-            data['systems'] = [system._to_dict() for system in self.systems.values()]
-
-        return data
 
     def _get_comment_dict(self) -> CommentDict:
         raise NotImplementedError
@@ -432,6 +419,12 @@ class CoreInfo(_FileInfoBase[CoreInfoDict]):
     def filename(self) -> str:
         return f'{self.name}.{self.emulator}.core.yml'
 
+    def resolve_file_extensions(self, emulator: EmulatorInfo, /) -> list[str]:
+        if isinstance(self.file_extensions, list):
+            return list(self.file_extensions)
+
+        return _resolve_file_extensions(self.file_extensions, emulator.resolve_file_extensions())
+
     def _get_comment_dict(self) -> CommentDict:
         return {
             'emulator': self.emulator,
@@ -448,6 +441,7 @@ class CoreInfo(_FileInfoBase[CoreInfoDict]):
             custom_features=_dict_to_custom_features(data.get('custom_features')),
             systems=_system_info_list_to_dict(data.get('systems', [])),
             keys=data.get('keys'),
+            file_extensions=data.get('file_extensions'),
         )
 
 
@@ -458,6 +452,9 @@ class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
     @property
     def filename(self) -> str:
         return f'{self.name}.emulator.yml'
+
+    def resolve_file_extensions(self) -> list[str]:
+        return _resolve_file_extensions(self.file_extensions)
 
     def _get_comment_dict(self) -> CommentDict:
         name = self.name
@@ -492,14 +489,6 @@ class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
                         emulator=self.name,
                     )
 
-    def _to_dict(self) -> dict[str, object]:
-        data = super(EmulatorInfo, self)._to_dict()
-
-        if self.cores:
-            data['cores'] = {core_name: core._to_dict() for core_name, core in self.cores.items()}
-
-        return data
-
     @classmethod
     def from_dict(cls, data: EmulatorInfoDict, /, *, name: str, **kwargs: object) -> Self:
         return cls(
@@ -519,6 +508,7 @@ class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
             if 'cores' in data
             else {},
             keys=data.get('keys'),
+            file_extensions=data.get('file_extensions'),
         )
 
 
@@ -581,12 +571,6 @@ class RegistryInfo[T: EmulatorInfo | CoreInfo]:
     def extend(self, extension: Path, /) -> None:
         self.info.extend(safe_load_yaml12(extension, Any) or {})
 
-    def register(self, dest: Path, /) -> None:
-        info_dict = self.info._to_dict()
-
-        dest.mkdir(parents=True, exist_ok=True)
-        safe_dump_yaml12(info_dict, dest / self.filename)
-
     @classmethod
     def from_info(cls, info_path: Path, file_info: FileInfoDict | None = None, /) -> RegistryInfo[Any]:
         if file_info is None:
@@ -603,9 +587,10 @@ class RegistryInfo[T: EmulatorInfo | CoreInfo]:
         )
 
 
-class CoreMetadata(TypedDict):
-    default: ReadOnly[bool]
-    incompatible_extensions: ReadOnly[list[str]]
+@dataclass(slots=True, frozen=True)
+class CoreMetadata:
+    default: bool
+    file_extensions: frozenset[str]
 
 
 type EmulatorCoresMetadataDict = dict[str, CoreMetadata]
@@ -616,8 +601,14 @@ type EmulatorsMetadataDict = dict[str, EmulatorCoresMetadataDict]
 type EmulatorsMetadataMapping = Mapping[str, EmulatorCoresMetadataMapping]
 
 
-type SystemsMetadataDict = dict[str, EmulatorsMetadataDict]
-type SystemsMetadataMapping = Mapping[str, EmulatorsMetadataMapping]
+@dataclass(slots=True, frozen=True)
+class SystemMetadata:
+    file_extensions: set[str] = field(default_factory=set[str])
+    emulators: EmulatorsMetadataDict = field(default_factory=lambda: defaultdict(dict))
+
+
+type SystemsMetadataDict = dict[str, SystemMetadata]
+type SystemsMetadataMapping = Mapping[str, SystemMetadata]
 
 type EmulatorsBySystemDict = dict[str, dict[str, dict[str, EmulatorInfo]]]
 type EmulatorsBySystemMapping = Mapping[str, Mapping[str, Mapping[str, EmulatorInfo]]]
@@ -663,7 +654,7 @@ class Registry:
 
         return self._emulator_defs
 
-    def _iter_system_emulator_cores(self) -> Iterator[tuple[SystemInfo, str, EmulatorInfo, str]]:
+    def _iter_system_emulator_cores(self) -> Iterator[tuple[SystemInfo, str, EmulatorInfo, str, list[str]]]:
         for emulator in self.emulator_defs.values():
             if not emulator.cores and emulator.systems:
                 for system in emulator.systems.values():
@@ -672,42 +663,56 @@ class Registry:
 
                     emulator_name = system.as_emulator or emulator.name
                     core_names = system.as_core or [emulator_name]
+                    file_extensions = system.resolve_file_extensions(emulator)
 
                     for core_name in core_names:
-                        yield system, emulator_name, emulator, core_name
+                        yield system, emulator_name, emulator, core_name, file_extensions
             elif emulator.cores and not emulator.systems:
                 for core in emulator.cores.values():
                     for system in core.systems.values():
                         if system.disabled:
                             continue
 
-                        yield system, emulator.name, emulator, core.name
+                        yield (
+                            system,
+                            emulator.name,
+                            emulator,
+                            core.name,
+                            system.resolve_file_extensions(emulator, core),
+                        )
             elif emulator.cores and emulator.systems:
                 for system in emulator.systems.values():
                     if system.disabled:
                         continue
 
                     for core in emulator.cores.values():
-                        yield system, emulator.name, emulator, core.name
+                        yield (
+                            system,
+                            emulator.name,
+                            emulator,
+                            core.name,
+                            system.resolve_file_extensions(emulator, core),
+                        )
 
     @property
     def emulators_by_system(self) -> EmulatorsBySystemMapping:
         emulators_by_system: EmulatorsBySystemDict = defaultdict(lambda: defaultdict(dict))
 
-        for system, emulator_name, emulator, core_name in self._iter_system_emulator_cores():
+        for system, emulator_name, emulator, core_name, _ in self._iter_system_emulator_cores():
             emulators_by_system[system.name][emulator_name][core_name] = emulator
 
         return emulators_by_system
 
-    def get_systems_metadata(self, configgen_defaults: ConfiggenDefaults, /) -> SystemsMetadataMapping:
-        system_core_data: SystemsMetadataDict = defaultdict(lambda: defaultdict(dict))
+    def get_systems_metadata(self, defaults: Defaults, /) -> SystemsMetadataMapping:
+        system_core_data: SystemsMetadataDict = defaultdict(lambda: SystemMetadata())
 
-        for system, emulator_name, _, core_name in self._iter_system_emulator_cores():
-            system_core_data[system.name][emulator_name][core_name] = {
-                'incompatible_extensions': system.exclude_extensions or [],
-                'default': emulator_name == configgen_defaults.get(system.name, 'emulator')
-                and core_name == configgen_defaults.get(system.name, 'core'),
-            }
+        for system, emulator_name, _, core_name, file_extensions in self._iter_system_emulator_cores():
+            system_core_data[system.name].emulators[emulator_name][core_name] = CoreMetadata(
+                file_extensions=frozenset(file_extensions),
+                default=emulator_name == defaults.get(system.name, 'emulator')
+                and core_name == defaults.get(system.name, 'core'),
+            )
+            system_core_data[system.name].file_extensions.update(file_extensions)
 
         return system_core_data
 
@@ -783,16 +788,3 @@ class Registry:
         return cls.load_files(
             path_file.read_text().strip().split(), missing=missing, buildroot_mapping=buildroot_mapping
         )
-
-    @staticmethod
-    def register_files(dest: Path, files: list[Path], /) -> None:
-        registry = Registry.load_files(files)
-
-        dest.mkdir(parents=True, exist_ok=True)
-
-        for emulator in registry._emulators.values():
-            emulator.write(dest)
-
-        for emulator_cores in registry._cores.values():
-            for core in emulator_cores.values():
-                core.write(dest)

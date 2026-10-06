@@ -4,7 +4,7 @@
 #
 ################################################################################
 # Version.: Commits on Jul 6, 2026
-LIBRETRO_STELLA2014_VERSION = 4a7da82595d27b8df7af1ecb467a64b642a41bc9
+LIBRETRO_STELLA2014_VERSION = 7d1361e407e63f29e52892655069e5fb4096e691
 LIBRETRO_STELLA2014_SITE = $(call github,libretro,stella2014-libretro,$(LIBRETRO_STELLA2014_VERSION))
 LIBRETRO_STELLA2014_LICENSE = GPLv2
 LIBRETRO_STELLA2014_DEPENDENCIES += retroarch

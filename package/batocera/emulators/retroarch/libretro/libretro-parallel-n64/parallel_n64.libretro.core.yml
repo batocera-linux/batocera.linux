@@ -157,6 +157,17 @@ custom_features:
       140%: 140
       145%: 145
       150%: 150
-systems:
+file_extensions:
+  - z64
   - n64
-  - n64dd
+  - zip
+  - 7z
+systems:
+  - name: n64
+    file_extensions:
+      add:
+        - v64
+  - name: n64dd
+    file_extensions:
+      add:
+        - ndd

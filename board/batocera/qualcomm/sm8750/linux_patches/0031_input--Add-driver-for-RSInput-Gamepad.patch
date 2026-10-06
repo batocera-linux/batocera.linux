@@ -11,10 +11,10 @@ Subject: [PATCH] input: Add driver for RSInput Gamepad
  create mode 100644 drivers/input/joystick/rsinput.c
 
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 132a44428dcd..2a77296e1b85 100644
+index 7755e5b45..0da3c0f44 100644
 --- a/drivers/input/joystick/Kconfig
 +++ b/drivers/input/joystick/Kconfig
-@@ -387,6 +387,10 @@ config JOYSTICK_QWIIC
+@@ -383,6 +383,10 @@ config JOYSTICK_QWIIC
  	  To compile this driver as a module, choose M here: the
  	  module will be called qwiic-joystick.
  
@@ -26,10 +26,10 @@ index 132a44428dcd..2a77296e1b85 100644
  	tristate "FlySky FS-iA6B RC Receiver"
  	select SERIO
 diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index ccbed1bafbef..f848b82d99dc 100644
+index 9976f596a..3de503e29 100644
 --- a/drivers/input/joystick/Makefile
 +++ b/drivers/input/joystick/Makefile
-@@ -29,6 +29,7 @@ obj-$(CONFIG_JOYSTICK_RETROID)		+= retroid.o
+@@ -28,6 +28,7 @@ obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
  obj-$(CONFIG_JOYSTICK_PSXPAD_SPI)	+= psxpad-spi.o
  obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
  obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
@@ -39,7 +39,7 @@ index ccbed1bafbef..f848b82d99dc 100644
  obj-$(CONFIG_JOYSTICK_SIDEWINDER)	+= sidewinder.o
 diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
 new file mode 100644
-index 000000000000..913c499ad30a
+index 000000000..c9cbaf2cd
 --- /dev/null
 +++ b/drivers/input/joystick/rsinput.c
 @@ -0,0 +1,578 @@
@@ -621,7 +621,3 @@ index 000000000000..913c499ad30a
 +
 +MODULE_LICENSE("GPL");
 +MODULE_DESCRIPTION("RSInput Gamepad Driver");
-+MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
--- 
-2.52.0
-

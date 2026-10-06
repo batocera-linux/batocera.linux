@@ -1,0 +1,44 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] mmc: sunxi-mmc: Mask DATA0 when updating the clock on H616 eMMC
+
+The H616 eMMC controller has no configuration of its own and matches
+the A100 eMMC fallback, which leaves DATA0 unmasked while the clock is
+updated. Commit 16e821e3ba47 ("mmc: sunxi: Mask DATA0 when updating the
+clock") added the mask because without it subsequent commands time out,
+and the H616 SD controllers already set it. Allwinner's sun50iw9 BSP
+masks DATA0 on this controller as well.
+
+On the Anbernic RG34XX and RG35XX H this controller drives the second
+SD slot. After s2idle the card can hold DATA0 busy while the host
+restores its clock; the update times out with STAS 0x606 and the card
+is dropped.
+
+Give the H616 eMMC controller its own configuration with mask_data0.
+
+Assisted-by: Claude:claude-opus-5
+---
+--- a/drivers/mmc/host/sunxi-mmc.c
++++ b/drivers/mmc/host/sunxi-mmc.c
+@@ -1190,6 +1190,14 @@
+ 	.needs_new_timings = true,
+ };
+ 
++static const struct sunxi_mmc_cfg sun50i_h616_emmc_cfg = {
++	.idma_des_size_bits = 13,
++	.idma_des_shift = 2,
++	.can_calibrate = true,
++	.mask_data0 = true,
++	.needs_new_timings = true,
++};
++
+ static const struct sunxi_mmc_cfg sun50i_h616_cfg = {
+ 	.idma_des_size_bits = 16,
+ 	.idma_des_shift = 2,
+@@ -1218,6 +1226,7 @@
+ 	{ .compatible = "allwinner,sun50i-a100-mmc", .data = &sun20i_d1_cfg },
+ 	{ .compatible = "allwinner,sun50i-a100-emmc", .data = &sun50i_a100_emmc_cfg },
+ 	{ .compatible = "allwinner,sun50i-h616-mmc", .data = &sun50i_h616_cfg },
++	{ .compatible = "allwinner,sun50i-h616-emmc", .data = &sun50i_h616_emmc_cfg },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, sunxi_mmc_of_match);

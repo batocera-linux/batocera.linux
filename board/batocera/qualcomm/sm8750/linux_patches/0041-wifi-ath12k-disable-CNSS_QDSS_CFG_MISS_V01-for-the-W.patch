@@ -12,10 +12,10 @@ Signed-off-by: Gianni Spadoni <me@gio.blue>
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/net/wireless/ath/ath12k/wifi7/hw.c b/drivers/net/wireless/ath/ath12k/wifi7/hw.c
-index 1eebfbb5f7a7..89be65aa9d84 100644
+index 2218e4fa7..2cd8453c4 100644
 --- a/drivers/net/wireless/ath/ath12k/wifi7/hw.c
 +++ b/drivers/net/wireless/ath/ath12k/wifi7/hw.c
-@@ -721,8 +721,7 @@ static const struct ath12k_hw_params ath12k_wifi7_hw_params[] = {
+@@ -764,8 +764,7 @@ static const struct ath12k_hw_params ath12k_wifi7_hw_params[] = {
  
  		.wmi_init = ath12k_wifi7_wmi_init_wcn7850,
  
@@ -25,6 +25,3 @@ index 1eebfbb5f7a7..89be65aa9d84 100644
  					   BIT(CNSS_AUX_UC_SUPPORT_V01),
  
  		.rfkill_pin = 0,
--- 
-2.43.0
-

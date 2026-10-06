@@ -194,6 +194,11 @@ case "${ACTION}" in
     "getDisplayMode")
         echo "drm"
         ;;
+
+    "configureWindow")
+	# not needed on drm
+	;;
+
     *)
         f_usage
         ;;

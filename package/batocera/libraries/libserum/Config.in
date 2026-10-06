@@ -1,5 +1,6 @@
 config BR2_PACKAGE_LIBSERUM
     bool "libserum"
+    select BR2_PACKAGE_LIBFRAMEUTIL 
     help
       Cross platform dynamic library code for Serum file format.
       

@@ -16,8 +16,11 @@
 #
 
 import sys
+import errno
+import time
 import evdev
 from evdev import ecodes
+from evdev.uinput import UInputError
 import select
 import argparse
 
@@ -45,17 +48,110 @@ for (code, inf) in input.capabilities()[ecodes.EV_ABS]:
     if code != args.axis:
         evabs.append((code, inf))
 evabs.append((args.axis, evdev.AbsInfo(value=0, min=args.minimum, max=args.maximum, fuzz=0, flat=0, resolution=0)))
-target = evdev.UInput(name="virtual wheel", events={ ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys})
+events = { ecodes.EV_ABS: evabs, ecodes.EV_KEY: evkeys }
+uinput_args = {}
+# expose the wheel's force feedback so games see a haptic device, effects are forwarded to the wheel
+has_ff = ecodes.EV_FF in input.capabilities() and input.ff_effects_count > 0
+if has_ff:
+    events[ecodes.EV_FF] = input.capabilities()[ecodes.EV_FF]
+    uinput_args["max_effects"] = input.ff_effects_count
+target = evdev.UInput(name="virtual wheel", events=events, **uinput_args)
 print(target.device.path)
 sys.stdout.close() # to not block processes that tries to read the stdout
+
+# virtual effect id -> physical effect id
+effects = {}
+
+# uinput keeps pending ff requests in 16 slots, but queues their events in a 16 event ring that wraps when we fall behind
+UINPUT_NUM_REQUESTS = 16
+SWEEP_INTERVAL = 0.05
+last_sweep = 0.0
+
+def ff_error(e):
+    return -(e.errno or errno.EIO)
+
+def upload_effect(request_id):
+    try:
+        upload = target.begin_upload(request_id)
+    except (OSError, UInputError):
+        return False  # not a pending upload: already answered, or an erase
+    effect = upload.effect
+    virtual_id = effect.id
+    try:
+        # update the physical effect already backing this id, or create a new one
+        effect.id = effects.get(virtual_id, -1)
+        effects[virtual_id] = input.upload_effect(effect)
+        upload.retval = 0
+    except OSError as e:
+        upload.retval = ff_error(e)
+    effect.id = virtual_id
+    try:
+        target.end_upload(upload)
+    except (OSError, UInputError):
+        pass  # the request timed out meanwhile
+    return True
+
+def erase_effect(request_id):
+    try:
+        erase = target.begin_erase(request_id)
+    except (OSError, UInputError):
+        return False  # not a pending erase: already answered, or an upload
+    try:
+        if (physical_id := effects.pop(erase.effect_id, None)) is not None:
+            input.erase_effect(physical_id)
+        erase.retval = 0
+    except OSError as e:
+        erase.retval = ff_error(e)
+    try:
+        target.end_erase(erase)
+    except (OSError, UInputError):
+        pass  # the request timed out meanwhile
+    return True
+
+def sweep_requests():
+    # answer requests whose event was lost when the ring wrapped, or the game blocks 30s in the upload ioctl
+    for request_id in range(UINPUT_NUM_REQUESTS):
+        if not upload_effect(request_id):
+            erase_effect(request_id)
+
+def forward_ff():
+    try:
+        requests = list(target.read())
+    except BlockingIOError:
+        return  # poll woke up but the requests were already consumed
+    for event in requests:
+        if event.type == ecodes.EV_UINPUT:
+            if event.code == ecodes.UI_FF_UPLOAD:
+                upload_effect(event.value)
+            elif event.code == ecodes.UI_FF_ERASE:
+                erase_effect(event.value)
+        elif event.type == ecodes.EV_FF:
+            # gain and autocenter are device wide, any other code plays or stops an effect
+            code = event.code if event.code in (ecodes.FF_GAIN, ecodes.FF_AUTOCENTER) else effects.get(event.code)
+            if code is not None:
+                try:
+                    input.write(ecodes.EV_FF, code, event.value)
+                except OSError:
+                    pass  # a failed effect must not stop steering
 
 # duplicate events
 poll = select.poll()
 poll.register(input.fd, select.POLLIN)
+if has_ff:
+    poll.register(target.fd, select.POLLIN)
 try:
     while True:
-        if poll.poll(1000):
-            for event in input.read():
+        # handle ff requests first, the game waits on them
+        ready = sorted(poll.poll(int(SWEEP_INTERVAL * 1000) if has_ff else 1000), key=lambda item: item[0] != target.fd)
+        for (fd, _) in ready:
+            if fd == target.fd:
+                forward_ff()
+                continue
+            try:
+                wheel_events = list(input.read())
+            except BlockingIOError:
+                continue
+            for event in wheel_events:
                 if event.type == ecodes.EV_ABS and event.code == args.axis:
                     if event.value >= -mimidzone and event.value <= mimidzone:
                         target.write(event.type, event.code, event.value)
@@ -67,6 +163,9 @@ try:
                                 target.write(event.type, event.code, event.value - mideadzone + mimidzone)
                 else:
                     target.write(event.type, event.code, event.value)
+        if has_ff and (now := time.monotonic()) - last_sweep >= SWEEP_INTERVAL:
+            last_sweep = now
+            sweep_requests()
 
 except KeyboardInterrupt:
     poll.unregister(input.fd)

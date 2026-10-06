@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -13,5 +14,7 @@ shared_features:
   - bezel.tattoo_file
   - bezel.resize_tattoo
   - use_guns
+file_extensions:
+  - pygame
 systems:
   - pygame

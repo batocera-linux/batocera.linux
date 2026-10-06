@@ -92,15 +92,15 @@ index c298dd1..e6d71f4 100644
    return fmt::format(std::locale{""}, "{:%x %X}", *local_time);
  }
  
--static std::string MakeStateFilename(int number)
+-static std::string MakeStateFilename(u32 number)
 -{
 -  return fmt::format("{}{}.s{:02d}", File::GetUserPath(D_STATESAVES_IDX),
 -                     SConfig::GetInstance().GetGameID(), number);
 -}
-+static std::string MakeStateFilename(bool useId, int number);
-+static std::string MakeStateFilename_partdirectory(int number);
-+static std::string MakeStateFilename_partfileName(int number);
-+static std::string MakeStateFilename_partfileID(int number);
++static std::string MakeStateFilename(bool useId, u32 number);
++static std::string MakeStateFilename_partdirectory(u32 number);
++static std::string MakeStateFilename_partfileName(u32 number);
++static std::string MakeStateFilename_partfileID(u32 number);
  
  static std::vector<SlotWithTimestamp> GetUsedSlotsWithTimestamp()
  {
@@ -135,7 +135,7 @@ index c298dd1..e6d71f4 100644
    s_flush_unsaved_data_hook.reset();
  }
  
-+static std::string MakeStateFilename(bool useId, int number)
++static std::string MakeStateFilename(bool useId, u32 number)
 +{
 +  std::string filePartName = MakeStateFilename_partfileName(number);
 +  std::string fileWithName = fmt::format("{}{}", MakeStateFilename_partdirectory(number), filePartName);
@@ -148,24 +148,24 @@ index c298dd1..e6d71f4 100644
 +  return fileWithName;
 +}
 +
-+static std::string MakeStateFilename_partdirectory(int number)
++static std::string MakeStateFilename_partdirectory(u32 number)
 +{
 +  return File::GetUserPath(D_STATESAVES_IDX);
 +}
 +
-+static std::string MakeStateFilename_partfileID(int number)
++static std::string MakeStateFilename_partfileID(u32 number)
 +{
 +  return fmt::format("{}.s{:02d}", SConfig::GetInstance().GetGameID(), number);
 +}
 +
-+static std::string MakeStateFilename_partfileName(int number)
++static std::string MakeStateFilename_partfileName(u32 number)
 +{
 +  std::string basesavestate = SConfig::GetInstance().GetBaseSaveState();
 +  if(basesavestate == "") return "";
 +  return fmt::format("{}.s{:02d}", basesavestate, number);
 +}
 +
- void Save(Core::System& system, int slot)
+ void Save(Core::System& system, u32 slot)
  {
 -  SaveAs(system, MakeStateFilename(slot));
 +  std::string savePath = MakeStateFilename(false, slot);
@@ -173,7 +173,7 @@ index c298dd1..e6d71f4 100644
 +  Core::SaveScreenShotWithPath(MakeStateFilename_partdirectory(slot), PathToFileName(savePath));
  }
  
- void Load(Core::System& system, int slot)
+ void Load(Core::System& system, u32 slot)
  {
 -  LoadAs(system, MakeStateFilename(slot));
 +  LoadAs(system, MakeStateFilename(true, slot));

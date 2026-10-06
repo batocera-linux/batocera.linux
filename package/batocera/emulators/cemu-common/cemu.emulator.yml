@@ -1,5 +1,6 @@
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -141,5 +142,13 @@ custom_features:
     choices:
       Disabled: false
       Enabled: true
+file_extensions:
+  - wua
+  - wup
+  - wud
+  - wux
+  - rpx
+  - squashfs
+  - wuhb
 systems:
   - wiiu

@@ -11,30 +11,30 @@
  #if C_SET_PRIORITY
 --- a/src/misc/cross.cpp	2020-11-04 16:21:48.281934402 +0100
 +++ b/src/misc/cross.cpp	2020-11-04 16:24:17.576770566 +0100
-@@ -105,7 +105,7 @@
- #elif !defined(HX_DOS)
- 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
- 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
--	in = conf_home + "/dosbox-x";
-+	in = conf_home + "/dosbox";
- 	ResolveHomedir(in);
+@@ -194,7 +194,7 @@
+         ? xdg_conf_home
+         : "~/.config";
+
+-    dir = conf_home + "/dosbox-x";
++    dir = conf_home + "/dosbox";
+     ResolveHomedir(dir);
  #endif
- 	//LOG_MSG("Config dir: %s", in.c_str());
-@@ -118,7 +118,7 @@
- #elif defined(MACOSX)
- #define DEFAULT_CONFIG_FILE "DOSBox-X " VERSION " Preferences"
- #else /*linux freebsd*/
+
+@@ -216,7 +216,7 @@
+ #elif defined(OS2) && defined(C_SDL2)
+ #define DEFAULT_CONFIG_FILE "dosbox-x-" PACKAGE_VERSION ".conf"
+ #else /* linux, freebsd */
 -#define DEFAULT_CONFIG_FILE "dosbox-x-" VERSION ".conf"
 +#define DEFAULT_CONFIG_FILE "dosboxx.conf"
  #endif
- 	in = DEFAULT_CONFIG_FILE;
- }
-@@ -142,7 +142,7 @@
- #elif !defined(HX_DOS)
- 	const char *xdg_conf_home = getenv("XDG_CONFIG_HOME");
- 	const std::string conf_home = xdg_conf_home && xdg_conf_home[0] == '/' ? xdg_conf_home: "~/.config";
--	in = conf_home + "/dosbox-x";
-+	in = conf_home + "/dosbox";
- 	ResolveHomedir(in);
- 	mkdir(in.c_str(),0700);
+
+     name = DEFAULT_CONFIG_FILE;
+@@ -250,7 +250,7 @@
+     const char* xdg_conf_home = getenv("XDG_CONFIG_HOME");
+     const std::string conf_home =
+         (xdg_conf_home && xdg_conf_home[0] == '/') ? xdg_conf_home : "~/.config";
+-    path = conf_home + "/dosbox-x";
++    path = conf_home + "/dosbox";
+     ResolveHomedir(path);
+     mkdir(path.c_str(), 0700);
  #endif

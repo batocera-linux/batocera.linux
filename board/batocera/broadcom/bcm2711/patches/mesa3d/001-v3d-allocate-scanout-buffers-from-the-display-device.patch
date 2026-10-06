@@ -1,0 +1,214 @@
+From c1f1c6925073c3945d802d5f998d928e30b661d7 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Sat, 19 Sep 2026 22:18:07 +1000
+Subject: [PATCH] v3d: allocate scanout buffers from the display device on the
+ render node
+
+When v3d is opened on the render node, as Wayland and X11 clients do,
+PIPE_BIND_SCANOUT buffers were plain shmem BOs. vc4 cannot import those
+for scanout (they are not physically contiguous), so wlroots compositors
+fail direct scanout on every frame and fall back to compositing, which on
+v3d also means a TFU shadow copy of the linear client buffer.
+
+Allocate linear scanout buffers as dumb buffers on the vc4 KMS device and
+import them into v3d, as v3dv already does for its WSI images and kmsro
+does for screens created on the display fd.
+
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10306
+---
+ src/gallium/drivers/v3d/v3d_resource.c | 48 ++++++++++++++++++++++
+ src/gallium/drivers/v3d/v3d_screen.c   | 56 ++++++++++++++++++++++++++
+ src/gallium/drivers/v3d/v3d_screen.h   |  9 +++++
+ 3 files changed, 113 insertions(+)
+
+diff --git a/src/gallium/drivers/v3d/v3d_resource.c b/src/gallium/drivers/v3d/v3d_resource.c
+index 33df0d0..380227e 100644
+--- a/src/gallium/drivers/v3d/v3d_resource.c
++++ b/src/gallium/drivers/v3d/v3d_resource.c
+@@ -33,6 +33,9 @@
+ #include "util/u_upload_mgr.h"
+ #include "util/format/u_format_zs.h"
+ #include "util/u_drm.h"
++#include <fcntl.h>
++#include <unistd.h>
++#include <xf86drm.h>
+ 
+ #include "drm-uapi/drm_fourcc.h"
+ #include "v3d_screen.h"
+@@ -123,6 +126,48 @@ v3d_resource_bo_alloc(struct v3d_resource *rsc)
+         }
+ }
+ 
++/* Allocates a linear buffer from the KMS device so the display can scan it
++ * out directly: v3d BOs are not physically contiguous and cannot be imported
++ * by vc4.
++ */
++static bool
++v3d_resource_bo_alloc_display(struct v3d_resource *rsc)
++{
++        struct v3d_screen *screen = v3d_screen(rsc->base.screen);
++        int display_fd = v3d_screen_get_display_fd(screen);
++        if (display_fd < 0)
++                return false;
++
++        struct drm_mode_create_dumb create_dumb = {
++                .width = 1024, /* one page */
++                .height = align(rsc->size + V3D_TFU_READAHEAD_SIZE, 4096) / 4096,
++                .bpp = 32,
++        };
++        if (drmIoctl(display_fd, DRM_IOCTL_MODE_CREATE_DUMB, &create_dumb))
++                return false;
++
++        int fd;
++        int ret = drmPrimeHandleToFD(display_fd, create_dumb.handle,
++                                     DRM_CLOEXEC | DRM_RDWR, &fd);
++
++        /* The dmabuf keeps the buffer alive for as long as v3d holds it. */
++        struct drm_mode_destroy_dumb destroy_dumb = {
++                .handle = create_dumb.handle,
++        };
++        drmIoctl(display_fd, DRM_IOCTL_MODE_DESTROY_DUMB, &destroy_dumb);
++
++        if (ret)
++                return false;
++
++        rsc->bo = v3d_bo_open_dmabuf(screen, fd);
++        close(fd);
++        if (!rsc->bo)
++                return false;
++
++        v3d_debug_resource_layout(rsc, "display");
++        return true;
++}
++
+ static void
+ v3d_resource_transfer_unmap(struct pipe_context *pctx,
+                             struct pipe_transfer *ptrans)
+@@ -898,6 +943,9 @@ v3d_resource_create_with_modifiers(struct pipe_screen *pscreen,
+                 v3d_debug_resource_layout(rsc, "renderonly");
+ 
+                 return prsc;
++        } else if ((tmpl->bind & PIPE_BIND_SCANOUT) && !rsc->tiled &&
++                   v3d_resource_bo_alloc_display(rsc)) {
++                return prsc;
+         } else {
+                 if (!v3d_resource_bo_alloc(rsc))
+                         goto fail;
+diff --git a/src/gallium/drivers/v3d/v3d_screen.c b/src/gallium/drivers/v3d/v3d_screen.c
+index 3a09b05..23d948d 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.c
++++ b/src/gallium/drivers/v3d/v3d_screen.c
+@@ -39,6 +39,8 @@
+ #include "util/ralloc.h"
+ #include "util/xmlconfig.h"
+ 
++#include <fcntl.h>
++#include <unistd.h>
+ #include <xf86drm.h>
+ #include "v3d_screen.h"
+ #include "v3d_context.h"
+@@ -82,6 +84,9 @@ v3d_screen_destroy(struct pipe_screen *pscreen)
+         slab_destroy_parent(&screen->transfer_pool);
+         if (screen->ro)
+                 screen->ro->destroy(screen->ro);
++        if (screen->display_fd >= 0)
++                close(screen->display_fd);
++        mtx_destroy(&screen->display_fd_lock);
+ 
+ #if USE_V3D_SIMULATOR
+         v3d_simulator_destroy(screen->sim_file);
+@@ -772,6 +777,55 @@ v3d_screen_get_fd(struct pipe_screen *pscreen)
+         return screen->fd;
+ }
+ 
++static int
++v3d_open_display_device(void)
++{
++        drmDevicePtr devices[8];
++        int count = drmGetDevices2(0, devices, ARRAY_SIZE(devices));
++        int fd = -1;
++
++        for (int i = 0; i < count && fd < 0; i++) {
++                if (!(devices[i]->available_nodes & (1 << DRM_NODE_PRIMARY)) ||
++                    (devices[i]->available_nodes & (1 << DRM_NODE_RENDER)))
++                        continue;
++
++                fd = open(devices[i]->nodes[DRM_NODE_PRIMARY], O_RDWR | O_CLOEXEC);
++                if (fd < 0)
++                        continue;
++
++                drmVersionPtr version = drmGetVersion(fd);
++                bool is_vc4 = version && strcmp(version->name, "vc4") == 0;
++                drmFreeVersion(version);
++                if (!is_vc4) {
++                        close(fd);
++                        fd = -1;
++                }
++        }
++
++        if (count > 0)
++                drmFreeDevices(devices, count);
++
++        return fd;
++}
++
++int
++v3d_screen_get_display_fd(struct v3d_screen *screen)
++{
++#if USE_V3D_SIMULATOR
++        return -1;
++#else
++        mtx_lock(&screen->display_fd_lock);
++        if (!screen->display_fd_probed) {
++                screen->display_fd_probed = true;
++                if (!screen->ro)
++                        screen->display_fd = v3d_open_display_device();
++        }
++        mtx_unlock(&screen->display_fd_lock);
++
++        return screen->display_fd;
++#endif
++}
++
+ struct pipe_screen *
+ v3d_screen_create(int fd, const struct pipe_screen_config *config,
+                   struct renderonly *ro)
+@@ -789,6 +843,8 @@ v3d_screen_create(int fd, const struct pipe_screen_config *config,
+ 
+         screen->fd = fd;
+         screen->ro = ro;
++        screen->display_fd = -1;
++        (void)mtx_init(&screen->display_fd_lock, mtx_plain);
+ 
+         list_inithead(&screen->bo_cache.time_list);
+         (void)mtx_init(&screen->bo_handles_mutex, mtx_plain);
+diff --git a/src/gallium/drivers/v3d/v3d_screen.h b/src/gallium/drivers/v3d/v3d_screen.h
+index 4f6a7d1..5cf73b1 100644
+--- a/src/gallium/drivers/v3d/v3d_screen.h
++++ b/src/gallium/drivers/v3d/v3d_screen.h
+@@ -55,6 +55,13 @@ struct v3d_screen {
+         struct renderonly *ro;
+         int fd;
+ 
++        /* KMS device that SCANOUT buffers are allocated from when the screen
++         * was opened on the render node rather than through kmsro.
++         */
++        int display_fd;
++        bool display_fd_probed;
++        mtx_t display_fd_lock;
++
+         struct v3d_device_info devinfo;
+ 
+         const char *name;
+@@ -112,6 +119,8 @@ struct pipe_screen *v3d_screen_create(int fd,
+ 
+ const char *v3d_screen_get_name(struct pipe_screen *pscreen);
+ 
++int v3d_screen_get_display_fd(struct v3d_screen *screen);
++
+ void
+ v3d_fence_screen_init(struct v3d_screen *screen);
+ 
+-- 
+2.55.0
+

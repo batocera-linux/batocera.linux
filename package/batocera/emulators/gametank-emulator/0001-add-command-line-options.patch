@@ -1,0 +1,109 @@
+From fb5c2a619004a9c2fda6dbbf9939f2842e91c286 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Thu, 17 Sep 2026 17:56:46 +1000
+Subject: [PATCH] Add command line options for fullscreen, palette, instant
+ blits and paddle
+
+The emulator only exposes these through its ImGui menu, which is not
+reachable from a batocera front end launch.
+---
+ src/emulator_config.cpp | 36 ++++++++++++++++++++++++++++++++++++
+ src/emulator_config.h   |  3 +++
+ src/gte.cpp             |  5 ++++-
+ 3 files changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/src/emulator_config.cpp b/src/emulator_config.cpp
+index 21d83f7..affb9ae 100644
+--- a/src/emulator_config.cpp
++++ b/src/emulator_config.cpp
+@@ -1,12 +1,16 @@
+ #include <cstring>
+ #include <cstdio>
+ #include "emulator_config.h"
++#include "palette.h"
+ 
+ bool EmulatorConfig::noSound = false;
+ bool EmulatorConfig::noJoystick = false;
+ bool EmulatorConfig::noSave = false;
+ Uint32 EmulatorConfig::defaultRendererFlags = SDL_RENDERER_ACCELERATED;
+ char *EmulatorConfig::xorFile = NULL;
++bool EmulatorConfig::fullScreen = false;
++bool EmulatorConfig::instantBlits = false;
++bool EmulatorConfig::paddleMode = false;
+ 
+ void EmulatorConfig::parseArg(const char* arg) {
+     if(strcmp(arg, "--nosound") == 0) {
+@@ -24,6 +28,38 @@ void EmulatorConfig::parseArg(const char* arg) {
+         return;
+     }
+ 
++    if(strcmp(arg, "--fullscreen") == 0) {
++        fullScreen = true;
++        return;
++    }
++
++    if(strcmp(arg, "--instantblits") == 0) {
++        instantBlits = true;
++        return;
++    }
++
++    if(strcmp(arg, "--paddle") == 0) {
++        paddleMode = true;
++        return;
++    }
++
++    const char *palettePrefix = "--palette=";
++    if(strncmp(arg, palettePrefix, strlen(palettePrefix)) == 0) {
++        const char *name = arg + strlen(palettePrefix);
++        if(strcmp(name, "capture") == 0) {
++            palette_select = PALETTE_SELECT_CAPTURE;
++        } else if(strcmp(name, "contrast") == 0) {
++            palette_select = PALETTE_SELECT_SCALED;
++        } else if(strcmp(name, "hdmi") == 0) {
++            palette_select = PALETTE_SELECT_HDMI;
++        } else if(strcmp(name, "legacy") == 0) {
++            palette_select = PALETTE_SELECT_OLD;
++        } else {
++            printf("Unrecognized palette %s\n", name);
++        }
++        return;
++    }
++
+     const char *xorFilePrefix = "--xorFile=";
+     if(strncmp(arg, xorFilePrefix, strlen(xorFilePrefix)) == 0) {
+       // TODO memory allocated here, need to clean up
+diff --git a/src/emulator_config.h b/src/emulator_config.h
+index c67221e..724fabc 100644
+--- a/src/emulator_config.h
++++ b/src/emulator_config.h
+@@ -9,4 +9,7 @@ public:
+     static Uint32 defaultRendererFlags;
+     static bool noSave;
+     static char *xorFile;
++    static bool fullScreen;
++    static bool instantBlits;
++    static bool paddleMode;
+ };
+diff --git a/src/gte.cpp b/src/gte.cpp
+index 11e38b0..9986c17 100644
+--- a/src/gte.cpp
++++ b/src/gte.cpp
+@@ -1551,6 +1551,8 @@ int main(int argC, char* argV[]) {
+ 	cpu_core->Reset();
+ 	cartridge_state.write_mode = false;
+ 	blitter = new Blitter(cpu_core, &timekeeper, &system_state, vRAM_Surface);
++	blitter->instant_mode = EmulatorConfig::instantBlits;
++	paddle_emulation_enabled = EmulatorConfig::paddleMode;
+ 	randomize_memory();
+ 	
+ 	SDL_Init(SDL_INIT_VIDEO);
+@@ -1565,7 +1567,8 @@ int main(int argC, char* argV[]) {
+ 	SDL_SetColorKey(vRAM_Surface, SDL_FALSE, 0);
+ 	SDL_SetColorKey(gRAM_Surface, SDL_FALSE, 0);
+ 
+-	mainWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, viewport_width(display_scale), viewport_height(display_scale), SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
++	isFullScreen = EmulatorConfig::fullScreen;
++	mainWindow = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, viewport_width(display_scale), viewport_height(display_scale), SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | (isFullScreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0));
+ 	SDL_SetWindowMinimumSize(mainWindow, viewport_width(MIN_DISPLAY_SCALE), viewport_height(MIN_DISPLAY_SCALE));
+ 	mainRenderer = SDL_CreateRenderer(mainWindow, -1, EmulatorConfig::defaultRendererFlags);
+ 	framebufferTexture = SDL_CreateTexture(mainRenderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_STREAMING, GT_WIDTH, GT_HEIGHT * 2);

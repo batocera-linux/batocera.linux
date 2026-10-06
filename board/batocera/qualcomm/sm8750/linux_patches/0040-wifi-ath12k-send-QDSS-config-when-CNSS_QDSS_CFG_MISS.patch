@@ -19,10 +19,10 @@ Signed-off-by: Gianni Spadoni <me@gio.blue>
  3 files changed, 225 insertions(+)
 
 diff --git a/drivers/net/wireless/ath/ath12k/hw.h b/drivers/net/wireless/ath/ath12k/hw.h
-index a9888e0521a1..42999c1c8d84 100644
+index 8d2fa0bfb..278215c30 100644
 --- a/drivers/net/wireless/ath/ath12k/hw.h
 +++ b/drivers/net/wireless/ath/ath12k/hw.h
-@@ -78,6 +78,7 @@
+@@ -96,6 +96,7 @@ struct ieee80211_rx_status;
  #define ATH12K_DEFAULT_CAL_FILE		"caldata.bin"
  #define ATH12K_AMSS_FILE		"amss.bin"
  #define ATH12K_M3_FILE			"m3.bin"
@@ -31,7 +31,7 @@ index a9888e0521a1..42999c1c8d84 100644
  #define ATH12K_REGDB_FILE_NAME		"regdb.bin"
  
 diff --git a/drivers/net/wireless/ath/ath12k/qmi.c b/drivers/net/wireless/ath/ath12k/qmi.c
-index c11b84b56f8f..1a7263e71aa6 100644
+index fd762b5d7..49a65a44b 100644
 --- a/drivers/net/wireless/ath/ath12k/qmi.c
 +++ b/drivers/net/wireless/ath/ath12k/qmi.c
 @@ -1582,6 +1582,113 @@ static const struct qmi_elem_info qmi_wlanfw_bdf_download_resp_msg_v01_ei[] = {
@@ -259,10 +259,10 @@ index c11b84b56f8f..1a7263e71aa6 100644
  }
  
 diff --git a/drivers/net/wireless/ath/ath12k/qmi.h b/drivers/net/wireless/ath/ath12k/qmi.h
-index b5a4a01391cb..dee0b8f4e719 100644
+index 2a63e214e..6cb557746 100644
 --- a/drivers/net/wireless/ath/ath12k/qmi.h
 +++ b/drivers/net/wireless/ath/ath12k/qmi.h
-@@ -529,6 +529,27 @@ struct qmi_wlanfw_bdf_download_resp_msg_v01 {
+@@ -528,6 +528,27 @@ struct qmi_wlanfw_bdf_download_resp_msg_v01 {
  	struct qmi_response_type_v01 resp;
  };
  
@@ -290,6 +290,3 @@ index b5a4a01391cb..dee0b8f4e719 100644
  #define QMI_WLANFW_M3_INFO_REQ_MSG_V01_MAX_MSG_LEN	18
  #define QMI_WLANFW_M3_INFO_RESP_MSG_V01_MAX_MSG_LEN	7
  #define QMI_WLANFW_M3_INFO_RESP_V01		0x003C
--- 
-2.43.0
-

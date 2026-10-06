@@ -1,6 +1,7 @@
 config BR2_PACKAGE_GTK_LAYER_SHELL
 	bool "gtk-layer-shell"
-	select BR2_PACKAGE_LIBGTK3
+	depends on BR2_PACKAGE_LIBGTK3 # select creates a recursive dependancy
+	depends on BR2_PACKAGE_WAYLAND
 	help
 	  A library to create panels and other desktop components 
 	  for Wayland using the Layer Shell protocol.

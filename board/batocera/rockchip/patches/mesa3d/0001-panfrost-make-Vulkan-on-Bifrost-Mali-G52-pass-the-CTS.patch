@@ -1,0 +1,709 @@
+From ce81dbf2aa7b88c46ab12db7d8ef9b8a3ded88e1 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Wed, 30 Sep 2026 17:02:18 +1000
+Subject: [PATCH] panfrost: make Vulkan on Bifrost (Mali-G52) pass the CTS
+
+Running the full Vulkan CTS (vk-main) on a Mali-G52 r1 MC3 (RK3576,
+panfrost 1.6) without PANVK_DEBUG=sync, which is how applications use
+the driver but not how CI runs it, showed crashes, flakes and GPU faults,
+on top of the expected failures listed in panfrost-g52-fails.txt. This
+fixes all of them.
+
+JM backend (panvk/jm):
+
+- Report GPU job failures. The kernel flags the fence of a job that
+  faulted (-EINVAL) or was killed by the scheduler timeout (-ECANCELED),
+  but gpu_queue_check_status() always returned VK_SUCCESS, so a job
+  killed after panfrost's 500ms timeout silently returned garbage.
+  Track the fences of submitted jobs in a merged sync_file (under a
+  mutex, as check_status() runs from any waiting thread) and report
+  VK_ERROR_DEVICE_LOST when one failed. Failed submit/wait ioctls,
+  previously only caught by assert(), now mark the queue lost too.
+
+- QueueWaitIdle() asserted the queue was not in threaded submit mode,
+  which emulated timeline semaphores switch to, and returned early in
+  release builds. Fall back to vk_common_QueueWaitIdle() in that case.
+
+- Re-issuing an already issued batch reset its job headers on the CPU
+  without waiting for the previous issue, so submitting a command
+  buffer again while still pending zeroed job headers the GPU hadn't
+  run yet (DATA_INVALID_FAULT). Wait on queue->sync first.
+
+- Support queue global priorities: create a JM context for LOW/HIGH
+  queues, and stop filtering the priorities down to MEDIUM.
+
+- Bifrost's rectangular line rasterization drops 1px lines lying
+  exactly on a pixel boundary for some viewport sizes (e.g. x = 129.0
+  in a 258x258 viewport), while it otherwise picks the left/top
+  column/row. Move single-sampled non-Bresenham lines up-left by one
+  subpixel, within the rounding allowed when snapping to the subpixel
+  grid.
+
+- Give each VkDevice its own DRM file. A dup()ed fd shares the DRM
+  file, and panfrost has one GPU address space per file, so all devices
+  shared ~4GB of VA and creating many of them failed with ENOSPC.
+
+PanVK on Bifrost:
+
+- textureQueryLod() returned the level rounded to the nearest integer,
+  which is only right for nearest mipmap filtering. Recompute it from
+  the unclamped LOD and the sampler descriptor, like Valhall does.
+
+Bifrost compiler (pan/bi):
+
+- The scheduler lowers ATOM_RETURN.i32/i64 to *ATOM_C + +ATOM_CX, but
+  bi_count_read_registers() counted ATOM_CX as reading all its staging
+  registers while the pseudo-instruction reads half of them. The
+  post-scheduling liveness then kept a dead register write the
+  scheduler had not accounted for, putting two writes in the last tuple
+  of a clause: "bi_pack_registers: Assertion `!(mode & 0x8)' failed" in
+  robustness.image_robustness.*r32i*cube*. Keep the atomic opcode on
+  ATOM_CX and count it like the pseudo-instruction.
+
+With these, v7 (G31/G51/G52/G76) no longer requires
+PAN_I_WANT_A_BROKEN_VULKAN_DRIVER (v6 and v14 still do).
+
+Batocera backport to Mesa 26.2.3 of the upstream-main change, with the
+src/panfrost/ci changes dropped. The full-CTS results were obtained on
+Mesa main (Vulkan 1.3 on Bifrost). 26.2.3 hard-codes Vulkan 1.0 below
+v10; v7 now reports 1.2, whose required features it already exposes
+(1.3 needs maintenance4 and subgroup_size_control). Not CTS-validated
+on 26.2.3.
+---
+ .../compiler/bifrost/bifrost/bi_schedule.c    |   4 +
+ src/panfrost/compiler/bifrost/bir.c           |   5 +
+ src/panfrost/vulkan/jm/panvk_queue.h          |  15 ++
+ src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c   | 181 ++++++++++++++++--
+ src/panfrost/vulkan/panvk_physical_device.c   |  10 +-
+ src/panfrost/vulkan/panvk_vX_cmd_draw.c       |  29 +++
+ src/panfrost/vulkan/panvk_vX_device.c         |  37 +++-
+ .../vulkan/panvk_vX_nir_lower_descriptors.c   |  61 ++++++
+ 8 files changed, 304 insertions(+), 38 deletions(-)
+
+diff --git a/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c b/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
+index c655956afae..62b96d2fd48 100644
+--- a/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
++++ b/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
+@@ -349,6 +349,8 @@ bi_lower_atom_c(bi_context *ctx, struct bi_clause_state *clause,
+    bi_instr *atom_cx =
+       bi_atom_cx_to(&b, pinstr->dest[0], pinstr->src[0], pinstr->src[1],
+                     pinstr->src[2], pinstr->src[0], pinstr->sr_count);
++   /* Not encoded, but needed to count the staging registers read */
++   atom_cx->atom_opc = pinstr->atom_opc;
+    tuple->add = atom_cx;
+    bi_remove_instruction(pinstr);
+ 
+@@ -391,6 +393,8 @@ bi_lower_atom_c_64(bi_context *ctx, struct bi_clause_state *clause,
+    bi_instr *atom_cx =
+       bi_atom_cx_to(&b, pinstr->dest[0], pinstr->src[0], pinstr->src[1],
+                     pinstr->src[2], pinstr->src[0], pinstr->sr_count);
++   /* Not encoded, but needed to count the staging registers read */
++   atom_cx->atom_opc = pinstr->atom_opc;
+    tuple->add = atom_cx;
+    bi_remove_instruction(pinstr);
+ 
+diff --git a/src/panfrost/compiler/bifrost/bir.c b/src/panfrost/compiler/bifrost/bir.c
+index 8da950f32ae..e3f9760cdd7 100644
+--- a/src/panfrost/compiler/bifrost/bir.c
++++ b/src/panfrost/compiler/bifrost/bir.c
+@@ -71,6 +71,11 @@ bi_count_read_registers(const bi_instr *ins, unsigned s)
+       return (ins->atom_opc == BI_ATOM_OPC_ACMPXCHG) ? 2 : 1;
+    else if (s == 0 && ins->op == BI_OPCODE_ATOM_RETURN_I64)
+       return (ins->atom_opc == BI_ATOM_OPC_ACMPXCHG) ? 4 : 2;
++   /* Same for the +ATOM_CX the scheduler lowers them to, which keeps their
++    * staging count and atomic opcode */
++   else if (s == 0 && ins->op == BI_OPCODE_ATOM_CX)
++      return (ins->atom_opc == BI_ATOM_OPC_ACMPXCHG) ? ins->sr_count
++                                                     : ins->sr_count / 2;
+    else if (s == 0 && bi_get_opcode_props(ins)->sr_read)
+       return bi_count_staging_registers(ins);
+    else if (s == 4 && ins->op == BI_OPCODE_BLEND)
+diff --git a/src/panfrost/vulkan/jm/panvk_queue.h b/src/panfrost/vulkan/jm/panvk_queue.h
+index 89b63a2bc74..fd1b8a28423 100644
+--- a/src/panfrost/vulkan/jm/panvk_queue.h
++++ b/src/panfrost/vulkan/jm/panvk_queue.h
+@@ -14,11 +14,26 @@
+ 
+ #include "panvk_device.h"
+ 
++#include "util/simple_mtx.h"
++
+ #include "vk_queue.h"
+ 
+ struct panvk_gpu_queue {
+    struct vk_queue vk;
+    uint32_t sync;
++
++   /* Kernel JM context carrying the queue priority, 0 for the default
++    * (medium priority) context. */
++   uint32_t jm_ctx;
++
++   /* Merged sync_file of the jobs submitted since we last saw them all
++    * signaled. The kernel flags the fence of a job that faulted or got
++    * killed by the scheduler timeout with an error, which is how we detect
++    * device loss on JM. -1 when there's nothing to track. Protected by
++    * pending_jobs_lock since check_status() can run from any thread
++    * waiting on a fence, concurrently with submits. */
++   int pending_jobs_fd;
++   simple_mtx_t pending_jobs_lock;
+ };
+ 
+ VK_DEFINE_HANDLE_CASTS(panvk_gpu_queue, vk.base, VkQueue, VK_OBJECT_TYPE_QUEUE)
+diff --git a/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c b/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
+index bc1bc0fcc75..7085ab8010e 100644
+--- a/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
++++ b/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
+@@ -24,12 +24,78 @@
+ #include "panvk_priv_bo.h"
+ #include "panvk_queue.h"
+ 
++#include "vk_common_entrypoints.h"
+ #include "vk_drm_syncobj.h"
+ #include "vk_framebuffer.h"
+ 
+ #include "drm-uapi/panfrost_drm.h"
+ 
+-static void
++#include "util/libsync.h"
++
++/* Report a job the kernel flagged as failed (fault or scheduler timeout), and
++ * stop tracking the jobs once they have all signaled. */
++static VkResult
++panvk_queue_poll_job_errors_locked(struct panvk_gpu_queue *queue)
++{
++   simple_mtx_assert_locked(&queue->pending_jobs_lock);
++
++   if (queue->pending_jobs_fd < 0)
++      return VK_SUCCESS;
++
++   struct sync_file_info info = {0};
++   if (ioctl(queue->pending_jobs_fd, SYNC_IOC_FILE_INFO, &info))
++      return vk_queue_set_lost(&queue->vk, "SYNC_IOC_FILE_INFO failed: %m");
++
++   if (info.status < 0) {
++      close(queue->pending_jobs_fd);
++      queue->pending_jobs_fd = -1;
++      return vk_queue_set_lost(&queue->vk, "GPU job failed: %s",
++                               strerror(-info.status));
++   }
++
++   if (info.status == 1) {
++      close(queue->pending_jobs_fd);
++      queue->pending_jobs_fd = -1;
++   }
++
++   return VK_SUCCESS;
++}
++
++static VkResult
++panvk_queue_poll_job_errors(struct panvk_gpu_queue *queue)
++{
++   simple_mtx_lock(&queue->pending_jobs_lock);
++   VkResult result = panvk_queue_poll_job_errors_locked(queue);
++   simple_mtx_unlock(&queue->pending_jobs_lock);
++
++   return result;
++}
++
++/* Add the job we just submitted, whose fence is now in queue->sync, to the
++ * set of jobs we check for errors. */
++static VkResult
++panvk_queue_track_job(struct panvk_gpu_queue *queue)
++{
++   struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
++
++   int fd = -1;
++   if (drmSyncobjExportSyncFile(dev->drm_fd, queue->sync, &fd))
++      return vk_queue_set_lost(&queue->vk, "sync file export failed: %m");
++
++   simple_mtx_lock(&queue->pending_jobs_lock);
++
++   VkResult result = panvk_queue_poll_job_errors_locked(queue);
++   if (result == VK_SUCCESS &&
++       sync_accumulate("panvk", &queue->pending_jobs_fd, fd))
++      result = vk_queue_set_lost(&queue->vk, "sync file merge failed: %m");
++
++   simple_mtx_unlock(&queue->pending_jobs_lock);
++   close(fd);
++
++   return result;
++}
++
++static VkResult
+ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+                          struct panvk_cmd_buffer *cmdbuf,
+                          struct panvk_batch *batch, uint32_t *bos,
+@@ -39,10 +105,21 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+    struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
+    struct panvk_physical_device *phys_dev =
+       to_panvk_physical_device(dev->vk.physical);
+-   ASSERTED int ret;
++   int ret;
+ 
+    /* Reset the batch if it's already been issued */
+    if (batch->issued) {
++      /* The job headers and tiler descriptors are rewritten in place, so the
++       * previous issue of this batch must be done with them. It might still
++       * be queued if the command buffer is submitted more than once
++       * (VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, or several times in
++       * the same vkQueueSubmit). All submits are ordered on queue->sync,
++       * which is the only GPU queue on JM, so waiting for it is enough. */
++      ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1, INT64_MAX,
++                           DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
++      if (ret)
++         return vk_queue_set_lost(&queue->vk, "syncobj wait failed: %m");
++
+       util_dynarray_foreach(&batch->jobs, void *, job)
+          memset((*job), 0, 4 * 4);
+ 
+@@ -74,10 +151,16 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+          .in_sync_count = nr_in_fences,
+          .out_sync = queue->sync,
+          .jc = batch->vtc_jc.first_job,
++         .jm_ctx_handle = queue->jm_ctx,
+       };
+ 
+       ret = pan_kmod_ioctl(dev->drm_fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
+-      assert(!ret);
++      if (ret)
++         return vk_queue_set_lost(&queue->vk, "PANFROST_SUBMIT failed: %m");
++
++      VkResult result = panvk_queue_track_job(queue);
++      if (result != VK_SUCCESS)
++         return result;
+ 
+       if (PANVK_DEBUG(TRACE) || PANVK_DEBUG(SYNC)) {
+          ret = drmSyncobjWait(dev->drm_fd, &submit.out_sync, 1, INT64_MAX, 0,
+@@ -110,6 +193,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+          .out_sync = queue->sync,
+          .jc = batch->frag_jc.first_job,
+          .requirements = PANFROST_JD_REQ_FS,
++         .jm_ctx_handle = queue->jm_ctx,
+       };
+ 
+       if (batch->vtc_jc.first_job) {
+@@ -121,7 +205,13 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+       }
+ 
+       ret = pan_kmod_ioctl(dev->drm_fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
+-      assert(!ret);
++      if (ret)
++         return vk_queue_set_lost(&queue->vk, "PANFROST_SUBMIT failed: %m");
++
++      VkResult result = panvk_queue_track_job(queue);
++      if (result != VK_SUCCESS)
++         return result;
++
+       if (PANVK_DEBUG(TRACE) || PANVK_DEBUG(SYNC)) {
+          ret = drmSyncobjWait(dev->drm_fd, &submit.out_sync, 1, INT64_MAX, 0,
+                               NULL);
+@@ -149,6 +239,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+       pandecode_next_frame(dev->debug.decode_ctx);
+ 
+    batch->issued = true;
++   return VK_SUCCESS;
+ }
+ 
+ static void
+@@ -304,8 +395,10 @@ panvk_per_arch(gpu_queue_submit)(struct vk_queue *vk_queue, struct vk_queue_subm
+ 
+          panvk_add_wait_event_syncobjs(batch, in_fences, &nr_in_fences);
+ 
+-         panvk_queue_submit_batch(queue, cmdbuf, batch, bos, nr_bos, in_fences,
+-                                  nr_in_fences);
++         VkResult result = panvk_queue_submit_batch(
++            queue, cmdbuf, batch, bos, nr_bos, in_fences, nr_in_fences);
++         if (result != VK_SUCCESS)
++            return result;
+ 
+          panvk_signal_event_syncobjs(queue, batch);
+       }
+@@ -329,16 +422,13 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
+                                  uint32_t queue_idx,
+                                  struct vk_queue **out_queue)
+ {
+-   ASSERTED const VkDeviceQueueGlobalPriorityCreateInfoKHR *priority_info =
++   const VkDeviceQueueGlobalPriorityCreateInfoKHR *priority_info =
+       vk_find_struct_const(create_info->pNext,
+                            DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_KHR);
+-   ASSERTED const VkQueueGlobalPriorityKHR priority =
++   const VkQueueGlobalPriorityKHR priority =
+       priority_info ? priority_info->globalPriority
+                     : VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_KHR;
+ 
+-   /* XXX: Panfrost kernel module doesn't support priorities so far */
+-   assert(priority == VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_KHR);
+-
+    struct panvk_gpu_queue *queue = vk_zalloc(&device->vk.alloc, sizeof(*queue), 8,
+                                          VK_SYSTEM_ALLOCATION_SCOPE_DEVICE);
+    if (!queue)
+@@ -356,10 +446,41 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
+       goto err_finish_queue;
+    }
+ 
++   /* The default context is medium priority, other priorities need a
++    * dedicated JM context. Only priorities the kernel allows are advertised. */
++   if (priority == VK_QUEUE_GLOBAL_PRIORITY_REALTIME_KHR) {
++      result = panvk_error(device, VK_ERROR_NOT_PERMITTED_KHR);
++      goto err_destroy_sync;
++   }
++
++   if (priority != VK_QUEUE_GLOBAL_PRIORITY_MEDIUM_KHR) {
++      struct drm_panfrost_jm_ctx_create ctx_create = {
++         .priority = priority == VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR
++                        ? PANFROST_JM_CTX_PRIORITY_LOW
++                        : PANFROST_JM_CTX_PRIORITY_HIGH,
++      };
++
++      ret = pan_kmod_ioctl(device->drm_fd, DRM_IOCTL_PANFROST_JM_CTX_CREATE,
++                           &ctx_create);
++      if (ret) {
++         result = panvk_error(device, errno == EPERM || errno == EACCES
++                                         ? VK_ERROR_NOT_PERMITTED_KHR
++                                         : VK_ERROR_INITIALIZATION_FAILED);
++         goto err_destroy_sync;
++      }
++
++      queue->jm_ctx = ctx_create.handle;
++   }
++
++   queue->pending_jobs_fd = -1;
++   simple_mtx_init(&queue->pending_jobs_lock, mtx_plain);
+    queue->vk.driver_submit = panvk_per_arch(gpu_queue_submit);
+    *out_queue = &queue->vk;
+    return VK_SUCCESS;
+ 
++err_destroy_sync:
++   drmSyncobjDestroy(device->drm_fd, queue->sync);
++
+ err_finish_queue:
+    vk_queue_finish(&queue->vk);
+ 
+@@ -374,6 +495,17 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
+    struct panvk_device *dev = to_panvk_device(vk_queue->base.device);
+ 
+    vk_queue_finish(&queue->vk);
++   if (queue->pending_jobs_fd >= 0)
++      close(queue->pending_jobs_fd);
++   simple_mtx_destroy(&queue->pending_jobs_lock);
++   if (queue->jm_ctx) {
++      struct drm_panfrost_jm_ctx_destroy ctx_destroy = {
++         .handle = queue->jm_ctx,
++      };
++
++      pan_kmod_ioctl(dev->drm_fd, DRM_IOCTL_PANFROST_JM_CTX_DESTROY,
++                     &ctx_destroy);
++   }
+    drmSyncobjDestroy(dev->drm_fd, queue->sync);
+    vk_free(&dev->vk.alloc, queue);
+ }
+@@ -381,7 +513,10 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
+ VkResult
+ panvk_per_arch(gpu_queue_check_status)(struct vk_queue *vk_queue)
+ {
+-   return VK_SUCCESS;
++   struct panvk_gpu_queue *queue =
++      container_of(vk_queue, struct panvk_gpu_queue, vk);
++
++   return panvk_queue_poll_job_errors(queue);
+ }
+ 
+ VKAPI_ATTR VkResult VKAPI_CALL
+@@ -390,8 +525,16 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
+    VK_FROM_HANDLE(panvk_gpu_queue, queue, _queue);
+    struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
+ 
+-   /* we need to use vk_common_QueueWaitIdle if we ever go threaded */
+-   assert(queue->vk.submit.mode != VK_QUEUE_SUBMIT_MODE_THREADED);
++   /* With threaded submission (e.g. wait-before-signal on emulated timeline
++    * semaphores), some submits may not have reached the kernel yet, so
++    * waiting on queue->sync isn't enough. */
++   if (queue->vk.submit.mode == VK_QUEUE_SUBMIT_MODE_THREADED) {
++      VkResult result = vk_common_QueueWaitIdle(_queue);
++      if (result != VK_SUCCESS)
++         return result;
++
++      return panvk_queue_poll_job_errors(queue);
++   }
+ 
+    if (vk_device_is_lost(&dev->vk)) {
+       /* Check printf buffer one more time before exiting */
+@@ -399,10 +542,10 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
+       return VK_ERROR_DEVICE_LOST;
+    }
+ 
+-   ASSERTED int ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1,
+-                                     INT64_MAX, DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL,
+-                                     NULL);
+-   assert(!ret);
++   int ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1, INT64_MAX,
++                            DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
++   if (ret)
++      return vk_queue_set_lost(&queue->vk, "syncobj wait failed: %m");
+ 
+-   return VK_SUCCESS;
++   return panvk_queue_poll_job_errors(queue);
+ }
+diff --git a/src/panfrost/vulkan/panvk_physical_device.c b/src/panfrost/vulkan/panvk_physical_device.c
+index 3f25829a86d..e49798b9b9f 100644
+--- a/src/panfrost/vulkan/panvk_physical_device.c
++++ b/src/panfrost/vulkan/panvk_physical_device.c
+@@ -401,7 +401,6 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+ 
+    switch (arch) {
+    case 6:
+-   case 7:
+    case 14:
+       if (!os_get_option("PAN_I_WANT_A_BROKEN_VULKAN_DRIVER")) {
+          result = panvk_errorf(instance, VK_ERROR_INCOMPATIBLE_DRIVER,
+@@ -412,6 +411,7 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+       }
+       break;
+ 
++   case 7:
+    case 10:
+    case 12:
+    case 13:
+@@ -510,7 +510,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
+                            uint32_t family_idx,
+                            VkQueueFamilyGlobalPriorityPropertiesKHR *prio)
+ {
+-   const unsigned arch = pan_arch(physical_device->kmod.dev->props.gpu_id);
+    uint32_t prio_idx = 0;
+ 
+    switch (family_idx) {
+@@ -518,13 +517,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
+       enum pan_kmod_group_allow_priority_flags prio_mask =
+          physical_device->kmod.dev->props.allowed_group_priorities_mask;
+ 
+-      /* Non-medium priority context is not hooked-up in the JM backend, even
+-       * though the panfrost kmod advertize it. Manually filter non-medium
+-       * priority for now.
+-       */
+-      if (arch < 10)
+-         prio_mask &= PAN_KMOD_GROUP_ALLOW_PRIORITY_MEDIUM;
+-
+       if (prio_mask & PAN_KMOD_GROUP_ALLOW_PRIORITY_LOW)
+          prio->priorities[prio_idx++] = VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR;
+       if (prio_mask & PAN_KMOD_GROUP_ALLOW_PRIORITY_MEDIUM)
+diff --git a/src/panfrost/vulkan/panvk_vX_cmd_draw.c b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
+index 11f03dd0d20..c1db888a496 100644
+--- a/src/panfrost/vulkan/panvk_vX_cmd_draw.c
++++ b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
+@@ -905,16 +905,45 @@ panvk_per_arch(cmd_prepare_draw_sysvals)(struct panvk_cmd_buffer *cmdbuf,
+        * oz = minDepth                    if negativeOneToOne is false
+        * oz = (maxDepth + minDepth) / 2   if negativeOneToOne is true
+        */
++#if PAN_ARCH >= 9
+       set_gfx_sysval(cmdbuf, dirty_sysvals, viewport.offset.x,
+                      (0.5f * viewport->width) + viewport->x);
+       set_gfx_sysval(cmdbuf, dirty_sysvals, viewport.offset.y,
+                      (0.5f * viewport->height) + viewport->y);
++#endif
+       set_gfx_sysval(cmdbuf, dirty_sysvals, viewport.offset.z,
+                      vp->depth_clip_negative_one_to_one ?
+                         0.5f * (z_min + z_max) : z_min);
+ 
+    }
+ 
++#if PAN_ARCH < 9
++   {
++      const struct vk_dynamic_graphics_state *dyns =
++         &cmdbuf->vk.dynamic_graphics_state;
++      const VkViewport *viewport = &dyns->vp.viewports[0];
++
++      /* Bifrost's rectangular line rasterization drops 1px lines lying exactly
++       * on a pixel boundary for some viewport sizes (both candidate columns
++       * are left out, e.g. a vertical line at x = 129.0 in a 258x258
++       * viewport), while it otherwise picks the left/top one. Move
++       * single-sampled non-Bresenham lines up-left by one subpixel (1/256 px),
++       * which is within the rounding allowed when snapping to the subpixel
++       * grid: lines never lie exactly on a boundary anymore, and the ones that
++       * did get the column/row the hardware would normally pick. */
++      const bool bias_lines =
++         u_reduced_prim(info->prim) == MESA_PRIM_LINES &&
++         dyns->rs.line.mode != VK_LINE_RASTERIZATION_MODE_BRESENHAM &&
++         dyns->ms.rasterization_samples <= 1;
++      const float bias = bias_lines ? -1.0f / 256.0f : 0.0f;
++
++      set_gfx_sysval(cmdbuf, dirty_sysvals, viewport.offset.x,
++                     (0.5f * viewport->width) + viewport->x + bias);
++      set_gfx_sysval(cmdbuf, dirty_sysvals, viewport.offset.y,
++                     (0.5f * viewport->height) + viewport->y + bias);
++   }
++#endif
++
+    if (dyn_gfx_state_dirty(cmdbuf, INPUT_ATTACHMENT_MAP))
+       prepare_iam_sysvals(cmdbuf, dirty_sysvals);
+ 
+diff --git a/src/panfrost/vulkan/panvk_vX_device.c b/src/panfrost/vulkan/panvk_vX_device.c
+index 5e54c6888c5..a5c48438620 100644
+--- a/src/panfrost/vulkan/panvk_vX_device.c
++++ b/src/panfrost/vulkan/panvk_vX_device.c
+@@ -10,6 +10,9 @@
+  * SPDX-License-Identifier: MIT
+  */
+ 
++#include <fcntl.h>
++#include <xf86drm.h>
++
+ #include "drm-uapi/panthor_drm.h"
+ 
+ #include "vk_cmd_enqueue_entrypoints.h"
+@@ -186,6 +189,28 @@ panvk_precomp_cleanup(struct panvk_device *device)
+    panvk_per_arch(precomp_cache_cleanup)(device->precomp_cache);
+ }
+ 
++static int
++open_device_drm_fd(const struct panvk_physical_device *phys_dev)
++{
++   int phys_fd = phys_dev->kmod.dev->fd;
++
++#if PAN_ARCH < 10
++   /* panfrost has a single GPU address space per DRM file, which a dup()ed fd
++    * shares. Re-open the render node so each VkDevice gets its own address
++    * space, instead of all devices of the physical device competing for the
++    * same 4GB of VA. */
++   char *path = drmGetRenderDeviceNameFromFd(phys_fd);
++   if (path) {
++      int fd = open(path, O_RDWR | O_CLOEXEC);
++      free(path);
++      if (fd >= 0)
++         return fd;
++   }
++#endif
++
++   return os_dupfd_cloexec(phys_fd);
++}
++
+ /* Always reserve the lower 32MB. */
+ #define PANVK_VA_RESERVE_BOTTOM 0x2000000ull
+ 
+@@ -211,7 +236,6 @@ static VkResult
+ check_global_priority(const struct panvk_physical_device *phys_dev,
+                       const VkDeviceQueueCreateInfo *create_info)
+ {
+-   const unsigned arch = pan_arch(phys_dev->kmod.dev->props.gpu_id);
+    const VkDeviceQueueGlobalPriorityCreateInfoKHR *priority_info =
+       vk_find_struct_const(create_info->pNext,
+                            DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_KHR);
+@@ -226,13 +250,6 @@ check_global_priority(const struct panvk_physical_device *phys_dev,
+       enum pan_kmod_group_allow_priority_flags allowed_prio_mask =
+          phys_dev->kmod.dev->props.allowed_group_priorities_mask;
+ 
+-      /* Non-medium priority context is not hooked-up in the JM backend, even
+-       * though the panfrost kmod advertize it. Manually filter non-medium
+-       * priority for now.
+-       */
+-      if (arch < 10)
+-         allowed_prio_mask &= PAN_KMOD_GROUP_ALLOW_PRIORITY_MEDIUM;
+-
+       if (requested_prio & allowed_prio_mask)
+          return VK_SUCCESS;
+ 
+@@ -394,8 +411,8 @@ panvk_per_arch(create_device)(struct panvk_physical_device *physical_device,
+       .priv = &device->vk.alloc,
+    };
+    device->kmod.dev = pan_kmod_dev_create(
+-      os_dupfd_cloexec(physical_device->kmod.dev->fd),
+-      physical_device->kmod.dev->flags, &device->kmod.allocator);
++      open_device_drm_fd(physical_device), physical_device->kmod.dev->flags,
++      &device->kmod.allocator);
+ 
+    if (!device->kmod.dev) {
+       result = panvk_errorf(instance, VK_ERROR_OUT_OF_HOST_MEMORY,
+diff --git a/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c b/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
+index 1fd78a3de65..cdfc0993e4c 100644
+--- a/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
++++ b/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
+@@ -819,6 +819,64 @@ lower_tex_immutable(nir_builder *b, nir_tex_instr *tex,
+    }
+ }
+ 
++#if PAN_ARCH < 9
++/* The Bifrost LOD query returns the level rounded to the nearest integer in
++ * .x, which is only right for VK_SAMPLER_MIPMAP_MODE_NEAREST. Recompute it from
++ * the unclamped LOD in .y and the sampler state, like Valhall does: clamp to
++ * the sampler LOD range and the texture levels, and pick the level according
++ * to the mipmap mode (fractional for linear filtering).
++ */
++static void
++fixup_tex_lod(nir_builder *b, nir_tex_instr *tex,
++              const struct lower_desc_ctx *ctx)
++{
++   int tex_src_idx = nir_tex_instr_src_index(tex, nir_tex_src_texture_deref);
++   int samp_src_idx = nir_tex_instr_src_index(tex, nir_tex_src_sampler_deref);
++   if (tex_src_idx < 0 || samp_src_idx < 0)
++      return;
++
++   nir_deref_instr *tex_deref = nir_src_as_deref(tex->src[tex_src_idx].src);
++   nir_deref_instr *samp_deref = nir_src_as_deref(tex->src[samp_src_idx].src);
++
++   b->cursor = nir_after_instr(&tex->instr);
++
++   nir_def *lambda_prime = nir_channel(b, &tex->def, 1);
++
++   nir_def *samp_w0 = load_resource_deref_desc(
++      b, samp_deref, VK_DESCRIPTOR_TYPE_SAMPLER, 0, 1, 32, ctx);
++   nir_def *samp_w1 = load_resource_deref_desc(
++      b, samp_deref, VK_DESCRIPTOR_TYPE_SAMPLER, 4, 1, 32, ctx);
++
++   /* Minimum and maximum LOD are 8.8 fixed point in word1[0:12] and
++    * word1[16:28]. */
++   nir_def *min_lod = nir_ubitfield_extract_imm(b, samp_w1, 0, 13);
++   nir_def *max_lod = nir_ubitfield_extract_imm(b, samp_w1, 16, 13);
++   min_lod = nir_fdiv_imm(b, nir_u2f32(b, min_lod), 256.0);
++   max_lod = nir_fdiv_imm(b, nir_u2f32(b, max_lod), 256.0);
++
++   nir_def *levels = load_tex_levels(b, tex_deref, tex->sampler_dim, ctx);
++   max_lod =
++      nir_fmin(b, max_lod, nir_u2f32(b, nir_iadd_imm(b, levels, -1)));
++
++   nir_def *lod = nir_fclamp(b, lambda_prime, min_lod, max_lod);
++
++   /* Mipmap mode is in word0[30:31]. */
++   nir_def *mipmap_mode = nir_ubitfield_extract_imm(b, samp_w0, 30, 2);
++
++   nir_def *nearest_lod =
++      nir_fadd_imm(b, nir_fceil(b, nir_fadd_imm(b, lod, 0.5)), -1.0);
++   lod = nir_bcsel(b, nir_ieq_imm(b, mipmap_mode, MALI_MIPMAP_MODE_NEAREST),
++                   nearest_lod, lod);
++   lod = nir_bcsel(b, nir_ieq_imm(b, mipmap_mode, MALI_MIPMAP_MODE_NONE),
++                   nir_imm_float(b, 0.0), lod);
++
++   nir_def *res = nir_vec2(b, lod, lambda_prime);
++   nir_def_rewrite_uses_after(&tex->def, res);
++
++   b->cursor = nir_before_instr(&tex->instr);
++}
++#endif
++
+ static bool
+ lower_tex(nir_builder *b, nir_tex_instr *tex, const struct lower_desc_ctx *ctx)
+ {
+@@ -858,6 +916,9 @@ lower_tex(nir_builder *b, nir_tex_instr *tex, const struct lower_desc_ctx *ctx)
+       nir_def_replace(&tex->def, res);
+       return true;
+    }
++
++   if (tex->op == nir_texop_lod)
++      fixup_tex_lod(b, tex, ctx);
+ #endif
+ 
+    uint32_t plane = 0;
+diff --git a/src/panfrost/vulkan/panvk_vX_physical_device.c b/src/panfrost/vulkan/panvk_vX_physical_device.c
+--- a/src/panfrost/vulkan/panvk_vX_physical_device.c
++++ b/src/panfrost/vulkan/panvk_vX_physical_device.c
+@@ -773,6 +773,9 @@
+    if (PAN_ARCH >= 10)
+       return VK_MAKE_API_VERSION(0, 1, 4, VK_HEADER_VERSION);
+ 
++   if (PAN_ARCH == 7)
++      return VK_MAKE_API_VERSION(0, 1, 2, VK_HEADER_VERSION);
++
+    return VK_MAKE_API_VERSION(0, 1, 0, VK_HEADER_VERSION);
+ }
+ 
+-- 
+2.55.0
+

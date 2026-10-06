@@ -1,0 +1,163 @@
+/// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+* Copyright (c) 2025 lcdyk <2670878301@qq.com>
+*/
+
+/dts-v1/;
+#include "rk3326-gameconsole-r3xs.dtsi"
+#include "retrogame_joypad_s2_f1.dtsi"
+
+/ {
+	model = "BatleXP G350";
+	compatible = "batlexp,g350", "rockchip,rk3326";
+};
+
+&joypad {
+	compatible = "rocknix-singleadc-joypad";
+	pwms = <&pwm0 0 200000000 0>;
+	pwm-names = "enable";
+	rumble-boost-weak = <0x0000>;
+	rumble-boost-strong = <0x0000>;
+	joypad-name = "retrogame_joypad";
+	joypad-vendor = <0x484B>;
+	joypad-product = <0x1101>;
+	joypad-revision = <0x0100>;
+	
+	status = "okay";
+	
+	/* gpio pincontrol setup */
+	pinctrl-names = "default";
+	pinctrl-0 = <&btn_pins>;
+	pinctrl-1 = <&pwm0_pin>;
+	
+	/* Analog mux define */
+	io-channel-names = "amux_adc";
+	io-channels = <&saradc 1>;
+	
+	/* adc mux channel count */
+	amux-count = <4>;
+	/* non-default wiring */
+	amux-channel-mapping = <2 0 1 3>;
+	/* adc mux enable gpio */
+	amux-a-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_LOW>;
+	amux-b-gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
+	/* adc mux enable gpio */
+	amux-en-gpios = <&gpio3 RK_PB5 GPIO_ACTIVE_LOW>;
+	
+	/*
+	Analog Stick data tuning value(precent)
+	p = positive direction, n = negative direction
+	report value = (real_adc_data * tuning_value) / 100
+	*/
+	abs_x-p-tuning = <200>;
+	abs_x-n-tuning = <200>;
+	
+	abs_y-p-tuning = <200>;
+	abs_y-n-tuning = <200>;
+	
+	abs_rx-p-tuning = <200>;
+	abs_rx-n-tuning = <200>;
+	
+	abs_ry-p-tuning = <200>;
+	abs_ry-n-tuning = <200>;
+	
+	/* gpio button auto repeat set value : default disable */
+	/*
+	autorepeat;
+	*/
+	invert-absx;
+	invert-absy;
+	invert-absrx;
+	
+	up      { gpios = <&gpio1 RK_PB4 GPIO_ACTIVE_LOW>; };
+	down    { gpios = <&gpio1 RK_PB5 GPIO_ACTIVE_LOW>; };
+	left    { gpios = <&gpio1 RK_PB6 GPIO_ACTIVE_LOW>; };
+	right   { gpios = <&gpio1 RK_PB7 GPIO_ACTIVE_LOW>; };
+	a       { gpios = <&gpio1 RK_PA2 GPIO_ACTIVE_LOW>; };
+	b       { gpios = <&gpio1 RK_PA5 GPIO_ACTIVE_LOW>; };
+	x       { gpios = <&gpio1 RK_PA7 GPIO_ACTIVE_LOW>; };
+	y       { gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_LOW>; };
+	select  { gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>; };
+	start   { gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>; };
+	mode    { gpios = <&gpio3 RK_PC5 GPIO_ACTIVE_LOW>; };
+	tl      { gpios = <&gpio2 RK_PA6 GPIO_ACTIVE_LOW>; };
+	tr      { gpios = <&gpio2 RK_PA7 GPIO_ACTIVE_LOW>; };
+	tl2     { gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>; };
+	tr2     { gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>; };
+	thumbl  { gpios = <&gpio2 RK_PA2 GPIO_ACTIVE_LOW>; };
+	thumbr  { gpios = <&gpio2 RK_PA3 GPIO_ACTIVE_LOW>; };
+};
+
+&dsi {
+	internal_display: panel@0 {
+		compatible = "rocknix,generic-dsi";
+		iovcc-supply = <&vcc_lcd>;
+		vcc-supply = <&vcc_lcd>;
+		reset-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_LOW>;
+		panel_description =
+		"G size=52,70 delays=20,150,20,120,20 format=rgb888 lanes=4 flags=0xe03",
+		
+		"M clock=50000 horizontal=640,450,70,450 vertical=480,17,5,13 default=1",
+		"M clock=50000 horizontal=640,450,85,450 vertical=480,17,106,13",
+		"M clock=50010 horizontal=640,450,127,450 vertical=480,17,90,13",
+		"M clock=50010 horizontal=640,450,73,450 vertical=480,17,110,13",
+		"M clock=50830 horizontal=640,450,85,450 vertical=480,17,34,13",
+		"M clock=53200 horizontal=640,450,128,450 vertical=480,17,24,13",
+		"M clock=50400 horizontal=640,450,77,450 vertical=480,17,10,13",
+		"M clock=50310 horizontal=640,450,85,450 vertical=480,17,6,13",
+		"M clock=54600 horizontal=640,450,94,450 vertical=480,17,46,13",
+		"M clock=65370 horizontal=640,450,113,450 vertical=480,17,14,13",
+		"M clock=76050 horizontal=640,450,85,450 vertical=480,17,10,13",
+		"M clock=100620 horizontal=640,450,85,450 vertical=480,17,6,13",
+		
+		"I seq=b9f11283",
+		"I seq=b1000000da80",
+		"I seq=b2001370",
+		"I seq=b31010282803ff00000000",
+		"I seq=b480",
+		"I seq=b50a0a",
+		"I seq=b67f7f",
+		"I seq=b82662f063",
+		"I seq=ba338105f90e0e2000000000000000442500900a0000014f01000037",
+		"I seq=bc47",
+		"I seq=bf021100",
+		"I seq=c0737350500000125000",
+		"I seq=c15300323277d1cccc77773333",
+		"I seq=c68200bfff00ff",
+		"I seq=c7b8000a000000",
+		"I seq=c810401e02",
+		"I seq=cc0b",
+		"I seq=e000070d37353f4144060c0d0f111012141a00070d37353f4144060c0d0f111012141a",
+		"I seq=e307070b0b0b0b00000000ff00c010",
+		"I seq=e9c810020000b0b11131232880b0b127080004020000000004020000008888ba60240888888888888888ba713518888888888800000001000000000000000000",
+		"I seq=ea970a820203070000000000008188ba17538888888888888088ba0642888888888888230000028000000000000000000000000000000000000000000000",
+		"I seq=efffff01",
+		"I seq=11 wait=200",
+		"I seq=29 wait=50";
+	};
+};
+
+&pinctrl {
+	btns {
+		btn_pins: btn-pins {
+			rockchip,pins =
+			<1 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+			<1 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+			<2 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>,
+			<2 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>,
+			<3 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>,
+			<2 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>,
+			<2 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+			<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+			<3 RK_PB7 RK_FUNC_GPIO &pcfg_pull_up>,
+			<3 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+			<3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};

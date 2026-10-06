@@ -1,0 +1,24 @@
+diff --git a/src/libs/zmbv/CMakeLists.txt b/src/libs/zmbv/CMakeLists.txt
+--- a/src/libs/zmbv/CMakeLists.txt
++++ b/src/libs/zmbv/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ add_library(zmbv STATIC zmbv.cpp)
+
+-pkg_check_modules(ZLIB_NG REQUIRED IMPORTED_TARGET zlib-ng)
++find_package(ZLIB REQUIRED)
+
+ target_include_directories(zmbv PUBLIC ..)
+-target_link_libraries(zmbv PRIVATE PkgConfig::ZLIB_NG)
++target_link_libraries(zmbv PRIVATE ZLIB::ZLIB)
+diff --git a/src/libs/zmbv/zmbv.h b/src/libs/zmbv/zmbv.h
+--- a/src/libs/zmbv/zmbv.h
++++ b/src/libs/zmbv/zmbv.h
+@@ -9,7 +9,7 @@
+
+ #include "dosbox_config.h"
+
+-#if defined(C_SYSTEM_ZLIB_NG)
++#if defined(C_SYSTEM_ZLIB_NG) && C_SYSTEM_ZLIB_NG
+ #include <zlib-ng.h>
+ #define deflateInit2 zng_deflateInit2
+ #define deflateReset zng_deflateReset

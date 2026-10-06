@@ -1,0 +1,291 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Tue, 22 Sep 2026 17:00:00 +0100
+Subject: [PATCH] input: singleadc-joypad: drive the joystick RGB LEDs
+
+The RG 55G1's stick LEDs are controlled by the joypad MCU through fields
+in the same 64-byte request frame the driver already polls it with. The
+layout comes from the stock single_mcu_joy.ko (custom_led_setting):
+
+  [7]      mode    1 = fixed colour from [11..13], 4 = the MCU's own
+                   rainbow, 5 = per-segment colours from [11..58]
+                   (16 x RGB, 8 segments per stick ring)
+  [8]      switch  0 = off, 1 = on
+  [9]      level   0..255
+  [10]     speed   effect speed for the MCU-driven modes
+  [11..13] R, G, B
+  [59]     tag0    always 0
+  [60]     tag1    incremented on every commit
+  [61..62] CRC-16/XMODEM over [7..60], big endian
+
+Expose the stock sysfs names (led_switch, led_mode, led_level, led_speed,
+custum_rgb_{r,g,b}, led_set) so the same userspace works on both, plus
+led_segments (16 RRGGBB values) for the per-segment mode. Values are
+staged and land in the frame on a write to led_set, which also bumps
+the tag and recomputes the CRC with crc_itu_t(). The template frame
+carried a stale CRC, which is why poking its LED bytes never did anything.
+
+As on stock, the LEDs stay off at boot until userspace commits a state.
+
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -408,6 +408,7 @@
+ 	tristate "Single-ADC / MCU SPI handheld gamepad"
+ 	depends on OF
+ 	depends on SPI
++	select CRC_ITU_T
+ 	help
+ 	  Say Y here to enable support for the handheld gamepad found on
+ 	  Anbernic SM4450 devices such as the RG 55G1, where the digital
+--- a/drivers/input/joystick/singleadc-joypad.c
++++ b/drivers/input/joystick/singleadc-joypad.c
+@@ -7,6 +7,7 @@
+  */
+ #define SUPPORT_MCU_SPI_ADC
+ 
++#include <linux/crc-itu-t.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/firmware/qcom/qcom_scm.h>
+@@ -145,15 +146,25 @@
+ 	int buf_len;
+ 	u32 crc_ok;
+ 	u32 crc_err;
++	/* Joystick RGB state, mirrored into the request frame by joypad_led_apply() */
++	u8 led_switch;
++	u8 led_mode;
++	u8 led_level;
++	u8 led_speed;
++	u8 led_r, led_g, led_b;
++	u8 led_seg[48];	/* 16 x RGB for mode 5 */
++	u8 led_tag;
+ };
+ 
+ static struct spi_mcu_data *g_smd;
++static void joypad_led_apply(struct spi_mcu_data *smd);
++#define JOYPAD_LED_SPEED_DEFAULT 0x32
+ 
+ /*
+- * Report request. Byte 10 selects what the MCU sends back: with 0x02 it
+- * answers with a partial frame where the two trigger words stay at the idle
+- * 0x0800. The stock spidev3.0 test tool shipped in the RG55G1 firmware asks
+- * for 0x32 instead.
++ * Report request, as sent by the stock spidev3.0 test tool shipped in the
++ * RG55G1 firmware. Bytes [7..13] and [59..62] are the LED fields, tag and CRC
++ * (see the LED block below); joypad_led_apply() rewrites them before the frame
++ * is first used, so only the header [0..6] really matters here.
+  */
+ static const char joypad_mcu_tx_cmd[64] = {
+ 	0x5a, 0x3a, 0x66, 0x66, 0x00, 0x0d, 0x0a, 0x04,
+@@ -577,6 +588,8 @@
+ 		return -ENOMEM;
+ 	}
+ 	memcpy(smd->tx_buf, joypad_mcu_tx_cmd, 64);
++	smd->led_speed = JOYPAD_LED_SPEED_DEFAULT;
++	joypad_led_apply(smd);
+ 	g_smd = smd;
+ 
+ 	{
+@@ -597,11 +610,192 @@
+ 	return 0;
+ }
+ 
++/*
++ * Joystick RGB LEDs.
++ *
++ * The MCU drives the stick LEDs from fields in the 64-byte request frame we
++ * poll it with. Layout recovered from the stock single_mcu_joy.ko
++ * (custom_led_setting), offsets in the frame:
++ *
++ *   [7]  mode     1 = fixed colour from [11..13] (both sticks), 4 = MCU's
++ *                 own rainbow, 5 = per-segment colours from [11..58]
++ *                 (16 x RGB: slots 0..7 the left stick ring, 8..15 the
++ *                 right); 2 = per-stick colour, 6 = stock's sync mode,
++ *                 0 and 3 leave the LEDs dark
++ *   [8]  switch   0 = LEDs off, 1 = on
++ *   [9]  level    brightness 0..255 (sysfs takes 0..100 like stock)
++ *   [10] speed    effect speed for the MCU-driven modes
++ *   [11..13]      R, G, B for mode 1
++ *   [59]  tag0    always 0
++ *   [60]  tag1    incremented on every commit so the MCU sees a new command
++ *   [61..62]      CRC-16/XMODEM (poly 0x1021, init 0) over [7..60], big endian
++ *
++ * The sysfs names (led_switch, led_mode, led_level, led_speed,
++ * custum_rgb_{r,g,b}, led_set) keep the stock spelling so the same userspace
++ * works on both; led_segments (16 RRGGBB hex values) is ours, for mode 5.
++ * Values are staged and only land in the frame on a write to led_set, again
++ * as stock does.
++ */
++#define JOYPAD_LED_OFF_MODE	7
++#define JOYPAD_LED_OFF_SWITCH	8
++#define JOYPAD_LED_OFF_LEVEL	9
++#define JOYPAD_LED_OFF_SPEED	10
++#define JOYPAD_LED_OFF_R	11
++#define JOYPAD_LED_OFF_G	12
++#define JOYPAD_LED_OFF_B	13
++#define JOYPAD_LED_SEG_LEN	48
++#define JOYPAD_LED_MODE_SEGMENTS 5
++#define JOYPAD_LED_OFF_TAG0	59
++#define JOYPAD_LED_OFF_TAG1	60
++#define JOYPAD_LED_OFF_CRC	61
++#define JOYPAD_LED_CRC_LEN	(JOYPAD_LED_OFF_CRC - JOYPAD_LED_OFF_MODE)
++
++/* Write the current LED state into the frame; it goes out on the next poll. */
++static void joypad_led_apply(struct spi_mcu_data *smd)
++{
++	u8 *f = (u8 *)smd->tx_buf;
++	u16 crc;
++
++	if (!f || smd->buf_len < 64)
++		return;
++
++	f[JOYPAD_LED_OFF_MODE] = smd->led_mode;
++	f[JOYPAD_LED_OFF_SWITCH] = smd->led_switch;
++	f[JOYPAD_LED_OFF_LEVEL] = smd->led_level * 255 / 100;
++	f[JOYPAD_LED_OFF_SPEED] = smd->led_speed;
++	if (smd->led_mode == JOYPAD_LED_MODE_SEGMENTS) {
++		memcpy(f + JOYPAD_LED_OFF_R, smd->led_seg, JOYPAD_LED_SEG_LEN);
++	} else {
++		f[JOYPAD_LED_OFF_R] = smd->led_r;
++		f[JOYPAD_LED_OFF_G] = smd->led_g;
++		f[JOYPAD_LED_OFF_B] = smd->led_b;
++		memset(f + JOYPAD_LED_OFF_B + 1, 0,
++		       JOYPAD_LED_SEG_LEN - 3);
++	}
++	f[JOYPAD_LED_OFF_TAG0] = 0;
++	f[JOYPAD_LED_OFF_TAG1] = ++smd->led_tag;
++
++	crc = crc_itu_t(0, f + JOYPAD_LED_OFF_MODE, JOYPAD_LED_CRC_LEN);
++	f[JOYPAD_LED_OFF_CRC] = crc >> 8;
++	f[JOYPAD_LED_OFF_CRC + 1] = crc & 0xff;
++
++	dev_dbg(smd->dev, "led apply sw=%u mode=%u lvl=%u spd=%u rgb=%u,%u,%u tag=%u crc=%04x\n",
++		smd->led_switch, smd->led_mode, smd->led_level, smd->led_speed,
++		smd->led_r, smd->led_g, smd->led_b, smd->led_tag, crc);
++}
++
++static ssize_t joypad_led_u8_store(u8 *field, unsigned int max,
++				   const char *buf, size_t count)
++{
++	unsigned int val;
++
++	if (kstrtouint(buf, 0, &val))
++		return -EINVAL;
++	if (val > max)
++		val = max;
++	*field = val;
++	return count;
++}
++
++#define JOYPAD_LED_ATTR(_name, _field, _max)				\
++static ssize_t _name##_show(struct device *dev,				\
++			    struct device_attribute *attr, char *buf)	\
++{									\
++	if (!g_smd)							\
++		return -ENODEV;						\
++	return sysfs_emit(buf, "%u\n", g_smd->_field);			\
++}									\
++static ssize_t _name##_store(struct device *dev,			\
++			     struct device_attribute *attr,		\
++			     const char *buf, size_t count)		\
++{									\
++	if (!g_smd)							\
++		return -ENODEV;						\
++	return joypad_led_u8_store(&g_smd->_field, _max, buf, count);	\
++}									\
++static DEVICE_ATTR_RW(_name)
++
++JOYPAD_LED_ATTR(led_switch, led_switch, 1);
++JOYPAD_LED_ATTR(led_mode, led_mode, 255);
++JOYPAD_LED_ATTR(led_level, led_level, 100);
++JOYPAD_LED_ATTR(led_speed, led_speed, 255);
++JOYPAD_LED_ATTR(custum_rgb_r, led_r, 255);
++JOYPAD_LED_ATTR(custum_rgb_g, led_g, 255);
++JOYPAD_LED_ATTR(custum_rgb_b, led_b, 255);
++
++/* 16 x RRGGBB (hex) for mode 5; missing trailing slots are cleared. */
++static ssize_t led_segments_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	int i, len = 0;
++
++	if (!g_smd)
++		return -ENODEV;
++	for (i = 0; i < JOYPAD_LED_SEG_LEN; i += 3)
++		len += sysfs_emit_at(buf, len, "%02x%02x%02x%c",
++				     g_smd->led_seg[i], g_smd->led_seg[i + 1],
++				     g_smd->led_seg[i + 2],
++				     i + 3 < JOYPAD_LED_SEG_LEN ? ' ' : '\n');
++	return len;
++}
++
++static ssize_t led_segments_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf, size_t count)
++{
++	u8 seg[JOYPAD_LED_SEG_LEN] = { 0 };
++	const char *p = buf;
++	int i = 0;
++
++	if (!g_smd)
++		return -ENODEV;
++
++	while (i < JOYPAD_LED_SEG_LEN) {
++		unsigned int val;
++		int consumed;
++
++		while (*p == ' ' || *p == ',' || *p == '\n')
++			p++;
++		if (!*p)
++			break;
++		if (sscanf(p, "%6x%n", &val, &consumed) != 1 || consumed != 6)
++			return -EINVAL;
++		seg[i++] = val >> 16;
++		seg[i++] = val >> 8;
++		seg[i++] = val;
++		p += consumed;
++	}
++	memcpy(g_smd->led_seg, seg, JOYPAD_LED_SEG_LEN);
++	return count;
++}
++static DEVICE_ATTR_RW(led_segments);
++
++/* Writing anything here commits the staged state to the frame. */
++static ssize_t led_set_store(struct device *dev,
++			     struct device_attribute *attr,
++			     const char *buf, size_t count)
++{
++	if (!g_smd)
++		return -ENODEV;
++	joypad_led_apply(g_smd);
++	return count;
++}
++static DEVICE_ATTR_WO(led_set);
++
+ static struct attribute *joypad_attrs[] = {
+ 	&dev_attr_mcu_info.attr,
+ 	&dev_attr_mcu_frame.attr,
+ 	&dev_attr_mcu_cmd.attr,
+ 	&dev_attr_mcu_crc.attr,
++	&dev_attr_led_switch.attr,
++	&dev_attr_led_mode.attr,
++	&dev_attr_led_level.attr,
++	&dev_attr_led_speed.attr,
++	&dev_attr_custum_rgb_r.attr,
++	&dev_attr_custum_rgb_g.attr,
++	&dev_attr_custum_rgb_b.attr,
++	&dev_attr_led_segments.attr,
++	&dev_attr_led_set.attr,
+ 	NULL,
+ };
+ ATTRIBUTE_GROUPS(joypad);
+@@ -1367,6 +1561,9 @@
+ 		return -ENOMEM;
+ 	}
+ 	memcpy(smd->tx_buf, joypad_mcu_tx_cmd, min_t(int, smd->buf_len, 64));
++	/* LEDs stay off until userspace commits a state, as on stock */
++	smd->led_speed = JOYPAD_LED_SPEED_DEFAULT;
++	joypad_led_apply(smd);
+ 
+ 	spi_set_drvdata(spi, smd);
+ 

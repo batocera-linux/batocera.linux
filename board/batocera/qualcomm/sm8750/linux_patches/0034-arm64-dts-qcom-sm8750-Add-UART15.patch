@@ -9,10 +9,10 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 30 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm8750.dtsi b/arch/arm64/boot/dts/qcom/sm8750.dtsi
-index 0e7a343297e3..a453a350200c 100644
+index b66372e3b..5cf43e670 100644
 --- a/arch/arm64/boot/dts/qcom/sm8750.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm8750.dtsi
-@@ -1207,6 +1207,28 @@ &config_noc SLAVE_QUP_2 QCOM_ICC_TAG_ALWAYS>,
+@@ -1220,6 +1220,28 @@ &config_noc SLAVE_QUP_2 QCOM_ICC_TAG_ALWAYS>,
  
  				status = "disabled";
  			};
@@ -41,7 +41,7 @@ index 0e7a343297e3..a453a350200c 100644
  		};
  
  		i2c_master_hub_0: geniqup@9c0000 {
-@@ -3553,6 +3575,14 @@ qup_uart14_cts_rts: qup-uart14-cts-rts-state {
+@@ -4085,6 +4107,14 @@ qup_uart14_cts_rts: qup-uart14-cts-rts-state {
  				bias-pull-down;
  			};
  
@@ -56,6 +56,3 @@ index 0e7a343297e3..a453a350200c 100644
  			sdc2_sleep: sdc2-sleep-state {
  				clk-pins {
  					pins = "sdc2_clk";
--- 
-2.43.0
-

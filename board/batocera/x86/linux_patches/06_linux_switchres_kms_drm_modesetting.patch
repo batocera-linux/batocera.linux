@@ -26,7 +26,7 @@ Index: linux-7.1/drivers/gpu/drm/drm_ioctl.c
 ===================================================================
 --- linux-7.1.orig/drivers/gpu/drm/drm_ioctl.c
 +++ linux-7.1/drivers/gpu/drm/drm_ioctl.c
-@@ -680,8 +680,8 @@ static const struct drm_ioctl_desc drm_i
+@@ -692,8 +692,8 @@ static const struct drm_ioctl_desc drm_i
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_SETGAMMA, drm_mode_gamma_set_ioctl, DRM_MASTER),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETENCODER, drm_mode_getencoder, 0),
  	DRM_IOCTL_DEF(DRM_IOCTL_MODE_GETCONNECTOR, drm_mode_getconnector, 0),

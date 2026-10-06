@@ -42,7 +42,7 @@
 
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		cooling-levels = <0 32 64 128 255>;
+		cooling-levels = <0 51 77 102 128 153 179 204 255>;
 		#cooling-cells = <2>;
 		fan-supply = <&vreg_fan_pwr>;
 		pwms = <&pm8150l_lpg 4 40000>;
@@ -163,6 +163,19 @@
 		gpio = <&tlmm 14 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-boot-on;
+	};
+
+	vreg_disp_avdd: display-avdd-regulator {
+		compatible = "regulator-fixed";
+		regulator-name = "display_panel_avdd";
+		regulator-min-microvolt = <5500000>;
+		regulator-max-microvolt = <5500000>;
+		gpio = <&tlmm 61 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+		regulator-enable-ramp-delay = <233>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&disp_avdd_active>;
 	};
 
 	vreg_vibrator_en: vibrator-en-regulator {
@@ -685,6 +698,7 @@
 		vddio-supply = <&vreg_l14a_1p8>;
 		vdd-supply = <&vreg_l11c_3p3>;
 		disp-supply = <&vreg_panel_en>;
+		blvdd-supply = <&vreg_disp_avdd>;
 
 		reset-gpios = <&tlmm 74 GPIO_ACTIVE_LOW>;
 
@@ -1146,6 +1160,13 @@
 		bias-pull-up;
 	};
 
+	disp_avdd_active: disp-avdd-active-state {
+		pins = "gpio61";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
 	dsi_rst_active: dsi-rst-active-state {
 		pins = "gpio74";
 		function = "gpio";
@@ -1329,3 +1350,5 @@
 &wsamacro {
 	status = "okay";
 };
+
+#include "sm8250-pwm-fan-cooling.dtsi"

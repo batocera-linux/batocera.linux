@@ -1,62 +1,113 @@
 # 2026/xx/xx - batocera.linux 44 - Malachite
 ### Special Notes
+- From v44 you can use `batocera-upgrade --update-bootloader` to flash required bootloader and firmware manually
+  SPI u-boot, Qualcomm ABL, Raspberry Pi EEPROM, H700 u-boot
+- Samba no longer maps unknown usernames to guest
+  Windows 11 24H2+ blocks unsigned guest sessions without prompting, so Windows now asks for credentials
+  Log in as root with the root password ("linux" unless security is enabled)
+- GZDoom has been replaced by UZDoom, a continuation of ZDoom and GZDoom - existing gzdoom ROM folders, .gzdoom mod files, and configs need to be renamed to uzdoom
 - ShadPS4 has moved from the no longer maintained ShadPS4 Plus to standard ShadPS4
+- SM2-Emu replaces Model2Emu which ran through WINE bringing Model 2 emualtion to more systems
 - The Play! emulator (and Libretro variant) has been removed in favor of PCSX2x6 for Namco2x6 systems as well as removed as a PS2 emulator.
+- Sega Chihiro now runs using Tovarichtch's Xemu Chihiro fork
+  Games need to be .bin netboot images made with Chihiro-netboot
+  BIOS files come from MAME's chihiro.zip, extracted into bios/chihiro
 ### Hardware
 - Anbernic RG-DS initial support
+- Anbernic RG-DS Plus initial support
+- Anbernic RG55G1 initial support
 - Anbernic RG-SP initial support
 - Anbernic RG Vita Pro initial support
 - Anbernic RG40xx-H-v2-panel variant support
 - Anbernic RG40xx-V-v2-panel variant support
+- Ayaneo Pocket DS initial support
 - AYN Odin initial support
 - AYN Odin 3 initial support
+- GameKiddy GKD Pixel2 initial support
+- KICKPI K3B initial support
 - Mangmi Air X initial support
 - Odroid M2 initial support
 - Radxa Rock-5T initial support
 - Retroid Pocket Nova initial support
 ### Added
+- Anbernic H700 device deep sleep suspend, replacing fake suspend
 - Anbernic H700 device hardware acceleration support
+- Anbernic H700 device u-boot is now updated by system upgrades, needed for deep sleep
+- Anbernic RG35XX Plus battery backed real-time clock
 - Anbernic RGCubeXX device LED controller support
+- Armsx2 for SM8250, SM8550 and SM8750
+- Battery, charger and power button support for Intel Atom laptops and tablets with the X-Powers AXP288 PMIC
+- BCC: audio devices can now be switch from the BCC menu (while playing games for example)
+- Box64 userland x86_64 emulator for aarch64
+- Broadcom STA (wl) wifi driver for older Macs, enable with broadcom-wl=true in batocera-boot.conf
 - Drastic back for Aarch64 devices
-- NanoBoyAdvance as an alternative GBA emulator
 - ES Setting for toggle fast forward
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - ES setting to determnine mitigations On|Off(Default On)
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
+- ES setting to choose which CPU cores an emulator runs on (fast or all), keeping emulators off the slow efficiency cores of big.LITTLE devices by default
 - ES can now display Unicode for ID3 tags of songs played
-- Box64 userland x86_64 emulator for aarch64
+- ES now supports correctly Arabic and Hebrew glyph rendering
+- ES can have a maximum depth of subfolders to go through when indexing (skip subfoldes with large amount of files)
+- GameTank console support through GameTankEmulator
 - Legion Go / Go 2 LED controller support
+- Libretro-anybor : for openbor games (support all openbor versions)
 - Libretro-Azahar
+- NanoBoyAdvance as an alternative GBA emulator
+- OpenGOAL for the Jak and Daxter trilogy, built from your own PS2 disc image
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
+- RPCS3 interface translations
+- SM2-Emu emulator for Model 2 games
+- Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
+- Steam Controller (2026) support on x86_64 / Zen3
+- Steam is installed automatically from Flathub the first time it is launched
+- Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
+- Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
+- Wine DLSS support for NVIDIA RTX GPUs when NVAPI is enabled
+- Xemu Chihiro fork for the Sega Chihiro, with light guns, wheels with force feedback, card readers and linked cabinets
 - Xenia-Edge for x864_64 and select aarch64 devices
 ### Fixed
+- Samba wide symbolic links under /userdata (e.g. to external drives) being silently disabled, and secure mode granting guest access to the share
+- Bauh not starting with Python 3.14
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
+- Boot logo disappearing once the graphics driver replaces the firmware framebuffer, leaving a black screen until the splash video starts
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
 - Commander Genius fullscreen in Wayland
+- Commander Genius render resolution option not taking effect in-game
+- Dolphin Wii Remotes 2-4 set to None when using pad profiles
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
+- MAME black screen on exit with a rotated display when CRT switchres is off
 - Mupen64 not starting fullscreen with Wayland
+- NVIDIA OpenGL over EGL on X11 falling back to Mesa (e.g. Dolphin failing to start with OpenGL)
+- Power button shutdown now closes the running game and shuts down through EmulationStation, saving gamelists
 - Pygame fullscreen with Wayland
+- R36S and other RK3326 clones losing the chosen panel overlay (mipi-panel.dtbo) after an upgrade, leaving a working backlight but a broken screen
 - Raze analog controls and improved controller bindings
+- SC-3000 games not scrapable (now scraped as SG-1000)
 - Simcoupe not starting fullscreen
+- SM8250 devices overcharging the battery (wrong charge voltage and current), and Retroid Pocket not charging again after powering a USB-C hub or dock
 - Sonic Mania controllers
+- Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches
 - Taradino blank screen with Wayland
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
+- VPinball now support multiscreens correctly on wayland
 ### Changed / Improved
 - AYN Thor, AYN button now opens Batocera Control Center
+- Brightness cycle buttons on handhelds now open the Batocera Control Center instead (brightness is adjustable from there)
 - BigPEmu added to capable aarch64 devices
 - Boot logo and video now scales better to the primary screen being rendered on
 - Cemu added to capable aarch64 devices
 - New CPU, GPU & Battery temp helper script - batocera-temp
+- Power mode, TDP and GPU governor game hooks are now batocera-launch plugins
 - Raspberry Pi4 now uses LabWC
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Khadas VIM4 now uses LabWC
 - Lindbergh Loader has transtioned to LinuxLoader for Lindbergh roms
 - MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
-- PCSX2 variant for capable aarch64 devices
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
 - Rockchip RK3588 devices moved to the mainline linux kernel:
@@ -70,195 +121,227 @@
 - Vita3k added for capable aarch64 devices
 - PCEngine / PCEngineCD: added Libretro-Beetle-PCE (not "Fast") for capable aarch64 devices
 ### Updated
-- Azahar to 2126.0
+- Amiberry to v8.3.0
+- AppleWin to Sep 6, 2026 build
+- Armsx2 to 2.7.2
+- Azahar to 2126.1.2
 - BigPEmu to 1.221
 - Blake Stone to v1.3.4
-- Box64 0.4.2
-- Cemu to August 7th, 2026 build
+- Box64 0.4.4
+- CatacombGL to Jun 20, 2026 build
+- Cemu to Sep 10, 2026 build
 - CDogs to 2.4.0
 - CLK to 2026-07-23
 - Commander Genius to v3.6.3
-- CorsixTH to v0.70.0
+- CorsixTH to v0.70.1
 - DevilutionX to 1.5.5
 - Dhewm3 & Mods to 1.5.5
-- Dolphin-Emu to 2606
+- Dolphin-Emu to 2609a
+- DOSBox Staging to v0.83.0
+- DOSBox-X to 2026.08.31
+- DXX-Rebirth to Aug 23, 2026 build
 - ECWolf to Feb 23, 2026 build
-- EDuke32 / Fury to Feb 03, 2026 build
+- EDuke32 / Fury to Aug 07, 2026 build
 - ETLegacy to v2.85.0
 - Flycast to v2.7
 - Groovy MAME to 0.289
-- IOQuake3 to Mar 9, 2026
+- Hurrican to Apr 5, 2026 build
+- Hydra Castle Labyrinth to Aug 11, 2026 build
+- Hypseus Singe to 3.0.2
+- IOQuake3 to Jul 16, 2026
 - Jazz2 to 3.8.0
 - Ledspicer to 0.7.6
 - Libretro-81 to April 20th, 2026 build
 - Libretro-Arduous to April 21st, 2026 build
-- Libretro-Atari800 to August 15th, 2026 build
-- Libretro-Azahar to 2126.0
+- Libretro-Atari800 to September 1st, 2026 build
+- Libretro-Azahar to 2126.1.2
 - Libretro-Beetle-Lynx to April 20th, 2026 build
 - Libretro-Beetle-NGP to June 14th, 20026 build
-- Libretro-Beetle-PCE to April 11th, 2026 build
-- Libretro-Beetle-PCE-Fast to August 28th, 2026 build
-- Libretro-Beetle-PCFX to August 23rd, 2026 build
-- Libretro-Beetle-PSX to August 23rd, 2026 build
-- Libretro-Beetle-Saturn to August 11th, 2026 build
+- Libretro-Beetle-PCE to September 4th, 2026 build
+- Libretro-Beetle-PCE-Fast to September 11th, 2026 build
+- Libretro-Beetle-PCFX to September 4th, 2026 build
+- Libretro-Beetle-PSX to September 7th, 2026 build
+- Libretro-Beetle-Saturn to September 6th, 2026 build
 - Libretro-Beetle-SuperGrafx to April 20th, 2026 build
 - Libretro-Beetle-VB to August 23rd, 2026 build
 - Libretro-Beetle-WSwan to July 31st, 2026 build
 - Libretro-BennuGD to August 29th, 2026 build
-- Libretro-BK to April 20th, 2026 build
-- Libretro-Blastem to August 13th, 2026 build
+- Libretro-BK to September 4th, 2026 build
+- Libretro-Blastem to September 20th, 2026 build
 - Libretro-BlueMSX to August 23rd, 2026 build
-- Libretro-Boom3 to August 28th, 2026 build
-- Libretro-Bsnes to August 12th, 2026 build
+- Libretro-Boom3 to September 3rd, 2026 build
+- Libretro-Bsnes to September 4th, 2026 build
 - Libretro-Bsnes-HD to December 5th, 2025 build
-- Libretro-Cap32 to April 6th, 2026 build
+- Libretro-Cap32 to August 30th, 2026 build
 - Libretro-Chailove to July 26th, 2026 build
 - Libretro-Craft to April 20th, 2026 build
 - Libretro-Desmume to August 23rd, 2026 build
-- Libretro-Dinothawr to August 26th, 2026 build
-- Libretro-Dolphin to August 27th, 2026 build
+- Libretro-Dinothawr to September 3rd, 2026 build
+- Libretro-Dolphin to September 14th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Ecwolf to August 20th, 2026 build
+- Libretro-EmuSCV to August 12th, 2026 build
 - Libretro-Ep128emu-Core to core_v1.2.13
 - Libretro-Fake08 to June 13th, 2026 build
 - Libretro-FBAlpha to July 28th, 2026 build
-- Libretro-FBNeo to August 27th, 2026 build
+- Libretro-FBNeo to September 4th, 2026 build
 - Libretro-Fceumm to August 22nd, 2026 build
 - Libretro-Flycast to v2.7
 - Libretro-FlycastVL to July 6th, 2026 build
-- Libretro-FMSX to June 4th, 2026 build
+- Libretro-FMSX to September 6th, 2026 build
 - Libretro-Freechaf to April 20th, 2026 build
 - Libretro-Freeintv to August 11th, 2026 build
-- Libretro-Fuse to August 12th, 2026 build
+- Libretro-Fuse to September 6th, 2026 build
 - Libretro-Gambatte to August 21st, 2026 build
-- Libretro-Gearcoleco to 1.6.12
-- Libretro-Gearsystem to August 29th, 2026 build
+- Libretro-Gearcoleco to 1.7.0
+- Libretro-Gearsystem to September 16th, 2026 build
 - Libretro-GenesisPlusGX to August 4th, 2026 build
 - Libretro-GenesisPlusGX-Expanded to March 30th, 2026 build
 - Libretro-GenesisPlusGX-Wide to July 28th, 2026 build
 - Libretro-GPSP to August 25th, 2026 build
 - Libretro-GW to April 20th, 2026 build
 - Libretro-Handy to April 20th, 2026 build
-- Libretro-Hatari to August 29th, 2026 build
-- Libretro-HatariB to August 29th, 2026 build
+- Libretro-Hatari to September 8th, 2026 build
+- Libretro-HatariB to September 16th, 2026 build
 - Libretro-Holani to 1.0.0
-- Libretro-iMame to July 28th, 2026 build
-- Libretro-Kronos to March 12th, 2025 build
+- Libretro-iMame to September 1st, 2026 build
+- Libretro-Kronos to September 1st, 2026 build
 - Libretro-Lowres-NX to March 31st, 2026 build
 - Libretro-Lutro to August 17th, 2026 build
 - Libretro-MAME to 0.289
-- Libretro-MAME2003-Plus to August 29th, 2026 build
+- Libretro-MAME2003-Plus to September 15th, 2026 build
 - Libretro-Melonds to July 19th, 2026 build
 - Libretro-Melonds-DS to v1.3.1
 - Libretro-Mesen to April 20th, 2026 build
 - Libretro-Mesen-S to August 23rd, 2026 build
-- Libretro-MGBA to August 27th, 2026 build
+- Libretro-MGBA to September 16th, 2026 build
 - Libretro-MiniVMac to April 20th, 2026 build
-- Libretro-Mupen64plus-Next to August 6th, 2026 build
+- Libretro-Mupen64plus-Next to September 12th, 2026 build
 - Libretro-NeoCD to August 30th, 2026 build
-- Libretro-Nestopia to August 30th, 2026 build
+- Libretro-Nestopia to September 13th, 2026 build
 - Libretro-NXEngine to August 22nd, 2026 build
+- Libretro-O2EM to July 21st, 2026 build
 - Libretro-Opera to August 21st, 2026 build
-- Libretro-Parallel-N64 to August 30th, 2026 build
-- Libretro-PC88 to July 22nd, 2026 build
-- Libretro-PC98 to August 23rd, 2026 build
-- Libretro-PCSX to August 26th, 2026 build
-- Libretro-PD777 to August 21st, 2026 build
-- Libretro-Picodrive to August 20th, 2026 build
+- Libretro-Parallel-N64 to September 3rd, 2026 build
+- Libretro-PC88 to September 6th, 2026 build
+- Libretro-PC98 to September 5th, 2026 build
+- Libretro-PCSX to September 5th, 2026 build
+- Libretro-PD777 to September 11th, 2026 build
+- Libretro-Picodrive to September 4th, 2026 build
 - Libretro-Play to 0.77
-- Libretro-Pocketsnes to June 25th, 2026 build
+- Libretro-Pocketsnes to September 6th, 2026 build
 - Libretro-Pokemini to July 31st, 2026 build
-- Libretro-Prboom to August 20th, 2026 build
+- Libretro-Prboom to October 5th, 2026 build
 - Libretro-ppsspp to 1.20.4
 - Libretro-ProSystem to August 22nd, 2026 build
-- Libretro-PS2 to August 29th, 2026 build
-- Libretro-PUAE to July 30th, 2026 build
+- Libretro-PS2 to September 17th, 2026 build
+- Libretro-PUAE to September 6th, 2026 build
 - Libretro-PX68k to August 22nd, 2026 build
 - Libretro-Reminiscence to July 21st, 2026 build
-- Libretro-Same-CDI to August 16th, 2026 build
+- Libretro-Same-CDI to September 2nd, 2026 build
 - Libretro-SameDuck to December 10th, 2023 build
-- Libretro-ScummVM to August 26th, 2026 build
-- Libretro-SMSPlus-GX to June 25th, 2026 build
+- Libretro-ScummVM to September 15th, 2026 build
+- Libretro-SMSPlus-GX to September 4th, 2026 build
 - Libretro-Snes9x to August 16th, 2026 build
-- Libretro-Snes9x-Next to August 16th, 2026 build
-- Libretro-Stella to August 30th, 2026 build
-- Libretro-Stella2014 to July 6th, 2026 build
-- Libretro-SuperBrosWar to July 27th, 2026 build
+- Libretro-Snes9x-Next to September 15th, 2026 build
+- Libretro-Stella to September 16th, 2026 build
+- Libretro-Stella2014 to September 4th, 2026 build
+- Libretro-SuperBrosWar to September 1st, 2026 build
 - Libretro-SuperFlappyBirds to June 12th, 2026 build
 - Libretro-Swanstation to August 11th, 2026 build
 - Libretro-Tgbdual to August 23rd, 2026 build
 - Libretro-Theodore to August 17th, 2026 build
-- Libretro-Tic80 to July 6th, 2026 build
+- Libretro-Tic80 to September 16th, 2026 build
 - Libretro-Tyrquake to July 15th, 2026 build
-- Libretro-Uae4arm to May 8th, 2026 build
+- Libretro-Uae4arm to September 7th, 2026 build
 - Libretro-Uzem to August 23rd, 2026 build
-- Libretro-VBA-M to August 28th, 2026 build
+- Libretro-VBA-M to September 14th, 2026 build
 - Libretro-Vecx to April 11th, 2026 build
 - Libretro-Vemulator to August 23rd, 2026 build
 - Libretro-Vice to August 1st, 2026 build
 - Libretro-Vircon32 to v1.6
-- Libretro-VirtualJaguar to August 26th, 2026 build
-- Libretro-VitaQuake2 to July 28th, 2026 build
+- Libretro-VirtualJaguar to September 5th, 2026 build
+- Libretro-VitaQuake2 to September 6th, 2026 build
 - Libretro-Watara to June 4th, 2026 build
 - Libretro-Xmil to August 23rd, 2026 build
 - Libretro-Xrick to July 28th, 2026 build
 - Libretro-Yabasanshiro to August 23rd, 2026 build
-- Lightspark to 0.9.0
-- LinuxLoader to v3.0.10
-- Moonlight-QT to Jun 26, 2026 build
-- Mupen64Plus-Core to March 30th, 2026 build
+- Lightspark to Sep 14, 2026 build
+- LinuxLoader to v3.0.12
+- Moonlight-Embedded to Jun 5, 2026 build
+- Moonlight-QT to Sep 8, 2026 build
+- Mupen64Plus core to Sep 5th, 2026 build; audio-sdl, input-sdl, rsp-hle, ui-console, video-glide64mk2 & video-rice plugins to Jun 23rd, 2026 build
+- OpenJazz to Mar 01, 2026 build
 - OpenMSX to Release 21
-- OpenJK to May 13th, 2026 build
+- OpenJK to Jul 11th, 2026 build
 - OpenJKDF2 to v0.9.9
-- PCSX2 to 2.8.0
+- PCSX2 to 2.9.81
+- PCSX2x6 to v0.2.22
 - Play to 0.77
 - PPSSPP to v1.20.4
-- Python Pyxel to May 9th, 2026 build
-- Redream to 1.5.0-1239
-- RPCS3 to v.0.0.42
+- Python Pyxel to v2.9.9
+- Redream to 1.5.0-1240
+- RPCS3 to Sep 24th, 2026 build
+- Ruffle to 17th of September 2026 nightly build
 - ScummVM to v2026.3.0
-- ShadPS4 to v.0.17.0
-- Solarus to 2.1.3
+- ShadPS4 to v.0.18.0
+- SimCoupe to v1.2.17
+- Snes9x to Sep 16, 2026 build
+- Solarus to 2.1.4
 - Sonic3-Air to v26.03.28.0
 - Supermodel to v0.3a-20260726-git-b7d8acd
 - TheXTech to v1.3.7.3-1
-- TRX to 1.10.2
-- Tsugaru to v20251206
-- Vita3k to 10th of June build
-- VKQuake to 1.35.0
+- TIC-80 to v1.2.0
+- TRX to 1.11.1
+- Tsugaru to v20260522
+- Ur-Quan Masters to Aug 21, 2026 build
+- UZDoom to 5.0.3
+- Visual Pinball to Sep 16, 2026 build
+- Vita3k to Sep 17, 2026 build
+- VKQuake to 1.36.0
+- vkQuake2 to Aug 5, 2026 build
 - VKQuake3 to 1.36
 - Winetricks to 20260125
 - X16emu to r49
+- Xash3D-FWGS (Half-Life engine + HLSDK mobile_hacks/dmc/opfor) to Aug 27, 2026 build
 - Xemu to v0.8.136
 - Xenia to v1.0.2844
-- Xenia Canary to August 29th, 2026 build
-- Xenia Edge to 28th of August build
+- Xenia Canary to September 16th, 2026 build
+- Xenia Edge to 17th of September build
+- XRoar to v1.12.1
 - Ymir to v0.3.3
 ### System
-- Allwinner H616 device kernel updated to 7.1.5
-- Allwinner H700 device kernel updated to 7.1.9
+- Allwinner H616 device kernel updated to 7.2.8
+- Allwinner H700 device kernel updated to 7.2.8
 - ALSA UCM configuration to v1.2.16.1
+- Bluez to 5.87
 - Buildroot to 2026.05.x with supporting package & toolchain updates
-- DXVK to 3.0.2
+- DXVK to 3.1.1
 - DXVK-NVAPI to v0.9.2
-- FAudio to 26.08
+- FAudio to 26.09
 - FFMPEG to 8.1.2
+- Flatpak to 1.18.2
 - GStreamer codecs to 1.28.5
+- H700 device kernel updated to 7.2.8
 - Khadas VIM4 kernel updated to vendor 5.15.y
-- LabWC to 0.20.1
+- LabWC to 0.20.2
 - Linux Firmware to 20260810
-- Mesa3D to 26.2.1
+- Mesa3D to 26.2.3
 - MangoHud to v0.8.4
-- Nvidia Open Production driver to 610.57.04
+- Nvidia Open Production driver to 615.71.09
 - Nvidia 580 Legacy driver to 580.178.04
 - QT to 6.11.1
-- Qualcomm SM6115 device kernel updated to 7.0.14
-- Qualcomm SM8550 device kernel updated to 7.0.14
-- Qualcomm SM8750 device kernel updated to 7.1.9
-- Raspberry Pi device kernel updated to 6.18.39
-- Rockchip RK3568 device kernel updated to 7.0.14
-- Rockchip RK3588 mainline device kernel updated to 7.1.5
-- Rocknix ABL to 1.1.6 (SM6115 & SM8x50 devices)
+- Qualcomm SM4450 device kernel updated to 7.2.8
+- Qualcomm SM6115 device kernel updated to 7.2.8
+- Qualcomm SM8250 device kernel updated to 7.2.8
+- Qualcomm SM8550 device kernel updated to 7.2.8
+- Qualcomm SM8750 device kernel updated to 7.2.8
+- Raspberry Pi device kernel updated to 6.18.54
+- Rockchip RK3326 device kernel updated to 7.2.8
+- Rockchip RK3562 device kernel updated to 7.2.8
+- Rockchip RK3568 device kernel updated to 7.2.8
+- Rockchip RK3588 mainline device kernel updated to 7.2.8
+- Rocknix ABL to 1.1.8 (SM6115 & SMxx50 devices)
 - RyzenAdj to v0.19.0
 - SDL3 to 3.4.14
 - Sound Open Firmware to 2025.12.2
@@ -266,11 +349,11 @@
 - RTKit to v0.14
 - VKD3D Proton to 3.0.1
 - Vulkan stack to 1.4.350
-- WINE Mono to 11.1.0
+- WINE Mono to 11.3.0
 - WINE Proton to proton-11.0-1
-- WINE TKG to 11.16
+- WINE TKG to 11.17
 - Wlroots to 0.20.2
-- X86_64 / Zen3 kernel updated to 7.1.9
+- X86_64 / Zen3 kernel updated to 7.2.8
 - Xone to v0.5.8
 
 # 2026/05/30 - batocera.linux 43.1

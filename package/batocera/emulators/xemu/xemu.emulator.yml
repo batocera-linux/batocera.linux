@@ -1,5 +1,6 @@
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -88,6 +89,8 @@ custom_features:
     prompt: UDP BIND ADDRESS
     description: Local address and port to receive packets on. Leave this empty if you want to enter it manually in the xemu.toml configuration file.
     preset: input
+file_extensions:
+  - iso
+  - squashfs
 systems:
-  - chihiro
   - xbox

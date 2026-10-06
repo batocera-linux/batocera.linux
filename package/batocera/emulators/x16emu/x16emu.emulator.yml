@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -34,5 +35,9 @@ custom_features:
       Nearest pixel sampling: nearest
       Linear filtering: linear
       Anisotropic filtering: best
+file_extensions:
+  - bas
+  - img
+  - prg
 systems:
   - commanderx16

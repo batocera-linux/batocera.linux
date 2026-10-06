@@ -1,0 +1,11 @@
+prefix=/usr
+exec_prefix=${prefix}
+includedir=${prefix}/include
+
+Name: asio
+Description: A cross-platform C++ library for network and low-level I/O programming that provides developers with a consistent asynchronous model using a modern C++ approach.
+Version: 1.38.2
+Cflags: -I${includedir}
+Lflags:
+Requires:
+Requires.private:

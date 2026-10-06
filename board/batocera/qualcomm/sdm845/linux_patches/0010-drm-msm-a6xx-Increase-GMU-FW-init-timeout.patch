@@ -1,0 +1,30 @@
+From ba970587a0e1203b6a0934b5b9174886b4c4d24c Mon Sep 17 00:00:00 2001
+From: Rob Clark <robin.clark@oss.qualcomm.com>
+Date: Sat, 12 Sep 2026 08:09:14 -0700
+Subject: [PATCH] drm/msm/a6xx+: Increase GMU FW init timeout
+
+We were using 10ms, kgsl uses 100ms.  In practice it is usually takes
+less than 10ms, but very occasionally goes a bit above 10ms, leading to
+a "GMU firmware inialization timed out", from which point things go
+south.
+
+There are probably some things that could be done to speed up init, like
+increasing GMU freq.  But to be safe, increase the timeout to match
+kgsl.
+
+Signed-off-by: Rob Clark <robin.clark@oss.qualcomm.com>
+Reviewed-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Patchwork: https://patchwork.freedesktop.org/patch/753014/
+Message-ID: <20260912150915.28700-1-robin.clark@oss.qualcomm.com>
+---
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+@@ -320,7 +320,7 @@
+ 	gmu_write(gmu, REG_A6XX_GMU_CM3_SYSRESET, 0);
+ 
+ 	ret = gmu_poll_timeout(gmu, REG_A6XX_GMU_CM3_FW_INIT_RESULT, val,
+-		(val & mask) == reset_val, 100, 10000);
++		(val & mask) == reset_val, 100, 100000);
+ 
+ 	if (ret)
+ 		DRM_DEV_ERROR(gmu->dev, "GMU firmware initialization timed out\n");

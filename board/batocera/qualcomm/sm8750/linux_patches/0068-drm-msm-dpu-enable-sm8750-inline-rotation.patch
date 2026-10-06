@@ -1,0 +1,122 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: tiopex <tiopxyz@gmail.com>
+Date: Thu, 10 Sep 2026 23:30:00 +0200
+Subject: [PATCH] drm/msm/dpu: enable SM8750 true inline rotation
+
+DPU 12.0 has SSPP true inline rotator v2.0.1 (max pre-rot
+height 1088), same family as Kalama. Expose 90/270 on VIG pipes
+(QSEED 3.4).
+
+Require UBWC for inline rotation of both RGB and YUV. Include
+XRGB2101010 which gamescope prefers for scanout.
+
+The generic dpu_plane/dpu_rm fixes this depends on live in the
+common patch 0013-drm-msm-dpu-fix-inline-rotation.
+
+Signed-off-by: tiopex <tiopxyz@gmail.com>
+---
+ drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_12_0_sm8750.h | 16 ++++++++--------
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c          | 30 ++++++++++++++++++++++++++++++
+ 2 files changed, 38 insertions(+), 8 deletions(-)
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_12_0_sm8750.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_12_0_sm8750.h
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_12_0_sm8750.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_12_0_sm8750.h
+@@ -59,29 +59,29 @@
+ 	{
+ 		.name = "sspp_0", .id = SSPP_VIG0,
+ 		.base = 0x4000, .len = 0x344,
+-		.features = VIG_SDM845_MASK_SDMA,
+-		.sblk = &dpu_vig_sblk_qseed3_3_4,
++		.features = VIG_SM8750_MASK_SDMA,
++		.sblk = &dpu_vig_sblk_qseed3_3_4_rot_v2,
+ 		.xin_id = 0,
+ 		.type = SSPP_TYPE_VIG,
+ 	}, {
+ 		.name = "sspp_1", .id = SSPP_VIG1,
+ 		.base = 0x6000, .len = 0x344,
+-		.features = VIG_SDM845_MASK_SDMA,
+-		.sblk = &dpu_vig_sblk_qseed3_3_4,
++		.features = VIG_SM8750_MASK_SDMA,
++		.sblk = &dpu_vig_sblk_qseed3_3_4_rot_v2,
+ 		.xin_id = 4,
+ 		.type = SSPP_TYPE_VIG,
+ 	}, {
+ 		.name = "sspp_2", .id = SSPP_VIG2,
+ 		.base = 0x8000, .len = 0x344,
+-		.features = VIG_SDM845_MASK_SDMA,
+-		.sblk = &dpu_vig_sblk_qseed3_3_4,
++		.features = VIG_SM8750_MASK_SDMA,
++		.sblk = &dpu_vig_sblk_qseed3_3_4_rot_v2,
+ 		.xin_id = 8,
+ 		.type = SSPP_TYPE_VIG,
+ 	}, {
+ 		.name = "sspp_3", .id = SSPP_VIG3,
+ 		.base = 0xa000, .len = 0x344,
+-		.features = VIG_SDM845_MASK_SDMA,
+-		.sblk = &dpu_vig_sblk_qseed3_3_4,
++		.features = VIG_SM8750_MASK_SDMA,
++		.sblk = &dpu_vig_sblk_qseed3_3_4_rot_v2,
+ 		.xin_id = 12,
+ 		.type = SSPP_TYPE_VIG,
+ 	}, {
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+@@ -59,6 +59,9 @@
+ #define VIG_SC7280_MASK_SDMA \
+ 	(VIG_SC7280_MASK | BIT(DPU_SSPP_SMART_DMA_V2))
+ 
++#define VIG_SM8750_MASK_SDMA \
++	(VIG_SDM845_MASK_SDMA | BIT(DPU_SSPP_INLINE_ROTATION))
++
+ #define DMA_SDM845_MASK_NO_SDMA \
+ 	(BIT(DPU_SSPP_QOS) | \
+ 	BIT(DPU_SSPP_TS_PREFILL) | BIT(DPU_SSPP_TS_PREFILL_REC1) |\
+@@ -190,6 +193,23 @@
+ 	/* TODO add formats after validation */
+ };
+ 
++static const u32 rotation_v201_formats[] = {
++	DRM_FORMAT_NV12,
++	DRM_FORMAT_P010,
++	DRM_FORMAT_ARGB8888,
++	DRM_FORMAT_ABGR8888,
++	DRM_FORMAT_RGBA8888,
++	DRM_FORMAT_BGRA8888,
++	DRM_FORMAT_XRGB8888,
++	DRM_FORMAT_XBGR8888,
++	DRM_FORMAT_RGBX8888,
++	DRM_FORMAT_BGRX8888,
++	DRM_FORMAT_ARGB2101010,
++	DRM_FORMAT_ABGR2101010,
++	DRM_FORMAT_XRGB2101010,
++	DRM_FORMAT_XBGR2101010,
++};
++
+ static const u32 wb2_formats_rgb_yuv[] = {
+ 	DRM_FORMAT_RGB565,
+ 	DRM_FORMAT_BGR565,
+@@ -309,6 +329,12 @@
+ 	.rot_format_list = rotation_v2_formats,
+ };
+ 
++static const struct dpu_rotation_cfg dpu_rot_sm8750_cfg_v201 = {
++	.rot_maxheight = 1088,
++	.rot_num_formats = ARRAY_SIZE(rotation_v201_formats),
++	.rot_format_list = rotation_v201_formats,
++};
++
+ static const struct dpu_sspp_sub_blks dpu_vig_sblk_qseed2 =
+ 				_VIG_SBLK_QSEED2();
+ 
+@@ -346,6 +372,10 @@
+ static const struct dpu_sspp_sub_blks dpu_vig_sblk_qseed3_3_4 =
+ 				_VIG_SBLK(SSPP_SCALER_VER(3, 4));
+ 
++static const struct dpu_sspp_sub_blks dpu_vig_sblk_qseed3_3_4_rot_v2 =
++			_VIG_SBLK_ROT(SSPP_SCALER_VER(3, 4),
++				      &dpu_rot_sm8750_cfg_v201);
++
+ static const struct dpu_sspp_sub_blks dpu_vig_sblk_qseed3_3_5 =
+ 				_VIG_SBLK_REC0_REC1(SSPP_SCALER_VER(3, 5));
+ 

@@ -1,15 +1,17 @@
 diff -Naur a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
---- a/drivers/input/joystick/rsinput.c	2025-04-21 18:14:21.488071154 +0300
-+++ b/drivers/input/joystick/rsinput.c	2025-04-21 18:34:31.196085921 +0300
-@@ -16,6 +16,7 @@
- #include <linux/of.h>
+diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
+index a47181518..5979891e6 100644
+--- a/drivers/input/joystick/rsinput.c
++++ b/drivers/input/joystick/rsinput.c
+@@ -18,6 +18,7 @@
+ #include <linux/regulator/consumer.h>
  #include <linux/serdev.h>
  #include <linux/slab.h>
 +#include <linux/platform_device.h>
  #include <uapi/linux/sched/types.h>
  
- #define FRAME_HEAD_1              0xA5
-@@ -55,6 +56,7 @@
+ static int update_params=0;
+@@ -127,6 +128,7 @@ module_param(axis_righty_antideadzone,int,0660);
  struct rsinput_driver {
      struct serdev_device *serdev;
      struct input_dev *input;
@@ -17,7 +19,7 @@ diff -Naur a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
      struct regulator *vdd;
      struct gpio_desc *boot_gpio;
      struct gpio_desc *enable_gpio;
-@@ -62,6 +64,9 @@
+@@ -139,6 +141,9 @@ struct rsinput_driver {
      uint8_t sequence_number;
  };
  
@@ -27,7 +29,7 @@ diff -Naur a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
  static const unsigned int keymap[] = {
      BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
      BTN_NORTH,   BTN_WEST,	    BTN_EAST,	   BTN_SOUTH,
-@@ -272,6 +277,45 @@
+@@ -417,6 +422,45 @@ static const struct serdev_device_ops rsinput_rx_ops = {
      .receive_buf = rsinput_rx,
  };
  
@@ -73,9 +75,9 @@ diff -Naur a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
  static int rsinput_probe(struct serdev_device *serdev) {
      struct rsinput_driver *drv;
      u32 gamepad_bus = 0;
-@@ -369,6 +413,17 @@
-     input_set_abs_params(drv->input, ABS_Z, 0, 1830, 0, 30);
-     input_set_abs_params(drv->input, ABS_RZ, 0, 1830, 0, 30);
+@@ -560,6 +604,17 @@ static int rsinput_probe(struct serdev_device *serdev) {
+     input_set_abs_params(drv->input, ABS_HAT0X, -1, 1, 0, 0);
+     input_set_abs_params(drv->input, ABS_HAT0Y, -1, 1, 0, 0);
  
 +    input_set_capability(drv->input, EV_FF, FF_PERIODIC);
 +
@@ -91,9 +93,10 @@ diff -Naur a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
      error = input_register_device(drv->input);
      if (error)
          return error;
-diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-haptics.c
---- a/drivers/input/misc/qcom-hv-haptics.c	2025-04-21 18:14:21.488071154 +0300
-+++ b/drivers/input/misc/qcom-hv-haptics.c	2025-04-21 18:36:54.856087675 +0300
+diff --git a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-haptics.c
+index ab8585f6c..daca114fe 100644
+--- a/drivers/input/misc/qcom-hv-haptics.c
++++ b/drivers/input/misc/qcom-hv-haptics.c
 @@ -31,6 +31,7 @@
  #include <linux/uaccess.h>
  #include <linux/workqueue.h>
@@ -102,7 +105,7 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
  #include <linux/qpnp/qpnp-pbs.h>
  
  #include <linux/soc/qcom/battery_charger.h>
-@@ -668,6 +669,8 @@
+@@ -668,6 +669,8 @@ struct haptics_reg_info {
  	u8 val;
  };
  
@@ -111,7 +114,7 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
  static inline int get_max_fifo_samples(struct haptics_chip *chip)
  {
  	int val = 0;
-@@ -6067,6 +6070,9 @@
+@@ -6075,6 +6078,9 @@ static int haptics_probe(struct platform_device *pdev)
  	if (rc < 0)
  		dev_err(chip->dev, "Creating debugfs failed, rc=%d\n", rc);
  #endif
@@ -121,7 +124,7 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
  	return 0;
  destroy_ff:
  	input_ff_destroy(chip->input_dev);
-@@ -6080,6 +6086,9 @@
+@@ -6088,6 +6094,9 @@ static void haptics_remove(struct platform_device *pdev)
  	if (chip->pbs_node)
  		of_node_put(chip->pbs_node);
  
@@ -131,7 +134,7 @@ diff -Naur a/drivers/input/misc/qcom-hv-haptics.c b/drivers/input/misc/qcom-hv-h
  	unregister_hboost_event_notifier(&chip->hboost_nb);
  	class_unregister(&chip->hap_class);
  #ifdef CONFIG_DEBUG_FS
-@@ -6277,5 +6286,62 @@
+@@ -6285,5 +6294,62 @@ static struct platform_driver haptics_driver = {
  };
  module_platform_driver(haptics_driver);
  

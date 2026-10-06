@@ -1,0 +1,46 @@
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -36,6 +36,7 @@
+ static unsigned int uvc_quirks_param = -1;
+ unsigned int uvc_dbg_param;
+ unsigned int uvc_timeout_param = UVC_CTRL_STREAMING_TIMEOUT;
++unsigned int uvc_bandwidth_cap_param;
+ bool uvc_allow_privacy_override_param;
+ 
+ static struct usb_driver uvc_driver;
+@@ -2505,6 +2506,8 @@
+ MODULE_PARM_DESC(trace, "Trace level bitmask");
+ module_param_named(timeout, uvc_timeout_param, uint, 0644);
+ MODULE_PARM_DESC(timeout, "Streaming control requests timeout");
++module_param_named(bandwidth_cap, uvc_bandwidth_cap_param, uint, S_IRUGO|S_IWUSR);
++MODULE_PARM_DESC(bandwidth_cap, "Maximum bandwidth per device");
+ module_param_named(allow_privacy_override, uvc_allow_privacy_override_param, bool, 0644);
+ MODULE_PARM_DESC(allow_privacy_override,
+ 		 "Allow access to privacy related controls");
+diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -262,6 +262,11 @@
+ 
+ 		ctrl->dwMaxPayloadTransferSize = bandwidth;
+ 	}
++
++	if (uvc_bandwidth_cap_param && ctrl->dwMaxPayloadTransferSize > uvc_bandwidth_cap_param) {
++	  dev_printk(KERN_WARNING, &(stream->dev)->udev->dev, "Bandwidth capped from %u to %u B/frame.\n", ctrl->dwMaxPayloadTransferSize, uvc_bandwidth_cap_param);
++	  ctrl->dwMaxPayloadTransferSize = uvc_bandwidth_cap_param;
++	}
+ 
+ 	if (stream->intf->num_altsetting > 1 &&
+ 	    ctrl->dwMaxPayloadTransferSize > stream->maxpsize) {
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -667,6 +667,7 @@
+ extern unsigned int uvc_dbg_param;
+ extern unsigned int uvc_timeout_param;
+ extern unsigned int uvc_hw_timestamps_param;
++extern unsigned int uvc_bandwidth_cap_param;
+ extern bool uvc_allow_privacy_override_param;
+ 
+ #define uvc_dbg(_dev, flag, fmt, ...)					\

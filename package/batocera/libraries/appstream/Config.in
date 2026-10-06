@@ -1,0 +1,16 @@
+config BR2_PACKAGE_APPSTREAM
+	bool "appstream"
+	depends on BR2_USE_WCHAR # libglib2
+	depends on BR2_TOOLCHAIN_HAS_THREADS # libglib2
+	depends on BR2_USE_MMU # libglib2
+	depends on !BR2_STATIC_LIBS # libxmlb
+	select BR2_PACKAGE_LIBCURL
+	select BR2_PACKAGE_LIBFYAML
+	select BR2_PACKAGE_LIBGLIB2
+	select BR2_PACKAGE_LIBXML2
+	select BR2_PACKAGE_LIBXMLB
+	help
+	  Library to read and write AppStream metadata, used by
+	  software centres and Flatpak.
+
+	  https://www.freedesktop.org/wiki/Distributions/AppStream/

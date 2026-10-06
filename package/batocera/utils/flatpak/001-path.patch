@@ -1,0 +1,11 @@
+--- a/app/flatpak-main.c
++++ b/app/flatpak-main.c
+@@ -939,6 +939,8 @@
+   int ret;
+   struct sigaction action;
+ 
++  putenv("HOME=/userdata/saves/flatpak/data");
++
+   /* The child repo shared between the client process and the
+      system-helper really needs to support creating files that
+      are readable by others, so override the umask to 022.

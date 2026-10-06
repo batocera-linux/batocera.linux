@@ -5,11 +5,11 @@
 ################################################################################
 # Align with the wlroots version
 # see https://github.com/labwc/labwc/blob/master/NEWS.md
-LABWC_VERSION = 0.20.1
+LABWC_VERSION = 0.20.2
 LABWC_SITE = $(call github,labwc,labwc,$(LABWC_VERSION))
 LABWC_LICENSE = GPLv2
 LABWC_LICENSE_FILES = LICENSE
-LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo 
+LABWC_DEPENDENCIES = cairo host-pkgconf libglib2 libinput libpng libsfdo
 LABWC_DEPENDENCIES += libxkbcommon libxml2 pango wayland wayland-protocols wlroots
 LABWC_CONF_OPTS = \
 	-Dman-pages=disabled \

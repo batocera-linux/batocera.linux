@@ -1,0 +1,13 @@
+diff --git a/pcsx2/Input/SDLInputSource.cpp b/pcsx2/Input/SDLInputSource.cpp
+index 4993e43514..38f6a1da47 100644
+--- a/pcsx2/Input/SDLInputSource.cpp
++++ b/pcsx2/Input/SDLInputSource.cpp
+@@ -29,7 +29,7 @@
+ #include <bit>
+ #include <cmath>
+ 
+-static constexpr const char* CONTROLLER_DB_FILENAME = "game_controller_db.txt";
++static constexpr const char* CONTROLLER_DB_FILENAME = "/userdata/system/configs/PCSX2/game_controller_db.txt";
+ 
+ static constexpr const char* s_sdl_axis_names[] = {
+ 	"LeftX", // SDL_CONTROLLER_AXIS_LEFTX

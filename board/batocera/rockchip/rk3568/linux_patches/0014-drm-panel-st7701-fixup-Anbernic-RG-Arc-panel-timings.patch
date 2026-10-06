@@ -1,0 +1,44 @@
+From 8f03d092a7bb6b62efc855157fe1fac3ff7f5686 Mon Sep 17 00:00:00 2001
+From: sydarn <sydarn@proton.me>
+Date: Mon, 29 Apr 2024 22:57:37 +0200
+Subject: [PATCH] drm/panel: st7701: fixup Anbernic RG-Arc panel timings
+
+* Request 26000kHz, but actually recieve 25600kHz as before. this to get
+  around choppiness issue. Again weird "clock" behavior, albeit
+  different than RGB30.
+* More visible rows, thogh 1 is still missing but noticeble better than
+  before.
+* 59.96Hz refresh rate.
+---
+ drivers/gpu/drm/panel/panel-sitronix-st7701.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-sitronix-st7701.c b/drivers/gpu/drm/panel/panel-sitronix-st7701.c
+index eef03d04e0cd..492cb84cea76 100644
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7701.c
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7701.c
+@@ -937,7 +937,7 @@ static const struct st7701_panel_desc kd50t048a_desc = {
+ };
+ 
+ static const struct drm_display_mode rg_arc_mode = {
+-	.clock          = 25600,
++	.clock          = 26000,
+ 
+ 	.hdisplay	= 480,
+ 	.hsync_start	= 480 + 60,
+@@ -945,9 +945,9 @@ static const struct drm_display_mode rg_arc_mode = {
+ 	.htotal         = 480 + 60 + 42 + 60,
+ 
+ 	.vdisplay	= 640,
+-	.vsync_start	= 640 + 10,
+-	.vsync_end	= 640 + 10 + 4,
+-	.vtotal         = 640 + 10 + 4 + 16,
++	.vsync_start	= 640 + 8,
++	.vsync_end	= 640 + 8 + 4,
++	.vtotal         = 640 + 8 + 4 + 13,
+ 
+ 	.width_mm	= 63,
+ 	.height_mm	= 84,
+-- 
+2.34.1
+

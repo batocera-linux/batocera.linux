@@ -1,0 +1,65 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Wed, 23 Sep 2026 21:20:00 +1000
+Subject: [PATCH] power: pmic: rk8xx: add RK806 charge-only boot support
+
+rk8xx_off_for_plugin() shuts the board back down when
+CONFIG_ROCKCHIP_RK8XX_DISABLE_BOOT_ON_POWERON is set and the wake
+reason was a charger plug-in rather than the power button, but it has
+no case for the RK806, so boards using that PMIC always fall through
+to "Cannot read boot reason" and never shut back down.
+
+Add it using the RK806's own SYS_CFG3/ON_SOURCE registers. With VBUS
+present the RK806 reports a power-button wake as a plug-in too, so the
+power-key interrupt latches in INT_STS0 are checked as well: any key
+activity means a person pressed the button and the board boots.
+
+Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
+---
+ drivers/power/pmic/rk8xx.c | 9 +++++++++
+ include/power/rk8xx_pmic.h | 5 ++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/power/pmic/rk8xx.c b/drivers/power/pmic/rk8xx.c
+--- a/drivers/power/pmic/rk8xx.c
++++ b/drivers/power/pmic/rk8xx.c
+@@ -83,6 +83,15 @@
+ 					BIT(0));
+ 		}
+ 		break;
++	case RK806_ID:
++		/* With VBUS present a button wake is still reported as a plug-in, so also check the key IRQ latch */
++		if ((pmic_reg_read(dev, RK806_ON_SOURCE) &
++		     (RK8XX_ON_PLUG_IN | RK8XX_ON_PWRON)) == RK8XX_ON_PLUG_IN &&
++		    !(pmic_reg_read(dev, RK806_INT_STS0) & RK806_INT_STS_PWRON_MSK)) {
++			printf("Power Off due to plug-in event\n");
++			pmic_clrsetbits(dev, RK806_REG_SYS_CFG3, 0, BIT(0));
++		}
++		break;
+ 	default:
+ 		printf("PMIC RK%x: Cannot read boot reason.\n",
+ 		       priv->variant);
+diff --git a/include/power/rk8xx_pmic.h b/include/power/rk8xx_pmic.h
+--- a/include/power/rk8xx_pmic.h
++++ b/include/power/rk8xx_pmic.h
+@@ -189,7 +189,9 @@
+ 	RK806_REG_SYS_CFG3 = 0x72,
+ 	RK806_WDT_REG,
+ 	RK806_ON_SOURCE,
+-	RK806_OFF_SOURCE
++	RK806_OFF_SOURCE,
++	RK806_PWRON_KEY,
++	RK806_INT_STS0
+ };
+ 
+ enum {
+@@ -237,6 +239,7 @@
+ 
+ #define RK8XX_ON_PWRON		BIT(7)
+ #define RK8XX_ON_PLUG_IN	BIT(6)
++#define RK806_INT_STS_PWRON_MSK	GENMASK(3, 0)
+ 
+ struct reg_data {
+ 	u8 reg;
+-- 
+2.43.0

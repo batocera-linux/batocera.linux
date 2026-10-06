@@ -1,0 +1,23 @@
+adc_joystick_invert() looks up the range by ABS code but was given the channel index,
+so an inverted axis on any channel whose index is not also its code reads -raw.
+
+--- a/drivers/input/joystick/adc-joystick.c
++++ b/drivers/input/joystick/adc-joystick.c
+@@ -45,7 +45,7 @@
+ 		if (ret < 0)
+ 			return;
+ 		if (joy->axes[i].inverted)
+-			val = adc_joystick_invert(input, i, val);
++			val = adc_joystick_invert(input, joy->axes[i].code, val);
+ 		input_report_abs(input, joy->axes[i].code, val);
+ 	}
+ 	input_sync(input);
+@@ -95,7 +95,7 @@
+ 		else
+ 			val &= GENMASK(msb, 0);
+ 		if (joy->axes[i].inverted)
+-			val = adc_joystick_invert(joy->input, i, val);
++			val = adc_joystick_invert(joy->input, joy->axes[i].code, val);
+ 		input_report_abs(joy->input, joy->axes[i].code, val);
+ 	}
+ 

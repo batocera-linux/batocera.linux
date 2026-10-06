@@ -168,6 +168,8 @@ do_help() {
 		  --media-upgrade          Try to upgrade with ~/upgrade/boot.tar.xz (default)
 		     --file [file path]    Use a dedicated file location
 		     --media               Use files in media pools, fallback to default
+
+		  --update-bootloader      Flash the bootloader and firmware of the installed version
 _EOF_
 }
 
@@ -285,8 +287,9 @@ do_update() {
     done
 
     # snapshot to help create .stale file
-    # Exclude Pi-specific eeprom files and rpi log from being treated as stale
-    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
+    # Exclude Pi-specific eeprom files, rpi log and user boot files (boot-custom.sh hook,
+    # Pi autoboot.txt, the chosen panel overlay) from being treated as stale
+    local BOOT_BEFORE=$(find /boot -mindepth 1 | sed 's|^/boot/||' | grep -vE '^(boot/batocera|boot/batocera\.update|boot/rufomaculata|boot/rufomaculata\.update|boot/overlay|boot/overlay\.old|[^/]+\.upgrade|boot\.stale|boot-custom\.sh|autoboot\.txt|overlays/mipi-panel\.dtbo|.*ldlinux.*|boot/spi-flash\.log|boot/rpi-eeprom\.log|boot/u-boot-sunxi\.log|recovery\.bin|recovery\.000|pieeprom\.upd|pieeprom\.sig|vl805\.bin|vl805\.sig)$' | sort)
 
     # extract file on /boot
     upgmsg "Extracting files ..."
@@ -295,6 +298,66 @@ do_update() {
 	return 1
     fi
 
+    do_bootloader_update
+
+    # build stale list: entries present before extraction but absent from the new tarball
+    upgmsg "Generating stale file list ..."
+    TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
+    comm -23 \
+	 <(echo "$BOOT_BEFORE") \
+	 <(echo "$TARBALL_CONTENTS") \
+	 > /boot/boot.stale
+
+    STALE_COUNT=$(wc -l < /boot/boot.stale)
+    if [ "$STALE_COUNT" -eq 0 ]; then
+	upgmsg "No stale files detected ... proceed" 0.5
+	rm -f /boot/boot.stale
+    else
+	upgmsg "Stale files to be removed on next boot (${STALE_COUNT})" 1
+	cat /boot/boot.stale
+    fi
+
+    # restore boot files
+    upgmsg "Restoring config files ..." 0.5
+    for BOOTFILE in ${BOOTFILES}
+    do
+	if test -e "/boot/${BOOTFILE}.upgrade"
+	then
+            if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
+            then
+		echo "Ouch" >&2
+            fi
+	fi
+    done
+
+    # remount /boot in ro
+    upgmsg "Doing final cleanups ..." 0.5
+    if ! mount -o remount,ro /boot
+    then
+	return 1
+    fi
+
+    # a sync with some cleanups of downloaded and created files
+    G_PRESERVE_UPGRADE_FILES=
+    do_clean ${TERMINAL}
+    sync
+
+    # exit from ES-badge without additional messages
+    [ $TERMINAL -eq 0 ] && return 0
+
+    # verify update is for same board, provide a warning if not
+    NEWBOARD=$(cat /boot/boot/batocera.board)
+    if [ "${G_BOARD}" != "${NEWBOARD}" ]
+    then
+	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
+    fi
+
+    echo; echo "Done. Please reboot the system so that the changes take effect!"
+    return 0
+}
+
+# Flash bootloaders and firmware shipped in /boot
+do_bootloader_update() {
     # Flash SPI u-boot if a new binary is present in /boot/boot
     local SPI_LOG="/boot/boot/spi-flash.log"
     local SPI_BIN=""
@@ -381,60 +444,35 @@ do_update() {
         fi
     fi
 
-    # build stale list: entries present before extraction but absent from the new tarball
-    upgmsg "Generating stale file list ..."
-    TARBALL_CONTENTS=$(tar -Jtf "${G_LOCAL_FILE}" | sed -e 's|^\./||' -e 's|/$||' | sort -u)
-    comm -23 \
-	 <(echo "$BOOT_BEFORE") \
-	 <(echo "$TARBALL_CONTENTS") \
-	 > /boot/boot.stale
-
-    STALE_COUNT=$(wc -l < /boot/boot.stale)
-    if [ "$STALE_COUNT" -eq 0 ]; then
-	upgmsg "No stale files detected ... proceed" 0.5
-	rm -f /boot/boot.stale
-    else
-	upgmsg "Stale files to be removed on next boot (${STALE_COUNT})" 1
-	cat /boot/boot.stale
-    fi
-
-    # restore boot files
-    upgmsg "Restoring config files ..." 0.5
-    for BOOTFILE in ${BOOTFILES}
-    do
-	if test -e "/boot/${BOOTFILE}.upgrade"
-	then
-            if ! mv "/boot/${BOOTFILE}.upgrade" "/boot/${BOOTFILE}"
-            then
-		echo "Ouch" >&2
+    # Update Allwinner u-boot at 8K on the boot disk, only over an existing SPL
+    local SUNXI_BIN="/boot/boot/u-boot-sunxi-with-spl.bin"
+    if test -f "${SUNXI_BIN}"; then
+        local SUNXI_LOG="/boot/boot/u-boot-sunxi.log"
+        local BOOT_PART=$(grep -m1 -E '^[^ ]+ /boot ' /proc/mounts | cut -d' ' -f1)
+        local BOOT_DISK="/dev/$(lsblk -no PKNAME "${BOOT_PART}" 2>/dev/null)"
+        local PART_START=$(cat "/sys/class/block/$(basename "${BOOT_PART}")/start" 2>/dev/null)
+        local BIN_SIZE=$(wc -c < "${SUNXI_BIN}")
+        local BIN_LEN=$(( (BIN_SIZE + 1023) / 1024 ))
+        echo "=== u-boot Update: $(date) ===" >> "${SUNXI_LOG}"
+        echo "disk: ${BOOT_DISK}, partition start: ${PART_START}, binary: ${BIN_SIZE} bytes" >> "${SUNXI_LOG}"
+        if ! test -b "${BOOT_DISK}" || test -z "${PART_START}" || test $((8192 + BIN_SIZE)) -gt $((PART_START * 512)); then
+            echo "WARNING: no room before the boot partition, skipping" >> "${SUNXI_LOG}"
+            upgmsg "WARNING: u-boot update skipped! See ${SUNXI_LOG}" 2
+        elif test "$(dd if="${BOOT_DISK}" bs=1 skip=8196 count=8 2>/dev/null)" != "eGON.BT0"; then
+            echo "WARNING: no SPL at 8K on ${BOOT_DISK}, skipping" >> "${SUNXI_LOG}"
+            upgmsg "WARNING: u-boot update skipped! See ${SUNXI_LOG}" 2
+        elif dd if="${BOOT_DISK}" bs=1k skip=8 count=${BIN_LEN} 2>/dev/null | head -c "${BIN_SIZE}" | cmp -s - "${SUNXI_BIN}"; then
+            echo "u-boot already up to date" >> "${SUNXI_LOG}"
+        else
+            upgmsg "Updating u-boot... DO NOT POWER OFF THE DEVICE!"
+            if dd if="${SUNXI_BIN}" of="${BOOT_DISK}" bs=1k seek=8 conv=fsync,notrunc 2>>"${SUNXI_LOG}"; then
+                echo "u-boot update successful" >> "${SUNXI_LOG}"
+                upgmsg "u-boot update completed!" 1
+            else
+                upgmsg "WARNING: u-boot update failed! See ${SUNXI_LOG}" 2
             fi
-	fi
-    done
-
-    # remount /boot in ro
-    upgmsg "Doing final cleanups ..." 0.5
-    if ! mount -o remount,ro /boot
-    then
-	return 1
+        fi
     fi
-
-    # a sync with some cleanups of downloaded and created files
-    G_PRESERVE_UPGRADE_FILES=
-    do_clean ${TERMINAL}
-    sync
-
-    # exit from ES-badge without additional messages
-    [ $TERMINAL -eq 0 ] && return 0
-
-    # verify update is for same board, provide a warning if not
-    NEWBOARD=$(cat /boot/boot/batocera.board)
-    if [ "${G_BOARD}" != "${NEWBOARD}" ]
-    then
-	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
-    fi
-
-    echo; echo "Done. Please reboot the system so that the changes take effect!"
-    return 0
 }
 
 #####################################################
@@ -444,8 +482,22 @@ do_update() {
 G_UPDATEURL="https://updates.batocera.org"
 G_CURRENT_VERSION=$(cat /usr/share/batocera/batocera.version)
 G_BOARD=$(cat /boot/boot/batocera.board)
+G_TARGET_BOARD=${G_BOARD}
 G_UPDATETYPE="$(/usr/bin/batocera-settings-get updates.type)"
 G_SETTINGSUPDATEURL="$(/usr/bin/batocera-settings-get updates.url)"
+
+# architecture migration if possible
+G_SETTINGSUPDATEARCH="$(/usr/bin/batocera-settings-get updates.architecture)"
+if test "${G_SETTINGSUPDATEARCH}" = 1
+then
+    NEW_ARCH=$(batocera-architecture-compatibility)
+    if test $? = 0 -a -n "${NEW_ARCH}"
+    then
+	echo "Choosing to migrate on architecture ${NEW_ARCH}..." >&2
+	G_TARGET_BOARD=${NEW_ARCH}
+    fi
+fi
+###
 
 # customizable upgrade url website
 test -n "${G_SETTINGSUPDATEURL}" && G_UPDATEURL="${G_SETTINGSUPDATEURL}"
@@ -454,7 +506,7 @@ test -n "${G_SETTINGSUPDATEURL}" && G_UPDATEURL="${G_SETTINGSUPDATEURL}"
 test "${G_UPDATETYPE}" != "stable" -a "${G_UPDATETYPE}" != "unstable" -a "${G_UPDATETYPE}" != "butterfly" && G_UPDATETYPE="stable"
 
 # custom the url directory
-G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/${G_UPDATETYPE}/last"
+G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_TARGET_BOARD}/${G_UPDATETYPE}/last"
 
 # --- Prepare file and link downloads ---
 ACTION="${1,,}"
@@ -495,7 +547,7 @@ case "${ACTION}" in
         G_PRESERVE_UPGRADE_FILES=1
         [[ ${1,,} == "butterfly" ]] && G_UPDATETYPE=butterfly
 	[[ ${1,,} == "stable" ]]    && G_UPDATETYPE=stable
-        do_upgradecheck_${TERMINAL} "${G_UPDATEURL}/${G_BOARD}/${G_UPDATETYPE}/last/batocera.version"
+        do_upgradecheck_${TERMINAL} "${G_UPDATEURL}/${G_TARGET_BOARD}/${G_UPDATETYPE}/last/batocera.version"
         exit $?
     ;;
     --check-media-upgrade) # Can a file be retrieved within ES
@@ -512,10 +564,10 @@ case "${ACTION}" in
 	shift
         case "${SWITCH}" in
             --url) [[ -n "$1" ]] && G_DWD_HTTP_DIR="$1" ;;
-            --version) [[ "$1" =~ ^[0-9.]{2,6}$ ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/stable/$1" ;;
+            --version) [[ "$1" =~ ^[0-9.]{2,6}$ ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_TARGET_BOARD}/stable/$1" ;;
             --type)
-		[[ "${1,,}" == "butterfly" ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/butterfly/last"
-		[[ "${1,,}" == "stable" ]]    && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_BOARD}/stable/last"
+		[[ "${1,,}" == "butterfly" ]] && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_TARGET_BOARD}/butterfly/last"
+		[[ "${1,,}" == "stable" ]]    && G_DWD_HTTP_DIR="${G_UPDATEURL}/${G_TARGET_BOARD}/stable/last"
 		;;
         esac
 	echo "Starting the upgrade..." >&2
@@ -529,6 +581,12 @@ case "${ACTION}" in
         download_upgrades ${TERMINAL} "${G_DWD_HTTP_DIR}" "${SIZE}" || { echo "Error: Connection failed '${G_DWD_HTTP_DIR}'"; exit 1; }
         validate_checksum || exit 1
 	do_update         || exit 1
+    ;;
+    --update-bootloader) # Flash from the installed /boot any extra bootloader or firmware files
+	mount -o remount,rw /boot || exit 1
+	do_bootloader_update
+	mount -o remount,ro /boot
+	sync
     ;;
     --help|-h) # Dedicated help page
         do_help

@@ -1,0 +1,343 @@
+From a72c45a8d7783408add4450aeddde5c59cb4cba8 Mon Sep 17 00:00:00 2001
+From: Paul Reioux <reioux@gmail.com>
+Date: Wed, 17 Apr 2024 16:16:26 -0700
+Subject: [PATCH] arm64: dts: rockchip: update powkiddy x55 dts to support
+ rocknix-joypad driver
+
+Signed-off-by: Paul Reioux <reioux@gmail.com>
+---
+ .../boot/dts/rockchip/rk3566-powkiddy-x55.dts | 304 ++++++++++--------
+ 1 file changed, 161 insertions(+), 143 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
+index 0f26b8789c40..f0becd04e070 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-x55.dts
+@@ -25,47 +25,6 @@ chosen: chosen {
+ 		stdout-path = "serial2:1500000n8";
+ 	};
+ 
+-	adc_joystick: adc-joystick {
+-		compatible = "adc-joystick";
+-		io-channels = <&saradc 0>, <&saradc 1>,
+-			      <&saradc 2>, <&saradc 3>;
+-		poll-interval = <60>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		axis@0 {
+-			reg = <0>;
+-			abs-flat = <30>;
+-			abs-fuzz = <20>;
+-			abs-range = <15 1023>;
+-			linux,code = <ABS_X>;
+-		};
+-
+-		axis@1 {
+-			reg = <1>;
+-			abs-flat = <30>;
+-			abs-fuzz = <20>;
+-			abs-range = <1023 15>;
+-			linux,code = <ABS_Y>;
+-		};
+-
+-		axis@2 {
+-			reg = <2>;
+-			abs-flat = <30>;
+-			abs-fuzz = <20>;
+-			abs-range = <15 1023>;
+-			linux,code = <ABS_RX>;
+-		};
+-
+-		axis@3 {
+-			reg = <3>;
+-			abs-flat = <30>;
+-			abs-fuzz = <20>;
+-			abs-range = <1023 15>;
+-			linux,code = <ABS_RY>;
+-		};
+-	};
+-
+ 	backlight: backlight {
+ 		compatible = "pwm-backlight";
+ 		power-supply = <&vcc_sys>;
+@@ -91,108 +50,6 @@ battery: battery {
+ 					<3400000 0>;
+ 	};
+ 
+-	gpio_keys_control: gpio-keys-control {
+-		compatible = "gpio-keys";
+-		pinctrl-0 = <&btn_pins_ctrl>;
+-		pinctrl-names = "default";
+-
+-		button-a {
+-			gpios = <&gpio3 RK_PD3 GPIO_ACTIVE_LOW>;
+-			label = "EAST";
+-			linux,code = <BTN_EAST>;
+-		};
+-
+-		button-b {
+-			gpios = <&gpio3 RK_PD2 GPIO_ACTIVE_LOW>;
+-			label = "SOUTH";
+-			linux,code = <BTN_SOUTH>;
+-		};
+-
+-		button-down {
+-			gpios = <&gpio4 RK_PA1 GPIO_ACTIVE_LOW>;
+-			label = "DPAD-DOWN";
+-			linux,code = <BTN_DPAD_DOWN>;
+-		};
+-
+-		button-l1 {
+-			gpios = <&gpio3 RK_PD0 GPIO_ACTIVE_LOW>;
+-			label = "TL";
+-			linux,code = <BTN_TL>;
+-		};
+-
+-		button-l2 {
+-			gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_LOW>;
+-			label = "TL2";
+-			linux,code = <BTN_TL2>;
+-		};
+-
+-		button-left {
+-			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_LOW>;
+-			label = "DPAD-LEFT";
+-			linux,code = <BTN_DPAD_LEFT>;
+-		};
+-
+-		button-right {
+-			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_LOW>;
+-			label = "DPAD-RIGHT";
+-			linux,code = <BTN_DPAD_RIGHT>;
+-		};
+-
+-		button-select {
+-			gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_LOW>;
+-			label = "SELECT";
+-			linux,code = <BTN_SELECT>;
+-		};
+-
+-		button-start {
+-			gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_LOW>;
+-			label = "START";
+-			linux,code = <BTN_START>;
+-		};
+-
+-		button-thumbl {
+-			gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_LOW>;
+-			label = "THUMBL";
+-			linux,code = <BTN_THUMBL>;
+-		};
+-
+-		button-thumbr {
+-			gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_LOW>;
+-			label = "THUMBR";
+-			linux,code = <BTN_THUMBR>;
+-		};
+-
+-		button-r1 {
+-			gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_LOW>;
+-			label = "TR";
+-			linux,code = <BTN_TR>;
+-		};
+-
+-		button-r2 {
+-			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
+-			label = "TR2";
+-			linux,code = <BTN_TR2>;
+-		};
+-
+-		button-up {
+-			gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_LOW>;
+-			label = "DPAD-UP";
+-			linux,code = <BTN_DPAD_UP>;
+-		};
+-
+-		button-x {
+-			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
+-			label = "NORTH";
+-			linux,code = <BTN_NORTH>;
+-		};
+-
+-		button-y {
+-			gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_LOW>;
+-			label = "WEST";
+-			linux,code = <BTN_WEST>;
+-		};
+-	};
+-
+ 	gpio_keys_vol: gpio-keys-vol {
+ 		compatible = "gpio-keys";
+ 		autorepeat;
+@@ -251,6 +108,167 @@ hdmi_con_in: endpoint {
+ 		};
+ 	};
+ 
++	joypad: rocknix-joypad {
++		compatible = "rocknix-joypad";
++		status = "okay";
++
++		/* the following 4 dts entries starting from joypad-name are important to keep
++		   compatibility with existing userspace programs such as ES and retroarch */
++		joypad-name = "retrogame_joypad";
++		joypad-product = <0x1101>;
++		joypad-revision = <0x0100>;
++		joypad-vendor = <0x484B>;
++
++		/* analog mux define */
++		io-channel-names = "key-RY", "key-RX", "key-LY", "key-LX";
++		io-channels = <&saradc 2>,<&saradc 3>,<&saradc 0>, <&saradc 1>;
++
++		/* gpio pincontrol setup */
++		pinctrl-names = "default";
++		pinctrl-0 = <&btn_pins_ctrl>;
++
++		/* adc calculate scale */
++		button-adc-scale = <2>;
++
++		/* adc deadzone range (minimum should be around 12%) */
++		button-adc-deadzone = <216>;
++
++		/* specifies fuzz value that is used to filter noise from
++		   the event stream. (around 3%) */
++		button-adc-fuzz = <54>;
++		button-adc-flat = <54>;
++
++		/* analog Stick data tuning value(precent)
++		   p = positive direction, n = negative direction
++		   report value = (real_adc_data * tuning_value) / 100 */
++		abs_x-p-tuning = <180>;
++		abs_x-n-tuning = <180>;
++
++		abs_y-p-tuning = <180>;
++		abs_y-n-tuning = <180>;
++
++		abs_rx-p-tuning = <180>;
++		abs_rx-n-tuning = <180>;
++
++		abs_ry-p-tuning = <180>;
++		abs_ry-n-tuning = <180>;
++
++		/* poll device interval (ms), adc read interval */
++		poll-interval = <10>;
++
++		/* gpio button auto repeat set value : default disable */
++		/* autorepeat; */
++
++		/*    *** Powkiddy X55 Switch layout ***
++		|------------------------------------------------|
++		| sw15                                      sw13 |
++		| sw16                                      sw14 |
++		|------------------------------------------------|
++		|                                                |
++		|   Analog     |-------------------|             |
++		|    sw11      |                   |      sw8    |
++		|              |                   |   sw7   sw5 |
++		|              |    LCD Display    |      sw6    |
++		|     sw1      |                   |             |
++		|  sw3  sw4    |                   |    Analog   |
++		|     sw2      |-------------------|     sw12    |
++		|                                                |
++		| sw9 Vol+                           Vol- sw10   |
++		|                                                |
++		|------------------------------------------------| */
++
++		sw1 {
++			gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-UP";
++			linux,code = <BTN_DPAD_UP>;
++		};
++		sw2 {
++			gpios = <&gpio4 RK_PA1 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-DOWN";
++			linux,code = <BTN_DPAD_DOWN>;
++		};
++		sw3 {
++			gpios = <&gpio3 RK_PD6 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-LEFT";
++			linux,code = <BTN_DPAD_LEFT>;
++		};
++		sw4 {
++			gpios = <&gpio3 RK_PD7 GPIO_ACTIVE_LOW>;
++			label = "GPIO DPAD-RIGHT";
++			linux,code = <BTN_DPAD_RIGHT>;
++		};
++		sw5 {
++			gpios = <&gpio3 RK_PD3 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-A";
++			linux,code = <BTN_EAST>;
++		};
++		sw6 {
++			gpios = <&gpio3 RK_PD2 GPIO_ACTIVE_LOW> ;
++			label = "GPIO BTN-B";
++			linux,code = <BTN_SOUTH>;
++		};
++		sw7 {
++			gpios = <&gpio3 RK_PD4 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-Y";
++			linux,code = <BTN_WEST>;
++		};
++		sw8 {
++			gpios = <&gpio3 RK_PD5 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN-X";
++			linux,code = <BTN_NORTH>;
++		};
++		sw9 {
++			gpios = <&gpio4 RK_PA4 GPIO_ACTIVE_LOW>;
++			label = "BTN_SELECT";
++			linux,code = <BTN_SELECT>;
++		};
++		sw10 {
++			gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_LOW>;
++			label = "BTN_START";
++			linux,code = <BTN_START>;
++		};
++		/* this sw11 entry is SPECIAL, most RK3566 devices do not have
++		   this physical button but for the sake of keeping compatibility
++		   with ES and retroarch, this phantom button and offset will
++		   allow existing userspace programs to work without doing any
++		   new remapping thus saving lots of headaches and extra work */
++		sw11 {
++			gpios = <&gpio3 RK_PB7 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN_F";
++			linux,code = <BTN_MODE>;
++		};
++		sw12 {
++			gpios = <&gpio4 RK_PA7 GPIO_ACTIVE_LOW>;
++			label = "BTN_THUMBL";
++			linux,code = <BTN_THUMBL>;
++		};
++		sw13 {
++			gpios = <&gpio4 RK_PB0 GPIO_ACTIVE_LOW>;
++			label = "BTN_THUMBR";
++			linux,code = <BTN_THUMBR>;
++		};
++		sw14 {
++			gpios = <&gpio3 RK_PC6 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN_TR";
++			linux,code = <BTN_TR>;
++		};
++		sw15 {
++			gpios = <&gpio3 RK_PC7 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN_TR2";
++			linux,code = <BTN_TR2>;
++		};
++		sw16 {
++			gpios = <&gpio3 RK_PD0 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN_TL";
++			linux,code = <BTN_TL>;
++		};
++		sw17 {
++			gpios = <&gpio3 RK_PD1 GPIO_ACTIVE_LOW>;
++			label = "GPIO BTN_TL2";
++			linux,code = <BTN_TL2>;
++		};
++	};
++
+ 	sdio_pwrseq: sdio-pwrseq {
+ 		compatible = "mmc-pwrseq-simple";
+ 		clocks = <&rk817 1>;
+-- 
+2.34.1
+

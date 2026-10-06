@@ -1,6 +1,7 @@
 features: []
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -177,12 +178,6 @@ custom_features:
     choices:
       ALSA (Default): alsa
       SDL: sdl
-  xenia_edge_headless:
-    prompt: UI PROMPTS
-    description: Choose to display UI prompts or accept defaults automatically.
-    choices:
-      Enabled (Default): false
-      Disabled: true
   xenia_edge_achievement:
     prompt: SHOW ACHIEVEMENT MESSAGES
     description: Display in-game achievement notifications.
@@ -401,5 +396,10 @@ custom_features:
     choices:
       Disabled (Default): false
       Enabled: true
+file_extensions:
+  - iso
+  - xex
+  - xbox360
+  - zar
 systems:
   - xbox360

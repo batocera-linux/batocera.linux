@@ -1,0 +1,25 @@
+Subject: [PATCH] usb: typec: ucsi_glink: enable UCSI_DELAY_DEVICE_PDOS quirk for SM4450
+
+The SM4450 ADSP firmware is a WAIPIO build same as SM8450.
+
+---
+--- a/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
++++ b/Documentation/devicetree/bindings/soc/qcom/qcom,pmic-glink.yaml
+@@ -28,6 +28,7 @@
+               - qcom,qcm6490-pmic-glink
+               - qcom,sc8180x-pmic-glink
+               - qcom,sc8280xp-pmic-glink
++              - qcom,sm4450-pmic-glink
+               - qcom,sm8350-pmic-glink
+               - qcom,sm8450-pmic-glink
+               - qcom,sm8550-pmic-glink
+--- a/drivers/usb/typec/ucsi/ucsi_glink.c
++++ b/drivers/usb/typec/ucsi/ucsi_glink.c
+@@ -379,6 +379,7 @@
+ 	{ .compatible = "qcom,qcm6490-pmic-glink", .data = &quirk_sc8280xp, },
+ 	{ .compatible = "qcom,sc8180x-pmic-glink", .data = &quirk_sc8180x, },
+ 	{ .compatible = "qcom,sc8280xp-pmic-glink", .data = &quirk_sc8280xp, },
++	{ .compatible = "qcom,sm4450-pmic-glink", .data = &quirk_sm8450, },
+ 	{ .compatible = "qcom,sm8350-pmic-glink", .data = &quirk_sc8180x, },
+ 	{ .compatible = "qcom,sm8450-pmic-glink", .data = &quirk_sm8450, },
+ 	{ .compatible = "qcom,sm8550-pmic-glink", .data = &quirk_sm8450, },

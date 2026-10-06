@@ -1,0 +1,15 @@
+--- a/common/flatpak-run.c
++++ b/common/flatpak-run.c
+@@ -2397,8 +2397,11 @@
+    *
+    * If bwrap is setuid, then --disable-userns will not work, which
+    * makes the seccomp filter security-critical.
++   *
++   * batocera: skipped as root, where a new userns maps only uid 0 and
++   * apps can no longer chown to any other uid.
+    */
+-  if (bwrap_unprivileged)
++  if (bwrap_unprivileged && getuid () != 0)
+     {
+       if (parent_expose_pids || parent_share_pids)
+         {

@@ -1,9 +1,9 @@
 diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 3202490..f536ea0 100644
+index d05cf790b..b14efed0f 100644
 --- a/drivers/hid/hid-input.c
 +++ b/drivers/hid/hid-input.c
-@@ -343,6 +343,8 @@ static enum power_supply_property hidinput_battery_props[] = {
- #define HID_BATTERY_QUIRK_AVOID_QUERY	(1 << 3) /* do not query the battery */
+@@ -357,6 +357,8 @@ static enum power_supply_property hidinput_battery_props[] = {
+ #define HID_BATTERY_QUIRK_DYNAMIC	(1 << 4) /* report present only after life signs */
  
  static const struct hid_device_id hid_battery_quirks[] = {
 +	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_8BITDO_SN30_PRO_PLUS),

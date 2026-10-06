@@ -1,0 +1,29 @@
+Subject: [PATCH] Bluetooth: hci_qca: include WCN3950 in WCN family switches
+
+---
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -2247,6 +2247,7 @@
+ 	power = qcadev->bt_power;
+ 
+ 	switch (soc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+@@ -2265,6 +2266,7 @@
+         }
+ 
+ 	switch (soc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:
+@@ -2576,6 +2578,7 @@
+ 	struct qca_power *power = qcadev->bt_power;
+ 
+ 	switch (qcadev->btsoc_type) {
++	case QCA_WCN3950:
+ 	case QCA_WCN3988:
+ 	case QCA_WCN3990:
+ 	case QCA_WCN3991:

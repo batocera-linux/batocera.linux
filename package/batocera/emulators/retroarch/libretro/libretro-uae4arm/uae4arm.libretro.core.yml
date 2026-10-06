@@ -1,5 +1,28 @@
+file_extensions:
+  - adf
+  - uae
+  - ipf
+  - dms
+  - dmz
+  - adz
+  - lha
+  - hdf
+  - exe
+  - m3u
+  - zip
+  - raw
+  - scp
 systems:
   - amiga1200
   - amiga500
-  - amigacd32
-  - amigacdtv
+  - name: amigacd32
+    file_extensions: &amigacd32
+      - bin
+      - cue
+      - iso
+      - chd
+  - name: amigacdtv
+    file_extensions:
+      values: *amigacd32
+      add:
+        - m3u

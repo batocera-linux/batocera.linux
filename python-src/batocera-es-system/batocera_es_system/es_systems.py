@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
 from batocera_common.yaml import safe_load_yaml
@@ -19,25 +21,25 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from batocera_es_system.registry import (
-        EmulatorsMetadataMapping,
+        SystemMetadata,
         SystemsMetadataMapping,
     )
 
 
 _DEFAULT_PARENTPATH: Final = '/userdata/roms'
-_DEFAULT_COMMAND: Final = 'emulatorlauncher %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%'
+_DEFAULT_COMMAND: Final = 'batocera-launch %CONTROLLERSCONFIG% -system %SYSTEM% -rom %ROM% -gameinfoxml %GAMEINFOXML% -systemname %SYSTEMNAME%'
 
 
-def _extensions_to_xml(values: Iterable[str], /) -> str:
-    return ' '.join(f'.{value}'.lower() for value in values if value)
+def _file_extensions_to_xml(values: Iterable[str], /) -> str:
+    return ' '.join(f'.{value}'.lower() for value in sorted(values) if value)
 
 
-def _emulators_data_to_xml(emulator_data: EmulatorsMetadataMapping | None, /) -> Iterator[str]:
-    if not emulator_data:
+def _emulators_data_to_xml(system_metadata: SystemMetadata | None, /) -> Iterator[str]:
+    if not system_metadata:
         return
 
     def _inner_emulators_data_to_xml() -> Iterator[str]:
-        for emulator, cores in sorted(emulator_data.items(), key=lambda x: x[0]):
+        for emulator, cores in sorted(system_metadata.emulators.items(), key=lambda x: x[0]):
             if not cores:
                 continue
 
@@ -46,12 +48,13 @@ def _emulators_data_to_xml(emulator_data: EmulatorsMetadataMapping | None, /) ->
 
             for core, core_data in sorted(cores.items(), key=lambda x: x[0]):
                 incompatible_extensions = ''
-                if extensions := core_data.get('incompatible_extensions'):
+                if file_extensions := core_data.file_extensions:
                     incompatible_extensions = to_xml_attribute(
-                        'incompatible_extensions', _extensions_to_xml(extensions)
+                        'incompatible_extensions',
+                        _file_extensions_to_xml(system_metadata.file_extensions - file_extensions),
                     )
 
-                default_attribute = ' default="true"' if core_data['default'] else ''
+                default_attribute = ' default="true"' if core_data.default else ''
 
                 yield f'                    <core{default_attribute}{incompatible_extensions}>{core}</core>'
 
@@ -64,11 +67,11 @@ def _emulators_data_to_xml(emulator_data: EmulatorsMetadataMapping | None, /) ->
 def _system_dict_to_xml(
     name: str,
     data: SystemDict,
-    emulator_data: EmulatorsMetadataMapping | None,
+    system_metadata: SystemMetadata | None,
     included_systems: set[str],
     /,
 ) -> Iterator[str]:
-    emulator_strings = peekable(_emulators_data_to_xml(emulator_data))
+    emulator_strings = peekable(_emulators_data_to_xml(system_metadata))
 
     if not emulator_strings and not data.get('force'):
         return
@@ -80,7 +83,9 @@ def _system_dict_to_xml(
         path = f'{_DEFAULT_PARENTPATH}/{path}'
 
     platform = data.get('platform', name) or ''
-    extensions = _extensions_to_xml(data.get('extensions', []))
+    file_extensions = _file_extensions_to_xml(
+        system_metadata.file_extensions if system_metadata else data.get('file_extensions', [])
+    )
     group = data.get('group', '') or ''
     command = data.get('command', _DEFAULT_COMMAND)
 
@@ -91,10 +96,10 @@ def _system_dict_to_xml(
     yield f'        <release>{protect_xml(data["release"])}</release>'
     yield f'        <hardware>{protect_xml(data["hardware"])}</hardware>'
 
-    if extensions:
+    if file_extensions:
         if path:
             yield f'        <path>{path}</path>'
-        yield f'        <extension>{extensions}</extension>'
+        yield f'        <extension>{file_extensions}</extension>'
         yield f'        <command>{command}</command>'
 
     if platform:
@@ -132,12 +137,22 @@ def load_es_systems(es_systems_yml: Path, /) -> SystemsData:
     return dict(sorted(systems_data.items(), key=lambda x: x[0]))
 
 
+@dataclass(slots=True, frozen=True)
+class BuiltSystem:
+    system: SystemDict
+    metadata: SystemMetadata | None
+
+
+type BuiltSystems = dict[str, BuiltSystem]
+type BuiltSystemsMapping = Mapping[str, BuiltSystem]
+
+
 def build(
     systems_core_metadata: SystemsMetadataMapping,
     es_systems_yml: Path,
     output_dir: Path,
     /,
-) -> SystemsData:
+) -> BuiltSystems:
     systems_data = load_es_systems(es_systems_yml)
     included_systems: set[str] = set()
 
@@ -151,4 +166,8 @@ def build(
         _systems_data_to_xml(systems_data, systems_core_metadata, included_systems),
     )
 
-    return {name: data for name, data in systems_data.items() if name in included_systems}
+    return {
+        name: BuiltSystem(system=data, metadata=systems_core_metadata.get(name))
+        for name, data in systems_data.items()
+        if name in included_systems
+    }

@@ -1,5 +1,20 @@
+file_extensions:
+  - bin
+  - sg
+  - zip
+  - 7z
 systems:
-  - gamegear
-  - mastersystem
+  - name: gamegear
+    file_extensions:
+      remove:
+        - sg
+      add:
+        - gg
+  - name: mastersystem
+    file_extensions:
+      remove:
+        - sg
+      add:
+        - sms
   - multivision
   - sg1000

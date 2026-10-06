@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -178,5 +179,7 @@ custom_features:
     choices:
       Off (Default): 0
       'On': 1
+file_extensions:
+  - game
 systems:
   - lindbergh

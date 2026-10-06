@@ -3,8 +3,7 @@
 # python-pyxel
 #
 ################################################################################
-# Version: Commits on May 9, 2026
-PYTHON_PYXEL_VERSION = 3c21bda75435d837809825d90b15646010188b7e
+PYTHON_PYXEL_VERSION = v2.9.9
 PYTHON_PYXEL_SITE =  $(call github,kitao,pyxel,$(PYTHON_PYXEL_VERSION))
 PYTHON_PYXEL_SETUP_TYPE = setuptools
 PYTHON_PYXEL_LICENSE = MIT
@@ -28,6 +27,13 @@ else ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3399),y)
 endif
 
 PYTHON_PYXEL_ENV = CARGO_HOME=$(@D) TARGET=$(PYXEL_CARGO_TARGET)
+
+# upstream's own `make build` stages these into the package dir before running maturin
+define PYTHON_PYXEL_STAGE_PACKAGE_FILES
+	cp -f $(@D)/LICENSE $(@D)/README.md $(@D)/python/pyxel/
+endef
+
+PYTHON_PYXEL_PRE_BUILD_HOOKS += PYTHON_PYXEL_STAGE_PACKAGE_FILES
 
 define PYTHON_PYXEL_REMOVE_PREVIOUS
 	rm -rf $(TARGET_DIR)/usr/bin/pyxel

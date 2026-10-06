@@ -22,8 +22,9 @@ log="/userdata/system/logs/steam.log"
 steam_file="/userdata/roms/steam/Steam.steam"
 steam_png="/userdata/roms/flatpak/images/Valve Corporation.png"
 
-blacklisted_apps=("Runtime" "Proton" "SDK" "Dedicated" "Workshop" "Big Picture"
-                  "Source" "Linux Runtime" "Redistributables" "Desktop Mode")
+# Array to catch blacklisted apps in lowercase, regex according https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#index-_005b_005b
+blacklisted_apps=("runtime" "proton" "redistributables" "dedicated" "workshop"
+                  "sdk$" "big.?picture" "desktop.?mode" "^steam[[:alnum:] -._]{0,8}$" "^source[[:alnum:] -._]{0,8}")
 
 # Steam may put .desktop files in different locations depending on Flatpak/Steam version:
 # - newer: $HOME/Desktop (via XDG Desktop portal)
@@ -98,7 +99,7 @@ es_add_game_worker(){
 
       # blacklist some apps
       for blacklistword in "${blacklisted_apps[@]}"; do
-        if [[ "${BASEAPP}" == *"${blacklistword}"* ]]; then
+        if [[ "${BASEAPP,,}" =~ ${blacklistword} ]]; then
           echo "Skipping blacklisted entry: ${BASEAPP}" >> $log
           continue 2
         fi

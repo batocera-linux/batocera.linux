@@ -1,0 +1,175 @@
+From 0b0cae51a81ab4cbcee511be3893e04e6a4c1925 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Sat, 19 Sep 2026 23:31:47 +1000
+Subject: [PATCH] panfrost: allocate scanout buffers from the display device on
+ the render node
+
+When panfrost is opened on the render node, as Wayland and X11 clients
+do, PIPE_BIND_SCANOUT buffers were plain GPU BOs. Display engines without
+an IOMMU (sun4i-drm, meson) cannot import those for scanout, as they are
+not physically contiguous, so wlroots compositors fail direct scanout on
+every frame and fall back to compositing.
+
+Allocate linear scanout buffers as dumb buffers on the KMS device and
+import them into panfrost, as kmsro already does for screens created on
+the display fd.
+---
+ src/gallium/drivers/panfrost/pan_resource.c | 95 +++++++++++++++++++++
+ src/gallium/drivers/panfrost/pan_screen.c   |  2 +
+ src/gallium/drivers/panfrost/pan_screen.h   |  7 ++
+ 3 files changed, 104 insertions(+)
+
+diff --git a/src/gallium/drivers/panfrost/pan_resource.c b/src/gallium/drivers/panfrost/pan_resource.c
+index 30b59e2..7e20622 100644
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -9,6 +9,7 @@
+  */
+ 
+ #include <fcntl.h>
++#include <unistd.h>
+ #include <xf86drm.h>
+ #include "drm-uapi/drm_fourcc.h"
+ 
+@@ -286,6 +287,96 @@ panfrost_resource_import_bo(struct panfrost_resource *rsc,
+    return 0;
+ }
+ 
++static int
++panfrost_open_display_device(void)
++{
++   /* Display engines without an IOMMU, which can only scan out physically
++    * contiguous memory.
++    */
++   static const char *const drivers[] = {"sun4i-drm", "meson"};
++   drmDevicePtr devices[8];
++   int count = drmGetDevices2(0, devices, ARRAY_SIZE(devices));
++   int fd = -1;
++
++   for (int i = 0; i < count && fd < 0; i++) {
++      if (!(devices[i]->available_nodes & (1 << DRM_NODE_PRIMARY)) ||
++          (devices[i]->available_nodes & (1 << DRM_NODE_RENDER)))
++         continue;
++
++      fd = open(devices[i]->nodes[DRM_NODE_PRIMARY], O_RDWR | O_CLOEXEC);
++      if (fd < 0)
++         continue;
++
++      drmVersionPtr version = drmGetVersion(fd);
++      bool match = false;
++      for (unsigned d = 0; version && d < ARRAY_SIZE(drivers); d++)
++         match |= strcmp(version->name, drivers[d]) == 0;
++      drmFreeVersion(version);
++
++      if (!match) {
++         close(fd);
++         fd = -1;
++      }
++   }
++
++   if (count > 0)
++      drmFreeDevices(devices, count);
++
++   return fd;
++}
++
++static int
++panfrost_screen_get_display_fd(struct panfrost_screen *screen)
++{
++   simple_mtx_lock(&screen->display_fd_lock);
++   if (!screen->display_fd_probed) {
++      screen->display_fd = screen->dev.ro ? -1 : panfrost_open_display_device();
++      screen->display_fd_probed = true;
++   }
++   simple_mtx_unlock(&screen->display_fd_lock);
++
++   return screen->display_fd;
++}
++
++/* Allocates a linear buffer from the KMS device so the display can scan it
++ * out directly: GPU BOs are not physically contiguous and cannot be imported
++ * by display engines without an IOMMU.
++ */
++static bool
++panfrost_resource_alloc_display(struct pipe_screen *pscreen,
++                                struct panfrost_resource *so)
++{
++   struct panfrost_device *dev = pan_device(pscreen);
++   int display_fd = panfrost_screen_get_display_fd(pan_screen(pscreen));
++   if (display_fd < 0)
++      return false;
++
++   struct drm_mode_create_dumb create_dumb = {
++      .width = 1024, /* one page */
++      .height = DIV_ROUND_UP(so->plane.layout.data_size_B, 4096),
++      .bpp = 32,
++   };
++   if (drmIoctl(display_fd, DRM_IOCTL_MODE_CREATE_DUMB, &create_dumb))
++      return false;
++
++   int fd;
++   int ret = drmPrimeHandleToFD(display_fd, create_dumb.handle,
++                                DRM_CLOEXEC | DRM_RDWR, &fd);
++
++   /* The dmabuf keeps the buffer alive for as long as the GPU holds it. */
++   struct drm_mode_destroy_dumb destroy_dumb = {
++      .handle = create_dumb.handle,
++   };
++   drmIoctl(display_fd, DRM_IOCTL_MODE_DESTROY_DUMB, &destroy_dumb);
++
++   if (ret)
++      return false;
++
++   ret = panfrost_resource_import_bo(so, dev, fd);
++   close(fd);
++   return ret == 0;
++}
++
+ static const char *
+ panfrost_resource_type_str(struct panfrost_resource *rsrc)
+ {
+@@ -1159,6 +1250,10 @@ panfrost_resource_create_with_modifier(struct pipe_screen *screen,
+       }
+ 
+       so->plane.base = so->bo->ptr.gpu;
++   } else if ((template->bind & PIPE_BIND_SCANOUT) &&
++              so->modifier == DRM_FORMAT_MOD_LINEAR &&
++              panfrost_resource_alloc_display(screen, so)) {
++      so->plane.base = so->bo->ptr.gpu;
+    } else {
+       /* We create a BO immediately but don't bother mapping, since we don't
+        * care to map e.g. FBOs which the CPU probably won't touch */
+diff --git a/src/gallium/drivers/panfrost/pan_screen.c b/src/gallium/drivers/panfrost/pan_screen.c
+index 23659ae..2699cc8 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -943,6 +943,8 @@ panfrost_destroy_screen(struct pipe_screen *pscreen)
+ 
+    if (dev->ro)
+       dev->ro->destroy(dev->ro);
++   if (screen->display_fd_probed && screen->display_fd >= 0)
++      close(screen->display_fd);
+    panfrost_close_device(dev);
+ 
+    disk_cache_destroy(screen->disk_cache);
+diff --git a/src/gallium/drivers/panfrost/pan_screen.h b/src/gallium/drivers/panfrost/pan_screen.h
+index 88382a1..97e34e0 100644
+--- a/src/gallium/drivers/panfrost/pan_screen.h
++++ b/src/gallium/drivers/panfrost/pan_screen.h
+@@ -142,6 +142,13 @@ struct panfrost_screen {
+ 
+    int force_afrc_rate;
+    uint64_t compute_core_mask;
++
++   /* KMS device that SCANOUT buffers are allocated from when the screen
++    * was opened on the render node rather than through kmsro.
++    */
++   int display_fd;
++   bool display_fd_probed;
++   simple_mtx_t display_fd_lock;
+    uint64_t fragment_core_mask;
+ 
+    struct {
+-- 
+2.55.0
+

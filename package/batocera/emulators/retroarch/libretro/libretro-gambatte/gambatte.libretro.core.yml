@@ -17,8 +17,14 @@ custom_features:
       Simple: mix
       LCD Ghosting (Accurate): lcd_ghosting
       LCD Ghosting (Fast): lcd_ghosting_fast
+file_extensions:
+  - zip
+  - 7z
 systems:
   - name: gbc
+    file_extensions:
+      add:
+        - gbc
     custom_features:
       gbc_color_correction:
         group: ADVANCED OPTIONS
@@ -28,6 +34,9 @@ systems:
           'Off': disabled
           'On': always
   - name: gb
+    file_extensions:
+      add:
+        - gb
     custom_features:
       gb_colorization:
         prompt: COLORIZATION

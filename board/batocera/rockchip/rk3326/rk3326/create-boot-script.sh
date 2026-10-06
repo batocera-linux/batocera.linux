@@ -37,6 +37,9 @@ cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomac
 cp "${BINARIES_DIR}/rk3326-odroid-go2.dtb"     "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp "${BINARIES_DIR}/rk3326-odroid-go2-v11.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp "${BINARIES_DIR}/rk3326-odroid-go3.dtb"     "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+# powkiddy and magicx devices
+cp "${BINARIES_DIR}/rk3326-powkiddy-rgb10.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+cp "${BINARIES_DIR}/rk3326-magicx-xu10.dtb"    "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 # anbernic devices
 cp "${BINARIES_DIR}/rk3326-anbernic-rg351m.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 cp "${BINARIES_DIR}/rk3326-anbernic-rg351v.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1

@@ -1,0 +1,27 @@
+diff --git a/yabause/src/libretro/Makefile b/yabause/src/libretro/Makefile
+index a5916d1..b3f4e8c 100644
+--- a/yabause/src/libretro/Makefile
++++ b/yabause/src/libretro/Makefile
+@@ -62,6 +62,13 @@
+ 	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+ 	LDFLAGS += -lpthread
+ 	ARCH_IS_LINUX = 1
++	# Cross-builds pass `arch=` explicitly; only fall back to the build host
++	# when it is unset (platform=unix on an ARM64 Mac must not force AArch64
++	# dynarec for an x86_64 target, and vice versa).
++	UNIX_HOST_ARCH := $(arch)
++	ifeq ($(UNIX_HOST_ARCH),)
++		UNIX_HOST_ARCH := $(shell uname -m)
++	endif
+ 	# ARM
+ 	ifneq (,$(findstring armv,$(platform)))
+ 		ifneq (,$(findstring cortexa8,$(platform)))
+@@ -87,7 +94,7 @@
+ 	# Native AArch64 (ARM64) desktop build (e.g. the libretro linux-aarch64 job,
+ 	# which invokes `make platform=unix` on an aarch64 runner). Use the devMiyax
+ 	# AArch64 SH2 dynarec and drop the x86-only SSE math flags.
+-	else ifneq (,$(filter aarch64 arm64,$(shell uname -m)))
++	else ifneq (,$(filter aarch64 arm64,$(UNIX_HOST_ARCH)))
+ 		HAVE_SSE = 0
+ 		USE_AARCH64_DRC = 1
+ 		DYNAREC_DEVMIYAX = 1

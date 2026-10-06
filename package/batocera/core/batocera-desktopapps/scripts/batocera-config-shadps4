@@ -30,4 +30,4 @@ if [ ! -d "$dlcPath" ]; then
     fi
 fi
 
-emulatorlauncher -system ps4 -rom config -emulator shadps4
+batocera-launch -system ps4 -rom config -emulator shadps4

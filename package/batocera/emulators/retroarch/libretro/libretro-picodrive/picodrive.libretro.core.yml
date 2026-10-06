@@ -57,13 +57,43 @@ custom_features:
     choices:
       Joypad 3 Button: 3 button pad
       Joypad 6 Button: 6 button pad
+file_extensions:
+  - bin
+  - zip
+  - 7z
 systems:
-  - gamegear
-  - mastersystem
-  - megacd
-  - megadrive
-  - pico
+  - name: gamegear
+    file_extensions:
+      add:
+        - gg
+  - name: mastersystem
+    file_extensions:
+      add:
+        - sms
+  - name: megacd
+    file_extensions:
+      - cue
+      - iso
+      - chd
+      - m3u
+  - name: megadrive
+    file_extensions:
+      add:
+        - gen
+        - md
+        - sg
+        - smd
+  - name: pico
+    file_extensions:
+      add:
+        - md
   - name: sega32x
+    file_extensions:
+      add:
+        - 32x
+        - chd
+        - smd
+        - md
     custom_features:
       picodrive-autowidescreen:
         prompt: AUTO WIDESCREEN

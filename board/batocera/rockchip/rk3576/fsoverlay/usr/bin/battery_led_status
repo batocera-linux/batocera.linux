@@ -87,6 +87,15 @@ get_state() {
   fi
 }
 
+# green drowns out red, so amber stands in for yellow
+led_yellow() { set_led 0 0 1; }
+
+# solid colour held through a real suspend, set by the pm sleep hook
+if [ "$1" = "standby" ]; then
+  led_yellow
+  exit 0
+fi
+
 PREV_STATE=""
 
 while true; do

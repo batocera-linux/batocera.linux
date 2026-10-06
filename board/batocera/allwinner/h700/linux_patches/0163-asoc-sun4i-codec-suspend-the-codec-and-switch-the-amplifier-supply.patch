@@ -1,0 +1,372 @@
+From: Kailash <6493816+kailashrs@users.noreply.github.com>
+Subject: [PATCH] ASoC: sun4i-codec: suspend the codec and switch the amplifier supply
+
+The codec kept its bus and module clocks and PLL_AUDIO0 running for the
+whole of a deep sleep. Save the registers that do not survive, drop the
+module clock once per user and the APB clock, and restore them on resume.
+
+The speaker amplifier rail (cldo1, "vcc-spkr-amp") was always-on with no
+consumer, so it stayed powered through sleep. Make it the codec's optional
+"allwinner,pa" supply, raised and dropped with the speaker path, with
+SUN4I_CODEC_PA_SETTLE_MS between the supply and the enable GPIO on both
+edges; vendor firmware allows the same 100ms on this pin.
+
+Measured on RG34XX-SP in deep sleep: AUDIO_DAC_CLK 0x81000000 ->
+0x01000000, codec bus gate 0x00010001 -> 0x00010000, PLL_AUDIO0
+0xb9021501 -> 0x29021501.
+
+Origin: kailashrs/H700_rocknix_enhancement c2dcab6bb
+Assisted-by: Claude:claude-opus-5
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -355,6 +355,7 @@
+ 	allwinner,audio-routing = "Speaker", "LINEOUT",
+ 				  "Headphone", "LINEOUT";
+ 	allwinner,pa-gpios = <&pio 8 5 GPIO_ACTIVE_HIGH>; // PI5
++	allwinner,pa-supply = <&reg_cldo1>;
+ 	hp-det-gpios = <&pio 8 3 GPIO_ACTIVE_HIGH>; // PI3
+ 	status = "okay";
+ };
+@@ -556,7 +557,7 @@
+ 			};
+ 
+ 			reg_cldo1: cldo1 {
+-				regulator-always-on;
++				/* Switched by the codec with the speaker path */
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc-spkr-amp";
+--- a/sound/soc/sunxi/sun4i-codec.c
++++ b/sound/soc/sunxi/sun4i-codec.c
+@@ -10,6 +10,7 @@
+  * Based on the Allwinner SDK driver, released under the GPL.
+  */
+ 
++#include <linux/atomic.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -20,6 +21,7 @@
+ #include <linux/regmap.h>
+ #include <linux/reset.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include <sound/core.h>
+ #include <sound/jack.h>
+@@ -325,6 +327,17 @@
+ 
+ #define SUNIV_CODEC_ADC_DBG		(0x4c)
+ 
++/* Configuration only: never replay FIFO data, W1C status or sample counters. */
++#define SUN50I_H616_CODEC_PM_DAC_FIFOC	1
++static const unsigned int sun50i_h616_codec_pm_regs[] = {
++	SUN4I_CODEC_DAC_DPC,
++	[SUN50I_H616_CODEC_PM_DAC_FIFOC] = SUN50I_H616_CODEC_DAC_FIFOC,
++	SUN50I_DAC_DG_REG,
++	SUN50I_H616_DAC_AC_DAC_REG,
++	SUN50I_H616_DAC_AC_MIXER_REG,
++	SUN50I_H616_DAC_AC_RAMP_REG,
++};
++
+ struct sun4i_codec {
+ 	struct device	*dev;
+ 	struct regmap	*regmap;
+@@ -333,6 +346,14 @@
+ 	struct reset_control *rst;
+ 	struct gpio_desc *gpio_pa;
+ 	struct gpio_desc *gpio_hp;
++	struct regulator *pa_reg;
++	bool pa_reg_on;
++	/* open streams; suspend drops their module clock, resume retakes it */
++	atomic_t module_clk_users;
++	bool apb_enabled;
++	bool suspend_resources;
++	bool clocks_suspended;
++	u32 saved_regs[ARRAY_SIZE(sun50i_h616_codec_pm_regs)];
+ 
+ 	/* ADC_FIFOC register is at different offset on different SoCs */
+ 	struct regmap_field *reg_adc_fifoc;
+@@ -683,6 +704,11 @@
+ 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+ 	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(rtd->card);
+ 
++	int ret;
++
++	if (scodec->clocks_suspended)
++		return -EIO;
++
+ 	/*
+ 	 * Stop issuing DRQ when we have room for less than 16 samples
+ 	 * in our TX FIFO
+@@ -690,7 +716,11 @@
+ 	regmap_field_set_bits(scodec->reg_dac_fifoc,
+ 			      3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT);
+ 
+-	return clk_prepare_enable(scodec->clk_module);
++	ret = clk_prepare_enable(scodec->clk_module);
++	if (!ret)
++		atomic_inc(&scodec->module_clk_users);
++
++	return ret;
+ }
+ 
+ static void sun4i_codec_shutdown(struct snd_pcm_substream *substream,
+@@ -699,7 +729,9 @@
+ 	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+ 	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(rtd->card);
+ 
+-	clk_disable_unprepare(scodec->clk_module);
++	atomic_dec(&scodec->module_clk_users);
++	if (!scodec->clocks_suspended)
++		clk_disable_unprepare(scodec->clk_module);
+ }
+ 
+ static const struct snd_soc_dai_ops sun4i_codec_dai_ops = {
+@@ -1660,14 +1692,49 @@
+ 	return link;
+ };
+ 
++/* Between the amplifier supply and its enable GPIO; doing both at once pops.
++ * Vendor firmware allows the same 100ms on this pin.
++ */
++#define SUN4I_CODEC_PA_SETTLE_MS	100
++
++/* Supply up before the enable GPIO, down after it. */
++static void sun4i_codec_set_pa(struct sun4i_codec *scodec, bool enable)
++{
++	int ret;
++
++	if (enable) {
++		if (scodec->pa_reg && !scodec->pa_reg_on) {
++			ret = regulator_enable(scodec->pa_reg);
++			if (ret) {
++				dev_warn(scodec->dev,
++					 "Failed to enable the pa supply: %d\n",
++					 ret);
++			} else {
++				scodec->pa_reg_on = true;
++				msleep(SUN4I_CODEC_PA_SETTLE_MS);
++			}
++		}
++
++		gpiod_set_value_cansleep(scodec->gpio_pa, 1);
++		return;
++	}
++
++	gpiod_set_value_cansleep(scodec->gpio_pa, 0);
++
++	if (scodec->pa_reg && scodec->pa_reg_on) {
++		msleep(SUN4I_CODEC_PA_SETTLE_MS);
++		regulator_disable(scodec->pa_reg);
++		scodec->pa_reg_on = false;
++	}
++}
++
+ static int sun4i_codec_spk_event(struct snd_soc_dapm_widget *w,
+ 				 struct snd_kcontrol *k, int event)
+ {
+ 	struct snd_soc_card *card = snd_soc_dapm_to_card(w->dapm);
+ 	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(card);
+ 
+-	gpiod_set_value_cansleep(scodec->gpio_pa,
+-				 !!SND_SOC_DAPM_EVENT_ON(event));
++	sun4i_codec_set_pa(scodec, !!SND_SOC_DAPM_EVENT_ON(event));
+ 
+ 	if (SND_SOC_DAPM_EVENT_ON(event)) {
+ 		/*
+@@ -2148,6 +2215,7 @@
+ 	unsigned int reg_adc_rxdata;	/* RX FIFO offset for DMA config */
+ 	bool has_reset;
+ 	bool playback_only;
++	bool suspend_resources;
+ 	u32 dma_max_burst;
+ };
+ 
+@@ -2232,6 +2300,7 @@
+ 
+ static const struct sun4i_codec_quirks sun50i_h616_codec_quirks = {
+ 	.regmap_config	= &sun50i_h616_codec_regmap_config,
++	.suspend_resources = true,
+ 	.codec		= &sun50i_h616_codec_codec,
+ 	.create_card	= sun50i_h616_codec_create_card,
+ 	.reg_dac_fifoc	= REG_FIELD(SUN50I_H616_CODEC_DAC_FIFOC, 0, 31),
+@@ -2290,6 +2359,114 @@
+ };
+ MODULE_DEVICE_TABLE(of, sun4i_codec_of_match);
+ 
++static void sun4i_codec_disable_apb(void *data)
++{
++	struct sun4i_codec *scodec = data;
++
++	if (scodec->apb_enabled) {
++		clk_disable_unprepare(scodec->clk_apb);
++		scodec->apb_enabled = false;
++	}
++}
++
++#ifdef CONFIG_PM_SLEEP
++/* ASoC must stop DMA and finish its register accesses before clocks go away. */
++static int sun4i_codec_suspend_late(struct device *dev)
++{
++	struct snd_soc_card *card = dev_get_drvdata(dev);
++	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(card);
++	unsigned int i;
++	int ret, users;
++
++	/* DAPM has powered the speaker path down; make sure the rail follows. */
++	sun4i_codec_set_pa(scodec, false);
++
++	if (!scodec->suspend_resources || !snd_soc_card_is_instantiated(card))
++		return 0;
++
++	for (i = 0; i < ARRAY_SIZE(sun50i_h616_codec_pm_regs); i++) {
++		ret = regmap_read(scodec->regmap, sun50i_h616_codec_pm_regs[i],
++				  &scodec->saved_regs[i]);
++		if (ret)
++			return ret;
++	}
++
++	/* FIFO flushing and DMA requests belong to the PCM trigger sequence. */
++	scodec->saved_regs[SUN50I_H616_CODEC_PM_DAC_FIFOC] &=
++		~(BIT(SUN4I_CODEC_DAC_FIFOC_FIFO_FLUSH) |
++		  BIT(SUN4I_CODEC_DAC_FIFOC_DAC_DRQ_EN));
++	users = atomic_read(&scodec->module_clk_users);
++	while (users--)
++		clk_disable_unprepare(scodec->clk_module);
++	sun4i_codec_disable_apb(scodec);
++	scodec->clocks_suspended = true;
++
++	return 0;
++}
++
++static int sun4i_codec_resume_early(struct device *dev)
++{
++	struct snd_soc_card *card = dev_get_drvdata(dev);
++	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(card);
++	unsigned int i;
++	int ret, enabled = 0, users;
++
++	if (!scodec->clocks_suspended)
++		return 0;
++
++	ret = clk_prepare_enable(scodec->clk_apb);
++	if (ret)
++		return ret;
++	scodec->apb_enabled = true;
++
++	users = atomic_read(&scodec->module_clk_users);
++	while (enabled < users) {
++		ret = clk_prepare_enable(scodec->clk_module);
++		if (ret)
++			goto err_clocks;
++		enabled++;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(sun50i_h616_codec_pm_regs); i++) {
++		ret = regmap_write(scodec->regmap, sun50i_h616_codec_pm_regs[i],
++				   scodec->saved_regs[i]);
++		if (ret)
++			goto err_clocks;
++	}
++	scodec->clocks_suspended = false;
++	return 0;
++
++err_clocks:
++	while (enabled--)
++		clk_disable_unprepare(scodec->clk_module);
++	sun4i_codec_disable_apb(scodec);
++	return ret;
++}
++
++static int sun4i_codec_resume(struct device *dev)
++{
++	struct snd_soc_card *card = dev_get_drvdata(dev);
++	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(card);
++
++	/* A failed early resume must not schedule ASoC MMIO with clocks off. */
++	if (scodec->clocks_suspended)
++		return dev_err_probe(dev, -EIO, "Codec clocks did not resume\n");
++
++	return snd_soc_resume(dev);
++}
++
++static const struct dev_pm_ops sun4i_codec_pm_ops = {
++	.suspend = snd_soc_suspend,
++	.resume = sun4i_codec_resume,
++	.suspend_late = sun4i_codec_suspend_late,
++	.resume_early = sun4i_codec_resume_early,
++	.freeze = snd_soc_suspend,
++	.thaw = snd_soc_resume,
++	.poweroff = snd_soc_poweroff,
++	.restore = snd_soc_resume,
++};
++#endif
++
+ static int sun4i_codec_probe(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card;
+@@ -2304,6 +2481,7 @@
+ 		return -ENOMEM;
+ 
+ 	scodec->dev = &pdev->dev;
++	atomic_set(&scodec->module_clk_users, 0);
+ 
+ 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+ 	if (IS_ERR(base))
+@@ -2315,6 +2493,8 @@
+ 		return -ENODEV;
+ 	}
+ 
++	scodec->suspend_resources = quirks->suspend_resources;
++
+ 	scodec->regmap = devm_regmap_init_mmio(&pdev->dev, base,
+ 					       quirks->regmap_config);
+ 	if (IS_ERR(scodec->regmap)) {
+@@ -2323,12 +2503,20 @@
+ 	}
+ 
+ 	/* Get the clocks from the DT */
+-	scodec->clk_apb = devm_clk_get_enabled(&pdev->dev, "apb");
++	scodec->clk_apb = devm_clk_get(&pdev->dev, "apb");
+ 	if (IS_ERR(scodec->clk_apb)) {
+ 		dev_err(&pdev->dev, "Failed to get the APB clock\n");
+ 		return PTR_ERR(scodec->clk_apb);
+ 	}
+ 
++	ret = clk_prepare_enable(scodec->clk_apb);
++	if (ret)
++		return ret;
++	scodec->apb_enabled = true;
++	ret = devm_add_action_or_reset(&pdev->dev, sun4i_codec_disable_apb, scodec);
++	if (ret)
++		return ret;
++
+ 	scodec->clk_module = devm_clk_get(&pdev->dev, "codec");
+ 	if (IS_ERR(scodec->clk_module)) {
+ 		dev_err(&pdev->dev, "Failed to get the module clock\n");
+@@ -2351,6 +2539,15 @@
+ 		return ret;
+ 	}
+ 
++	scodec->pa_reg = devm_regulator_get_optional(&pdev->dev, "allwinner,pa");
++	if (IS_ERR(scodec->pa_reg)) {
++		ret = PTR_ERR(scodec->pa_reg);
++		if (ret != -ENODEV)
++			return dev_err_probe(&pdev->dev, ret,
++					     "Failed to get pa supply\n");
++		scodec->pa_reg = NULL;
++	}
++
+ 	scodec->gpio_hp = devm_gpiod_get_optional(&pdev->dev, "hp-det", GPIOD_IN);
+ 	if (IS_ERR(scodec->gpio_hp)) {
+ 		ret = PTR_ERR(scodec->gpio_hp);
+@@ -2442,6 +2639,7 @@
+ 	.driver = {
+ 		.name = "sun4i-codec",
+ 		.of_match_table = sun4i_codec_of_match,
++		.pm = pm_sleep_ptr(&sun4i_codec_pm_ops),
+ 	},
+ 	.probe = sun4i_codec_probe,
+ 	.remove = sun4i_codec_remove,

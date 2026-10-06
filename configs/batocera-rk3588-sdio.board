@@ -10,7 +10,7 @@ BR2_ARM_FPU_NEON_FP_ARMV8=y
 BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO=y
 # As of rockchip-linux-5.10-rkr3.6, the vendored kernel does not like -fsigned-char, do NOT add it to BR2_TARGET_OPTIMIZATION=
 BR2_TARGET_OPTIMIZATION="-pipe -fsigned-char -mtune=cortex-a76"
-BR2_TARGET_GENERIC_GETTY_PORT="/dev/ttyFIQ0"
+BR2_TARGET_GENERIC_GETTY_PORT="ttyFIQ0"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_GLOBAL_PATCH_DIR="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/patches $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/patches"
 BR2_ROOTFS_OVERLAY="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/fsoverlay $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/fsoverlay"

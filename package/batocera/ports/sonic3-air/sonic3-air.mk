@@ -35,6 +35,9 @@ define SONIC3_AIR_INSTALL_TARGET_CMDS
 	cp -r $(@D)/Oxygen/sonic3air/data $(TARGET_DIR)/usr/bin/sonic3-air
 	cp -r $(@D)/Oxygen/sonic3air/scripts $(TARGET_DIR)/usr/bin/sonic3-air
 	cp -r $(@D)/Oxygen/sonic3air/saves $(TARGET_DIR)/usr/bin/sonic3-air
+	# engine data, found by the game as ../oxygenengine relative to the binary
+	mkdir -p $(TARGET_DIR)/usr/bin/oxygenengine
+	cp -r $(@D)/Oxygen/oxygenengine/data $(TARGET_DIR)/usr/bin/oxygenengine
 endef
 
 $(eval $(cmake-package))

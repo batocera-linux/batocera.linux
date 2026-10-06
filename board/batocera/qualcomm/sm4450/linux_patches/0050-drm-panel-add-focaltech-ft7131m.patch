@@ -1,0 +1,518 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Sat, 6 Sep 2026 19:20:00 +0200
+Subject: [PATCH] drm/panel: add FocalTech FT7131M for the Anbernic RG 55G1
+
+Ported from https://github.com/lualiliu/RG55G1-linux (branch for-next).
+
+Changes from that tree:
+- dropped the "extern bool rg55g1_abl_panel_ready" coupling to its
+  downstream rg55g1_bringup.c, along with the prepare/unprepare paths
+  that skipped panel init when the bootloader had already lit it. The
+  SM4450 display stack in this series already quiesces the boot scanout,
+  so the panel is reset and initialised from scratch.
+- the generated init table ended with the vendor off-command sequence
+  (b7 59 02 / 28 / 10) appended after display-on, so running it left the
+  panel in sleep with the display off - harmless upstream, where the
+  table was never executed because of the ABL skip above, but fatal here.
+  Split those into ft7131m_off_cmds and drive sleep-out, display-on,
+  display-off and sleep-in from the DCS helpers, in prepare/enable and
+  disable/unprepare respectively. The XML spells 11/29 as dtype 0x05
+  short writes with a padding byte, which the table encoded as a
+  parameter.
+- replaced the hand-rolled rg55g1_ft7131m_driver_register() entry point
+  and EXPORT_SYMBOL_GPL with module_mipi_dsi_driver().
+- dropped the pr_emerg() bring-up tracing.
+- the panel takes four supplies (vdd, vddio, avdd, avee) via
+  regulator_bulk rather than a single optional "vdda"; the OLED bias
+  rails have to be enabled for the panel to light.
+
+Mode timings are the stock ones from Panel_ft7131m_1080p_video.xml and
+match the vendor DTB in the device's own firmware.
+
+--- a/drivers/gpu/drm/panel/Kconfig	2026-09-06 19:14:38.428485343 +0200
++++ b/drivers/gpu/drm/panel/Kconfig	2026-09-06 19:15:37.260847731 +0200
+@@ -144,6 +144,16 @@
+ 	  Say Y if you want to enable support for panels based on the
+ 	  Feiyang FY07024DI26A30-D MIPI-DSI interface.
+ 
++config DRM_PANEL_FOCALTECH_FT7131M
++	tristate "FocalTech FT7131M 1080x1920 DSI video mode panel"
++	depends on OF
++	depends on DRM_MIPI_DSI
++	depends on BACKLIGHT_CLASS_DEVICE
++	help
++	  Say Y here if you want to enable support for the FocalTech FT7131M
++	  4-lane 1080x1920 MIPI DSI video mode panel, as fitted to the
++	  Anbernic RG 55G1 handheld.
++
+ config DRM_PANEL_DSI_CM
+ 	tristate "Generic DSI command mode panels"
+ 	depends on OF
+--- a/drivers/gpu/drm/panel/Makefile	2026-09-06 19:14:38.429461910 +0200
++++ b/drivers/gpu/drm/panel/Makefile	2026-09-06 19:15:37.260883117 +0200
+@@ -16,6 +16,7 @@
+ obj-$(CONFIG_DRM_PANEL_EBBG_FT8719) += panel-ebbg-ft8719.o
+ obj-$(CONFIG_DRM_PANEL_ELIDA_KD35T133) += panel-elida-kd35t133.o
+ obj-$(CONFIG_DRM_PANEL_FEIXIN_K101_IM2BA02) += panel-feixin-k101-im2ba02.o
++obj-$(CONFIG_DRM_PANEL_FOCALTECH_FT7131M) += panel-focaltech-ft7131m.o
+ obj-$(CONFIG_DRM_PANEL_FEIYANG_FY07024DI26A30D) += panel-feiyang-fy07024di26a30d.o
+ obj-$(CONFIG_DRM_PANEL_HIMAX_HX8279) += panel-himax-hx8279.o
+ obj-$(CONFIG_DRM_PANEL_HIMAX_HX83102) += panel-himax-hx83102.o
+--- a/drivers/gpu/drm/panel/panel-focaltech-ft7131m.c	2026-09-06 11:05:13.957929782 +0200
++++ b/drivers/gpu/drm/panel/panel-focaltech-ft7131m.c	2026-09-06 19:15:37.253567908 +0200
+@@ -0,0 +1,253 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * FocalTech FT7131M 1080x1920 DSI video panel (Anbernic RG55G1).
++ * Init sequence from Qualcomm Panel_ft7131m_1080p_video.xml.
++ *
++ * Ported from https://github.com/lualiliu/RG55G1-linux with the downstream
++ * ABL continuous-splash coupling removed; the SM4450 display stack already
++ * quiesces the bootloader scanout, so the panel is always reset and fully
++ * initialised here rather than inherited from the bootloader.
++ */
++
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/regulator/consumer.h>
++
++#include <drm/drm_mipi_dsi.h>
++#include <drm/drm_modes.h>
++#include <drm/drm_panel.h>
++#include <drm/drm_probe_helper.h>
++
++#include "panel-focaltech-ft7131m-init.h"
++
++
++struct ft7131m {
++	struct drm_panel panel;
++	struct mipi_dsi_device *dsi;
++	struct regulator_bulk_data supplies[4];
++	struct gpio_desc *reset;
++	enum drm_panel_orientation orientation;
++};
++
++static inline struct ft7131m *panel_to_ft7131m(struct drm_panel *panel)
++{
++	return container_of(panel, struct ft7131m, panel);
++}
++
++static void ft7131m_send_cmds(struct mipi_dsi_device *dsi,
++			      const struct ft7131m_cmd *cmds, size_t count)
++{
++	size_t i;
++
++	for (i = 0; i < count; i++) {
++		const struct ft7131m_cmd *cmd = &cmds[i];
++		int ret;
++
++		if (!cmd->type) {
++			if (cmd->len)
++				msleep(cmd->len);
++			continue;
++		}
++
++		if (cmd->len <= 1) {
++			ret = mipi_dsi_dcs_write(dsi, cmd->data[0], NULL, 0);
++		} else {
++			ret = mipi_dsi_dcs_write(dsi, cmd->data[0],
++						 cmd->data + 1, cmd->len - 1);
++		}
++		if (ret < 0)
++			dev_err(&dsi->dev, "init cmd %zu failed: %d\n", i, ret);
++	}
++}
++
++static int ft7131m_prepare(struct drm_panel *panel)
++{
++	struct ft7131m *ctx = panel_to_ft7131m(panel);
++	struct mipi_dsi_device *dsi = ctx->dsi;
++	int ret;
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
++	if (ret)
++		return ret;
++
++	if (ctx->reset) {
++		gpiod_set_value_cansleep(ctx->reset, 1);
++		msleep(10);
++		gpiod_set_value_cansleep(ctx->reset, 0);
++		msleep(10);
++	}
++
++	ft7131m_send_cmds(dsi, ft7131m_init_cmds, FT7131M_INIT_CMD_COUNT);
++
++	mipi_dsi_dcs_exit_sleep_mode(dsi);
++	msleep(120);
++
++	return 0;
++}
++
++static int ft7131m_enable(struct drm_panel *panel)
++{
++	struct ft7131m *ctx = panel_to_ft7131m(panel);
++
++	mipi_dsi_dcs_set_display_on(ctx->dsi);
++	/* Stock post-display-on settle from the vendor on-command sequence. */
++	msleep(300);
++
++	return 0;
++}
++
++static int ft7131m_disable(struct drm_panel *panel)
++{
++	struct ft7131m *ctx = panel_to_ft7131m(panel);
++	struct mipi_dsi_device *dsi = ctx->dsi;
++
++	ft7131m_send_cmds(dsi, ft7131m_off_cmds, FT7131M_OFF_CMD_COUNT);
++
++	mipi_dsi_dcs_set_display_off(dsi);
++	msleep(16);
++
++	return 0;
++}
++
++static int ft7131m_unprepare(struct drm_panel *panel)
++{
++	struct ft7131m *ctx = panel_to_ft7131m(panel);
++
++	mipi_dsi_dcs_enter_sleep_mode(ctx->dsi);
++	msleep(50);
++
++	if (ctx->reset)
++		gpiod_set_value_cansleep(ctx->reset, 1);
++
++	regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
++
++	return 0;
++}
++
++static const struct drm_display_mode ft7131m_mode = {
++	/* 1080x1920 @ ~61Hz from Panel_ft7131m_1080p_video.xml */
++	.clock = 145377,
++	.hdisplay = 1080,
++	.hsync_start = 1080 + 52,
++	.hsync_end = 1080 + 52 + 16,
++	.htotal = 1080 + 52 + 50 + 16,
++	.vdisplay = 1920,
++	.vsync_start = 1920 + 36,
++	.vsync_end = 1920 + 36 + 8,
++	.vtotal = 1920 + 36 + 24 + 8,
++	.width_mm = 68,
++	.height_mm = 121,
++	.type = DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
++};
++
++static int ft7131m_get_modes(struct drm_panel *panel,
++			     struct drm_connector *connector)
++{
++	return drm_connector_helper_get_modes_fixed(connector, &ft7131m_mode);
++}
++
++static enum drm_panel_orientation ft7131m_get_orientation(struct drm_panel *panel)
++{
++	struct ft7131m *ctx = panel_to_ft7131m(panel);
++
++	return ctx->orientation;
++}
++
++static const struct drm_panel_funcs ft7131m_funcs = {
++	.prepare = ft7131m_prepare,
++	.enable = ft7131m_enable,
++	.disable = ft7131m_disable,
++	.unprepare = ft7131m_unprepare,
++	.get_modes = ft7131m_get_modes,
++	.get_orientation = ft7131m_get_orientation,
++};
++
++static int ft7131m_probe(struct mipi_dsi_device *dsi)
++{
++	struct ft7131m *ctx;
++	int ret;
++
++	ctx = devm_drm_panel_alloc(&dsi->dev, struct ft7131m, panel,
++				   &ft7131m_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
++
++	mipi_dsi_set_drvdata(dsi, ctx);
++	ctx->dsi = dsi;
++
++	ctx->supplies[0].supply = "vdd";
++	ctx->supplies[1].supply = "vddio";
++	ctx->supplies[2].supply = "avdd";
++	ctx->supplies[3].supply = "avee";
++
++	ret = devm_regulator_bulk_get(&dsi->dev, ARRAY_SIZE(ctx->supplies),
++				      ctx->supplies);
++	if (ret)
++		return dev_err_probe(&dsi->dev, ret,
++				     "failed to get supplies\n");
++
++	ctx->reset = devm_gpiod_get_optional(&dsi->dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(ctx->reset))
++		return dev_err_probe(&dsi->dev, PTR_ERR(ctx->reset),
++				     "failed to get reset GPIO\n");
++
++	ret = of_drm_get_panel_orientation(dsi->dev.of_node, &ctx->orientation);
++	if (ret) {
++		dev_err(&dsi->dev, "%pOF: failed to get orientation: %d\n",
++			dsi->dev.of_node, ret);
++		return ret;
++	}
++
++	ret = drm_panel_of_backlight(&ctx->panel);
++	if (ret && ret != -ENODEV)
++		return ret;
++
++	/*
++	 * DSI host must be powered (LP-11) before init cmds; otherwise
++	 * msm transfer returns -EINVAL (!power_on).
++	 */
++	ctx->panel.prepare_prev_first = true;
++
++	ret = devm_drm_panel_add(&dsi->dev, &ctx->panel);
++	if (ret)
++		return ret;
++
++	dsi->lanes = 4;
++	dsi->format = MIPI_DSI_FMT_RGB888;
++	/*
++	 * Panel_ft7131m_1080p_video.xml: DSITrafficMode=1 → non-burst
++	 * sync event. VIDEO_BURST (mode 2) caused white screen + horizontal
++	 * noise after ABL handoff despite a stable DSI link (no FIFO errs).
++	 * Continuous clock matches ABL splash.
++	 */
++	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_LPM;
++
++	return devm_mipi_dsi_attach(&dsi->dev, dsi);
++}
++
++static void ft7131m_remove(struct mipi_dsi_device *dsi)
++{
++}
++
++static const struct of_device_id ft7131m_of_match[] = {
++	{ .compatible = "focaltech,ft7131m" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, ft7131m_of_match);
++
++static struct mipi_dsi_driver ft7131m_driver = {
++	.probe = ft7131m_probe,
++	.remove = ft7131m_remove,
++	.driver = {
++		.name = "panel-focaltech-ft7131m",
++		.of_match_table = ft7131m_of_match,
++	},
++};
++
++module_mipi_dsi_driver(ft7131m_driver);
++
++MODULE_AUTHOR("Anbernic RG 55G1 port");
++MODULE_DESCRIPTION("FocalTech FT7131M 1080p DSI panel");
++MODULE_LICENSE("GPL");
+--- a/drivers/gpu/drm/panel/panel-focaltech-ft7131m-init.h	2026-09-06 11:05:13.957929782 +0200
++++ b/drivers/gpu/drm/panel/panel-focaltech-ft7131m-init.h	2026-09-06 19:15:37.253591342 +0200
+@@ -0,0 +1,198 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Generated from Panel_ft7131m_1080p_video.xml */
++#ifndef PANEL_FOCALTECH_FT7131M_INIT_H
++#define PANEL_FOCALTECH_FT7131M_INIT_H
++
++struct ft7131m_cmd {
++	u8 type;	/* 0=delay ms, 1=dcs write */
++	u8 len;
++	u8 data[64];
++};
++
++static const struct ft7131m_cmd ft7131m_init_cmds[] = {
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 4, .data = { 0xff, 0x87, 0x56, 0x01 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 3, .data = { 0xff, 0x87, 0x56 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa1 } },
++	{ .type = 1, .len = 7, .data = { 0xb3, 0x04, 0x38, 0x07, 0x80, 0x00, 0xfc } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 7, .data = { 0xc0, 0x00, 0xa8, 0x00, 0x24, 0x00, 0x20 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x90 } },
++	{ .type = 1, .len = 7, .data = { 0xc0, 0x00, 0xa8, 0x00, 0x24, 0x00, 0x20 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 7, .data = { 0xc0, 0x01, 0x69, 0x00, 0x24, 0x00, 0x20 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 6, .data = { 0xc0, 0x00, 0xfb, 0x00, 0x24, 0x20 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xc1 } },
++	{ .type = 1, .len = 9, .data = { 0xc0, 0x00, 0xf4, 0x00, 0xc1, 0x00, 0xa3, 0x01, 0x22 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xd7 } },
++	{ .type = 1, .len = 7, .data = { 0xc0, 0x00, 0xa3, 0x00, 0x24, 0x00, 0x20 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa3 } },
++	{ .type = 1, .len = 7, .data = { 0xc1, 0x00, 0x26, 0x00, 0x26, 0x00, 0x02 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 17, .data = { 0xce, 0x01, 0x81, 0x09, 0x13, 0x00, 0xb8, 0x00, 0xb8, 0x00, 0x7a, 0x00, 0x7a, 0x00, 0xb8, 0x00, 0xb8 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x90 } },
++	{ .type = 1, .len = 16, .data = { 0xce, 0x00, 0x8e, 0x0e, 0xb6, 0x00, 0x8e, 0x80, 0x09, 0x13, 0x00, 0x04, 0x00, 0x1a, 0x1c, 0x11 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 4, .data = { 0xce, 0x20, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 4, .data = { 0xce, 0x22, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xd1 } },
++	{ .type = 1, .len = 8, .data = { 0xce, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xe1 } },
++	{ .type = 1, .len = 12, .data = { 0xce, 0x08, 0x02, 0x4d, 0x02, 0x4d, 0x02, 0x4d, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xf1 } },
++	{ .type = 1, .len = 10, .data = { 0xce, 0x12, 0x09, 0x0c, 0x00, 0xd7, 0x00, 0xd7, 0x01, 0x13 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 5, .data = { 0xcf, 0x00, 0x00, 0xaa, 0xae } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb5 } },
++	{ .type = 1, .len = 5, .data = { 0xcf, 0x03, 0x03, 0xf4, 0xf8 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xc0 } },
++	{ .type = 1, .len = 5, .data = { 0xcf, 0x07, 0x07, 0x58, 0x5c } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xc5 } },
++	{ .type = 1, .len = 5, .data = { 0xcf, 0x00, 0x00, 0x08, 0x0c } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xe8 } },
++	{ .type = 1, .len = 2, .data = { 0xc0, 0x10 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xca } },
++	{ .type = 1, .len = 2, .data = { 0xc0, 0x80 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 9, .data = { 0xc2, 0x83, 0x01, 0x01, 0x81, 0x82, 0x01, 0x01, 0x81 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 16, .data = { 0xc2, 0x8a, 0x0a, 0x00, 0x00, 0x86, 0x89, 0x0a, 0x00, 0x00, 0x86, 0x88, 0x0a, 0x00, 0x00, 0x86 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 6, .data = { 0xc2, 0x87, 0x0a, 0x00, 0x00, 0x86 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xe0 } },
++	{ .type = 1, .len = 15, .data = { 0xc2, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0x00, 0x00, 0x03, 0x07, 0x10, 0x8b, 0x01, 0x81 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 17, .data = { 0xcb, 0xfd, 0xfd, 0x3c, 0x30, 0xfd, 0x0c, 0x1c, 0xfe, 0xfd, 0xfe, 0xfd, 0xfd, 0xc0, 0xfd, 0x00, 0xfc } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x90 } },
++	{ .type = 1, .len = 17, .data = { 0xcb, 0xff, 0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 5, .data = { 0xcb, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 5, .data = { 0xcb, 0x50, 0x42, 0x64, 0x50 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xc0 } },
++	{ .type = 1, .len = 5, .data = { 0xcb, 0x50, 0x42, 0xa4, 0x50 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 17, .data = { 0xcc, 0x24, 0x24, 0x00, 0x1b, 0x18, 0x1a, 0x17, 0x19, 0x16, 0x25, 0x29, 0x29, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x90 } },
++	{ .type = 1, .len = 9, .data = { 0xcc, 0x07, 0x09, 0x01, 0x26, 0x26, 0x24, 0x23, 0x03 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 17, .data = { 0xcd, 0x24, 0x24, 0x00, 0x1b, 0x18, 0x1a, 0x17, 0x19, 0x16, 0x25, 0x29, 0x29, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x90 } },
++	{ .type = 1, .len = 9, .data = { 0xcd, 0x06, 0x08, 0x01, 0x26, 0x26, 0x24, 0x23, 0x02 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 17, .data = { 0xcc, 0x24, 0x24, 0x00, 0x1b, 0x18, 0x1a, 0x17, 0x19, 0x16, 0x25, 0x29, 0x29, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 9, .data = { 0xcc, 0x08, 0x06, 0x01, 0x26, 0x26, 0x22, 0x24, 0x02 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 17, .data = { 0xcd, 0x24, 0x24, 0x00, 0x1b, 0x18, 0x1a, 0x17, 0x19, 0x16, 0x25, 0x29, 0x29, 0x00, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb0 } },
++	{ .type = 1, .len = 9, .data = { 0xcd, 0x09, 0x07, 0x01, 0x26, 0x26, 0x22, 0x24, 0x03 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 4, .data = { 0xc4, 0x8d, 0xd8, 0x8d } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x93 } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0xcb } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9a } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0x23 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x97 } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0xda } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9c } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0x19 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x94 } },
++	{ .type = 1, .len = 4, .data = { 0xc5, 0x02, 0x01, 0x01 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x98 } },
++	{ .type = 1, .len = 3, .data = { 0xc5, 0x25, 0x01 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9b } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0x21 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9d } },
++	{ .type = 1, .len = 2, .data = { 0xc5, 0x25 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa4 } },
++	{ .type = 1, .len = 2, .data = { 0xd7, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9b } },
++	{ .type = 1, .len = 2, .data = { 0xf5, 0x4b } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x93 } },
++	{ .type = 1, .len = 3, .data = { 0xf5, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x9d } },
++	{ .type = 1, .len = 2, .data = { 0xf5, 0x49 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x82 } },
++	{ .type = 1, .len = 3, .data = { 0xf5, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 3, .data = { 0xf5, 0x59, 0x59 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x84 } },
++	{ .type = 1, .len = 4, .data = { 0xf5, 0x59, 0x59, 0x59 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x96 } },
++	{ .type = 1, .len = 2, .data = { 0xf5, 0x59 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa6 } },
++	{ .type = 1, .len = 2, .data = { 0xf5, 0x59 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xca } },
++	{ .type = 1, .len = 2, .data = { 0xc0, 0x80 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 3, .data = { 0xd8, 0x2e, 0x34 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 3, .data = { 0xd9, 0x41, 0x41 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe1, 0x00, 0x03, 0x08, 0x0f, 0x13, 0x1a, 0x21, 0x28, 0x32, 0x76, 0x3a, 0x41, 0x46, 0x4c, 0x9c, 0x50, 0x58, 0x5f, 0x66, 0xad, 0x6d, 0x74, 0x7b, 0x82, 0x03, 0x8b, 0x90, 0x96, 0x9c, 0xf1, 0xa3, 0xab, 0xb5, 0xbb, 0x59, 0xc2, 0xc9, 0xce, 0xd0, 0x17 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe2, 0x00, 0x03, 0x08, 0x0f, 0x13, 0x1a, 0x21, 0x28, 0x32, 0x76, 0x3a, 0x41, 0x46, 0x4c, 0x9c, 0x50, 0x58, 0x5f, 0x66, 0xad, 0x6d, 0x74, 0x7b, 0x82, 0x03, 0x8b, 0x90, 0x96, 0x9c, 0xf1, 0xa3, 0xab, 0xb5, 0xbb, 0x59, 0xc2, 0xc9, 0xce, 0xd0, 0x17 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe3, 0x00, 0x03, 0x08, 0x0f, 0x12, 0x1a, 0x21, 0x28, 0x32, 0x21, 0x3a, 0x41, 0x46, 0x4b, 0x4b, 0x50, 0x58, 0x5f, 0x66, 0x58, 0x6c, 0x73, 0x7a, 0x81, 0x97, 0x8a, 0x8f, 0x94, 0x9a, 0x04, 0xa0, 0xa8, 0xb1, 0xb6, 0x96, 0xbb, 0xc2, 0xc6, 0xc8, 0x9f } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe4, 0x00, 0x03, 0x08, 0x0f, 0x12, 0x1a, 0x21, 0x28, 0x32, 0x21, 0x3a, 0x41, 0x46, 0x4b, 0x4b, 0x50, 0x58, 0x5f, 0x66, 0x58, 0x6c, 0x73, 0x7a, 0x81, 0x97, 0x8a, 0x8f, 0x94, 0x9a, 0x04, 0xa0, 0xa8, 0xb1, 0xb6, 0x96, 0xbb, 0xc2, 0xc6, 0xc8, 0x9f } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe5, 0x00, 0x03, 0x08, 0x0f, 0x12, 0x1a, 0x21, 0x28, 0x33, 0x24, 0x3b, 0x42, 0x47, 0x4c, 0x4b, 0x51, 0x59, 0x61, 0x67, 0xa7, 0x6e, 0x76, 0x7d, 0x85, 0xc6, 0x8f, 0x94, 0x9a, 0xa2, 0x7f, 0xaa, 0xb5, 0xc3, 0xcc, 0x47, 0xe4, 0xf1, 0xf8, 0xff, 0x3b } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x00 } },
++	{ .type = 1, .len = 41, .data = { 0xe6, 0x00, 0x03, 0x08, 0x0f, 0x12, 0x1a, 0x21, 0x28, 0x33, 0x24, 0x3b, 0x42, 0x47, 0x4c, 0x4b, 0x51, 0x59, 0x61, 0x67, 0xa7, 0x6e, 0x76, 0x7d, 0x85, 0xc6, 0x8f, 0x94, 0x9a, 0xa2, 0x7f, 0xaa, 0xb5, 0xc3, 0xcc, 0x47, 0xe4, 0xf1, 0xf8, 0xff, 0x3b } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb6 } },
++	{ .type = 1, .len = 5, .data = { 0xc5, 0x19, 0x19, 0x19, 0x19 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x85 } },
++	{ .type = 1, .len = 2, .data = { 0xc4, 0x1c } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 2, .data = { 0xa4, 0x6c } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x8d } },
++	{ .type = 1, .len = 2, .data = { 0xa5, 0x06 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa9 } },
++	{ .type = 1, .len = 2, .data = { 0xf5, 0xc1 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa0 } },
++	{ .type = 1, .len = 17, .data = { 0xc3, 0x15, 0x01, 0x23, 0x45, 0x54, 0x32, 0x10, 0x00, 0x00, 0x00, 0x34, 0x50, 0x12, 0x21, 0x05, 0x43 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x8c } },
++	{ .type = 1, .len = 4, .data = { 0xc3, 0x00, 0x00, 0x00 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x89 } },
++	{ .type = 1, .len = 4, .data = { 0xc0, 0x02, 0x13, 0x05 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xc6 } },
++	{ .type = 1, .len = 4, .data = { 0xce, 0x02, 0x13, 0x05 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xa6 } },
++	{ .type = 1, .len = 4, .data = { 0xce, 0x02, 0x13, 0x05 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xb6 } },
++	{ .type = 1, .len = 4, .data = { 0xce, 0x02, 0x13, 0x05 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x82 } },
++	{ .type = 1, .len = 3, .data = { 0xa7, 0x22, 0x02 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xcb } },
++	{ .type = 1, .len = 2, .data = { 0xc0, 0x19 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x84 } },
++	{ .type = 1, .len = 3, .data = { 0xc5, 0x26, 0x26 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 2, .data = { 0xa4, 0x6c } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x97 } },
++	{ .type = 1, .len = 2, .data = { 0xc4, 0x01 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0x80 } },
++	{ .type = 1, .len = 2, .data = { 0xa7, 0x13 } },
++	{ .type = 1, .len = 2, .data = { 0x00, 0xd0 } },
++	{ .type = 1, .len = 13, .data = { 0xc3, 0x46, 0x00, 0x00, 0x00, 0x46, 0x00, 0x00, 0x00, 0x46, 0x00, 0x00, 0x00 } },
++};
++
++/*
++ * qcom,mdss-dsi-off-command. Sleep-out/display-on/display-off/sleep-in are
++ * issued by the driver through the DCS helpers instead, because the XML
++ * spells them as dtype 0x05 short writes whose second payload byte is packet
++ * padding, not a parameter.
++ */
++static const struct ft7131m_cmd ft7131m_off_cmds[] = {
++	{ .type = 1, .len = 3, .data = { 0xb7, 0x59, 0x02 } },
++};
++
++#define FT7131M_INIT_CMD_COUNT ARRAY_SIZE(ft7131m_init_cmds)
++#define FT7131M_OFF_CMD_COUNT ARRAY_SIZE(ft7131m_off_cmds)
++
++#endif

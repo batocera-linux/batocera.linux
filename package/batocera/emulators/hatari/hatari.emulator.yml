@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -63,5 +64,16 @@ custom_features:
     choices:
       IDE (Default): IDE
       ACSI: ACSI
+file_extensions:
+  - st
+  - msa
+  - stx
+  - dim
+  - ipf
+  - m3u
+  - zip
+  - 7z
+  - hd
+  - gemdos
 systems:
   - atarist

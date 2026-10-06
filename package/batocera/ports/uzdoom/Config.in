@@ -1,0 +1,18 @@
+config BR2_PACKAGE_UZDOOM
+    bool "uzdoom"
+    select BR2_PACKAGE_HOST_UZDOOM
+    select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_SDL2_NET
+    select BR2_PACKAGE_SDL2_MIXER
+    select BR2_PACKAGE_LIBGL
+    select BR2_PACKAGE_OPENAL
+    select BR2_PACKAGE_ZMUSIC
+    select BR2_PACKAGE_LIBVPX
+    select BR2_PACKAGE_WEBP
+    select BR2_PACKAGE_WEBP_DEMUX
+    select BR2_PACKAGE_WEBP_MUX
+    help
+      UZDoom is a continuation of ZDoom and GZDoom, a 3D-accelerated
+      Doom source port.
+
+	    https://github.com/UZDoom/UZDoom

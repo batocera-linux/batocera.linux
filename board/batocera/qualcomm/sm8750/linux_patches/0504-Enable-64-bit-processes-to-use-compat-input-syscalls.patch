@@ -20,10 +20,10 @@ Signed-off-by: Sergio Lopez <slp@redhat.com>
  5 files changed, 29 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/input/input-compat.c b/drivers/input/input-compat.c
-index 2ccd3eedbd6733..abb8cfb99d6cf9 100644
+index a5043193e..a3c0c7012 100644
 --- a/drivers/input/input-compat.c
 +++ b/drivers/input/input-compat.c
-@@ -14,7 +14,7 @@
+@@ -15,7 +15,7 @@
  int input_event_from_user(const char __user *buffer,
  			  struct input_event *event)
  {
@@ -32,7 +32,7 @@ index 2ccd3eedbd6733..abb8cfb99d6cf9 100644
  		struct input_event_compat compat_event;
  
  		if (copy_from_user(&compat_event, buffer,
-@@ -38,7 +38,7 @@ int input_event_from_user(const char __user *buffer,
+@@ -39,7 +39,7 @@ int input_event_from_user(const char __user *buffer,
  int input_event_to_user(char __user *buffer,
  			const struct input_event *event)
  {
@@ -41,7 +41,7 @@ index 2ccd3eedbd6733..abb8cfb99d6cf9 100644
  		struct input_event_compat compat_event;
  
  		compat_event.sec = event->input_event_sec;
-@@ -62,7 +62,7 @@ int input_event_to_user(char __user *buffer,
+@@ -63,7 +63,7 @@ int input_event_to_user(char __user *buffer,
  int input_ff_effect_from_user(const char __user *buffer, size_t size,
  			      struct ff_effect *effect)
  {
@@ -51,7 +51,7 @@ index 2ccd3eedbd6733..abb8cfb99d6cf9 100644
  
  		if (size != sizeof(struct ff_effect_compat))
 diff --git a/drivers/input/input-compat.h b/drivers/input/input-compat.h
-index 3b7bb12b023bc6..e78c0492ce0d36 100644
+index 99c87ceb9..e0e078306 100644
 --- a/drivers/input/input-compat.h
 +++ b/drivers/input/input-compat.h
 @@ -53,7 +53,7 @@ struct ff_effect_compat {
@@ -64,12 +64,12 @@ index 3b7bb12b023bc6..e78c0492ce0d36 100644
  }
  
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 77f01ac385f7a5..01125573065ecd 100644
+index 373bcc059..3548d9577 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1535,6 +1535,11 @@ struct task_struct {
- #ifdef CONFIG_USER_EVENTS
- 	struct user_event_mm		*user_event_mm;
+@@ -1548,6 +1548,11 @@ struct task_struct {
+ #ifdef CONFIG_MEMCG_V1
+ 	struct mem_cgroup		*memcg_in_oom;
  #endif
 +	/*
 +	 * Whether the task wants to use compat input syscalls even if it's
@@ -77,15 +77,15 @@ index 77f01ac385f7a5..01125573065ecd 100644
 +	 */
 +	bool compat_input;
  
- 	/*
- 	 * New fields for task_struct should be added above here, so that
+ #ifdef CONFIG_MEMCG
+ 	/* Number of pages to reclaim on returning to userland: */
 diff --git a/include/uapi/linux/prctl.h b/include/uapi/linux/prctl.h
-index 961216093f11ab..86fca7d168cc66 100644
+index b6ec6f693..55ca31b52 100644
 --- a/include/uapi/linux/prctl.h
 +++ b/include/uapi/linux/prctl.h
-@@ -311,4 +311,9 @@ struct prctl_mm_map {
- # define PR_SET_MEM_MODEL_DEFAULT	0
- # define PR_SET_MEM_MODEL_TSO		1
+@@ -416,4 +416,9 @@ struct prctl_mm_map {
+ # define PR_CFI_DISABLE		_BITUL(1)
+ # define PR_CFI_LOCK		_BITUL(2)
  
 +#define PR_GET_COMPAT_INPUT    0x63494e50
 +#define PR_SET_COMPAT_INPUT    0x43494e50
@@ -94,12 +94,12 @@ index 961216093f11ab..86fca7d168cc66 100644
 +
  #endif /* _LINUX_PRCTL_H */
 diff --git a/kernel/sys.c b/kernel/sys.c
-index 2db751ce25a260..1be74620b0b659 100644
+index df69bd71d..81320cde4 100644
 --- a/kernel/sys.c
 +++ b/kernel/sys.c
-@@ -2768,6 +2768,21 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
- 			return -EINVAL;
- 		error = arch_prctl_mem_model_set(me, arg2);
+@@ -2907,6 +2907,21 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
+ 		if (arg3 & PR_CFI_LOCK && !(arg3 & PR_CFI_DISABLE))
+ 			error = arch_prctl_lock_branch_landing_pad_state(me);
  		break;
 +	case PR_GET_COMPAT_INPUT:
 +		if (arg2 || arg3 || arg4 || arg5)
@@ -117,5 +117,5 @@ index 2db751ce25a260..1be74620b0b659 100644
 +			return -EINVAL;
 +		break;
  	default:
+ 		trace_task_prctl_unknown(option, arg2, arg3, arg4, arg5);
  		error = -EINVAL;
- 		break;

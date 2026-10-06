@@ -1,0 +1,19 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] clk: qcom: gpucc-sm4450: retain GX GDSC regs across collapse
+
+Set RETAIN_FF_ENABLE on gpu_cc_gx_gdsc so the register context survives
+GDSC power collapse.
+
+drives from this flag. Upstream made the equivalent to 
+QCM2290 in commit 899dfd90229e ("clk: qcom: qcm2290: Add
+RETAIN_FF_ENABLE flag for DISPCC and GPUCC GDSCs").
+
+--- a/drivers/clk/qcom/gpucc-sm4450.c
++++ b/drivers/clk/qcom/gpucc-sm4450.c
+@@ -689,5 +689,5 @@
+ 		.name = "gpu_gx_gdsc",
+ 	},
+ 	.pwrsts = PWRSTS_OFF_ON,
+-	.flags = CLAMP_IO | AON_RESET | SW_RESET | POLL_CFG_GDSCR,
++	.flags = CLAMP_IO | AON_RESET | SW_RESET | POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+ };

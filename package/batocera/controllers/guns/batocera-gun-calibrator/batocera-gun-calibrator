@@ -125,7 +125,7 @@ def readCalibration(devpath, key, pCenter, pInputWindow):
         pathSystem = '/userdata/system/configs/gun-calibrator/{}.conf'.format(key)
         if os.path.exists(pathLast):
             path = pathLast
-        elif os.path.exists(pastSystem):
+        elif os.path.exists(pathSystem):
             path = pathSystem
         else:
             return pCenter, pInputWindow

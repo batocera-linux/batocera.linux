@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -37,5 +38,8 @@ custom_features:
     choices:
       Disabled (Default): 0
       Enabled: 1
+file_extensions:
+  - d1x
+  - d2x
 systems:
   - dxx-rebirth

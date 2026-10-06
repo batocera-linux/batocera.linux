@@ -46,8 +46,18 @@ custom_features:
     choices:
       Retropad (Default): retropad
       Megadrive: megadrive
+file_extensions:
+  - zip
+  - 7z
 systems:
   - name: megadrive
+    file_extensions:
+      add:
+        - bin
+        - gen
+        - md
+        - sg
+        - smd
     shared_features:
       - use_guns
     custom_features:
@@ -103,7 +113,12 @@ systems:
           MAME (Enhanced YM3438): mame (enhanced ym3438)
           Nuked (YM2612): nuked (ym2612)
           Nuked (YM3438): nuked (ym3438)
-  - name: segacd
+  - name: megacd
+    file_extensions:
+      - cue
+      - iso
+      - chd
+      - m3u
     custom_features:
       gpgx_cd_add_on:
         prompt: CD ADD-ON
@@ -138,6 +153,10 @@ systems:
           Nuked (YM3438): nuked (ym3438)
   - name: megadrive-msu
     disabled: true
+    file_extensions:
+      add:
+        - md
+        - squashfs
     custom_features:
       gpgx_cd_add_on:
         prompt: CD ADD-ON
@@ -162,6 +181,10 @@ systems:
           "0": 0
   - name: mastersystem
     disabled: true
+    file_extensions:
+      add:
+        - bin
+        - sms
     shared_features:
       - use_guns
     custom_features:
@@ -204,6 +227,10 @@ systems:
           Paddle Control: 261
   - name: gamegear
     disabled: true
+    file_extensions:
+      add:
+        - bin
+        - gg
     custom_features:
       lcd_filter:
         group: ADVANCED OPTIONS

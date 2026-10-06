@@ -1,3 +1,13 @@
+file_extensions:
+  - bin
+  - zip
+  - 7z
 systems:
-  - gamegear
-  - mastersystem
+  - name: gamegear
+    file_extensions:
+      add:
+        - gg
+  - name: mastersystem
+    file_extensions:
+      add:
+        - sms

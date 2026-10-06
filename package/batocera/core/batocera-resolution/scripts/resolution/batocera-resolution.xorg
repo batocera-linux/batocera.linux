@@ -47,16 +47,61 @@ f_usage() {
     echo "${0} refreshRate" >&2
 }
 
+# a rate written on the labwc builds is in mHz; xrandr takes Hz and picks the closest listed rate
+_rate_hz() {
+    [ -n "$1" ] || return 0
+    awk -v r="$1" 'BEGIN { printf "%.2f\n", r >= 1000 ? r / 1000 : r }'
+}
+
+# modes a sink only takes as YCbCr 4:2:0 sit in the EDID's Y420 video data block; TVs tend to show
+# no picture on them, so they are left out of every listing
+_420_only_modes() {
+    xrandr --props | awk -v o="$1" '$0 ~ "^" o " " { p = 1; next } /^[^[:space:]]/ { p = 0 } p' \
+        | edid-decode 2>/dev/null | sed -n '/YCbCr 4:2:0 Video Data Block/,/^  [^ ]/p' | awk '/VIC/ { printf "%s@%.0f\n", $3, $4 }'
+}
+
+_list_modes() {
+    local skip
+    skip=$(_420_only_modes "$1" | tr '\n' ' ')
+    xrandr --listModes "$1" | awk -v skip=" ${skip} " '{ split($1, m, "."); if (!index(skip, " " m[1] "@" int((m[2] "." m[3]) + 0.5) " ")) print }'
+}
+
+# the rate to use when a request names only a resolution: the listed one nearest 60 Hz, since
+# xrandr alone would take the first mode of that name, 4:2:0-only ones included
+_listed_rate() {
+    _list_modes "${PSCREEN}" | awk -v res="$1" '
+        { split($1, m, "."); if (m[1] != res) next; d = (m[2] "." m[3]) - 60; if (d < 0) d = -d }
+        best == "" || d < bd { best = m[2] "." m[3]; bd = d }
+        END { print best }'
+}
+
+# xrandr would silently take the closest rate for a resolution, so check the request against the listing
+_mode_listed() {
+    _list_modes "${PSCREEN}" | awk -v res="$1" -v hz="$2" '
+        { split($1, m, "."); d = (m[2] "." m[3]) - hz; if (d < 0) d = -d }
+        m[1] == res && (hz == "" || d < 0.01) { found = 1; exit }
+        END { exit !found }'
+}
+
 f_minTomaxResolution() {
     
     BOOTRESOLUTION="$(batocera-settings-get -f "$BOOTCONF" es.resolution)"
     CONFRESOLUTION="$(batocera-settings-get-master es.resolution)"
+    # what ES saves for AUTO
+    [ "${BOOTRESOLUTION}" = "auto" ] && BOOTRESOLUTION=
+    [ "${CONFRESOLUTION}" = "auto" ] && CONFRESOLUTION=
 
     if [ -z "$1" ]; then
         # reinit the screen (in case it was off)
-        if [ -n "${BOOTRESOLUTION}" ] && [ "${BOOTRESOLUTION}" != "auto" ]; then
-            BOOT_RES=$(echo "${BOOTRESOLUTION}" | cut -d'.' -f1 | sed 's/max-//;s/\..*//')
-            BOOT_RATE=$(echo "${BOOTRESOLUTION}" | cut -s -d'.' -f2-)
+        BOOT_RES=$(echo "${BOOTRESOLUTION}" | cut -d'.' -f1 | sed 's/max-//;s/\..*//')
+        BOOT_RATE=$(_rate_hz "$(echo "${BOOTRESOLUTION}" | cut -s -d'.' -f2-)")
+        if [ -n "${BOOTRESOLUTION}" ] && ! _mode_listed "${BOOT_RES}" "${BOOT_RATE}"; then
+            echo "es.resolution ${BOOTRESOLUTION} is not an available mode, using --auto" >> "$log"
+            BOOTRESOLUTION=
+            CONFRESOLUTION=
+        fi
+        if [ -n "${BOOTRESOLUTION}" ]; then
+            [ -n "${BOOT_RATE}" ] || BOOT_RATE=$(_listed_rate "${BOOT_RES}")
             if [ -n "$BOOT_RATE" ]; then
                 echo "es.resolution setting found. Initializing screen to: ${BOOT_RES} @ ${BOOT_RATE}Hz" >> "$log"
                 xrandr --output "${PSCREEN}" --mode "${BOOT_RES}" --rate "${BOOT_RATE}"
@@ -83,7 +128,7 @@ f_minTomaxResolution() {
     MHEIGHT=$(echo "$1"x | tr -d [[:blank:]] | cut -dx -f2)
 
     # This logic finds the highest resolution with the highest refresh rate >= 59Hz.
-    IDEAL_MODE_INFO=$(xrandr --listModes "${PSCREEN}" | \
+    IDEAL_MODE_INFO=$(_list_modes "${PSCREEN}" | \
         grep -oE '[0-9]+x[0-9]+[[:space:]]+[0-9]+\.[0-9]+' | \
         # Keep only modes with a refresh rate of 59Hz or higher
         # and not the excluded resolution on some 4k TV's - 4096x2160
@@ -117,7 +162,7 @@ f_minTomaxResolution() {
         MAXWIDTH=$(echo "$RESOLUTION" | cut -d 'x' -f 1)
         MAXHEIGHT=$(echo "$RESOLUTION" | cut -d 'x' -f 2)
         # Extract refresh rate if present
-        MAXRATE=$(echo "$BOOTRESOLUTION" | cut -s -d '.' -f 2-)
+        MAXRATE=$(_rate_hz "$(echo "$BOOTRESOLUTION" | cut -s -d '.' -f 2-)")
         if [ -n "$MAXRATE" ]; then
             echo "Using ES resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
         else
@@ -129,7 +174,7 @@ f_minTomaxResolution() {
         MAXWIDTH=$(echo "$RESOLUTION" | cut -d 'x' -f 1)
         MAXHEIGHT=$(echo "$RESOLUTION" | cut -d 'x' -f 2)
         # Extract refresh rate if present
-        MAXRATE=$(echo "$CONFRESOLUTION" | cut -s -d '.' -f 2-)
+        MAXRATE=$(_rate_hz "$(echo "$CONFRESOLUTION" | cut -s -d '.' -f 2-)")
         if [ -n "$MAXRATE" ]; then
             echo "Using master ES resolution setting of $MAXWIDTH x $MAXHEIGHT @ $MAXRATE Hz" >> "$log"
         else
@@ -202,7 +247,7 @@ f_minTomaxResolution() {
     
     # select the new resolution with preferred refresh rate
     if [ -n "$MAXRATE" ]; then
-        xrandr --listModes "${PSCREEN}" | while IFS= read -r line; do
+        _list_modes "${PSCREEN}" | while IFS= read -r line; do
             resolution=$(echo "$line" | awk -F'.' '{print $1}')
             rate=$(echo "$line" | grep -oE '[0-9]+\.[0-9]+' | tail -1 | tr -d "*")
             # Check if the resolution and refresh rate match the MAX values
@@ -220,15 +265,16 @@ f_minTomaxResolution() {
         done
     else
         # no set refresh rate so select the first valid one
-        xrandr --listModes "${PSCREEN}" |
+        _list_modes "${PSCREEN}" |
         while read SUGGRESOLUTIONRATE SUGGMODE; do
             SUGGRESOLUTION=$(echo "${SUGGRESOLUTIONRATE}" | cut -d . -f 1)
             SUGGWIDTH=$(echo "${SUGGRESOLUTION}" | cut -d x -f 1)
             SUGGHEIGHT=$(echo "${SUGGRESOLUTION}" | cut -d x -f 2)
             if test "${SUGGWIDTH}" -le "${MAXWIDTH}" -a "${SUGGHEIGHT}" -le "${MAXHEIGHT}"; then
                 OUTPUT=${PSCREEN}
-                echo "Using old method = Output: ${OUTPUT} Mode: ${SUGGRESOLUTION}" >> $log
-                xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}"
+                SUGGRATE=$(_listed_rate "${SUGGRESOLUTION}")
+                echo "Using old method = Output: ${OUTPUT} Mode: ${SUGGRESOLUTION} Rate: ${SUGGRATE}" >> $log
+                xrandr --output "${OUTPUT}" --mode "${SUGGRESOLUTION}" --rate "${SUGGRATE}"
                 if [ "${CURRENT_ROTATION}" != "0" ]; then
                     batocera-resolution --screen "${PSCREEN}" setRotation "${CURRENT_ROTATION}"
                 fi
@@ -250,7 +296,7 @@ case "${ACTION}" in
     "listModes")
         echo "max-1920x1080:maximum 1920x1080"
         echo "max-640x480:maximum 640x480"
-        xrandr --listModes "${PSCREEN}" | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
+        _list_modes "${PSCREEN}" | sed -e s+'\*$'++ | sed -e s+'^\([^ ]*\) \(.*\)$'+'\1:\2'+
         ;;
     
     "setMode")
@@ -275,17 +321,31 @@ case "${ACTION}" in
                 exit 1
             fi
             # let the old format widthxheight and the new one widthxheight.hz
-            if echo "${MODE}" | grep "\."; then
+            if [ "${MODE}" = "auto" ]; then
+                echo "setMode: Output: ${OUTPUT} preferred mode" >> $log
+                xrandr --output "${OUTPUT}" --auto
+            elif echo "${MODE}" | grep -q "\."; then
                 PARTRES=$(echo "${MODE}" | cut -d'.' -f1)
-                PARTHZ=$(echo "${MODE}" | cut -d'.' -f2-)
+                PARTHZ=$(_rate_hz "$(echo "${MODE}" | cut -d'.' -f2-)")
+                if ! _mode_listed "${PARTRES}" "${PARTHZ}"; then
+                    echo "setMode: ${MODE} is not an available mode on ${OUTPUT}" >> $log
+                    echo "unknown mode: ${MODE}" >&2
+                    exit 1
+                fi
                 echo "setMode: Output: ${OUTPUT} Resolution: ${PARTRES} Rate: ${PARTHZ}" >> $log
                 xrandr --output "${OUTPUT}" --mode "${PARTRES}" --rate "${PARTHZ}"
                 if [ "${CURRENT_ROTATION}" != "0" ]; then
                     batocera-resolution --screen "${PSCREEN}" setRotation "${CURRENT_ROTATION}"
                 fi
             else
-                echo "setMode: Output: ${OUTPUT} Mode: ${MODE}" >> $log
-                xrandr --output "${OUTPUT}" --mode "${MODE}"
+                if ! _mode_listed "${MODE}" ""; then
+                    echo "setMode: ${MODE} is not an available mode on ${OUTPUT}" >> $log
+                    echo "unknown mode: ${MODE}" >&2
+                    exit 1
+                fi
+                PARTHZ=$(_listed_rate "${MODE}")
+                echo "setMode: Output: ${OUTPUT} Mode: ${MODE} Rate: ${PARTHZ}" >> $log
+                xrandr --output "${OUTPUT}" --mode "${MODE}" --rate "${PARTHZ}"
                 if [ "${CURRENT_ROTATION}" != "0" ]; then
                     batocera-resolution --screen "${PSCREEN}" setRotation "${CURRENT_ROTATION}"
                 fi
@@ -468,6 +528,10 @@ case "${ACTION}" in
     "getDisplayComp")
         echo "openbox"
         ;;
+
+    "configureWindow")
+	# nothing to do, on xorg, configuring windows is done at application level
+	;;
 
     *)
         f_usage

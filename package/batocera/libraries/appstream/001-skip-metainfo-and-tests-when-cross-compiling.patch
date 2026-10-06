@@ -1,0 +1,45 @@
+--- a/meson.build
++++ b/meson.build
+@@ -274,7 +274,9 @@
+ subdir('data/')
+ subdir('contrib/')
+ subdir('docs/')
+-subdir('tests/')
++if not meson.is_cross_build()
++    subdir('tests/')
++endif
+ if get_option('qt')
+     subdir('qt/')
+ endif
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -7,12 +7,8 @@
+ install_data('its/metainfo.loc',
+               install_dir: join_paths(get_option('datadir'), 'gettext', 'its'))
+ 
+-# Do not rely on an exe wrapper for rel-info, use the system one in that case
+-if meson.is_cross_build()
+-    dependency('appstream', version: '>=' + as_version, native: true,
+-               not_found_message: 'Native appstream required for cross-building')
+-    ascli_exe = find_program('appstreamcli', native: true)
+-endif
++# The metainfo needs a native appstreamcli and itstool, skip it when cross-building.
++if not meson.is_cross_build()
+ 
+ # NOTE: We do not translate the release notes on purpose here.
+ # If you do want to give translators a chance to translate them,
+@@ -40,12 +36,13 @@
+            '--no-net',
+            metainfo_i18n]
+ )
++endif
+ 
+ # install appstream.conf default template
+ install_data('appstream.conf',
+              install_dir: as_data_installdir)
+ 
+-if get_option('compose')
++if get_option('compose') and not meson.is_cross_build()
+     ascompose_metainfo = 'org.freedesktop.appstream.compose.metainfo.xml'
+     test('as-validate_metainfo.compose',
+          ascli_exe,

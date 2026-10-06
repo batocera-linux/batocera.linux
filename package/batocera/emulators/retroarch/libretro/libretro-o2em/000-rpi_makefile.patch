@@ -1,11 +1,9 @@
-diff --git a/Makefile b/Makefile
-index 6c840aa..1749d80 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -53,6 +53,27 @@ ifeq ($(platform), unix)
-    TARGET := $(TARGET_NAME)_libretro.so
-    fpic := -fPIC
-    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+@@ -58,6 +58,27 @@
+    # 32-bit ARM against rclone/FUSE mounts of the Internet Archive,
+    # #60) and ftello() truncates
+    FLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 +# Raspberry Pi
 +else ifneq (,$(findstring rpi,$(platform)))
 +	TARGET := $(TARGET_NAME)_libretro.so
@@ -28,5 +26,5 @@ index 6c840aa..1749d80 100644
 +         CFLAGS += -mcpu=cortex-a76 -mtune=cortex-a76
 +	endif
  else ifeq ($(platform), linux-portable)
+    FLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
     TARGET := $(TARGET_NAME)_libretro.so
-    fpic := -fPIC -nostdlib

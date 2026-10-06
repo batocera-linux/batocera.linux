@@ -3,8 +3,8 @@
 # libzedmd
 #
 ################################################################################
-# Version: Commits on Aug 12, 2026
-LIBZEDMD_VERSION = e8466d252a71539a50bc8ac6271a00fd2d48884c
+# Version: Commits on Sep 30, 2026
+LIBZEDMD_VERSION = 0b0f561b4bf2996de625c3ce5f94a2592b8455f6
 LIBZEDMD_SITE = $(call github,PPUC,libzedmd,$(LIBZEDMD_VERSION))
 LIBZEDMD_LICENSE = GPLv3
 LIBZEDMD_LICENSE_FILES = LICENSE
@@ -35,6 +35,8 @@ define LIBZEDMD_POST_PROCESS
 	mkdir -p $(TARGET_DIR)/usr/bin
 	$(INSTALL) -m 755 $(@D)/buildroot-build/zedmd-client \
         $(TARGET_DIR)/usr/bin/zedmd-client
+	$(INSTALL) -m 755 $(@D)/buildroot-build/zedmd-test \
+        $(TARGET_DIR)/usr/bin/zedmd-test
 endef
 
 LIBZEDMD_POST_INSTALL_TARGET_HOOKS += LIBZEDMD_POST_PROCESS

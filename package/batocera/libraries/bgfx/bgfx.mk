@@ -3,8 +3,8 @@
 # bgfx
 #
 ################################################################################
-# Version: Commits on Aug 12, 2026
-BGFX_VERSION = v1.153.9398-566
+# Version: Commits on Oct 2, 2026
+BGFX_VERSION = v1.162.9524-580
 BGFX_SITE = https://github.com/bkaradzic/bgfx.cmake
 BGFX_SITE_METHOD = git
 BGFX_GIT_SUBMODULES = YES
@@ -35,7 +35,7 @@ BGFX_CONF_OPTS += -DBGFX_WITH_WAYLAND=OFF
 endif
 
 # patch version details from vpinball - platforms/config.sh
-BGFX_PATCH_VERSION = 93b82acafc49fc90d13848e2c764b655adccc8ad
+BGFX_PATCH_VERSION = b0015b4518809e404a5d56e520bfe38d46dad728
 BGFX_PATCH_SOURCE = $(BGFX_PATCH_VERSION).tar.gz
 BGFX_EXTRA_DOWNLOADS = \
     $(addprefix \
@@ -49,5 +49,11 @@ define BGFX_EXTRACT_PATCH
 	mv $(@D)/bgfx-$(BGFX_PATCH_VERSION) $(@D)/bgfx
 endef
 BGFX_POST_EXTRACT_HOOKS += BGFX_EXTRACT_PATCH
+
+define BGFX_INSTALL_BIMG_ENCODE
+	$(INSTALL) -D -m 0644 $(BGFX_BUILDDIR)/cmake/bimg/libbimg_encode.a \
+		$(STAGING_DIR)/usr/lib/libbimg_encode.a
+endef
+BGFX_POST_INSTALL_STAGING_HOOKS += BGFX_INSTALL_BIMG_ENCODE
 
 $(eval $(cmake-package))

@@ -451,6 +451,18 @@ static void init_shader_program(void) {
 // Per-frame shader render pass
 // ---------------------------------------------------------------------------
 
+// Logical rect to output pixels through SDL's letterboxed logical viewport
+static void logical_to_output(SDL_Renderer *r, const SDL_Rect *src, SDL_Rect *dst) {
+    SDL_Rect vp;
+    float sx, sy;
+    SDL_RenderGetViewport(r, &vp);
+    SDL_RenderGetScale(r, &sx, &sy);
+    dst->x = (int)((vp.x + src->x) * sx);
+    dst->y = (int)((vp.y + src->y) * sy);
+    dst->w = (int)(src->w * sx);
+    dst->h = (int)(src->h * sy);
+}
+
 // Replace SDL_RenderCopy for a single DS screen texture with a GLES2 shader pass
 static int run_shader_copy(SDL_Renderer *r, SDL_Texture *texture,
                            const SDL_Rect *srcrect, const SDL_Rect *dstrect) {
@@ -524,12 +536,12 @@ static int run_shader_copy(SDL_Renderer *r, SDL_Texture *texture,
     } else {
 generic_viewport:
         {
-            float sx = (logical_width  > 0) ? (float)out_w / logical_width  : 1.0f;
-            float sy = (logical_height > 0) ? (float)out_h / logical_height : 1.0f;
-            gl_w = (int)(dstrect->w * sx);
-            gl_h = (int)(dstrect->h * sy);
-            gl_x = (int)(dstrect->x * sx);
-            gl_y = out_h - (int)(dstrect->y * sy) - gl_h;
+            SDL_Rect out;
+            logical_to_output(r, dstrect, &out);
+            gl_x = out.x;
+            gl_w = out.w;
+            gl_h = out.h;
+            gl_y = out_h - out.y - gl_h;
         }
     }
 
@@ -627,9 +639,9 @@ SDL_Window* SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
             last_width = bounds.w;
             last_height = bounds.h;
             if (bounds.w + bounds.x > total_width)
-                total_width += bounds.w;
+                total_width = bounds.w + bounds.x;
             if (bounds.h + bounds.y > total_height)
-                total_height += bounds.h;
+                total_height = bounds.h + bounds.y;
 
             if (i == 0) {
                 display0_rect = bounds;
@@ -638,6 +650,14 @@ SDL_Window* SDL_CreateWindow(const char *title, int x, int y, int w, int h, Uint
                 has_display_rects = 1;
             }
         }
+    }
+
+    // SDL numbers displays in the order they appeared, so a hotplugged top screen can come second
+    if (has_display_rects && (display1_rect.y < display0_rect.y ||
+                              (display1_rect.y == display0_rect.y && display1_rect.x < display0_rect.x))) {
+        SDL_Rect top = display1_rect;
+        display1_rect = display0_rect;
+        display0_rect = top;
     }
 
     // Record screen size for rect tracking/conversion
@@ -792,15 +812,7 @@ int SDL_RenderCopy(SDL_Renderer *renderer, SDL_Texture *texture, const SDL_Rect 
                 (screens[3] && texture == screens[3] && ds_screen_width == 256) ||
                 is_single) {
                 if (logical_width > 0 && logical_height > 0) {
-                    int output_w, output_h;
-                    SDL_GetRendererOutputSize(renderer, &output_w, &output_h);
-                    float scale_x = (float)output_w / logical_width;
-                    float scale_y = (float)output_h / logical_height;
-
-                    touch_rect_storage.x = (int)(dstrect->x * scale_x);
-                    touch_rect_storage.y = (int)(dstrect->y * scale_y);
-                    touch_rect_storage.w = (int)(dstrect->w * scale_x);
-                    touch_rect_storage.h = (int)(dstrect->h * scale_y);
+                    logical_to_output(renderer, dstrect, &touch_rect_storage);
                 } else {
                     touch_rect_storage = *dstrect;
                 }
@@ -874,6 +886,25 @@ void mic_audio_callback(void* userdata, Uint8* stream, int len) {
     }
 }
 
+// SDL's renderer rewrites fingers into its letterboxed logical viewport, map them back to window pixels
+static void finger_to_window(float fx, float fy, int* x, int* y) {
+    int lw = 0, lh = 0;
+    if (renderer)
+        SDL_RenderGetLogicalSize(renderer, &lw, &lh);
+
+    if (lw > 0 && lh > 0) {
+        SDL_Rect vp;
+        float sx, sy;
+        SDL_RenderGetViewport(renderer, &vp);
+        SDL_RenderGetScale(renderer, &sx, &sy);
+        *x = (int)((vp.x + fx * vp.w) * sx);
+        *y = (int)((vp.y + fy * vp.h) * sy);
+    } else {
+        *x = (int)(fx * phys_width);
+        *y = (int)(fy * phys_height);
+    }
+}
+
 int SDL_PollEvent(SDL_Event* event) {
     // Loop required to filter events we don't want to pass along
     while (1) {
@@ -885,8 +916,8 @@ int SDL_PollEvent(SDL_Event* event) {
                 if (!actual_touch)
                     actual_touch = 1;
 
-                int x = (int)(event->tfinger.x * phys_width);
-                int y = (int)(event->tfinger.y * phys_height);
+                int x, y;
+                finger_to_window(event->tfinger.x, event->tfinger.y, &x, &y);
 
                 if (!touch_rect) continue;
 
@@ -920,8 +951,8 @@ int SDL_PollEvent(SDL_Event* event) {
                 break;
             }
             case SDL_FINGERMOTION: {
-                int x = (int)(event->tfinger.x * phys_width);
-                int y = (int)(event->tfinger.y * phys_height);
+                int x, y;
+                finger_to_window(event->tfinger.x, event->tfinger.y, &x, &y);
 
                 if (!touch_rect) continue;
 

@@ -1,19 +1,17 @@
-diff --git a/src/video/video.cpp b/src/video/video.cpp
-index 9df5070403..f771d1bc05 100644
 --- a/src/video/video.cpp
 +++ b/src/video/video.cpp
-@@ -2233,6 +2233,10 @@ void draw_border(int s, int c) {
- 
-     SDL_Rect tb, lb, rb, bb;
+@@ -2464,6 +2464,10 @@
+ {
+     SDL_FRect tb, lb, rb, bb;
      unsigned char r = 0xff, g = 0xff, b = 0xff;
 +    int w, h;
 +
 +    // Get the display output size to calculate the border
-+    SDL_GetRendererOutputSize(g_renderer, &w, &h);
++    SDL_GetCurrentRenderOutputSize(g_renderer, &w, &h);
  
      switch(c)
      {
-@@ -2252,13 +2256,29 @@ void draw_border(int s, int c) {
+@@ -2483,13 +2487,29 @@
  
      SDL_SetRenderDrawColor(g_renderer, r, g, b, SDL_ALPHA_OPAQUE);
  

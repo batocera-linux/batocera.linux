@@ -129,23 +129,9 @@ ifeq ($(BR2_PACKAGE_CEMU),y)
   BATOCERA_DESKTOPAPPS_ICONS   += cemu.png
 endif
 
-# model2emu
-ifeq ($(BR2_PACKAGE_MODEL2EMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-model2emu
-  BATOCERA_DESKTOPAPPS_APPS    += model2emu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += model2emu.png
-endif
-
 # flatpak
 ifeq ($(BR2_PACKAGE_BAUH),y)
   BATOCERA_DESKTOPAPPS_APPS    += flatpak-config.desktop
-endif
-
-# citron
-ifeq ($(BR2_PACKAGE_CITRON),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-citron
-  BATOCERA_DESKTOPAPPS_APPS    += citron-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += citron.png
 endif
 
 # demul
@@ -237,6 +223,14 @@ ifeq ($(BR2_PACKAGE_YAD),y)
     BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.folder2autorun.desktop
     BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.file2autorun.desktop
     BATOCERA_DESKTOPAPPS_ACTIONS += wine.toolbox.extract.desktop
+  endif
+
+  # opengoal
+  # pack a built Jak game into a .squashfs that replaces its disc image
+  ifeq ($(BR2_PACKAGE_OPENGOAL),y)
+    BATOCERA_DESKTOPAPPS_TOOLBOX += opengoal.toolbox
+    BATOCERA_DESKTOPAPPS_ACTIONS += opengoal.toolbox.squashfs.desktop
+    BATOCERA_DESKTOPAPPS_ACTIONS += opengoal.toolbox.extract.desktop
   endif
 
   # dosbox

@@ -45,12 +45,13 @@ do_imagestart ()
 case "$1" in
     start)
         printf 'Starting %s: ' "$DAEMON"
+        rm -f /var/run/system-splash.ready
         if grep -qE '^[ ]*splash.screen.enabled[ ]*=[ ]*1[ ]*$' "/boot/batocera-boot.conf"
         then
             do_start
             echo "OK"
-	    else
-	        echo "SKIPPED"
+        else
+            echo "SKIPPED"
         fi
         ;;
     stop)

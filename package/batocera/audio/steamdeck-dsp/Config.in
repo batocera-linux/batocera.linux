@@ -2,6 +2,8 @@ config BR2_PACKAGE_STEAMDECK_DSP
 	bool "steamdeck-dsp"
 	depends on BR2_PACKAGE_PIPEWIRE
 	depends on BR2_PACKAGE_WIREPLUMBER
+	select BR2_PACKAGE_ALSA_UCM_CONF
+	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE
 	help
 	  Installs Steam Deck specific audio configurations.
 

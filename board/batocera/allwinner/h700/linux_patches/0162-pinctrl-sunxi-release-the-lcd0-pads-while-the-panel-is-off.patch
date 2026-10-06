@@ -1,0 +1,319 @@
+From: Kailash <6493816+kailashrs@users.noreply.github.com>
+Subject: [PATCH] pinctrl: sunxi: release the LCD0 pads while the panel is off
+
+Vendor firmware selects an "lcd0_suspend" pin function over PD0-PD27 when
+the LCD goes down: mux 7, pads disabled, no bias, so nothing is driven
+into a panel whose rail has been removed. Mainline never exposed mux 7 on
+this SoC. Add it as "io_disabled" on PD0-PD27, give the H616 dtsi a
+matching lcd0_suspend_pins group, and let panel-mipi select the board's
+"sleep" pinctrl state in unprepare and the default state in prepare; both
+are no-ops on boards without a sleep state.
+
+Measured on RG34XX-SP in deep sleep: PD_CFG0-2 0x22222222 -> 0x77777777,
+PD_CFG3 0x00022222 -> 0x00027777, PD28 (pwm0) untouched.
+
+Origin: kailashrs/H700_rocknix_enhancement af90bc4cd
+Assisted-by: Claude:claude-opus-5
+---
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h616.dtsi
+@@ -429,6 +429,20 @@
+ 				function = "lcd0";
+ 			};
+ 
++			/* Pad buffers off, no bias: nothing driven into an unpowered panel. */
++			/omit-if-no-ref/
++			lcd0_suspend_pins: lcd0-suspend-pins {
++				pins = "PD0", "PD1", "PD2", "PD3",
++				       "PD4", "PD5", "PD6", "PD7",
++				       "PD8", "PD9", "PD10", "PD11",
++				       "PD12", "PD13", "PD14", "PD15",
++				       "PD16", "PD17", "PD18", "PD19",
++				       "PD20", "PD21", "PD22", "PD23",
++				       "PD24", "PD25", "PD26", "PD27";
++				function = "io_disabled";
++				bias-disable;
++			};
++
+ 			/omit-if-no-ref/
+ 			lvds0_pins: lvds0-pins {
+ 				pins = "PD0", "PD1", "PD2", "PD3", "PD4",
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -288,7 +288,8 @@
+ 			power-supply = <&reg_lcd>;
+ 
+ 			pinctrl-0 = <&lcd0_rgb888_pins>;
+-			pinctrl-names = "default";
++			pinctrl-1 = <&lcd0_suspend_pins>;
++			pinctrl-names = "default", "sleep";
+ 
+ 			port {
+ 				panel_in_rgb: endpoint {
+--- a/drivers/gpu/drm/panel/panel-mipi.c
++++ b/drivers/gpu/drm/panel/panel-mipi.c
+@@ -23,6 +23,7 @@
+ #include <linux/media-bus-format.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
+@@ -557,6 +558,8 @@
+ 	struct panel_mipi *mipi = to_panel_mipi(panel);
+ 	int err, display_id;
+ 
++	pinctrl_pm_select_default_state(panel->dev);
++
+ 	err = regulator_bulk_enable(ARRAY_SIZE(mipi->supplies), mipi->supplies);
+ 	if (err)
+ 		return err;
+@@ -628,6 +631,9 @@
+ 		msleep(mipi->reset_delay);
+ 	}
+ 
++	/* Release the pads before the panel loses power; no-op without a sleep state. */
++	pinctrl_pm_select_sleep_state(panel->dev);
++
+ 	regulator_bulk_disable(ARRAY_SIZE(mipi->supplies), mipi->supplies);
+ 
+ 	return 0;
+--- a/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sun50i-h616.c
+@@ -202,179 +202,207 @@
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D0 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VP0 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* CLK */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 0)),	/* PD_EINT0 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 0),	/* PD_EINT0 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 1),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D1 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VN0 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* ERR */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 1)),	/* PD_EINT1 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 1),	/* PD_EINT1 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D2 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VP1 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* SYNC */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 2)),	/* PD_EINT2 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 2),	/* PD_EINT2 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 3),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D3 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VN1 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* DVLD */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 3)),	/* PD_EINT3 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 3),	/* PD_EINT3 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 4),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D4 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VP2 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* D0 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 4)),	/* PD_EINT4 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 4),	/* PD_EINT4 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 5),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D5 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VN2 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* D1 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 5)),	/* PD_EINT5 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 5),	/* PD_EINT5 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 6),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D6 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VPC */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* D2 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 6)),	/* PD_EINT6 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 6),	/* PD_EINT6 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 7),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D7 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VNC */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* D3 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 7)),	/* PD_EINT7 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 7),	/* PD_EINT7 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 8),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D8 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VP3 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"),		/* D4 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 8)),	/* PD_EINT8 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 8),	/* PD_EINT8 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 9),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D9 */
+ 		  SUNXI_FUNCTION(0x3, "lvds0"),		/* VN3 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"), 		/* D5 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 9)),	/* PD_EINT9 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 9),	/* PD_EINT9 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 10),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D10 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VP0 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"), 		/* D6 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 10)),	/* PD_EINT10 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 10),	/* PD_EINT10 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 11),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D11 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VN0 */
+ 		  SUNXI_FUNCTION(0x4, "ts0"), 		/* D7 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 11)),	/* PD_EINT11 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 11),	/* PD_EINT11 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 12),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D12 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VP1 */
+ 		  SUNXI_FUNCTION(0x4, "sim"), 		/* VPPEN */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 12)),	/* PD_EINT12 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 12),	/* PD_EINT12 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 13),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D13 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VN1 */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* VPPPP */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 13)),	/* PD_EINT13 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 13),	/* PD_EINT13 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 14),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D14 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VP2 */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* PWREN */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 14)),	/* PD_EINT14 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 14),	/* PD_EINT14 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 15),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D15 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VN2 */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* CLK */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 15)),	/* PD_EINT15 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 15),	/* PD_EINT15 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 16),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D16 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VPC */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* DATA */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 16)),	/* PD_EINT16 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 16),	/* PD_EINT16 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 17),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D17 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VNC */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* RST */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 17)),	/* PD_EINT17 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 17),	/* PD_EINT17 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 18),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D18 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VP3 */
+ 		  SUNXI_FUNCTION(0x4, "sim"),		/* DET */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 18)),	/* PD_EINT18 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 18),	/* PD_EINT18 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 19),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D19 */
+ 		  SUNXI_FUNCTION(0x3, "lvds1"),		/* VN3 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 19)),	/* PD_EINT19 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 19),	/* PD_EINT19 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 20),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D20 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 20)),	/* PD_EINT20 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 20),	/* PD_EINT20 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 21),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D21 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 21)),	/* PD_EINT21 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 21),	/* PD_EINT21 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 22),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D22 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 22)),	/* PD_EINT22 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 22),	/* PD_EINT22 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 23),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* D23 */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 23)),	/* PD_EINT23 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 23),	/* PD_EINT23 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 24),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* CLK */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 24)),	/* PD_EINT24 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 24),	/* PD_EINT24 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 25),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* DE */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 25)),	/* PD_EINT25 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 25),	/* PD_EINT25 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 26),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* HSYNC */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 26)),	/* PD_EINT26 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 26),	/* PD_EINT26 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 27),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),
+ 		  SUNXI_FUNCTION(0x2, "lcd0"),		/* VSYNC */
+-		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 27)),	/* PD_EINT27 */
++		  SUNXI_FUNCTION_IRQ_BANK(0x6, 2, 27),	/* PD_EINT27 */
++		  SUNXI_FUNCTION(0x7, "io_disabled")),
+ 	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 28),
+ 		  SUNXI_FUNCTION(0x0, "gpio_in"),
+ 		  SUNXI_FUNCTION(0x1, "gpio_out"),

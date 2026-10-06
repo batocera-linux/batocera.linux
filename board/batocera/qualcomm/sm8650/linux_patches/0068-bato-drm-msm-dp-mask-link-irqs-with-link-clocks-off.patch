@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Fri, 25 Sep 2026 10:00:00 +1000
+Subject: [PATCH] drm/msm/dp: mask link interrupts while the link clocks are off
+
+When the USB side of the combo PHY is torn down first on a Type-C unplug,
+PUSH_IDLE times out and IDLE_PATTERN_SENT latches after the link clocks
+stop. It can't be acked from there, and the ISR re-arms it every time, so
+the interrupt fires tens of thousands of times a second and stalls a CPU.
+Only unmask the link interrupts while the link clocks run.
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -247,7 +247,7 @@
+ 	intr_ack = (intr & DP_INTERRUPT_STATUS2)
+ 			<< DP_INTERRUPT_STATUS_ACK_SHIFT;
+ 	msm_dp_write_ahb(ctrl, REG_DP_INTR_STATUS2,
+-		     intr_ack | DP_INTERRUPT_STATUS2_MASK);
++		     intr_ack | (ctrl->link_clks_on ? DP_INTERRUPT_STATUS2_MASK : 0));
+ 
+ 	return intr;
+ }
+@@ -1763,6 +1763,8 @@
+ 		return ret;
+ 
+ 	ctrl->link_clks_on = true;
++	msm_dp_write_ahb(ctrl, REG_DP_INTR_STATUS2,
++			 DP_INTERRUPT_STATUS2_ACK | DP_INTERRUPT_STATUS2_MASK);
+ 
+ 	drm_dbg_dp(ctrl->drm_dev, "enable link clocks\n");
+ 	drm_dbg_dp(ctrl->drm_dev, "stream_clks:%s link_clks:%s core_clks:%s\n",
+@@ -1779,9 +1781,12 @@
+ 
+ 	ctrl = container_of(msm_dp_ctrl, struct msm_dp_ctrl_private, msm_dp_ctrl);
+ 
++	ctrl->link_clks_on = false;
++
+ 	clk_bulk_disable_unprepare(ctrl->num_link_clks, ctrl->link_clks);
+ 
+-	ctrl->link_clks_on = false;
++	/* link clock domain status can't be acked with the clocks off */
++	msm_dp_write_ahb(ctrl, REG_DP_INTR_STATUS2, DP_INTERRUPT_STATUS2_ACK);
+ 
+ 	drm_dbg_dp(ctrl->drm_dev, "disabled link clocks\n");
+ 	drm_dbg_dp(ctrl->drm_dev, "stream_clks:%s link_clks:%s core_clks:%s\n",

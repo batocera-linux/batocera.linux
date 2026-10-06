@@ -15,3 +15,68 @@
 &panel {
 	compatible = "mangmi,td4310";
 };
+
+/* batocera - add this section for touchscreen */
+/ {
+	/* the serial engine shared with spi2 never completes an i2c command on this model */
+	i2c_touch: i2c-touch {
+		compatible = "i2c-gpio";
+		sda-gpios = <&tlmm 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&tlmm 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <5>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&ts_i2c_default>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		touchscreen@70 {
+			compatible = "syna,rmi4-i2c";
+			reg = <0x70>;
+
+			interrupt-parent = <&tlmm>;
+			interrupts = <69 IRQ_TYPE_LEVEL_LOW>;
+
+			panel = <&panel>;
+			vdd-supply = <&vreg_l21a_2p704>;
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&ts_irq_default>;
+
+			syna,startup-delay-ms = <200>;
+			syna,reset-delay-ms = <200>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			rmi4-f01@1 {
+				reg = <0x1>;
+				syna,nosleep-mode = <1>;
+			};
+
+			rmi4-f12@12 {
+				reg = <0x12>;
+				syna,sensor-type = <1>;
+			};
+		};
+	};
+};
+
+&spi2 {
+	status = "disabled";
+};
+
+&tlmm {
+	ts_i2c_default: ts-i2c-default-state {
+		pins = "gpio6", "gpio7";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+
+	ts-reset-hog {
+		gpio-hog;
+		gpios = <68 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "ts-reset";
+	};
+};

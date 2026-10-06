@@ -79,12 +79,12 @@ Changes in v2:
  1 file changed, 83 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/crypto/qce/core.c b/drivers/crypto/qce/core.c
-index b966f3365b7d..2e1e4db93682 100644
+index ea5b9689c..77b7b347a 100644
 --- a/drivers/crypto/qce/core.c
 +++ b/drivers/crypto/qce/core.c
-@@ -12,6 +12,9 @@
+@@ -11,6 +11,9 @@
+ #include <linux/interrupt.h>
  #include <linux/module.h>
- #include <linux/mod_devicetable.h>
  #include <linux/platform_device.h>
 +#include <linux/pm.h>
 +#include <linux/pm_runtime.h>
@@ -92,7 +92,7 @@ index b966f3365b7d..2e1e4db93682 100644
  #include <linux/types.h>
  #include <crypto/algapi.h>
  #include <crypto/internal/hash.h>
-@@ -90,6 +93,11 @@ static int qce_handle_queue(struct qce_device *qce,
+@@ -89,6 +92,11 @@ static int qce_handle_queue(struct qce_device *qce,
  	struct crypto_async_request *async_req, *backlog;
  	int ret = 0, err;
  
@@ -104,7 +104,7 @@ index b966f3365b7d..2e1e4db93682 100644
  	scoped_guard(mutex, &qce->lock) {
  		if (req)
  			ret = crypto_enqueue_request(&qce->queue, req);
-@@ -207,37 +215,47 @@ static int qce_crypto_probe(struct platform_device *pdev)
+@@ -206,37 +214,47 @@ static int qce_crypto_probe(struct platform_device *pdev)
  	if (ret < 0)
  		return ret;
  
@@ -166,7 +166,7 @@ index b966f3365b7d..2e1e4db93682 100644
  
  	INIT_WORK(&qce->done_work, qce_req_done_work);
  	crypto_init_queue(&qce->queue, QCE_QUEUE_LENGTH);
-@@ -245,9 +263,58 @@ static int qce_crypto_probe(struct platform_device *pdev)
+@@ -244,9 +262,58 @@ static int qce_crypto_probe(struct platform_device *pdev)
  	qce->async_req_enqueue = qce_async_request_enqueue;
  	qce->async_req_done = qce_async_request_done;
  
@@ -226,7 +226,7 @@ index b966f3365b7d..2e1e4db93682 100644
  static const struct of_device_id qce_crypto_of_match[] = {
  	{ .compatible = "qcom,crypto-v5.1", },
  	{ .compatible = "qcom,crypto-v5.4", },
-@@ -261,6 +328,7 @@ static struct platform_driver qce_crypto_driver = {
+@@ -260,6 +327,7 @@ static struct platform_driver qce_crypto_driver = {
  	.driver = {
  		.name = KBUILD_MODNAME,
  		.of_match_table = qce_crypto_of_match,
@@ -234,6 +234,3 @@ index b966f3365b7d..2e1e4db93682 100644
  	},
  };
  module_platform_driver(qce_crypto_driver);
--- 
-2.34.1
-

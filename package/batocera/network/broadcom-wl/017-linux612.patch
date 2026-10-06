@@ -1,0 +1,15 @@
+diff -Nurp a/src/wl/sys/wl_linux.c b/src/wl/sys/wl_linux.c
+--- a/src/wl/sys/wl_linux.c	2024-11-19 03:05:21.160736778 +0000
++++ b/src/wl/sys/wl_linux.c	2024-11-19 03:09:59.010905106 +0000
+@@ -56,7 +56,11 @@
+ #include <asm/irq.h>
+ #include <asm/pgtable.h>
+ #include <asm/uaccess.h>
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
++#include <linux/unaligned.h>
++#else
+ #include <asm/unaligned.h>
++#endif
+ 
+ #include <proto/802.1d.h>
+ 

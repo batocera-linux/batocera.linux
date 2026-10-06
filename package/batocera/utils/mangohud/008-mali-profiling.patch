@@ -1,0 +1,50 @@
+panfrost and panthor only report per-job GPU time in fdinfo while the
+sysfs profiling switch is on, so the GPU load reads 0. Switch it on when
+MangoHud starts collecting GPU stats.
+
+--- a/src/gpu_fdinfo.cpp
++++ b/src/gpu_fdinfo.cpp
+@@ -128,6 +128,23 @@
+     return total;
+ }
+ 
++// panfrost and panthor only put per-job GPU time in fdinfo with profiling on
++void GPU_fdinfo::enable_mali_profiling()
++{
++    std::string path = "/sys/class/drm/" + drm_node + "/device/profiling";
++    std::string val;
++    std::ifstream in(path);
++
++    if (!in.is_open() || !std::getline(in, val) || val == "1")
++        return;
++
++    std::ofstream out(path);
++    out << "1";
++
++    if (!out)
++        SPDLOG_WARN("{}: cannot enable profiling, gpu load will read 0", path);
++}
++
+ uint64_t GPU_fdinfo::get_gpu_time_panfrost() {
+     uint64_t total = 0;
+ 
+--- a/src/gpu_fdinfo.h
++++ b/src/gpu_fdinfo.h
+@@ -99,6 +99,7 @@
+     int get_gpu_clock();
+ 
+     uint64_t get_gpu_time_panfrost();
++    void enable_mali_profiling();
+     int get_gpu_clock_mali();
+ 
+     std::ifstream throttle_status_stream;
+@@ -158,6 +159,9 @@
+             drm_memory_type = "drm-resident-memory";
+         }
+ 
++        if (module == "panfrost" || module == "panthor")
++            enable_mali_profiling();
++
+         if (fdinfo_data.size() > 0 &&
+             fdinfo_data[0].find(drm_memory_type) == fdinfo_data[0].end())
+         {

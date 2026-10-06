@@ -12,12 +12,12 @@ Signed-off-by: Xilin Wu <wuxilin123@gmail.com>
  create mode 100644 drivers/gpu/drm/panel/panel-synaptics-td4328.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 5b15d02948367..922605ba77549 100644
+index e41ee5698..54d816121 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -825,6 +825,16 @@ config DRM_PANEL_SYNAPTICS_R63353
- 	  Say Y if you want to enable support for panels based on the
- 	  Synaptics R63353 controller.
+@@ -1255,6 +1255,16 @@ config DRM_PANEL_SYNAPTICS_TDDI
+ 	  namesake, with varying resolutions and data lanes. They also have a
+ 	  built-in LED backlight and a touch controller.
  
 +config DRM_PANEL_SYNAPTICS_TD4328
 +	tristate "Synaptics TD4328-based panels"
@@ -32,17 +32,17 @@ index 5b15d02948367..922605ba77549 100644
  config DRM_PANEL_TDO_TL070WSH30
  	tristate "TDO TL070WSH30 DSI panel"
  	depends on OF
-@@ -915,4 +925,5 @@ config DRM_PANEL_XINPENG_XPP055C272
+@@ -1368,4 +1378,5 @@ config DRM_PANEL_XINPENG_XPP055C272
  	  Say Y here if you want to enable support for the Xinpeng
  	  XPP055C272 controller for 720x1280 LCD panels with MIPI/RGB/SPI
  	  system interfaces.
 +
  endmenu
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index f156d7fa0bccc..1e1c4632b0d62 100644
+index ad34e460f..c63f80902 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -79,6 +79,7 @@ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7701) += panel-sitronix-st7701.o
+@@ -116,6 +116,7 @@ obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7703) += panel-sitronix-st7703.o
  obj-$(CONFIG_DRM_PANEL_SITRONIX_ST7789V) += panel-sitronix-st7789v.o
  obj-$(CONFIG_DRM_PANEL_SUMMIT) += panel-summit.o
  obj-$(CONFIG_DRM_PANEL_SYNAPTICS_R63353) += panel-synaptics-r63353.o
@@ -52,10 +52,10 @@ index f156d7fa0bccc..1e1c4632b0d62 100644
  obj-$(CONFIG_DRM_PANEL_SONY_TD4353_JDI) += panel-sony-td4353-jdi.o
 diff --git a/drivers/gpu/drm/panel/panel-synaptics-td4328.c b/drivers/gpu/drm/panel/panel-synaptics-td4328.c
 new file mode 100644
-index 0000000000000..0fb0ddd9373db
+index 000000000..c88c77976
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-synaptics-td4328.c
-@@ -0,0 +1,227 @@
+@@ -0,0 +1,226 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree.
@@ -209,9 +209,10 @@ index 0000000000000..0fb0ddd9373db
 +	struct td4328 *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct td4328, panel,
++				   &td4328_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ctx->supplies[0].supply = "vddio";
 +	ctx->supplies[1].supply = "vdd";
@@ -233,8 +234,6 @@ index 0000000000000..0fb0ddd9373db
 +	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
 +			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
-+	drm_panel_init(&ctx->panel, dev, &td4328_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +	ctx->panel.prepare_prev_first = true;
 +
 +	ret = drm_panel_of_backlight(&ctx->panel);

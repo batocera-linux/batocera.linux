@@ -1,0 +1,98 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: tiopex <tiopxyz@gmail.com>
+Date: Thu, 10 Sep 2026 23:00:00 +0200
+Subject: [PATCH] drm/msm/dpu: enable QSEED detail enhancer and directional filter
+
+QSEED3Lite already has DE register programming, but the plane
+never enables it. Fill default sharpen/threshold/adjust curves, set
+dir_en, write DE_LPF blend and dir_weight. LUT blobs stay userspace.
+Enable DE/dir only when QSEED is actually scaling (src != dst after
+rot90 swap). 1:1 RGB+rot keeps the scaler on but does not sharpen.
+
+Signed-off-by: tiopex <tiopxyz@gmail.com>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.c | 12 +++++++++++-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h |  1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c   | 21 +++++++++++++++++++++
+ 3 files changed, 33 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.h
+@@ -81,6 +81,7 @@
+ 	int16_t adjust_a[DPU_MAX_DE_CURVES];
+ 	int16_t adjust_b[DPU_MAX_DE_CURVES];
+ 	int16_t adjust_c[DPU_MAX_DE_CURVES];
++	uint32_t blend;
+ };
+ 
+ 
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.c
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_util.c
+@@ -67,6 +67,8 @@
+ #define QSEED3LITE_COEF_LUT_CTRL              0x4C
+ #define QSEED3LITE_COEF_LUT_SWAP_BIT          0
+ #define QSEED3LITE_DIR_FILTER_WEIGHT          0x60
++#define QSEED3_DE_LPF_BLEND                0x64
++#define QSEED5_DEFAULT_DE_LPF_BLEND        0x3FF00000
+ #define QSEED3LITE_FILTERS                 2
+ #define QSEED3LITE_SEPARABLE_LUTS             10
+ #define QSEED3LITE_LUT_SIZE                   33
+@@ -256,7 +258,8 @@
+ 
+ 	sharp_ctl = ((de_cfg->limit & 0xF) << 9) |
+ 		((de_cfg->prec_shift & 0x7) << 13) |
+-		((de_cfg->clip & 0x7) << 16);
++		((de_cfg->clip & 0x7) << 16) |
++		((de_cfg->blend & 0xF) << 20);
+ 
+ 	shape_ctl = (de_cfg->thr_quiet & 0xFF) |
+ 		((de_cfg->thr_dieout & 0x3FF) << 16);
+@@ -326,8 +329,15 @@
+ 	if (scaler3_cfg->de.enable) {
+ 		_dpu_hw_setup_scaler3_de(c, &scaler3_cfg->de, scaler_offset);
+ 		op_mode |= BIT(8);
++		if (scaler_version >= 0x3000)
++			DPU_REG_WRITE(c, QSEED3_DE_LPF_BLEND + scaler_offset,
++				      QSEED5_DEFAULT_DE_LPF_BLEND);
+ 	}
+ 
++	if (scaler_version >= 0x2004)
++		DPU_REG_WRITE(c, QSEED3LITE_DIR_FILTER_WEIGHT + scaler_offset,
++			      scaler3_cfg->dir_weight & 0xFF);
++
+ 	if (scaler3_cfg->lut_flag) {
+ 		if (scaler_version < 0x2004)
+ 			_dpu_hw_setup_scaler3_lut(c, scaler3_cfg, scaler_offset);
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+@@ -487,6 +487,27 @@
+ 	scale_cfg->lut_flag = 0;
+ 	scale_cfg->blend_cfg = 1;
+ 	scale_cfg->enable = 1;
++	if (src_w != dst_w || src_h != dst_h) {
++		scale_cfg->dir_en = 1;
++		scale_cfg->dir_weight = 32;
++
++		scale_cfg->de.enable = 1;
++		scale_cfg->de.sharpen_level1 = 8;
++		scale_cfg->de.sharpen_level2 = 8;
++		scale_cfg->de.clip = 0;
++		scale_cfg->de.limit = 4;
++		scale_cfg->de.thr_quiet = 8;
++		scale_cfg->de.thr_dieout = 256;
++		scale_cfg->de.thr_low = 8;
++		scale_cfg->de.thr_high = 64;
++		scale_cfg->de.prec_shift = 2;
++		scale_cfg->de.blend = 0;
++		for (i = 0; i < DPU_MAX_DE_CURVES; i++) {
++			scale_cfg->de.adjust_a[i] = 112;
++			scale_cfg->de.adjust_b[i] = 0;
++			scale_cfg->de.adjust_c[i] = 0;
++		}
++	}
+ }
+ 
+ static void _dpu_plane_setup_pixel_ext(struct dpu_hw_scaler3_cfg *scale_cfg,

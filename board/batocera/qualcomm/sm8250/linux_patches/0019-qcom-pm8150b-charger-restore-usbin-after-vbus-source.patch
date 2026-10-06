@@ -1,0 +1,69 @@
+From: xenocideend (with Claude Opus 5.5) <xenocideend@gmail.com>
+Subject: [PATCH] power: supply: qcom_pm8150b_charger: restore USBIN after VBUS
+ sourcing
+
+---
+--- a/drivers/power/supply/qcom_pm8150b_charger.c
++++ b/drivers/power/supply/qcom_pm8150b_charger.c
+@@ -21,6 +21,7 @@
+ #include <linux/of.h>
+ #include <linux/power_supply.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/types.h>
+ #include <linux/workqueue.h>
+ 
+@@ -306,6 +307,7 @@
+ 	struct iio_channel *usb_in_v_chan;
+ 
+ 	struct power_supply *chg_psy;
++	struct notifier_block vbus_nb;
+ };
+ 
+ static enum power_supply_property smb5_properties[] = {
+@@ -815,10 +817,28 @@
+ 	return 0;
+ }
+ 
++static int smb5_vbus_notifier(struct notifier_block *nb, unsigned long event,
++			      void *data)
++{
++	struct smb5_chip *chip = container_of(nb, struct smb5_chip, vbus_nb);
++
++	if (event & REGULATOR_EVENT_DISABLE) {
++		regmap_update_bits(chip->regmap, chip->base + USBIN_CMD_IL,
++				   USBIN_SUSPEND_BIT, 0);
++		regmap_update_bits(chip->regmap, chip->base + CMD_APSD,
++				   APSD_RERUN_BIT, APSD_RERUN_BIT);
++		schedule_delayed_work(&chip->status_change_work,
++				      msecs_to_jiffies(1000));
++	}
++
++	return NOTIFY_OK;
++}
++
+ static int smb5_probe(struct platform_device *pdev)
+ {
+ 	struct power_supply_config supply_config = {};
+ 	struct power_supply_desc *desc;
++	struct regulator *vbus;
+ 	struct smb5_chip *chip;
+ 	int rc, irq;
+ 
+@@ -884,6 +904,16 @@
+ 		return dev_err_probe(chip->dev, rc,
+ 				     "Failed to init status change work\n");
+ 
++	vbus = devm_regulator_get_optional(chip->dev, "vbus");
++	if (IS_ERR(vbus) && PTR_ERR(vbus) != -ENODEV)
++		return PTR_ERR(vbus);
++	if (!IS_ERR(vbus)) {
++		chip->vbus_nb.notifier_call = smb5_vbus_notifier;
++		rc = devm_regulator_register_notifier(vbus, &chip->vbus_nb);
++		if (rc < 0)
++			return rc;
++	}
++
+ 	rc = clamp(chip->batt_info->voltage_max_design_uv, 3600000, 4450000);
+ 	rc = (rc - 3600000) / 10000;
+ 	rc = regmap_update_bits(chip->regmap, chip->base + FLOAT_VOLTAGE_CFG,

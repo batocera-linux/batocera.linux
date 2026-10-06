@@ -1,0 +1,134 @@
+[project]
+name = "batocera-launch"
+version = '44.0'
+dependencies = [
+    'uvloop',
+    'lazy-loader',
+    'batocera-common',
+    'hotkeygen',
+    'aiohttp',
+    'aiodns',
+    'brotli',
+    'configobj',
+    'pillow',
+    'qrcode',
+    'toml',
+]
+
+[project.scripts]
+batocera-launch = "batocera_launch.cli.main:main"
+batocera-joysticks-hotkeys = "batocera_launch.joysticks_hotkeys:main"
+
+[project.entry-points."batocera_launch.emulators"]
+lexaloffle = 'batocera_launch.emulators.lexaloffle:Lexaloffle'
+sh = 'batocera_launch.emulators.sh:Sh'
+
+abuse = 'batocera_launch.emulators.abuse:Abuse'
+amiberry = 'batocera_launch.emulators.amiberry:Amiberry'
+applewin = 'batocera_launch.emulators.applewin:AppleWin'
+armsx2 = 'batocera_launch.emulators.armsx2:Armsx2'
+azahar = 'batocera_launch.emulators.azahar:Azahar'
+bigpemu = 'batocera_launch.emulators.bigpemu:BigPEmu'
+bstone = 'batocera_launch.emulators.bstone:BStone'
+cannonball = 'batocera_launch.emulators.cannonball:Cannonball'
+catacombgl = 'batocera_launch.emulators.catacombgl:CatacombGL'
+cemu = 'batocera_launch.emulators.cemu:Cemu'
+clk = 'batocera_launch.emulators.clk:Clk'
+corsixth = 'batocera_launch.emulators.corsixth:CorsixTH'
+demul = 'batocera_launch.emulators.demul:Demul'
+devilutionx = 'batocera_launch.emulators.devilutionx:DevilutionX'
+dhewm3 = 'batocera_launch.emulators.dhewm3:Dhewm3'
+dosbox = 'batocera_launch.emulators.dosbox:DosBox'
+dosbox_staging = 'batocera_launch.emulators.dosbox_staging:DosBoxStaging'
+dosboxx = 'batocera_launch.emulators.dosboxx:DosBoxx'
+duckstation = 'batocera_launch.emulators.duckstation:Duckstation'
+duckstation-legacy = 'batocera_launch.emulators.duckstation:Duckstation'
+dxx-rebirth = 'batocera_launch.emulators.dxx_rebirth:DXXRebirth'
+easyrpg = 'batocera_launch.emulators.easyrpg:EasyRPG'
+ecwolf = 'batocera_launch.emulators.ecwolf:ECWolf'
+eduke32 = 'batocera_launch.emulators.eduke32:EDuke32'
+etlegacy = 'batocera_launch.emulators.etlegacy:ETLegacy'
+flatpak = 'batocera_launch.emulators.flatpak:Flatpak'
+fsuae = 'batocera_launch.emulators.fsuae:Fsuae'
+gametank-emulator = 'batocera_launch.emulators.gametank_emulator:GametankEmulator'
+gsplus = 'batocera_launch.emulators.gsplus:GSplus'
+hatari = 'batocera_launch.emulators.hatari:Hatari'
+hcl = 'batocera_launch.emulators.hcl:Hcl'
+hurrican = 'batocera_launch.emulators.hurrican:Hurrican'
+hypseus-singe = 'batocera_launch.emulators.hypseus_singe:HypseusSinge'
+ikemen = 'batocera_launch.emulators.ikemen:Ikemen'
+ioquake3 = 'batocera_launch.emulators.ioquake3:IOQuake3'
+iortcw = 'batocera_launch.emulators.iortcw:IORTCW'
+jazz2-native = 'batocera_launch.emulators.jazz2_native:Jazz2_Native'
+lightspark = 'batocera_launch.emulators.lightspark:Lightspark'
+melonds = 'batocera_launch.emulators.melonds:MelonDS'
+moonlight = 'batocera_launch.emulators.moonlight:Moonlight'
+mugen = 'batocera_launch.emulators.mugen:Mugen'
+nanoboyadvance = 'batocera_launch.emulators.nanoboyadvance:Nanoboyadvance'
+odcommander = 'batocera_launch.emulators.odcommander:ODCommander'
+openbor = 'batocera_launch.emulators.openbor:Openbor'
+opengoal = 'batocera_launch.emulators.opengoal:OpenGOAL'
+openmsx = 'batocera_launch.emulators.openmsx:Openmsx'
+pcsx2x6 = 'batocera_launch.emulators.pcsx2x6:Pcsx2x6'
+ppsspp = 'batocera_launch.emulators.ppsspp:PPSSPP'
+pygame = 'batocera_launch.emulators.pygame:Pygame'
+pyxel = 'batocera_launch.emulators.pyxel:Pyxel'
+raze = 'batocera_launch.emulators.raze:Raze'
+redream = 'batocera_launch.emulators.redream:Redream'
+ruffle = 'batocera_launch.emulators.ruffle:Ruffle'
+samcoupe = 'batocera_launch.emulators.samcoupe:Samcoupe'
+scummvm = 'batocera_launch.emulators.scummvm:ScummVM'
+sdlpop = 'batocera_launch.emulators.sdlpop:SdlPop'
+shadps4 = 'batocera_launch.emulators.shadps4:Shadps4'
+sm2-emu = 'batocera_launch.emulators.sm2_emu:Sm2Emu'
+solarus = 'batocera_launch.emulators.solarus:Solarus'
+sonic-mania = 'batocera_launch.emulators.sonic_mania:SonicMania'
+sonic2013 = 'batocera_launch.emulators.sonicretro:SonicRetro'
+sonic3-air = 'batocera_launch.emulators.sonic3_air:Sonic3AIR'
+soniccd = 'batocera_launch.emulators.sonicretro:SonicRetro'
+steam = 'batocera_launch.emulators.steam:Steam'
+stella = 'batocera_launch.emulators.stella:Stella'
+supermodel = 'batocera_launch.emulators.supermodel:Supermodel'
+taradino = 'batocera_launch.emulators.taradino:Taradino'
+theforceengine = 'batocera_launch.emulators.theforceengine:TheForceEngine'
+thextech = 'batocera_launch.emulators.thextech:TheXTech'
+tic80 = 'batocera_launch.emulators.tic80:Tic80'
+trx = 'batocera_launch.emulators.trx:TRX'
+tsugaru = 'batocera_launch.emulators.tsugaru:Tsugaru'
+tyrian = 'batocera_launch.emulators.tyrian:Tyrian'
+uqm = 'batocera_launch.emulators.uqm:Uqm'
+uzdoom = 'batocera_launch.emulators.uzdoom:UZDoom'
+vice = 'batocera_launch.emulators.vice:Vice'
+vita3k = 'batocera_launch.emulators.vita3k:Vita3k'
+vkquake = 'batocera_launch.emulators.vkquake:VKQuake'
+vkquake2 = 'batocera_launch.emulators.vkquake2:VKQuake2'
+vkquake3 = 'batocera_launch.emulators.ioquake3:IOQuake3'
+vpinball = 'batocera_launch.emulators.vpinball:VPinball'
+wine = 'batocera_launch.emulators.wine:Wine'
+x16emu = 'batocera_launch.emulators.x16emu:X16emu'
+xash3d_fwgs = 'batocera_launch.emulators.xash3d_fwgs:Xash3dFwgs'
+xemu = 'batocera_launch.emulators.xemu:Xemu'
+xenia = 'batocera_launch.emulators.xenia:Xenia'
+xenia-canary = 'batocera_launch.emulators.xenia:Xenia'
+xenia-edge = 'batocera_launch.emulators.xenia_edge:XeniaEdge'
+xroar = 'batocera_launch.emulators.xroar:Xroar'
+ymir = 'batocera_launch.emulators.ymir:Ymir'
+yquake2 = 'batocera_launch.emulators.yquake2:YQuake2'
+
+[project.entry-points."batocera_launch.plugins"]
+devfreq = 'batocera_launch.plugins.devfreq:DevfreqPlugin'
+power-mode = 'batocera_launch.plugins.power:PowerModePlugin'
+tdp = 'batocera_launch.plugins.tdp:TdpPlugin'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+include = ["/batocera_launch"]
+
+[tool.pytest]
+minversion = "9.0"
+addopts = ["--import-mode=importlib", "--cov=batocera_launch", "--cov-branch", "--cov-report=term"]
+strict = true
+asyncio_mode = "auto"

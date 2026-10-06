@@ -1,22 +1,37 @@
 from __future__ import annotations
 
 import shutil
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
-from batocera_es_system.shared import SystemDict, SystemsDataMapping, peekable
+from batocera_es_system.shared import peekable
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable, Iterator
     from pathlib import Path
 
-
-def _get_comment(data: SystemDict, key: Literal['comment_en', 'comment_fr'], /) -> str:
-    if key in data:
-        return f'{data[key]}\n'
-
-    return ''
+    from batocera_es_system.es_systems import BuiltSystem, BuiltSystemsMapping
 
 
-def build(systems_data: SystemsDataMapping, roms_dir: Path, output: Path, /) -> None:
+def _format_extensions(extensions: Iterable[str], /) -> str:
+    return ' '.join(f'.{value}'.lower() for value in extensions if value)
+
+
+def _get_extensions_strings(prefix: str, built_system: BuiltSystem, /) -> Iterator[str]:
+    if built_system.metadata is None:
+        yield f'{prefix}: {_format_extensions(built_system.system.get("extensions", []))}'
+        return
+
+    yield f'{prefix}:'
+    yield from (
+        f'- {core_name if emulator_name == core_name else f"{emulator_name}/{core_name}"}: {
+            _format_extensions(sorted(core_metadata.file_extensions))
+        }'
+        for emulator_name, emulator in built_system.metadata.emulators.items()
+        for core_name, core_metadata in emulator.items()
+    )
+
+
+def build(built_systems_data: BuiltSystemsMapping, roms_dir: Path, output: Path, /) -> None:
     target = output / 'roms'
 
     if target.is_dir() and peekable(target.iterdir()):
@@ -25,8 +40,8 @@ def build(systems_data: SystemsDataMapping, roms_dir: Path, output: Path, /) -> 
         target.mkdir(parents=True)
 
     print(f'Generating {target}...')
-    for system_name, system in systems_data.items():
-        dir_name = system.get('path', system_name)
+    for system_name, built_system in built_systems_data.items():
+        dir_name = built_system.system.get('path', system_name)
 
         if dir_name is None or dir_name.startswith('/'):
             continue  # nothing to do
@@ -40,11 +55,23 @@ def build(systems_data: SystemsDataMapping, roms_dir: Path, output: Path, /) -> 
             else:
                 system_target.mkdir(parents=True)
 
-        extensions = ' '.join(f'.{value}'.lower() for value in system['extensions'] if value)
+        lines: list[str] = [
+            f'## SYSTEM {built_system.system["name"].upper()} ##',
+            '-------------------------------------------------------------------------------',
+            *_get_extensions_strings('ROM files extensions accepted', built_system),
+        ]
 
-        (system_target / '_info.txt').write_text(f"""## SYSTEM {system['name'].upper()} ##
--------------------------------------------------------------------------------
-ROM files extensions accepted: "{extensions}"{_get_comment(system, 'comment_en')}
--------------------------------------------------------------------------------
-Extensions des fichiers ROMs permises: "{extensions}"{_get_comment(system, 'comment_fr')}
-""")
+        if 'comment_en' in built_system.system:
+            lines.append(built_system.system['comment_en'])
+
+        lines.extend(
+            [
+                '-------------------------------------------------------------------------------',
+                *_get_extensions_strings('Extensions des fichiers ROMs permises', built_system),
+            ]
+        )
+
+        if 'comment_fr' in built_system.system:
+            lines.append(built_system.system['comment_fr'])
+
+        system_target.joinpath('_info.txt').write_text('\n'.join(lines).strip() + '\n')

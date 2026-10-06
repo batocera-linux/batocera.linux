@@ -9,10 +9,10 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 5 insertions(+)
 
 diff --git a/drivers/pci/pwrctrl/pci-pwrctrl-pwrseq.c b/drivers/pci/pwrctrl/pci-pwrctrl-pwrseq.c
-index c7e4beec160a..77112a2d5b2e 100644
+index a308bf4b5..da435deea 100644
 --- a/drivers/pci/pwrctrl/pci-pwrctrl-pwrseq.c
 +++ b/drivers/pci/pwrctrl/pci-pwrctrl-pwrseq.c
-@@ -123,6 +123,11 @@ static const struct of_device_id pwrseq_pwrctrl_of_match[] = {
+@@ -122,6 +122,11 @@ static const struct of_device_id pwrseq_pwrctrl_of_match[] = {
  		.compatible = "pci17cb,1107",
  		.data = &pwrseq_pwrctrl_qcom_wcn_pdata,
  	},
@@ -24,6 +24,3 @@ index c7e4beec160a..77112a2d5b2e 100644
  	{ }
  };
  MODULE_DEVICE_TABLE(of, pwrseq_pwrctrl_of_match);
--- 
-2.43.0
-

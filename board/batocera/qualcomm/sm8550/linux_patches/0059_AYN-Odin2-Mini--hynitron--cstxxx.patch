@@ -9,18 +9,18 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/input/touchscreen/hynitron_cstxxx.c b/drivers/input/touchscreen/hynitron_cstxxx.c
-index 1d8ca90dcda695..28fdc6d0cfb743 100644
+index 49fb35c83..3e50b10b2 100644
 --- a/drivers/input/touchscreen/hynitron_cstxxx.c
 +++ b/drivers/input/touchscreen/hynitron_cstxxx.c
-@@ -22,6 +22,7 @@
- #include <linux/mod_devicetable.h>
+@@ -21,6 +21,7 @@
+ #include <linux/input/touchscreen.h>
  #include <linux/module.h>
  #include <linux/property.h>
 +#include <linux/regulator/consumer.h>
  #include <linux/unaligned.h>
  
  /* Per chip data */
-@@ -41,6 +42,7 @@ struct hynitron_ts_data {
+@@ -40,6 +41,7 @@ struct hynitron_ts_data {
  	struct input_dev *input_dev;
  	struct touchscreen_properties prop;
  	struct gpio_desc *reset_gpio;
@@ -28,7 +28,7 @@ index 1d8ca90dcda695..28fdc6d0cfb743 100644
  };
  
  /*
-@@ -253,6 +255,7 @@ static void cst3xx_report_contact(struct hynitron_ts_data *ts_data,
+@@ -252,6 +254,7 @@ static void cst3xx_report_contact(struct hynitron_ts_data *ts_data,
  	input_mt_report_slot_state(ts_data->input_dev, MT_TOOL_FINGER, 1);
  	touchscreen_report_pos(ts_data->input_dev, &ts_data->prop, x, y, true);
  	input_report_abs(ts_data->input_dev, ABS_MT_TOUCH_MAJOR, w);
@@ -36,7 +36,7 @@ index 1d8ca90dcda695..28fdc6d0cfb743 100644
  }
  
  static int cst3xx_finish_touch_read(struct i2c_client *client)
-@@ -434,11 +437,25 @@ static int hyn_probe(struct i2c_client *client)
+@@ -440,11 +443,25 @@ static int hyn_probe(struct i2c_client *client)
  		return err;
  	}
  

@@ -1,0 +1,8 @@
+config BR2_PACKAGE_LZMA_SDK
+	bool "lzma-sdk"
+	help
+	  Igor Pavlov's LZMA SDK (7-Zip): the C sources for reading and
+	  decoding .7z archives. Packaged here as a static library plus a
+	  find_package(lzmasdk) config exporting the lzmasdk::lzmasdk target.
+
+	  https://www.7-zip.org/sdk.html

@@ -1,0 +1,87 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] drm/msm/adreno: add Adreno 613 to the a6xx catalog
+
+--- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
+@@ -729,6 +729,30 @@
+ 			.prim_fifo_threshold = 0x00080000,
+ 		},
+ 	}, {
++		.chip_ids = ADRENO_CHIP_IDS(0x06010300),
++		.family = ADRENO_6XX_GEN1,
++		.fw = {
++			[ADRENO_FW_SQE] = "a630_sqe.fw",
++		},
++		.gmem = (SZ_128K + SZ_4K),
++		.quirks = ADRENO_QUIRK_4GB_VA,
++		.inactive_period = DRM_MSM_INACTIVE_PERIOD,
++		.funcs = &a6xx_gmuwrapper_funcs,
++		.zapfw = "a613_zap.mbn",
++		.a6xx = &(const struct a6xx_info) {
++			.hwcg = a612_hwcg,
++			.protect = &a630_protect,
++			.gbif_cx = a640_gbif,
++			.gmu_cgc_mode = 0x00020202,
++			.prim_fifo_threshold = 0x00080000,
++		},
++		.speedbins = ADRENO_SPEEDBINS(
++			{ 0, 0 },
++			{ 201, 1 },
++			{ 213, 2 },
++			{ 162, 3 },
++		),
++	}, {
+ 		.chip_ids = ADRENO_CHIP_IDS(0x06010500),
+ 		.family = ADRENO_6XX_GEN1,
+ 		.revn = 615,
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+@@ -421,6 +421,11 @@
+ 	return gpu->info->chip_ids[0] == 0x06010200;
+ }
+
++static inline int adreno_is_a613(const struct adreno_gpu *gpu)
++{
++	return gpu->info->chip_ids[0] == 0x06010300;
++}
++
+ static inline bool adreno_has_rgmu(const struct adreno_gpu *gpu)
+ {
+ 	return adreno_is_a612(gpu);
+@@ -502,6 +507,7 @@
+ 		return false;
+ 	return adreno_is_a610(gpu) ||
+ 	       adreno_is_a612(gpu) ||
++	       adreno_is_a613(gpu) ||
+ 	       adreno_is_a702(gpu);
+ }
+
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -648,5 +648,6 @@
+ 	if (adreno_is_a630(adreno_gpu))
+ 		clock_cntl_on = 0x8aa8aa02;
+-	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu))
++	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
++		 adreno_is_a613(adreno_gpu))
+ 		clock_cntl_on = 0xaaa8aa82;
+ 	else if (adreno_is_a702(adreno_gpu))
+@@ -1241,2 +1242,5 @@
+ 		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
++		/* A613 (gen6_3_26_0) requires GBIF_CX_CONFIG[18:16] cleared */
++		if (adreno_is_a613(adreno_gpu))
++			gpu_rmw(gpu, 0x3c00, GENMASK(18, 16), 0);
+ 	}
+@@ -1306,3 +1311,4 @@
+ 	/* Setting the mem pool size */
+-	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu)) {
++	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
++	    adreno_is_a613(adreno_gpu)) {
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
+@@ -1344,5 +1350,5 @@
+ 	else if (adreno_is_a690(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x4fffff);
+-	else if (adreno_is_a619(adreno_gpu))
++	else if (adreno_is_a619(adreno_gpu) || adreno_is_a613(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3fffff);
+ 	else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu))

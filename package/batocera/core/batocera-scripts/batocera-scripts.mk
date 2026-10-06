@@ -17,11 +17,6 @@ ifeq ($(BR2_PACKAGE_XSERVER_XORG_SERVER),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_MOUSE
 endif
 
-ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_SWAY),y)
-  BATOCERA_SCRIPTS_MOUSE_TYPE=wayland-sway
-  BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_MOUSE
-endif
-
 ifeq ($(BR2_PACKAGE_BATOCERA_WAYLAND_LABWC),y)
   BATOCERA_SCRIPTS_MOUSE_TYPE=wayland-labwc
   BATOCERA_SCRIPTS_DEPENDENCIES+= wtype
@@ -30,7 +25,7 @@ endif
 
 ###
 
-ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SDM845)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SDM845)$(BR2_PACKAGE_BATOCERA_TARGET_SM4450)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8650)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
   BATOCERA_SCRIPTS_POST_INSTALL_TARGET_HOOKS += BATOCERA_SCRIPTS_INSTALL_QCOM
 endif
 
@@ -87,7 +82,6 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-amd-tdp                   $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-spinner-calibrator        $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-vulkan                    $(TARGET_DIR)/usr/bin/
-    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-power-mode                $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-es-web-notifier           $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-xtract                    $(TARGET_DIR)/usr/bin/
     ln -sf /usr/bin/batocera-xtract $(TARGET_DIR)/usr/bin/file-roller
@@ -99,6 +93,9 @@ define BATOCERA_SCRIPTS_INSTALL_TARGET_CMDS
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-temp                      $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-mitigations               $(TARGET_DIR)/usr/bin/
     install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/battery_led_status                 $(TARGET_DIR)/usr/bin/
+    mkdir -p $(TARGET_DIR)/etc/pm/sleep.d
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/95battery-led                      $(TARGET_DIR)/etc/pm/sleep.d/
+    install -m 0755 $(BATOCERA_SCRIPTS_PATH)/scripts/batocera-architecture-compatibility             $(TARGET_DIR)/usr/bin/
 endef
 
 define BATOCERA_SCRIPTS_INSTALL_MOUSE

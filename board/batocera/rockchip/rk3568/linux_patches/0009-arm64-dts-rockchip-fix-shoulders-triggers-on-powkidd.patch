@@ -1,0 +1,44 @@
+From a51cfb844a8c6887b136efd3bcc4a3dd80ac320f Mon Sep 17 00:00:00 2001
+From: sydarn <sydarn@proton.me>
+Date: Thu, 28 Mar 2024 11:06:29 +0100
+Subject: [PATCH] arm64: dts: rockchip: fix shoulders/triggers on powkiddy
+ rgb10max3
+
+---
+ .../rockchip/rk3566-powkiddy-rgb10max3.dts    | 23 +++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb10max3.dts b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb10max3.dts
+index e5a474e681dd..1cd89a640449 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb10max3.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-powkiddy-rgb10max3.dts
+@@ -85,3 +85,26 @@ &red_led {
+ 	default-state = "off";
+ 	function = LED_FUNCTION_STATUS;
+ };
++
++&joypad {
++	sw12 {
++		gpios = <&gpio3 RK_PB2 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN_TL";
++		linux,code = <BTN_TL>;
++	};
++	sw13 {
++		gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN_TR";
++		linux,code = <BTN_TR>;
++	};
++	sw14 {
++		gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN_TL2";
++		linux,code = <BTN_TL2>;
++	};
++	sw15 {
++		gpios = <&gpio3 RK_PB3 GPIO_ACTIVE_LOW>;
++		label = "GPIO BTN_TR2";
++		linux,code = <BTN_TR2>;
++	};
++};
+-- 
+2.34.1
+

@@ -1,0 +1,46 @@
+From 36da2b60bfb42fb541934180795edd528124ebe4 Mon Sep 17 00:00:00 2001
+From: KancyJoe <kancy2333@outlook.com>
+Date: Sun, 19 Oct 2025 09:48:18 +0000
+Subject: [PATCH] audioreach: Add dedicated WSA2 support.
+
+LPAIF type should be set to WSA2 in audioreach topology to enable this feature.
+---
+ sound/soc/qcom/qdsp6/audioreach.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/qcom/qdsp6/audioreach.c b/sound/soc/qcom/qdsp6/audioreach.c
+index 241c3b4479c6..0dde9d279b8c 100644
+--- a/sound/soc/qcom/qdsp6/audioreach.c
++++ b/sound/soc/qcom/qdsp6/audioreach.c
+@@ -705,6 +705,8 @@ static int audioreach_codec_dma_set_media_format(struct q6apm_graph *graph,
+ 	void *p;
+ 
+ 	struct gpr_pkt *pkt __free(kfree) = audioreach_alloc_apm_cmd_pkt(size, APM_CMD_SET_CFG, 0);
++	static u8 last_active_channel_mask = 0;
++
+ 	if (IS_ERR(pkt))
+ 		return PTR_ERR(pkt);
+ 
+@@ -741,7 +743,19 @@ static int audioreach_codec_dma_set_media_format(struct q6apm_graph *graph,
+ 
+ 	intf_cfg->cfg.lpaif_type = module->hw_interface_type;
+ 	intf_cfg->cfg.intf_index = module->hw_interface_idx;
+-	intf_cfg->cfg.active_channels_mask = (1 << cfg->num_channels) - 1;
++	// dev_err(graph->dev, "IDX: 0x%08X, TYPE: 0x%08X", module->hw_interface_idx, module->hw_interface_type);
++
++	if((intf_cfg->cfg.lpaif_type == 7 && cfg->num_channels <= 2 && intf_cfg->cfg.intf_index == 1)
++		|| ((intf_cfg->cfg.intf_index == 1) && (intf_cfg->cfg.lpaif_type == 2) && (cfg->num_channels <= 2) && (last_active_channel_mask>>2 & 0b11) != 0)) // Dedicated WSA2 RX0
++	{
++		intf_cfg->cfg.active_channels_mask = ((1 << cfg->num_channels) - 1) << 2; 
++		last_active_channel_mask = intf_cfg->cfg.active_channels_mask;
++		// dev_err(graph->dev, "Setting mask to 0b1100");
++		intf_cfg->cfg.lpaif_type = 2;	// adsp do not support WSA2 DMA
++		// module->hw_interface_type = 2;	// need to set lpaif type back to WSA after set active channel mask
++	} else
++		intf_cfg->cfg.active_channels_mask = (1 << cfg->num_channels) - 1;
++
+ 	p += ic_sz;
+ 
+ 	pm_cfg = p;
+-- 
+GitLab

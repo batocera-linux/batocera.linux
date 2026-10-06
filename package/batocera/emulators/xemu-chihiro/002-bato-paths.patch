@@ -1,0 +1,31 @@
+diff --git a/ui/xemu-data.c b/ui/xemu-data.c
+index b0972ce280..89b2ba4e1f 100644
+--- a/ui/xemu-data.c
++++ b/ui/xemu-data.c
+@@ -67,8 +67,8 @@ const char *xemu_get_resource_path(const char *filename)
+ 	}
+ 
+ #if defined(__linux__)
+-	// /usr/share/xemu/data when installed
+-	snprintf(resource_path, resource_path_buffer_len, "/usr/share/xemu/data/%s",
++	// /usr/share/xemu-chihiro/data when installed
++	snprintf(resource_path, resource_path_buffer_len, "/usr/share/xemu-chihiro/data/%s",
+ 		filename);
+ 
+ 	if (path_exists(resource_path)) {
+diff --git a/ui/xemu-settings.cc b/ui/xemu-settings.cc
+index 3bce4eb731..be4a6db838 100644
+--- a/ui/xemu-settings.cc
++++ b/ui/xemu-settings.cc
+@@ -82,10 +82,7 @@ const char *xemu_settings_get_base_path(void)
+         assert(base != NULL);
+         base_path = g_strdup(base);
+     } else {
+-        char *base = SDL_GetPrefPath("xemu", "xemu");
+-        assert(base != NULL);
+-        base_path = g_strdup(base);
+-        SDL_free(base);
++        base_path = g_strdup("/userdata/saves/chihiro/");
+     }
+     fprintf(stderr, "%s: base path: %s\n", __func__, base_path);
+     return base_path;

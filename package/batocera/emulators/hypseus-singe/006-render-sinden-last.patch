@@ -1,17 +1,24 @@
---- hypseus-singe-v2.11.4/src/video/video.cpp	2025-01-10 05:00:00.000000000 -0800
-+++ hypseus-singe-v2.11.4-lbrpdx/src/video/video.cpp	2025-03-29 09:18:20.654073779 -0700
-@@ -1972,12 +1972,12 @@
-
-     if (g_bezel_toggle) vid_render_bezels();
-
-+    if (g_fRotateDegrees != 0) vid_render_rotate();
-+
-     if (g_game->get_sinden_border())
-         draw_border(g_game->get_sinden_border(),
-             g_game->get_sinden_border_color());
-
--    if (g_fRotateDegrees != 0) vid_render_rotate();
+--- a/src/video/video.cpp
++++ b/src/video/video.cpp
+@@ -2732,10 +2732,6 @@
+     if (VIDEO_HAS(SCANLINES))
+         draw_scanlines(g_scanline_shunt);
+ 
+-    if (g_game->get_outline_border())
+-        draw_border(g_game->get_outline_border(),
+-            g_game->get_outline_border_color());
 -
-     SDL_RenderPresent(g_renderer);
-
-     if (g_softsboard_needs_update) {
+     SDL_SetRenderTarget(g_renderer, NULL);
+     SDL_RenderClear(g_renderer);
+ 
+@@ -2755,6 +2751,10 @@
+ 
+     if (VIDEO_HAS(BEZEL_TOGGLE)) vid_render_bezels();
+ 
++    if (g_game->get_outline_border())
++        draw_border(g_game->get_outline_border(),
++            g_game->get_outline_border_color());
++
+     if (VIDEO_HAS(TAKE_SCREENSHOT))
+     {
+         VIDEO_CLEAR(TAKE_SCREENSHOT);

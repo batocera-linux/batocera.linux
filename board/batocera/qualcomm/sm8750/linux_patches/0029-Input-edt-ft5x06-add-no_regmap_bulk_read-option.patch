@@ -11,7 +11,7 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 40 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
-index d0ab644be006..6d745b564f7c 100644
+index d6c3d033b..d5132935b 100644
 --- a/drivers/input/touchscreen/edt-ft5x06.c
 +++ b/drivers/input/touchscreen/edt-ft5x06.c
 @@ -146,6 +146,7 @@ struct edt_ft5x06_ts_data {
@@ -75,7 +75,7 @@ index d0ab644be006..6d745b564f7c 100644
  	if (error) {
  		dev_err_ratelimited(dev, "Unable to fetch data, error: %d\n",
  				    error);
-@@ -1232,6 +1268,8 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
+@@ -1212,6 +1248,8 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
  		return error;
  	}
  
@@ -84,6 +84,3 @@ index d0ab644be006..6d745b564f7c 100644
  	/*
  	 * Check which sleep modes we can support. Power-off requires the
  	 * reset-pin to ensure correct power-down/power-up behaviour. Start with
--- 
-2.43.0
-

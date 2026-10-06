@@ -1,0 +1,20 @@
+Fix a struct-type mismatch between the largefile-aware MZ_FILE_STAT_STRUCT
+(struct stat64, under -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64, which
+Buildroot's glibc toolchain always passes) and the raw, non-largefile
+lstat() call a few lines below it in the same function. GCC treats this as
+an incompatible-pointer-types error (-Werror is enabled for this target),
+so the build fails outright.
+
+diff --git a/vendor/zip/src/zip.c b/vendor/zip/src/zip.c
+index 1111111..2222222 100644
+--- a/vendor/zip/src/zip.c
++++ b/vendor/zip/src/zip.c
+@@ -208,7 +208,7 @@ static int zip_mkpath(char *path, size_t pos) {
+         *p = '/';
+       }
+
+-      if (lstat(npath, &st) < 0) {
++      if (MZ_FILE_STAT(npath, &st) < 0) {
+         if (MZ_MKDIR(npath) == -1) {
+           if (errno != EEXIST) {
+             return ZIP_EMKDIR;

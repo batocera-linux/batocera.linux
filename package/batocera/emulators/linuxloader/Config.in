@@ -6,6 +6,7 @@ config BR2_PACKAGE_LINUXLOADER
     select BR2_PACKAGE_ALSA_LIB
     select BR2_PACKAGE_ALSA_PLUGINS
     select BR2_PACKAGE_ALSA_UTILS
+    select BR2_PACKAGE_BATOCERA_LAUNCH_LINUXLOADER    if BR2_PACKAGE_BATOCERA_LAUNCH
     select BR2_PACKAGE_DMIDECODE    if BR2_x86_64
     select BR2_PACKAGE_FAUDIO
     select BR2_PACKAGE_LIBBSD
@@ -41,7 +42,7 @@ config BR2_PACKAGE_LINUXLOADER
     select BR2_PACKAGE_XLIB_LIBXMU
     select BR2_PACKAGE_XLIB_LIBXXF86VM
     help
-      A SEGA Lindbergh Emulator for Linux. 
+      A SEGA Lindbergh Emulator for Linux.
 
       https://github.com/lindbergh-loader/linuxloader
 

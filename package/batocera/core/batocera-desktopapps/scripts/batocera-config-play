@@ -5,6 +5,6 @@ then
     export DISPLAY=$(getLocalXDisplay)
 fi
 
-emulatorlauncher -system namco2x6 -rom config
+batocera-launch -system namco2x6 -rom config
 
 exit 0

@@ -55,7 +55,7 @@ BLOCK_FILE='/var/run/led-handheld-block'
 
 def check_support():
     model = batoled.batocera_model()
-    if model in ["pwm", "rgbaddr", "legiongos", "legiongo", "multiled", "dual_multiled", "odin_mono", "cubexx", "rg_vita_pro", "r36ultra"]:
+    if model in ["pwm", "rgbaddr", "legiongos", "legiongo", "multiled", "dual_multiled", "odin_mono", "cubexx", "rg_vita_pro", "r36ultra", "rg55g1"]:
         for path in [
             "/sys/class/power_supply/BAT0", 
             "/sys/class/power_supply/BAT1", 
@@ -159,7 +159,7 @@ def led_check(led):
                         target_action = "PULSE"
 
                 # Check if this is a software-driven effect that requires continuous looping
-                is_software_effect = target_action in ["RAINBOW", "CHROMA", "PULSE"] and batoled.batocera_model() in ["pwm", "rgb", "rgbaddr", "multiled", "dual_multiled", "odin_mono"]
+                is_software_effect = target_action in ["RAINBOW", "CHROMA", "PULSE"] and batoled.batocera_model() in ["pwm", "rgb", "rgbaddr", "multiled", "dual_multiled", "odin_mono", "rg55g1"]
 
                 # Only write to the hardware if the state has changed, or if it is a software effect that needs looping
                 if target_action != last_state or is_software_effect:

@@ -8,7 +8,7 @@ STEAMDECK_DSP_VERSION = 0.83-1
 STEAMDECK_DSP_SOURCE =
 STEAMDECK_DSP_LICENSE = LGPL-2.1+
 
-STEAMDECK_DSP_DEPENDENCIES = pipewire wireplumber
+STEAMDECK_DSP_DEPENDENCIES = alsa-ucm-conf pipewire sound-open-firmware wireplumber
 
 STEAMDECK_DSP_FILES = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/audio/steamdeck-dsp

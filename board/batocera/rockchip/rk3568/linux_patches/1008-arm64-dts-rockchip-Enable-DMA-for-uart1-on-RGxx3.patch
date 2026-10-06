@@ -1,0 +1,28 @@
+From 170c9831a91dd2ee21cd108c74a495362ebbfb36 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 30 Oct 2024 21:06:34 -0500
+Subject: [PATCH] arm64: dts: rockchip: Enable DMA for uart1 on RGxx3
+
+Enable DMA by adding the proper dma-names for uart1 on the RGxx3.
+This allows the UART controller to then use DMA.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+index 280d630cadbc..dac6f5184bfd 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+@@ -576,6 +576,7 @@ &tsadc {
+ };
+ 
+ &uart1 {
++	dma-names = "tx", "rx";
+ 	pinctrl-0 = <&uart1m1_xfer &uart1m1_ctsn &uart1m1_rtsn>;
+ 	pinctrl-names = "default";
+ 	uart-has-rtscts;
+-- 
+2.34.1
+

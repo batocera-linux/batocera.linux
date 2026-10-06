@@ -973,7 +973,7 @@ index 000000000000..e2953433b491
 +			return -1;
 +
 +        printk("%s get vibrator0-gpio = %d \n", __func__, joypad->vib->gpio0);
-+		ret = devm_gpio_request_one(dev, joypad->vib->gpio0, GPIOF_OUT_INIT_LOW, "vibrator0");
++		ret = devm_gpio_request_one(dev, joypad->vib->gpio0, GPIOF_IN, "vibrator0");
 +		if (ret < 0)
 +			return ret;
 +
@@ -982,7 +982,7 @@ index 000000000000..e2953433b491
 +			return -1;
 +
 +        printk("%s get vibrator1-gpio = %d \n", __func__, joypad->vib->gpio1);
-+		ret = devm_gpio_request_one(dev, joypad->vib->gpio1, GPIOF_OUT_INIT_LOW, "vibrator1");
++		ret = devm_gpio_request_one(dev, joypad->vib->gpio1, GPIOF_IN, "vibrator1");
 +		if (ret < 0)
 +			return ret;
 +
@@ -3176,7 +3176,7 @@ new file mode 100644
 index 000000000000..34f182175bcd
 --- /dev/null
 +++ b/drivers/input/joystick/odroidgo3-joypad.c
-@@ -0,0 +1,1112 @@
+@@ -0,0 +1,1114 @@
 +/*
 + * SARADC joystick & GPIO Button driver for Linux(Hardkernel ODROIDGO2-Advance)
 + */
@@ -3403,7 +3403,7 @@ index 000000000000..34f182175bcd
 +			return -1;
 +	}
 +	/* mux swtiching speed : 35ns(on) / 9ns(off) */
-+	usleep_range(1, 2);
++	usleep_range(10, 20);
 +	return 0;
 +}
 +
@@ -3836,6 +3836,8 @@ index 000000000000..34f182175bcd
 +	amux = joypad->amux;
 +	amux->iio_ch = devm_iio_channel_get(dev, "amux_adc");
 +	if (IS_ERR(amux->iio_ch)) {
++		if (PTR_ERR(amux->iio_ch) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
 +		dev_err(dev, "iio channel get error\n");
 +		return -EINVAL;
 +	}
@@ -3859,9 +3861,9 @@ index 000000000000..34f182175bcd
 +				__func__, amux->sel_a_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_a_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->sel_b_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -3873,9 +3875,9 @@ index 000000000000..34f182175bcd
 +				__func__, amux->sel_b_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_b_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->en_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -3887,9 +3889,9 @@ index 000000000000..34f182175bcd
 +				__func__, amux->en_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->en_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +	return	0;
 +err_out:
@@ -4294,7 +4296,7 @@ new file mode 100644
 index 000000000000..a52981eee9fb
 --- /dev/null
 +++ b/drivers/input/joystick/rgb20s-joypad.c
-@@ -0,0 +1,1373 @@
+@@ -0,0 +1,1375 @@
 +/*
 + * SARADC joystick & GPIO Button driver for Linux(Powkiddy RGB20S)
 + */
@@ -4567,7 +4569,7 @@ index 000000000000..a52981eee9fb
 +			return -1;
 +	}
 +	/* mux swtiching speed : 35ns(on) / 9ns(off) */
-+	usleep_range(1, 2);
++	usleep_range(10, 20);
 +	return 0;
 +}
 +
@@ -5121,6 +5123,8 @@ index 000000000000..a52981eee9fb
 +	amux = joypad->amux;
 +	amux->iio_ch = devm_iio_channel_get(dev, "amux_adc");
 +	if (IS_ERR(amux->iio_ch)) {
++		if (PTR_ERR(amux->iio_ch) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
 +		dev_err(dev, "iio channel get error\n");
 +		return -EINVAL;
 +	}
@@ -5144,9 +5148,9 @@ index 000000000000..a52981eee9fb
 +				__func__, amux->sel_a_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_a_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->sel_b_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -5158,9 +5162,9 @@ index 000000000000..a52981eee9fb
 +				__func__, amux->sel_b_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_b_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->en_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -5172,9 +5176,9 @@ index 000000000000..a52981eee9fb
 +				__func__, amux->en_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->en_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +	return	0;
 +err_out:
@@ -5673,7 +5677,7 @@ new file mode 100644
 index 000000000000..f7832a8158d4
 --- /dev/null
 +++ b/drivers/input/joystick/xu10-joypad.c
-@@ -0,0 +1,1139 @@
+@@ -0,0 +1,1141 @@
 +/*
 + * SARADC joystick & GPIO Button driver for Linux(Hardkernel MagicX-XU10)
 + */
@@ -5884,7 +5888,7 @@ index 000000000000..f7832a8158d4
 +			return -1;
 +	}
 +	/* mux swtiching speed : 35ns(on) / 9ns(off) */
-+	usleep_range(1, 2);
++	usleep_range(10, 20);
 +	return 0;
 +}
 +
@@ -6345,6 +6349,8 @@ index 000000000000..f7832a8158d4
 +	amux->iio_ch_r = devm_iio_channel_get(dev, "joy_right");
 +
 +	if (IS_ERR(amux->iio_ch)) {
++		if (PTR_ERR(amux->iio_ch) == -EPROBE_DEFER)
++			return -EPROBE_DEFER;
 +		dev_err(dev, "iio channel get error\n");
 +		return -EINVAL;
 +	}
@@ -6382,9 +6388,9 @@ index 000000000000..f7832a8158d4
 +				__func__, amux->sel_a_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_a_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->sel_b_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -6396,9 +6402,9 @@ index 000000000000..f7832a8158d4
 +				__func__, amux->sel_b_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->sel_b_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +
 +	amux->en_gpio = of_get_named_gpio_flags(dev->of_node,
@@ -6410,9 +6416,9 @@ index 000000000000..f7832a8158d4
 +				__func__, amux->en_gpio);
 +			goto err_out;
 +		}
-+		ret = gpio_direction_output(amux->en_gpio, 0);
-+		if (ret < 0)
-+			goto err_out;
++
++
++
 +	}
 +	return	0;
 +err_out:

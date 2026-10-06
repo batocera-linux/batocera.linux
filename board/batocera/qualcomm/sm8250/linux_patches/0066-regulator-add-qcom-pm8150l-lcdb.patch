@@ -1,0 +1,262 @@
+From: Philippe Simons <philippe.simons@movify.com>
+Subject: [PATCH] regulator: add Qualcomm LCDB LCD bias regulator
+
+The LCDB block in PM8150L biases a display panel from a single boost: an
+LDO supplies the positive rail (AVDD) and an NCP inverts it for the
+negative rail (AVEE). Mainline has no driver for it - qcom-labibb-regulator
+binds only qcom,pmi8998-lab-ibb, a different register layout - so on the
+MANGMI Air Y Pro these rails stay as the bootloader leaves them.
+
+Unlike pmi8998 LAB/IBB, which have an enable register each, LCDB gates both
+rails with one MODULE_EN bit and sequences AVDD ahead of AVEE in hardware.
+Expose it as a single symmetric supply rather than a pair that cannot in
+fact be controlled separately: the requested voltage is programmed as +V on
+the LDO and -V on the NCP.
+
+Ported from the downstream qpnp-lcdb-regulator driver.
+
+---
+--- a/drivers/regulator/Kconfig
++++ b/drivers/regulator/Kconfig
+@@ -1889,4 +1889,15 @@
+ 	  boost regulator and IBB can be used as a negative boost regulator
+ 	  for LCD display panel.
+ 
++config REGULATOR_QCOM_LCDB
++	tristate "Qualcomm LCDB LCD bias regulator support"
++	depends on SPMI || COMPILE_TEST
++	help
++	  This driver supports the LCDB block found on Qualcomm PMICs such as
++	  PM8150L, which biases an LCD panel from a single boost: an LDO for
++	  the positive rail (AVDD) and an NCP for the negative rail (AVEE).
++
++	  Say M or Y here if your device has an LCD panel whose bias rails
++	  come from the PMIC rather than a discrete supply.
++
+ endif
+--- a/drivers/regulator/Makefile
++++ b/drivers/regulator/Makefile
+@@ -121,6 +121,7 @@
+ obj-$(CONFIG_REGULATOR_MT6397)	+= mt6397-regulator.o
+ obj-$(CONFIG_REGULATOR_MTK_DVFSRC) += mtk-dvfsrc-regulator.o
+ obj-$(CONFIG_REGULATOR_QCOM_LABIBB) += qcom-labibb-regulator.o
++obj-$(CONFIG_REGULATOR_QCOM_LCDB) += qcom-pm8150l-lcdb-regulator.o
+ obj-$(CONFIG_REGULATOR_QCOM_PM8008) += qcom-pm8008-regulator.o
+ obj-$(CONFIG_REGULATOR_QCOM_REFGEN) += qcom-refgen-regulator.o
+ obj-$(CONFIG_REGULATOR_QCOM_RPM) += qcom_rpm-regulator.o
+--- /dev/null
++++ b/drivers/regulator/qcom-pm8150l-lcdb-regulator.c
+@@ -0,0 +1,213 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Qualcomm LCDB (LCD bias) regulator driver
++ *
++ * The LCDB block biases a display panel from a single boost: an LDO supplies
++ * the positive rail (AVDD) and an NCP inverts it for the negative rail (AVEE).
++ * One MODULE_EN bit gates both, and the block sequences AVDD ahead of AVEE in
++ * hardware, so the pair is exposed as a single symmetric supply: the requested
++ * voltage is programmed as +V on the LDO and -V on the NCP.
++ *
++ * The bootloader leaves the block enabled and driving the splash framebuffer,
++ * so probe() deliberately touches no hardware: a requested voltage is only
++ * cached, and every register write is deferred to enable(). Nothing reaches
++ * the PMIC until a consumer asks for the rails.
++ *
++ * Ported from the downstream qpnp-lcdb-regulator driver.
++ */
++
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/regulator/driver.h>
++#include <linux/regulator/of_regulator.h>
++
++#define LCDB_MODULE_RDY			0x45
++#define  MODULE_RDY_BIT			BIT(7)
++
++#define LCDB_ENABLE_CTL1		0x46
++#define  MODULE_EN_BIT			BIT(7)
++
++#define LCDB_LDO_OUTPUT_VOLTAGE		0x71
++#define LCDB_NCP_OUTPUT_VOLTAGE		0x81
++#define  SET_OUTPUT_VOLTAGE_MASK	GENMASK(4, 0)
++
++/* 4.00V..4.90V in 100mV steps, then 4.95V..6.00V in 50mV steps. */
++static const struct linear_range lcdb_volt_ranges[] = {
++	REGULATOR_LINEAR_RANGE(4000000, 0, 9, 100000),
++	REGULATOR_LINEAR_RANGE(4950000, 10, 31, 50000),
++};
++
++struct lcdb_regulator {
++	struct regmap *regmap;
++	/*
++	 * regulator_register() stores this by reference rather than copying
++	 * it, so the descriptor has to outlive probe() - it cannot be a local.
++	 */
++	struct regulator_desc desc;
++	unsigned int base;
++	unsigned int sel;
++	bool enabled;
++};
++
++/*
++ * Only the LDO and NCP taps are programmed. The boost that feeds them is left
++ * exactly as the bootloader configured it: the vendor DT disables its own
++ * "bst" sub-regulator, so downstream never reprograms it either, and the rail
++ * here is fixed so there is nothing the boost would need to follow.
++ */
++static int lcdb_write_voltage(struct regulator_dev *rdev, unsigned int sel)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++	int ret;
++
++	ret = regmap_update_bits(lcdb->regmap,
++				 lcdb->base + LCDB_LDO_OUTPUT_VOLTAGE,
++				 SET_OUTPUT_VOLTAGE_MASK, sel);
++	if (ret)
++		return ret;
++
++	return regmap_update_bits(lcdb->regmap,
++				  lcdb->base + LCDB_NCP_OUTPUT_VOLTAGE,
++				  SET_OUTPUT_VOLTAGE_MASK, sel);
++}
++
++static int lcdb_set_voltage_sel(struct regulator_dev *rdev, unsigned int sel)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++
++	lcdb->sel = sel;
++
++	/* With the rails down there is nothing to reprogram yet. */
++	if (!lcdb->enabled)
++		return 0;
++
++	return lcdb_write_voltage(rdev, sel);
++}
++
++static int lcdb_get_voltage_sel(struct regulator_dev *rdev)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++
++	return lcdb->sel;
++}
++
++static int lcdb_enable(struct regulator_dev *rdev)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++	int ret;
++
++	/* The block ignores writes to its control registers until RDY is set. */
++	ret = regmap_update_bits(lcdb->regmap, lcdb->base + LCDB_MODULE_RDY,
++				 MODULE_RDY_BIT, MODULE_RDY_BIT);
++	if (ret)
++		return ret;
++
++	ret = lcdb_write_voltage(rdev, lcdb->sel);
++	if (ret)
++		return ret;
++
++	ret = regulator_enable_regmap(rdev);
++	if (ret)
++		return ret;
++
++	lcdb->enabled = true;
++
++	return 0;
++}
++
++static int lcdb_disable(struct regulator_dev *rdev)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++	int ret;
++
++	ret = regulator_disable_regmap(rdev);
++	if (ret)
++		return ret;
++
++	lcdb->enabled = false;
++
++	return 0;
++}
++
++static int lcdb_is_enabled(struct regulator_dev *rdev)
++{
++	struct lcdb_regulator *lcdb = rdev_get_drvdata(rdev);
++
++	return lcdb->enabled;
++}
++
++static const struct regulator_ops lcdb_ops = {
++	.enable			= lcdb_enable,
++	.disable		= lcdb_disable,
++	.is_enabled		= lcdb_is_enabled,
++	.set_voltage_sel	= lcdb_set_voltage_sel,
++	.get_voltage_sel	= lcdb_get_voltage_sel,
++	.list_voltage		= regulator_list_voltage_linear_range,
++	.map_voltage		= regulator_map_voltage_linear_range,
++};
++
++static int lcdb_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct regulator_config cfg = { };
++	struct lcdb_regulator *lcdb;
++	struct regulator_dev *rdev;
++	int ret;
++	u32 base;
++
++	lcdb = devm_kzalloc(dev, sizeof(*lcdb), GFP_KERNEL);
++	if (!lcdb)
++		return -ENOMEM;
++
++	lcdb->regmap = dev_get_regmap(dev->parent, NULL);
++	if (!lcdb->regmap)
++		return dev_err_probe(dev, -ENODEV, "failed to get regmap\n");
++
++	ret = device_property_read_u32(dev, "reg", &base);
++	if (ret)
++		return dev_err_probe(dev, ret, "missing reg property\n");
++	lcdb->base = base;
++
++	lcdb->desc.name			= "bias";
++	lcdb->desc.of_match		= "bias";
++	lcdb->desc.type			= REGULATOR_VOLTAGE;
++	lcdb->desc.owner		= THIS_MODULE;
++	lcdb->desc.ops			= &lcdb_ops;
++	lcdb->desc.linear_ranges	= lcdb_volt_ranges;
++	lcdb->desc.n_linear_ranges	= ARRAY_SIZE(lcdb_volt_ranges);
++	lcdb->desc.n_voltages		= 32;
++	lcdb->desc.enable_reg		= lcdb->base + LCDB_ENABLE_CTL1;
++	lcdb->desc.enable_mask		= MODULE_EN_BIT;
++
++	cfg.dev			= dev;
++	cfg.driver_data		= lcdb;
++	cfg.regmap		= lcdb->regmap;
++
++	rdev = devm_regulator_register(dev, &lcdb->desc, &cfg);
++	if (IS_ERR(rdev))
++		return dev_err_probe(dev, PTR_ERR(rdev),
++				     "failed to register bias regulator\n");
++
++	return 0;
++}
++
++static const struct of_device_id lcdb_match[] = {
++	{ .compatible = "qcom,pm8150l-lcdb" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, lcdb_match);
++
++static struct platform_driver lcdb_driver = {
++	.driver = {
++		.name = "qcom-lcdb-regulator",
++		.of_match_table = lcdb_match,
++	},
++	.probe = lcdb_probe,
++};
++module_platform_driver(lcdb_driver);
++
++MODULE_DESCRIPTION("Qualcomm LCDB LCD bias regulator driver");
++MODULE_LICENSE("GPL");

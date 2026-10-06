@@ -1,0 +1,255 @@
+[cdimono1]
+"Button 1" = {type = "special", player = 1, tag = ":slave_hle:MOUSEBTN", mask = 1, default = 0, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"Button 2" = {type = "special", player = 1, tag = ":slave_hle:MOUSEBTN", mask = 2, default = 0, key = "P1_BUTTON2", mapping = "BUTTON2"}
+"Button 3" = {type = "special", player = 1, tag = ":slave_hle:MOUSEBTN", mask = 4, default = 0, key = "P1_BUTTON3", mapping = "BUTTON3"}
+"X Axis" = {type = "analog", player = 1, tag = ":slave_hle:MOUSEX", mask = 65535, default = 0, key = "P1_MOUSE_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"Y Axis" = {type = "analog", player = 1, tag = ":slave_hle:MOUSEY", mask = 65535, default = 0, key = "P1_MOUSE_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+
+[apfm1000]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# Clear = {type = "special", player = 1, tag = ":joy.2", mask = 32, default = 32, key = "OTHER", mapping = "BUTTON3"}
+# "Enter/Fire" = {type = "special", player = 1, tag = ":joy.3", mask = 32, default = 32, key = "OTHER", mapping = "BUTTON1"}
+# 1 = {type = "special", player = 1, tag = ":joy.0", mask = 16, default = 16, key = "OTHER", mapping = "BUTTON4"}
+# 2 = {type = "special", player = 1, tag = ":joy.3", mask = 16, default = 16, key = "OTHER", mapping = "BUTTON2"}
+# 3 = {type = "special", player = 1, tag = ":joy.2", mask = 16, default = 16, key = "OTHER", mapping = "BUTTON6"}
+# 4 = {type = "special", player = 1, tag = ":joy.0", mask = 64, default = 64, key = "OTHER", mapping = "BUTTON5"}
+# 5 = {type = "special", player = 1, tag = ":joy.3", mask = 64, default = 64, key = "OTHER", mapping = "BUTTON8"}
+# 6 = {type = "special", player = 1, tag = ":joy.2", mask = 64, default = 64, key = "OTHER", mapping = "BUTTON7"}
+# 7 = {type = "special", player = 1, tag = ":joy.0", mask = 128, default = 128, key = "OTHER", mapping = "BUTTON10"}
+# 8 = {type = "special", player = 1, tag = ":joy.3", mask = 128, default = 128, key = "OTHER", mapping = "BUTTON9"}
+# 9 = {type = "special", player = 1, tag = ":joy.2", mask = 128, default = 128, key = "OTHER", mapping = "COIN"}
+# 0 = {type = "special", player = 1, tag = ":joy.0", mask = 32, default = 32, key = "OTHER", mapping = "START"}
+Clear = {type = "special", player = 2, tag = ":joy.2", mask = 2, default = 2, key = "TYPE_OTHER(243,1)", mapping = "BUTTON3"}
+"Enter/Fire" = {type = "special", player = 2, tag = ":joy.3", mask = 2, default = 2, key = "TYPE_OTHER(243,1)", mapping = "BUTTON1"}
+1 = {type = "special", player = 2, tag = ":joy.0", mask = 1, default = 1, key = "TYPE_OTHER(243,1)", mapping = "BUTTON4"}
+2 = {type = "special", player = 2, tag = ":joy.3", mask = 1, default = 1, key = "TYPE_OTHER(243,1)", mapping = "BUTTON2"}
+3 = {type = "special", player = 2, tag = ":joy.2", mask = 1, default = 1, key = "TYPE_OTHER(243,1)", mapping = "BUTTON6"}
+4 = {type = "special", player = 2, tag = ":joy.0", mask = 4, default = 4, key = "TYPE_OTHER(243,1)", mapping = "BUTTON5"}
+5 = {type = "special", player = 2, tag = ":joy.3", mask = 4, default = 4, key = "TYPE_OTHER(243,1)", mapping = "BUTTON8"}
+6 = {type = "special", player = 2, tag = ":joy.2", mask = 4, default = 4, key = "TYPE_OTHER(243,1)", mapping = "BUTTON7"}
+7 = {type = "special", player = 2, tag = ":joy.0", mask = 8, default = 8, key = "TYPE_OTHER(243,1)", mapping = "BUTTON10"}
+8 = {type = "special", player = 2, tag = ":joy.3", mask = 8, default = 8, key = "TYPE_OTHER(243,1)", mapping = "BUTTON9"}
+9 = {type = "special", player = 2, tag = ":joy.2", mask = 8, default = 8, key = "TYPE_OTHER(243,1)", mapping = "COIN"}
+0 = {type = "special", player = 2, tag = ":joy.0", mask = 2, default = 2, key = "TYPE_OTHER(243,1)", mapping = "START"}
+
+[astrocde]
+0 = {type = "special", player = 1, tag = ":KEYPAD2", mask = 32, default = 0, key = "KEYPAD", mapping = "BUTTON1"}
+1 = {type = "special", player = 1, tag = ":KEYPAD3", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON4"}
+2 = {type = "special", player = 1, tag = ":KEYPAD2", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON2"}
+3 = {type = "special", player = 1, tag = ":KEYPAD1", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON6"}
+4 = {type = "special", player = 1, tag = ":KEYPAD3", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON5"}
+5 = {type = "special", player = 1, tag = ":KEYPAD2", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON8"}
+6 = {type = "special", player = 1, tag = ":KEYPAD1", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON7"}
+7 = {type = "special", player = 1, tag = ":KEYPAD3", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON10"}
+8 = {type = "special", player = 1, tag = ":KEYPAD2", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON9"}
+9 = {type = "special", player = 1, tag = ":KEYPAD1", mask = 4, default = 0, key = "KEYPAD", mapping = "COIN"}
+"= (Start)" = {type = "special", player = 1, tag = ":KEYPAD0", mask = 32, default = 0, key = "KEYPAD", mapping = "START"}
+
+[adam]
+1 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 2, default = 2, key = "KEYPAD", mapping = "BUTTON4"}
+2 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 4, default = 4, key = "KEYPAD", mapping = "BUTTON2"}
+3 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 8, default = 8, key = "KEYPAD", mapping = "BUTTON6"}
+4 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 16, default = 16, key = "KEYPAD", mapping = "BUTTON5"}
+5 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 32, default = 32, key = "KEYPAD", mapping = "BUTTON8"}
+6 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 64, default = 64, key = "KEYPAD", mapping = "BUTTON7"}
+7 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 128, default = 128, key = "KEYPAD", mapping = "BUTTON10"}
+8 = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 512, default = 512, key = "KEYPAD", mapping = "BUTTON9"}
+"#" = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 1024, default = 0, key = "KEYPAD", mapping = "START"}
+"*" = {type = "special", player = 1, tag = ":joy1:hand:KEYPAD", mask = 2048, default = 0, key = "KEYPAD", mapping = "COIN"}
+
+[arcadia]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# 1 = {type = "special", player = 1, tag = ":controller1_col1", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON3"}
+# 2 = {type = "special", player = 1, tag = ":controller1_col2", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON1"}
+# 3 = {type = "special", player = 1, tag = ":controller1_col3", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON4"}
+# 4 = {type = "special", player = 1, tag = ":controller1_col1", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON2"}
+# 5 = {type = "special", player = 1, tag = ":controller1_col2", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON6"}
+# 6 = {type = "special", player = 1, tag = ":controller1_col3", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON5"}
+# 7 = {type = "special", player = 1, tag = ":controller1_col1", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON8"}
+# 8 = {type = "special", player = 1, tag = ":controller1_col2", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON7"}
+# 9 = {type = "special", player = 1, tag = ":controller1_col3", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON10"}
+# 0 = {type = "special", player = 1, tag = ":controller1_col2", mask = 1, default = 0, key = "KEYPAD", mapping = "BUTTON9"}
+1 = {type = "special", player = 2, tag = ":controller2_col1", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON3"}
+2 = {type = "special", player = 2, tag = ":controller2_col2", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON1"}
+3 = {type = "special", player = 2, tag = ":controller2_col3", mask = 8, default = 0, key = "KEYPAD", mapping = "BUTTON4"}
+4 = {type = "special", player = 2, tag = ":controller2_col1", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON2"}
+5 = {type = "special", player = 2, tag = ":controller2_col2", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON6"}
+6 = {type = "special", player = 2, tag = ":controller2_col3", mask = 4, default = 0, key = "KEYPAD", mapping = "BUTTON5"}
+7 = {type = "special", player = 2, tag = ":controller2_col1", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON8"}
+8 = {type = "special", player = 2, tag = ":controller2_col2", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON7"}
+9 = {type = "special", player = 2, tag = ":controller2_col3", mask = 2, default = 0, key = "KEYPAD", mapping = "BUTTON10"}
+0 = {type = "special", player = 2, tag = ":controller2_col3", mask = 1, default = 0, key = "KEYPAD", mapping = "BUTTON9"}
+
+[gamecom]
+A = {type = "special", player = 1, tag = ":IN0", mask = 128, default = 128, key = "P1_BUTTON1", mapping = "BUTTON2"}
+B = {type = "special", player = 1, tag = ":IN1", mask = 1, default = 1, key = "P1_BUTTON2", mapping = "BUTTON4"}
+C = {type = "special", player = 1, tag = ":IN1", mask = 2, default = 2, key = "P1_BUTTON3", mapping = "BUTTON1"}
+D = {type = "special", player = 1, tag = ":IN2", mask = 2, default = 2, key = "P1_BUTTON4", mapping = "BUTTON3"}
+Menu = {type = "special", player = 1, tag = ":IN0", mask = 16, default = 16, key = "OTHER", mapping = "COIN"}
+Pause = {type = "special", player = 1, tag = ":IN0", mask = 32, default = 32, key = "OTHER", mapping = "START"}
+
+[tutor]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# Down = {type = "special", player = 1, tag = ":LINE4_alt", mask = 16, default = 0, key = "P1_JOYSTICK_DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+# Left = {type = "special", player = 1, tag = ":LINE4_alt", mask = 32, default = 0, key = "P1_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+# Up = {type = "special", player = 1, tag = ":LINE4_alt", mask = 64, default = 0, key = "P1_JOYSTICK_UP", mapping = "JOYSTICK_UP"}
+# Right = {type = "special", player = 1, tag = ":LINE4_alt", mask = 128, default = 0, key = "P1_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+Down = {type = "special", player = 2, tag = ":LINE2_alt", mask = 16, default = 0, key = "P2_JOYSTICK_DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+Left = {type = "special", player = 2, tag = ":LINE2_alt", mask = 32, default = 0, key = "P2_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+Up = {type = "special", player = 2, tag = ":LINE2_alt", mask = 64, default = 0, key = "P2_JOYSTICK_UP", mapping = "JOYSTICK_UP"}
+Right = {type = "special", player = 2, tag = ":LINE2_alt", mask = 128, default = 0, key = "P2_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+"Enter Key" = {type = "combo", player = 1, tag = ":LINE6", mask = 16, default = 0, key = "KEYBOARD", kbMapping = "ENTER", mapping = "BUTTON3"}
+"Down Arrow" = {type = "combo", player = 1, tag = ":LINE7", mask = 4, default = 0, key = "KEYBOARD", kbMapping = "DOWN", mapping = "BUTTON6"}
+
+[crvision]
+"P1 Button 1 (Shift)" = {type = "special", player = 1, tag = ":PA1.7", mask = 128, default = 128, key = "P1_BUTTON1", mapping = "BUTTON2"}
+"P1 Button 2 (Control)" = {type = "special", player = 1, tag = ":PA0.7", mask = 128, default = 128, key = "P1_BUTTON2", mapping = "BUTTON4"}
+"P1 Upper Right (1)" = {type = "special", player = 1, tag = ":PA0.2", mask = 8, default = 8, key = "KEYBOARD", mapping = "BUTTON6"}
+"P1 Lower Left (B)" = {type = "special", player = 1, tag = ":PA1.1", mask = 4, default = 4, key = "KEYBOARD", mapping = "BUTTON1"}
+"P1 Lower Right (6)" = {type = "special", player = 1, tag = ":PA1.4", mask = 64, default = 64, key = "KEYBOARD", mapping = "BUTTON3"}
+"Reset/Start" = {type = "special", player = 1, tag = ":NMI", mask = 1, default = 0, key = "P1_START", mapping = "START"}
+"P2 Button 1 (-/=)" = {type = "special", player = 2, tag = ":PA3.7", mask = 128, default = 128, key = "P2_BUTTON1", mapping = "BUTTON2"}
+"P2 Button 2 (Right)" = {type = "special", player = 2, tag = ":PA2.7", mask = 128, default = 128, key = "P2_BUTTON2", mapping = "BUTTON4"}
+"P2 Upper Right (Space)" = {type = "special", player = 2, tag = ":PA2.2", mask = 8, default = 8, key = "KEYBOARD", mapping = "BUTTON6"}
+"P2 Lower Left (7)" = {type = "special", player = 2, tag = ":PA3.1", mask = 4, default = 4, key = "KEYBOARD", mapping = "BUTTON1"}
+"P2 Lower Right (N)" = {type = "special", player = 2, tag = ":PA3.1", mask = 64, default = 64, key = "KEYBOARD", mapping = "BUTTON3"}
+
+[bbc]
+"*" = {type = "combo", player = 1, tag = ":COL8", mask = 64, default = 64, key = "KEYBOARD", kbMapping = "QUOTE", mapping = "BUTTON2"}
+"?" = {type = "combo", player = 1, tag = ":COL8", mask = 16, default = 16, key = "KEYBOARD", kbMapping = "SLASH", mapping = "BUTTON4"}
+Z = {type = "combo", player = 1, tag = ":COL1", mask = 64, default = 64, key = "KEYBOARD", kbMapping = "Z", mapping = "BUTTON1"}
+X = {type = "combo", player = 1, tag = ":COL2", mask = 16, default = 16, key = "KEYBOARD", kbMapping = "X", mapping = "BUTTON3"}
+Enter = {type = "combo", player = 1, tag = ":COL9", mask = 16, default = 16, key = "KEYBOARD", kbMapping = "ENTER", mapping = "BUTTON6"}
+Down = {type = "combo", player = 1, tag = ":COL9", mask = 4, default = 4, key = "KEYBOARD", kbMapping = "DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+Left = {type = "combo", player = 1, tag = ":COL9", mask = 2, default = 2, key = "KEYBOARD", kbMapping = "LEFT", mapping = "JOYSTICK_LEFT"}
+Up = {type = "combo", player = 1, tag = ":COL9", mask = 8, default = 8, key = "KEYBOARD", kbMapping = "UP", mapping = "JOYSTICK_UP"}
+Right = {type = "combo", player = 1, tag = ":COL9", mask = 128, default = 128, key = "KEYBOARD", kbMapping = "RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+
+[bbc-acornjoy]
+"P1 Button" = {type = "special", player = 1, tag = ":analogue:acornjoy:BUTTONS", mask = 16, default = 16, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 X Axis" = {type = "analog", player = 1, tag = ":analogue:acornjoy:JOY0", mask = 255, default = 128, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P1 Y Axis" = {type = "analog", player = 1, tag = ":analogue:acornjoy:JOY1", mask = 255, default = 128, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+"P2 Button" = {type = "special", player = 2, tag = ":analogue:acornjoy:BUTTONS", mask = 32, default = 32, key = "P2_BUTTON1", mapping = "BUTTON1"}
+"P2 X Axis" = {type = "analog", player = 2, tag = ":analogue:acornjoy:JOY2", mask = 255, default = 128, key = "P2_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P2 Y Axis" = {type = "analog", player = 2, tag = ":analogueacornjoy:JOY3", mask = 255, default = 128, key = "P2_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+
+[bbc-voltmace3b]
+"P1 Button" = {type = "special", player = 1, tag = ":analogue:voltmace3b:BUTTONS", mask = 16, default = 16, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 X Axis" = {type = "analog", player = 1, tag = ":analogue:voltmace3b:JOY0", mask = 255, default = 128, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P1 Y Axis" = {type = "analog", player = 1, tag = ":analogue:voltmace3b:JOY1", mask = 255, default = 128, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+"P2 Button" = {type = "special", player = 2, tag = ":analogue:voltmace3b:BUTTONS", mask = 32, default = 32, key = "P2_BUTTON1", mapping = "BUTTON1"}
+"P2 X Axis" = {type = "analog", player = 2, tag = ":analogue:voltmace3b:JOY2", mask = 255, default = 128, key = "P2_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P2 Y Axis" = {type = "analog", player = 2, tag = ":voltmace3b:JOY3", mask = 255, default = 128, key = "P2_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+
+[bbc-bitstik1]
+"P1 Button 1" = {type = "special", player = 1, tag = ":analogue:bitstik1:BUTTONS", mask = 16, default = 16, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 Button 2" = {type = "special", player = 1, tag = ":analogue:bitstik1:BUTTONS", mask = 32, default = 32, key = "P1_BUTTON2", mapping = "BUTTON2"}
+"P1 Button 3" = {type = "special", player = 1, tag = ":analogue:bitstik1:BUTTONS", mask = 255, default = 255, key = "P1_BUTTON3", mapping = "BUTTON3"}
+"P1 X Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik1:CHANNEL0", mask = 255, default = 0, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P1 Y Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik1:CHANNEL1", mask = 255, default = 0, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+"P1 Z Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik1:CHANNEL2", mask = 255, default = 0, key = "P1_AD_STICK_Z", delta = 10, axis = "ZAXIS", incMapping = "BUTTON5", decMapping = "BUTTON6"}
+
+[bbc-bitstik2]
+"P1 Button 1" = {type = "special", player = 1, tag = ":analogue:bitstik2:BUTTONS", mask = 16, default = 16, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 Button 2" = {type = "special", player = 1, tag = ":analogue:bitstik2:BUTTONS", mask = 32, default = 32, key = "P1_BUTTON2", mapping = "BUTTON2"}
+"P1 Button 3" = {type = "special", player = 1, tag = ":analogue:bitstik2:BUTTONS", mask = 255, default = 255, key = "P1_BUTTON3", mapping = "BUTTON3"}
+"P1 X Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik2:CHANNEL0", mask = 255, default = 0, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P1 Y Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik2:CHANNEL1", mask = 255, default = 0, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+"P1 Z Axis" = {type = "analog", player = 1, tag = ":analogue:bitstik2:CHANNEL2", mask = 255, default = 0, key = "P1_AD_STICK_Z", delta = 10, axis = "ZAXIS", incMapping = "BUTTON5", decMapping = "BUTTON6"}
+
+[xegs]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# Down = {type = "special", player = 1, tag = ":djoy_0_1", mask = 2, default = 2, key = "P1_JOYSTICK_DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+# Left = {type = "special", player = 1, tag = ":djoy_0_1", mask = 4, default = 4, key = "P1_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+# Up = {type = "special", player = 1, tag = ":djoy_0_1", mask = 1, default = 1, key = "P1_JOYSTICK_UP", mapping = "JOYSTICK_UP"}
+# Right = {type = "special", player = 1, tag = ":djoy_0_1", mask = 8, default = 8, key = "P1_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+Down = {type = "special", player = 2, tag = ":djoy_0_1", mask = 32, default = 32, key = "P2_JOYSTICK_DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+Left = {type = "special", player = 2, tag = ":djoy_0_1", mask = 64, default = 64, key = "P2_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+Up = {type = "special", player = 2, tag = ":djoy_0_1", mask = 16, default = 16, key = "P2_JOYSTICK_UP", mapping = "JOYSTICK_UP"}
+Right = {type = "special", player = 2, tag = ":djoy_0_1", mask = 128, default = 128, key = "P2_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+"P1 Button 1" = {type = "special", player = 1, tag = ":djoy_b", mask = 1, default = 1, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 Button 2" = {type = "special", player = 1, tag = ":djoy_b", mask = 16, default = 16, key = "P1_BUTTON2", mapping = "BUTTON2"}
+"P2 Button 1" = {type = "special", player = 2, tag = ":djoy_b", mask = 2, default = 2, key = "P2_BUTTON1", mapping = "BUTTON1"}
+"P2 Button 2" = {type = "special", player = 2, tag = ":djoy_b", mask = 32, default = 32, key = "P2_BUTTON2", mapping = "BUTTON2"}
+
+[socrates]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# Down = {type = "combo", player = 1, tag = ":IN5", mask = 8, default = 0, key = "KEYBOARD", kbMapping = "2PAD", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+# Left = {type = "combo", player = 1, tag = ":IN5", mask = 4, default = 0, key = "KEYBOARD", kbMapping = "4PAD", mapping = "JOYSTICK_LEFT"}
+# Up = {type = "combo", player = 1, tag = ":IN5", mask = 2, default = 0, key = "KEYBOARD", kbMapping = "8PAD", mapping = "JOYSTICK_UP"}
+# Right = {type = "combo", player = 1, tag = ":IN5", mask = 1, default = 0, key = "KEYBOARD", kbMapping = "6PAD", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+Down = {type = "combo", player = 2, tag = ":IN5", mask = 16, default = 0, key = "KEYBOARD", kbMapping = "DOWN", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+Left = {type = "combo", player = 2, tag = ":IN5", mask = 32, default = 0, key = "KEYBOARD", kbMapping = "LEFT", mapping = "JOYSTICK_LEFT"}
+Up = {type = "combo", player = 2, tag = ":IN5", mask = 64, default = 0, key = "KEYBOARD", kbMapping = "UP", mapping = "JOYSTICK_UP"}
+Right = {type = "combo", player = 2, tag = ":IN5", mask = 128, default = 0, key = "KEYBOARD", kbMapping = "RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+"P1 Button" = {type = "combo", player = 1, tag = ":IN5", mask = 256, default = 0, key = "KEYBOARD", kbMapping = "ENTERPAD", mapping = "BUTTON1"}
+"P2 Button" = {type = "combo", player = 2, tag = ":IN5", mask = 512, default = 0, key = "KEYBOARD", kbMapping = "RALT", mapping = "BUTTON1"}
+
+[vgmplay]
+Stop = {type = "special", player = 1, tag = ":CONTROLS", mask = 1, default = 0, key = "P1_BUTTON1", mapping = "BUTTON3"}
+Pause = {type = "special", player = 1, tag = ":CONTROLS", mask = 2, default = 0, key = "P1_BUTTON2", mapping = "START"}
+Play = {type = "special", player = 1, tag = ":CONTROLS", mask = 4, default = 0, key = "P1_BUTTON3", mapping = "BUTTON1"}
+Restart = {type = "special", player = 1, tag = ":CONTROLS", mask = 8, default = 0, key = "P1_BUTTON4", mapping = "BUTTON5"}
+Loop = {type = "special", player = 1, tag = ":CONTROLS", mask = 16, default = 0, key = "P1_BUTTON5", mapping = "BUTTON6"}
+"Change Visualization Mode" = {type = "special", player = 1, tag = ":CONTROLS", mask = 32, default = 0, key = "P1_BUTTON6", mapping = "BUTTON8"}
+"Rate Down" = {type = "special", player = 1, tag = ":CONTROLS", mask = 64, default = 0, key = "P1_BUTTON7", mapping = "JOYSTICK_DOWN", useMapping = "JOYSTICK_UP"}
+"Rate Up" = {type = "special", player = 1, tag = ":CONTROLS", mask = 128, default = 0, key = "P1_BUTTON8", mapping = "JOYSTICK_UP"}
+"Rate Reset" = {type = "special", player = 1, tag = ":CONTROLS", mask = 256, default = 0, key = "P1_BUTTON9", mapping = "BUTTON2"}
+"Rate Hold" = {type = "special", player = 1, tag = ":CONTROLS", mask = 512, default = 0, key = "P1_BUTTON10", mapping = "BUTTON4"}
+"MAME Menu" = {type = "main", player = 1, tag = "standard", mask = 0, default = 0, key = "UI_CONFIGURE", mapping = "COIN"}
+
+[fmtmarty]
+Run = {type = "special", player = 1, tag = ":joy1_ex", mask = 1, default = 0, key = "P1_START", mapping = "BUTTON4"}
+
+[pdp1]
+"Control Panel Switch" = {type = "combo", player = 1, tag = ":CSW", mask = 1, default = 0, key = "KEYBOARD", kbMapping = "LCONTROL", mapping = "START"}
+"Load Punchtape" = {type = "combo", player = 1, tag = ":CSW", mask = 256, default = 0, key = "KEYBOARD", kbMapping = "ENTER", mapping = "START"}
+"P1 Spin Left" = {type = "special", player = 1, tag = ":SPACEWAR", mask = 1, default = 0, key = "P1_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+"P1 Spin Right" = {type = "special", player = 1, tag = ":SPACEWAR", mask = 2, default = 0, key = "P1_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+"P1 Thrust" = {type = "special", player = 1, tag = ":SPACEWAR", mask = 4, default = 0, key = "P1_BUTTON1", mapping = "BUTTON1"}
+"P1 Fire" = {type = "special", player = 1, tag = ":SPACEWAR", mask = 8, default = 0, key = "P1_BUTTON2", mapping = "BUTTON3"}
+"P1 Hyperspace" = {type = "special", player = 1, tag = ":SPACEWAR", mask = 256, default = 0, key = "P1_BUTTON3", mapping = "BUTTON2"}
+"P2 Spin Left" = {type = "special", player = 2, tag = ":SPACEWAR", mask = 16, default = 0, key = "P2_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+"P2 Spin Right" = {type = "special", player = 2, tag = ":SPACEWAR", mask = 32, default = 0, key = "P2_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT", useMapping = "JOYSTICK_LEFT"}
+"P2 Thrust" = {type = "special", player = 2, tag = ":SPACEWAR", mask = 64, default = 0, key = "P2_BUTTON1", mapping = "BUTTON1"}
+"P2 Fire" = {type = "special", player = 2, tag = ":SPACEWAR", mask = 128, default = 0, key = "P2_BUTTON2", mapping = "BUTTON3"}
+"P2 Hyperspace" = {type = "special", player = 2, tag = ":SPACEWAR", mask = 512, default = 0, key = "P2_BUTTON3", mapping = "BUTTON2"}
+
+[vc4000]
+# The following Player 1 entries were overwritten by duplicate Player 2 keys in the original CSV parsing code
+# 1 = {type = "special", player = 1, tag = ":KEYPAD1_1", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON3"}
+# "2/Button" = {type = "special", player = 1, tag = ":KEYPAD1_2", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON1"}
+# 3 = {type = "special", player = 1, tag = ":KEYPAD1_3", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON4"}
+# 4 = {type = "special", player = 1, tag = ":KEYPAD1_1", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON2"}
+# 5 = {type = "special", player = 1, tag = ":KEYPAD1_2", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON6"}
+# 6 = {type = "special", player = 1, tag = ":KEYPAD1_3", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON5"}
+# 7 = {type = "special", player = 1, tag = ":KEYPAD1_1", mask = 32, default = 0, key = "KEYPAD", mapping = "BUTTON8"}
+# 8 = {type = "special", player = 1, tag = ":KEYPAD1_2", mask = 32, default = 0, key = "KEYPAD", mapping = "BUTTON7"}
+# Enter = {type = "special", player = 1, tag = ":KEYPAD1_1", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON10"}
+# Clear = {type = "special", player = 1, tag = ":KEYPAD1_3", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON9"}
+1 = {type = "special", player = 2, tag = ":KEYPAD2_1", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON3"}
+"2/Button" = {type = "special", player = 2, tag = ":KEYPAD2_2", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON1"}
+3 = {type = "special", player = 2, tag = ":KEYPAD2_3", mask = 128, default = 0, key = "KEYPAD", mapping = "BUTTON4"}
+4 = {type = "special", player = 2, tag = ":KEYPAD2_1", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON2"}
+5 = {type = "special", player = 2, tag = ":KEYPAD2_2", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON6"}
+6 = {type = "special", player = 2, tag = ":KEYPAD2_3", mask = 64, default = 0, key = "KEYPAD", mapping = "BUTTON5"}
+7 = {type = "special", player = 2, tag = ":KEYPAD2_1", mask = 32, default = 0, key = "KEYPAD", mapping = "BUTTON8"}
+8 = {type = "special", player = 2, tag = ":KEYPAD2_2", mask = 32, default = 0, key = "KEYPAD", mapping = "BUTTON7"}
+Enter = {type = "special", player = 2, tag = ":KEYPAD2_1", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON10"}
+Clear = {type = "special", player = 2, tag = ":KEYPAD2_3", mask = 16, default = 0, key = "KEYPAD", mapping = "BUTTON9"}
+"Game Select" = {type = "special", player = 1, tag = ":PANEL", mask = 128, default = 0, key = "P1_SELECT", mapping = "COIN"}
+Start = {type = "special", player = 1, tag = ":PANEL", mask = 64, default = 0, key = "P1_START", mapping = "START"}
+
+[gp32]
+A = {type = "special", player = 1, tag = ":IN0", mask = 16384, default = 16384, key = "P1_BUTTON1", mapping = "BUTTON2"}
+B = {type = "special", player = 1, tag = ":IN0", mask = 8192, default = 8192, key = "P1_BUTTON2", mapping = "BUTTON1"}
+L = {type = "special", player = 1, tag = ":IN0", mask = 4096, default = 4096, key = "P1_BUTTON3", mapping = "BUTTON5"}
+R = {type = "special", player = 1, tag = ":IN0", mask = 32768, default = 32768, key = "P1_BUTTON4", mapping = "BUTTON6"}
+Select = {type = "special", player = 1, tag = ":IN1", mask = 128, default = 128, key = "P1_SELECT", mapping = "COIN"}
+Start = {type = "special", player = 1, tag = ":IN1", mask = 64, default = 64, key = "P1_START", mapping = "START"}
+
+[apple2-joy]
+"P1 X Axis" = {type = "analog", player = 1, tag = ":gameio:joy:joystick_1_x", mask = 255, default = 128, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P1 Y Axis" = {type = "analog", player = 1, tag = ":gameio:joy:joystick_1_y", mask = 255, default = 128, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
+"P2 X Axis" = {type = "analog", player = 2, tag = ":gameio:joy:joystick_2_x", mask = 255, default = 128, key = "P2_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
+"P2 Y Axis" = {type = "analog", player = 2, tag = ":gameio:joy:joystick_2_y", mask = 255, default = 128, key = "P2_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}

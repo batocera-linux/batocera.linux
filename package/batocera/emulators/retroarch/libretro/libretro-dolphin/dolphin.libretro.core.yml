@@ -62,9 +62,23 @@ custom_features:
     choices:
       Disabled: disabled
       Enabled: enabled
+file_extensions:
+  - gcm
+  - iso
+  - gcz
+  - ciso
+  - wbfs
+  - rvz
+  - elf
+  - dol
+  - m3u
+  - json
 systems:
   - gamecube
   - name: wii
+    file_extensions:
+      add:
+        - wad
     custom_features:
       wii_widescreen:
         prompt: WII TV MODE

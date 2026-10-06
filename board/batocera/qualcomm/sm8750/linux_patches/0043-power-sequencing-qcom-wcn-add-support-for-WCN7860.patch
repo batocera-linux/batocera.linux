@@ -9,10 +9,10 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 20 insertions(+)
 
 diff --git a/drivers/power/sequencing/pwrseq-qcom-wcn.c b/drivers/power/sequencing/pwrseq-qcom-wcn.c
-index b55b4317e21b..d43b9086c0d1 100644
+index d41793e1f..ebb1c2673 100644
 --- a/drivers/power/sequencing/pwrseq-qcom-wcn.c
 +++ b/drivers/power/sequencing/pwrseq-qcom-wcn.c
-@@ -402,6 +402,22 @@ static const struct pwrseq_qcom_wcn_pdata pwrseq_wcn7850_of_data = {
+@@ -401,6 +401,22 @@ static const struct pwrseq_qcom_wcn_pdata pwrseq_wcn7850_of_data = {
  	.targets = pwrseq_qcom_wcn_targets,
  };
  
@@ -35,7 +35,7 @@ index b55b4317e21b..d43b9086c0d1 100644
  static int pwrseq_qcom_wcn_match_regulator(struct pwrseq_device *pwrseq,
  					   struct device *dev,
  					   const char *name)
-@@ -577,6 +593,10 @@ static const struct of_device_id pwrseq_qcom_wcn_of_match[] = {
+@@ -576,6 +592,10 @@ static const struct of_device_id pwrseq_qcom_wcn_of_match[] = {
  		.compatible = "qcom,wcn7850-pmu",
  		.data = &pwrseq_wcn7850_of_data,
  	},
@@ -46,6 +46,3 @@ index b55b4317e21b..d43b9086c0d1 100644
  	{
  		.compatible = "qcom,wcn6750-pmu",
  		.data = &pwrseq_wcn6750_of_data,
--- 
-2.43.0
-

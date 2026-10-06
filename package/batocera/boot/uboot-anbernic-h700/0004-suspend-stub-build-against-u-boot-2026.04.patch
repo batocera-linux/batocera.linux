@@ -1,0 +1,48 @@
+From: Batocera
+Subject: [PATCH] suspend-stub: build against U-Boot 2026.04
+
+mctl_calc_size() now tests the last quarter of DRAM with mctl_check_memory()
+and reports a failure with printf(); provide both to the freestanding stub.
+
+---
+diff -ruN a/suspend-stub/compat/stub_compat.h b/suspend-stub/compat/stub_compat.h
+--- a/suspend-stub/compat/stub_compat.h
++++ b/suspend-stub/compat/stub_compat.h
+@@ -25,6 +25,7 @@
+ 	_Static_assert(offsetof(struct s, m) == (o), "check_member " #m)
+ 
+ #define debug(...)		do { } while (0)
++#define printf(...)		do { } while (0)
+ 
+ #define CFG_SYS_SDRAM_BASE	0x40000000UL
+ 
+@@ -32,6 +33,7 @@
+ void *memset(void *s, int c, size_t n);
+ void udelay(unsigned long us);
+ void mctl_await_completion(u32 *reg, u32 mask, u32 val);
++bool mctl_check_memory(unsigned long addr);
+ __attribute__((noreturn)) void stub_panic(void);
+ void stage(u32 code);
+ u64 stub_deadline(unsigned long timeout_us);
+diff -ruN a/suspend-stub/src/lib.c b/suspend-stub/src/lib.c
+--- a/suspend-stub/src/lib.c
++++ b/suspend-stub/src/lib.c
+@@ -127,6 +127,18 @@
+ 	}
+ }
+ 
++bool mctl_check_memory(unsigned long addr)
++{
++	u32 orig, val;
++
++	orig = readl(addr);
++	writel(~orig, addr);
++	val = readl(addr);
++	writel(orig, addr);
++
++	return ~orig == val;
++}
++
+ void stage(u32 code)
+ {
+ 	stub_params.stage = code;

@@ -1115,7 +1115,7 @@ index ceedae9e399b..254ebf8ac0c3 100644
 +			compatible = "allwinner,sun50i-h616-de33",
 +				     "allwinner,sun50i-a64-de2";
 +			reg = <0x1000000 0x400000>;
-+			allwinner,sram = <&de3_sram 1>;
++			allwinner,sram = <&sram_c 1>;
 +			#address-cells = <1>;
 +			#size-cells = <1>;
 +			ranges = <0 0x1000000 0x400000>;
@@ -1188,19 +1188,6 @@ index ceedae9e399b..254ebf8ac0c3 100644
  		gpu: gpu@1800000 {
  			compatible = "allwinner,sun50i-h616-mali",
  				     "arm,mali-bifrost";
-@@ -188,6 +271,12 @@ sram_c: sram@28000 {
- 				#address-cells = <1>;
- 				#size-cells = <1>;
- 				ranges = <0 0x00028000 0x30000>;
-+
-+				de3_sram: sram-section@0 {
-+					compatible = "allwinner,sun50i-h616-sram-c",
-+						     "allwinner,sun50i-a64-sram-c";
-+					reg = <0x0000 0x1e000>;
-+				};
- 			};
- 		};
- 
 @@ -868,6 +957,226 @@ ohci3: usb@5311400 {
  			status = "disabled";
  		};
@@ -1981,44 +1968,6 @@ index 724d93b9193b..f9fc0d87ce0d 100644
      then:
 -- 
 2.51.0
-
-
-From 62eff62cad1096bbed3f78c02149a0e4c064388b Mon Sep 17 00:00:00 2001
-From: Ryan Walklin <ryan@testtoast.com>
-Date: Sat, 19 Jul 2025 22:04:38 +1200
-Subject: [PATCH 15/21] dt-bindings: sram: sunxi-sram: Add H616 SRAM C
- compatible
-
-Add a compatible string for the H616 SRAM C region which is
-functionally similar to the A64 SRAM C region.
-
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-Signed-off-by: Ryan Walklin <ryan@testtoast.com>
-
---
-Changelog v1..v2: Add H616 fallback string
----
- .../bindings/sram/allwinner,sun4i-a10-system-control.yaml     | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
-index e7f7cf72719e..cdb664d1ec41 100644
---- a/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
-+++ b/Documentation/devicetree/bindings/sram/allwinner,sun4i-a10-system-control.yaml
-@@ -103,7 +103,9 @@ patternProperties:
-                       - allwinner,sun7i-a20-sram-d
-                   - const: allwinner,sun4i-a10-sram-d
-               - items:
--                  - const: allwinner,sun50i-h6-sram-c
-+                  - enum:
-+                      - allwinner,sun50i-h6-sram-c
-+                      - allwinner,sun50i-h616-sram-c
-                   - const: allwinner,sun50i-a64-sram-c
- 
- required:
--- 
-2.51.0
-
 
 From 3a2bb0a21b4c951f3950149ca5f6a18a441a12b3 Mon Sep 17 00:00:00 2001
 From: Jernej Skrabec <jernej.skrabec@gmail.com>

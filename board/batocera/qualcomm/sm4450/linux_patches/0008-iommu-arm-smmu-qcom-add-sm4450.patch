@@ -1,0 +1,26 @@
+From: sunshineinabox <aqemail@gmail.com>
+Subject: [PATCH] iommu/arm-smmu-qcom: add SM4450 support
+
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -55,6 +55,8 @@
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sc8280xp-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
++	{ .compatible = "qcom,sm4450-mdss",
++			.data = (const void *) (PREFETCH_DEFAULT | CMTLB) },
+ 	{ .compatible = "qcom,sm6115-mdss",
+ 			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
+ 	{ .compatible = "qcom,sm6125-mdss",
+@@ -420,6 +422,7 @@
+ 	{ .compatible = "qcom,sdm670-mdss" },
+ 	{ .compatible = "qcom,sdm845-mdss" },
+ 	{ .compatible = "qcom,sdm845-mss-pil" },
++	{ .compatible = "qcom,sm4450-mdss" },
+ 	{ .compatible = "qcom,sm6115-mdss" },
+ 	{ .compatible = "qcom,sm6350-mdss" },
+ 	{ .compatible = "qcom,sm6375-mdss" },

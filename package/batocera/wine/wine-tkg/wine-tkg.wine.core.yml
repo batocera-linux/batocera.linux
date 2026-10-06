@@ -1,3 +1,13 @@
 systems:
-  - windows
-  - windows_installers
+  - name: windows
+    file_extensions:
+      - pc
+      - exe
+      - wine
+      - wsquashfs
+      - wtgz
+  - name: windows_installers
+    file_extensions:
+      - exe
+      - iso
+      - msi

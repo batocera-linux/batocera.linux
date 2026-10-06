@@ -138,7 +138,7 @@ systems = {
 
     "atomiswave":   { "name": "Atomiswave", "biosFiles":  [ { "md5": "85254fbe320ca82a768ec2c26bb08def", "file": "bios/dc/awbios.zip"  } ] },
 
-    "segacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
+    "megacd":       { "name": "Sega CD", "biosFiles":     [ { "md5": "e66fa1dc5820d254611fdcdba0662372", "file": "bios/bios_CD_E.bin"   },
                                                             { "md5": "854b9150240a198070150e4566ae1290", "file": "bios/bios_CD_U.bin"   },
                                                             { "md5": "278a9397d192149e84e820ac621a8edd", "file": "bios/bios_CD_J.bin"   } ] },
 
@@ -168,9 +168,6 @@ systems = {
     # https://pcsx2.net/config-guide/official-english-pcsx2-configuration-guide.html#Bios
     # use the last USA bios which can run NTSC and PAL games
     "ps2": { "name": "PS2", "biosFiles": [  { "md5": "21038400dc633070a78ad53090c53017", "file": "bios/ps2/ps2-0230a-20080220.bin" } ] },
-
-    # https://www.playstation.com/en-us/support/system-updates/ps3/
-    "ps3": { "name": "PS3", "biosFiles": [  { "md5": "05fe32f5dc8c78acbcd84d36ee7fdc5b", "file": "bios/PS3UPDAT.PUP" } ] },
 
     # ---------- Nintendo ---------- #
     # https://docs.libretro.com/library/fceumm/#bios
@@ -345,6 +342,7 @@ systems = {
 
     # ---------- Super Cassette Vision ---------- #
     "scv":   { "name": "Super Cassette Vision", "biosFiles":  [ { "md5": "635a978fd40db9a18ee44eff449fc126", "file": "bios/upd7801g.s01"  } ] },
+    "samcoupe": { "name": "MGT SAM Coupe", "biosFiles": [ { "md5": "ad08ed47b07b0d7047fd3d0b5e7d90b3", "zippedFile": "rom31.z5", "file": "bios/samcoupe.zip" } ] },
 
     # ---------- Apple 2 GS ---------- #
     "gsplus":   { "name": "Apple 2 GS", "biosFiles":  [ { "md5": "20a0334c447cb069a040ae5be1d938df", "file": "bios/ROM1"  } ] },
@@ -701,7 +699,8 @@ systems = {
                                                 { "md5": "b9f94f5d1be27dafcb8fe619ca3f4d15", "zippedFile": "341-0728", "file": "bios/apple2gs.zip"},
                                                 { "md5": "e8e632aa592a61ef373b38af10ed54e1", "zippedFile": "341-0748", "file": "bios/apple2gs.zip"},
                                                 { "md5": "c9e0e059faec0393fc429131a3af4ee9", "zippedFile": "341s0632-2.bin", "file": "bios/apple2gs.zip"},
-                                                { "md5": "68ff96a624237d233e8d4c701f660dd1", "zippedFile": "apple2gs.chr", "file": "bios/apple2gs.zip"} ] },
+                                                { "md5": "68ff96a624237d233e8d4c701f660dd1", "zippedFile": "apple2gs.chr", "file": "bios/apple2gs.zip"},
+                                                { "md5": "21fd5e524b0cf65907b4c4a3af30d639", "zippedFile": "344s0047.bin", "file": "bios/apple2gs.zip"} ] },
 
     # ---------- Camputers Lynx ---------- #
     "camplynx":   { "name": "Camputers Lynx", "biosFiles":  [ { "md5": "", "file": "bios/lynx48k.zip"  },
@@ -855,6 +854,14 @@ systems = {
                                                 { "md5": "7eecfb8e8f82b47ffab92a0c5528100e", "zippedFile": "sp5002-a.bin", "file": "bios/dc/naomi2.zip"},
                                                 { "md5": "960ece0dc22a7c5ff81c812a2993e7cc", "zippedFile": "x76f100_eeprom.bin", "file": "bios/dc/naomi2.zip"} ] },
 
+    # ---------- Namco System 22 ---------- #
+    "namco22":   { "name": "Namco System 22", "biosFiles":  [ { "md5": "", "file": "bios/namcoc74.zip" },
+                                                    { "md5": "c78a2c4d6071a227e6d49bc009ef7600", "zippedFile": "c74.bin", "file": "bios/namcoc74.zip" } ] },
+
+    # ---------- Gaelco ---------- #
+    "gaelco":   { "name": "Gaelco", "biosFiles":  [ { "md5": "", "file": "bios/tms320c31.zip" },
+                                                    { "md5": "2060f3f2b5c11679d5cf7ea00894d1f2", "zippedFile": "c31boot.bin", "file": "bios/tms320c31.zip" } ] },
+
     # ---------- Hikaru ---------- #
     "hikaru":   { "name": "Hikaru", "biosFiles":  [ { "md5": "040f9b37a1f802d450379aaec106ec69", "file": "bios/hikaru.zip" },
                                                     { "md5": "e95415b161121bef35ade12367138c63", "file": "bios/mie.zip" },
@@ -911,7 +918,7 @@ systems = {
                                                           { "md5": "42af93619160ef2116416f74a6cb12f2", "file": "bios/openmsx/yrw801.rom" } ] },
 
     # ---------- Supr'A'can  ---------- #
-    "supracan":   { "name": "Supr'A'can", "biosFiles":  [ 
+    "supracan":   { "name": "Supr'A'can", "biosFiles":  [
                                     { "md5": "53c4343e062bb3b337370bbb58e64d16", "zippedFile": "internal_68k.bin", "file": "bios/supracan.zip" },
                                     { "md5": "da6cebe6b22a91a34a67074adbbec3a3", "file": "bios/umc6650.zip" }
                                                          ] },
@@ -930,12 +937,16 @@ systems = {
                                                                  { "md5": "b17148254a5799684c7d783206504926", "file": "bios/GC/USA/IPL.bin" } ] },
 
     # ---------- Sega Chihiro ---------- #
-    "chihiro": { "name": "Sega Chihiro", "biosFiles": [{ "md5": "d49c52a4102f6df7bcf8d0617ac475ed", "file": "bios/mcpx_1.0.bin" },
-                                                       { "md5": "f23d7e00ae8fbf88908ed1f9165f35eb", "file": "bios/cerbios.bin" }] },
+    "chihiro": { "name": "Sega Chihiro", "biosFiles": [{ "md5": "4bbbda157dcf922619da1046df10e216", "file": "bios/chihiro/chihiro_xbox_bios.bin" },
+                                                       { "md5": "afacfb61877401f1611998d2b590dffd", "file": "bios/chihiro/fpr21042_m29w160et.bin" },
+                                                       { "md5": "0d6ba29a5005639ac7f4d77b7e58b918", "file": "bios/chihiro/ic10_g24lc64.bin" },
+                                                       { "md5": "2b51c63d9caec283a61a4b90a2ac7c0c", "file": "bios/chihiro/ic11_24lc024.bin" },
+                                                       { "md5": "bf1cf24f8549137c0b1ad0fa61473c7e", "file": "bios/chihiro/pc20_g24lc64.bin" }] },
 
     # ---------- Oric Atmos ---------- #
     "oricatmos": { "name": "Oric Atmos", "biosFiles": [{ "md5": "a330779c42ad7d0c4ac6ef9e92788ec6", "file": "bios/Oric/basic11.rom" },
-                                                       { "md5": "c888b36bf0fc222c3585c3fabe556d21", "file": "bios/Oric/colour.rom" }] },
+                                                       { "md5": "c888b36bf0fc222c3585c3fabe556d21", "file": "bios/Oric/colour.rom" },
+                                                       { "md5": "a330779c42ad7d0c4ac6ef9e92788ec6", "zippedFile": "orica/basic11b.rom", "file": "bios/oric1.zip" }] },
     # ---------- Enterprise ---------- #
     "enterprise": { "name": "Enterprise", "biosFiles": [# ep128emu-core
                                                         { "md5": "f36f24cbb87745fbd2714e4df881db09", "file": "bios/ep128emu/roms/exos21.rom" },

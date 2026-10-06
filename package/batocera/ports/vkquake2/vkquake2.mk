@@ -3,8 +3,8 @@
 # vkquake2
 #
 ################################################################################
-# Version: Commits on Jan 5, 2025
-VKQUAKE2_VERSION = 5bf9c012024884234df0f63c615daec0c740def7
+# Version: Commits on Aug 5, 2026
+VKQUAKE2_VERSION = 6763f207229f97cffabb6fc2da72017a794b139b
 VKQUAKE2_SITE = $(call github,kondrak,vkQuake2,$(VKQUAKE2_VERSION))
 VKQUAKE2_LICENSE = GPL-2.0
 VKQUAKE2_LICENSE_FILE = LICENSE

@@ -1,0 +1,59 @@
+From 0eca189a44504367651a96fe8ca665ae3948e626 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 30 Oct 2024 21:09:36 -0500
+Subject: [PATCH] arm64: dts: rockchip: Map wifi host-wake interrupt for RGxx3
+
+Define the interrupt connected to the rtl8821cs wifi host wake
+functionality.
+
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ .../dts/rockchip/rk3566-anbernic-rgxx3.dtsi    | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+index dac6f5184bfd..1313d112331e 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rgxx3.dtsi
+@@ -479,6 +479,13 @@ vcc_lcd_h: vcc-lcd-h {
+ 		};
+ 	};
+ 
++	wifi {
++		wifi_host_wake_l: wifi-host-wake-l {
++			rockchip,pins =
++				<4 RK_PA1 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
++
+ 	vcc-wifi {
+ 		vcc_wifi_h: vcc-wifi-h {
+ 			rockchip,pins =
+@@ -550,6 +557,8 @@ &sdmmc1 {
+ };
+ 
+ &sdmmc2 {
++	#address-cells = <1>;
++	#size-cells = <0>;
+ 	bus-width = <4>;
+ 	cap-sd-highspeed;
+ 	cap-sdio-irq;
+@@ -567,6 +576,15 @@ &sdmmc2 {
+ 	no-sd;
+ 	sd-uhs-sdr50;
+ 	status = "okay";
++
++	wifi@1 {
++		reg = <1>;
++		interrupt-names = "host-wake";
++		interrupt-parent = <&gpio4>;
++		interrupts = <RK_PA1 IRQ_TYPE_LEVEL_HIGH>;
++		pinctrl-0 = <&wifi_host_wake_l>;
++		pinctrl-names = "default";
++	};
+ };
+ 
+ &tsadc {
+-- 
+2.34.1
+

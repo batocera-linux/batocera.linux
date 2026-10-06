@@ -21,32 +21,11 @@ New struct fields:
  drivers/input/touchscreen/goodix.h |  9 ++++++
  2 files changed, 62 insertions(+)
 
-diff --git a/drivers/input/touchscreen/goodix.h b/drivers/input/touchscreen/goodix.h
-index abcdef01..abcdef02 100644
---- a/drivers/input/touchscreen/goodix.h
-+++ b/drivers/input/touchscreen/goodix.h
-@@ -101,6 +101,15 @@ struct goodix_ts_data {
- 	unsigned short keymap[GOODIX_MAX_KEYS];
- 	u8 main_clk[GOODIX_MAIN_CLK_LEN];
- 	int bak_ref_len;
-+	/*
-+	 * Runtime coordinate scaling for panel variants that share
-+	 * OTA firmware.  When the GT911 flash config resolution
-+	 * differs from the physical panel, scale_to_* stores the DT
-+	 * resolution and native_* stores the GT911 native range.
-+	 * Touch coordinates are scaled by scale_to / native before
-+	 * reporting.  scale_to_x == 0 means no scaling.
-+	 */
-+	u16 scale_to_x, scale_to_y, native_x, native_y;
- 	u8 *bak_ref;
- };
- 
 diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
-index f8798d11ec03..a1b2c3d4e5f6 100644
+index 03efc0c79..b5789c676 100644
 --- a/drivers/input/touchscreen/goodix.c
 +++ b/drivers/input/touchscreen/goodix.c
-@@ -408,7 +408,11 @@ static void goodix_ts_report_touch_8b(struct goodix_ts_data *ts, u8 *coor_data)
- 	int input_y = get_unaligned_le16(&coor_data[3]);
+@@ -409,6 +409,10 @@ static void goodix_ts_report_touch_8b(struct goodix_ts_data *ts, u8 *coor_data)
  	int input_w = get_unaligned_le16(&coor_data[5]);
  
  	input_mt_slot(ts->input_dev, id);
@@ -57,8 +36,7 @@ index f8798d11ec03..a1b2c3d4e5f6 100644
  	input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, true);
  	touchscreen_report_pos(ts->input_dev, &ts->prop,
  			       input_x, input_y, true);
-@@ -423,7 +427,11 @@ static void goodix_ts_report_touch_9b(struct goodix_ts_data *ts, u8 *coor_data)
- 	int input_y = get_unaligned_le16(&coor_data[5]);
+@@ -424,6 +428,10 @@ static void goodix_ts_report_touch_9b(struct goodix_ts_data *ts, u8 *coor_data)
  	int input_w = get_unaligned_le16(&coor_data[7]);
  
  	input_mt_slot(ts->input_dev, id);
@@ -69,7 +47,7 @@ index f8798d11ec03..a1b2c3d4e5f6 100644
  	input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, true);
  	touchscreen_report_pos(ts->input_dev, &ts->prop,
  			       input_x, input_y, true);
-@@ -1065,5 +1079,38 @@
+@@ -1067,6 +1075,39 @@ static void goodix_read_config(struct goodix_ts_data *ts)
  		input_abs_set_max(ts->input_dev, ABS_MT_POSITION_Y, y_max - 1);
  	}
  
@@ -108,3 +86,24 @@ index f8798d11ec03..a1b2c3d4e5f6 100644
 +
  	ts->chip->calc_config_checksum(ts);
  }
+ 
+diff --git a/drivers/input/touchscreen/goodix.h b/drivers/input/touchscreen/goodix.h
+index 0d1e8a8d2..3c61fb0bf 100644
+--- a/drivers/input/touchscreen/goodix.h
++++ b/drivers/input/touchscreen/goodix.h
+@@ -102,6 +102,15 @@ struct goodix_ts_data {
+ 	unsigned short keymap[GOODIX_MAX_KEYS];
+ 	u8 main_clk[GOODIX_MAIN_CLK_LEN];
+ 	int bak_ref_len;
++	/*
++	 * Runtime coordinate scaling for panel variants that share
++	 * OTA firmware.  When the GT911 flash config resolution
++	 * differs from the physical panel, scale_to_* stores the DT
++	 * resolution and native_* stores the GT911 native range.
++	 * Touch coordinates are scaled by scale_to / native before
++	 * reporting.  scale_to_x == 0 means no scaling.
++	 */
++	u16 scale_to_x, scale_to_y, native_x, native_y;
+ 	u8 *bak_ref;
+ };
+ 

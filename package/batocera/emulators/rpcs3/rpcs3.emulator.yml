@@ -1,5 +1,6 @@
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -201,9 +202,9 @@ custom_features:
     prompt: SHADER COMPILATION MODE
     description: Method used to compile graphics shaders.
     choices:
-      Async with Shader Interpreter (Default): Async with Shader Interpreter
-      Async Shader Recompiler: Async Shader Recompiler
-      Legacy Single Threaded: Shader Recompiler
+      Async with Shader Interpreter (Default): Async Recompiler with Shader Interpreter
+      Async Shader Recompiler: Async Recompiler (multi-threaded)
+      Legacy Single Threaded: Legacy Recompiler (single-threaded)
       Shader Interpreter only: Shader Interpreter only
   rpcs3_num_compilers:
     submenu: RENDER
@@ -378,6 +379,13 @@ custom_features:
     choices:
       'Off': "0"
       'On': "1"
+  rpcs3_firmware_update:
+    group: ADVANCED OPTIONS
+    prompt: FIRMWARE UPDATES
+    description: Downloads newer PS3 firmware from Sony while a game runs and installs it on the next launch. Missing firmware is always downloaded.
+    choices:
+      'Off (Default)': "0"
+      'On': "1"
   rpcs3_crosshairs:
     order: 99
     group: CONTROLS
@@ -484,6 +492,13 @@ custom_features:
     prompt: RUMBLE
     description: Enable controller rumble capabilities if supported by the controller.
     preset: switchon
+file_extensions:
+  - squashfs
 systems:
-  - ps3
+  - name: ps3
+    file_extensions:
+      add:
+        - ps3
+        - psn
+        - iso
   - namco3xx

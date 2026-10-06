@@ -49,7 +49,7 @@ fi
 
 # Set storage device and partition naming scheme based on architecture
 case "$HW_DEVICE" in
-  SM6115)
+  SM4450|SM6115)
     DEVICE="/dev/mmcblk1"
     IS_EMMC=true
     ;;

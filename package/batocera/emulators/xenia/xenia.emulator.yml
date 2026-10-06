@@ -1,6 +1,7 @@
 features: []
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
 custom_features:
@@ -243,7 +244,9 @@ custom_features:
     choices:
       Disabled: false
       Enabled: true
+file_extensions:
+  - iso
+  - xex
+  - xbox360
 systems:
-  - name: xbox360
-    exclude_extensions:
-      - zar
+  - xbox360

@@ -1,0 +1,69 @@
+From e1431523c7170eed351b455a5c66d6849fded3a2 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 30 Oct 2024 17:47:39 -0500
+Subject: [PATCH] arm64: dts: rockchip: Add spk_amp regulator for Anbernic
+ RGxx3 Devices
+
+Define the VCC supply for the speaker amp on the Anbernic RGxx3 series
+devices which use an external amplifier circuit (all do except the V
+and VS series). This supply value was discovered by slightly raising
+and lowering the voltages of various regulators from within the
+bootloader and measuring for corresponding changes with a multimeter.
+---
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg-arc.dtsi | 1 +
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353p.dts  | 1 +
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353ps.dts | 1 +
+ arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts   | 1 +
+ 4 files changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg-arc.dtsi b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg-arc.dtsi
+index 162467db439e..02c84a43c07b 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg-arc.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg-arc.dtsi
+@@ -213,6 +213,7 @@ spk_amp: audio-amplifier {
+ 		pinctrl-0 = <&spk_amp_enable_h>;
+ 		pinctrl-names = "default";
+ 		sound-name-prefix = "Speaker Amp";
++		VCC-supply = <&vcc_3v3>;
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353p.dts b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353p.dts
+index 384e4b9dbbca..23c2a46f3ec8 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353p.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353p.dts
+@@ -74,6 +74,7 @@ spk_amp: audio-amplifier {
+ 		pinctrl-0 = <&spk_amp_enable_h>;
+ 		pinctrl-names = "default";
+ 		sound-name-prefix = "Speaker Amp";
++		VCC-supply = <&vcc_3v3>;
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353ps.dts b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353ps.dts
+index b2fac3ca4f1c..10b5bed757db 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353ps.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg353ps.dts
+@@ -73,6 +73,7 @@ spk_amp: audio-amplifier {
+ 		pinctrl-0 = <&spk_amp_enable_h>;
+ 		pinctrl-names = "default";
+ 		sound-name-prefix = "Speaker Amp";
++		VCC-supply = <&vcc_3v3>;
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
+index a9154162092e..2bbac3dd74ec 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3566-anbernic-rg503.dts
+@@ -100,6 +100,7 @@ spk_amp: audio-amplifier {
+ 		pinctrl-0 = <&spk_amp_enable_h>;
+ 		pinctrl-names = "default";
+ 		sound-name-prefix = "Speaker Amp";
++		VCC-supply = <&vcc_3v3>;
+ 	};
+ 
+ 	joypad: rocknix-singleadc-joypad {
+-- 
+2.34.1
+

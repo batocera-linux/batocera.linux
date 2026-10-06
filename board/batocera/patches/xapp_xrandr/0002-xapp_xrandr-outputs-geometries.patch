@@ -1,0 +1,64 @@
+diff --git a/xrandr.c b/xrandr.c
+index 4787981..aaee2b7 100644
+--- a/xrandr.c
++++ b/xrandr.c
+@@ -2684,6 +2684,7 @@ main (int argc, char **argv)
+     Bool	currentResolution = False;
+     Bool	currentRotation = False;
+     Bool        listConnectedOutputs = False;
++    Bool        listGeometries = False;
+     Bool	list_providers = False;
+     Bool        provsetoutsource = False;
+     Bool        provsetoffsink = False;
+@@ -2787,6 +2788,10 @@ main (int argc, char **argv)
+ 	    listConnectedOutputs = True;
+ 	    continue;
+ 	}
++	if (!strcmp ("--geometry", argv[i])) {
++	  listGeometries = True;
++	  continue;
++	}
+ 	if (!strcmp ("-o", argv[i]) || !strcmp ("--orientation", argv[i])) {
+ 	    char *endptr;
+ 	    if (++i >= argc) argerr ("%s requires an argument\n", argv[i-1]);
+@@ -3738,6 +3743,40 @@ main (int argc, char **argv)
+ 	}
+ 	exit (0);
+     }
++    if (listGeometries)
++    {
++	output_t    *output;
++
++	get_screen (current);
++	get_crtcs ();
++	get_outputs ();
++
++	for (output = all_outputs; output; output = output->next)
++	{
++	    XRROutputInfo   *output_info = output->output_info;
++	    crtc_t	    *cur_crtc = output->crtc_info;
++	    XRRCrtcInfo	    *crtc_info = cur_crtc ? cur_crtc->crtc_info : NULL;
++	    XRRModeInfo	    *cur_mode = output->mode_info;
++
++	    if(strcmp(connection[output_info->connection], "connected") == 0) {
++	      if (cur_mode)
++		{
++		  printf ("%s ", output_info->name);
++		  if (crtc_info) {
++		    printf (" %dx%d+%d+%d",
++			    crtc_info->width, crtc_info->height,
++			    crtc_info->x, crtc_info->y);
++		  } else {
++		    printf (" %dx%d+%d+%d",
++			    cur_mode->width, cur_mode->height, output->x,
++			    output->y);
++		  }
++		  printf ("\n");
++		}
++	    }
++	}
++	exit (0);
++    }
+     if (listModes) {
+       output_t    *output;
+ 

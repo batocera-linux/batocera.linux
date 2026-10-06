@@ -1,0 +1,27 @@
+Report the Ace triggers as ABS_Z/ABS_RZ with their measured, inverted range.
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-gameforce-ace.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-gameforce-ace.dts
+@@ -102,16 +102,18 @@
+ 			reg = <0>;
+ 			abs-flat = <15>;
+ 			abs-fuzz = <15>;
+-			abs-range = <890 1530>;
+-			linux,code = <ABS_HAT2X>;
++			/* batocera - triggers read lower when pressed, SDL takes ABS_HAT* as a hat */
++			abs-range = <1370 890>;
++			linux,code = <ABS_Z>;
+ 		};
+ 
+ 		axis@1 {
+ 			reg = <1>;
+ 			abs-flat = <15>;
+ 			abs-fuzz = <15>;
+-			abs-range = <1010 1550>;
+-			linux,code = <ABS_HAT2Y>;
++			/* batocera - triggers read lower when pressed, SDL takes ABS_HAT* as a hat */
++			abs-range = <1195 900>;
++			linux,code = <ABS_RZ>;
+ 		};
+ 	};
+ 

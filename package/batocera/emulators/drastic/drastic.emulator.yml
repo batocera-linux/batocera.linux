@@ -1,5 +1,6 @@
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -40,7 +41,7 @@ custom_features:
   drastic_threaded:
     group: ADVANCED OPTIONS
     prompt: THREADED 3D
-    description: Improves performance in 3D games. Can cause glitches.
+    description: Improves performance in 3D games. Some games then mix up the layers of the two screens, turn it off if the screens look wrong.
     choices:
       'Off': 0
       'On': 1
@@ -57,7 +58,8 @@ custom_features:
     choices:
       Vertical: 0
       Horizontal: 1
-      Single: 3
+      Single (Top): 2
+      Single (Bottom): 3
   drastic_shader:
     prompt: SCREEN SHADER
     description: Select a custom video shader filter.
@@ -69,6 +71,17 @@ custom_features:
       'Scanlines': 'scanlines'
       'LCD 3x': 'lcd3x'
       'LCD 1x NDS Color': 'lcd1x-nds-color'
+  drastic_language:
+    submenu: FIRMWARE SETTINGS
+    prompt: LANGUAGE
+    description: Select the firmware language.
+    choices:
+      Japanese: 0
+      English (Default): 1
+      French: 2
+      German: 3
+      Italian: 4
+      Spanish: 5
   drastic_mic_threshold:
     prompt: MICROPHONE SENSITIVITY
     description: Enable physical mic blowing. Higher sensitivity triggers more easily.
@@ -79,7 +92,14 @@ custom_features:
       'Medium (0.10)': '0.10'
       'Low (0.15)': '0.15'
       'Very Low (0.20)': '0.20'
+file_extensions:
+  - nds
+  - bin
+  - zip
 systems:
-  - name: nds
-    exclude_extensions:
-      - 7z
+  - nds
+labwc:
+  window_rules:
+    - identifier: drastic
+      actions:
+        - name: SpanOutputs

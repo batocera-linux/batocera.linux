@@ -4,6 +4,7 @@ config BR2_PACKAGE_OPENJK
 	select BR2_PACKAGE_LIBPNG
 	select BR2_PACKAGE_SDL2
 	select BR2_PACKAGE_ZLIB
+	select BR2_PACKAGE_BATOCERA_LAUNCH_OPENJK
 	help
 	  Community effort to maintain and improve Jedi Academy (SP & MP)
 	  and Jedi Outcast (SP only) released by Raven Software.

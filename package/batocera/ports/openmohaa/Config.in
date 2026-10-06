@@ -3,6 +3,7 @@ config BR2_PACKAGE_OPENMOHAA
     select BR2_PACKAGE_LIBCURL
     select BR2_PACKAGE_OPENAL
     select BR2_PACKAGE_SDL2
+    select BR2_PACKAGE_BATOCERA_LAUNCH_OPENMOHAA
     help
       Open re-implementation of Medal of Honor: Allied Assault
       including Spearhead and Breakthrough expansions with modern features.

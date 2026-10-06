@@ -28,3 +28,31 @@ shared_features:
   - vrr_runloop_enable
   - video_threaded
   - rumble_gain
+  - cpucluster
+
+labwc:
+  window_rules:
+    - identifier: emulationstation
+      actions:
+        - name: FocusOutput
+          output: primary
+        - name: MoveToOutput
+          output: primary
+    - identifier: batocera-backglass-window
+      actions:
+        - name: MoveToOutput
+          output: secondary
+    - title: Batocera Control Center
+      actions:
+        - name: MoveToOutput
+          output: primary
+    - identifier: "batocera-flash-screen*"
+      actions:
+        - name: MoveToOutput
+          output: primary
+    - identifier: "*"
+      actions:
+        - name: MoveToOutput
+          output: primary
+        - name: FocusOutput
+          output: primary

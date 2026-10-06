@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d9edf97..24c0b76 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -291,6 +291,9 @@ if (${BUILD_APPIMAGE})
+ 	endif()
+ endif()
+ 
++# batocera - use system sdl3
++find_package(SDL3 REQUIRED CONFIG)
++
+ add_subdirectory(external)
+ add_subdirectory(vita3k)
+ add_subdirectory(tools/gen-modules)
+diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
+index a26cd3a..743fad0 100644
+--- a/external/CMakeLists.txt
++++ b/external/CMakeLists.txt
+@@ -83,8 +83,6 @@ add_subdirectory(libfat16)
+ add_library(miniz STATIC miniz/miniz.c miniz/miniz.h)
+ target_include_directories(miniz PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/miniz")
+ 
+-add_subdirectory(sdl)
+-
+ # Cubeb setup, from https://github.com/RPCS3/rpcs3/blob/master/3rdparty/cubeb/CMakeLists.txt
+ set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Don't build shared libs")
+ set(BUILD_TESTS FALSE CACHE BOOL "Don't build tests")

@@ -3,7 +3,7 @@ features:
 shared_features:
   - autosave
 custom_features:
-  mame_cpu_overclock:
+  same_cdi_cpu_overclock:
     group: ADVANCED OPTIONS
     prompt: OVERCLOCK (UNSTABLE)
     description: Enhancement. Reduces system slowdown. Causes issues in some games.
@@ -34,7 +34,7 @@ custom_features:
       "140": 140
       "145": 145
       "150": 150
-  mame_altres:
+  same_cdi_altres:
     prompt: RENDERING RESOLUTION
     description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
     choices:
@@ -54,11 +54,8 @@ custom_features:
     choices:
       'On': 1
       Off (Default): 0
+file_extensions:
+  - chd
+  - iso
 systems:
-  - name: cdi
-    exclude_extensions:
-      - cue
-      - toc
-      - nrg
-      - gdi
-      - cdr
+  - cdi

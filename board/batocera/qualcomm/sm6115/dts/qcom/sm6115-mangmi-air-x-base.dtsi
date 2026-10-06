@@ -1001,9 +1001,11 @@
 			regulator-max-microvolt = <3304000>;
 		};
 
+		/* batocera - adjust voltages accordingly & always-on */
 		vreg_l21a_2p704: l21 {
-			regulator-min-microvolt = <2400000>;
-			regulator-max-microvolt = <3600000>;
+			regulator-min-microvolt = <2704000>;
+			regulator-max-microvolt = <2704000>;
+			regulator-always-on;
 		};
 
 		vreg_l22a_2p96: l22 {

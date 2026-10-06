@@ -15,7 +15,7 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 87 insertions(+), 8 deletions(-)
 
 diff --git a/sound/soc/codecs/aw88166.c b/sound/soc/codecs/aw88166.c
-index daee4de9e3b0..8c23c6db2547 100644
+index ea277a940..9db78a775 100644
 --- a/sound/soc/codecs/aw88166.c
 +++ b/sound/soc/codecs/aw88166.c
 @@ -12,7 +12,10 @@
@@ -138,7 +138,7 @@ index daee4de9e3b0..8c23c6db2547 100644
  	},
  };
  
-@@ -1802,9 +1874,16 @@ static const struct i2c_device_id aw88166_i2c_id[] = {
+@@ -1806,9 +1870,16 @@ static const struct i2c_device_id aw88166_i2c_id[] = {
  };
  MODULE_DEVICE_TABLE(i2c, aw88166_i2c_id);
  
@@ -155,6 +155,3 @@ index daee4de9e3b0..8c23c6db2547 100644
  	},
  	.probe = aw88166_i2c_probe,
  	.id_table = aw88166_i2c_id,
--- 
-2.43.0
-

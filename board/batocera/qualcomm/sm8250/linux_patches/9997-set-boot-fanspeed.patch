@@ -7,7 +7,7 @@ index a1712649b0..2233ac37fb 100644
  	 * the regulator. In case of error nothing is changed
  	 */
 -	ret = set_pwm(ctx, initial_pwm);
-+	ret = set_pwm(ctx, 70);
++	ret = set_pwm(ctx, 51);
  	if (ret) {
  		dev_err(dev, "Failed to configure PWM: %d\n", ret);
  		return ret;

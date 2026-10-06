@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - bezel
@@ -51,5 +52,7 @@ custom_features:
     choices:
       Disabled (Default): "false"
       Enabled: "true"
+file_extensions:
+  - cgenius
 systems:
   - cgenius

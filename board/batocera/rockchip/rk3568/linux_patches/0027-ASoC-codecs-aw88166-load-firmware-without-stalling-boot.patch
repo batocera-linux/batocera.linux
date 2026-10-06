@@ -1,0 +1,110 @@
+From: Noxwell <beebono@yahoo.com>
+Subject: [PATCH] ASoC: codecs: aw88166: load firmware without stalling boot
+
+When the driver and its sound card are built in, the component probe
+runs before the rootfs is mounted. request_firmware() then falls back
+to the sysfs user helper (CONFIG_FW_LOADER_USER_HELPER_FALLBACK=y) and
+blocks boot until that times out, after which the card fails to bind.
+
+Use request_firmware_direct() so a missing file fails immediately, let
+the component register anyway, and retry the load from a delayed work
+item until the ACF file shows up. Playback is already gated on
+fw_status, so the amp stays off until the firmware has been applied.
+---
+ sound/soc/codecs/aw88166.c | 49 +++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 47 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/codecs/aw88166.c b/sound/soc/codecs/aw88166.c
+--- a/sound/soc/codecs/aw88166.c
++++ b/sound/soc/codecs/aw88166.c
+@@ -17,11 +17,17 @@
+ #include "aw88166.h"
+ #include "aw88395/aw88395_device.h"
+ 
++/* poll for the ACF file for up to 60s while the rootfs comes up */
++#define AW88166_FW_RETRY_MS		500
++#define AW88166_FW_RETRY_MAX		120
++
+ struct aw88166 {
+ 	struct aw_device *aw_pa;
+ 	struct mutex lock;
+ 	struct gpio_desc *reset_gpio;
+ 	struct delayed_work start_work;
++	struct delayed_work fw_work;
++	unsigned int fw_retries;
+ 	struct regmap *regmap;
+ 	struct aw_container *aw_cfg;
+ 
+@@ -1581,9 +1587,15 @@
+ 	if (device_property_read_string(aw88166->aw_pa->dev, "firmware-name", &fw_name) < 0)
+ 		fw_name = AW88166_ACF_FILE;
+ 
+-	ret = request_firmware(&cont, fw_name, aw88166->aw_pa->dev);
++	/*
++	 * Never fall back to the sysfs user helper: when built in, this runs
++	 * before the rootfs is mounted and would stall boot until it times out.
++	 * A missing file is retried from aw88166_fw_work() instead.
++	 */
++	ret = request_firmware_direct(&cont, fw_name, aw88166->aw_pa->dev);
+ 	if (ret) {
+-		dev_err(aw88166->aw_pa->dev, "request [%s] failed!\n", fw_name);
++		if (ret != -ENOENT)
++			dev_err(aw88166->aw_pa->dev, "request [%s] failed!\n", fw_name);
+ 		return ret;
+ 	}
+ 
+@@ -1668,14 +1680,46 @@
+ 	{"AIF_TX", NULL, "ADC Input"},
+ };
+ 
++static void aw88166_fw_work(struct work_struct *work)
++{
++	struct aw88166 *aw88166 =
++		container_of(work, struct aw88166, fw_work.work);
++	int ret;
++
++	ret = aw88166_request_firmware_file(aw88166);
++	if (ret == -ENOENT && ++aw88166->fw_retries < AW88166_FW_RETRY_MAX) {
++		queue_delayed_work(system_dfl_wq, &aw88166->fw_work,
++				   msecs_to_jiffies(AW88166_FW_RETRY_MS));
++		return;
++	}
++
++	if (ret)
++		dev_err(aw88166->aw_pa->dev, "firmware load failed: %d\n", ret);
++	else
++		dev_dbg(aw88166->aw_pa->dev, "firmware loaded after %u retries\n",
++			aw88166->fw_retries);
++}
++
+ static int aw88166_codec_probe(struct snd_soc_component *component)
+ {
+ 	struct aw88166 *aw88166 = snd_soc_component_get_drvdata(component);
+ 	int ret;
+ 
+ 	INIT_DELAYED_WORK(&aw88166->start_work, aw88166_startup_work);
++	INIT_DELAYED_WORK(&aw88166->fw_work, aw88166_fw_work);
+ 
+ 	ret = aw88166_request_firmware_file(aw88166);
++	if (ret == -ENOENT) {
++		/*
++		 * Firmware not reachable yet (e.g. built in and the rootfs is
++		 * not mounted). Register the component anyway; playback stays
++		 * gated on fw_status until the retry work loads it.
++		 */
++		aw88166->fw_retries = 0;
++		queue_delayed_work(system_dfl_wq, &aw88166->fw_work,
++				   msecs_to_jiffies(AW88166_FW_RETRY_MS));
++		return 0;
++	}
+ 	if (ret)
+ 		dev_err(aw88166->aw_pa->dev, "%s failed\n", __func__);
+ 
+@@ -1686,6 +1730,7 @@
+ {
+ 	struct aw88166 *aw88166 = snd_soc_component_get_drvdata(aw_codec);
+ 
++	cancel_delayed_work_sync(&aw88166->fw_work);
+ 	cancel_delayed_work_sync(&aw88166->start_work);
+ }
+ 

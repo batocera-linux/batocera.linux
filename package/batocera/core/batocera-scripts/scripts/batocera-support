@@ -178,25 +178,9 @@ if command -v vulkaninfo >/dev/null; then
     vulkaninfo > "${DDISPLAY}/vulkan_info.txt" 2>/dev/null
 fi
 
-# Wayland Compositor State (Sway)
-if pgrep -x "sway" > /dev/null; then
-    if command -v swaymsg >/dev/null; then
-        # Try to locate socket if not in env
-        SWAYSOCK_FIND=$(ls /run/user/$(id -u)/sway-ipc.*.sock 2>/dev/null | head -n 1)
-        [ -z "$SWAYSOCK" ] && [ -n "$SWAYSOCK_FIND" ] && export SWAYSOCK="$SWAYSOCK_FIND"
-        
-        swaymsg -t get_outputs > "${DDISPLAY}/sway_outputs.json" 2>/dev/null
-        swaymsg -t get_tree > "${DDISPLAY}/sway_tree.json" 2>/dev/null
-        swaymsg -t get_config > "${DDISPLAY}/sway_config_dump.txt" 2>/dev/null
-    fi
-fi
-
 # Display related logs
 if [ -f /var/log/Xorg.0.log ]; then
     f_cp /var/log/Xorg.0.log                                   "${DDISPLAY}"
-fi
-if [ -f /var/run/sway.log ]; then
-    f_cp /var/run/sway.log                                     "${DDISPLAY}"
 fi
 if [ -f /var/log/splash.log ]; then
     f_cp /var/log/splash.log                                   "${DDISPLAY}"

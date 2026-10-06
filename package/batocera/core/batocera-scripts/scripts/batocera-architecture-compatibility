@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# return 0 if the board can be migrated to an other architecture
+# it is used by es to propose an option to upgrade
+# it is used by batocera-upgrade to find a compatible board
+
+G_BOARD=$(cat /boot/boot/batocera.board)
+
+case "${G_BOARD}" in
+    "x86_64")
+	if batocera-x64-compatibility >/dev/null 2>/dev/null
+	then
+	    echo "x86-64-v3"
+	    exit 0
+	fi
+    ;;
+esac
+
+exit 1
+

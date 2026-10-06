@@ -1,7 +1,11 @@
+file_extensions:
+  - zip
+  - 7z
 cores:
   demul:
     shared_features:
       - powermode
+      - cpucluster
       - tdp
       - videomode
     custom_features:

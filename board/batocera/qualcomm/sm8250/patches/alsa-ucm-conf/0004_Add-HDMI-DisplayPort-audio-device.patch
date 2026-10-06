@@ -1,0 +1,45 @@
+--- /dev/null
++++ b/ucm2/Qualcomm/sm8250/HDMI-RP.conf
+@@ -0,0 +1,28 @@
++# HDMI / DisplayPort output for Retroid Pocket SM8250.
++# Separate verb so an unconnected/unrouted DP PCM never poisons the HiFi card.
++
++SectionVerb {
++	EnableSequence [
++		cset "name='DISPLAY_PORT_RX Audio Mixer MultiMedia4' 1"
++	]
++
++	DisableSequence [
++		cset "name='DISPLAY_PORT_RX Audio Mixer MultiMedia4' 0"
++	]
++
++	Value {
++		TQ "HiFi"
++	}
++}
++
++SectionDevice."HDMI" {
++	Comment "HDMI / DisplayPort Audio (USB-C)"
++
++	Value {
++		PlaybackPCM "hw:${CardId},3"
++		PlaybackPriority 100
++		PlaybackChannels 2
++		PlaybackRate 48000
++		JackControl "DP0 Jack"
++	}
++}
+--- a/ucm2/Qualcomm/sm8250/RetroidPocket.conf
++++ b/ucm2/Qualcomm/sm8250/RetroidPocket.conf
+@@ -5,6 +5,11 @@
+ 	Comment "HiFi quality Music."
+ }
+ 
++SectionUseCase."HDMI" {
++	File "/Qualcomm/sm8250/HDMI-RP.conf"
++	Comment "HDMI / DisplayPort Output."
++}
++
+ BootSequence [
+ 	cset "name='WSA_RX0 Digital Volume' 120"
+ 	cset "name='WSA_RX1 Digital Volume' 120"

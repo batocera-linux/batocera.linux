@@ -2,6 +2,7 @@ config BR2_PACKAGE_OPENJAZZ
 	bool "openjazz"
 	depends on BR2_INSTALL_LIBSTDCPP
 	select BR2_PACKAGE_SDL2
+	select BR2_PACKAGE_BATOCERA_LAUNCH_OPENJAZZ
 	help
 	  OpenJazz is a free, open-source version
 	  of the classic Jazz Jackrabbit games.

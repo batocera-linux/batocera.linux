@@ -1,9 +1,13 @@
+file_extensions:
+  - iso
+  - rvz
 cores:
   dolphin:
     features:
       - cheevos
     shared_features:
       - powermode
+      - cpucluster
       - tdp
       - videomode
       - bezel
@@ -322,6 +326,16 @@ cores:
         preset: switchauto
     systems:
       - name: gamecube
+        file_extensions: &gamecube
+          add:
+            - gcm
+            - gcz
+            - ciso
+            - wbfs
+            - elf
+            - dol
+            - m3u
+            - json
         custom_features:
           widescreen_hack:
             submenu: DISPLAY
@@ -345,6 +359,10 @@ cores:
               Italian: 4
               Dutch: 5
       - name: wii
+        file_extensions:
+          values: *gamecube
+          add:
+            - wad
         shared_features:
           - use_guns
         custom_features:
@@ -415,4 +433,4 @@ cores:
             submenu: LIGHT GUNS
             prompt: SHOW LIGHT GUN CROSSHAIRS
             preset: switchauto
-      - name: triforce
+      - triforce

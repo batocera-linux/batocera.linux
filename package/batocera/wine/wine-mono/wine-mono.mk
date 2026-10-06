@@ -4,16 +4,16 @@
 #
 ################################################################################
 
-WINE_MONO_VERSION = 11.1.0
+WINE_MONO_VERSION = 11.3.0
 WINE_MONO_SOURCE = wine-mono-$(WINE_MONO_VERSION)-x86.tar.xz
 WINE_MONO_SITE = \
     https://github.com/wine-mono/wine-mono/releases/download/wine-mono-$(WINE_MONO_VERSION)
 
 define WINE_MONO_INSTALL_TARGET_CMDS
     mkdir -p \
-	    $(TARGET_DIR)/usr/share/wine/wine-mono-$(WINE_MONO_VERSION)
+	    $(TARGET_DIR)/usr/share/wine/mono/wine-mono-$(WINE_MONO_VERSION)
 	rsync -a --exclude='.*' $(@D)/ \
-	    $(TARGET_DIR)/usr/share/wine/wine-mono-$(WINE_MONO_VERSION)
+	    $(TARGET_DIR)/usr/share/wine/mono/wine-mono-$(WINE_MONO_VERSION)
 endef
 
 $(eval $(generic-package))

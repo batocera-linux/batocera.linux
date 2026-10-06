@@ -8,9 +8,11 @@ HPHL/HPHR float -> MBHC reports a ground/mic swap. Add an mbhc_cb hook the
 codec uses (via a qcom,usbss phandle) to route the switch to audio on
 insert and back on removal, reusing the USBSS audio FSM path.
 ---
+diff --git a/drivers/usb/typec/mux/wcd939x-usbss.c b/drivers/usb/typec/mux/wcd939x-usbss.c
+index 73db3aa3c..195a8983c 100644
 --- a/drivers/usb/typec/mux/wcd939x-usbss.c
 +++ b/drivers/usb/typec/mux/wcd939x-usbss.c
-@@ -752,6 +752,36 @@
+@@ -752,6 +752,36 @@ static void wcd939x_usbss_remove(struct i2c_client *client)
  	typec_mux_put(usbss->codec);
  }
  
@@ -45,27 +47,13 @@ insert and back on removal, reusing the USBSS audio FSM path.
 +EXPORT_SYMBOL_GPL(wcd939x_usbss_audio_config);
 +
  static const struct i2c_device_id wcd939x_usbss_table[] = {
- 	{ "wcd9390-usbss" },
+ 	{ .name = "wcd9390-usbss" },
  	{ }
---- a/sound/soc/codecs/wcd-mbhc-v2.h
-+++ b/sound/soc/codecs/wcd-mbhc-v2.h
-@@ -265,6 +265,13 @@
- 	bool (*mbhc_get_moisture_status)(struct snd_soc_component *component);
- 	void (*mbhc_moisture_polling_ctrl)(struct snd_soc_component *component, bool enable);
- 	void (*mbhc_moisture_detect_en)(struct snd_soc_component *component, bool enable);
-+	/*
-+	 * Route an external analog switch (e.g. WCD939x USBSS) into/out of
-+	 * audio-accessory mode when an integrated jack is detected via the
-+	 * mechanical path.  Optional; only set on boards whose HP lines are
-+	 * wired through such a switch.
-+	 */
-+	void (*mbhc_ext_switch_ctrl)(struct snd_soc_component *component, bool enable);
- };
- 
- #if IS_ENABLED(CONFIG_SND_SOC_WCD_MBHC)
+diff --git a/sound/soc/codecs/wcd-mbhc-v2.c b/sound/soc/codecs/wcd-mbhc-v2.c
+index bb0c8478a..f98fc7b9e 100644
 --- a/sound/soc/codecs/wcd-mbhc-v2.c
 +++ b/sound/soc/codecs/wcd-mbhc-v2.c
-@@ -535,11 +535,21 @@
+@@ -535,11 +535,21 @@ static void mbhc_plug_detect_fn(struct work_struct *work)
  	if (detection_type) {
  		if (mbhc->current_plug != MBHC_PLUG_TYPE_NONE)
  			goto exit;
@@ -87,6 +75,26 @@ insert and back on removal, reusing the USBSS audio FSM path.
  		/* Disable HW FSM */
  		wcd_mbhc_write_field(mbhc, WCD_MBHC_FSM_EN, 0);
  		wcd_mbhc_write_field(mbhc, WCD_MBHC_BTN_ISRC_CTL, 0);
+diff --git a/sound/soc/codecs/wcd-mbhc-v2.h b/sound/soc/codecs/wcd-mbhc-v2.h
+index a5d52b964..f85b3d010 100644
+--- a/sound/soc/codecs/wcd-mbhc-v2.h
++++ b/sound/soc/codecs/wcd-mbhc-v2.h
+@@ -265,6 +265,13 @@ struct wcd_mbhc_cb {
+ 	bool (*mbhc_get_moisture_status)(struct snd_soc_component *component);
+ 	void (*mbhc_moisture_polling_ctrl)(struct snd_soc_component *component, bool enable);
+ 	void (*mbhc_moisture_detect_en)(struct snd_soc_component *component, bool enable);
++	/*
++	 * Route an external analog switch (e.g. WCD939x USBSS) into/out of
++	 * audio-accessory mode when an integrated jack is detected via the
++	 * mechanical path.  Optional; only set on boards whose HP lines are
++	 * wired through such a switch.
++	 */
++	void (*mbhc_ext_switch_ctrl)(struct snd_soc_component *component, bool enable);
+ };
+ 
+ #if IS_ENABLED(CONFIG_SND_SOC_WCD_MBHC)
+diff --git a/sound/soc/codecs/wcd939x.c b/sound/soc/codecs/wcd939x.c
+index 010d12466..1b6bfa2ce 100644
 --- a/sound/soc/codecs/wcd939x.c
 +++ b/sound/soc/codecs/wcd939x.c
 @@ -17,6 +17,7 @@
@@ -97,7 +105,7 @@ insert and back on removal, reusing the USBSS audio FSM path.
  #include <sound/jack.h>
  #include <sound/pcm.h>
  #include <sound/pcm_params.h>
-@@ -187,6 +188,8 @@
+@@ -187,6 +188,8 @@ struct wcd939x_priv {
  	unsigned long typec_mode;
  	struct typec_switch *typec_switch;
  #endif /* CONFIG_TYPEC */
@@ -106,7 +114,7 @@ insert and back on removal, reusing the USBSS audio FSM path.
  	/* mbhc module */
  	struct wcd_mbhc *wcd_mbhc;
  	struct wcd_mbhc_config mbhc_cfg;
-@@ -2411,8 +2414,27 @@
+@@ -2411,8 +2414,27 @@ static void wcd939x_mbhc_moisture_polling_ctrl(struct snd_soc_component *compone
  				      enable);
  }
  
@@ -134,7 +142,7 @@ insert and back on removal, reusing the USBSS audio FSM path.
  	.mbhc_bias = wcd939x_mbhc_mbhc_bias_control,
  	.set_btn_thr = wcd939x_mbhc_program_btn_thr,
  	.micbias_enable_status = wcd939x_mbhc_micb_en_status,
-@@ -3224,6 +3246,23 @@
+@@ -3219,6 +3241,23 @@ static int wcd939x_populate_dt_data(struct wcd939x_priv *wcd939x, struct device
  	}
  #endif /* CONFIG_TYPEC */
  

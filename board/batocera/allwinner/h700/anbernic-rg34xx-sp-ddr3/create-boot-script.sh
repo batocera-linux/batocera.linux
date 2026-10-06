@@ -27,4 +27,6 @@ cp "${BOARD_DIR}/boot/extlinux.conf"                    "${BATOCERA_BINARIES_DIR
 
 cp "${BINARIES_DIR}/sun50i-h700-anbernic-rg35xx-2024-ddr3.dtbo" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
+cp "${BINARIES_DIR}/anbernic_rg35xx_h700_lpddr3/u-boot-sunxi-with-spl.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+
 exit 0

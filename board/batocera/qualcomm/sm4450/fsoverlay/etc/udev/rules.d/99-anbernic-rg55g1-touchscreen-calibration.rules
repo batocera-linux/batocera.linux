@@ -1,0 +1,8 @@
+# Anbernic RG 55G1 touchscreen calibration.
+# The panel is portrait and the output runs rotated (display.rotate=3); the
+# touch axes follow the panel, so wlroots' touch transform for that rotation
+# comes out 180 degrees off. Invert both axes ahead of it (i2c1 / 984000).
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-984000.i2c", \
+  ENV{WL_OUTPUT}="DSI-1", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="-1 0 1 0 -1 1"

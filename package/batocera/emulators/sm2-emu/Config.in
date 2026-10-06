@@ -1,0 +1,23 @@
+config BR2_PACKAGE_SM2_EMU
+    bool "sm2-emu"
+    depends on BR2_INSTALL_LIBSTDCPP
+    depends on BR2_PACKAGE_HAS_UDEV
+    depends on BR2_PACKAGE_HAS_LIBGL || BR2_PACKAGE_HAS_LIBGLES
+    select BR2_PACKAGE_SDL3
+    select BR2_PACKAGE_PUGIXML
+    select BR2_PACKAGE_MINIZ
+    select BR2_PACKAGE_IMGUI
+    select BR2_PACKAGE_LIBCURL
+    select BR2_PACKAGE_LZMA_SDK
+    select BR2_PACKAGE_VULKAN_HEADERS         if BR2_PACKAGE_BATOCERA_VULKAN
+    select BR2_PACKAGE_VULKAN_LOADER          if BR2_PACKAGE_BATOCERA_VULKAN
+    select BR2_PACKAGE_VULKAN_VALIDATIONLAYERS if BR2_PACKAGE_BATOCERA_VULKAN
+    help
+      A Sega Model 2 arcade emulator with software, OpenGL and
+      optional Vulkan rendering backends.
+
+      https://github.com/dmanlfc/sm2-emu
+
+comment "sm2-emu needs udev /dev management, a toolchain w/ C++ and OpenGL or OpenGL ES"
+    depends on !BR2_INSTALL_LIBSTDCPP || !BR2_PACKAGE_HAS_UDEV || \
+        (!BR2_PACKAGE_HAS_LIBGL && !BR2_PACKAGE_HAS_LIBGLES)

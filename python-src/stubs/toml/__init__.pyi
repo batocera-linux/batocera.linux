@@ -1,0 +1,13 @@
+import os
+from _typeshed import SupportsRead, SupportsWrite
+from collections.abc import Mapping, Sequence
+from typing import Any
+
+def load(
+    f: str | os.PathLike[str] | Sequence[str | os.PathLike[str]] | SupportsRead[str],
+    _dict: type[dict[str, Any]] = ...,
+    decoder: Any = ...,
+) -> dict[str, Any]: ...
+def loads(s: str, _dict: type[dict[str, Any]] = ..., decoder: Any = ...) -> dict[str, Any]: ...
+def dump(o: Mapping[str, Any], f: SupportsWrite[str], encoder: Any = ...) -> str: ...
+def dumps(o: Mapping[str, Any], encoder: Any = ...) -> str: ...

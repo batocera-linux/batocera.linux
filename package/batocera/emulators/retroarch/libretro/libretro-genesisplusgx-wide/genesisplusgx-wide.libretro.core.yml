@@ -4,7 +4,23 @@ features:
 shared_features:
   - rewind
   - autosave
+file_extensions:
+  - md
+  - zip
+  - 7z
 systems:
-  - megadrive
-  - megadrive-msu
-  - pico
+  - name: megadrive
+    file_extensions:
+      add:
+        - bin
+        - gen
+        - sg
+        - smd
+  - name: megadrive-msu
+    file_extensions:
+      add:
+        - squashfs
+  - name: pico
+    file_extensions:
+      add:
+        - bin

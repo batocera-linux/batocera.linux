@@ -4,17 +4,18 @@ Gate the AW200xx VDD rail via an external regulator.
 Enable an optional "vdd" supply during probe.
 
 diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
+index b92158ac9..8533ffaf7 100644
 --- a/drivers/leds/leds-aw200xx.c
 +++ b/drivers/leds/leds-aw200xx.c
-@@ -17,5 +17,6 @@
+@@ -16,6 +16,7 @@
  #include <linux/module.h>
  #include <linux/mutex.h>
  #include <linux/regmap.h>
 +#include <linux/regulator/consumer.h>
  #include <linux/time.h>
  #include <linux/units.h>
-@@ -566,6 +566,11 @@
- 	chip->regmap = devm_regmap_init_i2c(client, &aw200xx_regmap_config);
+ 
+@@ -566,6 +567,11 @@ static int aw200xx_probe(struct i2c_client *client)
  	if (IS_ERR(chip->regmap))
  		return PTR_ERR(chip->regmap);
  
@@ -25,3 +26,4 @@ diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
 +
  	chip->hwen = devm_gpiod_get_optional(&client->dev, "enable",
  					     GPIOD_OUT_HIGH);
+ 	if (IS_ERR(chip->hwen))

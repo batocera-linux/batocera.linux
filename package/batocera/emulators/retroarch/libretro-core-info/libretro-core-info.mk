@@ -58,6 +58,7 @@ define LIBRETRO_CORE_INFO_INSTALL_TARGET_CMDS
 	touch $(TARGET_DIR)/usr/share/libretro/info/superflappybirds_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/zc210_libretro.info
 	touch $(TARGET_DIR)/usr/share/libretro/info/hatarib_libretro.info
+	touch $(TARGET_DIR)/usr/share/libretro/info/anybor_libretro.info
 
 endef
 

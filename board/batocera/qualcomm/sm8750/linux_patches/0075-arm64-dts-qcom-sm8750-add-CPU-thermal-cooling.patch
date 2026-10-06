@@ -10,73 +10,11 @@ polling-delay-passive of 250ms, and #cooling-cells on the CPU nodes.
 scmi-cpufreq carries CPUFREQ_IS_COOLING_DEV, so the cooling devices
 register automatically once the CPU nodes advertise #cooling-cells.
 ---
+diff --git a/arch/arm64/boot/dts/qcom/sm8750.dtsi b/arch/arm64/boot/dts/qcom/sm8750.dtsi
+index 4e16c765c..220e9b1de 100644
 --- a/arch/arm64/boot/dts/qcom/sm8750.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm8750.dtsi
-@@ -44,6 +44,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd0>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 
- 			l2_0: l2-cache {
- 				compatible = "cache";
-@@ -60,6 +61,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd1>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu2: cpu@200 {
-@@ -70,6 +72,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd2>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu3: cpu@300 {
-@@ -80,6 +83,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd3>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu4: cpu@400 {
-@@ -90,6 +94,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd4>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu5: cpu@500 {
-@@ -100,6 +105,7 @@
- 			next-level-cache = <&l2_0>;
- 			power-domains = <&cpu_pd5>, <&scmi_dvfs 0>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu6: cpu@10000 {
-@@ -110,6 +116,7 @@
- 			next-level-cache = <&l2_1>;
- 			power-domains = <&cpu_pd6>, <&scmi_dvfs 1>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 
- 			l2_1: l2-cache {
- 				compatible = "cache";
-@@ -126,6 +133,7 @@
- 			next-level-cache = <&l2_1>;
- 			power-domains = <&cpu_pd7>, <&scmi_dvfs 1>;
- 			power-domain-names = "psci", "perf";
-+			#cooling-cells = <2>;
- 		};
- 
- 		cpu-map {
-@@ -6242,10 +6250,46 @@
+@@ -6320,10 +6320,46 @@ aoss0-critical {
  		};
  
  		cpu-0-0-0-thermal {
@@ -124,7 +62,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6260,10 +6304,46 @@
+@@ -6338,10 +6374,46 @@ cpu-0-0-0-critical {
  		};
  
  		cpu-0-0-1-thermal {
@@ -172,7 +110,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6278,10 +6358,46 @@
+@@ -6356,10 +6428,46 @@ cpu-0-0-1-critical {
  		};
  
  		cpu-0-1-0-thermal {
@@ -220,7 +158,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6296,10 +6412,46 @@
+@@ -6374,10 +6482,46 @@ cpu-0-1-0-critical {
  		};
  
  		cpu-0-1-1-thermal {
@@ -268,7 +206,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6314,10 +6466,46 @@
+@@ -6392,10 +6536,46 @@ cpu-0-1-1-critical {
  		};
  
  		cpu-0-2-0-thermal {
@@ -316,7 +254,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6332,10 +6520,46 @@
+@@ -6410,10 +6590,46 @@ cpu-0-2-0-critical {
  		};
  
  		cpu-0-2-1-thermal {
@@ -364,7 +302,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6350,10 +6574,46 @@
+@@ -6428,10 +6644,46 @@ cpu-0-2-1-critical {
  		};
  
  		cpu-0-3-0-thermal {
@@ -412,7 +350,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6368,10 +6628,46 @@
+@@ -6446,10 +6698,46 @@ cpu-0-3-0-critical {
  		};
  
  		cpu-0-3-1-thermal {
@@ -460,7 +398,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6386,10 +6682,46 @@
+@@ -6464,10 +6752,46 @@ cpu-0-3-1-critical {
  		};
  
  		cpu-0-4-0-thermal {
@@ -508,7 +446,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6404,10 +6736,46 @@
+@@ -6482,10 +6806,46 @@ cpu-0-4-0-critical {
  		};
  
  		cpu-0-4-1-thermal {
@@ -556,7 +494,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6422,10 +6790,46 @@
+@@ -6500,10 +6860,46 @@ cpu-0-4-1-critical {
  		};
  
  		cpu-0-5-0-thermal {
@@ -604,7 +542,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6440,10 +6844,46 @@
+@@ -6518,10 +6914,46 @@ cpu-0-5-0-critical {
  		};
  
  		cpu-0-5-1-thermal {
@@ -652,7 +590,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6512,10 +6952,38 @@
+@@ -6590,10 +7022,38 @@ aoss1-critical {
  		};
  
  		cpu-1-0-0-thermal {
@@ -692,7 +630,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6530,10 +6998,38 @@
+@@ -6608,10 +7068,38 @@ cpu-1-0-0-critical {
  		};
  
  		cpu-1-0-1-thermal {
@@ -732,7 +670,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6548,10 +7044,38 @@
+@@ -6626,10 +7114,38 @@ cpu-1-0-1-critical {
  		};
  
  		cpu-1-1-0-thermal {
@@ -772,7 +710,7 @@ register automatically once the CPU nodes advertise #cooling-cells.
  					temperature = <120000>;
  					hysteresis = <5000>;
  					type = "hot";
-@@ -6566,10 +7090,38 @@
+@@ -6644,10 +7160,38 @@ cpu-1-1-0-critical {
  		};
  
  		cpu-1-1-1-thermal {

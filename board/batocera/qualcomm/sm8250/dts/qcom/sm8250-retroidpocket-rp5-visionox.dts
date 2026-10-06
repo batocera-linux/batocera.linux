@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: GPL-2.0
+
+/dts-v1/;
+
+#include "sm8250-retroidpocket-rp5.dts"
+
+/ {
+	model = "Retroid Pocket 5 Visionox";
+};
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "vtdr6130,rp5";
+		reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&i2c13 {
+	touchscreen@38 {
+		/delete-property/ touchscreen-inverted-x;
+	};
+};
+
+&vdda_panel {
+	/delete-property/ regulator-boot-on;
+};

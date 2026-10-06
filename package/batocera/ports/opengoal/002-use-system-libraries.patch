@@ -1,0 +1,69 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5e946ede..0c77a574 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -14,6 +14,8 @@ if(NOT CMAKE_BUILD_TYPE)
+     set(CMAKE_BUILD_TYPE "Release")
+ endif()
+ 
++option(USE_SYSTEM_LIBS "Link against system libraries instead of the bundled copies" OFF)
++
+ # Potentially statically build the project
+ option(STATICALLY_LINK "Build for release purposes (statically link everything)" OFF)
+ message(STATUS "Statically Link? ${STATICALLY_LINK}")
+@@ -247,12 +249,18 @@ else()
+     endif()
+     set(CURL_USE_OPENSSL ON)
+ endif()
++if(USE_SYSTEM_LIBS)
++    find_package(CURL REQUIRED)
++    add_library(libcurl INTERFACE)
++    target_link_libraries(libcurl INTERFACE CURL::libcurl)
++else()
+ include_directories(third-party/curl/include)
+ if(STATICALLY_LINK)
+     build_third_party_lib(curl libcurl_static)
+ else()
+     build_third_party_lib(curl libcurl_shared)
+ endif()
++endif()
+ 
+ # build repl library
+ build_third_party_lib(replxx replxx)
+@@ -262,7 +270,13 @@ add_definitions(-DHAVE_USLEEP=1)
+ add_definitions(-DSQLITE_THREADSAFE=1)
+ add_definitions(-DSQLITE_ENABLE_JSON1)
+ add_definitions(-DSQLITE_ENABLE_RTREE)
++if(USE_SYSTEM_LIBS)
++    find_package(SQLite3 REQUIRED)
++    add_library(sqlite3 INTERFACE)
++    target_link_libraries(sqlite3 INTERFACE SQLite::SQLite3)
++else()
+ build_third_party_lib(sqlite3 sqlite3)
++endif()
+ 
+ # build tree-sitter parser
+ include_directories(third-party/tree-sitter/tree-sitter/lib/include)
+@@ -292,16 +306,22 @@ build_third_party_lib(libco libco)
+ build_third_party_lib(zstd libzstd_static)
+ 
+ # build SDL
++if(USE_SYSTEM_LIBS)
++    find_package(SDL3 REQUIRED CONFIG)
++else()
+ include(SDLOptions)
+ if(STATICALLY_LINK)
+     build_third_party_lib(SDL SDL3-static)
+ else()
+     build_third_party_lib(SDL SDL3-shared)
+ endif()
++endif()
+ 
+ # build imgui
+ include_directories(third-party/glad/include)
++if(NOT USE_SYSTEM_LIBS)
+ include_directories(third-party/SDL/include)
++endif()
+ build_third_party_lib(imgui imgui)
+ 
+ # build the game code in C++

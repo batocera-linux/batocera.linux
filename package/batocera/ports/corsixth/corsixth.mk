@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CORSIXTH_VERSION = v0.70.0
+CORSIXTH_VERSION = v0.70.1
 CORSIXTH_SITE = $(call github,CorsixTH,CorsixTH,$(CORSIXTH_VERSION))
 CORSIXTH_DEPENDENCIES =  lua luafilesystem luasec lpeg luasocket libcurl
 CORSIXTH_DEPENDENCIES += sdl2 sdl2_image sdl2_mixer ffmpeg rtmidi

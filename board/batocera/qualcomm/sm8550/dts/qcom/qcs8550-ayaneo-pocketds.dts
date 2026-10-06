@@ -54,10 +54,35 @@
 		enable-active-high;
 	};
 
+	/* batocera - hall lid sensor on eGPIO 166, which Android reads through the sensor hub */
+	gpio-keys-lid {
+		compatible = "gpio-keys";
+		pinctrl-0 = <&hall_lid_default>;
+		pinctrl-names = "default";
+
+		hall-lid-sensor {
+			label = "Hall Lid Sensor";
+			gpios = <&tlmm 166 GPIO_ACTIVE_LOW>;
+			linux,input-type = <EV_SW>;
+			linux,code = <SW_LID>;
+			debounce-interval = <100>;
+			linux,can-disable;
+			wakeup-source;
+		};
+	};
+
 };
 
 &tlmm {
 	gpio-reserved-ranges = <32 4>;
+
+	/* batocera - hall lid sensor, push-pull output */
+	hall_lid_default: hall-lid-default-state {
+		pins = "gpio166";
+		function = "gpio";
+		bias-disable;
+	};
+
     panel_pwr_active: panel-pwr-active-state {
         pins = "gpio152", "gpio153";
         function = "gpio";
@@ -131,15 +156,31 @@
 	status = "okay";
 
 	/* Screen power */
-	sgm3804: regulator@3e {
+	regulator@3e {
 		compatible = "sgmicro,sgm3804";
 		reg = <0x3e>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&panel_pwr_active>;
-		regulator-name = "panel-avdd";
-		regulator-min-microvolt = <5000000>;
-		regulator-max-microvolt = <5000000>;
-		reset-gpios = <&tlmm 152 GPIO_ACTIVE_HIGH>, <&tlmm 153 GPIO_ACTIVE_HIGH>;
+
+		vin-supply = <&vph_pwr>;
+
+		sgm3804_pos: pos {
+			regulator-name = "panel-avdd";
+			regulator-min-microvolt = <5200000>;
+			regulator-max-microvolt = <5200000>;
+			regulator-active-discharge = <1>;
+			regulator-boot-on;
+			enable-gpios = <&tlmm 152 GPIO_ACTIVE_HIGH>;
+		};
+
+		sgm3804_neg: neg {
+			regulator-name = "panel-avee";
+			regulator-min-microvolt = <5200000>;
+			regulator-max-microvolt = <5200000>;
+			regulator-active-discharge = <1>;
+			regulator-boot-on;
+			enable-gpios = <&tlmm 153 GPIO_ACTIVE_HIGH>;
+		};
 	};
 
 	/* Backlight */
@@ -239,7 +280,8 @@
 		pinctrl-0 = <&sde_dsi1_active>;
 		pinctrl-1 = <&sde_dsi1_suspend>;
 		pinctrl-names = "default", "sleep";
-		vcc-supply = <&sgm3804>;
+		vcc-supply = <&sgm3804_pos>;
+		avee-supply = <&sgm3804_neg>;
 		iovcc-supply = <&vreg_panel1_iovcc>;
 		reset-gpios = <&tca6408 2 GPIO_ACTIVE_LOW>;
 		rotation = <270>;
@@ -261,4 +303,9 @@
 &mdss_dsi1_phy {
 	vdds-supply = <&vreg_l1e_0p88>;
 	status = "okay";
+};
+
+/* batocera - L0s on the WiFi link floods correctable AER errors */
+&pcie0 {
+	aspm-no-l0s;
 };

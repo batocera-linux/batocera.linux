@@ -1,0 +1,24 @@
+From: Philippe Simons <philippe.simons@movify.com>
+Subject: [PATCH] arm64: dts: qcom: pm8150l: add LCDB node
+
+PM8150L has an LCDB block at 0xec00 that biases an LCD panel. Add it
+alongside the other pmic@5 children, disabled by default, so boards that
+use it can enable it and describe their rail constraints.
+
+---
+--- a/arch/arm64/boot/dts/qcom/pm8150l.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm8150l.dtsi
+@@ -121,6 +121,13 @@
+ 			status = "disabled";
+ 		};
+ 
++		pm8150l_lcdb: lcdb@ec00 {
++			compatible = "qcom,pm8150l-lcdb";
++			reg = <0xec00>;
++
++			status = "disabled";
++		};
++
+ 		pm8150l_lpg: pwm {
+ 			compatible = "qcom,pm8150l-lpg";
+ 

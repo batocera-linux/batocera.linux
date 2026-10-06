@@ -2,6 +2,7 @@ cores:
   pcsx2x6:
     shared_features:
       - powermode
+      - cpucluster
       - tdp
       - videomode
       - bezel
@@ -289,5 +290,7 @@ cores:
         choices:
           "Off": 0
           "On": 1
+file_extensions:
+  - acgame
 systems:
-  - name: namco2x6
+  - namco2x6

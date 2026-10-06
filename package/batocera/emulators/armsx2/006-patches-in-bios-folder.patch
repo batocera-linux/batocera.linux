@@ -1,0 +1,11 @@
+--- a/pcsx2/Patch.cpp	2023-10-01 12:11:29.837825347 +0200
++++ b/pcsx2/Patch.cpp	2023-10-01 12:11:48.690284822 +0200
+@@ -288,7 +288,7 @@
+ 	if (s_patches_zip)
+ 		return true;
+ 
+-	const std::string filename = Path::Combine(EmuFolders::Resources, PATCHES_ZIP_NAME);
++	const std::string filename = Path::Combine(EmuFolders::Bios, PATCHES_ZIP_NAME);
+ 
+ 	zip_error ze = {};
+ 	zip_source_t* zs = zip_source_file_create(filename.c_str(), 0, 0, &ze);

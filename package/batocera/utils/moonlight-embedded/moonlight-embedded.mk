@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-MOONLIGHT_EMBEDDED_VERSION = a6bf7154a743d4f74a1b377e730f188352a1b80c
+# Version: Commits on Jun 5, 2026
+MOONLIGHT_EMBEDDED_VERSION = f32e415aea6797d261d6b470dcf8bf18727341c2
 MOONLIGHT_EMBEDDED_SITE = https://github.com/moonlight-stream/moonlight-embedded.git
 MOONLIGHT_EMBEDDED_SITE_METHOD = git
 MOONLIGHT_EMBEDDED_GIT_SUBMODULES=y
@@ -22,10 +23,6 @@ endif
 
 ifeq ($(BR2_PACKAGE_LIBVA_INTEL_DRIVER),y)
     MOONLIGHT_EMBEDDED_DEPENDENCIES += libva-intel-driver intel-mediadriver
-endif
-
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-    MOONLIGHT_EMBEDDED_DEPENDENCIES += rpi-userland
 endif
 
 ifneq ($(BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_4_4),y)

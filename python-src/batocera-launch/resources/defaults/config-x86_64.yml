@@ -1,0 +1,153 @@
+default:
+  emulator:
+  core:
+  options:
+    hud_support: true
+    video_frame_delay_auto: true
+
+pcengine:
+  emulator: libretro
+  core:     pce
+pcenginecd:
+  emulator: libretro
+  core:     pce
+saturn:
+  emulator: libretro
+  core:     beetle-saturn
+n64:
+  options:
+    videomode: max-1920x1080
+n64dd:
+  options:
+    videomode: max-1920x1080
+sgb:
+  emulator: libretro
+  core:     mesen-s
+lcdgames:
+  emulator: mame
+  core:     mame
+cdi:
+  emulator: mame
+  core:     mame
+advision:
+  emulator: mame
+  core:     mame
+tvgames:
+  emulator: mame
+  core:     mame
+megaduck:
+  emulator: mame
+  core:     mame
+pdp1:
+  emulator: mame
+  core:     mame
+pv1000:
+  emulator: mame
+  core:     mame
+gamate:
+  emulator: mame
+  core:     mame
+crvision:
+  emulator: mame
+  core:     mame
+gamecom:
+  emulator: mame
+  core:     mame
+fm7:
+  emulator: mame
+  core:     mame
+gamepock:
+  emulator: mame
+  core:     mame
+apfm1000:
+  emulator: mame
+  core:     mame
+bbcmicro:
+  emulator: mame
+  core:     mame
+adam:
+  emulator: mame
+  core:     mame
+arcadia:
+  emulator: libretro
+  core:     mame
+  options:
+    sharemameart: 0
+gmaster:
+  emulator: mame
+  core:     mame
+astrocade:
+  emulator: mame
+  core:     mame
+ti99:
+  emulator: mame
+  core:     mame
+tutor:
+  emulator: mame
+  core:     mame
+coco:
+  emulator: mame
+  core:     mame
+macintosh:
+  emulator: mame
+  core:     mame
+archimedes:
+  emulator: mame
+  core:     mame
+socrates:
+  emulator: mame
+  core:     mame
+supracan:
+  emulator: mame
+  core:     mame
+vsmile:
+  emulator: mame
+  core:     mame
+xegs:
+  emulator: mame
+  core:     mame
+atom:
+  emulator: mame
+  core:     mame
+electron:
+  emulator: mame
+  core:     mame
+enterprise:
+  emulator: clk
+  core:     clk
+camplynx:
+  emulator: mame
+  core:     mame
+vgmplay:
+  emulator: mame
+  core:     mame
+vc4000:
+  emulator: mame
+  core:     mame
+gp32:
+  emulator: libretro
+  core:     gp32emu
+laser310:
+  emulator: mame
+  core:     mame
+psvita:
+  options:
+    hud_support: false
+jaguar:
+  emulator: bigpemu
+  core:     bigpemu
+jaguarcd:
+  emulator: bigpemu
+  core:     bigpemu
+chihiro:
+  emulator: xemu-chihiro
+  core:     xemu-chihiro
+spectravideo:
+  emulator: openmsx
+  core:     openmsx
+quake3:
+  emulator: vkquake3
+  core:     vkquake3
+oricatmos:
+  emulator: clk
+  core:     clk

@@ -76,6 +76,7 @@ index 000000000000..67151480f1aa
 +
 +static const struct regulator_bulk_data panel_supplies[] = {
 +	{ .supply = "avdd" },
++	{ .supply = "avee" },
 +	{ .supply = "vci" },
 +	{ .supply = "vddio" },
 +};
@@ -616,9 +617,10 @@ index 000000000000..67151480f1aa
 +	struct ar02_3inch *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct ar02_3inch, panel,
++				   &ar02_3inch_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
 +		panel_supplies, &ctx->supplies);
@@ -646,8 +648,6 @@ index 000000000000..67151480f1aa
 +		return ret;
 +	}
 +
-+	drm_panel_init(&ctx->panel, dev, &ar02_3inch_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +	ctx->panel.prepare_prev_first = true;
 +
 +	ctx->panel.backlight = ar02_3inch_create_backlight(dsi);

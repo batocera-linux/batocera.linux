@@ -1,0 +1,114 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kailash <kailash.sudhakar@gmail.com>
+Date: Sun, 21 Sep 2026 19:40:00 +0530
+Subject: [PATCH] sunxi: add AXP717 charge-only boot support
+
+When USB power is plugged into an AXP717-managed device while powered off,
+the PMIC powers on the system by default. With CONFIG_AXP_DISABLE_BOOT_ON_POWERON
+enabled, detect USB-only power-on with valid VBUS and present battery, and
+shut down back to the off-state charging mode while preserving button
+power-on events.
+---
+ arch/arm/mach-sunxi/Kconfig |  5 ++++-
+ board/sunxi/board.c         | 19 +++++++++++++++++++
+ include/axp717.h            | 19 +++++++++++++++++++
+ include/axp_pmic.h          |  1 +
+ 4 files changed, 43 insertions(+), 1 deletion(-)
+ create mode 100644 include/axp717.h
+
+diff --git a/arch/arm/mach-sunxi/Kconfig b/arch/arm/mach-sunxi/Kconfig
+index e979ee4a..f7576546 100644
+--- a/arch/arm/mach-sunxi/Kconfig
++++ b/arch/arm/mach-sunxi/Kconfig
+@@ -954,12 +954,15 @@ config AXP_GPIO
+ 
+ config AXP_DISABLE_BOOT_ON_POWERON
+ 	bool "Disable device boot on power plug-in"
+-	depends on AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER
++	depends on AXP209_POWER || AXP221_POWER || AXP809_POWER || AXP818_POWER || AXP717_POWER
+ 	---help---
+ 	  Say Y here to prevent the device from booting up because of a plug-in
+ 	  event. When set, the device will boot into the SPL briefly to
+ 	  determine why it was powered on, and if it was determined because of
+ 	  a plug-in event instead of a button press event it will shut back off.
++	  On AXP717, this requires a USB-only power-on cause, valid VBUS, a
++	  present battery, and the charger enabled with boost disabled. The
++	  charger settings are preserved; button starts are allowed.
+ 
+ config VIDEO_SUNXI
+ 	bool "Enable graphical uboot console on HDMI, LCD or VGA"
+diff --git a/board/sunxi/board.c b/board/sunxi/board.c
+index 2929bc17..2669de68 100644
+--- a/board/sunxi/board.c
++++ b/board/sunxi/board.c
+@@ -573,6 +573,24 @@ void sunxi_board_init(void)
+ 	power_failed = axp_init();
+ 
+ 	if (IS_ENABLED(CONFIG_AXP_DISABLE_BOOT_ON_POWERON) && !power_failed) {
++#if defined(CONFIG_AXP717_POWER)
++		u8 cause, status, modules;
++
++		if (sunxi_get_boot_device() != BOOT_DEVICE_BOARD &&
++		    !pmic_bus_read(AXP717_POWERON_STATUS, &cause) &&
++		    !pmic_bus_read(AXP717_PMU_STATUS1, &status) &&
++		    !pmic_bus_read(AXP717_MODULE_ENABLE2, &modules)) {
++			if (cause == AXP717_POWERON_VBUS &&
++			    (status & (AXP717_STATUS_VBUS_GOOD | AXP717_STATUS_BAT_PRESENT)) ==
++			    (AXP717_STATUS_VBUS_GOOD | AXP717_STATUS_BAT_PRESENT) &&
++			    (modules & AXP717_CHARGER_ENABLE) &&
++			    !(modules & AXP717_BOOST_ENABLE)) {
++				printf("Power on by plug-in, shutting down.\n");
++				pmic_bus_setbits(AXP717_SHUTDOWN, AXP717_SHUTDOWN_POWEROFF);
++				mdelay(500);
++			}
++		}
++#else
+ 		u8 boot_reason;
+ 
+ 		pmic_bus_read(AXP_POWER_STATUS, &boot_reason);
+@@ -580,6 +598,7 @@ void sunxi_board_init(void)
+ 			printf("Power on by plug-in, shutting down.\n");
+ 			pmic_bus_write(0x32, BIT(7));
+ 		}
++#endif
+ 	}
+ 
+ #ifdef CONFIG_AXP_DCDC1_VOLT
+diff --git a/include/axp717.h b/include/axp717.h
+new file mode 100644
+index 00000000..d43f79a8
+--- /dev/null
++++ b/include/axp717.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++#ifndef _AXP717_H_
++#define _AXP717_H_
++
++#include <linux/bitops.h>
++
++#define AXP717_PMU_STATUS1		0x00
++#define AXP717_MODULE_ENABLE2		0x19
++#define AXP717_POWERON_STATUS		0x20
++#define AXP717_SHUTDOWN			0x27
++
++#define AXP717_STATUS_VBUS_GOOD		BIT(5)
++#define AXP717_STATUS_BAT_PRESENT	BIT(3)
++#define AXP717_CHARGER_ENABLE		BIT(1)
++#define AXP717_BOOST_ENABLE		BIT(4)
++#define AXP717_POWERON_VBUS		BIT(2)
++#define AXP717_SHUTDOWN_POWEROFF	BIT(0)
++
++#endif
+diff --git a/include/axp_pmic.h b/include/axp_pmic.h
+index 1806a727..71c0ce82 100644
+--- a/include/axp_pmic.h
++++ b/include/axp_pmic.h
+@@ -13,6 +13,7 @@
+ #include <axp209.h>
+ #include <axp221.h>
+ #include <axp305.h>
++#include <axp717.h>
+ #include <axp809.h>
+ #include <axp818.h>
+ 
+-- 

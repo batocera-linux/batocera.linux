@@ -42,15 +42,14 @@ index 4b64459f88b5..339a5cb9f31b 100644
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
 +obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
+ obj-$(CONFIG_DRM_PANEL_CHIPWEALTH_CH13726A) += panel-chipwealth-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
  obj-$(CONFIG_DRM_PANEL_LVDS) += panel-lvds.o
- obj-$(CONFIG_DRM_PANEL_SIMPLE) += panel-simple.o
 diff --git a/drivers/gpu/drm/panel/panel-chipone-icna35xx.c b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
 new file mode 100644
-index 000000000000..fe4742678c00
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
-@@ -0,0 +1,572 @@
+@@ -0,0 +1,573 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Chipone ICNA35XX Driver IC panels driver
@@ -537,8 +536,8 @@ index 000000000000..fe4742678c00
 +	struct device *dev = &dsi->dev;
 +	const struct backlight_properties props = {
 +		.type = BACKLIGHT_RAW,
-+		.brightness = 4096,
-+		.max_brightness = 4096,
++		.brightness = 3413,
++		.max_brightness = 3413,
 +	};
 +
 +	return devm_backlight_device_register(dev, dev_name(dev), dev, dsi,
@@ -551,9 +550,11 @@ index 000000000000..fe4742678c00
 +	struct panel_info *pinfo;
 +	int ret;
 +
-+	pinfo = devm_kzalloc(dev, sizeof(*pinfo), GFP_KERNEL);
-+	if (!pinfo)
-+		return -ENOMEM;
++	pinfo = devm_drm_panel_alloc(dev, __typeof(*pinfo), panel,
++				     &icna35xx_panel_funcs,
++				     DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(pinfo))
++		return PTR_ERR(pinfo);
 +
 +	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
 +	panel_supplies, &pinfo->supplies);
@@ -571,7 +572,6 @@ index 000000000000..fe4742678c00
 +
 +	pinfo->dsi = dsi;
 +	mipi_dsi_set_drvdata(dsi, pinfo);
-+	drm_panel_init(&pinfo->panel, dev, &icna35xx_panel_funcs, DRM_MODE_CONNECTOR_DSI);
 +
 +	ret = of_drm_get_panel_orientation(dev->of_node, &pinfo->orientation);
 +	if (ret < 0) {
@@ -624,5 +624,3 @@ index 000000000000..fe4742678c00
 +MODULE_DESCRIPTION("DRM driver for Chipone ICNA35XX based MIPI DSI panels");
 +MODULE_LICENSE("GPL");
 \ No newline at end of file
--- 
-2.34.1

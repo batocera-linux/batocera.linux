@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 1d99a9410b4e..456b1f643d80 100644
+index b34cc48ed..cb166b40b 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -1215,6 +1215,15 @@ config DRM_PANEL_VISIONOX_VTDR6130
+@@ -1391,6 +1391,15 @@ config DRM_PANEL_VISIONOX_VTDR6130
  	  Say Y here if you want to enable support for Visionox
  	  VTDR6130 1080x2400 AMOLED DSI panel.
  
@@ -19,20 +19,20 @@ index 1d99a9410b4e..456b1f643d80 100644
  	tristate "Widechips WS2401 DPI panel driver"
  	depends on SPI && GPIOLIB
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 2421cdcfe7d5..34ac0cc04245 100644
+index 64ff51eaa..49ee3a3de 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -119,6 +119,7 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_G2647FB105) += panel-visionox-g2647fb105.o
+@@ -134,6 +134,7 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_G2647FB105) += panel-visionox-g2647fb105.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM69299) += panel-visionox-rm69299.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM692E5) += panel-visionox-rm692e5.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_VTDR6130) += panel-visionox-vtdr6130.o
 +obj-$(CONFIG_DRM_PANEL_VISIONOX_VTDR6130_COG) += panel-visionox-vtdr6130-cog.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_R66451) += panel-visionox-r66451.o
  obj-$(CONFIG_DRM_PANEL_WIDECHIPS_WS2401) += panel-widechips-ws2401.o
- obj-$(CONFIG_DRM_PANEL_XINPENG_XPP055C272) += panel-xinpeng-xpp055c272.o
+ obj-$(CONFIG_DRM_PANEL_AYANEO_WT0600_2K) += panel-wt0600-2k.o
 diff --git a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
 new file mode 100644
-index 000000000000..010a19ea477c
+index 000000000..e9766aba3
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
 @@ -0,0 +1,500 @@
@@ -465,9 +465,10 @@ index 000000000000..010a19ea477c
 +	struct panel_info *pinfo;
 +	int ret;
 +
-+	pinfo = devm_kzalloc(dev, sizeof(*pinfo), GFP_KERNEL);
-+	if (!pinfo)
-+		return -ENOMEM;
++	pinfo = devm_drm_panel_alloc(dev, struct panel_info, panel,
++				   &vtdr6130_panel_funcs, DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(pinfo))
++		return PTR_ERR(pinfo);
 +
 +	ret = devm_regulator_bulk_get_const(dev, ARRAY_SIZE(panel_supplies),
 +	panel_supplies, &pinfo->supplies);
@@ -485,7 +486,6 @@ index 000000000000..010a19ea477c
 +
 +	pinfo->dsi = dsi;
 +	mipi_dsi_set_drvdata(dsi, pinfo);
-+	drm_panel_init(&pinfo->panel, dev, &vtdr6130_panel_funcs, DRM_MODE_CONNECTOR_DSI);
 +
 +	ret = of_drm_get_panel_orientation(dev->of_node, &pinfo->orientation);
 +	if (ret < 0) {

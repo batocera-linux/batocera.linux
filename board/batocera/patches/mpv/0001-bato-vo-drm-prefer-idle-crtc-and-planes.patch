@@ -1,0 +1,73 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] vo/drm: prefer an idle CRTC and planes for a connector
+
+A connector with no current encoder took the first CRTC and primary plane
+its encoder allows, even when another connector was scanning them out,
+so the modeset failed.
+
+---
+--- a/video/out/drm_common.c
++++ b/video/out/drm_common.c
+@@ -584,7 +584,9 @@
+         drmModeFreeEncoder(encoder);
+     }
+ 
+-    // Otherwise pick first legal encoder and CRTC combo for the connector
++    // Otherwise pick first legal encoder and CRTC combo for the connector,
++    // preferring a CRTC that is not already driving another connector
++    for (int pass = 0; pass < 2; ++pass)
+     for (unsigned int i = 0; i < drm->connector->count_encoders; ++i) {
+         drmModeEncoder *encoder
+             = drmModeGetEncoder(drm->fd, drm->connector->encoders[i]);
+@@ -600,6 +602,14 @@
+             if (!(encoder->possible_crtcs & (1 << j)))
+                 continue;
+ 
++            if (pass == 0) {
++                drmModeCrtc *crtc = drmModeGetCrtc(drm->fd, res->crtcs[j]);
++                bool busy = crtc && crtc->mode_valid;
++                drmModeFreeCrtc(crtc);
++                if (busy)
++                    continue;
++            }
++
+             drm->encoder = encoder;
+             drm->crtc_id = res->crtcs[j];
+             goto success;
+--- a/video/out/drm_atomic.c
++++ b/video/out/drm_atomic.c
+@@ -154,6 +154,7 @@
+     int layercount = -1;
+     int primary_id = 0;
+     int overlay_id = 0;
++    bool primary_busy = false, overlay_busy = false;
+ 
+     uint64_t value;
+ 
+@@ -206,6 +207,7 @@
+         drmModePlane *drmplane = drmModeGetPlane(ctx->fd, plane_res->planes[j]);
+         const uint32_t possible_crtcs = drmplane->possible_crtcs;
+         const uint32_t plane_id = drmplane->plane_id;
++        const bool other_crtc = drmplane->crtc_id && drmplane->crtc_id != (uint32_t)crtc_id;
+         drmModeFreePlane(drmplane);
+         drmplane = NULL;
+ 
+@@ -226,11 +228,16 @@
+             if (value != DRM_PLANE_TYPE_CURSOR) { // Skip cursor planes
+                 layercount++;
+ 
+-                if ((!primary_id) && (value == DRM_PLANE_TYPE_PRIMARY))
++                // Skip planes another CRTC is scanning out, unless there is no other
++                if (value == DRM_PLANE_TYPE_PRIMARY && (!primary_id || (primary_busy && !other_crtc))) {
+                     primary_id = plane_id;
++                    primary_busy = other_crtc;
++                }
+ 
+-                if ((!overlay_id) && (value == DRM_PLANE_TYPE_OVERLAY))
++                if (value == DRM_PLANE_TYPE_OVERLAY && (!overlay_id || (overlay_busy && !other_crtc))) {
+                     overlay_id = plane_id;
++                    overlay_busy = other_crtc;
++                }
+ 
+                 if (layercount == draw_plane_idx) {
+                     ctx->draw_plane = plane;

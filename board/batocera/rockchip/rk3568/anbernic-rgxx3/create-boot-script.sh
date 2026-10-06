@@ -33,5 +33,7 @@ cp "${BINARIES_DIR}/rk3566-anbernic-rg-arc-s.dtb"  "${BATOCERA_BINARIES_DIR}/boo
 cp "${BINARIES_DIR}/rk3566-powkiddy-rgb30.dtb"     "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 cp "${BINARIES_DIR}/rk3566-powkiddy-rk2023.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 cp "${BINARIES_DIR}/rk3566-powkiddy-rgb10max3.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/rk3566-powkiddy-rgb20-pro.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+cp "${BINARIES_DIR}/rk3566-powkiddy-rgb20sx.dtb"   "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0

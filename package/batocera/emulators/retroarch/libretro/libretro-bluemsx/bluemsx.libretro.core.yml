@@ -18,19 +18,45 @@ custom_features:
     choices:
       'Off': false
       'On': true
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - colecovision
+  - name: colecovision
+    file_extensions:
+      add:
+        - bin
+        - col
+        - rom
   - name: msx1
-    exclude_extensions:
-      - ogv
-      - openmsx
+    file_extensions: &msx1
+      add:
+        - dsk
+        - mx1
+        - rom
+        - cas
+        - m3u
   - name: msx2
-    exclude_extensions:
-      - openmsx
+    file_extensions:
+      values: *msx1
+      remove:
+        - mx1
+      add:
+        - mx2
+        - ogv
   - name: msx2+
-    exclude_extensions:
-      - openmsx
+    file_extensions: &msx2plus
+      values: *msx1
+      remove:
+        - mx1
+      add:
+        - mx2
   - name: msxturbor
-    exclude_extensions:
-      - openmsx
-  - spectravideo
+    file_extensions:
+      values: *msx2plus
+      remove:
+        - cas
+  - name: spectravideo
+    file_extensions:
+      add:
+        - cas

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# flatpak only lists what runs in the runtime dir ES launched it with, hotkeygen has none
+export XDG_RUNTIME_DIR=/var/run
+
+steam_id="com.valvesoftware.Steam"
+
+steam_running() {
+    flatpak ps --columns=application | grep -qx "$steam_id"
+}
+
+hotkeygen --send close
+
+# Steam left running without a window can't take Alt+F4, so shut it down and kill it if it hangs.
+for i in $(seq 12); do
+    steam_running || exit 0
+    if [ "$i" = 4 ]; then
+        DISPLAY=$(getLocalXDisplay) flatpak run "$steam_id" -shutdown &
+    fi
+    sleep 0.5
+done
+flatpak kill "$steam_id"

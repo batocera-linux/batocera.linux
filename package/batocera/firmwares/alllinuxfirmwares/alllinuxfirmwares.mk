@@ -31,6 +31,19 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
         $(@D)/nxp $(@D)/powervr $(@D)/qcom $(@D)/rockchip $(@D)/s5p-* \
         $(@D)/starfive $(@D)/sun $(@D)/sunxi $(@D)/sxg $(@D)/ti-keystone \
         $(@D)/v3d $(@D)/vc4 $(@D)/vicam
+    # SoC wifi, cameras, NPU, server NICs and Instinct GPUs
+    ALLLINUXFIRMWARES_REMOVE_DIRS += \
+        $(@D)/ath10k/QCA4019 $(@D)/ath10k/WCN3990 $(@D)/ath11k/IPQ* \
+        $(@D)/ath11k/WCN6750 $(@D)/ath12k/IPQ* $(@D)/mediatek/mt798* \
+        $(@D)/ti-connectivity $(@D)/intel/ice $(@D)/intel/ipu \
+        $(@D)/intel/qat $(@D)/intel/vpu $(@D)/intel/vsc \
+        $(@D)/amdgpu/aldebaran_* $(@D)/amdgpu/arcturus_* \
+        $(@D)/amdgpu/gc_9_4_[34]_* $(@D)/amdgpu/gc_9_5_0_* \
+        $(@D)/amdgpu/psp_13_0_6_* $(@D)/amdgpu/psp_13_0_1[24]_* \
+        $(@D)/amdgpu/sdma_4_4_[245].bin $(@D)/amdgpu/vcn_4_0_3.bin \
+        $(@D)/amdgpu/vcn_5_0_1.bin
+    # nouveau only falls back to 535 when 570 is missing
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/nvidia/*/gsp/*-535.113.01.bin
 endif
 
 # This removes strictly ARM/RISC-V SoC components while preserving all Wi-Fi/BT.
@@ -44,7 +57,7 @@ ifeq ($(BR2_arm)$(BR2_aarch64),y)
         $(@D)/dsp56k $(@D)/matrox $(@D)/yamaha
     
     # Prune other ARM SoC vendors if building a specific ARM target
-    ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
+    ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3562)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)$(BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY),y)
          ALLLINUXFIRMWARES_REMOVE_DIRS += \
             $(@D)/rockchip $(@D)/amlogic $(@D)/meson $(@D)/sunxi \
             $(@D)/nxp $(@D)/imx $(@D)/starfive $(@D)/powervr \
@@ -57,9 +70,14 @@ ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI)$(BR2_PACKAGE_EXTRALINUXFIRMWARES
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/brcm
 endif
 
+# the rpi package ships these too, keep its newer firmware and matching clm_blob
+ifeq ($(BR2_PACKAGE_BRCMFMAC_SDIO_FIRMWARE_RPI),y)
+    ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/cypress/cyfmac43430-sdio.* $(@D)/cypress/cyfmac43455-sdio.*
+endif
+
 # Remove snadragon SoC folder if not a Qualcomm board
 # Preserves ath10k/11k/12k wifi separately
-ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_SDM845)$(BR2_PACKAGE_BATOCERA_TARGET_QCS6490)$(BR2_PACKAGE_BATOCERA_TARGET_SM6115)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)$(BR2_PACKAGE_BATOCERA_TARGET_SM8550)$(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
+ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_QUALCOMM_ANY),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/qcom
 endif
 
@@ -79,9 +97,19 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # Exclude defined directories
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
 
-    # RK3588 specific: Keep only Bluetooth 'ibt-*' from the Intel folder
-    if [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588" = "y" ] || [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO" = "y" ] || [ "$BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE" = "y" ]; then \
-        find $(@D)/intel -type f ! -name 'ibt-*' -delete; \
+    # RK3588 specific: Keep only Bluetooth 'ibt-*' and iwlwifi from the Intel folder
+    if [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)" = "y" ] || [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)" = "y" ] || [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)" = "y" ]; then \
+        find $(@D)/intel -type f ! -name 'ibt-*' ! -path '*/iwlwifi/*' -delete; \
+    fi
+
+    # iwlwifi loads only the newest API it supports, keep one spare for a lagging kernel
+    if [ "$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)" = "y" ]; then \
+        cd $(@D)/intel/iwlwifi && \
+        for f in *.ucode; do \
+            v=$${f##*-}; v=$${v%.ucode}; \
+            case $$v in c*) v=$$((100000 + $${v#c})) ;; esac; \
+            echo "$${f%-*} $$v $$f"; \
+        done | sort -k1,1 -k2,2nr | awk 'n[$$1]++ >= 2 { print $$3 }' | xargs -r rm -f; \
     fi
 
     # -n is mandatory while some other packages provides firmwares too

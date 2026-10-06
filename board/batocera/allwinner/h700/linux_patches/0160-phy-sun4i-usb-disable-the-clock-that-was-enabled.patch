@@ -1,0 +1,24 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] phy: sun4i-usb: disable the clock that was enabled for PHY2
+
+sun4i_usb_phy_init() enables phy2->clk2 to reach PHY2's REG_HCI_PHY_CTL,
+then disables phy->clk2 instead of phy2->clk2. The clock just enabled
+keeps a reference for the life of the PHY, and the one belonging to the
+PHY being initialised is disabled while still in use. On H700 that is
+the USB PHY left running across suspend. Xu Rao posted the same fix
+to linux-arm-kernel in July 2026; take it until it lands.
+
+Link: https://lists.infradead.org/pipermail/linux-arm-kernel/2026-July/1145685.html
+Reported-by: kailashrs <6493816+kailashrs@users.noreply.github.com>
+---
+--- a/drivers/phy/allwinner/phy-sun4i-usb.c
++++ b/drivers/phy/allwinner/phy-sun4i-usb.c
+@@ -318,7 +318,7 @@
+ 			writel(val, phy2->pmu + REG_HCI_PHY_CTL);
+ 		}
+ 
+-		clk_disable_unprepare(phy->clk2);
++		clk_disable_unprepare(phy2->clk2);
+ 	}
+ 
+ 	if (phy->pmu && data->cfg->hci_phy_ctl_clear) {

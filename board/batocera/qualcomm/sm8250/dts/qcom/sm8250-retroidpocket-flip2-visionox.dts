@@ -1,0 +1,29 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2026, Armada <https://armadaos.dev>.
+ */
+
+/dts-v1/;
+
+#include "sm8250-retroidpocket-flip2.dts"
+
+/ {
+	model = "Retroid Pocket Flip2 Visionox";
+};
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "vtdr6130,rpflip2";
+		reset-gpios = <&tlmm 75 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&i2c13 {
+	touchscreen@38 {
+		/delete-property/ touchscreen-inverted-x;
+	};
+};
+
+&vdda_panel {
+	/delete-property/ regulator-boot-on;
+};

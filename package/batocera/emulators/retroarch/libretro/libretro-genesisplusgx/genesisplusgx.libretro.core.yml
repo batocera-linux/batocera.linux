@@ -46,11 +46,46 @@ custom_features:
     choices:
       Retropad (Default): retropad
       Megadrive: megadrive
+file_extensions:
+  - zip
+  - 7z
 systems:
-  - gamegear
-  - mastersystem
-  - megacd
-  - megadrive
-  - megadrive-msu
-  - pico
-  - sg1000
+  - name: gamegear
+    file_extensions:
+      add:
+        - bin
+        - gg
+  - name: mastersystem
+    file_extensions:
+      add:
+        - bin
+        - sms
+  - name: megacd
+    file_extensions:
+      - cue
+      - iso
+      - chd
+      - m3u
+  - name: megadrive
+    file_extensions:
+      add:
+        - bin
+        - gen
+        - md
+        - sg
+        - smd
+  - name: megadrive-msu
+    file_extensions:
+      add:
+        - md
+        - squashfs
+  - name: pico
+    file_extensions:
+      add:
+        - bin
+        - md
+  - name: sg1000
+    file_extensions:
+      add:
+        - bin
+        - sg

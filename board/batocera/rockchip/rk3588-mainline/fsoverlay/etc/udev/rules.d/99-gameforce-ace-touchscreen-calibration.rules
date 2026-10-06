@@ -1,0 +1,5 @@
+# GameForce Ace touchscreen calibration, measured with sdl2-touch-test (i2c3 / feab0000).
+SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT_TOUCHSCREEN}=="1", \
+  ENV{ID_PATH}=="platform-feab0000.i2c", \
+  ENV{WL_OUTPUT}="DSI-1", \
+  ENV{LIBINPUT_CALIBRATION_MATRIX}="0 -1 1 1 0 0"

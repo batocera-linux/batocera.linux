@@ -21,10 +21,10 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/clk/qcom/gcc-sm8750.c b/drivers/clk/qcom/gcc-sm8750.c
-index db81569dd4b1..9b782e49eabf 100644
+index 6cfe90122..da77c9b8c 100644
 --- a/drivers/clk/qcom/gcc-sm8750.c
 +++ b/drivers/clk/qcom/gcc-sm8750.c
-@@ -2891,7 +2891,7 @@ static struct gdsc gcc_pcie_0_gdsc = {
+@@ -2890,7 +2890,7 @@ static struct gdsc gcc_pcie_0_gdsc = {
  	.pd = {
  		.name = "gcc_pcie_0_gdsc",
  	},
@@ -33,7 +33,7 @@ index db81569dd4b1..9b782e49eabf 100644
  	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE | VOTABLE,
  };
  
-@@ -2905,7 +2905,7 @@ static struct gdsc gcc_pcie_0_phy_gdsc = {
+@@ -2904,7 +2904,7 @@ static struct gdsc gcc_pcie_0_phy_gdsc = {
  	.pd = {
  		.name = "gcc_pcie_0_phy_gdsc",
  	},
@@ -42,6 +42,3 @@ index db81569dd4b1..9b782e49eabf 100644
  	.flags = POLL_CFG_GDSCR | RETAIN_FF_ENABLE | VOTABLE,
  };
  
--- 
-2.43.0
-

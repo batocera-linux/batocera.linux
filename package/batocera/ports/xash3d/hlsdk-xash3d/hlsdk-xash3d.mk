@@ -13,8 +13,9 @@
 #
 #   https://github.com/FWGS/xash3d-fwgs/blob/master/Documentation/supported-mod-list.md#list-of-games-and-mods-with-custom-gamedll
 #
-# "mobile_hacks" branch on 20 Jan 2024
-HLSDK_XASH3D_VERSION = 2769d70d5be6fb729334c9108da048c25586fd78
+# "mobile_hacks" branch
+# Version: Commits on Jun 14, 2026
+HLSDK_XASH3D_VERSION = 079f2387eb59e4a045647d9057240628130f0058
 HLSDK_XASH3D_DMC_BRANCH = mobile_hacks
 HLSDK_XASH3D_SITE = $(call github,FWGS,hlsdk-portable,$(HLSDK_XASH3D_VERSION))
 HLSDK_XASH3D_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium

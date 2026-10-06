@@ -1,5 +1,5 @@
 #!/bin/sh
 
-# script to be called from es to call configgen + kodi
+# script to be called from es to call batocera-launch + kodi
 sleep 5
-emulatorlauncher -system kodi -rom '' "$@"
+batocera-launch -system kodi -rom '' "$@"

@@ -112,6 +112,21 @@ custom_features:
       '4': '4'
       '8': '8'
       '16': '16'
+file_extensions:
+  - zip
+  - img
+  - dsk
+  - tap
+  - cas
 systems:
-  - enterprise
+  - name: enterprise
+    file_extensions:
+      add:
+        - bas
+        - com
+        - dtf
+        - trn
+        - '128'
+        - cdt
+        - tzx
   - tvc

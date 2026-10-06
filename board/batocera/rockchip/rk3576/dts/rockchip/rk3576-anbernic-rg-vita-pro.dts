@@ -255,18 +255,24 @@
 			default-state = "on";
 			function = LED_FUNCTION_POWER;
 			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+			/* batocera - keep the standby colour through suspend */
+			retain-state-suspended;
 		};
 
 		amber_led: led-1 {
 			color = <LED_COLOR_ID_AMBER>;
 			function = LED_FUNCTION_CHARGING;
 			gpios = <&gpio3 RK_PA4 GPIO_ACTIVE_HIGH>;
+			/* batocera - keep the standby colour through suspend */
+			retain-state-suspended;
 		};
 
 		red_led: led-2 {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_STATUS;
 			gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+			/* batocera - keep the standby colour through suspend */
+			retain-state-suspended;
 		};
 	};
 
@@ -1020,7 +1026,8 @@
 
 	husb311: typec-portc@4e {
 		status = "okay";
-		compatible = "hynetek,husb311";
+		/* batocera - rt1711h fallback, upstream 7.2 binds husb311 through it */
+		compatible = "hynetek,husb311", "richtek,rt1711h";
 		reg = <0x4e>;
 		interrupt-parent = <&gpio0>;
 		interrupts = <RK_PD1 IRQ_TYPE_LEVEL_LOW>;

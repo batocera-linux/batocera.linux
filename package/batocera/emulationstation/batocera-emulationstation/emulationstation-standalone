@@ -41,6 +41,30 @@ _wait_for_compositor() {
     return 1
 }
 
+# <key>.<output>, then <key>.<edid model> for a screen that can move between connectors
+_output_setting() {
+    local value model
+    value=$(/usr/bin/batocera-settings-get-master "$1.$2")
+    if [ -z "${value}" ]; then
+        model=$(batocera-resolution --screen "$2" outputModel 2>/dev/null)
+        if [ -n "${model}" ]; then
+            value=$(/usr/bin/batocera-settings-get-master "$1.${model}")
+        fi
+    fi
+    echo "${value}"
+}
+
+# the compositor keeps a transform set for a previous layout
+_reset_rotation() {
+    if [ "$(batocera-resolution getDisplayComp)" = "labwc" ] && [ "$(batocera-resolution --screen "$1" getRotation)" != "0" ]; then
+        echo "Standalone: Resetting rotation for '$1'." >> "$log"
+        batocera-resolution --screen "$1" setRotation 0
+    fi
+}
+
+# Use --init to get the current screens ; init only once
+batocera-switch-screen-checker --init
+
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
     echo "Standalone: --- Top of display configuration loop ---" >> "$log"
@@ -61,9 +85,6 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     ### VIDEO OUTPUT ###
     echo "Standalone: --- Determining Video Outputs ---" >> "$log"
-    
-    # Use --init to get the current screens
-    batocera-switch-screen-checker --init
 
     # Check for docked mode
     # if there is a mixed of handheld and external screens, just take one of the external screens as docked output (could be extended to several later if that's a use case)
@@ -93,37 +114,42 @@ while [ -e "${REBOOT_FLAG}" ]; do
     settings_output2=$(batocera-settings-get-master global.videooutput2)
     settings_output3=$(batocera-settings-get-master global.videooutput3)
 
-    # If master settings are not found, try the regular settings
+    # If no video output settings are found, check for the screen checker's query file auto.
+    # or if query file force is found (the user wants to force a configuration)
+    DO_QUERY_FILE=
     if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
-        echo "Standalone: Master video outputs not found, trying default" >> "$log"
-        settings_output=$(batocera-settings-get global.videooutput)
-        settings_output2=$(batocera-settings-get global.videooutput2)
-        settings_output3=$(batocera-settings-get global.videooutput3)
+        echo "Standalone: No video output settings found, checking for query file auto..." >> "$log"
+        query_file_auto="/var/run/batocera-switch-screen-checker-query-auto"
+        if [ -f "$query_file_auto" ]; then
+	    echo "Standalone: query file auto found..." >> "$log"
+	    DO_QUERY_FILE="$query_file_auto"
+	fi
     fi
 
-    # If no video output settings are found, check for the screen checker's status file.
-    if [ -z "$settings_output" ] && [ -z "$settings_output2" ] && [ -z "$settings_output3" ]; then
-        echo "Standalone: No video output settings found, checking for screen checker baseline..." >> "$log"
-        status_file="/var/run/batocera-switch-screen-checker-status"
-        if [ -f "$status_file" ]; then
-            echo "Standalone: Found screen checker status file. Reading outputs." >> "$log"
-            # Read all lines from the status file into an array
-            mapfile -t outputs < "$status_file"
-            # Assign outputs from the array to the settings variables
-            # The -n check ensures we only assign if the value is not null
-            if [ -n "${outputs[0]}" ]; then
-                settings_output="${outputs[0]}"
-            fi
-            if [ -n "${outputs[1]}" ]; then
-                settings_output2="${outputs[1]}"
-            fi
-            if [ -n "${outputs[2]}" ]; then
-                settings_output3="${outputs[2]}"
-            fi
-            echo "Standalone: Assigned from file - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
-        else
-            echo "Standalone: Screen checker status file not found. No outputs assigned." >> "$log"
+    # when the user query for a specific configuration, force it !
+    query_file_force="/var/run/batocera-switch-screen-checker-query-force"
+    if [ -f "$query_file_force" ]; then
+	echo "Standalone: query file force found..." >> "$log"
+	DO_QUERY_FILE="$query_file_force"
+    fi
+    
+    if [ -n "${DO_QUERY_FILE}" ]; then
+        echo "Standalone: Found screen checker query file. Reading outputs." >> "$log"
+        # Read all lines from the query file into an array
+        mapfile -t outputs < "${DO_QUERY_FILE}"
+        # Assign outputs from the array to the settings variables
+        # The -n check ensures we only assign if the value is not null
+        if [ -n "${outputs[0]}" ]; then
+            settings_output="${outputs[0]}"
         fi
+        if [ -n "${outputs[1]}" ]; then
+            settings_output2="${outputs[1]}"
+        fi
+        if [ -n "${outputs[2]}" ]; then
+            settings_output3="${outputs[2]}"
+        fi
+        echo "Standalone: Assigned from file - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
+	rm -f "${DO_QUERY_FILE}" # remove once done
     else
         echo "Standalone: Using pre-configured video outputs - ${settings_output}, ${settings_output2}, ${settings_output3}" >> "$log"
     fi
@@ -142,7 +168,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         fi
     fi
     # Validate output 2
-    if [ -n "${settings_output2}" ]; then
+    if [ -n "${settings_output2}" -a "${settings_output2}" != "none" ]; then
         if [ -z "${settings_output}" -o "${settings_output}" = "${settings_output2}" ]; then
             settings_output2=
         else
@@ -153,7 +179,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
         fi
     fi
     # Validate output 3
-    if [ -n "${settings_output3}" ]; then
+    if [ -n "${settings_output3}" -a "${settings_output3}" != "none" ]; then
         if [ -z "${settings_output}" -o -z "${settings_output2}" -o "${settings_output}" = "${settings_output3}" -o "${settings_output2}" = "${settings_output3}" ]; then
             settings_output3=
         else
@@ -187,7 +213,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     fi
     # If screen2 is empty, take the first one found which is not screen1
     if [ -z "${settings_output2}" ]; then
-        user_output2="$(batocera-settings-get global.videooutput2)"
+        user_output2="$(batocera-settings-get-master global.videooutput2)"
         if [ "${user_output2}" != "none" ]; then
             settings_output2=$(batocera-resolution listOutputs | grep -vE "^${settings_output}$" | head -1)
             if [ -n "${settings_output2}" ]; then
@@ -195,6 +221,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
             fi
         fi
     fi
+
+    # if output2/output3 are set to none, now, it is time to make them empty, they will not be auto filled now
+    test "${settings_output2}" = "none" && settings_output2=
+    test "${settings_output3}" = "none" && settings_output3=
 
     # We set the output to enable screens...
     echo "Standalone: --- Enabling Outputs ---" >> "$log"
@@ -241,7 +271,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
             fi
         fi
         if [ -n "${settings_output3}" ]; then
-            bootresolution3="$(batocera-settings-get es.resolution3)"
+            bootresolution3="$(batocera-settings-get-master es.resolution3)"
             if [ -z "${bootresolution3}" ]; then
                 echo "Standalone: No resolution for '${settings_output3}'. Using minTomaxResolution-secure." >> "$log"
                 batocera-resolution --screen "${settings_output3}" minTomaxResolution-secure
@@ -256,9 +286,10 @@ while [ -e "${REBOOT_FLAG}" ]; do
     ### ROTATION ###
     echo "Standalone: --- Applying Rotations ---" >> "$log"
     display_rotate=
+    EXTRA_OPTS=
     effective_output="${settings_output}"
     if [ -n "${effective_output}" ]; then
-        display_rotate=$(/usr/bin/batocera-settings-get-master "display.rotate.${effective_output}")
+        display_rotate=$(_output_setting display.rotate "${effective_output}")
         echo "Rotation for output ${effective_output}: ${display_rotate}" >> $log
     fi
 
@@ -278,34 +309,40 @@ while [ -e "${REBOOT_FLAG}" ]; do
             echo "Standalone: System rotation not supported. Using EmulationStation rotation." >> "$log"
             EXTRA_OPTS="--screenrotate ${display_rotate}"
         fi
+    elif [ -n "${effective_output}" ]; then
+        _reset_rotation "${effective_output}"
     fi
     # Other screens
     if [ -n "${settings_output2}" ]; then
         display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate2.${settings_output2}")
         # Add fallback to primary rotation key if specific key not found
         if [ -z "${display_rotate2}" ]; then
-            display_rotate2=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output2}")
+            display_rotate2=$(_output_setting display.rotate "${settings_output2}")
         fi
         if [ -z "${display_rotate2}" ]; then
-            display_rotate2="$(/usr/bin/batocera-settings-get display.rotate2)"
+            display_rotate2="$(/usr/bin/batocera-settings-get-master display.rotate2)"
         fi
         if [ -n "${display_rotate2}" ] && batocera-resolution --screen "${settings_output2}" supportSystemRotation; then
             echo "Standalone: Applying system rotation '${display_rotate2}' for '${settings_output2}'." >> "$log"
             batocera-resolution --screen "${settings_output2}" setRotation "${display_rotate2}"
+        elif [ -z "${display_rotate2}" ]; then
+            _reset_rotation "${settings_output2}"
         fi
     fi
     if [ -n "${settings_output3}" ]; then
         display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate3.${settings_output3}")
         # Add fallback to primary rotation key if specific key not found
         if [ -z "${display_rotate3}" ]; then
-            display_rotate3=$(/usr/bin/batocera-settings-get-master "display.rotate.${settings_output3}")
+            display_rotate3=$(_output_setting display.rotate "${settings_output3}")
         fi
         if [ -z "${display_rotate3}" ]; then
-            display_rotate3="$(/usr/bin/batocera-settings-get display.rotate3)"
+            display_rotate3="$(/usr/bin/batocera-settings-get-master display.rotate3)"
         fi
         if [ -n "${display_rotate3}" ] && batocera-resolution --screen "${settings_output3}" supportSystemRotation; then
             echo "Standalone: Applying system rotation '${display_rotate3}' for '${settings_output3}'." >> "$log"
             batocera-resolution --screen "${settings_output3}" setRotation "${display_rotate3}"
+        elif [ -z "${display_rotate3}" ]; then
+            _reset_rotation "${settings_output3}"
         fi
     fi
     ###################
@@ -388,6 +425,55 @@ while [ -e "${REBOOT_FLAG}" ]; do
         [ -e /userdata/system/custom-es-config ] && bash /userdata/system/custom-es-config &
         ###################
     fi
+
+    # same for labwc : to be moved in batocera-resolution
+    if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
+	TOUCHSCREEN=""
+	TOUCHSCREEN_MAP=()
+	for TOUCH_OUTPUT in "${settings_output}" "${settings_output2}" "${settings_output3}"; do
+	    test -z "${TOUCH_OUTPUT}" && continue
+	    TOUCH_DEVICE=$(_output_setting display.touchscreen "${TOUCH_OUTPUT}")
+	    if [ -n "${TOUCH_DEVICE}" ]; then
+		echo "Touchscreen '${TOUCH_DEVICE}' mapped to output ${TOUCH_OUTPUT}." >>"$log"
+		# wlroots rotates a mapped touchscreen with its output, so only a digitiser that already reports in the rotated frame needs a matrix
+		TOUCH_ROTATION=$(_output_setting display.touchrotate "${TOUCH_OUTPUT}")
+		[ -z "${TOUCH_ROTATION}" ] && TOUCH_ROTATION=0
+		TOUCHSCREEN_MAP+=(--touchscreen-map "${TOUCH_DEVICE}" "${TOUCH_OUTPUT}" "${TOUCH_ROTATION}")
+	    fi
+	done
+	if [ ${#TOUCHSCREEN_MAP[@]} -eq 0 ]; then
+	    TOUCHSCREEN_LIST=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]}}')
+	    if [ -n "${TOUCHSCREEN_LIST}" ]; then
+		NUM_TOUCH=$(echo "${TOUCHSCREEN_LIST}" | grep -v '^$' | wc -l)
+	    else
+		NUM_TOUCH=0
+	    fi
+	    if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${settings_output}" ]; then
+		TOUCHSCREEN="${TOUCHSCREEN_LIST}"
+		echo "One touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${settings_output}." >>"$log"
+	    else
+		if [ "${NUM_TOUCH}" -eq 0 ]; then
+		    echo "No touchscreen found. Touchscreen configuration omitted/removed." >>"$log"
+		elif [ "${NUM_TOUCH}" -gt 1 ]; then
+		    echo "Multiple touchscreens detected (${NUM_TOUCH}). Omitting individual touch mapping." >>"$log"
+		    echo "Use sdl2-touch-test to get the calibration for your touch panels." >>"$log"
+		elif [ -z "${settings_output}" ]; then
+		    echo "No primary output set. Skipping touchscreen configuration." >>"$log"
+		fi
+	    fi
+	    TOUCHSCREEN_MAP=(--touchscreen="${TOUCHSCREEN}")
+	fi
+	# apply rules to es, backglass, bcc, ...
+	LABWC_PID=$(pgrep -o -x labwc) batocera-labwc-config --reconfigure --primary="${settings_output}" --secondary="${settings_output2}" "${TOUCHSCREEN_MAP[@]}"
+
+	# ES sizes its window from the first wayland output, not the one labwc moves it to,
+	# and SDL mode emulation misplaces an exclusive fullscreen window
+	ES_RESOLUTION=$(batocera-resolution --screen "${settings_output}" currentResolution)
+	if echo "${ES_RESOLUTION}" | grep -qE '^[0-9]+x[0-9]+$'; then
+	    EXTRA_OPTS="${EXTRA_OPTS} --resolution ${ES_RESOLUTION%x*} ${ES_RESOLUTION#*x} --fullscreen-borderless"
+	fi
+    fi
+
     CUSTOMESOPTIONS="$(/usr/bin/batocera-settings-get es.customsargs)"
 
     # Launch automatically a game only the first time
@@ -457,8 +543,11 @@ while [ -e "${REBOOT_FLAG}" ]; do
         echo "Standalone: ES suspend requested. Waiting for resume signal." >> "$log"
         rm -f "/tmp/suspend.please"
         # The 'read' command will block the script until 'resume' is called.
-        read < "/tmp/es-resume.fifo"
-        echo "Standalone: Resume signal received. Continuing loop." >> "$log"
+        if read < "/tmp/es-resume.fifo"; then
+            echo "Standalone: Resume signal received. Continuing loop." >> "$log"
+        else
+            echo "Standalone: WARNING: resume pipe read failed ($(date '+%H:%M:%S')), relaunching ES without a resume signal." >> "$log"
+        fi
     fi
     GAMELAUNCH=0
 done

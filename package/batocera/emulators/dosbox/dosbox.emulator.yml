@@ -2,6 +2,7 @@ features:
   - padtokeyboard
 shared_features:
   - powermode
+  - cpucluster
   - tdp
   - videomode
   - ratio
@@ -41,7 +42,13 @@ custom_features:
     choices:
       AUTO: auto
       Max: max
+file_extensions:
+  - pc
+  - dos
+  - squashfs
+  - dosz
+  - m3u
+  - iso
+  - cue
 systems:
-  - name: dos
-    exclude_extensions:
-      - zip
+  - dos

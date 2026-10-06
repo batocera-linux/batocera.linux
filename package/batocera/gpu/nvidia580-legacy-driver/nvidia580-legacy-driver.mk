@@ -54,6 +54,8 @@ NVIDIA580_LEGACY_DRIVER_LIBS_MISC = \
 	libnvidia-eglcore.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-egl-gbm.so.1.1.3 \
 	libnvidia-egl-wayland.so.1.1.20 \
+	libnvidia-egl-xcb.so.1.0.5 \
+	libnvidia-egl-xlib.so.1.0.5 \
 	libnvidia-glcore.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
@@ -79,6 +81,8 @@ NVIDIA580_LEGACY_DRIVER_32 = \
 	$(NVIDIA580_LEGACY_DRIVER_LIBS_GLES) \
 	libnvidia-allocator.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-eglcore.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
+	libnvidia-egl-xcb.so.1.0.5 \
+	libnvidia-egl-xlib.so.1.0.5 \
 	libnvidia-glcore.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-glsi.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	libnvidia-glvkspirv.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
@@ -274,11 +278,17 @@ define NVIDIA580_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/usr/share/egl/egl_external_platform.d/10_nvidia_wayland.json
 	$(INSTALL) -D -m 0644 $(@D)/15_nvidia_gbm.json \
 	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/15_nvidia_gbm.json
+	$(INSTALL) -D -m 0644 $(@D)/20_nvidia_xcb.json \
+	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/20_nvidia_xcb.json
+	$(INSTALL) -D -m 0644 $(@D)/20_nvidia_xlib.json \
+	    $(TARGET_DIR)/usr/share/egl/egl_external_platform.d/20_nvidia_xlib.json
 
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia
 	mkdir -p $(TARGET_DIR)/usr/share/nvidia/X11
 	$(INSTALL) -D -m 0644 $(@D)/nvidia-drm-outputclass.conf \
 		$(TARGET_DIR)/usr/share/nvidia/X11/10-nvidia580-legacy-drm-outputclass.conf
+	$(INSTALL) -D -m 0644 $(@D)/nvidia-application-profiles-$(NVIDIA580_LEGACY_DRIVER_VERSION)-rc \
+		$(TARGET_DIR)/usr/share/nvidia/nvidia-application-profiles-$(NVIDIA580_LEGACY_DRIVER_VERSION)-rc
 
 	$(INSTALL) -D -m 0644 $(@D)/libglxserver_nvidia.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.$(NVIDIA580_LEGACY_DRIVER_VERSION)
@@ -287,9 +297,6 @@ define NVIDIA580_LEGACY_DRIVER_INSTALL_TARGET_CMDS
 	ln -sf libglxserver_nvidia.so.$(NVIDIA580_LEGACY_DRIVER_VERSION) \
 	 	$(TARGET_DIR)/usr/lib/xorg/modules/extensions/libglxserver_nvidia.so.1
 
-# firmware
-    mkdir -p $(TARGET_DIR)/lib/firmware/nvidia/$(NVIDIA580_LEGACY_DRIVER_VERSION)
-	$(INSTALL) -D -m 0644 $(@D)/firmware/* $(TARGET_DIR)/lib/firmware/nvidia/$(NVIDIA580_LEGACY_DRIVER_VERSION)
 
 endef
 

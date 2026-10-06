@@ -8,7 +8,8 @@ PYTHON_BATOCERA_COMMON_SETUP_TYPE=hatch
 PYTHON_BATOCERA_COMMON_DEPENDENCIES = \
 	python-typing-extensions \
 	python-pyyaml \
-	python-ruamel-yaml
+	python-ruamel-yaml \
+	sdl3
 
 HOST_PYTHON_BATOCERA_COMMON_SETUP_TYPE=hatch
 HOST_PYTHON_BATOCERA_COMMON_DEPENDENCIES = \

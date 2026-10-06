@@ -1,0 +1,46 @@
+From 985642a0046d45d8d7bb49b3970c1a60f9bf9d98 Mon Sep 17 00:00:00 2001
+From: Chris Morgan <macromorgan@hotmail.com>
+Date: Wed, 22 Apr 2026 15:49:16 -0500
+Subject: [PATCH 1/2] dt-bindings: power: supply: rk817-charger: Add
+ rockchip,gate-function-disable
+
+Add a boolean attribute for the rk817-charger to control whether or not
+the system power is shutdown in battery off mode. The BSP kernel sets
+this value unless a device-tree attribute is present, and this attribute
+is to replicate that behavior.
+
+Reported-by: Zetarancio <zetarancio@users.noreply.github.com>
+Fixes: a592aa3a2a8c ("dt-bindings: mfd: Add Rockchip rk817 battery charger support")
+Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+---
+ Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml b/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
+index 2cb6d176a84c..4cf987fe763b 100644
+--- a/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
++++ b/Documentation/devicetree/bindings/mfd/rockchip,rk817.yaml
+@@ -148,6 +148,12 @@ properties:
+           Value in microamps of the sleep filter current for the charger.
+           Value is used by the driver to derive the sleep sample current.
+ 
++      rockchip,gate-function-disable:
++        type: boolean
++        description:
++          Boolean value to prevent PMIC from turning off system voltage when
++          battery voltage is shut down.
++
+     required:
+       - monitored-battery
+       - rockchip,resistor-sense-micro-ohms
+@@ -381,6 +387,7 @@ examples:
+ 
+             rk817_charger: charger {
+                 monitored-battery = <&battery>;
++                rockchip,gate-function-disable;
+                 rockchip,resistor-sense-micro-ohms = <10000>;
+                 rockchip,sleep-enter-current-microamp = <300000>;
+                 rockchip,sleep-filter-current-microamp = <100000>;
+-- 
+2.43.0
+

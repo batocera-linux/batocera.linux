@@ -1,0 +1,102 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/* batocera - EE clone with a 720x720 panel, keros LEDs and RK915 wifi on sdio */
+#include "rk3326-gameconsole-eeclone.dts"
+
+/ {
+	model = "Game Console R36 Ultra";
+	compatible = "gameconsole,r36ultra", "rockchip,rk3326";
+
+	rk915-wifi {
+		compatible = "rockchip,rk915";
+		power-gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
+		interrupts-extended = <&gpio0 RK_PA1 IRQ_TYPE_EDGE_RISING>;
+		nvmem-cells = <&cpu_id>;
+		nvmem-cell-names = "soc-id";
+		status = "okay";
+	};
+
+	keros-leds {
+		compatible = "keros,pulse-leds";
+		ctrl-gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&adc_keys {
+	status = "okay";
+};
+
+&internal_display {
+	reset-gpios = <&gpio3 RK_PD3 GPIO_ACTIVE_LOW>;
+	panel_description =
+		"G size=153,85 delays=120,120,120,120,20 format=rgb888 lanes=4 flags=0xe03",
+		"M clock=45000 horizontal=720,140,80,140 vertical=720,20,4,20 default=1",
+		"M clock=45000 horizontal=720,140,100,140 vertical=720,20,59,20",
+		"M clock=45000 horizontal=720,140,125,140 vertical=720,20,40,20",
+		"M clock=47860 horizontal=720,140,122,140 vertical=720,20,93,20",
+		"M clock=49680 horizontal=720,140,125,140 vertical=720,20,8,20",
+		"M clock=56900 horizontal=720,140,90,140 vertical=720,20,114,20",
+		"M clock=50400 horizontal=720,140,92,140 vertical=720,20,10,20",
+		"M clock=50220 horizontal=720,140,80,140 vertical=720,20,15,20",
+		"M clock=54600 horizontal=720,140,112,140 vertical=720,20,57,20",
+		"M clock=75450 horizontal=720,140,95,140 vertical=720,20,153,20",
+		"M clock=75330 horizontal=720,140,80,140 vertical=720,20,15,20",
+		"M clock=100440 horizontal=720,140,80,140 vertical=720,20,15,20",
+		"I seq=b9f11283",
+		"I seq=b1000000da80",
+		"I seq=b23c1230",
+		"I seq=b31010282803ff00000000",
+		"I seq=b480",
+		"I seq=b50a0a",
+		"I seq=b69797",
+		"I seq=b82622f013",
+		"I seq=ba338105f90e0e2000000000000000442500900a0000014f01000037",
+		"I seq=bc47",
+		"I seq=bf021100",
+		"I seq=c0737350500000127000",
+		"I seq=c12500323277e4ffffcccc7777",
+		"I seq=c68200bfff00ff",
+		"I seq=c7b8000a000000",
+		"I seq=c810401e02",
+		"I seq=cc0b",
+		"I seq=e0000b102c3d3f423a070d0f131513140f16000b102c3d3f423a070d0f131513140f16",
+		"I seq=e307070b0b0b0b00000000ff00c010",
+		"I seq=e9c8100a000080811231234f86a000470800000c00000000000c00000098028baf4602888888888898138baf5713888888888800000000000000000000000000",
+		"I seq=ea970c090909780000000000009f318ba8317588888888889f208ba820648888888888230000027100000000000000000000000000000040808100000000",
+		"I seq=efffff01",
+		"I seq=11 wait=250",
+		"I seq=29 wait=50";
+};
+
+&joypad {
+	invert-absx = <1>;
+	invert-absy = <1>;
+};
+
+&lcd_rst {
+	rockchip,pins = <3 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
+};
+
+&sdio {
+	/delete-property/ max-frequency;
+	/delete-property/ cd-gpios;
+	/delete-property/ card-detect-delay;
+	/delete-property/ sd-uhs-sdr12;
+	/delete-property/ sd-uhs-sdr25;
+	/delete-property/ sd-uhs-sdr50;
+	/delete-property/ sd-uhs-sdr104;
+	/delete-property/ vqmmc-supply;
+	max-frequency = <50000000>;
+	no-sd;
+	no-mmc;
+	keep-power-in-suspend;
+	supports-rk915;
+};
+
+&vcc18_lcd0 {
+	gpio = <&gpio3 RK_PA3 GPIO_ACTIVE_HIGH>;
+};
+
+&vcc18_lcd_n {
+	rockchip,pins = <3 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
+};

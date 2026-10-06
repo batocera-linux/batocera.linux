@@ -1,10 +1,10 @@
 Subject: [PATCH] power: supply: add Halo Microelectronics HL7139 charge pump
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index 92f9f7aae92f..a1b2c3d4e5f6 100644
+index 33e5d476d..afe3af0d8 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
-@@ -817,6 +817,13 @@ config CHARGER_BQ25980
+@@ -839,6 +839,13 @@ config CHARGER_BQ25980
  	  Say Y to enable support for the TI BQ25980, BQ25975 and BQ25960
  	  series of fast battery chargers.
  
@@ -19,20 +19,20 @@ index 92f9f7aae92f..a1b2c3d4e5f6 100644
  	tristate "TI BQ256XX battery charger driver"
  	depends on I2C
 diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index 4b79d5abc49a..b2c3d4e5f6a7 100644
+index 92376e5ca..0b6bc70d0 100644
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
-@@ -104,6 +104,7 @@
+@@ -105,6 +105,7 @@ obj-$(CONFIG_CHARGER_BQ2515X)	+= bq2515x_charger.o
  obj-$(CONFIG_CHARGER_BQ257XX)	+= bq257xx_charger.o
  obj-$(CONFIG_CHARGER_BQ25890)	+= bq25890_charger.o
  obj-$(CONFIG_CHARGER_BQ25980)	+= bq25980_charger.o
 +obj-$(CONFIG_CHARGER_HL7139)	+= hl7139_charger.o
  obj-$(CONFIG_CHARGER_BQ256XX)	+= bq256xx_charger.o
  obj-$(CONFIG_CHARGER_RK817)	+= rk817_charger.o
- obj-$(CONFIG_CHARGER_SMB347)	+= smb347-charger.o
+ obj-$(CONFIG_CHARGER_S2M)	+= s2m-charger.o
 diff --git a/drivers/power/supply/hl7139_charger.c b/drivers/power/supply/hl7139_charger.c
 new file mode 100644
-index 000000000000..f84c84eb7948
+index 000000000..3ce3d5dbb
 --- /dev/null
 +++ b/drivers/power/supply/hl7139_charger.c
 @@ -0,0 +1,374 @@

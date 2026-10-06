@@ -1,0 +1,57 @@
+#!/bin/bash
+# Follow the USB-C DP connection with the card's HDMI UCM profile.
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+exec 9>/var/run/sm8250-dp-audio.lock
+flock 9
+
+CARDDEV=$(basename "$(readlink -f /proc/asound/RetroidPocket 2>/dev/null)")
+[ -n "${CARDDEV}" ] && [ "${CARDDEV}" != RetroidPocket ] || exit 0
+CARD="alsa_card._sys_devices_platform_sound_sound_${CARDDEV}"
+
+log() { logger -t sm8250-dp-audio "$1"; }
+
+card_present() {
+    pactl list cards short 2>/dev/null | grep -q "${CARD}"
+}
+
+wait_card() {
+    for i in $(seq 40); do
+        [ "$(card_present && echo 1)" = "$1" ] && return 0
+        sleep 0.25
+    done
+    return 1
+}
+
+has_hdmi() {
+    pactl list cards | grep -qE '^\s+HDMI: .*available: yes'
+}
+
+wait_card 1 || exit 0
+
+# the DP PCM cannot open until the sink's ELD arrives, so pipewire drops the profile when probed earlier
+if grep -qx connected /sys/class/drm/card*-DP-*/status; then
+    for i in $(seq 5); do
+        has_hdmi && break
+        sleep 1
+        log "re-probing ${CARD}"
+        udevadm trigger --action=remove "/sys/class/sound/${CARDDEV}"
+        wait_card ""
+        udevadm trigger --action=add "/sys/class/sound/${CARDDEV}"
+        wait_card 1 || exit 0
+    done
+    WANT=HDMI
+else
+    WANT=HiFi
+fi
+
+PROFILE=$(batocera-settings-get audio.profile)
+[ -z "${PROFILE}" ] || [ "${PROFILE}" = "auto" ] || exit 0
+has_hdmi || WANT=HiFi
+log "profile ${WANT}"
+pactl set-card-profile "${CARD}" "${WANT}"
+VOL=$(batocera-settings-get-master audio.volume)
+[ -n "${VOL}" ] && batocera-audio setSystemVolume "${VOL}"
+exit 0

@@ -1,0 +1,106 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Minimal RK3576 DT for the Anbernic RG Vita Pro, cloned from
+ * rk3576-generic.dts with the RK806 PMIC added so U-Boot SPL can
+ * read its power-on cause and shut back down on a bare charger
+ * plug-in (CONFIG_ROCKCHIP_RK8XX_DISABLE_BOOT_ON_POWERON), and the
+ * green power LED so it lights as soon as U-Boot proper runs.
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/pinctrl/rockchip.h>
+#include "rk3576.dtsi"
+
+/ {
+	model = "Anbernic RG Vita Pro";
+	compatible = "anbernic,rg-vita-pro", "rockchip,rk3576";
+
+	aliases {
+		mmc0 = &sdhci;
+		mmc1 = &sdmmc;
+	};
+
+	chosen {
+		stdout-path = "serial0:1500000n8";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_green_h>;
+
+		led-0 {
+			gpios = <&gpio3 RK_PA5 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+	};
+};
+
+&pinctrl {
+	leds {
+		led_green_h: led-green-h {
+			rockchip,pins = <3 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+};
+
+&sdhci {
+	bus-width = <8>;
+	cap-mmc-highspeed;
+	mmc-hs200-1_8v;
+	no-sd;
+	no-sdio;
+	non-removable;
+	status = "okay";
+};
+
+&sdmmc {
+	bus-width = <4>;
+	cap-sd-highspeed;
+	disable-wp;
+	no-mmc;
+	no-sdio;
+	status = "okay";
+};
+
+&u2phy0 {
+	status = "okay";
+};
+
+&u2phy0_otg {
+	status = "okay";
+};
+
+&uart0 {
+	pinctrl-0 = <&uart0m0_xfer>;
+	status = "okay";
+};
+
+&usb_drd0_dwc3 {
+	dr_mode = "peripheral";
+	maximum-speed = "high-speed";
+	phys = <&u2phy0_otg>;
+	phy-names = "usb2-phy";
+	status = "okay";
+};
+
+&i2c1 {
+	status = "okay";
+
+	pmic: pmic@23 {
+		compatible = "rockchip,rk806";
+		reg = <0x23>;
+		system-power-controller;
+
+		/*
+		 * No regulator children: the rkbin TPL blob already
+		 * programs every rail before U-Boot proper runs. This
+		 * node exists only so the RK8XX PMIC driver binds and
+		 * probes, letting it read the power-on cause register.
+		 */
+		pmic_regulators: regulators {
+		};
+	};
+};

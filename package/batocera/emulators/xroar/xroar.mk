@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XROAR_VERSION = 1.10
+XROAR_VERSION = 1.12.1
 XROAR_SOURCE = xroar-${XROAR_VERSION}.tar.gz
 XROAR_SITE = https://www.6809.org.uk/xroar/dl
 XROAR_LICENSE = GPLv3

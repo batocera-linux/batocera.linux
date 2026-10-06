@@ -1,0 +1,11 @@
+--- a/common/HostSys.cpp
++++ b/common/HostSys.cpp
+@@ -59,7 +59,7 @@
+ #endif
+ /* pcsx2/, on the include path; common/ is being folded into it. Every
+  * platform: the registration mutex below is used on all of them. */
+-#include "SLockGuard.h"
++#include "../pcsx2/SLockGuard.h"
+ 
+ /* Registration-side mutex only.  The fault filter itself takes NO
+  * lock: pthread mutexes are not async-signal-safe, and a global lock
