@@ -9,6 +9,7 @@ dev = [
     "pytest-cov==7.1.0",
     "pytest-xdist==3.8.0",
     "pyfakefs==6.2.0",
+    "aiointercept==0.1.12",
     "coverage[toml]==7.16.1",
     "pygobject-stubs @ git+https://github.com/pygobject/pygobject-stubs.git@959c470767cd44a74912ba182e9fb202d0d96519",
 ]
@@ -46,6 +47,8 @@ batocera-launch = { workspace = true }
 hotkeygen = { workspace = true }
 batocera-launch-libretro = { workspace = true }
 batocera-launch-mame-common = { workspace = true }
+pytest-batocera-launch = { workspace = true }
+pytest-batocera = { workspace = true }
 
 [tool.uv.workspace]
 members = [
@@ -64,6 +67,9 @@ addopts = [
 ]
 strict = true
 asyncio_mode = "auto"
+filterwarnings = [
+    "ignore:'asyncio.iscoroutinefunction' is deprecated:DeprecationWarning",  # ignore deprecation warnings from asyncio.iscoroutinefunction
+]
 
 [tool.coverage.run]
 omit = ["**/python-src/*/tests/**", "**/hotkeygen/tests/**"]

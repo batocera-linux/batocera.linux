@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
     import pytest_mock
     from pyfakefs.fake_filesystem import FakeFilesystem
+    from pytest_mock import MockerFixture
 
 SUMMARY_OUTPUT = """\
 ==========
@@ -111,7 +112,7 @@ DISCRETE_GPU = vulkan.VulkanGPU(
 
 
 @pytest.fixture
-def mock_vulkaninfo(request: pytest.FixtureRequest, mocker: pytest_mock.MockFixture, fs: FakeFilesystem) -> AsyncMock:
+def mock_vulkaninfo(request: pytest.FixtureRequest, mocker: pytest_mock.MockerFixture, fs: FakeFilesystem) -> AsyncMock:
     from batocera_common.asyncio import AsyncCompletedProcess
 
     if request.param == 'summary':
@@ -231,11 +232,10 @@ async def test_get_vulkan_info_device_extensions() -> None:
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_preserves_display(
-    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
-    monkeypatch.setenv('DISPLAY', ':1')
-    monkeypatch.delenv('WAYLAND_DISPLAY', raising=False)
+    mocker.patch.dict('os.environ', {'DISPLAY': ':1'}, clear=True)
 
     await vulkan.get_vulkan_info()
 
@@ -245,11 +245,10 @@ async def test_get_vulkan_info_preserves_display(
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_preserves_wayland_display(
-    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
-    monkeypatch.setenv('WAYLAND_DISPLAY', 'wayland-0')
-    monkeypatch.delenv('DISPLAY', raising=False)
+    mocker.patch.dict('os.environ', {'WAYLAND_DISPLAY': 'wayland-0'}, clear=True)
 
     await vulkan.get_vulkan_info()
 
@@ -262,12 +261,11 @@ async def test_get_vulkan_info_preserves_wayland_display(
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_discovers_display_from_x_socket(
     fs: FakeFilesystem,
-    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
     fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
-    monkeypatch.delenv('DISPLAY', raising=False)
-    monkeypatch.delenv('WAYLAND_DISPLAY', raising=False)
+    mocker.patch.dict('os.environ', {}, clear=True)
 
     await vulkan.get_vulkan_info()
 
@@ -279,13 +277,12 @@ async def test_get_vulkan_info_discovers_display_from_x_socket(
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_uses_lowest_x_socket(
     fs: FakeFilesystem,
-    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
     fs.create_file('/tmp/.X11-unix/X1')  # pyright: ignore[reportUnknownMemberType]
     fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
-    monkeypatch.delenv('DISPLAY', raising=False)
-    monkeypatch.delenv('WAYLAND_DISPLAY', raising=False)
+    mocker.patch.dict('os.environ', {}, clear=True)
 
     await vulkan.get_vulkan_info()
 
@@ -296,11 +293,10 @@ async def test_get_vulkan_info_uses_lowest_x_socket(
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_no_display_without_x_sockets(
-    monkeypatch: pytest.MonkeyPatch,
+    mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
-    monkeypatch.delenv('DISPLAY', raising=False)
-    monkeypatch.delenv('WAYLAND_DISPLAY', raising=False)
+    mocker.patch.dict('os.environ', {}, clear=True)
 
     await vulkan.get_vulkan_info()
 

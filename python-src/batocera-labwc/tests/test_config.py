@@ -54,8 +54,8 @@ def rc_path(fs: FakeFilesystem) -> Path:
 
 
 @pytest.fixture
-def labwc_pid(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv('LABWC_PID', '12345')
+def labwc_pid(mocker: MockerFixture) -> None:
+    mocker.patch.dict('os.environ', {'LABWC_PID': '12345'}, clear=True)
 
 
 def _find_rule(root: ET.Element[str], /, *, identifier: str | None = None, title: str | None = None) -> ET.Element[str]:
@@ -361,10 +361,9 @@ class TestLabWCConfigReconfigure:
     def test_reconfigure_skips_when_labwc_pid_unset(
         self,
         mocker: MockerFixture,
-        monkeypatch: pytest.MonkeyPatch,
         caplog: pytest.LogCaptureFixture,
     ) -> None:
-        monkeypatch.delenv('LABWC_PID', raising=False)
+        mocker.patch.dict('os.environ', {}, clear=True)
         mock_run = mocker.patch('subprocess.run')
 
         with caplog.at_level('WARNING'):

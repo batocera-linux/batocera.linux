@@ -2,12 +2,10 @@ from __future__ import annotations
 
 import logging
 import subprocess
-from typing import TYPE_CHECKING, Final
+from dataclasses import dataclass, field
+from typing import Final
 
-from . import Plugin
-
-if TYPE_CHECKING:
-    from . import HookContext
+from ..plugin_manager import HookContext, Plugin
 
 _logger: Final = logging.getLogger(__name__)
 
@@ -47,10 +45,11 @@ def apply_tdp(watts: int, /, *, detach: bool = False) -> None:
     )
 
 
+@dataclass(slots=True)
 class TdpPlugin(Plugin):
     """Scale a supported AMD CPU's TDP by the configured percentage while a game runs."""
 
-    _changed: bool = False
+    _changed: bool = field(init=False, default=False)
 
     def start(self, context: HookContext, /) -> None:
         config = context.config

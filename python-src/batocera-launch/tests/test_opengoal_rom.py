@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
+from pytest_batocera import write_ps2_disc
 
 from batocera_launch.emulators.opengoal import (
     _GAMES,
@@ -15,9 +15,6 @@ from batocera_launch.emulators.opengoal import (
     _pckernel_version,
     _read_build,
 )
-
-if TYPE_CHECKING:
-    from collections.abc import Callable
 
 pytestmark = pytest.mark.usefixtures('fs')
 
@@ -158,26 +155,20 @@ class TestGameDataTarget:
 
 @pytest.mark.parametrize('serial', sorted(_SERIAL_GAMES))
 class TestIsoSerial:
-    def test_reads_the_serial_from_the_boot_elf_name(self, serial: str, write_ps2_disc: Callable[..., Path]) -> None:
+    def test_reads_the_serial_from_the_boot_elf_name(self, serial: str) -> None:
         assert _iso_serial(write_ps2_disc(_ROM.with_suffix('.iso'), serial)) == serial
 
-    def test_finds_the_elf_past_the_first_directory_sector(
-        self, serial: str, write_ps2_disc: Callable[..., Path]
-    ) -> None:
+    def test_finds_the_elf_past_the_first_directory_sector(self, serial: str) -> None:
         iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial, pad_first_sector=True)
 
         assert _iso_serial(iso) == serial
 
-    def test_ignores_a_name_that_only_contains_the_serial(
-        self, serial: str, write_ps2_disc: Callable[..., Path]
-    ) -> None:
+    def test_ignores_a_name_that_only_contains_the_serial(self, serial: str) -> None:
         iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial, elf_suffix='.BAK')
 
         assert _iso_serial(iso) is None
 
-    def test_returns_nothing_for_a_truncated_root_directory(
-        self, serial: str, write_ps2_disc: Callable[..., Path]
-    ) -> None:
+    def test_returns_nothing_for_a_truncated_root_directory(self, serial: str) -> None:
         iso = write_ps2_disc(_ROM.with_suffix('.iso'), serial)
         iso.write_bytes(iso.read_bytes()[: 20 * 2048 + 34 * 2 + 20])
 

@@ -52,6 +52,7 @@ from .exceptions import (
     UnknownEmulator as UnknownEmulator,
 )
 from .parallel_startup_task_mixin import ParallelStartupTaskMixin as ParallelStartupTaskMixin
+from .plugin_manager import HookContext as HookContext, Plugin as Plugin
 from .rom import Rom as Rom, ShortGameID as ShortGameID
 from .special_decorations_mixin import SpecialDecorationsMixin as SpecialDecorationsMixin
 from .types import (

@@ -8,13 +8,11 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.power import read_sysfs, write_sysfs
 from batocera_common.settings import get_master_setting
 
-from . import Plugin
+from ..plugin_manager import HookContext, Plugin
 from .power import resolve_power_mode
 
 if TYPE_CHECKING:
     from batocera_common.key_value_config import KeyValueConfig
-
-    from . import HookContext
 
 _logger: Final = logging.getLogger(__name__)
 

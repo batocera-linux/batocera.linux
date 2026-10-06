@@ -321,7 +321,7 @@ class OpenGOAL(Emulator):
         marker = self.data_dir / _BUILD_MARKER
         marker.unlink(missing_ok=True)
 
-        args = [str(source), '--proj-path', str(self.project_dir), '-g', game, '-d', '-c']
+        args = [source, '--proj-path', self.project_dir, '-g', game, '-d', '-c']
         args += ['-f'] if folder else ['-e', '-v']
 
         _logger.info(
