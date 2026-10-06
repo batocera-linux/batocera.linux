@@ -137,15 +137,26 @@ _get_current_transform() {
     esac
 }
 
+# modes a sink only takes as YCbCr 4:2:0 sit in the EDID's Y420 video data block; TVs tend to show
+# no picture on them, so they are left out of every listing
+_420_only_modes() {
+    local edid
+    edid=$(ls /sys/class/drm/card*-"$1"/edid 2>/dev/null | head -n1)
+    [ -n "${edid}" ] || return 0
+    edid-decode "${edid}" 2>/dev/null | sed -n '/YCbCr 4:2:0 Video Data Block/,/^  [^ ]/p' | awk '/VIC/ { printf "%s@%.0f\n", $3, $4 }'
+}
+
 # Get all available modes for a screen
 _get_available_modes() {
     local screen_name="$1"
     local screen_block
     local modes_section
+    local skip
 
     if [ -z "${screen_name}" ]; then
         return 1
     fi
+    skip=$(_420_only_modes "${screen_name}" | tr '\n' ' ')
 
     screen_block=$(_get_screen_block "${screen_name}")
     if [ $? -ne 0 ]; then
@@ -167,18 +178,50 @@ _get_available_modes() {
             elif [ -n "${resolution}" ]; then
                 printf "%s\n" "${resolution}"
             fi
-        done | sort -u | sort -Vr
+        done | awk -F'[@H]' -v skip=" ${skip} " '!index(skip, " " $1 "@" int($2 + 0.5) " ")' | sort -u | sort -Vr
 }
 
-# --preferred fails outright when no mode carries the preferred flag, so fall back to the best listed mode
+# wlr-randr prints the refresh as a float, so "59.939999" has to round back up to 59940 mHz
+_hz_to_mhz() {
+    awk -v hz="$1" 'BEGIN { printf "%.0f\n", hz * 1000 }'
+}
+
+# WxH, WxH.<mHz> (listModes) or WxH.<Hz> (configs written on the xorg builds), snapped to the
+# listed mode nearest in refresh so a value saved from an older truncated listing still matches;
+# nothing comes back for a mode that is not listed
+_mode_to_wlr() {
+    local res="${1%%.*}" ref="${1#*.}"
+
+    if [ "${ref}" = "$1" ]; then
+        echo "${res}"
+        return
+    fi
+    _get_available_modes "${PSCREEN}" | awk -F'[@H]' -v res="${res}" -v ref="${ref}" '
+        BEGIN { want = (index(ref, ".") || ref < 1000) ? ref + 0 : ref / 1000 }
+        $1 == res { d = $2 - want; if (d < 0) d = -d; if (best == "" || d < bd) { best = $0; bd = d } }
+        END { if (best != "" && bd < 0.0015) print best }'
+}
+
+# the preferred flag is often a 30 Hz 4K mode: a mode near 60 Hz wins, then the preferred
+# resolution, then the largest one, then the refresh nearest 60
+_best_mode() {
+    local res
+    res=$(_get_screen_block "$1" | sed -n 's/^[[:space:]]*\([0-9]*x[0-9]*\) px.*(preferred.*/\1/p' | head -n1)
+    _get_available_modes "$1" | awk -F'[@H]' -v res="${res}" '
+        {
+            hz = $2 + 0
+            split($1, wh, "x")
+            d = hz - 60; if (d < 0) d = -d
+            score = (d <= 1) * 1e15 + ($1 == res) * 1e14 + wh[1] * wh[2] * 1e3 + 1000 - d * 10
+            if (best == "" || score > bs) { best = $0; bs = score }
+        }
+        END { print best }'
+}
+
 _get_enable_args() {
     local mode
 
-    if _get_screen_block "$1" | grep -q "(preferred"; then
-        echo "--output $1 --on --preferred"
-        return
-    fi
-    mode=$(_get_available_modes "$1" | head -n1)
+    mode=$(_best_mode "$1")
     if [ -n "${mode}" ]; then
         echo "--output $1 --on --mode ${mode}"
     else
@@ -366,10 +409,7 @@ case "${ACTION}" in
             RES_ONLY=$(echo "${CURRENT_MODE_STR}" | cut -d'@' -f1)
             REFRESH_HZ_STR=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
             if [ -n "${REFRESH_HZ_STR}" ]; then
-                # Convert Hz to mHz (multiply by 1000)
-                REFRESH_MHZ=$(echo "scale=0; (${REFRESH_HZ_STR} * 1000) / 1" | bc 2>/dev/null)
-                if [ -z "${REFRESH_MHZ}" ]; then REFRESH_MHZ="0"; fi
-                echo "${RES_ONLY}.${REFRESH_MHZ}"
+                echo "${RES_ONLY}.$(_hz_to_mhz "${REFRESH_HZ_STR}")"
             else
                 echo "${RES_ONLY}.0"
                 _log "currentMode: Parsed mode string '${CURRENT_MODE_STR}' but no refresh rate found."
@@ -393,9 +433,7 @@ case "${ACTION}" in
             if echo "${mode}" | grep -q '@'; then
                 resolution=$(echo "${mode}" | cut -d'@' -f1)
                 refresh_hz=$(echo "${mode}" | sed 's/.*@\([0-9.]*\)Hz/\1/')
-                refresh_mhz=$(echo "scale=0; (${refresh_hz} * 1000) / 1" | bc 2>/dev/null)
-                if [ -z "${refresh_mhz}" ]; then refresh_mhz="0"; fi
-                printf "%s.%s:%s %s Hz\n" "${resolution}" "${refresh_mhz}" "${resolution}" "${refresh_hz}"
+                printf "%s.%s:%s %s Hz\n" "${resolution}" "$(_hz_to_mhz "${refresh_hz}")" "${resolution}" "${refresh_hz}"
             else
                 printf "%s.0:%s 0.000 Hz\n" "${mode}" "${mode}"
             fi
@@ -409,21 +447,28 @@ case "${ACTION}" in
         fi
 
         MODE_TO_SET=$1
-        if echo "${MODE_TO_SET}" | grep -qE '^max-'; then
-            SPMODE=$(echo "${MODE_TO_SET}" | sed -e 's+^max-++')
-            f_minTomaxResolution "${SPMODE}"
-        else
-            TARGET_MODE="${MODE_TO_SET}"
-            if echo "${MODE_TO_SET}" | grep -q "\."; then
-                PARTRES=$(echo "${MODE_TO_SET}" | cut -d'.' -f1)
-                PARTMHZ=$(echo "${MODE_TO_SET}" | cut -d'.' -f2-)
-                # Convert mHz back to Hz (divide by 1000)
-                PARTHZ=$(echo "scale=6; ${PARTMHZ} / 1000" | bc 2>/dev/null)
-                if [ -z "${PARTHZ}" ]; then PARTHZ="0.000000"; fi
-                TARGET_MODE="${PARTRES}@${PARTHZ}Hz"
-            fi
-            "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"
-        fi
+        case "${MODE_TO_SET}" in
+            max-*)
+                f_minTomaxResolution "${MODE_TO_SET#max-}"
+                ;;
+            auto|"")
+                # what ES saves for AUTO
+                "${WLR_RANDR}" $(_get_enable_args "${PSCREEN}")
+                ;;
+            *)
+                TARGET_MODE=$(_mode_to_wlr "${MODE_TO_SET}")
+                if [ -z "${TARGET_MODE}" ]; then
+                    _log "setMode: '${MODE_TO_SET}' is not an available mode on ${PSCREEN}"
+                    echo "unknown mode: ${MODE_TO_SET}" >&2
+                    exit 1
+                fi
+                _log "setMode: '${MODE_TO_SET}' -> '${TARGET_MODE}' on ${PSCREEN}"
+                if ! "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"; then
+                    _log "setMode: wlr-randr refused '${TARGET_MODE}'"
+                    exit 1
+                fi
+                ;;
+        esac
         ;;
 
     "currentResolution")
