@@ -293,16 +293,6 @@ endif
 
 FFMPEG_ROCKCHIP_CONF_OPTS += --disable-mmal --disable-omx --disable-omx-rpi
 
-# batocera - add RPi H.265 hardware acceleration
-ifeq ($(BR2_PACKAGE_RPI_HEVC),y)
-FFMPEG_ROCKCHIP_CONF_OPTS += --disable-mmal
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-neon
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-v4l2-request
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-libudev
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-epoxy
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-sand
-endif
-
 # To avoid a circular dependency only use opencv if opencv itself does
 # not depend on ffmpeg.
 ifeq ($(BR2_PACKAGE_OPENCV3_LIB_IMGPROC)x$(BR2_PACKAGE_OPENCV3_WITH_FFMPEG),yx)
