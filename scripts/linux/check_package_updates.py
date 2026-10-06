@@ -73,7 +73,7 @@ GROUPS = {
         "hypseus-singe", "dolphin-emu", "dosbox", "dosbox-staging", "dosbox-x",
         "duckstation", "easyrpg-player", "liblcf", "eka2l1", "flycast", "fsuae",
         "gsplus", "hatari", "ikemen", "lexaloffle-pico8", "lexaloffle-voxatron",
-        "lightspark", "mame", "melonds", "model2", "openmsx", "pcsx2", "pifba",
+        "lightspark", "mame", "melonds", "model2", "openmsx", "pcsx2",
         "ppsspp", "python-pygame2", "python-pyxel", "redream", "rpcs3", "ruffle",
         "scummvm", "shadps4", "simcoupe", "snes9x", "solarus-engine",
         "sugarbox", "supermodel", "thextech", "tsugaru", "vice",

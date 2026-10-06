@@ -41,11 +41,6 @@ else
     FLYCAST_CONF_OPTS += -DUSE_VULKAN=OFF
 endif
 
-# RPI: use the legacy Broadcom GLES libraries
-ifeq ($(BR2_PACKAGE_BATOCERA_RPI_VCORE),y)
-    FLYCAST_CONF_OPTS += -DUSE_VIDEOCORE=ON
-endif
-
 ifeq ($(BR2_PACKAGE_HAS_LIBMALI),y)
     FLYCAST_DEPENDENCIES += libmali
     FLYCAST_CONF_OPTS += -DUSE_MALI=ON
