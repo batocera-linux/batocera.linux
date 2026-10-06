@@ -48,6 +48,8 @@ cp "${BINARIES_DIR}/rk3326-anbernic-rg351v.dtb" "${BATOCERA_BINARIES_DIR}/boot/"
 cp "${BINARIES_DIR}/rk3326-gameforce-chi.dtb" "${BATOCERA_BINARIES_DIR}/boot/rk3326-gameforce-chi.dtb" || exit 1
 # R33 device
 cp "${BINARIES_DIR}/rk3326-gameconsole-r33s.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
+# R36 ultra
+cp "${BINARIES_DIR}/rk3326-gameconsole-r36ultra.dtb" "${BATOCERA_BINARIES_DIR}/boot/" || exit 1
 
 # overlay files
 cp -a "${BOARD_DIR}/overlays/." "${BATOCERA_BINARIES_DIR}/boot/overlays/" || exit 1

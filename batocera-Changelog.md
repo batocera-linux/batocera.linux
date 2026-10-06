@@ -29,6 +29,7 @@
 - Odroid M2 initial support
 - Radxa Rock-5T initial support
 - Retroid Pocket Nova initial support
+- R36 Ultra initial support
 ### Added
 - Anbernic H700 device deep sleep suspend, replacing fake suspend
 - Anbernic H700 device hardware acceleration support
