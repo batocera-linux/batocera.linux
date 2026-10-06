@@ -51,14 +51,14 @@ case "$1" in
                     # and requires a custom hciattach_opi binary
                     if [ "${BOARD}" = "orangepi4-lts" ] || [ "${BOARD}" = "orangepi-800" ]
                     then
-                        /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd &
+                        /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd >/dev/null 2>&1 &
                     else
-                        /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep &
+                        /usr/bin/hciattach /dev/ttyS0 bcm43xx 1500000 flow nosleep >/dev/null 2>&1 &
                     fi
                     sleep 2 # Give hciattach a few seconds to finish attaching firmware
                 ;;
                 rtk115)
-                    /usr/bin/hciattach -n /dev/ttyS0 rtk_h5 115200 & # specific to Tinkerboard
+                    /usr/bin/hciattach -n /dev/ttyS0 rtk_h5 115200 >/dev/null 2>&1 & # specific to Tinkerboard
                     sleep 2 # Give hciattach a few seconds to finish attaching firmware
                 ;;
                 bcm921)
@@ -69,26 +69,26 @@ case "$1" in
                     sleep 2 # without the sleep, on rpi4, the agent fails on startup complaining the device is not here
                 ;;
                 sprd)
-                    /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd & # specific for certain orangepi boards
+                    /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd >/dev/null 2>&1 & # specific for certain orangepi boards
                     sleep 2
                 ;;
                 bcm4345c5)
                     /usr/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 200000 \
-                        --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 &
+                        --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 >/dev/null 2>&1 &
                     sleep 2
                 ;;
                 bcm4345c0)
                     if [ "${BOARD}" = "radxa-zero-3w" ]; then
                         # it's actually an aic8800 chipset
                         rfkill unblock all
-                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep &
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep >/dev/null 2>&1 &
                         sleep 2
                     else
                         bt_status="$(cat /proc/device-tree/wireless-bluetooth/status 2>/dev/null | tr -d '\0')"
                         wifi_chip="$(cat /proc/device-tree/wireless-wlan/wifi_chip_type 2>/dev/null | tr -d '\0')"
                         if [ "${wifi_chip}" = "ap6256" ] && [ "${bt_status}" = "okay" ]; then
                             brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
-                                --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 &
+                                --baudrate 1500000 --patchram /lib/firmware/BCM4345C0.hcd /dev/ttyS1 >/dev/null 2>&1 &
                             sleep 2
                         fi
                     fi
@@ -97,14 +97,14 @@ case "$1" in
                     if [ "${BOARD}" = "orangepi-5-ultra" ] || [ "${BOARD}" = "orangepi-5-max" ]; then
                         rfkill unblock all
                         brcm_patchram_plus --enable_hci --no2bytes --use_baudrate_for_download --tosleep 200000 \
-                            --baudrate 1500000 --patchram /lib/firmware/SYN43711A0.hcd /dev/ttyS7 &
+                            --baudrate 1500000 --patchram /lib/firmware/SYN43711A0.hcd /dev/ttyS7 >/dev/null 2>&1 &
                         sleep 2
                     fi
                 ;;
                 aic8800)
                     if [ "${BOARD}" = "coolpi-4b" ]; then
                         rfkill unblock all
-                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 &
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 >/dev/null 2>&1 &
                         sleep 2
                     fi
                 ;;
@@ -129,19 +129,19 @@ case "$1" in
         if test "${debug}" = 1
         then
             start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec \
-                /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS 2>/var/log/bluetooth-daemon.log &
+                /usr/libexec/bluetooth/bluetoothd -- -n -d $BLUETOOTHD_ARGS >/dev/null 2>/var/log/bluetooth-daemon.log &
         else
             start-stop-daemon -S -q -m -p /var/run/bluetoothd.pid --exec \
-                /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS &
+                /usr/libexec/bluetooth/bluetoothd -- $BLUETOOTHD_ARGS >/dev/null 2>&1 &
         fi
 
         if [ -n "${btaddr}" ]
         then
             start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec \
-                /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" &
+                /usr/bin/batocera-bluetooth-agent -- --device "${btaddr}" >/dev/null 2>&1 &
         else
             start-stop-daemon -S -q -m -p /var/run/bluetooth-agent.pid --exec \
-                /usr/bin/batocera-bluetooth-agent &
+                /usr/bin/batocera-bluetooth-agent >/dev/null 2>&1 &
         fi
         # for OrangePi LTS devices we need to power on the controller & put in pairable mode
         if [ "${BOARD}" = "orangepi4-lts" ] || [ "${BOARD}" = "orangepi-3-lts" ] || [ "${BOARD}" = "orangepi-zero2" ] || [ "${BOARD}" = "orangepi-800" ]
