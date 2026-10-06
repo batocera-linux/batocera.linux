@@ -21,7 +21,7 @@ ba_keyboard_lang() {
         fi
     fi
 
-    # Export variables for graphical sessions (Sway, labwc, Xorg)
+    # Export variables for graphical sessions (labwc, Xorg)
     export XKB_LAYOUT="$settings_kb"
     export XKB_DEFAULT_LAYOUT="$settings_kb"
     
