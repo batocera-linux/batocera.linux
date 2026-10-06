@@ -7,7 +7,7 @@ Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
  drivers/gpu/drm/panel/Kconfig                |   9 +
  drivers/gpu/drm/panel/Makefile               |   1 +
- drivers/gpu/drm/panel/panel-innolux-td4328.c | 254 +++++++++++++++++++
+ drivers/gpu/drm/panel/ panel-innolux-td4328.c | 251 +++++++++++++++++++
  3 files changed, 349 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-innolux-td4328.c
 
@@ -48,7 +48,7 @@ new file mode 100644
 index 0000000..6173871
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-innolux-td4328.c
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,251 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Copyright (C) 2022 Teguh Sobirin
@@ -205,9 +205,11 @@ index 0000000..6173871
 +	struct innolux_td4328 *ctx;
 +	int ret;
 +
-+	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return -ENOMEM;
++	ctx = devm_drm_panel_alloc(dev, struct innolux_td4328, panel,
++				   &innolux_td4328_panel_funcs,
++				   DRM_MODE_CONNECTOR_DSI);
++	if (IS_ERR(ctx))
++		return PTR_ERR(ctx);
 +
 +	ctx->supplies[0].supply = "vddio";
 +	ctx->supplies[1].supply = "vddpos";
@@ -253,35 +255,30 @@ index 0000000..6173871
 +					| MIPI_DSI_MODE_VIDEO_BURST
 +					| MIPI_DSI_MODE_NO_EOT_PACKET;
 +
-+	drm_panel_init(&ctx->panel, dev, &innolux_td4328_panel_funcs,
-+		       DRM_MODE_CONNECTOR_DSI);
 +	ctx->panel.prepare_prev_first = true;
 +
 +	ret = drm_panel_of_backlight(&ctx->panel);
 +	if (ret)
 +		return dev_err_probe(dev, ret, "Failed to get backlight\n");
 +
-+	drm_panel_add(&ctx->panel);
++	ret = devm_drm_panel_add(dev, &ctx->panel);
++	if (ret)
++		return ret;
 +
 +	ret = mipi_dsi_attach(dsi);
-+	if (ret < 0) {
-+		drm_panel_remove(&ctx->panel);
++	if (ret < 0)
 +		return dev_err_probe(dev, ret, "Failed to attach to DSI host\n");
-+	}
 +
 +	return 0;
 +}
 +
 +static void innolux_td4328_remove(struct mipi_dsi_device *dsi)
 +{
-+	struct innolux_td4328 *ctx = mipi_dsi_get_drvdata(dsi);
 +	int ret;
 +
 +	ret = mipi_dsi_detach(dsi);
 +	if (ret < 0)
 +		dev_err(&dsi->dev, "Failed to detach from DSI host: %d\n", ret);
-+
-+	drm_panel_remove(&ctx->panel);
 +}
 +
 +static const struct of_device_id innolux_td4328_of_match[] = {

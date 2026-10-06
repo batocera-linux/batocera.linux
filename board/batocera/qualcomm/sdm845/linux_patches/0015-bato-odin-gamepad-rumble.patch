@@ -1,0 +1,138 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] Input: odin-gamepad: rumble through the pmi8998 haptics
+
+Expose FF_RUMBLE on the gamepad and forward effects to the pmi8998
+haptics driver, which exports a rumble entry point for it. The Odin
+motor is an ERM.
+
+---
+--- a/drivers/input/misc/qcom-spmi-haptics.c
++++ b/drivers/input/misc/qcom-spmi-haptics.c
+@@ -11,6 +11,7 @@
+ #include <linux/errno.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/input.h>
++#include <linux/input/qcom-spmi-haptics.h>
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/log2.h>
+@@ -195,6 +196,8 @@
+ 	struct mutex play_lock;
+ };
+ 
++static struct spmi_haptics *global_haptics;
++
+ static inline bool is_secure_addr(u16 addr)
+ {
+ 	return (addr & 0xFF) > 0xD0;
+@@ -775,6 +778,21 @@
+ 	return 0;
+ }
+ 
++int qcom_spmi_haptics_rumble(unsigned int strong_magnitude, unsigned int weak_magnitude)
++{
++	struct ff_effect effect = {
++		.type = FF_RUMBLE,
++		.u.rumble.strong_magnitude = strong_magnitude,
++		.u.rumble.weak_magnitude = weak_magnitude,
++	};
++
++	if (!global_haptics)
++		return -ENODEV;
++
++	return spmi_haptics_play_effect(global_haptics->haptics_input_dev, NULL, &effect);
++}
++EXPORT_SYMBOL_GPL(qcom_spmi_haptics_rumble);
++
+ static int spmi_haptics_probe(struct platform_device *pdev)
+ {
+ 	struct spmi_haptics *haptics;
+@@ -922,6 +940,8 @@
+ 		goto register_fail;
+ 	}
+ 
++	global_haptics = haptics;
++
+ 	return 0;
+ 
+ register_fail:
+@@ -947,6 +967,7 @@
+ {
+ 	struct spmi_haptics *haptics = dev_get_drvdata(&pdev->dev);
+ 
++	global_haptics = NULL;
+ 	cancel_work_sync(&haptics->work);
+ 	mutex_destroy(&haptics->play_lock);
+ 	input_unregister_device(haptics->haptics_input_dev);
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -347,6 +347,8 @@
+ config JOYSTICK_ODIN_GAMEPAD
+ 	tristate "AYN Odin Gamepad driver"
+ 	depends on ARCH_QCOM
++	depends on INPUT_QCOM_SPMI_HAPTICS
++	select INPUT_FF_MEMLESS
+ 	help
+ 	  Say Y here if you wish to enable AYN Odin internal gamepad unit.
+ 	  To compile this as a module choose M here: the module will be called
+--- a/drivers/input/joystick/odin-gamepad.c
++++ b/drivers/input/joystick/odin-gamepad.c
+@@ -8,6 +8,7 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/input/qcom-spmi-haptics.h>
+ #include <linux/iio/consumer.h>
+ #include <linux/iio/types.h>
+ #include <linux/input.h>
+@@ -90,6 +91,13 @@
+ 	unsigned long combo_btns_pressed;
+ };
+ 
++static int odin_gamepad_rumble(struct input_dev *input, void *data,
++			       struct ff_effect *effect)
++{
++	return qcom_spmi_haptics_rumble(effect->u.rumble.strong_magnitude,
++					effect->u.rumble.weak_magnitude);
++}
++
+ static void odin_gamepad_poll(struct input_dev *input)
+ {
+ 	struct odin_gamepad *gamepad = input_get_drvdata(input);
+@@ -331,6 +339,11 @@
+ 	input_setup_polling(input, odin_gamepad_poll);
+ 	input_set_poll_interval(input, poll_interval);
+ 
++	input_set_capability(input, EV_FF, FF_RUMBLE);
++	error = input_ff_create_memless(input, NULL, odin_gamepad_rumble);
++	if (error)
++		return dev_err_probe(dev, error, "Unable to create rumble device\n");
++
+ 	dev_info(dev, "%s: register input_dev\n", __func__);
+ 	error = input_register_device(input);
+ 	if (error)
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -815,6 +815,12 @@
+ 	};
+ };
+ 
++&pmi8998_haptics {
++	qcom,actuator-type = <HAP_TYPE_ERM>;
++	qcom,wave-play-rate-us = <4255>;
++	status = "okay";
++};
++
+ &pmi8998_lpg {
+ 	status = "okay";
+ 
+--- /dev/null
++++ b/include/linux/input/qcom-spmi-haptics.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_INPUT_QCOM_SPMI_HAPTICS_H
++#define _LINUX_INPUT_QCOM_SPMI_HAPTICS_H
++
++int qcom_spmi_haptics_rumble(unsigned int strong_magnitude, unsigned int weak_magnitude);
++
++#endif
