@@ -57,11 +57,11 @@ def _write_build(root: Path, game: str, release: str, /, *, iso_data: bool) -> N
 
 
 @cached_dataclass
-class _Harness2(OpenGOAL):
+class _Harness(OpenGOAL):
     def __init__(self, config: SystemConfig, rom: Rom, /) -> None:
-        object.__setattr__(self, 'config', config)
-        object.__setattr__(self, 'rom', rom)
-        object.__setattr__(self, '_repacked', None)
+        self.config = config
+        self.rom = rom
+        self._repacked = None
 
         OpenGOAL.__post_init__(self)
 
@@ -122,7 +122,7 @@ class TestSquashfsFromAnOlderVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
 
         await emulator._resolve_game()
         assert mock_run.await_args_list == [
@@ -176,7 +176,7 @@ class TestSquashfsFromAnOlderVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
 
         mock_run.__force_fail__ = True
         assert await emulator._resolve_game() == game
@@ -208,7 +208,7 @@ class TestSquashfsFromAnOlderVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
 
         for child in (packed_launch_rom / 'iso_data' / game).iterdir():
             child.rmdir()
@@ -226,7 +226,7 @@ class TestSquashfsFromThisVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
 
         assert await emulator._resolve_game() == game
         mock_run.assert_not_awaited()
@@ -239,7 +239,7 @@ class TestSquashfsFromThisVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
         _write_build(emulator.data_dir, game, _NEW, iso_data=False)
 
         await emulator._resolve_game()
@@ -254,7 +254,7 @@ class TestSquashfsFromThisVersion:
         packed_launch_rom: Rom,
         launch_config: MockSystemConfig,
     ) -> None:
-        emulator = _Harness2(launch_config, packed_launch_rom)
+        emulator = _Harness(launch_config, packed_launch_rom)
         _write_build(emulator.data_dir, game, _NEW, iso_data=True)
 
         await emulator._resolve_game()
@@ -280,7 +280,7 @@ class TestDiscImage:
     ) -> None:
         iso = write_ps2_disc(ROMS / 'opengoal' / f'{serial}.iso', serial)
 
-        assert await _Harness2(launch_config, Rom(iso, None))._resolve_game() == disc_game
+        assert await _Harness(launch_config, Rom(iso, None))._resolve_game() == disc_game
         assert mock_run.await_args_list == [
             (
                 (
@@ -301,7 +301,7 @@ class TestDiscImage:
 
         mock_run.reset_mock()
 
-        assert await _Harness2(launch_config, Rom(iso, None))._resolve_game() == disc_game
+        assert await _Harness(launch_config, Rom(iso, None))._resolve_game() == disc_game
         mock_run.assert_not_awaited()
 
     async def test_rebuilds_over_another_games_leftovers(
@@ -314,7 +314,7 @@ class TestDiscImage:
         iso = write_ps2_disc(ROMS / 'opengoal' / f'{serial}.iso', serial)
 
         for leftover in (game for game in _GAMES if game != disc_game):
-            emulator = _Harness2(launch_config, Rom(iso, None))
+            emulator = _Harness(launch_config, Rom(iso, None))
             _write_build(emulator.data_dir, leftover, _NEW, iso_data=False)
 
             mock_run.reset_mock()
@@ -349,7 +349,7 @@ async def test_rejects_the_unsupported_disc_next_to_each_supported_one(
     iso = write_ps2_disc(ROMS / 'opengoal' / f'{unsupported}.iso', unsupported)
 
     with pytest.raises(BatoceraException, match=unsupported):
-        await _Harness2(launch_config, Rom(iso, None))._resolve_game()
+        await _Harness(launch_config, Rom(iso, None))._resolve_game()
 
     mock_run.assert_not_awaited()
 
@@ -359,6 +359,6 @@ async def test_rejects_a_plain_folder(game: str, launch_config: MockSystemConfig
     _write_build(folder, game, _NEW, iso_data=True)
 
     with pytest.raises(BatoceraException, match='neither'):
-        await _Harness2(launch_config, Rom(folder, None))._resolve_game()
+        await _Harness(launch_config, Rom(folder, None))._resolve_game()
 
     mock_run.assert_not_awaited()
