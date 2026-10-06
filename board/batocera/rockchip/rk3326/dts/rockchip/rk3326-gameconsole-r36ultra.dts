@@ -100,3 +100,11 @@
 &vcc18_lcd_n {
 	rockchip,pins = <3 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
 };
+
+&{/rk817-sound-amplified} {
+	status = "disabled";
+};
+
+&{/rk817-sound-simple} {
+	status = "okay";
+};
