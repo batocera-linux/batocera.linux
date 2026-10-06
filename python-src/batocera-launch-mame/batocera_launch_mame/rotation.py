@@ -1,12 +1,8 @@
 from __future__ import annotations
 
 import subprocess
-from typing import TYPE_CHECKING
 
-from batocera_launch.plugins import Plugin
-
-if TYPE_CHECKING:
-    from batocera_launch.plugins import HookContext
+from batocera_launch import HookContext, Plugin
 
 
 def _resolution(command: str, /) -> str:

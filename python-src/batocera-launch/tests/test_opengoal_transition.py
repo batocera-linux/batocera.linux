@@ -3,20 +3,48 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 import pytest
+from pytest_batocera import write_ps2_disc
 
 from batocera_common.asyncio import AsyncCompletedProcess
-from batocera_launch.emulators import opengoal
-from batocera_launch.emulators.opengoal import _GAMES, _SERIAL_GAMES, OpenGOAL
+from batocera_common.dataclasses import cached_dataclass
+from batocera_common.paths import CACHE, ROMS, SQUASHFS_DIR
+from batocera_launch.emulators.opengoal import (
+    _BUILD_MARKER,
+    _GAMES,
+    _INSTALL_DIR,
+    _RELEASE_FILE,
+    _RUNTIME_PROJECT_DIRS,
+    _SERIAL_GAMES,
+    _SHIPPED_DATA,
+    OpenGOAL,
+)
 from batocera_launch.exceptions import BatoceraException
 from batocera_launch.rom import Rom
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from pyfakefs.fake_filesystem import FakeFilesystem
+    from pytest_batocera import MockSystemConfig
+    from pytest_mock import MockerFixture
+
+    from batocera_launch import SystemConfig
 
 _OLD = 'v1.0.0'
 _NEW = 'v1.0.1'
+
+pytestmark = [pytest.mark.usefixtures('fs'), pytest.mark.launch_config_system('opengoal')]
+
+
+@pytest.fixture
+def fs(fs: FakeFilesystem) -> None:
+    fs.makedirs(str(_SHIPPED_DATA))
+
+    _RELEASE_FILE.write_text(f'{_NEW}\n')
+
+    for directory in _RUNTIME_PROJECT_DIRS:
+        _SHIPPED_DATA.joinpath(directory).mkdir(parents=True, exist_ok=True)
 
 
 def _write_build(root: Path, game: str, release: str, /, *, iso_data: bool) -> None:
@@ -28,19 +56,14 @@ def _write_build(root: Path, game: str, release: str, /, *, iso_data: bool) -> N
         (root / 'iso_data' / game / 'DGO').mkdir(parents=True)
 
 
-class _Harness(OpenGOAL):
-    def __init__(self, rom: Rom, base: Path, /) -> None:
+@cached_dataclass
+class _Harness2(OpenGOAL):
+    def __init__(self, config: SystemConfig, rom: Rom, /) -> None:
+        object.__setattr__(self, 'config', config)
         object.__setattr__(self, 'rom', rom)
         object.__setattr__(self, '_repacked', None)
-        self._base = base
 
-    @property
-    def project_dir(self) -> Path:  # pyright: ignore[reportIncompatibleVariableOverride]
-        return self._base / 'cache' / self.rom.id
-
-    @property
-    def data_dir(self) -> Path:  # pyright: ignore[reportIncompatibleVariableOverride]
-        return self._base / 'roms' / self.rom.id
+        OpenGOAL.__post_init__(self)
 
 
 @pytest.fixture(params=_GAMES)
@@ -49,126 +72,189 @@ def game(request: pytest.FixtureRequest) -> str:
 
 
 @pytest.fixture
-def base(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    release_file = tmp_path / 'shipped' / 'version'
-    release_file.parent.mkdir()
-    release_file.write_text(f'{_NEW}\n')
-    monkeypatch.setattr(opengoal, '_RELEASE_FILE', release_file)
-    monkeypatch.setattr(opengoal, '_SHIPPED_DATA', tmp_path / 'shipped')
-    for directory in opengoal._RUNTIME_PROJECT_DIRS:
-        (tmp_path / 'shipped' / directory).mkdir(parents=True)
-    return tmp_path
+def game_release(request: pytest.FixtureRequest) -> str:
+    return getattr(request, 'param', _OLD)
 
 
-def _fake_tools(monkeypatch: pytest.MonkeyPatch, *, mksquashfs_fails: bool = False) -> list[str]:
-    calls: list[str] = []
+@pytest.fixture
+def mock_run(mocker: MockerFixture, request: pytest.FixtureRequest) -> AsyncMock:
+    mksquashfs_fails = getattr(request, 'param', False)
 
-    async def fake_run(cmd: str | Path, /, *args: str | Path, **_: object) -> AsyncCompletedProcess[bytes]:
+    async def side_effect(cmd: str | Path, /, *args: str | Path, **_: object) -> AsyncCompletedProcess[bytes]:
         if Path(cmd).name == 'extractor':
             game = str(args[args.index('-g') + 1])
-            calls.append(f'extractor {game}' + (' validated' if '-e' in args and '-v' in args else ''))
             project = Path(args[args.index('--proj-path') + 1])
             (project / 'out' / game / 'iso').mkdir(parents=True, exist_ok=True)
             (project / 'out' / game / 'iso' / 'KERNEL.CGO').write_text('rebuilt')
+
             return AsyncCompletedProcess(0, b'', b'')
 
-        calls.append(Path(cmd).name)
-
-        if mksquashfs_fails:
+        if mksquashfs_fails or mock.__force_fail__:
             return AsyncCompletedProcess(1, b'', b'No space left on device')
 
         Path(args[3]).write_text('\n'.join(str(source) for source in args[:3]))
         return AsyncCompletedProcess(0, b'', b'')
 
-    monkeypatch.setattr(opengoal, 'run', fake_run)
-    return calls
+    mock = mocker.patch('batocera_launch.emulators.opengoal.run', new_callable=AsyncMock, side_effect=side_effect)
+
+    mock.__force_fail__ = False
+
+    return mock
 
 
-def _packed(base: Path, game: str, release: str, /) -> tuple[Rom, Callable[[], _Harness]]:
-    source = base / 'roms' / f'{game}.squashfs'
-    source.parent.mkdir(parents=True, exist_ok=True)
-    source.write_text('old image')
-    mount = base / 'mnt' / source.stem
-    _write_build(mount, game, release, iso_data=True)
-    rom = Rom(source, mount)
-    return rom, lambda: _Harness(rom, base)
+@pytest.fixture
+def packed_launch_rom(fs: FakeFilesystem, launch_config_system: str, game: str, game_release: str) -> Rom:
+    rom = Rom(ROMS / launch_config_system / f'{game}.squashfs', SQUASHFS_DIR / game)
+
+    rom.source.parent.mkdir(parents=True, exist_ok=True)
+    rom.source.write_text('old image')
+
+    _write_build(rom, game, game_release, iso_data=True)
+
+    return rom
 
 
 class TestSquashfsFromAnOlderVersion:
-    async def test_rebuilds_repacks_and_tidies_up(self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch) -> None:
-        calls = _fake_tools(monkeypatch)
-        rom, harness = _packed(base, game, _OLD)
-        emulator = harness()
+    async def test_rebuilds_repacks_and_tidies_up(
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
+    ) -> None:
+        emulator = _Harness2(launch_config, packed_launch_rom)
 
-        assert await emulator._resolve_game() == game
-        assert calls == [f'extractor {game}', 'mksquashfs']
+        await emulator._resolve_game()
+        assert mock_run.await_args_list == [
+            (
+                (
+                    _INSTALL_DIR / 'extractor',
+                    CACHE / 'opengoal' / game / 'iso_data' / game,
+                    '--proj-path',
+                    CACHE / 'opengoal' / game,
+                    '-g',
+                    game,
+                    '-d',
+                    '-c',
+                    '-f',
+                ),
+                {'capture_output': False},
+            ),
+            (
+                (
+                    'mksquashfs',
+                    packed_launch_rom / 'iso_data',
+                    ROMS / 'opengoal' / game / 'out',
+                    ROMS / 'opengoal' / game / _BUILD_MARKER,
+                    packed_launch_rom.source.with_name(f'.{packed_launch_rom.source.name}.new'),
+                    '-comp',
+                    'zstd',
+                    '-noappend',
+                    '-no-progress',
+                    '-quiet',
+                ),
+                {},
+            ),
+        ]
 
-        assert rom.source.read_text().splitlines() == [
-            str(rom / 'iso_data'),
+        assert packed_launch_rom.source.read_text().splitlines() == [
+            str(packed_launch_rom / 'iso_data'),
             str(emulator.data_dir / 'out'),
             str(emulator.data_dir / 'opengoal-build.json'),
         ]
-        assert not list(rom.source.parent.glob('.*.new'))
+        assert not list(packed_launch_rom.source.parent.glob('.*.new'))
 
         assert (emulator.project_dir / 'out').resolve() == emulator.data_dir / 'out'
-        emulator._drop_local_build(emulator._repacked)  # pyright: ignore[reportArgumentType]
+        assert emulator._repacked is not None
+        emulator._drop_local_build(emulator._repacked)
         assert not emulator.data_dir.exists()
 
     async def test_a_failed_repack_still_plays_and_retries_without_rebuilding(
-        self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
     ) -> None:
-        _fake_tools(monkeypatch, mksquashfs_fails=True)
-        rom, harness = _packed(base, game, _OLD)
+        emulator = _Harness2(launch_config, packed_launch_rom)
 
-        assert await harness()._resolve_game() == game
-        assert rom.source.read_text() == 'old image'
-        assert not list(rom.source.parent.glob('.*.new'))
+        mock_run.__force_fail__ = True
+        assert await emulator._resolve_game() == game
+        assert packed_launch_rom.source.read_text() == 'old image'
+        assert not list(packed_launch_rom.source.parent.glob('.*.new'))
+        mock_run.__force_fail__ = False
 
-        calls = _fake_tools(monkeypatch)
-        assert await harness()._resolve_game() == game
-        assert calls == ['mksquashfs']
+        assert await emulator._resolve_game() == game
+        assert mock_run.await_args_list[-1] == (
+            (
+                'mksquashfs',
+                packed_launch_rom / 'iso_data',
+                ROMS / 'opengoal' / game / 'out',
+                ROMS / 'opengoal' / game / _BUILD_MARKER,
+                packed_launch_rom.source.with_name(f'.{packed_launch_rom.source.name}.new'),
+                '-comp',
+                'zstd',
+                '-noappend',
+                '-no-progress',
+                '-quiet',
+            ),
+            {},
+        )
 
     async def test_without_iso_data_it_cannot_rebuild(
-        self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
     ) -> None:
-        _fake_tools(monkeypatch)
-        rom, harness = _packed(base, game, _OLD)
-        for child in (rom / 'iso_data' / game).iterdir():
+        emulator = _Harness2(launch_config, packed_launch_rom)
+
+        for child in (packed_launch_rom / 'iso_data' / game).iterdir():
             child.rmdir()
 
         with pytest.raises(BatoceraException, match='no iso_data'):
-            await harness()._resolve_game()
+            await emulator._resolve_game()
 
 
+@pytest.mark.parametrize('game_release', [_NEW], indirect=True)
 class TestSquashfsFromThisVersion:
-    async def test_plays_straight_from_the_image(self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch) -> None:
-        calls = _fake_tools(monkeypatch)
-        rom, harness = _packed(base, game, _NEW)
-        emulator = harness()
+    async def test_plays_straight_from_the_image(
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
+    ) -> None:
+        emulator = _Harness2(launch_config, packed_launch_rom)
 
         assert await emulator._resolve_game() == game
-        assert calls == []
-        assert (emulator.project_dir / 'out').resolve() == rom / 'out'
+        mock_run.assert_not_awaited()
+        assert (emulator.project_dir / 'out').samefile(packed_launch_rom / 'out')
 
     async def test_clears_a_leftover_from_an_interrupted_repack(
-        self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
     ) -> None:
-        _fake_tools(monkeypatch)
-        rom, harness = _packed(base, game, _NEW)
-        emulator = harness()
+        emulator = _Harness2(launch_config, packed_launch_rom)
         _write_build(emulator.data_dir, game, _NEW, iso_data=False)
 
         await emulator._resolve_game()
 
         assert not emulator.data_dir.exists()
-        assert (emulator.project_dir / 'out').resolve() == rom / 'out'
+        assert (emulator.project_dir / 'out').samefile(packed_launch_rom / 'out')
 
     async def test_keeps_a_folder_that_carries_its_own_disc(
-        self, base: Path, game: str, monkeypatch: pytest.MonkeyPatch
+        self,
+        mock_run: AsyncMock,
+        game: str,
+        packed_launch_rom: Rom,
+        launch_config: MockSystemConfig,
     ) -> None:
-        _fake_tools(monkeypatch)
-        _, harness = _packed(base, game, _NEW)
-        emulator = harness()
+        emulator = _Harness2(launch_config, packed_launch_rom)
         _write_build(emulator.data_dir, game, _NEW, iso_data=True)
 
         await emulator._resolve_game()
@@ -187,61 +273,92 @@ def _unsupported_neighbour(serial: str, /) -> str:
 class TestDiscImage:
     async def test_builds_then_plays_the_game_on_the_disc(
         self,
-        base: Path,
         serial: str,
         disc_game: str,
-        monkeypatch: pytest.MonkeyPatch,
-        write_ps2_disc: Callable[..., Path],
+        mock_run: AsyncMock,
+        launch_config: MockSystemConfig,
     ) -> None:
-        calls = _fake_tools(monkeypatch)
-        iso = write_ps2_disc(base / 'roms' / f'{serial}.iso', serial)
+        iso = write_ps2_disc(ROMS / 'opengoal' / f'{serial}.iso', serial)
 
-        assert await _Harness(Rom(iso, None), base)._resolve_game() == disc_game
-        assert calls == [f'extractor {disc_game} validated']
+        assert await _Harness2(launch_config, Rom(iso, None))._resolve_game() == disc_game
+        assert mock_run.await_args_list == [
+            (
+                (
+                    _INSTALL_DIR / 'extractor',
+                    iso,
+                    '--proj-path',
+                    CACHE / 'opengoal' / serial,
+                    '-g',
+                    disc_game,
+                    '-d',
+                    '-c',
+                    '-e',
+                    '-v',
+                ),
+                {'capture_output': False},
+            )
+        ]
 
-        calls.clear()
-        assert await _Harness(Rom(iso, None), base)._resolve_game() == disc_game
-        assert calls == []
+        mock_run.reset_mock()
+
+        assert await _Harness2(launch_config, Rom(iso, None))._resolve_game() == disc_game
+        mock_run.assert_not_awaited()
 
     async def test_rebuilds_over_another_games_leftovers(
         self,
-        base: Path,
         serial: str,
         disc_game: str,
-        monkeypatch: pytest.MonkeyPatch,
-        write_ps2_disc: Callable[..., Path],
+        mock_run: AsyncMock,
+        launch_config: MockSystemConfig,
     ) -> None:
-        iso = write_ps2_disc(base / 'roms' / f'{serial}.iso', serial)
+        iso = write_ps2_disc(ROMS / 'opengoal' / f'{serial}.iso', serial)
 
         for leftover in (game for game in _GAMES if game != disc_game):
-            emulator = _Harness(Rom(iso, None), base)
+            emulator = _Harness2(launch_config, Rom(iso, None))
             _write_build(emulator.data_dir, leftover, _NEW, iso_data=False)
-            calls = _fake_tools(monkeypatch)
+
+            mock_run.reset_mock()
 
             assert await emulator._resolve_game() == disc_game
-            assert calls == [f'extractor {disc_game} validated']
+            assert mock_run.await_args_list == [
+                (
+                    (
+                        _INSTALL_DIR / 'extractor',
+                        iso,
+                        '--proj-path',
+                        CACHE / 'opengoal' / serial,
+                        '-g',
+                        disc_game,
+                        '-d',
+                        '-c',
+                        '-e',
+                        '-v',
+                    ),
+                    {'capture_output': False},
+                )
+            ]
 
 
 @pytest.mark.parametrize('serial', sorted(_SERIAL_GAMES))
 async def test_rejects_the_unsupported_disc_next_to_each_supported_one(
-    base: Path, serial: str, monkeypatch: pytest.MonkeyPatch, write_ps2_disc: Callable[..., Path]
+    serial: str,
+    mock_run: AsyncMock,
+    launch_config: MockSystemConfig,
 ) -> None:
-    calls = _fake_tools(monkeypatch)
     unsupported = _unsupported_neighbour(serial)
-    iso = write_ps2_disc(base / 'roms' / f'{unsupported}.iso', unsupported)
+    iso = write_ps2_disc(ROMS / 'opengoal' / f'{unsupported}.iso', unsupported)
 
     with pytest.raises(BatoceraException, match=unsupported):
-        await _Harness(Rom(iso, None), base)._resolve_game()
+        await _Harness2(launch_config, Rom(iso, None))._resolve_game()
 
-    assert calls == []
+    mock_run.assert_not_awaited()
 
 
-async def test_rejects_a_plain_folder(base: Path, game: str, monkeypatch: pytest.MonkeyPatch) -> None:
-    calls = _fake_tools(monkeypatch)
-    folder = base / 'roms' / game
+async def test_rejects_a_plain_folder(game: str, launch_config: MockSystemConfig, mock_run: AsyncMock) -> None:
+    folder = ROMS / 'opengoal' / game
     _write_build(folder, game, _NEW, iso_data=True)
 
     with pytest.raises(BatoceraException, match='neither'):
-        await _Harness(Rom(folder, None), base)._resolve_game()
+        await _Harness2(launch_config, Rom(folder, None))._resolve_game()
 
-    assert calls == []
+    mock_run.assert_not_awaited()

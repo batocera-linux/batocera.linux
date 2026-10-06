@@ -30,7 +30,7 @@ from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
-from .plugins import HookContext, PluginManager
+from .plugin_manager import HookContext, PluginManager
 from .rom import Rom, ShortGameID
 
 if TYPE_CHECKING:
@@ -61,7 +61,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     sdl_game_controller_config_ignore_buttons: ClassVar[Container[str] | None] = None
 
     config: SystemConfig
-    profiler: Profiler
+    profiler: Profiler = field(repr=False)
 
     # These are set in __post_init__
     system: str = field(init=False)
@@ -70,15 +70,15 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
     # These are set in __aenter__
     rom: Rom = field(init=False, default=cast('Rom', None))
-    metadata: dict[str, str] = field(init=False, default=cast('dict[str, str]', None))
-    controllers: Controllers = field(init=False, default=cast('Controllers', None))
-    guns: Guns = field(init=False, default=cast('Guns', None))
-    wheels: DeviceInfoMapping = field(init=False, default=cast('DeviceInfoMapping', None))
-    resolution: Resolution = field(init=False, default=cast('Resolution', None))
+    metadata: dict[str, str] = field(init=False, default=cast('dict[str, str]', None), repr=False)
+    controllers: Controllers = field(init=False, default=cast('Controllers', None), repr=False)
+    guns: Guns = field(init=False, default=cast('Guns', None), repr=False)
+    wheels: DeviceInfoMapping = field(init=False, default=cast('DeviceInfoMapping', None), repr=False)
+    resolution: Resolution = field(init=False, default=cast('Resolution', None), repr=False)
 
-    __client_session: aiohttp.ClientSession | None = field(init=False, default=None)
-    __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack)
-    __plugins: PluginManager = field(init=False)
+    __client_session: aiohttp.ClientSession | None = field(init=False, default=None, repr=False)
+    __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack, repr=False)
+    __plugins: PluginManager = field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         self.system = self.config.system

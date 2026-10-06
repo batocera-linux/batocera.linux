@@ -4,13 +4,12 @@ from typing import TYPE_CHECKING
 
 from batocera_common.power import apply_power_mode, is_power_connected
 
-from . import Plugin
+from ..plugin_manager import HookContext, Plugin
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from ..config.config import SystemConfig
-    from . import HookContext
 
 
 def global_power_mode(global_settings: Mapping[str, str], /) -> str | None:

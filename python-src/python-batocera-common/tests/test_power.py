@@ -4,13 +4,15 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from batocera_common import power
 from batocera_common.paths import BATOCERA_CONF
 from batocera_common.power import CPU_DIR, CPUFREQ_DIR, POWER_SUPPLY_DIR, apply_power_mode, is_power_connected, main
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Sequence
     from pathlib import Path
+    from unittest.mock import Mock
+
+    from pytest_mock import MockerFixture
 
 pytestmark = pytest.mark.usefixtures('fs')
 
@@ -93,19 +95,15 @@ class TestApplyPowerMode:
 
         assert _governors() == {'schedutil\n'}
 
-    def test_only_writes_changed_policies(self, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_only_writes_changed_policies(self, mocker: MockerFixture) -> None:
         _cpufreq('performance schedutil')
+
         (CPUFREQ_DIR / 'policy4' / 'scaling_governor').write_text('performance\n')
-        written: list[Path] = []
-
-        def write(path: Path, value: str, /) -> None:
-            written.append(path)
-
-        monkeypatch.setattr(power, 'write_sysfs', write)
+        mock_write_sysfs = mocker.patch('batocera_common.power.write_sysfs')
 
         apply_power_mode('highperformance')
 
-        assert written == [CPUFREQ_DIR / 'policy0' / 'scaling_governor']
+        mock_write_sysfs.assert_called_once_with(CPUFREQ_DIR / 'policy0' / 'scaling_governor', 'performance')
 
 
 class TestIsPowerConnected:
@@ -147,56 +145,54 @@ class TestIsPowerConnected:
 
 class TestMain:
     @pytest.fixture
-    def applied(self, monkeypatch: pytest.MonkeyPatch) -> list[str | None]:
-        applied: list[str | None] = []
+    def mock_apply_power_mode(self, mocker: MockerFixture) -> Mock:
+        return mocker.patch('batocera_common.power.apply_power_mode')
 
-        def apply(mode: str | None, /, **kwargs: object) -> None:
-            applied.append(mode)
+    @pytest.fixture
+    def run_main(self, mocker: MockerFixture) -> Callable[..., None]:
+        def _run(*argv: str) -> None:
+            mocker.patch('sys.argv', ['batocera-power-mode', *argv])
+            main()
 
-        monkeypatch.setattr(power, 'apply_power_mode', apply)
-        return applied
+        return _run
 
-    def _run(self, monkeypatch: pytest.MonkeyPatch, *args: str) -> None:
-        monkeypatch.setattr('sys.argv', ['batocera-power-mode', *args])
-        main()
-
-    def test_ac_uses_the_global_power_mode(self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]) -> None:
+    def test_ac_uses_the_global_power_mode(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         _write(BATOCERA_CONF, 'global.powermode=balanced\n')
 
-        self._run(monkeypatch, 'ac')
+        run_main('ac')
 
-        assert applied == ['balanced']
+        mock_apply_power_mode.assert_called_once_with('balanced')
 
     def test_ac_without_a_mode_restores_the_default(
-        self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]
+        self, run_main: Callable[..., None], mock_apply_power_mode: Mock
     ) -> None:
         _write(BATOCERA_CONF, '')
 
-        self._run(monkeypatch, 'ac')
+        run_main('ac')
 
-        assert applied == [None]
+        mock_apply_power_mode.assert_called_once_with(None)
 
-    def test_battery_defaults_to_balanced(self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]) -> None:
+    def test_battery_defaults_to_balanced(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         _write(BATOCERA_CONF, '')
 
-        self._run(monkeypatch, 'battery')
+        run_main('battery')
 
-        assert applied == ['balanced']
+        mock_apply_power_mode.assert_called_once_with('balanced')
 
-    def test_battery_uses_the_battery_mode(self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]) -> None:
+    def test_battery_uses_the_battery_mode(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         _write(BATOCERA_CONF, 'global.batterymode=powersaver\n')
 
-        self._run(monkeypatch, 'battery')
+        run_main('battery')
 
-        assert applied == ['powersaver']
+        mock_apply_power_mode.assert_called_once_with('powersaver')
 
-    def test_mode_is_case_insensitive(self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]) -> None:
-        self._run(monkeypatch, 'Powersaver')
+    def test_mode_is_case_insensitive(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
+        run_main('Powersaver')
 
-        assert applied == ['powersaver']
+        mock_apply_power_mode.assert_called_once_with('powersaver')
 
-    def test_unknown_mode_exits(self, monkeypatch: pytest.MonkeyPatch, applied: list[str | None]) -> None:
+    def test_unknown_mode_exits(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         with pytest.raises(SystemExit):
-            self._run(monkeypatch, 'turbo')
+            run_main('turbo')
 
-        assert applied == []
+        mock_apply_power_mode.assert_not_called()
