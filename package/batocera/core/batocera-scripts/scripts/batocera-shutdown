@@ -74,37 +74,7 @@ restore_backlight() {
 # --- Display Functions ---
 display_off() {
     echo "Turning display OFF"
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            if [ -e "$sock_file" ]; then
-                sway_sock="$sock_file"
-                break
-            fi
-        done
-
-        if [ -z "$sway_sock" ]; then
-            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn off display."
-            return
-        fi
-        
-        echo "INFO: [Sway] Found socket file at: $sway_sock"
-        
-        local active_displays
-        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
-
-        if [ -n "${active_displays}" ]; then
-            echo "${active_displays}" | tr '\n' ' ' > "${ACTIVE_DISPLAYS_FILE}"
-            echo "INFO: [Sway] Saved active displays to state file: $(cat ${ACTIVE_DISPLAYS_FILE})"
-
-            for output in ${active_displays}; do
-                echo "INFO: [Sway] Turning off output '${output}'"
-                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
-            done
-        else
-            echo "INFO: [Sway] No active displays found to turn off."
-        fi
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         # For labwc, find active displays, save their names, then turn them off.
         local active_displays
         active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
@@ -142,39 +112,7 @@ PLUGGED_INTERNAL_DISPLAYS_FILE="/var/run/plugged_internal_displays.list"
 
 display_off_internal_only() {
     echo "INFO: [Plugged] Turning off internal display(s) only."
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            if [ -e "$sock_file" ]; then
-                sway_sock="$sock_file"
-                break
-            fi
-        done
-
-        if [ -z "$sway_sock" ]; then
-            echo "ERROR: [Sway] Could not find sway socket file. Cannot turn off internal display."
-            return
-        fi
-
-        local active_displays
-        active_displays=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[] | select(.active==true) | .name')
-
-        local turned_off=""
-        for output in ${active_displays}; do
-            if _is_internal_display "${output}"; then
-                echo "INFO: [Sway] Turning off internal output '${output}'"
-                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power off"
-                turned_off="${turned_off} ${output}"
-            else
-                echo "INFO: [Sway] Skipping external output '${output}'"
-            fi
-        done
-
-        if [ -n "${turned_off}" ]; then
-            echo "${turned_off}" | xargs > "${PLUGGED_INTERNAL_DISPLAYS_FILE}"
-        fi
-
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         local active_displays
         active_displays=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
 
@@ -231,19 +169,7 @@ display_on_internal_only() {
         return
     fi
 
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            if [ -e "$sock_file" ]; then
-                sway_sock="$sock_file"
-                break
-            fi
-        done
-        for output in ${outputs_to_enable}; do
-            echo "INFO: [Sway] Restoring internal output '${output}'"
-            SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
-        done
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         batocera-resolution setOutput ${outputs_to_enable}
     elif pgrep -x "xinit" >/dev/null; then
         export DISPLAY=:0
@@ -257,39 +183,7 @@ display_on_internal_only() {
 
 display_on() {
     echo "Turning display ON"
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            if [ -e "$sock_file" ]; then
-                sway_sock="$sock_file"
-                break
-            fi
-        done
-
-        if [ -z "$sway_sock" ]; then
-            echo "ERROR: [Sway] Could not find sway socket file in /var/run. Cannot turn on display."
-            return
-        fi
-        
-        echo "INFO: [Sway] Found socket file at: $sway_sock"
-
-        if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
-            local outputs_to_enable
-            outputs_to_enable=$(cat "${ACTIVE_DISPLAYS_FILE}")
-
-            for output in ${outputs_to_enable}; do
-                echo "INFO: [Sway] Restoring output '${output}'"
-                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
-            done
-
-            rm -f "${ACTIVE_DISPLAYS_FILE}"
-        else
-            echo "WARNING: [Sway] No active display state file found. Restoring all outputs."
-            for output in $(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs | jq -r '.[].name'); do
-                SWAYSOCK="${sway_sock}" swaymsg "output ${output} power on"
-            done
-        fi
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         # For labwc, restore displays using the saved state file.
         if [ -f "${ACTIVE_DISPLAYS_FILE}" ]; then
             local outputs_to_enable
@@ -851,17 +745,7 @@ do_plugged_screen_on() {
 
 is_external_display_connected() {
     local outputs=""
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            if [ -e "$sock_file" ]; then
-                sway_sock="$sock_file"
-                break
-            fi
-        done
-        [ -n "$sway_sock" ] && outputs=$(SWAYSOCK="${sway_sock}" swaymsg -t get_outputs \
-            | jq -r '.[] | select(.active==true) | .name')
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         outputs=$(wlr-randr | awk '/^[^ ]/ {display_name=$1} /Enabled: yes/ {print display_name}')
     elif pgrep -x "xinit" >/dev/null; then
         export DISPLAY=:0
@@ -935,14 +819,7 @@ is_power_connected() {
 
 is_external_display_connected() {
     local outputs=""
-    if pgrep -x "sway" >/dev/null; then
-        local sway_sock=""
-        for sock_file in /var/run/sway-ipc.*.sock; do
-            [ -e "\$sock_file" ] && sway_sock="\$sock_file" && break
-        done
-        [ -n "\$sway_sock" ] && outputs=\$(SWAYSOCK="\${sway_sock}" swaymsg -t get_outputs \
-            | jq -r '.[] | select(.active==true) | .name')
-    elif pgrep -x "labwc" >/dev/null; then
+    if pgrep -x "labwc" >/dev/null; then
         outputs=\$(wlr-randr | awk '/^[^ ]/ {display_name=\$1} /Enabled: yes/ {print display_name}')
     elif pgrep -x "xinit" >/dev/null; then
         export DISPLAY=:0

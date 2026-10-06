@@ -24,7 +24,7 @@ case "$1" in
 		;;
 
 	stop)
-		for COMPOSITOR in openbox sway labwc; do
+		for COMPOSITOR in openbox labwc; do
 			pidof $COMPOSITOR >/dev/null && break || COMPOSITOR=
 		done
 
@@ -33,7 +33,6 @@ case "$1" in
 		if [ -n "$COMPOSITOR" ]; then
 			case "$COMPOSITOR" in
 				openbox) openbox --exit 2>/dev/null ;;
-				sway)    swaymsg exit 2>/dev/null ;;
 				labwc)   labwc --exit 2>/dev/null ;;
 			esac
 		fi
