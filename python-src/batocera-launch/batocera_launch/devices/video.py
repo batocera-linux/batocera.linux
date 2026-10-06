@@ -121,6 +121,24 @@ async def get_current_output() -> str:
     return proc.stdout.strip()
 
 
+_WAYLAND_OUTPUT_NAME_RE: Final = re.compile(r'^\s+name: (?P<name>\S+)$')
+
+
+def parse_wayland_outputs(info: str, /) -> list[str]:
+    return [match['name'] for line in info.splitlines() if (match := _WAYLAND_OUTPUT_NAME_RE.match(line))]
+
+
+async def list_wayland_outputs() -> list[str]:
+    # wl_output globals in registry order, which is how Qt numbers its screens; wlr-randr orders them differently
+    try:
+        proc = await run('wayland-info', '-i', 'wl_output', text=True, check=True)
+    except Exception as e:
+        _logger.debug('Failed to list wayland outputs: %s', e)
+        return []
+
+    return parse_wayland_outputs(proc.stdout)
+
+
 async def supports_system_rotation() -> bool:
     proc = await run('batocera-resolution', 'supportSystemRotation', shell=True, text=True)
     return proc.returncode == 0
