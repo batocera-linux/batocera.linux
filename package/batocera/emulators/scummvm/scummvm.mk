@@ -20,12 +20,6 @@ endif
 SCUMMVM_ADDITIONAL_FLAGS += -I$(STAGING_DIR)/usr/include -lpthread -lm
 SCUMMVM_ADDITIONAL_FLAGS += -L$(STAGING_DIR)/usr/lib -lGLESv2 -lEGL
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-    SCUMMVM_ADDITIONAL_FLAGS += -I$(STAGING_DIR)/usr/include/interface/vcos/pthreads \
-        -I$(STAGING_DIR)/usr/include/interface/vmcs_host/linux -lbcm_host -lvchostif
-    SCUMMVM_CONF_OPTS += --host=raspberrypi
-endif
-
 ifeq ($(BR2_aarch64)$(BR2_arm),y)
     SCUMMVM_CONF_OPTS += --host=arm-linux
 else ifeq ($(BR2_riscv),y)

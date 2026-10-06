@@ -291,18 +291,7 @@ else
 FFMPEG4_CONF_OPTS += --disable-vdpau
 endif
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-FFMPEG4_CONF_OPTS += --enable-omx --enable-omx-rpi \
-	--extra-cflags=-I$(STAGING_DIR)/usr/include/IL
-FFMPEG4_DEPENDENCIES += rpi-userland
-ifeq ($(BR2_arm),y)
-FFMPEG4_CONF_OPTS += --enable-mmal
-else
-FFMPEG4_CONF_OPTS += --disable-mmal
-endif
-else
 FFMPEG4_CONF_OPTS += --disable-mmal --disable-omx --disable-omx-rpi
-endif
 
 # Required for hw decoding on raspberry pi boards
 ifeq ($(BR2_PACKAGE_RPI_HEVC),y)

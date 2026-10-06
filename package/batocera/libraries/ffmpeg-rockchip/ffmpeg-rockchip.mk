@@ -291,18 +291,7 @@ else
 FFMPEG_ROCKCHIP_CONF_OPTS += --disable-vdpau
 endif
 
-ifeq ($(BR2_PACKAGE_RPI_USERLAND),y)
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-omx --enable-omx-rpi \
-	--extra-cflags=-I$(STAGING_DIR)/usr/include/IL
-FFMPEG_ROCKCHIP_DEPENDENCIES += rpi-userland
-ifeq ($(BR2_arm),y)
-FFMPEG_ROCKCHIP_CONF_OPTS += --enable-mmal
-else
-FFMPEG_ROCKCHIP_CONF_OPTS += --disable-mmal
-endif
-else
 FFMPEG_ROCKCHIP_CONF_OPTS += --disable-mmal --disable-omx --disable-omx-rpi
-endif
 
 # batocera - add RPi H.265 hardware acceleration
 ifeq ($(BR2_PACKAGE_RPI_HEVC),y)
