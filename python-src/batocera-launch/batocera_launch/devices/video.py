@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Final, Literal
 
 from batocera_common.asyncio import run
 
-from ..exceptions import BatoceraException
 from ..types import Resolution, ScreenInfo
 
 if TYPE_CHECKING:
@@ -49,42 +48,15 @@ async def min_to_max_resolution() -> None:
     await run('batocera-resolution', 'minToMaxResolution', shell=True)
 
 
-_max_res_re: Final = re.compile(r'^max-[0-9]*x[0-9]*$')
-
-
-async def mode_exists(video_mode: str) -> bool:
-    # max resolution given
-    if video_mode.startswith('max-'):
-        matches = _max_res_re.match(video_mode)
-        if matches is not None:
-            return True
-
-    # specific resolution given
-    proc = await run('batocera-resolution', 'listModes', shell=True)
-    for line in proc.stdout.decode().splitlines():
-        values = line.split(':')
-        if video_mode == values[0]:
-            return True
-
-    _logger.error('invalid video mode %s', video_mode)
-    return False
-
-
 async def change_mode(video_mode: str) -> None:
-    if await mode_exists(video_mode):
-        cmd = ['batocera-resolution', 'setMode', video_mode]
-        _logger.debug('change_mode(%s): %s', video_mode, cmd)
-        max_tries = 2  # maximum number of tries to set the mode
-        for i in range(1, max_tries + 1):
-            try:
-                proc = await run(*cmd, text=True, check=True)
-                _logger.debug(proc.stdout.strip())
-                return
-            except subprocess.CalledProcessError as e:
-                _logger.error('Error setting video mode: %s', e.stderr)
-                if i == max_tries - 1:
-                    raise BatoceraException('Error setting video mode') from e
-                await asyncio.sleep(1)
+    # the backend validates the mode and reports a bad one on stderr; the game still launches
+    cmd = ['batocera-resolution', 'setMode', video_mode]
+    _logger.debug('change_mode(%s): %s', video_mode, cmd)
+    proc = await run(*cmd, text=True)
+    if proc.returncode:
+        _logger.error('Error setting video mode %s: %s', video_mode, proc.stderr.strip())
+    elif proc.stdout:
+        _logger.debug(proc.stdout.strip())
 
 
 async def get_current_resolution(name: str | None = None) -> Resolution:
