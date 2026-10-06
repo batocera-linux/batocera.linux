@@ -151,9 +151,6 @@ config BR2_PACKAGE_BATOCERA_CPU_BIG_LITTLE
 		     BR2_cortex_a72_a53 || BR2_cortex_a73_a35 || BR2_cortex_a73_a53 || \
 		     BR2_cortex_a75_a55 || BR2_cortex_a76_a55
 
-config BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
-	bool "batocera is limited to abandoned systems"
-
 
 ##########################################
 config BR2_PACKAGE_BATOCERA_MUSIC_SUPPORT
@@ -1654,7 +1651,6 @@ config BR2_PACKAGE_BATOCERA_CONSOLE_SYSTEMS
 											   BR2_PACKAGE_BATOCERA_TARGET_QUALCOMM_SMXXXX_PLATFORM || \
 											   BR2_PACKAGE_BATOCERA_TARGET_RK3576
 
-	select BR2_PACKAGE_CITRON	  if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY && BR2_PACKAGE_BATOCERA_CORES_STILL_COMMERCIALIZED
 	# Microsoft XBOX
 	select BR2_PACKAGE_XEMU				if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
 	                                       BR2_PACKAGE_BATOCERA_TARGET_SM8550     || \
