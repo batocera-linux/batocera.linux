@@ -1,6 +1,7 @@
 config BR2_PACKAGE_LOGI_WHEEL
 	bool "logi-wheel"
 	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+	depends on BR2_ARCH_IS_64
 	help
 	    Terminal settings app for the wheels driven by the
 	    logitech-trueforce module (RS50, G PRO, G923): rotation range,
