@@ -16,7 +16,7 @@ from ..exceptions import BatoceraException
 from ..types import Resolution, ScreenInfo
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator, Sequence
+    from collections.abc import AsyncGenerator, Iterable, Sequence
 
     from ..config.config import SystemConfig
 
@@ -52,26 +52,92 @@ async def min_to_max_resolution() -> None:
 _max_res_re: Final = re.compile(r'^max-[0-9]*x[0-9]*$')
 
 
-async def mode_exists(video_mode: str) -> bool:
+_mode_re: Final = re.compile(r'^(?P<resolution>\d+x\d+)(?:\.(?P<refresh>\d+(?:\.\d+)?))?$')
+
+# Refresh rates are compared in millihertz. Older listings truncated 59.94 Hz to 59939 mHz,
+# so a saved value may be off by one from the mode the backend reports today.
+_REFRESH_TOLERANCE_MHZ: Final = 1
+
+
+def _parse_mode(mode: str, /) -> tuple[str, int | None] | None:
+    """Split a ``WxH[.refresh]`` mode string into ``(resolution, refresh in mHz)``.
+
+    The refresh is either millihertz (``1920x1080.60000``, labwc style) or hertz
+    (``1920x1080.60.00``, Xorg style). An integer below 1000 is read as hertz, since no
+    display runs below 1 Hz.
+    """
+    matches = _mode_re.match(mode)
+    if matches is None:
+        return None
+
+    refresh = matches['refresh']
+    if refresh is None:
+        return matches['resolution'], None
+
+    if '.' in refresh:
+        return matches['resolution'], round(float(refresh) * 1000)
+
+    value = int(refresh)
+    return matches['resolution'], value if value >= 1000 else value * 1000
+
+
+def find_mode(video_mode: str, listed_modes: Iterable[str], /) -> str | None:
+    """Return the entry of ``listed_modes`` that ``video_mode`` refers to, or ``None``.
+
+    An exact match always wins. Otherwise modes are compared by resolution and refresh rate,
+    so a config written for another display backend (Xorg ``1920x1080.60.00`` vs labwc
+    ``1920x1080.60000``) still resolves. The listed spelling is returned since that is the one
+    the backend's ``setMode`` understands.
+    """
+    listed = list(listed_modes)
+
+    if video_mode in listed:
+        return video_mode
+
+    wanted = _parse_mode(video_mode)
+    if wanted is None:
+        return None
+
+    wanted_resolution, wanted_refresh = wanted
+    if wanted_refresh is None:
+        return None
+
+    for candidate in listed:
+        parsed = _parse_mode(candidate)
+        if parsed is None:
+            continue
+        resolution, refresh = parsed
+        if refresh is None or resolution != wanted_resolution:
+            continue
+        if abs(refresh - wanted_refresh) <= _REFRESH_TOLERANCE_MHZ:
+            return candidate
+
+    return None
+
+
+async def resolve_mode(video_mode: str, /) -> str | None:
     # max resolution given
     if video_mode.startswith('max-'):
         matches = _max_res_re.match(video_mode)
         if matches is not None:
-            return True
+            return video_mode
 
     # specific resolution given
     proc = await run('batocera-resolution', 'listModes', shell=True)
-    for line in proc.stdout.decode().splitlines():
-        values = line.split(':')
-        if video_mode == values[0]:
-            return True
+    listed_modes = [line.split(':')[0] for line in proc.stdout.decode().splitlines()]
 
-    _logger.error('invalid video mode %s', video_mode)
-    return False
+    resolved = find_mode(video_mode, listed_modes)
+    if resolved is None:
+        _logger.error('invalid video mode %s', video_mode)
+    elif resolved != video_mode:
+        _logger.debug('video mode %s resolved to %s', video_mode, resolved)
+
+    return resolved
 
 
 async def change_mode(video_mode: str) -> None:
-    if await mode_exists(video_mode):
+    if (resolved_mode := await resolve_mode(video_mode)) is not None:
+        video_mode = resolved_mode
         cmd = ['batocera-resolution', 'setMode', video_mode]
         _logger.debug('change_mode(%s): %s', video_mode, cmd)
         max_tries = 2  # maximum number of tries to set the mode

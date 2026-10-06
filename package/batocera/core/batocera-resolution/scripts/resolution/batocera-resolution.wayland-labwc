@@ -170,6 +170,58 @@ _get_available_modes() {
         done | sort -u | sort -Vr
 }
 
+# Convert the refresh part of a mode string ("60000", "60", "60.00", "59.939999") to
+# whole millihertz, rounding to nearest. wlr-randr prints refresh as a float, so
+# truncating (e.g. 59.939999 -> 59939) loses the real 59940 mHz.
+#   - contains a '.'         -> Hz (Xorg style, e.g. "60.00")
+#   - integer >= 1000        -> already mHz (labwc style, e.g. "60000")
+#   - integer < 1000         -> Hz (no refresh is ever below 1 Hz)
+_refresh_to_mhz() {
+    awk -v r="$1" 'BEGIN {
+        if (r == "") { print 0; exit }
+        if (index(r, ".")) { printf "%d\n", r * 1000 + 0.5 }
+        else if (r + 0 >= 1000) { printf "%d\n", r + 0 }
+        else { printf "%d\n", (r + 0) * 1000 }
+    }'
+}
+
+# Turn a requested mode ("WxH", "WxH.<mHz>" or the Xorg-style "WxH.<Hz>", e.g.
+# "1920x1080.60.00") into a string wlr-randr accepts ("WxH@<Hz>Hz"). wlr-randr only
+# matches modes exactly, so prefer the mode string wlr-randr itself lists for that
+# resolution when its refresh is within 1 mHz of the request. Falls back to the
+# converted request if nothing matches, so wlr-randr can report the error.
+_resolve_mode() {
+    local mode="$1" res ref want resolved
+
+    case "${mode}" in
+        *.*) res="${mode%%.*}"; ref="${mode#*.}" ;;
+        *)   res="${mode}"; ref="" ;;
+    esac
+
+    want=$(_refresh_to_mhz "${ref}")
+    if [ "${want}" -le 0 ]; then
+        echo "${res}"
+        return 0
+    fi
+
+    resolved=$(_get_available_modes "${PSCREEN}" | awk -v res="${res}" -v want="${want}" '
+        {
+            split($0, a, "@")
+            if (a[1] != res) next
+            hz = a[2]
+            sub(/Hz$/, "", hz)
+            d = int(hz * 1000 + 0.5) - want
+            if (d < 0) d = -d
+            if (d <= 1) { print $0; exit }
+        }')
+
+    if [ -n "${resolved}" ]; then
+        echo "${resolved}"
+    else
+        awk -v res="${res}" -v m="${want}" 'BEGIN { printf "%s@%.6fHz\n", res, m / 1000 }'
+    fi
+}
+
 # --preferred fails outright when no mode carries the preferred flag, so fall back to the best listed mode
 _get_enable_args() {
     local mode
@@ -367,7 +419,7 @@ case "${ACTION}" in
             REFRESH_HZ_STR=$(echo "${CURRENT_MODE_STR}" | sed -n 's/.*@\([0-9.]*\)Hz/\1/p')
             if [ -n "${REFRESH_HZ_STR}" ]; then
                 # Convert Hz to mHz (multiply by 1000)
-                REFRESH_MHZ=$(echo "scale=0; (${REFRESH_HZ_STR} * 1000) / 1" | bc 2>/dev/null)
+                REFRESH_MHZ=$(_refresh_to_mhz "${REFRESH_HZ_STR}")
                 if [ -z "${REFRESH_MHZ}" ]; then REFRESH_MHZ="0"; fi
                 echo "${RES_ONLY}.${REFRESH_MHZ}"
             else
@@ -393,7 +445,7 @@ case "${ACTION}" in
             if echo "${mode}" | grep -q '@'; then
                 resolution=$(echo "${mode}" | cut -d'@' -f1)
                 refresh_hz=$(echo "${mode}" | sed 's/.*@\([0-9.]*\)Hz/\1/')
-                refresh_mhz=$(echo "scale=0; (${refresh_hz} * 1000) / 1" | bc 2>/dev/null)
+                refresh_mhz=$(_refresh_to_mhz "${refresh_hz}")
                 if [ -z "${refresh_mhz}" ]; then refresh_mhz="0"; fi
                 printf "%s.%s:%s %s Hz\n" "${resolution}" "${refresh_mhz}" "${resolution}" "${refresh_hz}"
             else
@@ -413,16 +465,14 @@ case "${ACTION}" in
             SPMODE=$(echo "${MODE_TO_SET}" | sed -e 's+^max-++')
             f_minTomaxResolution "${SPMODE}"
         else
-            TARGET_MODE="${MODE_TO_SET}"
-            if echo "${MODE_TO_SET}" | grep -q "\."; then
-                PARTRES=$(echo "${MODE_TO_SET}" | cut -d'.' -f1)
-                PARTMHZ=$(echo "${MODE_TO_SET}" | cut -d'.' -f2-)
-                # Convert mHz back to Hz (divide by 1000)
-                PARTHZ=$(echo "scale=6; ${PARTMHZ} / 1000" | bc 2>/dev/null)
-                if [ -z "${PARTHZ}" ]; then PARTHZ="0.000000"; fi
-                TARGET_MODE="${PARTRES}@${PARTHZ}Hz"
+            # Accepts "WxH", "WxH.<mHz>" and the Xorg-style "WxH.<Hz>" (e.g. 1920x1080.60.00),
+            # which is what an existing batocera.conf / es.resolution may still contain.
+            TARGET_MODE=$(_resolve_mode "${MODE_TO_SET}")
+            _log "setMode: '${MODE_TO_SET}' -> '${TARGET_MODE}' on ${PSCREEN}"
+            if ! "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"; then
+                _log "setMode: ERROR: wlr-randr could not set '${TARGET_MODE}' (requested '${MODE_TO_SET}') on ${PSCREEN}"
+                exit 1
             fi
-            "${WLR_RANDR}" --output "${PSCREEN}" --mode "${TARGET_MODE}"
         fi
         ;;
 
