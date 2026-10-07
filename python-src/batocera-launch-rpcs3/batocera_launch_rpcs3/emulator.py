@@ -435,6 +435,8 @@ class RPCS3Command(Command):
 
 @cached_dataclass
 class RPCS3(ParallelStartupTaskMixin, Emulator):
+    needs_sdl_game_controller_config = True
+
     _firmware_update: asyncio.Task[None] | None = field(init=False, default=None)
 
     async def __aexit__(
