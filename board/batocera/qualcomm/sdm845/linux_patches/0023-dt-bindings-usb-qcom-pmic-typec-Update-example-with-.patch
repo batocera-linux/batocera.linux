@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Heidelberg <david@ixit.cz>
+Date: Sat, 26 Sep 2026 14:40:21 +0200
+Subject: [PATCH 02/10] dt-bindings: usb: qcom,pmic-typec: Update example with
+ vbus-supply
+
+The vdd-vbus-supply is deprecated, thus don't suggest deprecated usage in
+example.
+
+Assisted-by: LLM
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+---
+ Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml b/Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml
+index ba790c448..2c8b11e92 100644
+--- a/Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml
++++ b/Documentation/devicetree/bindings/usb/qcom,pmic-typec.yaml
+@@ -168,7 +168,6 @@ examples:
+                               "msg-rx-discarded",
+                               "fr-swap";
+ 
+-            vdd-vbus-supply = <&pm8150b_vbus>;
+             vdd-pdphy-supply = <&vreg_l2a_3p1>;
+ 
+             connector {
+@@ -181,6 +180,8 @@ examples:
+                 source-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_DUAL_ROLE |
+                                PDO_FIXED_USB_COMM | PDO_FIXED_DATA_SWAP)>;
+ 
++                vbus-supply = <&pm8150b_vbus>;
++
+                 ports {
+                     #address-cells = <1>;
+                     #size-cells = <0>;

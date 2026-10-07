@@ -1,0 +1,24 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: pmi8998: add the USB VBUS regulator
+
+The OTG boost at 0x1100 has the PM8150B register layout, so the existing
+qcom_usb_vbus-regulator driver drives it through the fallback compatible.
+Node taken from Maxim Furman's PMI8998 Type-C series.
+
+---
+--- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+@@ -30,6 +30,13 @@ pmi8998_charger: charger@1000 {
+ 			status = "disabled";
+ 		};
+ 
++		pmi8998_vbus: usb-vbus-regulator@1100 {
++			compatible = "qcom,pmi8998-vbus-reg",
++				     "qcom,pm8150b-vbus-reg";
++			reg = <0x1100>;
++			status = "disabled";
++		};
++
+ 		pmi8998_typec: typec@1300 {
+ 			compatible = "qcom,pmi8998-typec";
+ 			reg = <0x1300>,

@@ -1,0 +1,40 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] usb: typec: qcom: report an attached partner when gen1 starts toggling
+
+Restarting the gen1 state machine with a partner still attached, e.g.
+booting with a dock plugged in, leaves the CC state unchanged and raises
+no type-c-change, so TCPM sat in TOGGLING forever.
+
+---
+--- a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port_gen1.c
++++ b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port_gen1.c
+@@ -373,6 +373,8 @@
+ 	unsigned int role;
+ 	unsigned int try_src = 0;
+ 	unsigned int try_snk = 0;
++	unsigned int status4;
++	bool attached = false;
+ 	int ret;
+ 
+ 	switch (port_type) {
+@@ -414,9 +416,20 @@
+ 		goto out;
+ 
+ 	ret = gen1_typec_set_power_role(port, role);
++	if (ret)
++		goto out;
++
++	/* a partner that stays attached raises no type-c-change */
++	if (!regmap_read(port->regmap, port->base + TYPEC_STATUS_4_REG,
++			 &status4))
++		attached = status4 & CC_ATTACHED;
+ 
+ out:
+ 	mutex_unlock(&port->lock);
++
++	if (attached && port->tcpm_port)
++		tcpm_cc_change(port->tcpm_port);
++
+ 	return ret;
+ }
+ 

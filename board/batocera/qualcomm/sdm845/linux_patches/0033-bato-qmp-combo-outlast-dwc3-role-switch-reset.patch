@@ -1,0 +1,20 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] phy: qcom: qmp-combo: outlast the dwc3 role-switch reset
+
+A PD data role swap and the DP alt mode entry land together, so the
+typec mux re-inits the USB PHY while dwc3 holds its core in reset for
+100 ms and PCS never reports ready within 10 ms.
+
+---
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+@@ -71,7 +71,8 @@
+ #define SW_PORTSELECT_MUX			BIT(1)
+ #define INVERT_CC_POLARITY			BIT(2)
+ 
+-#define PHY_INIT_COMPLETE_TIMEOUT		10000
++/* covers the 100 ms dwc3 holds its core in reset on a role switch */
++#define PHY_INIT_COMPLETE_TIMEOUT		200000
+ 
+ enum qmpphy_mode {
+ 	QMPPHY_MODE_USB3DP = 0,
