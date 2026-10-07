@@ -1,0 +1,19 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] remoteproc: qcom_q6v5_mss: let PDC sync settle before the MSS restart
+
+The downstream sdm845 modem shutdown waits 6 sleep clock cycles after
+asserting PDC sync before it restarts the MSS. Without that wait the
+restart can land while the PDC is still syncing and hang the SoC.
+
+---
+--- a/drivers/remoteproc/qcom_q6v5_mss.c
++++ b/drivers/remoteproc/qcom_q6v5_mss.c
+@@ -546,6 +546,8 @@
+ 
+ 	if (qproc->has_alt_reset) {
+ 		reset_control_assert(qproc->pdc_reset);
++		/* Wait 6 32kHz sleep cycles for PDC SYNC to take effect */
++		usleep_range(200, 300);
+ 		ret = reset_control_reset(qproc->mss_restart);
+ 		reset_control_deassert(qproc->pdc_reset);
+ 	} else if (qproc->has_spare_reg) {
