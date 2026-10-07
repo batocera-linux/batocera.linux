@@ -1,0 +1,33 @@
+From 2a3c65bbfb85d944110b14b40ef375f238ca3932 Mon Sep 17 00:00:00 2001
+From: taygoth <taygoth@gmail.com>
+Date: Mon, 18 May 2026 05:49:16 -0900
+Subject: [PATCH] dt-bindings: regulator: qcom,usb-vbus-regulator: add PMI8998
+
+The Qualcomm PMI8998 PMIC integrates a USB OTG VBUS boost converter
+inside its SMB2 charger block at offset 0x1100. The OTG control
+register layout (CMD_OTG at +0x40, OTG_CURRENT_LIMIT_CFG at +0x52,
+OTG_CFG at +0x53) matches the PM8150B SMB5 block, so the existing
+qcom_usb_vbus-regulator driver can drive it without code changes via
+compatible cascade.
+
+Verified by inspecting the downstream qpnp-smb2 driver and reading
+live register values on a OnePlus 6T (sdm845-oneplus-fajita) running
+mainline Linux.
+
+Signed-off-by: taygoth <taygoth@gmail.com>
+---
+ .../devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml   | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml b/Documentation/devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml
+index fcefc722ee2a49..9e2e2c8f953982 100644
+--- a/Documentation/devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml
++++ b/Documentation/devicetree/bindings/regulator/qcom,usb-vbus-regulator.yaml
+@@ -28,6 +28,7 @@ properties:
+               - qcom,pm6150-vbus-reg
+               - qcom,pm7250b-vbus-reg
+               - qcom,pmi632-vbus-reg
++              - qcom,pmi8998-vbus-reg
+           - const: qcom,pm8150b-vbus-reg
+ 
+   reg:

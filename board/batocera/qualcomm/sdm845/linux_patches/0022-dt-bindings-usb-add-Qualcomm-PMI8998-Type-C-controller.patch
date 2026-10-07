@@ -1,0 +1,126 @@
+From 5f4271701066943ead54f82003ab282c4b39f3da Mon Sep 17 00:00:00 2001
+From: taygoth <taygoth@gmail.com>
+Date: Mon, 18 May 2026 06:08:37 -0900
+Subject: [PATCH] dt-bindings: usb: add Qualcomm PMI8998 Type-C controller
+
+The PMI8998 PMIC integrates a USB Type-C detection block in its SMB2
+charger USBIN region at offset 0x1300. The block performs CC sensing,
+debounce and Rp/Rd resolution in hardware and reports role changes
+through a single consolidated "type-c-change" interrupt.
+
+This is architecturally distinct from the qcom,pmic-typec binding
+(PM8150B / PMI632 family) which exposes a granular 8-16 IRQ topology
+fanned out per Type-C event for a software TCPM state machine. PMI8998
+has neither the per-event IRQs nor a register layout compatible with
+the TCPM code path, so this binding describes a separate hardware-
+managed role-switch controller.
+
+Signed-off-by: taygoth <taygoth@gmail.com>
+---
+ .../bindings/usb/qcom,pmi8998-typec.yaml      | 97 +++++++++++++++++++
+ 1 file changed, 97 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/usb/qcom,pmi8998-typec.yaml
+
+diff --git a/Documentation/devicetree/bindings/usb/qcom,pmi8998-typec.yaml b/Documentation/devicetree/bindings/usb/qcom,pmi8998-typec.yaml
+new file mode 100644
+index 00000000000000..f2814f5ce3de74
+--- /dev/null
++++ b/Documentation/devicetree/bindings/usb/qcom,pmi8998-typec.yaml
+@@ -0,0 +1,97 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/usb/qcom,pmi8998-typec.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm PMI8998 USB Type-C role-switch controller
++
++maintainers:
++  - Maxim Furman <taygoth@gmail.com>
++
++description:
++  The PMI8998 PMIC integrates a USB Type-C detection block inside its SMB2
++  charger USBIN region at offset 0x1300. CC sensing, debounce and Rp/Rd
++  resolution are performed in hardware, and the negotiated role is reported
++  through a single consolidated "type-c-change" interrupt.
++
++  This block is distinct from the TCPM-based qcom,pmic-typec controllers
++  (PM8150B, PMI632, etc.) — PMI8998 lacks the granular per-event interrupt
++  topology those parts expose and the driver therefore translates the
++  hardware-decided role directly into a usb_role_switch_set_role() call
++  rather than running a software TCPM state machine. Power Delivery is not
++  supported by this binding.
++
++properties:
++  compatible:
++    const: qcom,pmi8998-typec
++
++  reg:
++    maxItems: 1
++    description: Type-C SPMI register base offset (typically 0x1300).
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-names:
++    items:
++      - const: type-c-change
++
++  vdd-vbus-supply:
++    description:
++      VBUS source regulator enabled when the controller transitions to
++      USB host mode so bus-powered downstream peripherals can be powered.
++
++  connector:
++    type: object
++    $ref: /schemas/connector/usb-connector.yaml#
++    unevaluatedProperties: false
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - connector
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    pmic {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        typec@1300 {
++            compatible = "qcom,pmi8998-typec";
++            reg = <0x1300>;
++
++            interrupts = <0x2 0x13 0x7 IRQ_TYPE_EDGE_BOTH>;
++            interrupt-names = "type-c-change";
++
++            vdd-vbus-supply = <&pmi8998_vbus>;
++
++            connector {
++                compatible = "usb-c-connector";
++                label = "USB-C";
++                power-role = "dual";
++                data-role = "dual";
++                try-power-role = "sink";
++
++                ports {
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++
++                    port@0 {
++                        reg = <0>;
++                        pmi8998_hs_in: endpoint {
++                            remote-endpoint = <&usb_1_dwc3_hs>;
++                        };
++                    };
++                };
++            };
++        };
++    };
++...
