@@ -7,7 +7,8 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Final, Protocol, cast
 
-from batocera_common.paths import CONFIGS, SAVES
+from batocera_common.configparser import CaseSensitiveConfigParser
+from batocera_common.paths import SAVES
 
 from ..paths import PRECALIBRATION_DIR
 
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 _input_re: Final = re.compile(r'^/dev/input/event([0-9]*)$')
+# xemu-chihiro names a save after the parent game, so its revisions share it
+_CHIHIRO_SAVE_NAMES: Final = {'ghostsqo': 'ghostsqu', 'vcop3a': 'vcop3'}
 
 
 def _copy_file(src: Path, dst: Path) -> None:
@@ -36,6 +39,20 @@ def _copy_files_in_dir(srcdir: Path, dstdir: Path, startWith: str, endWith: str)
     for src in srcdir.iterdir():
         if src.name.startswith(startWith):  # and src.endswith(endswith):
             _copy_file(src, dstdir / src.name)
+
+
+def _acgame_sram(rom: Path) -> Path | None:
+    # pcsx2x6 keeps the sram in the game folder set by the .acgame
+    acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
+    try:
+        acgame.read(rom, encoding='utf-8')
+    except Exception as e:
+        _logger.warning('Could not read %s: %s', rom, e)
+        return None
+
+    gameid = acgame.get('game', 'gameid', fallback='')
+    subdir = acgame.get('data', 'subdir', fallback=gameid)
+    return rom.parent / subdir / acgame.get('data', 'sram', fallback='sram.bin')
 
 
 class LegacyConfig(Protocol):
@@ -174,7 +191,10 @@ class Gun:
                     target_dir = 'mame'
                 elif emulator == 'libretro':
                     if core == 'mame078plus':
-                        target_dir = 'mame/mame2003-plus'
+                        # mame2003-plus reads its own nvram files
+                        src = dir / 'mame2003-plus' / 'nvram' / f'{rom.stem}.nv'
+                        dst = SAVES / 'mame' / 'mame2003-plus' / 'nvram' / f'{rom.stem}.nv'
+                        _copy_file(src, dst)
                     elif core == 'mame':
                         target_dir = 'mame/mame'
 
@@ -185,11 +205,6 @@ class Gun:
                     srcdir = dir / 'diff'
                     dstdir = SAVES / target_dir / 'diff'
                     _copy_files_in_dir(srcdir, dstdir, rom.stem + '_', '.dif')
-
-            elif system_config.system == 'model2':
-                src = dir / 'NVDATA' / f'{rom.name}.DAT'
-                dst = SAVES / 'model2' / 'NVDATA' / f'{rom.name}.DAT'
-                _copy_file(src, dst)
 
             elif system_config.system == 'naomi':
                 for suffix in ['nvmem', 'eeprom']:
@@ -202,10 +217,17 @@ class Gun:
                 dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
                 _copy_file(src, dst)
 
-            elif system_config.system == 'namco2x6':  # noqa: SIM102
-                if emulator == 'play':
-                    src = dir / 'play' / rom.stem
-                    dst = CONFIGS / 'play' / 'Play Data Files' / 'arcadesaves' / f'{rom.stem}.backupram'
+            elif system_config.system == 'namco2x6':
+                if emulator == 'pcsx2x6':
+                    src = dir / rom.stem / 'sram.bin'
+                    dst = _acgame_sram(rom)
+                    if dst is not None:
+                        _copy_file(src, dst)
+
+            elif system_config.system == 'chihiro':  # noqa: SIM102
+                if emulator == 'xemu-chihiro':
+                    src = dir / 'saves' / f'{rom.stem}.sav'
+                    dst = SAVES / 'chihiro' / 'saves' / f'{_CHIHIRO_SAVE_NAMES.get(rom.stem, rom.stem)}.sav'
                     _copy_file(src, dst)
 
         return cls.get_all()
