@@ -1,0 +1,64 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: sdm845-ayn-odin: enable USB-C role switching
+
+The USB-C port was fixed in host mode with no VBUS, so bus-powered
+adapters never powered up. Use the PMI8998 Type-C block to switch roles
+and its OTG boost for VBUS.
+
+---
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -797,6 +797,37 @@
+ 	monitored-battery = <&battery>;
+ };
+ 
++/* batocera - VBUS boost for USB-C host mode */
++&pmi8998_vbus {
++	regulator-enable-ramp-delay = <250000>;
++	status = "okay";
++};
++
++/* batocera - PMI8998 Type-C role switch */
++&pmi8998_typec {
++	status = "okay";
++
++	connector {
++		compatible = "usb-c-connector";
++		label = "USB-C";
++		power-role = "dual";
++		data-role = "dual";
++		try-power-role = "sink";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				pmi8998_hs_in: endpoint {
++					remote-endpoint = <&usb_1_dwc3_hs>;
++				};
++			};
++		};
++	};
++};
++
+ &pmi8998_fg {
+ 	status = "okay";
+ 	monitored-battery = <&battery>;
+@@ -1171,7 +1202,14 @@
+ };
+ 
+ &usb_1_dwc3 {
+-	dr_mode = "host";
++	/* batocera - role comes from the PMI8998 Type-C block */
++	dr_mode = "otg";
++	usb-role-switch;
++};
++
++/* batocera - Type-C role switch endpoint */
++&usb_1_dwc3_hs {
++	remote-endpoint = <&pmi8998_hs_in>;
+ };
+ 
+ &usb_1_hsphy {
