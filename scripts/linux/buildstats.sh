@@ -51,49 +51,9 @@ ls "${BROUTPUTDIR}/images/batocera/images/${BOARD}/"*.gz |
 echo "</ul>"
 
 echo "<h2>Emulators details</h2>"
-echo "<a href=\"batocera_systemsReport.html\">Emulator details</a>"
+echo "<a href=\"https://batocera.org/compatibility.php\">Emulator details</a>"
 
-echo "<h2>Translations</h2>"
-echo "<table>"
-echo "<tr><th>Language</th><th>Status</th><th>Translated</th><th>Fuzzy</th><th>Untranslated</th></tr>"
-for POFILE in "${ESDIR}"/locale/lang/*/LC_MESSAGES/emulationstation2.po
-do
-    POLANG=$(echo "${POFILE}" | sed -e s+"^.*/locale/lang/\([^/]*\)/.*$"+'\1'+)
-    NBFUZZY=$(msgattrib --only-fuzzy "${POFILE}" | grep -E '^msgid' | wc -l)
-    test ${NBFUZZY} -gt 0 && let NBFUZZY-- # header added
-    NBUNTRANSLATED=$(msgattrib --untranslated "${POFILE}" | grep -E '^msgid' | wc -l)
-    test ${NBUNTRANSLATED} -gt 0 && let NBUNTRANSLATED-- # header added
-    NBTRANSLATED=$(msgattrib --translated "${POFILE}" | grep -E '^msgid' | wc -l)
-    test ${NBTRANSLATED} -gt 0 && let NBTRANSLATED-- # header added
-    let NBTRANSLATED=$NBTRANSLATED-$NBFUZZY
-
-    let TOTAL=$NBTRANSLATED+$NBFUZZY+$NBUNTRANSLATED
-    #let PER_TRANSLATED_W=$NBTRANSLATED'*'100/$TOTAL'*'2
-    let PER_FUZZY_W=$NBFUZZY'*'100/$TOTAL'*'2
-    let PER_UNTRANSLATED_W=$NBUNTRANSLATED'*'100/$TOTAL'*'2
-    let PER_TRANSLATED_W=200-$PER_FUZZY_W-PER_UNTRANSLATED_W
-    let PER_TRANSLATED=$NBTRANSLATED'*'100/$TOTAL
-    LINK="https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/master/locale/lang/${POLANG}/LC_MESSAGES/emulationstation2.po"
-    
-    echo "<tr>"
-    echo "<td><a href=\"${LINK}\">${POLANG}</a></td>"
-    echo "<td>"
-    echo "<div style=\"width:${PER_TRANSLATED_W}px; height:20px; background:green; float:left\">${PER_TRANSLATED}%</div><div style=\"width:${PER_FUZZY_W}px; height:20px; background:orange; float:left\"></div><div style=\"width:${PER_UNTRANSLATED_W}px; height:20px; background:red; float:left\"></div>"
-    echo "</td>"
-    echo "<td>"
-    test "${NBTRANSLATED}" -gt 0 && echo "${NBTRANSLATED}"
-    echo "</td>"
-    echo "<td>"
-    test "${NBFUZZY}" -gt 0 && echo "${NBFUZZY}"
-    echo "</td>"
-    echo "<td>"
-    test "${NBUNTRANSLATED}" -gt 0 && echo "${NBUNTRANSLATED}"
-    echo "</td>"
-    echo "</tr>"
-done
-echo '</table>'
-echo "<p>If your language is not available, please translate <a href=\"https://raw.githubusercontent.com/batocera-linux/batocera-emulationstation/master/locale/emulationstation2.pot\">this file</a> and send it us.<br />You can read other translations to take them as exemple.</p>"
-echo "<p><a href=\"archives\">archives</a></p>"
+echo "<p><a href=\"..\">archives</a></p>"
 echo "Generated on ${GENDATE}"
 echo '</body>'
 echo '</html>'
