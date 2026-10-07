@@ -58,7 +58,7 @@ do_push() {
     done
 
     # update the butterfly file
-    ssh batocera@mirrors.o2switch.fr /opt/www/batocera/listBetas.sh
+    ssh batocera@mirrors.o2switch.fr /opt/www/batocera/listInstalls.sh
 }
 
 do_html() {
