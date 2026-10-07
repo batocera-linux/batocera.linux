@@ -1,42 +1,49 @@
 diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
-index d4f03cd..40d53f9 100644
+index 22855725..e390f484 100644
 --- a/vita3k/gui-qt/src/main_window.cpp
 +++ b/vita3k/gui-qt/src/main_window.cpp
-@@ -85,6 +85,7 @@
- #include <QCloseEvent>
- #include <QDragEnterEvent>
+@@ -87,6 +87,7 @@
  #include <QDropEvent>
-+#include <QKeyEvent>
  #include <QFileInfo>
  #include <QHBoxLayout>
++#include <QKeyEvent>
  #include <QLineEdit>
-@@ -423,6 +424,8 @@ void MainWindow::initialize() {
-     m_sdl_pump_timer->start();
+ #include <QMenu>
+ #include <QMessageBox>
+@@ -104,6 +105,8 @@
+ #include <QWidgetAction>
+ #include <QtResource>
+ 
++#include <cstdio>
++#include <cstdlib>
+ #include <optional>
+ 
+ #if defined(HAVE_X11) || defined(HAVE_WAYLAND)
+@@ -424,6 +427,8 @@ void MainWindow::initialize() {
  
      setup_toolbar();
-+    
-+    qApp->installEventFilter(this);
  
++    qApp->installEventFilter(this);
++
      connect(m_ui->welcome_dialog_action, &QAction::triggered, this, [this]() {
          auto *welcome = new WelcomeDialog(emuenv, true, this);
-@@ -1245,6 +1248,23 @@ void MainWindow::on_live_area_closed() {
+         welcome->open();
+@@ -1245,6 +1250,21 @@ void MainWindow::on_live_area_closed() {
  }
  
  bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
-+
 +    if (event->type() == QEvent::KeyPress) {
-+        auto *key_event = static_cast<QKeyEvent *>(event);
++        const auto *key_event = static_cast<QKeyEvent *>(event);
 +        if (key_event->key() == Qt::Key_F12 && key_event->modifiers() == Qt::ControlModifier) {
-+            close_auxiliary_windows();
-+            
-+            // Close the game window if running, without prompting
 +            if (m_game_window) {
-+                m_app_session.set_pause_reason(app::AppSessionPauseReason::User, false);
-+                on_game_closed();
++                // Stopping the app waits on every guest thread and can hang, so flush the open files and leave
++                LOG_INFO("Exit hotkey: {}", emuenv.current_app_title);
++                app::update_app_time_used(emuenv, emuenv.io.app_path);
++                std::fflush(nullptr);
++                std::_Exit(0);
 +            }
-+            
 +            close();
-+            return true; // Consume event so it doesn't propagate further
++            return true;
 +        }
 +    }
 +

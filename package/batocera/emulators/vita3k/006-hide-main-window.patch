@@ -1,8 +1,8 @@
 diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
-index 287bfda..ef30bc0 100644
+index e390f484..cd792824 100644
 --- a/vita3k/gui-qt/src/main_window.cpp
 +++ b/vita3k/gui-qt/src/main_window.cpp
-@@ -250,6 +250,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
+@@ -255,6 +255,7 @@ void MainWindow::closeEvent(QCloseEvent *event) {
  
      save_window_state();
      QMainWindow::closeEvent(event);
@@ -10,19 +10,17 @@ index 287bfda..ef30bc0 100644
  }
  
  void MainWindow::paintEvent(QPaintEvent *event) {
-@@ -424,6 +425,10 @@ void MainWindow::initialize() {
+@@ -429,6 +430,9 @@ void MainWindow::initialize() {
  
-     setup_toolbar();
+     qApp->installEventFilter(this);
  
 +    // Stop Qt from terminating the event loop prematurely when secondary windows close
 +    qApp->setQuitOnLastWindowClosed(false);
-+    qApp->installEventFilter(this);
 +
      connect(m_ui->welcome_dialog_action, &QAction::triggered, this, [this]() {
          auto *welcome = new WelcomeDialog(emuenv, true, this);
          welcome->open();
-@@ -933,6 +938,9 @@ std::optional<AppLaunchRequest> MainWindow::boot_game_once(const AppLaunchReques
-     if (m_settings_dialog)
+@@ -1052,6 +1056,9 @@ std::optional<AppLaunchRequest> MainWindow::boot_game_once(const AppLaunchReques
          m_settings_dialog->set_storage_path_locked(true);
      refresh_emulation_actions();
      refresh_status_bar();
@@ -32,7 +30,7 @@ index 287bfda..ef30bc0 100644
      return std::nullopt;
  }
  
-@@ -972,6 +980,7 @@ void MainWindow::on_game_closed() {
+@@ -1093,6 +1100,7 @@ void MainWindow::on_game_closed() {
      refresh_status_bar();
  
      if (!m_is_app_closing) {
@@ -40,17 +38,17 @@ index 287bfda..ef30bc0 100644
          raise();
          activateWindow();
      }
-@@ -1085,6 +1094,9 @@ void MainWindow::show_live_area(const std::string &title_id) {
-     m_fullscreen = emuenv.cfg.boot_apps_full_screen;
-     m_ui->toolbar_fullscreen->setIcon(m_fullscreen ? m_icon_fullscreen_off : m_icon_fullscreen_on);
-     m_ui->toolbar_fullscreen->setText(m_fullscreen ? tr("Exit Fullscreen") : tr("Fullscreen"));
+@@ -1218,6 +1226,9 @@ void MainWindow::show_live_area(const std::string &title_id) {
+ 
+     connect(m_live_area_widget, &LiveAreaWidget::play_clicked,
+         this, &MainWindow::on_live_area_play);
 +
 +    // Hide the main window while in LiveArea
 +    this->hide();
  }
  
- void MainWindow::on_live_area_closed() {
-@@ -1111,6 +1123,7 @@ void MainWindow::on_live_area_closed() {
+ void MainWindow::on_live_area_play() {
+@@ -1244,6 +1255,7 @@ void MainWindow::on_live_area_closed() {
          delete closed_window;
  
      if (!m_is_app_closing) {
