@@ -32,6 +32,11 @@ EOF
 
     #sleep 1
     log_msg "Starting rmtfs..."
+    # rmtfs only looks for the modem remoteproc when it starts
+    for i in $(seq 30); do
+        grep -qsE "mss-pil|mpss-pas" /sys/class/remoteproc/*/device/modalias && break
+        sleep 0.1
+    done
     mkdir -p /var/lib/rmtfs
     chmod 777 /var/lib/rmtfs
     kmsg "Starting rmtfs..."
