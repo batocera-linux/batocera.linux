@@ -51,7 +51,7 @@ ls "${BROUTPUTDIR}/images/batocera/images/${BOARD}/"*.gz |
 echo "</ul>"
 
 echo "<h2>Emulators details</h2>"
-echo "<a href=\"https://batocera.org/compatibility.php\">Emulator details</a>"
+echo "<a href=\"https://batocera.org/compatibility.php?boards=${BOARD}\">Emulator details</a>"
 
 echo "<p><a href=\"..\">archives</a></p>"
 echo "Generated on ${GENDATE}"
