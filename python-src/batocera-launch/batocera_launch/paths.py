@@ -37,7 +37,7 @@ SYSTEM_DECORATIONS: Final = DATAINIT_DIR / 'decorations'
 
 USER_SCRIPTS: Final = HOME / 'scripts'
 
-PRECALIBRATION_DIR: Final = BATOCERA_SHARE_DIR / 'guns-precalibration'
+PRECALIBRATION_DIR: Final = BATOCERA_SHARE_DIR / 'guns-precalibrations'
 
 
 def configure_emulator(rom: Path, /) -> bool:

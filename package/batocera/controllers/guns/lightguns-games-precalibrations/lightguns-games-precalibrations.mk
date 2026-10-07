@@ -3,8 +3,8 @@
 # lightguns-games-precalibrations
 #
 ################################################################################
-# Version:Commits on Mar 11, 2026
-LIGHTGUNS_GAMES_PRECALIBRATIONS_VERSION = b2a36161d99ea81b2fdd454941b50927a4cc14eb
+# Version:Commits on Oct 7, 2026
+LIGHTGUNS_GAMES_PRECALIBRATIONS_VERSION = c399dc858ef1a1db750c203d2b3f8177704f516e
 LIGHTGUNS_GAMES_PRECALIBRATIONS_SITE = $(call github,batocera-linux,lightguns-games-precalibrations,$(LIGHTGUNS_GAMES_PRECALIBRATIONS_VERSION))
 
 define LIGHTGUNS_GAMES_PRECALIBRATIONS_INSTALL_TARGET_CMDS
