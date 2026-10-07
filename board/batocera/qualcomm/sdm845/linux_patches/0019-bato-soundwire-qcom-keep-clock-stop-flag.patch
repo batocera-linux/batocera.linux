@@ -1,0 +1,18 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] soundwire: qcom: don't clear clock_stop_not_supported on enumeration
+
+The flag was cleared for every enumerated device, so a bogus device ID
+read after the amps turned clock stop back on. The WSA881x amps then miss
+the clock stop exit and fail to attach. Only ever set it.
+
+---
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -665,7 +665,6 @@
+ 
+ 		sdw_extract_slave_id(bus, addr, &id);
+ 		found = false;
+-		ctrl->clock_stop_not_supported = false;
+ 		/* Now compare with entries */
+ 		list_for_each_entry_safe(slave, _s, &bus->slaves, node) {
+ 			if (sdw_compare_devid(slave, id) == 0) {
