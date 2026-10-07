@@ -90,6 +90,11 @@ draw_logo () {
         fi
     fi
 
+    # firmware framebuffers have no connector, follow the console's panel rotation
+    if [ -z "${video_rotation}" ] && [ -z "${effectiveDrmOutput}" ] && [ -r /sys/class/graphics/fbcon/rotate ]; then
+        read -r video_rotation < /sys/class/graphics/fbcon/rotate
+    fi
+
     video_rotation=$(echo "${video_rotation}" | tr -d '[:space:]')
     echo "${DAEMON} Active DRM Output: [${effectiveDrmOutput}]"
     echo "${DAEMON} Final Rotation Value: [${video_rotation}]"
