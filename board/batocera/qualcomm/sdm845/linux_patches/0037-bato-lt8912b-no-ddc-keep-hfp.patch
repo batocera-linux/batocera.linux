@@ -1,0 +1,60 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] drm/bridge: lt8912b: work without DDC and keep the HFP packets
+
+On the AYN Odin the bridge never locks to the DSI stream when the host
+stops sending horizontal front porch packets, so drop NO_HFP (Android runs
+it in plain non-burst sync event mode). The HDMI connector has no DDC bus,
+so offer the standard modes up to 1080p60 instead of falling back to
+1024x768.
+
+---
+--- a/drivers/gpu/drm/bridge/lontium-lt8912b.c
++++ b/drivers/gpu/drm/bridge/lontium-lt8912b.c
+@@ -493,7 +493,6 @@
+ 
+ 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
+ 			  MIPI_DSI_MODE_LPM |
+-			  MIPI_DSI_MODE_VIDEO_NO_HFP |
+ 			  MIPI_DSI_MODE_NO_EOT_PACKET;
+ 
+ 	ret = devm_mipi_dsi_attach(dev, dsi);
+@@ -633,6 +632,17 @@
+ 	return NULL;
+ }
+ 
++/* no DDC wired to the connector: offer the standard modes up to 1080p60 */
++static int lt8912_bridge_get_modes(struct drm_bridge *bridge,
++				   struct drm_connector *connector)
++{
++	int num = drm_add_modes_noedid(connector, 1920, 1080);
++
++	drm_set_preferred_mode(connector, 1920, 1080);
++
++	return num;
++}
++
+ static const struct drm_bridge_funcs lt8912_bridge_funcs = {
+ 	.attach = lt8912_bridge_attach,
+ 	.detach = lt8912_bridge_detach,
+@@ -641,6 +651,7 @@
+ 	.enable = lt8912_bridge_enable,
+ 	.detect = lt8912_bridge_detect,
+ 	.edid_read = lt8912_bridge_edid_read,
++	.get_modes = lt8912_bridge_get_modes,
+ };
+ 
+ static int lt8912_bridge_resume(struct device *dev)
+@@ -780,8 +791,11 @@
+ 	i2c_set_clientdata(client, lt);
+ 
+ 	lt->bridge.of_node = dev->of_node;
+-	lt->bridge.ops = (DRM_BRIDGE_OP_EDID |
+-			  DRM_BRIDGE_OP_DETECT);
++	lt->bridge.ops = DRM_BRIDGE_OP_DETECT;
++	if (lt->bridge.next_bridge->ops & DRM_BRIDGE_OP_EDID)
++		lt->bridge.ops |= DRM_BRIDGE_OP_EDID;
++	else
++		lt->bridge.ops |= DRM_BRIDGE_OP_MODES;
+ 
+ 	drm_bridge_add(&lt->bridge);
+ 
