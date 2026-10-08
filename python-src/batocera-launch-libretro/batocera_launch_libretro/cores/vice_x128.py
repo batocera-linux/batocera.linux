@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from batocera_common.dataclasses import cached_dataclass
 from batocera_launch_libretro import Core
 
+from .vice_x64 import jiffydos_option
+
 if TYPE_CHECKING:
     from batocera_launch import LibretroConfig
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
 class ViceX128(Core):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Activate Jiffydos
-        core_options.set('vice_jiffydos', 'enabled')
+        core_options.set('vice_jiffydos', jiffydos_option('JiffyDOS_C64.bin', 'JiffyDOS_C128.bin'))
         # Enable Automatic Load Warp
         core_options.set('vice_autoloadwarp', 'enabled')
         # Disable Datasette Hotkeys

@@ -3,10 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from batocera_common.dataclasses import cached_dataclass
+from batocera_common.paths import BIOS
 from batocera_launch_libretro import Core
 
 if TYPE_CHECKING:
     from batocera_launch import LibretroConfig
+
+_JIFFYDOS_DRIVE_ROMS: Final = ('JiffyDOS_1541-II.bin', 'JiffyDOS_1571_repl310654.bin', 'JiffyDOS_1581.bin')
 
 _C64_MAPPING: Final = {
     'a': '---',
@@ -38,6 +41,12 @@ _C64_MAPPING: Final = {
 }
 
 
+def jiffydos_option(*kernals: str) -> str:
+    # The core disables every drive whose JiffyDOS ROM is missing
+    roms = (*_JIFFYDOS_DRIVE_ROMS, *kernals)
+    return 'enabled' if all((BIOS / 'vice' / rom).exists() for rom in roms) else 'disabled'
+
+
 @cached_dataclass
 class ViceX64(Core):
     gun_mapping: ClassVar = {
@@ -60,7 +69,13 @@ class ViceX64(Core):
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Activate Jiffydos
-        core_options.set('vice_jiffydos', 'enabled')
+        if self.emulator.core == 'vice_xscpu64':
+            kernals = ()
+        elif self.config.get('c64_model', '').startswith('C64SX'):
+            kernals = ('JiffyDOS_SX-64.bin',)
+        else:
+            kernals = ('JiffyDOS_C64.bin',)
+        core_options.set('vice_jiffydos', jiffydos_option(*kernals))
         # Enable Automatic Load Warp
         core_options.set('vice_autoloadwarp', 'enabled')
         # Disable Datasette Hotkeys
