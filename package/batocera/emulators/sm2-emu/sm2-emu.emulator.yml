@@ -127,6 +127,13 @@ custom_features:
       Light: 30
       Medium (Default): 50
       Strong: 70
+  sm2_wheel_ffb_invert:
+    group: WHEELS
+    prompt: INVERT WHEEL FORCE FEEDBACK
+    description: Reverse the force for a wheel that pulls away from the centre instead of back to it.
+    choices:
+      Off (Default): 0
+      'On': 1
   sm2_wheel_rumble:
     group: WHEELS
     prompt: WHEEL RUMBLE
