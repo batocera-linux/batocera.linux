@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Heidelberg <david@ixit.cz>
+Date: Sat, 26 Sep 2026 14:40:20 +0200
+Subject: [PATCH 01/10] usb: typec: tcpm: qcom: Release the connector fwnode
+ reference
+
+device_get_named_child_node() returns the connector node with its
+reference count incremented, but the port probe never drops it. The node
+is only needed for the VBUS regulator lookup, so release it right after.
+
+Assisted-by: LLM
+Fixes: 506927b6bf29 ("usb: typec: tcpm: qcom: prefer VBUS supply from the connector node")
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+---
+ drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port.c b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port.c
+index d3523435f..6029d51db 100644
+--- a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port.c
++++ b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
+@@ -733,6 +734,7 @@ int qcom_pmic_typec_port_probe(struct platform_device *pdev,
+ 	pmic_typec_port->vdd_vbus = devm_of_regulator_get_optional(dev,
+ 								   to_of_node(connector),
+ 								   "vbus");
++	fwnode_handle_put(connector);
+ 	if (pmic_typec_port->vdd_vbus == ERR_PTR(-ENODEV))
+ 		pmic_typec_port->vdd_vbus = devm_regulator_get(dev, "vdd-vbus");
+ 	if (IS_ERR(pmic_typec_port->vdd_vbus))

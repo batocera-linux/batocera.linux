@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Heidelberg <david@ixit.cz>
+Date: Sat, 26 Sep 2026 14:40:27 +0200
+Subject: [PATCH 07/10] arm64: dts: qcom: pmi8998: Add USB Type-C port
+ controller node
+
+Add the pmi8998 Type-C port controller and PD PHY device node.
+
+The Type-C CC logic is at USBIN base 0x1300 and the PD PHY is at 0x1700.
+The node uses the 'type-c-change' interrupt from the USBIN peripheral
+for CC state notifications, plus the 8 PD PHY interrupts, including
+fr-swap.
+
+The node is disabled by default; individual boards enable it and provide
+the USB-C connector description with PD capabilities and port graph.
+
+Assisted-by: LLM
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+index 1d4cf7a8e..bc30702f1 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+@@ -30,6 +30,33 @@ pmi8998_charger: charger@1000 {
+ 			status = "disabled";
+ 		};
+ 
++		pmi8998_typec: typec@1300 {
++			compatible = "qcom,pmi8998-typec";
++			reg = <0x1300>,
++			      <0x1700>;
++
++			interrupts = <0x2 0x13 0x7 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x0 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x2 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x3 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x4 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x5 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x6 IRQ_TYPE_EDGE_RISING>,
++				     <0x2 0x17 0x7 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "type-c-change",
++					  "sig-tx",
++					  "sig-rx",
++					  "msg-tx",
++					  "msg-rx",
++					  "msg-tx-failed",
++					  "msg-tx-discarded",
++					  "msg-rx-discarded",
++					  "fr-swap";
++
++			status = "disabled";
++		};
++
+ 		pmi8998_gpios: gpio@c000 {
+ 			compatible = "qcom,pmi8998-gpio", "qcom,spmi-gpio";
+ 			reg = <0xc000>;

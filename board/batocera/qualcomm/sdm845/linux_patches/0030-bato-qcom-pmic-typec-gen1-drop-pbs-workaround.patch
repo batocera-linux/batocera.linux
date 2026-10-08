@@ -1,0 +1,54 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] usb: typec: qcom: drop the gen1 PBS workaround
+
+It writes to the MISC peripheral outside the node's reg and is not needed
+on sdm845, as agreed in the RFC review.
+
+---
+--- a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port_gen1.c
++++ b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec_port_gen1.c
+@@ -71,11 +71,6 @@
+ #define  DFP_EN_CMD					BIT(1)
+ #define  TYPEC_DISABLE_CMD				BIT(0)
+ 
+-/* GEN1 TYPEC_PBS_WA_BIT workaround used by the downstream SMB2 driver. */
+-#define MISC_BASE_OFFSET				0x300
+-#define TM_IO_DTEST4_SEL				0xe9
+-#define PBS_CRUDE_SENSOR_ENABLE				0xa5
+-
+ /* Interrupt numbers */
+ #define PMIC_TYPEC_CHANGE_IRQ				0x0
+ 
+@@ -103,32 +98,11 @@ const struct pmic_typec_port_resources gen1_port_res = {
+ 	},
+ };
+ 
+-/*
+- * Failure of this workaround write is non-fatal and
+- * we can continue with the role transition.
+- */
+-static void gen1_typec_pbs_wa(struct gen1_typec_port *port, bool sink)
+-{
+-	unsigned int val = sink ? 0 : PBS_CRUDE_SENSOR_ENABLE;
+-	int ret;
+-
+-	ret = regmap_write(port->regmap, port->base +
+-			   MISC_BASE_OFFSET + TM_IO_DTEST4_SEL, val);
+-	if (!ret)
+-		return;
+-
+-	dev_warn(port->dev,
+-		 "failed to update GEN1 Type-C PBS workaround: %d\n",
+-		 ret);
+-}
+-
+ static int gen1_typec_set_power_role(struct gen1_typec_port *port,
+ 				     unsigned int role)
+ {
+ 	int ret;
+ 
+-	gen1_typec_pbs_wa(port, role == UFP_EN_CMD);
+-
+ 	ret = regmap_update_bits(port->regmap,
+ 				 port->base + TYPEC_SW_CTRL_REG,
+ 				 POWER_ROLE_CMD_MASK, role);

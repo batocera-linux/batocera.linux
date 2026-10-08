@@ -1,0 +1,193 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: sdm845-ayn-odin: enable USB-C PD and
+ DP alt mode
+
+Same wiring as the SDM845 MTP: PMI8998 Type-C/PD PHY, FSUSB42-style AUX
+switch on TLMM 43/51, DP through the QMP combo PHY.
+
+---
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -13,6 +13,7 @@
+ #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+ #include <dt-bindings/sound/qcom,q6afe.h>
+ #include <dt-bindings/sound/qcom,q6asm.h>
++#include <dt-bindings/usb/pd.h>
+ 
+ #include "sdm845.dtsi"
+ #include "sdm845-wcd9340.dtsi"
+@@ -33,6 +34,26 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	/* batocera - DP AUX switch on the USB-C SBU lines */
++	usb-1-sbu-mux {
++		compatible = "onnn,fsusb42", "gpio-sbu-mux";
++
++		enable-gpios = <&tlmm 43 GPIO_ACTIVE_LOW>;
++		select-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
++
++		pinctrl-0 = <&usb_1_sbu_default>;
++		pinctrl-names = "default";
++
++		mode-switch;
++		orientation-switch;
++
++		port {
++			usb_1_sbu_mux: endpoint {
++				remote-endpoint = <&pmi8998_typec_sbu_out>;
++			};
++		};
++	};
++
+ 	battery: battery {
+ 		compatible = "simple-battery";
+ 
+@@ -672,6 +693,15 @@ &mdss {
+ 	status = "okay";
+ };
+ 
++/* batocera - DisplayPort over USB-C */
++&mdss_dp {
++	status = "okay";
++};
++
++&mdss_dp_out {
++	data-lanes = <0 1>;
++};
++
+ &mdss_dsi0 {
+ 	status = "okay";
+ 	vdda-supply = <&vreg_l26a_1p2>;
+@@ -848,6 +878,79 @@ led@5 {
+ 	};
+ };
+ 
++/* batocera - USB-C port with PD and DP alt mode */
++&pmi8998_typec {
++	vdd-pdphy-supply = <&vreg_l24a_3p075>;
++
++	status = "okay";
++
++	connector {
++		compatible = "usb-c-connector";
++		label = "USB-C";
++
++		power-role = "dual";
++		data-role = "dual";
++		try-power-role = "sink";
++
++		vbus-supply = <&pmi8998_vbus>;
++
++		source-pdos = <PDO_FIXED(5000, 1500,
++					 PDO_FIXED_DUAL_ROLE |
++					 PDO_FIXED_USB_COMM |
++					 PDO_FIXED_DATA_SWAP)>;
++		/* 9 V at the PMIC's 1.5 A input limit, 12 V trips USBIN OV */
++		sink-pdos = <PDO_FIXED(5000, 3000,
++				       PDO_FIXED_DUAL_ROLE |
++				       PDO_FIXED_USB_COMM |
++				       PDO_FIXED_DATA_SWAP)
++			     PDO_FIXED(9000, 1500, 0)>;
++		op-sink-microwatt = <13500000>;
++
++		altmodes {
++			displayport {
++				svid = /bits/ 16 <0xff01>;
++				vdo = <0x00001c46>;
++			};
++		};
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++
++				pmi8998_hs_in: endpoint {
++					remote-endpoint = <&usb_1_dwc3_hs>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++
++				pmi8998_ss_in: endpoint {
++					remote-endpoint = <&usb_1_qmpphy_out>;
++				};
++			};
++
++			port@2 {
++				reg = <2>;
++
++				pmi8998_typec_sbu_out: endpoint {
++					remote-endpoint = <&usb_1_sbu_mux>;
++				};
++			};
++		};
++	};
++};
++
++/* batocera - VBUS boost for USB-C source mode */
++&pmi8998_vbus {
++	regulator-enable-ramp-delay = <250000>;
++
++	status = "okay";
++};
++
+ &pmi8998_rradc {
+ 	status = "okay";
+ 	monitored-battery = <&battery>;
+@@ -1135,6 +1236,14 @@ hdmi_hpd: hdmi-hpd-active {
+ 		bias-pull-up;
+ 		input-enable;
+ 	};
++
++	/* batocera - DP AUX switch enable and select */
++	usb_1_sbu_default: usb-1-sbu-default-state {
++		pins = "gpio43", "gpio51";
++		function = "gpio";
++		bias-disable;
++		drive-strength = <8>;
++	};
+ };
+ 
+ &uart6 {
+@@ -1177,7 +1286,14 @@ &usb_1 {
+ };
+ 
+ &usb_1_dwc3 {
+-	dr_mode = "host";
++	/* batocera - role comes from the PMI8998 Type-C port */
++	dr_mode = "otg";
++	usb-role-switch;
++};
++
++/* batocera - Type-C connector endpoint */
++&usb_1_dwc3_hs {
++	remote-endpoint = <&pmi8998_hs_in>;
+ };
+ 
+ &usb_1_hsphy {
+@@ -1194,12 +1310,20 @@ &usb_1_hsphy {
+ };
+ 
+ &usb_1_qmpphy {
++	/* batocera - USB/DP lane switching for DP alt mode */
++	mode-switch;
++
+ 	status = "okay";
+ 
+ 	vdda-phy-supply = <&vreg_l26a_1p2>;
+ 	vdda-pll-supply = <&vreg_l1a_0p875>;
+ };
+ 
++/* batocera - Type-C connector SuperSpeed endpoint */
++&usb_1_qmpphy_out {
++	remote-endpoint = <&pmi8998_ss_in>;
++};
++
+ &venus {
+ 	status = "okay";
+ 	firmware-name = "qcom/venus-5.2/venus.mbn";

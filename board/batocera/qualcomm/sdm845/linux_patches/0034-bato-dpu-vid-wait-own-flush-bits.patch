@@ -1,0 +1,23 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] drm/msm/dpu: wait only for our own flush bits on video mode commits
+
+Flush bits can be left pending on a CTL for blocks outside its path (seen
+on the Odin after boot), so they never latch. Waiting for the whole register to
+clear then times out on every commit and caps DP on the Odin at ~8 fps.
+Use the same check as the vblank irq handler.
+
+---
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder_phys_vid.c
+@@ -538,8 +538,10 @@
+ 	if (!hw_ctl)
+ 		return 0;
+ 
++	/* only our own bits, stale ones outside this CTL path never latch */
+ 	ret = wait_event_timeout(phys_enc->pending_kickoff_wq,
+-		(hw_ctl->ops.get_flush_register(hw_ctl) == 0),
++		!(hw_ctl->ops.get_flush_register(hw_ctl) &
++		  hw_ctl->ops.get_pending_flush(hw_ctl)),
+ 		msecs_to_jiffies(50));
+ 	if (ret <= 0) {
+ 		DPU_ERROR("vblank timeout: %x\n", hw_ctl->ops.get_flush_register(hw_ctl));

@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Heidelberg <david@ixit.cz>
+Date: Sat, 26 Sep 2026 14:40:24 +0200
+Subject: [PATCH 05/10] usb: typec: qcom: Make typec_port accept also different
+ structure
+
+This is needed by followup commit introducing 1st gen of type-c support.
+
+Assisted-by: LLM
+Co-developed-by: Alexey Minnekhanov <alexeymin@minlexx.ru>
+Signed-off-by: Alexey Minnekhanov <alexeymin@minlexx.ru>
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Reviewed-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+---
+ drivers/usb/typec/tcpm/qcom/qcom_pmic_typec.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec.h b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec.h
+index 3c75820c9..6f89d296a 100644
+--- a/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec.h
++++ b/drivers/usb/typec/tcpm/qcom/qcom_pmic_typec.h
+@@ -11,7 +11,7 @@ struct pmic_typec {
+ 	struct tcpm_port	*tcpm_port;
+ 	struct tcpc_dev		tcpc;
+ 	struct pmic_typec_pdphy	*pmic_typec_pdphy;
+-	struct pmic_typec_port	*pmic_typec_port;
++	void			*pmic_typec_port;
+ 
+ 	int (*pdphy_start)(struct pmic_typec *tcpm,
+ 			   struct tcpm_port *tcpm_port);
