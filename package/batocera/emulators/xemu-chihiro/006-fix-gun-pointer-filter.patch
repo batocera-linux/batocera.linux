@@ -1,0 +1,24 @@
+diff --git a/ui/xemu-pointer-evdev.c b/ui/xemu-pointer-evdev.c
+index 434db8ea54..46be197d8a 100644
+--- a/ui/xemu-pointer-evdev.c
++++ b/ui/xemu-pointer-evdev.c
+@@ -141,7 +141,8 @@ static void close_pointer(Pointer *p)
+ }
+ 
+ /* Open one event node if it is a pointer: a left button (or touch) with
+- * absolute or relative X/Y axes, and not a gamepad or joystick. */
++ * absolute or relative X/Y axes. A gamepad or joystick is not one, unless it
++ * has a left button: some light guns have joystick buttons too. */
+ static void open_node(const char *node)
+ {
+     if (find_node(node)) {
+@@ -163,7 +164,8 @@ static void open_node(const char *node)
+ 
+     bool has_left = test_bit(key, BTN_LEFT);
+     bool pointer = has_left || test_bit(key, BTN_TOUCH);
+-    bool pad = test_bit(key, BTN_SOUTH) || test_bit(key, BTN_JOYSTICK);
++    bool pad = !has_left &&
++               (test_bit(key, BTN_SOUTH) || test_bit(key, BTN_JOYSTICK));
+     bool absolute = test_bit(ev, EV_ABS) && test_bit(abs, ABS_X) &&
+                     test_bit(abs, ABS_Y);
+     bool relative = test_bit(ev, EV_REL) && test_bit(rel, REL_X) &&
