@@ -17,11 +17,15 @@ class LibretroInfo:
 
     config: CaseSensitiveConfigParser
 
+    @staticmethod
+    def file(core: str, /) -> Path:
+        return _RETROARCH_INFO_DIR / f'{core}_libretro.info'
+
     @classmethod
     def load(cls, core: str, /) -> Self | None:
         # for each core, a file /usr/lib/<core>.info must exit, otherwise, info such as rewinding/netplay will not work
         # to do a global check : cd /usr/lib/libretro && for i in *.so; do INF=$(echo $i | sed -e s+/usr/lib/libretro+/usr/share/libretro/info+ -e s+\.so+.info+); test -e "$INF" || echo $i; done
-        if not (info_file := _RETROARCH_INFO_DIR / f'{core}_libretro.info').exists():
+        if not (info_file := cls.file(core)).exists():
             return None
 
         config = CaseSensitiveConfigParser(

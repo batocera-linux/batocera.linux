@@ -200,6 +200,7 @@ def launch_config(
         user_config=MockKeyValueConfig(data=launch_config_user_settings),
         system_settings=launch_config_system_settings,
         global_settings=launch_config_global_settings,
+        system_defaults={'emulator': launch_config_emulator, 'core': launch_config_core},
         system=launch_config_system,
         rom=launch_rom,
         emulator=launch_config_emulator,

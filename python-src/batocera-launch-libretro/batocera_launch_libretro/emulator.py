@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import shutil
-from dataclasses import field
+from dataclasses import field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
@@ -43,7 +43,6 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 _RETROARCH_BIN: Final = Path('/usr/bin/retroarch')
-_RETROARCH_CORES_DIR: Final = Path('/usr/lib/libretro')
 _RETROARCH_SHARE_DIR: Final = Path('/usr/share/libretro')
 _RETROARCH_INFO_DIR: Final = _RETROARCH_SHARE_DIR / 'info'
 
@@ -117,6 +116,22 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             self.config['core'] = 'mame'
 
         self.lr_core = load_core(self)
+
+        # A core removed from the image can still be selected in batocera.conf
+        if not self.lr_core.exists:
+            defaults = self.config.system_defaults
+            default_core = defaults['core']
+            if defaults['emulator'] == 'libretro' and default_core and default_core != self.core:
+                _logger.warning('libretro core %s is not installed, using %s instead', self.core, default_core)
+                self.config.remove_user_setting('core', self.core)
+                self.config = replace(self.config, core=default_core)
+                self.config['core'] = default_core
+                self.lr_core = load_core(self)
+
+        # Load the `.info` file right away to ensure that the core is installed
+        # NOTE: keep this assert here, as it will raise a `MissingCore` exception if
+        # the `.info` file is not installed, but we want to load this file early
+        assert self.lr_core.info
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -271,7 +286,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             _RETROARCH_BIN,
             '-L',
             # Retroarch core on the filesystem
-            _RETROARCH_CORES_DIR / f'{self.lr_core.library_prefix}_libretro.so',
+            self.lr_core.library,
             '--config',
             config_file,
         ]
