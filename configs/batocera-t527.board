@@ -20,7 +20,8 @@ BR2_PACKAGE_HOST_LINUX_HEADERS_CUSTOM_5_15=y
 BR2_LINUX_KERNEL=y
 BR2_LINUX_KERNEL_CUSTOM_GIT=y
 BR2_LINUX_KERNEL_CUSTOM_REPO_URL="https://github.com/orangepi-xunlong/linux-orangepi"
-BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="orange-pi-5.15-sun55iw3"
+# pinned to the branch head, bump when the branch moves & refresh linux_patches against it
+BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="5b956b750422abd5e9e9c5523540d2aaf41a7939"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/t527/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/allwinner/t527/linux-t527-current.config"
