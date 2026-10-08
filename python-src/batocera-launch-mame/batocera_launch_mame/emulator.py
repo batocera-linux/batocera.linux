@@ -128,6 +128,8 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                 f'{self.config_dir};{self.config_dir / "ini"}',
                 '-crosshairpath',
                 self.bios_dir / 'artwork' / 'crosshairs',
+                '-joystickprovider',
+                'sdljoy',
             ]
         )
 

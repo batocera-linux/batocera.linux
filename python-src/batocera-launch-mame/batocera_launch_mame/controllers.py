@@ -316,6 +316,9 @@ class MAMEControllers(MAMEBase):
 
         _mappings, gun_mappings, mouse_mappings = self.all_mame_control_mappings
 
+        if include_coin:
+            sequence += f' OR KEYCODE_{player_number}_{player_number + 4}'
+
         if mapping in gun_mappings:
             sequence += f' OR GUNCODE_{player_number}_{gun_mappings[mapping]}'
             if gun_mappings[mapping] == 'BUTTON2' and (pedal_key := self.__pedal_key(player_number)) is not None:
@@ -324,9 +327,6 @@ class MAMEControllers(MAMEBase):
         if mapping in mouse_mappings:
             mouse_player = player_number if self.config.get_bool('multimouse') else 1
             sequence += f' OR MOUSECODE_{mouse_player}_{mouse_mappings[mapping]}'
-
-        if include_coin:
-            sequence += f' OR KEYCODE_{player_number}_{player_number + 4}'
 
         return sequence
 
