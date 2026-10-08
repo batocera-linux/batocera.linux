@@ -1,0 +1,42 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: sdm845-ayn-odin: power the LT8912B rails
+
+Android drives GPIO 8 as the bridge power enable next to the GPIO 13 HDMI
+enable. Give it a fixed regulator and wire the bridge supplies the way the
+Odin 2 Mini does.
+
+---
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -185,6 +185,15 @@
+ 		enable-active-high;
+ 	};
+ 
++	/* batocera - LT8912B power enable (Android lt,pwren-gpio) */
++	hdmi_pwr_reg: hdmi-pwr-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "hdmi_pwr";
++
++		gpio = <&tlmm 8 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 
+@@ -610,6 +619,15 @@
+ 		reg = <0x48>;
+ 		reset-gpios = <&tlmm 12 GPIO_ACTIVE_LOW>;
+ 
++		/* batocera - bridge rails, wired like the Odin 2 Mini */
++		vdd-supply = <&hdmi_en_reg>;
++		vccmipirx-supply = <&hdmi_pwr_reg>;
++		vccsysclk-supply = <&hdmi_pwr_reg>;
++		vcclvdstx-supply = <&hdmi_pwr_reg>;
++		vcchdmitx-supply = <&hdmi_pwr_reg>;
++		vcclvdspll-supply = <&hdmi_pwr_reg>;
++		vcchdmipll-supply = <&hdmi_pwr_reg>;
++
+ 		ports {
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
