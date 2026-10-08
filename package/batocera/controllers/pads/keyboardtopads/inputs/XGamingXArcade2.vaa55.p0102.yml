@@ -1,0 +1,36 @@
+# XArcade Tankstick Max
+target_devices:
+- name: Tankstick Max Player 1
+  type: joystick
+  mapping:
+    key:up: abs:hat0y:-1
+    key:down: abs:hat0y:1
+    key:left: abs:hat0x:-1
+    key:right: abs:hat0x:1
+    key:leftshift: btn:south
+    key:z: btn:east
+    key:leftctrl: btn:west
+    key:leftalt: btn:north
+    key:x: btn:tr
+    key:space: btn:tl
+    key:5: btn:tr2
+    key:c: btn:tl2
+    key:1: btn:start
+    key:3: btn:select
+- name: Tankstick Max Player 2
+  type: joystick
+  mapping:
+    key:r: abs:hat0y:-1
+    key:f: abs:hat0y:1
+    key:d: abs:hat0x:-1
+    key:g: abs:hat0x:1
+    key:w: btn:south
+    key:e: btn:east
+    key:a: btn:west
+    key:s: btn:north
+    key:leftbrace: btn:tr
+    key:q: btn:tl
+    key:6: btn:tr2
+    key:rightbrace: btn:tl2
+    key:2: btn:start
+    key:4: btn:select
