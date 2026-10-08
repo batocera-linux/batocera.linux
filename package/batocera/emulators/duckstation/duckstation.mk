@@ -42,7 +42,7 @@ endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     DUCKSTATION_CONF_OPTS += -DENABLE_VULKAN=ON
-    DUCKSTATION_DEPENDENCIES += mesa3d vulkan-loader
+    DUCKSTATION_DEPENDENCIES += $(if $(BR2_PACKAGE_MESA3D),mesa3d) vulkan-loader
     DUCKSTATION_CONF_OPTS += -DSHADERC_INCLUDE_DIR=$(STAGING_DIR)/stenzek-shaderc/include
     DUCKSTATION_CONF_OPTS += -DSHADERC_LIBRARY=$(STAGING_DIR)/stenzek-shaderc/lib/libshaderc_shared.so
 else
