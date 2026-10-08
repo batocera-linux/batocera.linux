@@ -1881,7 +1881,7 @@ ports:
   manufacturer: Ports
   release:
   hardware: port
-  file_extensions: [sh, squashfs]
+  file_extensions: [sh, squashfs, desktop]
   platform: pc
   group: ports
   path: ports
@@ -1890,17 +1890,19 @@ ports:
     ## SYSTEM PORTS ##
     -------------------------------------------------------------------------------
     Here you can find Linux games and apps, launched by shell scripts ending in
-    ".sh". Only the ".sh" scripts appear in EmulationStation.
+    ".sh" or by ".desktop" entries. Only the ".sh" scripts and ".desktop" entries
+    appear in EmulationStation.
   comment_fr: |
     ## SYSTEM PORTS ##
     -------------------------------------------------------------------------------
     Vous trouverez ici des jeux et applications Linux, qui sont lancés par des scripts
-    shell en ".sh". Seuls les scripts en ".sh" apparaissent dans EmulationStation.
+    shell en ".sh" ou par des raccourcis ".desktop". Seuls les scripts en ".sh" et les
+    raccourcis ".desktop" apparaissent dans EmulationStation.
   comment_br: |
     ## SISTEMA DE PORTS ##
      -------------------------------------------------- -----------------------------
      Aqui você pode encontrar jogos e aplicativos para Linux, iniciados via scripts shell que terminam em
-     ".sh". Apenas os scripts ".sh" aparecem no EmulationStation.
+     ".sh" ou por atalhos ".desktop". Apenas os scripts ".sh" e os atalhos ".desktop" aparecem no EmulationStation.
 
 windows:
   name:       Windows
