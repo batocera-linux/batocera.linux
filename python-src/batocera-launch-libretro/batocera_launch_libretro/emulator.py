@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import logging
 import shutil
 from dataclasses import field
@@ -173,6 +174,12 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
         return bezel
 
+    @cached_property
+    def uses_retroachievements(self) -> bool:
+        return self.config.get_bool('retroachievements') and (
+            self.lr_core.supports_retroachievements or self.config.get_bool('cheevos_force')
+        )
+
     @property
     def handles_bezels(self) -> bool:
         return True
@@ -194,6 +201,13 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         return self.config_dir / 'overlay.cfg'
 
     async def configure(self) -> Command:
+        config_file = self.config.get_str('configfile')
+
+        internet_check: asyncio.Future[bool] | None = None
+        if config_file is None and self.uses_retroachievements:
+            # Runs alongside the config generation, awaited in set_config
+            internet_check = asyncio.ensure_future(is_connected_to_internet())
+
         gfx_backend = await self.get_gfx_backend()
 
         game_shader: str | None = None
@@ -230,8 +244,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             if 'noBezel' in video_shader.name:
                 shader_bezel = True
 
-        config_file = self.config.get_str('configfile')
-
         if config_file is None:
             # Use the batocera config file if no user defined file
             config_file = str(self.custom_config_path)
@@ -242,7 +254,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             self.set_controllers_config(custom_config)
             self.set_paths_config(custom_config)
             self.lr_core.generate_special_configs()
-            await self.set_config(custom_config, gfx_backend, shader_bezel)
+            await self.set_config(custom_config, gfx_backend, shader_bezel, internet_check)
             self.set_guns_config(custom_config, core_options)
 
             # write core_options a bit late while guns configs can modify it
@@ -628,7 +640,14 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
         return core_options
 
-    async def set_config(self, custom_config: LibretroConfig, gfx_backend: str, shader_bezel: bool, /) -> None:
+    async def set_config(
+        self,
+        custom_config: LibretroConfig,
+        gfx_backend: str,
+        shader_bezel: bool,
+        internet_check: asyncio.Future[bool] | None,
+        /,
+    ) -> None:
         # Basic configuration
 
         # not aligned behavior on other emus
@@ -848,7 +867,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         custom_config.set('cheevos_richpresence_enable', False)
 
         cheevos_enable = self.config.get_bool('retroachievements')
-        if cheevos_enable and (self.lr_core.supports_retroachievements or self.config.get_bool('cheevos_force')):
+        if self.uses_retroachievements:
             custom_config.set_from_config('cheevos_username', 'retroachievements.username', default='')
             custom_config.set('cheevos_password', '')  # clear the password - only use the token
             custom_config.set_from_config('cheevos_token', 'retroachievements.token', default='')
@@ -870,7 +889,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             # retroarchievements_unofficial
             custom_config.set_bool_from_config('cheevos_test_unofficial', 'retroachievements.unofficial')
 
-            if not await is_connected_to_internet():
+            if internet_check is not None and not await internet_check:
                 cheevos_enable = False
 
         custom_config.set('cheevos_enable', cheevos_enable)

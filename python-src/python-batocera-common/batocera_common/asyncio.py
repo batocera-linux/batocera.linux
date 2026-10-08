@@ -308,17 +308,26 @@ async def create_ready_task[**P, R](
 async def is_connected_to_internet() -> bool:
     import aiohttp
 
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
-        try:
-            async with session.head('https://one.one.one.one'):
-                return True
-        except aiohttp.ClientError, TimeoutError:
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=3)) as session:
+
+        async def probe(url: str, /) -> bool:
             try:
-                async with session.head('https://dns.google'):
+                async with session.head(url):
                     return True
             except aiohttp.ClientError, TimeoutError:
-                _logger.error('Not connected to the internet')
                 return False
+
+        tasks = [asyncio.create_task(probe(url)) for url in ('https://one.one.one.one', 'https://dns.google')]
+
+        try:
+            for done in asyncio.as_completed(tasks):
+                if await done:
+                    return True
+        finally:
+            await cancel_all(*tasks)
+
+    _logger.error('Not connected to the internet')
+    return False
 
 
 async def iterate_queue[T](queue: asyncio.Queue[T], /) -> AsyncIterator[T]:

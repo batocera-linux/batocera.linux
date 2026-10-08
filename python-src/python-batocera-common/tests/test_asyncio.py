@@ -2,11 +2,18 @@ from __future__ import annotations
 
 import asyncio
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, Self, cast
 
 import pytest
 
-from batocera_common.asyncio import cancel_all, create_ready_task, group_tasks, iterate_queue, parallel
+from batocera_common.asyncio import (
+    cancel_all,
+    create_ready_task,
+    group_tasks,
+    is_connected_to_internet,
+    iterate_queue,
+    parallel,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -302,3 +309,67 @@ class TestCancelAll:
 
         assert tasks[0].result() is None
         assert isinstance(tasks[1].exception(), RuntimeError)
+
+
+type _Outcome = Literal['answer', 'hang'] | Exception
+
+
+class _StubResponse:
+    def __init__(self, outcome: _Outcome, /) -> None:
+        self._outcome = outcome
+
+    async def __aenter__(self) -> Self:
+        if self._outcome == 'hang':
+            await asyncio.Event().wait()
+        elif isinstance(self._outcome, Exception):
+            raise self._outcome
+        return self
+
+    async def __aexit__(self, *exc_info: object) -> None:
+        return None
+
+
+class _StubSession:
+    def __init__(self, outcomes: dict[str, _Outcome], /) -> None:
+        self._outcomes = outcomes
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(self, *exc_info: object) -> None:
+        return None
+
+    def head(self, url: str, /) -> _StubResponse:
+        return _StubResponse(self._outcomes[url])
+
+
+def _stub_probes(monkeypatch: pytest.MonkeyPatch, cloudflare: _Outcome, google: _Outcome, /) -> None:
+    import aiohttp
+
+    session = _StubSession({'https://one.one.one.one': cloudflare, 'https://dns.google': google})
+
+    def make_session(**_: object) -> _StubSession:
+        return session
+
+    monkeypatch.setattr(aiohttp, 'ClientSession', make_session)
+
+
+class TestIsConnectedToInternet:
+    async def test_first_answer_wins_over_a_hanging_probe(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        _stub_probes(monkeypatch, 'hang', 'answer')
+
+        assert await asyncio.wait_for(is_connected_to_internet(), 1) is True
+
+    async def test_one_failed_probe_is_not_offline(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import aiohttp
+
+        _stub_probes(monkeypatch, aiohttp.ClientConnectionError(), 'answer')
+
+        assert await is_connected_to_internet() is True
+
+    async def test_offline_when_every_probe_fails(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import aiohttp
+
+        _stub_probes(monkeypatch, TimeoutError(), aiohttp.ClientConnectionError())
+
+        assert await is_connected_to_internet() is False
