@@ -1,0 +1,19 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: sdm845-ayn-odin: make the touchscreen follow the panel
+
+The TD4328 is a TDDI, so the touch half is in reset while the panel is
+unprepared and its suspend write fails with -ENXIO, aborting s2idle.
+
+---
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -632,6 +632,9 @@
+ 		vdd-supply = <&vreg_l28a_3p0>;
+ 		vio-supply = <&vreg_l14a_1p8>;
+ 
++		/* batocera - TDDI, follow the panel so suspend does not hit a reset chip */
++		panel = <&display_panel>;
++
+ 		syna,reset-delay-ms = <200>;
+ 		syna,startup-delay-ms = <200>;
+ 
