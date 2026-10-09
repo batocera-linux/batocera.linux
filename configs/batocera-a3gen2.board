@@ -27,7 +27,7 @@ BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="4e557e233b9da219f48b82bfa313f353386097ec"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-amlogic-5.15.y.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/amlogic/a3gen2/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 # Branch: khadas-vims-5.15.y, Commit date: Mar 16, 2026 (please update when updating commit ref)
 BR2_PACKAGE_AMLOGIC_COMMON_DRIVERS=y

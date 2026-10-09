@@ -21,6 +21,7 @@ BR2_KERNEL_HEADERS_7_2=y
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm8550/linux_sm8550-defconfig.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 BR2_LINUX_KERNEL_DTS_SUPPORT=y
 BR2_LINUX_KERNEL_INTREE_DTS_NAME="qcom/qcs8550-retroidpocket-rpnova qcom/qcs8550-ayn-odin2 qcom/qcs8550-ayn-odin2portal qcom/qcs8550-ayn-odin2mini qcom/qcs8550-ayn-thor qcom/qcs8550-ayaneo-pocketace qcom/qcs8550-ayaneo-pocketdmg qcom/qcs8550-ayaneo-pocketds qcom/qcs8550-ayaneo-pocketevo qcom/qcs8550-ayaneo-pockets1k qcom/qcs8550-ayaneo-pockets2k qcom/qcs8550-ayaneo-pocketsmini qcom/qcs8550-retroidpocket-rp6 qcom/qcs8550-retroidpocket-rp6-top-dpad"
