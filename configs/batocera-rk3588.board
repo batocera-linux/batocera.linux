@@ -24,7 +24,7 @@ BR2_LINUX_KERNEL_CUSTOM_REPO_VERSION="41da3e69e16b9de57eca897215e8b0adc6efdc8b"
 BR2_LINUX_KERNEL_PATCH="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux_patches"
 BR2_LINUX_KERNEL_USE_CUSTOM_CONFIG=y
 BR2_LINUX_KERNEL_CUSTOM_CONFIG_FILE="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig.config"
-BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/rockchip/rk3588/linux-defconfig-fragment.config"
+BR2_LINUX_KERNEL_CONFIG_FRAGMENT_FILES="$(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/linux-defconfig-fragment.config"
 BR2_LINUX_KERNEL_NEEDS_HOST_OPENSSL=y
 
 # Build the DTB from the kernel sources
