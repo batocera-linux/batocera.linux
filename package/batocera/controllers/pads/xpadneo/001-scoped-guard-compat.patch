@@ -1,0 +1,53 @@
+diff --git a/hid-xpadneo/src/xpadneo/compat.h b/hid-xpadneo/src/xpadneo/compat.h
+index 58a9d3d..b635613 100644
+--- a/hid-xpadneo/src/xpadneo/compat.h
++++ b/hid-xpadneo/src/xpadneo/compat.h
+@@ -9,8 +9,36 @@
+ #ifndef COMPAT_H
+ #define COMPAT_H
+ 
++#include <linux/spinlock.h>
+ #include <linux/version.h>
+ 
++/* v6.5: scoped_guard() from linux/cleanup.h, only the spinlock_irqsave form is used */
++#ifndef scoped_guard
++struct xpadneo_spin_guard {
++	spinlock_t *lock;
++	unsigned long flags;
++};
++
++static inline struct xpadneo_spin_guard xpadneo_spin_guard_enter(spinlock_t *lock)
++{
++	struct xpadneo_spin_guard g = { .lock = lock };
++
++	spin_lock_irqsave(g.lock, g.flags);
++	return g;
++}
++
++static inline void xpadneo_spin_guard_exit(struct xpadneo_spin_guard *g)
++{
++	if (g->lock)
++		spin_unlock_irqrestore(g->lock, g->flags);
++}
++
++#define scoped_guard_spinlock_irqsave(_lock) \
++	for (struct xpadneo_spin_guard __attribute__((cleanup(xpadneo_spin_guard_exit))) \
++	     _g = xpadneo_spin_guard_enter(_lock); _g.lock; _g.lock = NULL)
++#define scoped_guard(_name, args...) scoped_guard_##_name(args)
++#endif
++
+ /* v4.19: ida_simple_{get,remove}() have been replaced */
+ #if KERNEL_VERSION(4, 19, 0) >= LINUX_VERSION_CODE
+ #define ida_alloc(a, f) ida_simple_get((a), 0, 0, (f))
+diff --git a/hid-xpadneo/src/xpadneo/rumble.c b/hid-xpadneo/src/xpadneo/rumble.c
+index 1cf185f..48d8ecd 100644
+--- a/hid-xpadneo/src/xpadneo/rumble.c
++++ b/hid-xpadneo/src/xpadneo/rumble.c
+@@ -13,6 +13,7 @@
+ #include <linux/smp.h>
+ 
+ #include "xpadneo.h"
++#include "compat.h"
+ #include "helpers.h"
+ 
+ /* module parameter "trigger_rumble_mode" */
