@@ -19,7 +19,7 @@ class EmulatorInfo(TypedDict):
 
 
 def _main(info_path_file: Path, destination_dir: Path, /) -> None:
-    info_files = (
+    for info_file in (
         Path(str_path)
         for str_path in info_path_file.read_text().strip().split()
         if (info_file := Path(str_path))
@@ -27,9 +27,7 @@ def _main(info_path_file: Path, destination_dir: Path, /) -> None:
         and (parts := info_file.stem.split('.'))
         and len(parts) == 2
         and parts[-1] == 'emulator'
-    )
-
-    for info_file in info_files:
+    ):
         emulator_info = safe_load_yaml12(info_file, EmulatorInfo) or {}
 
         if 'labwc' in emulator_info and 'window_rules' in emulator_info['labwc']:

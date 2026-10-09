@@ -49,6 +49,7 @@ class cached_property[TValue]:
 
 
 @overload
+@dataclass_transform(field_specifiers=(field, Field))
 def cached_dataclass[T](
     cls: type[T],
     /,
@@ -66,6 +67,7 @@ def cached_dataclass[T](
 
 
 @overload
+@dataclass_transform(field_specifiers=(field, Field))
 def cached_dataclass[T](
     cls: None = None,
     /,
