@@ -9,6 +9,7 @@ from batocera_common.paths import BATOCERA_SHARE_DIR
 
 from .config import RC_XML, LabWCConfig
 from .outputs import layout_box
+from .touch import resolve_touchscreens, touchscreens
 from .types import LabWCRule, Output
 
 
@@ -72,13 +73,11 @@ def main() -> None:
     parser.add_argument('--reconfigure', action='store_true', help='reload configuration in LabWC')
     parser.add_argument('--primary', type=str, help='primary output screen')
     parser.add_argument('--secondary', type=str, help='secondary output screen')
-    parser.add_argument('--touchscreen', type=str, help='touchscreen device')
     parser.add_argument(
-        '--touchscreen-map',
-        nargs=3,
-        action='append',
-        metavar=('DEVICE', 'OUTPUT', 'ROTATION'),
-        help='map a touchscreen device to an output, rotation 0-3 (repeatable)',
+        '--touchscreen-outputs',
+        nargs='+',
+        metavar='OUTPUT',
+        help='map the touchscreens to these outputs, primary first (give the rule set before this option)',
     )
     parser.add_argument(
         'rule_set',
@@ -95,8 +94,7 @@ def main() -> None:
         and args.reconfigure
         and args.primary is None
         and args.secondary is None
-        and args.touchscreen is None
-        and args.touchscreen_map is None
+        and args.touchscreen_outputs is None
     ):
         LabWCConfig.reconfigure()
         return
@@ -107,16 +105,14 @@ def main() -> None:
         rules = _load_rules('_global' if args.rule_set is None else args.rule_set)
         _apply_rules(config, rules, args.primary, args.secondary)
 
-    if args.touchscreen is not None:
-        config.set_touchscreen(name=args.touchscreen or None, map_to_output_name=args.primary or None)
-    elif args.touchscreen_map is not None:
-        config.set_touchscreens(
-            [
-                (name, output, int(rotation) if rotation.isdigit() else 0)
-                for name, output, rotation in args.touchscreen_map
-                if name and output
-            ]
-        )
+    if args.touchscreen_outputs is not None:
+        outputs = [output for output in args.touchscreen_outputs if output]
+        if outputs:
+            mappings = resolve_touchscreens(outputs, touchscreens())
+        else:
+            print('No primary output set. Skipping touchscreen configuration.')
+            mappings = []
+        config.set_touchscreens([(mapping.device, mapping.output, mapping.rotation) for mapping in mappings])
 
     config.save()
 

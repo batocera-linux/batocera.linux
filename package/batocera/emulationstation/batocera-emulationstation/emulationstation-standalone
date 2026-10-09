@@ -428,43 +428,8 @@ while [ -e "${REBOOT_FLAG}" ]; do
 
     # same for labwc : to be moved in batocera-resolution
     if [ "$(batocera-resolution getDisplayComp)" = "labwc" ]; then
-	TOUCHSCREEN=""
-	TOUCHSCREEN_MAP=()
-	for TOUCH_OUTPUT in "${settings_output}" "${settings_output2}" "${settings_output3}"; do
-	    test -z "${TOUCH_OUTPUT}" && continue
-	    TOUCH_DEVICE=$(_output_setting display.touchscreen "${TOUCH_OUTPUT}")
-	    if [ -n "${TOUCH_DEVICE}" ]; then
-		echo "Touchscreen '${TOUCH_DEVICE}' mapped to output ${TOUCH_OUTPUT}." >>"$log"
-		# wlroots rotates a mapped touchscreen with its output, so only a digitiser that already reports in the rotated frame needs a matrix
-		TOUCH_ROTATION=$(_output_setting display.touchrotate "${TOUCH_OUTPUT}")
-		[ -z "${TOUCH_ROTATION}" ] && TOUCH_ROTATION=0
-		TOUCHSCREEN_MAP+=(--touchscreen-map "${TOUCH_DEVICE}" "${TOUCH_OUTPUT}" "${TOUCH_ROTATION}")
-	    fi
-	done
-	if [ ${#TOUCHSCREEN_MAP[@]} -eq 0 ]; then
-	    TOUCHSCREEN_LIST=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]}}')
-	    if [ -n "${TOUCHSCREEN_LIST}" ]; then
-		NUM_TOUCH=$(echo "${TOUCHSCREEN_LIST}" | grep -v '^$' | wc -l)
-	    else
-		NUM_TOUCH=0
-	    fi
-	    if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${settings_output}" ]; then
-		TOUCHSCREEN="${TOUCHSCREEN_LIST}"
-		echo "One touchscreen '${TOUCHSCREEN}' detected. Configuring for output ${settings_output}." >>"$log"
-	    else
-		if [ "${NUM_TOUCH}" -eq 0 ]; then
-		    echo "No touchscreen found. Touchscreen configuration omitted/removed." >>"$log"
-		elif [ "${NUM_TOUCH}" -gt 1 ]; then
-		    echo "Multiple touchscreens detected (${NUM_TOUCH}). Omitting individual touch mapping." >>"$log"
-		    echo "Use sdl2-touch-test to get the calibration for your touch panels." >>"$log"
-		elif [ -z "${settings_output}" ]; then
-		    echo "No primary output set. Skipping touchscreen configuration." >>"$log"
-		fi
-	    fi
-	    TOUCHSCREEN_MAP=(--touchscreen="${TOUCHSCREEN}")
-	fi
-	# apply rules to es, backglass, bcc, ...
-	LABWC_PID=$(pgrep -o -x labwc) batocera-labwc-config --reconfigure --primary="${settings_output}" --secondary="${settings_output2}" "${TOUCHSCREEN_MAP[@]}"
+	# apply rules to es, backglass, bcc, ... and map the touchscreens to their outputs
+	LABWC_PID=$(pgrep -o -x labwc) batocera-labwc-config --reconfigure --primary="${settings_output}" --secondary="${settings_output2}" --touchscreen-outputs "${settings_output}" "${settings_output2}" "${settings_output3}" >>"$log"
 
 	# ES sizes its window from the first wayland output, not the one labwc moves it to,
 	# and SDL mode emulation misplaces an exclusive fullscreen window

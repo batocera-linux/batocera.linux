@@ -10,6 +10,7 @@ from batocera_common.paths import BATOCERA_SHARE_DIR
 from batocera_labwc.cli import main
 from batocera_labwc.config import LabWCConfig
 from batocera_labwc.outputs import Box
+from batocera_labwc.touch import TouchMapping
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -529,44 +530,6 @@ class TestMain:
 
         assert ET.parse(rc_path).getroot().find('./windowRules') is None
 
-    def test_sets_touchscreen_with_primary(
-        self,
-        rc_path: Path,
-        run_main: Callable[..., None],
-    ) -> None:
-        run_main(
-            '--config-path',
-            str(rc_path),
-            '--primary',
-            'HDMI-A-1',
-            '--touchscreen',
-            'touch-panel',
-        )
-
-        touch_elements = _touch_elements(ET.parse(rc_path).getroot())
-
-        assert len(touch_elements) == 1
-        assert touch_elements[0].get('deviceName') == 'touch-panel'
-        assert touch_elements[0].get('mapToOutput') == 'HDMI-A-1'
-
-    def test_touchscreen_without_primary_clears_mapping(
-        self,
-        rc_path: Path,
-        run_main: Callable[..., None],
-    ) -> None:
-        config = LabWCConfig(path=rc_path)
-        config.set_touchscreen(name='old-touch', map_to_output_name='HDMI-A-1')
-        config.save()
-
-        run_main(
-            '--config-path',
-            str(rc_path),
-            '--touchscreen',
-            'touch-panel',
-        )
-
-        assert _touch_elements(ET.parse(rc_path).getroot()) == []
-
     def test_span_outputs_covers_both_screens(
         self,
         rc_path: Path,
@@ -604,43 +567,46 @@ class TestMain:
         assert rule.find('./action[@name="MoveTo"]') is None
         assert rule.find('./action[@name="ResizeTo"]') is None
 
-    def test_touchscreen_map_sets_each_device(
+    def test_touchscreen_outputs_maps_resolved_touchscreens(
         self,
         rc_path: Path,
         run_main: Callable[..., None],
+        mocker: MockerFixture,
     ) -> None:
-        run_main(
-            '--config-path',
-            str(rc_path),
-            '--touchscreen-map',
-            'bottom-touch',
-            'DSI-1',
-            '0',
-            '--touchscreen-map',
-            'top-touch',
-            'DP-1',
-            '1',
+        mocker.patch('batocera_labwc.cli.touchscreens', return_value=['bottom-touch', 'top-touch'])
+        resolve = mocker.patch(
+            'batocera_labwc.cli.resolve_touchscreens',
+            return_value=[TouchMapping('bottom-touch', 'DSI-1', None), TouchMapping('top-touch', 'DP-1', 1)],
         )
 
-        root = ET.parse(rc_path).getroot()
+        run_main('--config-path', str(rc_path), '--primary=DSI-1', '--touchscreen-outputs', 'DSI-1', 'DP-1', '')
 
+        resolve.assert_called_once_with(['DSI-1', 'DP-1'], ['bottom-touch', 'top-touch'])
+        root = ET.parse(rc_path).getroot()
         assert [(t.get('deviceName'), t.get('mapToOutput')) for t in _touch_elements(root)] == [
             ('bottom-touch', 'DSI-1'),
             ('top-touch', 'DP-1'),
         ]
+        assert root.find('./libinput/device[@category="bottom-touch"]') is None
         assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '0 1 0 -1 0 1'
 
-    def test_touchscreen_map_unknown_rotation_is_identity(
+    def test_touchscreen_outputs_without_primary_clears_mapping(
         self,
         rc_path: Path,
         run_main: Callable[..., None],
+        mocker: MockerFixture,
+        capsys: pytest.CaptureFixture[str],
     ) -> None:
-        run_main('--config-path', str(rc_path), '--touchscreen-map', 'top-touch', 'DP-1', 'unknown')
+        resolve = mocker.patch('batocera_labwc.cli.resolve_touchscreens')
+        config = LabWCConfig(path=rc_path)
+        config.set_touchscreens([('old-touch', 'HDMI-A-1', None)])
+        config.save()
 
-        root = ET.parse(rc_path).getroot()
+        run_main('--config-path', str(rc_path), '--touchscreen-outputs', '', '')
 
-        assert [t.get('mapToOutput') for t in _touch_elements(root)] == ['DP-1']
-        assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '1 0 0 0 1 0'
+        resolve.assert_not_called()
+        assert _touch_elements(ET.parse(rc_path).getroot()) == []
+        assert 'No primary output set' in capsys.readouterr().out
 
     def test_reconfigure_after_save(
         self,
