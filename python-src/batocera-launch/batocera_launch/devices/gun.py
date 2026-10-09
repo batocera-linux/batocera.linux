@@ -5,6 +5,7 @@ import re
 import shutil
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final, Protocol, cast
 
 from batocera_common.configparser import CaseSensitiveConfigParser
@@ -13,20 +14,27 @@ from batocera_common.paths import SAVES
 from ..paths import PRECALIBRATION_DIR
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from ..config.config import SystemConfig
 
 _logger = logging.getLogger(__name__)
 _input_re: Final = re.compile(r'^/dev/input/event([0-9]*)$')
 # xemu-chihiro names a save after the parent game, so its revisions share it
 _CHIHIRO_SAVE_NAMES: Final = {'ghostsqo': 'ghostsqu', 'vcop3a': 'vcop3'}
+# the sm2-emu launcher copies these default saves for every game on first run
+_SM2_EMU_DEFAULT_SAVES: Final = Path('/usr/share/sm2-emu/nvram')
 
 
 def _copy_file(src: Path, dst: Path) -> None:
     if src.exists() and not dst.exists():
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src, dst)
+
+
+def _copy_file_over_default(src: Path, dst: Path, default: Path) -> None:
+    # also replace a default save that was never changed
+    if dst.exists() and default.exists() and dst.read_bytes() == default.read_bytes():
+        dst.unlink()
+    _copy_file(src, dst)
 
 
 def _copy_dir(src: Path, dst: Path) -> None:
@@ -216,6 +224,15 @@ class Gun:
                 src = dir / 'NVDATA' / f'{rom.stem}.nv'
                 dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
                 _copy_file(src, dst)
+
+            elif system_config.system == 'model2':
+                if emulator == 'sm2-emu':
+                    # sm2-emu names a save after the set it finds in the archive, not after the file
+                    srcdir = dir / 'sm2-emu'
+                    if srcdir.is_dir():
+                        for src in srcdir.iterdir():
+                            dst = SAVES / 'model2' / 'sm2-emu' / src.name
+                            _copy_file_over_default(src, dst, _SM2_EMU_DEFAULT_SAVES / src.name)
 
             elif system_config.system == 'namco2x6':
                 if emulator == 'pcsx2x6':

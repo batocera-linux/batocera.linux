@@ -113,6 +113,13 @@ custom_features:
     choices:
       Off (Default): 0
       'On': 1
+  sm2_lightgun_crosshair:
+    group: LIGHT GUNS
+    prompt: SHOW LIGHT GUN CROSSHAIRS
+    description: Draw the emulator's crosshairs. By default they show only for guns that need them.
+    choices:
+      Off: 0
+      'On': 1
   sm2_wheel_ffb:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK
