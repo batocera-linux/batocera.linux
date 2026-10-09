@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal, NotRequired, ReadOnly, TypedDict
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
@@ -9,12 +10,12 @@ from .libretro_info import LibretroInfo
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
-    from pathlib import Path
 
     from batocera_launch import Controller, Controllers, DeviceInfoMapping, Gun, Guns, LibretroConfig, Rom, SystemConfig
 
     from .emulator import Libretro
 
+_RETROARCH_CORES_DIR: Final = Path('/usr/lib/libretro')
 _PEDAL_KEYS: Final = {1: 'c', 2: 'v', 3: 'b', 4: 'n'}
 
 
@@ -42,6 +43,14 @@ class Core:
     @cached_property
     def library_prefix(self) -> str:
         return self.emulator.core
+
+    @cached_property
+    def library(self) -> Path:
+        return _RETROARCH_CORES_DIR / f'{self.library_prefix}_libretro.so'
+
+    @property
+    def exists(self) -> bool:
+        return self.library.exists() and LibretroInfo.file(self.library_prefix).exists()
 
     @cached_property
     def info(self) -> LibretroInfo:

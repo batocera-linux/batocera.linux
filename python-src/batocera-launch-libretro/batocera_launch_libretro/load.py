@@ -17,11 +17,4 @@ def load_core(emulator: Libretro, /) -> Core:
     if emulator.core in cores.names:
         core_cls = cores[emulator.core].load()
 
-    core = core_cls(emulator)
-
-    # Load the `.info` file right away to ensure that the core is installed
-    # NOTE: keep this assert here, as it will raise a `MissingCore` exception if
-    # the `.info` file is not installed, but we want to load this file early
-    assert core.info
-
-    return core
+    return core_cls(emulator)
