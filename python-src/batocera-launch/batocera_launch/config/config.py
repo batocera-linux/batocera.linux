@@ -141,14 +141,6 @@ class SystemConfig(Config):
     use_wheels: bool = field(init=False)
     ui_mode: Literal['Full', 'Kiosk', 'Kid']
     show_fps: bool
-    netplay_mode: str | None
-    netplay_password: str | None
-    netplay_server_ip: str | None
-    netplay_server_port: str | None
-    netplay_server_session: str | None
-    state_slot: str | None
-    autosave: str | None
-    state_filename: str | None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'use_guns', self.get_bool('use_guns'))
@@ -250,18 +242,22 @@ class SystemConfig(Config):
             else:
                 _logger.info("use_wheels manually set to '%s' to flagless game", data['use_wheels'])
 
-        for key, value in (
-            ('netplay.mode', args.netplaymode),
-            ('netplay.password', args.netplaypass),
-            ('netplay.server.ip', args.netplayip),
-            ('netplay.server.port', args.netplayport),
-            ('netplay.server.session', args.netplaysession),
-            ('state_slot', args.state_slot),
-            ('autosave', args.autosave),
-            ('state_filename', args.state_filename),
-        ):
-            if value is not None:
-                data[key] = value
+        data.update(
+            *(
+                (key, value)
+                for key, value in (
+                    ('netplay.mode', args.netplaymode),
+                    ('netplay.password', args.netplaypass),
+                    ('netplay.server.ip', args.netplayip),
+                    ('netplay.server.port', args.netplayport),
+                    ('netplay.server.session', args.netplaysession),
+                    ('state_slot', args.state_slot),
+                    ('autosave', args.autosave),
+                    ('state_filename', args.state_filename),
+                )
+                if value is not None
+            )
+        )
 
         return cls(
             data,
@@ -279,12 +275,4 @@ class SystemConfig(Config):
             core_forced=('core' in user_settings or args.core is not None),
             ui_mode=ui_mode,
             show_fps=show_fps,
-            netplay_mode=args.netplaymode,
-            netplay_password=args.netplaypass,
-            netplay_server_ip=args.netplayip,
-            netplay_server_port=args.netplayport,
-            netplay_server_session=args.netplaysession,
-            state_slot=args.state_slot,
-            autosave=args.autosave,
-            state_filename=args.state_filename,
         )

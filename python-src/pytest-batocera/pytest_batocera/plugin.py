@@ -209,13 +209,5 @@ def launch_config(
         core_forced=False,
         ui_mode='Full',
         show_fps=False,
-        netplay_mode=None,
-        netplay_password=None,
-        netplay_server_ip=None,
-        netplay_server_port=None,
-        netplay_server_session=None,
-        state_slot=None,
-        autosave=None,
-        state_filename=None,
         render_config_data=launch_config_render_config,
     )

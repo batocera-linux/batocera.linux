@@ -470,7 +470,7 @@ class PPSSPP(Emulator):
             args.extend(['--dpi', '0.5'])
 
         # state_slot option
-        if state_filename := self.config.state_filename:
+        if state_filename := self.config.get_str('state_filename'):
             args.append(f'--state={state_filename}')
 
         return Command(

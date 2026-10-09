@@ -833,7 +833,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         custom_config.set_from_config('state_slot', default=0)
 
         # in case of the auto state_filename, do an autoload
-        self.config.get_str('state_filename', 'foo')
         if (state_filename := self.config.get_str('state_filename')) and state_filename.endswith('.auto'):
             custom_config.set('savestate_auto_load', True)
 
