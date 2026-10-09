@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 import gi
 
 if TYPE_CHECKING:
-    from batocera_bezel_overlay import _layer_shell as GtkLayerShell
+    from batocera_bezel_overlay import _layer_shell
+
+    GtkLayerShell = _layer_shell
 else:
     gi.require_version('GtkLayerShell', '0.1')
 

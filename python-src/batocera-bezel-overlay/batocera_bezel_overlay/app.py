@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING
 import gi
 from gi.repository import GLib
 
+from batocera_bezel_overlay.overlay import create_overlay
+
 try:
     gi.require_version('Gio', '2.0')
     gi.require_version('Gtk', '3.0')
@@ -116,12 +118,10 @@ class Application(Gtk.Application):
         return 0
 
     def do_activate(self) -> None:
-        if 'wayland' in self.session_type:
-            from batocera_bezel_overlay.overlay import WaylandOverlay as Overlay
-        else:
-            from batocera_bezel_overlay.overlay import X11Overlay as Overlay
+        overlay = create_overlay(
+            'wayland' if 'wayland' in self.session_type else 'x11', self.image_path, self.dimensions
+        )
 
-        overlay = Overlay(self.image_path, self.dimensions)
         self.add_window(overlay)
 
         overlay.present()
