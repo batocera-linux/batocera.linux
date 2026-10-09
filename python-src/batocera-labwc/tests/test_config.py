@@ -231,9 +231,9 @@ class TestWindowRuleToggleFullscreen:
 
 
 class TestLabWCConfigSetTouchscreen:
-    def test_set_touchscreen_creates_touch_element(self, rc_path: Path) -> None:
+    def test_set_touchscreens_creates_touch_element(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
-        config.set_touchscreen(name='touch-panel', map_to_output_name='HDMI-A-1')
+        config.set_touchscreens([('touch-panel', 'HDMI-A-1', None)])
 
         touch_elements = _touch_elements(config.root)
 
@@ -242,10 +242,10 @@ class TestLabWCConfigSetTouchscreen:
         assert touch_elements[0].get('mapToOutput') == 'HDMI-A-1'
         assert touch_elements[0].get('mouseEmulation') == 'no'
 
-    def test_set_touchscreen_replaces_existing_entries(self, rc_path: Path) -> None:
+    def test_set_touchscreens_replaces_existing_entries(self, rc_path: Path) -> None:
         rc_path.write_text(_EXISTING_TOUCH_RC_XML)
         config = LabWCConfig(path=rc_path)
-        config.set_touchscreen(name='new-touch', map_to_output_name='HDMI-A-2')
+        config.set_touchscreens([('new-touch', 'HDMI-A-2', None)])
 
         touch_elements = _touch_elements(config.root)
 
@@ -253,16 +253,10 @@ class TestLabWCConfigSetTouchscreen:
         assert touch_elements[0].get('deviceName') == 'new-touch'
         assert touch_elements[0].get('mapToOutput') == 'HDMI-A-2'
 
-    def test_set_touchscreen_clear_removes_existing_entries(self, rc_path: Path) -> None:
+    def test_set_touchscreens_empty_removes_existing_entries(self, rc_path: Path) -> None:
         rc_path.write_text(_EXISTING_TOUCH_RC_XML)
         config = LabWCConfig(path=rc_path)
-        config.set_touchscreen()
-
-        assert _touch_elements(config.root) == []
-
-    def test_set_touchscreen_requires_both_name_and_output(self, rc_path: Path) -> None:
-        config = LabWCConfig(path=rc_path)
-        config.set_touchscreen(name='touch-panel', map_to_output_name=None)
+        config.set_touchscreens([])
 
         assert _touch_elements(config.root) == []
 
@@ -289,10 +283,10 @@ class TestLabWCConfigSetTouchscreen:
         assert [t.get('deviceName') for t in _touch_elements(config.root)] == ['bottom-touch']
         assert [d.get('category') for d in config.root.findall('./libinput/device')] == ['bottom-touch']
 
-    def test_set_touchscreen_leaves_calibration_to_udev(self, rc_path: Path) -> None:
+    def test_set_touchscreens_without_rotation_leaves_calibration_to_udev(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
         config.set_touchscreens([('top-touch', 'DP-1', 1)])
-        config.set_touchscreen(name='touch-panel', map_to_output_name='DSI-1')
+        config.set_touchscreens([('touch-panel', 'DSI-1', None)])
 
         assert [t.get('deviceName') for t in _touch_elements(config.root)] == ['touch-panel']
         assert config.root.find('./libinput') is None
@@ -303,7 +297,7 @@ class TestLabWCConfigSetTouchscreen:
         )
         config = LabWCConfig(path=rc_path)
         config.set_touchscreens([('top-touch', 'DP-1', 3)])
-        config.set_touchscreen()
+        config.set_touchscreens([])
 
         devices = config.root.findall('./libinput/device')
         assert [d.get('category') for d in devices] == ['touchpad']

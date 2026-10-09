@@ -139,12 +139,6 @@ class LabWCConfig:
 
         self._window_rules_cache = {}
 
-    def set_touchscreen(self, name: str | None = None, map_to_output_name: str | None = None) -> None:
-        if name is not None and map_to_output_name is not None:
-            self.set_touchscreens([(name, map_to_output_name, None)])
-        else:
-            self.set_touchscreens([])
-
     def set_touchscreens(self, mappings: Sequence[tuple[str, str, int | None]]) -> None:
         # Always strip any existing <touch> elements, and the calibration written for them, to keep a clean slate
         libinput = self.root.find('./libinput')

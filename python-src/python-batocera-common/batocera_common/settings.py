@@ -39,6 +39,15 @@ def _lookup(config: KeyValueConfig, key: str, /) -> str | None:
     return value
 
 
+def _board_sysconfig() -> Path | None:
+    if (model := board_model()) is None:
+        return None
+
+    board_conf = SYSCONFIG.with_name(f'{SYSCONFIG.name}.{model}')
+
+    return board_conf if board_conf.is_file() else None
+
+
 def get_master_setting(key: str, /, *, user_config: KeyValueConfig | None = None) -> str | None:
     """A setting with the board and general sysconfig defaults as fallbacks, like batocera-settings-get-master."""
     if user_config is None:
@@ -47,13 +56,30 @@ def get_master_setting(key: str, /, *, user_config: KeyValueConfig | None = None
     if (value := _lookup(user_config, key)) is not None:
         return value
 
-    if (model := board_model()) is not None:
-        board_conf = SYSCONFIG.with_name(f'{SYSCONFIG.name}.{model}')
-
-        if board_conf.is_file() and (value := _lookup(KeyValueConfig(board_conf), key)) is not None:
-            return value
+    if (board_conf := _board_sysconfig()) is not None and (
+        value := _lookup(KeyValueConfig(board_conf), key)
+    ) is not None:
+        return value
 
     if SYSCONFIG.is_file():
         return _lookup(KeyValueConfig(SYSCONFIG), key)
 
     return None
+
+
+def get_master_section(section: str, /, *, user_config: KeyValueConfig | None = None) -> dict[str, str]:
+    """Every `<section>.<key>` setting with the same precedence as get_master_setting, keyed without the section."""
+    if user_config is None:
+        user_config = KeyValueConfig(BATOCERA_CONF)
+
+    values: dict[str, str] = {}
+
+    if SYSCONFIG.is_file():
+        values.update(KeyValueConfig(SYSCONFIG).section_items(section))
+
+    if (board_conf := _board_sysconfig()) is not None:
+        values.update(KeyValueConfig(board_conf).section_items(section))
+
+    values.update(user_config.section_items(section))
+
+    return values

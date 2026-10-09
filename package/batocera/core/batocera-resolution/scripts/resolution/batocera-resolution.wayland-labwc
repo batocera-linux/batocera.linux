@@ -37,10 +37,10 @@ _reconfigure_labwc() {
 
         _log "Triggering labwc reconfigure: $*"
         # Set the environment variable just for this command
-        LABWC_PID="${LABWC_PID}" batocera-labwc-config --reconfigure "$@"
+        LABWC_PID="${LABWC_PID}" batocera-labwc-config --reconfigure "$@" >> "${log}"
     else
         _log "Could not find running labwc process to trigger reconfigure action."
-        batocera-labwc-config --reconfigure "$@"
+        batocera-labwc-config --reconfigure "$@" >> "${log}"
     fi
 }
 
@@ -722,30 +722,8 @@ case "${ACTION}" in
 
         "${WLR_RANDR}" --output "${PSCREEN}" --transform "${WLR_TRANSFORM}"
 
-        # --- Check for touchscreen ---
-        TOUCHSCREEN_LIST=$(libinput list-devices | awk -v RS= '/Capabilities:.*touch/ {if (match($0, /Device:[[:space:]]+([^\n]+)/, m)) {print m[1]}}')
-        if [ -n "${TOUCHSCREEN_LIST}" ]; then
-            NUM_TOUCH=$(echo "${TOUCHSCREEN_LIST}" | grep -v '^$' | wc -l)
-        else
-            NUM_TOUCH=0
-        fi
-
-        TOUCHSCREEN=""
-        if [ "${NUM_TOUCH}" -eq 1 ] && [ -n "${PSCREEN}" ]; then
-            TOUCHSCREEN="${TOUCHSCREEN_LIST}"
-            _log "One touchscreen '${TOUCHSCREEN}' found. Ensuring touch device configuration is correct..."
-        else
-            if [ "${NUM_TOUCH}" -eq 0 ]; then
-                _log "No touchscreen found; skipped touchscreen configuration."
-            elif [ "${NUM_TOUCH}" -gt 1 ]; then
-                _log "Multiple touchscreens detected (${NUM_TOUCH}). Skipping individual touch mapping."
-                _log "Use sdl2-touch-test to get the calibration for your touch panels."
-            elif [ -z "${PSCREEN}" ]; then
-                _log "No primary screen (PSCREEN) set. Skipping touchscreen configuration."
-            fi
-        fi
-
-        _reconfigure_labwc --touchscreen="${TOUCHSCREEN}" --primary="${PSCREEN}"
+        # the touchscreens follow their outputs, the rotated one first
+        _reconfigure_labwc --primary="${PSCREEN}" --touchscreen-outputs "${PSCREEN}" $("${WLR_RANDR}" 2>/dev/null | grep -E '^[A-Za-z0-9.-]+ "' | cut -d' ' -f1 | grep -vx "${PSCREEN}")
         ;;
 
     "getRotation")
