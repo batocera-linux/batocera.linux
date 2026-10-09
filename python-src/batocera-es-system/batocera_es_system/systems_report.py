@@ -64,7 +64,7 @@ class _SortedListEncoder(json.JSONEncoder):
             if isinstance(item, list):
                 return sorted(sort_lists(i) for i in cast('list[Any]', item))
             if isinstance(item, dict):
-                return {k: sort_lists(v) for k, v in cast('dict[str, Any]', item.items())}
+                return {k: sort_lists(v) for k, v in cast('dict[str, Any]', item).items()}
             return item
 
         return super().encode(sort_lists(o))

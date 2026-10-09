@@ -209,16 +209,17 @@ def _update_hotkeys(
     new_keys: dict[str, Any],
     user_config_file: Path,
     default_config: dict[str, Any],
+    debug: bool,
     /,
 ) -> None:
     # update keys
     for new_key in new_keys:
-        if gdebug:
+        if debug:
             print(f'updating key {new_key}', file=sys.stderr)
         found = False
         for index, key in enumerate(config['actions_player1']):
             if _is_simple_key(key) and key['trigger'][1] == new_key:
-                if gdebug:
+                if debug:
                     print(f'key {new_key} already set. reaffecting it.', file=sys.stderr)
                 found = True
                 if new_keys[new_key] == 'none':
@@ -233,7 +234,7 @@ def _update_hotkeys(
                         config['actions_player1'][index]['target'] = [new_keys[new_key]]
         # the key was removed, add it back from default config
         if not found:
-            if gdebug:
+            if debug:
                 print(f'key {new_key} is not defined. affecting it.', file=sys.stderr)
             if new_keys[new_key] != 'none':
                 found = False
@@ -321,8 +322,6 @@ def main() -> None:
     if args.r3:
         new_keys['r3'] = args.r3
 
-    global gdebug
-    gdebug = args.debug
     hotkeys_mapping = _read_hotkey_mapping(_HOTKEYGEN_MAPPING)
 
     if args.values:
@@ -340,7 +339,7 @@ def main() -> None:
     if len(new_keys) == 0:
         _list_hotkeys(config, default_config, hotkeys_mapping)
     else:
-        _update_hotkeys(config, new_keys, _USER_HOTKEYS_FILE, default_config)
+        _update_hotkeys(config, new_keys, _USER_HOTKEYS_FILE, default_config, args.debug)
 
 
 if __name__ == '__main__':
