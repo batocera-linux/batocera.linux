@@ -92,6 +92,7 @@
 - SM8250 devices overcharging the battery (wrong charge voltage and current), and Retroid Pocket not charging again after powering a USB-C hub or dock
 - Sonic Mania controllers
 - Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches
+- Touchscreens on X11 (x86_64) not following display.rotate
 - Taradino blank screen with Wayland
 - Vice not going fullscreen with C128
 - X16emu fullscreen with Wayland
