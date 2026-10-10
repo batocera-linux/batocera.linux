@@ -12,7 +12,7 @@ BOOT_CONF_FILE="/boot/batocera-boot.conf"
 MERGERFS_OPTS="-o cache.files=partial,dropcacheonclose=true,category.create=eplfs,allow_other,inodecalc=path-hash,moveonenospc=true,minfreespace=4G"
 
 # --- HELPERS ---
-log_msg() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"; }
+log_msg() { printf '[%(%Y-%m-%d %H:%M:%S)T] %s\n' -1 "$1" >> "$LOG_FILE"; }
 
 log_initial_info() {
     local INIT_LOCK_DIR="/tmp/batocera-storage.init.lock"
@@ -154,16 +154,16 @@ send_notification() {
 
 # Get a drives UUID for exclusion to format requests
 get_unique_id() {
-    local dev_path="/dev/$1"; local id=""
+    local dev_path="/dev/$1"; local id="" props=""
+    # Only wait for udev to know the device at all; devices without a serial (eMMC boot LUNs) must not retry.
     for i in {1..5}; do
-        id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_SERIAL=' | cut -d= -f2)
-        [ -n "$id" ] && { echo "$id"; return; }
+        props=$(udevadm info --query=property --name="$dev_path" 2>/dev/null) && break
         sleep 1
     done
-    id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_SERIAL_SHORT=' | cut -d= -f2)
-    [ -n "$id" ] && { echo "$id"; return; }
-    id=$(udevadm info --query=property --name="$dev_path" | grep -m1 '^ID_WWN=' | cut -d= -f2)
-    [ -n "$id" ] && { echo "$id"; return; }
+    for key in ID_SERIAL ID_SERIAL_SHORT ID_WWN; do
+        id=$(echo "$props" | grep -m1 "^$key=" | cut -d= -f2)
+        [ -n "$id" ] && { echo "$id"; return; }
+    done
     local all_uuids=$(lsblk -no UUID,PARTUUID "/dev/${1}"* | tr -d '[:space:]' | sort -u | tr -d '\n')
     if [ -n "$all_uuids" ]; then echo "$all_uuids" | md5sum | cut -d' ' -f1; return; fi
     # Append devname so two identical drives get different IDs
@@ -291,10 +291,8 @@ get_parent_disk() {
     local dev=$1
     if [[ "$dev" =~ ^sd[a-z][0-9]*$ ]]; then
         echo "${dev%%[0-9]*}"
-    elif [[ "$dev" =~ ^nvme ]]; then
-        echo "$dev" | sed -E 's/p[0-9]+$//'
-    elif [[ "$dev" =~ ^mmcblk ]]; then
-        echo "$dev" | sed -E 's/p[0-9]+$//'
+    elif [[ "$dev" =~ ^(nvme|mmcblk) ]]; then
+        echo "${dev%p[0-9]*}"
     else
         local pk=$(lsblk -no pkname "/dev/$dev" 2>/dev/null)
         [ -z "$pk" ] && echo "$dev" || echo "$pk"
@@ -358,8 +356,10 @@ handle_partition_event() {
 
     local part_dev="/dev/$devname"
     
+    local props=$(udevadm info --query=property --name="$part_dev")
+
     # Check for 'Hidden' or 'No Automount'
-    local attrs=$(udevadm info --query=property --name="$part_dev" | grep 'ID_PART_ENTRY_ATTRIBUTES=' | cut -d= -f2)
+    local attrs=$(echo "$props" | grep 'ID_PART_ENTRY_ATTRIBUTES=' | cut -d= -f2)
     if [[ "$attrs" =~ ^0x[456789abcdefABCDEF] ]]; then
         log_msg "SKIP: [$devname] Hidden or No-Automount attribute detected ($attrs)."
         exit 0
@@ -367,7 +367,7 @@ handle_partition_event() {
 
     # Partition Type GUID Check (EFI, MSR, Recovery)
     local guid_skip="c12a7328-f81f-11d2-ba4b-00a0c93ec93b|e3c9e316-0b5c-4db8-817d-f92df00215ae|de94bba4-06d1-4d40-a16a-bfd50179d6ac"
-    local part_type=$(udevadm info --query=property --name="$part_dev" | grep 'ID_PART_ENTRY_TYPE=' | cut -d= -f2)
+    local part_type=$(echo "$props" | grep 'ID_PART_ENTRY_TYPE=' | cut -d= -f2)
     if [[ "$guid_skip" == *"$part_type"* ]]; then
         log_msg "SKIP: [$devname] System/Recovery GUID detected ($part_type)."
         exit 0

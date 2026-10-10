@@ -414,16 +414,27 @@ find /userdata/system -maxdepth 1 -name "extension_*.tar.gz" |
     done
 
 # Process delayed drives from the storage manager
+# Disks first so a protected parent is flagged before its partitions, then the partitions concurrently as hotplug does
 DELAY_DIR="/var/run/storage-manager.delay"
+DELAY_PARTS="/var/run/storage-manager.partitions"
 if [ -d "$DELAY_DIR" ]; then
+    rm -f "$DELAY_PARTS"
     ls "$DELAY_DIR" | sort -n | while read -r EVENT_FILE; do
         ARGS=$(cat "$DELAY_DIR/$EVENT_FILE")
         DEV=$(echo "$ARGS" | cut -d: -f1)
         TYPE=$(echo "$ARGS" | cut -d: -f2)
-        # Trigger the manager detect command manually
-        /usr/bin/batocera-storage-manager detect "$DEV" "$TYPE"
+        if [ "$TYPE" = "partition" ]; then
+            echo "$DEV $TYPE" >> "$DELAY_PARTS"
+        else
+            # Trigger the manager detect command manually
+            /usr/bin/batocera-storage-manager detect "$DEV" "$TYPE"
+        fi
         rm "$DELAY_DIR/$EVENT_FILE"
     done
+    if [ -f "$DELAY_PARTS" ]; then
+        xargs -P 4 -L 1 /usr/bin/batocera-storage-manager detect < "$DELAY_PARTS"
+        rm -f "$DELAY_PARTS"
+    fi
 fi
 
 if [ -f "/tmp/mergerfs.pending" ]; then

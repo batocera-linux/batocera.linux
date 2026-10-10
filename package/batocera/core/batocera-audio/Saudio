@@ -40,6 +40,7 @@ start_pipewire() {
         return 1
     fi
     # Wait loop for real hardware discovery
+    # Sinks only exist once a profile is active, which S27audioconfig may have to set, so wait for the card instead
     N=0
     MAX_RETRIES=50
     
@@ -49,10 +50,10 @@ start_pipewire() {
             REASON="Waiting for pipewire-0 socket..."
         elif ! pactl info >/dev/null 2>&1; then
             REASON="Pulse bridge initializing..."
-        elif ! sinks=$(pactl list sinks short 2>/dev/null) || ! echo "$sinks" | grep -qE "alsa_output|pci|usb"; then
-            REASON="Hardware discovery in progress (Sinks found: $(echo $sinks | awk '{print $2}' | xargs || echo 'none'))"       
+        elif ! cards=$(pactl list cards short 2>/dev/null) || ! echo "$cards" | grep -q "alsa_card"; then
+            REASON="Hardware discovery in progress (Cards found: $(echo $cards | awk '{print $2}' | xargs || echo 'none'))"
         else
-            log "info" "Hardware sinks discovered: $(echo "$sinks" | grep -E 'alsa|pci|usb' | awk '{print $2}' | xargs)"
+            log "info" "Hardware cards discovered: $(echo "$cards" | awk '{print $2}' | xargs)"
             echo "OK"
             return 0
         fi
@@ -64,7 +65,7 @@ start_pipewire() {
         N=$((N+1))
     done
 
-    log "err" "TIMEOUT: No hardware sinks found in 5s. Only dummy/null may be available."
+    log "err" "TIMEOUT: No ALSA card found. Only dummy/null may be available."
     echo "FAIL"
     return 1
 }

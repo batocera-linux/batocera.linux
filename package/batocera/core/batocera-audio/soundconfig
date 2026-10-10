@@ -6,7 +6,14 @@
 
 # setup alsa (especially the mixer config)
 
+NL='
+'
+
+# every amixer call enumerates all controls, so only sset the ones the card has
 mixer() {
+	name=$2
+	case "$name" in *,[0-9]*) ;; *) name="$name,0" ;; esac
+	case "$NL$controls$NL" in *"$NL$name$NL"*) ;; *) return ;; esac
 	parm=${4:-on}
 	amixer -c "$1" sset "$2" "$3" $parm >/dev/null 2>&1
 	amixer -c "$1" sset "$2" $parm >/dev/null 2>&1
@@ -16,6 +23,7 @@ mixer() {
 
 # get card num
 card=`echo $1 | sed 's/[^0-9]*//g'`
+controls=$(amixer -c "$card" scontrols | sed "s/^Simple mixer control '\(.*\)',\([0-9]*\)$/\1,\2/")
 
 # set common mixer params
 mixer $card Master 0db
