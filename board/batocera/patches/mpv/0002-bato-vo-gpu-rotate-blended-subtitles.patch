@@ -1,0 +1,136 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] vo/gpu: rotate subtitles with the video for blend-subtitles=video
+
+The subtitles were blended into the texture after the video rotation had
+been applied to it, so they stayed upright on a rotated video. Draw them
+in the video's own orientation and rotate the quads into the texture.
+
+---
+--- a/video/out/gpu/osd.h
++++ b/video/out/gpu/osd.h
+@@ -18,7 +18,8 @@
+ bool mpgl_osd_draw_prepare(struct mpgl_osd *ctx, int index,
+                            struct gl_shader_cache *sc);
+ void mpgl_osd_draw_finish(struct mpgl_osd *ctx, int index,
+-                          struct gl_shader_cache *sc, const struct ra_fbo *fbo);
++                          struct gl_shader_cache *sc, const struct ra_fbo *fbo,
++                          int rotate);
+ bool mpgl_osd_check_change(struct mpgl_osd *ctx, struct mp_osd_res *res,
+                            double pts);
+ 
+--- a/video/out/gpu/osd.c
++++ b/video/out/gpu/osd.c
+@@ -236,14 +236,16 @@
+                        float tx0, float ty0, float tx1, float ty1,
+                        float tex_w, float tex_h, const uint8_t color[4])
+ {
+-    gl_transform_vec(t, &x0, &y0);
+-    gl_transform_vec(t, &x1, &y1);
++    // every corner, as t may rotate
++    float p[4][2] = {{x0, y0}, {x0, y1}, {x1, y0}, {x1, y1}};
++    for (int i = 0; i < 4; i++)
++        gl_transform_vec(t, &p[i][0], &p[i][1]);
+ 
+ #define COLOR_INIT {color[0], color[1], color[2], color[3]}
+-    va[0] = (struct vertex){ {x0, y0}, {tx0 / tex_w, ty0 / tex_h}, COLOR_INIT };
+-    va[1] = (struct vertex){ {x0, y1}, {tx0 / tex_w, ty1 / tex_h}, COLOR_INIT };
+-    va[2] = (struct vertex){ {x1, y0}, {tx1 / tex_w, ty0 / tex_h}, COLOR_INIT };
+-    va[3] = (struct vertex){ {x1, y1}, {tx1 / tex_w, ty1 / tex_h}, COLOR_INIT };
++    va[0] = (struct vertex){ {p[0][0], p[0][1]}, {tx0 / tex_w, ty0 / tex_h}, COLOR_INIT };
++    va[1] = (struct vertex){ {p[1][0], p[1][1]}, {tx0 / tex_w, ty1 / tex_h}, COLOR_INIT };
++    va[2] = (struct vertex){ {p[2][0], p[2][1]}, {tx1 / tex_w, ty0 / tex_h}, COLOR_INIT };
++    va[3] = (struct vertex){ {p[3][0], p[3][1]}, {tx1 / tex_w, ty1 / tex_h}, COLOR_INIT };
+     va[4] = va[2];
+     va[5] = va[1];
+ #undef COLOR_INIT
+@@ -285,8 +287,10 @@
+     }
+ }
+ 
++// rotate: clockwise rotation of the target relative to the OSD canvas
+ void mpgl_osd_draw_finish(struct mpgl_osd *ctx, int index,
+-                          struct gl_shader_cache *sc, const struct ra_fbo *fbo)
++                          struct gl_shader_cache *sc, const struct ra_fbo *fbo,
++                          int rotate)
+ {
+     struct mpgl_osd_part *part = ctx->parts[index];
+ 
+@@ -305,7 +309,16 @@
+             t.t[0] += a_x * t.m[0][0] + a_y * t.m[1][0];
+             t.t[1] += a_x * t.m[0][1] + a_y * t.m[1][1];
+ 
+-            generate_verts(part, t);
++            float w = ctx->osd_res.w, h = ctx->osd_res.h;
++            struct gl_transform rot = identity_trans;
++            switch (rotate) {
++            case 90:  rot = (struct gl_transform){{{0, -1}, {1, 0}}, {h, 0}}; break;
++            case 180: rot = (struct gl_transform){{{-1, 0}, {0, -1}}, {w, h}}; break;
++            case 270: rot = (struct gl_transform){{{0, 1}, {-1, 0}}, {0, w}}; break;
++            }
++            gl_transform_trans(t, &rot);
++
++            generate_verts(part, rot);
+         }
+     }
+ 
+--- a/video/out/gpu/video.c
++++ b/video/out/gpu/video.c
+@@ -2988,7 +2988,7 @@
+ // instead adapted to the display's gamut.
+ static void pass_draw_osd(struct gl_video *p, int osd_flags, int frame_flags,
+                           double pts, struct mp_osd_res rect, const struct ra_fbo *fbo,
+-                          bool cms)
++                          bool cms, int rotate)
+ {
+     if (frame_flags & RENDER_FRAME_VF_SUBS)
+         osd_flags |= OSD_DRAW_SUB_FILTER;
+@@ -3014,7 +3014,7 @@
+             pass_colormanage(p, csp_srgb, MP_CSP_LIGHT_DISPLAY, &fbo->color_space,
+                              frame_flags, true);
+         }
+-        mpgl_osd_draw_finish(p->osd, n, p->sc, fbo);
++        mpgl_osd_draw_finish(p->osd, n, p->sc, fbo, rotate);
+     }
+ 
+     timer_pool_stop(p->osd_timer);
+@@ -3104,13 +3104,20 @@
+     {
+         double scale[2];
+         get_scale_factors(p, false, scale);
++        // the texture is already rotated, draw the subs in the video's
++        // own orientation and rotate them into it
++        int rotate = p->image_params.rotate;
+         struct mp_osd_res rect = {
+             .w = p->texture_w, .h = p->texture_h,
+             .display_par = scale[1] / scale[0], // counter compensate scaling
+         };
+-        finish_pass_tex(p, &p->blend_subs_tex, rect.w, rect.h);
++        if (rotate % 180 == 90) {
++            MPSWAP(int, rect.w, rect.h);
++            rect.display_par = scale[0] / scale[1];
++        }
++        finish_pass_tex(p, &p->blend_subs_tex, p->texture_w, p->texture_h);
+         struct ra_fbo fbo = { p->blend_subs_tex };
+-        pass_draw_osd(p, OSD_DRAW_SUB_ONLY, flags, vpts, rect, &fbo, false);
++        pass_draw_osd(p, OSD_DRAW_SUB_ONLY, flags, vpts, rect, &fbo, false, rotate);
+         pass_read_tex(p, p->blend_subs_tex);
+         pass_describe(p, "blend subs video");
+     }
+@@ -3142,7 +3149,7 @@
+         }
+         finish_pass_tex(p, &p->blend_subs_tex, p->texture_w, p->texture_h);
+         struct ra_fbo fbo = { p->blend_subs_tex };
+-        pass_draw_osd(p, OSD_DRAW_SUB_ONLY, flags, vpts, rect, &fbo, false);
++        pass_draw_osd(p, OSD_DRAW_SUB_ONLY, flags, vpts, rect, &fbo, false, 0);
+         pass_read_tex(p, p->blend_subs_tex);
+         pass_describe(p, "blend subs");
+     }
+@@ -3528,7 +3535,7 @@
+         if (!(flags & RENDER_FRAME_OSD))
+             osd_flags |= OSD_DRAW_SUB_ONLY;
+ 
+-        pass_draw_osd(p, osd_flags, flags, p->osd_pts, p->osd_rect, fbo, true);
++        pass_draw_osd(p, osd_flags, flags, p->osd_pts, p->osd_rect, fbo, true, 0);
+         debug_check_gl(p, "after OSD rendering");
+     }
+ 
