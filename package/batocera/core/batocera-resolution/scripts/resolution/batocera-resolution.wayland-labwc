@@ -761,7 +761,7 @@ case "${ACTION}" in
         exit 0
         ;;
     "supportSystemReflection")
-        exit 0
+        exit 1
         ;;
     "configureWindow")
 	batocera-labwc-config --reconfigure "$@"
