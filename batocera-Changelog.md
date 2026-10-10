@@ -77,6 +77,7 @@
 - Commander Genius fullscreen in Wayland
 - Commander Genius render resolution option not taking effect in-game
 - Dolphin Wii Remotes 2-4 set to None when using pad profiles
+- Flatpak and Steam missing the Decorations options, so a global decoration set could not be disabled for them
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
 - MAME black screen on exit with a rotated display when CRT switchres is off
