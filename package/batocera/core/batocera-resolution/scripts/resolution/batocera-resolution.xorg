@@ -6,6 +6,48 @@ log="/userdata/system/logs/display.log"
 mpvlog="/userdata/system/logs/mpv.log"
 BOOTCONF="/boot/batocera-boot.conf"
 
+_primary_output() {
+    PRIMARY=$(xrandr --listPrimary)
+    if test -z "${PRIMARY}"
+    then
+        PRIMARY=$(xrandr --listConnectedOutputs | sed -e 's/\*$//' | head -n1)
+    fi
+    echo "${PRIMARY}"
+}
+
+_map_touchscreen() {
+    TRIES=0
+    until ID=$(xinput list --id-only "pointer:$1" 2>/dev/null) || [ "${TRIES}" -ge 5 ]
+    do
+        TRIES=$((TRIES + 1))
+        sleep 1
+    done
+    if [ -z "${ID}" ]
+    then
+        echo "Touchscreen '$1' not found" >> "$log"
+        return 1
+    fi
+    xinput --map-to-output "${ID}" "$2"
+    echo "Touchscreen '$1' mapped to $2" >> "$log"
+}
+
+_map_touchscreens() {
+    WANTED=$(batocera-settings-get-master "display.touchscreen.$1")
+    if [ -n "${WANTED}" ]
+    then
+        _map_touchscreen "${WANTED}" "$1"
+    elif [ "$1" = "$(_primary_output)" ]
+    then
+        CLAIMED=$(sed -n 's/^display\.touchscreen\.[^=]*=//p' /userdata/system/batocera.conf 2>/dev/null)
+        for NODE in /dev/input/event*
+        do
+            udevadm info -q property -n "${NODE}" 2>/dev/null | grep -qx 'ID_INPUT_TOUCHSCREEN=1' || continue
+            NAME=$(cat "/sys/class/input/${NODE##*/}/device/name")
+            echo "${CLAIMED}" | grep -qxF "${NAME}" || _map_touchscreen "${NAME}" "$1"
+        done
+    fi
+}
+
 PSCREEN=
 if test "${1}" = "--screen"
 then
@@ -14,18 +56,9 @@ then
     shift
 fi
 
-# set default screen, the first one
 if test -z "${PSCREEN}"
 then
-    PSCREEN=$(xrandr --listPrimary)
-fi
-
-# Fallback if no primary screen is designated
-# Therefore we default to the first connected output.
-# Helps with TV"s powering off whilst Bato is active
-if test -z "${PSCREEN}"
-then
-    PSCREEN=$(xrandr --listConnectedOutputs | sed -e 's/\*$//' | head -n1)
+    PSCREEN=$(_primary_output)
 fi
 
 f_usage() {
@@ -472,43 +505,16 @@ case "${ACTION}" in
         ;;
 
     "setRotation")
-        TRIES=5
-        COUNT=0
-        ROTATE=$1
         OUTPUT=${PSCREEN}
-        while [ $COUNT -lt $TRIES ]; do
-            TOUCHSCREEN=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|0603:F001|HID Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/"\1"/')
-            TOUCHID=$(xinput | grep pointer | tail -n +2 | grep -Ei 'touchscreen|2808:1015|27C6:011A|0603:F001|HID Touch' | sed -E 's/[^a-zA-Z0-9]*((\S+ ?)+[a-zA-Z0-9\(\)]+)\s*id=([0-9]+)\s*(.*)/\3/')
-            if [ -n "$TOUCHSCREEN" ] && [ -n "$TOUCHID" ]; then
-                echo "Touch screen panel: $TOUCHSCREEN" >> $log
-                echo "With touch screen panel ID of: $TOUCHID" >> $log
-                break
-            fi
-            COUNT=$((COUNT+1))
-            sleep 1
-        done
-
-        case "${ROTATE}" in
-            "1")
-                xrandr --output "${OUTPUT}" --rotate right
-                [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
-                echo "Screen rotated right" >> $log
-                ;;
-            "2")
-                xrandr --output "${OUTPUT}" --rotate inverted
-                [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
-                echo "Screen rotated inverted" >> $log
-                ;;
-            "3")
-                xrandr --output "${OUTPUT}" --rotate left
-                [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
-                echo "Screen rotated left" >> $log
-                ;;
-            *)
-                # in case of reboot of es
-                xrandr --output "${OUTPUT}" --rotate normal
-                [ ! -z "${TOUCHSCREEN}" ] && xinput set-prop "${TOUCHID}" --type=float "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
+        case "${1}" in
+            "1") ROTATION=right ;;
+            "2") ROTATION=inverted ;;
+            "3") ROTATION=left ;;
+            *) ROTATION=normal ;;
         esac
+        xrandr --output "${OUTPUT}" --rotate "${ROTATION}"
+        echo "Screen ${OUTPUT} rotated ${ROTATION}" >> "$log"
+        _map_touchscreens "${OUTPUT}"
         ;;
 
     "getRotation")
@@ -517,8 +523,8 @@ case "${ACTION}" in
 
     "setReflection")
         OUTPUT=${PSCREEN}
-        REFLECTION=$1
-        xrandr --output "${OUTPUT}" --reflect "${REFLECTION}"
+        xrandr --output "${OUTPUT}" --reflect "${1}"
+        _map_touchscreens "${OUTPUT}"
         ;;
     
     "getDisplayMode")
