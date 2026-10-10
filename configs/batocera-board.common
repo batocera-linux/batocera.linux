@@ -14,9 +14,6 @@ BR2_TOOLCHAIN_BUILDROOT_CXX=y
 BR2_TOOLCHAIN_GLIBC_GCONV_LIBS_COPY=y
 BR2_STRIP_EXCLUDE_DIRS="usr/bin/vpinball usr/share/ecwolf usr/bin/vita3k usr/bin/dmdserver"
 
-# Allow to build GOLD linker, but do not use as default
-BR2_BINUTILS_EXTRA_CONFIG_OPTIONS="--enable-gold --enable-plugins"
-
 # prefer linux tools over busybox tools
 BR2_PACKAGE_BUSYBOX=n
 BR2_PACKAGE_BC=y

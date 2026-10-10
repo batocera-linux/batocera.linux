@@ -36,8 +36,8 @@ else ifeq ($(BR2_riscv),y)
     LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=riscv PLATFORM=riscv
 else ifeq ($(BR2_arm),y)
     LIBRETRO_MAME_EXTRA_ARGS += PTR64=0 LIBRETRO_CPU=arm PLATFORM=arm NOASM=1
-# workaround for linkage failure using ld on arm 32-bit targets
-    LIBRETRO_MAME_ARCHOPTS += -fuse-ld=gold -Wl,--long-plt
+# the binary outgrows the default short PLT entries
+    LIBRETRO_MAME_ARCHOPTS += -Wl,--long-plt
 else ifeq ($(BR2_aarch64),y)
     LIBRETRO_MAME_EXTRA_ARGS += PTR64=1 LIBRETRO_CPU=arm64 PLATFORM=arm64
     LIBRETRO_MAME_ARCHOPTS += -D__aarch64__
