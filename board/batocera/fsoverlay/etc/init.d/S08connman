@@ -58,10 +58,11 @@ batocera_wifi_configure() {
 
     [ -n "$settings_key" ] && optionalPassphrase="Passphrase=${settings_key}"
 
-    # Create or remove wifi configuration file based on SSID and WLAN status
-    if [ -n "$settings_ssid" ] && [ "$settingsWlan" = "1" ]; then
-        mkdir -p "/var/lib/connman"
-        cat > "${settings_file}" <<-_EOF_
+    [ -n "$settings_ssid" ] && [ "$settingsWlan" = "1" ] || return
+    echo "$settings_file"
+
+    # only replace a changed file: connman drops the service on a delete and reloads it on a move
+    cat > "${settings_file}.tmp" <<-_EOF_
 		[global]
 		Name=batocera
 		[service_batocera_${settings_name}]
@@ -71,14 +72,27 @@ batocera_wifi_configure() {
 		${optionalPassphrase}
 		Autoconnect=true
 	_EOF_
+    if cmp -s "${settings_file}.tmp" "${settings_file}"; then
+        rm -f "${settings_file}.tmp"
     else
-        rm "${settings_file}" 2>/dev/null
+        mv -f "${settings_file}.tmp" "${settings_file}"
     fi
 }
 
+# 1 for wifi.ssid, then the N of every wifiN.ssid set
+wifi_slots() {
+    echo 1
+    grep -oE '^wifi[0-9]+\.ssid=' "$BATOCONF" | sed -E 's/^wifi([0-9]+)\.ssid=/\1/'
+}
+
 wifi_configure_all() {
-    for i in 1 2 3 .hidden; do
-        batocera_wifi_configure $i
+    mkdir -p "/var/lib/connman"
+    keep=" "
+    for i in $(wifi_slots) .hidden; do
+        keep="${keep}$(batocera_wifi_configure $i) "
+    done
+    for f in /var/lib/connman/batocera_wifi*.config; do
+        case "$keep" in *" $f "*) ;; *) rm -f "$f" ;; esac
     done
 }
 
@@ -110,9 +124,12 @@ wifi_enable() {
 
     connmanctl enable wifi 2>/dev/null
 
-    # Get the primary SSID hex for filtering
-    settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi.ssid)"
-    ssid_hex=$(echo -n "$settings_ssid" | xxd -p | tr -d '\n')
+    # Service names carry the SSID as hex; match any configured network
+    ssid_regex=$(for i in $(wifi_slots); do
+        [ "$i" = "1" ] && i=
+        settings_ssid="$(/usr/bin/batocera-settings-get -f "$BATOCONF" wifi${i}.ssid)"
+        [ -n "$settings_ssid" ] && echo -n "$settings_ssid" | xxd -p | tr -d '\n' && echo
+    done | paste -sd '|')
 
     connected=false
     for i in $(seq 1 10); do
@@ -133,7 +150,7 @@ wifi_enable() {
             connmanctl connect "$service" 2>/dev/null
             sleep 2
         done < <(
-            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "_${ssid_hex}_" | while read svc; do
+            connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep -E "_(${ssid_regex})_" | while read svc; do
                 signal=$(connmanctl services "$svc" 2>/dev/null | grep "Strength" | awk '{print $3}')
                 echo "${signal:-0} $svc"
             done | sort -rn
@@ -182,7 +199,10 @@ case "$1" in
         sleep 0.5
         $0 start
         ;;
+    configure)
+        wifi_configure_all
+        ;;
     *)
-        echo "usage: $0 {start|stop|restart|reload}"
+        echo "usage: $0 {start|stop|restart|reload|configure}"
         ;;
 esac
