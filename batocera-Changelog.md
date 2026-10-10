@@ -80,6 +80,7 @@
 - Flatpak and Steam missing the Decorations options, so a global decoration set could not be disabled for them
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
+- Lindbergh games (e.g. Harley Davidson) reconfiguring the host network, leaving the system without DNS or its LAN address
 - MAME black screen on exit with a rotated display when CRT switchres is off
 - Mupen64 not starting fullscreen with Wayland
 - NVIDIA OpenGL over EGL on X11 falling back to Mesa (e.g. Dolphin failing to start with OpenGL)

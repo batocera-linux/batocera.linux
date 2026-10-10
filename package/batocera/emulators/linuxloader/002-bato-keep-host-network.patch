@@ -1,0 +1,78 @@
+Keep the cabinet's network setup off the host
+
+Games such as Harley Davidson run the Lindbergh network init as root: they set
+the interface address, flush the routes and rewrite /etc/resolv.conf, which
+leaves the host without DNS or its LAN address. Ignore the interface and route
+ioctls and keep the resolver file inside the game directory.
+
+--- a/src/loader/redirections/filesystemShared.c
++++ b/src/loader/redirections/filesystemShared.c
+@@ -92,6 +92,9 @@
+     if (_remove == NULL)
+         _remove = REAL_FUNC(remove);
+ 
++    if (strcmp(path, "/etc/resolv.conf") == 0)
++        path = "resolv.conf";
++
+     if (strncmp(path, "/home/disk1/rankingdata/", 24) == 0 && (gGrp == GROUP_OUTRUN || gGrp == GROUP_OUTRUN_TEST))
+     {
+         path += 12;
+@@ -265,6 +268,9 @@
+     if (strncmp(pathname, "/tmp/", 5) == 0)
+         pathname += 1;
+ 
++    if (strcmp(pathname, "/etc/resolv.conf") == 0)
++        pathname = "resolv.conf";
++
+     if (strcmp(pathname, "/proc/bus/pci/01/00.0") == 0)
+     {
+         hooks[PCI_CARD_000] = _open(HOOK_FILE_NAME, flags, mode);
+@@ -317,6 +323,13 @@
+         return NULL;
+     }
+ 
++    // the game runs the cabinet's network setup: keep its resolver and dhcp pid files away from the host
++    if (strcmp(pathname, "/etc/resolv.conf") == 0)
++        return _fopen("resolv.conf", mode);
++
++    if (strncmp(pathname, "/var/run/dhcpcd-", 16) == 0)
++        return NULL;
++
+     if (strcmp(pathname, "/root/lindbergrc") == 0)
+     {
+         return _fopen("lindbergrc", mode);
+@@ -979,6 +992,15 @@
+         struct ifreq *ifr = (struct ifreq *)argp;
+         strncpy(ifr->ifr_name, getConfig()->nicName, IFNAMSIZ);
+     }
++
++    // the cabinet's network setup sets the interface address and flushes the routes: never let it reach the host
++    if (request == SIOCSIFADDR || request == SIOCSIFNETMASK || request == SIOCSIFBRDADDR || request == SIOCSIFFLAGS ||
++        request == SIOCADDRT || request == SIOCDELRT)
++    {
++        log_debug("Ignoring network ioctl 0x%lx", request);
++        return 0;
++    }
++
+     return _ioctl(fd, request, argp);
+ #endif
+     return 0;
+@@ -1073,6 +1095,18 @@
+     return sharedRemove(path);
+ }
+ 
++static int (*_unlink)(const char *path) = NULL;
++int unlink(const char *path)
++{
++    if (_unlink == NULL)
++        _unlink = REAL_FUNC(unlink);
++
++    if (strcmp(path, "/etc/resolv.conf") == 0)
++        path = "resolv.conf";
++
++    return _unlink(path);
++}
++
+ int mkdir(const char *path, mode_t mode)
+ {
+     return sharedMkdir(path, mode);
