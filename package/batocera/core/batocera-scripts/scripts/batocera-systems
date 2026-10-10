@@ -1140,7 +1140,9 @@ def checkBios(systems, prefix, filterROMs):
                         else:
                             if system not in missingBios:
                                 missingBios[system] = {}
-                            missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": file["md5"], "file": file["file"] }
+                            # a missing zip has no md5 of its own; the zipped entries share its key
+                            md5 = "" if "zippedFile" in file else file["md5"]
+                            missingBios[system][file["file"]] = { "status": BiosStatus.MISSING, "md5": md5, "file": file["file"] }
     return missingBios
 
 def displayMissingBios(systems, missingBios):
