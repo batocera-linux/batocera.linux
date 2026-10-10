@@ -86,8 +86,8 @@ ifeq ($(BR2_arm),y)
 MAME_CROSS_ARCH = arm
 # Always enable NEON on 32-bit arm
 MAME_CFLAGS += -D__ARM_NEON__ -D__ARM_NEON -DEGL_NO_X11=1
-# workaround for linkage failure using ld on arm 32-bit targets
-MAME_LDFLAGS += -fuse-ld=gold -Wl,--long-plt
+# the binary outgrows the default short PLT entries
+MAME_LDFLAGS += -Wl,--long-plt
 endif
 
 ifeq ($(BR2_RISCV_64),y)
