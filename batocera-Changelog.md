@@ -55,6 +55,7 @@
 - Libretro-anybor : for openbor games (support all openbor versions)
 - Libretro-Azahar
 - NanoBoyAdvance as an alternative GBA emulator
+- Network settings can now save any number of other Wi-Fi networks, so a handheld connects wherever it is taken
 - OpenGOAL for the Jak and Daxter trilogy, built from your own PS2 disc image
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - RPCS3 interface translations

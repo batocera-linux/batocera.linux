@@ -5,6 +5,10 @@ export LC_ALL=C
 do_help() {
     echo "$0 scanlist" >&2
     echo "$0 list" >&2
+    echo "$0 enable [ssid key country]" >&2
+    echo "$0 disable" >&2
+    echo "$0 configure" >&2
+    echo "$0 connect ssid" >&2
 }
 
 do_list() {
@@ -79,6 +83,25 @@ case "${ACTION}" in
         batocera-settings-set wifi.enabled 0
         /etc/init.d/S08connman reload
         wait_for_ip down
+        ;;
+    "configure")
+        # provision the saved networks without restarting connman
+        /etc/init.d/S08connman configure
+        ;;
+    "connect")
+        /etc/init.d/S08connman configure
+        ssid_hex=$(echo -n "$1" | xxd -p | tr -d '\n')
+        connmanctl scan wifi >/dev/null 2>&1
+        service=$(connmanctl services | awk '{print $NF}' | grep "^wifi_" | grep "_${ssid_hex}_" | while read svc; do
+            echo "$(connmanctl services "$svc" | awk '/Strength/ {print $3}') $svc"
+        done | sort -rn | awk 'NR==1 {print $2}')
+        [ -n "$service" ] || exit 1
+        connmanctl connect "$service" >/dev/null 2>&1
+        for i in $(seq 1 20); do
+            connmanctl services "$service" | grep -qE 'State = (ready|online)' && exit 0
+            sleep 0.5
+        done
+        exit 1
         ;;
     *)
         do_help
