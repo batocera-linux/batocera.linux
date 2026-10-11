@@ -80,6 +80,7 @@
 - Commander Genius render resolution option not taking effect in-game
 - Dolphin Wii Remotes 2-4 set to None when using pad profiles
 - Flatpak and Steam missing the Decorations options, so a global decoration set could not be disabled for them
+- iptables failing with "Module ip_tables not found" since v43, breaking wg-quick (WireGuard) and connman tethering on boards with Linux 6.16 or newer
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Libretro-Hatarib not starting due to a compiled symbol issue
 - Lindbergh games (e.g. Harley Davidson) reconfiguring the host network, leaving the system without DNS or its LAN address
