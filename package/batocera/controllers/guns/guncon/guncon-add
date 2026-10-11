@@ -14,7 +14,7 @@ echo "${DEVNAME}" | grep -E "^/dev/input/event[0-9]+$" || exit 0
 # Select            : KEY_5
 # Thumb pad         : KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 
-DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 0-8)
+DEVHASH=$(echo "${DEVNAME}" | md5sum | cut -c 1-8)
 evsieve --input "${DEVNAME}" persist=exit     \
         --map yield btn:middle   btn:3        \
         --map yield btn:right    btn:2        \
@@ -25,4 +25,4 @@ evsieve --input "${DEVNAME}" persist=exit     \
         --map yield key:down     btn:6        \
         --map yield key:left     btn:7        \
         --map yield key:right    btn:8        \
-        --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_{DEVHASH}.log" &
+        --output name="GunCon2-Gun" >/dev/null 2>"/var/log/guncon_${DEVHASH}.log" &
