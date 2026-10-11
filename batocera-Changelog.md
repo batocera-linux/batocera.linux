@@ -97,6 +97,7 @@
 - Raze analog controls and improved controller bindings
 - SC-3000 games not scrapable (now scraped as SG-1000)
 - Simcoupe not starting fullscreen
+- Splash video not showing when es.resolution or splash.screen.resize holds the rotated size of a rotated display (e.g. 1080x1920)
 - SM8250 devices overcharging the battery (wrong charge voltage and current), and Retroid Pocket not charging again after powering a USB-C hub or dock
 - Sonic Mania controllers
 - Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches
