@@ -174,16 +174,6 @@ define ALLLINUXFIRMWARES_FIX_AMD_890M
         $(TARGET_DIR)/lib/firmware/amdgpu/isp_4_1_0.bin
 endef
 
-# symlink Bee-Link SER9 for a BIOS / firmware bug
-define ALLLINUXFIRMWARES_FIX_SER9
-    mkdir -p $(TARGET_DIR)/usr/share/batocera/firmware
-    mkdir -p $(TARGET_DIR)/etc/init.d
-    cp -f $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/dcn_3_5_dmcub.bin \
-        $(TARGET_DIR)/usr/share/batocera/firmware/dcn_3_5_dmcub.bin
-    $(INSTALL) -m 0755 -D $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/S03firmware \
-        $(TARGET_DIR)/etc/init.d/
-endef
-
 # Realtek BT symlinks for RK3588 kernel compatibility
 define ALLLINUXFIRMWARES_LINK_RTL_BT
     ln -sf /lib/firmware/rtl_bt/rtl8852bu_fw.bin $(TARGET_DIR)/lib/firmware/rtl8852bu_fw
@@ -194,7 +184,6 @@ endef
 ifeq ($(BR2_x86_64),y)
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
     ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_AMD_890M
-    ALLLINUXFIRMWARES_POST_INSTALL_TARGET_HOOKS += ALLLINUXFIRMWARES_FIX_SER9
 endif
 
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3588)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE),y)
