@@ -1,0 +1,22 @@
+diff --git a/shell/libretro/libretro.cpp b/shell/libretro/libretro.cpp
+index a4444c9..b8200b6 100644
+--- a/shell/libretro/libretro.cpp
++++ b/shell/libretro/libretro.cpp
+@@ -769,6 +769,8 @@ bool retro_refresh_av_info(double fps)
+ 
+ 	if (fps > 0 && fps < 100)
+ 		fps_spg = fps;
++	if (fps != 0)
++		return false;
+ 
+ 	if (setAVInfo(avinfo))
+ 	{
+@@ -1324,6 +1326,8 @@ void retro_run()
+ 	if (led_state_cb)
+ 		retro_led_interface();
+ 
++	retro_refresh_av_info(0);
++
+ 	// Unless VGA cable is selected, We need to update
+ 	// the refresh rate for PAL games with a 60Hz mode
+ 	bool pal_check = SPG_CONTROL.isPAL();
