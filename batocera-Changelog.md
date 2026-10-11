@@ -74,6 +74,7 @@
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
 - Boot logo disappearing once the graphics driver replaces the firmware framebuffer, leaving a black screen until the splash video starts
 - Boot splash version text not rotating with the video on rotated screens (e.g. RG Vita Pro, RG ARC-D, Powkiddy x55)
+- Brief white or garbage flash before the splash video starts (visible with hardware decoding, e.g. AMD x86_64)
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
 - Commander Genius fullscreen in Wayland

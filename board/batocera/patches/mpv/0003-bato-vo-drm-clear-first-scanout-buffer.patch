@@ -1,0 +1,19 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] vo/drm: clear the first scanout buffer
+
+The buffer swapped once to seed gbm_surface_lock_front_buffer is what the
+CRTC shows until the first frame arrives, and it is never cleared.
+
+---
+--- a/video/out/opengl/context_drm_egl.c
++++ b/video/out/opengl/context_drm_egl.c
+@@ -586,6 +586,9 @@
+     }
+ 
+     mpegl_load_functions(&p->gl, ctx->vo->log);
++    // this buffer is scanned out until the first frame, so don't show garbage
++    p->gl.ClearColor(0, 0, 0, 1);
++    p->gl.Clear(GL_COLOR_BUFFER_BIT);
+     // required by gbm_surface_lock_front_buffer
+     eglSwapBuffers(p->egl.display, p->egl.surface);
+ 
