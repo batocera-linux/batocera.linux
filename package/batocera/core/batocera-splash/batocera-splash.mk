@@ -23,6 +23,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     # Baseline for modern boards using gpu-next
     BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=auto
 
+    ifeq ($(BR2_x86_64),y)
+        BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu-next,drm,sdl --gpu-context=drm --hwdec=vaapi,auto
+    endif
+
     # Legacy Rockchip boards requiring custom fallback (MPP / RGA)
     ifeq ($(BR2_PACKAGE_ROCKCHIP_RGA),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=drm,sdl --hwdec=auto
