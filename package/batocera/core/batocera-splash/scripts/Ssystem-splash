@@ -122,12 +122,17 @@ draw_logo () {
             fi
 
             # Automatically crops and centers the master logo to target aspect ratio
+            logo_filter="scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=increase,crop=${CROP_WIDTH}:${CROP_HEIGHT}"
+            # a rotated landscape screen is portrait, fit the logo rather than keep a sliver of it
+            if { [ "${video_rotation}" = "1" ] || [ "${video_rotation}" = "3" ]; } && [ "${WIDTH}" -gt "${HEIGHT}" ]; then
+                logo_filter="scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=decrease,pad=${CROP_WIDTH}:${CROP_HEIGHT}:(ow-iw)/2:(oh-ih)/2:black"
+            fi
             cropped_image="/tmp/boot-logo-cropped.bmp"
             if [ -f "${image}" ]; then
                 echo "${DAEMON} Pre-cropping logo to logical size ${CROP_WIDTH}x${CROP_HEIGHT} via FFmpeg..."
                 if ffmpeg -y -threads 1 -sws_flags fast_bilinear \
                     -i "${image}" \
-                    -vf "scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=increase,crop=${CROP_WIDTH}:${CROP_HEIGHT}" \
+                    -vf "${logo_filter}" \
                     "${cropped_image}" >/dev/null 2>&1 \
                    && [ -f "${cropped_image}" ]; then
                     image="${cropped_image}"
