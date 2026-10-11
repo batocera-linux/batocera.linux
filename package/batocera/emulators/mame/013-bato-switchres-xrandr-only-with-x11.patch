@@ -1,0 +1,69 @@
+diff --git a/3rdparty/switchres/display_linux.cpp b/3rdparty/switchres/display_linux.cpp
+index 470647f..4b496ab 100644
+--- a/3rdparty/switchres/display_linux.cpp
++++ b/3rdparty/switchres/display_linux.cpp
+@@ -163,7 +163,7 @@ int linux_display::get_available_video_modes()
+ 		video_modes.push_back(mode);
+ 		backup_modes.push_back(mode);
+ 
+-		log_verbose("Switchres: [%3ld] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
++		log_verbose("Switchres: [%3zu] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
+ 		log_mode(&mode);
+ 	};
+ 
+diff --git a/3rdparty/switchres/display_sdl2.cpp b/3rdparty/switchres/display_sdl2.cpp
+index 3985e5a..e98eea0 100644
+--- a/3rdparty/switchres/display_sdl2.cpp
++++ b/3rdparty/switchres/display_sdl2.cpp
+@@ -250,7 +250,7 @@ int sdl2_display::get_available_video_modes()
+ 		video_modes.push_back(mode);
+ 		backup_modes.push_back(mode);
+ 
+-		log_verbose("Switchres/SDL2: [%3ld] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
++		log_verbose("Switchres/SDL2: [%3zu] %4dx%4d @%3d%s%s %s: ", video_modes.size(), mode.width, mode.height, mode.refresh, mode.interlace ? "i" : "p", mode.type & MODE_DESKTOP ? "*" : "", mode.type & MODE_ROTATED ? "rot" : "");
+ 		log_mode(&mode);
+ 	};
+ 
+diff --git a/scripts/src/3rdparty.lua b/scripts/src/3rdparty.lua
+index d2895d1..7810a87 100755
+--- a/scripts/src/3rdparty.lua
++++ b/scripts/src/3rdparty.lua
+@@ -2151,14 +2151,11 @@ if _OPTIONS["targetos"]=="linux" then
+ 		MAME_DIR .. "3rdparty/switchres/display_linux.h",
+ 		MAME_DIR .. "3rdparty/switchres/display_sdl2.cpp",
+ 		MAME_DIR .. "3rdparty/switchres/display_sdl2.h",
+-		MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.cpp",
+-		MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.h",
+ 		MAME_DIR .. "3rdparty/switchres/custom_video_drmkms.cpp",
+ 		MAME_DIR .. "3rdparty/switchres/custom_video_drmkms.h",
+ 	}
+ 
+ 	defines {
+-		"SR_WITH_XRANDR",
+ 		"SR_WITH_KMSDRM",
+ 		"SR_WITH_SDL2",
+ 	}
+@@ -2168,9 +2165,20 @@ if _OPTIONS["targetos"]=="linux" then
+ 		backtick("pkg-config --cflags sdl2"),
+ 	}
+ 
+-	links {
+-		"Xrandr",
+-	}
++	if _OPTIONS["NO_X11"]~="1" then
++		files {
++			MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.cpp",
++			MAME_DIR .. "3rdparty/switchres/custom_video_xrandr.h",
++		}
++
++		defines {
++			"SR_WITH_XRANDR",
++		}
++
++		links {
++			"Xrandr",
++		}
++	end
+ 
+ 	local str = backtick("pkg-config --libs libdrm")
+ 	addlibfromstring(str)
