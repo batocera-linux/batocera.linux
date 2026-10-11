@@ -1,0 +1,48 @@
+diff --git a/src/bsx.c b/src/bsx.c
+index ae885ec..da884ea 100644
+--- a/src/bsx.c
++++ b/src/bsx.c
+@@ -14,7 +14,6 @@
+ #include <streams/file_stream.h>
+ #include <string.h>
+ #include <time.h>
+-#include <math.h>
+ #include "snes9x.h"
+ #include "memmap.h"
+ #include "display.h"
+@@ -792,7 +791,6 @@ static void S9xBSXSetStream1 (uint8_t count)
+ {
+ 	char path[PATH_MAX + 32];
+ 	long str1size;
+-	float QueueSize;
+ 
+ 	if ((BSX.sat_stream1 != NULL))
+ 		{ filestream_close(BSX.sat_stream1); BSX.sat_stream1 = NULL; } /* already open: close it */
+@@ -807,8 +805,7 @@ static void S9xBSXSetStream1 (uint8_t count)
+ 		filestream_seek(BSX.sat_stream1, 0, RETRO_VFS_SEEK_POSITION_END);
+ 		str1size = filestream_tell(BSX.sat_stream1);
+ 		filestream_seek(BSX.sat_stream1, 0, RETRO_VFS_SEEK_POSITION_START);
+-		QueueSize = str1size / 22.;
+-		BSX.sat_stream1_queue = (uint16_t)(ceil(QueueSize));
++		BSX.sat_stream1_queue = (uint16_t)((str1size + 21) / 22);
+ 		BSX.PPU[0x218D - BSXPPUBASE] = 0;
+ 		BSX.sat_stream1_first = TRUE;
+ 		BSX.sat_stream1_loaded = TRUE;
+@@ -823,7 +820,6 @@ static void S9xBSXSetStream2 (uint8_t count)
+ {
+ 	char path[PATH_MAX + 32];
+ 	long str2size;
+-	float QueueSize;
+ 
+ 	if ((BSX.sat_stream2 != NULL))
+ 		{ filestream_close(BSX.sat_stream2); BSX.sat_stream2 = NULL; } /* already open: close it */
+@@ -839,8 +835,7 @@ static void S9xBSXSetStream2 (uint8_t count)
+ 		filestream_seek(BSX.sat_stream2, 0, RETRO_VFS_SEEK_POSITION_END);
+ 		str2size = filestream_tell(BSX.sat_stream2);
+ 		filestream_seek(BSX.sat_stream2, 0, RETRO_VFS_SEEK_POSITION_START);
+-		QueueSize = str2size / 22.;
+-		BSX.sat_stream2_queue = (uint16_t)(ceil(QueueSize));
++		BSX.sat_stream2_queue = (uint16_t)((str2size + 21) / 22);
+ 		BSX.PPU[0x2193 - BSXPPUBASE] = 0;
+ 		BSX.sat_stream2_first = TRUE;
+ 		BSX.sat_stream2_loaded = TRUE;
