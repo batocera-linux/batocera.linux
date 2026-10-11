@@ -85,6 +85,7 @@
 - Lindbergh games (e.g. Harley Davidson) reconfiguring the host network, leaving the system without DNS or its LAN address
 - MAME black screen on exit with a rotated display when CRT switchres is off
 - Mupen64 not starting fullscreen with Wayland
+- Nintendo DS .dsi and .ids ROM files not listed in EmulationStation (melonDS and DeSmuME accept them)
 - NVIDIA OpenGL over EGL on X11 falling back to Mesa (e.g. Dolphin failing to start with OpenGL)
 - Power button shutdown now closes the running game and shuts down through EmulationStation, saving gamelists
 - Pygame fullscreen with Wayland
