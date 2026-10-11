@@ -425,10 +425,10 @@ index 01ee7e7fe6..1b662d11c7 100644
    }
  
 -  if (IsSupportedHwFormat(static_cast<AVPixelFormat>(m_pFrame->format)))
-+  if (!m_processInfo.GetVideoInterlaced() && m_pFrame->interlaced_frame)
++  if (!m_processInfo.GetVideoInterlaced() && (m_pFrame->flags & AV_FRAME_FLAG_INTERLACED))
 +    m_processInfo.SetVideoInterlaced(true);
 +
-+  std::string filterChain = GetFilterChain(m_pFrame->interlaced_frame);
++  std::string filterChain = GetFilterChain(m_pFrame->flags & AV_FRAME_FLAG_INTERLACED);
 +  if (!filterChain.empty())
    {
 -    CVideoBufferDRMPRIMEFFmpeg* buffer =
