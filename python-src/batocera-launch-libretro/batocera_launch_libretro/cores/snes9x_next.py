@@ -35,10 +35,3 @@ class Snes9xNext(Snes9xControllersMixin, RACore):
 
         # Blargg NTSC Filter
         core_options.set_from_config('snes9x_2010_blargg', 'snes9x_2010_blargg_filter', default='disabled')
-
-        # Crosshair
-        core_options.set_from_config(
-            'snes9x_2010_superscope_crosshair',
-            'superscope_crosshair',
-            default='2' if self.emulator.guns_need_crosses else 'disabled',
-        )

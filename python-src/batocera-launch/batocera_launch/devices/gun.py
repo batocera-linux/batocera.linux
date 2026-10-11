@@ -49,6 +49,13 @@ def _copy_files_in_dir(srcdir: Path, dstdir: Path, startWith: str, endWith: str)
             _copy_file(src, dstdir / src.name)
 
 
+def _flycast_saves_dir(system: str, emulator: str) -> Path:
+    # standalone Flycast keeps the arcade saves with its Dreamcast saves
+    if emulator == 'flycast':
+        return SAVES / 'dreamcast' / 'flycast'
+    return SAVES / system / 'reicast'
+
+
 def _acgame_sram(rom: Path) -> Path | None:
     # pcsx2x6 keeps the sram in the game folder set by the .acgame
     acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
@@ -190,7 +197,7 @@ class Gun:
             if system_config.system == 'atomiswave':
                 for suffix in ['nvmem', 'nvmem2']:
                     src = dir / 'reicast' / f'{rom.name}.{suffix}'
-                    dst = SAVES / 'atomiswave' / 'reicast' / f'{rom.name}.{suffix}'
+                    dst = _flycast_saves_dir('atomiswave', emulator) / f'{rom.name}.{suffix}'
                     _copy_file(src, dst)
 
             elif system_config.system == 'mame':
@@ -217,13 +224,8 @@ class Gun:
             elif system_config.system == 'naomi':
                 for suffix in ['nvmem', 'eeprom']:
                     src = dir / 'reicast' / f'{rom.name}.{suffix}'
-                    dst = SAVES / 'naomi' / 'reicast' / f'{rom.name}.{suffix}'
+                    dst = _flycast_saves_dir('naomi', emulator) / f'{rom.name}.{suffix}'
                     _copy_file(src, dst)
-
-            elif system_config.system == 'supermodel':
-                src = dir / 'NVDATA' / f'{rom.stem}.nv'
-                dst = SAVES / 'supermodel' / 'NVDATA' / f'{rom.stem}.nv'
-                _copy_file(src, dst)
 
             elif system_config.system == 'model2':
                 if emulator == 'sm2-emu':

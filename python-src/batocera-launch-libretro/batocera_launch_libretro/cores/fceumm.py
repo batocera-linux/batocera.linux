@@ -24,7 +24,7 @@ class Fceumm(RACore):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # gun
         core_options.set(
-            'fceumm_zapper_mode', 'lightgun' if self.config.use_guns and self.guns else 'mouse'
+            'fceumm_zapper_mode', 'clightgun' if self.config.use_guns and self.guns else 'mouse'
         )  # FCEumm Mouse mode for Zapper
 
         # gun cross
