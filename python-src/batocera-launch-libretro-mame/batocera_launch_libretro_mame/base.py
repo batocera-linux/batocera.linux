@@ -21,6 +21,7 @@ _ARCADE_SYSTEMS: Final = {
     'tvgames',
     'vis',
     'namco22',
+    'model1',
     'model2',
     'model3',
     'cave3rd',
