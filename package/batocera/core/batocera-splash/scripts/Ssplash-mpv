@@ -159,9 +159,8 @@ do_videostart ()
         effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
     fi
     
-    # Natively crop 16:9 on the GPU presentation plane.
-    mpv_video="--panscan=1.0" 
-    
+    mpv_video=""
+
     video_rotation=$(batocera-settings-get-master "display.rotate.${effectiveDrmOutput}")
     if test -z "${video_rotation}"
     then
@@ -293,6 +292,24 @@ do_videostart ()
                 drm_mode="preferred"
             fi
         fi
+    fi
+
+    # Natively crop 16:9 on the GPU presentation plane, except for a rotated video on a
+    # landscape screen, where it is better letterboxed than cropped to a sliver
+    local screen_mode=""
+    if [ "$drm_mode" != "preferred" ]; then
+        screen_mode=$drm_mode
+    elif [ -n "$drm_connector" ]; then
+        screen_mode=$(cat /sys/class/drm/card*-"$drm_connector"/modes 2>/dev/null | head -1)
+    fi
+    [ -z "$screen_mode" ] && read -r screen_mode < /sys/class/graphics/fb0/modes 2>/dev/null
+    screen_mode=${screen_mode#*:}
+    local screen_w=${screen_mode%%x*} screen_h=${screen_mode#*x}
+    screen_h=${screen_h%%[!0-9]*}
+    if [[ "$video_rotation" =~ ^(90|270)$ && "$screen_w" =~ ^[0-9]+$ && "$screen_h" =~ ^[0-9]+$ && "$screen_w" -gt "$screen_h" ]]; then
+        echo "Splash: rotated video on a landscape screen, letterboxing" >> "$log"
+    else
+        mpv_video="${mpv_video} --panscan=1.0"
     fi
 
     # Hold the last frame so fbdev never shows the other panel's logo here
