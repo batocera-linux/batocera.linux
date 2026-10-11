@@ -130,9 +130,9 @@ _get_current_transform() {
 
     case "${transform_val}" in
         "normal"|"flipped"|"") echo "0" ;;
-        "90") echo "1" ;;
+        "90") echo "3" ;;
         "180") echo "2" ;;
-        "270") echo "3" ;;
+        "270") echo "1" ;;
         *) echo "0" ;;
     esac
 }
@@ -709,11 +709,12 @@ case "${ACTION}" in
         fi
 
         ROTATE_VAL=$1
+        # batocera rotations are clockwise, wlroots transforms are counter-clockwise
         case "${ROTATE_VAL}" in
             "0") WLR_TRANSFORM="normal" ;;
-            "1") WLR_TRANSFORM="90" ;;
+            "1") WLR_TRANSFORM="270" ;;
             "2") WLR_TRANSFORM="180" ;;
-            "3") WLR_TRANSFORM="270" ;;
+            "3") WLR_TRANSFORM="90" ;;
             *)
                 _log "setRotation: Invalid rotation value '${ROTATE_VAL}'. Using normal."
                 WLR_TRANSFORM="normal"
