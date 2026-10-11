@@ -18,7 +18,7 @@ class Tic80(Emulator):
         return {
             'name': 'tic80',
             'keys': {
-                'exit': ['KEY_LEFTCTRL', 'KEY_Q'],
+                'exit': ['KEY_LEFTALT', 'KEY_F4'],
                 'menu': 'KEY_ENTER',
                 'reset': ['KEY_LEFTCTRL', 'KEY_R'],
             },
