@@ -8,7 +8,7 @@
 # ec: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found       // 13.06.2025
 # ec: 10-poweroff, 11-reboot, 1-general error, 0-okay
 #
-# - removed update code, since v44 it is added to batocera-upgrade
+# - mimics update code, since v44 it is added to batocera-upgrade
 
 # first argument is action, second is timeout or branch, default waitTimer=5, fractions allowed
 waitTimer=5
@@ -144,8 +144,12 @@ case ${1,,} in
                echo "Nothing done!"
         esac
     ;;
-    *)
-        cat <<-_EOF_
+
+    --update)
+        /usr/bin/batocera-upgrade --check-upgrade "$2"
+    ;;
+
+    *)  cat <<-_EOF_
 		BATOCERA SWISS KNIFE FOR EmulationStation
 		  usage: $(basename ${0}) [Option] <Timeout in s> <butterfly>
 		  --restart       will RESTART EmulationStation only
@@ -164,6 +168,8 @@ case ${1,,} in
 		  --version       Shows current version of BATOCERA running
 		  --overlay       will try to backup your overlay file
 		  --remount <dir> toggle write access to <dir>, default /boot
+
+		  --update        Will check updates, add 'stable' or 'butterfly'
 
 		EC: 20-hotkeygen, 25-wine based emu, 22-cpid SIGKILL, 21-no emulator found
 		    10-poweroff, 11-reboot, 1-general error, 0-okay
