@@ -1,0 +1,15 @@
+--- a/xpad.c
++++ b/xpad.c
+@@ -2031,9 +2031,11 @@
+ 	int error;
+ 
+ 	if (xpad->xtype == XTYPE_XBOX360) {
++		/* some pads stall the init sequence but work without it */
+ 		error = xpad_start_xbox_360(xpad);
+ 		if (error)
+-			return error;
++			dev_warn(&xpad->dev->dev,
++				 "xbox 360 init sequence failed: %d\n", error);
+ 	}
+ 
+ 	if (usb_submit_urb(xpad->irq_in, GFP_KERNEL))
