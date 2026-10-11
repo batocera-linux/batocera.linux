@@ -40,10 +40,10 @@ case "$1" in
     governor=$(/usr/bin/batocera-settings-get-master system.cpu.governor)
 
     if [ -z "$governor" ] || ! check_governor "$governor"; then
-      if check_governor "schedutil"; then
-        governor="schedutil"
-      else
+      if check_governor "performance"; then
         governor="performance"
+      else
+        governor="schedutil"
       fi
       save_governor "$governor"
     fi
