@@ -162,6 +162,12 @@ custom_features:
     choices:
       Off: 0
       On (Default): 1
+  sm2_wheel_deadzone:
+    group: WHEELS
+    prompt: WHEEL CENTRE DEADZONE
+    description: Wheel travel about centre that reads as centre, in percent. Most wheels want none.
+    preset: sliderauto
+    preset_parameters: 0 20 1 %
   sm2_pad_rumble:
     group: GAMEPAD
     prompt: GAMEPAD RUMBLE
@@ -183,6 +189,12 @@ custom_features:
     choices:
       Off: 0
       On (Default): 1
+  sm2_pad_stick_deadzone:
+    group: GAMEPAD
+    prompt: STICK DEADZONE
+    description: Stick travel about centre that reads as centre, in percent. Raise it for a stick that no longer settles at rest.
+    preset: sliderauto
+    preset_parameters: 0 40 1 %
   sm2_pad_stick_sensitivity:
     group: GAMEPAD
     prompt: STICK SENSITIVITY
