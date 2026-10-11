@@ -161,9 +161,9 @@ do_help() {
 		  --check-media-upgrade    Searches for upgrade files in media pool
 
 		  --upgrade                Starts the upgrade on CLI and GUI with configed URL
-		       --type <type>       Download stable or butterfly
-		       --url <url>         Use dedicated download location
-		       --version <version> Use plain version numbers for ex. 5.27.2, 39 or 44
+		     --type <type>         Download stable or butterfly
+		     --url <url>           Use dedicated download location
+		     --version <version>   Use plain version numbers for ex. 5.27.2, 39 or 44
 
 		  --media-upgrade          Try to upgrade with ~/upgrade/boot.tar.xz (default)
 		     --file [file path]    Use a dedicated file location
@@ -593,7 +593,8 @@ case "${ACTION}" in
         exit 0
     ;;
     *)
-	do_help
+        # One liner during development in ES interface
+	echo "Usage: $(basename $0) --help for dedicated help page"
 	exit 1
 esac
 ###
