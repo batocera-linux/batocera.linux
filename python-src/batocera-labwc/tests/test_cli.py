@@ -588,7 +588,7 @@ class TestMain:
             ('top-touch', 'DP-1'),
         ]
         assert root.find('./libinput/device[@category="bottom-touch"]') is None
-        assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '0 1 0 -1 0 1'
+        assert root.findtext('./libinput/device[@category="top-touch"]/calibrationMatrix') == '0 -1 1 1 0 0'
 
     def test_touchscreen_outputs_without_primary_clears_mapping(
         self,

@@ -24,9 +24,9 @@ LABWC_BIN: Final = Path('/usr/bin/labwc')
 # keyed by the batocera rotation a digitiser already reports in; each matrix undoes the wlroots output transform for it
 _TOUCH_CALIBRATION: Final = {
     0: '1 0 0 0 1 0',
-    1: '0 1 0 -1 0 1',
+    1: '0 -1 1 1 0 0',
     2: '-1 0 1 0 -1 1',
-    3: '0 -1 1 1 0 0',
+    3: '0 1 0 -1 0 1',
 }
 
 

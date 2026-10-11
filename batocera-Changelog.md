@@ -12,6 +12,7 @@
 - Sega Chihiro now runs using Tovarichtch's Xemu Chihiro fork
   Games need to be .bin netboot images made with Chihiro-netboot
   BIOS files come from MAME's chihiro.zip, extracted into bios/chihiro
+- Display rotate on Wayland (labwc) builds now rotates clockwise
 ### Hardware
 - Anbernic RG-DS initial support
 - Anbernic RG-DS Plus initial support
@@ -98,6 +99,7 @@
 - SC-3000 games not scrapable (now scraped as SG-1000)
 - Simcoupe not starting fullscreen
 - Splash video not showing when es.resolution or splash.screen.resize holds the rotated size of a rotated display (e.g. 1080x1920)
+- Screen rotation on Wayland (labwc) going the opposite way to the boot splash and the documentation (display.rotate=1 rotated anticlockwise)
 - SM8250 devices overcharging the battery (wrong charge voltage and current), and Retroid Pocket not charging again after powering a USB-C hub or dock
 - Sonic Mania controllers
 - Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches

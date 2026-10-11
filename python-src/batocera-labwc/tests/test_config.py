@@ -273,7 +273,7 @@ class TestLabWCConfigSetTouchscreen:
         matrices = {
             d.get('category'): d.findtext('./calibrationMatrix') for d in config.root.findall('./libinput/device')
         }
-        assert matrices == {'bottom-touch': '1 0 0 0 1 0', 'top-touch': '0 1 0 -1 0 1'}
+        assert matrices == {'bottom-touch': '1 0 0 0 1 0', 'top-touch': '0 -1 1 1 0 0'}
 
     def test_set_touchscreens_removes_stale_calibration(self, rc_path: Path) -> None:
         config = LabWCConfig(path=rc_path)
