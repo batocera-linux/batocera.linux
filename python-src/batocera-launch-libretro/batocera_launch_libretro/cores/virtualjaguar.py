@@ -18,5 +18,5 @@ class VirtualJaguar(RACore):
         # Show Bios Bootlogo
         core_options.set_from_config('virtualjaguar_bios', 'bios_vj', default='enabled')
 
-        # Doom Res Hack
-        core_options.set_from_config('virtualjaguar_doom_res_hack', 'doom_res_hack', default='disabled')
+        # Internal Resolution
+        core_options.set_from_config('virtualjaguar_internal_resolution', default='1x')
