@@ -164,8 +164,8 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                 ]
             )
         # Other video modes
-        elif video == 'accel':
-            args.extend(['-video', 'accel'])
+        elif video in ('accel', 'opengl'):
+            args.extend(['-video', video])
         else:
             args.extend(['-video', 'auto'])
 
@@ -316,7 +316,7 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                 args.extend(['-ioport:peb:slot2', '32kmem'])
 
             if self.config.get_bool('ti99_speech', True):
-                args.extend(['-ioport', 'speechsyn'])
+                args.extend(['-ioport:peb:slot3', 'speechadapter'])
 
         # Laser 310 Memory Expansion & Joystick
         if self.system == 'laser310':
@@ -330,6 +330,12 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
         # Enterprise
         if self.system == 'enterprise':
             args.extend(['-exp', 'exdos'])
+
+        # Colour Genie floppy controller
+        if self.system == 'cgenie' and (
+            self.config.get_str('altromtype', '').startswith('flop') or soft_list == 'cgenie_flop_rom'
+        ):
+            args.extend(['-exp', 'floppy'])
 
         # Apple II
         if self.system == 'apple2':
@@ -356,8 +362,6 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                     ram_size = 4
                 if mess_model == 'maclc3' and ram_size > 80:
                     ram_size = 80
-                if mess_model == 'maciix' and ram_size == 16:
-                    ram_size = 32
                 if mess_model == 'maciix' and ram_size == 48:
                     ram_size = 64
 
@@ -376,7 +380,7 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
             # Will use Floppy 1 or Hard Drive, depending on the disk.
             boot_disk = self.config.get('bootdisk')
             if self.system == 'macintosh' and boot_disk:
-                if boot_disk in ['macos30', 'macos608', 'macos701', 'macos75']:
+                if boot_disk in ['macos3', 'macos608', 'macos701', 'macos75']:
                     bootType = '-flop1'
                     bootDisk = f'/userdata/bios/{boot_disk}.img'
                 else:
@@ -428,7 +432,7 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
             else:
                 if boot_disk:
                     if (alt_rom_type == 'flop1' or not alt_rom_type) and boot_disk in [
-                        'macos30',
+                        'macos3',
                         'macos608',
                         'macos701',
                         'macos75',
