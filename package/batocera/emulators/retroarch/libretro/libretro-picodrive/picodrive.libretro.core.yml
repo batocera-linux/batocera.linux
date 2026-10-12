@@ -10,13 +10,14 @@ custom_features:
     choices:
       'Off': disabled
       'On': enabled
-  picodrive_cropoverscan:
+  picodrive_renderer:
     group: ADVANCED OPTIONS
-    prompt: CROP OVERSCAN
-    description: Zooms in to hide black borders.
+    prompt: VIDEO RENDERER
+    description: Accurate is the slowest but most exact. Good and Fast are quicker but break games that change colours or sprites mid-frame.
     choices:
-      'Off': disabled
-      'On': enabled
+      Accurate: accurate
+      Good: good
+      Fast: fast
   pd_controller1_mapping:
     submenu: CONTROLLERS
     prompt: CONTROLLER 1 INPUT MAPPING
