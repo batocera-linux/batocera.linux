@@ -75,8 +75,8 @@ custom_features:
       Denmark: dk
       Finland: su
       France: fr
-      Germany: gm
-      Greece: gr
+      Germany: gr
+      Greece: gk
       Hungary: hu
       Iceland: is161
       Italy: it
@@ -103,7 +103,7 @@ custom_features:
     prompt: SAVESTATE/REWIND
     description: Rewind can be CPU heavy.
     choices:
-      'On': true
+      'On': 'on'
       On with rewind support: rewind
       'Off': disabled
   pure_auto_mapping:
@@ -137,7 +137,7 @@ custom_features:
   controller1_dosbox_pure:
     prompt: CONTROLLER 1 TYPE
     choices:
-      Gravis GamePad (D-pad + 4 Btns): 1
+      Gravis GamePad (D-pad + 4 Btns): 1025
       Generic Keyboard Binds: 257
       Keyboard + Mouse (Left An.): 513
       Keyboard + Mouse (Right An.): 769
@@ -148,7 +148,7 @@ custom_features:
   controller2_dosbox_pure:
     prompt: CONTROLLER 2 TYPE
     choices:
-      Gravis GamePad (D-pad + 4 Btns): 1
+      Gravis GamePad (D-pad + 4 Btns): 1025
       Generic Keyboard Binds: 257
       Keyboard + Mouse (Left An.): 513
       Keyboard + Mouse (Right An.): 769
@@ -176,10 +176,10 @@ custom_features:
     prompt: MIDI OUTPUT
     description: Select the .SF2 SoundFont file, .ROM file, or interface used for MIDI output.
     choices:
-      General MIDI SoundFont (Default): zcsf.sf2
+      General MIDI SoundFont: zcsf.sf2
       Roland MT-32/CM-32L: scummvm/extra/MT32_CONTROL.ROM
       Frontend MIDI driver: frontend
-      'Off': disabled
+      Off (Default): disabled
 file_extensions:
   - pc
   - dos
