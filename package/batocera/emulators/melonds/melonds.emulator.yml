@@ -72,7 +72,7 @@ custom_features:
   melonds_month:
     submenu: FIRMWARE SETTINGS
     prompt: BIRTH MONTH
-    description: The month of your birthay.
+    description: The month of your birthday.
     choices:
       January: 1
       February: 2
@@ -86,7 +86,6 @@ custom_features:
       October: 10
       November: 11
       December: 12
-      Don't Override: 1
   melonds_day:
     submenu: FIRMWARE SETTINGS
     prompt: BIRTH DAY
@@ -123,7 +122,6 @@ custom_features:
       29th: 29
       30th: 30
       31st: 31
-      Don't Override: 1
   melonds_polygons:
     group: ADVANCED OPTIONS
     prompt: ENABLE POLYGON SPLITTING
@@ -145,14 +143,6 @@ custom_features:
     choices:
       'Off': false
       'On': true
-  melonds_screensize:
-    prompt: SCREEN SIZE
-    description: Sets the window size to an integer size.
-    choices:
-      1x: 0
-      2x: 1
-      3x: 2
-      4x: 3
   melonds_layout:
     prompt: SCREEN LAYOUT
     description: Adjusts the positions of the screens.

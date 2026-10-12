@@ -157,7 +157,7 @@ class MelonDS(Emulator):
         resolution = self.config.get_int('melonds_resolution')
         if resolution is not None:
             base_config['3D']['GL']['ScaleFactor'] = resolution
-            base_config['3D']['GL']['HiresCoordinates'] = resolution == 2
+            base_config['3D']['GL']['HiresCoordinates'] = True
 
         # Polygons
         if polygons := self.config.get_bool('melonds_polygons'):
