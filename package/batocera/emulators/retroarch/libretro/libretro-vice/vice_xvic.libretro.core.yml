@@ -47,12 +47,6 @@ custom_features:
       B = Fire, A = Up: jump
       Y = Fire: rotate
       Y = Fire, B = Up: rotate_jump
-  vice_joyport:
-    prompt: CONTROLLER PORT
-    description: Most games use port 2, some use port 1.
-    choices:
-      Port 1: 1
-      Port 2: 2
   vice_joyport_type:
     prompt: CONTROLLER TYPE
     choices:

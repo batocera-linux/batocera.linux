@@ -26,9 +26,6 @@ class ViceXpet(Core):
         # Model type
         core_options.set_from_config('vice_pet_model', 'pet_model', default='8032')
 
-        # Aspect Ratio
-        core_options.set_from_config('vice_aspect_ratio', default='pal')
-
         # Zoom Mode
         zoom_mode = self.config.get('vice_zoom_mode', 'auto_disable')
         core_options.set('vice_crop', 'auto' if zoom_mode == 'automatic' else zoom_mode)
@@ -36,15 +33,6 @@ class ViceXpet(Core):
 
         # External palette
         core_options.set_from_config('vice_pet_external_palette', default='default')
-
-        # Button options
-        core_options.set_from_config('vice_retropad_options', default='disabled')
-
-        # Select Controller Port
-        core_options.set_from_config('vice_joyport', default='2')
-
-        # Select Controller Type
-        core_options.set_from_config('vice_joyport_type', default='1')
 
         # Keyboard Pass-through for Pad2Key
         core_options.set_from_config(
