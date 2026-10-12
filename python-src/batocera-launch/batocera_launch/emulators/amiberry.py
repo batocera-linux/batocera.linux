@@ -341,11 +341,6 @@ class Amiberry(Emulator):
         amiberryconf['retroarch_config'] = retroarch_custom
         amiberryconf['default_vkbd_enabled'] = self.config.get_bool('amiberry_virtual_keyboard', return_values=(1, 0))
 
-        # NOTE: as of amiberry v8.3.0 upstream treats default_vkbd_hires as a legacy,
-        # accepted-but-never-applied key (the bitmap "hi-res keyboard" concept was dropped
-        # from the rewritten virtual keyboard) -- amiberry_hires_keyboard is effectively a
-        # no-op now. Kept as a harmless write pending a decision on removing the .yml option.
-        amiberryconf['default_vkbd_hires'] = self.config.get_bool('amiberry_hires_keyboard', return_values=(1, 0))
         amiberryconf['default_vkbd_transparency'] = self.config.get_str('amiberry_vkbd_transparency', '60')
         amiberryconf['default_vkbd_language'] = self.config.get_str('amiberry_vkbd_language', 'US')
         amiberryconf['default_vkbd_toggle'] = 'leftstick'
@@ -458,7 +453,7 @@ class Amiberry(Emulator):
         # auto_crop (previously auto_height)
         if amiberry_auto_crop := self.config.get_str('amiberry_auto_crop'):
             args.append('-s')
-            args.append(f'gfx_auto_crop={amiberry_auto_crop}')
+            args.append(f'amiberry.gfx_auto_crop={amiberry_auto_crop}')
 
         # keep aspect ratio: this is a per-config UAE key (gfx_keep_aspect), there's no
         # amiberry.conf-level default for it upstream
