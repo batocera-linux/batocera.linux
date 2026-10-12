@@ -6,7 +6,6 @@ from dataclasses import field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
-from batocera_common.asyncio import is_connected_to_internet
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, OVERLAYS
 from batocera_common.vulkan import get_vulkan_info
@@ -894,7 +893,9 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             # retroarchievements_unofficial
             custom_config.set_bool_from_config('cheevos_test_unofficial', 'retroachievements.unofficial')
 
-            if not await is_connected_to_internet():
+            from batocera_common import connman
+
+            if not await connman.is_connected(self.bus):
                 cheevos_enable = False
 
         custom_config.set('cheevos_enable', cheevos_enable)
