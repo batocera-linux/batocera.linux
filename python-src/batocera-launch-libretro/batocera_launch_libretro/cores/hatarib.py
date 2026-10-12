@@ -52,7 +52,10 @@ class Hatarib(HatariConfigMixin, Core):
         core_options.set_from_config('hatarib_machine', 'hatarib_machine', default='0')
 
         # Language/Region
-        core_options.set_from_config('hatarib_region', 'hatarib_language', default='127')
+        core_options.set_from_config('hatarib_emutos_region', 'hatarib_language', default='-1')
+
+        # Monitor
+        core_options.set_from_config('hatarib_monitor', default='1')
 
         # CPU
         core_options.set_from_config('hatarib_cpu', 'hatarib_cpu', default='-1')
