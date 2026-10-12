@@ -662,8 +662,6 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                         'background_alpha=0',
                         'legacy_layout=false',
                         f'font_size={game_mode_font_size}',
-                        'image_max_width=200',
-                        'image=%THUMBNAIL%',
                         'custom_text=%GAMENAME%',
                         'custom_text=%SYSTEMNAME%',
                         'custom_text=%EMULATORCORE%',
