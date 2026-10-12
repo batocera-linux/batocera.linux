@@ -16,12 +16,15 @@ define BATOCERA_LED_HANDHELD_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)
     mkdir -p $(TARGET_DIR)/usr/bin
     mkdir -p $(TARGET_DIR)/etc/init.d
+    mkdir -p $(TARGET_DIR)/etc/pm/sleep.d
     install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/batoled.py \
         $(TARGET_DIR)/usr/lib/python$(PYTHON3_VERSION_MAJOR)/
     install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/batocera-led-handheld.py \
         $(TARGET_DIR)/usr/bin/batocera-led-handheld
     install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/S21led-handheld \
         $(TARGET_DIR)/etc/init.d/
+    install -m 0755 $(BATOCERA_LED_HANDHELD_PATH)/95led-handheld \
+        $(TARGET_DIR)/etc/pm/sleep.d/
 endef
 
 $(eval $(generic-package))

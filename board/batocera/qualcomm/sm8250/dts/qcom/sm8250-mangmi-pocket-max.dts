@@ -109,6 +109,22 @@
 		};
 	};
 
+	typec_sbu_mux: usb-c-sbu-mux {
+		compatible = "gpio-sbu-mux";
+
+		select-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+
+		mode-switch;
+		orientation-switch;
+
+		port {
+			sbu_mux_usb_con: endpoint {
+				remote-endpoint = <&pm8150b_typec_sbu>;
+			};
+		};
+	};
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
@@ -676,6 +692,7 @@
 
 &mdss_dp {
 	status = "okay";
+	#sound-dai-cells = <0>;
 };
 
 &mdss_dp_out {
@@ -799,6 +816,8 @@
 
 &pm8150b_charger {
 	monitored-battery = <&battery>;
+	/* batocera - lets the charger resume USBIN once the port stops sourcing VBUS */
+	vbus-supply = <&pm8150b_vbus>;
 	status = "okay";
 };
 
@@ -820,6 +839,8 @@
 		data-role = "dual";
 		try-power-role = "sink";
 		self-powered;
+
+		vbus-supply = <&pm8150b_vbus>;
 
 		source-pdos = <PDO_FIXED(5000, 3000,
 					 PDO_FIXED_DUAL_ROLE |
@@ -855,6 +876,13 @@
 				reg = <1>;
 				pm8150b_typec_mux_in: endpoint {
 					remote-endpoint = <&usb_1_qmpphy_out>;
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				pm8150b_typec_sbu: endpoint {
+					remote-endpoint = <&sbu_mux_usb_con>;
 				};
 			};
 		};
@@ -935,6 +963,10 @@
 	dai@2 {
 		reg = <2>;
 	};
+
+	dai@3 {
+		reg = <3>;
+	};
 };
 
 &qupv3_id_0 {
@@ -1012,6 +1044,13 @@
 		};
 	};
 
+	mm4-dai-link {
+		link-name = "MultiMedia4";
+		cpu {
+			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA4>;
+		};
+	};
+
 	wcd-playback-dai-link {
 		link-name = "WCD Playback";
 		cpu {
@@ -1047,6 +1086,19 @@
 
 		codec {
 			sound-dai = <&wcd938x 1>, <&swr2 0>, <&txmacro 0>;
+		};
+		platform {
+			sound-dai = <&q6routing>;
+		};
+	};
+
+	displayport-dai-link {
+		link-name = "DisplayPort Playback";
+		cpu {
+			sound-dai = <&q6afedai DISPLAY_PORT_RX>;
+		};
+		codec {
+			sound-dai = <&mdss_dp>;
 		};
 		platform {
 			sound-dai = <&q6routing>;

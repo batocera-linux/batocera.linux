@@ -1,0 +1,85 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] soundwire: qcom: re-read a device ID that matches no known device
+
+With two WSA881x amps powering up together the enumerator can still be
+busy with one while the other's ID is read, so the read comes back
+corrupt. The amp is then never matched, never gets its device number and
+times out. Re-read an unmatched ID a few times before adding a new device.
+
+---
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -642,7 +642,7 @@
+ 	u32 val1, val2;
+ 	bool found;
+ 	u64 addr;
+-	int i;
++	int i, retry;
+ 	char *buf1 = (char *)&val1, *buf2 = (char *)&val2;
+ 
+ 	for (i = 1; i <= SDW_MAX_DEVICES; i++) {
+@@ -650,33 +650,43 @@
+ 		if (!ctrl->status[i])
+ 			continue;
+ 
+-		/*SCP_Devid5 - Devid 4*/
+-		ctrl->reg_read(ctrl, SWRM_ENUMERATOR_SLAVE_DEV_ID_1(i), &val1);
++		/* An ID read while another device enumerates can come back corrupt */
++		for (retry = 0; retry < 5; retry++) {
++			/*SCP_Devid5 - Devid 4*/
++			ctrl->reg_read(ctrl, SWRM_ENUMERATOR_SLAVE_DEV_ID_1(i), &val1);
+ 
+-		/*SCP_Devid3 - DevId 2 Devid 1 Devid 0*/
+-		ctrl->reg_read(ctrl, SWRM_ENUMERATOR_SLAVE_DEV_ID_2(i), &val2);
++			/*SCP_Devid3 - DevId 2 Devid 1 Devid 0*/
++			ctrl->reg_read(ctrl, SWRM_ENUMERATOR_SLAVE_DEV_ID_2(i), &val2);
+ 
+-		if (!val1 && !val2)
+-			break;
+-
+-		addr = buf2[1] | (buf2[0] << 8) | (buf1[3] << 16) |
+-			((u64)buf1[2] << 24) | ((u64)buf1[1] << 32) |
+-			((u64)buf1[0] << 40);
+-
+-		sdw_extract_slave_id(bus, addr, &id);
+-		found = false;
+-		/* Now compare with entries */
+-		list_for_each_entry_safe(slave, _s, &bus->slaves, node) {
+-			if (sdw_compare_devid(slave, id) == 0) {
+-				qcom_swrm_set_slave_dev_num(bus, slave, i);
+-				if (slave->prop.clk_stop_mode1)
+-					ctrl->clock_stop_not_supported = true;
+-
+-				found = true;
++			if (!val1 && !val2)
+ 				break;
++
++			addr = buf2[1] | (buf2[0] << 8) | (buf1[3] << 16) |
++				((u64)buf1[2] << 24) | ((u64)buf1[1] << 32) |
++				((u64)buf1[0] << 40);
++
++			sdw_extract_slave_id(bus, addr, &id);
++			found = false;
++			/* Now compare with entries */
++			list_for_each_entry_safe(slave, _s, &bus->slaves, node) {
++				if (sdw_compare_devid(slave, id) == 0) {
++					qcom_swrm_set_slave_dev_num(bus, slave, i);
++					if (slave->prop.clk_stop_mode1)
++						ctrl->clock_stop_not_supported = true;
++
++					found = true;
++					break;
++				}
+ 			}
++			if (found)
++				break;
++
++			usleep_range(200, 300);
+ 		}
+ 
++		if (!val1 && !val2)
++			break;
++
+ 		if (!found) {
+ 			qcom_swrm_set_slave_dev_num(bus, NULL, i);
+ 			sdw_slave_add(bus, &id, NULL);

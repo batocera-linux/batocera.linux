@@ -1,0 +1,31 @@
+From d858770e86e75bf78429b9f5210b7556ef431033 Mon Sep 17 00:00:00 2001
+From: Kumar Anurag <kumar.singh@oss.qualcomm.com>
+Date: Tue, 16 Jun 2026 08:12:52 -0700
+Subject: [PATCH] drm/msm/dp: return 0 from audio_prepare when cable is
+ disconnected
+
+PipeWire treats a non-zero return from prepare as fatal, marking the
+DP audio device as a dummy sink when the cable is unplugged. The
+active_stream_cnt guard already prevents any unclocked hardware access,
+so return success instead of -EINVAL when the link is not active.
+
+Upstream-Status: Backport [https://lore.kernel.org/r/20260616151252.3599089-2-kumar.singh@oss.qualcomm.com]
+---
+ drivers/gpu/drm/msm/dp/dp_audio.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_audio.c b/drivers/gpu/drm/msm/dp/dp_audio.c
+--- a/drivers/gpu/drm/msm/dp/dp_audio.c
++++ b/drivers/gpu/drm/msm/dp/dp_audio.c
+@@ -284,10 +284,8 @@ int msm_dp_audio_prepare(struct drm_bridge *bridge,
+ 	 * such cases check for connection status and bail out if not
+ 	 * connected.
+ 	 */
+-	if (!msm_dp_display->power_on) {
+-		rc = -EINVAL;
++	if (!msm_dp_display->power_on)
+ 		goto end;
+-	}
+ 
+ 	audio = msm_dp_audio_get_data(msm_dp_display);
+ 	if (IS_ERR(audio)) {

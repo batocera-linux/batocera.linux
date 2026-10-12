@@ -1,0 +1,104 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Philippe Simons <simons.philippe@gmail.com>
+Date: Wed, 30 Sep 2026 22:55:55 +0200
+Subject: [PATCH] drm/msm/dp: on SM8250, refuse to start DP audio while the
+ link is down
+
+msm_dp implements dp_audio_prepare and dp_audio_shutdown but not
+dp_audio_startup, so opening the DP PCM always succeeds, and since
+d858770e86e7 prepare succeeds with the cable unplugged too. The stream
+then goes on to start the DSP's DP port. On SM8250 (q6afe) the DSP does
+not answer that first AFE_PORT_CMD_DEVICE_START on port 0x6020 at all:
+the open blocks for q6afe's 3 s timeout (-110), and only the retry gets
+an immediate "not ready" (-22).
+
+PipeWire's profile probe opens the DP PCM five times, so on a board with
+nothing plugged into USB-C every boot lost ~16 s before any sound came
+up (measured on a MANGMI Pocket Max: sinks at ~33 s instead of ~16.5 s).
+
+On SM8250, fail the open in startup instead, with the same link-state
+test prepare already uses to avoid unclocked access. It never reaches
+the DSP, which is what the downstream DP audio codec does: its startup
+asks the display driver for cable status and returns -ENODEV when
+nothing is connected (msm_ext_disp_audio_codec_rx_dai_startup, msm-4.19
+techpack/audio).
+
+Scoped to the "qcom,sm8250-dp" compatible. The AudioReach SoCs do not
+stall on an unplugged open, and failing it there would bring back the
+dummy-sink behaviour d858770e86e7 removed from prepare, for no gain.
+
+hdmi_codec_startup() returns before marking the codec busy, so a
+refused open leaves no state behind.
+
+Written here, never posted.
+---
+ drivers/gpu/drm/msm/dp/dp_audio.c | 23 +++++++++++++++++++++++
+ drivers/gpu/drm/msm/dp/dp_audio.h |  2 ++
+ drivers/gpu/drm/msm/dp/dp_drm.c   |  1 +
+ 3 files changed, 26 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_audio.c b/drivers/gpu/drm/msm/dp/dp_audio.c
+--- a/drivers/gpu/drm/msm/dp/dp_audio.c
++++ b/drivers/gpu/drm/msm/dp/dp_audio.c
+@@ -6,6 +6,7 @@
+ 
+ #define pr_fmt(fmt)	"[drm-dp] %s: " fmt, __func__
+ 
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/workqueue.h>
+ 
+@@ -278,6 +279,28 @@
+ 	return container_of(msm_dp_audio, struct msm_dp_audio_private, msm_dp_audio);
+ }
+ 
++/*
++ * On SM8250, refuse to open a DP audio stream while the link is down. Without
++ * this the open succeeds and the stream is started on the DSP's DP port anyway,
++ * and SM8250's DSP (q6afe) does not answer that first port start at all: every
++ * open made with nothing plugged in blocks for q6afe's 3 s timeout before it
++ * fails. The downstream DP audio codec makes the same check in its startup.
++ *
++ * SM8250 only: on the AudioReach SoCs the unplugged open is harmless, and
++ * failing it there is what d858770e86e7 removed from prepare.
++ */
++int msm_dp_audio_startup(struct drm_bridge *bridge,
++			 struct drm_connector *connector)
++{
++	struct msm_dp *msm_dp_display = to_dp_bridge(bridge)->msm_dp_display;
++
++	if (!of_device_is_compatible(msm_dp_display->pdev->dev.of_node,
++				     "qcom,sm8250-dp"))
++		return 0;
++
++	return msm_dp_display->power_on ? 0 : -ENODEV;
++}
++
+ int msm_dp_audio_prepare(struct drm_bridge *bridge,
+ 			 struct drm_connector *connector,
+ 			 struct hdmi_codec_daifmt *daifmt,
+diff --git a/drivers/gpu/drm/msm/dp/dp_audio.h b/drivers/gpu/drm/msm/dp/dp_audio.h
+--- a/drivers/gpu/drm/msm/dp/dp_audio.h
++++ b/drivers/gpu/drm/msm/dp/dp_audio.h
+@@ -45,6 +45,8 @@
+  */
+ void msm_dp_audio_put(struct msm_dp_audio *msm_dp_audio);
+ 
++int msm_dp_audio_startup(struct drm_bridge *bridge,
++			 struct drm_connector *connector);
+ int msm_dp_audio_prepare(struct drm_bridge *bridge,
+ 			 struct drm_connector *connector,
+ 			 struct hdmi_codec_daifmt *daifmt,
+diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
+--- a/drivers/gpu/drm/msm/dp/dp_drm.c
++++ b/drivers/gpu/drm/msm/dp/dp_drm.c
+@@ -65,6 +65,7 @@
+ 	.hpd_notify   = msm_dp_bridge_hpd_notify,
+ 	.debugfs_init = msm_dp_bridge_debugfs_init,
+ 
++	.dp_audio_startup = msm_dp_audio_startup,
+ 	.dp_audio_prepare = msm_dp_audio_prepare,
+ 	.dp_audio_shutdown = msm_dp_audio_shutdown,
+ };
+-- 
+2.55.0

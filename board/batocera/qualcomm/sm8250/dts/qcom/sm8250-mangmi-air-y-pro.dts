@@ -124,6 +124,41 @@
 		};
 	};
 
+	typec_sbu_mux: usb-c-sbu-mux {
+		compatible = "gpio-sbu-mux";
+
+		select-gpios = <&tlmm 51 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+
+		mode-switch;
+		orientation-switch;
+
+		port {
+			sbu_mux_usb_con: endpoint {
+				remote-endpoint = <&pm8150b_typec_sbu>;
+			};
+		};
+	};
+
+	/* batocera - group each ring LED into one RGB led, l1/r1 at SW going anticlockwise */
+	multi-led-l1 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l1"; leds = <&left_red_1>, <&left_green_1>, <&left_blue_1>; };
+	multi-led-l2 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l2"; leds = <&left_red_2>, <&left_green_2>, <&left_blue_2>; };
+	multi-led-l3 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l3"; leds = <&left_red_3>, <&left_green_3>, <&left_blue_3>; };
+	multi-led-l4 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l4"; leds = <&left_red_4>, <&left_green_4>, <&left_blue_4>; };
+	multi-led-l5 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l5"; leds = <&left_red_5>, <&left_green_5>, <&left_blue_5>; };
+	multi-led-l6 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l6"; leds = <&left_red_6>, <&left_green_6>, <&left_blue_6>; };
+	multi-led-l7 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l7"; leds = <&left_red_7>, <&left_green_7>, <&left_blue_7>; };
+	multi-led-l8 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l8"; leds = <&left_red_8>, <&left_green_8>, <&left_blue_8>; };
+
+	multi-led-r1 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r1"; leds = <&right_red_1>, <&right_green_1>, <&right_blue_1>; };
+	multi-led-r2 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r2"; leds = <&right_red_2>, <&right_green_2>, <&right_blue_2>; };
+	multi-led-r3 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r3"; leds = <&right_red_3>, <&right_green_3>, <&right_blue_3>; };
+	multi-led-r4 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r4"; leds = <&right_red_4>, <&right_green_4>, <&right_blue_4>; };
+	multi-led-r5 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r5"; leds = <&right_red_5>, <&right_green_5>, <&right_blue_5>; };
+	multi-led-r6 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r6"; leds = <&right_red_6>, <&right_green_6>, <&right_blue_6>; };
+	multi-led-r7 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r7"; leds = <&right_red_7>, <&right_green_7>, <&right_blue_7>; };
+	multi-led-r8 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "r8"; leds = <&right_red_8>, <&right_green_8>, <&right_blue_8>; };
+
 	vph_pwr: vph-pwr-regulator {
 		compatible = "regulator-fixed";
 		regulator-name = "vph_pwr";
@@ -585,30 +620,31 @@
 		enable-gpios = <&tlmm 24 GPIO_ACTIVE_HIGH>;
 		vdd-supply = <&vreg_led_en>;
 
-		led@0  { reg = <0>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
-		led@1  { reg = <1>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
-		led@2  { reg = <2>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
-		led@3  { reg = <3>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
-		led@4  { reg = <4>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
-		led@5  { reg = <5>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
-		led@6  { reg = <6>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
-		led@7  { reg = <7>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
-		led@8  { reg = <8>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
-		led@9  { reg = <9>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
-		led@a  { reg = <10>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
-		led@b  { reg = <11>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
-		led@c  { reg = <12>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
-		led@d  { reg = <13>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
-		led@e  { reg = <14>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
-		led@f  { reg = <15>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
-		led@10 { reg = <16>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
-		led@11 { reg = <17>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
-		led@12 { reg = <18>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
-		led@13 { reg = <19>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
-		led@14 { reg = <20>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
-		led@15 { reg = <21>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
-		led@16 { reg = <22>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
-		led@17 { reg = <23>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
+		/* batocera - labels for the multi-led groups */
+		left_blue_1: led@0  { reg = <0>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
+		left_green_1: led@1  { reg = <1>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
+		left_red_1: led@2  { reg = <2>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <0>; led-max-microamp = <9780>; };
+		left_blue_2: led@3  { reg = <3>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
+		left_green_2: led@4  { reg = <4>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
+		left_red_2: led@5  { reg = <5>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <1>; led-max-microamp = <9780>; };
+		left_blue_3: led@6  { reg = <6>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
+		left_green_3: led@7  { reg = <7>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
+		left_red_3: led@8  { reg = <8>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <2>; led-max-microamp = <9780>; };
+		left_blue_4: led@9  { reg = <9>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
+		left_green_4: led@a  { reg = <10>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
+		left_red_4: led@b  { reg = <11>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <3>; led-max-microamp = <9780>; };
+		left_blue_5: led@c  { reg = <12>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
+		left_green_5: led@d  { reg = <13>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
+		left_red_5: led@e  { reg = <14>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <4>; led-max-microamp = <9780>; };
+		left_blue_6: led@f  { reg = <15>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
+		left_green_6: led@10 { reg = <16>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
+		left_red_6: led@11 { reg = <17>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <5>; led-max-microamp = <9780>; };
+		left_blue_7: led@12 { reg = <18>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
+		left_green_7: led@13 { reg = <19>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
+		left_red_7: led@14 { reg = <20>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <6>; led-max-microamp = <9780>; };
+		left_blue_8: led@15 { reg = <21>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
+		left_green_8: led@16 { reg = <22>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
+		left_red_8: led@17 { reg = <23>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <7>; led-max-microamp = <9780>; };
 	};
 
 	led-controller@3b {
@@ -620,30 +656,31 @@
 		enable-gpios = <&tlmm 73 GPIO_ACTIVE_HIGH>;
 		vdd-supply = <&vreg_led_en>;
 
-		led@0  { reg = <0>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
-		led@1  { reg = <1>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
-		led@2  { reg = <2>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
-		led@3  { reg = <3>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
-		led@4  { reg = <4>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
-		led@5  { reg = <5>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
-		led@6  { reg = <6>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
-		led@7  { reg = <7>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
-		led@8  { reg = <8>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
-		led@9  { reg = <9>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
-		led@a  { reg = <10>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
-		led@b  { reg = <11>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
-		led@c  { reg = <12>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
-		led@d  { reg = <13>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
-		led@e  { reg = <14>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
-		led@f  { reg = <15>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
-		led@10 { reg = <16>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
-		led@11 { reg = <17>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
-		led@12 { reg = <18>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
-		led@13 { reg = <19>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
-		led@14 { reg = <20>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
-		led@15 { reg = <21>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
-		led@16 { reg = <22>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
-		led@17 { reg = <23>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
+		/* batocera - labels for the multi-led groups */
+		right_blue_1: led@0  { reg = <0>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
+		right_green_1: led@1  { reg = <1>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
+		right_red_1: led@2  { reg = <2>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <8>;  led-max-microamp = <9780>; };
+		right_blue_2: led@3  { reg = <3>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
+		right_green_2: led@4  { reg = <4>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
+		right_red_2: led@5  { reg = <5>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <9>;  led-max-microamp = <9780>; };
+		right_blue_3: led@6  { reg = <6>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
+		right_green_3: led@7  { reg = <7>;  color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
+		right_red_3: led@8  { reg = <8>;  color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <10>; led-max-microamp = <9780>; };
+		right_blue_4: led@9  { reg = <9>;  color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
+		right_green_4: led@a  { reg = <10>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
+		right_red_4: led@b  { reg = <11>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <11>; led-max-microamp = <9780>; };
+		right_blue_5: led@c  { reg = <12>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
+		right_green_5: led@d  { reg = <13>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
+		right_red_5: led@e  { reg = <14>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <12>; led-max-microamp = <9780>; };
+		right_blue_6: led@f  { reg = <15>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
+		right_green_6: led@10 { reg = <16>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
+		right_red_6: led@11 { reg = <17>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <13>; led-max-microamp = <9780>; };
+		right_blue_7: led@12 { reg = <18>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
+		right_green_7: led@13 { reg = <19>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
+		right_red_7: led@14 { reg = <20>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <14>; led-max-microamp = <9780>; };
+		right_blue_8: led@15 { reg = <21>; color = <LED_COLOR_ID_BLUE>;  function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
+		right_green_8: led@16 { reg = <22>; color = <LED_COLOR_ID_GREEN>; function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
+		right_red_8: led@17 { reg = <23>; color = <LED_COLOR_ID_RED>;   function = LED_FUNCTION_INDICATOR; function-enumerator = <15>; led-max-microamp = <9780>; };
 	};
 };
 
@@ -677,6 +714,7 @@
 
 &mdss_dp {
 	status = "okay";
+	#sound-dai-cells = <0>;
 };
 
 &mdss_dp_out {
@@ -800,6 +838,8 @@
 
 &pm8150b_charger {
 	monitored-battery = <&battery>;
+	/* batocera - lets the charger resume USBIN once the port stops sourcing VBUS */
+	vbus-supply = <&pm8150b_vbus>;
 	status = "okay";
 };
 
@@ -821,6 +861,8 @@
 		data-role = "dual";
 		try-power-role = "sink";
 		self-powered;
+
+		vbus-supply = <&pm8150b_vbus>;
 
 		source-pdos = <PDO_FIXED(5000, 3000,
 					 PDO_FIXED_DUAL_ROLE |
@@ -856,6 +898,13 @@
 				reg = <1>;
 				pm8150b_typec_mux_in: endpoint {
 					remote-endpoint = <&usb_1_qmpphy_out>;
+				};
+			};
+
+			port@2 {
+				reg = <2>;
+				pm8150b_typec_sbu: endpoint {
+					remote-endpoint = <&sbu_mux_usb_con>;
 				};
 			};
 		};
@@ -939,7 +988,8 @@
 &pon_resin {
 	status = "okay";
 
-	linux,code = <KEY_VOLUMEDOWN>;
+	/* batocera - user button, the wheel is the volume control */
+	linux,code = <KEY_CONTEXT_MENU>;
 };
 
 &q6asmdai {
@@ -953,6 +1003,10 @@
 
 	dai@2 {
 		reg = <2>;
+	};
+
+	dai@3 {
+		reg = <3>;
 	};
 };
 
@@ -1031,6 +1085,13 @@
 		};
 	};
 
+	mm4-dai-link {
+		link-name = "MultiMedia4";
+		cpu {
+			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA4>;
+		};
+	};
+
 	wcd-playback-dai-link {
 		link-name = "WCD Playback";
 		cpu {
@@ -1066,6 +1127,19 @@
 
 		codec {
 			sound-dai = <&wcd938x 1>, <&swr2 0>, <&txmacro 0>;
+		};
+		platform {
+			sound-dai = <&q6routing>;
+		};
+	};
+
+	displayport-dai-link {
+		link-name = "DisplayPort Playback";
+		cpu {
+			sound-dai = <&q6afedai DISPLAY_PORT_RX>;
+		};
+		codec {
+			sound-dai = <&mdss_dp>;
 		};
 		platform {
 			sound-dai = <&q6routing>;

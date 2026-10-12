@@ -27,6 +27,7 @@
 - GameKiddy GKD Pixel2 initial support
 - KICKPI K3B initial support
 - Mangmi Air X initial support
+- Mangmi Air Y Pro initial support
 - Odroid M2 initial support
 - Radxa Rock-5T initial support
 - Retroid Pocket Nova initial support

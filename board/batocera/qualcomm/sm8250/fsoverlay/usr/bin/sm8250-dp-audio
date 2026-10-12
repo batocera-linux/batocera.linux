@@ -7,8 +7,11 @@
 exec 9>/var/run/sm8250-dp-audio.lock
 flock 9
 
-CARDDEV=$(basename "$(readlink -f /proc/asound/RetroidPocket 2>/dev/null)")
-[ -n "${CARDDEV}" ] && [ "${CARDDEV}" != RetroidPocket ] || exit 0
+for ID in RetroidPocket PocketMax AirYPro; do
+    [ -e "/proc/asound/${ID}" ] && break
+done
+CARDDEV=$(basename "$(readlink -f "/proc/asound/${ID}" 2>/dev/null)")
+[ -n "${CARDDEV}" ] && [ "${CARDDEV}" != "${ID}" ] || exit 0
 CARD="alsa_card._sys_devices_platform_sound_sound_${CARDDEV}"
 
 log() { logger -t sm8250-dp-audio "$1"; }

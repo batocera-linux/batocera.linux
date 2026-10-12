@@ -1,0 +1,67 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] ASoC: codecs: wsa881x: vote for power on a shared powerdown GPIO
+
+The shared GPIO proxy keeps the first requested value as its default and
+any vote against it wins. Requesting the line powered let one amp's runtime
+suspend shut down both, so the other timed out on resume. Default to
+shutdown and only set the value so each amp votes for power on. After
+cutting power, wait for the amp to drop off the bus so the manager does
+not broadcast a clock stop prepare to a powered-off amp.
+
+---
+--- a/sound/soc/codecs/wsa881x.c
++++ b/sound/soc/codecs/wsa881x.c
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/bitops.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/slab.h>
+@@ -1115,10 +1116,12 @@
+ 	if (!wsa881x)
+ 		return -ENOMEM;
+ 
+-	wsa881x->sd_n = devm_gpiod_get_optional(dev, "powerdown", GPIOD_OUT_LOW);
++	/* Default to shutdown so a shared line stays up while any amp is on. */
++	wsa881x->sd_n = devm_gpiod_get_optional(dev, "powerdown", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(wsa881x->sd_n))
+ 		return dev_err_probe(dev, PTR_ERR(wsa881x->sd_n),
+ 				     "Shutdown Control GPIO not found\n");
++	gpiod_set_value_cansleep(wsa881x->sd_n, 0);
+ 
+ 	dev_set_drvdata(dev, wsa881x);
+ 	wsa881x->slave = pdev;
+@@ -1151,10 +1154,16 @@
+ 
+ static int wsa881x_runtime_suspend(struct device *dev)
+ {
++	struct sdw_slave *slave = dev_to_sdw_dev(dev);
+ 	struct regmap *regmap = dev_get_regmap(dev, NULL);
+ 	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
++	enum sdw_slave_status status;
++
++	gpiod_set_value_cansleep(wsa881x->sd_n, 1);
+ 
+-	gpiod_direction_output(wsa881x->sd_n, 1);
++	/* Let the bus see the amp drop off before the manager prepares clock stop. */
++	read_poll_timeout(READ_ONCE, status, status == SDW_SLAVE_UNATTACHED,
++			  1000, 20000, false, slave->status);
+ 
+ 	regcache_cache_only(regmap, true);
+ 	regcache_mark_dirty(regmap);
+@@ -1169,11 +1178,11 @@
+ 	struct wsa881x_priv *wsa881x = dev_get_drvdata(dev);
+ 	int ret;
+ 
+-	gpiod_direction_output(wsa881x->sd_n, 0);
++	gpiod_set_value_cansleep(wsa881x->sd_n, 0);
+ 
+ 	ret = sdw_slave_wait_for_init(slave, WSA881X_PROBE_TIMEOUT);
+ 	if (ret) {
+-		gpiod_direction_output(wsa881x->sd_n, 1);
++		gpiod_set_value_cansleep(wsa881x->sd_n, 1);
+ 		return ret;
+ 	}
+ 

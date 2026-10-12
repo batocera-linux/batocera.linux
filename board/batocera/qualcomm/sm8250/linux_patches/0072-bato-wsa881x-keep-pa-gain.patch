@@ -1,0 +1,66 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] ASoC: codecs: wsa881x: keep the PA gain across power up
+
+The PRE_PMU register sequence writes SPKR_DRV_GAIN, resetting the PA to
+12dB on every power up and discarding the PA Volume setting. Remember the
+requested gain and step back to it in POST_PMU.
+
+---
+--- a/sound/soc/codecs/wsa881x.c
++++ b/sound/soc/codecs/wsa881x.c
+@@ -672,6 +672,7 @@
+ 	struct sdw_stream_runtime *sruntime;
+ 	struct sdw_port_config port_config[WSA881X_MAX_SWR_PORTS];
+ 	struct gpio_desc *sd_n;
++	int pa_gain;
+ 	int active_ports;
+ 	bool hw_init;
+ 	bool port_prepared[WSA881X_MAX_SWR_PORTS];
+@@ -740,6 +741,7 @@
+ 			       struct snd_ctl_elem_value *ucontrol)
+ {
+ 	struct snd_soc_component *comp = snd_kcontrol_chip(kc);
++	struct wsa881x_priv *wsa881x = snd_soc_component_get_drvdata(comp);
+ 	struct soc_mixer_control *mc =
+ 			(struct soc_mixer_control *)kc->private_value;
+ 	int max = mc->max;
+@@ -751,6 +753,7 @@
+ 		return ret;
+ 
+ 	max_gain = (max - ucontrol->value.integer.value[0]) & mask;
++	wsa881x->pa_gain = max_gain;
+ 	/*
+ 	 * Gain has to set incrementally in 4 steps
+ 	 * as per HW sequence
+@@ -915,6 +918,7 @@
+ {
+ 	struct snd_soc_component *comp = snd_soc_dapm_to_component(w->dapm);
+ 	struct wsa881x_priv *wsa881x = snd_soc_component_get_drvdata(comp);
++	int val;
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+@@ -929,6 +933,15 @@
+ 					      WSA881X_PA_GAIN_SEL_REG);
+ 		break;
+ 	case SND_SOC_DAPM_POST_PMU:
++		/* PRE_PMU leaves the PA at 12dB, step back to the requested gain. */
++		val = wsa881x->pa_gain > G_12DB ? wsa881x->pa_gain : G_12DB - 1;
++		for (; val >= wsa881x->pa_gain; val--) {
++			usleep_range(1000, 1010);
++			snd_soc_component_update_bits(comp, WSA881X_SPKR_DRV_GAIN,
++						      WSA881X_SPKR_PAG_GAIN_MASK,
++						      val << 4);
++		}
++
+ 		if (wsa881x->port_prepared[WSA881X_PORT_VISENSE]) {
+ 			wsa881x_visense_txfe_ctrl(comp, true);
+ 			snd_soc_component_update_bits(comp,
+@@ -1124,6 +1137,7 @@
+ 	gpiod_set_value_cansleep(wsa881x->sd_n, 0);
+ 
+ 	dev_set_drvdata(dev, wsa881x);
++	wsa881x->pa_gain = G_12DB;
+ 	wsa881x->slave = pdev;
+ 	wsa881x->dev = dev;
+ 	wsa881x->sconfig.ch_count = 1;

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# the daemon only resends on a colour change, so stop it (LEDs off) and restart it across sleep
+case "$1" in
+    suspend|hibernate)
+        if [ -f /var/run/led-handheld.pid ]; then
+            /etc/init.d/S21led-handheld stop >/dev/null
+            touch /var/run/led-handheld-sleep
+        fi
+        ;;
+    resume|thaw)
+        if [ -f /var/run/led-handheld-sleep ]; then
+            rm -f /var/run/led-handheld-sleep
+            /etc/init.d/S21led-handheld start >/dev/null
+        fi
+        ;;
+esac
+
+exit 0
