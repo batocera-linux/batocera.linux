@@ -29,21 +29,21 @@ custom_features:
     prompt: REGION
     description: Choose the arcade machine console region. This may be required to start the game.
     choices:
-      Japan (Default): JP
+      Japan: JP
       United States: US
-      Export: EX
+      Export (Default): EX
   linuxloader_aspect:
     prompt: ASPECT RATIO
     description: Set to maintain the aspect ratio (4:3) in games like Sega Race TV and Primeval Hunt.
     choices:
-      Off (Default): 0
-      'On': 1
+      'Off': 0
+      On (Default): 1
   linuxloader_limit:
     prompt: FPS LIMITER
     description: Enable this to limit the FPS in games that are uncapped, such as OutRun 2.
     choices:
-      Off (Default): 0
-      'On': 1
+      'Off': 0
+      On (Default): 1
   linuxloader_fps:
     prompt: FPS TARGET
     description: Set the target FPS (only functions if FPS LIMITER is enabled).
@@ -62,7 +62,7 @@ custom_features:
       EVDEV (Default): 2
   linuxloader_ffb:
     prompt: FORCE FEEDBACK
-    description: Enable force feedback (rumble) for supported games.
+    description: Emulate the drive board for force feedback in Hummer. OutRun 2, R-Tuned and Sega Race TV always use it.
     choices:
       'Off': 0
       On (Default): 1
@@ -70,13 +70,6 @@ custom_features:
     group: GAME OPTIONS
     prompt: HUMMER FLICKER FIX
     description: Set to 'On' if you experience flickering in Hummer.
-    choices:
-      Off (Default): 0
-      'On': 1
-  linuxloader_lens:
-    group: GAME OPTIONS
-    prompt: OUTRUN LENS GLARE
-    description: Enable lens glare effects in OutRun 2.
     choices:
       Off (Default): 0
       'On': 1
@@ -121,8 +114,8 @@ custom_features:
     prompt: NETWORK PATCHES
     description: Required for multi-cabinet networking with specific IP address.
     choices:
-      Off (Default): 0
-      'On': 1
+      'Off': 0
+      On (Default): 1
   linuxloader_rambo_switch:
     group: GAME OPTIONS
     prompt: RAMBO GUNS SWITCH
