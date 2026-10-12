@@ -17,12 +17,15 @@ class Pcsx2(GLCoreForceMixin, Core):
         # Fast CD/DVD Access
         core_options.set_from_config('pcsx2_fastcdvd', 'lr_pcsx2_fast_cdvd', default='disabled')
         # Enable Cheats
-        core_options.set_from_config('pcsx2_enable_cheats', 'lr_pcsx2_fast_cheats', default='disabled')
+        core_options.set_from_config('pcsx2_enable_cheats', 'lr_pcsx2_cheats', default='disabled')
         # Language Unlock
         core_options.set_from_config('pcsx2_hint_language_unlock', 'lr_pcsx2_language_unlock', default='disabled')
-        # Graphics API
-        if self.config.get('gfxbackend') == 'vulkan':
-            core_options.set('pcsx2_renderer', 'Vulkan')
+        # Renderer
+        renderer = self.config.get('lr_pcsx2_renderer')
+        if renderer == 'Software (SW)':
+            core_options.set('pcsx2_renderer', 'Software (SW)')
+        elif self.config.get('gfxbackend') == 'vulkan':
+            core_options.set('pcsx2_renderer', 'paraLLEl-GS' if renderer == 'paraLLEl-GS' else 'Vulkan')
         else:
             core_options.set('pcsx2_renderer', 'OpenGL')
         # Render resolution

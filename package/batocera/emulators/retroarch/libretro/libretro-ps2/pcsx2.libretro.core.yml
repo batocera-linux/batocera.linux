@@ -32,6 +32,14 @@ custom_features:
     choices:
       Disabled: disabled
       Enabled: enabled
+  lr_pcsx2_renderer:
+    submenu: GRAPHICS
+    prompt: RENDERER
+    description: paraLLEl-GS is the accurate renderer and needs the Vulkan graphics API. Software runs on the CPU.
+    choices:
+      Hardware (Default): hardware
+      paraLLEl-GS: paraLLEl-GS
+      Software: Software (SW)
   lr_pcsx2_resolution:
     submenu: GRAPHICS
     prompt: RENDERING RESOLUTION
@@ -43,7 +51,7 @@ custom_features:
       4x Native (~1440p/2K): 4x Native (~1440p/2K)
       5x Native (~1800p/3K): 5x Native (~1800p/3K)
       6x Native (~2160p/4K): 6x Native (~2160p/4K)
-      7x Native (~2530p): 7x Native (~2530p)
+      7x Native (~2520p): 7x Native (~2520p)
       8x Native (~2880p/5K): 8x Native (~2880p/5K)
       9x Native (~3240p): 9x Native (~3240p)
       10x Native (~3600p/6K): 10x Native (~3600p/6K)
@@ -67,7 +75,7 @@ custom_features:
     prompt: TRILINEAR FILTERING
     description: Control the texture's trilinear filtering of the emulation.
     choices:
-      'OFF': false
+      'OFF': disabled
       Trilinear (PS2): Trilinear (PS2)
       Trilinear (Forced): Trilinear (Forced)
   lr_pcsx2_anisotropic:
@@ -85,7 +93,7 @@ custom_features:
     prompt: DITHERING
     description: Reduces banding between colors and improves the preceived color depth.
     choices:
-      'OFF': false
+      'OFF': disabled
       Scaled: Scaled
       Unscaled: Unscaled
       Force 32bit: Force 32bit
