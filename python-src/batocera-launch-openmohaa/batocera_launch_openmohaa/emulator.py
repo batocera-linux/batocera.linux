@@ -23,6 +23,7 @@ _MODEL_DETAIL: Final[dict[str, tuple[str, str, str]]] = {
     '2': ('0.45', '0.35', '0.45'),
     '3': ('0.55', '0.5', '0.55'),
     '4': ('0.9', '0.9', '0.9'),
+    '5': ('1.0', '1.0', '1.0'),
 }
 
 _EFFECTS_DETAIL: Final[dict[str, tuple[str, str]]] = {
