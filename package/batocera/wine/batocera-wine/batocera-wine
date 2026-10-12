@@ -185,7 +185,6 @@ waitWineServer() {
 wine_options() {
     WINEPOINT=$1
     NTSYNC="$(get_setting ntsync "${SYSTEM}" "${ROMGAMENAME}")"
-    PBA="$(get_setting pba "${SYSTEM}" "${ROMGAMENAME}")"
     FSR="$(get_setting fsr "${SYSTEM}" "${ROMGAMENAME}")"
     FPS_LIMIT="$(get_setting fps_limit "${SYSTEM}" "${ROMGAMENAME}")"
     ALLOW_XIM="$(get_setting allow_xim "${SYSTEM}" "${ROMGAMENAME}")"
@@ -197,7 +196,6 @@ wine_options() {
     ENABLE_VKREFLEX="$(get_setting enable_vkreflex "${SYSTEM}" "${ROMGAMENAME}")"
     ENABLE_HIDRAW="$(get_setting enable_hidraw "${SYSTEM}" "${ROMGAMENAME}")"
     DXVK_RESET_CACHE="$(get_setting dxvk_reset_cache "${SYSTEM}" "${ROMGAMENAME}")"
-    WINE_NTFS="$(get_setting wine_ntfs "${SYSTEM}" "${ROMGAMENAME}")"
     WINE_DEBUG="$(get_setting wine_debug "${SYSTEM}" "${ROMGAMENAME}")"
     KEYBOARD="$(/usr/bin/batocera-settings-get system.kblayout)"
     VIRTUAL_DESKTOP="$(get_setting virtual_desktop "${SYSTEM}" "${ROMGAMENAME}")"
@@ -260,9 +258,6 @@ wine_options() {
         fi
     fi
 
-    export PBA_ENABLE=0
-    [[ "${PBA}" = 1 ]] && PBA_ENABLE=1
-
     export DXVK_FRAME_RATE=0
     [[ "${FPS_LIMIT}" = 1 ]] && DXVK_FRAME_RATE=60
 
@@ -300,8 +295,8 @@ wine_options() {
     export WINE_DISABLE_WRITE_WATCH=0
     [[ "${NO_WRITE_WATCH}" = 1 ]] && WINE_DISABLE_WRITE_WATCH=1
 
-    export WINE_LARGE_ADDRESS_AWARE=0
-    [[ "${FORCE_LARGE_ADRESS}" = 1 ]] && WINE_LARGE_ADDRESS_AWARE=1
+    # unset leaves large address aware on
+    [[ "${FORCE_LARGE_ADRESS}" = 0 ]] && export WINE_LARGE_ADDRESS_AWARE=0
 
     export WINE_HEAP_DELAY_FREE=0
     [[ "${HEAP_DELAY_FREE}" = 1 ]] && WINE_HEAP_DELAY_FREE=1
@@ -323,9 +318,6 @@ wine_options() {
 
     export DXVK_STATE_CACHE=1
     [[ "${DXVK_RESET_CACHE}" = 1 ]] && DXVK_STATE_CACHE=reset
-
-    export NTFS_MODE=0
-    [[ "${WINE_NTFS}" = 1 ]] && NTFS_MODE=1
 
     export STAGING_SHARED_MEMORY=1
     export ULIMIT_SIZE=1048576

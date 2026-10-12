@@ -61,13 +61,6 @@ custom_features:
     choices:
       "Off": 0
       On (Default): 1
-  pba:
-    group: ADVANCED OPTIONS
-    prompt: PBA
-    description: Vastly improves the speed of buffer maps.
-    choices:
-      "Off": 0
-      "On": 1
   fsr:
     group: ADVANCED OPTIONS
     prompt: FIDELITY FX SUPER RESOLUTION
@@ -109,7 +102,7 @@ custom_features:
     description: Force WINE to run games with large addresses.
     choices:
       "Off": 0
-      "On": 1
+      On (Default): 1
   heap_delay_free:
     group: ADVANCED OPTIONS
     prompt: HEAP DELAY FREE
@@ -152,13 +145,6 @@ custom_features:
     choices:
       Native: native
       XWayland (Default): xwayland
-  wine_ntfs:
-    group: ADVANCED OPTIONS
-    prompt: ENABLE NTFS MODE
-    description: Enable this mode if you have issue for run your game on NTFS storage (by default is better to use LinuxFS).
-    choices:
-      "Off": 0
-      "On": 1
   wine_debug:
     group: ADVANCED OPTIONS
     prompt: ENABLE DEBUG
