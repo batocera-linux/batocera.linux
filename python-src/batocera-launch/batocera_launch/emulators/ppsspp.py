@@ -261,6 +261,9 @@ class PPSSPP(Emulator):
         # Resolution
         ini_config.set('Graphics', 'InternalResolution', self.config.get_str('internal_resolution', '1'))
 
+        # MSAA, Vulkan only
+        ini_config.set('Graphics', 'MultiSampleLevel', self.config.get_str('msaa', '0'))
+
         # Software rendering (always false)
         ini_config.set('Graphics', 'SoftwareRenderer', 'False')
 
@@ -415,7 +418,9 @@ class PPSSPP(Emulator):
 
             # proAdhocServer is always controlled by the ADHOC SERVER choice
             adhoc_server = self.config.get_str('adhoc_server', '')
-            if adhoc_server and adhoc_server != '__manual__':
+            if not adhoc_server:
+                ini_config.remove_option('Network', 'proAdhocServer')
+            elif adhoc_server != '__manual__':
                 ini_config.set('Network', 'proAdhocServer', adhoc_server)
 
             # Common settings

@@ -29,10 +29,20 @@ custom_features:
   vsync:
     submenu: RENDERING
     prompt: VSYNC
-    description: Enable for more fluidity, disable if screen tearing.
+    description: Prevents screen tearing. Disable if it costs too much performance.
     choices:
-      Disable: 0
+      Disable (Default): 0
       Enable: 1
+  msaa:
+    submenu: RENDERING
+    prompt: ANTI-ALIASING (MSAA)
+    description: Smooths jagged edges. Vulkan only, unsupported levels fall back to off.
+    choices:
+      'Off': 0
+      2x: 1
+      4x: 2
+      8x: 3
+      16x: 4
   frameskip:
     submenu: FRAMESKIP CONTROL
     prompt: FRAME SKIPPING
@@ -188,7 +198,7 @@ custom_features:
   lan_adhoc_mode:
     submenu: NETWORKING
     prompt: LAN ADHOC MODE
-    description: "Local LAN multiplayer without internet. Host: this machine runs the Ad-Hoc server. Client: connects to the host on the same network."
+    description: "Local LAN multiplayer without internet. Host: this machine runs the Ad-Hoc server. Other machines set ADHOC SERVER to Manual and enter the host IP in PPSSPP."
     choices:
       'Off': "off"
       'Host (run local Ad-Hoc server)': "host"
