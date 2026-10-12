@@ -32,7 +32,8 @@ class Atari800(Core):
             core_options.set_from_config('atari800_sioaccel', default='enabled')
 
             # Hi-Res Artifacting
-            core_options.set_from_config('atari800_artifacting', default='disabled')
+            legacy = 'blue/brown 1' if self.config.get('atari800_artifacting') == 'enabled' else 'none'
+            core_options.set_from_config('atari800_artifacting_mode', default=legacy)
 
             # Internal resolution
             core_options.set_from_config('atari800_resolution')  # Default : 336x240
@@ -45,9 +46,6 @@ class Atari800(Core):
         else:
             # Select Atari 5200
             core_options.set('atari800_system', '5200')
-
-            # Autodetect A5200 CartType (Off/On)
-            core_options.set('atari800_CartType', 'enabled')
 
             # Joy Hack (for robotron)
             core_options.set_from_config('atari800_opt2', default='disabled')
