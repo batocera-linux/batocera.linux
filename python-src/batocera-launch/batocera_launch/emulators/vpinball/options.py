@@ -27,6 +27,10 @@ def configure_options(settings: CaseSensitiveConfigParser, config: SystemConfig)
     # vsync
     settings.set('Player', 'SyncMode', config.get_str('vpinball_vsync', '2'))
 
+    # anti-aliasing
+    settings.set('Player', 'MSAASamples', config.get_str('vpinball_msaa', ''))
+    settings.set('Player', 'AAFactor', config.get_str('vpinball_supersampling', ''))
+
     # presets
     if (presets := config.get_str('vpinball_presets')) != 'manual':
         match presets:

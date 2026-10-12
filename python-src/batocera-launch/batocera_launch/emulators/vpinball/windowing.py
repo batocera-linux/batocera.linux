@@ -32,8 +32,6 @@ def configure_ini(
 
     playfield_screen, backglass_screen = get_playfield_and_backglass_screens(config, screens)
 
-    dmdsize = get_dmd_window_size(config)
-
     # Playfield
     if config.get_str('vpinball_playfield') != 'manual':
         configure_playfield(settings, screens, playfield_screen)
@@ -48,7 +46,7 @@ def configure_ini(
 
     # backglass
     if backglass_config != 'manual':
-        configure_backglass(settings, backglass_config, screens, backglass_screen, r_screen, resolution, dmdsize)
+        configure_backglass(settings, backglass_config, screens, backglass_screen, r_screen, resolution)
 
 
 def get_backglass_configuration(config: SystemConfig, screens: list[ScreenInfo]) -> str:
@@ -89,18 +87,6 @@ def configure_playfield(settings: CaseSensitiveConfigParser, screens: list[Scree
     settings.set('Player', 'PlayfieldHeight', str(screens[playfield_screen].resolution.height))
 
 
-def get_dmd_window_size(config: SystemConfig) -> list[int]:
-    if 'vpinball_dmdsize' not in config:
-        return [1024, 256]  # like 128x32
-    if config.get_str('vpinball_dmdsize') == '128x16':
-        return [1024, 128]
-    if config.get_str('vpinball_dmdsize') == '192x64':
-        return [1024, 341]
-    if config.get_str('vpinball_dmdsize') == '256x64':
-        return [1024, 128]
-    return [1024, 256]  # like 128x32
-
-
 def configure_backglass(
     settings: CaseSensitiveConfigParser,
     backglass_config: str,
@@ -108,7 +94,6 @@ def configure_backglass(
     backglass_screen: int,
     r_screen: float,
     resolution: Resolution,
-    dmdsize: list[int],  # kept for parity with the old generator; unused there too
 ) -> None:
     r_window = 4 / 3  # Usual Ratio for this window
     small, medium, large = 20, 25, 30

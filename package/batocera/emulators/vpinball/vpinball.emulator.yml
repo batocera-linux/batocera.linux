@@ -32,16 +32,18 @@ custom_features:
     description: Affects just the visual effect of nudging.
     choices:
       0 (No Visual Effect): "0"
-      1%: "0.01"
-      2%: "0.02"
-      3%: "0.03"
-      4%: "0.04"
+      25%: "0.25"
+      50%: "0.5"
+      100% (Default): "1.0"
+      150%: "1.5"
+      200%: "2.0"
   vpinball_maxframerate:
     group: DISPLAY
     prompt: MAXIMUM FRAMERATE
     description: Framerate limiter to reduce CPU utilisation.
     choices:
-      0 (Defaults Unlimited): "0"
+      Display Refresh Rate (Default): "-1"
+      Unlimited: "0"
       "50": "50"
       "60": "60"
       "120": "120"
@@ -54,6 +56,27 @@ custom_features:
       None: "0"
       Vertical Sync: "1"
       Adaptive Sync (Default): "2"
+      Frame Pacing: "3"
+  vpinball_msaa:
+    group: DISPLAY
+    prompt: MSAA
+    description: Multisample anti-aliasing. Reduces geometry aliasing at the cost of performance and GPU memory.
+    choices:
+      "Off (Default)": "0"
+      4x: "1"
+      6x: "2"
+      8x: "3"
+  vpinball_supersampling:
+    group: DISPLAY
+    prompt: SUPERSAMPLING
+    description: Renders at a higher or lower resolution than the display. Higher values look better but cost a lot of performance.
+    choices:
+      50%: "0.5"
+      75%: "0.75"
+      100% (Default): "1.0"
+      125%: "1.25"
+      150%: "1.5"
+      200%: "2.0"
   vpinball_presets:
     group: DISPLAY
     prompt: PERFORMANCE PRESETS
@@ -83,15 +106,6 @@ custom_features:
       On screen 2 if available: screen2
       Disabled: disabled
       Manual: manual
-  vpinball_dmdsize:
-    group: WINDOWS POSITIONS
-    prompt: DMD SIZE
-    description: DMD window ratio
-    choices:
-      128x16: 128x16
-      128x32: 128x32
-      192x64: 192x64
-      256x64: 256x64
   vpinball_inverseplayfieldandbackglass:
     group: WINDOWS POSITIONS
     prompt: INVERSE PLAYFIELD AND B2S
@@ -102,10 +116,10 @@ custom_features:
   vpinball_playfieldmode:
     group: WINDOWS POSITIONS
     prompt: PLAYFIELD MODE
-    description: FULLSCREEN gives you a top-down view on the playfield. For cabinet use or multi-window on desktop.
+    description: CABINET gives you a top-down view on the playfield. For cabinet use or multi-window on desktop.
     choices:
       DESKTOP: 0
-      FULLSCREEN: 1
+      CABINET: 1
       FULL SINGLE SCREEN: 2
   vpinball_customphysicalsetup:
     group: DISPLAY PHYSICAL SETUP
@@ -129,19 +143,19 @@ custom_features:
     prompt: SCREEN INCLINATION
     description: Screen inclination (degree)
     preset: slider
-    preset_parameters: 0 90 0.5 0
+    preset_parameters: -30 30 0.5 0
   vpinball_screenplayery:
     group: DISPLAY PHYSICAL SETUP
     prompt: SCREEN PLAYER Y
     description: Player distance from lower screen edge (cm)
     preset: slider
-    preset_parameters: -30 50 0.5 0
+    preset_parameters: -70 30 0.5 -10
   vpinball_screenplayerz:
     group: DISPLAY PHYSICAL SETUP
     prompt: SCREEN PLAYER Z
     description: Player's eyes distance from lower screen edge (cm)
     preset: slider
-    preset_parameters: 15 120 0.5 70
+    preset_parameters: 30 100 0.5 70
   vpinball_musicvolume:
     group: AUDIO
     prompt: MUSIC VOLUME
