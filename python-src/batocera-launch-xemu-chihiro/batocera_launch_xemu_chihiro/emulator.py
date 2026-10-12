@@ -78,6 +78,9 @@ class XemuChihiro(Emulator):
             return None
         return next((pad for pad in self.controllers[:4] if pad.device_path in self.wheels), None)
 
+    def get_sdl_game_controller_config(self) -> str:
+        return '\n'.join(pad.generate_sdl_game_db_line() for pad in self.controllers if pad is not self.wheel)
+
     async def configure(self) -> Command:
         config_file = self.config_dir / 'xemu.toml'
 
