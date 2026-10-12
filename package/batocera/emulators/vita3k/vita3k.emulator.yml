@@ -95,13 +95,12 @@ custom_features:
     preset: switchauto
   vita3k_mapping:
     prompt: MEMORY MAPPING
-    description: Memory mapping improved VUlkna performance. Reduces memory usage and fixes many graphical issues. However, it may be unstable on some GPUs.
+    description: Memory mapping improves Vulkan performance. Reduces memory usage and fixes many graphical issues. However, it may be unstable on some GPUs.
     choices:
       Disabled:         disabled
-      Double Buffering: double-buffer
+      Double Buffering (Default): double-buffer
       External Host:    external-host
       Page Table:       page-table
-      Native Buffer:    native-buffer
   vita3k_system_language:
     prompt: SYSTEM LANGUAGE
     description: Set the system language reported to applications.
