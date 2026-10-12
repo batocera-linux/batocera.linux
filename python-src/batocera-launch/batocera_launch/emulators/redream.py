@@ -120,6 +120,10 @@ class Redream(Emulator):
                 written_guids.add(controller.guid)
                 lines.append(full_profile)
 
+        renderer = self.config.get_str('redreamRender', 'gl_hle_perstrip')
+        if not renderer.startswith(('gl_', 'vk_')):
+            renderer = f'gl_{renderer}'
+
         # change settings as per users options
         # [video]
         lines.extend(
@@ -132,7 +136,7 @@ class Redream(Emulator):
                 f'aspect={self.config.get_str("redreamRatio", "4:3")}',
                 f'frameskip={self.config.get_str("redreamFrameSkip", "0")}',
                 f'vsync={self.config.get_str("redreamVsync", "0")}',
-                f'renderer={self.config.get_str("redreamRender", "hle_perstrip")}',
+                f'renderer={renderer}',
             ]
         )
         # [system]

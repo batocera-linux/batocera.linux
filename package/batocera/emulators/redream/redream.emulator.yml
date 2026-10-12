@@ -45,9 +45,9 @@ custom_features:
     group: ADVANCED OPTIONS
     prompt: RENDER MODE
     choices:
-      HLE (per-strip): hle_perstrip
-      HLE (per-pixel): hle_perpixel
-      LLE: lle
+      HLE (per-strip) (Default): gl_hle_perstrip
+      HLE (per-pixel): gl_hle_perpixel
+      LLE: gl_lle
   redreamRegion:
     prompt: REGION
     description: Choose the Dreamcast console region.
