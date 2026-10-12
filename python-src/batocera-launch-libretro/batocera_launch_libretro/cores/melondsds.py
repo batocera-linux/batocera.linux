@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class MelonDSDS(AssociatedMouseMixin, Core):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # System Settings
-        core_options.set_from_config('melonds_console_mode', 'melondsds_console_mode', default='DS')
+        core_options.set_from_config('melonds_console_mode', 'melondsds_console_mode', default='ds')
 
         # Video Settings
         core_options.set_from_config('melonds_render_mode', 'melondsds_render_mode', default='software')
@@ -22,7 +22,7 @@ class MelonDSDS(AssociatedMouseMixin, Core):
         core_options.set_from_config('melonds_opengl_filtering', 'melondsds_filtering', default='nearest')
 
         # Screen Settings
-        core_options.set_from_config('melonds_show_cursor', 'melondsds_cursor', default='nearest')
+        core_options.set_from_config('melonds_show_cursor', 'melondsds_cursor', default='timeout')
         core_options.set_from_config('melonds_cursor_timeout', 'melondsds_cursor_timeout', default='3')
         core_options.set_from_config('melonds_touch_mode', 'melondsds_touchmode', default='auto')
         # set 1 screen for now top/botton

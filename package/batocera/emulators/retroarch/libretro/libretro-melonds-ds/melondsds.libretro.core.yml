@@ -5,10 +5,10 @@ shared_features:
 custom_features:
   melondsds_console_mode:
     prompt: NDS VERSION
-    decription: Choose the NDS handheld version
+    description: Choose the NDS handheld version
     choices:
-      DS: DS
-      DSi (Experiemental): DSi
+      DS: ds
+      DSi (Experimental): dsi
   melondsds_render_mode:
     submenu: VIDEO SETTINGS
     prompt: RENDERER MODE
@@ -48,7 +48,7 @@ custom_features:
     prompt: CURSOR MODE
     description: Determines how the cursor should apprear on the botton screen.
     choices:
-      Never: never
+      Never: disabled
       While Touching: touching
       Until Timeout: timeout
       Always: always
@@ -72,7 +72,7 @@ custom_features:
     description: Determine how the console's touch screen in emulated.
     choices:
       Joystick: joystick
-      Pointer: pointer
+      Pointer: touch
   melondsds_dns:
     submenu: FIRMWARE SETTINGS
     prompt: DNS OVERRIDE
@@ -90,7 +90,7 @@ custom_features:
     choices:
       Use Host: auto
       English: en
-      Japanese: jp
+      Japanese: ja
       French: fr
       German: de
       Italian: it
