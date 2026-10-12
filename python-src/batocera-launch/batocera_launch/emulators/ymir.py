@@ -239,7 +239,7 @@ class Ymir(Emulator):
 
     @cached_property
     def in_game_ratio(self) -> float:
-        if self.config.get_float('ymir_aspect') == 1.3333333333333333:
+        if self.config.get_float('ymir_aspect', 4 / 3) == 4 / 3:
             return 4 / 3
         return 16 / 9
 
@@ -385,7 +385,7 @@ class Ymir(Emulator):
         # Options
         video_config.update(
             {
-                'ForcedAspect': self.config.get_float('ymir_aspect', 1.5),
+                'ForcedAspect': self.config.get_float('ymir_aspect', 4 / 3),
                 'Rotation': self.config.get_str('ymir_rotation', 'Normal'),
             }
         )
