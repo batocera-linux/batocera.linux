@@ -10,7 +10,7 @@ custom_features:
   batterymode:
     group: POWER OPTIONS
     prompt: BATTERY MODE
-    description: Adjust the CPU power profile whist on battery. Overwrites previous Power Mode(s).
+    description: CPU power profile whilst on battery, replacing the global Power Mode. A system or game Power Mode still takes priority.
     choices:
       High Performance: highperformance
       Balanced: balanced
@@ -186,7 +186,7 @@ custom_features:
   video_frame_delay_auto:
     submenu: LATENCY REDUCTION
     prompt: AUTOMATIC FRAME DELAY
-    description: Automatically decrease frame delay temporarily to prevent frame drops. Can introduce stuttering.
+    description: Adjust frame delay on the fly, lowering it when frames would drop. With frame delay at 0, it targets 3/4 of the frame time.
     choices:
       "On": 1
       "Off": 0
