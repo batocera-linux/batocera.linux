@@ -154,7 +154,7 @@ class Fsuae(Emulator):
             f'--kickstarts_dir={FSUAE_BIOS_DIR!s}',
             f'--save_states_dir={FSUAE_SAVES / self.core / _file_prefix(self.rom)}',
             '--zoom=auto',
-            '--bezel=1',
+            f'--bezel={0 if self.config.get_str("bezel") == "none" else 1}',
             '--theme=fsemu-classic',
         ]
 
