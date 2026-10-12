@@ -32,7 +32,9 @@ class Fbneo(RACore):
         core_options.set_from_config('fbneo-cpu-speed-adjust', 'fbneo-cpu-speed-adjust', default='100%')
 
         # Frameskip
-        core_options.set_from_config('fbneo-frameskip', 'fbneo-frameskip', default='0')
+        frameskip = self.config.get('fbneo-frameskip', '0')
+        core_options.set('fbneo-frameskip-type', 'Fixed' if frameskip != '0' else 'disabled')
+        core_options.set('fbneo-fixed-frameskip', frameskip)
 
         # Crosshair (Lightgun)
         core_options.set_from_config(
@@ -54,8 +56,8 @@ class Fbneo(RACore):
                     core_options.set(f'fbneo-dipswitch-{self.rom.id}-BIOS', 'MVS USA ver. 5 (2 slot)')
                 elif mode_switch == 'MVS Japan':
                     core_options.set(f'fbneo-dipswitch-{self.rom.id}-BIOS', 'MVS Japan ver. 5 (? slot)')
-                elif mode_switch == 'AES Asia':
-                    core_options.set(f'fbneo-dipswitch-{self.rom.id}-BIOS', 'AES Asia')
+                elif mode_switch in ('AES World', 'AES Asia'):
+                    core_options.set(f'fbneo-dipswitch-{self.rom.id}-BIOS', 'AES World')
                 elif mode_switch == 'AES Japan':
                     core_options.set(f'fbneo-dipswitch-{self.rom.id}-BIOS', 'AES Japan')
                 else:
