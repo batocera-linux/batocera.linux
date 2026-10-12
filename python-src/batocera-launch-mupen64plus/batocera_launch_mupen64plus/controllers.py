@@ -274,7 +274,7 @@ class Mupen64PlusControllersMixin(Emulator):
             _fill_ini_player(pad, ini_config, pad_config)
 
         # remove section with no player
-        for x in range(len(self.controllers) + 1, 4):
+        for x in range(len(self.controllers) + 1, 5):
             section = f'Input-SDL-Control{x}'
             if ini_config.has_section(section):
                 _clean_player(x, ini_config)
