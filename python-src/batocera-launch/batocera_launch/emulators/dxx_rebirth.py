@@ -55,40 +55,24 @@ class DXXRebirth(Emulator):
         config_file = self.config_dir / 'descent.cfg'
         self.config_dir.mkdir(parents=True, exist_ok=True)
 
-        replacements = {
-            'ResolutionX=': f'ResolutionX={self.resolution.width}',
-            'ResolutionY=': f'ResolutionY={self.resolution.height}',
-            'WindowMode=': 'WindowMode=0',
-            'VSync=': f'VSync={self.config.get_str("rebirth_vsync", "0")}',
-            'TexFilt=': f'TexFilt={self.config.get_str("rebirth_filtering", "0")}',
-            'TexAnisotropy=': f'TexAnisotropy={self.config.get_str("rebirth_anisotropy", "0")}',
-            'Multisample=': f'Multisample={self.config.get_str("rebirth_multisample", "0")}',
+        options = {
+            'ResolutionX': str(self.resolution.width),
+            'ResolutionY': str(self.resolution.height),
+            'WindowMode': '0',
+            'VSync': self.config.get_str('rebirth_vsync', '0'),
+            'TexFilt': self.config.get_str('rebirth_filtering', '0'),
+            'TexAnisotropy': self.config.get_str('rebirth_anisotropy', '0'),
+            'Multisample': self.config.get_str('rebirth_multisample', '0'),
         }
 
-        if config_file.is_file():
-            lines = config_file.read_text().splitlines(keepends=True)
-
-            for i, line in enumerate(lines):
-                for prefix, replacement in replacements.items():
-                    if line.startswith(prefix):
-                        lines[i] = f'{replacement}\n'
-                        break
-
-            config_file.write_text(''.join(lines))
-        else:
-            config_file.write_text(
-                '\n'.join(
-                    [
-                        f'ResolutionX={self.resolution.width}',
-                        f'ResolutionY={self.resolution.height}',
-                        'WindowMode=0',
-                        'VSync=0',
-                        'TexFilt=0',
-                        'TexAnisotropy=0',
-                        'Multisample=0',
-                        '',
-                    ]
-                ),
-            )
+        lines = config_file.read_text().splitlines() if config_file.is_file() else []
+        found: set[str] = set()
+        for i, line in enumerate(lines):
+            key = line.split('=', 1)[0]
+            if key in options:
+                lines[i] = f'{key}={options[key]}'
+                found.add(key)
+        lines.extend(f'{key}={value}' for key, value in options.items() if key not in found)
+        config_file.write_text('\n'.join(lines) + '\n')
 
         return Command([self.rom_binary, '-hogdir', self.rom.parent])
