@@ -66,7 +66,7 @@ systems:
         prompt: BLARGG NTSC FILTER
         description: Core-powered video filter.
         choices:
-          'Off': false
+          'Off': disabled
           Composite (color bleeding + artifacts): composite
           SVideo (color bleeding only): svideo
           RGB (crisp image): rgb
@@ -193,7 +193,7 @@ systems:
         prompt: BLARGG NTSC FILTER
         description: Core-powered video filter.
         choices:
-          'Off': false
+          'Off': disabled
           Composite (color bleeding + artifacts): composite
           SVideo (color bleeding only): svideo
           RGB (crisp image): rgb
