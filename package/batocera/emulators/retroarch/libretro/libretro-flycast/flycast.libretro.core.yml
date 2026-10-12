@@ -8,13 +8,6 @@ shared_features:
   - wheel_deadzone
   - wheel_midzone
 custom_features:
-  reicast_synchronous_rendering:
-    group: ADVANCED OPTIONS
-    prompt: SYNCHRONOUS RENDERING
-    description: Can avoid flashing screen issues. Significant performance cost.
-    choices:
-      'Off': disabled
-      'On': enabled
   reicast_internal_resolution:
     prompt: RENDERING RESOLUTION
     description: Enhancement. Increase the rendering resolution. Makes 3D objects clearer.
@@ -91,11 +84,19 @@ custom_features:
     prompt: ANISOTROPIC FILTERING
     description: Improves clarity of distant textures when mip-mapping is enabled.
     choices:
-      'Off': false
+      Off (Default): 'off'
       2x: 2
       4x: 4
       8x: 8
       16x: 16
+  reicast_alpha_sorting:
+    group: ADVANCED OPTIONS
+    prompt: ALPHA SORTING
+    description: How transparent polygons are sorted. Per-pixel is the most accurate and the slowest.
+    choices:
+      Per-Strip (Fast): per-strip (fast, least accurate)
+      Per-Triangle (Default): per-triangle (normal)
+      Per-Pixel (Accurate): per-pixel (accurate)
   reicast_texupscale:
     group: ADVANCED OPTIONS
     prompt: TEXTURE UPSCALING (XBRZ)
@@ -127,7 +128,7 @@ custom_features:
     prompt: CONSOLE REGION
     description: Choose the Dreamcast console region.
     choices:
-      USA: Usa
+      USA: USA
       Europe: Europe
       Japan: Japan
       Default: Default
@@ -142,13 +143,6 @@ custom_features:
       Italian: Italian
       Japanese: Japanese
       Default: Default
-  reicast_force_wince:
-    group: ADVANCED OPTIONS
-    prompt: FORCE WINDOWS CE MODE
-    description: Required for some games.
-    choices:
-      'Off': disabled
-      'On': enabled
   flycast-autowidescreen:
     prompt: AUTO WIDESCREEN
     description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.

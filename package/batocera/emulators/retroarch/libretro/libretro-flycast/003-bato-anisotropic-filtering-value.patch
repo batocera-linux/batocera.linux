@@ -1,0 +1,33 @@
+Read the anisotropic filtering core option as a number instead of the
+index of the chosen value, which made 2x off and capped 16x at 4x.
+
+--- a/core/cfg/option.h
++++ b/core/cfg/option.h
+@@ -468,7 +468,9 @@
+ extern Option<bool> LinearInterpolation;
+ extern Option<bool> VSync;
+ extern Option<int64_t> PixelBufferSize;
++#ifndef LIBRETRO
+ extern Option<int> AnisotropicFiltering;
++#endif
+ extern Option<int> TextureFiltering; // 0: default, 1: force nearest, 2: force linear
+ extern Option<bool> ThreadedRendering;
+ extern Option<bool> DupeFrames;
+--- a/shell/libretro/option.cpp
++++ b/shell/libretro/option.cpp
+@@ -89,7 +89,7 @@
+ Option<bool> LinearInterpolation("", true);
+ Option<bool> VSync("", true);
+ Option<bool> ThreadedRendering(CORE_OPTION_NAME "_threaded_rendering", true);
+-Option<int> AnisotropicFiltering(CORE_OPTION_NAME "_anisotropic_filtering");
++IntOption AnisotropicFiltering(CORE_OPTION_NAME "_anisotropic_filtering");
+ Option<int> TextureFiltering(CORE_OPTION_NAME "_texture_filtering");
+ Option<bool> PowerVR2Filter(CORE_OPTION_NAME "_pvr2_filtering");
+ Option<int64_t> PixelBufferSize("", 512_MB);
+--- a/shell/libretro/option_lr.h
++++ b/shell/libretro/option_lr.h
+@@ -209,3 +209,4 @@
+ extern IntOption MaxFilteredTextureSize;
+ extern IntOption PerPixelLayers;
+ extern IntOption Sh4Clock;
++extern IntOption AnisotropicFiltering;

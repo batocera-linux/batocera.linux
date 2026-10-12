@@ -47,17 +47,11 @@ class Flycast(FlycastVL):
         # force vmu all, to save in saves (otherwise, it saves in game_dir, which is bios)
         core_options.set('reicast_per_content_vmus', 'All VMUs')
 
-        # Synchronous rendering
-        core_options.set_from_config('reicast_synchronous_rendering', default='enabled')
-
         # DSP audio
         core_options.set_from_config('reicast_enable_dsp', 'reicast_dsp', default='disabled')
 
         # Threaded Rendering
         core_options.set('reicast_threaded_rendering', 'enabled')
-
-        # Enable controller force feedback
-        core_options.set('reicast_enable_purupuru', 'enabled')
 
         # Crossbar Colors
         need_crosses = self.emulator.guns_need_crosses
@@ -75,14 +69,13 @@ class Flycast(FlycastVL):
         # Anisotropic Filtering
         core_options.set_from_config('reicast_anisotropic_filtering', default='off')
 
+        core_options.set_from_config('reicast_alpha_sorting', default='per-triangle (normal)')
+
         # Texture Upscaling (xBRZ)
         core_options.set_from_config('reicast_texupscale', default='1')
 
         # Frame Skip
         core_options.set_from_config('reicast_frame_skipping', default='disabled')
-
-        # Force Windows CE Mode
-        core_options.set_from_config('reicast_force_wince', default='disabled')
 
         # Widescreen Cheat
         if (
@@ -101,7 +94,7 @@ class Flycast(FlycastVL):
             self.config.get('reicast_widescreen_hack') == 'enabled'
             and self.config.get('ratio') == '16/9'
             and self.config.get('bezel') == 'none'
-            and self.config.get('reicast_widescreen_cheats') == 'disabled'
+            and self.config.get('reicast_widescreen_cheats') != 'enabled'
         ):
             widescreen_hack = 'enabled'
         else:
