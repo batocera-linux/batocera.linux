@@ -334,8 +334,8 @@ class OpenJazz(Emulator):
         cfg.video_width = int(width_str)
         cfg.video_height = int(height_str)
 
-        # Scaler: 0=None, 1=Bilinear, 2=Scale2x, 3=hqx
-        cfg.scale_method = int(self.config.get_str('jazz_scaler', '0'))
+        # Scaler: 0=None, 1=Bilinear, 2=Scale2x (hqx is unimplemented on SDL2)
+        cfg.scale_method = min(int(self.config.get_str('jazz_scaler', '0')), 2)
 
         # Integer pixel-scale factor (clamped 1-4 by the engine)
         cfg.video_scale = int(self.config.get_str('jazz_video_scale', '1'))
