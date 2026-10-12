@@ -59,13 +59,6 @@ custom_features:
       Composite (color bleeding + artifacts): composite
       SVideo (color bleeding only): svideo
       RGB (crisp image): rgb
-  nestopia_overclock:
-    group: ADVANCED OPTIONS
-    prompt: OVERCLOCK (UNSTABLE)
-    description: Enhancement. Reduces system slowdown. Causes issues in some games.
-    choices:
-      'Off': 1x
-      2x: 2x
   nestopia_select_adapter:
     prompt: 4 PLAYER ADAPTER
     description: Manually activate the adapter for supported games.

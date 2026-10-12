@@ -53,9 +53,6 @@ class Nestopia(Core):
         # NTSC Filter
         core_options.set_from_config('nestopia_blargg_ntsc_filter', default='disabled')
 
-        # CPU Overclock
-        core_options.set_from_config('nestopia_overclock', default='1x')
-
         # 4 Player Adapter
         adapter = self.config.get('nestopia_select_adapter', 'automatic')
         core_options.set('nestopia_select_adapter', 'auto' if adapter == 'automatic' else adapter)
