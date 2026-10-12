@@ -19,11 +19,6 @@ class Mgba(RACore):
         # This works because only '1' is treated as True in get_bool()
         core_options.set_bool_from_config('mgba_force_gbp', 'rumble_gain', default=True, values=('OFF', 'ON'))
 
-        if self.system != 'gba':
-            # GB / GBC: Color Correction
-            color_correction = self.config.get('color_correction', 'False')
-            core_options.set('mgba_color_correction', 'OFF' if color_correction == 'False' else color_correction)
-
         if self.system == 'gba':
             # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
             core_options.set_from_config('mgba_solar_sensor_level', 'solar_sensor_level', default='0')

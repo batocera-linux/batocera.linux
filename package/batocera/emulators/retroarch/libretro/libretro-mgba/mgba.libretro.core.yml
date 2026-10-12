@@ -18,26 +18,10 @@ systems:
     file_extensions:
       add:
         - gb
-    custom_features:
-      color_correction:
-        group: ADVANCED OPTIONS
-        prompt: COLOR CORRECTION
-        description: Simulate LCD color inaccuracy.
-        choices:
-          'Off': false
-          'On': GBA
   - name: gbc
     file_extensions:
       add:
         - gbc
-    custom_features:
-      color_correction:
-        group: ADVANCED OPTIONS
-        prompt: COLOR CORRECTION
-        description: Simulate LCD color inaccuracy.
-        choices:
-          'Off': false
-          'On': GBC
   - name: gba
     file_extensions:
       add:
