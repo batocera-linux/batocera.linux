@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-import json
 import logging
 from contextlib import AbstractAsyncContextManager
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field
 from typing import TYPE_CHECKING, Self
 
-from hotkeygen.dbus.client import Client
+from hotkeygen.dbus.client import HotkeygenClient
 from hotkeygen.paths import DEVICE_NAME
-
-from batocera_common.asyncio import run
 
 if TYPE_CHECKING:
     from types import TracebackType
+
+    from batocera_common.dbus import Bus
 
     from ..config.config import UIMode
     from ..types import HotkeysContext
@@ -23,14 +22,16 @@ _logger = logging.getLogger(__name__)
 
 @dataclass(slots=True)
 class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
+    bus: InitVar[Bus]
     _context: InitVar[HotkeysContext]
     exit_only: bool
     ui_mode: InitVar[UIMode]
 
     context: HotkeysContext = field(init=False)
-    dbus_client: Client = field(init=False, default_factory=Client)
+    dbus_client: HotkeygenClient = field(init=False)
 
-    def __post_init__(self, _context: HotkeysContext, ui_mode: UIMode) -> None:
+    def __post_init__(self, bus: Bus, _context: HotkeysContext, ui_mode: UIMode) -> None:
+        self.dbus_client = HotkeygenClient(bus)
         self.context = deepcopy(_context)
 
         # limit hotkeys
@@ -49,29 +50,9 @@ class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
     async def __aenter__(self) -> Self:
         _logger.debug('hotkeygen: updating context to %s', self.context['name'])
 
-        try:
-            await self.dbus_client.__aenter__()
-        except Exception as e:
-            _logger.warning('hotkeygen: could not connect to dbus (%s), using the cli', e)
-
-        use_cli = not self.dbus_client.connected
-
-        if self.dbus_client.connected:
-            try:
-                await self.dbus_client.set_context(
-                    {'name': self.context['name'], 'keys': self.context['keys']}, not self.exit_only
-                )
-            except Exception as e:
-                _logger.warning('hotkeygen: dbus context update failed (%s), using the cli', e)
-                use_cli = True
-
-        if use_cli:
-            cmd = ['hotkeygen', '--new-context', self.context['name'], json.dumps(self.context['keys'])]
-
-            if self.exit_only:
-                cmd.append('--disable-common')
-
-            await run(*cmd, capture_output=False)
+        await self.dbus_client.set_context(
+            {'name': self.context['name'], 'keys': self.context['keys']}, not self.exit_only
+        )
 
         return self
 
@@ -85,24 +66,7 @@ class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
         # reset hotkeygen context
         _logger.debug('hotkeygen: resetting to default context')
 
-        use_cli = not self.dbus_client.connected
-
-        if self.dbus_client.connected:
-            try:
-                await self.dbus_client.set_default_context()
-            except Exception as e:
-                _logger.warning('hotkeygen: dbus context reset failed (%s), using the cli', e)
-                use_cli = True
-        else:
-            _logger.warning('hotkeygen: using the cli to reset context')
-
-        try:
-            await self.dbus_client.__aexit__(exc_type, exc_value, traceback)
-        except Exception:
-            pass
-
-        if use_cli:
-            await run('hotkeygen', '--default-context', capture_output=False)
+        await self.dbus_client.set_default_context()
 
 
 async def reset_mouse() -> None:

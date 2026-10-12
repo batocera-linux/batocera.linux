@@ -88,8 +88,7 @@ def get_device_mapping(device: evdev.InputDevice[str] | None, debug: bool) -> di
         if debug:
             print(f'using mapping {mapping_path}')
 
-        data = json.loads(mapping_path.read_text())
-        return _load_mapping(data)
+        return _load_mapping(json.loads(mapping_path.read_text()))
 
     data: dict[str, str] = {}
 

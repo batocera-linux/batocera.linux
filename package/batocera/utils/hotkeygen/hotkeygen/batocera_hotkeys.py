@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     import evdev
     import pyudev
 
-    from .dbus.client import Client
+    from .dbus.client import HotkeygenClient
 
 
 class _KeyInfo(TypedDict):
@@ -197,7 +197,7 @@ def _get_config_fancy_name(file: str, /) -> str:
 
 # to avoid listing all systems hotkeys (like almost nobody want to see the steamdeck hotkeys)
 # filter list to existing devices
-async def _do_list(client: Client, /) -> None:
+async def _do_list(client: HotkeygenClient, /) -> None:
     if not sys.stdout.isatty():
         print('<hotkeys>')
 
@@ -226,7 +226,7 @@ def _udev_to_ev_code(code: str, /) -> str:
     return code
 
 
-async def _list_values(client: Client, /) -> None:
+async def _list_values(client: HotkeygenClient, /) -> None:
     _, by_names = await client.get_system_default_mapping_config()
 
     print('<mapping>')
@@ -239,9 +239,12 @@ async def _list_values(client: Client, /) -> None:
 
 
 async def _do_dbus_actions(args: argparse.Namespace, /) -> None:
-    from .dbus.client import Client
+    from batocera_common.dbus import Bus
 
-    async with Client() as client:
+    from .dbus.client import HotkeygenClient
+
+    async with Bus() as bus:
+        client = HotkeygenClient(bus)
         if args.values:
             await _list_values(client)
         elif args.remove:

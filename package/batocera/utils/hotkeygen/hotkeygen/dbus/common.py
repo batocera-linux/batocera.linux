@@ -5,19 +5,17 @@ from typing import Annotated, Final
 from dbus_fast import Variant
 from dbus_fast.annotations import DBusSignature
 
-DBUS_SERVICE: Final = 'org.batocera.Hotkeygen'
+DBUS_BUS_NAME: Final = 'org.batocera.Hotkeygen'
 DBUS_PATH: Final = '/'
 
-CONTEXT_INTERFACE: Final = 'org.batocera.Hotkeygen.Context'
-MOUSE_INTERFACE: Final = 'org.batocera.Hotkeygen.Mouse'
-HOTKEY_INTERFACE: Final = 'org.batocera.Hotkeygen.Hotkey'
-CONFIG_INTERFACE: Final = 'org.batocera.Hotkeygen.Config'
+HOTKEYGEN_INTERFACE: Final = 'org.batocera.Hotkeygen'
 
 type DBusContextType = tuple[str, dict[str, Variant]]
 type DBusDeviceType = tuple[str, str, str, str]  # device_node, name, filename, full_path
 type DBusDeviceMappingType = dict[int, str]
 type DBusDeviceMappingsType = list[tuple[DBusDeviceType, tuple[DBusDeviceMappingType, DBusDeviceMappingType]]]
 
+DBusContext = Annotated[DBusContextType, DBusSignature('(sa{sv})')]
 DBusDetails = Annotated[
     tuple[DBusContextType, DBusDeviceMappingsType], DBusSignature('((sa{sv})a((ssss)(a{ts}a{ts})))')
 ]
