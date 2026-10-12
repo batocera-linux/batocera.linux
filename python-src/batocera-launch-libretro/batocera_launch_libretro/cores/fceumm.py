@@ -56,7 +56,8 @@ class Fceumm(RACore):
         core_options.set('fceumm_overscan_v_bottom', overscan_v)
 
         # Palette Choice
-        core_options.set_from_config('fceumm_palette', default='default')
+        palette = self.config.get('fceumm_palette', 'default')
+        core_options.set('fceumm_palette', 'wii-vc' if palette == 'nintendo-vc' else palette)
 
         # NTSC Filter
         core_options.set_from_config('fceumm_ntsc_filter', default='disabled')
