@@ -146,6 +146,7 @@ try:
         for (fd, _) in ready:
             if fd == target.fd:
                 forward_ff()
+                last_sweep = time.monotonic()
                 continue
             try:
                 wheel_events = list(input.read())
@@ -161,7 +162,7 @@ try:
                                 target.write(event.type, event.code, event.value + mideadzone - mimidzone)
                             else:
                                 target.write(event.type, event.code, event.value - mideadzone + mimidzone)
-                else:
+                elif event.type != ecodes.EV_FF:
                     target.write(event.type, event.code, event.value)
         if has_ff and (now := time.monotonic()) - last_sweep >= SWEEP_INTERVAL:
             last_sweep = now
