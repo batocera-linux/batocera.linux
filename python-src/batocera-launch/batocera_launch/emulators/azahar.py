@@ -307,6 +307,12 @@ class Azahar(Emulator):
         # Texture Filter
         azahar_config.set('Renderer', 'texture_filter', self.config.get_str('azahar_texture_filter', '0'))
         azahar_config.set('Renderer', r'texture_filter\default', 'false')
+        azahar_config.set(
+            'Renderer',
+            'use_disk_shader_cache',
+            self.config.get_bool('azahar_use_disk_shader_cache', True, return_values=('true', 'false')),
+        )
+        azahar_config.set('Renderer', r'use_disk_shader_cache\default', 'false')
 
         ## [AUDIO]
         if not azahar_config.has_section('Audio'):
@@ -322,13 +328,6 @@ class Azahar(Emulator):
         ## [UTILITY]
         if not azahar_config.has_section('Utility'):
             azahar_config.add_section('Utility')
-        # Disk Shader Cache
-        azahar_config.set(
-            'Utility',
-            'use_disk_shader_cache',
-            self.config.get_bool('azahar_use_disk_shader_cache', return_values=('true', 'false')),
-        )
-        azahar_config.set('Utility', r'use_disk_shader_cache\default', 'false')
         # Custom Textures
         match self.config.get_str('azahar_custom_textures'):
             case None | '0':
