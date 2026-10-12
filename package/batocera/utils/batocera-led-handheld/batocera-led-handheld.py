@@ -220,6 +220,7 @@ if len(sys.argv) > 1:
     elif sys.argv[1] in ["retroachievement", "rainbow"]:
         if color_changes_allowed():
             block_color_changes(True)
+            batoled.forced_effect = True
             try:
                 led.rainbow_effect()
             finally:
@@ -227,6 +228,7 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "chroma":
         if color_changes_allowed():
             block_color_changes(True)
+            batoled.forced_effect = True
             try:
                 led.chroma_effect()
             finally:
@@ -234,6 +236,7 @@ if len(sys.argv) > 1:
     elif sys.argv[1] == "pulse":
         if color_changes_allowed():
             block_color_changes(True)
+            batoled.forced_effect = True
             try:
                 led.pulse_effect()
             finally:

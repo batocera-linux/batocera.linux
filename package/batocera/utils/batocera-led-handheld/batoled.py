@@ -30,9 +30,13 @@ DEFAULT_ES_COLOR = '255 0 165'
 
 BLOCK_FILE = '/var/run/led-handheld-block'
 LED_CHANGE_TIME = 120
+# set by a one-shot effect from the command line, which blocks colour changes itself
+forced_effect = False
 
 # Ecosystem Interruption Check
 def check_interrupt(expected_mode):
+    if forced_effect:
+        return False
     # Check if user selected another mode
     if batoconf("led.mode") != expected_mode:
         return True
