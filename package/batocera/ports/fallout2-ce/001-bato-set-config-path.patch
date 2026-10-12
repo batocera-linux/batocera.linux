@@ -1,0 +1,35 @@
+--- a/src/game_config.cc
++++ b/src/game_config.cc
+@@ -149,31 +149,7 @@
+         : DEFAULT_GAME_CONFIG_FILE_NAME;
+ 
+     // Make `fallout2.cfg` file path.
+-    char* executable = argv[0];
+-    char* ch = strrchr(executable, '\\');
+-    if (ch != nullptr) {
+-        *ch = '\0';
+-        if (isMapper) {
+-            snprintf(gGameConfigFilePath,
+-                sizeof(gGameConfigFilePath),
+-                "%s\\%s",
+-                executable,
+-                MAPPER_CONFIG_FILE_NAME);
+-        } else {
+-            snprintf(gGameConfigFilePath,
+-                sizeof(gGameConfigFilePath),
+-                "%s\\%s",
+-                executable,
+-                configFileName);
+-        }
+-        *ch = '\\';
+-    } else {
+-        if (isMapper) {
+-            strcpy(gGameConfigFilePath, MAPPER_CONFIG_FILE_NAME);
+-        } else {
+-            strcpy(gGameConfigFilePath, configFileName);
+-        }
+-    }
++    strcpy(gGameConfigFilePath, "/userdata/system/configs/fallout2/fallout2.cfg");
+ 
+     // Read contents of `fallout2.cfg` into config. The values from the file
+     // will override the defaults above.
