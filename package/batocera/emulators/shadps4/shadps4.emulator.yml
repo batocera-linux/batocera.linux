@@ -27,7 +27,7 @@ custom_features:
     description: Enable Robust Contrast-Adaptive Sharpening.
     choices:
       Disabled: false
-      Enabled: true
+      Enabled (Default): true
   shadps4_hdr:
     submenu: GRAPHICS
     prompt: HDR
@@ -113,8 +113,8 @@ custom_features:
     description: GPU readback mode. Can help fix rendering issues in some games.
     choices:
       Off (Default): 0
-      Sync: 1
-      Async: 2
+      Relaxed: 1
+      Precise: 2
   shadps4_dma:
     submenu: ADVANCED
     prompt: DIRECT MEMORY ACCESS
