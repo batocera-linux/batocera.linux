@@ -69,7 +69,12 @@ class MAME(MAMEControllers, MAMECommand, MAMEBase):
             core_options.set_from_config('same_cdi_cpu_overclock', default='default')
 
             # Video Resolution
-            core_options.set_from_config('same_cdi_altres', default='640x480')
+            altres = self.config.get('same_cdi_altres', '640x480')
+            if altres == '1600x800':
+                altres = '1600x900'
+            core_options.set('same_cdi_altres', altres)
+            # The core ignores altres unless the alternate renderer is on
+            core_options.set('same_cdi_alternate_renderer', 'disabled' if altres == '640x480' else 'enabled')
 
             # Disable controller profiling
             core_options.set('same_cdi_buttons_profiles', 'disabled')
