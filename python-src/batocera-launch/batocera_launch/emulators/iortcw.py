@@ -38,7 +38,7 @@ class IORTCW(Emulator):
     async def configure(self) -> Command:
         self.config_file.parent.mkdir(parents=True, exist_ok=True)
 
-        filtering = self.config.get_str('iortcw_filtering', '2')
+        filtering = self.config.get_str('iortcw_filtering', '0')
         aa = self.config.get_str('iortcw_aa', '0')
 
         options_to_set = {
@@ -71,8 +71,8 @@ class IORTCW(Emulator):
             'seta cl_renderer': self.config.get_str('iortcw_api', 'opengl1'),
             'seta r_swapInterval': self.config.get_bool('iortcw_vsync', return_values=('1', '0')),
             'seta com_maxfps': self.config.get_str('iortcw_fps', '60'),
-            'seta r_ext_texture_filter_anisotropic': '0' if filtering == '2' else '1',
-            'seta r_ext_max_anisotropy': filtering,
+            'seta r_ext_texture_filter_anisotropic': '0' if filtering == '0' else '1',
+            'seta r_ext_max_anisotropy': '2' if filtering == '0' else filtering,
             'seta r_ext_multisample': aa,
             'seta r_ext_framebuffer_multisample': aa,
             'seta com_introplayed': self.config.get_bool('iortcw_skip_video', return_values=('1', '0')),
