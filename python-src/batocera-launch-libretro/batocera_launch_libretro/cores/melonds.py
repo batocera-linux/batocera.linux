@@ -19,7 +19,7 @@ class MelonDS(AssociatedMouseMixin, GLCoreOverrideMixin, RACore):
         core_options.set_from_config('melonds_language', default='English')
 
         # External Firmware
-        core_options.set_from_config('melonds_use_fw_settings', default='disable')
+        core_options.set_from_config('melonds_use_fw_settings', default='disabled')
 
         # Enable threaded rendering
         core_options.set('melonds_threaded_renderer', 'enabled')
