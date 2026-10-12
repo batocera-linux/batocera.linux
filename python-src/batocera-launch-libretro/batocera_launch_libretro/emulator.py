@@ -42,6 +42,14 @@ if TYPE_CHECKING:
 
 _logger = logging.getLogger(__name__)
 
+
+def _slang_only_shader(shader: str) -> bool:
+    def exists(ext: str) -> bool:
+        return any((path / f'{shader}.{ext}').exists() for path in (USER_SHADERS, BATOCERA_SHADERS))
+
+    return exists('slangp') and not exists('glslp')
+
+
 _RETROARCH_BIN: Final = Path('/usr/bin/retroarch')
 _RETROARCH_SHARE_DIR: Final = Path('/usr/share/libretro')
 _RETROARCH_INFO_DIR: Final = _RETROARCH_SHARE_DIR / 'info'
@@ -209,8 +217,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         return self.config_dir / 'overlay.cfg'
 
     async def configure(self) -> Command:
-        gfx_backend = await self.get_gfx_backend()
-
         game_shader: str | None = None
         shader_bezel = False
         video_shader: Path | None = None
@@ -223,6 +229,8 @@ class Libretro(SpecialDecorationsMixin, Emulator):
                 game_shader = self.render_config.get(f'shader-{self.decoration_id}')
             elif 'shader' in self.render_config:
                 game_shader = self.render_config.get('shader')
+
+        gfx_backend = await self.get_gfx_backend(game_shader)
 
         if 'shader' in self.render_config and game_shader is not None:
             shader_filename = f'{game_shader}.{
@@ -346,7 +354,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
         return Command(args, {'XDG_CONFIG_HOME': CONFIGS})
 
-    async def get_gfx_backend(self) -> str:
+    async def get_gfx_backend(self, game_shader: str | None = None) -> str:
         # Start with the selected option
         # Pick glcore or gl based on drivers if not selected
         backend = self.config.get('gfxbackend')
@@ -357,7 +365,11 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             set_manually = False
             gl_info = await get_gl_info()
             # glvendor check first, to avoid a 2nd testing on intel boards
-            if gl_info.vendor in {'nvidia', 'amd'} and gl_info.version >= 3.1:
+            # slang-only shaders (mega bezel) need glcore; intel on wayland skips glxinfo so has no version
+            slang_only = game_shader is not None and _slang_only_shader(game_shader)
+            if (gl_info.version >= 3.1 and (gl_info.vendor in {'nvidia', 'amd'} or slang_only)) or (
+                slang_only and gl_info.vendor == 'intel'
+            ):
                 backend = 'glcore'
             else:
                 backend = 'gl'

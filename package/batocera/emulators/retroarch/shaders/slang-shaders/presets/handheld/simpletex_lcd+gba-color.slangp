@@ -1,0 +1,30 @@
+shaders = 3
+
+shader0 = shaders/color/lut/GBA-LUT.slang
+filter_linear0 = false
+scale_type0 = source
+scale0 = 1.0
+shader1 = shaders/color/gba-color.slang
+filter_linear1 = false
+scale_type1 = source
+scale1 = 1.0
+shader2 = shaders/simpletex_lcd/simpletex_lcd.slang
+filter_linear2 = true
+wrap_mode2 = clamp_to_border
+mipmap_input2 = false
+scale_type2 = viewport
+
+textures = "SamplerLUT1;SamplerLUT2;BACKGROUND"
+SamplerLUT1 = shaders/color/lut/gba-grey1.png
+SamplerLUT1_linear = true
+SamplerLUT2 = shaders/color/lut/gba-grey2.png
+SamplerLUT2_linear = true
+BACKGROUND = shaders/simpletex_lcd/png/2k/textured_paper.png
+BACKGROUND_linear = false
+
+GRID_INTENSITY = "0.65"
+GRID_WIDTH = "0.65"
+GRID_BIAS = "0.6"
+DARKEN_GRID = "0.0"
+DARKEN_COLOUR = "0.05"
+BACKGROUND_INTENSITY = "1.0"
