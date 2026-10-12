@@ -369,7 +369,6 @@ class Pcsx2(Emulator):
                 self.config.get_bool('retroachievements.unofficial', return_values=('true', 'false')),
             )
         # set other settings
-        pcsx2_ini_config.set('Achievements', 'UnofficialTestMode', 'false')
         pcsx2_ini_config.set('Achievements', 'Notifications', 'true')
         pcsx2_ini_config.set('Achievements', 'SoundEffects', 'true')
 
@@ -386,37 +385,24 @@ class Pcsx2(Emulator):
             pcsx2_ini_config.add_section('EmuCore/Speedhacks')
 
         # Renderer
-        # Check Vulkan first to be sure
-        if vulkan_info := await get_vulkan_info():
-            _logger.debug('Vulkan driver is available on the system.')
-            renderer = '-1'
-
-            if gfxbackend := self.config.get('pcsx2_gfxbackend'):
-                if gfxbackend == '12':
-                    _logger.debug('User selected OpenGL')
-                if gfxbackend == '13':
-                    _logger.debug('User selected Software! Man you must have a fast CPU!')
-                elif gfxbackend == '14':
-                    _logger.debug('User selected Vulkan')
-                    if discrete_gpu := vulkan_info.active_discrete_gpu:
-                        _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                        if discrete_gpu.name:
-                            _logger.debug('Using Discrete GPU Name: %s for PCSX2', discrete_gpu.name)
-                            pcsx2_ini_config.set('EmuCore/GS', 'Adapter', discrete_gpu.name)
-                        else:
-                            _logger.debug("Couldn't get discrete GPU Name")
-                            pcsx2_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
-                    else:
-                        _logger.debug('Discrete GPU is not available on the system. Using default.')
-                        pcsx2_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
-                renderer = gfxbackend
-            else:
-                _logger.debug('User selected to Automatic')
-
-            pcsx2_ini_config.set('EmuCore/GS', 'Renderer', renderer)
-        else:
+        renderer = self.config.get('pcsx2_gfxbackend', '-1')
+        vulkan_info = await get_vulkan_info()
+        if renderer == '14' and not vulkan_info:
             _logger.debug('Vulkan driver is not available on the system. Falling back to Automatic')
-            pcsx2_ini_config.set('EmuCore/GS', 'Renderer', '-1')
+            renderer = '-1'
+        if renderer == '14' and vulkan_info:
+            if discrete_gpu := vulkan_info.active_discrete_gpu:
+                _logger.debug('A discrete GPU is available on the system. We will use that for performance')
+                if discrete_gpu.name:
+                    _logger.debug('Using Discrete GPU Name: %s for PCSX2', discrete_gpu.name)
+                    pcsx2_ini_config.set('EmuCore/GS', 'Adapter', discrete_gpu.name)
+                else:
+                    _logger.debug("Couldn't get discrete GPU Name")
+                    pcsx2_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
+            else:
+                _logger.debug('Discrete GPU is not available on the system. Using default.')
+                pcsx2_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
+        pcsx2_ini_config.set('EmuCore/GS', 'Renderer', renderer)
 
         # Ratio
         pcsx2_ini_config.set('EmuCore/GS', 'AspectRatio', self.config.get('pcsx2_ratio', 'Auto 4:3/3:2'))
@@ -431,16 +417,12 @@ class Pcsx2(Emulator):
         pcsx2_ini_config.set('EmuCore/GS', 'fxaa', self.config.get('pcsx2_fxaa', 'false'))
 
         # FMV Ratio
-        pcsx2_ini_config.set('EmuCore/GS', 'FMVAspectRatioSwitch', self.config.get('pcsx2_fmv_ratio', 'Auto 4:3/3:2'))
+        pcsx2_ini_config.set('EmuCore/GS', 'FMVAspectRatioSwitch', self.config.get('pcsx2_fmv_ratio', 'Off'))
 
-        # Mipmapping
-        # Upstream collapsed the old 3-way "mipmap_hw" (Off/Basic/Full) setting into a plain
-        # on/off "hw_mipmap" boolean (PCSX2 v2.8.x) -- the "Basic" vs "Full" distinction this
-        # custom_feature's choices still expose no longer has an upstream equivalent, so any
-        # non-"Off" choice just enables hardware mipmapping.
-        pcsx2_ini_config.set(
-            'EmuCore/GS', 'hw_mipmap', 'false' if self.config.get('pcsx2_mipmapping') == '0' else 'true'
-        )
+        # Mipmapping (software and hardware renderers have separate keys)
+        mipmap = 'false' if self.config.get('pcsx2_mipmapping') == '0' else 'true'
+        pcsx2_ini_config.set('EmuCore/GS', 'mipmap', mipmap)
+        pcsx2_ini_config.set('EmuCore/GS', 'hw_mipmap', mipmap)
 
         # Trilinear Filtering
         pcsx2_ini_config.set('EmuCore/GS', 'TriFilter', self.config.get('pcsx2_trilinear_filtering', '-1'))
@@ -493,7 +475,7 @@ class Pcsx2(Emulator):
         pcsx2_ini_config.set('EmuCore/GS', 'OsdPerformancePos', self.config.get('pcsx2_osd_performance_position', '0'))
 
         # Crop Overscan
-        crop_overscan = '3' if self.config.get_bool('pcsx2_overscan') else '0'
+        crop_overscan = '3' if self.config.get_bool('pcsx2_crop_overscan') else '0'
 
         pcsx2_ini_config.set('EmuCore/GS', 'CropLeft', crop_overscan)
         pcsx2_ini_config.set('EmuCore/GS', 'CropTop', crop_overscan)
@@ -501,7 +483,7 @@ class Pcsx2(Emulator):
         pcsx2_ini_config.set('EmuCore/GS', 'CropBottom', crop_overscan)
 
         # TV Shader
-        pcsx2_ini_config.set('EmuCore', 'TVShader', self.config.get('pcsx2_shaderset', '0'))
+        pcsx2_ini_config.set('EmuCore/GS', 'TVShader', self.config.get('pcsx2_shaderset', '0'))
 
         pcsx2_ini_config.set(
             'EmuCore',
