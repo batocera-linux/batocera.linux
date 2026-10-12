@@ -17,4 +17,7 @@ class Mrboom(Core):
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Team mode
-        core_options.set_from_config('mrboom-aspect', 'mrboom-aspect', default='Native')
+        legacy = self.config.get('mrboom-aspect', 'Native')
+        core_options.set_from_config(
+            'mrboom-teammode', 'mrboom-teammode', default='Selfie' if legacy == 'Native' else legacy
+        )
