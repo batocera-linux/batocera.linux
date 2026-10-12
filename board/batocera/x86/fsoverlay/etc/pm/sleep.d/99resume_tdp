@@ -30,18 +30,12 @@ case "$1" in
             echo "No CPU TDP value found."
             exit 0
         else
-            TDP_SETTING=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
-            if [ -z "${TDP_SETTING}" ]; then
-                TDP_SETTING="$(/usr/bin/batocera-settings-get-master system.cpu.tdp)"
-                
-                if [ -n "${TDP_SETTING}" ]; then
-                    set_tdp "${TDP_SETTING}"
-                else
-                    echo "TDP setting is not defined, cannot set TDP."
-                    exit 1
-                fi
-            else
-                handle_tdp "${TDP_SETTING}"
+            TDP_SETTING=$(/usr/bin/batocera-settings-get global.tdp)
+            # a game may have set its own TDP, so prefer what was last applied
+            if [ -s /var/run/amd-tdp.state ]; then
+                set_tdp "$(cat /var/run/amd-tdp.state)"
+            elif [ -n "${TDP_SETTING}" ]; then
+                handle_tdp "$(printf "%.0f" "${TDP_SETTING}")"
             fi
         fi
         ;;

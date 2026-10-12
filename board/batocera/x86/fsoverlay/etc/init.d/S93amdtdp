@@ -28,11 +28,15 @@ case "$1" in
             echo "*** ------------------------------------- ***" >> $log
             echo "" >> $log
             echo "Supported Ryzen Mobile Processor found for TDP..." >> $log
-            MAX_TDP=$(/usr/bin/ryzenadj -i | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}')
+            RYZEN_INFO=$(/usr/bin/ryzenadj -i)
+            MAX_TDP=$(echo "$RYZEN_INFO" | awk '/PPT LIMIT FAST/ {printf "%.0f\n", $6}')
             # Check if MAX_TDP is defined and not-empty
             if [ -n "$MAX_TDP" ]; then
                 echo "Maximum reported TDP is $MAX_TDP Watts" >> $log
                 /usr/bin/batocera-settings-set system.cpu.tdp "${MAX_TDP}"
+                SLOW_PERCENT=$(echo "$RYZEN_INFO" | awk '/PPT LIMIT FAST/ {f=$6} /PPT LIMIT SLOW/ {s=$6} END {if (f > 0 && s > 0) printf "%.0f\n", (s < f ? s : f) * 100 / f}')
+                echo "Reported slow limit is ${SLOW_PERCENT:-unknown}% of fast" >> $log
+                /usr/bin/batocera-settings-set system.cpu.tdp.slowpercent "${SLOW_PERCENT}"
                 # set the global TDP if set
                 TDP_PERCENTAGE=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
                 if [ -n "$TDP_PERCENTAGE" ] && [ "$TDP_PERCENTAGE" -ge 10 ]; then
