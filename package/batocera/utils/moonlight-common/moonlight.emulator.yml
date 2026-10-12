@@ -20,7 +20,7 @@ custom_features:
       4K (3840x2160): 2
   moonlight_rotate:
     prompt: ROTATE
-    description: Output rotation independent of xrandr or framebuffer settings.
+    description: Output rotation independent of xrandr or framebuffer settings. Moonlight Embedded only.
     choices:
       0 degrees: "0"
       90 degrees: "90"
@@ -54,13 +54,13 @@ custom_features:
       'On': true
   moonlight_viewonly:
     prompt: VIEW ONLY
-    description: Disable all input processing (view-only mode).
+    description: Disable all input processing (view-only mode). Moonlight Embedded only.
     choices:
       'Off': false
       'On': true
   moonlight_remote:
     prompt: LAN / WAN STREAMING
-    description: Enable QOS settings to optimize for internet or local network.
+    description: Enable QOS settings to optimise for internet or local network. Moonlight Embedded only.
     choices:
       WAN: 'yes'
       LAN (Default): 'no'
