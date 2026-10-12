@@ -24,12 +24,12 @@ class Dice(Core):
         # Axes for mouse-paddles.  Default for mice, but allow overrides for spinner setups
         core_options.set_from_config('dice_retromouse_paddle0_x', 'ttl_retromouse_paddle0_x', default='x')
         core_options.set_from_config('dice_retromouse_paddle0_y', 'ttl_retromouse_paddle0_y', default='y')
-        core_options.set_from_config('dice_retromouse_paddle1_x', 'ttl_retromouse_paddle0_x', default='x')
-        core_options.set_from_config('dice_retromouse_paddle1_y', 'ttl_retromouse_paddle0_y', default='y')
-        core_options.set_from_config('dice_retromouse_paddle2_x', 'ttl_retromouse_paddle0_x', default='x')
-        core_options.set_from_config('dice_retromouse_paddle2_y', 'ttl_retromouse_paddle0_y', default='y')
-        core_options.set_from_config('dice_retromouse_paddle3_x', 'ttl_retromouse_paddle0_x', default='x')
-        core_options.set_from_config('dice_retromouse_paddle3_y', 'ttl_retromouse_paddle0_y', default='y')
+        core_options.set_from_config('dice_retromouse_paddle1_x', 'ttl_retromouse_paddle1_x', default='x')
+        core_options.set_from_config('dice_retromouse_paddle1_y', 'ttl_retromouse_paddle1_y', default='y')
+        core_options.set_from_config('dice_retromouse_paddle2_x', 'ttl_retromouse_paddle2_x', default='x')
+        core_options.set_from_config('dice_retromouse_paddle2_y', 'ttl_retromouse_paddle2_y', default='y')
+        core_options.set_from_config('dice_retromouse_paddle3_x', 'ttl_retromouse_paddle3_x', default='x')
+        core_options.set_from_config('dice_retromouse_paddle3_y', 'ttl_retromouse_paddle3_y', default='y')
         # Miscellaneous input scaling tweaks
         core_options.set_from_config(
             'dice_paddle_keyboard_sensitivity', 'ttl_paddle_keyboard_sensitivity', default='250'
