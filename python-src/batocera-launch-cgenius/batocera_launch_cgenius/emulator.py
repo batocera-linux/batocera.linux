@@ -72,7 +72,7 @@ class CGenius(Emulator):
         config['Video']['aspect'] = self.config.get_str('cgenius_aspect', '4:3')
         config['Video']['fullscreen'] = 'false'
         config['Video']['integerScaling'] = 'false'
-        config['Video']['filter'] = self.config.get_str('cgenius_filter', 'none')
+        config['Video']['filter'] = self.config.get_str('cgenius_filter', '1')
         config['Video']['OGLfilter'] = self.config.get_str('cgenius_quality', 'nearest')
 
         match self.config.get('cgenius_render'):
