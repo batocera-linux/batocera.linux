@@ -5,15 +5,16 @@
 
 start() {
 	printf "Starting fan daemon: "
-	start-stop-daemon -S -q -p /var/run/qcom-fan.pid --exec /usr/bin/qcom-fan start &
+	start-stop-daemon -S -q -b -m -p /var/run/qcom-fan.pid --startas /usr/bin/qcom-fan -- start
 	[ $? = 0 ] && echo "OK" || echo "FAIL"
 }
 
 stop() {
 	printf "Stopping fan daemon: "
+	start-stop-daemon -K -q --remove-pidfile -p /var/run/qcom-fan.pid
+	RET=$?
 	/usr/bin/qcom-fan stop
-	start-stop-daemon -K -q -p /var/run/qcom-fan.pid
-	[ $? = 0 ] && echo "OK" || echo "FAIL"
+	[ $RET = 0 ] && echo "OK" || echo "FAIL"
 }
 restart() {
 	stop
