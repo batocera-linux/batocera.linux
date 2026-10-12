@@ -1,0 +1,17 @@
+lib/replace: skip reflink when FICLONERANGE is missing
+
+struct file_clone_range and FICLONERANGE arrived in linux 4.5, but
+HAVE_LINUX_IOCTL only checks for FS_IOC_GETFLAGS, so older kernel
+headers fail to build. Fall back to ENOSYS there.
+
+--- a/lib/replace/replace.c
++++ b/lib/replace/replace.c
+@@ -1255,7 +1255,7 @@
+ 			 off_t dst_off,
+ 			 off_t to_copy)
+ {
+-#ifdef HAVE_LINUX_IOCTL
++#if defined(HAVE_LINUX_IOCTL) && defined(FICLONERANGE)
+ 	struct file_clone_range cr;
+ 
+ 	cr = (struct file_clone_range) {
