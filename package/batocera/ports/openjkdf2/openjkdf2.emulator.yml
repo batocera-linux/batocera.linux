@@ -25,8 +25,8 @@ custom_features:
     submenu: GENERAL
     prompt: CUTSCENES
     choices:
-      Disabled: 0
-      Enabled: 1
+      Disabled: 1
+      Enabled: 0
   jkdf2_subs:
     submenu: GENERAL
     prompt: CUTSCENE SUBTITLES
@@ -85,7 +85,7 @@ custom_features:
       Enabled: true
   jkdf2_waggle:
     submenu: GAMEPLAY
-    prompt: WEAPON WAGGLE
+    prompt: DISABLE WEAPON WAGGLE
     description: Disable weapon waggle.
     choices:
       Disabled: 0
@@ -183,7 +183,7 @@ custom_features:
     description: Fix screen tearing.
     choices:
       Disabled: false
-      Enabled: true
+      Enabled (Default): true
   jkdf2_hidpi:
     submenu: DISPLAY
     prompt: HIDPI
