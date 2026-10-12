@@ -500,6 +500,10 @@ case "${ACTION}" in
 	    exit 0
         ;;
 
+    "supportHdr")
+	    exit 1
+        ;;
+
     "setRotation")
         OUTPUT=${PSCREEN}
         case "${1}" in

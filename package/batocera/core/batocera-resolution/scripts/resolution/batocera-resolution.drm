@@ -187,6 +187,9 @@ case "${ACTION}" in
     "supportSystemReflection")
 	exit 1
         ;;
+    "supportHdr")
+	exit 1
+	;;
     "setRotation")
 	# no possible rotation
 	exit 1

@@ -26,6 +26,8 @@ f_usage() {
     echo "${0} getDisplayMode" >&2
     echo "${0} getDisplayComp" >&2
     echo "${0} refreshRate" >&2
+    echo "${0} supportHdr" >&2
+    echo "${0} setHdr" >&2
 }
 
 _reconfigure_labwc() {
@@ -42,6 +44,49 @@ _reconfigure_labwc() {
         _log "Could not find running labwc process to trigger reconfigure action."
         batocera-labwc-config --reconfigure "$@" >> "${log}"
     fi
+}
+
+# wlroots needs its Vulkan renderer, both connector properties and an EDID listing BT.2020 and PQ
+_hdr_capable() {
+    local card driver name
+
+    [ "${WLR_RENDERER}" = "vulkan" ] || return 1
+
+    for card in /sys/class/drm/card[0-9]*; do
+        case "${card##*/}" in *-*) continue ;; esac
+        driver=$(basename "$(readlink -f "${card}/device/driver")")
+        for name in $(modetest -M "${driver}" -c 2>/dev/null | awk -F'\t' '
+            /^[0-9]+\t/ {
+                if (name != "" && cs && md) print name
+                name = ($3 == "connected") ? $4 : ""
+                gsub(/ /, "", name)
+                cs = md = 0
+            }
+            /^\t[0-9]+ Colorspace:/ { cs = 1 }
+            /^\t[0-9]+ HDR_OUTPUT_METADATA:/ { md = 1 }
+            END { if (name != "" && cs && md) print name }'); do
+            edid-decode "${card}-${name}/edid" 2>/dev/null | awk '
+                /Colorimetry Data Block/ { c = 1; next }
+                /Block:/ { c = 0 }
+                c && /BT2020/ { b = 1 }
+                /SMPTE ST2084/ { p = 1 }
+                END { exit !(b && p) }' && return 0
+        done
+    done
+    return 1
+}
+
+# labwc keeps the previous hdr state on reload when the tag is absent, so always write it
+_set_hdr() {
+    local rc_xml="${HOME}/.config/labwc/rc.xml"
+    local hdr="no"
+
+    [ -f "${rc_xml}" ] || return
+    if [ "$(batocera-settings-get display.hdr)" = "1" ] && _hdr_capable; then
+        hdr="yes"
+    fi
+    sed -i -e '/<hdr>/d' -e "s|</core>|  <hdr>${hdr}</hdr>\n  </core>|" "${rc_xml}"
+    _log "labwc HDR: ${hdr}"
 }
 
 # Extract output block for a specific screen
@@ -362,6 +407,14 @@ case "${ACTION_PRECHECK}" in
         echo "wayland"
         exit 0
         ;;
+    "supportHdr")
+        _hdr_capable
+        exit $?
+        ;;
+    "setHdr")
+        _set_hdr
+        exit 0
+        ;;
 esac
 
 # If wlr-randr returns no output, it means the Wayland compositor isn't running yet.
@@ -528,6 +581,8 @@ case "${ACTION}" in
             _log "Updating labwc window rules in ${RC_XML}"
             PRIMARY_OUT=$1
             SECONDARY_OUT=$2
+
+            _set_hdr
 
             # Trigger labwc to reload the configuration
             _log "Reconfiguring LabWC: primary='${PRIMARY_OUT}' secondary='${SECONDARY_OUT}'"

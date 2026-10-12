@@ -253,6 +253,8 @@ else
     echo "Using default stable GLES2 renderer fallback." >> "$LOG_FILE"
 fi
 
+batocera-resolution setHdr
+
 # Start Labwc with specified environment variable, logging output
 echo "Starting Labwc with keyboard layout: $XKB_DEFAULT_LAYOUT" >> "$LOG_FILE"
 
