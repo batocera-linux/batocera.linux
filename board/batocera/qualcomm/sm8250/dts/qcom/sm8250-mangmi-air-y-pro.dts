@@ -42,7 +42,8 @@
 
 	fan: pwm-fan {
 		compatible = "pwm-fan";
-		cooling-levels = <0 32 64 128 255>;
+		/* batocera - nine levels for the shared fan cooling maps */
+		cooling-levels = <0 51 77 102 128 153 179 204 255>;
 		#cooling-cells = <2>;
 		fan-supply = <&vreg_fan_pwr>;
 		pwms = <&pm8150l_lpg 4 40000>;
@@ -1426,3 +1427,6 @@
 &wsamacro {
 	status = "okay";
 };
+
+/* batocera - drive the fan from the cluster1 thermal zone */
+#include "sm8250-pwm-fan-cooling.dtsi"
