@@ -5,21 +5,27 @@ shared_features:
   - autosave
   - use_guns
 custom_features:
-  mame2003-plus_analog:
-    prompt: CONTROL MAPPING
-    choices:
-      Analog: analog
-      Digital: digital
   mame2003-plus_frameskip:
     prompt: FRAMESKIP
     description: Skip frames to improve performance, at the cost of choppy motion.
     choices:
-      'Off': 0
+      'Off': disabled
       "1": 1
       "2": 2
       "3": 3
       "4": 4
       "5": 5
+  mame2003-plus_vector_resolution:
+    prompt: VECTOR RESOLUTION
+    description: Rendering resolution for vector games.
+    choices:
+      640x480: 640x480
+      1024x768 (Default): 1024x768
+      1280x960: 1280x960
+      1440x1080: 1440x1080
+      1600x1200: 1600x1200
+      1707x1280: 1707x1280
+      Original: original
   mame2003-plus_input_interface:
     group: ADVANCED OPTIONS
     prompt: INPUT INTERFACE
