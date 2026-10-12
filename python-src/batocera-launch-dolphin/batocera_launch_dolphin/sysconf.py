@@ -87,7 +87,7 @@ def read_write_file(filepath: Path, setval: Mapping[str, int]) -> None:
 
 
 _WII_LANGUAGES: Final = {
-    'jp_JP': 0,
+    'ja_JP': 0,
     'en_US': 1,
     'de_DE': 2,
     'fr_FR': 3,
