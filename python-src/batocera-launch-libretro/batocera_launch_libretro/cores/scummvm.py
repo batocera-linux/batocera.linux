@@ -28,6 +28,3 @@ class ScummVM(Core):
 
         # Gamepad Cursor Speed
         core_options.set_from_config('scummvm_gamepad_cursor_speed', 'scummvm_gamepad_cursor_speed', default='1.0')
-
-        # Speed Hack (safe)
-        core_options.set_from_config('scummvm_speed_hack', 'scummvm_speed_hack', default='enabled')
