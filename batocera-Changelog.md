@@ -53,6 +53,7 @@
 - ES now supports correctly Arabic and Hebrew glyph rendering
 - ES can have a maximum depth of subfolders to go through when indexing (skip subfoldes with large amount of files)
 - GameTank console support through GameTankEmulator
+- HDR toggle for supported devices & display panels
 - Legion Go / Go 2 LED controller support
 - Libretro-anybor : for openbor games (support all openbor versions)
 - Libretro-Azahar
