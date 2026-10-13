@@ -393,10 +393,10 @@ class Supermodel(Emulator):
             outputs_lf = 'true' if self.config.get_bool('m3_outputs_lf') else 'false'
             target_config.set('Global', 'OutputsWithLF', outputs_lf)
 
-            tcp_port = self.config.get_str('m3_outputs_tcp', '0')
+            tcp_port = self.config.get_str('m3_outputs_tcp', '8000')
             target_config.set('Global', 'OutputsTCPPort', tcp_port)
 
-            udp_port = self.config.get_str('m3_outputs_udp', '0')
+            udp_port = self.config.get_str('m3_outputs_udp', '8001')
             target_config.set('Global', 'OutputsUDPBroadcastPort', udp_port)
         else:
             target_config.set('Global', 'Outputs', 'none')

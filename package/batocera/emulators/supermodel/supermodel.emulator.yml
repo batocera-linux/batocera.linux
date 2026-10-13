@@ -138,7 +138,7 @@ custom_features:
       "20": 20
       "30": 30
       "40": 40
-      50 (Default): 50
+      "50": 50
       "60": 60
       "70": 70
       "80": 80
@@ -149,6 +149,7 @@ custom_features:
       "130": 130
       "140": 140
       "150": 150
+      "166": 166
   m3_scsp:
     group: AUDIO
     prompt: SCSP SOUND ENGINE
@@ -180,20 +181,18 @@ custom_features:
   m3_outputs_tcp:
     group: CABINET OUTPUTS
     prompt: OUTPUTS TCP PORT
-    description: The TCP port used to send network output packets. Leave at default (0) to disable.
+    description: The TCP port used to send network output packets.
     choices:
-      '0 (Disabled)': 0
-      '8000': 8000
+      '8000 (Default)': 8000
       '8001': 8001
       '15124': 15124
   m3_outputs_udp:
     group: CABINET OUTPUTS
     prompt: OUTPUTS UDP BROADCAST PORT
-    description: The UDP broadcast port used to send network output packets. Leave at default (0) to disable.
+    description: The UDP broadcast port used to send network output packets.
     choices:
-      '0 (Disabled)': 0
       '8000': 8000
-      '8001': 8001
+      '8001 (Default)': 8001
       '15126': 15126
 file_extensions:
   - zip
