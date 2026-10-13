@@ -96,6 +96,7 @@ custom_features:
   mupen64plus-rdpPlugin:
     group: ADVANCED OPTIONS
     prompt: RDP PLUGIN
+    description: ParaLLEl-RDP is only available on x86_64. Angrylion is only available on x86 and the Raspberry Pi 5.
     choices:
       GLideN64 (Fastest): gliden64
       ParaLLEl-RDP: parallel
@@ -103,6 +104,7 @@ custom_features:
   mupen64plus-rspPlugin:
     group: ADVANCED OPTIONS
     prompt: RSP PLUGIN
+    description: ParaLLEl is only available on x86 and the Raspberry Pi 5, CXD4 on x86_64 and the Raspberry Pi 5.
     choices:
       HLE (Fastest): hle
       ParaLLEl (Best LLE): parallel
@@ -223,7 +225,7 @@ custom_features:
   mupen64plus-parallel-rdp-upscaling:
     group: ADVANCED OPTIONS
     prompt: PARALLEL-RDP UPSCALER
-    description: Only applies when using Parallel-RDP as the chosen RDP Plugin.
+    description: Only applies when using ParaLLEl-RDP as the chosen RDP Plugin, which is only available on x86_64.
     choices:
       1x (Default): 1x
       2x: 2x
