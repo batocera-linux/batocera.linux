@@ -51,11 +51,8 @@ class PcsxRearmed(RACore):
                         custom_config.set(f'input_libretro_device_p{pad.player_number}', 517)  # DualShock Controller
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
-        # Display Games Hack Options
-        core_options.set('pcsx_rearmed_show_gpu_peops_settings', 'enabled')
-
         # Display Multitap/Gamepad Options
-        core_options.set('pcsx_rearmed_show_other_input_settings', 'enabled')
+        core_options.set('pcsx_rearmed_show_input_settings', 'enabled')
 
         # Enable Vibration
         core_options.set('pcsx_rearmed_vibration', 'enabled')
@@ -64,7 +61,12 @@ class PcsxRearmed(RACore):
         core_options.set_from_config('pcsx_rearmed_show_bios_bootlogo', 'show_bios_bootlogo', default='disabled')
 
         # Frameskip
-        core_options.set_from_config('pcsx_rearmed_frameskip', 'frameskip_pcsx', default='0')
+        frameskip = self.config.get_str('frameskip_pcsx', '0')
+        if frameskip == '0':
+            core_options.set('pcsx_rearmed_frameskip_type', 'disabled')
+        else:
+            core_options.set('pcsx_rearmed_frameskip_type', 'fixed_interval')
+            core_options.set('pcsx_rearmed_frameskip_interval', frameskip)
 
         # Enhanced resolution at the cost of lower performance
         match self.config.get('neon_enhancement'):
@@ -80,33 +82,6 @@ class PcsxRearmed(RACore):
 
         # Multitap
         core_options.set_from_config('pcsx_rearmed_multitap', 'pcsx_rearmed_multitap', default='disabled')
-
-        # Additional game fixes
-        core_options.set('pcsx_rearmed_idiablofix', 'disabled')
-        core_options.set('pcsx_rearmed_pe2_fix', 'disabled')
-        core_options.set('pcsx_rearmed_inuyasha_fix', 'disabled')
-        core_options.set('pcsx_rearmed_gpu_peops_odd_even_bit', 'disabled')
-        core_options.set('pcsx_rearmed_gpu_peops_expand_screen_width', 'disabled')
-        core_options.set('pcsx_rearmed_gpu_peops_ignore_brightness', 'disabled')
-        core_options.set('pcsx_rearmed_gpu_peops_lazy_screen_update', 'disabled')
-        core_options.set('pcsx_rearmed_gpu_peops_repeated_triangles', 'disabled')
-        if (fixes := self.config.get('game_fixes_pcsx')) != 'disabled':
-            if fixes == 'Diablo_Music_Fix':
-                core_options.set('pcsx_rearmed_idiablofix', 'enabled')
-            elif fixes == 'Parasite_Eve':
-                core_options.set('pcsx_rearmed_pe2_fix', 'enabled')
-            elif fixes == 'InuYasha_Sengoku':
-                core_options.set('pcsx_rearmed_inuyasha_fix', 'enabled')
-            elif fixes == 'Chrono_Chross':
-                core_options.set('pcsx_rearmed_gpu_peops_odd_even_bit', 'enabled')
-            elif fixes == 'Capcom_fighting':
-                core_options.set('pcsx_rearmed_gpu_peops_expand_screen_width', 'enabled')
-            elif fixes == 'Lunar':
-                core_options.set('pcsx_rearmed_gpu_peops_ignore_brightness', 'enabled')
-            elif fixes == 'Pandemonium':
-                core_options.set('pcsx_rearmed_gpu_peops_lazy_screen_update', 'enabled')
-            elif fixes == 'Dark_Forces':
-                core_options.set('pcsx_rearmed_gpu_peops_repeated_triangles', 'enabled')
 
         # gun cross
         # Crossbar Colors
