@@ -84,7 +84,7 @@ cores:
         prompt: FMV ASPECT RATIO
         description: Adjusts Full Motion Video movies aspect ratio.
         choices:
-          Off (Default): "off"
+          Off (Default): "Off"
           Auto Standard (4:3 interlaced / 3:2 progressive): Auto 4:3/3:2
           Standard (4:3): 4:3
           Widescreen (16:9): 16:9
@@ -186,7 +186,7 @@ cores:
         choices:
           "Off": 0
           Basic (generated Mipmaps): 1
-          Full (PS2 Mipmaps): 2
+          Full (PS2 Mipmaps) (Default): 2
       pcsx2x6_texture_filtering:
         submenu: RENDERING
         prompt: TEXTURE FILTERING
@@ -220,8 +220,8 @@ cores:
         description: Reduces banding between colors and improves the preceived color depth.
         choices:
           "Off": 0
-          Unscaled (Default): 1
-          Scaled: 2
+          Scaled: 1
+          Unscaled (Default): 2
           Force 32bit: 3
       pcsx2x6_blending:
         submenu: RENDERING

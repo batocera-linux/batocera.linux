@@ -330,7 +330,6 @@ async def _configure_ini(
         )
     # set other settings
     pcsx2x6_ini_config.set('Achievements', 'TestMode', 'false')
-    pcsx2x6_ini_config.set('Achievements', 'UnofficialTestMode', 'false')
     pcsx2x6_ini_config.set('Achievements', 'Notifications', 'true')
     pcsx2x6_ini_config.set('Achievements', 'SoundEffects', 'true')
 
@@ -366,37 +365,24 @@ async def _configure_ini(
         pcsx2x6_ini_config.add_section('EmuCore/Speedhacks')
 
     # Renderer
-    # Check Vulkan first to be sure
-    if vulkan_info := await get_vulkan_info():
-        _logger.debug('Vulkan driver is available on the system.')
-        renderer = '-1'
-
-        if gfxbackend := config.get('pcsx2x6_gfxbackend'):
-            if gfxbackend == '12':
-                _logger.debug('User selected OpenGL')
-            if gfxbackend == '13':
-                _logger.debug('User selected Software! Man you must have a fast CPU!')
-            elif gfxbackend == '14':
-                _logger.debug('User selected Vulkan')
-                if discrete_gpu := vulkan_info.active_discrete_gpu:
-                    _logger.debug('A discrete GPU is available on the system. We will use that for performance')
-                    if discrete_gpu.name:
-                        _logger.debug('Using Discrete GPU Name: %s for PCSX2x6', discrete_gpu.name)
-                        pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', discrete_gpu.name)
-                    else:
-                        _logger.debug("Couldn't get discrete GPU Name")
-                        pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
-                else:
-                    _logger.debug('Discrete GPU is not available on the system. Using default.')
-                    pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
-            renderer = gfxbackend
-        else:
-            _logger.debug('User selected to Automatic')
-
-        pcsx2x6_ini_config.set('EmuCore/GS', 'Renderer', renderer)
-    else:
+    renderer = config.get('pcsx2x6_gfxbackend', '-1')
+    vulkan_info = await get_vulkan_info()
+    if renderer == '14' and not vulkan_info:
         _logger.debug('Vulkan driver is not available on the system. Falling back to Automatic')
-        pcsx2x6_ini_config.set('EmuCore/GS', 'Renderer', '-1')
+        renderer = '-1'
+    if renderer == '14' and vulkan_info:
+        if discrete_gpu := vulkan_info.active_discrete_gpu:
+            _logger.debug('A discrete GPU is available on the system. We will use that for performance')
+            if discrete_gpu.name:
+                _logger.debug('Using Discrete GPU Name: %s for PCSX2x6', discrete_gpu.name)
+                pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', discrete_gpu.name)
+            else:
+                _logger.debug("Couldn't get discrete GPU Name")
+                pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
+        else:
+            _logger.debug('Discrete GPU is not available on the system. Using default.')
+            pcsx2x6_ini_config.set('EmuCore/GS', 'Adapter', '(Default)')
+    pcsx2x6_ini_config.set('EmuCore/GS', 'Renderer', renderer)
 
     # Ratio
     pcsx2x6_ini_config.set('EmuCore/GS', 'AspectRatio', config.get('pcsx2x6_ratio', 'Auto 4:3/3:2'))
@@ -411,7 +397,7 @@ async def _configure_ini(
     pcsx2x6_ini_config.set('EmuCore/GS', 'fxaa', config.get('pcsx2x6_fxaa', 'false'))
 
     # FMV Ratio
-    pcsx2x6_ini_config.set('EmuCore/GS', 'FMVAspectRatioSwitch', config.get('pcsx2x6_fmv_ratio', 'Auto 4:3/3:2'))
+    pcsx2x6_ini_config.set('EmuCore/GS', 'FMVAspectRatioSwitch', config.get('pcsx2x6_fmv_ratio', 'Off'))
 
     # Mipmapping
     # Upstream split the old tri-state "mipmap_hw" int setting (Off/Basic/Full) into two
@@ -419,7 +405,7 @@ async def _configure_ini(
     # PS2's own real mip data, mainly relevant to the software renderer). Preserve the original
     # 3-way intent across both keys: Off -> both false, Basic -> hw generated only,
     # Full -> both (use real PS2 data, still enabling hw mip generation as a fallback).
-    mipmapping = config.get('pcsx2x6_mipmapping', '0')
+    mipmapping = config.get('pcsx2x6_mipmapping', '2')
     pcsx2x6_ini_config.set('EmuCore/GS', 'hw_mipmap', 'false' if mipmapping == '0' else 'true')
     pcsx2x6_ini_config.set('EmuCore/GS', 'mipmap', 'true' if mipmapping == '2' else 'false')
 
@@ -478,7 +464,7 @@ async def _configure_ini(
     pcsx2x6_ini_config.set('EmuCore/GS', 'CropBottom', crop_overscan)
 
     # TV Shader
-    pcsx2x6_ini_config.set('EmuCore', 'TVShader', config.get('pcsx2x6_shaderset', '0'))
+    pcsx2x6_ini_config.set('EmuCore/GS', 'TVShader', config.get('pcsx2x6_shaderset', '0'))
 
     pcsx2x6_ini_config.set(
         'EmuCore', 'AutoIncrementSlot', config.get_bool('incrementalsavestates', True, return_values=('true', 'false'))
