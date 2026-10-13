@@ -4,16 +4,6 @@ features:
 shared_features:
   - rewind
   - autosave
-custom_features:
-  bsnes_video_filter:
-    prompt: VIDEO FILTERS
-    description: Apply a video filter to mimic various NTSC TV signals.
-    choices:
-      'Off': None
-      NTSC (RF): NTSC (RF)
-      NTSC (RGB): NTSC (RGB)
-      NTSC (S-Video): NTSC (S-Video)
-      NTSC (Composite): NTSC (Composite)
 file_extensions:
   - zip
   - 7z
@@ -81,7 +71,7 @@ systems:
         prompt: HD MODE 7 WIDESCREEN
         description: Extend the horizontal field of view for widescreen displays.
         choices:
-          'Off': Off
+          'Off': none
           Only for Mode 7 scenes: Mode 7
           Enable for all scenes: all
   - name: snes-msu1
@@ -126,6 +116,6 @@ systems:
         prompt: HD MODE 7 WIDESCREEN
         description: Extend the horizontal field of view for widescreen displays.
         choices:
-          'Off': Off
+          'Off': none
           Only for Mode 7 scenes: Mode 7
           Enable for all scenes: all

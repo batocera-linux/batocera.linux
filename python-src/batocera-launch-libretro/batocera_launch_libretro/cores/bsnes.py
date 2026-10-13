@@ -35,14 +35,15 @@ class Bsnes(SquashFSMixin, RACore):
         if self.config.use_guns and self.guns:
             core_options.set('bsnes_touchscreen_lightgun_superscope_reverse', 'OFF')
 
-        # Video Filters
-        core_options.set_from_config('bsnes_video_filter', default='disabled')
+        # Video Filters (bsnes only)
+        if self.config.core == 'bsnes':
+            core_options.set_from_config('bsnes_video_filter', default='None')
 
         # HD Mode 7 (bsnes_hd only, SNES systems)
         if self.config.core == 'bsnes_hd' and self.system in ('snes', 'snes-msu1'):
             core_options.set_from_config('bsnes_mode7_scale', default='disable')
             core_options.set_from_config('bsnes_mode7_supersample', default='none')
-            core_options.set_from_config('bsnes_mode7_wsMode', default='Off')
+            core_options.set_from_config('bsnes_mode7_wsMode', default='none')
 
         # SGB options
         if self.system == 'sgb-msu1':
