@@ -109,7 +109,7 @@ custom_features:
     prompt: LINEAR UPSCALING
     description: Enabling will smooth out the image.
     choices:
-      Disabled (Default): "false"
+      Disabled: "false"
       Enabled: "true"
   duckstation_stretch:
     submenu: DISPLAY
@@ -232,7 +232,7 @@ custom_features:
       DualShock / Xbox Type: AnalogController
       Namco GunCon: GunCon
       PlayStation Mouse: PlayStationMouse
-      NeGcon (Rumble): NeGcon
+      NeGcon (Rumble): NeGconRumble
   duckstation_Controller2:
     submenu: CONTROLLERS
     prompt: CONTROLLER 2 TYPE
@@ -244,7 +244,7 @@ custom_features:
       DualShock / Xbox Type: AnalogController
       Namco GunCon: GunCon
       PlayStation Mouse: PlayStationMouse
-      NeGcon (Rumble): NeGcon
+      NeGcon (Rumble): NeGconRumble
   duckstation_pgxp:
     group: ADVANCED OPTIONS
     prompt: ENABLE PGXP CORRECTIONS
@@ -252,6 +252,13 @@ custom_features:
     choices:
       Disabled: "false"
       Enabled (Default): "true"
+  duckstation_pgxp_depth:
+    group: ADVANCED OPTIONS
+    prompt: PGXP DEPTH BUFFER
+    description: Reduces polygon fighting. Needs PGXP corrections and a hardware renderer.
+    choices:
+      Disabled (Default): "false"
+      Enabled: "true"
   duckstation_boot_without_sbi:
     group: ADVANCED OPTIONS
     prompt: ALLOW BOOTING WITHOUT SBI FILE
@@ -290,12 +297,6 @@ custom_features:
       Per 1s, 60s total (660MB|120MB): "60"
       Per 1s, 90s total (990MB|180MB): "90"
       Per 1s, 120s total (1320MB|240MB): "120"
-  duckstation_achievements:
-    prompt: ACHIEVEMENTS
-    decription: Enable achievements for supported games. Enter login details via app in F1 menu.
-    choices:
-      Disabled: "false"
-      Enabled: "true"
   duckstation_antialiasing:
     submenu: RENDERING
     prompt: ANTI-ALIASING (MSAA/SSAA)
