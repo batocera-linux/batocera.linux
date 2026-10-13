@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 _PATCH_FILE: Final = 'df_patch4.zip'
+# heights whose TFE preset width is not 4:3
+_RENDER_WIDTHS: Final = {200: 320, 400: 640, 1050: 1440}
 
 
 @cached_dataclass
@@ -63,13 +65,8 @@ class TheForceEngine(Emulator):
             force_config.add_section('Graphics')
 
         res_height = self.config.get_int('force_render_res', self.resolution.height)
-        res_width = int(res_height) * 4 / 3
-        res_width_int = int(res_width)
-        force_config.set(
-            'Graphics',
-            'gameWidth',
-            str(res_width_int if res_width == res_width_int else res_width),
-        )
+        res_width = _RENDER_WIDTHS.get(res_height, res_height * 4 // 3)
+        force_config.set('Graphics', 'gameWidth', str(res_width))
         force_config.set('Graphics', 'gameHeight', str(res_height))
         force_config.set(
             'Graphics',
@@ -127,7 +124,7 @@ class TheForceEngine(Emulator):
         force_config.set(
             'Sound',
             'disableSoundInMenus',
-            self.config.get_bool('force_menu_sound', return_values=('true', 'false')),
+            self.config.get_bool('force_menu_sound', True, return_values=('false', 'true')),
         )
         force_config.set(
             'Sound',
@@ -152,7 +149,7 @@ class TheForceEngine(Emulator):
         force_config.set(
             'Dark_Forces',
             'disableFightMusic',
-            self.config.get_bool('force_fight_music', return_values=('true', 'false')),
+            self.config.get_bool('force_fight_music', True, return_values=('false', 'true')),
         )
         force_config.set(
             'Dark_Forces',
@@ -193,9 +190,7 @@ class TheForceEngine(Emulator):
         args: list[str | Path] = ['theforceengine']
 
         skip_cutscenes = self.config.get_str('force_skip_cutscenes')
-        if skip_cutscenes == 'initial':
-            args.append('-c0')
-        elif skip_cutscenes == 'skip':
+        if skip_cutscenes in ('initial', 'skip'):
             args.append('-c')
 
         if mod_name is not None:
