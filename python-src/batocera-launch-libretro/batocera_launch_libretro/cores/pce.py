@@ -17,4 +17,5 @@ class Pce(RACore):
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Remove 16-sprites-per-scanline hardware limit
-        core_options.set_from_config('pce_nospritelimit', default='enabled')
+        prefix = 'pce_fast' if self.emulator.core == 'pce_fast' else 'pce'
+        core_options.set_from_config(f'{prefix}_nospritelimit', 'pce_nospritelimit', default='enabled')
