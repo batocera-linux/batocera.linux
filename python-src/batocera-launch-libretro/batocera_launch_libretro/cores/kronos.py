@@ -12,9 +12,6 @@ if TYPE_CHECKING:
 @cached_dataclass
 class Kronos(GLCoreOverrideMixin, RACore):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
-        # Set best OpenGL renderer
-        core_options.set('kronos_videocoretype', 'opengl_cs')
-
         # Video Resolution
         core_options.set_from_config('kronos_resolution_mode', 'kronos_resolution', default='original')
 
