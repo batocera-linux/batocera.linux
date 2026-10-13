@@ -159,6 +159,9 @@ _CONF_KEYS: Final = {
     'EXIT_GAME',
 }
 
+# misspelt key shipped in older inis, renamed in place so it stays in its section
+_LEGACY_KEYS: Final = {'EMULATE_ID_CARD_READER': 'EMULATE_ID_CARDREADER'}
+
 _CONF_LINE_PATTERN: Final = re.compile(r'^\s*(#?)\s*([A-Z0-9_\s]+[A-Z0-9_])\s*=\s*(.*)$')
 
 
@@ -183,6 +186,8 @@ class Configuration:
             _logger.debug('Configuration file %s not found.', self.config_file)
             self.raw = []
 
+        legacy: dict[str, _ConfigValue] = {}
+
         # find keys and values
         # analyze lines
         for n, line in enumerate(self.raw):
@@ -190,7 +195,14 @@ class Configuration:
             if matches:
                 key = matches.group(2).strip()
 
-                if key in _CONF_KEYS:
+                if key in _LEGACY_KEYS:
+                    legacy[_LEGACY_KEYS[key]] = {
+                        'value': matches.group(3).strip(),
+                        'commented': matches.group(1) == '#',
+                        'line': n,
+                        'modified': True,
+                    }
+                elif key in _CONF_KEYS:
                     if key in self.data:  # take care of duplicated keys
                         # if the 1st one is commented, prefer the last one
                         if self.data[key]['commented']:
@@ -223,6 +235,12 @@ class Configuration:
                 stripped_line = line.rstrip()
                 if stripped_line != '':
                     _logger.debug('CONF: ignoring line %s', stripped_line)
+
+        for key, value in legacy.items():
+            # drop a copy appended at the end of the file, outside the section
+            if (current := self.data.get(key)) is not None:
+                self.raw[current['line']] = ''
+            self.data[key] = value
 
     def keys(self) -> Iterator[str]:
         yield from self.data.keys()
