@@ -113,10 +113,18 @@ class Moonlight(Emulator):
             args.append('--bitrate')
             args.append(bitrate)
 
+        if codec := {'h264': 'H.264', 'h265': 'HEVC'}.get(self.config.get_str('moonlight_codec', '')):
+            args.extend(['--video-codec', codec])
+
+        if audio := {'5.1': '5.1-surround', '7.1': '7.1-surround'}.get(self.config.get_str('moonlight_surround', '')):
+            args.extend(['--audio-config', audio])
+
+        if self.config.get_str('moonlight_sops'):
+            sops = self.config.get_bool('moonlight_sops')
+            args.append('--game-optimization' if sops else '--no-game-optimization')
+
         # quit remote app on exit
-        # NOTE: mirrors the old generator's truthiness check verbatim - any non-empty
-        # stored value (including the literal string "false") is treated as enabled.
-        if self.config.get_str('moonlight_quitapp'):
+        if self.config.get_bool('moonlight_quitapp'):
             args.append('--quit-after')
         else:
             args.append('--no-quit-after')
