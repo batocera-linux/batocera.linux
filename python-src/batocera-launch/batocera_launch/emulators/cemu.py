@@ -348,7 +348,7 @@ class Cemu(Emulator):
         # Graphical backend
         api_value = self.config.get_str('cemu_gfxbackend', '1')  # 1 = Vulkan
         _set_xml_value(config, graphic_root, 'api', api_value)
-        # Only set the graphics `device` if Vulkan
+        # Only set the graphics `vkDevice` if Vulkan
         if api_value == '1':
             # Check if we have a discrete GPU & if so, set the UUID
             if vulkan_info := await get_vulkan_info():
@@ -357,7 +357,7 @@ class Cemu(Emulator):
                     if discrete_gpu.uuid:
                         discrete_uuid_num = discrete_gpu.uuid.replace('-', '')
                         _logger.debug('Using Discrete GPU UUID: %s for Cemu', discrete_uuid_num)
-                        _set_xml_value(config, graphic_root, 'device', discrete_uuid_num)
+                        _set_xml_value(config, graphic_root, 'vkDevice', discrete_uuid_num)
                     else:
                         _logger.debug("Couldn't get discrete GPU UUID!")
                 else:
@@ -503,6 +503,9 @@ class Cemu(Emulator):
                 case _:  # '0' or None
                     if nplayer == 0:
                         controller_type = _GAMEPAD
+
+            if _is_wiimote(pad):
+                controller_type = _WIIMOTE
 
             ET.SubElement(root, 'type').text = controller_type
 
