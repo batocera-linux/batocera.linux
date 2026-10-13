@@ -46,7 +46,8 @@ class Cannonball(Emulator):
         ET.SubElement(video, 'widescreen').text = self.config.get('ratio', '0')
         ET.SubElement(video, 'hires').text = self.config.get('highResolution', '0')
         ET.SubElement(video, 'vsync').text = self.config.get('vsync', '1')  # default vsync to 1
-        ET.SubElement(video, 'scanlines').text = self.config.get('scanlines', '0')
+        scanlines = self.config.get('scanlines', '0')
+        ET.SubElement(video, 'scanlines').text = '35' if scanlines == '1' else scanlines
         ET.SubElement(video, 'fps').text = self.config.get('fps', '2')  # 60 FPS default
 
         # Sound Section

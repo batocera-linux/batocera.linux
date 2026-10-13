@@ -21,10 +21,10 @@ custom_features:
     description: Simulate vintage CRT scanlines (Requires scale factor 2x or higher).
     choices:
       'Off': 0
-      'On': 1
+      'On': 35
   vsync:
     prompt: VSYNC
-    description: Fix screen tearing.
+    description: Fix screen tearing. Only applies to OpenGL ES boards, PC builds always use vsync.
     choices:
       'Off': 0
       'On': 1
