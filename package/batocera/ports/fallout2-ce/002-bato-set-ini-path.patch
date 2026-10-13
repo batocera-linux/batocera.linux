@@ -1,0 +1,22 @@
+--- a/src/svga.cc
++++ b/src/svga.cc
+@@ -106,7 +106,7 @@
+ 
+     Config resolutionConfig;
+     if (configInit(&resolutionConfig)) {
+-        if (configRead(&resolutionConfig, "f2_res.ini", false)) {
++        if (configRead(&resolutionConfig, "/userdata/system/configs/fallout2/f2_res.ini", false)) {
+             int screenWidth;
+             if (configGetInt(&resolutionConfig, "MAIN", "SCR_WIDTH", &screenWidth)) {
+                 width = screenWidth;
+--- a/src/game.cc
++++ b/src/game.cc
+@@ -1455,7 +1455,7 @@
+     // TODO: Move to settings.
+     Config config;
+     if (configInit(&config)) {
+-        if (configRead(&config, "f2_res.ini", false)) {
++        if (configRead(&config, "/userdata/system/configs/fallout2/f2_res.ini", false)) {
+             configGetInt(&config, "STATIC_SCREENS", "SPLASH_SCRN_SIZE", &size);
+         }
+ 
