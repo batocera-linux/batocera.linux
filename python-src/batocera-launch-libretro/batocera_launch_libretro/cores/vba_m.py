@@ -18,14 +18,15 @@ class VbaM(RACore):
 
         if self.system == 'gb':
             # GB: Colorisation of GB games
-            core_options.set_from_config('vbam_palettes', 'palettes', default='black and white')
+            palette = self.config.get('palettes', 'black and white')
+            core_options.set('vbam_palettes', 'wierd colors' if palette == 'weird colors' else palette)
 
             # GB: Color Correction
-            core_options.set_from_config('vbam_gbcoloroption', 'gbcoloroption_gb', default='disabled')
+            core_options.set_from_config('vbam_lcdfilter', 'gbcoloroption_gb', default='disabled')
 
         if self.system == 'gbc':
             # GBC: Color Correction
-            core_options.set_from_config('vbam_gbcoloroption', 'gbcoloroption_gbc', default='disabled')
+            core_options.set_from_config('vbam_lcdfilter', 'gbcoloroption_gbc', default='disabled')
 
         if self.system == 'gba':
             # GBA: Solar sensor level, Boktai 1: The Sun is in Your Hand
