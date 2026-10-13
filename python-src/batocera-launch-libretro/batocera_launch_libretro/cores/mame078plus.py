@@ -22,11 +22,11 @@ class MAME078Plus(Core):
         core_options.set('mame2003-plus_skip_disclaimer', 'enabled')
         core_options.set('mame2003-plus_skip_warnings', 'enabled')
 
-        # Control Mapping
-        core_options.set_from_config('mame2003-plus_analog', default='digital')
-
         # Frameskip
-        core_options.set_from_config('mame2003-plus_frameskip', default='0')
+        core_options.set_from_config('mame2003-plus_frameskip', default='disabled')
+
+        # Vector resolution
+        core_options.set_from_config('mame2003-plus_vector_resolution', default='1024x768')
 
         # Input interface
         core_options.set_from_config('mame2003-plus_input_interface', default='retropad')
