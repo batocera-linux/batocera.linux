@@ -187,7 +187,7 @@ class Shadps4(Emulator):
 
         # Options - GRAPHICS
         gpu_config['fsr_enabled'] = self.config.get_bool('shadps4_fsr')
-        gpu_config['rcas_enabled'] = self.config.get_bool('shadps4_rcas')
+        gpu_config['rcas_enabled'] = self.config.get_bool('shadps4_rcas', True)
         gpu_config['hdr_allowed'] = self.config.get_bool('shadps4_hdr')
 
         # Options - DISPLAY
@@ -197,7 +197,7 @@ class Shadps4(Emulator):
 
         # Options - SYSTEM
         general_config['neo_mode'] = self.config.get_bool('shadps4_neo_mode')
-        general_config['console_language'] = self.config.get_int('shadps4_console_lang') or 1
+        general_config['console_language'] = self.config.get_int('shadps4_console_lang', 1)
 
         # Options - ADVANCED
         gpu_config['copy_gpu_buffers'] = self.config.get_bool('shadps4_copy_gpu_buffers')
