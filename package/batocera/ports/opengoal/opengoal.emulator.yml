@@ -75,7 +75,7 @@ custom_features:
   opengoal_ps2_shadow:
     group: PS2 FIDELITY
     prompt: ORIGINAL SHADOWS
-    description: Off casts shadows from objects the PS2 could not afford to.
+    description: Off casts shadows from objects the PS2 could not afford to. Jak II and Jak 3 only.
     choices:
       Off (Default): 'false'
       'On': 'true'
@@ -83,20 +83,6 @@ custom_features:
     group: PS2 FIDELITY
     prompt: FORCE ENVIRONMENT MAPPING
     description: Keeps reflections at full strength instead of fading them with distance.
-    choices:
-      On (Default): 'true'
-      'Off': 'false'
-  opengoal_ps2_read_speed:
-    group: PS2 FIDELITY
-    prompt: EMULATE DVD LOADING
-    description: Reproduces the original disc read speed, including the loading pauses it caused.
-    choices:
-      Off (Default): 'false'
-      'On': 'true'
-  opengoal_ps2_hints:
-    group: PS2 FIDELITY
-    prompt: ORIGINAL HINTS
-    description: Off enables the extra gameplay hints added by the PC port.
     choices:
       On (Default): 'true'
       'Off': 'false'

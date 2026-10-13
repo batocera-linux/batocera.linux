@@ -492,8 +492,6 @@ class OpenGOAL(Emulator):
             'ps2-lod-dist?': _goal_bool(self.config.get_bool('opengoal_ps2_lod', False)),
             'ps2-parts?': _goal_bool(self.config.get_bool('opengoal_ps2_parts', False)),
             'ps2-shadow?': _goal_bool(self.config.get_bool('opengoal_ps2_shadow', False)),
-            'ps2-read-speed?': _goal_bool(self.config.get_bool('opengoal_ps2_read_speed', False)),
-            'ps2-hints?': _goal_bool(self.config.get_bool('opengoal_ps2_hints', True)),
             'force-envmap?': _goal_bool(self.config.get_bool('opengoal_force_envmap', True)),
             'hinttitles?': _goal_bool(self.config.get_bool('opengoal_hinttitles', False)),
             'subtitle-speaker': self._subtitle_speaker,
