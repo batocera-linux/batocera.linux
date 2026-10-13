@@ -31,16 +31,22 @@ class MednafenPsx(RACore):
         return super().get_analog_mode(controller)
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
+        # the software-only build reads the same options without the _hw prefix
+        def set_option(name: str, value: object, /) -> None:
+            core_options.set(f'beetle_psx_hw_{name}', value)
+            core_options.set(f'beetle_psx_{name}', value)
+
+        def set_option_from_config(name: str, /, *, default: object) -> None:
+            set_option(name, self.config.get(f'beetle_psx_hw_{name}', default))
+
         # CPU Frequency Scaling (Overclock)
-        core_options.set_from_config(
-            'beetle_psx_hw_cpu_freq_scale', default='110%'
-        )  # If not 110% NO options are working!
+        set_option_from_config('cpu_freq_scale', default='100%')
 
         # Show official Bootlogo
-        core_options.set_from_config('beetle_psx_hw_skip_bios', default='disabled')
+        set_option_from_config('skip_bios', default='disabled')
 
         # Video Resolution
-        core_options.set_from_config('beetle_psx_hw_internal_resolution', default='1x(native)')
+        set_option_from_config('internal_resolution', default='1x(native)')
 
         # Widescreen Hack
         if (
@@ -48,33 +54,35 @@ class MednafenPsx(RACore):
             and self.config.get('ratio') == '16/9'
             and self.config.get('bezel') == 'none'
         ):
-            core_options.set('beetle_psx_hw_widescreen_hack', 'enabled')
+            set_option('widescreen_hack', 'enabled')
         else:
-            core_options.set('beetle_psx_hw_widescreen_hack', 'disabled')
+            set_option('widescreen_hack', 'disabled')
 
         # Frame Duping (Speedup)
-        core_options.set_from_config('beetle_psx_hw_frame_duping', default='disabled')
+        set_option_from_config('frame_duping', default='disabled')
 
         # CPU Dynarec (Speedup)
-        core_options.set_from_config('beetle_psx_hw_cpu_dynarec', default='disabled')
+        set_option_from_config('cpu_dynarec', default='disabled')
 
         # Dynarec Code Invalidation
-        core_options.set_from_config('beetle_psx_hw_dynarec_invalidate', default='full')
+        set_option_from_config('dynarec_invalidate', default='full')
+
+        set_option_from_config('pgxp_mode', default='disabled')
 
         # Analog Stick self calibration
-        core_options.set('beetle_psx_hw_analog_calibration', 'enabled')
+        set_option('analog_calibration', 'enabled')
 
         # Multitap
         match self.config.get('multitap_mednafen'):
             case 'port1':
-                core_options.set('beetle_psx_hw_enable_multitap_port1', 'enabled')
-                core_options.set('beetle_psx_hw_enable_multitap_port2', 'disabled')
+                set_option('enable_multitap_port1', 'enabled')
+                set_option('enable_multitap_port2', 'disabled')
             case 'port2':
-                core_options.set('beetle_psx_hw_enable_multitap_port1', 'disabled')
-                core_options.set('beetle_psx_hw_enable_multitap_port2', 'enabled')
+                set_option('enable_multitap_port1', 'disabled')
+                set_option('enable_multitap_port2', 'enabled')
             case 'port12':
-                core_options.set('beetle_psx_hw_enable_multitap_port1', 'enabled')
-                core_options.set('beetle_psx_hw_enable_multitap_port2', 'enabled')
+                set_option('enable_multitap_port1', 'enabled')
+                set_option('enable_multitap_port2', 'enabled')
             case _:
-                core_options.set('beetle_psx_hw_enable_multitap_port1', 'disabled')
-                core_options.set('beetle_psx_hw_enable_multitap_port2', 'disabled')
+                set_option('enable_multitap_port1', 'disabled')
+                set_option('enable_multitap_port2', 'disabled')
