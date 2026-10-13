@@ -33,10 +33,7 @@ class Picodrive(MegadriveControllerRemapMixin, RACore):
         # Reduce sprite flickering
         core_options.set_from_config('picodrive_sprlim', default='enabled')
 
-        # Crop Overscan: the setting in picodrive shows overscan when enabled
-        core_options.set_bool_from_config(
-            'picodrive_overscan', 'picodrive_cropoverscan', default=True, values=('disabled', 'enabled')
-        )
+        core_options.set_from_config('picodrive_renderer', default='accurate')
 
         # 6 Button Controller 1
         core_options.set_from_config('picodrive_input1', 'picodrive_controller1', default='6 button pad')
