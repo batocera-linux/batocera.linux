@@ -1,0 +1,12 @@
+--- a/src/input/evdev.c
++++ b/src/input/evdev.c
+@@ -51,6 +51,9 @@
+ #define int16_to_le(val) ((((val) >> 8) & 0x00FF) | (((val) << 8) & 0xFF00))
+ #endif
+ 
++#define input_event_sec time.tv_sec
++#define input_event_usec time.tv_usec
++
+ struct input_abs_parms {
+   int min, max;
+   int flat;
