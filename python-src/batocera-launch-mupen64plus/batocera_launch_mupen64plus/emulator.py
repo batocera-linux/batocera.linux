@@ -225,12 +225,9 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
         # Textures Mip-Mapping (Filtering)
         match mipmapping := self.config.get('mupen64plus_Mipmapping', '0'):
             case '1':
-                filtering = '0'
-            case '2':
-                filtering = '1'
-            case '3':
                 filtering = '2'
-                mipmapping = '3'
+            case '2' | '3':
+                filtering = '1'
             case _:
                 filtering = '-1'
 
@@ -246,7 +243,8 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
         ini_config.set('Video-Rice', 'AnisotropicFiltering', anisotropic)
         # Wrapper Anisotropic Filtering
         # This is uneffective if Mipmapping is false.
-        ini_config.set('Video-Glide64mk2', 'wrpAnisotropic', '1' if anisotropic == '0' else anisotropic)
+        ini_config.set('Video-Glide64mk2', 'wrpAnisotropic', 'False' if anisotropic == '0' else 'True')
+        ini_config.set('Video-GLideN64', 'anisotropy', anisotropic)
 
         # Anti-aliasing MSAA
         antialiasing = self.config.get('mupen64plus_AntiAliasing', '0')
@@ -254,6 +252,12 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
         ini_config.set(
             'Video-Glide64mk2', 'wrpAntiAliasing', antialiasing
         )  # Enable full-scene anti-aliasing by setting this to a value greater than 1
+        ini_config.set('Video-GLideN64', 'MultiSampling', antialiasing)
+
+        # GLideN64: 0=screen resolution, otherwise a multiple of the N64 native resolution
+        ini_config.set(
+            'Video-GLideN64', 'UseNativeResolutionFactor', self.config.get('mupen64plus_NativeResFactor', '0')
+        )
 
         # Hires textures
         load_hires_textures = self.config.get_bool('mupen64plus_LoadHiResTextures')
@@ -261,6 +265,7 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
         ini_config.set(
             'Video-Glide64mk2', 'ghq_hirs', '1' if load_hires_textures else '0'
         )  # Hi-res texture pack format (0 for none, 1 for Rice)
+        ini_config.set('Video-GLideN64', 'txHiresEnable', str(load_hires_textures))
 
         # Texture Enhencement XBRZ -> ONLY for RICE
         # 0=None, 1=2X, 2=2XSAI, 3=HQ2X, 4=LQ2X, 5=HQ4X, 6=Sharpen, 7=Sharpen More, 8=External, 9=Mirrored
@@ -306,13 +311,9 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
                 'Video-Glide64mk2', 'show_fps', '8'
             )  # 1=FPS counter, 2=VI/s counter, 4=% speed, 8=FPS transparent
 
-            # Custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
-            # NOTE: ported as-is from the old configgen generator, including this indentation - the custom-override
-            # loop below only runs when show_fps is False there too. This looks like a pre-existing bug (the loop
-            # is almost certainly meant to be unconditional), kept unchanged here to preserve exact behavior; flagged
-            # for the user to decide whether to fix separately.
-            for section_option, user_config_value in self.config.items(starts_with='mupen64plus.'):
-                custom_section, _, custom_option = section_option.partition('.')
-                if not ini_config.has_section(custom_section):
-                    ini_config.add_section(custom_section)
-                ini_config.set(custom_section, custom_option, str(user_config_value))
+        # Custom : allow the user to configure directly mupen64plus.cfg via batocera.conf via lines like : n64.mupen64plus.section.option=value
+        for section_option, user_config_value in self.config.items(starts_with='mupen64plus.'):
+            custom_section, _, custom_option = section_option.partition('.')
+            if not ini_config.has_section(custom_section):
+                ini_config.add_section(custom_section)
+            ini_config.set(custom_section, custom_option, str(user_config_value))

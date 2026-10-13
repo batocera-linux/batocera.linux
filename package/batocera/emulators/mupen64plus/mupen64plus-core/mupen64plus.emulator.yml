@@ -78,6 +78,16 @@ custom_features:
       4x: 4
       8x: 8
       16x: 16
+  mupen64plus_NativeResFactor:
+    group: ADVANCED OPTIONS
+    prompt: RENDERING RESOLUTION (GLIDEN64 ONLY)
+    description: Render at the screen resolution or at a multiple of the N64 native resolution.
+    choices:
+      Screen Resolution (Default): 0
+      1x (Native): 1
+      2x: 2
+      3x: 3
+      4x: 4
   mupen64plus_TextureEnhancement:
     group: ADVANCED OPTIONS
     prompt: TEXTURE UPSCALING (RICE ONLY)
