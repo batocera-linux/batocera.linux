@@ -19,16 +19,25 @@ _logger = logging.getLogger(__name__)
 _JEDI_ACADEMY: Final = Path('/usr/bin/JediAcademy')
 _JEDI_OUTCAST: Final = Path('/usr/bin/JediOutcast')
 
+_OUTCAST_TEXT_LANGUAGES: Final = {'english': '0', 'french': '1', 'german': '2', 'spanish': '7'}
+# values stored by older yml choices
+_LEGACY_TEXT_LANGUAGES: Final = {'deutsch': 'german'}
+_LEGACY_VOICE_LANGUAGES: Final = {'french': 'francais', 'spanish': 'espanol'}
+
+
+def _line_key(line: str, /) -> str:
+    return ' '.join(line.split()[:2])
+
 
 def _update_config_file(file_path: Path, options_to_set: dict[str, str], remove_keys: list[str], /) -> None:
     if file_path.is_file():
         lines = file_path.read_text().splitlines(keepends=True)
-        lines = [line for line in lines if not any(key in line for key in remove_keys)]
+        lines = [line for line in lines if _line_key(line) not in remove_keys]
 
         for key, value in options_to_set.items():
             option_line = f'{key} "{value}"\n'
-            if any(key in line for line in lines):
-                lines = [option_line if key in line else line for line in lines]
+            if any(_line_key(line) == key for line in lines):
+                lines = [option_line if _line_key(line) == key else line for line in lines]
             else:
                 lines.append(option_line)
 
@@ -85,6 +94,7 @@ class OpenJK(Emulator):
 
     async def configure(self) -> Command:
         rom_name = self.rom.name.lower()
+        outcast = False
         if 'academy' in rom_name:
             _logger.info('Found Jedi Academy!')
             binary_src_path = _JEDI_ACADEMY
@@ -95,6 +105,7 @@ class OpenJK(Emulator):
             binary_src_path = _JEDI_OUTCAST
             binary_dest = self.rom.parent / 'openjo_sp.x86_64'
             config_file = CONFIGS / 'openjo' / 'base' / 'openjo_sp.cfg'
+            outcast = True
         else:
             _logger.info("Could not determine which game you're using!")
             _logger.info('Rename your .jedi file as per the _infot.txt file')
@@ -172,10 +183,23 @@ class OpenJK(Emulator):
         options_to_set['seta cg_crosshairIdentifyTarget'] = self.config.get_str('openjk_target', '1')
         options_to_set['seta d_slowmodeath'] = self.config.get_str('openjk_death', '3')
         options_to_set['seta cg_gunAutoFirst'] = self.config.get_str('openjk_guns', '1')
-        options_to_set['seta g_dismemberment'] = self.config.get_str('openjk_dismember', '1')
-        options_to_set['seta ui_disableWeaponSway'] = self.config.get_str('openjk_sway', '0')
-        options_to_set['seta se_language'] = self.config.get_str('openjk_text', 'english')
-        options_to_set['seta s_language'] = self.config.get_str('openjk_voice', 'english')
+        options_to_set['seta g_dismemberment'] = self.config.get_str('openjk_dismember', '3')
+
+        remove_keys.append('seta ui_disableWeaponSway')
+        bob_keys = ['seta cg_bobup', 'seta cg_bobpitch', 'seta cg_bobroll']
+        if self.config.get_str('openjk_sway') == '0':
+            options_to_set.update(dict.fromkeys(bob_keys, '0'))
+        else:
+            remove_keys.extend(bob_keys)
+
+        text_language = self.config.get_str('openjk_text', 'english')
+        text_language = _LEGACY_TEXT_LANGUAGES.get(text_language, text_language)
+        if outcast:
+            options_to_set['seta sp_language'] = _OUTCAST_TEXT_LANGUAGES.get(text_language, '0')
+        else:
+            options_to_set['seta se_language'] = text_language
+        voice_language = self.config.get_str('openjk_voice', 'english')
+        options_to_set['seta s_language'] = _LEGACY_VOICE_LANGUAGES.get(voice_language, voice_language)
         options_to_set['seta g_subtitles'] = self.config.get_str('openjk_subtitles', '0')
 
         _update_config_file(config_file, options_to_set, remove_keys)
