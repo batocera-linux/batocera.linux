@@ -41,13 +41,16 @@ systems:
         choices:
           'Off': disabled
           'On': enabled
-      atari800_artifacting:
+      atari800_artifacting_mode:
         group: ADVANCED OPTIONS
         prompt: HI-RES ARTIFACTING
-        description: Emulate NTSC quirks to show more colors in hi-res mode.
+        description: Emulate NTSC quirks to show more colours in hi-res mode.
         choices:
-          'Off': disabled
-          'On': enabled
+          'Off': none
+          Blue/Brown 1: blue/brown 1
+          Blue/Brown 2: blue/brown 2
+          GTIA: GTIA
+          CTIA: CTIA
       atari800_resolution:
         prompt: INTERNAL RESOLUTION
         description: Use an alternate resolution. Some games need this.
