@@ -271,15 +271,11 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
         )
         conf.set('DEBUG_MSGS', 'true' if self.config.get_bool('linuxloader_debug') else 'false')
         conf.set('HUMMER_FLICKER_FIX', 'true' if self.config.get_bool('linuxloader_hummer') else 'false')
-        conf.set(
-            'OUTRUN_LENS_GLARE_ENABLED',
-            'true' if self.config.get_bool('linuxloader_lens', True) else 'false',
-        )
         conf.set('BOOST_RENDER_RES', 'true' if self.config.get_bool('linuxloader_boost') else 'false')
         # disable by default, otherwise no FFB
         conf.set(
             'SKIP_OUTRUN_CABINET_CHECK',
-            'false' if 'outrun' in rom_name.lower() or 'outr2sdx' in rom_name.lower() else 'true',
+            'true' if self.config.get_bool('linuxloader_cabinet_skip') else 'false',
         )
         conf.set('SRAM_PATH', f'"{self.saves_dir}/sram.bin.{Path(rom_name).stem.lower()}"')
         conf.set('EEPROM_PATH', f'"{self.saves_dir}/eeprom.bin.{Path(rom_name).stem.lower()}"')
@@ -338,11 +334,11 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
             conf.set('EMULATE_HW210_CARDREADER', 'false')
 
         if 'initiad' in rom_name.lower() and self.config.get_bool('linuxloader_card', True):
-            conf.set('EMULATE_ID_CARD_READER', 'true')
+            conf.set('EMULATE_ID_CARDREADER', 'true')
             conf.set('ID_CARDFILE_AUTOLOAD', 'true')
             conf.set('ID_CARDFOLDER', f'"{self.saves_dir}"')
         else:
-            conf.set('EMULATE_ID_CARD_READER', 'false')
+            conf.set('EMULATE_ID_CARDREADER', 'false')
 
         # Rambo switch
         if 'rambo' in rom_name.lower():
