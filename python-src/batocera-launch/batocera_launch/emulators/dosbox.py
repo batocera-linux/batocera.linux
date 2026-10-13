@@ -43,9 +43,12 @@ class DosBox(Emulator):
         if not ini_settings.has_section('cpu'):
             ini_settings.add_section('cpu')
 
-        ini_settings.set('cpu', 'core', self.config.get_str('dosbox_cpu_core', 'auto'))
-        ini_settings.set('cpu', 'cputype', self.config.get_str('dosbox_cpu_cputype', 'auto'))
-        ini_settings.set('cpu', 'cycles', self.config.get_str('dosbox_cpu_cycles', 'auto'))
+        # loaded after the game's dosbox.cfg, so only override it when an option is set
+        for key in ('core', 'cputype', 'cycles'):
+            if value := self.config.get_str(f'dosbox_cpu_{key}'):
+                ini_settings.set('cpu', key, value)
+            else:
+                ini_settings.remove_option('cpu', key)
 
         with custom_config_path.open('w') as config:
             ini_settings.write(config)
