@@ -255,7 +255,7 @@ class Drastic(Emulator):
         }
 
         # Safe parsing for screen orientation configuration
-        orientation = self.config.get_str('drastic_screen_orientation', '0')
+        orientation = self.config.get_str('drastic_screen_orientation')
         if not orientation or orientation in {'auto', 'none'}:
             screen_orientation = '0'
         else:
@@ -263,6 +263,12 @@ class Drastic(Emulator):
                 screen_orientation = str(int(orientation))
             except ValueError:
                 screen_orientation = '0'
+
+        # single bottom is single mode with the screens swapped
+        if orientation is not None:
+            config['screen_swap'] = '1' if screen_orientation == '3' else '0'
+            if screen_orientation == '3':
+                screen_orientation = '2'
 
         language_override = self.config.get_int('drastic_language', -1)
         firmware_language = (
