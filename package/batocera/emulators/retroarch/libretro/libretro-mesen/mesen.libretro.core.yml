@@ -36,8 +36,8 @@ custom_features:
     prompt: REDUCE SPRITE FLICKERING
     description: Enhancement. Remove the eight sprite per line limit.
     choices:
-      'Off': false
-      'On': true
+      'Off': disabled
+      'On': enabled
   mesen_palette:
     prompt: COLOR PALETTE
     choices:
@@ -55,21 +55,21 @@ custom_features:
     prompt: LOAD CUSTOM TEXTURES
     description: For use with HD texture packs.
     choices:
-      'Off': false
-      'On': true
+      'Off': disabled
+      'On': enabled
   mesen_fdsautoinsertdisk:
     prompt: (FDS) AUTOMATICALLY LOAD DISK SIDE A
     description: Avoids having to manually load side A every time.
     choices:
-      'Off': false
-      'On': true
+      'Off': disabled
+      'On': enabled
   mesen_fdsfastforwardload:
     group: ADVANCED OPTIONS
     prompt: (FDS) FAST FORWARD DISK LOADING
     description: Reduce load time at the cost of accuracy.
     choices:
-      'Off': false
-      'On': true
+      'Off': disabled
+      'On': enabled
   mesen_ramstate:
     group: ADVANCED OPTIONS
     prompt: DEFAULT POWER ON RAM STATE
