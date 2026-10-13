@@ -1,0 +1,11 @@
+--- a/src/citra_libretro/core_settings.cpp
++++ b/src/citra_libretro/core_settings.cpp
+@@ -920,7 +920,7 @@
+         return Settings::TextureFilter::Bicubic;
+     if (name == "ScaleForce")
+         return Settings::TextureFilter::ScaleForce;
+-    if (name == "xBRZ freescale")
++    if (name == "xBRZ")
+         return Settings::TextureFilter::xBRZ;
+     if (name == "MMPX")
+         return Settings::TextureFilter::MMPX;
