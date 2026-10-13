@@ -31,4 +31,4 @@ class Ep128emuCore(Core):
         # User 1 Autofire for button
         core_options.set_from_config('ep128emu_afbt', default='None')
         # User 1 Autofire repeat delay
-        core_options.set_from_config('ep128emu_afsp', default='1')
+        core_options.set_from_config('ep128emu_afsp', default='2')

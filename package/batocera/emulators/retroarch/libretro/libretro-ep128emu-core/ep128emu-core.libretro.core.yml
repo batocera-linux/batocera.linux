@@ -9,8 +9,11 @@ custom_features:
     group: PERFORMANCE
     prompt: MAIN THREAD WAIT
     description: Main thread wait time in milliseconds. Core default (0).
-    preset: sliderauto
-    preset_parameters: 0 10 1 ms
+    choices:
+      0 ms (Default): '0'
+      1 ms: '1'
+      5 ms: '5'
+      10 ms: '10'
   ep128emu_sdhq:
     group: AUDIO
     prompt: HIGH SOUND QUALITY
@@ -105,10 +108,10 @@ custom_features:
   ep128emu_afsp:
     group: CONTROLS
     prompt: USER 1 AUTOFIRE REPEAT DELAY
-    description: Autofire repeat delay for User 1. Core default (1).
+    description: Autofire repeat delay for User 1. Core default (2).
     choices:
-      1 (Default): '1'
-      '2': '2'
+      '1': '1'
+      2 (Default): '2'
       '4': '4'
       '8': '8'
       '16': '16'
