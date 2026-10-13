@@ -74,8 +74,8 @@ custom_features:
     group: LIGHT GUN
     prompt: SHOW LIGHT GUN CROSSHAIRS
     choices:
-      "Off": disabled
-      "On": enabled
+      "Off": "0"
+      "On": "2"
   snes9x_blargg_filter:
     prompt: BLARGG NTSC FILTER
     description: Apply a video filter to mimic various NTSC TV signals.
