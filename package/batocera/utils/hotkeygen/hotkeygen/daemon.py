@@ -11,13 +11,18 @@ from typing import TYPE_CHECKING, Final, Self
 
 import evdev
 import pyudev
+from dbus_fast import DBusError, Variant
 from evdev import ecodes
 
 from batocera_common.asyncio import cancel_all, iterate_queue
+from batocera_common.dbus import Bus
 from batocera_common.fs import atomic_write
 from batocera_common.paths import existing_files_in_directories, glob_in_directories
+from hotkeygen.dbus.common import DBUS_BUS_NAME, DBUS_PATH, DBusContext, DBusContextType
+from hotkeygen.dbus.interfaces import (
+    HotkeygenInterface,
+)
 
-from .dbus.service import Service
 from .paths import (
     CONFIG_DEFAULTDIR,
     CONFIG_SYSTEMDIR,
@@ -41,7 +46,16 @@ if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable, Iterator, Mapping
     from pathlib import Path
 
+    from dbus_fast.annotations import DBusBool, DBusStr
+
     from ._types import HotkeysContext, HotkeysContextMapping, PersistedHotkeysContext
+    from .dbus.common import (
+        DBusDetails,
+        DBusDeviceMappingConfig,
+        DBusDeviceMappingsType,
+        DBusSystemDefaultMappingConfig,
+    )
+    from .dbus.interfaces import DBusKeysDict
 
 
 _DEFAULT_CONTEXT_FILE: Final = CONFIG_DEFAULTDIR / 'default_context.conf'
@@ -503,19 +517,46 @@ class Daemon:
         finally:
             self.tracked_backend_tasks.discard(task)
 
-    ## begin ContextBackend
+    ## begin ContextInterface
 
-    def set_context(self, context: HotkeysContextMapping, /, include_common: bool = True) -> None:
-        self.__set_context(context, include_common=include_common)
+    @property
+    def dbus_context(self) -> DBusContext:
+        context = deepcopy(self.context)
+
+        dbus_context: DBusContextType = (
+            context['name'],
+            {
+                action: Variant('s' if isinstance(keys, str) else 't' if isinstance(keys, int) else 'at', keys)
+                for action, keys in context['keys'].items()
+            },
+        )
+
+        return dbus_context
+
+    def set_context(self, name: DBusStr, keys: DBusKeysDict, include_common: DBusBool) -> None:
+        python_keys: dict[str, str | list[str]] = {}
+
+        for key, variant in keys.items():
+            if variant.signature not in ('s', 'as'):
+                raise DBusError(
+                    'org.batocera.Hotkeygen.InvalidKeys',
+                    f'Invalid variant signature for key {key}: {variant.signature}',
+                )
+
+            python_keys[key] = variant.value
+        self.__set_context({'name': name, 'keys': python_keys}, include_common=include_common)
 
     def set_default_context(self) -> None:
         self.__set_context(None, include_common=True)
 
-    def get_context(self) -> HotkeysContext:
-        return deepcopy(self.context)
+    def get_details(self) -> DBusDetails:
+        mappings = dict(device_loop.get_device_mapping_item() for device_loop in self.device_loops.values())
 
-    def get_device_mappings(self) -> dict[tuple[str, str, str, str], tuple[dict[int, str], dict[int, str]]]:
-        return dict(device_loop.get_device_mapping_item() for device_loop in self.device_loops.values())
+        dbus_mappings: DBusDeviceMappingsType = [
+            (device, (mapping, associations)) for device, (mapping, associations) in mappings.items()
+        ]
+
+        return (self.dbus_context, dbus_mappings)
 
     def reload(self) -> None:
         if not self.context['name']:
@@ -523,25 +564,25 @@ class Daemon:
         else:
             self.__reload_device_mappings()
 
-    ## end ContextBackend
+    ## end ContextInterface
 
-    ## begin HotkeyBackend
+    ## begin HotkeyInterface
 
     async def send_hotkey(self, hotkey: str, delay: int | None, /) -> None:
         await self.__run_tracked_action(self.__send_hotkey, hotkey, delay)
 
-    ## end HotkeyBackend
+    ## end HotkeyInterace
 
-    ## begin MouseBackend
+    ## begin MouseInterace
 
     async def reset_mouse_position(self) -> None:
         await self.__run_tracked_action(self.__reset_mouse_position)
 
-    ## end MouseBackend
+    ## end MouseInterace
 
-    ## begin ConfigBackend
+    ## begin ConfigInterace
 
-    def get_system_default_mapping_config(self) -> tuple[dict[str, str], dict[str, str]]:
+    def get_system_default_mapping_config(self) -> DBusSystemDefaultMappingConfig:
         by_keys: dict[str, str] = json.loads(SYSTEM_DEFAULT_MAPPING.read_text())
         by_names: dict[str, str] = {name: key for key, name in by_keys.items()}
 
@@ -577,7 +618,7 @@ class Daemon:
 
             yield file
 
-    def get_device_mapping_config(self) -> dict[str, dict[str, str]]:
+    def get_device_mapping_config(self) -> DBusDeviceMappingConfig:
         device_mappings: dict[str, dict[str, str]] = {}
 
         for mapping_file in self.__get_connected_mapping_files():
@@ -614,15 +655,15 @@ class Daemon:
         with atomic_write(user_file) as user_file:
             user_file.write_text(json.dumps(values, indent=4))
 
-    def set_device_mapping_config(self, filename: str, key: str, action: str, /) -> None:
+    def set_device_mapping_config(self, filename: DBusStr, key: DBusStr, action: DBusStr) -> None:
         self.__write_device_mapping_config(filename, key, action)
         self.__reload_device_mappings()
 
-    def remove_device_mapping_config(self, filename: str, key: str, /) -> None:
+    def remove_device_mapping_config(self, filename: DBusStr, key: DBusStr) -> None:
         self.__write_device_mapping_config(filename, key, None)
         self.__reload_device_mappings()
 
-    ## end ConfigBackend
+    ## end ConfigInterace
 
     async def run(self) -> None:
         if self.running:
@@ -650,11 +691,16 @@ class Daemon:
         self.udev_task = asyncio.create_task(self.__udev_loop(), name='udev-input-monitor')
 
         try:
-            async with Service(self):
+            async with Bus() as bus:
+                bus.get_path(DBUS_PATH, HotkeygenInterface).export(self)
+
+                await bus.request_name(DBUS_BUS_NAME)
+
                 try:
                     await asyncio.Event().wait()  # wait forever
                 finally:
                     self.stopping = True
+
         finally:
             loop.remove_reader(self.monitor)
 

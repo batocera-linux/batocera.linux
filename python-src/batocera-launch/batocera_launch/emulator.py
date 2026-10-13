@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, ClassVar, Final, Self, cast
 
 from batocera_common.asyncio import group_tasks, parallel
 from batocera_common.dataclasses import cached_dataclass, cached_property
+from batocera_common.dbus import Bus
 from batocera_common.math import clamp
 from batocera_common.paths import BIOS, CONFIGS, ROMS, SAVES
 
@@ -69,6 +70,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     game_info_path: Path = field(init=False)
 
     # These are set in __aenter__
+    bus: Bus = field(init=False, default=cast('Bus', None), repr=False)
     rom: Rom = field(init=False, default=cast('Rom', None))
     metadata: dict[str, str] = field(init=False, default=cast('dict[str, str]', None), repr=False)
     controllers: Controllers = field(init=False, default=cast('Controllers', None), repr=False)
@@ -95,6 +97,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         self.__plugins.start()
 
         try:
+            self.bus = await self.__stack.enter_async_context(Bus())
+
             self.rom = await self.__stack.enter_async_context(
                 Rom.prepare(
                     self.config.rom,
@@ -767,7 +771,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         async with (
             script_caller(('gameStart', 'gameStop'), self.system, self.name, self.core, self.rom),
             EvmapyManager(self) as evmapy_manager,
-            HotkeygenManager(self.hotkeygen_context, self.config.get_bool('exithotkeyonly'), self.config.ui_mode),
+            HotkeygenManager(
+                self.bus, self.hotkeygen_context, self.config.get_bool('exithotkeyonly'), self.config.ui_mode
+            ),
         ):
             with self.prepare_execution_path():
                 if self.needs_sdl_controller_db:

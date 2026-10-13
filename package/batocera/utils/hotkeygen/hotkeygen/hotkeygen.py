@@ -6,13 +6,17 @@ import argparse
 async def _client(args: argparse.Namespace) -> None:
     import json
 
-    from .dbus.client import Client
+    from batocera_common.dbus import Bus
 
-    async with Client() as client:
+    from .dbus.client import HotkeygenClient
+
+    async with Bus() as bus:
+        client = HotkeygenClient(bus)
+
         if args.list:
             await client.list_config()
         elif args.reset_mouse:
-            await client.reset_mouse()
+            await client.reset_mouse_position()
         elif args.send is not None:
             await client.send_hotkey(args.send, args.send_delay or 0)
         elif args.new_context is not None:
