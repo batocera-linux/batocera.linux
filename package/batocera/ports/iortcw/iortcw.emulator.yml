@@ -17,7 +17,7 @@ custom_features:
   iortcw_api:
     submenu: GRAPHICS
     prompt: RENDERER
-    description: Choose your preferred renderer.
+    description: Choose your preferred renderer. Enhanced OpenGL is only available on x86_64.
     choices:
       Standard OpenGL (Default): opengl1
       Enhanced OpenGL: rend2
@@ -43,7 +43,8 @@ custom_features:
     prompt: ANISOTROPIC FILTERING
     description: Improves clarity of distant textures.
     choices:
-      2x (Default): "2"
+      Off (Default): "0"
+      2x: "2"
       4x: "4"
       8x: "8"
       16x: "16"
