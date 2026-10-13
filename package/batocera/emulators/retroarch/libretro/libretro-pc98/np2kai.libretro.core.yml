@@ -48,7 +48,7 @@ custom_features:
     prompt: EMULATED RAM SIZE
     choices:
       1MB: 1
-      3MB: 2
+      3MB: 3
       7MB: 7
       11MB: 11
       13MB (Recommended): 13
@@ -125,7 +125,7 @@ custom_features:
     prompt: JOY2KEY PROFILE
     description: Emulate a keyboard/mouse/joypad.
     choices:
-      'Off': false
+      'Off': 'OFF'
       Mouse: Mouse
       Arrows: Arrows
       Arrows 3button: Arrows 3button
