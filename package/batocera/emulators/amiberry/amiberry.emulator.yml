@@ -109,8 +109,8 @@ custom_features:
     prompt: FORCE NTSC
     description: Force NTSC instead PAL.
     choices:
-      "ON (Default)": False
-      "OFF": True
+      "OFF (Default)": False
+      "ON": True
   amiberry_shader:
     prompt: SHADER
     description: CRT Shader.
@@ -124,13 +124,6 @@ custom_features:
     group: KEYBOARD OPTIONS
     prompt: VIRTUAL KEYBOARD
     description: Enable the Virtual Keyboard.
-    choices:
-      "OFF": 0
-      "ON": 1
-  amiberry_hires_keyboard:
-    group: KEYBOARD OPTIONS
-    prompt: LARGER KEYBOARD
-    description: High-Resolution Keyboard, which is larger and might be easier to see.
     choices:
       "OFF": 0
       "ON": 1
