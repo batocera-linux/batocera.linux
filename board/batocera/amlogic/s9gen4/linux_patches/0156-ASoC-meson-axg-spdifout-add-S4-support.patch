@@ -1,0 +1,106 @@
+From a8a181a8fca4729f089c4c37314b0c7f2aa6491c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Oct 2026 10:29:28 +0000
+Subject: [PATCH 170/210] ASoC: meson: axg-spdifout: add S4 support
+
+The S4 SPDIF output has a 16-bit sample mask in SPDIFOUT_CTRL0[15:0],
+two bits per lane, where AXG and G12A use CTRL0[11:4]. Writing the
+G12A layout selects lane 2 on S4, so a stereo stream sends no samples
+and HDMI or optical receivers get frames carrying no audio data.
+
+Add match data with the position of the sample mask, and a S4
+compatible that uses the per-lane layout.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/axg-spdifout.c | 31 +++++++++++++++++++++++++++----
+ 1 file changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/sound/soc/meson/axg-spdifout.c b/sound/soc/meson/axg-spdifout.c
+index 8b7656eb2629..2085917b5b44 100644
+--- a/sound/soc/meson/axg-spdifout.c
++++ b/sound/soc/meson/axg-spdifout.c
+@@ -5,6 +5,7 @@
+ 
+ #include <linux/clk.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/of_platform.h>
+ #include <linux/regmap.h>
+ #include <sound/soc.h>
+@@ -35,7 +36,7 @@
+ #define  SPDIFOUT_CTRL0_VSEL		BIT(18)
+ #define  SPDIFOUT_CTRL0_VSET		BIT(17)
+ #define  SPDIFOUT_CTRL0_MASK_MASK	GENMASK(11, 4)
+-#define  SPDIFOUT_CTRL0_MASK(x)		((x) << 4)
++#define  SPDIFOUT_CTRL0_S4_MASK_MASK	GENMASK(15, 0)
+ #define SPDIFOUT_CTRL1			0x10
+ #define  SPDIFOUT_CTRL1_MSB_POS_MASK	GENMASK(12, 8)
+ #define  SPDIFOUT_CTRL1_MSB_POS(x)	((x) << 8)
+@@ -59,10 +60,15 @@
+ 
+ #define SPDIFOUT_CH_MAX			8
+ 
++struct axg_spdifout_match_data {
++	u32 ctrl0_mask;
++};
++
+ struct axg_spdifout {
+ 	struct regmap *map;
+ 	struct clk *mclk;
+ 	struct clk *pclk;
++	const struct axg_spdifout_match_data *data;
+ 	u8 iec_status[AES_IEC958_STATUS_SIZE];
+ };
+ 
+@@ -137,10 +143,11 @@ static int axg_spdifout_sample_fmt(struct snd_pcm_hw_params *params,
+ 		return -EINVAL;
+ 	}
+ 
+-	val = SPDIFOUT_CTRL0_MASK(params_channels(params) > 1 ? 0x3 : 0x1);
++	val = (params_channels(params) > 1 ? 0x3 : 0x1) <<
++	      __ffs(priv->data->ctrl0_mask);
+ 
+ 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0,
+-			   SPDIFOUT_CTRL0_MASK_MASK, val);
++			   priv->data->ctrl0_mask, val);
+ 
+ 	/* FIFO data are arranged in chunks of 64bits */
+ 	switch (params_physical_width(params)) {
+@@ -468,8 +475,22 @@ static const struct regmap_config axg_spdifout_regmap_cfg = {
+ 	.max_register	= SPDIFOUT_MUTE_VAL,
+ };
+ 
++static const struct axg_spdifout_match_data axg_spdifout_match_data = {
++	.ctrl0_mask = SPDIFOUT_CTRL0_MASK_MASK,
++};
++
++static const struct axg_spdifout_match_data s4_spdifout_match_data = {
++	.ctrl0_mask = SPDIFOUT_CTRL0_S4_MASK_MASK,
++};
++
+ static const struct of_device_id axg_spdifout_of_match[] = {
+-	{ .compatible = "amlogic,axg-spdifout", },
++	{
++		.compatible = "amlogic,axg-spdifout",
++		.data = &axg_spdifout_match_data,
++	}, {
++		.compatible = "amlogic,s4-spdifout",
++		.data = &s4_spdifout_match_data,
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, axg_spdifout_of_match);
+@@ -486,6 +507,8 @@ static int axg_spdifout_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	platform_set_drvdata(pdev, priv);
+ 
++	priv->data = of_device_get_match_data(dev);
++
+ 	ret = snd_pcm_create_iec958_consumer_default(priv->iec_status,
+ 						     sizeof(priv->iec_status));
+ 	if (ret < 0)
+-- 
+2.43.0
+

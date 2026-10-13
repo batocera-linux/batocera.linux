@@ -1,0 +1,1041 @@
+From 1782af32c894dc514aafe0f8bda4dd6f43778156 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 19:20:44 +0000
+Subject: [PATCH 146/210] arm64: dts: meson: gx: carry HDMI audio from the
+ SPDIF encoder
+
+The AIU IEC958 encoder only feeds the optical output on boards that have
+one, so a compressed stream cannot be sent over HDMI. Link the encoder to
+the HDMI controller on all GX boards, adding the S/PDIF FIFO and encoder
+links to boards without an optical output.
+
+hdmi_tx now has an I2S and an S/PDIF DAI, so name the I2S DAI in the
+existing HDMI link of the HiFi-Shield boards, which do not use the
+common sound card layout.
+
+Place the S/PDIF FIFO link second on every board so the PCM device that
+carries compressed audio has the same number across the family.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../dts/amlogic/meson-gx-libretech-pc.dtsi    | 24 +++++++++++++++++--
+ .../boot/dts/amlogic/meson-gx-p23x-q20x.dtsi  | 12 ++++++++++
+ .../boot/dts/amlogic/meson-gxbb-kii-pro.dts   | 12 ++++++++++
+ .../boot/dts/amlogic/meson-gxbb-nanopi-k2.dts | 22 ++++++++++++++++-
+ .../dts/amlogic/meson-gxbb-nexbox-a95x.dts    | 22 ++++++++++++++++-
+ .../meson-gxbb-odroidc2-hifishield.dts        | 14 ++++++++++-
+ .../meson-gxbb-odroidc2-hifishield2.dts       | 14 ++++++++++-
+ .../boot/dts/amlogic/meson-gxbb-odroidc2.dts  | 22 ++++++++++++++++-
+ .../boot/dts/amlogic/meson-gxbb-p200.dts      | 12 ++++++++++
+ .../boot/dts/amlogic/meson-gxbb-p201.dts      | 22 ++++++++++++++++-
+ .../boot/dts/amlogic/meson-gxbb-vega-s95.dtsi | 12 ++++++++++
+ .../boot/dts/amlogic/meson-gxbb-wetek-hub.dts | 22 ++++++++++++++++-
+ .../dts/amlogic/meson-gxbb-wetek-play2.dts    | 12 ++++++++++
+ .../amlogic/meson-gxl-s805x-libretech-ac.dts  | 24 +++++++++++++++++--
+ .../boot/dts/amlogic/meson-gxl-s805x-p241.dts | 24 +++++++++++++++++--
+ .../meson-gxl-s805y-xiaomi-aquaman.dts        | 22 ++++++++++++++++-
+ .../amlogic/meson-gxl-s905x-khadas-vim.dts    | 22 ++++++++++++++++-
+ .../meson-gxl-s905x-libretech-cc-v2.dts       | 22 ++++++++++++++++-
+ .../amlogic/meson-gxl-s905x-libretech-cc.dts  | 24 +++++++++++++++++--
+ .../boot/dts/amlogic/meson-gxl-s905x-p212.dts | 24 +++++++++++++++++--
+ .../dts/amlogic/meson-gxl-s905x-vero4k.dts    | 12 ++++++++++
+ .../dts/amlogic/meson-gxm-khadas-vim2.dts     | 22 ++++++++++++++++-
+ .../boot/dts/amlogic/meson-gxm-nexbox-a1.dts  | 12 ++++++++++
+ .../boot/dts/amlogic/meson-gxm-rbox-pro.dts   | 12 ++++++++++
+ 24 files changed, 421 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
+index 8c15b0121d47..8157fb21b0f6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-libretech-pc.dtsi
+@@ -210,6 +210,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -223,7 +227,7 @@ codec-1 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+@@ -231,13 +235,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-3 {
++		dai-link-4 {
+ 			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+index 84b5209059b8..17e9af432aa8 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-p23x-q20x.dtsi
+@@ -167,6 +167,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -184,6 +188,14 @@ codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
+index ce40f93b1a7c..d8295d9ea52e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-kii-pro.dts
+@@ -80,6 +80,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -89,6 +93,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts
+index 4157942b860b..599a485aad3f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-nanopi-k2.dts
+@@ -151,6 +151,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -160,13 +164,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts
+index 59d9c4a08150..a95dc59a2941 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-nexbox-a95x.dts
+@@ -158,6 +158,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -167,13 +171,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
+index 2073c94d8cb7..6be1e53792a4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
+@@ -69,13 +69,25 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield2.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield2.dts
+index 6533c4aeee80..207d69a021cc 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield2.dts
+@@ -69,13 +69,25 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts
+index 20f1e5feb3cb..2440821834f2 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2.dts
+@@ -33,6 +33,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -42,13 +46,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts
+index 1606bff396d2..cd15677c159b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-p200.dts
+@@ -103,6 +103,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -112,6 +116,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-p201.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-p201.dts
+index 336902521883..731a1379bcbe 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-p201.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-p201.dts
+@@ -33,6 +33,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -42,13 +46,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
+index a37a0e540b31..694d8d6fcf12 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-vega-s95.dtsi
+@@ -143,6 +143,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -152,6 +156,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-hub.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-hub.dts
+index 6c42176c7bce..b523628e03eb 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-hub.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-hub.dts
+@@ -32,6 +32,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -41,13 +45,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-play2.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-play2.dts
+index 716b3777f0ad..5dc1687d12d4 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-play2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek-play2.dts
+@@ -83,6 +83,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -92,6 +96,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-libretech-ac.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-libretech-ac.dts
+index ae20cf35a665..6559e822870c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-libretech-ac.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-libretech-ac.dts
+@@ -139,6 +139,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -152,7 +156,7 @@ codec-1 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+@@ -160,13 +164,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-3 {
++		dai-link-4 {
+ 			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-p241.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-p241.dts
+index 17ffdb7731ae..873f7edfa689 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-p241.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s805x-p241.dts
+@@ -144,6 +144,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -157,7 +161,7 @@ codec-1 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+@@ -165,13 +169,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-3 {
++		dai-link-4 {
+ 			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s805y-xiaomi-aquaman.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s805y-xiaomi-aquaman.dts
+index 2283a7db91f5..0f27aaa8dd18 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s805y-xiaomi-aquaman.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s805y-xiaomi-aquaman.dts
+@@ -134,6 +134,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -143,13 +147,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+index b7c216b902c3..79945d7f7191 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+@@ -85,6 +85,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -94,13 +98,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc-v2.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc-v2.dts
+index 113d2d9d7a25..125cb47a980d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc-v2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc-v2.dts
+@@ -176,6 +176,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -185,13 +189,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc.dts
+index 17eccaf75ca5..3f847cd8a732 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-libretech-cc.dts
+@@ -158,6 +158,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -171,7 +175,7 @@ codec-1 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+@@ -179,13 +183,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-3 {
++		dai-link-4 {
+ 			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
+index 3b0326149fd2..e36469f47017 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
+@@ -65,6 +65,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -78,7 +82,7 @@ codec-1 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+@@ -86,13 +90,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-3 {
++		dai-link-4 {
+ 			sound-dai = <&aiu AIU_ACODEC CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-vero4k.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-vero4k.dts
+index bf0c1ff39ad6..6b8402c1b409 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-vero4k.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-vero4k.dts
+@@ -130,6 +130,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -147,6 +151,14 @@ codec-0 {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		dai-link-6 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+index 3ff74067fd80..d48deb994044 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-khadas-vim2.dts
+@@ -168,6 +168,10 @@ dai-link-0 {
+ 		};
+ 
+ 		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
+ 			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+ 			dai-format = "i2s";
+ 			mclk-fs = <256>;
+@@ -177,13 +181,29 @@ codec-0 {
+ 			};
+ 		};
+ 
+-		dai-link-2 {
++		dai-link-3 {
+ 			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+ 
+ 			codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
++		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
+index e99176662ed7..2ad2d1387e5d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-nexbox-a1.dts
+@@ -121,6 +121,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -130,6 +134,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts b/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
+index 31e7a5ff3fc8..f9a58cde77fc 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm-rbox-pro.dts
+@@ -136,6 +136,10 @@ dai-link-3 {
+ 			codec-0 {
+ 				sound-dai = <&spdif_dit>;
+ 			};
++
++			codec-1 {
++				sound-dai = <&aiu AIU_HDMI CTRL_PCM>;
++			};
+ 		};
+ 
+ 		dai-link-4 {
+@@ -145,6 +149,14 @@ codec-0 {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		dai-link-5 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT_SPDIF>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+-- 
+2.43.0
+

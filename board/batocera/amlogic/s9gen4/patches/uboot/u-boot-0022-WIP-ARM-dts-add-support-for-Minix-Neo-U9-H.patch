@@ -1,0 +1,30 @@
+From 69bbe7fa336270c299f49bbc01ee770b7ffde5a1 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:50:15 +0000
+Subject: [PATCH 22/43] WIP: ARM: dts: add support for Minix Neo U9-H
+
+The board device tree comes from dts/upstream, so only add the
+u-boot.dtsi file, which includes the common GXL U-Boot additions.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/dts/meson-gxm-minix-neo-u9h-u-boot.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
+ create mode 100644 arch/arm/dts/meson-gxm-minix-neo-u9h-u-boot.dtsi
+
+diff --git a/arch/arm/dts/meson-gxm-minix-neo-u9h-u-boot.dtsi b/arch/arm/dts/meson-gxm-minix-neo-u9h-u-boot.dtsi
+new file mode 100644
+index 00000000000..39270ea71c8
+--- /dev/null
++++ b/arch/arm/dts/meson-gxm-minix-neo-u9h-u-boot.dtsi
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2019 BayLibre, SAS.
++ * Author: Neil Armstrong <narmstrong@baylibre.com>
++ */
++
++#include "meson-gxl-u-boot.dtsi"
+-- 
+2.43.0
+

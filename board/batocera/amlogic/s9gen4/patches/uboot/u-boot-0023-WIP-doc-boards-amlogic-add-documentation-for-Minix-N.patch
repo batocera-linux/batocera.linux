@@ -1,0 +1,164 @@
+From b10fa9f04d8efa3abb018ae09a009ab429ed620c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:50:16 +0000
+Subject: [PATCH 23/43] WIP: doc: boards: amlogic: add documentation for Minix
+ Neo U9-H
+
+Add build instructions for the Minix Neo U9-H board, list them in the
+Amlogic board index, and add the board files to the q200 MAINTAINERS
+file.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ board/amlogic/q200/MAINTAINERS  |   2 +
+ doc/board/amlogic/index.rst     |   1 +
+ doc/board/amlogic/minix-u9h.rst | 111 ++++++++++++++++++++++++++++++++
+ 3 files changed, 114 insertions(+)
+ create mode 100644 doc/board/amlogic/minix-u9h.rst
+
+diff --git a/board/amlogic/q200/MAINTAINERS b/board/amlogic/q200/MAINTAINERS
+index aece8d5e05c..f8747bcea5b 100644
+--- a/board/amlogic/q200/MAINTAINERS
++++ b/board/amlogic/q200/MAINTAINERS
+@@ -8,7 +8,9 @@ F:	configs/beelink-gt1-ultimate_defconfig
+ F:	configs/khadas-vim2_defconfig
+ F:	configs/libretech-s905d-pc_defconfig
+ F:	configs/libretech-s912-pc_defconfig
++F:	configs/minix-u9h_defconfig
+ F:	configs/wetek-core2_defconfig
+ F:	doc/board/amlogic/beelink-gt1-ultimate.rst
+ F:	doc/board/amlogic/khadas-vim2.rst
++F:	doc/board/amlogic/minix-u9h.rst
+ F:	doc/board/amlogic/wetek-core2.rst
+diff --git a/doc/board/amlogic/index.rst b/doc/board/amlogic/index.rst
+index e8bb421ed8c..34940d9751f 100644
+--- a/doc/board/amlogic/index.rst
++++ b/doc/board/amlogic/index.rst
+@@ -104,6 +104,7 @@ Board Documentation
+    khadas-vim3l
+    libretech-ac
+    libretech-cc
++   minix-u9h
+    nanopi-k2
+    odroid-c2
+    odroid-c4
+diff --git a/doc/board/amlogic/minix-u9h.rst b/doc/board/amlogic/minix-u9h.rst
+new file mode 100644
+index 00000000000..2c70b38d367
+--- /dev/null
++++ b/doc/board/amlogic/minix-u9h.rst
+@@ -0,0 +1,111 @@
++.. SPDX-License-Identifier: GPL-2.0+
++
++U-Boot for Minix Neo U9-H (S912)
++================================
++
++Minix Neo U9-H is an Android STB based on the Q200 reference design with the following
++specifications:
++
++ - Amlogic S912 ARM Cortex-A53 octo-core SoC @ 1.5GHz
++ - ARM Mali T820 GPU
++ - 2GB DDR3 SDRAM
++ - 10/100/1000 Realtek RTL8211 Ethernet (external PHY)
++ - Broadcom BCM4356 SDIO Module (802.11 b/g/n/ac), Bluetooth 4.1
++ - HDMI 2.0 4K/60Hz display
++ - 2x USB 2.0 Host
++ - 1x USB 2.0 OTG
++ - 16GB eMMC
++ - microSD
++ - IR receiver
++ - Nuvoton MCU
++
++U-Boot Compilation
++------------------
++
++.. code-block:: bash
++
++    $ export CROSS_COMPILE=aarch64-none-elf-
++    $ make minix-u9h_defconfig
++    $ make
++
++U-Boot Signing with Pre-Built FIP repo
++--------------------------------------
++
++.. code-block:: bash
++
++    $ git clone https://github.com/LibreELEC/amlogic-boot-fip --depth=1
++    $ cd amlogic-boot-fip
++    $ mkdir my-output-dir
++    $ ./build-fip.sh minix-u9h /path/to/u-boot/u-boot.bin my-output-dir
++
++U-Boot Manual Signing
++---------------------
++
++Amlogic does not provide firmware sources or tools needed to create the bootloader image
++and Minix has not publicly shared the precompiled FIP binaries. However the Khadas VIM1
++sources also work with the U9-H box so we can use the Khadas git tree:
++
++.. code-block:: bash
++
++    $ wget https://releases.linaro.org/archive/13.11/components/toolchain/binaries/gcc-linaro-aarch64-none-elf-4.8-2013.11_linux.tar.xz
++    $ wget https://releases.linaro.org/archive/13.11/components/toolchain/binaries/gcc-linaro-arm-none-eabi-4.8-2013.11_linux.tar.xz
++    $ tar xvfJ gcc-linaro-aarch64-none-elf-4.8-2013.11_linux.tar.xz
++    $ tar xvfJ gcc-linaro-arm-none-eabi-4.8-2013.11_linux.tar.xz
++    $ export PATH=$PWD/gcc-linaro-aarch64-none-elf-4.8-2013.11_linux/bin:$PWD/gcc-linaro-arm-none-eabi-4.8-2013.11_linux/bin:$PATH
++    $ git clone https://github.com/khadas/u-boot -b khadas-vim-v2015.01 vim-u-boot
++    $ cd vim-u-boot
++    $ make kvim_defconfig
++    $ make
++    $ export FIPDIR=$PWD/fip
++
++Go back to the mainline U-Boot source tree then:
++
++.. code-block:: bash
++
++    $ mkdir fip
++    $ cp $FIPDIR/gxl/bl2.bin fip/
++    $ cp $FIPDIR/gxl/acs.bin fip/
++    $ cp $FIPDIR/gxl/bl21.bin fip/
++    $ cp $FIPDIR/gxl/bl30.bin fip/
++    $ cp $FIPDIR/gxl/bl301.bin fip/
++    $ cp $FIPDIR/gxl/bl31.img fip/
++    $ cp u-boot.bin fip/bl33.bin
++
++    $ $FIPDIR/blx_fix.sh \
++              fip/bl30.bin \
++              fip/zero_tmp \
++              fip/bl30_zero.bin \
++              fip/bl301.bin \
++              fip/bl301_zero.bin \
++              fip/bl30_new.bin \
++              bl30
++
++    $ python $FIPDIR/acs_tool.pyc fip/bl2.bin fip/bl2_acs.bin fip/acs.bin 0
++
++    $ $FIPDIR/blx_fix.sh \
++              fip/bl2_acs.bin \
++              fip/zero_tmp \
++              fip/bl2_zero.bin \
++              fip/bl21.bin \
++              fip/bl21_zero.bin \
++              fip/bl2_new.bin \
++              bl2
++
++    $ $FIPDIR/gxl/aml_encrypt_gxl --bl3enc --input fip/bl30_new.bin
++    $ $FIPDIR/gxl/aml_encrypt_gxl --bl3enc --input fip/bl31.img
++    $ $FIPDIR/gxl/aml_encrypt_gxl --bl3enc --input fip/bl33.bin
++    $ $FIPDIR/gxl/aml_encrypt_gxl --bl2sig --input fip/bl2_new.bin --output fip/bl2.n.bin.sig
++    $ $FIPDIR/gxl/aml_encrypt_gxl --bootmk \
++                                  --output fip/u-boot.bin \
++                                  --bl2 fip/bl2.n.bin.sig \
++                                  --bl30 fip/bl30_new.bin.enc \
++                                  --bl31 fip/bl31.img.enc \
++                                  --bl33 fip/bl33.bin.enc
++
++Then write U-Boot to SD or eMMC with:
++
++.. code-block:: bash
++
++    $ DEV=/dev/boot_device
++    $ dd if=fip/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=512 skip=1 seek=1
++    $ dd if=fip/u-boot.bin.sd.bin of=$DEV conv=fsync,notrunc bs=1 count=440
+-- 
+2.43.0
+

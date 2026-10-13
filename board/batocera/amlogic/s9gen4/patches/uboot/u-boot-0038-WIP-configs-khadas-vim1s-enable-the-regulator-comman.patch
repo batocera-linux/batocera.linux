@@ -1,0 +1,30 @@
+From cce43c041c07c64220b891721685f83784e139ad Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:52:20 +0000
+Subject: [PATCH 38/43] WIP: configs: khadas-vim1s: enable the regulator
+ command
+
+Enable the regulator command so the VDDCPU and other board supplies
+can be inspected from the U-Boot prompt.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ configs/khadas-vim1s_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/configs/khadas-vim1s_defconfig b/configs/khadas-vim1s_defconfig
+index 85049877f39..0dffaada8e1 100644
+--- a/configs/khadas-vim1s_defconfig
++++ b/configs/khadas-vim1s_defconfig
+@@ -33,6 +33,7 @@ CONFIG_CMD_MMC=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_WDT=y
+ CONFIG_CMD_RTC=y
++CONFIG_CMD_REGULATOR=y
+ CONFIG_OF_CONTROL=y
+ CONFIG_OF_UPSTREAM=y
+ CONFIG_SARADC_MESON=y
+-- 
+2.43.0
+

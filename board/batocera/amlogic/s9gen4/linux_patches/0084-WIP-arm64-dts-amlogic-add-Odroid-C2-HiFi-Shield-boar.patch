@@ -1,0 +1,157 @@
+From 028c01b58eb68c48a42a6d025e50ce0d08a3645d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 24 Jun 2026 12:42:41 +0000
+Subject: [PATCH 091/210] WIP: arm64: dts: amlogic: add Odroid-C2 HiFi-Shield+
+ board
+
+Add a board variant for the Hardkernel HiFi-Shield+ mezzanine on the
+ODROID-C2. The shield carries a TI PCM5102A I2S DAC fed from the J7
+audio header.
+
+The AIU I2S and S/PDIF outputs are muxed off-SoC, the PCM5102A is added
+as a second codec on the I2S encoder backend (played alongside HDMI),
+and the S/PDIF output is exposed via an spdif-dit codec.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/Makefile          |   1 +
+ .../meson-gxbb-odroidc2-hifishield.dts        | 115 ++++++++++++++++++
+ 2 files changed, 116 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
+
+diff --git a/arch/arm64/boot/dts/amlogic/Makefile b/arch/arm64/boot/dts/amlogic/Makefile
+index 57bc440fa55c..0356717682ce 100644
+--- a/arch/arm64/boot/dts/amlogic/Makefile
++++ b/arch/arm64/boot/dts/amlogic/Makefile
+@@ -44,6 +44,7 @@ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-kii-pro.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-nanopi-k2.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-nexbox-a95x.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-odroidc2.dtb
++dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-odroidc2-hifishield.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-p200.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-p201.dtb
+ dtb-$(CONFIG_ARCH_MESON) += meson-gxbb-vega-s95-meta.dtb
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
+new file mode 100644
+index 000000000000..2073c94d8cb7
+--- /dev/null
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-odroidc2-hifishield.dts
+@@ -0,0 +1,115 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright (c) 2016 Andreas Färber
++ * Copyright (c) 2016 BayLibre, Inc.
++ *   Author: Kevin Hilman <khilman@kernel.org>
++ * Copyright (c) 2026 Christian Hewitt
++ *
++ * ODROID-C2 with the Hardkernel HiFi-Shield+ mezzanine board, which carries
++ * a TI PCM5102A I2S DAC fed from the J7 audio header. The AIU I2S and S/PDIF
++ * outputs are routed off-SoC and the DAC is added as a second codec on the
++ * I2S encoder backend (played alongside HDMI).
++ */
++
++/dts-v1/;
++
++#include "meson-gxbb-odroidc2.dtsi"
++#include <dt-bindings/sound/meson-aiu.h>
++
++/ {
++	compatible = "hardkernel,odroid-c2", "amlogic,meson-gxbb";
++	model = "Hardkernel ODROID-C2 with HiFi-Shield2";
++
++	spdif_dit: audio-codec-1 {
++		#sound-dai-cells = <0>;
++		compatible = "linux,spdif-dit";
++		status = "okay";
++		sound-name-prefix = "DIT";
++	};
++
++	sound {
++		compatible = "amlogic,gx-sound-card";
++		model = "ODROID-C2";
++		clocks = <&clkc CLKID_MPLL0>,
++			 <&clkc CLKID_MPLL1>,
++			 <&clkc CLKID_MPLL2>;
++
++		assigned-clocks = <&clkc CLKID_MPLL0>,
++				  <&clkc CLKID_MPLL1>,
++				  <&clkc CLKID_MPLL2>;
++		assigned-clock-rates = <294912000>,
++				       <270950400>,
++				       <393216000>;
++
++		dai-link-0 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
++		};
++
++		dai-link-1 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_FIFO>;
++		};
++
++		dai-link-2 {
++			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
++			dai-format = "i2s";
++			mclk-fs = <256>;
++
++			codec-0 {
++				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
++			};
++
++			codec-1 {
++				sound-dai = <&pcm5102a>;
++			};
++		};
++
++		dai-link-3 {
++			sound-dai = <&aiu AIU_CPU CPU_SPDIF_ENCODER>;
++
++			codec-0 {
++				sound-dai = <&spdif_dit>;
++			};
++		};
++
++		dai-link-4 {
++			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
++
++			codec-0 {
++				sound-dai = <&hdmi_tx>;
++			};
++		};
++	};
++};
++
++&aiu {
++	status = "okay";
++	pinctrl-0 = <&spdif_out_ao_6_pins>, <&i2s_am_clk_pins>,
++		    <&i2s_out_ao_clk_pins>, <&i2s_out_lr_clk_pins>,
++		    <&i2s_out_ch01_ao_pins>;
++	pinctrl-names = "default";
++};
++
++&gpio_ao {
++	gpio-line-names = "UART TX", "UART RX", "VCCK En", "TF 3V3/1V8 En",
++			  "USB HUB nRESET", "USB OTG Power En",
++			  "SPDIF_OUTPUT", "IR In", "I2S_MCLK",
++			  "I2S_SCLK", "I2S_LRCLK", "I2S_DATA_OUTPUT",
++			  "HDMI CEC", "SYS LED",
++			  /* GPIO_TEST_N */
++			  "";
++};
++
++&i2c_A {
++	status = "okay";
++	pinctrl-0 = <&i2c_a_pins>;
++	pinctrl-names = "default";
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	pcm5102a: pcm5102a@4c {
++		compatible = "ti,pcm5102a";
++		reg = <0x4c>;
++		#sound-dai-cells = <0>;
++	};
++};
+-- 
+2.43.0
+

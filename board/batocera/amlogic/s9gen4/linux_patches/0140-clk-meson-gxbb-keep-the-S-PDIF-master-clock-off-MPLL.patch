@@ -1,0 +1,58 @@
+From deab03a31468c552e9a98d18c11dfa83fb9533a5 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 30 Sep 2026 12:41:56 +0000
+Subject: [PATCH 154/210] clk: meson: gxbb: keep the S/PDIF master clock off
+ MPLL0
+
+The IEC958 master clock mux picks the closest parent for each rate.
+MPLL0 and MPLL2 both provide the 48kHz family exactly, and MPLL0 wins
+the tie as the first parent, so S/PDIF and HDMI audio run from MPLL0.
+On GXBB the HHI_MPLL_CNTL bit that MPLL0 needs for its fractional
+divider is documented as the DDS0 spread spectrum enable.
+
+Offer MPLL1 and MPLL2 only. The board MPLL rates still provide every
+IEC958 rate: the 44.1kHz family from MPLL1 and the 48kHz family,
+including HBR, from MPLL2.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/clk/meson/gxbb.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/meson/gxbb.c b/drivers/clk/meson/gxbb.c
+index 7a7b104182ff..5e4f125f3e69 100644
+--- a/drivers/clk/meson/gxbb.c
++++ b/drivers/clk/meson/gxbb.c
+@@ -1299,19 +1299,25 @@ static struct clk_regmap gxbb_cts_amclk = {
+ 	},
+ };
+ 
++static u32 gxbb_cts_mclk_i958_parents_val_table[] = { 2, 3 };
++static const struct clk_hw *gxbb_cts_mclk_i958_parents[] = {
++	&gxbb_mpll1.hw,
++	&gxbb_mpll2.hw,
++};
++
+ static struct clk_regmap gxbb_cts_mclk_i958_sel = {
+ 	.data = &(struct clk_regmap_mux_data){
+ 		.offset = HHI_AUD_CLK_CNTL2,
+ 		.mask = 0x3,
+ 		.shift = 25,
+-		.table = gxbb_cts_mclk_parents_val_table,
++		.table = gxbb_cts_mclk_i958_parents_val_table,
+ 		.flags = CLK_MUX_ROUND_CLOSEST,
+ 	},
+ 	.hw.init = &(struct clk_init_data) {
+ 		.name = "cts_mclk_i958_sel",
+ 		.ops = &clk_regmap_mux_ops,
+-		.parent_hws = gxbb_cts_mclk_parents,
+-		.num_parents = ARRAY_SIZE(gxbb_cts_mclk_parents),
++		.parent_hws = gxbb_cts_mclk_i958_parents,
++		.num_parents = ARRAY_SIZE(gxbb_cts_mclk_i958_parents),
+ 	},
+ };
+ 
+-- 
+2.43.0
+

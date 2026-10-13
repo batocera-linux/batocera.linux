@@ -1,0 +1,48 @@
+From ccbc27880991c967ebb0ebcc449b8beafc051b2d Mon Sep 17 00:00:00 2001
+From: Gus Bourg <gus@bourg.net>
+Date: Sat, 26 Sep 2026 09:14:35 -0700
+Subject: [PATCH 118/210] media: uapi: add the Amlogic AM21B and AM21C
+ compressed formats
+
+Describe the single-plane Amlogic framebuffer-compressed formats: AM21C,
+the scatter format, and AM21B, the basic format where the compressed
+body is followed by its header in one buffer.
+
+Assisted-by: Claude:claude-opus-5.5 Claude:claude-fable-5.1 Codex:gpt-5.6 Codex:gpt-6.0
+[chewitt: add the AM21B basic format]
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/media/v4l2-core/v4l2-ioctl.c | 2 ++
+ include/uapi/linux/videodev2.h       | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index 17ba1ae70735..1df539a17653 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -1549,6 +1549,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+ 		case V4L2_PIX_FMT_AV1:		descr = "AV1 OBU Stream"; break;
+ 		case V4L2_PIX_FMT_MT2110T:	descr = "Mediatek 10bit Tile Mode"; break;
+ 		case V4L2_PIX_FMT_MT2110R:	descr = "Mediatek 10bit Raster Mode"; break;
++		case V4L2_PIX_FMT_AM21C:	descr = "Amlogic FBC (Scatter)"; break;
++		case V4L2_PIX_FMT_AM21B:	descr = "Amlogic FBC (Basic)"; break;
+ 		case V4L2_PIX_FMT_HEXTILE:	descr = "Hextile Compressed Format"; break;
+ 		case V4L2_PIX_FMT_PISP_COMP1_RGGB: descr = "PiSP 8b RGRG/GBGB mode1 compr"; break;
+ 		case V4L2_PIX_FMT_PISP_COMP1_GRBG: descr = "PiSP 8b GRGR/BGBG mode1 compr"; break;
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 5373dba640fa..003826d7cfa5 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -820,6 +820,8 @@ struct v4l2_pix_format {
+ #define V4L2_PIX_FMT_HI240    v4l2_fourcc('H', 'I', '2', '4') /* BTTV 8-bit dithered RGB */
+ #define V4L2_PIX_FMT_QC08C    v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
+ #define V4L2_PIX_FMT_QC10C    v4l2_fourcc('Q', '1', '0', 'C') /* Qualcomm 10-bit compressed */
++#define V4L2_PIX_FMT_AM21C    v4l2_fourcc('A', 'M', '2', '1') /* Amlogic FBC scatter mode */
++#define V4L2_PIX_FMT_AM21B    v4l2_fourcc('A', 'M', '2', 'B') /* Amlogic FBC basic mode */
+ #define V4L2_PIX_FMT_AJPG     v4l2_fourcc('A', 'J', 'P', 'G') /* Aspeed JPEG */
+ #define V4L2_PIX_FMT_HEXTILE  v4l2_fourcc('H', 'X', 'T', 'L') /* Hextile compressed */
+ 
+-- 
+2.43.0
+

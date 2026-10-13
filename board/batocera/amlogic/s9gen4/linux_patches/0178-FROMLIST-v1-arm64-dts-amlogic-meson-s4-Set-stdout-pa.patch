@@ -1,0 +1,106 @@
+From b529c680555fbae185c5a7d6f8b9a3a4a47077d8 Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Tue, 29 Sep 2026 04:34:00 +0000
+Subject: [PATCH 192/210] FROMLIST(v1): arm64: dts: amlogic: meson-s4: Set
+ stdout-path to uart_b
+
+If stdout-path is not set then bootloaders such as U-Boot may fail to
+boot when they cannot find the serial console. Normally, this would be
+added to the board devicetree, but in this case the boot ROM,
+first-stage bootloader, ATF, and TEE all use this serial port with this
+baud rate [1]. All of the listed components are signed by Amlogic and can't
+be modified by OEMs. So while someone might want to use a different
+port, they can't prevent previous stages of the boot process from
+printing to this port. Therefore, set the serial port in the SoC
+devicetree. Boards can override it in their devicetree if necessary.
+
+[1] Actually, the baud rate used by the ROM et al. is 888888, but some
+    userspace tools (such as agetty) choke on non-standard baud rates,
+    so we use 921600 which is close enough for most serial adapters.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-s4-s805x2-aq222.dts    | 8 --------
+ .../boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts    | 5 -----
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi                | 9 ++++++++-
+ 3 files changed, 8 insertions(+), 14 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4-s805x2-aq222.dts b/arch/arm64/boot/dts/amlogic/meson-s4-s805x2-aq222.dts
+index 43493bc9da46..2bc7c3c3a860 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4-s805x2-aq222.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-s4-s805x2-aq222.dts
+@@ -14,10 +14,6 @@ / {
+ 	#address-cells = <2>;
+ 	#size-cells = <2>;
+ 
+-	aliases {
+-		serial0 = &uart_b;
+-	};
+-
+ 	memory@0 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x0 0x0 0x40000000>;
+@@ -363,10 +359,6 @@ &pwm_ij {
+ 	status = "okay";
+ };
+ 
+-&uart_b {
+-	status = "okay";
+-};
+-
+ &ir {
+ 	status = "okay";
+ 	pinctrl-0 = <&remote_pins>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+index ce8f8ba9612f..591c9d2db474 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+@@ -22,7 +22,6 @@ aliases {
+ 		mmc2 = &sdio; /* SDIO */
+ 		rtc0 = &rtc;
+ 		rtc1 = &vrtc;
+-		serial0 = &uart_b;
+ 	};
+ 
+ 	chosen {
+@@ -656,10 +655,6 @@ bluetooth {
+ 	};
+ };
+ 
+-&uart_b {
+-	status = "okay";
+-};
+-
+ &usb {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index 7959fe1c0d43..800bd4b23376 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -19,6 +19,14 @@
+ #include <dt-bindings/thermal/thermal.h>
+ 
+ / {
++	aliases {
++		serial0 = &uart_b;
++	};
++
++	chosen {
++		stdout-path = "serial0:921600n8";
++	};
++
+ 	cpus {
+ 		#address-cells = <2>;
+ 		#size-cells = <0>;
+@@ -962,7 +970,6 @@ uart_b: serial@7a000 {
+ 				interrupts = <GIC_SPI 169 IRQ_TYPE_EDGE_RISING>;
+ 				clocks = <&xtal>, <&clkc_periphs CLKID_UART_B>, <&xtal>;
+ 				clock-names = "xtal", "pclk", "baud";
+-				status = "disabled";
+ 			};
+ 
+ 			usb2_phy0: phy@3c000 {
+-- 
+2.43.0
+

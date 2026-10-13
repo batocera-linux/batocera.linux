@@ -1,0 +1,52 @@
+From f26b23d431bd4a6dd50ead42ec0c5f130ea5b85b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:43 +0100
+Subject: [PATCH 072/210] FROMLIST(v12): drm/panfrost: Add warning messages to
+ fatal error conditions
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Rather than just failing silently, let's warn the user of device remove not
+being able to take an PM reference or the PM suspend path still reporting
+inflight jobs. Neither situation should ever happen.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_device.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
+index 561fcf7ce0ae..a840af049c55 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.c
++++ b/drivers/gpu/drm/panfrost/panfrost_device.c
+@@ -9,6 +9,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
+ #include <drm/drm_drv.h>
++#include <drm/drm_print.h>
+ 
+ #include "panfrost_device.h"
+ #include "panfrost_devfreq.h"
+@@ -358,7 +359,7 @@ int panfrost_device_init(struct panfrost_device *pfdev)
+ 
+ void panfrost_device_fini(struct panfrost_device *pfdev)
+ {
+-	pm_runtime_get_sync(pfdev->base.dev);
++	drm_WARN_ON(&pfdev->base, pm_runtime_get_sync(pfdev->base.dev) < 0);
+ 
+ 	pm_runtime_dont_use_autosuspend(pfdev->base.dev);
+ 	pm_runtime_disable(pfdev->base.dev);
+@@ -517,7 +518,7 @@ static int panfrost_device_runtime_suspend(struct device *dev)
+ {
+ 	struct panfrost_device *pfdev = dev_get_drvdata(dev);
+ 
+-	if (!panfrost_jm_is_idle(pfdev))
++	if (drm_WARN_ON(&pfdev->base, !panfrost_jm_is_idle(pfdev)))
+ 		return -EBUSY;
+ 
+ 	panfrost_devfreq_suspend(pfdev);
+-- 
+2.43.0
+

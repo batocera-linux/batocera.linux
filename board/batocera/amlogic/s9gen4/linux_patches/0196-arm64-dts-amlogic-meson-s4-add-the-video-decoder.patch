@@ -1,0 +1,51 @@
+From 8ee97b454cb35581a400c5720c0abef88907915f Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Oct 2026 11:11:38 +0000
+Subject: [PATCH 210/210] arm64: dts: amlogic: meson-s4: add the video decoder
+
+Add the DOS video decoder node, with the VDEC_1 and VDEC_HEVC secure
+power domains, the DMC request control window and the HEVC pipeline
+resets.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index 960411a65ec0..77fdb3c9a78a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -364,6 +364,28 @@ hdmi_tx_tmds_port: port@1 {
+ 				};
+ 			};
+ 
++			vdec: video-decoder@320000 {
++				compatible = "amlogic,s4-vdec";
++				reg = <0x0 0x320000 0x0 0x10000>,
++				      <0x0 0x36000 0x0 0x400>;
++				reg-names = "dos", "dmc";
++				interrupts = <GIC_SPI 92 IRQ_TYPE_EDGE_RISING>;
++				interrupt-names = "vdec";
++				clocks = <&clkc_periphs CLKID_DOS>,
++					 <&clkc_periphs CLKID_VDEC_SEL>,
++					 <&clkc_periphs CLKID_HEVCF_SEL>;
++				clock-names = "dos", "vdec_1", "vdec_hevc";
++				power-domains = <&pwrc PWRC_S4_DOS_VDEC_ID>,
++						<&pwrc PWRC_S4_DOS_HEVC_ID>;
++				power-domain-names = "vdec", "hevc";
++				resets = <&reset RESET_BRG_HEVCF_PIPL0>,
++					 <&reset RESET_BRG_HEVCF_PIPL1>,
++					 <&reset RESET_BRG_HEVCB_PIPL1>;
++				reset-names = "hevcf-pipl0", "hevcf-pipl1",
++					      "hevcb-pipl1";
++				amlogic,canvas = <&canvas>;
++			};
++
+ 			clkc_periphs: clock-controller@0 {
+ 				compatible = "amlogic,s4-peripherals-clkc";
+ 				reg = <0x0 0x0 0x0 0x49c>;
+-- 
+2.43.0
+

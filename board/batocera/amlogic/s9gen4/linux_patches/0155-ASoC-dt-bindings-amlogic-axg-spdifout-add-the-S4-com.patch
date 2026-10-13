@@ -1,0 +1,39 @@
+From 1f57fa630cec77f19ede742b7b905eef81d586b6 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Oct 2026 10:29:06 +0000
+Subject: [PATCH 169/210] ASoC: dt-bindings: amlogic,axg-spdifout: add the S4
+ compatible
+
+The S4 SPDIF output keeps its sample mask in a per-lane field at a
+different position in SPDIFOUT_CTRL0 from the AXG/G12A encoder. Add a
+S4 compatible, with the AXG compatible as a fall-back.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../devicetree/bindings/sound/amlogic,axg-spdifout.yaml         | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/amlogic,axg-spdifout.yaml b/Documentation/devicetree/bindings/sound/amlogic,axg-spdifout.yaml
+index 15be8dae9398..fe9504cdae9c 100644
+--- a/Documentation/devicetree/bindings/sound/amlogic,axg-spdifout.yaml
++++ b/Documentation/devicetree/bindings/sound/amlogic,axg-spdifout.yaml
+@@ -16,6 +16,7 @@ properties:
+       - items:
+           - enum:
+               - amlogic,g12a-spdifout
++              - amlogic,s4-spdifout
+               - amlogic,sm1-spdifout
+           - const: amlogic,axg-spdifout
+ 
+@@ -54,6 +55,7 @@ allOf:
+           contains:
+             enum:
+               - amlogic,g12a-spdifout
++              - amlogic,s4-spdifout
+               - amlogic,sm1-spdifout
+     then:
+       required:
+-- 
+2.43.0
+

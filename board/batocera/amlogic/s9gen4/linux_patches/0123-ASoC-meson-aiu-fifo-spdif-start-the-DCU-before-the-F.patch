@@ -1,0 +1,48 @@
+From eedb6d92fd79d773bcaa3b063bc84aee01dbda8f Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 16:37:22 +0000
+Subject: [PATCH 135/210] ASoC: meson: aiu: fifo-spdif: start the DCU before
+ the FIFO
+
+The S/PDIF FIFO is started before the DCU that drains it, so the DCU
+starts partway through the data and the IEC958 subframe phase is random.
+Channel order changes from one stream to the next, and a compressed
+stream carries its burst preamble in the wrong subframe.
+
+Reset the domain and enable the DCU before starting the FIFO.
+
+Fixes: 6ae9ca9ce986 ("ASoC: meson: aiu: add i2s and spdif support")
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/aiu-fifo-spdif.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/sound/soc/meson/aiu-fifo-spdif.c b/sound/soc/meson/aiu-fifo-spdif.c
+index fe8483d31472..900ffd98ced9 100644
+--- a/sound/soc/meson/aiu-fifo-spdif.c
++++ b/sound/soc/meson/aiu-fifo-spdif.c
+@@ -60,11 +60,6 @@ static int fifo_spdif_trigger(struct snd_pcm_substream *substream, int cmd,
+ 			      struct snd_soc_dai *dai)
+ {
+ 	struct snd_soc_component *component = dai->component;
+-	int ret;
+-
+-	ret = aiu_fifo_trigger(substream, cmd, dai);
+-	if (ret)
+-		return ret;
+ 
+ 	switch (cmd) {
+ 	case SNDRV_PCM_TRIGGER_START:
+@@ -85,7 +80,7 @@ static int fifo_spdif_trigger(struct snd_pcm_substream *substream, int cmd,
+ 		return -EINVAL;
+ 	}
+ 
+-	return 0;
++	return aiu_fifo_trigger(substream, cmd, dai);
+ }
+ 
+ static int fifo_spdif_prepare(struct snd_pcm_substream *substream,
+-- 
+2.43.0
+

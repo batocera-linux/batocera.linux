@@ -1,0 +1,82 @@
+From 09e680b281e8be3f6a2f2aa759c980306c56eb16 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:51:27 +0000
+Subject: [PATCH 34/43] WIP: board: amlogic: vim1s: keep a MAC address set in
+ the environment
+
+misc_init_r() always overwrote ethaddr with the address derived from
+SYSCTRL secure status REG18, so a MAC address saved in the environment
+was lost on every boot.
+
+Only derive the address when the environment has none, and read REG18
+through the S4 register definitions.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/include/asm/arch-meson/s4.h |  1 +
+ board/amlogic/vim1s/vim1s.c          | 28 +++++++++++++++-------------
+ 2 files changed, 16 insertions(+), 13 deletions(-)
+
+diff --git a/arch/arm/include/asm/arch-meson/s4.h b/arch/arm/include/asm/arch-meson/s4.h
+index 234f806af2b..8f143a0df21 100644
+--- a/arch/arm/include/asm/arch-meson/s4.h
++++ b/arch/arm/include/asm/arch-meson/s4.h
+@@ -12,6 +12,7 @@
+ #define S4_SEC_STATUS_REG15		S4_SYSCTRL_ADDR(0xcf)
+ #define S4_SEC_STATUS_REG16		S4_SYSCTRL_ADDR(0xd0)
+ #define S4_SEC_STATUS_REG17		S4_SYSCTRL_ADDR(0xd1)
++#define S4_SEC_STATUS_REG18		S4_SYSCTRL_ADDR(0xd2)
+ 
+ #define S4_BOOT_DEVICE_MASK		0xF0
+ #define S4_BOOT_DEVICE_SHIFT		4
+diff --git a/board/amlogic/vim1s/vim1s.c b/board/amlogic/vim1s/vim1s.c
+index 6e0a3eb206d..5c35eff4f97 100644
+--- a/board/amlogic/vim1s/vim1s.c
++++ b/board/amlogic/vim1s/vim1s.c
+@@ -6,10 +6,9 @@
+ #include <env.h>
+ #include <net-common.h>
+ #include <asm/arch/boot.h>
++#include <asm/arch/s4.h>
+ #include <asm/io.h>
+ 
+-#define SYSCTRL_SEC_STATUS_REG18	0xfe010348
+-
+ int mmc_get_env_dev(void)
+ {
+ 	switch (meson_get_boot_device()) {
+@@ -24,16 +23,19 @@ int mmc_get_env_dev(void)
+ 
+ int misc_init_r(void)
+ {
+-	/* This procedure copied from Khadas's downstream fork */
+-	u32 val = readl(SYSCTRL_SEC_STATUS_REG18);
+-	unsigned char addr[ARP_HLEN] = {
+-		0x02,
+-		0xad,
+-		val >> 24,
+-		0x01,
+-		(val >> 8) & 0xff,
+-		val & 0xff,
+-	};
++	u8 mac_addr[ARP_HLEN];
++	u32 val;
++
++	if (!eth_env_get_enetaddr("ethaddr", mac_addr)) {
++		val = readl(S4_SEC_STATUS_REG18);
++		mac_addr[0] = 0x02;
++		mac_addr[1] = 0xad;
++		mac_addr[2] = val >> 24;
++		mac_addr[3] = 0x01;
++		mac_addr[4] = (val >> 8) & 0xff;
++		mac_addr[5] = val & 0xff;
++		eth_env_set_enetaddr("ethaddr", mac_addr);
++	}
+ 
+-	return eth_env_set_enetaddr("ethaddr", addr);
++	return 0;
+ }
+-- 
+2.43.0
+

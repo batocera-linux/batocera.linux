@@ -1,0 +1,33 @@
+From dc59c3bb0287ab945c5484c70c8e2a2588d06a61 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 26 Sep 2026 08:20:16 +0000
+Subject: [PATCH 125/210] dt-bindings: media: amlogic,gx-vdec: update
+ maintainers
+
+Maxime Jourdan no longer works on the Amlogic video decoder. Replace him
+with Christian Hewitt and Gus Bourg, who maintain the driver, matching
+the MAINTAINERS entry for this binding.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+index 47dce75aeae6..913d52e8bc9e 100644
+--- a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
++++ b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+@@ -9,7 +9,8 @@ title: Amlogic Video Decoder
+ 
+ maintainers:
+   - Neil Armstrong <neil.armstrong@linaro.org>
+-  - Maxime Jourdan <mjourdan@baylibre.com>
++  - Christian Hewitt <christianshewitt@gmail.com>
++  - Gus Bourg <gus@bourg.net>
+ 
+ description: |
+   The video decoding IP lies within the DOS memory region,
+-- 
+2.43.0
+

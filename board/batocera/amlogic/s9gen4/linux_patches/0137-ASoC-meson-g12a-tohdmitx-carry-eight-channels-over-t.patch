@@ -1,0 +1,38 @@
+From 8d3ec7199cb079f96aa7c420428f8610ed5efced Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 17 Sep 2026 05:53:11 +0000
+Subject: [PATCH 151/210] ASoC: meson: g12a-tohdmitx: carry eight channels over
+ the S/PDIF legs
+
+The S/PDIF inputs and output of the HDMI TX glue are limited to two
+channels, but an HBR stream from the S/PDIF encoder needs eight. Raise
+the limit to eight.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/g12a-tohdmitx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/meson/g12a-tohdmitx.c b/sound/soc/meson/g12a-tohdmitx.c
+index 1823a3cd11c2..57223bde7dcf 100644
+--- a/sound/soc/meson/g12a-tohdmitx.c
++++ b/sound/soc/meson/g12a-tohdmitx.c
+@@ -147,11 +147,11 @@ static struct snd_soc_dai_driver g12a_tohdmitx_dai_drv[] = {
+ 	TOHDMITX_OUT("I2S OUT", TOHDMITX_I2S_OUT,
+ 		     TOHDMITX_I2S_FORMATS, 8),
+ 	TOHDMITX_IN("SPDIF IN A", TOHDMITX_SPDIF_IN_A,
+-		    TOHDMITX_SPDIF_FORMATS, 2),
++		    TOHDMITX_SPDIF_FORMATS, 8),
+ 	TOHDMITX_IN("SPDIF IN B", TOHDMITX_SPDIF_IN_B,
+-		    TOHDMITX_SPDIF_FORMATS, 2),
++		    TOHDMITX_SPDIF_FORMATS, 8),
+ 	TOHDMITX_OUT("SPDIF OUT", TOHDMITX_SPDIF_OUT,
+-		     TOHDMITX_SPDIF_FORMATS, 2),
++		     TOHDMITX_SPDIF_FORMATS, 8),
+ };
+ 
+ static int g12a_tohdmi_component_probe(struct snd_soc_component *c)
+-- 
+2.43.0
+

@@ -1,0 +1,29 @@
+From f7a779537289620f29cf11b9024a07533c1d4217 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 19:19:05 +0000
+Subject: [PATCH 138/210] dt-bindings: sound: meson-aiu: add the HDMI S/PDIF
+ output
+
+The AIU can feed the HDMI controller from its IEC958 encoder as well as
+from I2S. Add an identifier for that output.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ include/dt-bindings/sound/meson-aiu.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/dt-bindings/sound/meson-aiu.h b/include/dt-bindings/sound/meson-aiu.h
+index 1051b8af298b..df045fe8136c 100644
+--- a/include/dt-bindings/sound/meson-aiu.h
++++ b/include/dt-bindings/sound/meson-aiu.h
+@@ -14,5 +14,6 @@
+ #define CTRL_I2S		0
+ #define CTRL_PCM		1
+ #define CTRL_OUT		2
++#define CTRL_OUT_SPDIF		3
+ 
+ #endif /* __DT_MESON_AIU_H */
+-- 
+2.43.0
+

@@ -1,0 +1,50 @@
+From 8ebff35a63a9862d97e16279a64b35f589e6f94d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 3 Oct 2026 13:32:36 +0000
+Subject: [PATCH 26/43] WIP: configs: meson64: move S4 load addresses out of
+ the secmon carveout
+
+S4 reserves 0x05000000-0x083fffff for the secure monitor, and the
+default meson64 script, fdt and kernel addresses fall inside it.
+Loads there appear to succeed but read back as junk, so extlinux
+boot fails with "Bad Linux ARM64 Image magic!".
+
+Place the S4 script, fdt, pxe and overlay addresses below the
+carveout, as the vendor u-boot does, and the kernel above it so a
+uImage can still be decompressed to the usual 0x1080000.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ include/configs/meson64.h | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/include/configs/meson64.h b/include/configs/meson64.h
+index 72d3caa30be..ce0670bdd7d 100644
+--- a/include/configs/meson64.h
++++ b/include/configs/meson64.h
+@@ -128,12 +128,20 @@
+ #endif
+ 
+ #define BOOTM_SIZE		__stringify(0x1700000)
++#if defined(CONFIG_MESON_S4)
++#define KERNEL_ADDR_R		__stringify(0x08480000)
++#define FDT_ADDR_R		__stringify(0x01008000)
++#define SCRIPT_ADDR_R		__stringify(0x01000000)
++#define PXEFILE_ADDR_R		__stringify(0x00e00000)
++#define FDTOVERLAY_ADDR_R	__stringify(0x00f00000)
++#else
+ #define KERNEL_ADDR_R		__stringify(0x08080000)
+-#define KERNEL_COMP_ADDR_R	__stringify(0x0d080000)
+ #define FDT_ADDR_R		__stringify(0x08008000)
+ #define SCRIPT_ADDR_R		__stringify(0x08000000)
+ #define PXEFILE_ADDR_R		__stringify(0x01080000)
+ #define FDTOVERLAY_ADDR_R	__stringify(0x01000000)
++#endif
++#define KERNEL_COMP_ADDR_R	__stringify(0x0d080000)
+ #define RAMDISK_ADDR_R		__stringify(0x13000000)
+ 
+ #include <config_distro_bootcmd.h>
+-- 
+2.43.0
+

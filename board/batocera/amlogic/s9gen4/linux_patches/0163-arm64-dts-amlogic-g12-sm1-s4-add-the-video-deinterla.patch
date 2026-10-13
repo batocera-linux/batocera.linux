@@ -1,0 +1,120 @@
+From f3a547be59fa2034e2191c18c51cf1539ac7ee50 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 27 Sep 2026 11:23:16 +0000
+Subject: [PATCH 177/210] arm64: dts: amlogic: g12/sm1/s4: add the video
+ deinterlacer
+
+Add the video deinterlacer node, with the G12B and SM1 compatibles and
+the VPU power domain of each SoC.
+
+On S4 the deinterlacer registers start at VPU word 0x1700 and run to
+the read memory interface blocks that end at 0x56ff. Interrupt 203
+signals the pre stage and 202 the post stage.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 13 +++++++++++++
+ arch/arm64/boot/dts/amlogic/meson-g12.dtsi        |  4 ++++
+ arch/arm64/boot/dts/amlogic/meson-g12b.dtsi       |  4 ++++
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi         | 13 +++++++++++++
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi        |  5 +++++
+ 5 files changed, 39 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 9e3acbbfddd0..88aaddca250a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -2173,6 +2173,19 @@ vdec: video-decoder@ff620000 {
+ 			reset-names = "esparser";
+ 		};
+ 
++		di: video-deinterlacer@ff905c00 {
++			compatible = "amlogic,g12a-di";
++			reg = <0x0 0xff905c00 0x0 0x8400>;
++			interrupts = <GIC_SPI 46 IRQ_TYPE_EDGE_RISING>,
++				     <GIC_SPI 40 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "pre", "post";
++			clocks = <&clkc CLKID_VPU_CLKB>,
++				 <&clkc CLKID_VPU_INTR>;
++			clock-names = "vpu_clkb", "vpu_intr";
++			amlogic,canvas = <&canvas>;
++			amlogic,hhi-sysctrl = <&hhi>;
++		};
++
+ 		vpu: vpu@ff900000 {
+ 			compatible = "amlogic,meson-g12a-vpu";
+ 			reg = <0x0 0xff900000 0x0 0x100000>,
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
+index 664912d1beaa..2070d71e1196 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12.dtsi
+@@ -359,6 +359,10 @@ tohdmitx: audio-controller@744 {
+ 	};
+ };
+ 
++&di {
++	power-domains = <&pwrc PWRC_G12A_VPU_ID>;
++};
++
+ &ethmac {
+ 	power-domains = <&pwrc PWRC_G12A_ETH_ID>;
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+index 18506d54d239..2d22762f44f0 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b.dtsi
+@@ -193,6 +193,10 @@ map1 {
+ 	};
+ };
+ 
++&di {
++	compatible = "amlogic,g12b-di";
++};
++
+ &mali {
+ 	dma-coherent;
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index 2f796bc1e823..a7c2fc91044e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -983,6 +983,19 @@ emmc: mmc@fe08c000 {
+ 			assigned-clock-rates = <24000000>;
+ 		};
+ 
++		di: video-deinterlacer@ff005c00 {
++			compatible = "amlogic,s4-di";
++			reg = <0x0 0xff005c00 0x0 0x10000>;
++			interrupts = <GIC_SPI 203 IRQ_TYPE_EDGE_RISING>,
++				     <GIC_SPI 202 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "pre", "post";
++			clocks = <&clkc_periphs CLKID_VPU_CLKB>,
++				 <&clkc_periphs CLKID_VPU_INTR>;
++			clock-names = "vpu_clkb", "vpu_intr";
++			power-domains = <&pwrc PWRC_S4_VPU_HDMI_ID>;
++			amlogic,canvas = <&canvas>;
++		};
++
+ 		vpu: vpu@ff000000 {
+ 			compatible = "amlogic,meson-s4-vpu";
+ 			reg = <0x0 0xff000000 0x0 0x40000>,
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 9739c6297960..cc5f86238a1a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -554,6 +554,11 @@ map1 {
+ 	};
+ };
+ 
++&di {
++	compatible = "amlogic,sm1-di";
++	power-domains = <&pwrc PWRC_SM1_VPU_ID>;
++};
++
+ &ethmac {
+ 	power-domains = <&pwrc PWRC_SM1_ETH_ID>;
+ };
+-- 
+2.43.0
+

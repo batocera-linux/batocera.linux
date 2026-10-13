@@ -1,0 +1,82 @@
+From 7637a667c55df0acacf82d6499e00100bce8249e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:48 +0100
+Subject: [PATCH 077/210] FROMLIST(v12): drm/panfrost: Introduce a reset lock
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+So as to avoid accessing HW register while a reset is ongoing, a read/write
+semaphore that envelopes the reset sequence will help driver entry points
+avoid racing with it. For now, the only such racy entry point is the ioctl
+that returns the current GPU timestmap.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_device.c | 2 ++
+ drivers/gpu/drm/panfrost/panfrost_device.h | 1 +
+ drivers/gpu/drm/panfrost/panfrost_drv.c    | 9 ++++++---
+ drivers/gpu/drm/panfrost/panfrost_job.c    | 1 +
+ 4 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
+index ca385c90970c..eefd614b9a97 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.c
++++ b/drivers/gpu/drm/panfrost/panfrost_device.c
+@@ -482,6 +482,8 @@ bool panfrost_exception_needs_reset(const struct panfrost_device *pfdev,
+ 
+ void panfrost_device_reset(struct panfrost_device *pfdev, bool enable_job_int)
+ {
++	guard(rwsem_write)(&pfdev->reset.lock);
++
+ 	panfrost_gpu_soft_reset(pfdev);
+ 
+ 	panfrost_gpu_power_on(pfdev);
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.h b/drivers/gpu/drm/panfrost/panfrost_device.h
+index a0b9a2145fc9..63452febb1cf 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.h
++++ b/drivers/gpu/drm/panfrost/panfrost_device.h
+@@ -165,6 +165,7 @@ struct panfrost_device {
+ 	struct {
+ 		struct workqueue_struct *wq;
+ 		struct work_struct work;
++		struct rw_semaphore lock;
+ 		atomic_t pending;
+ 	} reset;
+ 
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index e8ba3c60c7fb..724bb01c3fbd 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -41,9 +41,12 @@ static int panfrost_ioctl_query_timestamp(struct panfrost_device *pfdev,
+ 	if (ret)
+ 		return ret;
+ 
+-	panfrost_cycle_counter_get(pfdev);
+-	*arg = panfrost_timestamp_read(pfdev);
+-	panfrost_cycle_counter_put(pfdev);
++	/* We should not read timestamp register while the GPU  is being reset */
++	scoped_guard(rwsem_read, &pfdev->reset.lock) {
++		panfrost_cycle_counter_get(pfdev);
++		*arg = panfrost_timestamp_read(pfdev);
++		panfrost_cycle_counter_put(pfdev);
++	}
+ 
+ 	pm_runtime_put(pfdev->base.dev);
+ 	return 0;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_job.c b/drivers/gpu/drm/panfrost/panfrost_job.c
+index ab65786bf63b..4ddf4b722ddf 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_job.c
++++ b/drivers/gpu/drm/panfrost/panfrost_job.c
+@@ -877,6 +877,7 @@ int panfrost_jm_init(struct panfrost_device *pfdev)
+ 	INIT_WORK(&pfdev->reset.work, panfrost_reset_work);
+ 	spin_lock_init(&js->job_lock);
+ 	mutex_init(&pfdev->sched_lock);
++	init_rwsem(&pfdev->reset.lock);
+ 
+ 	js->irq = platform_get_irq_byname(to_platform_device(pfdev->base.dev), "job");
+ 	if (js->irq < 0)
+-- 
+2.43.0
+

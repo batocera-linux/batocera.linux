@@ -1,0 +1,137 @@
+From 717bc8ae9c266efe816f8c98f8302e02795d1f7f Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 27 Sep 2026 11:23:16 +0000
+Subject: [PATCH 161/210] dt-bindings: media: add the Amlogic G12A video
+ deinterlacer
+
+Add a binding for the video deinterlacer of the Amlogic G12A, G12B, SM1
+and S4 SoCs, which reads interlaced frames from memory and writes
+progressive frames back to memory. Its registers are part of the VPU
+register space.
+
+The S4 deinterlacer memory is powered with the VPU, so only the G12
+family takes the HHI system controller.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../bindings/media/amlogic,g12a-di.yaml       | 107 ++++++++++++++++++
+ 1 file changed, 107 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/amlogic,g12a-di.yaml
+
+diff --git a/Documentation/devicetree/bindings/media/amlogic,g12a-di.yaml b/Documentation/devicetree/bindings/media/amlogic,g12a-di.yaml
+new file mode 100644
+index 000000000000..80407f052c5e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/amlogic,g12a-di.yaml
+@@ -0,0 +1,107 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/amlogic,g12a-di.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Amlogic G12A/G12B/SM1/S4 video deinterlacer
++
++maintainers:
++  - Christian Hewitt <christianshewitt@gmail.com>
++
++description:
++  The video deinterlacer (DI) of the Amlogic G12A, G12B, SM1 and S4 SoCs reads
++  interlaced frames from memory and writes progressive frames back to
++  memory. Its registers are part of the VPU register space.
++
++properties:
++  compatible:
++    enum:
++      - amlogic,g12a-di
++      - amlogic,g12b-di
++      - amlogic,sm1-di
++      - amlogic,s4-di
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    items:
++      - description: pre-processing done
++      - description: post-processing done
++
++  interrupt-names:
++    items:
++      - const: pre
++      - const: post
++
++  clocks:
++    items:
++      - description: deinterlacer core clock
++      - description: VPU interrupt clock
++
++  clock-names:
++    items:
++      - const: vpu_clkb
++      - const: vpu_intr
++
++  power-domains:
++    maxItems: 1
++
++  amlogic,canvas:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: phandle to the canvas provider node
++
++  amlogic,hhi-sysctrl:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: phandle to the HHI system controller
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - clocks
++  - clock-names
++  - power-domains
++  - amlogic,canvas
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: amlogic,s4-di
++    then:
++      properties:
++        amlogic,hhi-sysctrl: false
++    else:
++      required:
++        - amlogic,hhi-sysctrl
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/g12a-clkc.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/power/meson-g12a-power.h>
++
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        video-deinterlacer@ff905c00 {
++            compatible = "amlogic,g12a-di";
++            reg = <0x0 0xff905c00 0x0 0x8400>;
++            interrupts = <GIC_SPI 46 IRQ_TYPE_EDGE_RISING>,
++                         <GIC_SPI 40 IRQ_TYPE_EDGE_RISING>;
++            interrupt-names = "pre", "post";
++            clocks = <&clkc CLKID_VPU_CLKB>,
++                     <&clkc CLKID_VPU_INTR>;
++            clock-names = "vpu_clkb", "vpu_intr";
++            power-domains = <&pwrc PWRC_G12A_VPU_ID>;
++            amlogic,canvas = <&canvas>;
++            amlogic,hhi-sysctrl = <&hhi>;
++        };
++    };
+-- 
+2.43.0
+

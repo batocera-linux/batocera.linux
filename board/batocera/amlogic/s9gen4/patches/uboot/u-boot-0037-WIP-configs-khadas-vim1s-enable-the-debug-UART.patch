@@ -1,0 +1,39 @@
+From bd8b1faec1266af12cac9142569d0fa283c5efe8 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:52:11 +0000
+Subject: [PATCH 37/43] WIP: configs: khadas-vim1s: enable the debug UART
+
+Enable the early debug UART with its announcement, as the G12 Khadas
+boards do. The earlier boot stages have already set up the console UART,
+so skip its initialisation.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ configs/khadas-vim1s_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/configs/khadas-vim1s_defconfig b/configs/khadas-vim1s_defconfig
+index 55ccf5c7ac9..85049877f39 100644
+--- a/configs/khadas-vim1s_defconfig
++++ b/configs/khadas-vim1s_defconfig
+@@ -14,6 +14,7 @@ CONFIG_DM_RESET=y
+ CONFIG_MESON_S4=y
+ CONFIG_SYS_LOAD_ADDR=0x20000000
+ CONFIG_IDENT_STRING=" vim1s"
++CONFIG_DEBUG_UART=y
+ CONFIG_REMAKE_ELF=y
+ CONFIG_FIT=y
+ CONFIG_FIT_SIGNATURE=y
+@@ -64,6 +65,8 @@ CONFIG_PWM_MESON=y
+ CONFIG_DM_RTC=y
+ CONFIG_RTC_PCF8563=y
+ CONFIG_BAUDRATE=888888
++CONFIG_DEBUG_UART_ANNOUNCE=y
++CONFIG_DEBUG_UART_SKIP_INIT=y
+ CONFIG_MESON_SERIAL=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
+-- 
+2.43.0
+

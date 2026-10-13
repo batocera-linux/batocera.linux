@@ -1,0 +1,220 @@
+From 6ccfb5f5356f0bbf9e45b789de3f4490bfe3520e Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 19:20:43 +0000
+Subject: [PATCH 139/210] ASoC: meson: aiu: give each HDMI source its own
+ output DAI
+
+The HDMI controller can be fed by the I2S or the IEC958 encoder, and the
+source must follow the stream: multichannel LPCM needs I2S and a
+compressed stream needs S/PDIF. The driver exposes a mux control and a
+single output DAI, so the codec format is fixed for the life of the card.
+
+The mux is also wrong. It writes the same value to CLK_SEL and DATA_SEL
+in AIU_HDMI_CLK_DATA_CTRL, but CLK_SEL is the AIU for both sources and
+DATA_SEL only matters for I2S. Nothing clears AIU_CLK_CTRL_MORE bit 6,
+which selects the AIU clock handed over, once the I2S encoder sets it.
+
+Give each input its own output DAI, let DAPM power the one in use, and
+program all three fields from that DAI. The two sources use different
+FIFOs and never stream at the same time.
+
+Based on an RFC by Martin Blumenstingl:
+Link: https://lore.kernel.org/all/20211002234313.3209294-1-martin.blumenstingl@googlemail.com/
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/aiu-codec-ctrl.c  | 121 +++++++++++++++---------------
+ sound/soc/meson/aiu-encoder-i2s.c |   6 --
+ 2 files changed, 61 insertions(+), 66 deletions(-)
+
+diff --git a/sound/soc/meson/aiu-codec-ctrl.c b/sound/soc/meson/aiu-codec-ctrl.c
+index 60bb4cdfee52..515cf04a7aa9 100644
+--- a/sound/soc/meson/aiu-codec-ctrl.c
++++ b/sound/soc/meson/aiu-codec-ctrl.c
+@@ -12,68 +12,70 @@
+ #include "aiu.h"
+ #include "meson-codec-glue.h"
+ 
+-#define CTRL_CLK_SEL		GENMASK(1, 0)
+-#define CTRL_DATA_SEL_SHIFT	4
+-#define CTRL_DATA_SEL		(0x3 << CTRL_DATA_SEL_SHIFT)
++#define CTRL_CLK_SEL			GENMASK(1, 0)
++#define CTRL_CLK_SEL_DISABLE		0x0
++#define CTRL_CLK_SEL_PCM		0x1
++#define CTRL_CLK_SEL_AIU		0x2
++#define CTRL_DATA_SEL			GENMASK(5, 4)
++#define CTRL_DATA_SEL_OUTPUT_ZERO	0x0
++#define CTRL_DATA_SEL_PCM_DATA		0x1
++#define CTRL_DATA_SEL_I2S_DATA		0x2
++
++#define AIU_CLK_CTRL_MORE_HDMI_AMCLK	BIT(6)
++
++struct aiu_hdmi_out {
++	unsigned int data_sel;
++	bool amclk;
++};
++
++static const struct aiu_hdmi_out aiu_hdmi_out_i2s = {
++	.data_sel	= CTRL_DATA_SEL_I2S_DATA,
++	.amclk		= true,
++};
+ 
+-static const char * const aiu_codec_ctrl_mux_texts[] = {
+-	"DISABLED", "PCM", "I2S",
++static const struct aiu_hdmi_out aiu_hdmi_out_spdif = {
++	.data_sel	= CTRL_DATA_SEL_OUTPUT_ZERO,
++	.amclk		= false,
+ };
+ 
+-static int aiu_codec_ctrl_mux_put_enum(struct snd_kcontrol *kcontrol,
+-				       struct snd_ctl_elem_value *ucontrol)
++static void aiu_codec_ctrl_select(struct snd_soc_component *component,
++				  const struct aiu_hdmi_out *out)
+ {
+-	struct snd_soc_component *component = snd_soc_dapm_kcontrol_to_component(kcontrol);
+-	struct snd_soc_dapm_context *dapm = snd_soc_dapm_kcontrol_to_dapm(kcontrol);
+-	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
+-	unsigned int mux, changed;
+-
+-	if (ucontrol->value.enumerated.item[0] >= e->items)
+-		return -EINVAL;
+-
+-	mux = snd_soc_enum_item_to_val(e, ucontrol->value.enumerated.item[0]);
+-	changed = snd_soc_component_test_bits(component, e->reg,
+-					      CTRL_DATA_SEL,
+-					      FIELD_PREP(CTRL_DATA_SEL, mux));
+-
+-	if (!changed)
+-		return 0;
+-
+-	/* Force disconnect of the mux while updating */
+-	snd_soc_dapm_mux_update_power(dapm, kcontrol, 0, NULL, NULL);
+-
+-	/* Reset the source first */
+-	snd_soc_component_update_bits(component, e->reg,
+-				      CTRL_CLK_SEL |
+-				      CTRL_DATA_SEL,
+-				      FIELD_PREP(CTRL_CLK_SEL, 0) |
+-				      FIELD_PREP(CTRL_DATA_SEL, 0));
+-
+-	/* Set the appropriate source */
+-	snd_soc_component_update_bits(component, e->reg,
+-				      CTRL_CLK_SEL |
+-				      CTRL_DATA_SEL,
+-				      FIELD_PREP(CTRL_CLK_SEL, mux) |
+-				      FIELD_PREP(CTRL_DATA_SEL, mux));
+-
+-	snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
+-
+-	return 1;
++	snd_soc_component_update_bits(component, AIU_HDMI_CLK_DATA_CTRL,
++				      CTRL_CLK_SEL | CTRL_DATA_SEL,
++				      FIELD_PREP(CTRL_CLK_SEL,
++						 out ? CTRL_CLK_SEL_AIU :
++						       CTRL_CLK_SEL_DISABLE) |
++				      FIELD_PREP(CTRL_DATA_SEL,
++						 out ? out->data_sel :
++						       CTRL_DATA_SEL_OUTPUT_ZERO));
++
++	snd_soc_component_update_bits(component, AIU_CLK_CTRL_MORE,
++				      AIU_CLK_CTRL_MORE_HDMI_AMCLK,
++				      out && out->amclk ?
++				      AIU_CLK_CTRL_MORE_HDMI_AMCLK : 0);
+ }
+ 
+-static SOC_ENUM_SINGLE_DECL(aiu_hdmi_ctrl_mux_enum, AIU_HDMI_CLK_DATA_CTRL,
+-			    CTRL_DATA_SEL_SHIFT,
+-			    aiu_codec_ctrl_mux_texts);
++static int aiu_codec_ctrl_output_startup(struct snd_pcm_substream *substream,
++					 struct snd_soc_dai *dai)
++{
++	int ret = meson_codec_glue_output_startup(substream, dai);
+ 
+-static const struct snd_kcontrol_new aiu_hdmi_ctrl_mux =
+-	SOC_DAPM_ENUM_EXT("HDMI Source", aiu_hdmi_ctrl_mux_enum,
+-			  snd_soc_dapm_get_enum_double,
+-			  aiu_codec_ctrl_mux_put_enum);
++	if (ret)
++		return ret;
+ 
+-static const struct snd_soc_dapm_widget aiu_hdmi_ctrl_widgets[] = {
+-	SND_SOC_DAPM_MUX("HDMI CTRL SRC", SND_SOC_NOPM, 0, 0,
+-			 &aiu_hdmi_ctrl_mux),
+-};
++	aiu_codec_ctrl_select(dai->component, dai->id == CTRL_OUT ?
++					      &aiu_hdmi_out_i2s :
++					      &aiu_hdmi_out_spdif);
++
++	return 0;
++}
++
++static void aiu_codec_ctrl_output_shutdown(struct snd_pcm_substream *substream,
++					   struct snd_soc_dai *dai)
++{
++	aiu_codec_ctrl_select(dai->component, NULL);
++}
+ 
+ static const struct snd_soc_dai_ops aiu_codec_ctrl_input_ops = {
+ 	.probe		= meson_codec_glue_input_dai_probe,
+@@ -83,7 +85,8 @@ static const struct snd_soc_dai_ops aiu_codec_ctrl_input_ops = {
+ };
+ 
+ static const struct snd_soc_dai_ops aiu_codec_ctrl_output_ops = {
+-	.startup	= meson_codec_glue_output_startup,
++	.startup	= aiu_codec_ctrl_output_startup,
++	.shutdown	= aiu_codec_ctrl_output_shutdown,
+ };
+ 
+ #define AIU_CODEC_CTRL_FORMATS					\
+@@ -117,12 +120,12 @@ static struct snd_soc_dai_driver aiu_hdmi_ctrl_dai_drv[] = {
+ 	[CTRL_I2S] = AIU_CODEC_CTRL_INPUT("HDMI I2S IN"),
+ 	[CTRL_PCM] = AIU_CODEC_CTRL_INPUT("HDMI PCM IN"),
+ 	[CTRL_OUT] = AIU_CODEC_CTRL_OUTPUT("HDMI OUT"),
++	[CTRL_OUT_SPDIF] = AIU_CODEC_CTRL_OUTPUT("HDMI OUT SPDIF"),
+ };
+ 
+ static const struct snd_soc_dapm_route aiu_hdmi_ctrl_routes[] = {
+-	{ "HDMI CTRL SRC", "I2S", "HDMI I2S IN Playback" },
+-	{ "HDMI CTRL SRC", "PCM", "HDMI PCM IN Playback" },
+-	{ "HDMI OUT Capture", NULL, "HDMI CTRL SRC" },
++	{ "HDMI OUT Capture", NULL, "HDMI I2S IN Playback" },
++	{ "HDMI OUT SPDIF Capture", NULL, "HDMI PCM IN Playback" },
+ };
+ 
+ static int aiu_hdmi_of_xlate_dai_name(struct snd_soc_component *component,
+@@ -134,8 +137,6 @@ static int aiu_hdmi_of_xlate_dai_name(struct snd_soc_component *component,
+ 
+ static const struct snd_soc_component_driver aiu_hdmi_ctrl_component = {
+ 	.name			= "AIU HDMI Codec Control",
+-	.dapm_widgets		= aiu_hdmi_ctrl_widgets,
+-	.num_dapm_widgets	= ARRAY_SIZE(aiu_hdmi_ctrl_widgets),
+ 	.dapm_routes		= aiu_hdmi_ctrl_routes,
+ 	.num_dapm_routes	= ARRAY_SIZE(aiu_hdmi_ctrl_routes),
+ 	.of_xlate_dai_name	= aiu_hdmi_of_xlate_dai_name,
+diff --git a/sound/soc/meson/aiu-encoder-i2s.c b/sound/soc/meson/aiu-encoder-i2s.c
+index f52823d357cc..5b45e3b3f8fd 100644
+--- a/sound/soc/meson/aiu-encoder-i2s.c
++++ b/sound/soc/meson/aiu-encoder-i2s.c
+@@ -20,7 +20,6 @@
+ #define AIU_CLK_CTRL_AOCLK_INVERT	BIT(6)
+ #define AIU_CLK_CTRL_LRCLK_INVERT	BIT(7)
+ #define AIU_CLK_CTRL_LRCLK_SKEW		GENMASK(9, 8)
+-#define AIU_CLK_CTRL_MORE_HDMI_AMCLK	BIT(6)
+ #define AIU_CLK_CTRL_MORE_I2S_DIV	GENMASK(5, 0)
+ #define AIU_CODEC_DAC_LRCLK_CTRL_DIV	GENMASK(11, 0)
+ 
+@@ -166,11 +165,6 @@ static int aiu_encoder_i2s_set_clocks(struct snd_pcm_substream *substream,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Make sure amclk is used for HDMI i2s as well */
+-	snd_soc_component_update_bits(component, AIU_CLK_CTRL_MORE,
+-				      AIU_CLK_CTRL_MORE_HDMI_AMCLK,
+-				      AIU_CLK_CTRL_MORE_HDMI_AMCLK);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.43.0
+

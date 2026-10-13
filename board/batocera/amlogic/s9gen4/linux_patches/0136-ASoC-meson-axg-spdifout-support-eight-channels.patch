@@ -1,0 +1,109 @@
+From ef7ab14bb2f5e014c13300dc00e67efede8c5a94 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Thu, 17 Sep 2026 05:53:11 +0000
+Subject: [PATCH 150/210] ASoC: meson: axg-spdifout: support eight channels
+
+The S/PDIF output advertises two channels, but it also feeds the HDMI
+transmitter, and an HBR stream is eight channels of IEC61937 at 192 kHz
+carried as a stereo frame at 768 kHz.
+
+Scale the master clock with the channel count and advertise eight
+channels.
+
+Both channel status blocks also carry the same word, so every subframe
+names channel zero, and a receiver reassembling an IEC61937 burst has no
+channel number to track its position in the frame. Set channel 1 in the
+first block and channel 2 in the second.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/axg-spdifout.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/sound/soc/meson/axg-spdifout.c b/sound/soc/meson/axg-spdifout.c
+index 9b9c75b6bbd4..8b7656eb2629 100644
+--- a/sound/soc/meson/axg-spdifout.c
++++ b/sound/soc/meson/axg-spdifout.c
+@@ -57,6 +57,8 @@
+ #define SPDIFOUT_CHSTSB			0x48
+ #define SPDIFOUT_MUTE_VAL		0x4c
+ 
++#define SPDIFOUT_CH_MAX			8
++
+ struct axg_spdifout {
+ 	struct regmap *map;
+ 	struct clk *mclk;
+@@ -129,19 +131,14 @@ static int axg_spdifout_sample_fmt(struct snd_pcm_hw_params *params,
+ 	unsigned int val;
+ 
+ 	/* Set the samples spdifout will pull from the FIFO */
+-	switch (params_channels(params)) {
+-	case 1:
+-		val = SPDIFOUT_CTRL0_MASK(0x1);
+-		break;
+-	case 2:
+-		val = SPDIFOUT_CTRL0_MASK(0x3);
+-		break;
+-	default:
++	if (params_channels(params) > SPDIFOUT_CH_MAX) {
+ 		dev_err(dai->dev, "too many channels for spdif dai: %u\n",
+ 			params_channels(params));
+ 		return -EINVAL;
+ 	}
+ 
++	val = SPDIFOUT_CTRL0_MASK(params_channels(params) > 1 ? 0x3 : 0x1);
++
+ 	regmap_update_bits(priv->map, SPDIFOUT_CTRL0,
+ 			   SPDIFOUT_CTRL0_MASK_MASK, val);
+ 
+@@ -197,8 +194,11 @@ static int axg_spdifout_set_chsts(struct snd_pcm_runtime *runtime,
+ 	}
+ 	val = cs[0] | cs[1] << 8 | cs[2] << 16 | cs[3] << 24;
+ 
++	val &= ~(IEC958_AES2_CON_CHANNEL << 16);
++
+ 	/* Setup channel status A bits [31 - 0]*/
+-	regmap_write(priv->map, SPDIFOUT_CHSTS0, val);
++	regmap_write(priv->map, SPDIFOUT_CHSTS0,
++		     val | (1 << 4) << 16);
+ 
+ 	/* Clear channel status A bits [191 - 32] */
+ 	for (offset = SPDIFOUT_CHSTS1; offset <= SPDIFOUT_CHSTS5;
+@@ -206,7 +206,8 @@ static int axg_spdifout_set_chsts(struct snd_pcm_runtime *runtime,
+ 		regmap_write(priv->map, offset, 0);
+ 
+ 	/* Setup channel status B bits [31 - 0]*/
+-	regmap_write(priv->map, SPDIFOUT_CHSTS6, val);
++	regmap_write(priv->map, SPDIFOUT_CHSTS6,
++		     val | (2 << 4) << 16);
+ 
+ 	/* Clear channel status B bits [191 - 32] */
+ 	for (offset = SPDIFOUT_CHSTS7; offset <= SPDIFOUT_CHSTSB;
+@@ -221,11 +222,12 @@ static int axg_spdifout_hw_params(struct snd_pcm_substream *substream,
+ 				  struct snd_soc_dai *dai)
+ {
+ 	struct axg_spdifout *priv = snd_soc_dai_get_drvdata(dai);
++	unsigned int channels = max(params_channels(params), 2u);
+ 	unsigned int rate = params_rate(params);
+ 	int ret;
+ 
+-	/* 2 * 32bits per subframe * 2 channels = 128 */
+-	ret = clk_set_rate(priv->mclk, rate * 128);
++	/* 2 clocks per bit * 32bits per subframe * one subframe per channel */
++	ret = clk_set_rate(priv->mclk, rate * 64 * channels);
+ 	if (ret) {
+ 		dev_err(dai->dev, "failed to set spdif clock\n");
+ 		return ret;
+@@ -311,7 +313,7 @@ static struct snd_soc_dai_driver axg_spdifout_dai_drv[] = {
+ 		.playback = {
+ 			.stream_name	= "Playback",
+ 			.channels_min	= 1,
+-			.channels_max	= 2,
++			.channels_max	= SPDIFOUT_CH_MAX,
+ 			.rates		= (SNDRV_PCM_RATE_32000  |
+ 					   SNDRV_PCM_RATE_44100  |
+ 					   SNDRV_PCM_RATE_48000  |
+-- 
+2.43.0
+

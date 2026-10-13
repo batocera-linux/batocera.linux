@@ -1,0 +1,58 @@
+From f8d13a3fd29363cf6c9d693d913f618c85b0e57b Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 22 Jun 2026 16:56:15 +0000
+Subject: [PATCH 012/210] LOCAL: arm64: dts: amlogic: g12: add dummy mali GPU
+ regulator
+
+The Mali-G31/G52 GPU OPP table specifies an operating voltage so the
+panfrost driver requests a "mali" regulator from the OPP core. As there
+is no dedicated GPU regulator on G12A/G12B/SM1 (the GPU shares the SoC
+supply) this fails with the harmless but noisy error:
+
+  panfrost ...: error -ENODEV: _opp_set_regulators: no regulator (mali) found
+
+Model a dummy always-on fixed regulator and wire it to the GPU node via
+mali-supply to satisfy the OPP core and silence the error.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../arm64/boot/dts/amlogic/meson-g12-common.dtsi | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index a0beebe4b2b1..9030e8c59170 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -59,6 +59,21 @@ efuse: efuse {
+ 		secure-monitor = <&sm>;
+ 	};
+ 
++	/*
++	 * The Mali OPP table specifies an operating voltage so the panfrost
++	 * driver asks the OPP core for a "mali" regulator. There is no
++	 * dedicated GPU regulator on G12A/G12B/SM1 (the GPU shares the SoC
++	 * supply) so provide a dummy always-on regulator to silence the
++	 * harmless "no regulator (mali) found" error.
++	 */
++	vddgpu: regulator-vddgpu {
++		compatible = "regulator-fixed";
++		regulator-name = "mali";
++		regulator-min-microvolt = <800000>;
++		regulator-max-microvolt = <800000>;
++		regulator-always-on;
++	};
++
+ 	gpu_opp_table: opp-table-gpu {
+ 		compatible = "operating-points-v2";
+ 
+@@ -2520,6 +2535,7 @@ mali: gpu@ffe40000 {
+ 			clocks = <&clkc CLKID_MALI>;
+ 			resets = <&reset RESET_DVALIN_CAPB3>, <&reset RESET_DVALIN>;
+ 			operating-points-v2 = <&gpu_opp_table>;
++			mali-supply = <&vddgpu>;
+ 			#cooling-cells = <2>;
+ 		};
+ 	};
+-- 
+2.43.0
+

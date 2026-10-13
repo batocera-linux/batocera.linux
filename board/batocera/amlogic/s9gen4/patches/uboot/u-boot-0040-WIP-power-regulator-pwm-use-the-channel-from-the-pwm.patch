@@ -1,0 +1,36 @@
+From b174f771f1eb02d7b6756df743d84b2056eaff8c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 12:38:52 +0000
+Subject: [PATCH 40/43] WIP: power: regulator: pwm: use the channel from the
+ pwms specifier
+
+pwm_regulator_of_to_plat() reads the period and polarity from the pwms
+specifier but never the channel, so pwm_id stays zero and the regulator
+always drives channel 0 of its PWM controller. Boards whose regulator is
+on the second channel, such as VDDCPU on PWM_J of the Khadas VIM1S, had
+their init voltage programmed into the wrong channel.
+
+Read the channel from the first specifier cell.
+
+Fixes: 1a01695615f9 ("power: regulator: add pwm regulator")
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/power/regulator/pwm_regulator.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/power/regulator/pwm_regulator.c b/drivers/power/regulator/pwm_regulator.c
+index 7e73957f607..8e6cbfb381b 100644
+--- a/drivers/power/regulator/pwm_regulator.c
++++ b/drivers/power/regulator/pwm_regulator.c
+@@ -102,6 +102,7 @@ static int pwm_regulator_of_to_plat(struct udevice *dev)
+ 		return ret;
+ 	}
+ 
++	priv->pwm_id = args.args[0];
+ 	priv->period_ns = args.args[1];
+ 	priv->polarity = args.args[2];
+ 
+-- 
+2.43.0
+

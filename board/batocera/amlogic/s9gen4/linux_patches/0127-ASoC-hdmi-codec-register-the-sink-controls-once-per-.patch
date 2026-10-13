@@ -1,0 +1,53 @@
+From d7d6007838999a0f04908d92a7feef99f9cf70f3 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 20:33:25 +0000
+Subject: [PATCH 140/210] ASoC: hdmi-codec: register the sink controls once per
+ codec
+
+hdmi_codec_pcm_new() runs for each DAI, so a codec with both i2s and
+spdif DAIs registers the ELD, channel map and IEC958 controls twice.
+The controls describe the sink rather than the DAI, and the second pass
+creates duplicates and overwrites chmap_info.
+
+Register them once per codec.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/codecs/hdmi-codec.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
+index 7aa50c5bd3df..ec829176e23e 100644
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -291,6 +291,7 @@ struct hdmi_codec_priv {
+ 	unsigned int jack_status;
+ 	u8 iec_status[AES_IEC958_STATUS_SIZE];
+ 	struct snd_info_entry *proc_entry;
++	bool ctls_added;
+ };
+ 
+ static const struct snd_soc_dapm_widget hdmi_widgets[] = {
+@@ -800,6 +801,9 @@ static int hdmi_codec_pcm_new(struct snd_soc_pcm_runtime *rtd,
+ 	unsigned int i;
+ 	int ret;
+ 
++	if (hcp->ctls_added)
++		return 0;
++
+ 	ret =  snd_pcm_add_chmap_ctls(rtd->pcm, SNDRV_PCM_STREAM_PLAYBACK,
+ 				      NULL, drv->playback.channels_max, 0,
+ 				      &hcp->chmap_info);
+@@ -828,6 +832,8 @@ static int hdmi_codec_pcm_new(struct snd_soc_pcm_runtime *rtd,
+ 			return ret;
+ 	}
+ 
++	hcp->ctls_added = true;
++
+ 	return 0;
+ }
+ 
+-- 
+2.43.0
+

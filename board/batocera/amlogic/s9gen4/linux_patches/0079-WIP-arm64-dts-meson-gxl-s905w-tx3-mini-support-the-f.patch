@@ -1,0 +1,135 @@
+From 598022e8c86e888b79acb80cf0102c8cdad3aa20 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 11 Jun 2025 11:23:44 +0000
+Subject: [PATCH 086/210] WIP: arm64: dts: meson-gxl-s905w-tx3-mini: support
+ the fd628 display
+
+The TX3-mini has an FD628 display. Add support using the tm166xx
+kernel driver and userspace tools [0].
+
+[0] https://github.com/jefflessard/tm16xx-display
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../dts/amlogic/meson-gxl-s905w-tx3-mini.dts  | 98 +++++++++++++++++++
+ 1 file changed, 98 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-tx3-mini.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-tx3-mini.dts
+index 6705c2082a78..fec1b3fa0467 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-tx3-mini.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905w-tx3-mini.dts
+@@ -10,6 +10,8 @@
+ 
+ #include "meson-gxl-s905x.dtsi"
+ #include "meson-gx-p23x-q20x.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/leds/common.h>
+ 
+ / {
+ 	compatible = "oranth,tx3-mini", "amlogic,s905w", "amlogic,meson-gxl";
+@@ -19,6 +21,102 @@ memory@0 {
+ 		device_type = "memory";
+ 		reg = <0x0 0x0 0x0 0x40000000>; /* 1 GiB or 2 GiB */
+ 	};
++
++	display_client: spi {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "spi-gpio";
++		sck-gpios = <&gpio 76 GPIO_ACTIVE_HIGH>;
++		mosi-gpios = <&gpio 75 GPIO_ACTIVE_HIGH>;
++		cs-gpios = <&gpio_ao 4 GPIO_ACTIVE_LOW>;
++		num-chipselects = <1>;
++
++		display@0 {
++			compatible = "fdhisi,fd628", "titanmec,tm1628";
++			reg = <0>;
++			spi-3wire;
++			spi-lsb-first;
++			spi-max-frequency = <500000>;
++
++			digits {
++				#address-cells = <1>;
++				#size-cells = <0>;
++				digit@0 {
++					reg = <0>;
++					segments = <3 3>,
++						   <3 4>,
++						   <3 5>,
++						   <3 0>,
++						   <3 1>,
++						   <3 2>,
++						   <3 6>;
++				};
++				digit@1 {
++					reg = <1>;
++					segments = <2 3>,
++						   <2 4>,
++						   <2 5>,
++						   <2 0>,
++						   <2 1>,
++						   <2 2>,
++						   <2 6>;
++				};
++				digit@2 {
++					reg = <2>;
++					segments = <1 3>,
++						   <1 4>,
++						   <1 5>,
++						   <1 0>,
++						   <1 1>,
++						   <1 2>,
++						   <1 6>;
++				};
++				digit@3 {
++					reg = <3>;
++					segments = <0 3>,
++						   <0 4>,
++						   <0 5>,
++						   <0 0>,
++						   <0 1>,
++						   <0 2>,
++						   <0 6>;
++				};
++			};
++
++			leds {
++				#address-cells = <2>;
++				#size-cells = <0>;
++				led@4,0 {
++					reg = <4 0>;
++					function = LED_FUNCTION_ALARM;
++				};
++				led@4,1 {
++					reg = <4 1>;
++					function = LED_FUNCTION_USB;
++				};
++				led@4,3 {
++					reg = <4 3>;
++					function = "pause";
++				};
++				led@4,2 {
++					reg = <4 2>;
++					function = "play";
++				};
++				led@4,4 {
++					reg = <4 4>;
++					function = "colon";
++				};
++				led@4,5 {
++					reg = <4 5>;
++					function = LED_FUNCTION_LAN;
++				};
++				led@4,6 {
++					reg = <4 6>;
++					function = LED_FUNCTION_WLAN;
++				};
++			};
++		};
++	};
+ };
+ 
+ &ir {
+-- 
+2.43.0
+

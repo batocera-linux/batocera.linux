@@ -1,0 +1,70 @@
+From da9f60b8ec5409779dc8b9429164aea75dd612dc Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 18 Sep 2026 16:56:17 +0000
+Subject: [PATCH 152/210] clk: meson: g12a: keep the video decoder off the
+ audio and GP0 PLLs
+
+The video decoder muxes can select hifi_pll or gp0_pll and carry
+CLK_SET_RATE_PARENT, so the decoder reprograms whichever PLL it lands on
+at the start of each stream. hifi_pll is the audio PLL, and once audio
+clocks propagate rate requests, the decoder moves the audio clock with
+it.
+
+Remove both PLLs from the parents with a mux table. The fixed dividers
+provide every rate the decoder uses. mali_0_sel and vpu_0_sel already
+avoid reparenting onto these PLLs.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/clk/meson/g12a.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index d0d4c7b6dc82..3b6c9f976b78 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -2928,14 +2928,14 @@ static struct clk_regmap g12a_vpu = {
+ 
+ /* VDEC clocks */
+ 
++static u32 g12a_vdec_mux_table[] = { 0, 1, 2, 3, 4 };
++
+ static const struct clk_hw *g12a_vdec_parents[] = {
+ 	&g12a_fclk_div2p5.hw,
+ 	&g12a_fclk_div3.hw,
+ 	&g12a_fclk_div4.hw,
+ 	&g12a_fclk_div5.hw,
+ 	&g12a_fclk_div7.hw,
+-	&g12a_hifi_pll.hw,
+-	&g12a_gp0_pll.hw,
+ };
+ 
+ static struct clk_regmap g12a_vdec_1_sel = {
+@@ -2944,6 +2944,7 @@ static struct clk_regmap g12a_vdec_1_sel = {
+ 		.mask = 0x7,
+ 		.shift = 9,
+ 		.flags = CLK_MUX_ROUND_CLOSEST,
++		.table = g12a_vdec_mux_table,
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "vdec_1_sel",
+@@ -2994,6 +2995,7 @@ static struct clk_regmap g12a_vdec_hevcf_sel = {
+ 		.mask = 0x7,
+ 		.shift = 9,
+ 		.flags = CLK_MUX_ROUND_CLOSEST,
++		.table = g12a_vdec_mux_table,
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "vdec_hevcf_sel",
+@@ -3044,6 +3046,7 @@ static struct clk_regmap g12a_vdec_hevc_sel = {
+ 		.mask = 0x7,
+ 		.shift = 25,
+ 		.flags = CLK_MUX_ROUND_CLOSEST,
++		.table = g12a_vdec_mux_table,
+ 	},
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "vdec_hevc_sel",
+-- 
+2.43.0
+

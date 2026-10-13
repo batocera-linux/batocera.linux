@@ -1,0 +1,4882 @@
+From 663ad36baaf4b5c0d23f41ffb2d4c02d05db72cb Mon Sep 17 00:00:00 2001
+From: Gus Bourg <gus@bourg.net>
+Date: Sat, 26 Sep 2026 09:14:36 -0700
+Subject: [PATCH 119/210] media: amlogic: add the video decoder core
+
+Add the meson-amvdec platform driver to replace staging meson/vdec on
+GXBB, GXL, GXLX, GXM, G12A, G12B and SM1. Provide a stateless-only V4L2
+request interface with mem2mem scheduling, control snapshots, timestamp
+reference lookup and explicit input and capture-buffer ownership.
+
+Control the VDEC_1 and VDEC_HEVC blocks, their clocks, microcode and
+parser input. Retain the microcode DMA source for the device lifetime
+and quiesce decoder DDR requests before releasing buffers. Provide
+canvas mapping, DMA guards and request watchdog/event-recording helpers.
+The dma_guards parameter enables allocation guards; job_watch_ms sets
+the request timeout, with zero disabling it.
+
+Per-compatible codec descriptors carry coded-size, bit-depth, profile
+and level limits and generate the profile/level menus. Each compatible
+has its own format table; G12B reuses the G12A compatible. HEVC supports
+Main and Main10 at 3840x2160 on every SoC. VP9 supports profiles 0 and 2
+at that size on GXL, GXM, G12A, G12B and SM1. GXBB and GXLX have no VP9.
+H.264 retains its 1920x1088 limit on GX and 3840x2160 on G12/SM1;
+MPEG-2 is limited to 1920x1088 everywhere.
+
+CAPTURE uses NV12M, with decoder double-write producing 8-bit output
+for 10-bit input. G12/SM1 additionally support AM21C compressed scatter
+capture. Native compressed GX export is outside this series.
+
+Parser DMA uses a per-device completion initialized before each fetch
+with a bounded, non-interruptible 200 ms wait.
+
+Firmware paths are under meson/vdec/. GXBB/GXL/GXLX use
+gxl_h264_multi.bin, gxl_hevc.bin and gxl_mpeg12_multi.bin; GXM uses
+gxm_h264_multi.bin for H.264. GXL/GXM add gxl_vp9.bin.
+G12A/G12B use g12a_h264_multi.bin,
+g12a_hevc_mmu.bin and g12a_vp9.bin. SM1 uses sm1_h264_multi.bin,
+sm1_hevc_mmu.bin and sm1_vp9_mmu.bin. All families use
+gxl_mpeg12_multi.bin for MPEG-2. The *_multi images are not yet in
+linux-firmware.
+
+Assisted-by: Claude:claude-opus-5.5 Claude:claude-fable-5.1 Codex:gpt-5.6 Codex:gpt-6.0
+[chewitt: set allow_cache_hints on the CAPTURE queue so userspace can
+ request non-coherent buffers for CPU readers such as software
+ deinterlacing, which takes 1080i MPEG-2 read-back on GXM from 35 to
+ 90 fps]
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ MAINTAINERS                                   |    5 +-
+ drivers/media/platform/amlogic/Kconfig        |    1 +
+ drivers/media/platform/amlogic/Makefile       |    1 +
+ drivers/media/platform/amlogic/amvdec/Kconfig |   19 +
+ .../media/platform/amlogic/amvdec/Makefile    |    8 +
+ .../media/platform/amlogic/amvdec/amvdec.c    | 1295 +++++++++++++++++
+ .../media/platform/amlogic/amvdec/amvdec.h    |  430 ++++++
+ .../media/platform/amlogic/amvdec/amvdec_1.c  |  346 +++++
+ .../media/platform/amlogic/amvdec/amvdec_1.h  |   16 +
+ .../platform/amlogic/amvdec/amvdec_helpers.c  |  961 ++++++++++++
+ .../platform/amlogic/amvdec/amvdec_helpers.h  |  137 ++
+ .../platform/amlogic/amvdec/amvdec_hevc.c     |  471 ++++++
+ .../platform/amlogic/amvdec/amvdec_hevc.h     |   17 +
+ .../platform/amlogic/amvdec/amvdec_platform.c |   90 ++
+ .../platform/amlogic/amvdec/amvdec_platform.h |   38 +
+ .../amlogic/amvdec/codec_h264_scratch.h       |   18 +
+ .../media/platform/amlogic/amvdec/dos_regs.h  |   91 ++
+ .../media/platform/amlogic/amvdec/esparser.c  |  521 +++++++
+ .../media/platform/amlogic/amvdec/esparser.h  |   25 +
+ .../media/platform/amlogic/amvdec/hevc_regs.h |  163 +++
+ 20 files changed, 4652 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/media/platform/amlogic/amvdec/Kconfig
+ create mode 100644 drivers/media/platform/amlogic/amvdec/Makefile
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_1.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_1.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_helpers.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_hevc.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_hevc.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/amvdec_platform.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/codec_h264_scratch.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/dos_regs.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/esparser.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/esparser.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/hevc_regs.h
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8ff3e233bb68..585bee06b0fe 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17621,13 +17621,16 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/mtd/amlogic,meson-nand.yaml
+ F:	drivers/mtd/nand/raw/meson_*
+ 
+-MESON VIDEO DECODER DRIVER FOR AMLOGIC SOCS
++MESON VIDEO DECODER DRIVER FOR AMLOGIC SOCS (STATELESS)
+ M:	Neil Armstrong <neil.armstrong@linaro.org>
++M:	Christian Hewitt <christianshewitt@gmail.com>
++M:	Gus Bourg <gus@bourg.net>
+ L:	linux-media@vger.kernel.org
+ L:	linux-amlogic@lists.infradead.org
+ S:	Supported
+ T:	git git://linuxtv.org/media.git
+ F:	Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
++F:	drivers/media/platform/amlogic/amvdec/
+ 
+ META ETHERNET DRIVERS
+ M:	Alexander Duyck <alexanderduyck@fb.com>
+diff --git a/drivers/media/platform/amlogic/Kconfig b/drivers/media/platform/amlogic/Kconfig
+index 458acf3d5fa8..8b92aee0fc94 100644
+--- a/drivers/media/platform/amlogic/Kconfig
++++ b/drivers/media/platform/amlogic/Kconfig
+@@ -2,5 +2,6 @@
+ 
+ comment "Amlogic media platform drivers"
+ 
++source "drivers/media/platform/amlogic/amvdec/Kconfig"
+ source "drivers/media/platform/amlogic/c3/Kconfig"
+ source "drivers/media/platform/amlogic/meson-ge2d/Kconfig"
+diff --git a/drivers/media/platform/amlogic/Makefile b/drivers/media/platform/amlogic/Makefile
+index c744afcd1b9e..b6926f972483 100644
+--- a/drivers/media/platform/amlogic/Makefile
++++ b/drivers/media/platform/amlogic/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ 
++obj-y += amvdec/
+ obj-y += c3/
+ obj-y += meson-ge2d/
+diff --git a/drivers/media/platform/amlogic/amvdec/Kconfig b/drivers/media/platform/amlogic/amvdec/Kconfig
+new file mode 100644
+index 000000000000..68733d6aa610
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/Kconfig
+@@ -0,0 +1,19 @@
++# SPDX-License-Identifier: GPL-2.0
++
++config VIDEO_MESON_AMVDEC
++	tristate "Amlogic video decoder driver"
++	depends on V4L_MEM2MEM_DRIVERS
++	depends on VIDEO_DEV && HAS_DMA
++	select MEDIA_CONTROLLER
++	depends on ARCH_MESON || COMPILE_TEST
++	select VIDEOBUF2_DMA_CONTIG
++	select V4L2_MEM2MEM_DEV
++	select V4L2_H264
++	select MESON_CANVAS
++	help
++	Support for the video decoder found in the Amlogic GXBB, GXL, GXM,
++	G12A, G12B and SM1 SoCs: stateless H.264, HEVC, MPEG-2 and VP9
++	decoding through the V4L2 request API.
++
++	To compile this driver as a module, choose M here: the module will
++	be called meson-amvdec.
+diff --git a/drivers/media/platform/amlogic/amvdec/Makefile b/drivers/media/platform/amlogic/amvdec/Makefile
+new file mode 100644
+index 000000000000..566b21e557e6
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/Makefile
+@@ -0,0 +1,8 @@
++# SPDX-License-Identifier: GPL-2.0
++# Makefile for the Amlogic meson-amvdec video decoder driver
++
++meson-amvdec-objs = esparser.o amvdec.o amvdec_helpers.o amvdec_platform.o
++meson-amvdec-objs += amvdec_1.o
++meson-amvdec-objs += amvdec_hevc.o
++
++obj-$(CONFIG_VIDEO_MESON_AMVDEC) += meson-amvdec.o
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec.c b/drivers/media/platform/amlogic/amvdec/amvdec.c
+new file mode 100644
+index 000000000000..a4c725a7c973
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec.c
+@@ -0,0 +1,1295 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * V4L2 request decoder core.
++ */
++
++#include <linux/of.h>
++#include <linux/clk.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/mfd/syscon.h>
++#include <linux/slab.h>
++#include <linux/interrupt.h>
++#include <linux/workqueue.h>
++#include <media/v4l2-ioctl.h>
++#include <media/v4l2-event.h>
++#include <media/v4l2-ctrls.h>
++#include <media/v4l2-mem2mem.h>
++#include <media/v4l2-dev.h>
++#include <media/videobuf2-dma-contig.h>
++
++#include "amvdec.h"
++#include "hevc_regs.h"
++#include "esparser.h"
++#include "amvdec_helpers.h"
++
++/* Stuck-request report: see vdec_job_watch() */
++static unsigned int job_watch_ms = 1000;
++module_param(job_watch_ms, uint, 0644);
++MODULE_PARM_DESC(job_watch_ms,
++		 "Report a request that has not completed after this long (0 = off)");
++
++struct dummy_buf {
++	struct vb2_v4l2_buffer vb;
++	struct list_head list;
++};
++
++/* 16 MiB for parsed bitstream swap exchange */
++#define SIZE_VIFIFO SZ_16M
++
++/*
++ * Canvas strides are 64-byte aligned for VDEC writes and VD1 scanout.
++ * Plane heights are 32-row aligned for macroblock rows and field pairs.
++ */
++static u32 get_output_size(u32 width, u32 height)
++{
++	return ALIGN(ALIGN(width, 64) * ALIGN(height, 32), SZ_64K);
++}
++
++u32 meson_amvdec_get_output_size(struct amvdec_session *sess)
++{
++	return get_output_size(sess->width, sess->height);
++}
++
++static bool vdec_needs_parser_vififo(struct amvdec_session *sess)
++{
++	return !sess->fmt_out->codec_ops->direct_input;
++}
++
++static int vdec_poweron(struct amvdec_session *sess)
++{
++	int ret;
++	struct amvdec_ops *vdec_ops = sess->fmt_out->vdec_ops;
++
++	ret = clk_prepare_enable(sess->core->dos_parser_clk);
++	if (ret)
++		return ret;
++
++	ret = clk_prepare_enable(sess->core->dos_clk);
++	if (ret)
++		goto disable_dos_parser;
++
++	ret = vdec_ops->start(sess);
++	if (ret)
++		goto disable_dos;
++
++	if (vdec_needs_parser_vififo(sess))
++		meson_amvdec_esparser_power_up(sess);
++
++	return 0;
++
++disable_dos:
++	clk_disable_unprepare(sess->core->dos_clk);
++disable_dos_parser:
++	clk_disable_unprepare(sess->core->dos_parser_clk);
++
++	return ret;
++}
++
++static void vdec_wait_inactive(struct amvdec_session *sess)
++{
++	/* Treat 50 ms without an IRQ as inactive. */
++	while (time_is_after_jiffies64(sess->last_irq_jiffies +
++				       msecs_to_jiffies(50)))
++		msleep(25);
++}
++
++static void vdec_cancel_job_watch(struct amvdec_session *sess)
++{
++	WRITE_ONCE(sess->watch_on, false);
++	cancel_delayed_work_sync(&sess->job_watch);
++}
++
++static int vdec_poweroff(struct amvdec_session *sess)
++{
++	struct amvdec_ops *vdec_ops = sess->fmt_out->vdec_ops;
++	int ret;
++
++	vdec_cancel_job_watch(sess);
++
++	sess->should_stop = 1;
++	vdec_wait_inactive(sess);
++
++	meson_amvdec_esparser_quiesce(sess->core);
++
++	/*
++	 * Detach the session and synchronize its IRQ before freeing codec memory.
++	 * Hold claim_lock through power-down so another session cannot start the core.
++	 * No codec lock is held while waiting for the IRQ handler.
++	 */
++	mutex_lock(&sess->core->claim_lock);
++	sess->core->cur_sess = NULL;
++	synchronize_irq(sess->core->irq);
++
++	ret = vdec_ops->stop(sess);
++	if (!ret) {
++		clk_disable_unprepare(sess->core->dos_clk);
++		clk_disable_unprepare(sess->core->dos_parser_clk);
++	}
++	mutex_unlock(&sess->core->claim_lock);
++
++	return ret;
++}
++
++/* HEVC-core formats: where the firmware and the stream fetcher stand. */
++static void vdec_job_watch_stream(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	if (sess->fmt_out->pixfmt != V4L2_PIX_FMT_HEVC_SLICE &&
++	    sess->fmt_out->pixfmt != V4L2_PIX_FMT_VP9_FRAME)
++		return;
++	/* Registers only while this session owns the powered core */
++	if (READ_ONCE(core->cur_sess) != sess)
++		return;
++
++	dev_warn(core->dev,
++		 "stuck request: status=%x endpoint=%x shift=%x lcu=%x stream wp=%x rp=%x level=%x\n",
++		 meson_amvdec_read_dos(core, HEVC_ASSIST_SCRATCH_0),
++		 meson_amvdec_read_dos(core, HEVC_ASSIST_SCRATCH_N),
++		 meson_amvdec_read_dos(core, HEVC_SHIFT_BYTE_COUNT),
++		 meson_amvdec_read_dos(core, HEVC_PARSER_LCU_START),
++		 meson_amvdec_read_dos(core, HEVC_STREAM_WR_PTR),
++		 meson_amvdec_read_dos(core, HEVC_STREAM_RD_PTR),
++		 meson_amvdec_read_dos(core, HEVC_STREAM_LEVEL));
++}
++
++/*
++ * Report stalled jobs once per job_watch_ms interval, including queue state
++ * and the request trace. A running job or queued input requires progress.
++ */
++static void vdec_job_watch(struct work_struct *work)
++{
++	struct amvdec_session *sess = container_of(to_delayed_work(work),
++						   struct amvdec_session,
++						   job_watch);
++	u32 seq = READ_ONCE(sess->run_seq);
++	u64 age = ktime_get_ns() - READ_ONCE(sess->run_ns);
++	bool running = v4l2_m2m_get_curr_priv(sess->m2m_dev) == sess;
++	unsigned int src = v4l2_m2m_num_src_bufs_ready(sess->m2m_ctx);
++	unsigned int dst = v4l2_m2m_num_dst_bufs_ready(sess->m2m_ctx);
++	unsigned int ms = READ_ONCE(job_watch_ms);
++
++	if (!READ_ONCE(sess->watch_on) || !ms)
++		return;
++	/* A stopped or failed queue cannot make progress on another job. */
++	if (READ_ONCE(sess->should_stop) ||
++	    sess->m2m_ctx->out_q_ctx.q.error ||
++	    sess->m2m_ctx->cap_q_ctx.q.error) {
++		WRITE_ONCE(sess->watch_on, false);
++		return;
++	}
++
++	if (age > (u64)ms * NSEC_PER_MSEC && (running || src) &&
++	    sess->watch_dumped_seq != seq) {
++		sess->watch_dumped_seq = seq;
++		dev_warn(sess->core->dev,
++			 "no new job for %llu ms: job %u running=%d src_ready=%u dst_ready=%u parser_queued=%d request_state=%d run_armed=%d seq=%u/%u\n",
++			 age / NSEC_PER_MSEC, seq, running, src, dst,
++			 atomic_read(&sess->esparser_queued_bufs),
++			 atomic_read(&sess->request_job.state),
++			 READ_ONCE(sess->m2m_run_armed),
++			 READ_ONCE(sess->sequence_out),
++			 READ_ONCE(sess->sequence_cap));
++		vdec_job_watch_stream(sess);
++		meson_amvdec_trace_dump(sess, "job watch");
++	}
++
++	if (READ_ONCE(sess->watch_on))
++		mod_delayed_work(system_dfl_wq, &sess->job_watch,
++				 msecs_to_jiffies(ms / 4 + 1));
++}
++
++static void vdec_m2m_device_run(void *priv)
++{
++	struct amvdec_session *sess = priv;
++
++	meson_amvdec_trace(sess, AMVDEC_TR_RUN, 0, 0, 0);
++	WRITE_ONCE(sess->run_ns, ktime_get_ns());
++	WRITE_ONCE(sess->run_seq, sess->run_seq + 1);
++	if (READ_ONCE(job_watch_ms) && !READ_ONCE(sess->should_stop)) {
++		WRITE_ONCE(sess->watch_on, true);
++		queue_delayed_work(system_dfl_wq, &sess->job_watch,
++				   msecs_to_jiffies(job_watch_ms / 4 + 1));
++	}
++	WRITE_ONCE(sess->m2m_run_armed, true);
++	schedule_work(&sess->esparser_queue_work);
++}
++
++static void vdec_m2m_job_abort(void *priv)
++{
++	struct amvdec_session *sess = priv;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++
++	vdec_cancel_job_watch(sess);
++	if (codec_ops->job_abort)
++		codec_ops->job_abort(sess);
++	v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++}
++
++static const struct v4l2_m2m_ops vdec_m2m_ops = {
++	.device_run = vdec_m2m_device_run,
++	.job_abort = vdec_m2m_job_abort,
++};
++
++static void process_num_buffers(struct vb2_queue *q,
++				struct amvdec_session *sess,
++				unsigned int *num_buffers,
++				bool is_reqbufs)
++{
++	const struct amvdec_format *fmt_out = sess->fmt_out;
++	unsigned int q_num_bufs = vb2_get_num_buffers(q);
++	unsigned int buffers_total = q_num_bufs + *num_buffers;
++
++	if (!buffers_total)
++		*num_buffers = 1;
++	if (is_reqbufs && buffers_total < fmt_out->min_buffers)
++		*num_buffers = fmt_out->min_buffers - q_num_bufs;
++	if (buffers_total > fmt_out->max_buffers)
++		*num_buffers = fmt_out->max_buffers - q_num_bufs;
++
++	q->min_queued_buffers = 0;
++}
++
++/*
++ * GXBB's ANC2AXI reference table keeps only address bits 31:16 (the slot
++ * number is packed into bits 15:8), so every HEVC reference plane must be
++ * 64 KiB aligned.  CMA aligns an allocation to its size rounded up to a
++ * power of two, so sizing each NV12M plane as a 64 KiB multiple is enough.
++ */
++static bool vdec_nv12m_needs_64k(struct amvdec_session *sess)
++{
++	u32 pixfmt = sess->fmt_out->pixfmt;
++
++	return sess->core->platform->revision == AMVDEC_REVISION_GXBB &&
++	       pixfmt == V4L2_PIX_FMT_HEVC_SLICE;
++}
++
++static u32 vdec_nv12m_plane_size(struct amvdec_session *sess, u32 size)
++{
++	return vdec_nv12m_needs_64k(sess) ? ALIGN(size, SZ_64K) : size;
++}
++
++static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
++			    unsigned int *num_planes, unsigned int sizes[],
++			    struct device *alloc_devs[])
++{
++	struct amvdec_session *sess = vb2_get_drv_priv(q);
++	u32 output_size = meson_amvdec_get_output_size(sess);
++
++	if (*num_planes) {
++		switch (q->type) {
++		case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
++			if (*num_planes != 1 ||
++			    sizes[0] < sess->src_buffer_size)
++				return -EINVAL;
++			break;
++		case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
++			switch (sess->pixfmt_cap) {
++			case V4L2_PIX_FMT_NV12M:
++				if (*num_planes != 2 ||
++				    sizes[0] < vdec_nv12m_plane_size(sess, output_size) ||
++				    sizes[1] < vdec_nv12m_plane_size(sess, output_size / 2))
++					return -EINVAL;
++				break;
++			case V4L2_PIX_FMT_YUV420M:
++				if (*num_planes != 3 ||
++				    sizes[0] < output_size ||
++				    sizes[1] < output_size / 4 ||
++				    sizes[2] < output_size / 4)
++					return -EINVAL;
++				break;
++			case V4L2_PIX_FMT_AM21C:
++				if (*num_planes != 1 ||
++				    sizes[0] < AM21C_HEADER_SIZE)
++					return -EINVAL;
++				break;
++			default:
++				return -EINVAL;
++			}
++
++			process_num_buffers(q, sess, num_buffers, false);
++			break;
++		}
++
++		return 0;
++	}
++
++	switch (q->type) {
++	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
++		sizes[0] = sess->src_buffer_size;
++		*num_planes = 1;
++		break;
++	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
++		switch (sess->pixfmt_cap) {
++		case V4L2_PIX_FMT_NV12M:
++			sizes[0] = vdec_nv12m_plane_size(sess, output_size);
++			sizes[1] = vdec_nv12m_plane_size(sess, output_size / 2);
++			*num_planes = 2;
++			break;
++		case V4L2_PIX_FMT_YUV420M:
++			sizes[0] = output_size;
++			sizes[1] = output_size / 4;
++			sizes[2] = output_size / 4;
++			*num_planes = 3;
++			break;
++		case V4L2_PIX_FMT_AM21C:
++			sizes[0] = AM21C_HEADER_SIZE;
++			*num_planes = 1;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		process_num_buffers(q, sess, num_buffers, true);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++/* Software-only snapshots: safe even when the decoder is powered down. */
++static void vdec_debug_state(struct amvdec_session *sess, const char *event,
++			     u32 type, u32 value)
++{
++	dev_dbg(sess->core->dev,
++		"%s sess=%p type=%u value=%#x status=%u stream=%u/%u stop=%u src_ready=%u dst_ready=%u seq=%u/%u credit=%d irq_jiffies=%llu\n",
++		event, sess, type, value, READ_ONCE(sess->status),
++		READ_ONCE(sess->streamon_out), READ_ONCE(sess->streamon_cap),
++		READ_ONCE(sess->should_stop),
++		v4l2_m2m_num_src_bufs_ready(sess->m2m_ctx),
++		v4l2_m2m_num_dst_bufs_ready(sess->m2m_ctx),
++		READ_ONCE(sess->sequence_out), READ_ONCE(sess->sequence_cap),
++		atomic_read(&sess->esparser_queued_bufs),
++		READ_ONCE(sess->last_irq_jiffies));
++}
++
++static void vdec_vb2_buf_queue(struct vb2_buffer *vb)
++{
++	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
++	struct amvdec_session *sess = vb2_get_drv_priv(vb->vb2_queue);
++
++	v4l2_m2m_buf_queue(sess->m2m_ctx, vbuf);
++	vdec_debug_state(sess, "qbuf", vb->type, vb->index);
++}
++
++static int vdec_start_streaming(struct vb2_queue *q, unsigned int count)
++{
++	struct amvdec_session *sess = vb2_get_drv_priv(q);
++	struct amvdec_core *core = sess->core;
++	struct vb2_v4l2_buffer *buf;
++	int ret;
++
++	vdec_debug_state(sess, "streamon-enter", q->type, count);
++
++	/* Claim the shared decoder atomically across independently locked sessions. */
++	mutex_lock(&core->claim_lock);
++	if (core->cur_sess && core->cur_sess != sess) {
++		mutex_unlock(&core->claim_lock);
++		ret = -EBUSY;
++		goto bufs_done;
++	}
++	core->cur_sess = sess;
++	mutex_unlock(&core->claim_lock);
++
++	if (q->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
++		sess->streamon_out = 1;
++	else
++		sess->streamon_cap = 1;
++
++	if (!sess->streamon_out || !sess->streamon_cap)
++		return 0;
++
++	if (sess->status == STATUS_RUNNING ||
++	    sess->status == STATUS_INIT)
++		return 0;
++
++	sess->vififo_size = 0;
++	sess->vififo_vaddr = NULL;
++	sess->vififo_paddr = 0;
++	if (vdec_needs_parser_vififo(sess)) {
++		sess->vififo_size = SIZE_VIFIFO;
++		sess->vififo_vaddr =
++			dma_alloc_coherent(sess->core->dev, sess->vififo_size,
++					   &sess->vififo_paddr, GFP_KERNEL);
++		if (!sess->vififo_vaddr) {
++			dev_err(sess->core->dev, "Failed to request VIFIFO buffer\n");
++			ret = -ENOMEM;
++			goto bufs_done;
++		}
++	}
++
++	sess->should_stop = 0;
++	sess->last_offset = 0;
++	sess->wrap_count = 0;
++	sess->bitdepth = 8;
++	atomic_set(&sess->esparser_queued_bufs, 0);
++
++	ret = vdec_poweron(sess);
++	if (ret)
++		goto vififo_free;
++
++	sess->sequence_cap = 0;
++	sess->sequence_out = 0;
++
++	sess->status = STATUS_INIT;
++	schedule_work(&sess->esparser_queue_work);
++	return 0;
++
++vififo_free:
++	if (sess->vififo_vaddr)
++		dma_free_coherent(sess->core->dev, sess->vififo_size,
++				  sess->vififo_vaddr, sess->vififo_paddr);
++bufs_done:
++	mutex_lock(&core->claim_lock);
++	if (core->cur_sess == sess)
++		core->cur_sess = NULL;
++	mutex_unlock(&core->claim_lock);
++
++	while ((buf = v4l2_m2m_src_buf_remove(sess->m2m_ctx)))
++		v4l2_m2m_buf_done(buf, VB2_BUF_STATE_QUEUED);
++	while ((buf = v4l2_m2m_dst_buf_remove(sess->m2m_ctx)))
++		v4l2_m2m_buf_done(buf, VB2_BUF_STATE_QUEUED);
++
++	if (q->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
++		sess->streamon_out = 0;
++	else
++		sess->streamon_cap = 0;
++
++	return ret;
++}
++
++static void vdec_free_canvas(struct amvdec_session *sess)
++{
++	int i;
++
++	for (i = 0; i < sess->canvas_num; ++i)
++		meson_canvas_free(sess->core->canvas, sess->canvas_alloc[i]);
++
++	sess->canvas_num = 0;
++
++	/* The firmware buffer mappings name the canvases just freed. */
++	sess->num_fw_bufs = 0;
++	for (i = 0; i < ARRAY_SIZE(sess->fw_idx_to_vb2_idx); ++i)
++		sess->fw_idx_to_vb2_idx[i] = VB2_IDX_UNMAPPED;
++	for (i = 0; i < ARRAY_SIZE(sess->vb2_idx_to_fw_idx); ++i)
++		sess->vb2_idx_to_fw_idx[i] = VB2_IDX_UNMAPPED;
++}
++
++static void vdec_reset_timestamps(struct amvdec_session *sess)
++{
++	struct amvdec_timestamp *tmp, *n;
++
++	list_for_each_entry_safe(tmp, n, &sess->timestamps, list) {
++		list_del(&tmp->list);
++		kfree(tmp);
++	}
++}
++
++static void vdec_stop_streaming(struct vb2_queue *q)
++{
++	struct amvdec_session *sess = vb2_get_drv_priv(q);
++	struct amvdec_core *core = sess->core;
++	struct vb2_v4l2_buffer *buf;
++	int stop_ret = 0;
++
++	vdec_cancel_job_watch(sess);
++	vdec_debug_state(sess, "streamoff-enter", q->type, 0);
++
++	if (sess->status == STATUS_RUNNING ||
++	    sess->status == STATUS_INIT) {
++		stop_ret = vdec_poweroff(sess);
++		if (stop_ret) {
++			dev_err(core->dev,
++				"decoder stop failed (%d); retaining private DMA allocations\n",
++				stop_ret);
++			vb2_queue_error(&sess->m2m_ctx->out_q_ctx.q);
++			vb2_queue_error(&sess->m2m_ctx->cap_q_ctx.q);
++			sess->status = STATUS_STOPPED;
++		} else {
++			if (meson_amvdec_request_jobs(sess))
++				meson_amvdec_request_retire(sess, true);
++			if (sess->request_job.input_vaddr) {
++				dma_free_coherent(core->dev, sess->request_job.input_size,
++						  sess->request_job.input_vaddr,
++						  sess->request_job.input_paddr);
++				sess->request_job.input_vaddr = NULL;
++				sess->request_job.input_size = 0;
++			}
++			vdec_free_canvas(sess);
++			if (sess->vififo_vaddr)
++				dma_free_coherent(sess->core->dev,
++						  sess->vififo_size,
++						  sess->vififo_vaddr,
++						  sess->vififo_paddr);
++			sess->hevc_headers_valid = false;
++			vdec_reset_timestamps(sess);
++			kfree(sess->priv);
++			sess->priv = NULL;
++			sess->status = STATUS_STOPPED;
++		}
++	}
++
++	/* Return both buffers of the active request before tearing down either queue. */
++	if (meson_amvdec_request_jobs(sess))
++		meson_amvdec_request_retire(sess, true);
++
++	if (q->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		while ((buf = v4l2_m2m_src_buf_remove(sess->m2m_ctx))) {
++			v4l2_ctrl_request_complete(buf->vb2_buf.req_obj.req,
++						   &sess->ctrl_handler);
++			v4l2_m2m_buf_done(buf, VB2_BUF_STATE_ERROR);
++		}
++
++		sess->streamon_out = 0;
++	} else {
++		while ((buf = v4l2_m2m_dst_buf_remove(sess->m2m_ctx)))
++			v4l2_m2m_buf_done(buf, VB2_BUF_STATE_ERROR);
++
++		sess->streamon_cap = 0;
++	}
++
++	/* Release an early claim once this session is fully off */
++	mutex_lock(&core->claim_lock);
++	if (!sess->streamon_out && !sess->streamon_cap &&
++	    core->cur_sess == sess)
++		core->cur_sess = NULL;
++	mutex_unlock(&core->claim_lock);
++	vdec_debug_state(sess, "streamoff-exit", q->type, 0);
++}
++
++static int vdec_vb2_buf_prepare(struct vb2_buffer *vb)
++{
++	to_vb2_v4l2_buffer(vb)->field = V4L2_FIELD_NONE;
++	return 0;
++}
++
++static int vdec_buf_out_validate(struct vb2_buffer *vb)
++{
++	to_vb2_v4l2_buffer(vb)->field = V4L2_FIELD_NONE;
++	return 0;
++}
++
++static void vdec_buf_request_complete(struct vb2_buffer *vb)
++{
++	struct amvdec_session *sess = vb2_get_drv_priv(vb->vb2_queue);
++
++	v4l2_ctrl_request_complete(vb->req_obj.req, &sess->ctrl_handler);
++}
++
++static const struct vb2_ops vdec_vb2_ops = {
++	.queue_setup = vdec_queue_setup,
++	.start_streaming = vdec_start_streaming,
++	.stop_streaming = vdec_stop_streaming,
++	.buf_queue = vdec_vb2_buf_queue,
++	.buf_prepare = vdec_vb2_buf_prepare,
++	.buf_out_validate = vdec_buf_out_validate,
++	.buf_request_complete = vdec_buf_request_complete,
++};
++
++static int
++vdec_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
++{
++	strscpy(cap->driver, "meson-amvdec", sizeof(cap->driver));
++	strscpy(cap->card, "Amlogic Video Decoder", sizeof(cap->card));
++	strscpy(cap->bus_info, "platform:meson-amvdec", sizeof(cap->bus_info));
++
++	return 0;
++}
++
++static const struct amvdec_format *
++find_format(const struct amvdec_format *fmts, u32 size, u32 pixfmt)
++{
++	unsigned int i;
++
++	for (i = 0; i < size; i++) {
++		if (fmts[i].pixfmt == pixfmt)
++			return &fmts[i];
++	}
++
++	return NULL;
++}
++
++static unsigned int
++vdec_supports_pixfmt_cap(const struct amvdec_format *fmt_out, u32 pixfmt_cap)
++{
++	int i;
++
++	for (i = 0; fmt_out->pixfmts_cap[i]; i++)
++		if (fmt_out->pixfmts_cap[i] == pixfmt_cap)
++			return 1;
++
++	return 0;
++}
++
++static const struct amvdec_format *
++vdec_try_fmt_common(struct amvdec_session *sess, u32 size,
++		    struct v4l2_format *f)
++{
++	struct v4l2_pix_format_mplane *pixmp = &f->fmt.pix_mp;
++	struct v4l2_plane_pix_format *pfmt = pixmp->plane_fmt;
++	const struct amvdec_format *fmts = sess->core->platform->formats;
++	const struct amvdec_format *fmt_out = NULL;
++	u32 output_size = 0;
++
++	memset(pfmt[0].reserved, 0, sizeof(pfmt[0].reserved));
++	memset(pixmp->reserved, 0, sizeof(pixmp->reserved));
++
++	switch (f->type) {
++	case V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE:
++		fmt_out = find_format(fmts, size, pixmp->pixelformat);
++		if (!fmt_out) {
++			pixmp->pixelformat = fmts[0].pixfmt;
++			fmt_out = &fmts[0];
++		}
++		break;
++	case V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE:
++		fmt_out = sess->fmt_out;
++		break;
++	default:
++		return NULL;
++	}
++
++	pixmp->width = clamp(pixmp->width,
++			     amvdec_min_coded_width(fmt_out->pixfmt),
++			     fmt_out->max_width);
++	pixmp->height = clamp(pixmp->height,
++			      amvdec_min_coded_height(fmt_out->pixfmt),
++			      fmt_out->max_height);
++	output_size = get_output_size(pixmp->width, pixmp->height);
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		if (!pfmt[0].sizeimage)
++			pfmt[0].sizeimage = sess->src_buffer_size;
++		pfmt[0].bytesperline = 0;
++		pixmp->num_planes = 1;
++	} else if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
++		fmt_out = sess->fmt_out;
++		if (!vdec_supports_pixfmt_cap(fmt_out, pixmp->pixelformat))
++			pixmp->pixelformat = fmt_out->pixfmts_cap[0];
++
++		memset(pfmt[1].reserved, 0, sizeof(pfmt[1].reserved));
++		if (pixmp->pixelformat == V4L2_PIX_FMT_NV12M) {
++			/* HEVC and VP9 linear output uses a 32-byte row pitch. */
++			u32 align = (fmt_out->pixfmt == V4L2_PIX_FMT_HEVC_SLICE ||
++				     fmt_out->pixfmt == V4L2_PIX_FMT_VP9_FRAME) ? 32 : 64;
++
++			pfmt[0].sizeimage = vdec_nv12m_plane_size(sess, output_size);
++			pfmt[0].bytesperline = ALIGN(pixmp->width, align);
++
++			pfmt[1].sizeimage = vdec_nv12m_plane_size(sess, output_size / 2);
++			pfmt[1].bytesperline = ALIGN(pixmp->width, align);
++			pixmp->num_planes = 2;
++		} else if (pixmp->pixelformat == V4L2_PIX_FMT_YUV420M) {
++			pfmt[0].sizeimage = output_size;
++			pfmt[0].bytesperline = ALIGN(pixmp->width, 64);
++
++			pfmt[1].sizeimage = output_size / 4;
++			pfmt[1].bytesperline = ALIGN(pixmp->width, 64) / 2;
++
++			pfmt[2].sizeimage = output_size / 2;
++			pfmt[2].bytesperline = ALIGN(pixmp->width, 64) / 2;
++			pixmp->num_planes = 3;
++		} else if (pixmp->pixelformat == V4L2_PIX_FMT_AM21C) {
++			/* one plane: the FBC/MMU compression header */
++			pfmt[0].sizeimage = AM21C_HEADER_SIZE;
++			pfmt[0].bytesperline = 0;
++			pixmp->num_planes = 1;
++		}
++	}
++
++	if (pixmp->field == V4L2_FIELD_ANY)
++		pixmp->field = V4L2_FIELD_NONE;
++
++	return fmt_out;
++}
++
++static int vdec_try_fmt(struct file *file, void *fh, struct v4l2_format *f)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++
++	vdec_try_fmt_common(sess, sess->core->platform->num_formats, f);
++
++	return 0;
++}
++
++static int vdec_g_fmt(struct file *file, void *fh, struct v4l2_format *f)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++	struct v4l2_pix_format_mplane *pixmp = &f->fmt.pix_mp;
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
++		pixmp->pixelformat = sess->pixfmt_cap;
++	else if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
++		pixmp->pixelformat = sess->fmt_out->pixfmt;
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
++		pixmp->width = sess->width;
++		pixmp->height = sess->height;
++		pixmp->colorspace = sess->colorspace;
++		pixmp->ycbcr_enc = sess->ycbcr_enc;
++		pixmp->quantization = sess->quantization;
++		pixmp->xfer_func = sess->xfer_func;
++	} else if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		pixmp->width = sess->width;
++		pixmp->height = sess->height;
++	}
++
++	vdec_try_fmt_common(sess, sess->core->platform->num_formats, f);
++
++	return 0;
++}
++
++static int vdec_s_fmt(struct file *file, void *fh, struct v4l2_format *f)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++	struct v4l2_pix_format_mplane *pixmp = &f->fmt.pix_mp;
++	u32 num_formats = sess->core->platform->num_formats;
++	const struct amvdec_format *fmt_out;
++	struct v4l2_pix_format_mplane orig_pixmp;
++	struct v4l2_format format;
++	u32 pixfmt_out = 0, pixfmt_cap = 0;
++
++	if (vb2_is_busy(v4l2_m2m_get_src_vq(sess->m2m_ctx)) ||
++	    vb2_is_busy(v4l2_m2m_get_dst_vq(sess->m2m_ctx)))
++		return -EBUSY;
++
++	orig_pixmp = *pixmp;
++
++	fmt_out = vdec_try_fmt_common(sess, num_formats, f);
++	if (!fmt_out)
++		return -EINVAL;
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		pixfmt_out = pixmp->pixelformat;
++		pixfmt_cap = sess->pixfmt_cap;
++	} else if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
++		pixfmt_cap = pixmp->pixelformat;
++		pixfmt_out = sess->fmt_out->pixfmt;
++	}
++
++	memset(&format, 0, sizeof(format));
++
++	format.type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
++	format.fmt.pix_mp.pixelformat = pixfmt_out;
++	format.fmt.pix_mp.width = orig_pixmp.width;
++	format.fmt.pix_mp.height = orig_pixmp.height;
++	vdec_try_fmt_common(sess, num_formats, &format);
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		sess->width = format.fmt.pix_mp.width;
++		sess->height = format.fmt.pix_mp.height;
++		sess->colorspace = pixmp->colorspace;
++		sess->ycbcr_enc = pixmp->ycbcr_enc;
++		sess->quantization = pixmp->quantization;
++		sess->xfer_func = pixmp->xfer_func;
++		sess->src_buffer_size = pixmp->plane_fmt[0].sizeimage;
++	}
++
++	memset(&format, 0, sizeof(format));
++
++	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++	format.fmt.pix_mp.pixelformat = pixfmt_cap;
++	format.fmt.pix_mp.width = orig_pixmp.width;
++	format.fmt.pix_mp.height = orig_pixmp.height;
++	vdec_try_fmt_common(sess, num_formats, &format);
++
++	sess->width = format.fmt.pix_mp.width;
++	sess->height = format.fmt.pix_mp.height;
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
++		sess->fmt_out = fmt_out;
++	else if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
++		sess->pixfmt_cap = format.fmt.pix_mp.pixelformat;
++
++	return 0;
++}
++
++static int vdec_enum_fmt(struct file *file, void *fh, struct v4l2_fmtdesc *f)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++	const struct amvdec_platform *platform = sess->core->platform;
++	const struct amvdec_format *fmt_out;
++
++	memset(f->reserved, 0, sizeof(f->reserved));
++
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		if (f->index >= platform->num_formats)
++			return -EINVAL;
++
++		fmt_out = &platform->formats[f->index];
++		f->pixelformat = fmt_out->pixfmt;
++		f->flags = fmt_out->flags;
++	} else if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
++		fmt_out = sess->fmt_out;
++		if (f->index >= 4 || !fmt_out->pixfmts_cap[f->index])
++			return -EINVAL;
++
++		f->pixelformat = fmt_out->pixfmts_cap[f->index];
++	} else {
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int vdec_enum_framesizes(struct file *file, void *fh,
++				struct v4l2_frmsizeenum *fsize)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++	const struct amvdec_format *formats = sess->core->platform->formats;
++	const struct amvdec_format *fmt;
++	u32 num_formats = sess->core->platform->num_formats;
++
++	fmt = find_format(formats, num_formats, fsize->pixel_format);
++	if (!fmt || fsize->index)
++		return -EINVAL;
++
++	fsize->type = V4L2_FRMSIZE_TYPE_CONTINUOUS;
++
++	/* Advertise the coded-size floor enforced by each codec. */
++	fsize->stepwise.min_width = amvdec_min_coded_width(fsize->pixel_format);
++	fsize->stepwise.min_height = amvdec_min_coded_height(fsize->pixel_format);
++	fsize->stepwise.max_width = fmt->max_width;
++	fsize->stepwise.step_width = 1;
++	fsize->stepwise.max_height = fmt->max_height;
++	fsize->stepwise.step_height = 1;
++
++	return 0;
++}
++
++static int vdec_subscribe_event(struct v4l2_fh *fh,
++				const struct v4l2_event_subscription *sub)
++{
++	return v4l2_ctrl_subscribe_event(fh, sub);
++}
++
++static const struct v4l2_ioctl_ops vdec_ioctl_ops = {
++	.vidioc_querycap = vdec_querycap,
++	.vidioc_enum_fmt_vid_cap = vdec_enum_fmt,
++	.vidioc_enum_fmt_vid_out = vdec_enum_fmt,
++	.vidioc_s_fmt_vid_cap_mplane = vdec_s_fmt,
++	.vidioc_s_fmt_vid_out_mplane = vdec_s_fmt,
++	.vidioc_g_fmt_vid_cap_mplane = vdec_g_fmt,
++	.vidioc_g_fmt_vid_out_mplane = vdec_g_fmt,
++	.vidioc_try_fmt_vid_cap_mplane = vdec_try_fmt,
++	.vidioc_try_fmt_vid_out_mplane = vdec_try_fmt,
++	.vidioc_reqbufs = v4l2_m2m_ioctl_reqbufs,
++	.vidioc_querybuf = v4l2_m2m_ioctl_querybuf,
++	.vidioc_prepare_buf = v4l2_m2m_ioctl_prepare_buf,
++	.vidioc_qbuf = v4l2_m2m_ioctl_qbuf,
++	.vidioc_expbuf = v4l2_m2m_ioctl_expbuf,
++	.vidioc_dqbuf = v4l2_m2m_ioctl_dqbuf,
++	.vidioc_create_bufs = v4l2_m2m_ioctl_create_bufs,
++	.vidioc_streamon = v4l2_m2m_ioctl_streamon,
++	.vidioc_streamoff = v4l2_m2m_ioctl_streamoff,
++	.vidioc_enum_framesizes = vdec_enum_framesizes,
++	.vidioc_subscribe_event = vdec_subscribe_event,
++	.vidioc_unsubscribe_event = v4l2_event_unsubscribe,
++};
++
++static int m2m_queue_init(void *priv, struct vb2_queue *src_vq,
++			  struct vb2_queue *dst_vq)
++{
++	struct amvdec_session *sess = priv;
++	int ret;
++
++	src_vq->type = V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE;
++	src_vq->io_modes = VB2_MMAP | VB2_DMABUF;
++	src_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
++	src_vq->ops = &vdec_vb2_ops;
++	src_vq->mem_ops = &vb2_dma_contig_memops;
++	src_vq->drv_priv = sess;
++	src_vq->buf_struct_size = sizeof(struct dummy_buf);
++	src_vq->supports_requests = true;
++	src_vq->requires_requests = true;
++	src_vq->min_queued_buffers = 0;
++	src_vq->dev = sess->core->dev;
++	src_vq->lock = &sess->lock;
++	ret = vb2_queue_init(src_vq);
++	if (ret)
++		return ret;
++
++	dst_vq->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
++	/*
++	 * Let vb2 report CMA allocation failures through REQBUFS without an allocator
++	 * warning or free-map dump.
++	 */
++	dst_vq->gfp_flags = __GFP_NOWARN;
++	dst_vq->io_modes = VB2_MMAP | VB2_DMABUF;
++	dst_vq->allow_cache_hints = 1;
++	dst_vq->timestamp_flags = V4L2_BUF_FLAG_TIMESTAMP_COPY;
++	dst_vq->ops = &vdec_vb2_ops;
++	dst_vq->mem_ops = &vb2_dma_contig_memops;
++	dst_vq->drv_priv = sess;
++	dst_vq->buf_struct_size = sizeof(struct dummy_buf);
++	dst_vq->min_queued_buffers = 0;
++	dst_vq->dev = sess->core->dev;
++	dst_vq->lock = &sess->lock;
++	return vb2_queue_init(dst_vq);
++}
++
++/* Compound controls must have defaults accepted by their try_ctrl callback. */
++static int vdec_init_ctrls(struct amvdec_session *sess)
++{
++	struct v4l2_ctrl_handler *ctrl_handler = &sess->ctrl_handler;
++	int ret;
++
++	ret = v4l2_ctrl_handler_init(ctrl_handler, 20);
++	if (ret)
++		return ret;
++
++	/* Create controls for the formats in the selected capability table. */
++
++	/* Menus are derived from this compatible's codec descriptors. */
++	for (unsigned int i = 0; i < sess->core->platform->num_formats; i++) {
++		const struct amvdec_format *fmt = &sess->core->platform->formats[i];
++
++		if (fmt->profile_ctrl)
++			v4l2_ctrl_new_std_menu(ctrl_handler, NULL, fmt->profile_ctrl,
++					       fls(fmt->profiles) - 1, ~fmt->profiles,
++					       fmt->default_profile);
++		if (fmt->level_ctrl)
++			v4l2_ctrl_new_std_menu(ctrl_handler, NULL, fmt->level_ctrl,
++					       fmt->max_level, 0, fmt->default_level);
++	}
++
++	ret = ctrl_handler->error;
++	if (ret) {
++		v4l2_ctrl_handler_free(ctrl_handler);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int vdec_open(struct file *file)
++{
++	struct amvdec_core *core = video_drvdata(file);
++	struct device *dev = core->dev;
++	const struct amvdec_format *formats = core->platform->formats;
++	struct amvdec_session *sess;
++	int ret;
++
++	if (!core->platform->num_formats)
++		return -ENODEV;
++
++	sess = kzalloc_obj(*sess);
++	if (!sess)
++		return -ENOMEM;
++
++	sess->core = core;
++
++	sess->m2m_dev = core->m2m_dev;
++
++	sess->m2m_ctx = v4l2_m2m_ctx_init(sess->m2m_dev, sess, m2m_queue_init);
++	if (IS_ERR(sess->m2m_ctx)) {
++		dev_err(dev, "Fail to v4l2_m2m_ctx_init\n");
++		ret = PTR_ERR(sess->m2m_ctx);
++		goto err_free_sess;
++	}
++
++	ret = vdec_init_ctrls(sess);
++	if (ret)
++		goto err_m2m_ctx_release;
++
++	sess->pixfmt_cap = formats[0].pixfmts_cap[0];
++	sess->fmt_out = &formats[0];
++	sess->width = 1280;
++	sess->height = 720;
++	sess->src_buffer_size = SZ_1M;
++
++	INIT_LIST_HEAD(&sess->timestamps);
++	INIT_WORK(&sess->esparser_queue_work, meson_amvdec_esparser_queue_all_src);
++	INIT_DELAYED_WORK(&sess->job_watch, vdec_job_watch);
++	mutex_init(&sess->lock);
++	spin_lock_init(&sess->ts_spinlock);
++
++	v4l2_fh_init(&sess->fh, core->vdev_dec);
++	sess->fh.ctrl_handler = &sess->ctrl_handler;
++	v4l2_fh_add(&sess->fh, file);
++	sess->fh.m2m_ctx = sess->m2m_ctx;
++
++	return 0;
++
++err_m2m_ctx_release:
++	v4l2_m2m_ctx_release(sess->m2m_ctx);
++err_free_sess:
++	kfree(sess);
++	return ret;
++}
++
++static int vdec_close(struct file *file)
++{
++	struct amvdec_session *sess = file_to_amvdec_session(file);
++
++	WRITE_ONCE(sess->watch_on, false);
++	disable_delayed_work_sync(&sess->job_watch);
++	disable_work_sync(&sess->esparser_queue_work);
++	v4l2_m2m_ctx_release(sess->m2m_ctx);
++	v4l2_fh_del(&sess->fh, file);
++	v4l2_fh_exit(&sess->fh);
++	v4l2_ctrl_handler_free(&sess->ctrl_handler);
++
++	mutex_destroy(&sess->lock);
++
++	kfree(sess);
++
++	return 0;
++}
++
++static const struct v4l2_file_operations vdec_fops = {
++	.owner = THIS_MODULE,
++	.open = vdec_open,
++	.release = vdec_close,
++	.unlocked_ioctl = video_ioctl2,
++	.poll = v4l2_m2m_fop_poll,
++	.mmap = v4l2_m2m_fop_mmap,
++};
++
++static irqreturn_t vdec_isr(int irq, void *data)
++{
++	struct amvdec_core *core = data;
++	struct amvdec_session *sess = core->cur_sess;
++
++	/* An interrupt can arrive after STREAMOFF detaches the session. */
++	if (!sess)
++		return IRQ_NONE;
++
++	sess->last_irq_jiffies = get_jiffies_64();
++
++	return sess->fmt_out->codec_ops->isr(sess);
++}
++
++static irqreturn_t vdec_threaded_isr(int irq, void *data)
++{
++	struct amvdec_core *core = data;
++	struct amvdec_session *sess = core->cur_sess;
++
++	if (!sess)
++		return IRQ_NONE;
++
++	return sess->fmt_out->codec_ops->threaded_isr(sess);
++}
++
++static const struct of_device_id vdec_dt_match[] = {
++	{ .compatible = "amlogic,gxbb-vdec",
++	  .data = &meson_amvdec_platform_gxbb },
++	{ .compatible = "amlogic,gxm-vdec",
++	  .data = &meson_amvdec_platform_gxm },
++	{ .compatible = "amlogic,gxl-vdec",
++	  .data = &meson_amvdec_platform_gxl },
++	{ .compatible = "amlogic,gxlx-vdec",
++	  .data = &meson_amvdec_platform_gxlx },
++	{ .compatible = "amlogic,g12a-vdec",
++	  .data = &meson_amvdec_platform_g12a },
++	{ .compatible = "amlogic,sm1-vdec",
++	  .data = &meson_amvdec_platform_sm1 },
++	{}
++};
++MODULE_DEVICE_TABLE(of, vdec_dt_match);
++
++static int vdec_request_validate(struct media_request *req)
++{
++	unsigned int count = vb2_request_buffer_cnt(req);
++
++	if (!count)
++		return -ENOENT;
++	if (count > 1)
++		return -EINVAL;
++
++	return vb2_request_validate(req);
++}
++
++static const struct media_device_ops vdec_media_ops = {
++	.req_validate = vdec_request_validate,
++	.req_queue = v4l2_m2m_request_queue,
++};
++
++static int vdec_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct video_device *vdev;
++	struct amvdec_core *core;
++	const struct of_device_id *of_id;
++	int irq;
++	int ret;
++
++	core = devm_kzalloc(dev, sizeof(*core), GFP_KERNEL);
++	if (!core)
++		return -ENOMEM;
++
++	core->dev = dev;
++	platform_set_drvdata(pdev, core);
++
++	core->fw_vaddr = dmam_alloc_coherent(dev, AMVDEC_FW_SIZE,
++					     &core->fw_paddr, GFP_KERNEL);
++	if (!core->fw_vaddr)
++		return -ENOMEM;
++
++	core->dos_base = devm_platform_ioremap_resource_byname(pdev, "dos");
++	if (IS_ERR(core->dos_base))
++		return PTR_ERR(core->dos_base);
++
++	core->esparser_base = devm_platform_ioremap_resource_byname(pdev, "esparser");
++	if (IS_ERR(core->esparser_base))
++		return PTR_ERR(core->esparser_base);
++
++	core->regmap_ao =
++		syscon_regmap_lookup_by_phandle(dev->of_node,
++						"amlogic,ao-sysctrl");
++	if (IS_ERR(core->regmap_ao)) {
++		dev_err(dev, "Couldn't regmap AO sysctrl\n");
++		return PTR_ERR(core->regmap_ao);
++	}
++
++	core->canvas = meson_canvas_get(dev);
++	if (IS_ERR(core->canvas))
++		return PTR_ERR(core->canvas);
++
++	of_id = of_match_node(vdec_dt_match, dev->of_node);
++	core->platform = of_id->data;
++
++	if (core->platform->revision == AMVDEC_REVISION_G12A ||
++	    core->platform->revision == AMVDEC_REVISION_SM1) {
++		core->amvdec_hevcf_clk = devm_clk_get(dev, "vdec_hevcf");
++		if (IS_ERR(core->amvdec_hevcf_clk))
++			return -EPROBE_DEFER;
++	}
++
++	core->dos_parser_clk = devm_clk_get(dev, "dos_parser");
++	if (IS_ERR(core->dos_parser_clk))
++		return -EPROBE_DEFER;
++
++	core->dos_clk = devm_clk_get(dev, "dos");
++	if (IS_ERR(core->dos_clk))
++		return -EPROBE_DEFER;
++
++	core->amvdec_1_clk = devm_clk_get(dev, "vdec_1");
++	if (IS_ERR(core->amvdec_1_clk))
++		return -EPROBE_DEFER;
++
++	core->amvdec_hevc_clk = devm_clk_get(dev, "vdec_hevc");
++	if (IS_ERR(core->amvdec_hevc_clk))
++		return -EPROBE_DEFER;
++
++	irq = platform_get_irq_byname(pdev, "vdec");
++	core->irq = irq;
++	if (irq < 0)
++		return irq;
++
++	ret = devm_request_threaded_irq(core->dev, irq, vdec_isr,
++					vdec_threaded_isr, IRQF_ONESHOT,
++					"vdec", core);
++	if (ret)
++		return ret;
++
++	ret = meson_amvdec_esparser_init(pdev, core);
++	if (ret)
++		return ret;
++
++	ret = v4l2_device_register(dev, &core->v4l2_dev);
++	if (ret) {
++		dev_err(dev, "Couldn't register v4l2 device\n");
++		return -ENOMEM;
++	}
++
++	core->m2m_dev = v4l2_m2m_init(&vdec_m2m_ops);
++	if (IS_ERR(core->m2m_dev)) {
++		ret = PTR_ERR(core->m2m_dev);
++		goto err_v4l2_unregister;
++	}
++
++	core->mdev.dev = dev;
++	strscpy(core->mdev.model, "meson-amvdec", sizeof(core->mdev.model));
++	strscpy(core->mdev.bus_info, "platform:meson-amvdec",
++		sizeof(core->mdev.bus_info));
++	media_device_init(&core->mdev);
++	core->mdev.ops = &vdec_media_ops;
++	core->v4l2_dev.mdev = &core->mdev;
++
++	vdev = video_device_alloc();
++	if (!vdev) {
++		ret = -ENOMEM;
++		goto err_media_cleanup;
++	}
++
++	core->vdev_dec = vdev;
++	core->dev_dec = dev;
++	mutex_init(&core->lock);
++	mutex_init(&core->claim_lock);
++
++	strscpy(vdev->name, "meson-video-decoder", sizeof(vdev->name));
++	vdev->release = video_device_release;
++	vdev->fops = &vdec_fops;
++	vdev->ioctl_ops = &vdec_ioctl_ops;
++	vdev->vfl_dir = VFL_DIR_M2M;
++	vdev->v4l2_dev = &core->v4l2_dev;
++	vdev->lock = &core->lock;
++	vdev->device_caps = V4L2_CAP_VIDEO_M2M_MPLANE | V4L2_CAP_STREAMING;
++
++	video_set_drvdata(vdev, core);
++
++	ret = video_register_device(vdev, VFL_TYPE_VIDEO, -1);
++	if (ret) {
++		dev_err(dev, "Failed registering video device\n");
++		goto err_vdev_release;
++	}
++
++	ret = v4l2_m2m_register_media_controller(core->m2m_dev, vdev,
++						 MEDIA_ENT_F_PROC_VIDEO_DECODER);
++	if (ret)
++		goto err_video_unregister;
++
++	ret = media_device_register(&core->mdev);
++	if (ret)
++		goto err_mc_unregister;
++
++	return 0;
++
++err_mc_unregister:
++	v4l2_m2m_unregister_media_controller(core->m2m_dev);
++err_video_unregister:
++	video_unregister_device(vdev);
++	goto err_media_cleanup;
++err_vdev_release:
++	video_device_release(vdev);
++err_media_cleanup:
++	media_device_cleanup(&core->mdev);
++	v4l2_m2m_release(core->m2m_dev);
++err_v4l2_unregister:
++	v4l2_device_unregister(&core->v4l2_dev);
++	return ret;
++}
++
++static void vdec_remove(struct platform_device *pdev)
++{
++	struct amvdec_core *core = platform_get_drvdata(pdev);
++
++	media_device_unregister(&core->mdev);
++	v4l2_m2m_unregister_media_controller(core->m2m_dev);
++	video_unregister_device(core->vdev_dec);
++	media_device_cleanup(&core->mdev);
++	v4l2_m2m_release(core->m2m_dev);
++	v4l2_device_unregister(&core->v4l2_dev);
++}
++
++static struct platform_driver meson_amvdec_driver = {
++	.probe = vdec_probe,
++	.remove = vdec_remove,
++	.driver = {
++		.name = "meson-amvdec",
++		.of_match_table = vdec_dt_match,
++	},
++};
++module_platform_driver(meson_amvdec_driver);
++
++MODULE_DESCRIPTION("Amlogic stateless video decoder driver");
++MODULE_AUTHOR("Maxime Jourdan <mjourdan@baylibre.com>");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec.h b/drivers/media/platform/amlogic/amvdec/amvdec.h
+new file mode 100644
+index 000000000000..b5743317b83c
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec.h
+@@ -0,0 +1,430 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * V4L2 request decoder core.
++ */
++
++#ifndef __MESON_AMVDEC_CORE_H_
++#define __MESON_AMVDEC_CORE_H_
++
++#include <linux/completion.h>
++#include <linux/irqreturn.h>
++#include <linux/regmap.h>
++#include <linux/list.h>
++#include <media/videobuf2-v4l2.h>
++#include <media/v4l2-ctrls.h>
++#include <media/v4l2-device.h>
++#include <media/media-device.h>
++#include <linux/soc/amlogic/meson-canvas.h>
++
++#include "amvdec_platform.h"
++#include "codec_h264_scratch.h"
++
++/* 32 buffers in 3-plane YUV420 */
++#define MAX_CANVAS (32 * 3)
++#define AMVDEC_HEVC_MAX_SLICES 800
++
++struct amvdec_dma_guard {
++	void *raw_vaddr;
++	dma_addr_t raw_paddr;
++	size_t raw_size;
++	size_t size;
++	size_t prefix_size;	/* guard bytes before the device-visible buffer */
++};
++
++/*
++ * AM21C capture exposes one compression-header plane. Driver-owned body
++ * pages are reached through its page table for VD1 scanout as
++ * DRM_FORMAT_YUV420_10BIT with DRM_FORMAT_MOD_AMLOGIC_FBC(SCATTER).
++ * The header size matches MMU_COMPRESS_HEADER_SIZE.
++ */
++
++#define AM21C_HEADER_SIZE 0x48000
++
++/**
++ * struct amvdec_timestamp - stores a src timestamp along with a VIFIFO offset
++ *
++ * @list: timestamp list node
++ * @tc: timecode from the v4l2 buffer
++ * @ts: timestamp from the VB2 buffer
++ * @offset: offset in the VIFIFO of the associated input packet
++ * @flags: flags from the v4l2 buffer
++ * @vp9_frame: VP9_FRAME request control copied while the OUTPUT request is live
++ * @has_vp9_frame: true when vp9_frame contains a valid request snapshot
++ */
++struct amvdec_timestamp {
++	struct list_head list;
++	struct v4l2_timecode tc;
++	u64 ts;
++	u32 offset;
++	u32 flags;
++	struct v4l2_ctrl_vp9_frame vp9_frame;
++	bool has_vp9_frame;
++	struct v4l2_ctrl_hevc_sps hevc_sps;
++	struct v4l2_ctrl_hevc_pps hevc_pps;
++	struct v4l2_ctrl_hevc_slice_params hevc_slice;
++	struct v4l2_ctrl_hevc_decode_params hevc_decode;
++	bool has_hevc_slice;
++	u32 input_end; /* cumulative coded endpoint, excluding current tail padding */
++};
++
++struct amvdec_session;
++
++/* Largest microcode image loaded into a core's IMEM (VDEC_1 and HEVC alike) */
++#define AMVDEC_FW_SIZE		(4096 * 4)
++
++/**
++ * struct amvdec_core - device parameters, singleton
++ *
++ * @dos_base: DOS memory base address
++ * @esparser_base: PARSER memory base address
++ * @regmap_ao: regmap for the AO bus
++ * @dev: core device
++ * @dev_dec: decoder device
++ * @platform: platform-specific data
++ * @canvas: canvas provider reference
++ * @dos_parser_clk: DOS_PARSER clock
++ * @dos_clk: DOS clock
++ * @amvdec_1_clk: VDEC_1 clock
++ * @amvdec_hevc_clk: VDEC_HEVC clock
++ * @amvdec_hevcf_clk: VDEC_HEVCF clock
++ * @esparser_completion: completion of the current parser DMA fetch
++ * @esparser_reset: RESET for the PARSER
++ * @vdev_dec: video device for the decoder
++ * @v4l2_dev: v4l2 device
++ * @cur_sess: current decoding session
++ * @lock: video device lock
++ */
++struct amvdec_core {
++	void __iomem *dos_base;
++	void __iomem *esparser_base;
++	struct regmap *regmap_ao;
++
++	struct device *dev;
++	struct device *dev_dec;
++	const struct amvdec_platform *platform;
++
++	struct meson_canvas *canvas;
++
++	/*
++	 * Keep the IMEM DMA source for the device lifetime: the DMA engine can
++	 * report idle before all reads complete.
++	 */
++	void *fw_vaddr;
++	dma_addr_t fw_paddr;
++
++	struct clk *dos_parser_clk;
++	struct clk *dos_clk;
++	struct clk *amvdec_1_clk;
++	struct clk *amvdec_hevc_clk;
++	struct clk *amvdec_hevcf_clk;
++
++	struct completion esparser_completion;
++	struct reset_control *esparser_reset;
++
++	struct video_device *vdev_dec;
++	struct v4l2_device v4l2_dev;
++	struct media_device mdev;
++	struct v4l2_m2m_dev *m2m_dev;
++
++	struct amvdec_session *cur_sess;
++	/* Serialize video-device ioctls. */
++	struct mutex lock;
++	/*
++	 * Protect decoder ownership through power-down. Acquire claim_lock after
++	 * the device or session lock; never wait for either while holding it.
++	 */
++	struct mutex claim_lock;
++
++	/* kept so teardown can wait an in-flight handler out */
++	int irq;
++};
++
++/**
++ * struct amvdec_ops - vdec operations
++ *
++ * @start: mandatory call when the vdec needs to initialize
++ * @stop: mandatory call when the vdec needs to stop
++ * @conf_esparser: mandatory call to let the vdec configure the ESPARSER
++ * @vififo_level: mandatory call to get the current amount of data
++ *		  in the VIFIFO
++ */
++struct amvdec_ops {
++	int (*start)(struct amvdec_session *sess);
++	int (*stop)(struct amvdec_session *sess);
++	void (*conf_esparser)(struct amvdec_session *sess);
++	u32 (*vififo_level)(struct amvdec_session *sess);
++};
++
++/**
++ * struct amvdec_codec_ops - codec operations
++ *
++ * @start: mandatory call when the codec needs to initialize
++ * @stop: mandatory call when the codec needs to stop
++ * @load_firmware: optional call to load/prepare the complete firmware image
++ * @load_extended_firmware: optional call to load additional firmware bits
++ * @post_start: optional call after the firmware processor is started
++ * @pre_stop: optional live-domain call before vdec_ops->stop powers down
++ * @job_abort: optional call when videobuf2 requests a job abort/timeout
++ * @isr: mandatory call when the ISR triggers
++ * @threaded_isr: mandatory call for the threaded ISR
++ * @direct_input: the codec points the decoder's stream FIFO at the OUTPUT
++ *	buffer itself: the core leaves the firmware processors halted at
++ *	start and does not power up the parser VIFIFO
++ */
++struct amvdec_codec_ops {
++	int (*start)(struct amvdec_session *sess);
++	int (*stop)(struct amvdec_session *sess);
++	void (*pre_stop)(struct amvdec_session *sess);
++	void (*job_abort)(struct amvdec_session *sess);
++	int (*load_firmware)(struct amvdec_session *sess,
++			     const u8 *data, u32 len);
++	int (*load_extended_firmware)(struct amvdec_session *sess,
++				      const u8 *data, u32 len);
++	void (*post_start)(struct amvdec_session *sess);
++	irqreturn_t (*isr)(struct amvdec_session *sess);
++	irqreturn_t (*threaded_isr)(struct amvdec_session *sess);
++	bool direct_input;
++};
++
++/**
++ * struct amvdec_format - describes one of the OUTPUT (src) format supported
++ *
++ * @profile_ctrl: profile menu control ID, zero if absent
++ * @default_profile: default profile menu entry
++ * @level_ctrl: level menu control ID, zero if absent
++ * @default_level: default level menu entry
++ * @profiles: supported profile menu entries as a bit mask
++ * @max_level: highest level menu entry
++ * @max_bit_depth: highest coded bit depth, zero for no format-specific limit
++ * @pixfmt: V4L2 pixel format
++ * @min_buffers: minimum amount of CAPTURE (dst) buffers
++ * @max_buffers: maximum amount of CAPTURE (dst) buffers
++ * @max_width: maximum picture width supported
++ * @max_height: maximum picture height supported
++ * @flags: enum flags associated with this pixfmt
++ * @vdec_ops: the VDEC operations that support this format
++ * @codec_ops: the codec operations that support this format
++ * @firmware_path: Path to the firmware that supports this format
++ * @pixfmts_cap: list of CAPTURE pixel formats available with pixfmt
++ */
++struct amvdec_format {
++	u32 profile_ctrl;
++	u32 default_profile;
++	u32 level_ctrl;
++	u32 default_level;
++	u32 profiles;
++	u32 max_level;
++	u32 pixfmt;
++	u32 min_buffers;
++	u32 max_buffers;
++	u32 max_width;
++	u32 max_height;
++	/* Maximum coded bit depth; zero means no format-specific limit. */
++	u8 max_bit_depth;
++	u32 flags;
++
++	struct amvdec_ops *vdec_ops;
++	struct amvdec_codec_ops *codec_ops;
++
++	char *firmware_path;
++	u32 pixfmts_cap[4];
++};
++
++enum amvdec_status {
++	STATUS_STOPPED,
++	STATUS_INIT,
++	STATUS_RUNNING,
++};
++
++/* No firmware buffer index is mapped to this vb2 buffer */
++#define VB2_IDX_UNMAPPED	U32_MAX
++
++/* Record request events in memory and dump them when a job stalls. */
++#define AMVDEC_TRACE_LEN	128
++
++struct amvdec_trace_ev {
++	u64 ns;
++	u32 id, a, b, c;
++};
++
++enum amvdec_trace_id {
++	AMVDEC_TR_FEED = 1,	/* a = ring offset, b = bytes incl. padding, c = timestamp/1000 */
++	AMVDEC_TR_FED,		/* a = write result, b = parser WP */
++	AMVDEC_TR_READY,	/* a = endpoint, b = parked, c = status */
++	AMVDEC_TR_IRQ,		/* a = status, b = shift byte count, c = LCU */
++	AMVDEC_TR_KICK,		/* a = decode size, b = slice index, c = slice address */
++	AMVDEC_TR_DONE,		/* a = shift byte count, b = decode size, c = LCU */
++	AMVDEC_TR_RUN,		/* m2m device_run: next job handed to the driver */
++	AMVDEC_TR_WORK,		/* feed worker entered: a = run armed, b = src ready */
++	AMVDEC_TR_SIGNAL,	/* picture handed back to userspace: a = vb2 index */
++};
++
++/*
++ * Per-request control copies and synthesised headers for esparser_queue(),
++ * kept in the session rather than on its stack.  Only the feed worker
++ * touches them, under sess->lock.
++ */
++struct amvdec_feed_scratch {
++	struct h264_parse_scratch h264_parse;
++	struct v4l2_ctrl_vp9_frame vp9_frame;
++	struct v4l2_ctrl_hevc_sps hevc_sps;
++	struct v4l2_ctrl_hevc_pps hevc_pps;
++	struct v4l2_ctrl_hevc_slice_params hevc_slice;
++	struct v4l2_ctrl_hevc_decode_params hevc_decode;
++	struct v4l2_ctrl_mpeg2_sequence mpeg2_seq;
++	struct v4l2_ctrl_mpeg2_picture mpeg2_pic;
++	struct v4l2_ctrl_mpeg2_picture mpeg2_job_pic;
++	struct v4l2_ctrl_mpeg2_quantisation mpeg2_quant;
++	u8 headers[512];
++};
++
++/**
++ * struct amvdec_session - decoding session parameters
++ *
++ * @core: reference to the vdec core struct
++ * @fh: v4l2 file handle
++ * @m2m_dev: v4l2 m2m device
++ * @m2m_ctx: v4l2 m2m context
++ * @ctrl_handler: V4L2 control handler
++ * @lock: cap & out queues lock
++ * @fmt_out: vdec pixel format for the OUTPUT queue
++ * @pixfmt_cap: V4L2 pixel format for the CAPTURE queue
++ * @src_buffer_size: size in bytes of the OUTPUT buffers' only plane
++ * @width: current picture width
++ * @height: current picture height
++ * @colorspace: current colorspace
++ * @ycbcr_enc: current ycbcr_enc
++ * @quantization: current quantization
++ * @xfer_func: current transfer function
++ * @esparser_queued_bufs: number of buffers currently queued into ESPARSER
++ * @esparser_queue_work: work struct for the ESPARSER to process src buffers
++ * @streamon_cap: stream on flag for capture queue
++ * @streamon_out: stream on flag for output queue
++ * @sequence_cap: capture sequence counter
++ * @sequence_out: output sequence counter
++ * @should_stop: stop feeding during teardown
++ * @num_fw_bufs: number of destination buffers mapped to firmware canvases
++ * @canvas_alloc: array of all the canvas IDs allocated
++ * @canvas_num: number of canvas IDs allocated
++ * @vififo_vaddr: virtual address for the VIFIFO
++ * @vififo_paddr: physical address for the VIFIFO
++ * @vififo_size: size of the VIFIFO dma alloc
++ * @timestamps: chronological list of src timestamps
++ * @ts_spinlock: spinlock for the timestamps list
++ * @last_irq_jiffies: tracks last time the vdec triggered an IRQ
++ * @last_offset: tracks last offset of vififo
++ * @wrap_count: number of times the vififo wrapped around
++ * @fw_idx_to_vb2_idx: firmware buffer index to vb2 buffer index
++ * @vb2_idx_to_fw_idx: vb2 buffer index to firmware buffer index, the
++ *	inverse of @fw_idx_to_vb2_idx.  VB2_IDX_UNMAPPED for a buffer the
++ *	firmware has no canvas for.
++ * @fw_buf_canvas: canvas specification programmed for each firmware index
++ * @fw_buf_paddr: plane DMA addresses the canvases of each firmware index
++ *	describe
++ * @status: current decoding status
++ * @priv: codec private data
++ */
++struct amvdec_session {
++	struct amvdec_trace_ev trace[AMVDEC_TRACE_LEN];
++	atomic_t trace_pos;
++	/* Stuck-request watch: see vdec_job_watch() */
++	struct delayed_work job_watch;
++	u64 run_ns;
++	u32 run_seq;
++	u32 watch_dumped_seq;
++	bool watch_on;
++	struct amvdec_core *core;
++
++	struct v4l2_fh fh;
++	struct v4l2_m2m_dev *m2m_dev;
++	struct v4l2_m2m_ctx *m2m_ctx;
++	struct v4l2_ctrl_handler ctrl_handler;
++	/* Serialize buffer queues, feed work and stream transitions. */
++	struct mutex lock;
++
++	const struct amvdec_format *fmt_out;
++	u32 pixfmt_cap;
++	u32 src_buffer_size;
++
++	u32 width;
++	u32 height;
++	u32 colorspace;
++	u32 bitdepth;
++	u8 ycbcr_enc;
++	u8 quantization;
++	u8 xfer_func;
++
++	atomic_t esparser_queued_bufs;
++	struct work_struct esparser_queue_work;
++	/*
++	 * Only device_run() arms a feed. STREAMON work must not consume input
++	 * before the request controls are applied.
++	 */
++	bool m2m_run_armed;
++	/* HEVC/VP9: exactly one request owns the hardware until picture done.
++	 * Input and reference identity must not follow mutable vb2 timestamps.
++	 * state: 0 idle, 1 active, 2 completed (retired by the feed worker).
++	 */
++	struct {
++		atomic_t state;
++		struct vb2_v4l2_buffer *src, *dst;
++		struct vb2_buffer *refs[16];
++		u64 ref_ts[16];
++		u64 timestamp;
++		bool error, credit;
++		struct v4l2_ctrl_hevc_slice_params *slices;
++		unsigned int num_slices;
++		void *input_vaddr;
++		dma_addr_t input_paddr;
++		size_t input_size;
++	} request_job;
++	struct amvdec_feed_scratch feed;
++	/* Synthetic completion metadata, protected by ts_spinlock. */
++	struct vb2_v4l2_buffer metadata_src;
++	u8 hevc_cached_headers[8192];
++	u32 hevc_cached_headers_len;
++	bool hevc_headers_valid;
++
++	unsigned int streamon_cap, streamon_out;
++	unsigned int sequence_cap, sequence_out;
++
++	unsigned int should_stop;
++
++	unsigned int num_fw_bufs;
++
++	u8 canvas_alloc[MAX_CANVAS];
++	u32 canvas_num;
++
++	void *vififo_vaddr;
++	dma_addr_t vififo_paddr;
++	u32 vififo_size;
++
++	struct list_head timestamps;
++	spinlock_t ts_spinlock; /* timestamp list lock */
++
++	u64 last_irq_jiffies;
++	u32 last_offset;
++	u32 wrap_count;
++	u32 fw_idx_to_vb2_idx[32];
++	u32 vb2_idx_to_fw_idx[32];
++	u32 fw_buf_canvas[32];
++	dma_addr_t fw_buf_paddr[32][3];
++
++	enum amvdec_status status;
++	void *priv;
++};
++
++static inline struct amvdec_session *file_to_amvdec_session(struct file *filp)
++{
++	return container_of(file_to_v4l2_fh(filp), struct amvdec_session, fh);
++}
++
++u32 meson_amvdec_get_output_size(struct amvdec_session *sess);
++
++void meson_amvdec_trace(struct amvdec_session *sess, u32 id, u32 a, u32 b, u32 c);
++void meson_amvdec_trace_dump(struct amvdec_session *sess, const char *why);
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_1.c b/drivers/media/platform/amlogic/amvdec/amvdec_1.c
+new file mode 100644
+index 000000000000..90b0b1505883
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_1.c
+@@ -0,0 +1,346 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * VDEC_1 hardware control for H.264 and MPEG-2.
++ */
++
++#include <linux/firmware.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++
++#include "amvdec_1.h"
++#include "amvdec_helpers.h"
++#include "dos_regs.h"
++
++/* AO Registers */
++#define AO_RTI_GEN_PWR_SLEEP0	0xe8
++#define AO_RTI_GEN_PWR_ISO0	0xec
++	#define GEN_PWR_VDEC_1 (BIT(3) | BIT(2))
++	#define GEN_PWR_VDEC_1_ISO (BIT(7) | BIT(6))
++	#define GEN_PWR_VDEC_1_SM1 (BIT(1))
++
++#define MC_SIZE			AMVDEC_FW_SIZE
++
++/* G12A, G12B and SM1 use DMC ambus channel 5 for VDEC_1. */
++#define DMC_REQ_VDEC_1		BIT(21)
++
++/* Reset VLD, VLD_PART, VFIFO, MC, DBLK and PIC_DC with the DMC port parked. */
++#define DOS_SW_RESET0_VDEC_1_QUIESCE					\
++	(BIT(3) | BIT(4) | BIT(5) | BIT(7) | BIT(8) | BIT(9))
++
++/* Stop AMRISC and drain its DMA engines before reset or power-down. */
++static void amvdec_1_stop_armrisc(struct amvdec_core *core)
++{
++	int i;
++
++	meson_amvdec_write_dos(core, MPSR, 0);
++	meson_amvdec_write_dos(core, CPSR, 0);
++
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, IMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, LMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	if (i == 1000)
++		dev_warn(core->dev, "VDEC_1 LMEM DMA did not drain\n");
++}
++
++/*
++ * Reset VDEC_1 sub-engines and pulse the G12B DMC pipeline reset.
++ * Call with the domain powered and the DMC port parked.
++ */
++static void amvdec_1_core_scrub(struct amvdec_core *core)
++{
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, DOS_SW_RESET0_VDEC_1_QUIESCE);
++	udelay(10);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++
++	if (amvdec_is_g12(core))
++		meson_amvdec_dmc_pipeline_reset(core);
++}
++
++/* Quiesce the powered VDEC_1 core. */
++static void amvdec_1_quiesce_reset(struct amvdec_core *core)
++{
++	if (!amvdec_is_g12(core)) {
++		amvdec_1_core_scrub(core);
++		return;
++	}
++
++	meson_amvdec_dmc_park(core, DMC_REQ_VDEC_1);
++	amvdec_1_core_scrub(core);
++	meson_amvdec_dmc_unpark(core, DMC_REQ_VDEC_1);
++}
++
++static int
++amvdec_1_load_firmware(struct amvdec_session *sess, const char *fwname)
++{
++	const struct firmware *fw;
++	struct amvdec_core *core = sess->core;
++	struct device *dev = core->dev_dec;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++	int ret;
++	u32 i = 1000;
++
++	ret = request_firmware(&fw, fwname, dev);
++	if (ret < 0)
++		return -EINVAL;
++
++	/* Pad 8 KiB firmware images to the 16 KiB IMEM transfer size. */
++	if (fw->size < MC_SIZE && fw->size != MC_SIZE / 2) {
++		dev_err(dev, "Firmware %s size %zu is too small. Expected %u.\n",
++			fwname, fw->size, MC_SIZE);
++		ret = -EINVAL;
++		goto release_firmware;
++	}
++
++	memset(core->fw_vaddr, 0, MC_SIZE);
++	memcpy(core->fw_vaddr, fw->data, min_t(size_t, fw->size, MC_SIZE));
++
++	meson_amvdec_write_dos(core, MPSR, 0);
++	meson_amvdec_write_dos(core, CPSR, 0);
++
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(31));
++
++	meson_amvdec_write_dos(core, IMEM_DMA_ADR, core->fw_paddr);
++	meson_amvdec_write_dos(core, IMEM_DMA_COUNT, MC_SIZE / 4);
++	meson_amvdec_write_dos(core, IMEM_DMA_CTRL, (0x8000 | (7 << 16)));
++
++	/* Wait up to one second for IMEM DMA before starting the processor. */
++	i = 100000;
++	while (i && (meson_amvdec_read_dos(core, IMEM_DMA_CTRL) & 0x8000)) {
++		udelay(10);
++		i--;
++	}
++
++	if (i == 0) {
++		dev_err(dev, "Firmware load fail (DMA hang?)\n");
++		ret = -EINVAL;
++		goto release_firmware;
++	}
++
++	if (codec_ops->load_firmware)
++		ret = codec_ops->load_firmware(sess, fw->data, fw->size);
++	else if (codec_ops->load_extended_firmware)
++		ret = codec_ops->load_extended_firmware(sess,
++						fw->data + MC_SIZE,
++						fw->size - MC_SIZE);
++
++release_firmware:
++	release_firmware(fw);
++	return ret;
++}
++
++static int amvdec_1_stbuf_power_up(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	if (!sess->vififo_vaddr)
++		return 0;
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL, 0);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_WRAP_COUNT, 0);
++	meson_amvdec_write_dos(core, POWER_CTL_VLD, BIT(4));
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_START_PTR, sess->vififo_paddr);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CURR_PTR, sess->vififo_paddr);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_END_PTR,
++			 sess->vififo_paddr + sess->vififo_size - 8);
++
++	meson_amvdec_write_dos_bits(core, VLD_MEM_VIFIFO_CONTROL, 1);
++	meson_amvdec_clear_dos_bits(core, VLD_MEM_VIFIFO_CONTROL, 1);
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, MEM_BUFCTRL_MANUAL);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_WP, sess->vififo_paddr);
++
++	meson_amvdec_write_dos_bits(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
++	meson_amvdec_clear_dos_bits(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
++
++	meson_amvdec_write_dos_bits(core, VLD_MEM_VIFIFO_CONTROL,
++			      (0x11 << MEM_FIFO_CNT_BIT) | MEM_FILL_ON_LEVEL |
++			      MEM_CTRL_FILL_EN | MEM_CTRL_EMPTY_EN);
++
++	return 0;
++}
++
++static void amvdec_1_conf_esparser(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	/* VDEC_1 specific ESPARSER stuff */
++	meson_amvdec_write_dos(core, DOS_GEN_CTRL0, 0);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
++	meson_amvdec_clear_dos_bits(core, VLD_MEM_VIFIFO_BUF_CNTL, 1);
++}
++
++static u32 amvdec_1_vififo_level(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	return meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_LEVEL);
++}
++
++static void __vdec_1_stop(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_MASK, 0);
++
++	if (codec_ops->pre_stop)
++		codec_ops->pre_stop(sess);
++
++	/* Stop the firmware processors and drain their DMA first */
++	amvdec_1_stop_armrisc(core);
++
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(12) | BIT(11));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++
++	/*
++	 * Park the DMC port and reset sub-engines before power-down to clear
++	 * outstanding transactions.
++	 */
++	amvdec_1_quiesce_reset(core);
++
++	/* enable vdec1 isolation */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_1_SM1, GEN_PWR_VDEC_1_SM1);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_1_ISO, GEN_PWR_VDEC_1_ISO);
++	/* power off vdec1 memories */
++	meson_amvdec_write_dos(core, DOS_MEM_PD_VDEC, 0xffffffff);
++	/* power off vdec1 */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_1_SM1, GEN_PWR_VDEC_1_SM1);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_1, GEN_PWR_VDEC_1);
++
++	if (sess->priv)
++		codec_ops->stop(sess);
++}
++
++static int amvdec_1_stop(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	__vdec_1_stop(sess);
++
++	clk_disable_unprepare(core->amvdec_1_clk);
++
++	return 0;
++}
++
++static int amvdec_1_start(struct amvdec_session *sess)
++{
++	int ret;
++	struct amvdec_core *core = sess->core;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++
++	/* Configure the vdec clk to the maximum available */
++	clk_set_rate(core->amvdec_1_clk, 666666666);
++	ret = clk_prepare_enable(core->amvdec_1_clk);
++	if (ret)
++		return ret;
++
++	/* Enable power for VDEC_1 */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_1_SM1, 0);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_1, 0);
++	usleep_range(10, 20);
++
++	/*
++	 * Park the DMC port before powering up. Access DOS registers only after
++	 * the memories are powered and isolation is removed, then reset the core.
++	 */
++	if (amvdec_is_g12(core))
++		meson_amvdec_dmc_park(core, DMC_REQ_VDEC_1);
++
++	/* Reset VDEC1 */
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0xfffffffc);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0x00000000);
++
++	meson_amvdec_write_dos(core, DOS_GCLK_EN0, 0x3ff);
++
++	/* enable VDEC Memories */
++	meson_amvdec_write_dos(core, DOS_MEM_PD_VDEC, 0);
++	/* Remove VDEC1 Isolation */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_1_SM1, 0);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_1_ISO, 0);
++
++	/* Domain fully up: scrub the sub-engines, then reconnect DDR */
++	amvdec_1_core_scrub(core);
++	if (amvdec_is_g12(core))
++		meson_amvdec_dmc_unpark(core, DMC_REQ_VDEC_1);
++
++	/* Reset DOS top registers */
++	meson_amvdec_write_dos(core, DOS_VDEC_MCRCC_STALL_CTRL, 0);
++
++	meson_amvdec_write_dos(core, GCLK_EN, 0x3ff);
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(31));
++
++	amvdec_1_stbuf_power_up(sess);
++
++	ret = amvdec_1_load_firmware(sess, sess->fmt_out->firmware_path);
++	if (ret)
++		goto stop;
++
++	ret = codec_ops->start(sess);
++	if (ret)
++		goto stop;
++
++	/* Enable IRQ */
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_CLR_REG, 1);
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_MASK, 1);
++
++	/* Enable 2-plane output */
++	if (sess->pixfmt_cap == V4L2_PIX_FMT_NV12M)
++		meson_amvdec_write_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(17));
++	else
++		meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(17));
++
++	/*
++	 * Direct-input codecs release AMRISC only after supplying the first input
++	 * and decoder context.
++	 */
++	if (sess->fmt_out->pixfmt != V4L2_PIX_FMT_MPEG2_SLICE &&
++	    !codec_ops->direct_input) {
++		meson_amvdec_write_dos(core, MPSR, 1);
++		usleep_range(10, 20);
++	}
++
++	if (codec_ops->post_start)
++		codec_ops->post_start(sess);
++
++	return 0;
++
++stop:
++	__vdec_1_stop(sess);
++	clk_disable_unprepare(core->amvdec_1_clk);
++	return ret;
++}
++
++struct amvdec_ops meson_amvdec_1_ops = {
++	.start = amvdec_1_start,
++	.stop = amvdec_1_stop,
++	.conf_esparser = amvdec_1_conf_esparser,
++	.vififo_level = amvdec_1_vififo_level,
++};
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_1.h b/drivers/media/platform/amlogic/amvdec/amvdec_1.h
+new file mode 100644
+index 000000000000..41af6006a6aa
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_1.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * VDEC_1 hardware control for H.264 and MPEG-2.
++ */
++
++#ifndef __MESON_AMVDEC_VDEC_1_H_
++#define __MESON_AMVDEC_VDEC_1_H_
++
++#include "amvdec.h"
++
++extern struct amvdec_ops meson_amvdec_1_ops;
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
+new file mode 100644
+index 000000000000..4bd10a888088
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
+@@ -0,0 +1,961 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Shared decoder, canvas and DMA helpers.
++ */
++
++#include <linux/gcd.h>
++#include <linux/delay.h>
++#include <linux/io.h>
++#include <linux/moduleparam.h>
++#include <linux/slab.h>
++#include <media/v4l2-mem2mem.h>
++#include <media/v4l2-event.h>
++#include <media/videobuf2-dma-contig.h>
++
++#include "amvdec_helpers.h"
++
++#define NUM_CANVAS_NV12 2
++#define NUM_CANVAS_YUV420 3
++
++#define DMA_GUARD_PATTERN 0x5a
++
++/*
++ * Optional DMA guards surround coherent HEVC-core allocations and are
++ * checked after hardware access. The layout is fixed at module load.
++ */
++static bool dma_guards;
++module_param(dma_guards, bool, 0444);
++MODULE_PARM_DESC(dma_guards,
++		 "Debug: add guard pages around HEVC-core coherent allocations and check them (default off)");
++
++bool meson_amvdec_dma_guards_enabled(void)
++{
++	return READ_ONCE(dma_guards);
++}
++
++static void amvdec_dma_fill_guards(const struct amvdec_dma_guard *guard)
++{
++	if (!guard->raw_vaddr || !guard->raw_size)
++		return;
++	memset(guard->raw_vaddr, DMA_GUARD_PATTERN, guard->prefix_size);
++	memset((u8 *)guard->raw_vaddr + guard->prefix_size + guard->size,
++	       DMA_GUARD_PATTERN, PAGE_SIZE);
++}
++
++void *meson_amvdec_dma_alloc_guarded(struct device *dev, size_t size,
++			       dma_addr_t *dma_handle, gfp_t gfp,
++				       struct amvdec_dma_guard *guard)
++{
++	void *raw;
++	dma_addr_t raw_dma, visible;
++	size_t aligned = PAGE_ALIGN(size);
++	size_t raw_size, alignment;
++
++	memset(guard, 0, sizeof(*guard));
++	if (!meson_amvdec_dma_guards_enabled()) {
++		raw = dma_alloc_coherent(dev, size, dma_handle, gfp);
++		if (raw) {
++			guard->raw_vaddr = raw;
++			guard->raw_paddr = *dma_handle;
++			guard->raw_size = size;
++			guard->size = size;
++		}
++		return raw;
++	}
++
++	/*
++	 * Preserve 64 KiB alignment for large GXBB HEVC allocations. Include any
++	 * alignment padding in the prefix guard; smaller buffers remain page-aligned.
++	 */
++	alignment = aligned >= SZ_64K ? SZ_64K : PAGE_SIZE;
++	if (aligned > SIZE_MAX - alignment - PAGE_SIZE)
++		return NULL;
++	raw_size = alignment + aligned + PAGE_SIZE;
++	raw = dma_alloc_coherent(dev, raw_size, &raw_dma, gfp);
++	if (!raw)
++		return NULL;
++
++	visible = ALIGN(raw_dma + PAGE_SIZE, alignment);
++	guard->raw_vaddr = raw;
++	guard->raw_paddr = raw_dma;
++	guard->raw_size = raw_size;
++	guard->size = aligned;
++	guard->prefix_size = visible - raw_dma;
++	*dma_handle = visible;
++	amvdec_dma_fill_guards(guard);
++
++	return (u8 *)raw + guard->prefix_size;
++}
++
++void meson_amvdec_dma_free_guarded(struct device *dev, dma_addr_t visible_paddr,
++			     struct amvdec_dma_guard *guard)
++{
++	if (!guard->raw_vaddr)
++		return;
++
++	dma_free_coherent(dev, guard->raw_size, guard->raw_vaddr,
++			  guard->raw_paddr ? guard->raw_paddr : visible_paddr);
++	memset(guard, 0, sizeof(*guard));
++}
++
++int meson_amvdec_dma_verify_guard(struct device *dev, const char *name,
++			    const struct amvdec_dma_guard *guard)
++{
++	const u8 *before;
++	const u8 *after;
++	size_t off;
++	int ret = 0;
++
++	if (!meson_amvdec_dma_guards_enabled() || !guard->raw_vaddr ||
++	    !guard->prefix_size ||
++	    guard->raw_size < guard->prefix_size + guard->size + PAGE_SIZE)
++		return 0;
++
++	before = guard->raw_vaddr;
++	after = (const u8 *)guard->raw_vaddr + guard->prefix_size + guard->size;
++
++	/*
++	 * The guard memory is uncached: scan it word-wise first and walk it a
++	 * byte at a time only to report what changed.
++	 */
++	if (!memchr_inv(before, DMA_GUARD_PATTERN, guard->prefix_size) &&
++	    !memchr_inv(after, DMA_GUARD_PATTERN, PAGE_SIZE))
++		return 0;
++
++	/* offsets are reported relative to the start of the prefix guard */
++	for (off = 0; off < guard->prefix_size; ) {
++		size_t start, end;
++
++		while (off < guard->prefix_size && before[off] == DMA_GUARD_PATTERN)
++			off++;
++		if (off == guard->prefix_size)
++			break;
++		start = off;
++		while (off < guard->prefix_size && before[off] != DMA_GUARD_PATTERN)
++			off++;
++		end = off;
++		dev_err(dev, "DMA guard changed %s before offset=%zu length=%zu\n",
++			name, start, end - start);
++		ret = -EIO;
++	}
++
++	for (off = 0; off < PAGE_SIZE; ) {
++		size_t start, end;
++
++		while (off < PAGE_SIZE && after[off] == DMA_GUARD_PATTERN)
++			off++;
++		if (off == PAGE_SIZE)
++			break;
++		start = off;
++		while (off < PAGE_SIZE && after[off] != DMA_GUARD_PATTERN)
++			off++;
++		end = off;
++		dev_err(dev, "DMA guard changed %s after offset=%zu length=%zu\n",
++			name, start, end - start);
++		ret = -EIO;
++	}
++
++	return ret;
++}
++
++/*
++ * G12 DMC offsets are word-addressed: DMC_REQ_CTRL is word 0 and
++ * DMC_CHAN_STS is word 0x36 (byte 0xd8). Bits 15:0 select axibus channels
++ * and bits 23:16 select ambus channels; a set status bit means idle.
++ */
++#define G12A_DMC_BASE		0xff638000
++#define G12A_DMC_SIZE		0x100
++	#define DMC_REQ_CTRL	0x00
++	#define DMC_CHAN_STS	0xd8
++
++/* RESET7 pulse register; bits 15:11 are the DMC decode pipelines */
++#define G12A_RESET7_ADDR	0xffd01020
++	#define RESET7_DMC_PIPEL	GENMASK(15, 11)
++
++static void __iomem *amvdec_map(u64 addr, u32 size, void __iomem **cache)
++{
++	if (!*cache)
++		*cache = ioremap(addr, size);
++	return *cache;
++}
++
++int meson_amvdec_dmc_park(struct amvdec_core *core, u32 mask)
++{
++	static void __iomem *dmc_base;
++	u32 val;
++	int i;
++
++	/* G12 physical addresses: not the reset/DMC blocks of older SoCs */
++	if (!amvdec_is_g12(core))
++		return -EOPNOTSUPP;
++
++	if (!amvdec_map(G12A_DMC_BASE, G12A_DMC_SIZE, &dmc_base))
++		return -ENOMEM;
++
++	val = readl(dmc_base + DMC_REQ_CTRL);
++	writel(val & ~mask, dmc_base + DMC_REQ_CTRL);
++
++	for (i = 0; i < 100; i++) {
++		if ((readl(dmc_base + DMC_CHAN_STS) & mask) == mask)
++			return 0;
++		udelay(10);
++	}
++
++	dev_warn(core->dev, "DMC ports %08x did not idle before reset\n", mask);
++	return -ETIMEDOUT;
++}
++
++void meson_amvdec_dmc_unpark(struct amvdec_core *core, u32 mask)
++{
++	static void __iomem *dmc_base;
++	u32 val;
++
++	/* G12 physical addresses: not the reset/DMC blocks of older SoCs */
++	if (!amvdec_is_g12(core))
++		return;
++
++	if (!amvdec_map(G12A_DMC_BASE, G12A_DMC_SIZE, &dmc_base))
++		return;
++
++	val = readl(dmc_base + DMC_REQ_CTRL);
++	writel(val | mask, dmc_base + DMC_REQ_CTRL);
++}
++
++void meson_amvdec_dmc_pipeline_reset(struct amvdec_core *core)
++{
++	static void __iomem *reset7;
++
++	/* G12 physical addresses: not the reset/DMC blocks of older SoCs */
++	if (!amvdec_is_g12(core))
++		return;
++
++	if (!amvdec_map(G12A_RESET7_ADDR, 4, &reset7))
++		return;
++
++	writel(RESET7_DMC_PIPEL, reset7);
++}
++
++u32 meson_amvdec_read_dos(struct amvdec_core *core, u32 reg)
++{
++	return readl_relaxed(core->dos_base + reg);
++}
++
++void meson_amvdec_write_dos(struct amvdec_core *core, u32 reg, u32 val)
++{
++	writel_relaxed(val, core->dos_base + reg);
++}
++
++void meson_amvdec_write_dos_action(struct amvdec_core *core, u32 reg, u32 val)
++{
++	/* Order register and DMA writes before the firmware action doorbell. */
++	dma_wmb();
++	meson_amvdec_write_dos(core, reg, val);
++}
++
++void meson_amvdec_write_dos_bits(struct amvdec_core *core, u32 reg, u32 val)
++{
++	meson_amvdec_write_dos(core, reg, meson_amvdec_read_dos(core, reg) | val);
++}
++
++void meson_amvdec_clear_dos_bits(struct amvdec_core *core, u32 reg, u32 val)
++{
++	meson_amvdec_write_dos(core, reg, meson_amvdec_read_dos(core, reg) & ~val);
++}
++
++u32 meson_amvdec_read_parser(struct amvdec_core *core, u32 reg)
++{
++	return readl_relaxed(core->esparser_base + reg);
++}
++
++void meson_amvdec_write_parser(struct amvdec_core *core, u32 reg, u32 val)
++{
++	writel_relaxed(val, core->esparser_base + reg);
++}
++
++/* AMFBC body is made out of 64x32 blocks with varying block size */
++u32 meson_amvdec_amfbc_body_size(u32 width, u32 height, u32 is_10bit, u32 use_mmu)
++{
++	u32 width_64 = ALIGN(width, 64) / 64;
++	u32 height_32 = ALIGN(height, 32) / 32;
++	u32 blk_size = 4096;
++
++	if (!is_10bit) {
++		if (use_mmu)
++			blk_size = 3200;
++		else
++			blk_size = 3072;
++	}
++
++	return blk_size * width_64 * height_32;
++}
++
++/* 32 bytes per 128x64 block */
++u32 meson_amvdec_amfbc_head_size(u32 width, u32 height)
++{
++	u32 width_128 = ALIGN(width, 128) / 128;
++	u32 height_64 = ALIGN(height, 64) / 64;
++
++	return 32 * width_128 * height_64;
++}
++
++u32 meson_amvdec_amfbc_size(u32 width, u32 height, u32 is_10bit, u32 use_mmu)
++{
++	return ALIGN(meson_amvdec_amfbc_body_size(width, height, is_10bit, use_mmu) +
++		     meson_amvdec_amfbc_head_size(width, height), SZ_64K);
++}
++
++static int canvas_alloc(struct amvdec_session *sess, u8 *canvas_id)
++{
++	int ret;
++
++	if (sess->canvas_num >= MAX_CANVAS) {
++		dev_err(sess->core->dev, "Reached max number of canvas\n");
++		return -ENOMEM;
++	}
++
++	ret = meson_canvas_alloc(sess->core->canvas, canvas_id);
++	if (ret)
++		return ret;
++
++	sess->canvas_alloc[sess->canvas_num++] = *canvas_id;
++	return 0;
++}
++
++/*
++ * Program the canvases of one CAPTURE buffer and write their IDs to @reg.
++ * A nonzero *@spec names canvases already allocated for this slot, which
++ * are reprogrammed in place; otherwise new ones are allocated and *@spec
++ * is set.
++ */
++static int set_canvas_yuv420m(struct amvdec_session *sess,
++			      struct vb2_buffer *vb, u32 width,
++			      u32 height, u32 reg, u32 *spec)
++{
++	struct amvdec_core *core = sess->core;
++	u8 canvas_id[NUM_CANVAS_YUV420]; /* Y U V */
++	dma_addr_t buf_paddr[NUM_CANVAS_YUV420]; /* Y U V */
++	int ret, i;
++
++	for (i = 0; i < NUM_CANVAS_YUV420; ++i) {
++		if (*spec) {
++			canvas_id[i] = (*spec >> (8 * i)) & 0xff;
++		} else {
++			ret = canvas_alloc(sess, &canvas_id[i]);
++			if (ret)
++				return ret;
++		}
++
++		buf_paddr[i] =
++		    vb2_dma_contig_plane_dma_addr(vb, i);
++	}
++
++	/* Y plane */
++	meson_canvas_config(core->canvas, canvas_id[0], buf_paddr[0],
++			    width, height, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++
++	/* U plane */
++	meson_canvas_config(core->canvas, canvas_id[1], buf_paddr[1],
++			    width / 2, height / 2, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++
++	/* V plane */
++	meson_canvas_config(core->canvas, canvas_id[2], buf_paddr[2],
++			    width / 2, height / 2, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++
++	*spec = (canvas_id[2] << 16) | (canvas_id[1] << 8) | canvas_id[0];
++	if (reg)
++		meson_amvdec_write_dos(core, reg, *spec);
++
++	return 0;
++}
++
++static int set_canvas_nv12m(struct amvdec_session *sess,
++			    struct vb2_buffer *vb, u32 width,
++			    u32 height, u32 reg, u32 *spec)
++{
++	struct amvdec_core *core = sess->core;
++	u8 canvas_id[NUM_CANVAS_NV12]; /* Y U/V */
++	dma_addr_t buf_paddr[NUM_CANVAS_NV12]; /* Y U/V */
++	int ret, i;
++
++	for (i = 0; i < NUM_CANVAS_NV12; ++i) {
++		if (*spec) {
++			canvas_id[i] = (*spec >> (8 * i)) & 0xff;
++		} else {
++			ret = canvas_alloc(sess, &canvas_id[i]);
++			if (ret)
++				return ret;
++		}
++
++		buf_paddr[i] =
++		    vb2_dma_contig_plane_dma_addr(vb, i);
++	}
++
++	/* Y plane */
++	meson_canvas_config(core->canvas, canvas_id[0], buf_paddr[0],
++			    width, height, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++
++	/* U/V plane */
++	meson_canvas_config(core->canvas, canvas_id[1], buf_paddr[1],
++			    width, height / 2, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++
++	*spec = (canvas_id[1] << 16) | (canvas_id[1] << 8) | canvas_id[0];
++	if (reg)
++		meson_amvdec_write_dos(core, reg, *spec);
++
++	return 0;
++}
++
++/*
++ * Give one CAPTURE buffer a canvas pair of its own and return the canvas
++ * specification (Y | UV << 8 | UV << 16) without writing it anywhere.  Used
++ * by codecs whose host names the destination and references per picture.
++ * Pass the previous spec to reconfigure the same canvases in place.
++ */
++int meson_amvdec_canvas_nv12m_spec(struct amvdec_session *sess, struct vb2_buffer *vb,
++			     u32 width, u32 height, u32 *spec)
++{
++	struct amvdec_core *core = sess->core;
++	u8 id[NUM_CANVAS_NV12];
++	int ret, i;
++
++	if (*spec) {
++		id[0] = *spec & 0xff;
++		id[1] = (*spec >> 8) & 0xff;
++	} else {
++		for (i = 0; i < NUM_CANVAS_NV12; i++) {
++			ret = canvas_alloc(sess, &id[i]);
++			if (ret)
++				return ret;
++		}
++	}
++	meson_canvas_config(core->canvas, id[0],
++			    vb2_dma_contig_plane_dma_addr(vb, 0),
++			    width, height, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++	meson_canvas_config(core->canvas, id[1],
++			    vb2_dma_contig_plane_dma_addr(vb, 1),
++			    width, height / 2, MESON_CANVAS_WRAP_NONE,
++			    MESON_CANVAS_BLKMODE_LINEAR,
++			    MESON_CANVAS_ENDIAN_SWAP64);
++	*spec = (id[1] << 16) | (id[1] << 8) | id[0];
++	return 0;
++}
++
++/* Remember the plane addresses the canvases of @fw_idx now describe. */
++static void amvdec_record_fw_buf_paddr(struct amvdec_session *sess,
++				       u32 fw_idx, struct vb2_buffer *vb)
++{
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(sess->fw_buf_paddr[fw_idx]); i++)
++		sess->fw_buf_paddr[fw_idx][i] = i < vb->num_planes ?
++			vb2_dma_contig_plane_dma_addr(vb, i) : 0;
++}
++
++static bool amvdec_fw_buf_paddr_match(struct amvdec_session *sess,
++				      u32 fw_idx, struct vb2_buffer *vb)
++{
++	unsigned int i;
++
++	for (i = 0; i < vb->num_planes; i++)
++		if (sess->fw_buf_paddr[fw_idx][i] !=
++		    vb2_dma_contig_plane_dma_addr(vb, i))
++			return false;
++
++	return true;
++}
++
++/*
++ * Map the prepared CAPTURE buffer when the decoder selects it. Keep its
++ * firmware index for the session so reference lists remain valid as the
++ * client grows the buffer pool.
++ */
++int meson_amvdec_map_capture_buffer(struct amvdec_session *sess,
++			      struct vb2_buffer *vb,
++			      u32 reg_base[], u32 reg_num[])
++{
++	u32 pixfmt = sess->pixfmt_cap;
++	u32 width = ALIGN(sess->width, 64);
++	u32 height = ALIGN(sess->height, 32);
++	u32 reg_cur, reg_num_cur, reg_base_cur;
++	unsigned int i;
++	int fw_idx, ret;
++
++	if (!vb || vb->index >= ARRAY_SIZE(sess->vb2_idx_to_fw_idx))
++		return -EINVAL;
++
++	/* First buffer of the session: nothing is mapped yet. */
++	if (!sess->num_fw_bufs) {
++		for (i = 0; i < ARRAY_SIZE(sess->fw_idx_to_vb2_idx); ++i)
++			sess->fw_idx_to_vb2_idx[i] = VB2_IDX_UNMAPPED;
++		for (i = 0; i < ARRAY_SIZE(sess->vb2_idx_to_fw_idx); ++i)
++			sess->vb2_idx_to_fw_idx[i] = VB2_IDX_UNMAPPED;
++	}
++
++	if (vb->num_planes > ARRAY_SIZE(sess->fw_buf_paddr[0]))
++		return -EINVAL;
++	for (i = 0; i < vb->num_planes; i++) {
++		if (!vb->planes[i].mem_priv) {
++			dev_err(sess->core->dev,
++				"CAPTURE buffer %u plane %u has no memory\n",
++				vb->index, i);
++			return -EINVAL;
++		}
++	}
++
++	fw_idx = sess->vb2_idx_to_fw_idx[vb->index];
++	if (fw_idx != VB2_IDX_UNMAPPED) {
++		/*
++		 * Already mapped.  A DMABUF index can be requeued with other
++		 * memory behind it: reprogram its canvases in place if so.
++		 */
++		if (amvdec_fw_buf_paddr_match(sess, fw_idx, vb))
++			return 0;
++	} else {
++		fw_idx = sess->num_fw_bufs;
++		if (fw_idx >= ARRAY_SIZE(sess->fw_idx_to_vb2_idx)) {
++			dev_err(sess->core->dev,
++				"Too many CAPTURE buffers to map (fw %d)\n", fw_idx);
++			return -EINVAL;
++		}
++		sess->fw_buf_canvas[fw_idx] = 0;
++	}
++
++	/* Walk reg_base[]/reg_num[] to the register slot for this index. */
++	reg_base_cur = 0;
++	reg_num_cur = fw_idx;
++	while (reg_base[reg_base_cur] && reg_num_cur >= reg_num[reg_base_cur]) {
++		reg_num_cur -= reg_num[reg_base_cur];
++		reg_base_cur++;
++	}
++	if (!reg_base[reg_base_cur])
++		return -EINVAL;
++	reg_cur = reg_base[reg_base_cur] + reg_num_cur * 4;
++
++	switch (pixfmt) {
++	case V4L2_PIX_FMT_NV12M:
++		ret = set_canvas_nv12m(sess, vb, width, height, reg_cur,
++				       &sess->fw_buf_canvas[fw_idx]);
++		break;
++	case V4L2_PIX_FMT_YUV420M:
++		ret = set_canvas_yuv420m(sess, vb, width, height, reg_cur,
++					 &sess->fw_buf_canvas[fw_idx]);
++		break;
++	default:
++		dev_err(sess->core->dev, "Unsupported pixfmt %08X\n", pixfmt);
++		return -EINVAL;
++	}
++	if (ret)
++		return ret;
++
++	amvdec_record_fw_buf_paddr(sess, fw_idx, vb);
++	if (fw_idx == sess->num_fw_bufs) {
++		sess->fw_idx_to_vb2_idx[fw_idx] = vb->index;
++		sess->vb2_idx_to_fw_idx[vb->index] = fw_idx;
++		sess->num_fw_bufs = fw_idx + 1;
++	}
++	return 0;
++}
++
++/*
++ * Complete the request control handler before returning OUTPUT. Normal
++ * vb2 buffer completion does not complete the control-handler object.
++ */
++void meson_amvdec_src_buf_done(struct amvdec_session *sess,
++			 struct vb2_v4l2_buffer *vbuf,
++			 enum vb2_buffer_state state)
++{
++	if (vbuf->vb2_buf.req_obj.req)
++		v4l2_ctrl_request_complete(vbuf->vb2_buf.req_obj.req,
++					   &sess->ctrl_handler);
++	v4l2_m2m_buf_done(vbuf, state);
++}
++
++int meson_amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 vbuf_flags,
++		  const struct v4l2_ctrl_vp9_frame *vp9_frame,
++		  const struct v4l2_ctrl_hevc_sps *hevc_sps,
++		  const struct v4l2_ctrl_hevc_pps *hevc_pps,
++		  const struct v4l2_ctrl_hevc_slice_params *hevc_slice,
++		  const struct v4l2_ctrl_hevc_decode_params *hevc_decode)
++{
++	struct amvdec_timestamp *new_ts;
++	unsigned long flags;
++
++	new_ts = kzalloc_obj(*new_ts);
++	if (!new_ts)
++		return -ENOMEM;
++
++	new_ts->ts = ts;
++	new_ts->tc = tc;
++	new_ts->offset = offset;
++	new_ts->flags = vbuf_flags;
++	if (vp9_frame) {
++		new_ts->vp9_frame = *vp9_frame;
++		new_ts->has_vp9_frame = true;
++	}
++	if (hevc_sps && hevc_pps && hevc_slice && hevc_decode) {
++		new_ts->hevc_sps = *hevc_sps;
++		new_ts->hevc_pps = *hevc_pps;
++		new_ts->hevc_slice = *hevc_slice;
++		new_ts->hevc_decode = *hevc_decode;
++		new_ts->has_hevc_slice = true;
++	}
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	list_add_tail(&new_ts->list, &sess->timestamps);
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++	return 0;
++}
++
++int meson_amvdec_set_input_end(struct amvdec_session *sess, u64 ts, u32 end)
++{
++	struct amvdec_timestamp *tmp;
++	unsigned long flags;
++	int ret = -ENOENT;
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	list_for_each_entry(tmp, &sess->timestamps, list) {
++		if (tmp->ts == ts) {
++			tmp->input_end = end;
++			ret = 0;
++			break;
++		}
++	}
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++	return ret;
++}
++
++void meson_amvdec_remove_ts(struct amvdec_session *sess, u64 ts)
++{
++	struct amvdec_timestamp *tmp;
++	unsigned long flags;
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	list_for_each_entry(tmp, &sess->timestamps, list) {
++		if (tmp->ts == ts) {
++			list_del(&tmp->list);
++			kfree(tmp);
++			goto unlock;
++		}
++	}
++	/* Cleanup is idempotent: preparation may already have consumed the record. */
++	dev_dbg(sess->core->dev_dec, "Timestamp %llu already removed\n", ts);
++
++unlock:
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++}
++
++/*
++ * Discard timestamp snapshots when the stream offset restarts at zero.
++ * Call only with the firmware parked after a completed picture and no input
++ * queued, so no active request loses its controls.
++ */
++unsigned int meson_amvdec_flush_ts(struct amvdec_session *sess)
++{
++	struct amvdec_timestamp *tmp, *n;
++	unsigned int dropped = 0;
++	unsigned long flags;
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	list_for_each_entry_safe(tmp, n, &sess->timestamps, list) {
++		list_del(&tmp->list);
++		kfree(tmp);
++		dropped++;
++	}
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++
++	return dropped;
++}
++
++static void dst_buf_done(struct amvdec_session *sess,
++			 struct vb2_v4l2_buffer *vbuf,
++			 u32 field, u64 timestamp,
++			 struct v4l2_timecode timecode, u32 flags)
++{
++	struct device *dev = sess->core->dev_dec;
++	u32 output_size = meson_amvdec_get_output_size(sess);
++
++	switch (sess->pixfmt_cap) {
++	case V4L2_PIX_FMT_NV12M:
++		vb2_set_plane_payload(&vbuf->vb2_buf, 0, output_size);
++		vb2_set_plane_payload(&vbuf->vb2_buf, 1, output_size / 2);
++		break;
++	case V4L2_PIX_FMT_YUV420M:
++		vb2_set_plane_payload(&vbuf->vb2_buf, 0, output_size);
++		vb2_set_plane_payload(&vbuf->vb2_buf, 1, output_size / 4);
++		vb2_set_plane_payload(&vbuf->vb2_buf, 2, output_size / 4);
++		break;
++	case V4L2_PIX_FMT_AM21C:
++		vb2_set_plane_payload(&vbuf->vb2_buf, 0, AM21C_HEADER_SIZE);
++		break;
++	}
++
++	vbuf->vb2_buf.timestamp = timestamp;
++	vbuf->sequence = sess->sequence_cap++;
++	vbuf->flags = flags;
++	vbuf->timecode = timecode;
++
++	dev_dbg(dev, "Buffer %u done, ts = %llu, flags = %08X\n",
++		vbuf->vb2_buf.index, timestamp, flags);
++	vbuf->field = field;
++	v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_DONE);
++
++	/* Wake the feed worker after returning CAPTURE. */
++	schedule_work(&sess->esparser_queue_work);
++}
++
++bool meson_amvdec_request_jobs(struct amvdec_session *sess)
++{
++	return sess->fmt_out->pixfmt == V4L2_PIX_FMT_HEVC_SLICE ||
++	       sess->fmt_out->pixfmt == V4L2_PIX_FMT_VP9_FRAME ||
++	       sess->fmt_out->pixfmt == V4L2_PIX_FMT_MPEG2_SLICE;
++}
++
++int meson_amvdec_request_begin(struct amvdec_session *sess, struct vb2_v4l2_buffer *src)
++{
++	if (WARN_ON(atomic_read(&sess->request_job.state)))
++		return -EBUSY;
++	sess->request_job.dst = v4l2_m2m_dst_buf_remove(sess->m2m_ctx);
++	if (!sess->request_job.dst)
++		return -ENOBUFS;
++	sess->request_job.src = src;
++	sess->request_job.timestamp = src->vb2_buf.timestamp;
++	sess->request_job.error = false;
++	sess->request_job.credit = false;
++	memset(sess->request_job.refs, 0, sizeof(sess->request_job.refs));
++	WRITE_ONCE(sess->m2m_run_armed, false);
++	atomic_set(&sess->request_job.state, 1);
++	return 0;
++}
++
++int meson_amvdec_request_resolve_ref(struct amvdec_session *sess, unsigned int index, u64 ts)
++{
++	struct vb2_buffer *vb;
++
++	if (index >= ARRAY_SIZE(sess->request_job.refs))
++		return -EINVAL;
++	vb = vb2_find_buffer(v4l2_m2m_get_dst_vq(sess->m2m_ctx), ts);
++	if (!vb || vb == &sess->request_job.dst->vb2_buf)
++		return -ENOENT;
++	sess->request_job.refs[index] = vb;
++	sess->request_job.ref_ts[index] = ts;
++	return 0;
++}
++
++void meson_amvdec_request_signal(struct amvdec_session *sess, struct vb2_v4l2_buffer *dst)
++{
++	if (WARN_ON(dst != sess->request_job.dst) ||
++	    atomic_cmpxchg(&sess->request_job.state, 1, 2) != 1) {
++		meson_amvdec_abort(sess);
++		return;
++	}
++	/* The worker also owns feeding: retirement cannot race the DMA submit. */
++	schedule_work(&sess->esparser_queue_work);
++}
++
++void meson_amvdec_request_retire(struct amvdec_session *sess, bool cancel)
++{
++	struct vb2_v4l2_buffer *src = sess->request_job.src;
++	struct vb2_v4l2_buffer *dst = sess->request_job.dst;
++	bool error = cancel || sess->request_job.error;
++	unsigned int i;
++
++	if (!src || (!cancel && atomic_read(&sess->request_job.state) != 2))
++		return;
++	if (error) {
++		for (i = 0; i < dst->vb2_buf.num_planes; i++)
++			vb2_set_plane_payload(&dst->vb2_buf, i, 0);
++		v4l2_m2m_buf_done(dst, VB2_BUF_STATE_ERROR);
++	} else {
++		dst_buf_done(sess, dst, V4L2_FIELD_NONE,
++			     sess->request_job.timestamp, src->timecode, src->flags);
++	}
++	meson_amvdec_remove_ts(sess, sess->request_job.timestamp);
++	meson_amvdec_src_buf_done(sess, src, error ? VB2_BUF_STATE_ERROR : VB2_BUF_STATE_DONE);
++	if (sess->request_job.credit)
++		atomic_dec(&sess->esparser_queued_bufs);
++	kfree(sess->request_job.slices);
++	sess->request_job.slices = NULL;
++	sess->request_job.num_slices = 0;
++	sess->request_job.src = NULL;
++	sess->request_job.dst = NULL;
++	atomic_set(&sess->request_job.state, 0);
++	v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++}
++
++void meson_amvdec_request_refuse(struct amvdec_session *sess)
++{
++	sess->request_job.error = true;
++	atomic_set(&sess->request_job.state, 2);
++	meson_amvdec_request_retire(sess, false);
++}
++
++/* Keep the offset record for reordered completion; copy controls at allocation,
++ * before another picture can resolve this CAPTURE timestamp as a reference.
++ */
++int meson_amvdec_dst_buf_prepare_hevc(struct amvdec_session *sess,
++				struct vb2_v4l2_buffer *vbuf, u32 offset,
++			      struct v4l2_ctrl_hevc_slice_params *slice,
++			      struct v4l2_ctrl_hevc_decode_params *decode, u32 *input_end,
++			      u32 *input_offset)
++{
++	struct amvdec_timestamp *tmp, *match = NULL;
++	struct vb2_v4l2_buffer *src = &sess->metadata_src;
++	unsigned long flags;
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	list_for_each_entry(tmp, &sess->timestamps, list) {
++		if (tmp->offset > offset)
++			break;
++		match = tmp;
++	}
++	if (!match || !match->has_hevc_slice) {
++		spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++		dev_err_ratelimited(sess->core->dev,
++				    "HEVC no request snapshot at offset %u\n", offset);
++		return -ENOENT;
++	}
++	*slice = match->hevc_slice;
++	*decode = match->hevc_decode;
++	*input_end = match->input_end;
++	*input_offset = match->offset;
++	src->vb2_buf.timestamp = match->ts;
++	src->timecode = match->tc;
++	src->flags = match->flags;
++	src->field = V4L2_FIELD_NONE;
++	v4l2_m2m_buf_copy_metadata(src, vbuf);
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++	dev_dbg(sess->core->dev,
++		"prepare idx=%u timestamp=%llu copied=%u poc=%d offset=%u start=%u end=%u\n",
++		 vbuf->vb2_buf.index, vbuf->vb2_buf.timestamp,
++		 vbuf->vb2_buf.copied_timestamp, decode->pic_order_cnt_val,
++		 offset, *input_offset, *input_end);
++	return 0;
++}
++
++int meson_amvdec_dst_buf_prepare_stateless(struct amvdec_session *sess,
++				     struct vb2_v4l2_buffer *vbuf,
++				     struct v4l2_ctrl_vp9_frame *vp9_frame, u32 *input_end)
++{
++	struct amvdec_timestamp *tmp;
++	struct list_head *timestamps = &sess->timestamps;
++	struct vb2_v4l2_buffer *src_vbuf = &sess->metadata_src;
++	unsigned long flags;
++	int ret = 0;
++
++	spin_lock_irqsave(&sess->ts_spinlock, flags);
++	if (list_empty(timestamps)) {
++		dev_err_ratelimited(sess->core->dev_dec,
++				    "Buffer %u prepared but timestamp list is empty\n",
++			vbuf->vb2_buf.index);
++		ret = -ENOENT;
++		goto unlock;
++	}
++
++	tmp = list_first_entry(timestamps, struct amvdec_timestamp, list);
++	if (!tmp->has_vp9_frame) {
++		dev_err_ratelimited(sess->core->dev_dec,
++				    "Buffer %u prepared without VP9_FRAME controls\n",
++			vbuf->vb2_buf.index);
++		ret = -EINVAL;
++		goto unlock;
++	}
++
++	src_vbuf->vb2_buf.timestamp = tmp->ts;
++	src_vbuf->timecode = tmp->tc;
++	src_vbuf->flags = tmp->flags;
++	src_vbuf->field = V4L2_FIELD_NONE;
++	*vp9_frame = tmp->vp9_frame;
++	*input_end = tmp->input_end;
++	v4l2_m2m_buf_copy_metadata(src_vbuf, vbuf);
++
++	list_del(&tmp->list);
++	kfree(tmp);
++
++unlock:
++	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++void meson_amvdec_dst_buf_done_stateless(struct amvdec_session *sess,
++				   struct vb2_v4l2_buffer *vbuf, u32 field)
++{
++	dst_buf_done(sess, vbuf, field, vbuf->vb2_buf.timestamp,
++		     vbuf->timecode, vbuf->flags);
++	atomic_dec(&sess->esparser_queued_bufs);
++	v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++}
++
++void meson_amvdec_dst_buf_error_stateless(struct amvdec_session *sess,
++				    struct vb2_v4l2_buffer *vbuf)
++{
++	if (meson_amvdec_request_jobs(sess)) {
++		sess->request_job.error = true;
++		meson_amvdec_abort(sess);
++		return;
++	}
++	v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
++	atomic_dec(&sess->esparser_queued_bufs);
++	v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++}
++
++void meson_amvdec_abort(struct amvdec_session *sess)
++{
++	/* Identify the caller of a terminal decoding failure. */
++	dev_warn_ratelimited(sess->core->dev, "decoding session aborted by %pS\n",
++			     __builtin_return_address(0));
++	vb2_queue_error(&sess->m2m_ctx->cap_q_ctx.q);
++	vb2_queue_error(&sess->m2m_ctx->out_q_ctx.q);
++}
++
++void meson_amvdec_trace(struct amvdec_session *sess, u32 id, u32 a, u32 b, u32 c)
++{
++	u32 pos = (u32)atomic_inc_return(&sess->trace_pos) % AMVDEC_TRACE_LEN;
++	struct amvdec_trace_ev *ev = &sess->trace[pos];
++
++	ev->ns = ktime_get_ns();
++	ev->id = id;
++	ev->a = a;
++	ev->b = b;
++	ev->c = c;
++}
++
++void meson_amvdec_trace_dump(struct amvdec_session *sess, const char *why)
++{
++	static const char * const name[] = {
++		"?", "feed", "fed", "ready", "irq", "kick", "done",
++		"run", "work", "signal",
++	};
++	u32 end = (u32)atomic_read(&sess->trace_pos);
++	u32 i;
++
++	dev_dbg(sess->core->dev, "flight recorder (%s):\n", why);
++	for (i = 1; i <= AMVDEC_TRACE_LEN; i++) {
++		struct amvdec_trace_ev *ev = &sess->trace[(end + i) % AMVDEC_TRACE_LEN];
++
++		if (!ev->id)
++			continue;
++		dev_dbg(sess->core->dev, "  %llu.%06llu %-5s %08x %08x %08x\n",
++			ev->ns / NSEC_PER_SEC, (ev->ns % NSEC_PER_SEC) / 1000,
++			ev->id < ARRAY_SIZE(name) ? name[ev->id] : "?",
++			ev->a, ev->b, ev->c);
++	}
++}
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_helpers.h b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.h
+new file mode 100644
+index 000000000000..e76a0c87a06f
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.h
+@@ -0,0 +1,137 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Shared decoder, canvas and DMA helpers.
++ */
++
++#ifndef __MESON_AMVDEC_HELPERS_H_
++#define __MESON_AMVDEC_HELPERS_H_
++
++#include "amvdec.h"
++
++/*
++ * G12A, G12B and SM1 route decoder DDR requests through the DMC and provide
++ * RESET7 pipeline resets; GXBB/GXL/GXM do not.
++ */
++static inline bool amvdec_is_g12(struct amvdec_core *core)
++{
++	return core->platform->revision == AMVDEC_REVISION_G12A ||
++	       core->platform->revision == AMVDEC_REVISION_SM1;
++}
++
++void *meson_amvdec_dma_alloc_guarded(struct device *dev, size_t size,
++			       dma_addr_t *dma_handle, gfp_t gfp,
++				       struct amvdec_dma_guard *guard);
++void meson_amvdec_dma_free_guarded(struct device *dev, dma_addr_t visible_paddr,
++			     struct amvdec_dma_guard *guard);
++int meson_amvdec_dma_verify_guard(struct device *dev, const char *name,
++			    const struct amvdec_dma_guard *guard);
++bool meson_amvdec_dma_guards_enabled(void);
++
++/*
++ * Coded-size floors shared by format negotiation and codec validation: VP9
++ * allows 8-pixel dimensions; other formats require at least 16 pixels.
++ */
++static inline u32 amvdec_min_coded_width(u32 pixfmt)
++{
++	if (pixfmt == V4L2_PIX_FMT_VP9_FRAME)
++		return 8;
++
++	return 16;
++}
++
++static inline u32 amvdec_min_coded_height(u32 pixfmt)
++{
++	if (pixfmt == V4L2_PIX_FMT_VP9_FRAME)
++		return 8;
++
++	return 16;
++}
++
++/* Map one prepared CAPTURE buffer and retain its canvas index for the session. */
++int meson_amvdec_map_capture_buffer(struct amvdec_session *sess,
++			      struct vb2_buffer *vb,
++			      u32 reg_base[], u32 reg_num[]);
++
++/* Complete the request control handler before returning the OUTPUT buffer. */
++void meson_amvdec_src_buf_done(struct amvdec_session *sess,
++			 struct vb2_v4l2_buffer *vbuf,
++			 enum vb2_buffer_state state);
++
++/* Helpers to read/write to the various IPs (DOS, PARSER) */
++u32 meson_amvdec_read_dos(struct amvdec_core *core, u32 reg);
++void meson_amvdec_write_dos(struct amvdec_core *core, u32 reg, u32 val);
++int meson_amvdec_canvas_nv12m_spec(struct amvdec_session *sess, struct vb2_buffer *vb,
++			     u32 width, u32 height, u32 *spec);
++bool meson_amvdec_request_jobs(struct amvdec_session *sess);
++int meson_amvdec_request_begin(struct amvdec_session *sess, struct vb2_v4l2_buffer *src);
++int meson_amvdec_request_resolve_ref(struct amvdec_session *sess, unsigned int index, u64 ts);
++void meson_amvdec_request_signal(struct amvdec_session *sess, struct vb2_v4l2_buffer *dst);
++void meson_amvdec_request_retire(struct amvdec_session *sess, bool cancel);
++void meson_amvdec_request_refuse(struct amvdec_session *sess);
++
++void meson_amvdec_write_dos_action(struct amvdec_core *core, u32 reg, u32 val);
++void meson_amvdec_write_dos_bits(struct amvdec_core *core, u32 reg, u32 val);
++void meson_amvdec_clear_dos_bits(struct amvdec_core *core, u32 reg, u32 val);
++u32 meson_amvdec_read_parser(struct amvdec_core *core, u32 reg);
++void meson_amvdec_write_parser(struct amvdec_core *core, u32 reg, u32 val);
++
++/*
++ * Park DMC request ports before decoder resets or power transitions. The
++ * DMC registers are outside the decoder power domains; DOS registers require
++ * powered memories and removed isolation.
++ */
++int meson_amvdec_dmc_park(struct amvdec_core *core, u32 mask);
++void meson_amvdec_dmc_unpark(struct amvdec_core *core, u32 mask);
++/* G12B latches DMC-side decode pipeline state; pulse it before unparking */
++void meson_amvdec_dmc_pipeline_reset(struct amvdec_core *core);
++
++/* Helpers for the Amlogic compressed framebuffer format */
++u32 meson_amvdec_amfbc_body_size(u32 width, u32 height, u32 is_10bit, u32 use_mmu);
++u32 meson_amvdec_amfbc_head_size(u32 width, u32 height);
++u32 meson_amvdec_amfbc_size(u32 width, u32 height, u32 is_10bit, u32 use_mmu);
++
++int meson_amvdec_dst_buf_prepare_hevc(struct amvdec_session *sess,
++				struct vb2_v4l2_buffer *vbuf, u32 offset,
++			      struct v4l2_ctrl_hevc_slice_params *slice,
++			      struct v4l2_ctrl_hevc_decode_params *decode,
++			      u32 *input_end, u32 *input_offset);
++int meson_amvdec_dst_buf_prepare_stateless(struct amvdec_session *sess,
++				     struct vb2_v4l2_buffer *vbuf,
++				     struct v4l2_ctrl_vp9_frame *vp9_frame, u32 *input_end);
++void meson_amvdec_dst_buf_done_stateless(struct amvdec_session *sess,
++				   struct vb2_v4l2_buffer *vbuf, u32 field);
++void meson_amvdec_dst_buf_error_stateless(struct amvdec_session *sess,
++				    struct vb2_v4l2_buffer *vbuf);
++
++/**
++ * meson_amvdec_add_ts() - Add a timestamp to the list
++ *
++ * @sess: current session
++ * @ts: timestamp to add
++ * @tc: timecode to add
++ * @offset: offset in the VIFIFO of the associated input packet
++ * @flags: the vb2_v4l2_buffer flags
++ * @vp9_frame: optional copied VP9_FRAME request control
++ */
++int meson_amvdec_add_ts(struct amvdec_session *sess, u64 ts,
++		  struct v4l2_timecode tc, u32 offset, u32 flags,
++		  const struct v4l2_ctrl_vp9_frame *vp9_frame,
++		  const struct v4l2_ctrl_hevc_sps *hevc_sps,
++		  const struct v4l2_ctrl_hevc_pps *hevc_pps,
++		  const struct v4l2_ctrl_hevc_slice_params *hevc_slice,
++		  const struct v4l2_ctrl_hevc_decode_params *hevc_decode);
++int meson_amvdec_set_input_end(struct amvdec_session *sess, u64 ts, u32 end);
++void meson_amvdec_remove_ts(struct amvdec_session *sess, u64 ts);
++
++unsigned int meson_amvdec_flush_ts(struct amvdec_session *sess);
++
++/**
++ * meson_amvdec_abort() - Abort the current decoding session
++ *
++ * @sess: current session
++ */
++void meson_amvdec_abort(struct amvdec_session *sess);
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_hevc.c b/drivers/media/platform/amlogic/amvdec/amvdec_hevc.c
+new file mode 100644
+index 000000000000..1d829f0214c9
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_hevc.c
+@@ -0,0 +1,471 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 Maxime Jourdan <maxi.jourdan@wanadoo.fr>
++ *
++ * VDEC_HEVC hardware control for HEVC and VP9.
++ */
++
++#include <linux/firmware.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/io.h>
++
++#include "amvdec_1.h"
++#include "amvdec_helpers.h"
++#include "amvdec_hevc.h"
++#include "esparser.h"
++#include "hevc_regs.h"
++#include "dos_regs.h"
++
++/* AO Registers */
++#define AO_RTI_GEN_PWR_SLEEP0	0xe8
++#define AO_RTI_GEN_PWR_ISO0	0xec
++	#define GEN_PWR_VDEC_HEVC (BIT(7) | BIT(6))
++	#define GEN_PWR_VDEC_HEVC_SM1 (BIT(2))
++
++#define MC_SIZE	AMVDEC_FW_SIZE
++
++/* HEVC uses DMC axibus channels 4 (front) and 8 (back) on G12A, G12B and SM1. */
++#define DMC_REQ_HEVC		(BIT(4) | BIT(8))
++
++#define G12B_RESET7_LEVEL_ADDR	0xffd0109c	/* level register (low = reset) */
++	#define RESET7_LEVEL_HEVC_DMC	(BIT(14) | BIT(13))
++
++/* HEVC stop/reset registers, in byte offsets. */
++#define HEVC_SAO_MMU_RESET_CTRL	0x9904
++#define HEVC_LMEM_DMA_CTRL	0xcd40
++#define HEVC_WRRSP_LMEM		0xcd4c
++
++/*
++ * Reset the HEVC parser, processors, DMA and reconstruction sub-engines
++ * with the DMC request ports parked.
++ */
++#define DOS_SW_RESET3_HEVC_QUIESCE					\
++	(BIT(3) | BIT(4) | BIT(8) | BIT(10) | BIT(11) | BIT(12) |	\
++	 BIT(13) | BIT(14) | BIT(15) | BIT(17) | BIT(18) | BIT(19) |	\
++	 BIT(24) | BIT(26))
++
++static int amvdec_hevc_load_firmware(struct amvdec_session *sess,
++				     const char *fwname)
++{
++	struct amvdec_core *core = sess->core;
++	struct device *dev = core->dev_dec;
++	const struct firmware *fw;
++	int ret;
++	u32 i = 100;
++
++	ret = request_firmware(&fw, fwname, dev);
++	if (ret < 0)  {
++		dev_err(dev, "Unable to request firmware %s\n", fwname);
++		return ret;
++	}
++
++	if (fw->size < MC_SIZE) {
++		dev_err(dev, "Firmware size %zu is too small. Expected %u.\n",
++			fw->size, MC_SIZE);
++		ret = -EINVAL;
++		goto release_firmware;
++	}
++
++	memcpy(core->fw_vaddr, fw->data, MC_SIZE);
++
++	meson_amvdec_write_dos(core, HEVC_MPSR, 0);
++	meson_amvdec_write_dos(core, HEVC_CPSR, 0);
++
++	meson_amvdec_write_dos(core, HEVC_IMEM_DMA_ADR, core->fw_paddr);
++	meson_amvdec_write_dos(core, HEVC_IMEM_DMA_COUNT, MC_SIZE / 4);
++	meson_amvdec_write_dos(core, HEVC_IMEM_DMA_CTRL, (0x8000 | (7 << 16)));
++
++	/* Wait up to one second for IMEM DMA before starting the processor. */
++	i = 100000;
++	while (i && (readl(core->dos_base + HEVC_IMEM_DMA_CTRL) & 0x8000)) {
++		udelay(10);
++		i--;
++	}
++
++	if (i == 0) {
++		dev_err(dev, "Firmware load fail (DMA hang?)\n");
++		ret = -ENODEV;
++	}
++
++release_firmware:
++	release_firmware(fw);
++	return ret;
++}
++
++static void amvdec_hevc_stbuf_init(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	meson_amvdec_write_dos(core, HEVC_STREAM_CONTROL,
++			 meson_amvdec_read_dos(core, HEVC_STREAM_CONTROL) & ~1);
++	meson_amvdec_write_dos(core, HEVC_STREAM_START_ADDR, sess->vififo_paddr);
++	meson_amvdec_write_dos(core, HEVC_STREAM_END_ADDR,
++			 sess->vififo_paddr + sess->vififo_size);
++	meson_amvdec_write_dos(core, HEVC_STREAM_RD_PTR, sess->vififo_paddr);
++	meson_amvdec_write_dos(core, HEVC_STREAM_WR_PTR, sess->vififo_paddr);
++}
++
++/* VDEC_HEVC specific ESPARSER configuration */
++static void amvdec_hevc_conf_esparser(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	/* set vififo_vbuf_rp_sel=>vdec_hevc */
++	meson_amvdec_write_dos(core, DOS_GEN_CTRL0, 3 << 1);
++	meson_amvdec_write_dos(core, HEVC_STREAM_CONTROL,
++			 meson_amvdec_read_dos(core, HEVC_STREAM_CONTROL) | BIT(3));
++	meson_amvdec_write_dos(core, HEVC_STREAM_CONTROL,
++			 meson_amvdec_read_dos(core, HEVC_STREAM_CONTROL) | 1);
++	meson_amvdec_write_dos(core, HEVC_STREAM_FIFO_CTL,
++			 meson_amvdec_read_dos(core, HEVC_STREAM_FIFO_CTL) | BIT(29));
++}
++
++static u32 amvdec_hevc_vififo_level(struct amvdec_session *sess)
++{
++	return readl_relaxed(sess->core->dos_base + HEVC_STREAM_LEVEL);
++}
++
++/* Stop AMRISC and drain DMA and write responses before reset or power-down. */
++static int amvdec_hevc_stop_armrisc(struct amvdec_core *core)
++{
++	int ret = 0;
++	int i;
++
++	meson_amvdec_write_dos(core, HEVC_MPSR, 0);
++	meson_amvdec_write_dos(core, HEVC_CPSR, 0);
++
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, HEVC_IMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	if (i == 1000) {
++		dev_warn(core->dev, "HEVC IMEM DMA did not drain\n");
++		ret = -ETIMEDOUT;
++	}
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, HEVC_LMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	if (i == 1000) {
++		dev_warn(core->dev, "HEVC LMEM DMA did not drain\n");
++		ret = -ETIMEDOUT;
++	}
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, HEVC_WRRSP_LMEM) & 0xfff))
++			break;
++		udelay(10);
++	}
++	if (i == 1000) {
++		dev_warn(core->dev, "HEVC write responses did not drain\n");
++		ret = -ETIMEDOUT;
++	}
++
++	return ret;
++}
++
++static bool amvdec_hevc_armrisc_dma_busy(struct amvdec_core *core)
++{
++	return (meson_amvdec_read_dos(core, HEVC_IMEM_DMA_CTRL) & 0x8000) ||
++	       (meson_amvdec_read_dos(core, HEVC_LMEM_DMA_CTRL) & 0x8000) ||
++	       (meson_amvdec_read_dos(core, HEVC_WRRSP_LMEM) & 0xfff);
++}
++
++static void amvdec_hevc_stop_stream_fetch(struct amvdec_core *core)
++{
++	meson_amvdec_write_dos(core, HEVC_STREAM_CONTROL, 0);
++}
++
++/*
++ * Park HEVC DMC request ports and wait for idle. These registers remain
++ * accessible while the decoder power domain is off.
++ */
++static int amvdec_hevc_dmc_park(struct amvdec_core *core)
++{
++	if (!amvdec_is_g12(core))
++		return 0;
++
++	return meson_amvdec_dmc_park(core, DMC_REQ_HEVC);
++}
++
++static void amvdec_hevc_dmc_unpark(struct amvdec_core *core)
++{
++	if (!amvdec_is_g12(core))
++		return;
++
++	meson_amvdec_dmc_unpark(core, DMC_REQ_HEVC);
++}
++
++/*
++ * Hold SAO/MMU reset, reset the HEVC sub-engines, drain writes, then reset
++ * the G12B DMC pipelines. Call with the domain powered and DMC ports parked.
++ */
++static int amvdec_hevc_core_scrub(struct amvdec_core *core)
++{
++	static void __iomem *reset7_lvl;
++	u32 val;
++	int i;
++
++	if (!amvdec_is_g12(core))
++		return 0;
++
++	if (!reset7_lvl)
++		reset7_lvl = ioremap(G12B_RESET7_LEVEL_ADDR, 4);
++	if (!reset7_lvl)
++		return -ENOMEM;
++
++	/* Hold the SAO/MMU in reset across the sub-engine reset */
++	val = meson_amvdec_read_dos(core, HEVC_SAO_MMU_RESET_CTRL);
++	meson_amvdec_write_dos(core, HEVC_SAO_MMU_RESET_CTRL, val | 1);
++
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, DOS_SW_RESET3_HEVC_QUIESCE);
++	udelay(10);
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0);
++
++	/* Drain outstanding write responses before releasing anything */
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, HEVC_WRRSP_LMEM) & 0xfff))
++			break;
++		udelay(10);
++	}
++	if (i == 1000) {
++		dev_warn(core->dev,
++			 "HEVC write responses did not drain after reset\n");
++		return -ETIMEDOUT;
++	}
++
++	val = meson_amvdec_read_dos(core, HEVC_SAO_MMU_RESET_CTRL);
++	meson_amvdec_write_dos(core, HEVC_SAO_MMU_RESET_CTRL, val & ~1);
++
++	/*
++	 * G12B: the DMC-side decode pipelines latch state.  Toggle the
++	 * LEVEL reset (low = asserted), then pulse the pipeline reset.
++	 */
++	val = readl(reset7_lvl);
++	writel(val & ~RESET7_LEVEL_HEVC_DMC, reset7_lvl);
++	udelay(10);
++	writel(val | RESET7_LEVEL_HEVC_DMC, reset7_lvl);
++	meson_amvdec_dmc_pipeline_reset(core);
++
++	return 0;
++}
++
++/*
++ * Quiesce the powered core. Keep DMC ports parked after any earlier stop
++ * failure so the caller can retain DMA allocations safely.
++ */
++static int amvdec_hevc_quiesce_reset_locked(struct amvdec_core *core,
++					    bool unpark_on_success)
++{
++	int ret;
++
++	amvdec_hevc_stop_stream_fetch(core);
++
++	ret = amvdec_hevc_dmc_park(core);
++	if (ret)
++		return ret;
++
++	ret = amvdec_hevc_core_scrub(core);
++	if (ret)
++		return ret;
++
++	if (unpark_on_success)
++		amvdec_hevc_dmc_unpark(core);
++
++	return 0;
++}
++
++static int __vdec_hevc_stop(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++	int ret, ret2;
++
++	/* Disable interrupt */
++	meson_amvdec_write_dos(core, HEVC_ASSIST_MBOX1_MASK, 0);
++	/* Stop the firmware processors, drain their DMA + writes */
++	ret = amvdec_hevc_stop_armrisc(core);
++
++	/*
++	 * Quiesce DMA before releasing codec buffers. On timeout, keep the DMC
++	 * ports parked and retain allocations the hardware may still address.
++	 */
++	ret2 = amvdec_hevc_quiesce_reset_locked(core, !ret);
++	if (ret && !ret2) {
++		/*
++		 * A processor halt can leave DMA busy until the core reset. Accept the
++		 * stop only after parked DMC ports, completed resets and idle DMA status.
++		 */
++		if (!amvdec_hevc_armrisc_dma_busy(core)) {
++			dev_dbg(core->dev,
++				"HEVC AMRISC DMA flags cleared by the core reset; stop completed\n");
++			amvdec_hevc_dmc_unpark(core);
++			ret = 0;
++		}
++	}
++	if (ret2)
++		ret = ret ?: ret2;
++
++	if (ret)
++		return ret;
++
++	if (sess->priv)
++		codec_ops->stop(sess);
++
++	/* Enable VDEC_HEVC Isolation */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_HEVC_SM1,
++				   GEN_PWR_VDEC_HEVC_SM1);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   0xc00, 0xc00);
++
++	/* VDEC_HEVC Memories */
++	meson_amvdec_write_dos(core, DOS_MEM_PD_HEVC, 0xffffffffUL);
++
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_HEVC_SM1,
++				   GEN_PWR_VDEC_HEVC_SM1);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_HEVC, GEN_PWR_VDEC_HEVC);
++
++	return 0;
++}
++
++static int amvdec_hevc_stop(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	int ret;
++
++	ret = __vdec_hevc_stop(sess);
++	if (ret)
++		return ret;
++
++	clk_disable_unprepare(core->amvdec_hevc_clk);
++	if (core->platform->revision == AMVDEC_REVISION_G12A ||
++	    core->platform->revision == AMVDEC_REVISION_SM1)
++		clk_disable_unprepare(core->amvdec_hevcf_clk);
++
++	return 0;
++}
++
++static int __vdec_hevc_start(struct amvdec_session *sess)
++{
++	int ret;
++	struct amvdec_core *core = sess->core;
++	struct amvdec_codec_ops *codec_ops = sess->fmt_out->codec_ops;
++
++	clk_set_rate(core->amvdec_hevc_clk, 666666666);
++	ret = clk_prepare_enable(core->amvdec_hevc_clk);
++	if (ret) {
++		if (core->platform->revision == AMVDEC_REVISION_G12A ||
++		    core->platform->revision == AMVDEC_REVISION_SM1)
++			clk_disable_unprepare(core->amvdec_hevcf_clk);
++		return ret;
++	}
++
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_HEVC_SM1, 0);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_SLEEP0,
++				   GEN_PWR_VDEC_HEVC, 0);
++	usleep_range(10, 20);
++
++	/*
++	 * Park the DMC ports before powering up. Access HEVC registers only after
++	 * the memories are powered and isolation is removed, then reset the core.
++	 */
++	ret = amvdec_hevc_dmc_park(core);
++	if (ret)
++		goto stop;
++
++	/* Reset VDEC_HEVC*/
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0xffffffff);
++	udelay(10);
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0x00000000);
++
++	meson_amvdec_write_dos(core, DOS_GCLK_EN3, 0xffffffff);
++
++	/* VDEC_HEVC Memories */
++	meson_amvdec_write_dos(core, DOS_MEM_PD_HEVC, 0x00000000);
++
++	/* Remove VDEC_HEVC Isolation */
++	if (core->platform->revision == AMVDEC_REVISION_SM1)
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   GEN_PWR_VDEC_HEVC_SM1, 0);
++	else
++		regmap_update_bits(core->regmap_ao, AO_RTI_GEN_PWR_ISO0,
++				   0xc00, 0);
++
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0xffffffff);
++	udelay(10);
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0x00000000);
++
++	/*
++	 * Domain fully up: scrub the sub-engines, then reconnect DDR.  A scrub
++	 * that times out leaves the ports parked and the processor halted.
++	 */
++	ret = amvdec_hevc_core_scrub(core);
++	if (ret)
++		goto stop;
++	amvdec_hevc_dmc_unpark(core);
++
++	amvdec_hevc_stbuf_init(sess);
++
++	ret = amvdec_hevc_load_firmware(sess, sess->fmt_out->firmware_path);
++	if (ret)
++		goto stop;
++
++	ret = codec_ops->start(sess);
++	if (ret)
++		goto stop;
++
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, BIT(12) | BIT(11));
++	meson_amvdec_write_dos(core, DOS_SW_RESET3, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET3);
++
++	meson_amvdec_write_dos(core, HEVC_MPSR, 1);
++	/* Let the firmware settle */
++	usleep_range(10, 20);
++
++	return 0;
++
++stop:
++	if (!__vdec_hevc_stop(sess))
++		clk_disable_unprepare(core->amvdec_hevc_clk);
++	return ret;
++}
++
++static int amvdec_hevc_start(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	int ret;
++
++	if (core->platform->revision == AMVDEC_REVISION_G12A ||
++	    core->platform->revision == AMVDEC_REVISION_SM1) {
++		clk_set_rate(core->amvdec_hevcf_clk, 666666666);
++		ret = clk_prepare_enable(core->amvdec_hevcf_clk);
++		if (ret)
++			return ret;
++
++		ret = __vdec_hevc_start(sess);
++		if (ret)
++			clk_disable_unprepare(core->amvdec_hevcf_clk);
++		return ret;
++	}
++
++	return __vdec_hevc_start(sess);
++}
++
++struct amvdec_ops meson_amvdec_hevc_ops = {
++	.start = amvdec_hevc_start,
++	.stop = amvdec_hevc_stop,
++	.conf_esparser = amvdec_hevc_conf_esparser,
++	.vififo_level = amvdec_hevc_vififo_level,
++};
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_hevc.h b/drivers/media/platform/amlogic/amvdec/amvdec_hevc.h
+new file mode 100644
+index 000000000000..ef41b3d13f4c
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_hevc.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 Maxime Jourdan <maxi.jourdan@wanadoo.fr>
++ *
++ * VDEC_HEVC hardware control for HEVC and VP9.
++ */
++
++#ifndef __MESON_AMVDEC_VDEC_HEVC_H_
++#define __MESON_AMVDEC_VDEC_HEVC_H_
++
++#include "amvdec.h"
++
++extern struct amvdec_ops meson_amvdec_hevc_ops;
++
++int meson_amvdec_hevc_restream(struct amvdec_session *sess);
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+new file mode 100644
+index 000000000000..854f90035e5c
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Per-compatible decoder capabilities and firmware.
++ */
++
++#include "amvdec_platform.h"
++#include "amvdec.h"
++
++#include "amvdec_1.h"
++#include "amvdec_hevc.h"
++
++/*
++ * GXBB: H.264 and MPEG-2 at 1920x1088; HEVC Main/Main10 at 3840x2160.
++ */
++static const struct amvdec_format amvdec_formats_gxbb[] = {
++};
++
++/*
++ * GXL: H.264 and MPEG-2 at 1920x1088; HEVC Main/Main10 and VP9
++ * profiles 0/2 at 3840x2160.
++ */
++static const struct amvdec_format amvdec_formats_gxl[] = {
++};
++
++/*
++ * GXLX: H.264 and MPEG-2 at 1920x1088; HEVC Main/Main10 at 3840x2160.
++ */
++static const struct amvdec_format amvdec_formats_gxlx[] = {
++};
++
++/*
++ * GXM: H.264 and MPEG-2 at 1920x1088; HEVC Main/Main10 and VP9
++ * profiles 0/2 at 3840x2160.
++ */
++static const struct amvdec_format amvdec_formats_gxm[] = {
++};
++
++/*
++ * G12A/G12B: H.264, HEVC Main/Main10 and VP9 profiles 0/2 at
++ * 3840x2160; MPEG-2 at 1920x1088.
++ */
++static const struct amvdec_format amvdec_formats_g12a[] = {
++};
++
++/*
++ * SM1: H.264, HEVC Main/Main10 and VP9 profiles 0/2 at 3840x2160;
++ * MPEG-2 at 1920x1088.
++ */
++static const struct amvdec_format amvdec_formats_sm1[] = {
++};
++
++const struct amvdec_platform meson_amvdec_platform_gxbb = {
++	.formats = amvdec_formats_gxbb,
++	.num_formats = ARRAY_SIZE(amvdec_formats_gxbb),
++	.revision = AMVDEC_REVISION_GXBB,
++};
++
++const struct amvdec_platform meson_amvdec_platform_gxl = {
++	.formats = amvdec_formats_gxl,
++	.num_formats = ARRAY_SIZE(amvdec_formats_gxl),
++	.revision = AMVDEC_REVISION_GXL,
++};
++
++const struct amvdec_platform meson_amvdec_platform_gxlx = {
++	.formats = amvdec_formats_gxlx,
++	.num_formats = ARRAY_SIZE(amvdec_formats_gxlx),
++	.revision = AMVDEC_REVISION_GXLX,
++};
++
++const struct amvdec_platform meson_amvdec_platform_gxm = {
++	.formats = amvdec_formats_gxm,
++	.num_formats = ARRAY_SIZE(amvdec_formats_gxm),
++	.revision = AMVDEC_REVISION_GXM,
++};
++
++const struct amvdec_platform meson_amvdec_platform_g12a = {
++	.formats = amvdec_formats_g12a,
++	.num_formats = ARRAY_SIZE(amvdec_formats_g12a),
++	.revision = AMVDEC_REVISION_G12A,
++};
++
++const struct amvdec_platform meson_amvdec_platform_sm1 = {
++	.formats = amvdec_formats_sm1,
++	.num_formats = ARRAY_SIZE(amvdec_formats_sm1),
++	.revision = AMVDEC_REVISION_SM1,
++};
++
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_platform.h b/drivers/media/platform/amlogic/amvdec/amvdec_platform.h
+new file mode 100644
+index 000000000000..21de8cd7c689
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_platform.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Per-compatible decoder capabilities and firmware.
++ */
++
++#ifndef __MESON_AMVDEC_PLATFORM_H_
++#define __MESON_AMVDEC_PLATFORM_H_
++
++#include "amvdec.h"
++
++struct amvdec_format;
++
++enum amvdec_revision {
++	AMVDEC_REVISION_GXBB,
++	AMVDEC_REVISION_GXL,
++	AMVDEC_REVISION_GXLX,
++	AMVDEC_REVISION_GXM,
++	AMVDEC_REVISION_G12A,
++	AMVDEC_REVISION_SM1,
++};
++
++struct amvdec_platform {
++	const struct amvdec_format *formats;
++	const u32 num_formats;
++	enum amvdec_revision revision;
++};
++
++extern const struct amvdec_platform meson_amvdec_platform_gxbb;
++extern const struct amvdec_platform meson_amvdec_platform_gxm;
++extern const struct amvdec_platform meson_amvdec_platform_gxl;
++extern const struct amvdec_platform meson_amvdec_platform_gxlx;
++extern const struct amvdec_platform meson_amvdec_platform_g12a;
++extern const struct amvdec_platform meson_amvdec_platform_sm1;
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_h264_scratch.h b/drivers/media/platform/amlogic/amvdec/codec_h264_scratch.h
+new file mode 100644
+index 000000000000..229cd96b05ae
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/codec_h264_scratch.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2026 Gus Bourg <gus@bourg.net>
++ *
++ * H.264 header-parser scratch storage.
++ */
++
++#ifndef __MESON_AMVDEC_CODEC_H264_SCRATCH_H_
++#define __MESON_AMVDEC_CODEC_H264_SCRATCH_H_
++
++/* Two bounded lists of 32 UE-coded commands can exceed 128 bytes. */
++#define H264_PARSE_RBSP_SIZE 1024
++
++struct h264_parse_scratch {
++	unsigned char rbsp[H264_PARSE_RBSP_SIZE];
++};
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/dos_regs.h b/drivers/media/platform/amlogic/amvdec/dos_regs.h
+new file mode 100644
+index 000000000000..fcd3a50cf468
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/dos_regs.h
+@@ -0,0 +1,91 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Decoder register offsets.
++ */
++
++#ifndef __MESON_AMVDEC_DOS_REGS_H_
++#define __MESON_AMVDEC_DOS_REGS_H_
++
++/* DOS registers */
++
++#define ASSIST_MBOX1_CLR_REG	0x01d4
++#define ASSIST_MBOX1_MASK	0x01d8
++
++#define MPSR			0x0c04
++#define CPSR			0x0c84
++
++#define IMEM_DMA_CTRL		0x0d00
++#define IMEM_DMA_ADR		0x0d04
++#define IMEM_DMA_COUNT		0x0d08
++#define LMEM_DMA_CTRL		0x0d40
++
++#define PSCALE_CTRL		0x2444
++
++#define GCLK_EN			0x260c
++#define MDEC_PIC_DC_CTRL	0x2638
++#define ANC0_CANVAS_ADDR	0x2640
++#define ANC2_CANVAS_ADDR	0x2648
++#define REC_CANVAS_ADDR	0x26c8
++#define F_CODE_REG	0x3008
++#define SLICE_VER_POS_PIC_TYPE	0x3010
++#define MB_INFO	0x30b0
++#define VCOP_CTRL_REG	0x3800
++#define MDEC_PIC_DC_THRESH	0x26e0
++
++/* Firmware interface registers */
++#define AV_SCRATCH_0		0x2700
++#define AV_SCRATCH_1		0x2704
++#define AV_SCRATCH_2		0x2708
++#define AV_SCRATCH_3		0x270c
++#define AV_SCRATCH_4		0x2710
++#define AV_SCRATCH_5		0x2714
++#define AV_SCRATCH_6		0x2718
++#define AV_SCRATCH_7		0x271c
++#define AV_SCRATCH_8		0x2720
++#define AV_SCRATCH_9		0x2724
++#define AV_SCRATCH_A		0x2728
++#define AV_SCRATCH_B		0x272c
++#define AV_SCRATCH_C		0x2730
++#define AV_SCRATCH_E		0x2738
++#define AV_SCRATCH_F		0x273c
++#define AV_SCRATCH_G		0x2740
++#define AV_SCRATCH_H		0x2744
++#define AV_SCRATCH_I		0x2748
++#define AV_SCRATCH_J		0x274c
++#define AV_SCRATCH_L		0x2754
++
++#define MPEG1_2_REG		0x3004
++#define PIC_HEAD_INFO		0x300c
++#define POWER_CTL_VLD		0x3020
++#define VIFF_BIT_CNT		0x3068
++#define M4_CONTROL_REG		0x30a4
++
++/* Stream Buffer (stbuf) regs */
++#define VLD_MEM_VIFIFO_START_PTR	0x3100
++#define VLD_MEM_VIFIFO_CURR_PTR	0x3104
++#define VLD_MEM_VIFIFO_END_PTR	0x3108
++#define VLD_MEM_VIFIFO_CONTROL	0x3110
++	#define MEM_FIFO_CNT_BIT	16
++	#define MEM_FILL_ON_LEVEL	BIT(10)
++	#define MEM_CTRL_EMPTY_EN	BIT(2)
++	#define MEM_CTRL_FILL_EN	BIT(1)
++#define VLD_MEM_VIFIFO_WP	0x3114
++#define VLD_MEM_VIFIFO_RP	0x3118
++#define VLD_MEM_VIFIFO_LEVEL	0x311c
++#define VLD_MEM_VIFIFO_BUF_CNTL	0x3120
++	#define MEM_BUFCTRL_MANUAL	BIT(1)
++#define VLD_MEM_VIFIFO_WRAP_COUNT	0x3144
++
++#define DOS_SW_RESET0		0xfc00
++#define DOS_GCLK_EN0		0xfc04
++#define DOS_GEN_CTRL0		0xfc08
++#define DOS_MEM_PD_VDEC		0xfcc0
++#define DOS_MEM_PD_HEVC		0xfccc
++#define DOS_SW_RESET3		0xfcd0
++#define DOS_GCLK_EN3		0xfcd4
++#define DOS_VDEC_MCRCC_STALL_CTRL	0xfd00
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/esparser.c b/drivers/media/platform/amlogic/amvdec/esparser.c
+new file mode 100644
+index 000000000000..01e3628d2db5
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/esparser.c
+@@ -0,0 +1,521 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Elementary-stream input and request scheduling.
++ */
++
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <linux/cleanup.h>
++#include <linux/ioctl.h>
++#include <linux/list.h>
++#include <linux/module.h>
++#include <linux/reset.h>
++#include <linux/delay.h>
++#include <linux/interrupt.h>
++#include <media/videobuf2-dma-contig.h>
++#include <media/v4l2-mem2mem.h>
++
++#include "dos_regs.h"
++#include "esparser.h"
++#include "amvdec_hevc.h"
++#include "amvdec_helpers.h"
++
++/* Zero lookahead appended after each HEVC/VP9 request payload; not part of
++ * the coded endpoint.
++ */
++#define REQUEST_TAIL_SIZE	SZ_4K
++
++/* PARSER REGS (CBUS) */
++#define PARSER_CONTROL 0x00
++	#define ES_PACK_SIZE_BIT	8
++	#define ES_WRITE		BIT(5)
++	#define ES_SEARCH		BIT(1)
++	#define ES_PARSER_START		BIT(0)
++#define PARSER_FETCH_ADDR	0x4
++#define PARSER_FETCH_CMD	0x8
++#define PARSER_CONFIG 0x14
++	#define PS_CFG_MAX_FETCH_CYCLE_BIT	0
++	#define PS_CFG_STARTCODE_WID_24_BIT	10
++	#define PS_CFG_MAX_ES_WR_CYCLE_BIT	12
++	#define PS_CFG_PFIFO_EMPTY_CNT_BIT	16
++#define PFIFO_WR_PTR 0x18
++#define PFIFO_RD_PTR 0x1c
++#define PARSER_SEARCH_PATTERN 0x24
++	#define ES_START_CODE_PATTERN 0x00000100
++#define PARSER_SEARCH_MASK 0x28
++	#define ES_START_CODE_MASK	0xffffff00
++	#define FETCH_ENDIAN_BIT	27
++#define PARSER_INT_ENABLE	0x2c
++	#define PARSER_INT_HOST_EN_BIT	8
++#define PARSER_INT_STATUS	0x30
++	#define PARSER_INTSTAT_SC_FOUND	1
++#define PARSER_ES_CONTROL	0x5c
++#define PARSER_VIDEO_START_PTR	0x80
++#define PARSER_VIDEO_END_PTR	0x84
++#define PARSER_VIDEO_WP		0x88
++#define PARSER_VIDEO_HOLE	0x90
++
++#define VP9_HEADER_SIZE		16
++
++static irqreturn_t esparser_isr(int irq, void *dev)
++{
++	int int_status;
++	struct amvdec_core *core = dev;
++
++	int_status = meson_amvdec_read_parser(core, PARSER_INT_STATUS);
++	meson_amvdec_write_parser(core, PARSER_INT_STATUS, int_status);
++
++	if (int_status & PARSER_INTSTAT_SC_FOUND) {
++		meson_amvdec_write_parser(core, PFIFO_RD_PTR, 0);
++		meson_amvdec_write_parser(core, PFIFO_WR_PTR, 0);
++		complete(&core->esparser_completion);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static int
++esparser_write_data(struct amvdec_core *core, dma_addr_t addr, u32 size)
++{
++	reinit_completion(&core->esparser_completion);
++	/* Order the reset before the relaxed MMIO starts the parser. */
++	wmb();
++
++	meson_amvdec_write_parser(core, PFIFO_RD_PTR, 0);
++	meson_amvdec_write_parser(core, PFIFO_WR_PTR, 0);
++	meson_amvdec_write_parser(core, PARSER_CONTROL,
++			    ES_WRITE |
++			    ES_PARSER_START |
++			    ES_SEARCH |
++			    (size << ES_PACK_SIZE_BIT));
++
++	meson_amvdec_write_parser(core, PARSER_FETCH_ADDR, addr);
++	meson_amvdec_write_parser(core, PARSER_FETCH_CMD,
++			    (7 << FETCH_ENDIAN_BIT) |
++			    (size + ESPARSER_SEARCH_PATTERN_SIZE));
++
++	return wait_for_completion_timeout(&core->esparser_completion, HZ / 5);
++}
++
++static u32 esparser_vififo_get_free_space(struct amvdec_session *sess)
++{
++	u32 vififo_usage;
++	struct amvdec_ops *vdec_ops = sess->fmt_out->vdec_ops;
++	struct amvdec_core *core = sess->core;
++
++	vififo_usage  = vdec_ops->vififo_level(sess);
++	vififo_usage += meson_amvdec_read_parser(core, PARSER_VIDEO_HOLE);
++	vififo_usage += (6 * SZ_1K); // 6 KiB internal fifo
++
++	dev_dbg(core->dev,
++		"fifo sess=%p usage=%u size=%u offset=%u wraps=%u\n",
++		sess, vififo_usage, sess->vififo_size,
++		sess->last_offset, sess->wrap_count);
++
++	if (vififo_usage > sess->vififo_size) {
++		dev_warn_ratelimited(sess->core->dev,
++				     "VIFIFO usage (%u) > VIFIFO size (%u)\n",
++			 vififo_usage, sess->vififo_size);
++		return 0;
++	}
++
++	return sess->vififo_size - vififo_usage;
++}
++
++static u32 esparser_get_offset(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	u32 offset = meson_amvdec_read_parser(core, PARSER_VIDEO_WP) -
++		     sess->vififo_paddr;
++
++	if (offset < sess->last_offset)
++		sess->wrap_count++;
++
++	sess->last_offset = offset;
++	offset += (sess->wrap_count * sess->vififo_size);
++
++	return offset;
++}
++
++/*
++ * A prefeed refusal completes this job without poisoning either vb2 queue.
++ * The ready destination belongs to this scheduled job, unlike earlier DONE
++ * buffers on vb2's completion list. No destination has been selected by HW.
++ */
++static void esparser_src_error(struct amvdec_session *sess,
++			       struct vb2_v4l2_buffer *src)
++{
++	if (meson_amvdec_request_jobs(sess) && sess->request_job.src == src) {
++		if (sess->request_job.credit) {
++			/* Hardware may have consumed input: ownership ends at stop. */
++			sess->request_job.error = true;
++			meson_amvdec_abort(sess);
++			return;
++		}
++		meson_amvdec_request_refuse(sess);
++		return;
++	}
++	/* Also completes the OUTPUT's media-request control-handler object. */
++	meson_amvdec_src_buf_done(sess, src, VB2_BUF_STATE_ERROR);
++
++}
++
++static int
++esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
++{
++	int ret;
++	struct vb2_buffer *vb = &vbuf->vb2_buf;
++	struct amvdec_core *core = sess->core;
++	u32 payload_size = vb2_get_plane_payload(vb, 0);
++	u32 original_payload_size = payload_size;
++	dma_addr_t phy = vb2_dma_contig_plane_dma_addr(vb, 0);
++	struct amvdec_feed_scratch *f = &sess->feed;
++	struct v4l2_ctrl_vp9_frame *vp9_frame_ptr = NULL;
++	struct v4l2_ctrl_hevc_sps *hevc_sps_ptr = NULL;
++	struct v4l2_ctrl_hevc_pps *hevc_pps_ptr = NULL;
++	struct v4l2_ctrl_hevc_slice_params *hevc_slice_ptr = NULL;
++	struct v4l2_ctrl_hevc_decode_params *hevc_decode_ptr = NULL;
++
++	u8 *hevc_headers __free(kfree) = NULL;
++	u32 hevc_headers_len = 0;
++	u32 offset;
++	u32 pad_size;
++
++	bool mpeg2_second = false;
++
++	dev_dbg(core->dev, "feed attempt sess=%p idx=%u bytes=%u\n",
++		sess, vb->index, payload_size);
++
++	/*
++	 * Decide whether this buffer can be fed BEFORE reading its request's
++	 * controls: applying a request stashes its per-picture parameters,
++	 * so examining a buffer that is then deferred would overwrite the
++	 * parameters of the picture currently being decoded.
++	 */
++
++	if (meson_amvdec_request_jobs(sess) &&
++	    (!READ_ONCE(sess->m2m_run_armed) || atomic_read(&sess->request_job.state)))
++		return -EAGAIN;
++
++	if (esparser_vififo_get_free_space(sess) < payload_size)
++		return -EAGAIN;
++
++	if (meson_amvdec_request_jobs(sess) && meson_amvdec_request_begin(sess, vbuf))
++		return -EAGAIN;
++	v4l2_m2m_src_buf_remove_by_buf(sess->m2m_ctx, vbuf);
++
++	offset = esparser_get_offset(sess);
++
++	struct media_request *req = vb->req_obj.req;
++
++	if (!req) {
++		dev_err_ratelimited(core->dev, "stateless buffer has no request\n");
++		esparser_src_error(sess, vbuf);
++		return -EINVAL;
++	}
++
++	ret = v4l2_ctrl_request_setup(req, &sess->ctrl_handler);
++	if (ret) {
++		dev_dbg(core->dev, "request setup failed: %d\n", ret);
++		esparser_src_error(sess, vbuf);
++		return ret;
++	}
++
++	ret = meson_amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset,
++			    vbuf->flags, vp9_frame_ptr, hevc_sps_ptr, hevc_pps_ptr,
++			    hevc_slice_ptr, hevc_decode_ptr);
++	if (ret) {
++		esparser_src_error(sess, vbuf);
++		return ret;
++	}
++
++	dev_dbg(core->dev, "esparser: ts = %llu pld_size = %u offset = %08X flags = %08X\n",
++		vb->timestamp, payload_size, offset, vbuf->flags);
++
++	vbuf->flags = 0;
++	vbuf->field = V4L2_FIELD_NONE;
++	vbuf->sequence = sess->sequence_out++;
++
++	/*
++	 * The multi blob takes the OUTPUT buffer as its stream FIFO directly:
++	 * no ESPARSER copy, no start-code padding, and the buffer stays owned
++	 * by the hardware until the picture completes.
++	 */
++
++	unsigned int i, n = 0;
++	u64 refs[16];
++
++	if (hevc_decode_ptr) {
++		n = f->hevc_decode.num_active_dpb_entries;
++		if (n > ARRAY_SIZE(refs)) {
++			esparser_src_error(sess, vbuf);
++			return -EINVAL;
++		}
++		for (i = 0; i < n; i++)
++			refs[i] = f->hevc_decode.dpb[i].timestamp;
++	} else if (vp9_frame_ptr && !(f->vp9_frame.flags &
++		   (V4L2_VP9_FRAME_FLAG_KEY_FRAME | V4L2_VP9_FRAME_FLAG_INTRA_ONLY))) {
++		n = 3;
++		refs[0] = f->vp9_frame.last_frame_ts;
++		refs[1] = f->vp9_frame.golden_frame_ts;
++		refs[2] = f->vp9_frame.alt_frame_ts;
++	}
++	for (i = 0; i < n; i++) {
++		if (meson_amvdec_request_resolve_ref(sess, i, refs[i])) {
++			/* The codec checks the entries the picture uses. */
++			if (hevc_decode_ptr) {
++				sess->request_job.refs[i] = NULL;
++				sess->request_job.ref_ts[i] = refs[i];
++				continue;
++			}
++			/* A P field may have only its mate to predict from. */
++			if (mpeg2_second && f->mpeg2_job_pic.picture_coding_type ==
++			    V4L2_MPEG2_PIC_CODING_TYPE_P)
++				continue;
++			dev_err(core->dev,
++				"prefeed reference %u timestamp %llu missing/current\n",
++				i, refs[i]);
++			esparser_src_error(sess, vbuf);
++			return -EINVAL;
++		}
++	}
++
++	/* Record the framed/synthesized coded endpoint before padding or DMA.
++	 * Reading PARSER_VIDEO_WP for offset includes previous transport bytes.
++	 */
++
++	u32 tail = REQUEST_TAIL_SIZE;
++	u32 plane_size = vb2_plane_size(vb, 0);
++	u8 *data = vb2_plane_vaddr(vb, 0);
++
++	size_t needed = (size_t)payload_size + tail + ESPARSER_SEARCH_PATTERN_SIZE;
++
++	if (!data || payload_size > plane_size ||
++	    esparser_vififo_get_free_space(sess) < payload_size + tail) {
++		esparser_src_error(sess, vbuf);
++		return -EINVAL;
++	}
++	/* The transport tail belongs to the driver, not the client's
++	 * negotiated OUTPUT padding. Previous DMA has completed before
++	 * another request can resize or reuse this storage.
++	 */
++	if (sess->request_job.input_size < needed) {
++		void *new_data;
++		dma_addr_t new_phy;
++
++		new_data = dma_alloc_coherent(core->dev, needed, &new_phy,
++					      GFP_KERNEL);
++		if (!new_data) {
++			esparser_src_error(sess, vbuf);
++			return -ENOMEM;
++		}
++		if (sess->request_job.input_vaddr)
++			dma_free_coherent(core->dev, sess->request_job.input_size,
++					  sess->request_job.input_vaddr,
++					sess->request_job.input_paddr);
++		sess->request_job.input_vaddr = new_data;
++		sess->request_job.input_paddr = new_phy;
++		sess->request_job.input_size = needed;
++	}
++	memcpy(sess->request_job.input_vaddr, data, payload_size);
++	data = sess->request_job.input_vaddr;
++	phy = sess->request_job.input_paddr;
++	memset(data + payload_size, 0, tail + ESPARSER_SEARCH_PATTERN_SIZE);
++	data[payload_size + tail + 2] = 1;
++	data[payload_size + tail + 3] = 0xff;
++	pad_size = tail;
++	dev_dbg(core->dev,
++		"feed mode=%08x idx=%u ts=%llu original=%u headers=%u payload=%u pad=%u write=%u fetch=%u offset=%u free=%u queued=%d\n",
++		 sess->fmt_out->pixfmt, vb->index, vb->timestamp,
++		 original_payload_size, hevc_headers_len,
++		 payload_size, pad_size,
++		 payload_size + pad_size, payload_size + pad_size + ESPARSER_SEARCH_PATTERN_SIZE,
++		 offset, esparser_vififo_get_free_space(sess),
++		 atomic_read(&sess->esparser_queued_bufs));
++	sess->request_job.credit = true;
++	atomic_inc(&sess->esparser_queued_bufs);
++	meson_amvdec_trace(sess, AMVDEC_TR_FEED, offset, payload_size + pad_size,
++		     (u32)(vb->timestamp / 1000));
++	ret = esparser_write_data(core, phy, payload_size + pad_size);
++	meson_amvdec_trace(sess, AMVDEC_TR_FED, ret,
++		     meson_amvdec_read_parser(core, PARSER_VIDEO_WP), 0);
++
++	if (ret > 0) {
++		/* Only a successful feed establishes the firmware's cached headers. */
++		if (hevc_headers_len) {
++			memcpy(sess->hevc_cached_headers, hevc_headers, hevc_headers_len);
++			sess->hevc_cached_headers_len = hevc_headers_len;
++			sess->hevc_headers_valid = true;
++			dev_dbg(core->dev, "HEVC parameter sets sent ts=%llu bytes=%u\n",
++				vb->timestamp, hevc_headers_len);
++		}
++	}
++
++	if (ret <= 0) {
++		dev_warn_ratelimited(core->dev, "esparser: input parsing error\n");
++		meson_amvdec_remove_ts(sess, vb->timestamp);
++		esparser_src_error(sess, vbuf);
++		meson_amvdec_write_parser(core, PARSER_FETCH_CMD, 0);
++
++		return 0;
++	}
++
++	dev_dbg(core->dev,
++		"feed done mode=%08x idx=%u ts=%llu payload=%u parser_ret=%d queued_before_inc=%d\n",
++		 sess->fmt_out->pixfmt, vb->index, vb->timestamp, payload_size, ret,
++		 atomic_read(&sess->esparser_queued_bufs));
++
++	return 0;
++}
++
++void meson_amvdec_esparser_queue_all_src(struct work_struct *work)
++{
++	struct v4l2_m2m_buffer *buf, *n;
++	struct amvdec_session *sess =
++		container_of(work, struct amvdec_session, esparser_queue_work);
++	u32 fed = 0;
++	int ret = 0;
++
++	mutex_lock(&sess->lock);
++	meson_amvdec_trace(sess, AMVDEC_TR_WORK, READ_ONCE(sess->m2m_run_armed),
++		     v4l2_m2m_num_src_bufs_ready(sess->m2m_ctx), 0);
++	dev_dbg(sess->core->dev, "worker begin src=%u queued=%d\n",
++		v4l2_m2m_num_src_bufs_ready(sess->m2m_ctx),
++		atomic_read(&sess->esparser_queued_bufs));
++	if (meson_amvdec_request_jobs(sess))
++		meson_amvdec_request_retire(sess, false);
++	/* Retire a finished picture before feeding the next one. */
++
++	/*
++	 * The stream position counter must not reach 0x80000000. Restart the
++	 * core here, before anything is fed: the firmware is parked after a
++	 * completed picture and the VIFIFO is empty, so nothing is lost.
++	 * VP9 restarts at a key frame instead: see esparser_queue().
++	 */
++
++	v4l2_m2m_for_each_src_buf_safe(sess->m2m_ctx, buf, n) {
++		if (sess->should_stop)
++			break;
++
++		ret = esparser_queue(sess, &buf->vb);
++		if (ret < 0)
++			break;
++		fed++;
++		if (meson_amvdec_request_jobs(sess))
++			break;
++		/*
++		 * One access unit per decode: the buffer is already off the
++		 * ready queue (esparser_queue() dequeues what it feeds), and
++		 * the VLD is pointed at it until the picture completes.
++		 */
++
++	}
++	dev_dbg(sess->core->dev,
++		"worker end fed=%u ret=%d src=%u queued=%d dst=%u\n",
++		fed, ret, v4l2_m2m_num_src_bufs_ready(sess->m2m_ctx),
++		atomic_read(&sess->esparser_queued_bufs),
++		v4l2_m2m_num_dst_bufs_ready(sess->m2m_ctx));
++	mutex_unlock(&sess->lock);
++}
++
++int meson_amvdec_esparser_power_up(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct amvdec_ops *vdec_ops = sess->fmt_out->vdec_ops;
++
++	reset_control_reset(core->esparser_reset);
++	meson_amvdec_write_parser(core, PARSER_CONFIG,
++			    (10 << PS_CFG_PFIFO_EMPTY_CNT_BIT) |
++			    (1  << PS_CFG_MAX_ES_WR_CYCLE_BIT) |
++			    (16 << PS_CFG_MAX_FETCH_CYCLE_BIT));
++
++	meson_amvdec_write_parser(core, PFIFO_RD_PTR, 0);
++	meson_amvdec_write_parser(core, PFIFO_WR_PTR, 0);
++
++	meson_amvdec_write_parser(core, PARSER_SEARCH_PATTERN,
++			    ES_START_CODE_PATTERN);
++	meson_amvdec_write_parser(core, PARSER_SEARCH_MASK, ES_START_CODE_MASK);
++
++	meson_amvdec_write_parser(core, PARSER_CONFIG,
++			    (10 << PS_CFG_PFIFO_EMPTY_CNT_BIT) |
++			    (1  << PS_CFG_MAX_ES_WR_CYCLE_BIT) |
++			    (16 << PS_CFG_MAX_FETCH_CYCLE_BIT) |
++			    (2  << PS_CFG_STARTCODE_WID_24_BIT));
++
++	meson_amvdec_write_parser(core, PARSER_CONTROL,
++			    (ES_SEARCH | ES_PARSER_START));
++
++	meson_amvdec_write_parser(core, PARSER_VIDEO_START_PTR, sess->vififo_paddr);
++	meson_amvdec_write_parser(core, PARSER_VIDEO_END_PTR,
++			    sess->vififo_paddr + sess->vififo_size - 8);
++	meson_amvdec_write_parser(core, PARSER_ES_CONTROL,
++			    meson_amvdec_read_parser(core, PARSER_ES_CONTROL) & ~1);
++
++	if (vdec_ops->conf_esparser)
++		vdec_ops->conf_esparser(sess);
++
++	meson_amvdec_write_parser(core, PARSER_INT_STATUS, 0xffff);
++	meson_amvdec_write_parser(core, PARSER_INT_ENABLE,
++			    BIT(PARSER_INT_HOST_EN_BIT));
++
++	return 0;
++}
++
++/*
++ * Cancel parser DMA, clear stream control, wait for idle and reset the
++ * parser before gating its clock. Outstanding transactions must not cross
++ * a power transition.
++ */
++void meson_amvdec_esparser_quiesce(struct amvdec_core *core)
++{
++	int i;
++
++	meson_amvdec_write_parser(core, PARSER_FETCH_CMD, 0);
++	meson_amvdec_write_parser(core, PARSER_CONTROL, 0);
++
++	for (i = 0; i < 100; i++) {
++		if (!(meson_amvdec_read_parser(core, PARSER_ES_CONTROL) & BIT(19)))
++			break;
++		udelay(10);
++	}
++	if (i == 100)
++		dev_warn_ratelimited(core->dev, "parser ES request still pending\n");
++
++	meson_amvdec_write_parser(core, PARSER_INT_ENABLE, 0);
++	meson_amvdec_write_parser(core, PARSER_INT_STATUS, 0xffff);
++	meson_amvdec_write_parser(core, PARSER_VIDEO_HOLE, 0);
++
++	reset_control_reset(core->esparser_reset);
++}
++
++int meson_amvdec_esparser_init(struct platform_device *pdev, struct amvdec_core *core)
++{
++	struct device *dev = &pdev->dev;
++	int ret;
++	int irq;
++
++	irq = platform_get_irq_byname(pdev, "esparser");
++	if (irq < 0)
++		return irq;
++
++	init_completion(&core->esparser_completion);
++
++	ret = devm_request_irq(dev, irq, esparser_isr, IRQF_SHARED,
++			       "esparserirq", core);
++	if (ret) {
++		dev_err(dev, "Failed requesting ESPARSER IRQ\n");
++		return ret;
++	}
++
++	core->esparser_reset =
++		devm_reset_control_get_exclusive(dev, "esparser");
++	if (IS_ERR(core->esparser_reset)) {
++		dev_err(dev, "Failed to get esparser_reset\n");
++		return PTR_ERR(core->esparser_reset);
++	}
++
++	return 0;
++}
+diff --git a/drivers/media/platform/amlogic/amvdec/esparser.h b/drivers/media/platform/amlogic/amvdec/esparser.h
+new file mode 100644
+index 000000000000..fe52be428513
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/esparser.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2018 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * Elementary-stream input and request scheduling.
++ */
++
++#ifndef __MESON_AMVDEC_ESPARSER_H_
++#define __MESON_AMVDEC_ESPARSER_H_
++
++#include <linux/platform_device.h>
++
++#include "amvdec.h"
++
++int meson_amvdec_esparser_init(struct platform_device *pdev, struct amvdec_core *core);
++void meson_amvdec_esparser_quiesce(struct amvdec_core *core);
++int meson_amvdec_esparser_power_up(struct amvdec_session *sess);
++
++/* Feed the next scheduled request from worker context. */
++void meson_amvdec_esparser_queue_all_src(struct work_struct *work);
++
++#define ESPARSER_SEARCH_PATTERN_SIZE SZ_512
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/hevc_regs.h b/drivers/media/platform/amlogic/amvdec/hevc_regs.h
+new file mode 100644
+index 000000000000..736117bc603b
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/hevc_regs.h
+@@ -0,0 +1,163 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
++ *
++ * HEVC and VP9 decoder register offsets.
++ */
++
++#ifndef __MESON_AMVDEC_HEVC_REGS_H_
++#define __MESON_AMVDEC_HEVC_REGS_H_
++
++#define HEVC_ASSIST_MMU_MAP_ADDR 0xc024
++
++#define HEVC_ASSIST_MBOX1_CLR_REG 0xc1d4
++#define HEVC_ASSIST_MBOX1_MASK 0xc1d8
++
++#define HEVC_ASSIST_SCRATCH_0 0xc300
++#define HEVC_ASSIST_SCRATCH_1 0xc304
++#define HEVC_ASSIST_SCRATCH_2 0xc308
++#define HEVC_ASSIST_SCRATCH_3 0xc30c
++#define HEVC_ASSIST_SCRATCH_4 0xc310
++#define HEVC_ASSIST_SCRATCH_5 0xc314
++#define HEVC_ASSIST_SCRATCH_6 0xc318
++#define HEVC_ASSIST_SCRATCH_7 0xc31c
++#define HEVC_ASSIST_SCRATCH_8 0xc320
++#define HEVC_ASSIST_SCRATCH_9 0xc324
++#define HEVC_ASSIST_SCRATCH_A 0xc328
++#define HEVC_ASSIST_SCRATCH_B 0xc32c
++#define HEVC_ASSIST_SCRATCH_C 0xc330
++#define HEVC_ASSIST_SCRATCH_D 0xc334
++#define HEVC_ASSIST_SCRATCH_E 0xc338
++#define HEVC_ASSIST_SCRATCH_F 0xc33c
++#define HEVC_ASSIST_SCRATCH_G 0xc340
++#define HEVC_ASSIST_SCRATCH_H 0xc344
++#define HEVC_ASSIST_SCRATCH_I 0xc348
++#define HEVC_ASSIST_SCRATCH_J 0xc34c
++#define HEVC_ASSIST_SCRATCH_K 0xc350
++#define HEVC_ASSIST_SCRATCH_L 0xc354
++#define HEVC_ASSIST_SCRATCH_M 0xc358
++#define HEVC_ASSIST_SCRATCH_N 0xc35c
++
++#define HEVC_STREAM_CONTROL 0xc404
++#define HEVC_STREAM_START_ADDR 0xc408
++#define HEVC_STREAM_END_ADDR 0xc40c
++#define HEVC_STREAM_WR_PTR 0xc410
++#define HEVC_STREAM_RD_PTR 0xc414
++#define HEVC_STREAM_LEVEL 0xc418
++#define HEVC_STREAM_FIFO_CTL 0xc41c
++#define HEVC_SHIFT_CONTROL 0xc420
++#define HEVC_SHIFT_STARTCODE 0xc424
++#define HEVC_SHIFT_STATUS 0xc42c
++#define HEVC_SHIFT_BYTE_COUNT 0xc434
++#define HEVC_CABAC_CONTROL 0xc440
++#define HEVC_PARSER_CMD_WRITE 0xc448
++#define HEVC_PARSER_CORE_CONTROL 0xc44c
++#define HEVC_PARSER_INT_CONTROL 0xc480
++#define HEVC_PARSER_IF_CONTROL 0xc488
++#define HEVC_PARSER_PICTURE_SIZE 0xc48c
++#define HEVC_PARSER_LCU_START 0xc490
++#define HEVC_PARSER_CMD_SKIP_0 0xc4a0
++#define HEVC_PARSER_CMD_SKIP_1 0xc4a4
++#define HEVC_PARSER_CMD_SKIP_2 0xc4a8
++
++#define HEVC_MPRED_CTRL0 0xc804
++	#define MPRED_CTRL0_NEW_PIC	BIT(2)
++	#define MPRED_CTRL0_NEW_TILE	BIT(3)
++	#define MPRED_CTRL0_NEW_SLI_SEG	BIT(4)
++	#define MPRED_CTRL0_TMVP	BIT(5)
++	#define MPRED_CTRL0_LDC		BIT(6)
++	#define MPRED_CTRL0_COL_FROM_L0	BIT(7)
++	#define MPRED_CTRL0_ABOVE_EN	BIT(9)
++	#define MPRED_CTRL0_MV_WR_EN	BIT(10)
++	#define MPRED_CTRL0_MV_RD_EN	BIT(11)
++	#define MPRED_CTRL0_BUF_LINEAR	BIT(13)
++#define HEVC_MPRED_CTRL1 0xc808
++#define HEVC_MPRED_PIC_SIZE 0xc814
++#define HEVC_MPRED_PIC_SIZE_LCU 0xc818
++#define HEVC_MPRED_TILE_START 0xc81c
++#define HEVC_MPRED_TILE_SIZE_LCU 0xc820
++#define HEVC_MPRED_REF_NUM 0xc824
++#define HEVC_MPRED_REF_EN_L0 0xc830
++#define HEVC_MPRED_REF_EN_L1 0xc834
++#define HEVC_MPRED_ABV_START_ADDR 0xc848
++#define HEVC_MPRED_MV_WR_START_ADDR 0xc84c
++#define HEVC_MPRED_MV_RD_START_ADDR 0xc850
++#define HEVC_MPRED_MV_WPTR 0xc854
++#define HEVC_MPRED_MV_RPTR 0xc858
++#define HEVC_MPRED_MV_WR_ROW_JUMP 0xc85c
++#define HEVC_MPRED_MV_RD_ROW_JUMP 0xc860
++#define HEVC_MPRED_CURR_LCU 0xc864
++#define HEVC_MPRED_CTRL3 0xc874
++#define HEVC_MPRED_L0_REF00_POC 0xc880
++#define HEVC_MPRED_L1_REF00_POC 0xc8c0
++
++#define HEVC_MPRED_CTRL4 0xc930
++
++#define HEVC_MPRED_CUR_POC 0xc980
++#define HEVC_MPRED_COL_POC 0xc984
++#define HEVC_MPRED_MV_RD_END_ADDR 0xc988
++
++#define HEVC_MPSR 0xcc04
++#define HEVC_MCPU_INTR_REQ 0xcc14
++#define HEVC_CPSR 0xcc84
++
++#define HEVC_IMEM_DMA_CTRL 0xcd00
++#define HEVC_IMEM_DMA_ADR 0xcd04
++#define HEVC_IMEM_DMA_COUNT 0xcd08
++
++#define HEVCD_IPP_TOP_CNTL 0xd000
++#define HEVCD_IPP_LINEBUFF_BASE 0xd024
++#define HEVCD_IPP_AXIIF_CONFIG 0xd02c
++
++#define VP9D_MPP_REF_SCALE_ENBL		0xd104
++#define VP9D_MPP_REFINFO_TBL_ACCCONFIG	0xd108
++#define VP9D_MPP_REFINFO_DATA		0xd10c
++
++#define HEVCD_MPP_ANC2AXI_TBL_CONF_ADDR 0xd180
++#define HEVCD_MPP_ANC2AXI_TBL_CMD_ADDR 0xd184
++#define HEVCD_MPP_ANC2AXI_TBL_DATA 0xd190
++
++#define HEVCD_MPP_ANC_CANVAS_ACCCONFIG_ADDR 0xd300
++#define HEVCD_MPP_ANC_CANVAS_DATA_ADDR 0xd304
++#define HEVCD_MPP_DECOMP_CTL1 0xd308
++#define HEVCD_MPP_DECOMP_CTL2 0xd30c
++#define HEVCD_MCRCC_CTL1 0xd3c0
++#define HEVCD_MCRCC_CTL2 0xd3c4
++#define HEVCD_MCRCC_CTL3 0xd3c8
++
++#define HEVC_DBLK_CFG1 0xd404
++#define HEVC_DBLK_CFG2 0xd408
++#define HEVC_DBLK_CFG4 0xd410
++#define HEVC_DBLK_CFG5 0xd414
++#define HEVC_DBLK_CFG9 0xd424
++#define HEVC_DBLK_CFGA 0xd428
++#define HEVC_DBLK_CFGB 0xd42c
++#define HEVC_DBLK_CFGE 0xd438
++#define HEVC_G12A_DBLK_STS1 0xd440
++
++#define HEVC_SAO_CTRL0 0xd804
++#define HEVC_SAO_CTRL1 0xd808
++#define HEVC_SAO_PIC_SIZE 0xd814
++#define HEVC_SAO_PIC_SIZE_LCU 0xd818
++#define HEVC_SAO_Y_START_ADDR 0xd82c
++#define HEVC_SAO_Y_LENGTH 0xd830
++#define HEVC_SAO_C_START_ADDR 0xd834
++#define HEVC_SAO_C_LENGTH 0xd838
++#define HEVC_SAO_Y_WPTR 0xd83c
++#define HEVC_SAO_C_WPTR 0xd840
++#define HEVC_SAO_CTRL5 0xd88c
++#define HEVC_CM_BODY_START_ADDR 0xd898
++#define HEVC_CM_BODY_LENGTH 0xd89c
++#define HEVC_CM_HEADER_START_ADDR 0xd8a0
++#define HEVC_CM_HEADER_LENGTH 0xd8a4
++#define HEVC_CM_HEADER_OFFSET 0xd8ac
++#define HEVC_SAO_CTRL9 0xd8b4
++#define HEVC_SAO_MMU_VH0_ADDR 0xd8e8
++#define HEVC_SAO_MMU_VH1_ADDR 0xd8ec
++
++#define HEVC_IQIT_SCALELUT_WR_ADDR 0xdc08
++#define HEVC_IQIT_SCALELUT_DATA 0xdc10
++
++#define HEVC_PSCALE_CTRL 0xe444
++
++#endif
+-- 
+2.43.0
+

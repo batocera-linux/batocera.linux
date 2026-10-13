@@ -1,0 +1,31 @@
+From a6754166880de5f116c4facd0c170443677662fa Mon Sep 17 00:00:00 2001
+From: jiebing chen <jiebing.chen@amlogic.com>
+Date: Mon, 2 Feb 2026 11:17:46 +0800
+Subject: [PATCH 167/210] ASoC: dt-bindings: amlogic,g12a-tohdmitx: add S4
+ compatible
+
+Add the compatible for the hdmitx control glue of the Amlogic S4 SoC
+family, which falls back to the G12A glue.
+
+Signed-off-by: jiebing chen <jiebing.chen@amlogic.com>
+[chewitt: split from the driver change]
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../devicetree/bindings/sound/amlogic,g12a-tohdmitx.yaml         | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/sound/amlogic,g12a-tohdmitx.yaml b/Documentation/devicetree/bindings/sound/amlogic,g12a-tohdmitx.yaml
+index b4b78475c5b8..016d3cd3eb03 100644
+--- a/Documentation/devicetree/bindings/sound/amlogic,g12a-tohdmitx.yaml
++++ b/Documentation/devicetree/bindings/sound/amlogic,g12a-tohdmitx.yaml
+@@ -22,6 +22,7 @@ properties:
+           - const: amlogic,g12a-tohdmitx
+       - items:
+           - enum:
++              - amlogic,s4-tohdmitx
+               - amlogic,sm1-tohdmitx
+           - const: amlogic,g12a-tohdmitx
+ 
+-- 
+2.43.0
+

@@ -1,0 +1,47 @@
+From 229e9c0b4c6e20cd85da47bd190ac6b4f633d226 Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Fri, 14 Aug 2026 10:10:31 -0400
+Subject: [PATCH 13/43] FROMGIT: reset: meson: Add s4 support
+
+Add s4 support. There are no new features, so just define the layout
+info.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Series-to: Neil Armstrong <neil.armstrong@linaro.org>
+Series-cc: Tom Rini <trini@konsulko.com>
+Series-cc: u-boot-amlogic@groups.io
+Series-to: u-boot@lists.u-boot-project.org
+---
+ drivers/reset/reset-meson.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/reset/reset-meson.c b/drivers/reset/reset-meson.c
+index 8c27563ce23..16d2dc19898 100644
+--- a/drivers/reset/reset-meson.c
++++ b/drivers/reset/reset-meson.c
+@@ -82,6 +82,11 @@ static const struct meson_reset_drvdata meson_a1_data = {
+ 	.level_offset = 0x40,
+ };
+ 
++static const struct meson_reset_drvdata meson_s4_data = {
++	.reg_count = 6,
++	.level_offset = 0x40,
++};
++
+ static const struct udevice_id meson_reset_ids[] = {
+ 	{
+ 		.compatible = "amlogic,meson-gxbb-reset",
+@@ -95,6 +100,10 @@ static const struct udevice_id meson_reset_ids[] = {
+ 		.compatible = "amlogic,meson-a1-reset",
+ 		.data = (ulong)&meson_a1_data,
+ 	},
++	{
++		.compatible = "amlogic,meson-s4-reset",
++		.data = (ulong)&meson_s4_data,
++	},
+ 	{ }
+ };
+ 
+-- 
+2.43.0
+

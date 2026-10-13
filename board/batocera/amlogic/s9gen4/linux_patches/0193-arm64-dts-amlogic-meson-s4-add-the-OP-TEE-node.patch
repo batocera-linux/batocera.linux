@@ -1,0 +1,34 @@
+From a800104e7a84dc2044f4492b073a235b9b312f64 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 7 Oct 2026 04:14:14 +0000
+Subject: [PATCH 207/210] arm64: dts: amlogic: meson-s4: add the OP-TEE node
+
+Amlogic boards boot with an OP-TEE BL32. Describe it so the kernel TEE
+driver can talk to the secure OS. The video decoder needs it to load
+its signed microcode.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index d8144e5887bb..960411a65ec0 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -112,6 +112,11 @@ xtal: xtal-clk {
+ 	};
+ 
+ 	firmware {
++		optee {
++			compatible = "linaro,optee-tz";
++			method = "smc";
++		};
++
+ 		sm: secure-monitor {
+ 			compatible = "amlogic,meson-gxbb-sm";
+ 
+-- 
+2.43.0
+

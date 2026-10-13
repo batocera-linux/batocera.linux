@@ -1,0 +1,4392 @@
+From 9d917db68fe6ad38b1718902389d234a8c6422e0 Mon Sep 17 00:00:00 2001
+From: Gus Bourg <gus@bourg.net>
+Date: Sat, 26 Sep 2026 09:14:46 -0700
+Subject: [PATCH 121/210] media: amlogic: amvdec: add H.264 decoding
+
+Decode frame-based H.264 slice requests with multi-instance firmware.
+Validate SPS/PPS and slice syntax, synthesize in-band headers and build
+frame and field reference lists from request controls and timestamps.
+
+Keep parser scratch in the session and retain the direct-input buffer
+until decode completion. Track field-pair provenance and canvas lifetime,
+program colocated motion-vector storage and stop processor DMA before
+releasing request buffers. Advertise profiles and levels from the
+per-compatible capability tables.
+
+Assisted-by: Claude:claude-opus-5.5 Claude:claude-fable-5.1 Codex:gpt-5.6 Codex:gpt-6.0
+[chewitt: state the H.264 capabilities in each per-SoC format table
+ instead of a shared GX macro, and allow 32 CAPTURE buffers, the size
+ of the firmware canvas table; a level 5.1 stream decoded by a client
+ with six frame threads needs more than 24; allocate each colocated
+ MV slot when its canvas is first decoded into rather than all 32 at
+ stream start, which saves ~50 MB of CMA on a 4K stream]
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../media/platform/amlogic/amvdec/Makefile    |    1 +
+ .../media/platform/amlogic/amvdec/amvdec.c    |   84 +
+ .../platform/amlogic/amvdec/amvdec_platform.c |  120 +
+ .../platform/amlogic/amvdec/codec_h264.c      | 2342 +++++++++++++++++
+ .../platform/amlogic/amvdec/codec_h264.h      |   59 +
+ .../platform/amlogic/amvdec/codec_h264_refs.h |  208 ++
+ .../amlogic/amvdec/codec_h264_synth.h         | 1108 ++++++++
+ .../media/platform/amlogic/amvdec/esparser.c  |  204 +-
+ 8 files changed, 4121 insertions(+), 5 deletions(-)
+ create mode 100644 drivers/media/platform/amlogic/amvdec/codec_h264.c
+ create mode 100644 drivers/media/platform/amlogic/amvdec/codec_h264.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/codec_h264_refs.h
+ create mode 100644 drivers/media/platform/amlogic/amvdec/codec_h264_synth.h
+
+diff --git a/drivers/media/platform/amlogic/amvdec/Makefile b/drivers/media/platform/amlogic/amvdec/Makefile
+index 0e79f63e36e1..1a38a3228c15 100644
+--- a/drivers/media/platform/amlogic/amvdec/Makefile
++++ b/drivers/media/platform/amlogic/amvdec/Makefile
+@@ -5,5 +5,6 @@ meson-amvdec-objs = esparser.o amvdec.o amvdec_helpers.o amvdec_platform.o
+ meson-amvdec-objs += amvdec_1.o
+ meson-amvdec-objs += amvdec_hevc.o
+ meson-amvdec-objs += codec_mpeg12.o
++meson-amvdec-objs += codec_h264.o
+ 
+ obj-$(CONFIG_VIDEO_MESON_AMVDEC) += meson-amvdec.o
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec.c b/drivers/media/platform/amlogic/amvdec/amvdec.c
+index 2101f0680067..b242ef8fe25b 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec.c
+@@ -24,6 +24,7 @@
+ 
+ #include "amvdec.h"
+ #include "hevc_regs.h"
++#include "codec_h264_synth.h"
+ #include "codec_mpeg12_synth.h"
+ #include "esparser.h"
+ #include "amvdec_helpers.h"
+@@ -936,6 +937,11 @@ static int m2m_queue_init(void *priv, struct vb2_queue *src_vq,
+ 	return vb2_queue_init(dst_vq);
+ }
+ 
++static const struct v4l2_ctrl_h264_scaling_matrix vdec_h264_scaling_default = {
++	.scaling_list_4x4 = { [0 ... 5] = { [0 ... 15] = 16 } },
++	.scaling_list_8x8 = { [0 ... 1] = { [0 ... 63] = 16 } },
++};
++
+ /* Find the coded format in the selected compatible's capability table. */
+ static const struct amvdec_format *
+ vdec_format_by_pixfmt(struct amvdec_core *core, u32 pixfmt)
+@@ -949,6 +955,41 @@ vdec_format_by_pixfmt(struct amvdec_core *core, u32 pixfmt)
+ 	return NULL;
+ }
+ 
++/* Reject unsupported sequence syntax before a client commits to hardware. */
++static struct amvdec_session *vdec_ctrl_session(struct v4l2_ctrl *ctrl)
++{
++	return container_of(ctrl->handler, struct amvdec_session, ctrl_handler);
++}
++
++static int vdec_h264_try_ctrl(struct v4l2_ctrl *ctrl)
++{
++	switch (ctrl->id) {
++	case V4L2_CID_STATELESS_H264_SPS: {
++		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
++		const struct amvdec_format *fmt =
++			vdec_format_by_pixfmt(vdec_ctrl_session(ctrl)->core,
++					      V4L2_PIX_FMT_H264_SLICE);
++		u32 w = (sps->pic_width_in_mbs_minus1 + 1) * 16;
++		u32 h = (sps->pic_height_in_map_units_minus1 + 1) * 16 *
++			((sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) ? 1 : 2);
++
++		/* Enforce the coded-size limit from platform data. */
++		if (fmt && (w > fmt->max_width || h > fmt->max_height))
++			return -EINVAL;
++		return h264_sps_validate(sps) ? -EINVAL : 0;
++	}
++	case V4L2_CID_STATELESS_H264_PPS:
++		return ctrl->p_new.p_h264_pps->num_slice_groups_minus1 ?
++		       -EINVAL : 0;
++	default:
++		return 0;
++	}
++}
++
++static const struct v4l2_ctrl_ops vdec_h264_ctrl_ops = {
++	.try_ctrl = vdec_h264_try_ctrl,
++};
++
+ static int vdec_mpeg2_try_ctrl(struct v4l2_ctrl *ctrl)
+ {
+ 	switch (ctrl->id) {
+@@ -965,6 +1006,13 @@ static const struct v4l2_ctrl_ops vdec_mpeg2_ctrl_ops = {
+ };
+ 
+ /* Compound controls must have defaults accepted by their try_ctrl callback. */
++static const struct v4l2_ctrl_h264_sps vdec_h264_sps_default = {
++	.profile_idc = 77,
++	.level_idc = 41,
++	.chroma_format_idc = 1,
++	.flags = V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY,
++};
++
+ static const struct v4l2_ctrl_mpeg2_sequence vdec_mpeg2_sequence_default = {
+ 	.horizontal_size = 16,
+ 	.vertical_size = 16,
+@@ -981,6 +1029,42 @@ static int vdec_init_ctrls(struct amvdec_session *sess)
+ 		return ret;
+ 
+ 	/* Create controls for the formats in the selected capability table. */
++	if (vdec_format_by_pixfmt(sess->core, V4L2_PIX_FMT_H264_SLICE)) {
++		static const struct v4l2_ctrl_config h264_ctrls[] = {
++			{
++				.id = V4L2_CID_STATELESS_H264_SPS,
++				.ops = &vdec_h264_ctrl_ops,
++				.p_def.p_const = &vdec_h264_sps_default,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_PPS,
++				.ops = &vdec_h264_ctrl_ops,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_SCALING_MATRIX,
++				.ops = &vdec_h264_ctrl_ops,
++				.p_def.p_const = &vdec_h264_scaling_default,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_PRED_WEIGHTS,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_SLICE_PARAMS,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_DECODE_PARAMS,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_DECODE_MODE,
++				.min = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED,
++				.max = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED,
++				.def = V4L2_STATELESS_H264_DECODE_MODE_FRAME_BASED,
++			}, {
++				.id = V4L2_CID_STATELESS_H264_START_CODE,
++				.min = V4L2_STATELESS_H264_START_CODE_ANNEX_B,
++				.max = V4L2_STATELESS_H264_START_CODE_ANNEX_B,
++				.def = V4L2_STATELESS_H264_START_CODE_ANNEX_B,
++			},
++		};
++		unsigned int i;
++
++		for (i = 0; i < ARRAY_SIZE(h264_ctrls); i++)
++			v4l2_ctrl_new_custom(ctrl_handler, &h264_ctrls[i], NULL);
++	}
+ 
+ 	if (vdec_format_by_pixfmt(sess->core, V4L2_PIX_FMT_MPEG2_SLICE)) {
+ 		static const struct v4l2_ctrl_config mpeg2_ctrls[] = {
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+index 0d7b6bb338cd..eac45cd8f9c1 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+@@ -12,12 +12,36 @@
+ #include "amvdec_1.h"
+ #include "amvdec_hevc.h"
+ #include "codec_mpeg12.h"
++#include "codec_h264.h"
++
++#define AMVDEC_H264_PROFILES (BIT(V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE) | \
++	BIT(V4L2_MPEG_VIDEO_H264_PROFILE_CONSTRAINED_BASELINE) | \
++	BIT(V4L2_MPEG_VIDEO_H264_PROFILE_MAIN) | \
++	BIT(V4L2_MPEG_VIDEO_H264_PROFILE_HIGH))
+ 
+ /*
+  * GXBB: H.264 and MPEG-2 at 1920x1088; HEVC Main/Main10 at 3840x2160.
+  */
+ static const struct amvdec_format amvdec_formats_gxbb[] = {
+ 	{
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 1920,
++		.max_height = 1088,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/gxl_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2_SLICE,
+ 		.min_buffers = 2,
+ 		.max_buffers = 24,
+@@ -37,6 +61,24 @@ static const struct amvdec_format amvdec_formats_gxbb[] = {
+  */
+ static const struct amvdec_format amvdec_formats_gxl[] = {
+ 	{
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 1920,
++		.max_height = 1088,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/gxl_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2_SLICE,
+ 		.min_buffers = 2,
+ 		.max_buffers = 24,
+@@ -55,6 +97,24 @@ static const struct amvdec_format amvdec_formats_gxl[] = {
+  */
+ static const struct amvdec_format amvdec_formats_gxlx[] = {
+ 	{
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 1920,
++		.max_height = 1088,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/gxl_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2_SLICE,
+ 		.min_buffers = 2,
+ 		.max_buffers = 24,
+@@ -74,6 +134,24 @@ static const struct amvdec_format amvdec_formats_gxlx[] = {
+  */
+ static const struct amvdec_format amvdec_formats_gxm[] = {
+ 	{
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_2,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 1920,
++		.max_height = 1088,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/gxm_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2_SLICE,
+ 		.min_buffers = 2,
+ 		.max_buffers = 24,
+@@ -93,6 +171,25 @@ static const struct amvdec_format amvdec_formats_gxm[] = {
+  */
+ static const struct amvdec_format amvdec_formats_g12a[] = {
+ 	{
++		/* Multi-instance firmware, fed straight from the OUTPUT buffer. */
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_5_1,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 3840,
++		.max_height = 2160,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/g12a_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		/*
+ 		 * The firmware parses sequence and picture headers synthesized from
+ 		 * controls.
+@@ -117,6 +214,25 @@ static const struct amvdec_format amvdec_formats_g12a[] = {
+  */
+ static const struct amvdec_format amvdec_formats_sm1[] = {
+ 	{
++		/* Multi-instance firmware, fed straight from the OUTPUT buffer. */
++		.pixfmt = V4L2_PIX_FMT_H264_SLICE,
++		.profile_ctrl = V4L2_CID_MPEG_VIDEO_H264_PROFILE,
++		.default_profile = V4L2_MPEG_VIDEO_H264_PROFILE_MAIN,
++		.level_ctrl = V4L2_CID_MPEG_VIDEO_H264_LEVEL,
++		.default_level = V4L2_MPEG_VIDEO_H264_LEVEL_4_1,
++		.profiles = AMVDEC_H264_PROFILES,
++		.max_level = V4L2_MPEG_VIDEO_H264_LEVEL_5_1,
++		.max_bit_depth = 8,
++		.min_buffers = 16,
++		.max_buffers = 32,
++		.max_width = 3840,
++		.max_height = 2160,
++		.vdec_ops = &meson_amvdec_1_ops,
++		.codec_ops = &meson_amvdec_codec_h264_multi_ops,
++		.firmware_path = "meson/vdec/sm1_h264_multi.bin",
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.flags = V4L2_FMT_FLAG_COMPRESSED,
++	}, {
+ 		/*
+ 		 * The firmware parses sequence and picture headers synthesized from
+ 		 * controls.
+@@ -171,4 +287,8 @@ const struct amvdec_platform meson_amvdec_platform_sm1 = {
+ 	.revision = AMVDEC_REVISION_SM1,
+ };
+ 
++MODULE_FIRMWARE("meson/vdec/g12a_h264_multi.bin");
++MODULE_FIRMWARE("meson/vdec/gxl_h264_multi.bin");
+ MODULE_FIRMWARE("meson/vdec/gxl_mpeg12_multi.bin");
++MODULE_FIRMWARE("meson/vdec/gxm_h264_multi.bin");
++MODULE_FIRMWARE("meson/vdec/sm1_h264_multi.bin");
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_h264.c b/drivers/media/platform/amlogic/amvdec/codec_h264.c
+new file mode 100644
+index 000000000000..f96e5c7dc966
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/codec_h264.c
+@@ -0,0 +1,2342 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * Copyright (C) 2019 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * H.264 request decoding with multi-instance firmware.
++ */
++
++#include <linux/delay.h>
++#include <linux/dma-mapping.h>
++#include <media/v4l2-mem2mem.h>
++#include <media/videobuf2-dma-contig.h>
++#include <media/v4l2-h264.h>
++
++#include "amvdec_helpers.h"
++#include "dos_regs.h"
++#include <linux/spinlock.h>
++
++#include "codec_h264.h"
++#include "codec_h264_refs.h"
++#define SIZE_EXT_FW_MULTI	((20 + 16) * SZ_1K)
++#define SIZE_MULTI_FW_MIN	0x7000
++#define SIZE_MULTI_AUX	SZ_16K
++#define SIZE_WORKSPACE	0x200000
++#define SIZE_WORKSPACE_MULTI	0x228080
++#define SIZE_WORKSPACE_MULTI_RP	(SIZE_WORKSPACE_MULTI + 2 * SZ_4K)
++#define SIZE_SEI	(8 * SZ_1K)
++#define SIZE_LMEM	PAGE_SIZE
++
++#define DCAC_READ_MARGIN	SZ_64K
++
++#define MC_OFFSET_HEADER	0x0000
++#define MC_OFFSET_DATA		0x1000
++#define MC_OFFSET_MMCO		0x2000
++#define MC_OFFSET_LIST		0x3000
++#define MC_OFFSET_SLICE		0x4000
++#define MC_OFFSET_MAIN		0x5000
++#define MC_SWAP_SIZE		SZ_4K
++
++#define LMEM_DUMP_ADR	AV_SCRATCH_L
++#define H264_DECODE_MODE	AV_SCRATCH_4
++#define H264_DECODE_SEQINFO	AV_SCRATCH_5
++#define H264_DECODE_SIZE	AV_SCRATCH_E
++#define H264_AUX_ADR		AV_SCRATCH_C
++#define H264_AUX_DATA_SIZE	AV_SCRATCH_H
++#define DPB_STATUS_REG		AV_SCRATCH_J
++#define INIT_FLAG_REG		AV_SCRATCH_2
++#define HEAD_PADING_REG		AV_SCRATCH_3
++#define NAL_SEARCH_CTL		AV_SCRATCH_9
++
++#define DECODE_MODE_MULTI_FRAMEBASE	0x1
++#define H264_SLICE_HEAD_DONE		0x01
++#define H264_PIC_DATA_DONE		0x02
++#define H264_CONFIG_REQUEST		0x11
++#define H264_ACTION_SEARCH_HEAD		0xf0
++#define H264_ACTION_DECODE_SLICE	0xf1
++#define H264_ACTION_CONFIG_DONE		0xf2
++#define H264_ACTION_DECODE_NEWPIC	0xf3
++
++/* Scale register word offsets for byte-addressed accessors. */
++#define VDEC_ASSIST_MMC_CTRL1	0x0008	/* 0x0002 */
++#define WRRSP_LMEM		0x0d4c	/* 0x0353 */
++#define AV_SCRATCH_M		0x2758	/* 0x09d6 */
++#define MDEC_PIC_DC_MUX_CTRL	0x2634	/* 0x098d */
++#define MDEC_EXTIF_CFG1		0x2794	/* 0x09e5 */
++#define MDEC_EXTIF_CFG2		0x2798	/* 0x09e6 */
++#define IQIDCT_CONTROL		0x3838	/* 0x0e0e */
++#define FRAME_COUNTER_REG	AV_SCRATCH_I
++#define DEBUG_REG1		AV_SCRATCH_M
++
++/* Per-picture decode registers, expressed as byte offsets. */
++#define DBKR_CANVAS_ADDR		0x26c0
++#define DBKW_CANVAS_ADDR		0x26c4
++#define REC_CANVAS_ADDR			0x26c8
++#define CURR_CANVAS_CTRL		0x26cc
++#define H264_BUFFER_INFO_DATA		0x3088	/* PMV2_X  0x0c22 */
++#define H264_BUFFER_INFO_INDEX		0x3090	/* PMV3_X  0x0c24 */
++#define H264_CURRENT_POC_IDX_RESET	0x30c0	/* LAST_SLICE_MV_ADDR 0x0c30 */
++#define H264_CURRENT_POC		0x30c8	/* LAST_MVY 0x0c32 */
++#define H264_CO_MB_WR_ADDR		0x30e0	/* VLD_C38 0x0c38 */
++#define H264_CO_MB_RD_ADDR		0x30e4	/* VLD_C39 0x0c39 */
++#define H264_CO_MB_RW_CTL		0x30f4	/* VLD_C3D 0x0c3d */
++#define H264_MBY_MBX			0x301c	/* MB_MOTION_MODE 0x0c07 */
++
++/* RPM (LMEM) word offsets */
++#define H264_RPM_LOG2_MAX_FRAME_NUM	0x83
++#define H264_RPM_FRAME_MBS_ONLY_FLAG	0x84
++#define H264_RPM_PIC_ORDER_CNT_TYPE	0x85
++#define H264_RPM_LOG2_MAX_POC_LSB	0x86
++#define H264_RPM_TOTAL_MB_HEIGHT	0x8f
++#define H264_RPM_MB_X_NUM		0xb0
++#define H264_RPM_MB_HEIGHT		0xb2
++#define H264_RPM_PREV_MB_WIDTH		0xf1
++#define H264_RPM_PREV_FRAME_SIZE_IN_MB	0xf2
++
++/* Canvas-table slots reserved for CAPTURE buffers (ANC0_CANVAS_ADDR). */
++#define H264_MULTI_MAX_FW_BUFS		32
++
++#define H264_COLOCATE_BYTES_PER_MB	96
++
++/*
++ * G12B firmware reports SEI status 0x53; acknowledge with 0x54 to advance
++ * to CONFIG_REQUEST (0x11).
++ */
++#define H264_SEI_DATA_READY		0x53
++#define H264_SEI_DATA_DONE		0x54
++
++struct h264_field_ref_scratch {
++	struct v4l2_h264_reflist_builder builder;
++	struct v4l2_h264_reference ordered[2][V4L2_H264_REF_LIST_LEN];
++	struct v4l2_ctrl_h264_decode_params params;
++};
++
++struct codec_h264 {
++	/* H.264 decoder requires an extended firmware */
++	void      *ext_fw_vaddr;
++	dma_addr_t ext_fw_paddr;
++	u32        ext_fw_size;
++	u32        multi_irq_count;
++	bool       multi_powered;
++	bool       multi_hw_started;
++
++	/* Buffer for the H.264 Workspace */
++	void      *workspace_vaddr;
++	dma_addr_t workspace_paddr;
++	u32        workspace_size;
++
++	/* Buffer for parsed SEI data */
++	void      *sei_vaddr;
++	dma_addr_t sei_paddr;
++
++	/* Auxiliary firmware buffer. */
++	void      *aux_vaddr;
++	dma_addr_t aux_paddr;
++
++	/* LMEM page the multi firmware publishes its parameter block through */
++	void      *lmem_vaddr;
++	dma_addr_t lmem_paddr;
++
++	/* Colocated MV store for the multi blob, one slot per CAPTURE frame */
++	void      *colocate_vaddr[H264_MULTI_MAX_FW_BUFS];
++	dma_addr_t colocate_paddr[H264_MULTI_MAX_FW_BUFS];
++	u32        colocate_buf_size;
++
++	/*
++	 * Per-picture state for the multi blob, captured from the V4L2
++	 * controls when the access unit is fed. The firmware decodes one
++	 * picture at a time, so a single record suffices.
++	 */
++	bool       multi_pic_valid;
++	int        multi_params_error;
++	/* Last PPS spliced into the bitstream; the firmware parses only that. */
++	u8 multi_last_headers[H264_SYNTH_MAX_HEADERS];
++	u32 multi_last_sps_len, multi_last_headers_len;
++	bool       multi_headers_valid;
++	bool       multi_pic_started;
++	bool       multi_done_pending;
++	bool       multi_done_error;
++	struct h264_slice_refs multi_slice_refs;
++	struct h264_slice_refs multi_request_picture;
++	bool multi_geometry_valid;
++	u32 multi_geometry_width_mbs, multi_geometry_height_mbs;
++	const u8 *multi_slice_data; /* cached copy of the AU; immutable until completion */
++	u8        *multi_src_vaddr;  /* the OUTPUT buffer itself, which the VLD reads */
++	u8        *scan_copy;        /* see meson_amvdec_codec_h264_scan_copy() */
++	u32        scan_copy_size;
++	u32 multi_slice_size, multi_slice_cursor, multi_slice_count;
++	u32 multi_slice_type_mask, multi_slice_mv_offset;
++	bool multi_slice_uniform;
++	bool multi_field_picture;
++	bool multi_field_mate;
++	struct h264_field_surface multi_field_slots[H264_MULTI_MAX_FW_BUFS];
++	u32 multi_decoded_fields;
++	spinlock_t multi_field_lock; /* Terminal state and provenance publication. */
++	u32 multi_field_phase; /* 0 decoding, 2 ready, 3 failed, 4 claimed */
++	struct h264_slice_refs multi_fields[1];
++	/*
++	 * Working arrays kept off the stack.  write_ref_lists runs in the
++	 * threaded ISR, field_preflight in the feed worker: each has its own.
++	 */
++	struct h264_ref wrl_refs[V4L2_H264_NUM_DPB_ENTRIES];
++	struct h264_ref wrl_l0[V4L2_H264_REF_LIST_LEN];
++	struct h264_ref wrl_l1[V4L2_H264_REF_LIST_LEN];
++	struct h264_ref pre_refs[V4L2_H264_REF_LIST_LEN];
++	struct h264_slice_refs pre_first;
++	struct h264_field_ref_scratch pre_field_refs;
++	struct h264_field_ref_scratch wrl_field_refs;
++	/* HEADER parsing runs in the threaded ISR, apart from sess->feed. */
++	struct h264_parse_scratch irq_parse;
++
++	bool       multi_sps_mbaff;
++	u32        multi_done_fw_idx;
++	struct vb2_v4l2_buffer *multi_src_vbuf;
++	u32        multi_pic_count;
++	u64        multi_pic_ts;
++	/* Sequence words, re-applied after each per-picture VLD reset. */
++	u32        multi_seq_cfg;
++	u32        multi_seq_cfg2;
++	u32        multi_seq_cfgb;
++	u32        multi_seq_scratch0;
++	u32        multi_nal_search_or;
++	u32        multi_pic_vb2_idx;
++	u32        multi_pic_fw_idx;
++	s32        multi_pic_top_poc;
++	s32        multi_pic_bottom_poc;
++	u32        multi_sps_max_refs;
++	bool       multi_l1_valid;
++	u32        multi_l1_fw_idx;
++	u8         multi_l1_structure, multi_l1_view;
++	s32        multi_l1_top;
++	s32        multi_l1_bottom;
++	struct v4l2_ctrl_h264_sps multi_sps;
++	struct v4l2_ctrl_h264_pps multi_pps;
++	struct v4l2_h264_dpb_entry multi_dpb[V4L2_H264_NUM_DPB_ENTRIES];
++	u8         multi_nal_ref_idc;
++
++	u32 mb_width;
++	u32 mb_height;
++};
++
++static u16 codec_h264_multi_lmem_word(const struct codec_h264 *h264, u32 i)
++{
++	const u16 *lmem = h264->lmem_vaddr;
++
++	return lmem[(i & ~3) + 3 - (i & 3)];
++}
++
++static u8 codec_h264_multi_current_structure(const struct codec_h264 *h264)
++{
++	if (h264->multi_field_picture)
++		return h264->multi_slice_refs.bottom_field ? 1 : 0;
++	if (h264->multi_slice_refs.valid)
++		return h264->multi_slice_refs.mbaff ? 3 : 2;
++	return h264->multi_sps_mbaff ? 3 : 2;
++}
++
++static dma_addr_t codec_h264_multi_workspace_base(const struct codec_h264 *h264)
++{
++	return h264->workspace_paddr + DCAC_READ_MARGIN;
++}
++
++/* Answer firmware configuration requests from the negotiated format and SPS. */
++static void codec_h264_multi_write_dpb_config(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	u32 config = h264->multi_seq_scratch0;
++
++	if (!config) {
++		u32 max_refs = h264->multi_sps_max_refs ?
++			       h264->multi_sps_max_refs : 1;
++
++		config = ((max_refs + 1) << 24) |
++			 (V4L2_H264_NUM_DPB_ENTRIES << 16) |
++			 (V4L2_H264_NUM_DPB_ENTRIES << 8);
++	}
++	meson_amvdec_write_dos(core, AV_SCRATCH_0, config);
++	dev_dbg(core->dev_dec, "h264 multi scratch0: %#x\n", config);
++}
++
++/* Resolve active DPB timestamps to CAPTURE buffers and their firmware canvas slots. */
++static int codec_h264_multi_ref_fw_idx(struct amvdec_session *sess,
++				       const struct v4l2_h264_dpb_entry *e)
++{
++	struct vb2_queue *q = v4l2_m2m_get_dst_vq(sess->m2m_ctx);
++	struct vb2_buffer *vb = vb2_find_buffer(q, e->reference_ts);
++	u32 idx;
++
++	if (!vb)
++		return -ENOENT;
++	idx = vb->index;
++	if (idx >= ARRAY_SIZE(sess->vb2_idx_to_fw_idx) ||
++	    sess->vb2_idx_to_fw_idx[idx] >= sess->num_fw_bufs)
++		return -ENOENT;
++	return sess->vb2_idx_to_fw_idx[idx];
++}
++
++static const struct v4l2_h264_dpb_entry *
++codec_h264_multi_ref_in_slot(struct amvdec_session *sess, u32 fw_slot)
++{
++	struct codec_h264 *h264 = sess->priv;
++	int i;
++
++	for (i = 0; i < V4L2_H264_NUM_DPB_ENTRIES; i++) {
++		const struct v4l2_h264_dpb_entry *e = &h264->multi_dpb[i];
++
++		if (!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
++			continue;
++		if (codec_h264_multi_ref_fw_idx(sess, e) == (int)fw_slot)
++			return e;
++	}
++	return NULL;
++}
++
++/*
++ * Build frame reference lists per H.264 8.2.4.2. P uses descending PicNum
++ * then ascending long-term indices. B orders short-term references around
++ * the current POC, then appends long-term references. Swap the first two
++ * entries of an identical B list1 when it contains multiple entries.
++ * Pack four canvas/structure entries per word and pad with the last entry.
++ */
++static void codec_h264_multi_write_list(struct amvdec_session *sess, u32 index,
++					const struct h264_ref *refs, u32 n, u32 view)
++{
++	struct amvdec_core *core = sess->core;
++	u32 i, words = 0, val = 0, last = 0;
++
++	meson_amvdec_write_dos(core, H264_BUFFER_INFO_INDEX, index);
++	for (i = 0; i < n; i++) {
++		last = (refs[i].fw & 0x1f) | ((refs[i].view ? refs[i].view : view) << 5);
++		val = (val << 8) | last;
++		if ((i & 3) == 3) {
++			meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, val);
++			words++;
++			val = 0;
++		}
++	}
++	if (n & 3) {
++		for (i = n & 3; i < 4; i++)
++			val = (val << 8) | last;
++		meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, val);
++		words++;
++	}
++	val = (last << 24) | (last << 16) | (last << 8) | last;
++	for (; words < 8; words++)
++		meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, val);
++}
++
++/* Read reference-list modifications from slice headers in frame-based mode. */
++void meson_amvdec_codec_h264_multi_set_slice_refs(struct amvdec_session *sess,
++				     const struct h264_slice_refs *sr)
++{
++	struct codec_h264 *h264 = sess->priv;
++
++	if (!h264)
++		return;
++	if (sr)
++		h264->multi_slice_refs = *sr;
++	else
++		memset(&h264->multi_slice_refs, 0,
++		       sizeof(h264->multi_slice_refs));
++}
++
++/*
++ * Compare the SPS and PPS syntax against the firmware header cache. Emit
++ * changed headers before any picture, including changes under the same ID.
++ */
++int meson_amvdec_codec_h264_multi_headers(struct amvdec_session *sess,
++			     const struct v4l2_ctrl_h264_sps *sps,
++			    const struct v4l2_ctrl_h264_pps *pps,
++			    const struct v4l2_ctrl_h264_scaling_matrix *sm,
++			    bool force, u8 *dst, u32 cap, u32 *len)
++{
++	struct codec_h264 *h264 = sess->priv;
++	u32 ns, np, total;
++	bool same_sps, same_pps;
++	int ret;
++
++	*len = 0;
++	if (!h264)
++		return -EINVAL;
++	ret = h264_synth_sps(sps, dst, cap, &ns);
++	if (ret)
++		goto invalidate;
++	ret = h264_synth_pps(sps, pps, sm, dst + ns, cap - ns, &np);
++	if (ret)
++		goto invalidate;
++	total = ns + np;
++	if (total > sizeof(h264->multi_last_headers)) {
++		ret = -ENOSPC;
++		goto invalidate;
++	}
++	/* Compare the actual syntax consumed by firmware, including resolved
++	 * scaling matrices. Control padding and unused lists are not syntax.
++	 */
++	same_sps = h264->multi_headers_valid &&
++		   ns == h264->multi_last_sps_len &&
++		   !memcmp(dst, h264->multi_last_headers, ns);
++	same_pps = same_sps && total == h264->multi_last_headers_len &&
++		   !memcmp(dst + ns, h264->multi_last_headers + ns, np);
++	memcpy(h264->multi_last_headers, dst, total);
++	h264->multi_last_sps_len = ns;
++	h264->multi_last_headers_len = total;
++	if (force || !same_sps) {
++		*len = total;
++	} else if (!same_pps) {
++		memmove(dst, dst + ns, np);
++		*len = np;
++	}
++	/* A queued header is not yet firmware state. HEADER_DONE commits it;
++	 * a failed submission leaves the next request requiring both headers.
++	 */
++invalidate:
++	h264->multi_headers_valid = false;
++	return ret;
++}
++
++/* The upstream builder expands 16 stores into up to 32 ordered field views. */
++static int codec_h264_multi_field_refs(struct amvdec_session *sess,
++				       struct h264_ref *list, u32 *count, u32 lx, bool preflight)
++{
++	struct codec_h264 *h264 = sess->priv;
++	const struct h264_slice_refs *sr = preflight ? &h264->multi_fields[0] :
++						    &h264->multi_slice_refs;
++	struct h264_field_ref_scratch *scratch = preflight ?
++		&h264->pre_field_refs : &h264->wrl_field_refs;
++	struct v4l2_h264_reflist_builder *builder = &scratch->builder;
++	struct v4l2_h264_reference (*ordered)[V4L2_H264_REF_LIST_LEN] = scratch->ordered;
++	struct v4l2_ctrl_h264_decode_params *params = &scratch->params;
++	u32 type = sr->slice_type % 5;
++	u32 i, active, n, max_pic_num;
++	int ret;
++
++	if (lx > 1 || type > 1 || (lx && type != 1))
++		return -EOPNOTSUPP;
++	active = sr->num_ref_idx_active[lx];
++	if (!active || active > V4L2_H264_REF_LIST_LEN ||
++	    sr->n_mod[lx] > H264_MAX_RPLM)
++		return -EOPNOTSUPP;
++	memset(params, 0, sizeof(*params));
++	params->frame_num = sr->frame_num;
++	params->top_field_order_cnt = h264->multi_pic_top_poc;
++	params->bottom_field_order_cnt = h264->multi_pic_bottom_poc;
++	params->flags = V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC;
++	if (sr->bottom_field)
++		params->flags |= V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD;
++	v4l2_h264_init_reflist_builder(builder, params, &h264->multi_sps,
++				       h264->multi_dpb);
++	if (!builder->num_valid ||
++	    (!sr->n_mod[lx] && builder->num_valid < active))
++		return -EINVAL;
++	if (type == 1)
++		v4l2_h264_build_b_ref_lists(builder, ordered[0], ordered[1]);
++	else
++		v4l2_h264_build_p_ref_list(builder, ordered[0]);
++	/* Modification can select beyond the initial active prefix. */
++	n = sr->n_mod[lx] ? builder->num_valid : active;
++	for (i = 0; i < n; i++) {
++		const struct v4l2_h264_reference *r = &ordered[lx][i];
++		const struct v4l2_h264_dpb_entry *e;
++
++		if (r->index >= ARRAY_SIZE(h264->multi_dpb))
++			return -EINVAL;
++		e = &h264->multi_dpb[r->index];
++		list[i] = (struct h264_ref) {
++			.dpb_idx = r->index, .view = r->fields,
++			.field = !!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD),
++			.structure = r->fields == V4L2_H264_BOTTOM_FIELD_REF ? 1 : 0,
++			.top = e->top_field_order_cnt, .bottom = e->bottom_field_order_cnt,
++			.poc = r->fields == V4L2_H264_TOP_FIELD_REF ?
++				e->top_field_order_cnt : e->bottom_field_order_cnt,
++			.lt = !!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM),
++			/*
++			 * frame_num is FrameNumWrap for short-term entries and
++			 * LongTermFrameIdx for long-term entries. The field formula
++			 * therefore yields PicNum or LongTermPicNum respectively.
++			 */
++			.pic_num = 2 * builder->refs[r->index].frame_num +
++				(r->fields == builder->cur_pic_fields),
++		};
++	}
++	max_pic_num = 1U << (h264->multi_sps.log2_max_frame_num_minus4 + 5);
++	if (sr->n_mod[lx]) {
++		/* The shared helper snapshots its work before committing. */
++		ret = h264_refs_modify(list, &n, list, n, sr, lx, max_pic_num);
++		if (ret)
++			return ret;
++	}
++	if (n < active)
++		return -EINVAL;
++	/* Validate only the selected views, as on the unmodified-list path. */
++	for (i = 0; i < active; i++) {
++		const struct v4l2_h264_dpb_entry *e = &h264->multi_dpb[list[i].dpb_idx];
++		const struct h264_field_surface *surface;
++		int fw = codec_h264_multi_ref_fw_idx(sess, e);
++
++		if (fw < 0 || fw >= H264_MULTI_MAX_FW_BUFS)
++			return -EINVAL;
++		surface = &h264->multi_field_slots[fw];
++		if ((surface->valid && surface->vb2_idx != sess->fw_idx_to_vb2_idx[fw]) ||
++		    !h264_surface_view_valid(surface, e, list[i].view, &h264->multi_sps) ||
++		    (fw == h264->multi_pic_fw_idx && !h264->multi_field_mate))
++			return -EINVAL;
++		list[i].fw = fw;
++		if (!list[i].field)
++			list[i].structure = surface->structure;
++		if (!preflight)
++			dev_dbg(sess->core->dev_dec,
++				"h264 field ref: order=%u current=%u fw=%u view=%u ts=%llu poc=%d pic_num=%d list=%u\n",
++			 i, h264->multi_pic_fw_idx, fw, list[i].view, e->reference_ts,
++			 list[i].poc, list[i].pic_num, lx);
++	}
++	*count = active;
++	return 0;
++}
++
++static int codec_h264_multi_write_ref_lists(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	struct h264_ref *refs = h264->wrl_refs;
++	struct h264_ref *l0 = h264->wrl_l0;
++	struct h264_ref *l1 = h264->wrl_l1;
++	s32 cur_poc = min(h264->multi_pic_top_poc, h264->multi_pic_bottom_poc);
++	u32 slice_type = h264->multi_slice_refs.slice_type % 5;
++	bool is_b = slice_type == 1;
++	u32 n = 0, n0 = 0, n1 = 0, i, j, l0_view = 3;
++
++	if (slice_type == 2)
++		goto write_lists;
++	if (h264->multi_field_picture) {
++		int ret = codec_h264_multi_field_refs(sess, l0, &n0, 0, false);
++
++		if (!ret && is_b)
++			ret = codec_h264_multi_field_refs(sess, l1, &n1, 1, false);
++		if (ret)
++			return ret;
++		goto write_lists;
++	}
++
++	for (i = 0; i < V4L2_H264_NUM_DPB_ENTRIES; i++) {
++		const struct v4l2_h264_dpb_entry *e = &h264->multi_dpb[i];
++		int fw;
++
++		if (!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
++			continue;
++		fw = codec_h264_multi_ref_fw_idx(sess, e);
++		if (fw < 0) {
++			dev_warn_ratelimited(core->dev_dec,
++					     "h264 multi: pic vb2=%u poc=%d: ref ts=%llu frame_num=%u has no CAPTURE buffer\n",
++				 h264->multi_pic_vb2_idx, h264->multi_pic_top_poc,
++				 e->reference_ts, e->frame_num);
++			continue;
++		}
++		if (fw >= H264_MULTI_MAX_FW_BUFS)
++			return -EINVAL;
++		if (!h264_surface_view_valid(&h264->multi_field_slots[fw], e,
++					     V4L2_H264_FRAME_REF, &h264->multi_sps)) {
++			dev_err_ratelimited(core->dev_dec,
++					    "h264 frame ref: invalid view fw=%d fields=%u flags=%#x ts=%llu completed=%u surface_valid=%u surface_ts=%llu poc=%d/%d stored=%d/%d\n",
++				fw, e->fields, e->flags, e->reference_ts,
++				h264->multi_field_slots[fw].decoded_fields,
++				h264->multi_field_slots[fw].valid,
++				h264->multi_field_slots[fw].timestamp,
++				e->top_field_order_cnt, e->bottom_field_order_cnt,
++				h264->multi_field_slots[fw].top_poc,
++				h264->multi_field_slots[fw].bottom_poc);
++			return -EINVAL;
++		}
++		refs[n].fw = fw;
++		refs[n].view = 3;
++		refs[n].field = !!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD);
++		refs[n].structure = h264->multi_field_slots[fw].structure;
++		refs[n].lt = !!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM);
++		/*
++		 * Derive signed FrameNumWrap from frame_num and MaxFrameNum for short-term
++		 * references, as specified by H.264 (8-27) and (8-28).
++		 */
++		if (refs[n].lt || !h264->multi_slice_refs.valid) {
++			refs[n].pic_num = (s32)e->pic_num;
++		} else {
++			s32 max_fn = 1 << (h264->multi_sps.log2_max_frame_num_minus4 + 4);
++			s32 curr = (s32)h264->multi_slice_refs.frame_num;
++			s32 fn = (s32)e->frame_num;
++
++			refs[n].pic_num = fn > curr ? fn - max_fn : fn;
++		}
++		refs[n].top = e->top_field_order_cnt;
++		refs[n].bottom = e->bottom_field_order_cnt;
++		refs[n].poc = min(e->top_field_order_cnt,
++				  e->bottom_field_order_cnt);
++		n++;
++	}
++
++	if (!is_b) {
++		/* P: descending PicNum, long-term last (ascending). */
++		for (i = 0; i < n; i++) {
++			if (refs[i].lt)
++				continue;
++			l0[n0++] = refs[i];
++		}
++		for (i = 1; i < n0; i++)
++			for (j = i; j > 0 && l0[j - 1].pic_num < l0[j].pic_num; j--)
++				swap(l0[j - 1], l0[j]);
++		for (i = 0; i < n; i++)
++			if (refs[i].lt)
++				l0[n0++] = refs[i];
++	} else {
++		/* B list0: POC below descending, then above ascending. */
++		for (i = 0; i < n; i++)
++			if (!refs[i].lt && refs[i].poc < cur_poc)
++				l0[n0++] = refs[i];
++		for (i = 1; i < n0; i++)
++			for (j = i; j > 0 && l0[j - 1].poc < l0[j].poc; j--)
++				swap(l0[j - 1], l0[j]);
++		j = n0;
++		for (i = 0; i < n; i++)
++			if (!refs[i].lt && refs[i].poc > cur_poc)
++				l0[n0++] = refs[i];
++		for (i = j + 1; i < n0; i++) {
++			u32 k;
++
++			for (k = i; k > j && l0[k - 1].poc > l0[k].poc; k--)
++				swap(l0[k - 1], l0[k]);
++		}
++		/* B list1: the mirror image. */
++		for (i = 0; i < n; i++)
++			if (!refs[i].lt && refs[i].poc > cur_poc)
++				l1[n1++] = refs[i];
++		for (i = 1; i < n1; i++)
++			for (j = i; j > 0 && l1[j - 1].poc > l1[j].poc; j--)
++				swap(l1[j - 1], l1[j]);
++		j = n1;
++		for (i = 0; i < n; i++)
++			if (!refs[i].lt && refs[i].poc < cur_poc)
++				l1[n1++] = refs[i];
++		for (i = j + 1; i < n1; i++) {
++			u32 k;
++
++			for (k = i; k > j && l1[k - 1].poc < l1[k].poc; k--)
++				swap(l1[k - 1], l1[k]);
++		}
++		for (i = 0; i < n; i++)
++			if (refs[i].lt) {
++				l0[n0++] = refs[i];
++				l1[n1++] = refs[i];
++			}
++		if (n1 > 1 && n0 == n1) {
++			bool same = true;
++
++			for (i = 0; i < n1; i++)
++				if (l0[i].fw != l1[i].fw)
++					same = false;
++			if (same)
++				swap(l1[0], l1[1]);
++		}
++	}
++
++	/* Apply slice-header modifications and limit each list to its active count. */
++	if (h264->multi_slice_refs.valid) {
++		const struct h264_slice_refs *sr = &h264->multi_slice_refs;
++		u32 max_pic_num = 1u << (h264->multi_sps.log2_max_frame_num_minus4 + 4);
++
++		int ret = 0;
++
++		if (sr->n_mod[0])
++			ret = h264_refs_modify(l0, &n0, refs, n, sr, 0,
++					       max_pic_num);
++		if (!ret && sr->n_mod[1])
++			ret = h264_refs_modify(l1, &n1, refs, n, sr, 1,
++					       max_pic_num);
++		if (ret) {
++			dev_err_ratelimited(core->dev_dec,
++					    "h264 multi: invalid reference-list modification frame_num=%u active=%u/%u mods=%u/%u\n",
++				sr->frame_num, sr->num_ref_idx_active[0],
++				sr->num_ref_idx_active[1], sr->n_mod[0],
++				sr->n_mod[1]);
++			return ret;
++		}
++		if (sr->num_ref_idx_active[0] && n0 > sr->num_ref_idx_active[0])
++			n0 = sr->num_ref_idx_active[0];
++		if (is_b && sr->num_ref_idx_active[1] &&
++		    n1 > sr->num_ref_idx_active[1])
++			n1 = sr->num_ref_idx_active[1];
++	}
++
++write_lists:
++	codec_h264_multi_write_list(sess, 0, l0, n0, l0_view);
++	codec_h264_multi_write_list(sess, 8, l1, n1, 3);
++
++	h264->multi_l1_valid = n1 > 0;
++	h264->multi_l1_fw_idx = n1 ? l1[0].fw : 0;
++	h264->multi_l1_top = n1 ? l1[0].top : 0;
++	h264->multi_l1_bottom = n1 ? l1[0].bottom : 0;
++	h264->multi_l1_view = n1 ? l1[0].view : 0;
++	h264->multi_l1_structure = n1 ? l1[0].structure : 0;
++
++	dev_dbg(core->dev_dec,
++		"h264 multi refs: pic_ts=%llu poc=%d %s list0=%u list1=%u l1[0]_fw=%d rplm=%u/%u\n",
++		 h264->multi_pic_ts, h264->multi_pic_top_poc,
++		 is_b ? "B" : "P/I", n0, n1, n1 ? l1[0].fw : -1,
++		 h264->multi_slice_refs.n_mod[0], h264->multi_slice_refs.n_mod[1]);
++	return 0;
++}
++
++/* Select the ready CAPTURE buffer and retain its firmware canvas slot. */
++static int codec_h264_multi_pick_capture(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	struct vb2_v4l2_buffer *dst;
++	u32 vb2_idx, fw_idx;
++
++	dst = v4l2_m2m_next_dst_buf(sess->m2m_ctx);
++	if (!dst) {
++		dev_err_ratelimited(core->dev_dec, "h264 multi: no CAPTURE buffer ready\n");
++		return -ENOBUFS;
++	}
++
++	vb2_idx = dst->vb2_buf.index;
++	if (vb2_idx >= ARRAY_SIZE(sess->vb2_idx_to_fw_idx)) {
++		dev_err_ratelimited(core->dev_dec, "h264 multi: vb2_idx %u out of range\n",
++				    vb2_idx);
++		return -EINVAL;
++	}
++	/*
++	 * Map this prepared buffer on first use; the client may grow the pool
++	 * while decoding.
++	 */
++	if (meson_amvdec_map_capture_buffer(sess, &dst->vb2_buf,
++				      (u32[]){ ANC0_CANVAS_ADDR, 0 },
++				      (u32[]){ H264_MULTI_MAX_FW_BUFS, 0 })) {
++		dev_err_ratelimited(core->dev_dec, "h264 multi: canvas map failed for vb2 %u\n",
++				    vb2_idx);
++		return -EINVAL;
++	}
++	fw_idx = sess->vb2_idx_to_fw_idx[vb2_idx];
++	if (fw_idx >= sess->num_fw_bufs) {
++		dev_err_ratelimited(core->dev_dec,
++				    "h264 multi: vb2_idx %u has no firmware canvas\n",
++			vb2_idx);
++		return -EINVAL;
++	}
++
++	h264->multi_pic_vb2_idx = vb2_idx;
++	h264->multi_pic_fw_idx = fw_idx;
++	if (h264->multi_src_vbuf)
++		h264->multi_pic_ts = h264->multi_src_vbuf->vb2_buf.timestamp;
++	if (h264->multi_field_picture) {
++		struct h264_field_surface *first = &h264->multi_field_slots[fw_idx];
++
++		h264->multi_field_mate = h264_field_is_mate(first, &h264->multi_fields[0],
++							    h264->multi_pic_ts, vb2_idx,
++							    &h264->multi_sps, &h264->multi_pps);
++		/* A capture timestamp is reusable after a pair or a new picture. */
++		if (first->valid && first->decoded_fields != 3 &&
++		    first->timestamp == h264->multi_pic_ts &&
++		    first->frame_num == h264->multi_fields[0].frame_num &&
++		    !h264->multi_fields[0].idr && !h264->multi_field_mate)
++			return -EINVAL;
++		if (h264->multi_field_mate) {
++			if (first->bottom)
++				h264->multi_pic_bottom_poc = first->poc;
++			else
++				h264->multi_pic_top_poc = first->poc;
++		}
++		/* Timestamp lookup must see the current owned capture before L0. */
++		v4l2_m2m_buf_copy_metadata(h264->multi_src_vbuf, dst);
++		dev_dbg(core->dev_dec,
++			"h264 field pick: mate=%u fw=%u vb2=%u ts=%llu bottom=%u frame_num=%u pending=%u top=%d bottom_poc=%d\n",
++			 h264->multi_field_mate, fw_idx, vb2_idx, h264->multi_pic_ts,
++			 h264->multi_fields[0].bottom_field, h264->multi_fields[0].frame_num,
++			 first->valid, h264->multi_pic_top_poc, h264->multi_pic_bottom_poc);
++	}
++	/* A proven mate retains completed first-field provenance until claim. */
++	if (!h264->multi_field_mate)
++		h264->multi_field_slots[fw_idx].valid = false;
++	return 0;
++}
++
++/*
++ * Only field terminal state/provenance use this lock; never hold it over
++ * MMIO, queue completion or queue abort. Completion linearizes at claim.
++ */
++static bool codec_h264_multi_field_advance(struct codec_h264 *h264, u32 from, u32 to)
++{
++	unsigned long flags;
++	bool advanced;
++
++	spin_lock_irqsave(&h264->multi_field_lock, flags);
++	advanced = h264->multi_field_phase == from;
++	if (advanced) {
++		h264->multi_decoded_fields = BIT(h264->multi_fields[0].bottom_field);
++		h264->multi_field_phase = to;
++	}
++	spin_unlock_irqrestore(&h264->multi_field_lock, flags);
++	return advanced;
++}
++
++static void codec_h264_multi_stop_processor(struct amvdec_session *sess,
++					    const char *tag)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	u32 rp0, rp1;
++	int i;
++
++	if (!h264 || !h264->multi_powered || !h264->multi_hw_started)
++		return;
++
++	dev_dbg(core->dev_dec, "h264 stop: tag=%s begin\n", tag);
++	meson_amvdec_write_dos(core, MPSR, 0);
++	meson_amvdec_write_dos(core, CPSR, 0);
++
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, IMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	if (i == 1000)
++		dev_warn(core->dev_dec, "h264 stop: tag=%s IMEM DMA did not drain ctrl=%#x\n",
++			 tag, meson_amvdec_read_dos(core, IMEM_DMA_CTRL));
++
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, LMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	if (i == 1000)
++		dev_warn(core->dev_dec, "h264 stop: tag=%s LMEM DMA did not drain ctrl=%#x\n",
++			 tag, meson_amvdec_read_dos(core, LMEM_DMA_CTRL));
++
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, WRRSP_LMEM) & 0xfff))
++			break;
++		udelay(10);
++	}
++	if (i == 1000)
++		dev_warn(core->dev_dec, "h264 stop: tag=%s WRRSP_LMEM did not drain wrrsp=%#x\n",
++			 tag, meson_amvdec_read_dos(core, WRRSP_LMEM));
++
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(12) | BIT(11));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++
++	for (i = 0; i < 100; i++) {
++		rp0 = meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_RP);
++		udelay(30);
++		rp1 = meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_RP);
++		if (rp0 == rp1)
++			break;
++	}
++	if (i == 100)
++		dev_warn(core->dev_dec, "h264 stop: tag=%s VIFIFO_RP still moving rp0=%#x rp1=%#x\n",
++			 tag, rp0, rp1);
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL, BIT(15));
++	h264->multi_hw_started = false;
++	dev_dbg(core->dev_dec,
++		"h264 stop: tag=%s done rp0=%#x rp1=%#x level=%#x bitcnt=%#x\n",
++		 tag, rp0, rp1, meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_LEVEL),
++		 meson_amvdec_read_dos(core, VIFF_BIT_CNT));
++}
++
++static void codec_h264_job_abort(struct amvdec_session *sess)
++{
++	codec_h264_multi_stop_processor(sess, "timeout");
++}
++
++static void codec_h264_pre_stop(struct amvdec_session *sess)
++{
++	codec_h264_multi_stop_processor(sess, "stop");
++}
++
++static void codec_h264_multi_abort(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	unsigned long flags;
++
++	if (h264)
++		codec_h264_multi_stop_processor(sess, "abort");
++
++	if (h264->multi_field_picture) {
++		spin_lock_irqsave(&h264->multi_field_lock, flags);
++		/* A later abort cannot revoke an already claimed result. */
++		if (h264->multi_field_phase != 4) {
++			h264->multi_decoded_fields = 0;
++			h264->multi_field_phase = 3;
++			if (h264->multi_pic_fw_idx < ARRAY_SIZE(h264->multi_field_slots))
++				h264->multi_field_slots[h264->multi_pic_fw_idx].valid = false;
++		}
++		spin_unlock_irqrestore(&h264->multi_field_lock, flags);
++	}
++	meson_amvdec_abort(sess);
++}
++
++static bool codec_h264_multi_field_claim(struct codec_h264 *h264, bool have_buffers)
++{
++	unsigned long flags;
++	bool claimed;
++
++	spin_lock_irqsave(&h264->multi_field_lock, flags);
++	claimed = have_buffers && h264->multi_field_phase == 2 &&
++		  h264->multi_decoded_fields == BIT(h264->multi_fields[0].bottom_field) &&
++		  h264->multi_done_fw_idx == h264->multi_pic_fw_idx &&
++		  h264->multi_done_fw_idx < ARRAY_SIZE(h264->multi_field_slots);
++	if (claimed) {
++		struct h264_field_surface *surface =
++			&h264->multi_field_slots[h264->multi_done_fw_idx];
++
++		h264->multi_field_phase = 4;
++		memset(surface, 0, sizeof(*surface));
++		surface->valid = true;
++		surface->bottom = h264->multi_fields[0].bottom_field;
++		surface->decoded_fields = h264->multi_field_mate ? 3 : h264->multi_decoded_fields;
++		surface->structure = h264->multi_fields[0].bottom_field ? 1 : 0;
++		surface->frame_num = h264->multi_fields[0].frame_num;
++		surface->timestamp = h264->multi_pic_ts;
++		surface->vb2_idx = h264->multi_pic_vb2_idx;
++		surface->top_poc = h264->multi_pic_top_poc;
++		surface->bottom_poc = h264->multi_pic_bottom_poc;
++		surface->poc = h264->multi_fields[0].bottom_field ?
++				h264->multi_pic_bottom_poc : h264->multi_pic_top_poc;
++		surface->sps = h264->multi_sps;
++		surface->reference = !!h264->multi_fields[0].nal_ref_idc;
++	} else if (h264->multi_field_phase != 4) {
++		h264->multi_decoded_fields = 0;
++		h264->multi_field_phase = 3;
++		if (h264->multi_pic_fw_idx < ARRAY_SIZE(h264->multi_field_slots))
++			h264->multi_field_slots[h264->multi_pic_fw_idx].valid = false;
++	}
++	spin_unlock_irqrestore(&h264->multi_field_lock, flags);
++	return claimed;
++}
++
++/* Match the frame HEADER inventory check before any FIFO/firmware write. */
++static int codec_h264_multi_frame_preflight(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct h264_slice_refs *slice = &h264->pre_first;
++	bool has_fields = false, checked = false;
++	u32 cursor = 0, count = 0, i;
++	int ret;
++
++	ret = h264_frame_refs_preflight(h264->multi_slice_data,
++					h264->multi_slice_size,
++					&h264->multi_sps,
++					&h264->multi_pps,
++					&h264->multi_request_picture, &sess->feed.h264_parse);
++	if (ret == -EBADMSG)
++		dev_err_ratelimited(sess->core->dev_dec,
++				    "H.264 initial CAVLC macroblocks overlap the next slice or exceed the picture\n");
++	if (ret)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(h264->multi_dpb); i++) {
++		const struct v4l2_h264_dpb_entry *e = &h264->multi_dpb[i];
++		int fw;
++
++		if (!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
++			continue;
++		fw = codec_h264_multi_ref_fw_idx(sess, e);
++		if ((e->flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD) ||
++		    (fw >= 0 && fw < H264_MULTI_MAX_FW_BUFS &&
++		     h264->multi_field_slots[fw].valid))
++			has_fields = true;
++	}
++	if (!has_fields)
++		return 0;
++
++	while (!(ret = h264_next_slice_refs(h264->multi_slice_data,
++					    h264->multi_slice_size, &cursor, &h264->multi_sps,
++		 &h264->multi_pps, slice, &sess->feed.h264_parse))) {
++		if (!h264_same_frame_picture(slice, &h264->multi_request_picture))
++			return -EINVAL;
++		count++;
++		/* Intra slices do not consume the active DPB inventory. */
++		if (slice->slice_type % 5 == 2 || checked)
++			continue;
++		for (i = 0; i < ARRAY_SIZE(h264->multi_dpb); i++) {
++			const struct v4l2_h264_dpb_entry *e = &h264->multi_dpb[i];
++			int fw;
++
++			if (!(e->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
++				continue;
++			fw = codec_h264_multi_ref_fw_idx(sess, e);
++			if (fw < 0 && !(e->flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD))
++				continue;
++			if (fw < 0 || fw >= H264_MULTI_MAX_FW_BUFS ||
++			    !h264_surface_view_valid(&h264->multi_field_slots[fw], e,
++					V4L2_H264_FRAME_REF, &h264->multi_sps)) {
++				dev_dbg(sess->core->dev_dec,
++					"h264 frame ref: prefeed refused fw=%d fields=%u flags=%#x ts=%llu poc=%d/%d\n",
++					 fw, e->fields, e->flags, e->reference_ts,
++					 e->top_field_order_cnt, e->bottom_field_order_cnt);
++				return -EINVAL;
++			}
++		}
++		checked = true;
++	}
++	return ret == -ENOENT && count ? 0 : (ret == -ENOENT ? -EINVAL : ret);
++}
++
++static int codec_h264_multi_field_preflight(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct h264_ref *refs = h264->pre_refs;
++	u32 count, cursor = 0;
++	int ret;
++
++	h264->multi_field_picture = false;
++	h264->multi_field_mate = false;
++	h264->multi_field_phase = 0;
++	h264->multi_decoded_fields = 0;
++	if (!h264->multi_request_picture.field_pic)
++		return 0;
++	ret = h264_parse_single_field(h264->multi_slice_data, h264->multi_slice_size,
++				      &h264->multi_sps, &h264->multi_pps,
++				      &h264->multi_request_picture,
++		&h264->multi_fields[0], &sess->feed.h264_parse);
++	if (ret < 0) {
++		dev_err_ratelimited(sess->core->dev_dec,
++				    "h264 field preflight: rejected err=%d poc_type=%u sps_flags=%#x pps_flags=%#x weighted_bipred=%u type=%u ref_idc=%u\n",
++			ret, h264->multi_sps.pic_order_cnt_type, h264->multi_sps.flags,
++			h264->multi_pps.flags, h264->multi_pps.weighted_bipred_idc,
++			h264->multi_request_picture.slice_type,
++			h264->multi_request_picture.nal_ref_idc);
++		return ret;
++	}
++	/* All slices belong to one field; coalescing is not supported. */
++	if (ret < 1)
++		return -EOPNOTSUPP;
++	/* Only POC0 carries pic_order_cnt_lsb; POC1 uses the client POCs. */
++	if (h264->multi_sps.pic_order_cnt_type == 0 &&
++	    ((s64)(h264->multi_fields[0].bottom_field ?
++	     h264->multi_pic_bottom_poc : h264->multi_pic_top_poc) -
++	     h264->multi_fields[0].poc_lsb) %
++	    (1U << (h264->multi_sps.log2_max_pic_order_cnt_lsb_minus4 + 4)))
++		return -EINVAL;
++	/* Resolve actual completed reference views before firmware owns this job.
++	 * A refused mixed-picture request can leave later controls naming a
++	 * missing surface; HEADER-time discovery would abort the whole session.
++	 */
++	h264->pre_first = h264->multi_fields[0];
++	{
++		struct vb2_v4l2_buffer *dst = v4l2_m2m_next_dst_buf(sess->m2m_ctx);
++		u32 fw = H264_MULTI_MAX_FW_BUFS, idx;
++
++		if (!dst || !h264->multi_src_vbuf)
++			return -EINVAL;
++		idx = dst->vb2_buf.index;
++		/* QBUF may clear CAPTURE's timestamp; resolve a mate to its own
++		 * completed first field before vb2_find_buffer() searches it.
++		 * No canvas is allocated or programmed during this preflight.
++		 */
++		v4l2_m2m_buf_copy_metadata(h264->multi_src_vbuf, dst);
++		if (idx < ARRAY_SIZE(sess->vb2_idx_to_fw_idx)) {
++			u32 mapped = sess->vb2_idx_to_fw_idx[idx];
++
++			if (mapped < sess->num_fw_bufs && mapped < H264_MULTI_MAX_FW_BUFS &&
++			    sess->fw_idx_to_vb2_idx[mapped] == idx)
++				fw = mapped;
++		}
++		h264->multi_pic_fw_idx = fw;
++		h264->multi_field_mate = fw < H264_MULTI_MAX_FW_BUFS &&
++			h264_field_is_mate(&h264->multi_field_slots[fw], &h264->multi_fields[0],
++					   h264->multi_src_vbuf->vb2_buf.timestamp, idx,
++				&h264->multi_sps, &h264->multi_pps);
++		/* Every slice can carry independent active counts and B lists. */
++		while (!(ret = h264_next_slice_refs_mode(h264->multi_slice_data,
++							 h264->multi_slice_size, &cursor,
++							 &h264->multi_sps,
++				&h264->multi_pps, true, &h264->multi_fields[0],
++				&sess->feed.h264_parse))) {
++			u32 type = h264->multi_fields[0].slice_type % 5;
++
++			if (type == 2)
++				continue;
++			ret = codec_h264_multi_field_refs(sess, refs, &count, 0, true);
++			if (!ret && type == 1)
++				ret = codec_h264_multi_field_refs(sess, refs, &count, 1, true);
++			if (ret)
++				break;
++		}
++		h264->multi_fields[0] = h264->pre_first;
++		if (ret != -ENOENT)
++			return ret;
++	}
++	h264->multi_field_picture = true;
++	return 0;
++}
++
++static int codec_h264_multi_next_slice(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct h264_slice_refs sr;
++	u32 bytes_per_unit = H264_COLOCATE_BYTES_PER_MB;
++	u32 first_mb, type, type_bit;
++	u64 units;
++	int ret;
++
++	if (!h264->multi_src_vbuf || !h264->multi_slice_data || !h264->lmem_vaddr)
++		return -EINVAL;
++	ret = h264_next_slice_refs_mode(h264->multi_slice_data, h264->multi_slice_size,
++					&h264->multi_slice_cursor, &h264->multi_sps,
++				   &h264->multi_pps, h264->multi_field_picture, &sr,
++				   &h264->irq_parse);
++	if (ret)
++		return ret;
++	first_mb = codec_h264_multi_lmem_word(h264, 0xf0);
++	type = codec_h264_multi_lmem_word(h264, 0x82) % 5;
++	if (sr.first_mb != first_mb || sr.slice_type % 5 != type ||
++	    !h264_same_frame_picture(&sr, &h264->multi_request_picture))
++		return -EINVAL;
++	units = (u64)(h264->multi_sps.pic_width_in_mbs_minus1 + 1) *
++		(h264->multi_sps.pic_height_in_map_units_minus1 + 1);
++	if (!(h264->multi_sps.flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) &&
++	    !sr.field_pic && !sr.mbaff)
++		units *= 2;
++	if (sr.first_mb >= units ||
++	    (!h264->multi_slice_count && sr.first_mb) ||
++	    (h264->multi_slice_count && sr.first_mb <= h264->multi_slice_refs.first_mb))
++		return -EINVAL;
++	if (sr.field_pic &&
++	    (!h264->multi_field_picture || READ_ONCE(h264->multi_field_phase) ||
++	     codec_h264_multi_lmem_word(h264, 0x80) != (sr.idr ? 5 : 1) ||
++	     codec_h264_multi_lmem_word(h264, 0x81) != sr.nal_ref_idc ||
++	     codec_h264_multi_lmem_word(h264, 0x7c) != (sr.bottom_field ? 2 : 1)))
++		return -EINVAL;
++	type_bit = BIT(type);
++	if ((h264->multi_slice_uniform || sr.slice_type >= 5) &&
++	    (h264->multi_slice_type_mask & ~type_bit))
++		return -EINVAL;
++	h264->multi_slice_uniform |= sr.slice_type >= 5;
++	h264->multi_slice_type_mask |= type_bit;
++	/* first_mb is not doubled; field/MBAFF MV units are 192 bytes. */
++	if (sr.field_pic || sr.mbaff)
++		bytes_per_unit *= 2;
++	if ((codec_h264_multi_lmem_word(h264, 0x8c) & 6) == 6)
++		bytes_per_unit >>= 2;
++	if ((u64)(sr.first_mb + 1) * bytes_per_unit > h264->colocate_buf_size)
++		return -EINVAL;
++	h264->multi_slice_mv_offset = sr.first_mb * bytes_per_unit;
++	h264->multi_slice_refs = sr;
++	h264->multi_slice_count++;
++	dev_dbg(sess->core->dev_dec, "h264 multi slice: n=%u first_mb=%u type=%u mv_offset=%u\n",
++		h264->multi_slice_count, sr.first_mb, type, h264->multi_slice_mv_offset);
++	return 0;
++}
++
++static int codec_h264_multi_colocate_slot(struct amvdec_session *sess, u32 fw)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++
++	if (fw >= H264_MULTI_MAX_FW_BUFS || !h264->colocate_buf_size)
++		return -EINVAL;
++	if (h264->colocate_vaddr[fw])
++		return 0;
++
++	h264->colocate_vaddr[fw] = dma_alloc_coherent(core->dev,
++						      h264->colocate_buf_size,
++						      &h264->colocate_paddr[fw],
++						      GFP_KERNEL);
++	if (!h264->colocate_vaddr[fw]) {
++		dev_err_ratelimited(core->dev_dec,
++				    "h264 multi: colocated MV alloc failed (%u bytes)\n",
++				    h264->colocate_buf_size);
++		return -ENOMEM;
++	}
++
++	dev_dbg(core->dev_dec, "h264 multi: colocated MV slot %u paddr=%pad size=%#x\n",
++		fw, &h264->colocate_paddr[fw], h264->colocate_buf_size);
++	return 0;
++}
++
++static int codec_h264_multi_config_decode_buf(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	u32 fw_idx = h264->multi_pic_fw_idx;
++	u32 canvas, info0;
++	s32 top_poc = h264->multi_pic_top_poc;
++	s32 bottom_poc = h264->multi_pic_bottom_poc;
++	u32 colocate_wr;
++	u32 i;
++
++	if (fw_idx >= sess->num_fw_bufs) {
++		dev_err_ratelimited(core->dev_dec,
++				    "h264 multi decbuf: invalid fw_idx=%u fw_bufs=%u\n",
++			fw_idx, sess->num_fw_bufs);
++		return -EINVAL;
++	}
++
++	/* Before the mate is decoded, only the first field's POC is valid. */
++	if (h264->multi_field_picture &&
++	    !READ_ONCE(h264->multi_field_phase) && !h264->multi_field_mate) {
++		s32 first_poc = h264->multi_fields[0].bottom_field ? bottom_poc : top_poc;
++
++		top_poc = first_poc;
++		bottom_poc = first_poc;
++	}
++	/* Write frame POC as min(top, bottom), followed by top and bottom POC. */
++	meson_amvdec_write_dos(core, H264_CURRENT_POC_IDX_RESET, 0);
++	meson_amvdec_write_dos(core, H264_CURRENT_POC,
++			 min(top_poc, bottom_poc));
++	meson_amvdec_write_dos(core, H264_CURRENT_POC, top_poc);
++	meson_amvdec_write_dos(core, H264_CURRENT_POC, bottom_poc);
++
++	/* Reconstruction and deblock canvases for the chosen CAPTURE buffer. */
++	meson_amvdec_write_dos(core, CURR_CANVAS_CTRL, fw_idx << 24);
++	canvas = meson_amvdec_read_dos(core, CURR_CANVAS_CTRL) & 0xffffff;
++	meson_amvdec_write_dos(core, REC_CANVAS_ADDR, canvas);
++	meson_amvdec_write_dos(core, DBKR_CANVAS_ADDR, canvas);
++	meson_amvdec_write_dos(core, DBKW_CANVAS_ADDR, canvas);
++
++	/*
++	 * Buffer-info indices 16 onward hold info0/top_poc/bottom_poc per canvas
++	 * slot. Bit 8 marks bottom-first pairs; the low nibble marks the decode
++	 * slot. Indices 0 and 8 hold the packed reference lists, including padding.
++	 * Picture-structure tags: 0xf4c0 MBAFF, 0xf400 top field, 0xf440 bottom
++	 * field and 0xf480 progressive frame.
++	 */
++	switch (codec_h264_multi_current_structure(h264)) {
++	case 0:
++		info0 = 0xf400;
++		break;
++	case 1:
++		info0 = 0xf440;
++		break;
++	case 3:
++		info0 = 0xf4c0;
++		break;
++	case 2:
++	default:
++		info0 = 0xf480;
++		break;
++	}
++	if (bottom_poc < top_poc)
++		info0 |= 0x100;
++
++	/*
++	 * Index by firmware canvas position, covering all 24 capture slots.
++	 * Zero unused slots, including those without a mapping.
++	 */
++	meson_amvdec_write_dos(core, H264_BUFFER_INFO_INDEX, 16);
++	for (i = 0; i < H264_MULTI_MAX_FW_BUFS; i++) {
++		const struct v4l2_h264_dpb_entry *ref;
++		u32 r_info0 = 0;
++		s32 r_top = 0, r_bot = 0;
++
++		ref = i == fw_idx ? NULL : codec_h264_multi_ref_in_slot(sess, i);
++		if (i == fw_idx) {
++			r_info0 = info0 | 0xf;
++			r_top = top_poc;
++			r_bot = bottom_poc;
++		} else if (ref) {
++			/*
++			 * Retain each reference picture structure. MbaffFrameFlag is
++			 * constant
++			 * across frame pictures in a sequence.
++			 */
++			const struct h264_field_surface *surface = &h264->multi_field_slots[i];
++
++			r_info0 = h264->multi_sps_mbaff ? 0xf4c0 : 0xf480;
++			r_top = ref->top_field_order_cnt;
++			r_bot = ref->bottom_field_order_cnt;
++			if (surface->valid && surface->timestamp == ref->reference_ts &&
++			    surface->vb2_idx == sess->fw_idx_to_vb2_idx[i]) {
++				r_info0 = h264_surface_info0(surface);
++				r_top = surface->top_poc;
++				r_bot = surface->bottom_poc;
++				if (surface->decoded_fields != V4L2_H264_FRAME_REF) {
++					r_bot = surface->poc;
++					r_top = r_bot;
++				}
++			} else if (r_bot < r_top) {
++				r_info0 |= 0x100;
++			}
++			if (ref->flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM)
++				r_info0 |= (ref->fields & V4L2_H264_TOP_FIELD_REF ? 0x10 : 0) |
++					   (ref->fields & V4L2_H264_BOTTOM_FIELD_REF ? 0x20 : 0);
++		}
++		if (h264->multi_field_picture && r_info0)
++			dev_dbg(core->dev_dec, "h264 field slot: fw=%u current=%u info0=%#x top=%d bottom=%d\n",
++				i, i == fw_idx, r_info0, r_top, r_bot);
++		meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, r_info0);
++		meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, r_top);
++		meson_amvdec_write_dos(core, H264_BUFFER_INFO_DATA, r_bot);
++	}
++
++	if (codec_h264_multi_write_ref_lists(sess))
++		return -EINVAL;
++
++	/*
++	 * Use one colocated-MV slot per capture canvas. Each slice addresses its
++	 * macroblock or MBAFF-pair offset within that slot.
++	 */
++	if (codec_h264_multi_colocate_slot(sess, fw_idx))
++		return -ENOMEM;
++	if (h264->multi_field_picture) {
++		for (i = 0; i < 1000; i++) {
++			if (!(meson_amvdec_read_dos(core, H264_CO_MB_RW_CTL) & BIT(11)))
++				break;
++			udelay(1);
++		}
++		if (i == 1000) {
++			dev_err_ratelimited(core->dev_dec, "h264 field: CO_MB_RW_CTL busy phase=%u\n",
++					    READ_ONCE(h264->multi_field_phase));
++			return -ETIMEDOUT; /* HEADER caller aborts both queues. */
++		}
++	} else {
++		while (meson_amvdec_read_dos(core, H264_CO_MB_RW_CTL) & BIT(11))
++			cpu_relax();
++	}
++	colocate_wr = h264->colocate_paddr[fw_idx] + h264->multi_slice_mv_offset;
++	meson_amvdec_write_dos(core, H264_CO_MB_WR_ADDR, colocate_wr);
++	if (h264->multi_l1_valid) {
++		/*
++		 * Direct mode reads the colocated MVs of L1[0]. Bits 31:30
++		 * carry that picture's coding structure (2 = frame) and bit
++		 * 29 selects which field of it to use; for a frame picture
++		 * select the field by POC distance.
++		 */
++		u32 rd;
++		s32 cur = min(h264->multi_pic_top_poc,
++			      h264->multi_pic_bottom_poc);
++		u32 ref_type = abs(cur - h264->multi_l1_top) <
++			       abs(cur - h264->multi_l1_bottom) ? 0 : 1;
++
++		u8 cur_structure = codec_h264_multi_current_structure(h264);
++		bool direct_8x8 = (codec_h264_multi_lmem_word(h264, 0x8c) & 6) == 6;
++		u32 offset, value;
++
++		/* Field bit29 selects L1[0]'s parity, not the current field's. */
++		if (h264->multi_field_picture)
++			ref_type = h264->multi_l1_view == V4L2_H264_BOTTOM_FIELD_REF;
++		offset = h264_colocate_read_offset(h264->multi_slice_refs.first_mb,
++						   h264->multi_sps.pic_width_in_mbs_minus1 + 1,
++						   cur_structure,
++			h264->multi_l1_structure, direct_8x8);
++		if (offset >= h264->colocate_buf_size ||
++		    codec_h264_multi_colocate_slot(sess, h264->multi_l1_fw_idx))
++			return -EINVAL;
++		rd = h264->colocate_paddr[h264->multi_l1_fw_idx] + offset;
++		value = (rd >> 3) | ((u32)h264->multi_l1_structure << 30) |
++			(ref_type << 29);
++		meson_amvdec_write_dos(core, H264_CO_MB_RD_ADDR, value);
++		if (h264->multi_field_picture || h264->multi_l1_structure < 2)
++			dev_dbg(core->dev_dec,
++				"h264 field mv: cur=%u l1_fw=%u structure=%u view=%u bit29=%u direct8=%u offset=%#x addr=%#x value=%#x\n",
++				 cur_structure, h264->multi_l1_fw_idx, h264->multi_l1_structure,
++				 h264->multi_l1_view, ref_type, direct_8x8, offset, rd, value);
++	}
++
++	dev_dbg(core->dev_dec,
++		"h264 multi decbuf: fw_idx=%u vb2_idx=%u canvas=%#x poc=(%d,%d) info0=%#x colo_wr=%#x\n",
++		 fw_idx, h264->multi_pic_vb2_idx, canvas,
++		 top_poc, bottom_poc, info0, colocate_wr);
++
++	return 0;
++}
++
++/* Inverse of codec_h264_multi_lmem_word()'s 4-word swizzle. */
++static void codec_h264_multi_lmem_set(struct codec_h264 *h264, u32 i, u16 v)
++{
++	u16 *lmem = h264->lmem_vaddr;
++
++	if (!lmem)
++		return;
++	lmem[(i & ~3) + 3 - (i & 3)] = v;
++}
++
++/*
++ * Supply SPS-derived geometry in RPM after SLICE_HEAD_DONE and before
++ * starting reconstruction; the firmware leaves these fields unset.
++ */
++static void codec_h264_multi_inject_sps_rpm(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	const struct v4l2_ctrl_h264_sps *sps = &h264->multi_sps;
++	u32 mb_w = h264->mb_width, mb_h = h264->mb_height;
++
++	if (!h264->lmem_vaddr || !h264->multi_pic_valid)
++		return;
++
++	codec_h264_multi_lmem_set(h264, H264_RPM_LOG2_MAX_FRAME_NUM,
++				  sps->log2_max_frame_num_minus4 + 4);
++	codec_h264_multi_lmem_set(h264, H264_RPM_FRAME_MBS_ONLY_FLAG,
++				  !!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY));
++	codec_h264_multi_lmem_set(h264, H264_RPM_PIC_ORDER_CNT_TYPE,
++				  sps->pic_order_cnt_type);
++	codec_h264_multi_lmem_set(h264, H264_RPM_LOG2_MAX_POC_LSB,
++				  sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
++	codec_h264_multi_lmem_set(h264, H264_RPM_TOTAL_MB_HEIGHT, mb_h);
++	codec_h264_multi_lmem_set(h264, H264_RPM_MB_X_NUM, mb_w);
++	codec_h264_multi_lmem_set(h264, H264_RPM_MB_HEIGHT, mb_h);
++	codec_h264_multi_lmem_set(h264, H264_RPM_PREV_MB_WIDTH, mb_w);
++	codec_h264_multi_lmem_set(h264, H264_RPM_PREV_FRAME_SIZE_IN_MB,
++				  mb_w * mb_h);
++
++	dev_dbg(sess->core->dev_dec,
++		"h264 rpm inject: mb=%ux%u log2_frame_num=%u mbs_only=%u poc_type=%u\n",
++		 mb_w, mb_h, sps->log2_max_frame_num_minus4 + 4,
++		 !!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY),
++		 sps->pic_order_cnt_type);
++}
++
++static u16 h264_flag(u32 flags, u32 bit)
++{
++	return !!(flags & bit);
++}
++
++static int codec_h264_multi_host_config(struct amvdec_session *sess);
++
++/* Cache request controls for per-picture hardware programming. */
++void meson_amvdec_codec_h264_multi_set_params(struct amvdec_session *sess,
++				 const struct v4l2_ctrl_h264_sps *sps,
++				 const struct v4l2_ctrl_h264_pps *pps,
++				 const struct v4l2_ctrl_h264_decode_params *dec)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	u32 cfg, frame_size, max_refs, max_list, pic_h_mbs;
++	u32 req_width_mbs, req_height_mbs, fmt_width_mbs, fmt_height_mbs;
++
++	if (!h264 || !h264->workspace_vaddr)
++		return;
++
++	h264->multi_pic_top_poc = dec->top_field_order_cnt;
++	h264->multi_pic_bottom_poc = dec->bottom_field_order_cnt;
++	h264->multi_sps_max_refs = sps->max_num_ref_frames;
++	h264->multi_sps = *sps;
++	h264->multi_pps = *pps;
++	memset(&h264->multi_request_picture, 0, sizeof(h264->multi_request_picture));
++	h264->multi_request_picture.frame_num = dec->frame_num;
++	h264->multi_request_picture.pps_id = pps->pic_parameter_set_id;
++	h264->multi_request_picture.idr = !!(dec->flags & V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC);
++	h264->multi_request_picture.idr_pic_id = dec->idr_pic_id;
++	h264->multi_request_picture.nal_ref_idc = dec->nal_ref_idc;
++	h264->multi_request_picture.field_pic =
++		!!(dec->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC);
++	h264->multi_request_picture.bottom_field =
++		!!(dec->flags & V4L2_H264_DECODE_PARAM_FLAG_BOTTOM_FIELD);
++	if (sps->pic_order_cnt_type == 0) {
++		h264->multi_request_picture.poc_lsb = dec->pic_order_cnt_lsb;
++		if (!h264->multi_request_picture.field_pic &&
++		    (pps->flags & V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT))
++			h264->multi_request_picture.delta_poc_bottom =
++				dec->delta_pic_order_cnt_bottom;
++	} else if (sps->pic_order_cnt_type == 1 &&
++		   !(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO)) {
++		h264->multi_request_picture.delta_poc[0] = dec->delta_pic_order_cnt0;
++		if (!h264->multi_request_picture.field_pic &&
++		    (pps->flags & V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT))
++			h264->multi_request_picture.delta_poc[1] = dec->delta_pic_order_cnt1;
++	}
++	memcpy(h264->multi_dpb, dec->dpb, sizeof(h264->multi_dpb));
++	h264->multi_nal_ref_idc = dec->nal_ref_idc;
++	h264->multi_pic_valid = true;
++	h264->multi_params_error = 0;
++
++	/*
++	 * With frame_mbs_only_flag = 0 the SPS counts map units, which are
++	 * field height: FrameHeightInMbs is twice PicHeightInMapUnits (7-18).
++	 * Using it directly would size an MBAFF frame at half its height.
++	 */
++	pic_h_mbs = sps->pic_height_in_map_units_minus1 + 1;
++	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
++		pic_h_mbs *= 2;
++	req_width_mbs = sps->pic_width_in_mbs_minus1 + 1;
++	req_height_mbs = pic_h_mbs;
++	fmt_width_mbs = DIV_ROUND_UP(sess->width, 16);
++	fmt_height_mbs = DIV_ROUND_UP(sess->height, 16);
++	if (!fmt_width_mbs || !fmt_height_mbs ||
++	    req_width_mbs > fmt_width_mbs || req_height_mbs > fmt_height_mbs ||
++	    (h264->multi_geometry_valid &&
++	     (req_width_mbs != h264->multi_geometry_width_mbs ||
++	      req_height_mbs != h264->multi_geometry_height_mbs))) {
++		dev_warn_ratelimited(core->dev_dec,
++				     "h264 multi: rejected SPS geometry %ux%u MBs for negotiated %ux%u MBs (active %ux%u MBs)\n",
++			req_width_mbs, req_height_mbs,
++			fmt_width_mbs, fmt_height_mbs,
++			h264->multi_geometry_valid ? h264->multi_geometry_width_mbs : 0,
++			h264->multi_geometry_valid ? h264->multi_geometry_height_mbs : 0);
++		h264->multi_pic_valid = false;
++		h264->multi_params_error = -EINVAL;
++		return;
++	}
++	h264->multi_geometry_valid = true;
++	h264->multi_geometry_width_mbs = req_width_mbs;
++	h264->multi_geometry_height_mbs = req_height_mbs;
++	frame_size = (sps->pic_width_in_mbs_minus1 + 1) * pic_h_mbs;
++	cfg = (h264_flag(sps->flags, V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) << 31) |
++	      (sps->max_num_ref_frames << 24) | (frame_size << 8) |
++	      (sps->pic_width_in_mbs_minus1 + 1);
++	/*
++	 * Keep these: the per-picture VLD reset in the feed path runs after
++	 * this point, so they are re-applied there rather than relied on here.
++	 */
++	h264->multi_seq_cfg = cfg;
++	h264->multi_seq_cfg2 = (h264_flag(sps->flags,
++				V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE) << 15) |
++			       sps->chroma_format_idc;
++	h264->multi_seq_cfgb = (sps->max_num_ref_frames << 8) | sps->level_idc;
++	h264->multi_nal_search_or = ((sps->level_idc & 0xff) << 7) | BIT(2);
++
++	h264->multi_sps_mbaff = !(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) &&
++			    !!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD);
++	/*
++	 * The decoder applies frame implicit weights to MBAFF field pairs,
++	 * without the per-field weights required by H.264 8.4.2.3.1.
++	 */
++	if (h264->multi_sps_mbaff && pps->weighted_bipred_idc == 2)
++		dev_warn_once(core->dev_dec,
++			      "H.264 MBAFF with implicit weighted bi-prediction is not bit-exact on this hardware\n");
++	h264->mb_width = (sps->pic_width_in_mbs_minus1 + 4) & ~3u;
++	h264->mb_height = (pic_h_mbs + 3) & ~3u;
++	max_refs = clamp_t(u32, sps->max_num_ref_frames, 0,
++			   V4L2_H264_NUM_DPB_ENTRIES);
++
++	max_list = (pps->num_ref_idx_l1_default_active_minus1 + 1) +
++		   (pps->num_ref_idx_l0_default_active_minus1 + 1);
++	if (max_list > max_refs)
++		max_refs = max_list;
++	h264->multi_sps_max_refs = max_refs;
++
++	h264->multi_seq_scratch0 = ((max_refs + 1) << 24) |
++				   (V4L2_H264_NUM_DPB_ENTRIES << 16) |
++				   (V4L2_H264_NUM_DPB_ENTRIES << 8);
++
++	dev_dbg(core->dev_dec,
++		"h264 multi params: poc=%d nrefs=%u | sps_id=%u pps_id=%u mb=%ux%u seq_cfg=%#x max_refs=%u\n",
++		 dec->top_field_order_cnt,
++		 ({
++			unsigned int k, c = 0;
++
++			for (k = 0; k < V4L2_H264_NUM_DPB_ENTRIES; k++)
++				if (dec->dpb[k].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
++					c++;
++			c;
++		 }),
++		 sps->seq_parameter_set_id, pps->pic_parameter_set_id,
++		 h264->mb_width, h264->mb_height, cfg, max_refs);
++}
++
++static int codec_h264_start(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct codec_h264 *h264 = sess->priv;
++	int ret;
++
++	BUILD_BUG_ON(DCAC_READ_MARGIN + 0x218000 + 0x10 > SIZE_WORKSPACE_MULTI);
++	BUILD_BUG_ON(SIZE_WORKSPACE_MULTI > SIZE_WORKSPACE_MULTI_RP);
++
++	h264->workspace_size = SIZE_WORKSPACE_MULTI_RP;
++
++	/* Allocate some memory for the H.264 decoder's state */
++	h264->workspace_vaddr =
++		dma_alloc_coherent(core->dev, h264->workspace_size,
++				   &h264->workspace_paddr, GFP_KERNEL);
++	if (!h264->workspace_vaddr)
++		return -ENOMEM;
++
++	/* Allocate some memory for the H.264 SEI dump */
++	h264->sei_vaddr = dma_alloc_coherent(core->dev, SIZE_SEI,
++					     &h264->sei_paddr, GFP_KERNEL);
++	if (!h264->sei_vaddr)
++		return -ENOMEM;
++
++	h264->aux_vaddr = dma_alloc_coherent(core->dev, SIZE_MULTI_AUX,
++					     &h264->aux_paddr, GFP_KERNEL);
++	if (!h264->aux_vaddr)
++		return -ENOMEM;
++
++	h264->lmem_vaddr = dma_alloc_coherent(core->dev, SIZE_LMEM,
++					      &h264->lmem_paddr,
++					      GFP_KERNEL);
++	if (!h264->lmem_vaddr)
++		return -ENOMEM;
++
++	memset(h264->workspace_vaddr, 0, h264->workspace_size);
++
++	/*
++	 * Reset VLD_PART, IQIDCT, MC, DBLK and PIC_DC after clocks and memories
++	 * are enabled, following the vendor driver initialization sequence.
++	 */
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(7) | BIT(6) | BIT(4));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(7) | BIT(6) | BIT(4));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(9) | BIT(8));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++
++	meson_amvdec_write_dos_bits(core, POWER_CTL_VLD, BIT(9) | BIT(6));
++
++	h264->multi_powered = true;
++	h264->multi_hw_started = false;
++	meson_amvdec_write_dos(core, AV_SCRATCH_8,
++			       codec_h264_multi_workspace_base(h264));
++	meson_amvdec_write_dos(core, H264_AUX_ADR, h264->aux_paddr);
++	meson_amvdec_write_dos(core, H264_AUX_DATA_SIZE,
++			       ((SIZE_MULTI_AUX >> 4) << 16));
++	meson_amvdec_write_dos(core, H264_DECODE_MODE,
++			       DECODE_MODE_MULTI_FRAMEBASE);
++	meson_amvdec_write_dos(core, H264_DECODE_SEQINFO, 0);
++	meson_amvdec_write_dos(core, HEAD_PADING_REG, 0);
++	meson_amvdec_write_dos(core, INIT_FLAG_REG, 0);
++	meson_amvdec_write_dos(core, DPB_STATUS_REG, 0);
++	dev_dbg(core->dev_dec,
++		"h264 multi init: mode=framebase workspace=%pad aux=%pad ext=%pad\n",
++		 &h264->workspace_paddr, &h264->aux_paddr,
++		 &h264->ext_fw_paddr);
++
++	ret = codec_h264_multi_host_config(sess);
++	if (ret)
++		return ret;
++	meson_amvdec_write_dos(core, AV_SCRATCH_G, h264->ext_fw_paddr);
++	if (h264->lmem_vaddr)
++		meson_amvdec_write_dos(core, LMEM_DUMP_ADR, h264->lmem_paddr);
++
++	/* Enable "error correction" */
++	meson_amvdec_write_dos(core, AV_SCRATCH_F,
++			 (meson_amvdec_read_dos(core, AV_SCRATCH_F) & 0xffffffc3) |
++			 BIT(4) | BIT(7));
++
++	meson_amvdec_write_dos(core, MDEC_PIC_DC_THRESH, 0x404038aa);
++
++	/* Set NAL_SEARCH_CTL before starting the processor. */
++	if (h264->lmem_vaddr)
++		meson_amvdec_write_dos(core, NAL_SEARCH_CTL, 0);
++
++	return 0;
++}
++
++static int codec_h264_stop(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	unsigned int i;
++
++	/* Return the active OUTPUT buffer owned by the codec before vb2 teardown. */
++	if (h264->multi_src_vbuf) {
++		h264->multi_slice_data = NULL;
++		meson_amvdec_src_buf_done(sess, h264->multi_src_vbuf, VB2_BUF_STATE_ERROR);
++		h264->multi_src_vbuf = NULL;
++	}
++	h264->multi_done_pending = false;
++	h264->multi_pic_started = false;
++	h264->multi_hw_started = false;
++	h264->multi_powered = false;
++	h264->multi_headers_valid = false;
++
++	if (h264->ext_fw_vaddr)
++		dma_free_coherent(core->dev, h264->ext_fw_size,
++				  h264->ext_fw_vaddr, h264->ext_fw_paddr);
++
++	if (h264->workspace_vaddr)
++		dma_free_coherent(core->dev, h264->workspace_size,
++				  h264->workspace_vaddr, h264->workspace_paddr);
++
++	if (h264->sei_vaddr)
++		dma_free_coherent(core->dev, SIZE_SEI,
++				  h264->sei_vaddr, h264->sei_paddr);
++
++	if (h264->aux_vaddr)
++		dma_free_coherent(core->dev, SIZE_MULTI_AUX,
++				  h264->aux_vaddr, h264->aux_paddr);
++
++	if (h264->lmem_vaddr)
++		dma_free_coherent(core->dev, SIZE_LMEM,
++				  h264->lmem_vaddr, h264->lmem_paddr);
++
++	for (i = 0; i < H264_MULTI_MAX_FW_BUFS; i++)
++		if (h264->colocate_vaddr[i])
++			dma_free_coherent(core->dev, h264->colocate_buf_size,
++					  h264->colocate_vaddr[i],
++					  h264->colocate_paddr[i]);
++
++	return 0;
++}
++
++static int codec_h264_load_firmware(struct amvdec_session *sess,
++				    const u8 *data, u32 len)
++{
++	struct codec_h264 *h264;
++	struct amvdec_core *core = sess->core;
++	u32 ext_size = SIZE_EXT_FW_MULTI;
++
++	if (len < SIZE_MULTI_FW_MIN)
++		return -EINVAL;
++
++	h264 = kzalloc_obj(*h264);
++	if (!h264)
++		return -ENOMEM;
++
++	spin_lock_init(&h264->multi_field_lock);
++	h264->ext_fw_size = ext_size;
++	h264->ext_fw_vaddr = dma_alloc_coherent(core->dev, ext_size,
++						&h264->ext_fw_paddr,
++						GFP_KERNEL);
++	if (!h264->ext_fw_vaddr) {
++		kvfree(h264->scan_copy);
++		kfree(h264);
++		return -ENOMEM;
++	}
++
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_HEADER,
++	       data + 0x4000, MC_SWAP_SIZE);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_DATA,
++	       data + 0x2000, MC_SWAP_SIZE);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_MMCO,
++	       data + 0x6000, MC_SWAP_SIZE);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_LIST,
++	       data + 0x3000, MC_SWAP_SIZE);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_SLICE,
++	       data + 0x5000, MC_SWAP_SIZE);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_MAIN,
++	       data, 0x2000);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_MAIN + 0x2000,
++	       data + 0x2000, 0x1000);
++	memcpy(h264->ext_fw_vaddr + MC_OFFSET_MAIN + 0x3000,
++	       data + 0x5000, 0x1000);
++	dev_dbg(core->dev_dec,
++		"h264 fw layout: multi size=%u ext_size=%u\n",
++		 len, ext_size);
++
++	sess->priv = h264;
++
++	return 0;
++}
++
++/*
++ * Size one colocated MV slot per CAPTURE frame. Each slot holds 96 bytes per
++ * macroblock and is allocated when its canvas is first decoded into, so the
++ * store follows the buffers the client creates.
++ */
++static int codec_h264_multi_size_colocate(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	u32 mb_total;
++
++	if (h264->colocate_buf_size)
++		return 0;
++
++	mb_total = h264->mb_width * h264->mb_height;
++	if (!mb_total)
++		return -EINVAL;
++
++	/*
++	 * MBAFF stores motion vectors for both halves of each macroblock pair
++	 * and requires twice the progressive-frame storage.
++	 */
++	h264->colocate_buf_size = mb_total * H264_COLOCATE_BYTES_PER_MB *
++				  (h264->multi_sps_mbaff ? 2 : 1);
++	return 0;
++}
++
++/* Configure capture canvases and colocated-MV storage before feeding pictures. */
++static int codec_h264_multi_host_config(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++
++	h264->mb_width = DIV_ROUND_UP(sess->width, 16);
++	h264->mb_height = DIV_ROUND_UP(sess->height, 16);
++
++	/* Apply sequence geometry from each request SPS. */
++	dev_dbg(core->dev_dec,
++		"h264 multi host config: %ux%u mb=%ux%u fw_bufs=%u\n",
++		 sess->width, sess->height, h264->mb_width, h264->mb_height,
++		 sess->num_fw_bufs);
++
++	return codec_h264_multi_size_colocate(sess);
++}
++
++static irqreturn_t codec_h264_threaded_isr(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++	struct codec_h264 *h264 = sess->priv;
++	u32 status;
++
++	if (h264) {
++		u32 level = meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_LEVEL);
++		u32 wp = meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_WP);
++		u32 rp = meson_amvdec_read_dos(core, VLD_MEM_VIFIFO_RP);
++		u32 bit_count = meson_amvdec_read_dos(core, VIFF_BIT_CNT);
++
++		status = meson_amvdec_read_dos(core, DPB_STATUS_REG);
++		meson_amvdec_trace(sess, AMVDEC_TR_IRQ, status, level, bit_count);
++		dev_dbg(core->dev,
++			"H264 multi status: time_ns=%llu irq=%u status=%#04x level=%#x wp=%#x rp=%#x bits=%#x\n",
++			 (unsigned long long)ktime_get_ns(),
++			 ++h264->multi_irq_count, status, level, wp, rp,
++			 bit_count);
++		if (status == H264_SEI_DATA_READY) {
++			meson_amvdec_write_dos_action(core, DPB_STATUS_REG,
++						H264_SEI_DATA_DONE);
++			dev_dbg(core->dev,
++				"H264 multi reply: status=%#04x action=%#04x\n",
++				 status, H264_SEI_DATA_DONE);
++		} else if (status == H264_CONFIG_REQUEST) {
++			u32 scratch1 = meson_amvdec_read_dos(core, AV_SCRATCH_1);
++			u32 scratch2 = meson_amvdec_read_dos(core, AV_SCRATCH_2);
++			u32 scratch6 = meson_amvdec_read_dos(core, AV_SCRATCH_6);
++			u32 scratchb = meson_amvdec_read_dos(core, AV_SCRATCH_B);
++
++			dev_dbg(core->dev,
++				"H264 multi config: scratch1=%#x scratch2=%#x scratch6=%#x scratchb=%#x\n",
++				 scratch1, scratch2, scratch6, scratchb);
++			meson_amvdec_write_dos_action(core, DPB_STATUS_REG,
++						H264_ACTION_CONFIG_DONE);
++			dev_dbg(core->dev,
++				"H264 multi reply: status=%#04x action=%#04x\n",
++				 status, H264_ACTION_CONFIG_DONE);
++			/*
++			 * Answer the configuration request from the host SPS and capture
++			 * format.
++			 */
++			codec_h264_multi_write_dpb_config(sess);
++		} else if (status == H264_SLICE_HEAD_DONE) {
++			u32 action;
++
++			h264->multi_headers_valid = h264->multi_last_headers_len != 0;
++
++			if (codec_h264_multi_next_slice(sess)) {
++				dev_err_ratelimited(core->dev_dec, "h264 multi: slice header/picture mismatch\n");
++				codec_h264_multi_abort(sess);
++				return IRQ_HANDLED;
++			}
++			codec_h264_multi_inject_sps_rpm(sess);
++			if (!h264->multi_pic_started) {
++				if (codec_h264_multi_pick_capture(sess)) {
++					if (h264->multi_field_picture)
++						codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++				if (codec_h264_multi_config_decode_buf(sess)) {
++					codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++				h264->multi_pic_started = true;
++				action = H264_ACTION_DECODE_NEWPIC;
++			} else {
++				if (codec_h264_multi_config_decode_buf(sess)) {
++					codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++				action = H264_ACTION_DECODE_SLICE;
++			}
++			meson_amvdec_trace(sess, AMVDEC_TR_KICK, action, status, 0);
++			meson_amvdec_write_dos_action(core, DPB_STATUS_REG, action);
++			dev_dbg(core->dev_dec,
++				"H264 multi reply: status=%#04x action=%#04x\n",
++				 status, action);
++		} else if (status == H264_PIC_DATA_DONE) {
++			u32 mby_mbx = meson_amvdec_read_dos(core, H264_MBY_MBX);
++
++			meson_amvdec_trace(sess, AMVDEC_TR_DONE, status,
++				     h264->multi_pic_vb2_idx, mby_mbx);
++			u32 decoded_mbs = ((mby_mbx & 0xff) + 1) *
++					  (((mby_mbx >> 8) & 0xff) + 1);
++			u32 expected_mb_width = h264->multi_sps.pic_width_in_mbs_minus1 + 1;
++			u32 expected_mb_height =
++				(h264->multi_sps.pic_height_in_map_units_minus1 + 1) *
++				((h264->multi_sps.flags &
++				  V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) ? 1 : 2);
++			u32 expected_mbs = expected_mb_width * expected_mb_height;
++
++			dev_dbg(core->dev_dec,
++				"h264 multi pic done: time_ns=%llu fw_idx=%u vb2_idx=%u mby_mbx=%#x decoded_mbs=%u mb_total=%u nal_search_ctl=%#x\n",
++				 (unsigned long long)ktime_get_ns(),
++				 h264->multi_pic_fw_idx, h264->multi_pic_vb2_idx,
++				 mby_mbx, decoded_mbs,
++				 h264->mb_width * h264->mb_height,
++				 meson_amvdec_read_dos(core, NAL_SEARCH_CTL));
++			if (!h264->multi_field_picture && h264->multi_slice_count == 1 &&
++			    ((mby_mbx & 0xff) != expected_mb_height - 1 ||
++			     ((mby_mbx >> 8) & 0xff) != expected_mb_width - 1)) {
++				dev_warn_ratelimited(core->dev_dec,
++						     "h264 multi: incomplete picture: decoded %u/%u macroblocks (mby_mbx=%#x)\n",
++					decoded_mbs, expected_mbs, mby_mbx);
++				h264->multi_done_error = true;
++			}
++			/*
++			 * Record completion and wake the feed worker, which owns removal and
++			 * retirement of m2m buffers.
++			 */
++			if (h264->multi_field_picture) {
++				u32 w = h264->multi_sps.pic_width_in_mbs_minus1 + 1;
++				u32 h = h264->multi_sps.pic_height_in_map_units_minus1 + 1;
++
++				if (!h264->multi_src_vbuf || !h264->multi_pic_started ||
++				    !h264->multi_slice_count ||
++				    (mby_mbx & 255) != h - 1 || ((mby_mbx >> 8) & 255) != w - 1) {
++					codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++				if (!codec_h264_multi_field_advance(h264, 0, 2)) {
++					codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++				dev_dbg(core->dev_dec, "h264 field done: fw=%u bottom=%u count=%u ts=%llu\n",
++					h264->multi_pic_fw_idx, h264->multi_fields[0].bottom_field,
++					w * h, h264->multi_pic_ts);
++			}
++			if (h264->multi_slice_data) {
++				const u8 *remaining = h264->multi_slice_data +
++						      h264->multi_slice_cursor;
++				u32 size = h264->multi_slice_size - h264->multi_slice_cursor;
++				u32 unused_len;
++
++				if (h264_find_first_slice(remaining, size, &unused_len)) {
++					dev_err_ratelimited(core->dev_dec, "h264 multi: picture done with unconsumed slices\n");
++					codec_h264_multi_abort(sess);
++					return IRQ_HANDLED;
++				}
++			}
++			if (h264->multi_pic_started) {
++				h264->multi_pic_started = false;
++				h264->multi_done_fw_idx = h264->multi_pic_fw_idx;
++				h264->multi_done_pending = true;
++				schedule_work(&sess->esparser_queue_work);
++			}
++		} else if (h264->multi_field_picture) {
++			dev_err_ratelimited(core->dev_dec, "h264 field: unexpected status=%#x phase=%u\n",
++					    status, READ_ONCE(h264->multi_field_phase));
++			codec_h264_multi_abort(sess);
++		}
++		return IRQ_HANDLED;
++	}
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t codec_h264_isr(struct amvdec_session *sess)
++{
++	struct amvdec_core *core = sess->core;
++
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_CLR_REG, 1);
++
++	return IRQ_WAKE_THREAD;
++}
++
++static void codec_h264_post_start(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++
++	if (!h264)
++		return;
++
++	/* amvdec_1_start() leaves direct-input firmware halted. The first feed
++	 * publishes input and context before it releases the processors.
++	 */
++	meson_amvdec_write_dos(sess->core, MPSR, 0);
++	meson_amvdec_write_dos(sess->core, CPSR, 0);
++	dev_dbg(sess->core->dev_dec, "h264 multi: halted until first feed\n");
++}
++
++/*
++ * Use OUTPUT as the VLD stream FIFO. Align the base to eight bytes and
++ * provide a padding window for hardware read-ahead.
++ */
++#define VDEC_FIFO_ALIGN		8
++#define VLD_PADDING_SIZE	1024
++
++/* One access unit in flight: the VLD is pointed at that buffer. */
++bool meson_amvdec_codec_h264_multi_busy(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++
++	return h264 && h264->multi_src_vbuf;
++}
++
++/*
++ * Retire OUTPUT and CAPTURE from the feed worker. Copy the OUTPUT
++ * timestamp to CAPTURE so later requests can name it as a reference.
++ */
++void meson_amvdec_codec_h264_multi_finish_picture(struct amvdec_session *sess)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	struct vb2_v4l2_buffer *dst;
++	bool abort_session;
++
++	if (!h264 || !h264->multi_done_pending)
++		return;
++	h264->multi_done_pending = false;
++	abort_session = h264->multi_done_error;
++	if (h264->multi_done_error)
++		dev_warn_ratelimited(core->dev_dec,
++				     "h264 multi: completing incomplete picture as an error\n");
++
++	dst = v4l2_m2m_dst_buf_remove_by_idx(sess->m2m_ctx,
++					     sess->fw_idx_to_vb2_idx[h264->multi_done_fw_idx]);
++	if (h264->multi_field_picture &&
++	    !codec_h264_multi_field_claim(h264, dst && h264->multi_src_vbuf)) {
++		dev_err_ratelimited(core->dev_dec, "h264 field: aborted or lost completion buffer\n");
++		h264->multi_slice_data = NULL;
++		codec_h264_multi_abort(sess);
++		if (dst)
++			v4l2_m2m_buf_done(dst, VB2_BUF_STATE_ERROR);
++		if (h264->multi_src_vbuf) {
++			h264->multi_slice_data = NULL;
++			meson_amvdec_src_buf_done(sess, h264->multi_src_vbuf, VB2_BUF_STATE_ERROR);
++			h264->multi_src_vbuf = NULL;
++			atomic_dec(&sess->esparser_queued_bufs);
++		}
++		v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++		return;
++	}
++	if (dst && h264->multi_src_vbuf && !h264->multi_done_error &&
++	    !h264->multi_field_picture &&
++	    h264->multi_done_fw_idx < ARRAY_SIZE(h264->multi_field_slots)) {
++		struct h264_field_surface *surface =
++			&h264->multi_field_slots[h264->multi_done_fw_idx];
++
++		memset(surface, 0, sizeof(*surface));
++		surface->valid = true;
++		surface->decoded_fields = V4L2_H264_FRAME_REF;
++		surface->structure = codec_h264_multi_current_structure(h264);
++		surface->frame_num = h264->multi_slice_refs.frame_num;
++		surface->timestamp = h264->multi_pic_ts;
++		surface->vb2_idx = h264->multi_pic_vb2_idx;
++		surface->top_poc = h264->multi_pic_top_poc;
++		surface->bottom_poc = h264->multi_pic_bottom_poc;
++		surface->poc = min(h264->multi_pic_top_poc, h264->multi_pic_bottom_poc);
++		surface->sps = h264->multi_sps;
++		surface->reference = !!h264->multi_nal_ref_idc;
++	}
++
++	if (dst && h264->multi_src_vbuf && h264->multi_done_error) {
++		u32 plane;
++
++		v4l2_m2m_buf_copy_metadata(h264->multi_src_vbuf, dst);
++		for (plane = 0; plane < dst->vb2_buf.num_planes; plane++)
++			vb2_set_plane_payload(&dst->vb2_buf, plane, 0);
++		dst->sequence = sess->sequence_cap++;
++		v4l2_m2m_buf_done(dst, VB2_BUF_STATE_ERROR);
++	} else if (dst && h264->multi_src_vbuf) {
++		u32 output_size = meson_amvdec_get_output_size(sess);
++
++		switch (sess->pixfmt_cap) {
++		case V4L2_PIX_FMT_NV12M:
++			vb2_set_plane_payload(&dst->vb2_buf, 0, output_size);
++			vb2_set_plane_payload(&dst->vb2_buf, 1, output_size / 2);
++			break;
++		case V4L2_PIX_FMT_YUV420M:
++			vb2_set_plane_payload(&dst->vb2_buf, 0, output_size);
++			vb2_set_plane_payload(&dst->vb2_buf, 1, output_size / 4);
++			vb2_set_plane_payload(&dst->vb2_buf, 2, output_size / 4);
++			break;
++		}
++		v4l2_m2m_buf_copy_metadata(h264->multi_src_vbuf, dst);
++		dst->field = V4L2_FIELD_NONE;
++		if (h264->multi_field_mate)
++			dst->field = h264->multi_pic_top_poc < h264->multi_pic_bottom_poc ?
++				     V4L2_FIELD_INTERLACED_TB : V4L2_FIELD_INTERLACED_BT;
++		if (h264->multi_field_picture)
++			dev_dbg(core->dev_dec,
++				"h264 field complete: mate=%u fw=%u vb2=%u ts=%llu fields=%u field=%u top=%d bottom=%d\n",
++				 h264->multi_field_mate, h264->multi_pic_fw_idx, dst->vb2_buf.index,
++				 dst->vb2_buf.timestamp,
++				 h264->multi_field_slots[h264->multi_pic_fw_idx].decoded_fields,
++				 dst->field, h264->multi_pic_top_poc, h264->multi_pic_bottom_poc);
++		dst->sequence = sess->sequence_cap++;
++		v4l2_m2m_buf_done(dst, VB2_BUF_STATE_DONE);
++		meson_amvdec_trace(sess, AMVDEC_TR_SIGNAL, dst->vb2_buf.index, 0, 0);
++		dev_dbg(core->dev_dec, "h264 multi done: vb2=%u ts=%llu\n",
++			dst->vb2_buf.index, dst->vb2_buf.timestamp);
++	} else if (!dst) {
++		dev_err_ratelimited(core->dev_dec,
++				    "h264 multi: fw_idx %u has no CAPTURE buffer\n",
++			h264->multi_done_fw_idx);
++	} else {
++		/*
++		 * Return the owned destination as an error when no source supplies metadata.
++		 */
++		dev_err_ratelimited(core->dev_dec,
++				    "h264 multi drop: vb2=%u removed with no OUTPUT buffer\n",
++			dst->vb2_buf.index);
++	}
++
++	if (h264->multi_src_vbuf) {
++		h264->multi_slice_data = NULL;
++		meson_amvdec_src_buf_done(sess, h264->multi_src_vbuf,
++				    h264->multi_done_error ? VB2_BUF_STATE_ERROR :
++				    VB2_BUF_STATE_DONE);
++		h264->multi_src_vbuf = NULL;
++		atomic_dec(&sess->esparser_queued_bufs);
++	}
++	h264->multi_done_error = false;
++	/*
++	 * A short picture may already have been used as a reference by the
++	 * firmware.  Continuing would either expose dependent pictures as valid
++	 * or wait forever if the damaged stream leaves the firmware mid-slice.
++	 * Fail both queues after returning the errored picture so userspace can
++	 * tear down this session and start the next stream on a clean decoder.
++	 */
++	if (abort_session) {
++		codec_h264_multi_stop_processor(sess, "done-error");
++		codec_h264_multi_abort(sess);
++	}
++
++	v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
++}
++
++/*
++ * Called only before direct VLD feed, while the session worker owns the job.
++ * The rejected destination is newly queued; already-DONE CAPTUREs are untouched.
++ */
++void meson_amvdec_codec_h264_multi_discard_capture(struct amvdec_session *sess, u32 vb2_idx)
++{
++	struct codec_h264 *h264 = sess->priv;
++	u32 fw;
++
++	if (!h264)
++		return;
++	/* Header synthesis updates this cache before firmware sees the bytes. */
++	h264->multi_headers_valid = false;
++	if (vb2_idx >= ARRAY_SIZE(sess->vb2_idx_to_fw_idx))
++		return;
++	fw = sess->vb2_idx_to_fw_idx[vb2_idx];
++	if (fw >= H264_MULTI_MAX_FW_BUFS || fw >= sess->num_fw_bufs ||
++	    sess->fw_idx_to_vb2_idx[fw] != vb2_idx)
++		return;
++	h264->multi_field_slots[fw].valid = false;
++}
++
++void meson_amvdec_codec_h264_multi_hold_src(struct amvdec_session *sess,
++			       struct vb2_v4l2_buffer *vbuf)
++{
++	struct codec_h264 *h264 = sess->priv;
++
++	if (h264) {
++		h264->multi_src_vbuf = vbuf;
++		if (!vbuf) {
++			h264->multi_decoded_fields = 0;
++			h264->multi_slice_data = NULL;
++			h264->multi_slice_size = 0;
++		}
++	}
++}
++
++/*
++ * Copy each access unit into cached memory for repeated byte-wise header
++ * parsing. Hardware and synthesized-header writes still use the coherent
++ * OUTPUT buffer. Fall back to parsing OUTPUT if allocation fails.
++ */
++const u8 *meson_amvdec_codec_h264_scan_copy(struct amvdec_session *sess, const u8 *src,
++			       u32 len, u32 cap)
++{
++	struct codec_h264 *h264 = sess->priv;
++
++	if (!h264 || !src || !len || len > cap)
++		return src;
++	if (cap > h264->scan_copy_size) {
++		kvfree(h264->scan_copy);
++		h264->scan_copy = kvmalloc(cap, GFP_KERNEL);
++		h264->scan_copy_size = h264->scan_copy ? cap : 0;
++		if (!h264->scan_copy)
++			return src;
++	}
++	memcpy(h264->scan_copy, src, len);
++	return h264->scan_copy;
++}
++
++int meson_amvdec_codec_h264_multi_feed_buffer(struct amvdec_session *sess,
++				 struct vb2_buffer *vb)
++{
++	struct codec_h264 *h264 = sess->priv;
++	struct amvdec_core *core = sess->core;
++	dma_addr_t src_dma = vb2_dma_contig_plane_dma_addr(vb, 0);
++	u32 payload = vb2_get_plane_payload(vb, 0);
++	u32 fifo_size = round_down(vb2_plane_size(vb, 0), VDEC_FIFO_ALIGN);
++	int i, ret;
++
++	/* WP includes read-ahead, but must stay inside the allocated ring. */
++	if (!payload || fifo_size <= VLD_PADDING_SIZE ||
++	    payload >= fifo_size - VLD_PADDING_SIZE ||
++	    !IS_ALIGNED(src_dma, VDEC_FIFO_ALIGN))
++		return -EINVAL;
++	/* Headers have been synthesized already; retain the actual DMA payload. */
++	h264->multi_src_vaddr = vb2_plane_vaddr(vb, 0);
++	h264->multi_slice_data = meson_amvdec_codec_h264_scan_copy(sess, h264->multi_src_vaddr,
++						      payload, vb2_plane_size(vb, 0));
++	h264->multi_slice_size = payload;
++	h264->multi_slice_cursor = 0;
++	h264->multi_slice_count = 0;
++	h264->multi_slice_type_mask = 0;
++	h264->multi_slice_uniform = false;
++	h264->multi_slice_mv_offset = 0;
++	h264->multi_done_error = false;
++	if (!h264->multi_slice_data)
++		return -EINVAL;
++	if (!h264->multi_pic_valid)
++		return h264->multi_params_error ? h264->multi_params_error : -EINVAL;
++	ret = codec_h264_multi_field_preflight(sess);
++	if (!ret && !h264->multi_request_picture.field_pic)
++		ret = codec_h264_multi_frame_preflight(sess);
++	if (ret) {
++		dev_err_ratelimited(core->dev_dec, "h264 field: source rejected: %d\n", ret);
++		/* No feed occurred; esparser retires only this request. */
++		return ret;
++	}
++
++	/*
++	 * Clear padding so VLD cannot read stale OUTPUT bytes beyond the payload.
++	 */
++	memset(h264->multi_src_vaddr + payload, 0, VLD_PADDING_SIZE);
++	dma_sync_single_for_device(core->dev, src_dma + payload,
++				   VLD_PADDING_SIZE, DMA_TO_DEVICE);
++
++	dev_dbg(core->dev_dec, "h264 multi feed enter: pic=%u paddr=%pad payload=%u\n",
++		h264->multi_pic_count, &src_dma, payload);
++
++	/* Halt AMRISC before resetting the VLD to avoid outstanding bus transactions. */
++	meson_amvdec_write_dos(core, MPSR, 0);
++	meson_amvdec_write_dos(core, CPSR, 0);
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, IMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++	for (i = 0; i < 1000; i++) {
++		if (!(meson_amvdec_read_dos(core, LMEM_DMA_CTRL) & 0x8000))
++			break;
++		udelay(10);
++	}
++
++	/*
++	 * Restore input and per-picture context before resetting and restarting
++	 * the firmware processors. Use OUTPUT as the VLD FIFO.
++	 */
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL, 0);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(5) | BIT(4) | BIT(3));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_write_dos(core, POWER_CTL_VLD, BIT(4));
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_START_PTR, src_dma);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_END_PTR,
++			 src_dma + fifo_size - VDEC_FIFO_ALIGN);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CURR_PTR,
++			 round_down(src_dma, VDEC_FIFO_ALIGN));
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL, 1);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL, 0);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, 2);
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_RP,
++			 round_down(src_dma, VDEC_FIFO_ALIGN));
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_WP,
++			 round_down(src_dma + payload + VLD_PADDING_SIZE,
++				    VDEC_FIFO_ALIGN));
++
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, 3);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_BUF_CNTL, 2);
++	meson_amvdec_write_dos(core, VLD_MEM_VIFIFO_CONTROL,
++			 (0x11 << 16) | BIT(10) | (7 << 3));
++
++	meson_amvdec_write_dos(core, AV_SCRATCH_1, 0);
++	meson_amvdec_write_dos(core, M4_CONTROL_REG, BIT(13));
++	meson_amvdec_write_dos(core, H264_DECODE_SIZE, payload);
++	meson_amvdec_write_dos(core, VIFF_BIT_CNT, payload * 8);
++
++	/* Restore the per-picture hardware context. */
++	meson_amvdec_write_dos(core, POWER_CTL_VLD,
++			 meson_amvdec_read_dos(core, POWER_CTL_VLD) |
++			 BIT(9) | BIT(6));
++	meson_amvdec_write_dos(core, PSCALE_CTRL, 0);
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_CLR_REG, 1);
++	meson_amvdec_write_dos(core, ASSIST_MBOX1_MASK, 1);
++
++	meson_amvdec_write_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(17));
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(16));
++	meson_amvdec_write_dos_bits(core, MDEC_PIC_DC_CTRL, 0xbfu << 24);
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, 0xbfu << 24);
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_CTRL, BIT(31));
++	meson_amvdec_clear_dos_bits(core, MDEC_PIC_DC_MUX_CTRL, BIT(31));
++	meson_amvdec_write_dos(core, MDEC_EXTIF_CFG1, 0);
++	meson_amvdec_write_dos(core, MDEC_PIC_DC_THRESH, 0x404038aa);
++
++	meson_amvdec_write_dos(core, DPB_STATUS_REG, 0);
++	if (h264->lmem_paddr)
++		meson_amvdec_write_dos(core, LMEM_DUMP_ADR, h264->lmem_paddr);
++	meson_amvdec_write_dos(core, FRAME_COUNTER_REG, h264->multi_pic_count);
++	meson_amvdec_write_dos(core, AV_SCRATCH_8,
++			 codec_h264_multi_workspace_base(h264));
++	meson_amvdec_write_dos(core, AV_SCRATCH_F,
++			 (meson_amvdec_read_dos(core, AV_SCRATCH_F) & 0xffffffc3) |
++			 BIT(4));
++	meson_amvdec_clear_dos_bits(core, AV_SCRATCH_F, BIT(6));
++	/* The vendor driver sets this register only on GXL and newer, not on GXBB. */
++	if (core->platform->revision >= AMVDEC_REVISION_GXL)
++		meson_amvdec_write_dos(core, IQIDCT_CONTROL, 0x200);
++
++	/* Enable frame-based decode and stream input. */
++	meson_amvdec_write_dos(core, H264_DECODE_MODE, DECODE_MODE_MULTI_FRAMEBASE);
++	meson_amvdec_write_dos(core, HEAD_PADING_REG, 0);
++	meson_amvdec_write_dos(core, H264_DECODE_SEQINFO, h264->multi_seq_cfg);
++
++	/*
++	 * Restore sequence words after VLD reset. Leave AV_SCRATCH_1 zero so the
++	 * firmware takes geometry from H264_DECODE_SEQINFO.
++	 */
++	meson_amvdec_write_dos(core, AV_SCRATCH_2, h264->multi_seq_cfg2);
++	meson_amvdec_write_dos(core, AV_SCRATCH_B, h264->multi_seq_cfgb);
++	/* INIT_FLAG_REG aliases AV_SCRATCH_2; write the initialization flag last. */
++	meson_amvdec_write_dos(core, INIT_FLAG_REG, 1);
++	meson_amvdec_write_dos(core, AV_SCRATCH_0, h264->multi_seq_scratch0);
++	meson_amvdec_write_dos(core, NAL_SEARCH_CTL, h264->multi_nal_search_or);
++
++	meson_amvdec_write_dos_bits(core, VLD_MEM_VIFIFO_CONTROL, 0x6);
++	meson_amvdec_write_dos_bits(core, NAL_SEARCH_CTL, BIT(16));
++	meson_amvdec_write_dos_bits(core, MDEC_EXTIF_CFG2, 0x20);
++	meson_amvdec_clear_dos_bits(core, NAL_SEARCH_CTL, 0x2);
++	meson_amvdec_clear_dos_bits(core, VDEC_ASSIST_MMC_CTRL1, BIT(3));
++
++	/* Restart the processors and request the slice header. */
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, BIT(12) | BIT(11));
++	meson_amvdec_write_dos(core, DOS_SW_RESET0, 0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_read_dos(core, DOS_SW_RESET0);
++	meson_amvdec_write_dos(core, MPSR, 1);
++
++	h264->multi_pic_started = false;
++	h264->multi_hw_started = true;
++	meson_amvdec_write_dos_action(core, DPB_STATUS_REG,
++				H264_ACTION_SEARCH_HEAD);
++
++	dev_dbg(core->dev_dec,
++		"h264 multi feed: pic=%u paddr=%pad payload=%u\n",
++		 h264->multi_pic_count, &src_dma, payload);
++	h264->multi_pic_count++;
++	return 0;
++}
++
++/*
++ * H.264 uses multi-instance firmware with direct OUTPUT input. Keep the
++ * processors halted until the first request supplies input and context.
++ */
++struct amvdec_codec_ops meson_amvdec_codec_h264_multi_ops = {
++	.start = codec_h264_start,
++	.stop = codec_h264_stop,
++	.pre_stop = codec_h264_pre_stop,
++	.job_abort = codec_h264_job_abort,
++	.load_firmware = codec_h264_load_firmware,
++	.post_start = codec_h264_post_start,
++	.isr = codec_h264_isr,
++	.threaded_isr = codec_h264_threaded_isr,
++	.direct_input = true,
++};
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_h264.h b/drivers/media/platform/amlogic/amvdec/codec_h264.h
+new file mode 100644
+index 000000000000..7a058c2ef68b
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/codec_h264.h
+@@ -0,0 +1,59 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2019 BayLibre, SAS
++ * Author: Maxime Jourdan <mjourdan@baylibre.com>
++ *
++ * H.264 request decoding with multi-instance firmware.
++ */
++
++#ifndef __MESON_AMVDEC_CODEC_H264_H_
++#define __MESON_AMVDEC_CODEC_H264_H_
++
++#include "codec_h264_synth.h"
++#include "amvdec.h"
++
++/* H.264 request decoder with direct OUTPUT input. */
++extern struct amvdec_codec_ops meson_amvdec_codec_h264_multi_ops;
++
++/* True when this session decodes on the multi-instance firmware. */
++static inline bool codec_h264_direct_input(struct amvdec_session *sess)
++{
++	return sess->fmt_out->pixfmt == V4L2_PIX_FMT_H264_SLICE &&
++	       sess->fmt_out->codec_ops->direct_input;
++}
++
++bool meson_amvdec_codec_h264_multi_busy(struct amvdec_session *sess);
++
++void meson_amvdec_codec_h264_multi_finish_picture(struct amvdec_session *sess);
++
++void meson_amvdec_codec_h264_multi_discard_capture(struct amvdec_session *sess, u32 vb2_idx);
++
++void meson_amvdec_codec_h264_multi_hold_src(struct amvdec_session *sess,
++			       struct vb2_v4l2_buffer *vbuf);
++
++const u8 *meson_amvdec_codec_h264_scan_copy(struct amvdec_session *sess, const u8 *src,
++			       u32 len, u32 cap);
++int meson_amvdec_codec_h264_multi_feed_buffer(struct amvdec_session *sess,
++				 struct vb2_buffer *vb);
++
++void meson_amvdec_codec_h264_multi_set_params(struct amvdec_session *sess,
++				 const struct v4l2_ctrl_h264_sps *sps,
++				 const struct v4l2_ctrl_h264_pps *pps,
++				 const struct v4l2_ctrl_h264_decode_params *dec);
++
++/*
++ * Reference list modification for the picture being fed.  Frame-based mode
++ * carries no per-slice controls, so the feed path reads these out of the
++ * slice header and the list builder applies them.
++ */
++void meson_amvdec_codec_h264_multi_set_slice_refs(struct amvdec_session *sess,
++				     const struct h264_slice_refs *sr);
++
++/* Prepare in-band headers; HEADER_DONE commits the firmware cache. */
++int meson_amvdec_codec_h264_multi_headers(struct amvdec_session *sess,
++			     const struct v4l2_ctrl_h264_sps *sps,
++			    const struct v4l2_ctrl_h264_pps *pps,
++			    const struct v4l2_ctrl_h264_scaling_matrix *sm,
++			    bool force, u8 *dst, u32 cap, u32 *len);
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_h264_refs.h b/drivers/media/platform/amlogic/amvdec/codec_h264_refs.h
+new file mode 100644
+index 000000000000..ca6e68dadaf7
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/codec_h264_refs.h
+@@ -0,0 +1,208 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2026 Gus Bourg <gus@bourg.net>
++ *
++ * H.264 frame and field reference-list helpers.
++ */
++
++#ifndef __MESON_AMVDEC_CODEC_H264_REFS_H_
++#define __MESON_AMVDEC_CODEC_H264_REFS_H_
++
++#include "codec_h264_synth.h"
++
++/*
++ * Keep FrameNumWrap signed: short-term references above the current
++ * frame_num wrap to negative PicNum values (H.264 8-27 and 8-28).
++ */
++
++struct h264_ref {
++	int fw;
++	s32 poc, top, bottom;
++	s32 pic_num;
++	bool lt, field;
++	u8 view, dpb_idx, structure;
++};
++
++/* Field rows share one interleaved motion-vector slot. */
++static inline u32 h264_colocate_read_offset(u32 first_mb, u32 mb_width,
++					    u8 cur_structure, u8 ref_structure,
++					 bool direct_8x8)
++{
++	u32 mby = first_mb / mb_width, mbx = first_mb % mb_width;
++	u32 units;
++
++	if (cur_structure < 2)
++		units = ref_structure != 2 ? first_mb * 2 : mby * 2 * mb_width + mbx;
++	else if (ref_structure < 2)
++		units = ((cur_structure == 3 ? mby : mby / 2) * mb_width + mbx) * 2;
++	else
++		units = cur_structure == 2 ? first_mb : first_mb * 2;
++	return (units * 96) >> (direct_8x8 ? 2 : 0);
++}
++
++/* Metadata describes bytes actually completed, independently of a DPB view. */
++struct h264_field_surface {
++	bool valid, bottom, reference;
++	u8 decoded_fields, structure;
++	s32 top_poc, bottom_poc;
++	u32 vb2_idx, frame_num;
++	unsigned long long timestamp;
++	s32 poc;
++	struct v4l2_ctrl_h264_sps sps;
++};
++
++/*
++ * Pair opposite fields with the same frame_num, reference class, SPS and
++ * capture generation. Each field request may supply a different PPS.
++ */
++static inline bool h264_field_is_mate(const struct h264_field_surface *surface,
++				      const struct h264_slice_refs *picture,
++				      unsigned long long timestamp,
++		u32 vb2_idx, const struct v4l2_ctrl_h264_sps *sps,
++		const struct v4l2_ctrl_h264_pps *pps)
++{
++	return surface->valid && surface->decoded_fields == (1U << surface->bottom) &&
++		surface->timestamp == timestamp && surface->vb2_idx == vb2_idx &&
++		picture->field_pic && !picture->idr &&
++		surface->bottom != picture->bottom_field &&
++		surface->frame_num == picture->frame_num &&
++		surface->reference == !!picture->nal_ref_idc &&
++		pps->seq_parameter_set_id == sps->seq_parameter_set_id &&
++		!memcmp(&surface->sps, sps, sizeof(*sps));
++}
++
++/* A DPB view may expose only parity bytes actually completed in this slot. */
++static inline bool h264_surface_view_valid(const struct h264_field_surface *surface,
++					   const struct v4l2_h264_dpb_entry *entry, u8 view,
++		const struct v4l2_ctrl_h264_sps *sps)
++{
++	if (!view || view > V4L2_H264_FRAME_REF ||
++	    (entry->fields & view) != view ||
++	    !(entry->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
++		return false;
++	if (!surface->valid)
++		return !(entry->flags & V4L2_H264_DPB_ENTRY_FLAG_FIELD);
++	return surface->timestamp == entry->reference_ts &&
++		(surface->decoded_fields & view) == view &&
++		!memcmp(&surface->sps, sps, sizeof(*sps)) &&
++		(!(view & V4L2_H264_TOP_FIELD_REF) ||
++		 surface->top_poc == entry->top_field_order_cnt) &&
++		(!(view & V4L2_H264_BOTTOM_FIELD_REF) ||
++		 surface->bottom_poc == entry->bottom_field_order_cnt);
++}
++
++static inline u32 h264_surface_info0(const struct h264_field_surface *surface)
++{
++	u32 info;
++
++	switch (surface->structure) {
++	case 0:
++		info = 0xf400;
++		break;
++	case 1:
++		info = 0xf440;
++		break;
++	case 3:
++		info = 0xf4c0;
++		break;
++	case 2:
++	default:
++		info = 0xf480;
++		break;
++	}
++	if (surface->decoded_fields == V4L2_H264_FRAME_REF &&
++	    surface->bottom_poc < surface->top_poc)
++		info |= 0x100;
++	return info;
++}
++
++/*
++ * Apply H.264 8.2.4.3 list modifications from an immutable inventory.
++ * Remove duplicates only after the newly fixed prefix. The caller provides
++ * 32 entries; errors leave the list and length unchanged.
++ */
++#ifdef __KERNEL__
++static noinline
++#else
++static
++#endif
++int h264_refs_modify(struct h264_ref *list, u32 *len,
++		     const struct h264_ref *inventory, u32 count,
++				  const struct h264_slice_refs *sr, u32 lx,
++				  u32 max_pic_num)
++{
++	struct h264_ref work[V4L2_H264_REF_LIST_LEN + 1];
++	u32 n = *len, idx, k, dst, active;
++	s32 curr = sr->field_pic ? 2 * sr->frame_num + 1 : sr->frame_num;
++	s32 pred;
++
++	if (lx > 1 || n > V4L2_H264_REF_LIST_LEN ||
++	    count > (sr->field_pic ? V4L2_H264_REF_LIST_LEN :
++		     V4L2_H264_NUM_DPB_ENTRIES) ||
++	    !max_pic_num || max_pic_num > (sr->field_pic ? 131072 : 65536) ||
++	    sr->frame_num >= (max_pic_num >> !!sr->field_pic) ||
++	    sr->n_mod[lx] > H264_MAX_RPLM)
++		return -EINVAL;
++	if (!sr->n_mod[lx])
++		return 0;
++	active = sr->num_ref_idx_active[lx];
++	if (!active || active > V4L2_H264_REF_LIST_LEN || sr->n_mod[lx] > active)
++		return -EINVAL;
++
++	memcpy(work, list, n * sizeof(*list));
++	pred = curr;
++	for (idx = 0; idx < sr->n_mod[lx]; idx++) {
++		const struct h264_rplm_op *op = &sr->mod[lx][idx];
++		const struct h264_ref *ref = NULL;
++		s32 pic_num;
++
++		if (op->idc < 2) {
++			s32 diff;
++
++			if (op->arg >= max_pic_num)
++				return -EINVAL;
++			diff = op->arg + 1;
++			pred += op->idc ? diff : -diff;
++			if (pred < 0)
++				pred += max_pic_num;
++			else if (pred >= (s32)max_pic_num)
++				pred -= max_pic_num;
++			pic_num = pred > curr ?
++				  pred - (s32)max_pic_num : pred;
++		} else if (op->idc == 2) {
++			/* Inventory carries LongTermPicNum, including field parity. */
++			if (op->arg >= max_pic_num)
++				return -EINVAL;
++			pic_num = op->arg;
++		} else {
++			return -EINVAL;
++		}
++		for (k = 0; k < count; k++)
++			if (inventory[k].lt == (op->idc == 2) &&
++			    inventory[k].pic_num == pic_num) {
++				ref = &inventory[k];
++				break;
++			}
++		if (!ref || idx > n)
++			return -EINVAL;
++
++		for (k = n; k > idx; k--)
++			work[k] = work[k - 1];
++		work[idx] = *ref;
++		dst = idx + 1;
++		for (k = idx + 1; k <= n; k++)
++			if (work[k].lt != ref->lt || work[k].pic_num != ref->pic_num)
++				work[dst++] = work[k];
++		n = dst > V4L2_H264_REF_LIST_LEN ? V4L2_H264_REF_LIST_LEN : dst;
++	}
++	/*
++	 * Limit the active count to initialized entries. Every explicit target
++	 * must exist in the inventory; the register writer pads with the last entry.
++	 */
++	if (n > active)
++		n = active;
++	memcpy(list, work, n * sizeof(*list));
++	*len = n;
++	return 0;
++}
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_h264_synth.h b/drivers/media/platform/amlogic/amvdec/codec_h264_synth.h
+new file mode 100644
+index 000000000000..1c83aa2b57b5
+--- /dev/null
++++ b/drivers/media/platform/amlogic/amvdec/codec_h264_synth.h
+@@ -0,0 +1,1108 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2026 Gus Bourg <gus@bourg.net>
++ *
++ * H.264 header synthesis and slice parsing.
++ */
++
++#ifndef __MESON_AMVDEC_CODEC_H264_SYNTH_H_
++#define __MESON_AMVDEC_CODEC_H264_SYNTH_H_
++
++#ifdef __KERNEL__
++#include <linux/bits.h>
++#include <linux/errno.h>
++#include <linux/string.h>
++#include <linux/types.h>
++#include <media/v4l2-ctrls.h>
++#else
++#include <errno.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <string.h>
++typedef uint8_t u8;
++typedef int8_t s8;
++typedef uint16_t u16;
++typedef uint32_t u32;
++typedef int32_t s32;
++typedef long long s64;
++#include <linux/v4l2-controls.h>
++#ifndef ARRAY_SIZE
++#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
++#endif
++#endif
++
++#define H264_SYNTH_MAX_HEADERS 512
++
++#include "codec_h264_scratch.h"
++
++struct h264_bw {
++	u8 *buf;
++	u32 cap;
++	u32 bitpos;
++	int err;
++};
++
++static inline void h264_bw_init(struct h264_bw *bw, u8 *buf, u32 cap)
++{
++	bw->buf = buf;
++	bw->cap = cap;
++	bw->bitpos = 0;
++	bw->err = 0;
++	memset(buf, 0, cap);
++}
++
++static inline void h264_bw_bit(struct h264_bw *bw, u32 bit)
++{
++	u32 byte = bw->bitpos >> 3;
++
++	if (bw->err)
++		return;
++	if (byte >= bw->cap) {
++		bw->err = -ENOSPC;
++		return;
++	}
++	if (bit)
++		bw->buf[byte] |= 1 << (7 - (bw->bitpos & 7));
++	bw->bitpos++;
++}
++
++static inline void h264_bw_u(struct h264_bw *bw, u32 val, u32 bits)
++{
++	while (bits--)
++		h264_bw_bit(bw, (val >> bits) & 1);
++}
++
++static inline void h264_bw_ue(struct h264_bw *bw, u32 val)
++{
++	u32 code = val + 1;
++	u32 bits = 32 - __builtin_clz(code);
++	u32 i;
++
++	for (i = 1; i < bits; i++)
++		h264_bw_bit(bw, 0);
++	h264_bw_u(bw, code, bits);
++}
++
++static inline void h264_bw_se(struct h264_bw *bw, s32 val)
++{
++	u32 code = val <= 0 ? (u32)(-2 * val) : (u32)(2 * val - 1);
++
++	h264_bw_ue(bw, code);
++}
++
++static inline void h264_bw_trailing(struct h264_bw *bw)
++{
++	h264_bw_bit(bw, 1);
++	while (bw->bitpos & 7)
++		h264_bw_bit(bw, 0);
++}
++
++static inline u32 h264_bw_bytes(const struct h264_bw *bw)
++{
++	return (bw->bitpos + 7) >> 3;
++}
++
++static inline int h264_epb_copy(u8 *dst, u32 cap, const u8 *src, u32 len,
++				u32 *out_len)
++{
++	u32 zeros = 0, out = 0, i;
++
++	for (i = 0; i < len; i++) {
++		if (zeros >= 2 && src[i] <= 3) {
++			if (out >= cap)
++				return -ENOSPC;
++			dst[out++] = 3;
++			zeros = 0;
++		}
++		if (out >= cap)
++			return -ENOSPC;
++		dst[out++] = src[i];
++		zeros = src[i] == 0 ? zeros + 1 : 0;
++	}
++	*out_len = out;
++	return 0;
++}
++
++static inline int h264_emit_nal(u8 *dst, u32 cap, u8 header,
++				const u8 *rbsp, u32 rbsp_len, u32 *out_len)
++{
++	u32 epb_len;
++	int ret;
++
++	if (cap < 5)
++		return -ENOSPC;
++	dst[0] = 0;
++	dst[1] = 0;
++	dst[2] = 0;
++	dst[3] = 1;
++	dst[4] = header;
++	ret = h264_epb_copy(dst + 5, cap - 5, rbsp, rbsp_len, &epb_len);
++	if (ret)
++		return ret;
++	*out_len = 5 + epb_len;
++	return 0;
++}
++
++/*
++ * Profiles whose SPS carries the chroma/bit-depth/scaling-matrix block
++ * (7.3.2.1.1).  Emitting an SPS without it for these profiles produces a
++ * stream the firmware cannot parse.
++ */
++static inline bool h264_profile_has_chroma_ext(u8 profile_idc)
++{
++	switch (profile_idc) {
++	case 100: case 110: case 122: case 244:
++	case 44: case 83: case 86:
++	case 118: case 128: case 138: case 139: case 134: case 135:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static inline int h264_sps_validate(const struct v4l2_ctrl_h264_sps *sps)
++{
++	const u32 unsupported_sps =
++		V4L2_H264_SPS_FLAG_SEPARATE_COLOUR_PLANE |
++		V4L2_H264_SPS_FLAG_QPPRIME_Y_ZERO_TRANSFORM_BYPASS;
++
++	/*
++	 * Accept supported Baseline, Main and High syntax with 4:2:0 8-bit samples.
++	 * Extended streams asserting constraint_set1 conform to Main (A.2.2).
++	 */
++	if (sps->profile_idc != 66 && sps->profile_idc != 77 &&
++	    !(sps->profile_idc == 88 &&
++	      (sps->constraint_set_flags & V4L2_H264_SPS_CONSTRAINT_SET1_FLAG)) &&
++	    !h264_profile_has_chroma_ext(sps->profile_idc))
++		return -EOPNOTSUPP;
++	if (sps->chroma_format_idc != 1 || sps->bit_depth_luma_minus8 ||
++	    sps->bit_depth_chroma_minus8)
++		return -EOPNOTSUPP;
++	/*
++	 * Frame geometry uses map-unit height; field-picture admission is checked
++	 * from the slice header.
++	 */
++	if (sps->flags & unsupported_sps)
++		return -EOPNOTSUPP;
++	if (sps->pic_order_cnt_type > 2)
++		return -EINVAL;
++	return 0;
++}
++
++static inline bool h264_scaling_matrix_flat(const struct v4l2_ctrl_h264_sps *sps,
++					    const struct v4l2_ctrl_h264_pps *pps,
++						 const struct v4l2_ctrl_h264_scaling_matrix *sm)
++{
++	unsigned int i, j, n8;
++
++	if (!(pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT))
++		return true;
++	if (!sm)
++		return false;
++	for (i = 0; i < ARRAY_SIZE(sm->scaling_list_4x4); i++)
++		for (j = 0; j < ARRAY_SIZE(sm->scaling_list_4x4[0]); j++)
++			if (sm->scaling_list_4x4[i][j] != 16)
++				return false;
++	n8 = sps->chroma_format_idc == 3 ?
++	     ARRAY_SIZE(sm->scaling_list_8x8) : 2;
++	for (i = 0; i < n8; i++)
++		for (j = 0; j < ARRAY_SIZE(sm->scaling_list_8x8[0]); j++)
++			if (sm->scaling_list_8x8[i][j] != 16)
++				return false;
++	return true;
++}
++
++static inline int h264_synth_validate(const struct v4l2_ctrl_h264_sps *sps,
++				      const struct v4l2_ctrl_h264_pps *pps,
++				      const struct v4l2_ctrl_h264_scaling_matrix *sm)
++{
++	const u16 unsupported_pps = 0;
++	int ret;
++
++	ret = h264_sps_validate(sps);
++	if (ret)
++		return ret;
++	if (pps->num_slice_groups_minus1 || (pps->flags & unsupported_pps))
++		return -EOPNOTSUPP;
++	return 0;
++}
++
++static const u8 h264_zigzag_4x4[16] = {
++	0, 1, 4, 8, 5, 2, 3, 6, 9, 12, 13, 10, 7, 11, 14, 15,
++};
++
++static const u8 h264_zigzag_8x8[64] = {
++	0, 1, 8, 16, 9, 2, 3, 10,
++	17, 24, 32, 25, 18, 11, 4, 5,
++	12, 19, 26, 33, 40, 48, 41, 34,
++	27, 20, 13, 6, 7, 14, 21, 28,
++	35, 42, 49, 56, 57, 50, 43, 36,
++	29, 22, 15, 23, 30, 37, 44, 51,
++	58, 59, 52, 45, 38, 31, 39, 46,
++	53, 60, 61, 54, 47, 55, 62, 63,
++};
++
++static inline void h264_bw_scaling_list(struct h264_bw *bw, const u8 *list,
++					const u8 *scan, u32 size)
++{
++	s32 last = 8;
++	u32 i;
++
++	for (i = 0; i < size; i++) {
++		s32 next = list[scan[i]];
++
++		/* delta_scale is signed 8-bit; nextScale wraps modulo 256. */
++		h264_bw_se(bw, ((next - last + 128) & 255) - 128);
++		last = next;
++	}
++}
++
++static inline int h264_synth_sps(const struct v4l2_ctrl_h264_sps *sps,
++				 u8 *dst, u32 cap, u32 *len)
++{
++	u8 rbsp[256];
++	struct h264_bw bw;
++	u32 constraint_byte = 0;
++	u32 i;
++
++	h264_bw_init(&bw, rbsp, sizeof(rbsp));
++	h264_bw_u(&bw, sps->profile_idc, 8);
++	/* V4L2 numbers constraint_set0..5 from the LSB; the RBSP stores
++	 * constraint_set0 first, at bit 7, followed by two reserved zero bits.
++	 */
++	for (i = 0; i < 6; i++)
++		if (sps->constraint_set_flags & (1 << i))
++			constraint_byte |= 1 << (7 - i);
++	h264_bw_u(&bw, constraint_byte, 8);
++	h264_bw_u(&bw, sps->level_idc, 8);
++	h264_bw_ue(&bw, sps->seq_parameter_set_id);
++	if (h264_profile_has_chroma_ext(sps->profile_idc)) {
++		h264_bw_ue(&bw, sps->chroma_format_idc);
++		if (sps->chroma_format_idc == 3)
++			h264_bw_bit(&bw, !!(sps->flags &
++				V4L2_H264_SPS_FLAG_SEPARATE_COLOUR_PLANE));
++		h264_bw_ue(&bw, sps->bit_depth_luma_minus8);
++		h264_bw_ue(&bw, sps->bit_depth_chroma_minus8);
++		h264_bw_bit(&bw, !!(sps->flags &
++			V4L2_H264_SPS_FLAG_QPPRIME_Y_ZERO_TRANSFORM_BYPASS));
++		/* Effective lists, including SPS inheritance, are emitted in PPS. */
++		h264_bw_bit(&bw, 0); /* seq_scaling_matrix_present_flag */
++	}
++	h264_bw_ue(&bw, sps->log2_max_frame_num_minus4);
++	h264_bw_ue(&bw, sps->pic_order_cnt_type);
++	if (sps->pic_order_cnt_type == 0) {
++		h264_bw_ue(&bw, sps->log2_max_pic_order_cnt_lsb_minus4);
++	} else if (sps->pic_order_cnt_type == 1) {
++		h264_bw_bit(&bw, !!(sps->flags &
++				       V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO));
++		h264_bw_se(&bw, sps->offset_for_non_ref_pic);
++		h264_bw_se(&bw, sps->offset_for_top_to_bottom_field);
++		h264_bw_ue(&bw, sps->num_ref_frames_in_pic_order_cnt_cycle);
++		for (i = 0; i < sps->num_ref_frames_in_pic_order_cnt_cycle; i++)
++			h264_bw_se(&bw, sps->offset_for_ref_frame[i]);
++	}
++	h264_bw_ue(&bw, sps->max_num_ref_frames);
++	h264_bw_bit(&bw, !!(sps->flags &
++			       V4L2_H264_SPS_FLAG_GAPS_IN_FRAME_NUM_VALUE_ALLOWED));
++	h264_bw_ue(&bw, sps->pic_width_in_mbs_minus1);
++	h264_bw_ue(&bw, sps->pic_height_in_map_units_minus1);
++	h264_bw_bit(&bw, !!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY));
++	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY))
++		h264_bw_bit(&bw, !!(sps->flags &
++				    V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD));
++	h264_bw_bit(&bw, !!(sps->flags & V4L2_H264_SPS_FLAG_DIRECT_8X8_INFERENCE));
++	h264_bw_bit(&bw, 0); /* frame_cropping_flag: absent from the V4L2 control */
++	h264_bw_bit(&bw, 0); /* vui_parameters_present_flag: absent from the control */
++	h264_bw_trailing(&bw);
++	if (bw.err)
++		return bw.err;
++	return h264_emit_nal(dst, cap, 0x67, rbsp, h264_bw_bytes(&bw), len);
++}
++
++static inline int h264_synth_pps(const struct v4l2_ctrl_h264_sps *sps,
++				 const struct v4l2_ctrl_h264_pps *pps,
++				 const struct v4l2_ctrl_h264_scaling_matrix *sm,
++				 u8 *dst, u32 cap, u32 *len)
++{
++	u8 rbsp[512];
++	struct h264_bw bw;
++	bool extension, emit_scaling;
++	u32 i;
++
++	h264_bw_init(&bw, rbsp, sizeof(rbsp));
++	h264_bw_ue(&bw, pps->pic_parameter_set_id);
++	h264_bw_ue(&bw, pps->seq_parameter_set_id);
++	h264_bw_bit(&bw, !!(pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE));
++	h264_bw_bit(&bw, !!(pps->flags &
++			       V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT));
++	h264_bw_ue(&bw, pps->num_slice_groups_minus1);
++	h264_bw_ue(&bw, pps->num_ref_idx_l0_default_active_minus1);
++	h264_bw_ue(&bw, pps->num_ref_idx_l1_default_active_minus1);
++	h264_bw_bit(&bw, !!(pps->flags & V4L2_H264_PPS_FLAG_WEIGHTED_PRED));
++	h264_bw_u(&bw, pps->weighted_bipred_idc, 2);
++	h264_bw_se(&bw, pps->pic_init_qp_minus26);
++	h264_bw_se(&bw, pps->pic_init_qs_minus26);
++	h264_bw_se(&bw, pps->chroma_qp_index_offset);
++	h264_bw_bit(&bw, !!(pps->flags &
++			       V4L2_H264_PPS_FLAG_DEBLOCKING_FILTER_CONTROL_PRESENT));
++	h264_bw_bit(&bw, !!(pps->flags & V4L2_H264_PPS_FLAG_CONSTRAINED_INTRA_PRED));
++	h264_bw_bit(&bw, !!(pps->flags & V4L2_H264_PPS_FLAG_REDUNDANT_PIC_CNT_PRESENT));
++	/* Emit explicit scaling lists only when they differ from flat defaults. */
++	emit_scaling = sm &&
++		       (pps->flags & V4L2_H264_PPS_FLAG_SCALING_MATRIX_PRESENT) &&
++		       !h264_scaling_matrix_flat(sps, pps, sm);
++	extension = emit_scaling ||
++		    (pps->flags & V4L2_H264_PPS_FLAG_TRANSFORM_8X8_MODE) ||
++		    pps->second_chroma_qp_index_offset !=
++		    pps->chroma_qp_index_offset;
++	if (extension) {
++		h264_bw_bit(&bw, !!(pps->flags &
++				    V4L2_H264_PPS_FLAG_TRANSFORM_8X8_MODE));
++		h264_bw_bit(&bw, emit_scaling); /* pic_scaling_matrix_present_flag */
++		if (emit_scaling) {
++			for (i = 0; i < ARRAY_SIZE(sm->scaling_list_4x4); i++) {
++				h264_bw_bit(&bw, 1);
++				h264_bw_scaling_list(&bw, sm->scaling_list_4x4[i],
++						     h264_zigzag_4x4,
++						      ARRAY_SIZE(h264_zigzag_4x4));
++			}
++			for (i = 0;
++			     (pps->flags & V4L2_H264_PPS_FLAG_TRANSFORM_8X8_MODE) &&
++			     i < (sps->chroma_format_idc == 3 ? 6 : 2); i++) {
++				h264_bw_bit(&bw, 1);
++				h264_bw_scaling_list(&bw, sm->scaling_list_8x8[i],
++						     h264_zigzag_8x8,
++						      ARRAY_SIZE(h264_zigzag_8x8));
++			}
++		}
++		h264_bw_se(&bw, pps->second_chroma_qp_index_offset);
++	}
++	h264_bw_trailing(&bw);
++	if (bw.err)
++		return bw.err;
++	return h264_emit_nal(dst, cap, 0x68, rbsp, h264_bw_bytes(&bw), len);
++}
++
++/*
++ * Parse slice-header reference-list modifications for frame-based requests;
++ * the host supplies final lists to the firmware.
++ */
++
++#define H264_MAX_RPLM	32
++
++struct h264_rplm_op {
++	u8  idc;	/* modification_of_pic_nums_idc */
++	u32 arg;	/* abs_diff_pic_num_minus1 or long_term_pic_num */
++};
++
++struct h264_slice_refs {
++	u32 first_mb;
++	u32 pps_id;
++	u32 idr_pic_id;
++	u32 poc_lsb;
++	s32 delta_poc_bottom, delta_poc[2];
++	u8 nal_ref_idc;
++	bool idr;
++	u32 refs_header_bits; /* End of parsed prefix, before I-field marking. */
++	u32 initial_mb_count; /* CAVLC skip run plus the first coded macroblock. */
++	u32 slice_type;			/* 0 P, 1 B, 2 I, 5/6/7 same mod 5 */
++	u32 frame_num;
++	u32 num_ref_idx_active[2];
++	bool field_pic;
++	bool bottom_field;
++	bool mbaff;
++	struct h264_rplm_op mod[2][H264_MAX_RPLM];
++	u32 n_mod[2];
++	bool valid;
++};
++
++struct h264_br {
++	const u8 *buf;
++	u32 len;
++	u32 bit;
++	int err;
++};
++
++static inline u32 h264_br_u1(struct h264_br *r)
++{
++	u32 byte = r->bit >> 3;
++
++	if (byte >= r->len) {
++		r->err = -EINVAL;
++		return 0;
++	}
++	return (r->buf[byte] >> (7 - (r->bit++ & 7))) & 1;
++}
++
++static inline u32 h264_br_u(struct h264_br *r, u32 n)
++{
++	u32 v = 0;
++
++	while (n--)
++		v = (v << 1) | h264_br_u1(r);
++	return v;
++}
++
++static inline u32 h264_br_ue(struct h264_br *r)
++{
++	u32 zeros = 0;
++
++	while (!r->err && !h264_br_u1(r)) {
++		if (++zeros > 31) {
++			r->err = -EINVAL;
++			return 0;
++		}
++	}
++	if (r->err || !zeros)
++		return 0;
++	return (1u << zeros) - 1 + h264_br_u(r, zeros);
++}
++
++static inline s32 h264_br_se(struct h264_br *r)
++{
++	u32 k = h264_br_ue(r);
++
++	return (k & 1) ? (s32)((k + 1) >> 1) : -(s32)(k >> 1);
++}
++
++/* Copy a bounded RBSP prefix to @dst, removing emulation-prevention bytes. */
++static inline u32 h264_unescape(const u8 *src, u32 len, u8 *dst, u32 want)
++{
++	u32 i = 0, o = 0, zeros = 0;
++
++	while (i < len && o < want) {
++		u8 b = src[i++];
++
++		if (zeros >= 2 && b == 0x03) {
++			zeros = 0;
++			continue;
++		}
++		zeros = b ? 0 : zeros + 1;
++		dst[o++] = b;
++	}
++	return o;
++}
++
++static inline int h264_skip_pred_weight_table(struct h264_br *r,
++					      const struct v4l2_ctrl_h264_sps *sps,
++		const struct h264_slice_refs *sr)
++{
++	u32 lx, i, j, lists = (sr->slice_type % 5) == 1 ? 2 : 1;
++	bool chroma = sps->chroma_format_idc != 0;
++
++	if (h264_br_ue(r) > 7)
++		return -EINVAL;
++	if (chroma && h264_br_ue(r) > 7)
++		return -EINVAL;
++	for (lx = 0; lx < lists; lx++) {
++		for (i = 0; i < sr->num_ref_idx_active[lx]; i++) {
++			if (h264_br_u1(r)) {
++				h264_br_se(r); /* luma_weight_lX */
++				h264_br_se(r); /* luma_offset_lX */
++			}
++			if (!chroma)
++				continue;
++			if (!h264_br_u1(r))
++				continue;
++			for (j = 0; j < 2; j++) {
++				h264_br_se(r); /* chroma_weight_lX */
++				h264_br_se(r); /* chroma_offset_lX */
++			}
++		}
++	}
++	return r->err;
++}
++
++static inline int h264_skip_dec_ref_pic_marking(struct h264_br *r,
++						const struct h264_slice_refs *sr)
++{
++	u32 count = 0;
++
++	if (!sr->nal_ref_idc)
++		return 0;
++	if (sr->idr) {
++		h264_br_u1(r); /* no_output_of_prior_pics_flag */
++		h264_br_u1(r); /* long_term_reference_flag */
++		return r->err;
++	}
++	if (!h264_br_u1(r)) /* adaptive_ref_pic_marking_mode_flag */
++		return r->err;
++	while (!r->err) {
++		u32 op = h264_br_ue(r);
++
++		if (!op)
++			break;
++		if (++count > H264_MAX_RPLM) {
++			r->err = -EINVAL;
++			break;
++		}
++		switch (op) {
++		case 1:
++			h264_br_ue(r); /* difference_of_pic_nums_minus1 */
++			break;
++		case 2:
++			h264_br_ue(r); /* long_term_pic_num */
++			break;
++		case 3:
++			h264_br_ue(r); /* difference_of_pic_nums_minus1 */
++			h264_br_ue(r); /* long_term_frame_idx */
++			break;
++		case 4:
++			h264_br_ue(r); /* max_long_term_frame_idx_plus1 */
++			break;
++		case 5:
++			break;
++		case 6:
++			h264_br_ue(r); /* long_term_frame_idx */
++			break;
++		default:
++			r->err = -EINVAL;
++			break;
++		}
++	}
++	return r->err;
++}
++
++static inline int h264_validate_slice_header_tail(struct h264_br *r,
++						  const struct v4l2_ctrl_h264_sps *sps,
++		const struct v4l2_ctrl_h264_pps *pps,
++		struct h264_slice_refs *sr)
++{
++	u32 type = sr->slice_type % 5;
++	s32 qp;
++
++	if (((pps->flags & V4L2_H264_PPS_FLAG_WEIGHTED_PRED) && type == 0) ||
++	    (pps->weighted_bipred_idc == 1 && type == 1)) {
++		int ret = h264_skip_pred_weight_table(r, sps, sr);
++
++		if (ret)
++			return ret;
++	}
++	sr->refs_header_bits = r->bit;
++	if (h264_skip_dec_ref_pic_marking(r, sr))
++		return r->err;
++	if ((pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE) && type != 2) {
++		if (h264_br_ue(r) > 2) /* cabac_init_idc */
++			return -EINVAL;
++	}
++	qp = 26 + pps->pic_init_qp_minus26 + h264_br_se(r);
++	if (qp < 0 || qp > 51)
++		return -EINVAL;
++	if (pps->flags & V4L2_H264_PPS_FLAG_DEBLOCKING_FILTER_CONTROL_PRESENT) {
++		u32 disable = h264_br_ue(r);
++
++		if (disable > 2)
++			return -EINVAL;
++		if (disable != 1) {
++			s32 alpha = h264_br_se(r);
++			s32 beta = h264_br_se(r);
++
++			if (alpha < -6 || alpha > 6 || beta < -6 || beta > 6)
++				return -EINVAL;
++		}
++	}
++	return r->err;
++}
++
++/* Locate the first VCL NAL (type 1 or 5) in an Annex B access unit. */
++static inline const u8 *h264_find_first_slice(const u8 *buf, u32 len, u32 *nal_len)
++{
++	u32 i = 0, start = 0;
++	bool have = false;
++
++	while (i < len && len - i >= 3) {
++		if (buf[i] == 0 && buf[i + 1] == 0 && buf[i + 2] == 1) {
++			u32 payload = i + 3;
++
++			if (have) {
++				u32 end = i;
++
++				while (end > start && buf[end - 1] == 0)
++					end--;
++				*nal_len = end - start;
++				return buf + start;
++			}
++			if (payload < len) {
++				u8 t = buf[payload] & 0x1f;
++
++				if (t == 1 || t == 5) {
++					start = payload;
++					have = true;
++				}
++			}
++			i = payload;
++			continue;
++		}
++		i++;
++	}
++	if (have) {
++		*nal_len = len - start;
++		return buf + start;
++	}
++	return NULL;
++}
++
++/* Reject unsupported syntax before any part of an access unit is fed. */
++static inline int h264_request_preflight(const u8 *buf, u32 len,
++					 const struct v4l2_ctrl_h264_pps *pps)
++{
++	const u8 *nal;
++	u32 cursor = 0, count = 0, nal_len;
++
++	if (pps->num_slice_groups_minus1)
++		return -EOPNOTSUPP;
++	if (!buf)
++		return -EINVAL;
++	while (cursor < len &&
++	       (nal = h264_find_first_slice(buf + cursor, len - cursor, &nal_len))) {
++		u8 rbsp[16];
++		struct h264_br r = { .buf = rbsp };
++		u32 type;
++
++		r.len = h264_unescape(nal + 1, nal_len - 1, rbsp, sizeof(rbsp));
++		h264_br_ue(&r); /* first_mb_in_slice */
++		type = h264_br_ue(&r);
++		if (r.err)
++			return r.err;
++		/* The same slice_type domain as h264_parse_slice_refs(). */
++		if (type > 9 || type % 5 > 2)
++			return -EOPNOTSUPP;
++		cursor = (u32)(nal - buf) + nal_len;
++		count++;
++	}
++	return count ? 0 : -EINVAL;
++}
++
++/*
++ * Parse one slice header far enough to recover the reference list
++ * modification commands.  @nal points at the NAL header byte.
++ */
++static inline int h264_parse_slice_refs_mode(const u8 *nal, u32 len,
++					     const struct v4l2_ctrl_h264_sps *sps,
++					     const struct v4l2_ctrl_h264_pps *pps,
++					     bool allow_inter_field,
++					     struct h264_slice_refs *out,
++					     struct h264_parse_scratch *scratch)
++{
++	u8 *rbsp = scratch->rbsp;
++	struct h264_br r;
++	u32 type, lx, n;
++	bool idr;
++	int ret;
++
++	memset(out, 0, sizeof(*out));
++	if (!len)
++		return -EINVAL;
++
++	idr = (nal[0] & 0x1f) == 5;
++	r.buf = rbsp;
++	r.len = h264_unescape(nal + 1, len - 1, rbsp, sizeof(scratch->rbsp));
++	r.bit = 0;
++	r.err = 0;
++
++	out->first_mb = h264_br_ue(&r);
++	type = h264_br_ue(&r);
++	out->slice_type = type;
++	if (type > 9 || type % 5 > 2)
++		return -EOPNOTSUPP;
++	out->idr = idr;
++	out->nal_ref_idc = (nal[0] >> 5) & 3;
++	if (nal[0] & 0x80)
++		return -EINVAL;
++	type %= 5;
++	out->pps_id = h264_br_ue(&r);
++	if (sps->flags & V4L2_H264_SPS_FLAG_SEPARATE_COLOUR_PLANE)
++		h264_br_u(&r, 2);		/* colour_plane_id */
++	out->frame_num = h264_br_u(&r, sps->log2_max_frame_num_minus4 + 4);
++
++	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY)) {
++		out->field_pic = h264_br_u1(&r);
++		if (out->field_pic) {
++			out->bottom_field = h264_br_u1(&r);
++			/* Inter fields are admitted only by the per-field path. */
++			if (type != 2 && !allow_inter_field)
++				return -EOPNOTSUPP;
++		}
++	}
++	if (idr)
++		out->idr_pic_id = h264_br_ue(&r);
++
++	if (sps->pic_order_cnt_type == 0) {
++		out->poc_lsb = h264_br_u(&r, sps->log2_max_pic_order_cnt_lsb_minus4 + 4);
++		if (!out->field_pic &&
++		    (pps->flags & V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT))
++			out->delta_poc_bottom = h264_br_se(&r);
++	} else if (sps->pic_order_cnt_type == 1 &&
++		   !(sps->flags & V4L2_H264_SPS_FLAG_DELTA_PIC_ORDER_ALWAYS_ZERO)) {
++		out->delta_poc[0] = h264_br_se(&r);
++		if (!out->field_pic &&
++		    (pps->flags & V4L2_H264_PPS_FLAG_BOTTOM_FIELD_PIC_ORDER_IN_FRAME_PRESENT))
++			out->delta_poc[1] = h264_br_se(&r);
++	}
++	if (pps->flags & V4L2_H264_PPS_FLAG_REDUNDANT_PIC_CNT_PRESENT)
++		h264_br_ue(&r);			/* redundant_pic_cnt */
++	if (type == 1)
++		h264_br_u1(&r);			/* direct_spatial_mv_pred_flag */
++
++	out->num_ref_idx_active[0] = pps->num_ref_idx_l0_default_active_minus1 + 1;
++	out->num_ref_idx_active[1] = pps->num_ref_idx_l1_default_active_minus1 + 1;
++	if (type == 0 || type == 1 || type == 3) {
++		if (h264_br_u1(&r)) {	/* num_ref_idx_active_override_flag */
++			out->num_ref_idx_active[0] = h264_br_ue(&r) + 1;
++			if (type == 1)
++				out->num_ref_idx_active[1] = h264_br_ue(&r) + 1;
++		}
++	}
++
++	/* ref_pic_list_modification(): l0 for P/SP/B, l1 for B only. */
++	for (lx = 0; lx < 2; lx++) {
++		if (lx == 0 && !(type == 0 || type == 1 || type == 3))
++			continue;
++		if (lx == 1 && type != 1)
++			continue;
++		if (!h264_br_u1(&r))
++			continue;
++		n = 0;
++		while (!r.err) {
++			u32 idc = h264_br_ue(&r);
++
++			if (idc == 3)
++				break;
++			if (idc > 2 || n >= H264_MAX_RPLM) {
++				r.err = -EINVAL;
++				break;
++			}
++			out->mod[lx][n].idc = idc;
++			out->mod[lx][n].arg = h264_br_ue(&r);
++			n++;
++		}
++		out->n_mod[lx] = n;
++	}
++
++	if (r.err)
++		return r.err;
++	ret = h264_validate_slice_header_tail(&r, sps, pps, out);
++	if (ret)
++		return ret;
++	if (r.err)
++		return r.err;
++	if (!out->field_pic && (type == 0 || type == 1) &&
++	    !(pps->flags & V4L2_H264_PPS_FLAG_ENTROPY_CODING_MODE)) {
++		u32 skip = h264_br_ue(&r);
++		u32 end = r.len * 8;
++
++		if (r.err)
++			return r.err;
++		/*
++		 * The no-FMO PPS rules out slice_group_change_cycle here.
++		 * Only P/B headers end at mb_skip_run; SP/SI have extra fields.
++		 * The last set bit is rbsp_stop_one_bit. Any preceding bits
++		 * after mb_skip_run belong to a coded macroblock. The bounded
++		 * RBSP copy may omit the tail; that only lowers this minimum.
++		 */
++		while (end > r.bit &&
++		       !(r.buf[(end - 1) >> 3] & (1U << (7 - ((end - 1) & 7)))))
++			end--;
++		if (end > r.bit + 1) {
++			if (skip == ~0U)
++				return -EINVAL;
++			skip++;
++		}
++		out->initial_mb_count = skip;
++	}
++	out->mbaff = !out->field_pic && !(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) &&
++		     !!(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD);
++	out->valid = true;
++	return 0;
++}
++
++/* Use the frame and single-field parser subset. */
++static inline int h264_parse_slice_refs(const u8 *nal, u32 len,
++					const struct v4l2_ctrl_h264_sps *sps,
++					const struct v4l2_ctrl_h264_pps *pps,
++					struct h264_slice_refs *out,
++					struct h264_parse_scratch *scratch)
++{
++	return h264_parse_slice_refs_mode(nal, len, sps, pps, false, out, scratch);
++}
++
++/* Advance over exactly one VCL NAL; non-VCL NALs and start codes are skipped. */
++static inline int h264_next_slice_refs_mode(const u8 *buf, u32 len, u32 *cursor,
++					    const struct v4l2_ctrl_h264_sps *sps,
++					    const struct v4l2_ctrl_h264_pps *pps,
++					    bool allow_inter_field,
++					    struct h264_slice_refs *out,
++					    struct h264_parse_scratch *scratch)
++{
++	const u8 *nal;
++	u32 nal_len = 0;
++	int ret;
++
++	if (!buf || *cursor > len)
++		return -EINVAL;
++	nal = h264_find_first_slice(buf + *cursor, len - *cursor, &nal_len);
++	if (!nal)
++		return -ENOENT;
++	ret = h264_parse_slice_refs_mode(nal, nal_len, sps, pps, allow_inter_field, out, scratch);
++	if (ret)
++		return ret;
++	*cursor = (u32)(nal - buf) + nal_len;
++	return 0;
++}
++
++static inline int h264_next_slice_refs(const u8 *buf, u32 len, u32 *cursor,
++				       const struct v4l2_ctrl_h264_sps *sps,
++				       const struct v4l2_ctrl_h264_pps *pps,
++				       struct h264_slice_refs *out,
++				       struct h264_parse_scratch *scratch)
++{
++	return h264_next_slice_refs_mode(buf, len, cursor, sps, pps, false, out, scratch);
++}
++
++/* Slice type/counts/lists may change inside one coded picture. */
++static inline bool h264_same_frame_picture(const struct h264_slice_refs *a,
++					   const struct h264_slice_refs *b)
++{
++	return a->frame_num == b->frame_num && a->pps_id == b->pps_id &&
++	       a->field_pic == b->field_pic &&
++	       (!a->field_pic || a->bottom_field == b->bottom_field) &&
++	       a->idr == b->idr &&
++	       (!a->idr || a->idr_pic_id == b->idr_pic_id) &&
++	       !!a->nal_ref_idc == !!b->nal_ref_idc &&
++	       a->poc_lsb == b->poc_lsb &&
++	       a->delta_poc_bottom == b->delta_poc_bottom &&
++	       a->delta_poc[0] == b->delta_poc[0] &&
++	       a->delta_poc[1] == b->delta_poc[1];
++}
++
++/* Validate each frame slice before firmware sees the request. */
++static inline int h264_frame_refs_preflight(const u8 *buf, u32 len,
++					    const struct v4l2_ctrl_h264_sps *sps,
++		const struct v4l2_ctrl_h264_pps *pps,
++		const struct h264_slice_refs *request,
++		struct h264_parse_scratch *scratch)
++{
++	struct h264_slice_refs slice;
++	u32 cursor = 0, count = 0, previous_mb = 0, type_mask = 0;
++	u32 previous_end = 0;
++	u32 units;
++	bool uniform = false;
++	int ret;
++
++	if (request->field_pic)
++		return 0;
++	if (!buf)
++		return -EINVAL;
++	units = (sps->pic_width_in_mbs_minus1 + 1) *
++		(sps->pic_height_in_map_units_minus1 + 1);
++	if (!(sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) &&
++	    !(sps->flags & V4L2_H264_SPS_FLAG_MB_ADAPTIVE_FRAME_FIELD))
++		units *= 2;
++	if (!units)
++		return -EINVAL;
++	while (!(ret = h264_next_slice_refs(buf, len, &cursor, sps, pps, &slice, scratch))) {
++		u32 type = slice.slice_type % 5;
++		u32 type_bit = 1U << type;
++		u32 start_mb, total_mbs;
++
++		/* Inspect every actual slice, not the request's first-slice type flag. */
++		if (slice.field_pic)
++			return -EOPNOTSUPP;
++		if (!h264_same_frame_picture(&slice, request) ||
++		    slice.first_mb >= units || (!count && slice.first_mb) ||
++		    (count && slice.first_mb <= previous_mb))
++			return -EINVAL;
++		start_mb = slice.first_mb << slice.mbaff;
++		total_mbs = units << slice.mbaff;
++		if (start_mb < previous_end ||
++		    slice.initial_mb_count > total_mbs - start_mb)
++			return -EBADMSG;
++		previous_end = start_mb + slice.initial_mb_count;
++		if (type != 2 &&
++		    (!slice.num_ref_idx_active[0] ||
++		     slice.num_ref_idx_active[0] > V4L2_H264_REF_LIST_LEN))
++			return -EINVAL;
++		if (type == 1 &&
++		    (!slice.num_ref_idx_active[1] ||
++		     slice.num_ref_idx_active[1] > V4L2_H264_REF_LIST_LEN))
++			return -EINVAL;
++		if ((uniform || slice.slice_type >= 5) && (type_mask & ~type_bit))
++			return -EINVAL;
++		uniform |= slice.slice_type >= 5;
++		type_mask |= type_bit;
++		previous_mb = slice.first_mb;
++		count++;
++	}
++	return ret == -ENOENT && count ? 0 : (ret == -ENOENT ? -EINVAL : ret);
++}
++
++/*
++ * Consume dec_ref_pic_marking(). The client has already applied these MMCOs
++ * to the DPB control; this validates and advances over the in-band copy that
++ * the firmware will process independently.
++ */
++static inline int h264_field_marking(const u8 *nal, u32 len,
++				     const struct h264_slice_refs *sr,
++					  struct h264_parse_scratch *scratch)
++{
++	u8 *rbsp = scratch->rbsp;
++	struct h264_br r = { .buf = rbsp, .bit = sr->refs_header_bits };
++	u32 count = 0;
++
++	if (!sr->nal_ref_idc)
++		return 0;
++	r.len = h264_unescape(nal + 1, len - 1, rbsp, sizeof(scratch->rbsp));
++	if (sr->idr) {
++		h264_br_u1(&r); /* no_output_of_prior_pics_flag */
++		h264_br_u1(&r); /* long_term_reference_flag */
++		return r.err;
++	}
++	if (!h264_br_u1(&r)) /* adaptive_ref_pic_marking_mode_flag */
++		return r.err;
++	while (!r.err) {
++		u32 op = h264_br_ue(&r);
++
++		if (!op)
++			break;
++		if (++count > H264_MAX_RPLM) {
++			r.err = -EINVAL;
++			break;
++		}
++		switch (op) {
++		case 1:
++			h264_br_ue(&r); /* difference_of_pic_nums_minus1 */
++			break;
++		case 2:
++			h264_br_ue(&r); /* long_term_pic_num */
++			break;
++		case 3:
++			h264_br_ue(&r); /* difference_of_pic_nums_minus1 */
++			h264_br_ue(&r); /* long_term_frame_idx */
++			break;
++		case 4:
++			h264_br_ue(&r); /* max_long_term_frame_idx_plus1 */
++			break;
++		case 5:
++			break;
++		case 6:
++			h264_br_ue(&r); /* long_term_frame_idx */
++			break;
++		default:
++			r.err = -EINVAL;
++			break;
++		}
++	}
++	return r.err;
++}
++
++/* One I/P/B field picture, POC0/1, with ordered slices and no weighting.
++ * Return the number of slices, retaining the first header for mate identity.
++ */
++static inline int h264_parse_single_field(const u8 *buf, u32 len,
++					  const struct v4l2_ctrl_h264_sps *sps,
++		const struct v4l2_ctrl_h264_pps *pps,
++		const struct h264_slice_refs *request, struct h264_slice_refs *out,
++		struct h264_parse_scratch *scratch)
++{
++	struct h264_slice_refs sr;
++	u32 i = 0, count = 0, previous_mb = 0, type_mask = 0;
++	u32 units;
++	bool uniform = false;
++	int ret;
++
++	if (!request->field_pic)
++		return 0;
++	if (!buf)
++		return -EINVAL;
++	if (sps->pic_order_cnt_type > 1 ||
++	    sps->log2_max_frame_num_minus4 > 12 ||
++	    sps->log2_max_pic_order_cnt_lsb_minus4 > 12 ||
++	    sps->chroma_format_idc != 1 || sps->bit_depth_luma_minus8 ||
++	    sps->bit_depth_chroma_minus8 ||
++	    (sps->flags & V4L2_H264_SPS_FLAG_FRAME_MBS_ONLY) ||
++	    pps->num_slice_groups_minus1 ||
++	    (pps->flags & V4L2_H264_PPS_FLAG_REDUNDANT_PIC_CNT_PRESENT) ||
++	    sps->pic_width_in_mbs_minus1 > 254 ||
++	    sps->pic_height_in_map_units_minus1 > 255)
++		return -EOPNOTSUPP;
++	units = (sps->pic_width_in_mbs_minus1 + 1) *
++		(sps->pic_height_in_map_units_minus1 + 1);
++	if (units > 0x7fff)
++		return -EOPNOTSUPP;
++	while (i + 3 <= len) {
++		u32 start, end, type, type_bit;
++
++		if (buf[i] || buf[i + 1] || buf[i + 2] != 1) {
++			i++;
++			continue;
++		}
++		start = i + 3;
++		if (start == len)
++			return -EINVAL;
++		end = start;
++		while (end < len && len - end >= 3 &&
++		       (buf[end] || buf[end + 1] || buf[end + 2] != 1))
++			end++;
++		if (len - end < 3)
++			end = len;
++		i = end;
++		type = buf[start] & 31;
++		if (type != 1 && type != 5) {
++			if (count || (type != 6 && type != 7 && type != 8 && type != 9))
++				return -EOPNOTSUPP;
++			continue;
++		}
++		ret = h264_parse_slice_refs_mode(buf + start, end - start,
++						 sps, pps, true, &sr, scratch);
++		if (ret)
++			return ret;
++		if (!sr.field_pic || !h264_same_frame_picture(&sr, request) ||
++		    sr.first_mb >= units || (!count && sr.first_mb) ||
++		    (count && sr.first_mb <= previous_mb) ||
++		    sr.slice_type % 5 > 2 ||
++		    (sr.slice_type % 5 != 2 && (sr.idr ||
++		     !sr.num_ref_idx_active[0] ||
++		     sr.num_ref_idx_active[0] > V4L2_H264_REF_LIST_LEN)) ||
++		    (sr.slice_type % 5 == 1 &&
++		     (!sr.num_ref_idx_active[1] ||
++		      sr.num_ref_idx_active[1] > V4L2_H264_REF_LIST_LEN)))
++			return -EOPNOTSUPP;
++		type_bit = 1U << (sr.slice_type % 5);
++		if ((uniform || sr.slice_type >= 5) && (type_mask & ~type_bit))
++			return -EINVAL;
++		uniform |= sr.slice_type >= 5;
++		type_mask |= type_bit;
++		ret = h264_field_marking(buf + start, end - start, &sr, scratch);
++		if (ret)
++			return ret;
++		if (!count)
++			*out = sr;
++		previous_mb = sr.first_mb;
++		count++;
++	}
++	return count ? (int)count : -EINVAL;
++}
++
++static inline int h264_synth_headers(const struct v4l2_ctrl_h264_sps *sps,
++				     const struct v4l2_ctrl_h264_pps *pps,
++				     const struct v4l2_ctrl_h264_scaling_matrix *sm,
++				     u8 *dst, u32 cap, u32 *len)
++{
++	u32 sps_len, pps_len;
++	int ret;
++
++	ret = h264_synth_validate(sps, pps, sm);
++	if (ret)
++		return ret;
++	ret = h264_synth_sps(sps, dst, cap, &sps_len);
++	if (ret)
++		return ret;
++	ret = h264_synth_pps(sps, pps, sm, dst + sps_len, cap - sps_len,
++			     &pps_len);
++	if (ret)
++		return ret;
++	*len = sps_len + pps_len;
++	return 0;
++}
++
++#endif
+diff --git a/drivers/media/platform/amlogic/amvdec/esparser.c b/drivers/media/platform/amlogic/amvdec/esparser.c
+index 26574ef84089..b0409039681f 100644
+--- a/drivers/media/platform/amlogic/amvdec/esparser.c
++++ b/drivers/media/platform/amlogic/amvdec/esparser.c
+@@ -22,8 +22,10 @@
+ #include "esparser.h"
+ #include "amvdec_hevc.h"
+ #include "amvdec_helpers.h"
++#include "codec_h264_synth.h"
+ #include "codec_mpeg12.h"
+ #include "codec_mpeg12_synth.h"
++#include "codec_h264.h"
+ 
+ /* Zero lookahead appended after each HEVC/VP9 request payload; not part of
+  * the coded endpoint.
+@@ -150,6 +152,26 @@ static u32 esparser_get_offset(struct amvdec_session *sess)
+ static void esparser_src_error(struct amvdec_session *sess,
+ 			       struct vb2_v4l2_buffer *src)
+ {
++	bool direct = codec_h264_direct_input(sess);
++	struct vb2_v4l2_buffer *dst = NULL;
++	u32 plane;
++
++	if (direct) {
++		WRITE_ONCE(sess->m2m_run_armed, false);
++		dst = v4l2_m2m_dst_buf_remove(sess->m2m_ctx);
++		meson_amvdec_codec_h264_multi_discard_capture(
++			sess, dst ? dst->vb2_buf.index : U32_MAX);
++		if (dst) {
++			v4l2_m2m_buf_copy_metadata(src, dst);
++			for (plane = 0; plane < dst->vb2_buf.num_planes; plane++)
++				vb2_set_plane_payload(&dst->vb2_buf, plane, 0);
++			dst->sequence = sess->sequence_cap++;
++			dev_dbg(sess->core->dev_dec,
++				"h264 request refused: output=%u capture=%u ts=%llu\n",
++				 src->vb2_buf.index, dst->vb2_buf.index, src->vb2_buf.timestamp);
++			v4l2_m2m_buf_done(dst, VB2_BUF_STATE_ERROR);
++		}
++	}
+ 	if (meson_amvdec_request_jobs(sess) && sess->request_job.src == src) {
+ 		if (sess->request_job.credit) {
+ 			/* Hardware may have consumed input: ownership ends at stop. */
+@@ -162,7 +184,8 @@ static void esparser_src_error(struct amvdec_session *sess,
+ 	}
+ 	/* Also completes the OUTPUT's media-request control-handler object. */
+ 	meson_amvdec_src_buf_done(sess, src, VB2_BUF_STATE_ERROR);
+-
++	if (direct)
++		v4l2_m2m_job_finish(sess->m2m_dev, sess->m2m_ctx);
+ }
+ 
+ static int
+@@ -176,6 +199,10 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 	dma_addr_t phy = vb2_dma_contig_plane_dma_addr(vb, 0);
+ 	struct amvdec_feed_scratch *f = &sess->feed;
+ 	struct v4l2_ctrl_vp9_frame *vp9_frame_ptr = NULL;
++	const struct v4l2_ctrl_h264_sps *h264_sps;
++	const struct v4l2_ctrl_h264_pps *h264_pps;
++	const struct v4l2_ctrl_h264_scaling_matrix *h264_sm = NULL;
++	bool h264_idr = false;
+ 	struct v4l2_ctrl_hevc_sps *hevc_sps_ptr = NULL;
+ 	struct v4l2_ctrl_hevc_pps *hevc_pps_ptr = NULL;
+ 	struct v4l2_ctrl_hevc_slice_params *hevc_slice_ptr = NULL;
+@@ -183,14 +210,16 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 
+ 	u8 *hevc_headers __free(kfree) = NULL;
+ 	u32 hevc_headers_len = 0;
++	u32 h264_headers_len = 0;
+ 	u32 offset;
+ 	u32 pad_size;
+-
++	bool direct_h264 = codec_h264_direct_input(sess);
+ 	u16 mpeg2_tref = 0;
+ 	bool mpeg2_second = false;
+ 	bool mpeg2_job = false;
+ 
+-	BUILD_BUG_ON(sizeof(f->headers) < MPEG12_SYNTH_MAX_HEADERS);
++	BUILD_BUG_ON(sizeof(f->headers) < H264_SYNTH_MAX_HEADERS ||
++		     sizeof(f->headers) < MPEG12_SYNTH_MAX_HEADERS);
+ 
+ 	dev_dbg(core->dev, "feed attempt sess=%p idx=%u bytes=%u\n",
+ 		sess, vb->index, payload_size);
+@@ -201,12 +230,15 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 	 * so examining a buffer that is then deferred would overwrite the
+ 	 * parameters of the picture currently being decoded.
+ 	 */
++	if (direct_h264 &&
++	    (meson_amvdec_codec_h264_multi_busy(sess) || !READ_ONCE(sess->m2m_run_armed)))
++		return -EAGAIN;
+ 
+ 	if (meson_amvdec_request_jobs(sess) &&
+ 	    (!READ_ONCE(sess->m2m_run_armed) || atomic_read(&sess->request_job.state)))
+ 		return -EAGAIN;
+ 
+-	if (esparser_vififo_get_free_space(sess) < payload_size)
++	if (!direct_h264 && esparser_vififo_get_free_space(sess) < payload_size)
+ 		return -EAGAIN;
+ 
+ 	if (meson_amvdec_request_jobs(sess) && meson_amvdec_request_begin(sess, vbuf))
+@@ -313,6 +345,116 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 		dev_dbg(core->dev,
+ 			"MPEG2 synthesized %d header bytes, coding_type=%u\n",
+ 			hdrs_len, f->mpeg2_pic.picture_coding_type);
++	} else {
++		u8 *vaddr = vb2_plane_vaddr(vb, 0);
++		u32 plane_size = vb2_plane_size(vb, 0);
++		/* Parsed copy of vaddr, see meson_amvdec_codec_h264_scan_copy(). */
++		const u8 *scan;
++
++		ctrl = v4l2_ctrl_find(&sess->ctrl_handler,
++				      V4L2_CID_STATELESS_H264_SPS);
++		if (!ctrl || !ctrl->p_cur.p_h264_sps) {
++			dev_err_ratelimited(core->dev, "H.264 SPS request control missing\n");
++			esparser_src_error(sess, vbuf);
++			return -EINVAL;
++		}
++		h264_sps = ctrl->p_cur.p_h264_sps;
++		ctrl = v4l2_ctrl_find(&sess->ctrl_handler,
++				      V4L2_CID_STATELESS_H264_PPS);
++		if (!ctrl || !ctrl->p_cur.p_h264_pps) {
++			dev_err_ratelimited(core->dev, "H.264 PPS request control missing\n");
++			esparser_src_error(sess, vbuf);
++			return -EINVAL;
++		}
++		h264_pps = ctrl->p_cur.p_h264_pps;
++		scan = meson_amvdec_codec_h264_scan_copy(sess, vaddr, payload_size,
++							 plane_size);
++		ret = h264_request_preflight(scan, payload_size, h264_pps);
++		if (ret) {
++			dev_err_ratelimited(core->dev,
++					    "h264 syntax refused before feed: %d slice_groups=%u\n",
++				ret, h264_pps->num_slice_groups_minus1);
++			esparser_src_error(sess, vbuf);
++			return ret;
++		}
++		ctrl = v4l2_ctrl_find(&sess->ctrl_handler,
++				      V4L2_CID_STATELESS_H264_DECODE_PARAMS);
++		if (!ctrl || !ctrl->p_cur.p_h264_decode_params) {
++			dev_err_ratelimited(core->dev, "H.264 decode params request control missing\n");
++			esparser_src_error(sess, vbuf);
++			return -EINVAL;
++		}
++		h264_idr = ctrl->p_cur.p_h264_decode_params->flags &
++			   V4L2_H264_DECODE_PARAM_FLAG_IDR_PIC;
++		meson_amvdec_codec_h264_multi_set_params(sess, h264_sps, h264_pps,
++							 ctrl->p_cur.p_h264_decode_params);
++		ctrl = v4l2_ctrl_find(&sess->ctrl_handler,
++				      V4L2_CID_STATELESS_H264_SCALING_MATRIX);
++		h264_sm = ctrl ? ctrl->p_cur.p_h264_scaling_matrix : NULL;
++		ret = h264_synth_validate(h264_sps, h264_pps, h264_sm);
++		if (ret) {
++			dev_err_ratelimited(core->dev,
++					    "H.264 header synthesis rejected controls: %d (profile=%u chroma=%u depth=%u/%u sps_flags=%#llx pps_flags=%#x slice_groups=%u poc_type=%u)\n",
++				ret, h264_sps->profile_idc,
++				h264_sps->chroma_format_idc,
++				h264_sps->bit_depth_luma_minus8,
++				h264_sps->bit_depth_chroma_minus8,
++				(unsigned long long)h264_sps->flags,
++				h264_pps->flags,
++				h264_pps->num_slice_groups_minus1,
++				h264_sps->pic_order_cnt_type);
++			esparser_src_error(sess, vbuf);
++			return ret;
++		}
++
++		/*
++		 * Read reference-list modifications from slice headers before prepending
++		 * headers. Frame-based requests do not supply final reference lists.
++		 */
++		if (vaddr) {
++			struct h264_slice_refs sr;
++			const u8 *nal;
++			u32 nal_len = 0;
++
++			nal = h264_find_first_slice(scan, payload_size,
++						    &nal_len);
++			if (nal && !h264_parse_slice_refs(nal, nal_len,
++							  h264_sps,
++							  h264_pps, &sr, &f->h264_parse))
++				meson_amvdec_codec_h264_multi_set_slice_refs(sess, &sr);
++			else
++				meson_amvdec_codec_h264_multi_set_slice_refs(sess, NULL);
++		}
++
++		/* The multi firmware consumes SPS/PPS in band. Its cache must
++		 * include every emitted dependency, not just the PPS control.
++		 */
++		ret = meson_amvdec_codec_h264_multi_headers(sess, h264_sps, h264_pps,
++							    h264_sm, h264_idr,
++							    f->headers, sizeof(f->headers),
++							    &h264_headers_len);
++		if (h264_headers_len || ret) {
++			if (ret) {
++				dev_err_ratelimited(core->dev,
++						    "H.264 header synthesis failed: %d\n",
++						    ret);
++				esparser_src_error(sess, vbuf);
++				return ret;
++			}
++			if (!vaddr || payload_size + h264_headers_len > plane_size) {
++				dev_err_ratelimited(core->dev,
++						    "H.264 buffer too small for synthesized headers\n");
++				esparser_src_error(sess, vbuf);
++				return -ENOSPC;
++			}
++			memmove(vaddr + h264_headers_len, vaddr, payload_size);
++			memcpy(vaddr, f->headers, h264_headers_len);
++			payload_size += h264_headers_len;
++			vb2_set_plane_payload(vb, 0, payload_size);
++			dev_dbg(core->dev,
++				"H.264 synthesized %u header bytes ahead of %s\n",
++				h264_headers_len, h264_idr ? "IDR" : "picture");
++		}
+ 	}
+ 
+ 	ret = meson_amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset,
+@@ -335,6 +477,41 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 	 * no ESPARSER copy, no start-code padding, and the buffer stays owned
+ 	 * by the hardware until the picture completes.
+ 	 */
++	if (direct_h264) {
++		/*
++		 * Only one access unit can be in flight: the VLD is pointed at
++		 * that buffer, so feeding another would reset the FIFO out
++		 * from under a running decode.
++		 */
++		WRITE_ONCE(sess->m2m_run_armed, false);
++
++		/*
++		 * Claim the buffer before the firmware is kicked: feeding it
++		 * starts the decode, and the slice-head interrupt can land
++		 * before this function returns.
++		 */
++		dev_dbg(core->dev,
++			"h264 multi feed pair: out_idx=%u out_ts=%llu\n",
++			 vb->index, vb->timestamp);
++		meson_amvdec_codec_h264_multi_hold_src(sess, vbuf);
++		/*
++		 * One request in, one frame out - the CAPTURE timestamp is
++		 * copied from this OUTPUT buffer at completion, so the FIFO
++		 * timestamp list is not used and must not accumulate.
++		 */
++		meson_amvdec_remove_ts(sess, vb->timestamp);
++		atomic_inc(&sess->esparser_queued_bufs);
++		meson_amvdec_trace(sess, AMVDEC_TR_FEED, vb->index, payload_size, 0);
++		ret = meson_amvdec_codec_h264_multi_feed_buffer(sess, vb);
++		meson_amvdec_trace(sess, AMVDEC_TR_FED, ret, 0, 0);
++		if (ret) {
++			meson_amvdec_codec_h264_multi_hold_src(sess, NULL);
++			atomic_dec(&sess->esparser_queued_bufs);
++			esparser_src_error(sess, vbuf);
++			return ret;
++		}
++		return 0;
++	}
+ 
+ 	unsigned int i, n = 0;
+ 	u64 refs[16];
+@@ -385,6 +562,7 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
+ 			return -EINVAL;
+ 		}
+ 	}
++	v4l2_m2m_buf_copy_metadata(vbuf, sess->request_job.dst);
+ 	if (mpeg2_job) {
+ 		/* The VLD reads this buffer directly; nothing goes
+ 		 * through the parser FIFO.
+@@ -506,6 +684,21 @@ void meson_amvdec_esparser_queue_all_src(struct work_struct *work)
+ 	if (meson_amvdec_request_jobs(sess))
+ 		meson_amvdec_request_retire(sess, false);
+ 	/* Retire a finished picture before feeding the next one. */
++	if (codec_h264_direct_input(sess)) {
++		struct v4l2_m2m_buffer *b;
++		char q[48] = "";
++		int p = 0;
++
++		meson_amvdec_codec_h264_multi_finish_picture(sess);
++		v4l2_m2m_for_each_src_buf(sess->m2m_ctx, b)
++			if (p < 40)
++				p += scnprintf(q + p, sizeof(q) - p, "%u,",
++					       b->vb.vb2_buf.index);
++		dev_dbg(sess->core->dev,
++			"h264 multi worker: armed=%u busy=%u rdy=[%s]\n",
++			 READ_ONCE(sess->m2m_run_armed),
++			 meson_amvdec_codec_h264_multi_busy(sess), q);
++	}
+ 
+ 	/*
+ 	 * The stream position counter must not reach 0x80000000. Restart the
+@@ -529,7 +722,8 @@ void meson_amvdec_esparser_queue_all_src(struct work_struct *work)
+ 		 * ready queue (esparser_queue() dequeues what it feeds), and
+ 		 * the VLD is pointed at it until the picture completes.
+ 		 */
+-
++		if (codec_h264_direct_input(sess))
++			break;
+ 	}
+ 	dev_dbg(sess->core->dev,
+ 		"worker end fed=%u ret=%d src=%u queued=%d dst=%u\n",
+-- 
+2.43.0
+

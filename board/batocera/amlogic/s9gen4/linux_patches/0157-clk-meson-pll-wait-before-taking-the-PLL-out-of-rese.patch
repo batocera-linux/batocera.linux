@@ -1,0 +1,36 @@
+From 0c1edc2e05e8345f7de765e9f7135633efd84233 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 16:18:36 +0000
+Subject: [PATCH 171/210] clk: meson: pll: wait before taking the PLL out of
+ reset
+
+On S4 the HIFI PLL fails to lock when it is enabled, so every attempt
+to enable the audio master clock returns -EIO and the TDM interface
+cannot leave standby:
+
+  axg-tdm-iface audio-controller-0: ASoC: Failed to prepare bias: -5
+
+The same PLL settings lock when written by hand with a delay between
+enabling the PLL and releasing its reset. Wait 50us at that point.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/clk/meson/clk-pll.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/clk/meson/clk-pll.c b/drivers/clk/meson/clk-pll.c
+index 1ea6579a760f..955c51ce7c75 100644
+--- a/drivers/clk/meson/clk-pll.c
++++ b/drivers/clk/meson/clk-pll.c
+@@ -368,6 +368,7 @@ static int meson_clk_pll_enable(struct clk_hw *hw)
+ 
+ 	/* Enable the pll */
+ 	meson_parm_write(clk->map, &pll->en, 1);
++	udelay(50);
+ 
+ 	/* Take the pll out reset */
+ 	if (MESON_PARM_APPLICABLE(&pll->rst))
+-- 
+2.43.0
+

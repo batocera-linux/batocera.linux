@@ -1,0 +1,66 @@
+From 8e78bf015e21b62551162e4b52972a934c1bb163 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 7 Oct 2026 04:14:15 +0000
+Subject: [PATCH 205/210] tee: optee: send the Amlogic boot complete
+ notification
+
+The OP-TEE builds in Amlogic BL32 blobs refuse to load any user TA
+until the normal world reports that it has booted. Open session fails
+with TEEC_ERROR_BAD_STATE and the secure console logs "ree system is
+not ready, ta can not be loaded". The Amlogic tee-supplicant sends fast
+call 0xb200e060 from userspace at start.
+
+Send it from the driver at probe instead, so that upstream
+tee-supplicant works. Only S4 is matched for now.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/tee/optee/optee_smc.h |  6 ++++++
+ drivers/tee/optee/smc_abi.c   | 15 +++++++++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/drivers/tee/optee/optee_smc.h b/drivers/tee/optee/optee_smc.h
+index accf76a99288..6836f44b228f 100644
+--- a/drivers/tee/optee/optee_smc.h
++++ b/drivers/tee/optee/optee_smc.h
+@@ -637,4 +637,10 @@ static inline bool __optee_smc_return_is_rpc(u32 ret)
+ 			OPTEE_SMC_RETURN_RPC_PREFIX;
+ }
+ 
++/*
++ * Amlogic vendor fast call: tell the secure OS that the normal world has
++ * finished booting, so that it starts accepting trusted application loads.
++ */
++#define OPTEE_SMC_AMLOGIC_SYS_BOOT_COMPLETE	OPTEE_SMC_FAST_CALL_VAL(0xe060)
++
+ #endif /* OPTEE_SMC_H */
+diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
+index 111b5aab94fe..c8013c245c95 100644
+--- a/drivers/tee/optee/smc_abi.c
++++ b/drivers/tee/optee/smc_abi.c
+@@ -1776,6 +1776,21 @@ static int optee_probe(struct platform_device *pdev)
+ 	    of_machine_is_compatible("amlogic,s4"))
+ 		sec_caps &= ~OPTEE_SMC_SEC_CAP_DYNAMIC_SHM;
+ 
++	/*
++	 * The Amlogic vendor OP-TEE refuses to load trusted applications
++	 * ("ree system is not ready") until told that the normal world has
++	 * booted. The vendor tee-supplicant does this on start.
++	 */
++	if (of_machine_is_compatible("amlogic,s4")) {
++		struct arm_smccc_res res;
++
++		invoke_fn(OPTEE_SMC_AMLOGIC_SYS_BOOT_COMPLETE,
++			  0, 0, 0, 0, 0, 0, 0, &res);
++		if (res.a0)
++			pr_warn("boot complete notification failed: %#lx\n",
++				res.a0);
++	}
++
+ 	/*
+ 	 * Try to use dynamic shared memory if possible
+ 	 */
+-- 
+2.43.0
+

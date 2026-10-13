@@ -1,0 +1,58 @@
+From 15114bf35b774e7a6c727dc30610d375f568096c Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 22 Jun 2026 16:56:15 +0000
+Subject: [PATCH 011/210] LOCAL: arm64: dts: amlogic: gxm: add dummy mali GPU
+ regulator
+
+The Mali-T820 GPU OPP table specifies an operating voltage so the
+panfrost driver requests a "mali" regulator from the OPP core. As there
+is no dedicated GPU regulator on GXM (the GPU shares the SoC supply)
+this fails with the harmless but noisy error:
+
+  panfrost ...: error -ENODEV: _opp_set_regulators: no regulator (mali) found
+
+Model a dummy always-on fixed regulator and wire it to the GPU node via
+mali-supply to satisfy the OPP core and silence the error.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxm.dtsi | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxm.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxm.dtsi
+index 514c9bea6423..473e564a0d38 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxm.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxm.dtsi
+@@ -127,6 +127,21 @@ cpu7: cpu@103 {
+ 		};
+ 	};
+ 
++	/*
++	 * The Mali OPP table specifies an operating voltage so the panfrost
++	 * driver asks the OPP core for a "mali" regulator. There is no
++	 * dedicated GPU regulator on GXM (the GPU shares the SoC supply) so
++	 * provide a dummy always-on regulator to silence the harmless
++	 * "no regulator (mali) found" error.
++	 */
++	vddgpu: regulator-vddgpu {
++		compatible = "regulator-fixed";
++		regulator-name = "mali";
++		regulator-min-microvolt = <950000>;
++		regulator-max-microvolt = <950000>;
++		regulator-always-on;
++	};
++
+ 	gpu_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
+ 
+@@ -180,6 +195,7 @@ mali: gpu@c0000 {
+ 		clocks = <&clkc CLKID_MALI>;
+ 		resets = <&reset RESET_MALI_CAPB3>, <&reset RESET_MALI>;
+ 		operating-points-v2 = <&gpu_opp_table>;
++		mali-supply = <&vddgpu>;
+ 	};
+ };
+ 
+-- 
+2.43.0
+

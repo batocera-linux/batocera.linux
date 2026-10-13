@@ -1,0 +1,64 @@
+From fd723e018fb371439cec06700a1affd9b99584af Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:51:00 +0000
+Subject: [PATCH 30/43] WIP: ARM: meson: s4: read the DRAM size from the secure
+ status
+
+BL2 reports the DRAM size in SYSCTRL secure status REG4, in 16MiB units
+in bits [31:20], which is where the vendor U-Boot reads it from. U-Boot
+on S4 had no get_effective_memsize(), so it did not use that value.
+
+Provide get_effective_memsize() from REG4 as G12A does, capped at
+0xe0000000.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/include/asm/arch-meson/s4.h | 5 +++++
+ arch/arm/mach-meson/board-s4.c       | 8 ++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-meson/s4.h b/arch/arm/include/asm/arch-meson/s4.h
+index 39f92344863..234f806af2b 100644
+--- a/arch/arm/include/asm/arch-meson/s4.h
++++ b/arch/arm/include/asm/arch-meson/s4.h
+@@ -8,12 +8,17 @@
+ #define S4_SYSCTRL_ADDR(off)		(S4_SYSCTRL_BASE + ((off) << 2))
+ 
+ #define S4_SEC_STATUS_REG2		S4_SYSCTRL_ADDR(0xc2)
++#define S4_SEC_STATUS_REG4		S4_SYSCTRL_ADDR(0xc4)
+ #define S4_SEC_STATUS_REG15		S4_SYSCTRL_ADDR(0xcf)
+ #define S4_SEC_STATUS_REG16		S4_SYSCTRL_ADDR(0xd0)
+ #define S4_SEC_STATUS_REG17		S4_SYSCTRL_ADDR(0xd1)
+ 
+ #define S4_BOOT_DEVICE_MASK		0xF0
+ #define S4_BOOT_DEVICE_SHIFT		4
++#define S4_MEM_SIZE_MASK		0xFFF00000
++#define S4_MEM_SIZE_SHIFT		20
++#define S4_MEM_SIZE_UNIT		SZ_16M
++#define S4_MEM_SIZE_MAX			0xe0000000
+ #define S4_BL31_RSVMEM_SIZE_MASK	0xFFFF0000
+ #define S4_BL31_RSVMEM_SIZE_SHIFT	16
+ #define S4_BL32_RSVMEM_SIZE_MASK	0xFFFF
+diff --git a/arch/arm/mach-meson/board-s4.c b/arch/arm/mach-meson/board-s4.c
+index 2d42d8e79d0..feab22b724c 100644
+--- a/arch/arm/mach-meson/board-s4.c
++++ b/arch/arm/mach-meson/board-s4.c
+@@ -47,6 +47,14 @@ void meson_init_reserved_memory(void *fdt)
+ 		meson_board_add_reserved_memory(fdt, bl32_start, bl32_size);
+ }
+ 
++phys_size_t get_effective_memsize(void)
++{
++	u64 size = ((readl(S4_SEC_STATUS_REG4) & S4_MEM_SIZE_MASK)
++			>> S4_MEM_SIZE_SHIFT) * S4_MEM_SIZE_UNIT;
++
++	return min_t(u64, size, S4_MEM_SIZE_MAX);
++}
++
+ static struct mm_region s4_mem_map[] = {
+ 	{
+ 		.virt = 0x00000000UL,
+-- 
+2.43.0
+

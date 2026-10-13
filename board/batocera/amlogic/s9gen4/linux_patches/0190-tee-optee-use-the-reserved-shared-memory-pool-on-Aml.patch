@@ -1,0 +1,48 @@
+From 4114e7af66ae64302761e4ac39e4e1c2198ea1d3 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 7 Oct 2026 04:14:14 +0000
+Subject: [PATCH 204/210] tee: optee: use the reserved shared memory pool on
+ Amlogic SoCs
+
+The OP-TEE builds that Amlogic ships in its BL32 blobs advertise both
+dynamic and reserved shared memory. They return
+OPTEE_SMC_RETURN_EBADADDR for any non-secure buffer in the low part of
+DRAM (below about 0x10c00000 on the boards tested). The driver caches
+its first message buffer page at probe, and early boot allocations land
+in that range, so every standard call then fails with
+TEEC_ERROR_COMMUNICATION.
+
+Ignore the dynamic shared memory capability and use the reserved pool.
+Clearing the capability also stops advertising TEE_GEN_CAP_REG_MEM, so
+libteec allocates from the pool instead of registering user pages that
+may land low. Only S4 is matched for now.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/tee/optee/smc_abi.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
+index b8a2bdac3208..111b5aab94fe 100644
+--- a/drivers/tee/optee/smc_abi.c
++++ b/drivers/tee/optee/smc_abi.c
+@@ -1767,6 +1767,15 @@ static int optee_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
++	/*
++	 * The Amlogic vendor OP-TEE rejects non-secure buffers in the low part
++	 * of DRAM, so dynamic shared memory fails depending on where pages
++	 * land. Use the reserved pool it also provides.
++	 */
++	if ((sec_caps & OPTEE_SMC_SEC_CAP_HAVE_RESERVED_SHM) &&
++	    of_machine_is_compatible("amlogic,s4"))
++		sec_caps &= ~OPTEE_SMC_SEC_CAP_DYNAMIC_SHM;
++
+ 	/*
+ 	 * Try to use dynamic shared memory if possible
+ 	 */
+-- 
+2.43.0
+
