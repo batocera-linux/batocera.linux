@@ -48,7 +48,7 @@ custom_features:
     description: Choose your desired Atari Monitor.
     choices:
       Monochrome High-Resolution: "0"
-      RGB Color Low/Medium-Resolution: "1"
+      RGB Colour Low/Medium-Resolution: "1"
       VGA: "2"
       TV: "3"
   hatarib_ratio:
@@ -64,9 +64,9 @@ custom_features:
     description: Atari ST monitors had a visible border around the main screen area, but most software does not display anything in it.
     choices:
       Hide: "0"
-      Full: "1"
-      Crop 720p (240, 480): "2"
-      Crop 1080p (270, 540): "3"
+      Full: "4"
+      Crop 720p (240, 480): "5"
+      Crop 1080p (270, 540): "6"
   hatarib_pause:
     prompt: PAUSE SCREEN DISPLAY
     description: Choose your desired pause screen display type.
@@ -99,8 +99,8 @@ custom_features:
       Czech (cz): "15"
       Hungarian (hg): "16"
       Poland (pl): "17"
-      Russian (ru): "18"
-      Greek (gk): "19"
+      Russian (ru): "19"
+      Greek (gk): "31"
   hatarib_drive:
     prompt: ATARI HARD DRIVE TYPE
     description: Choose your Atari hard drive type for the .hd extension file.
