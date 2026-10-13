@@ -23,7 +23,8 @@ class Cap32(RACore):
         if self.system == 'gx4000':
             core_options.set('cap32_model', '6128+ (experimental)')
         else:
-            core_options.set_from_config('cap32_model', default='6128')
+            model = self.config.get('cap32_model', '6128')
+            core_options.set('cap32_model', '6128+ (experimental)' if model == '6128+' else model)
 
         # Ram size
         core_options.set_from_config('cap32_ram', default='128')
