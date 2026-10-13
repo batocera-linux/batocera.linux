@@ -15,14 +15,18 @@ _logger = logging.getLogger(__name__)
 _D3XP_MODS: Final = {'perfected_roe', 'sikkmodd3xp', 'bloodmod_roe'}
 
 
+def _line_key(line: str, /) -> str:
+    return ' '.join(line.split()[:2])
+
+
 def _update_config_file(file_path: Path, options_to_set: dict[str, str], /) -> None:
     if file_path.is_file():
         lines = file_path.read_text(encoding='utf-8').splitlines(keepends=True)
 
         for key, value in options_to_set.items():
             option_line = f'{key} "{value}"\n'
-            if any(key in line for line in lines):
-                lines = [option_line if key in line else line for line in lines]
+            if any(_line_key(line) == key for line in lines):
+                lines = [option_line if _line_key(line) == key else line for line in lines]
             else:
                 lines.append(option_line)
 
