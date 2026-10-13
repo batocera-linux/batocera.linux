@@ -286,7 +286,7 @@ class Dolphin(Emulator):
         gfx.set('Hacks', 'VISkip', str(self.config.get_bool('vbi_hack')))
         gfx.set('Settings', 'InternalResolution', self.config.get('internal_resolution', '1'))
         gfx.set('Hardware', 'VSync', str(self.config.get_bool('vsync', True)))
-        gfx.set('Enhancements', 'MaxAnisotropy', self.config.get('anisotropic_filtering', '0'))
+        gfx.set('Enhancements', 'MaxAnisotropy', self.config.get('anisotropic_filtering', '-1'))
         gfx.set('Settings', 'MSAA', self.config.get('antialiasing', '0'))
         gfx.set('Settings', 'SSAA', str(self.config.get_bool('use_ssaa')))
         # Manual texture sampling: on = speed hack off. off = speed hack on

@@ -141,7 +141,7 @@ def generate_controller_config_emulatedwiimotes(
     controller_mode = emulator.config.get('controller_mode')
 
     # Side wiimote. l2 for shaking actions
-    if ('.side.' in rom.name) or (controller_mode is not None and controller_mode not in ('disabled', 'cc')):
+    if ('.side.' in rom.name) or (controller_mode is not None and controller_mode not in ('disabled', 'cc', 'pro')):
         extra_options['Options/Sideways Wiimote'] = '1'
         wii_mapping['x'] = 'Buttons/B'
         wii_mapping['y'] = 'Buttons/A'
@@ -154,7 +154,7 @@ def generate_controller_config_emulatedwiimotes(
 
     # i
     if ('.is.' in rom.name or '.it.' in rom.name or '.in.' in rom.name) or (
-        controller_mode is not None and controller_mode not in ('disabled', 'in', 'cc')
+        controller_mode is not None and controller_mode not in ('disabled', 'in', 'cc', 'pro')
     ):
         wii_mapping['joystick1up'] = 'IR/Up'
         wii_mapping['joystick1left'] = 'IR/Left'
