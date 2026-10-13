@@ -17,13 +17,12 @@ custom_features:
     choices:
       Show: enabled
       Skip: disabled
-  doom_res_hack:
-    group: ADVANCED OPTIONS
-    prompt: DOOM RES HACK
-    description: Enable for Doom to run at its correct resolution.
+  virtualjaguar_internal_resolution:
+    prompt: INTERNAL RESOLUTION
+    description: Render at a multiple of the native resolution.
     choices:
-      'Off': disabled
-      'On': enabled
+      1x (native): 1x
+      2x: 2x
 systems:
   - name: jaguar
     file_extensions:
