@@ -205,7 +205,7 @@ class UZDoom(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'uzdoom',
-            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'save_store': 'KEY_F6', 'restore_store': 'KEY_F9'},
+            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'save_state': 'KEY_F6', 'restore_state': 'KEY_F9'},
         }
 
     @cached_property
