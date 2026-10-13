@@ -33,12 +33,15 @@ class BlueMSX(RACore):
             core_options.set('bluemsx_msxtype', 'MSX2+')
         elif self.system == 'msxturbor':
             core_options.set('bluemsx_msxtype', 'MSXturboR')
-
-        # Forces cropping of overscanned frames
-        core_options.set('bluemsx_overscan', 'enabled' if self.system in {'colecovision', 'msx1'} else 'MSX2')
+        elif self.system == 'spectravideo':
+            core_options.set('bluemsx_msxtype', 'SVI - Spectravideo SVI-328')
+        else:
+            core_options.set('bluemsx_msxtype', 'Auto')
 
         # Reduce Sprite Flickering
         core_options.set_bool_from_config('bluemsx_nospritelimits', default=True, values=('ON', 'OFF'))
 
         # Zoom, Hide Video Border
-        core_options.set_from_config('bluemsx_overscan', default='MSX2')
+        core_options.set_from_config(
+            'bluemsx_overscan', default='enabled' if self.system in {'colecovision', 'msx1'} else 'MSX2'
+        )
