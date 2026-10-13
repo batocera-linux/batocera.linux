@@ -31,6 +31,9 @@ define SLANG_SHADERS_BATOCERA_SHADERS_SLANG
     cd $(TARGET_DIR)/usr/share/batocera/shaders/ && \
 	    cp -f edge-smoothing/scalehq/2xScaleHQ.slangp ./scalehq/ && \
 		cp -f ./edge-smoothing/scalehq/shaders/2xScaleHQ.slang ./scalehq/shaders/
+    # slang equivalents of glsl-only presets used by the shader sets
+    cp -f $(SLANG_SHADERS_PKGDIR)/presets/handheld/*.slangp \
+        $(TARGET_DIR)/usr/share/batocera/shaders/handheld/
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_SHADERS),y)
