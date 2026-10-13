@@ -55,6 +55,18 @@ custom_features:
       4x: 2
       8x: 3
       16x: 4
+  wii_antialiasing:
+    group: ADVANCED OPTIONS
+    prompt: ANTI-ALIASING
+    description: Enhancement. Smooth out jagged edges on 3D object polygons. SSAA looks better but has a higher performance cost.
+    choices:
+      'Off': 0
+      2x MSAA: 1
+      4x MSAA: 2
+      8x MSAA: 3
+      2x SSAA: 4
+      4x SSAA: 5
+      8x SSAA: 6
   wii_osd:
     group: ADVANCED OPTIONS
     prompt: OSD MESSAGES
@@ -96,7 +108,7 @@ systems:
           WiiMote + Classic Controller: 1025
           WiiMote + Classic Controller Pro: 1281
           Real Wiimote: 1536
-          GameCube Controller: 1281
+          GameCube Controller: 1537
       controller2_wii:
         prompt: CONTROLLER 2 TYPE
         description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
@@ -107,7 +119,7 @@ systems:
           WiiMote + Classic Controller: 1025
           WiiMote + Classic Controller Pro: 1281
           Real Wiimote: 1536
-          GameCube Controller: 1281
+          GameCube Controller: 1537
       controller3_wii:
         prompt: CONTROLLER 3 TYPE
         description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
@@ -118,7 +130,7 @@ systems:
           WiiMote + Classic Controller: 1025
           WiiMote + Classic Controller Pro: 1281
           Real Wiimote: 1536
-          GameCube Controller: 1281
+          GameCube Controller: 1537
       controller4_wii:
         prompt: CONTROLLER 4 TYPE
         description: Emulate a Wiimote Sideway with L2 for Shake and Nunchuk on R-stick.
@@ -129,4 +141,4 @@ systems:
           WiiMote + Classic Controller: 1025
           WiiMote + Classic Controller Pro: 1281
           Real Wiimote: 1536
-          GameCube Controller: 1281
+          GameCube Controller: 1537

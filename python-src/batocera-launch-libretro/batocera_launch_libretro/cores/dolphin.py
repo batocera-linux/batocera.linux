@@ -99,6 +99,9 @@ class Dolphin(Core):
         # Anisotropic Filtering
         core_options.set_from_config('dolphin_max_anisotropy', 'wii_anisotropic', default='0')
 
+        # Anti-aliasing
+        core_options.set_from_config('dolphin_anti_aliasing', 'wii_antialiasing', default='0')
+
         # Wii Tv Mode
         core_options.set_from_config('dolphin_widescreen', 'wii_widescreen', default='enabled')
 
