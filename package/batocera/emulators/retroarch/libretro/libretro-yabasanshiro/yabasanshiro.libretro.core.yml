@@ -11,6 +11,15 @@ custom_features:
       720p: 720p
       1080p: 1080p
       4K: 4k
+  yabasanshiro_rbg_resolution:
+    prompt: ROTATING BACKGROUND RESOLUTION
+    description: Enhancement. Render the rotating background (RBG) layer at a higher resolution. Demanding on weaker devices.
+    choices:
+      Original (Default): original
+      2x: 2x
+      720p: 720p
+      1080p: 1080p
+      Fit To Rendering Resolution: Fit_to_emulation
   yabasanshiro-autowidescreen:
     prompt: AUTO WIDESCREEN
     description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
@@ -30,13 +39,13 @@ custom_features:
     description: Not all games support 3D pad.
     choices:
       Saturn Pad: 1
-      Saturn 3D Pad: 5
+      Saturn 3D Pad: 261
   controller2_saturn:
     prompt: CONTROLLER 2 TYPE
     description: Not all games support 3D pad.
     choices:
       Saturn Pad: 1
-      Saturn 3D Pad: 5
+      Saturn 3D Pad: 261
   yabasanshiro_language:
     prompt: LANGUAGE
     description: Change the system's language.

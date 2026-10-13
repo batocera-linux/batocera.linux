@@ -22,14 +22,19 @@ class BeetleSaturn(RACore):
         if self.config.use_wheels:
             return '517'  # Arcade Racer
 
-        return self.config.get_str('controller1_saturn', '1')  # 1 = Saturn pad
+        return self._saturn_device_type('controller1_saturn')
 
     @cached_property
     def player2_device_type(self) -> str | None:
         if self.system != 'saturn':
             return None
 
-        return self.config.get_str('controller2_saturn', '1')  # 1 = Saturn pad
+        return self._saturn_device_type('controller2_saturn')
+
+    def _saturn_device_type(self, key: str, /) -> str:
+        # shared with yabasanshiro, which used to store its 3D Pad as 5
+        device = self.config.get_str(key, '1')  # 1 = Saturn pad
+        return '261' if device == '5' else device
 
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # gun cross / wheel
