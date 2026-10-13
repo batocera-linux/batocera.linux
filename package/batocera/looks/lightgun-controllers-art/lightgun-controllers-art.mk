@@ -15,6 +15,9 @@ define LIGHTGUN_CONTROLLERS_ART_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/guns-overlays
 	cp -f $(@D)/png/*.png $(TARGET_DIR)/usr/share/batocera/guns-overlays
 	cp -f $(@D)/infos/*.infos $(TARGET_DIR)/usr/share/batocera/guns-overlays
+	# GunCon3 has a different name on batocera
+	(cd $(TARGET_DIR)/usr/share/batocera/guns-overlays && ln -sf "GunCon3-Gun.png"  "GunCon3-Gun calibrated.png")
+	(cd $(TARGET_DIR)/usr/share/batocera/guns-overlays && ln -sf "GunCon3-Gun.infos" "GunCon3-Gun calibrated.infos")
 endef
 
 $(eval $(generic-package))
