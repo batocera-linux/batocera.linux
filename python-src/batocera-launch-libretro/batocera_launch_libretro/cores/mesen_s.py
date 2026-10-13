@@ -33,7 +33,7 @@ class MesenS(SquashFSMixin, RACore):
             core_options.set_from_config('mesen-s_sgb2', default='enabled')
 
         # NTSC Filter
-        core_options.set_from_config('mesen-s_ntsc_filter', default='disabled')
+        core_options.set_from_config('mesen-s_ntsc_filter', default='Disabled')
 
         # Blending for high-res mode (Kirby's Dream Land 3 pseudo-transparency)
         core_options.set_from_config('mesen-s_blend_high_res', default='disabled')
