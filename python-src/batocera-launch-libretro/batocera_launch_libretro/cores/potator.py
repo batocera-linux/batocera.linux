@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Potator(RACore):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Watara Color Palette
-        core_options.set_from_config('potator_palette', 'watara_palette', default='gameking')
+        core_options.set('potator_palette', self.config.get('watara_palette', 'gameking').lower())
 
         # Watara Ghosting
         core_options.set_from_config('potator_lcd_ghosting', 'watara_ghosting', default='0')
