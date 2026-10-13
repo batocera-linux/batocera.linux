@@ -22,11 +22,12 @@ class ParallelN64(N64ControllerRemapMixin, RACore):
         # Graphics Plugin
         core_options.set_from_config(
             'parallel-n64-gfxplugin',
-            default='parallel' if self.config.get('gfxbackend') == 'vulkan' else 'auto',
-        )  # vulkan doesn't work with auto
+            default='parallel' if self.config.get('gfxbackend') == 'vulkan' else 'gliden64',
+        )
 
         # Video Resolution
         core_options.set_from_config('parallel-n64-screensize', default='320x240')
+        core_options.set_from_config('parallel-n64-upscaling', default='1x')
 
         # Widescreen Hack
         # Increases from 4:3 to 16:9 in 3D games (bad for 2D)
@@ -43,9 +44,6 @@ class ParallelN64(N64ControllerRemapMixin, RACore):
 
         # Texture Filtering
         core_options.set_from_config('parallel-n64-filtering', default='automatic')
-
-        # Framerate
-        core_options.set_from_config('parallel-n64-framerate', default='automatic')
 
         # Controller rumble settings
         for pak_number in range(1, 5):

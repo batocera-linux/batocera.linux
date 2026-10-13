@@ -11,6 +11,7 @@ custom_features:
     prompt: GRAPHICS PLUGIN
     description: Choose the Parallel N64 graphics plugin.
     choices:
+      GLideN64: gliden64
       Glide64: glide64
       Gln64: gln64
       Rice: rice
@@ -30,7 +31,15 @@ custom_features:
       7x (2240x1680): 2240x1680
       9x (2880x2160): 2880x2160
       18x (5760x4320): 5760x4320
-  parallel_n64-widescreen:
+  parallel-n64-upscaling:
+    prompt: UPSCALING FACTOR
+    description: Render at a multiple of the N64 resolution. Only applies to the Angrylion and Parallel plugins. Angrylion stops at 4x.
+    choices:
+      1x (Default): 1x
+      2x: 2x
+      4x: 4x
+      8x: 8x
+  parallel_n64-autowidescreen:
     prompt: AUTO WIDESCREEN
     description: Automatically sets aspect ratio to 16/9 for games that natively support it. 2D elements like HUD/UI may be stretched.
     choices:
@@ -51,13 +60,6 @@ custom_features:
       N64 3-point: N64 3-point
       Bilinear: bilinear
       Nearest: nearest
-  parallel-n64-framerate:
-    group: ADVANCED OPTIONS
-    prompt: FRAME RATE
-    description: Full speed can break some games.
-    choices:
-      Original: original
-      Full speed: fullspeed
   parallel-n64-controller1:
     submenu: CONTROLLER 1
     prompt: CONTROLLER TYPE
