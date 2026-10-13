@@ -389,7 +389,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             custom_config.set('content_show_video', False)
             custom_config.set('content_show_history', False)
             custom_config.set('content_show_playlists', False)
-            custom_config.set('content_show_add', False)
+            custom_config.set('content_show_add_entry', 0)
             custom_config.set('menu_show_load_core', False)
             custom_config.set('menu_show_load_content', False)
             custom_config.set('menu_show_online_updater', False)
@@ -614,9 +614,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         custom_config.set('recording_output_directory', '/userdata/screenshots/')
         custom_config.set('savestate_directory', '/userdata/saves/')
         custom_config.set('savefile_directory', '/userdata/saves/')
-        custom_config.set('extraction_directory', '/userdata/extractions/')
         custom_config.set('cheat_database_path', '/userdata/cheats/cht/')
-        custom_config.set('cheat_settings_path', '/userdata/cheats/saves/')
         custom_config.set('system_directory', '/userdata/bios/')
         custom_config.set('joypad_autoconfig_dir', '/userdata/system/configs/retroarch/inputs/')
         custom_config.set('video_shader_dir', '/usr/share/batocera/shaders/')
@@ -895,18 +893,12 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         if (netplay_mode := self.config.get('netplay.mode')) in {'host', 'client', 'spectator'}:
             # Security : hardcore mode disables save states, which would kill netplay
             custom_config.set('cheevos_hardcore_mode_enable', False)
-            # Quite strangely, host mode requires netplay_mode to be set to false when launched from command line
-            custom_config.set('netplay_mode', False)
             custom_config.set_from_config('netplay_ip_port', 'netplay.port')
-            custom_config.set_from_config('netplay_delay_frames', 'netplay.frames')
+            custom_config.set_from_config('netplay_input_latency_frames_min', 'netplay.frames')
             custom_config.set_from_config('netplay_nickname', 'netplay.nickname')
-            custom_config.set('netplay_client_swap_input', False)
             if netplay_mode == 'client' or self.config['netplay.mode'] == 'spectator':
-                # But client needs netplay_mode = true ... bug ?
-                custom_config.set('netplay_mode', True)
                 custom_config.set_from_config('netplay_ip_address', 'netplay.server.ip')
                 custom_config.set_from_config('netplay_ip_port', 'netplay.server.port')
-                custom_config.set('netplay_client_swap_input', True)
 
             # Connect as client
             if netplay_mode == 'client':
@@ -927,9 +919,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             # Netplay hide the gameplay
             custom_config.set_bool_from_config('netplay_public_announce', 'netplay_public_announce', default=True)
 
-            # Enable or disable server spectator mode
-            custom_config.set_bool_from_config('netplay_spectator_mode_enable', 'netplay.spectator')
-
             # Relay
             if (netplay_relay := self.config.get('netplay.relay')) and netplay_relay != 'none':
                 custom_config.set('netplay_use_mitm_server', True)
@@ -948,9 +937,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         # rumble (to reduce force feedback on devices like RG552)
         custom_config.set_from_config('input_rumble_gain', 'rumble_gain')
 
-        # On-Screen Display
-        custom_config.set('width', self.resolution.width)  # default value
-        custom_config.set('height', self.resolution.height)  # default value
         # force the assets directory while it was wrong in some beta versions
         custom_config.set('assets_directory', '/usr/share/libretro/assets')
 
@@ -1201,7 +1187,6 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         if not shader_bezel:
             custom_config.set('input_overlay_enable', True)
 
-        custom_config.set('input_overlay_scale', '1.0')
         custom_config.set('input_overlay', str(self.overlay_config_path))
         custom_config.set('input_overlay_hide_in_menu', True)
 
