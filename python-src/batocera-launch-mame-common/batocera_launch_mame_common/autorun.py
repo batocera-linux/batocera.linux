@@ -180,7 +180,9 @@ def get_autorun_command(
 
         # if still undefined, default autoRunCmd based on media type
         if not autorun_cmd and (
-            alt_rom_type == 'cass' or (soft_list and soft_list.endswith('cass')) or rom.suffix.casefold() == '.cas'
+            alt_rom_type == 'cass'
+            or (soft_list and (soft_list == 'mc10' or soft_list.endswith('cass')))
+            or rom.suffix.casefold() == '.cas'
         ):
             rom_type = 'cass'
             autorun_cmd = r'CLOAD\n'
