@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-# Current xone needs kernel 6.3 or newer
-ifeq ($(BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_3),y)
+# 6.1 boards carry backport patches for current xone
+ifeq ($(BR2_TOOLCHAIN_HEADERS_AT_LEAST_6_1),y)
     XONE_VERSION = v0.5.8
 else
     XONE_VERSION = bbf0dcc484c3f5611f4e375da43e0e0ef08f3d18
