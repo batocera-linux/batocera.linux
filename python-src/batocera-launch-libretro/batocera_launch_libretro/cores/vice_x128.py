@@ -50,6 +50,9 @@ class ViceX128(Core):
         # Select Controller Type
         core_options.set_from_config('vice_joyport_type', default='1')
 
+        # RAM Expansion Unit
+        core_options.set_from_config('vice_c128_ram_expansion_unit', default='none')
+
         # Keyboard Pass-through for Pad2Key
         core_options.set_from_config(
             'vice_physical_keyboard_pass_through', 'vice_keyboard_pass_through', default='disabled'

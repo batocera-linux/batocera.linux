@@ -27,12 +27,6 @@ custom_features:
       green: green
       amber: amber
       white: white
-  vice_aspect_ratio:
-    prompt: ASPECT RATIO
-    description: Change the output resolution ratio.
-    choices:
-      PAL 576x312px: pal
-      NTSC 492x262px: ntsc
   vice_zoom_mode:
     group: ADVANCED OPTIONS
     prompt: ZOOM/CROP (HIDE BORDERS)
@@ -44,28 +38,6 @@ custom_features:
       small: small
       medium: medium
       maximum: maximum
-  vice_retropad_options:
-    prompt: Button Options
-    description: RetroPad Face Button Options.
-    choices:
-      B = Fire: disabled
-      B = Fire, A = Up: jump
-      Y = Fire: rotate
-      Y = Fire, B = Up: rotate_jump
-  vice_joyport:
-    prompt: CONTROLLER PORT
-    description: Most games use port 2, some use port 1.
-    choices:
-      Port 1: 1
-      Port 2: 2
-  vice_joyport_type:
-    prompt: CONTROLLER TYPE
-    choices:
-      Joystick: 1
-      Paddles: 2
-      Mouse (1351): 3
-      Trackball (Atari CX-22): 6
-      Koalapad: 10
   vice_keyboard_pass_through:
     group: ADVANCED OPTIONS
     prompt: KEYBOARD PASSTHROUGH

@@ -40,9 +40,6 @@ class ViceXvic(Core):
         # Button options
         core_options.set_from_config('vice_retropad_options', default='disabled')
 
-        # Select Controller Port
-        core_options.set_from_config('vice_joyport', default='2')
-
         # Select Controller Type
         core_options.set_from_config('vice_joyport_type', default='1')
 
