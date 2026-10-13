@@ -162,8 +162,6 @@ class Flycast(Emulator):
         # save / load states
         config.set('config', 'Dreamcast.AutoLoadState', self.config.get_str('flycast_loadstate', 'no'))
         config.set('config', 'Dreamcast.AutoSaveState', self.config.get_str('flycast_savestate', 'no'))
-        # windows CE
-        config.set('config', 'Dreamcast.ForceWindowsCE', self.config.get_str('flycast_winCE', 'no'))
         # Per-game VMU
         config.set('config', 'PerGameVmu', self.config.get_bool('flycast_per_game_vmu', return_values=('yes', 'no')))
         # DSP
