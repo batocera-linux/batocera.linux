@@ -51,18 +51,18 @@ class GenesisPlusGX(SquashFSMixin, MegadriveControllerRemapMixin, RACore):
 
         # Sometimes needs to be forced to NTSC-U for MSU-MD to work (this is to avoid an intentionally coded lock-out screen):
         # https://arcadetv.github.io/msu-md-patches/wiki/Lockout-screen.html
-        core_options.set_from_config('genesis_plus_region_detect', 'gpgx_region', default='auto')
+        core_options.set_from_config('genesis_plus_gx_region_detect', 'gpgx_region', default='auto')
 
         # Reduce sprite flickering
         core_options.set_from_config('genesis_plus_gx_no_sprite_limit', 'gpgx_no_sprite_limit', default='disabled')
 
         # Blargg NTSC filter
         if self.system == 'megadrive':
-            ntsc_filter = self.config.get('gpgx_blargg_filter_md', 'Off')
+            ntsc_filter = self.config.get('gpgx_blargg_filter_md', 'disabled')
         elif self.system == 'mastersystem':
-            ntsc_filter = self.config.get('gpgx_blargg_filter_ms', 'Off')
+            ntsc_filter = self.config.get('gpgx_blargg_filter_ms', 'disabled')
         else:
-            ntsc_filter = 'Off'
+            ntsc_filter = 'disabled'
 
         core_options.set('genesis_plus_gx_blargg_ntsc_filter', ntsc_filter)
 
