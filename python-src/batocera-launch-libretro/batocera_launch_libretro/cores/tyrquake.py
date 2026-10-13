@@ -45,7 +45,7 @@ class Tyrquake(Core):
 
         # Frame rate
         framerate = self.config.get('tyrquake_framerate', 'automatic')
-        core_options.set('tyrquake_framerate', 'Auto' if framerate == 'automatic' else framerate)
+        core_options.set('tyrquake_framerate', 'auto' if framerate == 'automatic' else framerate.removesuffix('fps'))
 
         # Rumble
         core_options.set_from_config('tyrquake_rumble', 'tyrquake_rumble', default='disabled')
