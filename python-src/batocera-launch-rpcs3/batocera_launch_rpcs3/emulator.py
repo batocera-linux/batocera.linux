@@ -692,16 +692,7 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
                 second_frame_limit = 0
             # Check for valid Frame Limit value, if it's not a Frame Limit value apply to Second Frame Limit
             case (
-                'Off'
-                | '30'
-                | '50'
-                | '59.94'
-                | '60'
-                | '120'
-                | 'Display'
-                | 'Auto'
-                | 'PS3 Native'
-                | 'Infinite' as rpcs3_framelimit
+                'Off' | '30' | '50' | '60' | '120' | 'Display' | 'Auto' | 'PS3 Native' | 'Infinite' as rpcs3_framelimit
             ):
                 frame_limit = rpcs3_framelimit
                 second_frame_limit = 0
@@ -776,7 +767,7 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
                 # Stretch to display area
                 'Stretch To Display Area': self.config.get_bool('rpcs3_stretchdisplay'),
                 # Frame Limit
-                # Frame limit checks for specific values("Auto", "Off", "30", "50", "59.94", "60", "120", "Display", "PS3 Native", "Infinite")
+                # Frame limit checks for specific values("Auto", "Off", "30", "50", "60", "120", "Display", "PS3 Native", "Infinite")
                 # Second Frame Limit can be any float/integer. 0 = disabled.
                 'Frame limit': frame_limit,
                 'Second Frame Limit': second_frame_limit,
@@ -876,8 +867,7 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
 
             vulkan_config['Asynchronous Texture Streaming'] = self.config.get_bool('rpcs3_async_texture')
             # Asynchronous Queue Scheduler
-            if self.config.get('rpcs3_vk_async_scheduler'):
-                vulkan_config['Asynchronous Queue Scheduler'] = self.config.get('rpcs3_vk_async_scheduler')
+            vulkan_config['Asynchronous Queue Scheduler'] = self.config.get('rpcs3_vk_async_scheduler', 'Safe')
 
         merge(rpcs3_yml_config, config)
 

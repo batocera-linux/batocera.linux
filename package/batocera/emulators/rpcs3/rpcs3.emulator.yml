@@ -175,7 +175,7 @@ custom_features:
       1920x1080 (150% - 1080p): "150"
       2240x1260 (175%): "175"
       2560x1440 (200% - 1440p): "200"
-      3200x1800 (225%): "225"
+      2880x1620 (225%): "225"
       3840x2160 (300% - 4K): "300"
   rpcs3_resolution_scale_threshold:
     submenu: VIDEO
@@ -190,7 +190,7 @@ custom_features:
     choices:
       Bilinear (Default): Bilinear
       Nearest: Nearest
-      FidelityFX Super Resolution: FidelityFX Super Resolution 1
+      FidelityFX Super Resolution: FidelityFX Super Resolution
   rpcs3_fsr_sharpening:
     submenu: RENDER
     prompt: FSR SHARPENING INTENSITY
@@ -398,7 +398,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 1
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -406,7 +406,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 2
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -414,7 +414,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 3
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -422,7 +422,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 4
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -430,7 +430,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 5
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -438,7 +438,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 6
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
@@ -446,7 +446,7 @@ custom_features:
     group: CONTROLS
     submenu: CONTROLLER 7
     prompt: PS3 CONTROLLER
-    description: Default uses SDL2, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
+    description: Default uses SDL, otherwise enable controller specific capabilities. Sony DS won't work with clone controllers.
     choices:
       Legacy Evdev: Evdev
       Sony DS: Sony
