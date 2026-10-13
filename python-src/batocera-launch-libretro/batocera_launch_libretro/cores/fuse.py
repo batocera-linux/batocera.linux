@@ -27,5 +27,6 @@ class Fuse(Core):
         # The most common configuration same as ZX Spectrum+
         core_options.set_from_config('fuse_machine', 'fuse_machine', default='Spectrum 128K')
 
-        # Zoom, Hide Video Border
-        core_options.set_from_config('fuse_hide_border', 'fuse_hide_border', default='disabled')
+        # Video border size
+        default = 'none' if self.config.get('fuse_hide_border') == 'enabled' else 'full'
+        core_options.set_from_config('fuse_size_border', 'fuse_size_border', default=default)

@@ -21,12 +21,15 @@ custom_features:
       Pentagon 512K: Pentagon 512K
       Pentagon 1024: Pentagon 1024
       Scorpion 256K: Scorpion 256K
-  fuse_hide_border:
-    prompt: ZOOM (HIDE BORDERS)
-    description: Hides borders on many games. Some games used the borders.
+  fuse_size_border:
+    prompt: VIDEO BORDER SIZE
+    description: Shrinks or hides the borders. Some games used the borders.
     choices:
-      'Off': disabled
-      'On': enabled
+      Full: full
+      Medium: medium
+      Small: small
+      Minimum: minimum
+      None: none
   controller1_zxspec:
     prompt: CONTROLLER TYPE 1
     description: Sinclair 1 controller set to AUTO.
