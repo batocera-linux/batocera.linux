@@ -2,85 +2,17 @@ from __future__ import annotations
 
 import logging
 import re
-import shutil
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
-from pathlib import Path
-from typing import TYPE_CHECKING, ClassVar, Final, Protocol, cast
-
-from batocera_common.configparser import CaseSensitiveConfigParser
-from batocera_common.paths import SAVES
-
-from ..paths import PRECALIBRATION_DIR
+from typing import TYPE_CHECKING, ClassVar, Final, cast
 
 if TYPE_CHECKING:
-    from ..config.config import SystemConfig
+    from pathlib import Path
+
+    from ..rom import Rom
 
 _logger = logging.getLogger(__name__)
 _input_re: Final = re.compile(r'^/dev/input/event([0-9]*)$')
-# xemu-chihiro names a save after the parent game, so its revisions share it
-_CHIHIRO_SAVE_NAMES: Final = {'ghostsqo': 'ghostsqu', 'vcop3a': 'vcop3'}
-# the sm2-emu launcher copies these default saves for every game on first run
-_SM2_EMU_DEFAULT_SAVES: Final = Path('/usr/share/sm2-emu/nvram')
-
-
-def _copy_file(src: Path, dst: Path) -> None:
-    if src.exists() and not dst.exists():
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(src, dst)
-
-
-def _copy_file_over_default(src: Path, dst: Path, default: Path) -> None:
-    # also replace a default save that was never changed
-    if dst.exists() and default.exists() and dst.read_bytes() == default.read_bytes():
-        dst.unlink()
-    _copy_file(src, dst)
-
-
-def _copy_dir(src: Path, dst: Path) -> None:
-    if src.exists() and not dst.exists():
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(src, dst)
-
-
-def _copy_files_in_dir(srcdir: Path, dstdir: Path, startWith: str, endWith: str) -> None:
-    for src in srcdir.iterdir():
-        if src.name.startswith(startWith):  # and src.endswith(endswith):
-            _copy_file(src, dstdir / src.name)
-
-
-def _flycast_saves_dir(system: str, emulator: str) -> Path:
-    # standalone Flycast keeps the arcade saves with its Dreamcast saves
-    if emulator == 'flycast':
-        return SAVES / 'dreamcast' / 'flycast'
-    return SAVES / system / 'reicast'
-
-
-def _acgame_sram(rom: Path) -> Path | None:
-    # pcsx2x6 keeps the sram in the game folder set by the .acgame
-    acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
-    try:
-        acgame.read(rom, encoding='utf-8')
-    except Exception as e:
-        _logger.warning('Could not read %s: %s', rom, e)
-        return None
-
-    gameid = acgame.get('game', 'gameid', fallback='')
-    subdir = acgame.get('data', 'subdir', fallback=gameid)
-    return rom.parent / subdir / acgame.get('data', 'sram', fallback='sram.bin')
-
-
-class LegacyConfig(Protocol):
-    system: str
-
-    @property
-    def emulator(self) -> str: ...
-
-    @property
-    def core(self) -> str: ...
-
-    @property
-    def use_guns(self) -> bool: ...
 
 
 @dataclass(slots=True, kw_only=True)
@@ -181,76 +113,6 @@ class Gun:
 
         return guns
 
-    @classmethod
-    def get_and_precalibrate_all(cls, system_config: SystemConfig | LegacyConfig, rom: Path, /) -> GunList:
-        if not system_config.use_guns:
-            _logger.info('guns disabled.')
-            return []
-
-        dir = PRECALIBRATION_DIR / system_config.system
-
-        # TODO: move preconfiguration code to Emulator subclasses/mixins
-        if dir.exists():
-            emulator = system_config.emulator
-            core = system_config.core
-
-            if system_config.system == 'atomiswave':
-                for suffix in ['nvmem', 'nvmem2']:
-                    src = dir / 'reicast' / f'{rom.name}.{suffix}'
-                    dst = _flycast_saves_dir('atomiswave', emulator) / f'{rom.name}.{suffix}'
-                    _copy_file(src, dst)
-
-            elif system_config.system == 'mame':
-                target_dir: str | None = None
-                if emulator == 'mame':
-                    target_dir = 'mame'
-                elif emulator == 'libretro':
-                    if core == 'mame078plus':
-                        # mame2003-plus reads its own nvram files
-                        src = dir / 'mame2003-plus' / 'nvram' / f'{rom.stem}.nv'
-                        dst = SAVES / 'mame' / 'mame2003-plus' / 'nvram' / f'{rom.stem}.nv'
-                        _copy_file(src, dst)
-                    elif core == 'mame':
-                        target_dir = 'mame/mame'
-
-                if target_dir is not None:
-                    src = dir / 'nvram' / rom.stem
-                    dst = SAVES / target_dir / 'nvram' / rom.stem
-                    _copy_dir(src, dst)
-                    srcdir = dir / 'diff'
-                    dstdir = SAVES / target_dir / 'diff'
-                    _copy_files_in_dir(srcdir, dstdir, rom.stem + '_', '.dif')
-
-            elif system_config.system == 'naomi':
-                for suffix in ['nvmem', 'eeprom']:
-                    src = dir / 'reicast' / f'{rom.name}.{suffix}'
-                    dst = _flycast_saves_dir('naomi', emulator) / f'{rom.name}.{suffix}'
-                    _copy_file(src, dst)
-
-            elif system_config.system == 'model2':
-                if emulator == 'sm2-emu':
-                    # sm2-emu names a save after the set it finds in the archive, not after the file
-                    srcdir = dir / 'sm2-emu'
-                    if srcdir.is_dir():
-                        for src in srcdir.iterdir():
-                            dst = SAVES / 'model2' / 'sm2-emu' / src.name
-                            _copy_file_over_default(src, dst, _SM2_EMU_DEFAULT_SAVES / src.name)
-
-            elif system_config.system == 'namco2x6':
-                if emulator == 'pcsx2x6':
-                    src = dir / rom.stem / 'sram.bin'
-                    dst = _acgame_sram(rom)
-                    if dst is not None:
-                        _copy_file(src, dst)
-
-            elif system_config.system == 'chihiro':  # noqa: SIM102
-                if emulator == 'xemu-chihiro':
-                    src = dir / 'saves' / f'{rom.stem}.sav'
-                    dst = SAVES / 'chihiro' / 'saves' / f'{_CHIHIRO_SAVE_NAMES.get(rom.stem, rom.stem)}.sav'
-                    _copy_file(src, dst)
-
-        return cls.get_all()
-
 
 def guns_need_crosses(guns: Guns, /) -> bool:
     # no gun, enable the cross for joysticks, mouses...
@@ -258,6 +120,22 @@ def guns_need_crosses(guns: Guns, /) -> bool:
         return True
 
     return any(gun.needs_cross for gun in guns)
+
+
+def precalibrate_reicast_guns(system: str, rom: Rom, precalibration_dir: Path, saves_dir: Path, /) -> None:
+    if system not in {'atomiswave', 'naomi'}:
+        return
+
+    suffixes = {'nvmem', 'nvmem2'} if system == 'atomiswave' else {'nvmem', 'eeprom'}
+
+    for suffix in suffixes:
+        filename = f'{rom.name}.{suffix}'
+        src = precalibration_dir / 'reicast' / filename
+        dest = saves_dir / filename
+
+        if src.exists() and not dest.exists():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            src.copy(dest)
 
 
 type Guns = Sequence[Gun]

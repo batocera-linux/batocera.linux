@@ -25,6 +25,7 @@ from .devices.gun import (
     GunList as GunList,
     Guns as Guns,
     guns_need_crosses as guns_need_crosses,
+    precalibrate_reicast_guns as precalibrate_reicast_guns,
 )
 from .devices.input import Input as Input, InputDict as InputDict, InputMapping as InputMapping
 from .devices.video import (

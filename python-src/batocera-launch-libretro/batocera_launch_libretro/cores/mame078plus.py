@@ -13,6 +13,18 @@ if TYPE_CHECKING:
 class MAME078Plus(Core):
     gun_mapping: ClassVar = {'default': {'device': 4, 'p1': 0, 'p2': 1}}
 
+    def precalibrate_guns(self) -> None:
+        if self.system != 'mame':
+            return
+
+        # mame2003-plus reads its own nvram files
+        src = self.emulator.gun_precalibration_dir / 'mame2003-plus' / 'nvram' / f'{self.rom.stem}.nv'
+        dest = self.emulator.saves_dir / 'mame2003-plus' / 'nvram' / f'{self.rom.stem}.nv'
+
+        if src.is_file() and not dest.exists():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            src.copy(dest)
+
     @cached_property
     def map_lightguns(self) -> bool:
         return self.config.get_bool('lightgun_map')

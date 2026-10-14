@@ -94,6 +94,57 @@ class Pcsx2x6(Emulator):
             return 16 / 9
         return 4 / 3
 
+    @cached_property
+    def rom_ini(self) -> CaseSensitiveConfigParser | None:
+        acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
+
+        try:
+            acgame.read(self.rom, encoding='utf-8')
+        except Exception as e:
+            _logger.warning('Could not read %s: %s', self.rom, e)
+            return None
+
+        return acgame
+
+    @cached_property
+    def rom_gameid(self) -> str:
+        if self.rom_ini is None:
+            return ''
+
+        return self.rom_ini.get('game', 'gameid', fallback='')
+
+    @cached_property
+    def rom_data_subdir(self) -> str:
+        if self.rom_ini is None:
+            return self.rom_gameid
+
+        return self.rom_ini.get('data', 'subdir', fallback=self.rom_gameid)
+
+    @cached_property
+    def rom_data_dongle_source(self) -> Path | None:
+        if self.rom_ini is None:
+            return None
+
+        name = self.rom_ini.get('data', 'dongle', fallback=f'{self.rom_gameid}.ps2')
+        return self.rom.parent / self.rom_data_subdir / name
+
+    @cached_property
+    def rom_sram(self) -> Path | None:
+        if self.rom_ini is None:
+            return None
+
+        return self.rom.parent / self.rom_data_subdir / self.rom_ini.get('data', 'sram', fallback='sram.bin')
+
+    def precalibrate_guns(self) -> None:
+        if self.system != 'namco2x6':
+            return
+
+        src = self.gun_precalibration_dir / self.rom.stem / 'sram.bin'
+
+        if self.rom_sram is not None and src.exists() and not self.rom_sram.exists():
+            self.rom_sram.parent.mkdir(parents=True, exist_ok=True)
+            src.copy(self.rom_sram)
+
     async def configure(self) -> Command:
         pcsx2_patches = _PCSX2X6_BIOS / 'patches.zip'
 
@@ -106,7 +157,11 @@ class Pcsx2x6(Emulator):
         _configure_reg(self.config_dir)
         await _configure_ini(self.config_dir, self.config, self.rom, self.controllers, self.guns)
         _configure_audio(self.config_dir)
-        _install_dongle(self.rom)
+
+        if (dongle_source := self.rom_data_dongle_source) is not None and dongle_source.exists():
+            # pcsx2x6 only looks for the dongle in its memory card folder
+            _PCSX2X6_MEMCARDS.mkdir(parents=True, exist_ok=True)
+            shutil.copy(dongle_source, _PCSX2X6_MEMCARDS / dongle_source.name)
 
         command_array: list[str | Path] = (
             ['/usr/pcsx2x6/bin/pcsx2x6-qt']
@@ -148,23 +203,6 @@ def _configure_reg(config_directory: Path) -> None:
         f.write(f'SettingsFolder={config_directory / "inis"}\n')
         f.write(f'Install_Dir={_PCSX2X6_BIN_DIR}\n')
         f.write('RunWizard=0\n')
-
-
-def _install_dongle(rom: Path) -> None:
-    # pcsx2x6 only looks for the dongle in its memory card folder
-    acgame = CaseSensitiveConfigParser(interpolation=None, strict=False)
-    try:
-        acgame.read(rom, encoding='utf-8')
-    except Exception as e:
-        _logger.warning('Could not read %s: %s', rom, e)
-        return
-
-    gameid = acgame.get('game', 'gameid', fallback='')
-    dongle = acgame.get('data', 'dongle', fallback=f'{gameid}.ps2')
-    source = rom.parent / acgame.get('data', 'subdir', fallback=gameid) / dongle
-    if source.is_file():
-        _PCSX2X6_MEMCARDS.mkdir(parents=True, exist_ok=True)
-        shutil.copy(source, _PCSX2X6_MEMCARDS / dongle)
 
 
 def _evdev_pointer_slots() -> dict[str, int]:

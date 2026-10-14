@@ -215,6 +215,9 @@ class Libretro(SpecialDecorationsMixin, Emulator):
     def overlay_config_path(self) -> Path:
         return self.config_dir / 'overlay.cfg'
 
+    def precalibrate_guns(self) -> None:
+        self.lr_core.precalibrate_guns()
+
     async def configure(self) -> Command:
         game_shader: str | None = None
         shader_bezel = False

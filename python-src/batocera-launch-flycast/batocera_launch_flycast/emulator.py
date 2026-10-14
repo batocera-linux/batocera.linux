@@ -11,6 +11,7 @@ from batocera_launch import (
     Command,
     Emulator,
     HotkeysContext,
+    precalibrate_reicast_guns,
 )
 
 from .controllers import generate_controller_config, generate_keyboard_config
@@ -57,6 +58,9 @@ class Flycast(Emulator):
     @cached_property
     def mapping_dir(self) -> Path:
         return self.config_dir / 'mappings'
+
+    def precalibrate_guns(self) -> None:
+        precalibrate_reicast_guns(self.system, self.rom, self.gun_precalibration_dir, self.saves_dir)
 
     async def configure(self) -> Command:
         config = CaseSensitiveConfigParser(interpolation=None)

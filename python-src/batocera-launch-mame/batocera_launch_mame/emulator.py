@@ -9,7 +9,7 @@ from batocera_common.dataclasses import cached_dataclass
 from batocera_common.paths import BIOS, CONFIGS, ROMS, SAVES, SCREENSHOTS
 from batocera_launch import Command
 from batocera_launch.paths import USER_DECORATIONS
-from batocera_launch_mame_common import MessSystemInfo, get_autorun_command
+from batocera_launch_mame_common import MessSystemInfo, get_autorun_command, precalibrate_mame_guns
 from batocera_launch_mame_common.paths import MAME_BIN_DIR
 
 from .base import MAMEBase
@@ -25,6 +25,12 @@ _SUBDIR_SOFT_LIST: Final = ['mac_hdd', 'bbc_hdd', 'cdi', 'archimedes_hdd', 'fmto
 
 @cached_dataclass
 class MAME(MAMEControllers, MAMEBezels, MAMEBase):
+    def precalibrate_guns(self) -> None:
+        if self.system != 'mame':
+            return
+
+        precalibrate_mame_guns(self.rom, self.gun_precalibration_dir, self.saves_dir)
+
     async def configure(self) -> Command:
         for path in [
             self.config_dir,

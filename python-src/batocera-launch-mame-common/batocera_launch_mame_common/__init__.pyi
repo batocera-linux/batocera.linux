@@ -12,6 +12,7 @@ from .control_config import (
     has_stick as has_stick,
     reverse_mapping as reverse_mapping,
 )
+from .gun_precalibration import precalibrate_mame_guns as precalibrate_mame_guns
 from .info import get_machine_size as get_machine_size
 from .mame_control_scheme import (
     MameControlScheme as MameControlScheme,
