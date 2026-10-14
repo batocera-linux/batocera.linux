@@ -45,6 +45,7 @@ def _custom_features_to_xml(features: Mapping[str, CustomFeature] | None, indent
         submenu = to_xml_attribute('submenu', feature.submenu)
         group = to_xml_attribute('group', feature.group)
         order = to_xml_attribute('order', feature.order)
+        requires = to_xml_attribute('requires', feature.requires)
         description = protect_xml(feature.description)
         preset = ''
 
@@ -54,7 +55,7 @@ def _custom_features_to_xml(features: Mapping[str, CustomFeature] | None, indent
             if feature.preset_parameters:
                 preset += to_xml_attribute('preset-parameters', feature.preset_parameters)
 
-        yield f'{indent}<feature name="{protect_xml(feature.prompt)}"{submenu}{group}{order} value="{
+        yield f'{indent}<feature name="{protect_xml(feature.prompt)}"{submenu}{group}{order}{requires} value="{
             protect_xml(name)
         }" description="{description}"{preset}>'
 

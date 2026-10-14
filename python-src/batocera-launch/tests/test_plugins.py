@@ -279,3 +279,70 @@ class TestTdpPlugin:
         plugin.stop(hook_context)
 
         assert apply_tdp.call_args_list == [((14,), {}), ((22,), {'detach': True})]
+
+    @pytest.fixture
+    def profiles(self, mocker: MockerFixture) -> list[str]:
+        current = ['custom']
+
+        def _set(profile: str, /) -> bool:
+            if profile in {'custom', 'balanced', 'low-power'} and profile != current[-1]:
+                current.append(profile)
+                return True
+            return False
+
+        mocker.patch('batocera_launch.plugins.tdp.current_platform_profile', side_effect=lambda: current[-1])
+        mocker.patch('batocera_launch.plugins.tdp.set_platform_profile', side_effect=_set)
+        mocker.patch('batocera_launch.plugins.tdp.time.sleep')
+        return current
+
+    @pytest.mark.launch_config_user_settings({'system.cpu.tdp': '28'})
+    @pytest.mark.launch_config_system_settings({'platformprofile': 'balanced'})
+    def test_profile_for_the_game_then_restores_it_and_the_maximum(
+        self, apply_tdp: Mock, profiles: list[str], hook_context: HookContext
+    ) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        assert profiles == ['custom', 'balanced']
+        apply_tdp.assert_not_called()
+
+        plugin.stop(hook_context)
+        assert profiles == ['custom', 'balanced', 'custom']
+        assert apply_tdp.call_args_list == [((28,), {'detach': True, 'delay': 2})]
+
+    @pytest.mark.launch_config_user_settings({'system.cpu.tdp': '28'})
+    @pytest.mark.launch_config_system_settings({'platformprofile': 'balanced', 'tdp': '50'})
+    @pytest.mark.launch_config_global_settings({'platformprofile': 'low-power'})
+    def test_restores_the_global_profile(self, apply_tdp: Mock, profiles: list[str], hook_context: HookContext) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        plugin.stop(hook_context)
+
+        assert profiles == ['custom', 'balanced', 'low-power']
+        assert apply_tdp.call_args_list == [((14,), {}), ((28,), {'detach': True, 'delay': 2})]
+
+    @pytest.mark.launch_config_system_settings({'platformprofile': 'balanced'})
+    def test_profile_without_a_supported_cpu(
+        self, apply_tdp: Mock, profiles: list[str], hook_context: HookContext
+    ) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        plugin.stop(hook_context)
+
+        assert profiles == ['custom', 'balanced', 'custom']
+        apply_tdp.assert_not_called()
+
+    @pytest.mark.launch_config_user_settings({'system.cpu.tdp': '28'})
+    @pytest.mark.launch_config_system_settings({'platformprofile': 'quiet'})
+    def test_unoffered_profile_changes_nothing(
+        self, apply_tdp: Mock, profiles: list[str], hook_context: HookContext
+    ) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        plugin.stop(hook_context)
+
+        assert profiles == ['custom']
+        apply_tdp.assert_not_called()

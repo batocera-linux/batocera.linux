@@ -16,9 +16,20 @@
 
 log="/userdata/system/logs/amd-tdp.log"
 
+restore_platform_profile() {
+    PROFILE=$(/usr/bin/batocera-settings-get global.platformprofile)
+    /usr/bin/batocera-platform-profile set "${PROFILE:-$PREVIOUS_PROFILE}"
+}
+
 case "$1" in
   start)
+    # ES only offers the platform profiles listed here, and TDP only once a maximum is detected
+    /usr/bin/batocera-settings-set system.platformprofile.choices "$(/usr/bin/batocera-platform-profile list)"
+    # the firmware keeps the last profile across reboots, read the limits in the highest power one
+    PREVIOUS_PROFILE=$(/usr/bin/batocera-platform-profile max)
     if ! lscpu | grep -q AuthenticAMD; then
+        restore_platform_profile
+        /usr/bin/batocera-settings-set system.cpu.tdp ""
         echo "Authentic AMD CPU not found, exiting TDP..."
         exit 1
     else
@@ -37,6 +48,7 @@ case "$1" in
                 SLOW_PERCENT=$(echo "$RYZEN_INFO" | awk '/PPT LIMIT FAST/ {f=$6} /PPT LIMIT SLOW/ {s=$6} END {if (f > 0 && s > 0) printf "%.0f\n", (s < f ? s : f) * 100 / f}')
                 echo "Reported slow limit is ${SLOW_PERCENT:-unknown}% of fast" >> $log
                 /usr/bin/batocera-settings-set system.cpu.tdp.slowpercent "${SLOW_PERCENT}"
+                restore_platform_profile
                 # set the global TDP if set
                 TDP_PERCENTAGE=$(printf "%.0f" "$(/usr/bin/batocera-settings-get global.tdp)")
                 if [ -n "$TDP_PERCENTAGE" ] && [ "$TDP_PERCENTAGE" -ge 10 ]; then
@@ -47,10 +59,14 @@ case "$1" in
                     echo "No global TDP value set, using detected maximum!" >> $log
                 fi
             else
+                restore_platform_profile
+                /usr/bin/batocera-settings-set system.cpu.tdp ""
                 echo "Maximum TDP is not defined, exiting TDP..." >> $log
                 exit 1
             fi
         else
+            restore_platform_profile
+            /usr/bin/batocera-settings-set system.cpu.tdp ""
             echo "Supported AMD Processor NOT found for TDP..."
             exit 1
         fi
