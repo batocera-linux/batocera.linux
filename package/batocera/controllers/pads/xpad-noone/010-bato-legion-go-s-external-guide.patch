@@ -1,0 +1,34 @@
+Let the Legion Go S driver own the guide button, the xinput report never sets it
+
+diff --git a/xpad.c b/xpad.c
+index 86f4683..150b06b 100644
+--- a/xpad.c
++++ b/xpad.c
+@@ -107,6 +107,7 @@
+ #define MAP_SELECT_BUTTON		(1 << 3)
+ #define MAP_PADDLES			(1 << 4)
+ #define MAP_PROFILE_BUTTON		(1 << 5)
++#define MAP_EXTERNAL_GUIDE		(1 << 6)
+ 
+ #define DANCEPAD_MAP_CONFIG	(MAP_DPAD_TO_BUTTONS |			\
+ 				MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
+@@ -347,7 +348,7 @@ static const struct xpad_device {
+ 	{ 0x17ef, 0x6182, "Lenovo Legion Controller for Windows", 0, XTYPE_XBOX360 },
+ 	{ 0x17ef, 0x61eb, "Lenovo Legion Go", 0, XTYPE_XBOX360 },
+ 	{ 0x1949, 0x041a, "Amazon Game Controller", 0, XTYPE_XBOX360 },
+-	{ 0x1a86, 0xe310, "QH Electronics Controller", 0, XTYPE_XBOX360 },
++	{ 0x1a86, 0xe310, "QH Electronics Controller", MAP_EXTERNAL_GUIDE, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0002, "Harmonix Rock Band Guitar", 0, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0003, "Harmonix Rock Band Drumkit", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360 },
+ 	{ 0x1bad, 0x0130, "Ion Drum Rocker", MAP_DPAD_TO_BUTTONS, XTYPE_XBOX360 },
+@@ -1012,7 +1013,9 @@ static void xpad360_process_packet(struct usb_xpad *xpad, struct input_dev *dev,
+ 	input_report_key(dev, BTN_Y,	data[3] & BIT(7));
+ 	input_report_key(dev, BTN_TL,	data[3] & BIT(0));
+ 	input_report_key(dev, BTN_TR,	data[3] & BIT(1));
+-	input_report_key(dev, BTN_MODE,	data[3] & BIT(2));
++	/* the guide button comes from another driver, which injects BTN_MODE */
++	if (!(xpad->mapping & MAP_EXTERNAL_GUIDE))
++		input_report_key(dev, BTN_MODE,	data[3] & BIT(2));
+ 
+ 	if (!(xpad->mapping & MAP_STICKS_TO_NULL)) {
+ 		/* left stick */

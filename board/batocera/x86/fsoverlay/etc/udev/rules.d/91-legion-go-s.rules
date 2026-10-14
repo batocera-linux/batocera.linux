@@ -24,3 +24,6 @@ SUBSYSTEMS=="hid", ACTION=="add", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="e3
       echo custom > /sys/class/leds/go_s:rgb:joystick_rings/mode; \
     fi' \
   "
+
+# Quick access and back buttons only drive hotkeygen, keep them out of ES and emulators
+SUBSYSTEM=="input", ATTRS{name}=="Legion Go S Extra Buttons", ENV{ID_INPUT_JOYSTICK}="0"
