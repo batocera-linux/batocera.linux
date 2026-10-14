@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import xml.etree.ElementTree as ET
 from typing import TYPE_CHECKING
 
@@ -9,6 +10,18 @@ from batocera_launch import Command, Emulator, HotkeysContext
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+def _existing_controls(config_file: Path, /) -> ET.Element:
+    """The user's <controls> (key and pad bindings) from a previous config.xml."""
+    try:
+        text = re.sub(r'^\s*<\?xml[^>]*\?>', '', config_file.read_text(encoding='utf-8'))
+        # Several top-level sections, so wrap them in a root to parse.
+        root = ET.fromstring(f'<root>{text}</root>')
+    except ET.ParseError, OSError:
+        return ET.Element('controls')
+    controls = root.find('controls')
+    return controls if controls is not None else ET.Element('controls')
 
 
 @cached_dataclass
@@ -75,9 +88,14 @@ class Cannonball(Emulator):
         ET.SubElement(engine, 'turbo').text = self.config.get('cheats_turbo', '0')
         ET.SubElement(engine, 'car_color').text = self.config.get('car_colour', '0')
 
+        config_file = self.config_dir / 'config.xml'
+
         # Controls Section
-        controls = ET.Element('controls')
-        ET.SubElement(controls, 'gear').text = self.config.get('gear_mode', '3')  # default, automatic
+        controls = _existing_controls(config_file)
+        if (gear := controls.find('gear')) is None:
+            gear = ET.SubElement(controls, 'gear')
+        if 'gear_mode' in self.config or not gear.text:
+            gear.text = self.config.get('gear_mode', '3')  # default, automatic
 
         # Function to convert XML to pretty-printed
         def prettify(element: ET.Element) -> bytes:
@@ -85,7 +103,6 @@ class Cannonball(Emulator):
             return ET.tostring(element, encoding='unicode').encode('utf-8')
 
         # Save the config file with multiple sections
-        config_file = self.config_dir / 'config.xml'
         with config_file.open('wb') as cannonballXml:
             cannonballXml.write(b'<?xml version="1.0" encoding="utf-8"?>\n')
             cannonballXml.write(prettify(data))
