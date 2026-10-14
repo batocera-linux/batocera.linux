@@ -27,7 +27,6 @@ else
     exit 1
 fi
 
-# add SM6115 & SM8650 for future device support
 case "$HW_DEVICE" in
   SM4450|SM6115|SM8250|SM8550|SM8650|SM8750)
     ;;
@@ -37,117 +36,78 @@ case "$HW_DEVICE" in
     ;;
 esac
 
-ABL_DIR="/usr/share/bootloader/rocknix_abl"
+REPO="OpenHandheldCollective/OpenABL"
+ABL_DIR="/usr/share/bootloader/openabl"
 ELF="${ABL_DIR}/abl_signed-${HW_DEVICE}.elf"
 SHA256SUM="${ABL_DIR}/abl_signed-${HW_DEVICE}.elf.sha256"
 
 ABL_A="/dev/disk/by-partlabel/abl_a"
 ABL_B="/dev/disk/by-partlabel/abl_b"
 
-# Ensure the ABL directory exists
-mkdir -p "$ABL_DIR"
-
 # ---- GitHub Online Check Logic ----
 if [[ "${1:-}" == "--check-online" ]]; then
     echo "Checking GitHub for ABL updates..."
-    
-    # Try fetching the latest release tag from the GitHub API
+
     LATEST_TAG=""
-    if LATEST_RELEASE_JSON=$(curl -sL --fail --max-time 10 "https://api.github.com/repos/ROCKNIX/abl/releases/latest" 2>/dev/null); then
+    if LATEST_RELEASE_JSON=$(curl -sL --fail --max-time 10 "https://api.github.com/repos/${REPO}/releases/latest" 2>/dev/null); then
         LATEST_TAG=$(echo "$LATEST_RELEASE_JSON" | grep -m1 '"tag_name":' | cut -d'"' -f4 || true)
     fi
 
     # Fallback: Parse redirection from the standard GitHub URL
     if [ -z "$LATEST_TAG" ]; then
-        LATEST_TAG=$(curl -sL --fail --max-time 10 -o /dev/null -w "%{url_effective}" "https://github.com/ROCKNIX/abl/releases/latest" 2>/dev/null | sed 's|.*/tag/||' || true)
+        LATEST_TAG=$(curl -sL --fail --max-time 10 -o /dev/null -w "%{url_effective}" "https://github.com/${REPO}/releases/latest" 2>/dev/null | sed 's|.*/tag/||' || true)
     fi
 
-    # Validate tag format (must look like a standard version tag)
     if [[ ! "$LATEST_TAG" =~ ^v[0-9] ]]; then
         LATEST_TAG=""
     fi
 
-    if [ -n "$LATEST_TAG" ]; then
-        # Determine local version
-        LOCAL_VERSION=""
-        if [ -f "${ABL_DIR}/version" ]; then
-            LOCAL_VERSION=$(cat "${ABL_DIR}/version" | xargs)
-        fi
+    LOCAL_VERSION=$(cat "${ABL_DIR}/version" 2>/dev/null || true)
 
-        # If files don't exist, or local version doesn't match the online release
-        if [ ! -f "$ELF" ] || [ ! -f "$SHA256SUM" ] || [ "$LATEST_TAG" != "$LOCAL_VERSION" ]; then
-            echo "A newer ABL bootloader ($LATEST_TAG) is available online!"
-            
-            proceed_download=0
-            if [ "$NON_INTERACTIVE" -eq 1 ]; then
-                proceed_download=1
-            else
-                read -p "Do you want to download and flash the new ABL update? (y/N): " -n 1 -r
-                echo
-                if [[ $REPLY =~ ^[Yy]$ ]]; then
-                    proceed_download=1
-                fi
-            fi
-
-            if [ "$proceed_download" -eq 1 ]; then
-                echo "Downloading ABL release ${LATEST_TAG}..."
-                
-                TMP_DIR=$(mktemp -d)
-                TAR_TMP="${TMP_DIR}/rocknix-abl.tar.gz"
-                TAR_URL="https://github.com/ROCKNIX/abl/releases/download/${LATEST_TAG}/rocknix-abl-${LATEST_TAG}.tar.gz"
-
-                if ! curl -sL --fail -o "$TAR_TMP" "$TAR_URL"; then
-                    echo "Error: Failed to download $TAR_URL. Aborting update."
-                    rm -rf "$TMP_DIR"
-                    exit 1
-                fi
-                
-                echo "Extracting archive..."
-                if ! tar -xzf "$TAR_TMP" -C "$TMP_DIR"; then
-                    echo "Error: Failed to extract tarball. Aborting update."
-                    rm -rf "$TMP_DIR"
-                    exit 1
-                fi
-
-                # Locate the specific device binaries recursively inside the extracted archive
-                FOUND_ELF=$(find "$TMP_DIR" -type f -name "abl_signed-${HW_DEVICE}.elf" | head -n 1)
-                FOUND_SHA=$(find "$TMP_DIR" -type f -name "abl_signed-${HW_DEVICE}.elf.sha256" | head -n 1)
-
-                if [ -z "$FOUND_ELF" ] || [ -z "$FOUND_SHA" ]; then
-                    echo "Error: Could not find ABL files for device ${HW_DEVICE} inside the downloaded archive."
-                    rm -rf "$TMP_DIR"
-                    exit 1
-                fi
-
-                # Verify extracted files match the included SHA256 checksum
-                echo "Verifying downloaded files..."
-                if ! (cd "$(dirname "$FOUND_ELF")" && sha256sum -c "$(basename "$FOUND_SHA")"); then
-                    echo "Error: SHA256 checksum verification failed for the downloaded files! Aborting."
-                    rm -rf "$TMP_DIR"
-                    exit 1
-                fi
-
-                # Copy validated files to their destination
-                mv "$FOUND_ELF" "$ELF"
-                mv "$FOUND_SHA" "$SHA256SUM"
-                echo "$LATEST_TAG" > "${ABL_DIR}/version"
-                
-                # Cleanup temp directory
-                rm -rf "$TMP_DIR"
-                echo "Download complete and verified."
-            else
-                echo "Skipping ABL update download."
-                # If local files don't exist and user skips download, we must exit
-                if [ ! -f "$ELF" ]; then
-                    echo "No local ABL files exist. Exiting."
-                    exit 0
-                fi
-            fi
-        else
-            echo "The latest ABL ($LATEST_TAG) is already downloaded locally."
-        fi
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Warning: Could not reach GitHub or determine the latest version. Proceeding with the local ABL."
+    elif [ -n "$LOCAL_VERSION" ] && [ "$(printf '%s\n%s\n' "$LATEST_TAG" "$LOCAL_VERSION" | sort -V | tail -n1)" = "$LOCAL_VERSION" ]; then
+        echo "The local ABL ($LOCAL_VERSION) is the latest."
     else
-        echo "Warning: Could not reach GitHub or determine the latest version. Proceeding with local files if they exist."
+        echo "A newer ABL ($LATEST_TAG) is available online!"
+
+        proceed_download=0
+        if [ "$NON_INTERACTIVE" -eq 1 ]; then
+            proceed_download=1
+        else
+            read -p "Do you want to download and flash the new ABL update? (y/N): " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                proceed_download=1
+            fi
+        fi
+
+        if [ "$proceed_download" -eq 1 ]; then
+            echo "Downloading ABL release ${LATEST_TAG}..."
+            TMP_DIR=$(mktemp -d)
+            trap 'rm -rf "$TMP_DIR"' EXIT
+            BASE_URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}"
+            NAME="abl_signed-${HW_DEVICE}.elf"
+
+            if ! curl -sL --fail -o "${TMP_DIR}/${NAME}" "${BASE_URL}/${NAME}" ||
+               ! curl -sL --fail -o "${TMP_DIR}/${NAME}.sha256" "${BASE_URL}/${NAME}.sha256"; then
+                echo "Error: Failed to download the ABL for ${HW_DEVICE} from ${BASE_URL}. Aborting update."
+                exit 1
+            fi
+
+            echo "Verifying downloaded files..."
+            if ! (cd "$TMP_DIR" && sha256sum -c "${NAME}.sha256"); then
+                echo "Error: SHA256 checksum verification failed for the downloaded files! Aborting."
+                exit 1
+            fi
+
+            # /usr is not persistent, so flash straight from the download
+            ELF="${TMP_DIR}/${NAME}"
+            SHA256SUM="${TMP_DIR}/${NAME}.sha256"
+            echo "Download complete and verified."
+        else
+            echo "Skipping ABL update download."
+        fi
     fi
 fi
 
@@ -273,9 +233,8 @@ in an unbootable device if used incorrectly.
 - Ensure you have recovery options before flashing
 - This project is provided as-is, with no warranty
 
-This ABL works with a fresh install of v43 or later only.
-
-Created by the ROCKNIX Team for the emulation community.
+OpenABL by the Open Handheld Collective, based on the
+ROCKNIX ABL.
 ------------------------------------------------------------
 EOF
 
