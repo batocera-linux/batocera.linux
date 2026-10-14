@@ -15,7 +15,7 @@ Subject: [PATCH] arm64: dts: meson: add Unico FUN R1
  dtb-$(CONFIG_ARCH_MESON) += meson-gxl-s905x-libretech-cc-v2.dtb
 --- /dev/null
 +++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-fun-r1.dts
-@@ -0,0 +1,72 @@
+@@ -0,0 +1,95 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright (c) 2016 Endless Computers, Inc.
@@ -25,6 +25,7 @@ Subject: [PATCH] arm64: dts: meson: add Unico FUN R1
 +/dts-v1/;
 +
 +#include "meson-gxl-s905x-fun-r1.dtsi"
++#include <dt-bindings/input/input.h>
 +
 +/ {
 +	compatible = "amlogic,p212", "amlogic,s905x", "amlogic,meson-gxl";
@@ -53,6 +54,28 @@ Subject: [PATCH] arm64: dts: meson: add Unico FUN R1
 +			hdmi_connector_in: endpoint {
 +				remote-endpoint = <&hdmi_tx_tmds_out>;
 +			};
++		};
++	};
++
++	gpio-keys-polled {
++		compatible = "gpio-keys-polled";
++		poll-interval = <100>;
++
++		power-button {
++			label = "power";
++			linux,code = <KEY_POWER>;
++			gpios = <&gpio_ao GPIOAO_2 GPIO_ACTIVE_LOW>;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++
++		led-system {
++			label = "fun-r1:system-status";
++			gpios = <&gpio GPIODV_24 GPIO_ACTIVE_HIGH>;
++			default-state = "on";
++			panic-indicator;
 +		};
 +	};
 +};
