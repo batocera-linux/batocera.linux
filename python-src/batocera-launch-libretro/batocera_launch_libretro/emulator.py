@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import CONFIGS, OVERLAYS
+from batocera_common.paths import CONFIGS, OVERLAYS, existing_files_in_directories
 from batocera_common.vulkan import get_vulkan_info
 from batocera_launch import (
     BezelInfo,
@@ -42,9 +42,9 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
-def _slang_only_shader(shader: str) -> bool:
-    def exists(ext: str) -> bool:
-        return any((path / f'{shader}.{ext}').exists() for path in (USER_SHADERS, BATOCERA_SHADERS))
+def _slang_only_shader(shader: str, /) -> bool:
+    def exists(ext: str, /) -> bool:
+        return any(path for path in existing_files_in_directories(f'{shader}.{ext}', (USER_SHADERS, BATOCERA_SHADERS)))
 
     return exists('slangp') and not exists('glslp')
 
