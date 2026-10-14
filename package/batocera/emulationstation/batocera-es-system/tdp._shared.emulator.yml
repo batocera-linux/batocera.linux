@@ -5,4 +5,20 @@ custom_features:
     description: Adjust the percentage of power (watts) provided to a Ryzen Mobile Series CPU based on it's default max value. Caution, setting wattage too high could damage your device.
     preset: sliderauto
     preset_parameters: 10 120 5 %
+    requires: system.cpu.tdp
+    before: videomode
+  platformprofile:
+    group: POWER OPTIONS
+    prompt: THERMAL PROFILE
+    description: Firmware fan curve and power limits preset. Outside Custom the firmware sets the power limits and the TDP option has no effect.
+    choices:
+      Low Power: low-power
+      Quiet: quiet
+      Cool: cool
+      Balanced: balanced
+      Balanced Performance: balanced-performance
+      Performance: performance
+      Max Power: max-power
+      Custom: custom
+    requires: system.platformprofile.choices
     before: videomode
