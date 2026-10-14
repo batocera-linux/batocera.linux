@@ -1,0 +1,231 @@
+hid-lenovo-go-s: report the Legion, quick access and back buttons
+
+The xinput pad has no Legion, quick access or Y1/Y2 buttons. Read them from
+the vendor gamepad report: Legion becomes the xinput pad's guide button, the
+others get a Legion Go S Extra Buttons device.
+
+diff --git a/drivers/hid/hid-lenovo-go-s.c b/drivers/hid/hid-lenovo-go-s.c
+index a72f7f7..eb4b996 100644
+--- a/drivers/hid/hid-lenovo-go-s.c
++++ b/drivers/hid/hid-lenovo-go-s.c
+@@ -14,11 +14,14 @@
+ #include <linux/dev_printk.h>
+ #include <linux/device.h>
+ #include <linux/hid.h>
++#include <linux/input.h>
+ #include <linux/jiffies.h>
+ #include <linux/kstrtox.h>
+ #include <linux/led-class-multicolor.h>
+ #include <linux/mutex.h>
+ #include <linux/printk.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
+ #include <linux/string.h>
+ #include <linux/sysfs.h>
+ #include <linux/types.h>
+@@ -30,6 +33,7 @@
+ #include "hid-ids.h"
+ 
+ #define GO_S_CFG_INTF_IN	0x84
++#define GO_S_GP_INTF_IN		0x86
+ #define GO_S_PACKET_SIZE	64
+ 
+ static struct hid_gos_cfg {
+@@ -389,6 +393,141 @@ static int get_endpoint_address(struct hid_device *hdev)
+ 	return -ENODEV;
+ }
+ 
++/*
++ * The xinput pad leaves out the Legion, quick access and back buttons, they only
++ * show up in the vendor gamepad report. Legion is injected into the xinput pad
++ * as its guide button, the rest get their own input device.
++ */
++static DEFINE_SPINLOCK(gos_pad_lock);
++static struct input_handle *gos_pad_handle;
++static bool gos_guide_state;
++
++static void hid_gos_report_guide(bool pressed)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&gos_pad_lock, flags);
++	if (gos_pad_handle && pressed != gos_guide_state) {
++		/* input_event rather than input_inject_event, so a grabbed pad still gets it */
++		input_event(gos_pad_handle->dev, EV_KEY, BTN_MODE, pressed);
++		input_sync(gos_pad_handle->dev);
++		gos_guide_state = pressed;
++	}
++	spin_unlock_irqrestore(&gos_pad_lock, flags);
++}
++
++static int hid_gos_pad_connect(struct input_handler *handler,
++			       struct input_dev *dev,
++			       const struct input_device_id *id)
++{
++	struct input_handle *handle;
++	unsigned long flags;
++	int ret;
++
++	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
++	if (!handle)
++		return -ENOMEM;
++
++	handle->dev = dev;
++	handle->handler = handler;
++	handle->name = "hid-lenovo-go-s";
++
++	ret = input_register_handle(handle);
++	if (ret) {
++		kfree(handle);
++		return ret;
++	}
++
++	spin_lock_irqsave(&gos_pad_lock, flags);
++	if (!gos_pad_handle) {
++		gos_pad_handle = handle;
++		gos_guide_state = false;
++	}
++	spin_unlock_irqrestore(&gos_pad_lock, flags);
++
++	return 0;
++}
++
++static void hid_gos_pad_disconnect(struct input_handle *handle)
++{
++	unsigned long flags;
++
++	spin_lock_irqsave(&gos_pad_lock, flags);
++	if (gos_pad_handle == handle)
++		gos_pad_handle = NULL;
++	spin_unlock_irqrestore(&gos_pad_lock, flags);
++
++	input_unregister_handle(handle);
++	kfree(handle);
++}
++
++static const struct input_device_id hid_gos_pad_ids[] = {
++	{
++		.flags = INPUT_DEVICE_ID_MATCH_BUS | INPUT_DEVICE_ID_MATCH_VENDOR |
++			 INPUT_DEVICE_ID_MATCH_PRODUCT | INPUT_DEVICE_ID_MATCH_KEYBIT,
++		.bustype = BUS_USB,
++		.vendor = USB_VENDOR_ID_QHE,
++		.product = USB_DEVICE_ID_LENOVO_LEGION_GO_S_XINPUT,
++		.keybit = { [BIT_WORD(BTN_MODE)] = BIT_MASK(BTN_MODE) },
++	},
++	{}
++};
++
++static struct input_handler hid_gos_pad_handler = {
++	.name = "hid-lenovo-go-s",
++	.connect = hid_gos_pad_connect,
++	.disconnect = hid_gos_pad_disconnect,
++	.id_table = hid_gos_pad_ids,
++};
++
++static int hid_gos_gamepad_event(struct hid_device *hdev, u8 *data, int size)
++{
++	struct input_dev *input = hid_get_drvdata(hdev);
++
++	if (size < 3)
++		return 0;
++
++	hid_gos_report_guide(data[0] & BIT(0));
++
++	if (input) {
++		input_report_key(input, BTN_TRIGGER_HAPPY1, data[0] & BIT(1));
++		input_report_key(input, BTN_TRIGGER_HAPPY2, data[2] & BIT(0));
++		input_report_key(input, BTN_TRIGGER_HAPPY3, data[2] & BIT(1));
++		input_sync(input);
++	}
++
++	return 0;
++}
++
++static int hid_gos_extra_buttons_probe(struct hid_device *hdev)
++{
++	struct input_dev *input;
++	int i, ret;
++
++	input = devm_input_allocate_device(&hdev->dev);
++	if (!input)
++		return -ENOMEM;
++
++	input->name = "Legion Go S Extra Buttons";
++	input->phys = hdev->phys;
++	input->uniq = hdev->uniq;
++	input->id.bustype = hdev->bus;
++	input->id.vendor = hdev->vendor;
++	input->id.product = hdev->product;
++	input->id.version = hdev->version;
++	input->dev.parent = &hdev->dev;
++
++	for (i = 0; i < 3; i++)
++		input_set_capability(input, EV_KEY, BTN_TRIGGER_HAPPY1 + i);
++
++	ret = input_register_device(input);
++	if (ret)
++		return ret;
++
++	hid_set_drvdata(hdev, input);
++	return 0;
++}
++
+ static int hid_gos_raw_event(struct hid_device *hdev, struct hid_report *report,
+ 			     u8 *data, int size)
+ {
+@@ -396,6 +535,8 @@ static int hid_gos_raw_event(struct hid_device *hdev, struct hid_report *report,
+ 	int ep, ret;
+ 
+ 	ep = get_endpoint_address(hdev);
++	if (ep == GO_S_GP_INTF_IN)
++		return hid_gos_gamepad_event(hdev, data, size);
+ 	if (ep != GO_S_CFG_INTF_IN)
+ 		return 0;
+ 
+@@ -1482,6 +1623,14 @@ static int hid_gos_probe(struct hid_device *hdev,
+ 	}
+ 
+ 	ep = get_endpoint_address(hdev);
++	if (ep == GO_S_GP_INTF_IN &&
++	    hdev->product == USB_DEVICE_ID_LENOVO_LEGION_GO_S_XINPUT) {
++		ret = hid_gos_extra_buttons_probe(hdev);
++		if (ret)
++			hid_warn(hdev, "Failed to register extra buttons: %d\n", ret);
++		return 0;
++	}
++
+ 	if (ep != GO_S_CFG_INTF_IN) {
+ 		dev_dbg(&hdev->dev, "Started interface %x as generic HID device.\n", ep);
+ 		return 0;
+@@ -1542,7 +1691,30 @@ static struct hid_driver hid_lenovo_go_s = {
+ 	.raw_event = hid_gos_raw_event,
+ 	.reset_resume = hid_gos_reset_resume,
+ };
+-module_hid_driver(hid_lenovo_go_s);
++
++static int __init hid_gos_init(void)
++{
++	int ret;
++
++	ret = input_register_handler(&hid_gos_pad_handler);
++	if (ret)
++		return ret;
++
++	ret = hid_register_driver(&hid_lenovo_go_s);
++	if (ret)
++		input_unregister_handler(&hid_gos_pad_handler);
++
++	return ret;
++}
++
++static void __exit hid_gos_exit(void)
++{
++	hid_unregister_driver(&hid_lenovo_go_s);
++	input_unregister_handler(&hid_gos_pad_handler);
++}
++
++module_init(hid_gos_init);
++module_exit(hid_gos_exit);
+ 
+ MODULE_AUTHOR("Derek J. Clark");
+ MODULE_DESCRIPTION("HID Driver for Lenovo Legion Go S Series gamepad.");
