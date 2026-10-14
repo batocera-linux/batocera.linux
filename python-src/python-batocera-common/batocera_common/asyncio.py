@@ -305,22 +305,6 @@ async def create_ready_task[**P, R](
     return task
 
 
-async def is_connected_to_internet() -> bool:
-    import aiohttp
-
-    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=1)) as session:
-        try:
-            async with session.head('https://one.one.one.one'):
-                return True
-        except aiohttp.ClientError, TimeoutError:
-            try:
-                async with session.head('https://dns.google'):
-                    return True
-            except aiohttp.ClientError, TimeoutError:
-                _logger.error('Not connected to the internet')
-                return False
-
-
 async def iterate_queue[T](queue: asyncio.Queue[T], /) -> AsyncIterator[T]:
     """Yield items from an asyncio.Queue as they become available."""
 
