@@ -1,0 +1,31 @@
+From 0e8a4c457530537d6eb115ba9b81e422c7de5545 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 27 Sep 2026 09:02:04 +0000
+Subject: [PATCH 159/210] dt-bindings: clock: g12a-clkc: add VPU clkb clock IDs
+
+Add IDs for the VPU clkb clock tree that clocks the video deinterlacer.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ include/dt-bindings/clock/g12a-clkc.h | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/include/dt-bindings/clock/g12a-clkc.h b/include/dt-bindings/clock/g12a-clkc.h
+index fd09819da2ec..4d44231b4cc7 100644
+--- a/include/dt-bindings/clock/g12a-clkc.h
++++ b/include/dt-bindings/clock/g12a-clkc.h
+@@ -287,5 +287,10 @@
+ #define CLKID_MIPI_ISP_GATE			276
+ #define CLKID_MIPI_ISP_CSI_PHY0			277
+ #define CLKID_MIPI_ISP_CSI_PHY1			278
++#define CLKID_VPU_CLKB_TMP_SEL			279
++#define CLKID_VPU_CLKB_TMP_DIV			280
++#define CLKID_VPU_CLKB_TMP			281
++#define CLKID_VPU_CLKB_DIV			282
++#define CLKID_VPU_CLKB				283
+ 
+ #endif /* __G12A_CLKC_H */
+-- 
+2.43.0
+

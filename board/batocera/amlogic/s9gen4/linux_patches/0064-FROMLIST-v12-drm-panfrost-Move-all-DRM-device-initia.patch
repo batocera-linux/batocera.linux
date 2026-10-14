@@ -1,0 +1,202 @@
+From 64a8cf12b9088993850eb8504fbea7f74d803625 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:42 +0100
+Subject: [PATCH 071/210] FROMLIST(v12): drm/panfrost: Move all DRM device
+ initialisation into device_init()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Ideally the probe() function will do as little as possible, and all device
+initialisation and registration should happen inside the panfrost device
+subsystem, just like it's done in Panthor. This also simplifies resource
+unwinding in the error path.
+
+Do the same thing for DRM driver remove, as in, sweep most of the action
+into panfrost_device_fini(), just like we did for device probe.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_device.c | 49 ++++++++++++++++++++
+ drivers/gpu/drm/panfrost/panfrost_drv.c    | 52 +---------------------
+ 2 files changed, 50 insertions(+), 51 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
+index f8354797ad5b..561fcf7ce0ae 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.c
++++ b/drivers/gpu/drm/panfrost/panfrost_device.c
+@@ -8,6 +8,7 @@
+ #include <linux/pm_domain.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/regulator/consumer.h>
++#include <drm/drm_drv.h>
+ 
+ #include "panfrost_device.h"
+ #include "panfrost_devfreq.h"
+@@ -229,8 +230,15 @@ static int panfrost_pm_domain_init(struct panfrost_device *pfdev)
+ 
+ int panfrost_device_init(struct panfrost_device *pfdev)
+ {
++	bool device_initialised = false;
+ 	int err;
+ 
++	pfdev->comp = of_device_get_match_data(pfdev->base.dev);
++	if (!pfdev->comp)
++		return -ENODEV;
++
++	pfdev->coherent = device_get_dma_attr(pfdev->base.dev) == DEV_DMA_COHERENT;
++
+ #ifdef CONFIG_DEBUG_FS
+ 	mutex_init(&pfdev->debugfs.gems_lock);
+ 	INIT_LIST_HEAD(&pfdev->debugfs.gems_list);
+@@ -292,8 +300,35 @@ int panfrost_device_init(struct panfrost_device *pfdev)
+ 	if (err)
+ 		goto out_perfcnt;
+ 
++	device_initialised = true;
++
++	/* The reason we must manually set the PM status and usage counter is
++	 * we have just powered the device up but did not go through the PM
++	 * runtime resume callback, so we need to update these ourselves.
++	 */
++	pm_runtime_get_noresume(pfdev->base.dev);
++	pm_runtime_set_active(pfdev->base.dev);
++	pm_runtime_mark_last_busy(pfdev->base.dev);
++	pm_runtime_enable(pfdev->base.dev);
++	pm_runtime_set_autosuspend_delay(pfdev->base.dev, 50); /* ~3 frames */
++	pm_runtime_use_autosuspend(pfdev->base.dev);
++
++	/*
++	 * Register the DRM device with the core and the connectors with
++	 * sysfs
++	 */
++	err = drm_dev_register(&pfdev->base, 0);
++	if (err < 0)
++		goto err_disable_rpm;
++
++	pm_runtime_put_autosuspend(pfdev->base.dev);
++
+ 	return 0;
+ 
++err_disable_rpm:
++	pm_runtime_dont_use_autosuspend(pfdev->base.dev);
++	pm_runtime_disable(pfdev->base.dev);
++	panfrost_gem_fini(pfdev);
+ out_perfcnt:
+ 	panfrost_perfcnt_fini(pfdev);
+ out_job:
+@@ -312,11 +347,22 @@ int panfrost_device_init(struct panfrost_device *pfdev)
+ 	panfrost_reset_fini(pfdev);
+ out_pm_domain:
+ 	panfrost_pm_domain_fini(pfdev);
++
++	if (device_initialised) {
++		pm_runtime_set_suspended(pfdev->base.dev);
++		pm_runtime_put_noidle(pfdev->base.dev);
++	}
++
+ 	return err;
+ }
+ 
+ void panfrost_device_fini(struct panfrost_device *pfdev)
+ {
++	pm_runtime_get_sync(pfdev->base.dev);
++
++	pm_runtime_dont_use_autosuspend(pfdev->base.dev);
++	pm_runtime_disable(pfdev->base.dev);
++
+ 	panfrost_gem_fini(pfdev);
+ 	panfrost_perfcnt_fini(pfdev);
+ 	panfrost_jm_fini(pfdev);
+@@ -327,6 +373,9 @@ void panfrost_device_fini(struct panfrost_device *pfdev)
+ 	panfrost_clk_fini(pfdev);
+ 	panfrost_reset_fini(pfdev);
+ 	panfrost_pm_domain_fini(pfdev);
++
++	pm_runtime_set_suspended(pfdev->base.dev);
++	pm_runtime_put_noidle(pfdev->base.dev);
+ }
+ 
+ #define PANFROST_EXCEPTION(id) \
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index 81e36e5aba02..e8ba3c60c7fb 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -830,7 +830,6 @@ static const struct drm_driver panfrost_drm_driver = {
+ static int panfrost_probe(struct platform_device *pdev)
+ {
+ 	struct panfrost_device *pfdev;
+-	int err;
+ 
+ 	pfdev = devm_drm_dev_alloc(&pdev->dev, &panfrost_drm_driver,
+ 				   struct panfrost_device, base);
+@@ -839,50 +838,7 @@ static int panfrost_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, pfdev);
+ 
+-	pfdev->comp = of_device_get_match_data(&pdev->dev);
+-	if (!pfdev->comp)
+-		return -ENODEV;
+-
+-	pfdev->coherent = device_get_dma_attr(&pdev->dev) == DEV_DMA_COHERENT;
+-
+-	err = panfrost_device_init(pfdev);
+-	if (err) {
+-		if (err != -EPROBE_DEFER)
+-			dev_err(&pdev->dev, "Fatal error during GPU init\n");
+-		goto err_out0;
+-	}
+-
+-	/* The reason we must manually set the PM status and usage counter is
+-	 * we have just powered the device up but did not go through the PM
+-	 * runtime resume callback, so we need to update these ourselves.
+-	 */
+-	pm_runtime_get_noresume(pfdev->base.dev);
+-	pm_runtime_set_active(pfdev->base.dev);
+-	pm_runtime_mark_last_busy(pfdev->base.dev);
+-	pm_runtime_enable(pfdev->base.dev);
+-	pm_runtime_set_autosuspend_delay(pfdev->base.dev, 50); /* ~3 frames */
+-	pm_runtime_use_autosuspend(pfdev->base.dev);
+-
+-	/*
+-	 * Register the DRM device with the core and the connectors with
+-	 * sysfs
+-	 */
+-	err = drm_dev_register(&pfdev->base, 0);
+-	if (err < 0)
+-		goto err_out1;
+-
+-	pm_runtime_put_autosuspend(pfdev->base.dev);
+-
+-	return 0;
+-
+-err_out1:
+-	pm_runtime_dont_use_autosuspend(pfdev->base.dev);
+-	pm_runtime_disable(pfdev->base.dev);
+-	panfrost_device_fini(pfdev);
+-	pm_runtime_set_suspended(pfdev->base.dev);
+-	pm_runtime_put_noidle(pfdev->base.dev);
+-err_out0:
+-	return err;
++	return panfrost_device_init(pfdev);
+ }
+ 
+ static void panfrost_remove(struct platform_device *pdev)
+@@ -891,13 +847,7 @@ static void panfrost_remove(struct platform_device *pdev)
+ 
+ 	drm_dev_unregister(&pfdev->base);
+ 
+-	pm_runtime_get_sync(pfdev->base.dev);
+-	pm_runtime_dont_use_autosuspend(pfdev->base.dev);
+-	pm_runtime_disable(pfdev->base.dev);
+ 	panfrost_device_fini(pfdev);
+-	pm_runtime_set_suspended(pfdev->base.dev);
+-	pm_runtime_put_noidle(pfdev->base.dev);
+-
+ }
+ 
+ static ssize_t profiling_show(struct device *dev,
+-- 
+2.43.0
+

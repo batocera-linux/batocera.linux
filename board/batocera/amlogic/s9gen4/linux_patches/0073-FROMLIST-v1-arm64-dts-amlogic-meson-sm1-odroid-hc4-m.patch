@@ -1,0 +1,54 @@
+From db8f7bc051359f7bb20f12ddf9692bb25c7c1f71 Mon Sep 17 00:00:00 2001
+From: Igor Velkov <iav@iav.lv>
+Date: Wed, 30 Sep 2026 16:52:14 +0000
+Subject: [PATCH 080/210] FROMLIST(v1): arm64: dts: amlogic:
+ meson-sm1-odroid-hc4: mux the SPI NOR HOLD# and WP# pins
+
+The SPI NOR flash uses six lines, but nor_pins covers only four: data,
+clock and chip select. Nothing claims HOLD# (BOOT_3) and WP# (BOOT_7),
+so they keep the boot ROM setting. After a boot from SPI they are in
+the nor function and the flash works. After a boot from SD with the
+button under the board, they stay eMMC data lines pulled low, and
+spi-nor reports "unrecognized JEDEC id bytes: 00 00 00 00 00 00".
+
+Mux them in a board-local group. nor_pins is shared with boards that
+use BOOT_0..7 for eMMC, and the HC4 has eMMC disabled.
+
+Tested on ODROID-HC4: after a boot from SD past the SPI, the flash
+probes as a 16 MiB mtd0 and reads back correctly.
+
+Fixes: 7178f340e929 ("arm64: dts: meson-sm1-odroid-hc4: add spifc node to ODROID-HC4")
+Assisted-by: LLM
+Signed-off-by: Igor Velkov <iav@iav.lv>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
+index 3ece30a0a1ff..5ce76a1bfe02 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
+@@ -124,9 +124,19 @@ &sd_emmc_c {
+ 	status = "disabled";
+ };
+ 
++&periphs_pinctrl {
++	hc4_nor_hold_wp_pins: nor-hold-wp {
++		mux {
++			groups = "nor_hold", "nor_wp";
++			function = "nor";
++			bias-disable;
++		};
++	};
++};
++
+ &spifc {
+ 	status = "okay";
+-	pinctrl-0 = <&nor_pins>;
++	pinctrl-0 = <&nor_pins>, <&hc4_nor_hold_wp_pins>;
+ 	pinctrl-names = "default";
+ 
+ 	flash@0 {
+-- 
+2.43.0
+

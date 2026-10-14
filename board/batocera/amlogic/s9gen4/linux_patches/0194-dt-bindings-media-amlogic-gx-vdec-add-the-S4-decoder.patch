@@ -1,0 +1,196 @@
+From ddf8fdb8f91e523ee93f530ff8b673b72453be0d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 5 Oct 2026 11:11:38 +0000
+Subject: [PATCH 208/210] dt-bindings: media: amlogic,gx-vdec: add the S4
+ decoder
+
+The S4 decoder has no ESPARSER and no AO sysctrl power bits. The DOS
+block fetches the bitstream from memory directly, the VDEC_1 and
+VDEC_HEVC power domains are switched by the secure monitor, and the DMC
+request control registers sit in their own window. There is a single
+HEVC clock and no parser clock, and the HEVC pipeline resets come from
+the reset controller.
+
+Add the S4 compatible, and give each SoC family its own clock, reg,
+reset and interrupt names.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../bindings/media/amlogic,gx-vdec.yaml       | 109 +++++++++++++++---
+ 1 file changed, 91 insertions(+), 18 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+index e21684ae3109..0e1497f1e6a3 100644
+--- a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
++++ b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+@@ -26,6 +26,10 @@ description: |
+   Both VDEC_1 and VDEC_HEVC share the "vdec" IRQ and as such cannot run
+   concurrently.
+ 
++  S4 has no ESPARSER: the decoder fetches the bitstream from memory directly,
++  and the VDEC_1 and VDEC_HEVC power domains are switched by the secure
++  monitor.
++
+ properties:
+   compatible:
+     oneOf:
+@@ -39,42 +43,49 @@ properties:
+       - enum:
+           - amlogic,g12a-vdec # G12A (S905X2, S905D2)
+           - amlogic,sm1-vdec # SM1 (S905X3, S905D3)
++          - amlogic,s4-vdec # S4 (S805X2, S905Y4)
+ 
+   interrupts:
+-    minItems: 2
++    minItems: 1
++    maxItems: 2
+ 
+   interrupt-names:
++    minItems: 1
+     items:
+       - const: vdec
+       - const: esparser
+ 
+   reg:
+-    minItems: 2
++    maxItems: 2
+ 
+   reg-names:
+     items:
+       - const: dos
+-      - const: esparser
++      - enum: [ esparser, dmc ]
+ 
+   resets:
+-    maxItems: 1
++    minItems: 1
++    maxItems: 3
+ 
+   reset-names:
+-    items:
+-      - const: esparser
++    minItems: 1
++    maxItems: 3
+ 
+   clocks:
+-    minItems: 4
++    minItems: 3
+     maxItems: 5
+ 
+   clock-names:
+-    minItems: 4
++    minItems: 3
++    maxItems: 5
++
++  power-domains:
++    maxItems: 2
++
++  power-domain-names:
+     items:
+-      - const: dos_parser
+-      - const: dos
+-      - const: vdec_1
+-      - const: vdec_hevc
+-      - const: vdec_hevcf
++      - const: vdec
++      - const: hevc
+ 
+   amlogic,ao-sysctrl:
+     description: should point to the AOBUS sysctrl node
+@@ -95,7 +106,11 @@ allOf:
+     then:
+       properties:
+         clock-names:
+-          maxItems: 4
++          items:
++            - const: dos_parser
++            - const: dos
++            - const: vdec_1
++            - const: vdec_hevc
+ 
+   - if:
+       properties:
+@@ -108,7 +123,68 @@ allOf:
+     then:
+       properties:
+         clock-names:
+-          minItems: 5
++          items:
++            - const: dos_parser
++            - const: dos
++            - const: vdec_1
++            - const: vdec_hevc
++            - const: vdec_hevcf
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: amlogic,s4-vdec
++
++    then:
++      properties:
++        interrupts:
++          maxItems: 1
++        reg-names:
++          items:
++            - const: dos
++            - const: dmc
++        clock-names:
++          items:
++            - const: dos
++            - const: vdec_1
++            - const: vdec_hevc
++        resets:
++          items:
++            - description: HEVC front pipeline 0
++            - description: HEVC front pipeline 1
++            - description: HEVC back pipeline 1
++        reset-names:
++          items:
++            - const: hevcf-pipl0
++            - const: hevcf-pipl1
++            - const: hevcb-pipl1
++        amlogic,ao-sysctrl: false
++      required:
++        - power-domains
++        - power-domain-names
++
++    else:
++      properties:
++        interrupts:
++          minItems: 2
++        reg:
++          minItems: 2
++        reg-names:
++          items:
++            - const: dos
++            - const: esparser
++        resets:
++          maxItems: 1
++        reset-names:
++          items:
++            - const: esparser
++        power-domains: false
++        power-domain-names: false
++      required:
++        - resets
++        - reset-names
++        - amlogic,ao-sysctrl
+ 
+ required:
+   - compatible
+@@ -118,9 +194,6 @@ required:
+   - interrupt-names
+   - clocks
+   - clock-names
+-  - resets
+-  - reset-names
+-  - amlogic,ao-sysctrl
+   - amlogic,canvas
+ 
+ additionalProperties: false
+-- 
+2.43.0
+

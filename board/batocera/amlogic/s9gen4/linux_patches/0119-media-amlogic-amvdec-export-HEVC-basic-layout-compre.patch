@@ -1,0 +1,163 @@
+From d6c7464cb95b55f3feb51d4240efa43d2e2a2190 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 28 Sep 2026 07:04:23 +0000
+Subject: [PATCH 127/210] media: amlogic: amvdec: export HEVC basic-layout
+ compressed frames on GXM
+
+GXM decodes HEVC Main10 to compressed frames and then downsamples them
+to 8-bit NV12, so 10-bit content reaches the display with 8-bit
+precision. The frame MMU used by the AM21C scatter layout does not work
+on GX, but the non-MMU compressed frames already use the basic layout
+that the display overlay understands.
+
+Offer AM21B on GXM and decode straight into the capture buffer, with
+the compressed body followed by its header, and turn off the NV12
+double write. Buffers are sized for 10-bit bodies, which 8-bit memory
+saving mode never exceeds.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../media/platform/amlogic/amvdec/amvdec.c    | 20 +++++++++++++++++++
+ .../platform/amlogic/amvdec/amvdec_helpers.c  |  4 ++++
+ .../platform/amlogic/amvdec/amvdec_platform.c |  3 ++-
+ .../platform/amlogic/amvdec/codec_hevc.c      |  2 ++
+ .../amlogic/amvdec/codec_hevc_common.c        |  6 ++++--
+ .../amlogic/amvdec/codec_hevc_common.h        |  5 +++--
+ 6 files changed, 35 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec.c b/drivers/media/platform/amlogic/amvdec/amvdec.c
+index 29dccd6730f9..d6aa0abade3a 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec.c
+@@ -274,6 +274,11 @@ static bool vdec_nv12m_needs_64k(struct amvdec_session *sess)
+ 	       pixfmt == V4L2_PIX_FMT_HEVC_SLICE;
+ }
+ 
++static u32 vdec_am21b_size(u32 width, u32 height)
++{
++	return meson_amvdec_amfbc_size(width, height, 1, 0);
++}
++
+ static u32 vdec_nv12m_plane_size(struct amvdec_session *sess, u32 size)
+ {
+ 	return vdec_nv12m_needs_64k(sess) ? ALIGN(size, SZ_64K) : size;
+@@ -313,6 +318,12 @@ static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
+ 				    sizes[0] < AM21C_HEADER_SIZE)
+ 					return -EINVAL;
+ 				break;
++			case V4L2_PIX_FMT_AM21B:
++				if (*num_planes != 1 ||
++				    sizes[0] < vdec_am21b_size(sess->width,
++							       sess->height))
++					return -EINVAL;
++				break;
+ 			default:
+ 				return -EINVAL;
+ 			}
+@@ -346,6 +357,10 @@ static int vdec_queue_setup(struct vb2_queue *q, unsigned int *num_buffers,
+ 			sizes[0] = AM21C_HEADER_SIZE;
+ 			*num_planes = 1;
+ 			break;
++		case V4L2_PIX_FMT_AM21B:
++			sizes[0] = vdec_am21b_size(sess->width, sess->height);
++			*num_planes = 1;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -706,6 +721,11 @@ vdec_try_fmt_common(struct amvdec_session *sess, u32 size,
+ 			pfmt[0].sizeimage = AM21C_HEADER_SIZE;
+ 			pfmt[0].bytesperline = 0;
+ 			pixmp->num_planes = 1;
++		} else if (pixmp->pixelformat == V4L2_PIX_FMT_AM21B) {
++			pfmt[0].sizeimage = vdec_am21b_size(pixmp->width,
++							    pixmp->height);
++			pfmt[0].bytesperline = 0;
++			pixmp->num_planes = 1;
+ 		}
+ 	}
+ 
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
+index 2187648a7453..435adcd03d14 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_helpers.c
+@@ -711,6 +711,10 @@ static void dst_buf_done(struct amvdec_session *sess,
+ 	case V4L2_PIX_FMT_AM21C:
+ 		vb2_set_plane_payload(&vbuf->vb2_buf, 0, AM21C_HEADER_SIZE);
+ 		break;
++	case V4L2_PIX_FMT_AM21B:
++		vb2_set_plane_payload(&vbuf->vb2_buf, 0,
++				      vb2_plane_size(&vbuf->vb2_buf, 0));
++		break;
+ 	}
+ 
+ 	vbuf->vb2_buf.timestamp = timestamp;
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+index 2acf52a47fe8..aac1273820ec 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+@@ -217,7 +217,8 @@ static const struct amvdec_format amvdec_formats_gxm[] = {
+ 		.vdec_ops = &meson_amvdec_hevc_ops,
+ 		.codec_ops = &meson_amvdec_codec_hevc_ops,
+ 		.firmware_path = "meson/vdec/gxl_hevc.bin",
+-		.pixfmts_cap = { V4L2_PIX_FMT_NV12M, 0 },
++		.pixfmts_cap = { V4L2_PIX_FMT_NV12M,
++				 V4L2_PIX_FMT_AM21B, 0 },
+ 		.flags = V4L2_FMT_FLAG_COMPRESSED,
+ 	}, {
+ 		.pixfmt = V4L2_PIX_FMT_MPEG2_SLICE,
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_hevc.c b/drivers/media/platform/amlogic/amvdec/codec_hevc.c
+index 113278482363..a269cc698ab5 100644
+--- a/drivers/media/platform/amlogic/amvdec/codec_hevc.c
++++ b/drivers/media/platform/amlogic/amvdec/codec_hevc.c
+@@ -999,6 +999,8 @@ codec_hevc_set_sao(struct amvdec_session *sess, struct hevc_frame *frame)
+ 	if (core->platform->revision < AMVDEC_REVISION_G12A) {
+ 		if (!codec_hevc_use_fbc(sess->pixfmt_cap, hevc->is_10bit))
+ 			val |= BIT(0); /* disable cm compression */
++		if (sess->pixfmt_cap != V4L2_PIX_FMT_NV12M)
++			val |= BIT(1); /* disable double write */
+ 
+ 	}
+ 
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_hevc_common.c b/drivers/media/platform/amlogic/amvdec/codec_hevc_common.c
+index 44944b70fc50..e3a001c9bc8d 100644
+--- a/drivers/media/platform/amlogic/amvdec/codec_hevc_common.c
++++ b/drivers/media/platform/amlogic/amvdec/codec_hevc_common.c
+@@ -745,8 +745,10 @@ static bool codec_hevc_frame_buffer_backed(struct amvdec_session *sess,
+ 	const u32 revision = sess->core->platform->revision;
+ 	const u32 pixfmt = sess->pixfmt_cap;
+ 
+-	if (!codec_hevc_use_fbc(pixfmt, is_10bit))
+-		return true;	/* plain NV12: the vb2 planes are the frame */
++	if (!codec_hevc_use_fbc(pixfmt, is_10bit) ||
++	    (!codec_hevc_use_downsample(pixfmt, is_10bit) &&
++	     !codec_hevc_use_mmu(revision, pixfmt, is_10bit)))
++		return true;	/* the vb2 planes are the frame */
+ 
+ 	if (codec_hevc_use_downsample(pixfmt, is_10bit) &&
+ 	    codec_hevc_use_mmu(revision, pixfmt, is_10bit) &&
+diff --git a/drivers/media/platform/amlogic/amvdec/codec_hevc_common.h b/drivers/media/platform/amlogic/amvdec/codec_hevc_common.h
+index e1735fcbbcc1..e57eeb959ac0 100644
+--- a/drivers/media/platform/amlogic/amvdec/codec_hevc_common.h
++++ b/drivers/media/platform/amlogic/amvdec/codec_hevc_common.h
+@@ -66,13 +66,14 @@ struct codec_hevc_common {
+ /* Whether framebuffer compression is required. */
+ static inline int codec_hevc_use_fbc(u32 pixfmt, int is_10bit)
+ {
+-	return is_10bit || pixfmt == V4L2_PIX_FMT_AM21C;
++	return is_10bit || pixfmt == V4L2_PIX_FMT_AM21C ||
++	       pixfmt == V4L2_PIX_FMT_AM21B;
+ }
+ 
+ /* Whether 10-bit decode produces 8-bit NV12 output. */
+ static inline int codec_hevc_use_downsample(u32 pixfmt, int is_10bit)
+ {
+-	return is_10bit && pixfmt != V4L2_PIX_FMT_AM21C;
++	return is_10bit && pixfmt == V4L2_PIX_FMT_NV12M;
+ }
+ 
+ /* Whether decoding uses the frame MMU. */
+-- 
+2.43.0
+

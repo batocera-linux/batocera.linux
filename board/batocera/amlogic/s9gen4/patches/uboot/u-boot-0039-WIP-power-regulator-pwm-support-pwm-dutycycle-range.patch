@@ -1,0 +1,61 @@
+From 03c6578470dcc2bfccabef40fbe9f43a5c9d2fe9 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 01:50:50 +0000
+Subject: [PATCH 39/43] WIP: power: regulator: pwm: support pwm-dutycycle-range
+
+The pwm-regulator binding describes the duty cycle at the minimum and
+maximum voltages with pwm-dutycycle-range, which boards whose output
+voltage falls as the duty cycle rises set to <100 0>. The driver always
+mapped the minimum voltage to 0% and the maximum to 100%, so on those
+boards it programmed the opposite end of the range.
+
+Read pwm-dutycycle-range and interpolate between its two duty cycles,
+defaulting to <0 100> as the binding does.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/power/regulator/pwm_regulator.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/regulator/pwm_regulator.c b/drivers/power/regulator/pwm_regulator.c
+index adde5156c76..7e73957f607 100644
+--- a/drivers/power/regulator/pwm_regulator.c
++++ b/drivers/power/regulator/pwm_regulator.c
+@@ -34,6 +34,8 @@ struct pwm_regulator_info {
+ 	int min_voltage;
+ 	/* the current voltage of regulator */
+ 	int volt_uV;
++	/* the duty cycles in percent at the minimum and maximum voltages */
++	u32 dutycycle_range[2];
+ };
+ 
+ static int pwm_regulator_enable(struct udevice *dev, bool enable)
+@@ -48,9 +50,11 @@ static int pwm_voltage_to_duty_cycle_percentage(struct udevice *dev, int req_uV)
+ 	struct pwm_regulator_info *priv = dev_get_priv(dev);
+ 	int min_uV = priv->min_voltage;
+ 	int max_uV = priv->max_voltage;
+-	int diff = max_uV - min_uV;
++	int min_duty = priv->dutycycle_range[0];
++	int max_duty = priv->dutycycle_range[1];
+ 
+-	return ((req_uV * 100) - (min_uV * 100)) / diff;
++	return min_duty + (int)((s64)(req_uV - min_uV) * (max_duty - min_duty) /
++				(max_uV - min_uV));
+ }
+ 
+ static int pwm_regulator_get_voltage(struct udevice *dev)
+@@ -101,6 +105,10 @@ static int pwm_regulator_of_to_plat(struct udevice *dev)
+ 	priv->period_ns = args.args[1];
+ 	priv->polarity = args.args[2];
+ 
++	priv->dutycycle_range[0] = 0;
++	priv->dutycycle_range[1] = 100;
++	dev_read_u32_array(dev, "pwm-dutycycle-range", priv->dutycycle_range, 2);
++
+ 	priv->init_voltage = dev_read_u32_default(dev, "regulator-init-microvolt", -1);
+ 	if (priv->init_voltage < 0) {
+ 		printf("Cannot find regulator pwm init_voltage\n");
+-- 
+2.43.0
+

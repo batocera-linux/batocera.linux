@@ -1,0 +1,107 @@
+From ca8e0fbac02462db17b595f688e5bc5f29808d17 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 14 Sep 2026 16:37:04 +0000
+Subject: [PATCH 134/210] ASoC: meson: aiu: fifo-spdif: constrain the period to
+ the FIFO burst
+
+The S/PDIF FIFO reads DDR in whole 128 byte bursts, so a period that is
+not a multiple of 128 bytes is over-read. The stream runs fast and the
+read pointer drifts from where ALSA expects it, heard as steady break-up
+with no xrun. 48 kHz stereo with a 6000 frame period is enough to hit it.
+
+aiu_fifo_startup() constrains the period to fifo_block, but that field
+also sets the FIFO end pointer, which is 1 for the S/PDIF FIFO. Add a
+separate burst field and constrain the period and buffer to it.
+
+Fixes: 6ae9ca9ce986 ("ASoC: meson: aiu: add i2s and spdif support")
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/aiu-fifo-i2s.c   |  1 +
+ sound/soc/meson/aiu-fifo-spdif.c | 10 ++++++----
+ sound/soc/meson/aiu-fifo.c       |  4 ++--
+ sound/soc/meson/aiu-fifo.h       |  1 +
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/sound/soc/meson/aiu-fifo-i2s.c b/sound/soc/meson/aiu-fifo-i2s.c
+index eccbc16b293a..0a577b47ea11 100644
+--- a/sound/soc/meson/aiu-fifo-i2s.c
++++ b/sound/soc/meson/aiu-fifo-i2s.c
+@@ -166,6 +166,7 @@ int aiu_fifo_i2s_dai_probe(struct snd_soc_dai *dai)
+ 	fifo->pcm = &fifo_i2s_pcm;
+ 	fifo->mem_offset = AIU_MEM_I2S_START;
+ 	fifo->fifo_block = AIU_FIFO_I2S_BLOCK;
++	fifo->burst = AIU_FIFO_I2S_BLOCK;
+ 	fifo->pclk = aiu->i2s.clks[PCLK].clk;
+ 	fifo->irq = aiu->i2s.irq;
+ 
+diff --git a/sound/soc/meson/aiu-fifo-spdif.c b/sound/soc/meson/aiu-fifo-spdif.c
+index a9861c5d6637..fe8483d31472 100644
+--- a/sound/soc/meson/aiu-fifo-spdif.c
++++ b/sound/soc/meson/aiu-fifo-spdif.c
+@@ -26,7 +26,8 @@
+ #define AIU_MEM_IEC958_BUF_CNTL_INIT		BIT(0)
+ #define AIU_RST_SOFT_958_FAST			BIT(2)
+ 
+-#define AIU_FIFO_SPDIF_BLOCK			8
++#define AIU_FIFO_SPDIF_BLOCK			1
++#define AIU_FIFO_SPDIF_BURST			128
+ 
+ static const struct snd_pcm_hardware fifo_spdif_pcm = {
+ 	.info = (SNDRV_PCM_INFO_INTERLEAVED |
+@@ -38,8 +39,8 @@ static const struct snd_pcm_hardware fifo_spdif_pcm = {
+ 	.rate_max = 192000,
+ 	.channels_min = 2,
+ 	.channels_max = 2,
+-	.period_bytes_min = AIU_FIFO_SPDIF_BLOCK,
+-	.period_bytes_max = AIU_FIFO_SPDIF_BLOCK * USHRT_MAX,
++	.period_bytes_min = AIU_FIFO_SPDIF_BURST,
++	.period_bytes_max = ALIGN_DOWN(USHRT_MAX, AIU_FIFO_SPDIF_BURST),
+ 	.periods_min = 2,
+ 	.periods_max = UINT_MAX,
+ 
+@@ -185,7 +186,8 @@ int aiu_fifo_spdif_dai_probe(struct snd_soc_dai *dai)
+ 
+ 	fifo->pcm = &fifo_spdif_pcm;
+ 	fifo->mem_offset = AIU_MEM_IEC958_START;
+-	fifo->fifo_block = 1;
++	fifo->fifo_block = AIU_FIFO_SPDIF_BLOCK;
++	fifo->burst = AIU_FIFO_SPDIF_BURST;
+ 	fifo->pclk = aiu->spdif.clks[PCLK].clk;
+ 	fifo->irq = aiu->spdif.irq;
+ 
+diff --git a/sound/soc/meson/aiu-fifo.c b/sound/soc/meson/aiu-fifo.c
+index 8b54f9681d00..077cb588a05c 100644
+--- a/sound/soc/meson/aiu-fifo.c
++++ b/sound/soc/meson/aiu-fifo.c
+@@ -143,13 +143,13 @@ int aiu_fifo_startup(struct snd_pcm_substream *substream,
+ 	 */
+ 	ret = snd_pcm_hw_constraint_step(substream->runtime, 0,
+ 					 SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+-					 fifo->fifo_block);
++					 fifo->burst);
+ 	if (ret)
+ 		return ret;
+ 
+ 	ret = snd_pcm_hw_constraint_step(substream->runtime, 0,
+ 					 SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
+-					 fifo->fifo_block);
++					 fifo->burst);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/sound/soc/meson/aiu-fifo.h b/sound/soc/meson/aiu-fifo.h
+index b02cfcc4de7f..7269ebcb4ad5 100644
+--- a/sound/soc/meson/aiu-fifo.h
++++ b/sound/soc/meson/aiu-fifo.h
+@@ -21,6 +21,7 @@ struct aiu_fifo {
+ 	const struct snd_pcm_hardware *pcm;
+ 	unsigned int mem_offset;
+ 	unsigned int fifo_block;
++	unsigned int burst;
+ 	struct clk *pclk;
+ 	int irq;
+ };
+-- 
+2.43.0
+

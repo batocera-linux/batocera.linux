@@ -1,0 +1,11 @@
+config BR2_PACKAGE_AMVDEC_TEE
+	bool "amvdec-tee"
+	depends on BR2_TOOLCHAIN_HAS_THREADS # optee-client
+	depends on BR2_USE_MMU # optee-client
+	select BR2_PACKAGE_OPTEE_CLIENT
+	select BR2_PACKAGE_MESON_FIRMWARE
+	help
+	  Loads the signed Amlogic video decoder microcode through
+	  OP-TEE once per boot, needed by the S4 and later decoders.
+
+	  https://github.com/LibreELEC/amvdec-tee

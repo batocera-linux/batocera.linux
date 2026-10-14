@@ -26,7 +26,7 @@ cp "${BINARIES_DIR}/initrd.gz"       "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
-cp "${BINARIES_DIR}/kvim1s.dtb"  "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1
+cp "${BINARIES_DIR}/meson-s4-s905y4-khadas-vim1s.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"                   "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
 # cp "${BINARIES_DIR}/boot.scr"                          "${BATOCERA_BINARIES_DIR}/boot/"               || exit 1
 # cp "${BOARD_DIR}/boot/logo.bmp"                        "${BATOCERA_BINARIES_DIR}/boot/boot/"          || exit 1

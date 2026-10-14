@@ -1,0 +1,31 @@
+From 2023317eb0a8733b0fc49c0ba96cac12b20025c8 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 26 Sep 2026 08:20:28 +0000
+Subject: [PATCH 126/210] dt-bindings: media: amlogic,gx-vdec: VP9 is not
+ available on GXBB and GXLX
+
+The description says VDEC_HEVC decodes VP9, but GXBB and GXLX have no
+VP9 support. List the SoC families that do.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+index 913d52e8bc9e..e21684ae3109 100644
+--- a/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
++++ b/Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml
+@@ -21,7 +21,7 @@ description: |
+   - ESPARSER is a bitstream parser that outputs to a VIFIFO. Further VDEC blocks
+     then feed from this VIFIFO.
+   - VDEC_1 can decode MPEG-1, MPEG-2, MPEG-4 part 2, MJPEG, H.263, H.264, VC-1.
+-  - VDEC_HEVC can decode HEVC and VP9.
++  - VDEC_HEVC can decode HEVC, and VP9 on GXL, GXM, G12A and SM1.
+ 
+   Both VDEC_1 and VDEC_HEVC share the "vdec" IRQ and as such cannot run
+   concurrently.
+-- 
+2.43.0
+

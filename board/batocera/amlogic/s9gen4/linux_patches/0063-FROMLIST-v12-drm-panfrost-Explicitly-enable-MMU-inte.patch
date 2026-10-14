@@ -1,0 +1,61 @@
+From 5b2fbeb42cfa5e70c5d56c8b1395469147c12ebe Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:41 +0100
+Subject: [PATCH 070/210] FROMLIST(v12): drm/panfrost: Explicitly enable MMU
+ interrupts at device init
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Because the device must be in a position to accept jobs between the time
+drm_dev_register() is called and autosuspend first kicks in, there's a very
+narrow window inbetween during which jobs targeting the tiler buffer
+object would time out, since the device's PM status is 'Active', but no MMU
+interrupts were enabled at device initialisation time.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+Fixes: 73e467f60acd ("drm/panfrost: Consolidate reset handling")
+---
+ drivers/gpu/drm/panfrost/panfrost_mmu.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index 5c393ed6e310..faa62643caf1 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -336,6 +336,12 @@ void panfrost_mmu_as_put(struct panfrost_device *pfdev, struct panfrost_mmu *mmu
+ 	WARN_ON(atomic_read(&mmu->as_count) < 0);
+ }
+ 
++static void panfrost_mmu_enable_interrupts(struct panfrost_device *pfdev)
++{
++	mmu_write(pfdev, MMU_INT_CLEAR, ~0);
++	mmu_write(pfdev, MMU_INT_MASK, ~0);
++}
++
+ void panfrost_mmu_reset(struct panfrost_device *pfdev)
+ {
+ 	struct panfrost_mmu *mmu, *mmu_tmp;
+@@ -355,8 +361,7 @@ void panfrost_mmu_reset(struct panfrost_device *pfdev)
+ 
+ 	spin_unlock(&pfdev->as_lock);
+ 
+-	mmu_write(pfdev, MMU_INT_CLEAR, ~0);
+-	mmu_write(pfdev, MMU_INT_MASK, ~0);
++	panfrost_mmu_enable_interrupts(pfdev);
+ }
+ 
+ static size_t get_pgsize(u64 addr, size_t size, size_t *count)
+@@ -973,6 +978,8 @@ int panfrost_mmu_init(struct panfrost_device *pfdev)
+ 		return err;
+ 	}
+ 
++	panfrost_mmu_enable_interrupts(pfdev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.43.0
+

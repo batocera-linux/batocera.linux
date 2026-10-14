@@ -1,0 +1,7 @@
+config BR2_PACKAGE_MESON_FIRMWARE
+	bool "meson-firmware"
+	help
+	  Amlogic video decoder microcode, including the signed S4
+	  package and its OP-TEE trusted application.
+
+	  https://github.com/LibreELEC/meson-firmware

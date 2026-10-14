@@ -1,0 +1,42 @@
+From 28b443766938855d08c56ced439a82a7efc29dee Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 15 Sep 2026 04:06:15 +0000
+Subject: [PATCH 156/210] arm64: dts: meson: sm1: add the second SPDIF output
+
+SM1 has the same two S/PDIF outputs as G12, and the audio clock
+controller already provides the clocks and reset for the second, but
+only the first is described. Add the second, matching the G12 node.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1.dtsi | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+index 8f5b850b1774..9739c6297960 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1.dtsi
+@@ -442,6 +442,19 @@ tdmout_c: audio-controller@580 {
+ 			status = "disabled";
+ 		};
+ 
++		spdifout_b: audio-controller@680 {
++			compatible = "amlogic,sm1-spdifout",
++				     "amlogic,axg-spdifout";
++			reg = <0x0 0x680 0x0 0x50>;
++			#sound-dai-cells = <0>;
++			sound-name-prefix = "SPDIFOUT_B";
++			clocks = <&clkc_audio AUD_CLKID_SPDIFOUT_B>,
++				 <&clkc_audio AUD_CLKID_SPDIFOUT_B_CLK>;
++			clock-names = "pclk", "mclk";
++			resets = <&clkc_audio AUD_RESET_SPDIFOUT_B>;
++			status = "disabled";
++		};
++
+ 		toacodec: audio-controller@740 {
+ 			compatible = "amlogic,sm1-toacodec",
+ 				     "amlogic,g12a-toacodec";
+-- 
+2.43.0
+

@@ -1,0 +1,46 @@
+From c081ac2381ad5e7213eb81725a8926d6f913c91f Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:51:20 +0000
+Subject: [PATCH 33/43] WIP: board: amlogic: vim1s: pick the env MMC from the
+ boot device
+
+Select the environment MMC device from the boot device as the VIM3
+does, so U-Boot uses the environment of the media it booted from.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ board/amlogic/vim1s/vim1s.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/board/amlogic/vim1s/vim1s.c b/board/amlogic/vim1s/vim1s.c
+index d58f3b6299d..6e0a3eb206d 100644
+--- a/board/amlogic/vim1s/vim1s.c
++++ b/board/amlogic/vim1s/vim1s.c
+@@ -5,10 +5,23 @@
+ 
+ #include <env.h>
+ #include <net-common.h>
++#include <asm/arch/boot.h>
+ #include <asm/io.h>
+ 
+ #define SYSCTRL_SEC_STATUS_REG18	0xfe010348
+ 
++int mmc_get_env_dev(void)
++{
++	switch (meson_get_boot_device()) {
++	case BOOT_DEVICE_EMMC:
++		return 0;
++	case BOOT_DEVICE_SD:
++		return 1;
++	default:
++		return -1;
++	}
++}
++
+ int misc_init_r(void)
+ {
+ 	/* This procedure copied from Khadas's downstream fork */
+-- 
+2.43.0
+

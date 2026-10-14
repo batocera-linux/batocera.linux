@@ -1,0 +1,83 @@
+From d3c5dc393ac2d6b00b6a25493a2e27dc4efa4ae9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Jean-Fran=C3=A7ois=20Lessard?= <jefflessard3@gmail.com>
+Date: Fri, 21 Nov 2025 09:59:01 -0500
+Subject: [PATCH 051/210] FROMLIST(v6): dt-bindings: vendor-prefixes: Add
+ fdhisi, titanmec, princeton, winrise, wxicore
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Add vendor prefixes of chip manufacturers supported by the TM16xx 7-segment
+LED matrix display controllers driver:
+- fdhisi: Fuzhou Fuda Hisi Microelectronics Co., Ltd.
+- titanmec: Shenzhen Titan Micro Electronics Co., Ltd.
+- princeton: Princeton Technology Corp.
+- winrise: Shenzhen Winrise Technology Co., Ltd.
+- wxicore: Wuxi i-Core Electronics Co., Ltd.
+
+The titanmec prefix is based on the company's domain name titanmec.com.
+The remaining prefixes are based on company names, as these manufacturers
+either lack active .com domains or their .com domains are occupied by
+unrelated businesses.
+
+The fdhisi and titanmec prefixes were originally identified by
+Andreas Färber.
+
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Jean-François Lessard <jefflessard3@gmail.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index ba2002969373..1376c5c08408 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -600,6 +600,8 @@ patternProperties:
+     description: Fastrax Oy
+   "^fcs,.*":
+     description: Fairchild Semiconductor
++  "^fdhisi,.*":
++    description: Fuzhou Fuda Hisi Microelectronics Co., Ltd.
+   "^feixin,.*":
+     description: Shenzhen Feixin Photoelectic Co., Ltd
+   "^feiyang,.*":
+@@ -1359,6 +1361,8 @@ patternProperties:
+     description: Prime View International (PVI)
+   "^primux,.*":
+     description: Primux Trading, S.L.
++  "^princeton,.*":
++    description: Princeton Technology Corp.
+   "^probox2,.*":
+     description: PROBOX2 (by W2COMP Co., Ltd.)
+   "^pri,.*":
+@@ -1726,6 +1730,8 @@ patternProperties:
+     description: Texas Instruments
+   "^tianma,.*":
+     description: Tianma Micro-electronics Co., Ltd.
++  "^titanmec,.*":
++    description: Shenzhen Titan Micro Electronics Co., Ltd.
+   "^tlm,.*":
+     description: Trusted Logic Mobility
+   "^tmt,.*":
+@@ -1899,6 +1905,8 @@ patternProperties:
+     description: Wingtech Technology Co., Ltd.
+   "^winlink,.*":
+     description: WinLink Co., Ltd
++  "^winrise,.*":
++    description: Shenzhen Winrise Technology Co., Ltd.
+   "^winsen,.*":
+     description: Winsen Corp.
+   "^winstar,.*":
+@@ -1915,6 +1923,8 @@ patternProperties:
+     description: Wobo
+   "^wolfvision,.*":
+     description: WolfVision GmbH
++  "^wxicore,.*":
++    description: Wuxi i-Core Electronics Co., Ltd.
+   "^x-powers,.*":
+     description: X-Powers
+   "^xen,.*":
+-- 
+2.43.0
+

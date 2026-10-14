@@ -1,0 +1,1248 @@
+From a5d6cdca2ebf3267842958ce61bc05881f90e9eb Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 15 Sep 2026 01:09:15 +0000
+Subject: [PATCH 157/210] arm64: dts: meson: g12: carry HDMI audio from the
+ SPDIF encoder
+
+The G12 boards route HDMI audio through the I2S leg of the HDMI TX glue,
+which carries linear PCM only. Wire the S/PDIF leg as well so compressed
+streams can be sent over HDMI.
+
+Boards with an optical output already drive it from spdifout_a and have
+spdifout_b on the glue, and only need the link from the glue's S/PDIF
+output to the transmitter. Give the other boards spdifout_b, so the
+mixer settings are the same across the family.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../boot/dts/amlogic/meson-g12a-fbx8am.dts    |  9 +++++++
+ .../dts/amlogic/meson-g12a-radxa-zero.dts     | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12a-sei510.dts    | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12a-u200.dts      |  9 +++++++
+ .../boot/dts/amlogic/meson-g12a-x96-max.dts   |  9 +++++++
+ .../amlogic/meson-g12b-bananapi-cm4-cm4io.dts | 27 ++++++++++++++++++-
+ .../meson-g12b-bananapi-cm4-mnt-reform2.dts   | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12b-bananapi.dtsi | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12b-dreambox.dtsi |  9 +++++++
+ .../boot/dts/amlogic/meson-g12b-gsking-x.dts  | 27 ++++++++++++++++++-
+ .../dts/amlogic/meson-g12b-gtking-pro.dts     | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12b-gtking.dts    |  9 +++++++
+ .../dts/amlogic/meson-g12b-odroid-n2.dtsi     | 25 +++++++++++++++++
+ .../dts/amlogic/meson-g12b-odroid-n2l.dts     | 27 ++++++++++++++++++-
+ .../dts/amlogic/meson-g12b-radxa-zero2.dts    | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-g12b-ugoos-am6.dts |  9 +++++++
+ .../boot/dts/amlogic/meson-khadas-vim3.dtsi   | 27 ++++++++++++++++++-
+ .../amlogic/meson-libretech-cottonwood.dtsi   | 22 +++++++++++++++
+ .../dts/amlogic/meson-sm1-a95xf3-air-gbit.dts | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-sm1-a95xf3-air.dts | 27 ++++++++++++++++++-
+ .../dts/amlogic/meson-sm1-bananapi-m2-pro.dts | 27 ++++++++++++++++++-
+ .../dts/amlogic/meson-sm1-bananapi-m5.dts     | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-sm1-h96-max.dts    | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-sm1-odroid.dtsi    | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-sm1-sei610.dts     | 27 ++++++++++++++++++-
+ .../dts/amlogic/meson-sm1-x96-air-gbit.dts    | 27 ++++++++++++++++++-
+ .../boot/dts/amlogic/meson-sm1-x96-air.dts    | 27 ++++++++++++++++++-
+ 27 files changed, 595 insertions(+), 19 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
+index 9880aa2313cf..4fa126a2f227 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
+@@ -244,6 +244,15 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
+index c413588cb41a..3fdc027fe4b1 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
+@@ -136,7 +136,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -183,6 +186,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	wifi32k: wifi32k {
+@@ -352,6 +373,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&vcc_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index 84e2a5e0acce..2a760fef7748 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -199,7 +199,10 @@ sound {
+ 				"TODDR_C IN 0", "TDMIN_A OUT",
+ 				"TODDR_A IN 1", "TDMIN_B OUT",
+ 				"TODDR_B IN 1", "TDMIN_B OUT",
+-				"TODDR_C IN 1", "TDMIN_B OUT";
++				"TODDR_C IN 1", "TDMIN_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -284,6 +287,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-10 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-11 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -466,6 +487,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&emmc_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_a {
+ 	pinctrl-0 = <&tdm_a_dout0_pins>, <&tdm_a_fs_pins>, <&tdm_a_sclk_pins>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index ddf2eb1c399b..9eed16f6eabf 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -372,6 +372,15 @@ codec {
+ 				sound-dai = <&spdif_dir>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-14 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+index 1f3d993adebe..c4ada64e612b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+@@ -327,6 +327,15 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	wifi32k: wifi32k {
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
+index 16ae5b2198ff..de20319eabdd 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
+@@ -68,7 +68,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -116,6 +119,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -156,6 +177,10 @@ &sd_emmc_b {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tohdmitx {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+index 6663d0edfe74..2d77b65da783 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+@@ -77,7 +77,10 @@ sound {
+ 				"External Speaker", "SPK_RP",
+ 				"External Speaker", "SPK_RN",
+ 				"LINPUT1", "Mic Jack",
+-				"Mic Jack", "MICB";
++				"Mic Jack", "MICB",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -149,6 +152,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-9 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-10 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	reg_main_1v8: regulator-main-1v8 {
+@@ -341,6 +362,10 @@ &sd_emmc_b {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_a {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+index 8933d6a393c9..43fd0330fff2 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+@@ -192,7 +192,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -240,6 +243,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -433,6 +454,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&emmc_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
+index 0384cf62dba2..8aa6b0cb95e2 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
+@@ -108,6 +108,15 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
+index b3c2a1860a27..097c485b7432 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
+@@ -46,7 +46,10 @@ sound {
+ 		audio-routing = "TDMOUT_A IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_A IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_A IN 2", "FRDDR_C OUT 1",
+-				"TDM_A Playback", "TDMOUT_A OUT";
++				"TDM_A Playback", "TDMOUT_A OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -93,6 +96,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -145,6 +166,10 @@ rtc: rtc@51 {
+ 	};
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_a {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
+index cdb5b00def1b..d0384e1b6624 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
+@@ -47,7 +47,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -94,6 +97,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -129,6 +150,10 @@ rtc: rtc@51 {
+ 	};
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+index 290916db9175..0f5f237e55d5 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+@@ -105,6 +105,15 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index ea49b6ef09fb..a586ad285d3f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -90,6 +90,9 @@ sound {
+ 				"TODDR_A IN 6", "TDMIN_LB OUT",
+ 				"TODDR_B IN 6", "TDMIN_LB OUT",
+ 				"TODDR_C IN 6", "TDMIN_LB OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4",
+ 				"U19 INL", "ACODEC LOLP",
+ 				"U19 INR", "ACODEC LORP",
+ 				"Lineout", "U19 OUTL",
+@@ -174,6 +177,24 @@ codec {
+ 			};
+ 		};
+ 
++		/* spdif hdmi interface */
++		dai-link-10 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-11 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
++
+ 		/* acodec glue */
+ 		dai-link-9 {
+ 			sound-dai = <&toacodec TOACODEC_OUT>;
+@@ -303,6 +324,10 @@ mx25u64: flash@0 {
+ 	};
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &toacodec {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+index 181a0b4b3d20..21bf280ce494 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+@@ -37,7 +37,10 @@ sound {
+ 				"TODDR_C IN 2", "TDMIN_C OUT",
+ 				"TODDR_A IN 6", "TDMIN_LB OUT",
+ 				"TODDR_B IN 6", "TDMIN_LB OUT",
+-				"TODDR_C IN 6", "TDMIN_LB OUT";
++				"TODDR_C IN 6", "TDMIN_LB OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -97,6 +100,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-8 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-9 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -104,6 +125,10 @@ &eth_phy {
+ 	status = "disabled";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &vddcpu_a {
+ 	regulator-min-microvolt = <680000>;
+ 	regulator-max-microvolt = <1040000>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+index 6c91edfef72c..59571bb99c29 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+@@ -174,7 +174,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -222,6 +225,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	wifi32k: clock-0 {
+@@ -490,6 +511,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&vcc_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+index 575bc6ef515e..83af8c052a90 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+@@ -100,6 +100,15 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* hdmi glue, compressed */
++		dai-link-7 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+index d76b4c781d30..614b95003d8e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+@@ -180,7 +180,10 @@ sound {
+ 				"TDMIN_A IN 3", "TDM_A Loopback",
+ 				"TODDR_A IN 0", "TDMIN_A OUT",
+ 				"TODDR_B IN 0", "TDMIN_A OUT",
+-				"TODDR_C IN 0", "TDMIN_A OUT";
++				"TODDR_C IN 0", "TDMIN_A OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -240,6 +243,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-8 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-9 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	wifi32k: wifi32k {
+@@ -455,6 +476,10 @@ &sd_emmc_c {
+  * Replace emmc_data_8b_pins to emmc_data_4b_pins from sd_emmc_c pinctrl-0,
+  * and change bus-width to 4 then spifc can be enabled.
+  */
++&spdifout_b {
++	status = "okay";
++};
++
+ &spifc {
+ 	status = "disabled";
+ 	pinctrl-0 = <&nor_pins>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi b/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
+index fbc69531a452..5f3b0c3d6767 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
+@@ -336,6 +336,24 @@ codec {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-11 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-12 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -521,6 +539,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&flash_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &spifc {
+ 	status = "disabled";
+ 	pinctrl-0 = <&nor_pins>;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
+index 56d2b88f1687..6ff7e5f15398 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -118,6 +139,10 @@ &frddr_c {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
+index bfbee560c1ea..1dd148a09556 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -97,6 +118,10 @@ &frddr_c {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
+index 1403ab33dc4c..de24aca2962f 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -87,6 +108,10 @@ &frddr_c {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+index 43fb9da1f29c..4c6f291e30ae 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+@@ -55,7 +55,10 @@ sound {
+ 				"TODDR_B IN 2", "TDMIN_C OUT",
+ 				"TODDR_C IN 2", "TDMIN_C OUT",
+ 				"Lineout", "ACODEC LOLP",
+-				"Lineout", "ACODEC LORP";
++				"Lineout", "ACODEC LORP",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -144,6 +147,24 @@ codec {
+ 				sound-dai = <&acodec>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-10 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-11 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -175,6 +196,10 @@ &frddr_c {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
+index 25c99bc2fa81..dde31a5fed6c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -118,6 +139,10 @@ &frddr_c {
+ 	status = "okay";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+index b60689fac55a..a19e91669d7d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+@@ -175,7 +175,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -223,6 +226,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -429,6 +450,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&flash_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 0e802c6ced57..13deb40cf93c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -237,7 +237,10 @@ sound {
+ 				"TODDR_C IN 0", "TDMIN_A OUT",
+ 				"TODDR_A IN 1", "TDMIN_B OUT",
+ 				"TODDR_B IN 1", "TDMIN_B OUT",
+-				"TODDR_C IN 1", "TDMIN_B OUT";
++				"TODDR_C IN 1", "TDMIN_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -322,6 +325,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-10 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-11 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ 
+ 	wifi32k: wifi32k {
+@@ -509,6 +530,10 @@ &sd_emmc_c {
+ 	vqmmc-supply = <&emmc_1v8>;
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_a {
+ 	pinctrl-0 = <&tdm_a_dout0_pins>, <&tdm_a_fs_pins>, <&tdm_a_sclk_pins>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
+index 0779bb012937..1dc55902dbc7 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -122,6 +143,10 @@ &ir {
+ 	linux,rc-map-name = "rc-x96max";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
+index 9b833ec49230..06f0f292aba6 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
+@@ -20,7 +20,10 @@ sound {
+ 		audio-routing = "TDMOUT_B IN 0", "FRDDR_A OUT 1",
+ 				"TDMOUT_B IN 1", "FRDDR_B OUT 1",
+ 				"TDMOUT_B IN 2", "FRDDR_C OUT 1",
+-				"TDM_B Playback", "TDMOUT_B OUT";
++				"TDM_B Playback", "TDMOUT_B OUT",
++				"SPDIFOUT_B IN 0", "FRDDR_A OUT 4",
++				"SPDIFOUT_B IN 1", "FRDDR_B OUT 4",
++				"SPDIFOUT_B IN 2", "FRDDR_C OUT 4";
+ 
+ 		clocks = <&clkc CLKID_MPLL2>,
+ 			 <&clkc CLKID_MPLL0>,
+@@ -68,6 +71,24 @@ codec {
+ 				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
++
++		/* spdif hdmi interface */
++		dai-link-5 {
++			sound-dai = <&spdifout_b>;
++
++			codec {
++				sound-dai = <&tohdmitx TOHDMITX_SPDIF_IN_B>;
++			};
++		};
++
++		/* hdmi glue, compressed */
++		dai-link-6 {
++			sound-dai = <&tohdmitx TOHDMITX_SPDIF_OUT>;
++
++			codec {
++				sound-dai = <&hdmi_tx 1>;
++			};
++		};
+ 	};
+ };
+ 
+@@ -101,6 +122,10 @@ &ir {
+ 	linux,rc-map-name = "rc-beelink-gs1";
+ };
+ 
++&spdifout_b {
++	status = "okay";
++};
++
+ &tdmif_b {
+ 	status = "okay";
+ };
+-- 
+2.43.0
+

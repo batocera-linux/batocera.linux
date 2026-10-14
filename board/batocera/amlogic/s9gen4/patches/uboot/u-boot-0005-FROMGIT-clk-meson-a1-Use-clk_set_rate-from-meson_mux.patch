@@ -1,0 +1,43 @@
+From 18dbb27e02c957be66e92f1be55ff8ac9521a3e5 Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Thu, 13 Aug 2026 16:11:27 -0400
+Subject: [PATCH 05/43] FROMGIT: clk: meson: a1: Use clk_set_rate from
+ meson_mux_set_rate
+
+This function is useful for other drivers, but it's tied to the a1's
+meson_mux_set_rate implementation. Convert it to use clk_set_rate so
+the drivers's set_rate implementation will be used (no matter what it
+is).
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Patch-cc: Lukasz Majewski <lukma@denx.de>
+---
+ drivers/clk/meson/a1.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/clk/meson/a1.c b/drivers/clk/meson/a1.c
+index d0376663069..422cdf5f4d1 100644
+--- a/drivers/clk/meson/a1.c
++++ b/drivers/clk/meson/a1.c
+@@ -523,8 +523,6 @@ static ulong meson_composite_set_rate(struct clk *clk, ulong rate)
+ 	return 0;
+ }
+ 
+-static ulong meson_clk_set_rate(struct clk *clk, ulong rate);
+-
+ static ulong meson_mux_set_rate(struct clk *clk, ulong rate)
+ {
+ 	int i;
+@@ -542,7 +540,7 @@ static ulong meson_mux_set_rate(struct clk *clk, ulong rate)
+ 			.id = info->parents[i],
+ 		};
+ 
+-		ret = meson_clk_set_rate(&parent, rate);
++		ret = clk_set_rate(&parent, rate);
+ 		if (!ret) {
+ 			SET_PARM_VALUE(priv, info->parm, i);
+ 			break;
+-- 
+2.43.0
+

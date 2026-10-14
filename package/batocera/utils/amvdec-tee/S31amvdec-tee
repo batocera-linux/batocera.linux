@@ -1,0 +1,27 @@
+#!/bin/sh
+
+UCODE=/lib/firmware/meson/vdec/video_ucode.bin
+
+load() {
+	# S30tee-supplicant returns before the supplicant is serving requests
+	for i in 1 2 3 4 5 6 7 8 9 10; do
+		/usr/bin/amvdec-tee "$UCODE" && return 0
+		sleep 1
+	done
+	echo "amvdec-tee: microcode not loaded" > /dev/kmsg
+}
+
+case "$1" in
+	start)
+		[ -e /dev/teepriv0 ] && [ -f "$UCODE" ] || exit 0
+		load &
+		;;
+	stop|restart|reload)
+		;;
+	*)
+		echo "Usage: $0 {start}"
+		exit 1
+		;;
+esac
+
+exit 0

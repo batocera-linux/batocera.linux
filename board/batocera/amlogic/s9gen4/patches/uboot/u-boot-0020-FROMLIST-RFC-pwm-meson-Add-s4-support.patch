@@ -1,0 +1,68 @@
+From ab7676b60e8246305949cd6b2d5059fe64fbf91e Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Mon, 28 Sep 2026 17:13:25 -0400
+Subject: [PATCH 20/43] FROMLIST(RFC): pwm: meson: Add s4 support
+
+On s4, the devicetree clocks are the direct inputs to the PWMs, so we
+don't need to configure the clocks in the driver. Instead, we just need
+to grab one clock from the devicetree for each PWM.
+
+The PWM LED isn't working on my VIM1S, but I don't have time to look
+into this further. I'm posting this as RFC if anyone else would like to
+pick up where I left off.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Series-prefix: RFC
+Series-to: Neil Armstrong <neil.armstrong@linaro.org>
+Series-to: Tom Rini <trini@konsulko.com>
+Series-cc: u-boot-amlogic@groups.io
+Series-to: u-boot@lists.u-boot-project.org
+---
+ drivers/pwm/pwm-meson.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/drivers/pwm/pwm-meson.c b/drivers/pwm/pwm-meson.c
+index caa7af085fa..654b138d224 100644
+--- a/drivers/pwm/pwm-meson.c
++++ b/drivers/pwm/pwm-meson.c
+@@ -273,6 +273,13 @@ static int meson_pwm_probe(struct udevice *dev)
+ 		struct meson_pwm_channel *channel = &priv->channels[i];
+ 		struct meson_pwm_channel_data *channel_data = &meson_pwm_per_channel_data[i];
+ 
++		if (!data->parent_ids) {
++			err = clk_get_by_index(dev, i, &channel->clk);
++			if (err)
++				return err;
++			continue;
++		}
++
+ 		snprintf(name, sizeof(name), "clkin%u", i);
+ 
+ 		err = clk_get_by_name(dev, name, &channel->clk);
+@@ -488,6 +495,11 @@ static const struct meson_pwm_data pwm_g12a_ee_data = {
+ 	.num_parents = ARRAY_SIZE(pwm_g12a_ee_parent_ids),
+ };
+ 
++static const struct meson_pwm_data pwm_s4_data = {
++	.parent_ids = NULL,
++	.num_parents = 0,
++};
++
+ static const struct udevice_id meson_pwm_ids[] = {
+ 	{
+ 		.compatible = "amlogic,meson-gxbb-pwm",
+@@ -517,6 +529,11 @@ static const struct udevice_id meson_pwm_ids[] = {
+ 		.compatible = "amlogic,meson-g12a-ao-pwm-cd",
+ 		.data = (ulong)&pwm_g12a_ao_cd_data
+ 	},
++	{
++		.compatible = "amlogic,meson-s4-pwm",
++		.data = (ulong)&pwm_s4_data
++	},
++	{ },
+ };
+ 
+ U_BOOT_DRIVER(meson_pwm) = {
+-- 
+2.43.0
+

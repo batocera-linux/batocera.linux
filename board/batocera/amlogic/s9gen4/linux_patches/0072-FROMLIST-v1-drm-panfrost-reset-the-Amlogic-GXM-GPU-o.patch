@@ -1,0 +1,52 @@
+From 05e1fab4971bbae3546c7fba978c555ded5a5a43 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 28 Sep 2026 04:39:24 +0000
+Subject: [PATCH 079/210] FROMLIST(v1): drm/panfrost: reset the Amlogic GXM GPU
+ on runtime resume
+
+After its first runtime suspend, every power-off of the Mali-T820 in
+Amlogic GXM SoCs times out and floods the log with shader, tiler and L2
+power transition timeouts. Following a soft reset the cores report not
+ready but PWRTRANS never clears, however long the driver waits.
+
+The transitions complete normally when the GPU comes out of a hardware
+reset, as it does at probe. Use runtime PM with reset and clock control
+for GXM so the GPU is reset on every resume.
+
+Fixes: 22aa1a209018 ("drm/panfrost: Really power off GPU cores in panfrost_gpu_power_off()")
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_drv.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_drv.c b/drivers/gpu/drm/panfrost/panfrost_drv.c
+index be8307c75dc6..7390e350e9c0 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_drv.c
++++ b/drivers/gpu/drm/panfrost/panfrost_drv.c
+@@ -914,6 +914,13 @@ static const struct panfrost_compatible amlogic_data = {
+ 	.vendor_quirk = panfrost_gpu_amlogic_quirk,
+ };
+ 
++static const struct panfrost_compatible amlogic_gxm_data = {
++	.num_supplies = ARRAY_SIZE(default_supplies) - 1,
++	.supply_names = default_supplies,
++	.vendor_quirk = panfrost_gpu_amlogic_quirk,
++	.pm_features = BIT(GPU_PM_RT),
++};
++
+ static const char * const mediatek_pm_domains[] = { "core0", "core1", "core2",
+ 						    "core3", "core4" };
+ /*
+@@ -978,7 +985,7 @@ static const struct panfrost_compatible mediatek_mt8370_data = {
+ static const struct of_device_id dt_match[] = {
+ 	/* Set first to probe before the generic compatibles */
+ 	{ .compatible = "amlogic,meson-gxm-mali",
+-	  .data = &amlogic_data, },
++	  .data = &amlogic_gxm_data, },
+ 	{ .compatible = "amlogic,meson-g12a-mali",
+ 	  .data = &amlogic_data, },
+ 	{ .compatible = "renesas,r9a08g046-mali", .data = &default_pm_rt_data },
+-- 
+2.43.0
+

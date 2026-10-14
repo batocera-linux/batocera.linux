@@ -1,0 +1,43 @@
+From bda4e7f2abe7506b76bc32e5c1a4eaa6e136c044 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 19 Sep 2026 11:00:56 +0000
+Subject: [PATCH 136/210] ASoC: meson: aiu: put the channel status bytes in the
+ right order
+
+AIU_958_CHSTAT_L0 holds bits 15:0 of the channel status word with bit 0
+sent first, so byte 0 belongs in the low half and byte 1 in the high
+half. The driver swaps them, so a receiver reads byte 1 as byte 0 and
+byte 3 as byte 2. The sample rate is then always read as 44.1 kHz, and
+receivers lose lock on high rate compressed streams.
+
+Write the bytes in wire order, as the AXG encoder already does.
+
+Fixes: 6ae9ca9ce986 ("ASoC: meson: aiu: add i2s and spdif support")
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ sound/soc/meson/aiu-encoder-spdif.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/sound/soc/meson/aiu-encoder-spdif.c b/sound/soc/meson/aiu-encoder-spdif.c
+index 97da60db2c4d..5d654e17c45f 100644
+--- a/sound/soc/meson/aiu-encoder-spdif.c
++++ b/sound/soc/meson/aiu-encoder-spdif.c
+@@ -80,12 +80,12 @@ static int aiu_encoder_spdif_setup_cs_word(struct snd_soc_component *component,
+ 		return ret;
+ 
+ 	/* Write the 1st half word */
+-	val = cs[1] | cs[0] << 8;
++	val = cs[0] | cs[1] << 8;
+ 	snd_soc_component_write(component, AIU_958_CHSTAT_L0, val);
+ 	snd_soc_component_write(component, AIU_958_CHSTAT_R0, val);
+ 
+ 	/* Write the 2nd half word */
+-	val = cs[3] | cs[2] << 8;
++	val = cs[2] | cs[3] << 8;
+ 	snd_soc_component_write(component, AIU_958_CHSTAT_L1, val);
+ 	snd_soc_component_write(component, AIU_958_CHSTAT_R1, val);
+ 
+-- 
+2.43.0
+

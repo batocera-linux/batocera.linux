@@ -1,0 +1,64 @@
+From f67b3c886705c431a439b5700f0bd55db98042fd Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:50:43 +0000
+Subject: [PATCH 29/43] WIP: ARM: meson: s4: report the boot device
+
+meson_get_boot_device() returned -ENOSYS on S4, so board code could not
+tell whether it booted from eMMC or SD. The boot ROM reports the boot
+device in SYSCTRL secure status REG2 bits [7:4], using the same values
+as the other Meson SoCs, and the vendor U-Boot reads it from there.
+
+Return the boot device from REG2.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/include/asm/arch-meson/s4.h | 3 +++
+ arch/arm/mach-meson/board-s4.c       | 5 +++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/include/asm/arch-meson/s4.h b/arch/arm/include/asm/arch-meson/s4.h
+index 165fe351ef2..39f92344863 100644
+--- a/arch/arm/include/asm/arch-meson/s4.h
++++ b/arch/arm/include/asm/arch-meson/s4.h
+@@ -7,10 +7,13 @@
+ 
+ #define S4_SYSCTRL_ADDR(off)		(S4_SYSCTRL_BASE + ((off) << 2))
+ 
++#define S4_SEC_STATUS_REG2		S4_SYSCTRL_ADDR(0xc2)
+ #define S4_SEC_STATUS_REG15		S4_SYSCTRL_ADDR(0xcf)
+ #define S4_SEC_STATUS_REG16		S4_SYSCTRL_ADDR(0xd0)
+ #define S4_SEC_STATUS_REG17		S4_SYSCTRL_ADDR(0xd1)
+ 
++#define S4_BOOT_DEVICE_MASK		0xF0
++#define S4_BOOT_DEVICE_SHIFT		4
+ #define S4_BL31_RSVMEM_SIZE_MASK	0xFFFF0000
+ #define S4_BL31_RSVMEM_SIZE_SHIFT	16
+ #define S4_BL32_RSVMEM_SIZE_MASK	0xFFFF
+diff --git a/arch/arm/mach-meson/board-s4.c b/arch/arm/mach-meson/board-s4.c
+index 51ba055d092..2d42d8e79d0 100644
+--- a/arch/arm/mach-meson/board-s4.c
++++ b/arch/arm/mach-meson/board-s4.c
+@@ -3,16 +3,17 @@
+  * (C) Copyright 2023 SberDevices, Inc.
+  */
+ 
++#include <asm/arch/boot.h>
+ #include <asm/arch/mem.h>
+ #include <asm/arch/s4.h>
+ #include <asm/armv8/mmu.h>
+ #include <asm/io.h>
+-#include <linux/errno.h>
+ #include <linux/sizes.h>
+ 
+ int meson_get_boot_device(void)
+ {
+-	return -ENOSYS;
++	return (readl(S4_SEC_STATUS_REG2) & S4_BOOT_DEVICE_MASK)
++		>> S4_BOOT_DEVICE_SHIFT;
+ }
+ 
+ /*
+-- 
+2.43.0
+

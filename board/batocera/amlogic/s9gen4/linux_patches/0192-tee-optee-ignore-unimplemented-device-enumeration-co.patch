@@ -1,0 +1,55 @@
+From 0a4d613ad997a40888f56e2973b960bb5f903f1d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Wed, 7 Oct 2026 04:14:16 +0000
+Subject: [PATCH 206/210] tee: optee: ignore unimplemented device enumeration
+ commands
+
+Older OP-TEE releases, such as the 3.8 build in Amlogic BL32 blobs,
+have the device enumeration pseudo TA but do not implement
+PTA_CMD_GET_DEVICES_SUPP. When tee-supplicant opens the supplicant
+device, optee_bus_scan() gets TEEC_ERROR_NOT_IMPLEMENTED, logs an error
+and triggers its WARN_ON().
+
+Treat a command the PTA does not implement as an empty device list.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/tee/optee/device.c        | 8 ++++++++
+ drivers/tee/optee/optee_private.h | 1 +
+ 2 files changed, 9 insertions(+)
+
+diff --git a/drivers/tee/optee/device.c b/drivers/tee/optee/device.c
+index f751d743a120..de252062908f 100644
+--- a/drivers/tee/optee/device.c
++++ b/drivers/tee/optee/device.c
+@@ -47,6 +47,14 @@ static int get_devices(struct tee_context *ctx, u32 session,
+ 		 */
+ 		if (inv_arg.ret == TEE_ERROR_STORAGE_NOT_AVAILABLE)
+ 			return -ENODEV;
++		/*
++		 * Older OP-TEE releases implement the pseudo TA but not
++		 * every enumeration command, so treat that as no devices.
++		 */
++		if (inv_arg.ret == TEEC_ERROR_NOT_IMPLEMENTED) {
++			*shm_size = 0;
++			return 0;
++		}
+ 		pr_err("PTA_CMD_GET_DEVICES invoke function err: %x\n",
+ 		       inv_arg.ret);
+ 		return -EINVAL;
+diff --git a/drivers/tee/optee/optee_private.h b/drivers/tee/optee/optee_private.h
+index aefe1e6f5689..8d994410076b 100644
+--- a/drivers/tee/optee/optee_private.h
++++ b/drivers/tee/optee/optee_private.h
+@@ -23,6 +23,7 @@
+ #define TEEC_SUCCESS			0x00000000
+ #define TEEC_ERROR_BAD_PARAMETERS	0xFFFF0006
+ #define TEEC_ERROR_ITEM_NOT_FOUND	0xFFFF0008
++#define TEEC_ERROR_NOT_IMPLEMENTED	0xFFFF0009
+ #define TEEC_ERROR_NOT_SUPPORTED	0xFFFF000A
+ #define TEEC_ERROR_COMMUNICATION	0xFFFF000E
+ #define TEEC_ERROR_OUT_OF_MEMORY	0xFFFF000C
+-- 
+2.43.0
+

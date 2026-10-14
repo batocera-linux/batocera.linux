@@ -1,0 +1,39 @@
+From 71255dbfb268b624271a160c3588fcca754c4879 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 01:50:51 +0000
+Subject: [PATCH 41/43] WIP: ARM: dts: meson-s4-s905y4-khadas-vim1s: set the
+ VDDCPU boot voltage
+
+BL2 leaves VDDCPU at its 799mV power-up value, which the vendor OPP
+table only allows up to 1.404GHz, and nothing raises it for the clock
+the CPUs run at once Linux starts, so the cores are undervolted and
+Linux crashes at random early in boot. 959mV written by hand from the
+U-Boot prompt was stable.
+
+Set 939mV, which keeps a wide margin over the 869mV the vendor uses at
+1.608GHz and is the closest voltage to the tested value whose duty
+cycle reads back from the 36 count PWM period as an exact entry of the
+Linux voltage table, so the kernel regulator can take over without
+reprogramming VDDCPU.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi b/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
+index 0d233fd63e3..a19dd045f84 100644
+--- a/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
++++ b/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
+@@ -62,3 +62,7 @@
+ 		};
+ 	};
+ };
++
++&vddcpu {
++	regulator-init-microvolt = <939000>;
++};
+-- 
+2.43.0
+

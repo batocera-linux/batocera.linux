@@ -1,0 +1,57 @@
+From c8e35a20cdaa098f2f679f95b8c96d3a7358369d Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Mon, 22 Jun 2026 14:02:14 +0000
+Subject: [PATCH 010/210] LOCAL: arm64: dts: amlogic: gx: add dummy mali GPU
+ regulator
+
+The Mali GPU OPP table specifies an operating voltage so the lima
+driver requests a "mali" regulator from the OPP core. As there is no
+dedicated GPU regulator on the GXBB/GXL SoCs (the GPU shares the
+SoC supply) this fails with the harmless but noisy error:
+
+  lima d00c0000.gpu: error -ENODEV: _opp_set_regulators: no regulator (mali) found
+
+Model a dummy always-on fixed regulator and wire it to the GPU node via
+mali-supply to satisfy the OPP core and silence the error.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../arm64/boot/dts/amlogic/meson-gx-mali450.dtsi | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gx-mali450.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx-mali450.dtsi
+index f9771b51c852..4a89b70f0237 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gx-mali450.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gx-mali450.dtsi
+@@ -5,6 +5,21 @@
+  */
+ 
+ / {
++	/*
++	 * The Mali OPP table specifies an operating voltage, so the lima
++	 * driver asks the OPP core for a "mali" regulator. There is no
++	 * dedicated GPU regulator on these SoCs (the GPU shares the SoC
++	 * supply), so provide a dummy always-on regulator to silence the
++	 * harmless "no regulator (mali) found" error.
++	 */
++	vddgpu: regulator-vddgpu {
++		compatible = "regulator-fixed";
++		regulator-name = "mali";
++		regulator-min-microvolt = <950000>;
++		regulator-max-microvolt = <950000>;
++		regulator-always-on;
++	};
++
+ 	gpu_opp_table: opp-table {
+ 		compatible = "operating-points-v2";
+ 
+@@ -57,5 +72,6 @@ mali: gpu@c0000 {
+ 			"pp0", "ppmmu0", "pp1", "ppmmu1",
+ 			"pp2", "ppmmu2";
+ 		operating-points-v2 = <&gpu_opp_table>;
++		mali-supply = <&vddgpu>;
+ 	};
+ };
+-- 
+2.43.0
+

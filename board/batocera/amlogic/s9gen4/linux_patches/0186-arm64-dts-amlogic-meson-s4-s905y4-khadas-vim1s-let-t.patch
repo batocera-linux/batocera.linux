@@ -1,0 +1,37 @@
+From e57d1ad84c841f3a3214d26d0ea778d11669015a Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 15:10:10 +0000
+Subject: [PATCH 200/210] arm64: dts: amlogic: meson-s4-s905y4-khadas-vim1s:
+ let the SD supply power off
+
+The SD card supply was always on, so the card kept power across a warm
+reboot. A UHS card that had switched to 1.8V signalling then stayed in
+that mode and did not respond to the bootloader at 3.3V, leaving the
+board unable to find the card until it was power cycled.
+
+Mark the supply boot-on instead, so the MMC core can switch it off at
+shutdown and on power cycle, which returns the card to its initial
+signalling voltage.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+index 1a29f5086d37..204ea87f1ed8 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+@@ -115,7 +115,7 @@ sd_3v3: regulator-sd-3v3 {
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-max-microvolt = <3300000>;
+ 		gpio = <&gpio GPIOD_4 GPIO_ACTIVE_LOW>;
+-		regulator-always-on;
++		regulator-boot-on;
+ 	};
+ 
+ 	vddio_sd: regulator-vddio-sd {
+-- 
+2.43.0
+

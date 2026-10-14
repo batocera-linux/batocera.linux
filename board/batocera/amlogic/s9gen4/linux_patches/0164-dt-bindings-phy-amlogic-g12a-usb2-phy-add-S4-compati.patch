@@ -1,0 +1,30 @@
+From 232dc2a4e630ea648359e487b7be60458edede67 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 3 Oct 2026 14:44:01 +0000
+Subject: [PATCH 178/210] dt-bindings: phy: amlogic,g12a-usb2-phy: add S4
+ compatible
+
+Add the compatible for the USB2 PHY of the Amlogic S4 SoC family, which
+is a variant of the A1 PHY.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/phy/amlogic,g12a-usb2-phy.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/phy/amlogic,g12a-usb2-phy.yaml b/Documentation/devicetree/bindings/phy/amlogic,g12a-usb2-phy.yaml
+index 1a0c436b87a0..54058d2e6053 100644
+--- a/Documentation/devicetree/bindings/phy/amlogic,g12a-usb2-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/amlogic,g12a-usb2-phy.yaml
+@@ -15,6 +15,7 @@ properties:
+     enum:
+       - amlogic,g12a-usb2-phy
+       - amlogic,a1-usb2-phy
++      - amlogic,s4-usb2-phy
+ 
+   reg:
+     maxItems: 1
+-- 
+2.43.0
+

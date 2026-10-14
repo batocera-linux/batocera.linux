@@ -1,0 +1,43 @@
+From 529627db29baa631c005034c1a3d1a91b5192a5f Mon Sep 17 00:00:00 2001
+From: Igor Velkov <iav@iav.lv>
+Date: Wed, 30 Sep 2026 16:52:15 +0000
+Subject: [PATCH 081/210] FROMLIST(v1): arm64: dts: amlogic:
+ meson-sm1-odroid-hc4: run the SPI NOR at 40 MHz
+
+At 104 MHz, reads return corrupted data: bit 0 of the first byte of a
+transfer flips from 0 to 1 part of the time. The same byte read as the
+second byte of a transfer was correct in all 100 reads. One 4 KiB block
+read 200 times came back wrong 157 times. Writes are unaffected.
+
+flashcp verifies while it writes, so a bootloader update erases blocks
+it should skip and can abort halfway, with the flash half written.
+
+The Hardkernel vendor device tree for this board uses 40 MHz. At 40 MHz
+the same tests pass: 200 block reads with no mismatch, and 14 flashcp
+runs with no block erased.
+
+Tested on ODROID-HC4 with an XT25F128B.
+
+Fixes: 7178f340e929 ("arm64: dts: meson-sm1-odroid-hc4: add spifc node to ODROID-HC4")
+Assisted-by: LLM
+Signed-off-by: Igor Velkov <iav@iav.lv>
+---
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
+index 5ce76a1bfe02..8f09f2b74bdd 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid-hc4.dts
+@@ -144,7 +144,7 @@ flash@0 {
+ 		#size-cells = <1>;
+ 		compatible = "jedec,spi-nor";
+ 		reg = <0>;
+-		spi-max-frequency = <104000000>;
++		spi-max-frequency = <40000000>;
+ 	};
+ };
+ 
+-- 
+2.43.0
+

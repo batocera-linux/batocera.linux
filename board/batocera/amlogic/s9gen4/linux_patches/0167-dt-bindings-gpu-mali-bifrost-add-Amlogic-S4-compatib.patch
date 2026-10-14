@@ -1,0 +1,41 @@
+From 2530ac0b4ccc426f16ca6710245e99230d6926c6 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 3 Oct 2026 14:44:53 +0000
+Subject: [PATCH 181/210] dt-bindings: gpu: mali-bifrost: add Amlogic S4
+ compatible
+
+The Amlogic S4 SoC family has a Mali-G31 GPU integrated like the one
+in G12A.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml b/Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml
+index 9db9f84ad964..720b549f6ece 100644
+--- a/Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml
++++ b/Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml
+@@ -19,6 +19,7 @@ properties:
+           - enum:
+               - allwinner,sun50i-h616-mali
+               - amlogic,meson-g12a-mali
++              - amlogic,meson-s4-mali
+               - mediatek,mt8183-mali
+               - mediatek,mt8183b-mali
+               - mediatek,mt8186-mali
+@@ -136,7 +137,9 @@ allOf:
+       properties:
+         compatible:
+           contains:
+-            const: amlogic,meson-g12a-mali
++            enum:
++              - amlogic,meson-g12a-mali
++              - amlogic,meson-s4-mali
+     then:
+       properties:
+         power-domains:
+-- 
+2.43.0
+

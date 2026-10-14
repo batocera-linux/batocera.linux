@@ -1,0 +1,87 @@
+From 682fdfcea86a38c1347ca4de71d3694ac1694168 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sat, 3 Oct 2026 17:45:44 +0000
+Subject: [PATCH 31/43] WIP: power: domain: meson-secure-pwrc: add S4 power
+ domains
+
+Add the S4 secure power domains, as listed by the Linux driver, so
+devices such as the USB controller can power up their domain.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/power/domain/Kconfig             |  4 ++--
+ drivers/power/domain/meson-secure-pwrc.c | 21 +++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/power/domain/Kconfig b/drivers/power/domain/Kconfig
+index 12b0e2c9914..bb2f45c5f82 100644
+--- a/drivers/power/domain/Kconfig
++++ b/drivers/power/domain/Kconfig
+@@ -78,10 +78,10 @@ config MESON_GX_VPU_POWER_DOMAIN
+ 
+ config MESON_SECURE_POWER_DOMAIN
+ 	bool "Enable Amlogic Secure power domain driver"
+-	depends on POWER_DOMAIN && ARCH_MESON && MESON_A1
++	depends on POWER_DOMAIN && ARCH_MESON && (MESON_A1 || MESON_S4)
+ 	help
+ 	  Enable support for manipulating Amlogic Meson Secure power domains.
+-	  Support for Amlogic A1 series.
++	  Support for Amlogic A1 and S4 series.
+ 
+ config MT2701_POWER_DOMAIN
+ 	bool "Enable the MediaTek power domain driver for MT2701 compatible SoC"
+diff --git a/drivers/power/domain/meson-secure-pwrc.c b/drivers/power/domain/meson-secure-pwrc.c
+index 1b82b58f3e5..c2596214825 100644
+--- a/drivers/power/domain/meson-secure-pwrc.c
++++ b/drivers/power/domain/meson-secure-pwrc.c
+@@ -9,6 +9,7 @@
+ #include <power-domain.h>
+ #include <power-domain-uclass.h>
+ #include <dt-bindings/power/meson-a1-power.h>
++#include <dt-bindings/power/meson-s4-power.h>
+ 
+ struct meson_secure_pwrc_domain_desc {
+ 	char *name;
+@@ -120,6 +121,17 @@ static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
+ 	SEC_PD(RSA),
+ };
+ 
++static struct meson_secure_pwrc_domain_desc s4_pwrc_domains[] = {
++	SEC_PD(S4_DOS_HEVC),
++	SEC_PD(S4_DOS_VDEC),
++	SEC_PD(S4_VPU_HDMI),
++	SEC_PD(S4_USB_COMB),
++	SEC_PD(S4_GE2D),
++	SEC_PD(S4_ETH),
++	SEC_PD(S4_DEMOD),
++	SEC_PD(S4_AUDIO),
++};
++
+ static const struct power_domain_ops meson_secure_pwrc_ops = {
+ 	.on = meson_secure_pwrc_on,
+ 	.off = meson_secure_pwrc_off,
+@@ -131,11 +143,20 @@ static struct meson_secure_pwrc_domain_data meson_secure_a1_pwrc_data = {
+ 	.domains = a1_pwrc_domains,
+ };
+ 
++static struct meson_secure_pwrc_domain_data meson_secure_s4_pwrc_data = {
++	.count = ARRAY_SIZE(s4_pwrc_domains),
++	.domains = s4_pwrc_domains,
++};
++
+ static const struct udevice_id meson_secure_pwrc_ids[] = {
+ 	{
+ 		.compatible = "amlogic,meson-a1-pwrc",
+ 		.data = (unsigned long)&meson_secure_a1_pwrc_data,
+ 	},
++	{
++		.compatible = "amlogic,meson-s4-pwrc",
++		.data = (unsigned long)&meson_secure_s4_pwrc_data,
++	},
+ 	{ }
+ };
+ 
+-- 
+2.43.0
+

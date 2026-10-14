@@ -1,0 +1,120 @@
+From 916758527f511d63d80374787fd3f365d4f0510b Mon Sep 17 00:00:00 2001
+From: Nick Xie <nick@khadas.com>
+Date: Mon, 2 Feb 2026 11:33:10 +0800
+Subject: [PATCH 183/210] arm64: dts: amlogic: meson-s4: add GPU support
+
+Signed-off-by: Nick Xie <nick@khadas.com>
+[chewitt: add the arm,mali-bifrost fallback compatible, use the
+ 799999988Hz rate fclk_div2p5 provides for the 800MHz OPP, and enable
+ the GPU on the Khadas VIM1S]
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../amlogic/meson-s4-s905y4-khadas-vim1s.dts  | 12 +++++
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi     | 54 +++++++++++++++++++
+ 2 files changed, 66 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+index 9595fa274614..14c3fb55739c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+@@ -165,6 +165,13 @@ hdmi_5v: regulator-hdmi-5v {
+ 		regulator-always-on;
+ 	};
+ 
++	vdd_gpu: regulator-vdd-gpu {
++		compatible = "regulator-fixed";
++		regulator-name = "vdd-gpu";
++		regulator-min-microvolt = <800000>;
++		regulator-max-microvolt = <800000>;
++	};
++
+ 	/* SY8120B1ABC DC/DC Regulator. */
+ 	vddcpu: regulator-vddcpu {
+ 		compatible = "pwm-regulator";
+@@ -287,6 +294,11 @@ &ethmac {
+ 	phy-mode = "rmii";
+ };
+ 
++&gpu {
++	mali-supply = <&vdd_gpu>;
++	status = "okay";
++};
++
+ &i2c1 {
+ 	status = "okay";
+ 	pinctrl-names = "default";
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index 8107b7f1f9ff..804e5556c20e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -110,6 +110,39 @@ saradc: adc@fe026000 {
+ 		status = "disabled";
+ 	};
+ 
++	gpu_opp_table: opp-table-gpu {
++		compatible = "operating-points-v2";
++
++		opp-124999998 {
++			opp-hz = /bits/ 64 <124999998>;
++			opp-microvolt = <800000>;
++		};
++		opp-249999996 {
++			opp-hz = /bits/ 64 <249999996>;
++			opp-microvolt = <800000>;
++		};
++		opp-285714281 {
++			opp-hz = /bits/ 64 <285714281>;
++			opp-microvolt = <800000>;
++		};
++		opp-399999994 {
++			opp-hz = /bits/ 64 <399999994>;
++			opp-microvolt = <800000>;
++		};
++		opp-499999992 {
++			opp-hz = /bits/ 64 <499999992>;
++			opp-microvolt = <800000>;
++		};
++		opp-666666656 {
++			opp-hz = /bits/ 64 <666666656>;
++			opp-microvolt = <800000>;
++		};
++		opp-799999988 {
++			opp-hz = /bits/ 64 <799999988>;
++			opp-microvolt = <800000>;
++		};
++	};
++
+ 	soc {
+ 		compatible = "simple-bus";
+ 		#address-cells = <2>;
+@@ -1005,6 +1038,27 @@ emmc: mmc@fe08c000 {
+ 			assigned-clock-rates = <24000000>;
+ 		};
+ 
++		gpu: gpu@fe400000 {
++			compatible = "amlogic,meson-s4-mali", "arm,mali-bifrost";
++			reg = <0x00 0xfe400000 0x00 0x40000>;
++
++			interrupt-parent = <&gic>;
++			interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
++						<GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
++						<GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "job", "mmu", "gpu";
++
++			clocks = <&clkc_periphs CLKID_MALI_SEL>,
++					<&clkc_periphs CLKID_MALI>;
++			clock-names = "core", "bus";
++
++			resets = <&reset RESET_MALI>,
++					<&reset RESET_MALI_APB>;
++
++			operating-points-v2 = <&gpu_opp_table>;
++			#cooling-cells = <2>;
++		};
++
+ 		usb: usb@fe03a000 {
+ 			compatible = "amlogic,meson-g12a-usb-ctrl";
+ 			reg = <0x0 0xfe03a000 0x0 0xa0>;
+-- 
+2.43.0
+

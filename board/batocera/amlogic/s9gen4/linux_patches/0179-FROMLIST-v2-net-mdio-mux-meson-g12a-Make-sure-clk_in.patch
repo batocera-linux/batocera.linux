@@ -1,0 +1,39 @@
+From ed5f3d28ac0acfa8a59e652970e7d84b99831045 Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Date: Thu, 3 Sep 2026 11:00:40 +0200
+Subject: [PATCH 193/210] FROMLIST(v2): net: mdio: mux-meson-g12a: Make sure
+ clk_init_data is fully initialized
+
+The clk_init_data structure contains several mutually-exclusive members
+for different methods to specify the possible parents of a clock,
+prompting drivers to initialize only the members they need.  However,
+not initializing all members may cause subtle issues, which are only
+exposed when CONFIG_INIT_STACK_ALL_PATTERN or CONFIG_INIT_STACK_NONE is
+enabled.
+
+Make sure all members are fully initialized, to avoid such bugs, and to
+prevent future breakage when converting drivers to a different method
+for specifying the parents.
+
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Brian Masney <bmasney@redhat.com>
+---
+ drivers/net/mdio/mdio-mux-meson-g12a.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/mdio/mdio-mux-meson-g12a.c b/drivers/net/mdio/mdio-mux-meson-g12a.c
+index 08d6a6c93fb8..e6c9ef3641af 100644
+--- a/drivers/net/mdio/mdio-mux-meson-g12a.c
++++ b/drivers/net/mdio/mdio-mux-meson-g12a.c
+@@ -223,7 +223,7 @@ static int g12a_ephy_glue_clk_register(struct device *dev)
+ {
+ 	struct g12a_mdio_mux *priv = dev_get_drvdata(dev);
+ 	const char *parent_names[PLL_MUX_NUM_PARENT];
+-	struct clk_init_data init;
++	struct clk_init_data init = {};
+ 	struct g12a_ephy_pll *pll;
+ 	struct clk_mux *mux;
+ 	struct clk *clk;
+-- 
+2.43.0
+

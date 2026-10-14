@@ -1,0 +1,32 @@
+From 9da5b04c1417dacde04651e7b4bc6472bb48454e Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 18 Jan 2022 15:18:32 +0000
+Subject: [PATCH 084/210] WIP: arm64: dts: meson: remove SDIO node from Khadas
+ VIM1
+
+Now that SDIO 100MHz max-frequency is inherited from the p212 dtsi we
+can drop the node from the board dts.
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+index 22a8e0b3e81c..a93ad9b61b8b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-khadas-vim.dts
+@@ -218,10 +218,6 @@ &pwm_ef {
+ 	pinctrl-0 = <&pwm_e_pins>, <&pwm_f_clk_pins>;
+ };
+ 
+-&sd_emmc_a {
+-	max-frequency = <100000000>;
+-};
+-
+ /* This is brought out on the Linux_RX (18) and Linux_TX (19) pins: */
+ &uart_AO {
+ 	status = "okay";
+-- 
+2.43.0
+

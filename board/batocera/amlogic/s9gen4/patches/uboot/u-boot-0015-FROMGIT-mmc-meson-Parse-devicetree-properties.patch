@@ -1,0 +1,40 @@
+From c92b7d8ff96292e4562b57809841e1976b349847 Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Thu, 13 Aug 2026 17:12:54 -0400
+Subject: [PATCH 15/43] FROMGIT: mmc: meson: Parse devicetree properties
+
+Parse devicetree properties so things like max-frequency are respected.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Patch-cc: Peng Fan <peng.fan@nxp.com>
+Patch-cc: Jaehoon Chung <jh80.chung@samsung.com>
+Series-version: 2
+Series-changes: 2
+- Remove Upstream-Status tag
+
+Series-to: Neil Armstrong <neil.armstrong@linaro.org>
+Series-cc: Tom Rini <trini@konsulko.com>
+Series-cc: u-boot-amlogic@groups.io
+Series-to: u-boot@lists.u-boot-project.org
+---
+ drivers/mmc/meson_gx_mmc.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/mmc/meson_gx_mmc.c b/drivers/mmc/meson_gx_mmc.c
+index 76af3873e15..b5b4e60d8ec 100644
+--- a/drivers/mmc/meson_gx_mmc.c
++++ b/drivers/mmc/meson_gx_mmc.c
+@@ -351,6 +351,9 @@ static int meson_mmc_probe(struct udevice *dev)
+ 	cfg->f_max = 40000000; /* 40 MHz */
+ 	cfg->b_max = 511; /* max 512 - 1 blocks */
+ 	cfg->name = dev->name;
++	ret = mmc_of_parse(dev, cfg);
++	if (ret)
++		return ret;
+ 
+ 	if (IS_ENABLED(CONFIG_SPL_BUILD)) {
+ 		cfg->host_caps &= ~(MMC_MODE_HS_52MHz | MMC_MODE_HS);
+-- 
+2.43.0
+

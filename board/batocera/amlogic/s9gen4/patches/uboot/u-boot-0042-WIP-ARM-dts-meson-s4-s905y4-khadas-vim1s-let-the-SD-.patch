@@ -1,0 +1,36 @@
+From 8f08feea2e2c064532b6aff5be6e97878539d4f5 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 15:10:28 +0000
+Subject: [PATCH 42/43] WIP: ARM: dts: meson-s4-s905y4-khadas-vim1s: let the SD
+ supply power off
+
+The SD card supply is always on, so u-boot cannot power cycle the card
+when it initialises it. After a warm reboot a UHS card that Linux left
+in 1.8V signalling mode then does not respond at 3.3V and the board
+cannot find the card.
+
+Mark the supply boot-on instead of always-on so the MMC core power
+cycles the card at init.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi b/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
+index a19dd045f84..3ba465b9fe4 100644
+--- a/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
++++ b/arch/arm/dts/meson-s4-s905y4-khadas-vim1s-u-boot.dtsi
+@@ -66,3 +66,8 @@
+ &vddcpu {
+ 	regulator-init-microvolt = <939000>;
+ };
++
++&sd_3v3 {
++	/delete-property/ regulator-always-on;
++	regulator-boot-on;
++};
+-- 
+2.43.0
+

@@ -1,0 +1,171 @@
+From 27e02612d4ed294c5907c794a5a5a5aff703b508 Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Fri, 14 Aug 2026 16:16:49 -0400
+Subject: [PATCH 03/43] FROMGIT: arm64: meson: Add s4 SoC support
+
+Add support for amlogic s4 (S805X2/S905W2/S905Y4) SoCs. These are very
+similar to other recent SoCs, with the exception of a workaround for
+some BL2 (mis)behavior. Memory for ATF/TEE is expected to be reserved in
+the board devicetree, so we don't reserve it in board-s4.c.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Patch-cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Series-changes: 2
+- Add S4 to meson board info
+- Add DEBUG_UART defaults
+- Extend initial padding to 4096 to match what Amlogic does
+---
+ arch/arm/include/asm/arch-meson/boot0.h | 12 ++++++
+ arch/arm/mach-meson/Kconfig             |  7 ++++
+ arch/arm/mach-meson/Makefile            |  1 +
+ arch/arm/mach-meson/board-info.c        |  2 +
+ arch/arm/mach-meson/board-s4.c          | 50 +++++++++++++++++++++++++
+ drivers/serial/Kconfig                  |  2 +
+ 6 files changed, 74 insertions(+)
+ create mode 100644 arch/arm/include/asm/arch-meson/boot0.h
+ create mode 100644 arch/arm/mach-meson/board-s4.c
+
+diff --git a/arch/arm/include/asm/arch-meson/boot0.h b/arch/arm/include/asm/arch-meson/boot0.h
+new file mode 100644
+index 00000000000..d098786e5f1
+--- /dev/null
++++ b/arch/arm/include/asm/arch-meson/boot0.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0+ */
++/*
++ * Copyright (C) 2026 Brivo Systems LLC
++ */
++b reset
++/*
++ * BL2 copies some keys to the start of DRAM, clobbering anything in the first
++ * 4k aside from the initial instruction. I measured the actual data clobbered
++ * as 1076 bytes, but I suspect the amount depends on the configuration, so
++ * just go with what amlogic does.
++ */
++.skip 4096
+diff --git a/arch/arm/mach-meson/Kconfig b/arch/arm/mach-meson/Kconfig
+index c687ef822a2..91d1e8342e0 100644
+--- a/arch/arm/mach-meson/Kconfig
++++ b/arch/arm/mach-meson/Kconfig
+@@ -67,6 +67,13 @@ config MESON_A1
+ 	help
+ 	  Select this if your SoC is an A113L
+ 
++config MESON_S4
++	bool "S4"
++	select MESON64_COMMON
++	select ENABLE_ARM_SOC_BOOT0_HOOK
++	help
++	  Select this if your SoC is an S905Y4/S905W2/S805X2
++
+ endchoice
+ 
+ config SYS_SOC
+diff --git a/arch/arm/mach-meson/Makefile b/arch/arm/mach-meson/Makefile
+index 08a24d4b24f..2157c35c2d5 100644
+--- a/arch/arm/mach-meson/Makefile
++++ b/arch/arm/mach-meson/Makefile
+@@ -17,3 +17,4 @@ endif
+ obj-$(CONFIG_MESON_AXG) += board-axg.o
+ obj-$(CONFIG_MESON_G12A) += board-g12a.o
+ obj-$(CONFIG_MESON_A1) += board-a1.o
++obj-$(CONFIG_MESON_S4) += board-s4.o
+diff --git a/arch/arm/mach-meson/board-info.c b/arch/arm/mach-meson/board-info.c
+index d3807dc787d..379f6a42c22 100644
+--- a/arch/arm/mach-meson/board-info.c
++++ b/arch/arm/mach-meson/board-info.c
+@@ -40,6 +40,7 @@ static const struct meson_gx_soc_id {
+ 	{ "G12B",   0x29 },
+ 	{ "SM1",    0x2b },
+ 	{ "A1",	    0x2c },
++	{ "S4",     0x37 },
+ };
+ 
+ static const struct meson_gx_package_id {
+@@ -73,6 +74,7 @@ static const struct meson_gx_package_id {
+ 	{ "S905X3", 0x2b, 0x10, 0x3f },
+ 	{ "S905D3", 0x2b, 0x30, 0x3f },
+ 	{ "A113L", 0x2c, 0x0, 0xf8 },
++	{ "S905Y4", 0x37, 0x03, 0xff },
+ };
+ 
+ DECLARE_GLOBAL_DATA_PTR;
+diff --git a/arch/arm/mach-meson/board-s4.c b/arch/arm/mach-meson/board-s4.c
+new file mode 100644
+index 00000000000..7d0bea9924f
+--- /dev/null
++++ b/arch/arm/mach-meson/board-s4.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * (C) Copyright 2023 SberDevices, Inc.
++ */
++
++#include <asm/armv8/mmu.h>
++#include <asm/io.h>
++#include <linux/compiler.h>
++#include <linux/errno.h>
++
++void meson_init_reserved_memory(__maybe_unused void *fdt)
++{
++}
++
++int meson_get_boot_device(void)
++{
++	return -ENOSYS;
++}
++
++static struct mm_region s4_mem_map[] = {
++	{
++		.virt = 0x00000000UL,
++		.phys = 0x00000000UL,
++		.size = 0x80000000UL,
++		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
++			PTE_BLOCK_INNER_SHARE
++	}, {
++		.virt = 0x80000000UL,
++		.phys = 0x80000000UL,
++		.size = 0x7FE00000UL,
++		.attrs = PTE_BLOCK_MEMTYPE(MT_DEVICE_NGNRNE) |
++			PTE_BLOCK_NON_SHARE |
++			PTE_BLOCK_PXN | PTE_BLOCK_UXN
++	}, {
++		/*
++		 * This mem region contains in/out shared memory with bl31,
++		 * hence it's marked as NORMAL memory type
++		 */
++		.virt = 0xFFE00000UL,
++		.phys = 0xFFE00000UL,
++		.size = 0x00200000UL,
++		.attrs = PTE_BLOCK_MEMTYPE(MT_NORMAL) |
++			PTE_BLOCK_INNER_SHARE
++	}, {
++		/* List terminator */
++		0,
++	}
++};
++
++struct mm_region *mem_map = s4_mem_map;
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index ffc58d663ff..909e5e4c5f5 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -537,6 +537,7 @@ config DEBUG_UART_BASE
+ 	default 0xe0000000 if DEBUG_UART_ZYNQ && ARCH_ZYNQ
+ 	default 0xff000000 if DEBUG_UART_PL011 && ARCH_VERSAL
+ 	default 0xf1920000 if DEBUG_UART_PL011 && (ARCH_VERSAL_NET || ARCH_VERSAL2)
++	default 0xfe07a000 if DEBUG_UART_MESON && MESON_S4
+ 	help
+ 	  This is the base address of your UART for memory-mapped UARTs.
+ 
+@@ -573,6 +574,7 @@ config DEBUG_UART_CLOCK
+ 	default 100000000 if DEBUG_UART_ZYNQ && ARCH_ZYNQMP
+ 	default 50000000 if DEBUG_UART_ZYNQ && ARCH_ZYNQ
+ 	default 100000000 if DEBUG_UART_PL011 && (ARCH_VERSAL || ARCH_VERSAL_NET || ARCH_VERSAL2)
++	default 24000000 if DEBUG_UART_MESON && MESON_S4
+ 	help
+ 	  The UART input clock determines the speed of the internal UART
+ 	  circuitry. The baud rate is derived from this by dividing the input
+-- 
+2.43.0
+

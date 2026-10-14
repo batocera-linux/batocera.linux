@@ -1,0 +1,71 @@
+From 128a306118c824c9e4da62268cf917aaad951f78 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 17:23:54 +0000
+Subject: [PATCH 203/210] arm64: dts: amlogic: meson-s4: use the S4 MMC
+ compatible
+
+The S4 MMC controllers need their own receive delay tuning. Use the S4
+compatible with the AXG fallback.
+
+With the tuning in place, raise the VIM1S SDIO limit from 50MHz to
+100MHz. The bus advertises SDR104, so the BCM43456 WiFi module was run
+in SDR104 mode at 50MHz and tuned for that, and intermittently stopped
+responding after firmware load:
+
+  brcmfmac: brcmf_sdio_dpc: failed backplane access over SDIO, halting operation
+  ieee80211 phy0: brcmf_attach: dongle is not responding: err=-110
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ .../arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi                   | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+index 204ea87f1ed8..5ca6d24fd065 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-s4-s905y4-khadas-vim1s.dts
+@@ -629,7 +629,7 @@ &sdio {
+ 	cap-sd-highspeed;
+ 	sd-uhs-sdr50;
+ 	sd-uhs-sdr104;
+-	max-frequency = <50000000>;
++	max-frequency = <100000000>;
+ 	non-removable;
+ 	disable-wp;
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+index 1cc111843cea..d8144e5887bb 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+@@ -1147,7 +1147,7 @@ uart_a: serial@fe078000 {
+ 		};
+ 
+ 		sdio: mmc@fe088000 {
+-			compatible = "amlogic,meson-axg-mmc";
++			compatible = "amlogic,s4-mmc", "amlogic,meson-axg-mmc";
+ 			reg = <0x0 0xfe088000 0x0 0x800>;
+ 			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&clkc_periphs CLKID_SDEMMC_A>,
+@@ -1164,7 +1164,7 @@ sdio: mmc@fe088000 {
+ 		};
+ 
+ 		sd: mmc@fe08a000 {
+-			compatible = "amlogic,meson-axg-mmc";
++			compatible = "amlogic,s4-mmc", "amlogic,meson-axg-mmc";
+ 			reg = <0x0 0xfe08a000 0x0 0x800>;
+ 			interrupts = <GIC_SPI 177 IRQ_TYPE_EDGE_RISING>;
+ 			clocks = <&clkc_periphs CLKID_SDEMMC_B>,
+@@ -1179,7 +1179,7 @@ sd: mmc@fe08a000 {
+ 		};
+ 
+ 		emmc: mmc@fe08c000 {
+-			compatible = "amlogic,meson-axg-mmc";
++			compatible = "amlogic,s4-mmc", "amlogic,meson-axg-mmc";
+ 			reg = <0x0 0xfe08c000 0x0 0x800>;
+ 			interrupts = <GIC_SPI 178 IRQ_TYPE_EDGE_RISING>;
+ 			clocks = <&clkc_periphs CLKID_NAND>,
+-- 
+2.43.0
+

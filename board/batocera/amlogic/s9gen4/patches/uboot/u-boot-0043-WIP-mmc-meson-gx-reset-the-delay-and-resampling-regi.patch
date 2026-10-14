@@ -1,0 +1,69 @@
+From c98e949ed85d353b68df3da50b31b39032b36840 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 4 Oct 2026 17:55:39 +0000
+Subject: [PATCH 43/43] WIP: mmc: meson-gx: reset the delay and resampling
+ registers
+
+The bootloader stages that run before U-Boot can leave the controller
+tuned for a fast bus. On the Khadas VIM1S, booting from eMMC leaves
+resampling enabled in SD_EMMC_ADJUST (0x00012000), so the card does not
+respond during identification at 400kHz and U-Boot cannot find it:
+
+  Card did not respond to voltage select! : -110
+
+U-Boot does not tune the bus, so clear the delay lines and resampling
+when the controller is initialised, as the vendor U-Boot does. On GX
+these offsets are the delay and adjust registers and the read-only
+calibration output.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/mmc/meson_gx_mmc.c | 8 ++++++++
+ drivers/mmc/meson_gx_mmc.h | 4 ++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/drivers/mmc/meson_gx_mmc.c b/drivers/mmc/meson_gx_mmc.c
+index b5b4e60d8ec..bf8c7ac58fa 100644
+--- a/drivers/mmc/meson_gx_mmc.c
++++ b/drivers/mmc/meson_gx_mmc.c
+@@ -257,6 +257,10 @@ struct meson_mmc_plat mmc_plat[2];
+ 
+ static int meson_legacy_mmc_init(struct mmc *mmc)
+ {
++	meson_write(mmc, 0, MESON_SD_EMMC_DELAY1);
++	meson_write(mmc, 0, MESON_SD_EMMC_DELAY2);
++	meson_write(mmc, 0, MESON_SD_EMMC_ADJUST);
++
+ 	/* reset all status bits */
+ 	meson_write(mmc, STATUS_MASK, MESON_SD_EMMC_STATUS);
+ 
+@@ -376,6 +380,10 @@ static int meson_mmc_probe(struct udevice *dev)
+ 	}
+ #endif
+ 
++	meson_write(mmc, 0, MESON_SD_EMMC_DELAY1);
++	meson_write(mmc, 0, MESON_SD_EMMC_DELAY2);
++	meson_write(mmc, 0, MESON_SD_EMMC_ADJUST);
++
+ 	/* reset all status bits */
+ 	meson_write(mmc, STATUS_MASK, MESON_SD_EMMC_STATUS);
+ 
+diff --git a/drivers/mmc/meson_gx_mmc.h b/drivers/mmc/meson_gx_mmc.h
+index 8974b78f559..317781c5da3 100644
+--- a/drivers/mmc/meson_gx_mmc.h
++++ b/drivers/mmc/meson_gx_mmc.h
+@@ -35,6 +35,10 @@ enum meson_gx_mmc_compatible {
+ #define   CLK_TX_PHASE_270		(3 << 10)
+ #define   CLK_ALWAYS_ON			BIT(24)
+ 
++#define MESON_SD_EMMC_DELAY1		0x04
++#define MESON_SD_EMMC_DELAY2		0x08
++#define MESON_SD_EMMC_ADJUST		0x0c
++
+ #define MESON_SD_EMMC_CFG		0x44
+ #define   CFG_BUS_WIDTH_MASK		GENMASK(1, 0)
+ #define   CFG_BUS_WIDTH_1		0
+-- 
+2.43.0
+

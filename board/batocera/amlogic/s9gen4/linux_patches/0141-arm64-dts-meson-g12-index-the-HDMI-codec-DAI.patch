@@ -1,0 +1,409 @@
+From 73df6e5b968f4a6ae04036c799ebcf0eae1b35e0 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Tue, 15 Sep 2026 01:08:46 +0000
+Subject: [PATCH 155/210] arm64: dts: meson: g12: index the HDMI codec DAI
+
+hdmi_tx has an I2S and an S/PDIF DAI, so a link must say which one it
+uses. Add a sound-dai cell to the node; the boards that bind it already
+name the I2S DAI.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts           | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts                 | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts              | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts   | 2 +-
+ .../boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts    | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi            | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi            | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts             | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts           | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi           | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts           | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts          | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts            | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi              | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi     | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts       | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts            | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts       | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts           | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi               | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts                | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts          | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts               | 2 +-
+ 28 files changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 9030e8c59170..9e3acbbfddd0 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -227,7 +227,7 @@ hdmi_tx: hdmi-tx@0 {
+ 				clock-names = "isfr", "iahb", "venci";
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				#sound-dai-cells = <0>;
++				#sound-dai-cells = <1>;
+ 				status = "disabled";
+ 
+ 				assigned-clocks = <&clkc CLKID_HDMI_SEL>,
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
+index 4c9cd0024efb..9880aa2313cf 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-fbx8am.dts
+@@ -241,7 +241,7 @@ dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
+index 4bb1c2846c81..c413588cb41a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-radxa-zero.dts
+@@ -180,7 +180,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+index 8ca7f6ec9adc..84e2a5e0acce 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-sei510.dts
+@@ -281,7 +281,7 @@ dai-link-9 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+index 91df4793dd6e..ddf2eb1c399b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-u200.dts
+@@ -351,7 +351,7 @@ dai-link-11 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+index 7e3605e0f82c..1f3d993adebe 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a-x96-max.dts
+@@ -324,7 +324,7 @@ dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
+index cdb522f5365a..16ae5b2198ff 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-cm4io.dts
+@@ -113,7 +113,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+index 2d4071c51f3d..6663d0edfe74 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi-cm4-mnt-reform2.dts
+@@ -146,7 +146,7 @@ dai-link-8 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+index 7b5d78f97215..8933d6a393c9 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-bananapi.dtsi
+@@ -237,7 +237,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
+index a69d5531c540..0384cf62dba2 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-dreambox.dtsi
+@@ -105,7 +105,7 @@ dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
+index 8758a68136ea..b3c2a1860a27 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
+@@ -90,7 +90,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
+index a9478e2cce4d..cdb5b00def1b 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking-pro.dts
+@@ -91,7 +91,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+index a2ff5040eadf..290916db9175 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gtking.dts
+@@ -102,7 +102,7 @@ dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index edb7ed6b0ec0..ea49b6ef09fb 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -170,7 +170,7 @@ dai-link-8 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+index 15795889cb53..181a0b4b3d20 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2l.dts
+@@ -94,7 +94,7 @@ dai-link-7 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+index 50565851f3d8..6c91edfef72c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-radxa-zero2.dts
+@@ -219,7 +219,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+index dbd72fe0f53f..575bc6ef515e 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-ugoos-am6.dts
+@@ -97,7 +97,7 @@ dai-link-6 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+index 73aa6b5a5de7..d76b4c781d30 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-khadas-vim3.dtsi
+@@ -237,7 +237,7 @@ dai-link-7 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi b/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
+index cb8b0f98beb4..fbc69531a452 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-libretech-cottonwood.dtsi
+@@ -325,7 +325,7 @@ dai-link-9 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
+index 7c67e459c602..56d2b88f1687 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air-gbit.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
+index e841c44c69de..bfbee560c1ea 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-a95xf3-air.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
+index 8d12bd1702d3..1403ab33dc4c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m2-pro.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+index 0cd306569312..43fb9da1f29c 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-bananapi-m5.dts
+@@ -132,7 +132,7 @@ dai-link-8 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
+index 3c671676e453..25c99bc2fa81 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-h96-max.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+index e6f02d738a21..b60689fac55a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-odroid.dtsi
+@@ -220,7 +220,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+index 18b830a233a6..0e802c6ced57 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-sei610.dts
+@@ -319,7 +319,7 @@ dai-link-9 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
+index ecb6aa79302d..0779bb012937 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air-gbit.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+diff --git a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
+index 24a6a679b377..9b833ec49230 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
++++ b/arch/arm64/boot/dts/amlogic/meson-sm1-x96-air.dts
+@@ -65,7 +65,7 @@ dai-link-4 {
+ 			sound-dai = <&tohdmitx TOHDMITX_I2S_OUT>;
+ 
+ 			codec {
+-				sound-dai = <&hdmi_tx>;
++				sound-dai = <&hdmi_tx 0>;
+ 			};
+ 		};
+ 	};
+-- 
+2.43.0
+

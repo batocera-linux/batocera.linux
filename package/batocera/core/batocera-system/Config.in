@@ -259,18 +259,15 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_WIREGUARD_LINUX_COMPAT    if !BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 && \
 	                                                !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
 	                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3326 && \
-	                                                !BR2_PACKAGE_BATOCERA_TARGET_S9GEN4 && \
 	                                                !BR2_PACKAGE_BATOCERA_TARGET_RK3128
 													# Kernel < 5.6 backwards compatibility and not boards which already had it backported
 	select BR2_PACKAGE_WIREGUARD_TOOLS           if BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 || ( \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S9GEN4 && \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3128    \
                                                      )
 													# WireGuard VPN support (match kernel compatibility)
 	select BR2_PACKAGE_WIREGUARD_SERVICE    if BR2_TOOLCHAIN_HEADERS_AT_LEAST_5_6 || ( \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_A3GEN2 && \
-	                                                 !BR2_PACKAGE_BATOCERA_TARGET_S9GEN4 && \
 	                                                 !BR2_PACKAGE_BATOCERA_TARGET_RK3128    \
                                                      ) # Batocera service
 	select BR2_PACKAGE_OPENRESOLV                # DNS resolver
@@ -892,6 +889,7 @@ config BR2_BATOCERA_ARCH
 	default "s905gen2" if BR2_PACKAGE_BATOCERA_TARGET_S905GEN2
 	default "s905gen3" if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 	default "s922x" if BR2_PACKAGE_BATOCERA_TARGET_S922X
+	default "s9gen4" if BR2_PACKAGE_BATOCERA_TARGET_S9GEN4
 	default "sdm845" if BR2_PACKAGE_BATOCERA_TARGET_SDM845
 	default "sm4450" if BR2_PACKAGE_BATOCERA_TARGET_SM4450
 	default "sm6115" if BR2_PACKAGE_BATOCERA_TARGET_SM6115

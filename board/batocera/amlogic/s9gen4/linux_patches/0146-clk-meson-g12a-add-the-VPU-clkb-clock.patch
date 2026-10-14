@@ -1,0 +1,155 @@
+From 33366a02a71484e5e0974bb41e243874d40e59fb Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Sun, 27 Sep 2026 09:02:04 +0000
+Subject: [PATCH 160/210] clk: meson: g12a: add the VPU clkb clock
+
+The video deinterlacer is clocked by VPU clkb, which is not modelled, so
+a driver cannot enable it or set its rate.
+
+Add the two stages of HHI_VPU_CLKB_CNTL: a mux of vpu, fclk_div4,
+fclk_div5 and fclk_div7 with a divider and gate, feeding a second
+divider and gate.
+
+Assisted-by: Claude:claude-opus-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/clk/meson/g12a.c | 102 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 102 insertions(+)
+
+diff --git a/drivers/clk/meson/g12a.c b/drivers/clk/meson/g12a.c
+index 3b6c9f976b78..e191a0a120a0 100644
+--- a/drivers/clk/meson/g12a.c
++++ b/drivers/clk/meson/g12a.c
+@@ -2926,6 +2926,93 @@ static struct clk_regmap g12a_vpu = {
+ 	},
+ };
+ 
++static const struct clk_hw *g12a_vpu_clkb_tmp_parents[] = {
++	&g12a_vpu.hw,
++	&g12a_fclk_div4.hw,
++	&g12a_fclk_div5.hw,
++	&g12a_fclk_div7.hw,
++};
++
++static struct clk_regmap g12a_vpu_clkb_tmp_sel = {
++	.data = &(struct clk_regmap_mux_data){
++		.offset = HHI_VPU_CLKB_CNTL,
++		.mask = 0x3,
++		.shift = 20,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "vpu_clkb_tmp_sel",
++		.ops = &clk_regmap_mux_ops,
++		.parent_hws = g12a_vpu_clkb_tmp_parents,
++		.num_parents = ARRAY_SIZE(g12a_vpu_clkb_tmp_parents),
++	},
++};
++
++static struct clk_regmap g12a_vpu_clkb_tmp_div = {
++	.data = &(struct clk_regmap_div_data){
++		.offset = HHI_VPU_CLKB_CNTL,
++		.shift = 16,
++		.width = 4,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "vpu_clkb_tmp_div",
++		.ops = &clk_regmap_divider_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12a_vpu_clkb_tmp_sel.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
++static struct clk_regmap g12a_vpu_clkb_tmp = {
++	.data = &(struct clk_regmap_gate_data){
++		.offset = HHI_VPU_CLKB_CNTL,
++		.bit_idx = 24,
++	},
++	.hw.init = &(struct clk_init_data) {
++		.name = "vpu_clkb_tmp",
++		.ops = &clk_regmap_gate_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12a_vpu_clkb_tmp_div.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
++static struct clk_regmap g12a_vpu_clkb_div = {
++	.data = &(struct clk_regmap_div_data){
++		.offset = HHI_VPU_CLKB_CNTL,
++		.shift = 0,
++		.width = 8,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "vpu_clkb_div",
++		.ops = &clk_regmap_divider_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12a_vpu_clkb_tmp.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
++static struct clk_regmap g12a_vpu_clkb = {
++	.data = &(struct clk_regmap_gate_data){
++		.offset = HHI_VPU_CLKB_CNTL,
++		.bit_idx = 8,
++	},
++	.hw.init = &(struct clk_init_data) {
++		.name = "vpu_clkb",
++		.ops = &clk_regmap_gate_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&g12a_vpu_clkb_div.hw
++		},
++		.num_parents = 1,
++		.flags = CLK_SET_RATE_PARENT,
++	},
++};
++
+ /* VDEC clocks */
+ 
+ static u32 g12a_vdec_mux_table[] = { 0, 1, 2, 3, 4 };
+@@ -4720,6 +4807,11 @@ static struct clk_hw *g12a_hw_clks[] = {
+ 	[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+ 	[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 	[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
++	[CLKID_VPU_CLKB_TMP_SEL]	= &g12a_vpu_clkb_tmp_sel.hw,
++	[CLKID_VPU_CLKB_TMP_DIV]	= &g12a_vpu_clkb_tmp_div.hw,
++	[CLKID_VPU_CLKB_TMP]		= &g12a_vpu_clkb_tmp.hw,
++	[CLKID_VPU_CLKB_DIV]		= &g12a_vpu_clkb_div.hw,
++	[CLKID_VPU_CLKB]		= &g12a_vpu_clkb.hw,
+ };
+ 
+ static struct clk_hw *g12b_hw_clks[] = {
+@@ -4988,6 +5080,11 @@ static struct clk_hw *g12b_hw_clks[] = {
+ 	[CLKID_MIPI_ISP_GATE]		= &g12b_mipi_isp_gate.hw,
+ 	[CLKID_MIPI_ISP_CSI_PHY0]	= &g12b_csi_phy0.hw,
+ 	[CLKID_MIPI_ISP_CSI_PHY1]	= &g12b_csi_phy1.hw,
++	[CLKID_VPU_CLKB_TMP_SEL]	= &g12a_vpu_clkb_tmp_sel.hw,
++	[CLKID_VPU_CLKB_TMP_DIV]	= &g12a_vpu_clkb_tmp_div.hw,
++	[CLKID_VPU_CLKB_TMP]		= &g12a_vpu_clkb_tmp.hw,
++	[CLKID_VPU_CLKB_DIV]		= &g12a_vpu_clkb_div.hw,
++	[CLKID_VPU_CLKB]		= &g12a_vpu_clkb.hw,
+ };
+ 
+ static struct clk_hw *sm1_hw_clks[] = {
+@@ -5235,6 +5332,11 @@ static struct clk_hw *sm1_hw_clks[] = {
+ 	[CLKID_MIPI_DSI_PXCLK_SEL]	= &g12a_mipi_dsi_pxclk_sel.hw,
+ 	[CLKID_MIPI_DSI_PXCLK_DIV]	= &g12a_mipi_dsi_pxclk_div.hw,
+ 	[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
++	[CLKID_VPU_CLKB_TMP_SEL]	= &g12a_vpu_clkb_tmp_sel.hw,
++	[CLKID_VPU_CLKB_TMP_DIV]	= &g12a_vpu_clkb_tmp_div.hw,
++	[CLKID_VPU_CLKB_TMP]		= &g12a_vpu_clkb_tmp.hw,
++	[CLKID_VPU_CLKB_DIV]		= &g12a_vpu_clkb_div.hw,
++	[CLKID_VPU_CLKB]		= &g12a_vpu_clkb.hw,
+ };
+ 
+ static const struct reg_sequence g12a_init_regs[] = {
+-- 
+2.43.0
+

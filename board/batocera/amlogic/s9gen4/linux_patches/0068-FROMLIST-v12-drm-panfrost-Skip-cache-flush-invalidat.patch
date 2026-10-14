@@ -1,0 +1,51 @@
+From c8bd95a32c6f1d34e49d59e12d6eca988b08937f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:46 +0100
+Subject: [PATCH 075/210] FROMLIST(v12): drm/panfrost: Skip cache
+ flush/invalidate when enabling perfcnt
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The GPU cache flush/invalidate operation is unnecessary. First off, the
+GPU doesn't read off the perfcnt sample buffer, only writes into it, so
+an invalidate doesn't make a difference. Then flushing GPU caches after
+each sample has been written is enough for the CPU to see updated values.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_perfcnt.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_perfcnt.c b/drivers/gpu/drm/panfrost/panfrost_perfcnt.c
+index f71534e741b6..ffc77121070e 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_perfcnt.c
++++ b/drivers/gpu/drm/panfrost/panfrost_perfcnt.c
+@@ -124,21 +124,10 @@ static int panfrost_perfcnt_enable_locked(struct panfrost_device *pfdev,
+ 	panfrost_gem_internal_set_label(&bo->base, "Perfcnt sample buffer");
+ 
+ 	/*
+-	 * Invalidate the cache and clear the counters to start from a fresh
+-	 * state.
++	 * Clear the counters to start from a fresh state.
+ 	 */
+-	reinit_completion(&pfdev->perfcnt->dump_comp);
+-	gpu_write(pfdev, GPU_INT_CLEAR,
+-		  GPU_IRQ_CLEAN_CACHES_COMPLETED |
+-		  GPU_IRQ_PERFCNT_SAMPLE_COMPLETED);
++	gpu_write(pfdev, GPU_INT_CLEAR, GPU_IRQ_PERFCNT_SAMPLE_COMPLETED);
+ 	gpu_write(pfdev, GPU_CMD, GPU_CMD_PERFCNT_CLEAR);
+-	gpu_write(pfdev, GPU_CMD, GPU_CMD_CLEAN_INV_CACHES);
+-	ret = wait_for_completion_timeout(&pfdev->perfcnt->dump_comp,
+-					  msecs_to_jiffies(1000));
+-	if (!ret) {
+-		ret = -ETIMEDOUT;
+-		goto err_vunmap;
+-	}
+ 
+ 	ret = panfrost_mmu_as_get(pfdev, perfcnt->mapping->mmu);
+ 	if (ret < 0)
+-- 
+2.43.0
+

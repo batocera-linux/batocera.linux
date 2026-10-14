@@ -1,0 +1,60 @@
+From 99f049823f14eb8950393319fd99b35ca881c2c7 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>
+Date: Tue, 29 Sep 2026 04:44:38 +0100
+Subject: [PATCH 067/210] FROMLIST(v12): drm/panfrost: Skip NULL checks for
+ clock enable/disabling
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The clk_* API can deal with NULL clock objects, so we can do away with NULL
+checks in client code.
+
+Reviewed-by: Boris Brezillon <boris.brezillon@collabora.com>
+Signed-off-by: Adrián Larumbe <adrian.larumbe@collabora.com>
+---
+ drivers/gpu/drm/panfrost/panfrost_device.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/gpu/drm/panfrost/panfrost_device.c b/drivers/gpu/drm/panfrost/panfrost_device.c
+index 82654b041992..d5352e84ff17 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_device.c
++++ b/drivers/gpu/drm/panfrost/panfrost_device.c
+@@ -511,11 +511,9 @@ static int panfrost_device_resume(struct device *dev)
+ 		if (ret)
+ 			goto err_clk;
+ 
+-		if (pfdev->bus_clock) {
+-			ret = clk_enable(pfdev->bus_clock);
+-			if (ret)
+-				goto err_bus_clk;
+-		}
++		ret = clk_enable(pfdev->bus_clock);
++		if (ret)
++			goto err_bus_clk;
+ 	}
+ 
+ 	ret = pm_runtime_force_resume(dev);
+@@ -525,7 +523,7 @@ static int panfrost_device_resume(struct device *dev)
+ 	return 0;
+ 
+ err_resume:
+-	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS) && pfdev->bus_clock)
++	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS))
+ 		clk_disable(pfdev->bus_clock);
+ err_bus_clk:
+ 	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS))
+@@ -546,9 +544,7 @@ static int panfrost_device_suspend(struct device *dev)
+ 		return ret;
+ 
+ 	if (pfdev->comp->pm_features & BIT(GPU_PM_CLK_DIS)) {
+-		if (pfdev->bus_clock)
+-			clk_disable(pfdev->bus_clock);
+-
++		clk_disable(pfdev->bus_clock);
+ 		clk_disable(pfdev->clock);
+ 	}
+ 
+-- 
+2.43.0
+

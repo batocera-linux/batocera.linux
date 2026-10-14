@@ -1,0 +1,31 @@
+From 08d0219ec3e20737420cdb17f9043ea278273b4e Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Fri, 14 Aug 2026 10:09:44 -0400
+Subject: [PATCH 12/43] FROMGIT: serial: meson: Add s4 support
+
+No new features, just a different compatible.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Series-to: Neil Armstrong <neil.armstrong@linaro.org>
+Series-cc: Tom Rini <trini@konsulko.com>
+Series-cc: u-boot-amlogic@groups.io
+Series-to: u-boot@lists.u-boot-project.org
+---
+ drivers/serial/serial_meson.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/serial/serial_meson.c b/drivers/serial/serial_meson.c
+index cc71381f87e..336ca552ead 100644
+--- a/drivers/serial/serial_meson.c
++++ b/drivers/serial/serial_meson.c
+@@ -244,6 +244,7 @@ static const struct udevice_id meson_serial_ids[] = {
+ 	{ .compatible = "amlogic,meson-uart" },
+ 	{ .compatible = "amlogic,meson-gx-uart" },
+ 	{ .compatible = "amlogic,meson-a1-uart" },
++	{ .compatible = "amlogic,meson-s4-uart" },
+ 	{ }
+ };
+ 
+-- 
+2.43.0
+

@@ -1,0 +1,33 @@
+From d80159169078f7b8a3c04bc46b39b420b55ad586 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:55:18 +0000
+Subject: [PATCH 27/43] WIP: ARM: meson: include the types that mem.h uses
+
+mem.h declares meson_board_add_reserved_memory() with u64 arguments
+but does not include linux/types.h, so it only builds when an earlier
+header has already pulled the types in.
+
+Include linux/types.h.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ arch/arm/include/asm/arch-meson/mem.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-meson/mem.h b/arch/arm/include/asm/arch-meson/mem.h
+index a65100aeb74..463d965ce68 100644
+--- a/arch/arm/include/asm/arch-meson/mem.h
++++ b/arch/arm/include/asm/arch-meson/mem.h
+@@ -7,6 +7,8 @@
+ #ifndef __MESON_MEM_H__
+ #define __MESON_MEM_H__
+ 
++#include <linux/types.h>
++
+ /* Configure the reserved memory zones exported by the secure registers
+  * into EFI and DTB reserved memory entries.
+  */
+-- 
+2.43.0
+

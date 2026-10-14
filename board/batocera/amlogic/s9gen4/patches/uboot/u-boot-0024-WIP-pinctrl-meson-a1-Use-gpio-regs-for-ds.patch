@@ -1,0 +1,55 @@
+From 45dbd8c7dec1afcf8795c0c1af192fefac293c3b Mon Sep 17 00:00:00 2001
+From: Sean Anderson <sanderson@brivo.com>
+Date: Thu, 13 Aug 2026 17:13:45 -0400
+Subject: [PATCH 24/43] WIP: pinctrl: meson: a1: Use gpio regs for ds
+
+On newer SoCs, the drivestrength registers are included with the rest of
+the GPIO registers. Linux has a rather complex system that uses a helper
+function to fix up the registers for each SoC before registering the
+pinctrl. Instead of that, just fix things up in probe.
+
+This silences warnings like
+
+meson-s4-pinctrl pinctrl@4000: drive-strength-microamp not supported
+
+which I encountered on s4 and which I assume affects a1 as well.
+
+Signed-off-by: Sean Anderson <sanderson@brivo.com>
+Reviewed-by: Neil Armstrong <neil.armstrong@linaro.org>
+Commit-changes: 2
+- Add comment to probe on why we're overriding reg_ds
+---
+ drivers/pinctrl/meson/pinctrl-meson-a1.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/pinctrl/meson/pinctrl-meson-a1.c b/drivers/pinctrl/meson/pinctrl-meson-a1.c
+index 7e9ac6390b1..f736e9017c0 100644
+--- a/drivers/pinctrl/meson/pinctrl-meson-a1.c
++++ b/drivers/pinctrl/meson/pinctrl-meson-a1.c
+@@ -856,11 +856,22 @@ static const struct udevice_id meson_a1_pinctrl_match[] = {
+ 	{ },
+ };
+ 
++static int meson_a1_pinctrl_probe(struct udevice *dev)
++{
++	struct meson_pinctrl *priv = dev_get_priv(dev);
++	int ret = meson_pinctrl_probe(dev);
++
++	/* Drive-strength registers are combined with GPIO registers */
++	if (!ret)
++		priv->reg_ds = priv->reg_gpio;
++	return ret;
++}
++
+ U_BOOT_DRIVER(meson_a1_pinctrl) = {
+ 	.name	= "meson-a1-pinctrl",
+ 	.id	= UCLASS_PINCTRL,
+ 	.of_match = of_match_ptr(meson_a1_pinctrl_match),
+-	.probe = meson_pinctrl_probe,
++	.probe = meson_a1_pinctrl_probe,
+ 	.priv_auto = sizeof(struct meson_pinctrl),
+ 	.ops = &meson_axg_pinctrl_ops,
+ };
+-- 
+2.43.0
+

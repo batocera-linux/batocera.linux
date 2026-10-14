@@ -1,0 +1,36 @@
+From 452ee288fb2fee9d1e25e1c99211079d0c67d807 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 2 Oct 2026 20:34:43 +0000
+Subject: [PATCH 128/210] TESTING: media: amlogic: amvdec: allow 4K HEVC on
+ GXBB
+
+GXBB caps HEVC at 1920x1088. Raise it to the GXL limit of 4096x2304 so
+4K decoding can be tested.
+
+On WP2 (GXBB) 4K HEVC Main decodes bit-exact with software at 33 fps,
+and Main 10 decodes at 50 fps.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ drivers/media/platform/amlogic/amvdec/amvdec_platform.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+index aac1273820ec..aee1293ac529 100644
+--- a/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
++++ b/drivers/media/platform/amlogic/amvdec/amvdec_platform.c
+@@ -48,8 +48,8 @@ static const struct amvdec_format amvdec_formats_gxbb[] = {
+ 			    BIT(V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN_10),
+ 		.min_buffers = 16,
+ 		.max_buffers = 24,
+-		.max_width = 1920,
+-		.max_height = 1088,
++		.max_width = 4096,
++		.max_height = 2304,
+ 		.max_bit_depth = 10,
+ 		.vdec_ops = &meson_amvdec_hevc_ops,
+ 		.codec_ops = &meson_amvdec_codec_hevc_ops,
+-- 
+2.43.0
+

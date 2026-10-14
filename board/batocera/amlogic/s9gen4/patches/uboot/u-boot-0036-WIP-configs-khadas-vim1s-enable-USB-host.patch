@@ -1,0 +1,55 @@
+From 4526871e37a2af7062a9aaf7e68c396d66c9a401 Mon Sep 17 00:00:00 2001
+From: Christian Hewitt <christianshewitt@gmail.com>
+Date: Fri, 9 Oct 2026 09:52:11 +0000
+Subject: [PATCH 36/43] WIP: configs: khadas-vim1s: enable USB host
+
+Enable the USB host stack with storage and keyboard support, the S4
+USB2 PHY and DWC3 glue drivers, and the secure power domains the USB
+controller needs.
+
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+---
+ configs/khadas-vim1s_defconfig | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/configs/khadas-vim1s_defconfig b/configs/khadas-vim1s_defconfig
+index af9d14644e0..55ccf5c7ac9 100644
+--- a/configs/khadas-vim1s_defconfig
++++ b/configs/khadas-vim1s_defconfig
+@@ -29,6 +29,7 @@ CONFIG_CMD_PWM=y
+ CONFIG_CMD_GPT=y
+ CONFIG_CMD_I2C=y
+ CONFIG_CMD_MMC=y
++CONFIG_CMD_USB=y
+ CONFIG_CMD_WDT=y
+ CONFIG_CMD_RTC=y
+ CONFIG_OF_CONTROL=y
+@@ -49,8 +50,11 @@ CONFIG_DM_ETH_PHY=y
+ CONFIG_ETH_DESIGNWARE_MESON8B=y
+ CONFIG_MDIO_MUX_MESON_G12A=y
+ CONFIG_PHY_MESON_GXL=y
++CONFIG_MESON_G12A_USB_PHY=y
+ CONFIG_PINCTRL=y
+ CONFIG_PINCTRL_MESON_S4=y
++CONFIG_POWER_DOMAIN=y
++CONFIG_MESON_SECURE_POWER_DOMAIN=y
+ CONFIG_DM_REGULATOR=y
+ CONFIG_REGULATOR_PWM=y
+ CONFIG_DM_REGULATOR_FIXED=y
+@@ -61,6 +65,12 @@ CONFIG_DM_RTC=y
+ CONFIG_RTC_PCF8563=y
+ CONFIG_BAUDRATE=888888
+ CONFIG_MESON_SERIAL=y
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_XHCI_GENERIC=y
++CONFIG_USB_DWC3=y
++CONFIG_USB_DWC3_MESON_G12A=y
++CONFIG_USB_KEYBOARD=y
+ CONFIG_WDT=y
+ CONFIG_WDT_MESON_GXBB=y
+ # CONFIG_TOOLS_MKEFICAPSULE is not set
+-- 
+2.43.0
+
