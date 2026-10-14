@@ -1,0 +1,30 @@
+config BR2_PACKAGE_OPENABL
+	bool "openabl"
+	depends on BR2_aarch64
+	select BR2_PACKAGE_PV
+	help
+	  Qualcomm's Android Bootloader (ABL) with a graphical boot menu
+	  and standard Linux boot, built for the board's chipset.
+	  Installs the signed ABL image and updateabl to flash it.
+
+	  https://github.com/OpenHandheldCollective/OpenABL
+
+if BR2_PACKAGE_OPENABL
+
+config BR2_PACKAGE_OPENABL_STANDARD_BOOT
+	bool "standard boot"
+	default y
+	help
+	  UEFI boot manager, Boot Loader Specification entries, unified
+	  kernel images, extlinux.conf and the card boot logo. Without
+	  it Linux boots only from Android boot images.
+
+config BR2_PACKAGE_OPENABL_ZH_HANS
+	bool "Simplified Chinese menu"
+
+config BR2_PACKAGE_OPENABL_DEBUG
+	bool "debug build"
+	help
+	  Adds a Debug section to the boot menu.
+
+endif
