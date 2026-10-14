@@ -29,7 +29,7 @@ class MAME(MAMEControllers, MAMECommand, MAMEBase):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         if self.config.core != 'same_cdi':
             # Lightgun mode
-            core_options.set('mame_lightgun_mode', 'lightgun')
+            core_options.set('mame_lightgun_mode', 'lightgun' if self.config.use_guns and self.guns else 'disabled')
 
             # Enable cheats
             core_options.set('mame_cheats_enable', 'enabled')
