@@ -7,23 +7,22 @@ from typing import TYPE_CHECKING, Any, Final
 import toml
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import BIOS, SCREENSHOTS
+from batocera_common.paths import SCREENSHOTS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Emulator, HotkeysContext
+from batocera_launch import Command, Controller, Emulator, Gun, HotkeysContext
 
 from .bindings import DEPRECATED, ControlsBuilder
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from batocera_launch import Controller
-    from batocera_launch.devices.gun import Gun
-
 _logger: Final = logging.getLogger(__name__)
 
 _XEMU_BIN: Final = Path('/usr/bin/xemu-chihiro')
 _CROSSHAIRS: Final = Path('/usr/share/xemu-chihiro/crosshairs')
-_BIOS_DIR: Final = BIOS / 'chihiro'
+
+# xemu-chihiro names a save after the parent game, so its revisions share it
+_CHIHIRO_SAVE_NAMES: Final = {'ghostsqo': 'ghostsqu', 'vcop3a': 'vcop3'}
 
 # SDL scancode, with Shift, Ctrl and Alt in bits 16-18; kept in step with the hotkeygen keys below
 _HOTKEYS: Final = {
@@ -80,6 +79,17 @@ class XemuChihiro(Emulator):
 
     def get_sdl_game_controller_config(self) -> str:
         return '\n'.join(pad.generate_sdl_game_db_line() for pad in self.controllers if pad is not self.wheel)
+
+    def precalibrate_guns(self) -> None:
+        if self.system != 'chihiro':
+            return
+
+        src = self.gun_precalibration_dir / 'saves' / f'{self.rom.stem}.sav'
+        dest = self.saves_dir / 'saves' / f'{_CHIHIRO_SAVE_NAMES.get(self.rom.stem, self.rom.stem)}.sav'
+
+        if src.exists() and not dest.exists():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            src.copy(dest)
 
     async def configure(self) -> Command:
         config_file = self.config_dir / 'xemu.toml'
@@ -149,10 +159,10 @@ class XemuChihiro(Emulator):
     def _configure_chihiro(self, config: dict[str, Any], /) -> None:
         # the media board flash and the EEPROMs are found next to the BIOS
         roms = _section(config, 'chihiro.roms')
-        roms['bios_path'] = str(_BIOS_DIR / 'chihiro_xbox_bios.bin')
+        roms['bios_path'] = str(self.bios_dir / 'chihiro_xbox_bios.bin')
         for key in ('mediaboard_path', 'ic10_path', 'ic11_path', 'pc20_path'):
             roms[key] = ''
-        net_firmware = _BIOS_DIR / 'ver1305.bin'
+        net_firmware = self.bios_dir / 'ver1305.bin'
         roms['net_firmware_path'] = str(net_firmware) if net_firmware.is_file() else ''
 
         settings = _section(config, 'chihiro.settings')

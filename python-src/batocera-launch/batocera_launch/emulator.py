@@ -23,14 +23,14 @@ from .config.metadata import get_games_meta_data
 from .cpu import resolve_cpu_cluster
 from .devices.controller import Controller, generate_sdl_game_controller_config
 from .devices.evmapy import EvmapyManager
-from .devices.gun import Gun, guns_need_crosses
+from .devices.gun import Gun, GunList, guns_need_crosses
 from .devices.hotkeygen import HotkeygenManager, reset_mouse as _hotkeygen_reset_mouse
 from .devices.mouse import prepare_mouse
 from .devices.video import get_screens, list_outputs, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
-from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, SYSTEM_DECORATIONS, USER_DECORATIONS
+from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, PRECALIBRATION_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .plugin_manager import HookContext, PluginManager
 from .rom import Rom, ShortGameID
 
@@ -111,10 +111,11 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             # point to create it
             self.saves_dir.mkdir(parents=True, exist_ok=True)
 
-            controllers, self.guns, self.metadata = await group_tasks(
+            controllers, self.guns, self.metadata, _ = await group_tasks(
                 asyncio.to_thread(Controller.load_for_players, self.config.cli_args.players),
-                asyncio.to_thread(Gun.get_and_precalibrate_all, self.config, self.rom),
+                asyncio.to_thread(self.get_all_guns),
                 asyncio.to_thread(self.get_games_metadata, ES_GAMES_METADATA),
+                asyncio.to_thread(self.prepare_gun_precalibration),
             )
 
             ((self.controllers, self.wheels), self.resolution) = await self.__stack.enter_async_context(
@@ -216,6 +217,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     @cached_property
     def saves_dir(self) -> Path:
         return SAVES / self.system
+
+    @cached_property
+    def gun_precalibration_dir(self) -> Path:
+        return PRECALIBRATION_DIR / self.system
 
     @property
     def target_video_mode(self) -> str:
@@ -381,8 +386,26 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         if self.__client_session is not None:
             await self.__client_session.close()
 
+    def get_all_guns(self) -> GunList:
+        if not self.config.use_guns:
+            _logger.info('guns disabled.')
+            return []
+
+        return Gun.get_all()
+
     def get_games_metadata(self, metadata_file: Path) -> dict[str, str]:
         return get_games_meta_data(metadata_file, self.system, self.rom_short_id)
+
+    def prepare_gun_precalibration(self) -> None:
+        if not self.config.use_guns:
+            _logger.info('guns disabled')
+            return
+
+        if self.gun_precalibration_dir.is_dir():
+            self.precalibrate_guns()
+
+    def precalibrate_guns(self) -> None:
+        return None
 
     async def prepare_bezel(self) -> Path | None:
         if self.handles_bezels:

@@ -149,6 +149,27 @@ class Sm2Emu(Emulator):
     def screenshot_dir(self) -> Path:
         return SCREENSHOTS / self.name
 
+    @cached_property
+    def gun_precalibration_dir(self) -> Path:
+        return super().gun_precalibration_dir / self.name
+
+    def precalibrate_guns(self) -> None:
+        if self.system != 'model2':
+            return
+
+        # sm2-emu names a save after the set it finds in the archive, not after the file
+        for src in self.gun_precalibration_dir.iterdir():
+            dest = self.nvram_dir / src.name
+            default = _NVRAM_SRC / src.name
+
+            # also replace a default save that was never changed
+            if dest.exists() and default.exists() and dest.read_bytes() == default.read_bytes():
+                dest.unlink()
+
+            if src.exists() and not dest.exists():
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                src.copy(dest)
+
     async def configure(self) -> Command:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.nvram_dir.mkdir(parents=True, exist_ok=True)

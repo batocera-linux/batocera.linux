@@ -5,8 +5,7 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from batocera_launch import Controller
-    from batocera_launch.devices.gun import Gun
+    from batocera_launch import Controller, Gun
 
 # xemu-chihiro's JVS binding namespaces (ui/xemu-input.h)
 _MOUSE_BUTTON: Final = 1001

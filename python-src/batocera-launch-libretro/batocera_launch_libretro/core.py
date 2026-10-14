@@ -142,6 +142,9 @@ class Core:
     def rom_argument(self) -> str | Path | None:
         return self.rom
 
+    def precalibrate_guns(self) -> None:
+        return
+
     def force_gfx_backend(self, default_gfx_backend: str, /) -> str | None:
         return None
 

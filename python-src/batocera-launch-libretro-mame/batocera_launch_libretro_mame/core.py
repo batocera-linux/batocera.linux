@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
+from batocera_launch_mame_common import precalibrate_mame_guns
 
 from .base import MAMEBase
 from .command import MAMECommand
@@ -19,6 +20,12 @@ class MAME(MAMEControllers, MAMECommand, MAMEBase):
     @cached_property
     def rom_argument(self) -> str | Path | None:
         return self.cmd_filename
+
+    def precalibrate_guns(self) -> None:
+        if self.system != 'mame' or self.emulator.core != 'mame':
+            return
+
+        precalibrate_mame_guns(self.rom, self.emulator.gun_precalibration_dir, self.saves_dir / 'mame')
 
     def generate_special_configs(self) -> None:
         super().generate_special_configs()

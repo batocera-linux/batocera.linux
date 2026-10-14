@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from batocera_common.dataclasses import cached_dataclass
+from batocera_launch import precalibrate_reicast_guns
 from batocera_launch_libretro import DisableAnalogModeMixin, RACore
 
 if TYPE_CHECKING:
@@ -12,6 +13,11 @@ if TYPE_CHECKING:
 @cached_dataclass
 class FlycastVL(DisableAnalogModeMixin, RACore):
     gun_mapping: ClassVar = {'default': {'device': 4, 'p1': 0, 'p2': 1, 'p3': 2, 'p4': 3}}
+
+    def precalibrate_guns(self) -> None:
+        precalibrate_reicast_guns(
+            self.system, self.rom, self.emulator.gun_precalibration_dir, self.emulator.saves_dir / 'reicast'
+        )
 
 
 @cached_dataclass
