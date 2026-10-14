@@ -1,16 +1,27 @@
---- a/src/debug/debugcpu.c	2022-01-19 14:20:08.000000000 +0100
-+++ b/src/debug/debugcpu.c	2023-09-21 00:30:51.261822857 +0200
-@@ -248,7 +248,7 @@
+--- a/src/debug/debugcpu.c
++++ b/src/debug/debugcpu.c
+@@ -315,7 +315,7 @@
  	{
- 		if (r1 >= '0' && r1 <= '7')
+ 		if (r1 >= 0 && r1 <= 7)
  		{
--			*addr = &(Regs[REG_A0 + r1 - '0']);
-+			*addr = &(Regs[_REG_A0 + r1 - '0']);
+-			*addr = &(regs.regs[REG_A0 + r1]);
++			*addr = &(regs.regs[_REG_A0 + r1]);
  			return 32;
  		}
  		fprintf(stderr,"\tBad address register, valid values are 0-7\n");
---- a/src/includes/m68000.h	2022-01-19 14:20:08.000000000 +0100
-+++ b/src/includes/m68000.h	2023-09-21 00:30:32.077429878 +0200
+--- a/src/gemdos.c
++++ b/src/gemdos.c
+@@ -4583,7 +4583,7 @@
+ 
+ 	if (errcode)
+ 	{
+-		Regs[REG_A0] = Regs[REG_D0];
++		Regs[_REG_A0] = Regs[REG_D0];
+ 		Regs[REG_D0] = errcode;
+ 		sr &= ~SR_ZERO;
+ 	} else if (mode == 0)
+--- a/src/includes/m68000.h
++++ b/src/includes/m68000.h
 @@ -37,7 +37,7 @@
    REG_D5,
    REG_D6,
