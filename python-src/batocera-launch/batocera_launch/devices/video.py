@@ -45,7 +45,7 @@ async def get_refresh_rate() -> str:  # noqa: RET503
 
 
 async def min_to_max_resolution() -> None:
-    await run('batocera-resolution', 'minToMaxResolution', shell=True)
+    await run('batocera-resolution', 'minTomaxResolution', shell=True)
 
 
 async def change_mode(video_mode: str) -> None:
