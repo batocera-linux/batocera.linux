@@ -88,6 +88,8 @@
 - Wine GE-Proton runner and D7VK (Direct3D 7 over Vulkan)
 - Xemu Chihiro fork for the Sega Chihiro, with light guns, wheels with force feedback, card readers and linked cabinets
 - Xenia-Edge for x86_64 and select aarch64 devices
+- Insert Coin Cube suport
+- Arcade2TV-XR, Tankstick MAX support
 ### Fixed
 - AMD TDP setting lost after resume from sleep, and the TDP option showing on Ryzen systems that do not support it
 - Bauh not starting with Python 3.14
