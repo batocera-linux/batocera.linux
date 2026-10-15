@@ -54,12 +54,19 @@ def _wheel_axes(pad: Controller, /) -> dict[str, str]:
 
     relaxed = pad.get_mapping_axis_relaxed_values()
 
+    # pedals on one axis each use half of it, pressed the way es saw it pressed
+    shared = accel is not None and brake is not None and accel[1] == brake[1]
+
     def axis_id(found: tuple[str, int] | None) -> str:
         return str(found[1]) if found is not None else '-1'
 
     # sm2-emu inverts a pedal that rests at the positive end, which is es's 'reversed'
     def inverted(found: tuple[str, int] | None) -> str:
-        return _ini_bool(found is not None and (axis := relaxed.get(found[0])) is not None and axis['reversed'])
+        if found is None:
+            return _ini_bool(False)
+        if shared:
+            return _ini_bool(int(pad.inputs[found[0]].value) < 0)
+        return _ini_bool((axis := relaxed.get(found[0])) is not None and axis['reversed'])
 
     return {
         'wheel_steer_axis': axis_id(steer),
@@ -67,6 +74,8 @@ def _wheel_axes(pad: Controller, /) -> dict[str, str]:
         'wheel_brake_axis': axis_id(brake),
         'wheel_accel_invert': inverted(accel),
         'wheel_brake_invert': inverted(brake),
+        'wheel_accel_half': _ini_bool(shared),
+        'wheel_brake_half': _ini_bool(shared),
     }
 
 
@@ -223,15 +232,18 @@ class Sm2Emu(Emulator):
             'lightgun_recoil_strength': self.config.get_str('sm2_lightgun_recoil_strength', '60'),
             **{f'gun{gun}_button_{role}': str(code) for gun in (1, 2) for role, code in _GUN_BUTTONS.items()},
             'wheel_ffb': _ini_bool(self.config.get_bool('sm2_wheel_ffb', True)),
-            'wheel_ffb_strength': self.config.get_str('sm2_wheel_ffb_strength', '50'),
+            'wheel_ffb_strength': str(round(self.config.get_float('sm2_wheel_ffb_strength', 50))),
             'wheel_ffb_invert': _ini_bool(self.config.get_bool('sm2_wheel_ffb_invert', False)),
             'wheel_rumble': _ini_bool(self.config.get_bool('sm2_wheel_rumble', True)),
             'wheel_rumble_strength': self.config.get_str('sm2_wheel_rumble_strength', '40'),
             'wheel_rumble_engine': _ini_bool(self.config.get_bool('sm2_wheel_rumble_engine', True)),
             'wheel_steer_deadzone': str(round(self.config.get_float('sm2_wheel_deadzone', 0))),
+            'wheel_shift_neutral_ms': self.config.get_str('sm2_shift_neutral', '0'),
+            'wheel_indy_deadband': str(round(self.config.get_float('sm2_wheel_indy_deadband', 0))),
+            'wheel_indy_full_power': str(round(self.config.get_float('sm2_wheel_indy_full_power', 63))),
             **wheel_managed,
             'pad_rumble': _ini_bool(self.config.get_bool('sm2_pad_rumble', True)),
-            'pad_rumble_strength': self.config.get_str('sm2_pad_rumble_strength', '60'),
+            'pad_rumble_strength': str(round(self.config.get_float('sm2_pad_rumble_strength', 50))),
             'pad_rumble_cornering': _ini_bool(self.config.get_bool('sm2_pad_rumble_cornering', True)),
             'pad_stick_deadzone': str(round(self.config.get_float('sm2_pad_stick_deadzone', 5))),
             'pad_stick_sensitivity': str(round(self.config.get_float('sm2_pad_stick_sensitivity', 100))),
@@ -243,6 +255,7 @@ class Sm2Emu(Emulator):
             'render_scale': self.config.get_str('sm2_render_scale', '1'),
             'scaling_method': self.config.get_str('sm2_scaling_method', 'sharp'),
             'aspect_mode': self.config.get_str('sm2_aspect_mode', '4:3'),
+            'extended_draw_distance': _ini_bool(self.config.get_bool('sm2_draw_distance', True)),
             'texture_filter': self.config.get_str('sm2_texture_filter', 'faithful'),
             'anisotropy': self.config.get_str('sm2_anisotropy', '4'),
             'upscale_2d': self.config.get_str('sm2_upscale_2d', 'faithful'),
