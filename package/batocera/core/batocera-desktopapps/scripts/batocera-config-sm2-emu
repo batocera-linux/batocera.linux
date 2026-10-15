@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export SDL_VIDEODRIVER=wayland
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-sm2-emu"
+else
+    export DISPLAY=$(getLocalXDisplay)
+fi
+
+mkdir -p /userdata/system/configs/sm2-emu /userdata/saves/model2/sm2-emu
+# the same pre-calibrated saves a game launch starts from, never over one
+for src in /usr/share/sm2-emu/nvram/*; do
+    [ -e "$src" ] || continue
+    dest="/userdata/saves/model2/sm2-emu/$(basename "$src")"
+    [ -e "$dest" ] || cp -a "$src" "$dest"
+done
+
+export SDL_JOYSTICK_HIDAPI=0
+export XDG_CONFIG_HOME=/userdata/system/configs
+
+/usr/bin/sm2-emu \
+    --config /userdata/system/configs/sm2-emu \
+    --rom-dir /userdata/roms/model2 \
+    --nvram /userdata/saves/model2/sm2-emu

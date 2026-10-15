@@ -50,9 +50,10 @@ custom_features:
   sm2_aspect_mode:
     group: GRAPHICS
     prompt: ASPECT RATIO
-    description: Which rectangle the frame is fit into.
+    description: Which rectangle the frame is fit into. 16:9 widens the 3D into the sides, experimental. OpenGL/Vulkan only.
     choices:
       4:3 (Default): '4:3'
+      16:9 Widescreen: '16:9'
       Square Pixel: square
       Stretch: stretch
   sm2_texture_filter:
@@ -86,6 +87,13 @@ custom_features:
     choices:
       Stipple (Default): stipple
       Blended: blended
+  sm2_draw_distance:
+    group: GRAPHICS
+    prompt: EXTENDED DRAW DISTANCE
+    description: Draw the scenery to the edge of the course instead of the arcade's short range. Daytona USA only.
+    choices:
+      Off: 0
+      On (Default): 1
   sm2_vsync:
     group: GRAPHICS
     prompt: VSYNC
@@ -131,10 +139,9 @@ custom_features:
   sm2_wheel_ffb_strength:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK STRENGTH
-    choices:
-      Light: 30
-      Medium (Default): 50
-      Strong: 70
+    description: Strength of the game's forces, in percent of the wheel's maximum. Auto is 50%.
+    preset: sliderauto
+    preset_parameters: 0 100 5 %
   sm2_wheel_ffb_invert:
     group: WHEELS
     prompt: INVERT WHEEL FORCE FEEDBACK
@@ -163,6 +170,26 @@ custom_features:
     choices:
       Off: 0
       On (Default): 1
+  sm2_shift_neutral:
+    group: WHEELS
+    prompt: NEUTRAL BETWEEN GEARS
+    description: A paddle or RB/LB shift passes through neutral on the way to the next gear, as a real gearbox does.
+    choices:
+      Off (Default): 0
+      Short: 100
+      Long: 250
+  sm2_wheel_indy_deadband:
+    group: WHEELS
+    prompt: INDY BOARD FORCE DEADBAND
+    description: Indy 500, Touring Car, Over Rev and Super GT 24h. Drive board motor power, out of 63, below which the wheel feels no force. Raise it if small forces buzz.
+    preset: sliderauto
+    preset_parameters: 0 63 1
+  sm2_wheel_indy_full_power:
+    group: WHEELS
+    prompt: INDY BOARD FORCE FULL POWER
+    description: Indy 500, Touring Car, Over Rev and Super GT 24h. Drive board motor power, out of 63, that gives the wheel's full force. Lower it for stronger forces sooner.
+    preset: sliderauto
+    preset_parameters: 1 63 1
   sm2_wheel_deadzone:
     group: WHEELS
     prompt: WHEEL CENTRE DEADZONE
@@ -179,10 +206,9 @@ custom_features:
   sm2_pad_rumble_strength:
     group: GAMEPAD
     prompt: GAMEPAD RUMBLE STRENGTH
-    choices:
-      Light: 30
-      Medium (Default): 60
-      Strong: 90
+    description: Strength of the rumble, in percent of the pad's motors. Auto is 50%.
+    preset: sliderauto
+    preset_parameters: 0 100 5 %
   sm2_pad_rumble_cornering:
     group: GAMEPAD
     prompt: GAMEPAD STEERING VIBRATION
