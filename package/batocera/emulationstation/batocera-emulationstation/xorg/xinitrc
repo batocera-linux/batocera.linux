@@ -35,11 +35,11 @@ if [ -f "/var/tmp/nvidia.prime" ]; then
     if [ "$provider_count" -ge 2 ]; then
         echo "Setting Nvidia Prime environment variables" >> "$nvidia_log"
         # find the Nvidia provider number
-        provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2}' | tr -d ':')
+        provider_number=$(xrandr --listproviders | awk '/NVIDIA/ {print $2; exit}' | tr -d ':')
         if [ -z "$provider_number" ]; then
             echo "Multiple xrandr providers however none appear to be a NVIDIA driver device!" >> "$nvidia_log"
             echo "Check for Nouveau drivers..." >> "$nvidia_log"
-            provider_number=$(xrandr --listproviders | awk '/nouveau/ {print $2}' | tr -d ':')
+            provider_number=$(xrandr --listproviders | awk '/nouveau/ {print $2; exit}' | tr -d ':')
             if [ -z "$provider_number" ]; then
                 echo "Nouveau drivers not found either, using integrated graphics" >> "$nvidia_log"
             else

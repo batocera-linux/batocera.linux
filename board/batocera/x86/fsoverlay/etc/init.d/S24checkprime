@@ -63,7 +63,11 @@ case "$1" in
             echo "'nvidia-prime' manually set to false, skipping checks" >> "$nvidia_log"
         else
             gpu_name=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller" | head -n 1)
-            if [ -n "$gpu_name" ]; then
+            nvidia_count=$(lspci -nn | grep -iE "nvidia" | grep -iE "VGA|3D|Display controller" | wc -l)
+            # all-NVIDIA pairs are muxed rather than Optimus, so there is no iGPU to offload from
+            if [ -n "$gpu_name" ] && [ "$nvidia_count" -eq "$gpu_count" ] && [ "$nvidia_prime" != "true" ]; then
+                echo "All $gpu_count GPUs are NVIDIA, skipping prime (set nvidia-prime=true to force)" >> "$nvidia_log"
+            elif [ -n "$gpu_name" ]; then
                 formatted_info=$(echo "$gpu_name" | awk -F ' ' '{print $1}' | sed -e 's/:/_/g' -e 's/\./_/' -e 's/^/pci-0000_/')               
                 echo "$formatted_info" > "/var/tmp/nvidia.prime"
                 echo "Using $gpu_name as the primary GPU" >> "$nvidia_log"
