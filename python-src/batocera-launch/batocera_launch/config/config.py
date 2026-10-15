@@ -261,20 +261,18 @@ class SystemConfig(Config):
                 _logger.info("use_wheels manually set to '%s' to flagless game", data['use_wheels'])
 
         data.update(
-            *(
-                (key, value)
-                for key, value in (
-                    ('netplay.mode', args.netplaymode),
-                    ('netplay.password', args.netplaypass),
-                    ('netplay.server.ip', args.netplayip),
-                    ('netplay.server.port', args.netplayport),
-                    ('netplay.server.session', args.netplaysession),
-                    ('state_slot', args.state_slot),
-                    ('autosave', args.autosave),
-                    ('state_filename', args.state_filename),
-                )
-                if value is not None
+            (key, value)
+            for key, value in (
+                ('netplay.mode', args.netplaymode),
+                ('netplay.password', args.netplaypass),
+                ('netplay.server.ip', args.netplayip),
+                ('netplay.server.port', args.netplayport),
+                ('netplay.server.session', args.netplaysession),
+                ('state_slot', args.state_slot),
+                ('autosave', args.autosave),
+                ('state_filename', args.state_filename),
             )
+            if value is not None
         )
 
         return cls(
