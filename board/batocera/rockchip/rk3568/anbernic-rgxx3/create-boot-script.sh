@@ -21,6 +21,7 @@ cp "${BINARIES_DIR}/initrd.lz4"      "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"     || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf" "${BATOCERA_BINARIES_DIR}/boot/boot/extlinux/"           || exit 1
+cp "${BINARIES_DIR}/anbernic-rgxx3/u-boot-rockchip.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 # Device Trees
 cp "${BINARIES_DIR}/rk3566-anbernic-rg353p.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
