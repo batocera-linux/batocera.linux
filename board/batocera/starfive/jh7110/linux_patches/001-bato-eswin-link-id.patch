@@ -1,0 +1,25 @@
+ecrnx: pass link ids, not NULL, to stop_ap and add_key
+
+The cfg80211 MLO changes made link_id an int; newer GCC rejects NULL
+there as an int-conversion error.
+
+--- a/drivers/net/wireless/eswin/fullmac/ecrnx_main.c
++++ b/drivers/net/wireless/eswin/fullmac/ecrnx_main.c
+@@ -1347,7 +1347,7 @@
+     {
+         if((ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_AP) || (ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_P2P_GO))
+         {
+-            ecrnx_cfg80211_stop_ap(wiphy, dev, NULL);
++            ecrnx_cfg80211_stop_ap(wiphy, dev, 0);
+         }
+         else if((ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_STATION) || (ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_P2P_CLIENT))
+         {
+@@ -1712,7 +1712,7 @@
+         key_params.key_len = sme->key_len;
+         key_params.seq_len = 0;
+         key_params.cipher = sme->crypto.cipher_group;
+-        ecrnx_cfg80211_add_key(wiphy, dev, NULL, sme->key_idx, false, NULL, &key_params);
++        ecrnx_cfg80211_add_key(wiphy, dev, -1, sme->key_idx, false, NULL, &key_params);
+     }
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 17, 0)
+     else if ((sme->auth_type == NL80211_AUTHTYPE_SAE) &&

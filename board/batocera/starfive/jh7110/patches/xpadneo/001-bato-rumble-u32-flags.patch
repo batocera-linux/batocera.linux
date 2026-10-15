@@ -1,0 +1,15 @@
+xpadneo: make the rumble flags u32 for cmpxchg
+
+riscv on older kernels only supports 4 and 8 byte cmpxchg.
+
+--- a/hid-xpadneo/src/xpadneo/xpadneo.h
++++ b/hid-xpadneo/src/xpadneo/xpadneo.h
+@@ -191,7 +191,7 @@
+ 		spinlock_t lock;
+ 		struct work_struct worker;
+ 		struct work_struct init_worker;
+-		bool enabled, pending;
++		u32 enabled, pending;
+ 		struct xpadneo_rumble_data data;
+ 		struct xpadneo_rumble_data shadow;
+ 		void *output_report_dmabuf;
