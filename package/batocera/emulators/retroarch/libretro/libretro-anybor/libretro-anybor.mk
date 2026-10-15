@@ -19,6 +19,8 @@ ifeq ($(BR2_x86_64),y)
 LIBRETRO_ANYBOR_PLATFORM = linux-x86_64
 else ifeq ($(BR2_aarch64),y)
 LIBRETRO_ANYBOR_PLATFORM = linux-aarch64
+else ifeq ($(BR2_RISCV_64),y)
+LIBRETRO_ANYBOR_PLATFORM = linux-riscv64
 endif
 
 define LIBRETRO_ANYBOR_BUILD_CMDS
