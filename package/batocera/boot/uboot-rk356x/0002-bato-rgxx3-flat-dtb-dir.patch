@@ -1,0 +1,17 @@
+rgxx3: look for the dtbs at the top of the boot directory
+
+Batocera installs them flat under /boot, as older u-boot builds expected.
+Only the environment fdtfile drops the prefix, the SPL FIT config match
+still needs it.
+
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -549,7 +549,7 @@
+ 	env_set("board", rg3xx_model_details[gd->board_type].board);
+ 	env_set("board_name",
+ 		rg3xx_model_details[gd->board_type].board_name);
+-	env_set("fdtfile", rg3xx_model_details[gd->board_type].fdtfile);
++	env_set("fdtfile", rg3xx_model_details[gd->board_type].fdtfile + strlen(DTB_DIR));
+ 
+ 	/*
+ 	 * Skip panel detection if not needed. Warn but don't fail for
