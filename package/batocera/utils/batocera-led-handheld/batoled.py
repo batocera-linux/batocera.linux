@@ -1013,11 +1013,12 @@ class multiled(object):
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
-        prev = self.get_color()
+        r, g, b = batoconf_color()
+        base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range(0, EFFECT_STEP):
             if check_interrupt("pulse"):
                 break
-            o = getPulseRGB(i, EFFECT_STEP, prev)
+            o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
             
@@ -1456,16 +1457,26 @@ class rgbled(object):
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        self.rainbow_effect()
+        for i in range (0, EFFECT_STEP):
+            if check_interrupt("chroma"):
+                break
+            o = getRainbowRGB(float (i/EFFECT_STEP))
+            self.set_color(o)
+            time.sleep((EFFECT_DURATION * 5) / EFFECT_STEP)
+
+        current_mode = batoconf("led.mode")
+        if current_mode not in ["rainbow", "chroma", "pulse"]:
+            self.set_color("ESCOLOR")
 
     def pulse_effect(self):
-        prev = self.get_color()
+        r, g, b = batoconf_color()
+        base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range (0, EFFECT_STEP):
             if check_interrupt("pulse"):
                 break
-            o = getPulseRGB(i, EFFECT_STEP, prev)
+            o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
-            time.sleep(PULSE_DURATION/EFFECT_STEP)
+            time.sleep((PULSE_DURATION * 4) / EFFECT_STEP)
             
         current_mode = batoconf("led.mode")
         if current_mode not in ["rainbow", "chroma", "pulse"]:
@@ -1673,11 +1684,12 @@ class pwmled(object):
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
-        prev = self.get_color()
+        r, g, b = batoconf_color()
+        base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range (0, EFFECT_STEP):
             if check_interrupt("pulse"):
                 break
-            o = getPulseRGB(i, EFFECT_STEP, prev)
+            o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
             
@@ -1829,11 +1841,12 @@ class rg55g1led(object):
             self.set_color("ESCOLOR")
 
     def pulse_effect(self):
-        prev = self.get_color()
+        r, g, b = batoconf_color()
+        base_hex = f"{dec_to_hex(r)}{dec_to_hex(g)}{dec_to_hex(b)}"
         for i in range (0, EFFECT_STEP):
             if check_interrupt("pulse"):
                 break
-            o = getPulseRGB(i, EFFECT_STEP, prev)
+            o = getPulseRGB(i, EFFECT_STEP, base_hex)
             self.set_color(o)
             time.sleep(PULSE_DURATION/EFFECT_STEP)
 
