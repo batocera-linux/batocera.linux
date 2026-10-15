@@ -1,0 +1,16 @@
+ecrnx: pass a link id, not NULL, to stop_ap
+
+stop_ap takes an unsigned int link_id since the MLO cfg80211 changes;
+newer GCC rejects the NULL as an int-conversion error.
+
+--- a/drivers/net/wireless/eswin/fullmac/ecrnx_main.c
++++ b/drivers/net/wireless/eswin/fullmac/ecrnx_main.c
+@@ -1347,7 +1347,7 @@
+     {
+         if((ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_AP) || (ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_P2P_GO))
+         {
+-            ecrnx_cfg80211_stop_ap(wiphy, dev, NULL);
++            ecrnx_cfg80211_stop_ap(wiphy, dev, 0);
+         }
+         else if((ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_STATION) || (ECRNX_VIF_TYPE(vif) == NL80211_IFTYPE_P2P_CLIENT))
+         {
