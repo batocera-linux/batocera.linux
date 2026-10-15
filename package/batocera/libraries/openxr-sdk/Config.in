@@ -1,0 +1,7 @@
+config BR2_PACKAGE_OPENXR_SDK
+    bool "openxr-sdk"
+    select BR2_PACKAGE_XLIB_LIBX11
+    help
+      Khronos OpenXR loader.
+
+      https://github.com/KhronosGroup/OpenXR-SDK-Source

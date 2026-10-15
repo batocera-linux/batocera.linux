@@ -3,20 +3,20 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Oct 3, 2026
-VPINBALL_VERSION = 28fe41f8e74bb7a08de4a1b08623452152bef8a8
-VPINBALL_REVISION = 5997
+# Version: Commits on Oct 14, 2026
+VPINBALL_VERSION = 68afa2a9056131c7065959d7b0915b9cc38d09dc
+VPINBALL_REVISION = 6231
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
-VPINBALL_DEPENDENCIES = host-libcurl host-cmake libfreeimage libpinmame
+VPINBALL_DEPENDENCIES = host-libcurl host-cmake libfreeimage-vpinball libpinmame
 VPINBALL_DEPENDENCIES += libdmdutil libdof sdl3 sdl3_image sdl3_ttf
-VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs
+VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs openxr-sdk vulkan-headers
+VPINBALL_DEPENDENCIES += libspatialaudio zlib
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
 VPINBALL_EMULATOR_INFO = vpinball.emulator.yml
 
 VPINBALL_CONF_OPTS += -DCMAKE_BUILD_TYPE=Release
-VPINBALL_CONF_OPTS += -DENABLE_XR=OFF
 VPINBALL_CONF_OPTS += -DBUILD_SHARED_LIBS=OFF
 VPINBALL_CONF_OPTS += -DPOST_BUILD_COPY_EXT_LIBS=OFF
 
@@ -42,6 +42,8 @@ VPINBALL_CONF_OPTS += -DRENDERER=BGFX
 VPINBALL_CONF_OPTS += -DUSE_SYSTEM_LIBS=ON
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_INCLUDE_DIR=$(STAGING_DIR)/usr/include
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_LIB_DIR=$(STAGING_DIR)/usr/lib
+VPINBALL_CONF_OPTS += -DFREEIMAGE_INCLUDE_DIR=$(STAGING_DIR)/libfreeimage-vpinball/include
+VPINBALL_CONF_OPTS += -DFREEIMAGE_LIBRARY=$(STAGING_DIR)/libfreeimage-vpinball/lib/libfreeimage.a
 
 define VPINBALL_SET_GIT_VERSION
 	$(SED) 's/9999/$(VPINBALL_REVISION)/;s/unknown/$(shell echo $(VPINBALL_VERSION) | cut -c1-9)/' \
@@ -49,6 +51,24 @@ define VPINBALL_SET_GIT_VERSION
 endef
 
 VPINBALL_POST_EXTRACT_HOOKS += VPINBALL_SET_GIT_VERSION
+
+VPINBALL_MEMMAPS_VERSION = 68c1b3373ba74cd07f42fba9d56db63ea28212dc
+VPINBALL_GAMEDEFS_VERSION = 6eece7e53de9463bf783b9476ce3aeb98e2e7256
+VPINBALL_EXTRA_DOWNLOADS = \
+    https://github.com/tomlogic/pinball-memory-maps/archive/$(VPINBALL_MEMMAPS_VERSION).tar.gz \
+    https://github.com/vpinball/pinmame-game-defs/archive/$(VPINBALL_GAMEDEFS_VERSION).tar.gz
+
+define VPINBALL_EXTRACT_PINMAME_DATA
+	mkdir -p $(@D)/pinmame-data $(@D)/third-party/memmaps $(@D)/third-party/gamedefs
+	$(TAR) -xf $(VPINBALL_DL_DIR)/$(VPINBALL_MEMMAPS_VERSION).tar.gz -C $(@D)/pinmame-data
+	$(TAR) -xf $(VPINBALL_DL_DIR)/$(VPINBALL_GAMEDEFS_VERSION).tar.gz -C $(@D)/pinmame-data
+	cd $(@D)/pinmame-data/pinball-memory-maps-$(VPINBALL_MEMMAPS_VERSION) && \
+		cp -r index.json maps platforms $(@D)/third-party/memmaps/
+	cd $(@D)/pinmame-data/pinmame-game-defs-$(VPINBALL_GAMEDEFS_VERSION) && \
+		cp -r catalog machines controllers $(@D)/third-party/gamedefs/
+endef
+
+VPINBALL_POST_EXTRACT_HOOKS += VPINBALL_EXTRACT_PINMAME_DATA
 
 define VPINBALL_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/bin/vpinball
