@@ -1,0 +1,163 @@
+Report the AYANEO button, an F17 chord on the keyboard, as guide on the AYANEO pads
+
+diff --git a/xpad.c b/xpad.c
+index 150b06b..8f51356 100644
+--- a/xpad.c
++++ b/xpad.c
+@@ -828,6 +828,89 @@ struct usb_xpad {
+ 
+ static int xpad_init_input(struct usb_xpad *xpad);
+ static void xpad_deinit_input(struct usb_xpad *xpad);
++
++/* AYANEO pads leave guide out of their report, the button is an F17 chord on the keyboard */
++static DEFINE_SPINLOCK(xpad_kbd_guide_lock);
++static struct usb_xpad *xpad_kbd_guide_pad;
++
++static void xpad_kbd_guide_event(struct input_handle *handle, unsigned int type,
++				 unsigned int code, int value)
++{
++	unsigned long flags;
++
++	if (type != EV_KEY || code != KEY_F17 || value == 2)
++		return;
++
++	spin_lock_irqsave(&xpad_kbd_guide_lock, flags);
++	if (xpad_kbd_guide_pad) {
++		input_report_key(xpad_kbd_guide_pad->dev, BTN_MODE, value);
++		input_sync(xpad_kbd_guide_pad->dev);
++	}
++	spin_unlock_irqrestore(&xpad_kbd_guide_lock, flags);
++}
++
++static int xpad_kbd_guide_connect(struct input_handler *handler,
++				  struct input_dev *dev,
++				  const struct input_device_id *id)
++{
++	struct input_handle *handle;
++	int error;
++
++	handle = kzalloc(sizeof(*handle), GFP_KERNEL);
++	if (!handle)
++		return -ENOMEM;
++
++	handle->dev = dev;
++	handle->handler = handler;
++	handle->name = "xpad-noone";
++
++	error = input_register_handle(handle);
++	if (error)
++		goto err_free_handle;
++
++	error = input_open_device(handle);
++	if (error)
++		goto err_unregister_handle;
++
++	return 0;
++
++err_unregister_handle:
++	input_unregister_handle(handle);
++err_free_handle:
++	kfree(handle);
++	return error;
++}
++
++static void xpad_kbd_guide_disconnect(struct input_handle *handle)
++{
++	input_close_device(handle);
++	input_unregister_handle(handle);
++	kfree(handle);
++}
++
++static const struct input_device_id xpad_kbd_guide_ids[] = {
++	{
++		.flags = INPUT_DEVICE_ID_MATCH_BUS | INPUT_DEVICE_ID_MATCH_KEYBIT,
++		.bustype = BUS_I8042,
++		.keybit = { [BIT_WORD(KEY_F17)] = BIT_MASK(KEY_F17) },
++	},
++	{}
++};
++
++static struct input_handler xpad_kbd_guide_handler = {
++	.name = "xpad-noone",
++	.event = xpad_kbd_guide_event,
++	.connect = xpad_kbd_guide_connect,
++	.disconnect = xpad_kbd_guide_disconnect,
++	.id_table = xpad_kbd_guide_ids,
++};
++
++static bool xpad_is_kbd_guide_pad(struct usb_device *udev)
++{
++	return le16_to_cpu(udev->descriptor.idVendor) == 0x045e &&
++	       le16_to_cpu(udev->descriptor.idProduct) == 0x028e &&
++	       udev->manufacturer && !strcmp(udev->manufacturer, "ZhiXu");
++}
+ static void xpadone_ack_mode_report(struct usb_xpad *xpad, u8 seq_num);
+ static void xpad360w_poweroff_controller(struct usb_xpad *xpad);
+ 
+@@ -2396,6 +2479,9 @@ static int xpad_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	if (triggers_to_buttons)
+ 		xpad->mapping |= MAP_TRIGGERS_TO_BUTTONS;
+ 
++	if (xpad_is_kbd_guide_pad(udev))
++		xpad->mapping |= MAP_EXTERNAL_GUIDE;
++
+ 	if (xpad->xtype == XTYPE_XBOXONE &&
+ 	    intf->cur_altsetting->desc.bInterfaceNumber != GIP_WIRED_INTF_DATA) {
+ 		/*
+@@ -2494,6 +2580,13 @@ static int xpad_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 		error = xpad_init_input(xpad);
+ 		if (error)
+ 			goto err_deinit_output;
++
++		if (xpad_is_kbd_guide_pad(udev)) {
++			spin_lock_irq(&xpad_kbd_guide_lock);
++			if (!xpad_kbd_guide_pad)
++				xpad_kbd_guide_pad = xpad;
++			spin_unlock_irq(&xpad_kbd_guide_lock);
++		}
+ 	}
+ 
+ 	if (xpad->quirks & QUIRK_GHL_XBOXONE) {
+@@ -2530,6 +2623,11 @@ static void xpad_disconnect(struct usb_interface *intf)
+ 	if (xpad->xtype == XTYPE_XBOX360W)
+ 		xpad360w_stop_input(xpad);
+ 
++	spin_lock_irq(&xpad_kbd_guide_lock);
++	if (xpad_kbd_guide_pad == xpad)
++		xpad_kbd_guide_pad = NULL;
++	spin_unlock_irq(&xpad_kbd_guide_lock);
++
+ 	xpad_deinit_input(xpad);
+ 
+ 	/*
+@@ -2623,7 +2721,29 @@ static struct usb_driver xpad_driver = {
+ 	.id_table	= xpad_table,
+ };
+ 
+-module_usb_driver(xpad_driver);
++static int __init xpad_init(void)
++{
++	int error;
++
++	error = input_register_handler(&xpad_kbd_guide_handler);
++	if (error)
++		return error;
++
++	error = usb_register(&xpad_driver);
++	if (error)
++		input_unregister_handler(&xpad_kbd_guide_handler);
++
++	return error;
++}
++
++static void __exit xpad_exit(void)
++{
++	usb_deregister(&xpad_driver);
++	input_unregister_handler(&xpad_kbd_guide_handler);
++}
++
++module_init(xpad_init);
++module_exit(xpad_exit);
+ 
+ MODULE_AUTHOR("Marko Friedemann <mfr@bmx-chemnitz.de>");
+ MODULE_DESCRIPTION("Xbox pad driver");
