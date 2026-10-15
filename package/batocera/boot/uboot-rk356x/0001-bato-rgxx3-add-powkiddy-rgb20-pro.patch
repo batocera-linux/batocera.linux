@@ -1,0 +1,30 @@
+rgxx3: add the Powkiddy RGB20 Pro
+
+Board ID value from ROCKNIX u-boot-Generic 004-rgb20pro.patch.
+
+--- a/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
++++ b/board/anbernic/rgxx3_rk3566/rgxx3-rk3566.c
+@@ -56,6 +56,7 @@
+ 	RK2023,
+ 	RGARCD,
+ 	RGB10MAX3,
++	RGB20PRO,
+ 	/* Devices with duplicate ADC value */
+ 	RG353PS,
+ 	RG353VS,
+@@ -135,6 +136,15 @@
+ 		.detect_panel = 0,
+ 		.detect_regulator = 1,
+ 		.uart_con = 0,
++	},
++	[RGB20PRO] = {
++		.adc_value = 245, /* Observed average from device */
++		.board = "rk3566-powkiddy-rgb20-pro",
++		.board_name = "Powkiddy RGB20 Pro",
++		.fdtfile = DTB_DIR "rk3566-powkiddy-rgb20-pro.dtb",
++		.detect_panel = 0,
++		.detect_regulator = 1,
++		.uart_con = 0,
+ 	},
+ 	/* Devices with duplicate ADC value */
+ 	[RG353PS] = {
