@@ -6,7 +6,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 from abc import ABC, abstractmethod
-from contextlib import AbstractAsyncContextManager, AbstractContextManager, AsyncExitStack, chdir
+from contextlib import AbstractAsyncContextManager, AbstractContextManager, AsyncExitStack, asynccontextmanager, chdir
 from dataclasses import field
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Final, Self, cast
@@ -35,7 +35,7 @@ from .plugin_manager import HookContext, PluginManager
 from .rom import Rom, ShortGameID
 
 if TYPE_CHECKING:
-    from collections.abc import Container, Iterator, Mapping
+    from collections.abc import AsyncGenerator, Container, Iterator, Mapping
     from types import TracebackType
 
     import aiohttp
@@ -51,6 +51,32 @@ if TYPE_CHECKING:
     from .types import BezelFiles, HotkeysContext, Resolution, ScreenInfo
 
 _logger: Final = logging.getLogger(__name__)
+
+
+@asynccontextmanager
+async def _exit_together[T](
+    first: AbstractAsyncContextManager[T], second: AbstractAsyncContextManager[object], /
+) -> AsyncGenerator[T]:
+    # entered in order, but the exits are independent waits on other processes
+    result = await first.__aenter__()
+    try:
+        await second.__aenter__()
+    except BaseException:
+        await first.__aexit__(*sys.exc_info())
+        raise
+
+    exc_info: tuple[type[BaseException] | None, BaseException | None, TracebackType | None] = (None, None, None)
+    try:
+        yield result
+    except BaseException:
+        exc_info = sys.exc_info()
+        raise
+    finally:
+        for outcome in await asyncio.gather(
+            first.__aexit__(*exc_info), second.__aexit__(*exc_info), return_exceptions=True
+        ):
+            if isinstance(outcome, BaseException):
+                raise outcome
 
 
 @cached_dataclass
@@ -118,6 +144,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 asyncio.to_thread(self.prepare_gun_precalibration),
             )
 
+            outputs_task = asyncio.ensure_future(list_outputs(timeout=3))
+            self.__stack.callback(outputs_task.cancel)
+
             ((self.controllers, self.wheels), self.resolution) = await self.__stack.enter_async_context(
                 parallel(
                     configure_wheels(self.config, controllers, self.metadata),
@@ -125,7 +154,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 )
             )
 
-            outputs = await list_outputs(timeout=3)
+            outputs = await outputs_task
 
             if len(outputs) > 1:
                 _logger.debug(
@@ -793,10 +822,12 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
         async with (
             script_caller(('gameStart', 'gameStop'), self.system, self.name, self.core, self.rom),
-            EvmapyManager(self) as evmapy_manager,
-            HotkeygenManager(
-                self.bus, self.hotkeygen_context, self.config.get_bool('exithotkeyonly'), self.config.ui_mode
-            ),
+            _exit_together(
+                EvmapyManager(self),
+                HotkeygenManager(
+                    self.bus, self.hotkeygen_context, self.config.get_bool('exithotkeyonly'), self.config.ui_mode
+                ),
+            ) as evmapy_manager,
         ):
             with self.prepare_execution_path():
                 if self.needs_sdl_controller_db:
