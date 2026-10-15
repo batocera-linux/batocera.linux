@@ -1,0 +1,40 @@
+c11: use the glibc once_flag and call_once when stdlib.h has them
+
+glibc 2.41+ declares both in stdlib.h for C23 and _GNU_SOURCE builds.
+
+--- a/include/c11/threads_posix.h
++++ b/include/c11/threads_posix.h
+@@ -51,7 +51,9 @@
+ #include <pthread.h>
+ 
+ /*---------------------------- macros ----------------------------*/
++#ifndef __once_flag_defined
+ #define ONCE_FLAG_INIT PTHREAD_ONCE_INIT
++#endif
+ #ifdef INIT_ONCE_STATIC_INIT
+ #define TSS_DTOR_ITERATIONS PTHREAD_DESTRUCTOR_ITERATIONS
+ #else
+@@ -66,7 +68,9 @@
+ typedef pthread_t       thrd_t;
+ typedef pthread_key_t   tss_t;
+ typedef pthread_mutex_t mtx_t;
++#ifndef __once_flag_defined
+ typedef pthread_once_t  once_flag;
++#endif
+ 
+ 
+ /*
+@@ -90,11 +94,13 @@
+ 
+ /*--------------- 7.25.2 Initialization functions ---------------*/
+ // 7.25.2.1
++#ifndef __once_flag_defined
+ static inline void
+ call_once(once_flag *flag, void (*func)(void))
+ {
+     pthread_once(flag, func);
+ }
++#endif
+ 
+ 
+ /*------------- 7.25.3 Condition variable functions -------------*/
