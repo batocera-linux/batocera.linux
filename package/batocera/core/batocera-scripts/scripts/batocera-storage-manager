@@ -108,6 +108,13 @@ trap 'RET=$?; if [ $RET -ne 0 ]; then log_msg "EXIT: Failed (Code $RET)."; fi' E
 
 is_mounted() { grep -q " $1 " /proc/mounts; return $?; }
 
+ensure_fuse() {
+    [ -c /dev/fuse ] || modprobe -q fuse 2>/dev/null
+    [ -c /dev/fuse ] && return 0
+    log_msg "MERGERFS: /dev/fuse is missing and the fuse module could not be loaded."
+    return 1
+}
+
 # HTTP API Helper
 send_to_es_api() {
     local ENDPOINT=$1
@@ -602,6 +609,8 @@ case "$COMMAND" in
         exit 0
     fi
 
+    ensure_fuse || exit 1
+
     # Ensure destination exists
     if [ ! -d "$POOL_PATH" ]; then
         mkdir -p "$POOL_PATH"
@@ -780,6 +789,11 @@ case "$COMMAND" in
         fi
     fi
 
+    if ! ensure_fuse; then
+        send_notification "NOTIFY:Error: Merge Failed"
+        exit 1
+    fi
+
     send_notification "NOTIFY:Merging Drive..."
 
     BRANCH_PATH="$MOUNT_POINT/roms"
@@ -914,6 +928,7 @@ case "$COMMAND" in
 
         mkdir -p "$BASE_DIR"
         BRANCHES_CMD="$BASE_DIR:$CLEAN_CONFIG"       
+        ensure_fuse
         /usr/bin/mergerfs $MERGERFS_OPTS "$BRANCHES_CMD" "$POOL_PATH"
         
         if [ $? -eq 0 ]; then
