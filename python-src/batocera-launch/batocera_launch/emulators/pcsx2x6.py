@@ -50,7 +50,7 @@ def _gfx_ratio_from_config(config: SystemConfig) -> str:
     ratio = config.get('pcsx2x6_ratio')
     if ratio == '16:9':
         return '16:9'
-    if ratio == 'full':
+    if ratio == 'Stretch':
         return 'Stretch'
     return '4:3'
 
