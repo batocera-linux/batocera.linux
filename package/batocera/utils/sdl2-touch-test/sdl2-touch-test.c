@@ -595,6 +595,16 @@ void draw_thick_border(SDL_Renderer* renderer, SDL_Rect rect, int thickness, SDL
     }
 }
 
+// A display's centre stays put under any mirror or rotation, so the button
+// can be hit before the touchscreen is calibrated
+static SDL_Rect exit_button_rect(SDL_Rect b) {
+    return (SDL_Rect){ b.x + b.w / 2 - 80, b.y + b.h / 2 - 30, 160, 60 };
+}
+
+static bool in_rect(SDL_Rect r, int x, int y) {
+    return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+}
+
 // Display the help documentation in standard terminal outputs
 void print_help(void) {
     printf("Agnostic SDL Touch Diagnostic and Calibration Utility\n\n");
@@ -618,7 +628,7 @@ void print_help(void) {
     printf("    Tap 'RETRY' (Red) or press 'R' to clear calculations and restart.\n");
     printf("    Tap 'SAVE & NEXT / EXIT' (Green) or press 'ENTER' to accept and output rules.\n\n");
     printf("  Global Keys:\n");
-    printf("    Press 'ESC' anywhere to quit the application cleanly.\n\n");
+    printf("    Tap EXIT or press 'ESC' anywhere to quit the application cleanly.\n\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -771,6 +781,9 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
+            } else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.which != SDL_TOUCH_MOUSEID &&
+                       in_rect(exit_button_rect(displays[0]), event.button.x, event.button.y)) {
+                running = false;
             } else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
                     running = false;
@@ -830,6 +843,12 @@ int main(int argc, char* argv[]) {
 
                 double rx = event.tfinger.x;
                 double ry = event.tfinger.y;
+
+                if (event.type == SDL_FINGERDOWN &&
+                    in_rect(exit_button_rect(displays[0]), (int)(rx * total_w), (int)(ry * total_h))) {
+                    running = false;
+                    continue;
+                }
 
                 // Hit test checks inside Verification Mode to capture custom Red/Green button taps
                 bool ui_element_tapped = false;
@@ -1101,10 +1120,10 @@ int main(int argc, char* argv[]) {
                                  dev_name, hw_pts, active_counts[d]);
                         draw_label(renderer, font, hud_buf, displays[d].x + displays[d].w / 2, displays[d].y + 70, text_color, true);
 
-                        draw_wrapped_text(renderer, font, "MULTI-TOUCH DIAGNOSTIC MODE. Tap with multiple fingers to test hardware limit. Press ESC to exit.",
+                        draw_wrapped_text(renderer, font, "MULTI-TOUCH DIAGNOSTIC MODE. Tap with multiple fingers to test hardware limit. Tap EXIT or press ESC to exit.",
                                           displays[d].x + displays[d].w / 2, displays[d].y + 30, displays[d].w - 40, text_color);
                     } else {
-                        draw_wrapped_text(renderer, font, "CALIBRATION COMPLETE. Swiping test active (Yellow pointer maps calibrated, Gray crosses map raw). Press ESC to exit.",
+                        draw_wrapped_text(renderer, font, "CALIBRATION COMPLETE. Swiping test active (Yellow pointer maps calibrated, Gray crosses map raw). Tap EXIT or press ESC to exit.",
                                           displays[d].x + displays[d].w / 2, displays[d].y + 30, displays[d].w - 40, text_color);
                     }
                 } else {
@@ -1258,6 +1277,11 @@ int main(int argc, char* argv[]) {
                 draw_label(renderer, font, "Calibrated", last_cal_x, last_cal_y - 18, text_color, true);
             }
         }
+
+        SDL_Rect exit_btn = exit_button_rect(displays[0]);
+        SDL_SetRenderDrawColor(renderer, 200, 50, 50, 255);
+        SDL_RenderFillRect(renderer, &exit_btn);
+        draw_label(renderer, font, "EXIT", exit_btn.x + exit_btn.w / 2, exit_btn.y + exit_btn.h / 2, text_color, true);
 
         SDL_RenderPresent(renderer);
     }
