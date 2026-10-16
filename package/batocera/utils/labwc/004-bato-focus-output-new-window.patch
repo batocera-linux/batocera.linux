@@ -1,0 +1,19 @@
+FocusOutput in a window rule runs on first map, before the new view has a
+size, so it intersects no output and focus went to the window below it.
+Treat a view without outputs as on the output it was assigned to.
+
+diff --git a/src/desktop.c b/src/desktop.c
+index 57ef9e3..8d29b06 100644
+--- a/src/desktop.c
++++ b/src/desktop.c
+@@ -233,7 +233,9 @@ desktop_focus_output(struct output *output)
+ 	}
+ 	struct view *view;
+ 	for_each_view(view, &server.views, LAB_VIEW_CRITERIA_CURRENT_WORKSPACE) {
+-		if (view->outputs & output->id_bit) {
++		/* a view on its first map has no size yet, so no outputs either */
++		if ((view->outputs & output->id_bit)
++				|| (!view->outputs && view->output == output)) {
+ 			desktop_focus_view(view, /*raise*/ false);
+ 			wlr_cursor_warp(server.seat.cursor, NULL,
+ 				view->current.x + view->current.width / 2,
