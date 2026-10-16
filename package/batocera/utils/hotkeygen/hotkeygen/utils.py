@@ -120,24 +120,6 @@ async def reset_pointer_position(target_device: evdev.UInput, /) -> None:
         await asyncio.sleep(0.10)
 
 
-async def reset_mouse() -> None:
-    # Create temporary device
-    import evdev
-    from evdev import ecodes
-
-    sender = evdev.UInput(
-        name='batocera-mouse-reset',
-        events={ecodes.EV_REL: [ecodes.REL_X, ecodes.REL_Y], ecodes.EV_KEY: [ecodes.BTN_LEFT]},
-    )
-
-    try:
-        await asyncio.sleep(0.2)
-
-        await reset_pointer_position(sender)
-    finally:
-        sender.close()
-
-
 def get_common_context_keys() -> KeysDict:
     keys: KeysDict = {}
 

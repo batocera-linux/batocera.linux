@@ -69,16 +69,6 @@ class HotkeygenManager(AbstractAsyncContextManager['HotkeygenManager', None]):
         await self.dbus_client.set_default_context()
 
 
-async def reset_mouse() -> None:
-    try:
-        from hotkeygen.utils import reset_mouse as _reset_mouse
-
-        _logger.debug('Triggering mouse reset to primary display')
-        await _reset_mouse()
-    except Exception as e:
-        _logger.warning('Failed to reset mouse: %s', e)
-
-
 def get_hotkeygen_event() -> str | None:
     import evdev
 

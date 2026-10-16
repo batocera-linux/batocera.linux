@@ -24,9 +24,9 @@ from .cpu import resolve_cpu_cluster
 from .devices.controller import Controller, generate_sdl_game_controller_config
 from .devices.evmapy import EvmapyManager
 from .devices.gun import Gun, GunList, guns_need_crosses
-from .devices.hotkeygen import HotkeygenManager, reset_mouse as _hotkeygen_reset_mouse
+from .devices.hotkeygen import HotkeygenManager
 from .devices.mouse import prepare_mouse
-from .devices.video import get_screens, list_outputs, prepare_resolution
+from .devices.video import get_screens, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
@@ -144,28 +144,12 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 asyncio.to_thread(self.prepare_gun_precalibration),
             )
 
-            outputs_task = asyncio.ensure_future(list_outputs(timeout=3))
-            self.__stack.callback(outputs_task.cancel)
-
             ((self.controllers, self.wheels), self.resolution) = await self.__stack.enter_async_context(
                 parallel(
                     configure_wheels(self.config, controllers, self.metadata),
                     prepare_resolution(self.config.video_mode == 'default', self.target_video_mode),
                 )
             )
-
-            outputs = await outputs_task
-
-            if len(outputs) > 1:
-                _logger.debug(
-                    'Multiple displays detected (%s). Resetting mouse to primary display.', ', '.join(outputs)
-                )
-                await _hotkeygen_reset_mouse()
-            else:
-                _logger.debug(
-                    'Single display detected (%s). Skipping mouse reset to keep cursor hidden',
-                    ', '.join(outputs) if outputs else 'default',
-                )
 
             await self.__stack.enter_async_context(prepare_mouse(self.needs_mouse))
 
