@@ -1,5 +1,12 @@
 #!/bin/sh
 
 # script to be called from es to call batocera-launch + kodi
-sleep 5
+
+# suspend the sinks so pipewire frees the hardware for passthrough now, not after 5 s idle
+END=$(($(cut -d. -f1 /proc/uptime) + 5))
+while fuser -s /dev/snd/pcmC*p 2>/dev/null && [ "$(cut -d. -f1 /proc/uptime)" -lt "$END" ]; do
+    pactl list short sinks 2>/dev/null | cut -f2 | while read -r SINK; do pactl suspend-sink "$SINK" 1; done
+    sleep 0.1
+done
+
 batocera-launch -system kodi -rom '' "$@"
