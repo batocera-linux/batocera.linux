@@ -258,4 +258,8 @@ batocera-resolution setHdr
 # Start Labwc with specified environment variable, logging output
 echo "Starting Labwc with keyboard layout: $XKB_DEFAULT_LAYOUT" >> "$LOG_FILE"
 
-WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/labwc -d -C $LABWC_CONF_DIR > "$LABWC_LOG_FILE" 2>&1
+# debug logging writes several lines per frame, so only when asked for
+LABWC_LOG_LEVEL="-V"
+[ -n "$LABWC_DEBUG" ] && LABWC_LOG_LEVEL="-d"
+
+WLR_LIBINPUT_NO_DEVICES=1 /usr/bin/labwc $LABWC_LOG_LEVEL -C $LABWC_CONF_DIR > "$LABWC_LOG_FILE" 2>&1
