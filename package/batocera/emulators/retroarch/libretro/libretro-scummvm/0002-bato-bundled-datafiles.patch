@@ -1,0 +1,35 @@
+diff --git a/backends/platform/libretro/src/libretro-os-utils.cpp b/backends/platform/libretro/src/libretro-os-utils.cpp
+index f0a9eb9..02d919c 100644
+--- a/backends/platform/libretro/src/libretro-os-utils.cpp
++++ b/backends/platform/libretro/src/libretro-os-utils.cpp
+@@ -32,6 +32,9 @@
+ #include "backends/platform/libretro/include/libretro-options-widget.h"
+ #include "backends/platform/libretro/include/libretro-fs.h"
+ 
++// batocera - engine data and themes installed with the core
++#define BATOCERA_DATA_DIR "/usr/share/libretro-scummvm"
++
+ #ifdef EMSCRIPTEN
+ #include <emscripten.h>
+ #endif
+@@ -238,9 +241,9 @@ void OSystem_libretro::applyBackendSettings() {
+ 		ConfMan.setAndFlush("savepath", s_systemDir);
+ 		retro_osd_notification("ScummVM save folder not found.");
+ 	}
+-	if (!checkPathSetting("themepath", s_themeDir))
++	if (!checkPathSetting("themepath", s_themeDir) && !LibRetroFilesystemNode(BATOCERA_DATA_DIR "/theme").isDirectory())
+ 		retro_osd_notification("ScummVM theme folder not found.");
+-	if (!checkPathSetting("extrapath", s_extraDir))
++	if (!checkPathSetting("extrapath", s_extraDir) && !LibRetroFilesystemNode(BATOCERA_DATA_DIR "/extra").isDirectory())
+ 		retro_osd_notification("ScummVM extra folder not found. Some engines/features (e.g. Virtual Keyboard) will not work without relevant datafiles.");
+ 	checkPathSetting("soundfont", s_soundfontPath, false);
+ 	{
+@@ -340,6 +343,8 @@ Common::String OSystem_libretro::getSaveDir(void) {
+ void OSystem_libretro::addSysArchivesToSearchSet(Common::SearchSet &s, int priority) {
+ 	if (!s_systemDir.empty())
+ 		s.add("systemDir", new Common::FSDirectory(Common::FSNode(Common::Path(s_systemDir))), priority);
++	s.add("batoceraExtra", new Common::FSDirectory(Common::Path(BATOCERA_DATA_DIR "/extra"), 2), priority);
++	s.add("batoceraTheme", new Common::FSDirectory(Common::Path(BATOCERA_DATA_DIR "/theme")), priority);
+ 	// Add the current dir as a very last resort (cf. bug #3984).
+ 	// TODO: check if it's really needed
+ 	s.addDirectory(".", ".", priority - 1);
