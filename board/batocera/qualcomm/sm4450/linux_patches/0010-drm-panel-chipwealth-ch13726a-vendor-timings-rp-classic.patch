@@ -1,19 +1,13 @@
 From: sunshineinabox <aqemail@gmail.com>
-Subject: [PATCH] drm/panel: chipwealth-ch13726a: per-rate frame-memory path, vendor timings, Retroid Pocket Classic
+Subject: [PATCH] drm/panel: chipwealth-ch13726a: per-board init table, vendor timings, Retroid Pocket Classic
 
-The DDIC routes video through its frame memory (B9=0x11) at 120 Hz and
-bypasses it (B9=0x00) at 60 Hz; the vendor selects this per refresh rate
-and driving 120 Hz in bypass mode washes the image out. Pick the path from
-the mode the CRTC is programmed for. Add the sleep-out/display-on/sleep-in
-delays and the power-to-reset gap from the vendor device trees, and a
-Retroid Pocket Classic compatible (same module as the Thor bottom panel,
-60 Hz preferred, 120 Hz selectable).
+Add both Retroid Pocket Classic boards. Rev Q is the same module as the
+Thor bottom panel. The original board carries a different module.
 
----
-diff -Nur a/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml b/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml
---- a/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml	2026-09-05 14:10:58
-+++ b/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml	2026-09-05 14:10:58
-@@ -19,7 +19,9 @@
+diff -Nur pa/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml pb/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml
+--- a/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml	2026-09-21 20:47:11
++++ b/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.yaml	2026-09-21 20:48:23
+@@ -19,7 +19,10 @@
  properties:
    compatible:
      items:
@@ -21,24 +15,37 @@ diff -Nur a/Documentation/devicetree/bindings/display/panel/chipwealth,ch13726a.
 +      - enum:
 +          - ayntec,thor-panel-bottom
 +          - retroid,pocket-classic-panel
++          - retroid,pocket-classic-g1392-panel
        - const: chipwealth,ch13726a
  
    reg:
-diff -Nur a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c b/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c
---- a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c	2026-09-05 14:10:58
-+++ b/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c	2026-09-05 15:22:07
-@@ -12,7 +12,10 @@
+diff -Nur pa/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c pb/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c
+--- a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c	2026-09-21 20:47:11
++++ b/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c	2026-09-21 20:49:25
+@@ -12,6 +12,8 @@
  #include <linux/regulator/consumer.h>
  
  #include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_connector.h>
 +#include <drm/drm_crtc.h>
  #include <drm/drm_modes.h>
-+#include <drm/drm_modes.h>
  #include <drm/drm_panel.h>
  
- #include <video/mipi_display.h>
-@@ -31,6 +34,7 @@
+@@ -24,6 +26,13 @@
+ 	{ .supply = "avdd", },
+ };
+ 
++/* Boards that route VCI and AVDD to one switched rail have no separate avdd. */
++static const struct regulator_bulk_data ch13726a_supplies_no_avdd[] = {
++	{ .supply = "vdd1v2", },
++	{ .supply = "vddio", },
++	{ .supply = "vdd", },
++};
++
+ struct ch13726a_panel {
+ 	struct drm_panel panel;
+ 	struct mipi_dsi_device *dsi;
+@@ -31,6 +40,7 @@
  	struct gpio_desc *reset_gpio;
  	struct ch13726a_desc *desc;
  	enum drm_panel_orientation orientation;
@@ -46,8 +53,46 @@ diff -Nur a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c b/drivers/gpu/drm/
  };
  
  struct ch13726a_desc {
-@@ -57,18 +61,41 @@
- 	usleep_range(10000, 11000);
+@@ -40,6 +50,24 @@
+ 
+ 	const struct drm_display_mode *modes;
+ 	unsigned int num_modes;
++
++	const struct regulator_bulk_data *supplies;
++	unsigned int num_supplies;
++
++	/*
++	 * Per-board init/teardown, taken from each board's vendor device tree.
++	 * The command set is the same everywhere - vendor page F0/B9, then
++	 * sleep-out and display-on - only the encoding and the delays differ.
++	 */
++	bool vendor_page_dcs;		/* F0/B9 as DCS, not generic, writes */
++	bool init_max_brightness;	/* vendor leads with 51 FF */
++	unsigned int reset_pulse_ms;
++	unsigned int power_on_delay_ms;
++	unsigned int sleep_out_delay_ms;
++	unsigned int display_on_delay_ms;
++	unsigned int display_off_delay_ms;
++	unsigned int sleep_in_delay_ms;
++	unsigned long extra_mode_flags;
+ };
+ 
+ static inline struct ch13726a_panel *to_ch13726a_panel(struct drm_panel *panel)
+@@ -49,26 +77,59 @@
+ 
+ static void ch13726a_reset(struct ch13726a_panel *ctx)
+ {
++	unsigned int ms = ctx->desc->reset_pulse_ms;
++
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
+-	usleep_range(10000, 11000);
++	msleep(ms);
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+-	usleep_range(10000, 11000);
++	msleep(ms);
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
+-	usleep_range(10000, 11000);
++	msleep(ms);
  }
  
 +static const struct drm_display_mode *ch13726a_current_mode(struct ch13726a_panel *ctx)
@@ -72,41 +117,87 @@ diff -Nur a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c b/drivers/gpu/drm/
  {
  	struct mipi_dsi_multi_context dsi_ctx = { .dsi = ctx->dsi };
  
++	const struct ch13726a_desc *desc = ctx->desc;
++	u8 b9 = drm_mode_vrefresh(ch13726a_current_mode(ctx)) >= 110 ? 0x11 : 0x00;
++
  	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
  
- 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xf0, 0x50);
+-	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xf0, 0x50);
 -	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xb9, 0x00);
-+	if (drm_mode_vrefresh(ch13726a_current_mode(ctx)) >= 110)
-+		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xb9, 0x11);
-+	else
-+		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xb9, 0x00);
++	if (desc->init_max_brightness)
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0x51, 0xff);
  
++	if (desc->vendor_page_dcs) {
++		mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xf0, 0x50);
++		mipi_dsi_dcs_write_var_seq_multi(&dsi_ctx, 0xb9, b9);
++	} else {
++		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xf0, 0x50);
++		mipi_dsi_generic_write_var_seq_multi(&dsi_ctx, 0xb9, b9);
++	}
++
  	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
-+	mipi_dsi_msleep(&dsi_ctx, 120);
++	mipi_dsi_msleep(&dsi_ctx, desc->sleep_out_delay_ms);
  
  	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
-+	mipi_dsi_msleep(&dsi_ctx, 20);
++	mipi_dsi_msleep(&dsi_ctx, desc->display_on_delay_ms);
  
  	return dsi_ctx.accum_err;
  }
-@@ -83,6 +113,7 @@
+@@ -81,8 +142,9 @@
+ 	ctx->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
+ 
  	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
- 	mipi_dsi_msleep(&dsi_ctx, 50);
+-	mipi_dsi_msleep(&dsi_ctx, 50);
++	mipi_dsi_msleep(&dsi_ctx, ctx->desc->display_off_delay_ms);
  	mipi_dsi_dcs_enter_sleep_mode_multi(&dsi_ctx);
-+	mipi_dsi_msleep(&dsi_ctx, 120);
++	mipi_dsi_msleep(&dsi_ctx, ctx->desc->sleep_in_delay_ms);
  
  	return dsi_ctx.accum_err;
  }
-@@ -99,6 +130,7 @@
+@@ -93,19 +155,20 @@
+ 	struct device *dev = &ctx->dsi->dev;
+ 	int ret;
+ 
+-	ret = regulator_bulk_enable(ARRAY_SIZE(ch13726a_supplies), ctx->supplies);
++	ret = regulator_bulk_enable(ctx->desc->num_supplies, ctx->supplies);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to enable regulators: %d\n", ret);
  		return ret;
  	}
  
-+	msleep(20);
++	msleep(ctx->desc->power_on_delay_ms);
  	ch13726a_reset(ctx);
  
  	ret = ch13726a_on(ctx);
-@@ -159,11 +191,48 @@
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
+ 		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+-		regulator_bulk_disable(ARRAY_SIZE(ch13726a_supplies), ctx->supplies);
++		regulator_bulk_disable(ctx->desc->num_supplies, ctx->supplies);
+ 		return ret;
+ 	}
+ 
+@@ -119,7 +182,7 @@
+ 	struct ch13726a_panel *ctx = to_ch13726a_panel(panel);
+ 
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+-	regulator_bulk_disable(ARRAY_SIZE(ch13726a_supplies), ctx->supplies);
++	regulator_bulk_disable(ctx->desc->num_supplies, ctx->supplies);
+ 
+ 	return 0;
+ }
+@@ -157,13 +220,121 @@
+ 	.width_mm = 65,
+ 	.height_mm = 75,
  	.bpc = 8,
++	.supplies = ch13726a_supplies,
++	.num_supplies = ARRAY_SIZE(ch13726a_supplies),
++	.reset_pulse_ms = 10,
++	.power_on_delay_ms = 20,
++	.sleep_out_delay_ms = 120,
++	.display_on_delay_ms = 20,
++	.display_off_delay_ms = 50,
++	.sleep_in_delay_ms = 120,
  };
  
 +static const struct drm_display_mode rp_classic_modes[] = {
@@ -142,6 +233,69 @@ diff -Nur a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c b/drivers/gpu/drm/
 +	.width_mm = 65,
 +	.height_mm = 75,
 +	.bpc = 8,
++	.supplies = ch13726a_supplies,
++	.num_supplies = ARRAY_SIZE(ch13726a_supplies),
++	.reset_pulse_ms = 10,
++	.power_on_delay_ms = 20,
++	.sleep_out_delay_ms = 120,
++	.display_on_delay_ms = 20,
++	.display_off_delay_ms = 50,
++	.sleep_in_delay_ms = 120,
++};
++
++/*
++ * Original Retroid Pocket Classic board. The vendor calls this panel "g1392";
++ * that name is stale copy-paste in its own device tree (the node claims "lcd"
++ * while declaring physical-type "oled"), and the module is NOT the CH13726A
++ * one the refreshed board uses - different porches, traffic mode and delays.
++ * It is driven here because it speaks the same undocumented vendor register
++ * page (F0 50 / B9 00), which no other panel in the tree does. That is strong
++ * evidence of the same DDIC family but is NOT a confirmed part number, so do
++ * not send this compatible upstream without one.
++ *
++ * Mode and delays are the vendor kernel node verbatim: 1080x1240,
++ * H fp12/pulse4/bp12, V fp12/pulse4/bp12, burst mode, DCS-encoded vendor
++ * page, 51 FF brightness prefix, sleep-out +120 ms, display-on +150 ms,
++ * display-off +16 ms, sleep-in +50 ms, 20 ms reset pulses.
++ *
++ * VCI and AVDD are one switched 3.3 V rail on this board, so there is no
++ * separate avdd supply.
++ *
++ * TODO verify on hardware: width_mm/height_mm are borrowed from the CH13726A
++ * module, and the vendor's ESD reg_read (0x0A, expect 0x9C) is not wired up.
++ */
++static const struct drm_display_mode rp_classic_g1392_modes[] = {
++	{
++		/* 60Hz */
++		.clock = (1080 + 12 + 4 + 12) * (1240 + 12 + 4 + 12) * 60 / 1000,
++		.hdisplay = 1080,
++		.hsync_start = 1080 + 12,
++		.hsync_end = 1080 + 12 + 4,
++		.htotal = 1080 + 12 + 4 + 12,
++		.vdisplay = 1240,
++		.vsync_start = 1240 + 12,
++		.vsync_end = 1240 + 12 + 4,
++		.vtotal = 1240 + 12 + 4 + 12,
++	}
++};
++
++static struct ch13726a_desc rp_classic_g1392_desc = {
++	.modes = rp_classic_g1392_modes,
++	.num_modes = ARRAY_SIZE(rp_classic_g1392_modes),
++	.width_mm = 65,
++	.height_mm = 75,
++	.bpc = 8,
++	.supplies = ch13726a_supplies_no_avdd,
++	.num_supplies = ARRAY_SIZE(ch13726a_supplies_no_avdd),
++	.vendor_page_dcs = true,
++	.init_max_brightness = true,
++	.reset_pulse_ms = 20,
++	.power_on_delay_ms = 20,
++	.sleep_out_delay_ms = 120,
++	.display_on_delay_ms = 150,
++	.display_off_delay_ms = 16,
++	.sleep_in_delay_ms = 50,
++	.extra_mode_flags = MIPI_DSI_MODE_VIDEO_BURST,
 +};
 +
  static int ch13726a_get_modes(struct drm_panel *panel,
@@ -154,11 +308,33 @@ diff -Nur a/drivers/gpu/drm/panel/panel-chipwealth-ch13726a.c b/drivers/gpu/drm/
  	for (uint8_t i = 0; i < ctx->desc->num_modes; i++) {
  		const struct drm_display_mode *m = &ctx->desc->modes[i];
  		struct drm_display_mode *mode;
-@@ -315,6 +385,7 @@
+@@ -257,8 +428,8 @@
+ 		return -ENODEV;
+ 
+ 	ret = devm_regulator_bulk_get_const(dev,
+-					    ARRAY_SIZE(ch13726a_supplies),
+-					    ch13726a_supplies,
++					    ctx->desc->num_supplies,
++					    ctx->desc->supplies,
+ 					    &ctx->supplies);
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "Failed to get regulators\n");
+@@ -280,7 +451,8 @@
+ 	dsi->lanes = 4;
+ 	dsi->format = MIPI_DSI_FMT_RGB888;
+ 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO |
+-			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
++			  MIPI_DSI_CLOCK_NON_CONTINUOUS |
++			  ctx->desc->extra_mode_flags;
+ 
+ 	ctx->panel.prepare_prev_first = true;
+ 
+@@ -315,6 +487,8 @@
  
  static const struct of_device_id ch13726a_of_match[] = {
  	{ .compatible = "ayntec,thor-panel-bottom", .data = &thor_bottom_desc },
 +	{ .compatible = "retroid,pocket-classic-panel", .data = &rp_classic_desc },
++	{ .compatible = "retroid,pocket-classic-g1392-panel", .data = &rp_classic_g1392_desc },
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, ch13726a_of_match);
