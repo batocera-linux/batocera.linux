@@ -28,7 +28,7 @@ class DXXRebirth(Emulator):
                 'menu': 'KEY_F2',
                 'pause': 'KEY_F2',
                 'save_state': ['KEY_LEFTALT', 'KEY_F2'],
-                'restore_state': ['KEY_LEFTALT', 'KEY_LEFTSHIFT', 'KEY_F2'],
+                'restore_state': ['KEY_LEFTALT', 'KEY_F3'],
             },
         }
 
