@@ -56,6 +56,17 @@
   </keyboard>
   <mouse>
     <default />
+    <context name="Client">
+      <mousebind button="Left" action="Press">
+        <action name="If">
+          <query identifier="batocera-backglass-window" />
+          <else>
+            <action name="Focus" />
+            <action name="Raise" />
+          </else>
+        </action>
+      </mousebind>
+    </context>
     <context name="root">
       <mousebind button="Left" action="Press" />
       <mousebind button="Right" action="Press" />
