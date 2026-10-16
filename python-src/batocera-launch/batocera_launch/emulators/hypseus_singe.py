@@ -141,7 +141,7 @@ class HypseusSinge(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'hypseus-singe',
-            'keys': {'exit': 'KEY_ESC', 'menu': 'KEY_9'},
+            'keys': {'exit': 'KEY_ESC', 'menu': 'KEY_9', 'coin': 'KEY_5', 'pause': 'KEY_P', 'reset': 'KEY_0'},
         }
 
     @property
