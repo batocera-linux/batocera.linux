@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
 
 from ..exceptions import BatoceraException
-from ..paths import SYSTEM_ES_DIR, USER_ES_DIR
+from ..paths import ES_PLAYERS_INPUT, SYSTEM_ES_DIR, USER_ES_DIR
 from .input import Input, InputDict, InputMapping
 
 if TYPE_CHECKING:
@@ -75,7 +75,7 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
 
 @dataclass(slots=True)
 class _InputConfigRoots:
-    # the system file is large and only needed when the user file has no exact match
+    # each file is only parsed once an earlier one has no exact match; the system file is large
     paths: Sequence[Path]
     _roots: dict[Path, ET.Element] = field(init=False, default_factory=dict[Path, ET.Element])
 
@@ -225,7 +225,7 @@ class Controller:
         cfg_roots = _InputConfigRoots(
             [
                 conffile
-                for conffile in (USER_ES_DIR / 'es_input.cfg', SYSTEM_ES_DIR / 'es_input.cfg')
+                for conffile in (ES_PLAYERS_INPUT, USER_ES_DIR / 'es_input.cfg', SYSTEM_ES_DIR / 'es_input.cfg')
                 if conffile.exists()
             ]
         )

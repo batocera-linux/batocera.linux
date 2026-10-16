@@ -21,6 +21,8 @@ USER_ES_DIR: Final = CONFIGS / 'emulationstation'
 SYSTEM_ES_DIR: Final = Path('/usr/share/emulationstation')
 
 ES_SETTINGS: Final = USER_ES_DIR / 'es_settings.cfg'
+# written by ES at each launch with the configs it resolved for the players
+ES_PLAYERS_INPUT: Final = Path('/tmp/es_input_players.cfg')
 
 ES_RESOURCES_DIR: Final = SYSTEM_ES_DIR / 'resources'
 
