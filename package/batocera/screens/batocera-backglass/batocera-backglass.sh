@@ -4,6 +4,7 @@
 EVENTS="game-selected system-selected"
 PIDFILE="/var/run/batocera-backglass.pid"
 PARAMSFILE="/var/run/batocera-backglass.params"
+LOGFILE="/userdata/system/logs/backglass.log"
 
 do_help() {
     echo "${1} enable <output_device> [theme]" >&2
@@ -30,6 +31,21 @@ isRunning() {
     else
         return 1
     fi
+}
+
+startWindow() {
+    (
+        trap 'kill -15 ${WINDOW} 2>/dev/null; exit 0' TERM
+        while true
+        do
+            batocera-backglass-window -x "${1}" -y "${2}" --width "${3}" --height "${4}" --www "${5}" &
+            WINDOW=$!
+            wait ${WINDOW}
+            echo "$(date '+%F %T') batocera-backglass-window exited with status $?, restarting"
+            sleep 2
+        done
+    ) >> "${LOGFILE}" 2>&1 &
+    echo "$!" > "${PIDFILE}"
 }
 
 getTheme() {
@@ -76,8 +92,8 @@ case "${ACTION}" in
        fi
 
         # Fire background native renderer directly to the targeted connector display
-	batocera-backglass-window -x "${X}" -y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
-        echo "$!" > "${PIDFILE}"
+        : > "${LOGFILE}"
+        startWindow "${X}" "${Y}" "${WIDTH}" "${HEIGHT}" "${THEME}"
 
         # Register hook scripts directly inside EmulationStation
         for EVT in ${EVENTS}
@@ -124,8 +140,7 @@ case "${ACTION}" in
 	echo "${X} ${Y} ${WIDTH} ${HEIGHT} ${THEME}" > "${PARAMSFILE}" || exit 1
 
         # Launch again with the native configuration target parameters
-	batocera-backglass-window -x "${X}" -y "${Y}" --width "${WIDTH}" --height "${HEIGHT}" --www "${THEME}" &
-        echo "$!" > "${PIDFILE}"
+        startWindow "${X}" "${Y}" "${WIDTH}" "${HEIGHT}" "${THEME}"
         ;;
 
     "list-themes")
