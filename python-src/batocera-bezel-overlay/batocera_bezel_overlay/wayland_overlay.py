@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import ctypes
+import json
 import logging
+import subprocess
 import sys
 from typing import Any, ClassVar, cast
 
@@ -12,12 +14,41 @@ from batocera_bezel_overlay.overlay import Overlay
 try:
     gi.require_version('Gtk', '3.0')
 
-    from gi.repository import GLib, Gtk
+    from gi.repository import Gdk, GLib, Gtk
 except (ImportError, ValueError) as exc:
     print('Error: Dependencies not met.', exc)
     sys.exit(1)
 
 _log = logging.getLogger(__name__)
+
+
+def _primary_monitor() -> Gdk.Monitor | None:
+    # a layer surface without a monitor lands on the output that last had input, so pin it to the
+    # primary output; GTK3 has no output names on Wayland, so match its layout position instead
+    try:
+        name = subprocess.run(
+            ['batocera-resolution', 'currentOutput'], capture_output=True, text=True, timeout=3, check=True
+        ).stdout.strip()
+        outputs = json.loads(
+            subprocess.run(['wlr-randr', '--json'], capture_output=True, text=True, timeout=3, check=True).stdout
+        )
+    except OSError, subprocess.SubprocessError, ValueError:
+        _log.exception('Could not look up the primary output')
+        return None
+
+    position = next(
+        ((output['position']['x'], output['position']['y']) for output in outputs if output.get('name') == name),
+        None,
+    )
+    if position is None or (display := Gdk.Display.get_default()) is None:
+        return None
+
+    for index in range(display.get_n_monitors()):
+        monitor = display.get_monitor(index)
+        if monitor is not None and (monitor.get_geometry().x, monitor.get_geometry().y) == position:
+            return monitor
+
+    return None
 
 
 class WaylandOverlay(Overlay):
@@ -114,6 +145,10 @@ class WaylandOverlay(Overlay):
 
             GtkLayerShell.init_for_window(self)
             GtkLayerShell.set_layer(self, GtkLayerShell.Layer.OVERLAY)
+
+            if (monitor := _primary_monitor()) is not None:
+                GtkLayerShell.set_monitor(self, monitor)
+
             GtkLayerShell.set_keyboard_mode(self, GtkLayerShell.KeyboardMode.NONE)
 
             # Stretch overlay across physical screen edges
