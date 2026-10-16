@@ -144,6 +144,10 @@ class HypseusSinge(Emulator):
             'keys': {'exit': 'KEY_ESC', 'menu': 'KEY_9'},
         }
 
+    @property
+    def handles_bezels(self) -> bool:
+        return True
+
     @cached_property
     def in_game_ratio(self) -> float:
         if self.config.get('hypseus_ratio') == 'stretch':
