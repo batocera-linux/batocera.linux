@@ -1,0 +1,189 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Retroid Pocket Classic (SM4450 "parrot") - original board.
+ *
+ */
+
+/dts-v1/;
+
+#include "sm4450-retroid-pocket-classic-common.dtsi"
+
+/ {
+	model = "Retroid Pocket Classic";
+	compatible = "retroid,pocket-classic", "qcom,sm4450";
+	qcom,board-id = <0x22 0>;
+
+	/* vendor: gpios_control/mcu-3v3-enable-gpio */
+	mcu_vdd: regulator-mcu-vdd {
+		compatible = "regulator-fixed";
+		regulator-name = "mcu_vdd";
+		gpio = <&tlmm 46 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+	};
+
+	fan_pwr: regulator-fan-pwr {
+		compatible = "regulator-fixed";
+		regulator-name = "fan_pwr";
+		gpio = <&tlmm 18 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	fan: pwm-fan {
+		compatible = "pwm-fan";
+		pwms = <&pm6450_pwm 0 50000>;
+		fan-supply = <&fan_pwr>;
+		interrupts-extended = <&tlmm 52 IRQ_TYPE_EDGE_FALLING>;
+		pulses-per-revolution = <2>;
+		#cooling-cells = <2>;
+		cooling-levels = <0 102>;
+	};
+
+	vreg_panel_vci: regulator-panel-vci {
+		compatible = "regulator-fixed";
+		regulator-name = "vreg_panel_vci";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		gpio = <&tlmm 40 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+		startup-delay-us = <1000>;
+		pinctrl-0 = <&panel_vci_en_default>, <&panel_avdd_hold>;
+		pinctrl-names = "default";
+	};
+
+	vreg_panel_vddio: regulator-panel-vddio {
+		compatible = "regulator-fixed";
+		regulator-name = "vreg_panel_vddio";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		gpio = <&pm7250b_gpios 11 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+		regulator-always-on;
+		startup-delay-us = <1000>;
+		pinctrl-0 = <&panel_vddio_en_default>;
+		pinctrl-names = "default";
+	};
+
+	/* vendor display_panel_extvdd, 1.2 V (Rev Q raised the same pin to 1.3 V) */
+	vreg_panel_extvdd: regulator-panel-extvdd {
+		compatible = "regulator-fixed";
+		regulator-name = "vreg_panel_extvdd";
+		regulator-min-microvolt = <1200000>;
+		regulator-max-microvolt = <1200000>;
+		gpio = <&pm7250b_gpios 12 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+		startup-delay-us = <1000>;
+		pinctrl-0 = <&panel_extvdd_en_default>;
+		pinctrl-names = "default";
+	};
+};
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "retroid,pocket-classic-g1392-panel", "chipwealth,ch13726a";
+		reg = <0>;
+
+		vdd-supply = <&vreg_panel_vci>;
+		vddio-supply = <&vreg_panel_vddio>;
+		vdd1v2-supply = <&vreg_panel_extvdd>;
+
+		reset-gpios = <&tlmm 92 GPIO_ACTIVE_LOW>;
+
+		pinctrl-0 = <&panel_reset_default>;
+		pinctrl-names = "default";
+
+		rotation = <90>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&uart3 {
+	gamepad: gamepad {
+		compatible = "gamepad,rsinput";
+
+		gamepad-name = "Retroid Pocket Classic Gamepad";
+		gamepad-bus = <0x0003>;
+		gamepad-vid = <0x2f24>;
+		gamepad-pid = <0x0001>;
+		gamepad-rev = <0x0001>;
+		digital-triggers;
+
+		vdd-supply = <&mcu_vdd>;
+		reset-gpios = <&tlmm 1 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&speaker_amp_l {
+	reset-gpios = <&tlmm 2 GPIO_ACTIVE_LOW>;
+};
+
+&speaker_amp_r {
+	reset-gpios = <&tlmm 3 GPIO_ACTIVE_LOW>;
+};
+
+&wifi {
+	vdd-0.8-cx-mx-supply = <&vreg_l21b_1p8>;
+};
+
+/* vendor node name "gpio5_pwm" => pm6450 gpio5, not gpio7 as on Rev Q */
+&pm6450_gpios {
+	fan_pwm_default: fan-pwm-state {
+		pins = "gpio5";
+		function = "func1";
+		power-source = <1>;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
+		bias-disable;
+	};
+};
+
+&pm6450_pwm {
+	pinctrl-0 = <&fan_pwm_default>;
+	pinctrl-names = "default";
+};
+
+&pm7250b_gpios {
+	panel_vddio_en_default: panel-vddio-en-default-state {
+		pins = "gpio11";
+		function = "normal";
+		bias-disable;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
+		input-disable;
+		output-enable;
+		power-source = <0>;
+	};
+
+	panel_extvdd_en_default: panel-extvdd-en-default-state {
+		pins = "gpio12";
+		function = "normal";
+		bias-disable;
+		qcom,drive-strength = <PMIC_GPIO_STRENGTH_MED>;
+		input-disable;
+		output-enable;
+		power-source = <0>;
+	};
+};
+
+&tlmm {
+	panel_vci_en_default: panel-vci-en-default-state {
+		pins = "gpio40";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	panel_avdd_hold: panel-avdd-hold-state {
+		pins = "gpio127";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+		output-high;
+	};
+};

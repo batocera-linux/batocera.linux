@@ -1,0 +1,69 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Date: Tue, 13 Oct 2026 17:00:00 -0400
+Subject: [PATCH] input: rsinput: add digital-triggers
+
+---
+diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
+--- a/drivers/input/joystick/rsinput.c
++++ b/drivers/input/joystick/rsinput.c
+@@ -135,6 +135,7 @@
+     bool invert_y;
+     bool invert_rx;
+     bool invert_ry;
++    bool digital_triggers;
+     uint8_t rx_buf[1024];
+     uint8_t sequence_number;
+     struct delayed_work rx_watchdog;
+@@ -289,8 +290,10 @@
+             INT_SIGN(axis_righty_min) * ( abs(axis_righty_min) - axis_righty_antideadzone ),
+             INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
+              0, 0);
+-        input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
+-        input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++        if (!drv->digital_triggers) {
++            input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++            input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++        }
+         update_params = 0;
+     }
+ 
+@@ -324,8 +327,13 @@
+     int16_t ry = raw_ry + axis_righty_center;
+     ry = ( abs(ry) < axis_righty_deadzone ) ? 0 : INT_SIGN(ry) * ( abs(ry) - axis_righty_antideadzone );
+ 
+-    input_report_abs(drv->input, ABS_Z, z);
+-    input_report_abs(drv->input, ABS_RZ, rz);
++    if (drv->digital_triggers) {
++        input_report_key(drv->input, BTN_TL2, raw_trig_l != 0);
++        input_report_key(drv->input, BTN_TR2, raw_trig_r != 0);
++    } else {
++        input_report_abs(drv->input, ABS_Z, z);
++        input_report_abs(drv->input, ABS_RZ, rz);
++    }
+     input_report_abs(drv->input, ABS_X, drv->invert_x ? x * (-1) : x);
+     input_report_abs(drv->input, ABS_Y, drv->invert_y ? y * (-1) : y);
+     input_report_abs(drv->input, ABS_RX, drv->invert_rx ? rx * (-1) : rx);
+@@ -513,6 +521,7 @@
+     drv->invert_y = device_property_present(&serdev->dev, "invert-y");
+     drv->invert_rx = device_property_present(&serdev->dev, "invert-rx");
+     drv->invert_ry = device_property_present(&serdev->dev, "invert-ry");
++    drv->digital_triggers = device_property_present(&serdev->dev, "digital-triggers");
+ 
+     {
+         u32 range;
+@@ -634,8 +643,13 @@
+         INT_SIGN(axis_righty_max) * ( abs(axis_righty_max) - axis_righty_antideadzone ),
+         0, 0);
+ 
+-    input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
+-    input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++    if (drv->digital_triggers) {
++        input_set_capability(drv->input, EV_KEY, BTN_TL2);
++        input_set_capability(drv->input, EV_KEY, BTN_TR2);
++    } else {
++        input_set_abs_params(drv->input, ABS_Z, 0, trigger_left_max - trigger_left_antideadzone, 0, 30);
++        input_set_abs_params(drv->input, ABS_RZ, 0, trigger_right_max - trigger_right_antideadzone, 0, 30);
++    }
+ 
+     error = input_register_device(drv->input);
+     if (error)

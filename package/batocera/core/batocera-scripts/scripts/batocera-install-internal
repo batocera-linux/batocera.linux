@@ -48,8 +48,22 @@ else
 fi
 
 # Set storage device and partition naming scheme based on architecture
+MODEL=$(tr -d '\0' < /proc/device-tree/model 2>/dev/null || true)
+
 case "$HW_DEVICE" in
-  SM4450|SM6115)
+  SM4450)
+    case "$MODEL" in
+      *"RG 55G1"*)
+        DEVICE="/dev/sda"
+        IS_EMMC=false
+        ;;
+      *)
+        echo "This script is not compatible with device: $MODEL"
+        exit 1
+        ;;
+    esac
+    ;;
+  SM6115)
     DEVICE="/dev/mmcblk1"
     IS_EMMC=true
     ;;
@@ -62,6 +76,11 @@ case "$HW_DEVICE" in
     exit 1
     ;;
 esac
+
+if [ "/dev/$(lsblk -no PKNAME "$(findmnt -no SOURCE /boot)")" = "$DEVICE" ]; then
+  echo "Error: ${DEVICE} holds the running system, not the internal storage."
+  exit 1
+fi
 
 # Perform Power Check before proceeding
 check_power
