@@ -161,9 +161,8 @@ def add_tattoo_image(input_path: StrPath, output_path: StrPath, config: SystemCo
 
     tattoo_image = tattoo_file.convert('RGBA')
 
-    # Quickly grab the sizes.
-    width, height = get_image_size(input_path)
-    tattoo_width, tattoo_height = get_image_size(tattoo_path)
+    width, height = back_image.size
+    tattoo_width, tattoo_height = tattoo_image.size
 
     if not config.get_bool('bezel.resize_tattoo', True):
         # Maintain the image's original size.
@@ -174,6 +173,7 @@ def add_tattoo_image(input_path: StrPath, output_path: StrPath, config: SystemCo
             tattoo_height = int(float(tattoo_height) * percent)
             # Resize the tattoo to the calculated size.
             tattoo_image = tattoo_image.resize((width, tattoo_height), Image.Resampling.BICUBIC)  # pyright: ignore[reportUnknownMemberType]
+            tattoo_width = width
     else:
         # Resize to be slightly smaller than the bezel's column.
         tattoo_width_tmp = int((225 / 1920) * width)
