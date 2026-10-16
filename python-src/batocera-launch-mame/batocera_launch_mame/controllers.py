@@ -317,7 +317,7 @@ class MAMEControllers(MAMEBase):
         _mappings, gun_mappings, mouse_mappings = self.all_mame_control_mappings
 
         if include_coin:
-            sequence += f' OR KEYCODE_{player_number}_{player_number + 4}'
+            sequence += f' OR KEYCODE_{player_number + 4}'
 
         if mapping in gun_mappings:
             sequence += f' OR GUNCODE_{player_number}_{gun_mappings[mapping]}'
