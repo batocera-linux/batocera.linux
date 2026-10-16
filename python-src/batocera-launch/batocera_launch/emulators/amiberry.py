@@ -152,6 +152,9 @@ def _floppies_from_rom(rom: Path, /) -> list[Path]:
         while (floppy := rom.with_name(f'{fileprefix}{n}{rom.suffix}')).is_file():
             floppies.append(floppy)
             n += 1
+
+        if rom not in floppies:
+            return [rom]
     # (Disk 1 of 2) format
     elif index_disk != -1:
         floppies.append(rom)
