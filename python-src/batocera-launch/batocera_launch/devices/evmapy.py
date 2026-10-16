@@ -204,7 +204,7 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                 sdl3.pump_events()
                 joystick_ids = sdl3.get_joystick_ids()
 
-                online_controllers_map: dict[str, Path] = {}
+                online_controllers_map: dict[str, list[str]] = defaultdict(list)
 
                 for joystick_id in joystick_ids:
                     try:
@@ -212,24 +212,35 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                         path = sdl3.get_joystick_path(joystick_id)
 
                         if guid and path:
-                            online_controllers_map[guid] = path
+                            online_controllers_map[guid].append(str(path))
                     except Exception as e:
                         _logger.warning('Error while querying joystick id %s with sdl3: %s', joystick_id, e)
 
-                _logger.info('>>> [Check 1] SDL3 scan found online controllers: %s', online_controllers_map)
+                _logger.info('>>> [Check 1] SDL3 scan found online controllers: %s', dict(online_controllers_map))
 
                 new_active_controllers = cast('list[Controller | None]', [None] * len(initial_controllers_snapshot))
 
+                # identical pads share a GUID, so players keep a path that is still online before the rest are handed out
                 for i, initial_controller in enumerate(initial_controllers_snapshot):
-                    if initial_controller and initial_controller.guid in online_controllers_map:
-                        new_path = online_controllers_map[initial_controller.guid]
-                        if initial_controller.device_path != str(new_path):
-                            _logger.info(
-                                '>>> [Revival] Player %s (GUID: %s) path has changed.',
-                                initial_controller.player_number,
-                                initial_controller.guid,
-                            )
-                            initial_controller.device_path = str(new_path)
+                    if (
+                        initial_controller
+                        and initial_controller.device_path in online_controllers_map[initial_controller.guid]
+                    ):
+                        online_controllers_map[initial_controller.guid].remove(initial_controller.device_path)
+                        new_active_controllers[i] = initial_controller
+
+                for i, initial_controller in enumerate(initial_controllers_snapshot):
+                    if (
+                        initial_controller
+                        and new_active_controllers[i] is None
+                        and online_controllers_map[initial_controller.guid]
+                    ):
+                        _logger.info(
+                            '>>> [Revival] Player %s (GUID: %s) path has changed.',
+                            initial_controller.player_number,
+                            initial_controller.guid,
+                        )
+                        initial_controller.device_path = online_controllers_map[initial_controller.guid].pop(0)
                         new_active_controllers[i] = initial_controller
 
                 current_paths = [c.device_path if c else None for c in self.controllers]
