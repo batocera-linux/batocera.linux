@@ -389,7 +389,7 @@ class ControlConfig:
 
         if mapping == 'COIN' and player_number <= 4:
             keyval = (
-                keyval + f' OR KEYCODE_{player_number}_{player_number + 4}'
+                keyval + f' OR KEYCODE_{player_number + 4}'
             )  # 5 for player 1, 6 for player 2, 7 for player 3 and 8 for player 4
 
         if mapping in gun_mappings:
