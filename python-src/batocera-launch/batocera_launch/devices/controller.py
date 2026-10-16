@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import xml.etree.ElementTree as ET
-from collections.abc import Container, Iterable, Mapping, Sequence
+from collections.abc import Container, Iterable, Iterator, Mapping, Sequence
 from dataclasses import InitVar, dataclass, field, replace
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, Self, TypedDict, Unpack, cast
@@ -71,6 +71,19 @@ def _key_to_sdl_game_controller_config(keyname: str, input: Input, /) -> str | N
         return None
 
     raise BatoceraException(f'Unknown controller input type: {input.type!r}')
+
+
+@dataclass(slots=True)
+class _InputConfigRoots:
+    # the system file is large and only needed when the user file has no exact match
+    paths: Sequence[Path]
+    _roots: dict[Path, ET.Element] = field(init=False, default_factory=dict[Path, ET.Element])
+
+    def __iter__(self) -> Iterator[ET.Element]:
+        for path in self.paths:
+            if (root := self._roots.get(path)) is None:
+                root = self._roots[path] = ET.parse(path).getroot()
+            yield root
 
 
 def _find_input_config(roots: Iterable[ET.Element], name: str, guid: str, /) -> ET.Element:
@@ -209,11 +222,13 @@ class Controller:
     # Create a controller array with the player id as a key
     @classmethod
     def load_for_players(cls, player_args: Iterable[PlayerArguments | None], /) -> ControllerList:
-        cfg_roots = [
-            ET.parse(conffile).getroot()
-            for conffile in (USER_ES_DIR / 'es_input.cfg', SYSTEM_ES_DIR / 'es_input.cfg')
-            if conffile.exists()
-        ]
+        cfg_roots = _InputConfigRoots(
+            [
+                conffile
+                for conffile in (USER_ES_DIR / 'es_input.cfg', SYSTEM_ES_DIR / 'es_input.cfg')
+                if conffile.exists()
+            ]
+        )
 
         return [
             controller

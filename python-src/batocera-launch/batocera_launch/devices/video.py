@@ -268,6 +268,7 @@ async def prepare_resolution(limit_resolution: bool, target_mode: str, /) -> Asy
     current_mode = original_mode
 
     restore_resolution = False
+    game_resolution: Resolution | None = None
 
     if limit_resolution:
         # Limit the display resolution to the maximum supported resolution before starting the game
@@ -276,7 +277,12 @@ async def prepare_resolution(limit_resolution: bool, target_mode: str, /) -> Asy
 
         await min_to_max_resolution()
 
-        current_mode = await get_current_mode()
+        # no mode change follows, so both can be queried at once
+        if target_mode == 'default':
+            current_mode, game_resolution = await asyncio.gather(get_current_mode(), get_current_resolution())
+        else:
+            current_mode = await get_current_mode()
+
         if current_mode != original_mode:
             restore_resolution = True
 
@@ -287,7 +293,8 @@ async def prepare_resolution(limit_resolution: bool, target_mode: str, /) -> Asy
         await change_mode(target_mode)
         restore_resolution = True
 
-    game_resolution = await get_current_resolution()
+    if game_resolution is None:
+        game_resolution = await get_current_resolution()
 
     if is_resolution_reversed():
         game_resolution = Resolution(width=game_resolution.height, height=game_resolution.width)
