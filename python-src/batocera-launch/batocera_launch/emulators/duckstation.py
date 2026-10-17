@@ -119,13 +119,18 @@ def _language() -> str:
 
 def _rewrite_m3u_full_path(m3u: Path, /) -> Path:
     """Rewrite an m3u with absolute paths, working around DuckStation's handling of relative ones."""
-    first_line = m3u.read_text().splitlines()[0].rstrip()
-    rewritten = Path('/tmp') / Path(first_line).with_suffix('.m3u').name
+    entries = [line.strip() for line in m3u.read_text().splitlines()]
+    entries = [entry for entry in entries if entry and not entry.startswith('#')]
+    if not entries:
+        return m3u
 
-    with m3u.open() as source, rewritten.open('w') as target:
-        for line in source:
-            # handle both "/MGScd1.chd" and "MGScd1.chd"
-            target.write(str(m3u.parent / line.removeprefix('/')))
+    rewritten = Path('/tmp') / Path(entries[0]).with_suffix('.m3u').name
+    with rewritten.open('w') as target:
+        for entry in entries:
+            disc = Path(entry)
+            if not (disc.is_absolute() and disc.exists()):
+                disc = m3u.parent / entry.removeprefix('/')
+            target.write(f'{disc}\n')
 
     return rewritten
 
