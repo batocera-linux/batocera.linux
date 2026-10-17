@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
-from batocera_common.dataclasses import cached_property
+from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS
 
 from .base import FalloutBase
@@ -14,7 +13,7 @@ if TYPE_CHECKING:
     from batocera_common.configparser import CaseSensitiveConfigParser
 
 
-@dataclass(slots=True)
+@cached_dataclass
 class Fallout2(FalloutBase):
     CONFIG_FILE_NAME: ClassVar[str] = 'fallout2.cfg'
     INI_FILE_NAME: ClassVar[str] = 'f2_res.ini'
