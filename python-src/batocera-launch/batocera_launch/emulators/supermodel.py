@@ -161,7 +161,7 @@ class Supermodel(Emulator):
                 'reset': ['KEY_LEFTALT', 'KEY_R'],
                 'save_state': 'KEY_F5',
                 'restore_state': 'KEY_F7',
-                'next_state': 'KEY_F6',
+                'next_slot': 'KEY_F6',
             },
         }
 
