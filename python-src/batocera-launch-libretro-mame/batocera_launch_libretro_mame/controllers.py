@@ -61,7 +61,7 @@ def _get_input_definition(
     if input.find('AXIS') != -1:
         if altButtons == 'qbert':  # Q*Bert Joystick
             if key == 'joystick1up' or key == 'up':
-                return f'JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1up"]}_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1right"]} OR \
+                return f'JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1up"]} JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1right"]} OR \
                     JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["up"].format(joycode)} JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["right"].format(joycode)}'
             if key == 'joystick1down' or key == 'down':
                 return f'JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1down"]} JOYCODE_{joycode}_{_RETRO_PAD_MAPPINGS["joystick1left"]} OR \
