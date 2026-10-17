@@ -57,6 +57,16 @@ case "$HW_DEVICE" in
         DEVICE="/dev/sda"
         IS_EMMC=false
         ;;
+      *"Retroid Pocket Classic"*)
+        # either storage can be fitted
+        if [ "$(cat /sys/block/mmcblk0/device/type 2>/dev/null)" = "MMC" ]; then
+          DEVICE="/dev/mmcblk0"
+          IS_EMMC=true
+        else
+          DEVICE="/dev/sda"
+          IS_EMMC=false
+        fi
+        ;;
       *)
         echo "This script is not compatible with device: $MODEL"
         exit 1
