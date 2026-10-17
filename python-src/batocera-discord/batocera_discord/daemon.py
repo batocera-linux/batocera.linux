@@ -50,6 +50,7 @@ class App:
         self.pads = Pads(self.request_toggle, guide_enabled=setting('discord.guidebutton', '1') != '0')
         self.setup = SetupServer(self.state, self.session.reconfigure, self.session.logout)
         self._toggle = threading.Event()
+        self._stopping = threading.Event()
         self._visible = False
         self._authorizing = False
 
@@ -133,6 +134,7 @@ class App:
             self._toggle.set()
 
     def stop(self) -> None:
+        self._stopping.set()
         self.pads.release()
         self.setup.stop()
 
@@ -142,6 +144,9 @@ class App:
         self.session.start()
         self.pads.start()
         audio.start_watcher(self.state)
+        threading.Thread(
+            target=discord_app.keep_pulse_socket, args=(self._stopping,), name='discord-pulse', daemon=True
+        ).start()
         # imported late: pygame prints a banner and must see the SDL environment set by main()
         from .ui.window import OverlayWindow
 

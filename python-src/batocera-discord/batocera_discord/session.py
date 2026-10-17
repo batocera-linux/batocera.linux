@@ -29,8 +29,12 @@ VOICE_EVENTS: Final = (
 VOICE_CHANNEL_TYPES: Final = (2, 13)  # voice, stage
 MAX_RECENTS: Final = 12
 LAUNCH_RETRY: Final = 45.0
-AUTO_INSTALL_RETRY: Final = 300.0  # seconds: the network may not be up yet when the service starts
+# seconds between automatic install attempts: the network may not be up yet when the service starts
+AUTO_INSTALL_DELAYS: Final = (30.0, 60.0, 120.0, 300.0)
 INSTALL_ERROR_HOLD: Final = 10.0  # seconds the panel shows a failed install before offering it again
+MAX_SILENT_LAUNCHES: Final = 3  # launches without an IPC socket before the panel reports a problem
+STARTUP_GRACE: Final = 90.0  # seconds after a launch during which a refused connection only means "not ready yet"
+_CONNECT_ERRORS: Final = (OSError, ipc.RPCError)
 
 
 class SessionHooks(Protocol):
@@ -75,7 +79,9 @@ class Session:
         self._installing = threading.Lock()
         self._install_thread: threading.Thread | None = None
         self._last_auto_install: float | None = None
+        self._auto_install_attempts = 0
         self._install_error_until = 0.0
+        self._launches = 0  # since the IPC socket was last seen
         self.recents: list[dict[str, str]] = [
             cast('dict[str, str]', item)
             for item in read_json(paths.RECENTS_FILE).get('items', [])
@@ -110,17 +116,17 @@ class Session:
                 self.state.bump()
 
         try:
-            ok = discord_app.install(progress)
-        except Exception:
+            reason = discord_app.install(progress)
+        except Exception as exc:
             _logger.exception('Discord install failed')
-            ok = False
+            reason = str(exc) or 'unexpected error'
         # publish the result before releasing the lock, so the connection loop never sees an in-between state
-        if ok:
+        if not reason:
             self._discord_installed = True
             self.state.set_phase(Phase.STARTING)
         else:
             self._install_error_until = time.monotonic() + INSTALL_ERROR_HOLD
-            self.state.set_phase(Phase.ERROR, 'flatpak install failed')
+            self.state.set_phase(Phase.ERROR, f'Discord install failed: {reason}'[:160])
         self._installing.release()
         self._reconfigured.set()  # wake the connection loop
 
@@ -129,8 +135,10 @@ class Session:
         if not self.auto_install or self._discord_installed or self._installing.locked():
             return
         now = time.monotonic()
-        if self._last_auto_install is not None and now - self._last_auto_install < AUTO_INSTALL_RETRY:
-            return
+        if self._last_auto_install is not None:
+            delay = AUTO_INSTALL_DELAYS[min(self._auto_install_attempts, len(AUTO_INSTALL_DELAYS)) - 1]
+            if now - self._last_auto_install < delay:
+                return
         self._last_auto_install = now
         if not discord_app.flatpak_available():
             return
@@ -138,6 +146,7 @@ class Session:
             self._discord_installed = True
             return
         _logger.info('Discord is not installed: installing it in the background')
+        self._auto_install_attempts += 1
         self.install()
 
     # -- connection loop --
@@ -169,8 +178,18 @@ class Session:
         if (sock := ipc.find_socket()) is None:
             self._ensure_discord_running()
             return
+        self._launches = 0
         self.state.set_phase(Phase.CONNECTING)
-        self.rpc.connect(config.client_id, sock)
+        try:
+            self.rpc.connect(config.client_id, sock)
+        except _CONNECT_ERRORS as exc:
+            if not self._last_launch or time.monotonic() - self._last_launch > STARTUP_GRACE:
+                raise
+            # the socket comes up before Discord answers on it: keep showing "starting" and retry
+            _logger.info('Discord is still starting (%s)', exc)
+            self.state.set_phase(Phase.LAUNCHING)
+            self._reconfigured.wait(2)
+            return
         user = self._authenticate(config)
         with self.state.lock:
             self.state.user = user
@@ -200,10 +219,18 @@ class Session:
             self._reconfigured.wait(5)
             return
         self._discord_installed = True
-        self.state.set_phase(Phase.LAUNCHING)
         if time.monotonic() - self._last_launch > LAUNCH_RETRY:
             self._last_launch = time.monotonic()
-            discord_app.launch()
+            if error := discord_app.launch():
+                self.state.set_phase(Phase.ERROR, f'Discord cannot start: {error}'[:160])
+                self._reconfigured.wait(5)
+                return
+            self._launches += 1
+        if self._launches > MAX_SILENT_LAUNCHES:
+            # it keeps closing (or never logs in): say so instead of "starting" forever
+            self.state.set_phase(Phase.ERROR, f'Discord does not start, see {discord_app.client_log()}')
+        else:
+            self.state.set_phase(Phase.LAUNCHING)
         self._reconfigured.wait(3)
 
     def _authenticate(self, config: AppConfig, /) -> dict[str, Any]:

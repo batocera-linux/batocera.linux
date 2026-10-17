@@ -16,9 +16,15 @@ RUN_DIR: Final = Path('/var/run')
 PID_FILE: Final = RUN_DIR / 'batocera-discord.pid'
 LOCK_FILE: Final = RUN_DIR / 'batocera-discord.lock'
 
-# Flatpak apps run as root on Batocera with XDG_RUNTIME_DIR=/var/run (see batocera-launch flatpak emulator)
 FLATPAK_APP_ID: Final = 'com.discordapp.Discord'
+# runtime directory of the flatpak commands the service runs as root (install, info)
 FLATPAK_RUNTIME_DIR: Final = RUN_DIR
+# Electron refuses to run as root: the Discord client runs as this user, with the flatpak data of Batocera
+DISCORD_USER: Final = 'batocera'
+FLATPAK_HOME: Final = USERDATA / 'saves' / 'flatpak' / 'data'
+# XDG data/config/cache of that user for flatpak itself (the home above belongs to root)
+DISCORD_USER_DIR: Final = USERDATA / 'saves' / 'flatpak' / 'discord-user'
+PULSE_SOCKET: Final = RUN_DIR / 'pulse' / 'native'
 
 # Fonts shipped with the image: the default ES theme font first, then broad-coverage fallbacks
 FONT_REGULAR: Final = (

@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import threading
 import time
+from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
+import pytest
+
 from batocera_discord import discord_app, session as session_module
-from batocera_discord.session import AUTO_INSTALL_RETRY, Session
+from batocera_discord.session import AUTO_INSTALL_DELAYS, MAX_SILENT_LAUNCHES, Session
 from batocera_discord.state import Phase, State
 from batocera_discord.storage import AppConfig
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    import pytest
 
 
 class Hooks:
@@ -37,13 +38,13 @@ class FakeFlatpak:
         monkeypatch.setattr(discord_app, 'installed', lambda: self.is_installed)
         monkeypatch.setattr(discord_app, 'install', self.install)
 
-    def install(self, progress: Callable[[int], None], /) -> bool:
+    def install(self, progress: Callable[[int], None], /) -> str:
         self.installs += 1
         self.started.set()
         progress(42)
         self.release.wait(5)
         self.is_installed = self.result
-        return self.result
+        return '' if self.result else 'Could not resolve hostname dl.flathub.org'
 
 
 class Clock:
@@ -120,10 +121,11 @@ def test_failed_auto_install_shows_the_error_then_retries_later(monkeypatch: pyt
     session._connect_and_serve()
     _join(session)
     assert state.phase is Phase.ERROR
+    assert state.error == 'Discord install failed: Could not resolve hostname dl.flathub.org'
     session._connect_and_serve()  # the error stays on screen for a while
     assert state.phase is Phase.ERROR
 
-    clock.now += AUTO_INSTALL_RETRY - 1
+    clock.now += AUTO_INSTALL_DELAYS[0] - 1
     session._connect_and_serve()
     assert flatpak.installs == 1
     assert state.phase is Phase.NO_CONFIG  # the panel offers the setup again meanwhile
@@ -135,3 +137,79 @@ def test_failed_auto_install_shows_the_error_then_retries_later(monkeypatch: pyt
     assert flatpak.installs == 2
     assert session._discord_installed
     assert state.phase is not Phase.ERROR
+
+
+def test_auto_install_retries_less_and_less_often(monkeypatch: pytest.MonkeyPatch) -> None:
+    clock = Clock(monkeypatch)
+    flatpak = FakeFlatpak(monkeypatch, result=False)
+    session, _state = _session()
+
+    for delay in (*AUTO_INSTALL_DELAYS, AUTO_INSTALL_DELAYS[-1]):
+        session._auto_install()
+        _join(session)
+        attempts = flatpak.installs
+        clock.now += delay - 1
+        session._auto_install()
+        assert flatpak.installs == attempts
+        clock.now += 1
+
+    assert flatpak.installs == len(AUTO_INSTALL_DELAYS) + 1
+
+
+def _configured_session(monkeypatch: pytest.MonkeyPatch, launch: Callable[[], str], /) -> tuple[Session, State, Clock]:
+    clock = Clock(monkeypatch)
+    flatpak = FakeFlatpak(monkeypatch)
+    flatpak.is_installed = True
+    monkeypatch.setattr(discord_app, 'launch', launch)
+    monkeypatch.setattr(session_module.ipc, 'find_socket', lambda: None)
+    AppConfig(client_id='123456789012345678').save()
+    session, state = _session(auto_install=False)
+    return session, state, clock
+
+
+def test_launch_error_is_shown(monkeypatch: pytest.MonkeyPatch) -> None:
+    session, state, _clock = _configured_session(monkeypatch, lambda: 'no batocera user to run Discord')
+
+    session._connect_and_serve()
+
+    assert state.phase is Phase.ERROR
+    assert state.error == 'Discord cannot start: no batocera user to run Discord'
+
+
+def test_discord_that_keeps_closing_is_reported(monkeypatch: pytest.MonkeyPatch) -> None:
+    launches: list[int] = []
+
+    def launch() -> str:
+        launches.append(1)
+        return ''
+
+    session, state, clock = _configured_session(monkeypatch, launch)
+
+    for _ in range(MAX_SILENT_LAUNCHES):
+        session._connect_and_serve()
+        assert state.phase is Phase.LAUNCHING
+        clock.now += session_module.LAUNCH_RETRY + 1
+    session._connect_and_serve()
+
+    assert len(launches) == MAX_SILENT_LAUNCHES + 1
+    assert state.phase is Phase.ERROR
+    assert 'discord-client.log' in state.error
+
+
+def test_discord_still_starting_is_not_an_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    session, state, clock = _configured_session(monkeypatch, lambda: '')
+    session._connect_and_serve()  # launches Discord
+    sockets: list[Path] = [Path('/run/user/1000/app/com.discordapp.Discord/discord-ipc-0')]
+    monkeypatch.setattr(session_module.ipc, 'find_socket', lambda: sockets[0])
+
+    def refuse(_client_id: str, _path: Path, /) -> None:
+        raise ConnectionError('socket closed')
+
+    monkeypatch.setattr(session.rpc, 'connect', refuse)
+
+    session._connect_and_serve()
+    assert state.phase is Phase.LAUNCHING
+
+    clock.now += session_module.STARTUP_GRACE + 1
+    with pytest.raises(ConnectionError):
+        session._connect_and_serve()

@@ -11,3 +11,4 @@ from typing import Final
 PROCESS_ERRORS: Final = (OSError, subprocess.TimeoutExpired)
 IO_ERRORS: Final = (OSError, ValueError)
 LOOKUP_ERRORS: Final = (KeyError, ValueError)
+ACCOUNT_ERRORS: Final = (OSError, KeyError)  # pwd/grp lookups and the file operations around them

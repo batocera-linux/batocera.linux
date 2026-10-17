@@ -399,7 +399,7 @@ class Overlay:
                     button=confirm,
                 ),
             ),
-            Phase.ERROR: (_('Connection failed'), state.error),
+            Phase.ERROR: (_('Something went wrong'), state.error),
             Phase.STARTING: (_('Starting…'), ''),
         }
         title, subtitle = texts.get(phase, ('', ''))

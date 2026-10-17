@@ -79,7 +79,7 @@ _FR: Final = {
     'Accept the request in the Discord window: move the pointer with the stick, {button} clicks.': (
         'Accepte la demande dans la fenêtre Discord : le stick déplace le pointeur, {button} clique.'
     ),
-    'Connection failed': 'Connexion impossible',
+    'Something went wrong': 'Un problème est survenu',
     'Starting…': 'Démarrage…',
     'Reconfigure': 'Reconfigurer',
     'Log out': 'Se déconnecter',
