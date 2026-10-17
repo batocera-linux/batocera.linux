@@ -33,7 +33,7 @@ class BStone(Emulator):
 
     @cached_property
     def in_game_ratio(self) -> float:
-        if self.config.get_bool('bstone_widescreen') and self.config.get_bool('bstone_ui_stretched'):
+        if self.config.get_bool('bstone_widescreen') or self.config.get_bool('bstone_ui_stretched'):
             return 16 / 9
 
         return 4 / 3
