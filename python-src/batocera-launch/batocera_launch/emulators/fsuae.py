@@ -83,6 +83,9 @@ def _floppies_from_rom(rom: Path, /) -> list[Path]:
         floppies.append(floppy)
         n += 1
 
+    if rom not in floppies:
+        return [rom]
+
     return floppies
 
 
