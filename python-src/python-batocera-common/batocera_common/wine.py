@@ -72,7 +72,7 @@ class Runner:
 
     def __run_wine_process(
         self, cmd: Sequence[str | Path], /, *, environment: Mapping[str, str | Path] | None = None
-    ) -> None:
+    ) -> int:
         env = {
             'LD_LIBRARY_PATH': f'/lib32:{self.__lib}',
             'WINEPREFIX': self.bottle_dir,
@@ -92,13 +92,19 @@ class Runner:
         _logger.debug(out.decode())
         _logger.error(err.decode())
 
+        return proc.returncode
+
     def install_wine_trick(self, name: str, /, *, environment: Mapping[str, str | Path] | None = None) -> None:
         done_file = self.bottle_dir / f'{name}.done'
 
         if done_file.exists():
             return
 
-        self.__run_wine_process([_WINETRICKS, '-q', name], environment=environment)
+        if returncode := self.__run_wine_process([_WINETRICKS, '-q', name], environment=environment):
+            _logger.error(
+                'winetricks %s failed with exit code %s, it will be retried on the next launch', name, returncode
+            )
+            return
 
         done_file.write_text('done')
 
