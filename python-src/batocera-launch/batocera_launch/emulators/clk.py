@@ -9,6 +9,7 @@ import zlib
 from pathlib import Path
 from typing import Final
 
+from batocera_common.asyncio import run
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
@@ -43,6 +44,7 @@ _BIOS_IMAGE_PART_SIZE: Final = 0x4000
 
 # Static temp file for extraction; CLK doesn't support zipped roms.
 _TMP_DIR: Final = Path('/tmp/clk_extracted')
+_7Z_EXECUTABLE: Final = Path('/usr/bin/7z')
 _QUICKLOAD_SYSTEMS: Final = {
     'amstradcpc',
     'archimedes',
@@ -89,42 +91,27 @@ def _supported_extensions(system_name: str, /) -> set[str]:
     return extensions
 
 
-def _openzip_file(file_path: Path, valid_extensions: set[str] | None = None, /) -> Path | None:
+async def _extract_archive(file_path: Path, valid_extensions: set[str] | None = None, /) -> Path | None:
     if not file_path.is_file():
         return None
 
     if _TMP_DIR.exists():
-        shutil.rmtree(_TMP_DIR)  # Remove extracted zip files (can't be done upon return from configgen)
+        shutil.rmtree(_TMP_DIR)
 
-    if file_path.suffix.lower() != '.zip':
-        return file_path
+    match file_path.suffix.lower():
+        case '.zip':
+            with zipfile.ZipFile(file_path, 'r') as zip_ref:
+                zip_ref.extractall(_TMP_DIR)
+        case '.7z':
+            await run(_7Z_EXECUTABLE, 'x', '-y', f'-o{_TMP_DIR}', file_path, check=True, capture_output=True)
+        case _:
+            return file_path
 
-    with zipfile.ZipFile(file_path, 'r') as zip_ref:
-        # Prefer the largest file with a loadable extension, so CLK can identify
-        # the target machine. Fall back to the largest file overall.
-        best_valid: zipfile.ZipInfo | None = None
-        largest_info: zipfile.ZipInfo | None = None
-        for info in zip_ref.infolist():
-            # Skip directories
-            if info.is_dir():
-                continue
-
-            if largest_info is None or info.file_size > largest_info.file_size:
-                largest_info = info
-
-            if (
-                valid_extensions
-                and Path(info.filename).suffix.lower().lstrip('.') in valid_extensions
-                and (best_valid is None or info.file_size > best_valid.file_size)
-            ):
-                best_valid = info
-
-        chosen = best_valid or largest_info
-        if chosen is None:
-            return None
-
-        zip_ref.extractall(_TMP_DIR)
-        return _TMP_DIR / chosen.filename
+    # Prefer the largest file with a loadable extension, so CLK can identify
+    # the target machine. Fall back to the largest file overall.
+    files = sorted((path for path in _TMP_DIR.rglob('*') if path.is_file()), key=lambda path: path.stat().st_size)
+    valid = [path for path in files if valid_extensions and path.suffix.lower().lstrip('.') in valid_extensions]
+    return (valid or files or [None])[-1]
 
 
 def _link_bios_aliases() -> None:
@@ -203,7 +190,7 @@ class Clk(Emulator):
         }
 
     async def configure(self) -> Command:
-        rom = _openzip_file(self.rom, _supported_extensions(self.system))
+        rom = await _extract_archive(self.rom, _supported_extensions(self.system))
 
         if rom is None:
             raise BatoceraException(f'ROM is a directory: {self.rom}')
