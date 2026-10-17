@@ -19,6 +19,12 @@ class FlycastVL(DisableAnalogModeMixin, RACore):
             self.system, self.rom, self.emulator.gun_precalibration_dir, self.emulator.saves_dir / 'reicast'
         )
 
+    def set_config(self, custom_config: LibretroConfig, /) -> None:
+        super().set_config(custom_config)
+
+        if self.system != 'dreamcast':
+            custom_config.set('input_player1_select', 'f12')
+
 
 @cached_dataclass
 class Flycast(FlycastVL):
