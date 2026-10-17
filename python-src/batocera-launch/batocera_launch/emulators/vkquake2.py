@@ -18,7 +18,7 @@ class VKQuake2(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'vkquake2',
-            'keys': {'exit': 'KEY_F10', 'save_state': 'KEY_F6', 'restore_state': 'KEY_F7'},
+            'keys': {'exit': 'KEY_F10', 'save_state': 'KEY_F6', 'restore_state': 'KEY_F9'},
         }
 
     @property
