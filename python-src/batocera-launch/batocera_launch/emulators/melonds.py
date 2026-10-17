@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import toml
 
@@ -30,6 +30,14 @@ _MELONDS_MAPPING: Final = {
     'x': 'X',
     'y': 'Y',
 }
+
+
+def _merge(target: dict[str, Any], source: dict[str, Any], /) -> None:
+    for key, value in source.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _merge(target[key], cast('dict[str, Any]', value))
+        else:
+            target[key] = value
 
 
 @cached_dataclass
@@ -228,8 +236,9 @@ class MelonDS(Emulator):
                         val = 258
                 base_config['Instance0']['Joystick'][option] = int(val)
 
-        # Update base_config with any existing values
-        config.update(base_config)
+        # merge so settings made in melonDS itself survive, the pad bindings are rewritten every launch
+        _merge(config, base_config)
+        config['Instance0']['Joystick'] = base_config['Instance0']['Joystick']
 
         with config_file.open('w') as fp:
             toml.dump(config, fp)
