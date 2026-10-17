@@ -46,7 +46,7 @@ class App:
     def __init__(self) -> None:
         self.state = State()
         self.images = ImageCache(self.state.bump)
-        self.session = Session(self.state, self)
+        self.session = Session(self.state, self, auto_install=setting('discord.autoinstall', '1') != '0')
         self.pads = Pads(self.request_toggle, guide_enabled=setting('discord.guidebutton', '1') != '0')
         self.setup = SetupServer(self.state, self.session.reconfigure, self.session.logout)
         self._toggle = threading.Event()
@@ -90,21 +90,7 @@ class App:
         return self.setup.url()
 
     def install_discord(self) -> None:
-        if self.state.phase is Phase.INSTALLING:
-            return
-
-        def progress(percent: int) -> None:
-            with self.state.lock:
-                self.state.install_progress = percent
-                self.state.bump()
-
-        def run() -> None:
-            self.state.set_phase(Phase.INSTALLING)
-            ok = discord_app.install(progress)
-            self.state.set_phase(Phase.STARTING if ok else Phase.ERROR, '' if ok else 'flatpak install failed')
-            self.session.reconfigure()
-
-        threading.Thread(target=run, name='discord-install', daemon=True).start()
+        self.session.install()
 
     def show_discord_window(self) -> None:
         self.close_overlay()

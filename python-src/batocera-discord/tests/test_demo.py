@@ -27,4 +27,5 @@ def test_every_screen_renders(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, l
         'settings.png',
         'setup.png',
         'install.png',
+        'installing.png',
     }

@@ -29,6 +29,8 @@ VOICE_EVENTS: Final = (
 VOICE_CHANNEL_TYPES: Final = (2, 13)  # voice, stage
 MAX_RECENTS: Final = 12
 LAUNCH_RETRY: Final = 45.0
+AUTO_INSTALL_RETRY: Final = 300.0  # seconds: the network may not be up yet when the service starts
+INSTALL_ERROR_HOLD: Final = 10.0  # seconds the panel shows a failed install before offering it again
 
 
 class SessionHooks(Protocol):
@@ -52,14 +54,28 @@ def avatar_key(user: dict[str, Any], /) -> str:
 
 
 class Session:
-    def __init__(self, state: State, hooks: SessionHooks, /, *, tokens: TokenClient | None = None) -> None:
+    def __init__(
+        self,
+        state: State,
+        hooks: SessionHooks,
+        /,
+        *,
+        tokens: TokenClient | None = None,
+        auto_install: bool = False,
+    ) -> None:
         self.state = state
         self.hooks = hooks
         self.tokens = tokens or TokenClient()
+        self.auto_install = auto_install
         self.rpc = ipc.DiscordIPC(self._on_event)
         self._jobs: queue.Queue[Callable[[], object]] = queue.Queue()
         self._reconfigured = threading.Event()
         self._last_launch = 0.0
+        self._discord_installed = False
+        self._installing = threading.Lock()
+        self._install_thread: threading.Thread | None = None
+        self._last_auto_install: float | None = None
+        self._install_error_until = 0.0
         self.recents: list[dict[str, str]] = [
             cast('dict[str, str]', item)
             for item in read_json(paths.RECENTS_FILE).get('items', [])
@@ -77,6 +93,53 @@ class Session:
     def start(self) -> None:
         threading.Thread(target=self._loop, name='discord-session', daemon=True).start()
 
+    def install(self) -> None:
+        """Install Discord from Flathub in the background; the progress goes to the state."""
+        if not self._installing.acquire(blocking=False):
+            return
+        with self.state.lock:
+            self.state.install_progress = 0
+        self.state.set_phase(Phase.INSTALLING)
+        self._install_thread = threading.Thread(target=self._install, name='discord-install', daemon=True)
+        self._install_thread.start()
+
+    def _install(self) -> None:
+        def progress(percent: int) -> None:
+            with self.state.lock:
+                self.state.install_progress = percent
+                self.state.bump()
+
+        try:
+            ok = discord_app.install(progress)
+        except Exception:
+            _logger.exception('Discord install failed')
+            ok = False
+        # publish the result before releasing the lock, so the connection loop never sees an in-between state
+        if ok:
+            self._discord_installed = True
+            self.state.set_phase(Phase.STARTING)
+        else:
+            self._install_error_until = time.monotonic() + INSTALL_ERROR_HOLD
+            self.state.set_phase(Phase.ERROR, 'flatpak install failed')
+        self._installing.release()
+        self._reconfigured.set()  # wake the connection loop
+
+    def _auto_install(self) -> None:
+        """Install Discord as soon as the service runs, so it is ready by the time the panel is opened."""
+        if not self.auto_install or self._discord_installed or self._installing.locked():
+            return
+        now = time.monotonic()
+        if self._last_auto_install is not None and now - self._last_auto_install < AUTO_INSTALL_RETRY:
+            return
+        self._last_auto_install = now
+        if not discord_app.flatpak_available():
+            return
+        if discord_app.installed():
+            self._discord_installed = True
+            return
+        _logger.info('Discord is not installed: installing it in the background')
+        self.install()
+
     # -- connection loop --
     def _loop(self) -> None:
         while True:
@@ -93,6 +156,11 @@ class Session:
 
     def _connect_and_serve(self) -> None:
         self._reconfigured.clear()
+        self._auto_install()
+        if self._installing.locked() or time.monotonic() < self._install_error_until:
+            # the install progress, then its error, have priority over the setup and launch screens
+            self._reconfigured.wait(1)
+            return
         config = AppConfig.load()
         if not config.configured:
             self.state.set_phase(Phase.NO_CONFIG)
@@ -127,10 +195,11 @@ class Session:
                 _logger.warning('action failed: %s', exc)
 
     def _ensure_discord_running(self) -> None:
-        if not discord_app.installed():
+        if not self._discord_installed and not discord_app.installed():
             self.state.set_phase(Phase.NO_DISCORD)
             self._reconfigured.wait(5)
             return
+        self._discord_installed = True
         self.state.set_phase(Phase.LAUNCHING)
         if time.monotonic() - self._last_launch > LAUNCH_RETRY:
             self._last_launch = time.monotonic()

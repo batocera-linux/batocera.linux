@@ -66,6 +66,9 @@ _FR: Final = {
     'Discord is not installed': "Discord n'est pas installé",
     'Press {button} to install it from Flathub (about 250 MB).': "Appuie sur {button} pour l'installer depuis Flathub (environ 250 Mo).",
     'Installing Discord… {percent}%': 'Installation de Discord… {percent} %',
+    'Meanwhile, press {button} to set it up from your phone.': (
+        'En attendant, appuie sur {button} pour le configurer depuis ton téléphone.'
+    ),
     'Starting Discord…': 'Démarrage de Discord…',
     'Log in to Discord once in its window, then come back here.': (
         'Connecte-toi une fois à Discord dans sa fenêtre, puis reviens ici.'

@@ -230,7 +230,7 @@ class Overlay:
                 self.c.install_discord()
             elif phase is Phase.LAUNCHING:
                 self.c.show_discord_window()
-            elif phase is Phase.ERROR:
+            elif phase in (Phase.ERROR, Phase.INSTALLING):
                 self.qr_url = self.c.setup_url()
 
     # ------------------------------------------------------------- drawing
@@ -386,7 +386,10 @@ class Overlay:
                 _('Discord is not installed'),
                 _('Press {button} to install it from Flathub (about 250 MB).', button=confirm),
             ),
-            Phase.INSTALLING: (_('Installing Discord… {percent}%', percent=state.install_progress), ''),
+            Phase.INSTALLING: (
+                _('Installing Discord… {percent}%', percent=state.install_progress),
+                _('Meanwhile, press {button} to set it up from your phone.', button=confirm),
+            ),
             Phase.LAUNCHING: (_('Starting Discord…'), _('Log in to Discord once in its window, then come back here.')),
             Phase.CONNECTING: (_('Connecting…'), ''),
             Phase.AUTHORIZE: (

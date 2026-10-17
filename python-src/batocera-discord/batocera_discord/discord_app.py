@@ -29,8 +29,12 @@ def _run(*args: str, timeout: float = 20) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, capture_output=True, text=True, timeout=timeout, env=_env(), check=False)
 
 
+def flatpak_available() -> bool:
+    return shutil.which('flatpak') is not None
+
+
 def installed() -> bool:
-    if shutil.which('flatpak') is None:
+    if not flatpak_available():
         return False
     try:
         return _run('flatpak', 'info', '--system', paths.FLATPAK_APP_ID).returncode == 0
@@ -42,15 +46,22 @@ def install(progress: Callable[[int], None], /) -> bool:
     """Install Discord from Flathub, reporting 0-100 progress. Returns True on success."""
     command = ['flatpak', 'install', '--system', '-y', '--noninteractive', 'flathub', paths.FLATPAK_APP_ID]
     _logger.info('installing %s', paths.FLATPAK_APP_ID)
-    with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_env()) as proc:
-        assert proc.stdout is not None
-        for line in proc.stdout:
-            if match := _PERCENT_RE.search(line):
-                progress(min(100, int(match.group(1))))
-        ok = proc.wait() == 0
+    try:
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_env()) as proc:
+            assert proc.stdout is not None
+            for line in proc.stdout:
+                if match := _PERCENT_RE.search(line):
+                    progress(min(100, int(match.group(1))))
+            ok = proc.wait() == 0
+    except PROCESS_ERRORS:
+        _logger.exception('cannot run flatpak install')
+        return False
     if ok and shutil.which('batocera-flatpak-update'):
         # same step as the Flatpak system menu: adds the new app to EmulationStation
-        subprocess.run(['batocera-flatpak-update'], check=False, capture_output=True, timeout=120)
+        try:
+            subprocess.run(['batocera-flatpak-update'], check=False, capture_output=True, timeout=120)
+        except PROCESS_ERRORS:
+            _logger.warning('batocera-flatpak-update failed', exc_info=True)
     return ok
 
 

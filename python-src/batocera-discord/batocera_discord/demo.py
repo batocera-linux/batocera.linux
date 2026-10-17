@@ -132,5 +132,10 @@ def render_demo(directory: Path, language: str = 'en', /) -> int:
     overlay.act(Action.UP)  # status screens ignore navigation
     overlay.draw(surface)
     pygame.image.save(surface, str(directory / 'install.png'))
+
+    controller.state.phase = Phase.INSTALLING
+    controller.state.install_progress = 42
+    overlay.draw(surface)
+    pygame.image.save(surface, str(directory / 'installing.png'))
     print(f'screenshots written to {directory}')
     return 0
