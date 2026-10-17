@@ -746,7 +746,7 @@ class Pcsx2(Emulator):
             # only configure the number of controllers set
             if nplayer <= multi_tap:
                 pad_index = nplayer
-                if multi_tap == 4 and pad.index != 0:
+                if multi_tap == 4 and nplayer != 1:
                     # Skip Pad2 in the ini file when MultitapPort1 only
                     pad_index = nplayer + 1
                 pad_num = f'Pad{pad_index}'
