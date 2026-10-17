@@ -155,42 +155,68 @@ def find_package_for_file(changed_file_path: Path, package_dirs: Mapping[Path, s
     return None
 
 
+def git_in_root(git_root: Path, /, *args: str) -> list[str]:
+    try:
+        return subprocess.check_output(
+            [
+                'git',
+                '-C',
+                str(git_root),
+                *args,
+            ],
+            stderr=subprocess.DEVNULL,
+            universal_newlines=True,
+        ).splitlines()
+    except Exception:
+        return []
+
+
+def git_log_since(git_root: Path, since: str, /, *args: str) -> list[str]:
+    return git_in_root(
+        git_root,
+        'log',
+        # log only first-parent commits (not merged commits) to follow the branch's
+        # integration history
+        '--first-parent',
+        # when determining what changed, diff the merge commit (and all commits
+        # it merged) against the first-parent; this (along with --first-parent)
+        # treats the merge commit as an atomic unit of change at the time it was
+        # merged
+        '--diff-merges=first-parent',
+        f'--since={since}',
+        *args,
+    )
+
+
+def git_diff_head(git_root: Path, /, *args: str) -> list[str]:
+    return git_in_root(git_root, 'diff', 'HEAD', *args)
+
+
 def get_changed_files(git_root: Path, since: str, /) -> Iterator[Path]:
     """Retrieves both committed files and any uncommitted staged/unstaged/untracked files."""
     changed_files: set[str] = set()
 
     # Committed files from the last time period
-    try:
-        out = subprocess.check_output(
-            ['git', '-C', str(git_root), 'log', f'--since={since}', '--name-only', '--format=%n'],
-            stderr=subprocess.DEVNULL,
-            universal_newlines=True,
+    changed_files.update(
+        stripped
+        for line in git_log_since(
+            git_root,
+            since,
+            '--name-only',
+            '--format=%n',
         )
-        changed_files.update(line.strip() for line in out.splitlines() if line.strip())
-    except Exception:
-        pass
+        if (stripped := line.strip())
+    )
 
     # Uncommitted modifications (both staged and unstaged)
-    try:
-        out = subprocess.check_output(
-            ['git', '-C', str(git_root), 'diff', 'HEAD', '--name-only'],
-            stderr=subprocess.DEVNULL,
-            universal_newlines=True,
-        )
-        changed_files.update(line.strip() for line in out.splitlines() if line.strip())
-    except Exception:
-        pass
+    changed_files.update(stripped for line in git_diff_head(git_root, '--name-only') if (stripped := line.strip()))
 
     # Untracked files
-    try:
-        out = subprocess.check_output(
-            ['git', '-C', str(git_root), 'ls-files', '--others', '--exclude-standard'],
-            stderr=subprocess.DEVNULL,
-            universal_newlines=True,
-        )
-        changed_files.update(line.strip() for line in out.splitlines() if line.strip())
-    except Exception:
-        pass
+    changed_files.update(
+        stripped
+        for line in git_in_root(git_root, 'ls-files', '--others', '--exclude-standard')
+        if (stripped := line.strip())
+    )
 
     for file_rel in sorted(changed_files):
         yield git_root / file_rel
@@ -223,31 +249,22 @@ def map_config_option_to_package(option: str, config_to_pkg: Mapping[str, str], 
 def get_changed_configs_in_file(git_root: Path, file_path: Path, since: str, /) -> set[str]:
     """Extracts changed Buildroot config options from committed logs and uncommitted diffs."""
     changed_options: set[str] = set()
-    try:
-        rel_path = file_path.resolve().relative_to(git_root.resolve())
-        config_key_pattern = re.compile(r'^[+-](?![+-])\s*(?:#\s*)?(BR2_[A-Z0-9_]+)')
 
-        # Fetch from committed logs
-        out_log = subprocess.check_output(
-            ['git', '-C', str(git_root), 'log', '-p', f'--since={since}', '--', str(rel_path)],
-            stderr=subprocess.DEVNULL,
-            universal_newlines=True,
-        )
-        for line in out_log.splitlines():
-            if match := config_key_pattern.match(line):
-                changed_options.add(match.group(1))
+    rel_path = file_path.resolve().relative_to(git_root.resolve())
+    config_key_pattern = re.compile(r'^[+-](?![+-])\s*(?:#\s*)?(BR2_[A-Z0-9_]+)')
 
-        # Fetch from uncommitted (staged + unstaged) edits
-        out_diff = subprocess.check_output(
-            ['git', '-C', str(git_root), 'diff', 'HEAD', '--', str(rel_path)],
-            stderr=subprocess.DEVNULL,
-            universal_newlines=True,
-        )
-        for line in out_diff.splitlines():
-            if match := config_key_pattern.match(line):
-                changed_options.add(match.group(1))
-    except Exception:
-        pass
+    # Fetch from committed logs
+    lines = git_log_since(git_root, since, '-p', '--', str(rel_path))
+    for line in lines:
+        if match := config_key_pattern.match(line):
+            changed_options.add(match.group(1))
+
+    # Fetch from uncommitted (staged + unstaged) edits
+    diff_lines = git_diff_head(git_root, '--', str(rel_path))
+    for line in diff_lines:
+        if match := config_key_pattern.match(line):
+            changed_options.add(match.group(1))
+
     return changed_options
 
 
