@@ -41,7 +41,7 @@ class X16emu(Emulator):
         if self.rom.suffix == '.img':
             args.extend(['-sdcard', self.rom])
         elif self.rom.suffix == '.bas':
-            args.extend(['-bas', self.rom])
+            args.extend(['-bas', self.rom, '-run'])
         else:
             args.extend(['-prg', self.rom, '-run'])
 
