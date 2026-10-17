@@ -56,7 +56,8 @@ class Cannonball(Emulator):
         window = ET.SubElement(video, 'window')
         ET.SubElement(window, 'scale').text = '2'
         ET.SubElement(video, 'fps_counter').text = '1' if self.config.show_fps else '0'
-        ET.SubElement(video, 'widescreen').text = self.config.get('ratio', '0')
+        ratio = self.config.get('ratio', '0')
+        ET.SubElement(video, 'widescreen').text = '1' if ratio in ('1', '16/9') else '0'
         ET.SubElement(video, 'hires').text = self.config.get('highResolution', '0')
         ET.SubElement(video, 'vsync').text = self.config.get('vsync', '1')  # default vsync to 1
         scanlines = self.config.get('scanlines', '0')
