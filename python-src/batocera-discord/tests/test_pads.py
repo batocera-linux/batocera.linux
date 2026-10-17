@@ -7,6 +7,7 @@ import pytest
 
 pytest.importorskip('evdev')
 
+import evdev
 from evdev import ecodes
 
 from batocera_discord import pads
@@ -39,47 +40,47 @@ def test_nintendo_confirms_with_the_right_button() -> None:
     assert KEYMAPS[Family.NINTENDO][ecodes.BTN_SOUTH] is Action.BACK
 
 
-def test_lone_guide_press_toggles() -> None:
-    toggles: list[bool] = []
-    reader = Pads(lambda: toggles.append(True))
+def _press(reader: Pads, pad: Any, code: int, /) -> None:
+    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, code, 1)))
+    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, code, 0)))
+
+
+def test_guide_or_hotkey_key_closes_the_panel() -> None:
+    closes: list[bool] = []
+    reader = Pads(lambda: closes.append(True), close_keys=frozenset({ecodes.BTN_MODE, ecodes.KEY_RECORD}))
     pad = _pad()
 
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_MODE, 1)))
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_MODE, 0)))
+    _press(reader, pad, ecodes.BTN_MODE)
+    _press(reader, pad, ecodes.KEY_RECORD)
 
-    assert toggles == [True]
-
-
-def test_hotkey_combo_does_not_toggle() -> None:
-    toggles: list[bool] = []
-    reader = Pads(lambda: toggles.append(True))
-    pad = _pad()
-
-    for code, value in ((ecodes.BTN_MODE, 1), (ecodes.BTN_START, 1), (ecodes.BTN_START, 0), (ecodes.BTN_MODE, 0)):
-        reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, code, value)))
-
-    assert toggles == []
+    assert closes == [True, True]
+    assert reader.actions.empty()
 
 
-def test_guide_button_can_be_disabled() -> None:
-    toggles: list[bool] = []
-    reader = Pads(lambda: toggles.append(True), guide_enabled=False)
-    pad = _pad()
-
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_MODE, 1)))
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_MODE, 0)))
-
-    assert toggles == []
-
-
-def test_buttons_only_act_while_grabbed() -> None:
+def test_buttons_become_actions() -> None:
     reader = Pads(lambda: None)
     pad = _pad(Family.PLAYSTATION)
 
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_SOUTH, 1)))
-    assert reader.actions.empty()
+    _press(reader, pad, ecodes.BTN_SOUTH)
+
+    assert reader.actions.get_nowait() is Action.CONFIRM
     assert reader.last_family is Family.PLAYSTATION
 
-    reader._grabbed = True
-    reader.handle(pad, cast('Any', FakeEvent(ecodes.EV_KEY, ecodes.BTN_SOUTH, 1)))
-    assert reader.actions.get_nowait() is Action.CONFIRM
+
+def test_nothing_is_read_while_the_panel_is_closed(monkeypatch: pytest.MonkeyPatch) -> None:
+    def no_devices() -> list[str]:
+        return []
+
+    monkeypatch.setattr(evdev, 'list_devices', no_devices)
+    reader = Pads(lambda: None)
+
+    assert not reader.active
+    assert reader._thread is None
+    reader.set_active(True)
+    thread = reader._thread
+    assert thread is not None
+    reader.set_active(False)
+    thread.join(5)
+
+    assert not thread.is_alive()
+    assert reader._thread is None

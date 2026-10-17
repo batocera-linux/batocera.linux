@@ -12,7 +12,7 @@ import time
 from logging.handlers import RotatingFileHandler
 from typing import IO, TYPE_CHECKING, Final
 
-from . import audio, discord_app, paths
+from . import audio, discord_app, hotkey, paths
 from .controls import Action, Family
 from .errors import IO_ERRORS, PROCESS_ERRORS
 from .i18n import _
@@ -47,7 +47,8 @@ class App:
         self.state = State()
         self.images = ImageCache(self.state.bump)
         self.session = Session(self.state, self, auto_install=setting('discord.autoinstall', '1') != '0')
-        self.pads = Pads(self.request_toggle, guide_enabled=setting('discord.guidebutton', '1') != '0')
+        self.pads = Pads(self.request_toggle)
+        self.hotkey = setting('discord.hotkey', hotkey.DEFAULT_KEY)
         self.setup = SetupServer(self.state, self.session.reconfigure, self.session.logout)
         self._toggle = threading.Event()
         self._stopping = threading.Event()
@@ -61,7 +62,7 @@ class App:
         if self._visible:
             self._toggle.set()
         self.pads.pointer = self._move_pointer
-        self.pads.grab(True)
+        self.pads.set_active(True)
         discord_app.show_window()
         time.sleep(1.5)
         discord_app.pointer_center()
@@ -70,7 +71,7 @@ class App:
     def authorize_finished(self) -> None:
         self._authorizing = False
         self.pads.pointer = None
-        self.pads.grab(self._visible)
+        self.pads.set_active(self._visible)
         discord_app.hide_window()
 
     def image_wanted(self, key: str, url: str, /) -> None:
@@ -142,7 +143,8 @@ class App:
         _.set_language()
         self.images.start()
         self.session.start()
-        self.pads.start()
+        if hotkey.register(self.hotkey) and (code := hotkey.key_code(self.hotkey)) is not None:
+            self.pads.close_keys = self.pads.close_keys | {code}  # the key that opens the panel also closes it
         audio.start_watcher(self.state)
         threading.Thread(
             target=discord_app.keep_pulse_socket, args=(self._stopping,), name='discord-pulse', daemon=True
@@ -154,7 +156,7 @@ class App:
 
     def _set_visible(self, visible: bool, /) -> None:
         self._visible = visible
-        self.pads.grab(visible or self._authorizing)
+        self.pads.set_active(visible or self._authorizing)
         if not visible and self.state.phase is Phase.READY:
             self.setup.stop()  # configured: the setup page is no longer needed
 

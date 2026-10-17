@@ -1,7 +1,7 @@
 """batocera-discord: controller-driven Discord voice panel for Batocera.
 
 batocera-discord run           the service (started by /usr/share/batocera/services/discord)
-batocera-discord toggle        open or close the panel (for a hotkeygen action or a script)
+batocera-discord toggle        open or close the panel (run by the hotkeygen "discord" action)
 batocera-discord demo <dir>    render the panel with sample data to PNG files
 """
 

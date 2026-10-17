@@ -11,6 +11,8 @@ RECENTS_FILE: Final = CONFIG_DIR / 'recents.json'
 CACHE_DIR: Final = USERDATA / 'system' / 'cache' / 'discord'
 LOG_FILE: Final = USERDATA / 'system' / 'logs' / 'discord.log'
 BATOCERA_CONF: Final = USERDATA / 'system' / 'batocera.conf'
+HOTKEYGEN_SYSTEM_DIR: Final = Path('/etc/hotkeygen')
+HOTKEYGEN_USER_DIR: Final = USERDATA / 'system' / 'configs' / 'hotkeygen'
 
 RUN_DIR: Final = Path('/var/run')
 PID_FILE: Final = RUN_DIR / 'batocera-discord.pid'
