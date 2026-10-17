@@ -116,12 +116,17 @@ class XeniaEdge(Emulator):
             GPU={
                 'gpu': 'vulkan',
                 'framerate_limit': self.config.get_int('xenia_edge_vsync_fps', 0),
-                'texture_cache_memory_limit_hard': self.config.get_int('xenia_edge_limit_hard', 768),
-                'texture_cache_memory_limit_render_to_texture': self.config.get_int(
-                    'xenia_edge_limit_render_to_texture', 24
-                ),
-                'texture_cache_memory_limit_soft': self.config.get_int('xenia_edge_limit_soft', 384),
-                'texture_cache_memory_limit_soft_lifetime': self.config.get_int('xenia_edge_limit_soft_lifetime', 30),
+                'Debug': {
+                    **config.get('GPU', {}).get('Debug', {}),
+                    'texture_cache_memory_limit_hard': self.config.get_int('xenia_edge_limit_hard', 768),
+                    'texture_cache_memory_limit_render_to_texture': self.config.get_int(
+                        'xenia_edge_limit_render_to_texture', 24
+                    ),
+                    'texture_cache_memory_limit_soft': self.config.get_int('xenia_edge_limit_soft', 384),
+                    'texture_cache_memory_limit_soft_lifetime': self.config.get_int(
+                        'xenia_edge_limit_soft_lifetime', 30
+                    ),
+                },
                 'render_target_path': self.config.get_str('xenia_edge_render_target_path', 'performance'),
                 'occlusion_query': self.config.get_str('xenia_edge_occlusion_query', 'fast'),
                 'precise_interpolation': self.config.get_bool('xenia_edge_precise_interpolation', True),
