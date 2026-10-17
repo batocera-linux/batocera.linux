@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from io import TextIOWrapper
     from pathlib import Path
 
+    from batocera_launch import Input
+
 # Map each core binary to the vicerc section name it uses for its settings
 _SYSTEM_CORE_MAP: Final = {
     'x64': 'C64',
@@ -32,39 +34,35 @@ _CORE_CHIP_MAP: Final = {
     'C128': ['VICII', 'VDC'],
 }
 
-# inputtype:
-# 0      axis
-# 1      button
-# 2      hat
-# 3      ball
-#
-# Note that each axis has 2 inputindex entries and each hat has 4.
-#
-# action [action_parameters]:
-# 0               none
-# 1 port pin      joystick (pin: 1/2/4/8/16/32/64/128/256/512/1024/2048 = u/d/l/r/fire(A)/fire2(B)/fire3(X)/Y/LB/RB/select/start)
-# 2 row col       keyboard
-# 3               map
-# 4               UI activate
-# 5 path&to&item  UI function
-# 6 pot axis      joystick (pot: 1/2/3/4 = x1/y1/x2/y2)
-_VICE_JOYSTICK: Final = {
-    'up': '# 2 0 1 / 1',
-    'down': '# 2 1 1 / 2',
-    'left': '# 2 2 1 / 4',
-    'right': '# 2 3 1 / 8',
-    'start': '# 1 ? 0',
-    'select': '# 1 ? 4',
-    'hotkey': '# 1 ? 5 Quit emulator',
-    'a': '# 1 ? 1 / 32',  # Space
-    'b': '# 1 ? 1 / 16',  # Fire button
-    'x': '# 1 ? 0',
-    'y': '# 1 ? 1 / 64',  # Y
-    'pageup': '# 1 ? 0',
-    'pagedown': '# 1 ? 0',
-    'l1': '# 1 ? 0',
-    'r1': '# 1 ? 0',
+# VICE joymap lines are 'joynum inputtype inputindex action [args]', the port comes from JoyDevice1/2
+# inputtype: 0 axis (index axis*2, +1 for negative), 1 button, 2 hat (index hat*4 + up/down/left/right)
+# action: 1 pin = joystick (1/2/4/8/16/32/64 = u/d/l/r/fire/fire2/fire3), 4 = UI activate
+_VICE_PINS: Final = {
+    'up': 1,
+    'down': 2,
+    'left': 4,
+    'right': 8,
+    'b': 16,  # Fire button
+    'a': 32,  # Space
+    'y': 64,
 }
+
+# JoyDevice values: 0 none, 4 onwards the host joysticks
+_JOYDEV_NONE: Final = 0
+_JOYDEV_REALJOYSTICK_MIN: Final = 4
+
+# SDL hat value -> VICE hat direction offset
+_HAT_DIRECTION: Final = {'1': 0, '4': 1, '8': 2, '2': 3}
+
+
+def _joymap_input(input: Input, /) -> str | None:
+    if input.type == 'button':
+        return f'1 {input.id}'
+    if input.type == 'hat' and input.value in _HAT_DIRECTION:
+        return f'2 {int(input.id) * 4 + _HAT_DIRECTION[input.value]}'
+    if input.type == 'axis':
+        return f'0 {int(input.id) * 2 + (int(input.value) < 0)}'
+    return None
 
 
 class _EqualsSpaceRemover:
@@ -130,9 +128,12 @@ class Vice(Emulator):
             joyport1 = '1'
         config.set(system_core, 'JoyPort1Device', joyport1)
 
-        config.set(system_core, 'JoyDevice1', '4')
-        if system_core != 'VIC20':
-            config.set(system_core, 'JoyDevice2', '4')
+        # VICE gives a pad to one port only, so P1 takes port 2 that most games read (the VIC-20 has just port 1)
+        devices = [_JOYDEV_REALJOYSTICK_MIN + pad.index for pad in self.controllers[:2]]
+        player_ports = (1,) if system_core == 'VIC20' else (2, 1)
+        port_devices = dict(zip(player_ports, devices, strict=False))
+        for port in sorted(player_ports):
+            config.set(system_core, f'JoyDevice{port}', str(port_devices.get(port, _JOYDEV_NONE)))
         config.set(system_core, 'JoyMapFile', str(joymap))
 
         # custom : allow the user to configure directly sdl-vicerc via batocera.conf via lines like : vice.section.option=value
@@ -148,18 +149,17 @@ class Vice(Emulator):
         return joymap
 
     def _write_joymap(self, joymap: Path) -> None:
-        # vic20 uses a slightly different port
-        joy_port = '0' if self.core == 'xvic' else '1'
-
         lines = ['# Batocera configured controllers', '', '!CLEAR']
         for pad in self.controllers:
             lines.append('')
             lines.append(f'# {pad.real_name}')
             for input_name, input_value in pad.inputs.items():
-                if input_name in _VICE_JOYSTICK:
-                    line = _VICE_JOYSTICK[input_name]
-                    line = line.replace('#', str(pad.index)).replace('?', str(input_value.id))
-                    lines.append(line.replace('/', joy_port))
+                if (source := _joymap_input(input_value)) is None:
+                    continue
+                if input_name in _VICE_PINS:
+                    lines.append(f'{pad.index} {source} 1 {_VICE_PINS[input_name]}')
+                elif input_name == 'select':
+                    lines.append(f'{pad.index} {source} 4')
             lines.append('')
 
         joymap.write_text('\n'.join(lines) + '\n')
