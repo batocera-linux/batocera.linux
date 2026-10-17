@@ -162,6 +162,7 @@ class Supermodel(Emulator):
                 'save_state': 'KEY_F5',
                 'restore_state': 'KEY_F7',
                 'next_slot': 'KEY_F6',
+                'coin': 'KEY_3',
             },
         }
 
