@@ -21,6 +21,11 @@ class Fbneo(RACore):
 
         return None
 
+    def set_config(self, custom_config: LibretroConfig, /) -> None:
+        super().set_config(custom_config)
+
+        custom_config.set('input_player1_select', 'f12')
+
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Diagnostic input
         core_options.set('fbneo-diagnostic-input', 'Start + L + R')
