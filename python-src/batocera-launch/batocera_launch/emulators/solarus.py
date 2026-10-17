@@ -8,68 +8,29 @@ from batocera_launch import Command, Controller, Emulator, HotkeysContext
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from batocera_launch import Controllers, Input
+    from batocera_launch import Controllers
 
-_KEYMAPPING: Final = {
-    'action': 'a',
-    'attack': 'b',
-    'item1': 'y',
-    'item2': 'x',
+_BUTTONS: Final = {
+    'action': 'b',
+    'attack': 'a',
+    'item1': 'x',
+    'item2': 'y',
     'pause': 'start',
-    'right': 'right',
-    'up': 'up',
-    'left': 'left',
-    'down': 'down',
 }
 
-_REVERSE_AXIS: Final = {
-    'up': 'down',
-    'left': 'right',
+_DIRECTIONS: Final = {
+    'dpad': {'up': 'dpad_up', 'down': 'dpad_down', 'left': 'dpad_left', 'right': 'dpad_right'},
+    'joystick1': {'up': 'left_y -', 'down': 'left_y +', 'left': 'left_x -', 'right': 'left_x +'},
+    'joystick2': {'up': 'right_y -', 'down': 'right_y +', 'left': 'right_x -', 'right': 'right_x +'},
 }
-
-
-def _key2val(input: Input, reverse: bool, /) -> str | None:
-    if input.type == 'button':
-        return f'button {input.id}'
-    if input.type == 'hat':
-        if input.value == '1':
-            return 'hat 0 up'
-        if input.value == '2':
-            return 'hat 0 right'
-        if input.value == '4':
-            return 'hat 0 down'
-        if input.value == '8':
-            return 'hat 0 left'
-        return None
-    if input.type == 'axis':
-        if (reverse and input.value == '-1') or (not reverse and input.value == '1'):
-            return f'axis {input.id} +'
-        return f'axis {input.id} -'
-    return None
 
 
 def _write_pad_config(config_dir: Path, controllers: Controllers, joystick: str | None, /) -> None:
-    keymapping = dict(_KEYMAPPING)
-    if joystick in {'joystick1', 'joystick2'}:
-        keymapping['up'] = f'{joystick}up'
-        keymapping['down'] = f'{joystick}down'
-        keymapping['left'] = f'{joystick}left'
-        keymapping['right'] = f'{joystick}right'
-
     config_dir.mkdir(parents=True, exist_ok=True)
     with (config_dir / 'pads.ini').open('w', encoding='ascii') as f:
-        if pad := Controller.find_player_number(controllers, 1):
-            for key, mapped in keymapping.items():
-                if mapped not in pad.inputs:
-                    continue
-                if (value := _key2val(pad.inputs[mapped], False)) is not None:
-                    f.write(f'{key}={value}\n')
-                if (
-                    key in _REVERSE_AXIS
-                    and pad.inputs[mapped].type == 'axis'
-                    and (value := _key2val(pad.inputs[mapped], True)) is not None
-                ):
-                    f.write(f'{_REVERSE_AXIS[key]}={value}\n')
+        if Controller.find_player_number(controllers, 1):
+            bindings = _BUTTONS | _DIRECTIONS.get(joystick or '', _DIRECTIONS['dpad'])
+            f.writelines(f'{key}={value}\n' for key, value in bindings.items())
 
 
 @cached_dataclass
