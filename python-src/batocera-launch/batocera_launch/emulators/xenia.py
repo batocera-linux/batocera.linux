@@ -204,11 +204,11 @@ class Xenia(Emulator):
         if self.config.get_bool('xenia_patches'):
             # Simplify the rom name to match a patch file's own naming (which
             # drops region/revision tags in brackets/parens).
-            rom_name = re.sub(r'\[.*?\]|\(.*?\)', '', rom.stem)
+            rom_name = re.sub(r'\[.*?\]|\(.*?\)', '', rom.stem).strip()
             matching_files = [
                 file_path
                 for file_path in (canarypath / 'patches').glob(f'*{rom_name}*.patch.toml')
-                if re.search(rom_name, file_path.name, re.IGNORECASE)
+                if re.search(re.escape(rom_name), file_path.name, re.IGNORECASE)
             ]
             if matching_files:
                 for file_path in matching_files:
