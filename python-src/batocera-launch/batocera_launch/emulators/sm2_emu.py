@@ -144,9 +144,12 @@ class Sm2Emu(Emulator):
             'name': 'sm2-emu',
             'keys': {
                 'exit': 'KEY_F9',
+                'menu': 'KEY_F10',
+                'pause': 'KEY_P',
                 'screenshot': 'KEY_F12',
                 'save_state': 'KEY_F6',
                 'restore_state': 'KEY_F7',
+                'coin': 'KEY_5',
             },
         }
 
