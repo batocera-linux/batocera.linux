@@ -17,16 +17,16 @@
 #
 ################################################################################
 
-YMIR_VERSION = v0.3.3
+YMIR_VERSION = v0.4.0
 YMIR_SITE = https://github.com/StrikerX3/Ymir
 YMIR_SITE_METHOD = git
-YMIR_GIT_SUBMODULES = ES
+YMIR_GIT_SUBMODULES = YES
 YMIR_LICENSE = GPLv2
 YMIR_LICENSE_FILE = LICENSE
 YMIR_EMULATOR_INFO = ymir.emulator.yml
-YMIR_DEPENDENCIES += catch2 cereal cxxopts date fmt host-clang json-for-modern-cpp
-YMIR_DEPENDENCIES += libcurl miniz nghttp3 ngtcp2 openssl rtmidi sdl3 semver stb
-YMIR_DEPENDENCIES += tomlplusplus
+YMIR_DEPENDENCIES += catch2 cereal cxxopts date fmt host-clang host-pkgconf
+YMIR_DEPENDENCIES += json-for-modern-cpp libcurl lz4 miniz nghttp3 ngtcp2 openssl
+YMIR_DEPENDENCIES += rtmidi sdl3 semver stb tomlplusplus xxhash zlib zstd
 
 YMIR_SUPPORTS_IN_SOURCE_BUILD = NO
 
@@ -46,8 +46,8 @@ YMIR_CONF_OPTS += -DYmir_ENABLE_TESTS=OFF
 YMIR_CONF_OPTS += -DYmir_ENABLE_YMDASM=OFF
 YMIR_CONF_OPTS += -DYmir_ENABLE_IPO=ON
 YMIR_CONF_OPTS += -DYmir_ENABLE_UPDATE_CHECKS=OFF
-YMIR_CONF_OPTS += -DYmir_FF_VIRTUA_GUN=ON
-YMIR_CONF_OPTS += -DStb_INCLUDE_DIR=$(STAGING_DIR)/usr/include/stb
+# the vulkan backend is unimplemented but becomes the default when found, and needs dxc
+YMIR_CONF_OPTS += -DCMAKE_DISABLE_FIND_PACKAGE_Vulkan=ON
 
 ifeq ($(BR2_X86_CPU_HAS_AVX2),y)
     YMIR_CONF_OPTS += -DYmir_AVX2=ON

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from fractions import Fraction
 from typing import TYPE_CHECKING, Final, TypedDict, cast
 
 import toml
@@ -269,7 +270,7 @@ class Ymir(Emulator):
         if not config:
             _logger.info('Creating default ymir config at %s', toml_file)
             config = {
-                'ConfigVersion': 5,  # pyright: ignore[reportAssignmentType]
+                'ConfigVersion': 6,  # pyright: ignore[reportAssignmentType]
                 'Cartridge': {
                     'AutoLoadGameCarts': True,
                     'Type': 'None',
@@ -306,7 +307,7 @@ class Ymir(Emulator):
         # "Change history" comment); always keep the ConfigVersion current so Ymir reads
         # our writes from the locations we actually write them to below, rather than
         # falling back to (and never updating) the pre-v4/v5 flat key layout.
-        config['ConfigVersion'] = 5  # pyright: ignore[reportArgumentType]
+        config['ConfigVersion'] = 6  # pyright: ignore[reportArgumentType]
 
         # --- Apply Batocera Specific Overrides ---
 
@@ -316,6 +317,7 @@ class Ymir(Emulator):
             {
                 'CheckForUpdates': False,
                 'IncludeNightlyBuilds': False,
+                'EnableDiscordPresence': False,
             }
         )
 
@@ -382,10 +384,13 @@ class Ymir(Emulator):
             }
         )
 
+        # ConfigVersion 6 stores the aspect as a ratio, e.g. 16:9
+        aspect = Fraction(self.config.get_float('ymir_aspect', 4 / 3)).limit_denominator(100)
+
         # Options
         video_config.update(
             {
-                'ForcedAspect': self.config.get_float('ymir_aspect', 4 / 3),
+                'ForcedAspect': f'{aspect.numerator}:{aspect.denominator}',
                 'Rotation': self.config.get_str('ymir_rotation', 'Normal'),
             }
         )

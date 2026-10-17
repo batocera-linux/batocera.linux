@@ -370,7 +370,7 @@
 - Xenia Edge to 17th of September build
 - Xenia to v1.0.2844
 - XRoar to v1.12.1
-- Ymir to v0.3.3
+- Ymir to v0.4.0
 ### System
 - Allwinner H616 device kernel updated to 7.2.8
 - Allwinner H700 device kernel updated to 7.2.8

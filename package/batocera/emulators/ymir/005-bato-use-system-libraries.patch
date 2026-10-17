@@ -1,0 +1,84 @@
+--- a/vendor/CMakeLists.txt
++++ b/vendor/CMakeLists.txt
+@@ -35,19 +35,23 @@
+ message(STATUS "==> mio")
+ add_subdirectory(mio EXCLUDE_FROM_ALL)
+ 
+-# {fmt} - https://github.com/fmtlib/fmt
+-message(STATUS "==> libfmt")
+-set(FMT_MODULE OFF)
+-add_subdirectory(fmt)
++# batocera - use system fmt, xxhash and lz4
++find_package(fmt CONFIG REQUIRED GLOBAL)
++find_package(PkgConfig REQUIRED)
++# buildroot's libxxhash.pc points at /usr/local
++find_path(XXHASH_INCLUDE_DIR xxhash.h REQUIRED)
++find_library(XXHASH_LIBRARY xxhash REQUIRED)
++add_library(xxHash::xxHash UNKNOWN IMPORTED GLOBAL)
++set_target_properties(xxHash::xxHash PROPERTIES
++    IMPORTED_LOCATION "${XXHASH_LIBRARY}"
++    INTERFACE_INCLUDE_DIRECTORIES "${XXHASH_INCLUDE_DIR}")
++pkg_check_modules(LZ4 REQUIRED IMPORTED_TARGET GLOBAL liblz4)
++add_library(lz4::lz4 ALIAS PkgConfig::LZ4)
+ 
+ # concurrentqueue - https://github.com/cameron314/concurrentqueue
+ message(STATUS "==> concurrentqueue")
+ add_subdirectory(concurrentqueue EXCLUDE_FROM_ALL)
+ 
+-# xxHash - https://github.com/Cyan4973/xxHash
+-message(STATUS "==> xxHash")
+-add_subdirectory(xxHash EXCLUDE_FROM_ALL)
+-
+ # libchdr - https://github.com/rtissera/libchdr
+ message(STATUS "==> libchdr")
+ add_subdirectory(libchdr)
+@@ -79,11 +83,6 @@
+     message(STATUS "==> dear ImGui")
+     add_subdirectory(imgui EXCLUDE_FROM_ALL)
+ 
+-    # lz4 - https://github.com/lz4/lz4
+-    # - Unable to configure AVX2 support from vcpkg
+-    message(STATUS "==> lz4")
+-    add_subdirectory(lz4 EXCLUDE_FROM_ALL)
+-
+     # discord-rpc - https://github.com/discord/discord-rpc
+     # - Via myMCpp / PCSX2
+     message(STATUS "==> discord-rpc")
+@@ -95,10 +94,8 @@
+ if (MSVC)
+     set_target_properties(chdr-lzma PROPERTIES FOLDER Vendored)
+     set_target_properties(chdr-static PROPERTIES FOLDER Vendored)
+-    set_target_properties(xxHash PROPERTIES FOLDER Vendored)
+     if (NOT Ymir_LIBRARY_ONLY)
+         set_target_properties(imgui PROPERTIES FOLDER Vendored)
+-        set_target_properties(lz4 PROPERTIES FOLDER Vendored)
+         set_target_properties(discord-rpc PROPERTIES FOLDER Vendored)
+     endif ()
+ endif ()
+--- a/vendor/stb/CMakeLists.txt
++++ b/vendor/stb/CMakeLists.txt
+@@ -1,20 +1,15 @@
+-add_library(stb OBJECT
+-    stb/stb_image.h
+-    stb/stb_image_write.h
+-    stb/stb_vorbis.c
+-
+-    # Add more features as needed
++# batocera - use system stb
++find_path(STB_INCLUDE_DIR stb_vorbis.c PATH_SUFFIXES stb REQUIRED)
+ 
++add_library(stb OBJECT
+     ymir/stb_implementations.cpp
+ )
+ add_library(stb::stb ALIAS stb)
+ 
+ target_include_directories(stb
+     PUBLIC
+-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/stb>"
++        "${STB_INCLUDE_DIR}"
+         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ymir>"
+-    PRIVATE
+-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/stb>"
+ )
+ target_compile_features(stb PUBLIC cxx_std_20)
+ target_compile_definitions(stb PUBLIC STB_VORBIS_HEADER_ONLY)
