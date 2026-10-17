@@ -53,6 +53,7 @@
 - Chronic Concepts Insert Coin Cube Gen 2 coin mechanism support
 - Controller configs for the Arcade2TV-XR
 - CorsixTH game resolution, interface scale and decoration options
+- Discord service (x86_64): a controller panel opened with the guide button to join voice channels, call friends, mute and set volumes, set up from a phone with a QR code
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
 - Drastic back for Aarch64 devices
 - ES can have a maximum depth of subfolders to go through when indexing (skip subfolders with large amount of files)

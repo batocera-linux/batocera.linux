@@ -11,6 +11,8 @@ dev = [
     "pyfakefs==6.2.0",
     "aiointercept==0.1.12",
     "coverage[toml]==7.16.2",
+    # type information for python-src/batocera-discord; the image ships python-pygame2 (same API)
+    "pygame-ce==2.5.8",
     "pygobject-stubs @ git+https://github.com/pygobject/pygobject-stubs.git@959c470767cd44a74912ba182e9fb202d0d96519",
 ]
 

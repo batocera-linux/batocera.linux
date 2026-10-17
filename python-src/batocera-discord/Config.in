@@ -1,0 +1,15 @@
+config BR2_PACKAGE_BATOCERA_DISCORD
+	bool "batocera discord"
+	depends on BR2_PACKAGE_FLATPAK
+	depends on BR2_PACKAGE_XORG7
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_PYGAME2
+	select BR2_PACKAGE_PYTHON_EVDEV
+	select BR2_PACKAGE_PYTHON_QRCODE
+	select BR2_PACKAGE_XDOTOOL
+	help
+	  Controller driven Discord voice panel, available as the
+	  "discord" service: join voice channels, call friends, mute
+	  and set per-user volume from the couch. Uses the Discord
+	  flatpak and its local RPC; set up from a phone by scanning
+	  a QR code shown on the TV.
