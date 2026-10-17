@@ -350,14 +350,15 @@ class Pcsx2(Emulator):
             )
             pcsx2_ini_config.set(
                 'Achievements',
-                'PrimedIndicators',
+                'Overlays',
                 self.config.get_bool('retroachievements.challenge_indicators', return_values=('true', 'false')),
             )
-            pcsx2_ini_config.set(
-                'Achievements',
-                'Leaderboards',
-                self.config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
-            )
+            for key in ('LeaderboardNotifications', 'LBOverlays'):
+                pcsx2_ini_config.set(
+                    'Achievements',
+                    key,
+                    self.config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
+                )
             pcsx2_ini_config.set(
                 'Achievements',
                 'EncoreMode',

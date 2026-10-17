@@ -345,19 +345,15 @@ async def _configure_ini(
         )
         pcsx2x6_ini_config.set(
             'Achievements',
-            'PrimedIndicators',
+            'Overlays',
             config.get_bool('retroachievements.challenge_indicators', return_values=('true', 'false')),
         )
-        pcsx2x6_ini_config.set(
-            'Achievements',
-            'RichPresence',
-            config.get_bool('retroachievements.richpresence', return_values=('true', 'false')),
-        )
-        pcsx2x6_ini_config.set(
-            'Achievements',
-            'Leaderboards',
-            config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
-        )
+        for key in ('LeaderboardNotifications', 'LBOverlays'):
+            pcsx2x6_ini_config.set(
+                'Achievements',
+                key,
+                config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
+            )
         pcsx2x6_ini_config.set(
             'Achievements', 'EncoreMode', config.get_bool('retroachievements.encore', return_values=('true', 'false'))
         )
@@ -367,7 +363,6 @@ async def _configure_ini(
             config.get_bool('retroachievements.unofficial', return_values=('true', 'false')),
         )
     # set other settings
-    pcsx2x6_ini_config.set('Achievements', 'TestMode', 'false')
     pcsx2x6_ini_config.set('Achievements', 'Notifications', 'true')
     pcsx2x6_ini_config.set('Achievements', 'SoundEffects', 'true')
 

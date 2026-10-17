@@ -343,20 +343,19 @@ class Dolphin(Emulator):
             rac_config.set('Achievements', 'Username', self.config.get('retroachievements.username', ''))
             rac_config.set('Achievements', 'ApiToken', self.config.get('retroachievements.token', ''))
             rac_config.set('Achievements', 'HardcoreEnabled', self.config.get('retroachievements.hardcore', 'False'))
-            rac_config.set('Achievements', 'BadgesEnabled', self.config.get('retroachievements.verbose', 'False'))
             rac_config.set('Achievements', 'EncoreEnabled', self.config.get('retroachievements.encore', 'False'))
             rac_config.set(
-                'Achievements', 'ProgressEnabled', self.config.get('retroachievements.challenge_indicators', 'False')
+                'Achievements',
+                'ChallengeIndicatorsEnabled',
+                self.config.get('retroachievements.challenge_indicators', 'False'),
             )
             rac_config.set(
-                'Achievements', 'LeaderboardsEnabled', self.config.get('retroachievements.leaderboard', 'False')
-            )
-            rac_config.set(
-                'Achievements', 'RichPresenceEnabled', self.config.get('retroachievements.richpresence', 'False')
+                'Achievements', 'LeaderboardTrackerEnabled', self.config.get('retroachievements.leaderboards', 'False')
             )
             rac_config.set(
                 'Achievements', 'UnofficialEnabled', self.config.get('retroachievements.unofficial', 'False')
             )
+            rac_config.set('Achievements', 'ProgressEnabled', self.config.get('retroachievements.verbose', 'False'))
         else:
             rac_config.set('Achievements', 'Enabled', 'False')
         with (DOLPHIN_CONFIG / 'RetroAchievements.ini').open('w') as fp:
