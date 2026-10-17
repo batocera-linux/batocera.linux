@@ -651,9 +651,10 @@ class RPCS3(ParallelStartupTaskMixin, Emulator):
         if config_file_path.is_file():
             rpcs3_yml_config = safe_load_yaml12(config_file_path, dict[str, dict[str, Any]]) or {}
 
-        # VFS is no longer stored in config.yml: RPCS3 reads it from a dedicated vfs.yml
-        # file. Drop any stale VFS section that older versions may have written here.
-        rpcs3_yml_config.pop('VFS', None)
+        # VFS mount points moved to vfs.yml, drop the stale ones but keep the VFS settings RPCS3 still reads here
+        if isinstance(vfs := rpcs3_yml_config.get('VFS'), dict):
+            for mount in [key for key in vfs if key.startswith(('/', '$('))]:
+                del vfs[mount]
 
         # Add Nodes if not in the file
         if 'Core' not in rpcs3_yml_config:
