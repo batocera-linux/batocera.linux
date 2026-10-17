@@ -9,12 +9,12 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from batocera_discord import discord_app, paths
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import Callable, Generator
 
     import pytest
 
@@ -181,34 +181,50 @@ def test_audio_falls_back_to_group_access(monkeypatch: pytest.MonkeyPatch) -> No
 
 def test_install_reports_why_flatpak_failed(monkeypatch: pytest.MonkeyPatch) -> None:
     output = [
-        'Looking for matches…\n',
-        '\x1b[1mInstalling…\x1b[0m 12%\n',
-        'error: Unable to load summary from remote flathub: Could not resolve hostname\n',
+        'Looking for matches…',
+        '\x1b[1mInstalling…\x1b[0m ████   12%  4.1 MB/s',
+        'error: Unable to load summary from remote flathub: Could not resolve hostname',
     ]
-
-    class Process:
-        stdout = iter(output)
-
-        def __enter__(self) -> Self:
-            return self
-
-        def __exit__(self, *_exc: object) -> None: ...
-
-        def wait(self) -> int:
-            return 1
 
     def run(*_args: str, timeout: float = 20) -> subprocess.CompletedProcess[str]:
         return subprocess.CompletedProcess([], 0)
 
-    def popen(*_args: object, **_kwargs: object) -> Process:
-        return Process()
+    def terminal(_command: list[str], on_line: Callable[[str], None], /) -> int:
+        for line in output:
+            on_line(line)
+        return 1
 
     progress: list[int] = []
     monkeypatch.setattr(shutil, 'which', _which)
     monkeypatch.setattr(discord_app, '_run', run)
-    monkeypatch.setattr(subprocess, 'Popen', popen)
+    monkeypatch.setattr(discord_app, 'run_in_terminal', terminal)
 
     reason = discord_app.install(progress.append)
 
     assert reason == 'error: Unable to load summary from remote flathub: Could not resolve hostname'
     assert progress == [12]
+
+
+def test_overall_progress_over_several_refs() -> None:
+    progress: list[int] = []
+    overall = discord_app.InstallProgress(progress.append)
+
+    for line in (
+        'Installing 1/2…  ████        50%  80 MB/s',
+        'Installing 1/2…  ████████   100%',
+        'Installing 2/2…              0%',  # the second ref starts: the bar must not go back
+        'Installing 2/2…  ████        50%',
+        'Installing 2/2…  ████████   100%',
+        ' 1.     com.discordapp.Discord    stable   i    flathub   < 247.1 MB',
+    ):
+        overall.feed(line)
+
+    assert progress == [25, 50, 75, 100]
+
+
+def test_progress_is_read_from_a_terminal() -> None:
+    lines: list[str] = []
+    script = 'test -t 1 || exit 3; printf "Installing…  10%%\\rInstalling…  60%%\\rdone\\n"'
+
+    assert discord_app.run_in_terminal(['sh', '-c', script], lines.append) == 0
+    assert lines == ['Installing…  10%', 'Installing…  60%', 'done']

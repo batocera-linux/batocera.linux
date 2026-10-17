@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import codecs
+import fcntl
 import grp
 import logging
 import os
+import pty
 import pwd
 import re
 import resource
 import shutil
+import struct
 import subprocess
+import termios
 from collections import deque
 from typing import TYPE_CHECKING, Final
 
@@ -23,6 +28,7 @@ if TYPE_CHECKING:
 
 _logger: Final = logging.getLogger(__name__)
 _PERCENT_RE: Final = re.compile(r'(\d{1,3})%')
+_STEP_RE: Final = re.compile(r'(\d+)/(\d+)')  # "Installing 3/6…" when several refs are installed
 # Electron opens a splash window titled exactly "Discord"; the main window is "<page> - Discord"
 _SPLASH_TITLE: Final = 'Discord'
 _OPEN_FILES: Final = 4096  # Electron keeps many files open
@@ -61,18 +67,18 @@ def install(progress: Callable[[int], None], /) -> str:
         _run('flatpak', 'remote-add', '--system', '--if-not-exists', 'flathub', FLATHUB_REPO, timeout=120)
     except PROCESS_ERRORS:
         _logger.warning('cannot check the flathub remote', exc_info=True)
-    command = ['flatpak', 'install', '--system', '-y', '--noninteractive', 'flathub', paths.FLATPAK_APP_ID]
+    # no --noninteractive: it hides the progress; -y still answers every question
+    command = ['flatpak', 'install', '--system', '-y', 'flathub', paths.FLATPAK_APP_ID]
     _logger.info('installing %s', paths.FLATPAK_APP_ID)
     last_lines: deque[str] = deque(maxlen=4)
+    overall = InstallProgress(progress)
+
+    def on_line(line: str, /) -> None:
+        if not overall.feed(line) and (text := _ANSI_RE.sub('', line).strip()):
+            last_lines.append(text)
+
     try:
-        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=_env()) as proc:
-            assert proc.stdout is not None
-            for line in proc.stdout:
-                if match := _PERCENT_RE.search(line):
-                    progress(min(100, int(match.group(1))))
-                elif text := _ANSI_RE.sub('', line).strip():
-                    last_lines.append(text)
-            ok = proc.wait() == 0
+        ok = run_in_terminal(command, on_line) == 0
     except PROCESS_ERRORS as exc:
         _logger.exception('cannot run flatpak install')
         return str(exc)
@@ -89,6 +95,64 @@ def install(progress: Callable[[int], None], /) -> str:
         except PROCESS_ERRORS:
             _logger.warning('batocera-flatpak-update failed', exc_info=True)
     return ''
+
+
+class InstallProgress:
+    """Turns flatpak's per-ref percentages into one overall percentage that never goes back."""
+
+    def __init__(self, report: Callable[[int], None], /) -> None:
+        self.report = report
+        self.last = -1
+
+    def feed(self, line: str, /) -> bool:
+        """Returns True when the line was a progress line."""
+        text = _ANSI_RE.sub('', line)
+        if (match := _PERCENT_RE.search(text)) is None:
+            return False
+        percent = min(100, int(match.group(1)))
+        if (step := _STEP_RE.search(text[: match.start()])) is not None:
+            index, total = int(step.group(1)), max(1, int(step.group(2)))
+            percent = int(((min(index, total) - 1) * 100 + percent) / total)
+        if percent > self.last:
+            self.last = percent
+            self.report(percent)
+        return True
+
+
+def run_in_terminal(command: list[str], on_line: Callable[[str], None], /) -> int:
+    """Run a command in a pseudo terminal (flatpak only shows its progress to a terminal).
+
+    Every line, or progress update ended by a carriage return, goes to ``on_line``.
+    Returns the exit code.
+    """
+    master, slave = pty.openpty()
+    # a wide terminal, so that flatpak does not cut its progress lines
+    fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack('HHHH', 50, 200, 0, 0))
+    try:
+        proc = subprocess.Popen(
+            command, stdin=subprocess.DEVNULL, stdout=slave, stderr=slave, env=_env(), close_fds=True
+        )
+    finally:
+        os.close(slave)
+    decoder = codecs.getincrementaldecoder('utf-8')(errors='replace')
+    pending = ''
+    try:
+        while True:
+            try:
+                chunk = os.read(master, 4096)
+            except OSError:  # EIO: the command closed the terminal
+                break
+            if not chunk:
+                break
+            *lines, pending = re.split(r'[\r\n]', pending + decoder.decode(chunk))
+            for line in lines:
+                if line:  # the terminal turns \n into \r\n
+                    on_line(line)
+        if pending:
+            on_line(pending)
+    finally:
+        os.close(master)
+    return proc.wait()
 
 
 def running() -> bool:
