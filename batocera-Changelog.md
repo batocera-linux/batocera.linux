@@ -1,4 +1,4 @@
-# 2026/xx/xx - batocera.linux 44 - Malachite
+# 2026/11/xx - batocera.linux 44 - Malachite
 ### Special Notes
 - From v44 you can use `batocera-upgrade --update-bootloader` to flash required bootloader and firmware manually
   SPI u-boot, Qualcomm ABL, Raspberry Pi EEPROM, H700 u-boot
@@ -31,6 +31,7 @@
 - Odroid M2 initial support
 - R36 Ultra initial support
 - Radxa Rock-5T initial support
+- Retroid Pocket Classic initial support
 - Retroid Pocket Nova initial support
 ### Added
 - AMD handhelds: thermal profile option where the firmware exposes a platform profile (e.g. Legion Go S)

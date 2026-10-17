@@ -87,6 +87,9 @@
 	};
 
 	aliases {
+		// Batocera - fixed eMMC and SD card numbering
+		mmc0 = &sdhc_1;
+		mmc1 = &sdhc_2;
 		serial0 = &uart7;
 	};
 
@@ -370,6 +373,13 @@
 			regulator-name = "vreg_l4e_3p0";
 			regulator-min-microvolt = <3000000>;
 			regulator-max-microvolt = <3312000>;
+			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+		};
+		// Batocera - eMMC VCC
+		vreg_l5e_3p3: ldo5 {
+			regulator-name = "vreg_l5e_3p3";
+			regulator-min-microvolt = <3296000>;
+			regulator-max-microvolt = <3304000>;
 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 		};
 		vreg_l6e_3: ldo6 {
@@ -739,10 +749,29 @@
 			 <&rpmhcc RPMH_CXO_CLK>;
 		clock-names = "iface", "core", "xo";
 		power-domains = <&rpmhpd RPMHPD_CX>;
+		// Batocera - internal eMMC, settings from the stock Ravelin tree
+		resets = <&gcc GCC_SDCC1_BCR>;
+		iommus = <&apps_smmu 0x560 0x0>;
+		interconnects = <&aggre2_noc MASTER_SDCC_1 QCOM_ICC_TAG_ALWAYS
+				 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>,
+				<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ALWAYS
+				 &config_noc SLAVE_SDC1 QCOM_ICC_TAG_ALWAYS>;
+		interconnect-names = "sdhc-ddr", "cpu-sdhc";
+		pinctrl-0 = <&sdc1_default>;
+		pinctrl-names = "default";
+		vmmc-supply = <&vreg_l5e_3p3>;
+		vqmmc-supply = <&vreg_l19b_1p8>;
 		bus-width = <8>;
+		mmc-ddr-1_8v;
+		mmc-hs200-1_8v;
+		mmc-hs400-1_8v;
+		mmc-hs400-enhanced-strobe;
+		cap-mmc-hw-reset;
 		supports-cqe;
+		no-sd;
+		no-sdio;
 		non-removable;
-		status = "disabled";
+		status = "okay";
 	};
 
 	usb_1_hsphy: phy@88e3000 {
@@ -1427,6 +1456,32 @@
 		drive-strength = <8>;
 		bias-disable;
 		output-high;
+	};
+
+	// Batocera - eMMC pins
+	sdc1_default: sdc1-default-state {
+		clk-pins {
+			pins = "sdc1_clk";
+			drive-strength = <16>;
+			bias-disable;
+		};
+
+		cmd-pins {
+			pins = "sdc1_cmd";
+			drive-strength = <10>;
+			bias-pull-up;
+		};
+
+		data-pins {
+			pins = "sdc1_data";
+			drive-strength = <10>;
+			bias-pull-up;
+		};
+
+		rclk-pins {
+			pins = "sdc1_rclk";
+			bias-pull-down;
+		};
 	};
 
 	sdc2_default: sdc2-default-state {
