@@ -371,6 +371,21 @@ class Duckstation(Emulator):
             else:
                 settings.set(
                     'Cheevos',
+                    'Overlays',
+                    self.config.get_bool('retroachievements.challenge_indicators', return_values=('true', 'false')),
+                )
+                settings.set(
+                    'Cheevos',
+                    'LeaderboardNotifications',
+                    self.config.get_bool('retroachievements.leaderboards', return_values=('true', 'false')),
+                )
+                settings.set(
+                    'Cheevos',
+                    'EncoreMode',
+                    self.config.get_bool('retroachievements.encore', return_values=('true', 'false')),
+                )
+                settings.set(
+                    'Cheevos',
                     'UnofficialTestMode',
                     self.config.get_bool('retroachievements.unofficial', return_values=('true', 'false')),
                 )
