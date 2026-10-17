@@ -59,11 +59,10 @@ class EasyRPG(Emulator):
             'name': 'easyrpg',
             'keys': {
                 'exit': ['KEY_LEFTALT', 'KEY_F4'],
-                'menu': 'KEY_F9',
+                'menu': 'KEY_F1',
                 'pause': 'KEY_ESC',
-                'restore_state': 'KEY_F12',
                 'save_state': 'KEY_F11',
-                'rewind': 'KEY_F',
+                'fastforward': 'KEY_F',
             },
         }
 
