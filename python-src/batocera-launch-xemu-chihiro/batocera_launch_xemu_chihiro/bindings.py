@@ -192,6 +192,13 @@ class ControlsBuilder:
                 steer_right=port + _JOY_HALFAXIS + int(steer.id) * 2 + int(not left_positive),
             )
 
+        panel = next((pad for pad in self._controllers if pad is not wheel), wheel)
+
+        def panel_button(name: str) -> int | None:
+            if (input := panel.inputs.get(name)) is not None and input.type == 'button':
+                return self._controllers.index(panel) * _JOY_PORT_STRIDE + _JOY_BUTTON + int(input.id)
+            return button(name)
+
         gear_up = button(_GEAR_UP_INPUTS)
         gear_down = button(_GEAR_DOWN_INPUTS)
         _update(
@@ -203,6 +210,8 @@ class ControlsBuilder:
             gear_down=gear_down,
             start=button('start'),
             coin=button('select'),
+            service=panel_button('l3'),
+            test=panel_button('r3'),
             card_in=button('x'),
         )
         _update(bindings, 'chihiro.jvs.ctx', drive_gear=gear_up, reverse=gear_down, jump=button('b'))
