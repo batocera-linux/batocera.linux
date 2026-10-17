@@ -149,7 +149,7 @@ class Hatari(Emulator):
             config.set(section, 'nJoystickMode', '1')
 
             for button, name in _PAD_MAPPING.items():
-                key = f'nButton{button}'
+                key = f'nJoyBut{button}Index'
                 if name in pad.inputs:
                     config.set(section, key, str(pad.inputs[name].id))
                 else:
