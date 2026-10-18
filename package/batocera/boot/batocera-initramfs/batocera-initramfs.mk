@@ -96,11 +96,11 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM6115),y)
 BATOCERA_INITRAMFS_DEPENDENCIES += alllinuxfirmwares
 define BATOCERA_INITRAMFS_SM6115_EARLY_FIRMWARE
-	mkdir -p $(INITRAMFS_DIR)/lib/firmware/qcom/qrb4210
+	mkdir -p $(INITRAMFS_DIR)/lib/firmware/qcom/sm6115/mangmi
 	cp $(ALLLINUXFIRMWARES_DIR)/qcom/a630_sqe.fw \
 		$(INITRAMFS_DIR)/lib/firmware/qcom/
-	cp -R $(ALLLINUXFIRMWARES_DIR)/qcom/qrb4210/* \
-		$(INITRAMFS_DIR)/lib/firmware/qcom/qrb4210/
+	cp $(BR2_EXTERNAL_BATOCERA_PATH)/board/batocera/qualcomm/sm6115/fsoverlay/lib/firmware/qcom/sm6115/mangmi/a610_zap.mbn \
+		$(INITRAMFS_DIR)/lib/firmware/qcom/sm6115/mangmi/
 endef
 BATOCERA_INITRAMFS_PRE_INSTALL_IMAGES_HOOKS += BATOCERA_INITRAMFS_SM6115_EARLY_FIRMWARE
 endif

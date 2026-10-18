@@ -156,6 +156,11 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
                 ln -sf "$$d" "$$f" || exit 1; \
             fi ; \
         done
+
+    # tqftpserv serves wlanmdsp.mbn from any remoteproc dir, keep only the qrb4210 adsp
+    if [ "$(BR2_PACKAGE_BATOCERA_TARGET_SM6115)" = "y" ]; then \
+        find $(TARGET_DIR)/lib/firmware/qcom/qrb4210 ! -type d ! -name "adsp*" -delete; \
+    fi
 endef
 
 # Link Qualcomm Wi-Fi/BT for Steam Deck OLED and other x86 handhelds

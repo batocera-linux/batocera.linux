@@ -1,0 +1,30 @@
+Subject: [PATCH] backlight: pwm_bl: allow a brightness scale above the top level
+
+An optional "brightness-scale" sets the level value that maps to full
+duty. Setting it above the highest brightness level caps the backlight
+below 100%, as vendor kernels do for some panels.
+
+---
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 237d3d3..eaaff43 100644
+--- a/drivers/video/backlight/pwm_bl.c
++++ b/drivers/video/backlight/pwm_bl.c
+@@ -446,6 +446,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 	struct pwm_bl_data *pb;
+ 	struct pwm_state state;
+ 	unsigned int i;
++	u32 scale;
+ 	int ret;
+ 
+ 	if (!data) {
+@@ -539,6 +540,10 @@ static int pwm_backlight_probe(struct platform_device *pdev)
+ 			if (data->levels[i] > pb->scale)
+ 				pb->scale = data->levels[i];
+ 
++		if (!device_property_read_u32(&pdev->dev, "brightness-scale", &scale) &&
++		    scale > pb->scale)
++			pb->scale = scale;
++
+ 		if (pwm_backlight_is_linear(data))
+ 			props.scale = BACKLIGHT_SCALE_LINEAR;
+ 		else

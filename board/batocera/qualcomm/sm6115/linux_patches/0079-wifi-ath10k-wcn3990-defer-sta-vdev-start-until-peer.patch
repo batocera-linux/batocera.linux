@@ -1,0 +1,102 @@
+wifi: ath10k: defer STA vdev start until the BSS peer exists on WCN3990
+
+WCN39xx firmware (WLAN.HL.3.x) resolves and uses the BSS peer while
+handling WMI_VDEV_START for a station vdev, and rejects the start with a
+generic error when no peer exists yet. qcacld always creates the peer
+before starting the vdev. mac80211 assigns the channel context (vdev
+start) before adding the AP station (peer create), so on WCN3990 defer
+the station vdev start until the peer has been created.
+
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -592,6 +592,8 @@
+ 
+ 	bool is_started;
+ 	bool is_up;
++	bool start_pending;
++	struct cfg80211_chan_def pending_chandef;
+ 	bool spectral_enabled;
+ 	bool ps;
+ 	u32 aid;
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -7684,6 +7684,19 @@
+ 
+ 		spin_unlock_bh(&ar->data_lock);
+ 
++		if (arvif->start_pending && !sta->tdls) {
++			arvif->start_pending = false;
++			ret = ath10k_vdev_start(arvif, &arvif->pending_chandef);
++			if (ret) {
++				ath10k_warn(ar, "failed to start vdev %i after peer create: %d\n",
++					    arvif->vdev_id, ret);
++				ath10k_peer_delete(ar, arvif->vdev_id, sta->addr);
++				ath10k_mac_dec_num_stations(arvif, sta);
++				kfree(arsta->tx_stats);
++				goto exit;
++			}
++		}
++
+ 		if (!sta->tdls)
+ 			goto exit;
+ 
+@@ -9089,12 +9102,22 @@
+ 		return -EBUSY;
+ 	}
+ 
+-	ret = ath10k_vdev_start(arvif, &ctx->def);
+-	if (ret) {
+-		ath10k_warn(ar, "failed to start vdev %i addr %pM on freq %d: %d\n",
+-			    arvif->vdev_id, vif->addr,
+-			    ctx->def.chan->center_freq, ret);
+-		goto err;
++	if (QCA_REV_WCN3990(ar) && arvif->vdev_type == WMI_VDEV_TYPE_STA) {
++		/* WCN39xx firmware expects the BSS peer to exist before the
++		 * vdev is started. Defer the start until the peer is created.
++		 */
++		arvif->pending_chandef = ctx->def;
++		arvif->start_pending = true;
++		ath10k_dbg(ar, ATH10K_DBG_MAC, "mac vdev %i start deferred until peer create\n",
++			   arvif->vdev_id);
++	} else {
++		ret = ath10k_vdev_start(arvif, &ctx->def);
++		if (ret) {
++			ath10k_warn(ar, "failed to start vdev %i addr %pM on freq %d: %d\n",
++				    arvif->vdev_id, vif->addr,
++				    ctx->def.chan->center_freq, ret);
++			goto err;
++		}
+ 	}
+ 
+ 	arvif->is_started = true;
+@@ -9139,7 +9162,10 @@
+ 	return 0;
+ 
+ err_stop:
+-	ath10k_vdev_stop(arvif);
++	if (arvif->start_pending)
++		arvif->start_pending = false;
++	else
++		ath10k_vdev_stop(arvif);
+ 	arvif->is_started = false;
+ 	ath10k_mac_vif_setup_ps(arvif);
+ 
+@@ -9177,10 +9203,14 @@
+ 		arvif->is_up = false;
+ 	}
+ 
+-	ret = ath10k_vdev_stop(arvif);
+-	if (ret)
+-		ath10k_warn(ar, "failed to stop vdev %i: %d\n",
+-			    arvif->vdev_id, ret);
++	if (arvif->start_pending) {
++		arvif->start_pending = false;
++	} else {
++		ret = ath10k_vdev_stop(arvif);
++		if (ret)
++			ath10k_warn(ar, "failed to stop vdev %i: %d\n",
++				    arvif->vdev_id, ret);
++	}
+ 
+ 	arvif->is_started = false;
+ 

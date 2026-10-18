@@ -5,12 +5,13 @@ Subject: [PATCH] power: supply: add CellWise CW221X battery gauge driver
 
 Add support for CellWise CW2215/CW2217/CW2218 coulomb-counting
 battery fuel gauge ICs. Based on Rockchip BSP driver by Xu Shengfei,
-reworked to use regmap and devm managed resources.
+reworked to use regmap and devm managed resources. Battery status follows
+the charger named by "cellwise,charger", as the vendor driver does.
 ---
  drivers/power/supply/Kconfig          |  11 +
  drivers/power/supply/Makefile         |   1 +
- drivers/power/supply/cw221x_battery.c | 554 ++++++++++++++++++++++++++++
- 3 files changed, 566 insertions(+)
+ drivers/power/supply/cw221x_battery.c | 626 ++++++++++++++++++++++++++++
+ 3 files changed, 638 insertions(+)
  create mode 100644 drivers/power/supply/cw221x_battery.c
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
@@ -52,7 +53,7 @@ new file mode 100644
 index 000000000000..a1b2c3d4e5f6
 --- /dev/null
 +++ b/drivers/power/supply/cw221x_battery.c
-@@ -0,0 +1,597 @@
+@@ -0,0 +1,624 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Battery gauge driver for CellWise CW2215/CW2217/CW2218
@@ -109,6 +110,7 @@ index 000000000000..a1b2c3d4e5f6
 +	struct device *dev;
 +	struct regmap *regmap;
 +	struct power_supply *battery;
++	struct power_supply *charger;
 +	struct delayed_work work;
 +
 +	u8 *profile;
@@ -125,6 +127,7 @@ index 000000000000..a1b2c3d4e5f6
 +	int cycle;
 +	int soh;
 +	int last_soc;
++	int last_status;
 +};
 +
 +static const struct regmap_config cw221x_regmap_config = {
@@ -355,9 +358,25 @@ index 000000000000..a1b2c3d4e5f6
 +	return cw221x_set_mode(cw, CW221X_MODE_ACTIVE);
 +}
 +
++static int cw221x_get_status(struct cw221x *cw)
++{
++	union power_supply_propval val;
++
++	if (cw->charger &&
++	    !power_supply_get_property(cw->charger, POWER_SUPPLY_PROP_STATUS, &val))
++		return val.intval;
++
++	if (!power_supply_is_system_supplied())
++		return POWER_SUPPLY_STATUS_DISCHARGING;
++
++	return cw->soc == 100 ? POWER_SUPPLY_STATUS_FULL :
++				POWER_SUPPLY_STATUS_CHARGING;
++}
++
 +static void cw221x_work_func(struct work_struct *work)
 +{
 +	struct cw221x *cw = container_of(work, struct cw221x, work.work);
++	int status;
 +
 +	if (cw221x_check_active(cw)) {
 +		dev_err(cw->dev, "failed to re-activate IC\n");
@@ -367,8 +386,10 @@ index 000000000000..a1b2c3d4e5f6
 +	if (cw221x_update_data(cw))
 +		dev_err(cw->dev, "failed to update data\n");
 +
-+	if (cw->soc != cw->last_soc) {
++	status = cw221x_get_status(cw);
++	if (cw->soc != cw->last_soc || status != cw->last_status) {
 +		cw->last_soc = cw->soc;
++		cw->last_status = status;
 +		power_supply_changed(cw->battery);
 +	}
 +
@@ -385,12 +406,7 @@ index 000000000000..a1b2c3d4e5f6
 +
 +	switch (psp) {
 +	case POWER_SUPPLY_PROP_STATUS:
-+		if (cw->soc == 100 && power_supply_is_system_supplied())
-+			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (power_supply_is_system_supplied())
-+			val->intval = POWER_SUPPLY_STATUS_CHARGING;
-+		else
-+			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
++		val->intval = cw221x_get_status(cw);
 +		break;
 +	case POWER_SUPPLY_PROP_PRESENT:
 +		val->intval = cw->voltage_uv > 0;
@@ -504,6 +520,17 @@ index 000000000000..a1b2c3d4e5f6
 +
 +	i2c_set_clientdata(client, cw);
 +
++	cw->charger = devm_power_supply_get_by_reference(cw->dev,
++							 "cellwise,charger");
++	if (!cw->charger)
++		return dev_err_probe(cw->dev, -EPROBE_DEFER,
++				     "waiting for charger\n");
++	if (IS_ERR(cw->charger)) {
++		if (PTR_ERR(cw->charger) == -ENOMEM)
++			return -ENOMEM;
++		cw->charger = NULL;
++	}
++
 +	/* Verify chip ID */
 +	ret = regmap_read(cw->regmap, CW221X_REG_CHIP_ID, &reg_val);
 +	if (ret)
@@ -570,6 +597,7 @@ index 000000000000..a1b2c3d4e5f6
 +	if (ret)
 +		return dev_err_probe(cw->dev, ret, "failed initial data read\n");
 +	cw->last_soc = cw->soc;
++	cw->last_status = cw221x_get_status(cw);
 +
 +	/* Register power supply */
 +	psy_cfg.drv_data = cw;
