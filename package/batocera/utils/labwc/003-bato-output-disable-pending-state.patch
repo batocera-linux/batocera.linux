@@ -1,0 +1,22 @@
+output: clear the pending state before disabling an output
+
+After an output is enabled labwc queues the HDR image description for its
+next frame. When nothing renders before the output is disabled again, the
+disable commit carries it and wlroots rejects the commit.
+
+diff --git a/src/output.c b/src/output.c
+index 1308f56..6b98206 100644
+--- a/src/output.c
++++ b/src/output.c
+@@ -836,6 +836,11 @@ output_config_apply(struct wlr_output_configuration_v1 *config)
+ 		struct wlr_output_state *os = &output->pending;
+ 		bool output_enabled = head->state.enabled;
+ 
++		/* a disabled output rejects state queued for the next frame */
++		if (!output_enabled) {
++			wlr_output_state_finish(os);
++			wlr_output_state_init(os);
++		}
+ 		wlr_output_state_set_enabled(os, output_enabled);
+ 		if (output_enabled) {
+ 			/* Output specific actions only */

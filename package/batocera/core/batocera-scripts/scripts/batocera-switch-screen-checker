@@ -117,6 +117,9 @@ case "$1" in
             exit 1
         fi
 
+	# a screen in standby drops out for a while, keep the last list so that its return is no change
+	test -z "$(batocera-resolution listOutputs)" && exit 0
+
 	# compute delta of plugged screens
 	# if no delta between screens plugged is observed, ignore the event, something not related to plugged screens
 	DELTAANY=$(batocera-resolution listOutputs | sort | diff "${STATUS_FILE}" - | grep -E '^[<>]' | sed -e s/"^[<>] "//)
@@ -137,13 +140,8 @@ case "$1" in
 		echo "${DELTANEW}" > "${QUERY_FILE_AUTO}"
 	    fi
 
-	    # don't quit if there is no more output (the tv in standby and no more visible)
-	    LST_OUTPUTS=$(cat "${STATUS_FILE}")
-	    if test -n "${LST_OUTPUTS}"
-	    then
-		echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
-		curl http://localhost:1234/quit
-	    fi
+	    echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
+	    curl http://localhost:1234/quit
 	fi
         ;;
 esac
