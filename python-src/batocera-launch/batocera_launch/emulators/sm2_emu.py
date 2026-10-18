@@ -252,6 +252,8 @@ class Sm2Emu(Emulator):
             'pad_rumble_cornering': _ini_bool(self.config.get_bool('sm2_pad_rumble_cornering', True)),
             'pad_stick_deadzone': str(round(self.config.get_float('sm2_pad_stick_deadzone', 5))),
             'pad_stick_sensitivity': str(round(self.config.get_float('sm2_pad_stick_sensitivity', 100))),
+            'rewind': _ini_bool(self.config.get_bool('rewind', False)),
+            'rewind_buffer_mb': str(round(self.config.get_float('sm2_rewind_memory', 128))),
             'pad_shortcuts': 'false',  # hotkeygen maps the hotkeys to the keys in hotkeygen_context
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
