@@ -1,0 +1,484 @@
+Subject: [PATCH] Input: hynitron_cstxxx - add cst3530 (cst66xx family)
+
+It boots from internal flash, so skip the cst3xx bootloader probe. Add an
+optional vdd supply. Protocol from the Hynitron vendor driver. Follow the
+panel and system sleep with the stock deep-sleep and power-up sequences.
+
+---
+diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+index 9b9ae8a..3f7c70b 100644
+--- a/drivers/input/touchscreen/Kconfig
++++ b/drivers/input/touchscreen/Kconfig
+@@ -466,6 +466,7 @@ config TOUCHSCREEN_HYCON_HY46XX
+ config TOUCHSCREEN_HYNITRON_CSTXXX
+ 	tristate "Hynitron touchscreen support"
+ 	depends on I2C
++	depends on DRM || !DRM
+ 	help
+ 	  Say Y here if you have a touchscreen using a Hynitron
+ 	  touchscreen controller.
+diff --git a/drivers/input/touchscreen/hynitron_cstxxx.c b/drivers/input/touchscreen/hynitron_cstxxx.c
+index 49fb35c..a222ae5 100644
+--- a/drivers/input/touchscreen/hynitron_cstxxx.c
++++ b/drivers/input/touchscreen/hynitron_cstxxx.c
+@@ -21,8 +21,11 @@
+ #include <linux/input/touchscreen.h>
+ #include <linux/module.h>
+ #include <linux/property.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/unaligned.h>
+ 
++#include <drm/drm_panel.h>
++
+ /* Per chip data */
+ struct hynitron_ts_chip_data {
+ 	unsigned int max_touch_num;
+@@ -31,6 +34,8 @@ struct hynitron_ts_chip_data {
+ 	int (*bootloader_enter)(struct i2c_client *client);
+ 	int (*init_input)(struct i2c_client *client);
+ 	void (*report_touch)(struct i2c_client *client);
++	int (*suspend)(struct i2c_client *client);
++	int (*resume)(struct i2c_client *client);
+ };
+ 
+ /* Data generic to all (supported and non-supported) controllers. */
+@@ -40,6 +45,12 @@ struct hynitron_ts_data {
+ 	struct input_dev *input_dev;
+ 	struct touchscreen_properties prop;
+ 	struct gpio_desc *reset_gpio;
++	struct regulator *vdd;
++	struct drm_panel_follower panel_follower;
++	struct mutex pm_lock;
++	bool panel_off;
++	bool suspended;
++	bool powered;
+ };
+ 
+ /*
+@@ -63,6 +74,23 @@ struct hynitron_ts_data {
+ #define CST3XX_TOUCH_DATA_STOP_CMD		0xab00d0
+ #define CST3XX_TOUCH_COUNT_MASK			GENMASK(6, 0)
+ 
++#define CST66XX_CMD_PREAMBLE			0xd0000400
++#define CST66XX_CMD_NORMAL			0xd0000000
++#define CST66XX_CMD_GESTURE_OFF			0xd0000c00
++#define CST66XX_CMD_REPORT_ON			0xd0000100
++#define CST66XX_CMD_DEEP_SLEEP			0xd00022ab
++#define CST66XX_CMD_INFO			0xd0030000
++#define CST66XX_CMD_TOUCH			0xd0070000
++#define CST66XX_CMD_TOUCH_ACK			0xd00002ab
++#define CST66XX_RESET_US			8000
++#define CST66XX_BOOT_MS				50
++#define CST66XX_INFO_LEN			50
++#define CST66XX_TOUCH_HDR_LEN			4
++#define CST66XX_TOUCH_REC_LEN			5
++#define CST66XX_TOUCH_TYPE_POS			0xff
++#define CST66XX_CHECKSUM_SEED			0x55
++#define CST66XX_MAX_POINTS			5
++
+ 
+ /*
+  * Hard coded reset delay value of 20ms not IC dependent in
+@@ -245,6 +273,108 @@ static int cst3xx_bootloader_enter(struct i2c_client *client)
+ 	return 0;
+ }
+ 
++static int cst66xx_cmd(struct i2c_client *client, u32 cmd)
++{
++	u8 buf[4];
++
++	put_unaligned_be32(cmd, buf);
++
++	return cst3xx_i2c_write(client, buf, sizeof(buf));
++}
++
++static int cst66xx_read(struct i2c_client *client, u32 cmd, u8 *val, u16 len)
++{
++	int ret;
++
++	ret = cst66xx_cmd(client, cmd);
++	if (ret)
++		return ret;
++
++	ret = i2c_master_recv(client, val, len);
++	if (ret == len)
++		return 0;
++
++	return ret < 0 ? ret : -EIO;
++}
++
++static void cst66xx_preamble(struct i2c_client *client)
++{
++	cst66xx_cmd(client, CST66XX_CMD_PREAMBLE);
++	usleep_range(1000, 1100);
++	cst66xx_cmd(client, CST66XX_CMD_PREAMBLE);
++}
++
++static int cst66xx_set_normal(struct i2c_client *client)
++{
++	int err;
++
++	cst66xx_preamble(client);
++
++	err = cst66xx_cmd(client, CST66XX_CMD_NORMAL);
++	if (!err)
++		err = cst66xx_cmd(client, CST66XX_CMD_GESTURE_OFF);
++	if (!err)
++		err = cst66xx_cmd(client, CST66XX_CMD_REPORT_ON);
++
++	return err;
++}
++
++static int cst66xx_firmware_info(struct i2c_client *client)
++{
++	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
++	u8 buf[CST66XX_INFO_LEN];
++	int retry, err = -ENODEV;
++	u32 chip;
++
++	for (retry = 0; retry < 5; retry++) {
++		err = cst66xx_set_normal(client);
++		if (!err)
++			err = cst66xx_read(client, CST66XX_CMD_INFO, buf, sizeof(buf));
++		if (!err && buf[2] == 0xca && buf[3] == 0xca)
++			break;
++
++		err = -ENODEV;
++		usleep_range(1000, 2000);
++		cst66xx_cmd(client, CST66XX_CMD_PREAMBLE);
++	}
++	if (err) {
++		dev_err(&client->dev, "failed to read cst66xx info\n");
++		return err;
++	}
++
++	chip = get_unaligned_le32(&buf[0]);
++	if ((chip & 0xffff0000) != ts_data->chip->ic_chkcode) {
++		dev_err(&client->dev, "ic mismatch, chip type is 0x%08x\n", chip);
++		return -ENODEV;
++	}
++
++	dev_info(&client->dev, "chip 0x%08x fw 0x%08x project 0x%08x %ux%u\n",
++		 chip, get_unaligned_le32(&buf[32]), get_unaligned_le32(&buf[36]),
++		 get_unaligned_le16(&buf[28]), get_unaligned_le16(&buf[30]));
++
++	return cst66xx_set_normal(client);
++}
++
++static int cst66xx_suspend(struct i2c_client *client)
++{
++	cst66xx_preamble(client);
++	usleep_range(1000, 1100);
++
++	return cst66xx_cmd(client, CST66XX_CMD_DEEP_SLEEP);
++}
++
++static int cst66xx_resume(struct i2c_client *client)
++{
++	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
++
++	gpiod_set_value_cansleep(ts_data->reset_gpio, 1);
++	fsleep(CST66XX_RESET_US);
++	gpiod_set_value_cansleep(ts_data->reset_gpio, 0);
++	msleep(CST66XX_BOOT_MS);
++
++	return cst66xx_set_normal(client);
++}
++
+ static void cst3xx_report_contact(struct hynitron_ts_data *ts_data,
+ 				  u8 id, unsigned int x, unsigned int y, u8 w)
+ {
+@@ -361,6 +491,73 @@ static void cst3xx_touch_report(struct i2c_client *client)
+ 	input_sync(ts_data->input_dev);
+ }
+ 
++static void cst66xx_touch_report(struct i2c_client *client)
++{
++	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
++	u8 buf[CST66XX_TOUCH_HDR_LEN + CST66XX_MAX_POINTS * CST66XX_TOUCH_REC_LEN];
++	unsigned int fingers, keys, records, i;
++	unsigned int x, y;
++	int ret, len;
++	u16 sum;
++	u8 *rec;
++	int err;
++
++	err = cst66xx_read(client, CST66XX_CMD_TOUCH, buf,
++			   CST66XX_TOUCH_HDR_LEN + CST66XX_TOUCH_REC_LEN);
++	if (err)
++		goto ack;
++
++	fingers = buf[3] & 0x0f;
++	keys = buf[3] >> 4;
++	records = fingers + keys;
++	if (records > CST66XX_MAX_POINTS) {
++		err = -EINVAL;
++		goto ack;
++	}
++
++	if (records > 1) {
++		len = (records - 1) * CST66XX_TOUCH_REC_LEN;
++		ret = i2c_master_recv(client,
++				      &buf[CST66XX_TOUCH_HDR_LEN + CST66XX_TOUCH_REC_LEN],
++				      len);
++		if (ret != len) {
++			err = ret < 0 ? ret : -EIO;
++			goto ack;
++		}
++	}
++
++	sum = CST66XX_CHECKSUM_SEED;
++	for (i = 0; i < records * CST66XX_TOUCH_REC_LEN; i++)
++		sum += buf[CST66XX_TOUCH_HDR_LEN + i];
++	if (sum != get_unaligned_le16(buf))
++		err = -EBADMSG;
++
++ack:
++	cst66xx_cmd(client, CST66XX_CMD_TOUCH_ACK);
++
++	if (err) {
++		dev_dbg(&client->dev, "cst66xx touch read failure: %d\n", err);
++		return;
++	}
++
++	if (buf[2] != CST66XX_TOUCH_TYPE_POS)
++		return;
++
++	for (i = 0; i < fingers; i++) {
++		rec = &buf[CST66XX_TOUCH_HDR_LEN + (keys + i) * CST66XX_TOUCH_REC_LEN];
++
++		if ((rec[4] & 0x0f) >= ts_data->chip->max_touch_num || !(rec[4] >> 4))
++			continue;
++
++		x = rec[0] | (rec[3] & 0x0f) << 8;
++		y = rec[1] | (rec[3] & 0xf0) << 4;
++		cst3xx_report_contact(ts_data, rec[4] & 0x0f, x, y, rec[2]);
++	}
++
++	input_mt_sync_frame(ts_data->input_dev);
++	input_sync(ts_data->input_dev);
++}
++
+ static int cst3xx_input_dev_int(struct i2c_client *client)
+ {
+ 	struct hynitron_ts_data *ts_data = i2c_get_clientdata(client);
+@@ -416,6 +613,94 @@ static int cst3xx_input_dev_int(struct i2c_client *client)
+ 	return 0;
+ }
+ 
++static int hyn_power_on(struct hynitron_ts_data *ts_data)
++{
++	struct i2c_client *client = ts_data->client;
++	int err;
++
++	gpiod_set_value_cansleep(ts_data->reset_gpio, 1);
++	err = regulator_enable(ts_data->vdd);
++	if (err)
++		return err;
++
++	err = ts_data->chip->resume(client);
++	if (err)
++		dev_warn(&client->dev, "chip resume failed: %d\n", err);
++
++	return 0;
++}
++
++static void hyn_update_power(struct hynitron_ts_data *ts_data)
++{
++	struct i2c_client *client = ts_data->client;
++	bool on = !ts_data->panel_off && !ts_data->suspended;
++	int err;
++
++	if (on == ts_data->powered)
++		return;
++
++	if (on) {
++		err = hyn_power_on(ts_data);
++		if (err) {
++			dev_err(&client->dev, "failed to enable vdd: %d\n", err);
++			return;
++		}
++		enable_irq(client->irq);
++	} else {
++		disable_irq(client->irq);
++		err = ts_data->chip->suspend(client);
++		if (err)
++			dev_warn(&client->dev, "chip suspend failed: %d\n", err);
++		input_mt_sync_frame(ts_data->input_dev);
++		input_sync(ts_data->input_dev);
++		gpiod_set_value_cansleep(ts_data->reset_gpio, 1);
++		regulator_disable(ts_data->vdd);
++	}
++
++	ts_data->powered = on;
++}
++
++static void hyn_set_power_flag(struct hynitron_ts_data *ts_data, bool *flag,
++			       bool val)
++{
++	guard(mutex)(&ts_data->pm_lock);
++	*flag = val;
++	hyn_update_power(ts_data);
++}
++
++static void hyn_vdd_disable(void *data)
++{
++	struct hynitron_ts_data *ts_data = data;
++
++	if (ts_data->powered)
++		regulator_disable(ts_data->vdd);
++}
++
++static int hyn_panel_disabling(struct drm_panel_follower *follower)
++{
++	struct hynitron_ts_data *ts_data =
++		container_of(follower, struct hynitron_ts_data, panel_follower);
++
++	hyn_set_power_flag(ts_data, &ts_data->panel_off, true);
++
++	return 0;
++}
++
++static int hyn_panel_enabled(struct drm_panel_follower *follower)
++{
++	struct hynitron_ts_data *ts_data =
++		container_of(follower, struct hynitron_ts_data, panel_follower);
++
++	hyn_set_power_flag(ts_data, &ts_data->panel_off, false);
++
++	return 0;
++}
++
++static const struct drm_panel_follower_funcs hyn_panel_follower_funcs = {
++	.panel_disabling = hyn_panel_disabling,
++	.panel_enabled = hyn_panel_enabled,
++};
++
+ static int hyn_probe(struct i2c_client *client)
+ {
+ 	struct hynitron_ts_data *ts_data;
+@@ -432,20 +717,45 @@ static int hyn_probe(struct i2c_client *client)
+ 	if (!ts_data->chip)
+ 		return -EINVAL;
+ 
+-	ts_data->reset_gpio = devm_gpiod_get(&client->dev,
+-					     "reset", GPIOD_OUT_LOW);
++	err = devm_mutex_init(&client->dev, &ts_data->pm_lock);
++	if (err)
++		return err;
++
++	ts_data->reset_gpio = devm_gpiod_get(&client->dev, "reset",
++					     ts_data->chip->resume ?
++					     GPIOD_OUT_HIGH : GPIOD_OUT_LOW);
+ 	err = PTR_ERR_OR_ZERO(ts_data->reset_gpio);
+ 	if (err) {
+ 		dev_err(&client->dev, "request reset gpio failed: %d\n", err);
+ 		return err;
+ 	}
+ 
+-	hyn_reset_proc(client, 60);
++	ts_data->vdd = devm_regulator_get(&client->dev, "vdd");
++	if (IS_ERR(ts_data->vdd))
++		return dev_err_probe(&client->dev, PTR_ERR(ts_data->vdd),
++				     "failed to get vdd\n");
+ 
+-	err = ts_data->chip->bootloader_enter(client);
+-	if (err < 0)
++	if (ts_data->chip->resume)
++		err = hyn_power_on(ts_data);
++	else
++		err = regulator_enable(ts_data->vdd);
++	if (err)
++		return dev_err_probe(&client->dev, err, "failed to enable vdd\n");
++
++	ts_data->powered = true;
++	err = devm_add_action_or_reset(&client->dev, hyn_vdd_disable, ts_data);
++	if (err)
+ 		return err;
+ 
++	if (!ts_data->chip->resume)
++		hyn_reset_proc(client, 60);
++
++	if (ts_data->chip->bootloader_enter) {
++		err = ts_data->chip->bootloader_enter(client);
++		if (err < 0)
++			return err;
++	}
++
+ 	err = ts_data->chip->init_input(client);
+ 	if (err < 0)
+ 		return err;
+@@ -463,9 +773,40 @@ static int hyn_probe(struct i2c_client *client)
+ 		return err;
+ 	}
+ 
++	if (ts_data->chip->suspend && drm_is_panel_follower(&client->dev)) {
++		ts_data->panel_follower.funcs = &hyn_panel_follower_funcs;
++		err = devm_drm_panel_add_follower(&client->dev,
++						  &ts_data->panel_follower);
++		if (err)
++			return dev_err_probe(&client->dev, err,
++					     "failed to follow panel\n");
++	}
++
++	return 0;
++}
++
++static int hyn_suspend(struct device *dev)
++{
++	struct hynitron_ts_data *ts_data = dev_get_drvdata(dev);
++
++	if (ts_data->chip->suspend)
++		hyn_set_power_flag(ts_data, &ts_data->suspended, true);
++
++	return 0;
++}
++
++static int hyn_resume(struct device *dev)
++{
++	struct hynitron_ts_data *ts_data = dev_get_drvdata(dev);
++
++	if (ts_data->chip->suspend)
++		hyn_set_power_flag(ts_data, &ts_data->suspended, false);
++
+ 	return 0;
+ }
+ 
++static DEFINE_SIMPLE_DEV_PM_OPS(hyn_pm_ops, hyn_suspend, hyn_resume);
++
+ static const struct hynitron_ts_chip_data cst3xx_data = {
+ 	.max_touch_num		= 5,
+ 	.ic_chkcode		= 0xcaca0000,
+@@ -475,6 +816,16 @@ static const struct hynitron_ts_chip_data cst3xx_data = {
+ 	.report_touch		= &cst3xx_touch_report,
+ };
+ 
++static const struct hynitron_ts_chip_data cst66xx_data = {
++	.max_touch_num		= CST66XX_MAX_POINTS,
++	.ic_chkcode		= 0xcaca0000,
++	.firmware_info		= &cst66xx_firmware_info,
++	.init_input		= &cst3xx_input_dev_int,
++	.report_touch		= &cst66xx_touch_report,
++	.suspend		= &cst66xx_suspend,
++	.resume			= &cst66xx_resume,
++};
++
+ static const struct i2c_device_id hyn_tpd_id[] = {
+ 	{ .name = "hynitron_ts" },
+ 	{ /* sentinel */ },
+@@ -483,6 +834,7 @@ MODULE_DEVICE_TABLE(i2c, hyn_tpd_id);
+ 
+ static const struct of_device_id hyn_dt_match[] = {
+ 	{ .compatible = "hynitron,cst340", .data = &cst3xx_data },
++	{ .compatible = "hynitron,cst3530", .data = &cst66xx_data },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, hyn_dt_match);
+@@ -491,6 +843,7 @@ static struct i2c_driver hynitron_i2c_driver = {
+ 	.driver = {
+ 		.name = "Hynitron-TS",
+ 		.of_match_table = hyn_dt_match,
++		.pm = pm_sleep_ptr(&hyn_pm_ops),
+ 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+ 	},
+ 	.id_table = hyn_tpd_id,

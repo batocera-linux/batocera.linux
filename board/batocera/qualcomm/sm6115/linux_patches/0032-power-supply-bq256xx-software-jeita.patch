@@ -17,7 +17,7 @@
  #define BQ256XX_OTG_CONFIG		BIT(5)
  
  #define BQ256XX_ITERM_MASK		GENMASK(3, 0)
-@@ -247,6 +257,16 @@
+@@ -251,6 +261,16 @@ enum bq256xx_id {
   * @state: device status and faults
   * @watchdog_timer: watchdog timer value in milliseconds
   */
@@ -34,7 +34,7 @@
  struct bq256xx_device {
  	struct i2c_client *client;
  	struct device *dev;
-@@ -267,6 +287,10 @@
+@@ -275,6 +295,10 @@ struct bq256xx_device {
  	const struct bq256xx_chip_info *chip_info;
  	struct bq256xx_state state;
  	int watchdog_timer;
@@ -45,7 +45,7 @@
  };
  
  /**
-@@ -1392,6 +1416,115 @@
+@@ -1400,6 +1424,115 @@ static int bq256xx_get_charger_property(struct power_supply *psy,
  	return ret;
  }
  
@@ -161,19 +161,19 @@
  static bool bq256xx_state_changed(struct bq256xx_device *bq,
  				  struct bq256xx_state *new_state)
  {
-@@ -1444,8 +1577,10 @@
+@@ -1504,8 +1637,10 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
  	bq->state = state;
  	mutex_unlock(&bq->lock);
  
 -	if (state.vbus_stat != prev_vbus_stat)
 +	if (state.vbus_stat != prev_vbus_stat) {
  		bq256xx_set_iindpm_for_type(bq, state.vbus_stat);
-+		mod_delayed_work(system_wq, &bq->jeita_work, 0);
++		mod_delayed_work(system_percpu_wq, &bq->jeita_work, 0);
 +	}
  
  	power_supply_changed(bq->charger);
  
-@@ -2059,6 +2194,14 @@
+@@ -2098,6 +2233,12 @@ static int bq256xx_probe(struct i2c_client *client)
  		return ret;
  	}
  
@@ -182,6 +182,16 @@
 +	ret = devm_add_action_or_reset(dev, bq256xx_jeita_cleanup, bq);
 +	if (ret)
 +		return ret;
++
+ 	if (client->irq) {
+ 		ret = devm_request_threaded_irq(dev, client->irq, NULL,
+ 						bq256xx_irq_handler_thread,
+@@ -2138,6 +2279,11 @@ static int bq256xx_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	cancel_delayed_work_sync(&bq->jeita_work);
++	bq->jeita_band = BQ256XX_JEITA_BAND_UNKNOWN;
 +	schedule_delayed_work(&bq->jeita_work,
 +			      msecs_to_jiffies(BQ256XX_JEITA_POLL_MS));
 +

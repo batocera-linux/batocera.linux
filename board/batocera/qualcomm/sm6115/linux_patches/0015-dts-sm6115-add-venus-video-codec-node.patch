@@ -1,21 +1,18 @@
+From e0511284f0c14e2929aa6cec435a9cb8bec259b1 Mon Sep 17 00:00:00 2001
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Date: Fri, 15 May 2026 14:59:26 +0300
 Subject: [PATCH] arm64: dts: qcom: sm6115: add venus device
 
 Define the video en/decoding device present on the SM6115 platform. The
 core, AR50LT, is mostly compatible with the one present on the Agatti
 devices, so it uses qcom,qcm2290-venus as a fallback.
 
-Replaces the earlier ROCKNIX hand-port from agatti.dtsi.  Adds the
-300/384 MHz OPPs that AR50LT silicon actually validates (vendor caps
-at 384 MHz per qcom,allowed-clock-rates), uses the upstream
-sm6115-venus + qcm2290-venus dual compatible string, and ships
-status="disabled" so the board DTSI opts in.
-
-Author: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Upstream-Status: Backport [https://lore.kernel.org/r/20260515-iris-sm6115-v2-3-2ab75229de61@oss.qualcomm.com]
 ---
- arch/arm64/boot/dts/qcom/sm6115.dtsi | 65 ++++++++++++++++++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm6115.dtsi | 65 ++++++++++++++++++++++++++++
  1 file changed, 65 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
 --- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
 @@ -1853,6 +1853,71 @@ adreno_smmu: iommu@59a0000 {

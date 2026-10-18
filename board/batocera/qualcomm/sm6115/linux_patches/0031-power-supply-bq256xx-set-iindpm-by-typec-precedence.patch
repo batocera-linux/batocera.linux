@@ -1,0 +1,156 @@
+Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
+---
+ drivers/power/supply/bq256xx_charger.c | 107 +++++++++++++++++++++++++++++++++
+ 1 file changed, 107 insertions(+)
+
+--- a/drivers/power/supply/bq256xx_charger.c
++++ b/drivers/power/supply/bq256xx_charger.c
+@@ -41,6 +41,8 @@
+ #define BQ256XX_IINDPM_MIN_uA		100000
+ #define BQ256XX_IINDPM_MAX_uA		3200000
+ #define BQ256XX_IINDPM_DEF_uA		2400000
++#define BQ256XX_IINDPM_SDP_uA		500000
++#define BQ256XX_IINDPM_BC12_uA		1500000
+ 
+ #define BQ256XX_TS_IGNORE		BIT(6)
+ #define BQ256XX_TS_IGNORE_SHIFT		6
+@@ -259,6 +261,10 @@ struct bq256xx_device {
+ 	struct work_struct usb_work;
+ 	unsigned long usb_event;
+ 
++	struct notifier_block typec_nb;
++	int typec_ua;
++	bool iindpm_replaced;
++
+ 	char model_name[I2C_NAME_SIZE];
+ 
+ 	struct bq256xx_init_data init_data;
+@@ -1402,10 +1408,80 @@ static bool bq256xx_state_changed(struct bq256xx_device *bq,
+ 	return memcmp(&old_state, new_state, sizeof(struct bq256xx_state)) != 0;
+ }
+ 
++static void __bq256xx_set_iindpm(struct bq256xx_device *bq, u8 vbus_stat)
++{
++	int iindpm = 0;
++
++	if (bq->typec_ua) {
++		iindpm = bq->typec_ua;
++		bq->iindpm_replaced = true;
++	} else {
++		switch (vbus_stat) {
++		case BQ256XX_VBUS_STAT_USB_SDP:
++			iindpm = BQ256XX_IINDPM_SDP_uA;
++			break;
++		case BQ256XX_VBUS_STAT_USB_CDP:
++		case BQ256XX_VBUS_STAT_USB_DCP:
++			iindpm = BQ256XX_IINDPM_BC12_uA;
++			break;
++		default:
++			if (bq->iindpm_replaced)
++				iindpm = BQ256XX_IINDPM_SDP_uA;
++			break;
++		}
++	}
++
++	if (iindpm)
++		bq->chip_info->bq256xx_set_iindpm(bq, iindpm);
++}
++
++static void bq256xx_set_iindpm_for_type(struct bq256xx_device *bq, u8 vbus_stat)
++{
++	mutex_lock(&bq->lock);
++	__bq256xx_set_iindpm(bq, vbus_stat);
++	mutex_unlock(&bq->lock);
++}
++
++static int bq256xx_typec_notifier(struct notifier_block *nb,
++				  unsigned long event, void *data)
++{
++	struct bq256xx_device *bq =
++			container_of(nb, struct bq256xx_device, typec_nb);
++	struct power_supply *psy = data;
++	union power_supply_propval val;
++	int ua = 0;
++
++	if (event != PSY_EVENT_PROP_CHANGED ||
++	    !strstarts(psy->desc->name, "tcpm-source-psy-"))
++		return NOTIFY_DONE;
++
++	if (!power_supply_get_property(psy, POWER_SUPPLY_PROP_ONLINE, &val) &&
++	    val.intval &&
++	    !power_supply_get_property(psy, POWER_SUPPLY_PROP_CURRENT_NOW, &val))
++		ua = val.intval;
++
++	mutex_lock(&bq->lock);
++	if (ua != bq->typec_ua) {
++		bq->typec_ua = ua;
++		__bq256xx_set_iindpm(bq, bq->state.vbus_stat);
++	}
++	mutex_unlock(&bq->lock);
++
++	return NOTIFY_OK;
++}
++
++static void bq256xx_typec_unreg(void *data)
++{
++	struct bq256xx_device *bq = data;
++
++	power_supply_unreg_notifier(&bq->typec_nb);
++}
++
+ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
+ {
+ 	struct bq256xx_device *bq = private;
+ 	struct bq256xx_state state;
++	u8 prev_vbus_stat;
+ 	int ret;
+ 
+ 	ret = bq256xx_get_state(bq, &state);
+@@ -1416,9 +1492,15 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
+ 		goto irq_out;
+ 
+ 	mutex_lock(&bq->lock);
++	prev_vbus_stat = bq->state.vbus_stat;
++	if (state.vbus_stat != prev_vbus_stat)
++		bq->iindpm_replaced = false;
+ 	bq->state = state;
+ 	mutex_unlock(&bq->lock);
+ 
++	if (state.vbus_stat != prev_vbus_stat)
++		bq256xx_set_iindpm_for_type(bq, state.vbus_stat);
++
+ 	power_supply_changed(bq->charger);
+ 
+ irq_out:
+@@ -1953,6 +2035,7 @@ static int bq256xx_probe(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 	struct bq256xx_device *bq;
+ 	struct power_supply_config psy_cfg = { };
++	struct bq256xx_state state;
+ 
+ 	int ret;
+ 
+@@ -2031,6 +2114,23 @@ static int bq256xx_probe(struct i2c_client *client)
+ 		return ret;
+ 	}
+ 
++	if (!bq256xx_get_state(bq, &state)) {
++		mutex_lock(&bq->lock);
++		bq->state = state;
++		bq->iindpm_replaced = true;
++		__bq256xx_set_iindpm(bq, state.vbus_stat);
++		mutex_unlock(&bq->lock);
++	}
++
++	bq->typec_nb.notifier_call = bq256xx_typec_notifier;
++	ret = power_supply_reg_notifier(&bq->typec_nb);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, bq256xx_typec_unreg, bq);
++	if (ret)
++		return ret;
++
+ 	return ret;
+ }
+ 

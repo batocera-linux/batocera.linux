@@ -1,31 +1,138 @@
-Subject: [PATCH] ASoC: es8326: add optional "vdd" power supply
+Subject: [PATCH] ASoC: es8326: add optional "vdd" supply, cut it in suspend
+
+The qrb4210 machine driver has no card PM, so the component suspend never
+runs. Like the vendor driver, do it from system sleep: run the component
+suspend, drop vdd and park the MCLK pin; resume re-inits the codec.
 
 ---
- sound/soc/codecs/es8326.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
 diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
+index 95262dc..8975f05 100644
 --- a/sound/soc/codecs/es8326.c
 +++ b/sound/soc/codecs/es8326.c
-@@ -11,6 +11,7 @@
+@@ -11,6 +11,8 @@
  #include <linux/interrupt.h>
  #include <linux/irq.h>
  #include <linux/module.h>
++#include <linux/pinctrl/consumer.h>
 +#include <linux/regulator/consumer.h>
  #include <sound/jack.h>
  #include <sound/pcm_params.h>
  #include <sound/soc.h>
-@@ -1276,6 +1277,11 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
+@@ -40,6 +42,8 @@ struct es8326_priv {
+ 	unsigned int sysclk;
+ 
+ 	bool calibrated;
++	bool suspended;
++	struct regulator *vdd;
+ 	int version;
+ 	int hp;
+ 	int jack_remove_retry;
+@@ -1126,6 +1130,10 @@ static int es8326_resume(struct snd_soc_component *component)
+ 	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
+ 	unsigned int reg;
+ 
++	if (!es8326->suspended)
++		return 0;
++	es8326->suspended = false;
++
+ 	regcache_cache_only(es8326->regmap, false);
+ 	regcache_cache_bypass(es8326->regmap, true);
+ 	regmap_read(es8326->regmap, ES8326_CLK_RESAMPLE, &reg);
+@@ -1146,6 +1154,10 @@ static int es8326_suspend(struct snd_soc_component *component)
+ {
+ 	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
+ 
++	if (es8326->suspended)
++		return 0;
++	es8326->suspended = true;
++
+ 	cancel_delayed_work_sync(&es8326->jack_detect_work);
+ 	es8326_disable_micbias(component);
+ 	es8326->calibrated = false;
+@@ -1272,6 +1284,53 @@ static const struct snd_soc_component_driver soc_component_dev_es8326 = {
+ 	.endianness		= 1,
+ };
+ 
++static void es8326_vdd_disable(void *data)
++{
++	regulator_disable(data);
++}
++
++static int es8326_i2c_suspend(struct device *dev)
++{
++	struct es8326_priv *es8326 = dev_get_drvdata(dev);
++
++	if (!es8326->component || !es8326->vdd)
++		return 0;
++
++	if (es8326->irq > 0)
++		disable_irq(es8326->irq);
++	es8326_suspend(es8326->component);
++	regulator_disable(es8326->vdd);
++
++	return pinctrl_pm_select_sleep_state(dev);
++}
++
++static int es8326_i2c_resume(struct device *dev)
++{
++	struct es8326_priv *es8326 = dev_get_drvdata(dev);
++	int ret;
++
++	if (!es8326->component || !es8326->vdd)
++		return 0;
++
++	ret = pinctrl_pm_select_default_state(dev);
++	if (ret)
++		return ret;
++
++	ret = regulator_enable(es8326->vdd);
++	if (ret)
++		return ret;
++	usleep_range(10000, 11000);
++
++	es8326_resume(es8326->component);
++	if (es8326->irq > 0)
++		enable_irq(es8326->irq);
++
++	return 0;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(es8326_pm_ops, es8326_i2c_suspend,
++				es8326_i2c_resume);
++
+ static int es8326_i2c_probe(struct i2c_client *i2c)
+ {
+ 	struct es8326_priv *es8326;
+@@ -1281,6 +1340,24 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
  	if (!es8326)
  		return -ENOMEM;
  
-+	ret = devm_regulator_get_enable_optional(&i2c->dev, "vdd");
-+	if (ret < 0 && ret != -ENODEV)
-+		return dev_err_probe(&i2c->dev, ret,
-+				     "failed to enable vdd supply\n");
++	es8326->vdd = devm_regulator_get_optional(&i2c->dev, "vdd");
++	if (IS_ERR(es8326->vdd)) {
++		if (PTR_ERR(es8326->vdd) != -ENODEV)
++			return dev_err_probe(&i2c->dev, PTR_ERR(es8326->vdd),
++					     "failed to get vdd supply\n");
++		es8326->vdd = NULL;
++	} else {
++		ret = regulator_enable(es8326->vdd);
++		if (ret)
++			return dev_err_probe(&i2c->dev, ret,
++					     "failed to enable vdd supply\n");
++
++		ret = devm_add_action_or_reset(&i2c->dev, es8326_vdd_disable,
++					       es8326->vdd);
++		if (ret)
++			return ret;
++	}
 +
  	i2c_set_clientdata(i2c, es8326);
  	es8326->i2c = i2c;
  	mutex_init(&es8326->lock);
---
-2.43.1
+@@ -1376,6 +1453,7 @@ MODULE_DEVICE_TABLE(acpi, es8326_acpi_match);
+ static struct i2c_driver es8326_i2c_driver = {
+ 	.driver = {
+ 		.name = "es8326",
++		.pm = pm_sleep_ptr(&es8326_pm_ops),
+ 		.acpi_match_table = ACPI_PTR(es8326_acpi_match),
+ 		.of_match_table = of_match_ptr(es8326_of_match),
+ 	},

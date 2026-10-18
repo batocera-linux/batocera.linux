@@ -1,0 +1,57 @@
+From: Noxwell <beebono@gmail.com>
+Date: Sat, 3 Oct 2026 12:00:00 -0500
+Subject: [PATCH] wifi: ath10k: WCN3990 firmware workarounds for WLAN.HL.3.x
+
+Backport of Malte Schababerle's "[PATCH 0/2] ath10k: WCN3990 firmware
+workarounds for WLAN.HL.3.2" (linux-wireless, 2026-03-22, not yet merged):
+https://ratatoskr.run/linux-wireless/2026/03/15793732/t
+
+- skip quiet mode for WCN3990: the firmware advertises
+  WMI_SERVICE_THERM_THROT but crashes on the quiet mode command sent from
+  ath10k_start()
+- force passive scan on 5GHz for WCN3990: active scan does not tune the
+  radio on 5GHz non-DFS channels, so no 5GHz networks are found
+
+Seen on the Retroid Pocket Duo Lite (WCN3950, WLAN.HL.3.0.2): a
+wlan_process fatal error on interface up, and no 5GHz networks in scans.
+---
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 746867b..b4c7b42 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -3528,6 +3528,14 @@ static int ath10k_update_channel_list(struct ath10k *ar)
+ 			passive = channel->flags & IEEE80211_CHAN_NO_IR;
+ 			ch->passive = passive;
+ 
++			/* Force passive scan on 5GHz to work around WCN3990
++			 * firmware bug where active scan doesn't tune the
++			 * radio on 5GHz non-DFS channels.
++			 */
++			if (QCA_REV_WCN3990(ar) &&
++			    band == NL80211_BAND_5GHZ)
++				ch->passive = true;
++
+ 			/* the firmware is ignoring the "radar" flag of the
+ 			 * channel and is scanning actively using Probe Requests
+ 			 * on "Radar detection"/DFS channels which are not
+diff --git a/drivers/net/wireless/ath/ath10k/thermal.c b/drivers/net/wireless/ath/ath10k/thermal.c
+index 9bb486f..5987df3 100644
+--- a/drivers/net/wireless/ath/ath10k/thermal.c
++++ b/drivers/net/wireless/ath/ath10k/thermal.c
+@@ -136,6 +136,16 @@ void ath10k_thermal_set_throttling(struct ath10k *ar)
+ 	if (!ar->wmi.ops->gen_pdev_set_quiet_mode)
+ 		return;
+ 
++	/* WCN3990 firmware crashes on quiet mode despite advertising support.
++	 * See also commit 53884577fbcef ("ath10k: skip sending quiet mode
++	 * cmd for WCN3990").
++	 */
++	if (QCA_REV_WCN3990(ar)) {
++		ath10k_dbg(ar, ATH10K_DBG_BOOT,
++			   "skip quiet mode for WCN3990 (known crash trigger)\n");
++		return;
++	}
++
+ 	if (ar->state != ATH10K_STATE_ON)
+ 		return;
+ 

@@ -1,0 +1,195 @@
+// SPDX-License-Identifier: BSD-3-Clause
+/*
+ * Copyright (c) 2026, ROCKNIX
+ */
+
+/dts-v1/;
+
+#include "sm6115-mangmi-air-x-base.dtsi"
+
+/ {
+	model = "MANGMI Air Y";
+	compatible = "mangmi,sm6115-air-y", "qcom,sm6115";
+
+	/delete-node/ multi-led-r1;
+	/delete-node/ multi-led-r2;
+	/delete-node/ multi-led-r3;
+	/delete-node/ multi-led-r4;
+	/delete-node/ multi-led-r5;
+	/delete-node/ multi-led-r6;
+	/delete-node/ multi-led-r7;
+	/delete-node/ multi-led-r8;
+	/delete-node/ multi-led-r9;
+
+	multi-led-l1 { leds = <&left_red_7>, <&left_green_7>, <&left_blue_7>; };
+	multi-led-l2 { leds = <&left_red_8>, <&left_green_8>, <&left_blue_8>; };
+	multi-led-l3 { leds = <&left_red_4>, <&left_green_4>, <&left_blue_4>; };
+	multi-led-l4 { leds = <&left_red_3>, <&left_green_3>, <&left_blue_3>; };
+	multi-led-l5 { leds = <&left_red_2>, <&left_green_2>, <&left_blue_2>; };
+	multi-led-l6 { leds = <&left_red_1>, <&left_green_1>, <&left_blue_1>; };
+	multi-led-l7 { leds = <&left_red_5>, <&left_green_5>, <&left_blue_5>; };
+	multi-led-l8 { leds = <&left_red_6>, <&left_green_6>, <&left_blue_6>; };
+	multi-led-l9 { leds = <&left_red_9>, <&left_green_9>, <&left_blue_9>; };
+	multi-led-l10 { compatible = "leds-group-multicolor"; color = <LED_COLOR_ID_RGB>; function = "l10"; leds = <&left_red_10>, <&left_green_10>, <&left_blue_10>; };
+
+	gpio-keys {
+		pinctrl-0 = <&vol_up_n>, <&wheel_keys_default>;
+
+		key-volume-up {
+			label = "Wheel Press";
+			linux,code = <KEY_MUTE>;
+		};
+
+		key-wheel-up {
+			label = "Volume Up";
+			linux,code = <KEY_VOLUMEUP>;
+			gpios = <&tlmm 0 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+		};
+
+		key-wheel-down {
+			label = "Volume Down";
+			linux,code = <KEY_VOLUMEDOWN>;
+			gpios = <&tlmm 19 GPIO_ACTIVE_LOW>;
+			debounce-interval = <15>;
+		};
+	};
+
+	sound {
+		model = "MangmiAirY";
+
+		widgets = "Speaker", "SPK_L Speaker";
+		pin-switches = "SPK_L Speaker";
+		audio-routing = "SPK_L Speaker", "SPK_L DAC Output",
+				"Headphone Jack", "HPOL",
+				"Headphone Jack", "HPOR";
+
+		sec-mi2s-playback-dai-link {
+			codec {
+				sound-dai = <&aw88261_l>;
+			};
+		};
+	};
+};
+
+&aw88261_l {
+	/delete-property/ awinic,sync-flag;
+};
+
+&battery {
+	charge-term-current-microamp = <100000>;
+};
+
+&fuel_gauge {
+	cellwise,battery-profile = /bits/ 8 <
+		0x5a 0x00 0x00 0x00 0x00 0x00 0x00 0x00
+		0xae 0xb2 0xaf 0xbf 0xa6 0xa2 0xd3 0xb6
+		0x9e 0xff 0xff 0xc2 0x9b 0x7e 0x65 0x5c
+		0x5a 0x5a 0x5a 0xbe 0x88 0xdd 0xe4 0xff
+		0xff 0xff 0xe2 0xd2 0xd8 0xdb 0xdb 0xd4
+		0xcf 0xcd 0xcf 0xd4 0xbf 0x9c 0x89 0x7d
+		0x79 0x79 0x89 0x9d 0xb9 0xc3 0xad 0x49
+		0x20 0x00 0xab 0x10 0x00 0xb0 0x16 0x00
+		0x00 0x00 0x64 0x83 0xd2 0xda 0x00 0x00
+		0x00 0x00 0x00 0x00 0x00 0x00 0x00 0xc0>;
+};
+
+&i2c1 {
+	/delete-node/ audio-codec@35;
+};
+
+&i2c2 {
+	clock-frequency = <400000>;
+	status = "okay";
+
+	touchscreen@58 {
+		compatible = "hynitron,cst3530";
+		reg = <0x58>;
+
+		interrupts-extended = <&tlmm 69 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&tlmm 68 GPIO_ACTIVE_LOW>;
+		vdd-supply = <&vreg_l21a_2p704>;
+
+		touchscreen-size-x = <1280>;
+		touchscreen-size-y = <960>;
+
+		panel = <&panel>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&ts_irq_default>;
+	};
+};
+
+&i2c5 {
+	/delete-node/ led-controller@3b;
+
+	led-controller@3a {
+		left_blue_10: led@1b { reg = <0x1b>; color = <LED_COLOR_ID_BLUE>; label = "left_blue_10"; led-max-microamp = <3400>; };
+		left_green_10: led@1c { reg = <0x1c>; color = <LED_COLOR_ID_GREEN>; label = "left_green_10"; led-max-microamp = <3400>; };
+		left_red_10: led@1d { reg = <0x1d>; color = <LED_COLOR_ID_RED>; label = "left_red_10"; led-max-microamp = <3400>; };
+	};
+};
+
+&panel {
+	compatible = "mangmi,gh7005";
+	/delete-property/ rotation;
+};
+
+&panel_backlight {
+	brightness-levels = <0 429>;
+	num-interpolated-steps = <429>;
+	brightness-scale = <511>;
+	max-brightness = <429>;
+	default-brightness-level = <429>;
+};
+
+&pon_resin {
+	/* batocera - user button opens the control center via hotkeygen */
+	linux,code = <KEY_CONTEXT_MENU>;
+};
+
+&qup_i2c2_default {
+	/delete-property/ bias-pull-up;
+	bias-disable;
+};
+
+&spi2 {
+	status = "disabled";
+};
+
+&tlmm {
+	wheel_keys_default: wheel-keys-default-state {
+		pins = "gpio0", "gpio19";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-up;
+		input-enable;
+	};
+};
+
+&ts_irq_default {
+	/delete-property/ bias-pull-up;
+	bias-disable;
+};
+
+&uart0 {
+	gamepad {
+		compatible = "rocknix,mangmi-air-y-joypad";
+		mcu-start-gpios = <&tlmm 24 GPIO_ACTIVE_LOW>;
+		mcu-select-gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&vreg_l18a_1p232 {
+	regulator-min-microvolt = <1200000>;
+	regulator-max-microvolt = <1200000>;
+};
+
+&vreg_l21a_2p704 {
+	regulator-min-microvolt = <2800000>;
+	regulator-max-microvolt = <2800000>;
+};
+
+&wifi {
+	firmware-name = "mangmi-air-y";
+};

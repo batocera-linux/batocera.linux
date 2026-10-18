@@ -1,23 +1,35 @@
-Subject: [PATCH] leds: aw200xx: add vdd-supply and LED_CORE_SUSPENDRESUME
+Subject: [PATCH] leds: aw200xx: add vdd supply and power off in suspend
 
-Add optional regulator and set brightness 0 on suspend. 
+Add an optional vdd regulator. In suspend, after the LED core has blanked
+every LED, drop HWEN and vdd and select the sleep pins, like the vendor
+driver. Resume repowers the chip and redoes the probe setup.
 
 ---
- drivers/leds/leds-aw200xx.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
 diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
+index b92158a..8986c55 100644
 --- a/drivers/leds/leds-aw200xx.c
 +++ b/drivers/leds/leds-aw200xx.c
-@@ -18,6 +18,7 @@
+@@ -15,7 +15,9 @@
+ #include <linux/leds.h>
  #include <linux/module.h>
  #include <linux/mutex.h>
++#include <linux/pinctrl/consumer.h>
  #include <linux/regmap.h>
 +#include <linux/regulator/consumer.h>
  #include <linux/time.h>
  #include <linux/units.h>
  
-@@ -463,6 +464,7 @@ static int aw200xx_probe_fw(struct device *dev, struct aw200xx *chip)
+@@ -118,7 +120,9 @@ struct aw200xx {
+ 	struct mutex mutex;
+ 	u32 num_leds;
+ 	u32 display_rows;
++	u32 imax_uA;
+ 	struct gpio_desc *hwen;
++	struct regulator *vdd;
+ 	struct aw200xx_led leds[] __counted_by(num_leds);
+ };
+ 
+@@ -462,6 +466,7 @@ static int aw200xx_probe_fw(struct device *dev, struct aw200xx *chip)
  		led->cdev.brightness_set_blocking = aw200xx_brightness_set;
  		led->cdev.max_brightness = AW200XX_FADE_MAX;
  		led->cdev.groups = dim_groups;
@@ -25,14 +37,109 @@ diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
  		init_data.fwnode = child;
  
  		ret = devm_led_classdev_register_ext(dev, &led->cdev,
-@@ -567,6 +569,10 @@ static int aw200xx_probe(struct i2c_client *client)
+@@ -480,6 +485,7 @@ static int aw200xx_probe_fw(struct device *dev, struct aw200xx *chip)
+ 						  AW200XX_IMAX_DEFAULT_uA);
+ 	}
+ 
++	chip->imax_uA = min_uA;
+ 	return aw200xx_set_imax(chip, min_uA);
+ }
+ 
+@@ -536,6 +542,11 @@ static void aw200xx_disable_action(void *data)
+ 	aw200xx_disable(data);
+ }
+ 
++static void aw200xx_vdd_disable_action(void *data)
++{
++	regulator_disable(data);
++}
++
+ static int aw200xx_probe(struct i2c_client *client)
+ {
+ 	const struct aw200xx_chipdef *cdef;
+@@ -566,6 +577,25 @@ static int aw200xx_probe(struct i2c_client *client)
  	if (IS_ERR(chip->regmap))
  		return PTR_ERR(chip->regmap);
  
-+	ret = devm_regulator_get_enable_optional(&client->dev, "vdd");
-+	if (ret < 0 && ret != -ENODEV)
-+		return dev_err_probe(&client->dev, ret, "Failed to enable vdd supply\n");
++	chip->vdd = devm_regulator_get_optional(&client->dev, "vdd");
++	if (IS_ERR(chip->vdd)) {
++		if (PTR_ERR(chip->vdd) != -ENODEV)
++			return dev_err_probe(&client->dev, PTR_ERR(chip->vdd),
++					     "Failed to get vdd supply\n");
++		chip->vdd = NULL;
++	} else {
++		ret = regulator_enable(chip->vdd);
++		if (ret)
++			return dev_err_probe(&client->dev, ret,
++					     "Failed to enable vdd supply\n");
++
++		ret = devm_add_action_or_reset(&client->dev,
++					       aw200xx_vdd_disable_action,
++					       chip->vdd);
++		if (ret)
++			return ret;
++	}
 +
  	chip->hwen = devm_gpiod_get_optional(&client->dev, "enable",
  					     GPIOD_OUT_HIGH);
  	if (IS_ERR(chip->hwen))
+@@ -611,6 +641,51 @@ out_unlock:
+ 	return ret;
+ }
+ 
++static int aw200xx_suspend(struct device *dev)
++{
++	struct aw200xx *chip = dev_get_drvdata(dev);
++
++	aw200xx_disable(chip);
++	if (chip->vdd)
++		regulator_disable(chip->vdd);
++
++	return pinctrl_pm_select_sleep_state(dev);
++}
++
++static int aw200xx_resume(struct device *dev)
++{
++	struct aw200xx *chip = dev_get_drvdata(dev);
++	int ret;
++
++	ret = pinctrl_pm_select_default_state(dev);
++	if (ret)
++		return ret;
++
++	if (chip->vdd) {
++		ret = regulator_enable(chip->vdd);
++		if (ret)
++			return ret;
++	}
++
++	aw200xx_enable(chip);
++
++	mutex_lock(&chip->mutex);
++
++	regcache_drop_region(chip->regmap, 0, AW200XX_REG_MAX);
++
++	ret = aw200xx_chip_reset(chip);
++	if (!ret)
++		ret = aw200xx_set_imax(chip, chip->imax_uA);
++	if (!ret)
++		ret = aw200xx_chip_init(chip);
++
++	mutex_unlock(&chip->mutex);
++
++	return ret;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(aw200xx_pm_ops, aw200xx_suspend, aw200xx_resume);
++
+ static const struct aw200xx_chipdef aw20036_cdef = {
+ 	.channels = 36,
+ 	.display_size_rows_max = 3,
+@@ -657,6 +732,7 @@ static struct i2c_driver aw200xx_driver = {
+ 	.driver = {
+ 		.name = "aw200xx",
+ 		.of_match_table = aw200xx_match_table,
++		.pm = pm_sleep_ptr(&aw200xx_pm_ops),
+ 	},
+ 	.probe = aw200xx_probe,
+ 	.id_table = aw200xx_id,
