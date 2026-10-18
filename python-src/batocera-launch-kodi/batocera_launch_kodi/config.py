@@ -7,9 +7,12 @@ from xml.dom import minidom
 from batocera_common.paths import HOME
 
 if TYPE_CHECKING:
-    from batocera_launch import Controllers
+    from collections.abc import Mapping
+
+    from batocera_launch import Controllers, Input
 
 _KODI_USERDATA: Final = HOME / '.kodi' / 'userdata'
+_ABS_HAT0X: Final = 0x10
 _HAT_POSITIONS: Final = {1: 'up', 2: 'right', 4: 'down', 8: 'left'}
 _REVERSE_POSITIONS: Final = {
     'joystick1up': 'joystick1down',
@@ -44,6 +47,12 @@ _AXIS_MAPPING: Final = {
     'joystick2left': {'name': 'rightstick', 'sens': 'left'},
     'joystick2right': {'name': 'rightstick', 'sens': 'right'},
 }
+
+
+def _axis_number(input: Input, axis_numbers: Mapping[int, int] | None, /) -> str:
+    if axis_numbers is None or input.code is None:
+        return input.id
+    return str(axis_numbers.get(int(input.code), input.id))
 
 
 def _vidpid(guid: str) -> tuple[str, str]:
@@ -83,8 +92,10 @@ def write_kodi_config(controllers: Controllers) -> None:
             vid, pid = _vidpid(controller.guid)
             xml_device.setAttribute('vid', vid)
             xml_device.setAttribute('pid', pid)
+        axis_numbers = controller.get_evdev_axis_numbers(skip_flat=True)
         xml_device.setAttribute('buttoncount', str(controller.button_count))
-        xml_device.setAttribute('axiscount', str(2 * controller.hat_count + controller.axis_count))
+        axis_count = len(axis_numbers) if axis_numbers is not None else 2 * controller.hat_count + controller.axis_count
+        xml_device.setAttribute('axiscount', str(axis_count))
         xml_buttonmap.appendChild(xml_device)
 
         xml_controller = document.createElement('controller')
@@ -101,7 +112,7 @@ def write_kodi_config(controllers: Controllers) -> None:
                     sticks_node[mapping['name']].setAttribute('name', mapping['name'])
                 for sens in [controller_input.name, _REVERSE_POSITIONS[controller_input.name]]:
                     xml_sens = document.createElement(_AXIS_MAPPING[sens]['sens'])
-                    val = controller_input.id
+                    val = _axis_number(controller_input, axis_numbers)
                     if (int(controller_input.value) >= 0 and sens == controller_input.name) or (
                         int(controller_input.value) < 0 and sens != controller_input.name
                     ):
@@ -122,13 +133,19 @@ def write_kodi_config(controllers: Controllers) -> None:
                 elif controller_input.type == 'hat' and int(controller_input.value) in _HAT_POSITIONS:
                     xml_hat = document.createElement('feature')
                     hat_name = _HAT_POSITIONS[int(controller_input.value)]
-                    val = str(controller.axis_count if hat_name in {'left', 'right'} else controller.axis_count + 1)
+                    vertical = int(hat_name in {'up', 'down'})
+                    val = str(
+                        (axis_numbers or {}).get(
+                            _ABS_HAT0X + 2 * int(controller_input.id) + vertical,
+                            controller.axis_count + 2 * int(controller_input.id) + vertical,
+                        )
+                    )
                     xml_hat.setAttribute('axis', f'+{val}' if hat_name in {'down', 'right'} else f'-{val}')
                     xml_hat.setAttribute('name', hat_name)
                     xml_controller.appendChild(xml_hat)
                 elif controller_input.type == 'axis':
                     xml_axis = document.createElement('feature')
-                    val = controller_input.id
+                    val = _axis_number(controller_input, axis_numbers)
                     val = f'+{val}' if int(controller_input.value) >= 0 else f'-{val}'
                     xml_axis.setAttribute('axis', val)
                     xml_axis.setAttribute('name', _BUTTON_MAPPING[controller_input.name])
