@@ -16,7 +16,13 @@ shared_features:
   - use_wheels
   - wheel_rotation
   - cpucluster
+  - rewind
 custom_features:
+  sm2_rewind_memory:
+    prompt: REWIND MEMORY
+    description: Memory kept for rewinding when Rewind is on. More goes further back. Auto is 128 MB, about 35 seconds.
+    preset: sliderauto
+    preset_parameters: 32 1024 32 MB
   sm2_graphics_backend:
     group: GRAPHICS
     prompt: GRAPHICS API
