@@ -199,6 +199,7 @@
 - CorsixTH to v0.70.1
 - DevilutionX to 1.5.5
 - Dhewm3 & Mods to 1.5.5
+- DICE to 0.4.3
 - Dolphin-Emu to 2609a
 - DOSBox Staging to v0.83.0
 - DOSBox-X to 2026.08.31
