@@ -149,6 +149,8 @@ class Sm2Emu(Emulator):
                 'screenshot': 'KEY_F12',
                 'save_state': 'KEY_F6',
                 'restore_state': 'KEY_F7',
+                'rewind': 'KEY_BACKSPACE',
+                'fastforward': 'KEY_TAB',
                 'coin': 'KEY_5',
             },
         }
@@ -250,6 +252,7 @@ class Sm2Emu(Emulator):
             'pad_rumble_cornering': _ini_bool(self.config.get_bool('sm2_pad_rumble_cornering', True)),
             'pad_stick_deadzone': str(round(self.config.get_float('sm2_pad_stick_deadzone', 5))),
             'pad_stick_sensitivity': str(round(self.config.get_float('sm2_pad_stick_sensitivity', 100))),
+            'pad_shortcuts': 'false',  # hotkeygen maps the hotkeys to the keys in hotkeygen_context
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),
