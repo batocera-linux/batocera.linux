@@ -153,10 +153,16 @@ class ControlsBuilder:
         self._wheel = wheel
         self._guns = guns
 
-    def build(self) -> dict[str, dict[str, int]]:
+    def build(self, pad: Controller | None, /) -> dict[str, dict[str, int]]:
         bindings = {path: dict(values) for path, values in _PAD.items()}
         if self._wheel is not None:
             self._bind_wheel(bindings, self._wheel)
+        panel = pad or self._wheel
+        if panel is not None and (panel is self._wheel or panel is not self._controllers[0]):
+            port = self._controllers.index(panel) * _JOY_PORT_STRIDE
+            for key, name in (('service', 'l3'), ('test', 'r3')):
+                if (input := panel.inputs.get(name)) is not None and input.type == 'button':
+                    bindings['chihiro.jvs'][key] = port + _JOY_BUTTON + int(input.id)
         if len(self._controllers) > 1:
             card = self._controllers[1].inputs.get('x')
             if card is not None and card.type == 'button':
@@ -192,13 +198,6 @@ class ControlsBuilder:
                 steer_right=port + _JOY_HALFAXIS + int(steer.id) * 2 + int(not left_positive),
             )
 
-        panel = next((pad for pad in self._controllers if pad is not wheel), wheel)
-
-        def panel_button(name: str) -> int | None:
-            if (input := panel.inputs.get(name)) is not None and input.type == 'button':
-                return self._controllers.index(panel) * _JOY_PORT_STRIDE + _JOY_BUTTON + int(input.id)
-            return button(name)
-
         gear_up = button(_GEAR_UP_INPUTS)
         gear_down = button(_GEAR_DOWN_INPUTS)
         _update(
@@ -210,8 +209,6 @@ class ControlsBuilder:
             gear_down=gear_down,
             start=button('start'),
             coin=button('select'),
-            service=panel_button('l3'),
-            test=panel_button('r3'),
             card_in=button('x'),
         )
         _update(bindings, 'chihiro.jvs.ctx', drive_gear=gear_up, reverse=gear_down, jump=button('b'))

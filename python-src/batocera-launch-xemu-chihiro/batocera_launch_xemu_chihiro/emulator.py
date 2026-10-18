@@ -9,7 +9,7 @@ import toml
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SCREENSHOTS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Controller, Emulator, Gun, HotkeysContext
+from batocera_launch import Command, Controller, Emulator, Gun, HotkeysContext, get_device_info
 
 from .bindings import DEPRECATED, ControlsBuilder
 
@@ -226,5 +226,7 @@ class XemuChihiro(Emulator):
             for key in keys:
                 section.pop(key, None)
 
-        for path, values in ControlsBuilder(self.controllers[:4], self.wheel, guns).build().items():
+        wheels = set(self.wheels) | {path for path, device in get_device_info().items() if device.is_wheel}
+        pad = next((pad for pad in self.controllers[:4] if pad.device_path not in wheels), None)
+        for path, values in ControlsBuilder(self.controllers[:4], self.wheel, guns).build(pad).items():
             _section(config, path).update(values)
