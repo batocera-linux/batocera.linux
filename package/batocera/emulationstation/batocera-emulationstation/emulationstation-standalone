@@ -64,6 +64,7 @@ _reset_rotation() {
 
 # Use --init to get the current screens ; init only once
 batocera-switch-screen-checker --init
+BOOT_OUTPUTS=$(batocera-resolution listOutputs)
 
 GAMELAUNCH=1
 while [ -e "${REBOOT_FLAG}" ]; do
@@ -72,6 +73,14 @@ while [ -e "${REBOOT_FLAG}" ]; do
     # to be ready before running any display commands.
     if ! _wait_for_compositor; then
         sleep 5; continue
+    fi
+
+    # with no screen connected EmulationStation exits at once, wait for one instead of relaunching in a loop
+    if [ -n "${BOOT_OUTPUTS}" ] && [ -z "$(batocera-resolution listOutputs)" ]; then
+        echo "Standalone: No video output connected, waiting for one..." >> "$log"
+        while [ -e "${REBOOT_FLAG}" ] && [ -z "$(batocera-resolution listOutputs)" ]; do
+            sleep 2
+        done
     fi
 
     ### LANGUAGE SETTINGS ###

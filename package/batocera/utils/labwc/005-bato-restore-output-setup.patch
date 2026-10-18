@@ -1,0 +1,169 @@
+output: set up a returning output the way it was before it went away
+
+An output that is unplugged, or a screen that drops its hotplug signal in
+standby, comes back in its preferred mode and at an automatic position.
+Remember its state and apply it again when the same screen returns.
+
+diff --git a/src/output.c b/src/output.c
+index 67d4e6a..5babc74 100644
+--- a/src/output.c
++++ b/src/output.c
+@@ -39,6 +39,85 @@
+ #include "view.h"
+ #include "xwayland.h"
+ 
++/* how an output was set up when it went away, to set it up the same way if it comes back */
++struct saved_output {
++	struct wl_list link;
++	char *name, *make, *model, *serial;
++	bool enabled;
++	int32_t width, height, refresh;
++	enum wl_output_transform transform;
++	float scale;
++	struct wlr_box box;
++};
++
++static struct wl_list saved_outputs = { &saved_outputs, &saved_outputs };
++
++static void
++saved_output_free(struct saved_output *saved)
++{
++	wl_list_remove(&saved->link);
++	g_free(saved->name);
++	g_free(saved->make);
++	g_free(saved->model);
++	g_free(saved->serial);
++	free(saved);
++}
++
++static struct saved_output *
++saved_output_find(struct wlr_output *wlr_output)
++{
++	struct saved_output *saved;
++	wl_list_for_each(saved, &saved_outputs, link) {
++		if (str_equal(saved->name, wlr_output->name)
++				&& str_equal(saved->make, wlr_output->make)
++				&& str_equal(saved->model, wlr_output->model)
++				&& str_equal(saved->serial, wlr_output->serial)) {
++			return saved;
++		}
++	}
++	return NULL;
++}
++
++static void
++output_save(struct wlr_output *wlr_output)
++{
++	struct saved_output *saved, *tmp;
++	wl_list_for_each_safe(saved, tmp, &saved_outputs, link) {
++		if (str_equal(saved->name, wlr_output->name)) {
++			saved_output_free(saved);
++		}
++	}
++
++	saved = znew(*saved);
++	saved->name = g_strdup(wlr_output->name);
++	saved->make = g_strdup(wlr_output->make);
++	saved->model = g_strdup(wlr_output->model);
++	saved->serial = g_strdup(wlr_output->serial);
++	saved->enabled = wlr_output->enabled;
++	saved->width = wlr_output->width;
++	saved->height = wlr_output->height;
++	saved->refresh = wlr_output->refresh;
++	saved->transform = wlr_output->transform;
++	saved->scale = wlr_output->scale;
++	wlr_output_layout_get_box(server.output_layout, wlr_output, &saved->box);
++	wl_list_insert(&saved_outputs, &saved->link);
++}
++
++static bool
++saved_output_set_mode(struct saved_output *saved, struct wlr_output *wlr_output,
++		struct wlr_output_state *state)
++{
++	struct wlr_output_mode *mode;
++	wl_list_for_each(mode, &wlr_output->modes, link) {
++		if (mode->width == saved->width && mode->height == saved->height
++				&& mode->refresh == saved->refresh) {
++			wlr_output_state_set_mode(state, mode);
++			return true;
++		}
++	}
++	return false;
++}
++
+ #if WLR_HAS_X11_BACKEND
+ 	#include <wlr/backend/x11.h>
+ #endif
+@@ -286,6 +365,7 @@ handle_output_destroy(struct wl_listener *listener, void *data)
+ {
+ 	struct output *output = wl_container_of(listener, output, destroy);
+ 	struct seat *seat = &server.seat;
++	output_save(output->wlr_output);
+ 	regions_evacuate_output(output);
+ 	regions_destroy(seat, &output->regions);
+ 	if (seat->overlay.active.output == output) {
+@@ -521,15 +601,25 @@ output_test_auto(struct wlr_output *wlr_output, struct wlr_output_state *state,
+ }
+ 
+ static void
+-configure_new_output(struct output *output)
++configure_new_output(struct output *output, struct saved_output *saved)
+ {
+ 	struct wlr_output *wlr_output = output->wlr_output;
+ 
+ 	wlr_log(WLR_DEBUG, "enable output %s", wlr_output->name);
+ 	wlr_output_state_set_enabled(&output->pending, true);
+ 
+-	if (!output_test_auto(wlr_output, &output->pending,
+-			/* is_client_request */ false)) {
++	if (saved) {
++		wlr_log(WLR_INFO, "restoring the previous setup of output %s",
++			wlr_output->name);
++		wlr_output_state_set_scale(&output->pending, saved->scale);
++		wlr_output_state_set_transform(&output->pending, saved->transform);
++	}
++
++	if (!(saved && saved_output_set_mode(saved, wlr_output, &output->pending)
++			&& output_test_auto(wlr_output, &output->pending,
++				/* is_client_request */ true))
++			&& !output_test_auto(wlr_output, &output->pending,
++				/* is_client_request */ false)) {
+ 		wlr_log(WLR_INFO, "mode test failed for output %s",
+ 			wlr_output->name);
+ 		wlr_output_state_set_enabled(&output->pending, false);
+@@ -549,6 +639,10 @@ configure_new_output(struct output *output)
+ 	 */
+ 	server.pending_output_layout_change++;
+ 	add_output_to_layout(output);
++	if (saved && !wlr_box_empty(&saved->box)) {
++		wlr_output_layout_add(server.output_layout, wlr_output,
++			saved->box.x, saved->box.y);
++	}
+ 	server.pending_output_layout_change--;
+ 
+ 	/*
+@@ -753,8 +847,10 @@ handle_new_output(struct wl_listener *listener, void *data)
+ 	 * it would result in no outputs being enabled at all. This check
+ 	 * might need tweaking if wlroots adds other output backends.
+ 	 */
+-	if (rc.auto_enable_outputs || !wlr_output_is_drm(wlr_output)) {
+-		configure_new_output(output);
++	struct saved_output *saved = saved_output_find(wlr_output);
++	if (saved ? saved->enabled
++			: rc.auto_enable_outputs || !wlr_output_is_drm(wlr_output)) {
++		configure_new_output(output, saved);
+ 	}
+ 
+ 	do_output_layout_change();
+@@ -806,6 +902,11 @@ output_finish(void)
+ {
+ 	wl_list_remove(&server.new_output.link);
+ 	output_manager_finish();
++
++	struct saved_output *saved, *tmp;
++	wl_list_for_each_safe(saved, tmp, &saved_outputs, link) {
++		saved_output_free(saved);
++	}
+ }
+ 
+ static void
