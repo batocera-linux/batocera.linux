@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# the bluetooth uart wake irq aborts deep suspend at cpu offline
+BT_UART_WAKEUP=/sys/devices/platform/soc@0/4ac0000.geniqup/4a8c000.serial/power/wakeup
+
+[ -w "$BT_UART_WAKEUP" ] || exit 0
+
+case "$1" in
+    suspend|hibernate)
+        echo disabled > "$BT_UART_WAKEUP"
+        ;;
+    resume|thaw)
+        echo enabled > "$BT_UART_WAKEUP"
+        ;;
+esac
+
+exit 0
