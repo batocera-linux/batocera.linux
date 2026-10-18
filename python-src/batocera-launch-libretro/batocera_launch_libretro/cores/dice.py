@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 
 @cached_dataclass
 class Dice(Core):
+    def set_config(self, custom_config: LibretroConfig, /) -> None:
+        super().set_config(custom_config)
+
+        custom_config.set('input_player1_select', 'f12')
+
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Pointer-as-paddle, simplest mouse setup
         core_options.set_from_config(
