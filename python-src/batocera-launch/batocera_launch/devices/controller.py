@@ -219,6 +219,26 @@ class Controller:
                 res[x] = {'centered': 0.44 < frac < 0.56, 'reversed': frac > 0.56}
         return res
 
+    def get_evdev_axis_numbers(self, *, skip_flat: bool = False) -> dict[int, int] | None:
+        """Maps ABS codes to the axis numbers of apps that count every code below ABS_MISC, hats included."""
+        import evdev
+
+        try:
+            input_device = evdev.InputDevice(self.device_path)
+        except OSError:
+            return None
+        try:
+            absinfo_by_code = dict(input_device.capabilities().get(evdev.ecodes.EV_ABS, []))
+        finally:
+            input_device.close()
+
+        codes = sorted(
+            code
+            for code, info in absinfo_by_code.items()
+            if code < evdev.ecodes.ABS_MISC and not (skip_flat and info.max <= info.min)
+        )
+        return {code: number for number, code in enumerate(codes)}
+
     # Create a controller array with the player id as a key
     @classmethod
     def load_for_players(cls, player_args: Iterable[PlayerArguments | None], /) -> ControllerList:

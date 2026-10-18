@@ -805,19 +805,7 @@ class _PadAxes:
 
     @classmethod
     def for_pad(cls, pad: Controller, /) -> Self:
-        import evdev
-
-        try:
-            device = evdev.InputDevice(pad.device_path)
-        except OSError:
-            return cls(pad.axis_count, {})
-        try:
-            codes = dict(device.capabilities().get(evdev.ecodes.EV_ABS, []))
-        finally:
-            device.close()
-        # Dolphin numbers every ABS code below ABS_MISC, hats included, unlike SDL
-        dolphin_codes = sorted(code for code in codes if code < evdev.ecodes.ABS_MISC)
-        return cls(pad.axis_count, {code: number for number, code in enumerate(dolphin_codes)})
+        return cls(pad.axis_count, pad.get_evdev_axis_numbers() or {})
 
     def axis(self, input: Input, /) -> int:
         if input.code is None:
