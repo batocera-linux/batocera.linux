@@ -3,7 +3,8 @@ from __future__ import annotations
 import ast
 import logging
 import re
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Self
 
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_launch import BatoceraException
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from batocera_launch import Controller, Controllers, DeviceInfoMapping, Emulator, Guns
+    from batocera_launch import Controller, Controllers, DeviceInfoMapping, Emulator, Guns, Input
 
 _logger = logging.getLogger(__name__)
 
@@ -647,6 +648,7 @@ def _generate_controller_config_wheel(f: SupportsWrite[str], pad: Controller, np
     }
 
     _logger.debug('configuring wheel for pad %s', pad.real_name)
+    axes = _PadAxes.for_pad(pad)
 
     f.write('Rumble/Motor = Constant\n')  # only Constant works on my wheel. maybe some other values could be good
     f.write('Rumble/Motor/Range = -100.\n')  # value must be negative, otherwise the center is in extremes
@@ -654,11 +656,9 @@ def _generate_controller_config_wheel(f: SupportsWrite[str], pad: Controller, np
 
     for name, inp in pad.inputs.items():
         if inp.name in wheel_mapping:
-            _write_key(f, wheel_mapping[inp.name], inp.type, inp.id, inp.value, pad.axis_count, reverse=False)
+            _write_key(f, wheel_mapping[inp.name], inp, axes, reverse=False)
             if inp.name == 'joystick1left' and 'joystick1right' in wheel_mapping:
-                _write_key(
-                    f, wheel_mapping['joystick1right'], inp.type, inp.id, inp.value, pad.axis_count, reverse=True
-                )
+                _write_key(f, wheel_mapping['joystick1right'], inp, axes, reverse=True)
         del name
 
 
@@ -701,20 +701,21 @@ def _generate_controller_config_any_auto(
                         current_mapping['joystick2left']
                     ]
 
+    axes = _PadAxes.for_pad(pad)
     for inp in pad.inputs.values():
         keyname = current_mapping.get(inp.name)
 
         # Write the configuration for this key
         if keyname is not None:
-            _write_key(f, keyname, inp.type, inp.id, inp.value, pad.axis_count, reverse=False)
+            _write_key(f, keyname, inp, axes, reverse=False)
             if 'Triggers' in keyname and inp.type == 'axis':
-                _write_key(f, f'{keyname}-Analog', inp.type, inp.id, inp.value, pad.axis_count, reverse=False)
+                _write_key(f, f'{keyname}-Analog', inp, axes, reverse=False)
             if 'Buttons/Z' in keyname and 'pageup' in pad.inputs:
                 gcz_ids = {'pageup': pad.inputs['pageup'].id, 'pagedown': pad.inputs['pagedown'].id}
-                _write_key(f, keyname, inp.type, inp.id, inp.value, pad.axis_count, reverse=False, gcz_ids=gcz_ids)
+                _write_key(f, keyname, inp, axes, reverse=False, gcz_ids=gcz_ids)
         # Write the 2nd part
         if inp.name in {'joystick1up', 'joystick1left', 'joystick2up', 'joystick2left'} and keyname is not None:
-            _write_key(f, any_reverse_axes[keyname], inp.type, inp.id, inp.value, pad.axis_count, reverse=True)
+            _write_key(f, any_reverse_axes[keyname], inp, axes, reverse=True)
         # DualShock Motion control
         if emulator.config.get_bool('dsmotion'):
             dev = f'evdev/{nsamepad!s}/{pad.real_name.strip()} Motion Sensors'
@@ -797,13 +798,45 @@ def _generate_controller_config_any_from_profiles(
     return False
 
 
+@dataclass(frozen=True, slots=True)
+class _PadAxes:
+    sdl_count: int
+    numbers: Mapping[int, int]
+
+    @classmethod
+    def for_pad(cls, pad: Controller, /) -> Self:
+        import evdev
+
+        try:
+            device = evdev.InputDevice(pad.device_path)
+        except OSError:
+            return cls(pad.axis_count, {})
+        try:
+            codes = dict(device.capabilities().get(evdev.ecodes.EV_ABS, []))
+        finally:
+            device.close()
+        # Dolphin numbers every ABS code below ABS_MISC, hats included, unlike SDL
+        dolphin_codes = sorted(code for code in codes if code < evdev.ecodes.ABS_MISC)
+        return cls(pad.axis_count, {code: number for number, code in enumerate(dolphin_codes)})
+
+    def axis(self, input: Input, /) -> int:
+        if input.code is None:
+            return int(input.id)
+        return self.numbers.get(int(input.code), int(input.id))
+
+    def hat(self, input: Input, /) -> int:
+        from evdev import ecodes
+
+        vertical = int(input.value in ('1', '4'))
+        code = ecodes.ABS_HAT0X + 2 * int(input.id) + vertical
+        return self.numbers.get(code, self.sdl_count + 2 * int(input.id) + vertical)
+
+
 def _write_key(
     f: SupportsWrite[str],
     keyname: str,
-    input_type: str,
-    input_id: str,
-    input_value: str,
-    input_global_id: int,
+    input: Input,
+    axes: _PadAxes,
     /,
     *,
     reverse: bool,
@@ -814,23 +847,20 @@ def _write_key(
     if hotkey_id is not None:
         f.write(f'`Button {hotkey_id}` & ')
     f.write('`')
-    if input_type == 'button':
+    if input.type == 'button':
         # Map L1 & R1 both to Z with OR operator
         if keyname == 'Buttons/Z' and gcz_ids is not None:
             f.write(f'Button {gcz_ids["pageup"]}`|`Button {gcz_ids["pagedown"]}')
         else:
-            f.write(f'Button {input_id}')
-    elif input_type == 'hat':
-        if input_value in ('1', '4'):  # up or down
-            f.write(f'Axis {int(input_global_id) + 1 + int(input_id) * 2}')
-        else:
-            f.write(f'Axis {int(input_global_id) + int(input_id) * 2}')
-        f.write('-' if input_value in ('1', '8') else '+')  # up or left
-    elif input_type == 'axis':
+            f.write(f'Button {input.id}')
+    elif input.type == 'hat':
+        f.write(f'Axis {axes.hat(input)}')
+        f.write('-' if input.value in ('1', '8') else '+')  # up or left
+    elif input.type == 'axis':
         # Ensure full values are used for analog triggers
         prefix = 'Full ' if keyname in {'Triggers/L-Analog', 'Triggers/R-Analog'} else ''
-        if (reverse and input_value == '-1') or (not reverse and input_value == '1'):
-            f.write(f'{prefix}Axis {input_id}+')
+        if (reverse and input.value == '-1') or (not reverse and input.value == '1'):
+            f.write(f'{prefix}Axis {axes.axis(input)}+')
         else:
-            f.write(f'{prefix}Axis {input_id}-')
+            f.write(f'{prefix}Axis {axes.axis(input)}-')
     f.write('`\n')
