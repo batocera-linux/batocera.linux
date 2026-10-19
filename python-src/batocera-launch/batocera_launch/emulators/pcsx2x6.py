@@ -19,6 +19,7 @@ from batocera_launch import (
     Guns,
     HotkeysContext,
     SystemConfig,
+    get_device_info,
     guns_need_crosses,
 )
 from batocera_launch.paths import DATAINIT_DIR, configure_emulator
@@ -771,9 +772,12 @@ async def _configure_ini(
 
     if pad2 is not None:
         _add_binding(pcsx2x6_ini_config, 'JVS', 'Coin1', f'{p2_sdl}/Back')
-        if pad1 is not None and pad1.device_path in wheels:
-            _add_binding(pcsx2x6_ini_config, 'JVS', 'P1_Service', f'{p2_sdl}/LeftStick')
-            _add_binding(pcsx2x6_ini_config, 'JVS', 'ToggleTestMode', f'{p2_sdl}/RightStick')
+
+    wheel_paths = set(wheels) | {path for path, device in get_device_info().items() if device.is_wheel}
+    panel = next((pad for pad in controllers if pad.device_path not in wheel_paths), None)
+    if panel is not None and panel is not pad1:
+        _add_binding(pcsx2x6_ini_config, 'JVS', 'P1_Service', f'SDL-{panel.index}/LeftStick')
+        _add_binding(pcsx2x6_ini_config, 'JVS', 'ToggleTestMode', f'SDL-{panel.index}/RightStick')
 
     slots = _evdev_pointer_slots() if guns else {}
     crosshair = config.get_bool('pcsx2x6_crosshairs', guns_need_crosses(guns))
