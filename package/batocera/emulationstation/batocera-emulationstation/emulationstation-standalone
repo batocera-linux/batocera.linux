@@ -457,6 +457,13 @@ while [ -e "${REBOOT_FLAG}" ]; do
         GAMELAUNCHOPT="--no-startup-game"
     fi
 
+    # Synthax check for gameslist.xml files, if validation fails then ignore to load gamelists at all
+    if ! find /userdata/roms -maxdepth 2 -name "gamelist.xml" -exec xmllint --noout {} +; then
+        XMLGAMELIST="--ignore-gamelist"
+    else
+        XMLGAMELIST=
+    fi
+
     echo "${settings_output}" > "/var/run/switch_screen_current"
 
     ### BACKGLASS ###
@@ -498,7 +505,7 @@ while [ -e "${REBOOT_FLAG}" ]; do
     cd /userdata # ES need a PWD
 
     # DBUS is required for the gio/gvfs/trash:///...
-    %BATOCERA_EMULATIONSTATION_PREFIX% dbus-run-session -- emulationstation ${GAMELAUNCHOPT} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
+    %BATOCERA_EMULATIONSTATION_PREFIX% dbus-run-session -- emulationstation ${GAMELAUNCHOPT} ${XMLGAMELIST} --exit-on-reboot-required %BATOCERA_EMULATIONSTATION_ARGS% ${CUSTOMESOPTIONS}
 
     if which batocera-backglass; then
         if [ -n "${settings_output2}" ]; then
