@@ -19,9 +19,6 @@ config BR2_PACKAGE_OPENABL_STANDARD_BOOT
 	  kernel images, extlinux.conf and the card boot logo. Without
 	  it Linux boots only from Android boot images.
 
-config BR2_PACKAGE_OPENABL_ZH_HANS
-	bool "Simplified Chinese menu"
-
 config BR2_PACKAGE_OPENABL_DEBUG
 	bool "debug build"
 	help

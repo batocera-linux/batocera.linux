@@ -392,7 +392,7 @@
 - Mesa3D to 26.2.5
 - Nvidia 580 Legacy driver to 580.178.04
 - Nvidia Open Production driver to 615.71.09
-- OpenABL replaces Rocknix ABL
+- OpenABL v1.1 replaces Rocknix ABL
 - QT to 6.11.1
 - Qualcomm SDM845 device kernel updated to 7.2.8
 - Qualcomm SM4450 device kernel updated to 7.2.8

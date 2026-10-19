@@ -4,41 +4,47 @@
 #
 ################################################################################
 
-OPENABL_VERSION = 1.0
+OPENABL_VERSION = 1.1
 OPENABL_SOURCE = openabl-v$(OPENABL_VERSION)-source.tar.xz
 OPENABL_SITE = https://github.com/OpenHandheldCollective/OpenABL/releases/download/v$(OPENABL_VERSION)
 OPENABL_LICENSE = GPL-3.0+
 OPENABL_LICENSE_FILES = LICENSE LICENSES.md
 OPENABL_DEPENDENCIES = host-clang host-lld host-python3 host-python-setuptools \
-	host-python-cryptography host-util-linux pv
+	host-python-cryptography host-python-fonttools host-util-linux pv
 
 OPENABL_CHIPSET = $(BATOCERA_ARCH)
 OPENABL_IMAGE = abl_signed-$(call UPPERCASE,$(OPENABL_CHIPSET)).elf
 
 # Per-chipset settings from upstream's build.sh
 OPENABL_SIGN = -v7
-OPENABL_PARAMS = PVMFW_ENABLED=true DISABLE_KERNEL_PROTOCOL=0 ABL_LARGE_IMAGE=1
+OPENABL_PARAMS = PVMFW_ENABLED=true DISABLE_KERNEL_PROTOCOL=0
 OPENABL_SOC_FEATURES =
 OPENABL_STANDARD_BOOT_FEATURES = standard-boot card-logo
 
-ifeq ($(OPENABL_CHIPSET),sm4450)
+ifeq ($(OPENABL_CHIPSET),sdm845)
+OPENABL_SIGN = -v5
+OPENABL_PARAMS = PVMFW_ENABLED=false DISABLE_KERNEL_PROTOCOL=1
+OPENABL_SOC_FEATURES = devinfo-settings loader-quirks
+else ifeq ($(OPENABL_CHIPSET),sm4450)
 OPENABL_SOC_FEATURES = sdcc-sm4450
 else ifeq ($(OPENABL_CHIPSET),sm6115)
 OPENABL_SIGN = -v6
-OPENABL_PARAMS = PVMFW_ENABLED=false DISABLE_KERNEL_PROTOCOL=0 ABL_LARGE_IMAGE=1 \
+OPENABL_PARAMS = PVMFW_ENABLED=false DISABLE_KERNEL_PROTOCOL=0 \
 	ABL_USB_HOST_BUNDLED_STACK=1 TARGET_SOC_SM6115=1
 OPENABL_SOC_FEATURES = loader-quirks
 else ifeq ($(OPENABL_CHIPSET),sm8250)
 OPENABL_SIGN = -v6
 OPENABL_PARAMS = PVMFW_ENABLED=false DISABLE_KERNEL_PROTOCOL=0
+else ifeq ($(OPENABL_CHIPSET),sm8650)
+OPENABL_SOC_FEATURES = park-display
 else ifeq ($(OPENABL_CHIPSET),sm8750)
+OPENABL_SOC_FEATURES = park-display
 OPENABL_STANDARD_BOOT_FEATURES += sysfont
 endif
 
 OPENABL_FEATURES = \
 	$(if $(BR2_PACKAGE_OPENABL_STANDARD_BOOT),$(OPENABL_STANDARD_BOOT_FEATURES)) \
 	$(OPENABL_SOC_FEATURES) \
-	$(if $(BR2_PACKAGE_OPENABL_ZH_HANS),zh-hans) \
 	$(if $(BR2_PACKAGE_OPENABL_DEBUG),debug)
 
 OPENABL_PARAMS += \
