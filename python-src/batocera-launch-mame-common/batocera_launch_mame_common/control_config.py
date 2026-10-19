@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 
     from .mame_control_scheme import MameControlScheme
 
+_MAME_AXIS_NAMES = {0: 'XAXIS', 1: 'YAXIS', 2: 'ZAXIS', 3: 'RXAXIS', 4: 'RYAXIS', 5: 'RZAXIS'}
+
 
 def has_stick(controller: Controller, /) -> bool:
     return 'joystick1up' in controller.inputs
@@ -42,7 +44,6 @@ def get_input_definition(
     ignore_axis: bool = False,
     is_wheel: bool = False,
 ) -> str:
-    mame_axis_mapping_names = {0: 'XAXIS', 1: 'YAXIS', 2: 'ZAXIS', 3: 'RXAXIS', 4: 'RYAXIS', 5: 'RZAXIS'}
     joycode = controller.index + 1
 
     if is_wheel and (key == 'joystick1left' or key == 'l2' or key == 'r2'):
@@ -51,8 +52,8 @@ def get_input_definition(
             suffix = '_NEG'
         if key == 'l2':
             suffix = '_NEG'
-        if int(input.id) in mame_axis_mapping_names:
-            id_name = mame_axis_mapping_names[int(input.id)]
+        if int(input.id) in _MAME_AXIS_NAMES:
+            id_name = _MAME_AXIS_NAMES[int(input.id)]
             return f'JOYCODE_{joycode}_{id_name}{suffix}'
 
     if input.type == 'button':
@@ -140,8 +141,8 @@ def get_input_definition(
                 return f'JOYCODE_{joycode}_RXAXIS_NEG_SWITCH OR {button_directions["y"]}'
             if key == 'joystick2right':
                 return f'JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {button_directions["a"]}'
-            if int(input.id) in mame_axis_mapping_names:
-                id_name = mame_axis_mapping_names[int(input.id)]
+            if int(input.id) in _MAME_AXIS_NAMES:
+                id_name = _MAME_AXIS_NAMES[int(input.id)]
                 return f'JOYCODE_{joycode}_{id_name}_POS_SWITCH'
 
     return 'unknown'
@@ -303,6 +304,19 @@ class ControlConfig:
                 mask='255',
                 defvalue='128',
                 sequence=f'GUNCODE_{player_number}_{axis}AXIS',
+            )
+
+    def add_stick_player_ports(self, player_number: int, controller: Controller, /) -> None:
+        # default.cfg replaces MAME's default sequence, so keep its mouse code next to the stick axis
+        joycode = controller.index + 1
+        for axis, key in [('X', 'joystick1left'), ('Y', 'joystick1up')]:
+            input = controller.inputs.get(key)
+            if input is None or input.type != 'axis' or (axis_name := _MAME_AXIS_NAMES.get(int(input.id))) is None:
+                continue
+
+            self._add_port_element(
+                f'P{player_number}_AD_STICK_{axis}',
+                sequence=f'JOYCODE_{joycode}_{axis_name} OR MOUSECODE_{player_number}_{axis}AXIS',
             )
 
     def add_port(
