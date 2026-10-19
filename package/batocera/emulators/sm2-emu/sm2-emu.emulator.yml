@@ -145,9 +145,28 @@ custom_features:
   sm2_wheel_ffb_strength:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK STRENGTH
-    description: Strength of the game's forces, in percent of the wheel's maximum. Auto is 50%.
+    description: How strong the game's forces are. At 100% the game's strongest force is the wheel's full force. Above 100% every force is stronger, the strongest capped at the wheel's full force. Auto is 50%.
+    preset: sliderauto
+    preset_parameters: 0 200 10 %
+  sm2_wheel_panel_spring:
+    group: WHEELS
+    prompt: WHEEL PANEL SPRING
+    description: Sega Rally and Daytona USA only. The light centring spring of their wheel panel, in percent of Sega Rally's strongest force. Auto is 20%.
     preset: sliderauto
     preset_parameters: 0 100 5 %
+  sm2_wheel_drive_dip:
+    group: WHEELS
+    prompt: DRIVE BOARD DIP STRENGTH
+    description: The operator's force setting on the drive board's DIP switches. 0 is how the boards leave the factory, 7 is the most force a cabinet can have.
+    choices:
+      0 (Default): 0
+      '1': 1
+      '2': 2
+      '3': 3
+      '4': 4
+      '5': 5
+      '6': 6
+      '7': 7
   sm2_wheel_ffb_invert:
     group: WHEELS
     prompt: INVERT WHEEL FORCE FEEDBACK

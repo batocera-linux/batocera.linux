@@ -238,6 +238,8 @@ class Sm2Emu(Emulator):
             **{f'gun{gun}_button_{role}': str(code) for gun in (1, 2) for role, code in _GUN_BUTTONS.items()},
             'wheel_ffb': _ini_bool(self.config.get_bool('sm2_wheel_ffb', True)),
             'wheel_ffb_strength': str(round(self.config.get_float('sm2_wheel_ffb_strength', 50))),
+            'wheel_panel_spring': str(round(self.config.get_float('sm2_wheel_panel_spring', 20))),
+            'wheel_drive_dip': self.config.get_str('sm2_wheel_drive_dip', '0'),
             'wheel_ffb_invert': _ini_bool(self.config.get_bool('sm2_wheel_ffb_invert', False)),
             'wheel_rumble': _ini_bool(self.config.get_bool('sm2_wheel_rumble', True)),
             'wheel_rumble_strength': self.config.get_str('sm2_wheel_rumble_strength', '40'),
@@ -273,6 +275,7 @@ class Sm2Emu(Emulator):
             'crt_mask_strength': self.config.get_str('sm2_crt_mask_strength', '30'),
             'crt_glow_strength': self.config.get_str('sm2_crt_glow_strength', '20'),
             'crt_curvature': self.config.get_str('sm2_crt_curvature', '0'),
+            'bezel': 'false',  # batocera draws its own bezels
         }
 
         config_path = self.config_dir / 'sm2-emu.ini'
