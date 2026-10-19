@@ -16,7 +16,7 @@ index 0f4921b1a892..f8d8c2d7f9d6 100644
  		return PTR_ERR(global_state);
  
  	dpu_rm_release(global_state, crtc);
-+	cstate->num_mixers = 0;
++	to_dpu_crtc_state(crtc_state)->num_mixers = 0;
  
  	if (!crtc_state->enable)
  		return 0;
