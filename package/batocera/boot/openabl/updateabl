@@ -28,7 +28,7 @@ else
 fi
 
 case "$HW_DEVICE" in
-  SM4450|SM6115|SM8250|SM8550|SM8650|SM8750)
+  SDM845|SM4450|SM6115|SM8250|SM8550|SM8650|SM8750)
     ;;
   *)
     echo "This script is not compatible with device: $HW_DEVICE"
