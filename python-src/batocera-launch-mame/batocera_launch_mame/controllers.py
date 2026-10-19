@@ -107,7 +107,10 @@ class MAMEControllers(MAMEBase):
                 mappings_use['PEDAL2'] = 'l2'
                 mappings_use['PADDLE'] = 'joystick1left'
 
-            default_control_config.add_common_player_ports(nplayer)
+            if self.config.use_guns and nplayer <= len(self.guns):
+                default_control_config.add_common_player_ports(nplayer)
+            else:
+                default_control_config.add_stick_player_ports(nplayer, controller)
 
             for mapping, mapped_key in mappings_use.items():
                 resolved = _resolve_pad_key(controller, mapped_key)
