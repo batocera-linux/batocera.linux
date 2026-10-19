@@ -1,1 +1,1 @@
-SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Chronic Concepts Insert Coin Cube*", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0"
+SUBSYSTEM=="input", ACTION=="add", ATTRS{name}=="Chronic Concepts Insert Coin Cube*", ENV{ID_INPUT_KEYBOARD}="0", ENV{ID_INPUT_KEY}="0", RUN+="/usr/bin/chronic-concepts-insert-coin --set-kbd-en true --set-key-btn A --set-key-coin B"
