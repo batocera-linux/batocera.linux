@@ -98,7 +98,7 @@ class Xash3dFwgs(Emulator):
         return Command(
             args,
             env={
-                'XASH3D_BASEDIR': self.rom_data_dir,
+                'XASH3D_BASEDIR': self.roms_dir,
                 'XASH3D_EXTRAS_PAK1': '/usr/share/xash3d/valve/extras.pk3',
                 'LD_LIBRARY_PATH': '/usr/lib/xash3d',
             },
