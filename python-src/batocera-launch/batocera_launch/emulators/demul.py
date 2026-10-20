@@ -84,15 +84,11 @@ class Demul(Emulator):
 
     @cached_property
     def gpu_resolution(self) -> tuple[int, int]:
-        # Gaelco's plugin takes its window and render size from this, and draws the picture to fill it. Under Wayland
-        # that is a window, so give it the largest box with the chosen aspect that fits the screen. Xorg is fullscreen.
+        # Gaelco's plugin takes its window and render size from this, and draws the picture to fill it, so give it the
+        # largest box with the chosen aspect that fits the screen.
         width, height = self.resolution.width, self.resolution.height
 
-        if (
-            self.system == 'gaelco'
-            and 'WAYLAND_DISPLAY' in os.environ
-            and (ratio := self.config.get_int('demulRatio', 1)) != 0
-        ):
+        if self.system == 'gaelco' and (ratio := self.config.get_int('demulRatio', 1)) != 0:
             target = 4 / 3 if ratio == 1 else 16 / 9
 
             if width / height > target:
@@ -210,10 +206,11 @@ class Demul(Emulator):
         )
 
         # Handle window quirks with Demul systems: some systems start non-fullscreen
-        # and need a synthetic F3 (+ Alt+Enter under X11) to force fullscreen.
+        # and need a synthetic F3 (+ Alt+Enter under X11) to force fullscreen. Gaelco stays windowed, its plugin
+        # squeezes the picture in exclusive fullscreen.
         if self.system in ('cave3rd', 'gaelco'):
             trigger_cmd = 'sleep 5 && export DISPLAY=:0 && xdotool getactivewindow key F3'
-            if 'WAYLAND_DISPLAY' not in os.environ:
+            if self.system != 'gaelco' and 'WAYLAND_DISPLAY' not in os.environ:
                 trigger_cmd += ' && xdotool getactivewindow key alt+Return'
             trigger_cmd += f' && {_CENTRE_WINDOW}'
 
