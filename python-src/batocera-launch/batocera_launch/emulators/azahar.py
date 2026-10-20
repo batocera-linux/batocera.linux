@@ -168,7 +168,7 @@ class Azahar(Emulator):
 
     @property
     def needs_mouse(self) -> bool:
-        return self.config.get_str('azahar_screen_layout') != '1-false'
+        return True
 
     async def configure_windows(self) -> None:
         # windows position is handled by coordonnates by the application (xorg) or the windows manager (wayland)
