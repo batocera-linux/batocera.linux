@@ -53,6 +53,7 @@ class Flycast(Emulator):
             'keys': {
                 'exit': 'KEY_F7',
                 'menu': 'KEY_TAB',
+                'coin': 'KEY_A',
                 'save_state': 'KEY_F9',
                 'restore_state': 'KEY_F8',
                 'fastforward': 'KEY_SPACE',

@@ -43,7 +43,7 @@ class FlycastVL(DisableAnalogModeMixin, RACore):
         super().set_config(custom_config)
 
         if self.system != 'dreamcast':
-            custom_config.set('input_player1_select', 'f12')
+            custom_config.set('input_player1_select', 'num5')
 
 
 @cached_dataclass
