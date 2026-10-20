@@ -3,8 +3,8 @@
 # libfreeimage-vpinball
 #
 ################################################################################
-# Version: Commits on Oct 12, 2026
-LIBFREEIMAGE_VPINBALL_VERSION = b1613452a0c3849d43ac877b154cf51ff9e078d3
+# Version: Commits on Nov 15, 2026
+LIBFREEIMAGE_VPINBALL_VERSION = d29c96999deb331181c44264e5338ec16d393c79
 LIBFREEIMAGE_VPINBALL_SITE = $(call github,toxieainc,freeimage,$(LIBFREEIMAGE_VPINBALL_VERSION))
 LIBFREEIMAGE_VPINBALL_LICENSE = GPL-2.0 or GPL-3.0 or FreeImage Public License
 LIBFREEIMAGE_VPINBALL_LICENSE_FILES = license-gplv2.txt license-gplv3.txt license-fi.txt

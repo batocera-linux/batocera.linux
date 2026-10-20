@@ -38,12 +38,12 @@ _logger = logging.getLogger(__name__)
 
 _PLUGINS_TO_ENABLE = (
     'Plugin.AltSound',
-    'Plugin.B2SLegacy',
+    'Plugin.B2S',
     'Plugin.DMDUtil',
     'Plugin.FlexDMD',
     'Plugin.PinMAME',
     'Plugin.PUP',
-    'Plugin.ScoreView',
+    'Plugin.Nixie',
     'Plugin.Serum',
     'Plugin.WMP',
     'Plugin.VNI',
