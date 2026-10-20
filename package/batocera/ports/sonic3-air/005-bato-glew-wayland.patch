@@ -1,0 +1,26 @@
+diff --git a/Oxygen/oxygenengine/source/oxygen/drawing/opengl/OpenGLDrawer.cpp b/Oxygen/oxygenengine/source/oxygen/drawing/opengl/OpenGLDrawer.cpp
+--- a/Oxygen/oxygenengine/source/oxygen/drawing/opengl/OpenGLDrawer.cpp
++++ b/Oxygen/oxygenengine/source/oxygen/drawing/opengl/OpenGLDrawer.cpp
+@@ -117,7 +117,8 @@
+ 			// GLEW initialization
+ 			RMX_LOG_INFO("GLEW initialization...");
+ 			const GLenum result = glewInit();
+-			if (result != GLEW_OK)
++			// no GLX display under Wayland, but the GL entry points are loaded
++			if (result != GLEW_OK && result != GLEW_ERROR_NO_GLX_DISPLAY)
+ 			{
+ 				RMX_ERROR("Error in OpenGL initialization (glewInit):\n" << glewGetErrorString(result), );
+ 				return;
+diff --git a/librmx/source/rmxmedia/framework/VideoManager.cpp b/librmx/source/rmxmedia/framework/VideoManager.cpp
+--- a/librmx/source/rmxmedia/framework/VideoManager.cpp
++++ b/librmx/source/rmxmedia/framework/VideoManager.cpp
+@@ -136,7 +136,8 @@
+ 		{
+ 		#ifdef RMX_USE_GLEW
+ 			const GLenum result = glewInit();
+-			if (result != GLEW_OK)
++			// no GLX display under Wayland, but the GL entry points are loaded
++			if (result != GLEW_OK && result != GLEW_ERROR_NO_GLX_DISPLAY)
+ 			{
+ 				RMX_ERROR("Error in OpenGL initialization (glewInit):\n" << glewGetErrorString(result), );
+ 				return false;
