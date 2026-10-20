@@ -48,6 +48,7 @@ _SPECIAL_CONTROLS: Final = {
     'vc4000',
     'fmtmarty',
     'gp32',
+    'gamate',
     'apple2p',
     'apple2e',
     'apple2ee',

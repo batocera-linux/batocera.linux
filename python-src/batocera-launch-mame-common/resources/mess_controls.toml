@@ -248,6 +248,16 @@ R = {type = "special", player = 1, tag = ":IN0", mask = 32768, default = 32768, 
 Select = {type = "special", player = 1, tag = ":IN1", mask = 128, default = 128, key = "P1_SELECT", mapping = "COIN"}
 Start = {type = "special", player = 1, tag = ":IN1", mask = 64, default = 64, key = "P1_START", mapping = "START"}
 
+[gamate]
+Up = {type = "special", player = 1, tag = ":JOY", mask = 1, default = 1, key = "P1_JOYSTICK_UP", mapping = "JOYSTICK_UP"}
+Down = {type = "special", player = 1, tag = ":JOY", mask = 2, default = 2, key = "P1_JOYSTICK_DOWN", mapping = "JOYSTICK_DOWN"}
+Left = {type = "special", player = 1, tag = ":JOY", mask = 4, default = 4, key = "P1_JOYSTICK_LEFT", mapping = "JOYSTICK_LEFT"}
+Right = {type = "special", player = 1, tag = ":JOY", mask = 8, default = 8, key = "P1_JOYSTICK_RIGHT", mapping = "JOYSTICK_RIGHT"}
+A = {type = "special", player = 1, tag = ":JOY", mask = 16, default = 16, key = "P1_BUTTON2", mapping = "BUTTON1"}
+B = {type = "special", player = 1, tag = ":JOY", mask = 32, default = 32, key = "P1_BUTTON1", mapping = "BUTTON2"}
+Start = {type = "special", player = 1, tag = ":JOY", mask = 64, default = 64, key = "P1_START", mapping = "START"}
+Select = {type = "special", player = 1, tag = ":JOY", mask = 128, default = 128, key = "P1_SELECT", mapping = "COIN"}
+
 [apple2-joy]
 "P1 X Axis" = {type = "analog", player = 1, tag = ":gameio:joy:joystick_1_x", mask = 255, default = 128, key = "P1_AD_STICK_X", delta = 10, axis = "XAXIS", incMapping = "JOYSTICK_RIGHT", incUseMapping = "JOYSTICK_LEFT", decMapping = "JOYSTICK_LEFT"}
 "P1 Y Axis" = {type = "analog", player = 1, tag = ":gameio:joy:joystick_1_y", mask = 255, default = 128, key = "P1_AD_STICK_Y", delta = 10, axis = "YAXIS", incMapping = "JOYSTICK_DOWN", incUseMapping = "JOYSTICK_UP", decMapping = "JOYSTICK_UP"}
