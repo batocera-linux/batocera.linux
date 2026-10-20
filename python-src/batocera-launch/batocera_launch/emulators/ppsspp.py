@@ -197,6 +197,7 @@ def _generate_controller_config(controls_ini: Path, controls_init: Path, control
     config.set(section, 'Next Slot', '1-136')
     config.set(section, 'Screenshot', '1-137')
     config.set(section, 'Pause', '1-139')
+    config.set(section, 'Exit App', '1-140')
 
     controls_ini.parent.mkdir(parents=True, exist_ok=True)
     with controls_ini.open('w+') as fp:
@@ -213,7 +214,7 @@ class PPSSPP(Emulator):
         return {
             'name': 'ppsspp',
             'keys': {
-                'exit': ['KEY_LEFTALT', 'KEY_F4'],
+                'exit': 'KEY_F10',
                 'menu': 'KEY_F9',
                 'pause': 'KEY_F9',
                 'rewind': 'KEY_F1',
@@ -383,6 +384,8 @@ class PPSSPP(Emulator):
         ini_config.set('General', 'EnableCheats', str(self.config.get_bool('enable_cheats', False)))
         # Don't check for a new version
         ini_config.set('General', 'CheckForNewVersion', 'False')
+        # the exit hotkey uses Exit App, which otherwise asks to confirm after 5 minutes of unsaved play
+        ini_config.set('General', 'AskForExitConfirmationAfterSeconds', '0')
 
         # SaveState
         ini_config.set('General', 'StateSlot', self.config.get_str('state_slot', '0'))
