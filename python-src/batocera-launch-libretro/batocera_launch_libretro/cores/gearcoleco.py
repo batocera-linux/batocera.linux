@@ -23,14 +23,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass
-from batocera_launch_libretro import Core
+from batocera_launch_libretro import RACore
 
 if TYPE_CHECKING:
     from batocera_launch import LibretroConfig
 
 
 @cached_dataclass
-class Gearcoleco(Core):
+class Gearcoleco(RACore):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Refresh Rate (requires restart)
         core_options.set_from_config('gearcoleco_timing', default='Auto')

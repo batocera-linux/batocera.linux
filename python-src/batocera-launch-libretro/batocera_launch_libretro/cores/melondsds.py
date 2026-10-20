@@ -23,14 +23,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass
-from batocera_launch_libretro import AssociatedMouseMixin, Core
+from batocera_launch_libretro import AssociatedMouseMixin, RACore
 
 if TYPE_CHECKING:
     from batocera_launch import LibretroConfig
 
 
 @cached_dataclass
-class MelonDSDS(AssociatedMouseMixin, Core):
+class MelonDSDS(AssociatedMouseMixin, RACore):
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # System Settings
         core_options.set_from_config('melonds_console_mode', 'melondsds_console_mode', default='ds')
