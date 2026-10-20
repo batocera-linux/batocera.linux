@@ -130,10 +130,11 @@ class Openmsx(Emulator):
                     file.write('dict set joystick2_config DOWN {+axis1 D_hat0}\n')
 
                 for input_ in pad.inputs.values():
-                    if input_.name == 'y':
-                        file.write(f'bind "joy{nplayer} button{input_.id} down" "keymatrixdown 6 0x40"\n')
-                    if input_.name == 'x':
-                        file.write(f'bind "joy{nplayer} button{input_.id} down" "keymatrixdown 6 0x80"\n')
+                    # row 6 bits 6/7 are F2/F3 on an msx but enter/left on the svi
+                    if input_.name in ('y', 'x') and self.system != 'spectravideo':
+                        mask = '0x40' if input_.name == 'y' else '0x80'
+                        file.write(f'bind "joy{nplayer} button{input_.id} down" "keymatrixdown 6 {mask}"\n')
+                        file.write(f'bind "joy{nplayer} button{input_.id} up" "keymatrixup 6 {mask}"\n')
                     if input_.name == 'pagedown':
                         file.write(f'bind "joy{nplayer} button{input_.id} up" "set fastforward off"\n')
                         file.write(f'bind "joy{nplayer} button{input_.id} down" "set fastforward on"\n')
