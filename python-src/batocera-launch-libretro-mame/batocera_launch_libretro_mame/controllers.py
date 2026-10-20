@@ -368,8 +368,8 @@ class MAMEControllers(MAMEBase):
                         'standard',
                         'UI_SELECT',
                         'ENTER',
-                        'a',
-                        _RETRO_PAD_MAPPINGS['a'],
+                        'b',
+                        _RETRO_PAD_MAPPINGS['b'],
                     )
 
                 if mess_controls is not None:
