@@ -35,6 +35,7 @@ from batocera_launch import Command, Emulator, HotkeysContext
 _logger: Final = logging.getLogger(__name__)
 
 _CONFIG_NAME: Final = 'hypinput.ini'
+_INVERTED_CONFIG_NAME: Final = 'hypinput_inverted.ini'
 _SHARE_DIR: Final = Path('/usr/share/hypseus-singe')
 
 # Bezel images are shared across a family of related ROM variants (regional /
@@ -138,6 +139,22 @@ def _get_resolution(video_path: Path) -> tuple[int, int] | None:
         ratio = sar_num / sar_den
         width = int(height * ratio)
     return width, height
+
+
+def _write_inverted_keymap(source: Path, destination: Path) -> None:
+    # -tiphat only inverts hat events, which hypseus ignores in -gamepad mode, so swap the pad bindings instead
+    lines = source.read_text().splitlines(keepends=True)
+    entries: dict[str, tuple[int, str, list[str]]] = {}
+    for index, line in enumerate(lines):
+        name, sep, value = line.partition('=')
+        if sep and name.strip() in ('KEY_UP', 'KEY_DOWN'):
+            entries[name.strip()] = (index, name + sep, value.split())
+    if len(entries) == 2:
+        up_index, up_prefix, up_fields = entries['KEY_UP']
+        down_index, down_prefix, down_fields = entries['KEY_DOWN']
+        lines[up_index] = f'{up_prefix} {" ".join(up_fields[:2] + down_fields[2:])}\n'
+        lines[down_index] = f'{down_prefix} {" ".join(down_fields[:2] + up_fields[2:])}\n'
+    destination.write_text(''.join(lines))
 
 
 def _copy_resources(source_dir: Path, destination_dir: Path) -> None:
@@ -289,12 +306,11 @@ class HypseusSinge(Emulator):
             ]
 
         # controller config file
-        args.extend(
-            [
-                '-keymapfile',
-                self.config.get_bool('hypseus_joy', return_values=('custom.ini', _CONFIG_NAME)),
-            ]
-        )
+        keymap = self.config.get_bool('hypseus_joy', return_values=('custom.ini', _CONFIG_NAME))
+        if self.config.get_bool('hypseus_axis'):
+            _write_inverted_keymap(self.config_dir / keymap, self.config_dir / _INVERTED_CONFIG_NAME)
+            keymap = _INVERTED_CONFIG_NAME
+        args.extend(['-keymapfile', keymap])
 
         # Default -fullscreen behaviour respects game aspect ratio
         bezel_required = False
@@ -390,10 +406,6 @@ class HypseusSinge(Emulator):
                 args.extend(['-bezel', 'default.png'])
             else:
                 args.extend(['-bezel', bezel_file])
-
-        # Invert HAT Axis
-        if self.config.get_bool('hypseus_axis'):
-            args.append('-tiphat')
 
         # Game rotation options for vertical screens, default is 0.
         match self.config.get('hypseus_rotate'):
