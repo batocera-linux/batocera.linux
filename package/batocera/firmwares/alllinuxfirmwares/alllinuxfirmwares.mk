@@ -4,9 +4,14 @@
 #
 ################################################################################
 
-ALLLINUXFIRMWARES_VERSION = 20260810
+ALLLINUXFIRMWARES_VERSION = 20261019
 ALLLINUXFIRMWARES_SOURCE = linux-firmware-$(ALLLINUXFIRMWARES_VERSION).tar.xz
 ALLLINUXFIRMWARES_SITE = https://www.kernel.org/pub/linux/kernel/firmware
+
+# the prunes below read the kernel config and the iwlwifi versions it loads
+ifeq ($(BR2_LINUX_KERNEL),y)
+ALLLINUXFIRMWARES_DEPENDENCIES += linux
+endif
 
 ifeq ($(BR2_PACKAGE_FIRMWARE_ARMBIAN),y)
 ALLLINUXFIRMWARES_DEPENDENCIES += firmware-armbian
@@ -20,7 +25,20 @@ endif
 # Removed to save significant space on all targets.
 ALLLINUXFIRMWARES_REMOVE_DIRS = $(@D)/liquidio $(@D)/netronome $(@D)/mellanox \
     $(@D)/dpaa2 $(@D)/bnx2x $(@D)/cxgb4 $(@D)/mrvl/prestera $(@D)/qed \
-    $(@D)/qlogic $(@D)/nfp $(@D)/pensando $(@D)/cavium
+    $(@D)/qlogic $(@D)/nfp $(@D)/pensando $(@D)/cavium \
+    $(@D)/ath10k/WCN3990/hw1.0/shikra
+
+# firmware for drivers the kernel doesn't build, as CONFIG_<option>:<path>
+ALLLINUXFIRMWARES_KCONFIG_PRUNE = \
+    IWLWIFI:intel/iwlwifi \
+    DRM_AMDGPU:amdgpu \
+    DRM_RADEON:radeon \
+    ATH10K_SNOC:ath10k/WCN3990 \
+    ATH10K_AHB:ath10k/QCA4019 \
+    ATH11K_AHB:ath11k/IPQ* \
+    ATH11K_AHB:ath11k/WCN6750 \
+    ATH12K_AHB:ath12k/IPQ* \
+    RTW89_8922D[A-Z]*:rtw89/rtw8922d*
 
 # Remove strictly ARM/Mobile SoC components
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
@@ -41,7 +59,7 @@ ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY),y)
         $(@D)/amdgpu/gc_9_4_[34]_* $(@D)/amdgpu/gc_9_5_0_* \
         $(@D)/amdgpu/psp_13_0_6_* $(@D)/amdgpu/psp_13_0_1[24]_* \
         $(@D)/amdgpu/sdma_4_4_[245].bin $(@D)/amdgpu/vcn_4_0_3.bin \
-        $(@D)/amdgpu/vcn_5_0_1.bin
+        $(@D)/amdgpu/vcn_5_0_1.bin $(@D)/nvidia/tegra*
     # nouveau only falls back to 535 when 570 is missing
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/nvidia/*/gsp/*-535.113.01.bin
 endif
@@ -81,6 +99,33 @@ ifneq ($(BR2_PACKAGE_BATOCERA_TARGET_QUALCOMM_ANY),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/qcom
 endif
 
+# qcom folders the board device trees load from, video firmware is shared
+ALLLINUXFIRMWARES_QCOM_KEEP = vpu vpu-* venus-*
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_QCS6490),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += qcm6490 qcs6490
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SDM845),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sdm845
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM4450),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm4450
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM6115),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm6115 qrb4210
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm8250
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8550),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm8550
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8650),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm8650
+endif
+ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM8750),y)
+    ALLLINUXFIRMWARES_QCOM_KEEP += sm8750
+endif
+
 # Irrelevant blobs for SM6115 & SM8250.
 ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_SM6115)$(BR2_PACKAGE_BATOCERA_TARGET_SM8250),y)
     ALLLINUXFIRMWARES_REMOVE_DIRS += $(@D)/intel $(@D)/mediatek
@@ -97,20 +142,26 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     # Exclude defined directories
     rm -rf $(ALLLINUXFIRMWARES_REMOVE_DIRS)
 
+    if [ -f $(LINUX_DIR)/.config ]; then \
+        for p in $(ALLLINUXFIRMWARES_KCONFIG_PRUNE); do \
+            grep -q "^CONFIG_$${p%%:*}=[ym]" $(LINUX_DIR)/.config || \
+                rm -rf $(@D)/$${p#*:}; \
+        done; \
+    fi
+
+    if [ -d $(@D)/qcom ]; then \
+        find $(@D)/qcom -mindepth 1 -maxdepth 1 -type d \
+            $(foreach d,$(ALLLINUXFIRMWARES_QCOM_KEEP),! -name '$(d)') \
+            -exec rm -rf {} +; \
+    fi
+
     # RK3588 specific: Keep only Bluetooth 'ibt-*' and iwlwifi from the Intel folder
     if [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588)" = "y" ] || [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_SDIO)" = "y" ] || [ "$(BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE)" = "y" ]; then \
         find $(@D)/intel -type f ! -name 'ibt-*' ! -path '*/iwlwifi/*' -delete; \
     fi
 
-    # iwlwifi loads only the newest API it supports, keep one spare for a lagging kernel
-    if [ "$(BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY)" = "y" ]; then \
-        cd $(@D)/intel/iwlwifi && \
-        for f in *.ucode; do \
-            v=$${f##*-}; v=$${v%.ucode}; \
-            case $$v in c*) v=$$((100000 + $${v#c})) ;; esac; \
-            echo "$${f%-*} $$v $$f"; \
-        done | sort -k1,1 -k2,2nr | awk 'n[$$1]++ >= 2 { print $$3 }' | xargs -r rm -f; \
-    fi
+    # iwlwifi loads only the newest API it supports, keep one spare
+    $(ALLLINUXFIRMWARES_PKGDIR)/prune-iwlwifi.sh $(@D) $(LINUX_DIR)
 
     # -n is mandatory while some other packages provides firmwares too
     # this is not ideal, but i don't know how to tell to buildroot to install this package first
@@ -128,13 +179,8 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
         find $(TARGET_DIR)/lib/firmware/ti -maxdepth 1 -type f -delete; \
     fi
     
-    # Logic for ARM SM8250: Keep only necessary firmware folders
+    # Logic for ARM SM8250: drop older Adreno firmware
     if [ "$(BR2_PACKAGE_BATOCERA_TARGET_SM8250)" = "y" ]; then \
-        find $(TARGET_DIR)/lib/firmware/qcom -maxdepth 1 -mindepth 1 -type d \
-            ! -name "sm8250" \
-            ! -name "vpu" \
-            ! -name "venus-*" \
-            -exec rm -rf {} +; \
         rm -f $(TARGET_DIR)/lib/firmware/a300_*.fw; \
         rm -f $(TARGET_DIR)/lib/firmware/a420_*.fw; \
         rm -f $(TARGET_DIR)/lib/firmware/a530_*.fw; \
@@ -163,12 +209,9 @@ define ALLLINUXFIRMWARES_INSTALL_TARGET_CMDS
     fi
 endef
 
-# Link Qualcomm Wi-Fi/BT for Steam Deck OLED and other x86 handhelds
+# Qualcomm Wi-Fi board files for Steam Deck OLED and other x86 handhelds
 define ALLLINUXFIRMWARES_LINK_QCA_WIFI_BT
-    mkdir -p $(TARGET_DIR)/lib/firmware/ath11k/WCN6855/hw2.1
     mkdir -p $(TARGET_DIR)/lib/firmware/ath11k/QCA2066
-    cp -rf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/hw2.1/* \
-        $(TARGET_DIR)/lib/firmware/ath11k/WCN6855/hw2.1
     cp -rf $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/firmwares/alllinuxfirmwares/QCA206X/* \
         $(TARGET_DIR)/lib/firmware/ath11k/QCA2066
 endef
