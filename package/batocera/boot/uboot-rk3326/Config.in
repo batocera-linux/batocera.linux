@@ -1,5 +1,6 @@
 config BR2_PACKAGE_UBOOT_RK3326
 	bool "uboot-rk3326"
+	select BR2_PACKAGE_BATOCERA_RKBIN
 	help
 	  Legacy hardkernel U-Boot (ROCKNIX fork) for RK3326 handhelds
 	  that are detected by the board ID ADC.
