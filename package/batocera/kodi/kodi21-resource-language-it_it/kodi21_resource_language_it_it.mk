@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-KODI21_RESOURCE_LANGUAGE_IT_IT_VERSION = 11.0.106
+KODI21_RESOURCE_LANGUAGE_IT_IT_VERSION = 11.0.112
 KODI21_RESOURCE_LANGUAGE_IT_IT_SOURCE = \
     resource.language.it_it-$(KODI21_RESOURCE_LANGUAGE_IT_IT_VERSION).zip
 KODI21_RESOURCE_LANGUAGE_IT_IT_SITE = \
