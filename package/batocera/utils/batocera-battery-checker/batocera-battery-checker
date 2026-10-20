@@ -4,7 +4,8 @@ export LC_ALL=C
 
 # Function to get the battery percentage
 getBattery() {
-    BATT=$(cat /sys/class/power_supply/*{BAT,bat}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e 's/^POWER_SUPPLY_CAPACITY=//' | sort -rn | head -1)
+    # skip controller batteries, they report scope=Device
+    BATT=$(for U in /sys/class/power_supply/*{BAT,bat}*/uevent; do grep -qx "POWER_SUPPLY_SCOPE=Device" "${U}" 2>/dev/null || cat "${U}" 2>/dev/null; done | grep -E "^POWER_SUPPLY_CAPACITY=" | sed -e 's/^POWER_SUPPLY_CAPACITY=//' | sort -rn | head -1)
     if ! test -n "${BATT}"; then
         NOW=$(cat /sys/class/power_supply/*{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_NOW=" | sed -e 's/^POWER_SUPPLY_CHARGE_NOW=//' | sort -rn | head -1)
         MAX=$(cat /sys/class/power_supply/*{FUEL,fuel}*/uevent 2>/dev/null | grep -E "^POWER_SUPPLY_CHARGE_FULL=" | sed -e 's/^POWER_SUPPLY_CHARGE_FULL=//' | sort -rn | head -1)
