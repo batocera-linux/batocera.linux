@@ -1,46 +1,8 @@
-From 6ba0219c9da833fd27500bc72e3103ea8998ed47 Mon Sep 17 00:00:00 2001
-From: tiopex <tiopxyz@gmail.com>
-Date: Thu, 29 May 2025 12:51:30 +0200
-Subject: [PATCH] sound: soc: Add sunxi_v2 for h616 ahub
-
----
- sound/soc/Kconfig                         |    1 +
- sound/soc/Makefile                        |    1 +
- sound/soc/sunxi_v2/Kconfig                |   48 +
- sound/soc/sunxi_v2/Makefile               |   11 +
- sound/soc/sunxi_v2/drv_hdmi.h             |   63 +
- sound/soc/sunxi_v2/snd_sunxi_ahub.c       | 1475 +++++++++++++++++++++
- sound/soc/sunxi_v2/snd_sunxi_ahub.h       |   67 +
- sound/soc/sunxi_v2/snd_sunxi_ahub_dam.c   |  532 ++++++++
- sound/soc/sunxi_v2/snd_sunxi_ahub_dam.h   |  291 ++++
- sound/soc/sunxi_v2/snd_sunxi_common.c     |  267 ++++
- sound/soc/sunxi_v2/snd_sunxi_common.h     |   67 +
- sound/soc/sunxi_v2/snd_sunxi_log.h        |   30 +
- sound/soc/sunxi_v2/snd_sunxi_mach.c       |  479 +++++++
- sound/soc/sunxi_v2/snd_sunxi_mach.h       |   17 +
- sound/soc/sunxi_v2/snd_sunxi_mach_utils.c |  422 ++++++
- sound/soc/sunxi_v2/snd_sunxi_mach_utils.h |  116 ++
- 16 files changed, 3887 insertions(+)
- create mode 100644 sound/soc/sunxi_v2/Kconfig
- create mode 100644 sound/soc/sunxi_v2/Makefile
- create mode 100644 sound/soc/sunxi_v2/drv_hdmi.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_ahub.c
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_ahub.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_ahub_dam.c
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_ahub_dam.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_common.c
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_common.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_log.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_mach.c
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_mach.h
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_mach_utils.c
- create mode 100644 sound/soc/sunxi_v2/snd_sunxi_mach_utils.h
-
 diff --git a/sound/soc/Kconfig b/sound/soc/Kconfig
-index 5efba76ab..b1b4693ca 100644
+index edfdcbf..bb1d692 100644
 --- a/sound/soc/Kconfig
 +++ b/sound/soc/Kconfig
-@@ -117,6 +117,7 @@ source "sound/soc/starfive/Kconfig"
+@@ -135,6 +135,7 @@ source "sound/soc/starfive/Kconfig"
  source "sound/soc/sti/Kconfig"
  source "sound/soc/stm/Kconfig"
  source "sound/soc/sunxi/Kconfig"
@@ -49,10 +11,10 @@ index 5efba76ab..b1b4693ca 100644
  source "sound/soc/ti/Kconfig"
  source "sound/soc/uniphier/Kconfig"
 diff --git a/sound/soc/Makefile b/sound/soc/Makefile
-index 08baaa11d..ca53a0853 100644
+index 21d8406..d92bbf2 100644
 --- a/sound/soc/Makefile
 +++ b/sound/soc/Makefile
-@@ -70,6 +70,7 @@ obj-$(CONFIG_SND_SOC)	+= starfive/
+@@ -78,6 +78,7 @@ obj-$(CONFIG_SND_SOC)	+= starfive/
  obj-$(CONFIG_SND_SOC)	+= sti/
  obj-$(CONFIG_SND_SOC)	+= stm/
  obj-$(CONFIG_SND_SOC)	+= sunxi/
@@ -62,7 +24,7 @@ index 08baaa11d..ca53a0853 100644
  obj-$(CONFIG_SND_SOC)	+= uniphier/
 diff --git a/sound/soc/sunxi_v2/Kconfig b/sound/soc/sunxi_v2/Kconfig
 new file mode 100644
-index 000000000..37fc579ba
+index 0000000..37fc579
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/Kconfig
 @@ -0,0 +1,48 @@
@@ -116,7 +78,7 @@ index 000000000..37fc579ba
 +endmenu
 diff --git a/sound/soc/sunxi_v2/Makefile b/sound/soc/sunxi_v2/Makefile
 new file mode 100644
-index 000000000..c7c2ef8f9
+index 0000000..c7c2ef8
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/Makefile
 @@ -0,0 +1,11 @@
@@ -133,7 +95,7 @@ index 000000000..c7c2ef8f9
 +obj-$(CONFIG_SND_SOC_SUNXI_MACH)		+= snd_soc_sunxi_machine.o
 diff --git a/sound/soc/sunxi_v2/drv_hdmi.h b/sound/soc/sunxi_v2/drv_hdmi.h
 new file mode 100644
-index 000000000..2e05489b0
+index 0000000..2e05489
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/drv_hdmi.h
 @@ -0,0 +1,63 @@
@@ -202,10 +164,10 @@ index 000000000..2e05489b0
 +#endif
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_ahub.c b/sound/soc/sunxi_v2/snd_sunxi_ahub.c
 new file mode 100644
-index 000000000..5cfab0d79
+index 0000000..c21b09d
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_ahub.c
-@@ -0,0 +1,1475 @@
+@@ -0,0 +1,1474 @@
 +/*
 + * sound\soc\sunxi\snd_sunxi_ahub.c
 + * (C) Copyright 2021-2025
@@ -229,7 +191,6 @@ index 000000000..5cfab0d79
 +#include <linux/ioport.h>
 +#include <linux/regmap.h>
 +#include <linux/of_address.h>
-+#include <linux/of_gpio.h>
 +#include <sound/soc.h>
 +#include <sound/pcm_params.h>
 +#include <sound/dmaengine_pcm.h>
@@ -1277,7 +1238,7 @@ index 000000000..5cfab0d79
 +			     struct snd_ctl_elem_value *ucontrol)
 +{
 +	unsigned int reg_val;
-+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 +	struct sunxi_ahub_info *ahub_info = snd_soc_component_get_drvdata(component);
 +	struct sunxi_ahub_mem_info *mem_info = &ahub_info->mem_info;
 +	struct sunxi_ahub_dts_info *dts_info = &ahub_info->dts_info;
@@ -1291,7 +1252,7 @@ index 000000000..5cfab0d79
 +int sunxi_loopback_debug_set(struct snd_kcontrol *kcontrol,
 +			     struct snd_ctl_elem_value *ucontrol)
 +{
-+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
 +	struct sunxi_ahub_info *ahub_info = snd_soc_component_get_drvdata(component);
 +	struct sunxi_ahub_mem_info *mem_info = &ahub_info->mem_info;
 +	struct sunxi_ahub_dts_info *dts_info = &ahub_info->dts_info;
@@ -1683,7 +1644,7 @@ index 000000000..5cfab0d79
 +MODULE_DESCRIPTION("sunxi soundcard platform of ahub");
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_ahub.h b/sound/soc/sunxi_v2/snd_sunxi_ahub.h
 new file mode 100644
-index 000000000..ee5df6480
+index 0000000..ee5df64
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_ahub.h
 @@ -0,0 +1,67 @@
@@ -1756,10 +1717,10 @@ index 000000000..ee5df6480
 +#endif /* __SND_SUNXI_AHUB_H */
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.c b/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.c
 new file mode 100644
-index 000000000..f3c7bb3c7
+index 0000000..ccd203b
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.c
-@@ -0,0 +1,532 @@
+@@ -0,0 +1,531 @@
 +/*
 + * sound\soc\sunxi\snd_sunxi_ahub_dam.c
 + * (C) Copyright 2021-2025
@@ -1782,7 +1743,6 @@ index 000000000..f3c7bb3c7
 +#include <linux/ioport.h>
 +#include <linux/regmap.h>
 +#include <linux/of_address.h>
-+#include <linux/of_gpio.h>
 +#include <sound/soc.h>
 +
 +#include "snd_sunxi_log.h"
@@ -2294,7 +2254,7 @@ index 000000000..f3c7bb3c7
 +MODULE_DESCRIPTION("sunxi soundcard platform of ahub_dam");
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.h b/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.h
 new file mode 100644
-index 000000000..b7679bf54
+index 0000000..b7679bf
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_ahub_dam.h
 @@ -0,0 +1,291 @@
@@ -2592,7 +2552,7 @@ index 000000000..b7679bf54
 \ No newline at end of file
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_common.c b/sound/soc/sunxi_v2/snd_sunxi_common.c
 new file mode 100644
-index 000000000..410ab75ae
+index 0000000..410ab75
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_common.c
 @@ -0,0 +1,267 @@
@@ -2865,7 +2825,7 @@ index 000000000..410ab75ae
 +}
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_common.h b/sound/soc/sunxi_v2/snd_sunxi_common.h
 new file mode 100644
-index 000000000..7b88d20c2
+index 0000000..7b88d20
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_common.h
 @@ -0,0 +1,67 @@
@@ -2939,7 +2899,7 @@ index 000000000..7b88d20c2
 \ No newline at end of file
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_log.h b/sound/soc/sunxi_v2/snd_sunxi_log.h
 new file mode 100644
-index 000000000..ee26c2997
+index 0000000..ee26c29
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_log.h
 @@ -0,0 +1,30 @@
@@ -2975,7 +2935,7 @@ index 000000000..ee26c2997
 +
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_mach.c b/sound/soc/sunxi_v2/snd_sunxi_mach.c
 new file mode 100644
-index 000000000..74d276a2d
+index 0000000..d4c84d5
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_mach.c
 @@ -0,0 +1,479 @@
@@ -3189,7 +3149,7 @@ index 000000000..74d276a2d
 +{
 +	int i;
 +	struct snd_soc_card *card = rtd->card;
-+	struct snd_soc_dapm_context *dapm = &card->dapm;
++	struct snd_soc_dapm_context *dapm = card->dapm;
 +
 +	const struct snd_kcontrol_new *controls = card->controls;
 +
@@ -3460,7 +3420,7 @@ index 000000000..74d276a2d
 +MODULE_DESCRIPTION("sunxi soundcard machine");
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_mach.h b/sound/soc/sunxi_v2/snd_sunxi_mach.h
 new file mode 100644
-index 000000000..ab429c884
+index 0000000..ab429c8
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_mach.h
 @@ -0,0 +1,17 @@
@@ -3483,7 +3443,7 @@ index 000000000..ab429c884
 +#endif /* __SND_SUNXI_MACH_H */
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_mach_utils.c b/sound/soc/sunxi_v2/snd_sunxi_mach_utils.c
 new file mode 100644
-index 000000000..820c72eb6
+index 0000000..820c72e
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_mach_utils.c
 @@ -0,0 +1,422 @@
@@ -3911,7 +3871,7 @@ index 000000000..820c72eb6
 +MODULE_DESCRIPTION("sunxi soundcard machine utils");
 diff --git a/sound/soc/sunxi_v2/snd_sunxi_mach_utils.h b/sound/soc/sunxi_v2/snd_sunxi_mach_utils.h
 new file mode 100644
-index 000000000..6a9ec18b4
+index 0000000..6a9ec18
 --- /dev/null
 +++ b/sound/soc/sunxi_v2/snd_sunxi_mach_utils.h
 @@ -0,0 +1,116 @@
@@ -4031,6 +3991,3 @@ index 000000000..6a9ec18b4
 +				  int is_single_links);
 +
 +#endif /* __SND_SUNXI_MACH_UTILS_H */
--- 
-2.34.1
-
