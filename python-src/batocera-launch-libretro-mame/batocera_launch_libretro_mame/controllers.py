@@ -157,7 +157,7 @@ def _generate_special_port_element(
     # Special button input (ie mouse button to gamepad)
     sequence = _get_input_definition(controller, key, input, controller.index + 1, reversed, 0)
     if mapping == f'COIN{nplayer}' and nplayer == 1:
-        sequence = sequence + f' OR KEYCODE_{nplayer}_F{nplayer + 11}'  # f12 for player 1
+        sequence = sequence + f' OR KEYCODE_{nplayer}_5'
 
     config.add_sequence_port(
         mapping,

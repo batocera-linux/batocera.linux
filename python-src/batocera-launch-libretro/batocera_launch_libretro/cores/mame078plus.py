@@ -49,6 +49,11 @@ class MAME078Plus(Core):
     def map_lightguns(self) -> bool:
         return self.config.get_bool('lightgun_map')
 
+    def set_config(self, custom_config: LibretroConfig, /) -> None:
+        super().set_config(custom_config)
+
+        custom_config.set('input_player1_select', 'num5')
+
     def set_core_options(self, core_options: LibretroConfig, /) -> None:
         # Skip Disclaimer and Warnings
         core_options.set('mame2003-plus_skip_disclaimer', 'enabled')

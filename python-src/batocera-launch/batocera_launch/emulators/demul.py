@@ -75,7 +75,7 @@ class Demul(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'demul',
-            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4']},
+            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'coin': 'KEY_MINUS'},
         }
 
     @cached_property

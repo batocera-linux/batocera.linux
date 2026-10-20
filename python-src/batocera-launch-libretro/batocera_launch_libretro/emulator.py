@@ -163,14 +163,13 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
-        # f12 for coin : set in libretroMameConfig.py, others in libretroControllers.py
         return {
             'name': 'retroarch',
             'keys': {
                 'exit': ['KEY_LEFTSHIFT', 'KEY_ESC'],
                 'menu': ['KEY_LEFTSHIFT', 'KEY_F1'],
                 'pause': ['KEY_LEFTSHIFT', 'KEY_P'],
-                'coin': 'KEY_F12',
+                'coin': 'KEY_5',
                 'save_state': ['KEY_LEFTSHIFT', 'KEY_F3'],
                 'restore_state': ['KEY_LEFTSHIFT', 'KEY_F4'],
                 'previous_slot': ['KEY_LEFTSHIFT', 'KEY_F5'],

@@ -57,7 +57,7 @@ class Cannonball(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'cannonball',
-            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4']},
+            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'coin': 'KEY_5'},
         }
 
     async def configure(self) -> Command:
