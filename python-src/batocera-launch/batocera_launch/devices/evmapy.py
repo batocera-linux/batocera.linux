@@ -483,9 +483,9 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                         axis_id = 'BASE'
                         axis_name = 'Y'
                         if input.name == 'up':
-                            absbasey_positive = int(input.value) >= 0
-                        else:
                             absbasey_positive = int(input.value) < 0
+                        else:
+                            absbasey_positive = int(input.value) >= 0
                     elif input.name == 'left' or input.name == 'right':
                         axis_id = 'BASE'
                         axis_name = 'X'
@@ -636,7 +636,7 @@ class EvmapyManager(AbstractAsyncContextManager['EvmapyManager', None]):
                 mapping['left'] = 'ABSBASEX:max'
                 mapping['right'] = 'ABSBASEX:min'
 
-        if 'ABSBASEX:min' in known_button_names:
+        if 'ABSBASEY:min' in known_button_names:
             if absbasey_positive:
                 mapping['down'] = 'ABSBASEY:max'
                 mapping['up'] = 'ABSBASEY:min'
