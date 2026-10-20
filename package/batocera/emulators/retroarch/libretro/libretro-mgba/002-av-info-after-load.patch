@@ -1,0 +1,39 @@
+diff --git a/src/platform/libretro/libretro.c b/src/platform/libretro/libretro.c
+index 12e7913..825b3fe 100644
+--- a/src/platform/libretro/libretro.c
++++ b/src/platform/libretro/libretro.c
+@@ -97,6 +97,7 @@ static size_t camStride;
+ static bool deferredSetup = false;
+ static bool useBitmasks = true;
+ static bool envVarsUpdated;
++static bool gameLoaded = false;
+ static int32_t tiltX = 0;
+ static int32_t tiltY = 0;
+ static int32_t gyroZ = 0;
+@@ -990,6 +991,7 @@ bool retro_load_game(const struct retro_game_info* game) {
+ 
+ 	core->reset(core);
+ 	_setupMaps(core);
++	gameLoaded = true;
+ 
+ 	return true;
+ }
+@@ -998,6 +1000,7 @@ void retro_unload_game(void) {
+ 	if (!core) {
+ 		return;
+ 	}
++	gameLoaded = false;
+ 	mCoreConfigDeinit(&core->config);
+ 	core->deinit(core);
+ 	mappedMemoryFree(data, dataSize);
+@@ -1251,6 +1254,10 @@ static void _postAudioBuffer(struct mAVStream* stream, struct mAudioBuffer* buff
+ 
+ static void _audioRateChanged(struct mAVStream* stream, unsigned rate) {
+ 	UNUSED(stream);
++	// The frontend reads the AV info after load; a call before then makes it build its video driver twice.
++	if (!gameLoaded) {
++		return;
++	}
+ 	struct retro_system_av_info info;
+ 	retro_get_system_av_info(&info);
+ 	environCallback(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info);
