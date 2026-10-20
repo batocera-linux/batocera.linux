@@ -22,7 +22,8 @@ default is:
 100 is when a charger is plugged in
 You can use PULSE, RAINBOW, CHROMA and OFF as rgb_color for special effects.
 
-ESCOLOR is the default one set with sliders in EmulationStation
+ESCOLOR is the default one set with sliders in EmulationStation,
+or a red to green battery gauge when led.mode=battery
 
 Also, if you want to trigger a fancy rainbow effect when you unlock a retroachievement,
 SSH into Batocera and type the 3 commands:
@@ -81,6 +82,15 @@ def read_color(tempval, configlist):
         if int(tempval) >= tempcfg:
             return fancfg
     return 0
+
+# Battery mode: fade from red at 15% through yellow to green when full
+def battery_color(level):
+    t = max(0.0, min(1.0, (int(level) - 15) / 85.0))
+    if t < 0.5:
+        r, g = 255, int(510 * t)
+    else:
+        r, g = int(510 * (1 - t)), 255
+    return f'{r:02X}{g:02X}00'
 
 # Load the config file to memory
 def load_config(fname: Path) -> list[str]:
@@ -157,18 +167,23 @@ def led_check(led):
                         target_action = "CHROMA"
                     elif mode == "pulse":
                         target_action = "PULSE"
+                    elif mode == "battery":
+                        target_action = battery_color(bt)
 
                 # Check if this is a software-driven effect that requires continuous looping
                 is_software_effect = target_action in ["RAINBOW", "CHROMA", "PULSE"] and batoled.batocera_model() in ["pwm", "rgb", "rgbaddr", "multiled", "dual_multiled", "odin_mono", "rg55g1"]
 
+                # Also rewrite when the colour or brightness settings change, so they apply once saved
+                state = (target_action, batoled.batoconf("led.colour"), batoled.batoconf("led.brightness"))
+
                 # Only write to the hardware if the state has changed, or if it is a software effect that needs looping
-                if target_action != last_state or is_software_effect:
+                if state != last_state or is_software_effect:
                     try:
                         if DEBUG:
                             print(f"Set color to {target_action} for {bt}%")
                         if color_changes_allowed():
                             led.set_color(target_action)
-                            last_state = target_action
+                            last_state = state
                     except Exception as e:
                         print (f"Error: {e}") 
 
