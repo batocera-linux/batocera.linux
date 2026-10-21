@@ -96,6 +96,14 @@ wifi_configure_all() {
     done
 }
 
+wifi_busy() {
+    local svc
+    for svc in $(connmanctl services 2>/dev/null | awk '{print $NF}' | grep "^wifi_"); do
+        connmanctl services "$svc" 2>/dev/null | grep -qE "State = (association|configuration)" && return 0
+    done
+    return 1
+}
+
 wifi_enable() {
     # Wait for the wifi interface.
     wait_count=0
@@ -139,6 +147,12 @@ wifi_enable() {
             break
         fi
 
+        # a scan or connect while connman associates or runs DHCP loses the lease
+        if wifi_busy; then
+            sleep 1
+            continue
+        fi
+
         echo "*** Wifi not yet connected. Scanning for alternative services... ***" > /dev/kmsg
         connmanctl scan wifi 2>/dev/null
         sleep 1
@@ -146,6 +160,7 @@ wifi_enable() {
         while read signal service; do
             state=$(connmanctl state 2>/dev/null | grep "State =" | awk '{print $3}')
             [ "$state" = "ready" ] || [ "$state" = "online" ] && { connected=true; break; }
+            wifi_busy && break
             echo "*** Wifi trying service: $service (signal: $signal) ***" > /dev/kmsg
             connmanctl connect "$service" 2>/dev/null
             sleep 2
