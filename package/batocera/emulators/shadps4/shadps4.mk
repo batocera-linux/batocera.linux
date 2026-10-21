@@ -28,7 +28,7 @@ SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
 SHADPS4_EMULATOR_INFO = shadps4.emulator.yml
 
 SHADPS4_DEPENDENCIES += alsa-lib boost ffmpeg fmt freetype glslang host-protobuf jack2 libedit
-SHADPS4_DEPENDENCIES += libevdev libminiupnpc libzlib openal openssl pugixml
+SHADPS4_DEPENDENCIES += libevdev libminiupnpc libzlib openal openssl pugixml xxhash
 SHADPS4_DEPENDENCIES += protobuf pulseaudio sdl3 udev vulkan-headers
 SHADPS4_DEPENDENCIES += vulkan-validationlayers
 
