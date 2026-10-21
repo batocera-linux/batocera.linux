@@ -1,0 +1,147 @@
+diff --git a/mini_settings_set_main.c b/mini_settings_set_main.c
+index 2064d07..e219b60 100644
+--- a/mini_settings_set_main.c
++++ b/mini_settings_set_main.c
+@@ -1,8 +1,20 @@
++#define _POSIX_C_SOURCE 200809L
++
+ #include <errno.h>
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <fcntl.h>
++#include <limits.h>
++#include <sys/file.h>
++#include <sys/stat.h>
++#include <sys/types.h>
++#include <unistd.h>
++
++#ifndef PATH_MAX
++#define PATH_MAX 4096
++#endif
+ 
+ #include "mini_settings_read_file.h"
+ #include "mini_settings_set.h"
+@@ -34,6 +46,73 @@ static const char kUsage[] =
+     "By default, reads from " DEFAULT_CONFIG_IN_PATH
+     " and writes to " DEFAULT_CONFIG_OUT_PATH "\n";
+ 
++static int acquire_settings_lock(void) {
++  int lock_fd = open("/var/run/knulli-settings-set.lock", O_CREAT | O_RDWR, 0666);
++  if (lock_fd < 0) {
++    perror("open lock");
++    return -1;
++  }
++
++  if (flock(lock_fd, LOCK_EX) != 0) {
++    perror("flock");
++    close(lock_fd);
++    return -1;
++  }
++
++  return lock_fd;
++}
++
++static int write_file_atomic(const char *path, const char *data, size_t size) {
++  char tmp_path[PATH_MAX];
++
++  if (snprintf(tmp_path, sizeof(tmp_path), "%s.tmp.XXXXXX", path) >=
++      (int)sizeof(tmp_path)) {
++    errno = ENAMETOOLONG;
++    perror(path);
++    return -1;
++  }
++
++  int fd = mkstemp(tmp_path);
++  if (fd < 0) {
++    perror("mkstemp");
++    return -1;
++  }
++
++  size_t total = 0;
++  while (total < size) {
++    ssize_t n = write(fd, data + total, size - total);
++    if (n < 0) {
++      if (errno == EINTR) continue;
++      perror("write");
++      close(fd);
++      unlink(tmp_path);
++      return -1;
++    }
++    total += (size_t)n;
++  }
++
++  if (fsync(fd) != 0) {
++    perror("fsync");
++    close(fd);
++    unlink(tmp_path);
++    return -1;
++  }
++
++  if (close(fd) != 0) {
++    perror("close");
++    unlink(tmp_path);
++    return -1;
++  }
++
++  if (rename(tmp_path, path) != 0) {
++    perror("rename");
++    unlink(tmp_path);
++    return -1;
++  }
++
++  return 0;
++}
++
+ int main(int argc, char *argv[]) {
+   if (argc < 2 || strcmp(argv[1], "--help") == 0) {
+     fprintf(stderr, kUsage, argv[0]);
+@@ -76,6 +155,11 @@ int main(int argc, char *argv[]) {
+     return EXIT_FAILURE;
+   }
+ 
++  int lock_fd = acquire_settings_lock();
++  if (lock_fd < 0) {
++    return EXIT_FAILURE;
++  }
++
+   char *config_contents;
+   size_t config_contents_size;
+ 
+@@ -86,6 +170,7 @@ int main(int argc, char *argv[]) {
+       config_contents_size = 0;
+     } else {
+       perror(config_in_path);
++      close(lock_fd);
+       return EXIT_FAILURE;
+     }
+   }
+@@ -99,24 +184,18 @@ int main(int argc, char *argv[]) {
+     goto set_failed;
+   }
+ 
+-  FILE *config_file = fopen(config_out_path, "w");
+-  if (config_file == NULL) {
+-    perror(config_out_path);
+-    goto set_failed;
+-  }
+-  fwrite(result.contents, sizeof(char), result.contents_size, config_file);
+-  if (ferror(config_file)) {
+-    perror("write error");
++  if (write_file_atomic(config_out_path, result.contents, result.contents_size) != 0) {
+     goto set_failed;
+   }
+-  fclose(config_file);
+ 
+   free(result.contents);
+   free(config_contents);
++  close(lock_fd);
+   return EXIT_SUCCESS;
+ 
+ set_failed:
+   free(result.contents);
+   free(config_contents);
++  close(lock_fd);
+   return EXIT_FAILURE;
+ }
