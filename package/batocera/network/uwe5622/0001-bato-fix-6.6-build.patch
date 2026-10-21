@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Thu, 22 Oct 2026 09:25:45 +1000
+Subject: [PATCH] fix the version gates for 6.6
+
+tty write takes size_t from 6.6, and cfg80211_ch_switch_notify takes
+a punct_bitmap argument from 6.3 to 6.8.
+---
+ tty-sdio/tty.c      | 2 +-
+ unisocwifi/cmdevt.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/tty-sdio/tty.c b/tty-sdio/tty.c
+index d637a7c..b61415e 100644
+--- a/tty-sdio/tty.c
++++ b/tty-sdio/tty.c
+@@ -467,7 +467,7 @@ static  int sdio_data_transmit(uint8_t *data, size_t count)
+ 	return mtty_write(NULL, data, count);
+ }
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 12, 0)
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0)
+ static ssize_t mtty_write_plus(struct tty_struct *tty, const u8 *buf,
+ 				 size_t count)
+ #else
+diff --git a/unisocwifi/cmdevt.c b/unisocwifi/cmdevt.c
+index 33d417a..05d2170 100644
+--- a/unisocwifi/cmdevt.c
++++ b/unisocwifi/cmdevt.c
+@@ -3323,6 +3323,8 @@ static void sprdwl_event_chan_changed(struct sprdwl_vif *vif, u8 *data, u16 len)
+ 			wl_err("%s, ch is null!\n", __func__);
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(6,9, 0))
+ 		cfg80211_ch_switch_notify(vif->ndev, &chandef, 0);
++#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(6,3, 0))
++		cfg80211_ch_switch_notify(vif->ndev, &chandef, 0, 0);
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(5,19, 2))
+ 		cfg80211_ch_switch_notify(vif->ndev, &chandef, 0);
+ #else
