@@ -4,18 +4,19 @@ Date: Thu, 22 Oct 2026 09:25:36 +1000
 Subject: [PATCH] arm64: dts: allwinner: orangepi-3-lts: enable uwe5622 wifi
 
 Power the AW859A module on mmc1 from the PH7 switch with PM3/PM4 as
-reset lines, keep bldo3 up for the PM bank and wifi IO, and derive
-the wifi and bt addresses from the SoC SID through addr-mgt.
+reset lines, keep bldo3 up for the PM bank and wifi IO, derive the
+wifi and bt addresses from the SoC SID through addr-mgt and add a
+sprd,unisoc-wifi node so the driver loads from the device tree.
 
 ---
- .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 43 +++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ .../allwinner/sun50i-h6-orangepi-3-lts.dts    | 48 +++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 index a2d2c85..fac2fbb 100644
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3-lts.dts
-@@ -76,6 +76,31 @@
+@@ -76,6 +76,36 @@
  		regulator-max-microvolt = <5000000>;
  		regulator-always-on;
  	};
@@ -44,10 +45,15 @@ index a2d2c85..fac2fbb 100644
 +		type_addr_wifi = <0x2>;
 +		type_addr_bt = <0x2>;
 +	};
++
++	/* lets udev load sprdwl_ng through its of alias */
++	unisoc-wifi {
++		compatible = "sprd,unisoc-wifi";
++	};
  };
  
  &cpu0 {
-@@ -145,6 +170,19 @@
+@@ -145,6 +175,19 @@
  	status = "okay";
  };
  
@@ -67,7 +73,7 @@ index a2d2c85..fac2fbb 100644
  &mmc2 {
  	vmmc-supply = <&reg_cldo1>;
  	vqmmc-supply = <&reg_bldo2>;
-@@ -228,6 +266,7 @@
+@@ -228,6 +271,7 @@
  			};
  
  			reg_bldo3: bldo3 {
@@ -75,7 +81,7 @@ index a2d2c85..fac2fbb 100644
  				regulator-min-microvolt = <1800000>;
  				regulator-max-microvolt = <1800000>;
  				regulator-name = "vcc-pm-pg-dcxoio-wifi";
-@@ -289,6 +328,10 @@
+@@ -289,6 +333,10 @@
  	};
  };
  

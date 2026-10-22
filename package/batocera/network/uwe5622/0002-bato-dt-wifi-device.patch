@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Thu, 22 Oct 2026 19:28:34 +1000
+Subject: [PATCH] only add the wifi device when the device tree has none
+
+A sprd,unisoc-wifi node lets udev load the driver from its of alias,
+so skip the hand-made platform device to avoid a second probe.
+---
+ unisocwifi/wl_core.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/unisocwifi/wl_core.c b/unisocwifi/wl_core.c
+index dae97a7..fb608b0 100644
+--- a/unisocwifi/wl_core.c
++++ b/unisocwifi/wl_core.c
+@@ -753,10 +753,14 @@ static struct platform_driver sprdwl_driver = {
+ static struct platform_device *unisoc_pdev;
+ static int __init unisoc_wlan_init(void)
+ {
++	struct device_node *np;
+ 	int ret;
+ 
+ 	ret = platform_driver_register(&sprdwl_driver);
+-	if (!ret) {
++	/* a sprd,unisoc-wifi node already provides the device */
++	np = of_find_compatible_node(NULL, NULL, "sprd,unisoc-wifi");
++	of_node_put(np);
++	if (!ret && !np) {
+ 		unisoc_pdev = platform_device_alloc("unisoc_wifi", -1);
+ 		if (platform_device_add(unisoc_pdev) != 0)
+ 			wl_err("register platform device unisoc wifi failed\n");
+@@ -768,7 +772,8 @@ static int __init unisoc_wlan_init(void)
+ static void __exit unisoc_wlan_exit(void)
+ {
+     platform_driver_unregister(&sprdwl_driver);
+-    platform_device_del(unisoc_pdev);
++    if (unisoc_pdev)
++        platform_device_del(unisoc_pdev);
+ }
+ 
+ module_init(unisoc_wlan_init);
