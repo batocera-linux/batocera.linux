@@ -13,6 +13,10 @@
   Games need to be .bin netboot images made with Chihiro-netboot
   BIOS files come from MAME's chihiro.zip, extracted into bios/chihiro
 - Display rotate on Wayland (labwc) builds now rotates clockwise
+- Qualcomm handhelds (SDM845, SM4450, SM6115, SM8250, SM8550, SM8650, SM8750) now boot only through OpenABL
+  You must flash OpenABL v1.1 or newer before upgrading to v44, older ABLs (ROCKNIX ABL, stock) can't boot it
+  On v43 or v44, flash the latest OpenABL over SSH with:
+  `wget -qO /tmp/updateabl https://raw.githubusercontent.com/batocera-linux/batocera.linux/master/package/batocera/boot/openabl/updateabl && bash /tmp/updateabl --check-online`
 ### Hardware
 - Anbernic RG Vita Pro initial support
 - Anbernic RG40xx-H-v2-panel variant support

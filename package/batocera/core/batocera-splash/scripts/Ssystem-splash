@@ -90,7 +90,13 @@ draw_logo () {
         fi
     fi
 
-    # firmware framebuffers have no connector, follow the console's panel rotation
+    # firmware framebuffers have no connector and show the built-in panel
+    if [ -z "${video_rotation}" ] && [ -z "${effectiveDrmOutput}" ]; then
+        for conf in "${BOOT_CONF}" "${MODEL_CONF}"; do
+            [ -f "${conf}" ] && video_rotation=$(grep -iE '^display\.rotate\.(DSI|EDP)[^=]*=' "${conf}" | head -1 | cut -d'=' -f2)
+            [ -n "${video_rotation}" ] && break
+        done
+    fi
     if [ -z "${video_rotation}" ] && [ -z "${effectiveDrmOutput}" ] && [ -r /sys/class/graphics/fbcon/rotate ]; then
         read -r video_rotation < /sys/class/graphics/fbcon/rotate
     fi
