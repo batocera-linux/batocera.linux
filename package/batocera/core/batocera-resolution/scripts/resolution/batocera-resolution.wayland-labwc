@@ -28,6 +28,8 @@ f_usage() {
     echo "${0} refreshRate" >&2
     echo "${0} supportHdr" >&2
     echo "${0} setHdr" >&2
+    echo "${0} supportVrr" >&2
+    echo "${0} setVrr" >&2
 }
 
 _reconfigure_labwc() {
@@ -87,6 +89,32 @@ _set_hdr() {
     fi
     sed -i -e '/<hdr>/d' -e "s|</core>|  <hdr>${hdr}</hdr>\n  </core>|" "${rc_xml}"
     _log "labwc HDR: ${hdr}"
+}
+
+_vrr_capable() {
+    local card driver
+
+    for card in /sys/class/drm/card[0-9]*; do
+        case "${card##*/}" in *-*) continue ;; esac
+        driver=$(basename "$(readlink -f "${card}/device/driver")")
+        modetest -M "${driver}" -c 2>/dev/null | awk -F'\t' '
+            /^[0-9]+\t/ { connected = ($3 == "connected") }
+            /^\t[0-9]+ vrr_capable:/ { vrr = 1; next }
+            vrr && /^\t\tvalue:/ { if (connected && $3 == "value: 1") found = 1; vrr = 0 }
+            END { exit !found }' && return 0
+    done
+    return 1
+}
+
+# labwc only applies adaptiveSync when an output is set up, so this has to run before it starts
+_set_vrr() {
+    local rc_xml="${HOME}/.config/labwc/rc.xml"
+    local vrr="yes"
+
+    [ -f "${rc_xml}" ] || return
+    [ "$(batocera-settings-get display.vrr)" = "0" ] && vrr="no"
+    sed -i "s|<adaptiveSync>[a-z]*</adaptiveSync>|<adaptiveSync>${vrr}</adaptiveSync>|" "${rc_xml}"
+    _log "labwc adaptive sync: ${vrr}"
 }
 
 # Extract output block for a specific screen
@@ -413,6 +441,14 @@ case "${ACTION_PRECHECK}" in
         ;;
     "setHdr")
         _set_hdr
+        exit 0
+        ;;
+    "supportVrr")
+        _vrr_capable
+        exit $?
+        ;;
+    "setVrr")
+        _set_vrr
         exit 0
         ;;
 esac

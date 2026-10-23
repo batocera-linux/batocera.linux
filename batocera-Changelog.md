@@ -64,6 +64,7 @@
 - ES setting to determine mitigations On|Off (Default On)
 - GameTank console support through GameTankEmulator
 - HDR toggle for supported devices & display panels
+- VRR toggle for FreeSync / VRR capable displays
 - Legion Go / Go 2 LED controller support
 - Legion Go S: Legion L button as hotkey, QAM opens the BCC, Y1 / Y2 quick load and save
 - Libretro-anybor : for openbor games (support all openbor versions)
