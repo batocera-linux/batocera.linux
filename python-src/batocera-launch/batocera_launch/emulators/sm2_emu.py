@@ -218,6 +218,10 @@ class Sm2Emu(Emulator):
         wheel = next(
             (pad for pad in self.controllers if self.config.use_wheels and pad.device_path in self.wheels), None
         )
+        # sm2-emu otherwise numbers the pads in SDL's order, not ES's
+        pad_paths = [pad.device_path for pad in self.controllers if pad.device_path not in self.wheels][:2]
+        pad_paths += [''] * (2 - len(pad_paths))
+
         es_wheel_rotation = self.config.get_str('wheel_rotation') if 'wheel_rotation' in self.config else None
 
         wheel_managed = (
@@ -277,6 +281,8 @@ class Sm2Emu(Emulator):
             'pad_stick_sensitivity': str(round(self.config.get_float('sm2_pad_stick_sensitivity', 100))),
             'rewind': _ini_bool(self.config.get_bool('rewind', False)),
             'rewind_buffer_mb': str(round(self.config.get_float('sm2_rewind_memory', 128))),
+            'pad1_device': pad_paths[0],
+            'pad2_device': pad_paths[1],
             'pad_shortcuts': 'false',  # hotkeygen maps the hotkeys to the keys in hotkeygen_context
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
