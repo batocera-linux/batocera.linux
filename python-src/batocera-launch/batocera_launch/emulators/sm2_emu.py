@@ -253,6 +253,7 @@ class Sm2Emu(Emulator):
                 use_guns and self.config.get_bool('sm2_lightgun_crosshair', guns_need_crosses(self.guns))
             ),
             'lightgun_hide_flash': _ini_bool(self.config.get_bool('sm2_lightgun_hide_flash', False)),
+            'lightgun_pad_centred': _ini_bool(self.config.get_bool('sm2_lightgun_pad_centred', False)),
             'lightgun_recoil': _ini_bool(self.config.get_bool('sm2_lightgun_recoil', True)),
             'lightgun_recoil_strength': self.config.get_str('sm2_lightgun_recoil_strength', '60'),
             **{f'gun{gun}_button_{role}': str(code) for gun in (1, 2) for role, code in _GUN_BUTTONS.items()},
