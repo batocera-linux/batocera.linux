@@ -1,0 +1,67 @@
+v4l2m2m encoders return the parameter sets as a packet of their own,
+which repeats the next timestamp and breaks hardware decode of the
+recording, and some flag every packet as a keyframe. Merge the header
+into the next packet and set the keyframe flag from the bitstream.
+
+diff --git a/src/frame-writer.cpp b/src/frame-writer.cpp
+--- a/src/frame-writer.cpp
++++ b/src/frame-writer.cpp
+@@ -979,12 +979,58 @@
+ }
+ #endif
+ 
++// v4l2m2m encoders return the parameter sets as a packet of their own and
++// some flag every packet as a keyframe, so read both from the bitstream
++static bool fix_v4l2m2m_packet(AVCodecContext *enc_ctx, AVPacket& pkt)
++{
++    static AVPacket *header = nullptr;
++    bool hevc = enc_ctx->codec_id == AV_CODEC_ID_HEVC;
++    bool slice = false, key = false;
++
++    for (int i = 0; i + 3 < pkt.size; i++)
++    {
++        if (pkt.data[i] || pkt.data[i + 1] || pkt.data[i + 2] != 1)
++            continue;
++        int type = hevc ? (pkt.data[i + 3] >> 1) & 0x3f : pkt.data[i + 3] & 0x1f;
++        slice |= hevc ? type < 32 : (type >= 1 && type <= 5);
++        key |= hevc ? (type >= 16 && type <= 23) : type == 5;
++    }
++
++    if (!slice)
++    {
++        av_packet_free(&header);
++        header = av_packet_clone(&pkt);
++        return false;
++    }
++
++    if (header)
++    {
++        int size = pkt.size;
++        if (av_grow_packet(&pkt, header->size) < 0)
++            return false;
++        memmove(pkt.data + header->size, pkt.data, size);
++        memcpy(pkt.data, header->data, header->size);
++        av_packet_free(&header);
++    }
++
++    if (key)
++        pkt.flags |= AV_PKT_FLAG_KEY;
++    else
++        pkt.flags &= ~AV_PKT_FLAG_KEY;
++    return true;
++}
++
+ void FrameWriter::finish_frame(AVCodecContext *enc_ctx, AVPacket& pkt)
+ {
+     static std::mutex fmt_mutex, pending_mutex;
+ 
+     if (enc_ctx == videoCodecCtx)
+     {
++        if (strstr(enc_ctx->codec->name, "_v4l2m2m") &&
++            (enc_ctx->codec_id == AV_CODEC_ID_HEVC || enc_ctx->codec_id == AV_CODEC_ID_H264) &&
++            !fix_v4l2m2m_packet(enc_ctx, pkt))
++            return;
++
+         av_packet_rescale_ts(&pkt, videoCodecCtx->time_base, videoStream->time_base);
+         pkt.stream_index = videoStream->index;
+     }
