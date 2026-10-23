@@ -30,7 +30,7 @@ cat > "${BATOCERA_BINARIES_DIR}/boot/loader/entries/batocera.conf" <<EOF || exit
 title   Batocera
 linux   /boot/Image
 initrd  /boot/initrd.lz4
-options label=BATOCERA rootwait quiet loglevel=0 console=tty3 vt.global_cursor_default=0 efi=noruntime
+options label=BATOCERA rootwait quiet loglevel=0 console=tty3 vt.global_cursor_default=0 efi=noruntime mem_sleep_default=s2idle
 EOF
 
 exit 0
