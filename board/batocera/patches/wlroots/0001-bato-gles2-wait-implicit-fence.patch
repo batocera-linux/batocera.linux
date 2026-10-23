@@ -1,0 +1,56 @@
+Clients without explicit sync (Mesa EGL) depend on the dmabuf implicit
+fence, which the GLES renderer does not wait on. On msm the compositor
+can sample a client buffer before it is rendered and show an older frame.
+Wait on the fence like the Vulkan renderer does.
+
+diff --git a/include/render/gles2.h b/include/render/gles2.h
+--- a/include/render/gles2.h
++++ b/include/render/gles2.h
+@@ -87,6 +87,8 @@
+ 
+ 	struct wl_list buffers; // wlr_gles2_buffer.link
+ 	struct wl_list textures; // wlr_gles2_texture.link
++
++	bool no_implicit_fence;
+ };
+ 
+ struct wlr_gles2_render_timer {
+diff --git a/render/gles2/pass.c b/render/gles2/pass.c
+--- a/render/gles2/pass.c
++++ b/render/gles2/pass.c
+@@ -3,8 +3,12 @@
+ #include <pixman.h>
+ #include <time.h>
+ #include <unistd.h>
++#include <linux/dma-buf.h>
++#include <wlr/render/dmabuf.h>
++#include <wlr/types/wlr_buffer.h>
+ #include <wlr/render/drm_syncobj.h>
+ #include <wlr/util/transform.h>
++#include "render/dmabuf.h"
+ #include "render/egl.h"
+ #include "render/gles2.h"
+ #include "util/matrix.h"
+@@ -221,6 +225,22 @@
+ 		if (!ok) {
+ 			return;
+ 		}
++	} else if (texture->buffer != NULL && !renderer->no_implicit_fence) {
++		// Without explicit sync, wait for the client to finish rendering into the dmabuf
++		struct wlr_dmabuf_attributes dmabuf;
++		if (wlr_buffer_get_dmabuf(texture->buffer->buffer, &dmabuf)) {
++			int sync_file_fd = dmabuf_export_sync_file(dmabuf.fd[0], DMA_BUF_SYNC_READ);
++			if (sync_file_fd < 0) {
++				renderer->no_implicit_fence = true;
++			} else {
++				EGLSyncKHR sync = wlr_egl_create_sync(renderer->egl, sync_file_fd);
++				close(sync_file_fd);
++				if (sync != EGL_NO_SYNC_KHR) {
++					wlr_egl_wait_sync(renderer->egl, sync);
++					wlr_egl_destroy_sync(renderer->egl, sync);
++				}
++			}
++		}
+ 	}
+ 
+ 	setup_blending(!texture->has_alpha && alpha == 1.0 ?
