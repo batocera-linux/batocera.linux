@@ -1,0 +1,21 @@
+The encoder crop is taken from the aligned capture format, so 1080p is
+encoded as 1088 lines with a green strip. Take it from the raw format.
+
+diff --git a/drivers/media/platform/qcom/venus/venc.c b/drivers/media/platform/qcom/venus/venc.c
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -287,8 +287,12 @@
+ 	format.fmt.pix_mp.height = orig_pixmp.height;
+ 	venc_try_fmt_common(inst, &format);
+ 
+-	inst->width = format.fmt.pix_mp.width;
+-	inst->height = format.fmt.pix_mp.height;
++	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
++		inst->width = clamp(ALIGN(orig_pixmp.width, 2), frame_width_min(inst),
++				    format.fmt.pix_mp.width);
++		inst->height = clamp(ALIGN(orig_pixmp.height, 2), frame_height_min(inst),
++				     format.fmt.pix_mp.height);
++	}
+ 
+ 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)
+ 		inst->fmt_out = fmt;

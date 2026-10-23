@@ -88,6 +88,16 @@ find_best_vulkan_device() {
     echo "none"
 }
 
+# ffmpeg lists v4l2m2m encoders on every build, so probe for a real device.
+# h264_v4l2m2m output is not muxed cleanly, so only HEVC is used.
+find_v4l2m2m_encoder() {
+    ls /dev/video* >/dev/null 2>&1 || return 1
+    check_ffmpeg_encoder hevc_v4l2m2m || return 1
+    ffmpeg -hide_banner -loglevel error -f lavfi -i color=c=black:s=320x240:r=30 \
+        -frames:v 5 -pix_fmt nv12 -c:v hevc_v4l2m2m -b:v 1M -f null - >/dev/null 2>&1 || return 1
+    echo hevc_v4l2m2m
+}
+
 # Check for encoder support first on all available render nodes
 find_best_vaapi_device() {
     log "Searching for Encoder hardware..."
@@ -170,6 +180,14 @@ auto_detect_encoder() {
                 done
             fi
         fi
+    fi
+
+    # ARM: V4L2 stateful encoder
+    local V4L2_ENC
+    if V4L2_ENC=$(find_v4l2m2m_encoder); then
+        log "Detection: Selected V4L2 M2M ($V4L2_ENC)"
+        echo "$V4L2_ENC|none"
+        return
     fi
 
     # Software Fallback
@@ -296,10 +314,10 @@ case "$1" in
         ALL=$(get_conf "ALL" "$DEFAULT_ALL")
 
         case "$Q" in
-            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60 ;;
-            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60 ;;
-            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25 ;;
-            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30 ;;
+            ultra) CRF=20; V_QUAL=20; PRESET="ultrafast"; FPS=60; BITRATE=20M ;;
+            high)  CRF=23; V_QUAL=23; PRESET="fast";      FPS=60; BITRATE=12M ;;
+            low)   CRF=35; V_QUAL=35; PRESET="veryfast";  FPS=25; BITRATE=3M ;;
+            *)     CRF=28; V_QUAL=28; PRESET="veryfast";  FPS=30; BITRATE=6M ;;
         esac
 
         # Detect encoder
@@ -329,12 +347,21 @@ case "$1" in
         fi
 
         # Build encoder flags
+        EXT="mkv"
+        RATE_FLAGS=(-r "$FPS")
         if echo "$ENCODER" | grep -q "vulkan"; then
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "qp=$V_QUAL" -F "format=nv12,hwupload")
         elif echo "$ENCODER" | grep -q "vaapi"; then
             ENC_FLAGS=(-c "$ENCODER" -d "$SELECTED_DEVICE" -p "global_quality=$V_QUAL")
         elif echo "$ENCODER" | grep -q "nvenc"; then
             ENC_FLAGS=(-c "$ENCODER" -p "rc=vbr" -p "cq=$CRF")
+        elif echo "$ENCODER" | grep -q "v4l2m2m"; then
+            # No quality mode and the bitrate default is 200k
+            ENC_FLAGS=(-c "$ENCODER" -x nv12 -p "b=$BITRATE" -p "g=$((FPS * 2))")
+            # Matroska needs the codec header up front, which v4l2m2m does not provide
+            EXT="mp4"
+            # The fps filter shortens the video when capture falls behind
+            RATE_FLAGS=()
         else
             ENC_FLAGS=(-c "$ENCODER" -p "crf=$CRF" -p "preset=$PRESET")
         fi
@@ -365,12 +392,12 @@ case "$1" in
 
             RUNNING_PIDS=()
             while read -r DISP; do
-                FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.mkv"
+                FILE="${BASE_DIR}/rec-${TIMESTAMP}-${DISP}.${EXT}"
                 log "Recording output: $DISP -> $FILE"
                 if [ "$DISP" = "$PRIMARY" ]; then
-                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${RATE_FLAGS[@]}" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 else
-                    wf-recorder "${ENC_FLAGS[@]}" -r "$FPS" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+                    wf-recorder "${ENC_FLAGS[@]}" "${RATE_FLAGS[@]}" -o "$DISP" -f "$FILE" >> "$LOG_FILE" 2>&1 &
                 fi
                 RUNNING_PIDS+=("$!")
             done <<< "$ALL_OUTPUTS"
@@ -408,10 +435,10 @@ case "$1" in
 
             printf '%s\n' "${VALID_PIDS[@]}" > "$PID_FILE"
         else
-            FILE="${BASE_DIR}/rec-${TIMESTAMP}.mkv"
+            FILE="${BASE_DIR}/rec-${TIMESTAMP}.${EXT}"
             log "Recording primary output: $PRIMARY -> $FILE"
 
-            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" -r "$FPS" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
+            wf-recorder "${AUDIO_FLAGS[@]}" "${ENC_FLAGS[@]}" "${RATE_FLAGS[@]}" -o "$PRIMARY" -f "$FILE" >> "$LOG_FILE" 2>&1 &
             echo "$!" > "$PID_FILE"
 
             # Wait slightly so the PID file exists before the UI refreshes
