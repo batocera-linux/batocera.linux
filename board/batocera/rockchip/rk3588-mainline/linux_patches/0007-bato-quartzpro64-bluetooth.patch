@@ -1,0 +1,77 @@
+Add the AP6275PR3 bluetooth on uart8 m1 from the QuartzPro64 schematic.
+GPIO3_A6 is BT_REG_ON, so it moves from the unused vcc3v3_bt regulator
+to the bluetooth shutdown gpio.
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-quartzpro64.dts
+@@ -158,16 +158,7 @@
+ 		regulator-max-microvolt = <12000000>;
+ 	};
+ 
+-	vcc3v3_bt: regulator-vcc3v3-bt {
+-		compatible = "regulator-fixed";
+-		enable-active-high;
+-		gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
+-		regulator-name = "vcc3v3_bt";
+-		regulator-min-microvolt = <3300000>;
+-		regulator-max-microvolt = <3300000>;
+-		startup-delay-us = <50000>;
+-		vin-supply = <&vcc_3v3_s0>;
+-	};
++	/* batocera - GPIO3_A6 is BT_REG_ON, driven by the bluetooth node */
+ 
+ 	vcc3v3_pcie30: regulator-vcc3v3-pcie30 {
+ 		compatible = "regulator-fixed";
+@@ -352,6 +343,21 @@
+ };
+ 
+ &pinctrl {
++	/* batocera - AP6275PR3 bluetooth pins */
++	bluetooth {
++		bt_reg_on: bt-reg-on {
++			rockchip,pins = <3 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		bt_wake_host_irq: bt-wake-host-irq {
++			rockchip,pins = <3 RK_PA0 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++
++		host_wake_bt: host-wake-bt {
++			rockchip,pins = <3 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
+ 	hym8563 {
+ 		hym8563_int: hym8563-int {
+ 			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_up>;
+@@ -1180,6 +1186,30 @@
+ 	status = "okay";
+ };
+ 
++/* batocera - AP6275PR3 bluetooth */
++&uart8 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart8m1_xfer &uart8m1_ctsn &uart8m1_rtsn>;
++	uart-has-rtscts;
++	status = "okay";
++
++	bluetooth {
++		compatible = "brcm,bcm43438-bt";
++		clocks = <&hym8563>;
++		clock-names = "lpo";
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PA0 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "host-wakeup";
++		device-wakeup-gpios = <&gpio3 RK_PA1 GPIO_ACTIVE_HIGH>;
++		shutdown-gpios = <&gpio3 RK_PA6 GPIO_ACTIVE_HIGH>;
++		max-speed = <1500000>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&bt_wake_host_irq &host_wake_bt &bt_reg_on>;
++		vbat-supply = <&vcc_3v3_s0>;
++		vddio-supply = <&vcc_1v8_s0>;
++	};
++};
++
+ &usb_host0_ehci {
+ 	status = "okay";
+ };
