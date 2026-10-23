@@ -48,6 +48,33 @@ _map_touchscreens() {
     fi
 }
 
+_vrr_capable() {
+    local card
+
+    for card in /sys/class/drm/card[0-9]*; do
+        case "${card##*/}" in *-*) continue ;; esac
+        [ "$(basename "$(readlink -f "${card}/device/driver")")" = "amdgpu" ] || continue
+        modetest -M amdgpu -c 2>/dev/null | awk -F'\t' '
+            /^[0-9]+\t/ { connected = ($3 == "connected") }
+            /^\t[0-9]+ vrr_capable:/ { vrr = 1; next }
+            vrr && /^\t\tvalue:/ { if (connected && $3 == "value: 1") found = 1; vrr = 0 }
+            END { exit !found }' && return 0
+    done
+    return 1
+}
+
+# runs before X starts; the root overlay lives in RAM so the edit resets every boot
+if test "${1}" = "setVrr"
+then
+    AMDGPU_CONF="/etc/X11/xorg.conf.d/20-amdgpu.conf"
+    test -f "${AMDGPU_CONF}" || exit 0
+    VRR=true
+    test "$(batocera-settings-get display.vrr)" = "0" && VRR=false
+    sed -i "s|\"VariableRefresh\" \"[a-z]*\"|\"VariableRefresh\" \"${VRR}\"|" "${AMDGPU_CONF}"
+    echo "Xorg VariableRefresh: ${VRR}" >> "$log"
+    exit 0
+fi
+
 PSCREEN=
 if test "${1}" = "--screen"
 then
@@ -502,6 +529,11 @@ case "${ACTION}" in
 
     "supportHdr")
 	    exit 1
+        ;;
+
+    "supportVrr")
+	    _vrr_capable
+	    exit $?
         ;;
 
     "setRotation")

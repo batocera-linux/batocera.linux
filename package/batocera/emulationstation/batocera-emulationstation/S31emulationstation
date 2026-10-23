@@ -17,6 +17,8 @@ case "$1" in
 		rm -f "${SUSPEND_FLAG}"
 		mkfifo -m 666 "${FIFO_PATH}"
 
+		batocera-resolution setVrr >/dev/null 2>&1
+
 		enabled="$(/usr/bin/batocera-settings-get system.es.atstartup)"
 		if [ "$enabled" != "0" ]; then
 			%BATOCERA_EMULATIONSTATION_CMD% %BATOCERA_EMULATIONSTATION_POSTFIX%
