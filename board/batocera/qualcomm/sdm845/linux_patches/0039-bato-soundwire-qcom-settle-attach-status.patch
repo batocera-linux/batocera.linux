@@ -1,0 +1,49 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Fri, 23 Oct 2026 15:30:00 +1000
+Subject: [PATCH] soundwire: qcom: re-read the device status until it settles
+
+When the shared powerdown brings both WSA881x amps up, the second one is
+still attaching when the attach interrupt reads the device status. That
+read can miss it and report the first amp as unattached, so no device ID
+is read for the second amp, nothing raises another interrupt and its
+resume times out. Handle the status again until two reads agree.
+---
+ drivers/soundwire/qcom.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+--- a/drivers/soundwire/qcom.c
++++ b/drivers/soundwire/qcom.c
+@@ -727,7 +727,7 @@
+ 	struct qcom_swrm_ctrl *ctrl = dev_id;
+ 	u32 value, intr_sts, intr_sts_masked, slave_status;
+ 	u32 i;
+-	int devnum;
++	int devnum, retry;
+ 	int ret = IRQ_HANDLED;
+ 	clk_prepare_enable(ctrl->hclk);
+ 
+@@ -760,9 +760,20 @@
+ 					dev_dbg(ctrl->dev, "Slave status not changed %x\n",
+ 						slave_status);
+ 				} else {
+-					qcom_swrm_get_device_status(ctrl);
+-					qcom_swrm_enumerate(&ctrl->bus);
+-					sdw_handle_slave_status(&ctrl->bus, ctrl->status);
++					/*
++					 * A status read while another device is still attaching can
++					 * miss it, or drop one that is attached, and no later
++					 * interrupt corrects it. Go again until it reads the same.
++					 */
++					for (retry = 0; retry < 10; retry++) {
++						qcom_swrm_get_device_status(ctrl);
++						qcom_swrm_enumerate(&ctrl->bus);
++						sdw_handle_slave_status(&ctrl->bus, ctrl->status);
++						usleep_range(1000, 1500);
++						ctrl->reg_read(ctrl, SWRM_MCP_SLV_STATUS, &slave_status);
++						if (slave_status == ctrl->slave_status)
++							break;
++					}
+ 				}
+ 				break;
+ 			case SWRM_INTERRUPT_STATUS_MASTER_CLASH_DET:
