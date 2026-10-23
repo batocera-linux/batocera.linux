@@ -21,10 +21,16 @@ cp "${BINARIES_DIR}/initrd.lz4"      "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update"     || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
-cp -f "${BOARD_DIR}/grub.cfg"         "${BINARIES_DIR}/efi-part/EFI/BOOT/grub.cfg" || exit 1
-cp -r "${BINARIES_DIR}/efi-part/EFI/" "${BATOCERA_BINARIES_DIR}/boot/"             || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/dtbs" "${BATOCERA_BINARIES_DIR}/boot/loader/entries" || exit 1
+cp "${BINARIES_DIR}/sdm845-ayn-odin.dtb"    "${BATOCERA_BINARIES_DIR}/boot/dtbs/" || exit 1
+cp "${BINARIES_DIR}/sdm845-ayn-odin-m2.dtb" "${BATOCERA_BINARIES_DIR}/boot/dtbs/" || exit 1
 
-cp "${BINARIES_DIR}/sdm845-ayn-odin.dtb"    "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
-cp "${BINARIES_DIR}/sdm845-ayn-odin-m2.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
+# OpenABL picks the devicetree from its model setting.
+cat > "${BATOCERA_BINARIES_DIR}/boot/loader/entries/batocera.conf" <<EOF || exit 1
+title   Batocera
+linux   /boot/Image
+initrd  /boot/initrd.lz4
+options label=BATOCERA rootwait quiet loglevel=0 console=tty3 vt.global_cursor_default=0 efi=noruntime
+EOF
 
 exit 0

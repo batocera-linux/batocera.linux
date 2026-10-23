@@ -1,0 +1,20 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Fri, 23 Oct 2026 11:30:00 +1000
+Subject: [PATCH] Odin: match the card name without DMI
+
+OpenABL provides no SMBIOS, so the card's long name is the devicetree's
+"AYN Odin" rather than the DMI-built names.
+---
+ ucm2/conf.d/sdm845/AYN Odin.conf | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 120000 ucm2/conf.d/sdm845/AYN Odin.conf
+
+diff --git a/ucm2/conf.d/sdm845/AYN Odin.conf b/ucm2/conf.d/sdm845/AYN Odin.conf
+new file mode 120000
+index 0000000..1a8d968
+--- /dev/null
++++ b/ucm2/conf.d/sdm845/AYN Odin.conf	
+@@ -0,0 +1 @@
++../../Odin/Odin.conf
+\ No newline at end of file

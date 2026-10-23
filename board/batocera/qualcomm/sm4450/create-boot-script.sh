@@ -20,37 +20,18 @@ echo "*** Copying the Batocera base system files ***"
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
-echo "*** Compressing the Kernel ***"
-gzip -9c "${BINARIES_DIR}/Image" > "${BINARIES_DIR}/kernel.gz" || exit 1
-
-echo "*** Appending all built .dtb files to the end of the compressed kernel ***"
-for dtb in "${BINARIES_DIR}"/*.dtb; do
-    if [ -f "$dtb" ]; then
-        echo "Appending: $dtb"
-        cat "$dtb" >> "${BINARIES_DIR}/kernel.gz"
-    fi
-done
-
-# Define the Kernel command line
 CMDLINE="label=BATOCERA rootwait quiet loglevel=0 console=ttyMSM0,115200n8 vt.global_cursor_default=0 mem_sleep_default=s2idle"
 
-MKBOOTIMG="${HOST_DIR}/usr/bin/mkbootimg.py"
-
-# Comment out the missing 'gki' import since Header V0 doesn't need it.
-chmod u+w "${MKBOOTIMG}" 2>/dev/null || true
-sed -i 's/^from gki.generate_gki_certificate/#from gki.generate_gki_certificate/' "${MKBOOTIMG}"
-
-echo "*** Generating the Android boot image ***"
-${HOST_DIR}/bin/python3 "${MKBOOTIMG}" \
-    --kernel "${BINARIES_DIR}/kernel.gz" \
-    --ramdisk "${BINARIES_DIR}/initrd.lz4" \
-    --kernel_offset 0x00000000 \
-    --ramdisk_offset 0x00000000 \
-    --tags_offset 0x00000000 \
-    --os_version 12.0.0 \
-    --os_patch_level "$(date '+%Y-%m')" \
-    --header_version 0 \
-    --cmdline "${CMDLINE}" \
-    -o "${BATOCERA_BINARIES_DIR}/boot/boot/Image" || exit 1
+echo "*** Generating the Boot Loader Spec entry ***"
+cp "${BINARIES_DIR}/Image"      "${BATOCERA_BINARIES_DIR}/boot/boot/linux"      || exit 1
+cp "${BINARIES_DIR}/initrd.lz4" "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4" || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/dtbs" "${BATOCERA_BINARIES_DIR}/boot/loader/entries" || exit 1
+cp "${BINARIES_DIR}"/*.dtb "${BATOCERA_BINARIES_DIR}/boot/dtbs/" || exit 1
+cat > "${BATOCERA_BINARIES_DIR}/boot/loader/entries/batocera.conf" <<EOF || exit 1
+title   Batocera
+linux   /boot/linux
+initrd  /boot/initrd.lz4
+options ${CMDLINE}
+EOF
 
 exit 0
