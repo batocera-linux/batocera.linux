@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR Jose Ceja, YEAR.
 #
 #, fuzzy
 msgid ""
@@ -19,7 +19,7 @@ msgstr ""
 
 #. TRANSLATION: shared
 msgctxt "game_options"
-msgid "opciones_del_juego"
+msgid ""
 "Adjust the CPU power frequency profile whilst in-game. Some systems will "
 "benefit from improved voltage handling."
 msgstr ""
@@ -29,7 +29,7 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "POWER OPTIONS"
-msgstr "OPCIONES DE ENERÍA"
+msgstr "OPCIONES DE ENERGÍA"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -80,12 +80,12 @@ msgstr ""
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RYZEN THERMAL DESIGN POWER"
-msgstr "POTENCIA TÉRMICA DE DISEÑO DE RYZEN"
+msgstr "POTENCIA TÉRMICA DE DISEÑO (TDP) DE RYZEN"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "Set the display's resolution. Does not affect the rendering resolution."
-msgstr "Configura la resolución de la pantalla. Para que no afecte la resolución del renderizado."
+msgstr "Configura la resolución de la pantalla. No afecta la resolución de renderizado."
 
 #. TRANSLATION: mame, shared
 msgctxt "game_options"
@@ -366,7 +366,7 @@ msgstr "REDUCCIÓN DE LATENCIA"
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "RUN-AHEAD FRAMES"
-msgstr "FOTOGRAMAS DE ENCABEZADO"
+msgstr "FOTOGRAMAS DE ANTICIPACIÓN (RUN-AHEAD)"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -376,7 +376,7 @@ msgstr "Puede evitar cortes de audio al presionar botones cuando se utiliza enca
 #. TRANSLATION: shared
 msgctxt "game_options"
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
-msgstr "USAR UNA SEGUNDA INSTANCIA PARA ENCABEZADO"
+msgstr "USAR UNA SEGUNDA INSTANCIA PARA RUN-AHEAD"
 
 #. TRANSLATION: shared
 msgctxt "game_options"
@@ -384,7 +384,7 @@ msgid ""
 "Use preemptive frames instead of run-ahead. Only runs ahead when controller "
 "state changes."
 msgstr ""
-"Utiliza fotogramas preventivos en lugar de Encabezado. Solo adelanta la "
+"Utiliza fotogramas preventivos en lugar de Run-Ahead. Solo adelanta la "
 "ejecución cuando cambia el estado del control."
 
 #. TRANSLATION: shared
@@ -2427,8 +2427,7 @@ msgctxt "game_options"
 msgid ""
 "Wii NAND's aspect ratio setting. Most games support both ratios natively."
 msgstr""
- "Configuración de la relación de aspecto de la NAND de Wii."
- "La mayoría de los juegos admiten ambas proporciones de forma nativa."
+ "Configuración de la relación de aspecto de la NAND de Wii. La mayoría de los juegos admiten ambas proporciones de forma nativa."
 
 #. TRANSLATION: dolphin, libretro/dolphin
 msgctxt "game_options"
@@ -9800,7 +9799,7 @@ msgstr "TIPO DE PUERTO 4 DE GAMECUBE"
 #. TRANSLATION: dolphin
 msgctxt "game_options"
 msgid "Moves South to West, West to North, etc. Standard controller type only."
-msgstr "Cambia Sur por Oeste, Oeste por Norte, etc. Solo para el mando estándar."
+msgstr "Cambia Abajo por Izquierda, Izquierda por Arriba, etc. Solo para el mando estándar."
 
 #. TRANSLATION: dolphin
 msgctxt "game_options"
@@ -12001,9 +12000,24 @@ msgid ""
 "Runs \"skinning\" on the CPU instead of the GPU, means that draw calls from "
 "the game can more easily be combined, which often improves things."
 msgstr ""
-"Ejecuta el proceso de «skinning» en la CPU en lugar de la GPU. Esto permite "
+"Ejecuta el proceso de \"skinning\" en la CPU en lugar de la GPU. Esto permite "
 "combinar más fácilmente las llamadas de dibujo del juego, lo que suele "
 "mejorar el rendimiento."
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "SOFTWARE SKINNING"
+msgstr "Personalización de la interfaz"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "Uses hardware to make curves."
+msgstr "Usa hardware para el renderizado de curvas"
+
+#. TRANSLATION: ppsspp
+msgctxt "game_options"
+msgid "HARDWARE TESSELLATION"
+msgstr "TESELADO POR HARDWARE"
 
 #. TRANSLATION: ppsspp
 msgctxt "game_options"
@@ -16506,7 +16520,7 @@ msgstr ""
 #. TRANSLATION: vpinball
 msgctxt "game_options"
 msgid "USE JOYPAD SOUTH BUTTON TO ADD CREDIT"
-msgstr "USAR EL BOTÓN SUR DEL MANDO PARA AÑADIR CRÉDITO"
+msgstr "USAR EL BOTÓN ABAJO DEL MANDO PARA AÑADIR CRÉDITO"
 
 #. TRANSLATION: vpinball
 msgctxt "game_options"
