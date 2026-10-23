@@ -128,6 +128,13 @@ custom_features:
     choices:
       Off (Default): 0
       'On': 1
+  sm2_lightgun_pad_centred:
+    group: LIGHT GUNS
+    prompt: CENTRED STICK AIM
+    description: Playing the gun games on a gamepad, the crosshair goes where the stick points and comes back to the centre at rest, instead of moving like a mouse.
+    choices:
+      Off (Default): 0
+      'On': 1
   sm2_lightgun_crosshair:
     group: LIGHT GUNS
     prompt: SHOW LIGHT GUN CROSSHAIRS
