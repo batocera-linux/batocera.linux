@@ -1,0 +1,22 @@
+Drive W_DISABLE1# of the onboard RTL8852BE inactive like the vendor
+dts does, otherwise the wifi stays disabled.
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588-rock-5b-plus.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-rock-5b-plus.dts
+@@ -69,6 +69,16 @@
+ 	};
+ };
+ 
++/* batocera - release W_DISABLE1# of the onboard wifi */
++&gpio4 {
++	wifi-disable-n-hog {
++		gpios = <RK_PA2 GPIO_ACTIVE_LOW>;
++		output-low;
++		line-name = "W_DISABLE1#";
++		gpio-hog;
++	};
++};
++
+ &i2c1 {
+ 	eeprom@50 {
+ 		compatible = "belling,bl24c16a", "atmel,24c16";

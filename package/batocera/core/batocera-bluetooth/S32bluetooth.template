@@ -104,7 +104,7 @@ case "$1" in
                 aic8800)
                     if [ "${BOARD}" = "coolpi-4b" ]; then
                         rfkill unblock all
-                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 >/dev/null 2>&1 &
+                        /usr/bin/hciattach -n /dev/ttyS9 any 1500000 >/dev/null 2>&1 &
                         sleep 2
                     fi
                 ;;

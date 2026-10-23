@@ -18,14 +18,13 @@ AIC8800_MODULE_MAKE_OPTS += \
 	USER_EXTRA_CFLAGS="-DCONFIG_$(call qstrip,$(BR2_ENDIAN))_ENDIAN \
 		-Wno-error"
 
+# the debian patches set the per-flavour firmware paths
 ifeq ($(BR2_PACKAGE_AIC8800_SDIO),y)
 AIC8800_MODULE_SUBDIRS = src/SDIO/driver_fw/driver/aic8800
-AIC8800_MODULE_MAKE_OPTS += CONFIG_AIC_FW_PATH="/lib/firmware/aic8800_fw/SDIO"
 endif
 
 ifeq ($(BR2_PACKAGE_AIC8800_USB),y)
 AIC8800_MODULE_SUBDIRS += src/USB/driver_fw/drivers/aic8800 src/USB/driver_fw/drivers/aic_btusb
-AIC8800_MODULE_MAKE_OPTS += CONFIG_AIC_FW_PATH="/lib/firmware/aic8800_fw/USB"
 endif
 
 define AIC8800_DEBIAN_PATCHES
@@ -39,16 +38,18 @@ define AIC8800_CONVERT_LINE_ENDINGS
 endef
 AIC8800_POST_EXTRACT_HOOKS += AIC8800_CONVERT_LINE_ENDINGS
 
-# Rock 5c uses aic8800D80 & CoolPi 4b uses aic8800
+# the SDIO driver looks in a per-chip subdirectory
 define AIC8800_FIRMWARE_ETC_SDIO
     mkdir -p $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO
-	cp -f $(@D)/src/SDIO/driver_fw/fw/aic8800/* \
+	cp -rf $(@D)/src/SDIO/driver_fw/fw/aic8800/ \
 	    $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO/
-	cp -f $(@D)/src/SDIO/driver_fw/fw/aic8800D80/* \
+	cp -rf $(@D)/src/SDIO/driver_fw/fw/aic8800D80/ \
 	    $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO/
-	cp -f $(@D)/src/SDIO/driver_fw/fw/aic8800D80X2/* \
+	cp -rf $(@D)/src/SDIO/driver_fw/fw/aic8800D80N/ \
 	    $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO/
-	cp -f $(@D)/src/SDIO/driver_fw/fw/aic8800DC/* \
+	cp -rf $(@D)/src/SDIO/driver_fw/fw/aic8800D80X2/ \
+	    $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO/
+	cp -rf $(@D)/src/SDIO/driver_fw/fw/aic8800DC/ \
 	    $(TARGET_DIR)/lib/firmware/aic8800_fw/SDIO/
 	# remove orangepi firmware duplication here...
 	rm -rf $(TARGET_DIR)/lib/firmware/aic8800d80
@@ -67,6 +68,20 @@ define AIC8800_FIRMWARE_ETC_USB
 endef
 
 AIC8800_POST_PATCH_HOOKS = AIC8800_DEBIAN_PATCHES
+
+# both flavours build an aic8800_fdrv module and export the same symbols
+ifeq ($(BR2_PACKAGE_AIC8800_SDIO)$(BR2_PACKAGE_AIC8800_USB),yy)
+AIC8800_USB_SYMBOLS = aicwf_prealloc_txq_alloc btchr_external_write \
+	get_adap_test get_fw_path get_testmode
+
+define AIC8800_USB_RENAME
+	sed -i 's/^MODULE_NAME = aic8800_fdrv$$/MODULE_NAME = aic8800_fdrv_usb/' \
+	    $(@D)/src/USB/driver_fw/drivers/aic8800/aic8800_fdrv/Makefile
+	find $(@D)/src/USB/driver_fw/drivers -name '*.[ch]' -exec sed -i \
+	    $(foreach s,$(AIC8800_USB_SYMBOLS),-e 's/\<$(s)\>/aicusb_$(s)/g') {} +
+endef
+AIC8800_POST_PATCH_HOOKS += AIC8800_USB_RENAME
+endif
 
 ifeq ($(BR2_PACKAGE_AIC8800_SDIO),y)
 AIC8800_POST_INSTALL_TARGET_HOOKS = AIC8800_FIRMWARE_ETC_SDIO
