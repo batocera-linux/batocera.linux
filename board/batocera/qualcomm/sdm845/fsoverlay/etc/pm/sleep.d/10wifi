@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# after a suspend ath10k can keep failing to reassociate and connman stops retrying
+link_up() {
+    for i in $(seq 1 "$1"); do
+        [ "$(cat /sys/class/net/wlan0/operstate 2>/dev/null)" = up ] && return 0
+        sleep 1
+    done
+    return 1
+}
+
+case "$1" in
+    resume|thaw)
+        [ "$(/usr/bin/batocera-settings-get wifi.enabled)" = 1 ] || exit 0
+        (
+            link_up 15 && exit 0
+            for attempt in 1 2 3; do
+                /etc/init.d/S08connman restart
+                link_up 30 && exit 0
+            done
+        ) </dev/null >/dev/null 2>&1 &
+        ;;
+esac
+
+exit 0
