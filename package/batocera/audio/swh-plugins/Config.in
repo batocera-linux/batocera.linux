@@ -1,0 +1,7 @@
+config BR2_PACKAGE_SWH_PLUGINS
+	bool "swh-plugins"
+	help
+	  Steve Harris' LADSPA plugins: the SC4 compressor and the fast
+	  lookahead limiter, for PipeWire filter-chains.
+
+	  https://github.com/swh/ladspa
