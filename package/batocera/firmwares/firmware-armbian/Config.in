@@ -5,3 +5,10 @@ config BR2_PACKAGE_FIRMWARE_ARMBIAN
 	  to work correctly with the Linux kernel.
 
 	  https://github.com/armbian/firmware
+
+config BR2_PACKAGE_FIRMWARE_ARMBIAN_FILES
+	string "files to install"
+	depends on BR2_PACKAGE_FIRMWARE_ARMBIAN
+	help
+	  Space-separated paths in the repository to install.
+	  Leave empty to install the whole repository.
