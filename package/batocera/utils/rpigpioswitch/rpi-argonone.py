@@ -1,69 +1,63 @@
 #!/usr/bin/env python3
 """
-Argon One Fan Service Daemon
+Argon ONE fan and power control for Raspberry Pi 4 and Pi 5.
 Original source: https://github.com/Elrondo46/argonone
-@lbrpdx - Modified to run on Batocera (now both RPi4 and RPi5)
+@lbrpdx - Modified to run on Batocera.
 
-RPI4:
-Make sure to add in /boot/config.txt:
- dtparam=i2c_arm=on
- dtparam=i2c-1=on
+Profiles: legacy (V1/V2/M.2), register (V3/register firmware), native (V5).
+The auto profile uses architecture defaults, not case/firmware detection.
+See README.md in the rpigpioswitch source directory for configuration.
 
-RPI5:
-Make sure to add in /boot/config.txt:
- dtparam=i2c=on
- dtparam=uart0=on
-
-(it should be installed by Batocera when you enable 
-Argon One support case through S92switch setup)
-
-This daemon is launched through /etc/init.d/S92switch
-
-In order to configure your own temperature/fan mapping
-edit a file /userdata/system/configs/argonone.conf with:
-
-# temperatures are in Celsius
-# fan_speed are from 0-100 percent of max speed
-# syntax is: temp_threashold=fan_speed
-# default is:
-# 45=0
-# 55=10
-# 60=55
-# 65=100
-
-In this script, put the following parameter
-FORCE_REBOOT=1
-In order to force a reboot on double click (by default
-double click kills the current emulator and returns to
-EmulationStation menu)
+Temperature mappings: /userdata/system/configs/argonone.conf
+Defaults: 45=0, 55=10, 60=55, 65=100 (Celsius=percent).
+FORCE_REBOOT=1 changes double click from emulator exit to reboot.
 """
-import smbus
-import gpiod
-from gpiod.line import Edge
+import glob
 import os
-import time
 import sys
+import time
 from threading import Thread
 
-# Choose 0 (kill emulator) or 1 (force reboot) on double click
 FORCE_REBOOT = 0
 DEBUG = 0
-
-config_file='/userdata/system/configs/argonone.conf'
-
-if not os.path.exists('/dev/i2c-1'):
-    print("Fatal error: i2c bus can't be initialized, verify your /boot/config.txt")
-    exit()
-
-try:
-    bus = smbus.SMBus(1)
-except Exception as e:
-    print(f"Fatal error: {e} ")
-    exit()
-
-address = 0x1a
+config_file = '/userdata/system/configs/argonone.conf'
 shutdown_pin = 4
-rpi_reg = 0x80
+
+
+def resolve_profile(requested, arch):
+    if requested not in ('auto', 'legacy', 'register', 'native'):
+        raise ValueError(f"Unknown Argon ONE profile: {requested}")
+    if arch not in ('bcm2711', 'bcm2712'):
+        raise ValueError(f"Unsupported Argon ONE platform: {arch}")
+    if requested == 'native' and arch != 'bcm2712':
+        raise ValueError("The native Argon ONE V5 profile requires a Raspberry Pi 5")
+    if requested == 'auto':
+        return 'register' if arch == 'bcm2712' else 'legacy'
+    return requested
+
+
+class ArgonOneController:
+    def __init__(self, bus, profile):
+        if profile not in ('legacy', 'register'):
+            raise ValueError(f"Not an I2C Argon ONE profile: {profile}")
+        self.bus = bus
+        self.profile = profile
+
+    def set_fan_speed(self, speed):
+        if not 0 <= speed <= 100:
+            raise ValueError(f"Invalid fan speed: {speed}")
+        if self.profile == 'register':
+            self.bus.write_byte_data(0x1a, 0x80, speed)
+        else:
+            self.bus.write_byte(0x1a, speed)
+
+    def poweroff(self):
+        # Signal the MCU now; it cuts power only after the Pi has halted.
+        if self.profile == 'register':
+            self.bus.write_byte_data(0x1a, 0x86, 1)
+        else:
+            self.bus.write_byte(0x1a, 0xff)
+
 
 # Read fan % speed from the config file
 def get_fanspeed(tempval, configlist):
@@ -112,75 +106,134 @@ def load_config(fname):
         return []
     return newconfig
 
-# Check the current temperature and adjust fan speed
-def temp_check():
-    check_interval = 15 # seconds between two temp changes
-    fanconfig = ["65=100", "60=55", "55=10", "45=0"] # Default values when no config file
-    tmpconfig = load_config(config_file)
-    if len(tmpconfig) > 0:
-        fanconfig = tmpconfig
+# Check the current temperature and adjust fan speed.
+def temp_check(controller):
+    check_interval = 15
+    fanconfig = load_config(config_file) or ["65=100", "60=55", "55=10", "45=0"]
     prevblock = 0
     while True:
-        temp = open("/sys/class/thermal/thermal_zone0/temp","r").readline()
-        val = float(int(temp)/1000)
+        with open('/sys/class/thermal/thermal_zone0/temp', 'r') as sensor:
+            val = int(sensor.readline()) / 1000
         block = get_fanspeed(val, fanconfig)
         if block < prevblock:
             time.sleep(check_interval)
         prevblock = block
         try:
             if DEBUG:
-                print(f"Set fan speed {block}% for temp {val}C ")
-            bus.write_byte_data(address, rpi_reg, block)
-        except IOError:
-            temp = ""
+                print(f"Set fan speed {block}% for temp {val}C")
+            controller.set_fan_speed(block)
+        except OSError as error:
+            print(f"Could not set fan speed: {error}", file=sys.stderr)
         time.sleep(check_interval)
 
-# Thread for the button for quitting an emulator (double click)
-def shutdown_check():
-    chip = "/dev/gpiochip0"
-    request = gpiod.request_lines(chip, consumer="watch-line-falling",
-                                      config={shutdown_pin: gpiod.LineSettings(edge_detection=Edge.FALLING)})
-    while True:
-        for event in request.read_edge_events():
-            if DEBUG:
-                print(f"Double click #{event.line_seqno}")
-            if FORCE_REBOOT == 1:
-                try:
-                    # force fan stop (but not board power off)
-                    bus.write_byte_data(address, rpi_reg, 0x00)
-                except Exception as e:
-                    print (f"Could not stop fan: {e}")
-                os.system("/usr/bin/batocera-es-swissknife --reboot" )
+
+def find_gpiochip(gpiod):
+    matches = []
+    for path in sorted(glob.glob('/dev/gpiochip*')):
+        try:
+            with gpiod.Chip(path) as chip:
+                info = chip.get_info()
+                if (info.label in ('pinctrl-bcm2711', 'pinctrl-bcm2835', 'pinctrl-rp1')
+                        and info.num_lines > shutdown_pin
+                        and chip.get_line_info(shutdown_pin).name == 'GPIO4'):
+                    matches.append(path)
+        except OSError:
+            continue
+    if len(matches) != 1:
+        raise RuntimeError(f"Cannot uniquely identify header GPIO4: {matches}")
+    return matches[0]
+
+
+def request_power_action(action):
+    # swissknife first closes running games and ES, preserving their state.
+    # Its successful exit codes are 11 for shutdown and 10 for reboot.
+    expected_status = (11 if action == 'shutdown' else 10) << 8
+    if os.system(f'/usr/bin/batocera-es-swissknife --{action}') == expected_status:
+        return True
+    # Without ES, swissknife can return after closing the game without powering off.
+    command = 'shutdown -h now' if action == 'shutdown' else 'shutdown -r now'
+    if os.system(command) == 0:
+        return True
+    print(f'Could not request {action}; keeping button monitoring active', file=sys.stderr)
+    return False
+
+
+def shutdown_check(controller, gpiod):
+    chip = find_gpiochip(gpiod)
+    settings = gpiod.LineSettings(edge_detection=gpiod.line.Edge.BOTH)
+    rising_ns = None
+    previous_sequence = None
+    with gpiod.request_lines(chip, consumer='argonone-button',
+                             config={shutdown_pin: settings}) as request:
+        while True:
+            for event in request.read_edge_events():
+                if previous_sequence is not None and event.line_seqno != previous_sequence + 1:
+                    rising_ns = None
+                previous_sequence = event.line_seqno
+                if event.event_type == gpiod.EdgeEvent.Type.RISING_EDGE:
+                    rising_ns = event.timestamp_ns
+                    continue
+                if event.event_type != gpiod.EdgeEvent.Type.FALLING_EDGE or rising_ns is None:
+                    continue
+                pulse_ns = event.timestamp_ns - rising_ns
+                rising_ns = None
+                if 20_000_000 <= pulse_ns <= 30_000_000:
+                    if FORCE_REBOOT:
+                        try:
+                            controller.set_fan_speed(0)
+                        except OSError as error:
+                            print(f"Could not stop fan: {error}", file=sys.stderr)
+                        if request_power_action('reboot'):
+                            return
+                    else:
+                        os.system('/usr/bin/batocera-es-swissknife --emukill')
+                elif 40_000_000 <= pulse_ns <= 50_000_000:
+                    # The service's halt hook signals power cut after OS shutdown.
+                    if request_power_action('shutdown'):
+                        return
+
+
+def main(argv=None):
+    args = sys.argv[1:] if argv is None else argv
+    action = args[0] if args else 'temp'
+    if len(args) > 2 or action not in ('temp', 'start', 'stop', 'halt'):
+        print('Usage: rpi-argonone [temp|start|stop|halt] [auto|legacy|register|native]', file=sys.stderr)
+        return 2
+    try:
+        if action == 'temp':
+            with open('/sys/class/thermal/thermal_zone0/temp', 'r') as sensor:
+                print(f"Temp: {int(sensor.readline()) / 1000:5.1f}C")
+            return 0
+        with open('/usr/share/batocera/batocera.arch', 'r') as arch_file:
+            profile = resolve_profile(args[1] if len(args) == 2 else 'auto', arch_file.read().strip())
+        if profile == 'native':
+            if action == 'start':
+                print('Argon ONE V5: using the kernel fan and native power button')
+            return 0
+        import smbus
+        bus = smbus.SMBus(1)
+        try:
+            controller = ArgonOneController(bus, profile)
+            if action == 'stop':
+                controller.set_fan_speed(0)
+            elif action == 'halt':
+                controller.poweroff()
             else:
-                os.system("/usr/bin/batocera-es-swissknife --emukill" )
+                fan = Thread(target=temp_check, args=(controller,))
+                fan.start()
+                try:
+                    import gpiod
+                    shutdown_check(controller, gpiod)
+                except Exception as error:
+                    print(f"Argon ONE button unavailable; fan control remains active: {error}", file=sys.stderr)
+                fan.join()
+        finally:
+            bus.close()
+    except (OSError, ValueError, ImportError) as error:
+        print(f"Argon ONE: {error}", file=sys.stderr)
+        return 1
+    return 0
 
-# argument: start, stop, or no argument = show temp
-if len(sys.argv)>1:
-    if str(sys.argv[1]) == "start":
-        try:
-            t = Thread(target=temp_check)
-            t2 = Thread(target=shutdown_check)
-            t.start()
-            t2.start()
-        except Exception as e:
-            print (f"Could not launch daemon: {e}")
-            t.stop()
-            t2.stop()
-    elif str(sys.argv[1]) == "stop":
-        try:
-            # force fan stop (but not board power off)
-            bus.write_byte(address, 0x00)
-        except Exception as e:
-            print (f"Could not stop fan: {e}")
-    elif str(sys.argv[1]) == "halt":
-        try:
-            # full power off
-            bus.write_byte(address, 0xFF)
-        except Exception as e:
-            print (f"Could not power off: {e}")
-else:
-    with open("/sys/class/thermal/thermal_zone0/temp","r") as tp:
-        temp = tp.readline().strip()
-        val = float(int(temp)/1000)
-        print ("Temp: {:5.1f}C".format(val))
 
+if __name__ == '__main__':
+    sys.exit(main())
