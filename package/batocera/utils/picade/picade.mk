@@ -3,8 +3,8 @@
 # picade
 #
 ################################################################################
-# Version.: Commits on Mar 5, 2020
-PICADE_VERSION = df02844c0cd773af5b908f47eac5fb1f7f361531
+# Version.: Commits on Sep 8, 2025
+PICADE_VERSION = f97c2ac7211c8d9ff866b22a82c3b2ae6d01e0df
 PICADE_SITE = $(call github,pimoroni,picade-hat,$(PICADE_VERSION))
 PICADE_INSTALL_IMAGES = YES
 PICADE_DEPENDENCIES += host-dtc
