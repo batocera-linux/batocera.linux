@@ -71,6 +71,7 @@ _JOY_AXIS_BINDING: Final = re.compile(r'^JOY(\d+)_([A-Z0-9]+?)(?:_POS|_NEG|_INV)
 # pedals, in the order _get_pad_input() resolves them
 _ACCELERATOR_INPUTS: Final = ['r2', 'right_trigger']
 _BRAKE_INPUTS: Final = ['l2', 'left_trigger']
+_STEERING_INPUTS: Final = ['joystick1left', 'joystick1right']
 
 
 def _get_pad_input(
@@ -164,6 +165,55 @@ def _set_pedal_calibration(
     target_config.set('Global', f'{key}OffVal', str(rest))
     target_config.set('Global', f'{key}MaxVal', str(pressed))
     _logger.info('supermodel: %s of %s calibrated %s to %s..%s', input_name, pad.real_name, key, rest, pressed)
+
+
+def _wheel_axis_name(pad: Controller, input_name: str, /) -> str | None:
+    if (axis_name := _AXIS_NAMES.get(int(pad.inputs[input_name].id))) is None:
+        _logger.warning('supermodel: %s of %s is beyond the 8 axes supermodel reads', input_name, pad.real_name)
+    return axis_name
+
+
+def _wheel_steering(target_config: CaseSensitiveConfigParser, pad: Controller, /) -> str | None:
+    name = next((name for name in _STEERING_INPUTS if name in pad.inputs and pad.inputs[name].type == 'axis'), None)
+    if name is None or (axis_name := _wheel_axis_name(pad, name)) is None:
+        return None
+    if int(pad.inputs[name].id) != 0:
+        _logger.warning('supermodel: force feedback only drives axis 0, the steering of %s is not on it', pad.real_name)
+
+    turned_positive = int(pad.inputs[name].value) > 0
+    inverted = turned_positive if name == 'joystick1left' else not turned_positive
+    target_config.set('Global', f'InputJoy{pad.index + 1}{_INI_AXIS_IDS[axis_name]}DeadZone', '0')
+    return f'JOY{pad.index + 1}_{axis_name}{"_INV" if inverted else ""}'
+
+
+def _wheel_pedal(
+    target_config: CaseSensitiveConfigParser, pad: Controller, names: list[str], other_names: list[str], /
+) -> str | None:
+    if (name := _find_pad_input_name(pad, names)) is None:
+        return None
+    input = pad.inputs[name]
+    if input.type != 'axis':
+        return _get_pad_input(pad, name)
+    if (axis_name := _wheel_axis_name(pad, name)) is None:
+        return None
+
+    pressed_negative = int(input.value) < 0
+    binding = f'JOY{pad.index + 1}_{axis_name}'
+    other_name = _find_pad_input_name(pad, other_names)
+    shared = other_name is not None and pad.inputs[other_name].type == 'axis' and pad.inputs[other_name].id == input.id
+    state = pad.get_mapping_axis_relaxed_values().get(name)
+    if shared or (state is not None and state['centered']):
+        return f'{binding}{"_NEG" if pressed_negative else "_POS"}'
+
+    if state is not None and state['reversed'] != pressed_negative:
+        _logger.warning('supermodel: %s of %s does not rest where es saw it pressed from', name, pad.real_name)
+    rest, pressed = (32767, -32768) if pressed_negative else (-32768, 32767)
+    key = f'InputJoy{pad.index + 1}{_INI_AXIS_IDS[axis_name]}'
+    target_config.set('Global', f'{key}MinVal', str(rest))
+    target_config.set('Global', f'{key}OffVal', str(rest))
+    target_config.set('Global', f'{key}MaxVal', str(pressed))
+    _logger.info('supermodel: %s of %s calibrated %s to %s..%s', name, pad.real_name, key, rest, pressed)
+    return f'{binding}_POS'
 
 
 @cached_dataclass
@@ -282,7 +332,8 @@ class Supermodel(Emulator):
 
         # Force feedback (the template bakes ForceFeedback = 1, so the "off" case must
         # be passed explicitly or the ini's default silently wins)
-        if self.config.get_bool('forceFeedback'):
+        use_wheel = self.config.use_wheels and any(pad.device_path in self.wheels for pad in self.controllers)
+        if self.config.get_bool('forceFeedback', use_wheel):
             args.append('-force-feedback')
         else:
             args.append('-no-force-feedback')
@@ -484,6 +535,8 @@ class Supermodel(Emulator):
 
             target_config.set('Global', 'InputStart1', _build_binding('KEY_1', p1_start))
             target_config.set('Global', 'InputCoin1', _build_binding('KEY_3', p1_select))
+            target_config.set('Global', 'InputServiceA', _build_binding('KEY_5', p1_l3))
+            target_config.set('Global', 'InputTestA', _build_binding('KEY_6', p1_r3))
 
             target_config.set('Global', 'InputJoyUp', _build_binding('KEY_UP', p1_up))
             target_config.set('Global', 'InputJoyDown', _build_binding('KEY_DOWN', p1_down))
@@ -506,12 +559,14 @@ class Supermodel(Emulator):
 
             is_wheel_pad = self.config.use_wheels and pad1.device_path in self.wheels
 
-            set_input('InputSteering', p1_lstick_x)
-            target_config.set('Global', 'InputAccelerator', _build_binding('KEY_UP', p1_r2))
-            target_config.set('Global', 'InputBrake', _build_binding('KEY_DOWN', p1_l2))
-
-            # raw axes rest at one end of -32768..32767, so pedals need their range declared
-            if not gamepad_mode or is_wheel_pad:
+            if is_wheel_pad:
+                p1_lstick_x = _wheel_steering(target_config, pad1)
+                p1_r2 = _wheel_pedal(target_config, pad1, _ACCELERATOR_INPUTS, _BRAKE_INPUTS)
+                p1_l2 = _wheel_pedal(target_config, pad1, _BRAKE_INPUTS, _ACCELERATOR_INPUTS)
+                if strength := self.config.get_str('m3_ffb_strength'):
+                    target_config.set('Global', 'ForceFeedbackStrength', strength)
+            elif not gamepad_mode:
+                # raw axes rest at one end of -32768..32767, so pedals need their range declared
                 relaxed = pad1.get_mapping_axis_relaxed_values()
                 for binding, names in ((p1_r2, _ACCELERATOR_INPUTS), (p1_l2, _BRAKE_INPUTS)):
                     if (name := _find_pad_input_name(pad1, names)) and (axis := relaxed.get(name)):
@@ -519,17 +574,21 @@ class Supermodel(Emulator):
                             target_config, pad1, binding, name, axis['reversed'], gamepad_mode=gamepad_mode
                         )
 
+            set_input('InputSteering', p1_lstick_x)
+            target_config.set('Global', 'InputAccelerator', _build_binding('KEY_UP', p1_r2))
+            target_config.set('Global', 'InputBrake', _build_binding('KEY_DOWN', p1_l2))
+
             target_config.set('Global', 'InputGearShiftUp', _build_binding('KEY_Y', p1_r1))
             target_config.set('Global', 'InputGearShiftDown', _build_binding('KEY_H', p1_l1))
 
             if is_wheel_pad:
                 # A wheel has no second stick for the 4-speed H-pattern (gamepad default,
-                # below) or a d-pad free for view-select (it's needed for gears instead), so
-                # re-lay these onto what a wheel actually has: the d-pad and face buttons/l3/r3
-                target_config.set('Global', 'InputGearShift1', _build_binding('KEY_Q', p1_left))
-                target_config.set('Global', 'InputGearShift2', _build_binding('KEY_W', p1_down))
-                target_config.set('Global', 'InputGearShift3', _build_binding('KEY_E', p1_up))
-                target_config.set('Global', 'InputGearShift4', _build_binding('KEY_R', p1_right))
+                # below): its paddles step through the gears and its face buttons take the
+                # views, so the d-pad is left free
+                target_config.set('Global', 'InputGearShift1', 'KEY_Q')
+                target_config.set('Global', 'InputGearShift2', 'KEY_W')
+                target_config.set('Global', 'InputGearShift3', 'KEY_E')
+                target_config.set('Global', 'InputGearShift4', 'KEY_R')
 
                 target_config.set('Global', 'InputVR1', _build_binding('KEY_A', p1_south))
                 target_config.set('Global', 'InputVR2', _build_binding('KEY_S', p1_east))
@@ -537,9 +596,9 @@ class Supermodel(Emulator):
                 target_config.set('Global', 'InputVR4', _build_binding('KEY_F', p1_west))
 
                 target_config.set('Global', 'InputViewChange', _build_binding('KEY_A', p1_south))
-                target_config.set('Global', 'InputHandBrake', _build_binding('KEY_S', p1_l3))
-                target_config.set('Global', 'InputRearBrake', _build_binding('KEY_S', p1_l3))
-                target_config.set('Global', 'InputMusicSelect', _build_binding('KEY_D', p1_r3))
+                target_config.set('Global', 'InputHandBrake', _build_binding('KEY_S', p1_east))
+                target_config.set('Global', 'InputRearBrake', _build_binding('KEY_S', p1_east))
+                target_config.set('Global', 'InputMusicSelect', _build_binding('KEY_D', p1_north))
             else:
                 target_config.set('Global', 'InputGearShift1', _build_binding('KEY_Q', p1_rstick_left))
                 target_config.set('Global', 'InputGearShift2', _build_binding('KEY_W', p1_rstick_down))
