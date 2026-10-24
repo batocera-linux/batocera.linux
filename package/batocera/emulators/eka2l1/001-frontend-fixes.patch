@@ -1,0 +1,291 @@
+Fixes for running EKA2L1 from a frontend (Batocera).
+Upstream: https://github.com/EKA2L1/EKA2L1/pull/916 (drop this patch once merged)
+
+- 12bpp (4096-colour) textures repacked to RGBA4444 instead of relying on a channel
+  swizzle, which Mesa freedreno ignores on RGBA4 textures (wrong colours on Adreno 6xx).
+- N-Gage / EKA1 display depth read from the ROM header even without a wsini.ini
+  WINDOWMODE (4096-colour games ran as 32-bit with an extracted Z drive).
+- A game started from the command line gets the pad without a click on the display.
+- Every bind of a key profile is kept: one phone key can have several sources.
+- A command line launch exits with its app, instead of stalling on a black screen.
+- The key profile is reloaded when it changes while a game runs.
+- background-image-keep-aspect and screen-scale-ratio: draw a picture of the phone around
+  the screen and place the game in it, like the Android screen profiles.
+
+--- a/src/emu/config/include/config/config.h	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/config/include/config/config.h	2026-10-24 17:25:36.788611333 +0200
+@@ -186,6 +186,8 @@
+ 		std::uint32_t btnet_discovery_mode{ 0 };
+         bool extensive_logging{ false };
+         int background_image_opacity{ 255 };
++        bool background_image_keep_aspect{ false };
++        int screen_scale_ratio{ 100 };
+ 
+         std::string current_mmc_id;
+ 
+--- a/src/emu/config/include/config/options.inl	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/config/include/config/options.inl	2026-10-24 17:25:38.632611427 +0200
+@@ -75,6 +75,8 @@
+ OPTION(hosts, hosts, host_map{})
+ OPTION(background-image, background_image, "")
+ OPTION(background-image-opacity, background_image_opacity, 255)
++OPTION(background-image-keep-aspect, background_image_keep_aspect, false)
++OPTION(screen-scale-ratio, screen_scale_ratio, 100)
+ OPTION(enable-hw-gles1, enable_hw_gles1, true)
+ OPTION(log-filter, log_filter, DEFAULT_LOG_FILTERING)
+ OPTION(hide-system-apps, hide_system_apps, true)
+--- a/src/emu/drivers/src/graphics/backend/graphics_driver_shared.cpp	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/drivers/src/graphics/backend/graphics_driver_shared.cpp	2026-10-24 17:25:40.508611523 +0200
+@@ -22,6 +22,7 @@
+ #include <common/platform.h>
+ 
+ #include <cstdint>
++#include <cstring>
+ #include <limits>
+ #include <vector>
+ 
+@@ -329,6 +330,36 @@
+             bmp->tex->update_data(this, 0, eka2l1::vec3(offset.x, offset.y, 0), eka2l1::vec3(dim.x, dim.y, 0), 0,
+                 texture_format::rgba, texture_data_type::ubyte, expanded_rgba.data(), 0, 4);
+         } else
++#else
++        // 12bpp Symbian pixels are 0x0RGB, which GL reads as R=0, G=R, B=G, A=B; a channel swizzle
++        // undoes that, but some drivers ignore it on RGBA4 textures (Mesa freedreno on Adreno 6xx shows
++        // every 4096-colour game shifted to green and blue). Repack them as 0xRGBF instead, GL's own
++        // RGBA4444 order, so no swizzle is needed.
++        if ((bmp->bpp == 12) && data && (dim.x > 0) && (dim.y > 0)) {
++            const std::size_t src_pixels_per_line = (pixels_per_line != 0) ? pixels_per_line : static_cast<std::size_t>(dim.x);
++            const std::size_t src_row_bytes = ((src_pixels_per_line * 2) + 3) & ~std::size_t(3);
++            const std::size_t dst_pixels_per_line = (static_cast<std::size_t>(dim.x) + 1) & ~std::size_t(1);
++            const std::size_t source_end = (static_cast<std::size_t>(dim.y) - 1) * src_row_bytes + static_cast<std::size_t>(dim.x) * 2;
++
++            if (!size || (source_end <= size)) {
++                const std::uint8_t *src = reinterpret_cast<const std::uint8_t *>(data);
++                std::vector<std::uint16_t> repacked(dst_pixels_per_line * static_cast<std::size_t>(dim.y));
++
++                for (int y = 0; y < dim.y; y++) {
++                    for (int x = 0; x < dim.x; x++) {
++                        std::uint16_t pixel = 0;
++                        std::memcpy(&pixel, src + static_cast<std::size_t>(y) * src_row_bytes + static_cast<std::size_t>(x) * 2, 2);
++                        repacked[static_cast<std::size_t>(y) * dst_pixels_per_line + x] = static_cast<std::uint16_t>((pixel << 4) | 0xF);
++                    }
++                }
++
++                bmp->tex->update_data(this, 0, eka2l1::vec3(offset.x, offset.y, 0), eka2l1::vec3(dim.x, dim.y, 0), dst_pixels_per_line,
++                    data_format, data_type, repacked.data(), 0, 4);
++                bmp->tex->set_channel_swizzle({ channel_swizzle::red, channel_swizzle::green,
++                    channel_swizzle::blue, channel_swizzle::alpha });
++                return;
++            }
++        }
+ #endif
+         bmp->tex->update_data(this, 0, eka2l1::vec3(offset.x, offset.y, 0), eka2l1::vec3(dim.x, dim.y, 0), pixels_per_line,
+             data_format, data_type, data, 0, 4);
+--- a/src/emu/qt/include/qt/mainwindow.h	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/qt/include/qt/mainwindow.h	2026-10-24 17:25:42.544611628 +0200
+@@ -254,6 +254,9 @@
+ 
+     int map_mouse_id_to_touch_index(int mouse_id, const bool on_release);
+     eka2l1::drivers::handle get_background_image();
++    eka2l1::vec2 get_background_image_size() const {
++        return previous_background_image_size_;
++    }
+ 
+     std::function<void(eka2l1::kernel::process *)> get_process_exit_callback();
+ 
+--- a/src/emu/qt/src/mainwindow.cpp	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/qt/src/mainwindow.cpp	2026-10-24 17:25:44.448611723 +0200
+@@ -71,6 +71,7 @@
+ #include <QDropEvent>
+ #include <QEventLoop>
+ #include <QFileDialog>
++#include <QFileSystemWatcher>
+ #include <QFuture>
+ #include <QFutureWatcher>
+ #include <QInputDialog>
+@@ -83,6 +84,9 @@
+ 
+ #include <stb_image.h>
+ 
++#include <cstdio>
++#include <cstdlib>
++
+ static constexpr const char *LAST_UI_WINDOW_GEOMETRY_SETTING = "lastWindowGeometry";
+ static constexpr const char *LAST_UI_WINDOW_STATE = "lastWindowState";
+ static constexpr const char *LAST_UI_WINDOW_MAXMIZED = "lastWindowMaximized";
+@@ -191,11 +195,21 @@
+     builder.set_feature(eka2l1::drivers::graphics_feature::clipping, false);
+     builder.set_viewport(viewport);
+ 
++    // The screen is laid out inside this area: the whole window, or the background image when it keeps its aspect
++    eka2l1::rect area;
++    area.size = swapchain_size;
++
+     eka2l1::drivers::handle background_image = state_ptr->ui_main->get_background_image();
+     builder.clear({ color_clear.z / 255.0f, color_clear.y / 255.0f, color_clear.x / 255.0f, color_clear.w / 255.0f, 0.0f, 0.0f }, eka2l1::drivers::draw_buffer_bit_color_buffer);
+     if (background_image != 0) {
+-        eka2l1::rect draw_image_rect;
+-        draw_image_rect.size = swapchain_size;
++        const eka2l1::vec2 image_size = state_ptr->ui_main->get_background_image_size();
++        if (state.conf.background_image_keep_aspect && (image_size.x > 0) && (image_size.y > 0)) {
++            const float image_scale = std::min(static_cast<float>(swapchain_size.x) / image_size.x, static_cast<float>(swapchain_size.y) / image_size.y);
++            area.size = eka2l1::vec2(static_cast<int>(image_size.x * image_scale), static_cast<int>(image_size.y * image_scale));
++            area.top = eka2l1::vec2((swapchain_size.x - area.size.x) / 2, (swapchain_size.y - area.size.y) / 2);
++        }
++
++        eka2l1::rect draw_image_rect = area;
+ 
+         builder.set_feature(eka2l1::drivers::graphics_feature::blend, true);
+         builder.blend_formula(eka2l1::drivers::blend_equation::add, eka2l1::drivers::blend_equation::add,
+@@ -218,22 +232,31 @@
+         std::swap(size.x, size.y);
+     }
+ 
+-    float mult_x = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (static_cast<float>(window_width) / size.x);
+-    float mult_y = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (state.stretch_to_fill_display ? (static_cast<float>(window_height) / size.y) : mult_x);
++    float mult_x = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (static_cast<float>(area.size.x) / size.x);
++    float mult_y = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (state.stretch_to_fill_display ? (static_cast<float>(area.size.y) / size.y) : mult_x);
+     float width = size.x * mult_x;
+     float height = size.y * mult_y;
+     std::uint32_t x = 0;
+     std::uint32_t y = 0;
+     if (!state.stretch_to_fill_display) {
+-        if (height > swapchain_size.y) {
+-            height = swapchain_size.y;
++        if (height > area.size.y) {
++            height = area.size.y;
+             mult_x = mult_y = height / size.y;
+             width = size.x * mult_y;
+         }
+     }
+ 
+-    x = (swapchain_size.x - width) / 2;
+-    y = (swapchain_size.y - height) / 2;
++    // Shrink the screen to fit the one drawn on the background, like the Android screen scale
++    if (scr->requested_ui_scale_factor <= 0.0f) {
++        const float ratio = eka2l1::common::clamp<int>(10, 100, state.conf.screen_scale_ratio) / 100.0f;
++        mult_x *= ratio;
++        mult_y *= ratio;
++        width *= ratio;
++        height *= ratio;
++    }
++
++    x = area.top.x + (area.size.x - width) / 2;
++    y = area.top.y + (area.size.y - height) / 2;
+ 
+     scr->set_native_scale_factor(state_ptr->graphics_driver.get(), mult_x, mult_y);
+     scr->absolute_pos.x = static_cast<int>(x);
+@@ -358,6 +381,22 @@
+         server->init_key_mappings();
+     }
+ 
++    // Reload the key profile when it changes while a game runs, for instance from a frontend's remapping tool
++    QFileSystemWatcher *bindings_watcher = new QFileSystemWatcher(this);
++    bindings_watcher->addPath(QDir::current().absoluteFilePath(QStringLiteral("bindings")));
++    connect(bindings_watcher, &QFileSystemWatcher::directoryChanged, this, [this](const QString &) {
++        const std::lock_guard<std::mutex> guard(emulator_state_.lockdown);
++        const std::string profile_path = "bindings/" + emulator_state_.conf.current_keybind_profile + ".yml";
++        if (!eka2l1::common::exists(profile_path)) {
++            return;
++        }
++
++        emulator_state_.conf.keybinds.deserialize(profile_path);
++        if (eka2l1::window_server *ws = get_window_server_through_system(emulator_state_.symsys.get())) {
++            ws->init_key_mappings();
++        }
++    });
++
+     rotate_group_ = new QActionGroup(this);
+     rotate_group_->addAction(ui_->action_rotate_0);
+     rotate_group_->addAction(ui_->action_rotate_90);
+@@ -1121,7 +1160,11 @@
+     }
+ 
+     if (emulator_state_.app_launch_from_command_line) {
+-        close();
++        // Started for one app (by a frontend): leave as soon as it is gone, like --runng does. Closing
++        // the window tears the emulator down, which can stall on its threads and leave the frontend
++        // waiting on a black screen. The app has closed its files by now.
++        std::fflush(nullptr);
++        std::_Exit(0);
+     } else {
+         on_restart_requested();
+     }
+@@ -1340,7 +1383,9 @@
+ 
+ bool main_window::controller_event_handler(eka2l1::drivers::input_event &event) {
+     emit controller_button_press(event);
+-    if (displayer_ && displayer_->isVisible() && displayer_->hasFocus()) {
++    // A game started from the command line (by a frontend) gets the pad without needing a click on
++    // the display first: under some compositors a fullscreen window never reports the focus.
++    if (displayer_ && displayer_->isVisible() && (displayer_->hasFocus() || emulator_state_.app_launch_from_command_line)) {
+         if (editor_widget_->isVisible() && editor_widget_->handle_controller_event(event)) {
+             return false;
+         }
+--- a/src/emu/services/src/window/window.cpp	2026-10-24 09:57:28.000000000 +0200
++++ b/src/emu/services/src/window/window.cpp	2026-10-24 17:25:46.480611737 +0200
+@@ -1468,34 +1468,31 @@
+ 
+         common::ini_node_ptr window_mode_node = ws_config.find("WINDOWMODE");
+         epoc::display_mode scr_mode_global = epoc::display_mode::color16ma;
++        bool use_in_ini = true;
+ 
+-        if (window_mode_node) {
++        // The ROM header has the real display depth on EKA1 phones. Read it even without a WINDOWMODE:
++        // their wsini.ini often lives inside the ROM image only, and is not found in an extracted Z drive
++        // (an N-Gage then ran its 4096-colour games as 32-bit, and direct screen access read them as 16-bit).
++        if (kern->get_epoc_version() <= epocver::epoc6) {
++            loader::rom *rom_info = kern->get_rom_info();
++            const epoc::display_mode conv_res = rom_info
++                ? epoc::get_display_mode_from_bpp(rom_info->header.eka1_diff1.bits_per_pixel, true)
++                : epoc::display_mode::color_last;
++
++            if (conv_res != epoc::display_mode::color_last) {
++                scr_mode_global = conv_res;
++                use_in_ini = false;
++            }
++        }
++
++        if (window_mode_node && use_in_ini) {
+             common::ini_pair *window_mode_pair = window_mode_node->get_as<common::ini_pair>();
+ 
+             std::vector<std::string> modes;
+             modes.resize(1);
+ 
+             window_mode_pair->get(modes);
+-
+-            device_manager *mngr = sys->get_device_manager();
+-            device *current_dvc = mngr->get_current();
+-
+-            bool use_in_ini = true;
+-
+-            if (kern->get_epoc_version() <= epocver::epoc6) {
+-                loader::rom *rom_info = kern->get_rom_info();
+-                const epoc::display_mode conv_res = epoc::get_display_mode_from_bpp(rom_info->header.eka1_diff1.bits_per_pixel, true);
+-
+-                if (conv_res != epoc::display_mode::color_last) {
+-                    scr_mode_global = conv_res;
+-                    use_in_ini = false;
+-                }
+-            }
+-
+-            if (use_in_ini) {
+-                scr_mode_global = epoc::string_to_display_mode(modes[0]);
+-            }
+-
++            scr_mode_global = epoc::string_to_display_mode(modes[0]);
+         }
+ 
+         // WSERV's default when the ini leaves it out.
+@@ -2332,9 +2329,9 @@
+ 
+         config::state *conf = kern->get_config();
+ 
++        // The maps start empty, so every bind of the profile is kept: one phone key can have
++        // several sources (a keyboard key, the D-pad and a stick, more than one pad).
+         for (auto &kb : conf->keybinds.keybinds) {
+-            delete_key_mapping(kb.target);
+-
+             bool is_mouse = (kb.source.type == config::KEYBIND_TYPE_MOUSE);
+ 
+             if ((kb.source.type == config::KEYBIND_TYPE_KEY) || is_mouse) {
