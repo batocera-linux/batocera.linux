@@ -10,11 +10,10 @@ UBOOT_PS7000_LICENSE = GPLv2
 UBOOT_PS7000_BOOT_SRC = idbloader.img uboot.img:uboot-ps7000.img trust.img
 UBOOT_PS7000_BINARIES_SUBDIR =
 
-UBOOT_PS7000_DEPENDENCIES = rk3128-blobs
+UBOOT_PS7000_DEPENDENCIES = batocera-rkbin
 
 define UBOOT_PS7000_BUILD_CMDS
     # FIXME: there should be a better way to build
-    # Build uboot for wx8-rk3128
     cd $(@D) && ARCH=arm CHIP=rk3128 \
         CROSS_COMPILE=$(HOST_DIR)/bin/arm-buildroot-linux-gnueabihf- \
         make ps7000-rk3128_defconfig
@@ -23,9 +22,9 @@ define UBOOT_PS7000_BUILD_CMDS
 
     # Generate idbloader.img
     $(@D)/tools/mkimage -n rk3128 -T rksd -d \
-        $(BINARIES_DIR)/rkbin/bin/rk31/rk3128_ddr_300MHz_v2.12.bin \
+        $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3128_ddr_300MHz_v2.12.bin \
         $(@D)/idbloader.img
-    cat $(BINARIES_DIR)/rkbin/bin/rk31/rk3128x_miniloader_v2.57.bin >> \
+    cat $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3128x_miniloader_v2.57.bin >> \
         $(@D)/idbloader.img
 
     # Generate uboot.img
@@ -34,7 +33,7 @@ define UBOOT_PS7000_BUILD_CMDS
 
     # Generate trust.img
     $(@D)/tools/loaderimage --pack --trustos \
-        $(BINARIES_DIR)/rkbin/bin/rk31/rk3126_tee_ta_v2.01.bin \
+        $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3126_tee_ta_v2.01.bin \
         $(@D)/trust.img --size 1024 4
 endef
 
