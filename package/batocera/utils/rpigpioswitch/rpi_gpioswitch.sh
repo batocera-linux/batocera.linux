@@ -41,7 +41,7 @@ powerdevices=(
               RETROFLAG_64PI "Retroflag 64Pi case for Raspberry Pi 5" \
               RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
-              ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
+              ARGONONE "Argon ONE fan/power profiles for RPi4 and RPi5" \
               KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
               MAUSBERRY "A neat power device from Mausberry circuits" \
               ONOFFSHIM "The cheapest power device from Pimoroni" \
@@ -360,10 +360,43 @@ function retroflag_config()
 
 # Pi4: https://argon40.com/products/argon-one-v2-case-for-raspberry-pi-4 (but tested on V1 which is EOL now)
 # Pi5: https://argon40.com/products/argon-one-v3-case-for-raspberry-pi-5
+function argonone_profile()
+{
+    local profile
+    if [[ "$1" == "stop" && -f /var/run/argonone.profile ]]; then
+        profile="$(cat /var/run/argonone.profile)"
+    else
+        profile="$(/usr/bin/batocera-settings-get system.argonone.profile 2>/dev/null)"
+    fi
+    profile="${profile:-auto}"
+    case "$profile" in
+        auto|legacy|register|native) printf '%s\n' "$profile" ;;
+        *) echo "Unknown Argon ONE profile: $profile" >&2; return 1 ;;
+    esac
+}
+
 function argonone_start()
 {
+    local profile arch
+    profile="$(argonone_profile start)" || return 1
+    arch="$(cat /usr/share/batocera/batocera.arch)" || return 1
+    case "$arch" in
+        bcm2711|bcm2712) ;;
+        *) echo "Unsupported Argon ONE platform: $arch" >&2; return 1 ;;
+    esac
+    if [[ "$profile" == "native" ]]; then
+        if [[ "$arch" != "bcm2712" ]]; then
+            echo "The native Argon ONE V5 profile requires a Raspberry Pi 5" >&2
+            return 1
+        fi
+        # V5 uses the Pi 5 fan header and native KEY_POWER handling.
+        if [[ "$CONF" -ne 1 ]]; then
+            printf '%s\n' "$profile" > /var/run/argonone.profile || return 1
+        fi
+        return 0
+    fi
     #------ CONFIG SECTION ------
-    case $(cat /usr/share/batocera/batocera.arch) in
+    case "$arch" in
         bcm2711)
 	    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
 		 mount -o remount,rw /boot
@@ -395,24 +428,34 @@ function argonone_start()
     modprobe i2c-dev
     modprobe i2c-bcm2708
     modprobe i2c-bcm2835
-    /usr/bin/rpi-argonone start &
+    printf '%s\n' "$profile" > /var/run/argonone.profile || return 1
+    /usr/bin/rpi-argonone start "$profile" &
     wait $!
 }
 
 function argonone_stop()
 {
+    local profile action status pid
+    # Keep the running protocol if settings were edited since startup.
+    profile="$(argonone_profile stop)" || return 1
     pid=$(pgrep -f rpi-argonone | head -n 1)
     if ! [ -z "${pid}" ]; then
          kill -9 "${pid}"
     fi
 
-    if [ -f /tmp/shutdown.please ]; then
-        # force a power shutdown from GPIO block
-        /usr/bin/rpi-argonone halt &
-    else
-        # only stop fan (keep power block on)
-        /usr/bin/rpi-argonone stop &
+    if [[ "$profile" == "native" ]]; then
+        rm -f /var/run/argonone.profile
+        return 0
     fi
+    if [ -f /tmp/shutdown.please ]; then
+        action=halt
+    else
+        action=stop
+    fi
+    /usr/bin/rpi-argonone "$action" "$profile"
+    status=$?
+    rm -f /var/run/argonone.profile
+    return "$status"
 }
 
 function argonone_config()
