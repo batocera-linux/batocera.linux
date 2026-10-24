@@ -327,7 +327,6 @@ def generate_controller_config_triforce(
         'y': 'Buttons/Y',
         'x': 'Buttons/X',
         'pagedown': 'Buttons/Z',
-        'pageup': 'Triforce/Service',
         'select': 'Triforce/Coin',
         'start': 'Buttons/Start',
         'l2': 'Triggers/L',
@@ -357,6 +356,10 @@ def generate_controller_config_triforce(
         'r2': 'pagedown',
     }
 
+    if emulator.config.get_bool('dolphin_service_buttons'):
+        triforce_mapping['l3'] = 'Triforce/Service'
+        triforce_mapping['r3'] = 'Triforce/Test'
+
     _read_per_rom_overrides(rom, triforce_mapping)
 
     # Wheel mapping for Triforce arcade racing games.
@@ -376,6 +379,11 @@ def generate_controller_config_triforce(
         'pageup': 'Buttons/X',  # Paddle left
         'pagedown': 'Buttons/Y',  # Paddle right
     }
+
+    if emulator.config.get_bool('dolphin_service_buttons'):
+        wheel_triforce_mapping['l3'] = 'Triforce/Service'
+        wheel_triforce_mapping['r3'] = 'Triforce/Test'
+
     wheel_triforce_reverse_axes: dict[str | None, str] = {'Main Stick/Left': 'Main Stick/Right'}
     wheel_triforce_extra_options: dict[str, str] = {'Main Stick/Dead Zone': '0.'}
 

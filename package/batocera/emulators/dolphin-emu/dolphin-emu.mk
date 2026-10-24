@@ -66,10 +66,10 @@ define DOLPHIN_EMU_PRE_CONFIGURE_HOOK
 endef
 
 define DOLPHIN_EMU_INI
-    mkdir -p $(TARGET_DIR)/usr/share/dolphin-emu/sys/GameSettings
+    mkdir -p $(TARGET_DIR)/usr/share/dolphin-emu/Sys/GameSettings
     # copy extra triforce ini files - force overwrite
     cp -pr $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/dolphin-emu/*.ini \
-		$(TARGET_DIR)/usr/share/dolphin-emu/sys/GameSettings
+		$(TARGET_DIR)/usr/share/dolphin-emu/Sys/GameSettings
     cd $(TARGET_DIR)/usr/bin && ln -sf dolphin-emu dolphin-emu.desktopconfig
 endef
 
