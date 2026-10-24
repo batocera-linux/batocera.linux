@@ -221,6 +221,12 @@ systems:
         choices:
           Horizontal: horizontal
           Vertical: vertical
+      reicast_allow_service_buttons:
+        prompt: SERVICE AND TEST BUTTONS
+        description: Service on L3 and Test on R3, to open the test menu.
+        choices:
+          'Off': disabled
+          'On': enabled
   - name: naomi
     custom_features:
       screen_rotation_naomi:
@@ -229,6 +235,12 @@ systems:
         choices:
           Horizontal: horizontal
           Vertical: vertical
+      reicast_allow_service_buttons:
+        prompt: SERVICE AND TEST BUTTONS
+        description: Service on L3 and Test on R3, to open the test menu.
+        choices:
+          'Off': disabled
+          'On': enabled
   - name: dreamcast
     file_extensions:
       - cdi
@@ -240,4 +252,11 @@ systems:
     file_extensions:
       - zip
       - 7z
+    custom_features:
+      reicast_allow_service_buttons:
+        prompt: SERVICE AND TEST BUTTONS
+        description: Service on L3 and Test on R3, to open the test menu.
+        choices:
+          'Off': disabled
+          'On': enabled
   - systemsp

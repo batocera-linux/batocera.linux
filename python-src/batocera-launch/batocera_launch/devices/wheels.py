@@ -49,14 +49,26 @@ _WHEEL_MAPPING: Final = {
     'upshift': 'pagedown',
 }
 
+_NAOMI_MAPPING: Final = {
+    'a': 'a',
+    'b': 'b',
+    'x': 'x',
+    'y': 'y',
+    'up': 'up',
+    'down': 'down',
+}
+
 # partial mapping between real pads buttons and batocera pads
 _SYSTEM_MAPPING: Final = {
     'dreamcast': {
         'lt': 'l2',
         'rt': 'r2',
-        'up': 'pageup',
-        'down': 'pagedown',
+        'up': 'up',
+        'down': 'down',
     },
+    'naomi': _NAOMI_MAPPING,
+    'naomi2': _NAOMI_MAPPING,
+    'atomiswave': _NAOMI_MAPPING,
     'gamecube': {
         'lt': 'l2',
         'rt': 'r2',
