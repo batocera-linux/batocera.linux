@@ -3281,6 +3281,62 @@ ngage:
   hardware: portable
   platform: ngage
   theme: ngage
+  comment_en: |
+    Emulated by EKA2L1, which needs a device firmware: an N-Gage QD (RH-29) or N-Gage (NEM-4).
+    Install it once from the EKA2L1 application (F1 > Applications > eka2l1-config, "Install device").
+
+    Game cards: put the dumps as .zip files containing the card's System folder, as they are.
+    They are mounted as the memory card, nothing is extracted or installed.
+
+    Already installed games show up by themselves after EKA2L1 has run once: a .json shortcut, the
+    format the Android version of EKA2L1 exports, is written for each one that has no file here yet.
+
+    An EKA2L1 folder from the Android or Windows version can be dropped here as
+    /userdata/roms/ngage/EKA2L1: its devices, installed games, saves and per-game settings are used.
+
+    Most games are made for 30 fps or less and run too fast at EKA2L1's default 60 fps:
+    set FPS LIMIT in the game's advanced options.
+  comment_fr: |
+    Émulé par EKA2L1, qui a besoin d'un firmware d'appareil : N-Gage QD (RH-29) ou N-Gage (NEM-4).
+    Installez-le une fois depuis l'application EKA2L1 (F1 > Applications > eka2l1-config, « Install device »).
+
+    Cartes de jeu : mettez les dumps en .zip contenant le dossier System de la carte, tels quels.
+    Ils sont montés comme la carte mémoire, rien n'est extrait ni installé.
+
+    Les jeux déjà installés apparaissent d'eux-mêmes après un premier lancement d'EKA2L1 : un raccourci
+    .json, le format exporté par la version Android d'EKA2L1, est créé pour chacun s'il n'a pas encore de fichier ici.
+
+    Un dossier EKA2L1 de la version Android ou Windows peut être déposé ici sous
+    /userdata/roms/ngage/EKA2L1 : ses appareils, jeux installés, sauvegardes et réglages par jeu sont utilisés.
+
+    La plupart des jeux sont prévus pour 30 fps ou moins et tournent trop vite aux 60 fps par défaut
+    d'EKA2L1 : réglez FPS LIMIT dans les options avancées du jeu.
+
+symbian:
+  name: Symbian
+  manufacturer: Nokia
+  release: 2002
+  hardware: portable
+  platform: symbian
+  theme: symbian
+  comment_en: |
+    Symbian phone games and applications, emulated by EKA2L1.
+
+    .sis packages (Symbian 6 to 8: S60v1, S60v2) run on an S60v1/v2 or N-Gage device,
+    .sis/.sisx packages for Symbian 9 (S60v3 and newer) on an S60v3 or newer device.
+    Install the devices once from the EKA2L1 application (F1 > Applications > eka2l1-config).
+
+    A package is installed the first time it is launched, then started directly.
+    .json shortcuts exported by the Android version of EKA2L1 start already installed applications.
+  comment_fr: |
+    Jeux et applications pour téléphones Symbian, émulés par EKA2L1.
+
+    Les paquets .sis (Symbian 6 à 8 : S60v1, S60v2) tournent sur un appareil S60v1/v2 ou N-Gage,
+    les .sis/.sisx pour Symbian 9 (S60v3 et plus récent) sur un appareil S60v3 ou plus récent.
+    Installez les appareils une fois depuis l'application EKA2L1 (F1 > Applications > eka2l1-config).
+
+    Un paquet est installé au premier lancement, puis démarré directement.
+    Les raccourcis .json exportés par la version Android d'EKA2L1 lancent les applications déjà installées.
 
 odcommander:
   name: OD-Commander

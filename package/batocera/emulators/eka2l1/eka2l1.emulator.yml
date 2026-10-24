@@ -12,10 +12,76 @@ shared_features:
   - bezel.tattoo_corner
   - bezel.tattoo_file
   - bezel.resize_tattoo
+custom_features:
+  eka2l1_fps:
+    prompt: FPS LIMIT
+    description: Most games run as fast as the screen refreshes. N-Gage games are usually made for 30 fps or less; at 60 they run too fast. Saved in the game's EKA2L1 settings.
+    choices:
+      15 fps: 15
+      20 fps: 20
+      25 fps: 25
+      30 fps: 30
+      60 fps: 60
+      120 fps: 120
+  eka2l1_rtos_level:
+    prompt: TIMING ACCURACY
+    description: Accuracy of the emulated system timers. Lower is faster, higher fixes some games running too fast or too slow.
+    choices:
+      Low:  low
+      Mid (Default): mid
+      High: high
+  eka2l1_pad_remap:
+    prompt: IN-GAME PAD REMAPPING
+    description: Hold hotkey alone for 3 seconds during the game to change which phone key a pad button sends. Saved for the game.
+    preset: switchauto
+  eka2l1_nearest_filter:
+    prompt: NEAREST NEIGHBOR FILTERING
+    description: Keep the pixels sharp when scaling the screen, instead of smoothing them.
+    preset: switchauto
+  eka2l1_language:
+    prompt: SYSTEM LANGUAGE
+    description: Language reported to the games. It has to be one the installed device firmware ships.
+    choices:
+      English: 1
+      French: 2
+      German: 3
+      Spanish: 4
+      Italian: 5
+      Swedish: 6
+      Danish: 7
+      Norwegian: 8
+      Finnish: 9
+      Portuguese: 13
+      Russian: 16
+      Dutch: 18
 file_extensions:
-  - n-gage
-  - sisx
-  - sis
   - zip
+  - json
+  - sis
+  - sisx
 systems:
-  - ngage
+  - name: ngage
+    file_extensions:
+      - zip
+      - json
+    custom_features:
+      eka2l1_ngage_device:
+        prompt: N-GAGE MODEL
+        description: Device used to run the game cards, when both are installed.
+        choices:
+          Auto: auto
+          N-Gage QD (RH-29): RH-29
+          N-Gage (NEM-4): NEM-4
+      eka2l1_skin:
+        prompt: SKIN
+        description: Picture of the console around the game, taken from the Android EKA2L1 screen profile of that name in roms/ngage/EKA2L1/android/profiles.
+        choices:
+          Game only: none
+          N-Gage: Nokia N-Gage (20_9)
+          N-Gage (zoom): Nokia N-Gage (20_9) (ZOOM)
+          N-Gage QD: Nokia N-Gage QD (20_9)
+  - name: symbian
+    file_extensions:
+      - sis
+      - sisx
+      - json
