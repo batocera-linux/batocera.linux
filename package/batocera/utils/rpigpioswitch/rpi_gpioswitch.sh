@@ -88,26 +88,23 @@ function atx_raspi_start()
     SHUTDOWN=$1
     REBOOTPULSEMINIMUM=200        #reboot pulse signal should be at least this long
     REBOOTPULSEMAXIMUM=600        #reboot pulse signal should be at most this long
-    echo "$SHUTDOWN" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio$SHUTDOWN/direction
 
     # Added reboot feature (with ATXRaspi R2.6 (or ATXRaspi 2.5 with blue dot on chip)
     # Hold ATXRaspi button for at least 500ms but no more than 2000ms and a reboot HIGH pulse of 500ms length will be issued
 
     # This is GPIO 8 (pin 24 on the pinout diagram).
     # This is an output from Pi to ATXRaspi and signals that the Pi has booted.
-    # This pin is asserted HIGH as soon as this script runs (by writing "1" to /sys/class/gpio/gpio8/value)
+    # This pin is asserted HIGH as soon as this script runs
     BOOT=$2
-    echo "$BOOT" > /sys/class/gpio/export
-    echo "out" > /sys/class/gpio/gpio$BOOT/direction
-    echo "1" > /sys/class/gpio/gpio$BOOT/value
+    gpioset -c gpiochip0 $BOOT=1 &
+    echo $! > /tmp/atxraspi.pid
 
     echo "ATXRaspi shutdown script started: asserted pins ($SHUTDOWN=input,LOW; $BOOT=output,HIGH). Waiting for GPIO$SHUTDOWN to become HIGH..."
 
     #This loop continuously checks if the shutdown button was pressed on ATXRaspi (GPIO7 to become HIGH), and issues a shutdown when that happens.
     #It sleeps as long as that has not happened.
     while true; do
-        shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
+        shutdownSignal=$(gpioget -c gpiochip0 --numeric $SHUTDOWN)
         if [ $shutdownSignal = 0 ]; then
             /bin/sleep 0.2
         else
@@ -120,7 +117,7 @@ function atx_raspi_start()
                     poweroff
                     exit
                 fi
-                shutdownSignal=$(cat /sys/class/gpio/gpio$SHUTDOWN/value)
+                shutdownSignal=$(gpioget -c gpiochip0 --numeric $SHUTDOWN)
             done
             #pulse went LOW, check if it was long enough, and trigger reboot
             if [ $(($(date +%s%N | cut -b1-13)-$pulseStart)) -gt $REBOOTPULSEMINIMUM ]; then
@@ -134,10 +131,7 @@ function atx_raspi_start()
 
 function atx_raspi_stop()
 {
-    # Cleanup GPIO init
-    for i in $*; do
-        echo "$i" > /sys/class/gpio/unexport
-    done
+    kill $(cat /tmp/atxraspi.pid) &> /dev/null
 }
 
 function atx_raspi_config()
@@ -152,9 +146,9 @@ function mausberry_start()
     # $1 is the GPIO pin connected to the lead on switch labeled OUT - GPIO23 -- will get high if button is pressed (therefore the label OUT)
     # $2 is the GPIO pin connected to the lead on switch labeled IN -- GPIO24 -- is set high and feeds the device (therefore the label IN)
     # init
-    gpioset 0 $2=1
+    gpioset -c gpiochip0 -z $2=1
 
-    while [ $(gpioget 0 $1) -eq 0 ]; do
+    while [ "$(gpioget -c gpiochip0 --numeric $1)" = "0" ]; do
         sleep 1
     done
 
@@ -187,15 +181,15 @@ function onoffshim_start()
 
 
     # This is Button command (GPIO17 default)
-    power=$(gpioget 0 $1)
+    power=$(gpioget -c gpiochip0 --numeric $1)
     echo $$ > /tmp/powerswitch.pid
     [ $power -eq 0 ] && switchtype=1 #Sliding Switch
     [ $power -eq 1 ] && switchtype=0 #Momentary push button
 
     until [ $power -eq $switchtype ]; do
-        gpiomon --num-events=1 -s 0 $1
+        gpiomon -c gpiochip0 -n 1 -q $1
         sleep 0.1
-        power=$(gpioget 0 $1)
+        power=$(gpioget -c gpiochip0 --numeric $1)
 done
 
     # Switch off
@@ -258,14 +252,11 @@ function msldigital_start()
 {
     # Init GPIO :
     # $1 is the GPIO pin receiving the shut-down signal
-    echo "$1" > /sys/class/gpio/export
-    echo "in" > /sys/class/gpio/gpio$1/direction
-
     # Wait for switch off signal
     power=0
     while [ "$power" = "0" ]; do
         sleep 1
-        power=$(cat /sys/class/gpio/gpio$1/value)
+        power=$(gpioget -c gpiochip0 --numeric $1)
     done
 
     # Switch off
@@ -279,32 +270,12 @@ function msldigital_stop()
 {
     if [ -f "/tmp/shutdown.please" ] || [ -f "/tmp/poweroff.please" ]; then
         if [ -f "/tmp/shutdown.please" ] && [ "$CONFVALUE" = "REMOTEPIBOARD_2005" ]; then
-            # Init GPIO
-            GPIOpin=15
-            echo "$GPIOpin" > /sys/class/gpio/export
-
-            # Execute shutdown sequence on pin
-            echo "out" > /sys/class/gpio/gpio$GPIOpin/direction
-            echo "1" > /sys/class/gpio/gpio$GPIOpin/value
-            usleep 125000
-            echo "0" > /sys/class/gpio/gpio$GPIOpin/value
-            usleep 200000
-            echo "1" > /sys/class/gpio/gpio$GPIOpin/value
-            usleep 400000
-            echo "0" > /sys/class/gpio/gpio$GPIOpin/value
+            # Execute shutdown sequence on pin 15
+            gpioset -c gpiochip0 -t 125ms,200ms,400ms,0 15=1
             sleep 1
-
-            # Uninit GPIO
-            echo "$GPIOpin" > /sys/class/gpio/unexport
         fi
-        echo "out" > /sys/class/gpio/gpio$1/direction
-        echo "1" > /sys/class/gpio/gpio$1/value
-        sleep 3
+        gpioset -c gpiochip0 -t 0 -p 3s $1=1
     fi
-    # Cleanup GPIO init
-    for i in $*; do
-        echo "$i" > /sys/class/gpio/unexport
-    done
 }
 
 function msldigital_config()

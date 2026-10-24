@@ -9,7 +9,7 @@ try:
     from datetime import timedelta
     import os
     import gpiod
-    from gpiod.line import Edge, Direction, Value
+    from gpiod.line import Bias, Edge, Direction, Value
     import subprocess
     import threading
     import time
@@ -40,7 +40,7 @@ class SNES:
 
     def init_gpio(self):
         try:
-            gpiod.request_lines('/dev/gpiochip0',
+            self.lines = gpiod.request_lines('/dev/gpiochip0',
                 config={
                     self.led_pin: gpiod.LineSettings(
                         direction=Direction.OUTPUT, 
@@ -52,7 +52,7 @@ class SNES:
                     ),
                     self.check_pin: gpiod.LineSettings(
                         direction=Direction.INPUT,
-                        output_value=Value.ACTIVE
+                        bias=Bias.PULL_UP
                     )
                 }
             )
@@ -77,28 +77,29 @@ class SNES:
 
     def power_function(self):
         time.sleep(self.debounce_time)  # debounce
-        if self.check.get_value() == 0:  # shutdown function if the power switch is toggled
-            self.led.set_value(0)  # led and fan off
+        if self.lines.get_value(self.check_pin) == Value.INACTIVE:  # shutdown function if the power switch is toggled
+            self.lines.set_values({self.led_pin: Value.INACTIVE, self.fan_pin: Value.INACTIVE})  # led and fan off
             subprocess.run("shutdown -h now", shell=True)
 
     def temp(self):     #returns the gpu temperature
         res = os.popen(self.temp_command).readline()
         return float((res.replace("temp=", "").replace("'C\n", "")))
 
-    def pwm_fancontrol(self,hysteresis, starttemp, temp):
-        perc = 100.0 * ((temp - (starttemp - hysteresis)) / (starttemp - (starttemp - hysteresis)))
-        perc=min(max(perc, 0.0), 100.0)
-        self.pwm = perc
+    def fancontrol(self, hysteresis, starttemp, temp):
+        if temp >= starttemp:
+            self.lines.set_value(self.fan_pin, Value.ACTIVE)
+        elif temp < starttemp - hysteresis:
+            self.lines.set_value(self.fan_pin, Value.INACTIVE)
 
     def blink(self,amount,interval): #blink the led
         for x in range(amount):
-            self.led.set_value(1)
+            self.lines.set_value(self.led_pin, Value.ACTIVE)
             time.sleep(interval)
-            self.led.set_value(0)
+            self.lines.set_value(self.led_pin, Value.INACTIVE)
             time.sleep(interval)
 
     def check_fan(self):
-        self.pwm_fancontrol(self.fan_hysteresis,self.fan_starttemp,self.temp())  # fan starts at 60 degrees and has a 5 degree hysteresis
+        self.fancontrol(self.fan_hysteresis, self.fan_starttemp, self.temp())
 
     def check_fan_periodically(self):
         while True:
