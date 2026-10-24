@@ -72,10 +72,10 @@ def get_games_meta_data(db_xml: str | Path, system: str, game_id: ShortGameID, /
 
     _logger.info('looking for game metadata (%s, %s) in %s', system, game_id, db_xml)
 
-    target_system = 'arcade' if system in _ARCADE_SYSTEMS else system
+    target_systems = {'arcade', system} if system in _ARCADE_SYSTEMS else {system}
 
     for system_element in root.iterfind('./system[@id]'):
-        if target_system not in system_element.attrib['id'].split(','):
+        if not target_systems.intersection(system_element.attrib['id'].split(',')):
             continue
 
         # search the game named default
