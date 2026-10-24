@@ -125,11 +125,25 @@ custom_features:
       P2 only: 2
       P1 & P2: 3
   forceFeedback:
-    prompt: RUMBLE
-    description: Only some games feature rumble. Not compatible with all controllers.
+    group: WHEELS
+    prompt: FORCE FEEDBACK
+    description: The drive board's forces on a wheel, or rumble on a pad, in games that have one. On by default with a wheel.
     choices:
       'Off': 0
       'On': 1
+  m3_ffb_strength:
+    group: WHEELS
+    prompt: DRIVE BOARD STRENGTH
+    description: The operator's force setting of the drive board, as on the cabinet.
+    choices:
+      1 (Weakest): 1
+      '2': 2
+      '3': 3
+      '4': 4
+      5 (Default): 5
+      '6': 6
+      '7': 7
+      8 (Strongest): 8
   ppcFreq:
     group: ADVANCED OPTIONS
     prompt: ADJUST POWERPC FREQUENCY

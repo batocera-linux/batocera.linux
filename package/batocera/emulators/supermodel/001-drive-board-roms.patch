@@ -1,0 +1,22 @@
+diff --git a/Config/Games.xml b/Config/Games.xml
+index 87e4db6..a4b9836 100644
+--- a/Config/Games.xml
++++ b/Config/Games.xml
+@@ -604,7 +604,7 @@
+       </region>
+       <!-- Spindizzi notes : apparently it uses the same rom from scud race-->
+       <region name="driveboard_program" stride="1" chunk_size="1" required="false">
+-        <file offset="0" name="epr-19338a.bin" crc32="0xC9FAC464" />
++        <file offset="0" name="epr-20512.bin" crc32="0xCF64350D" />
+       </region>
+     </roms>
+   </game>
+@@ -1083,7 +1083,7 @@
+       <!-- Spindizzi notes : original Driveboard from model2 hardware -->
+       <!-- Not working ATM - Commands don't correspond -->
+       <region name="driveboard_program" stride="1" chunk_size="1" required="false">
+-        <file offset="0" name="epr-18261.ic9" crc32="0x0C7FAC58" />
++        <file offset="0" name="epr-19338a.bin" crc32="0xC9FAC464" />
+       <!-- Driveboard program from scud - Can be a replacement from original model2 z80 program -->
+       <!-- I think Model3 driveboard hardware acts exactly like Model2 driveboard hardware (same irq, same memory mapping, same commands etc...)  -->
+       <!-- This is why we can exchange micro program (rom) in Supermodel to have ffb in lemans24 -->
