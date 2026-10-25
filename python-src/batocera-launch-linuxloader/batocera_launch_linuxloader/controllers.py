@@ -536,7 +536,7 @@ class ControllersMixin(Emulator):
             mappings_actions['right'] = 'BUTTON_2'
             del mappings_actions['2']
 
-        if short_rom_name == 'ghostsev':
+        if short_rom_name in ('ghostsev', 'ghostsevj'):
             mappings_actions['right'] = 'BUTTON_3'  # Action
             mappings_actions['2'] = 'BUTTON_4'  # Cycle firerate
             del mappings_actions['3']
@@ -565,15 +565,6 @@ class ControllersMixin(Emulator):
             elif len(self.guns) > 1:
                 mappings_actions['right'] = 'BUTTON_4'
                 del mappings_actions['3']
-
-        if short_rom_name == 'letsgoju' and len(self.guns) == 1:
-            mapping = 'right'
-            action = 'BUTTON_START'
-            if mapping in mappings_codes:
-                gun = self.guns[0]
-                code = mappings_codes[mapping]
-                conf.set(f'PLAYER_2_{action}', f'{gun.node}:KEY:{code}')
-                del mappings_actions[mapping]
 
         for nplayer, gun in enumerate(self.guns[:2], start=1):
             _logger.debug('linuxloader gun for player %s', nplayer)
