@@ -1,0 +1,38 @@
+--- a/mednafen/psx/frontio.c
++++ b/mednafen/psx/frontio.c
+@@ -4658,7 +4658,7 @@
+    if(vsync && !self->prev_vsync)
+       self->line_counter = 0;
+ 
+-   if(pixels && pix_clock)
++   if(pix_clock)
+    {
+       const int avs = 16; /*  Not 16 for PAL, fixme. */
+       int32_t gx;
+@@ -4674,7 +4674,7 @@
+          {
+             int r, g, b, a;
+ 
+-            MDFN_DecodeColor(pixels[ix * upscale_factor], &r, &g, &b, &a);
++            MDFN_DecodeColor(pixels ? pixels[ix * upscale_factor] : 0xFFFFFFFF, &r, &g, &b, &a);
+ 
+             if((r + g + b) >= 0x40)	/*  Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;) */
+             {
+@@ -5005,7 +5005,7 @@
+    if(vsync && !self->prev_vsync)
+       self->line_counter = 0;
+ 
+-   if(pixels && pix_clock)
++   if(pix_clock)
+    {
+       const int avs = 16; /*  Not 16 for PAL, fixme. */
+       int32_t gx;
+@@ -5022,7 +5022,7 @@
+       {
+          int r, g, b, a;
+ 
+-         MDFN_DecodeColor(pixels[gxa * upscale_factor], &r, &g, &b, &a);
++         MDFN_DecodeColor(pixels ? pixels[gxa * upscale_factor] : 0xFFFFFFFF, &r, &g, &b, &a);
+ 
+          if((r + g + b) >= 0x40)	/*  Wrong, but not COMPLETELY ABSOLUTELY wrong, at least. ;) */
+          {
