@@ -106,6 +106,8 @@ _SYSTEM_MAPPING: Final = {
         'triangle': 'x',
         'start': 'start',
         'select': 'select',
+        'up': 'up',
+        'down': 'down',
     },
     'ps2': {
         'cross': 'b',
