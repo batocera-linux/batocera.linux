@@ -57,6 +57,13 @@ class Flycast(FlycastVL):
             button_mappings['pagedown'] = 'r2'
             button_mappings['r2'] = 'r'
 
+        if (
+            self.system in ('atomiswave', 'naomi', 'naomi2')
+            and self.config.get('reicast_allow_service_buttons') == 'enabled'
+        ):
+            button_mappings['l3'] = 'r3'
+            button_mappings['r3'] = 'l3'
+
     def set_config(self, custom_config: LibretroConfig, /) -> None:
         super().set_config(custom_config)
 
@@ -152,6 +159,8 @@ class Flycast(FlycastVL):
             rotation = 'horizontal'
 
         core_options.set('reicast_screen_rotation', rotation)
+
+        core_options.set_from_config('reicast_allow_service_buttons', default='disabled')
 
         # wheel
         core_options.set(
