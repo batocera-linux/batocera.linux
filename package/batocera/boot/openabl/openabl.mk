@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OPENABL_VERSION = 1.1
+OPENABL_VERSION = 1.2
 OPENABL_SOURCE = openabl-v$(OPENABL_VERSION)-source.tar.xz
 OPENABL_SITE = https://github.com/OpenHandheldCollective/OpenABL/releases/download/v$(OPENABL_VERSION)
 OPENABL_LICENSE = GPL-3.0+
