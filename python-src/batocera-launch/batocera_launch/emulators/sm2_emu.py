@@ -128,12 +128,10 @@ async def _resolve_graphics_backend(requested: str) -> tuple[str, VulkanInfo | N
         _logger.debug('Vulkan driver is not available on the system. Falling back to OpenGL.')
         return 'opengl', None
 
-    if vulkan_info.version is not None and vulkan_info.version >= '1.3':
-        _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_info.version)
-        return 'vulkan', vulkan_info
-
-    _logger.debug('Vulkan version %s is lower than 1.3. Falling back to OpenGL.', vulkan_info.version)
-    return 'opengl', None
+    # Below 1.3 sm2-emu uses the extensions for the same features, and falls
+    # back to OpenGL itself when a device lacks them.
+    _logger.debug('Vulkan driver is available. Using Vulkan version: %s', vulkan_info.version)
+    return 'vulkan', vulkan_info
 
 
 def _resolve_gpu(backend: str, vulkan_info: VulkanInfo | None) -> str:
