@@ -26,12 +26,19 @@ from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_launch_libretro import RACore
 
 if TYPE_CHECKING:
-    from batocera_launch import Controller, LibretroConfig
+    from batocera_launch import Controller, Gun, LibretroConfig
 
 
 @cached_dataclass
 class MednafenPsx(RACore):
-    gun_mapping: ClassVar = {'default': {'device': 260, 'p1': 0, 'p2': 1}}
+    gun_mapping: ClassVar = {
+        'default': {
+            'device': 260,
+            'p1': 0,
+            'p2': 1,
+            'gameDependant': [{'key': 'type', 'value': 'justifier', 'mapkey': 'device', 'mapvalue': '516'}],
+        }
+    }
 
     @cached_property
     def player1_device_type(self) -> str | None:
@@ -106,3 +113,16 @@ class MednafenPsx(RACore):
             case _:
                 set_option('enable_multitap_port1', 'disabled')
                 set_option('enable_multitap_port2', 'disabled')
+
+    def get_pedal_config_name_for_player(self, player_number: int, /) -> str:
+        return f'input_player{player_number}_gun_aux_a'
+
+    def set_gun_config_for_player(self, custom_config: LibretroConfig, player_number: int, gun: Gun, /) -> None:
+        if self.metadata.get('gun_type') == 'justifier':
+            custom_config.set(f'input_player{player_number}_gun_offscreen_shot_mbtn', '')
+            custom_config.set(f'input_player{player_number}_gun_aux_a_mbtn', 2)
+        else:
+            custom_config.set(f'input_player{player_number}_gun_offscreen_shot_mbtn', '')
+            custom_config.set(f'input_player{player_number}_gun_start_mbtn', '')
+            custom_config.set(f'input_player{player_number}_gun_aux_a_mbtn', 2)
+            custom_config.set(f'input_player{player_number}_gun_aux_b_mbtn', 3)
