@@ -1,0 +1,41 @@
+diff --git a/input/drivers_joypad/udev_joypad.c b/input/drivers_joypad/udev_joypad.c
+index fc0f25b..c996eab 100644
+--- a/input/drivers_joypad/udev_joypad.c
++++ b/input/drivers_joypad/udev_joypad.c
+@@ -90,6 +90,7 @@ struct udev_joypad
+    bool has_set_ff[2];
+    /* Deal with analog triggers that report -32767 to 32767 */
+    bool neg_trigger[NUM_AXES];
++   int8_t trigger_rest[NUM_AXES];
+ };
+ 
+ struct joypad_udev_entry
+@@ -264,6 +265,10 @@ static int udev_add_pad(struct udev_device *dev, unsigned p, int fd, const char
+                and plugging back in. */
+             if (udev_compute_axis(abs, abs->value) < -1300)
+               pad->neg_trigger[i] = true;
++            if (pad->axes[axes] > 0x7fff - 1300)
++               pad->trigger_rest[axes] = 1;
++            else if (pad->axes[axes] < -0x7fff + 1300)
++               pad->trigger_rest[axes] = -1;
+             pad->axes_bind[i] = axes++;
+          }
+       }
+@@ -784,6 +789,8 @@ static int16_t udev_joypad_axis_state(
+                (AXIS_NEG_GET(joyaxis) == ABS_RZ))
+             && (pad->neg_trigger[AXIS_NEG_GET(joyaxis)]))
+          val = (val + 0x7fff) / 2;
++      else if (pad->trigger_rest[AXIS_NEG_GET(joyaxis)] > 0)
++         val = (val - 0x7fff) / 2;
+       if (val < 0)
+          return val;
+    }
+@@ -796,6 +803,8 @@ static int16_t udev_joypad_axis_state(
+                (AXIS_POS_GET(joyaxis) == ABS_RZ))
+             && (pad->neg_trigger[AXIS_POS_GET(joyaxis)]))
+          val = (val + 0x7fff) / 2;
++      else if (pad->trigger_rest[AXIS_POS_GET(joyaxis)] < 0)
++         val = (val + 0x7fff) / 2;
+       if (val > 0)
+          return val;
+    }
