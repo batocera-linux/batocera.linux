@@ -87,3 +87,10 @@
 		status = "okay";
 	};
 };
+
+/* batocera - MCU carrying the KONKR, home and top right buttons */
+&uart13 {
+	mcu {
+		compatible = "konkr,pocket-fit-mcu", "konkr,pf-elite-mcu";
+	};
+};
