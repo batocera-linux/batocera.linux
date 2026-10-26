@@ -1,0 +1,33 @@
+From 9c6c8e59d6ccf0f5bdb0ffc2830885854664770b Mon Sep 17 00:00:00 2001
+From: Flyinghead <raphael.jean@gmail.com>
+Date: Sun, 23 Aug 2026 13:18:08 +0200
+Subject: [PATCH] atomiswave: reduce bios size to 64KB as the rest is writable
+
+Fixes regression introduced by 8412d3d8a3916db3bcee4f9646cee3a7369dea52
+that overwrites the loaded .nvmem data with the bios second half.
+---
+ core/hw/naomi/naomi_roms.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/core/hw/naomi/naomi_roms.cpp b/core/hw/naomi/naomi_roms.cpp
+index 2e3aa051a..84f00d335 100644
+--- a/core/hw/naomi/naomi_roms.cpp
++++ b/core/hw/naomi/naomi_roms.cpp
+@@ -39,11 +39,11 @@ const BIOS_t BIOS[] =
+ 		"awbios",
+ 		{
+ 			// Sammy version
+-			{ 0, "bios0.ic23", 0x000000, 0x020000, 0x719b2b0b },
++			{ 0, "bios0.ic23", 0x000000, 0x010000, 0x719b2b0b },
+ 			//or
+-			//{ 0, "bios1.ic23", 0x000000, 0x020000, 0xd3e80a9f },
++			//{ 0, "bios1.ic23", 0x000000, 0x010000, 0xd3e80a9f },
+ 			// Sega version
+-			//{ 0, "fpr-24363.ic48", 0x000000, 0x020000, 0x82a105f0 },
++			//{ 0, "fpr-24363.ic48", 0x000000, 0x010000, 0x82a105f0 },
+ 		}
+ 	},
+ 	{
+-- 
+2.55.0
+
