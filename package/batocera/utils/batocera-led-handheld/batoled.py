@@ -58,12 +58,11 @@ def batocera_model():
     # Anbernic RG Vita Pro check
     if glob.glob('/sys/class/leds/*::joystick-left'):
         return "rg_vita_pro"
-    # Anbernic RG CubeXX check
-    if os.path.exists('/proc/device-tree/compatible'):
-        with open('/proc/device-tree/compatible', 'r') as f:
-            comp = f.read()
-            if 'rgcubexx' in comp:
-                return "cubexx"
+    # Anbernic H700 RGB MCU: GPIO enable LED plus the MCU on uart5
+    if os.path.exists('/sys/class/leds/rgb:kbd_backlight/brightness') \
+            and not os.path.exists('/sys/class/leds/rgb:kbd_backlight/multi_intensity') \
+            and h700_led_serial():
+        return "cubexx"
     # Odin 1 Monochrome GPIO layout
     if os.path.exists('/sys/class/leds/left_joystick/brightness'):
         return "odin_mono"
@@ -382,10 +381,16 @@ class rgvitaproled(object):
         return (str(b_conf), "100")
 
 ####################
-# Anbernic RG CubeXX LED Controller
+def h700_led_serial():
+    for tty in glob.glob('/sys/class/tty/ttyS*'):
+        if '/5001400.serial' in os.path.realpath(f'{tty}/device'):
+            return f'/dev/{os.path.basename(tty)}'
+    return None
+
+# Anbernic H700 (RG CubeXX, RG40XX H/V) LED Controller
 class cubexxled(object):
     def __init__(self):
-        self.serial_dev = '/dev/ttyS2'
+        self.serial_dev = h700_led_serial()
         self.gpio_path = '/sys/class/leds/rgb:kbd_backlight/brightness'
         self.max_val = 255
         self.current_color = "000000"
