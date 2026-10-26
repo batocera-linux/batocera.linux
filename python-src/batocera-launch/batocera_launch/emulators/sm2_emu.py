@@ -99,6 +99,22 @@ def _wheel_axes(pad: Controller, /) -> dict[str, str]:
     }
 
 
+# sm2-emu's default keys, held there as hotkeygen_context relies on them
+_DEFAULT_KEYS = {
+    'key_exit': 'Escape',
+    'key_quit': 'F9',
+    'key_overlay': 'F10',
+    'key_fullscreen': 'F11',
+    'key_screenshot': 'F12',
+    'key_pause': 'P',
+    'key_quick_save': 'F6',
+    'key_quick_load': 'F7',
+    'key_fps': 'F8',
+    'key_fast_forward': 'Tab',
+    'key_rewind': 'Backspace',
+}
+
+
 def _ini_bool(value: bool) -> str:
     return 'true' if value else 'false'
 
@@ -115,7 +131,9 @@ def _merge_ini(existing_text: str, managed: dict[str, str]) -> str:
         else:
             lines.append(line)
 
-    lines.extend(f'{key} = {value}' for key, value in remaining.items())
+    # before the first [section], where no game's gamepad section claims them
+    first_section = next((i for i, line in enumerate(lines) if line.strip().startswith('[')), len(lines))
+    lines[first_section:first_section] = [f'{key} = {value}' for key, value in remaining.items()]
     return '\n'.join((*lines, ''))
 
 
@@ -282,6 +300,7 @@ class Sm2Emu(Emulator):
             'pad1_device': pad_paths[0],
             'pad2_device': pad_paths[1],
             'pad_shortcuts': 'false',  # hotkeygen maps the hotkeys to the keys in hotkeygen_context
+            **_DEFAULT_KEYS,
             'rom_dir': str(self.roms_dir),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),
