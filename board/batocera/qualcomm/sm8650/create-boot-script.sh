@@ -20,7 +20,7 @@ echo "*** Copying the Batocera base system files ***"
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
-CMDLINE="label=BATOCERA rootwait video=efifb:off console=ttyMSM0,115200n8 console=tty0 irqaffinity=0-1 cgroup.memory=nokmem,nosocket nosoftlockup logo.nologo vt.cur_default=1"
+CMDLINE="label=BATOCERA rootwait video=efifb:off console=ttyMSM0,115200n8 irqaffinity=0-1 cgroup.memory=nokmem,nosocket nosoftlockup logo.nologo vt.cur_default=1"
 
 echo "*** Generating the Boot Loader Spec entry ***"
 cp "${BINARIES_DIR}/Image"      "${BATOCERA_BINARIES_DIR}/boot/boot/linux"      || exit 1
