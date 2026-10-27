@@ -160,3 +160,17 @@ def precalibrate_reicast_guns(system: str, rom: Rom, precalibration_dir: Path, s
 
 type Guns = Sequence[Gun]
 type GunList = list[Gun]
+
+
+def main() -> None:
+    guns = Gun.get_all()
+    for gun in guns:
+        print(f'* {gun.name}')
+        print(f'  event:         {gun.node}')
+        print(f'  needs cross:   {gun.needs_cross}')
+        print(f'  needs borders: {gun.needs_borders}')
+        print(f'  buttons:       {gun.buttons}')
+
+
+if __name__ == '__main__':
+    main()
