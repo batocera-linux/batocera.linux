@@ -41,7 +41,7 @@ powerdevices=(
               RETROFLAG_64PI "Retroflag 64Pi case for Raspberry Pi 5" \
               RETROFLAG_ADV "Retroflag Including NESPi+ SuperPi and MegaPi cases" \
               RETROFLAG_GPI "Retroflag GPi case for Raspberry 0" \
-              ARGONONE "Fan control for RPi4 & RPi5 Argon One case" \
+              ARGONONE "Argon ONE fan and power button (RPi4 & RPi5)" \
               KINTARO "SNES style case from SuperKuma aka ROSHAMBO" \
               MAUSBERRY "A neat power device from Mausberry circuits" \
               ONOFFSHIM "The cheapest power device from Pimoroni" \
@@ -362,8 +362,14 @@ function retroflag_config()
 # Pi5: https://argon40.com/products/argon-one-v3-case-for-raspberry-pi-5
 function argonone_start()
 {
+    local arch
+    arch="$(cat /usr/share/batocera/batocera.arch)" || return 1
+    case "$arch" in
+        bcm2711|bcm2712) ;;
+        *) echo "Unsupported Argon ONE platform: $arch" >&2; return 1 ;;
+    esac
     #------ CONFIG SECTION ------
-    case $(cat /usr/share/batocera/batocera.arch) in
+    case "$arch" in
         bcm2711)
 	    if ! grep -q "^dtparam=i2c_arm=on" "/boot/config.txt"; then
 		 mount -o remount,rw /boot
@@ -401,18 +407,32 @@ function argonone_start()
 
 function argonone_stop()
 {
-    pid=$(pgrep -f rpi-argonone | head -n 1)
-    if ! [ -z "${pid}" ]; then
-         kill -9 "${pid}"
+    local action pid pids attempts running
+    pids=$(pgrep -f '/usr/bin/rpi-argonone start$')
+    for pid in $pids; do
+        kill -TERM "$pid" 2>/dev/null
+    done
+    for ((attempts=0; attempts<100; attempts++)); do
+        running=0
+        for pid in $pids; do
+            kill -0 "$pid" 2>/dev/null && running=1
+        done
+        [ "$running" -eq 0 ] && break
+        sleep 0.05
+    done
+    if [ "$running" -ne 0 ]; then
+        echo "Argon ONE daemon did not stop" >&2
+        return 1
     fi
 
+    [ -f /var/run/argonone.profile ] || return 0
     if [ -f /tmp/shutdown.please ]; then
-        # force a power shutdown from GPIO block
-        /usr/bin/rpi-argonone halt &
+        action=halt
     else
-        # only stop fan (keep power block on)
-        /usr/bin/rpi-argonone stop &
+        action=stop
     fi
+    /usr/bin/rpi-argonone "$action"
+    return $?
 }
 
 function argonone_config()
