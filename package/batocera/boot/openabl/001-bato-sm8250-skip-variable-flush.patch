@@ -1,0 +1,44 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] variables: don't call FlushVariableNV on sm8250
+
+FlushVariableNV returns EFI_DEVICE_ERROR on sm8250, and every variable call
+after it fails until the next boot, so the menu can't read or save the model.
+sm8250 commits variables at a reset anyway.
+
+diff --git a/Efi/Qcom.c b/Efi/Qcom.c
+index 5feeeb6..e863a1d 100644
+--- a/Efi/Qcom.c
++++ b/Efi/Qcom.c
+@@ -291,7 +291,11 @@ BOOLEAN
+ QcomFlushVariables (OUT EFI_STATUS *Status)
+ {
+   VARIABLE_SERVICES *Services = Open (&mVariableServicesGuid);
++  QCOM_CHIP          Chip;
+ 
++  if (QcomChip (&Chip) && !EFI_ERROR (Chip.Id.Status) && Chip.Id.Value == 356) {
++    return FALSE;
++  }
+   if (!Services) {
+ #ifdef OABL_DEVINFO_SETTINGS
+     *Status = VariablesPersistToDevinfo ();
+diff --git a/Efi/Qcom.h b/Efi/Qcom.h
+index 5a6a797..02f5a55 100644
+--- a/Efi/Qcom.h
++++ b/Efi/Qcom.h
+@@ -108,10 +108,12 @@ CHAR8 *
+ QcomDisplayPanelConfig (VOID);
+ 
+ // Commits NV variables to storage with FlushVariableNV. On SM8750 a
+-// variable that isn't flushed is lost at the next reset; SM8250 flushes on
+-// ResetSystem but not on a hard reset. SDM845's XBL has no such protocol,
+-// so with OABL_DEVINFO_SETTINGS the variables are packed into devinfo
+-// instead. Otherwise FALSE without the protocol.
++// variable that isn't flushed is lost at the next reset. SM8250 commits them
++// at a reset, and its FlushVariableNV fails with EFI_DEVICE_ERROR and leaves
++// every variable call failing until the next boot, so it isn't called there
++// (FALSE). SDM845's XBL has no such protocol, so with OABL_DEVINFO_SETTINGS
++// the variables are packed into devinfo instead. Otherwise FALSE without the
++// protocol.
+ BOOLEAN
+ QcomFlushVariables (OUT EFI_STATUS *Status);
+ 
