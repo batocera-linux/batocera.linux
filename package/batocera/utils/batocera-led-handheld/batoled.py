@@ -164,6 +164,14 @@ def batoconf_color():
         print (f"batocera.conf said led.colour = {r} {g} {b}")
     return [ r, g, b ]
 
+def batoconf_brightness():
+    # EmulationStation saves led.brightness as a percentage
+    try:
+        pct = float(batoconf("led.brightness"))
+    except (TypeError, ValueError):
+        return 255
+    return int((pct / 100.0) * 255) if pct <= 100 else int(pct)
+
 
 ####################
 # Anbernic RG Vita Pro LED Controller
@@ -715,9 +723,7 @@ class dual_multiled(object):
             return
 
         # Fetch system brightness configuration
-        b_conf = batoconf("led.brightness")
-        if b_conf is None: 
-            b_conf = 255
+        b_conf = batoconf_brightness()
         
         if rgb == "ESCOLOR":
             r, g, b = batoconf_color()
@@ -738,7 +744,7 @@ class dual_multiled(object):
     def set_color_dec(self, rgb_str):
         try:
             r, g, b = [int(x) for x in rgb_str.split()]
-            b_conf = batoconf("led.brightness") or 255
+            b_conf = batoconf_brightness()
             self._write_hardware(b_conf, r, g, b)
         except Exception:
             pass
@@ -764,15 +770,7 @@ class dual_multiled(object):
             return "0 0 0"
 
     def rainbow_effect(self):
-        b_conf = batoconf("led.brightness")
-        if b_conf is None:
-            b_conf = 255
-        else:
-            try:
-                pct = float(b_conf)
-                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
-            except ValueError:
-                b_conf = 255
+        b_conf = batoconf_brightness()
 
         # Create a chasing color wheel using quadrant phase-shifting (Rainbow)
         for i in range(0, EFFECT_STEP):
@@ -811,15 +809,7 @@ class dual_multiled(object):
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        b_conf = batoconf("led.brightness")
-        if b_conf is None:
-            b_conf = 255
-        else:
-            try:
-                pct = float(b_conf)
-                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
-            except ValueError:
-                b_conf = 255
+        b_conf = batoconf_brightness()
 
         # Cycle all segments in unison through the spectrum (Chroma / Color Cycle) [3]
         for i in range(0, EFFECT_STEP):
@@ -901,9 +891,7 @@ class multiled(object):
             return
 
         # Get brightness from config
-        b_conf = batoconf("led.brightness")
-        if b_conf is None: 
-            b_conf = 255
+        b_conf = batoconf_brightness()
         
         if rgb == "ESCOLOR":
             r, g, b = batoconf_color()
@@ -924,7 +912,7 @@ class multiled(object):
     def set_color_dec(self, rgb_str):
         try:
             r, g, b = [int(x) for x in rgb_str.split()]
-            b_conf = batoconf("led.brightness") or 255
+            b_conf = batoconf_brightness()
             self._write_hardware(b_conf, r, g, b)
         except:
             pass
@@ -946,15 +934,7 @@ class multiled(object):
             return "0 0 0"
 
     def rainbow_effect(self):
-        b_conf = batoconf("led.brightness")
-        if b_conf is None:
-            b_conf = 255
-        else:
-            try:
-                pct = float(b_conf)
-                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
-            except ValueError:
-                b_conf = 255
+        b_conf = batoconf_brightness()
 
         # Sweeping colour wheel across all segments per ring (Rainbow)
         for i in range(0, EFFECT_STEP):
@@ -993,15 +973,7 @@ class multiled(object):
             self.set_color("ESCOLOR")
 
     def chroma_effect(self):
-        b_conf = batoconf("led.brightness")
-        if b_conf is None:
-            b_conf = 255
-        else:
-            try:
-                pct = float(b_conf)
-                b_conf = int((pct / 100.0) * 255) if pct <= 100 else int(pct)
-            except ValueError:
-                b_conf = 255
+        b_conf = batoconf_brightness()
 
         # Cycle all 18 segments in unison through the spectrum (Chroma)
         for i in range(0, EFFECT_STEP):
