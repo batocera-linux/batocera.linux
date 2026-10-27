@@ -285,6 +285,9 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
             args.extend(['-lightgunprovider', 'udev', '-lightgun_device', 'lightgun', '-adstick_device', 'lightgun'])
 
         # wheels
+        if self.config.use_wheels and all(controller.device_path in self.wheels for controller in self.controllers):
+            args.extend(['-joystick_deadzone', '0', '-joystick_saturation', '1'])
+
         if self.config.get_bool('multiscreens'):
             screens = await self.screens
             if len(screens) > 1:
