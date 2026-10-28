@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# same folders as the games (see batocera_launch/emulators/eka2l1.py)
+export XDG_CONFIG_HOME="/userdata/system/configs"
+export XDG_DATA_HOME="/userdata/system/configs"
+export XDG_CACHE_HOME="/userdata/system/cache"
+
+python3 -c 'from batocera_launch.emulators.eka2l1 import prepare_standalone; prepare_standalone()'
+
+# Now run the emulator
+/usr/eka2l1/eka2l1_qt
+
+python3 -c 'from batocera_launch.emulators.eka2l1 import finish_standalone; finish_standalone()'
