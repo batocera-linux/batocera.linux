@@ -1,0 +1,56 @@
+diff --git a/rpcs3/rpcs3qt/gl_gs_frame.cpp b/rpcs3/rpcs3qt/gl_gs_frame.cpp
+index 10098f6cf..97f7bbb9a 100644
+--- a/rpcs3/rpcs3qt/gl_gs_frame.cpp
++++ b/rpcs3/rpcs3qt/gl_gs_frame.cpp
+@@ -24,8 +24,8 @@ gl_gs_frame::gl_gs_frame(QScreen* screen, const QRect& geometry, const QIcon& ap
+ 		m_format.setOption(QSurfaceFormat::FormatOption::DebugContext);
+ 	}
+ 	setFormat(m_format);
++	setVisibility(m_startup_visibility);
+ 	create();
+-	show();
+ }
+ 
+ void gl_gs_frame::reset()
+diff --git a/rpcs3/rpcs3qt/gs_frame.cpp b/rpcs3/rpcs3qt/gs_frame.cpp
+index 4814358d9..c52c84b2f 100644
+--- a/rpcs3/rpcs3qt/gs_frame.cpp
++++ b/rpcs3/rpcs3qt/gs_frame.cpp
+@@ -101,7 +101,6 @@ gs_frame::gs_frame(QScreen* screen, const QRect& geometry, const QIcon& appIcon,
+ 
+ 	// NOTE: You cannot safely create a wayland window that has hidden initial status and perform any changes on the window while it is still hidden.
+ 	// Doing this will create a surface with deferred commands that require a buffer. When binding to your session, this may assert in your compositor due to protocol restrictions.
+-	Visibility startup_visibility = Hidden;
+ #ifndef _WIN32
+ 	if (const char* session_type = ::getenv("XDG_SESSION_TYPE"))
+ 	{
+@@ -110,7 +109,7 @@ gs_frame::gs_frame(QScreen* screen, const QRect& geometry, const QIcon& appIcon,
+ 			// Start windowed. This is a featureless rectangle on-screen with no window decorations.
+ 			// It does not even resemble a window until the WM attaches later on.
+ 			// Fullscreen could technically work with some fiddling, but easily breaks depending on geometry input.
+-			startup_visibility = Windowed;
++			m_startup_visibility = Windowed;
+ 		}
+ 	}
+ #endif
+@@ -125,7 +124,7 @@ gs_frame::gs_frame(QScreen* screen, const QRect& geometry, const QIcon& appIcon,
+ 	{
+ 		// Do not display the window before OpenGL is configured!
+ 		// This works fine in windows and X11 but wayland-egl will crash later.
+-		setVisibility(startup_visibility);
++		setVisibility(m_startup_visibility);
+ 		create();
+ 	}
+ 
+diff --git a/rpcs3/rpcs3qt/gs_frame.h b/rpcs3/rpcs3qt/gs_frame.h
+index 4c55ef452..b8c936a57 100644
+--- a/rpcs3/rpcs3qt/gs_frame.h
++++ b/rpcs3/rpcs3qt/gs_frame.h
+@@ -86,6 +86,7 @@ public:
+ 
+ protected:
+ 	video_renderer m_renderer;
++	Visibility m_startup_visibility = Visibility::Hidden;
+ 
+ 	void paintEvent(QPaintEvent* event) override;
+ 	void showEvent(QShowEvent* event) override;
