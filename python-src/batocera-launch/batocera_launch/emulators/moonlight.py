@@ -136,6 +136,9 @@ class Moonlight(Emulator):
         if codec := {'h264': 'H.264', 'h265': 'HEVC'}.get(self.config.get_str('moonlight_codec', '')):
             args.extend(['--video-codec', codec])
 
+        if self.config.get_str('moonlight_hdr'):
+            args.append('--hdr' if self.config.get_bool('moonlight_hdr') else '--no-hdr')
+
         if audio := {'5.1': '5.1-surround', '7.1': '7.1-surround'}.get(self.config.get_str('moonlight_surround', '')):
             args.extend(['--audio-config', audio])
 
