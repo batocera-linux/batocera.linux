@@ -1,0 +1,164 @@
+shared_features:
+  - powermode
+  - tdp
+  - platformprofile
+  - cpucluster
+  - videomode
+  - bezel
+  - bezel_stretch
+  - hud
+  - hud_corner
+  - bezel.tattoo
+  - bezel.tattoo_corner
+  - bezel.tattoo_file
+  - bezel.resize_tattoo
+  - use_guns
+  - use_wheels
+  - wheel_rotation
+  - wheel_deadzone
+  - wheel_midzone
+custom_features:
+  odin_api:
+    group: GRAPHICS
+    prompt: GRAPHICS API
+    description: The renderer. Odin falls back to OpenGL if Vulkan fails.
+    choices:
+      Vulkan (Default): vulkan
+      OpenGL: opengl
+  odin_scale:
+    group: GRAPHICS
+    prompt: INTERNAL RESOLUTION
+    description: Draw the 3D at a multiple of 640x480.
+    choices:
+      1x (Default): 1
+      2x: 2
+      3x: 3
+      4x: 4
+      5x: 5
+      6x: 6
+  odin_upscale_mode:
+    group: GRAPHICS
+    prompt: UPSCALING MODE
+    description: How the HUD and text are drawn above 1x. Smooth can show thin seams.
+    choices:
+      Smooth (Default): raw
+      Snap to Pixels: snap
+      Original Pixels: native
+  odin_anisotropy:
+    group: GRAPHICS
+    prompt: ANISOTROPIC FILTERING
+    description: Sharpen textures seen at an angle. The original board has none.
+    choices:
+      Off (Default): 1
+      2x: 2
+      4x: 4
+      8x: 8
+      16x: 16
+  odin_vsync:
+    group: GRAPHICS
+    prompt: VSYNC
+    description: Sync frames to the display to stop screen tearing.
+    choices:
+      Off (Default): "off"
+      On: "on"
+      Adaptive: adaptive
+  odin_filter:
+    group: GRAPHICS
+    prompt: CRT FILTER
+    description: Apply filters to look like the original displays. Needs a fast GPU.
+    choices:
+      Off (Default): none
+      Sega 29" monitor: lola-retro/sega-monitor-29
+      Sega 50" projector: lola-retro/sega-projector-50
+      Gaelco 28" monitor: lola-retro/gaelco-monitor-28
+      Gaelco 34" monitor: lola-retro/gaelco-monitor-34
+  odin_vibration:
+    group: CONTROLS
+    prompt: VIBRATION
+    description: Vibrate the controller as the original board doe for effects. Needs a controller that supports vibration.
+    choices:
+      On (Default): "on"
+      Off: "off"
+  odin_vibration_force:
+    group: CONTROLS
+    prompt: VIBRATION STRENGTH
+    description: How hard the controller vibrates.
+    choices:
+      25%: 25
+      50%: 50
+      75%: 75
+      100% (Default): 100
+      150%: 150
+      200%: 200
+  odin_wheel_rotation:
+    group: WHEELS
+    prompt: WHEEL ROTATION
+    description: How far the wheel turns from one end to the other. Used when the wheel rotation option is not set.
+    choices:
+      Full range (Default): 0
+      270 degrees: 270
+      360 degrees: 360
+      540 degrees: 540
+      900 degrees: 900
+      1080 degrees: 1080
+  odin_wheel_force:
+    group: WHEELS
+    prompt: WHEEL FORCE
+    description: How hard the force feels when turning the wheel.
+    choices:
+      25%: 25
+      50%: 50
+      75%: 75
+      100% (Default): 100
+      150%: 150
+      200%: 200
+file_extensions:
+  - zip
+  - 7z
+systems:
+  - name: hikaru
+    custom_features:
+      odin_light_gun_mode:
+        group: LIGHT GUN
+        prompt: BRAVE LIGHT GUN MODE
+        description: Aim with the mouse or light gun.
+        choices:
+          On (Default): "on"
+          Off: "off"
+      odin_pharrier_stick:
+        group: CONTROLS
+        prompt: PLANET HARRIERS STICK
+        description: Pull back to climb, as on the cabinet, or push up to climb.
+        choices:
+          Pull Back to Climb (Default): standard
+          Push Up to Climb: inverted
+      odin_nascar_cabinet:
+        group: CABINET
+        prompt: NASCAR CABINET
+        description: Deluxe has bass shakers in the seat, so the controller rumbles with the game's sound.
+        choices:
+          Standard (Default): standard
+          Deluxe: deluxe
+      odin_swracer_cabinet:
+        group: CABINET
+        prompt: STAR WARS RACER CABINET
+        description: Mini Deluxe has no second sound board, so the sound is simpler and the controller rumbles with the main sound.
+        choices:
+          Standard (Default): standard
+          Mini Deluxe: minideluxe
+  - name: gaelco
+    custom_features:
+      odin_atvtrack_cabinet:
+        group: CABINET
+        prompt: ATV TRACK CABINET
+        description: The controller rumbles as the moving platform tilts, or with the Vibrator's seat motor.
+        choices:
+          Standard (Default): standard
+          Vibrator: vibrator
+      odin_smashdrv_cabinet:
+        group: CABINET
+        prompt: SMASHING DRIVE CABINET
+        description: Upright is played standing, with no seat motor, so the controller doesn't rumble.
+        choices:
+          Standard (Default): standard
+          Upright: upright

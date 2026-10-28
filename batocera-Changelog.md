@@ -79,6 +79,7 @@
 - MangoHud GPU stats on Qualcomm and Mali devices
 - NanoBoyAdvance as an alternative GBA emulator
 - Network settings can now save any number of other Wi-Fi networks, so a handheld connects wherever it is taken
+- Odin, a standalone Sega Hikaru & Gaelco emulator
 - OpenGOAL for the Jak and Daxter trilogy, built from your own PS2 disc image
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - Retroid Pocket SM8250 devices audio over USB-C DisplayPort
@@ -168,6 +169,7 @@
 - Faster boot, storage detection and audio startup no longer wait on fixed delays
 - Faster game launch and exit
 - GameForce Ace moved to the mainline linux kernel
+- Hikaru & Gaelco now uses Odin, Demul no longer runs these games
 - Khadas VIM4 now uses LabWC
 - LabWC is now used on the older ARM boards: Raspberry Pi 1 / Zero, Allwinner H3, H5, H6, Rockchip RK3328, Amlogic S812, S905 and S9gen4
 - Lindbergh Loader has transitioned to LinuxLoader for Lindbergh roms

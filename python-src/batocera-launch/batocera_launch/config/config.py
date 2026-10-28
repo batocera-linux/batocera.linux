@@ -21,6 +21,7 @@
 from __future__ import annotations
 
 import logging
+import xml.etree.ElementTree as ET
 from collections import ChainMap
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal, Self, cast, overload
@@ -30,7 +31,7 @@ from batocera_common.key_value_config import KeyValueConfig
 from batocera_common.paths import BATOCERA_CONF
 
 from ..exceptions import MissingEmulator
-from ..paths import BATOCERA_SHADERS, USER_SHADERS
+from ..paths import BATOCERA_SHADERS, SYSTEM_ES_DIR, USER_ES_DIR, USER_SHADERS
 from .defaults import load_defaults, load_system_defaults
 from .es_settings import ESSettings
 
@@ -51,6 +52,21 @@ def _settings_sections(system: str, rom: Path, /) -> Iterator[str]:
     yield f'{system}["{settings_name}"]'  # game-specific
     yield f'{system}.folder["{rom.parent}"]'  # folder-specific
     yield system
+
+
+def _system_emulators(system: str, /) -> set[str] | None:
+    # the emulators es offers for the system, the last es_systems*.cfg naming it winning; None: no file names it
+    emulators: set[str] | None = None
+    for es_dir in (SYSTEM_ES_DIR, USER_ES_DIR):
+        for path in sorted(es_dir.glob('es_systems*.cfg')):
+            try:
+                root = ET.parse(path).getroot()
+            except ET.ParseError, OSError:
+                continue
+            for element in root.iter('system'):
+                if element.findtext('name') == system and (found := element.find('emulators')) is not None:
+                    emulators = {emulator.get('name', '') for emulator in found.iter('emulator')}
+    return emulators
 
 
 type UIMode = Literal['Full', 'Kiosk', 'Kid']
@@ -252,12 +268,32 @@ class SystemConfig(Config):
             ui_mode = 'Full'
 
         emulator = data['emulator']
+        core = data.get('core', None)
+        emulator_forced = 'emulator' in user_settings
+        core_forced = 'core' in user_settings
+
+        # as es does: a chosen emulator that no longer runs the system gives way to the default
+        if (
+            emulator_forced
+            and args.emulator is None
+            and emulator != system_defaults['emulator']
+            and (emulators := _system_emulators(args.system)) is not None
+            and emulator not in emulators
+        ):
+            _logger.warning(
+                'emulator %s no longer runs %s, using %s instead', emulator, args.system, system_defaults['emulator']
+            )
+            emulator, core = system_defaults['emulator'], system_defaults['core']
+            data['emulator'], data['core'] = emulator, core
+            emulator_forced = core_forced = False
+
         if args.emulator is not None:
             emulator = args.emulator
+            emulator_forced = True
 
-        core = data.get('core', None)
         if args.core is not None:
             core = args.core
+            core_forced = True
 
         if 'use_guns' not in data and args.lightgun:
             data['use_guns'] = True
@@ -306,10 +342,10 @@ class SystemConfig(Config):
             system=args.system,
             rom=rom,
             emulator=emulator,
-            emulator_forced=('emulator' in user_settings or args.emulator is not None),
+            emulator_forced=emulator_forced,
             raw_core=core,
             core=core or '',
-            core_forced=('core' in user_settings or args.core is not None),
+            core_forced=core_forced,
             ui_mode=ui_mode,
             show_fps=show_fps,
         )
