@@ -26,6 +26,7 @@ DEBUG = 0            # set to 1 for debugging
 EFFECT_STEP = 60     # how many colors in the effect
 EFFECT_DURATION = 2  # how many seconds
 PULSE_DURATION  = 1  # how many seconds
+BLINK_DURATION  = 1  # how many seconds
 DEFAULT_ES_COLOR = '255 0 165'
 
 BLOCK_FILE = '/var/run/led-handheld-block'
@@ -710,8 +711,12 @@ class dual_multiled(object):
         color_str = self._intensity(r, g, b)
         for p in self.all_paths:
             try:
-                with open(p + 'brightness', 'w') as f:
-                    f.write(str(brightness))
+                # each write updates the led chip, skip the brightness when unchanged (effect frames)
+                with open(p + 'brightness', 'r') as f:
+                    current = f.readline().strip()
+                if current != str(brightness):
+                    with open(p + 'brightness', 'w') as f:
+                        f.write(str(brightness))
                 with open(p + 'multi_intensity', 'w') as f:
                     f.write(color_str)
             except Exception:
@@ -2111,6 +2116,17 @@ def getPulseRGB(num, step, rgb): # num = order from 0 to step
     nr, ng, nb = int(coeff*float(r)), int(coeff*float(g)), int(coeff*float(b))
     out = f'{nr:0>2X}{ng:0>2X}{nb:0>2X}'
     return (out)
+
+def getEffectRGB(effect): # PULSE_RRGGBB or BLINK_RRGGBB right now, None for anything else
+    name, _, rgb = effect.partition("_")
+    if len(rgb) != 6:
+        return None
+    if name == "BLINK":
+        return rgb if time.time() % BLINK_DURATION < BLINK_DURATION / 2 else "000000"
+    if name == "PULSE":
+        num = int(time.time() / (PULSE_DURATION * 2) * EFFECT_STEP) % EFFECT_STEP
+        return getPulseRGB(num, EFFECT_STEP, rgb)
+    return None
 
 ####################
 # if invoked as a command line: respond with supported Model, or None
