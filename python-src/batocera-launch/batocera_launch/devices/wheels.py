@@ -66,9 +66,11 @@ _SYSTEM_MAPPING: Final = {
         'up': 'up',
         'down': 'down',
     },
+    # shared gamesdb arcade section
     'naomi': _NAOMI_MAPPING,
     'naomi2': _NAOMI_MAPPING,
     'atomiswave': _NAOMI_MAPPING,
+    'mame': _NAOMI_MAPPING,
     'gamecube': {
         'lt': 'l2',
         'rt': 'r2',

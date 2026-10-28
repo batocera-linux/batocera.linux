@@ -68,10 +68,16 @@ def get_input_definition(
 
     if is_wheel and (key == 'joystick1left' or key == 'l2' or key == 'r2'):
         suffix = ''
-        if key == 'r2':
-            suffix = '_NEG'
-        if key == 'l2':
-            suffix = '_NEG'
+        if (key == 'l2' or key == 'r2') and input.value == '-1':
+            suffix = '_REVERSE'
+        if key == 'joystick1left' and input.value == '1':
+            suffix = '_REVERSE'
+        l2 = controller.inputs.get('l2')
+        r2 = controller.inputs.get('r2')
+        if (key == 'l2' or key == 'r2') and l2 is not None and r2 is not None and l2.id == r2.id:
+            suffix = '_POS'
+            if input.value == '-1':
+                suffix = '_NEG'
         if int(input.id) in _MAME_AXIS_NAMES:
             id_name = _MAME_AXIS_NAMES[int(input.id)]
             return f'JOYCODE_{joycode}_{id_name}{suffix}'
@@ -93,7 +99,9 @@ def get_input_definition(
         # Determine alternate button for D-Pad and right stick as buttons
         dpad_inputs: dict[str, str] = {}
         for direction in ['up', 'down', 'left', 'right']:
-            if controller.inputs[direction].type == 'button':
+            if direction not in controller.inputs:
+                dpad_inputs[direction] = ''
+            elif controller.inputs[direction].type == 'button':
                 dpad_inputs[direction] = f'JOYCODE_{joycode}_BUTTON{int(controller.inputs[direction].id) + 1}'
             elif controller.inputs[direction].type == 'hat':
                 if controller.inputs[direction].value == '1':
@@ -163,7 +171,10 @@ def get_input_definition(
                 return f'JOYCODE_{joycode}_RXAXIS_POS_SWITCH OR {button_directions["a"]}'
             if int(input.id) in _MAME_AXIS_NAMES:
                 id_name = _MAME_AXIS_NAMES[int(input.id)]
-                return f'JOYCODE_{joycode}_{id_name}_POS_SWITCH'
+                suffix = '_POS_SWITCH'
+                if is_wheel and input.value == '-1':
+                    suffix = '_NEG_SWITCH'
+                return f'JOYCODE_{joycode}_{id_name}{suffix}'
 
     return 'unknown'
 

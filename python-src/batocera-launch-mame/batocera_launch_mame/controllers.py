@@ -125,7 +125,22 @@ class MAMEControllers(MAMEBase):
                 }
                 mappings_use['PEDAL'] = 'r2'
                 mappings_use['PEDAL2'] = 'l2'
+                mappings_use['JOYSTICK_LEFT'] = 'left'
+                mappings_use['JOYSTICK_RIGHT'] = 'right'
                 mappings_use['PADDLE'] = 'joystick1left'
+                mappings_use['DIAL'] = 'joystick1left'
+                mappings_use['AD_STICK_X'] = 'joystick1left'
+                for pedal, key in [('PEDAL', 'r2'), ('PEDAL2', 'l2')]:
+                    increment = 'NONE'
+                    if key in controller.inputs and controller.inputs[key].type == 'button':
+                        increment = self.__generate_pad_sequence(controller, key, use_mame_control_scheme=True)
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{pedal}', sequences=[('increment', increment)]
+                    )
+                for axis in ['AD_STICK_Y', 'PADDLE_V']:
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{axis}', sequence=f'MOUSECODE_{nplayer}_YAXIS'
+                    )
 
             if self.config.use_guns and nplayer <= len(self.guns):
                 default_control_config.add_common_player_ports(nplayer)
@@ -185,7 +200,9 @@ class MAMEControllers(MAMEBase):
 
                 default_control_config.add_sequence_port(
                     'UI_SELECT',
-                    sequence=(f'KEYCODE_ENTER OR {self.__generate_pad_sequence(controller, "b")}'),
+                    sequence=(
+                        f'KEYCODE_ENTER OR {self.__generate_pad_sequence(controller, "b", use_mame_control_scheme=True)}'
+                    ),
                     tag='standard',
                     mask='',
                     defvalue='',
