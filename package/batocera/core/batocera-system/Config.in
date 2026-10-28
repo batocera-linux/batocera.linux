@@ -1162,6 +1162,15 @@ config BR2_PACKAGE_BATOCERA_ARCADE_SYSTEMS
 	# Standalone Sega Model 2 emulator
 	select BR2_PACKAGE_SM2_EMU			if BR2_PACKAGE_BATOCERA_FAST_CPU
 
+	# Standalone Sega Hikaru & Gaelco emulator
+	select BR2_PACKAGE_ODIN			if BR2_PACKAGE_BATOCERA_TARGET_X86_64_ANY || \
+	                                   BR2_PACKAGE_BATOCERA_TARGET_SDM845     || \
+									   BR2_PACKAGE_BATOCERA_TARGET_QCS6490    || \
+									   BR2_PACKAGE_BATOCERA_TARGET_SM8250     || \
+									   BR2_PACKAGE_BATOCERA_TARGET_SM8550     || \
+									   BR2_PACKAGE_BATOCERA_TARGET_SM8650     || \
+									   BR2_PACKAGE_BATOCERA_TARGET_SM8750
+
 	# Standalone Sega Model 3 emulator
 	select BR2_PACKAGE_SUPERMODEL		    if BR2_PACKAGE_BATOCERA_FAST_CPU
 
