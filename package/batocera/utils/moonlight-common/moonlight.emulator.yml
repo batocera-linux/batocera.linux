@@ -26,6 +26,12 @@ custom_features:
       90 degrees: "90"
       180 degrees: "180"
       270 degrees: "270"
+  moonlight_hdr:
+    prompt: HDR STREAMING
+    description: Needs the system HDR option on. Not available with the h264 codec. Moonlight Qt only.
+    choices:
+      'Off': false
+      'On': true
   moonlight_framerate:
     prompt: VIDEO STREAM FRAME RATE
     choices:
