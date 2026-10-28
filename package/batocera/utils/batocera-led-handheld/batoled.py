@@ -14,6 +14,7 @@ Updated for LED Mode handling & Chroma - @dmanlfc
 Updated for better LED Mode handling for various devices - @dmanlfc
 Fix strobe effect when changing LED modes on SM8550 devices - @dmanlfc
 """
+import functools
 import glob
 import os
 import time
@@ -112,19 +113,25 @@ def batocera_model():
 
 ####################
 # Get a value from batocera.conf
+# parsed again only when the file changes, the effects read the settings at every frame
+_conf_cache = {}
 def _conf_lookup(path, key):
     try:
-        with open(path) as f:
-            for line in f:
-                if not line.startswith(key+"="):
-                    continue
-                rest = line.split("=", 1)[1]
-                nocomment = rest.split("#", 1)[0].strip()
-                return(nocomment) # First one is enough
+        st = os.stat(path)
+        if path not in _conf_cache or _conf_cache[path][0] != (st.st_mtime_ns, st.st_size):
+            values = {}
+            with open(path) as f:
+                for line in f:
+                    k, sep, rest = line.partition("=")
+                    if sep and k not in values: # First one is enough
+                        values[k] = rest.split("#", 1)[0].strip()
+            _conf_cache[path] = ((st.st_mtime_ns, st.st_size), values)
+        return _conf_cache[path][1].get(key)
     except OSError:
         pass
     return None
 
+@functools.lru_cache(maxsize=None)
 def _board_model():
     # same normalisation as batocera-settings-get-master
     for path in ["/sys/firmware/devicetree/base/model", "/sys/devices/virtual/dmi/id/product_name"]:
@@ -698,6 +705,8 @@ class dual_multiled(object):
                 self.colour_index = f.readline().split()
         except Exception:
             self.colour_index = ['red', 'green', 'blue']
+        # multi_intensity kept open, the effects write a frame every 0.1 s
+        self.intensity_fds = {}
 
     def _intensity(self, r, g, b):
         values = {'red': r, 'green': g, 'blue': b}
@@ -708,19 +717,24 @@ class dual_multiled(object):
         return values['red'], values['green'], values['blue']
 
     def _write_hardware(self, brightness, r, g, b):
-        color_str = self._intensity(r, g, b)
+        color_str = self._intensity(r, g, b).encode()
+        # each write updates the led chip, skip the brightness when unchanged (effect frames)
+        try:
+            fd = os.open(self.all_paths[0] + 'brightness', os.O_RDONLY)
+            current = os.read(fd, 16).strip().decode()
+            os.close(fd)
+        except Exception:
+            current = None
         for p in self.all_paths:
             try:
-                # each write updates the led chip, skip the brightness when unchanged (effect frames)
-                with open(p + 'brightness', 'r') as f:
-                    current = f.readline().strip()
                 if current != str(brightness):
                     with open(p + 'brightness', 'w') as f:
                         f.write(str(brightness))
-                with open(p + 'multi_intensity', 'w') as f:
-                    f.write(color_str)
+                if p not in self.intensity_fds:
+                    self.intensity_fds[p] = os.open(p + 'multi_intensity', os.O_WRONLY)
+                os.pwrite(self.intensity_fds[p], color_str, 0)
             except Exception:
-                pass
+                self.intensity_fds.pop(p, None) # opened again on the next write
 
     def set_color(self, rgb):
         if rgb == "OFF":

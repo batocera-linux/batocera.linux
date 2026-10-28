@@ -254,8 +254,9 @@ def color_changes_allowed():
             diff = time.time() - float(line)
             if diff < LED_CHANGE_TIME:
                 return (False)
-        with open(BLOCK_FILE, "w+") as fp:
-            fp.write("0")
+        if line != "0":
+            with open(BLOCK_FILE, "w+") as fp:
+                fp.write("0")
         return (True)
     except:
         return (True)
