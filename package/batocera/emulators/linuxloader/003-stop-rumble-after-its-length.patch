@@ -1,0 +1,45 @@
+Stop each rumble at the end of its length
+
+xpadneo now ignores the length of rumble effects and keeps the motors
+running until the game stops them. The drive board emulation only plays
+short effects and never stops them, so the last one stays on. Stop each
+effect from a timer once its length is over.
+
+--- a/src/loader/hardware/lindbergh/forceFeedback.c
++++ b/src/loader/hardware/lindbergh/forceFeedback.c
+@@ -8,8 +8,19 @@
+ #include "../../log/log.h"
+ 
+ static int effect_id = -1;
++static int effect_serial;
++static SDL_Mutex *effect_lock;
+ extern SDLControllers sdlJoysticks;
+ 
++static Uint32 SDLCALL sdlFfbStop(void *userdata, SDL_TimerID timerID, Uint32 interval)
++{
++    SDL_LockMutex(effect_lock);
++    if ((intptr_t)userdata == effect_serial)
++        SDL_StopHapticEffect(sdlJoysticks.haptics[0], effect_id);
++    SDL_UnlockMutex(effect_lock);
++    return 0;
++}
++
+ void sdlFfbInit(void)
+ {
+     // SDL input mode: open haptic from already-opened joysticks
+@@ -91,10 +102,15 @@
+     effect.leftright.length = duration_ms;
+     effect.leftright.large_magnitude = (Uint16)(left * 0xFFFF);
+     effect.leftright.small_magnitude = (Uint16)(right * 0xFFFF);
++    if (!effect_lock)
++        effect_lock = SDL_CreateMutex();
++    SDL_LockMutex(effect_lock);
+     if (effect_id >= 0)
+         SDL_DestroyHapticEffect(sdlJoysticks.haptics[0], effect_id);
+     effect_id = SDL_CreateHapticEffect(sdlJoysticks.haptics[0], &effect);
+     SDL_RunHapticEffect(sdlJoysticks.haptics[0], effect_id, 1);
++    SDL_AddTimer(duration_ms, sdlFfbStop, (void *)(intptr_t)++effect_serial);
++    SDL_UnlockMutex(effect_lock);
+ }
+ 
+ void sdlFfbShutdown(void)
