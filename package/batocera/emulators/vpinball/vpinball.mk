@@ -3,13 +3,13 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Oct 14, 2026
-VPINBALL_VERSION = 68afa2a9056131c7065959d7b0915b9cc38d09dc
-VPINBALL_REVISION = 6231
+# Version: Commits on Oct 29, 2026
+VPINBALL_VERSION = 34724fb128ffa544d111c5795141de73cbcd5b7d
+VPINBALL_REVISION = 6491
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
-VPINBALL_DEPENDENCIES = host-libcurl host-cmake libfreeimage-vpinball libpinmame
+VPINBALL_DEPENDENCIES = host-bgfx host-libcurl host-cmake libfreeimage-vpinball libpinmame
 VPINBALL_DEPENDENCIES += libdmdutil libdof sdl3 sdl3_image sdl3_ttf
 VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs openxr-sdk vulkan-headers
 VPINBALL_DEPENDENCIES += libspatialaudio zlib
@@ -39,6 +39,7 @@ endif
 VPINBALL_CONF_OPTS += -DPLATFORM=linux
 VPINBALL_CONF_OPTS += -DARCH=$(VPINBALL_ARCH)
 VPINBALL_CONF_OPTS += -DRENDERER=BGFX
+VPINBALL_CONF_OPTS += -DVPX_SHADERC=$(HOST_DIR)/bin/shaderc
 VPINBALL_CONF_OPTS += -DUSE_SYSTEM_LIBS=ON
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_INCLUDE_DIR=$(STAGING_DIR)/usr/include
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_LIB_DIR=$(STAGING_DIR)/usr/lib
@@ -52,8 +53,8 @@ endef
 
 VPINBALL_POST_EXTRACT_HOOKS += VPINBALL_SET_GIT_VERSION
 
-VPINBALL_MEMMAPS_VERSION = 68c1b3373ba74cd07f42fba9d56db63ea28212dc
-VPINBALL_GAMEDEFS_VERSION = 6eece7e53de9463bf783b9476ce3aeb98e2e7256
+VPINBALL_MEMMAPS_VERSION = f0c422099f0b50b69bfdf6d071a6653a8b25a6fd
+VPINBALL_GAMEDEFS_VERSION = 3ae4115314e6a555380f750336487db96d213d06
 VPINBALL_EXTRA_DOWNLOADS = \
     https://github.com/tomlogic/pinball-memory-maps/archive/$(VPINBALL_MEMMAPS_VERSION).tar.gz \
     https://github.com/vpinball/pinmame-game-defs/archive/$(VPINBALL_GAMEDEFS_VERSION).tar.gz
