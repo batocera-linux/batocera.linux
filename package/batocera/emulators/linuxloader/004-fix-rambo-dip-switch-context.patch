@@ -1,0 +1,19 @@
+Fix the dip switch context address of Rambo
+
+The context address of Rambo (SBQL) was the address of the game's amDipswInit
+itself, so the detoured amDipswInit wrote into the game's read-only code. The
+segfault handler then skipped the faulting bytes one by one and the game ran
+whatever was left, which crashes it depending on the build. Use the context
+variable the game's own amDipsw functions read.
+
+--- a/src/loader/patching/patch.c
++++ b/src/loader/patching/patch.c
+@@ -2606,7 +2606,7 @@
+             // patchMemoryFromString(0x080e3f79, "01");
+             patchMemoryFromString(0x080e3e2e, "EB");
+             // Fixes
+-            amDipswContextAddr = (void *)0x082c2f94;
++            amDipswContextAddr = (void *)0x0acad988;
+             detourFunction(0x082c2f94, amDipswInit);
+             detourFunction(0x082c3018, amDipswExit);
+             detourFunction(0x082c308d, amDipswGetData);
