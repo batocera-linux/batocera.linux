@@ -27,6 +27,7 @@ from typing import Final
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import SAVES
 from batocera_launch import (
+    BatoceraException,
     Command,
     Emulator,
     HotkeysContext,
@@ -140,9 +141,17 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
     def execution_path(self) -> Path | None:
         return _SOURCE_DIR
 
+    def needs_overlayfs(self, rom: Path, /) -> bool:
+        return True
+
     async def configure(self) -> Command:
-        rom_dir = self.rom.parent
-        rom_name = self.rom.name
+        game_file = self.rom
+        if self.rom.is_dir():
+            game_file = next(self.rom.rglob('*.game'), None)
+            if game_file is None:
+                raise BatoceraException(f'No .game file found in {self.rom.source}')
+        rom_dir = game_file.parent
+        rom_name = game_file.name
         short_rom_name = Path(rom_name.lower()).stem
         _logger.debug('ROM path: %s', rom_dir)
 
