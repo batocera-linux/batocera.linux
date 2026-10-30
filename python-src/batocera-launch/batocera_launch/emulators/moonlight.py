@@ -27,7 +27,7 @@ from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.key_value_config import KeyValueConfig
-from batocera_common.paths import CONFIGS, HOME
+from batocera_common.paths import HOME
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
 
 # moonlight is split across two upstream clients that batocera may ship: moonlight-qt
@@ -70,7 +70,6 @@ class Moonlight(Emulator):
         return Command(
             args,
             env={
-                'XDG_DATA_DIRS': CONFIGS,
                 'SDL_JOYSTICK_HIDAPI': '0',
             },
         )
