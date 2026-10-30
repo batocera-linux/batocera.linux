@@ -3,8 +3,9 @@ Subject: [PATCH] service: Retry wifi autoconnect after connect-failed
 
 A wifi service in failure is skipped by autoconnect until the user acts,
 so one auth timeout on a single BSS leaves the device offline. Clear the
-error and retry with a backoff of 5 s up to 5 min. invalid-key and
-user-initiated connects still stay in failure.
+error and retry with a backoff of 5 s up to 5 min. This also covers
+services last connected by the user, as connect_reason stays USER across
+a drop. invalid-key and services without autoconnect stay in failure.
 
 --- a/src/service.c
 +++ b/src/service.c
@@ -36,7 +37,7 @@ user-initiated connects still stay in failure.
  	__connman_notifier_service_remove(service);
  	service_schedule_removed(service);
  
-@@ -9231,6 +9238,43 @@
+@@ -9231,6 +9238,42 @@
  	return dbus_message_get_sender(service->pending);
  }
  
@@ -66,8 +67,7 @@ user-initiated connects still stay in failure.
 +
 +	if (service->type != CONNMAN_SERVICE_TYPE_WIFI ||
 +			!service->autoconnect || service->failure_retry ||
-+			service->error != CONNMAN_SERVICE_ERROR_CONNECT_FAILED ||
-+			service->connect_reason == CONNMAN_SERVICE_CONNECT_REASON_USER)
++			service->error != CONNMAN_SERVICE_ERROR_CONNECT_FAILED)
 +		return;
 +
 +	delay = MIN(5U << MIN(service->failure_retries, 6U), FAILURE_RETRY_MAX);
@@ -80,7 +80,7 @@ user-initiated connects still stay in failure.
  static int service_indicate_state(struct connman_service *service)
  {
  	enum connman_service_state old_state, new_state;
-@@ -9317,6 +9361,7 @@
+@@ -9317,6 +9360,7 @@
  
  	case CONNMAN_SERVICE_STATE_READY:
  		clear_error(service);
@@ -88,7 +88,7 @@ user-initiated connects still stay in failure.
  
  		if (service->new_service &&
  				__connman_stats_service_register(service) == 0) {
-@@ -9411,6 +9456,8 @@
+@@ -9411,6 +9455,8 @@
  		break;
  
  	case CONNMAN_SERVICE_STATE_FAILURE:
