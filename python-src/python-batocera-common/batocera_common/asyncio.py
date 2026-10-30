@@ -224,6 +224,25 @@ async def group_tasks[T1, T2, T3, T4](
     coro4: asyncio._CoroutineLike[T4],
     /,
 ) -> tuple[T1, T2, T3, T4]: ...
+@overload
+async def group_tasks[T1, T2, T3, T4, T5](
+    coro1: asyncio._CoroutineLike[T1],
+    coro2: asyncio._CoroutineLike[T2],
+    coro3: asyncio._CoroutineLike[T3],
+    coro4: asyncio._CoroutineLike[T4],
+    coro5: asyncio._CoroutineLike[T5],
+    /,
+) -> tuple[T1, T2, T3, T4, T5]: ...
+@overload
+async def group_tasks[T1, T2, T3, T4, T5, T6](
+    coro1: asyncio._CoroutineLike[T1],
+    coro2: asyncio._CoroutineLike[T2],
+    coro3: asyncio._CoroutineLike[T3],
+    coro4: asyncio._CoroutineLike[T4],
+    coro5: asyncio._CoroutineLike[T5],
+    coro6: asyncio._CoroutineLike[T6],
+    /,
+) -> tuple[T1, T2, T3, T4, T5, T6]: ...
 
 
 async def group_tasks(*coros: asyncio._CoroutineLike[Any]) -> tuple[Any, ...]:

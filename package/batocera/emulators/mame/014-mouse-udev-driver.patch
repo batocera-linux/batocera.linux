@@ -1,0 +1,240 @@
+diff --git a/src/osd/modules/input/input_udev.cpp b/src/osd/modules/input/input_udev.cpp
+index 225ba88..2d54e66 100644
+--- a/src/osd/modules/input/input_udev.cpp
++++ b/src/osd/modules/input/input_udev.cpp
+@@ -27,6 +27,13 @@ struct lightgun_state
+ 	int32_t buttons[16];
+ };
+ 
++// state information for a mouse
++struct mouse_state
++{
++	int32_t lX, lY;
++	int32_t buttons[3];
++};
++
+ struct event_udev_entry
+ {
+    const char *devnode;
+@@ -390,13 +397,209 @@ public:
+   
+ };
+ 
++//============================================================
++//  udev_mouse_device
++//============================================================
++
++class udev_mouse_device : public udev_input_device {
++public:
++  mouse_state m_mouse;
++  std::string m_devpath;
++  int m_fd;
++  s32 m_x, m_y;
++  running_machine* m_machine;
++
++  udev_mouse_device(std::string &&name, std::string &&id, input_module &module, std::string devpath, running_machine* machine) :
++    udev_input_device(std::move(name), std::move(id), module), m_mouse({0}) {
++    m_devpath = devpath;
++    m_fd = -1;
++    m_machine = machine;
++  }
++
++  ~udev_mouse_device() {
++    if(m_fd != -1) {
++      close(m_fd);
++    }
++  }
++
++  virtual void poll(bool relative_reset) override {
++    struct input_event input_events[32];
++    int j, len;
++
++    event_based_device<struct input_event>::poll(relative_reset);
++    
++    while ((len = read(m_fd, input_events, sizeof(input_events))) > 0) {
++      len /= sizeof(*input_events);
++      for (j = 0; j < len; j++) {
++    	queue_events(std::span(&(input_events[j]), 1));
++      }
++    }
++
++    if (relative_reset)
++      {
++	m_mouse.lX = std::exchange(m_x, 0);
++	m_mouse.lY = std::exchange(m_y, 0);
++      }
++  }
++
++  virtual void process_event(struct input_event const &event) override {
++    switch (event.type) {
++    case EV_KEY:
++      switch (event.code) {
++      case BTN_LEFT:
++	m_mouse.buttons[0] = (event.value == 1) ? 0x80 : 0;
++	break;
++      case BTN_RIGHT:
++	m_mouse.buttons[1] = (event.value == 1) ? 0x80 : 0;
++	break;
++      case BTN_MIDDLE:
++	m_mouse.buttons[2] = (event.value == 1) ? 0x80 : 0;
++	break;
++      default:
++	break;
++      }
++      break;
++
++    case EV_REL:
++      switch (event.code) {
++      case REL_X:
++	m_x += event.value * osd::input_device::RELATIVE_PER_PIXEL;
++    	break;
++      case REL_Y:
++    	m_y += event.value * osd::input_device::RELATIVE_PER_PIXEL;
++    	break;
++      }
++      break;
++    }
++  }
++
++  virtual void reset() override {
++    memset(&m_mouse, 0, sizeof(m_mouse));
++  }
++
++  virtual void configure(osd::input_device &device) override {
++    m_fd = open(m_devpath.c_str(), O_RDONLY | O_NONBLOCK);
++    if (m_fd != -1) {
++      for (int button = 0; button < 3; button++) {
++    	input_item_id itemid = static_cast<input_item_id>(ITEM_ID_BUTTON1 + button);
++    	device.add_item(default_button_name(button), std::string_view(), itemid, generic_button_get_state<std::int32_t>, &(m_mouse.buttons[button]));
++      }
++
++      device.add_item("X", std::string_view(), ITEM_ID_XAXIS, generic_axis_get_state<std::int32_t>, &(m_mouse.lX));
++      device.add_item("Y", std::string_view(), ITEM_ID_YAXIS, generic_axis_get_state<std::int32_t>, &(m_mouse.lY));
++    }
++  }
++
++};
++
++//============================================================
++//  udev_mouse_module
++//============================================================
++
++class udev_mouse_module : public input_module_impl<udev_mouse_device, osd_common_t>
++{
++private:
++  struct udev *m_udev;
++
++public:
++  udev_mouse_module() : input_module_impl<udev_mouse_device, osd_common_t>(OSD_MOUSEINPUT_PROVIDER, "udev")
++  {
++    m_udev = NULL;
++  }
++
++  ~udev_mouse_module() {
++    if (m_udev != NULL) udev_unref(m_udev);
++  }
++
++  virtual void exit() override
++  {
++    input_module_impl<udev_mouse_device, osd_common_t>::exit();
++  }
++
++  void input_init(running_machine &machine) override {
++    struct udev_enumerate *enumerate;
++    struct udev_list_entry     *devs = NULL;
++    struct udev_list_entry     *item = NULL;
++    unsigned sorted_count = 0;
++    struct event_udev_entry sorted[8]; // max devices
++    unsigned int i;
++
++   osd_printf_verbose("Mouse: Begin udev initialization\n");
++
++   input_module_impl<udev_mouse_device, osd_common_t>::input_init(machine);
++
++    m_udev = udev_new();
++    if(m_udev == NULL) return;
++
++    enumerate = udev_enumerate_new(m_udev);
++
++    if (enumerate != NULL) {
++      udev_enumerate_add_match_property(enumerate, "ID_INPUT_MOUSE", "1");
++      udev_enumerate_add_match_subsystem(enumerate, "input");
++      udev_enumerate_scan_devices(enumerate);
++      devs = udev_enumerate_get_list_entry(enumerate);
++
++      for (item = devs; item; item = udev_list_entry_get_next(item)) {
++	const char         *name = udev_list_entry_get_name(item);
++	struct udev_device  *dev = udev_device_new_from_syspath(m_udev, name);
++	const char      *devnode = udev_device_get_devnode(dev);
++	
++	if (devnode != NULL && sorted_count < 8) {
++	  sorted[sorted_count].devnode = devnode;
++	  sorted[sorted_count].item = item;
++	  sorted_count++;
++	} else {
++	  udev_device_unref(dev);
++	}
++      }
++
++      /* Sort the udev entries by devnode name so that they are
++       * created in the proper order */
++      qsort(sorted, sorted_count,
++	    sizeof(struct event_udev_entry), sort_devnodes);
++
++      for (i = 0; i < sorted_count; i++) {
++      	const char *name = udev_list_entry_get_name(sorted[i].item);
++
++      	/* Get the filename of the /sys entry for the device
++      	 * and create a udev_device object (dev) representing it. */
++      	struct udev_device *dev = udev_device_new_from_syspath(m_udev, name);
++      	const char *devnode     = udev_device_get_devnode(dev);
++      	char devname[64];
++
++      	if (devnode) {
++      	  int fd = open(devnode, O_RDONLY | O_NONBLOCK);
++      	  if (fd != -1) {
++      	    if (ioctl(fd, EVIOCGNAME(sizeof(devname)), devname) < 0) {
++      	      devname[0] = '\0';
++      	    }
++      	    close(fd);
++      	    auto &devinfo = create_device<udev_mouse_device>(DEVICE_CLASS_MOUSE,
++								std::string(devname),
++								std::string(devname),
++								std::string(devnode),
++								&machine);
++	    osd_printf_verbose("Mouse: registered %s (%s)\n", devinfo.name(), devnode);
++     	  }
++      	}
++      	udev_device_unref(dev);
++      }
++      udev_enumerate_unref(enumerate);
++    }
++
++    osd_printf_verbose("Mouse: End udev initialization\n");
++  }
++  
++};
+ 
+ } // anonymous namespace
+ 
+ #else // !defined(SDLMAME_WIN32)
+ 
+ MODULE_NOT_SUPPORTED(udev_lightgun_module, OSD_LIGHTGUNINPUT_PROVIDER, "udev")
++MODULE_NOT_SUPPORTED(udev_mouse_module, OSD_MOUSEINPUT_PROVIDER, "udev")
+ 
+ #endif // !defined(SDLMAME_WIN32)
+ 
+ MODULE_DEFINITION(LIGHTGUN_UDEV, udev_lightgun_module)
++MODULE_DEFINITION(MOUSEINPUT_UDEV, udev_mouse_module)
+diff --git a/src/osd/modules/lib/osdobj_common.cpp b/src/osd/modules/lib/osdobj_common.cpp
+index b94a3ca..c455cf7 100644
+--- a/src/osd/modules/lib/osdobj_common.cpp
++++ b/src/osd/modules/lib/osdobj_common.cpp
+@@ -367,6 +367,7 @@ void osd_common_t::register_options()
+ 	REGISTER_MODULE(m_mod_man, MOUSEINPUT_DINPUT);
+ 	REGISTER_MODULE(m_mod_man, MOUSEINPUT_WIN32);
+ 	REGISTER_MODULE(m_mod_man, MOUSEINPUT_MISTER);
++	REGISTER_MODULE(m_mod_man, MOUSEINPUT_UDEV);
+ 	REGISTER_MODULE(m_mod_man, MOUSE_NONE);
+ 
+ #if defined(OSD_SDL)

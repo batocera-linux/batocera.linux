@@ -289,6 +289,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             self.lr_core.generate_special_configs()
             await self.set_config(custom_config, gfx_backend, shader_bezel)
             self.set_guns_config(custom_config, core_options)
+            self.set_trackballspinners_config(custom_config, core_options)
 
             # write core_options a bit late while guns configs can modify it
             core_options.write()
@@ -1085,6 +1086,33 @@ class Libretro(SpecialDecorationsMixin, Emulator):
                 self.lr_core.set_gun_core_options(core_options)
 
                 custom_config.set('input_overlay_show_mouse_cursor', False)
+        else:
+            custom_config.set('input_overlay_show_mouse_cursor', True)
+
+    def set_trackballspinners_config(self, custom_config: LibretroConfig, core_options: LibretroConfig, /) -> None:
+        if self.config.use_trackballs:
+            for player_number in range(1, 5):
+                if player_number <= len(self.trackballs):
+                    custom_config.set(
+                        f'input_player{player_number}_mouse_index', self.trackballs[player_number - 1].mouseid
+                    )
+                else:
+                    # disable the mouse
+                    custom_config.set(f'input_player{player_number}_mouse_index', -1)
+            custom_config.set('input_overlay_show_mouse_cursor', False)
+        else:
+            custom_config.set('input_overlay_show_mouse_cursor', True)
+
+        if self.config.use_spinners:
+            for player_number in range(1, 5):
+                if player_number <= len(self.spinners):
+                    custom_config.set(
+                        f'input_player{player_number}_mouse_index', self.spinners[player_number - 1].mouseid
+                    )
+                else:
+                    # disable the mouse
+                    custom_config.set(f'input_player{player_number}_mouse_index', -1)
+            custom_config.set('input_overlay_show_mouse_cursor', False)
         else:
             custom_config.set('input_overlay_show_mouse_cursor', True)
 

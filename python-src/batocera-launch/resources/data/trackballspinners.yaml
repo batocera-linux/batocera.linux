@@ -1,0 +1,101 @@
+- name: Generic Spinner 1 (v273)
+  type: spinner
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: REL_X
+- name: Generic Spinner 2 (v273)
+  type: spinner
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: REL_Y
+- name: Generic Trackball (v273)
+  type: trackball
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: [ REL_X, REL_Y ]
+- name: Generic Trackball (v272)
+  type: trackball
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x110
+  interface: 0
+  axis: [ REL_X, REL_Y ]
+- name: Generic Spinner 1 (v272)
+  type: spinner
+  axis: REL_X
+  device_name: HID 1241:1111
+  vendor: 4673
+  product: 4369
+  version: 272
+- name: Generic Spinner 2 (v272)
+  type: spinner
+  axis: REL_Y
+  device_name: HID 1241:1111
+  vendor: 4673
+  product: 4369
+  version: 272
+- name: Xtension 4 Player Controller
+  type: trackball
+  device_name: Ultimarc U-Trak
+  vendor: 0xd209
+  product: 0x15a1
+  axis: [ REL_X, REL_Y ]
+- name: Logitech USB Trackball
+  type: trackball
+  device_name: Logitech USB Trackball
+  vendor: 0x46d
+  product: 0xc408
+  axis: [ REL_X, REL_Y ]
+- name: GRS LED Trackball
+  type: trackball
+  device_name: Baolian industry Co., Ltd. TS-SPTB-COMBO
+  vendor: 0x32be
+  product: 0x1540
+  axis: [ REL_X, REL_Y ]
+- name: GGG TurboTwist 2 Spinner
+  type: spinner
+  axis: REL_X
+  device_name: GGG TurboTwist 2 Spinner
+  vendor: 64250
+  product: 96
+  version: 272
+- name: enCoReII Mouse RDK
+  type: trackball
+  axis:
+  - REL_X
+  - REL_Y
+  device_name: Cypress Semiconductor, Inc. enCoReII Mouse RDK
+  vendor: 1204
+  product: 4623
+  version: 273
+- name: TS-DOT-02
+  type: spinner
+  axis: REL_X
+  device_name: Baolian industry Co., Ltd. TS-DOT-02
+  vendor: 12990
+  product: 5409
+  version: 273
+- name: TS-RT-JK
+  type: spinner
+  axis: REL_X
+  device_name: Baolian industry Co., Ltd TS-RT-JK
+  vendor: 12990
+  product: 8208
+  version: 273
+- name: 'TS-RT-JK #1'
+  type: spinner
+  axis: REL_X
+  device_name: 'Baolian industry Co., Ltd TS-RT-JK #1'
+  vendor: 12990
+  product: 8209
+  version: 273
