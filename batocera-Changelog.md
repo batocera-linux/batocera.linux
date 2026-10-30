@@ -50,6 +50,7 @@
 - Battery, charger and power button support for Intel Atom laptops and tablets with the X-Powers AXP288 PMIC
 - BCC: audio devices can now be switched from the BCC menu (while playing games for example)
 - BCC: choose which screen to use on multi-screen devices
+- BCC: show/hide mouse pointer on supported emulators
 - BIOS check now verifies files against a list of known MD5 sums
 - Boot splash video on the bottom screen of dual-screen devices
 - Box64 userland x86_64 emulator for aarch64
