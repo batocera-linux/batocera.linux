@@ -1,5 +1,5 @@
 version = 1
-revision = 5
+revision = 3
 requires-python = "==3.14.5"
 
 [manifest]
@@ -38,6 +38,7 @@ constraints = [
     { name = "brotli", specifier = "==1.2.0" },
     { name = "configobj", specifier = "==5.0.8" },
     { name = "dbus-fast", specifier = "==4.0.4" },
+    { name = "dicttoxml2", specifier = "==2.1.0" },
     { name = "evdev", specifier = "==1.9.3" },
     { name = "lazy-loader", specifier = "==0.5" },
     { name = "pillow", specifier = "==12.0.0" },
@@ -252,6 +253,7 @@ dependencies = [
     { name = "batocera-common" },
     { name = "brotli" },
     { name = "configobj" },
+    { name = "dicttoxml2" },
     { name = "hotkeygen" },
     { name = "lazy-loader" },
     { name = "pillow" },
@@ -267,6 +269,7 @@ requires-dist = [
     { name = "batocera-common", editable = "python-src/python-batocera-common" },
     { name = "brotli" },
     { name = "configobj" },
+    { name = "dicttoxml2" },
     { name = "hotkeygen", editable = "package/batocera/utils/hotkeygen" },
     { name = "lazy-loader" },
     { name = "pillow" },
@@ -721,6 +724,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/82/3d/a033cc655a3a32ee145f575cd05066cf5bed71e24238947d77fb9597c905/dbus_fast-4.0.4-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5843c3e543ac1d48cafff67394ada9e568f20d122b44408e378ae43402b785ca", size = 1610602, upload-time = "2026-04-02T04:50:32.146Z" },
     { url = "https://files.pythonhosted.org/packages/4a/46/2834b825da3f6ef206f5bc55363bc8751addcfc03fa34c639f72006f6a3e/dbus_fast-4.0.4-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:7ebb845f2e15ef19f4a99cb879dfbcb1c7028a97d5aaba93b36f65cfd938a022", size = 1550136, upload-time = "2026-04-02T04:50:34.311Z" },
     { url = "https://files.pythonhosted.org/packages/9e/01/894b2f6954d12c5c527232906d67272b59f0f12f386cd2d394d5e5eac7fc/dbus_fast-4.0.4-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:698fe83128150dd49aaa7deb5493523309f0a9749c3c075730a6981851607455", size = 1627660, upload-time = "2026-04-02T04:50:36.5Z" },
+]
+
+[[package]]
+name = "dicttoxml2"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/24/7a6d37b2770843e34685e470fd711955cb0f77c354c73d8ca64b02420bce/dicttoxml2-2.1.0.tar.gz", hash = "sha256:67cb729f337dd752808c021b70c8df8a34f84b9e111a5dbaa37e000eeaf4d462", size = 22698, upload-time = "2022-08-13T20:58:38.502Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ba/0f/2cbc69586728aab2bb7b82315423298eb96dfd2fb751ee88430585c55fdb/dicttoxml2-2.1.0-py3-none-any.whl", hash = "sha256:b58df16e614f09f100536b51f2ac1345652cfb44c89c2d7c2be685e2e32e03c6", size = 12478, upload-time = "2022-08-13T20:58:36.605Z" },
 ]
 
 [[package]]
