@@ -1,0 +1,99 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] service: Retry wifi autoconnect after connect-failed
+
+A wifi service in failure is skipped by autoconnect until the user acts,
+so one auth timeout on a single BSS leaves the device offline. Clear the
+error and retry with a backoff of 5 s up to 5 min. invalid-key and
+user-initiated connects still stay in failure.
+
+--- a/src/service.c
++++ b/src/service.c
+@@ -45,6 +45,8 @@
+ #define VPN_AUTOCONNECT_TIMEOUT_STEP 30
+ #define VPN_AUTOCONNECT_TIMEOUT_ATTEMPTS_THRESHOLD 270
+ 
++#define FAILURE_RETRY_MAX 300
++
+ /*
+  * There are many call sites throughout this module for these
+  * functions. These are macros to help, during debugging, to acertain
+@@ -150,6 +152,8 @@
+ 	enum connman_service_state state_ipv6;
+ 	enum connman_service_error error;
+ 	enum connman_service_connect_reason connect_reason;
++	guint failure_retry;
++	unsigned int failure_retries;
+ 	uint8_t strength;
+ 	bool favorite;
+ 	bool immutable;
+@@ -8031,6 +8035,9 @@
+ 		dns_changed(service);
+ 	}
+ 
++	if (service->failure_retry)
++		g_source_remove(service->failure_retry);
++
+ 	__connman_notifier_service_remove(service);
+ 	service_schedule_removed(service);
+ 
+@@ -9231,6 +9238,43 @@
+ 	return dbus_message_get_sender(service->pending);
+ }
+ 
++static gboolean run_failure_retry(gpointer user_data)
++{
++	struct connman_service *service = user_data;
++
++	service->failure_retry = 0;
++
++	if (service->state != CONNMAN_SERVICE_STATE_FAILURE ||
++			service->error != CONNMAN_SERVICE_ERROR_CONNECT_FAILED)
++		return G_SOURCE_REMOVE;
++
++	DBG("service %p retrying after connect failure", service);
++
++	clear_error(service);
++	__connman_service_clear_error(service);
++	__connman_service_auto_connect(CONNMAN_SERVICE_CONNECT_REASON_AUTO);
++
++	return G_SOURCE_REMOVE;
++}
++
++/* Autoconnect skips wifi services in failure until the user acts. */
++static void schedule_failure_retry(struct connman_service *service)
++{
++	unsigned int delay;
++
++	if (service->type != CONNMAN_SERVICE_TYPE_WIFI ||
++			!service->autoconnect || service->failure_retry ||
++			service->error != CONNMAN_SERVICE_ERROR_CONNECT_FAILED ||
++			service->connect_reason == CONNMAN_SERVICE_CONNECT_REASON_USER)
++		return;
++
++	delay = MIN(5U << MIN(service->failure_retries, 6U), FAILURE_RETRY_MAX);
++	service->failure_retries++;
++
++	service->failure_retry = g_timeout_add_seconds(delay,
++					run_failure_retry, service);
++}
++
+ static int service_indicate_state(struct connman_service *service)
+ {
+ 	enum connman_service_state old_state, new_state;
+@@ -9317,6 +9361,7 @@
+ 
+ 	case CONNMAN_SERVICE_STATE_READY:
+ 		clear_error(service);
++		service->failure_retries = 0;
+ 
+ 		if (service->new_service &&
+ 				__connman_stats_service_register(service) == 0) {
+@@ -9411,6 +9456,8 @@
+ 		break;
+ 
+ 	case CONNMAN_SERVICE_STATE_FAILURE:
++		schedule_failure_retry(service);
++
+ 		if (service->connect_reason == CONNMAN_SERVICE_CONNECT_REASON_USER ||
+ 			service->connect_reason == CONNMAN_SERVICE_CONNECT_REASON_NATIVE) {
+ 			result = connman_agent_report_error(service,
