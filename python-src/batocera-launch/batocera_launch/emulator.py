@@ -44,6 +44,7 @@ from .cpu import resolve_cpu_cluster
 from .devices.controller import Controller, generate_sdl_game_controller_config
 from .devices.evmapy import EvmapyManager
 from .devices.gun import Gun, GunList, guns_need_crosses
+from .devices.trackballspinner import TrackballSpinner, TrackballSpinnerList
 from .devices.hotkeygen import HotkeygenManager
 from .devices.mouse import prepare_mouse
 from .devices.video import get_screens, prepare_resolution
@@ -67,6 +68,7 @@ if TYPE_CHECKING:
     from .devices.controller import Controllers
     from .devices.device import DeviceInfoMapping
     from .devices.gun import Guns
+    from .devices.trackballspinner import TrackballSpinner
     from .profiler import Profiler
     from .types import BezelFiles, HotkeysContext, Resolution, ScreenInfo
 
@@ -122,6 +124,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     controllers: Controllers = field(init=False, default=cast('Controllers', None), repr=False)
     guns: Guns = field(init=False, default=cast('Guns', None), repr=False)
     wheels: DeviceInfoMapping = field(init=False, default=cast('DeviceInfoMapping', None), repr=False)
+    trackballs: TrackballSpinners = field(init=False, default=cast('TrackballSpinners', None), repr=False)
+    spinners: TrackballSpinners = field(init=False, default=cast('TrackballSpinners', None), repr=False)
     resolution: Resolution = field(init=False, default=cast('Resolution', None), repr=False)
 
     __client_session: aiohttp.ClientSession | None = field(init=False, default=None, repr=False)
@@ -157,9 +161,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             # point to create it
             self.saves_dir.mkdir(parents=True, exist_ok=True)
 
-            controllers, self.guns, self.metadata, _ = await group_tasks(
+            controllers, self.guns, (self.trackballs, self.spinners), self.metadata, _ = await group_tasks(
                 asyncio.to_thread(Controller.load_for_players, self.config.cli_args.players),
                 asyncio.to_thread(self.get_all_guns),
+                asyncio.to_thread(self.get_all_trackballspinners),
                 asyncio.to_thread(self.get_games_metadata, ES_GAMES_METADATA),
                 asyncio.to_thread(self.prepare_gun_precalibration),
             )
@@ -425,6 +430,13 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             return []
 
         return Gun.get_all()
+
+    def get_all_trackballspinners(self) -> TrackballSpinnerList:
+        if not self.config.use_trackballs and not self.config.use_spinners:
+            _logger.info('trackballs/spinners disabled.')
+            return ([], [])
+
+        return TrackballSpinner.get_all()
 
     def get_games_metadata(self, metadata_file: Path) -> dict[str, str]:
         return get_games_meta_data(metadata_file, self.system, self.rom_short_id)

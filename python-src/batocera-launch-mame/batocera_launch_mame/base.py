@@ -82,6 +82,16 @@ class MAMEBase(MAMEPathsMixin, SpecialDecorationsMixin, Emulator):  # pyright: i
         return self.config.get_bool('use_mouse') or not (mess_system is None or not mess_system.name)
 
     @cached_property
+    def use_trackballs(self) -> bool:
+        mess_system = self.mess_system_info
+        return self.config.get_bool('use_trackballs')
+
+    @cached_property
+    def use_spinners(self) -> bool:
+        mess_system = self.mess_system_info
+        return self.config.get_bool('use_spinners')
+
+    @cached_property
     def mame_control_scheme(self) -> MameControlScheme:
         return load_mame_control_scheme(self.config.get_str('altlayout', 'auto'), self.rom.stem)
 

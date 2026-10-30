@@ -171,12 +171,16 @@ class SystemConfig(Config):
     core_forced: bool
     use_guns: bool = field(init=False)
     use_wheels: bool = field(init=False)
+    use_trackballs: bool = field(init=False)
+    use_spinners: bool = field(init=False)
     ui_mode: Literal['Full', 'Kiosk', 'Kid']
     show_fps: bool
 
     def __post_init__(self) -> None:
         object.__setattr__(self, 'use_guns', self.get_bool('use_guns'))
         object.__setattr__(self, 'use_wheels', self.get_bool('use_wheels'))
+        object.__setattr__(self, 'use_trackballs', self.get_bool('use_trackballs'))
+        object.__setattr__(self, 'use_spinners', self.get_bool('use_spinners'))
 
     def remove_user_setting(self, key: str, value: str, /) -> None:
         names = {f'{section}.{key}' for section in _settings_sections(self.system, self.rom)}
@@ -279,6 +283,28 @@ class SystemConfig(Config):
                 )
             else:
                 _logger.info("use_wheels manually set to '%s' to flagless game", data['use_wheels'])
+
+        if 'use_trackballs' not in data and args.trackball:
+            data['use_trackballs'] = True
+        elif 'use_trackballs' in data:
+            if args.trackball:
+                _logger.warning(
+                    "use_trackballs manually set to '%s' to flagged game (auto-detection overridden)",
+                    data['use_trackballs'],
+                )
+            else:
+                _logger.info("use_trackballs manually set to '%s' to flagless game", data['use_trackballs'])
+
+        if 'use_spinners' not in data and args.spinner:
+            data['use_spinners'] = True
+        elif 'use_spinners' in data:
+            if args.spinner:
+                _logger.warning(
+                    "use_spinners manually set to '%s' to flagged game (auto-detection overridden)",
+                    data['use_spinners'],
+                )
+            else:
+                _logger.info("use_spinners manually set to '%s' to flagless game", data['use_spinners'])
 
         data.update(
             (key, value)
