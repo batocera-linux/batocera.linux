@@ -28,6 +28,11 @@ from .devices.gun import (
     precalibrate_reicast_guns as precalibrate_reicast_guns,
 )
 from .devices.input import Input as Input, InputDict as InputDict, InputMapping as InputMapping
+from .devices.trackballspinner import (
+    TrackballSpinner as TrackballSpinner,
+    TrackballSpinnerList as TrackballSpinnerList,
+    TrackballSpinners as TrackballSpinners,
+)
 from .devices.video import (
     configure_windows as configure_windows,
     find_screen as find_screen,

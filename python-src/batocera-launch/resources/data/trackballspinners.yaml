@@ -1,0 +1,50 @@
+- name: X-Arcade Tankstick MAX spinner 1
+  type: spinner
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: REL_X
+- name: X-Arcade Tankstick MAX spinner 2
+  type: spinner
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: REL_Y
+- name: X-Arcade Tankstick MAX trackball
+  type: trackball
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x111
+  interface: 0
+  axis: [ REL_X, REL_Y ]
+- name: Arcade2TV-XR trackball
+  type: trackball
+  device_name: HID 1241:1111
+  vendor: 0x1241
+  product: 0x1111
+  version: 0x110
+  interface: 0
+  axis: [ REL_X, REL_Y ]
+- name: Xtension 4 Player Controller
+  type: trackball
+  device_name: Ultimarc U-Trak
+  vendor: 0xd209
+  product: 0x15a1
+  axis: [ REL_X, REL_Y ]
+- name: Logitech USB Trackball
+  type: trackball
+  device_name: Logitech USB Trackball
+  vendor: 0x46d
+  product: 0xc408
+  axis: [ REL_X, REL_Y ]
+- name: GRS LED Trackball
+  type: trackball
+  device_name: Baolian industry Co., Ltd. TS-SPTB-COMBO
+  vendor: 0x32be
+  product: 0x1540
+  axis: [ REL_X, REL_Y ]

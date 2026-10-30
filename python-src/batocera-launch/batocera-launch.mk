@@ -138,7 +138,8 @@ define BATOCERA_LAUNCH_INSTALL_RESOURCES
 	mkdir -p $(TARGET_DIR)/usr/share/evmapy
 
 	$(INSTALL) -D -m 0644 -t $(TARGET_DIR)/usr/share/batocera/launch/data \
-		$(@D)/resources/data/gamesbuttonsdb.xml
+		$(@D)/resources/data/gamesbuttonsdb.xml \
+		$(@D)/resources/data/trackballspinners.yaml
 
 	$(INSTALL) -D -m 0644 -t $(TARGET_DIR)/usr/share/batocera/launch/data/special \
 		$(@D)/resources/data/special/*.toml
