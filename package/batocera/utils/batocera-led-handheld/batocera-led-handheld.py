@@ -23,6 +23,17 @@ default is:
 You can use PULSE, RAINBOW, CHROMA and OFF as rgb_color for special effects.
 
 ESCOLOR is the default one set with sliders in EmulationStation
+PULSE_RRGGBB and BLINK_RRGGBB pulse or blink a given color.
+
+With the BATTERY led mode in EmulationStation, the leds show the battery level.
+Its levels are set in EmulationStation, or in batocera.conf, default is:
+
+  led.battery.levels=0:BLINK_FF0000,5:FF0000,20:FF5000,40:FFC800,60:00FF00
+  led.battery.charging=PULSE
+  led.battery.full=BLINK_00FF00
+
+charging and full are used while a charger is plugged in:
+PULSE pulses the color of the current level, LEVEL shows it as is.
 
 Also, if you want to trigger a fancy rainbow effect when you unlock a retroachievement,
 SSH into Batocera and type the 3 commands:
@@ -52,6 +63,7 @@ CHECK_INTERVAL  = 3  # seconds between two checks
 LED_CHANGE_TIME = 120 # seconds to prevent changes while entering the settings menu
 CONFIG_FILE = CONFIGS / 'leds.conf'
 BLOCK_FILE='/var/run/led-handheld-block'
+BATTERY_LEVELS = "0:BLINK_FF0000,5:FF0000,20:FF5000,40:FFC800,60:00FF00"
 
 def check_support():
     model = batoled.batocera_model()
@@ -117,6 +129,36 @@ def load_config(fname: Path) -> list[str]:
         return []
     return newconfig
 
+# Battery led mode levels as battery_threshold=rgb_color, highest first, then the charging and full colors
+def battery_config() -> tuple[list[str], str, str]:
+    levels: list[str] = []
+    for value in [batoled.batoconf("led.battery.levels") or "", BATTERY_LEVELS]:
+        for item in value.split(","):
+            level, _, color = item.strip().partition(":")
+            if level.isdigit() and int(level) <= 100 and color:
+                levels.append(f'{int(level):3.0f}={color}')
+        if levels:
+            break
+    levels.sort(reverse=True)
+    return levels, batoled.batoconf("led.battery.charging") or "PULSE", batoled.batoconf("led.battery.full") or "BLINK_00FF00"
+
+# Color of the current battery level, or the charging one while plugged in
+def battery_action(level, status, batteryconfig):
+    levels, charging, full = batteryconfig
+    action = read_color(level, levels) or "OFF"
+    if status == "Full" or (status == "Charging" and level >= 100):
+        plugged = full
+    elif status == "Charging":
+        plugged = charging
+    else:
+        return action
+    if plugged == "LEVEL":
+        return action
+    if plugged == "PULSE":
+        color = action.split("_")[-1]
+        return f"PULSE_{color}" if len(color) == 6 else action
+    return plugged
+
 # Check the current battery level and adjust led color
 def led_check(led):
     ledconfig = ["100=009900", "15=ESCOLOR", "10=CC3333", "5=FF0000", "3=PULSE"] # Default values when no config file
@@ -141,16 +183,19 @@ def led_check(led):
                     open(PATH + '/status','r') as st:
                 bt = tp.readline().strip()
                 ch = st.readline().strip()
-                if (ch == "Charging") or (ch == "Full"):
-                    bt = '100'
-                if (ch == "Discharging") and (bt == "100"):
-                    bt = '99'
-                block = read_color(bt, ledconfig)
+                mode = batoled.batoconf("led.mode") or "static"
+                if mode == "battery":
+                    block = battery_action(int(bt), ch, battery_config())
+                else:
+                    if (ch == "Charging") or (ch == "Full"):
+                        bt = '100'
+                    if (ch == "Discharging") and (bt == "100"):
+                        bt = '99'
+                    block = read_color(bt, ledconfig)
                 
                 # Resolve the color block or transition mode dynamically
                 target_action = block
                 if block == "ESCOLOR":
-                    mode = batoled.batoconf("led.mode") or "static"
                     if mode == "rainbow":
                         target_action = "RAINBOW"
                     elif mode == "chroma":
@@ -158,11 +203,25 @@ def led_check(led):
                     elif mode == "pulse":
                         target_action = "PULSE"
 
+                # PULSE_RRGGBB and BLINK_RRGGBB: draw frames until the next check, without reading the battery each frame
+                if batoled.getEffectRGB(target_action) is not None:
+                    end = time.time() + CHECK_INTERVAL
+                    last_frame = None
+                    while time.time() < end:
+                        frame = batoled.getEffectRGB(target_action)
+                        if frame != last_frame and color_changes_allowed():
+                            led.set_color(frame)
+                            last_frame = frame
+                        time.sleep(0.1)
+                    last_state = target_action
+                    continue
+
                 # Check if this is a software-driven effect that requires continuous looping
                 is_software_effect = target_action in ["RAINBOW", "CHROMA", "PULSE"] and batoled.batocera_model() in ["pwm", "rgb", "rgbaddr", "multiled", "dual_multiled", "odin_mono", "rg55g1"]
 
                 # Only write to the hardware if the state has changed, or if it is a software effect that needs looping
-                if target_action != last_state or is_software_effect:
+                # a one-shot effect ends on ESCOLOR, the battery mode puts its color back
+                if target_action != last_state or is_software_effect or (mode == "battery" and len(target_action) == 6 and led.get_color() != target_action.upper()):
                     try:
                         if DEBUG:
                             print(f"Set color to {target_action} for {bt}%")
@@ -195,8 +254,9 @@ def color_changes_allowed():
             diff = time.time() - float(line)
             if diff < LED_CHANGE_TIME:
                 return (False)
-        with open(BLOCK_FILE, "w+") as fp:
-            fp.write("0")
+        if line != "0":
+            with open(BLOCK_FILE, "w+") as fp:
+                fp.write("0")
         return (True)
     except:
         return (True)
@@ -246,6 +306,12 @@ if len(sys.argv) > 1:
             led.set_color(sys.argv[2])
     elif sys.argv[1] == "get_color":
         print(led.get_color())
+    elif sys.argv[1] == "battery_profile":
+        (levels, charging, full) = battery_config()
+        for level in reversed(levels):
+            print(level.strip())
+        print(f'charging={charging}')
+        print(f'full={full}')
     elif sys.argv[1] == "set_color_dec" and len(sys.argv) > 2:
         if color_changes_allowed():
             rgb = " ".join(sys.argv[2:]) + " "
