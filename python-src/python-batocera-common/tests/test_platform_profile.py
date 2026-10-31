@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
     from pytest_mock import MockerFixture
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 def _handler(name: str, choices: str, profile: str) -> None:

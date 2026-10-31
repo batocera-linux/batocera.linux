@@ -31,14 +31,14 @@ from batocera_launch.paths import LAUNCH_DATA_DIR
 if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _REAL_SPECIAL_DIR = Path(__file__).resolve().parents[1] / 'resources' / 'data' / 'special'
 
 
 @pytest.fixture(autouse=True)
-def special_data(fs: FakeFilesystem) -> None:
-    fs.add_real_directory(_REAL_SPECIAL_DIR, target_path=LAUNCH_DATA_DIR / 'special')  # pyright: ignore
+def special_data(fake_fs: FakeFilesystem) -> None:
+    fake_fs.add_real_directory(_REAL_SPECIAL_DIR, target_path=LAUNCH_DATA_DIR / 'special')  # pyright: ignore
 
 
 class TestGetDecorationId:

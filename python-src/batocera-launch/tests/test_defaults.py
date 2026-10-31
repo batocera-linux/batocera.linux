@@ -31,7 +31,7 @@ from batocera_launch.paths import LAUNCH_DEFAULTS_DIR
 if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _REAL_DEFAULTS_DIR = Path(__file__).resolve().parents[1] / 'resources' / 'defaults'
 
@@ -257,9 +257,9 @@ n64:
             'videomode': 'max-1920x1080',
         }
 
-    def test_real_defaults_resources(self, fs: FakeFilesystem) -> None:
-        fs.add_real_directory(_REAL_DEFAULTS_DIR, target_path=LAUNCH_DEFAULTS_DIR)  # pyright: ignore
-        fs.add_real_file(  # pyright: ignore
+    def test_real_defaults_resources(self, fake_fs: FakeFilesystem) -> None:
+        fake_fs.add_real_directory(_REAL_DEFAULTS_DIR, target_path=LAUNCH_DEFAULTS_DIR)  # pyright: ignore
+        fake_fs.add_real_file(  # pyright: ignore
             _REAL_DEFAULTS_DIR / 'config-x86_64.yml',
             target_path=LAUNCH_DEFAULTS_DIR / 'config-arch.yml',
         )

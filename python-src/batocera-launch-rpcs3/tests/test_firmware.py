@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from aiointercept import aiointercept
 
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _UPDATE_LIST = """# US
 Dest=84;CompatibleSystemSoftwareVersion=4.9300-;

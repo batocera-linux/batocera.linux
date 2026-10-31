@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from batocera_launch.config.config import SystemConfig
 
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 def _write(path: Path, content: str) -> None:
@@ -129,7 +129,7 @@ class TestShouldBoost:
 
 
 def _initialize_sysfs_governor(
-    fs: FakeFilesystem,
+    fake_fs: FakeFilesystem,
     path: Path,
     params: str | tuple[str, str],
 ) -> None:
@@ -139,34 +139,34 @@ def _initialize_sysfs_governor(
     else:
         governor, available = params
 
-    fs.makedirs(str(path.parent), exist_ok=True)
-    fs.create_file(str(path), contents=f'{governor}\n')  # pyright: ignore
-    fs.create_file(str(path.with_name('available_governors')), contents=f'{available}\n')  # pyright: ignore
+    fake_fs.makedirs(str(path.parent), exist_ok=True)
+    fake_fs.create_file(str(path), contents=f'{governor}\n')  # pyright: ignore
+    fake_fs.create_file(str(path.with_name('available_governors')), contents=f'{available}\n')  # pyright: ignore
 
 
 @pytest.mark.usefixtures('on_mains')
 class TestDevfreqPlugin:
     @pytest.fixture
-    def mock_gpu(self, request: pytest.FixtureRequest, fs: FakeFilesystem) -> Path:
+    def mock_gpu(self, request: pytest.FixtureRequest, fake_fs: FakeFilesystem) -> Path:
         gpu = Path('/sys/class/devfreq/ff400000.gpu/governor')
 
-        _initialize_sysfs_governor(fs, gpu, request.param)
+        _initialize_sysfs_governor(fake_fs, gpu, request.param)
 
         return gpu
 
     @pytest.fixture
-    def mock_dmc(self, request: pytest.FixtureRequest, fs: FakeFilesystem) -> Path:
+    def mock_dmc(self, request: pytest.FixtureRequest, fake_fs: FakeFilesystem) -> Path:
         dmc = Path('/sys/class/devfreq/dmc/governor')
 
-        _initialize_sysfs_governor(fs, dmc, request.param)
+        _initialize_sysfs_governor(fake_fs, dmc, request.param)
 
         return dmc
 
     @pytest.fixture
-    def mock_mpgpu(self, fs: FakeFilesystem) -> Path:
+    def mock_mpgpu(self, fake_fs: FakeFilesystem) -> Path:
         mpgpu = Path('/sys/class/mpgpu/scale_mode')
 
-        fs.create_file(str(mpgpu), contents='1\n')  # pyright: ignore
+        fake_fs.create_file(str(mpgpu), contents='1\n')  # pyright: ignore
 
         return mpgpu
 

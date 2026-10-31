@@ -28,7 +28,7 @@ from batocera_common.key_value_config import KeyValueConfig
 from batocera_common.paths import BATOCERA_CONF, SYSCONFIG
 from batocera_common.settings import board_model, get_master_section, get_master_setting
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _DEVICETREE_MODEL = Path('/sys/firmware/devicetree/base/model')
 _DMI_PRODUCT_NAME = Path('/sys/devices/virtual/dmi/id/product_name')

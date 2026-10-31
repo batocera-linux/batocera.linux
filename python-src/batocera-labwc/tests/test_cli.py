@@ -38,7 +38,7 @@ if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
     from pytest_mock import MockerFixture
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _MINIMAL_RC_XML = """\
 <?xml version='1.0' encoding='utf-8'?>
@@ -142,7 +142,7 @@ _RULE_SETS: dict[str, str] = {
 
 
 @pytest.fixture
-def rc_path(fs: FakeFilesystem) -> Path:
+def rc_path(fake_fs: FakeFilesystem) -> Path:
     path = Path('/userdata/system/.config/labwc/rc.xml')
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(_MINIMAL_RC_XML)
@@ -150,7 +150,7 @@ def rc_path(fs: FakeFilesystem) -> Path:
 
 
 @pytest.fixture
-def rules_dir(fs: FakeFilesystem) -> Path:
+def rules_dir(fake_fs: FakeFilesystem) -> Path:
     path = BATOCERA_SHARE_DIR / 'labwc'
     path.mkdir(parents=True, exist_ok=True)
 
@@ -295,7 +295,7 @@ class TestMain:
     def test_empty_rules_yaml_applies_no_window_rules(
         self,
         rc_path: Path,
-        fs: FakeFilesystem,
+        fake_fs: FakeFilesystem,
         run_main: Callable[..., None],
     ) -> None:
         path = BATOCERA_SHARE_DIR / 'labwc' / '_global.labwc-rules.yml'

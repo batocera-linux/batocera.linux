@@ -26,7 +26,7 @@ import pytest
 
 from batocera_common.fs import atomic_write, directory_differences
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 def _write(path: Path, content: str = '') -> None:

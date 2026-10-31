@@ -54,12 +54,12 @@ if TYPE_CHECKING:
 _OLD = 'v1.0.0'
 _NEW = 'v1.0.1'
 
-pytestmark = [pytest.mark.usefixtures('fs'), pytest.mark.launch_config_system('opengoal')]
+pytestmark = [pytest.mark.usefixtures('fake_fs'), pytest.mark.launch_config_system('opengoal')]
 
 
 @pytest.fixture
-def fs(fs: FakeFilesystem) -> None:
-    fs.makedirs(str(_SHIPPED_DATA))
+def fake_fs(fake_fs: FakeFilesystem) -> None:
+    fake_fs.makedirs(str(_SHIPPED_DATA))
 
     _RELEASE_FILE.write_text(f'{_NEW}\n')
 
@@ -123,7 +123,7 @@ def mock_run(mocker: MockerFixture, request: pytest.FixtureRequest) -> AsyncMock
 
 
 @pytest.fixture
-def packed_launch_rom(fs: FakeFilesystem, launch_config_system: str, game: str, game_release: str) -> Rom:
+def packed_launch_rom(fake_fs: FakeFilesystem, launch_config_system: str, game: str, game_release: str) -> Rom:
     rom = Rom(ROMS / launch_config_system / f'{game}.squashfs', SQUASHFS_DIR / game)
 
     rom.source.parent.mkdir(parents=True, exist_ok=True)

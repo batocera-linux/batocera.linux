@@ -78,12 +78,12 @@ def pytest_configure(config: pytest.Config) -> None:
 
 
 @pytest.fixture
-def fs_modules_to_reload() -> list[ModuleType] | None:
+def fake_fs_modules_to_reload() -> list[ModuleType] | None:
     return
 
 
 @pytest.fixture
-def fs(fs_modules_to_reload: list[ModuleType] | None, mocker: MockerFixture) -> Iterator[FakeFilesystem]:
+def fake_fs(fake_fs_modules_to_reload: list[ModuleType] | None, mocker: MockerFixture) -> Iterator[FakeFilesystem]:
     environ = os.environ.copy()
 
     # delete these so our fake filesystem does not inherit the temporary directory
@@ -92,24 +92,25 @@ def fs(fs_modules_to_reload: list[ModuleType] | None, mocker: MockerFixture) -> 
     environ.pop('TMPDIR', None)
     environ.pop('TEMP', None)
 
-    with mocker.patch.dict('os.environ', environ, clear=True):
-        # batocera runs as root
-        helpers.set_uid(0)
+    mocker.patch.dict('os.environ', environ, clear=True)
 
-        with Patcher(
-            additional_skip_names=[
-                'syrupy.utils',
-                'syrupy.extensions.amber.serializer',
-                'syrupy.extensions.image',
-                'syrupy.extensions.single_file',
-            ],
-            modules_to_reload=fs_modules_to_reload,
-            allow_root_user=True,
-        ) as patcher:
-            patcher.fs.os = OSType.LINUX  # pyright: ignore
-            yield patcher.fs  # pyright: ignore
+    # batocera runs as root
+    helpers.set_uid(0)
 
-        helpers.reset_ids()
+    with Patcher(
+        additional_skip_names=[
+            'syrupy.utils',
+            'syrupy.extensions.amber.serializer',
+            'syrupy.extensions.image',
+            'syrupy.extensions.single_file',
+        ],
+        modules_to_reload=fake_fs_modules_to_reload,
+        allow_root_user=True,
+    ) as patcher:
+        patcher.fs.os = OSType.LINUX  # pyright: ignore
+        yield patcher.fs  # pyright: ignore
+
+    helpers.reset_ids()
 
 
 @pytest.fixture

@@ -38,7 +38,7 @@ from batocera_labwc.touch import (
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _LIBINPUT_LIST = """\
 Device:           gpio-keys
