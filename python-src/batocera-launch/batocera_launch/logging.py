@@ -108,6 +108,32 @@ class EpipeTolerantStreamHandler(logging.StreamHandler[EpipeTolerantTextIO]):
             raise
 
 
+class MaxLinesFilter(logging.Filter):
+    def __init__(self, max_lines: int) -> None:
+        super().__init__()
+
+        # Add one to allow for the notice message when the limit is reached
+        self.max_lines = max_lines + 1
+        self.line_count = 0
+
+    def filter(self, record: logging.LogRecord) -> bool | logging.LogRecord:
+        self.line_count += 1
+
+        if self.line_count < self.max_lines:
+            return True
+
+        if self.line_count == self.max_lines:
+            notice = logging.makeLogRecord(record.__dict__.copy())
+            notice.msg = 'Logging limit reached; further emulator output omitted.'
+            notice.args = ()
+            notice.exc_info = None
+            notice.exc_text = None
+            notice.stack_info = None
+            return notice
+
+        return False
+
+
 @contextmanager
 def setup_logging() -> Generator[None]:
     """
@@ -173,6 +199,7 @@ def setup_logging() -> Generator[None]:
             )
         )
         emulator_file_handler.addFilter(lambda r: r.name == 'emulator')  # Only include emulator logs
+        emulator_file_handler.addFilter(MaxLinesFilter(max_lines=500))  # Limit to 500 lines
 
         logger.addHandler(emulator_file_handler)
     except OSError:
