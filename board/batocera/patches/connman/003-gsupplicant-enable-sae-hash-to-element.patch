@@ -1,0 +1,55 @@
+From: Alejandro Arrufat <15357691+AlexArrufat@users.noreply.github.com>
+Subject: [PATCH] gsupplicant: enable SAE hash-to-element with legacy compatibility
+
+The default sae_pwe=0 only enables hunting-and-pecking. Enable both
+SAE derivation methods so access points advertising hash-to-element
+can negotiate it without excluding older networks.
+
+Set the per-interface global SaePwe property to "2" before connection
+setup. This allows hash-to-element where advertised while retaining
+hunting-and-pecking for older networks. It does not force WPA3 on
+WPA2-only APs or change the list of permitted key-management methods.
+NetworkManager uses the same global supplicant setting.
+
+This complements the SAE D-Bus capability reporting fix in
+wpa_supplicant 2.12. Tested with ConnMan 2.0:
+WPA3-SAE, H2E, PMF, DHCP, and interface-bound traffic.
+
+Upstream: Not submitted
+Signed-off-by: Alejandro Arrufat <15357691+AlexArrufat@users.noreply.github.com>
+
+--- a/gsupplicant/supplicant.c
++++ b/gsupplicant/supplicant.c
+@@ -2538,11 +2538,11 @@
+ 	return interface;
+ }
+ 
+-static void set_pmf(DBusMessageIter *iter, void *user_data)
+-{
+-	const char *pmf = user_data;
+-
+-	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &pmf);
++static void set_global_string(DBusMessageIter *iter, void *user_data)
++{
++	const char *value = user_data;
++
++	dbus_message_iter_append_basic(iter, DBUS_TYPE_STRING, &value);
+ }
+ 
+ static void interface_added(DBusMessageIter *iter, void *user_data)
+@@ -2575,7 +2575,14 @@
+ 	 */
+ 	supplicant_dbus_property_set(path, SUPPLICANT_INTERFACE ".Interface",
+ 				"Pmf", DBUS_TYPE_STRING_AS_STRING,
+-				set_pmf, NULL, "1", NULL);
++				set_global_string, NULL, "1", NULL);
++
++	/* Prefer SAE hash-to-element where advertised by the AP, while
++	 * retaining hunting-and-pecking compatibility for older networks.
++	 */
++	supplicant_dbus_property_set(path, SUPPLICANT_INTERFACE ".Interface",
++				"SaePwe", DBUS_TYPE_STRING_AS_STRING,
++				set_global_string, NULL, "2", NULL);
+ 
+ 	if (!properties_appended) {
+ 		supplicant_dbus_property_get_all(path,
