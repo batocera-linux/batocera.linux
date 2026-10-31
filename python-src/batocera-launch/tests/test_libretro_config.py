@@ -31,7 +31,7 @@ from batocera_launch.config.libretro import LibretroConfig
 if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def config(config_data: dict[str, Any]) -> Config:
 
 
 @pytest.fixture
-def config_path(request: pytest.FixtureRequest, fs: FakeFilesystem) -> Path:
+def config_path(request: pytest.FixtureRequest, fake_fs: FakeFilesystem) -> Path:
     param = getattr(request, 'param', Path('/retroarch/custom.cfg'))
 
     if isinstance(param, tuple):

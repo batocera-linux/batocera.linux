@@ -31,7 +31,7 @@ from batocera_launch.exceptions import InvalidConfiguration
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _ROM_DIR = Path('/userdata/roms/duke')
 

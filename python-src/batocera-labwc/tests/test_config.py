@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
     from pytest_mock import MockerFixture
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _MINIMAL_RC_XML = """\
 <?xml version='1.0' encoding='utf-8'?>
@@ -66,7 +66,7 @@ _EXISTING_TOUCH_RC_XML = """\
 
 
 @pytest.fixture
-def rc_path(fs: FakeFilesystem) -> Path:
+def rc_path(fake_fs: FakeFilesystem) -> Path:
     path = Path('/userdata/system/.config/labwc/rc.xml')
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(_MINIMAL_RC_XML)
@@ -118,8 +118,8 @@ def _touch_elements(root: ET.Element[str]) -> list[ET.Element[str]]:
 
 
 class TestLabWCConfigLoad:
-    def test_raises_when_file_not_found(self, fs: FakeFilesystem) -> None:
-        fs.create_dir('/userdata/system/.config/labwc')  # pyright: ignore
+    def test_raises_when_file_not_found(self, fake_fs: FakeFilesystem) -> None:
+        fake_fs.create_dir('/userdata/system/.config/labwc')  # pyright: ignore
 
         with pytest.raises(FileNotFoundError):
             LabWCConfig(path=Path('/userdata/system/.config/labwc/rc.xml'))

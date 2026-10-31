@@ -36,7 +36,7 @@ from batocera_launch.emulators.opengoal import (
     _read_build,
 )
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _ROM = Path('/userdata/roms/opengoal/game')
 _PROJECT = Path('/userdata/saves/opengoal/projects/game')

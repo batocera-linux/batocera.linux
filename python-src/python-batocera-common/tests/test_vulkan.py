@@ -132,7 +132,9 @@ DISCRETE_GPU = vulkan.VulkanGPU(
 
 
 @pytest.fixture
-def mock_vulkaninfo(request: pytest.FixtureRequest, mocker: pytest_mock.MockerFixture, fs: FakeFilesystem) -> AsyncMock:
+def mock_vulkaninfo(
+    request: pytest.FixtureRequest, mocker: pytest_mock.MockerFixture, fake_fs: FakeFilesystem
+) -> AsyncMock:
     from batocera_common.asyncio import AsyncCompletedProcess
 
     if request.param == 'summary':
@@ -148,7 +150,7 @@ def mock_vulkaninfo(request: pytest.FixtureRequest, mocker: pytest_mock.MockerFi
     else:
         raise ValueError('unknown param')
 
-    fs.create_file('/usr/bin/vulkaninfo')  # pyright: ignore[reportUnknownMemberType]
+    fake_fs.create_file('/usr/bin/vulkaninfo')  # pyright: ignore[reportUnknownMemberType]
 
     if output is not None:
         return_value = AsyncCompletedProcess(returncode=0, stdout=output, stderr='')
@@ -213,9 +215,9 @@ async def test_get_vulkan_info_summary() -> None:
 @pytest.mark.parametrize('mock_vulkaninfo', ['hybrid'], indirect=True)
 @pytest.mark.usefixtures('mock_vulkaninfo')
 @pytest.mark.parametrize('radeon_prime_disabled', [False, True])
-async def test_get_vulkan_info_hybrid(fs: FakeFilesystem, radeon_prime_disabled: bool) -> None:
+async def test_get_vulkan_info_hybrid(fake_fs: FakeFilesystem, radeon_prime_disabled: bool) -> None:
     if radeon_prime_disabled:
-        fs.create_file(  # pyright: ignore[reportUnknownMemberType]
+        fake_fs.create_file(  # pyright: ignore[reportUnknownMemberType]
             '/boot/batocera-boot.conf', contents='radeon-prime=false\n'
         )
 
@@ -280,11 +282,11 @@ async def test_get_vulkan_info_preserves_wayland_display(
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_discovers_display_from_x_socket(
-    fs: FakeFilesystem,
+    fake_fs: FakeFilesystem,
     mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
-    fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
+    fake_fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
     mocker.patch.dict('os.environ', {}, clear=True)
 
     await vulkan.get_vulkan_info()
@@ -296,12 +298,12 @@ async def test_get_vulkan_info_discovers_display_from_x_socket(
 
 @pytest.mark.parametrize('mock_vulkaninfo', ['summary'], indirect=True)
 async def test_get_vulkan_info_uses_lowest_x_socket(
-    fs: FakeFilesystem,
+    fake_fs: FakeFilesystem,
     mocker: MockerFixture,
     mock_vulkaninfo: AsyncMock,
 ) -> None:
-    fs.create_file('/tmp/.X11-unix/X1')  # pyright: ignore[reportUnknownMemberType]
-    fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
+    fake_fs.create_file('/tmp/.X11-unix/X1')  # pyright: ignore[reportUnknownMemberType]
+    fake_fs.create_file('/tmp/.X11-unix/X0')  # pyright: ignore[reportUnknownMemberType]
     mocker.patch.dict('os.environ', {}, clear=True)
 
     await vulkan.get_vulkan_info()
@@ -345,8 +347,8 @@ def test_vulkan_info_encoding_codecs() -> None:
     assert info.encoding_codecs == ['av1_vulkan']
 
 
-def test_vulkan_info_active_discrete_respects_radeon_prime(fs: FakeFilesystem) -> None:
-    fs.create_file(  # pyright: ignore[reportUnknownMemberType]
+def test_vulkan_info_active_discrete_respects_radeon_prime(fake_fs: FakeFilesystem) -> None:
+    fake_fs.create_file(  # pyright: ignore[reportUnknownMemberType]
         '/boot/batocera-boot.conf', contents='radeon-prime=false\n'
     )
 
@@ -358,8 +360,8 @@ def test_vulkan_info_active_discrete_respects_radeon_prime(fs: FakeFilesystem) -
     assert info.version == '1.3.280'
 
 
-def test_vulkan_info_discrete_gpu_without_active_discrete(fs: FakeFilesystem) -> None:
-    fs.create_file(  # pyright: ignore[reportUnknownMemberType]
+def test_vulkan_info_discrete_gpu_without_active_discrete(fake_fs: FakeFilesystem) -> None:
+    fake_fs.create_file(  # pyright: ignore[reportUnknownMemberType]
         '/boot/batocera-boot.conf', contents='radeon-prime=false\n'
     )
 

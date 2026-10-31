@@ -26,7 +26,7 @@ import pytest
 
 from batocera_common.key_value_config import KeyValueConfig
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 class TestKeyValueConfigGetSet:

@@ -30,7 +30,7 @@ from batocera_launch.cpu import fast_cores, read_cpu_capacities, resolve_cpu_clu
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 _SYS_CPU = Path('/sys/devices/system/cpu')
 

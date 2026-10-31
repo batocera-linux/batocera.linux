@@ -33,7 +33,7 @@ if TYPE_CHECKING:
     from pyfakefs.fake_filesystem import FakeFilesystem
     from pytest_mock import MockerFixture
 
-pytestmark = pytest.mark.usefixtures('fs')
+pytestmark = pytest.mark.usefixtures('fake_fs')
 
 
 def _write_info_paths(path: Path, *info_files: Path) -> None:
@@ -53,7 +53,7 @@ def info_paths() -> Path:
 
 
 @pytest.fixture
-def destination_dir(fs: FakeFilesystem) -> Path:
+def destination_dir(fake_fs: FakeFilesystem) -> Path:
     destination_dir = Path('/out/labwc')
     destination_dir.mkdir(parents=True, exist_ok=True)
     return destination_dir

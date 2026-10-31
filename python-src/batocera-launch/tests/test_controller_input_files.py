@@ -58,7 +58,7 @@ def _player() -> PlayerArguments:
     )
 
 
-def test_uses_the_configs_es_resolved_without_reading_es_input(fs: FakeFilesystem, mocker: MockerFixture) -> None:
+def test_uses_the_configs_es_resolved_without_reading_es_input(fake_fs: FakeFilesystem, mocker: MockerFixture) -> None:
     _write(ES_PLAYERS_INPUT, _input_list('7'))
     _write(SYSTEM_ES_DIR / 'es_input.cfg', _input_list('0'))
     parse = mocker.spy(ET, 'parse')
@@ -69,7 +69,7 @@ def test_uses_the_configs_es_resolved_without_reading_es_input(fs: FakeFilesyste
     assert [str(call.args[0]) for call in parse.call_args_list] == [str(ES_PLAYERS_INPUT)]
 
 
-def test_falls_back_to_es_input_without_the_players_file(fs: FakeFilesystem) -> None:
+def test_falls_back_to_es_input_without_the_players_file(fake_fs: FakeFilesystem) -> None:
     _write(SYSTEM_ES_DIR / 'es_input.cfg', _input_list('0'))
 
     (controller,) = Controller.load_for_players([_player()])
