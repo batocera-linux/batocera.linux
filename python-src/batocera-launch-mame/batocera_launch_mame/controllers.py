@@ -142,6 +142,37 @@ class MAMEControllers(MAMEBase):
                         f'P{nplayer}_{axis}', sequence=f'MOUSECODE_{nplayer}_YAXIS'
                     )
 
+            if self.config.use_trackballs and nplayer <= len(self.trackballs):
+                # if no spinner, configure trackballs as spinners
+                if len(self.spinners) == 0:
+                    xnplayer = 1 # always 1 until multimice
+                    for target_axis in ["DIAL", "PADDLE"]:
+                        mouseid = 1 # always 1 until multimice
+                        axis = "YAXIS" if "REL_Y" == self.trackballs[0].rels[0] else "XAXIS"
+                        default_control_config.add_sequence_port(
+                            f'P{xnplayer}_{target_axis}', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                        )
+                for target_axis in ["TRACKBALL"]:
+                    xnplayer = 1 # always 1 until multimice
+                    mouseid = 1 # always 1 until multimice
+                    axis = "YAXIS" if "REL_Y" == self.trackballs[0].rels[0] else "XAXIS"
+                    default_control_config.add_sequence_port(
+                        f'P{xnplayer}_{target_axis}_X', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+                    axis = "YAXIS" if "REL_Y" == self.trackballs[0].rels[1] else "XAXIS"
+                    default_control_config.add_sequence_port(
+                        f'P{xnplayer}_{target_axis}_Y', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+
+            if self.config.use_spinners and nplayer <= len(self.spinners):
+                xnplayer = 1 # always 1 until multimice
+                for target_axis in ["DIAL", "PADDLE"]:
+                    mouseid = 1 # always 1 until multimice
+                    axis = "YAXIS" if self.spinners[0].rels == "REL_Y" else "XAXIS"
+                    default_control_config.add_sequence_port(
+                        f'P{xnplayer}_{target_axis}', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+
             if self.config.use_guns and nplayer <= len(self.guns):
                 default_control_config.add_common_player_ports(nplayer)
             else:

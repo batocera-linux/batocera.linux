@@ -243,7 +243,9 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
             args.extend(['-plugins', '-plugin', ','.join(plugins_to_load)])
 
         use_mouse = self.use_mouse
-        device_string = 'mouse' if use_mouse else 'joystick'
+        use_trackballs = self.use_trackballs
+        use_spinners = self.use_spinners
+        device_string = 'mouse' if use_mouse or (use_trackballs and len(self.trackballs) > 0) or (use_spinners and len(self.spinners) > 0) else 'joystick'
 
         args.extend(
             [
@@ -273,12 +275,6 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                     device_string,
                 ]
             )
-
-        # Multimouse option currently hidden in ES, SDL only detects one mouse.
-        # Leaving code intact for testing & possible ManyMouse integration
-        multi_mouse = self.config.get_bool('multimouse')
-        if multi_mouse:
-            args.append('-multimouse')
 
         # guns
         if use_guns:

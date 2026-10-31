@@ -20,6 +20,7 @@ dependencies = [
 batocera-launch = "batocera_launch.cli.main:main"
 batocera-joysticks-hotkeys = "batocera_launch.joysticks_hotkeys:main"
 batocera-guns = "batocera_launch.devices.gun:main"
+batocera-trackballs-spinners = "batocera_launch.devices.trackball-spinner:main"
 
 [project.entry-points."batocera_launch.emulators"]
 lexaloffle = 'batocera_launch.emulators.lexaloffle:Lexaloffle'
