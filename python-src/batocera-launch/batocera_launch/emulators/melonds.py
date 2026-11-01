@@ -269,5 +269,8 @@ class MelonDS(Emulator):
             env={
                 'XDG_CONFIG_HOME': CONFIGS,
                 'XDG_DATA_HOME': SAVES,
+                # the Wayland GL path is compiled out due to crashes on Aarch64
+                # So labwc needs XWayland for an OpenGL context
+                'QT_QPA_PLATFORM': 'xcb',
             },
         )
