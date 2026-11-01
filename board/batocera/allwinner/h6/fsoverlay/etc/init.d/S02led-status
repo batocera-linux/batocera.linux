@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Switch the power LED from red to green as Batocera boots
+#
+
+RED="/sys/class/leds/orangepi:red:power/brightness"
+GREEN="/sys/class/leds/orangepi:green:status/brightness"
+
+# Hardware check: Exit if the expected LEDs do not exist
+if [ ! -e "$RED" ] || [ ! -e "$GREEN" ]; then
+    exit 0
+fi
+
+case "$1" in
+    start)
+        echo 0 > "$RED"
+        echo 1 > "$GREEN"
+        ;;
+    stop)
+        echo 0 > "$GREEN"
+        echo 1 > "$RED"
+        ;;
+    restart)
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+esac
