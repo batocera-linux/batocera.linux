@@ -1,0 +1,88 @@
+From: Diego Francio <dfrancio@gmail.com>
+Subject: [PATCH] Bluetooth: Disable LL Privacy on Intel JfP (8087:0aaa)
+
+Backport to Linux 7.2.8 of the series posted upstream on 2026-10-27:
+https://patchwork.kernel.org/project/bluetooth/cover/20261027164359.460369-1-dfrancio@gmail.com/
+The two patches are squashed. BTUSB_BROKEN_LL_PRIVACY uses BIT(30)
+because BIT(29) is BTUSB_BROKEN_EXT_SCAN in this tree.
+
+The Intel Jefferson Peak controller (Wireless-AC 9460/9462/9560,
+USB 8087:0aaa) reports LL Privacy support, but since commit
+e209e5ccc5ac ("Bluetooth: MGMT: Mark LL Privacy as stable") the kernel
+uses it whenever the controller claims it. With BLE HID devices paired
+the controller firmware then crashes every few minutes:
+
+  Bluetooth: hci0: Hardware error 0x0c
+
+Add HCI_QUIRK_BROKEN_LL_PRIVACY, which makes ll_privacy_capable()
+return false, and set it for this USB ID so the resolving list is not
+used on it.
+
+Fixes: e209e5ccc5ac ("Bluetooth: MGMT: Mark LL Privacy as stable")
+Signed-off-by: Diego Francio <dfrancio@gmail.com>
+---
+diff -ruN a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+--- a/drivers/bluetooth/btusb.c	2026-11-01 14:50:32.306038224 -0500
++++ b/drivers/bluetooth/btusb.c	2026-11-01 14:50:32.322142238 -0500
+@@ -69,6 +69,7 @@
+ #define BTUSB_ACTIONS_SEMI		BIT(27)
+ #define BTUSB_BARROT			BIT(28)
+ #define BTUSB_BROKEN_EXT_SCAN		BIT(29)
++#define BTUSB_BROKEN_LL_PRIVACY		BIT(30)
+ 
+ static const struct usb_device_id btusb_table[] = {
+ 	/*
+@@ -515,7 +516,8 @@
+ 	{ USB_DEVICE(0x8087, 0x0a2b), .driver_info = BTUSB_INTEL_COMBINED },
+ 	{ USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL_COMBINED |
+ 						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
+-	{ USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_COMBINED },
++	{ USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_COMBINED |
++						     BTUSB_BROKEN_LL_PRIVACY },
+ 
+ 	/* Other Intel Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
+@@ -4355,6 +4357,9 @@
+ 			btintel_set_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED);
+ 	}
+ 
++	if (id->driver_info & BTUSB_BROKEN_LL_PRIVACY)
++		hci_set_quirk(hdev, HCI_QUIRK_BROKEN_LL_PRIVACY);
++
+ 	if (id->driver_info & BTUSB_MARVELL)
+ 		hdev->set_bdaddr = btusb_set_bdaddr_marvell;
+ 
+diff -ruN a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+--- a/include/net/bluetooth/hci_core.h	2026-11-01 14:50:32.305063102 -0500
++++ b/include/net/bluetooth/hci_core.h	2026-11-01 14:50:32.320227613 -0500
+@@ -1990,7 +1990,9 @@
+ #define scan_coded(dev) (((dev)->le_tx_def_phys & HCI_LE_SET_PHY_CODED) || \
+ 			 ((dev)->le_rx_def_phys & HCI_LE_SET_PHY_CODED))
+ 
+-#define ll_privacy_capable(dev) ((dev)->le_features[0] & HCI_LE_LL_PRIVACY)
++#define ll_privacy_capable(dev) (((dev)->le_features[0] & HCI_LE_LL_PRIVACY) && \
++				 !hci_test_quirk((dev), \
++						 HCI_QUIRK_BROKEN_LL_PRIVACY))
+ #define ll_privacy_enabled(dev) (le_enabled(dev) && ll_privacy_capable(dev))
+ 
+ #define privacy_mode_capable(dev) (ll_privacy_capable(dev) && \
+diff -ruN a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+--- a/include/net/bluetooth/hci.h	2026-11-01 14:50:32.304982711 -0500
++++ b/include/net/bluetooth/hci.h	2026-11-01 14:50:32.319821202 -0500
+@@ -375,6 +375,16 @@
+ 	 */
+ 	HCI_QUIRK_BROKEN_READ_PAGE_SCAN_TYPE,
+ 
++	/* When this quirk is set, the controller is not treated as LL Privacy
++	 * capable even though it claims to support it in its LE features, so
++	 * the resolving list is never used. This is required for controllers
++	 * whose firmware crashes (Hardware Error) when the resolving list is
++	 * programmed.
++	 *
++	 * This quirk must be set before hci_register_dev is called.
++	 */
++	HCI_QUIRK_BROKEN_LL_PRIVACY,
++
+ 	__HCI_NUM_QUIRKS,
+ };
+ 
