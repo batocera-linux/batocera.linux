@@ -144,6 +144,18 @@ if BR2_PACKAGE_BATOCERA_TARGET_X86_ANY		|| \
 	default y
 endif
 
+# add platforms that carry the ffmpeg + mpv v4l2 request patches here
+if BR2_PACKAGE_BATOCERA_TARGET_H6		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_H616		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_H700		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3568		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3576		|| \
+   BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+	config BR2_PACKAGE_BATOCERA_V4L2_REQUEST
+	bool "target has v4l2 request support"
+	default y
+endif
+
 # CPUs with fast and slow cores (big.LITTLE). Implied by buildroot's paired CPU
 # selections; a board built for a single core type sets it in its .board file.
 config BR2_PACKAGE_BATOCERA_CPU_BIG_LITTLE

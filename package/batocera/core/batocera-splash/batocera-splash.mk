@@ -50,6 +50,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     # Allwinner H6, H616 H700 boards using stateless v4l2request decoding over Panfrost/DRM
     ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV_ALLWINNER),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request-copy
+        # H6 cedrus outputs AFBC, only the display plane can scan that out
+        ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
+            BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request --gpu-hwdec-interop=v4l2request-overlay
+        endif
     endif
     # Targets that should remain empty (handled by internal defaults)
     ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV_INTERNAL_DEFAULTS),y)
