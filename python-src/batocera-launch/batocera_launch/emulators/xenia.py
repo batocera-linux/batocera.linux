@@ -213,10 +213,12 @@ class Xenia(Emulator):
             'show_achievement_notification': self.config.get_bool('xenia_achievement'),
         }
         config['Vulkan'] = {'vulkan_sparse_shared_memory': False}
-        config['XConfig'] = {
-            'user_country': self.config.get_int('xenia_country', 103),  # 103 = US
-            'user_language': self.config.get_int('xenia_language', 1),
-        }
+        # canary keeps these in its binary xconfig.settings, set from its own menu
+        if not is_canary:
+            config['XConfig'] = {
+                'user_country': self.config.get_int('xenia_country', 103),  # 103 = US
+                'user_language': self.config.get_int('xenia_language', 1),
+            }
 
         with toml_file.open('w') as f:
             toml.dump(config, f)
