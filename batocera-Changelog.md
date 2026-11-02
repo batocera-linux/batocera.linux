@@ -129,6 +129,7 @@
 - LINQ / ShanWan dual-mode pads in Xbox 360 mode not detected since v43
 - MAME black screen on exit with a rotated display when CRT switchres is off
 - MelonDS OpenGL falling back to software on Wayland (labwc) builds
+- REminiscence freeze at launch with an empty .rem file
 - Missing BIOS list entries for Apple IIGS, Gaelco, Namco System 22, Oric Atmos and SAM Coupe
 - Mupen64 not starting fullscreen with Wayland
 - Nintendo DS .dsi and .ids ROM files not listed in EmulationStation (melonDS and DeSmuME accept them)
