@@ -3,8 +3,8 @@
 # libretro-anybor
 #
 ################################################################################
-# Version: 0.1.64
-LIBRETRO_ANYBOR_VERSION = e1e74050bf9e6cb5e65260186ccff427e66db6b0
+# Version: 0.2.10
+LIBRETRO_ANYBOR_VERSION = 7c3110763b085c79ef79e8f9e5061af0c32d973b
 LIBRETRO_ANYBOR_SITE = $(call github,retrodiv,AnyBOR-libretro,$(LIBRETRO_ANYBOR_VERSION))
 # multiple, see https://github.com/retrodiv/AnyBOR-libretro/tree/main/LICENSES
 # OpenBOR 3400 retains its no-sale terms; see LICENSES.md.
