@@ -36,4 +36,4 @@ class Reminiscence(Core):
         with self.rom.open() as file:
             first_line = file.readline().strip()
 
-        return self.rom.parent / first_line
+        return self.rom.parent / first_line if first_line else self.rom
