@@ -1024,8 +1024,9 @@ if [ "${SETACTION}" = "1" ]; then
     fi
 else
     # the one who manage to remove the file can do the action
-    FLAG_DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.flag"))))
+    FLAG_TIME=$(stat -c %Y "/var/run/shutdown-delay.flag" 2>/dev/null)
     if rm "/var/run/shutdown-delay.flag" 2>/dev/null; then
+		FLAG_DELAY=$(($(date +%s) - ${FLAG_TIME:-$(date +%s)}))
 		# if there is a delay, check it first
 		if [ "${SHUTDOWNDELAY}" != "" ]; then
 			if [ "${FLAG_DELAY}" -lt "${SHUTDOWNDELAY}" ]; then
@@ -1040,7 +1041,7 @@ else
 		if [ -e "/var/run/shutdown-delay.last" ]; then
 			DELAY=$(expr $(($(date +%s) - $(date +%s -r "/var/run/shutdown-delay.last"))))
 			if [ "${DELAY}" -lt 5 ]; then
-				echo "wait between 2 calls" >2&
+				echo "wait between 2 calls"
 				exit 0
 			fi
 		fi
