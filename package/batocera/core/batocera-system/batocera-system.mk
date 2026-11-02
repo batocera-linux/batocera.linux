@@ -42,7 +42,7 @@ define BATOCERA_SYSTEM_INSTALL_TARGET_CMDS
 
 	# list of modules that doesnt like suspend
 	mkdir -p $(TARGET_DIR)/etc/pm/config.d
-	echo 'SUSPEND_MODULES="rtw88_8822ce snd_pci_acp5x"' > $(TARGET_DIR)/etc/pm/config.d/config
+	echo 'SUSPEND_MODULES="rtw88_8822ce"' > $(TARGET_DIR)/etc/pm/config.d/config
 endef
 
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
