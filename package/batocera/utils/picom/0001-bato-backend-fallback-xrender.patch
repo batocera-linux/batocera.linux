@@ -1,0 +1,18 @@
+Fall back to xrender when the configured backend fails to initialise.
+
+--- a/src/picom.c
++++ b/src/picom.c
+@@ -561,6 +561,13 @@
+ 		// Reinitialize win_data
+ 		ps->backend_data =
+ 		    backend_init(ps->o.backend, ps, session_get_target_window(ps));
++		if (!ps->backend_data && ps->o.backend != backend_find("xrender")) {
++			log_warn("Failed to initialize backend %s, falling back to xrender",
++			         backend_name(ps->o.backend));
++			ps->o.backend = backend_find("xrender");
++			ps->backend_data =
++			    backend_init(ps->o.backend, ps, session_get_target_window(ps));
++		}
+ 		api_backend_plugins_invoke(backend_name(ps->o.backend), ps->backend_data);
+ 		if (!ps->backend_data) {
+ 			log_fatal("Failed to initialize backend, aborting...");
