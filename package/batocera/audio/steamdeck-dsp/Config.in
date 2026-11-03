@@ -3,10 +3,9 @@ config BR2_PACKAGE_STEAMDECK_DSP
 	depends on BR2_PACKAGE_PIPEWIRE
 	depends on BR2_PACKAGE_WIREPLUMBER
 	select BR2_PACKAGE_ALSA_UCM_CONF
+	select BR2_PACKAGE_LILV # pipewire lv2 filter-graph, oled speakers
 	select BR2_PACKAGE_SOUND_OPEN_FIRMWARE
 	help
 	  Installs Steam Deck specific audio configurations.
 
-	  Source files derived from...
-
-	  https://steamdeck-packages.steamos.cloud/archlinux-mirror/sources/jupiter-main
+	  https://steamdeck-packages.steamos.cloud/archlinux-mirror/jupiter-main
