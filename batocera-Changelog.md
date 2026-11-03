@@ -84,7 +84,7 @@
 - Retroid Pocket SM8250 devices audio over USB-C DisplayPort
 - RPCS3 downloads and installs missing PS3 firmware automatically, with optional background updates
 - RPCS3 interface translations
-- SM2-Emu emulator for Model 2 games
+- SM2-Emu emulator for Model 1 and Model 2 games, with a new Sega Model 1 system
 - Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
 - Steam Controller (2026) support on x86_64 / Zen3
 - Steam is installed automatically from Flathub the first time it is launched
