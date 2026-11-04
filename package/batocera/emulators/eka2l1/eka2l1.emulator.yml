@@ -23,6 +23,40 @@ custom_features:
       30 fps: 30
       60 fps: 60
       120 fps: 120
+  eka2l1_rotation:
+    prompt: SCREEN ROTATION
+    description: Turns the picture of games that draw it sideways. Games that switch the phone to landscape themselves are turned by EKA2L1. Saved in the game's EKA2L1 settings.
+    choices:
+      None: 0
+      90°: 90
+      180°: 180
+      270°: 270
+  eka2l1_shader:
+    prompt: SCREEN FILTER
+    description: Shader drawn over the game's picture as it is enlarged. Hold hotkey alone for 3 seconds in game to try them live, for that session only. Saved in the game's EKA2L1 settings.
+    choices:
+      None (Default): none
+      2xBR: 2xBR
+      4xBR: 4xBR
+      4xhq: 4xhq
+      5xBR: 5xBR
+      5xBR-lv2: 5xBR-lv2
+      aacolor: aacolor
+      CRT-Hyllian: CRT-Hyllian
+      CRT-Lottes: CRT-Lottes
+      CRT-Lottes-TV: CRT-Lottes-TV
+      dot: dot
+      dot_mobile: dot_mobile
+      dotpsp_color_mobile: dotpsp_color_mobile
+      fxaa: fxaa
+      grayscale: grayscale
+      inversecolors: inversecolors
+      natural: natural
+      scanline: scanline
+      scanline-emu: scanline-emu
+      sharpen: sharpen
+      zfast_lcd: zfast_lcd
+      zfast_lcd_mobile: zfast_lcd_mobile
   eka2l1_rtos_level:
     prompt: TIMING ACCURACY
     description: Accuracy of the emulated system timers. Lower is faster, higher fixes some games running too fast or too slow.
@@ -31,8 +65,8 @@ custom_features:
       Mid (Default): mid
       High: high
   eka2l1_pad_remap:
-    prompt: IN-GAME PAD REMAPPING
-    description: Hold hotkey alone for 3 seconds during the game to change which phone key a pad button sends. Saved for the game.
+    prompt: IN-GAME MENU
+    description: Hold hotkey alone for 3 seconds during the game to change which phone key a pad button sends (saved for the game), or to try the screen filters live.
     preset: switchauto
   eka2l1_nearest_filter:
     prompt: NEAREST NEIGHBOR FILTERING
@@ -40,7 +74,7 @@ custom_features:
     preset: switchauto
   eka2l1_language:
     prompt: SYSTEM LANGUAGE
-    description: Language reported to the games. It has to be one the installed device firmware ships.
+    description: Language reported to the games, Batocera's by default. The phone's own language is used when its firmware does not have it.
     choices:
       English: 1
       French: 2
@@ -57,31 +91,60 @@ custom_features:
 file_extensions:
   - zip
   - json
+  - n-gage
   - sis
   - sisx
+  - jar
 systems:
   - name: ngage
     file_extensions:
       - zip
       - json
+      - n-gage
     custom_features:
       eka2l1_ngage_device:
-        prompt: N-GAGE MODEL
+        prompt: N-GAGE 1 MODEL
         description: Device used to run the game cards, when both are installed.
         choices:
           Auto: auto
           N-Gage QD (RH-29): RH-29
           N-Gage (NEM-4): NEM-4
+      eka2l1_ngage2_device:
+        prompt: N-GAGE 2 MODEL
+        description: Phone used to run N-Gage 2.0, when installed. Auto uses the Nokia 5320, or the phone of the shortcut.
+        choices:
+          Auto: auto
+          Nokia 5320 XpressMusic (RM-409): RM-409
+          Nokia N95 (RM-159): RM-159
+          Nokia N95 8GB (RM-320): RM-320
+          Nokia N82 (RM-313): RM-313
+          Nokia N81 (RM-223): RM-223
+          Nokia N96 (RM-247): RM-247
+          Nokia E71 (RM-346): RM-346
       eka2l1_skin:
-        prompt: SKIN
+        prompt: N-GAGE 1 SKIN
         description: Picture of the console around the game, taken from the Android EKA2L1 screen profile of that name in roms/ngage/EKA2L1/android/profiles.
         choices:
           Game only: none
           N-Gage: Nokia N-Gage (20_9)
           N-Gage (zoom): Nokia N-Gage (20_9) (ZOOM)
           N-Gage QD: Nokia N-Gage QD (20_9)
+      eka2l1_ngage2_skin:
+        prompt: N-GAGE 2 SKIN
+        description: Picture of the phone around N-Gage 2.0 games, taken from the Android EKA2L1 screen profile of that name in roms/ngage/EKA2L1/android/profiles.
+        choices:
+          Game only: none
+          Nokia 5320 (blue): Nokia 5320 bleu
+          Nokia 5320 (red): Nokia 5320 rouge
+      eka2l1_ngage2_video:
+        prompt: N-GAGE 2 INTRO VIDEO
+        description: Video the N-Gage 2.0 application plays each time it starts. Off keeps it aside in its folder.
+        preset: switchauto
   - name: symbian
     file_extensions:
       - sis
       - sisx
       - json
+  - name: j2me
+    file_extensions:
+      - jar

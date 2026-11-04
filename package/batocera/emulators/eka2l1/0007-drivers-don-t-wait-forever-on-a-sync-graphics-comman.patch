@@ -1,0 +1,90 @@
+From e0ac290aa0de0b9be728511c6c3987c2a087e1ae Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Wed, 4 Nov 2026 01:23:03 +0100
+Subject: [PATCH 7/8] drivers: don't wait forever on a sync graphics command
+ after abort
+
+Quitting while the OS thread was inside a synchronous graphics call (for
+example a window server draw_bitmap creating its texture) could hang the
+emulator: the main thread aborts the graphics driver, the graphics thread
+leaves its loop without dispatching the pending list (or submit drops it
+because should_stop is already set), and send_sync_command keeps waiting
+for a status that nobody will ever write. The OS thread never leaves its
+loop and the main thread blocks joining it, with the screen black and the
+audio still playing.
+
+- send_sync_command also wakes on drv->aborted() and returns -1 when the
+  command never ran, like driver::wait_for already does.
+- ogl_graphics_driver::abort() sets should_stop first, aborts the queue,
+  then takes mut_ before notifying, so a waiter between its predicate
+  check and its wait cannot miss the wake.
+- request_queue::abort() sets abort_ under queue_mut_ for the same reason.
+---
+ src/emu/common/include/common/queue.h                  |  7 ++++++-
+ .../drivers/src/graphics/backend/ogl/graphics_ogl.cpp  | 10 +++++++++-
+ src/emu/drivers/src/itc.cpp                            |  7 +++++--
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/src/emu/common/include/common/queue.h b/src/emu/common/include/common/queue.h
+index 1299481e7..166aad439 100644
+--- a/src/emu/common/include/common/queue.h
++++ b/src/emu/common/include/common/queue.h
+@@ -217,7 +217,12 @@ namespace eka2l1 {
+         }
+ 
+         void abort() {
+-            abort_ = true;
++            {
++                // Set under the lock, so that a thread between its abort_ check and its wait gets the notification
++                const std::lock_guard<std::mutex> guard(queue_mut_);
++                abort_ = true;
++            }
++
+             queue_cond_.notify_all();
+             queue_empty_cond_.notify_all();
+         }
+diff --git a/src/emu/drivers/src/graphics/backend/ogl/graphics_ogl.cpp b/src/emu/drivers/src/graphics/backend/ogl/graphics_ogl.cpp
+index 435f22dba..aacf9a3d8 100644
+--- a/src/emu/drivers/src/graphics/backend/ogl/graphics_ogl.cpp
++++ b/src/emu/drivers/src/graphics/backend/ogl/graphics_ogl.cpp
+@@ -2102,9 +2102,17 @@ namespace eka2l1::drivers {
+     }
+ 
+     void ogl_graphics_driver::abort() {
+-        list_queue.abort();
+         should_stop = true;
+ 
++        // Release a submitter blocked on a full queue first: it holds mut_ while it pushes.
++        list_queue.abort();
++
++        // A waiter that checked aborted() under mut_ just before should_stop was set is not sleeping yet.
++        // Take mut_ so the notification can only come after it waits.
++        {
++            const std::lock_guard<std::mutex> guard(mut_);
++        }
++
+         cond_.notify_all();
+     }
+ 
+diff --git a/src/emu/drivers/src/itc.cpp b/src/emu/drivers/src/itc.cpp
+index c5041e011..a4fc166aa 100644
+--- a/src/emu/drivers/src/itc.cpp
++++ b/src/emu/drivers/src/itc.cpp
+@@ -44,9 +44,12 @@ namespace eka2l1::drivers {
+ 
+         std::unique_lock<std::mutex> ulock(drv->mut_);
+         drv->submit_command_list(cmd_list);
+-        drv->cond_.wait(ulock, [&]() { return status != -100; });
+ 
+-        return status;
++        // Once the driver is aborted (emulator quitting), the list may have been dropped or may never be
++        // dispatched, so nothing would ever set the status.
++        drv->cond_.wait(ulock, [&]() { return (status != -100) || drv->aborted(); });
++
++        return (status == -100) ? -1 : status;
+     }
+ 
+     static std::uint64_t make_data_copy(const void *source, const std::size_t size) {
+-- 
+2.53.0
+
