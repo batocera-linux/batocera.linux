@@ -130,6 +130,15 @@ _NGAGE_APP_VIDEO: Final = ('private', '20003b78', 'n-gage_flux320.3gp')
 
 # default pad layout, in the evmapy .keys format, turned into an EKA2L1 key profile read through SDL
 _PAD_LAYOUT: Final = Path('/usr/eka2l1/batocera-pad.keys')
+
+# Phones drawn for Batocera, with keys that light up and can be touched: the layout used
+# while the screen is taller than wide, then the one used while it is wider (or none)
+_SKINS: Final = _BINARY.parent / 'skins'
+_DRAWN_SKINS: Final = {
+    'drawn-nem-4': ('nem-4', None),
+    'drawn-rh-29': ('rh-29', None),
+    'drawn-rm-409': ('rm-409-portrait', 'rm-409-landscape'),
+}
 _KEYBIND_PROFILE: Final = 'batocera'
 
 # EKA2L1 controller codes (drivers/input/common.h)
@@ -809,9 +818,17 @@ class Eka2l1(Emulator):
             'background_image_opacity': 255,
             'background_image_keep_aspect': False,
             'screen_scale_ratio': 100,
+            'skin_layout': '',
+            'skin_layout_wide': '',
         }
 
         skin = self.config.get_str(setting, 'none')
+        if (drawn := _DRAWN_SKINS.get(skin)) is not None:
+            tall, wide = drawn
+            values['skin_layout'] = str(_SKINS / f'{tall}.json')
+            values['skin_layout_wide'] = str(_SKINS / f'{wide}.json') if wide else ''
+            return values
+
         profile = (self.portable_root or _PORTABLE_ROOTS[0]) / 'android' / 'profiles' / skin
         if skin == 'none' or not (profile / 'background').is_file():
             return values
@@ -917,15 +934,17 @@ class Eka2l1(Emulator):
         self._app_uids = uids
         device = str(args[args.index('--device') + 1])
         ngage2 = self.system == 'ngage' and devices[device] not in _EKA1_PLATFORMS
+        # S60v3 phones (N-Gage 2.0, Symbian 9) have a skin of their own, for their 240x320 screen
+        s60v3 = devices[device] not in _EKA1_PLATFORMS
 
         values: dict[str, object] = {
             'enable_nearest_neighbor_filter': self.config.get_bool('eka2l1_nearest_filter', True),
             'rtos_level': self.config.get_str('eka2l1_rtos_level', 'mid'),
             'current_keybind_profile': _KEYBIND_PROFILE,
-            **self._skin('eka2l1_ngage2_skin' if ngage2 else 'eka2l1_skin'),
+            **self._skin('eka2l1_ngage2_skin' if s60v3 else 'eka2l1_skin'),
             # N-Gage 2.0 phones are drawn lying for landscape games: they stand up when the game turns to portrait.
             # N-Gage games are in portrait on the console held sideways.
-            'background_image_follow_rotation': ngage2,
+            'background_image_follow_rotation': s60v3,
         }
         if (language := self.config.get_int('eka2l1_language')) is None:
             # the language of Batocera

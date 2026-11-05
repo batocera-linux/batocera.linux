@@ -34,6 +34,7 @@ endif
 
 # batocera-pad.keys: the default pad layout, turned into an EKA2L1 key profile by batocera-launch
 # (not an evmapy file: EKA2L1 reads the pad itself)
+# skins: phones drawn for Batocera around the screen, with the keys that light up and can be touched
 define EKA2L1_INSTALL_TARGET_CMDS
     mkdir -p $(TARGET_DIR)/usr/eka2l1
     $(TARGET_STRIP) $(@D)/buildroot-build/bin/eka2l1_qt
@@ -41,6 +42,9 @@ define EKA2L1_INSTALL_TARGET_CMDS
                 $(TARGET_DIR)/usr/eka2l1/
     $(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/eka2l1/batocera-pad.keys \
         $(TARGET_DIR)/usr/eka2l1/batocera-pad.keys
+    mkdir -p $(TARGET_DIR)/usr/eka2l1/skins
+    $(INSTALL) -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/eka2l1/skins/* \
+        $(TARGET_DIR)/usr/eka2l1/skins/
 endef
 
 $(eval $(cmake-package))

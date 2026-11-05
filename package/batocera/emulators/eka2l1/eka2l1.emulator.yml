@@ -121,6 +121,19 @@ systems:
           Nokia N81 (RM-223): RM-223
           Nokia N96 (RM-247): RM-247
           Nokia E71 (RM-346): RM-346
+      eka2l1_skin:
+        prompt: N-GAGE 1 SKIN
+        description: Picture of the console around the game. The phones are drawn for Batocera, with keys that light up when pressed and can be touched on a touch screen.
+        choices:
+          Game only: none
+          NEM-4 Drawn: drawn-nem-4
+          RH-29 Drawn: drawn-rh-29
+      eka2l1_ngage2_skin:
+        prompt: N-GAGE 2 SKIN
+        description: Picture of the phone around N-Gage 2.0 games. The phones are drawn for Batocera, with keys that light up when pressed and can be touched on a touch screen.
+        choices:
+          Game only: none
+          RM-409 Drawn: drawn-rm-409
       eka2l1_ngage2_video:
         prompt: N-GAGE 2 INTRO VIDEO
         description: Video the N-Gage 2.0 application plays each time it starts. Off keeps it aside in its folder.
@@ -130,6 +143,28 @@ systems:
       - sis
       - sisx
       - json
+    custom_features:
+      eka2l1_skin:
+        prompt: S60V1 SKIN
+        description: Picture of the phone around apps run on an S60v1 phone (176x208 screen, like the N-Gage). The phones are drawn for Batocera, with keys that light up when pressed and can be touched on a touch screen.
+        choices:
+          Game only: none
+          NEM-4 Drawn: drawn-nem-4
+          RH-29 Drawn: drawn-rh-29
+      eka2l1_ngage2_skin:
+        prompt: S60V3 SKIN
+        description: Picture of the phone around apps run on an S60v3 phone (240x320 screen, like the Nokia 5320). The phones are drawn for Batocera, with keys that light up when pressed and can be touched on a touch screen.
+        choices:
+          Game only: none
+          RM-409 Drawn: drawn-rm-409
   - name: j2me
     file_extensions:
       - jar
+    custom_features:
+      eka2l1_skin:
+        prompt: SKIN
+        description: Picture of the phone around the game, run on an N-Gage. The phones are drawn for Batocera, with keys that light up when pressed and can be touched on a touch screen.
+        choices:
+          Game only: none
+          NEM-4 Drawn: drawn-nem-4
+          RH-29 Drawn: drawn-rh-29
