@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_common.paths import SCREENSHOTS
+from batocera_common.paths import ROMS, SCREENSHOTS
 from batocera_common.vulkan import VulkanInfo, get_vulkan_info
 from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
 
@@ -301,7 +301,8 @@ class Sm2Emu(Emulator):
             'pad2_device': pad_paths[1],
             'pad_shortcuts': 'false',  # hotkeygen maps the hotkeys to the keys in hotkeygen_context
             **_DEFAULT_KEYS,
-            'rom_dir': str(self.roms_dir),
+            'rom_dir': str(ROMS / 'model2'),
+            'model1_rom_dir': str(ROMS / 'model1'),
             'nvram_dir': str(self.nvram_dir),
             'screenshot_dir': str(self.screenshot_dir),
             'graphics_backend': graphics_backend,
@@ -314,6 +315,8 @@ class Sm2Emu(Emulator):
             'anisotropy': self.config.get_str('sm2_anisotropy', '4'),
             'upscale_2d': self.config.get_str('sm2_upscale_2d', 'faithful'),
             'translucency': self.config.get_str('sm2_translucency', 'stipple'),
+            'brightness': str(round(self.config.get_float('sm2_brightness', 50))),
+            'music_volume': str(round(self.config.get_float('sm2_music_volume', 100))),
             'crt_enabled': _ini_bool(self.config.get_bool('sm2_crt_enabled', False)),
             'crt_scanline_strength': self.config.get_str('sm2_crt_scanline_strength', '40'),
             'crt_mask_strength': self.config.get_str('sm2_crt_mask_strength', '30'),
