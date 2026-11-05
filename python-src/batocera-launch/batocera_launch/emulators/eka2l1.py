@@ -786,7 +786,8 @@ class Eka2l1(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'eka2l1',
-            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4']},
+            # hotkey + right: Emulation > Fast forward, toggled by Tab
+            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4'], 'fastforward': 'KEY_TAB'},
         }
 
     @cached_property
@@ -943,6 +944,8 @@ class Eka2l1(Emulator):
         values: dict[str, object] = {
             'enable_nearest_neighbor_filter': self.config.get_bool('eka2l1_nearest_filter', True),
             'rtos_level': self.config.get_str('eka2l1_rtos_level', 'mid'),
+            # speed of the fast-forward toggled by hotkey + right
+            'fast_forward_speed': float(self.config.get_str('eka2l1_fast_forward_speed', '2')),
             'current_keybind_profile': _KEYBIND_PROFILE,
             **self._skin('eka2l1_ngage2_skin' if s60v3 else 'eka2l1_skin'),
             # N-Gage 2.0 phones are drawn lying for landscape games: they stand up when the game turns to portrait.

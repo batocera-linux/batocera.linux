@@ -72,6 +72,14 @@ custom_features:
     prompt: CHEATS
     description: Cheats entry of the in-game menu. Search the game memory for a value (lives, money), then change or freeze it. Codes are saved for the game.
     preset: switchauto
+  eka2l1_fast_forward_speed:
+    prompt: FAST FORWARD SPEED
+    description: Speed of the game while fast-forward is on. Hotkey + right turns it on and off.
+    choices:
+      x1.5: 1.5
+      x2: 2
+      x3: 3
+      x4: 4
   eka2l1_nearest_filter:
     prompt: NEAREST NEIGHBOR FILTERING
     description: Keep the pixels sharp when scaling the screen, instead of smoothing them.
