@@ -101,7 +101,9 @@ def apply_default(*, user_config: KeyValueConfig | None = None) -> None:
 
     if governor is not None and governor in available_governors():
         set_governor(governor)
-        _set_first_available(_DEFAULT_EPP, available_epp(), set_epp)
+        # pstate drivers pin EPP under this governor and reject other values
+        if governor != 'performance':
+            _set_first_available(_DEFAULT_EPP, available_epp(), set_epp)
 
 
 def apply_power_mode(mode: str | None, /, *, user_config: KeyValueConfig | None = None) -> None:

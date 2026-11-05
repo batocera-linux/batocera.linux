@@ -100,6 +100,16 @@ class TestApplyPowerMode:
         assert _governors() == {'ondemand'}
         assert _epps() == {'performance'}
 
+    def test_default_leaves_epp_alone_under_performance(self, mocker: MockerFixture) -> None:
+        _cpufreq('performance schedutil', epp='default performance power')
+        _write(BATOCERA_CONF, 'system.cpu.governor=performance\n')
+        mock_set_epp = mocker.patch('batocera_common.power.set_epp')
+
+        apply_power_mode(None)
+
+        assert _governors() == {'performance'}
+        mock_set_epp.assert_not_called()
+
     def test_default_ignores_an_unavailable_governor(self) -> None:
         _cpufreq('performance schedutil')
         _write(BATOCERA_CONF, 'system.cpu.governor=ondemand\n')
