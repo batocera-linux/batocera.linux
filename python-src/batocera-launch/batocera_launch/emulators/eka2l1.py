@@ -25,6 +25,7 @@ import json
 import logging
 import re
 import shutil
+import socket
 import subprocess
 import sys
 import zipfile
@@ -778,6 +779,8 @@ class Eka2l1(Emulator):
     # the applications the game may run, for their per-game settings
     _app_uids: list[int] = field(init=False, default_factory=list[int])
     _remapper: asyncio.subprocess.Process | None = field(init=False, default=None)
+    # EKA2L1's control API, which the cheats of the in-game menu go through; None: no cheats
+    _control_port: int | None = field(init=False, default=None)
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
@@ -988,11 +991,18 @@ class Eka2l1(Emulator):
                     with setting_file.open('w') as fp:
                         yaml.dump(setting, fp)  # pyright: ignore
 
+        if self.config.get_bool('eka2l1_cheats', True):
+            # a free port on the loopback, EKA2L1 only listens there
+            with socket.socket() as probe:
+                probe.bind(('127.0.0.1', 0))
+                self._control_port = probe.getsockname()[1]
+
         # once the game's applications are known, for its screen filter
         self._remapper = await self._start_pad_remapper()
 
+        control = ['--debug-control-port', str(self._control_port)] if self._remapper and self._control_port else []
         return Command(
-            [_BINARY, *args, '--fullscreen'],
+            [_BINARY, *args, *control, '--fullscreen'],
             env={
                 'XDG_CONFIG_HOME': CONFIGS,
                 'XDG_DATA_HOME': CONFIGS,
@@ -1002,7 +1012,8 @@ class Eka2l1(Emulator):
         )
 
     async def _start_pad_remapper(self) -> asyncio.subprocess.Process | None:
-        # hotkey held for 3 seconds: remap the pad of player 1 or change the screen filter in game (eka2l1_remap.py)
+        # hotkey held for 3 seconds: remap the pad of player 1, change the screen filter or cheat in game
+        # (eka2l1_remap.py)
         if not self.config.get_bool('eka2l1_pad_remap', True):
             return None
 
@@ -1020,6 +1031,7 @@ class Eka2l1(Emulator):
                     'layout': self.pad_layout,
                     'uids': self._app_uids,
                     'screen_height': self.resolution.height,
+                    'control_port': self._control_port,
                 }
             )
         )

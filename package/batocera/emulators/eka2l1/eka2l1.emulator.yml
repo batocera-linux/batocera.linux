@@ -66,7 +66,11 @@ custom_features:
       High: high
   eka2l1_pad_remap:
     prompt: IN-GAME MENU
-    description: Hold hotkey alone for 3 seconds during the game to change which phone key a pad button sends (saved for the game), or to try the screen filters live.
+    description: Hold hotkey alone for 3 seconds during the game to change which phone key a pad button sends (saved for the game), to try the screen filters live, or to cheat.
+    preset: switchauto
+  eka2l1_cheats:
+    prompt: CHEATS
+    description: Cheats entry of the in-game menu. Search the game memory for a value (lives, money), then change or freeze it. Codes are saved for the game.
     preset: switchauto
   eka2l1_nearest_filter:
     prompt: NEAREST NEIGHBOR FILTERING

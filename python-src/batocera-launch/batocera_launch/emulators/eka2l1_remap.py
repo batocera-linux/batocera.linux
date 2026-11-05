@@ -19,8 +19,9 @@
 # REDISTRIBUTED VERSION OF THIS FILE.
 
 # In-game menu for EKA2L1: hold hotkey alone for 3 seconds, then either press the pad button to change and
-# pick its phone key, or try the screen filters, applied as the cursor moves, for this session only (the ES
-# option sets the game's filter; D-pad, A: confirm, B or hotkey: cancel). Started by eka2l1.py with a session file.
+# pick its phone key, try the screen filters, applied as the cursor moves, for this session only (the ES
+# option sets the game's filter), or search the game's memory for cheats (eka2l1_cheats.py; D-pad, A: confirm,
+# B or hotkey: cancel). Started by eka2l1.py with a session file.
 
 from __future__ import annotations
 
@@ -44,6 +45,7 @@ from batocera_launch.emulators.eka2l1 import (
     save_game_screen_filter,
     screen_filters,
 )
+from batocera_launch.emulators.eka2l1_cheats import Cheats, Outcome, View, http_api
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Mapping, Sequence
@@ -76,6 +78,7 @@ _TEXTS: Final = {
     'menu': 'EKA2L1',
     'menu_keys': 'Change buttons',
     'menu_filter': 'Screen filter:  ◀ {filter} ▶',
+    'menu_cheats': 'Cheats',
     'menu_hint': '▲ ▼: choose   ◀ ▶: filter   East: confirm   South: close',
     'filter': 'Screen filter {position}/{count}',
     'filter_hint': 'D-pad: try   East: keep   South: cancel',
@@ -170,11 +173,13 @@ class _Stage(Enum):
     PRESS = auto()  # waiting for the pad button to change
     PICK = auto()  # choosing its phone key
     FILTER = auto()  # choosing the screen filter, applied as the cursor moves
+    CHEATS = auto()  # the cheats screens
 
 
 class _Entry(Enum):
     KEYS = auto()
     FILTER = auto()
+    CHEATS = auto()
 
 
 def _keypad_position(target: str | None, /) -> tuple[int, int]:
@@ -237,10 +242,25 @@ class _Remapper:
     filter_before: str | None = None
     filter_cursor: int = 0
     saved_filter: bool = False
+    # None: EKA2L1 has no control port, no cheats entry
+    cheats: Cheats | None = None
+    notice: str | None = None
 
     @property
     def has_filters(self) -> bool:
         return bool(self.uids) and len(self.filters) > 1
+
+    @property
+    def entries(self) -> list[_Entry]:
+        return [
+            _Entry.KEYS,
+            *([_Entry.FILTER] if self.has_filters else []),
+            *([_Entry.CHEATS] if self.cheats is not None else []),
+        ]
+
+    @property
+    def has_menu(self) -> bool:
+        return len(self.entries) > 1
 
     def _apply_filter(self, shader: str | None, /) -> None:
         if shader != self.filter:
@@ -263,12 +283,20 @@ class _Remapper:
                     self.stage = _Stage.IDLE
                 elif name == 'a' and self.entry == _Entry.KEYS:
                     self.stage = _Stage.PRESS
+                elif name == 'a' and self.entry == _Entry.CHEATS and self.cheats is not None:
+                    if self.cheats.open():
+                        self.stage = _Stage.CHEATS
+                    else:
+                        self.notice = self.cheats.error
+                        self.stage = _Stage.IDLE
                 elif name == 'a':
                     self.filter_before = self.filter
                     self.filter_cursor = self.filters.index(self.filter) if self.filter in self.filters else 0
                     self.stage = _Stage.FILTER
                 elif (step := _step(name)) in (-1, 1):
-                    self.entry = _Entry.FILTER if self.entry == _Entry.KEYS else _Entry.KEYS
+                    entries = self.entries
+                    index = entries.index(self.entry) if self.entry in entries else 0
+                    self.entry = entries[(index + step) % len(entries)]
                 elif step and self.entry == _Entry.FILTER:
                     # left and right go through the filters from the menu itself
                     index = self.filters.index(self.filter) if self.filter in self.filters else 0
@@ -288,6 +316,16 @@ class _Remapper:
                     else:
                         self.filter_cursor = min(max(self.filter_cursor + step, 0), last)
                     self._apply_filter(self.filters[self.filter_cursor])
+            case _Stage.CHEATS if self.cheats is not None:
+                match self.cheats.press(name):
+                    case Outcome.CLOSE:
+                        self.notice = self.cheats.notice
+                        self.stage = _Stage.IDLE
+                    case Outcome.BACK:
+                        self.stage = _Stage.MENU
+                    case Outcome.STAY:
+                        pass
+                self.cheats.notice = None
             case _Stage.PRESS:
                 if name == 'hotkey':
                     self.stage = _Stage.IDLE
@@ -315,7 +353,7 @@ class _Remapper:
             self.stage = _Stage.IDLE
         elif self.stage == _Stage.HELD:
             # the system saw hotkey go up before the pad is taken, so it is not left held
-            self.stage = _Stage.MENU if self.has_filters else _Stage.PRESS
+            self.stage = _Stage.MENU if self.has_menu else _Stage.PRESS
 
     def tick(self, now: float, /) -> None:
         if self.stage == _Stage.ARMED and now - self.armed_at >= _HOLD_SECONDS:
@@ -346,6 +384,8 @@ def _css(scale: float, /) -> bytes:
         .item.cursor {{ background-color: #2896eb; border-color: #9fd2ff; }}
         .item.current {{ border-color: #f0c040; }}
         .item label {{ color: #eef2ff; font-size: {px(22)}px; }}
+        .number {{ color: #eef2ff; font-size: {px(44)}px; font-family: monospace; }}
+        .error {{ color: #ff9f80; }}
     """.encode()
 
 
@@ -368,6 +408,7 @@ def main(argv: Sequence[str], /) -> int:
         [(str(trigger), str(target)) for trigger, target in session['layout']],
         [int(uid) for uid in session.get('uids', [])],
         [None, *screen_filters()],
+        cheats=Cheats(http_api(int(port))) if (port := session.get('control_port')) else None,
     )
     texts = _TEXTS
     scale = session.get('screen_height', 1080) / 1080
@@ -440,9 +481,14 @@ def main(argv: Sequence[str], /) -> int:
         items.pack_start(item, False, False, 0)
         item_label.show()
         rows.append((item, item_label))
+    # the value typed in the cheats, digit by digit
+    number = Gtk.Label(halign=Gtk.Align.CENTER)
+    number.get_style_context().add_class('number')
+    number.set_no_show_all(True)
     panel.pack_start(title, False, False, 0)
     panel.pack_start(grid, False, False, 0)
     panel.pack_start(items, False, False, 0)
+    panel.pack_start(number, False, False, 0)
     panel.pack_start(hint, False, False, 0)
     window.add(panel)
 
@@ -462,6 +508,7 @@ def main(argv: Sequence[str], /) -> int:
             (context.add_class if current else context.remove_class)('current')
             item.show()
         grid.hide()
+        number.hide()
         items.show()
 
     grabbed = False
@@ -488,10 +535,14 @@ def main(argv: Sequence[str], /) -> int:
 
     def refresh() -> None:
         stage = remapper.stage
-        set_grab(stage in (_Stage.MENU, _Stage.PRESS, _Stage.PICK, _Stage.FILTER))
+        set_grab(stage in (_Stage.MENU, _Stage.PRESS, _Stage.PICK, _Stage.FILTER, _Stage.CHEATS))
+        title.get_style_context().remove_class('error')
         if stage == _Stage.IDLE:
-            if remapper.saved is not None or remapper.saved_filter:
-                if remapper.saved is not None:
+            if remapper.saved is not None or remapper.saved_filter or remapper.notice:
+                if remapper.notice:
+                    title.set_text(remapper.notice)
+                    remapper.notice = None
+                elif remapper.saved is not None:
                     button, key = remapper.saved
                     symbol = next((s for keys in _KEYPAD for k, s in keys if k == key), texts['none'])
                     title.set_text(texts['saved'].format(button=PAD_LABELS.get(button, button), key=symbol))
@@ -502,30 +553,51 @@ def main(argv: Sequence[str], /) -> int:
                 remapper.saved_filter = False
                 grid.hide()
                 items.hide()
+                number.hide()
                 show()
-                GLib.timeout_add(1200, hide_later)
+                GLib.timeout_add(1500, hide_later)
             else:
                 window.hide()
             return
         if stage == _Stage.ARMED:
             return
         if stage == _Stage.HELD:
-            stage = _Stage.MENU if remapper.has_filters else _Stage.PRESS
+            stage = _Stage.MENU if remapper.has_menu else _Stage.PRESS
 
         if stage == _Stage.MENU:
-            show_items(
-                (
-                    (texts['menu_keys'], remapper.entry == _Entry.KEYS, False),
-                    (
-                        texts['menu_filter'].format(filter=filter_name(remapper.filter)),
-                        remapper.entry == _Entry.FILTER,
-                        False,
-                    ),
-                )
-            )
+            entry_texts = {
+                _Entry.KEYS: texts['menu_keys'],
+                _Entry.FILTER: texts['menu_filter'].format(filter=filter_name(remapper.filter)),
+                _Entry.CHEATS: texts['menu_cheats'],
+            }
+            show_items([(entry_texts[entry], remapper.entry == entry, False) for entry in remapper.entries])
             title.set_text(texts['menu'])
             hint.set_text(texts['menu_hint'])
             # beside the game, which shows the filters tried from here
+            place(on_the_left=True)
+            show()
+            return
+
+        if stage == _Stage.CHEATS and remapper.cheats is not None:
+            cheats = remapper.cheats
+            heading, help_text, view, rows_shown = cheats.view()
+            if view == View.NUMBER:
+                number.set_markup(
+                    ' '.join(
+                        f'<span background="#2896eb">{digit}</span>' if cursor else digit
+                        for digit, cursor in rows_shown
+                    )
+                )
+                grid.hide()
+                items.hide()
+                number.show()
+            else:
+                show_items([(text, cursor, False) for text, cursor in rows_shown])
+            if cheats.error:
+                heading = cheats.error
+                title.get_style_context().add_class('error')
+            title.set_text(heading)
+            hint.set_text(help_text)
             place(on_the_left=True)
             show()
             return
@@ -562,6 +634,7 @@ def main(argv: Sequence[str], /) -> int:
         title.set_text(texts['press'] if stage == _Stage.PRESS else texts['pick'].format(button=button))
         hint.set_text(texts['press_hint'] if stage == _Stage.PRESS else texts['pick_hint'])
         items.hide()
+        number.hide()
         # show_all() does nothing on a widget kept out of the window's show_all()
         for child in grid.get_children():
             child.show_all()
@@ -588,7 +661,12 @@ def main(argv: Sequence[str], /) -> int:
                     remapper.release(reader.pressed)
                 if remapper.stage == _Stage.ARMED and before != _Stage.ARMED:
                     GLib.timeout_add(round(_HOLD_SECONDS * 1000) + 50, on_hold)
-                if remapper.stage != before or remapper.stage in (_Stage.MENU, _Stage.PICK, _Stage.FILTER):
+                if remapper.stage != before or remapper.stage in (
+                    _Stage.MENU,
+                    _Stage.PICK,
+                    _Stage.FILTER,
+                    _Stage.CHEATS,
+                ):
                     refresh()
         return True
 
