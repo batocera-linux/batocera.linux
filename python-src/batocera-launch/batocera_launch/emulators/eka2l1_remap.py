@@ -326,6 +326,8 @@ class _Remapper:
                     case Outcome.STAY:
                         pass
                 self.cheats.notice = None
+            case _Stage.CHEATS:
+                self.stage = _Stage.IDLE
             case _Stage.PRESS:
                 if name == 'hotkey':
                     self.stage = _Stage.IDLE

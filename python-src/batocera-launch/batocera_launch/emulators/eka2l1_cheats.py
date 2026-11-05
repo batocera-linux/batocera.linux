@@ -461,7 +461,8 @@ class Cheats:
             first = min(max(cursor - ROWS // 2, 0), max(len(texts) - ROWS, 0))
             return [(text, index == cursor) for index, text in enumerate(texts[first : first + ROWS], first)]
 
-        app = (self.state.get('app') or {}).get('name')
+        app_info: dict[str, Any] = self.state.get('app') or {}
+        app = app_info.get('name')
         match self.screen:
             case Screen.HOME:
                 count = self.search.get('count', 0)
@@ -509,11 +510,11 @@ class Cheats:
                 title = _TEXTS['results_title'].format(position=cursor + 1, count=len(self.results))
                 return title, _TEXTS['results_hint'], View.LIST, rows(texts)
             case Screen.CODES:
-                texts = []
+                lines: list[str] = []
                 for entry in self._code_entries():
                     if entry == 'restore':
                         count = sum(1 for code in self.codes if code.get('wasFrozen'))
-                        texts.append(_TEXTS['restore'].format(count=count))
+                        lines.append(_TEXTS['restore'].format(count=count))
                         continue
                     code = self.codes[int(entry.removeprefix('code'))]
                     frozen = (
@@ -523,12 +524,12 @@ class Cheats:
                         if code.get('wasFrozen')
                         else ''
                     )
-                    texts.append(
+                    lines.append(
                         _TEXTS['code'].format(
                             address=_hex(code['address']), bits=8 * code['width'], value=code['value'], frozen=frozen
                         )
                     )
-                return _TEXTS['codes_title'], _TEXTS['codes_hint'], View.LIST, rows(texts or [_TEXTS['no_code']])
+                return _TEXTS['codes_title'], _TEXTS['codes_hint'], View.LIST, rows(lines or [_TEXTS['no_code']])
             case Screen.CODE:
                 code = (
                     self.codes[self.code]
