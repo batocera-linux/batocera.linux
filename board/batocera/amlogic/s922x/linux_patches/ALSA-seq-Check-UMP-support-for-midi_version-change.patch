@@ -1,0 +1,43 @@
+From 8765429279e7d3d68d39ace5f84af2815174bb1e Mon Sep 17 00:00:00 2001
+From: Takashi Iwai <tiwai@suse.de>
+Date: Tue, 31 Dec 2024 15:53:58 +0100
+Subject: [PATCH] ALSA: seq: Check UMP support for midi_version change
+
+When the kernel is built without UMP support but a user-space app
+requires the midi_version > 0, the kernel should return an error.
+Otherwise user-space assumes as if it were possible to deal,
+eventually hitting serious errors later.
+
+Fixes: 46397622a3fa ("ALSA: seq: Add UMP support")
+Cc: <stable@vger.kernel.org>
+Link: https://patch.msgid.link/20241231145358.21946-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ sound/core/seq/seq_clientmgr.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/sound/core/seq/seq_clientmgr.c b/sound/core/seq/seq_clientmgr.c
+index 3930e2f9082f42..77b6ac9b5c11bc 100644
+--- a/sound/core/seq/seq_clientmgr.c
++++ b/sound/core/seq/seq_clientmgr.c
+@@ -1275,10 +1275,16 @@ static int snd_seq_ioctl_set_client_info(struct snd_seq_client *client,
+ 	if (client->type != client_info->type)
+ 		return -EINVAL;
+ 
+-	/* check validity of midi_version field */
+-	if (client->user_pversion >= SNDRV_PROTOCOL_VERSION(1, 0, 3) &&
+-	    client_info->midi_version > SNDRV_SEQ_CLIENT_UMP_MIDI_2_0)
+-		return -EINVAL;
++	if (client->user_pversion >= SNDRV_PROTOCOL_VERSION(1, 0, 3)) {
++		/* check validity of midi_version field */
++		if (client_info->midi_version > SNDRV_SEQ_CLIENT_UMP_MIDI_2_0)
++			return -EINVAL;
++
++		/* check if UMP is supported in kernel */
++		if (!IS_ENABLED(CONFIG_SND_SEQ_UMP) &&
++		    client_info->midi_version > 0)
++			return -EINVAL;
++	}
+ 
+ 	/* fill the info fields */
+ 	if (client_info->name[0])
