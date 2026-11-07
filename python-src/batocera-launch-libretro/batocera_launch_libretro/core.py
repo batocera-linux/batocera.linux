@@ -31,7 +31,17 @@ from .libretro_info import LibretroInfo
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from batocera_launch import Controller, Controllers, DeviceInfoMapping, Gun, Guns, LibretroConfig, Rom, SystemConfig
+    from batocera_launch import (
+        Controller,
+        Controllers,
+        DeviceInfoMapping,
+        Gun,
+        Guns,
+        LibretroConfig,
+        Rom,
+        SystemConfig,
+        TrackballSpinners,
+    )
 
     from .emulator import Libretro
 
@@ -104,6 +114,14 @@ class Core:
     @property
     def guns(self) -> Guns:
         return self.emulator.guns
+
+    @property
+    def trackballs(self) -> TrackballSpinners:
+        return self.emulator.trackballs
+
+    @property
+    def spinners(self) -> TrackballSpinners:
+        return self.emulator.spinners
 
     @property
     def wheels(self) -> DeviceInfoMapping:
