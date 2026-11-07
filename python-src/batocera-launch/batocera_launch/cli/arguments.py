@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, Self
 
@@ -45,7 +45,7 @@ class Arguments:
     core: str | None
     players: tuple[PlayerArguments | None, ...]
     netplaymode: str | None
-    netplaypass: str | None
+    netplaypass: str | None = field(repr=False)  # secret: keep out of debug logs
     netplayip: str | None
     netplayport: str | None
     netplaysession: str | None
