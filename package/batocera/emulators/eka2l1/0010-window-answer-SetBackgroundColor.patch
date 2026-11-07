@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Wed, 4 Nov 2026 23:54:03 +0100
+Subject: [PATCH 10/15] window: answer SetBackgroundColor
+
+A client command left unanswered keeps the client waiting forever.
+Mophun games (Carmageddon 3D on the N-Gage) set the background colour
+right after loading the Mophun engine and stayed on a black screen.
+---
+ src/emu/services/src/window/window.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/emu/services/src/window/window.cpp b/src/emu/services/src/window/window.cpp
+index 206a2643c..98766fd13 100644
+--- a/src/emu/services/src/window/window.cpp
++++ b/src/emu/services/src/window/window.cpp
+@@ -1359,6 +1359,12 @@ namespace eka2l1::epoc {
+             ctx.complete(epoc::error_none);
+             break;
+ 
++        case ws_cl_op_set_background_color:
++            // The window server draws no background behind the windows: nothing to change,
++            // but the client waits for the answer
++            ctx.complete(epoc::error_none);
++            break;
++
+         case ws_cl_op_get_double_click_settings:
+             get_double_click_settings(ctx, cmd);
+             break;
