@@ -3,8 +3,8 @@
 # libserum
 #
 ################################################################################
-# Version: Commits on Oct 11, 2026
-LIBSERUM_VERSION = bc164a9e70ecb64e9bec3e16d1e8a6b33b865066
+# Version: Commits on Oct 27, 2026
+LIBSERUM_VERSION = 295cba2a752eda790cb53c28a5fd6419897bf395
 LIBSERUM_SITE = $(call github,ppuc,libserum,$(LIBSERUM_VERSION))
 LIBSERUM_LICENSE = GPLv2+
 LIBSERUM_LICENSE_FILES = LICENSE.md
