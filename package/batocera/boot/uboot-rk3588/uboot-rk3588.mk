@@ -11,35 +11,26 @@ UBOOT_RK3588_LICENSE = GPL-2.0+
 UBOOT_RK3588_LICENSE_FILES = Licenses/README
 UBOOT_RK3588_INSTALL_IMAGES = YES
 
-# Latest RKBin blobs for RK3588
-UBOOT_RK3588_RKBIN_COMMIT = ecb4fcbe954edf38b3ae037d5de6d9f5bccf81f4
-UBOOT_RK3588_EXTRA_DOWNLOADS = \
-    https://github.com/rockchip-linux/rkbin/archive/$(UBOOT_RK3588_RKBIN_COMMIT)/rkbin-$(UBOOT_RK3588_RKBIN_COMMIT).tar.gz
-
 # Arm Trusted Firmware
 UBOOT_RK3588_TFA_VERSION = v2.15.0
-UBOOT_RK3588_EXTRA_DOWNLOADS += \
+UBOOT_RK3588_EXTRA_DOWNLOADS = \
     https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$(UBOOT_RK3588_TFA_VERSION).tar.gz
 
 # Modern U-Boot dependencies
-UBOOT_RK3588_DEPENDENCIES = host-pkgconf host-openssl host-bison host-flex \
+UBOOT_RK3588_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison host-flex \
     host-python-setuptools host-dtc host-swig host-gnutls host-python-pyelftools
 
-# Extract the full rkbin repository
-define UBOOT_RK3588_EXTRACT_RKBIN
-    mkdir -p $(@D)/rkbin
-    $(TAR) -xf $(UBOOT_RK3588_DL_DIR)/rkbin-$(UBOOT_RK3588_RKBIN_COMMIT).tar.gz \
-        -C $(@D)/rkbin --strip-components=1
+define UBOOT_RK3588_EXTRACT_TFA
     mkdir -p $(@D)/tf-a
     $(TAR) -xf $(UBOOT_RK3588_DL_DIR)/$(UBOOT_RK3588_TFA_VERSION).tar.gz \
         -C $(@D)/tf-a --strip-components=1
 endef
-UBOOT_RK3588_POST_EXTRACT_HOOKS += UBOOT_RK3588_EXTRACT_RKBIN
+UBOOT_RK3588_POST_EXTRACT_HOOKS += UBOOT_RK3588_EXTRACT_TFA
 
 # RK3588 Specific Blob Paths
-UBOOT_RK3588_BL31 = $(@D)/rkbin/bin/rk35/rk3588_bl31_v1.54.elf
+UBOOT_RK3588_BL31 = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3588_bl31_v1.54.elf
 UBOOT_RK3588_TFA_BL31 = $(@D)/tf-a/build/rk3588/release/bl31/bl31.elf
-UBOOT_RK3588_TPL  = $(@D)/rkbin/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.21.bin
+UBOOT_RK3588_TPL  = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.21.bin
 
 UBOOT_RK3588_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \
