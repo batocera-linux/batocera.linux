@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import logging
 import re
+from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
@@ -31,7 +32,6 @@ from batocera_launch import Command, Emulator, HotkeysContext
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
-    from pathlib import Path
     from typing import Any
 
     from batocera_launch import Controller
@@ -71,11 +71,26 @@ _WHEEL_CONTROLS: Final = {
 }
 _COIN: Final = (['select'], 'key:5, pad:back, joy:select', False)
 
+_SERVICE_BUTTONS: Final = (
+    ('test', 'key:0', 'rightstick', 'r3'),
+    ('1p_service', 'key:9', 'leftstick', 'l3'),
+    ('2p_service', '', 'leftstick', ''),
+)
+
 _CABINETS: Final = {
     'sgnascar': 'odin_nascar_cabinet',
     'swracer': 'odin_swracer_cabinet',
     'atvtrack': 'odin_atvtrack_cabinet',
     'smashdrv': 'odin_smashdrv_cabinet',
+}
+
+_SOUND_MODES: Final = {
+    'pharrier': 'mix',
+    'sgnascar': 'mix',
+    'swracer': 'main',
+    'atvtrack': 'mix',
+    'gfootbal': 'mix',
+    'smashdrv': 'mix',
 }
 
 # keys only: hotkeygen turns the pad's hotkeys into these keys, and odin's own guide combos would act twice.
@@ -87,11 +102,15 @@ _HOTKEYS: Final = {
     'load_state': 'F4',
     'reset': 'Ctrl+R',
     'fullscreen': 'F11, Alt+Return',
-    'card': 'F6',
+    'card': 'F6, pad:guide+rightshoulder',
     'light_gun': 'F7',
     'close_game': 'none',
     'quit': 'Ctrl+Q',
 }
+
+# the bezels of odin-bezels; odin fits the game inside them itself
+_ARTWORK: Final = Path('/usr/share/odin/artwork')
+_NVRAM: Final = Path('/usr/share/odin/nvram')
 
 # the versions of a game in odin's list, set as their parent
 _PARENTS: Final = {
@@ -150,7 +169,8 @@ def _wheel_input(
 
 
 def _gun_identities(guns: Sequence[Gun], /) -> list[str]:
-    # as odin names an evdev pointer: serial, else vid:pid, else port, else node
+    # as odin names an evdev pointer: serial, else vid:pid, else port, else name (batocera's own guns), else node;
+    # spaces as '_'
     import evdev
 
     identities: list[str] = []
@@ -160,7 +180,8 @@ def _gun_identities(guns: Sequence[Gun], /) -> list[str]:
         except OSError:
             identities.append(f'node:{gun.node}')
             continue
-        uniq, phys, info = (device.uniq or '').strip(), (device.phys or '').strip(), device.info
+        uniq, phys, name = ((text or '').strip().replace(' ', '_') for text in (device.uniq, device.phys, device.name))
+        info = device.info
         identity = (
             f'uniq:{uniq}'
             if len(uniq) >= 8
@@ -168,6 +189,8 @@ def _gun_identities(guns: Sequence[Gun], /) -> list[str]:
             if info.vendor and info.product
             else f'path:{phys}'
             if phys
+            else f'name:{name}'
+            if name
             else f'node:{gun.node}'
         )
         # two of a kind take their port, then their node
@@ -184,6 +207,11 @@ def _gun_identities(guns: Sequence[Gun], /) -> list[str]:
 class Odin(Emulator):
     needs_sdl_game_controller_config = True
 
+    # odin's bezels have their screen inside a monitor's frame, which would hide the edges of a full height game
+    @property
+    def handles_bezels(self) -> bool:
+        return True
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {
@@ -198,6 +226,20 @@ class Odin(Emulator):
                 'coin': 'KEY_5',
             },
         }
+
+    @cached_property
+    def wheel(self) -> Controller | None:
+        if not self.config.use_wheels:
+            return None
+        return next((pad for pad in self.controllers if pad.device_path in self.wheels), None)
+
+    # a gamepad mapping would make sdl open the wheel as a pad, and odin takes its wheel among the other joysticks
+    def get_sdl_game_controller_config(self) -> str:
+        return '\n'.join(
+            pad.generate_sdl_game_db_line(ignore_buttons=self.sdl_game_controller_config_ignore_buttons)
+            for pad in self.controllers
+            if pad is not self.wheel
+        )
 
     async def configure(self) -> Command:
         game = self.rom.stem
@@ -217,7 +259,7 @@ class Odin(Emulator):
             'fullscreen': 'on',
             'vsync': self.config.get_str('odin_vsync', 'off'),
             'upscale_mode': self.config.get_str('odin_upscale_mode', 'raw'),
-            'bezel': 'off',  # batocera draws its own bezels
+            'bezel': self.config.get_str('odin_bezel', 'image'),
             'filter': self.config.get_str('odin_filter', 'none'),
             'show_speed': 'off',  # the title only; batocera's hud shows the fps
         }
@@ -225,20 +267,31 @@ class Odin(Emulator):
             text = _set_ini(text, 'display', key, value)
         for key, value in _HOTKEYS.items():
             text = _set_ini(text, 'hotkeys', key, value)
+        for key, standard in (('dead_zone', '3'), ('trigger_threshold', '3')):
+            text = _set_ini(text, 'gamepads', key, self.config.get_str(f'odin_{key}', standard))
         # beside the saves, not in odin's folder under configs
         states_dir = self.saves_dir / 'states'
         states_dir.mkdir(parents=True, exist_ok=True)
         text = _set_ini(text, 'paths', 'states', str(states_dir))
 
-        wheel = next(
-            (pad for pad in self.controllers if self.config.use_wheels and pad.device_path in self.wheels), None
-        )
+        # calibrated: brave firefighters, air trix, star wars racer
+        precalibrated = _NVRAM / game
+        if precalibrated.is_dir():
+            for src in precalibrated.iterdir():
+                if not (dest := self.saves_dir / game / src.name).exists():
+                    dest.parent.mkdir(parents=True, exist_ok=True)
+                    src.copy(dest)
+
+        wheel = self.wheel
+        guns: Sequence[Gun] = self.guns[:2] if parent == 'braveff' and self.config.use_guns else ()
         # odin otherwise takes the pads in the order they were plugged in, not es's
-        pads = [pad for pad in self.controllers if pad.type == 'joystick' and pad is not wheel][:2]
+        pads = [pad for pad in self.controllers if pad.type == 'joystick' and pad is not wheel][: 2 - len(guns)]
+        seats: list[Controller | None] = [*(None for _ in guns), *pads]
         # the paths tell two pads of a make apart, as they share their guid
         for i in range(2):
-            text = _set_ini(text, players, f'p{i + 1}', f'{pads[i].guid} {pads[i].real_name}' if i < len(pads) else '')
-            text = _set_ini(text, players, f'p{i + 1}_path', pads[i].device_path if i < len(pads) else '')
+            pad = seats[i] if i < len(seats) else None
+            text = _set_ini(text, players, f'p{i + 1}', f'{pad.guid} {pad.real_name}' if pad else '')
+            text = _set_ini(text, players, f'p{i + 1}_path', pad.device_path if pad else '')
 
         text = _set_ini(text, players, 'joy1', f'{wheel.guid} {wheel.real_name}' if wheel else '')
         text = _set_ini(text, players, 'joy1_path', wheel.device_path if wheel else '')
@@ -251,9 +304,20 @@ class Odin(Emulator):
                 if (joy := _wheel_input(wheel, controls, control, relaxed)) is not None:
                     text = _set_ini(text, f'controls.{game}', control, f'{defaults}, {joy}')
             # batocera has already narrowed the wheel to the rotation wanted
-            rotation = '0' if 'wheel_rotation' in self.config else self.config.get_str('odin_wheel_rotation', '0')
-            text = _set_ini(text, players, 'wheel_rotation', rotation)
+            text = _set_ini(text, players, 'wheel_rotation', '0')
             text = _set_ini(text, players, 'wheel_force', self.config.get_str('odin_wheel_force', '100'))
+
+        service_buttons = self.config.get_bool('odin_service_buttons')
+        for control, key, stick, es_name in _SERVICE_BUTTONS:
+            inputs = [key] if key else []
+            inputs.append(f'pad:{stick}' if service_buttons else f'pad:guide+{stick}')
+            button = wheel.inputs.get(es_name) if service_buttons and wheel is not None and es_name else None
+            if button is not None and button.type == 'button':
+                inputs.append(f'joy:button{button.id}')
+            text = _set_ini(text, f'controls.{game}', control, ', '.join(inputs))
+
+        if (mode := _SOUND_MODES.get(parent)) is not None:
+            text = _set_ini(text, f'sound.{game}', 'mode', self.config.get_str('odin_sound_mode', mode))
 
         if (cabinet := _CABINETS.get(parent)) is not None:
             text = _set_ini(text, players, 'cabinet', self.config.get_str(cabinet, 'standard'))
@@ -263,14 +327,19 @@ class Odin(Emulator):
             text = _set_ini(text, players, 'invert', 'stick_v' if inverted else '')
 
         if parent == 'braveff':
-            guns: Sequence[Gun] = self.guns[:2] if self.config.use_guns else ()
             identities = _gun_identities(guns) if guns else []
             for i in range(2):
                 text = _set_ini(
                     text, players, f'gun{i + 1}', f'{identities[i]} {guns[i].name}' if i < len(guns) else ''
                 )
             text = _set_ini(text, players, 'hide_cursor', self.config.get_str('odin_light_gun_mode', 'on'))
-            text = _set_ini(text, players, 'sinden_border', 'off')  # batocera draws the borders of the guns
+            borders = self.gun_border_dimensions if guns else None
+            text = _set_ini(text, players, 'sinden_border', 'on' if borders else 'off')
+            if borders:
+                size = min(max(self.resolution.width * borders[0] // 100, 2), 30)
+                style = 'game' if self.guns_border_ratio == '4:3' else 'window'
+                text = _set_ini(text, players, 'sinden_border_size', str(size))
+                text = _set_ini(text, players, 'sinden_border_style', style)
 
         if parent in ('braveff', 'swracer', 'sgnascar', 'atvtrack', 'smashdrv'):
             text = _set_ini(text, players, 'vibration', self.config.get_str('odin_vibration', 'on'))
@@ -293,10 +362,14 @@ class Odin(Emulator):
         if (anisotropy := self.config.get_str('odin_anisotropy', '1')) != '1':
             args.extend(['-a', anisotropy])
 
+        own = CONFIGS / 'odin' / 'artwork'
+        artwork = own if any((own / f'{name}_bezel.png').exists() for name in (game, parent)) else _ARTWORK
+
         return Command(
             args,
             env={
                 'XDG_DATA_HOME': CONFIGS,
                 'ODIN_SAVES': self.saves_dir,
+                'ODIN_ARTWORK': artwork,
             },
         )
