@@ -4,7 +4,8 @@
 #
 ################################################################################
 
-ODIN_VERSION = v0.1.1
+# Version: Commits on Nov 8, 2026
+ODIN_VERSION = 6ebf2b40ccbca9534d1a0e58b7602db11e4485d9
 ODIN_SITE = $(call github,Tovarichtch,Odin,$(ODIN_VERSION))
 ODIN_LICENSE = GPL-3.0+
 ODIN_LICENSE_FILES = LICENSE
@@ -25,6 +26,13 @@ else
 ODIN_DEPENDENCIES += libgles
 ODIN_CONF_OPTS += -DODIN_GLES=ON
 endif
+
+define ODIN_INSTALL_NVRAM
+	mkdir -p $(TARGET_DIR)/usr/share/odin/nvram
+	$(TAR) -xJf $(ODIN_PKGDIR)/nvram.tar.xz -C $(TARGET_DIR)/usr/share/odin/nvram
+endef
+
+ODIN_POST_INSTALL_TARGET_HOOKS += ODIN_INSTALL_NVRAM
 
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))

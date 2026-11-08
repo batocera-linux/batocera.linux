@@ -4,14 +4,8 @@ shared_features:
   - platformprofile
   - cpucluster
   - videomode
-  - bezel
-  - bezel_stretch
   - hud
   - hud_corner
-  - bezel.tattoo
-  - bezel.tattoo_corner
-  - bezel.tattoo_file
-  - bezel.resize_tattoo
   - use_guns
   - use_wheels
   - wheel_rotation
@@ -62,6 +56,13 @@ custom_features:
       Off (Default): "off"
       On: "on"
       Adaptive: adaptive
+  odin_bezel:
+    group: GRAPHICS
+    prompt: BEZELS
+    choices:
+      On (Default): image
+      Blurred Sides: blur
+      Off: "off"
   odin_filter:
     group: GRAPHICS
     prompt: CRT FILTER
@@ -75,7 +76,7 @@ custom_features:
   odin_vibration:
     group: CONTROLS
     prompt: VIBRATION
-    description: Vibrate the controller as the original board doe for effects. Needs a controller that supports vibration.
+    description: Vibrate the controller as the original board does for effects. Needs a controller that supports vibration.
     choices:
       On (Default): "on"
       Off: "off"
@@ -90,17 +91,35 @@ custom_features:
       100% (Default): 100
       150%: 150
       200%: 200
-  odin_wheel_rotation:
-    group: WHEELS
-    prompt: WHEEL ROTATION
-    description: How far the wheel turns from one end to the other. Used when the wheel rotation option is not set.
+  odin_dead_zone:
+    group: CONTROLS
+    prompt: STICK DEAD ZONE
+    description: How far a controller's stick moves before the game sees it.
     choices:
-      Full range (Default): 0
-      270 degrees: 270
-      360 degrees: 360
-      540 degrees: 540
-      900 degrees: 900
-      1080 degrees: 1080
+      Off: 0
+      3% (Default): 3
+      5%: 5
+      10%: 10
+      15%: 15
+      20%: 20
+      30%: 30
+  odin_trigger_threshold:
+    group: CONTROLS
+    prompt: TRIGGER THRESHOLD
+    description: How far a controller's trigger is pulled before it presses a button.
+    choices:
+      Off: 0
+      3% (Default): 3
+      5%: 5
+      10%: 10
+      20%: 20
+      30%: 30
+      50%: 50
+  odin_service_buttons:
+    group: CONTROLS
+    prompt: SERVICE AND TEST BUTTONS
+    description: Service on L3 and Test on R3, to open the test menu.
+    preset: switchauto
   odin_wheel_force:
     group: WHEELS
     prompt: WHEEL FORCE
@@ -146,6 +165,14 @@ systems:
         choices:
           Standard (Default): standard
           Mini Deluxe: minideluxe
+      odin_sound_mode:
+        group: SOUND
+        prompt: SOUND OUTPUT
+        description: Planet Harriers, NASCAR and Star Wars Racer have extra sound for the back of the cabinet.
+        choices:
+          Stereo: mix
+          4 Speakers: quad
+          Front Only: main
   - name: gaelco
     custom_features:
       odin_atvtrack_cabinet:
@@ -162,3 +189,11 @@ systems:
         choices:
           Standard (Default): standard
           Upright: upright
+      odin_sound_mode:
+        group: SOUND
+        prompt: SOUND OUTPUT
+        description: The cabinet has a bass speaker. 4 Speakers plays it from the back.
+        choices:
+          Stereo (Default): mix
+          4 Speakers: quad
+          No Bass Speaker: main
