@@ -1213,7 +1213,11 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             ):
                 bezel_need_adaptation = False
             if not shader_bezel:
-                aspect_ratio_index = _RATIOS.index('custom')
+                aspect_ratio_index = (
+                    _RATIOS.index('custom')
+                    if bezel_need_adaptation
+                    else _RATIOS.index('core')
+                )
                 custom_config.set('aspect_ratio_index', aspect_ratio_index)
                 if (ratio := self.config.get_str('ratio')) and ratio in _RATIOS:
                     aspect_ratio_index = _RATIOS.index(ratio)
