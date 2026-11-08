@@ -3047,57 +3047,35 @@ hikaru:
     ## HIKARU IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Hikaru games using Mame or Demul (with WINE).
-    The emulators are still work in progress for Hikaru games so mileage will vary.
+    You can now play Sega Hikaru games using Odin.
+    The emulator is still work in progress for Hikaru games so mileage will vary.
     Zipped roms should be stored in the appropriate hikaru directory compatible with MAME 0.284 or later.
+    The hikaru.zip and mie.zip BIOS files go in the bios directory, jvs13551.zip is optional.
 
-    Performance depends on your x86_64 system hardware.
+    Performance depends on your system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this system.
 
-    Note: Your graphics card requires Vulkan drivers for Demul to work.
-
-    -----------------
-    Demul First Start
-    -----------------
-
-    You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for WINE.
-
-    Note: It may take some minutes before the game starts with the first use, this is NORMAL!
-    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
-
-    -----------------
-    Demul Controllers
-    -----------------
-
-    Currently controllers cannot be configured using the desktop app.
-    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we map 2 players using the emulators default keyboard configuration using evmapy.
-
     ------------------
-    Demul Service Menu
+    Odin Service Menu
     ------------------
 
-    Note: Keyboard required.
-    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+    Hold Hotkey and press the right stick for TEST, or the left stick for SERVICE.
+    On a keyboard, TEST is 0 and SERVICE is 9.
 
-    ---------------------
-    Demul Compatible ROMs
-    ---------------------
+    --------------------
+    Odin Compatible ROMs
+    --------------------
 
-    Demul has a specific list of currently compatible roms:
+    Odin has a specific list of currently compatible roms:
 
     airtrix: Air Trix (Rev. A)
     airtrixo: Air Trix (original)
     braveff: Brave Firefighters
-    hikcheck: Hikaru Check ROM BD
     pharrier: Planet Harriers (Rev. A)
     swracer: Star Wars: Racer Arcade
     sgnascar: NASCAR Arcade (Rev. A)
     sgnascaro: NASCAR Arcade (original)
     von4: Cyber Troopers Virtual-On 4: Force (Rev. E)
-
-    With both MAME and Demul you should be able to play a good collection of games.
 
     Enjoy Sega Hikaru games under Linux!
 
@@ -3112,45 +3090,27 @@ gaelco:
     ## GAELCO IMPORTANT INFO ##
     ---------------------------------
 
-    You can now play Sega Gaelco games using Mame or Demul (with WINE).
+    You can now play Gaelco games using Odin or Mame.
     The emulators are still work in progress for Gaelco games so mileage will vary.
     Zipped roms should be stored in the appropriate gaelco directory compatible with MAME 0.284 or later.
+    Odin's Gaelco games need no BIOS.
 
-    Performance depends on your x86_64 system hardware.
+    Performance depends on your system hardware.
     If you get audio stuttering & slow music, your system isn't performant enough to run this system.
 
-    Note: Your graphics card requires Vulkan drivers for Demul to work.
-
-    -----------------
-    Demul First Start
-    -----------------
-
-    You need to run a ROM at least once AND be connected to the internet.
-    This creates the directory structure & installs the associated Windows libraries for WINE.
-
-    Note: It may take some minutes before the game starts with the first use, this is NORMAL!
-    *** Please be patient as it can take up to 2 minutes depending on your internet connection speed ***
-
-    -----------------
-    Demul Controllers
-    -----------------
-
-    Currently controllers cannot be configured using the desktop app.
-    This is a limitation of the Demul app under Wine but also a known buggy pad plugin, even under Windows.
-    Currently we map 2 players using the emulators default keyboard configuration using evmapy.
-
     ------------------
-    Demul Service Menu
+    Odin Service Menu
     ------------------
 
-    Note: Keyboard required.
-    You can access the Service Menu using F4 and then use F2 to navigate with F4 to select.
+    Hold Hotkey and press the right stick for TEST, or the left stick for SERVICE.
+    On a keyboard, TEST is 0 and SERVICE is 9.
+    In Gaelco Football the right stick kicks: pull it back first to lift the ball.
 
-    ---------------------
-    Demul Compatible ROMs
-    ---------------------
+    --------------------
+    Odin Compatible ROMs
+    --------------------
 
-    Demul has a specific list of currently compatible roms:
+    Odin has a specific list of currently compatible roms:
 
     atvtrack: ATV Track (set 1)
     atvtracka: ATV Track (set 2)
@@ -3159,9 +3119,9 @@ gaelco:
     smashdrvb: Smashing Drive (UK)
     smashdrvs: Smashing Drive (Spain, Portugal)
 
-    With both MAME and Demul you should be able to play a good collection of games.
+    With both Odin and MAME you should be able to play a good collection of games.
 
-    Enjoy Sega Gaelco games under Linux!
+    Enjoy Gaelco games under Linux!
 
 cave3rd:
   name: Cave CV1000
