@@ -36,7 +36,8 @@ SYNCTHING_TARGET_ENV = \
 
 define SYNCTHING_BUILD_CMDS
 	cd $(@D) && $(SYNCTHING_TARGET_ENV) \
-	    $(GO_BIN) run build.go -goos linux -goarch $(GOARCH) build
+	    $(GO_BIN) run build.go -goos linux -goarch $(GOARCH) \
+		-version $(SYNCTHING_VERSION) build
 endef
 
 define SYNCTHING_INSTALL_TARGET_CMDS
