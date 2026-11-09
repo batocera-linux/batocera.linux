@@ -7,7 +7,13 @@ IMAGES_DIR=$3
 export BL31="${BINARIES_DIR}/bl31.elf"
 
 # Download U-Boot mainline
-wget "https://ftp.denx.de/pub/u-boot/u-boot-2022.10.tar.bz2"
+if test -e ${BR2_DL_DIR}/uboot/u-boot-2022.10.tar.bz2
+then
+    cp ${BR2_DL_DIR}/uboot/u-boot-2022.10.tar.bz2 .
+else
+    wget "https://ftp.denx.de/pub/u-boot/u-boot-2022.10.tar.bz2"
+fi
+
 tar xf u-boot-2022.10.tar.bz2
 cd u-boot-2022.10
 
