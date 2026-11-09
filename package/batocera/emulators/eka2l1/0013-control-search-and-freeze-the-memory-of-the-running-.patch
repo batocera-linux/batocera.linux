@@ -1,0 +1,874 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Thu, 5 Nov 2026 01:50:32 +0100
+Subject: [PATCH 13/15] control: search and freeze the memory of the running
+ app (cheats)
+
+A memory cheat engine in the way of the Sorcerer tool on S60, behind the
+control API:
+
+- GET /v1/cheats: the app that has the focus, the search and the codes
+- POST /v1/cheats/search {width, value?}: addresses holding the value,
+  or a copy of the memory when the value is not known
+- POST /v1/cheats/search/next {compare, value?}: keep the addresses equal
+  to or different from a value, lower or higher than (or equal to) the
+  value before, changed or unchanged
+- GET /v1/cheats/search/results, POST /v1/cheats/codes,
+  PATCH|DELETE /v1/cheats/codes/{index}: keep a result, write it, freeze it
+- POST /v1/cheats/codes/restore: freeze again the codes saved frozen
+
+Only the app's own chunks are read (heaps, stacks, static data), page by
+page through its page table. The work runs on the emulator thread between
+two CPU slices, through the new system::run_between_slices and
+add_slice_callback, where no guest code runs and no system call is
+served; frozen values are written again after every slice. Codes are
+saved per app in cheats/<UID>.json and come back unfrozen.
+---
+ src/emu/control/CMakeLists.txt         |   2 +-
+ src/emu/control/README.md              |  14 +
+ src/emu/control/src/cheats.cpp         | 454 +++++++++++++++++++++++++
+ src/emu/control/src/cheats.h           |  94 +++++
+ src/emu/control/src/native.cpp         |  35 ++
+ src/emu/control/src/service.cpp        |   2 +-
+ src/emu/kernel/include/kernel/kernel.h |   4 +
+ src/emu/system/include/system/epoc.h   |   9 +
+ src/emu/system/src/epoc.cpp            |  71 ++++
+ 9 files changed, 683 insertions(+), 2 deletions(-)
+ create mode 100755 src/emu/control/src/cheats.cpp
+ create mode 100755 src/emu/control/src/cheats.h
+
+diff --git a/src/emu/control/CMakeLists.txt b/src/emu/control/CMakeLists.txt
+index f366ce8fa..0d716189d 100644
+--- a/src/emu/control/CMakeLists.txt
++++ b/src/emu/control/CMakeLists.txt
+@@ -16,7 +16,7 @@ elseif(NOT ANDROID)
+ endif()
+ 
+ if(NOT EKA2L1_IOS)
+-    add_library(control_native src/native.cpp)
++    add_library(control_native src/cheats.cpp src/native.cpp)
+     target_include_directories(control_native PUBLIC include)
+     target_link_libraries(control_native PUBLIC control PRIVATE epoc epockern epocservs epocpkg drivers common zlibstatic)
+     set_target_properties(control_native PROPERTIES POSITION_INDEPENDENT_CODE ON)
+diff --git a/src/emu/control/README.md b/src/emu/control/README.md
+index 2c6fc94ae..43f32195b 100644
+--- a/src/emu/control/README.md
++++ b/src/emu/control/README.md
+@@ -65,3 +65,17 @@ In Android control mode the host process survives guest exits so that another
+ API launch can use the same listener. Launches still create EmulatorActivity,
+ use its profile and wait for its rendering surface. Ordinary Android launches
+ retain their process-exit behavior.
++
++`/v1/cheats` searches and changes the memory of the app that has the focus, in
++the way of the Sorcerer tool on S60: a new search keeps the addresses holding a
++value (8, 16 or 32 bits, aligned), or copies the memory when the value is not
++known; the next searches keep the addresses whose value is equal to, different
++from, lower or higher than (or equal to) the one before, changed or unchanged.
++Only the app's own chunks are read (heaps, stacks, static data), page by page
++through its page table, so pages that are not committed are skipped. Results
++become codes, whose value can be written and frozen. All of it runs on the
++emulator thread between two CPU slices (`system::run_between_slices` and
++`add_slice_callback`): no guest code runs and no system call is served there,
++and data pages need no JIT invalidation. Frozen values are written again after
++every slice. Codes are saved in `cheats/<UID>.json` of the data root and come
++back unfrozen at the next launch, until `POST /v1/cheats/codes/restore`.
+diff --git a/src/emu/control/src/cheats.cpp b/src/emu/control/src/cheats.cpp
+new file mode 100755
+index 000000000..b0f78e80a
+--- /dev/null
++++ b/src/emu/control/src/cheats.cpp
+@@ -0,0 +1,454 @@
++// Copyright (c) 2026 EKA2L1 Team.
++// SPDX-License-Identifier: GPL-2.0-or-later
++#include "cheats.h"
++
++#include <common/cvt.h>
++#include <common/log.h>
++#include <kernel/chunk.h>
++#include <kernel/kernel.h>
++#include <kernel/process.h>
++#include <kernel/thread.h>
++#include <mem/mem.h>
++#include <mem/process.h>
++#include <services/ui/cap/oom_app.h>
++#include <services/window/classes/wingroup.h>
++#include <services/window/screen.h>
++#include <services/window/window.h>
++#include <system/epoc.h>
++
++#include <algorithm>
++#include <cmath>
++#include <cstring>
++#include <fstream>
++#include <sstream>
++
++namespace eka2l1::control {
++    namespace fs = std::filesystem;
++
++    static void require(bool condition, const std::string &code, const std::string &message, int status = 422) {
++        if (!condition)
++            throw api_error(status, code, message);
++    }
++
++    static std::uint32_t mask(int width) {
++        return width == 4 ? 0xFFFFFFFFu : ((1u << (width * 8)) - 1);
++    }
++
++    // Negative values are entered as they are stored, in two's complement
++    static std::uint32_t truncate(double value, int width) {
++        return static_cast<std::uint32_t>(static_cast<std::int64_t>(std::llround(value))) & mask(width);
++    }
++
++    static std::uint32_t peek(const std::uint8_t *data, int width) {
++        switch (width) {
++        case 1:
++            return *data;
++        case 2: {
++            std::uint16_t value;
++            std::memcpy(&value, data, 2);
++            return value;
++        }
++        default: {
++            std::uint32_t value;
++            std::memcpy(&value, data, 4);
++            return value;
++        }
++        }
++    }
++
++    static bool matches(cheat_engine::compare how, std::uint32_t before, std::uint32_t now, std::uint32_t value) {
++        switch (how) {
++        case cheat_engine::compare::equal:
++            return now == value;
++        case cheat_engine::compare::different:
++            return now != value;
++        case cheat_engine::compare::changed:
++            return now != before;
++        case cheat_engine::compare::unchanged:
++            return now == before;
++        case cheat_engine::compare::increased:
++            return now > before;
++        case cheat_engine::compare::decreased:
++            return now < before;
++        case cheat_engine::compare::not_increased:
++            return now <= before;
++        case cheat_engine::compare::not_decreased:
++            return now >= before;
++        }
++        return false;
++    }
++
++    static int parse_width(const json &value) {
++        const int width = static_cast<int>(value.number(4));
++        require(width == 1 || width == 2 || width == 4, "bad_request", "width must be 1, 2 or 4 bytes", 400);
++        return width;
++    }
++
++    static cheat_engine::compare parse_compare(const std::string &text) {
++        static const std::pair<const char *, cheat_engine::compare> names[] = {
++            { "equal", cheat_engine::compare::equal }, { "different", cheat_engine::compare::different },
++            { "changed", cheat_engine::compare::changed }, { "unchanged", cheat_engine::compare::unchanged },
++            { "increased", cheat_engine::compare::increased }, { "decreased", cheat_engine::compare::decreased },
++            { "not-increased", cheat_engine::compare::not_increased }, { "not-decreased", cheat_engine::compare::not_decreased }
++        };
++        for (const auto &[name, how] : names)
++            if (text == name)
++                return how;
++        throw api_error(400, "bad_request", "compare must be equal, different, changed, unchanged, increased, decreased, not-increased or not-decreased");
++    }
++
++    cheat_engine::cheat_engine(fs::path folder)
++        : folder_(std::move(folder)) {
++    }
++
++    // next to compat/<UID>.yml, the per-app settings
++    fs::path cheat_engine::file() const {
++        return folder_ / (hex(app_uid_).substr(2) + ".json");
++    }
++
++    kernel::process *cheat_engine::process(system &sys) {
++        return process_id_ ? sys.get_kernel_system()->get_by_id<kernel::process>(process_id_) : nullptr;
++    }
++
++    // The app whose window has the focus, found as the Qt frontend finds the app its settings apply to
++    void cheat_engine::attach(system &sys) {
++        kernel_system *kern = sys.get_kernel_system();
++        require(kern != nullptr, "no_device", "no device is booted", 409);
++        auto *winserv = reinterpret_cast<window_server *>(kern->get_by_name<service::server>(get_winserv_name_by_epocver(kern->get_epoc_version())));
++        epoc::screen *scr = winserv ? winserv->get_current_focus_screen() : nullptr;
++        std::optional<akn_running_app_info> found;
++        if (scr && scr->focus) {
++            for (auto *group = scr->get_group_chain(); group; group = reinterpret_cast<epoc::window_group *>(group->sibling)) {
++                auto info = get_akn_app_info_from_window_group(group);
++                if (!info.has_value())
++                    continue;
++                if (group == scr->focus) {
++                    found = info;
++                    break;
++                }
++                kernel::thread *owner = scr->focus->client->get_client();
++                if (owner && info->associated_->has_child_process(owner->owning_process()))
++                    found = info;
++            }
++        }
++        require(found.has_value() && found->associated_, "no_app", "no app has the focus", 409);
++        if (found->app_uid_ != app_uid_) {
++            reset_search();
++            app_uid_ = found->app_uid_;
++            load();
++        }
++        app_name_ = common::ucs2_to_utf8(found->app_name_);
++        if (found->associated_->unique_id() != process_id_) {
++            // the game started again: its old results point at memory it no longer has
++            reset_search();
++            process_id_ = found->associated_->unique_id();
++        }
++    }
++
++    void cheat_engine::reset_search() {
++        width_ = 0;
++        searching_ = false;
++        snapshot_.clear();
++        snapshot_.shrink_to_fit();
++        addresses_.clear();
++        addresses_.shrink_to_fit();
++        values_.clear();
++        values_.shrink_to_fit();
++    }
++
++    std::uint64_t cheat_engine::count() const {
++        if (!snapshot_.empty()) {
++            std::uint64_t bytes = 0;
++            for (const auto &p : snapshot_)
++                bytes += p.bytes.size();
++            return bytes / width_;
++        }
++        return addresses_.size();
++    }
++
++    // The pages of the app's own writable memory (heaps, stacks, static data): no code, no ROM
++    std::vector<std::pair<std::uint32_t, std::uint32_t>> cheat_engine::ranges(system &sys, kernel::process *pr) {
++        kernel_system *kern = sys.get_kernel_system();
++        memory_system *mem = sys.get_memory_system();
++        const std::uint32_t page_size = static_cast<std::uint32_t>(mem->get_page_size());
++        const mem::asid id = pr->get_mem_model()->address_space_id();
++        std::vector<std::pair<std::uint32_t, std::uint32_t>> pages;
++        for (auto &obj : kern->get_chunk_list()) {
++            auto *chunk = reinterpret_cast<kernel::chunk *>(obj.get());
++            if (!chunk || !chunk->valid() || chunk->get_own_process() != pr)
++                continue;
++            const auto access = chunk->position_access();
++            if (access == kernel::chunk_access::code || access == kernel::chunk_access::rom || access == kernel::chunk_access::kernel_mapping)
++                continue;
++            const std::uint32_t base = chunk->base(pr).ptr_address();
++            const std::uint64_t end = std::uint64_t(base) + chunk->max_size();
++            for (std::uint64_t address = base; address < end; address += page_size)
++                if (mem->get_real_pointer(static_cast<std::uint32_t>(address), id))
++                    pages.emplace_back(static_cast<std::uint32_t>(address), page_size);
++        }
++        std::sort(pages.begin(), pages.end());
++        pages.erase(std::unique(pages.begin(), pages.end()), pages.end());
++        return pages;
++    }
++
++    std::optional<std::uint32_t> cheat_engine::read(system &sys, kernel::process *pr, std::uint32_t address, int width) {
++        if (!pr || (address % width))
++            return std::nullopt;
++        auto *data = reinterpret_cast<std::uint8_t *>(sys.get_memory_system()->get_real_pointer(address, pr->get_mem_model()->address_space_id()));
++        if (!data)
++            return std::nullopt;
++        return peek(data, width);
++    }
++
++    bool cheat_engine::write(system &sys, kernel::process *pr, std::uint32_t address, int width, std::uint32_t value) {
++        if (!pr || (address % width))
++            return false;
++        auto *data = reinterpret_cast<std::uint8_t *>(sys.get_memory_system()->get_real_pointer(address, pr->get_mem_model()->address_space_id()));
++        if (!data)
++            return false;
++        // Data pages only: the JIT keeps no copy of them, nothing to invalidate
++        std::memcpy(data, &value, width);
++        return true;
++    }
++
++    std::uint64_t cheat_engine::start(system &sys, int width, std::optional<std::uint32_t> value) {
++        kernel::process *pr = process(sys);
++        require(pr != nullptr, "no_app", "the app is gone", 409);
++        reset_search();
++        width_ = width;
++        searching_ = true;
++        memory_system *mem = sys.get_memory_system();
++        const mem::asid id = pr->get_mem_model()->address_space_id();
++        for (const auto &[address, size] : ranges(sys, pr)) {
++            auto *data = reinterpret_cast<const std::uint8_t *>(mem->get_real_pointer(address, id));
++            if (!data)
++                continue;
++            if (!value.has_value()) {
++                snapshot_.push_back({ address, std::vector<std::uint8_t>(data, data + size) });
++                continue;
++            }
++            for (std::uint32_t offset = 0; offset + width <= size; offset += width)
++                if (peek(data + offset, width) == *value) {
++                    addresses_.push_back(address + offset);
++                    values_.push_back(*value);
++                }
++        }
++        return count();
++    }
++
++    std::uint64_t cheat_engine::next(system &sys, compare how, std::uint32_t value) {
++        require(searching_, "no_search", "start a new search first", 409);
++        kernel::process *pr = process(sys);
++        require(pr != nullptr, "no_app", "the app is gone", 409);
++        memory_system *mem = sys.get_memory_system();
++        const mem::asid id = pr->get_mem_model()->address_space_id();
++        const std::uint32_t page_mask = ~(static_cast<std::uint32_t>(mem->get_page_size()) - 1);
++        if (!snapshot_.empty()) {
++            for (const auto &p : snapshot_) {
++                auto *data = reinterpret_cast<const std::uint8_t *>(mem->get_real_pointer(p.address, id));
++                if (!data)
++                    continue;
++                for (std::uint32_t offset = 0; offset + width_ <= p.bytes.size(); offset += width_) {
++                    const std::uint32_t now = peek(data + offset, width_);
++                    if (matches(how, peek(p.bytes.data() + offset, width_), now, value)) {
++                        addresses_.push_back(p.address + offset);
++                        values_.push_back(now);
++                    }
++                }
++            }
++            snapshot_.clear();
++            snapshot_.shrink_to_fit();
++            return count();
++        }
++        std::size_t kept = 0;
++        std::uint32_t cached_page = 1;
++        const std::uint8_t *cached = nullptr;
++        for (std::size_t i = 0; i < addresses_.size(); ++i) {
++            const std::uint32_t address = addresses_[i];
++            if ((address & page_mask) != cached_page) {
++                cached_page = address & page_mask;
++                cached = reinterpret_cast<const std::uint8_t *>(mem->get_real_pointer(cached_page, id));
++            }
++            if (!cached)
++                continue;
++            const std::uint32_t now = peek(cached + (address - cached_page), width_);
++            if (matches(how, values_[i], now, value)) {
++                addresses_[kept] = address;
++                values_[kept++] = now;
++            }
++        }
++        addresses_.resize(kept);
++        values_.resize(kept);
++        return count();
++    }
++
++    void cheat_engine::load() {
++        codes_.clear();
++        std::ifstream in(file());
++        if (!in)
++            return;
++        std::stringstream text;
++        text << in.rdbuf();
++        try {
++            const json saved = json::parse(text.str());
++            for (const auto &item : saved["codes"].items()) {
++                const int width = static_cast<int>(item["width"].number(4));
++                if (width != 1 && width != 2 && width != 4)
++                    continue;
++                // armed again from the menu: the game may not have that memory in place yet
++                codes_.push_back({ static_cast<std::uint32_t>(item["address"].number()), width,
++                    truncate(item["value"].number(), width), false, item["frozen"].boolean(), item["name"].string() });
++            }
++        } catch (const std::exception &e) {
++            LOG_WARN(FRONTEND_CMDLINE, "Ignoring the unreadable cheat file of {}: {}", hex(app_uid_), e.what());
++        }
++    }
++
++    void cheat_engine::save() const {
++        if (!app_uid_)
++            return;
++        json::array list;
++        for (const auto &c : codes_)
++            list.push_back({ { "address", c.address }, { "width", c.width }, { "value", c.value },
++                { "frozen", c.frozen || c.was_frozen }, { "name", c.name } });
++        std::error_code error;
++        fs::create_directories(folder_, error);
++        std::ofstream out(file(), std::ios::trunc);
++        out << json(json::object{ { "uid", hex(app_uid_) }, { "codes", list } }).dump();
++        if (!out)
++            LOG_WARN(FRONTEND_CMDLINE, "Unable to save the cheats of {} in {}", hex(app_uid_), folder_.string());
++    }
++
++    json cheat_engine::code_list() const {
++        json::array list;
++        for (const auto &c : codes_)
++            list.push_back({ { "address", c.address }, { "addressHex", hex(c.address) }, { "width", c.width },
++                { "value", c.value }, { "frozen", c.frozen }, { "wasFrozen", c.was_frozen }, { "name", c.name } });
++        return list;
++    }
++
++    json cheat_engine::state() const {
++        return { { "app", app_uid_ ? json({ { "uid", hex(app_uid_) }, { "name", app_name_ } }) : json(nullptr) },
++            { "search", { { "active", searching_ }, { "width", width_ }, { "count", count() }, { "unknown", !snapshot_.empty() } } },
++            { "codes", code_list() } };
++    }
++
++    response cheat_engine::handle(system &sys, const request &req) {
++        attach(sys);
++        const auto &p = req.path;
++        const auto body = req.data();
++        auto refresh_values = [&] {
++            kernel::process *pr = process(sys);
++            for (auto &c : codes_)
++                if (!c.frozen && !c.was_frozen)
++                    if (auto now = read(sys, pr, c.address, c.width))
++                        c.value = *now;
++        };
++        if (p.size() == 2 && req.method == "GET") {
++            refresh_values();
++            return response::from_json(state());
++        }
++        if (p.size() >= 3 && p[2] == "search") {
++            if (p.size() == 3 && req.method == "POST") {
++                const int width = parse_width(body["width"]);
++                std::optional<std::uint32_t> value;
++                if (body.contains("value") && !body["value"].is_null())
++                    value = truncate(body["value"].number(), width);
++                start(sys, width, value);
++                return response::from_json(state());
++            }
++            if (p.size() == 4 && p[3] == "next" && req.method == "POST") {
++                const auto how = parse_compare(body["compare"].string("equal"));
++                const bool needs_value = how == compare::equal || how == compare::different;
++                require(!needs_value || body.contains("value"), "bad_request", "value required", 400);
++                next(sys, how, needs_value ? truncate(body["value"].number(), width_) : 0);
++                return response::from_json(state());
++            }
++            if (p.size() == 3 && req.method == "DELETE") {
++                reset_search();
++                return response::from_json(state());
++            }
++            if (p.size() == 4 && p[3] == "results" && req.method == "GET") {
++                require(searching_ && snapshot_.empty(), "no_results", "narrow the search down first", 409);
++                const std::size_t offset = std::min<std::size_t>(std::stoul(req.param("offset", "0")), addresses_.size());
++                const std::size_t limit = std::min<std::size_t>(std::stoul(req.param("limit", "100")), 1000);
++                kernel::process *pr = process(sys);
++                json::array list;
++                for (std::size_t i = offset; i < std::min(addresses_.size(), offset + limit); ++i) {
++                    auto now = read(sys, pr, addresses_[i], width_);
++                    list.push_back({ { "address", addresses_[i] }, { "addressHex", hex(addresses_[i]) },
++                        { "previous", values_[i] }, { "value", now ? json(*now) : json(nullptr) } });
++                }
++                return response::from_json({ { "count", count() }, { "width", width_ }, { "offset", offset }, { "results", list } });
++            }
++        }
++        if (p.size() >= 3 && p[2] == "codes") {
++            kernel::process *pr = process(sys);
++            if (p.size() == 3 && req.method == "POST") {
++                const std::uint32_t address = static_cast<std::uint32_t>(required_number(body, "address"));
++                const int width = body.contains("width") ? parse_width(body["width"]) : (width_ ? width_ : 4);
++                auto now = read(sys, pr, address, width);
++                require(now.has_value(), "bad_address", "the app has no memory at " + hex(address));
++                auto same = std::find_if(codes_.begin(), codes_.end(), [&](const code &c) { return c.address == address && c.width == width; });
++                if (same == codes_.end())
++                    codes_.push_back({ address, width, *now, false, false, body["name"].string() });
++                save();
++                return response::from_json(state());
++            }
++            if (p.size() == 4 && p[3] == "restore" && req.method == "POST") {
++                for (auto &c : codes_) {
++                    c.frozen = c.frozen || c.was_frozen;
++                    c.was_frozen = false;
++                }
++                save();
++                return response::from_json(state());
++            }
++            if (p.size() == 4) {
++                std::size_t index = 0;
++                try {
++                    index = std::stoul(p[3]);
++                } catch (const std::exception &) {
++                    throw api_error(404, "not_found", "no code " + p[3]);
++                }
++                require(index < codes_.size(), "not_found", "no code " + p[3], 404);
++                code &c = codes_[index];
++                if (req.method == "PATCH") {
++                    if (body.contains("name"))
++                        c.name = body["name"].string();
++                    if (body.contains("value")) {
++                        c.value = truncate(body["value"].number(), c.width);
++                        write(sys, pr, c.address, c.width, c.value);
++                    }
++                    if (body.contains("frozen")) {
++                        c.frozen = body["frozen"].boolean();
++                        c.was_frozen = false;
++                        if (!c.frozen)
++                            if (auto now = read(sys, pr, c.address, c.width))
++                                c.value = *now;
++                    }
++                    save();
++                    return response::from_json(state());
++                }
++                if (req.method == "DELETE") {
++                    codes_.erase(codes_.begin() + index);
++                    save();
++                    return response::from_json(state());
++                }
++            }
++        }
++        throw api_error(404, "not_found", "unknown cheats endpoint");
++    }
++
++    void cheat_engine::freeze(system &sys) {
++        if (codes_.empty())
++            return;
++        kernel::process *pr = nullptr;
++        for (const auto &c : codes_) {
++            if (!c.frozen)
++                continue;
++            if (!pr && !(pr = process(sys)))
++                return;
++            write(sys, pr, c.address, c.width, c.value);
++        }
++    }
++}
+diff --git a/src/emu/control/src/cheats.h b/src/emu/control/src/cheats.h
+new file mode 100755
+index 000000000..2c3cc4d55
+--- /dev/null
++++ b/src/emu/control/src/cheats.h
+@@ -0,0 +1,94 @@
++// Copyright (c) 2026 EKA2L1 Team.
++// SPDX-License-Identifier: GPL-2.0-or-later
++#pragma once
++
++#include <control/api.h>
++#include <kernel/common.h>
++
++#include <cstdint>
++#include <filesystem>
++#include <optional>
++#include <string>
++#include <vector>
++
++namespace eka2l1 {
++    class system;
++    namespace kernel {
++        class process;
++    }
++}
++
++namespace eka2l1::control {
++    // Memory search and freeze in the foreground app, for the /v1/cheats endpoints. Everything runs
++    // on the emulator thread, between two CPU slices (system::run_between_slices).
++    class cheat_engine {
++    public:
++        enum class compare {
++            equal,
++            different,
++            changed,
++            unchanged,
++            increased,
++            decreased,
++            not_increased,
++            not_decreased
++        };
++
++        struct code {
++            std::uint32_t address;
++            int width;
++            std::uint32_t value;
++            bool frozen;
++            // frozen when the game last ran, armed again on request
++            bool was_frozen;
++            std::string name;
++        };
++
++    private:
++        struct page {
++            std::uint32_t address;
++            std::vector<std::uint8_t> bytes;
++        };
++
++        std::filesystem::path folder_;
++
++        std::uint32_t app_uid_ = 0;
++        std::string app_name_;
++        kernel::uid process_id_ = 0;
++
++        int width_ = 0;
++        bool searching_ = false;
++        // a search from an unknown value starts from a copy of the memory
++        std::vector<page> snapshot_;
++        std::vector<std::uint32_t> addresses_;
++        std::vector<std::uint32_t> values_;
++
++        std::vector<code> codes_;
++
++        kernel::process *process(system &sys);
++        void attach(system &sys);
++        std::filesystem::path file() const;
++        void load();
++        void save() const;
++        void reset_search();
++        std::uint64_t count() const;
++
++        std::vector<std::pair<std::uint32_t, std::uint32_t>> ranges(system &sys, kernel::process *pr);
++        std::optional<std::uint32_t> read(system &sys, kernel::process *pr, std::uint32_t address, int width);
++        bool write(system &sys, kernel::process *pr, std::uint32_t address, int width, std::uint32_t value);
++
++        std::uint64_t start(system &sys, int width, std::optional<std::uint32_t> value);
++        std::uint64_t next(system &sys, compare how, std::uint32_t value);
++
++        json state() const;
++        json code_list() const;
++
++    public:
++        explicit cheat_engine(std::filesystem::path folder);
++
++        response handle(system &sys, const request &req);
++
++        // Writes the frozen values again, after every CPU slice
++        void freeze(system &sys);
++    };
++}
+diff --git a/src/emu/control/src/native.cpp b/src/emu/control/src/native.cpp
+index af9ce626f..033e0565a 100644
+--- a/src/emu/control/src/native.cpp
++++ b/src/emu/control/src/native.cpp
+@@ -1,7 +1,10 @@
+ // Copyright (c) 2026 EKA2L1 Team.
+ // SPDX-License-Identifier: GPL-2.0-or-later
++#include "cheats.h"
++
+ #include <algorithm>
+ #include <atomic>
++#include <chrono>
+ #include <cmath>
+ #include <common/algorithm.h>
+ #include <common/cvt.h>
+@@ -15,6 +18,7 @@
+ #include <drivers/graphics/graphics.h>
+ #include <drivers/input/common.h>
+ #include <filesystem>
++#include <future>
+ #include <kernel/kernel.h>
+ #include <kernel/process.h>
+ #include <kernel/thread.h>
+@@ -85,6 +89,8 @@ namespace eka2l1::control {
+         std::set<int> held_pointers;
+         json acceleration;
+         std::string card_path;
++        std::shared_ptr<cheat_engine> cheats;
++        system *cheats_system = nullptr;
+ 
+         explicit impl(native_frontend frontend)
+             : frontend(std::move(frontend)) {}
+@@ -289,6 +295,33 @@ namespace eka2l1::control {
+                 { "btnetDiscoveryMode", c.btnet_discovery_mode }, { "btnetListenPort", c.internet_bluetooth_port }, { "btnetPassword", c.btnet_password }, { "btCentralServerUrl", c.bt_central_server_url },
+                 { "hideSystemApps", c.hide_system_apps }, { "logFilter", c.log_filter }, { "screenBufferSync", c.screen_buffer_sync_string } };
+         }
++        // The engine works between two CPU slices, on the emulator thread
++        response cheat_request(const request &req) {
++            system &s = sys();
++            if (!cheats)
++                cheats = std::make_shared<cheat_engine>(fs::u8path(frontend.documents) / "cheats");
++            if (cheats_system != &s) {
++                std::weak_ptr<cheat_engine> weak = cheats;
++                s.add_slice_callback([weak](system *target) {
++                    if (auto engine = weak.lock())
++                        engine->freeze(*target);
++                });
++                cheats_system = &s;
++            }
++            auto result = std::make_shared<std::promise<response>>();
++            auto future = result->get_future();
++            s.run_between_slices([engine = cheats, req, result](system *target) {
++                try {
++                    result->set_value(engine->handle(*target, req));
++                } catch (const api_error &e) {
++                    result->set_value(response::error(e.status, e.code, e.what()));
++                } catch (const std::exception &e) {
++                    result->set_value(response::error(500, "internal", e.what()));
++                }
++            });
++            require(future.wait_for(std::chrono::seconds(10)) == std::future_status::ready, "busy", "the emulator did not reach the end of a CPU slice", 503);
++            return future.get();
++        }
+         response route(const request &req) {
+             auto p = req.path;
+             require(!p.empty() && p[0] == "v1", "not_found", "unknown API version", 404);
+@@ -304,6 +337,8 @@ namespace eka2l1::control {
+             auto body = req.data();
+             if (p == std::vector<std::string>{ "v1", "status" } && req.method == "GET")
+                 return response::from_json(status());
++            if (p.size() >= 2 && p[1] == "cheats")
++                return cheat_request(req);
+             if (p == std::vector<std::string>{ "v1", "devices" } && req.method == "GET")
+                 return response::from_json({ { "devices", devices() }, { "current", current_device() } });
+             if (p.size() >= 2 && p[1] == "devices") {
+diff --git a/src/emu/control/src/service.cpp b/src/emu/control/src/service.cpp
+index 0761217b6..e0d7f9230 100644
+--- a/src/emu/control/src/service.cpp
++++ b/src/emu/control/src/service.cpp
+@@ -314,7 +314,7 @@ namespace eka2l1::control {
+                 throw api_error(404, "not_found", "unknown API version");
+             const auto &p = req.path;
+             if (p.size() == 1 && req.method == "GET")
+-                return response::from_json({ { "api", 1 }, { "endpoints", json::array{ "GET /v1/status", "GET /v1/capabilities", "GET /v1/devices", "POST /v1/devices", "POST /v1/devices/rescan", "POST /v1/devices/{index|code}/boot", "PATCH /v1/devices/{index|code}", "DELETE /v1/devices/{index|code}", "GET /v1/apps?system=1", "POST /v1/apps", "DELETE /v1/apps/{uid}", "GET /v1/apps/{uid}/icon", "POST /v1/apps/{uid}/launch", "GET /v1/session", "DELETE /v1/session", "GET|PUT /v1/session/screen-mode", "GET|PUT /v1/session/frame-limit", "GET|PUT|DELETE /v1/card", "GET /v1/keys", "POST /v1/input/key", "POST /v1/input/touch", "POST /v1/input/text", "POST /v1/input/sequence", "POST /v1/input/release", "GET|PUT|DELETE /v1/input/accelerometer", "GET /v1/screenshot", "GET /v1/log", "POST /v1/wait", "GET|PATCH /v1/config", "GET|PUT /v1/language", "GET|PUT|DELETE /v1/files?path=", "POST /v1/emulator/pause", "POST /v1/emulator/resume", "GET /v1/jobs", "GET /v1/jobs/{id}" } } });
++                return response::from_json({ { "api", 1 }, { "endpoints", json::array{ "GET /v1/status", "GET /v1/capabilities", "GET /v1/devices", "POST /v1/devices", "POST /v1/devices/rescan", "POST /v1/devices/{index|code}/boot", "PATCH /v1/devices/{index|code}", "DELETE /v1/devices/{index|code}", "GET /v1/apps?system=1", "POST /v1/apps", "DELETE /v1/apps/{uid}", "GET /v1/apps/{uid}/icon", "POST /v1/apps/{uid}/launch", "GET /v1/session", "DELETE /v1/session", "GET|PUT /v1/session/screen-mode", "GET|PUT /v1/session/frame-limit", "GET|PUT|DELETE /v1/card", "GET /v1/keys", "POST /v1/input/key", "POST /v1/input/touch", "POST /v1/input/text", "POST /v1/input/sequence", "POST /v1/input/release", "GET|PUT|DELETE /v1/input/accelerometer", "GET /v1/screenshot", "GET /v1/log", "POST /v1/wait", "GET|PATCH /v1/config", "GET|PUT /v1/language", "GET|PUT|DELETE /v1/files?path=", "POST /v1/emulator/pause", "POST /v1/emulator/resume", "GET /v1/jobs", "GET /v1/jobs/{id}", "GET /v1/cheats", "POST|DELETE /v1/cheats/search", "POST /v1/cheats/search/next", "GET /v1/cheats/search/results", "POST /v1/cheats/codes", "POST /v1/cheats/codes/restore", "PATCH|DELETE /v1/cheats/codes/{index}" } } });
+             if (p.size() >= 2 && p[1] == "jobs" && req.method == "GET") {
+                 std::lock_guard<std::mutex> guard(jobs_mutex);
+                 if (p.size() == 2) {
+diff --git a/src/emu/kernel/include/kernel/kernel.h b/src/emu/kernel/include/kernel/kernel.h
+index f2b9dac88..bbdf695d3 100644
+--- a/src/emu/kernel/include/kernel/kernel.h
++++ b/src/emu/kernel/include/kernel/kernel.h
+@@ -613,6 +613,10 @@ namespace eka2l1 {
+             return threads_;
+         }
+ 
++        std::vector<kernel_obj_unq_ptr> &get_chunk_list() {
++            return chunks_;
++        }
++
+         // True while wipeout() is tearing the whole kernel down. Completion/scheduling
+         // work should be skipped then: the scheduler and threads are being destroyed, so
+         // signalling or rescheduling a thread would touch state that is already gone.
+diff --git a/src/emu/system/include/system/epoc.h b/src/emu/system/include/system/epoc.h
+index 7a7cd3686..0f19cc8a0 100644
+--- a/src/emu/system/include/system/epoc.h
++++ b/src/emu/system/include/system/epoc.h
+@@ -90,6 +90,7 @@ namespace eka2l1 {
+ 
+     using hal_instance = std::unique_ptr<epoc::hal>;
+     using system_reset_callback_type = std::function<void(system *)>;
++    using slice_callback_type = std::function<void(system *)>;
+ 
+     enum zip_mount_error {
+         zip_mount_error_none,
+@@ -215,6 +216,14 @@ namespace eka2l1 {
+         std::size_t add_system_reset_callback(system_reset_callback_type type);
+         bool remove_system_reset_callback(const std::size_t h);
+ 
++        // Runs the task once on the emulator thread, between two CPU slices: no guest code runs and
++        // no system call is being served there, so the task can read and change guest memory.
++        void run_between_slices(slice_callback_type task);
++
++        // Called the same way after every slice, until removed.
++        std::size_t add_slice_callback(slice_callback_type cb);
++        bool remove_slice_callback(const std::size_t h);
++
+         void initialize_user_parties();
+     };
+ }
+diff --git a/src/emu/system/src/epoc.cpp b/src/emu/system/src/epoc.cpp
+index d5c841b2b..3f0d3c022 100644
+--- a/src/emu/system/src/epoc.cpp
++++ b/src/emu/system/src/epoc.cpp
+@@ -48,6 +48,7 @@
+ #include <array>
+ #include <atomic>
+ #include <fstream>
++#include <map>
+ #include <string>
+ 
+ #include <disasm/disasm.h>
+@@ -177,6 +178,37 @@ namespace eka2l1 {
+ 
+         common::identity_container<system_reset_callback_type> reset_callbacks_;
+ 
++        std::mutex slice_lock_;
++        std::vector<slice_callback_type> slice_tasks_;
++        std::map<std::size_t, slice_callback_type> slice_callbacks_;
++        std::size_t slice_callback_next_ = 0;
++        std::atomic<bool> slice_work_ = false;
++
++        void run_slice_work() {
++            if (!slice_work_.load(std::memory_order_acquire)) {
++                return;
++            }
++
++            std::vector<slice_callback_type> tasks;
++            std::vector<slice_callback_type> callbacks;
++            {
++                const std::lock_guard<std::mutex> guard(slice_lock_);
++                tasks.swap(slice_tasks_);
++                for (const auto &[handle, cb] : slice_callbacks_) {
++                    callbacks.push_back(cb);
++                }
++                slice_work_ = !slice_callbacks_.empty();
++            }
++
++            for (auto &task : tasks) {
++                task(parent_);
++            }
++
++            for (auto &cb : callbacks) {
++                cb(parent_);
++            }
++        }
++
+     public:
+         explicit system_impl(system *parent, system_create_components &param);
+ 
+@@ -484,6 +516,31 @@ namespace eka2l1 {
+             return reset_callbacks_.remove(h);
+         }
+ 
++        void run_between_slices(slice_callback_type task) {
++            {
++                const std::lock_guard<std::mutex> guard(slice_lock_);
++                slice_tasks_.push_back(std::move(task));
++                slice_work_ = true;
++            }
++
++            // A core waiting for a guest thread to wake up would leave the task waiting too
++            if (kern_) {
++                kern_->stop_cores_idling();
++            }
++        }
++
++        std::size_t add_slice_callback(slice_callback_type cb) {
++            const std::lock_guard<std::mutex> guard(slice_lock_);
++            slice_callbacks_.emplace(slice_callback_next_, std::move(cb));
++            slice_work_ = true;
++            return slice_callback_next_++;
++        }
++
++        bool remove_slice_callback(const std::size_t h) {
++            const std::lock_guard<std::mutex> guard(slice_lock_);
++            return slice_callbacks_.erase(h) != 0;
++        }
++
+         void invoke_system_reset_callbacks() {
+             for (auto cb : reset_callbacks_) {
+                 cb(parent_);
+@@ -749,6 +806,8 @@ namespace eka2l1 {
+     int system_impl::loop() {
+         const std::lock_guard<std::mutex> guard(mut);
+ 
++        run_slice_work();
++
+         if (paused) {
+             return 1;
+         }
+@@ -1816,6 +1875,18 @@ namespace eka2l1 {
+         return impl->remove_system_reset_callback(h);
+     }
+ 
++    void system::run_between_slices(slice_callback_type task) {
++        impl->run_between_slices(std::move(task));
++    }
++
++    std::size_t system::add_slice_callback(slice_callback_type cb) {
++        return impl->add_slice_callback(std::move(cb));
++    }
++
++    bool system::remove_slice_callback(const std::size_t h) {
++        return impl->remove_slice_callback(h);
++    }
++
+     bool system::rescan_devices(const drive_number romdrv) {
+         return impl->rescan_devices(romdrv);
+     }
