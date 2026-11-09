@@ -173,6 +173,7 @@
 - Hikaru & Gaelco now uses Odin, Demul no longer runs these games
 - Khadas VIM4 now uses LabWC
 - LabWC is now used on the older ARM boards: Raspberry Pi 1 / Zero, Allwinner H3, H5, H6, Rockchip RK3328, Amlogic S812, S905 and S9gen4
+- Libretro-HatariB added to all aarch64 devices
 - Lindbergh Loader has transitioned to LinuxLoader for Lindbergh roms
 - MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
