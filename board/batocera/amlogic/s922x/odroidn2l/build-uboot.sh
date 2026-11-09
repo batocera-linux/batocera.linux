@@ -26,10 +26,15 @@ make_uboot () {
 }
 
 # Download U-Boot mainline
-uboot="u-boot-2024.01"
-wget "https://ftp.denx.de/pub/u-boot/${uboot}.tar.bz2"
-tar xf "${uboot}.tar.bz2" || exit 1
-pushd "${uboot}" || exit 1
+if test -e ${BR2_DL_DIR}/uboot/u-boot-2024.01.tar.bz2
+then
+    cp ${BR2_DL_DIR}/uboot/u-boot-2024.01.tar.bz2 .
+else
+    wget "https://ftp.denx.de/pub/u-boot/u-boot-2024.01.tar.bz2"
+fi
+
+tar xf "u-boot-2024.01.tar.bz2" || exit 1
+pushd "u-boot-2024.01" || exit 1
     # Clone LibreElec Amlogic FIP
     git clone --depth 1 https://github.com/LibreELEC/amlogic-boot-fip || exit 1
 
