@@ -1,0 +1,7 @@
+config BR2_PACKAGE_LIBRETRO_ZESARPCW
+	bool "libretro-zesarpcw"
+	help
+	  A libretro Amstrad PCW 8256/8512 emulator core, derived from
+	  ZEsarUX. It boots disk images without an external BIOS.
+
+	  https://github.com/retrodiv/ZEsarPCW-libretro

@@ -1087,8 +1087,10 @@ pcw:
   release: 1985
   hardware: computer
   comment_en: |
-    Requires MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
-    Games are floppy disk images (.dsk). Most games are self-booting and don't require a separate system disk.
+    Games are floppy disk images (.dsk), or .m3u playlists for multi-disk games.
+    The default core, libretro/zesarpcw, needs no BIOS.
+    The MAME cores require MAME BIOS files pcw8256.zip (and pcw9512.zip for the 9512 model).
+    Most games are self-booting and don't require a separate system disk.
 
 msx1:
   name: MSX1
