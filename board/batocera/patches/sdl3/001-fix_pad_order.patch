@@ -1,8 +1,7 @@
 diff --git a/src/core/linux/SDL_udev.c b/src/core/linux/SDL_udev.c
-index 907c34c7f6..8b0482b03a 100644
 --- a/src/core/linux/SDL_udev.c
 +++ b/src/core/linux/SDL_udev.c
-@@ -59,6 +59,66 @@ static bool SDL_UDEV_load_sym(const char *fn, void **addr)
+@@ -74,6 +74,66 @@ static bool SDL_UDEV_load_sym(const char *fn, void **addr)
      return true;
  }
  
@@ -69,43 +68,63 @@ index 907c34c7f6..8b0482b03a 100644
  static bool SDL_UDEV_load_syms(void)
  {
  /* cast funcs to char* first, to please GCC's strict aliasing rules. */
-@@ -190,6 +250,10 @@ bool SDL_UDEV_Scan(void)
+@@ -206,6 +266,11 @@ bool SDL_UDEV_Scan(void)
      struct udev_list_entry *devs = NULL;
      struct udev_list_entry *item = NULL;
  
 +    unsigned sorted_count = 0;
-+    struct joypad_udev_entry sorted[64];
-+    int i;
++    unsigned sorted_size = 0;
++    struct joypad_udev_entry *sorted = NULL;
++    unsigned i;
 +
      if (!_this) {
          return true;
      }
-@@ -210,11 +274,27 @@ bool SDL_UDEV_Scan(void)
+@@ -226,11 +291,46 @@ bool SDL_UDEV_Scan(void)
          const char *path = _this->syms.udev_list_entry_get_name(item);
          struct udev_device *dev = _this->syms.udev_device_new_from_syspath(_this->udev, path);
          if (dev) {
 -            device_event(SDL_UDEV_DEVICEADDED, dev);
 -            _this->syms.udev_device_unref(dev);
 +            const char* devnode = _this->syms.udev_device_get_devnode(dev);
-+            if(devnode != NULL) {
-+                sorted[sorted_count].devnode = devnode;
-+                sorted[sorted_count].dev     = dev;
-+                sorted[sorted_count].item = item;
-+                sorted_count++;
++            if(devnode == NULL) {
++                _this->syms.udev_device_unref(dev);
++                continue;
 +            }
++            /* the list holds every input, sound and video4linux node:
++             * it can be much longer than a few gamepads */
++            if(sorted_count == sorted_size) {
++                unsigned new_size = sorted_size ? sorted_size * 2 : 64;
++                struct joypad_udev_entry *new_sorted = (struct joypad_udev_entry *)SDL_realloc(sorted, new_size * sizeof(*sorted));
++                if(new_sorted == NULL) {
++                    /* out of memory: add it unsorted rather than lose it */
++                    device_event(SDL_UDEV_DEVICEADDED, dev);
++                    _this->syms.udev_device_unref(dev);
++                    continue;
++                }
++                sorted = new_sorted;
++                sorted_size = new_size;
++            }
++            sorted[sorted_count].devnode = devnode;
++            sorted[sorted_count].dev     = dev;
++            sorted[sorted_count].item = item;
++            sorted_count++;
          }
      }
  
 +    /* Sort the udev entries by devnode name so that they are
 +     * created in the proper order */
-+    qsort(sorted, sorted_count,
-+         sizeof(struct joypad_udev_entry), sort_devnodes);
++    if(sorted_count > 1) {
++        qsort(sorted, sorted_count,
++             sizeof(struct joypad_udev_entry), sort_devnodes);
++    }
 +    
 +    for (i = 0; i < sorted_count; i++)
 +    {
 +      device_event(SDL_UDEV_DEVICEADDED, sorted[i].dev);
 +      _this->syms.udev_device_unref(sorted[i].dev);
 +    }
++    SDL_free(sorted);
 +    
      _this->syms.udev_enumerate_unref(enumerate);
      return true;
