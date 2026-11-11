@@ -1,0 +1,34 @@
+vout: keep vout_thread_sys_t 8-byte aligned
+
+vout_thread_sys_t is placed right after vout_thread_t in the same
+allocation. On 32-bit targets sizeof(vout_thread_t) is 28, so the private
+data and the condition variables inside it end up 4-byte aligned. Since
+glibc 2.43 pthread_cond_wait updates the condvar counter with a 64-bit
+atomic on armv7 (ldrexd), which faults on such an address: SIGBUS as soon
+as a video output is created.
+
+--- a/src/video_output/video_output.c
++++ b/src/video_output/video_output.c
+@@ -120,9 +120,11 @@ static vout_thread_t *VoutCreate(vlc_object_t *object,
+     if (VoutValidateFormat(&original, cfg->fmt))
+         return NULL;
+ 
+-    /* Allocate descriptor */
++    /* Allocate descriptor; vout_thread_sys_t holds condition variables and
++     * must stay 8-byte aligned, sizeof(vout_thread_t) is not a multiple of 8 */
++    const uintptr_t align = _Alignof(vout_thread_sys_t);
+     vout_thread_t *vout = vlc_custom_create(object,
+-                                            sizeof(*vout) + sizeof(*vout->p),
++                                            sizeof(*vout) + align + sizeof(*vout->p),
+                                             "video output");
+     if (!vout) {
+         video_format_Clean(&original);
+@@ -130,7 +132,7 @@ static vout_thread_t *VoutCreate(vlc_object_t *object,
+     }
+ 
+     /* */
+-    vout->p = (vout_thread_sys_t*)&vout[1];
++    vout->p = (vout_thread_sys_t *)(((uintptr_t)&vout[1] + align - 1) & ~(align - 1));
+ 
+     vout->p->original = original;
+     vout->p->dpb_size = cfg->dpb_size;
