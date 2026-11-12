@@ -329,9 +329,9 @@ class MAMECommand(MAMEBase):
         # By default, will ignore standalone MAME's art paths.
         if self.config.core != 'same_cdi':
             if self.config.get_bool('sharemameart', True):
-                art_path = f'/var/run/mame_artwork/;{MAME_BIN_DIR / "artwork"};{BIOS / "lr-mame" / "artwork"};{self.bios_dir / "artwork"};{USER_DECORATIONS}'
+                art_path = f'{MAME_BIN_DIR / "artwork"};{BIOS / "lr-mame" / "artwork"};{self.bios_dir / "artwork"};{USER_DECORATIONS}'
             else:
-                art_path = f'/var/run/mame_artwork/;{MAME_BIN_DIR / "artwork"};{BIOS / "lr-mame" / "artwork"}'
+                art_path = f'{MAME_BIN_DIR / "artwork"};{BIOS / "lr-mame" / "artwork"}'
             if self.system != 'ti99':
                 command_line.extend(['-artpath', _quote(art_path)])
 
