@@ -1,0 +1,66 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Thu, 5 Nov 2026 01:28:19 +0100
+Subject: [PATCH 11/15] kernel: don't call EKA1 entry points flagged
+ KImageNoCallEntryPoint
+
+petran and rombuild set KImageNoCallEntryPoint (0x2) on EKA1 DLLs without
+static data, which is nearly all of them: every ROM DLL of the N-Gage
+NEM-4 firmware has flags 0x3. EKA2L1 put all of them in the entry point
+list returned by LibraryAttach, and RLibrary::Load then called each one
+with the process attach reason (0) then 1. The phone cannot be doing that
+(see below, CAPCODEC could never be loaded), so the flag is honoured.
+
+Most of them return KErrNone, but CAPCODEC.DLL's E32Dll returns KErrGeneral
+for that reason, so RLibrary::Load fails with KErrBadLibraryEntryPoint as
+soon as a library pulls it in. Carmageddon 3D for N-Gage (Mophun player,
+MOPHUN.DLL imports CAPCODEC.DLL directly) showed
+"System error" at start because of it.
+
+Mark the code segment's entry point disabled for such EKA1 DLLs, from
+both E32 and ROM images. EKA2 is left as it is.
+---
+ src/emu/kernel/src/libmanager.cpp | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/src/emu/kernel/src/libmanager.cpp b/src/emu/kernel/src/libmanager.cpp
+index 9a113c044..266fc05b3 100644
+--- a/src/emu/kernel/src/libmanager.cpp
++++ b/src/emu/kernel/src/libmanager.cpp
+@@ -207,6 +207,14 @@ namespace eka2l1::hle {
+         return res;
+     }
+ 
++    // EKA1 does not call the entry point of a DLL flagged KImageNoCallEntryPoint (petran and
++    // rombuild set it on DLLs without static data, so almost every one of them).
++    static bool no_entry_point_call(kernel_system *kern, const std::uint32_t uid1, const std::uint32_t flags) {
++        static constexpr std::uint32_t DLL_UID1 = 0x10000079;
++        static constexpr std::uint32_t IMAGE_NO_CALL_ENTRY_POINT = 0x2;
++        return kern->is_eka1() && (uid1 == DLL_UID1) && (flags & IMAGE_NO_CALL_ENTRY_POINT);
++    }
++
+     codeseg_ptr lib_manager::import_e32img(loader::e32img *img, const std::u16string &path, const address force_code_addr) {
+         std::uint32_t data_seg_size = img->header.data_size + img->header.bss_size;
+         kernel::codeseg_create_info info;
+@@ -267,6 +275,10 @@ namespace eka2l1::hle {
+             return nullptr;
+         }
+ 
++        if (no_entry_point_call(kern_, static_cast<std::uint32_t>(img->header.uid1), img->header.flags)) {
++            cs->set_entry_point_disabled();
++        }
++
+         const std::size_t first = loading_codesegs_.size();
+         cs->set_loading(true);
+         loading_codesegs_.push_back(cs);
+@@ -969,6 +981,10 @@ namespace eka2l1::hle {
+ 
+         auto cs = kern_->create<kernel::codeseg>(seg_name, info);
+ 
++        if (cs && no_entry_point_call(kern_, romimg.header.uid1, romimg.header.flags_raw)) {
++            cs->set_entry_point_disabled();
++        }
++
+         if (only_shell) {
+             return cs;
+         }

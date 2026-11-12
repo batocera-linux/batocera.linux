@@ -1,0 +1,75 @@
+From 915b2b394d6a7e2f9cf2c9dafb6fb7040a2b9d28 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Mon, 2 Nov 2026 00:43:32 +0100
+Subject: [PATCH 2/8] system: keep a language the Symbian 9 firmware has no
+ resource files for
+
+The configured language was reset to the firmware's default when the
+firmware's languages.txt did not list it, so a Nokia 5320 set to French
+started its games in English, although they carry French themselves.
+
+Keep it on Symbian 9 and put the firmware's default language in the
+locale's downgrade path: BaflUtils::NearestLanguageFile then finds the
+firmware's resource files in that language, while applications that
+bring their own translation get the language asked for. Symbian 6-8
+devices keep the old behaviour.
+---
+ src/emu/services/src/init.cpp | 9 +++++++++
+ src/emu/system/src/epoc.cpp   | 6 +++++-
+ 2 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/src/emu/services/src/init.cpp b/src/emu/services/src/init.cpp
+index e83ff7238..1e91c2067 100644
+--- a/src/emu/services/src/init.cpp
++++ b/src/emu/services/src/init.cpp
+@@ -22,7 +22,9 @@
+ #include <common/path.h>
+ #include <common/platform.h>
+ 
++#include <algorithm>
+ #include <initializer_list>
++#include <iterator>
+ #include <memory>
+ #include <string_view>
+ #include <vector>
+@@ -135,6 +137,7 @@
+ namespace eka2l1::epoc {
+     epoc::locale get_locale_info() {
+         epoc::locale locale;
++        std::fill(std::begin(locale.language_downgrades_), std::end(locale.language_downgrades_), static_cast<std::uint16_t>(epoc::lang_none));
+ 
+         // TODO: Move to common
+ #if EKA2L1_PLATFORM(WIN32)
+@@ -180,6 +183,12 @@ namespace eka2l1::epoc {
+             } else {
+                 lang.language = static_cast<epoc::language>(cfg->language);
+             }
++
++            // Resource files the firmware lacks in that language are found in its own one
++            if (!kern->is_eka1() && (dvc.default_language_code >= 0)
++                && (std::find(dvc.languages.begin(), dvc.languages.end(), static_cast<int>(lang.language)) == dvc.languages.end())) {
++                locale.language_downgrades_[0] = static_cast<std::uint16_t>(dvc.default_language_code);
++            }
+         }
+ 
+         const auto put_names = [kern](std::initializer_list<std::u16string_view> names) {
+diff --git a/src/emu/system/src/epoc.cpp b/src/emu/system/src/epoc.cpp
+index 5f125f2c0..d5c841b2b 100644
+--- a/src/emu/system/src/epoc.cpp
++++ b/src/emu/system/src/epoc.cpp
+@@ -1535,7 +1535,11 @@ namespace eka2l1 {
+ 
+         device *dvc = dvcmngr_->get_current();
+ 
+-        const bool lang_not_found_in_device = (std::find(dvc->languages.begin(), dvc->languages.end(), conf_->language) == dvc->languages.end());
++        // Symbian 9 keeps a language its firmware has no resource files for: those files are then looked for
++        // in the firmware's own language, which ends the locale's downgrade path, while the applications get
++        // the language asked for
++        const bool lang_not_found_in_device = (dvc->ver < epocver::eka2)
++            && (std::find(dvc->languages.begin(), dvc->languages.end(), conf_->language) == dvc->languages.end());
+         const bool lang_undetermined = (conf_->language == -1);
+ 
+         if (lang_undetermined || lang_not_found_in_device) {
+-- 
+2.53.0
+
