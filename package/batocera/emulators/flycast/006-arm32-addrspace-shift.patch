@@ -1,0 +1,83 @@
+From 128e6ce29c2f1f2f826b0310ef8657def2e6aaab Mon Sep 17 00:00:00 2001
+From: jutler <49445862+jutler@users.noreply.github.com>
+Date: Wed, 21 Oct 2026 11:07:14 +0100
+Subject: [PATCH] addrspace: mask the shift count taken from the tagged pointer
+ (#2574)
+
+readConst, writeConst, readt and writet shift the 32-bit guest address by
+the whole tagged memInfo_ptr value (pointer | shift). Shifting a u32 by 32
+or more is undefined, and GCC 16 targeting 32-bit ARM uses that: once the
+pointer is known to be non-null (iirf > 31) it drops the offset, so
+read32/write16 compile to a plain load/store at the region base. Every
+memory access then hits offset 0, the BIOS trampoline copied to 8C0000E0
+is lost and the console never boots (black screen, no sound).
+
+Mask the shift with HANDLER_MAX, which is what x86 does in hardware and
+what the code intends. No change in behaviour where the old code worked.
+
+Co-authored-by: hitenmandalia <hiten.mandalia@argusmedia.com>
+[ci skip]
+---
+ core/hw/mem/addrspace.cpp | 28 ++++++++++++++++++++--------
+ 1 file changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/core/hw/mem/addrspace.cpp b/core/hw/mem/addrspace.cpp
+index 64f54fb19c..8cf37222de 100644
+--- a/core/hw/mem/addrspace.cpp
++++ b/core/hw/mem/addrspace.cpp
+@@ -61,8 +61,11 @@ void *readConst(u32 addr, bool& ismem, u32 sz)
+ 	else
+ 	{
+ 		ismem = true;
+-		addr <<= iirf;
+-		addr >>= iirf;
++		// Only the low bits of iirf hold the mask shift. Shifting a 32-bit value by the
++		// whole tagged pointer is undefined, and GCC 16 on 32-bit ARM drops the
++		// address entirely (every access hits offset 0).
++		addr <<= (iirf & HANDLER_MAX);
++		addr >>= (iirf & HANDLER_MAX);
+ 
+ 		return &(((u8 *)ptr)[addr]);
+ 	}
+@@ -94,8 +97,11 @@ void *writeConst(u32 addr, bool& ismem, u32 sz)
+ 	else
+ 	{
+ 		ismem = true;
+-		addr <<= iirf;
+-		addr >>= iirf;
++		// Only the low bits of iirf hold the mask shift. Shifting a 32-bit value by the
++		// whole tagged pointer is undefined, and GCC 16 on 32-bit ARM drops the
++		// address entirely (every access hits offset 0).
++		addr <<= (iirf & HANDLER_MAX);
++		addr >>= (iirf & HANDLER_MAX);
+ 
+ 		return &(((u8 *)ptr)[addr]);
+ 	}
+@@ -112,8 +118,11 @@ T DYNACALL readt(u32 addr)
+ 
+ 	if (likely(ptr != nullptr))
+ 	{
+-		addr <<= iirf;
+-		addr >>= iirf;
++		// Only the low bits of iirf hold the mask shift. Shifting a 32-bit value by the
++		// whole tagged pointer is undefined, and GCC 16 on 32-bit ARM drops the
++		// address entirely (every access hits offset 0).
++		addr <<= (iirf & HANDLER_MAX);
++		addr >>= (iirf & HANDLER_MAX);
+ 
+ 		return *(T *)&((u8 *)ptr)[addr];
+ 	}
+@@ -156,8 +165,11 @@ void DYNACALL writet(u32 addr, T data)
+ 
+ 	if (likely(ptr != nullptr))
+ 	{
+-		addr <<= iirf;
+-		addr >>= iirf;
++		// Only the low bits of iirf hold the mask shift. Shifting a 32-bit value by the
++		// whole tagged pointer is undefined, and GCC 16 on 32-bit ARM drops the
++		// address entirely (every access hits offset 0).
++		addr <<= (iirf & HANDLER_MAX);
++		addr >>= (iirf & HANDLER_MAX);
+ 
+ 		*(T *)&((u8 *)ptr)[addr] = data;
+ 	}

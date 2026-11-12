@@ -101,6 +101,7 @@
 - Arcade2TV-XR, Tankstick MAX support
 ### Fixed
 - 32-bit ARM boards (e.g. Odroid XU4): Mupen64 standalone, EmulationStation videos (VLC) and other plugin libraries refused by glibc for requiring an executable stack
+- 32-bit ARM boards (e.g. Odroid XU4): Dreamcast, Naomi and Atomiswave black screen in Flycast (standalone and libretro), every guest memory access was miscompiled to read the start of RAM
 - AMD TDP setting lost after resume from sleep, and the TDP option showing on Ryzen systems that do not support it
 - Bauh not starting with Python 3.14
 - BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
