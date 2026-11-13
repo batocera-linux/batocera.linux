@@ -115,6 +115,8 @@ endif
 ifeq ($(BR2_PACKAGE_BATOCERA_VULKAN),y)
     RETROARCH_CONF_OPTS += --enable-vulkan
     RETROARCH_DEPENDENCIES += vulkan-headers vulkan-loader slang-shaders
+else
+    RETROARCH_CONF_OPTS += --disable-vulkan
 endif
 
 ifeq ($(BR2_PACKAGE_GLSLANG),y)
