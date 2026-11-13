@@ -1,0 +1,931 @@
+From 9d1cdb99dfdbf1240cacecac29744449ba7305c5 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Wed, 4 Nov 2026 08:24:12 +0100
+Subject: [PATCH 8/8] fbs: let a user font stand in for the device system font
+
+Adds system-font and system-font-scale options, exposed in the System
+settings tab (font picker plus an Add button copying fonts into the
+fonts folder, and a size percentage).
+
+When set, the chosen user font is linked in front of every text face of
+the ROM, sized so its capitals match the original face (scaled by the
+percentage). This covers both the TrueType faces of S60 devices and the
+bitmap .gdr faces of EKA1 devices such as the N-Gage.
+
+- linked font adapter: per-component metric identifiers sized by
+  capital height; sizes the text atlas asks for without going through
+  get_nearest_supported_metric are scaled from a known one.
+- antialiased component glyphs can be copied into an 8bpp (gdr) atlas.
+---
+ src/emu/config/include/config/config.h        |   7 +
+ src/emu/config/include/config/options.inl     |   2 +
+ src/emu/qt/include/qt/settings_dialog.h       |   4 +
+ src/emu/qt/src/settings_dialog.cpp            | 106 +++++++
+ src/emu/qt/src/settings_dialog.ui             |  60 ++++
+ .../fbs/adapter/linked_font_adapter.h         |  45 ++-
+ .../include/services/fbs/font_store.h         |   9 +-
+ .../src/fbs/adapter/linked_font_adapter.cpp   | 269 ++++++++++++++++--
+ src/emu/services/src/fbs/fbs.cpp              |   7 +-
+ src/emu/services/src/fbs/impls/font_store.cpp | 119 +++++++-
+ 10 files changed, 603 insertions(+), 25 deletions(-)
+
+diff --git a/src/emu/config/include/config/config.h b/src/emu/config/include/config/config.h
+index d56a905d7..6e9ba6374 100644
+--- a/src/emu/config/include/config/config.h
++++ b/src/emu/config/include/config/config.h
+@@ -190,6 +190,13 @@ namespace eka2l1::config {
+         bool background_image_follow_rotation{ false };
+         int screen_scale_ratio{ 100 };
+ 
++        // Family name of a font imported into <storage>/fonts that the device
++        // draws its own text with instead of its ROM fonts. Empty keeps the
++        // device's fonts. The scale is a percentage of the ROM font's capital
++        // height, which is what the imported font is sized to match.
++        std::string system_font;
++        int system_font_scale{ 100 };
++
+         std::string current_mmc_id;
+ 
+         void serialize(const bool with_bindings = true);
+diff --git a/src/emu/config/include/config/options.inl b/src/emu/config/include/config/options.inl
+index 7a6bc94f0..d28aa419c 100644
+--- a/src/emu/config/include/config/options.inl
++++ b/src/emu/config/include/config/options.inl
+@@ -88,6 +88,8 @@ OPTION(enable-upnp, enable_upnp, true)
+ OPTION(extensive-logging, extensive_logging, false)
+ OPTION(ios-use-jit, ios_use_jit, false)
+ OPTION(ios-performance-mode, ios_performance_mode, "balanced")
++OPTION(system-font, system_font, "")
++OPTION(system-font-scale, system_font_scale, 100)
+ 
+ #ifdef OPTION
+ #undef OPTION
+diff --git a/src/emu/qt/include/qt/settings_dialog.h b/src/emu/qt/include/qt/settings_dialog.h
+index cb65be2b6..6af64c633 100644
+--- a/src/emu/qt/include/qt/settings_dialog.h
++++ b/src/emu/qt/include/qt/settings_dialog.h
+@@ -79,6 +79,7 @@ private:
+     void update_device_settings();
+     void set_current_language(const int lang);
+     void refresh_available_system_languages(const int index = -1);
++    void refresh_system_fonts();
+     void refresh_device_utils_locking();
+     void refresh_keybind_buttons();
+     void refresh_keybind_profiles();
+@@ -123,6 +124,9 @@ private slots:
+     void on_friendly_phone_name_edited(const QString &text);
+     void on_rta_combo_choose(const int index);
+     void on_system_language_choose(const int index);
++    void on_system_font_choose(const int index);
++    void on_system_font_add_clicked();
++    void on_system_font_scale_changed(int value);
+     void on_system_battery_slider_value_moved(int value);
+     void on_master_volume_value_changed(int value);
+ 
+diff --git a/src/emu/qt/src/settings_dialog.cpp b/src/emu/qt/src/settings_dialog.cpp
+index f2b5b3b95..afeab1fad 100644
+--- a/src/emu/qt/src/settings_dialog.cpp
++++ b/src/emu/qt/src/settings_dialog.cpp
+@@ -51,7 +51,11 @@
+ #include <utils/system.h>
+ 
+ #include <QColorDialog>
++#include <QDir>
++#include <QFile>
+ #include <QFileDialog>
++#include <QFileInfo>
++#include <QRawFont>
+ #include <QInputDialog>
+ #include <QKeyEvent>
+ #include <QMessageBox>
+@@ -267,6 +271,8 @@ settings_dialog::settings_dialog(QWidget *parent, eka2l1::system *sys, eka2l1::d
+     ui_->system_audio_current_val_label->setText(QString("%1").arg(configuration_.audio_master_volume));
+     ui_->system_screen_buffer_sync_combo->setCurrentIndex(static_cast<int>(configuration_.screen_buffer_sync));
+     ui_->system_friendly_phone_name_edit->setText(QString::fromStdString(configuration_.device_display_name));
++    ui_->system_prop_font_scale_spin->setValue(configuration_.system_font_scale);
++    refresh_system_fonts();
+     ui_->system_audio_midi_backend_combo->setCurrentIndex(static_cast<int>(configuration.midi_backend));
+     ui_->system_audio_midi_hsb_bank_edit->setText(QString::fromStdString(eka2l1::absolute_path(configuration.hsb_bank_path, current_dir)));
+     ui_->system_audio_midi_sf2_bank_edit->setText(QString::fromStdString(eka2l1::absolute_path(configuration.sf2_bank_path, current_dir)));
+@@ -421,6 +427,9 @@ settings_dialog::settings_dialog(QWidget *parent, eka2l1::system *sys, eka2l1::d
+     connect(ui_->system_prop_bat_slider, &QSlider::valueChanged, this, &settings_dialog::on_system_battery_slider_value_moved);
+     connect(ui_->system_prop_imei_check_btn, &QPushButton::clicked, this, &settings_dialog::on_check_imei_validity_clicked);
+     connect(ui_->system_friendly_phone_name_edit, &QLineEdit::textEdited, this, &settings_dialog::on_friendly_phone_name_edited);
++    connect(ui_->system_prop_font_combo, QOverload<int>::of(&QComboBox::activated), this, &settings_dialog::on_system_font_choose);
++    connect(ui_->system_prop_font_add_btn, &QPushButton::clicked, this, &settings_dialog::on_system_font_add_clicked);
++    connect(ui_->system_prop_font_scale_spin, QOverload<int>::of(&QSpinBox::valueChanged), this, &settings_dialog::on_system_font_scale_changed);
+     connect(ui_->system_audio_vol_slider, &QSlider::valueChanged, this, &settings_dialog::on_master_volume_value_changed);
+     connect(ui_->system_audio_midi_backend_combo, QOverload<int>::of(&QComboBox::activated), this, &settings_dialog::on_audio_midi_backend_changed);
+     connect(ui_->system_audio_midi_hsb_bank_browse, &QPushButton::clicked, this, &settings_dialog::on_audio_hsb_browse_clicked);
+@@ -671,6 +680,103 @@ void settings_dialog::refresh_available_system_languages(const int index) {
+     }
+ }
+ 
++static QString system_fonts_folder(const eka2l1::config::state &conf) {
++    std::string current_dir;
++    eka2l1::common::get_current_directory(current_dir);
++
++    // The folder fbs_server::load_custom_fonts reads at boot.
++    return QString::fromStdString(eka2l1::add_path(eka2l1::absolute_path(conf.storage, current_dir), "fonts"));
++}
++
++void settings_dialog::refresh_system_fonts() {
++    ui_->system_prop_font_combo->clear();
++    ui_->system_prop_font_combo->addItem(tr("Device default"), QString());
++
++    QStringList families;
++    const QDir folder(system_fonts_folder(configuration_));
++
++    // Only TrueType outlines are drawn by the emulator, whatever the file is
++    // called; a font Qt cannot read either is not offered.
++    for (const QFileInfo &file : folder.entryInfoList(QDir::Files, QDir::Name)) {
++        if (file.suffix().compare("ttf", Qt::CaseInsensitive) != 0) {
++            continue;
++        }
++
++        const QRawFont font(file.absoluteFilePath(), 12);
++        const QString family = font.isValid() ? font.familyName() : QString();
++
++        if (!family.isEmpty() && !families.contains(family, Qt::CaseInsensitive)) {
++            families.append(family);
++        }
++    }
++
++    families.sort(Qt::CaseInsensitive);
++
++    for (const QString &family : families) {
++        ui_->system_prop_font_combo->addItem(family, family);
++    }
++
++    int current_index = 0;
++    const QString current = QString::fromStdString(configuration_.system_font);
++
++    if (!current.isEmpty()) {
++        current_index = ui_->system_prop_font_combo->findData(current, Qt::UserRole, Qt::MatchFixedString);
++
++        // Keep a choice whose files were removed visible rather than silently
++        // switching back to the device's font.
++        if (current_index < 0) {
++            ui_->system_prop_font_combo->addItem(tr("%1 (not found)").arg(current), current);
++            current_index = ui_->system_prop_font_combo->count() - 1;
++        }
++    }
++
++    ui_->system_prop_font_combo->setCurrentIndex(current_index);
++}
++
++void settings_dialog::on_system_font_choose(const int index) {
++    configuration_.system_font = ui_->system_prop_font_combo->itemData(index).toString().toStdString();
++    configuration_.serialize(false);
++}
++
++void settings_dialog::on_system_font_scale_changed(int value) {
++    configuration_.system_font_scale = value;
++    configuration_.serialize(false);
++}
++
++void settings_dialog::on_system_font_add_clicked() {
++    const QStringList files = QFileDialog::getOpenFileNames(this, tr("Choose TrueType fonts"), QString(),
++        tr("TrueType fonts (*.ttf *.TTF)"));
++
++    if (files.isEmpty()) {
++        return;
++    }
++
++    const QString folder_path = system_fonts_folder(configuration_);
++    QDir().mkpath(folder_path);
++
++    QStringList failed;
++
++    for (const QString &path : files) {
++        const QFileInfo source(path);
++        const QString destination = QDir(folder_path).filePath(source.fileName());
++
++        if (QFileInfo(destination).absoluteFilePath() == source.absoluteFilePath()) {
++            continue;
++        }
++
++        if (QFile::exists(destination) || !QFile::copy(path, destination)) {
++            failed.append(source.fileName());
++        }
++    }
++
++    refresh_system_fonts();
++
++    if (!failed.isEmpty()) {
++        QMessageBox::warning(this, tr("Some fonts were not added"),
++            tr("These fonts could not be copied, or a font with the same file name is already there:\n%1").arg(failed.join("\n")));
++    }
++}
++
+ void settings_dialog::refresh_device_utils_locking() {
+     eka2l1::kernel_system *kern = system_->get_kernel_system();
+     if (!kern || kern->get_thread_list().empty()) {
+diff --git a/src/emu/qt/src/settings_dialog.ui b/src/emu/qt/src/settings_dialog.ui
+index c19437c98..a5e12e51a 100644
+--- a/src/emu/qt/src/settings_dialog.ui
++++ b/src/emu/qt/src/settings_dialog.ui
+@@ -1054,6 +1054,66 @@ Preferred option will automatically enable this on S60v1/S60v2 devices.</string>
+             </item>
+            </layout>
+           </item>
++          <item row="7" column="0">
++           <layout class="QHBoxLayout" name="system_prop_font_layout" stretch="1,2,0">
++            <item>
++             <widget class="QLabel" name="system_prop_font_label">
++              <property name="toolTip">
++               <string>Draw the device's text with a font of your choice instead of its own. Fonts are kept in the fonts folder of the data folder. Takes effect the next time a device boots.</string>
++              </property>
++              <property name="text">
++               <string>System font</string>
++              </property>
++             </widget>
++            </item>
++            <item>
++             <widget class="QComboBox" name="system_prop_font_combo"/>
++            </item>
++            <item>
++             <widget class="QPushButton" name="system_prop_font_add_btn">
++              <property name="toolTip">
++               <string>Copy TrueType fonts into the fonts folder of the data folder.</string>
++              </property>
++              <property name="text">
++               <string>Add...</string>
++              </property>
++             </widget>
++            </item>
++           </layout>
++          </item>
++          <item row="8" column="0">
++           <layout class="QHBoxLayout" name="system_prop_font_scale_layout" stretch="1,2">
++            <item>
++             <widget class="QLabel" name="system_prop_font_scale_label">
++              <property name="toolTip">
++               <string>Size of the system font, as a percentage of the height of the device's own capital letters.</string>
++              </property>
++              <property name="text">
++               <string>System font size</string>
++              </property>
++             </widget>
++            </item>
++            <item>
++             <widget class="QSpinBox" name="system_prop_font_scale_spin">
++              <property name="suffix">
++               <string>%</string>
++              </property>
++              <property name="minimum">
++               <number>50</number>
++              </property>
++              <property name="maximum">
++               <number>200</number>
++              </property>
++              <property name="singleStep">
++               <number>5</number>
++              </property>
++              <property name="value">
++               <number>100</number>
++              </property>
++             </widget>
++            </item>
++           </layout>
++          </item>
+          </layout>
+         </widget>
+        </item>
+diff --git a/src/emu/services/include/services/fbs/adapter/linked_font_adapter.h b/src/emu/services/include/services/fbs/adapter/linked_font_adapter.h
+index 245e753bb..c1bdc3c86 100644
+--- a/src/emu/services/include/services/fbs/adapter/linked_font_adapter.h
++++ b/src/emu/services/include/services/fbs/adapter/linked_font_adapter.h
+@@ -22,6 +22,8 @@
+ #include <services/fbs/adapter/font_adapter.h>
+ 
+ #include <map>
++#include <mutex>
++#include <optional>
+ #include <unordered_map>
+ #include <vector>
+ 
+@@ -54,6 +56,13 @@ namespace eka2l1::epoc::adapter {
+         struct component {
+             font_file_adapter_base *adapter_;
+             std::size_t face_index_;
++
++            // Zero sizes the component the way link.ini components are: asked
++            // for the same maximum height as the canonical face. Otherwise it
++            // is sized so that its capitals are this many percent as tall as
++            // the canonical's -- for a font standing in for the canonical's
++            // own glyphs, whose design may sit very differently in its box.
++            int cap_height_scale_ = 0;
+         };
+ 
+     private:
+@@ -73,8 +82,13 @@ namespace eka2l1::epoc::adapter {
+         // it -- a pixel size to FreeType, an index into the face's bitmaps to
+         // gdr -- so the canonical's identifier is remembered alongside the one
+         // each component uses for that same size. Filled in by
+-        // get_nearest_supported_metric, which is where the size is still known.
+-        std::unordered_map<std::uint32_t, std::vector<std::uint32_t>> metric_identifiers_;
++        // get_nearest_supported_metric, which is where the size is still known,
++        // and by metric_for for a size it never saw (see there).
++        mutable std::unordered_map<std::uint32_t, std::vector<std::uint32_t>> metric_identifiers_;
++        mutable std::mutex identifiers_lock_;
++
++        // Is any component sized by capital height?
++        bool has_scaled_component_ = false;
+ 
+         const component &canonical() const {
+             return components_[canonical_];
+@@ -84,6 +98,23 @@ namespace eka2l1::epoc::adapter {
+         // `metric_identifier`.
+         std::uint32_t metric_for(const std::size_t component_index, const std::uint32_t metric_identifier) const;
+ 
++        // Every component's identifier for the canonical's `canonical_identifier`,
++        // whose maximum height is `settled_size`. Components that are not sized
++        // by capital height are only asked when `ask_unscaled` is set, and keep
++        // the canonical's identifier otherwise.
++        std::vector<std::uint32_t> identifiers_for(const std::uint32_t canonical_identifier,
++            const std::uint16_t settled_size, const bool ask_unscaled) const;
++
++        // Height in pixels of the component's "H" at that metric, or 0 if it
++        // has none.
++        static std::int32_t capital_height(const component &comp, const std::uint32_t metric_identifier);
++
++        // The metric identifier at which `comp` draws capitals closest to
++        // `target_height` pixels tall, starting from a maximum height of
++        // `settled_size`.
++        static std::optional<std::uint32_t> metric_for_capital_height(const component &comp,
++            const std::int32_t target_height, const std::uint16_t settled_size);
++
+         // The component that renders `code`, falling back to the canonical one
+         // when no component covers it (so the caller still gets .notdef rather
+         // than nothing).
+@@ -93,6 +124,16 @@ namespace eka2l1::epoc::adapter {
+         // Only if it writes the same pixel format.
+         bool can_share_atlas(const std::size_t component_index);
+ 
++        // Failing that, can its antialiased glyph bitmaps be copied into the
++        // canonical's atlas as they are?
++        bool can_draw_grey_into_atlas(const std::size_t component_index);
++
++        // Run `handler(bitmap, width, height, metric)` on the component's
++        // antialiased glyph for `code`, the bitmap being null if it has none.
++        template <typename F>
++        static void with_grey_glyph(const component &comp, const int code, const std::uint32_t metric_identifier,
++            F handler);
++
+         // Group `codes` by the component that draws each of them, then hand
+         // every group to `handler` as one batch, along with where each entry
+         // came from in the caller's arrays.
+diff --git a/src/emu/services/include/services/fbs/font_store.h b/src/emu/services/include/services/fbs/font_store.h
+index a14e2033b..b4801e626 100644
+--- a/src/emu/services/include/services/fbs/font_store.h
++++ b/src/emu/services/include/services/fbs/font_store.h
+@@ -106,8 +106,15 @@ namespace eka2l1::epoc {
+          * trailing components of a linked typeface, which is the same
+          * arrangement link.ini describes, with the device's own face canonical
+          * so nothing about its appearance or metrics changes.
++         *
++         * When `system_font` names the family of an imported font, that family
++         * is put in front of every device face that draws Latin text instead:
++         * its glyphs replace the device's, sized so its capitals are
++         * `system_font_scale` percent as tall as the device face's, while the
++         * device face stays canonical and supplies whatever the imported font
++         * lacks.
+          */
+-        void attach_user_font_fallbacks();
++        void attach_user_font_fallbacks(const std::u16string &system_font = u"", const int system_font_scale = 100);
+ 
+         open_font_info *seek_the_open_font(epoc::font_spec_base &spec);
+         open_font_info *seek_the_font_by_uid(const epoc::uid the_uid, epoc::open_font_metrics &target_metric, std::uint32_t *metric_identifier = nullptr);
+diff --git a/src/emu/services/src/fbs/adapter/linked_font_adapter.cpp b/src/emu/services/src/fbs/adapter/linked_font_adapter.cpp
+index ef8a0591d..9308a3bad 100644
+--- a/src/emu/services/src/fbs/adapter/linked_font_adapter.cpp
++++ b/src/emu/services/src/fbs/adapter/linked_font_adapter.cpp
+@@ -19,6 +19,10 @@
+ 
+ #include <services/fbs/adapter/linked_font_adapter.h>
+ 
++#include <common/algorithm.h>
++
++#include <algorithm>
++#include <cstring>
+ #include <vector>
+ 
+ namespace eka2l1::epoc::adapter {
+@@ -54,19 +58,177 @@ namespace eka2l1::epoc::adapter {
+         : components_(std::move(components))
+         , canonical_(canonical)
+         , attrib_(attrib) {
++        for (const component &comp : components_) {
++            if (comp.cap_height_scale_ > 0) {
++                has_scaled_component_ = true;
++            }
++        }
++    }
++
++    std::vector<std::uint32_t> linked_font_file_adapter::identifiers_for(const std::uint32_t canonical_identifier,
++        const std::uint16_t settled_size, const bool ask_unscaled) const {
++        std::vector<std::uint32_t> identifiers(components_.size(), canonical_identifier);
++        std::int32_t canonical_capital_height = -1;
++
++        for (std::size_t i = 0; i < components_.size(); i++) {
++            if (i == canonical_) {
++                continue;
++            }
++
++            if (components_[i].cap_height_scale_ > 0) {
++                if (canonical_capital_height < 0) {
++                    canonical_capital_height = capital_height(canonical(), canonical_identifier);
++                }
++
++                if (canonical_capital_height > 0) {
++                    const std::int32_t target = common::max<std::int32_t>(1,
++                        (canonical_capital_height * components_[i].cap_height_scale_ + 50) / 100);
++
++                    if (std::optional<std::uint32_t> scaled = metric_for_capital_height(components_[i], target, settled_size)) {
++                        identifiers[i] = scaled.value();
++                        continue;
++                    }
++                }
++            }
++
++            if (!ask_unscaled) {
++                continue;
++            }
++
++            std::uint32_t component_identifier = canonical_identifier;
++
++            if (components_[i].adapter_->get_nearest_supported_metric(components_[i].face_index_, settled_size,
++                    &component_identifier, false)) {
++                identifiers[i] = component_identifier;
++            }
++        }
++
++        return identifiers;
+     }
+ 
+     std::uint32_t linked_font_file_adapter::metric_for(const std::size_t component_index,
+         const std::uint32_t metric_identifier) const {
++        const std::lock_guard<std::mutex> guard(identifiers_lock_);
+         auto translated = metric_identifiers_.find(metric_identifier);
+ 
+-        if ((translated == metric_identifiers_.end()) || (component_index >= translated->second.size())) {
++        if (translated == metric_identifiers_.end()) {
++            // A scalable canonical's identifier is a pixel size, and the window
++            // server's text atlas makes one up for the upscaled screen without
++            // going through get_nearest_supported_metric. A component sized to
++            // the canonical's capitals would then draw at the canonical's own
++            // size while the layout keeps its real advances, so its size is
++            // worked out here instead. Other components keep the identifier,
++            // as they always have.
++            //
++            // Both identifiers are pixel sizes then, so the component's is
++            // scaled from a size already worked out rather than measured again:
++            // this runs while text is being drawn.
++            if (!has_scaled_component_ || !canonical().adapter_->vectorizable() || (metric_identifier == 0)) {
++                return metric_identifier;
++            }
++
++            auto known = std::find_if(metric_identifiers_.begin(), metric_identifiers_.end(),
++                [](const auto &entry) { return entry.first != 0; });
++
++            if (known == metric_identifiers_.end()) {
++                return metric_identifier;
++            }
++
++            std::vector<std::uint32_t> identifiers(components_.size(), metric_identifier);
++
++            for (std::size_t i = 0; i < components_.size(); i++) {
++                if ((i != canonical_) && (components_[i].cap_height_scale_ > 0) && (i < known->second.size())) {
++                    const std::uint64_t scaled = (static_cast<std::uint64_t>(known->second[i]) * metric_identifier
++                        + known->first / 2) / known->first;
++                    identifiers[i] = static_cast<std::uint32_t>(common::max<std::uint64_t>(scaled, 1));
++                }
++            }
++
++            translated = metric_identifiers_.emplace(metric_identifier, std::move(identifiers)).first;
++        }
++
++        if (component_index >= translated->second.size()) {
+             return metric_identifier;
+         }
+ 
+         return translated->second[component_index];
+     }
+ 
++    std::int32_t linked_font_file_adapter::capital_height(const component &comp, const std::uint32_t metric_identifier) {
++        if (!comp.adapter_->has_character(comp.face_index_, 'H', metric_identifier)) {
++            return 0;
++        }
++
++        int width = 0;
++        int height = 0;
++        std::uint32_t total_size = 0;
++        glyph_bitmap_type type = comp.adapter_->get_output_bitmap_type();
++        open_font_character_metric metric{};
++
++        std::uint8_t *bitmap = comp.adapter_->get_glyph_bitmap(comp.face_index_, 'H', metric_identifier, &width, &height,
++            total_size, &type, metric);
++
++        if (!bitmap) {
++            return 0;
++        }
++
++        comp.adapter_->free_glyph_bitmap(bitmap);
++
++        // "H" stands on the baseline, so how far it rises above it is the
++        // capital height, whatever padding the bitmap itself carries.
++        if (metric.horizontal_bearing_y > 0) {
++            return metric.horizontal_bearing_y;
++        }
++
++        return (metric.height > 0) ? metric.height : height;
++    }
++
++    std::optional<std::uint32_t> linked_font_file_adapter::metric_for_capital_height(const component &comp,
++        const std::int32_t target_height, const std::uint16_t settled_size) {
++        auto probe = [&](const std::uint16_t max_height, std::uint32_t &identifier) -> std::int32_t {
++            if (!comp.adapter_->get_nearest_supported_metric(comp.face_index_, max_height, &identifier, false)) {
++                return -1;
++            }
++
++            return capital_height(comp, identifier);
++        };
++
++        // Capitals only grow with the size asked for, so look for the smallest
++        // size whose capitals reach the target, then settle for whichever of it
++        // and the size below comes closer.
++        std::uint16_t low = 1;
++        std::uint16_t high = static_cast<std::uint16_t>(common::min<int>(common::max<int>(settled_size * 4, 64), 1024));
++
++        while (low < high) {
++            const std::uint16_t middle = static_cast<std::uint16_t>((low + high) / 2);
++            std::uint32_t identifier = 0;
++
++            if (probe(middle, identifier) < target_height) {
++                low = static_cast<std::uint16_t>(middle + 1);
++            } else {
++                high = middle;
++            }
++        }
++
++        std::uint32_t above = 0;
++        const std::int32_t above_height = probe(low, above);
++
++        if (above_height <= 0) {
++            return std::nullopt;
++        }
++
++        if (low > 1) {
++            std::uint32_t below = 0;
++            const std::int32_t below_height = probe(static_cast<std::uint16_t>(low - 1), below);
++
++            if ((below_height > 0) && ((target_height - below_height) < (above_height - target_height))) {
++                return below;
++            }
++        }
++
++        return above;
++    }
++
+     std::size_t linked_font_file_adapter::component_index_for(const std::uint32_t code,
+         const std::uint32_t metric_identifier) {
+         // A code with the high bit set is already a glyph index, which only
+@@ -219,6 +381,39 @@ namespace eka2l1::epoc::adapter {
+             == components_[canonical_].adapter_->get_atlas_bitmap_bits_per_pixel();
+     }
+ 
++    bool linked_font_file_adapter::can_draw_grey_into_atlas(const std::size_t component_index) {
++        // A one byte per pixel atlas is a coverage map, which is exactly what a
++        // component's antialiased glyph bitmap is. That is the atlas a gdr face
++        // uses, so an imported TrueType font can still draw on S60v1, and draw
++        // smoothly at that, by going through get_glyph_bitmap instead.
++        return (components_[canonical_].adapter_->get_atlas_bitmap_bits_per_pixel() == 8)
++            && (components_[component_index].adapter_->get_output_bitmap_type() == antialised_glyph_bitmap);
++    }
++
++    template <typename F>
++    void linked_font_file_adapter::with_grey_glyph(const component &comp, const int code,
++        const std::uint32_t metric_identifier, F handler) {
++        int width = 0;
++        int height = 0;
++        std::uint32_t total_size = 0;
++        glyph_bitmap_type type = antialised_glyph_bitmap;
++        open_font_character_metric metric{};
++
++        std::uint8_t *bitmap = comp.adapter_->get_glyph_bitmap(comp.face_index_, static_cast<std::uint32_t>(code),
++            metric_identifier, &width, &height, total_size, &type, metric);
++
++        if (bitmap && (type != antialised_glyph_bitmap)) {
++            comp.adapter_->free_glyph_bitmap(bitmap);
++            bitmap = nullptr;
++        }
++
++        handler(bitmap, bitmap ? width : 0, bitmap ? height : 0, metric);
++
++        if (bitmap) {
++            comp.adapter_->free_glyph_bitmap(bitmap);
++        }
++    }
++
+     // Sort `codes` by the component that draws them and run `handler` once per
+     // component, so a component still sees its glyphs as one batch. `slots`
+     // maps each entry of the group back to its index in the caller's arrays.
+@@ -230,7 +425,7 @@ namespace eka2l1::epoc::adapter {
+         for (std::size_t i = 0; i < count; i++) {
+             const std::size_t chosen = component_index_for(static_cast<std::uint32_t>(codes[i]), metric_identifier);
+ 
+-            auto &group = groups[can_share_atlas(chosen) ? chosen : canonical_];
++            auto &group = groups[(can_share_atlas(chosen) || can_draw_grey_into_atlas(chosen)) ? chosen : canonical_];
+ 
+             group.first.push_back(codes[i]);
+             group.second.push_back(i);
+@@ -255,6 +450,17 @@ namespace eka2l1::epoc::adapter {
+                 const std::vector<std::size_t> &slots) {
+                 std::vector<eka2l1::vec2> measured(group.size());
+ 
++                if (!can_share_atlas(component_index)) {
++                    for (std::size_t i = 0; i < group.size(); i++) {
++                        with_grey_glyph(comp, group[i], metric_for(component_index, metric_identifier),
++                            [&](const std::uint8_t *, const int width, const int height, const open_font_character_metric &) {
++                                sizes[slots[i]] = eka2l1::vec2(width, height);
++                            });
++                    }
++
++                    return true;
++                }
++
+                 if (!comp.adapter_->measure_atlas_glyphs(comp.face_index_, group.data(), group.size(),
+                         metric_for(component_index, metric_identifier), measured.data())) {
+                     return false;
+@@ -274,6 +480,36 @@ namespace eka2l1::epoc::adapter {
+         return for_each_component_group(codes, count, metric_identifier,
+             [&](const component &comp, const std::size_t component_index, const std::vector<int> &group,
+                 const std::vector<std::size_t> &slots) {
++                if (!can_share_atlas(component_index)) {
++                    for (std::size_t i = 0; i < group.size(); i++) {
++                        const eka2l1::vec2 position = positions[slots[i]];
++
++                        with_grey_glyph(comp, group[i], metric_for(component_index, metric_identifier),
++                            [&](const std::uint8_t *bitmap, const int width, const int height,
++                                const open_font_character_metric &metric) {
++                                character_info &glyph = info[slots[i]];
++                                glyph = character_info{};
++
++                                for (int y = 0; bitmap && (y < height); y++) {
++                                    std::memcpy(atlas + (position.y + y) * atlas_size.x + position.x,
++                                        bitmap + y * width, width);
++                                }
++
++                                glyph.x0 = static_cast<std::uint16_t>(position.x);
++                                glyph.y0 = static_cast<std::uint16_t>(position.y);
++                                glyph.x1 = static_cast<std::uint16_t>(position.x + width);
++                                glyph.y1 = static_cast<std::uint16_t>(position.y + height);
++                                glyph.xoff = metric.horizontal_bearing_x;
++                                glyph.yoff = -metric.horizontal_bearing_y;
++                                glyph.xoff2 = glyph.xoff + width;
++                                glyph.yoff2 = glyph.yoff + height;
++                                glyph.xadv = metric.horizontal_advance;
++                            });
++                    }
++
++                    return true;
++                }
++
+                 std::vector<eka2l1::vec2> where(group.size());
+                 std::vector<character_info> drawn(group.size());
+ 
+@@ -330,25 +566,26 @@ namespace eka2l1::epoc::adapter {
+             ? static_cast<std::uint16_t>(metrics->max_height)
+             : targeted_font_size;
+ 
+-        std::vector<std::uint32_t> &identifiers = metric_identifiers_[canonical_identifier];
+-        identifiers.assign(components_.size(), canonical_identifier);
+-
+-        for (std::size_t i = 0; i < components_.size(); i++) {
+-            if (i == canonical_) {
+-                continue;
+-            }
++        if (metric_identifier) {
++            *metric_identifier = canonical_identifier;
++        }
+ 
+-            std::uint32_t component_identifier = canonical_identifier;
++        // The answer only depends on the canonical's size, and sizing to a
++        // capital height renders glyphs to find it, so it is worked out once.
++        {
++            const std::lock_guard<std::mutex> guard(identifiers_lock_);
+ 
+-            if (components_[i].adapter_->get_nearest_supported_metric(components_[i].face_index_, settled_size,
+-                    &component_identifier, false)) {
+-                identifiers[i] = component_identifier;
++            if (metric_identifiers_.count(canonical_identifier)) {
++                return metrics;
+             }
+         }
+ 
+-        if (metric_identifier) {
+-            *metric_identifier = canonical_identifier;
+-        }
++        // Worked out without holding the lock: it calls into the components,
++        // and a glyph drawn meanwhile only needs the map.
++        std::vector<std::uint32_t> identifiers = identifiers_for(canonical_identifier, settled_size, true);
++
++        const std::lock_guard<std::mutex> guard(identifiers_lock_);
++        metric_identifiers_[canonical_identifier] = std::move(identifiers);
+ 
+         return metrics;
+     }
+diff --git a/src/emu/services/src/fbs/fbs.cpp b/src/emu/services/src/fbs/fbs.cpp
+index 0e4bca7e8..f2400aa8b 100644
+--- a/src/emu/services/src/fbs/fbs.cpp
++++ b/src/emu/services/src/fbs/fbs.cpp
+@@ -449,8 +449,11 @@ namespace eka2l1 {
+         load_linked_fonts(sys->get_io_system());
+ 
+         // Anything imported is only useful once the device's own faces can
+-        // reach it, the ROM having no link.ini that mentions it.
+-        persistent_font_store.attach_user_font_fallbacks();
++        // reach it, the ROM having no link.ini that mentions it. One of them
++        // may also have been chosen to draw the device's text in place of its
++        // own fonts.
++        persistent_font_store.attach_user_font_fallbacks(common::utf8_to_ucs2(sys->get_config()->system_font),
++            sys->get_config()->system_font_scale);
+ 
+         fs_server = kern->get_by_name<service::server>(epoc::fs::get_server_name_through_epocver(
+             kern->get_epoc_version()));
+diff --git a/src/emu/services/src/fbs/impls/font_store.cpp b/src/emu/services/src/fbs/impls/font_store.cpp
+index 75b0244b2..ab4ef9589 100644
+--- a/src/emu/services/src/fbs/impls/font_store.cpp
++++ b/src/emu/services/src/fbs/impls/font_store.cpp
+@@ -20,6 +20,10 @@
+ #include <services/fbs/adapter/linked_font_adapter.h>
+ #include <services/fbs/font_store.h>
+ 
++#include <common/algorithm.h>
++#include <common/cvt.h>
++#include <common/log.h>
++
+ namespace eka2l1::epoc {
+     static void fill_typeface_flags(const open_font_face_attrib &attrib, epoc::typeface_info &info) {
+         if (attrib.style & epoc::open_font_face_attrib::serif) {
+@@ -216,17 +220,64 @@ namespace eka2l1::epoc {
+         return true;
+     }
+ 
+-    void font_store::attach_user_font_fallbacks() {
++    static bool contains_ignore_case(const std::u16string &haystack, const std::u16string &needle) {
++        if (needle.size() > haystack.size()) {
++            return false;
++        }
++
++        for (std::size_t i = 0; i + needle.size() <= haystack.size(); i++) {
++            if (common::compare_ignore_case(haystack.substr(i, needle.size()), needle) == 0) {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
++    // Does a device face draw text the user would expect to change with the
++    // system font? A face with no Latin letters (a clock's digits, a symbol
++    // font) is left alone: whatever the imported font has at those code
++    // points is not what the device put there.
++    static bool is_text_face(open_font_info &info) {
++        if (info.face_attrib.style & epoc::open_font_face_attrib::symbol) {
++            return false;
++        }
++
++        return info.adapter->has_character(info.idx, 'a', 0) && info.adapter->has_character(info.idx, 'H', 0);
++    }
++
++    // A ROM face is often called bold without having the bold style bit set
++    // ("Nokia Sans TitleSmBd S60", S60v1's "LatinBold12"), so the name counts
++    // as much as the flag.
++    static bool looks_bold(const open_font_face_attrib &attrib) {
++        if (attrib.style & epoc::open_font_face_attrib::bold) {
++            return true;
++        }
++
++        const std::u16string name = const_cast<open_font_face_attrib &>(attrib).name.to_std_string(nullptr);
++        return contains_ignore_case(name, u"bold") || contains_ignore_case(name, u"smbd");
++    }
++
++    void font_store::attach_user_font_fallbacks(const std::u16string &system_font, const int system_font_scale) {
+         struct fallback_font {
+             epoc::adapter::linked_font_file_adapter::component component_;
+             const open_font_face_attrib *attrib_;
+         };
+ 
+         std::vector<fallback_font> fallbacks;
++        std::vector<open_font_info *> system_faces;
+ 
+         for (auto &info : open_font_store) {
+             if (info.user_font) {
+                 fallbacks.push_back({ { info.adapter, info.idx }, &info.face_attrib });
++
++                // Frontends list families through their own font engines,
++                // which do not all read the same name record as FreeType, so a
++                // full face name is accepted too.
++                if (!system_font.empty() && ((common::compare_ignore_case(info.family, system_font) == 0)
++                    || (common::compare_ignore_case(info.face_attrib.name.to_std_string(nullptr), system_font) == 0))) {
++                    system_faces.push_back(&info);
++                }
+             }
+         }
+ 
+@@ -234,17 +285,72 @@ namespace eka2l1::epoc {
+             return;
+         }
+ 
++        // The face of the chosen family that best stands in for a device face:
++        // same weight and slant if the family has it, its plain face otherwise.
++        auto pick_system_face = [&](const open_font_face_attrib &device_attrib) -> open_font_info * {
++            const bool want_bold = looks_bold(device_attrib);
++            const bool want_italic = (device_attrib.style & epoc::open_font_face_attrib::italic);
++
++            open_font_info *best = nullptr;
++            int best_score = -1;
++
++            for (open_font_info *candidate : system_faces) {
++                const bool bold = (candidate->face_attrib.style & epoc::open_font_face_attrib::bold);
++                const bool italic = (candidate->face_attrib.style & epoc::open_font_face_attrib::italic);
++                const int score = ((bold == want_bold) ? 2 : 0) + ((italic == want_italic) ? 1 : 0);
++
++                if (score > best_score) {
++                    best = candidate;
++                    best_score = score;
++                }
++            }
++
++            return best;
++        };
++
++        if (!system_font.empty() && system_faces.empty()) {
++            LOG_WARN(SERVICE_FBS, "System font {} is not among the imported fonts, keeping the device's own",
++                common::ucs2_to_utf8(system_font));
++        }
++
+         for (auto &info : open_font_store) {
+             if (info.user_font) {
+                 continue;
+             }
+ 
+             std::vector<epoc::adapter::linked_font_file_adapter::component> components;
+-            components.push_back({ info.adapter, info.idx });
+-
+             open_font_face_attrib attrib = info.face_attrib;
+ 
++            // The system font goes in front of the device face, so it draws
++            // every character it has, while the device face stays canonical:
++            // the name, the sizes and the line metrics the device's layouts
++            // were made for are unchanged, and anything the system font lacks
++            // (S60's private-use symbols, other scripts) still comes from ROM.
++            open_font_info *system_face = system_faces.empty() ? nullptr : pick_system_face(info.face_attrib);
++
++            if (system_face && is_text_face(info)
++                && epoc::adapter::can_present_glyph_as(system_face->adapter->get_output_bitmap_type(),
++                    info.adapter->get_output_bitmap_type())) {
++                epoc::adapter::linked_font_file_adapter::component replacement{ system_face->adapter, system_face->idx };
++                replacement.cap_height_scale_ = common::max(system_font_scale, 1);
++
++                components.push_back(replacement);
++
++                for (std::size_t word = 0; word < 4; word++) {
++                    attrib.coverage[word] |= system_face->face_attrib.coverage[word];
++                }
++            } else {
++                system_face = nullptr;
++            }
++
++            const std::size_t canonical = components.size();
++            components.push_back({ info.adapter, info.idx });
++
+             for (const auto &fallback : fallbacks) {
++                if (system_face && (fallback.attrib_ == &system_face->face_attrib)) {
++                    continue;
++                }
++
+                 // A glyph bitmap reaches the guest in the format the font as a
+                 // whole declares, so a component is only of use where the
+                 // linked adapter can present its glyphs as that format.
+@@ -264,9 +370,14 @@ namespace eka2l1::epoc {
+                 continue;
+             }
+ 
++            if (system_face) {
++                LOG_TRACE(SERVICE_FBS, "Device face {} is drawn with {}", common::ucs2_to_utf8(info.face_attrib.name.to_std_string(nullptr)),
++                    common::ucs2_to_utf8(system_face->face_attrib.name.to_std_string(nullptr)));
++            }
++
+             info.face_attrib = attrib;
+ 
+-            auto adapter = std::make_unique<epoc::adapter::linked_font_file_adapter>(std::move(components), 0, attrib);
++            auto adapter = std::make_unique<epoc::adapter::linked_font_file_adapter>(std::move(components), canonical, attrib);
+ 
+             info.adapter = adapter.get();
+             info.idx = 0;
+-- 
+2.53.0
+
