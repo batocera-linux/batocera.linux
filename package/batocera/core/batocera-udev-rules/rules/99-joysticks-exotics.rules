@@ -41,5 +41,5 @@ SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="0773", ENV{ID_IN
 SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="07a5", ENV{ID_INPUT_JOYSTICK}="0"
 SUBSYSTEM=="input", ATTRS{idVendor}=="045e", ATTRS{idProduct}=="07b2", ENV{ID_INPUT_JOYSTICK}="0"
 
-# Remove flag joystick in Chat Boost
+# Remove flag joystick in Collective Minds PS4 ChatBoost
 SUBSYSTEM=="input", ATTRS{name}=="PS4 Chat Boost", ENV{ID_INPUT_JOYSTICK}="0"
