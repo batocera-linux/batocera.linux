@@ -1,0 +1,35 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: sdm845-ayn-odin: mux the panel TE pin
+
+The TD4328 runs in command mode and the DPU paces frames on its TE
+signal (gpio10). Without the mdp_vsync mux the panel refreshes at 30 Hz
+whenever the bootloader switched the display off before Linux.
+
+---
+--- a/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-ayn-odin.dts
+@@ -744,7 +744,8 @@
+ 		rotation = <90>;
+ 
+ 		pinctrl-names = "default";
+-		pinctrl-0 = <&panel_reset_active &panel_enable_active>;
++		/* batocera - command mode panel, TE on gpio10 */
++		pinctrl-0 = <&panel_reset_active &panel_enable_active &panel_te_active>;
+ 
+ 		port {
+ 			panel_in: endpoint {
+@@ -1245,6 +1246,14 @@
+ 		bias-disable;
+ 	};
+ 
++	/* batocera - panel TE, the bootloader leaves it unmuxed when it powers the display off */
++	panel_te_active: panel-te-active {
++		pins = "gpio10";
++		function = "mdp_vsync";
++		drive-strength = <2>;
++		bias-pull-down;
++	};
++
+ 	panel_reset_active: panel-reset-active {
+ 		pins = "gpio6";
+ 		function = "gpio";
