@@ -20,6 +20,7 @@
 
 from __future__ import annotations
 
+import re
 import shutil
 from pathlib import Path
 from typing import Final
@@ -62,6 +63,12 @@ class SdlPop(Emulator):
             shutil.copyfile(system_cfg, user_config)
         if not user_ini.exists():
             shutil.copyfile(system_ini_src, user_ini)
+
+        # 4:3 like the bezels, the default stretches to 16:10 under them
+        ini = user_ini.read_text()
+        fixed = re.sub(r'(?m)^use_correct_aspect_ratio\s*=.*$', 'use_correct_aspect_ratio = true', ini)
+        if fixed != ini:
+            user_ini.write_text(fixed)
 
         system_config = _SYSTEM_DIR / 'SDLPoP.cfg'
         system_ini = _SYSTEM_DIR / 'SDLPoP.ini'
