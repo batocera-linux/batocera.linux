@@ -112,6 +112,7 @@
 - Cannonball coin is now the Select button
 - Cannonball fullscreen on Wayland
 - Cannonball overwriting the user's key and pad bindings
+- Cemu not loading its bundled per-game default profiles and the Wii U system fonts (games fell back to placeholder fonts)
 - CLK not finding the Acorn Electron, Archimedes, Macintosh and Atari ST TOS 1.00 ROMs
 - Commander Genius fullscreen in Wayland
 - Commander Genius render resolution option not taking effect in-game
