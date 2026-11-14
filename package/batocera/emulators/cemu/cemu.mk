@@ -77,6 +77,8 @@ define CEMU_INSTALL_TARGET_CMDS
 	    $(TARGET_DIR)/usr/bin/cemu/
 	# create dir for keys.txt
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/bios/cemu
+	# Cemu loads its game profiles and fonts from /usr/share/Cemu (exact case required)
+	ln -sfn /usr/bin/cemu $(TARGET_DIR)/usr/share/Cemu
 endef
 
 $(eval $(cmake-package))
