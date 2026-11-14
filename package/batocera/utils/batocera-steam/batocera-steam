@@ -92,10 +92,18 @@ else
     # We thus monitor the log and when the game process exits, we request steam to stop.
     # This should allow our steam command to actually finish.
     log_file="$target_dir/.var/app/com.valvesoftware.Steam/.local/share/Steam/logs/console_log.txt"
+    # Only the launched game's exit ends the session. Other apps register processes with Steam
+    # too and can exit first: EA app titles start EASteamAuthHelper (AppID 1182480), which quits
+    # within seconds and used to shut Steam down before the game opened. GAME without a 32-bit
+    # AppID (non-Steam shortcuts use 64-bit IDs) keeps the generic match.
+    exit_re='^\[.*\] (Exiting app|Game process removed)'
+    if [[ $GAME =~ rungameid/([0-9]{1,10})([^0-9]|$) ]]; then
+        exit_re="^\[.*\] (Exiting app|Game process removed ?: AppID ${BASH_REMATCH[1]}([^0-9]|\$))"
+    fi
     # Redirected so an orphaned tail (grep already matched, but tail is idle in read() and
     # never notices the broken pipe) can't keep our end of emulatorlauncher's pipe open forever.
     (
-        grep -q -E '^\[.*\] (Exiting app|Game process removed)' <(tail -F -n 0 "$log_file" 2>/dev/null)
+        grep -q -E "$exit_re" <(tail -F -n 0 "$log_file" 2>/dev/null)
         DISPLAY=$(getLocalXDisplay) flatpak run com.valvesoftware.Steam -shutdown
     ) </dev/null >>"$log" 2>&1 &
     log_watcher_pid=$!
