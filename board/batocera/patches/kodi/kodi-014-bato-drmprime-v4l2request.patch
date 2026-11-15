@@ -1,0 +1,131 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] DVDVideoCodecDRMPRIME: accept the V4L2 Request hwdevice
+
+The V4L2 Request hwaccels hand out DRM PRIME frames but register a
+v4l2request hwdevice rather than a DRM one, so they were never picked.
+Only choose one when a stateless decoder lists the codec, and create the
+device without a path so ffmpeg finds that decoder.
+
+---
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+@@ -25,6 +25,13 @@
+ #include "windowing/gbm/WinSystemGbm.h"
+ #endif
+ 
++#include <string>
++
++#include <fcntl.h>
++#include <linux/videodev2.h>
++#include <sys/ioctl.h>
++#include <unistd.h>
++
+ extern "C"
+ {
+ #include <libavcodec/avcodec.h>
+@@ -160,6 +167,74 @@
+          fmt == AV_PIX_FMT_YUVJ422P || fmt == AV_PIX_FMT_YUV444P || fmt == AV_PIX_FMT_YUVJ444P;
+ }
+ 
++// Looked up by name as only some ffmpeg builds carry the V4L2 Request hwdevice.
++static bool IsV4L2RequestDevice(enum AVHWDeviceType type)
++{
++  static const AVHWDeviceType v4l2request = av_hwdevice_find_type_by_name("v4l2request");
++  return v4l2request != AV_HWDEVICE_TYPE_NONE && type == v4l2request;
++}
++
++// The V4L2 Request hwaccels exist for every codec ffmpeg was built with, so check a
++// stateless decoder for this codec is present before choosing one.
++static bool HasV4L2RequestDecoder(AVCodecID id)
++{
++  uint32_t pixelformat;
++  switch (id)
++  {
++    case AV_CODEC_ID_H264:
++      pixelformat = V4L2_PIX_FMT_H264_SLICE;
++      break;
++    case AV_CODEC_ID_MPEG2VIDEO:
++      pixelformat = V4L2_PIX_FMT_MPEG2_SLICE;
++      break;
++    case AV_CODEC_ID_VP8:
++      pixelformat = V4L2_PIX_FMT_VP8_FRAME;
++      break;
++#ifdef V4L2_PIX_FMT_HEVC_SLICE
++    case AV_CODEC_ID_HEVC:
++      pixelformat = V4L2_PIX_FMT_HEVC_SLICE;
++      break;
++#endif
++#ifdef V4L2_PIX_FMT_VP9_FRAME
++    case AV_CODEC_ID_VP9:
++      pixelformat = V4L2_PIX_FMT_VP9_FRAME;
++      break;
++#endif
++#ifdef V4L2_PIX_FMT_AV1_FRAME
++    case AV_CODEC_ID_AV1:
++      pixelformat = V4L2_PIX_FMT_AV1_FRAME;
++      break;
++#endif
++    default:
++      return false;
++  }
++
++  for (int i = 0; i < 64; i++)
++  {
++    const std::string path = "/dev/video" + std::to_string(i);
++    const int fd = open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC);
++    if (fd < 0)
++      continue;
++
++    for (const uint32_t type : {V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, V4L2_BUF_TYPE_VIDEO_OUTPUT})
++    {
++      v4l2_fmtdesc desc = {};
++      desc.type = type;
++      for (; ioctl(fd, VIDIOC_ENUM_FMT, &desc) == 0; desc.index++)
++      {
++        if (desc.pixelformat == pixelformat)
++        {
++          close(fd);
++          return true;
++        }
++      }
++    }
++    close(fd);
++  }
++
++  return false;
++}
++
+ static const AVCodecHWConfig* FindHWConfig(const AVCodec* codec)
+ {
+   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
+@@ -176,6 +251,10 @@
+         config->device_type == AV_HWDEVICE_TYPE_DRM)
+       return config;
+ 
++    if ((config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) &&
++        IsV4L2RequestDevice(config->device_type) && HasV4L2RequestDecoder(codec->id))
++      return config;
++
+     if ((config->methods & AV_CODEC_HW_CONFIG_METHOD_INTERNAL))
+       return config;
+   }
+@@ -337,6 +416,19 @@
+       avcodec_free_context(&m_pCodecContext);
+       return false;
+     }
++  }
++  else if (pConfig && (pConfig->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) &&
++           IsV4L2RequestDevice(pConfig->device_type))
++  {
++    // With no device given ffmpeg probes the media devices for a matching decoder.
++    if (av_hwdevice_ctx_create(&m_pCodecContext->hw_device_ctx, pConfig->device_type, nullptr,
++                               nullptr, 0) < 0)
++    {
++      CLog::Log(LOGERROR, "CDVDVideoCodecDRMPRIME::{} - unable to create v4l2request hwdevice context",
++                __FUNCTION__);
++      avcodec_free_context(&m_pCodecContext);
++      return false;
++    }
+   }
+ 
+   m_pCodecContext->pix_fmt = AV_PIX_FMT_DRM_PRIME;

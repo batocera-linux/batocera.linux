@@ -4,6 +4,8 @@
   SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
 ### Added
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
+### Fixed
+- Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
 ### Updated
 - Keisho (formerly SM2-Emu) to v0.9.63
 
