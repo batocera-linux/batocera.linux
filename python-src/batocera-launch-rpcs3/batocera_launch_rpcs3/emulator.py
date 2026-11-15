@@ -379,8 +379,19 @@ def _migrate_dev_hdd0(config_dir: Path, hdd0_dir: Path, /) -> None:
 
     hdd0_dir.parent.mkdir(parents=True, exist_ok=True)
 
+    if legacy_dev_hdd0.is_symlink():
+        try:
+            hdd0_dir.symlink_to(legacy_dev_hdd0.resolve())
+            legacy_dev_hdd0.unlink()
+        except Exception:
+            _logger.exception('Failed to move the RPCS3 dev_hdd0 link from %s to %s', legacy_dev_hdd0, hdd0_dir)
+            return
+
+        _logger.debug('Moved the RPCS3 dev_hdd0 link from %s to %s', legacy_dev_hdd0, hdd0_dir)
+        return
+
     try:
-        shutil.copytree(legacy_dev_hdd0, hdd0_dir)
+        shutil.copytree(legacy_dev_hdd0, hdd0_dir, symlinks=True)
     except Exception:
         _logger.exception('Failed to copy RPCS3 dev_hdd0 from %s to %s', legacy_dev_hdd0, hdd0_dir)
         return
