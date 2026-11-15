@@ -1,0 +1,81 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] power: reset: qcom-pon: set PS_HOLD to shutdown before power off
+
+The Odin bootloader programs the PMIC PS_HOLD reset type as warm reset and
+PSCI SYSTEM_OFF does not reliably change it, so a power off can come back
+up as a reboot. Do what the downstream driver does and switch PS_HOLD to
+shutdown in the power off prepare stage.
+
+---
+--- a/drivers/power/reset/qcom-pon.c
++++ b/drivers/power/reset/qcom-pon.c
+@@ -12,6 +12,11 @@
+ #include <linux/reboot-mode.h>
+ #include <linux/regmap.h>
+ 
++#define PON_PS_HOLD_RST_CTL		0x5a
++#define PON_PS_HOLD_RST_CTL2		0x5b
++#define PON_PS_HOLD_RST_EN		BIT(7)
++#define PON_PS_HOLD_TYPE_MASK		GENMASK(3, 0)
++#define PON_PS_HOLD_TYPE_SHUTDOWN	0x4
+ #define PON_SOFT_RB_SPARE		0x8f
+ 
+ #define GEN1_REASON_SHIFT		2
+@@ -44,6 +49,43 @@
+ 	return ret;
+ }
+ 
++/*
++ * The bootloader leaves PS_HOLD set to warm reset and PSCI SYSTEM_OFF does
++ * not always change it, so dropping PS_HOLD on power off reboots instead.
++ */
++static int qcom_pon_power_off_prepare(struct sys_off_data *data)
++{
++	struct qcom_pon *pon = data->cb_data;
++	int ret;
++
++	ret = regmap_update_bits(pon->regmap,
++				 pon->baseaddr + PON_PS_HOLD_RST_CTL2,
++				 PON_PS_HOLD_RST_EN, 0);
++	if (ret < 0)
++		goto err;
++
++	/* The PMIC needs 10 sleep clock cycles to see the reset disabled */
++	usleep_range(500, 1000);
++
++	ret = regmap_update_bits(pon->regmap,
++				 pon->baseaddr + PON_PS_HOLD_RST_CTL,
++				 PON_PS_HOLD_TYPE_MASK,
++				 PON_PS_HOLD_TYPE_SHUTDOWN);
++	if (ret < 0)
++		goto err;
++
++	ret = regmap_update_bits(pon->regmap,
++				 pon->baseaddr + PON_PS_HOLD_RST_CTL2,
++				 PON_PS_HOLD_RST_EN, PON_PS_HOLD_RST_EN);
++	if (ret < 0)
++		goto err;
++
++	return NOTIFY_DONE;
++err:
++	dev_err(pon->dev, "failed to set PS_HOLD to shutdown\n");
++	return NOTIFY_DONE;
++}
++
+ static int qcom_pon_probe(struct platform_device *pdev)
+ {
+ 	struct qcom_pon *pon;
+@@ -80,6 +122,13 @@
+ 		}
+ 	}
+ 
++	error = devm_register_sys_off_handler(&pdev->dev,
++					      SYS_OFF_MODE_POWER_OFF_PREPARE,
++					      SYS_OFF_PRIO_DEFAULT,
++					      qcom_pon_power_off_prepare, pon);
++	if (error)
++		dev_warn(&pdev->dev, "can't register power off prepare\n");
++
+ 	platform_set_drvdata(pdev, pon);
+ 
+ 	return devm_of_platform_populate(&pdev->dev);
