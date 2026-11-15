@@ -89,6 +89,7 @@ do_root() {
                 # user files an older batocera-upgrade listed as stale
                 overlays/mipi-panel.dtbo) continue ;;
                 loader/loader.conf|loader/entries/*|EFI|EFI/Linux|EFI/Linux/*) continue ;;
+                boot-custom.sh|preshare.sh|postshare.sh|network-connman.config|autoboot.txt) continue ;;
             esac
             fullpath="/boot_root/${stalepath}"
             if test -e "$fullpath" || test -L "$fullpath"
