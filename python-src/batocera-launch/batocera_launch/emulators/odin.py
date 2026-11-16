@@ -340,6 +340,8 @@ class Odin(Emulator):
                 style = 'game' if self.guns_border_ratio == '4:3' else 'window'
                 text = _set_ini(text, players, 'sinden_border_size', str(size))
                 text = _set_ini(text, players, 'sinden_border_style', style)
+        else:
+            text = _set_ini(text, players, 'hide_cursor', 'on')
 
         if parent in ('braveff', 'swracer', 'sgnascar', 'atvtrack', 'smashdrv'):
             text = _set_ini(text, players, 'vibration', self.config.get_str('odin_vibration', 'on'))
