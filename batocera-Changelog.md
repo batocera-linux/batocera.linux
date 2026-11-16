@@ -76,6 +76,7 @@
 - Libretro-anybor : for openbor games (support all openbor versions)
 - Libretro-Azahar
 - Libretro-GP32emu for the GamePark GP32, default on x86_64
+- Libretro-ZEsarPCW for the Amstrad PCW, default as it needs no BIOS
 - MangoHud GPU stats on Qualcomm and Mali devices
 - NanoBoyAdvance as an alternative GBA emulator
 - Network settings can now save any number of other Wi-Fi networks, so a handheld connects wherever it is taken
