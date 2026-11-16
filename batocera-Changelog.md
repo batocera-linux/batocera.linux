@@ -17,8 +17,12 @@
   You must flash OpenABL v1.1 or newer before upgrading to v44, older ABLs (ROCKNIX ABL, stock) can't boot it
   On v43 or v44, flash the latest OpenABL over SSH with:
   `wget -qO /tmp/updateabl https://raw.githubusercontent.com/batocera-linux/batocera.linux/master/package/batocera/boot/openabl/updateabl && bash /tmp/updateabl --check-online`
+- New ARM and RISC-V images have an 8GB boot partition (10GB on SM8750) and no longer fit on 8GB SD cards
+- RPCS3 data (dev_hdd0: PS3 saves, installed games and updates) moves to saves/ps3/rpcs3, it is moved at the first PS3 launch and needs free space for a full copy
 ### Hardware
+- Anbernic H700 devices with LPDDR3 memory (-ddr3 images)
 - Anbernic RG Vita Pro initial support
+- Anbernic RG34xx-SP-v2-panel variant support
 - Anbernic RG40xx-H-v2-panel variant support
 - Anbernic RG40xx-V-v2-panel variant support
 - Anbernic RG55G1 initial support
@@ -35,9 +39,11 @@
 - Odroid M2 initial support
 - R36 Ultra initial support
 - Radxa Rock-5T initial support
+- Retroid Pocket 5 / Flip 2 Visionox panel variant support
 - Retroid Pocket Classic initial support
 - Retroid Pocket Nova initial support
 ### Added
+- AIC8800 USB Wi-Fi adapters on x86_64
 - AMD handhelds: thermal profile option where the firmware exposes a platform profile (e.g. Legion Go S)
 - Anbernic H700 device deep sleep suspend, replacing fake suspend
 - Anbernic H700 device hardware acceleration support
@@ -48,6 +54,7 @@
 - Armsx2 for Qualcomm devices
 - AYN SM8550 device power LED, amber while in standby
 - Battery, charger and power button support for Intel Atom laptops and tablets with the X-Powers AXP288 PMIC
+- AYN SM8550 devices and Retroid Pocket 6 real suspend, replacing fake suspend
 - BCC: audio devices can now be switched from the BCC menu (while playing games for example)
 - BCC: choose which screen to use on multi-screen devices
 - BCC: show/hide mouse pointer on supported emulators
@@ -57,16 +64,17 @@
 - Broadcom STA (wl) wifi driver for older Macs, enable with broadcom-wl=true in batocera-boot.conf
 - Chronic Concepts Insert Coin Cube Gen 2 coin mechanism support
 - Controller configs for the Arcade2TV-XR
+- Coin hotkey in Libretro-FBNeo, Libretro-DICE, Libretro-MAME2003-Plus, Libretro-Flycast, Flycast, Supermodel, Demul, Cannonball and Hypseus Singe
 - CorsixTH game resolution, interface scale and decoration options
 - Dolphin GameCube Controller type BattlerGC Pro (x-input mode with analog+digital triggers)
-- Drastic back for Aarch64 devices
-- ES can have a maximum depth of subfolders to go through when indexing (skip subfolders with large amount of files)
 - ES can now display Unicode for ID3 tags of songs played
+- DraStic is back for aarch64 devices
+- ES can have a maximum depth of subfolders to go through when indexing (skip subfolders with a large number of files)
 - ES now supports correctly Arabic and Hebrew glyph rendering
 - ES Setting for toggle fast forward
 - ES setting to choose controller LED mode (Rainbow, Pulse Chroma)
-- ES setting to choose which CPU cores an emulator runs on (fast or all), keeping emulators off the slow efficiency cores of big.LITTLE devices by default
 - ES setting to determine mitigations On|Off (Default On)
+- ES setting to choose which CPU cores an emulator runs on (fast or all), keeping emulators off the slow efficiency cores of big.LITTLE devices
 - GameTank console support through GameTankEmulator
 - HDR toggle for supported devices & display panels
 - Moonlight HDR streaming option
@@ -76,24 +84,41 @@
 - Libretro-anybor : for openbor games (support all openbor versions)
 - Libretro-Azahar
 - Libretro-GP32emu for the GamePark GP32, default on x86_64
+- Kodi on SM8550 devices
 - MangoHud GPU stats on Qualcomm and Mali devices
 - NanoBoyAdvance as an alternative GBA emulator
 - Network settings can now save any number of other Wi-Fi networks, so a handheld connects wherever it is taken
+- Libretro-Beetle-PSX light guns with the hardware renderer, and Justifier buttons
 - Odin, a standalone Sega Hikaru & Gaelco emulator
+- Light gun precalibrations for Odin, PCSX2x6, SM2-Emu and Xemu Chihiro
+- Lindbergh games as .squashfs files
+- Logitech TrueForce driver and settings app (RS50, G PRO wheels)
+- Namco System 357 / 369 games through RPCS3
 - OpenGOAL for the Jak and Daxter trilogy, built from your own PS2 disc image
 - PCSX2x6 emulator for Namco2x6 systems (see the _info.txt file for rom details)
 - Retroid Pocket SM8250 devices audio over USB-C DisplayPort
 - RPCS3 downloads and installs missing PS3 firmware automatically, with optional background updates
 - RPCS3 interface translations
+- Retroid Pocket 5 / 6 dual-screen add-on support
 - SM2-Emu emulator for Model 1 and Model 2 games, with a new Sega Model 1 system
 - Sonic Mania options for 4:3 aspect ratio, screen shaders and the developer menu
+- RPCS3 for SM8550 devices
 - Steam Controller (2026) support on x86_64 / Zen3
+- RPCS3 PSN games as .squashfs and ShadPS4 .zar archives, with toolboxes to convert .pkg / .rap files and create .psn launchers
 - Steam is installed automatically from Flathub the first time it is launched
-- Supermodel wheel support with force feedback
+- Steering wheel support:
+  - Armsx2 initial support
+  - Odin initial support, with force feedback
+  - SM2-Emu initial support, with force feedback
+  - Supermodel initial support, with force feedback
+  - Xemu Chihiro initial support, with force feedback
+  - MAME: full pedal travel, no dead zone, and on/off pedals
+  - Shift with the paddles in Flycast, MAME and PlayStation games (e.g. Initial D, Gran Turismo)
 - Upgrades : migration from x86_64 to x86-64-v3 is now possible from the menu for eligible software.
-- Upgrades : upgrades to stable releases is now possible via torrent, directly from the menu.
 - Vulkan on RK3568 and RK3576, with Dolphin on RK3576
 - Wine DLSS support for NVIDIA RTX GPUs when NVAPI is enabled
+- Upgrades: upgrade from a boot.tar.xz on a USB drive, from the menu
+- Upgrades: upgrades to stable releases are now possible via torrent, directly from the menu
 - Wine GE-Proton runner and D7VK (Direct3D 7 over Vulkan)
 - Xemu Chihiro fork for the Sega Chihiro, with light guns, wheels with force feedback, card readers and linked cabinets
 - Xenia-Edge for x86_64 and select aarch64 devices
@@ -103,48 +128,75 @@
 - 32-bit ARM boards (e.g. Odroid XU4): Mupen64 standalone, EmulationStation videos (VLC) and other plugin libraries refused by glibc for requiring an executable stack
 - 32-bit ARM boards (e.g. Odroid XU4): Dreamcast, Naomi and Atomiswave black screen in Flycast (standalone and libretro), every guest memory access was miscompiled to read the start of RAM
 - AMD TDP setting lost after resume from sleep, and the TDP option showing on Ryzen systems that do not support it
-- Bauh not starting with Python 3.14
-- BCC menu not showing on SM8250 devices (i.e. Retroid Pocket 5)
+- Argon ONE fan control on older Raspberry Pi 4 cases, and case button shutdown
+- Atari XE and MSX turboR games not scrapable with ScreenScraper
+- Ayaneo button not working as hotkey
+- BCC menu not showing on SM8250 devices (e.g. Retroid Pocket 5)
+- Bluetooth pairing: pads shown as paired but not connected, and pairings lost after a power cut during shutdown
 - Boot logo disappearing once the graphics driver replaces the firmware framebuffer, leaving a black screen until the splash video starts
 - Boot logo never visible on slower devices
 - Boot splash version text not rotating with the video on rotated screens (e.g. RG Vita Pro, RG ARC-D, Powkiddy x55)
 - Brief white or garbage flash before the splash video starts (visible with hardware decoding, e.g. AMD x86_64)
-- Cannonball coin is now the Select button
-- Cannonball fullscreen on Wayland
 - Cannonball overwriting the user's key and pad bindings
 - CLK not finding the Acorn Electron, Archimedes, Macintosh and Atari ST TOS 1.00 ROMs
 - Commander Genius fullscreen in Wayland
 - Commander Genius render resolution option not taking effect in-game
-- Demul Cave 3rd games, window position and Gaelco aspect ratio
+- Demul Cave 3rd games and window position
 - Dolphin Wii Remotes 2-4 set to None when using pad profiles
+- DOSBox-X not starting games with spaces in their path
 - Ethernet not working on some RK3568 boards
 - External displays without a preferred mode not being enabled on Wayland (labwc)
 - Flatpak and Steam missing the Decorations options, so a global decoration set could not be disabled for them
+- Flycast save / load state hotkeys swapped, and RetroArch previous / next slot hotkeys swapped
+- Flycast standalone and Libretro-MAME2003-Plus light gun precalibration never applied
 - Games failing to start when the selected libretro core is no longer installed, they now fall back to the default core
 - GSplus (Apple IIGS) exit hotkey only halting the emulator
+- Hatari ignoring the joystick button mapping, and VICE joystick mapping broken (one pad on both ports)
+- Identical controllers' hotkeys and pad-to-key mappings all following one pad after a controller reconnects during a game
 - iptables failing with "Module ip_tables not found" since v43, breaking wg-quick (WireGuard) and connman tethering on boards with Linux 6.16 or newer
+- Jazz2 not starting fullscreen
 - Jedi Knight Dark Forces 2 initial start to work fullscreen in certain conditions
 - Kernel modules printing modprobe FATAL errors at boot
 - Libretro-Hatarib not starting due to a compiled symbol issue
+- Libretro picture misplaced in the bezel with a custom ratio, or with bezels without a .info file (e.g. TheBezelProject) when the screen matches the bezel size
 - Libretro-MAME analog stick games (e.g. Apache 3, Star Blade) stuck at full right when no light gun is connected
+- Libretro-MAME games not starting with off-screen reload on, and the MAME menu confirming with East instead of South
 - Libretro-Picodrive crashing on the second launch of a Sega CD game
+- Libretro-ScummVM missing its engine data and themes
+- Libretro-Vice losing true drive emulation without the JiffyDOS ROMs
 - Lindbergh games (e.g. Harley Davidson) reconfiguring the host network, leaving the system without DNS or its LAN address
 - LINQ / ShanWan dual-mode pads in Xbox 360 mode not detected since v43
+- Low battery warnings caused by controller batteries (e.g. DualShock 4)
 - MAME black screen on exit with a rotated display when CRT switchres is off
+- MAME debug pop-ups (e.g. "Coinlock disabled") during games
 - MelonDS OpenGL falling back to software on Wayland (labwc) builds
+- Missing BIOS list entries for Apple IIGS, Namco System 22, Oric Atmos and SAM Coupe
 - REminiscence freeze at launch with an empty .rem file
-- Missing BIOS list entries for Apple IIGS, Gaelco, Namco System 22, Oric Atmos and SAM Coupe
 - Mupen64 not starting fullscreen with Wayland
 - Nintendo DS .dsi and .ids ROM files not listed in EmulationStation (melonDS and DeSmuME accept them)
+- openMSX pad X / Y (F2 / F3) keys staying pressed, and pressing Enter / Left on the Spectravideo SVI
+- Orange Pi 3 LTS Ethernet, Wi-Fi and Bluetooth not working
+- Pad-to-key up / down reversed or ignored on pads whose d-pad is an axis
+- Pause hotkey doing nothing in Amiberry, Azahar, BigPEmu, Dolphin, PCSX2 and RPCS3
+- PCSX2 Hotkey+Start toggling the frame limiter instead of exiting, and OSD messages showing when disabled
 - NVIDIA OpenGL over EGL on X11 falling back to Mesa (e.g. Dolphin failing to start with OpenGL)
 - Power button shutdown now closes the running game and shuts down through EmulationStation, saving gamelists
+- PPSSPP Hotkey+Start loading a state instead of exiting, and the pause menu opening on a single Home / hotkey press
 - Powkiddy X55 battery level reporting
 - Pygame fullscreen with Wayland
+- Radxa Rock 3C Wi-Fi not working, and Bluetooth now enabled
+- Raspberry Pi 4 / 5 GPIO controllers only registering some buttons
+- Raspberry Pi power switches (ATXRaspi, Mausberry, MSLDigital) not working
 - R36S and other RK3326 clones losing the chosen panel overlay (mipi-panel.dtbo) after an upgrade, leaving a working backlight but a broken screen
 - Raspberry Pi 5 DSI / DPI displays not used on Wayland (labwc)
 - Raze analog controls and improved controller bindings
 - Retroid Pocket joystick LED colours (red and blue swapped)
 - Samba wide symbolic links under /userdata (e.g. to external drives) being silently disabled, and secure mode granting guest access to the share
+- RetroAchievements (Libretro) turned off in Libretro-MelonDS-DS and Libretro-Gearcoleco, and when a 1-second internet ping failed on a working network
+- RetroArch light guns mis-mapped with Vulkan on Wayland
+- RetroArch wheel pedals only using half of their travel
+- RPCS3 crashing in some games when a light gun used in an earlier launch is no longer connected
+- Rumble not working on third-party Switch Bluetooth pads (e.g. 8BitDo Pro 2)
 - SC-3000 games not scrapable (now scraped as SG-1000)
 - Screen rotation on Wayland (labwc) going the opposite way to the boot splash and the documentation (display.rotate=1 rotated anticlockwise)
 - Simcoupe not starting fullscreen
@@ -153,21 +205,29 @@
 - Sonic Mania settings changed in-game (e.g. screen shader) now persist between launches
 - Splash video not showing when es.resolution or splash.screen.resize holds the rotated size of a rotated display (e.g. 1080x1920)
 - Steam and Flatpak apps not closing with the exit hotkey
+- Steam games sometimes not returning to ES, and Steam settings failing with an invalid time zone
+- Storage manager merge failing when the FUSE module was not loaded (e.g. Raspberry Pi 4)
 - Taradino blank screen with Wayland
 - Touchscreens on X11 (x86_64) not following display.rotate
+- Triforce wheel settings (wheel type and rotation) never applied in F-Zero AX and Mario Kart Arcade GP
+- Upgrades deleting boot-custom.sh and the Raspberry Pi autoboot.txt (upgrades from v44 on)
 - Vice not going fullscreen with C128
 - Video mode selection not matching the chosen mode on Wayland (labwc) and X11, and YCbCr 4:2:0 only modes being listed
 - VPinball now support multiscreens correctly on wayland
 - Wi-Fi on older Intel (iwldvm) cards failing with PMF-capable routers
+- X11 refusing modes below 320x200 (15 kHz CRT)
 - X16emu fullscreen with Wayland
 ### Changed / Improved
 - Amlogic S9gen4 moved to the mainline linux kernel with the Panfrost GPU driver
 - AYN Thor, AYN button now opens Batocera Control Center
 - Azahar opens separate windows by default when a second screen is connected, and no longer asks before exiting
+- Backglass rewritten in SDL2: faster, touch swipes browse ES, several images per game or system (video marquees are no longer played)
 - BigPEmu added to capable aarch64 devices
-- Boot logo and video now scales better to the primary screen being rendered on
+- Boot logo and video now scale better to the primary screen being rendered on
 - Brightness cycle buttons on handhelds now open the Batocera Control Center instead (brightness is adjustable from there)
+- Cannonball coin is now the Select button
 - Cemu added to capable aarch64 devices
+- ES uses an OpenGL ES 3 renderer on capable ARM and RISC-V devices
 - Faster boot, storage detection and audio startup no longer wait on fixed delays
 - Faster game launch and exit
 - GameForce Ace moved to the mainline linux kernel
@@ -178,6 +238,7 @@
 - Lindbergh Loader has transitioned to LinuxLoader for Lindbergh roms
 - MangoHud now scales the size based on the screen resolution
 - Migrated Khadas VIM4 GPU driver to Panfrost with the latest Mesa3D stack
+- New boot logo and splash videos
 - New CPU, GPU & Battery temp helper script - batocera-temp
 - PCEngine / PCEngineCD: added Libretro-Beetle-PCE (not "Fast") for capable aarch64 devices
 - Performance CPU and GPU governors are now the default on all boards
@@ -187,19 +248,22 @@
 - Raspberry Pi4 now uses the latest Mesa3D drivers
 - Removed Libretro-Puae2021
 - Removed the buggy Libretro-A5200 core. We will use the compatible Libretro-Atari800 core instead
+- Rockchip RK3326 image with mainline u-boot (EE clones, K36, RGB10X, RGB20S, XU10, XU Mini M, G350, R36 Ultra, GKD Pixel2)
 - Rockchip RK3588 devices moved to the mainline linux kernel:
   CoolPi 4B, FriendlyElec CM3588 NAS, IndieDroid Nova, Khadas Edge2, Orange Pi 5
   Orange Pi 5 Plus, Orange Pi 5B, QuartzPro64, ROCK 5A, ROCK 5B, ROCK 5B Plus, ROCK 5C
 - Select Qualcomm handheld devices can now install batocera on the internal drive alongside Android (batocera-install-internal)
 - The Force Engine to capable aarch64 devices
-- Touchscreen to display mapping is learnt instead of hardcoded per device, so external displays no longer take over touch input
+- Touchscreen to display mapping is learnt, so external displays no longer take over touch input
 - TR1X & TR2X have merged into the unified TRX which also now supports Tomb Raider 3
   As a result your roms in the traider1 & traider2 folders should be moved to the new combined traider folder
   Ensure you read the info text file in the traider folder
+- Visual Pinball added to Qualcomm SM8250 devices
 - Vita3k added for capable aarch64 devices
+- Xenia-Edge is now the default Xbox 360 emulator
+- Ymir pads default to the standard Control Pad, with a per-player controller type option
 ### Updated
 - Amiberry to v8.3.0
-- AppleWin to Sep 6, 2026 build
 - Armsx2 to 2.7.2
 - Azahar to 2126.1.2
 - BigPEmu to 1.221
@@ -243,7 +307,7 @@
 - Libretro-Beetle-SuperGrafx to April 20th, 2026 build
 - Libretro-Beetle-VB to August 23rd, 2026 build
 - Libretro-Beetle-WSwan to July 31st, 2026 build
-- Libretro-BennuGD to August 29th, 2026 build
+- Libretro-BennuGD to August 14th, 2026 build
 - Libretro-BK to September 4th, 2026 build
 - Libretro-Blastem to September 20th, 2026 build
 - Libretro-BlueMSX to August 23rd, 2026 build
@@ -251,14 +315,13 @@
 - Libretro-Bsnes to September 4th, 2026 build
 - Libretro-Bsnes-HD to December 5th, 2025 build
 - Libretro-Cap32 to August 30th, 2026 build
-- Libretro-Chailove to July 26th, 2026 build
 - Libretro-Craft to April 20th, 2026 build
 - Libretro-Desmume to August 23rd, 2026 build
 - Libretro-Dinothawr to September 3rd, 2026 build
 - Libretro-Dolphin to September 14th, 2026 build
 - Libretro-EasyRPG to 0.8.1.1
 - Libretro-Ecwolf to August 20th, 2026 build
-- Libretro-EmuSCV to September 16th, 2026 build
+- Libretro-EmuSCV to September 21st, 2026 build
 - Libretro-Ep128emu-Core to core_v1.2.13
 - Libretro-Fake08 to June 13th, 2026 build
 - Libretro-FBAlpha to July 28th, 2026 build
@@ -324,7 +387,6 @@
 - Libretro-Stella to September 16th, 2026 build
 - Libretro-Stella2014 to September 4th, 2026 build
 - Libretro-SuperBrosWar to September 1st, 2026 build
-- Libretro-SuperFlappyBirds to June 12th, 2026 build
 - Libretro-Swanstation to August 11th, 2026 build
 - Libretro-Tgbdual to August 23rd, 2026 build
 - Libretro-Theodore to August 17th, 2026 build
@@ -334,7 +396,6 @@
 - Libretro-Uzem to August 23rd, 2026 build
 - Libretro-VBA-M to September 14th, 2026 build
 - Libretro-Vecx to April 11th, 2026 build
-- Libretro-Vemulator to August 23rd, 2026 build
 - Libretro-Vice to August 1st, 2026 build
 - Libretro-Vircon32 to v1.6
 - Libretro-VirtualJaguar to September 5th, 2026 build
@@ -356,35 +417,35 @@
 - PCSX2x6 to v0.2.22
 - PPSSPP to v1.20.4
 - Python Pyxel to v2.9.9
+- Raze to Nov 19, 2025 build
 - Redream to 1.5.0-1240
 - RPCS3 to Sep 24th, 2026 build
 - Ruffle to 17th of September 2026 nightly build
 - ScummVM to v2026.3.0
 - ShadPS4 to v.0.18.0
 - SimCoupe to v1.2.17
-- Snes9x to Sep 16, 2026 build
 - Solarus to 2.1.4
 - Sonic3-Air to v26.03.28.0
-- Supermodel to v0.3a-20260726-git-b7d8acd
+- Supermodel to Sep 26, 2026 build
 - TheXTech to v1.3.7.3-1
 - TIC-80 to v1.2.0
 - TRX to 1.11.1
 - Tsugaru to v20260522
-- Ur-Quan Masters to Aug 21, 2026 build
 - UZDoom to 5.0.3
-- Visual Pinball to Sep 16, 2026 build
+- Visual Pinball to Oct 14, 2026 build
 - Vita3k to Oct 6, 2026 build
 - VKQuake to 1.36.0
 - vkQuake2 to Aug 5, 2026 build
-- VKQuake3 to 1.36
+- VKQuake3 to Jun 15, 2026 build
 - Winetricks to 20260125
 - X16emu to r49
-- Xash3D-FWGS (Half-Life engine + HLSDK mobile_hacks/dmc/opfor) to Aug 27, 2026 build
+- Xash3D-FWGS (Half-Life engine) to Aug 27, 2026 build; HLSDK mobile_hacks/opfor to Jun 14, 2026 and dmc to Jul 22, 2026 builds
 - Xemu to v0.8.136
 - Xenia Canary to September 16th, 2026 build
 - Xenia Edge to 17th of September build
 - Xenia to v1.0.2844
 - XRoar to v1.12.1
+- Yamagi Quake II to 8.70
 - Ymir to v0.4.0
 ### System
 - Allwinner H616 device kernel updated to 7.2.8
@@ -395,19 +456,20 @@
 - Buildroot to 2026.05.x with supporting package & toolchain updates
 - DXVK to 3.1.1
 - DXVK-NVAPI to v0.9.2
-- FAudio to 26.09
+- FAudio to 26.10
 - FFMPEG to 8.1.2
 - Flatpak to 1.18.2
 - FluidSynth to 2.6.0
 - GStreamer codecs to 1.28.5
 - Khadas VIM4 kernel updated to vendor 5.15.y
 - LabWC to 0.20.2
-- Linux Firmware to 20260810
+- Linux Firmware to 20261019
 - MangoHud to v0.8.4
 - Mesa3D to 26.2.5
 - Nvidia 580 Legacy driver to 580.178.04
 - Nvidia Open Production driver to 615.71.09
-- OpenABL v1.2 replaces Rocknix ABL
+- OpenABL v1.2 replaces ROCKNIX ABL
+- Python to 3.14.5
 - QT to 6.11.1
 - Qualcomm SDM845 device kernel updated to 7.2.8
 - Qualcomm SM4450 device kernel updated to 7.2.8
@@ -425,6 +487,7 @@
 - RyzenAdj to v0.19.0
 - SDL3 to 3.4.14
 - Sound Open Firmware to 2025.12.2
+- Steam Deck DSP to 1.03
 - SwitchRes to 2.2.2
 - Trusted Firmware-A to the latest LTS releases
 - VKD3D Proton to 3.0.1
@@ -435,10 +498,11 @@
 - Wlroots to 0.20.2
 - X86_64 / Zen3 kernel updated to 7.2.8
 - Xone to v0.5.8
+- Xpadneo to Sep 19, 2026 build
 
 # 2026/05/30 - batocera.linux 43.1
 ### Fixed
-- EmultationStation for missing systems / collections disappearing
+- EmulationStation for missing systems / collections disappearing
 - LR-Dolphin options broken
 - Steam & flatpak issue
 - Apple II GS  MAME support has been removed
