@@ -56,6 +56,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_IOQUAKE3)$(BR2_PACKAGE_VKQUAKE3),,ioquake3.py) \
 		$(if $(BR2_PACKAGE_IORTCW),,iortcw.py) \
 		$(if $(BR2_PACKAGE_JAZZ2_NATIVE),,jazz2_native.py) \
+		$(if $(BR2_PACKAGE_KEISHO),,keisho.py) \
 		$(if $(BR2_PACKAGE_LIGHTSPARK),,lightspark.py) \
 		$(if $(BR2_PACKAGE_MELONDS),,melonds.py) \
 		$(if $(BR2_PACKAGE_MOONLIGHT_QT)$(BR2_PACKAGE_MOONLIGHT_EMBEDDED),,moonlight.py) \
@@ -82,7 +83,6 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_SONIC2013)$(BR2_PACKAGE_SONICCD),,sonicretro.py) \
 		$(if $(BR2_PACKAGE_BATOCERA_STEAM),,steam.py) \
 		$(if $(BR2_PACKAGE_STELLA),,stella.py) \
-		$(if $(BR2_PACKAGE_SUPERMODEL),,supermodel.py) \
 		$(if $(BR2_PACKAGE_TARADINO),,taradino.py) \
 		$(if $(BR2_PACKAGE_THEFORCEENGINE),,theforceengine.py) \
 		$(if $(BR2_PACKAGE_THEXTECH),,thextech.py) \

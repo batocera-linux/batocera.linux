@@ -72,11 +72,11 @@ GROUPS = {
         "amiberry", "applewin", "azahar", "bigpemu", "cemu", "clk",
         "hypseus-singe", "dolphin-emu", "dosbox", "dosbox-staging", "dosbox-x",
         "duckstation", "easyrpg-player", "liblcf", "eka2l1", "flycast", "fsuae",
-        "gsplus", "hatari", "ikemen", "lexaloffle-pico8", "lexaloffle-voxatron",
-        "lightspark", "mame", "melonds", "model2", "openmsx", "pcsx2",
+        "gsplus", "hatari", "ikemen", "keisho", "lexaloffle-pico8", "lexaloffle-voxatron",
+        "lightspark", "mame", "melonds", "openmsx", "pcsx2",
         "ppsspp", "python-pygame2", "python-pyxel", "redream", "rpcs3", "ruffle",
         "scummvm", "shadps4", "simcoupe", "snes9x", "solarus-engine",
-        "sugarbox", "supermodel", "thextech", "tsugaru", "vice",
+        "sugarbox", "thextech", "tsugaru", "vice",
         "vita3k", "vpinball", "x16emu", "xemu", "xemu", "xenia", "xenia-canary"
     ],
     "PORTS": [

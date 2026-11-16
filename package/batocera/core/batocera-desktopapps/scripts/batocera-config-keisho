@@ -1,0 +1,29 @@
+#!/bin/bash
+
+if [ -n "$WAYLAND_DISPLAY" ]; then
+    export SDL_VIDEODRIVER=wayland
+    export SDL_VIDEO_WAYLAND_WMCLASS="batocera-config-keisho"
+else
+    export DISPLAY=$(getLocalXDisplay)
+fi
+
+# move any sm2-emu and supermodel saves over first, as a game launch does
+batocera-keisho-migrate
+
+mkdir -p /userdata/system/configs/keisho /userdata/saves/model2/keisho
+# the same pre-calibrated saves a game launch starts from, never over one
+for src in /usr/share/keisho/nvram/model2/*; do
+    [ -e "$src" ] || continue
+    dest="/userdata/saves/model2/keisho/$(basename "$src")"
+    [ -e "$dest" ] || cp -a "$src" "$dest"
+done
+
+export SDL_JOYSTICK_HIDAPI=0
+export XDG_CONFIG_HOME=/userdata/system/configs
+
+/usr/bin/keisho \
+    --config /userdata/system/configs/keisho \
+    --model1-rom-dir /userdata/roms/model1 \
+    --model2-rom-dir /userdata/roms/model2 \
+    --model3-rom-dir /userdata/roms/model3 \
+    --nvram /userdata/saves/model2/keisho

@@ -2081,97 +2081,85 @@ model3:
 
     Put your model3 roms in this directory.
 
-    Rom files must have a ".zip" extension from the latest MAME ROM set (currently 0.245).
+    Roms are .zip or .7z files from a MAME romset.
+    Keisho checks the CRC of every chip, not the file names, so a merged set holds all the revisions of a game.
+    A clone set needs its parent's archive beside it.
 
-    Files inside the .zip must match the board rom & CRC info expected of the emulator or they will not work.
-    Each .zip file must contain only one compressed rom and be named correctly for compatibility.
-    Specific rom details can be found in the emulators games.xml file.
+    The Emulator:
+    -------------
 
-    Note: The Raspberry Pi4 is limited to 720x576 or 720x480 with decorations & hud disabled.
-
-    Game Compatibility:
-    -------------------
-
-    Game compatibility can be found here - https://www.supermodel3.com/About.html
-
-    The Configuration File:
-    -----------------------
-
-    The configuration file, Supermodel.ini, located in the Config folder (/system/configs/supermodel/), which stores input settings as well as most of what can be set on the command line.
-
-    Audio:
-    ------
-
-    Sound and music volume can be adjusted during run-time using the F9-F12 keys.
-    Volume settings can be specified in the configuration file as well, globally for all games or tailored on a game-by-game basis.
+    Keisho emulates Sega Model 1, 2 and 3 - https://github.com/Keisho-Emu/Keisho
+    Its settings menu opens with the ES menu hotkey (F10), and its options are also in the ES game options.
+    The configuration file is keisho.ini in /system/configs/keisho/.
 
     Save States And Non-Volatile Memory:
     ------------------------------------
 
-    Save states are fully supported. Up to 10 different slots can be selected with keyboard - F6. To save and restore states, press F5 and F7.
-    State files are saved in the Saves folder (/saves/supermodel/), which must exist in order for save operations to succeed.
-    Non-volatile memory (NVRAM) consists of battery-backed backup RAM (typically used for high score data) and an EEPROM (machine settings).
-    It is saved to the NVRAM folder (/system/configs/supermodel/NVRAM/) each time Supermodel exits and is re-loaded at start-up.
-    Save states will also save and overwrite NVRAM data.
-    If you alter any machine settings, loading an earlier state will return them to their former configuration.
-    Be sure to save these files for future use.
+    Save states use the ES save and load hotkeys (F6 and F7) and are kept in /saves/model3/keisho/states/.
+    The NVRAM (high scores and machine settings) is saved to /saves/model3/keisho/ each time a game exits.
+    Supermodel's NVRAM files are moved there on the first launch.
+    Supermodel's save states can't be loaded and are left in /saves/supermodel/ for you to delete accordingly.
 
-    Emulation Exit
-    --------------
+    Audio:
+    ------
 
-    Configuration is set as Select & Start controller buttons.
+    Games built for four speakers can play on a 4-channel output with the Surround option.
+  comment_fr: |
+    ## SEGA MODEL 3 INFORMATIONS IMPORTANTES ##
 
-    Troubleshooting:
-    ----------------
+    Placez vos roms model3 dans ce répertoire.
 
-    See the Supermodel FAQ here - https://www.supermodel3.com/FAQ.html
+    Les roms sont des fichiers .zip ou .7z issus d'un romset MAME.
+    Keisho vérifie le CRC de chaque puce, pas les noms des fichiers, donc un set merged contient toutes les révisions d'un jeu.
+    Un set clone a besoin de l'archive de son parent à côté de lui.
+
+    L'émulateur :
+    -------------
+
+    Keisho émule les Sega Model 1, 2 et 3 - https://github.com/Keisho-Emu/Keisho
+    Son menu de réglages s'ouvre avec le raccourci menu d'ES (F10), et ses options sont aussi dans les options de jeu d'ES.
+    Le fichier de configuration est keisho.ini dans /system/configs/keisho/.
+
+    Sauvegardes instantanées et mémoire non volatile :
+    --------------------------------------------------
+
+    Les sauvegardes instantanées utilisent les raccourcis de sauvegarde et de chargement d'ES (F6 et F7) et sont gardées dans /saves/model3/keisho/states/.
+    La NVRAM (meilleurs scores et réglages de la machine) est enregistrée dans /saves/model3/keisho/ à chaque fois qu'un jeu se ferme.
+    Les fichiers NVRAM de Supermodel y sont déplacés au premier lancement.
+    Les sauvegardes instantanées de Supermodel ne peuvent pas être chargées et restent dans /saves/supermodel/, à supprimer selon vos besoins.
+
+    Audio :
+    -------
+
+    Les jeux conçus pour quatre haut-parleurs peuvent jouer sur une sortie 4 canaux avec l'option Surround.
   comment_br: |
     ## SEGA MODEL 3 INFORMAÇÕES IMPORTANTES ##
 
     Coloque suas roms model3 neste diretório.
 
-    Os arquivos de rom devem ter a extensão ".zip" da romset do mame versão 0.220.
+    As roms são arquivos .zip ou .7z de uma romset do MAME.
+    O Keisho verifica o CRC de cada chip, não os nomes dos arquivos, então uma romset merged contém todas as revisões de um jogo.
+    Uma romset clone precisa do arquivo do jogo pai ao lado.
 
-    Isso permite que o emulador Supermodel use roms compactados.
-    Os arquivos dentro do .zip devem corresponder às informações de rom e CRC da placa esperadas do emulador ou não funcionarão.
-    Cada arquivo .zip deve conter apenas uma rom compactada e ser nomeado corretamente ser compatível.
+    O Emulador:
+    -----------
 
-    Compatibilidade do jogo:
-    -------------------
+    O Keisho emula o Sega Model 1, 2 e 3 - https://github.com/Keisho-Emu/Keisho
+    O menu de configurações abre com a tecla de atalho de menu do ES (F10), e as opções também estão nas opções de jogo do ES.
+    O arquivo de configuração é o keisho.ini em /system/configs/keisho/.
 
-    A compatibilidade do jogo pode ser encontrada aqui - https://www.supermodel3.com/About.html
+    Estados salvos e memória não volátil:
+    -------------------------------------
 
-    Arquivo de configuração:
-    -----------------------
-
-    O arquivo de configuração, Supermodel.ini, está localizado na pasta Config (/system/configs/supermodel/), ele armazena as configurações de entrada, bem como a maior parte do que pode ser definido via linha de comando.
+    Os estados salvos usam as teclas de atalho de salvar e carregar do ES (F6 e F7) e ficam em /saves/model3/keisho/states/.
+    A NVRAM (recordes e configurações da máquina) é salva em /saves/model3/keisho/ cada vez que um jogo é fechado.
+    Os arquivos NVRAM do Supermodel são movidos para lá na primeira execução.
+    Os estados salvos do Supermodel não podem ser carregados e ficam em /saves/supermodel/ para você apagar se quiser.
 
     Áudio:
     ------
 
-    O volume do som e da música pode ser ajustado durante o tempo de execução usando as teclas F9 e F12.
-    As configurações de volume também podem ser especificadas no arquivo de configuração, globalmente para todos os jogos ou personalizadas para cada jogo.
-
-    Salvar estados e memória não volátil:
-    ------------------------------------
-
-    Os estados de salvamento são totalmente suportados. Até 10 espaços diferentes podem ser selecionados com o teclado via F6. Para salvar e restaurar estados, pressione F5 e F7.
-    Os arquivos de estado são salvos na pasta de Saves (/saves/supermodel/), que deve existir para que as operações de salvamento sejam bem-sucedidas.
-    A memória não volátil (NVRAM) consiste em uma RAM de backup com bateria (normalmente usada para dados de alta pontuação) e uma EEPROM (configurações da máquina).
-    Ele é salvo na pasta NVRAM (/system/configs/supermodel/NVRAM/) cada vez que o Supermodel é fechado e é recarregado na inicialização.
-    Os estados de salvamento também salvarão e substituirão os dados NVRAM.
-    Se você alterar qualquer configuração da máquina, e carregar um estado anterior, isto fará com que ela retorne à configuração anterior.
-    Certifique-se de salvar esses arquivos para uso futuro.
-
-    Saída de emulação
-    --------------
-
-    A configuração é definida como os botões Select & Start do controlador.
-
-    Solução de problemas:
-    ----------------
-
-    Veja as Perguntas e dúvidas mais frequentes sobre supermodelos aqui - https://www.supermodel3.com/FAQ.html
+    Jogos feitos para quatro alto-falantes podem tocar em uma saída de 4 canais com a opção Surround.
 
 mugen:
   name:       MUGEN

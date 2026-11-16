@@ -101,11 +101,11 @@ ifeq ($(BR2_PACKAGE_FLYCAST),y)
   BATOCERA_DESKTOPAPPS_ICONS   += flycast.png
 endif
 
-# sm2-emu
-ifeq ($(BR2_PACKAGE_SM2_EMU),y)
-  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-sm2-emu
-  BATOCERA_DESKTOPAPPS_APPS    += sm2-emu-config.desktop
-  BATOCERA_DESKTOPAPPS_ICONS   += sm2-emu.png
+# keisho
+ifeq ($(BR2_PACKAGE_KEISHO),y)
+  BATOCERA_DESKTOPAPPS_SCRIPTS += batocera-config-keisho
+  BATOCERA_DESKTOPAPPS_APPS    += keisho-config.desktop
+  BATOCERA_DESKTOPAPPS_ICONS   += keisho.png
 endif
 
 # scummvm
