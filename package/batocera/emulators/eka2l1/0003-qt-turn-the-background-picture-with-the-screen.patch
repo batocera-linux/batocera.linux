@@ -1,0 +1,106 @@
+From 888146e315a855fb4a658e8995cfc799919a8343 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Sun, 1 Nov 2026 23:43:41 +0100
+Subject: [PATCH 3/8] qt: turn the background picture with the screen
+
+A picture of a phone held sideways, drawn around a landscape game, stays sideways when the game turns the
+screen to portrait: the screen then stands upright in the middle of a lying phone. With the new option
+background-image-follow-rotation, a picture wider than tall is drawn turned clockwise while the screen is
+taller than wide, so the phone stands up around it.
+---
+ src/emu/config/include/config/config.h    |  1 +
+ src/emu/config/include/config/options.inl |  1 +
+ src/emu/qt/src/mainwindow.cpp             | 29 ++++++++++++++++-------
+ 3 files changed, 22 insertions(+), 9 deletions(-)
+
+diff --git a/src/emu/config/include/config/config.h b/src/emu/config/include/config/config.h
+index 72c1adfe4..d56a905d7 100644
+--- a/src/emu/config/include/config/config.h
++++ b/src/emu/config/include/config/config.h
+@@ -187,6 +187,7 @@ namespace eka2l1::config {
+         bool extensive_logging{ false };
+         int background_image_opacity{ 255 };
+         bool background_image_keep_aspect{ false };
++        bool background_image_follow_rotation{ false };
+         int screen_scale_ratio{ 100 };
+ 
+         std::string current_mmc_id;
+diff --git a/src/emu/config/include/config/options.inl b/src/emu/config/include/config/options.inl
+index c88316f46..7a6bc94f0 100644
+--- a/src/emu/config/include/config/options.inl
++++ b/src/emu/config/include/config/options.inl
+@@ -76,6 +76,7 @@ OPTION(hosts, hosts, host_map{})
+ OPTION(background-image, background_image, "")
+ OPTION(background-image-opacity, background_image_opacity, 255)
+ OPTION(background-image-keep-aspect, background_image_keep_aspect, false)
++OPTION(background-image-follow-rotation, background_image_follow_rotation, false)
+ OPTION(screen-scale-ratio, screen_scale_ratio, 100)
+ OPTION(enable-hw-gles1, enable_hw_gles1, true)
+ OPTION(log-filter, log_filter, DEFAULT_LOG_FILTERING)
+diff --git a/src/emu/qt/src/mainwindow.cpp b/src/emu/qt/src/mainwindow.cpp
+index a987a1c18..a9251de65 100644
+--- a/src/emu/qt/src/mainwindow.cpp
++++ b/src/emu/qt/src/mainwindow.cpp
+@@ -199,10 +199,24 @@ static void draw_emulator_screen(void *userdata, eka2l1::epoc::screen *scr, cons
+     eka2l1::rect area;
+     area.size = swapchain_size;
+ 
++    auto &crr_mode = scr->current_mode();
++
++    eka2l1::vec2 size = crr_mode.size;
++    if ((scr->ui_rotation % 180) != 0) {
++        std::swap(size.x, size.y);
++    }
++
+     eka2l1::drivers::handle background_image = state_ptr->ui_main->get_background_image();
+     builder.clear({ color_clear.z / 255.0f, color_clear.y / 255.0f, color_clear.x / 255.0f, color_clear.w / 255.0f, 0.0f, 0.0f }, eka2l1::drivers::draw_buffer_bit_color_buffer);
+     if (background_image != 0) {
+-        const eka2l1::vec2 image_size = state_ptr->ui_main->get_background_image_size();
++        eka2l1::vec2 image_size = state_ptr->ui_main->get_background_image_size();
++
++        // A picture of a phone held sideways stands up, turned clockwise, while the screen is taller than wide
++        const bool turn_image = state.conf.background_image_follow_rotation && (image_size.x > image_size.y) && (size.y > size.x);
++        if (turn_image) {
++            std::swap(image_size.x, image_size.y);
++        }
++
+         if (state.conf.background_image_keep_aspect && (image_size.x > 0) && (image_size.y > 0)) {
+             const float image_scale = std::min(static_cast<float>(swapchain_size.x) / image_size.x, static_cast<float>(swapchain_size.y) / image_size.y);
+             area.size = eka2l1::vec2(static_cast<int>(image_size.x * image_scale), static_cast<int>(image_size.y * image_scale));
+@@ -210,28 +224,25 @@ static void draw_emulator_screen(void *userdata, eka2l1::epoc::screen *scr, cons
+         }
+ 
+         eka2l1::rect draw_image_rect = area;
++        if (turn_image) {
++            eka2l1::drivers::advance_draw_pos_around_origin(draw_image_rect, 90);
++            std::swap(draw_image_rect.size.x, draw_image_rect.size.y);
++        }
+ 
+         builder.set_feature(eka2l1::drivers::graphics_feature::blend, true);
+         builder.blend_formula(eka2l1::drivers::blend_equation::add, eka2l1::drivers::blend_equation::add,
+             eka2l1::drivers::blend_factor::frag_out_alpha, eka2l1::drivers::blend_factor::one_minus_frag_out_alpha,
+             eka2l1::drivers::blend_factor::one, eka2l1::drivers::blend_factor::one_minus_frag_out_alpha);
+         builder.set_brush_color_detail(eka2l1::vec4(255, 255, 255, eka2l1::common::clamp<int>(0, 255, state_ptr->conf.background_image_opacity)));
+-        builder.draw_bitmap(background_image, 0, draw_image_rect, eka2l1::rect(), eka2l1::vec2(0, 0), 0.0f, eka2l1::drivers::bitmap_draw_flag_use_brush);
++        builder.draw_bitmap(background_image, 0, draw_image_rect, eka2l1::rect(), eka2l1::vec2(0, 0), turn_image ? 90.0f : 0.0f, eka2l1::drivers::bitmap_draw_flag_use_brush);
+         builder.set_feature(eka2l1::drivers::graphics_feature::blend, false);
+     }
+ 
+-    auto &crr_mode = scr->current_mode();
+-
+     // A host camera is bolted to the monitor, not to the emulated device. The
+     // draw below turns the picture clockwise by ui_rotation, so a frame turned
+     // counter-clockwise by the same amount comes out upright on the monitor.
+     eka2l1::drivers::camera::set_frame_rotation(scr->ui_rotation);
+ 
+-    eka2l1::vec2 size = crr_mode.size;
+-    if ((scr->ui_rotation % 180) != 0) {
+-        std::swap(size.x, size.y);
+-    }
+-
+     float mult_x = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (static_cast<float>(area.size.x) / size.x);
+     float mult_y = scr->requested_ui_scale_factor > 0.0f ? scr->requested_ui_scale_factor : (state.stretch_to_fill_display ? (static_cast<float>(area.size.y) / size.y) : mult_x);
+     float width = size.x * mult_x;
+-- 
+2.53.0
+
