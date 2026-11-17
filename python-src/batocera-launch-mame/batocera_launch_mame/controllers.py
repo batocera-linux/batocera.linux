@@ -142,6 +142,42 @@ class MAMEControllers(MAMEBase):
                         f'P{nplayer}_{axis}', sequence=f'MOUSECODE_{nplayer}_YAXIS'
                     )
 
+            if self.config.use_trackballs and nplayer <= len(self.trackballs):
+                for target_axis in ['TRACKBALL']:
+                    trackball = self.trackballs[nplayer - 1]
+                    mouseid = trackball.mouseid + 1 if trackball.mouseid is not None else 0
+                    axis = 'YAXIS' if self.trackballs[nplayer - 1].axis[0] == 'REL_Y' else 'XAXIS'
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{target_axis}_X', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+                    axis = 'YAXIS' if self.trackballs[nplayer - 1].axis[1] == 'REL_Y' else 'XAXIS'
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{target_axis}_Y', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+
+            if self.config.use_spinners and nplayer <= len(self.spinners):
+                for target_axis in ['DIAL', 'PADDLE']:
+                    spinner = self.spinners[nplayer - 1]
+                    mouseid = spinner.mouseid + 1 if spinner.mouseid is not None else 0
+                    axis = 'YAXIS' if self.spinners[nplayer - 1].axis == 'REL_Y' else 'XAXIS'
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{target_axis}', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+
+            # if not enough spinner, configure trackballs as spinners
+            if (
+                self.config.use_spinners
+                and nplayer > len(self.spinners)
+                and nplayer <= len(self.spinners) + len(self.trackballs)
+            ):
+                for target_axis in ['DIAL', 'PADDLE']:
+                    trackball = self.trackballs[nplayer - 1 - len(self.spinners)]
+                    mouseid = trackball.mouseid + 1 if trackball.mouseid is not None else 0
+                    axis = 'YAXIS' if self.trackballs[nplayer - 1 - len(self.spinners)].axis[0] == 'REL_Y' else 'XAXIS'
+                    default_control_config.add_sequence_port(
+                        f'P{nplayer}_{target_axis}', sequence=f'MOUSECODE_{mouseid}_{axis}'
+                    )
+
             if self.config.use_guns and nplayer <= len(self.guns):
                 default_control_config.add_common_player_ports(nplayer)
             else:

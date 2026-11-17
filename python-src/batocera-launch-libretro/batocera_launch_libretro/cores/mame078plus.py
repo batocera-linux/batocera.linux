@@ -74,7 +74,7 @@ class MAME078Plus(Core):
         # NEOGEO Bios
         core_options.set_from_config('mame2003-plus_neogeo_bios', default='unibios33')
 
-        # gun
+        # gun => lightgun, trackball/spinners => mouse
         core_options.set('mame2003-plus_xy_device', 'lightgun' if self.config.use_guns and self.guns else 'mouse')
 
         # gun cross
@@ -82,6 +82,18 @@ class MAME078Plus(Core):
             'mame2003-plus_crosshair_enabled',
             default='enabled' if self.emulator.guns_need_crosses else 'disabled',
         )
+
+        # spinners
+        # for the player2, share xy, if player1 and player2 are on the same device, and that player1 is rel_x and player2 is rel_y
+        if (
+            self.config.use_spinners
+            and len(self.spinners) >= 2
+            and self.spinners[0].mouseid == self.spinners[1].mouseid
+            and self.spinners[0].axis == 'REL_X'
+            and self.spinners[1].axis == 'REL_Y'
+        ):
+            core_options.set('mame2003-plus_dial_swap_xy', 'disabled')
+            core_options.set('mame2003-plus_dialsharexy', 'enabled')  # no _ between dial and share
 
     def set_gun_config_for_player(self, custom_config: LibretroConfig, player_number: int, gun: Gun, /) -> None:
         custom_config.set(f'input_player{player_number}_gun_offscreen_shot_mbtn', '')

@@ -37,6 +37,7 @@ constraint-dependencies = [
     "pygobject==3.56.3",
     "lazy-loader==0.5",
     "dbus-fast==4.0.4",
+    "dicttoxml2==2.1.0",
 ]
 config-settings-package = { pygobject-stubs = { config = "Gtk3,Gdk3" } }
 
@@ -126,7 +127,7 @@ explicit-preview-rules = true
 select = [
     "TC", "PYI", "I", "UP", "F", "FA", "E", "W", "B", "C4", "SIM", "PTH", "G", "PERF", "PIE", "RET", "PT", "RUF"
 ]
-ignore = ["SIM105", "SIM108", "E501", "RUF051"]
+ignore = ["SIM105", "SIM108", "E501", "RUF051", "docstring-in-stub"]
 
 [tool.ruff.lint.isort]
 extra-standard-library = ["typing_extensions", "_typeshed"]
