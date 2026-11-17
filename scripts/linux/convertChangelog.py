@@ -185,7 +185,7 @@ def read_changelog_line(infos: _InfoDict, line: str, /) -> None:
         return
 
     # comments
-    m = re.search(r'^  ([a-zA-Z0-9/"\*~\.].*)$', line)
+    m = re.search(r'^  ([a-zA-Z0-9/"\*~\.`].*)$', line)
     if m is not None:
         do_comment(m.group(1))
         return
