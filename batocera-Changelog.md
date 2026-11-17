@@ -1,4 +1,4 @@
-# 2026/11/xx - batocera.linux 44 - Malachite
+# 2026/11/17 - batocera.linux 44 - Malachite
 ### Special Notes
 - From v44 you can use `batocera-upgrade --update-bootloader` to flash required bootloader and firmware manually
   SPI u-boot, Qualcomm ABL, Raspberry Pi EEPROM, H700 u-boot
