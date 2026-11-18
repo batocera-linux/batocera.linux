@@ -12,7 +12,7 @@ UBOOT_PS5000_LICENSE = GPLv2
 UBOOT_PS5000_BOOT_SRC = idbloader.img uboot.img:uboot-ps5000.img trust.img
 UBOOT_PS5000_BINARIES_SUBDIR =
 
-UBOOT_PS5000_DEPENDENCIES = batocera-rkbin
+UBOOT_PS5000_DEPENDENCIES = host-batocera-rkbin
 
 define UBOOT_PS5000_BUILD_CMDS
     # FIXME: there should be a better way to build
@@ -24,9 +24,9 @@ define UBOOT_PS5000_BUILD_CMDS
 
     # Generate idbloader.img
     $(@D)/tools/mkimage -n rk3128 -T rksd -d \
-        $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3128_ddr_300MHz_v2.12.bin \
+        $(BATOCERA_RKBIN_DIR)/bin/rk31/rk3128_ddr_300MHz_v2.12.bin \
         $(@D)/idbloader.img
-    cat $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3128x_miniloader_v2.57.bin >> \
+    cat $(BATOCERA_RKBIN_DIR)/bin/rk31/rk3128x_miniloader_v2.57.bin >> \
         $(@D)/idbloader.img
 
     # Generate uboot.img
@@ -35,7 +35,7 @@ define UBOOT_PS5000_BUILD_CMDS
 
     # Generate trust.img
     $(@D)/tools/loaderimage --pack --trustos \
-        $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk31/rk3126_tee_ta_v2.01.bin \
+        $(BATOCERA_RKBIN_DIR)/bin/rk31/rk3126_tee_ta_v2.01.bin \
         $(@D)/trust.img --size 1024 4
 endef
 

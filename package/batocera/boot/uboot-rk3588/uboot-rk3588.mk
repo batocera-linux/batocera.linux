@@ -17,7 +17,7 @@ UBOOT_RK3588_EXTRA_DOWNLOADS = \
     https://github.com/ARM-software/arm-trusted-firmware/archive/refs/tags/$(UBOOT_RK3588_TFA_VERSION).tar.gz
 
 # Modern U-Boot dependencies
-UBOOT_RK3588_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison host-flex \
+UBOOT_RK3588_DEPENDENCIES = host-batocera-rkbin host-pkgconf host-openssl host-bison host-flex \
     host-python-setuptools host-dtc host-swig host-gnutls host-python-pyelftools
 
 define UBOOT_RK3588_EXTRACT_TFA
@@ -28,9 +28,9 @@ endef
 UBOOT_RK3588_POST_EXTRACT_HOOKS += UBOOT_RK3588_EXTRACT_TFA
 
 # RK3588 Specific Blob Paths
-UBOOT_RK3588_BL31 = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3588_bl31_v1.54.elf
+UBOOT_RK3588_BL31 = $(BATOCERA_RKBIN_DIR)/bin/rk35/rk3588_bl31_v1.54.elf
 UBOOT_RK3588_TFA_BL31 = $(@D)/tf-a/build/rk3588/release/bl31/bl31.elf
-UBOOT_RK3588_TPL  = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.21.bin
+UBOOT_RK3588_TPL  = $(BATOCERA_RKBIN_DIR)/bin/rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.21.bin
 
 UBOOT_RK3588_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \

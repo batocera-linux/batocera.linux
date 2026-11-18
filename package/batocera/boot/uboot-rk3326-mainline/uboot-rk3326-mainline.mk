@@ -11,12 +11,11 @@ UBOOT_RK3326_MAINLINE_LICENSE = GPL-2.0+
 UBOOT_RK3326_MAINLINE_LICENSE_FILES = Licenses/README
 UBOOT_RK3326_MAINLINE_INSTALL_IMAGES = YES
 
-UBOOT_RK3326_MAINLINE_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison host-flex
+UBOOT_RK3326_MAINLINE_DEPENDENCIES = host-batocera-rkbin host-pkgconf host-openssl host-bison host-flex
 
-
-UBOOT_RK3326_MAINLINE_DDR_BIN = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk33/rk3326_ddr_333MHz_v2.11.bin
-UBOOT_RK3326_MAINLINE_MINILOADER = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk33/rk3326_miniloader_v1.40.bin
-UBOOT_RK3326_MAINLINE_BL31 = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk33/rk3326_bl31_v1.34.elf
+UBOOT_RK3326_MAINLINE_DDR_BIN = $(BATOCERA_RKBIN_DIR)/bin/rk33/rk3326_ddr_333MHz_v2.11.bin
+UBOOT_RK3326_MAINLINE_MINILOADER = $(BATOCERA_RKBIN_DIR)/bin/rk33/rk3326_miniloader_v1.40.bin
+UBOOT_RK3326_MAINLINE_BL31 = $(BATOCERA_RKBIN_DIR)/bin/rk33/rk3326_bl31_v1.34.elf
 
 UBOOT_RK3326_MAINLINE_MAKE_OPTS = \
     ARCH=arm \
@@ -35,9 +34,9 @@ define UBOOT_RK3326_MAINLINE_UART5_CONFIG
 endef
 define UBOOT_RK3326_MAINLINE_UART5_DDR_BIN
     cp $(UBOOT_RK3326_MAINLINE_DDR_BIN) $(@D)/ddr.bin
-    $(HOST_DIR)/bin/python3 $(BATOCERA_RKBIN_IMAGES_DIR)/tools/ddrbin_tool.py rk3326 -g $(@D)/ddr.txt $(@D)/ddr.bin
+    $(HOST_DIR)/bin/python3 $(BATOCERA_RKBIN_DIR)/tools/ddrbin_tool.py rk3326 -g $(@D)/ddr.txt $(@D)/ddr.bin
     sed -i 's|uart id=.*$$|uart id=5|' $(@D)/ddr.txt
-    $(HOST_DIR)/bin/python3 $(BATOCERA_RKBIN_IMAGES_DIR)/tools/ddrbin_tool.py rk3326 $(@D)/ddr.txt $(@D)/ddr.bin
+    $(HOST_DIR)/bin/python3 $(BATOCERA_RKBIN_DIR)/tools/ddrbin_tool.py rk3326 $(@D)/ddr.txt $(@D)/ddr.bin
 endef
 UBOOT_RK3326_MAINLINE_IDB_DDR_BIN = $(@D)/ddr.bin
 else
@@ -57,11 +56,11 @@ define UBOOT_RK3326_MAINLINE_BUILD_CMDS
     # the RK3326 bootrom loads the legacy idbloader/uboot.img/trust.img layout
     $(@D)/tools/mkimage -n px30 -T rksd -d $(UBOOT_RK3326_MAINLINE_IDB_DDR_BIN) $(@D)/idbloader.img
     cat $(UBOOT_RK3326_MAINLINE_MINILOADER) >> $(@D)/idbloader.img
-    $(BATOCERA_RKBIN_IMAGES_DIR)/tools/loaderimage --pack --uboot $(@D)/u-boot-dtb.bin \
+    $(BATOCERA_RKBIN_DIR)/tools/loaderimage --pack --uboot $(@D)/u-boot-dtb.bin \
         $(@D)/uboot.img 0x00200000
     printf '[BL30_OPTION]\nSEC=0\n[BL31_OPTION]\nSEC=1\nPATH=%s\nADDR=0x00010000\n[BL32_OPTION]\nSEC=0\n[BL33_OPTION]\nSEC=0\n[OUTPUT]\nPATH=%s\n' \
         $(UBOOT_RK3326_MAINLINE_BL31) $(@D)/trust.img > $(@D)/trust.ini
-    $(BATOCERA_RKBIN_IMAGES_DIR)/tools/trust_merger $(@D)/trust.ini
+    $(BATOCERA_RKBIN_DIR)/tools/trust_merger $(@D)/trust.ini
 endef
 
 define UBOOT_RK3326_MAINLINE_INSTALL_IMAGES_CMDS
