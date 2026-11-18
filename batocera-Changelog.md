@@ -15,6 +15,7 @@
 - Keisho (formerly SM2-Emu) to v0.9.63
 ### System
 - Mesa3D to 26.3.0
+- Qualcomm QCS6490 device kernel updated to 7.3.5
 - X86_64 / Zen3 kernel updated to 7.3.5
 
 # 2026/11/17 - batocera.linux 44 - Malachite
