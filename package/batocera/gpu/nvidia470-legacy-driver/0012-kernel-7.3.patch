@@ -1,0 +1,97 @@
+From 98f927ae8b5720a680fe26f1c845330ad175783f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Joan=20Bruguera=20Mic=C3=B3?= <joanbrugueram@gmail.com>
+Date: Sun, 12 Jul 2026 15:45:19 +0000
+Subject: [PATCH] Tentative fix for NVIDIA 470.256.02 driver for Linux 7.3-rc1
+
+---
+ kernel/nvidia/nv-acpi.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/kernel/nvidia/nv-acpi.c b/kernel/nvidia/nv-acpi.c
+index 0d11845..eb82b1d 100644
+--- a/kernel/nvidia/nv-acpi.c
++++ b/kernel/nvidia/nv-acpi.c
+@@ -22,6 +22,8 @@ static NV_STATUS   nv_acpi_extract_buffer  (const union acpi_object *, void *, N
+ static NV_STATUS   nv_acpi_extract_package (const union acpi_object *, void *, NvU32, NvU32 *);
+ static NV_STATUS   nv_acpi_extract_object  (const union acpi_object *, void *, NvU32, NvU32 *);
+ 
++// Rel. commit "ACPI: bus: Eliminate struct acpi_driver" (Rafael J. Wysocki, 1 Jul 2026)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 3, 0)
+ static int         nv_acpi_add             (struct acpi_device *);
+ 
+ #if !defined(NV_ACPI_DEVICE_OPS_REMOVE_ARGUMENT_COUNT)
+@@ -33,12 +35,15 @@ static int         nv_acpi_remove(struct acpi_device *device);
+ #endif
+ 
+ static void        nv_acpi_event           (acpi_handle, u32, void *);
++#endif
+ static void        nv_acpi_powersource_hotplug_event(acpi_handle, u32, void *);
+ static acpi_status nv_acpi_find_methods    (acpi_handle, u32, void *, void **);
+ static NV_STATUS   nv_acpi_nvif_method     (NvU32, NvU32, void *, NvU16, NvU32 *, void *, NvU16 *);
+ 
+ static NV_STATUS   nv_acpi_wmmx_method     (NvU32, NvU8 *, NvU16 *);
+ 
++// Rel. commit "ACPI: bus: Eliminate struct acpi_driver" (Rafael J. Wysocki, 1 Jul 2026)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 3, 0)
+ static const struct acpi_device_id nv_video_device_ids[] = {
+     {
+         .id          = ACPI_VIDEO_HID,
+@@ -51,6 +56,7 @@ static const struct acpi_device_id nv_video_device_ids[] = {
+ };
+ 
+ static struct acpi_driver *nv_acpi_driver;
++#endif
+ static acpi_handle nvif_handle = NULL;
+ static acpi_handle nvif_parent_gpu_handle  = NULL;
+ static acpi_handle wmmx_handle = NULL;
+@@ -76,6 +82,8 @@ static NvBool battery_present = NV_FALSE;
+ #define ACPI_VIDEO_CLASS    "video"
+ #endif
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 3, 0)
++// Rel. commit "ACPI: bus: Eliminate struct acpi_driver" (Rafael J. Wysocki, 1 Jul 2026)
+ static const struct acpi_driver nv_acpi_driver_template = {
+     .name = "NVIDIA ACPI Video Driver",
+     .class = ACPI_VIDEO_CLASS,
+@@ -85,6 +93,7 @@ static const struct acpi_driver nv_acpi_driver_template = {
+         .remove = nv_acpi_remove,
+     },
+ };
++#endif
+ 
+ static int nv_acpi_get_device_handle(nv_state_t *nv, acpi_handle *dev_handle)
+ {
+@@ -146,6 +155,7 @@ void nv_acpi_unregister_notifier(nv_linux_state_t *nvl)
+     unregister_acpi_notifier(&nvl->acpi_nb);
+ }
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(7, 3, 0)
+ int nv_acpi_init(void)
+ {
+     /*
+@@ -497,6 +507,22 @@ static void nv_acpi_event(acpi_handle handle, u32 event_type, void *data)
+     // once we are subscribed to ACPI events, we don't have to re-subscribe unless
+     // unsubscribe.
+ }
++#else
++// Rel. commit "ACPI: bus: Eliminate struct acpi_driver" (Rafael J. Wysocki, 1 Jul 2026)
++// The old API (struct acpi_driver, acpi_bus_register_driver, etc.) is removed
++// and the replacement (struct platform_driver, platform_driver_register) is
++// GPL-only, so remove this; It only impacts laptop hotkey handling rather than
++// any critical function of the driver.
++int nv_acpi_init(void)
++{
++    return 0;
++}
++
++int nv_acpi_uninit(void)
++{
++    return 0;
++}
++#endif
+ 
+ NV_STATUS NV_API_CALL nv_acpi_get_powersource(NvU32 *ac_plugged)
+ {
+-- 
+2.55.0
+
