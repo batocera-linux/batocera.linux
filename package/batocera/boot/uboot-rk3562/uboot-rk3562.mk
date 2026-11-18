@@ -11,7 +11,7 @@ UBOOT_RK3562_LICENSE = GPL-2.0+
 UBOOT_RK3562_LICENSE_FILES = Licenses/README
 UBOOT_RK3562_INSTALL_IMAGES = YES
 
-UBOOT_RK3562_DEPENDENCIES = rkbin host-pkgconf host-openssl host-bison \
+UBOOT_RK3562_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison \
     host-flex host-python-setuptools host-dtc host-swig host-gnutls \
     host-python-pyelftools
 
@@ -23,7 +23,7 @@ UBOOT_RK3562_MAKE_OPTS = \
 
 # board:defconfig:bl31:tpl
 UBOOT_RK3562_BUILD_TARGETS = \
-    kickpi-k3b:kickpi-k3b-rk3562_defconfig:$(BINARIES_DIR)/rkbin/bin/rk35/rk3562_bl31_v1.23.elf:$(BINARIES_DIR)/rkbin/bin/rk35/rk3562_ddr_1056MHz_v1.09.bin
+    kickpi-k3b:kickpi-k3b-rk3562_defconfig:$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3562_bl31_v1.23.elf:$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3562_ddr_1056MHz_v1.09.bin
 
 define UBOOT_RK3562_BUILD_BOOTLOADER
     $(eval target_parts = $(subst :, ,$(target)))

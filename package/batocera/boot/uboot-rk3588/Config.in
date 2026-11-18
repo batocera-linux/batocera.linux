@@ -1,4 +1,5 @@
 config BR2_PACKAGE_UBOOT_RK3588
     bool "uboot-rk3588"
+    select BR2_PACKAGE_BATOCERA_RKBIN
     help
       u-boot for multiple RK3588 boards
