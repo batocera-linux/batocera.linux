@@ -25,6 +25,9 @@ from pathlib import Path
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
+from batocera_launch.gamescope import game_resolution
+
+_PROTON_WINE = Path('/usr/wine/wine-proton/bin/wine')
 
 
 @cached_dataclass
@@ -42,7 +45,24 @@ class Wine(Emulator):
 
     @cached_property
     def in_game_ratio(self) -> float:
+        if self.uses_gamescope:
+            game = game_resolution(self.config, self.resolution)
+            return game.width / game.height
+
         return 16 / 9
+
+    @property
+    def core(self) -> str:
+        # the runner batocera-wine picks, which defaults to wine-proton inside gamescope
+        if runner := self.config.get_str('wine-runner'):
+            return runner
+        if not self.config.core_forced and self.uses_gamescope and _PROTON_WINE.exists():
+            return 'wine-proton'
+        return super().core
+
+    @property
+    def gamescope_exposes_wayland(self) -> bool:
+        return self.config.get_str('wayland_driver') == 'native'
 
     async def configure(self) -> Command:
         if self.system == 'windows_installers':

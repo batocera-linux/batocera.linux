@@ -62,6 +62,11 @@ def _merge(target: dict[str, Any], source: dict[str, Any], /) -> None:
 
 @cached_dataclass
 class MelonDS(Emulator):
+    @property
+    def supports_gamescope(self) -> bool:
+        # its windows go to both screens, gamescope shows a single window on one output
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {

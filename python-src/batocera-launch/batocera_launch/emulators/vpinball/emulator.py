@@ -62,6 +62,11 @@ async def _dmd_service_started() -> bool:
 class VPinball(Emulator):
     needs_sdl_game_controller_config = True
 
+    @property
+    def supports_gamescope(self) -> bool:
+        # the backglass and DMD windows go to other screens, gamescope shows a single window on one output
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {

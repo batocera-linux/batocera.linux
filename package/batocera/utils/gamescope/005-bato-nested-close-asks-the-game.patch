@@ -1,0 +1,75 @@
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -1801,7 +1801,7 @@
+ 	}
+     void CWaylandPlane::LibDecor_Frame_Close( libdecor_frame *pFrame )
+     {
+-        raise( SIGTERM );
++        request_close_focus_window();
+     }
+     void CWaylandPlane::LibDecor_Frame_Commit( libdecor_frame *pFrame )
+     {
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -947,6 +947,20 @@
+ 	s_KeysToClose.push_back( eKey );
+ }
+ 
++// a host close asks the game to close like a window manager would, a second one quits
++static std::atomic<bool> s_bCloseFocusPending = false;
++static std::atomic<bool> s_bCloseFocusSent = false;
++void request_close_focus_window( void )
++{
++	if ( s_bCloseFocusSent )
++	{
++		raise( SIGTERM );
++		return;
++	}
++	s_bCloseFocusPending = true;
++	nudge_steamcompmgr();
++}
++
+ struct ignore {
+ 	struct ignore	*next;
+ 	unsigned long	sequence;
+@@ -10323,6 +10337,30 @@
+ 		}
+ #endif
+ 
++		if ( s_bCloseFocusPending.exchange( false ) )
++		{
++			global_focus_t *pCloseFocus = GetCurrentFocus();
++			steamcompmgr_win_t *pCloseWindow = pCloseFocus ? pCloseFocus->focusWindow : nullptr;
++			if ( pCloseWindow && pCloseWindow->type == steamcompmgr_win_type_t::XWAYLAND )
++			{
++				XEvent event = {0};
++				event.xclient.type = ClientMessage;
++				event.xclient.window = pCloseWindow->xwayland().id;
++				event.xclient.message_type = pCloseWindow->xwayland().ctx->atoms.wm_protocols;
++				event.xclient.format = 32;
++				event.xclient.data.l[0] = pCloseWindow->xwayland().ctx->atoms.wm_delete_window;
++				event.xclient.data.l[1] = CurrentTime;
++
++				XSendEvent( pCloseWindow->xwayland().ctx->dpy, pCloseWindow->xwayland().id, False, NoEventMask, &event );
++				XFlush( pCloseWindow->xwayland().ctx->dpy );
++				s_bCloseFocusSent = true;
++			}
++			else
++			{
++				raise( SIGTERM );
++			}
++		}
++
+ 		std::vector<gamescope::VirtualConnectorKey_t> keysToClose;
+ 		{
+ 			std::unique_lock lock{ s_KeysToCloseMutex };
+--- a/src/steamcompmgr.hpp
++++ b/src/steamcompmgr.hpp
+@@ -141,6 +141,7 @@
+ extern uint64_t g_lastWinSeq;
+ 
+ void nudge_steamcompmgr( void );
++void request_close_focus_window( void );
+ void MakeFocusDirty();
+ void force_repaint( void );
+ 

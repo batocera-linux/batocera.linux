@@ -144,6 +144,11 @@ def _azahar_lang_from_config(language: str | None) -> int:
 class Azahar(Emulator):
     needs_sdl_game_controller_config = True
 
+    @property
+    def supports_gamescope(self) -> bool:
+        # its windows go to both screens, gamescope shows a single window on one output
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {

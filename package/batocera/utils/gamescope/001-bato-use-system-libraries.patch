@@ -1,0 +1,16 @@
+diff --git a/meson.build b/meson.build
+--- a/meson.build
++++ b/meson.build
+@@ -51,10 +51,8 @@ dep_x11 = dependency('x11')
+ dep_wayland = dependency('wayland-client')
+ vulkan_dep = dependency('vulkan')
+ 
+-glm_proj = subproject('glm')
+-glm_dep = glm_proj.get_variable('glm_dep')
+-stb_proj = subproject('stb')
+-stb_dep = stb_proj.get_variable('stb_dep')
++glm_dep = declare_dependency()
++stb_dep = dependency('stb')
+ 
+ if get_option('enable_openvr_support')
+   openvr_dep = dependency('openvr', version: '>= 2.7', required : false)

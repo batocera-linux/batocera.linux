@@ -569,7 +569,7 @@ class Duckstation(Emulator):
 
         env: dict[str, str | Path] = {
             'XDG_CONFIG_HOME': CONFIGS,
-            'QT_QPA_PLATFORM': 'xcb' if self._legacy or not environ.get('WAYLAND_DISPLAY') else 'wayland',
+            'QT_QPA_PLATFORM': 'xcb' if self._legacy or not self.wayland_session else 'wayland',
             'SDL_JOYSTICK_HIDAPI': '0',
         }
 

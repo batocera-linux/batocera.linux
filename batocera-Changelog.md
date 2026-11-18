@@ -5,6 +5,8 @@
 - Orange Pi 5 Max and 5 Ultra move to the RK3588 mainline kernel, with Wi-Fi through the bcmdhd driver
 - Orange Pi 5 Pro, Banana Pi M7 / ArmSoM Sige7, NanoPi M6, Firefly ROC-RK3588S-PC / Station M3 and Mekotronics R58X move to the RK3588 mainline kernel, the RK3588 vendor kernel image is removed
 ### Added
+- Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
+  Windows games run inside gamescope use WINE Proton unless a runner is chosen
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 ### Fixed

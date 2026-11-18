@@ -26,6 +26,7 @@ from pathlib import Path
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
+from batocera_launch.gamescope import game_resolution
 
 # Old MUGEN builds use different key codes and cap out at 640x480; newer ones
 # use SDL scancodes and follow the chosen resolution.
@@ -194,16 +195,17 @@ class Mugen(Emulator):
             raise BatoceraException(f'Configuration file not found: {settings_path}')
 
         version = _mugen_version(settings_path)
+        resolution = game_resolution(self.config, self.resolution) if self.uses_gamescope else self.resolution
         sections_to_update = _PRESETS[version]
         if version == 'new':
             sections_to_update = {
                 **sections_to_update,
                 'Video': {
                     'FullScreen': '1',
-                    'Width': str(self.resolution.width),
-                    'Height': str(self.resolution.height),
+                    'Width': str(resolution.width),
+                    'Height': str(resolution.height),
                 },
-                'Config': {'GameWidth': str(self.resolution.width), 'GameHeight': str(self.resolution.height)},
+                'Config': {'GameWidth': str(resolution.width), 'GameHeight': str(resolution.height)},
             }
 
         lines = settings_path.read_text(encoding='utf-8-sig').splitlines(keepends=True)

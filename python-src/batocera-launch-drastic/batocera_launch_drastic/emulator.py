@@ -180,6 +180,11 @@ def _controls_b_from_inputs(inputs: InputDict, /) -> dict[str, str]:
 class Drastic(Emulator):
     needs_sdl_game_controller_config = True
 
+    @property
+    def supports_gamescope(self) -> bool:
+        # its windows go to both screens, gamescope shows a single window on one output
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {
