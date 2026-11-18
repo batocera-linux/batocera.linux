@@ -1,3 +1,12 @@
+# 2027/xx/xx - batocera.linux 45 - xxxx
+### Special Notes
+- SM2-Emu is now Keisho and replaces Supermodel for Model 3
+  SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
+### Added
+- Keisho Model 3 emulation, with surround sound and cabinet outputs options
+### Updated
+- Keisho (formerly SM2-Emu) to v0.9.63
+
 # 2026/11/17 - batocera.linux 44 - Malachite
 ### Special Notes
 - From v44 you can use `batocera-upgrade --update-bootloader` to flash required bootloader and firmware manually

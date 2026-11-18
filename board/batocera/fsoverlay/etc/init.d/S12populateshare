@@ -149,6 +149,11 @@ test -e /userdata/system/machine-id || dbus-uuidgen --ensure=/userdata/system/ma
 ln -sf /userdata/system/machine-id /var/lib/dbus/machine-id
 ln -sf /userdata/system/machine-id /etc/machine-id
 
+# sm2-emu and supermodel became keisho: carry their settings over before es reads them
+if test "${DOUPDATE}" = 1 && test -x /usr/bin/keisho; then
+    batocera-keisho-migrate --conf
+fi
+
 # save to avoid to redo that all the times
 cp /usr/share/batocera/batocera.version /userdata/system/data.version
 

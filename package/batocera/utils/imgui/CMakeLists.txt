@@ -102,7 +102,7 @@ if(IMGUI_BUILD_VULKAN_BINDING)
     find_package(Vulkan REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Vulkan::Vulkan)
     target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp)
-    # sm2-emu drives the Vulkan backend through dynamic rendering.
+    # keisho drives the Vulkan backend through dynamic rendering.
     target_compile_definitions(${PROJECT_NAME} PUBLIC IMGUI_IMPL_VULKAN_HAS_DYNAMIC_RENDERING)
 endif()
 

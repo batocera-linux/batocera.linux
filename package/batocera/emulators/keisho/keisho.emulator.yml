@@ -18,12 +18,12 @@ shared_features:
   - cpucluster
   - rewind
 custom_features:
-  sm2_rewind_memory:
+  keisho_rewind_memory:
     prompt: REWIND MEMORY
     description: Memory kept for rewinding when Rewind is on. More goes further back. Auto is 128 MB, about 35 seconds.
     preset: sliderauto
     preset_parameters: 32 1024 32 MB
-  sm2_graphics_backend:
+  keisho_graphics_backend:
     group: GRAPHICS
     prompt: GRAPHICS API
     description: Choose the rendering backend. Software is the current best option for Arm systems.
@@ -31,7 +31,7 @@ custom_features:
       OpenGL: opengl
       Vulkan: vulkan
       Software: software
-  sm2_render_scale:
+  keisho_render_scale:
     group: GRAPHICS
     prompt: RENDER SCALE
     description: Internal 3D render scale. OpenGL/Vulkan only, ignored on Software. Reduced automatically if the GPU can't render that size.
@@ -44,7 +44,7 @@ custom_features:
       6x: 6
       7x: 7
       8x (4K): 8
-  sm2_scaling_method:
+  keisho_scaling_method:
     group: GRAPHICS
     prompt: SCALING METHOD
     description: How the finished frame is magnified to the window.
@@ -53,23 +53,23 @@ custom_features:
       Bilinear: bilinear
       Sharp Bilinear (Default): sharp
       Integer: integer
-  sm2_aspect_mode:
+  keisho_aspect_mode:
     group: GRAPHICS
     prompt: ASPECT RATIO
-    description: Which rectangle the frame is fit into. 16:9 widens the 3D into the sides, experimental. OpenGL/Vulkan only.
+    description: Which rectangle the frame is fit into. 16:9 widens the 3D into the sides, experimental. OpenGL/Vulkan only on Model 1 and 2.
     choices:
       4:3 (Default): '4:3'
       16:9 Widescreen: '16:9'
       Square Pixel: square
       Stretch: stretch
-  sm2_texture_filter:
+  keisho_texture_filter:
     group: GRAPHICS
     prompt: 3D TEXTURE FILTER
     description: Anisotropic sharpens obliquely-viewed surfaces. OpenGL/Vulkan only, falls back to Faithful where unsupported.
     choices:
       Faithful (Default): faithful
       Anisotropic: anisotropic
-  sm2_anisotropy:
+  keisho_anisotropy:
     group: GRAPHICS
     prompt: ANISOTROPIC LEVEL
     description: Only applies when 3D texture filter is set to Anisotropic. Clamped to the GPU's max.
@@ -78,7 +78,7 @@ custom_features:
       4x (Default): 4
       8x: 8
       16x: 16
-  sm2_upscale_2d:
+  keisho_upscale_2d:
     group: GRAPHICS
     prompt: 2D UPSCALE FILTER
     description: Edge-directed pixel-art filters over the 2D tilemap layers. OpenGL/Vulkan only, falls back to Faithful where unsupported.
@@ -86,97 +86,104 @@ custom_features:
       Faithful (Default): faithful
       xBR: xbr
       ScaleFX: scalefx
-  sm2_translucency:
+  keisho_translucency:
     group: GRAPHICS
     prompt: TRANSLUCENCY
-    description: The hardware draws see-through surfaces as a checkerboard. Blended draws the 50% see-through it's trying to achieve. OpenGL/Vulkan only.
+    description: Model 1 and 2 only. The hardware draws see-through surfaces as a checkerboard. Blended draws the 50% see-through it's trying to achieve. OpenGL/Vulkan only.
     choices:
       Stipple (Default): stipple
       Blended: blended
-  sm2_draw_distance:
+  keisho_draw_distance:
     group: GRAPHICS
     prompt: EXTENDED DRAW DISTANCE
     description: Draw the scenery to the edge of the course instead of the arcade's short range. Daytona USA only.
     choices:
       Off: 0
       On (Default): 1
-  sm2_brightness:
+  keisho_brightness:
     group: GRAPHICS
     prompt: BRIGHTNESS
-    description: Model 2 only. Where the picture's black sits, lower is darker. Auto is 50%, matched to an arcade capture.
+    description: Where the picture's black sits on Model 1 and 2, or its overall level on Model 3. Lower is darker. Auto is 50%.
     preset: sliderauto
     preset_parameters: 0 100 5 %
-  sm2_vsync:
+  keisho_vsync:
     group: GRAPHICS
     prompt: VSYNC
     description: Sync to the display refresh to prevent tearing. Disable for VRR displays.
     choices:
       'On': 1
       Off (Default): 0
-  sm2_music_volume:
+  keisho_music_volume:
     group: AUDIO
     prompt: MUSIC VOLUME
-    description: Star Wars Arcade, Sega Touring Car Championship and Top Skater only, the games with a separate music board. Sound effects stay as they are. Auto is 100%.
+    description: Games with a separate music board only, Star Wars Arcade, Sega Touring Car Championship, Top Skater and the Model 3 games with a DSB. Sound effects stay as they are. Auto is 100%.
     preset: sliderauto
     preset_parameters: 0 100 5 %
-  sm2_lightgun_recoil:
+  keisho_surround:
+    group: AUDIO
+    prompt: SURROUND
+    description: Model 3 games built for four speakers play their rear pair on the rear channels. Needs a 4-channel audio output.
+    choices:
+      Stereo (Default): 0
+      Surround: 1
+  keisho_lightgun_recoil:
     group: LIGHT GUNS
     prompt: GUN RECOIL
     description: Fire the gun's recoil motor on each shot, for guns that have one.
     choices:
       Off: 0
       On (Default): 1
-  sm2_lightgun_recoil_strength:
+  keisho_lightgun_recoil_strength:
     group: LIGHT GUNS
     prompt: GUN RECOIL STRENGTH
     choices:
       Light: 30
       Medium (Default): 60
       Strong: 90
-  sm2_lightgun_hide_flash:
+  keisho_lightgun_hide_flash:
     group: LIGHT GUNS
     prompt: HIDE GUN FLASH
     description: Hide the white screen flash on each shot in House of the Dead and Virtua Cop.
     choices:
       Off (Default): 0
       'On': 1
-  sm2_lightgun_pad_centred:
+  keisho_lightgun_pad_centred:
     group: LIGHT GUNS
     prompt: CENTRED STICK AIM
     description: Playing the gun games on a gamepad, the crosshair goes where the stick points and comes back to the centre at rest, instead of moving like a mouse.
     choices:
       Off (Default): 0
       'On': 1
-  sm2_lightgun_crosshair:
+  keisho_lightgun_crosshair:
     group: LIGHT GUNS
     prompt: SHOW LIGHT GUN CROSSHAIRS
     description: Draw the emulator's crosshairs. By default they show only for guns that need them.
     choices:
       Off: 0
       'On': 1
-  sm2_wheel_ffb:
+  keisho_wheel_ffb:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK
     description: The game's own drive board forces, its springs, friction and impacts, on wheels that support it.
     choices:
       Off: 0
       On (Default): 1
-  sm2_wheel_ffb_strength:
+  keisho_wheel_ffb_strength:
     group: WHEELS
     prompt: WHEEL FORCE FEEDBACK STRENGTH
     description: How strong the game's forces are. At 100% the game's strongest force is the wheel's full force. Above 100% every force is stronger, the strongest capped at the wheel's full force. Auto is 50%.
     preset: sliderauto
     preset_parameters: 0 200 10 %
-  sm2_wheel_panel_spring:
+  keisho_wheel_panel_spring:
     group: WHEELS
     prompt: WHEEL PANEL SPRING
     description: Sega Rally and Daytona USA only. The light centring spring of their wheel panel, in percent of Sega Rally's strongest force. Auto is 20%.
     preset: sliderauto
     preset_parameters: 0 100 5 %
-  sm2_wheel_drive_dip:
+  keisho_wheel_drive_dip:
     group: WHEELS
     prompt: DRIVE BOARD DIP STRENGTH
-    description: The operator's force setting on the drive board's DIP switches. 0 is how the boards leave the factory, 7 is the most force a cabinet can have.
+    description: Model 1 and 2 only. The operator's force setting on the drive board's DIP switches. 0 is how the boards leave the factory, 7 is the most force a cabinet can have.
     choices:
       0 (Default): 0
       '1': 1
@@ -186,35 +193,35 @@ custom_features:
       '5': 5
       '6': 6
       '7': 7
-  sm2_wheel_ffb_invert:
+  keisho_wheel_ffb_invert:
     group: WHEELS
     prompt: INVERT WHEEL FORCE FEEDBACK
     description: Reverse the force for a wheel that pulls away from the centre instead of back to it.
     choices:
       Off (Default): 0
       'On': 1
-  sm2_wheel_rumble:
+  keisho_wheel_rumble:
     group: WHEELS
     prompt: WHEEL RUMBLE
     description: Vibrates on the game's impacts, for wheels without force feedback.
     choices:
       Off: 0
       On (Default): 1
-  sm2_wheel_rumble_strength:
+  keisho_wheel_rumble_strength:
     group: WHEELS
     prompt: WHEEL RUMBLE STRENGTH
     choices:
       Light: 20
       Medium (Default): 40
       Strong: 60
-  sm2_wheel_rumble_engine:
+  keisho_wheel_rumble_engine:
     group: WHEELS
     prompt: WHEEL ENGINE VIBRATION
     description: An added vibration that grows with the throttle. It is not from the game. Turn it off to feel only the game's force feedback.
     choices:
       Off: 0
       On (Default): 1
-  sm2_shift_neutral:
+  keisho_shift_neutral:
     group: WHEELS
     prompt: NEUTRAL BETWEEN GEARS
     description: A paddle or RB/LB shift passes through neutral on the way to the next gear, as a real gearbox does.
@@ -222,94 +229,110 @@ custom_features:
       Off (Default): 0
       Short: 100
       Long: 250
-  sm2_wheel_indy_deadband:
+  keisho_wheel_indy_deadband:
     group: WHEELS
     prompt: INDY BOARD FORCE DEADBAND
     description: Indy 500, Touring Car, Over Rev and Super GT 24h. Drive board motor power, out of 63, below which the wheel feels no force. Raise it if small forces buzz.
     preset: sliderauto
     preset_parameters: 0 63 1
-  sm2_wheel_indy_full_power:
+  keisho_wheel_indy_full_power:
     group: WHEELS
     prompt: INDY BOARD FORCE FULL POWER
     description: Indy 500, Touring Car, Over Rev and Super GT 24h. Drive board motor power, out of 63, that gives the wheel's full force. Lower it for stronger forces sooner.
     preset: sliderauto
     preset_parameters: 1 63 1
-  sm2_wheel_deadzone:
+  keisho_wheel_deadzone:
     group: WHEELS
     prompt: WHEEL CENTRE DEADZONE
     description: Wheel travel about centre that reads as centre, in percent. Most wheels want none.
     preset: sliderauto
     preset_parameters: 0 20 1 %
-  sm2_pad_rumble:
+  keisho_pad_rumble:
     group: GAMEPAD
     prompt: GAMEPAD RUMBLE
     description: Vibrates on the game's impacts in driving games.
     choices:
       Off: 0
       On (Default): 1
-  sm2_pad_rumble_strength:
+  keisho_pad_rumble_strength:
     group: GAMEPAD
     prompt: GAMEPAD RUMBLE STRENGTH
     description: Strength of the rumble, in percent of the pad's motors. Auto is 50%.
     preset: sliderauto
     preset_parameters: 0 100 5 %
-  sm2_pad_rumble_cornering:
+  keisho_pad_rumble_cornering:
     group: GAMEPAD
     prompt: GAMEPAD STEERING VIBRATION
     description: An added vibration that grows as you steer. It is not from the game. Turn it off to feel only the game's force feedback.
     choices:
       Off: 0
       On (Default): 1
-  sm2_pad_stick_deadzone:
+  keisho_pad_stick_deadzone:
     group: GAMEPAD
     prompt: STICK DEADZONE
     description: Stick travel about centre that reads as centre, in percent. Raise it for a stick that no longer settles at rest.
     preset: sliderauto
     preset_parameters: 0 40 1 %
-  sm2_pad_stick_sensitivity:
+  keisho_pad_stick_sensitivity:
     group: GAMEPAD
     prompt: STICK SENSITIVITY
     description: Response of a stick's travel. Full deflection is always full lock, under 100% the middle of the travel does less, over it does more.
     preset: sliderauto
     preset_parameters: 25 300 5 %
-  sm2_crt_enabled:
+  keisho_crt_enabled:
     group: CRT FILTER
     prompt: CRT FILTER
     description: Cosmetic scanline/mask/glow/curvature filter over the finished frame.
     choices:
       Off (Default): 0
       'On': 1
-  sm2_crt_scanline_strength:
+  keisho_crt_scanline_strength:
     group: CRT FILTER
     prompt: SCANLINE STRENGTH
     choices:
       Light: 20
       Medium (Default): 40
       Strong: 60
-  sm2_crt_mask_strength:
+  keisho_crt_mask_strength:
     group: CRT FILTER
     prompt: MASK STRENGTH
     choices:
       Light: 15
       Medium (Default): 30
       Strong: 45
-  sm2_crt_glow_strength:
+  keisho_crt_glow_strength:
     group: CRT FILTER
     prompt: GLOW STRENGTH
     choices:
       Light: 10
       Medium (Default): 20
       Strong: 30
-  sm2_crt_curvature:
+  keisho_crt_curvature:
     group: CRT FILTER
     prompt: CURVATURE
     choices:
       Off (Default): 0
       Light: 15
       Strong: 30
+  keisho_outputs_network:
+    group: CABINET OUTPUTS
+    prompt: CABINET OUTPUTS
+    description: Send the cabinet's lamps and drive board over the network to tools like MAME Hooker.
+    choices:
+      Off (Default): 0
+      'On': 1
+  keisho_outputs_network_port:
+    group: CABINET OUTPUTS
+    prompt: OUTPUTS TCP PORT
+    description: The TCP port the cabinet outputs are sent on.
+    choices:
+      8000 (Default): 8000
+      '8001': 8001
+      '15124': 15124
 file_extensions:
   - zip
   - 7z
 systems:
   - model1
   - model2
+  - model3
