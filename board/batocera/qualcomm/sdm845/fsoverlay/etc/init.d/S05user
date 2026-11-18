@@ -45,7 +45,7 @@ EOF
 exec /usr/bin/rmtfs -v -r -P -s >> "$RMTFS_LOG" 2>&1
 EOF
     chmod +x /tmp/rmtfs-run.sh
-    start-stop-daemon -S -b -m -p /var/run/rmtfs.pid --exec /tmp/rmtfs-run.sh
+    pidof rmtfs >/dev/null || start-stop-daemon -S -b -m -p /var/run/rmtfs.pid --exec /tmp/rmtfs-run.sh
 
     #sleep 1
     log_msg "Starting tqftpserv..."
@@ -76,12 +76,10 @@ stop_services() {
     kmsg "S05user stop invoked..."
     start-stop-daemon -K -q -p /var/run/tqftpserv.pid
     start-stop-daemon -K -q -p /var/run/pd-mapper.pid
-    start-stop-daemon -K -q -p /var/run/rmtfs.pid
+    # leave rmtfs running, stopping it crashes the modem and resets the SoC
+    killall tqftpserv pd-mapper 2>/dev/null
 
-    killall tqftpserv pd-mapper rmtfs 2>/dev/null
-
-    rm -f /var/run/tqftpserv.pid /var/run/pd-mapper.pid \
-          /var/run/rmtfs.pid /var/run/qcomm-bg.pid
+    rm -f /var/run/tqftpserv.pid /var/run/pd-mapper.pid /var/run/qcomm-bg.pid
 
     rm -f /var/run/qcomm-ready
     log_msg "Services stopped."
