@@ -3,6 +3,7 @@
 - SM2-Emu is now Keisho and replaces Supermodel for Model 3
   SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
 ### Added
+- Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 ### Fixed
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
