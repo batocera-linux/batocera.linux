@@ -3,8 +3,8 @@
 # cemu
 #
 ################################################################################
-# Version: Commits on Sep 10, 2026
-CEMU_VERSION = 3310f3b8b184d64a62b89fd59088c799432badf5
+# Version: Commits on Nov 13, 2026
+CEMU_VERSION = d4f720597e022737782e6215c0ec3ab1d9ae6636
 CEMU_SITE = https://github.com/cemu-project/Cemu
 CEMU_LICENSE = GPLv2
 CEMU_SITE_METHOD=git
@@ -69,9 +69,11 @@ else
 endif
 
 define CEMU_INSTALL_TARGET_CMDS
-	mkdir -p $(TARGET_DIR)/usr/bin/cemu/
+	mkdir -p $(TARGET_DIR)/usr/bin/cemu/ $(TARGET_DIR)/usr/share/Cemu/
 	mv -f $(@D)/bin/Cemu_release $(@D)/bin/cemu
-	cp -pr $(@D)/bin/{cemu,gameProfiles,resources} $(TARGET_DIR)/usr/bin/cemu/
+	cp -p $(@D)/bin/cemu $(TARGET_DIR)/usr/bin/cemu/
+	# game profiles, shared fonts and translations are read from <prefix>/share/Cemu
+	cp -pr $(@D)/bin/{gameProfiles,resources} $(TARGET_DIR)/usr/share/Cemu/
 	$(INSTALL) -m 0755 -D \
 	    $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/emulators/cemu/get-audio-device \
 	    $(TARGET_DIR)/usr/bin/cemu/
