@@ -1,0 +1,28 @@
+diff --git a/libgambatte/libretro/libretro.cpp b/libgambatte/libretro/libretro.cpp
+--- a/libgambatte/libretro/libretro.cpp
++++ b/libgambatte/libretro/libretro.cpp
+@@ -1907,7 +1907,11 @@ bool retro_serialize(void *data, size_t size)
+
+ bool retro_unserialize(const void *data, size_t size)
+ {
+-   if (size != retro_serialize_size())
++   /* The state is a list of labelled fields: a build that saves more or
++    * fewer of them (another version, HAVE_NETWORK) writes another size.
++    * gb.loadState skips the fields it does not know, keeps its own for
++    * the ones missing, and bounds-checks against the buffer. */
++   if (data == NULL || size == 0)
+       return false;
+
+    /* gb.loadState now bounds-checks against the buffer size
+diff --git a/libgambatte/src/gambatte.cpp b/libgambatte/src/gambatte.cpp
+--- a/libgambatte/src/gambatte.cpp
++++ b/libgambatte/src/gambatte.cpp
+@@ -145,6 +145,8 @@ void GB::setDmgPaletteColor(unsigned palNum, unsigned colorNum, unsigned rgb32)
+ bool GB::loadState(const void *data, size_t size) {
+    SaveState state;
+    p_->cpu.setStatePtrs(state);
++   /* Fields a state from another build does not have keep the running values */
++   p_->cpu.saveState(state);
+
+    if (StateSaver::loadState(state, data, size)) {
+       p_->cpu.loadState(state);
