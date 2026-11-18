@@ -154,6 +154,7 @@ for BIN in \
 "${G_TARGETDIR}/usr/lib/libFAudio.so"* \
 "${G_TARGETDIR}/usr/lib/libXrender.so"* \
 "${G_TARGETDIR}/usr/lib/libXcursor.so"* \
+"${G_TARGETDIR}/usr/lib/libxkbregistry.so"* \
 "${G_TARGETDIR}/usr/lib/libSDL2"*"so"* \
 "${G_TARGETDIR}/usr/lib/libSDL3"*"so"* \
 "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"* \
@@ -181,6 +182,7 @@ cp -prv "${G_TARGETDIR}/usr/lib/libXcomposite.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libgnutls"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libFAudio.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libXrender.so"*  "${TMPOUT}/lib32/" || exit 1
+cp -prv "${G_TARGETDIR}/usr/lib/libxkbregistry.so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libSDL2"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/libSDL3"*"so"*  "${TMPOUT}/lib32/" || exit 1
 cp -prv "${G_TARGETDIR}/usr/lib/lib"*"krb5"*"so"*  "${TMPOUT}/lib32/" || exit 1
