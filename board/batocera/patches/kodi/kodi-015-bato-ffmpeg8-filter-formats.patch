@@ -1,0 +1,168 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] VideoPlayer: convert formats the renderer lacks with ffmpeg 8
+
+ffmpeg 8 rejects buffersink options once the filter is initialised, so
+FilterOpen failed and 10-bit, 4:2:2 and 4:4:4 software frames reached the
+GLES renderer unconverted and showed black. Set the formats before init.
+
+Leave plain software decoding to the FFmpeg codec, and convert the frames
+a hwaccel falls back to software for in the DRM PRIME codec.
+
+---
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecDRMPRIME.cpp
+@@ -39,6 +39,7 @@
+ #include <libavutil/imgutils.h>
+ #include <libavutil/opt.h>
+ #include <libavutil/pixdesc.h>
++#include <libswscale/swscale.h>
+ }
+ 
+ namespace
+@@ -262,31 +263,69 @@
+   return nullptr;
+ }
+ 
++// Software decoding is left to CDVDVideoCodecFFmpeg, which converts formats the renderer lacks.
+ static const AVCodec* FindDecoder(CDVDStreamInfo& hints)
+ {
+   const AVCodec* codec = nullptr;
+   void* i = 0;
+ 
+-  if (!(hints.codecOptions & CODEC_FORCE_SOFTWARE))
+-    while ((codec = av_codec_iterate(&i)))
+-    {
+-      if (!av_codec_is_decoder(codec))
+-        continue;
+-      if (codec->id != hints.codec)
+-        continue;
+-
+-      const AVCodecHWConfig* config = FindHWConfig(codec);
+-      if (config)
+-        return codec;
+-    }
++  if (hints.codecOptions & CODEC_FORCE_SOFTWARE)
++    return nullptr;
++
++  while ((codec = av_codec_iterate(&i)))
++  {
++    if (!av_codec_is_decoder(codec))
++      continue;
++    if (codec->id != hints.codec)
++      continue;
+ 
+-  codec = avcodec_find_decoder(hints.codec);
+-  if (codec && (codec->capabilities & AV_CODEC_CAP_DR1) == AV_CODEC_CAP_DR1)
+-    return codec;
++    const AVCodecHWConfig* config = FindHWConfig(codec);
++    if (config)
++      return codec;
++  }
+ 
+   return nullptr;
+ }
+ 
++// Copies a software frame into a YUV420P DMA buffer the renderer can import.
++static CVideoBuffer* ConvertFrame(AVFrame* src, CProcessInfo& processInfo,
++                                  const VideoPicture& picture)
++{
++  thread_local std::unique_ptr<SwsContext, decltype(&sws_freeContext)> sws(nullptr,
++                                                                          sws_freeContext);
++  const int width = src->width;
++  const int height = src->height;
++
++  sws.reset(sws_getCachedContext(sws.release(), width, height,
++                                 static_cast<AVPixelFormat>(src->format), width, height,
++                                 AV_PIX_FMT_YUV420P, SWS_BILINEAR, nullptr, nullptr, nullptr));
++  if (!sws)
++    return nullptr;
++
++  const int size = av_image_get_buffer_size(AV_PIX_FMT_YUV420P, width, height, 1);
++  auto buffer = dynamic_cast<CVideoBufferDMA*>(
++      processInfo.GetVideoBufferManager().Get(AV_PIX_FMT_YUV420P, size, nullptr));
++  if (!buffer)
++    return nullptr;
++
++  AVFrame* frame = av_frame_alloc();
++  if (!frame)
++  {
++    buffer->Release();
++    return nullptr;
++  }
++  frame->format = AV_PIX_FMT_YUV420P;
++  buffer->Export(frame, width, height);
++  buffer->SyncStart();
++  sws_scale(sws.get(), src->data, src->linesize, 0, height, frame->data, frame->linesize);
++  buffer->SyncEnd();
++  av_frame_free(&frame);
++
++  buffer->SetPictureParams(picture);
++  buffer->SetDimensions(width, height);
++  return buffer;
++}
++
+ enum AVPixelFormat CDVDVideoCodecDRMPRIME::GetFormat(struct AVCodecContext* avctx,
+                                                      const enum AVPixelFormat* fmt)
+ {
+@@ -300,6 +339,18 @@
+     }
+   }
+ 
++  // The hwaccel cannot take this stream and ffmpeg fell back to software; GetPicture converts it.
++  for (int n = 0; fmt[n] != AV_PIX_FMT_NONE; n++)
++  {
++    const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get(fmt[n]);
++    if (desc && !(desc->flags & AV_PIX_FMT_FLAG_HWACCEL))
++    {
++      CDVDVideoCodecDRMPRIME* ctx = static_cast<CDVDVideoCodecDRMPRIME*>(avctx->opaque);
++      ctx->UpdateProcessInfo(avctx, fmt[n]);
++      return fmt[n];
++    }
++  }
++
+   std::vector<std::string> formats;
+   for (int n = 0; fmt[n] != AV_PIX_FMT_NONE; n++)
+   {
+@@ -744,6 +795,11 @@
+     pVideoPicture->videoBuffer = buffer;
+     av_frame_unref(m_pFrame);
+   }
++  else
++  {
++    pVideoPicture->videoBuffer = ConvertFrame(m_pFrame, m_processInfo, *pVideoPicture);
++    av_frame_unref(m_pFrame);
++  }
+ 
+   if (!pVideoPicture->videoBuffer)
+   {
+--- a/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp
++++ b/xbmc/cores/VideoPlayer/DVDCodecs/Video/DVDVideoCodecFFmpeg.cpp
+@@ -1201,16 +1201,24 @@
+     return result;
+   }
+ 
+-  if ((result = avfilter_graph_create_filter(&m_pFilterOut, outFilter, "out", NULL, NULL, m_pFilterGraph)) < 0)
++  // ffmpeg 8 only accepts the format list before the sink is initialised
++  m_pFilterOut = avfilter_graph_alloc_filter(m_pFilterGraph, outFilter, "out");
++  if (!m_pFilterOut)
+   {
+-    CLog::Log(LOGERROR, "CDVDVideoCodecFFmpeg::FilterOpen - avfilter_graph_create_filter: out");
+-    return result;
++    CLog::Log(LOGERROR, "CDVDVideoCodecFFmpeg::FilterOpen - avfilter_graph_alloc_filter: out");
++    return AVERROR(ENOMEM);
+   }
+-  if ((result = av_opt_set_int_list(m_pFilterOut, "pix_fmts", &m_formats[0],  AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN)) < 0)
++  if ((result = av_opt_set_array(m_pFilterOut, "pixel_formats", AV_OPT_SEARCH_CHILDREN, 0,
++                                 m_formats.size() - 1, AV_OPT_TYPE_PIXEL_FMT, m_formats.data())) < 0)
+   {
+     CLog::Log(LOGERROR, "CDVDVideoCodecFFmpeg::FilterOpen - failed settings pix formats");
+     return result;
+   }
++  if ((result = avfilter_init_dict(m_pFilterOut, nullptr)) < 0)
++  {
++    CLog::Log(LOGERROR, "CDVDVideoCodecFFmpeg::FilterOpen - avfilter_init_dict: out");
++    return result;
++  }
+ 
+   if (!filters.empty())
+   {
