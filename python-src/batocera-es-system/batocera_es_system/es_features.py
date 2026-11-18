@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from batocera_es_system.registry import (
     ChoiceFeature,
@@ -43,6 +43,18 @@ from batocera_es_system.shared import (
 if TYPE_CHECKING:
     from collections.abc import Iterator, Mapping
     from pathlib import Path
+
+
+# Offered on every emulator and core with achievements: ES writes it per system and per game,
+# batocera-launch reads it as it reads the global setting
+_HARDCORE_FEATURE: Final = 'retroachievements.hardcore'
+
+
+def _shared_features_of(obj: CoreInfo | EmulatorInfo, /) -> list[str] | None:
+    shared = obj.shared_features
+    if obj.features and 'cheevos' in obj.features and _HARDCORE_FEATURE not in (shared or []):
+        return [*(shared or []), _HARDCORE_FEATURE]
+    return shared
 
 
 def _features_to_attribute(obj: HasFeatures, /) -> str:
@@ -108,13 +120,14 @@ def _systems_to_xml(systems: Mapping[str, SystemInfo], /, *, indent: str = '') -
 
 
 def _core_to_xml(core: CoreInfo, /, *, indent: str = '') -> Iterator[str]:
-    if not core.shared_features and not core.custom_features and not core.systems:
+    shared_features = _shared_features_of(core)
+    if not shared_features and not core.custom_features and not core.systems:
         return
 
     yield from wrap_tag(
         'core',
         chain(
-            _shared_features_to_xml(core.shared_features, f'{indent}  '),
+            _shared_features_to_xml(shared_features, f'{indent}  '),
             _custom_features_to_xml(core.custom_features, f'{indent}  '),
             _systems_to_xml(core.systems, indent=f'{indent}  '),
         ),
@@ -131,12 +144,13 @@ def _cores_to_xml(cores: dict[str, CoreInfo], /, *, indent: str = '') -> Iterato
 
 
 def _emulator_to_xml(emulator: EmulatorInfo, /, *, indent: str = '') -> Iterator[str]:
+    shared_features = _shared_features_of(emulator)
     if (
         emulator.features is None
         and not emulator.cores
         and not emulator.systems
         and not emulator.custom_features
-        and not emulator.shared_features
+        and not shared_features
     ):
         return
 
@@ -155,7 +169,7 @@ def _emulator_to_xml(emulator: EmulatorInfo, /, *, indent: str = '') -> Iterator
         chain(
             _cores_to_xml(emulator.cores, indent=f'{indent}  '),
             _systems_to_xml(emulator.systems, indent=f'{indent}  '),
-            _shared_features_to_xml(emulator.shared_features, f'{indent}  '),
+            _shared_features_to_xml(shared_features, f'{indent}  '),
             _custom_features_to_xml(emulator.custom_features, f'{indent}  '),
         ),
         attributes=attributes,
