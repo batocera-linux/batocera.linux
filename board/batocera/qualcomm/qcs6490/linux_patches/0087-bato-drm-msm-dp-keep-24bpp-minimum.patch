@@ -1,0 +1,18 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: drm/msm/dp: keep a 24 bpp minimum
+
+The Dragon Q6A drives the RA620 over two DP lanes. With an 18 bpp floor a
+4K60 mode squeezes into the link at 6 bpc, so reject it and fall back to 4K30.
+---
+diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+--- a/drivers/gpu/drm/msm/dp/dp_panel.c
++++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+@@ -215,7 +215,7 @@
+ 		u32 mode_edid_bpp, u32 mode_pclk_khz)
+ {
+ 	const struct msm_dp_link_info *link_info;
+-	const u32 max_supported_bpp = 30, min_supported_bpp = 18;
++	const u32 max_supported_bpp = 30, min_supported_bpp = 24;
+ 	u32 bpp, data_rate_khz;
+ 
+ 	bpp = min(mode_edid_bpp, max_supported_bpp);
