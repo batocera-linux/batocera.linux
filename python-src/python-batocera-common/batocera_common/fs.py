@@ -42,6 +42,10 @@ _logger = logging.getLogger(__name__)
 type Difference = tuple[None, Path] | tuple[Path, None] | tuple[Path, Path]
 
 
+def _same_link(left: Path, right: Path, /) -> bool:
+    return left.is_symlink() and right.is_symlink() and left.readlink() == right.readlink()
+
+
 def _dircmp_differences(comparison: filecmp.dircmp[str], /) -> Iterator[Difference]:
     left = Path(comparison.left)
     right = Path(comparison.right)
@@ -52,8 +56,9 @@ def _dircmp_differences(comparison: filecmp.dircmp[str], /) -> Iterator[Differen
         (left / name, right / name) for name in comparison.diff_files + comparison.funny_files + comparison.common_funny
     )
 
-    for sub in comparison.subdirs.values():
-        yield from _dircmp_differences(sub)
+    for name, sub in comparison.subdirs.items():
+        if not _same_link(left / name, right / name):
+            yield from _dircmp_differences(sub)
 
 
 @dataclass(slots=True)
