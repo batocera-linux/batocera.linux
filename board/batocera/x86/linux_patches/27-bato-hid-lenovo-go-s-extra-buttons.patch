@@ -5,10 +5,10 @@ the vendor gamepad report: Legion becomes the xinput pad's guide button, the
 others get a Legion Go S Extra Buttons device.
 
 diff --git a/drivers/hid/hid-lenovo-go-s.c b/drivers/hid/hid-lenovo-go-s.c
-index a72f7f7..eb4b996 100644
+index 7102786ce..a019564b7 100644
 --- a/drivers/hid/hid-lenovo-go-s.c
 +++ b/drivers/hid/hid-lenovo-go-s.c
-@@ -14,11 +14,14 @@
+@@ -15,11 +15,14 @@
  #include <linux/dev_printk.h>
  #include <linux/device.h>
  #include <linux/hid.h>
@@ -23,15 +23,15 @@ index a72f7f7..eb4b996 100644
  #include <linux/string.h>
  #include <linux/sysfs.h>
  #include <linux/types.h>
-@@ -30,6 +33,7 @@
+@@ -31,6 +34,7 @@
  #include "hid-ids.h"
  
  #define GO_S_CFG_INTF_IN	0x84
 +#define GO_S_GP_INTF_IN		0x86
  #define GO_S_PACKET_SIZE	64
  
- static struct hid_gos_cfg {
-@@ -389,6 +393,141 @@ static int get_endpoint_address(struct hid_device *hdev)
+ struct gos_cfg_drvdata {
+@@ -400,6 +404,141 @@ static int get_endpoint_address(struct hid_device *hdev)
  	return -ENODEV;
  }
  
@@ -173,7 +173,7 @@ index a72f7f7..eb4b996 100644
  static int hid_gos_raw_event(struct hid_device *hdev, struct hid_report *report,
  			     u8 *data, int size)
  {
-@@ -396,6 +535,8 @@ static int hid_gos_raw_event(struct hid_device *hdev, struct hid_report *report,
+@@ -408,6 +547,8 @@ static int hid_gos_raw_event(struct hid_device *hdev, struct hid_report *report,
  	int ep, ret;
  
  	ep = get_endpoint_address(hdev);
@@ -182,7 +182,7 @@ index a72f7f7..eb4b996 100644
  	if (ep != GO_S_CFG_INTF_IN)
  		return 0;
  
-@@ -1482,6 +1623,14 @@ static int hid_gos_probe(struct hid_device *hdev,
+@@ -1743,6 +1884,14 @@ static int hid_gos_probe(struct hid_device *hdev,
  	}
  
  	ep = get_endpoint_address(hdev);
@@ -197,9 +197,9 @@ index a72f7f7..eb4b996 100644
  	if (ep != GO_S_CFG_INTF_IN) {
  		dev_dbg(&hdev->dev, "Started interface %x as generic HID device.\n", ep);
  		return 0;
-@@ -1542,7 +1691,30 @@ static struct hid_driver hid_lenovo_go_s = {
- 	.raw_event = hid_gos_raw_event,
- 	.reset_resume = hid_gos_reset_resume,
+@@ -1833,7 +1982,30 @@ static struct hid_driver hid_lenovo_go_s = {
+ 	.reset_resume = pm_ptr(hid_gos_reset_resume),
+ 	.suspend = pm_ptr(hid_gos_suspend),
  };
 -module_hid_driver(hid_lenovo_go_s);
 +
