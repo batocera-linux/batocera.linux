@@ -11,10 +11,9 @@ UBOOT_RK3576_LICENSE = GPL-2.0+
 UBOOT_RK3576_LICENSE_FILES = Licenses/README
 UBOOT_RK3576_INSTALL_IMAGES = YES
 
-UBOOT_RK3576_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison host-flex
+UBOOT_RK3576_DEPENDENCIES = host-batocera-rkbin host-pkgconf host-openssl host-bison host-flex
 UBOOT_RK3576_DEPENDENCIES += host-python-setuptools host-dtc host-swig
 UBOOT_RK3576_DEPENDENCIES += host-gnutls host-python-pyelftools
-
 
 # Anbernic RG Vita Pro board DT (RK806 PMIC, for charge-only boot) and defconfig
 define UBOOT_RK3576_COPY_BOARD_FILES
@@ -32,8 +31,8 @@ UBOOT_RK3576_MAKE_OPTS = \
     HOSTCC="$(HOSTCC)" \
     HOSTCFLAGS="$(HOST_CFLAGS)" \
     HOSTLDFLAGS="$(HOST_LDFLAGS)" \
-    BL31=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3576_bl31_v1.24.elf \
-    ROCKCHIP_TPL=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
+    BL31=$(BATOCERA_RKBIN_DIR)/bin/rk35/rk3576_bl31_v1.24.elf \
+    ROCKCHIP_TPL=$(BATOCERA_RKBIN_DIR)/bin/rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.12.bin
 
 define UBOOT_RK3576_CONFIGURE_CMDS
     # Based on generic-rk3576_defconfig, plus the Anbernic RG Vita Pro's own

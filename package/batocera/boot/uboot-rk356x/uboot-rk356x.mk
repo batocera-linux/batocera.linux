@@ -11,12 +11,11 @@ UBOOT_RK356X_LICENSE = GPL-2.0+
 UBOOT_RK356X_LICENSE_FILES = Licenses/README
 UBOOT_RK356X_INSTALL_IMAGES = YES
 
-UBOOT_RK356X_DEPENDENCIES = batocera-rkbin host-pkgconf host-openssl host-bison host-flex \
+UBOOT_RK356X_DEPENDENCIES = host-batocera-rkbin host-pkgconf host-openssl host-bison host-flex \
     host-python-setuptools host-dtc host-swig host-gnutls host-python-pyelftools
 
-
 # RK356x Specific BL31 Path
-UBOOT_RK356X_BL31 = $(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/rk3568_bl31_v1.46.elf
+UBOOT_RK356X_BL31 = $(BATOCERA_RKBIN_DIR)/bin/rk35/rk3568_bl31_v1.46.elf
 
 UBOOT_RK356X_MAKE_OPTS = \
     CROSS_COMPILE="$(TARGET_CROSS)" \
@@ -45,14 +44,14 @@ define UBOOT_RK356X_BUILD_BOOTLOADER
     @echo
     @echo "---- Building Mainline U-Boot for $(board) ----"
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK356X_MAKE_OPTS) \
-        ROCKCHIP_TPL=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/$(tpl) mrproper
+        ROCKCHIP_TPL=$(BATOCERA_RKBIN_DIR)/bin/rk35/$(tpl) mrproper
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK356X_MAKE_OPTS) \
-        ROCKCHIP_TPL=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/$(tpl) $(defconfig)
+        ROCKCHIP_TPL=$(BATOCERA_RKBIN_DIR)/bin/rk35/$(tpl) $(defconfig)
     $(@D)/scripts/config --file $(@D)/.config --disable CONFIG_TOOLS_MKEFICAPSULE
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK356X_MAKE_OPTS) \
-        ROCKCHIP_TPL=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/$(tpl) olddefconfig
+        ROCKCHIP_TPL=$(BATOCERA_RKBIN_DIR)/bin/rk35/$(tpl) olddefconfig
     $(TARGET_MAKE_ENV) $(MAKE) -C $(@D) $(UBOOT_RK356X_MAKE_OPTS) \
-        ROCKCHIP_TPL=$(BATOCERA_RKBIN_IMAGES_DIR)/bin/rk35/$(tpl)
+        ROCKCHIP_TPL=$(BATOCERA_RKBIN_DIR)/bin/rk35/$(tpl)
     mkdir -p $(@D)/staging/$(board)
     cp -v $(@D)/u-boot-rockchip.bin $(@D)/staging/$(board)/
     # Binman generates the SPI binary if CONFIG_ROCKCHIP_SPI_IMAGE is enabled
