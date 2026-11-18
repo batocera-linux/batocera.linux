@@ -1,4 +1,4 @@
-From ce81dbf2aa7b88c46ab12db7d8ef9b8a3ded88e1 Mon Sep 17 00:00:00 2001
+From 179fa24b217711d378c6b176dedee8c60a7ed05d Mon Sep 17 00:00:00 2001
 From: Daniel Martin <dmanlfc@gmail.com>
 Date: Wed, 30 Sep 2026 17:02:18 +1000
 Subject: [PATCH] panfrost: make Vulkan on Bifrost (Mali-G52) pass the CTS
@@ -63,12 +63,9 @@ Bifrost compiler (pan/bi):
 With these, v7 (G31/G51/G52/G76) no longer requires
 PAN_I_WANT_A_BROKEN_VULKAN_DRIVER (v6 and v14 still do).
 
-Batocera backport to Mesa 26.2.3 of the upstream-main change, with the
+Batocera backport to Mesa 26.3.0 of the upstream-main change, with the
 src/panfrost/ci changes dropped. The full-CTS results were obtained on
-Mesa main (Vulkan 1.3 on Bifrost). 26.2.3 hard-codes Vulkan 1.0 below
-v10; v7 now reports 1.2, whose required features it already exposes
-(1.3 needs maintenance4 and subgroup_size_control). Not CTS-validated
-on 26.2.3.
+Mesa main (Vulkan 1.3 on Bifrost), which 26.3.0 also reports.
 ---
  .../compiler/bifrost/bifrost/bi_schedule.c    |   4 +
  src/panfrost/compiler/bifrost/bir.c           |   5 +
@@ -81,7 +78,7 @@ on 26.2.3.
  8 files changed, 304 insertions(+), 38 deletions(-)
 
 diff --git a/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c b/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
-index c655956afae..62b96d2fd48 100644
+index 070179d8617..3931b246036 100644
 --- a/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
 +++ b/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
 @@ -349,6 +349,8 @@ bi_lower_atom_c(bi_context *ctx, struct bi_clause_state *clause,
@@ -119,7 +116,7 @@ index 8da950f32ae..e3f9760cdd7 100644
        return bi_count_staging_registers(ins);
     else if (s == 4 && ins->op == BI_OPCODE_BLEND)
 diff --git a/src/panfrost/vulkan/jm/panvk_queue.h b/src/panfrost/vulkan/jm/panvk_queue.h
-index 89b63a2bc74..fd1b8a28423 100644
+index 52bcc2a59aa..c0a858b308a 100644
 --- a/src/panfrost/vulkan/jm/panvk_queue.h
 +++ b/src/panfrost/vulkan/jm/panvk_queue.h
 @@ -14,11 +14,26 @@
@@ -150,16 +147,18 @@ index 89b63a2bc74..fd1b8a28423 100644
  
  VK_DEFINE_HANDLE_CASTS(panvk_gpu_queue, vk.base, VkQueue, VK_OBJECT_TYPE_QUEUE)
 diff --git a/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c b/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
-index bc1bc0fcc75..7085ab8010e 100644
+index cd203fa26f8..09763e01e41 100644
 --- a/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
 +++ b/src/panfrost/vulkan/jm/panvk_vX_gpu_queue.c
-@@ -24,12 +24,78 @@
+@@ -24,6 +24,7 @@
  #include "panvk_priv_bo.h"
  #include "panvk_queue.h"
  
 +#include "vk_common_entrypoints.h"
  #include "vk_drm_syncobj.h"
  #include "vk_framebuffer.h"
+ 
+@@ -31,7 +32,72 @@
  
  #include "drm-uapi/panfrost_drm.h"
  
@@ -213,7 +212,7 @@ index bc1bc0fcc75..7085ab8010e 100644
 +   struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
 +
 +   int fd = -1;
-+   if (drmSyncobjExportSyncFile(dev->drm_fd, queue->sync, &fd))
++   if (pan_kmod_sync_export_file(dev->kmod.dev, queue->sync, &fd))
 +      return vk_queue_set_lost(&queue->vk, "sync file export failed: %m");
 +
 +   simple_mtx_lock(&queue->pending_jobs_lock);
@@ -233,7 +232,7 @@ index bc1bc0fcc75..7085ab8010e 100644
  panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
                           struct panvk_cmd_buffer *cmdbuf,
                           struct panvk_batch *batch, uint32_t *bos,
-@@ -39,10 +105,21 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+@@ -41,10 +107,21 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
     struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
     struct panvk_physical_device *phys_dev =
        to_panvk_physical_device(dev->vk.physical);
@@ -248,15 +247,15 @@ index bc1bc0fcc75..7085ab8010e 100644
 +       * (VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT, or several times in
 +       * the same vkQueueSubmit). All submits are ordered on queue->sync,
 +       * which is the only GPU queue on JM, so waiting for it is enough. */
-+      ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1, INT64_MAX,
-+                           DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
++      ret = pan_kmod_sync_wait(dev->kmod.dev, &queue->sync, 1, INT64_MAX,
++                               DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
 +      if (ret)
 +         return vk_queue_set_lost(&queue->vk, "syncobj wait failed: %m");
 +
        util_dynarray_foreach(&batch->jobs, void *, job)
           memset((*job), 0, 4 * 4);
  
-@@ -74,10 +151,16 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+@@ -76,10 +153,16 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
           .in_sync_count = nr_in_fences,
           .out_sync = queue->sync,
           .jc = batch->vtc_jc.first_job,
@@ -273,8 +272,8 @@ index bc1bc0fcc75..7085ab8010e 100644
 +         return result;
  
        if (PANVK_DEBUG(TRACE) || PANVK_DEBUG(SYNC)) {
-          ret = drmSyncobjWait(dev->drm_fd, &submit.out_sync, 1, INT64_MAX, 0,
-@@ -110,6 +193,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+          ret = pan_kmod_sync_wait(dev->kmod.dev, &submit.out_sync, 1,
+@@ -112,6 +195,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
           .out_sync = queue->sync,
           .jc = batch->frag_jc.first_job,
           .requirements = PANFROST_JD_REQ_FS,
@@ -282,7 +281,7 @@ index bc1bc0fcc75..7085ab8010e 100644
        };
  
        if (batch->vtc_jc.first_job) {
-@@ -121,7 +205,13 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+@@ -123,7 +207,13 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
        }
  
        ret = pan_kmod_ioctl(dev->drm_fd, DRM_IOCTL_PANFROST_SUBMIT, &submit);
@@ -295,9 +294,9 @@ index bc1bc0fcc75..7085ab8010e 100644
 +         return result;
 +
        if (PANVK_DEBUG(TRACE) || PANVK_DEBUG(SYNC)) {
-          ret = drmSyncobjWait(dev->drm_fd, &submit.out_sync, 1, INT64_MAX, 0,
-                               NULL);
-@@ -149,6 +239,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
+          ret = pan_kmod_sync_wait(dev->kmod.dev, &submit.out_sync, 1,
+                                   INT64_MAX, 0, NULL);
+@@ -151,6 +241,7 @@ panvk_queue_submit_batch(struct panvk_gpu_queue *queue,
        pandecode_next_frame(dev->debug.decode_ctx);
  
     batch->issued = true;
@@ -305,7 +304,7 @@ index bc1bc0fcc75..7085ab8010e 100644
  }
  
  static void
-@@ -304,8 +395,10 @@ panvk_per_arch(gpu_queue_submit)(struct vk_queue *vk_queue, struct vk_queue_subm
+@@ -306,8 +397,10 @@ panvk_per_arch(gpu_queue_submit)(struct vk_queue *vk_queue, struct vk_queue_subm
  
           panvk_add_wait_event_syncobjs(batch, in_fences, &nr_in_fences);
  
@@ -318,7 +317,7 @@ index bc1bc0fcc75..7085ab8010e 100644
  
           panvk_signal_event_syncobjs(queue, batch);
        }
-@@ -329,16 +422,13 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
+@@ -331,16 +424,13 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
                                   uint32_t queue_idx,
                                   struct vk_queue **out_queue)
  {
@@ -337,7 +336,7 @@ index bc1bc0fcc75..7085ab8010e 100644
     struct panvk_gpu_queue *queue = vk_zalloc(&device->vk.alloc, sizeof(*queue), 8,
                                           VK_SYSTEM_ALLOCATION_SCOPE_DEVICE);
     if (!queue)
-@@ -356,10 +446,41 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
+@@ -358,10 +448,41 @@ panvk_per_arch(create_gpu_queue)(struct panvk_device *device,
        goto err_finish_queue;
     }
  
@@ -374,12 +373,12 @@ index bc1bc0fcc75..7085ab8010e 100644
     return VK_SUCCESS;
  
 +err_destroy_sync:
-+   drmSyncobjDestroy(device->drm_fd, queue->sync);
++   pan_kmod_sync_destroy(device->kmod.dev, queue->sync);
 +
  err_finish_queue:
     vk_queue_finish(&queue->vk);
  
-@@ -374,6 +495,17 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
+@@ -376,6 +497,17 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
     struct panvk_device *dev = to_panvk_device(vk_queue->base.device);
  
     vk_queue_finish(&queue->vk);
@@ -394,10 +393,10 @@ index bc1bc0fcc75..7085ab8010e 100644
 +      pan_kmod_ioctl(dev->drm_fd, DRM_IOCTL_PANFROST_JM_CTX_DESTROY,
 +                     &ctx_destroy);
 +   }
-    drmSyncobjDestroy(dev->drm_fd, queue->sync);
+    pan_kmod_sync_destroy(dev->kmod.dev, queue->sync);
     vk_free(&dev->vk.alloc, queue);
  }
-@@ -381,7 +513,10 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
+@@ -383,7 +515,10 @@ void panvk_per_arch(destroy_gpu_queue)(struct vk_queue *vk_queue)
  VkResult
  panvk_per_arch(gpu_queue_check_status)(struct vk_queue *vk_queue)
  {
@@ -409,7 +408,7 @@ index bc1bc0fcc75..7085ab8010e 100644
  }
  
  VKAPI_ATTR VkResult VKAPI_CALL
-@@ -390,8 +525,16 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
+@@ -392,8 +527,16 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
     VK_FROM_HANDLE(panvk_gpu_queue, queue, _queue);
     struct panvk_device *dev = to_panvk_device(queue->vk.base.device);
  
@@ -428,16 +427,16 @@ index bc1bc0fcc75..7085ab8010e 100644
  
     if (vk_device_is_lost(&dev->vk)) {
        /* Check printf buffer one more time before exiting */
-@@ -399,10 +542,10 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
+@@ -401,10 +544,10 @@ panvk_per_arch(QueueWaitIdle)(VkQueue _queue)
        return VK_ERROR_DEVICE_LOST;
     }
  
--   ASSERTED int ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1,
--                                     INT64_MAX, DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL,
--                                     NULL);
+-   ASSERTED int ret = pan_kmod_sync_wait(dev->kmod.dev, &queue->sync, 1,
+-                                         INT64_MAX,
+-                                         DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
 -   assert(!ret);
-+   int ret = drmSyncobjWait(dev->drm_fd, &queue->sync, 1, INT64_MAX,
-+                            DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
++   int ret = pan_kmod_sync_wait(dev->kmod.dev, &queue->sync, 1, INT64_MAX,
++                                DRM_SYNCOBJ_WAIT_FLAGS_WAIT_ALL, NULL);
 +   if (ret)
 +      return vk_queue_set_lost(&queue->vk, "syncobj wait failed: %m");
  
@@ -445,18 +444,18 @@ index bc1bc0fcc75..7085ab8010e 100644
 +   return panvk_queue_poll_job_errors(queue);
  }
 diff --git a/src/panfrost/vulkan/panvk_physical_device.c b/src/panfrost/vulkan/panvk_physical_device.c
-index 3f25829a86d..e49798b9b9f 100644
+index f500314c1c4..32d8714623b 100644
 --- a/src/panfrost/vulkan/panvk_physical_device.c
 +++ b/src/panfrost/vulkan/panvk_physical_device.c
-@@ -401,7 +401,6 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+@@ -453,7 +453,6 @@ panvk_physical_device_init(struct panvk_physical_device *device,
  
     switch (arch) {
     case 6:
 -   case 7:
+    case 11:
     case 14:
        if (!os_get_option("PAN_I_WANT_A_BROKEN_VULKAN_DRIVER")) {
-          result = panvk_errorf(instance, VK_ERROR_INCOMPATIBLE_DRIVER,
-@@ -412,6 +411,7 @@ panvk_physical_device_init(struct panvk_physical_device *device,
+@@ -465,6 +464,7 @@ panvk_physical_device_init(struct panvk_physical_device *device,
        }
        break;
  
@@ -464,7 +463,7 @@ index 3f25829a86d..e49798b9b9f 100644
     case 10:
     case 12:
     case 13:
-@@ -510,7 +510,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
+@@ -562,7 +562,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
                             uint32_t family_idx,
                             VkQueueFamilyGlobalPriorityPropertiesKHR *prio)
  {
@@ -472,7 +471,7 @@ index 3f25829a86d..e49798b9b9f 100644
     uint32_t prio_idx = 0;
  
     switch (family_idx) {
-@@ -518,13 +517,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
+@@ -570,13 +569,6 @@ panvk_fill_global_priority(const struct panvk_physical_device *physical_device,
        enum pan_kmod_group_allow_priority_flags prio_mask =
           physical_device->kmod.dev->props.allowed_group_priorities_mask;
  
@@ -487,10 +486,10 @@ index 3f25829a86d..e49798b9b9f 100644
           prio->priorities[prio_idx++] = VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR;
        if (prio_mask & PAN_KMOD_GROUP_ALLOW_PRIORITY_MEDIUM)
 diff --git a/src/panfrost/vulkan/panvk_vX_cmd_draw.c b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
-index 11f03dd0d20..c1db888a496 100644
+index 596ada0c4ad..59b458c0f8f 100644
 --- a/src/panfrost/vulkan/panvk_vX_cmd_draw.c
 +++ b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
-@@ -905,16 +905,45 @@ panvk_per_arch(cmd_prepare_draw_sysvals)(struct panvk_cmd_buffer *cmdbuf,
+@@ -950,16 +950,45 @@ panvk_per_arch(cmd_prepare_draw_sysvals)(struct panvk_cmd_buffer *cmdbuf,
         * oz = minDepth                    if negativeOneToOne is false
         * oz = (maxDepth + minDepth) / 2   if negativeOneToOne is true
         */
@@ -537,7 +536,7 @@ index 11f03dd0d20..c1db888a496 100644
        prepare_iam_sysvals(cmdbuf, dirty_sysvals);
  
 diff --git a/src/panfrost/vulkan/panvk_vX_device.c b/src/panfrost/vulkan/panvk_vX_device.c
-index 5e54c6888c5..a5c48438620 100644
+index a28094af794..8ff519fd174 100644
 --- a/src/panfrost/vulkan/panvk_vX_device.c
 +++ b/src/panfrost/vulkan/panvk_vX_device.c
 @@ -10,6 +10,9 @@
@@ -550,7 +549,7 @@ index 5e54c6888c5..a5c48438620 100644
  #include "drm-uapi/panthor_drm.h"
  
  #include "vk_cmd_enqueue_entrypoints.h"
-@@ -186,6 +189,28 @@ panvk_precomp_cleanup(struct panvk_device *device)
+@@ -267,6 +270,28 @@ panvk_precomp_cleanup(struct panvk_device *device)
     panvk_per_arch(precomp_cache_cleanup)(device->precomp_cache);
  }
  
@@ -579,7 +578,7 @@ index 5e54c6888c5..a5c48438620 100644
  /* Always reserve the lower 32MB. */
  #define PANVK_VA_RESERVE_BOTTOM 0x2000000ull
  
-@@ -211,7 +236,6 @@ static VkResult
+@@ -292,7 +317,6 @@ static VkResult
  check_global_priority(const struct panvk_physical_device *phys_dev,
                        const VkDeviceQueueCreateInfo *create_info)
  {
@@ -587,7 +586,7 @@ index 5e54c6888c5..a5c48438620 100644
     const VkDeviceQueueGlobalPriorityCreateInfoKHR *priority_info =
        vk_find_struct_const(create_info->pNext,
                             DEVICE_QUEUE_GLOBAL_PRIORITY_CREATE_INFO_KHR);
-@@ -226,13 +250,6 @@ check_global_priority(const struct panvk_physical_device *phys_dev,
+@@ -307,13 +331,6 @@ check_global_priority(const struct panvk_physical_device *phys_dev,
        enum pan_kmod_group_allow_priority_flags allowed_prio_mask =
           phys_dev->kmod.dev->props.allowed_group_priorities_mask;
  
@@ -601,7 +600,7 @@ index 5e54c6888c5..a5c48438620 100644
        if (requested_prio & allowed_prio_mask)
           return VK_SUCCESS;
  
-@@ -394,8 +411,8 @@ panvk_per_arch(create_device)(struct panvk_physical_device *physical_device,
+@@ -514,8 +531,8 @@ panvk_per_arch(create_device)(struct panvk_physical_device *physical_device,
        .priv = &device->vk.alloc,
     };
     device->kmod.dev = pan_kmod_dev_create(
@@ -613,7 +612,7 @@ index 5e54c6888c5..a5c48438620 100644
     if (!device->kmod.dev) {
        result = panvk_errorf(instance, VK_ERROR_OUT_OF_HOST_MEMORY,
 diff --git a/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c b/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
-index 1fd78a3de65..cdfc0993e4c 100644
+index 19750a478b9..f3047d7bab0 100644
 --- a/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
 +++ b/src/panfrost/vulkan/panvk_vX_nir_lower_descriptors.c
 @@ -819,6 +819,64 @@ lower_tex_immutable(nir_builder *b, nir_tex_instr *tex,
@@ -681,7 +680,7 @@ index 1fd78a3de65..cdfc0993e4c 100644
  static bool
  lower_tex(nir_builder *b, nir_tex_instr *tex, const struct lower_desc_ctx *ctx)
  {
-@@ -858,6 +916,9 @@ lower_tex(nir_builder *b, nir_tex_instr *tex, const struct lower_desc_ctx *ctx)
+@@ -869,6 +927,9 @@ lower_tex(nir_builder *b, nir_tex_instr *tex, const struct lower_desc_ctx *ctx)
        nir_def_replace(&tex->def, res);
        return true;
     }
@@ -691,19 +690,6 @@ index 1fd78a3de65..cdfc0993e4c 100644
  #endif
  
     uint32_t plane = 0;
-diff --git a/src/panfrost/vulkan/panvk_vX_physical_device.c b/src/panfrost/vulkan/panvk_vX_physical_device.c
---- a/src/panfrost/vulkan/panvk_vX_physical_device.c
-+++ b/src/panfrost/vulkan/panvk_vX_physical_device.c
-@@ -773,6 +773,9 @@
-    if (PAN_ARCH >= 10)
-       return VK_MAKE_API_VERSION(0, 1, 4, VK_HEADER_VERSION);
- 
-+   if (PAN_ARCH == 7)
-+      return VK_MAKE_API_VERSION(0, 1, 2, VK_HEADER_VERSION);
-+
-    return VK_MAKE_API_VERSION(0, 1, 0, VK_HEADER_VERSION);
- }
- 
 -- 
-2.55.0
+2.56.0
 
