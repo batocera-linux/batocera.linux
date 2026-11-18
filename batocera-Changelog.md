@@ -5,8 +5,10 @@
 ### Added
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 ### Fixed
+- Cemu game profiles, Wii U system fonts and UI translations were not loaded
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
 ### Updated
+- Cemu to Nov 13, 2026 build
 - Keisho (formerly SM2-Emu) to v0.9.63
 
 # 2026/11/17 - batocera.linux 44 - Malachite
