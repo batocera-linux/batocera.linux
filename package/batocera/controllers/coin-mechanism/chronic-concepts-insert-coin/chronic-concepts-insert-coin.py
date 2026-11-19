@@ -44,29 +44,39 @@ class CoinDeviceController:
     self.interface_no = interface_no
     self.device = None
 
-  def connect(self):
+  def connect(self, timeout: float = 2.0):
+    # udev runs us when the keyboard interface appears; the configuration
+    # interface is bound a few tens of ms later, so retry briefly.
     target_path = None
-    for device_dict in hid.enumerate(self.vendor_id, self.product_id):
-      if device_dict.get("interface_number") == self.interface_no:
-        target_path = device_dict["path"]
-        break
-
-    if not target_path:
-      raise Exception("No device found")
+    deadline = time.monotonic() + timeout
+    while target_path is None:
+      for device_dict in hid.enumerate(self.vendor_id, self.product_id):
+        if device_dict.get("interface_number") == self.interface_no:
+          target_path = device_dict["path"]
+          break
+      if target_path is None:
+        if time.monotonic() >= deadline:
+          raise Exception("No device found")
+        time.sleep(0.05)
       
     self.device = hid.device()
     self.device.open_path(target_path)
 
     print(f"Manufacturer : {self.device.get_manufacturer_string()}, Product: {self.device.get_product_string()}")
 
-  def get_device_config(self, timeout: float = 2.0) -> dict:
+  def get_device_config(self, timeout: float = 0.5, retries: int = 5) -> dict:
     pkt = [0] * 65
     pkt[0] = REPORT_ID
     pkt[1] = CMD_GET_CONFIG
 
-    # query reporting
-    self.device.write(pkt)
-    raw = self.device.read(64, timeout*1000)
+    # query reporting. Firmware <= 1.1.1 does not answer the first commands
+    # after a (re)plug, so retry a few times (a reply takes ~5 ms otherwise).
+    raw = None
+    for _ in range(retries):
+      self.device.write(pkt)
+      raw = self.device.read(64, int(timeout*1000))
+      if raw:
+        break
 
     if not raw:
       raise Exception("Failed to read device")
