@@ -1,0 +1,124 @@
+Allow HDMI audio to be prepared before the output is enabled, and apply it at enable.
+Fixes ASoC -ENODEV when pipewire opens the card before the first modeset.
+
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-qp.c
+@@ -167,6 +167,12 @@
+ 
+ 	unsigned long tmds_char_rate;
+ 	bool no_hpd;
++
++	struct mutex audio_mutex;
++	bool audio_enabled;
++	bool audio_prepared;
++	struct hdmi_codec_daifmt audio_fmt;
++	struct hdmi_codec_params audio_hparms;
+ };
+ 
+ static void dw_hdmi_qp_write(struct dw_hdmi_qp *hdmi, unsigned int val,
+@@ -467,35 +473,50 @@
+ {
+ 	struct dw_hdmi_qp *hdmi = dw_hdmi_qp_from_bridge(bridge);
+ 
++	guard(mutex)(&hdmi->audio_mutex);
++
++	hdmi->audio_enabled = true;
++
+ 	if (hdmi->tmds_char_rate)
+ 		dw_hdmi_qp_mod(hdmi, 0, AVP_DATAPATH_PACKET_AUDIO_SWDISABLE, GLOBAL_SWDISABLE);
+ 
+ 	return 0;
+ }
+ 
++static void dw_hdmi_qp_audio_config(struct dw_hdmi_qp *hdmi,
++				    struct drm_connector *connector)
++{
++	struct hdmi_codec_daifmt *fmt = &hdmi->audio_fmt;
++	struct hdmi_codec_params *hparms = &hdmi->audio_hparms;
++	bool ref2stream = fmt->bit_fmt == SNDRV_PCM_FORMAT_IEC958_SUBFRAME_LE;
++
++	dw_hdmi_qp_set_audio_interface(hdmi, fmt, hparms);
++	dw_hdmi_qp_set_sample_rate(hdmi, hdmi->tmds_char_rate, hparms->sample_rate);
++	dw_hdmi_qp_set_channel_status(hdmi, hparms->iec.status, ref2stream);
++	drm_atomic_helper_connector_hdmi_update_audio_infoframe(connector, &hparms->cea);
++}
++
+ static int dw_hdmi_qp_audio_prepare(struct drm_bridge *bridge,
+ 				    struct drm_connector *connector,
+ 				    struct hdmi_codec_daifmt *fmt,
+ 				    struct hdmi_codec_params *hparms)
+ {
+ 	struct dw_hdmi_qp *hdmi = dw_hdmi_qp_from_bridge(bridge);
+-	bool ref2stream = false;
+-
+-	if (!hdmi->tmds_char_rate)
+-		return -ENODEV;
+ 
+ 	if (fmt->bit_clk_provider | fmt->frame_clk_provider) {
+ 		dev_err(hdmi->dev, "unsupported clock settings\n");
+ 		return -EINVAL;
+ 	}
+ 
+-	if (fmt->bit_fmt == SNDRV_PCM_FORMAT_IEC958_SUBFRAME_LE)
+-		ref2stream = true;
++	guard(mutex)(&hdmi->audio_mutex);
+ 
+-	dw_hdmi_qp_set_audio_interface(hdmi, fmt, hparms);
+-	dw_hdmi_qp_set_sample_rate(hdmi, hdmi->tmds_char_rate, hparms->sample_rate);
+-	dw_hdmi_qp_set_channel_status(hdmi, hparms->iec.status, ref2stream);
+-	drm_atomic_helper_connector_hdmi_update_audio_infoframe(connector, &hparms->cea);
++	/* N/CTS depend on the TMDS rate, keep the stream setup for the next modeset */
++	hdmi->audio_fmt = *fmt;
++	hdmi->audio_hparms = *hparms;
++	hdmi->audio_prepared = true;
++
++	if (hdmi->tmds_char_rate)
++		dw_hdmi_qp_audio_config(hdmi, connector);
+ 
+ 	return 0;
+ }
+@@ -524,6 +545,11 @@
+ {
+ 	struct dw_hdmi_qp *hdmi = dw_hdmi_qp_from_bridge(bridge);
+ 
++	guard(mutex)(&hdmi->audio_mutex);
++
++	hdmi->audio_enabled = false;
++	hdmi->audio_prepared = false;
++
+ 	drm_atomic_helper_connector_hdmi_clear_audio_infoframe(connector);
+ 
+ 	if (hdmi->tmds_char_rate)
+@@ -780,6 +806,14 @@
+ 	dw_hdmi_qp_mod(hdmi, op_mode, OPMODE_DVI, LINK_CONFIG0);
+ 
+ 	drm_atomic_helper_connector_hdmi_update_infoframes(connector, state);
++
++	guard(mutex)(&hdmi->audio_mutex);
++
++	if (hdmi->tmds_char_rate && hdmi->audio_enabled) {
++		dw_hdmi_qp_mod(hdmi, 0, AVP_DATAPATH_PACKET_AUDIO_SWDISABLE, GLOBAL_SWDISABLE);
++		if (hdmi->audio_prepared)
++			dw_hdmi_qp_audio_config(hdmi, connector);
++	}
+ }
+ 
+ static void dw_hdmi_qp_bridge_atomic_disable(struct drm_bridge *bridge,
+@@ -787,6 +821,8 @@
+ {
+ 	struct dw_hdmi_qp *hdmi = bridge->driver_private;
+ 
++	guard(mutex)(&hdmi->audio_mutex);
++
+ 	hdmi->tmds_char_rate = 0;
+ 
+ 	hdmi->phy.ops->disable(hdmi, hdmi->phy.data);
+@@ -1343,6 +1379,8 @@
+ 	if (IS_ERR(hdmi->bridge.ddc))
+ 		return ERR_CAST(hdmi->bridge.ddc);
+ 
++	mutex_init(&hdmi->audio_mutex);
++
+ 	hdmi->bridge.hdmi_audio_max_i2s_playback_channels = 8;
+ 	hdmi->bridge.hdmi_audio_dev = dev;
+ 	hdmi->bridge.hdmi_audio_dai_port = 1;

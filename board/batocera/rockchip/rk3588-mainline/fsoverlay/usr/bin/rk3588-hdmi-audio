@@ -1,0 +1,56 @@
+#!/bin/bash
+# Follow the HDMI and headphone connections with the default sink when audio.device is auto.
+
+. /etc/profile.d/xdg.sh
+. /etc/profile.d/dbus.sh
+
+# headphone jacks raise no udev event, watch their controls instead
+if [ "$1" = "--monitor" ]; then
+    alsactl monitor 2>/dev/null | while read -r LINE; do
+        case "${LINE}" in
+            *"Headphones Jack"*) "$0" ;;
+        esac
+    done
+    exit 0
+fi
+
+exec 9>/var/run/rk3588-hdmi-audio.lock
+flock 9
+
+DEVICE=$(batocera-settings-get-master audio.device)
+[ -z "${DEVICE}" ] || [ "${DEVICE}" = "auto" ] || exit 0
+grep -qx connected /sys/class/drm/card*-DP-*/status 2>/dev/null && exit 0
+
+for i in $(seq 120); do
+    SINKS=$(pactl list sinks short 2>/dev/null | awk '{print $2}')
+    [ -n "${SINKS}" ] && break
+    sleep 0.5
+done
+
+# the hdmi-codec card has no jack control, so pipewire cannot tell a plugged HDMI from an unplugged one
+ANALOG=$(echo "${SINKS}" | grep -vE "hdmi|dp[0-9]-sound|spdif" | head -1)
+[ -n "${ANALOG}" ] || exit 0
+WANT=${ANALOG}
+CARD=${ANALOG##*sound_card}
+CARD=${CARD%%.*}
+if amixer -c "${CARD}" cget iface=CARD,name='Headphones Jack' 2>/dev/null | grep -q "values=on"; then
+    HEADPHONES=1
+fi
+for STATUS in /sys/class/drm/card*-HDMI-A-*/status; do
+    [ -n "${HEADPHONES}" ] && break
+    grep -qx connected "${STATUS}" || continue
+    N=${STATUS%/status}
+    N=${N##*-HDMI-A-}
+    HDMI=$(echo "${SINKS}" | grep -m1 "hdmi$((N - 1))-sound")
+    [ -n "${HDMI}" ] && WANT=${HDMI} && break
+done
+
+[ "$(pactl get-default-sink)" = "${WANT}" ] && exit 0
+logger -t rk3588-hdmi-audio "default sink ${WANT}"
+pactl set-default-sink "${WANT}"
+pactl list sink-inputs short | awk '{print $1}' | while read -r INPUT; do
+    pactl move-sink-input "${INPUT}" "${WANT}"
+done
+VOL=$(batocera-settings-get-master audio.volume)
+[ -n "${VOL}" ] && batocera-audio setSystemVolume "${VOL}"
+exit 0

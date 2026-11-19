@@ -1,0 +1,14 @@
+nanopi6-series: disable USB fastboot like nanopi-r6s, FASTBOOT_BUF_ADDR has
+no rk3588 default and the config stops at a prompt.
+
+diff --git a/configs/nanopi6-series-rk3588s_defconfig b/configs/nanopi6-series-rk3588s_defconfig
+--- a/configs/nanopi6-series-rk3588s_defconfig
++++ b/configs/nanopi6-series-rk3588s_defconfig
+@@ -42,6 +42,7 @@ CONFIG_CMD_MMC=y
+ CONFIG_CMD_PCI=y
+ CONFIG_CMD_USB=y
+ CONFIG_CMD_ROCKUSB=y
++# CONFIG_USB_FUNCTION_FASTBOOT is not set
+ # CONFIG_CMD_SETEXPR is not set
+ CONFIG_CMD_REGULATOR=y
+ # CONFIG_SPL_DOS_PARTITION is not set

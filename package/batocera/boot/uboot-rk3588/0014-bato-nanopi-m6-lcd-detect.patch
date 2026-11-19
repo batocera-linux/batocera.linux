@@ -1,0 +1,51 @@
+nanopi6-series: pick the YX35 LCD device tree in preboot, read from the panel
+eeprom ("yx35" at 0xe0) on the DSI1 (i2c5) / DSI0 (i2c4) connector; the
+extlinux FDTDIR entry then loads ${fdtfile}. HDMI only when no panel.
+
+diff --git a/arch/arm/dts/rk3588s-nanopi-m6-spi-u-boot.dtsi b/arch/arm/dts/rk3588s-nanopi-m6-spi-u-boot.dtsi
+--- a/arch/arm/dts/rk3588s-nanopi-m6-spi-u-boot.dtsi
++++ b/arch/arm/dts/rk3588s-nanopi-m6-spi-u-boot.dtsi
+@@ -17,3 +17,16 @@
+ 		bootph-some-ram;
+ 	};
+ };
++
++/* LCD eeprom on the DSI0 / DSI1 connectors, read by the preboot LCD detection */
++&i2c4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c4m3_xfer>;
++	status = "okay";
++};
++
++&i2c5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c5m2_xfer>;
++	status = "okay";
++};
+diff --git a/arch/arm/dts/rk3588s-nanopi-m6-u-boot.dtsi b/arch/arm/dts/rk3588s-nanopi-m6-u-boot.dtsi
+--- a/arch/arm/dts/rk3588s-nanopi-m6-u-boot.dtsi
++++ b/arch/arm/dts/rk3588s-nanopi-m6-u-boot.dtsi
+@@ -1 +1,14 @@
+ #include "rk3588s-u-boot.dtsi"
++
++/* LCD eeprom on the DSI0 / DSI1 connectors, read by the preboot LCD detection */
++&i2c4 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c4m3_xfer>;
++	status = "okay";
++};
++
++&i2c5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c5m2_xfer>;
++	status = "okay";
++};
+diff --git a/configs/nanopi6-series-rk3588s_defconfig b/configs/nanopi6-series-rk3588s_defconfig
+--- a/configs/nanopi6-series-rk3588s_defconfig
++++ b/configs/nanopi6-series-rk3588s_defconfig
+@@ -132,3 +132,5 @@ CONFIG_USB_ETHER_MCS7830=y
+ CONFIG_USB_ETHER_RTL8152=y
+ CONFIG_USB_ETHER_SMSC95XX=y
+ CONFIG_ERRNO_STR=y
++CONFIG_USE_PREBOOT=y
++CONFIG_PREBOOT="setenv fdtfile rk3588s-nanopi-m6.dtb; if i2c dev 5 && i2c read 0x50 0xe0 4 ${scriptaddr} && itest.l *${scriptaddr} == 0x35337879; then setenv fdtfile rk3588s-nanopi-m6-yx35-dsi1.dtb; elif i2c dev 4 && i2c read 0x50 0xe0 4 ${scriptaddr} && itest.l *${scriptaddr} == 0x35337879; then setenv fdtfile rk3588s-nanopi-m6-yx35-dsi0.dtb; fi"

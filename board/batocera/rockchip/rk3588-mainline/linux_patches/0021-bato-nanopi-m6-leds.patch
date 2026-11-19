@@ -1,0 +1,23 @@
+NanoPi M6: SYS LED steady instead of heartbeat, LED1 for SD card activity.
+
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6.dts
+@@ -95,7 +95,8 @@
+ 		sys_led: led-0 {
+ 			label = "sys_led";
+ 			gpios = <&gpio1 RK_PA4 GPIO_ACTIVE_HIGH>;
+-			linux,default-trigger = "heartbeat";
++			// Batocera - steady when on, off in standby
++			linux,default-trigger = "default-on";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&sys_led_pin>;
+ 		};
+@@ -103,6 +104,8 @@
+ 		user_led: led-1 {
+ 			label = "user_led";
+ 			gpios = <&gpio1 RK_PA6 GPIO_ACTIVE_HIGH>;
++			// Batocera - SD card activity
++			linux,default-trigger = "mmc1";
+ 			pinctrl-names = "default";
+ 			pinctrl-0 = <&user_led_pin>;
+ 		};

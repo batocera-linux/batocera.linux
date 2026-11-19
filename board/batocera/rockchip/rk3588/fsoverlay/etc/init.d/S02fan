@@ -1,7 +1,0 @@
-#!/bin/bash
-
-if test $1 = start
-then
-	FAN_SPEED=100
-	echo ${FAN_SPEED} > /sys/class/hwmon/hwmon0/pwm1
-fi

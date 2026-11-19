@@ -1,0 +1,206 @@
+Mekotronics R58X-4G: enable the dp1 video output (usbdp_phy1 already
+muxes all four lanes to DP), the fusb302 USB-C OTG port on i2c6 and
+the IR receiver.
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts b/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
+index 803a0fd..d39210e 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
+@@ -104,8 +104,6 @@
+ 	vcc5v0_otg: vcc5v0-otg-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc5v0_otg";
+-		regulator-boot-on;
+-		regulator-always-on;
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 		enable-active-high;
+@@ -180,6 +178,44 @@
+ 			};
+ 		};
+ 	};
++
++	// Batocera - IR receiver on the pwm3 m0 pin
++	ir-receiver {
++		compatible = "gpio-ir-receiver";
++		gpios = <&gpio0 RK_PD4 GPIO_ACTIVE_LOW>;
++	};
++
++	// Batocera - second video output on dp1
++	dp1-con {
++		compatible = "dp-connector";
++		label = "DP1";
++		type = "full-size";
++
++		port {
++			dp1_con_in: endpoint {
++				remote-endpoint = <&dp1_out_con>;
++			};
++		};
++	};
++};
++
++// Batocera - second video output on dp1
++&dp1 {
++	pinctrl-0 = <&dp1m0_pins>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&dp1_in {
++	dp1_in_vp2: endpoint {
++		remote-endpoint = <&vp2_out_dp1>;
++	};
++};
++
++&dp1_out {
++	dp1_out_con: endpoint {
++		remote-endpoint = <&dp1_con_in>;
++	};
+ };
+ 
+ &cpu_b0 {
+@@ -415,6 +451,51 @@
+ 		interrupts = <RK_PB2 IRQ_TYPE_LEVEL_LOW>; //RTCIC_INT_L_GPIO0_B2
+ 		wakeup-source;
+ 	};
++
++	// Batocera - USB-C OTG port
++	usbc0: usb-typec@22 {
++		compatible = "fcs,fusb302";
++		reg = <0x22>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PC7 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&usbc0_int>;
++		vbus-supply = <&vcc5v0_otg>;
++
++		usb_con: connector {
++			compatible = "usb-c-connector";
++			label = "USB-C";
++			data-role = "dual";
++			power-role = "source";
++			source-pdos = <PDO_FIXED(5000, 3000, PDO_FIXED_USB_COMM)>;
++
++			ports {
++				#address-cells = <1>;
++				#size-cells = <0>;
++
++				port@0 {
++					reg = <0>;
++					usbc0_hs: endpoint {
++						remote-endpoint = <&usb_host0_xhci_to_usbc0>;
++					};
++				};
++
++				port@1 {
++					reg = <1>;
++					usbc0_ss: endpoint {
++						remote-endpoint = <&usbdp_phy0_ss>;
++					};
++				};
++
++				port@2 {
++					reg = <2>;
++					usbc0_sbu: endpoint {
++						remote-endpoint = <&usbdp_phy0_sbu>;
++					};
++				};
++			};
++		};
++	};
+ };
+ 
+ // analog sound
+@@ -572,10 +653,16 @@
+ 	};
+ 
+ 	usb-typec {
+-		usbc0_int: usbc0-int { // @TODO missing fusb302
++		usbc0_int: usbc0-int {
+ 			rockchip,pins = <3 RK_PC7 RK_FUNC_GPIO &pcfg_pull_up>;
+ 		};
+ 
++		// Batocera - USB-C OTG port
++		usbc_sbu_dc: usbc-sbu-dc {
++			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>,
++					<0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
+ 		vcc5v0_otg_en: vcc5v0-otg-en {
+ 			rockchip,pins = <4 RK_PA7 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+@@ -995,12 +1082,42 @@
+ 	status = "okay";
+ };
+ 
+-&usb_host0_xhci { // usb@fc000000
+-	dr_mode = "peripheral";
+-	maximum-speed = "high-speed";
+-	phys = <&u2phy0_otg>;
+-	phy-names = "usb2-phy";
++// Batocera - USB-C OTG port
++&usb_host0_xhci {
++	usb-role-switch;
++	status = "okay";
++
++	port {
++		usb_host0_xhci_to_usbc0: endpoint {
++			remote-endpoint = <&usbc0_hs>;
++		};
++	};
++};
++
++// Batocera - USB-C OTG port
++&usbdp_phy0 {
++	mode-switch;
++	orientation-switch;
++	pinctrl-names = "default";
++	pinctrl-0 = <&usbc_sbu_dc>;
++	sbu1-dc-gpios = <&gpio0 RK_PC6 GPIO_ACTIVE_HIGH>;
++	sbu2-dc-gpios = <&gpio0 RK_PD3 GPIO_ACTIVE_HIGH>;
+ 	status = "okay";
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		usbdp_phy0_ss: endpoint@0 {
++			reg = <0>;
++			remote-endpoint = <&usbc0_ss>;
++		};
++
++		usbdp_phy0_sbu: endpoint@1 {
++			reg = <1>;
++			remote-endpoint = <&usbc0_sbu>;
++		};
++	};
+ };
+ 
+ &u2phy1 { // for usbdp_phy1 which is also usb_host1_xhci
+@@ -1039,10 +1156,6 @@
+ 	status = "okay";
+ };
+ 
+-&usb_host0_xhci {
+-	dr_mode = "host";
+-	status = "okay";
+-};
+ 
+ &usb_host1_ehci {
+ 	status = "okay";
+@@ -1072,6 +1185,14 @@
+ 	};
+ };
+ 
++// Batocera - second video output on dp1
++&vp2 {
++	vp2_out_dp1: endpoint@b {
++		reg = <ROCKCHIP_VOP2_EP_DP1>;
++		remote-endpoint = <&dp1_in_vp2>;
++	};
++};
++
+ 
+ &pd_npu {
+ 	domain-supply = <&vdd_npu_s0>;

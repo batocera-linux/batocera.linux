@@ -1,0 +1,166 @@
+RK3588 DP audio: S/PDIF sound card for each enabled DP output (dp0 from
+spdif_tx2, dp1 from spdif_tx5) on the Orange Pi 5 Pro, Mekotronics R58X,
+CoolPi 4B and Indiedroid Nova. The dp node takes one sound-dai cell to
+pick the hdmi-codec S/PDIF DAI, as the vendor tree does.
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts b/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588-blueberry-edge-v12-linux.dts
+@@ -197,15 +197,36 @@ dp1_con_in: endpoint {
+ 			};
+ 		};
+ 	};
++
++	// Batocera - DP1 audio over S/PDIF
++	dp1_sound: dp1-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "dp1";
++
++		simple-audio-card,codec {
++			sound-dai = <&dp1 1>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&spdif_tx5>;
++		};
++	};
+ };
+ 
+ // Batocera - second video output on dp1
+ &dp1 {
++	// Batocera - select the S/PDIF DAI
++	#sound-dai-cells = <1>;
+ 	pinctrl-0 = <&dp1m0_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
++// Batocera - DP audio source
++&spdif_tx5 {
++	status = "okay";
++};
++
+ &dp1_in {
+ 	dp1_in_vp2: endpoint {
+ 		remote-endpoint = <&vp2_out_dp1>;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-coolpi-4b.dts b/arch/arm64/boot/dts/rockchip/rk3588s-coolpi-4b.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-coolpi-4b.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-coolpi-4b.dts
+@@ -205,6 +205,20 @@ vcc_1v1_nldo_s3: regulator-vcc-1v1-nldo-s3 {
+ 		regulator-max-microvolt = <1100000>;
+ 		vin-supply = <&vcc5v0_sys>;
+ 	};
++
++	// Batocera - DP0 audio over S/PDIF
++	dp0_sound: dp0-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "dp0";
++
++		simple-audio-card,codec {
++			sound-dai = <&dp0 1>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&spdif_tx2>;
++		};
++	};
+ };
+ 
+ &combphy0_ps {
+@@ -228,11 +242,18 @@ &cpu_b2 {
+ };
+ 
+ &dp0 {
++	// Batocera - select the S/PDIF DAI
++	#sound-dai-cells = <1>;
+ 	pinctrl-0 = <&dp0m0_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
++// Batocera - DP audio source
++&spdif_tx2 {
++	status = "okay";
++};
++
+ &dp0_in {
+ 	dp0_in_vp2: endpoint {
+ 		remote-endpoint = <&vp2_out_dp0>;
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-indiedroid-nova.dts b/arch/arm64/boot/dts/rockchip/rk3588s-indiedroid-nova.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-indiedroid-nova.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-indiedroid-nova.dts
+@@ -148,6 +148,20 @@ vcc5v0_usbdcin: regulator-vcc5v0-usbdcin {
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-name = "vcc5v0_usbdcin";
+ 	};
++
++	// Batocera - DP0 audio over S/PDIF
++	dp0_sound: dp0-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "dp0";
++
++		simple-audio-card,codec {
++			sound-dai = <&dp0 1>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&spdif_tx2>;
++		};
++	};
+ };
+ 
+ &combphy0_ps {
+@@ -191,6 +205,13 @@ &cpu_b3 {
+ };
+ 
+ &dp0 {
++	// Batocera - select the S/PDIF DAI
++	#sound-dai-cells = <1>;
++	status = "okay";
++};
++
++// Batocera - DP audio source
++&spdif_tx2 {
+ 	status = "okay";
+ };
+ 
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5-pro.dts b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5-pro.dts
+--- a/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-orangepi-5-pro.dts
+@@ -142,15 +142,36 @@ typea_con: usb-a-connector {
+ 		power-role = "source";
+ 		vbus-supply = <&vcc5v0_otg>;
+ 	};
++
++	// Batocera - DP0 audio over S/PDIF
++	dp0_sound: dp0-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "dp0";
++
++		simple-audio-card,codec {
++			sound-dai = <&dp0 1>;
++		};
++
++		simple-audio-card,cpu {
++			sound-dai = <&spdif_tx2>;
++		};
++	};
+ };
+ 
+ // Batocera - second HDMI port
+ &dp0 {
++	// Batocera - select the S/PDIF DAI
++	#sound-dai-cells = <1>;
+ 	pinctrl-0 = <&dp0m0_pins>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
+ 
++// Batocera - DP audio source
++&spdif_tx2 {
++	status = "okay";
++};
++
+ &dp0_in {
+ 	dp0_in_vp2: endpoint {
+ 		remote-endpoint = <&vp2_out_dp0>;

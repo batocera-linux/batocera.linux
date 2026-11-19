@@ -1,0 +1,2 @@
+ACTION=="change", SUBSYSTEM=="drm", ENV{HOTPLUG}=="1", RUN+="/bin/sh -c '/usr/bin/rk3588-hdmi-audio >/dev/null 2>&1 &'"
+ACTION=="add", SUBSYSTEM=="sound", KERNEL=="card*", RUN+="/bin/sh -c '/usr/bin/rk3588-hdmi-audio >/dev/null 2>&1 &'"
