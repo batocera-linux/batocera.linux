@@ -287,6 +287,11 @@ wine_options() {
     # Wine-mono override for FNA games
     export WINE_MONO_OVERRIDES="Microsoft.Xna.Framework.*,Gac=n"
 
+    # .NET 5+ aborts on the icu stubs of runners without their own icu (only ge-proton has one), Wine's NLS works
+    if ! find_runner_dll_dir icu x86_64-windows >/dev/null; then
+        export DOTNET_SYSTEM_GLOBALIZATION_USENLS=1
+    fi
+
     # Disable XIM support until libx11 >= 1.7 is widespread
     export WINE_ALLOW_XIM=0
     [[ "${ALLOW_XIM}" = 1 ]] && WINE_ALLOW_XIM=1

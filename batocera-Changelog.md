@@ -10,6 +10,7 @@
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
+- Windows: .NET 5+ games (such as Celeste64) closed at start with WINE Proton and WINE TKG
 ### Updated
 - Cemu to Nov 13, 2026 build
 - Keisho (formerly SM2-Emu) to v0.9.63
