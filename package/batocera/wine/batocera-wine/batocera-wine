@@ -258,8 +258,8 @@ wine_options() {
         fi
     fi
 
-    export DXVK_FRAME_RATE=0
-    [[ "${FPS_LIMIT}" = 1 ]] && DXVK_FRAME_RATE=60
+    # DXVK no longer reads DXVK_FRAME_RATE, the limit goes through its inline config
+    [[ "${FPS_LIMIT}" = 1 ]] && export DXVK_CONFIG="dxgi.maxFrameRate = 60; d3d9.maxFrameRate = 60"
 
     export WINEDEBUG="-all"
     [[ "${WINE_DEBUG}" = 1 ]] && WINEDEBUG="err+all,fixme+all"
