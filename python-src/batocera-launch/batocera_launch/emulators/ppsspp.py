@@ -132,7 +132,7 @@ def _option_value(config: CaseSensitiveConfigParser, section: str, option: str, 
     return value
 
 
-def _generate_controller_config(controls_ini: Path, controls_init: Path, controller: Controller, /) -> None:
+def _generate_controller_config(controls_ini: Path, controls_init: Path, controller: Controller | None, /) -> None:
     config = CaseSensitiveConfigParser(interpolation=None)
     config.read(controls_init)
     # As we start with the default ini file, no need to create the section
@@ -140,12 +140,13 @@ def _generate_controller_config(controls_ini: Path, controls_init: Path, control
     if not config.has_section(section):
         config.add_section(section)
 
-    for input_ in controller.inputs.values():
+    inputs = controller.inputs.values() if controller else ()
+    padnum = controller.index if controller else 0
+    for input_ in inputs:
         if input_.name not in _PPSSPP_MAPPING or input_.type not in _PPSSPP_MAPPING[input_.name]:
             continue
 
         var = _PPSSPP_MAPPING[input_.name][input_.type]
-        padnum = controller.index
 
         if input_.type == 'button':
             pspcode = _SDL_NAME_TO_NKCODE[input_.name]
@@ -482,11 +483,10 @@ class PPSSPP(Emulator):
         if dbpath.exists():
             dbpath.unlink()
 
-        # Generate the controls.ini
-        if controller := Controller.find_player_number(self.controllers, 1):
-            controls_ini = self.psp_system_dir / 'controls.ini'
-            controls_init = CONF_INIT / 'ppsspp' / 'PSP' / 'SYSTEM' / 'controls.ini'
-            _generate_controller_config(controls_ini, controls_init, controller)
+        # Generate the controls.ini, the hotkeys are needed without a pad too
+        controls_ini = self.psp_system_dir / 'controls.ini'
+        controls_init = CONF_INIT / 'ppsspp' / 'PSP' / 'SYSTEM' / 'controls.ini'
+        _generate_controller_config(controls_ini, controls_init, Controller.find_player_number(self.controllers, 1))
 
         # The command to run
         args: list[str | Path] = ['/usr/bin/PPSSPP', self.rom, '--fullscreen']
