@@ -1,0 +1,71 @@
+Enable the AP6611S (SYN43711) wifi on the Orange Pi 5 Max and Ultra:
+sdio on sdiom0, WL_REG_ON pwrseq and the bcmdhd host-wake node.
+Drop the inherited M.2 wlan rfkill, it drives the RTC interrupt pin.
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-compact.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-compact.dtsi
+index 9343dfc86..7afd26d8d 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-compact.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3588-orangepi-5-compact.dtsi
+@@ -7,6 +7,24 @@
+ #include "rk3588-orangepi-5.dtsi"
+ 
+ / {
++	/* batocera - the M.2 wlan rfkill from orangepi-5.dtsi sits on the RTC interrupt here */
++	/delete-node/ rfkill;
++
++	/* batocera - AP6611S wifi on sdio, read by bcmdhd */
++	bcmdhd_wlan {
++		compatible = "android,bcmdhd_wlan";
++		gpio_wl_host_wake = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++	};
++
++	/* batocera - AP6611S WL_REG_ON */
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&hym8563>;
++		clock-names = "ext_clock";
++		post-power-on-delay-ms = <200>;
++		reset-gpios = <&gpio2 RK_PC5 GPIO_ACTIVE_LOW>;
++	};
++
+ 	vcc5v0_usb30_otg: vcc5v0-usb30-otg-regulator {
+ 		compatible = "regulator-fixed";
+ 		enable-active-high;
+@@ -101,6 +119,13 @@ host_wake_bt: host-wake-bt {
+ 			rockchip,pins = <4 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
+ 	};
++
++	/* batocera - AP6611S host wake */
++	wireless-wlan {
++		wifi_host_wake_irq: wifi-host-wake-irq {
++			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
+ };
+ 
+ &pwm4 {
+@@ -121,6 +146,23 @@ &pwm9 {
+ 	status = "okay";
+ };
+ 
++/* batocera - AP6611S wifi */
++&sdio {
++	bus-width = <4>;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	keep-power-in-suspend;
++	max-frequency = <150000000>;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	no-mmc;
++	no-sd;
++	non-removable;
++	sd-uhs-sdr104;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdiom0_pins>, <&wifi_host_wake_irq>;
++	status = "okay";
++};
++
+ &sfc {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&fspim2_pins>;
