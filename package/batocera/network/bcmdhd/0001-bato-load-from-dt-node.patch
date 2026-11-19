@@ -1,0 +1,19 @@
+Autoload from the android,bcmdhd_wlan DT node instead of the SDIO id table,
+which also matches every Broadcom and class 0 SDIO card on shared images.
+
+--- a/src/bcmsdh_sdmmc_linux.c
++++ b/src/bcmsdh_sdmmc_linux.c
+@@ -236,7 +236,12 @@
+ 	},
+ };
+ 
+-MODULE_DEVICE_TABLE(sdio, bcmsdh_sdmmc_ids);
++/* batocera - load from the board's DT node, not from any Broadcom or class 0 SDIO card */
++static const struct of_device_id bcmsdh_of_ids[] = {
++	{ .compatible = "android,bcmdhd_wlan" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, bcmsdh_of_ids);
+ 
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39)) && defined(CONFIG_PM_SLEEP)
+ static int bcmsdh_sdmmc_suspend(struct device *pdev)

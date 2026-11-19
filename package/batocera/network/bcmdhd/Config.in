@@ -1,0 +1,11 @@
+comment "bcmdhd needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_BCMDHD
+	bool "bcmdhd"
+	depends on BR2_LINUX_KERNEL
+	help
+	  Broadcom / Synaptics bcmdhd SDIO WiFi driver, for chips
+	  brcmfmac does not support (AP6611S / SYN43711).
+
+	  https://github.com/armbian/bcmdhd-dkms

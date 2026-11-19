@@ -51,6 +51,8 @@ UBOOT_RK3588_BUILDPAIR += coolpi-4b/coolpi-4b-rk3588s_defconfig
 UBOOT_RK3588_BUILDPAIR += gameforce-ace/gameforce-ace-rk3588s_defconfig
 UBOOT_RK3588_BUILDPAIR += quartzpro64/quartzpro64-rk3588_defconfig
 UBOOT_RK3588_BUILDPAIR += indiedroid-nova/nova-rk3588s_defconfig
+UBOOT_RK3588_BUILDPAIR += orangepi-5-max/orangepi-5-max-rk3588_defconfig
+UBOOT_RK3588_BUILDPAIR += orangepi-5-ultra/orangepi-5-ultra-rk3588_defconfig
 
 # Boards using mainline TF-A instead of the rkbin BL31
 UBOOT_RK3588_TFA_BOARDS = gameforce-ace

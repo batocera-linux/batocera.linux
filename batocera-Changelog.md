@@ -2,6 +2,7 @@
 ### Special Notes
 - SM2-Emu is now Keisho and replaces Supermodel for Model 3
   SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
+- Orange Pi 5 Max and 5 Ultra move to the RK3588 mainline kernel, with Wi-Fi through the bcmdhd driver
 ### Added
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
@@ -19,6 +20,7 @@
 - Mesa3D to 26.3.0
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
+- Rockchip RK3588 mainline kernel updated to 7.3.5
 - X86_64 / Zen3 kernel updated to 7.3.5
 
 # 2026/11/17 - batocera.linux 44 - Malachite

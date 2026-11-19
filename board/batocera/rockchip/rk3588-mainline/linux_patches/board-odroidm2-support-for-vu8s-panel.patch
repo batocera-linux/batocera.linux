@@ -5,12 +5,12 @@ Subject: Odroid-M2: Add support for Hardkernel ODROID-Vu8S panel
 
 Signed-off-by: Milivoje Legenovic <m.legenovic@gmail.com>
 ---
- arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts | 135 ++++++
- drivers/gpu/drm/panel/panel-ilitek-ili9881c.c      | 228 ++++++++++
- 2 files changed, 363 insertions(+)
+ .../boot/dts/rockchip/rk3588s-odroid-m2.dts   | 135 +++++++++++
+ drivers/gpu/drm/panel/panel-ilitek-ili9881c.c | 228 ++++++++++++++++++
+  2 files changed, 363 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts b/arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts
-index 111111111111..222222222222 100644
+index f61694ada..e0a663fb1 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3588s-odroid-m2.dts
 @@ -19,6 +19,47 @@ aliases {
@@ -117,7 +117,7 @@ index 111111111111..222222222222 100644
  &gmac1 {
  	clock_in_out = "input";
  	phy-handle = <&rgmii_phy1>;
-@@ -341,6 +431,20 @@ &i2c8 {
+@@ -345,6 +435,20 @@ &i2c8 {
  	pinctrl-0 = <&i2c8m2_xfer>;
  	status = "okay";
  
@@ -138,7 +138,7 @@ index 111111111111..222222222222 100644
  	usbc0: usb-typec@22 {
  		compatible = "fcs,fusb302";
  		reg = <0x22>;
-@@ -454,6 +558,10 @@ lcd {
+@@ -466,6 +570,10 @@ lcd {
  		lcd_pwren: lcd-pwren {
  			rockchip,pins = <4 RK_PA3 RK_FUNC_GPIO &pcfg_pull_none>;
  		};
@@ -149,7 +149,7 @@ index 111111111111..222222222222 100644
  	};
  
  	leds {
-@@ -497,6 +605,16 @@ rtl8211f_rst: rtl8211f-rst {
+@@ -509,6 +617,16 @@ rtl8211f_rst: rtl8211f-rst {
  		};
  	};
  
@@ -166,7 +166,7 @@ index 111111111111..222222222222 100644
  	usb {
  		usb2_host_pwren: usb2-host-pwren {
  			rockchip,pins = <1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
-@@ -522,6 +640,11 @@ &pwm0 {
+@@ -534,6 +652,11 @@ &pwm0 {
  	status = "okay";
  };
  
@@ -178,7 +178,7 @@ index 111111111111..222222222222 100644
  &saradc {
  	vref-supply = <&vcca_1v8_s0>;
  	status = "okay";
-@@ -970,3 +1093,15 @@ vp0_out_hdmi0: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
+@@ -982,3 +1105,15 @@ vp0_out_hdmi0: endpoint@ROCKCHIP_VOP2_EP_HDMI0 {
  		remote-endpoint = <&hdmi0_in_vp0>;
  	};
  };
@@ -195,11 +195,11 @@ index 111111111111..222222222222 100644
 +	};
 +};
 diff --git a/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c b/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
-index 111111111111..222222222222 100644
+index c3d5ab671..cb3905a8d 100644
 --- a/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
 +++ b/drivers/gpu/drm/panel/panel-ilitek-ili9881c.c
-@@ -1611,6 +1611,207 @@ static const struct ili9881c_instr bsd1218_a101kl68_init[] = {
- 	ILI9881C_COMMAND_INSTR(0xd3, 0x3f),
+@@ -2198,6 +2198,207 @@ static const struct ili9881c_instr waveshare_7inch_a_init[] = {
+ 	ILI9881C_COMMAND_INSTR(0x36, 0x00),
  };
  
 +static const struct ili9881c_instr odroid_vu8s_init[] = {
@@ -406,8 +406,8 @@ index 111111111111..222222222222 100644
  static inline struct ili9881c *panel_to_ili9881c(struct drm_panel *panel)
  {
  	return container_of(panel, struct ili9881c, panel);
-@@ -1840,6 +2041,23 @@ static const struct drm_display_mode bsd1218_a101kl68_default_mode = {
- 	.height_mm	= 170,
+@@ -2493,6 +2694,23 @@ static const struct drm_display_mode waveshare_7inch_a_mode = {
+ 	.height_mm	= 154,
  };
  
 +static const struct drm_display_mode odroid_hj080be31ia1_default_mode = {
@@ -430,8 +430,8 @@ index 111111111111..222222222222 100644
  static int ili9881c_get_modes(struct drm_panel *panel,
  			      struct drm_connector *connector)
  {
-@@ -2017,6 +2235,15 @@ static const struct ili9881c_desc bsd1218_a101kl68_desc = {
- 	.lanes = 4,
+@@ -2704,6 +2922,15 @@ static const struct ili9881c_desc waveshare_7inch_a_desc = {
+ 	.lanes = 2,
  };
  
 +static const struct ili9881c_desc odroid_vu8s_desc = {
@@ -446,9 +446,9 @@ index 111111111111..222222222222 100644
  static const struct of_device_id ili9881c_of_match[] = {
  	{ .compatible = "bananapi,lhr050h41", .data = &lhr050h41_desc },
  	{ .compatible = "bestar,bsd1218-a101kl68", .data = &bsd1218_a101kl68_desc },
-@@ -2026,6 +2253,7 @@ static const struct of_device_id ili9881c_of_match[] = {
- 	{ .compatible = "wanchanglong,w552946aba", .data = &w552946aba_desc },
+@@ -2716,6 +2943,7 @@ static const struct of_device_id ili9881c_of_match[] = {
  	{ .compatible = "ampire,am8001280g", .data = &am8001280g_desc },
+ 	{ .compatible = "raspberrypi,dsi-5inch", &rpi_5inch_desc },
  	{ .compatible = "raspberrypi,dsi-7inch", &rpi_7inch_desc },
 +	{ .compatible = "odroid,vu8s", .data = &odroid_vu8s_desc },
  	{ }
@@ -456,4 +456,3 @@ index 111111111111..222222222222 100644
  MODULE_DEVICE_TABLE(of, ili9881c_of_match);
 -- 
 Armbian
-
