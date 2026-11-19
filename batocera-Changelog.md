@@ -12,6 +12,7 @@
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
 - Windows: .NET 5+ games (such as Celeste64) closed at start with WINE Proton and WINE TKG
+- Windows: new WINE Proton prefixes asked to download WINE Mono
 - Windows: the FPS limiter option had no effect on DXVK games
 ### Updated
 - Cemu to Nov 13, 2026 build
