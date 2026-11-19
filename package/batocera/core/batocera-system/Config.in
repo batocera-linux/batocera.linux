@@ -1988,7 +1988,7 @@ config BR2_PACKAGE_BATOCERA_GUNS
 	select BR2_PACKAGE_FUSION_LIGHTGUNS			# Fusion Lightgun
 	select BR2_PACKAGE_DOLPHINBAR_GUNS			# Dolphinbar light gun
 	select BR2_PACKAGE_SINDEN_GUNS				# Sinden Light gun
-	select BR2_PACKAGE_AELIGHTGUN				# AE Light gun
+	# select BR2_PACKAGE_AELIGHTGUN				# AE Light gun disabled cause it is seen as a generic mouse (same as some trackballs)
 	select BR2_PACKAGE_GUN4IR_GUNS				# GUN4IR light gun
 	select BR2_PACKAGE_RETROSHOOTER_GUNS			# RetroShooter light gun
 	select BR2_PACKAGE_OPENFIRE_GUNS			# OpenFIRE light gun
