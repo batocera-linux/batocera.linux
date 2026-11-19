@@ -1,0 +1,36 @@
+--- a/drivers/hid/hid-lenovo-go-s.c
++++ b/drivers/hid/hid-lenovo-go-s.c
+@@ -1683,26 +1683,18 @@
+ 		return;
+ 	}
+ 
++	/* only informational, the touchpad does not answer on some units */
+ 	ret = mcu_property_out(drvdata->hdev, GET_PL_TEST, TEST_TP_MFR, NULL, 0);
+-	if (ret) {
+-		dev_err(&drvdata->hdev->dev,
+-			"Failed to retrieve Touchpad Manufacturer: %i\n", ret);
+-		return;
+-	}
++	if (ret)
++		dev_warn(&drvdata->hdev->dev, "Failed to retrieve Touchpad Manufacturer: %i\n", ret);
+ 
+ 	ret = mcu_property_out(drvdata->hdev, GET_PL_TEST, TEST_TP_VER, NULL, 0);
+-	if (ret) {
+-		dev_err(&drvdata->hdev->dev,
+-			"Failed to retrieve Touchpad Firmware Version: %i\n", ret);
+-		return;
+-	}
++	if (ret)
++		dev_warn(&drvdata->hdev->dev, "Failed to retrieve Touchpad Firmware Version: %i\n", ret);
+ 
+ 	ret = mcu_property_out(drvdata->hdev, GET_PL_TEST, TEST_IMU_MFR, NULL, 0);
+-	if (ret) {
+-		dev_err(&drvdata->hdev->dev,
+-			"Failed to retrieve IMU Manufacturer: %i\n", ret);
+-		return;
+-	}
++	if (ret)
++		dev_warn(&drvdata->hdev->dev, "Failed to retrieve IMU Manufacturer: %i\n", ret);
+ 
+ 	ret = mcu_property_out(drvdata->hdev, GET_GAMEPAD_CFG, FEATURE_OS_MODE,
+ 			       NULL, 0);
