@@ -1,0 +1,14 @@
+diff --git a/src/video_core/host_shaders/CMakeLists.txt b/src/video_core/host_shaders/CMakeLists.txt
+index 1f4d3bc..31e7f72 100644
+--- a/src/video_core/host_shaders/CMakeLists.txt
++++ b/src/video_core/host_shaders/CMakeLists.txt
+@@ -1,7 +1,8 @@
+ # SPDX-FileCopyrightText: Copyright 2023 Citra Emulator Project
+ # SPDX-License-Identifier: GPL-2.0-or-later
+ 
+-if (TARGET glslang-standalone)
++if (GLSLANG_COMPILER)
++elseif (TARGET glslang-standalone)
+     set(GLSLANG_COMPILER glslang-standalone)
+ elseif (TARGET glslang::glslang-standalone)
+     set(GLSLANG_COMPILER glslang::glslang-standalone)

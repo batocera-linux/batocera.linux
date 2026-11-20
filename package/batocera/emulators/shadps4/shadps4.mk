@@ -17,7 +17,7 @@
 #
 ################################################################################
 
-SHADPS4_VERSION = v.0.18.0
+SHADPS4_VERSION = v.0.21.0
 SHADPS4_SITE = https://github.com/shadps4-emu/shadPS4
 SHADPS4_SITE_METHOD = git
 SHADPS4_GIT_SUBMODULES = YES
@@ -27,9 +27,9 @@ SHADPS4_SUPPORTS_IN_SOURCE_BUILD = NO
 
 SHADPS4_EMULATOR_INFO = shadps4.emulator.yml
 
-SHADPS4_DEPENDENCIES += alsa-lib boost ffmpeg fmt freetype glslang host-protobuf jack2 libedit
+SHADPS4_DEPENDENCIES += alsa-lib boost ffmpeg fmt freetype glslang host-glslang host-protobuf jack2 libedit
 SHADPS4_DEPENDENCIES += libevdev libminiupnpc libzlib openal openssl pugixml xxhash
-SHADPS4_DEPENDENCIES += protobuf pulseaudio sdl3 udev vulkan-headers
+SHADPS4_DEPENDENCIES += protobuf pulseaudio sdl3 udev vulkan-headers zstd
 SHADPS4_DEPENDENCIES += vulkan-validationlayers
 
 SHADPS4_CMAKE_BACKEND = ninja
@@ -45,6 +45,7 @@ SHADPS4_CONF_OPTS += -DENABLE_SYSTEM_LIBRARIES=ON
 SHADPS4_CONF_OPTS += -DENABLE_UPDATER=OFF
 SHADPS4_CONF_OPTS += -DVMA_ENABLE_INSTALL=ON
 SHADPS4_CONF_OPTS += -DSHADPS4_PROTOC_EXECUTABLE=$(HOST_DIR)/bin/protoc
+SHADPS4_CONF_OPTS += -DGLSLANG_COMPILER=$(HOST_DIR)/bin/glslang
 
 # Dear_ImGui_FontEmbed is a build-time code generator that runs on the host.
 # The following builds the binary to run on the host rather than adding a
@@ -53,7 +54,7 @@ SHADPS4_CONF_OPTS += -DSHADPS4_PROTOC_EXECUTABLE=$(HOST_DIR)/bin/protoc
 # which is added in 0001-imgui-renderer-allow-prebuilt-fontembed.patch.
 define SHADPS4_BUILD_HOST_FONTEMBED
 	$(HOSTCXX) -O2 -o $(@D)/host-dear-imgui-fontembed \
-		$(@D)/externals/dear_imgui/misc/fonts/binary_to_compressed_c.cpp
+		$(@D)/externals/imgui/misc/fonts/binary_to_compressed_c.cpp
 endef
 SHADPS4_PRE_CONFIGURE_HOOKS += SHADPS4_BUILD_HOST_FONTEMBED
 

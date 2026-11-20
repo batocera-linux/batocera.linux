@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d38b447..6bc0c3a 100644
+index 96387e0..96439ed 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -246,6 +246,7 @@ if (ENABLE_SYSTEM_LIBRARIES)
+@@ -245,6 +245,7 @@ if (ENABLE_SYSTEM_LIBRARIES)
      find_package(miniz 3.1 CONFIG)
      find_package(nlohmann_json 3.12 CONFIG)
      find_package(PNG 1.6 MODULE)
@@ -10,7 +10,7 @@ index d38b447..6bc0c3a 100644
      find_package(OpenAL CONFIG)
      find_package(LibreSSL 4.3.1 MODULE)
      find_package(RenderDoc 1.6.0 MODULE)
-@@ -1208,7 +1208,7 @@ add_custom_command(
+@@ -1302,7 +1303,7 @@ add_custom_command(
      OUTPUT
          "${SHADNET_PROTO_OUT}/shadnet.pb.cc"
          "${SHADNET_PROTO_OUT}/shadnet.pb.h"
@@ -19,29 +19,32 @@ index d38b447..6bc0c3a 100644
          "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet"
          "--cpp_out=${SHADNET_PROTO_OUT}"
          "${CMAKE_CURRENT_SOURCE_DIR}/src/shadnet/shadnet.proto"
-@@ -1256,5 +1256,5 @@ target_link_libraries(shadps4 PRIVATE Cpp_Httplib miniupnpc::miniupnpc)
+@@ -1348,7 +1349,7 @@ target_link_libraries(shadps4 PRIVATE magic_enum::magic_enum fmt::fmt toml11::to
+ target_link_libraries(shadps4 PRIVATE Boost::headers GPUOpen::VulkanMemoryAllocator LibAtrac9 sirit Vulkan::Headers xxHash::xxhash Zydis::Zydis SDL3::SDL3 pugixml::pugixml)
+ target_link_libraries(shadps4 PRIVATE stb::headers lfreist-hwinfo::hwinfo nlohmann_json::nlohmann_json miniz::miniz fdk-aac CLI11::CLI11 OpenAL::OpenAL Cpp_Httplib miniupnpc::miniupnpc)
  target_link_libraries(shadps4 PRIVATE Freetype::Freetype)
 -target_link_libraries(shadps4 PRIVATE libprotobuf)
 +target_link_libraries(shadps4 PRIVATE protobuf::libprotobuf)
  target_link_libraries(shadps4 PRIVATE ZArchive::zarchive)
+ target_link_libraries(shadps4 PRIVATE zstd::libzstd)
  target_include_directories(shadps4 PRIVATE "${SHADNET_PROTO_OUT}")
- 
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 7b8175f..062582d 100644
+index cbe9219..d558e9b 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -384,5 +384,6 @@ endif()
+@@ -392,6 +392,7 @@ if (NOT TARGET absl::strings)
+ endif()
  
  # protobuf
 +if (NOT ENABLE_SYSTEM_LIBRARIES)
  set(protobuf_BUILD_TESTS              OFF CACHE INTERNAL "")
  set(protobuf_BUILD_EXAMPLES           OFF CACHE INTERNAL "")
  set(protobuf_BUILD_PROTOC_BINARIES    ON  CACHE INTERNAL "")
-@@ -394,6 +395,7 @@ if(MSVC)
+@@ -404,6 +405,7 @@ if(MSVC)
  set(protobuf_MSVC_STATIC_RUNTIME OFF CACHE BOOL "" FORCE)
  endif()
  add_subdirectory(protobuf EXCLUDE_FROM_ALL)
 +endif()
  
- # zstd (dependency of ZArchive)
- if (NOT TARGET libzstd_static)
+ if (NOT TARGET zstd::libzstd)
+     # zstd (dependency of ZArchive)
