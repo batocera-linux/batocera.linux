@@ -183,6 +183,8 @@ class XeniaEdge(Emulator):
             toml.dump(config, f)
 
         args: list[str | Path] = [_XENIA_EDGE_BIN]
+        pads = max(len(self.controllers), 1)
+        args.extend(f'--logged_profile_slot_{slot}_xuid=' for slot in range(pads, 4))
         if not configure_emulator(rom):
             args.append(rom)
 
