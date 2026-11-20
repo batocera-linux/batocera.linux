@@ -9,11 +9,12 @@
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 ### Fixed
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
+- Ghost Squad Evolution and other OSS audio games left a stuck audio process after exiting, which blocked cleanup for later games
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
-- Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - PPSSPP exit hotkey did nothing when no controller was connected
-- Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
+- Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - Windows: .NET 5+ games (such as Celeste64) closed at start with WINE Proton and WINE TKG
+- Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
 - Windows: new WINE Proton prefixes asked to download WINE Mono
 - Windows: the FPS limiter option had no effect on DXVK games
 ### Updated

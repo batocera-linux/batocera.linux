@@ -1,0 +1,91 @@
+Keep the PulseAudio mainloop running when a stream fails
+
+padsp_done() quit the threaded mainloop, but the main thread can be waiting
+in pa_threaded_mainloop_wait() for an operation (a drain on close), so it
+never woke up and osspd's reaper blocked on it for good. Flag the failure
+and signal instead, and stop the waits when a failure is flagged.
+
+--- a/ossp-padsp.c
++++ b/ossp-padsp.c
+@@ -125,8 +125,9 @@
+ 
+ static int padsp_done(void)
+ {
++	/* quitting the mainloop would strand a main thread waiting on an op */
+ 	fail_code = -EIO;
+-	mainloop_api->quit(mainloop_api, 1);
++	pa_threaded_mainloop_signal(mainloop, 0);
+ 	return fail_code;
+ }
+ 
+@@ -164,8 +165,11 @@
+ 	pa_operation *_o;						\
+ 	_o = op(args);							\
+ 	if (_o) {							\
+-		while (pa_operation_get_state(_o) != PA_OPERATION_DONE)	\
++		while (pa_operation_get_state(_o) == PA_OPERATION_RUNNING && \
++		       !fail_code)					\
+ 			pa_threaded_mainloop_wait(mainloop);		\
++		if (pa_operation_get_state(_o) == PA_OPERATION_RUNNING)	\
++			pa_operation_cancel(_o);			\
+ 		pa_operation_unref(_o);					\
+ 	} } while (0)
+ 
+@@ -182,14 +186,14 @@
+ }
+ 
+ #define EXEC_CONTEXT_OP(op, args...) ({					\
+-	int _success;							\
++	int _success = 0;						\
+ 	EXEC_OP(op , ##args, context_op_callback, &_success);		\
+ 	if (!_success)							\
+ 		warn_pa("%s() failed", #op);				\
+ 	_success ? 0 : -EIO; })
+ 
+ #define EXEC_STREAM_OP(op, args...) ({					\
+-	int _success;							\
++	int _success = 0;						\
+ 	EXEC_OP(op , ##args, stream_op_callback, &_success);		\
+ 	if (!_success)							\
+ 		warn_pa("%s() failed", #op);				\
+@@ -481,7 +485,8 @@
+ 			}
+ 		}
+ 
+-		while (pa_stream_get_state(s) == PA_STREAM_CREATING)
++		while (pa_stream_get_state(s) == PA_STREAM_CREATING &&
++		       !fail_code)
+ 			pa_threaded_mainloop_wait(mainloop);
+ 		if (pa_stream_get_state(s) != PA_STREAM_READY) {
+ 			err_pa("failed to connect stream (state=%d)",
+@@ -1081,11 +1086,13 @@
+ 	stream_waiting++;
+ 	while (1) {
+ 		size = pa_stream_writable_size(stream[PLAY]);
+-		if (arg->nonblock || size >= user_frag_size)
++		if (arg->nonblock || size >= user_frag_size || fail_code)
+ 			break;
+ 		pa_threaded_mainloop_wait(mainloop);
+ 	}
+ 	stream_waiting--;
++	if (fail_code)
++		return fail_code;
+ 
+ 	size = round_down(size, user_frag_size);
+ 	if (!size)
+@@ -1117,11 +1124,14 @@
+ 		stream_waiting++;
+ 		while (1) {
+ 			size = pa_stream_readable_size(stream[REC]);
+-			if (size + ring_bytes(&rec_buf) >= user_frag_size)
++			if (size + ring_bytes(&rec_buf) >= user_frag_size ||
++			    fail_code)
+ 				break;
+ 			pa_threaded_mainloop_wait(mainloop);
+ 		}
+ 		stream_waiting--;
++		if (fail_code)
++			return fail_code;
+ 	}
+ 
+ 	while (ring_bytes(&rec_buf) < max(user_frag_size, *dout_szp)) {
