@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import ast
 import logging
-import re
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Self
 
@@ -610,11 +609,13 @@ def generate_controller_config_any(
             nsamepad = double_pads.get(pad.real_name.strip(), 0)
             double_pads[pad.real_name.strip()] = nsamepad + 1
 
+            device = f'evdev/{nsamepad!s}/{pad.real_name.strip()}'
+
             f.write(f'[{any_def_key}{nplayer}]\n')
-            f.write(f'Device = evdev/{nsamepad!s}/{pad.real_name.strip()}\n')
+            f.write(f'Device = {device}\n')
 
             if emulator.config.get_bool('use_pad_profiles'):
-                if not _generate_controller_config_any_from_profiles(f, pad, emulator, extra_options or {}):
+                if not _generate_controller_config_any_from_profiles(f, device, emulator, extra_options or {}):
                     _generate_controller_config_any_auto(
                         f,
                         pad,
@@ -786,7 +787,7 @@ def _generate_controller_config_any_auto(
 
 
 def _generate_controller_config_any_from_profiles(
-    f: SupportsWrite[str], pad: Controller, emulator: Emulator, extra_options: Mapping[str, str], /
+    f: SupportsWrite[str], device: str, emulator: Emulator, extra_options: Mapping[str, str], /
 ) -> bool:
     glob_path: Path | None = None
     if emulator.system == 'gamecube':
@@ -805,12 +806,7 @@ def _generate_controller_config_any_from_profiles(
             profile_device = profile_config.get('Profile', 'Device')
             _logger.debug('Profile device : %s', profile_device)
 
-            device_vals = re.match('^([^/]*)/[0-9]*/(.*)$', profile_device)
-            if (
-                device_vals is not None
-                and device_vals.group(1) == 'evdev'
-                and device_vals.group(2).strip() == pad.real_name.strip()
-            ):
+            if profile_device == device:
                 _logger.debug('Eligible profile device found')
                 # Profiles don't store Source, so without it Dolphin leaves Wiimotes 2-4 at None
                 for key, val in extra_options.items():
