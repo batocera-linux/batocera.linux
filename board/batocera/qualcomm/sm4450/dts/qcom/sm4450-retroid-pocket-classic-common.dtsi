@@ -1795,7 +1795,8 @@
 			#sound-dai-cells = <0>;
 			firmware-name = "qcom/sm4450/RPClassic/aw88166_acf.bin";
 			sound-name-prefix = "Left";
-			awinic,audio-channel = <0>;
+			/* batocera - stock amp order, @34 is channel 1 and @35 stays on 0 */
+			awinic,audio-channel = <1>;
 			awinic,sync-flag;
 		};
 
