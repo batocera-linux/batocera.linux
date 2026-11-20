@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-XEMU_VERSION = v0.8.136
+XEMU_VERSION = v0.8.139
 XEMU_SITE = https://github.com/xemu-project/xemu.git
 XEMU_SITE_METHOD = git
 XEMU_GIT_SUBMODULES = YES
@@ -12,7 +12,7 @@ XEMU_LICENSE = GPLv2
 XEMU_EMULATOR_INFO = xemu.emulator.yml
 XEMU_DEPENDENCIES = python3 bzip2 pixman zlib slirp sdl3 libgbm libopenssl
 XEMU_DEPENDENCIES += libpcap libsamplerate gmp libgtk3 xlib_libX11 keyutils
-XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp
+XEMU_DEPENDENCIES += host-libcurl libcurl json-for-modern-cpp dsp56300
 
 XEMU_EXTRA_DOWNLOADS = \
     https://github.com/mborgerson/xemu-hdd-image/releases/download/1.0/xbox_hdd.qcow2.zip

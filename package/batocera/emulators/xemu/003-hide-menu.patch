@@ -1,8 +1,8 @@
-diff --git a/ui/xemu-input.c b/ui/xemu-input.c.new
-index d9181fe2a6..0346b169a0 100644
+diff --git a/ui/xemu-input.c b/ui/xemu-input.c
+index 4fbc863..9d8fd99 100644
 --- a/ui/xemu-input.c
-+++ b/ui/xemu-input.c.new
-@@ -181,9 +181,9 @@ void xemu_input_init(void)
++++ b/ui/xemu-input.c
+@@ -312,9 +312,9 @@ void xemu_input_init(void)
      int port = xemu_input_get_controller_default_bind_port(new_con, 0);
      if (port >= 0) {
          xemu_input_bind(port, new_con, 0);
@@ -15,7 +15,7 @@ index d9181fe2a6..0346b169a0 100644
          xemu_input_rebind_xmu(port);
      }
  
-@@ -304,9 +304,9 @@ void xemu_input_process_sdl_events(const SDL_Event *event)
+@@ -435,9 +435,9 @@ void xemu_input_process_sdl_events(const SDL_Event *event)
          }
  
          if (did_bind) {
@@ -27,4 +27,4 @@ index d9181fe2a6..0346b169a0 100644
 +            //xemu_queue_notification(buf);
              xemu_input_rebind_xmu(port);
          }
-     } else if (event->type == SDL_CONTROLLERDEVICEREMOVED) {
+     } else if (event->type == SDL_EVENT_GAMEPAD_REMOVED) {
