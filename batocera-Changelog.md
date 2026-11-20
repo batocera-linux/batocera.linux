@@ -34,6 +34,7 @@
 - ShadPS4 to v.0.21.0
 - TIC-80 to v1.4.1
 - Vita3k to Nov 19, 2026 build
+- Xemu to v0.8.139
 - Xenia Canary to Nov 19, 2026 build
 - Xenia Edge to Nov 20, 2026 build
 - Ymir to v0.4.1

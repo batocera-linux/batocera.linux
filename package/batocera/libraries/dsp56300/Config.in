@@ -1,0 +1,8 @@
+config BR2_PACKAGE_DSP56300
+	bool "dsp56300"
+	depends on BR2_PACKAGE_HOST_RUSTC_TARGET_ARCH_SUPPORTS
+	select BR2_PACKAGE_HOST_RUSTC
+	help
+	  Motorola DSP56300 JIT emulator library, used by xemu.
+
+	  https://github.com/mborgerson/dsp56300
