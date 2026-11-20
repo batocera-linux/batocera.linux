@@ -46,7 +46,7 @@
 ### System
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
-- Mesa3D to 26.3.0
+- Mesa3D to 26.3.1
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
