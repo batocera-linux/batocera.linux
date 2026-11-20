@@ -168,8 +168,6 @@ class XeniaEdge(Emulator):
                 'storage_root': str(self.config_dir),
                 'content_root': str(_XBOX360_SAVES),
                 'cache_root': str(xenia_cache),
-                'mount_scratch': True,
-                'mount_cache': self.config.get_bool('xenia_edge_cache', True),
             },
             UI={
                 'guide_button': False,

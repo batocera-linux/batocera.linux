@@ -1,8 +1,8 @@
-diff --git a/third_party/CMakeLists.txt b/third_party/CMakeLists.txt.new
-index 5458f8d..2869d8d 100644
+diff --git a/third_party/CMakeLists.txt b/third_party/CMakeLists.txt
+index 8079ae92b..a75504755 100644
 --- a/third_party/CMakeLists.txt
-+++ b/third_party/CMakeLists.txt.new
-@@ -688,98 +688,105 @@ endif()
++++ b/third_party/CMakeLists.txt
+@@ -702,98 +702,105 @@ endif()
  # ==============================================================================
  # SDL3
  # ==============================================================================
@@ -80,13 +80,28 @@ index 5458f8d..2869d8d 100644
 -# Consistent target name for downstream link calls.
 -if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 -  add_library(SDL3 ALIAS SDL3-shared)
-+option(XENIA_USE_SYSTEM_SDL3 "Use system-provided SDL3 instead of building the vendored submodule" OFF)
-+
-+if(XENIA_USE_SYSTEM_SDL3)
-+  find_package(SDL3 REQUIRED CONFIG)
- else()
+-else()
 -  add_library(SDL3 ALIAS SDL3-static)
 -endif()
++option(XENIA_USE_SYSTEM_SDL3 "Use system-provided SDL3 instead of building the vendored submodule" OFF)
+ 
+-# SDL3 explicitly bakes /W3 into its target COMPILE_OPTIONS, which clashes
+-# with the directory-level /W0 above and produces D9025 noise on every TU.
+-# Strip the /W* and /WX flags it added so only the directory-level /W0
+-# survives. Mirrors the same workaround we apply to SPIRV-Tools.
+-if(MSVC)
+-  foreach(_sdl3_target SDL3-static SDL_uclibc)
+-    if(TARGET ${_sdl3_target})
+-      get_target_property(_opts ${_sdl3_target} COMPILE_OPTIONS)
+-      if(_opts)
+-        list(FILTER _opts EXCLUDE REGEX "^/[Ww]([0-9]|all|X)$")
+-        set_target_properties(${_sdl3_target} PROPERTIES COMPILE_OPTIONS "${_opts}")
+-      endif()
+-    endif()
+-  endforeach()
++if(XENIA_USE_SYSTEM_SDL3)
++  find_package(SDL3 REQUIRED CONFIG)
++else()
 +	# Build SDL3 from source on every platform using upstream's own CMake. Xenia
 +	# drives windowing/rendering/GPU directly, so the SDL subsystems we don't
 +	# consume are switched off. Only audio + joystick/gamepad/haptic + events are
@@ -109,21 +124,7 @@ index 5458f8d..2869d8d 100644
 +	set(SDL_RENDER OFF CACHE INTERNAL "")
 +	set(SDL_SENSOR OFF CACHE INTERNAL "")
 +	set(SDL_HIDAPI_LIBUSB OFF CACHE INTERNAL "")
- 
--# SDL3 explicitly bakes /W3 into its target COMPILE_OPTIONS, which clashes
--# with the directory-level /W0 above and produces D9025 noise on every TU.
--# Strip the /W* and /WX flags it added so only the directory-level /W0
--# survives. Mirrors the same workaround we apply to SPIRV-Tools.
--if(MSVC)
--  foreach(_sdl3_target SDL3-static SDL_uclibc)
--    if(TARGET ${_sdl3_target})
--      get_target_property(_opts ${_sdl3_target} COMPILE_OPTIONS)
--      if(_opts)
--        list(FILTER _opts EXCLUDE REGEX "^/[Ww]([0-9]|all|X)$")
--        set_target_properties(${_sdl3_target} PROPERTIES COMPILE_OPTIONS "${_opts}")
--      endif()
--    endif()
--  endforeach()
++
 +	# We never create an SDL window, so the video backends are dead weight.
 +	# SDL_VIDEO and SDL_X11 must stay on: system_gnulinux.cc dlopens
 +	# SDL_ShowSimpleMessageBox(), which dispatches through the video bootstrap list.
@@ -197,7 +198,7 @@ index 5458f8d..2869d8d 100644
  endif()
  
  # ==============================================================================
-@@ -1162,7 +1178,21 @@ ffmpeg_common(libavformat)
+@@ -1124,7 +1131,21 @@ ffmpeg_common(libswresample)
  # ==============================================================================
  # wxWidgets
  # ==============================================================================
@@ -205,7 +206,7 @@ index 5458f8d..2869d8d 100644
 +
  if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
 +  if(XENIA_USE_SYSTEM_WXWIDGETS)
-+    find_package(wxWidgets REQUIRED COMPONENTS aui adv core base)
++    find_package(wxWidgets REQUIRED COMPONENTS aui adv core net base)
 +    add_library(xe-wxWidgets INTERFACE)
 +
 +    if(TARGET wxWidgets::wxWidgets)
@@ -219,9 +220,11 @@ index 5458f8d..2869d8d 100644
      # Build from vendored source — matches what we ship on Windows/macOS, and
      # on Linux gives us a known-good 3.3 (system 3.2 has GTK3/Wayland issues).
      # Strip the directory-level /W0 (or -w) so wxWidgets's own /W3 doesn't
-@@ -1292,4 +1325,5 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
+@@ -1268,6 +1289,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
      # compiled wx libraries to keep inline assert expansions consistent.
      target_compile_definitions(xe-wxWidgets INTERFACE
          $<$<CONFIG:Release>:wxDEBUG_LEVEL=0>)
 +  endif()
  endif()
+ 
+ # spirv_to_dxil (Mesa, NIR based SPIR-V to DXIL) is the D3D12 guest shader

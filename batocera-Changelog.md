@@ -28,6 +28,7 @@
 - ScummVM to v2026.4.0
 - TIC-80 to v1.4.1
 - OpenMSX to Release 22
+- Xenia Edge to Nov 20, 2026 build
 ### System
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
