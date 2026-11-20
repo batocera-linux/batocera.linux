@@ -34,6 +34,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
     # Overrides the RGA option for Mainline rockchip boards (Forces stateless v4l2request)
     ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV_RK_MAINLINE),y)
         BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request
+        ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_RK3562),y)
+            # Avoid expensive default GPU scaling that drops splash frames on RK3562.
+            BATOCERA_SPLASH_PLAYER_OPTIONS += --profile=fast
+        endif
     endif
     # RPi use drm-copy
     ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV_RPI),y)

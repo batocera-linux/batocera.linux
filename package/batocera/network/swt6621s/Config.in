@@ -1,0 +1,11 @@
+comment "swt6621s needs a Linux kernel to be built"
+	depends on !BR2_LINUX_KERNEL
+
+config BR2_PACKAGE_SWT6621S
+	bool "swt6621s"
+	depends on BR2_LINUX_KERNEL
+	help
+	  SeekWave SWT6621S SDIO Wi-Fi and Bluetooth drivers.
+	  The kernel needs CFG80211, MMC and Bluetooth support.
+
+	  https://github.com/Novice-PG/swt6621s

@@ -1,15 +1,15 @@
-From eb7da337d4e16ecc9674054649b57ef00875797c Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: retro98boy <retro98boy@qq.com>
 Date: Sat, 29 Aug 2026 15:59:16 +0800
-Subject: [PATCH 17/20] mmc: sdhci-of-dwcmshc: add RK3562 DLL settings
+Subject: mmc: sdhci-of-dwcmshc: add RK3562 DLL settings
 
 Add a dedicated RK3562 match entry and per-SoC DLL configuration for the DesignWare MMC host. Use the vendor-derived HS200/HS400 tap values, dynamic DLL lock calibration, HS400 CMDOUT edge selection, and the RK3562 low-speed DLL bypass behavior while preserving the existing RK3576 calibration and other SoC paths.
 ---
- drivers/mmc/host/sdhci-of-dwcmshc.c | 115 ++++++++++++++++++++++++----
+ drivers/mmc/host/sdhci-of-dwcmshc.c | 115 ++++++++--
  1 file changed, 102 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/mmc/host/sdhci-of-dwcmshc.c b/drivers/mmc/host/sdhci-of-dwcmshc.c
-index 5ec590663..b3ff0fcf7 100644
+index 111111111111..222222222222 100644
 --- a/drivers/mmc/host/sdhci-of-dwcmshc.c
 +++ b/drivers/mmc/host/sdhci-of-dwcmshc.c
 @@ -332,6 +332,18 @@ struct k230_pltfm_data {
@@ -186,7 +186,7 @@ index 5ec590663..b3ff0fcf7 100644
  
  	/* Disable cmd conflict check */
  	sdhci_writel(host, 0x0, dwc_priv->vendor_specific_area1 + DWCMSHC_HOST_CTRL3);
-@@ -2177,6 +2233,18 @@ static const struct cqhci_host_ops rk35xx_cqhci_ops = {
+@@ -2178,6 +2234,18 @@ static const struct cqhci_host_ops rk35xx_cqhci_ops = {
  	.set_tran_desc	= dwcmshc_set_tran_desc,
  };
  
@@ -205,7 +205,7 @@ index 5ec590663..b3ff0fcf7 100644
  static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3568_pdata = {
  	.dwcmshc_pdata = {
  		.pdata = {
-@@ -2193,6 +2261,23 @@ static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3568_pdata = {
+@@ -2194,6 +2262,23 @@ static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3568_pdata = {
  	.revision = 0,
  };
  
@@ -229,7 +229,7 @@ index 5ec590663..b3ff0fcf7 100644
  static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3576_pdata = {
  	.dwcmshc_pdata = {
  		.pdata = {
-@@ -2392,6 +2477,10 @@ static const struct of_device_id sdhci_dwcmshc_dt_ids[] = {
+@@ -2393,6 +2478,10 @@ static const struct of_device_id sdhci_dwcmshc_dt_ids[] = {
  		.compatible = "canaan,k230-sdio",
  		.data = &k230_sdio_data.dwcmshc_pdata,
  	},
@@ -241,5 +241,5 @@ index 5ec590663..b3ff0fcf7 100644
  		.compatible = "rockchip,rk3588-dwcmshc",
  		.data = &sdhci_dwcmshc_rk3588_pdata,
 -- 
-2.55.0
+Armbian
 

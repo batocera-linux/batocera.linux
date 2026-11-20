@@ -17,14 +17,14 @@ Signed-off-by: crackerjacques <jack@supremeoverlordjabs.co>
 ---
  drivers/gpu/drm/panel/Kconfig                     |  11 +
  drivers/gpu/drm/panel/Makefile                    |   1 +
- drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c | 697 ++++++++++
- 3 files changed, 709 insertions(+)
+ drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c | 698 ++++++++++
+ 3 files changed, 710 insertions(+)
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
 index 111111111111..222222222222 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -812,6 +812,17 @@ config DRM_PANEL_RENESAS_R69328
+@@ -877,6 +877,17 @@ config DRM_PANEL_RENESAS_R69328
  	  This panel controller can be found in LG Optimus 4X P895 smartphone
  	  in combination with LCD panel.
  
@@ -46,9 +46,9 @@ diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
 index 111111111111..222222222222 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -79,6 +79,7 @@ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM692E5) += panel-raydium-rm692e5.o
- obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM69380) += panel-raydium-rm69380.o
+@@ -85,6 +85,7 @@ obj-$(CONFIG_DRM_PANEL_RAYDIUM_RM69380) += panel-raydium-rm69380.o
  obj-$(CONFIG_DRM_PANEL_RENESAS_R61307) += panel-renesas-r61307.o
+ obj-$(CONFIG_DRM_PANEL_RENESAS_R63419) += panel-renesas-r63419.o
  obj-$(CONFIG_DRM_PANEL_RENESAS_R69328) += panel-renesas-r69328.o
 +obj-$(CONFIG_DRM_PANEL_ROCKNIX_GENERIC_DSI) += panel-rocknix-generic-dsi.o
  obj-$(CONFIG_DRM_PANEL_RONBO_RB070D30) += panel-ronbo-rb070d30.o
@@ -59,7 +59,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-rocknix-generic-dsi.c
-@@ -0,0 +1,697 @@
+@@ -0,0 +1,698 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * Generic MIPI-DSI panel driver
@@ -85,6 +85,7 @@ index 000000000000..111111111111
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_panel.h>
 +
 +#define DRIVER_NAME "panel-rocknix-generic-dsi"
@@ -362,7 +363,7 @@ index 000000000000..111111111111
 +
 +        release_firmware(fw);
 +    } else {
-+        //ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++        //ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +        const char *line;
 +        char * buf;
 +        size_t linescnt, i;
@@ -671,7 +672,7 @@ index 000000000000..111111111111
 +        return ret;
 +    }
 +
-+    ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++    ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +    if (ret < 0) {
 +        dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
 +        return ret;
