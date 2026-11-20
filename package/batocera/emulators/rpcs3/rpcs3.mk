@@ -3,8 +3,8 @@
 # rpcs3
 #
 ################################################################################
-# Version: Commits on Sep 24, 2026
-RPCS3_VERSION = c82221f292880272d11302ecf1206f81a970a5ab
+# Version: Commits on Nov 19, 2026
+RPCS3_VERSION = 1808e241d7b1bfb1c521e392b4c51a7d5494e9ca
 RPCS3_SITE = https://github.com/RPCS3/rpcs3.git
 RPCS3_SITE_METHOD=git
 RPCS3_GIT_SUBMODULES=YES
@@ -12,14 +12,14 @@ RPCS3_LICENSE = GPLv2
 RPCS3_EMULATOR_INFO = rpcs3.emulator.yml
 RPCS3_SUPPORTS_IN_SOURCE_BUILD = NO
 
-# Version: Commits on Sep 24, 2026
-RPCS3_TRANSLATIONS_VERSION = 9d7a7b45d59e4e15d9922e8231606dbdccb41f44
+# Version: Commits on Nov 19, 2026
+RPCS3_TRANSLATIONS_VERSION = 62fa31c7400b94784d4d919981347f819db300a3
 RPCS3_EXTRA_DOWNLOADS = \
     https://github.com/RPCS3/rpcs3_translations/archive/$(RPCS3_TRANSLATIONS_VERSION).tar.gz
 
 RPCS3_DEPENDENCIES += alsa-lib faudio ffmpeg flatbuffers host-clang host-lld
 RPCS3_DEPENDENCIES += libcurl libevdev libglew libglu libpng libusb libxml2 llvm
-RPCS3_DEPENDENCIES += mesa3d ncurses openal opencv4 qt6base qt6declarative
+RPCS3_DEPENDENCIES += mesa3d ncurses openal qt6base qt6declarative
 RPCS3_DEPENDENCIES += qt6multimedia qt6svg rtmpdump sdl3 wolfssl
 
 RPCS3_CMAKE_BACKEND = ninja
@@ -44,11 +44,11 @@ RPCS3_CONF_OPTS += -DUSE_SYSTEM_CURL=ON
 RPCS3_CONF_OPTS += -DUSE_SDL=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_SDL=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_FFMPEG=ON
-RPCS3_CONF_OPTS += -DUSE_SYSTEM_OPENCV=ON
 RPCS3_CONF_OPTS += -DUSE_SYSTEM_LIBUSB=ON
 RPCS3_CONF_OPTS += -DUSE_LIBEVDEV=ON
 RPCS3_CONF_OPTS += -DUSE_FAUDIO=ON
 RPCS3_CONF_OPTS += -DUSE_DISCORD_RPC=OFF
+RPCS3_CONF_OPTS += -DUSE_OPENXR=OFF
 RPCS3_CONF_OPTS += -DOpenGL_GL_PREFERENCE=LEGACY
 RPCS3_CONF_OPTS += -DBUILD_LLVM=OFF
 RPCS3_CONF_OPTS += -DSTATIC_LINK_LLVM=OFF
