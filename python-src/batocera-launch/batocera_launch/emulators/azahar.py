@@ -231,27 +231,24 @@ class Azahar(Emulator):
         azahar_config.set('UI', r'fullscreen\default', 'false')
 
         # Batocera - Defaults
-        azahar_config.set('UI', 'display_titlebar', 'false')
-        azahar_config.set('UI', r'display_titlebar\default', 'false')
-        azahar_config.set('UI', 'first_start', 'false')
-        azahar_config.set('UI', r'first_start\default', 'false')
-        azahar_config.set('UI', 'hide_mouse', 'true')
-        azahar_config.set('UI', r'hide_mouse\default', 'false')
+        azahar_config.set('UI', 'displayTitleBars', 'false')
+        azahar_config.set('UI', r'displayTitleBars\default', 'false')
+        azahar_config.set('UI', 'firstStart', 'false')
+        azahar_config.set('UI', r'firstStart\default', 'false')
+        azahar_config.set('UI', 'hideInactiveMouse', 'true')
+        azahar_config.set('UI', r'hideInactiveMouse\default', 'false')
         azahar_config.set('UI', 'confirmClose', 'false')
         azahar_config.set('UI', r'confirmClose\default', 'false')
         azahar_config.set('UI', 'enable_discord_presence', 'false')
         azahar_config.set('UI', r'enable_discord_presence\default', 'false')
 
         # Remove pop-up prompt on start
-        azahar_config.set('UI', 'callout_flags', '1')
-        azahar_config.set('UI', r'callout_flags\default', 'false')
-        # Close without confirmation
-        azahar_config.set('UI', 'confirm_before_closing', 'false')
-        azahar_config.set('UI', r'confirm_before_closing\default', 'false')
+        azahar_config.set('UI', 'calloutFlags', '1')
+        azahar_config.set('UI', r'calloutFlags\default', 'false')
 
         # screenshots
-        azahar_config.set('UI', r'Paths\screenshot_path', str(SCREENSHOTS))
-        azahar_config.set('UI', r'Paths\screenshot_path\default', 'false')
+        azahar_config.set('UI', r'Paths\screenshotPath', str(SCREENSHOTS))
+        azahar_config.set('UI', r'Paths\screenshotPath\default', 'false')
 
         ## [MISCELLANEOUS]
         if not azahar_config.has_section('Miscellaneous'):
