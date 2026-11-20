@@ -18,6 +18,7 @@
 - Windows: the FPS limiter option had no effect on DXVK games
 ### Updated
 - Cemu to Nov 13, 2026 build
+- DOSBox Staging to v0.83.1
 - Keisho (formerly SM2-Emu) to v0.9.63
 ### System
 - Mesa3D to 26.3.0
