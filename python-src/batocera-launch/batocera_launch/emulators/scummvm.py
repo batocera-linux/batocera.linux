@@ -20,7 +20,6 @@
 
 from __future__ import annotations
 
-import os
 import re
 from typing import TYPE_CHECKING, Final
 
@@ -128,7 +127,7 @@ class ScummVM(Emulator):
         return Command(
             args,
             env={
-                'SDL_VIDEODRIVER': 'wayland' if 'WAYLAND_DISPLAY' in os.environ else 'x11',
+                'SDL_VIDEODRIVER': 'wayland' if self.wayland_session else 'x11',
                 'XDG_CONFIG_HOME': CONFIGS,
                 'XDG_CACHE_HOME': CACHE,
             },

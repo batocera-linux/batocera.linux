@@ -1,0 +1,15 @@
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -10082,6 +10082,12 @@
+ 					g_flHDRItmTargetNits = atof(optarg);
+ 				} else if (strcmp(opt_name, "framerate-limit") == 0) {
+ 					g_nSteamCompMgrTargetFPS = atoi(optarg);
++					// the refresh cycle update on every frame keeps only an override
++					for ( int i = 0; i < gamescope::GAMESCOPE_SCREEN_TYPE_COUNT; i++ )
++					{
++						g_nCombinedAppRefreshCycleOverride[i] = g_nSteamCompMgrTargetFPS;
++						g_nCombinedAppRefreshCycleChangeRefresh[i] = false;
++					}
+ 				} else if (strcmp(opt_name, "reshade-effect") == 0) {
+ 					g_reshade_effect = optarg;
+ 				} else if (strcmp(opt_name, "reshade-technique-idx") == 0) {

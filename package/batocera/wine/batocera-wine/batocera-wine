@@ -208,7 +208,8 @@ wine_options() {
     fi
 
     VDESKTOP=""
-    if [[ "${VIRTUAL_DESKTOP}" = 1 ]]; then
+    # gamescope already gives wine its own screen
+    if [[ "${VIRTUAL_DESKTOP}" = 1 && "${XDG_CURRENT_DESKTOP}" != "gamescope" ]]; then
         VDESKTOP="explorer /desktop=Wine,${VIRTUAL_DESKTOP_SIZE}"
     fi
 
@@ -439,9 +440,9 @@ reg_install() {
         WINEPREFIX=${WINEPREFIX} ${CMD_PREFIX} "${WINE}" reg add "HKEY_CURRENT_USER\Control Panel\Colors" /v "Background" /t REG_SZ /d "0 0 0" /f &>/dev/null
     fi
 
-    # Wine picks its own Wayland driver whenever Wayland is running, the SDL 1.2 games Mugen runs need XWayland's X11 driver
-    if [[ "${SYSTEM}" = "mugen" && "${SYSTEM_DISPLAY_MODE}" = "wayland" ]]; then
-        if [[ "${WAYLAND_DRIVER}" != "native" ]]; then
+    # Wine picks its own Wayland driver whenever Wayland is running, the SDL 1.2 games Mugen runs and anything inside gamescope need the X11 driver
+    if [[ "${SYSTEM_DISPLAY_MODE}" = "wayland" ]]; then
+        if [[ "${WAYLAND_DRIVER}" != "native" && ( "${SYSTEM}" = "mugen" || "${XDG_CURRENT_DESKTOP}" = "gamescope" ) ]]; then
             if ! grep -q '^"Graphics"="x11"' "${WINEPOINT}/user.reg" 2>/dev/null; then
                 WINEPREFIX=${WINEPOINT} ${CMD_PREFIX} "${WINE}" reg add "HKEY_CURRENT_USER\Software\Wine\Drivers" /v "Graphics" /t REG_SZ /d "x11" /f &>/dev/null
                 waitWineServer 0
@@ -1193,6 +1194,10 @@ init_wine() {
 
     ## Wine detection
     WINE_RUNNER="$(/usr/bin/batocera-settings-get windows.wine-runner)"
+    # wine-proton emulates the display modes that gamescope cannot scale
+    if [[ -z "$WINE_RUNNER" && "${XDG_CURRENT_DESKTOP}" = "gamescope" && -x /usr/wine/wine-proton/bin/wine ]]; then
+        WINE_RUNNER="wine-proton"
+    fi
     [[ -z "$WINE_RUNNER" ]] && WINE_RUNNER="wine-tkg"
 
     WINE_VERSION="$(get_setting wine-runner "${SYSTEM}" "${ROMGAMENAME}")"

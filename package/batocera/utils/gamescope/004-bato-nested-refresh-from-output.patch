@@ -1,0 +1,28 @@
+--- a/src/Backends/WaylandBackend.cpp
++++ b/src/Backends/WaylandBackend.cpp
+@@ -229,6 +229,7 @@
+         std::optional<WaylandPlaneState> GetCurrentState() { std::unique_lock lock( m_PlaneStateLock ); return m_oCurrentPlaneState; }
+ 
+         void UpdateVRRRefreshRate();
++        bool m_bHostRefreshKnown = false;
+ 
+     private:
+ 
+@@ -1728,7 +1729,8 @@
+         if ( m_pParent )
+             return;
+ 
+-        if ( !m_pConnector->HostCompositorIsCurrentlyVRR() )
++        // hosts that discard our feedback (wlroots, when a plane covers the toplevel) never send a refresh, use the output's
++        if ( !m_pConnector->HostCompositorIsCurrentlyVRR() && m_bHostRefreshKnown )
+             return;
+ 
+         if ( m_pOutputs.empty() )
+@@ -1821,6 +1823,7 @@
+         if ( uRefreshCycle )
+         {
+             int32_t nRefresh = RefreshCycleTomHz( uRefreshCycle );
++            m_bHostRefreshKnown = true;
+             if ( nRefresh && nRefresh != g_nOutputRefresh )
+             {
+                 xdg_log.infof( "Changed refresh to: %.3fhz", ConvertmHzToHz( (float) nRefresh ) );

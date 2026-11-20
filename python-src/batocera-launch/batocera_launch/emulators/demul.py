@@ -68,6 +68,11 @@ def _sync_directories(source_dir: Path, dest_dir: Path, /) -> None:
 
 @cached_dataclass
 class Demul(Emulator):
+    @property
+    def supports_gamescope(self) -> bool:
+        # the cave3rd fullscreen helper sends its keys to the labwc X display
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {

@@ -1,4 +1,10 @@
 #!/bin/bash
 
+# inside gamescope the X server to use is gamescope's own, not the first socket
+if [ "${XDG_CURRENT_DESKTOP}" = "gamescope" ] && [ -n "${DISPLAY}" ]; then
+    echo "${DISPLAY}"
+    exit 0
+fi
+
 find /tmp/.X11-unix/X* 2>/dev/null | head -1 | sed -e s+"^.*/X"+":"+
 exit ${PIPESTATUS[0]}

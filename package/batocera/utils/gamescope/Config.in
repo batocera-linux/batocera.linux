@@ -1,0 +1,58 @@
+config BR2_PACKAGE_GAMESCOPE
+	bool "gamescope"
+	depends on BR2_PACKAGE_BATOCERA_VULKAN
+	depends on BR2_PACKAGE_BATOCERA_LUAJIT_ARCH_SUPPORTS # batocera-luajit
+	select BR2_PACKAGE_GLM
+	select BR2_PACKAGE_STB
+	select BR2_PACKAGE_VULKAN_HEADERS
+	select BR2_PACKAGE_VULKAN_LOADER
+	select BR2_PACKAGE_WAYLAND
+	select BR2_PACKAGE_WAYLAND_PROTOCOLS
+	select BR2_PACKAGE_XLIB_LIBX11
+	help
+	  SteamOS session compositing window manager, built for
+	  nesting inside labwc only (no DRM backend).
+
+	  https://github.com/ValveSoftware/gamescope
+
+if BR2_PACKAGE_GAMESCOPE
+
+choice
+	prompt "gamescope build"
+	default BR2_PACKAGE_GAMESCOPE_COMPOSITOR
+
+config BR2_PACKAGE_GAMESCOPE_COMPOSITOR
+	bool "compositor"
+	select BR2_PACKAGE_HWDATA
+	select BR2_PACKAGE_LIBCAP
+	select BR2_PACKAGE_LIBDECOR
+	select BR2_PACKAGE_LIBDISPLAY_INFO
+	select BR2_PACKAGE_LIBINPUT
+	select BR2_PACKAGE_LIBXKBCOMMON
+	select BR2_PACKAGE_BATOCERA_LUAJIT
+	select BR2_PACKAGE_PIXMAN
+	select BR2_PACKAGE_WLROOTS
+	select BR2_PACKAGE_WLROOTS_XWAYLAND
+	select BR2_PACKAGE_XLIB_LIBXCOMPOSITE
+	select BR2_PACKAGE_XLIB_LIBXCURSOR
+	select BR2_PACKAGE_XLIB_LIBXDAMAGE
+	select BR2_PACKAGE_XLIB_LIBXEXT
+	select BR2_PACKAGE_XLIB_LIBXFIXES
+	select BR2_PACKAGE_XLIB_LIBXI
+	select BR2_PACKAGE_XLIB_LIBXMU
+	select BR2_PACKAGE_XLIB_LIBXRENDER
+	select BR2_PACKAGE_XLIB_LIBXRES
+	select BR2_PACKAGE_XLIB_LIBXTST
+	select BR2_PACKAGE_XLIB_LIBXXF86VM
+	select BR2_PACKAGE_XWAYLAND
+
+config BR2_PACKAGE_GAMESCOPE_WSI_LAYER_ONLY
+	bool "WSI layer only"
+	help
+	  Only the Vulkan WSI layer, for the 32-bit Wine libraries of
+	  the 64-bit images: without it gamescope can't pace or limit
+	  32-bit Vulkan games.
+
+endchoice
+
+endif

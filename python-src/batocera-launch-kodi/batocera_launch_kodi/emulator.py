@@ -28,6 +28,11 @@ from .config import write_kodi_config
 
 @cached_dataclass
 class Kodi(Emulator):
+    @property
+    def supports_gamescope(self) -> bool:
+        # a media centre, not a game: it sets its own display mode and audio passthrough
+        return False
+
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
         return {

@@ -287,6 +287,16 @@ cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/intel_icd.i686.json" "${TMPOUT}/us
 cp -av "${G_TARGETDIR}/usr/share/vulkan/icd.d/radeon_icd.i686.json" "${TMPOUT}/usr/share/vulkan/icd.d/radeon_icd.i686.json" || exit 1
 sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/icd.d/"*i686.json || exit 1
 
+# gamescope wsi layer
+echo
+echo "gamescope wsi layer..."
+echo
+mkdir -p "${TMPOUT}/usr/share/vulkan/implicit_layer.d" || exit 1
+cp -pv "${G_TARGETDIR}/usr/lib/libVkLayer_FROG_gamescope_wsi_x86.so" "${TMPOUT}/lib32/" || exit 1
+findDeps "${G_TARGETDIR}/usr/lib/libVkLayer_FROG_gamescope_wsi_x86.so" "${TMPOUT}/lib32" || exit 1
+cp -av "${G_TARGETDIR}/usr/share/vulkan/implicit_layer.d/VkLayer_FROG_gamescope_wsi.x86.json" "${TMPOUT}/usr/share/vulkan/implicit_layer.d/" || exit 1
+sed -i "s@/usr/lib/@/lib32/@g" "${TMPOUT}/usr/share/vulkan/implicit_layer.d/VkLayer_FROG_gamescope_wsi.x86.json" || exit 1
+
 # extra helper libraries
 # required after bump to glibc 2.34+
 echo
