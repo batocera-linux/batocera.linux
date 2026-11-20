@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d9edf977..24c0b765 100644
+index 0978708c..1c5552bc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -291,6 +291,9 @@ if (${BUILD_APPIMAGE})
- 	endif()
+@@ -147,6 +147,9 @@ if(CMAKE_GENERATOR MATCHES "Visual Studio" AND (CMAKE_C_COMPILER_ID MATCHES "MSV
+ 	string(APPEND CMAKE_CXX_FLAGS " /MP")
  endif()
  
 +# batocera - use system sdl3
@@ -13,7 +13,7 @@ index d9edf977..24c0b765 100644
  add_subdirectory(vita3k)
  add_subdirectory(tools/gen-modules)
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index 794f8368..e3160662 100644
+index 26ed6ed5..0983e419 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
 @@ -80,8 +80,6 @@ add_subdirectory(libfat16)
