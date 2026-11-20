@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-AMIBERRY_VERSION = v8.3.0
+AMIBERRY_VERSION = v8.5.0
 AMIBERRY_SITE = $(call github,BlitterStudio,amiberry,$(AMIBERRY_VERSION))
 AMIBERRY_LICENSE = GPLv3
 AMIBERRY_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -21,6 +21,13 @@ AMIBERRY_DEPENDENCIES += libglew libglu
 AMIBERRY_CONF_OPTS += -DUSE_OPENGL=ON
 else
 AMIBERRY_CONF_OPTS += -DUSE_OPENGL=OFF
+endif
+
+ifeq ($(BR2_PACKAGE_FFMPEG),y)
+AMIBERRY_DEPENDENCIES += ffmpeg
+AMIBERRY_CONF_OPTS += -DUSE_FFMPEG=ON
+else
+AMIBERRY_CONF_OPTS += -DUSE_FFMPEG=OFF
 endif
 
 define AMIBERRY_INSTALL_TARGET_CMDS
