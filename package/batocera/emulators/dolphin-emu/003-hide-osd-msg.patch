@@ -1,10 +1,10 @@
-diff --git a/Source/Core/VideoBackends/OGL/OGLConfig.cpp b/Source/Core/VideoBackends/OGL/OGLConfig.cpp
-index ab31592..4186ab9 100644
---- a/Source/Core/VideoBackends/OGL/OGLConfig.cpp
-+++ b/Source/Core/VideoBackends/OGL/OGLConfig.cpp
-@@ -602,9 +602,9 @@ bool PopulateConfig(GLContext* m_main_gl_context)
-   g_Config.VerifyValidity();
-   UpdateActiveConfig();
+diff --git a/Source/Core/VideoBackends/OGL/OGLMain.cpp b/Source/Core/VideoBackends/OGL/OGLMain.cpp
+index 0595afee17..4146454d53 100644
+--- a/Source/Core/VideoBackends/OGL/OGLMain.cpp
++++ b/Source/Core/VideoBackends/OGL/OGLMain.cpp
+@@ -206,9 +206,9 @@ bool VideoBackend::Initialize(const WindowSystemInfo& wsi)
+   if (!FillBackendInfo(main_gl_context.get()))
+     return false;
  
 -  OSD::AddMessage(fmt::format("Video Info: {}, {}, {}", g_ogl_config.gl_vendor,
 -                              g_ogl_config.gl_renderer, g_ogl_config.gl_version),

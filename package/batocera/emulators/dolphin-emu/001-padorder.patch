@@ -1,8 +1,8 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index 6df37b4..64ade4a 100644
+index fc10325fa0..3cce8729f7 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -392,6 +392,65 @@ void Init()
+@@ -432,6 +432,65 @@ InputBackend::InputBackend(ControllerInterface* controller_interface)
    StartHotplugThread();
  }
  
@@ -66,9 +66,9 @@ index 6df37b4..64ade4a 100644
 +}
 +
  // Only call this when ControllerInterface::m_devices_population_mutex is locked
- void PopulateDevices()
+ void InputBackend::PopulateDevices()
  {
-@@ -404,6 +463,10 @@ void PopulateDevices()
+@@ -444,6 +503,10 @@ void InputBackend::PopulateDevices()
    // We use udev to iterate over all /dev/input/event* devices.
    // Note: the Linux kernel is currently limited to just 32 event devices. If
    // this ever changes, hopefully udev will take care of this.
@@ -79,7 +79,7 @@ index 6df37b4..64ade4a 100644
  
    udev* const udev = udev_new();
    ASSERT_MSG(CONTROLLERINTERFACE, udev != nullptr, "Couldn't initialize libudev.");
-@@ -422,11 +485,25 @@ void PopulateDevices()
+@@ -462,11 +525,25 @@ void InputBackend::PopulateDevices()
  
      udev_device* dev = udev_device_new_from_syspath(udev, path);
  

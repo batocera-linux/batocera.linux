@@ -1,9 +1,9 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h b/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
-index 6dc0afafe8..3c87b3c30d 100644
+index 8f7f4baf40..601bdbbe8b 100644
 --- a/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
 +++ b/Source/Core/InputCommon/ControllerInterface/ControllerInterface.h
-@@ -34,9 +34,9 @@
- #if defined(HAVE_SDL2)
+@@ -35,9 +35,9 @@
+ #if defined(HAVE_SDL3)
  #define CIFACE_USE_SDL
  #endif
 -#if defined(HAVE_HIDAPI)
