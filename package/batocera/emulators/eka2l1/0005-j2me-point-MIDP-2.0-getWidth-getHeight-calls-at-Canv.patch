@@ -1,0 +1,920 @@
+From d3684a35e7fa9e1af784c5ee53d2c397cd37dbf9 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Wed, 4 Nov 2026 00:15:25 +0100
+Subject: [PATCH 5/8] j2me: point MIDP 2.0 getWidth/getHeight calls at Canvas
+ on install
+
+Darkest Fear 1 and 2 (Rovio) are MIDP-1.0 games, but they were compiled
+against the MIDP 2.0 classes. Their two calls to getWidth() and
+getHeight() therefore name Displayable, which has these methods only
+since MIDP 2.0. The S60v1 VM that KMidRun runs has them on Canvas only,
+so the game exits at the first call: the VM writes
+"ALERT: Unhandled FatalSlotError" to stderr and terminates.
+
+When KMidRun installs a JAR, each class is now checked for method
+references to Displayable.getWidth()I or Displayable.getHeight()I.
+Such references are pointed at a Canvas class constant, which is reused
+if the class already has one, or else appended to the end of the
+constant pool. Canvas has both methods in MIDP 1.0 and 2.0. The JAR is
+then written back as a zip. A JAR that needs no change is still copied
+byte for byte.
+
+common::archive gains read_archive(), which reads every entry into
+memory, and write_zip_archive(), which uses libarchive's zip writer with
+deflate and no padding after the end of central directory record.
+---
+ src/emu/common/include/common/archive.h |  26 +++
+ src/emu/common/src/archive.cpp          | 172 ++++++++++++---
+ src/emu/j2me/CMakeLists.txt             |   4 +-
+ src/emu/j2me/include/j2me/midp1.h       |  46 ++++
+ src/emu/j2me/src/kmidrun.cpp            |   3 +-
+ src/emu/j2me/src/midp1.cpp              | 253 ++++++++++++++++++++++
+ src/tests/epoc/CMakeLists.txt           |   1 +
+ src/tests/epoc/j2me/midp1.cpp           | 272 ++++++++++++++++++++++++
+ 8 files changed, 750 insertions(+), 27 deletions(-)
+ create mode 100644 src/emu/j2me/include/j2me/midp1.h
+ create mode 100644 src/emu/j2me/src/midp1.cpp
+ create mode 100644 src/tests/epoc/j2me/midp1.cpp
+
+diff --git a/src/emu/common/include/common/archive.h b/src/emu/common/include/common/archive.h
+index 432d553f0..1c7d28db5 100644
+--- a/src/emu/common/include/common/archive.h
++++ b/src/emu/common/include/common/archive.h
+@@ -34,6 +34,13 @@ namespace eka2l1::common {
+         bool is_directory;
+     };
+ 
++    struct archive_file {
++        archive_entry_info info;
++
++        // Empty for a directory.
++        std::vector<char> content;
++    };
++
+     /**
+      * @brief Read the table of contents of an archive.
+      *
+@@ -78,4 +85,23 @@ namespace eka2l1::common {
+      */
+     bool read_archive_entry(const std::string &path, const std::string &entry_path,
+         std::vector<char> &content_out, const std::uint64_t max_size = 0);
++
++    /**
++     * @brief Read every entry of an archive into memory, in the order they are stored.
++     *
++     * @param max_size Refuse an archive whose entries add up to more than this many bytes, so a
++     *                 malformed or hostile archive cannot ask for an unbounded allocation. Zero means
++     *                 no limit.
++     *
++     * @returns False if the archive could not be read or is too big.
++     */
++    bool read_archive(const std::string &path, std::vector<archive_file> &files_out,
++        const std::uint64_t max_size = 0);
++
++    /**
++     * @brief Write entries to a new zip file, in the order given, with their content deflated.
++     *
++     * @returns False if the file could not be created or written.
++     */
++    bool write_zip_archive(const std::string &path, const std::vector<archive_file> &files);
+ }
+diff --git a/src/emu/common/src/archive.cpp b/src/emu/common/src/archive.cpp
+index 7b5b66165..7d8941970 100644
+--- a/src/emu/common/src/archive.cpp
++++ b/src/emu/common/src/archive.cpp
+@@ -156,6 +156,37 @@ namespace eka2l1::common {
+         }
+     }
+ 
++    // Reads the data of the entry the reader is on. already_read is what the caller has read from this
++    // archive before it, so that max_size can cap a whole archive as well as a single entry.
++    static bool read_entry_content(struct archive *reader, const archive_entry_info &info,
++        const std::string &path, const std::uint64_t already_read, const std::uint64_t max_size,
++        std::vector<char> &content_out) {
++        // Not every format fills the declared size in, so grow as it arrives.
++        std::vector<char> buffer(ARCHIVE_READ_BLOCK_SIZE);
++
++        for (;;) {
++            const la_ssize_t read = archive_read_data(reader, buffer.data(), buffer.size());
++
++            if (read == 0) {
++                return true;
++            }
++
++            if (read < 0) {
++                LOG_ERROR(COMMON, "Unable to decompress {} out of {}: {}", info.path, path,
++                    archive_error_string(reader));
++                return false;
++            }
++
++            if (max_size && (already_read + content_out.size() + static_cast<std::uint64_t>(read) > max_size)) {
++                LOG_ERROR(COMMON, "Reading {} out of {} goes over the {} bytes allowed", info.path, path,
++                    max_size);
++                return false;
++            }
++
++            content_out.insert(content_out.end(), buffer.begin(), buffer.begin() + read);
++        }
++    }
++
+     bool read_archive_entry(const std::string &path, const std::string &entry_path,
+         std::vector<char> &content_out, const std::uint64_t max_size) {
+         archive_ptr reader = open_archive(path);
+@@ -174,32 +205,8 @@ namespace eka2l1::common {
+                 continue;
+             }
+ 
+-            // Not every format fills the declared size in, so grow as it arrives.
+-            std::vector<char> buffer(ARCHIVE_READ_BLOCK_SIZE);
+-
+             content_out.clear();
+-
+-            for (;;) {
+-                const la_ssize_t read = archive_read_data(reader.get(), buffer.data(), buffer.size());
+-
+-                if (read == 0) {
+-                    return true;
+-                }
+-
+-                if (read < 0) {
+-                    LOG_ERROR(COMMON, "Unable to decompress {} out of {}: {}", info.path, path,
+-                        archive_error_string(reader.get()));
+-                    return false;
+-                }
+-
+-                if (max_size && (content_out.size() + static_cast<std::uint64_t>(read) > max_size)) {
+-                    LOG_ERROR(COMMON, "Entry {} of {} is larger than the {} bytes allowed", info.path, path,
+-                        max_size);
+-                    return false;
+-                }
+-
+-                content_out.insert(content_out.end(), buffer.begin(), buffer.begin() + read);
+-            }
++            return read_entry_content(reader.get(), info, path, 0, max_size, content_out);
+         }
+ 
+         if (result != ARCHIVE_EOF) {
+@@ -272,4 +279,119 @@ namespace eka2l1::common {
+ 
+         return true;
+     }
++
++    bool read_archive(const std::string &path, std::vector<archive_file> &files_out,
++        const std::uint64_t max_size) {
++        archive_ptr reader = open_archive(path);
++
++        if (!reader) {
++            return false;
++        }
++
++        struct archive_entry *entry = nullptr;
++        int result = ARCHIVE_OK;
++        std::uint64_t total_read = 0;
++
++        files_out.clear();
++
++        while ((result = archive_read_next_header(reader.get(), &entry)) == ARCHIVE_OK) {
++            archive_file file;
++            file.info = describe_entry(entry);
++
++            if (!file.info.is_directory) {
++                if (!read_entry_content(reader.get(), file.info, path, total_read, max_size, file.content)) {
++                    return false;
++                }
++
++                total_read += file.content.size();
++            }
++
++            files_out.push_back(std::move(file));
++        }
++
++        if (result != ARCHIVE_EOF) {
++            LOG_ERROR(COMMON, "Unable to read the contents of archive {}: {}", path,
++                archive_error_string(reader.get()));
++            return false;
++        }
++
++        return true;
++    }
++
++    struct archive_writer_freer {
++        void operator()(struct archive *a) const {
++            archive_write_free(a);
++        }
++    };
++
++    struct archive_entry_freer {
++        void operator()(struct archive_entry *entry) const {
++            archive_entry_free(entry);
++        }
++    };
++
++    bool write_zip_archive(const std::string &path, const std::vector<archive_file> &files) {
++        std::unique_ptr<struct archive, archive_writer_freer> writer(archive_write_new());
++
++        if (!writer) {
++            return false;
++        }
++
++        // The last block is not padded: zero bytes after the end of central directory record are not
++        // what readers that look for that record from the end of the file expect.
++        if ((archive_write_set_format_zip(writer.get()) != ARCHIVE_OK)
++            || (archive_write_set_options(writer.get(), "zip:compression=deflate") != ARCHIVE_OK)
++            || (archive_write_set_bytes_in_last_block(writer.get(), 1) != ARCHIVE_OK)) {
++            LOG_ERROR(COMMON, "Unable to set up a zip writer: {}", archive_error_string(writer.get()));
++            return false;
++        }
++
++#ifdef _WIN32
++        const std::u16string path_u16 = common::utf8_to_ucs2(path);
++        const int result = archive_write_open_filename_w(writer.get(),
++            reinterpret_cast<const wchar_t *>(path_u16.c_str()));
++#else
++        const int result = archive_write_open_filename(writer.get(), path.c_str());
++#endif
++
++        if (result != ARCHIVE_OK) {
++            LOG_ERROR(COMMON, "Unable to create archive {}: {}", path, archive_error_string(writer.get()));
++            return false;
++        }
++
++        for (const archive_file &file : files) {
++            std::unique_ptr<struct archive_entry, archive_entry_freer> entry(archive_entry_new());
++
++            if (!entry) {
++                return false;
++            }
++
++            const la_int64_t size = file.info.is_directory ? 0 : static_cast<la_int64_t>(file.content.size());
++
++            archive_entry_set_pathname_utf8(entry.get(), file.info.path.c_str());
++            archive_entry_set_filetype(entry.get(), file.info.is_directory ? AE_IFDIR : AE_IFREG);
++            archive_entry_set_perm(entry.get(), file.info.is_directory ? 0755 : 0644);
++            archive_entry_set_size(entry.get(), size);
++
++            if (archive_write_header(writer.get(), entry.get()) != ARCHIVE_OK) {
++                LOG_ERROR(COMMON, "Unable to add {} to archive {}: {}", file.info.path, path,
++                    archive_error_string(writer.get()));
++                return false;
++            }
++
++            if (size && (archive_write_data(writer.get(), file.content.data(), file.content.size()) != size)) {
++                LOG_ERROR(COMMON, "Unable to write {} into archive {}: {}", file.info.path, path,
++                    archive_error_string(writer.get()));
++                return false;
++            }
++        }
++
++        // The central directory is written on close, so a failure there is a failed write too.
++        if (archive_write_close(writer.get()) != ARCHIVE_OK) {
++            LOG_ERROR(COMMON, "Unable to finish archive {}: {}", path, archive_error_string(writer.get()));
++            return false;
++        }
++
++        return true;
++    }
+ }
+diff --git a/src/emu/j2me/CMakeLists.txt b/src/emu/j2me/CMakeLists.txt
+index c08f01ff4..6cea911f5 100644
+--- a/src/emu/j2me/CMakeLists.txt
++++ b/src/emu/j2me/CMakeLists.txt
+@@ -3,10 +3,12 @@ add_library(j2me
+     include/j2me/common.h
+     include/j2me/interface.h
+     include/j2me/kmidrun.h
++    include/j2me/midp1.h
+     src/applist.cpp
+     src/common.cpp
+     src/interface.cpp
+-    src/kmidrun.cpp)
++    src/kmidrun.cpp
++    src/midp1.cpp)
+ 
+ target_include_directories(j2me PUBLIC include)
+ target_link_libraries(j2me PRIVATE common config epocio epockern sqlite3 epoc)
+\ No newline at end of file
+diff --git a/src/emu/j2me/include/j2me/midp1.h b/src/emu/j2me/include/j2me/midp1.h
+new file mode 100644
+index 000000000..a6d918e44
+--- /dev/null
++++ b/src/emu/j2me/include/j2me/midp1.h
+@@ -0,0 +1,46 @@
++/*
++ * Copyright (c) 2026 EKA2L1 Team.
++ *
++ * This file is part of EKA2L1 project.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#pragma once
++
++#include <cstddef>
++#include <string>
++#include <vector>
++
++namespace eka2l1::j2me {
++    /**
++     * @brief Point a class file's calls to Displayable.getWidth() and getHeight() at Canvas.
++     *
++     * MIDP 2.0 moved these two methods up from Canvas to Displayable. A MIDP-1.0 game compiled against
++     * the MIDP 2.0 classes calls them through Displayable, which the MIDP 1.0 VM of S60v1 does not have:
++     * the game stops on the first call with an unhandled FatalSlotError. Canvas has them in both versions.
++     *
++     * @returns How many method references now name Canvas. A class file this cannot read is left as it is.
++     */
++    std::size_t redirect_midp2_size_calls(std::vector<char> &class_file);
++
++    /**
++     * @brief Copy a JAR for the MIDP 1.0 VM, passing each of its classes through redirect_midp2_size_calls.
++     *
++     * A JAR that needs no change, or that cannot be read as a zip, is copied byte for byte.
++     *
++     * @returns False if the copy could not be written.
++     */
++    bool copy_jar_for_midp1(const std::string &source, const std::string &dest);
++}
+diff --git a/src/emu/j2me/src/kmidrun.cpp b/src/emu/j2me/src/kmidrun.cpp
+index a6fe48814..6da31366f 100644
+--- a/src/emu/j2me/src/kmidrun.cpp
++++ b/src/emu/j2me/src/kmidrun.cpp
+@@ -20,6 +20,7 @@
+ #include <j2me/applist.h>
+ #include <j2me/common.h>
+ #include <j2me/kmidrun.h>
++#include <j2me/midp1.h>
+ 
+ #include <system/epoc.h>
+ #include <common/fileutils.h>
+@@ -162,7 +163,7 @@ namespace eka2l1::j2me {
+ 
+         if (raw_path_to_dir.has_value()) {
+             std::string path_to_real = common::ucs2_to_utf8(raw_path_to_dir.value()) + fmt::format("{}.jar", reduce_special_character_in_name(entry.name_));
+-            common::copy_file(path, path_to_real, true);
++            copy_jar_for_midp1(path, path_to_real);
+ 
+             // Change to jad
+             path_to_real.back() = 'd';
+diff --git a/src/emu/j2me/src/midp1.cpp b/src/emu/j2me/src/midp1.cpp
+new file mode 100644
+index 000000000..4af5aeabc
+--- /dev/null
++++ b/src/emu/j2me/src/midp1.cpp
+@@ -0,0 +1,253 @@
++/*
++ * Copyright (c) 2026 EKA2L1 Team.
++ *
++ * This file is part of EKA2L1 project.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <j2me/midp1.h>
++
++#include <common/archive.h>
++#include <common/fileutils.h>
++#include <common/log.h>
++
++#include <cstdint>
++#include <cstring>
++
++namespace eka2l1::j2me {
++    namespace {
++        constexpr const char *DISPLAYABLE_CLASS = "javax/microedition/lcdui/Displayable";
++        constexpr const char *CANVAS_CLASS = "javax/microedition/lcdui/Canvas";
++
++        // JARs of the phones this VM ran on are a few hundred kilobytes; this only guards the allocation.
++        constexpr std::uint64_t MAX_JAR_CONTENT_SIZE = 32 * 1024 * 1024;
++
++        enum constant_tag : std::uint8_t {
++            CONSTANT_UTF8 = 1,
++            CONSTANT_INTEGER = 3,
++            CONSTANT_FLOAT = 4,
++            CONSTANT_LONG = 5,
++            CONSTANT_DOUBLE = 6,
++            CONSTANT_CLASS = 7,
++            CONSTANT_STRING = 8,
++            CONSTANT_FIELDREF = 9,
++            CONSTANT_METHODREF = 10,
++            CONSTANT_INTERFACE_METHODREF = 11,
++            CONSTANT_NAME_AND_TYPE = 12
++        };
++
++        struct constant {
++            std::uint8_t tag = 0;
++
++            // Where the tag byte is in the class file.
++            std::size_t offset = 0;
++
++            // The two indices of a reference or a name and type, the one index of a class, or the
++            // byte length of a UTF-8 string.
++            std::uint16_t first = 0;
++            std::uint16_t second = 0;
++        };
++
++        std::uint16_t read_u16(const std::vector<char> &data, const std::size_t pos) {
++            return static_cast<std::uint16_t>((static_cast<std::uint8_t>(data[pos]) << 8)
++                | static_cast<std::uint8_t>(data[pos + 1]));
++        }
++
++        void write_u16(std::vector<char> &data, const std::size_t pos, const std::uint16_t value) {
++            data[pos] = static_cast<char>(value >> 8);
++            data[pos + 1] = static_cast<char>(value & 0xFF);
++        }
++
++        void append_u16(std::vector<char> &data, const std::uint16_t value) {
++            data.push_back(static_cast<char>(value >> 8));
++            data.push_back(static_cast<char>(value & 0xFF));
++        }
++
++        bool ends_with_class(const std::string &path) {
++            static constexpr const char EXTENSION[] = ".class";
++            static constexpr std::size_t EXTENSION_LENGTH = sizeof(EXTENSION) - 1;
++
++            return (path.size() > EXTENSION_LENGTH)
++                && (path.compare(path.size() - EXTENSION_LENGTH, EXTENSION_LENGTH, EXTENSION) == 0);
++        }
++    }
++
++    std::size_t redirect_midp2_size_calls(std::vector<char> &class_file) {
++        // magic, minor and major version, then the constant pool count.
++        if ((class_file.size() < 10) || (read_u16(class_file, 0) != 0xCAFE) || (read_u16(class_file, 2) != 0xBABE)) {
++            return 0;
++        }
++
++        const std::uint16_t count = read_u16(class_file, 8);
++        std::vector<constant> pool(count);
++        std::size_t pos = 10;
++
++        for (std::uint32_t i = 1; i < count; i++) {
++            if (pos >= class_file.size()) {
++                return 0;
++            }
++
++            constant &entry = pool[i];
++            entry.tag = static_cast<std::uint8_t>(class_file[pos]);
++            entry.offset = pos;
++
++            std::size_t length = 0;
++
++            switch (entry.tag) {
++            case CONSTANT_UTF8:
++                if (pos + 3 > class_file.size()) {
++                    return 0;
++                }
++
++                length = 3 + read_u16(class_file, pos + 1);
++                break;
++
++            case CONSTANT_CLASS:
++            case CONSTANT_STRING:
++                length = 3;
++                break;
++
++            case CONSTANT_INTEGER:
++            case CONSTANT_FLOAT:
++            case CONSTANT_FIELDREF:
++            case CONSTANT_METHODREF:
++            case CONSTANT_INTERFACE_METHODREF:
++            case CONSTANT_NAME_AND_TYPE:
++                length = 5;
++                break;
++
++            case CONSTANT_LONG:
++            case CONSTANT_DOUBLE:
++                // These take two slots of the pool.
++                length = 9;
++                i++;
++                break;
++
++            default:
++                // Not a constant MIDP 1.0 class files have.
++                return 0;
++            }
++
++            if (pos + length > class_file.size()) {
++                return 0;
++            }
++
++            if (length >= 3) {
++                entry.first = read_u16(class_file, pos + 1);
++            }
++
++            if (length >= 5) {
++                entry.second = read_u16(class_file, pos + 3);
++            }
++
++            pos += length;
++        }
++
++        const std::size_t pool_end = pos;
++
++        auto is_utf8 = [&](const std::uint16_t index, const char *text) {
++            if ((index == 0) || (index >= count) || (pool[index].tag != CONSTANT_UTF8)) {
++                return false;
++            }
++
++            const std::size_t length = std::strlen(text);
++            return (pool[index].first == length)
++                && (std::memcmp(&class_file[pool[index].offset + 3], text, length) == 0);
++        };
++
++        auto is_class = [&](const std::uint16_t index, const char *name) {
++            return (index != 0) && (index < count) && (pool[index].tag == CONSTANT_CLASS)
++                && is_utf8(pool[index].first, name);
++        };
++
++        std::vector<std::uint16_t> calls;
++        std::uint16_t canvas = 0;
++
++        for (std::uint32_t i = 1; i < count; i++) {
++            const constant &entry = pool[i];
++
++            if (is_class(static_cast<std::uint16_t>(i), CANVAS_CLASS)) {
++                canvas = static_cast<std::uint16_t>(i);
++                continue;
++            }
++
++            if ((entry.tag != CONSTANT_METHODREF) || !is_class(entry.first, DISPLAYABLE_CLASS)
++                || (entry.second == 0) || (entry.second >= count) || (pool[entry.second].tag != CONSTANT_NAME_AND_TYPE)) {
++                continue;
++            }
++
++            const constant &name_and_type = pool[entry.second];
++
++            if ((is_utf8(name_and_type.first, "getWidth") || is_utf8(name_and_type.first, "getHeight"))
++                && is_utf8(name_and_type.second, "()I")) {
++                calls.push_back(static_cast<std::uint16_t>(i));
++            }
++        }
++
++        if (calls.empty()) {
++            return 0;
++        }
++
++        if (canvas == 0) {
++            // No Canvas class constant to point at yet: add its name and the class at the end of the pool.
++            if (count > 0xFFFF - 2) {
++                return 0;
++            }
++
++            const std::size_t name_length = std::strlen(CANVAS_CLASS);
++            std::vector<char> added;
++
++            added.push_back(static_cast<char>(CONSTANT_UTF8));
++            append_u16(added, static_cast<std::uint16_t>(name_length));
++            added.insert(added.end(), CANVAS_CLASS, CANVAS_CLASS + name_length);
++            added.push_back(static_cast<char>(CONSTANT_CLASS));
++            append_u16(added, count);
++
++            class_file.insert(class_file.begin() + pool_end, added.begin(), added.end());
++            write_u16(class_file, 8, static_cast<std::uint16_t>(count + 2));
++
++            canvas = static_cast<std::uint16_t>(count + 1);
++        }
++
++        // The method references sit before the end of the pool, so they have not moved.
++        for (const std::uint16_t call : calls) {
++            write_u16(class_file, pool[call].offset + 1, canvas);
++        }
++
++        return calls.size();
++    }
++
++    bool copy_jar_for_midp1(const std::string &source, const std::string &dest) {
++        std::vector<common::archive_file> files;
++        std::size_t redirected = 0;
++
++        if (common::read_archive(source, files, MAX_JAR_CONTENT_SIZE)) {
++            for (common::archive_file &file : files) {
++                if (!file.info.is_directory && ends_with_class(file.info.path)) {
++                    redirected += redirect_midp2_size_calls(file.content);
++                }
++            }
++        }
++
++        if (redirected == 0) {
++            return common::copy_file(source, dest, true);
++        }
++
++        LOG_INFO(J2ME, "{} calls to Displayable.getWidth/getHeight, which MIDP 1.0 only has on Canvas, now go to Canvas",
++            redirected);
++
++        return common::write_zip_archive(dest, files);
++    }
++}
+diff --git a/src/tests/epoc/CMakeLists.txt b/src/tests/epoc/CMakeLists.txt
+index ac7275201..9a54cce0b 100644
+--- a/src/tests/epoc/CMakeLists.txt
++++ b/src/tests/epoc/CMakeLists.txt
+@@ -9,6 +9,7 @@ set(CORE_TEST_FILES
+     ${CMAKE_CURRENT_SOURCE_DIR}/drivers/video.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/gdbstub.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/j2me/applist.cpp
++    ${CMAKE_CURRENT_SOURCE_DIR}/j2me/midp1.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/graphics/texture_upload.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/graphics/openvg.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/graphics/gles1.cpp
+diff --git a/src/tests/epoc/j2me/midp1.cpp b/src/tests/epoc/j2me/midp1.cpp
+new file mode 100644
+index 000000000..86d50f6b9
+--- /dev/null
++++ b/src/tests/epoc/j2me/midp1.cpp
+@@ -0,0 +1,272 @@
++/*
++ * Copyright (c) 2026 EKA2L1 Team.
++ * This file is part of EKA2L1, licensed under GPL version 3 or later.
++ */
++
++#include <catch2/catch.hpp>
++#include <common/archive.h>
++#include <common/fileutils.h>
++#include <j2me/midp1.h>
++
++#include <algorithm>
++#include <cstdint>
++#include <cstring>
++#include <fstream>
++#include <iterator>
++#include <string>
++#include <vector>
++
++namespace {
++    const std::string DISPLAYABLE = "javax/microedition/lcdui/Displayable";
++    const std::string CANVAS = "javax/microedition/lcdui/Canvas";
++
++    // Builds a class file constant pool by constant pool, remembering where each constant starts.
++    class class_writer {
++        std::vector<char> data_;
++        std::vector<std::size_t> offsets_;
++
++        void u8(const std::uint8_t value) {
++            data_.push_back(static_cast<char>(value));
++        }
++
++        void u16(const std::uint16_t value) {
++            u8(static_cast<std::uint8_t>(value >> 8));
++            u8(static_cast<std::uint8_t>(value & 0xFF));
++        }
++
++        std::uint16_t begin(const std::uint8_t tag) {
++            offsets_.push_back(data_.size());
++            u8(tag);
++            return static_cast<std::uint16_t>(offsets_.size() - 1);
++        }
++
++    public:
++        class_writer() {
++            const std::uint8_t header[] = { 0xCA, 0xFE, 0xBA, 0xBE, 0, 3, 0, 45, 0, 0 };
++            data_.assign(header, header + sizeof(header));
++            offsets_.push_back(0);
++        }
++
++        std::uint16_t utf8(const std::string &text) {
++            const std::uint16_t index = begin(1);
++            u16(static_cast<std::uint16_t>(text.size()));
++            data_.insert(data_.end(), text.begin(), text.end());
++            return index;
++        }
++
++        std::uint16_t class_of(const std::string &name) {
++            const std::uint16_t name_index = utf8(name);
++            const std::uint16_t index = begin(7);
++            u16(name_index);
++            return index;
++        }
++
++        std::uint16_t method(const std::uint16_t owner, const std::string &name, const std::string &descriptor) {
++            const std::uint16_t name_index = utf8(name);
++            const std::uint16_t descriptor_index = utf8(descriptor);
++            const std::uint16_t name_and_type = begin(12);
++            u16(name_index);
++            u16(descriptor_index);
++
++            const std::uint16_t index = begin(10);
++            u16(owner);
++            u16(name_and_type);
++            return index;
++        }
++
++        void long_constant() {
++            begin(5);
++            for (int i = 0; i < 8; i++) {
++                u8(0x11);
++            }
++
++            // A long takes two slots.
++            offsets_.push_back(0);
++        }
++
++        std::size_t offset(const std::uint16_t index) const {
++            return offsets_[index];
++        }
++
++        // Ends the pool with the rest of a class file, which only needs to come through unchanged.
++        std::vector<char> finish() {
++            std::vector<char> result = data_;
++            const std::uint16_t count = static_cast<std::uint16_t>(offsets_.size());
++            result[8] = static_cast<char>(count >> 8);
++            result[9] = static_cast<char>(count & 0xFF);
++
++            const char rest[] = { 0x00, 0x21, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
++            result.insert(result.end(), rest, rest + sizeof(rest));
++            return result;
++        }
++    };
++
++    std::uint16_t read_u16(const std::vector<char> &data, const std::size_t pos) {
++        return static_cast<std::uint16_t>((static_cast<std::uint8_t>(data[pos]) << 8)
++            | static_cast<std::uint8_t>(data[pos + 1]));
++    }
++
++    std::vector<char> read_file(const std::string &path) {
++        std::ifstream file(path, std::ios::binary);
++        return std::vector<char>(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
++    }
++
++    struct jar_fixture {
++        const std::string dir = "j2me_midp1_test/";
++
++        jar_fixture() {
++            eka2l1::common::delete_folder(dir);
++            eka2l1::common::create_directories(dir);
++        }
++
++        ~jar_fixture() {
++            eka2l1::common::delete_folder(dir);
++        }
++    };
++
++    eka2l1::common::archive_file make_file(const std::string &path, const std::vector<char> &content) {
++        eka2l1::common::archive_file file;
++        file.info.path = path;
++        file.info.size = content.size();
++        file.info.is_directory = false;
++        file.content = content;
++        return file;
++    }
++}
++
++TEST_CASE("MIDP 2.0 calls to Displayable.getWidth and getHeight go to Canvas", "[j2me]") {
++    class_writer writer;
++    const std::uint16_t displayable = writer.class_of(DISPLAYABLE);
++    const std::uint16_t get_width = writer.method(displayable, "getWidth", "()I");
++    writer.long_constant();
++    const std::uint16_t get_height = writer.method(displayable, "getHeight", "()I");
++    const std::uint16_t get_title = writer.method(displayable, "getTitle", "()Ljava/lang/String;");
++
++    const std::vector<char> original = writer.finish();
++    const std::uint16_t count = read_u16(original, 8);
++    std::vector<char> patched = original;
++
++    REQUIRE(eka2l1::j2me::redirect_midp2_size_calls(patched) == 2);
++
++    // Canvas is added at the end of the pool, its name first.
++    REQUIRE(read_u16(patched, 8) == count + 2);
++    const std::uint16_t canvas = count + 1;
++
++    REQUIRE(read_u16(patched, writer.offset(get_width) + 1) == canvas);
++    REQUIRE(read_u16(patched, writer.offset(get_height) + 1) == canvas);
++    REQUIRE(read_u16(patched, writer.offset(get_title) + 1) == displayable);
++
++    const std::size_t pool_end = original.size() - 14;
++    REQUIRE(patched.size() == original.size() + 3 + CANVAS.size() + 3);
++    REQUIRE(patched[pool_end] == 1);
++    REQUIRE(read_u16(patched, pool_end + 1) == CANVAS.size());
++    REQUIRE(std::string(&patched[pool_end + 3], CANVAS.size()) == CANVAS);
++    REQUIRE(patched[pool_end + 3 + CANVAS.size()] == 7);
++    REQUIRE(read_u16(patched, pool_end + 4 + CANVAS.size()) == count);
++
++    // What follows the pool is the same.
++    REQUIRE(std::equal(original.begin() + pool_end, original.end(), patched.end() - 14));
++    REQUIRE(std::equal(original.begin(), original.begin() + 8, patched.begin()));
++}
++
++TEST_CASE("A Canvas class already in the pool is reused", "[j2me]") {
++    class_writer writer;
++    const std::uint16_t canvas = writer.class_of(CANVAS);
++    const std::uint16_t displayable = writer.class_of(DISPLAYABLE);
++    const std::uint16_t get_height = writer.method(displayable, "getHeight", "()I");
++
++    const std::vector<char> original = writer.finish();
++    std::vector<char> patched = original;
++
++    REQUIRE(eka2l1::j2me::redirect_midp2_size_calls(patched) == 1);
++    REQUIRE(patched.size() == original.size());
++    REQUIRE(read_u16(patched, 8) == read_u16(original, 8));
++    REQUIRE(read_u16(patched, writer.offset(get_height) + 1) == canvas);
++}
++
++TEST_CASE("Classes that do not call the MIDP 2.0 methods are left alone", "[j2me]") {
++    class_writer writer;
++    const std::uint16_t canvas = writer.class_of(CANVAS);
++    writer.method(canvas, "getWidth", "()I");
++    const std::uint16_t displayable = writer.class_of(DISPLAYABLE);
++    writer.method(displayable, "getWidth", "(I)I");
++
++    const std::vector<char> original = writer.finish();
++    std::vector<char> unchanged = original;
++    REQUIRE(eka2l1::j2me::redirect_midp2_size_calls(unchanged) == 0);
++    REQUIRE(unchanged == original);
++
++    // Cut in the middle of the pool, or not a class at all.
++    std::vector<char> truncated(original.begin(), original.begin() + 20);
++    const std::vector<char> truncated_copy = truncated;
++    REQUIRE(eka2l1::j2me::redirect_midp2_size_calls(truncated) == 0);
++    REQUIRE(truncated == truncated_copy);
++
++    std::vector<char> text = { 'n', 'o', 't', ' ', 'a', ' ', 'c', 'l', 'a', 's', 's', '!' };
++    REQUIRE(eka2l1::j2me::redirect_midp2_size_calls(text) == 0);
++}
++
++TEST_CASE("Installing a JAR for MIDP 1.0 patches its classes and keeps the rest", "[j2me]") {
++    jar_fixture fixture;
++
++    class_writer writer;
++    const std::uint16_t displayable = writer.class_of(DISPLAYABLE);
++    const std::uint16_t get_width = writer.method(displayable, "getWidth", "()I");
++    const std::vector<char> game_class = writer.finish();
++
++    const std::string manifest_text = "Manifest-Version: 1.0\nMicroEdition-Profile: MIDP-1.0\n";
++    const std::vector<char> manifest(manifest_text.begin(), manifest_text.end());
++    const std::vector<char> image(300, 0x42);
++
++    eka2l1::common::archive_file folder;
++    folder.info.path = "META-INF/";
++    folder.info.size = 0;
++    folder.info.is_directory = true;
++
++    const std::vector<eka2l1::common::archive_file> files = {
++        folder,
++        make_file("META-INF/MANIFEST.MF", manifest),
++        make_file("i.class", game_class),
++        make_file("splash.png", image)
++    };
++
++    const std::string source = fixture.dir + "game.jar";
++    const std::string dest = fixture.dir + "installed.jar";
++    REQUIRE(eka2l1::common::write_zip_archive(source, files));
++    REQUIRE(eka2l1::j2me::copy_jar_for_midp1(source, dest));
++
++    std::vector<eka2l1::common::archive_file> installed;
++    REQUIRE(eka2l1::common::read_archive(dest, installed));
++    REQUIRE(installed.size() == 4);
++
++    REQUIRE(installed[0].info.is_directory);
++    REQUIRE(installed[0].info.path == "META-INF/");
++    REQUIRE(installed[1].info.path == "META-INF/MANIFEST.MF");
++    REQUIRE(installed[1].content == manifest);
++    REQUIRE(installed[3].info.path == "splash.png");
++    REQUIRE(installed[3].content == image);
++
++    REQUIRE(installed[2].info.path == "i.class");
++    REQUIRE(installed[2].content.size() == game_class.size() + 3 + CANVAS.size() + 3);
++    REQUIRE(read_u16(installed[2].content, writer.offset(get_width) + 1) == read_u16(game_class, 8) + 1);
++
++    // The zip ends with its end of central directory record, without padding.
++    const std::vector<char> raw = read_file(dest);
++    REQUIRE(raw.size() > 22);
++    REQUIRE(std::memcmp(&raw[raw.size() - 22], "PK\x05\x06", 4) == 0);
++}
++
++TEST_CASE("A JAR with nothing to patch is installed byte for byte", "[j2me]") {
++    jar_fixture fixture;
++
++    class_writer writer;
++    const std::uint16_t canvas = writer.class_of(CANVAS);
++    writer.method(canvas, "getWidth", "()I");
++
++    const std::string source = fixture.dir + "game.jar";
++    const std::string dest = fixture.dir + "installed.jar";
++    REQUIRE(eka2l1::common::write_zip_archive(source, { make_file("a.class", writer.finish()) }));
++    REQUIRE(eka2l1::j2me::copy_jar_for_midp1(source, dest));
++
++    REQUIRE(read_file(dest) == read_file(source));
++}
+-- 
+2.53.0
+

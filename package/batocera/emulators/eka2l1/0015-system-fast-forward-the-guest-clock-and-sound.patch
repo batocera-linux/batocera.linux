@@ -1,0 +1,776 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Thu, 5 Nov 2026 01:23:28 +0100
+Subject: [PATCH 15/15] system: fast-forward the guest clock and sound
+
+Run the guest faster than real time, for skipping slow intros and grinding.
+
+Every guest clock reading and timer deadline goes through ntimer, so the
+speed is applied there: the teletimer reads
+virtual base + (host now - host base) * speed, re-anchored at each change
+so the clock never jumps back, and the timer thread sleeps deadline/speed
+of host time. Tick counts, timers and the window server frame limiter
+follow together.
+
+Guest audio streams are paced by the host sound card, which would hold
+titles that wait on their buffers at normal speed. The shared DSP stream
+now takes speed times more frames per render callback and plays every
+speed-th one: the sound is faster and higher pitched, and the guest
+buffers drain as fast as its clock runs.
+
+- config: fast-forward-speed (default 2, 1..8), the speed used while on.
+- Qt: Emulation > Fast forward, checkable, shortcut Tab (works in
+  fullscreen); off when the app stops; the status bar shows the speed.
+- control API: GET|PUT /v1/emulator/speed {"speed": 1..8}, speed in
+  /v1/status, fastForwardSpeed in /v1/config.
+
+The phone clock runs ahead while fast-forward is on. Music played through
+the MIDI/MP3 player backends keeps its normal speed.
+---
+ src/emu/common/include/common/time.h          |  4 ++
+ src/emu/common/src/time.cpp                   | 68 ++++++++++++++-----
+ src/emu/config/include/config/config.h        |  1 +
+ src/emu/config/include/config/options.inl     |  1 +
+ src/emu/config/src/config.cpp                 |  2 +
+ src/emu/control/include/control/native.h      |  2 +
+ src/emu/control/src/native.cpp                | 25 ++++++-
+ src/emu/control/src/service.cpp               |  2 +-
+ src/emu/drivers/include/drivers/audio/audio.h | 11 +++
+ .../drivers/audio/backend/dsp_shared.h        |  9 +++
+ .../drivers/src/audio/backend/dsp_shared.cpp  | 45 ++++++++++--
+ src/emu/kernel/include/kernel/timing.h        | 10 +++
+ src/emu/kernel/src/timing.cpp                 | 23 ++++++-
+ src/emu/qt/include/qt/mainwindow.h            |  2 +
+ src/emu/qt/src/mainwindow.cpp                 | 33 ++++++++-
+ src/emu/qt/src/mainwindow.ui                  | 15 ++++
+ src/emu/qt/src/thread.cpp                     |  1 +
+ src/emu/system/include/system/epoc.h          |  9 +++
+ src/emu/system/src/epoc.cpp                   | 36 ++++++++++
+ 19 files changed, 271 insertions(+), 28 deletions(-)
+
+diff --git a/src/emu/common/include/common/time.h b/src/emu/common/include/common/time.h
+index 25ee94fe1..52f6c52c7 100644
+--- a/src/emu/common/include/common/time.h
++++ b/src/emu/common/include/common/time.h
+@@ -93,6 +93,10 @@ namespace eka2l1::common {
+ 
+         virtual bool set_target_frequency(const std::uint32_t freq) = 0;
+ 
++        // Rate the clock runs at against the host clock (1 = real time, 2 = twice as fast).
++        virtual void set_speed(const double speed) = 0;
++        virtual double get_speed() const = 0;
++
+         virtual std::uint64_t ticks() = 0;
+         virtual std::uint64_t microseconds() = 0;
+         virtual std::uint64_t nanoseconds() = 0;
+diff --git a/src/emu/common/src/time.cpp b/src/emu/common/src/time.cpp
+index e04700fcd..776d46627 100644
+--- a/src/emu/common/src/time.cpp
++++ b/src/emu/common/src/time.cpp
+@@ -27,6 +27,7 @@
+ #include <common/time.h>
+ #include <ctime>
+ #include <cstdlib>
++#include <mutex>
+ #include <string>
+ 
+ #if EKA2L1_PLATFORM(WIN32)
+@@ -165,26 +166,54 @@ namespace eka2l1::common {
+     }
+ 
+     struct basic_teletimer_micro : public teletimer {
+-        std::uint64_t start_;
+-        std::uint64_t end_;
++        // The clock reads virtual_base_ + (host now - host_base_) * speed_. A speed change
++        // re-anchors both bases at the current reading, so the time never jumps or goes back.
++        std::uint64_t host_base_;
++        std::uint64_t virtual_base_;
++        std::uint64_t stopped_at_;
++        bool stopped_;
++        double speed_;
+ 
+         std::uint32_t target_freq_;
++        mutable std::mutex lock_;
++
++        std::uint64_t read_locked(const std::uint64_t host_now) const {
++            if (stopped_) {
++                return stopped_at_;
++            }
++
++            const std::uint64_t elapsed = host_now - host_base_;
++            if (speed_ == 1.0) {
++                return virtual_base_ + elapsed;
++            }
++
++            return virtual_base_ + static_cast<std::uint64_t>(static_cast<double>(elapsed) * speed_);
++        }
+ 
+     public:
+         explicit basic_teletimer_micro(const std::uint32_t freq)
+-            : target_freq_(freq) {
++            : host_base_(0)
++            , virtual_base_(0)
++            , stopped_at_(0)
++            , stopped_(true)
++            , speed_(1.0)
++            , target_freq_(freq) {
+         }
+ 
+         ~basic_teletimer_micro() override {
+         }
+ 
+         void start() override {
+-            start_ = get_current_utc_time_in_microseconds_since_epoch();
+-            end_ = 0;
++            const std::lock_guard<std::mutex> guard(lock_);
++            host_base_ = get_current_utc_time_in_microseconds_since_epoch();
++            virtual_base_ = 0;
++            stopped_ = false;
+         }
+ 
+         void stop() override {
+-            end_ = get_current_utc_time_in_microseconds_since_epoch();
++            const std::lock_guard<std::mutex> guard(lock_);
++            stopped_at_ = read_locked(get_current_utc_time_in_microseconds_since_epoch());
++            stopped_ = true;
+         }
+ 
+         bool set_target_frequency(const std::uint32_t freq) override {
+@@ -192,24 +221,31 @@ namespace eka2l1::common {
+             return true;
+         }
+ 
++        void set_speed(const double speed) override {
++            const std::lock_guard<std::mutex> guard(lock_);
++            const std::uint64_t host_now = get_current_utc_time_in_microseconds_since_epoch();
++
++            virtual_base_ = read_locked(host_now);
++            host_base_ = host_now;
++            speed_ = speed;
++        }
++
++        double get_speed() const override {
++            const std::lock_guard<std::mutex> guard(lock_);
++            return speed_;
++        }
++
+         std::uint64_t ticks() override {
+             return multiply_and_divide_qwords(microseconds(), target_freq_, 1000000);
+         }
+ 
+         std::uint64_t microseconds() override {
+-            if (end_ == 0) {
+-                return get_current_utc_time_in_microseconds_since_epoch() - start_;
+-            }
+-
+-            return end_ - start_;
++            const std::lock_guard<std::mutex> guard(lock_);
++            return read_locked(get_current_utc_time_in_microseconds_since_epoch());
+         }
+ 
+         std::uint64_t nanoseconds() override {
+-            if (end_ == 0) {
+-                return get_current_utc_time_in_nanoseconds_since_epoch() - start_;
+-            }
+-
+-            return end_ - start_;
++            return microseconds() * 1000;
+         }
+     };
+ 
+diff --git a/src/emu/config/include/config/config.h b/src/emu/config/include/config/config.h
+index 899597116..2dc77e71f 100644
+--- a/src/emu/config/include/config/config.h
++++ b/src/emu/config/include/config/config.h
+@@ -127,6 +127,7 @@ namespace eka2l1::config {
+         int language{ -1 };
+         int emulator_language{ -1 };
+         int audio_master_volume{ 100 };
++        double fast_forward_speed{ 2.0 }; // Guest speed while fast-forward is on.
+ 
+         bool enable_gdbstub{ false };
+         int gdb_port{ 24689 };
+diff --git a/src/emu/config/include/config/options.inl b/src/emu/config/include/config/options.inl
+index 0dd4bf4dd..de4706a72 100644
+--- a/src/emu/config/include/config/options.inl
++++ b/src/emu/config/include/config/options.inl
+@@ -63,6 +63,7 @@ OPTION(svg-icon-cache-reset, svg_icon_cache_reset, false)
+ OPTION(imei, imei, DEFAULT_IMI)
+ OPTION(mmc-id, mmc_id, DEFAULT_MMC_ID)
+ OPTION(audio-master-volume, audio_master_volume, 100)
++OPTION(fast-forward-speed, fast_forward_speed, 2.0)
+ OPTION(current-keybind-profile, current_keybind_profile, "default")
+ OPTION(screen-buffer-sync, screen_buffer_sync_string, "preferred")
+ OPTION(report-mmfdev-underflow, report_mmfdev_underflow, false)
+diff --git a/src/emu/config/src/config.cpp b/src/emu/config/src/config.cpp
+index 1be09d0c9..8ba1988fa 100644
+--- a/src/emu/config/src/config.cpp
++++ b/src/emu/config/src/config.cpp
+@@ -311,6 +311,7 @@ namespace eka2l1::config {
+ 
+     void state::serialize(const bool with_bindings) {
+         audio_master_volume = common::clamp(0, 100, audio_master_volume);
++        fast_forward_speed = common::clamp(1.0, 8.0, fast_forward_speed);
+         screen_buffer_sync_string = get_string_from_screen_buffer_sync_option(screen_buffer_sync);
+         midi_backend_string = get_string_from_midi_backend(midi_backend);
+ 
+@@ -394,6 +395,7 @@ namespace eka2l1::config {
+         }
+ 
+         audio_master_volume = common::clamp(0, 100, audio_master_volume);
++        fast_forward_speed = common::clamp(1.0, 8.0, fast_forward_speed);
+         screen_buffer_sync = get_screen_buffer_sync_option_from_string(screen_buffer_sync_string);
+         midi_backend = get_midi_backend_from_string(midi_backend_string);
+ 
+diff --git a/src/emu/control/include/control/native.h b/src/emu/control/include/control/native.h
+index cfb579d32..7e9bce3e3 100644
+--- a/src/emu/control/include/control/native.h
++++ b/src/emu/control/include/control/native.h
+@@ -27,6 +27,8 @@ namespace eka2l1::control {
+         std::function<void()> close;
+         std::function<bool(int)> boot;
+         std::function<void(bool)> pause;
++        // Guest speed (1 = normal). Unset: the backend applies it to the system itself.
++        std::function<void(double)> speed;
+         std::function<void(native_change)> changed;
+         std::function<void(const double *)> acceleration;
+     };
+diff --git a/src/emu/control/src/native.cpp b/src/emu/control/src/native.cpp
+index 033e0565a..2373b1710 100644
+--- a/src/emu/control/src/native.cpp
++++ b/src/emu/control/src/native.cpp
+@@ -169,7 +169,7 @@ namespace eka2l1::control {
+         }
+         json status() {
+             return { { "api", 1 }, { "started", true }, { "busy", false }, { "device", current_device() },
+-                { "card", card() }, { "session", session_snapshot() }, { "frames", frontend.frames() },
++                { "card", card() }, { "session", session_snapshot() }, { "frames", frontend.frames() }, { "speed", sys().get_speed() },
+                 { "documents", frontend.documents }, { "log", frontend.log }, { "screen", screen() } };
+         }
+         fs::path host_path(std::string raw) {
+@@ -286,9 +286,15 @@ namespace eka2l1::control {
+                     languages.push_back({ { "code", code }, { "name", common::get_language_name_by_code(code) } });
+             return { { "current", sys().get_config()->language }, { "available", languages } };
+         }
++        void set_speed(const double speed) {
++            if (frontend.speed)
++                frontend.speed(speed);
++            else
++                sys().set_speed(speed);
++        }
+         json config_snapshot() {
+             auto &c = *sys().get_config();
+-            return { { "audioMasterVolume", c.audio_master_volume }, { "cpuBackend", c.cpu_backend }, { "language", c.language },
++            return { { "audioMasterVolume", c.audio_master_volume }, { "fastForwardSpeed", c.fast_forward_speed }, { "cpuBackend", c.cpu_backend }, { "language", c.language },
+                 { "cpuLoadSave", c.cpu_load_save }, { "enableHwGles1", c.enable_hw_gles1 }, { "nearestNeighborFiltering", c.nearest_neighbor_filtering },
+                 { "integerScaling", c.integer_scaling }, { "rtosLevel", c.rtos_level }, { "imei", c.imei }, { "mmcId", c.mmc_id },
+                 { "extensiveLogging", c.extensive_logging }, { "deviceDisplayName", c.device_display_name }, { "backgroundImage", c.background_image },
+@@ -601,6 +607,10 @@ namespace eka2l1::control {
+                             if (key == "cpuBackend")
+                                 require(v == "dynarmic" || v == "dyncom" || v == "r12l1", "bad_request", "invalid CPU backend", 400);
+                             apply.emplace_back([target, v] { *target = v; });
++                        } else if (key == "fastForwardSpeed") {
++                            double v = required_number(body, key);
++                            require(v >= 1 && v <= 8, "bad_request", "fastForwardSpeed must be 1..8", 400);
++                            apply.emplace_back([&c, v] { c.fast_forward_speed = v; });
+                         } else if (key == "audioMasterVolume" || key == "btnetListenPort" || key == "btnetDiscoveryMode") {
+                             double v = required_number(body, key);
+                             require(v == std::floor(v) && v >= 0 && v <= 65535, "bad_request", "invalid numeric config value", 400);
+@@ -617,6 +627,8 @@ namespace eka2l1::control {
+                         change();
+                     if (auto *audio = sys().get_audio_driver())
+                         audio->master_volume(c.audio_master_volume);
++                    if (body.contains("fastForwardSpeed") && sys().get_speed() != 1.0)
++                        set_speed(c.fast_forward_speed);
+                     if (log::filterings)
+                         log::filterings->parse_filter_string(c.log_filter);
+                     c.serialize();
+@@ -626,6 +638,15 @@ namespace eka2l1::control {
+                     require(req.method == "GET", "not_found", "unknown operation", 404);
+                 return response::from_json(config_snapshot());
+             }
++            if (p == std::vector<std::string>{ "v1", "emulator", "speed" }) {
++                if (req.method == "PUT") {
++                    const double speed = required_number(body, "speed");
++                    require(speed >= 1 && speed <= 8, "bad_request", "speed must be 1..8", 400);
++                    set_speed(speed);
++                } else
++                    require(req.method == "GET", "not_found", "unknown operation", 404);
++                return response::from_json({ { "speed", sys().get_speed() }, { "fastForwardSpeed", sys().get_config()->fast_forward_speed } });
++            }
+             if (p.size() == 3 && p[1] == "emulator" && (p[2] == "pause" || p[2] == "resume") && req.method == "POST") {
+                 const bool paused = p[2] == "pause";
+                 frontend.pause(paused);
+diff --git a/src/emu/control/src/service.cpp b/src/emu/control/src/service.cpp
+index e0d7f9230..93bcb2985 100644
+--- a/src/emu/control/src/service.cpp
++++ b/src/emu/control/src/service.cpp
+@@ -314,7 +314,7 @@ namespace eka2l1::control {
+                 throw api_error(404, "not_found", "unknown API version");
+             const auto &p = req.path;
+             if (p.size() == 1 && req.method == "GET")
+-                return response::from_json({ { "api", 1 }, { "endpoints", json::array{ "GET /v1/status", "GET /v1/capabilities", "GET /v1/devices", "POST /v1/devices", "POST /v1/devices/rescan", "POST /v1/devices/{index|code}/boot", "PATCH /v1/devices/{index|code}", "DELETE /v1/devices/{index|code}", "GET /v1/apps?system=1", "POST /v1/apps", "DELETE /v1/apps/{uid}", "GET /v1/apps/{uid}/icon", "POST /v1/apps/{uid}/launch", "GET /v1/session", "DELETE /v1/session", "GET|PUT /v1/session/screen-mode", "GET|PUT /v1/session/frame-limit", "GET|PUT|DELETE /v1/card", "GET /v1/keys", "POST /v1/input/key", "POST /v1/input/touch", "POST /v1/input/text", "POST /v1/input/sequence", "POST /v1/input/release", "GET|PUT|DELETE /v1/input/accelerometer", "GET /v1/screenshot", "GET /v1/log", "POST /v1/wait", "GET|PATCH /v1/config", "GET|PUT /v1/language", "GET|PUT|DELETE /v1/files?path=", "POST /v1/emulator/pause", "POST /v1/emulator/resume", "GET /v1/jobs", "GET /v1/jobs/{id}", "GET /v1/cheats", "POST|DELETE /v1/cheats/search", "POST /v1/cheats/search/next", "GET /v1/cheats/search/results", "POST /v1/cheats/codes", "POST /v1/cheats/codes/restore", "PATCH|DELETE /v1/cheats/codes/{index}" } } });
++                return response::from_json({ { "api", 1 }, { "endpoints", json::array{ "GET /v1/status", "GET /v1/capabilities", "GET /v1/devices", "POST /v1/devices", "POST /v1/devices/rescan", "POST /v1/devices/{index|code}/boot", "PATCH /v1/devices/{index|code}", "DELETE /v1/devices/{index|code}", "GET /v1/apps?system=1", "POST /v1/apps", "DELETE /v1/apps/{uid}", "GET /v1/apps/{uid}/icon", "POST /v1/apps/{uid}/launch", "GET /v1/session", "DELETE /v1/session", "GET|PUT /v1/session/screen-mode", "GET|PUT /v1/session/frame-limit", "GET|PUT|DELETE /v1/card", "GET /v1/keys", "POST /v1/input/key", "POST /v1/input/touch", "POST /v1/input/text", "POST /v1/input/sequence", "POST /v1/input/release", "GET|PUT|DELETE /v1/input/accelerometer", "GET /v1/screenshot", "GET /v1/log", "POST /v1/wait", "GET|PATCH /v1/config", "GET|PUT /v1/language", "GET|PUT|DELETE /v1/files?path=", "POST /v1/emulator/pause", "POST /v1/emulator/resume", "GET|PUT /v1/emulator/speed", "GET /v1/jobs", "GET /v1/jobs/{id}", "GET /v1/cheats", "POST|DELETE /v1/cheats/search", "POST /v1/cheats/search/next", "GET /v1/cheats/search/results", "POST /v1/cheats/codes", "POST /v1/cheats/codes/restore", "PATCH|DELETE /v1/cheats/codes/{index}" } } });
+             if (p.size() >= 2 && p[1] == "jobs" && req.method == "GET") {
+                 std::lock_guard<std::mutex> guard(jobs_mutex);
+                 if (p.size() == 2) {
+diff --git a/src/emu/drivers/include/drivers/audio/audio.h b/src/emu/drivers/include/drivers/audio/audio.h
+index a8f168a84..143ee42e4 100644
+--- a/src/emu/drivers/include/drivers/audio/audio.h
++++ b/src/emu/drivers/include/drivers/audio/audio.h
+@@ -52,6 +52,7 @@ namespace eka2l1::drivers {
+ 
+         std::uint32_t master_volume_ = 100;
+         std::atomic<bool> suspend_{false};
++        std::atomic<double> playback_speed_{1.0};
+ 
+         std::mutex lock_;
+ 
+@@ -103,6 +104,16 @@ namespace eka2l1::drivers {
+ 
+         void master_volume(const std::uint32_t value);
+ 
++        // Rate guest audio streams are consumed at, following the guest clock speed
++        // (fast-forward). Above 1 a stream plays faster and higher pitched.
++        double playback_speed() const {
++            return playback_speed_.load(std::memory_order_relaxed);
++        }
++
++        void playback_speed(const double speed) {
++            playback_speed_.store(speed, std::memory_order_relaxed);
++        }
++
+         std::vector<player_type> get_suitable_player_types(const std::string &url);
+         std::vector<player_type> get_suitable_player_types(common::ro_stream &stream);
+         void set_preferred_midi_backend(const player_type type);
+diff --git a/src/emu/drivers/include/drivers/audio/backend/dsp_shared.h b/src/emu/drivers/include/drivers/audio/backend/dsp_shared.h
+index 3f555aabd..4437eb152 100644
+--- a/src/emu/drivers/include/drivers/audio/backend/dsp_shared.h
++++ b/src/emu/drivers/include/drivers/audio/backend/dsp_shared.h
+@@ -24,6 +24,7 @@
+ 
+ #include <common/container.h>
+ 
++#include <algorithm>
+ #include <atomic>
+ #include <mutex>
+ #include <vector>
+@@ -54,7 +55,15 @@ namespace eka2l1::drivers {
+         // audio we keep queued ahead - see low_water_mark_samples().
+         std::atomic<std::size_t> last_write_samples_;
+ 
++        // Render-thread scratch for fast-forward playback.
++        std::vector<std::int16_t> speed_scratch_;
++
+     protected:
++        // How many times faster than real time the stream is consumed (never below 1).
++        double consume_speed() const {
++            return aud_ ? std::max(aud_->playback_speed(), 1.0) : 1.0;
++        }
++
+         virtual bool internal_decode_running_out();
+ 
+         // How little unplayed audio may sit in the ring before we ask the guest for
+diff --git a/src/emu/drivers/src/audio/backend/dsp_shared.cpp b/src/emu/drivers/src/audio/backend/dsp_shared.cpp
+index 5c502377e..2dee05fe8 100644
+--- a/src/emu/drivers/src/audio/backend/dsp_shared.cpp
++++ b/src/emu/drivers/src/audio/backend/dsp_shared.cpp
+@@ -21,6 +21,8 @@
+ #include <common/log.h>
+ #include <drivers/audio/backend/dsp_shared.h>
+ 
++#include <cmath>
++
+ namespace eka2l1::drivers {
+     dsp_output_stream_shared::dsp_output_stream_shared(drivers::audio_driver *aud)
+         : dsp_output_stream()
+@@ -159,7 +161,8 @@ namespace eka2l1::drivers {
+         // streams again. Keep a whole guest buffer queued ahead instead, so the guest gets
+         // its own buffer period to answer, and cap the lookahead so a title writing huge
+         // buffers does not turn into seconds of latency.
+-        const std::size_t hardware_low = avg_frame_count_ * channels_ * 4;
++        // Fast-forward drains the ring several times faster; keep the same lookahead in time.
++        const std::size_t hardware_low = static_cast<std::size_t>(avg_frame_count_ * channels_ * 4 * consume_speed());
+         const std::size_t half_second = static_cast<std::size_t>(freq_) * common::max<std::size_t>(channels_, 1) / 2;
+         const std::size_t guest_buffer = common::min<std::size_t>(
+             last_write_samples_.load(std::memory_order_relaxed), half_second);
+@@ -184,22 +187,52 @@ namespace eka2l1::drivers {
+             avg_frame_count_ = (avg_frame_count_ + frame_count) / 2;
+         }
+ 
++        // Under fast-forward this render period covers speed times as much guest audio.
++        const double speed = consume_speed();
++        const std::size_t source_frames = (speed == 1.0) ? frame_count
++            : static_cast<std::size_t>(std::ceil(static_cast<double>(frame_count) * speed));
++
+         if (format_ != PCM16_FOUR_CC_CODE) {
+             // Running on low
+-            if (buffer_.size() <= (avg_frame_count_ * channels_ * 4)) {
++            const std::size_t low = static_cast<std::size_t>(avg_frame_count_ * channels_ * 4 * speed);
++            for (std::size_t round = 0; (round < static_cast<std::size_t>(std::ceil(speed))) && (buffer_.size() <= low); round++) {
+                 std::vector<std::uint8_t> target_buffer;
+                 decode_data(target_buffer);
+ 
++                if (target_buffer.empty()) {
++                    break;
++                }
++
+                 buffer_.push(target_buffer.data(), (target_buffer.size() + 1) / 2);
+             }
+         }
+ 
+-        std::size_t frame_to_wrote = buffer_.pop(buffer, frame_count * channels_) / channels_;
++        std::size_t frame_to_wrote = 0;
++        std::size_t source_taken = 0;
++
++        if (speed == 1.0) {
++            frame_to_wrote = buffer_.pop(buffer, frame_count * channels_) / channels_;
++            source_taken = frame_to_wrote;
++        } else {
++            // Play every speed-th frame: the guest buffers drain as fast as its clock
++            // runs, at the cost of a higher pitch.
++            speed_scratch_.resize(source_frames * channels_);
++            source_taken = buffer_.pop(speed_scratch_.data(), source_frames * channels_) / channels_;
++
++            for (; frame_to_wrote < frame_count; frame_to_wrote++) {
++                const std::size_t source = static_cast<std::size_t>(static_cast<double>(frame_to_wrote) * speed);
++                if (source >= source_taken) {
++                    break;
++                }
++
++                std::memcpy(&buffer[frame_to_wrote * channels_], &speed_scratch_[source * channels_],
++                    channels_ * sizeof(std::int16_t));
++            }
++        }
+ 
+-        samples_copied_.fetch_add(frame_to_wrote * channels_, std::memory_order_relaxed);
++        samples_copied_.fetch_add(source_taken * channels_, std::memory_order_relaxed);
+ 
+-        std::size_t sample_to_wrote = frame_to_wrote * channels_;
+-        std::size_t size_to_wrote = frame_to_wrote * channels_ * sizeof(std::int16_t);
++        std::size_t sample_to_wrote = source_taken * channels_;
+ 
+         // If the amount of buffer left is deemed to be insufficient (this takes account of current frame count that is needed)
+         if (internal_decode_running_out()) {
+diff --git a/src/emu/kernel/include/kernel/timing.h b/src/emu/kernel/include/kernel/timing.h
+index 36fbd019e..ab6b94708 100644
+--- a/src/emu/kernel/include/kernel/timing.h
++++ b/src/emu/kernel/include/kernel/timing.h
+@@ -164,6 +164,16 @@ namespace eka2l1 {
+         void schedule_event_at(std::uint64_t deadline, int event_type, std::uint64_t userdata);
+         bool unschedule_event(int event_type, uint64_t userdata);
+ 
++        /**
++         * @brief Run guest time faster or slower than the host clock (fast-forward).
++         *
++         * Every guest clock reading and timer deadline goes through this timer, so
++         * scaling it speeds up tick counts, timers and the window server frame
++         * pacing together. The reading stays continuous across a change.
++         */
++        void set_speed(const double speed);
++        double get_speed() const;
++
+         bool set_clock_frequency_mhz(const std::uint32_t cpu_mhz);
+         std::uint32_t get_clock_frequency_mhz();
+ 
+diff --git a/src/emu/kernel/src/timing.cpp b/src/emu/kernel/src/timing.cpp
+index 21c9495b4..ae12e765a 100644
+--- a/src/emu/kernel/src/timing.cpp
++++ b/src/emu/kernel/src/timing.cpp
+@@ -129,8 +129,12 @@ namespace eka2l1 {
+                     constexpr std::uint64_t IGNORE_AND_GO_PASS_MICROSECS = 32;
+ #endif
+ 
+-                    if (next_microseconds > IGNORE_AND_GO_PASS_MICROSECS) {
+-                        new_event_evt_.wait_for(next_microseconds.value());
++                    // The deadline is in guest time; sleep the host time it takes to get there.
++                    const std::uint64_t host_wait = static_cast<std::uint64_t>(
++                        static_cast<double>(next_microseconds.value()) / teletimer_->get_speed());
++
++                    if (host_wait > IGNORE_AND_GO_PASS_MICROSECS) {
++                        new_event_evt_.wait_for(host_wait);
+                     }
+                 } else {
+                     new_event_evt_.wait();
+@@ -224,6 +228,21 @@ namespace eka2l1 {
+         return false;
+     }
+ 
++    void ntimer::set_speed(const double speed) {
++        if ((speed <= 0.0) || (speed == teletimer_->get_speed())) {
++            return;
++        }
++
++        teletimer_->set_speed(speed);
++
++        // The timer thread may be sleeping on a host wait sized for the old speed.
++        new_event_evt_.set();
++    }
++
++    double ntimer::get_speed() const {
++        return teletimer_->get_speed();
++    }
++
+     bool ntimer::set_clock_frequency_mhz(const std::uint32_t cpu_mhz) {
+         if (teletimer_->set_target_frequency(cpu_mhz * 10000000)) {
+             CPU_HZ_ = cpu_mhz * 10000000;
+diff --git a/src/emu/qt/include/qt/mainwindow.h b/src/emu/qt/include/qt/mainwindow.h
+index 835a64759..cd8dde189 100644
+--- a/src/emu/qt/include/qt/mainwindow.h
++++ b/src/emu/qt/include/qt/mainwindow.h
+@@ -194,6 +194,7 @@ private slots:
+     void on_app_setting_files_changed();
+     void on_another_rotation_triggered(QAction *action);
+     void on_pause_toggled(bool checked);
++    void on_fast_forward_toggled(bool checked);
+     void on_package_uninstalled();
+     void on_refresh_app_list_requested();
+ 
+@@ -254,6 +255,7 @@ public:
+     void control_close();
+     void control_changed(eka2l1::control::native_change change);
+     void control_pause(bool paused);
++    void control_speed(double speed);
+     void setup_and_switch_to_game_mode();
+     void draw_enabled_overlay(eka2l1::drivers::graphics_driver *driver,
+         eka2l1::drivers::graphics_command_builder &builder, const float scale_factor_x,
+diff --git a/src/emu/qt/src/mainwindow.cpp b/src/emu/qt/src/mainwindow.cpp
+index a2e387026..93c167626 100644
+--- a/src/emu/qt/src/mainwindow.cpp
++++ b/src/emu/qt/src/mainwindow.cpp
+@@ -76,6 +76,7 @@
+ #include <QFutureWatcher>
+ #include <QInputDialog>
+ #include <QMessageBox>
++#include <QSignalBlocker>
+ #include <QProgressDialog>
+ #include <QSettings>
+ #include <QLineEdit>
+@@ -386,9 +387,11 @@ main_window::main_window(QApplication &application, QWidget *parent, eka2l1::des
+     ui_->status_bar->addPermanentWidget(screen_status_label_, 1);
+ 
+     ui_->action_pause->setEnabled(false);
++    ui_->action_fast_forward->setEnabled(false);
+     ui_->action_restart->setEnabled(false);
+ 
+     addAction(ui_->action_fullscreen);
++    addAction(ui_->action_fast_forward);
+ 
+     refresh_current_device_label();
+     make_default_binding_profile();
+@@ -488,6 +491,7 @@ main_window::main_window(QApplication &application, QWidget *parent, eka2l1::des
+     connect(ui_->action_mount_game_card_zip, &QAction::triggered, this, &main_window::on_mount_zip_clicked);
+     connect(ui_->action_fullscreen, &QAction::toggled, this, &main_window::on_fullscreen_toogled);
+     connect(ui_->action_pause, &QAction::toggled, this, &main_window::on_pause_toggled);
++    connect(ui_->action_fast_forward, &QAction::toggled, this, &main_window::on_fast_forward_toggled);
+     connect(ui_->action_restart, &QAction::triggered, this, &main_window::on_restart_requested);
+     connect(ui_->action_package_manager, &QAction::triggered, this, &main_window::on_package_manager_triggered);
+     connect(ui_->action_refresh_app_list, &QAction::triggered, this, &main_window::on_refresh_app_list_requested);
+@@ -743,6 +747,8 @@ void main_window::on_device_set_requested(const int index) {
+     ui_->action_pause->setEnabled(false);
+     ui_->action_restart->setEnabled(false);
+     ui_->action_pause->setChecked(false);
++    ui_->action_fast_forward->setChecked(false);
++    ui_->action_fast_forward->setEnabled(false);
+ 
+     setup_app_list(true);
+ }
+@@ -761,6 +767,12 @@ void main_window::on_pause_toggled(bool checked) {
+     }
+ }
+ 
++void main_window::on_fast_forward_toggled(bool checked) {
++    if (eka2l1::system *system = emulator_state_.symsys.get()) {
++        system->set_speed(checked ? emulator_state_.conf.fast_forward_speed : 1.0);
++    }
++}
++
+ void main_window::on_relaunch_request() {
+     QString program = QApplication::applicationFilePath();
+     QStringList arguments = QApplication::arguments();
+@@ -784,7 +796,15 @@ void main_window::on_status_bar_visibility_change(bool visible) {
+ }
+ 
+ void main_window::on_status_bar_update(const std::uint64_t fps) {
+-    screen_status_label_->setText(QString("%1 FPS").arg(fps));
++    eka2l1::system *system = emulator_state_.symsys.get();
++    const double speed = system ? system->get_speed() : 1.0;
++
++    if (speed == 1.0) {
++        screen_status_label_->setText(QString("%1 FPS").arg(fps));
++    } else {
++        // The count is per guest second; show what the host screen gets.
++        screen_status_label_->setText(QString("%1 FPS (x%2)").arg(static_cast<std::uint64_t>(fps * speed)).arg(speed));
++    }
+ }
+ 
+ void main_window::finish_stage_two() {
+@@ -1148,6 +1168,7 @@ void main_window::switch_to_game_display_mode() {
+     restore_ui_layouts();
+ 
+     ui_->action_pause->setEnabled(true);
++    ui_->action_fast_forward->setEnabled(true);
+     ui_->action_restart->setEnabled(true);
+     ui_->action_rotate_drop_menu->setEnabled(true);
+ 
+@@ -2264,3 +2285,13 @@ int main_window::skin_touch(const eka2l1::vec3 &pos, const int action, const int
+     down = true;
+     return 2;
+ }
++void main_window::control_speed(double speed) {
++    {
++        const QSignalBlocker blocker(ui_->action_fast_forward);
++        ui_->action_fast_forward->setChecked(speed != 1.0);
++    }
++
++    if (eka2l1::system *system = emulator_state_.symsys.get()) {
++        system->set_speed(speed);
++    }
++}
+diff --git a/src/emu/qt/src/mainwindow.ui b/src/emu/qt/src/mainwindow.ui
+index a42057e90..9b5fe4b0c 100644
+--- a/src/emu/qt/src/mainwindow.ui
++++ b/src/emu/qt/src/mainwindow.ui
+@@ -127,6 +127,7 @@
+      <string>Emulation</string>
+     </property>
+     <addaction name="action_pause"/>
++    <addaction name="action_fast_forward"/>
+     <addaction name="action_restart"/>
+     <addaction name="separator"/>
+     <addaction name="separator"/>
+@@ -196,6 +197,20 @@
+     <string>Pause</string>
+    </property>
+   </action>
++  <action name="action_fast_forward">
++   <property name="checkable">
++    <bool>true</bool>
++   </property>
++   <property name="text">
++    <string>Fast forward</string>
++   </property>
++   <property name="shortcut">
++    <string notr="true">Tab</string>
++   </property>
++   <property name="shortcutContext">
++    <enum>Qt::WindowShortcut</enum>
++   </property>
++  </action>
+   <action name="action_stop">
+    <property name="text">
+     <string>Stop</string>
+diff --git a/src/emu/qt/src/thread.cpp b/src/emu/qt/src/thread.cpp
+index b87e36588..4ce2f2964 100644
+--- a/src/emu/qt/src/thread.cpp
++++ b/src/emu/qt/src/thread.cpp
+@@ -436,6 +436,7 @@ namespace eka2l1::desktop {
+             frontend.close = [&state] { state.ui_main->control_close(); };
+             frontend.boot = [&state](int index) { return state.ui_main->control_boot(index); };
+             frontend.pause = [&state](bool paused) { state.ui_main->control_pause(paused); };
++            frontend.speed = [&state](double speed) { state.ui_main->control_speed(speed); };
+             frontend.changed = [&state](auto change) { state.ui_main->control_changed(change); };
+             if (state.sensor_driver) {
+                 state.sensor_driver->set_acceleration_override(nullptr);
+diff --git a/src/emu/system/include/system/epoc.h b/src/emu/system/include/system/epoc.h
+index 0f19cc8a0..4f00f51de 100644
+--- a/src/emu/system/include/system/epoc.h
++++ b/src/emu/system/include/system/epoc.h
+@@ -198,6 +198,15 @@ namespace eka2l1 {
+         bool pause();
+         bool unpause();
+ 
++        /**
++         * @brief Run the guest faster than real time (fast-forward), 1 being normal speed.
++         *
++         * Scales the guest clock - timers, tick counts, frame pacing - and the rate
++         * guest audio streams are played at. Kept across a device reboot.
++         */
++        void set_speed(const double speed);
++        double get_speed() const;
++
+         bool set_device(const std::uint8_t idx);
+         int install_package(std::u16string path, drive_number drv);
+ 
+diff --git a/src/emu/system/src/epoc.cpp b/src/emu/system/src/epoc.cpp
+index 3f0d3c022..dff01aee7 100644
+--- a/src/emu/system/src/epoc.cpp
++++ b/src/emu/system/src/epoc.cpp
+@@ -52,6 +52,7 @@
+ #include <string>
+ 
+ #include <disasm/disasm.h>
++#include <drivers/audio/audio.h>
+ #include <drivers/itc.h>
+ #include <gdbstub/gdbstub.h>
+ 
+@@ -163,6 +164,7 @@ namespace eka2l1 {
+ 
+         std::atomic<bool> exit = false;
+         std::atomic<bool> paused = false;
++        std::atomic<double> speed_{ 1.0 };
+ 
+         std::unordered_map<uint32_t, hal_instance> hals_;
+ 
+@@ -606,6 +608,11 @@ namespace eka2l1 {
+         bool pause();
+         bool unpause();
+ 
++        void set_speed(const double speed);
++        double get_speed() const {
++            return speed_;
++        }
++
+         memory_system *get_memory_system() {
+             return mem_.get();
+         }
+@@ -697,6 +704,7 @@ namespace eka2l1 {
+         // Initialize all the system that doesn't depend on others first
+         timing_ = std::make_unique<ntimer>(DEFAULT_CPU_HZ);
+         timing_->set_realtime_level(get_realtime_level_from_string(conf_->rtos_level.c_str()));
++        timing_->set_speed(speed_);
+ 
+         file_system_inst physical_fs = create_physical_filesystem(epocver::epoc94, "");
+         physical_fs_id_ = io_->add_filesystem(physical_fs);
+@@ -761,6 +769,26 @@ namespace eka2l1 {
+ 
+     void system_impl::set_audio_driver(drivers::audio_driver *aud_driver) {
+         adriver = aud_driver;
++
++        if (adriver) {
++            adriver->playback_speed(speed_);
++        }
++    }
++
++    void system_impl::set_speed(const double speed) {
++        if (speed <= 0.0) {
++            return;
++        }
++
++        speed_ = speed;
++
++        if (timing_) {
++            timing_->set_speed(speed);
++        }
++
++        if (adriver) {
++            adriver->playback_speed(speed);
++        }
+     }
+ 
+     void system_impl::set_sensor_driver(drivers::sensor_driver *sensor_driver) {
+@@ -1750,6 +1778,14 @@ namespace eka2l1 {
+         return impl->unpause();
+     }
+ 
++    void system::set_speed(const double speed) {
++        impl->set_speed(speed);
++    }
++
++    double system::get_speed() const {
++        return impl->get_speed();
++    }
++
+     memory_system *system::get_memory_system() {
+         return impl->get_memory_system();
+     }
