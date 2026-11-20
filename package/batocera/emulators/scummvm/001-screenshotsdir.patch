@@ -1,28 +1,28 @@
 diff --git a/base/commandLine.cpp b/base/commandLine.cpp
-index 40e853f..dc1c5fa 100644
+index c29d1eb0..6ab3d184 100644
 --- a/base/commandLine.cpp
 +++ b/base/commandLine.cpp
-@@ -151,6 +151,7 @@ static const char HELP_STRING[] =
- 	"                           pce, segacd, wii, windows)\n"
+@@ -170,6 +170,7 @@ static const char HELP_STRING4[] =
+ 	"  --joystick[=NUM]         Enable joystick input (default: 0 = first joystick)\n"
  	"  --savepath=PATH          Path to where saved games are stored\n"
  	"  --extrapath=PATH         Extra path to additional game data\n"
 +	"  --screenshots=PATH       Path to where screenshots are saved\n"
  	"  --iconspath=PATH         Path to additional icons for the launcher grid view\n"
  	"  --soundfont=FILE         Select the SoundFont for MIDI playback (only\n"
  	"                           supported by some MIDI drivers)\n"
-@@ -308,6 +309,8 @@ void registerDefaults() {
-
- 	ConfMan.registerDefault("enable_unsupported_game_warning", true);
-
+@@ -350,6 +351,8 @@ void registerDefaults() {
+ 	ConfMan.registerDefault("soundfont", "Roland_SC-55.sf2");
+ #endif
+ 
 +	ConfMan.registerDefault("screenshotspath", ".");
 +
  	// Game specific
- 	ConfMan.registerDefault("path", "");
+ 	ConfMan.registerDefault("path", Common::Path());
  	ConfMan.registerDefault("platform", Common::kPlatformDOS);
-@@ -857,6 +860,15 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
+@@ -974,6 +977,15 @@ Common::String parseCommandLine(Common::StringMap &settings, int argc, const cha
  			DO_LONG_OPTION("md5-engine")
  			END_OPTION
-
+ 
 +			DO_LONG_OPTION("screenshotspath")
 +				Common::FSNode path(option);
 +				if (!path.exists()) {
@@ -34,4 +34,4 @@ index 40e853f..dc1c5fa 100644
 +
  			DO_LONG_OPTION_INT("talkspeed")
  			END_OPTION
-
+ 
