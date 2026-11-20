@@ -28,22 +28,30 @@ for i in $(seq 120); do
 done
 
 # the hdmi-codec card has no jack control, so pipewire cannot tell a plugged HDMI from an unplugged one
+# a UCM card can turn itself off while its jack is empty, so there may be no analog sink
 ANALOG=$(echo "${SINKS}" | grep -vE "hdmi|dp[0-9]-sound|spdif" | head -1)
-[ -n "${ANALOG}" ] || exit 0
-WANT=${ANALOG}
-CARD=${ANALOG##*sound_card}
-CARD=${CARD%%.*}
-if amixer -c "${CARD}" cget iface=CARD,name='Headphones Jack' 2>/dev/null | grep -q "values=on"; then
-    HEADPHONES=1
-fi
+WANT=""
+for CARD in /proc/asound/card[0-9]*; do
+    CARD=${CARD##*card}
+    amixer -c "${CARD}" cget iface=CARD,name='Headphones Jack' 2>/dev/null | grep -q "values=on" || continue
+    # the headphone sink of a UCM card appears a moment after the jack
+    for i in $(seq 20); do
+        WANT=$(pactl list sinks short 2>/dev/null | awk '{print $2}' | grep -m1 "sound_card${CARD}\.")
+        [ -n "${WANT}" ] && break
+        sleep 0.25
+    done
+    [ -n "${WANT}" ] || exit 0
+    break
+done
 for STATUS in /sys/class/drm/card*-HDMI-A-*/status; do
-    [ -n "${HEADPHONES}" ] && break
+    [ -n "${WANT}" ] && break
     grep -qx connected "${STATUS}" || continue
     N=${STATUS%/status}
     N=${N##*-HDMI-A-}
-    HDMI=$(echo "${SINKS}" | grep -m1 "hdmi$((N - 1))-sound")
-    [ -n "${HDMI}" ] && WANT=${HDMI} && break
+    WANT=$(echo "${SINKS}" | grep -m1 "hdmi$((N - 1))-sound")
 done
+[ -n "${WANT}" ] || WANT=${ANALOG}
+[ -n "${WANT}" ] || exit 0
 
 [ "$(pactl get-default-sink)" = "${WANT}" ] && exit 0
 logger -t rk3588-hdmi-audio "default sink ${WANT}"
