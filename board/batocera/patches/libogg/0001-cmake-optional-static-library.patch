@@ -1,0 +1,24 @@
+From: retrodiv <retrodiv@proton.me>
+Subject: [PATCH] cmake: optionally install a PIC static companion library
+
+Build applications that need to wrap codec allocations against the
+same package as shared-library consumers.
+
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -120,4 +120,14 @@ install(TARGETS ogg
+     PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ogg
+ )
+-
++
++option(OGG_BUILD_STATIC_LIBS "Also install a PIC static library" OFF)
++if(BUILD_SHARED_LIBS AND OGG_BUILD_STATIC_LIBS)
++    add_library(ogg_static STATIC ${OGG_HEADERS} ${OGG_SOURCES})
++    target_include_directories(ogg_static PRIVATE
++        ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_BINARY_DIR}/include)
++    set_target_properties(ogg_static PROPERTIES
++        OUTPUT_NAME ogg POSITION_INDEPENDENT_CODE ON)
++    install(TARGETS ogg_static ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
++endif()
++
+ export(EXPORT OggTargets NAMESPACE Ogg:: FILE OggTargets.cmake)

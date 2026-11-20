@@ -145,6 +145,14 @@ class Core:
     def can_rewind(self) -> bool:
         return self.__savestate_features in {'serialized', 'deterministic'} and self.config.get_bool('rewind')
 
+    @property
+    def rewind_granularity(self) -> int:
+        return 1
+
+    @property
+    def rewind_buffer_size(self) -> int:
+        return 20
+
     @cached_property
     def runahead(self) -> int:
         if self.__savestate_features == 'deterministic':
