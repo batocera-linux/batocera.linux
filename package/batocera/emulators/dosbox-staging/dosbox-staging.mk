@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DOSBOX_STAGING_VERSION = v0.83.0
+DOSBOX_STAGING_VERSION = v0.83.1
 DOSBOX_STAGING_SITE = $(call github,dosbox-staging,dosbox-staging,$(DOSBOX_STAGING_VERSION))
 DOSBOX_STAGING_DEPENDENCIES = asio iir libpng libogg libvorbis opus opusfile
 DOSBOX_STAGING_DEPENDENCIES += sdl2 sdl2_image speexdsp zlib
