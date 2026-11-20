@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-TIC80_VERSION = v1.2.0
+TIC80_VERSION = v1.4.1
 TIC80_SITE = https://github.com/nesbox/TIC-80.git
 TIC80_SITE_METHOD = git
 TIC80_GIT_SUBMODULES = YES

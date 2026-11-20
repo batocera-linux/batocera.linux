@@ -26,6 +26,7 @@
 - Keisho (formerly SM2-Emu) to v0.9.63
 - PCSX2 to 2.9.185
 - ScummVM to v2026.4.0
+- TIC-80 to v1.4.1
 ### System
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
