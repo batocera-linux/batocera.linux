@@ -1,0 +1,299 @@
+NanoPi M6: device trees for the FriendlyElec YX35 LCD (ST7701S 480x800,
+GT1x touch) on DSI0 or DSI1, using the generic DSI panel driver. The
+init sequence and timings come from the vendor overlays.
+
+diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
+index 7bd4242f8..3ac18eaec 100644
+--- a/arch/arm64/boot/dts/rockchip/Makefile
++++ b/arch/arm64/boot/dts/rockchip/Makefile
+@@ -232,6 +232,8 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-indiedroid-nova.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-khadas-edge2.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-lubancat-4.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-m6.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-m6-yx35-dsi0.dtb
++dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-m6-yx35-dsi1.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-r6s.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-nanopi-r6c.dtb
+ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3588s-odroid-m2.dtb
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi0.dts b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi0.dts
+new file mode 100644
+index 000000000..e649891c2
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi0.dts
+@@ -0,0 +1,87 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++
++#include "rk3588s-nanopi-m6-yx35.dtsi"
++
++/ {
++	model = "FriendlyElec NanoPi M6 with YX35 LCD on DSI0";
++};
++
++&backlight {
++	pwms = <&pwm10 0 25000 0>;
++};
++
++&dsi0 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	panel@0 {
++		compatible = "rocknix,generic-dsi";
++		reg = <0>;
++		backlight = <&backlight>;
++		reset-gpios = <&gpio3 RK_PD2 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_rst0_gpio>;
++		panel_description = YX35_PANEL_DESCRIPTION;
++
++		port {
++			panel_in_dsi0: endpoint {
++				remote-endpoint = <&dsi0_out_panel>;
++			};
++		};
++	};
++};
++
++&dsi0_in {
++	dsi0_in_vp3: endpoint {
++		remote-endpoint = <&vp3_out_dsi0>;
++	};
++};
++
++&dsi0_out {
++	dsi0_out_panel: endpoint {
++		remote-endpoint = <&panel_in_dsi0>;
++	};
++};
++
++&i2c4 {
++	clock-frequency = <200000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c4m3_xfer>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	touchscreen@14 {
++		compatible = "goodix,gt1151";
++		reg = <0x14>;
++		interrupt-parent = <&gpio3>;
++		interrupts = <RK_PC0 IRQ_TYPE_EDGE_FALLING>;
++		irq-gpios = <&gpio3 RK_PC0 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touch_dsi0_gpio>;
++	};
++};
++
++&mipidcphy0 {
++	status = "okay";
++};
++
++&pwm10 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm10m2_pins>;
++	status = "okay";
++};
++
++&vp3 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	vp3_out_dsi0: endpoint@ROCKCHIP_VOP2_EP_MIPI0 {
++		reg = <ROCKCHIP_VOP2_EP_MIPI0>;
++		remote-endpoint = <&dsi0_in_vp3>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi1.dts b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi1.dts
+new file mode 100644
+index 000000000..f0eff19ae
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35-dsi1.dts
+@@ -0,0 +1,87 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++/dts-v1/;
++
++#include "rk3588s-nanopi-m6-yx35.dtsi"
++
++/ {
++	model = "FriendlyElec NanoPi M6 with YX35 LCD on DSI1";
++};
++
++&backlight {
++	pwms = <&pwm11 0 25000 0>;
++};
++
++&dsi1 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	panel@0 {
++		compatible = "rocknix,generic-dsi";
++		reg = <0>;
++		backlight = <&backlight>;
++		reset-gpios = <&gpio4 RK_PA1 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_rst1_gpio>;
++		panel_description = YX35_PANEL_DESCRIPTION;
++
++		port {
++			panel_in_dsi1: endpoint {
++				remote-endpoint = <&dsi1_out_panel>;
++			};
++		};
++	};
++};
++
++&dsi1_in {
++	dsi1_in_vp3: endpoint {
++		remote-endpoint = <&vp3_out_dsi1>;
++	};
++};
++
++&dsi1_out {
++	dsi1_out_panel: endpoint {
++		remote-endpoint = <&panel_in_dsi1>;
++	};
++};
++
++&i2c5 {
++	clock-frequency = <200000>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c5m2_xfer>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	touchscreen@14 {
++		compatible = "goodix,gt1151";
++		reg = <0x14>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <RK_PA0 IRQ_TYPE_EDGE_FALLING>;
++		irq-gpios = <&gpio4 RK_PA0 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpio4 RK_PA2 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touch_dsi1_gpio>;
++	};
++};
++
++&mipidcphy1 {
++	status = "okay";
++};
++
++&pwm11 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm11m3_pins>;
++	status = "okay";
++};
++
++&vp3 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	vp3_out_dsi1: endpoint@ROCKCHIP_VOP2_EP_MIPI1 {
++		reg = <ROCKCHIP_VOP2_EP_MIPI1>;
++		remote-endpoint = <&dsi1_in_vp3>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35.dtsi
+new file mode 100644
+index 000000000..088bc1cfe
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/rk3588s-nanopi-m6-yx35.dtsi
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * FriendlyElec YX35 3.5" 480x800 MIPI-DSI LCD (ST7701S) with GT1x touch,
++ * on either of the NanoPi M6 DSI connectors.
++ */
++
++#include "rk3588s-nanopi-m6.dts"
++
++#define YX35_PANEL_DESCRIPTION \
++	"G size=45,75 delays=0,20,120,5,0 format=rgb888 lanes=2 flags=0xc03", \
++	"M clock=29700 horizontal=480,40,32,30 vertical=800,20,10,20 default=1", \
++	"I seq=0100 wait=0a", \
++	"I seq=1100 wait=7d", \
++	"I seq=ff7701000013", \
++	"I seq=ef08", \
++	"I seq=ff7701000010", \
++	"I seq=c06300", \
++	"I seq=c11414", \
++	"I seq=c23702", \
++	"I seq=cc10", \
++	"I seq=b0c5111b0d11070a090824051210a932df", \
++	"I seq=b1c519210b0e030c070726041211aa32df", \
++	"I seq=ff7701000011", \
++	"I seq=b04d", \
++	"I seq=b159", \
++	"I seq=b281", \
++	"I seq=b380", \
++	"I seq=b54e", \
++	"I seq=b785", \
++	"I seq=b832", \
++	"I seq=bb03", \
++	"I seq=c108", \
++	"I seq=c208", \
++	"I seq=d088", \
++	"I seq=e0000002", \
++	"I seq=e106280828052807280e3333", \
++	"I seq=e2303033333400000034000000", \
++	"I seq=e300003333", \
++	"I seq=e44444", \
++	"I seq=e5092f2c8c0b312c8c0d332c8c0f352c8c", \
++	"I seq=e600003333", \
++	"I seq=e74444", \
++	"I seq=e8082e2c8c0a302c8c0c322c8c0e342c8c", \
++	"I seq=e93600", \
++	"I seq=eb0001e4e4448840", \
++	"I seq=edfffcb24567fa01ffff10af76542bcfff", \
++	"I seq=ef080808453f54", \
++	"I seq=ff7701000013", \
++	"I seq=e8000e", \
++	"I seq=1100 wait=78", \
++	"I seq=e8000c wait=0a", \
++	"I seq=e80000", \
++	"I seq=ff7701000000", \
++	"I seq=3600", \
++	"I seq=2900"
++
++/ {
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		brightness-levels = <0 255>;
++		num-interpolated-steps = <255>;
++		default-brightness-level = <200>;
++	};
++};
++
++&pinctrl {
++	lcd {
++		lcd_rst0_gpio: lcd-rst0-gpio {
++			rockchip,pins = <3 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		lcd_rst1_gpio: lcd-rst1-gpio {
++			rockchip,pins = <4 RK_PA1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	touch {
++		touch_dsi0_gpio: touch-dsi0-gpio {
++			rockchip,pins =
++				<3 RK_PC0 RK_FUNC_GPIO &pcfg_pull_up>,
++				<3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++
++		touch_dsi1_gpio: touch-dsi1-gpio {
++			rockchip,pins =
++				<4 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>,
++				<4 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};

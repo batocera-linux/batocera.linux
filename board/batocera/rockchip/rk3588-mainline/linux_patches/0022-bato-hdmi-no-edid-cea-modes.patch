@@ -1,0 +1,36 @@
+HDMI bridges without a readable EDID: offer CEA 1080p60/720p60/480p60 with 1080p preferred
+instead of the 1024x768 VESA set, and allow RGB so the HDMI helper does not warn on every check.
+
+--- a/drivers/gpu/drm/display/drm_bridge_connector.c
++++ b/drivers/gpu/drm/display/drm_bridge_connector.c
+@@ -361,8 +361,28 @@
+ 	 * the .detect(). Just update the modes here.
+ 	 */
+ 	bridge = bridge_connector->bridge_hdmi;
+-	if (bridge)
+-		return drm_edid_connector_add_modes(connector);
++	if (bridge) {
++		static const u8 vics[] = { 16, 4, 2 };
++		struct drm_display_mode *mode;
++		int i, n;
++
++		n = drm_edid_connector_add_modes(connector);
++		if (n || connector->connector_type != DRM_MODE_CONNECTOR_HDMIA)
++			return n;
++
++		/* No EDID: offer the CEA TV modes, 1080p60 first, instead of the 1024x768 VESA set */
++		connector->display_info.color_formats |= BIT(DRM_OUTPUT_COLOR_FORMAT_RGB444);
++		for (i = 0; i < ARRAY_SIZE(vics); i++) {
++			mode = drm_display_mode_from_cea_vic(connector->dev, vics[i]);
++			if (!mode)
++				continue;
++			if (i == 0)
++				mode->type |= DRM_MODE_TYPE_PREFERRED;
++			drm_mode_probed_add(connector, mode);
++			n++;
++		}
++		return n;
++	}
+ 
+ 	/*
+ 	 * If display exposes EDID, then we parse that in the normal way to
