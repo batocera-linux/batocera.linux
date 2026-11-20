@@ -33,6 +33,7 @@
 - Python Pyxel to v3.0.3
 - ScummVM to v2026.4.0
 - ShadPS4 to v.0.21.0
+- Snes9x to Sep 24, 2026 build
 - TIC-80 to v1.4.1
 - Vita3k to Nov 19, 2026 build
 - Xemu to v0.8.139
