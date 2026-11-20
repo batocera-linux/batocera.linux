@@ -1,8 +1,6 @@
-diff --git a/rpcs3/Emu/Io/evdev_gun_handler.cpp b/rpcs3/Emu/Io/evdev_gun_handler.cpp
-index e506920..293b9cb 100644
 --- a/rpcs3/Emu/Io/evdev_gun_handler.cpp
 +++ b/rpcs3/Emu/Io/evdev_gun_handler.cpp
-@@ -214,7 +214,7 @@ bool evdev_gun_handler::init()
+@@ -203,7 +203,7 @@
  
  	if (udev_enumerate* enumerate = udev_enumerate_new(m_udev))
  	{
@@ -11,12 +9,14 @@ index e506920..293b9cb 100644
  		udev_enumerate_add_match_subsystem(enumerate, "input");
  		udev_enumerate_scan_devices(enumerate);
  		udev_list_entry* devs = udev_enumerate_get_list_entry(enumerate);
---- a/rpcs3/Emu/Io/pad_types.h	2026-02-01 03:29:10.000000000 +0000
-+++ b/rpcs3/Emu/Io/pad_types.h	2026-02-01 05:55:42.385680003 +0000
-@@ -53,6 +53,19 @@
- 	mouse_button_6,
- 	mouse_button_7,
- 	mouse_button_8,
+--- a/rpcs3/Emu/Io/pad_types.h
++++ b/rpcs3/Emu/Io/pad_types.h
+@@ -64,7 +64,20 @@
+ 	// Special "buttons" that map behaviour
+ 	mouse,
+ 	left_stick,
+-	right_stick
++	right_stick,
 +
 +	// Accent gun / lightgun buttons
 +	gun_button_1,
@@ -33,12 +33,12 @@ index e506920..293b9cb 100644
  };
  
  u32 pad_button_offset(pad_button button);
---- a/rpcs3/Emu/Io/pad_types.cpp	2026-02-01 03:29:10.000000000 +0000
-+++ b/rpcs3/Emu/Io/pad_types.cpp	2026-02-01 05:55:42.386680003 +0000
-@@ -48,6 +48,17 @@
- 		case pad_button::mouse_button_6: return "Mouse Button 6";
- 		case pad_button::mouse_button_7: return "Mouse Button 7";
- 		case pad_button::mouse_button_8: return "Mouse Button 8";
+--- a/rpcs3/Emu/Io/pad_types.cpp
++++ b/rpcs3/Emu/Io/pad_types.cpp
+@@ -56,6 +56,17 @@
+ 		case pad_button::mouse: return "Mouse";
+ 		case pad_button::left_stick: return "Left Stick";
+ 		case pad_button::right_stick: return "Right Stick";
 +		case pad_button::gun_button_1: return "Gun Button 1";
 +		case pad_button::gun_button_2: return "Gun Button 2";
 +		case pad_button::gun_button_3: return "Gun Button 3";
@@ -53,10 +53,10 @@ index e506920..293b9cb 100644
  		}
  
  		return unknown;
-@@ -96,6 +107,17 @@
- 	case pad_button::mouse_button_6:
- 	case pad_button::mouse_button_7:
- 	case pad_button::mouse_button_8:
+@@ -112,6 +123,17 @@
+ 	case pad_button::mouse:
+ 	case pad_button::left_stick:
+ 	case pad_button::right_stick:
 +	case pad_button::gun_button_1:
 +	case pad_button::gun_button_2:
 +	case pad_button::gun_button_3:
@@ -71,10 +71,10 @@ index e506920..293b9cb 100644
  		return 0;
  	}
  	return 0;
-@@ -143,6 +165,17 @@
- 	case pad_button::mouse_button_6: return 6;
- 	case pad_button::mouse_button_7: return 7;
- 	case pad_button::mouse_button_8: return 8;
+@@ -167,6 +189,17 @@
+ 	case pad_button::mouse: return 0;
+ 	case pad_button::left_stick: return 0;
+ 	case pad_button::right_stick: return 0;
 +	case pad_button::gun_button_1: return 1;
 +	case pad_button::gun_button_2: return 2;
 +	case pad_button::gun_button_3: return 3;
@@ -89,9 +89,9 @@ index e506920..293b9cb 100644
  	}
  	return 0;
  }
---- a/rpcs3/Emu/Io/gem_config.h	2026-02-01 03:29:10.000000000 +0000
-+++ b/rpcs3/Emu/Io/gem_config.h	2026-02-01 05:55:42.387680003 +0000
-@@ -98,6 +98,26 @@
+--- a/rpcs3/Emu/Io/gem_config.h
++++ b/rpcs3/Emu/Io/gem_config.h
+@@ -208,6 +208,26 @@
  	cfg_gems() : emulated_pads_config<cfg_gem, 4>("gem_real") {};
  };
  
@@ -118,9 +118,9 @@ index e506920..293b9cb 100644
  extern cfg_fake_gems g_cfg_gem_fake;
  extern cfg_mouse_gems g_cfg_gem_mouse;
 +extern cfg_gun_gems g_cfg_gem_gun;
---- a/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-02-01 03:29:10.000000000 +0000
-+++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp	2026-02-01 05:55:42.389680002 +0000
-@@ -189,6 +189,7 @@
+--- a/rpcs3/Emu/Cell/Modules/cellGem.cpp
++++ b/rpcs3/Emu/Cell/Modules/cellGem.cpp
+@@ -180,6 +180,7 @@
  cfg_gems g_cfg_gem_real;
  cfg_fake_gems g_cfg_gem_fake;
  cfg_mouse_gems g_cfg_gem_mouse;
@@ -128,7 +128,7 @@ index e506920..293b9cb 100644
  
  struct gem_config_data
  {
-@@ -626,9 +627,15 @@
+@@ -625,9 +626,15 @@
  			cellGem.notice("Could not load mouse gem config. Using defaults.");
  		}
  
@@ -144,7 +144,7 @@ index e506920..293b9cb 100644
  	}
  };
  
-@@ -2348,6 +2355,26 @@
+@@ -2801,6 +2808,26 @@
  }
  
  #ifdef HAVE_LIBEVDEV
@@ -171,7 +171,7 @@ index e506920..293b9cb 100644
  static bool gun_input_to_pad(u32 gem_no, be_t<u16>& digital_buttons, be_t<u16>& analog_t)
  {
  	digital_buttons = 0;
-@@ -2358,29 +2385,30 @@
+@@ -2811,29 +2838,30 @@
  
  	gun_thread& gun = g_fxo->get<gun_thread>();
  	std::scoped_lock lock(gun.handler.mutex);

@@ -1,6 +1,6 @@
---- a/3rdparty/hidapi/hidapi/libusb/hid.c	2021-06-30 21:14:13.000000000 +0200
-+++ b/3rdparty/hidapi/hidapi/libusb/hid.c	2021-08-01 19:15:08.124788582 +0200
-@@ -44,7 +44,7 @@
+--- a/3rdparty/hidapi/hidapi/libusb/hid.c
++++ b/3rdparty/hidapi/hidapi/libusb/hid.c
+@@ -41,7 +41,7 @@
  #include <wchar.h>
  
  /* GNU / LibUSB */
@@ -8,9 +8,9 @@
 +#include <libusb-1.0/libusb.h>
  #if !defined(__ANDROID__) && !defined(NO_ICONV)
  #include <iconv.h>
- #endif
---- a/3rdparty/libusb/libusb.cmake	2020-07-19 17:14:04.829722651 +0200
-+++ b/3rdparty/libusb/libusb.cmake	2020-07-19 17:14:12.793868076 +0200
+ #ifndef ICONV_CONST
+--- a/3rdparty/libusb/libusb.cmake
++++ b/3rdparty/libusb/libusb.cmake
 @@ -10,6 +10,7 @@
  	list(APPEND LIBUSB_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
  endif()

@@ -18,19 +18,17 @@ Combined patch on top of RPCS3 v0.0.41:
 - debounced auto-save of the USIO SRAM (calibration/settings) shortly after
   the game writes it, since Batocera exits skip the device destructor.
 ---
-diff --git a/rpcs3/Emu/Cell/lv2/sys_fs.cpp b/rpcs3/Emu/Cell/lv2/sys_fs.cpp
-index 79bd852..3f3a038 100644
 --- a/rpcs3/Emu/Cell/lv2/sys_fs.cpp
 +++ b/rpcs3/Emu/Cell/lv2/sys_fs.cpp
-@@ -13,6 +13,7 @@
- #include "Emu/IdManager.h"
+@@ -14,6 +14,7 @@
  #include "Emu/system_utils.hpp"
+ #include "Emu/System.h"
  #include "Emu/Cell/lv2/sys_process.h"
 +#include "Emu/Cell/lv2/sys_usbd.h"
  
  #include <span>
  #include <shared_mutex>
-@@ -1650,6 +1651,18 @@ error_code sys_fs_stat(ppu_thread& ppu, vm::cptr<char> path, vm::ptr<CellFsStat>
+@@ -2011,6 +2012,18 @@
  		return CELL_OK;
  	}
  
@@ -49,8 +47,6 @@ index 79bd852..3f3a038 100644
  	if (local_path.empty())
  	{
  		// This syscall can be used by games and VSH to test the presence of dev_usb000 ~ dev_usb127
-diff --git a/rpcs3/Emu/Cell/lv2/sys_usbd.cpp b/rpcs3/Emu/Cell/lv2/sys_usbd.cpp
-index b84e345..6401c89 100644
 --- a/rpcs3/Emu/Cell/lv2/sys_usbd.cpp
 +++ b/rpcs3/Emu/Cell/lv2/sys_usbd.cpp
 @@ -126,6 +126,7 @@
@@ -132,13 +128,11 @@ index b84e345..6401c89 100644
  	if (const auto iterator = predefined_ldds.find(product); iterator != predefined_ldds.end())
 --- a/rpcs3/Emu/Cell/lv2/sys_usbd.h
 +++ b/rpcs3/Emu/Cell/lv2/sys_usbd.h
-@@ -91,3 +91,4 @@ error_code sys_usbd_unregister_extra_ldd(ppu_thread& ppu, u32 handle, vm::cptr<c
- void connect_usb_controller(u8 index, input::product_type);
+@@ -94,3 +94,4 @@
  void reconnect_usb(u32 assigned_number);
+ void set_usb_device_attached(usb_device* dev, bool attached);
  void handle_hotplug_event(bool connected, bool source_is_libusb);
 +bool is_usb_ldd_registered(std::string_view product);
-diff --git a/rpcs3/Emu/Io/evdev_gun_handler.cpp b/rpcs3/Emu/Io/evdev_gun_handler.cpp
-index 8ed4c63..fcb13d0 100644
 --- a/rpcs3/Emu/Io/evdev_gun_handler.cpp
 +++ b/rpcs3/Emu/Io/evdev_gun_handler.cpp
 @@ -13,6 +13,8 @@
@@ -150,8 +144,8 @@ index 8ed4c63..fcb13d0 100644
  LOG_CHANNEL(evdev_log, "evdev");
  
  constexpr usz max_devices = 8;
-@@ -133,6 +135,11 @@ int evdev_gun_handler::get_axis_y_max(u32 gunno) const
- 	return axis.max - axis.min;
+@@ -126,6 +128,11 @@
+ 	return get_axis(gunno, ABS_Y);
  }
  
 +const std::string& evdev_gun_handler::get_devnode(u32 gunno) const
@@ -162,7 +156,7 @@ index 8ed4c63..fcb13d0 100644
  void evdev_gun_handler::poll(u32 index)
  {
  	if (!m_is_init || index >= m_devices.size())
-@@ -164,9 +171,37 @@ void evdev_gun_handler::poll(u32 index)
+@@ -157,9 +164,37 @@
  			{
  			case EV_KEY:
  				gun.buttons[evt.code] = evt.value;
@@ -201,7 +195,7 @@ index 8ed4c63..fcb13d0 100644
  				break;
  			default:
  				break;
-@@ -208,9 +243,18 @@ bool evdev_gun_handler::init()
+@@ -201,9 +236,18 @@
  		return false;
  	}
  
@@ -222,7 +216,7 @@ index 8ed4c63..fcb13d0 100644
  		udev_enumerate_add_match_subsystem(enumerate, "input");
  		udev_enumerate_scan_devices(enumerate);
  		udev_list_entry* devs = udev_enumerate_get_list_entry(enumerate);
-@@ -244,7 +288,6 @@ bool evdev_gun_handler::init()
+@@ -237,7 +281,6 @@
  
  		for (const event_udev_entry& entry : sorted_devices)
  		{
@@ -230,7 +224,7 @@ index 8ed4c63..fcb13d0 100644
  			const char* name = udev_list_entry_get_name(entry.item);
  			evdev_log.notice("Lightgun: found device %s", name);
  
-@@ -263,54 +306,75 @@ bool evdev_gun_handler::init()
+@@ -256,54 +299,75 @@
  				continue;
  			}
  
@@ -269,7 +263,7 @@ index 8ed4c63..fcb13d0 100644
 -						break;
 +						gun.axis[ABS_X].value = (gun.axis[ABS_X].min + gun.axis[ABS_X].max) / 2;
 +						gun.axis[ABS_Y].value = (gun.axis[ABS_Y].min + gun.axis[ABS_Y].max) / 2;
- 					}
++					}
 +					is_valid = true;
 +				}
 +				else if (relative && has_key && has_rel)
@@ -283,7 +277,7 @@ index 8ed4c63..fcb13d0 100644
 +						gun.axis[code].min = 0;
 +						gun.axis[code].max = range;
 +						gun.axis[code].value = range / 2;
-+					}
+ 					}
 +					is_valid = true;
  				}
  
@@ -332,8 +326,6 @@ index 8ed4c63..fcb13d0 100644
  
  	m_is_init = true;
  	return true;
-diff --git a/rpcs3/Emu/Io/evdev_gun_handler.h b/rpcs3/Emu/Io/evdev_gun_handler.h
-index 342fff4..d8c3cfc 100644
 --- a/rpcs3/Emu/Io/evdev_gun_handler.h
 +++ b/rpcs3/Emu/Io/evdev_gun_handler.h
 @@ -2,6 +2,8 @@
@@ -345,15 +337,15 @@ index 342fff4..d8c3cfc 100644
  #include "Utilities/mutex.h"
  
  enum class gun_button
-@@ -34,6 +36,7 @@ public:
- 	int get_axis_y(u32 gunno) const;
- 	int get_axis_x_max(u32 gunno) const;
- 	int get_axis_y_max(u32 gunno) const;
+@@ -32,6 +34,7 @@
+ 	int get_button(u32 gunno, gun_button button) const;
+ 	f32 get_axis_x(u32 gunno) const;
+ 	f32 get_axis_y(u32 gunno) const;
 +	const std::string& get_devnode(u32 gunno) const;
  
  	void poll(u32 index);
  
-@@ -53,8 +56,21 @@ private:
+@@ -53,8 +56,21 @@
  	struct evdev_gun
  	{
  		struct libevdev* device = nullptr;
@@ -375,14 +367,12 @@ index 342fff4..d8c3cfc 100644
  	};
  
  	std::vector<evdev_gun> m_devices;
-diff --git a/rpcs3/Emu/Io/usio.cpp b/rpcs3/Emu/Io/usio.cpp
-index f707ae8..ddc7fdb 100644
 --- a/rpcs3/Emu/Io/usio.cpp
 +++ b/rpcs3/Emu/Io/usio.cpp
-@@ -5,9 +5,81 @@
- #include "Input/pad_thread.h"
+@@ -7,9 +7,81 @@
  #include "Emu/Io/usio_config.h"
  #include "Emu/IdManager.h"
+ #include "Emu/system_config.h"
 +#include "Emu/System.h"
 +#ifdef HAVE_LIBEVDEV
 +#include "Emu/Io/evdev_gun_handler.h"
@@ -461,7 +451,7 @@ index f707ae8..ddc7fdb 100644
  template <>
  void fmt_class_string<usio_btn>::format(std::string& out, u64 arg)
  {
-@@ -64,6 +136,9 @@ usb_device_usio::usb_device_usio(const std::array<u8, 7>& location)
+@@ -67,6 +139,9 @@
  {
  	// Initialize dependencies
  	g_fxo->need<usio_memory>();
@@ -471,7 +461,7 @@ index f707ae8..ddc7fdb 100644
  
  	device = UsbDescriptorNode(USB_DESCRIPTOR_DEVICE,
  		UsbDeviceDescriptor{
-@@ -73,8 +148,8 @@ usb_device_usio::usb_device_usio(const std::array<u8, 7>& location)
+@@ -76,8 +151,8 @@
  			.bDeviceProtocol    = 0xff,
  			.bMaxPacketSize0    = 0x8,
  			.idVendor           = 0x0b9a,
@@ -482,7 +472,7 @@ index f707ae8..ddc7fdb 100644
  			.iManufacturer      = 0x01,
  			.iProduct           = 0x02,
  			.iSerialNumber      = 0x00,
-@@ -121,6 +196,11 @@ usb_device_usio::usb_device_usio(const std::array<u8, 7>& location)
+@@ -124,6 +199,11 @@
  			.wMaxPacketSize   = 0x0008,
  			.bInterval        = 16}));
  
@@ -494,8 +484,8 @@ index f707ae8..ddc7fdb 100644
  	load_backup();
  }
  
-@@ -298,6 +378,229 @@ void usb_device_usio::translate_input_taiko()
- 	response = std::move(input_buf);
+@@ -316,6 +396,227 @@
+ 	std::memcpy(response.data() + 16, &m_io_status[0].coin_counter, sizeof(u16));
  }
  
 +void usb_device_usio::translate_input_gun()
@@ -656,10 +646,8 @@ index f707ae8..ddc7fdb 100644
 +			// Gun aim -> 0x1000 analog channels (P1 @ 0xA0/0xA2, P2 @ 0xA4/0xA6),
 +			// the slot Dead Storm Pirates reads for the lightgun. 8-bit position
 +			// scaled to 16-bit (*257), matching the old TeknoParrot 0x1000 path.
-+			const int xmax = gun.handler.get_axis_x_max(g);
-+			const int ymax = gun.handler.get_axis_y_max(g);
-+			const u8 ax8 = xmax > 0 ? static_cast<u8>(std::clamp(gun.handler.get_axis_x(g) * 255 / xmax, 0, 255)) : 0;
-+			const u8 ay8 = ymax > 0 ? static_cast<u8>(std::clamp(gun.handler.get_axis_y(g) * 255 / ymax, 0, 255)) : 0;
++			const u8 ax8 = static_cast<u8>(std::clamp(gun.handler.get_axis_x(g) * 255.0f, 0.0f, 255.0f));
++			const u8 ay8 = static_cast<u8>(std::clamp(gun.handler.get_axis_y(g) * 255.0f, 0.0f, 255.0f));
 +			// Per TeknoParrot: JVS analog is 16-bit BIG-ENDIAN, read by the game
 +			// as SIGNED (screen center = 0). High byte (at 0xA0) is the signed
 +			// position: offset-binary 0..0xFF mapped to signed -128..+127 via
@@ -724,29 +712,28 @@ index f707ae8..ddc7fdb 100644
  void usb_device_usio::translate_input_tekken()
  {
  	std::lock_guard lock(pad::g_pad_mutex);
-@@ -309,7 +612,7 @@ void usb_device_usio::translate_input_tekken()
+@@ -337,7 +638,7 @@
+ 		}
  
- 	const auto translate_from_pad = [&](usz pad_number, usz player)
- 	{
--		const usz shift = (player % 2) * 24ULL;
-+		const usz shift = (player % 2) * (m_is_tekken6 ? 16ULL : 24ULL);
- 		auto& status = m_io_status[player / 2];
- 		auto& input = digital_input[player / 2];
- 
-@@ -328,12 +631,22 @@ void usb_device_usio::translate_input_tekken()
+ 		const usz player_index = player % 2;
+-		const usz shift = (player_index) * 24ULL;
++		const usz shift = (player_index) * (m_is_tekken6 ? 16ULL : 24ULL);
+ 		const usz io_index = player / 2;
+ 		auto& status = m_io_status[io_index];
+ 		auto& input = digital_input[io_index];
+@@ -355,11 +656,21 @@
  					status.test_key_pressed = value.pressed;
  					break;
  				case usio_btn::coin:
--					if (player % 2 != 0)
+-					if (player_index != 0)
 -						break;
 -					if (value.pressed && !status.coin_key_pressed) // Ensure only one coin is inserted each time the Coin button is pressed
 -						status.coin_counter++;
 -					status.coin_key_pressed = value.pressed;
--					break;
 +					// Two coin slots per board: the first player on the board feeds
 +					// coin1, the second (Tekken P2) feeds coin2. Each slot keeps its
 +					// own debounce so one press inserts exactly one coin.
-+					if (player % 2 == 0)
++					if (player_index == 0)
 +					{
 +						if (value.pressed && !status.coin_key_pressed)
 +							status.coin_counter++;
@@ -758,57 +745,56 @@ index f707ae8..ddc7fdb 100644
 +							status.coin_counter2++;
 +						status.coin_key_pressed2 = value.pressed;
 +					}
-+ 					break;
+ 					break;
  				case usio_btn::service:
- 					if (player % 2 == 0 && value.pressed)
- 						input |= 0x4000;
-@@ -341,7 +654,7 @@ void usb_device_usio::translate_input_tekken()
+ 					if (player_index == 0 && value.pressed)
+@@ -368,7 +679,7 @@
  				case usio_btn::enter:
- 					if (pressed)
+ 					if (value.pressed)
  					{
--						input |= 0x800000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x8000ULL : 0x800000ULL) << shift;
+-						input |= (g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x200ULL : 0x800000ULL) << shift;
++						input |= m_is_tekken6 ? (0x8000ULL << shift) : ((g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x200ULL : 0x800000ULL) << shift);
  						if (player == 0)
  							digital_input_lm |= 0x800;
  					}
-@@ -349,7 +662,7 @@ void usb_device_usio::translate_input_tekken()
+@@ -376,7 +687,7 @@
  				case usio_btn::up:
- 					if (pressed)
+ 					if (value.pressed)
  					{
--						input |= 0x200000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x2000ULL : 0x200000ULL) << shift;
+-						input |= (g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x2000ULL : 0x200000ULL) << shift;
++						input |= m_is_tekken6 ? (0x2000ULL << shift) : ((g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x2000ULL : 0x200000ULL) << shift);
  						if (player == 0)
  							digital_input_lm |= 0x200;
  					}
-@@ -357,7 +670,7 @@ void usb_device_usio::translate_input_tekken()
+@@ -384,7 +695,7 @@
  				case usio_btn::down:
- 					if (pressed)
+ 					if (value.pressed)
  					{
--						input |= 0x100000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x1000ULL : 0x100000ULL) << shift;
+-						input |= (g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x1000ULL : 0x100000ULL) << shift;
++						input |= m_is_tekken6 ? (0x1000ULL << shift) : ((g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? 0x1000ULL : 0x100000ULL) << shift);
  						if (player == 0)
  							digital_input_lm |= 0x400;
  					}
-@@ -365,7 +678,7 @@ void usb_device_usio::translate_input_tekken()
+@@ -392,7 +703,7 @@
  				case usio_btn::left:
- 					if (pressed)
+ 					if (value.pressed)
  					{
--						input |= 0x80000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x800ULL : 0x80000ULL) << shift;
+-						input |= g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x800000ULL : 0x100000ULL) : (0x80000ULL << shift);
++						input |= m_is_tekken6 ? (0x800ULL << shift) : g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x800000ULL : 0x100000ULL) : (0x80000ULL << shift);
  						if (player == 0)
  							digital_input_lm |= 0x2000;
  					}
-@@ -373,7 +686,7 @@ void usb_device_usio::translate_input_tekken()
+@@ -400,7 +711,7 @@
  				case usio_btn::right:
- 					if (pressed)
+ 					if (value.pressed)
  					{
--						input |= 0x40000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x400ULL : 0x40000ULL) << shift;
+-						input |= g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x400000ULL : 0x80000ULL) : (0x40000ULL << shift);
++						input |= m_is_tekken6 ? (0x400ULL << shift) : g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x400000ULL : 0x80000ULL) : (0x40000ULL << shift);
  						if (player == 0)
  							digital_input_lm |= 0x4000;
  					}
-@@ -381,26 +694,26 @@ void usb_device_usio::translate_input_tekken()
- 				case usio_btn::tekken_button1:
+@@ -408,26 +719,26 @@
+ 				case usio_btn::tekken_button1: // or "2D / 3D Switch" button for shooter games
  					if (value.pressed)
  					{
 -						input |= 0x20000ULL << shift;
@@ -817,10 +803,10 @@ index f707ae8..ddc7fdb 100644
  							digital_input_lm |= 0x100;
  					}
  					break;
- 				case usio_btn::tekken_button2:
+ 				case usio_btn::tekken_button2: // or "Start" button for shooter games
  					if (value.pressed)
--						input |= 0x10000ULL << shift;
-+						input |= (m_is_tekken6 ? 0x100ULL : 0x10000ULL) << shift;
+-						input |= g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x200000ULL : 0x40000ULL) : (0x10000ULL << shift);
++						input |= m_is_tekken6 ? (0x100ULL << shift) : g_cfg.io.usio_mode == usio_handler_mode::shooter_games ? (player_index == 0 ? 0x200000ULL : 0x40000ULL) : (0x10000ULL << shift);
  					break;
  				case usio_btn::tekken_button3:
  					if (value.pressed)
@@ -839,25 +825,25 @@ index f707ae8..ddc7fdb 100644
  					break;
  				case usio_btn::card_tapping:
  					if (value.pressed)
-@@ -427,8 +740,14 @@ void usb_device_usio::translate_input_tekken()
+@@ -506,8 +817,14 @@
  
  	for (usz i = 0; i < 2; i++)
  	{
--		std::memcpy(input_buf.data() - i * 0x80 + 0x100, &digital_input[i], sizeof(u64));
--		std::memcpy(input_buf.data() - i * 0x80 + 0x100 + 0x10, &m_io_status[i].coin_counter, sizeof(u16));
+-		std::memcpy(response.data() - i * 0x80 + 0x100, &digital_input[i], sizeof(u64));
+-		std::memcpy(response.data() - i * 0x80 + 0x100 + 0x10, &m_io_status[i].coin_counter, sizeof(u16));
 +		// System 357 reads P1 from board 0 (0x80) / P2 from board 1 (0x100),
 +		// same as the gun games. The original code wrote them swapped (P1 ->
 +		// 0x100), so on System 357 titles like Tekken 6 the game read board 0
 +		// where nothing was written and no input registered.
-+		std::memcpy(input_buf.data() + 0x80 + i * 0x80, &digital_input[i], sizeof(u64));
++		std::memcpy(response.data() + 0x80 + i * 0x80, &digital_input[i], sizeof(u64));
 +		// Two coin slots per board: coin1 at +0x10, coin2 at +0x12 (Tekken P2).
-+		std::memcpy(input_buf.data() + 0x80 + i * 0x80 + 0x10, &m_io_status[i].coin_counter, sizeof(u16));
-+		std::memcpy(input_buf.data() + 0x80 + i * 0x80 + 0x12, &m_io_status[i].coin_counter2, sizeof(u16));
++		std::memcpy(response.data() + 0x80 + i * 0x80 + 0x10, &m_io_status[i].coin_counter, sizeof(u16));
++		std::memcpy(response.data() + 0x80 + i * 0x80 + 0x12, &m_io_status[i].coin_counter2, sizeof(u16));
  	}
  
- 	std::memcpy(input_buf.data(), &digital_input_lm, sizeof(u16));
-@@ -655,6 +974,9 @@ void usb_device_usio::usio_write(u8 channel, u16 reg, std::vector<u8>& data)
- 		case 0x0028:
+ 	std::memcpy(response.data(), &digital_input_lm, sizeof(u16));
+@@ -595,6 +912,9 @@
+ 		case usio_reg::set_expansion_mode:
  		{
  			usio_log.trace("SetExpansionMode: 0x%04X", get_u16("SetExpansionMode"));
 +			// If we don't set this as requested, razing storm will run at low fps because it will keep trying to change
@@ -865,31 +851,29 @@ index f707ae8..ddc7fdb 100644
 +			expansion_mode = get_u16("SetExpansionMode");
  			break;
  		}
- 		case 0x0048:
-@@ -663,6 +985,7 @@ void usb_device_usio::usio_write(u8 channel, u16 reg, std::vector<u8>& data)
- 		case 0x0078:
+ 		case usio_reg::set_hopper_request_0:
+@@ -603,6 +923,7 @@
+ 		case usio_reg::set_hopper_request_3:
  		{
- 			usio_log.trace("SetHopperRequest(Hopper: %d, Request: 0x%04X)", (reg - 0x48) / 0x10, get_u16("SetHopperRequest"));
-+			hoppers[(reg - 0x48) / 0x10] = get_u16("SetHopperLimit");
+ 			usio_log.trace("SetHopperRequest(Hopper: %d, Request: 0x%04X)", (reg - static_cast<u16>(usio_reg::set_hopper_request_0)) / usio_hopper_stride, get_u16("SetHopperRequest"));
++			hoppers[(reg - static_cast<u16>(usio_reg::set_hopper_request_0)) / usio_hopper_stride] = get_u16("SetHopperLimit");
  			break;
  		}
- 		case 0x004A:
-@@ -670,7 +993,13 @@ void usb_device_usio::usio_write(u8 channel, u16 reg, std::vector<u8>& data)
- 		case 0x006A:
- 		case 0x007A:
- 		{
--			usio_log.trace("SetHopperRequest(Hopper: %d, Limit: 0x%04X)", (reg - 0x4A) / 0x10, get_u16("SetHopperLimit"));
-+			usio_log.trace("SetHopperLimit(Hopper: %d, Limit: 0x%04X)", (reg - 0x4A) / 0x10, get_u16("SetHopperLimit"));
-+			break;
-+		}
-+		case 0x1400:
+ 		case usio_reg::set_hopper_limit_0:
+@@ -613,6 +934,12 @@
+ 			usio_log.trace("SetHopperLimit(Hopper: %d, Limit: 0x%04X)", (reg - static_cast<u16>(usio_reg::set_hopper_limit_0)) / usio_hopper_stride, get_u16("SetHopperLimit"));
+ 			break;
+ 		}
++		case usio_reg::set_led:
 +		{
 +			// for razing storm, LED outputs in the test menu seem to change the bytes at [0x10] and [0x11]
 +			usio_log.trace("SetLed");
- 			break;
- 		}
- 		case 0x0080:
-@@ -697,7 +1026,10 @@ void usb_device_usio::usio_write(u8 channel, u16 reg, std::vector<u8>& data)
++			break;
++		}
+ 		case usio_reg::card_reader_0_status:
+ 		case usio_reg::card_reader_0_unk:
+ 		case usio_reg::card_reader_1_status:
+@@ -637,7 +964,10 @@
  		auto& memory = g_fxo->get<usio_memory>().backup_memory;
  		const usz addr_end = reg + data.size();
  		if (data.size() > 0 && page < usio_memory::page_count && addr_end <= usio_memory::page_size)
@@ -900,12 +884,10 @@ index f707ae8..ddc7fdb 100644
  		else
  			usio_log.error("Usio sram invalid write operation(page: 0x%02X, addr: 0x%04X, size: 0x%04X, data: %s)", page, reg, data.size(), fmt::buf_to_hexstring(data.data(), data.size()));
  	}
-@@ -720,7 +1052,94 @@ void usb_device_usio::usio_read(u8 channel, u16 reg, u16 size)
- 			// Get Buffer, rarely gives a reply on real HW
- 			// First U16 seems to be a timestamp of sort
+@@ -662,6 +992,88 @@
  			// Purpose seems related to connectivity check
-+			// [2] and [3] seem to be a U16 to set specific error flags.
- 			response = {0x7E, 0xE4, 0x00, 0x00, 0x74, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+ 			response = {0x00, 0x00, 0x00, 0x00, 0x74, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00, 0x7E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+ 			write_to_ptr<le_t<u16>>(response, 0, static_cast<u16>(get_timestamp() / 1000));
 +			response.resize(0x100); // Razing storm wants a full 0x100 bytes here, and we need the space to write in the gun data and whatnot
 +
 +			// IO board count
@@ -953,11 +935,8 @@ index f707ae8..ddc7fdb 100644
 +
 +				const auto read_axis = [&](u32 gunno, bool is_y) -> u8
 +				{
-+					const int max = is_y ? gun.handler.get_axis_y_max(gunno) : gun.handler.get_axis_x_max(gunno);
-+					if (max <= 0)
-+						return 0;
-+					const int val = is_y ? gun.handler.get_axis_y(gunno) : gun.handler.get_axis_x(gunno);
-+					return static_cast<u8>(std::clamp(val * 255 / max, 0, 255));
++					const f32 val = is_y ? gun.handler.get_axis_y(gunno) : gun.handler.get_axis_x(gunno);
++					return static_cast<u8>(std::clamp(val * 255.0f, 0.0f, 255.0f));
 +				};
 +
 +				const u32 num_guns = gun.handler.get_num_guns();
@@ -991,13 +970,12 @@ index f707ae8..ddc7fdb 100644
 +			response[0x59] = p2_x >> 8;
 +			response[0x5A] = p2_y & 0xFF;
 +			response[0x5B] = p2_y >> 8;
-+			
  			break;
  		}
- 		case 0x0080:
-@@ -733,8 +1152,13 @@ void usb_device_usio::usio_read(u8 channel, u16 reg, u16 size)
+ 		case usio_reg::card_reader_0_status:
+@@ -674,8 +1086,13 @@
  		}
- 		case 0x1000:
+ 		case usio_reg::input_tekken:
  		{
 -			// Often called, gets input from usio for Tekken
 -			translate_input_tekken();
@@ -1010,10 +988,10 @@ index f707ae8..ddc7fdb 100644
 +				translate_input_tekken();
  			break;
  		}
- 		case 0x1080:
-@@ -746,9 +1170,11 @@ void usb_device_usio::usio_read(u8 channel, u16 reg, u16 size)
- 		case 0x1800:
- 		case 0x1880:
+ 		case usio_reg::input_taiko:
+@@ -687,9 +1104,11 @@
+ 		case usio_reg::firmware_info_0:
+ 		case usio_reg::firmware_info_1:
  		{
 -			// Seems to contain a few extra bytes of info in addition to the firmware string
  			// Firmware
@@ -1022,9 +1000,9 @@ index f707ae8..ddc7fdb 100644
 +			// Identifier, command versions, how many bytes per player for switches, how many analog channels and so on.
 +			// It seems to be losely based on the original JVS spec.
  			constexpr std::array<u8, 0x180> info {0x4E, 0x42, 0x47, 0x49, 0x2E, 0x3B, 0x55, 0x53, 0x49, 0x4F, 0x30, 0x31, 0x3B, 0x56, 0x65, 0x72, 0x31, 0x2E, 0x30, 0x30, 0x3B, 0x4A, 0x50, 0x4E, 0x2C, 0x4D, 0x75, 0x6C, 0x74, 0x69, 0x70, 0x75, 0x72, 0x70, 0x6F, 0x73, 0x65, 0x20, 0x77, 0x69, 0x74, 0x68, 0x20, 0x50, 0x50, 0x47, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x31, 0x3B, 0x55, 0x53, 0x49, 0x4F, 0x30, 0x31, 0x3B, 0x56, 0x65, 0x72, 0x31, 0x2E, 0x30, 0x30, 0x3B, 0x4A, 0x50, 0x4E, 0x2C, 0x4D, 0x75, 0x6C, 0x74, 0x69, 0x70, 0x75, 0x72, 0x70, 0x6F, 0x73, 0x65, 0x20, 0x77, 0x69, 0x74, 0x68, 0x20, 0x50, 0x50, 0x47, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x13, 0x00, 0x30, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03, 0x02, 0x00, 0x08, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00, 0x75, 0x6C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4E, 0x42, 0x47, 0x49, 0x32, 0x3B, 0x55, 0x53, 0x49, 0x4F, 0x30, 0x31, 0x3B, 0x56, 0x65, 0x72, 0x31, 0x2E, 0x30, 0x30, 0x3B, 0x4A, 0x50, 0x4E, 0x2C, 0x4D, 0x75, 0x6C, 0x74, 0x69, 0x70, 0x75, 0x72, 0x70, 0x6F, 0x73, 0x65, 0x20, 0x77, 0x69, 0x74, 0x68, 0x20, 0x50, 0x50, 0x47, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x13, 0x00, 0x30, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x03, 0x02, 0x00, 0x08, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00, 0x75, 0x6C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
- 			response = {info.begin() + (reg - 0x1800), info.end()};
+ 			response = {info.begin() + (reg - static_cast<u16>(usio_reg::firmware_info_0)), info.end()};
  			break;
-@@ -831,6 +1257,17 @@ void usb_device_usio::interrupt_transfer(u32 buf_size, u8* buf, u32 endpoint, Us
+@@ -768,6 +1187,17 @@
  
  	is_used = true;
  
@@ -1039,14 +1017,12 @@ index f707ae8..ddc7fdb 100644
 +		m_backup_save_time = get_timestamp();
 +	}
 +
- 	switch (endpoint)
+ 	switch (static_cast<usio_endpoint>(endpoint))
  	{
- 	case 0x01:
-diff --git a/rpcs3/Emu/Io/usio.h b/rpcs3/Emu/Io/usio.h
-index d88032e..da59a6b 100644
+ 	case usio_endpoint::command_out:
 --- a/rpcs3/Emu/Io/usio.h
 +++ b/rpcs3/Emu/Io/usio.h
-@@ -20,6 +20,7 @@ private:
+@@ -21,6 +21,7 @@
  	void save_backup();
  	void translate_input_taiko();
  	void translate_input_tekken();
@@ -1054,26 +1030,14 @@ index d88032e..da59a6b 100644
  	void emulate_card_reader(std::vector<u8>& buf, u16 reg);
  	void tap_card(usz player);
  	void usio_write(u8 channel, u16 reg, std::vector<u8>& data);
-@@ -30,16 +31,45 @@ private:
- 	bool is_used = false;
+@@ -32,6 +33,33 @@
  	const std::string usio_backup_path = rpcs3::utils::get_hdd1_dir() + "/caches/usiobackup.bin";
+ 	static constexpr const char usio_card_path[] = "%s/caches/usio_card_p%d.bin";
  	std::vector<u8> response;
 +	u16 expansion_mode = 0x8000;
 +	std::array<u16, 4> hoppers = {0x0080, 0, 0, 0};
  
- 	struct io_status
- 	{
- 		bool test_on = false;
- 		bool test_key_pressed = false;
- 		bool coin_key_pressed = false;
-+		bool coin_key_pressed2 = false; // second coin slot on the same board (Tekken P2 / coin2)
- 		bool card_tapped = false;
- 		le_t<u16> coin_counter = 0;
-+		le_t<u16> coin_counter2 = 0;
- 		usz card_index = 0;
- 	};
- 
- 	std::array<io_status, 2> m_io_status;
+ 	std::array<usio_io_status, 2> m_io_status;
 +
 +	// Separate debounce for the lightgun coin button so it doesn't clobber the
 +	// pad coin handler's state (they share m_io_status[].coin_counter).
@@ -1100,3 +1064,24 @@ index d88032e..da59a6b 100644
 +	bool m_backup_dirty = false;
 +	u64 m_backup_save_time = 0;
  };
+--- a/rpcs3/Emu/Io/usio_types.h
++++ b/rpcs3/Emu/Io/usio_types.h
+@@ -49,6 +49,7 @@
+ 	card_reader_0_unk    = 0x008D, // Written, but ignored
+ 	card_reader_1_status = 0x0090,
+ 	card_reader_1_unk    = 0x009D,
++	set_led              = 0x1400,
+ 	input_tekken         = 0x1000, // Possibly the input block of I/O board 0 rather than game specific
+ 	input_taiko          = 0x1080, // Possibly the input block of I/O board 1 rather than game specific
+ 	firmware_info_0      = 0x1800, // Reads start at (reg - firmware_info_0) into the info block
+@@ -78,8 +79,10 @@
+ 	bool test_on = false;
+ 	bool test_key_pressed = false;
+ 	bool coin_key_pressed = false;
++	bool coin_key_pressed2 = false; // second coin slot on the same board (Tekken P2 / coin2)
+ 	bool card_tapped = false;
+ 	le_t<u16> coin_counter = 0;
++	le_t<u16> coin_counter2 = 0;
+ 	usz card_index = 0;
+ 	s8 vital_sensors[2] = {0, 0};
+ 	s8 wheel_rotation = 0;

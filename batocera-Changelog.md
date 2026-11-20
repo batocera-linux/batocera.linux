@@ -31,6 +31,7 @@
 - OpenMSX to Release 22
 - PCSX2 to 2.9.185
 - Python Pyxel to v3.0.3
+- RPCS3 to Nov 19, 2026 build
 - ScummVM to v2026.4.0
 - ShadPS4 to v.0.21.0
 - Snes9x to Sep 24, 2026 build
