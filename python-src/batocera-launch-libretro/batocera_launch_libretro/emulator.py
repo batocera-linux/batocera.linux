@@ -834,6 +834,8 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
         # Rewind option
         custom_config.set('rewind_enable', self.lr_core.can_rewind)
+        custom_config.set('rewind_granularity', self.lr_core.rewind_granularity)
+        custom_config.set('rewind_buffer_size', self.lr_core.rewind_buffer_size)
 
         # Run-ahead option (latency reduction)
         run_ahead_frames = self.lr_core.runahead
