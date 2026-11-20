@@ -17,8 +17,8 @@
 #
 ################################################################################
 
-YMIR_VERSION = v0.4.0
-YMIR_SITE = https://github.com/StrikerX3/Ymir
+YMIR_VERSION = v0.4.1
+YMIR_SITE = https://github.com/ymir-emu/Ymir
 YMIR_SITE_METHOD = git
 YMIR_GIT_SUBMODULES = YES
 YMIR_LICENSE = GPLv2
