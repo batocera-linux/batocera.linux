@@ -1,8 +1,8 @@
 diff --git a/pcsx2/CDVD/CDVD.cpp b/pcsx2/CDVD/CDVD.cpp
-index 757d7ae..79c4937 100644
+index 3b6ab2e11..54786b7f2 100644
 --- a/pcsx2/CDVD/CDVD.cpp
 +++ b/pcsx2/CDVD/CDVD.cpp
-@@ -20,7 +20,7 @@
+@@ -6,7 +6,7 @@
  #include "CDVD/CDVD_internal.h"
  #include "CDVD/IsoReader.h"
  #include "CDVD/IsoFileFormats.h"
@@ -12,15 +12,15 @@ index 757d7ae..79c4937 100644
  #include "Elfheader.h"
  #include "ps2/BiosTools.h"
 diff --git a/pcsx2/DebugTools/DebugInterface.cpp b/pcsx2/DebugTools/DebugInterface.cpp
-index d29c2b0..2a89378 100644
+index 033102de8..3a78d6215 100644
 --- a/pcsx2/DebugTools/DebugInterface.cpp
 +++ b/pcsx2/DebugTools/DebugInterface.cpp
-@@ -20,7 +20,7 @@
- #include "R5900.h"
+@@ -7,7 +7,7 @@
+ #include "R5900OpcodeTables.h"
  #include "Debug.h"
  #include "VU.h"
 -#include "GS.h" // Required for gsNonMirroredRead()
 +#include "../GS.h" // Required for gsNonMirroredRead()
  #include "Counters.h"
  
- #include "R3000A.h"
+ #include "Host.h"

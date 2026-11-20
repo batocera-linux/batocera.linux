@@ -1,20 +1,20 @@
 diff --git a/pcsx2/Config.h b/pcsx2/Config.h
-index 3b12a96..382b19b 100644
+index 21adcf1f1..0853b28f0 100644
 --- a/pcsx2/Config.h
 +++ b/pcsx2/Config.h
-@@ -1359,6 +1359,7 @@ struct Pcsx2Config
+@@ -1372,6 +1372,7 @@ struct Pcsx2Config
  		UseSavestateSelector : 1,
  		InhibitScreensaver : 1,
  		BackupSavestate : 1,
 +		AutoIncrementSlot : 1,
  		ManuallySetRealTimeClock : 1, // passes user-set real-time clock information to cdvd at startup
  		UseSystemLocaleFormat : 1, // presents OS time format instead of yyyy-MM-dd HH:mm:ss for manual RTC
-
+ 
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
-index 9a715c0..ef746da 100644
+index 51c34b978..2445730ad 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
-@@ -1931,6 +1931,7 @@ Pcsx2Config::Pcsx2Config()
+@@ -1974,6 +1974,7 @@ Pcsx2Config::Pcsx2Config()
  	EnableDiscordPresence = false;
  	ManuallySetRealTimeClock = false;
  	UseSystemLocaleFormat = false;
@@ -22,21 +22,21 @@ index 9a715c0..ef746da 100644
  
  	// To be moved to FileMemoryCard pluign (someday)
  	for (uint slot = 0; slot < 8; ++slot)
-@@ -1734,6 +1735,7 @@ void Pcsx2Config::LoadSaveCore(SettingsWrapper& wrap)
+@@ -2016,6 +2017,7 @@ void Pcsx2Config::LoadSaveCore(SettingsWrapper& wrap)
  	SettingsWrapBitBool(EnableDiscordPresence);
  	SettingsWrapBitBool(InhibitScreensaver);
  	SettingsWrapBitBool(HostFs);
 +	SettingsWrapBitBool(AutoIncrementSlot);
  
  	SettingsWrapBitBool(BackupSavestate);
- 	SettingsWrapBitBool(SavestateZstdCompression);
+ 
 diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
-index 3324fc5..46e02c4 100644
+index a52248d77..031a4bf02 100644
 --- a/pcsx2/VMManager.cpp
 +++ b/pcsx2/VMManager.cpp
-@@ -2022,6 +2022,12 @@ bool VMManager::SaveState(const char* filename, bool zip_on_thread, bool backup_
+@@ -2177,6 +2177,12 @@ void VMManager::SaveState(
  
- bool VMManager::SaveStateToSlot(s32 slot, bool zip_on_thread)
+ void VMManager::SaveStateToSlot(s32 slot, bool zip_on_thread, std::function<void(const std::string&)> error_callback)
  {
 +	//increment the slot before saving
 +	if(EmuConfig.AutoIncrementSlot) {
@@ -46,4 +46,4 @@ index 3324fc5..46e02c4 100644
 +
  	const std::string filename(GetCurrentSaveStateFileName(slot));
  	if (filename.empty())
- 		return false;
+ 	{

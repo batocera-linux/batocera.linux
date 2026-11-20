@@ -1,8 +1,8 @@
 diff --git a/pcsx2-qt/QtHost.cpp b/pcsx2-qt/QtHost.cpp
-index 5587e92..43608c0 100644
+index 2f4069d64..462de72d0 100644
 --- a/pcsx2-qt/QtHost.cpp
 +++ b/pcsx2-qt/QtHost.cpp
-@@ -2123,6 +2123,11 @@ bool QtHost::ParseCommandLineOptions(const QStringList& args, std::shared_ptr<VM
+@@ -2250,6 +2250,11 @@ bool QtHost::ParseCommandLineOptions(const QStringList& args, std::shared_ptr<VM
  				AutoBoot(autoboot)->save_state = (++it)->toStdString();
  				continue;
  			}
@@ -15,10 +15,10 @@ index 5587e92..43608c0 100644
  			{
  				AutoBoot(autoboot)->elf_override = (++it)->toStdString();
 diff --git a/pcsx2/VMManager.cpp b/pcsx2/VMManager.cpp
-index 12c5d93..3324fc5 100644
+index db4f08929..a52248d77 100644
 --- a/pcsx2/VMManager.cpp
 +++ b/pcsx2/VMManager.cpp
-@@ -1561,6 +1561,12 @@ bool VMManager::Initialize(VMBootParameters boot_params)
+@@ -1674,6 +1674,12 @@ VMBootResult VMManager::Initialize(const VMBootParameters& boot_params, Error* e
  
  	SetEmuThreadAffinities();
  
@@ -32,12 +32,12 @@ index 12c5d93..3324fc5 100644
  	if (!GSDumpReplayer::IsReplayingDump() && !state_to_load.empty())
  	{
 diff --git a/pcsx2/VMManager.h b/pcsx2/VMManager.h
-index 5e73e51..f8455cc 100644
+index 682f613d9..cb2d4bdda 100644
 --- a/pcsx2/VMManager.h
 +++ b/pcsx2/VMManager.h
-@@ -32,6 +32,7 @@ struct VMBootParameters
- 	std::string elf_override;
+@@ -34,6 +34,7 @@ struct VMBootParameters
  	std::string save_state;
+ 	std::string game_config;
  	std::optional<s32> state_index;
 +  	std::optional<s32> state_start_index;
  	std::optional<CDVD_SourceType> source_type;
