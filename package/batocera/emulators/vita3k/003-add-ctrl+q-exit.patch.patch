@@ -1,16 +1,7 @@
 diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
-index 22855725..e390f484 100644
 --- a/vita3k/gui-qt/src/main_window.cpp
 +++ b/vita3k/gui-qt/src/main_window.cpp
-@@ -87,6 +87,7 @@
- #include <QDropEvent>
- #include <QFileInfo>
- #include <QHBoxLayout>
-+#include <QKeyEvent>
- #include <QLineEdit>
- #include <QMenu>
- #include <QMessageBox>
-@@ -104,6 +105,8 @@
+@@ -110,6 +110,8 @@
  #include <QWidgetAction>
  #include <QtResource>
  
@@ -19,7 +10,7 @@ index 22855725..e390f484 100644
  #include <optional>
  
  #if defined(HAVE_X11) || defined(HAVE_WAYLAND)
-@@ -424,6 +427,8 @@ void MainWindow::initialize() {
+@@ -437,6 +439,8 @@
  
      setup_toolbar();
  
@@ -28,7 +19,7 @@ index 22855725..e390f484 100644
      connect(m_ui->welcome_dialog_action, &QAction::triggered, this, [this]() {
          auto *welcome = new WelcomeDialog(emuenv, true, this);
          welcome->open();
-@@ -1245,6 +1250,21 @@ void MainWindow::on_live_area_closed() {
+@@ -1289,6 +1293,21 @@
  }
  
  bool MainWindow::eventFilter(QObject *watched, QEvent *event) {
@@ -47,6 +38,6 @@ index 22855725..e390f484 100644
 +        }
 +    }
 +
-     if (watched == m_live_area_widget) {
-         if (event->type() == QEvent::Close) {
-             event->ignore();
+     if (event->type() == QEvent::KeyPress && (watched == windowHandle() || watched == m_live_area_widget)) {
+         const auto *ke = static_cast<QKeyEvent *>(event);
+         const auto *focus = QApplication::focusWidget();
