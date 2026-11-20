@@ -30,6 +30,7 @@
 - OpenMSX to Release 22
 - Xenia Edge to Nov 20, 2026 build
 - Ymir to v0.4.1
+- ShadPS4 to v.0.21.0
 ### System
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
