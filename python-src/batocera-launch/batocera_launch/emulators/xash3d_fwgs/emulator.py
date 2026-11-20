@@ -33,6 +33,7 @@ from batocera_launch import Command, Emulator, HotkeysContext
 _HLSDK_LIBS_DIR: Final = Path('/usr/lib/xash3d/hlsdk')
 _DEFAULT_SERVER_LIB: Final = 'hl'
 _GAMEDLL_RE: Final = re.compile(r'gamedll\w*\s+"(?:dlls[/\\])?([^.]*)')
+_GAMEDLL_LINUX_RE: Final = re.compile(r'gamedll_linux\s+"(?:dlls[/\\])?([^.]*)')
 
 
 def _client_lib_path(server_lib: str, arch_suffix: str) -> Path:
@@ -97,15 +98,21 @@ class Xash3dFwgs(Emulator):
 
         # By default, xash3d will use `dlls/hl.so` in the valve directory (via the `liblist.gam` config file).
         # However, that `so` is incompatible with xash3d (it's the x86-glibc version from Valve).
-        # We instead point to the hlsdk-xash3d `so`.
+        # We instead point to the hlsdk-xash3d `so`, unless the game dir ships its own.
+        if game_libs := self._find_game_libs(arch_suffix):
+            client_lib, server_lib_path = game_libs
+        else:
+            client_lib = _find_client_lib(server_lib, arch_suffix)
+            server_lib_path = _find_server_lib(server_lib, arch_suffix)
+
         args: list[str | Path] = [
             '/usr/bin/xash3d',
             '-fullscreen',
             '-dev',
             '-clientlib',
-            _find_client_lib(server_lib, arch_suffix),
+            client_lib,
             '-dll',
-            _find_server_lib(server_lib, arch_suffix),
+            server_lib_path,
             '-game',
             self.rom.stem,
             '+cl_showfps',
@@ -123,6 +130,23 @@ class Xash3dFwgs(Emulator):
                 'LD_LIBRARY_PATH': '/usr/lib/xash3d',
             },
         )
+
+    def _find_game_libs(self, arch_suffix: str, /) -> tuple[Path, Path] | None:
+        # Mods with no hlsdk build (e.g. cs16-client, hlsdk-portable bshift) ship
+        # cl_dlls/client<arch>.so and dlls/<gamedll_linux><arch>.so in the game dir.
+        path = self.rom_data_dir / 'liblist.gam'
+        if not path.exists():
+            return None
+
+        for line in path.read_text(errors='replace').splitlines():
+            if m := _GAMEDLL_LINUX_RE.match(line):
+                client = self.rom_data_dir / 'cl_dlls' / f'client{arch_suffix}.so'
+                server = self.rom_data_dir / 'dlls' / f'{m.group(1)}{arch_suffix}.so'
+                if client.exists() and server.exists():
+                    return client, server
+                return None
+
+        return None
 
     def _get_server_lib_basename_from_liblist_gam(self) -> str | None:
         path = self.rom_data_dir / 'liblist.gam'
