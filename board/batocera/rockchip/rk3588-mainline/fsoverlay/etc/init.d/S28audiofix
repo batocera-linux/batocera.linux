@@ -9,10 +9,6 @@ start() {
         amixer -q -c rockchipes8388 sset 'Output 1' 30
         amixer -q -c rockchipes8388 sset 'Output 2' 30
     fi
-    if [[ "$MODEL" == "Gameforce_Ace" ]]; then
-        echo "Setting Output 2 volume for GameForce ACE"
-        amixer -c 0 set 'Output 2' 18
-    fi
     if [[ "$MODEL" == FriendlyElec_NanoPi_M6* ]]; then
         echo "Routing the DAC to the headphone jack for NanoPi M6"
         for CTL in 'Stereo DAC MIXL DAC L1' 'Stereo DAC MIXR DAC R1' 'OUT MIXL DAC L1' 'OUT MIXR DAC R1' 'HPVOL' 'HPO MIX HPVOL' 'HP'; do
