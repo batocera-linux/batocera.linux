@@ -246,6 +246,8 @@ class Xenia(Emulator):
 
         exe = canarypath / 'xenia_canary.exe' if is_canary else emupath / 'xenia.exe'
         args: list[str | Path] = [wine_runner.wine, exe]
+        pads = max(len(self.controllers), 1)
+        args.extend(f'--logged_profile_slot_{slot}_xuid=' for slot in range(pads, 4))
         if not configure_emulator(rom):
             args.append(f'z:{rom}')
 
