@@ -17,6 +17,7 @@
 - Windows: new WINE Proton prefixes asked to download WINE Mono
 - Windows: the FPS limiter option had no effect on DXVK games
 ### Updated
+- Armsx2 to 2.9.5
 - Cemu to Nov 13, 2026 build
 - DOSBox Staging to v0.83.1
 - DOSBox-X to 2026.10.01
