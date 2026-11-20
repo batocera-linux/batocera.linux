@@ -3,7 +3,7 @@
 # python-pyxel
 #
 ################################################################################
-PYTHON_PYXEL_VERSION = v2.9.9
+PYTHON_PYXEL_VERSION = v3.0.3
 PYTHON_PYXEL_SITE =  $(call github,kitao,pyxel,$(PYTHON_PYXEL_VERSION))
 PYTHON_PYXEL_SETUP_TYPE = setuptools
 PYTHON_PYXEL_LICENSE = MIT

@@ -1,0 +1,12 @@
+--- a/crates/pyxel-core/src/cube/glb_parser.rs
++++ b/crates/pyxel-core/src/cube/glb_parser.rs
+@@ -1070,7 +1070,8 @@
+ 
+     let mut indices = reader
+         .read_indices()
+-        .map_or_default(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>());
++        .map(|indices| indices.into_u32().map(|i| i as i32).collect::<Vec<i32>>())
++        .unwrap_or_default();
+     if indices.iter().any(|&index| index as usize >= vertex_count) {
+         return Err("GLB primitive index is out of range for POSITION count".to_string());
+     }

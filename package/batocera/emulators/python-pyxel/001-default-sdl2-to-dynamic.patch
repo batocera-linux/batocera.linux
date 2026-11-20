@@ -1,9 +1,7 @@
-diff --git a/crates/pyxel-binding/Cargo.toml b/crates/pyxel-binding/Cargo.toml
-index 259dc42..75d61f2 100644
 --- a/crates/pyxel-binding/Cargo.toml
 +++ b/crates/pyxel-binding/Cargo.toml
-@@ -20,5 +20,6 @@ pyxel-core = { path = "../pyxel-core" }
- sysinfo = "0.38"
+@@ -22,5 +22,6 @@
+ sysinfo = { default-features = false, features = ["system"], version = "0.40" }
  
  [features]
 +default = ["sdl2_dynamic"]
