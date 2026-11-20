@@ -27,6 +27,7 @@
 - PCSX2 to 2.9.185
 - ScummVM to v2026.4.0
 - TIC-80 to v1.4.1
+- OpenMSX to Release 22
 ### System
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
