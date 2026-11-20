@@ -24,6 +24,7 @@
 - Cemu to Nov 13, 2026 build
 - DOSBox Staging to v0.83.1
 - DOSBox-X to 2026.10.01
+- GameTankEmulator to Nov 19, 2026 build
 - Keisho (formerly SM2-Emu) to v0.9.63
 - Lightspark to 0.10.0
 - OpenMSX to Release 22

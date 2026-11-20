@@ -93,7 +93,7 @@ index 11e38b0..9986c17 100644
  	cartridge_state.write_mode = false;
  	blitter = new Blitter(cpu_core, &timekeeper, &system_state, vRAM_Surface);
 +	blitter->instant_mode = EmulatorConfig::instantBlits;
-+	paddle_emulation_enabled = EmulatorConfig::paddleMode;
++	mouse_paddle_enabled = EmulatorConfig::paddleMode;
  	randomize_memory();
  	
  	SDL_Init(SDL_INIT_VIDEO);
