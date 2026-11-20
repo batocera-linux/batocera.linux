@@ -25,6 +25,7 @@
 - DOSBox Staging to v0.83.1
 - DOSBox-X to 2026.10.01
 - Keisho (formerly SM2-Emu) to v0.9.63
+- Lightspark to 0.10.0
 - OpenMSX to Release 22
 - PCSX2 to 2.9.185
 - Python Pyxel to v3.0.3
