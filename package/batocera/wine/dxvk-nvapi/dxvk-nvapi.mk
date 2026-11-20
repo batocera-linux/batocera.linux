@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DXVK_NVAPI_VERSION = v0.9.2
+DXVK_NVAPI_VERSION = v0.9.3
 DXVK_NVAPI_SOURCE = dxvk-nvapi-$(DXVK_NVAPI_VERSION).tar.gz
 DXVK_NVAPI_SITE = \
     https://github.com/jp7677/dxvk-nvapi/releases/download/$(DXVK_NVAPI_VERSION)

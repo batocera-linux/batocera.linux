@@ -1,9 +1,9 @@
 diff --git a/loader/wine.inf.in b/loader/wine.inf.in
-index c4ca11782f..e3396cee16 100644
+index b1c5f37..9a891f4 100644
 --- a/loader/wine.inf.in
 +++ b/loader/wine.inf.in
-@@ -71,7 +71,8 @@ AddReg=\
-     Printing,\
+@@ -72,7 +72,8 @@ AddReg=\
+     CustomOverrides,\
      Services, \
      SessionMgr,\
 -    ThemeManager
@@ -12,7 +12,7 @@ index c4ca11782f..e3396cee16 100644
  
  [DefaultInstall]
  Needs=BaseInstall
-@@ -120,7 +121,8 @@ AddReg=\
+@@ -121,7 +122,8 @@ AddReg=\
      LicenseInformation,\
      MCI,\
      Misc,\
@@ -22,7 +22,7 @@ index c4ca11782f..e3396cee16 100644
  
  [Wow64Install.ntx86]
  Needs=BaseWow64Install
-@@ -1605,3 +1605,7 @@ HKCU,Software\Wine\DllOverrides,"version",0x2,"native,builtin"
+@@ -1619,3 +1621,7 @@ HKCU,Software\Wine\DllOverrides,"version",0x2,"native,builtin"
  HKCU,Software\Wine\DllOverrides,"dinput8",0x2,"native,builtin"
  HKCU,Software\Wine\DllOverrides,"dinput",0x2,"native,builtin"
  HKCU,Software\Wine\DllOverrides,"dsound",0x2,"native,builtin"

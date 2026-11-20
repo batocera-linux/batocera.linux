@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-D7VK_VERSION = 2.2
+D7VK_VERSION = 2.4
 D7VK_SOURCE = d7vk-v$(D7VK_VERSION).zip
 D7VK_SITE = https://github.com/WinterSnowfall/d7vk/releases/download/v$(D7VK_VERSION)
 D7VK_LICENSE = zlib/libpng

@@ -21,10 +21,15 @@
 - DOSBox Staging to v0.83.1
 - Keisho (formerly SM2-Emu) to v0.9.63
 ### System
+- D7VK to v2.4
+- DXVK-NVAPI to v0.9.3
 - Mesa3D to 26.3.0
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
+- VKD3D Proton to 3.1
+- WINE Proton to proton-11.0-2
+- WINE TKG to 11.22
 - X86_64 / Zen3 kernel updated to 7.3.5
 
 # 2026/11/17 - batocera.linux 44 - Malachite
