@@ -1,35 +1,35 @@
---- a/src/gui/sdlmain.cpp	2020-08-03 06:33:31.000000000 +0200
-+++ b/src/gui/sdlmain.cpp	2020-08-28 13:21:18.681580955 +0200
-@@ -954,7 +954,7 @@
+--- a/src/gui/sdlmain.cpp
++++ b/src/gui/sdlmain.cpp
+@@ -1005,7 +1005,7 @@ const char *modifier;
  #elif defined(HAIKU)
- #define DEFAULT_CONFIG_FILE "~/config/settings/dosbox-x/dosbox-x.conf"
+ #define DEFAULT_CONFIG_FILE             "~/config/settings/dosbox-x/dosbox-x.conf"
  #else /*linux freebsd*/
 -# define DEFAULT_CONFIG_FILE            "/.dosboxrc"
 +# define DEFAULT_CONFIG_FILE            "/dosboxx.conf"
  #endif
  
  #if C_SET_PRIORITY
---- a/src/misc/cross.cpp	2020-11-04 16:21:48.281934402 +0100
-+++ b/src/misc/cross.cpp	2020-11-04 16:24:17.576770566 +0100
-@@ -194,7 +194,7 @@
+--- a/src/misc/cross.cpp
++++ b/src/misc/cross.cpp
+@@ -215,7 +215,7 @@ std::string Cross::GetPlatformConfigDir()
          ? xdg_conf_home
          : "~/.config";
-
+ 
 -    dir = conf_home + "/dosbox-x";
 +    dir = conf_home + "/dosbox";
      ResolveHomedir(dir);
  #endif
-
-@@ -216,7 +216,7 @@
+ 
+@@ -237,7 +237,7 @@ std::string Cross::GetPlatformConfigName()
  #elif defined(OS2) && defined(C_SDL2)
  #define DEFAULT_CONFIG_FILE "dosbox-x-" PACKAGE_VERSION ".conf"
  #else /* linux, freebsd */
 -#define DEFAULT_CONFIG_FILE "dosbox-x-" VERSION ".conf"
 +#define DEFAULT_CONFIG_FILE "dosboxx.conf"
  #endif
-
+ 
      name = DEFAULT_CONFIG_FILE;
-@@ -250,7 +250,7 @@
+@@ -271,7 +271,7 @@ std::string Cross::CreatePlatformConfigDir()
      const char* xdg_conf_home = getenv("XDG_CONFIG_HOME");
      const std::string conf_home =
          (xdg_conf_home && xdg_conf_home[0] == '/') ? xdg_conf_home : "~/.config";

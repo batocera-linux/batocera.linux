@@ -1,6 +1,6 @@
---- a/src/gui/sdl_mapper.cpp	2020-08-03 06:33:31.000000000 +0200
-+++ b/src/gui/sdl_mapper.cpp	2020-08-28 21:37:39.460659614 +0200
-@@ -73,6 +73,7 @@
+--- a/src/gui/sdl_mapper.cpp
++++ b/src/gui/sdl_mapper.cpp
+@@ -94,6 +94,7 @@
  #define MAX_VJOY_HATS           16
  #define MAX_VJOY_AXES           8
  
@@ -8,8 +8,8 @@
  
  class CEvent;
  class CKeyEvent;
-@@ -2428,6 +2429,21 @@
- 	Bit8u button;
+@@ -3078,6 +3079,21 @@ public:
+ 	uint8_t button;
  };
  
 +class CMouseMoveEvent : public CContinuousEvent {
@@ -30,7 +30,7 @@
  //! \brief Joystick axis event handling for the mapper
  class CJAxisEvent : public CContinuousEvent {
  public:
-@@ -3053,6 +3069,16 @@
+@@ -3952,6 +3968,16 @@ static CMouseButtonEvent * AddMouseButtonEvent(Bitu x,Bitu y,Bitu dx,Bitu dy,cha
  	return event;
  }
  
@@ -47,8 +47,8 @@
  static CJAxisEvent * AddJAxisButton(Bitu x,Bitu y,Bitu dx,Bitu dy,char const * const title,Bitu stick,Bitu axis,bool positive,CJAxisEvent * opposite_axis) {
      char buf[64];
      sprintf(buf,"jaxis_%d_%d%s",(int)stick,(int)axis,positive ? "+" : "-");
-@@ -3179,6 +3205,16 @@
- 	AddMouseButtonEvent(PX(XO+2),PY(YO),BW,BH,"R","right",1);
+@@ -4080,6 +4106,16 @@ static void CreateLayout(void) {
+ 
  #undef XO
  #undef YO
 +#define XO 6
@@ -62,5 +62,5 @@
 +#undef XO
 +#undef YO
  #define XO 0
- #define YO 7
-     /* Numeric KeyPad */
+ #define YO 3
+ 
