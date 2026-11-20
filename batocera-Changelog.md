@@ -18,6 +18,7 @@
 - Windows: the FPS limiter option had no effect on DXVK games
 ### Updated
 - Amiberry to v8.5.0
+- AppleWin to Nov 8, 2026 build
 - Armsx2 to 2.9.5
 - Azahar to 2126.2
 - Cemu to Nov 13, 2026 build
