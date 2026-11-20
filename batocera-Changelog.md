@@ -29,6 +29,7 @@
 - GameTankEmulator to Nov 19, 2026 build
 - Keisho (formerly SM2-Emu) to v0.9.63
 - Lightspark to 0.10.0
+- LinuxLoader to v3.0.15
 - OpenMSX to Release 22
 - PCSX2 to 2.9.185
 - Python Pyxel to v3.0.3
