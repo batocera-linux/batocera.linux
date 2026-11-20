@@ -152,7 +152,6 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
                 raise BatoceraException(f'No .game file found in {self.rom.source}')
         rom_dir = game_file.parent
         rom_name = game_file.name
-        short_rom_name = Path(rom_name.lower()).stem
         _logger.debug('ROM path: %s', rom_dir)
 
         # check for mergerfs path
@@ -192,10 +191,6 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
             'SDL_JOYSTICK_HIDAPI': '0',
         }
 
-        # ALSA SDL driver causes hangs during race start in OutRun but it's needed for other roms.
-        if not short_rom_name.startswith('outr'):
-            environment['SDL_AUDIODRIVER'] = 'alsa'
-
         # Run command - Use -c * -o for ini files and -g for the game folder
         config_file = self.config_dir / 'linuxloader.ini'
         controller_file = self.config_dir / 'controls.ini'
@@ -208,10 +203,6 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
             '-g',
             rom_dir,
         ]
-
-        if self.config.get_bool('linuxloader_zink'):
-            command_array.append('--zink')
-            environment.update({'MESA_LOADER_DRIVER_OVERRIDE': 'zink', 'VK_LOADER_LAYERS_DISABLE': '~all~'})
 
         if self.config.get_bool('linuxloader_test'):
             command_array.append('-t')
@@ -307,10 +298,7 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
         conf.set('ENABLE_CROSSHAIRS', 'true' if self.config.get_bool('linuxloader_crosshairs') else 'false')
 
         # Cg Shader Compiler Library Path
-        if any(
-            keyword in rom_name.lower()
-            for keyword in ('harley', 'hdkotr', 'spicy', 'rambo', 'hotdex', 'dead ex', 'initiad', 'letsgoju', 'tennis')
-        ):
+        if any(keyword in rom_name.lower() for keyword in ('harley', 'hdkotr', 'spicy', 'rambo', 'hotdex', 'dead ex')):
             conf.set('LIBCG_PATH', f'"{rom_dir}/libCg.so"')
 
         ## -= Additional game specific options =-
@@ -431,22 +419,6 @@ class LinuxLoader(ControllersMixin, ParallelStartupTaskMixin, Emulator):
             ):
                 shutil.copy2(src_cg_gl, dest_cg_gl)
                 _logger.debug('Copied: %s', dest_cg_gl)
-
-        # fixes shadows and textures, the bundled libs are known-bad.
-        # Scan first; if diff, overwrite
-        elif any(keyword in rom_name.lower() for keyword in ('initiad', 'letsgoju', 'tennis')):
-            dest_cg = Path(rom_dir) / 'libCg.so'
-            dest_cg_gl = Path(rom_dir) / 'libCgGL.so'
-            src_cg = Path('/lib32/extralibs/libCg.so.other')
-            src_cg_gl = Path('/lib32/extralibs/libCgGL.so.other')
-            if src_cg.exists() and (not dest_cg.exists() or not filecmp.cmp(src_cg, dest_cg, shallow=False)):
-                shutil.copy2(src_cg, dest_cg)
-                _logger.debug('Overwriting bad lib: %s', dest_cg)
-            if src_cg_gl.exists() and (
-                not dest_cg_gl.exists() or not filecmp.cmp(src_cg_gl, dest_cg_gl, shallow=False)
-            ):
-                shutil.copy2(src_cg_gl, dest_cg_gl)
-                _logger.debug('Overwriting bad lib: %s', dest_cg_gl)
 
         # Remove legacy/conflicting files from the ROM directory
         legacy_files = ['libsegaapi.so', 'lindbergh', 'lindbergh.conf', 'lindbergh.so', 'lindbergh.ini']
