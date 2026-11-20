@@ -3,11 +3,11 @@
 # dolphin-emu
 #
 ################################################################################
-# Version: Commits on Sep 16, 2026
+# Version: Commits on Nov 19, 2026
 # Add major & minor version accordingly for any bump
-DOLPHIN_EMU_VERSION = ee018d00e60b9eb727489908a8daec5c537f44a8
-DOLPHIN_EMU_VERSION_MAJOR = 2609a
-DOLPHIN_EMU_VERSION_MINOR =
+DOLPHIN_EMU_VERSION = 32a2b828e20612807531592002da4e7296fd2207
+DOLPHIN_EMU_VERSION_MAJOR = 2609
+DOLPHIN_EMU_VERSION_MINOR = 293
 DOLPHIN_EMU_SITE = https://github.com/dolphin-emu/dolphin
 DOLPHIN_EMU_SITE_METHOD = git
 DOLPHIN_EMU_LICENSE = GPLv2+
@@ -15,7 +15,7 @@ DOLPHIN_EMU_GIT_SUBMODULES = YES
 DOLPHIN_EMU_SUPPORTS_IN_SOURCE_BUILD = NO
 
 DOLPHIN_EMU_DEPENDENCIES = libevdev ffmpeg zlib libpng lzo libusb libcurl
-DOLPHIN_EMU_DEPENDENCIES += bluez5_utils hidapi xz host-xz sdl3 cpp-ipc
+DOLPHIN_EMU_DEPENDENCIES += bluez5_utils hidapi xz host-xz sdl3 cpp-ipc cubeb
 
 $(eval $(call register,dolphin.emulator.yml))
 $(eval $(call register-if-kconfig,BR2_PACKAGE_BATOCERA_VULKAN,gfxbackend.dolphin.emulator.yml))
@@ -33,6 +33,7 @@ DOLPHIN_EMU_CONF_OPTS += -DUSE_SYSTEM_LIBS=AUTO
 DOLPHIN_EMU_CONF_OPTS += -DUSE_SYSTEM_FMT=OFF
 DOLPHIN_EMU_CONF_OPTS += -DENABLE_CLI_TOOL=OFF
 DOLPHIN_EMU_CONF_OPTS += -DUSE_RETRO_ACHIEVEMENTS=ON
+DOLPHIN_EMU_CONF_OPTS += -DUSE_SYSTEM_CUBEB=ON
 
 ifeq ($(BR2_PACKAGE_QT6),y)
 DOLPHIN_EMU_DEPENDENCIES += qt6base qt6svg

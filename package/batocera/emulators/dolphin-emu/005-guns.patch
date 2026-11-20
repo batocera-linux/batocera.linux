@@ -1,17 +1,17 @@
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index 10be6d8..bab0f99 100644
+index 3cce8729f7..df04903522 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-@@ -22,6 +22,8 @@
- #include "Common/StringUtil.h"
+@@ -26,6 +26,8 @@
  #include "Common/Thread.h"
+ #include "Common/WorkQueueThread.h"
  #include "InputCommon/ControllerInterface/ControllerInterface.h"
 +#include "VideoCommon/Present.h"
 +#include "VideoCommon/FramebufferManager.h"
  
  namespace ciface::evdev
  {
-@@ -101,15 +101,7 @@ protected:
+@@ -101,15 +103,7 @@ protected:
    {
      if (const char* code_name = libevdev_event_code_get_name(EV_KEY, m_code))
      {
@@ -28,7 +28,7 @@ index 10be6d8..bab0f99 100644
      }
      else
      {
-@@ -148,9 +143,30 @@ public:
+@@ -160,9 +154,30 @@ public:
    ControlState GetState() const final override
    {
      int value = 0;
@@ -60,7 +60,7 @@ index 10be6d8..bab0f99 100644
    }
  
  protected:
-@@ -552,7 +568,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -563,7 +578,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
      m_name = potential_new_name;
  
    const bool is_motion_device = libevdev_has_property(dev, INPUT_PROP_ACCELEROMETER);
@@ -68,7 +68,7 @@ index 10be6d8..bab0f99 100644
  
    // If a device has BTN_JOYSTICK it probably uses event codes counting up from 0x120
    // which have very useless and wrong names.
-@@ -565,21 +580,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -576,21 +590,7 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
    {
      if (libevdev_has_event_code(dev, EV_KEY, key))
      {
@@ -91,7 +91,7 @@ index 10be6d8..bab0f99 100644
        ++num_buttons;
      }
    }
-@@ -615,24 +616,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
+@@ -626,24 +626,6 @@ bool evdevDevice::AddNode(std::string devnode, int fd, libevdev* dev)
      return true;
    }
  

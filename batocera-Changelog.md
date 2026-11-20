@@ -22,6 +22,7 @@
 - Armsx2 to 2.9.5
 - Azahar to 2126.2
 - Cemu to Nov 13, 2026 build
+- Dolphin-Emu to Nov 19, 2026 build
 - DOSBox Staging to v0.83.1
 - DOSBox-X to 2026.10.01
 - GameTankEmulator to Nov 19, 2026 build
