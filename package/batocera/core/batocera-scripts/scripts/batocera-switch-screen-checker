@@ -4,6 +4,7 @@ export LC_ALL=C
 
 LOG="/userdata/system/logs/display.log"
 DEBOUNCE_LOCK="/var/run/batocera-switch-screen.debounce.lock"
+DEBOUNCE_PENDING="/var/run/batocera-switch-screen.debounce.pending"
 
 # for xorg while this script is called from udev
 export XAUTHORITY=/var/lib/.Xauthority
@@ -30,6 +31,18 @@ _wait_for_emulationstation() {
     done
     echo "Checker: EmulationStation web server is responsive." >> "$LOG"
     return 0
+}
+
+# an output that drops and comes back (flaky plug, TV standby) returns at its preferred mode
+_restore_resolutions() {
+    local output
+    [ "$(batocera-resolution getDisplayComp)" = "labwc" ] || return 0
+    [ "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:1234/runningGame)" = "201" ] || return 0
+    [ -z "$(batocera-settings-get-master -f /boot/batocera-boot.conf es.resolution)" ] || return 0
+    [ -z "$(batocera-settings-get-master es.resolution2)$(batocera-settings-get-master es.resolution3)" ] || return 0
+    for output in $(batocera-resolution listOutputs); do
+        batocera-resolution --screen "${output}" minTomaxResolution-secure
+    done
 }
 
 case "$1" in
@@ -107,9 +120,10 @@ case "$1" in
 
         # Debounce lock to avoid multiple udev triggers
         if ! mkdir "${DEBOUNCE_LOCK}"; then
+            touch "${DEBOUNCE_PENDING}"
             exit 0
         fi
-        (sleep 3; rmdir "${DEBOUNCE_LOCK}") & # 3 sec is already a lot. If you plug, unplug during this time, the unplug will not be considered.
+        (sleep 3; rmdir "${DEBOUNCE_LOCK}"; rm "${DEBOUNCE_PENDING}" 2>/dev/null && "$0") >/dev/null 2>&1 &
 
         echo "Checker: Hotplug event detected. Waiting for EmulationStation..." >> "$LOG"
         if ! _wait_for_emulationstation; then
@@ -142,6 +156,8 @@ case "$1" in
 
 	    echo "Checker: Sending quit command to EmulationStation for display restart." >> "$LOG"
 	    curl http://localhost:1234/quit
+	else
+	    _restore_resolutions
 	fi
         ;;
 esac
