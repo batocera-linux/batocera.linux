@@ -36,6 +36,11 @@ Subject: [ARCHEOLOGY] board: anbernic-rg-vita-pro - fix eMMC HS400 timeouts
 > X-Git-Archeology:   From: crackerjacques <jack@supremeoverlordjabs.co>
 > X-Git-Archeology:   Subject: rockchip64: sdhci-dwcmshc: scope the rk3576 HS400 DLL calibration to rk3576
 > X-Git-Archeology:
+> X-Git-Archeology: - Revision 9b238c25303559648231205f8d3b600275344cbf: https://github.com/armbian/build/commit/9b238c25303559648231205f8d3b600275344cbf
+> X-Git-Archeology:   Date: Sun, 30 Aug 2026 19:26:08 +0200
+> X-Git-Archeology:   From: EvilOlaf <werner@armbian.com>
+> X-Git-Archeology:   Subject: 7.3: copy rockchip64, meson64 and both uefi variants patches to 7.3 archive folders
+> X-Git-Archeology:
 ---
  drivers/mmc/host/sdhci-of-dwcmshc.c | 74 ++++++++--
  1 file changed, 65 insertions(+), 9 deletions(-)
@@ -166,7 +171,7 @@ index 111111111111..222222222222 100644
  	sdhci_writel(host, extra, DWCMSHC_EMMC_DLL_STRBIN);
  
  enable_clk:
-@@ -2152,6 +2207,7 @@ static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3576_pdata = {
+@@ -2153,6 +2208,7 @@ static const struct rockchip_pltfm_data sdhci_dwcmshc_rk3576_pdata = {
  		.postinit = dwcmshc_rk3576_postinit,
  	},
  	.revision = 1,

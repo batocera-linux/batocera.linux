@@ -1,7 +1,7 @@
-From dc4ead1d3e57d5939062e0e22c5707cc8a94aa9f Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: retro98boy <retro98boy@qq.com>
 Date: Sun, 23 Aug 2026 15:40:29 +0800
-Subject: [PATCH 11/18] drm/rockchip: add RK3562 MIPI DSI support
+Subject: drm/rockchip: add RK3562 MIPI DSI support
 
 Add RK3562 chip data for the Rockchip DesignWare MIPI DSI bridge.
 
@@ -9,14 +9,14 @@ The RK3562 uses an external Innosilicon D-PHY, so select the Rockchip BSP transi
 
 Match the new RK3562 device-tree compatible while leaving the existing timing and chip-data paths unchanged for other SoCs.
 ---
- .../gpu/drm/rockchip/dw-mipi-dsi-rockchip.c   | 40 +++++++++++++++++++
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c | 40 ++++++++++
  1 file changed, 40 insertions(+)
 
 diff --git a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-index 3547d91b2..0c33bf605 100644
+index 111111111111..222222222222 100644
 --- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
 +++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -203,6 +203,11 @@
+@@ -202,6 +202,11 @@
  #define RK3506_DSI_TURNDISABLE		BIT(2)
  #define RK3506_DSI_FORCERXMODE		BIT(0)
  
@@ -28,7 +28,7 @@ index 3547d91b2..0c33bf605 100644
  /*
   * Note these registers do not appear in the datasheet, they are
   * however present in the BSP driver which is where these values
-@@ -268,6 +273,7 @@ struct rockchip_dw_dsi_chip_data {
+@@ -267,6 +272,7 @@ struct rockchip_dw_dsi_chip_data {
  
  	unsigned int flags;
  	unsigned int max_data_lanes;
@@ -36,7 +36,7 @@ index 3547d91b2..0c33bf605 100644
  };
  
  struct dw_mipi_dsi_rockchip {
-@@ -718,12 +724,30 @@ static struct hstt hstt_table[] = {
+@@ -717,12 +723,30 @@ static struct hstt hstt_table[] = {
  	HSTT(1500, 181, 66, 153, 50)
  };
  
@@ -67,7 +67,7 @@ index 3547d91b2..0c33bf605 100644
  	for (i = 0; i < ARRAY_SIZE(hstt_table); i++)
  		if (lane_mbps < hstt_table[i].maxfreq)
  			break;
-@@ -1678,6 +1702,19 @@ static const struct rockchip_dw_dsi_chip_data rk3506_chip_data[] = {
+@@ -1683,6 +1707,19 @@ static const struct rockchip_dw_dsi_chip_data rk3506_chip_data[] = {
  	{ /* sentinel */ }
  };
  
@@ -87,7 +87,7 @@ index 3547d91b2..0c33bf605 100644
  static const struct rockchip_dw_dsi_chip_data rk3568_chip_data[] = {
  	{
  		.reg = 0xfe060000,
-@@ -1731,6 +1768,9 @@ static const struct of_device_id dw_mipi_dsi_rockchip_dt_ids[] = {
+@@ -1736,6 +1773,9 @@ static const struct of_device_id dw_mipi_dsi_rockchip_dt_ids[] = {
  	}, {
  	 .compatible = "rockchip,rk3506-mipi-dsi",
  	 .data = &rk3506_chip_data,
@@ -98,5 +98,5 @@ index 3547d91b2..0c33bf605 100644
  	 .compatible = "rockchip,rk3568-mipi-dsi",
  	 .data = &rk3568_chip_data,
 -- 
-2.55.0
+Armbian
 
