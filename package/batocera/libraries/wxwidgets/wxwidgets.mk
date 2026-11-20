@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-WXWIDGETS_VERSION = v3.3.1
+WXWIDGETS_VERSION = v3.3.4
 WXWIDGETS_SITE = https://github.com/wxWidgets/wxWidgets
 WXWIDGETS_SITE_METHOD = git
 WXWIDGETS_GIT_SUBMODULES = YES

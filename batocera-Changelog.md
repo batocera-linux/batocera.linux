@@ -50,6 +50,7 @@
 - VKD3D Proton to 3.1
 - WINE Proton to proton-11.0-2
 - WINE TKG to 11.22
+- wxWidgets to v3.3.4
 - X86_64 / Zen3 kernel updated to 7.3.5
 
 # 2026/11/17 - batocera.linux 44 - Malachite
