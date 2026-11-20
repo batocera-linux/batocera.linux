@@ -53,6 +53,31 @@ do_start () {
     echo "${DAEMON} Done."
 }
 
+connector_rotation () {
+    local rotation=""
+
+    # Check connector-specific settings
+    if [ -n "$1" ]; then
+        if [ -f "${BOOT_CONF}" ]; then
+            rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate.$1")
+        fi
+        if [ -z "${rotation}" ] && [ -f "${MODEL_CONF}" ]; then
+            rotation=$(grep -iE "^display\.rotate\.$1=" "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
+        fi
+    fi
+
+    # Fall back to generic global settings
+    if [ -z "${rotation}" ]; then
+        if [ -f "${BOOT_CONF}" ]; then
+            rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
+        fi
+        if [ -z "${rotation}" ] && [ -f "${MODEL_CONF}" ]; then
+            rotation=$(grep -iE '^display\.rotate=' "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
+        fi
+    fi
+    echo "${rotation}" | tr -d '[:space:]'
+}
+
 draw_logo () {
     # Default image
     image="/usr/share/batocera/splash/boot-logo.png"
@@ -62,33 +87,32 @@ draw_logo () {
     WIDTH=""
     HEIGHT=""
 
-    # Detect active DRM connector type (batocera-drminfo returns "EDP", "DSI", "HDMIA", etc.)
-    effectiveDrmOutput=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done | head -1)
-
     V_BOARD_MODEL=$(batocera-model)
-    video_rotation=""
     BOOT_CONF="/boot/batocera-boot.conf"
     MODEL_CONF="/usr/share/batocera/sysconfigs/batocera.conf.${V_BOARD_MODEL}"
 
-    # Check connector-specific settings
-    if [ -n "${effectiveDrmOutput}" ]; then
-        if [ -f "${BOOT_CONF}" ]; then
-            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate.${effectiveDrmOutput}")
-        fi
-        if [ -z "${video_rotation}" ] && [ -f "${MODEL_CONF}" ]; then
-            video_rotation=$(grep -iE "^display\.rotate\.${effectiveDrmOutput}=" "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
-        fi
+    # Detect active DRM connector types (batocera-drminfo returns "EDP", "DSI", "HDMIA", etc.)
+    drmOutputs=$(for GPU in /dev/dri/card*; do batocera-drminfo "${GPU}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+'; done)
+
+    # fb0 is one buffer mirrored on every screen of its card, draw on each of them directly instead
+    fbCard=""
+    for card in /sys/class/drm/card[0-9]*; do
+        [ "$(readlink -f "${card}/device")" = "$(readlink -f /sys/class/graphics/fb0/device)" ] && fbCard="/dev/dri/${card##*/}" && break
+    done
+    fbOutputs=""
+    [ -n "${fbCard}" ] && fbOutputs=$(batocera-drminfo "${fbCard}" "current" 2>/dev/null | grep -oP '^[0-9]+\.[0-9]+:\K[^ ]+')
+    if [ "$(echo "${fbOutputs}" | grep -c .)" -gt 1 ]; then
+        logoArgs=""
+        for output in ${fbOutputs}; do
+            logoArgs="${logoArgs} ${output}=$(connector_rotation "${output}")"
+        done
+        [ -e "${READY_FILE}" ] || return 0
+        echo "${DAEMON} Drawing logo per screen on ${fbCard}:${logoArgs}"
+        batocera-splash-logo "${fbCard}" "${image}" ${logoArgs} && return 0
     fi
 
-    # Fall back to generic global settings
-    if [ -z "${video_rotation}" ]; then
-        if [ -f "${BOOT_CONF}" ]; then
-            video_rotation=$(/usr/bin/batocera-settings-get -f "${BOOT_CONF}" "display.rotate")
-        fi
-        if [ -z "${video_rotation}" ] && [ -f "${MODEL_CONF}" ]; then
-            video_rotation=$(grep -iE '^display\.rotate=' "${MODEL_CONF}" | head -1 | cut -d'=' -f2)
-        fi
-    fi
+    effectiveDrmOutput=$(echo "${drmOutputs}" | head -1)
+    video_rotation=$(connector_rotation "${effectiveDrmOutput}")
 
     # firmware framebuffers have no connector and show the built-in panel
     if [ -z "${video_rotation}" ] && [ -z "${effectiveDrmOutput}" ]; then
