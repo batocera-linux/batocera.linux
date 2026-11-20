@@ -24,16 +24,15 @@ endef
 define SLANG_SHADERS_BATOCERA_SHADERS_SLANG
     # Some shaders got the .slan(g) variants moved
     mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/interpolation/shaders
-    mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/scalehq/shaders
+    mkdir -p $(TARGET_DIR)/usr/share/batocera/shaders/scalehq
     cd $(TARGET_DIR)/usr/share/batocera/shaders/ && \
 	    cp -f pixel-art-scaling/sharp-bilinear-simple.slangp ./interpolation/ && \
 		cp -f pixel-art-scaling/shaders/sharp-bilinear-simple.slang ./interpolation/shaders/
-    cd $(TARGET_DIR)/usr/share/batocera/shaders/ && \
-	    cp -f edge-smoothing/scalehq/2xScaleHQ.slangp ./scalehq/ && \
-		cp -f ./edge-smoothing/scalehq/shaders/2xScaleHQ.slang ./scalehq/shaders/
     # slang equivalents of glsl-only presets used by the shader sets
     cp -f $(SLANG_SHADERS_PKGDIR)/presets/handheld/*.slangp \
         $(TARGET_DIR)/usr/share/batocera/shaders/handheld/
+    cp -f $(SLANG_SHADERS_PKGDIR)/presets/scalehq/*.slangp \
+        $(TARGET_DIR)/usr/share/batocera/shaders/scalehq/
 endef
 
 ifeq ($(BR2_PACKAGE_BATOCERA_SHADERS),y)
