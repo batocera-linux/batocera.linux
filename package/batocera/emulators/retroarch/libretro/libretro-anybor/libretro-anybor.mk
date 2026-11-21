@@ -3,15 +3,21 @@
 # libretro-anybor
 #
 ################################################################################
-# Version: 0.1.64
-LIBRETRO_ANYBOR_VERSION = e1e74050bf9e6cb5e65260186ccff427e66db6b0
+# Version: 0.2.48
+LIBRETRO_ANYBOR_VERSION = b211fdc4b616de146b6fe594689081eeb4ae3bfd
 LIBRETRO_ANYBOR_SITE = $(call github,retrodiv,AnyBOR-libretro,$(LIBRETRO_ANYBOR_VERSION))
 # multiple, see https://github.com/retrodiv/AnyBOR-libretro/tree/main/LICENSES
-# OpenBOR 3400 retains its no-sale terms; see LICENSES.md.
-LIBRETRO_ANYBOR_LICENSE = BSD-3-Clause, OpenBOR-3400 (no sale), MIT, ISC, Zlib, Libpng-2.0, CC0-1.0, other
+# OpenBOR 3400 and 3741 retain their no-sale terms; see LICENSES.md.
+LIBRETRO_ANYBOR_LICENSE = BSD-3-Clause, OpenBOR-3400 (no sale), OpenBOR-3741 (no sale), MIT, ISC, Zlib, Libpng-2.0, CC0-1.0, other
 LIBRETRO_ANYBOR_LICENSE_FILES = LICENSE LICENSES.md NOTICE.txt
-LIBRETRO_ANYBOR_DEPENDENCIES = retroarch zlib libpng libogg libvorbis libvpx
+LIBRETRO_ANYBOR_DEPENDENCIES = host-pkgconf retroarch zlib libpng libogg libvorbis libvpx libarchive
 LIBRETRO_ANYBOR_EMULATOR_INFO = anybor.libretro.core.yml
+
+# AnyBOR wraps codec allocations inside each engine's relocatable link.
+ifeq ($(BR2_PACKAGE_LIBRETRO_ANYBOR),y)
+LIBOGG_CONF_OPTS += -DOGG_BUILD_STATIC_LIBS=ON
+LIBVORBIS_CONF_OPTS += --with-pic
+endif
 
 LIBRETRO_ANYBOR_PLATFORM = $(LIBRETRO_PLATFORM)
 
@@ -30,9 +36,7 @@ define LIBRETRO_ANYBOR_BUILD_CMDS
 	    CXXFLAGS="$(filter-out -D_FILE_OFFSET_BITS=64,$(TARGET_CXXFLAGS))" \
 	    $(MAKE) CXX="$(TARGET_CXX)" CC="$(TARGET_CC)" \
 	    -C $(@D)/ -f Makefile platform="$(LIBRETRO_ANYBOR_PLATFORM)" \
-	    CONFIGURE_HOST="$(GNU_TARGET_NAME)" \
-	    CONFIGURE_BUILD="$(GNU_HOST_NAME)" \
-        GIT_VERSION="-$(shell echo $(LIBRETRO_ANYBOR_VERSION) | cut -c 1-7)"
+	    SYSTEM_DEPS=1
 endef
 
 define LIBRETRO_ANYBOR_INSTALL_TARGET_CMDS
