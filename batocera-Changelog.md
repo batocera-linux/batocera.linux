@@ -25,6 +25,7 @@
 - Libretro-Gambatte could not load older save states (e.g. from RomM / EmulatorJS)
 - PPSSPP exit hotkey did nothing when no controller was connected
 - RetroArch 2xScaleHQ shader failed to load
+- RetroArch held the left stick up on Bluetooth Xbox controllers (xpadneo)
 - Retroid Pocket Classic speaker only played one audio channel
 - RPCS3 data move copied symlinked dev_hdd0 folders (e.g. games on another drive) in full, and failed when dev_hdd0 itself was a link
 - SDLPoP was stretched to 16:10 behind its 4:3 bezel
