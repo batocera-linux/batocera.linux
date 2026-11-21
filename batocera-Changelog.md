@@ -5,22 +5,43 @@
 - Orange Pi 5 Max and 5 Ultra move to the RK3588 mainline kernel, with Wi-Fi through the bcmdhd driver
 - Orange Pi 5 Pro, Banana Pi M7 / ArmSoM Sige7, NanoPi M6, Firefly ROC-RK3588S-PC / Station M3 and Mekotronics R58X move to the RK3588 mainline kernel, the RK3588 vendor kernel image is removed
 ### Added
+- FightBox R10-PRO controller configuration
 - Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
   Windows games run inside gamescope use WINE Proton unless a runner is chosen
 - Half-Life 1: Counter-Strike 1.6 support
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
+- KICKPI K3B Wi-Fi and Bluetooth
+- RetroAchievements hardcore mode can be set per system and per game
+- Trackball and spinner support in MAME and libretro MAME 2003-Plus, used for games flagged as trackball or spinner games
 ### Fixed
+- AYN Odin could reboot instead of powering off
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
+- Chronic Concepts Insert Coin Cube was sometimes not configured after being plugged in
+- Collective Minds PS4 Chat Boost keyboard input was ignored and the device was seen as a joystick
 - Ghost Squad Evolution and other OSS audio games left a stuck audio process after exiting, which blocked cleanup for later games
 - Half-Life 1: Blue Shift ran as Half-Life
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
+- Libretro-Gambatte could not load older save states (e.g. from RomM / EmulatorJS)
 - PPSSPP exit hotkey did nothing when no controller was connected
+- RetroArch 2xScaleHQ shader failed to load
+- Retroid Pocket Classic speaker only played one audio channel
+- RPCS3 data move copied symlinked dev_hdd0 folders (e.g. games on another drive) in full, and failed when dev_hdd0 itself was a link
+- SDLPoP was stretched to 16:10 behind its 4:3 bezel
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
+- System upgrades deleted preshare.sh, postshare.sh and network-connman.config from the boot partition
+- Wayland (labwc): a second screen was not placed beside the first unless a display position was set
+- Wayland (labwc): the resolution limit was lost when a screen dropped and came back
 - Windows: .NET 5+ games (such as Celeste64) closed at start with WINE Proton and WINE TKG
 - Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
 - Windows: new WINE Proton prefixes asked to download WINE Mono
 - Windows: the FPS limiter option had no effect on DXVK games
+- Xenia Canary / Edge signed in a profile for every player slot, not just the connected pads
+### Changed / Improved
+- AE light gun driver is no longer included, it was seen as a generic mouse like some trackballs
+- Boot logo is drawn on each screen of dual-screen devices with that screen's size and rotation
+- KICKPI K3B boot splash video uses hardware decoding
+- KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
 ### Updated
 - Amiberry to v8.5.0
 - AppleWin to Nov 8, 2026 build
@@ -49,11 +70,13 @@
 - Xenia Edge to Nov 20, 2026 build
 - Ymir to v0.4.1
 ### System
+- Armbian firmware to Nov 18, 2026 build
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
 - Mesa3D to 26.3.1
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
+- Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
 - VKD3D Proton to 3.1
 - WINE Proton to proton-11.0-2
