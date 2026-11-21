@@ -1,6 +1,10 @@
 config BR2_PACKAGE_EKA2L1
     bool "eka2l1"
     select BR2_PACKAGE_BATOCERA_QT6
+    # in-game pad remapping screen (batocera_launch/emulators/eka2l1_remap.py)
+    select BR2_PACKAGE_PYTHON_GOBJECT
+    select BR2_PACKAGE_LIBGTK3
+    select BR2_PACKAGE_GTK_LAYER_SHELL if BR2_PACKAGE_WAYLAND
     help
       Symbian OS / N-Gage emulator
 
