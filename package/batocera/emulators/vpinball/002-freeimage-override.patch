@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 61ccaaa19..0b69e423e 100644
+index b52efd9..80c297c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -137,6 +137,13 @@ if(USE_SYSTEM_LIBS)
+@@ -140,6 +140,13 @@ if(USE_SYSTEM_LIBS)
     message(STATUS "USE_SYSTEM_LIBS: include=${SYSTEM_LIBS_INCLUDE_DIR} lib=${SYSTEM_LIBS_LIB_DIR}")
  endif()
  
@@ -17,15 +17,15 @@ index 61ccaaa19..0b69e423e 100644
  
  if(PLATFORM STREQUAL "windows")
 diff --git a/make/CMakeLists_app.txt b/make/CMakeLists_app.txt
-index fa770a725..a77fd7e14 100644
+index c1f6fb5..d2c9001 100644
 --- a/make/CMakeLists_app.txt
 +++ b/make/CMakeLists_app.txt
-@@ -605,7 +605,7 @@ elseif(PLATFORM STREQUAL "linux")
+@@ -648,7 +648,7 @@ elseif(PLATFORM STREQUAL "linux")
     target_link_libraries(vpinball PUBLIC
        SDL3
        SDL3_ttf
 -      freeimage
 +      ${FREEIMAGE_LIBRARY}
-       hidapi-hidraw
        winevbs
-       spatialaudio
+       opusfile
+       opus
