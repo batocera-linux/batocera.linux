@@ -1,0 +1,49 @@
+A new view is constrained to the output under the cursor before the
+first-map window rules run, so MoveToOutput placed it on its output with
+that output's size. Restore the client's size and constrain it to the
+output the rule picked.
+
+diff --git a/include/view.h b/include/view.h
+index 46943ab..d8b4bc0 100644
+--- a/include/view.h
++++ b/include/view.h
+@@ -185,6 +185,8 @@ struct view {
+ 
+ 	bool mapped;
+ 	bool been_mapped;
++	/* client size before the first-map constrain to the cursor output */
++	int initial_width, initial_height;
+ 	uint64_t creation_id;
+ 	enum lab_ssd_mode ssd_mode;
+ 	enum ssd_preference ssd_preference;
+diff --git a/src/view.c b/src/view.c
+index 21005f2..2112e9d 100644
+--- a/src/view.c
++++ b/src/view.c
+@@ -1101,6 +1101,11 @@ view_constrain_size_to_that_of_usable_area(struct view *view)
+ 		return;
+ 	}
+ 
++	if (!view->been_mapped && !view->initial_width) {
++		view->initial_width = view->pending.width;
++		view->initial_height = view->pending.height;
++	}
++
+ 	struct wlr_box usable_area =
+ 			output_usable_area_in_layout_coords(view->output);
+ 	struct border margin = ssd_get_margin(view->ssd);
+@@ -2136,6 +2141,14 @@ view_move_to_output(struct view *view, struct output *output)
+ 		struct wlr_box output_area = output_usable_area_in_layout_coords(output);
+ 		view->pending.x = output_area.x;
+ 		view->pending.y = output_area.y;
++		/* a first-map rule: constrain to this output, not the cursor's */
++		if (!view->been_mapped && view->initial_width) {
++			struct wlr_box box = view->pending;
++			box.width = view->initial_width;
++			box.height = view->initial_height;
++			view_move_resize(view, box);
++			view_constrain_size_to_that_of_usable_area(view);
++		}
+ 		view_place_by_policy(view,
+ 				/* allow_cursor */ false, rc.placement_policy);
+ 	} else if (view->fullscreen) {
