@@ -212,3 +212,13 @@ labwc:
       actions:
         - name: MoveToOutput
           output: secondary|primary
+        - name: FocusOutput
+          output: primary
+    - identifier: VPinballX_BGFX
+      title: Visual Pinball Score View
+      actions:
+        - name: MoveToOutput
+          output: tertiary
+          remove_if_missing: true
+        - name: FocusOutput
+          output: primary

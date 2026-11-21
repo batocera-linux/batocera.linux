@@ -209,14 +209,21 @@ async def get_screens(config: SystemConfig, /) -> list[ScreenInfo]:
     return infos
 
 
-def find_screen(screens: Sequence[ScreenInfo], output: Literal['primary', 'secondary'], /) -> ScreenInfo | None:
+def find_screen(
+    screens: Sequence[ScreenInfo], output: Literal['primary', 'secondary', 'tertiary'], /
+) -> ScreenInfo | None:
+    if output == 'tertiary':
+        return screens[2] if len(screens) > 2 else None
+
     if output == 'secondary':
         return screens[1] if len(screens) > 1 else None
 
     return screens[0]
 
 
-async def configure_windows(rule_set: str, primary: ScreenInfo | None, secondary: ScreenInfo | None, /) -> None:
+async def configure_windows(
+    rule_set: str, primary: ScreenInfo | None, secondary: ScreenInfo | None, tertiary: ScreenInfo | None = None, /
+) -> None:
     try:
         await run(
             'batocera-resolution',
@@ -225,6 +232,8 @@ async def configure_windows(rule_set: str, primary: ScreenInfo | None, secondary
             '' if primary is None else primary.name,
             '--secondary',
             '' if secondary is None else secondary.name,
+            '--tertiary',
+            '' if tertiary is None else tertiary.name,
             rule_set,
             check=True,
         )

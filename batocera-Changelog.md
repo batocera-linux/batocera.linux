@@ -31,6 +31,7 @@
 - SDLPoP was stretched to 16:10 behind its 4:3 bezel
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - System upgrades deleted preshare.sh, postshare.sh and network-connman.config from the boot partition
+- Visual Pinball on Wayland (labwc): the playfield lost keyboard and controller focus to the backglass and needed alt-tab, and the score view was not placed on the third screen
 - Wayland (labwc): a second screen was not placed beside the first unless a display position was set
 - Wayland (labwc): the resolution limit was lost when a screen dropped and came back
 - Wayland (labwc): with several screens, EmulationStation and the Visual Pinball windows were offset or shrunk on their screen when the mouse pointer was on another smaller screen

@@ -88,6 +88,14 @@ _RULE_SETS: dict[str, str] = {
   actions:
     - name: MoveToOutput
       output: secondary|primary
+- identifier: VPinballX_BGFX
+  title: Visual Pinball Score View
+  actions:
+    - name: MoveToOutput
+      output: tertiary
+      remove_if_missing: true
+    - name: FocusOutput
+      output: primary
 """,
     'plain_secondary': """\
 - identifier: plain-app
@@ -381,6 +389,47 @@ class TestMain:
 
         assert _output_name(player) == 'HDMI-A-1'
         assert _output_name(backglass) == 'HDMI-A-2'
+
+    def test_vpinball_score_view_on_tertiary(
+        self,
+        rc_path: Path,
+        rules_dir: Path,
+        run_main: Callable[..., None],
+    ) -> None:
+        run_main(
+            '--config-path',
+            str(rc_path),
+            '--primary',
+            'DP-1',
+            '--secondary',
+            'DP-3',
+            '--tertiary',
+            'DP-2',
+            'vpinball',
+        )
+
+        saved = ET.parse(rc_path).getroot()
+        score_view = _find_rule(saved, identifier='VPinballX_BGFX', title='Visual Pinball Score View')
+
+        assert _output_name(score_view) == 'DP-2'
+        assert _focus_output_name(score_view) == 'DP-1'
+
+    def test_vpinball_score_view_move_removed_without_tertiary(
+        self,
+        rc_path: Path,
+        rules_dir: Path,
+        run_main: Callable[..., None],
+    ) -> None:
+        run_main(
+            '--config-path', str(rc_path), '--primary', 'DP-1', '--secondary', 'DP-3', '--tertiary', 'DP-2', 'vpinball'
+        )
+        run_main('--config-path', str(rc_path), '--primary', 'DP-1', '--secondary', 'DP-3', 'vpinball')
+
+        saved = ET.parse(rc_path).getroot()
+        score_view = _find_rule(saved, identifier='VPinballX_BGFX', title='Visual Pinball Score View')
+
+        assert _output_name(score_view) is None
+        assert _focus_output_name(score_view) == 'DP-1'
 
     def test_skips_move_when_secondary_empty_without_remove_if_missing(
         self,

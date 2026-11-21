@@ -44,19 +44,21 @@ def _load_rules(key: str, /) -> list[LabWCRule]:
     return safe_load_yaml12(rules_file, list[LabWCRule]) or []
 
 
-def _get_output(output: Output, primary: str, secondary: str, /) -> str:
+def _get_output(output: Output, primary: str, secondary: str, tertiary: str, /) -> str:
     match output:
         case 'primary':
             return primary
         case 'secondary':
             return secondary
+        case 'tertiary':
+            return tertiary
         case 'primary|secondary':
             return primary or secondary
         case 'secondary|primary':  # pragma: no branch
             return secondary or primary
 
 
-def _apply_rules(config: LabWCConfig, rules: list[LabWCRule], primary: str, secondary: str, /) -> None:
+def _apply_rules(config: LabWCConfig, rules: list[LabWCRule], primary: str, secondary: str, tertiary: str, /) -> None:
     for rule in rules:
         identifier = rule.get('identifier')
         title = rule.get('title')
@@ -69,13 +71,13 @@ def _apply_rules(config: LabWCConfig, rules: list[LabWCRule], primary: str, seco
 
             match action['name']:
                 case 'MoveToOutput':
-                    output = _get_output(action['output'], primary, secondary)
+                    output = _get_output(action['output'], primary, secondary, tertiary)
                     if action.get('remove_if_missing', False):
                         window_rule.move_to_output(output or None)
                     elif output:
                         window_rule.move_to_output(output)
                 case 'FocusOutput':
-                    output = _get_output(action['output'], primary, secondary)
+                    output = _get_output(action['output'], primary, secondary, tertiary)
                     if action.get('remove_if_missing', False):
                         window_rule.focus_output(output or None)
                     elif output:
@@ -93,6 +95,7 @@ def main() -> None:
     parser.add_argument('--reconfigure', action='store_true', help='reload configuration in LabWC')
     parser.add_argument('--primary', type=str, help='primary output screen')
     parser.add_argument('--secondary', type=str, help='secondary output screen')
+    parser.add_argument('--tertiary', type=str, default='', help='tertiary output screen')
     parser.add_argument(
         '--touchscreen-outputs',
         nargs='+',
@@ -123,7 +126,7 @@ def main() -> None:
 
     if args.primary is not None and args.secondary is not None:
         rules = _load_rules('_global' if args.rule_set is None else args.rule_set)
-        _apply_rules(config, rules, args.primary, args.secondary)
+        _apply_rules(config, rules, args.primary, args.secondary, args.tertiary)
 
     if args.touchscreen_outputs is not None:
         outputs = [output for output in args.touchscreen_outputs if output]
