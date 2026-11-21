@@ -33,6 +33,7 @@
 - System upgrades deleted preshare.sh, postshare.sh and network-connman.config from the boot partition
 - Wayland (labwc): a second screen was not placed beside the first unless a display position was set
 - Wayland (labwc): the resolution limit was lost when a screen dropped and came back
+- Wayland (labwc): with several screens, EmulationStation and the Visual Pinball windows were offset or shrunk on their screen when the mouse pointer was on another smaller screen
 - Windows: .NET 5+ games (such as Celeste64) closed at start with WINE Proton and WINE TKG
 - Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
 - Windows: new WINE Proton prefixes asked to download WINE Mono
