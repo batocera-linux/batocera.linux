@@ -20,7 +20,8 @@
 
 from __future__ import annotations
 
-from batocera_launch.devices.video import parse_wayland_outputs
+from batocera_launch.devices.video import find_screen, parse_wayland_outputs
+from batocera_launch.types import Resolution, ScreenInfo
 
 # wayland-info -i wl_output on a dual panel device
 _WAYLAND_INFO = """\
@@ -42,3 +43,10 @@ def test_parse_wayland_outputs_keeps_registry_order() -> None:
 
 def test_parse_wayland_outputs_empty() -> None:
     assert parse_wayland_outputs('') == []
+
+
+def test_find_screen_tertiary() -> None:
+    screens = [ScreenInfo(name, Resolution(1920, 1080), 1920 * i, 0) for i, name in enumerate(('DP-1', 'DP-3', 'DP-2'))]
+
+    assert find_screen(screens, 'tertiary') == screens[2]
+    assert find_screen(screens[:2], 'tertiary') is None

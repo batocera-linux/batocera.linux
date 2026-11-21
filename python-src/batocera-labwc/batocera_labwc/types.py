@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from typing import Literal, NotRequired, TypedDict
 
-type Output = Literal['primary', 'secondary', 'primary|secondary', 'secondary|primary']
+type Output = Literal['primary', 'secondary', 'tertiary', 'primary|secondary', 'secondary|primary']
 
 
 class MoveToOutputAction(TypedDict):

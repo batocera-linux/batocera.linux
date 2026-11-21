@@ -87,6 +87,7 @@ class VPinball(Emulator):
             'vpinball',
             find_screen(screens, 'primary' if playfield_screen == 0 else 'secondary'),
             find_screen(screens, 'primary' if backglass_screen == 0 else 'secondary'),
+            find_screen(screens, 'tertiary'),
         )
 
     async def configure(self) -> Command:
