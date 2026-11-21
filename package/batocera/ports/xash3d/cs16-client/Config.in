@@ -1,0 +1,9 @@
+config BR2_PACKAGE_CS16_CLIENT
+	bool "cs16-client"
+	depends on BR2_INSTALL_LIBSTDCPP
+	select BR2_PACKAGE_FREETYPE
+	help
+	  Reverse-engineered Counter-Strike 1.6 client, menu and
+	  ReGameDLL server libraries for Xash3D.
+
+	  https://github.com/FWGS/cs16-client

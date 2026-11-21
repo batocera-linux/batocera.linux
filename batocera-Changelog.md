@@ -7,11 +7,13 @@
 ### Added
 - Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
   Windows games run inside gamescope use WINE Proton unless a runner is chosen
+- Half-Life 1: Counter-Strike 1.6 support
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 ### Fixed
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
 - Ghost Squad Evolution and other OSS audio games left a stuck audio process after exiting, which blocked cleanup for later games
+- Half-Life 1: Blue Shift ran as Half-Life
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
 - PPSSPP exit hotkey did nothing when no controller was connected
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
@@ -41,6 +43,7 @@
 - Snes9x to Sep 24, 2026 build
 - TIC-80 to v1.4.1
 - Vita3k to Nov 19, 2026 build
+- Xash3D-FWGS (Half-Life engine) HLSDK mobile_hacks to Nov 7, 2026 build
 - Xemu to v0.8.139
 - Xenia Canary to Nov 19, 2026 build
 - Xenia Edge to Nov 20, 2026 build

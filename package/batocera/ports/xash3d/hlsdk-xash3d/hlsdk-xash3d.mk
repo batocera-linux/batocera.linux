@@ -14,13 +14,15 @@
 #   https://github.com/FWGS/xash3d-fwgs/blob/master/Documentation/supported-mod-list.md#list-of-games-and-mods-with-custom-gamedll
 #
 # "mobile_hacks" branch
-# Version: Commits on Jun 14, 2026
-HLSDK_XASH3D_VERSION = 079f2387eb59e4a045647d9057240628130f0058
-HLSDK_XASH3D_DMC_BRANCH = mobile_hacks
-HLSDK_XASH3D_SITE = $(call github,FWGS,hlsdk-portable,$(HLSDK_XASH3D_VERSION))
+# Version: Commits on Nov 7, 2026
+HLSDK_XASH3D_VERSION = 7ec223cfd29e0c20d8e52927dcc3d0c27d9ca7ac
+HLSDK_XASH3D_BRANCH = mobile_hacks
+HLSDK_XASH3D_SITE = https://github.com/FWGS/hlsdk-portable.git
+HLSDK_XASH3D_SITE_METHOD = git
+HLSDK_XASH3D_GIT_SUBMODULES = YES
 HLSDK_XASH3D_DEPENDENCIES = sdl2 sdl2_mixer sdl2_image sdl2_ttf libsodium
-HLSDK_XASH3D_LICENSE = Half Life 1 SDK LICENSE
-HLSDK_XASH3D_LICENSE_FILES = LICENSE
+HLSDK_XASH3D_LICENSE = Half Life 1 SDK LICENSE, BSD-3-Clause (freevgui)
+HLSDK_XASH3D_LICENSE_FILES = LICENSE freevgui/LICENSE
 
 # GCC 15 / C23 compatibility fix
 HLSDK_XASH3D_CONF_ENV = CFLAGS="$(TARGET_CFLAGS) -std=gnu17"

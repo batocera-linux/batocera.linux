@@ -31,34 +31,24 @@ from batocera_common.paths import SAVES
 from batocera_launch import Command, Emulator, HotkeysContext
 
 _HLSDK_LIBS_DIR: Final = Path('/usr/lib/xash3d/hlsdk')
+_XASH3D_SHARE_DIR: Final = Path('/usr/share/xash3d')
 _DEFAULT_SERVER_LIB: Final = 'hl'
 _GAMEDLL_RE: Final = re.compile(r'gamedll\w*\s+"(?:dlls[/\\])?([^.]*)')
 
 
-def _client_lib_path(server_lib: str, arch_suffix: str) -> Path:
-    return _HLSDK_LIBS_DIR / server_lib / 'cl_dlls' / f'client{arch_suffix}.so'
+def _find_libs_dir(names: list[str | None], arch_suffix: str) -> Path:
+    for name in names:
+        if name and (_HLSDK_LIBS_DIR / name / 'cl_dlls' / f'client{arch_suffix}.so').exists():
+            return _HLSDK_LIBS_DIR / name
+
+    return _HLSDK_LIBS_DIR / _DEFAULT_SERVER_LIB
 
 
-def _server_lib_path(server_lib: str, arch_suffix: str) -> Path:
-    return _HLSDK_LIBS_DIR / server_lib / 'dlls' / f'{server_lib}{arch_suffix}.so'
+def _server_lib_path(libs_dir: Path, arch_suffix: str) -> Path:
+    if libs := sorted((libs_dir / 'dlls').glob(f'*{arch_suffix}.so')):
+        return libs[0]
 
-
-def _find_server_lib(server_lib: str | None, arch_suffix: str) -> Path:
-    if server_lib:
-        path = _server_lib_path(server_lib, arch_suffix)
-        if path.exists():
-            return path
-
-    return _server_lib_path(_DEFAULT_SERVER_LIB, arch_suffix)
-
-
-def _find_client_lib(server_lib: str | None, arch_suffix: str) -> Path:
-    if server_lib:
-        path = _client_lib_path(server_lib, arch_suffix)
-        if path.exists():
-            return path
-
-    return _client_lib_path(_DEFAULT_SERVER_LIB, arch_suffix)
+    return libs_dir / 'dlls' / f'{libs_dir.name}{arch_suffix}.so'
 
 
 def _get_arch_suffix() -> str:
@@ -97,32 +87,39 @@ class Xash3dFwgs(Emulator):
 
         # By default, xash3d will use `dlls/hl.so` in the valve directory (via the `liblist.gam` config file).
         # However, that `so` is incompatible with xash3d (it's the x86-glibc version from Valve).
-        # We instead point to the hlsdk-xash3d `so`.
+        # We instead point to the hlsdk-xash3d `so`, picked by game dir first since some mods share `hl.dll`.
+        libs_dir = _find_libs_dir([self.rom.stem, server_lib], arch_suffix)
         args: list[str | Path] = [
             '/usr/bin/xash3d',
             '-fullscreen',
             '-dev',
             '-clientlib',
-            _find_client_lib(server_lib, arch_suffix),
+            libs_dir / 'cl_dlls' / f'client{arch_suffix}.so',
             '-dll',
-            _find_server_lib(server_lib, arch_suffix),
+            _server_lib_path(libs_dir, arch_suffix),
             '-game',
             self.rom.stem,
             '+cl_showfps',
             '1' if self.config.show_fps else '0',
         ]
 
+        menu_lib = libs_dir / 'cl_dlls' / f'menu{arch_suffix}.so'
+        if menu_lib.exists():
+            args += ['-menulib', menu_lib]
+
+        env: dict[str, str | Path] = {
+            'XASH3D_BASEDIR': self.roms_dir,
+            'XASH3D_EXTRAS_PAK1': _XASH3D_SHARE_DIR / 'valve' / 'extras.pk3',
+            'LD_LIBRARY_PATH': '/usr/lib/xash3d',
+        }
+        extras = _XASH3D_SHARE_DIR / self.rom.stem / 'extras.pk3'
+        if extras.exists():
+            env['XASH3D_EXTRAS_PAK2'] = extras
+
         self._maybe_init_config()
         self._maybe_init_save_dir()
 
-        return Command(
-            args,
-            env={
-                'XASH3D_BASEDIR': self.roms_dir,
-                'XASH3D_EXTRAS_PAK1': '/usr/share/xash3d/valve/extras.pk3',
-                'LD_LIBRARY_PATH': '/usr/lib/xash3d',
-            },
-        )
+        return Command(args, env=env)
 
     def _get_server_lib_basename_from_liblist_gam(self) -> str | None:
         path = self.rom_data_dir / 'liblist.gam'
