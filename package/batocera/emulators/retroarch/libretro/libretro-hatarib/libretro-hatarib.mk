@@ -14,6 +14,7 @@ LIBRETRO_HATARIB_EMULATOR_INFO = hatarib.libretro.core.yml
 LIBRETRO_HATARIB_CONF_ENV += \
     CMAKE="$(BR2_CMAKE)" \
     CMAKE_SYSTEM_NAME=Linux \
+    WERROR="-Wall" \
     SHORTHASH='"$(shell echo $(LIBRETRO_HATARIB_VERSION) | cut -c 1-7)"' \
     SDL2_INCLUDE="$(STAGING_DIR)/usr/include/SDL2" \
     SDL2_LIB="$(STAGING_DIR)/usr/lib" \
