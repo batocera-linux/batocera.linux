@@ -1,5 +1,8 @@
 #!/bin/sh
 
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/var/run}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-$(getLocalWaylandDisplay)}"
+
 CAPTURE_ALL=false
 TIMER=""
 
