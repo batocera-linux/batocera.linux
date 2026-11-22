@@ -1,0 +1,21 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] include: define __s128 and __u128
+
+Linux 7.3 moved __u128 into linux/types.h and the arm64 asm/sigcontext.h
+uses it. The bundled linux/types.h shadows the kernel one, so add the
+same typedefs.
+---
+--- a/include/linux/types.h
++++ b/include/linux/types.h
+@@ -7,6 +7,11 @@
+ 
+ #include <linux/posix_types.h>
+ 
++#ifdef __SIZEOF_INT128__
++typedef __signed__ __int128 __s128 __attribute__((aligned(16)));
++typedef unsigned __int128 __u128 __attribute__((aligned(16)));
++#endif
++
+ 
+ /*
+  * Below are truly Linux-specific types that should never collide with
