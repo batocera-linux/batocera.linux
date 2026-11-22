@@ -1,0 +1,69 @@
+From ecaa6235c5f0f26082c8a57f21bf97a8b24851df Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 21 Jul 2026 12:01:11 +0200
+Subject: [PATCH 098/143] pci: sunxi: reprogram the DMA-mapped MSI target on
+ resume
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+sunxi_pcie_plat_resume() reprogrammed PCIE_MSI_ADDR_LO/HI with
+ALIGN_DOWN(virt_to_phys(pp), SZ_4K) -- the physical address of the
+driver's own sunxi_pcie_port struct in kernel RAM.  After resume any
+endpoint MSI write lands inside that struct (silent memory
+corruption) or faults the SMMU, depending on the IOMMU setup.
+
+At probe sunxi_pcie_msi_init() instead DMA-maps &pp->msi_msg and
+programs the resulting IOVA (pp->msi_data) into the controller; that
+dma_map_single_attrs() mapping persists across suspend/resume as
+long as the device stays bound, so on resume we only need to
+reprogram the same IOVA into config space -- no remap needed.
+
+Also switch the gate from the compile-time IS_ENABLED(CONFIG_PCI_MSI)
+to the runtime pci_msi_enabled(), matching the probe path: when MSI
+is disabled at runtime the probe path leaves the registers alone, so
+resume must too, or the controller would point at an MSI target that
+nothing ever set up.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index dc73eb861..c273828d0 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -1186,10 +1186,24 @@ static int sunxi_pcie_plat_resume(struct device *dev)
+ 		sunxi_pcie_plat_ltssm_disable(pci);
+ 		sunxi_pcie_host_setup_rc(pp);
+ 
+-		if (IS_ENABLED(CONFIG_PCI_MSI) && !pp->has_its) {
+-			phys_addr_t pa = ALIGN_DOWN(virt_to_phys(pp), SZ_4K);
+-			sunxi_pcie_host_wr_own_conf(pp, PCIE_MSI_ADDR_LO, 4, lower_32_bits(pa));
+-			sunxi_pcie_host_wr_own_conf(pp, PCIE_MSI_ADDR_HI, 4, upper_32_bits(pa));
++		if (pci_msi_enabled() && !pp->has_its) {
++			/*
++			 * Reprogram the MSI target address that suspend cleared
++			 * from the controller's config space.  Use the same IOVA
++			 * that was DMA-mapped in sunxi_pcie_msi_init() at probe:
++			 * the dma_map_single_attrs() mapping is persistent across
++			 * suspend/resume as long as the device stays bound, so
++			 * pp->msi_data is still valid.  Programming
++			 * virt_to_phys(pp) here (a kernel-RAM address) would
++			 * route endpoint MSI writes into the driver's own
++			 * struct (or fault the SMMU) and corrupt memory.
++			 */
++			u64 msi_target = (u64)pp->msi_data;
++
++			sunxi_pcie_host_wr_own_conf(pp, PCIE_MSI_ADDR_LO, 4,
++						    lower_32_bits(msi_target));
++			sunxi_pcie_host_wr_own_conf(pp, PCIE_MSI_ADDR_HI, 4,
++						    upper_32_bits(msi_target));
+ 		}
+ 
+ 		sunxi_pcie_host_establish_link(pci);
+-- 
+2.53.0
+

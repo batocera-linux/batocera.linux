@@ -1,0 +1,97 @@
+From 871b1ec7d35044f237a569f20eb00f2b1e58105a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Sun, 19 Jul 2026 22:31:18 +0200
+Subject: [PATCH 096/143] clk: sunxi-ng: sun55i-a523: GPU clock divider is
+ fractional, not linear
+
+The GPU mod clock (0x670) was modelled as a linear M+1 divider, but the
+M factor of this register is a cycle-masking divider: GPU_CLK = Clock
+Source * ((16-M)/16) (T527 user manual v0.92, section 2.7.6.58).
+
+With the linear model every OPP that needed M > 0 silently ran the GPU
+faster than requested.  Measured on an Orange Pi 4A (T527) with the
+Mali cycle counter against the programmed register:
+
+	OPP request	programmed	real rate
+	150 MHz		600M, M=3	487.5 MHz
+	200 MHz		800M, M=3	650   MHz
+	300 MHz		600M, M=1	562.5 MHz
+	400 MHz		800M, M=1	750   MHz
+	600 MHz		600M, M=0	600   MHz
+
+i.e. the "400 MHz" OPP ran the GPU at 750 MHz, 25% above the vendor
+ceiling of 600 MHz, at the low-OPP voltage.
+
+Switch the clock to the maskdiv type.  Also drop pll-periph0-800M from
+the selectable parents (mux table skips index 1): the vendor BSP
+removed it with the comment "If GPU use pll-peri0-800m, gpu will occur
+job fault", and with the masking semantics every BSP OPP matches
+exactly from the 800M parent first, so it would otherwise always be
+chosen.  With least-masking preference the BSP OPP set now resolves to
+600/400/300/200 MHz taken undivided from their periph outputs and
+150 MHz = pll-periph0-200M * 12/16, all exact.
+---
+ drivers/clk/sunxi-ng/ccu-sun55i-a523.c | 26 +++++++++++++++++++-------
+ 1 file changed, 19 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/clk/sunxi-ng/ccu-sun55i-a523.c b/drivers/clk/sunxi-ng/ccu-sun55i-a523.c
+index 219dc4e79..41f4c600a 100644
+--- a/drivers/clk/sunxi-ng/ccu-sun55i-a523.c
++++ b/drivers/clk/sunxi-ng/ccu-sun55i-a523.c
+@@ -21,6 +21,7 @@
+ 
+ #include "ccu_div.h"
+ #include "ccu_gate.h"
++#include "ccu_maskdiv.h"
+ #include "ccu_mp.h"
+ #include "ccu_mult.h"
+ #include "ccu_nk.h"
+@@ -442,7 +443,6 @@ static SUNXI_CCU_GATE_HWS(bus_g2d_clk, "bus-g2d", ahb_hws, 0x63c, BIT(0), 0);
+ 
+ static const struct clk_hw *gpu_parents[] = {
+ 	&pll_gpu_clk.common.hw,
+-	&pll_periph0_800M_clk.common.hw,
+ 	&pll_periph0_600M_clk.hw,
+ 	&pll_periph0_400M_clk.hw,
+ 	&pll_periph0_300M_clk.hw,
+@@ -450,18 +450,30 @@ static const struct clk_hw *gpu_parents[] = {
+ };
+ 
+ /*
+- * No CLK_SET_RATE_PARENT: every GPU OPP is an exact division of the fixed
++ * Mux index 1 (pll-periph0-800M) is skipped: the vendor BSP removed it
++ * from the parent list ("If GPU use pll-peri0-800m, gpu will occur job
++ * fault"), and with the masking divider every OPP would match exactly
++ * from it first.
++ */
++static const u8 gpu_mux_table[] = { 0, 2, 3, 4, 5 };
++
++/*
++ * The M factor is a cycle-masking (fractional) divider, not a linear
++ * one: rate = source * (16 - M) / 16 (T527 manual, GPU_CLK_REG).
++ *
++ * No CLK_SET_RATE_PARENT: every GPU OPP is reachable from the fixed
+  * pll-periph0 outputs, and pll-gpu must never be retuned through this mux.
+  * Once the GPU moves off pll-gpu the PLL is no longer prepared, so it loses
+  * the rate protection of CLK_SET_RATE_GATE; a propagated rate request would
+  * then reprogram the PLL while its gate is off (the lock bit never asserts,
+  * 70 ms timeout) and switch the running GPU onto it before it locks.
+  */
+-static SUNXI_CCU_M_HW_WITH_MUX_GATE(gpu_clk, "gpu", gpu_parents, 0x670,
+-				    0, 4,	/* M */
+-				    24, 3,	/* mux */
+-				    BIT(31),	/* gate */
+-				    0);
++static SUNXI_CCU_MASKDIV_HW_WITH_MUX_TABLE_GATE(gpu_clk, "gpu", gpu_parents,
++						gpu_mux_table, 0x670,
++						0, 4,	/* M */
++						24, 3,	/* mux */
++						BIT(31),	/* gate */
++						0);
+ 
+ static SUNXI_CCU_GATE_HWS(bus_gpu_clk, "bus-gpu", ahb_hws, 0x67c, BIT(0), 0);
+ 
+-- 
+2.53.0
+

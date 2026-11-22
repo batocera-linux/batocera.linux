@@ -1,0 +1,58 @@
+From 2275bff8098bae2f25188d76d1db88bb1cdc26a9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:52:33 +0200
+Subject: [PATCH 122/143] phy: allwinner: inno-combophy: unregister the
+ notifier before exit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+sunxi_combphy_remove() powered the sub-system down and only then
+unregistered the power notifier.  A power event delivered in that
+window re-initializes the sub-system (clocks and regulator back on)
+right before the device goes away, leaving them enabled with no owner.
+
+Unregister first, then exit -- the exact mirror of the probe order
+(init, provider, notifier).  There is no in-tree emitter of
+inno_subsys_notifier_list today (the BSP dwc3 glue is the only known
+caller), so this closes a latent window rather than a reproducible
+bug.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/phy/allwinner/sunxi-inno-combophy.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/phy/allwinner/sunxi-inno-combophy.c b/drivers/phy/allwinner/sunxi-inno-combophy.c
+index 4aabb17ff..3d9d5a462 100644
+--- a/drivers/phy/allwinner/sunxi-inno-combophy.c
++++ b/drivers/phy/allwinner/sunxi-inno-combophy.c
+@@ -1104,14 +1104,17 @@ static void sunxi_combphy_remove(struct platform_device *pdev)
+ 	struct sunxi_combphy *combphy = platform_get_drvdata(pdev);
+ 	int ret;
+ 
++	/*
++	 * Unregister the power notifier first, mirroring probe: a power
++	 * event delivered between the sub-system exit and the
++	 * unregister would re-enable clocks and regulator that nobody
++	 * would ever turn off again.
++	 */
++	atomic_notifier_chain_unregister(&inno_subsys_notifier_list, &combphy->pwr_nb);
++
+ 	ret = pcie_usb3_sub_system_exit(pdev);
+-	if (ret) {
++	if (ret)
+ 		dev_err(dev, "failed to exit sub system\n");
+-		
+-	}
+-
+-	/* unregister inno power notifier */
+-	atomic_notifier_chain_unregister(&inno_subsys_notifier_list, &combphy->pwr_nb);
+ 
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
+-- 
+2.53.0
+

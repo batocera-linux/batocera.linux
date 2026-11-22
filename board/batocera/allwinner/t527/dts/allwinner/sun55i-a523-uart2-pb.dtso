@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/dts-v1/;
+/plugin/;
+
+&pio {
+	uart2_pb_pins: uart2-pb-pins {
+		pins = "PB0", "PB1";
+		allwinner,pinmux = <2>;
+		function = "uart2";
+	};
+};
+
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pb_pins>;
+	status = "okay";
+};

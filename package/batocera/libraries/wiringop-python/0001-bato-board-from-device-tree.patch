@@ -1,0 +1,62 @@
+Derive the board when neither /etc/orangepi-release nor /etc/armbian-release
+exists, from the first device-tree compatible, e.g. xunlong,orangepi-4a.
+
+--- a/wiringOP/wiringPi/wiringPi.c
++++ b/wiringOP/wiringPi/wiringPi.c
+@@ -2824,6 +2824,33 @@
+ 	exit (EXIT_FAILURE) ;
+ }
+ 
++/* no release file: derive BOARD= from the "xunlong,orangepi-4a" style compatible */
++static int piBoardIdFromDt (char *line, size_t size)
++{
++	FILE *fd;
++	char compat[64];
++	const char *src;
++	size_t n = 0, len;
++
++	if ((fd = fopen ("/proc/device-tree/compatible", "r")) == NULL)
++		return 0;
++	len = fread (compat, 1, sizeof (compat) - 1, fd);
++	fclose (fd);
++	compat[len] = 0;
++
++	if (strncmp (compat, "xunlong,", 8) != 0)
++		return 0;
++
++	n = snprintf (line, size, "BOARD=");
++	for (src = compat + 8; *src && n < size - 1; src++) {
++		if (*src == '-' && strncmp (src, "-lts", 4) != 0)
++			continue;
++		line[n++] = *src;
++	}
++	line[n] = 0;
++	return 1;
++}
++
+ void piBoardId (int * model)
+ {
+ 	FILE *cpuFd ;
+@@ -2833,14 +2860,16 @@
+ 	unsigned int i = 0;
+ 
+ 	if ((cpuFd = fopen ("/etc/orangepi-release", "r")) == NULL)
+-		if ((cpuFd = fopen ("/etc/armbian-release", "r")) == NULL)
+-			piGpioLayoutOops ("Unable to open /etc/orangepi-release or /etc/armbian-release.");
++		cpuFd = fopen ("/etc/armbian-release", "r");
+ 
+-	while (fgets (line, 40, cpuFd) != NULL)
+-	if (strncmp (line, "BOARD=", 6) == 0)
+-		break ;
++	if (cpuFd != NULL) {
++		while (fgets (line, 40, cpuFd) != NULL)
++		if (strncmp (line, "BOARD=", 6) == 0)
++			break ;
+ 
+-	fclose (cpuFd) ;
++		fclose (cpuFd) ;
++	} else if (!piBoardIdFromDt (line, sizeof (line)))
++		piGpioLayoutOops ("Unable to open /etc/orangepi-release or /etc/armbian-release.");
+ 
+ 	if (strncmp (line, "BOARD=", 6) != 0)
+ 		piGpioLayoutOops ("No \"Revision\" line") ;

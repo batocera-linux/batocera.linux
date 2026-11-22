@@ -1,0 +1,181 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] drm/sun4i: dw-hdmi: a523: 50 kHz DDC, 4K60 link and 1080p
+ no-EDID fallback
+
+Run the DDC master at 50 kHz like the BSP (SCL counts from the isfr rate),
+and when no EDID can be read offer modes up to 1920x1080 with 1080p
+preferred instead of the 1024x768 core fallback.
+
+The Inno PHY init never set the sink's SCDC TMDS clock ratio, so 4K60
+(594 MHz) went out scrambled with a 1/10 ratio and the TV showed no
+signal; call dw_hdmi_set_high_tmds_clock_ratio() while TMDS is off.
+At 594 MHz the link also needs the calibrated 100 ohm source termination
+the BSP sets up (_inno_phy_config_4k60); without it every channel
+saturated the sink's SCDC character error counters.
+---
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index a37b02d..4fa6e24 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -159,6 +159,7 @@ struct dw_hdmi {
+ 
+ 	struct i2c_adapter *ddc;
+ 	void __iomem *regs;
++	unsigned long isfr_rate;
+ 	bool sink_is_hdmi;
+ 	bool sink_has_audio;
+ 
+@@ -277,6 +278,18 @@ static void dw_hdmi_i2c_init(struct dw_hdmi *hdmi)
+ 	/* Set Standard Mode speed (determined to be 100KHz on iMX6) */
+ 	hdmi_writeb(hdmi, 0x00, HDMI_I2CM_DIV);
+ 
++	if (hdmi->plat_data->ddc_scl_rate && hdmi->isfr_rate) {
++		/* same 46%/51% high/low split as the Allwinner BSP */
++		u64 div = (u64)hdmi->plat_data->ddc_scl_rate * 100;
++		u16 hcnt = DIV_ROUND_UP_ULL((u64)hdmi->isfr_rate * 46, div);
++		u16 lcnt = DIV_ROUND_UP_ULL((u64)hdmi->isfr_rate * 51, div);
++
++		hdmi_writeb(hdmi, hcnt >> 8, HDMI_I2CM_SS_SCL_HCNT_1_ADDR);
++		hdmi_writeb(hdmi, hcnt & 0xff, HDMI_I2CM_SS_SCL_HCNT_0_ADDR);
++		hdmi_writeb(hdmi, lcnt >> 8, HDMI_I2CM_SS_SCL_LCNT_1_ADDR);
++		hdmi_writeb(hdmi, lcnt & 0xff, HDMI_I2CM_SS_SCL_LCNT_0_ADDR);
++	}
++
+ 	/* Set done, not acknowledged and arbitration interrupt polarities */
+ 	hdmi_writeb(hdmi, HDMI_I2CM_INT_DONE_POL, HDMI_I2CM_INT);
+ 	hdmi_writeb(hdmi, HDMI_I2CM_CTLINT_NAC_POL | HDMI_I2CM_CTLINT_ARB_POL,
+@@ -2534,6 +2547,11 @@ static int dw_hdmi_connector_get_modes(struct drm_connector *connector)
+ 	ret = drm_edid_connector_add_modes(connector);
+ 	drm_edid_free(drm_edid);
+ 
++	if (!ret && hdmi->plat_data->noedid_1080p) {
++		ret = drm_add_modes_noedid(connector, 1920, 1080);
++		drm_set_preferred_mode(connector, 1920, 1080);
++	}
++
+ 	return ret;
+ }
+ 
+@@ -3467,6 +3485,7 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+ 		dev_err(hdmi->dev, "Unable to get HDMI isfr clk: %d\n", ret);
+ 		goto err_res;
+ 	}
++	hdmi->isfr_rate = clk_get_rate(clk);
+ 
+ 	clk = devm_clk_get_enabled(hdmi->dev, "iahb");
+ 	if (IS_ERR(clk)) {
+diff --git a/include/drm/bridge/dw_hdmi.h b/include/drm/bridge/dw_hdmi.h
+index 8500dd4..9513713 100644
+--- a/include/drm/bridge/dw_hdmi.h
++++ b/include/drm/bridge/dw_hdmi.h
+@@ -166,6 +166,11 @@ struct dw_hdmi_plat_data {
+ 	void *phy_data;
+ 	unsigned int phy_force_vendor;
+ 
++	/* DDC standard-mode SCL rate in Hz, 0 keeps the controller default */
++	unsigned int ddc_scl_rate;
++	/* Without an EDID, offer modes up to 1920x1080 instead of 1024x768 */
++	bool noedid_1080p;
++
+ 	/* Synopsys PHY support */
+ 	const struct dw_hdmi_mpll_config *mpll_cfg;
+ 	const struct dw_hdmi_curr_ctrl *cur_ctr;
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+index bd3923e..bc63c33 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.c
+@@ -190,6 +190,8 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
+ 
+ 	plat_data->mode_valid = hdmi->quirks->mode_valid;
+ 	plat_data->use_drm_infoframe = hdmi->quirks->use_drm_infoframe;
++	plat_data->noedid_1080p = hdmi->quirks->noedid_1080p;
++	plat_data->ddc_scl_rate = hdmi->quirks->ddc_scl_rate;
+ 	sun8i_hdmi_phy_set_ops(hdmi->phy, plat_data);
+ 
+ 	platform_set_drvdata(pdev, hdmi);
+@@ -255,6 +257,13 @@ static const struct sun8i_dw_hdmi_quirks sun50i_h6_quirks = {
+ 	.use_drm_infoframe = true,
+ };
+ 
++static const struct sun8i_dw_hdmi_quirks sun55i_a523_quirks = {
++	.mode_valid = sun8i_dw_hdmi_mode_valid_h6,
++	.use_drm_infoframe = true,
++	.noedid_1080p = true,
++	.ddc_scl_rate = 50000,
++};
++
+ static const struct of_device_id sun8i_dw_hdmi_dt_ids[] = {
+ 	{
+ 		.compatible = "allwinner,sun8i-a83t-dw-hdmi",
+@@ -264,6 +273,10 @@ static const struct of_device_id sun8i_dw_hdmi_dt_ids[] = {
+ 		.compatible = "allwinner,sun50i-h6-dw-hdmi",
+ 		.data = &sun50i_h6_quirks,
+ 	},
++	{
++		.compatible = "allwinner,sun55i-a523-dw-hdmi",
++		.data = &sun55i_a523_quirks,
++	},
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, sun8i_dw_hdmi_dt_ids);
+diff --git a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
+index df94f83..2021ec2 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
++++ b/drivers/gpu/drm/sun4i/sun8i_dw_hdmi.h
+@@ -176,6 +176,8 @@ struct sun8i_dw_hdmi_quirks {
+ 					   const struct drm_display_info *info,
+ 					   const struct drm_display_mode *mode);
+ 	unsigned int use_drm_infoframe : 1;
++	unsigned int noedid_1080p : 1;
++	unsigned int ddc_scl_rate;
+ };
+ 
+ struct sun8i_dw_hdmi {
+diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+index 23dbac1..8488c95 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
++++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
+@@ -896,6 +896,23 @@ static void sun55i_a523_inno_dump(struct sun8i_hdmi_phy *phy, const char *when)
+ 		 when, ctl0, pll0, pll1, pll2, pll3, fra, dr0, rxs);
+ }
+ 
++/* HDMI 2.0 rates need the calibrated 100 ohm source termination (BSP 4k60 path) */
++static void sun55i_a523_inno_term_4k60(struct sun8i_hdmi_phy *phy)
++{
++	unsigned int i;
++
++	/* calibration clock: 24 MHz / 240 */
++	regmap_write(phy->regs, INNO_DR5 + 2, 0xf0);
++	regmap_update_bits(phy->regs, INNO_DR5 + 1, 0x7f, 0);
++	for (i = 0; i < 4; i++)
++		regmap_write(phy->regs, INNO_DR5 + 4 + i, 0x28);
++	/* 100 ohm, calibrate ch0/1/2 */
++	regmap_update_bits(phy->regs, INNO_DR5 + 3, 0x76, 0x70);
++	regmap_update_bits(phy->regs, INNO_DR5 + 1, 0x80, 0x80);
++	udelay(5);
++	regmap_update_bits(phy->regs, INNO_DR5 + 1, 0x80, 0);
++}
++
+ static void sun55i_a523_inno_mpll_config(struct sun8i_hdmi_phy *phy,
+ 					 const struct inno_phy_mpll *c)
+ {
+@@ -1026,6 +1043,9 @@ static int sun55i_a523_hdmi_phy_init(struct dw_hdmi *hdmi, void *data,
+ 	dev_dbg(phy->dev, "inno: tmds=%ukHz mpll prepll_div=%08x clkdiv=%08x postpll=%08x\n",
+ 		 tmds_khz, mpll->prepll_div, mpll->prepll_clk_div, mpll->postpll);
+ 
++	if (tmds_khz == 594000)
++		sun55i_a523_inno_term_4k60(phy);
++
+ 	sun55i_a523_inno_mpll_config(phy, mpll);
+ 	sun55i_a523_inno_dump(phy, "post-mpll");
+ 
+@@ -1042,6 +1062,9 @@ static int sun55i_a523_hdmi_phy_init(struct dw_hdmi *hdmi, void *data,
+ 
+ 	sun55i_a523_inno_config_drive(phy, tmds_khz);
+ 
++	/* TMDS is off here, the sync below gives the sink its 1 ms before it resumes */
++	dw_hdmi_set_high_tmds_clock_ratio(hdmi, display);
++
+ 	/* digital reset + data sync */
+ 	sun55i_a523_inno_clr(phy, INNO_CTL0, INNO_CTL0_RST_DI);
+ 	mdelay(10);

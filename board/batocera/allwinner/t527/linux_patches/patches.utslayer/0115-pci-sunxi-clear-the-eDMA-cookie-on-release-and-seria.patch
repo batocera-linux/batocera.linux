@@ -1,0 +1,254 @@
+From 2a7a9d18668e4d26db903168c1ad96ec76d5f200 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:49:17 +0200
+Subject: [PATCH 115/143] pci: sunxi: clear the eDMA cookie on release and
+ serialize channel state
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The per-channel auto-release cookie set by sunxi_pcie_plat_dma_config()
+for internally requested channels was never cleared again:
+sunxi_pcie_dma_chan_release() dropped the callback and the bitmap bit
+but left cookie == true forever.  Once a channel had been used
+internally a single time, the stale cookie made the eDMA IRQ handlers
+release the channel on behalf of any later owner -- including one that
+obtained it through the exported sunxi_pcie_dma_chan_request() API and
+still holds it -- allowing the same channel to be handed out twice.  A
+done and an abort event observed in the same IRQ run could also
+release the channel twice, with a window in between where another CPU
+could claim it and have the claim wiped.
+
+Fix the lifecycle and use the per-channel spinlock that was
+initialized but never taken:
+
+ - clear the cookie inside sunxi_pcie_dma_chan_release(), under the
+   channel lock, and only then publish the channel as free in the
+   bitmap;
+ - claim channels with a find/test_and_set_bit loop so two concurrent
+   requesters can no longer pick the same free channel, and initialize
+   the channel fields under the lock;
+ - make the IRQ handlers consume the cookie atomically through the new
+   sunxi_pcie_dma_chan_take_cookie() helper, so check-then-release is
+   single-shot;
+ - set the cookie under the same lock in the config path.
+
+The eDMA IRQ handlers run in hard-IRQ context, so all lock sites use
+spin_lock_irqsave().
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-dma.c  | 111 ++++++++++++++---------
+ drivers/pci/pcie-sunxi/pcie-sunxi-dma.h  |   1 +
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c |   7 +-
+ 3 files changed, 75 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-dma.c b/drivers/pci/pcie-sunxi/pcie-sunxi-dma.c
+index ff7567163..80b0590c3 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-dma.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-dma.c
+@@ -38,78 +38,105 @@ static struct dma_trx_obj *obj_global;
+ sunxi_pci_edma_chan_t *sunxi_pcie_dma_chan_request(enum dma_dir dma_trx, void *cb, void *data)
+ {
+ 	struct sunxi_pcie *pci = dev_get_drvdata(obj_global->dev);
+-	sunxi_pci_edma_chan_t *edma_chan = NULL;
++	sunxi_pci_edma_chan_t *edma_chan;
++	unsigned long *map, flags;
+ 	u32 free_chan;
+ 
+ 	if (dma_trx == PCIE_DMA_WRITE) {
+-		free_chan = find_first_zero_bit(pci->wr_edma_map, pci->num_edma);
+-
+-		if (free_chan >= pci->num_edma) {
+-			dev_err(pci->dev, "No free pcie edma write channel.\n");
+-			return NULL;
+-		}
+-
+-		set_bit(free_chan, pci->wr_edma_map);
+-
+-		edma_chan = &pci->dma_wr_chn[free_chan];
+-
+-		edma_chan->dma_trx = PCIE_DMA_WRITE;
+-		edma_chan->chnl_num = free_chan;
+-		edma_chan->callback = cb;
+-		edma_chan->callback_param = data;
+-
+-		return edma_chan;
++		map = pci->wr_edma_map;
+ 	} else if (dma_trx == PCIE_DMA_READ) {
+-		free_chan = find_first_zero_bit(pci->rd_edma_map, pci->num_edma);
++		map = pci->rd_edma_map;
++	} else {
++		dev_err(pci->dev, "ERR: unsupported type:%d \n", dma_trx);
++		return NULL;
++	}
+ 
++	/*
++	 * Claim the channel atomically: a plain find_first_zero_bit() +
++	 * set_bit() pair lets two concurrent requesters pick the same
++	 * free channel and both believe they own it.
++	 */
++	do {
++		free_chan = find_first_zero_bit(map, pci->num_edma);
+ 		if (free_chan >= pci->num_edma) {
+-			dev_err(pci->dev, "No free pcie edma read channel.\n");
++			dev_err(pci->dev, "No free pcie edma %s channel.\n",
++				(dma_trx == PCIE_DMA_READ) ? "read" : "write");
+ 			return NULL;
+ 		}
++	} while (test_and_set_bit(free_chan, map));
+ 
+-		set_bit(free_chan, pci->rd_edma_map);
++	edma_chan = (dma_trx == PCIE_DMA_WRITE) ? &pci->dma_wr_chn[free_chan]
++						: &pci->dma_rd_chn[free_chan];
+ 
+-		edma_chan = &pci->dma_rd_chn[free_chan];
++	spin_lock_irqsave(&edma_chan->lock, flags);
++	edma_chan->dma_trx = dma_trx;
++	edma_chan->chnl_num = free_chan;
++	edma_chan->callback = cb;
++	edma_chan->callback_param = data;
++	spin_unlock_irqrestore(&edma_chan->lock, flags);
+ 
+-		edma_chan->dma_trx = PCIE_DMA_READ;
+-		edma_chan->chnl_num = free_chan;
+-		edma_chan->callback = cb;
+-		edma_chan->callback_param = data;
+-
+-		return edma_chan;
+-	} else {
+-		dev_err(pci->dev, "ERR: unsupported type:%d \n", dma_trx);
+-	}
+-
+-	return NULL;
++	return edma_chan;
+ }
+ EXPORT_SYMBOL_GPL(sunxi_pcie_dma_chan_request);
+ 
+ int sunxi_pcie_dma_chan_release(struct sunxi_pci_edma_chan *edma_chan, enum dma_dir dma_trx)
+ {
+ 	struct sunxi_pcie *pci = dev_get_drvdata(obj_global->dev);
++	unsigned long flags;
+ 
+ 	if (edma_chan->chnl_num >= pci->num_edma) {
+ 		dev_err(pci->dev, "ERR: the channel num:%d is error\n", edma_chan->chnl_num);
+ 		return -1;
+ 	}
+ 
+-	if (PCIE_DMA_WRITE == dma_trx) {
+-		edma_chan->callback = NULL;
+-		edma_chan->callback_param = NULL;
+-		clear_bit(edma_chan->chnl_num, pci->wr_edma_map);
+-	} else if (PCIE_DMA_READ == dma_trx) {
+-		edma_chan->callback = NULL;
+-		edma_chan->callback_param = NULL;
+-		clear_bit(edma_chan->chnl_num, pci->rd_edma_map);
+-	} else {
++	if (dma_trx != PCIE_DMA_WRITE && dma_trx != PCIE_DMA_READ) {
+ 		dev_err(pci->dev, "ERR: unsupported type:%d \n", dma_trx);
++		return -1;
+ 	}
+ 
++	spin_lock_irqsave(&edma_chan->lock, flags);
++	edma_chan->callback = NULL;
++	edma_chan->callback_param = NULL;
++	/*
++	 * Also drop the auto-release cookie: it used to survive the
++	 * release and leak into the channel's next owner, making the
++	 * eDMA IRQ handler release a channel it no longer owned.
++	 */
++	edma_chan->cookie = false;
++	spin_unlock_irqrestore(&edma_chan->lock, flags);
++
++	/* Publish the channel as free only after its state is cleared */
++	if (dma_trx == PCIE_DMA_WRITE)
++		clear_bit(edma_chan->chnl_num, pci->wr_edma_map);
++	else
++		clear_bit(edma_chan->chnl_num, pci->rd_edma_map);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(sunxi_pcie_dma_chan_release);
+ 
++/*
++ * Atomically consume the auto-release cookie of a channel.  Returns true
++ * when the caller (the eDMA IRQ handler) must release the channel on
++ * behalf of the internal request made by sunxi_pcie_plat_dma_config().
++ * Consuming the cookie before releasing makes the check-then-release
++ * sequence in the IRQ handlers single-shot: a done and an abort event
++ * observed in the same handler run can no longer release the channel
++ * twice.
++ */
++bool sunxi_pcie_dma_chan_take_cookie(struct sunxi_pci_edma_chan *edma_chan)
++{
++	unsigned long flags;
++	bool cookie;
++
++	spin_lock_irqsave(&edma_chan->lock, flags);
++	cookie = edma_chan->cookie;
++	edma_chan->cookie = false;
++	spin_unlock_irqrestore(&edma_chan->lock, flags);
++
++	return cookie;
++}
++
+ static int sunxi_pcie_init_edma_map(struct sunxi_pcie *pci)
+ {
+ 	pci->rd_edma_map = devm_bitmap_zalloc(pci->dev, pci->num_edma, GFP_KERNEL);
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-dma.h b/drivers/pci/pcie-sunxi/pcie-sunxi-dma.h
+index 0fe4f7d62..e44dc5f45 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-dma.h
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-dma.h
+@@ -272,6 +272,7 @@ struct dma_trx_obj *sunxi_pcie_dma_obj_probe(struct device *dev);
+ int sunxi_pcie_dma_obj_remove(struct device *dev);
+ sunxi_pci_edma_chan_t *sunxi_pcie_dma_chan_request(enum dma_dir dma_trx, void *cb, void *data);
+ int sunxi_pcie_dma_chan_release(struct sunxi_pci_edma_chan *edma_chan, enum dma_dir dma_trx);
++bool sunxi_pcie_dma_chan_take_cookie(struct sunxi_pci_edma_chan *edma_chan);
+ 
+ 
+ int sunxi_pcie_dma_get_chan(struct platform_device *pdev);
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index 14cd75328..221ef49b2 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -635,7 +635,7 @@ static void sunxi_pcie_plat_dma_handle_interrupt(struct sunxi_pcie *pci, u32 ch,
+ 		dev_err(pci->dev, "ERR: unsupported type:%d \n", dma_trx);
+ 	}
+ 
+-	if (edma_chan->cookie)
++	if (sunxi_pcie_dma_chan_take_cookie(edma_chan))
+ 		sunxi_pcie_dma_chan_release(edma_chan, dma_trx);
+ }
+ 
+@@ -675,7 +675,7 @@ static irqreturn_t sunxi_pcie_##name##_irq_handler				\
+ 		 * did not reach its destination and the caller must be told via \
+ 		 * its own error path.					      \
+ 		 */								  \
+-		if (edma_chan->cookie)						  \
++		if (sunxi_pcie_dma_chan_take_cookie(edma_chan))			  \
+ 			sunxi_pcie_dma_chan_release(edma_chan, dir);		  \
+ 	}											  \
+ 												  \
+@@ -764,6 +764,7 @@ static int sunxi_pcie_plat_dma_config(struct dma_table *table, phys_addr_t src_a
+ 					unsigned int size, enum dma_dir dma_trx, sunxi_pci_edma_chan_t *edma_chn)
+ {
+ 	sunxi_pci_edma_chan_t *chn = NULL;
++	unsigned long flags;
+ 
+ 	table->ctx_reg.ctrllo.lie   = 0x1;
+ 	table->ctx_reg.ctrllo.rie   = 0x0;
+@@ -784,7 +785,9 @@ static int sunxi_pcie_plat_dma_config(struct dma_table *table, phys_addr_t src_a
+ 			return -ENOMEM;
+ 		}
+ 
++		spin_lock_irqsave(&chn->lock, flags);
+ 		chn->cookie = true;
++		spin_unlock_irqrestore(&chn->lock, flags);
+ 		table->start.chnl = chn->chnl_num;
+ 		table->weilo.dword = (PCIE_WEIGHT << (5 * chn->chnl_num));
+ 	} else {
+-- 
+2.53.0
+

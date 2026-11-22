@@ -1,0 +1,115 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: t527: 256 MiB CMA pool above secmon
+
+A 4K preferred mode filled the 80 MiB pool below secmon@48000000, so the
+1080p mode set failed. The display engine reads above 0x48000000, so pin a
+256 MiB pool at 0x60000000, below 4 GiB for its 32-bit DMA. The Avaota A1
+node sat inside the PMIC, move it to reserved-memory.
+---
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
+@@ -33,24 +33,13 @@
+ 		#size-cells = <2>;
+ 		ranges;
+ 
+-		/*
+-		 * The display engine's layer DMA master has a limited fetch
+-		 * aperture and can only reach low DRAM (it reads the RCQ pool at
+-		 * ~0x43000000 but not 0x4b100000). The kernel's default CMA is
+-		 * high (~0xf0000000), so scanout fetches zeros (black). Pin CMA
+-		 * just above the kernel image (ends ~0x42c70000) and the RCQ
+-		 * pool (~0x43000000), below the dtb (~0x49ff6000).
+-		 */
++		/* above the secmon reservations, below 4 GiB for the 32-bit display engine */
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
+-			/* pin low: the DE fetch aperture only reaches DRAM below
+-			 * ~0x4b100000; stop at 0x48000000 to stay clear of the
+-			 * secmon@48000000/48100000 and vdev@4ae00000 no-map
+-			 * reservations (overlap hands out no-map pages -> oops) */
+-			reg = <0x0 0x43000000 0x0 0x5000000>;
+-			alloc-ranges = <0x0 0x43000000 0x0 0x5000000>;
+-			size = <0x0 0x5000000>;
++			reg = <0x0 0x60000000 0x0 0x10000000>;
++			alloc-ranges = <0x0 0x60000000 0x0 0x10000000>;
++			size = <0x0 0x10000000>;
+ 			linux,cma-default;
+ 		};
+ 	};
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
+@@ -24,6 +24,22 @@
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	reserved-memory {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++
++		/* above the secmon reservations, below 4 GiB for the 32-bit display engine */
++		linux,cma {
++			compatible = "shared-dma-pool";
++			reusable;
++			reg = <0x0 0x60000000 0x0 0x10000000>;
++			alloc-ranges = <0x0 0x60000000 0x0 0x10000000>;
++			size = <0x0 0x10000000>;
++			linux,cma-default;
++		};
++	};
++
+ 	ext_osc32k: ext-osc32k-clk {
+ 		#clock-cells = <0>;
+ 		compatible = "fixed-clock";
+@@ -376,19 +392,6 @@
+ 			/* 12V-5V buck converter can supply up to 5A */
+ 			input-current-limit-microamp = <3250000>;
+ 		};
+-
+-		linux,cma {
+-			compatible = "shared-dma-pool";
+-			reusable;
+-			/* pin low: the DE fetch aperture only reaches DRAM below
+-			 * ~0x4b100000; stop at 0x48000000 to stay clear of the
+-			 * secmon@48000000/48100000 and vdev@4ae00000 no-map
+-			 * reservations (overlap hands out no-map pages -> oops) */
+-			reg = <0x0 0x43000000 0x0 0x5000000>;
+-			alloc-ranges = <0x0 0x43000000 0x0 0x5000000>;
+-			size = <0x0 0x5000000>;
+-			linux,cma-default;
+-		};
+ 	};
+ 
+ 	axp323: pmic@36 {
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -41,25 +41,17 @@
+ 			no-map;
+ 		};
+ 
+-		/*
+-		 * The display engine's layer DMA master has a limited fetch
+-		 * aperture and can only reach low DRAM (it reads the RCQ pool at
+-		 * ~0x43000000 but not 0x4b100000). The kernel's default CMA is
+-		 * high (~0xf0000000), so scanout fetches zeros (black). Ideally
+-		 * this pool should be pinned low just above the kernel image
+-		 * (ends ~0x42c70000) and the RCQ pool (~0x43000000), below the
+-		 * dtb (~0x49ff6000); that is NOT guaranteed without reg and
+-		 * alloc-ranges. HDMI output on this board is untested.
+-		 */
++		/* above the secmon reservations, below 4 GiB for the 32-bit display engine */
+ 		linux,cma {
+ 			compatible = "shared-dma-pool";
+ 			reusable;
++			reg = <0x0 0x60000000 0x0 0x10000000>;
++			alloc-ranges = <0x0 0x60000000 0x0 0x10000000>;
+ 			size = <0x0 0x10000000>;
+ 			linux,cma-default;
+ 		};
+ 	};
+ 
+-	/* HDMI output is enabled but not yet validated on this board. */
+ 	hdmi-connector {
+ 		compatible = "hdmi-connector";
+ 		type = "a";

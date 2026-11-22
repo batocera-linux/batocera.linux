@@ -1,0 +1,73 @@
+From bedbafc6171c3f103a63018362bc54f4ee878ca9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:52:59 +0200
+Subject: [PATCH 123/143] phy: allwinner: inno-combophy: make the power
+ notifier chain blocking
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The inno_subsys_notifier_list chain was declared with
+ATOMIC_NOTIFIER_HEAD, so its callbacks run under rcu_read_lock(), but
+sunxi_inno_combophy_power_event() sleeps on both event directions:
+pcie_usb3_sub_system_init()/exit() call clk_prepare_enable(),
+clk_set_rate(), regulator_enable() and reset_control operations, all
+of which can take mutexes.  Any emitter would trigger
+sleeping-in-atomic splats (or worse) the moment an event fired.
+
+Convert the chain to BLOCKING_NOTIFIER_HEAD.  There is no in-tree
+emitter today, so the change is inert; the only known caller, the
+vendor BSP dwc3 glue (dwc3-sunxi-plat.c), emits from process context
+under a mutex, which is exactly what a blocking chain expects if it
+is ever ported.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/phy/allwinner/sunxi-inno-combophy.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/phy/allwinner/sunxi-inno-combophy.c b/drivers/phy/allwinner/sunxi-inno-combophy.c
+index 3d9d5a462..7eb865d1b 100644
+--- a/drivers/phy/allwinner/sunxi-inno-combophy.c
++++ b/drivers/phy/allwinner/sunxi-inno-combophy.c
+@@ -80,7 +80,7 @@ enum phy_refclk_sel {
+ 	EXTER_DIF_REF_CLK, /* PHY use external single end reference clock */
+ };
+ 
+-extern struct atomic_notifier_head inno_subsys_notifier_list;
++extern struct blocking_notifier_head inno_subsys_notifier_list;
+ 
+ struct sunxi_combophy_of_data {
+ 	bool has_cfg_clk;
+@@ -121,7 +121,7 @@ struct sunxi_combphy {
+ 	bool initialized;
+ };
+ 
+-ATOMIC_NOTIFIER_HEAD(inno_subsys_notifier_list);
++BLOCKING_NOTIFIER_HEAD(inno_subsys_notifier_list);
+ EXPORT_SYMBOL(inno_subsys_notifier_list);
+ 
+ /*  PCIE USB3 Sub-system Application */
+@@ -1084,7 +1084,7 @@ static int sunxi_combphy_probe(struct platform_device *pdev)
+ 
+ 	combphy->pwr_nb.notifier_call = sunxi_inno_combophy_power_event;
+ 	/* register inno power notifier */
+-	atomic_notifier_chain_register(&inno_subsys_notifier_list, &combphy->pwr_nb);
++	blocking_notifier_chain_register(&inno_subsys_notifier_list, &combphy->pwr_nb);
+ 
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_enable(dev);
+@@ -1110,7 +1110,7 @@ static void sunxi_combphy_remove(struct platform_device *pdev)
+ 	 * unregister would re-enable clocks and regulator that nobody
+ 	 * would ever turn off again.
+ 	 */
+-	atomic_notifier_chain_unregister(&inno_subsys_notifier_list, &combphy->pwr_nb);
++	blocking_notifier_chain_unregister(&inno_subsys_notifier_list, &combphy->pwr_nb);
+ 
+ 	ret = pcie_usb3_sub_system_exit(pdev);
+ 	if (ret)
+-- 
+2.53.0
+

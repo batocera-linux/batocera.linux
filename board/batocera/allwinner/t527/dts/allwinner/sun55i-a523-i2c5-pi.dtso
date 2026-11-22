@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/dts-v1/;
+/plugin/;
+
+&pio {
+	i2c5_pi_pins: i2c5-pi-pins {
+		pins = "PI8", "PI9";
+		allwinner,pinmux = <2>;
+		function = "i2c5";
+	};
+};
+
+&i2c5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c5_pi_pins>;
+	status = "okay";
+};

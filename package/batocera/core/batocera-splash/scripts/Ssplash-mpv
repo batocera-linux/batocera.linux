@@ -277,6 +277,13 @@ do_videostart ()
     local mpv_log=/userdata/system/logs/mpv.log
     rm -f "$mpv_log"
 
+    # a kernel video= mode caps the boot output, mpv's preferred is the EDID one
+    if [ "$drm_mode" = "preferred" ] && [ -n "$drm_connector" ]; then
+        local cmdline_mode
+        cmdline_mode=$(tr ' ' '\n' < /proc/cmdline | sed -n "s/^video=${drm_connector}:\([0-9]*x[0-9]*\).*/\1/p" | head -n1)
+        [ -n "$cmdline_mode" ] && drm_mode="$cmdline_mode"
+    fi
+
     # a hand-typed rotated size (1080x1920) matches no physical mode, so swap it or fall back
     if [ "$drm_mode" != "preferred" ]; then
         local drm_args=() modes swapped

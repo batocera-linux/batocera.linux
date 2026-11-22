@@ -1,0 +1,16 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: t527: orangepi-4a: heartbeat status LED
+
+The green status LED had no trigger and stayed dark; blink it like the
+Orange Pi BSP does.
+---
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -113,6 +113,7 @@
+ 			function = LED_FUNCTION_STATUS;
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&pio 3 20 GPIO_ACTIVE_HIGH>; /* PD20 */
++			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
+ 

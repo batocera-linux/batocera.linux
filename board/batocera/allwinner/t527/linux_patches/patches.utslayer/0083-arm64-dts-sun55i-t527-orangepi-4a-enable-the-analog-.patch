@@ -1,0 +1,50 @@
+From dcbd7509d9a68916ab02cf0a0b89e0d48a44979a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Wed, 15 Jul 2026 17:04:50 +0200
+Subject: [PATCH 083/143] arm64: dts: sun55i-t527-orangepi-4a: enable the
+ analog codec (3.5mm jack)
+
+Enables the internal codec with the board values of the &codec node of the
+Orange Pi 4A BSP dts: regulators avcc=reg_aldo4 (1.8V), vdd=reg_cldo3 (3.3V),
+cpvin=reg_cldo1 (1.8V, HP charge pump) and speaker amplifier on PH6 active
+high with no delay (pa-pin-0/level 1/msleep 0 of the BSP) as
+allwinner,pa-gpios.
+
+The gains and volumes of the BSP dts (dac-vol 63, dacl/r 160, adc1-3 160,
+lineout 31, hpout 7, adc-gain 31) match one to one the BSP driver defaults, so
+they are wired into the mainline driver and not declared here. Likewise
+jack-det-level=1, threshold=8, debounce=0 (driver defaults).
+---
+ .../dts/allwinner/sun55i-t527-orangepi-4a.dts  | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+index f4fe94d46..2db2d1fd7 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -922,3 +922,21 @@ simple-audio-card,codec {
+ 		};
+ 	};
+ };
++
++/*
++ * ANALOG AUDIO (A523 internal codec, the 5.15 BSP recipe): 3.5 mm
++ * jack (HPOUT + jack detect on IRQ 190), line-out, 3 mic inputs and an
++ * external speaker amplifier on PH6 (active high, no delay, BSP node
++ * pa-pin-0). The regulators are those of the &codec node in the board's BSP
++ * dts: avcc=aldo4 1.8V, vdd=cldo3 3.3V, cpvin=cldo1 1.8V (HP charge
++ * pump). The board's gains/volumes == the BSP driver defaults, so they are
++ * hard-wired in the driver. jack-det-level=1 and threshold=8 are the mainline
++ * driver defaults, no need to declare them.
++ */
++&codec {
++	avcc-supply = <&reg_aldo4>;
++	vdd-supply = <&reg_cldo3>;
++	cpvin-supply = <&reg_cldo1>;
++	allwinner,pa-gpios = <&pio 7 6 GPIO_ACTIVE_HIGH>; /* PH6 */
++	status = "okay";
++};
+-- 
+2.53.0
+

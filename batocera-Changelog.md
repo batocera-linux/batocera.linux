@@ -4,6 +4,10 @@
   SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
 - Orange Pi 5 Max and 5 Ultra move to the RK3588 mainline kernel, with Wi-Fi through the bcmdhd driver
 - Orange Pi 5 Pro, Banana Pi M7 / ArmSoM Sige7, NanoPi M6, Firefly ROC-RK3588S-PC / Station M3 and Mekotronics R58X move to the RK3588 mainline kernel, the RK3588 vendor kernel image is removed
+- Orange Pi 4A (T527) moves from the vendor 5.15 kernel to mainline Linux 7.3.5 with mainline U-Boot
+### Hardware
+- Initial support for the Avaota A1
+- Initial support for the Radxa Cubie A5E
 ### Added
 - FightBox R10-PRO controller configuration
 - Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
@@ -39,6 +43,7 @@
 - Windows: 32-bit games did not start on Wayland builds with the virtual desktop off
 - Windows: new WINE Proton prefixes asked to download WINE Mono
 - Windows: the FPS limiter option had no effect on DXVK games
+- wiringOP (wiringpi Python) could not identify the board on Orange Pi images
 - Xenia Canary / Edge signed in a profile for every player slot, not just the connected pads
 ### Changed / Improved
 - AE light gun driver is no longer included, it was seen as a generic mouse like some trackballs
@@ -82,6 +87,7 @@
 - Qualcomm QCS6490 device kernel updated to 7.3.5
 - Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
+- U-Boot updated to 2026.10 on Allwinner H3, H5, H6, H616 and T527 and Rockchip RK3288 and RK3399 devices
 - VKD3D Proton to 3.1
 - WINE Proton to proton-11.0-2
 - WINE TKG to 11.22

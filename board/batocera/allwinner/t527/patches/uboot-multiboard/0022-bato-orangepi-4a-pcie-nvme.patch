@@ -1,0 +1,39 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm: dts: sunxi: orangepi-4a: enable PCIe for NVMe boot
+
+Power the M.2 slot from PL8 and enable the combo PHY and the single
+PCIe lane, PERST# on PH11 and WAKE# on PH12, as the BSP does.
+---
+diff --git a/arch/arm/dts/sun55i-t527-orangepi-4a-u-boot.dtsi b/arch/arm/dts/sun55i-t527-orangepi-4a-u-boot.dtsi
+new file mode 100644
+index 00000000..7ea3dd6d
+--- /dev/null
++++ b/arch/arm/dts/sun55i-t527-orangepi-4a-u-boot.dtsi
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++
++#include "sunxi-u-boot.dtsi"
++
++/ {
++	reg_pcie_vcc3v3: regulator-pcie-vcc3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc-pcie-3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&r_pio 0 8 GPIO_ACTIVE_HIGH>;	/* PL8 */
++		enable-active-high;
++		regulator-boot-on;
++	};
++};
++
++&combophy {
++	status = "okay";
++};
++
++&pcie {
++	reset-gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>;	/* PH11, PERST# */
++	wake-gpios = <&pio 7 12 GPIO_ACTIVE_HIGH>;	/* PH12, WAKE# */
++	num-lanes = <1>;
++	slot-3v3-supply = <&reg_pcie_vcc3v3>;
++	status = "okay";
++};

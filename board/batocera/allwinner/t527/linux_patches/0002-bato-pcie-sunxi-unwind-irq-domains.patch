@@ -1,0 +1,91 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] pci: sunxi: unwind the IRQ domains on host init failure
+
+The ut-slayer fixes 0100, 0106, 0118 and 0120 rebased onto the Armbian
+driver: propagate the INTx domain error, free the domains when MSI setup
+or the host probe fails, mask INTx before its domain is removed and drop
+the SII IRQ lookup made before the ITS check.
+---
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index f0f4d6724..5c4a3b857 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -804,10 +804,6 @@ static int sunxi_pcie_plat_request_irq(struct sunxi_pcie *sunxi_pcie, struct pla
+ 	struct sunxi_pcie *pci = platform_get_drvdata(pdev);
+ 	struct sunxi_pcie_port *pp = &pci->pp;
+ 
+-	irq = platform_get_irq_byname(pdev, "sii");
+-	if (irq < 0)
+-		return -EINVAL;
+-
+ 	if (!pp->has_its) {
+ 		irq = platform_get_irq_byname(pdev, "sii");
+ 		if (irq < 0)
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c b/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
+index a2a784304..22c16c979 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
+@@ -203,6 +203,14 @@ static int sunxi_allocate_msi_domains(struct sunxi_pcie_port *pp)
+ 
+ static void sunxi_free_irq_domains(struct sunxi_pcie_port *pp)
+ {
++	struct sunxi_pcie *pci = to_sunxi_pcie_from_pp(pp);
++	u32 val;
++
++	/* quiet INTx before its domain goes, the SII handler outlives it */
++	val = sunxi_pcie_readl(pci, SII_INT_MASK0);
++	val &= ~INTX_RX_ASSERT_MASK;
++	sunxi_pcie_writel(val, pci, SII_INT_MASK0);
++
+ 	if (pp->irq_domain)
+ 		irq_domain_remove(pp->irq_domain);
+ 	if (pp->intx_irq_domain)
+@@ -500,16 +508,18 @@ static int sunxi_pcie_host_init(struct sunxi_pcie_port *pp)
+ 		pp->io_base   -= PCIE_CPU_BASE;
+ 	}
+ 
+-	sunxi_allocate_intx_irq_domains(pp);
++	ret = sunxi_allocate_intx_irq_domains(pp);
++	if (ret)
++		return ret;
+ 
+ 	if (pci_msi_enabled() && !pp->has_its) {
+ 		ret = sunxi_allocate_msi_domains(pp);
+ 		if (ret)
+-			return ret;
++			goto err_free_domains;
+ 
+ 		ret = sunxi_pcie_msi_init(pp);
+ 		if (ret)
+-			return ret;
++			goto err_free_domains;
+ 	}
+ 
+ 	if (pp->ops->host_init)
+@@ -519,19 +529,18 @@ static int sunxi_pcie_host_init(struct sunxi_pcie_port *pp)
+ 	bridge->ops = &sunxi_pcie_ops;
+ 
+ 	ret = pci_host_probe(bridge);
+-
+ 	if (ret) {
+-		if (pci_msi_enabled() && !pp->has_its) {
+-			sunxi_pcie_free_msi(pp);
+-		}
+-		sunxi_free_irq_domains(pp);
+-
+ 		dev_err(pp->dev, "Failed to probe host bridge\n");
+-
+-		return ret;
++		if (pci_msi_enabled() && !pp->has_its)
++			sunxi_pcie_free_msi(pp);
++		goto err_free_domains;
+ 	}
+ 
+ 	return 0;
++
++err_free_domains:
++	sunxi_free_irq_domains(pp);
++	return ret;
+ }
+ 
+ void sunxi_pcie_host_setup_rc(struct sunxi_pcie_port *pp)

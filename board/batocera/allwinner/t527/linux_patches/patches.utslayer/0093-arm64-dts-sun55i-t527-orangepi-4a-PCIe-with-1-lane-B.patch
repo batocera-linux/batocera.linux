@@ -1,0 +1,46 @@
+From 9c02c968a2fc5c3354a5147d0a015560e300519c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Sat, 18 Jul 2026 06:01:18 +0200
+Subject: [PATCH 093/143] arm64: dts: sun55i-t527-orangepi-4a: PCIe with 1 lane
+ (BSP datum)
+
+The armbian patch set num-lanes = <2>, but the source of truth (BSP 5.15,
+sun55iw3p1.dtsi line 5066: num-lanes = <1>, without override in
+sun55i-t527-orangepi-4a.dts) says the T527 brings ONE lane out to the M.2;
+the Inno combophy lane is single and muxed with USB3. With 2 lanes the DWC
+core would negotiate a non-existent width. The block indentation is also
+normalized (mixed spaces of the original patch) and the GPIOs are commented
+(PH11 PERST#, PH12 WAKE#).
+---
+ .../boot/dts/allwinner/sun55i-t527-orangepi-4a.dts     | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+index 9cf7a8f46..b91edba00 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -726,15 +726,15 @@ bluetooth {
+ };
+ 
+ &combophy {
+-       resets = <&ccu RST_BUS_PCIE_USB3>;
+-    	phy_use_sel = <0>;
++	resets = <&ccu RST_BUS_PCIE_USB3>;
++	phy_use_sel = <0>; /* 0:PCIE; 1:USB3 */
+ 	status = "okay";
+ };
+ 
+ &pcie {
+-	reset-gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>;
+-	wake-gpios = <&pio 7 12 GPIO_ACTIVE_HIGH>;
+-	num-lanes = <2>;
++	reset-gpios = <&pio 7 11 GPIO_ACTIVE_HIGH>; /* PH11, PERST# */
++	wake-gpios = <&pio 7 12 GPIO_ACTIVE_HIGH>;  /* PH12, WAKE# */
++	num-lanes = <1>;
+ 	clk-freq-100M;
+ 	pcie3v3-supply = <&reg_pcie_vcc3v3>;
+ 	status = "okay";
+-- 
+2.53.0
+

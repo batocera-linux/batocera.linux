@@ -1,0 +1,59 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: a523: add the PWM0 controller and overlay symbols
+
+The A523 PWM0 block is the same IP as the D1 one (sunxi-pwm-v201 in the
+BSP), add it with 16 channels. Build the A527/T527 board DTBs with -@ so
+the header overlays can be applied.
+---
+diff --git a/Documentation/devicetree/bindings/pwm/allwinner,sun20i-d1-pwm.yaml b/Documentation/devicetree/bindings/pwm/allwinner,sun20i-d1-pwm.yaml
+index 306e14a9c..b081673f9 100644
+--- a/Documentation/devicetree/bindings/pwm/allwinner,sun20i-d1-pwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/allwinner,sun20i-d1-pwm.yaml
+@@ -15,7 +15,9 @@ properties:
+     oneOf:
+       - const: allwinner,sun20i-d1-pwm
+       - items:
+-          - const: allwinner,sun50i-r329-pwm
++          - enum:
++              - allwinner,sun50i-r329-pwm
++              - allwinner,sun55i-a523-pwm
+           - const: allwinner,sun20i-d1-pwm
+ 
+   reg:
+diff --git a/arch/arm64/boot/dts/allwinner/Makefile b/arch/arm64/boot/dts/allwinner/Makefile
+index aa21f58a4..77ece5231 100644
+--- a/arch/arm64/boot/dts/allwinner/Makefile
++++ b/arch/arm64/boot/dts/allwinner/Makefile
+@@ -4,6 +4,9 @@ DTC_FLAGS_sun50i-a64-pine64-lts := -@
+ DTC_FLAGS_sun50i-a64-pine64 := -@
+ DTC_FLAGS_sun50i-a64-pine64-plus := -@
+ DTC_FLAGS_sun50i-a64-sopine-baseboard := -@
++DTC_FLAGS_sun55i-a527-cubie-a5e := -@
++DTC_FLAGS_sun55i-t527-avaota-a1 := -@
++DTC_FLAGS_sun55i-t527-orangepi-4a := -@
+ 
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-a64-amarula-relic.dtb
+ dtb-$(CONFIG_ARCH_SUNXI) += sun50i-a64-bananapi-m64.dtb
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
+index 9e153a6ac..3b601c14d 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
+@@ -592,6 +592,18 @@ uart1_rts_cts_pins: uart1-rts-cts-pins {
+ 			};
+ 		};
+ 
++		pwm0: pwm@2000c00 {
++			compatible = "allwinner,sun55i-a523-pwm",
++				     "allwinner,sun20i-d1-pwm";
++			reg = <0x02000c00 0x400>;
++			clocks = <&ccu CLK_BUS_PWM0>, <&osc24M>, <&ccu CLK_APB1>;
++			clock-names = "bus", "hosc", "apb";
++			resets = <&ccu RST_BUS_PWM0>;
++			#pwm-cells = <3>;
++			allwinner,npwms = <16>;
++			status = "disabled";
++		};
++
+ 		ccu: clock-controller@2001000 {
+ 			compatible = "allwinner,sun55i-a523-ccu";
+ 			reg = <0x02001000 0x1000>;

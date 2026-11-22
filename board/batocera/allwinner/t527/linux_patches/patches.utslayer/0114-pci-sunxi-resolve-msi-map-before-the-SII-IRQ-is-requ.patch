@@ -1,0 +1,78 @@
+From 39a91a6a9d14907b47d78ec9acb8c6040df72271 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:46:57 +0200
+Subject: [PATCH 114/143] pci: sunxi: resolve msi-map before the SII IRQ is
+ requested
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+sunxi_pcie_plat_request_irq() gates the "sii" interrupt lookup on
+!pp->has_its, but the field was only assigned later, in
+sunxi_pcie_host_add_port(), from the presence of the "msi-map" DT
+property.  The port structure is zero-allocated, so the guard always
+observed has_its == false: the SII IRQ was requested even on ITS-wired
+designs, and a DT that legitimately omits "sii" (ITS mode) still
+failed probe with -EINVAL -- exactly the case the guard was meant to
+allow.  Commit 509dfc3d68d2 ("pci: sunxi: drop redundant SII IRQ
+lookup outside ITS-mode guard") relied on that guard, and this
+ordering silently defeated its rationale.
+
+Resolve "msi-map" in sunxi_pcie_plat_parse_dts_res(), which runs
+before every consumer of the flag, and drop the late duplicate
+assignment so there is a single point of truth.
+
+No functional change on boards without "msi-map" (such as the
+Orange Pi 4A): has_its is false either way.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 9 +++++++++
+ drivers/pci/pcie-sunxi/pcie-sunxi-rc.c   | 2 --
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index e12393cfc..14cd75328 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -23,6 +23,7 @@
+ #include <linux/of_device.h>
+ #include <linux/pci.h>
+ #include <linux/platform_device.h>
++#include <linux/property.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/resource.h>
+ #include <linux/signal.h>
+@@ -998,6 +999,14 @@ static int sunxi_pcie_plat_parse_dts_res(struct platform_device *pdev, struct su
+ 
+ 	pp->cpu_pcie_addr_quirk = pci->drvdata->cpu_pcie_addr_quirk;
+ 
++	/*
++	 * Resolve the MSI wiring here, before any pp->has_its consumer
++	 * runs: sunxi_pcie_plat_request_irq() gates the "sii" IRQ lookup
++	 * on it and is called before sunxi_pcie_host_add_port(), which
++	 * used to assign it too late for that check to ever see true.
++	 */
++	pp->has_its = device_property_read_bool(&pdev->dev, "msi-map");
++
+ 	ret = sunxi_pcie_plat_clk_get(pdev, pci);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "pcie get clk init failed\n");
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c b/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
+index c3bfe2605..575802e44 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-rc.c
+@@ -820,8 +820,6 @@ int sunxi_pcie_host_add_port(struct sunxi_pcie *pci, struct platform_device *pde
+ 		return -EINVAL;
+ 	}
+ 
+-	pp->has_its = device_property_read_bool(&pdev->dev, "msi-map");
+-
+ 	if (pci_msi_enabled() && !pp->has_its) {
+ 		pp->msi_irq = platform_get_irq_byname(pdev, "msi");
+ 		if (pp->msi_irq < 0)
+-- 
+2.53.0
+

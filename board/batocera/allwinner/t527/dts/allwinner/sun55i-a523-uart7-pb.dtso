@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/dts-v1/;
+/plugin/;
+
+&pio {
+	uart7_pb_pins: uart7-pb-pins {
+		pins = "PB13", "PB14";
+		allwinner,pinmux = <3>;
+		function = "uart7";
+	};
+};
+
+&uart7 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart7_pb_pins>;
+	status = "okay";
+};

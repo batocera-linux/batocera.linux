@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/dts-v1/;
+/plugin/;
+
+/* PWM0 channel 8 on PB4, channels 12 and 13 on PI11 and PI12 */
+&pio {
+	pwm0_pb4_pin: pwm0-pb4-pin {
+		pins = "PB4";
+		allwinner,pinmux = <5>;
+		function = "pwm0";
+	};
+
+	pwm0_pi11_pi12_pins: pwm0-pi11-pi12-pins {
+		pins = "PI11", "PI12";
+		allwinner,pinmux = <4>;
+		function = "pwm0";
+	};
+};
+
+&pwm0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pwm0_pb4_pin>, <&pwm0_pi11_pi12_pins>;
+	status = "okay";
+};

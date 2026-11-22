@@ -1,0 +1,59 @@
+From b0f7b3416dc5f0802b7ef0df61b62729a37d739b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 21 Jul 2026 12:08:30 +0200
+Subject: [PATCH 101/143] pci: sunxi: release the DMA channel on transfer abort
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The DMA IRQ handler released the channel only on the success path
+(sta.done): the abort path (sta.abort) wrote the abort clear bit and
+logged the error but left the channel marked busy (cookie set, bitmap
+claimed).  After the first abort that channel number was permanently
+unobtainable through sunxi_pcie_dma_chan_request() and the controller
+silently lost one DMA channel per abort, eventually running out.
+
+Release the channel on abort as well.  The user completion callback is
+intentionally NOT invoked here -- the buffer did not reach its
+destination and the caller has to be told through its own error path
+rather than getting a spurious "transfer done" callback.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index b811ebfd8..a99399fbf 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -657,11 +657,25 @@ static irqreturn_t sunxi_pcie_##name##_irq_handler				\
+ 	}											  \
+ 												  \
+ 	if (sta.abort & BIT(chn)) {								  \
++		struct sunxi_pci_edma_chan *edma_chan =				  \
++			(dir == PCIE_DMA_WRITE) ? &pci->dma_wr_chn[chn]		  \
++						: &pci->dma_rd_chn[chn];		  \
+ 		clr.abortclr = BIT(chn);							  \
+ 		sunxi_pcie_writel_dbi(pci, PCIE_DMA_OFFSET +					  \
+ 				(dir ? PCIE_DMA_RD_INT_CLEAR : PCIE_DMA_WR_INT_CLEAR), clr.dword);\
+ 		dev_err(pci->dev, "DMA %s channel %d is abort\n",				  \
+ 							dir ? "read":"write", chn);		  \
++		/*								  \
++		 * An aborted transfer left the channel marked busy (cookie set,  \
++		 * bitmap claimed); release it so the channel can be reused.     \
++		 * Without this the channel leaks after the first abort and      \
++		 * sunxi_pcie_dma_chan_request() can never obtain it again.      \
++		 * The user completion callback is NOT invoked here: the buffer  \
++		 * did not reach its destination and the caller must be told via \
++		 * its own error path.					      \
++		 */								  \
++		if (edma_chan->cookie)						  \
++			sunxi_pcie_dma_chan_release(edma_chan, dir);		  \
+ 	}											  \
+ 												  \
+ 	return IRQ_HANDLED;									  \
+-- 
+2.53.0
+

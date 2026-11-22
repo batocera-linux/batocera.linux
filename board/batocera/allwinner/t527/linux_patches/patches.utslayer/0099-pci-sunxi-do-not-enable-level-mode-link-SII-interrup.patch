@@ -1,0 +1,96 @@
+From 44318744713ccbce40d4dcc21871912646350e69 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 21 Jul 2026 12:06:16 +0200
+Subject: [PATCH 099/143] pci: sunxi: do not enable level-mode link SII
+ interrupts
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The SII interrupt line is level-triggered (GIC SPI 117,
+IRQ_TYPE_LEVEL_HIGH) and the SII_INT_1 link-up bits (0xE0C bits 0/1,
+SMLH/RDLH_LINK_UP) read back as live level status, not edge-latched
+events, per the T527 user manual v0.92 §8.13.5.35.
+
+The driver's set_irqmask() enabled those link interrupts at probe by
+writing PCIE_LINK_INT_EN (bits 0/1 = Not Mask) into SII_INT_MASK_1
+(0xE04, §8.13.5.33), and the SII handler then "acknowledged" them in
+irqpending() by clearing the same bits -- i.e. *masking* them again
+(0xE04 is mask, 0:Mask per the manual), not clearing any pending
+status (the W1C status register is SII_INT_1 at 0xE0C, a different
+offset).  The combined effect was "fire the SII IRQ once when the
+link first comes up, then disable it": the very first SII interrupt
+silenced all future link-state events, and because the link bits are
+level status the single "fire" was the start of a permanent IRQ storm
+that irqpending() then quenched by masking.
+
+The driver does not actually consume link-up/down events -- it polls
+link state through sunxi_pcie_host_link_up_status() when it needs to
+-- so enabling those interrupts in the first place is pure overhead
+that the irqpending() workaround existed to suppress.  Drop the
+enable: leave SII_INT_MASK_1 at its power-on default (link bits
+masked), and drop the irqpending() workaround from the SII handler
+since there is now nothing for it to quench.
+
+No other PCIE_INT_ENABLE_CLR / PCIE_LINK_INT_EN consumer remains in
+the driver; the macros are kept in the header in case a future link
+event handler is added.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 29 ++++++++++--------------
+ 1 file changed, 12 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index c273828d0..b811ebfd8 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -393,23 +393,20 @@ void sunxi_pcie_plat_ltssm_disable(struct sunxi_pcie *pcie)
+ }
+ EXPORT_SYMBOL_GPL(sunxi_pcie_plat_ltssm_disable);
+ 
+-static void sunxi_pcie_plat_irqpending(struct sunxi_pcie_port *pp)
+-{
+-	struct sunxi_pcie *pcie = to_sunxi_pcie_from_pp(pp);
+-	u32 val;
+-
+-	val = sunxi_pcie_readl(pcie, PCIE_INT_ENABLE_CLR);
+-	val &= ~PCIE_LINK_INT_EN;
+-	sunxi_pcie_writel(val, pcie, PCIE_INT_ENABLE_CLR);
+-}
+-
+ static void sunxi_pcie_plat_set_irqmask(struct sunxi_pcie *pci)
+ {
+-	u32 val;
+-
+-	val = sunxi_pcie_readl(pci, PCIE_INT_ENABLE_CLR);
+-	val |= PCIE_LINK_INT_EN;
+-	sunxi_pcie_writel(val, pci, PCIE_INT_ENABLE_CLR);
++	/*
++	 * The SII interrupt line is level-triggered (GIC SPI 117,
++	 * IRQ_TYPE_LEVEL_HIGH, see sun55i-a523.dtsi) and the SII_INT_1 link
++	 * bits (0xE0C bits 0/1, SMLH/RDLH_LINK_UP) read back as live level
++	 * status per the T527 user manual v0.92 §8.13.5.35.  The driver does
++	 * not handle link-up/down events in software (it polls link state
++	 * through sunxi_pcie_host_link_up_status() when it needs to), so
++	 * enabling those interrupts would produce a permanent SII IRQ storm
++	 * the moment the link comes up.  Leave them masked at their power-on
++	 * default (SII_INT_MASK_1 0xE04, 0:Mask per §8.13.5.33): no storm, no
++	 * spurious SII IRQs, no workaround needed.
++	 */
+ }
+ 
+ static int sunxi_pcie_plat_power_on(struct sunxi_pcie *pci)
+@@ -612,8 +609,6 @@ static irqreturn_t sunxi_pcie_plat_sii_handler(int irq, void *arg)
+ 
+ 	sunxi_pcie_plat_sii_int0_handler(pp);
+ 
+-	sunxi_pcie_plat_irqpending(pp);
+-
+ 	return IRQ_HANDLED;
+ }
+ 
+-- 
+2.53.0
+

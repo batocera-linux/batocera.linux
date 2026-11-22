@@ -1,0 +1,99 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: t527: reset the PHYs from the MDIO bus
+
+The PHY reset was on the PHY node, which phylib only releases after the
+scan has read the PHY ID. With u-boot leaving the line low the scan found
+nothing ("MDIO device at address 1 is missing") and eth0 never came up.
+Pulse the reset from the MDIO bus before the scan.
+---
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a527-cubie-a5e.dts
+@@ -261,22 +261,26 @@
+ };
+ 
+ &mdio0 {
++	/* bus-level reset, released before the PHY ID is read on the scan */
++	reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
++	reset-delay-us = <10000>;
++	reset-post-delay-us = <150000>;
++
+ 	ext_rgmii0_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+-		reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <150000>;
+ 	};
+ };
+ 
+ &mdio1 {
++	/* bus-level reset, released before the PHY ID is read on the scan */
++	reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
++	reset-delay-us = <10000>;
++	reset-post-delay-us = <150000>;
++
+ 	ext_rgmii1_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+-		reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <150000>;
+ 	};
+ };
+ 
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-avaota-a1.dts
+@@ -155,22 +155,26 @@
+ };
+ 
+ &mdio0 {
++	/* bus-level reset, released before the PHY ID is read on the scan */
++	reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
++	reset-delay-us = <10000>;
++	reset-post-delay-us = <150000>;
++
+ 	ext_rgmii0_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+-		reset-gpios = <&pio 7 8 GPIO_ACTIVE_LOW>; /* PH8 */
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <150000>;
+ 	};
+ };
+ 
+ &mdio1 {
++	/* bus-level reset, released before the PHY ID is read on the scan */
++	reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
++	reset-delay-us = <10000>;
++	reset-post-delay-us = <150000>;
++
+ 	ext_rgmii1_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+-		reset-gpios = <&pio 9 16 GPIO_ACTIVE_LOW>; /* PJ16 */
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <150000>;
+ 	};
+ };
+ 
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -227,13 +227,15 @@
+ };
+ 
+ &mdio1 {
++	/* bus-level reset, released before the PHY ID is read on the scan */
++	reset-gpios = <&pio 8 15 GPIO_ACTIVE_LOW>; /* PI15 */
++	reset-delay-us = <10000>;
++	reset-post-delay-us = <150000>;
++
+ 	ext_rgmii_phy: ethernet-phy@1 {
+ 		compatible = "ethernet-phy-ieee802.3-c22";
+ 		reg = <1>;
+ 		interrupts-extended = <&pio 8 16 IRQ_TYPE_LEVEL_LOW>; /* PI16 */
+-		reset-gpios = <&pio 8 15 GPIO_ACTIVE_LOW>; /* PI15 */
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <150000>;
+ 	};
+ };
+ 
