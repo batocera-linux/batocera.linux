@@ -1,6 +1,8 @@
 #!/bin/sh
 
 export LC_ALL=C
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/var/run}"
+export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-$(getLocalWaylandDisplay)}"
 
 log="/userdata/system/logs/display.log"
 WLR_RANDR="wlr-randr"
