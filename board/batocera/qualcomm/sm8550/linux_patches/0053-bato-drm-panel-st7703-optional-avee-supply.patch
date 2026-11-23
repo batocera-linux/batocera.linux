@@ -1,0 +1,58 @@
+From: Batocera
+Subject: [PATCH] drm/panel: st7703: optional avee supply
+
+The AYANEO Pocket DS lower panel takes its negative rail from the
+SGM3804 neg output. Without a consumer it is switched off as unused.
+---
+--- a/drivers/gpu/drm/panel/panel-sitronix-st7703.c
++++ b/drivers/gpu/drm/panel/panel-sitronix-st7703.c
+@@ -59,6 +59,7 @@
+ 	struct gpio_desc *reset_gpio;
+ 	struct regulator *vcc;
+ 	struct regulator *iovcc;
++	struct regulator *avee;
+ 
+ 	struct dentry *debugfs;
+ 	const struct st7703_panel_desc *desc;
+@@ -810,6 +811,8 @@
+ 	struct st7703 *ctx = panel_to_st7703(panel);
+ 
+ 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
++	if (ctx->avee)
++		regulator_disable(ctx->avee);
+ 	regulator_disable(ctx->iovcc);
+ 	regulator_disable(ctx->vcc);
+ 
+@@ -837,6 +840,16 @@
+ 		return ret;
+ 	}
+ 
++	if (ctx->avee) {
++		ret = regulator_enable(ctx->avee);
++		if (ret < 0) {
++			dev_err(ctx->dev, "Failed to enable avee supply: %d\n", ret);
++			regulator_disable(ctx->vcc);
++			regulator_disable(ctx->iovcc);
++			return ret;
++		}
++	}
++
+ 	/* Give power supplies time to stabilize before deasserting reset. */
+ 	usleep_range(10000, 20000);
+ 
+@@ -969,6 +982,15 @@
+ 		return dev_err_probe(dev, PTR_ERR(ctx->iovcc),
+ 				     "Failed to request iovcc regulator\n");
+ 
++	/* Negative rail of a dual-output panel supply, enabled with vcc. */
++	ctx->avee = devm_regulator_get_optional(dev, "avee");
++	if (IS_ERR(ctx->avee)) {
++		if (PTR_ERR(ctx->avee) != -ENODEV)
++			return dev_err_probe(dev, PTR_ERR(ctx->avee),
++					     "Failed to request avee regulator\n");
++		ctx->avee = NULL;
++	}
++
+ 	ret = drm_of_get_panel_orientation(dsi->dev.of_node, &ctx->orientation);
+ 	if (ret < 0)
+ 		return dev_err_probe(&dsi->dev, ret, "Failed to get orientation\n");

@@ -1,0 +1,17 @@
+From: Batocera
+Subject: [PATCH] backlight: sy7758: make the enable gpio optional
+
+The AYANEO Pocket boards hold the enable line up through pinctrl, and
+the Pocket DS has no enable line at all.
+---
+--- a/drivers/video/backlight/sy7758.c
++++ b/drivers/video/backlight/sy7758.c
+@@ -185,7 +185,7 @@
+ 	fsleep(100);
+ 
+ 	/* Get enable GPIO and set to high */
+-	sydev->gpio = devm_gpiod_get(dev, "enable", GPIOD_OUT_HIGH);
++	sydev->gpio = devm_gpiod_get_optional(dev, "enable", GPIOD_OUT_HIGH);
+ 	if (IS_ERR(sydev->gpio))
+ 		return dev_err_probe(dev, PTR_ERR(sydev->gpio),
+ 				     "failed to get enable GPIO\n");

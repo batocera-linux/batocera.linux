@@ -292,3 +292,13 @@
 	firmware-name = "qcom/sm8550/ayn/odin2portal/aw883xx_acf.bin";
 };
 
+&{/sound} {
+	audio-routing =
+			"IN1_HPHL", "HPHL_OUT",
+			"IN2_HPHR", "HPHR_OUT",
+			"AMIC2", "MIC BIAS2",
+			"TX SWR_INPUT1", "ADC2_OUTPUT",
+			"DMIC3", "MIC BIAS3",
+			"TX SWR_INPUT7", "DMIC3_OUTPUT";
+};
+

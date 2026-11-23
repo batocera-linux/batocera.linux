@@ -1,0 +1,16 @@
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Subject: [PATCH] clk: qcom: gcc-sm8550: let the PCIe 0 GDSC collapse in suspend
+
+---
+diff --git a/drivers/clk/qcom/gcc-sm8550.c b/drivers/clk/qcom/gcc-sm8550.c
+--- a/drivers/clk/qcom/gcc-sm8550.c
++++ b/drivers/clk/qcom/gcc-sm8550.c
+@@ -3003,7 +3003,7 @@
+ 	.pd = {
+ 		.name = "pcie_0_gdsc",
+ 	},
+-	.pwrsts = PWRSTS_RET_ON,
++	.pwrsts = PWRSTS_OFF_ON,
+ 	.flags = VOTABLE | POLL_CFG_GDSCR | RETAIN_FF_ENABLE,
+ };
+ 

@@ -107,3 +107,9 @@
 		};
 	};
 };
+
+/* The fan tach IRQ wakes the SoC from suspend */
+&pwm_fan {
+	/delete-property/ interrupts;
+	/delete-property/ interrupt-parent;
+};

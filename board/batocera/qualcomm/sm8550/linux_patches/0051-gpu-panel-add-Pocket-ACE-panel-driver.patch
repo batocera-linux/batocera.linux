@@ -6,17 +6,17 @@ Subject: [PATCH] gpu: panel: add Pocket ACE panel driver
 ---
  drivers/gpu/drm/panel/Kconfig            |  10 +
  drivers/gpu/drm/panel/Makefile           |   1 +
- drivers/gpu/drm/panel/panel-ar06-4inch.c | 235 +++++++++++++++++++++++
- 3 files changed, 246 insertions(+)
+ drivers/gpu/drm/panel/panel-ar06-4inch.c | 236 +++++++++++++++++++++++
+ 3 files changed, 247 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-ar06-4inch.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index e059b06e0239..11c3d7106d50 100644
+index cbdf7b8f7..af7197315 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -17,6 +17,16 @@ config DRM_PANEL_ABT_Y030XX067A
- 	  Y030XX067A 320x480 3.0" panel as found in the YLM RG-280M, RG-300
- 	  and RG-99 handheld gaming consoles.
+@@ -27,6 +27,16 @@ config DRM_PANEL_ANBERNIC_TD4310
+ 	  TD4310 panel controller such as the ones used on the Anbernic RG
+ 	  Vita Pro.
  
 +config DRM_PANEL_AR06_4INCH
 +	tristate "Ayaneo Pocket ACE panel driver"
@@ -32,22 +32,23 @@ index e059b06e0239..11c3d7106d50 100644
  	tristate "ARM Versatile panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 1bb8ae46b59b..fb145bc6a8df 100644
+index 3b523cf37..eece60cb8 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -1,5 +1,6 @@
+@@ -1,6 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  obj-$(CONFIG_DRM_PANEL_ABT_Y030XX067A) += panel-abt-y030xx067a.o
+ obj-$(CONFIG_DRM_PANEL_ANBERNIC_TD4310) += panel-anbernic-td4310.o
 +obj-$(CONFIG_DRM_PANEL_AR06_4INCH) += panel-ar06-4inch.o
  obj-$(CONFIG_DRM_PANEL_ARM_VERSATILE) += panel-arm-versatile.o
  obj-$(CONFIG_DRM_PANEL_ASUS_Z00T_TM5P5_NT35596) += panel-asus-z00t-tm5p5-n35596.o
  obj-$(CONFIG_DRM_PANEL_AUO_A030JTN01) += panel-auo-a030jtn01.o
 diff --git a/drivers/gpu/drm/panel/panel-ar06-4inch.c b/drivers/gpu/drm/panel/panel-ar06-4inch.c
 new file mode 100644
-index 000000000000..fe76ac9fab2c
+index 000000000..ad7427c85
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ar06-4inch.c
-@@ -0,0 +1,235 @@
+@@ -0,0 +1,236 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright (c) 2025 FIXME
 +// Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
@@ -59,6 +60,7 @@ index 000000000000..fe76ac9fab2c
 +#include <linux/module.h>
 +#include <linux/regulator/consumer.h>
 +
++#include <drm/drm_of.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -229,7 +231,7 @@ index 000000000000..fe76ac9fab2c
 +			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
 +	/* Orientation */
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "failed to get orientation %d\n", ret);
 +		return ret;
@@ -283,6 +285,3 @@ index 000000000000..fe76ac9fab2c
 +MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 +MODULE_DESCRIPTION("DRM driver for ar06 4inch video mode dsi panel");
 +MODULE_LICENSE("GPL");
--- 
-2.50.0
-

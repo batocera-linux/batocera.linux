@@ -1,0 +1,51 @@
+Subject: [PATCH] serial: qcom-geni: mask UART IRQ during system suspend
+
+---
+diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+index a851b8f0e..af314055f 100644
+--- a/drivers/tty/serial/qcom_geni_serial.c
++++ b/drivers/tty/serial/qcom_geni_serial.c
+@@ -2101,9 +2101,12 @@ static int qcom_geni_serial_suspend(struct device *dev)
+ 		geni_icc_set_bw(&port->se);
+ 	}
+ 
++	disable_irq(uport->irq);
+ 	ret = uart_suspend_port(private_data->drv, uport);
+-	if (ret)
++	if (ret) {
++		enable_irq(uport->irq);
+ 		return ret;
++	}
+ 
+ 	/*
+ 	 * When no_console_suspend is set the console must remain active
+@@ -2112,7 +2115,11 @@ static int qcom_geni_serial_suspend(struct device *dev)
+ 	if (!console_suspend_enabled && uart_console(uport))
+ 		return 0;
+ 
+-	return pm_runtime_force_suspend(dev);
++	ret = pm_runtime_force_suspend(dev);
++	if (ret)
++		enable_irq(uport->irq);
++
++	return ret;
+ }
+ 
+ static int qcom_geni_serial_resume(struct device *dev)
+@@ -2124,11 +2131,15 @@ static int qcom_geni_serial_resume(struct device *dev)
+ 
+ 	if (console_suspend_enabled || !uart_console(uport)) {
+ 		ret = pm_runtime_force_resume(dev);
+-		if (ret)
++		if (ret) {
++			enable_irq(uport->irq);
+ 			return ret;
++		}
+ 	}
+ 
+ 	ret = uart_resume_port(private_data->drv, uport);
++
++	enable_irq(uport->irq);
+ 	if (uart_console(uport)) {
+ 		geni_icc_set_tag(&port->se, QCOM_ICC_TAG_ALWAYS);
+ 		geni_icc_set_bw(&port->se);

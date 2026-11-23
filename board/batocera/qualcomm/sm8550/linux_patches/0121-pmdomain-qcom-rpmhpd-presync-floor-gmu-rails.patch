@@ -1,3 +1,4 @@
+From: ROCKNIX <noreply@rocknix.org>
 Subject: [PATCH] pmdomain: qcom: rpmhpd: floor GMU managed rails low pre sync_state
 
 Floor gfx/gmxc at their lowest functional corner until sync_state
@@ -5,46 +6,80 @@ instead: low enough for ACD to calibrate against real levels, alive
 enough for the GMU's first ramp. Skip the retention level so the
 floor is a corner logic can run at.
 
+[Modified: Armada scopes the flags to dedicated SM8550/SM8750
+descriptors so other Qualcomm SoCs keep stock clamp behavior.]
+
 ---
+ drivers/pmdomain/qcom/rpmhpd.c | 24 +++++++++++++++++++++---
+ 1 file changed, 21 insertions(+), 3 deletions(-)
+
 diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
-index 63120e703..68daecc65 100644
+index 907432759..19674bb4d 100644
 --- a/drivers/pmdomain/qcom/rpmhpd.c
 +++ b/drivers/pmdomain/qcom/rpmhpd.c
-@@ -42,6 +42,7 @@
+@@ -41,6 +41,7 @@
+  * @addr:		Resource address as looped up using resource name from
   *			cmd-db
   * @state_synced:	Indicator that sync_state has been invoked for the rpmhpd resource
-  * @skip_retention_level: Indicate that retention level should not be used for the power domain
 + * @presync_floor:	Clamp to the lowest functional corner instead of the highest before sync_state
   */
  struct rpmhpd {
  	struct device	*dev;
-@@ -59,6 +60,7 @@ struct rpmhpd {
+@@ -57,6 +58,7 @@ struct rpmhpd {
+ 	const char	*res_name;
  	u32		addr;
  	bool		state_synced;
- 	bool            skip_retention_level;
 +	bool		presync_floor;
  };
  
  struct rpmhpd_desc {
-@@ -120,6 +122,8 @@ static struct rpmhpd gbx = {
- static struct rpmhpd gfx = {
- 	.pd = { .name = "gfx", },
+@@ -120,6 +122,12 @@ static struct rpmhpd gfx = {
  	.res_name = "gfx.lvl",
-+	.presync_floor = true,
-+	.skip_retention_level = true,
  };
  
++static struct rpmhpd gfx_gmu = {
++	.pd = { .name = "gfx", },
++	.res_name = "gfx.lvl",
++	.presync_floor = true,
++};
++
  static struct rpmhpd gfx1 = {
-@@ -235,6 +239,8 @@ static struct rpmhpd qphy = {
- static struct rpmhpd gmxc = {
- 	.pd = { .name = "gmxc", },
+ 	.pd = { .name = "gfx1", },
+ 	.res_name = "gfx1.lvl",
+@@ -233,6 +241,12 @@ static struct rpmhpd gmxc = {
  	.res_name = "gmxc.lvl",
-+	.presync_floor = true,
-+	.skip_retention_level = true,
  };
  
++static struct rpmhpd gmxc_sm8750 = {
++	.pd = { .name = "gmxc", },
++	.res_name = "gmxc.lvl",
++	.presync_floor = true,
++};
++
  /* Eliza RPMH powerdomains */
-@@ -971,6 +977,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
+ static struct rpmhpd *eliza_rpmhpds[] = {
+ 	[RPMHPD_CX] = &cx,
+@@ -589,7 +603,7 @@ static struct rpmhpd *sm8550_rpmhpds[] = {
+ 	[RPMHPD_CX] = &cx,
+ 	[RPMHPD_CX_AO] = &cx_ao,
+ 	[RPMHPD_EBI] = &ebi,
+-	[RPMHPD_GFX] = &gfx,
++	[RPMHPD_GFX] = &gfx_gmu,
+ 	[RPMHPD_LCX] = &lcx,
+ 	[RPMHPD_LMX] = &lmx,
+ 	[RPMHPD_MMCX] = &mmcx_w_cx_parent,
+@@ -636,8 +650,8 @@ static struct rpmhpd *sm8750_rpmhpds[] = {
+ 	[RPMHPD_CX] = &cx,
+ 	[RPMHPD_CX_AO] = &cx_ao,
+ 	[RPMHPD_EBI] = &ebi,
+-	[RPMHPD_GFX] = &gfx,
+-	[RPMHPD_GMXC] = &gmxc,
++	[RPMHPD_GFX] = &gfx_gmu,
++	[RPMHPD_GMXC] = &gmxc_sm8750,
+ 	[RPMHPD_LCX] = &lcx,
+ 	[RPMHPD_LMX] = &lmx,
+ 	[RPMHPD_MX] = &mx,
+@@ -967,6 +981,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
  
  	if (pd->state_synced) {
  		to_active_sleep(pd, corner, &this_active_corner, &this_sleep_corner);

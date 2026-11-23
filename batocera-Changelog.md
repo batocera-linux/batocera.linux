@@ -85,6 +85,7 @@
 - Mesa3D to 26.3.1
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
+- Qualcomm SM8550 device kernel updated to 7.3.5
 - Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
 - U-Boot updated to 2026.10 on Allwinner H3, H5, H6, H616 and T527 and Rockchip RK3288 and RK3399 devices
