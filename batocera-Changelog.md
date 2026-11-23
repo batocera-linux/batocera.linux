@@ -49,6 +49,7 @@
 ### Changed / Improved
 - AE light gun driver is no longer included, it was seen as a generic mouse like some trackballs
 - Boot logo is drawn on each screen of dual-screen devices with that screen's size and rotation
+- Handheld LED chroma mode cycles through the colours more slowly
 - KICKPI K3B boot splash video uses hardware decoding
 - KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
 - Support file gathers more information for a wider array of devices
