@@ -7,15 +7,15 @@ thanks KancyJoe <kancy2333@outlook.com>
 ---
  drivers/gpu/drm/panel/Kconfig           |  12 +
  drivers/gpu/drm/panel/Makefile          |   1 +
- drivers/gpu/drm/panel/panel-wt0600-2k.c | 336 ++++++++++++++++++++++++
- 3 files changed, 349 insertions(+)
+ drivers/gpu/drm/panel/panel-wt0600-2k.c | 337 ++++++++++++++++++++++++
+ 3 files changed, 350 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-wt0600-2k.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 09b9f7ff9340..1bfb393afc57 100644
+index 2c333da6b..c2f59936f 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -1123,6 +1123,18 @@ config DRM_PANEL_WIDECHIPS_WS2401
+@@ -1478,6 +1478,18 @@ config DRM_PANEL_WIDECHIPS_WS2401
  	  480x800 display controller used in panels such as Samsung LMS380KF01.
  	  This display is used in the Samsung Galaxy Ace 2 GT-I8160 (Codina).
  
@@ -35,10 +35,10 @@ index 09b9f7ff9340..1bfb393afc57 100644
  	tristate "Xinpeng XPP055C272 panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 957555b49996..45dddcc85b65 100644
+index 51354e89d..b4c34b07c 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -113,4 +113,5 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_RM692E5) += panel-visionox-rm692e5.o
+@@ -143,4 +143,5 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_RM692E5) += panel-visionox-rm692e5.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_VTDR6130) += panel-visionox-vtdr6130.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_R66451) += panel-visionox-r66451.o
  obj-$(CONFIG_DRM_PANEL_WIDECHIPS_WS2401) += panel-widechips-ws2401.o
@@ -46,10 +46,10 @@ index 957555b49996..45dddcc85b65 100644
  obj-$(CONFIG_DRM_PANEL_XINPENG_XPP055C272) += panel-xinpeng-xpp055c272.o
 diff --git a/drivers/gpu/drm/panel/panel-wt0600-2k.c b/drivers/gpu/drm/panel/panel-wt0600-2k.c
 new file mode 100644
-index 000000000000..08d9e32f31c0
+index 000000000..b97c7d8a6
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-wt0600-2k.c
-@@ -0,0 +1,336 @@
+@@ -0,0 +1,337 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * DRM driver for wt0600/wt0630 2K dual-DSI video mode panels
@@ -67,6 +67,7 @@ index 000000000000..08d9e32f31c0
 +
 +#include <video/mipi_display.h>
 +
++#include <drm/drm_of.h>
 +#include <drm/drm_connector.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
@@ -132,8 +133,8 @@ index 000000000000..08d9e32f31c0
 +
 +static struct panel_desc wt0630_desc = {
 +	.lanes = 4,
-+	.width_mm = 78,
-+	.height_mm = 140,
++	.width_mm = 79,   /* real Pocket S2 panel width; SteamUI auto-scale fixed upstream, no calibration fudge needed */
++	.height_mm = 140, /* real Pocket S2 panel height */
 +	.mode = &wt0600_mode,  /* wt0600 only has different screen size */
 +	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
 +		      MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_LPM,
@@ -315,7 +316,7 @@ index 000000000000..08d9e32f31c0
 +				     "Failed to register second DSI device\n");
 +
 +	/* Get panel orientation */
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0 && ret != -ENODEV)
 +		return dev_err_probe(dev, ret,
 +				     "Failed to get panel orientation\n");
@@ -386,6 +387,3 @@ index 000000000000..08d9e32f31c0
 +MODULE_AUTHOR("Kancy Joe <kancy2333@outlook.com>");
 +MODULE_DESCRIPTION("DRM driver for wt0600/wt0630 2k video mode dsi panel");
 +MODULE_LICENSE("GPL");
--- 
-2.51.0
-

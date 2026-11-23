@@ -4,18 +4,23 @@ Date: Mon, 27 Oct 2025 16:53:15 +0800
 Subject: [PATCH] drm/panel: Add panel driver for DDIC CH13726A based panels
 
 Signed-off-by: Teguh Sobirin <teguh@sobir.in>
+
+Folded in: wait 120 ms after sleep-out before display-on. The DDIC needs
+it per the MIPI DCS spec; ROCKNIX's SM8250 copy of this driver (the RP5's)
+carries the delay, the SM8550 copy this one comes from did not. From
+Kettle Linux 21-sm8250/0058.
 ---
  drivers/gpu/drm/panel/Kconfig               |  11 +
  drivers/gpu/drm/panel/Makefile              |   1 +
- drivers/gpu/drm/panel/panel-ddic-ch13726a.c | 327 ++++++++++++++++++++
- 3 files changed, 339 insertions(+)
+ drivers/gpu/drm/panel/panel-ddic-ch13726a.c | 328 ++++++++++++++++++++
+ 3 files changed, 340 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-ddic-ch13726a.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 62d2a413d..5a19066a1 100644
+index 9c2edece2..2c333da6b 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -157,6 +157,17 @@ config DRM_PANEL_CHIPONE_ICNA35XX
+@@ -188,6 +188,17 @@ config DRM_PANEL_DDIC_ICNA35XX
  	  around the Chipone ICNA3512 and ICNA3520 display controllers,
  	  such as some Tianma panels used in AYN Odin2 Portal and Thor.
  
@@ -34,12 +39,12 @@ index 62d2a413d..5a19066a1 100644
  	tristate "EBBG FT8719 panel driver"
  	depends on GPIOLIB
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index c47753d5f..badc6677d 100644
+index 16edcb4fe..51354e89d 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
+@@ -17,6 +17,7 @@ obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
  obj-$(CONFIG_DRM_PANEL_BOE_XM91080G) += panel-boe-xm91080g.o
- obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
+ obj-$(CONFIG_DRM_PANEL_DDIC_ICNA35XX) += panel-ddic-icna35xx.o
  obj-$(CONFIG_DRM_PANEL_CHIPWEALTH_CH13726A) += panel-chipwealth-ch13726a.o
 +obj-$(CONFIG_DRM_PANEL_DDIC_CH13726A) += panel-ddic-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
@@ -47,10 +52,10 @@ index c47753d5f..badc6677d 100644
  obj-$(CONFIG_DRM_PANEL_SIMPLE) += panel-simple.o
 diff --git a/drivers/gpu/drm/panel/panel-ddic-ch13726a.c b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
 new file mode 100644
-index 000000000..7f149a2e8
+index 000000000..e8e4b38bb
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ddic-ch13726a.c
-@@ -0,0 +1,326 @@
+@@ -0,0 +1,328 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * DDIC CH13726A MIPI-DSI panel driver
@@ -64,6 +69,7 @@ index 000000000..7f149a2e8
 +#include <linux/of.h>
 +#include <linux/regulator/consumer.h>
 +
++#include <drm/drm_of.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -105,6 +111,7 @@ index 000000000..7f149a2e8
 +	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xb9, 0x00);
 +	
 +	mipi_dsi_dcs_exit_sleep_mode_multi(&dsi_ctx);
++	mipi_dsi_msleep(&dsi_ctx, 120);
 +
 +	mipi_dsi_dcs_set_display_on_multi(&dsi_ctx);
 +
@@ -311,7 +318,7 @@ index 000000000..7f149a2e8
 +		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
 +				     "Failed to get reset-gpios\n");
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
 +		return ret;
@@ -369,7 +376,7 @@ index 000000000..7f149a2e8
 +	.probe = ch13726a_probe,
 +	.remove = ch13726a_remove,
 +	.driver = {
-+		.name = "panel-ch13726a-amoled",
++		.name = "panel-ddic-ch13726a",
 +		.of_match_table = ch13726a_of_match,
 +	},
 +};

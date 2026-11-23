@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# An open playback stream keeps the ADSP awake, so the cards are off across the suspend.
+STATE=/var/run/sleep-audio-profiles
+
+case "$1" in
+    suspend|hibernate)
+        : > "$STATE"
+        pactl list cards | sed -n -e 's/^\tName: //p' -e 's/^\tActive Profile: //p' | while read -r CARD && read -r PROFILE; do
+            [ "$PROFILE" = "off" ] && continue
+            printf '%s\t%s\n' "$CARD" "$PROFILE" >> "$STATE"
+            pactl set-card-profile "$CARD" off
+        done
+        ;;
+    resume|thaw)
+        [ -s "$STATE" ] || exit 0
+        while IFS="$(printf '\t')" read -r CARD PROFILE; do
+            pactl set-card-profile "$CARD" "$PROFILE"
+        done < "$STATE"
+        rm -f "$STATE"
+        ;;
+esac
+
+exit 0

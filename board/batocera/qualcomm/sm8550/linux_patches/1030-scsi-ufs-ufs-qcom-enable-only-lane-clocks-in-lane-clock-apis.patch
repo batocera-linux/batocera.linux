@@ -1,0 +1,136 @@
+From f07317a8d57f382ec505597816271dd72ffa20c7 Mon Sep 17 00:00:00 2001
+From: Nitin Rawat <nitin.rawat@oss.qualcomm.com>
+Date: Wed, 9 Sep 2026 11:09:44 +0530
+Subject: [PATCH] scsi: ufs: ufs-qcom: Enable only lane clocks in lane clock
+ APIs
+
+[ Upstream commit f07317a8d57f382ec505597816271dd72ffa20c7 ]
+
+ufs_qcom_enable_lane_clks() and ufs_qcom_disable_lane_clks() currently
+use clk_bulk_prepare_enable()/clk_bulk_disable_unprepare() on the entire
+host->clks array obtained from devm_clk_bulk_get_all(). This array
+contains all device clocks, not just lane symbol clocks.
+
+Since the UFS core framework already manages the non-lane clocks via the
+setup_clocks callback, the bulk enable/disable in the lane clock APIs
+resulted in duplicate reference count increments on those shared
+clocks. The extra enable counts were never balanced by a corresponding
+disable from the framework's clock gating path, preventing the clock
+reference counts from reaching zero and ultimately blocking CXO shutdown
+during low-power states.
+
+Fix this by restricting the lane clock APIs to only prepare/enable and
+disable/unprepare the three lane symbol clocks (tx_lane0_sync_clk,
+rx_lane0_sync_clk, rx_lane1_sync_clk), leaving the handling of all other
+clocks to the UFS core framework. The lane clocks are now acquired
+individually via devm_clk_get() instead of being looked up in the bulk
+clock array.
+
+Signed-off-by: Nitin Rawat <nitin.rawat@oss.qualcomm.com>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Link: https://patch.msgid.link/20260909053944.2827968-1-nitin.rawat@oss.qualcomm.com
+Signed-off-by: Martin K. Petersen (Oracle) <mkp@kernel.org>
+---
+ drivers/ufs/host/ufs-qcom.c | 47 ++++++++++++++++++++++++++++++-------
+ drivers/ufs/host/ufs-qcom.h |  5 ++--
+ 2 files changed, 42 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/ufs/host/ufs-qcom.c b/drivers/ufs/host/ufs-qcom.c
+index 62396212a..581a38f1f 100644
+--- a/drivers/ufs/host/ufs-qcom.c
++++ b/drivers/ufs/host/ufs-qcom.c
+@@ -347,7 +347,9 @@ static void ufs_qcom_disable_lane_clks(struct ufs_qcom_host *host)
+ 	if (!host->is_lane_clks_enabled)
+ 		return;
+ 
+-	clk_bulk_disable_unprepare(host->num_clks, host->clks);
++	clk_disable_unprepare(host->rx_lane1_sync_clk);
++	clk_disable_unprepare(host->rx_lane0_sync_clk);
++	clk_disable_unprepare(host->tx_lane0_sync_clk);
+ 
+ 	host->is_lane_clks_enabled = false;
+ }
+@@ -356,28 +358,57 @@ static int ufs_qcom_enable_lane_clks(struct ufs_qcom_host *host)
+ {
+ 	int err;
+ 
+-	err = clk_bulk_prepare_enable(host->num_clks, host->clks);
++	if (host->is_lane_clks_enabled)
++		return 0;
++
++	err = clk_prepare_enable(host->tx_lane0_sync_clk);
+ 	if (err)
+-		return err;
++		goto out;
++
++	err = clk_prepare_enable(host->rx_lane0_sync_clk);
++	if (err)
++		goto out_disable_tx_lane0;
++
++	err = clk_prepare_enable(host->rx_lane1_sync_clk);
++	if (err)
++		goto out_disable_rx_lane0;
+ 
+ 	host->is_lane_clks_enabled = true;
+ 
+ 	return 0;
++
++out_disable_rx_lane0:
++	clk_disable_unprepare(host->rx_lane0_sync_clk);
++out_disable_tx_lane0:
++	clk_disable_unprepare(host->tx_lane0_sync_clk);
++out:
++	return err;
+ }
+ 
+ static int ufs_qcom_init_lane_clks(struct ufs_qcom_host *host)
+ {
+-	int err;
+ 	struct device *dev = host->hba->dev;
+ 
+ 	if (has_acpi_companion(dev))
+ 		return 0;
+ 
+-	err = devm_clk_bulk_get_all(dev, &host->clks);
+-	if (err <= 0)
+-		return err;
++	host->tx_lane0_sync_clk = devm_clk_get(dev, "tx_lane0_sync_clk");
++	if (IS_ERR(host->tx_lane0_sync_clk))
++		return dev_err_probe(dev, PTR_ERR(host->tx_lane0_sync_clk),
++				     "failed to get tx_lane0_sync_clk\n");
++
++	host->rx_lane0_sync_clk = devm_clk_get(dev, "rx_lane0_sync_clk");
++	if (IS_ERR(host->rx_lane0_sync_clk))
++		return dev_err_probe(dev, PTR_ERR(host->rx_lane0_sync_clk),
++				     "failed to get rx_lane0_sync_clk\n");
+ 
+-	host->num_clks = err;
++	/* In case of single lane per direction, don't read lane1 clocks */
++	if (host->hba->lanes_per_direction > 1) {
++		host->rx_lane1_sync_clk = devm_clk_get(dev, "rx_lane1_sync_clk");
++		if (IS_ERR(host->rx_lane1_sync_clk))
++			return dev_err_probe(dev, PTR_ERR(host->rx_lane1_sync_clk),
++					     "failed to get rx_lane1_sync_clk\n");
++	}
+ 
+ 	return 0;
+ }
+diff --git a/drivers/ufs/host/ufs-qcom.h b/drivers/ufs/host/ufs-qcom.h
+index e20b3ca50..37f6e88b0 100644
+--- a/drivers/ufs/host/ufs-qcom.h
++++ b/drivers/ufs/host/ufs-qcom.h
+@@ -330,8 +330,9 @@ struct ufs_qcom_host {
+ 	struct phy *generic_phy;
+ 	struct ufs_hba *hba;
+ 	struct ufs_pa_layer_attr dev_req_params;
+-	struct clk_bulk_data *clks;
+-	u32 num_clks;
++	struct clk *tx_lane0_sync_clk;
++	struct clk *rx_lane0_sync_clk;
++	struct clk *rx_lane1_sync_clk;
+ 	bool is_lane_clks_enabled;
+ 
+ 	struct icc_path *icc_ddr;
+-- 
+2.56.0
+

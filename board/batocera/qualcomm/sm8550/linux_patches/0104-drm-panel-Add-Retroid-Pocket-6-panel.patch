@@ -1,8 +1,7 @@
-diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index b34cc48ed..cb166b40b 100644
+
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -1391,6 +1391,15 @@ config DRM_PANEL_VISIONOX_VTDR6130
+@@ -1458,6 +1458,15 @@
  	  Say Y here if you want to enable support for Visionox
  	  VTDR6130 1080x2400 AMOLED DSI panel.
  
@@ -18,11 +17,9 @@ index b34cc48ed..cb166b40b 100644
  config DRM_PANEL_WIDECHIPS_WS2401
  	tristate "Widechips WS2401 DPI panel driver"
  	depends on SPI && GPIOLIB
-diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 64ff51eaa..49ee3a3de 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -134,6 +134,7 @@ obj-$(CONFIG_DRM_PANEL_VISIONOX_G2647FB105) += panel-visionox-g2647fb105.o
+@@ -140,6 +140,7 @@
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM69299) += panel-visionox-rm69299.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_RM692E5) += panel-visionox-rm692e5.o
  obj-$(CONFIG_DRM_PANEL_VISIONOX_VTDR6130) += panel-visionox-vtdr6130.o
@@ -30,9 +27,6 @@ index 64ff51eaa..49ee3a3de 100644
  obj-$(CONFIG_DRM_PANEL_VISIONOX_R66451) += panel-visionox-r66451.o
  obj-$(CONFIG_DRM_PANEL_WIDECHIPS_WS2401) += panel-widechips-ws2401.o
  obj-$(CONFIG_DRM_PANEL_AYANEO_WT0600_2K) += panel-wt0600-2k.o
-diff --git a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
-new file mode 100644
-index 000000000..e9766aba3
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
 @@ -0,0 +1,500 @@
@@ -52,7 +46,7 @@ index 000000000..e9766aba3
 +#include <linux/regulator/consumer.h>
 +
 +#include <video/mipi_display.h>
-+
++#include <drm/drm_of.h>
 +#include <drm/display/drm_dsc.h>
 +#include <drm/display/drm_dsc_helper.h>
 +#include <drm/drm_connector.h>
@@ -181,7 +175,7 @@ index 000000000..e9766aba3
 +					0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
 +	}
 +
-+	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xAA, 0x10);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xF0, 0xAA, 0x10);
 +
 +	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB1, 
 +				0x02, 0x16, 0x00, 0x14, 0x00, 0x1C, 0x00, 0x02,
@@ -487,7 +481,7 @@ index 000000000..e9766aba3
 +	pinfo->dsi = dsi;
 +	mipi_dsi_set_drvdata(dsi, pinfo);
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &pinfo->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &pinfo->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
 +		return ret;

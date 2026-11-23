@@ -6,15 +6,15 @@ Subject: [PATCH] gpu: panel: add Pocket DMG panel driver
 ---
  drivers/gpu/drm/panel/Kconfig            |  10 +
  drivers/gpu/drm/panel/Makefile           |   1 +
- drivers/gpu/drm/panel/panel-ar02-3inch.c | 647 +++++++++++++++++++++++
- 3 files changed, 658 insertions(+)
+ drivers/gpu/drm/panel/panel-ar02-3inch.c | 649 +++++++++++++++++++++++
+ 3 files changed, 660 insertions(+)
  create mode 100644 drivers/gpu/drm/panel/panel-ar02-3inch.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 2b0c4bab517c..86f3c0178805 100644
+index af7197315..087f5a1f8 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -27,6 +27,16 @@ config DRM_PANEL_AR06_4INCH
+@@ -37,6 +37,16 @@ config DRM_PANEL_AR06_4INCH
  	  Say Y here if you want to enable support for Ayaneo Pocket ACE
  	  1080x1620 60hz Panel.
  
@@ -32,12 +32,12 @@ index 2b0c4bab517c..86f3c0178805 100644
  	tristate "ARM Versatile panel driver"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index e2e83723083e..630f5f22e40f 100644
+index eece60cb8..f90777e89 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
+@@ -2,6 +2,7 @@
  obj-$(CONFIG_DRM_PANEL_ABT_Y030XX067A) += panel-abt-y030xx067a.o
+ obj-$(CONFIG_DRM_PANEL_ANBERNIC_TD4310) += panel-anbernic-td4310.o
  obj-$(CONFIG_DRM_PANEL_AR06_4INCH) += panel-ar06-4inch.o
 +obj-$(CONFIG_DRM_PANEL_AR02_3INCH) += panel-ar02-3inch.o
  obj-$(CONFIG_DRM_PANEL_ARM_VERSATILE) += panel-arm-versatile.o
@@ -45,10 +45,10 @@ index e2e83723083e..630f5f22e40f 100644
  obj-$(CONFIG_DRM_PANEL_AUO_A030JTN01) += panel-auo-a030jtn01.o
 diff --git a/drivers/gpu/drm/panel/panel-ar02-3inch.c b/drivers/gpu/drm/panel/panel-ar02-3inch.c
 new file mode 100644
-index 000000000000..67151480f1aa
+index 000000000..c904e47e8
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ar02-3inch.c
-@@ -0,0 +1,648 @@
+@@ -0,0 +1,649 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright (c) 2025 FIXME
 +// Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
@@ -61,6 +61,7 @@ index 000000000000..67151480f1aa
 +#include <linux/module.h>
 +#include <linux/regulator/consumer.h>
 +
++#include <drm/drm_of.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -642,7 +643,7 @@ index 000000000000..67151480f1aa
 +			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
 +	/* Orientation */
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "failed to get orientation %d\n", ret);
 +		return ret;
@@ -697,6 +698,3 @@ index 000000000000..67151480f1aa
 +MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 +MODULE_DESCRIPTION("DRM driver for ar02 395inch video mode dsi panel");
 +MODULE_LICENSE("GPL");
--- 
-2.50.1
-

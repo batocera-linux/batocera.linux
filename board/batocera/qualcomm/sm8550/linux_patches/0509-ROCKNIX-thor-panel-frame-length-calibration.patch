@@ -1,0 +1,210 @@
+drm/panel: icna35xx: allow calibrating the ICNA3520 frame length
+
+The Odin 3 panel's refresh rate is set by the DDIC frame-length word in
+the 0xB3 timing writes; the baked-in constants land measurably off the
+nominal 60/120 Hz on real units. Hoist the frame-length words out of the
+init sequence into per-mode fields with sysfs knobs frame_len_120
+(0x10..0x80) and frame_len_60 (0x770..0x838) on the DSI device, applied
+live when the panel is up and running that rate, and persisted for every
+later init. Defaults are the old constants (0x4C / 0x7D6). The userspace
+calibration (per-device quirk measuring vblank timestamps) writes these.
+
+From ROCKNIX SM8750 0518 (Jacob Cook), rebased onto our 0530-0532 icna35xx
+driver: the live-reprogram guard uses panel.prepared (their tree has a
+local enabled flag ours dropped with .get_brightness).
+
+diff --git a/drivers/gpu/drm/panel/panel-ddic-icna35xx.c b/drivers/gpu/drm/panel/panel-ddic-icna35xx.c
+index ea0b40721..b76a941d8 100644
+--- a/drivers/gpu/drm/panel/panel-ddic-icna35xx.c
++++ b/drivers/gpu/drm/panel/panel-ddic-icna35xx.c
+@@ -34,6 +34,10 @@ struct panel_info {
+ 	struct gpio_desc *reset_gpio;
+ 	struct regulator_bulk_data *supplies;
+ 	struct drm_panel_bl_levels bl_levels;
++
++	int vrefresh;
++	u16 frame_len_120;
++	u16 frame_len_60;
+ };
+ 
+ struct panel_desc {
+@@ -54,6 +58,9 @@ struct panel_desc {
+ 	unsigned int bl_num_interp;
+ 
+ 	struct drm_dsc_config dsc;
++
++	u16 frame_len_120;
++	u16 frame_len_60;
+ };
+ 
+ static const struct regulator_bulk_data panel_supplies[] = {
+@@ -175,6 +182,34 @@ static int icna3512_init_sequence(struct panel_info *pinfo)
+ 	return dsi_ctx.accum_err;
+ }
+ 
++static void icna3520_set_frame_len(struct mipi_dsi_multi_context *dsi_ctx,
++				   struct panel_info *pinfo)
++{
++	u8 payload_120[] = {
++		0xB3,
++		0x00, 0xD8, 0x00, 0x1C,
++		pinfo->frame_len_120 >> 8, pinfo->frame_len_120 & 0xff,
++	};
++	u8 payload_60[] = {
++		0xB3,
++		0x00, 0xDB, 0x00, 0x1C, 0x00, 0x1C, 0x00,
++		0x00, 0xDB, 0x00, 0x1C,
++		pinfo->frame_len_60 >> 8, pinfo->frame_len_60 & 0xff, 0x00,
++	};
++
++	if (pinfo->vrefresh == 120) {
++		mipi_dsi_generic_write_seq_multi(dsi_ctx, 0x48, 0x00);
++		mipi_dsi_generic_write_seq_multi(dsi_ctx, 0x9F, 0x00);
++		mipi_dsi_generic_write_multi(dsi_ctx, payload_120,
++					     sizeof(payload_120));
++	} else {
++		mipi_dsi_generic_write_seq_multi(dsi_ctx, 0x48, 0x10);
++		mipi_dsi_generic_write_seq_multi(dsi_ctx, 0x9F, 0x00);
++		mipi_dsi_generic_write_multi(dsi_ctx, payload_60,
++					     sizeof(payload_60));
++	}
++}
++
+ static int icna3520_init_sequence(struct panel_info *pinfo)
+ {
+ 	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
+@@ -195,19 +230,8 @@ static int icna3520_init_sequence(struct panel_info *pinfo)
+ 
+ 	mipi_dsi_msleep(&dsi_ctx, 120);
+ 
+-	if (cur_vrefresh == 120) {
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x48, 0x00);
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x9F, 0x00);
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB3, 
+-                0x00, 0xD8, 0x00, 0x1C, 0x00, 0x4C);
+-	}
+-	else {
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x48, 0x10);
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x9F, 0x00);
+-		mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB3, 
+-                0x00, 0xDB, 0x00, 0x1C, 0x00, 0x1C, 0x00, 0x00,
+-				0xDB, 0x00, 0x1C, 0x07, 0xD6, 0x00);
+-	}
++	pinfo->vrefresh = cur_vrefresh;
++	icna3520_set_frame_len(&dsi_ctx, pinfo);
+ 
+ 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x9F, 0x01);
+ 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB2, 0x00);
+@@ -528,6 +552,8 @@ static struct panel_desc icna3520_desc = {
+ 	.format = MIPI_DSI_FMT_RGB888,
+ 	.mode_flags =  MIPI_DSI_MODE_NO_EOT_PACKET | MIPI_DSI_CLOCK_NON_CONTINUOUS | MIPI_DSI_MODE_LPM,
+ 	.init_sequence = icna3520_init_sequence,
++	.frame_len_120 = 0x4C,
++	.frame_len_60 = 0x7D6,
+ 	.bl_levels = icna35xx_bl_levels,
+ 	.num_bl_levels = ARRAY_SIZE(icna35xx_bl_levels),
+ 	.bl_num_interp = 32,
+@@ -788,6 +814,86 @@ static struct backlight_device *icna35xx_create_backlight(struct mipi_dsi_device
+ 					      &icna35xx_bl_ops, &props);
+ }
+ 
++static ssize_t icna3520_frame_len_store(struct device *dev, u16 *frame_len,
++					int vrefresh, u16 min, u16 max,
++					const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
++	u16 val;
++	int ret;
++
++	ret = kstrtou16(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	if (val < min || val > max)
++		return -EINVAL;
++
++	*frame_len = val;
++
++	if (!pinfo->panel.prepared || pinfo->vrefresh != vrefresh)
++		return count;
++
++	pinfo->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
++	icna3520_set_frame_len(&dsi_ctx, pinfo);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0x9F, 0x0D);
++	pinfo->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
++
++	if (dsi_ctx.accum_err)
++		return dsi_ctx.accum_err;
++
++	return count;
++}
++
++static ssize_t frame_len_120_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%u\n", pinfo->frame_len_120);
++}
++
++static ssize_t frame_len_120_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return icna3520_frame_len_store(dev, &pinfo->frame_len_120, 120,
++					0x10, 0x80, buf, count);
++}
++static DEVICE_ATTR_RW(frame_len_120);
++
++static ssize_t frame_len_60_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%u\n", pinfo->frame_len_60);
++}
++
++static ssize_t frame_len_60_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return icna3520_frame_len_store(dev, &pinfo->frame_len_60, 60,
++					0x770, 0x838, buf, count);
++}
++static DEVICE_ATTR_RW(frame_len_60);
++
++static struct attribute *icna3520_attrs[] = {
++	&dev_attr_frame_len_120.attr,
++	&dev_attr_frame_len_60.attr,
++	NULL
++};
++
++static const struct attribute_group icna3520_group = {
++	.attrs = icna3520_attrs,
++};
++
+ static int icna35xx_probe(struct mipi_dsi_device *dsi)
+ {
+ 	struct device *dev = &dsi->dev;
+@@ -815,6 +921,16 @@ static int icna35xx_probe(struct mipi_dsi_device *dsi)
+ 
+ 	pinfo->dsi = dsi;
+ 	mipi_dsi_set_drvdata(dsi, pinfo);
++
++	if (pinfo->desc->frame_len_120) {
++		pinfo->frame_len_120 = pinfo->desc->frame_len_120;
++		pinfo->frame_len_60 = pinfo->desc->frame_len_60;
++
++		ret = devm_device_add_group(dev, &icna3520_group);
++		if (ret)
++			return ret;
++	}
++
+ 	ret = drm_of_get_panel_orientation(dev->of_node, &pinfo->orientation);
+ 	if (ret < 0) {
+ 		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);

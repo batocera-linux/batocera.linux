@@ -58,7 +58,7 @@ new file mode 100644
 index 0000000..141da42
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-ar16-4inch.c
-@@ -0,0 +1,401 @@
+@@ -0,0 +1,402 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * DRM driver for the AYANEO Pocket S Mini AR16 panel.
@@ -75,6 +75,7 @@ index 0000000..141da42
 +#include <linux/of.h>
 +#include <linux/regulator/consumer.h>
 +
++#include <drm/drm_of.h>
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
@@ -403,7 +404,7 @@ index 0000000..141da42
 +		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
 +				     "failed to get reset GPIO\n");
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0 && ret != -ENODEV)
 +		return dev_err_probe(dev, ret, "failed to get orientation\n");
 +

@@ -1,0 +1,27 @@
+diff --git a/drivers/input/joystick/rsinput.c b/drivers/input/joystick/rsinput.c
+--- a/drivers/input/joystick/rsinput.c
++++ b/drivers/input/joystick/rsinput.c
+@@ -626,6 +626,15 @@
+     regulator_disable(drv->vdd);
+ }
+ 
++static int rsinput_resume(struct device *dev)
++{
++    struct rsinput_driver *drv = dev_get_drvdata(dev);
++
++    return rsinput_init_commands(drv);
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(rsinput_pm_ops, NULL, rsinput_resume);
++
+ static const struct of_device_id rsinput_of_match[] = {
+     { .compatible = "gamepad,rsinput" },
+     { /* sentinel */ }
+@@ -638,6 +647,7 @@
+     .driver = {
+         .name = "rsinput",
+         .of_match_table = rsinput_of_match,
++        .pm = pm_sleep_ptr(&rsinput_pm_ops),
+     },
+ };
+ 
