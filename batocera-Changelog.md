@@ -34,6 +34,7 @@
 - RPCS3 data move copied symlinked dev_hdd0 folders (e.g. games on another drive) in full, and failed when dev_hdd0 itself was a link
 - SDLPoP was stretched to 16:10 behind its 4:3 bezel
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
+- Support file creation hung when Bluetooth was off, and passwords in the logs folder were not removed
 - System upgrades deleted preshare.sh, postshare.sh and network-connman.config from the boot partition
 - Visual Pinball on Wayland (labwc): the playfield lost keyboard and controller focus to the backglass and needed alt-tab, and the score view was not placed on the third screen
 - Wayland (labwc): a second screen was not placed beside the first unless a display position was set
@@ -50,6 +51,7 @@
 - Boot logo is drawn on each screen of dual-screen devices with that screen's size and rotation
 - KICKPI K3B boot splash video uses hardware decoding
 - KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
+- Support file gathers more information for a wider array of devices
 ### Updated
 - Amiberry to v8.5.0
 - AnyBOR to v0.2.48
