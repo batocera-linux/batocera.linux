@@ -2,10 +2,27 @@
 
 # An open playback stream keeps the ADSP awake, so the cards are off across the suspend.
 STATE=/var/run/sleep-audio-profiles
+VOLUMES=/var/run/sleep-audio-volumes
+
+# alsa_card.X -> alsa_output.X.*, bluez_card.X -> bluez_output.X.*
+restore_profile() {
+    pactl set-card-profile "$1" "$2"
+    for i in 1 2 3 4 5 6 7 8 9 10; do
+        pactl list sinks short | cut -f2 | grep -qF "${1%%_card.*}_output.${1#*_card.}." && return 0
+        sleep 0.2
+    done
+    return 1
+}
 
 case "$1" in
     suspend|hibernate)
         : > "$STATE"
+        : > "$VOLUMES"
+        pactl list sinks short | cut -f2 | while read -r SINK; do
+            VOL=$(pactl get-sink-volume "$SINK" | awk 'NR==1 {print $3}')
+            MUTE=$(pactl get-sink-mute "$SINK" | awk '{print $2}')
+            printf '%s\t%s\t%s\n' "$SINK" "$VOL" "$MUTE" >> "$VOLUMES"
+        done
         pactl list cards | sed -n -e 's/^\tName: //p' -e 's/^\tActive Profile: //p' | while read -r CARD && read -r PROFILE; do
             [ "$PROFILE" = "off" ] && continue
             printf '%s\t%s\n' "$CARD" "$PROFILE" >> "$STATE"
@@ -15,9 +32,16 @@ case "$1" in
     resume|thaw)
         [ -s "$STATE" ] || exit 0
         while IFS="$(printf '\t')" read -r CARD PROFILE; do
-            pactl set-card-profile "$CARD" "$PROFILE"
+            # the sink is sometimes not created on the first try after resume
+            restore_profile "$CARD" "$PROFILE" || { pactl set-card-profile "$CARD" off; restore_profile "$CARD" "$PROFILE"; }
         done < "$STATE"
-        rm -f "$STATE"
+        # the UCM enable sequence resets the hardware volume; an unchanged value is not written back
+        while IFS="$(printf '\t')" read -r SINK VOL MUTE; do
+            pactl set-sink-volume "$SINK" 0
+            pactl set-sink-volume "$SINK" "$VOL"
+            pactl set-sink-mute "$SINK" "$MUTE"
+        done < "$VOLUMES"
+        rm -f "$STATE" "$VOLUMES"
         ;;
 esac
 
