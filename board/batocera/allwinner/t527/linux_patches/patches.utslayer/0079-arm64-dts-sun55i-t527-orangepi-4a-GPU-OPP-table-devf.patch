@@ -1,0 +1,79 @@
+From 293eb6fd0828efad90b8b71aa2f13303ca630d28 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 14 Jul 2026 05:09:01 +0200
+Subject: [PATCH 079/143] arm64: dts: sun55i-t527-orangepi-4a: GPU OPP table
+ (devfreq 150-600 MHz)
+
+The five universal points of the BSP gpu_opp_table (150/200/300/400/600 MHz;
+648+ go by speed-bin and are out). With operating-points-v2 on the gpu node,
+panfrost instantiates devfreq with simple_ondemand: 600 MHz ceiling (+39% over
+the fixed 432 MHz that U-Boot leaves) and drop to 150 MHz at idle.
+
+No voltage scaling: the BSP asks for 0.90V at all points and the vdd-gpu-sys
+rail (AXP717 DCDC2) is fixed at 0.92V, so each OPP declares 0.92V and the
+voltage transition is a no-op. The value cannot be omitted: the OPP core
+rejects a table without opp-microvolt when panfrost attaches the mali-supply
+regulator.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+index c17dfbe..f522453 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -168,6 +168,48 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-always-on;
+ 	};
++
++	/*
++	 * GPU OPPs: the five speed-bin-independent points of the vendor
++	 * table (648 MHz and above are fused off on most bins, so they are
++	 * left out). All of them divide exactly from the fixed pll-periph0
++	 * outputs, so pll-gpu is never touched and powers down after the
++	 * first transition away from the U-Boot state (432 MHz on pll-gpu).
++	 *
++	 * The vendor table asks for 0.90 V on every point; this board's
++	 * vdd-gpu-sys rail (AXP717 DCDC2) is fixed at 0.92 V, so the OPPs
++	 * state 0.92 V and voltage transitions are no-ops. The value cannot
++	 * be dropped: the OPP core rejects a voltage-less table once
++	 * panfrost attaches the mali-supply regulator.
++	 */
++	gpu_opp_table: opp-table-gpu {
++		compatible = "operating-points-v2";
++
++		opp-150000000 {
++			opp-hz = /bits/ 64 <150000000>;
++			opp-microvolt = <920000>;
++		};
++
++		opp-200000000 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <920000>;
++		};
++
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++			opp-microvolt = <920000>;
++		};
++
++		opp-400000000 {
++			opp-hz = /bits/ 64 <400000000>;
++			opp-microvolt = <920000>;
++		};
++
++		opp-600000000 {
++			opp-hz = /bits/ 64 <600000000>;
++			opp-microvolt = <920000>;
++		};
++	};
+ };
+ 
+ &cpu0 {
+@@ -223,6 +265,7 @@
+ 
+ &gpu {
+ 	mali-supply = <&reg_dcdc2>;
++	operating-points-v2 = <&gpu_opp_table>;
+ 	status = "okay";
+ };
+ 

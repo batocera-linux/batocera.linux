@@ -147,7 +147,8 @@ if BR2_PACKAGE_BATOCERA_TARGET_H6		|| \
    BR2_PACKAGE_BATOCERA_TARGET_RK3562		|| \
    BR2_PACKAGE_BATOCERA_TARGET_RK3568		|| \
    BR2_PACKAGE_BATOCERA_TARGET_RK3576		|| \
-   BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+   BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE	|| \
+   BR2_PACKAGE_BATOCERA_TARGET_T527
 	config BR2_PACKAGE_BATOCERA_V4L2_REQUEST
 	bool "target has v4l2 request support"
 	default y
@@ -493,7 +494,8 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
 	select BR2_PACKAGE_RTL8822CS    if BR2_PACKAGE_BATOCERA_TARGET_S905GEN3
 
 	select BR2_PACKAGE_AIC8800_SDIO      if BR2_PACKAGE_BATOCERA_TARGET_RK3568 || \
-	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+	                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE || \
+	                                        BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	select BR2_PACKAGE_AIC8800_USB  if BR2_PACKAGE_BATOCERA_TARGET_QCS6490 || \
                                        BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE || \
@@ -624,8 +626,7 @@ config BR2_PACKAGE_BATOCERA_SYSTEM
         select BR2_PACKAGE_KEROS_LEDS         if BR2_PACKAGE_BATOCERA_TARGET_RK3326
 
 	# bluetooth
-	select BR2_PACKAGE_BRCM_PATCHRAM_PLUS    if BR2_PACKAGE_BATOCERA_TARGET_T527   || \
-												BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
+	select BR2_PACKAGE_BRCM_PATCHRAM_PLUS    if BR2_PACKAGE_BATOCERA_TARGET_RK3588_MAINLINE
 
 	help
 	  Install the batocera.linux system files
@@ -703,7 +704,7 @@ config BR2_TARGET_BATOCERA_IMAGES_DEFINITIONS
 													if BR2_PACKAGE_BATOCERA_TARGET_RK3562
 	default "allwinner/h3/orangepi-pc allwinner/h3/orangepi-one allwinner/h3/orangepi-plus2e allwinner/h3/bananapi-m2-zero allwinner/h3/cha" \
 													if BR2_PACKAGE_BATOCERA_TARGET_H3
-	default "allwinner/t527/orangepi-4a"    if BR2_PACKAGE_BATOCERA_TARGET_T527
+	default "allwinner/t527/orangepi-4a allwinner/t527/radxa-cubie-a5e allwinner/t527/avaota-a1"    if BR2_PACKAGE_BATOCERA_TARGET_T527
 
 	default "rockchip/rk3576/anbernic-rg-vita-pro"    if BR2_PACKAGE_BATOCERA_TARGET_RK3576
 
@@ -2240,6 +2241,7 @@ config BR2_PACKAGE_BATOCERA_LINUX_FIRMWARES
 	# Extra linux firmware
 	select BR2_PACKAGE_EXTRALINUXFIRMWARES			if BR2_PACKAGE_BATOCERA_TARGET_H616		|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_H6		|| \
+								   BR2_PACKAGE_BATOCERA_TARGET_T527		|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_AMLOGIC_ANY	|| \
 								   BR2_PACKAGE_BATOCERA_TARGET_RK3399
 	# orangepi firmware

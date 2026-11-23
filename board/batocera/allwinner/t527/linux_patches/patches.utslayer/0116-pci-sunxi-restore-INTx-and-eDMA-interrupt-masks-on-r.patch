@@ -1,0 +1,74 @@
+From 42791ccf3305df68052131a0135de145a8829e14 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:49:59 +0200
+Subject: [PATCH 116/143] pci: sunxi: restore INTx and eDMA interrupt masks on
+ resume
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+sunxi_pcie_plat_suspend() tears the controller down through
+sunxi_pcie_plat_hw_deinit() (PHY exit, clocks gated, power off), so on
+resume the application registers are back at their power-on defaults,
+which mask everything (SII_INT_MASK0 default 0x0 per the T527 user
+manual, section 8.13.5.32).  The resume path reprogrammed the RC
+config space and the MSI target, but never restored:
+
+ - the INTx enable bits in SII_INT_MASK0 that
+   sunxi_allocate_intx_domains() writes at probe -- endpoints using
+   legacy interrupts lose them silently after a suspend/resume cycle;
+ - the eDMA interrupt unmask (PCIE_DMA_WR/RD_INT_MASK = 0) that
+   sunxi_pcie_plat_dma_init() writes at probe -- any eDMA transfer
+   started after resume would never signal completion.
+
+Mirror both probe-time writes in the RC resume path, after the RC
+setup and before the link is re-established.  The vendor BSP 5.15 has
+the same gap.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index 221ef49b2..a9c87429d 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -1189,6 +1189,7 @@ static int sunxi_pcie_plat_resume(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct sunxi_pcie *pci = platform_get_drvdata(pdev);
+ 	struct sunxi_pcie_port *pp = &pci->pp;
++	u32 val;
+ 	int ret;
+ 
+ 	ret = sunxi_pcie_plat_hw_init(pci);
+@@ -1223,6 +1224,24 @@ static int sunxi_pcie_plat_resume(struct device *dev)
+ 						    upper_32_bits(msi_target));
+ 		}
+ 
++		/*
++		 * Suspend gated the controller clocks (and possibly the
++		 * power domain), so the SII and eDMA interrupt masks are
++		 * back at their power-on default: everything masked.
++		 * Restore what probe programmed, or INTx and eDMA
++		 * completion interrupts stay silently dead after resume:
++		 * - the INTx enables written by
++		 *   sunxi_allocate_intx_domains();
++		 * - the eDMA interrupt unmask written by
++		 *   sunxi_pcie_plat_dma_init().
++		 */
++		val = sunxi_pcie_readl(pci, SII_INT_MASK0);
++		val |= INTX_RX_ASSERT_MASK;
++		sunxi_pcie_writel(val, pci, SII_INT_MASK0);
++
++		sunxi_pcie_writel_dbi(pci, PCIE_DMA_OFFSET + PCIE_DMA_WR_INT_MASK, 0x0);
++		sunxi_pcie_writel_dbi(pci, PCIE_DMA_OFFSET + PCIE_DMA_RD_INT_MASK, 0x0);
++
+ 		sunxi_pcie_host_establish_link(pci);
+ 		sunxi_pcie_host_speed_change(pci, pci->link_gen);
+ 		break;
+-- 
+2.53.0
+

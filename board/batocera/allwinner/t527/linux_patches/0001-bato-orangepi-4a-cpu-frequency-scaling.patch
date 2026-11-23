@@ -1,0 +1,137 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: t527: orangepi-4a: enable CPU frequency scaling
+
+Include the A523 CPU OPP tables and give every CPU its supply, DCDC1 of
+the AXP717 for the little cluster and the dual-phase DCDC1/2 of the AXP323
+for the big cluster, as the Armbian Cubie A5E patch does. Add the same
+thermal backstop, the board is also fanless.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+index 8ac80dd9e..8771f999b 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
++++ b/arch/arm64/boot/dts/allwinner/sun55i-t527-orangepi-4a.dts
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+ 
+ #include "sun55i-a523.dtsi"
++#include "sun55i-a523-cpu-opp.dtsi"
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/leds/common.h>
+@@ -176,6 +177,38 @@ reg_vcc5v: regulator-vcc5v {
+ 	};
+ };
+ 
++&cpu0 {
++	cpu-supply = <&reg_dcdc1>;
++};
++
++&cpu1 {
++	cpu-supply = <&reg_dcdc1>;
++};
++
++&cpu2 {
++	cpu-supply = <&reg_dcdc1>;
++};
++
++&cpu3 {
++	cpu-supply = <&reg_dcdc1>;
++};
++
++&cpu4 {
++	cpu-supply = <&reg_dcdc1_323>;
++};
++
++&cpu5 {
++	cpu-supply = <&reg_dcdc1_323>;
++};
++
++&cpu6 {
++	cpu-supply = <&reg_dcdc1_323>;
++};
++
++&cpu7 {
++	cpu-supply = <&reg_dcdc1_323>;
++};
++
+ &ehci0 {
+ 	status = "okay";
+ };
+@@ -575,3 +608,77 @@ hdmi_out_con: endpoint {
+ &i2s2 {
+ 	status = "okay";
+ };
++
++/*
++ * Thermal backstop for DVFS. The SoC zones only bind cooling to the 90 C
++ * trip (step_wise, no lower limit), which does not hold a fanless board
++ * under sustained all-core load. Add hard floors: at 95 C both clusters
++ * are limited to cooling state 4 or deeper, at 100 C the little cluster
++ * to state 4 and the big cluster to state 7 or deeper. Both clusters are
++ * throttled from either sensor because they share the die.
++ *
++ * The OPP count, and so the cooling max_state, depends on the speed bin.
++ * The smallest tables have max_state 4 (little) and 7 (big), and a map
++ * with a bound above max_state is rejected, so these bounds are the
++ * deepest ones valid for every bin. On speed0 the 100 C floor is
++ * 1008/840 MHz; on the smallest bins it is the lowest OPP (408 MHz).
++ */
++&{/thermal-zones/cpu0-thermal} {
++	trips {
++		cpu0_hot95: cpu-trip-3 {
++			temperature = <95000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++
++		cpu0_hot100: cpu-trip-4 {
++			temperature = <100000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++	};
++
++	cooling-maps {
++		map-hot95 {
++			trip = <&cpu0_hot95>;
++			cooling-device = <&cpu0 4 THERMAL_NO_LIMIT>,
++					 <&cpu4 4 THERMAL_NO_LIMIT>;
++		};
++
++		map-hot100 {
++			trip = <&cpu0_hot100>;
++			cooling-device = <&cpu0 4 THERMAL_NO_LIMIT>,
++					 <&cpu4 7 THERMAL_NO_LIMIT>;
++		};
++	};
++};
++
++&{/thermal-zones/cpu4-thermal} {
++	trips {
++		cpu4_hot95: cpu-trip-3 {
++			temperature = <95000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++
++		cpu4_hot100: cpu-trip-4 {
++			temperature = <100000>;
++			hysteresis = <2000>;
++			type = "passive";
++		};
++	};
++
++	cooling-maps {
++		map-hot95 {
++			trip = <&cpu4_hot95>;
++			cooling-device = <&cpu0 4 THERMAL_NO_LIMIT>,
++					 <&cpu4 4 THERMAL_NO_LIMIT>;
++		};
++
++		map-hot100 {
++			trip = <&cpu4_hot100>;
++			cooling-device = <&cpu0 4 THERMAL_NO_LIMIT>,
++					 <&cpu4 7 THERMAL_NO_LIMIT>;
++		};
++	};
++};

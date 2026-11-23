@@ -1,0 +1,45 @@
+From 51629db13162c539052cdbd7b588b717e7677456 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Wed, 22 Jul 2026 21:06:01 +0200
+Subject: [PATCH 111/143] ASoC: sunxi: sun55i-a523-codec: cancel jack scan work
+ on probe failure
+
+The jack scan delayed work is scheduled from the card machine_init(), which
+runs inside devm_snd_soc_register_card(). The teardown that cancels it is a
+devres action registered only after card registration succeeds, so if the
+card fails to register after machine_init() already scheduled the work, the
+work stays pending and fires ~2s later against freed driver memory
+(regmap/scodec): a use-after-free. Use devm_delayed_work_autocancel() so the
+work is always cancelled on unwind, including that failure window.
+---
+ sound/soc/sunxi/sun55i-a523-codec.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/sound/soc/sunxi/sun55i-a523-codec.c b/sound/soc/sunxi/sun55i-a523-codec.c
+index 2a4ef5db6..c79530be5 100644
+--- a/sound/soc/sunxi/sun55i-a523-codec.c
++++ b/sound/soc/sunxi/sun55i-a523-codec.c
+@@ -21,6 +21,7 @@
+ 
+ #include <linux/clk.h>
+ #include <linux/delay.h>
++#include <linux/devm-helpers.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/input.h>
+ #include <linux/interrupt.h>
+@@ -1459,7 +1460,10 @@ static int sun55i_codec_probe(struct platform_device *pdev)
+ 	/* Jack parameters (OPi4A: level 1, threshold 8, debounce 0) */
+ 	jack = &scodec->jack;
+ 	mutex_init(&jack->lock);
+-	INIT_DELAYED_WORK(&jack->scan_work, sun55i_codec_jack_scan_work);
++	ret = devm_delayed_work_autocancel(dev, &jack->scan_work,
++					   sun55i_codec_jack_scan_work);
++	if (ret)
++		return dev_err_probe(dev, ret, "jack scan work init failed\n");
+ 	jack->first_report = true;
+ 	jack->irq = platform_get_irq_optional(pdev, 0);
+ 	jack->det_level = !device_property_read_bool(dev,
+-- 
+2.53.0
+

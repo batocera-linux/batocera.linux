@@ -72,11 +72,6 @@ case "$1" in
                     /usr/bin/hciattach_opi -n -s 1500000 /dev/ttyBT0 sprd >/dev/null 2>&1 & # specific for certain orangepi boards
                     sleep 2
                 ;;
-                bcm4345c5)
-                    /usr/bin/brcm_patchram_plus --enable_hci --no2bytes --tosleep 200000 \
-                        --baudrate 1500000 --patchram /lib/firmware/BCM4345C5.hcd /dev/ttyAS1 >/dev/null 2>&1 &
-                    sleep 2
-                ;;
                 bcm4345c0)
                     if [ "${BOARD}" = "radxa-zero-3w" ]; then
                         # it's actually an aic8800 chipset
@@ -97,6 +92,10 @@ case "$1" in
                     if [ "${BOARD}" = "coolpi-4b" ]; then
                         rfkill unblock all
                         /usr/bin/hciattach -n /dev/ttyS9 any 1500000 >/dev/null 2>&1 &
+                        sleep 2
+                    elif [ "${BOARD}" = "radxa-cubie-a5e" ] || [ "${BOARD}" = "avaota-a1" ]; then
+                        rfkill unblock all
+                        /usr/bin/hciattach -n /dev/ttyS1 any 1500000 flow nosleep >/dev/null 2>&1 &
                         sleep 2
                     fi
                 ;;

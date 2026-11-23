@@ -1,0 +1,59 @@
+From 471f1d6d4806da7dbb8e4bffd14f0037c01ae927 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 14 Jul 2026 05:09:01 +0200
+Subject: [PATCH 078/143] arm64: dts: sun55i-a523: GPU as a cooling device of
+ its thermal zone
+
+The GPU becomes coolable: #cooling-cells on the gpu node and cooling-map in
+gpu-thermal tying the gpu_hot trip (90C, the BSP gpu_target) to the devfreq
+cooling that panfrost registers when there is an OPP table (contribution 1024,
+BSP literal like the CPU maps).
+
+dynamic-power-coefficient = 1434 comes from the BSP ipa_dvfs
+(mali-simple-power-model, dynamic-coefficient in pW/(Hz*V^2), numerically
+identical unit to the uW/(MHz*V^2) of the mainline binding); with it the
+devfreq cooling Energy Model is registered.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
+index f9303d9..ab1dd14 100644
+--- a/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun55i-a523.dtsi
+@@ -162,6 +162,12 @@
+ 			clock-names = "core", "bus";
+ 			power-domains = <&pck600 PD_GPU>;
+ 			resets = <&ccu RST_BUS_GPU>;
++			/*
++			 * Vendor mali-simple-power-model dynamic-coefficient,
++			 * same unit (pW/Hz/V^2 == uW/MHz/V^2).
++			 */
++			dynamic-power-coefficient = <1434>;
++			#cooling-cells = <2>;
+ 			status = "disabled";
+ 		};
+ 
+@@ -1649,7 +1655,7 @@
+ 					hysteresis = <0>;
+ 				};
+ 
+-				gpu-trip-1 {
++				gpu_hot: gpu-trip-1 {
+ 					temperature = <90000>;
+ 					type = "passive";
+ 					hysteresis = <0>;
+@@ -1661,6 +1667,15 @@
+ 					hysteresis = <0>;
+ 				};
+ 			};
++
++			cooling-maps {
++				map0 {
++					trip = <&gpu_hot>;
++					cooling-device = <&gpu THERMAL_NO_LIMIT
++							  THERMAL_NO_LIMIT>;
++					contribution = <1024>;
++				};
++			};
+ 		};
+ 
+ 		npu-thermal {

@@ -17,13 +17,15 @@ BATOCERA_BINARIES_DIR=$6
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot"     || exit 1
 mkdir -p "${BATOCERA_BINARIES_DIR}/boot/extlinux" || exit 1
 
-"${HOST_DIR}/bin/mkimage" -A arm -O linux -T kernel -C none -a 0X41000000 -e 0X41000000 -n linux -d "${BINARIES_DIR}/Image" "${BATOCERA_BINARIES_DIR}/boot/boot/uImage" || exit 1
-#cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
-cp "${BINARIES_DIR}/uInitrd"      "${BATOCERA_BINARIES_DIR}/boot/boot/uInitrd"      || exit 1
+cp "${BINARIES_DIR}/Image"           "${BATOCERA_BINARIES_DIR}/boot/boot/linux"           || exit 1
+cp "${BINARIES_DIR}/initrd.lz4"      "${BATOCERA_BINARIES_DIR}/boot/boot/initrd.lz4"      || exit 1
 cp "${BINARIES_DIR}/rootfs.squashfs" "${BATOCERA_BINARIES_DIR}/boot/boot/batocera.update" || exit 1
 cp "${BINARIES_DIR}/rufomaculata"    "${BATOCERA_BINARIES_DIR}/boot/boot/rufomaculata.update" || exit 1
 
 cp "${BINARIES_DIR}/sun55i-t527-orangepi-4a.dtb" "${BATOCERA_BINARIES_DIR}/boot/boot/"     || exit 1
+mkdir -p "${BATOCERA_BINARIES_DIR}/boot/boot/overlays" || exit 1
+cp "${BINARIES_DIR}"/sun55i-a523-*.dtbo "${BATOCERA_BINARIES_DIR}/boot/boot/overlays/" || exit 1
 cp "${BOARD_DIR}/boot/extlinux.conf"             "${BATOCERA_BINARIES_DIR}/boot/extlinux/" || exit 1
+cp "${BINARIES_DIR}/uboot-multiboard/orangepi_4a/u-boot-sunxi-with-spl.bin" "${BATOCERA_BINARIES_DIR}/boot/boot/" || exit 1
 
 exit 0

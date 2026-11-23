@@ -1,0 +1,59 @@
+From 906a2b0fd2b050398bce69cb1ff5e02c79b95eb8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:52:14 +0200
+Subject: [PATCH 121/143] phy: allwinner: inno-combophy: undo subsystem init on
+ provider failure
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If devm_of_phy_provider_register() fails, probe returned with the
+sub-system fully brought up by pcie_usb3_sub_system_init(): regulator
+enabled, resets deasserted, clocks prepared and enabled, initialized
+set.  Nothing ever undid that on this path, so the clocks and the
+regulator stayed on forever and the subsequent devm clk_put() ran on
+still-enabled clocks.
+
+Unwind through pcie_usb3_sub_system_exit() before propagating the
+error; it is the exact mirror of the init and already guards against
+double invocation with the initialized flag.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/phy/allwinner/sunxi-inno-combophy.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/phy/allwinner/sunxi-inno-combophy.c b/drivers/phy/allwinner/sunxi-inno-combophy.c
+index ea2495044..4aabb17ff 100644
+--- a/drivers/phy/allwinner/sunxi-inno-combophy.c
++++ b/drivers/phy/allwinner/sunxi-inno-combophy.c
+@@ -1077,8 +1077,10 @@ static int sunxi_combphy_probe(struct platform_device *pdev)
+ 	phy_set_drvdata(combphy->phy, combphy);
+ 
+ 	phy_provider = devm_of_phy_provider_register(dev, sunxi_combphy_xlate);
+-	if (IS_ERR(phy_provider))
+-		return PTR_ERR(phy_provider);
++	if (IS_ERR(phy_provider)) {
++		ret = PTR_ERR(phy_provider);
++		goto err_sub_system_exit;
++	}
+ 
+ 	combphy->pwr_nb.notifier_call = sunxi_inno_combophy_power_event;
+ 	/* register inno power notifier */
+@@ -1089,6 +1091,11 @@ static int sunxi_combphy_probe(struct platform_device *pdev)
+ 	pm_runtime_get_sync(dev);
+ 
+ 	return 0;
++
++err_sub_system_exit:
++	pcie_usb3_sub_system_exit(pdev);
++
++	return ret;
+ }
+ 
+ static void sunxi_combphy_remove(struct platform_device *pdev)
+-- 
+2.53.0
+

@@ -1,0 +1,64 @@
+From d2f9333bea61797c98bf64be880051ff1908d16f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Thu, 16 Jul 2026 00:45:59 +0200
+Subject: [PATCH 084/143] ASoC: sunxi: sun55i-a523-codec: quiesce the jack
+ BEFORE destroying the card
+
+Port audit: devm_add_action_or_reset(quiesce) was registered before
+devm_snd_soc_register_card, and since devres unwinds in LIFO order the real
+teardown was: card (frees the snd_jack/kctls/input) -> free of the IRQ ->
+quiesce. A jack event in that window ran the handler with the IRQ still
+enabled in hardware and called snd_soc_jack_report() over an already-freed
+snd_jack (use-after-free on unbind/rmmod/probe failure).
+
+Fix: register the action AFTER the card (so it runs first in the unwind) and
+sync the in-flight handler with disable_irq() before masking the HMIC block
+enables and cancelling the scan work. Resulting teardown order: quiesce ->
+card -> free IRQ -> regmap/clocks.
+---
+ sound/soc/sunxi/sun55i-a523-codec.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/sound/soc/sunxi/sun55i-a523-codec.c b/sound/soc/sunxi/sun55i-a523-codec.c
+index 2cf3e3cb3..2a4ef5db6 100644
+--- a/sound/soc/sunxi/sun55i-a523-codec.c
++++ b/sound/soc/sunxi/sun55i-a523-codec.c
+@@ -1377,7 +1377,11 @@ static void sun55i_codec_quiesce_jack(void *data)
+ {
+ 	struct sun55i_codec *scodec = data;
+ 
+-	/* stop the jack machinery before the card goes away */
++	/* stop the jack machinery before the card goes away; disable_irq()
++	 * also waits for a threaded handler already in flight
++	 */
++	if (scodec->jack.irq > 0)
++		disable_irq(scodec->jack.irq);
+ 	regmap_update_bits(scodec->regmap, SUNXI_HMIC_CTL,
+ 			   0x1 << JACK_IN_IRQ_EN | 0x1 << JACK_OUT_IRQ_EN |
+ 			   0x1 << MIC_DET_IRQ_EN, 0);
+@@ -1505,16 +1509,15 @@ static int sun55i_codec_probe(struct platform_device *pdev)
+ 
+ 	snd_soc_card_set_drvdata(card, scodec);
+ 
+-	/* make sure the jack work/irq stop before the card is torn down */
+-	ret = devm_add_action_or_reset(dev, sun55i_codec_quiesce_jack, scodec);
+-	if (ret)
+-		return ret;
+-
+ 	ret = devm_snd_soc_register_card(dev, card);
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "card register failed\n");
+ 
+-	return 0;
++	/* devres unwinds in reverse order: registered after the card, this
++	 * action runs FIRST on teardown, so the jack irq/work are quiesced
++	 * while the card (and its snd_jack) is still alive.
++	 */
++	return devm_add_action_or_reset(dev, sun55i_codec_quiesce_jack, scodec);
+ }
+ 
+ static const struct of_device_id sun55i_codec_of_match[] = {
+-- 
+2.53.0
+

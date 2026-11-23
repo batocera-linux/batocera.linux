@@ -1,0 +1,75 @@
+From 7d2817724151105b077e01d0df1fb67bef440504 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:51:26 +0200
+Subject: [PATCH 119/143] pci: sunxi: keep register access ahead of clock
+ gating in remove()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+sunxi_pcie_plat_remove() called sunxi_pcie_plat_hw_deinit() (PHY exit,
+clock gating, power off) first, and only then removed the root bus
+(which issues config accesses), wrote the eDMA masks in
+sunxi_pcie_plat_dma_deinit() and finally cleared the LTSSM enable bit
+-- all MMIO against a register block whose clocks were already gated,
+which on sunxi can stall the interconnect.  It also disabled runtime
+PM before dropping the reference taken at probe.
+
+Reorder the teardown in reverse probe order: remove the port (or EP),
+disable the LTSSM, mask the eDMA interrupts, and only then gate
+clocks/power and release the pm_runtime reference.  The pm_runtime
+reference from probe keeps the power domain up for the whole MMIO
+part.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index 591000dc3..26ca70b0a 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -1145,14 +1145,15 @@ static void sunxi_pcie_plat_remove(struct platform_device *pdev)
+ {
+ 	struct sunxi_pcie *pci = platform_get_drvdata(pdev);
+ 
+-	sunxi_pcie_plat_hw_deinit(pci);
+-
+-	pm_runtime_disable(&pdev->dev);
+-
+-	pm_runtime_put(&pdev->dev);
+-
+-	sunxi_pcie_plat_dma_deinit(pci);
+-
++	/*
++	 * Teardown in reverse probe order, and above all: every step
++	 * that touches controller registers (config accesses while the
++	 * root bus is removed, the LTSSM bit, the eDMA masks) must run
++	 * before sunxi_pcie_plat_hw_deinit() gates the clocks -- MMIO
++	 * against a gated register block can stall the interconnect.
++	 * The pm_runtime reference taken at probe keeps the power
++	 * domain up until the put below.
++	 */
+ 	switch (pci->drvdata->mode) {
+ 	case SUNXI_PCIE_RC_TYPE:
+ 		sunxi_pcie_host_remove_port(pci);
+@@ -1167,6 +1168,13 @@ static void sunxi_pcie_plat_remove(struct platform_device *pdev)
+ 
+ 	sunxi_pcie_plat_ltssm_disable(pci);
+ 
++	sunxi_pcie_plat_dma_deinit(pci);
++
++	sunxi_pcie_plat_hw_deinit(pci);
++
++	pm_runtime_put(&pdev->dev);
++
++	pm_runtime_disable(&pdev->dev);
+ }
+ 
+ #if IS_ENABLED(CONFIG_PM)
+-- 
+2.53.0
+

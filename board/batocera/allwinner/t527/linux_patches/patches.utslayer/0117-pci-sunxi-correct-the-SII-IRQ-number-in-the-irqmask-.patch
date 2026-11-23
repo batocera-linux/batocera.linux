@@ -1,0 +1,38 @@
+From 1e94ef1e2627c702137c966c7fbcf90515ac6a73 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Fri, 24 Jul 2026 18:50:12 +0200
+Subject: [PATCH 117/143] pci: sunxi: correct the SII IRQ number in the irqmask
+ comment
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The comment claimed the SII line is GIC SPI 117.  The device tree
+wires "sii" to GIC_SPI 106 (sun55i-a523.dtsi), and the T527 user
+manual interrupt source table agrees: source 138 "PCIE_SII", i.e.
+SPI 138 - 32 = 106.  The substance of the comment (level-triggered
+line, link bits left masked at their power-on default) is unchanged.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+Co-Authored-By: AI Agent
+---
+ drivers/pci/pcie-sunxi/pcie-sunxi-plat.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+index a9c87429d..591000dc3 100644
+--- a/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
++++ b/drivers/pci/pcie-sunxi/pcie-sunxi-plat.c
+@@ -397,7 +397,7 @@ EXPORT_SYMBOL_GPL(sunxi_pcie_plat_ltssm_disable);
+ static void sunxi_pcie_plat_set_irqmask(struct sunxi_pcie *pci)
+ {
+ 	/*
+-	 * The SII interrupt line is level-triggered (GIC SPI 117,
++	 * The SII interrupt line is level-triggered (GIC SPI 106,
+ 	 * IRQ_TYPE_LEVEL_HIGH, see sun55i-a523.dtsi) and the SII_INT_1 link
+ 	 * bits (0xE0C bits 0/1, SMLH/RDLH_LINK_UP) read back as live level
+ 	 * status per the T527 user manual v0.92 §8.13.5.35.  The driver does
+-- 
+2.53.0
+

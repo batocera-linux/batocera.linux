@@ -1,0 +1,1628 @@
+From 89653766cce5e08a6d62de15ec86a298da82c81a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Wed, 15 Jul 2026 17:04:27 +0200
+Subject: [PATCH 081/143] ASoC: sunxi: new driver for the A523/T527 internal
+ codec (sun55i-a523-codec)
+
+Faithful 6.18 port of the analog codec driver of the Allwinner BSP 5.15
+(bsp/drivers/sound/platform/snd_sun55iw3_codec.c v1.0.12, by huhaoxin
+<huhaoxin@allwinnertech.com>), which is the source of truth for the hardware:
+headphone jack (HPOUT + cpldo 1.2V charge pump), line-out, 3 mic ADCs with a
+shared MICBIAS, external PA via GPIO and jack detection with buttons (HMIC
+block, IRQ GIC_SPI 190).
+
+Translation to the 6.18 frameworks (sun4i-codec.c pattern: a single
+self-contained driver instead of the codec/plat/mach/jack quartet of the BSP):
+ - ASoC codec component with the BSP DAPM widgets/routes (DACL/R in DAC_AN_REG,
+   ADC1-3 in ADC_DIG_CTL, lineout events with L/RMUTE, HPPA_EN, mic PGA+bias
+   with refcount and msleep(240) anti-pop) and the same kcontrols with
+   identical ranges/TLV (DAC/DACL/DACR/ADC1-3 Volume, LINEOUT/HPOUT Gain,
+   ADC1-3 Gain, swaps).
+ - init sequence traced from sunxi_codec_init(): RAMP bit1, DAP master en,
+   cpldo 1.2V, HMIC bias 2.55V, VRP_LDO, ADCDFEN/ADCFDT=2, volume enables and
+   board defaults (== BSP defaults).
+ - PCM via generic dmaengine (FIFOs +0x20/+0x40, mcu_dma req 7, maxburst 4,
+   width per format - like snd_sunxi_pcm of the BSP via
+   snd_hwparams_to_dma_slave_config) instead of the CMA wrapper
+   snd_sunxi_aaudio.
+ - dedicated card with pin-switches (MIC1-3, LINEOUTL/R, HPOUT, SPK) that
+   replicate the routing of the BSP codec_mach node; the PA (BSP pa-pin-0:
+   active high, msleep 0) is a gpiod in the SPK widget.
+ - jack: state machine from snd_sunxi_jack_codec.c (JACK_DET_CODEC) on a
+   threaded IRQ + initial 2s scan with DET_MODE inversion; button thresholds
+   and windows = BSP defaults (threshold 8, hook 0-0, up 2-2, down 4-5,
+   voice 1-1; KEY_MEDIA/VOLUMEUP/VOLUMEDOWN/VOICECOMMAND).
+ - module clock: clk_set_rate(dac/adc, 24.576M or 22.5792M per family); the
+   mainline mcu-ccu (PLL_AUDIO1 SDM) gives the exact rate, without the manual
+   reparent of the BSP (whose 48k branch points at pll_audio0_4x@1083801600,
+   which is not an integer multiple of 24.576M).
+
+Deferred and documented: DRC/HPF (DAP) and their tables, tx-hub, rx-sync,
+ADDA debug loop, SDBP (slow insertion, unused on this board), suspend/resume
+(register dump/echo + SID BIASDATA) and the BG_BUFFER pulse that the BSP gates
+on soc_ver 0/1 (here unconditional, it is harmless).
+---
+ sound/soc/sunxi/Kconfig             |   11 +
+ sound/soc/sunxi/Makefile            |    1 +
+ sound/soc/sunxi/sun55i-a523-codec.c | 1537 +++++++++++++++++++++++++++
+ 3 files changed, 1549 insertions(+)
+ create mode 100644 sound/soc/sunxi/sun55i-a523-codec.c
+
+diff --git a/sound/soc/sunxi/Kconfig b/sound/soc/sunxi/Kconfig
+index 205f422d9..0c9ed3ea1 100644
+--- a/sound/soc/sunxi/Kconfig
++++ b/sound/soc/sunxi/Kconfig
+@@ -38,6 +38,17 @@ config SND_SUN50I_CODEC_ANALOG
+ 	  Say Y or M if you want to add support for the analog controls for
+ 	  the codec embedded in Allwinner A64 SoC.
+ 
++config SND_SUN55I_A523_CODEC
++	tristate "Allwinner sun55i A523/T527 Codec Support"
++	depends on OF
++	depends on (ARM64 && ARCH_SUNXI) || COMPILE_TEST
++	select SND_SOC_GENERIC_DMAENGINE_PCM
++	select REGMAP_MMIO
++	help
++	  Select Y or M to add support for the internal audio codec
++	  (headphones, line-out, mics, speaker amplifier and jack
++	  detection) embedded in the Allwinner A523/T527 SoCs.
++
+ config SND_SUN4I_I2S
+ 	tristate "Allwinner A10 I2S Support"
+ 	select SND_SOC_GENERIC_DMAENGINE_PCM
+diff --git a/sound/soc/sunxi/Makefile b/sound/soc/sunxi/Makefile
+index 4483fe9c9..f9728e2d6 100644
+--- a/sound/soc/sunxi/Makefile
++++ b/sound/soc/sunxi/Makefile
+@@ -7,3 +7,4 @@ obj-$(CONFIG_SND_SUN50I_CODEC_ANALOG) += sun50i-codec-analog.o
+ obj-$(CONFIG_SND_SUN8I_CODEC) += sun8i-codec.o
+ obj-$(CONFIG_SND_SUN8I_ADDA_PR_REGMAP) += sun8i-adda-pr-regmap.o
+ obj-$(CONFIG_SND_SUN50I_DMIC) += sun50i-dmic.o
++obj-$(CONFIG_SND_SUN55I_A523_CODEC) += sun55i-a523-codec.o
+diff --git a/sound/soc/sunxi/sun55i-a523-codec.c b/sound/soc/sunxi/sun55i-a523-codec.c
+new file mode 100644
+index 000000000..2cf3e3cb3
+--- /dev/null
++++ b/sound/soc/sunxi/sun55i-a523-codec.c
+@@ -0,0 +1,1537 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Allwinner sun55i A523/T527 internal audio codec driver
++ *
++ * Faithful mainline port of the Allwinner BSP 5.15 driver
++ * bsp/drivers/sound/platform/snd_sun55iw3_codec.c (v1.0.12) plus the
++ * relevant bits of snd_sunxi_aaudio.c (DMA/FIFO parameters) and
++ * snd_sunxi_jack{,_codec}.c (jack detection state machine).
++ *
++ * Copyright (c) 2022, huhaoxin <huhaoxin@allwinnertech.com> (original BSP)
++ * Copyright (c) 2026, AurealNix port to mainline
++ *
++ * The hardware register programming (routes, gains, init sequences,
++ * jack detection thresholds) is taken verbatim from the BSP, which is
++ * the source of truth for this hardware. The glue (ASoC component,
++ * dmaengine PCM, card creation) follows the mainline sun4i-codec.c
++ * pattern: a single self-contained driver that registers the codec
++ * component, a dummy CPU DAI carrying the DMA data, the generic
++ * dmaengine PCM and its own sound card with pin switches and jack.
++ */
++
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/input.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/ktime.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
++#include <linux/reset.h>
++#include <linux/workqueue.h>
++
++#include <sound/dmaengine_pcm.h>
++#include <sound/jack.h>
++#include <sound/pcm.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
++#include <sound/soc-dapm.h>
++#include <sound/tlv.h>
++
++/*
++ * Register map (BSP snd_sun55iw3_codec.h). Offsets relative to
++ * 0x07110000, block length 0x350 (the BSP declares 0x348 but the last
++ * register SUNXI_POWER_AN_CTL itself sits at 0x348).
++ */
++/* Digital */
++#define SUNXI_DAC_DPC		0x00
++#define SUNXI_DAC_VOL_CTL	0x04
++#define SUNXI_DAC_FIFO_CTL	0x10
++#define SUNXI_DAC_FIFO_STA	0x14
++#define SUNXI_DAC_TXDATA	0x20
++#define SUNXI_DAC_CNT		0x24
++#define SUNXI_DAC_DEBUG		0x28
++#define SUNXI_ADC_FIFO_CTL	0x30
++#define SUNXI_ADC_VOL_CTL1	0x34
++#define SUNXI_ADC_FIFO_STA	0x38
++#define SUNXI_ADC_RXDATA	0x40
++#define SUNXI_ADC_CNT		0x44
++#define SUNXI_ADC_DEBUG		0x4C
++#define SUNXI_ADC_DIG_CTL	0x50
++#define SUNXI_DAC_DAP_CTL	0xF0
++#define SUNXI_ADC_DAP_CTL	0xF8
++#define SUNXI_VERSION		0x2C0
++/* Analog */
++#define SUNXI_ADC1_AN_CTL	0x300
++#define SUNXI_ADC2_AN_CTL	0x304
++#define SUNXI_ADC3_AN_CTL	0x308
++#define SUNXI_DAC_AN_REG	0x310
++#define SUNXI_DAC2_AN_REG	0x314
++#define SUNXI_MICBIAS_AN_CTL	0x318
++#define SUNXI_RAMP		0x31c
++#define SUNXI_BIAS_AN_CTL	0x320
++#define SUNXI_HP_AN_CTL		0x324
++#define SUNXI_HMIC_CTL		0x328
++#define SUNXI_HMIC_STA		0x32C
++#define SUNXI_POWER_AN_CTL	0x348
++#define SUNXI_AUDIO_MAX_REG	SUNXI_POWER_AN_CTL
++
++/* SUNXI_DAC_DPC */
++#define DAC_DIG_EN		31
++#define DVOL			12
++#define HUB_EN			0
++/* SUNXI_DAC_VOL_CTL */
++#define DAC_VOL_SEL		16
++#define DAC_VOL_L		8
++#define DAC_VOL_R		0
++/* SUNXI_DAC_FIFO_CTL */
++#define DAC_FS			29
++#define DAC_FIFO_MODE		24
++#define TX_TRIG_LEVEL		8
++#define DAC_MONO_EN		6
++#define TX_SAMPLE_BITS		5
++#define DAC_DRQ_EN		4
++#define DAC_FIFO_FLUSH		0
++/* SUNXI_DAC_FIFO_STA */
++#define DAC_TXE_INT		3
++#define DAC_TXU_INT		2
++#define DAC_TXO_INT		1
++/* SUNXI_DAC_DEBUG */
++#define DA_SWP			6
++/* SUNXI_ADC_FIFO_CTL */
++#define ADC_FS			29
++#define ADC_DIG_EN		28
++#define ADCFDT			26
++#define ADCDFEN			25
++#define RX_FIFO_MODE		24
++#define RX_SAMPLE_BITS		16
++#define ADC_DRQ_EN		3
++#define ADC_FIFO_FLUSH		0
++/* SUNXI_ADC_VOL_CTL1 */
++#define ADC3_VOL		16
++#define ADC2_VOL		8
++#define ADC1_VOL		0
++/* SUNXI_ADC_FIFO_STA */
++#define ADC_RXA_INT		3
++#define ADC_RXO_INT		1
++/* SUNXI_ADC_DEBUG */
++#define ADC_SWP2		25
++#define ADC_SWP1		24
++/* SUNXI_ADC_DIG_CTL */
++#define ADC3_VOL_EN		17
++#define ADC1_2_VOL_EN		16
++#define ADC_CHANNEL_EN		0
++/* SUNXI_DAC_DAP_CTL */
++#define DDAP_EN			31
++/* SUNXI_ADC_DAP_CTL */
++#define ADAP0_EN		31
++#define ADAP1_EN		27
++/* SUNXI_ADC[123]_AN_CTL (same layout) */
++#define ADCx_EN			31
++#define MICx_PGA_EN		30
++#define ADCx_PGA_GAIN_CTL	8
++/* SUNXI_DAC_AN_REG */
++#define HEADPHONE_GAIN		28
++#define CPLDO_VOLTAGE		24
++#define DACL_EN			15
++#define DACR_EN			14
++#define LINEOUTL_EN		13
++#define LMUTE			12
++#define LINEOUTR_EN		11
++#define RMUTE			10
++#define CPLDO_EN		7
++#define LINEOUT_GAIN		0
++/* SUNXI_MICBIAS_AN_CTL */
++#define SEL_DET_ADC_BF		24
++#define JACK_DET_EN		23
++#define MIC_DET_ADC_EN		20
++#define DET_MODE		18
++#define AUTO_PULL_LOW_EN	17
++#define HMIC_BIAS_EN		15
++#define HMIC_BIAS_SEL		13
++#define MMIC_BIAS_EN		7
++/* SUNXI_BIAS_AN_CTL */
++#define BIASDATA		0
++/* SUNXI_HP_AN_CTL */
++#define HPPA_EN			15
++/* SUNXI_HMIC_CTL */
++#define MDATA_THRESHOLD		16
++#define HMIC_N			6
++#define JACK_OUT_IRQ_EN		2
++#define JACK_IN_IRQ_EN		1
++#define MIC_DET_IRQ_EN		0
++/* SUNXI_HMIC_STA */
++#define HMIC_DATA		8
++#define JACK_OUT_IRQ_STA	4
++#define JACK_IN_IRQ_STA		3
++#define MIC_DET_IRQ_STA		0
++/* SUNXI_POWER_AN_CTL */
++#define VRP_LDO_EN		24
++#define BG_BUFFER_DISABLE	15
++
++/* FIFO data registers feed the MCU DMA (dma1/mcu_dma), request 7 (BSP
++ * codec_plat node: dmas = <&dma1 7>, <&dma1 7>; maxburst 4).
++ */
++#define SUN55I_CODEC_DMA_MAXBURST	4
++
++struct sun55i_codec_jack {
++	struct snd_soc_jack	jack;
++	int			irq;
++
++	/* board parameters (BSP: jack-det-level/threshold/debouce) */
++	bool			det_level;	/* 1 = detect high */
++	unsigned int		det_threshold;
++	unsigned int		det_debounce;
++	/* BSP defaults: hook 0-0, up 2-2, down 4-5, voice 1-1 */
++	unsigned int		key_det_vol[4][2];
++
++	struct mutex		lock;
++	struct delayed_work	scan_work;
++	bool			scan_active;
++	bool			first_report;
++	int			type;
++	int			type_old;
++	unsigned int		hp_det_basedata;
++	time64_t		ts_headset_plugin;
++};
++
++struct sun55i_codec {
++	struct device		*dev;
++	struct regmap		*regmap;
++	struct clk		*clk_bus;
++	struct clk		*clk_dac;
++	struct clk		*clk_adc;
++	struct reset_control	*rst;
++	struct gpio_desc	*gpio_pa;
++
++	/* capture-side refcounting for shared MMIC bias / ADC_DIG_EN
++	 * (BSP struct sunxi_audio_status)
++	 */
++	struct mutex		acf_mutex;
++	bool			mic1;
++	bool			mic2;
++	bool			mic3;
++
++	struct sun55i_codec_jack		jack;
++	struct snd_dmaengine_dai_dma_data	playback_dma_data;
++	struct snd_dmaengine_dai_dma_data	capture_dma_data;
++};
++
++#define SUN55I_CODEC_JACK_MASK	(SND_JACK_HEADSET | SND_JACK_BTN_0 | \
++				 SND_JACK_BTN_1 | SND_JACK_BTN_2 | \
++				 SND_JACK_BTN_3)
++
++static struct sun55i_codec *snd_soc_card_to_codec(struct snd_soc_card *card)
++{
++	return snd_soc_card_get_drvdata(card);
++}
++
++static struct sun55i_codec *dai_to_codec(struct snd_soc_dai *dai)
++{
++	return snd_soc_card_to_codec(dai->component->card);
++}
++
++/*******************************************************************************
++ * DAI ops (BSP sunxi_codec_dai_ops, on the codec DAI like in the BSP)
++ ******************************************************************************/
++
++struct sun55i_codec_rate {
++	unsigned int samplerate;
++	unsigned int rate_bit;
++};
++
++/* BSP sunxi_sample_rate_conv */
++static const struct sun55i_codec_rate sun55i_codec_rates[] = {
++	{ 44100, 0 },
++	{ 48000, 0 },
++	{ 8000, 5 },
++	{ 32000, 1 },
++	{ 22050, 2 },
++	{ 24000, 2 },
++	{ 16000, 3 },
++	{ 11025, 4 },
++	{ 12000, 4 },
++	{ 192000, 6 },
++	{ 96000, 7 },
++};
++
++static int sun55i_codec_dai_startup(struct snd_pcm_substream *substream,
++				    struct snd_soc_dai *dai)
++{
++	struct sun55i_codec *scodec = dai_to_codec(dai);
++	int ret;
++
++	/* The BSP enables both module clocks (and their PLL parents,
++	 * which the CCF propagates for us) on stream startup.
++	 */
++	ret = clk_prepare_enable(scodec->clk_dac);
++	if (ret)
++		return ret;
++	ret = clk_prepare_enable(scodec->clk_adc);
++	if (ret) {
++		clk_disable_unprepare(scodec->clk_dac);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void sun55i_codec_dai_shutdown(struct snd_pcm_substream *substream,
++				      struct snd_soc_dai *dai)
++{
++	struct sun55i_codec *scodec = dai_to_codec(dai);
++
++	clk_disable_unprepare(scodec->clk_adc);
++	clk_disable_unprepare(scodec->clk_dac);
++}
++
++static int sun55i_codec_dai_hw_params(struct snd_pcm_substream *substream,
++				      struct snd_pcm_hw_params *params,
++				      struct snd_soc_dai *dai)
++{
++	struct sun55i_codec *scodec = dai_to_codec(dai);
++	struct regmap *regmap = scodec->regmap;
++	bool playback = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
++	unsigned long freq;
++	int i, ret;
++
++	/*
++	 * Module clock rate: 24.576 MHz for the 48 kHz family, 22.5792 MHz
++	 * for the 44.1 kHz family (BSP machine driver, pll-fs = 1). The
++	 * BSP reparents the clock by hand (with an inconsistent branch for
++	 * the 48k family, see the port notes); in mainline the mcu-ccu
++	 * models the mux and the PLL_AUDIO1 SDM table, so a plain
++	 * clk_set_rate() yields the exact rate. Caveat: PLL_AUDIO1 is
++	 * shared with i2s2 (HDMI audio); playing different rate families
++	 * on both at once will detune whichever stream started first.
++	 */
++	switch (params_rate(params)) {
++	case 11025:
++	case 22050:
++	case 44100:
++		freq = 22579200;
++		break;
++	default:
++		freq = 24576000;
++		break;
++	}
++
++	ret = clk_set_rate(playback ? scodec->clk_dac : scodec->clk_adc, freq);
++	if (ret) {
++		dev_err(scodec->dev, "failed to set module clock to %lu: %d\n",
++			freq, ret);
++		return ret;
++	}
++
++	/* Set bits (BSP sunxi_codec_dai_hw_params) */
++	switch (params_format(params)) {
++	case SNDRV_PCM_FORMAT_S16_LE:
++		if (playback) {
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x3 << DAC_FIFO_MODE,
++					   0x3 << DAC_FIFO_MODE);
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x1 << TX_SAMPLE_BITS,
++					   0x0 << TX_SAMPLE_BITS);
++		} else {
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << RX_FIFO_MODE,
++					   0x1 << RX_FIFO_MODE);
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << RX_SAMPLE_BITS,
++					   0x0 << RX_SAMPLE_BITS);
++		}
++		break;
++	case SNDRV_PCM_FORMAT_S24_LE:
++	case SNDRV_PCM_FORMAT_S32_LE:
++		if (playback) {
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x3 << DAC_FIFO_MODE,
++					   0x0 << DAC_FIFO_MODE);
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x1 << TX_SAMPLE_BITS,
++					   0x1 << TX_SAMPLE_BITS);
++		} else {
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << RX_FIFO_MODE,
++					   0x0 << RX_FIFO_MODE);
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << RX_SAMPLE_BITS,
++					   0x1 << RX_SAMPLE_BITS);
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	/* Set rate */
++	for (i = 0; i < ARRAY_SIZE(sun55i_codec_rates); i++)
++		if (sun55i_codec_rates[i].samplerate == params_rate(params))
++			break;
++	if (i == ARRAY_SIZE(sun55i_codec_rates))
++		return -EINVAL;
++	if (playback) {
++		regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL, 0x7 << DAC_FS,
++				   sun55i_codec_rates[i].rate_bit << DAC_FS);
++	} else {
++		if (params_rate(params) > 48000)
++			return -EINVAL;
++		regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL, 0x7 << ADC_FS,
++				   sun55i_codec_rates[i].rate_bit << ADC_FS);
++	}
++
++	/* Set channels */
++	if (playback)
++		regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++				   0x1 << DAC_MONO_EN,
++				   (params_channels(params) == 1) << DAC_MONO_EN);
++
++	return 0;
++}
++
++static int sun55i_codec_dai_prepare(struct snd_pcm_substream *substream,
++				    struct snd_soc_dai *dai)
++{
++	struct sun55i_codec *scodec = dai_to_codec(dai);
++	struct regmap *regmap = scodec->regmap;
++
++	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
++		regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++				   0x1 << DAC_FIFO_FLUSH, 0x1 << DAC_FIFO_FLUSH);
++		regmap_write(regmap, SUNXI_DAC_FIFO_STA,
++			     0x1 << DAC_TXE_INT | 0x1 << DAC_TXU_INT |
++			     0x1 << DAC_TXO_INT);
++		regmap_write(regmap, SUNXI_DAC_CNT, 0);
++	} else {
++		regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++				   0x1 << ADC_FIFO_FLUSH, 0x1 << ADC_FIFO_FLUSH);
++		regmap_write(regmap, SUNXI_ADC_FIFO_STA,
++			     0x1 << ADC_RXA_INT | 0x1 << ADC_RXO_INT);
++		regmap_write(regmap, SUNXI_ADC_CNT, 0);
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_dai_trigger(struct snd_pcm_substream *substream,
++				    int cmd, struct snd_soc_dai *dai)
++{
++	struct sun55i_codec *scodec = dai_to_codec(dai);
++	struct regmap *regmap = scodec->regmap;
++	bool playback = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
++
++	/* Note: the BSP additionally toggles the speaker PA GPIO on
++	 * PAUSE_PUSH/RELEASE; in this port the PA is owned exclusively
++	 * by the SPK DAPM widget.
++	 */
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_START:
++	case SNDRV_PCM_TRIGGER_RESUME:
++	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
++		if (playback)
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x1 << DAC_DRQ_EN, 0x1 << DAC_DRQ_EN);
++		else
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << ADC_DRQ_EN, 0x1 << ADC_DRQ_EN);
++		break;
++	case SNDRV_PCM_TRIGGER_STOP:
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
++		if (playback)
++			regmap_update_bits(regmap, SUNXI_DAC_FIFO_CTL,
++					   0x1 << DAC_DRQ_EN, 0x0 << DAC_DRQ_EN);
++		else
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << ADC_DRQ_EN, 0x0 << ADC_DRQ_EN);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct snd_soc_dai_ops sun55i_codec_dai_ops = {
++	.startup	= sun55i_codec_dai_startup,
++	.shutdown	= sun55i_codec_dai_shutdown,
++	.hw_params	= sun55i_codec_dai_hw_params,
++	.prepare	= sun55i_codec_dai_prepare,
++	.trigger	= sun55i_codec_dai_trigger,
++};
++
++/* Rates present in the BSP conversion table only (no 64k/88.2k/176.4k) */
++#define SUN55I_CODEC_PB_RATES	(SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_11025 | \
++				 SNDRV_PCM_RATE_12000 | SNDRV_PCM_RATE_16000 | \
++				 SNDRV_PCM_RATE_22050 | SNDRV_PCM_RATE_24000 | \
++				 SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | \
++				 SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_96000 | \
++				 SNDRV_PCM_RATE_192000)
++#define SUN55I_CODEC_CAP_RATES	(SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_11025 | \
++				 SNDRV_PCM_RATE_12000 | SNDRV_PCM_RATE_16000 | \
++				 SNDRV_PCM_RATE_22050 | SNDRV_PCM_RATE_24000 | \
++				 SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | \
++				 SNDRV_PCM_RATE_48000)
++#define SUN55I_CODEC_FORMATS	(SNDRV_PCM_FMTBIT_S16_LE | \
++				 SNDRV_PCM_FMTBIT_S24_LE | \
++				 SNDRV_PCM_FMTBIT_S32_LE)
++
++static struct snd_soc_dai_driver sun55i_codec_dai = {
++	.name = "Codec",
++	.playback = {
++		.stream_name	= "Playback",
++		.channels_min	= 1,
++		.channels_max	= 2,
++		.rates		= SUN55I_CODEC_PB_RATES,
++		.formats	= SUN55I_CODEC_FORMATS,
++	},
++	.capture = {
++		.stream_name	= "Capture",
++		.channels_min	= 1,
++		.channels_max	= 3,
++		.rates		= SUN55I_CODEC_CAP_RATES,
++		.formats	= SUN55I_CODEC_FORMATS,
++	},
++	.ops = &sun55i_codec_dai_ops,
++};
++
++/*******************************************************************************
++ * Controls (BSP sunxi_codec_controls, same names/ranges)
++ ******************************************************************************/
++
++static const DECLARE_TLV_DB_SCALE(sun55i_codec_dac_vol_tlv, -7424, 116, 0);
++static const DECLARE_TLV_DB_SCALE(sun55i_codec_dac_lr_vol_tlv, -11925, 75, 1);
++static const DECLARE_TLV_DB_SCALE(sun55i_codec_adc_vol_tlv, -11925, 75, 1);
++static const DECLARE_TLV_DB_SCALE(sun55i_codec_hpout_gain_tlv, -4200, 600, 1);
++static const DECLARE_TLV_DB_SCALE(sun55i_codec_adc_gain_tlv, 0, 100, 0);
++static const DECLARE_TLV_DB_RANGE(sun55i_codec_lineout_gain_tlv,
++	0, 1, TLV_DB_SCALE_ITEM(0, 0, 1),
++	2, 31, TLV_DB_SCALE_ITEM(-4350, 150, 1)
++);
++
++static const char * const sun55i_codec_switch_text[] = { "Off", "On" };
++static SOC_ENUM_SINGLE_DECL(sun55i_codec_dac_swap_enum, SUNXI_DAC_DEBUG,
++			    DA_SWP, sun55i_codec_switch_text);
++static SOC_ENUM_SINGLE_DECL(sun55i_codec_adc12_swap_enum, SUNXI_ADC_DEBUG,
++			    ADC_SWP1, sun55i_codec_switch_text);
++static SOC_ENUM_SINGLE_DECL(sun55i_codec_adc34_swap_enum, SUNXI_ADC_DEBUG,
++			    ADC_SWP2, sun55i_codec_switch_text);
++
++static const struct snd_kcontrol_new sun55i_codec_controls[] = {
++	/* ADC/DAC Swap */
++	SOC_ENUM("DACL DACR Swap", sun55i_codec_dac_swap_enum),
++	SOC_ENUM("ADC1 ADC2 Swap", sun55i_codec_adc12_swap_enum),
++	SOC_ENUM("ADC3 ADC4 Swap", sun55i_codec_adc34_swap_enum),
++
++	/* Volume - digital */
++	SOC_SINGLE_TLV("DAC Volume", SUNXI_DAC_DPC, DVOL, 0x3F, 1,
++		       sun55i_codec_dac_vol_tlv),
++	SOC_SINGLE_TLV("DACL Volume", SUNXI_DAC_VOL_CTL, DAC_VOL_L, 0xFF, 0,
++		       sun55i_codec_dac_lr_vol_tlv),
++	SOC_SINGLE_TLV("DACR Volume", SUNXI_DAC_VOL_CTL, DAC_VOL_R, 0xFF, 0,
++		       sun55i_codec_dac_lr_vol_tlv),
++	SOC_SINGLE_TLV("ADC1 Volume", SUNXI_ADC_VOL_CTL1, ADC1_VOL, 0xFF, 0,
++		       sun55i_codec_adc_vol_tlv),
++	SOC_SINGLE_TLV("ADC2 Volume", SUNXI_ADC_VOL_CTL1, ADC2_VOL, 0xFF, 0,
++		       sun55i_codec_adc_vol_tlv),
++	SOC_SINGLE_TLV("ADC3 Volume", SUNXI_ADC_VOL_CTL1, ADC3_VOL, 0xFF, 0,
++		       sun55i_codec_adc_vol_tlv),
++
++	/* Gain - analog */
++	SOC_SINGLE_TLV("LINEOUT Gain", SUNXI_DAC_AN_REG, LINEOUT_GAIN, 0x1F, 0,
++		       sun55i_codec_lineout_gain_tlv),
++	SOC_SINGLE_TLV("HPOUT Gain", SUNXI_DAC_AN_REG, HEADPHONE_GAIN, 0x7, 1,
++		       sun55i_codec_hpout_gain_tlv),
++	SOC_SINGLE_TLV("ADC1 Gain", SUNXI_ADC1_AN_CTL, ADCx_PGA_GAIN_CTL,
++		       0x1F, 0, sun55i_codec_adc_gain_tlv),
++	SOC_SINGLE_TLV("ADC2 Gain", SUNXI_ADC2_AN_CTL, ADCx_PGA_GAIN_CTL,
++		       0x1F, 0, sun55i_codec_adc_gain_tlv),
++	SOC_SINGLE_TLV("ADC3 Gain", SUNXI_ADC3_AN_CTL, ADCx_PGA_GAIN_CTL,
++		       0x1F, 0, sun55i_codec_adc_gain_tlv),
++};
++
++/*******************************************************************************
++ * DAPM (BSP sunxi_codec_dapm_widgets/routes + codec_mach routing)
++ ******************************************************************************/
++
++static int sun55i_codec_playback_event(struct snd_soc_dapm_widget *w,
++				       struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		regmap_update_bits(scodec->regmap, SUNXI_DAC_DPC,
++				   0x1 << DAC_DIG_EN, 0x1 << DAC_DIG_EN);
++		break;
++	case SND_SOC_DAPM_POST_PMD:
++		regmap_update_bits(scodec->regmap, SUNXI_DAC_DPC,
++				   0x1 << DAC_DIG_EN, 0x0 << DAC_DIG_EN);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_lineoutl_event(struct snd_soc_dapm_widget *w,
++				       struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++	struct regmap *regmap = scodec->regmap;
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LMUTE, 0x1 << LMUTE);
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LINEOUTL_EN, 0x1 << LINEOUTL_EN);
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LINEOUTL_EN, 0x0 << LINEOUTL_EN);
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LMUTE, 0x0 << LMUTE);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_lineoutr_event(struct snd_soc_dapm_widget *w,
++				       struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++	struct regmap *regmap = scodec->regmap;
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << RMUTE, 0x1 << RMUTE);
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LINEOUTR_EN, 0x1 << LINEOUTR_EN);
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << LINEOUTR_EN, 0x0 << LINEOUTR_EN);
++		regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++				   0x1 << RMUTE, 0x0 << RMUTE);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_spk_event(struct snd_soc_dapm_widget *w,
++				  struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	/* BSP pa-pin config for this board: active high, msleep 0 */
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		gpiod_set_value_cansleep(scodec->gpio_pa, 1);
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		gpiod_set_value_cansleep(scodec->gpio_pa, 0);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_hpout_event(struct snd_soc_dapm_widget *w,
++				    struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	switch (event) {
++	case SND_SOC_DAPM_POST_PMU:
++		regmap_update_bits(scodec->regmap, SUNXI_HP_AN_CTL,
++				   0x1 << HPPA_EN, 0x1 << HPPA_EN);
++		break;
++	case SND_SOC_DAPM_PRE_PMD:
++		regmap_update_bits(scodec->regmap, SUNXI_HP_AN_CTL,
++				   0x1 << HPPA_EN, 0x0 << HPPA_EN);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++/*
++ * The three mic events share the main mic bias and the ADC digital
++ * enable, refcounted with the acf mutex exactly like the BSP.
++ */
++static int sun55i_codec_mic_event(struct snd_soc_dapm_widget *w,
++				  struct snd_kcontrol *k, int event,
++				  unsigned int an_reg, bool *self,
++				  bool *other1, bool *other2)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++	struct regmap *regmap = scodec->regmap;
++
++	switch (event) {
++	case SND_SOC_DAPM_PRE_PMU:
++		regmap_update_bits(regmap, an_reg,
++				   0x1 << MICx_PGA_EN, 0x1 << MICx_PGA_EN);
++		regmap_update_bits(regmap, an_reg,
++				   0x1 << ADCx_EN, 0x1 << ADCx_EN);
++		mutex_lock(&scodec->acf_mutex);
++		*self = true;
++		if (!*other1 && !*other2) {
++			regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++					   0x1 << MMIC_BIAS_EN,
++					   0x1 << MMIC_BIAS_EN);
++			/* BSP: delay to avoid pop recording at the
++			 * beginning; adc fifo delay time must not be
++			 * less than 20ms.
++			 */
++			msleep(240);
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << ADC_DIG_EN,
++					   0x1 << ADC_DIG_EN);
++		}
++		mutex_unlock(&scodec->acf_mutex);
++		break;
++	case SND_SOC_DAPM_POST_PMD:
++		mutex_lock(&scodec->acf_mutex);
++		*self = false;
++		if (!*other1 && !*other2) {
++			regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++					   0x1 << ADC_DIG_EN,
++					   0x0 << ADC_DIG_EN);
++			regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++					   0x1 << MMIC_BIAS_EN,
++					   0x0 << MMIC_BIAS_EN);
++		}
++		mutex_unlock(&scodec->acf_mutex);
++		regmap_update_bits(regmap, an_reg,
++				   0x1 << ADCx_EN, 0x0 << ADCx_EN);
++		regmap_update_bits(regmap, an_reg,
++				   0x1 << MICx_PGA_EN, 0x0 << MICx_PGA_EN);
++		break;
++	default:
++		break;
++	}
++
++	return 0;
++}
++
++static int sun55i_codec_mic1_event(struct snd_soc_dapm_widget *w,
++				   struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	return sun55i_codec_mic_event(w, k, event, SUNXI_ADC1_AN_CTL,
++				      &scodec->mic1, &scodec->mic2,
++				      &scodec->mic3);
++}
++
++static int sun55i_codec_mic2_event(struct snd_soc_dapm_widget *w,
++				   struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	return sun55i_codec_mic_event(w, k, event, SUNXI_ADC2_AN_CTL,
++				      &scodec->mic2, &scodec->mic1,
++				      &scodec->mic3);
++}
++
++static int sun55i_codec_mic3_event(struct snd_soc_dapm_widget *w,
++				   struct snd_kcontrol *k, int event)
++{
++	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	return sun55i_codec_mic_event(w, k, event, SUNXI_ADC3_AN_CTL,
++				      &scodec->mic3, &scodec->mic1,
++				      &scodec->mic2);
++}
++
++static const struct snd_soc_dapm_widget sun55i_codec_dapm_widgets[] = {
++	SND_SOC_DAPM_AIF_IN_E("DACL", "Playback", 0, SUNXI_DAC_AN_REG,
++			      DACL_EN, 0, sun55i_codec_playback_event,
++			      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
++	SND_SOC_DAPM_AIF_IN_E("DACR", "Playback", 0, SUNXI_DAC_AN_REG,
++			      DACR_EN, 0, sun55i_codec_playback_event,
++			      SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
++	SND_SOC_DAPM_AIF_OUT("ADC1", "Capture", 0, SUNXI_ADC_DIG_CTL,
++			     ADC_CHANNEL_EN + 0, 0),
++	SND_SOC_DAPM_AIF_OUT("ADC2", "Capture", 0, SUNXI_ADC_DIG_CTL,
++			     ADC_CHANNEL_EN + 1, 0),
++	SND_SOC_DAPM_AIF_OUT("ADC3", "Capture", 0, SUNXI_ADC_DIG_CTL,
++			     ADC_CHANNEL_EN + 2, 0),
++
++	SND_SOC_DAPM_OUTPUT("LINEOUTLP_PIN"),
++	SND_SOC_DAPM_OUTPUT("LINEOUTLN_PIN"),
++	SND_SOC_DAPM_OUTPUT("LINEOUTRP_PIN"),
++	SND_SOC_DAPM_OUTPUT("LINEOUTRN_PIN"),
++	SND_SOC_DAPM_OUTPUT("HPOUTL_PIN"),
++	SND_SOC_DAPM_OUTPUT("HPOUTR_PIN"),
++	SND_SOC_DAPM_INPUT("MIC1P_PIN"),
++	SND_SOC_DAPM_INPUT("MIC1N_PIN"),
++	SND_SOC_DAPM_INPUT("MIC2P_PIN"),
++	SND_SOC_DAPM_INPUT("MIC2N_PIN"),
++	SND_SOC_DAPM_INPUT("MIC3P_PIN"),
++	SND_SOC_DAPM_INPUT("MIC3N_PIN"),
++
++	SND_SOC_DAPM_LINE("LINEOUTL", sun55i_codec_lineoutl_event),
++	SND_SOC_DAPM_LINE("LINEOUTR", sun55i_codec_lineoutr_event),
++	SND_SOC_DAPM_SPK("SPK", sun55i_codec_spk_event),
++	SND_SOC_DAPM_HP("HPOUT", sun55i_codec_hpout_event),
++	SND_SOC_DAPM_MIC("MIC1", sun55i_codec_mic1_event),
++	SND_SOC_DAPM_MIC("MIC2", sun55i_codec_mic2_event),
++	SND_SOC_DAPM_MIC("MIC3", sun55i_codec_mic3_event),
++};
++
++/* BSP codec routes + codec_mach soundcard-mach,routing merged here */
++static const struct snd_soc_dapm_route sun55i_codec_dapm_routes[] = {
++	/* DAC -> LINEOUT/HPOUT pins */
++	{ "LINEOUTLP_PIN", NULL, "DACL" },
++	{ "LINEOUTLN_PIN", NULL, "DACL" },
++	{ "LINEOUTRP_PIN", NULL, "DACR" },
++	{ "LINEOUTRN_PIN", NULL, "DACR" },
++	{ "HPOUTL_PIN", NULL, "DACL" },
++	{ "HPOUTR_PIN", NULL, "DACR" },
++
++	/* MIC pins -> ADC */
++	{ "ADC1", NULL, "MIC1P_PIN" },
++	{ "ADC1", NULL, "MIC1N_PIN" },
++	{ "ADC2", NULL, "MIC2P_PIN" },
++	{ "ADC2", NULL, "MIC2N_PIN" },
++	{ "ADC3", NULL, "MIC3P_PIN" },
++	{ "ADC3", NULL, "MIC3N_PIN" },
++
++	/* machine-level routing (BSP codec_mach node) */
++	{ "MIC1P_PIN", NULL, "MIC1" },
++	{ "MIC1N_PIN", NULL, "MIC1" },
++	{ "MIC2P_PIN", NULL, "MIC2" },
++	{ "MIC2N_PIN", NULL, "MIC2" },
++	{ "MIC3P_PIN", NULL, "MIC3" },
++	{ "MIC3N_PIN", NULL, "MIC3" },
++	{ "LINEOUTL", NULL, "LINEOUTLP_PIN" },
++	{ "LINEOUTL", NULL, "LINEOUTLN_PIN" },
++	{ "LINEOUTR", NULL, "LINEOUTRP_PIN" },
++	{ "LINEOUTR", NULL, "LINEOUTRN_PIN" },
++	{ "SPK", NULL, "LINEOUTLP_PIN" },
++	{ "SPK", NULL, "LINEOUTLN_PIN" },
++	{ "SPK", NULL, "LINEOUTRP_PIN" },
++	{ "SPK", NULL, "LINEOUTRN_PIN" },
++	{ "HPOUT", NULL, "HPOUTL_PIN" },
++	{ "HPOUT", NULL, "HPOUTR_PIN" },
++};
++
++/*******************************************************************************
++ * Codec init (BSP sunxi_codec_init) — hardware defaults for this board:
++ * the OPi4A DT values match the BSP driver defaults exactly
++ * (dac-vol 63 -> DVOL 0, dacl/r 160, adc1-3 160, lineout 31,
++ *  hpout 7 -> reg 0, adc gains 31), so they are hardcoded here.
++ ******************************************************************************/
++static void sun55i_codec_init(struct sun55i_codec *scodec)
++{
++	struct regmap *regmap = scodec->regmap;
++
++	regmap_update_bits(regmap, SUNXI_RAMP, 0x1 << 1, 0x1 << 1);
++
++	/* Enable DAC/ADC DAP (DRC/HPF sub-functions stay disabled) */
++	regmap_update_bits(regmap, SUNXI_DAC_DAP_CTL,
++			   0x1 << DDAP_EN, 0x1 << DDAP_EN);
++	regmap_update_bits(regmap, SUNXI_ADC_DAP_CTL,
++			   0x1 << ADAP0_EN, 0x1 << ADAP0_EN);
++	regmap_update_bits(regmap, SUNXI_ADC_DAP_CTL,
++			   0x1 << ADAP1_EN, 0x1 << ADAP1_EN);
++	/* cpvcc set 1.2V, analog power for the headphone charge pump */
++	regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++			   0x1 << CPLDO_EN, 0x1 << CPLDO_EN);
++	regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++			   0x3 << CPLDO_VOLTAGE, 0x3 << CPLDO_VOLTAGE);
++	/* HMICBIAS set to 2.55V to support MEMS and ECM mics */
++	regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++			   0x3 << HMIC_BIAS_SEL, 0x3 << HMIC_BIAS_SEL);
++	/* Open VRP to remove noise */
++	regmap_update_bits(regmap, SUNXI_POWER_AN_CTL,
++			   0x1 << VRP_LDO_EN, 0x1 << VRP_LDO_EN);
++	/* Enable ADCFDT to overcome noise at the beginning */
++	regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++			   0x1 << ADCDFEN, 0x1 << ADCDFEN);
++	regmap_update_bits(regmap, SUNXI_ADC_FIFO_CTL,
++			   0x3 << ADCFDT, 0x2 << ADCFDT);
++	/* Enable ADC1/2/3 and DACL/R volume controls */
++	regmap_update_bits(regmap, SUNXI_DAC_VOL_CTL,
++			   0x1 << DAC_VOL_SEL, 0x1 << DAC_VOL_SEL);
++	regmap_update_bits(regmap, SUNXI_ADC_DIG_CTL,
++			   0x1 << ADC1_2_VOL_EN, 0x1 << ADC1_2_VOL_EN);
++	regmap_update_bits(regmap, SUNXI_ADC_DIG_CTL,
++			   0x1 << ADC3_VOL_EN, 0x1 << ADC3_VOL_EN);
++	/*
++	 * "To solve play quietly": the BSP only pulses the bandgap buffer
++	 * on SoC versions 0/1 (read through sunxi-sid). We have no
++	 * mainline SoC-revision helper, and the pulse is harmless on
++	 * newer revisions, so do it unconditionally.
++	 */
++	regmap_update_bits(regmap, SUNXI_POWER_AN_CTL,
++			   0x1 << BG_BUFFER_DISABLE, 0x1 << BG_BUFFER_DISABLE);
++	msleep(50);
++	regmap_update_bits(regmap, SUNXI_POWER_AN_CTL,
++			   0x1 << BG_BUFFER_DISABLE, 0x0 << BG_BUFFER_DISABLE);
++
++	/* Default volume/gain values (BSP defaults == OPi4A DT values) */
++	regmap_update_bits(regmap, SUNXI_DAC_DPC, 0x3F << DVOL, 0 << DVOL);
++	regmap_update_bits(regmap, SUNXI_DAC_VOL_CTL,
++			   0xFF << DAC_VOL_L, 160 << DAC_VOL_L);
++	regmap_update_bits(regmap, SUNXI_DAC_VOL_CTL,
++			   0xFF << DAC_VOL_R, 160 << DAC_VOL_R);
++	regmap_update_bits(regmap, SUNXI_ADC_VOL_CTL1,
++			   0xFF << ADC1_VOL, 160 << ADC1_VOL);
++	regmap_update_bits(regmap, SUNXI_ADC_VOL_CTL1,
++			   0xFF << ADC2_VOL, 160 << ADC2_VOL);
++	regmap_update_bits(regmap, SUNXI_ADC_VOL_CTL1,
++			   0xFF << ADC3_VOL, 160 << ADC3_VOL);
++	regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++			   0x1F << LINEOUT_GAIN, 31 << LINEOUT_GAIN);
++	regmap_update_bits(regmap, SUNXI_DAC_AN_REG,
++			   0x7 << HEADPHONE_GAIN, 0 << HEADPHONE_GAIN);
++	regmap_update_bits(regmap, SUNXI_ADC1_AN_CTL,
++			   0x1F << ADCx_PGA_GAIN_CTL, 31 << ADCx_PGA_GAIN_CTL);
++	regmap_update_bits(regmap, SUNXI_ADC2_AN_CTL,
++			   0x1F << ADCx_PGA_GAIN_CTL, 31 << ADCx_PGA_GAIN_CTL);
++	regmap_update_bits(regmap, SUNXI_ADC3_AN_CTL,
++			   0x1F << ADCx_PGA_GAIN_CTL, 31 << ADCx_PGA_GAIN_CTL);
++}
++
++static int sun55i_codec_component_probe(struct snd_soc_component *component)
++{
++	struct sun55i_codec *scodec = snd_soc_card_to_codec(component->card);
++
++	sun55i_codec_init(scodec);
++
++	return 0;
++}
++
++static const struct snd_soc_component_driver sun55i_codec_codec = {
++	.probe			= sun55i_codec_component_probe,
++	.controls		= sun55i_codec_controls,
++	.num_controls		= ARRAY_SIZE(sun55i_codec_controls),
++	.dapm_widgets		= sun55i_codec_dapm_widgets,
++	.num_dapm_widgets	= ARRAY_SIZE(sun55i_codec_dapm_widgets),
++	.dapm_routes		= sun55i_codec_dapm_routes,
++	.num_dapm_routes	= ARRAY_SIZE(sun55i_codec_dapm_routes),
++};
++
++/*******************************************************************************
++ * Dummy CPU DAI carrying the dmaengine data (sun4i-codec pattern)
++ ******************************************************************************/
++
++static const struct snd_soc_component_driver sun55i_codec_cpu_component = {
++	.name			= "sun55i-a523-codec-cpu",
++	.legacy_dai_naming	= 1,
++#ifdef CONFIG_DEBUG_FS
++	.debugfs_prefix		= "cpu",
++#endif
++};
++
++static int sun55i_codec_cpu_dai_probe(struct snd_soc_dai *dai)
++{
++	struct snd_soc_card *card = snd_soc_dai_get_drvdata(dai);
++	struct sun55i_codec *scodec = snd_soc_card_get_drvdata(card);
++
++	snd_soc_dai_init_dma_data(dai, &scodec->playback_dma_data,
++				  &scodec->capture_dma_data);
++
++	return 0;
++}
++
++static const struct snd_soc_dai_ops sun55i_codec_cpu_dai_ops = {
++	.probe	= sun55i_codec_cpu_dai_probe,
++};
++
++static struct snd_soc_dai_driver sun55i_codec_cpu_dai = {
++	.name = "sun55i-a523-codec-cpu-dai",
++	.playback = {
++		.stream_name	= "Playback",
++		.channels_min	= 1,
++		.channels_max	= 2,
++		.rates		= SUN55I_CODEC_PB_RATES,
++		.formats	= SUN55I_CODEC_FORMATS,
++	},
++	.capture = {
++		.stream_name	= "Capture",
++		.channels_min	= 1,
++		.channels_max	= 3,
++		.rates		= SUN55I_CODEC_CAP_RATES,
++		.formats	= SUN55I_CODEC_FORMATS,
++	},
++	.ops = &sun55i_codec_cpu_dai_ops,
++};
++
++/*******************************************************************************
++ * Jack detection (BSP snd_sunxi_jack_codec.c + jack callbacks of
++ * snd_sun55iw3_codec.c, JACK_DET_CODEC method). The SDBP ("slow insert")
++ * extra machinery is not used on this board (no jack-sdbp-method in DT)
++ * and was left out.
++ ******************************************************************************/
++
++enum sun55i_jack_irq_sta {
++	SUN55I_JACK_IRQ_NULL = -1,
++	SUN55I_JACK_IRQ_OUT = 0,
++	SUN55I_JACK_IRQ_IN,
++	SUN55I_JACK_IRQ_MIC,
++};
++
++/* BSP sunxi_jack_codec_init() */
++static void sun55i_codec_jack_hw_init(struct sun55i_codec *scodec)
++{
++	struct sun55i_codec_jack *jack = &scodec->jack;
++	struct regmap *regmap = scodec->regmap;
++
++	/* hp & mic det */
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL, 0xffff << 0, 0x0 << 0);
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL, 0x1f << MDATA_THRESHOLD,
++			   jack->det_threshold << MDATA_THRESHOLD);
++	regmap_update_bits(regmap, SUNXI_HMIC_STA, 0xffff << 0, 0x6000 << 0);
++	regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++			   0xff << SEL_DET_ADC_BF, 0x40 << SEL_DET_ADC_BF);
++	if (!jack->det_level) {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN,
++				   0x1 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x0 << DET_MODE);
++	} else {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN,
++				   0x0 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x1 << DET_MODE);
++	}
++
++	regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++			   0x1 << JACK_DET_EN, 0x1 << JACK_DET_EN);
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++			   0x1 << JACK_IN_IRQ_EN, 0x1 << JACK_IN_IRQ_EN);
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++			   0x1 << JACK_OUT_IRQ_EN, 0x1 << JACK_OUT_IRQ_EN);
++
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL, 0xf << HMIC_N,
++			   jack->det_debounce << HMIC_N);
++
++	regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++			   0x1 << HMIC_BIAS_EN, 0x0 << HMIC_BIAS_EN);
++	regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++			   0x1 << MIC_DET_ADC_EN, 0x0 << MIC_DET_ADC_EN);
++	regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++			   0x1 << MIC_DET_IRQ_EN, 0x0 << MIC_DET_IRQ_EN);
++}
++
++/* BSP sunxi_jack_codec_det_irq_work(), inside jack->lock */
++static void sun55i_codec_jack_handle(struct sun55i_codec *scodec,
++				     enum sun55i_jack_irq_sta sta)
++{
++	struct sun55i_codec_jack *jack = &scodec->jack;
++	struct regmap *regmap = scodec->regmap;
++	unsigned int reg_val, basedata;
++	int type = jack->type;
++
++	switch (sta) {
++	case SUN55I_JACK_IRQ_OUT:
++		regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++				   0x1 << JACK_IN_IRQ_EN, 0x1 << JACK_IN_IRQ_EN);
++		regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++				   0x1 << JACK_OUT_IRQ_EN, 0x0 << JACK_OUT_IRQ_EN);
++
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << HMIC_BIAS_EN, 0x0 << HMIC_BIAS_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << MIC_DET_ADC_EN, 0x0 << MIC_DET_ADC_EN);
++		regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++				   0x1 << MIC_DET_IRQ_EN, 0x0 << MIC_DET_IRQ_EN);
++
++		type = 0;
++		break;
++	case SUN55I_JACK_IRQ_IN:
++		regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++				   0x1 << JACK_IN_IRQ_EN, 0x0 << JACK_IN_IRQ_EN);
++		regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++				   0x1 << JACK_OUT_IRQ_EN, 0x1 << JACK_OUT_IRQ_EN);
++
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << HMIC_BIAS_EN, 0x1 << HMIC_BIAS_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << MIC_DET_ADC_EN, 0x1 << MIC_DET_ADC_EN);
++		msleep(500);
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		basedata = (reg_val >> HMIC_DATA) & 0x1f;
++
++		if (basedata > jack->det_threshold) {
++			/* headphone + mic */
++			type = SND_JACK_HEADSET;
++			jack->ts_headset_plugin = ktime_get_seconds();
++			/* slow insert: save basedata */
++			jack->hp_det_basedata = basedata;
++
++			if (basedata > 3)
++				basedata -= 3;
++
++			regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++					   0x1f << MDATA_THRESHOLD,
++					   basedata << MDATA_THRESHOLD);
++			regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++					   0x1 << MIC_DET_IRQ_EN,
++					   0x1 << MIC_DET_IRQ_EN);
++		} else {
++			regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++					   0x1 << MIC_DET_IRQ_EN,
++					   0x0 << MIC_DET_IRQ_EN);
++			regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++					   0x1 << MIC_DET_ADC_EN,
++					   0x0 << MIC_DET_ADC_EN);
++			regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++					   0x1 << HMIC_BIAS_EN,
++					   0x0 << HMIC_BIAS_EN);
++			type = SND_JACK_HEADPHONE;
++		}
++		break;
++	case SUN55I_JACK_IRQ_MIC:
++		/* slow insert: confirm basedata again */
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		reg_val = (reg_val >> HMIC_DATA) & 0x1f;
++		if (reg_val > jack->det_threshold &&
++		    abs((int)reg_val - (int)jack->hp_det_basedata) >= 3) {
++			reg_val -= 3;
++			regmap_update_bits(regmap, SUNXI_HMIC_CTL,
++					   0x1f << MDATA_THRESHOLD,
++					   reg_val << MDATA_THRESHOLD);
++		}
++
++		/* Ignore buttons right after the headset was plugged in */
++		if (ktime_get_seconds() - jack->ts_headset_plugin < 2)
++			break;
++
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		reg_val = (reg_val >> HMIC_DATA) & 0x1f;
++
++		/* BTN_0 hook, BTN_1 up, BTN_2 down, BTN_3 voice */
++		if (reg_val >= jack->key_det_vol[0][0] &&
++		    reg_val <= jack->key_det_vol[0][1])
++			type |= SND_JACK_BTN_0;
++		else if (reg_val >= jack->key_det_vol[1][0] &&
++			 reg_val <= jack->key_det_vol[1][1])
++			type |= SND_JACK_BTN_1;
++		else if (reg_val >= jack->key_det_vol[2][0] &&
++			 reg_val <= jack->key_det_vol[2][1])
++			type |= SND_JACK_BTN_2;
++		else if (reg_val >= jack->key_det_vol[3][0] &&
++			 reg_val <= jack->key_det_vol[3][1])
++			type |= SND_JACK_BTN_3;
++		else
++			dev_dbg(scodec->dev, "unsupported jack button\n");
++		break;
++	default:
++		return;
++	}
++
++	jack->type = type;
++
++	/* Reporting (BSP sunxi_jack_det_irq_work) */
++	if (jack->type == jack->type_old && !jack->first_report)
++		return;
++	jack->first_report = false;
++
++	snd_soc_jack_report(&jack->jack, jack->type, SUN55I_CODEC_JACK_MASK);
++	if (jack->type & (SND_JACK_BTN_0 | SND_JACK_BTN_1 |
++			  SND_JACK_BTN_2 | SND_JACK_BTN_3)) {
++		/* report the button release right away, like the BSP */
++		jack->type &= ~(SND_JACK_BTN_0 | SND_JACK_BTN_1 |
++				SND_JACK_BTN_2 | SND_JACK_BTN_3);
++		snd_soc_jack_report(&jack->jack, jack->type,
++				    SUN55I_CODEC_JACK_MASK);
++	}
++	jack->type_old = jack->type;
++}
++
++static irqreturn_t sun55i_codec_jack_irq(int irq, void *dev_id)
++{
++	struct sun55i_codec *scodec = dev_id;
++	struct sun55i_codec_jack *jack = &scodec->jack;
++	struct regmap *regmap = scodec->regmap;
++	enum sun55i_jack_irq_sta sta = SUN55I_JACK_IRQ_NULL;
++	unsigned int jack_state, reg_val;
++
++	/* Ack + classification (BSP sunxi_jack_codec_irq_clean) */
++	regmap_read(regmap, SUNXI_HMIC_STA, &jack_state);
++
++	if (jack_state & (1 << JACK_IN_IRQ_STA)) {
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		reg_val |= 0x1 << JACK_IN_IRQ_STA;
++		reg_val &= ~(0x1 << JACK_OUT_IRQ_STA);
++		regmap_write(regmap, SUNXI_HMIC_STA, reg_val);
++		sta = SUN55I_JACK_IRQ_IN;
++	}
++	if (jack_state & (1 << JACK_OUT_IRQ_STA)) {
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		reg_val &= ~(0x1 << JACK_IN_IRQ_STA);
++		reg_val |= 0x1 << JACK_OUT_IRQ_STA;
++		regmap_write(regmap, SUNXI_HMIC_STA, reg_val);
++		sta = SUN55I_JACK_IRQ_OUT;
++	}
++	if (jack_state & (1 << MIC_DET_IRQ_STA)) {
++		regmap_read(regmap, SUNXI_HMIC_STA, &reg_val);
++		reg_val &= ~(0x1 << JACK_IN_IRQ_STA);
++		reg_val &= ~(0x1 << JACK_OUT_IRQ_STA);
++		reg_val |= 0x1 << MIC_DET_IRQ_STA;
++		regmap_write(regmap, SUNXI_HMIC_STA, reg_val);
++		sta = SUN55I_JACK_IRQ_MIC;
++	}
++
++	/* During the boot/resume scan, interrupts are not handled */
++	if (READ_ONCE(jack->scan_active))
++		sta = SUN55I_JACK_IRQ_NULL;
++
++	if (sta == SUN55I_JACK_IRQ_NULL)
++		return IRQ_HANDLED;
++
++	mutex_lock(&jack->lock);
++	sun55i_codec_jack_handle(scodec, sta);
++	mutex_unlock(&jack->lock);
++
++	return IRQ_HANDLED;
++}
++
++/*
++ * BSP sunxi_jack_codec_det_scan_work(): briefly invert the detection
++ * mode so the hardware retriggers the in/out interrupt, which then
++ * reports the real jack state. Used once at boot (2s after probe).
++ */
++static void sun55i_codec_jack_scan_work(struct work_struct *work)
++{
++	struct sun55i_codec_jack *jack =
++		container_of(work, struct sun55i_codec_jack, scan_work.work);
++	struct sun55i_codec *scodec =
++		container_of(jack, struct sun55i_codec, jack);
++	struct regmap *regmap = scodec->regmap;
++
++	mutex_lock(&jack->lock);
++	WRITE_ONCE(jack->scan_active, true);
++	if (!jack->det_level) {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN, 0x0 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x1 << DET_MODE);
++	} else {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN, 0x1 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x0 << DET_MODE);
++	}
++
++	/* must ensure that the interrupt triggers (BSP: 500ms) */
++	msleep(500);
++
++	WRITE_ONCE(jack->scan_active, false);
++	if (!jack->det_level) {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN, 0x1 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x0 << DET_MODE);
++	} else {
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << AUTO_PULL_LOW_EN, 0x0 << AUTO_PULL_LOW_EN);
++		regmap_update_bits(regmap, SUNXI_MICBIAS_AN_CTL,
++				   0x1 << DET_MODE, 0x1 << DET_MODE);
++	}
++	mutex_unlock(&jack->lock);
++}
++
++/*******************************************************************************
++ * Card (BSP codec_mach translated: pin switches + jack)
++ ******************************************************************************/
++
++static const struct snd_kcontrol_new sun55i_codec_card_controls[] = {
++	SOC_DAPM_PIN_SWITCH("MIC1"),
++	SOC_DAPM_PIN_SWITCH("MIC2"),
++	SOC_DAPM_PIN_SWITCH("MIC3"),
++	SOC_DAPM_PIN_SWITCH("LINEOUTL"),
++	SOC_DAPM_PIN_SWITCH("LINEOUTR"),
++	SOC_DAPM_PIN_SWITCH("HPOUT"),
++	SOC_DAPM_PIN_SWITCH("SPK"),
++};
++
++static int sun55i_codec_machine_init(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_soc_card *card = rtd->card;
++	struct sun55i_codec *scodec = snd_soc_card_get_drvdata(card);
++	struct sun55i_codec_jack *jack = &scodec->jack;
++	int ret;
++
++	if (jack->irq <= 0)
++		return 0;
++
++	ret = snd_soc_card_jack_new(card, "Headphone",
++				    SUN55I_CODEC_JACK_MASK, &jack->jack);
++	if (ret) {
++		dev_err(card->dev, "jack creation failed: %d\n", ret);
++		return ret;
++	}
++
++	/* BSP key mapping */
++	snd_jack_set_key(jack->jack.jack, SND_JACK_BTN_0, KEY_MEDIA);
++	snd_jack_set_key(jack->jack.jack, SND_JACK_BTN_1, KEY_VOLUMEUP);
++	snd_jack_set_key(jack->jack.jack, SND_JACK_BTN_2, KEY_VOLUMEDOWN);
++	snd_jack_set_key(jack->jack.jack, SND_JACK_BTN_3, KEY_VOICECOMMAND);
++
++	sun55i_codec_jack_hw_init(scodec);
++
++	ret = devm_request_threaded_irq(scodec->dev, jack->irq, NULL,
++					sun55i_codec_jack_irq, IRQF_ONESHOT,
++					"sun55i-codec-jack", scodec);
++	if (ret) {
++		dev_err(card->dev, "jack irq request failed: %d\n", ret);
++		return ret;
++	}
++
++	/* BSP: recheck 2s after boot to detect an already-inserted jack */
++	schedule_delayed_work(&jack->scan_work, msecs_to_jiffies(2000));
++
++	return 0;
++}
++
++static struct snd_soc_card *sun55i_codec_create_card(struct device *dev)
++{
++	struct snd_soc_card *card;
++	struct snd_soc_dai_link *link;
++	struct snd_soc_dai_link_component *dlc;
++
++	card = devm_kzalloc(dev, sizeof(*card), GFP_KERNEL);
++	link = devm_kzalloc(dev, sizeof(*link), GFP_KERNEL);
++	dlc = devm_kzalloc(dev, 3 * sizeof(*dlc), GFP_KERNEL);
++	if (!card || !link || !dlc)
++		return ERR_PTR(-ENOMEM);
++
++	link->cpus		= &dlc[0];
++	link->codecs		= &dlc[1];
++	link->platforms		= &dlc[2];
++	link->num_cpus		= 1;
++	link->num_codecs	= 1;
++	link->num_platforms	= 1;
++
++	link->name		= "cdc";
++	link->stream_name	= "CDC PCM";
++	link->codecs->dai_name	= "Codec";
++	link->cpus->dai_name	= dev_name(dev);
++	link->codecs->name	= dev_name(dev);
++	link->platforms->name	= dev_name(dev);
++	link->init		= sun55i_codec_machine_init;
++
++	card->dai_link		= link;
++	card->num_links		= 1;
++	card->dev		= dev;
++	card->owner		= THIS_MODULE;
++	card->name		= "audiocodec";
++	card->controls		= sun55i_codec_card_controls;
++	card->num_controls	= ARRAY_SIZE(sun55i_codec_card_controls);
++
++	return card;
++}
++
++/*******************************************************************************
++ * Probe
++ ******************************************************************************/
++
++static const struct regmap_config sun55i_codec_regmap_config = {
++	.reg_bits	= 32,
++	.reg_stride	= 4,
++	.val_bits	= 32,
++	.max_register	= SUNXI_AUDIO_MAX_REG,
++};
++
++static const char * const sun55i_codec_supply_names[] = {
++	"avcc",		/* bias supply, 1.8V (reg_aldo4) */
++	"vdd",		/* module supply, 3.3V (reg_cldo3) */
++	"cpvin",	/* headphone charge pump, 1.8V (reg_cldo1) */
++};
++
++static void sun55i_codec_quiesce_jack(void *data)
++{
++	struct sun55i_codec *scodec = data;
++
++	/* stop the jack machinery before the card goes away */
++	regmap_update_bits(scodec->regmap, SUNXI_HMIC_CTL,
++			   0x1 << JACK_IN_IRQ_EN | 0x1 << JACK_OUT_IRQ_EN |
++			   0x1 << MIC_DET_IRQ_EN, 0);
++	cancel_delayed_work_sync(&scodec->jack.scan_work);
++}
++
++static int sun55i_codec_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct snd_soc_card *card;
++	struct sun55i_codec *scodec;
++	struct sun55i_codec_jack *jack;
++	struct resource *res;
++	void __iomem *base;
++	int ret;
++
++	scodec = devm_kzalloc(dev, sizeof(*scodec), GFP_KERNEL);
++	if (!scodec)
++		return -ENOMEM;
++
++	scodec->dev = dev;
++	mutex_init(&scodec->acf_mutex);
++
++	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(base))
++		return PTR_ERR(base);
++
++	scodec->regmap = devm_regmap_init_mmio(dev, base,
++					       &sun55i_codec_regmap_config);
++	if (IS_ERR(scodec->regmap))
++		return dev_err_probe(dev, PTR_ERR(scodec->regmap),
++				     "regmap init failed\n");
++
++	/*
++	 * BSP order: pulse the reset ("to avoid register modification
++	 * before module load"), then enable the bus clock.
++	 */
++	scodec->rst = devm_reset_control_get_exclusive(dev, NULL);
++	if (IS_ERR(scodec->rst))
++		return dev_err_probe(dev, PTR_ERR(scodec->rst),
++				     "reset get failed\n");
++	reset_control_assert(scodec->rst);
++	ret = reset_control_deassert(scodec->rst);
++	if (ret)
++		return dev_err_probe(dev, ret, "reset deassert failed\n");
++
++	scodec->clk_bus = devm_clk_get_enabled(dev, "bus");
++	if (IS_ERR(scodec->clk_bus))
++		return dev_err_probe(dev, PTR_ERR(scodec->clk_bus),
++				     "bus clock get failed\n");
++
++	scodec->clk_dac = devm_clk_get(dev, "dac");
++	if (IS_ERR(scodec->clk_dac))
++		return dev_err_probe(dev, PTR_ERR(scodec->clk_dac),
++				     "dac clock get failed\n");
++
++	scodec->clk_adc = devm_clk_get(dev, "adc");
++	if (IS_ERR(scodec->clk_adc))
++		return dev_err_probe(dev, PTR_ERR(scodec->clk_adc),
++				     "adc clock get failed\n");
++
++	ret = devm_regulator_bulk_get_enable(dev,
++				ARRAY_SIZE(sun55i_codec_supply_names),
++				sun55i_codec_supply_names);
++	if (ret)
++		return dev_err_probe(dev, ret, "supplies get failed\n");
++
++	/* External speaker amplifier (OPi4A: PH6, active high) */
++	scodec->gpio_pa = devm_gpiod_get_optional(dev, "allwinner,pa",
++						  GPIOD_OUT_LOW);
++	if (IS_ERR(scodec->gpio_pa))
++		return dev_err_probe(dev, PTR_ERR(scodec->gpio_pa),
++				     "PA GPIO get failed\n");
++
++	/* Jack parameters (OPi4A: level 1, threshold 8, debounce 0) */
++	jack = &scodec->jack;
++	mutex_init(&jack->lock);
++	INIT_DELAYED_WORK(&jack->scan_work, sun55i_codec_jack_scan_work);
++	jack->first_report = true;
++	jack->irq = platform_get_irq_optional(pdev, 0);
++	jack->det_level = !device_property_read_bool(dev,
++					"allwinner,jack-det-level-low");
++	jack->det_threshold = 8;
++	device_property_read_u32(dev, "allwinner,jack-det-threshold",
++				 &jack->det_threshold);
++	jack->det_debounce = 0;
++	device_property_read_u32(dev, "allwinner,jack-det-debounce",
++				 &jack->det_debounce);
++	/* BSP default button windows: hook 0-0, up 2-2, down 4-5, voice 1-1 */
++	jack->key_det_vol[0][0] = 0;
++	jack->key_det_vol[0][1] = 0;
++	jack->key_det_vol[1][0] = 2;
++	jack->key_det_vol[1][1] = 2;
++	jack->key_det_vol[2][0] = 4;
++	jack->key_det_vol[2][1] = 5;
++	jack->key_det_vol[3][0] = 1;
++	jack->key_det_vol[3][1] = 1;
++
++	/* DMA data: FIFOs at +0x20 (DAC) / +0x40 (ADC), MCU DMA req 7,
++	 * maxburst 4 (BSP codec_plat). The bus width is derived from the
++	 * sample format by the generic dmaengine PCM, like the BSP does.
++	 */
++	scodec->playback_dma_data.addr = res->start + SUNXI_DAC_TXDATA;
++	scodec->playback_dma_data.maxburst = SUN55I_CODEC_DMA_MAXBURST;
++	scodec->capture_dma_data.addr = res->start + SUNXI_ADC_RXDATA;
++	scodec->capture_dma_data.maxburst = SUN55I_CODEC_DMA_MAXBURST;
++
++	ret = devm_snd_soc_register_component(dev, &sun55i_codec_codec,
++					      &sun55i_codec_dai, 1);
++	if (ret)
++		return dev_err_probe(dev, ret, "codec register failed\n");
++
++	ret = devm_snd_soc_register_component(dev, &sun55i_codec_cpu_component,
++					      &sun55i_codec_cpu_dai, 1);
++	if (ret)
++		return dev_err_probe(dev, ret, "CPU DAI register failed\n");
++
++	ret = devm_snd_dmaengine_pcm_register(dev, NULL, 0);
++	if (ret)
++		return dev_err_probe(dev, ret, "dmaengine PCM register failed\n");
++
++	card = sun55i_codec_create_card(dev);
++	if (IS_ERR(card))
++		return PTR_ERR(card);
++
++	snd_soc_card_set_drvdata(card, scodec);
++
++	/* make sure the jack work/irq stop before the card is torn down */
++	ret = devm_add_action_or_reset(dev, sun55i_codec_quiesce_jack, scodec);
++	if (ret)
++		return ret;
++
++	ret = devm_snd_soc_register_card(dev, card);
++	if (ret)
++		return dev_err_probe(dev, ret, "card register failed\n");
++
++	return 0;
++}
++
++static const struct of_device_id sun55i_codec_of_match[] = {
++	{ .compatible = "allwinner,sun55i-a523-codec" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, sun55i_codec_of_match);
++
++static struct platform_driver sun55i_codec_driver = {
++	.driver = {
++		.name = "sun55i-a523-codec",
++		.of_match_table = sun55i_codec_of_match,
++	},
++	.probe = sun55i_codec_probe,
++};
++module_platform_driver(sun55i_codec_driver);
++
++MODULE_DESCRIPTION("Allwinner sun55i A523/T527 internal codec driver");
++MODULE_AUTHOR("huhaoxin <huhaoxin@allwinnertech.com>");
++MODULE_LICENSE("GPL");
+-- 
+2.53.0
+

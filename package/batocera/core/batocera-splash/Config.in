@@ -131,12 +131,13 @@ config BR2_PACKAGE_BATOCERA_SPLASH_MPV_SM8x50
 	default y
 endif
 
-# Allwinner Profile (H6, H616, H700):
+# Allwinner Profile (H6, H616, H700, T527):
 # Allwinner chips requiring stateless decoding over the Panfrost GPU/DRM stack 
 # (using '--hwdec=v4l2request-copy').
 if BR2_PACKAGE_BATOCERA_TARGET_H6    || \
    BR2_PACKAGE_BATOCERA_TARGET_H616  || \
-   BR2_PACKAGE_BATOCERA_TARGET_H700
+   BR2_PACKAGE_BATOCERA_TARGET_H700  || \
+   BR2_PACKAGE_BATOCERA_TARGET_T527
 config BR2_PACKAGE_BATOCERA_SPLASH_MPV_ALLWINNER
 	bool
 	default y
@@ -145,8 +146,7 @@ endif
 # Internal Defaults:
 # Specific target chips that perform best with completely unassigned parameters, 
 # allowing MPV to resolve hardware decoding using its built-in internal logic.
-if BR2_PACKAGE_BATOCERA_TARGET_RK3399 || \
-   BR2_PACKAGE_BATOCERA_TARGET_T527
+if BR2_PACKAGE_BATOCERA_TARGET_RK3399
 config BR2_PACKAGE_BATOCERA_SPLASH_MPV_INTERNAL_DEFAULTS
 	bool
 	default y

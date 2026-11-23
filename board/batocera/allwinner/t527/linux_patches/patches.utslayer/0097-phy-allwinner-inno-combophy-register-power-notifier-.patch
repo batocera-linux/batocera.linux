@@ -1,0 +1,52 @@
+From 3e8d4be2a3717a420ef4b16bbb315b037275f104 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Juan=20Manuel=20L=C3=B3pez=20Carrillo?=
+ <juanmanuellopezcarrillo@gmail.com>
+Date: Tue, 21 Jul 2026 11:59:28 +0200
+Subject: [PATCH 097/143] phy: allwinner: inno-combophy: register power
+ notifier after probe success
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The power notifier (combphy->pwr_nb) was chained on
+inno_subsys_notifier_list before the return value of
+devm_of_phy_provider_register() was checked. On a probe failure the
+struct sunxi_combphy is devm-freed but its notifier_block remains
+chained, so the next inno_subsys power event dereferences freed memory
+through container_of().
+
+Register the notifier only after the provider has been published
+successfully, and propagate the provider error immediately. This
+matches the driver's own remove() path, which already pairs
+atomic_notifier_chain_register() with an explicit unregister.
+
+Signed-off-by: Juan Manuel López Carrillo <juanmanuellopezcarrillo@gmail.com>
+---
+ drivers/phy/allwinner/sunxi-inno-combophy.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/phy/allwinner/sunxi-inno-combophy.c b/drivers/phy/allwinner/sunxi-inno-combophy.c
+index e37ca990d..ea2495044 100644
+--- a/drivers/phy/allwinner/sunxi-inno-combophy.c
++++ b/drivers/phy/allwinner/sunxi-inno-combophy.c
+@@ -1077,6 +1077,8 @@ static int sunxi_combphy_probe(struct platform_device *pdev)
+ 	phy_set_drvdata(combphy->phy, combphy);
+ 
+ 	phy_provider = devm_of_phy_provider_register(dev, sunxi_combphy_xlate);
++	if (IS_ERR(phy_provider))
++		return PTR_ERR(phy_provider);
+ 
+ 	combphy->pwr_nb.notifier_call = sunxi_inno_combophy_power_event;
+ 	/* register inno power notifier */
+@@ -1086,7 +1088,7 @@ static int sunxi_combphy_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_sync(dev);
+ 
+-	return PTR_ERR_OR_ZERO(phy_provider);
++	return 0;
+ }
+ 
+ static void sunxi_combphy_remove(struct platform_device *pdev)
+-- 
+2.53.0
+

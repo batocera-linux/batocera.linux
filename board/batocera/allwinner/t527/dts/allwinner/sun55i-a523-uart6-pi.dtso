@@ -1,0 +1,17 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/dts-v1/;
+/plugin/;
+
+&pio {
+	uart6_pi_pins: uart6-pi-pins {
+		pins = "PI6", "PI7";
+		allwinner,pinmux = <2>;
+		function = "uart6";
+	};
+};
+
+&uart6 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart6_pi_pins>;
+	status = "okay";
+};

@@ -58,6 +58,10 @@ ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV),y)
         ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_H6),y)
             BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request --gpu-hwdec-interop=v4l2request-overlay
         endif
+        # T527 has no video plane yet, zero-copy into the GPU with cheap scaling keeps 60 fps
+        ifeq ($(BR2_PACKAGE_BATOCERA_TARGET_T527),y)
+            BATOCERA_SPLASH_PLAYER_OPTIONS = --vo=gpu --gpu-context=drm --hwdec=v4l2request --profile=fast
+        endif
     endif
     # Targets that should remain empty (handled by internal defaults)
     ifeq ($(BR2_PACKAGE_BATOCERA_SPLASH_MPV_INTERNAL_DEFAULTS),y)
