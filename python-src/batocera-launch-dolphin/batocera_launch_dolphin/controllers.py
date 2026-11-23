@@ -614,7 +614,7 @@ def generate_controller_config_any(
             f.write(f'Device = evdev/{nsamepad!s}/{pad.real_name.strip()}\n')
 
             if emulator.config.get_bool('use_pad_profiles'):
-                if not _generate_controller_config_any_from_profiles(f, pad, emulator, extra_options or {}):
+                if not _generate_controller_config_any_from_profiles(f, pad, nsamepad, emulator, extra_options or {}):
                     _generate_controller_config_any_auto(
                         f,
                         pad,
@@ -786,7 +786,12 @@ def _generate_controller_config_any_auto(
 
 
 def _generate_controller_config_any_from_profiles(
-    f: SupportsWrite[str], pad: Controller, emulator: Emulator, extra_options: Mapping[str, str], /
+    f: SupportsWrite[str],
+    pad: Controller,
+    nsamepad: int,
+    emulator: Emulator,
+    extra_options: Mapping[str, str],
+    /,
 ) -> bool:
     glob_path: Path | None = None
     if emulator.system == 'gamecube':
@@ -797,7 +802,10 @@ def _generate_controller_config_any_from_profiles(
     if glob_path is None:
         return False
 
-    for profile_file in glob_path.glob('*.ini'):
+    pad_name = pad.real_name.strip()
+    shared_profile: tuple[CaseSensitiveConfigParser, int] | None = None
+
+    for profile_file in sorted(glob_path.glob('*.ini')):
         try:
             _logger.debug('Looking profile : %s', profile_file)
             profile_config = CaseSensitiveConfigParser(interpolation=None)
@@ -805,25 +813,48 @@ def _generate_controller_config_any_from_profiles(
             profile_device = profile_config.get('Profile', 'Device')
             _logger.debug('Profile device : %s', profile_device)
 
-            device_vals = re.match('^([^/]*)/[0-9]*/(.*)$', profile_device)
-            if (
-                device_vals is not None
-                and device_vals.group(1) == 'evdev'
-                and device_vals.group(2).strip() == pad.real_name.strip()
-            ):
+            device_vals = re.match('^evdev/([0-9]+)/(.*)$', profile_device)
+            if device_vals is None or device_vals.group(2).strip() != pad_name:
+                continue
+
+            profile_index = int(device_vals.group(1))
+            if profile_index == nsamepad:
                 _logger.debug('Eligible profile device found')
-                # Profiles don't store Source, so without it Dolphin leaves Wiimotes 2-4 at None
-                for key, val in extra_options.items():
-                    if not profile_config.has_option('Profile', key):
-                        f.write(f'{key} = {val}\n')
-                for key, val in profile_config.items('Profile'):
-                    if key != 'Device':
-                        f.write(f'{key} = {val}\n')
+                _write_profile(f, profile_config, extra_options, None)
                 return True
+
+            if shared_profile is None:
+                shared_profile = (profile_config, profile_index)
         except Exception:
             _logger.exception('profile %s : FAILED', profile_file)
 
-    return False
+    if shared_profile is None:
+        return False
+
+    profile_config, profile_index = shared_profile
+    _logger.debug('Eligible profile device found for another pad of the same name')
+    # Bindings name their device, so point the saved pad's references (motion sensors too) at this one
+    device_ref = re.compile(f'evdev/{profile_index}/(?={re.escape(pad_name)})')
+    _write_profile(f, profile_config, extra_options, (device_ref, f'evdev/{nsamepad}/'))
+    return True
+
+
+def _write_profile(
+    f: SupportsWrite[str],
+    profile_config: CaseSensitiveConfigParser,
+    extra_options: Mapping[str, str],
+    device_ref: tuple[re.Pattern[str], str] | None,
+    /,
+) -> None:
+    # Profiles don't store Source, so without it Dolphin leaves Wiimotes 2-4 at None
+    for key, val in extra_options.items():
+        if not profile_config.has_option('Profile', key):
+            f.write(f'{key} = {val}\n')
+    for key, val in profile_config.items('Profile'):
+        if key != 'Device':
+            if device_ref is not None:
+                val = device_ref[0].sub(device_ref[1], val)
+            f.write(f'{key} = {val}\n')
 
 
 @dataclass(frozen=True, slots=True)
