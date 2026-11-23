@@ -2,7 +2,6 @@
 
 GTMP="/tmp"
 DHOME="/userdata/system"
-V_ARCH=$(uname -m)
 
 # to be callable by any external tool
 if test $# -eq 1
@@ -24,7 +23,16 @@ d_cp() {
     test -d "$1" && cp -pr "$1" "$2"
 }
 
+# stdout to the file, stderr beside it (empty files are removed at the end)
+capture() {
+    OUT="$1"
+    shift
+    "$@" > "${OUT}" 2> "${OUT}.err"
+}
+
+rm -rf "${TMPDIR}"
 if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/system" \
+                          "${TMPDIR}/boot" \
                           "${TMPDIR}/audio" \
                           "${TMPDIR}/bluetooth" \
                           "${TMPDIR}/display" \
@@ -32,10 +40,7 @@ if mkdir "${TMPDIR}" && mkdir "${TMPDIR}/system" \
                           "${TMPDIR}/hardware" \
                           "${TMPDIR}/configs" \
                           "${TMPDIR}/logs" \
-                          "${TMPDIR}/joysticks" \
-                          "${TMPDIR}/lirc" \
-                          "${TMPDIR}/kodi" \
-                          "${TMPDIR}/coredumps"
+                          "${TMPDIR}/joysticks"
 then
     if ! cd "${TMPDIR}"
     then
@@ -49,6 +54,7 @@ fi
 
 # Define path shortcuts
 DSYSTEM="${TMPDIR}/system"
+DBOOT="${TMPDIR}/boot"
 DAUDIO="${TMPDIR}/audio"
 DBLUETOOTH="${TMPDIR}/bluetooth"
 DDISPLAY="${TMPDIR}/display"
@@ -56,10 +62,15 @@ DNETWORK="${TMPDIR}/network"
 DHARDWARE="${TMPDIR}/hardware"
 DCONFIGS="${TMPDIR}/configs"
 DLOGS="${TMPDIR}/logs"
+DJOYS="${TMPDIR}/joysticks"
 
-# in case xorg is in use
+# the session environment is missing when run from ssh
 if test -z "${DISPLAY}"; then
     export DISPLAY=$(getLocalXDisplay 2>/dev/null)
+fi
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/var/run}"
+if test -z "${WAYLAND_DISPLAY}" && test -S "${XDG_RUNTIME_DIR}/wayland-0"; then
+    export WAYLAND_DISPLAY=wayland-0
 fi
 
 # -----------------------------------------------------------------------------
@@ -68,71 +79,155 @@ fi
 dmesg 	         	    > "${DSYSTEM}/dmesg.txt"
 ps -ef 	         	    > "${DSYSTEM}/ps.txt"
 batocera-version        > "${DSYSTEM}/batocera.version"
-batocera-info           > "${DSYSTEM}/batocera.info"
-batocera-services list  > "${DSYSTEM}/services.txt"
+capture "${DSYSTEM}/batocera.info" batocera-info
+capture "${DSYSTEM}/services.txt"  batocera-services list
 find /boot -type f      > "${DSYSTEM}/boot_files.txt"
 ldconfig -p             > "${DSYSTEM}/ldcache.txt"
 top -b -n 1             > "${DSYSTEM}/top_processes.txt"
 env                     > "${DSYSTEM}/environment_variables.txt"
+uptime                  > "${DSYSTEM}/uptime.txt"
 
-if [ -f /sys/class/thermal/thermal_zone0/temp ]; then
-    cat /sys/class/thermal/thermal_zone0/temp > "${DSYSTEM}/cpu_temp_raw.txt"
+for Z in /sys/class/thermal/thermal_zone*; do
+    test -e "${Z}/temp" || continue
+    echo "$(basename "${Z}") $(cat "${Z}/type" 2>/dev/null) $(cat "${Z}/temp" 2>/dev/null)"
+done > "${DSYSTEM}/thermal.txt"
+
+{
+    echo "state: $(cat /sys/power/state 2>/dev/null)"
+    echo "mem_sleep: $(cat /sys/power/mem_sleep 2>/dev/null)"
+} > "${DSYSTEM}/power.txt"
+
+# files changed on top of the system image: the saved boot overlay plus this boot's changes
+if test -e /boot/boot/overlay; then
+    ls -l /boot/boot/overlay > "${DSYSTEM}/overlay.txt"
 fi
+if test -d /overlay/overlay; then
+    find /overlay/overlay \( -path /overlay/overlay/var -o -name .cache -o -name __pycache__ \) -prune \
+         -o -type f -exec ls -l {} + > "${DSYSTEM}/overlay_files.txt" 2>/dev/null
+fi
+
+for U in "${DHOME}/custom.sh" "${DHOME}/services" "${DHOME}/scripts"; do
+    test -e "${U}" && ls -lR "${U}"
+done > "${DSYSTEM}/user_scripts.txt" 2>/dev/null
 
 # Libinput (Wayland input Diagnostics)
 if command -v libinput >/dev/null; then
-    libinput list-devices > "${DJOYS}/libinput_list.txt" 2>/dev/null
+    capture "${DJOYS}/libinput_list.txt" libinput list-devices
 fi
+
+# -----------------------------------------------------------------------------
+# BOOT / FIRMWARE
+# -----------------------------------------------------------------------------
+cat /proc/cmdline       > "${DBOOT}/cmdline.txt"
+d_cp /boot/loader                                              "${DBOOT}"
+for L in /boot/boot/*.log; do
+    f_cp "${L}" "${DBOOT}"
+done
+
+if test -e /proc/device-tree/model; then
+    {
+        echo "model: $(tr -d '\0' < /proc/device-tree/model)"
+        echo "compatible: $(tr '\0' ' ' < /proc/device-tree/compatible)"
+    } > "${DBOOT}/devicetree.txt"
+fi
+
+if test -d /sys/class/dmi/id; then
+    for F in sys_vendor product_name product_version product_family board_vendor board_name board_version bios_vendor bios_version bios_date; do
+        echo "${F}: $(cat /sys/class/dmi/id/${F} 2>/dev/null)"
+    done > "${DBOOT}/dmi.txt"
+fi
+
+for E in /sys/firmware/efi/esrt/entries/*; do
+    test -d "${E}" || continue
+    echo "$(cat "${E}/fw_class") fw_version=$(cat "${E}/fw_version") last_attempt_status=$(cat "${E}/last_attempt_status")"
+done > "${DBOOT}/esrt.txt" 2>/dev/null
 
 # -----------------------------------------------------------------------------
 # AUDIO SUBSYSTEM
 # -----------------------------------------------------------------------------
-amixer                  > "${DAUDIO}/amixer.txt" 2>/dev/null
-aplay -l                > "${DAUDIO}/aplay-l.txt" 2>/dev/null
-aplay -L                > "${DAUDIO}/aplay-L.txt" 2>/dev/null
-alsactl info            > "${DAUDIO}/alsactl-info.txt" 2>/dev/null
-batocera-audio list     > "${DAUDIO}/batocera-audio-list.txt" 2>/dev/null
-wpctl status            > "${DAUDIO}/wireplumber.txt" 2>/dev/null
-command -v pw-dump >/dev/null && pw-dump > "${DAUDIO}/pipewire_dump.json" 2>/dev/null
+f_cp /proc/asound/cards "${DAUDIO}/cards.txt"
+for C in /proc/asound/card[0-9]*; do
+    test -d "${C}" || continue
+    N=${C#/proc/asound/card}
+    capture "${DAUDIO}/amixer-card${N}.txt" amixer -c "${N}" contents
+done
+capture "${DAUDIO}/aplay-l.txt"       aplay -l
+capture "${DAUDIO}/aplay-L.txt"       aplay -L
+capture "${DAUDIO}/alsactl-info.txt"  alsactl info
+command -v alsaucm >/dev/null && capture "${DAUDIO}/alsaucm-cards.txt" alsaucm listcards
+if pidof pipewire >/dev/null; then
+    capture "${DAUDIO}/batocera-audio-list.txt" batocera-audio list
+    capture "${DAUDIO}/wireplumber.txt"         wpctl status
+    capture "${DAUDIO}/default-sink.txt"        wpctl inspect @DEFAULT_AUDIO_SINK@
+    capture "${DAUDIO}/pipewire_dump.json"      pw-dump
+fi
 
 # -----------------------------------------------------------------------------
 # BLUETOOTH SUBSYSTEM
 # -----------------------------------------------------------------------------
-hciconfig -a            > "${DBLUETOOTH}/bt-capabilities.txt" 2>/dev/null
+if test -n "$(ls /sys/class/bluetooth 2>/dev/null)"; then
+    capture "${DBLUETOOTH}/bt-capabilities.txt" hciconfig -a
+    # bluetoothctl waits forever for a bluetoothd that is not running
+    if pidof bluetoothd >/dev/null; then
+        capture "${DBLUETOOTH}/controller_info.txt" bluetoothctl show
+        capture "${DBLUETOOTH}/paired_devices.txt"  bluetoothctl devices
+    fi
+fi
 f_cp /var/log/bluetooth-agent.log "${DBLUETOOTH}"
-command -v bluetoothctl >/dev/null && bluetoothctl show > "${DBLUETOOTH}/controller_info.txt" 2>/dev/null
-command -v bluetoothctl >/dev/null && bluetoothctl devices > "${DBLUETOOTH}/paired_devices.txt" 2>/dev/null
-command -v rfkill >/dev/null && rfkill list > "${DBLUETOOTH}/rfkill_status.txt" 2>/dev/null
+command -v rfkill >/dev/null && capture "${DBLUETOOTH}/rfkill_status.txt" rfkill list
 
 # -----------------------------------------------------------------------------
 # NETWORK SUBSYSTEM
 # -----------------------------------------------------------------------------
 netstat -tuan    	    > "${DNETWORK}/netstat.txt"
 ifconfig -a             > "${DNETWORK}/ifconfig.txt"
-connmanctl technologies > "${DNETWORK}/connman-technologies.txt"
-connmanctl services     > "${DNETWORK}/connman-services.txt"
-iw dev                  > "${DNETWORK}/iw-dev.txt" 2>/dev/null
-iw phy phy0 info        > "${DNETWORK}/iw-phy0-info.txt" 2>/dev/null
 ip a                    > "${DNETWORK}/ip_addr_show.txt"
+ip route                > "${DNETWORK}/ip_route.txt"
+f_cp /etc/resolv.conf "${DNETWORK}"
+if pidof connmand >/dev/null; then
+    capture "${DNETWORK}/connman-technologies.txt" connmanctl technologies
+    capture "${DNETWORK}/connman-services.txt"     connmanctl services
+    # network names, in clear and hex in the service id
+    sed -i -E 's/^(....)[^ ].* (wifi_[0-9a-f]+_)[0-9a-f]+(_.*)$/\1[ssid] \2[ssid]\3/' "${DNETWORK}/connman-services.txt"
+fi
+if test -n "$(ls /sys/class/ieee80211 2>/dev/null)"; then
+    capture "${DNETWORK}/iw-dev.txt" iw dev
+    sed -i -e 's/^\(\s*ssid \).*$/\1[ssid]/' "${DNETWORK}/iw-dev.txt"
+    capture "${DNETWORK}/iw-reg.txt" iw reg get
+    for P in $(ls /sys/class/ieee80211); do
+        capture "${DNETWORK}/iw-${P}-info.txt" iw phy "${P}" info
+    done
+fi
 
 # -----------------------------------------------------------------------------
-# HARDWARE (Storage, USB, PCI)
+# HARDWARE (Storage, USB, PCI, Memory, Power)
 # -----------------------------------------------------------------------------
 lsmod 	         	    > "${DHARDWARE}/lsmod.txt"
 df -h 	         	    > "${DHARDWARE}/df.txt"
+df -i                   > "${DHARDWARE}/df_inodes.txt"
 mount                   > "${DHARDWARE}/mount_options.txt"
-lsusb            	    > "${DHARDWARE}/lsusb.txt" 2>/dev/null
-lsusb -v         	    > "${DHARDWARE}/lsusb_v.txt" 2>/dev/null
-lspci                   > "${DHARDWARE}/lspci.txt"
-lspci -v                > "${DHARDWARE}/lspci_v.txt"
+capture "${DHARDWARE}/lsusb.txt"   lsusb
+capture "${DHARDWARE}/lsusb_v.txt" lsusb -v
+capture "${DHARDWARE}/lspci.txt"   lspci
+capture "${DHARDWARE}/lspci_v.txt" lspci -v
 blkid                   > "${DHARDWARE}/disks.txt"
+lsblk -f                > "${DHARDWARE}/lsblk.txt"
+free -m                 > "${DHARDWARE}/memory.txt"
+cat /proc/meminfo      >> "${DHARDWARE}/memory.txt"
+dmesg | grep -iE "firmware.*(fail|error|not found)|direct firmware load" > "${DHARDWARE}/firmware_errors.txt"
+
+for P in /sys/class/power_supply/*; do
+    test -e "${P}/uevent" || continue
+    echo "--- $(basename "${P}") ---"
+    cat "${P}/uevent"
+done > "${DHARDWARE}/power_supply.txt" 2>/dev/null
 
 # Disk Health (Smartctl)
 if command -v smartctl >/dev/null; then
     for drive in /dev/sd? /dev/nvme?n?; do
         if [ -e "$drive" ]; then
             NAME=$(basename "$drive")
-            smartctl -H -A "$drive" > "${DHARDWARE}/smart_${NAME}.txt" 2>/dev/null
+            capture "${DHARDWARE}/smart_${NAME}.txt" smartctl -H -A "$drive"
         fi
     done
 fi
@@ -140,23 +235,28 @@ fi
 # -----------------------------------------------------------------------------
 # DISPLAY SUBSYSTEM (GPU, DRM, X11, Wayland)
 # -----------------------------------------------------------------------------
-command -v tvservice >/dev/null && tvservice -m CEA 	> "${DDISPLAY}/tvservice-CEA.txt" 2>/dev/null
-command -v tvservice >/dev/null && tvservice -m DMT 	> "${DDISPLAY}/tvservice-DMT.txt" 2>/dev/null
+command -v tvservice >/dev/null && capture "${DDISPLAY}/tvservice-CEA.txt" tvservice -m CEA
+command -v tvservice >/dev/null && capture "${DDISPLAY}/tvservice-DMT.txt" tvservice -m DMT
 
-# Graphics: OpenGL (glxinfo)
-if command -v glxinfo >/dev/null; then
-    glxinfo > "${DDISPLAY}/glxinfo.txt" 2>/dev/null
+for R in listOutputs currentOutput outputModel currentMode currentResolution refreshRate getRotation getDisplayMode getDisplayComp listModes; do
+    echo "--- ${R} ---"
+    batocera-resolution "${R}"
+done > "${DDISPLAY}/batocera-resolution.txt" 2>&1
+
+# Graphics: X11 (glxinfo, xrandr)
+if test -n "${DISPLAY}"; then
+    command -v glxinfo >/dev/null && capture "${DDISPLAY}/glxinfo.txt"          glxinfo
+    command -v xrandr >/dev/null  && capture "${DDISPLAY}/xrandr.txt"           xrandr
+    command -v xrandr >/dev/null  && capture "${DDISPLAY}/xrandr-providers.txt" xrandr --listproviders
 fi
 
-# Graphics: X11 (xrandr) - Restricted to x86 architectures
-if [ "${V_ARCH}" = "x86" -o "${V_ARCH}" = "x86_64" ]; then
-    if command -v xrandr >/dev/null; then
-        xrandr                  > "${DDISPLAY}/xrandr.txt" 2>/dev/null
-        xrandr --listproviders  > "${DDISPLAY}/xrandr-providers.txt" 2>/dev/null
-    fi
+# Graphics: Wayland
+if test -n "${WAYLAND_DISPLAY}"; then
+    command -v wlr-randr >/dev/null && capture "${DDISPLAY}/wlr-randr.txt" wlr-randr
 fi
+command -v eglinfo >/dev/null && capture "${DDISPLAY}/eglinfo.txt" eglinfo -B
 
-# Graphics: Wayland / DRM / KMS
+# Graphics: DRM / KMS
 # Raw DRM status from kernel
 for card in /sys/class/drm/card*-*; do
     if [ -e "$card/status" ]; then
@@ -164,18 +264,21 @@ for card in /sys/class/drm/card*-*; do
         cat "$card/status" >> "${DDISPLAY}/drm_status.txt" 2>/dev/null
         cat "$card/enabled" >> "${DDISPLAY}/drm_status.txt" 2>/dev/null
         cat "$card/modes" >> "${DDISPLAY}/drm_status.txt" 2>/dev/null
+        if command -v edid-decode >/dev/null && test -s "$card/edid"; then
+            capture "${DDISPLAY}/edid-$(basename "$card").txt" edid-decode "$card/edid"
+        fi
     fi
 done
 
 # Modetest (KMS debugging)
 if command -v modetest >/dev/null; then
-    modetest > "${DDISPLAY}/modetest_generic.txt" 2>/dev/null
+    capture "${DDISPLAY}/modetest_generic.txt" modetest
 fi
 
 # Vulkan
 if command -v vulkaninfo >/dev/null; then
-    vulkaninfo --summary > "${DDISPLAY}/vulkan_summary.txt" 2>/dev/null
-    vulkaninfo > "${DDISPLAY}/vulkan_info.txt" 2>/dev/null
+    capture "${DDISPLAY}/vulkan_summary.txt" vulkaninfo --summary
+    capture "${DDISPLAY}/vulkan_info.txt"    vulkaninfo
 fi
 
 # Display related logs
@@ -200,21 +303,37 @@ f_cp /userdata/system/configs/emulationstation/es_settings.cfg "${DCONFIGS}"
 f_cp /userdata/system/configs/emulationstation/es_input.cfg    "${DCONFIGS}"
 f_cp /boot/batocera-boot.conf                                  "${DCONFIGS}"
 
-batocera-systems        > "${DCONFIGS}/bios.txt" 2>/dev/null
+capture "${DCONFIGS}/bios.txt" batocera-systems
 
 # Labwc Configs (if present)
 if [ -f /var/log/labwc.log ]; then
     d_cp /userdata/system/.config/labwc                        "${DCONFIGS}/labwc"
 fi
 
+# emulator configs written since the last game launch (ES writes /tmp/game.xml when it starts one)
+if test -e /tmp/game.xml; then
+    mkdir "${DCONFIGS}/lastgame"
+    (cd "${DHOME}/configs" && find . -type f -newer /tmp/game.xml -size -256k \
+         ! -path "./emulationstation/*" ! -path "./pulse/*" ! -path "*/playlists/*" ! -ipath "*cache*" ! -name "*.log" |
+     while IFS= read -r C; do
+         grep -Iq . "${C}" && cp --parents "${C}" "${DCONFIGS}/lastgame"
+     done)
+fi
+
 # -----------------------------------------------------------------------------
 # LOGS
 # -----------------------------------------------------------------------------
-# Copy entire logs folder
-d_cp /userdata/system/logs                                     "${TMPDIR}"
+# Copy entire logs folder, core dumps are handled below
+tar -C "${DHOME}" --exclude='logs/core.*' -cf - logs 2>/dev/null | tar -C "${TMPDIR}" -xf -
+find "${DLOGS}" -type f -size +1M | while IFS= read -r L; do
+    tail -c 1M "${L}" > "${L}.tail" && mv "${L}.tail" "${L}"
+done
 # Copy specific logs
 f_cp /var/log/messages                                         "${DLOGS}"
 f_cp /userdata/system/configs/emulationstation/es_log.txt      "${DLOGS}"
+f_cp /userdata/system/configs/emulationstation/es_log.0.txt    "${DLOGS}"
+f_cp /var/log/hotkeygen.log                                    "${DLOGS}"
+f_cp /var/log/controlcenter-crash.log                          "${DLOGS}"
 
 if [ -f /tmp/resize.log ]; then
     f_cp /tmp/resize.log                                       "${DLOGS}"
@@ -235,7 +354,7 @@ fi
 # -----------------------------------------------------------------------------
 # Clear passwords etc
 # filter some dangerous options (may include some path with /userdata)
-sed -i -e s+"^.*password.*$"+""+gI "${DLOGS}/logs/"*.log 2>/dev/null
+sed -i -e s+"^.*password.*$"+""+gI -e s+"^.*token.*$"+""+gI "${DLOGS}/"*.log "${DLOGS}/"*.txt "${DLOGS}/messages" 2>/dev/null
 sed -i -e s+"^.*user.*$"+""+gI "${DCONFIGS}/es_settings.cfg"
 sed -i -e s+"^.*pass.*$"+""+gI "${DCONFIGS}/es_settings.cfg"
 sed -i -e s+"^.*wifi.*$"+""+gI "${DCONFIGS}/batocera.conf"
@@ -243,6 +362,9 @@ sed -i -e s+"^.*retroachievements.*$"+""+gI "${DCONFIGS}/batocera.conf"
 sed -i -e s+"^.*password.*$"+""+gI "${DCONFIGS}/batocera.conf"
 sed -i -e s+"^.*token.*$"+""+gI "${DCONFIGS}/batocera.conf"
 sed -i -e s+"^.*wifi.*$"+""+gI "${DCONFIGS}/batocera-boot.conf"
+if test -d "${DCONFIGS}/lastgame"; then
+    find "${DCONFIGS}/lastgame" -type f -exec sed -i -e s+"^.*pass.*$"+""+gI -e s+"^.*token.*$"+""+gI -e s+"^.*username.*$"+""+gI {} +
+fi
 
 # -----------------------------------------------------------------------------
 # PERIPHERALS & EXTRAS
@@ -251,34 +373,43 @@ sed -i -e s+"^.*wifi.*$"+""+gI "${DCONFIGS}/batocera-boot.conf"
 #d_cp /userdata/system/configs                           "${TMPDIR}/configs", disabled, too big
 
 # joysticks
-DJOYS="${TMPDIR}/joysticks"
 find /dev/input > "${DJOYS}/inputs.txt"
+f_cp /proc/bus/input/devices "${DJOYS}/input_devices.txt"
 for J in /dev/input/event*
 do
     N=$(basename ${J})
     evtest --info "${J}"          > "${DJOYS}/evtest.${N}.txt"
     udevadm info -q all -n "${J}" > "${DJOYS}/udevadm.${N}.txt"
 done
-sdl2-jstest -l > "${DJOYS}/sdl2-jstest.txt" 2>/dev/null
+capture "${DJOYS}/sdl2-jstest.txt" sdl2-jstest -l
 cp "/var/run/sinden/p"*"/sinden-"*".log" "${DJOYS}" 2>/dev/null
 
 # lirc
-DLIRC="${TMPDIR}/lirc"
-f_cp "${DHOME}/.config/lirc/lircd.conf" "${DLIRC}"
+if test -e "${DHOME}/.config/lirc/lircd.conf"; then
+    mkdir "${TMPDIR}/lirc"
+    cp "${DHOME}/.config/lirc/lircd.conf" "${TMPDIR}/lirc"
+fi
 
-# kodi
-DKODI="${TMPDIR}/kodi"
-f_cp "${DHOME}/.kodi/userdata/Lircmap.xml"          	      "${DKODI}"
-d_cp "${DHOME}/.kodi/userdata/addon_data/peripheral.joystick" "${DKODI}"
-d_cp "${DHOME}/.kodi/userdata/remotes"              	      "${DKODI}"
-f_cp "${DHOME}/.kodi/temp/kodi.log"                 	      "${DKODI}"
+# kodi, once it has run
+if test -e "${DHOME}/.kodi/temp/kodi.log"; then
+    DKODI="${TMPDIR}/kodi"
+    mkdir "${DKODI}"
+    f_cp "${DHOME}/.kodi/temp/kodi.log"                       "${DKODI}"
+    f_cp "${DHOME}/.kodi/temp/kodi.old.log"                   "${DKODI}"
+    f_cp "${DHOME}/.kodi/userdata/Lircmap.xml"                "${DKODI}"
+    d_cp "${DHOME}/.kodi/userdata/addon_data/peripheral.joystick" "${DKODI}"
+    d_cp "${DHOME}/.kodi/userdata/remotes"                    "${DKODI}"
+fi
 
-# core dumps
-DCORE="${TMPDIR}/coredumps"
-for C in /userdata/system/logs/core.*
-do
-    f_cp "${C}" "${DCORE}"
-done
+# core dumps: list them all, copy only the small ones
+if ls "${DHOME}/logs/"core.* >/dev/null 2>&1; then
+    DCORE="${TMPDIR}/coredumps"
+    mkdir "${DCORE}"
+    ls -l "${DHOME}/logs/"core.* > "${DCORE}/list.txt"
+    find "${DHOME}/logs" -maxdepth 1 -name 'core.*' -size -20M -exec cp {} "${DCORE}" \;
+fi
+
+find "${TMPDIR}" -empty -delete
 
 if ! (cd "${GTMP}" && tar cf -  "${REPORTNAME}" | gzip -c > "${OUTPUTFILE}")
 then
