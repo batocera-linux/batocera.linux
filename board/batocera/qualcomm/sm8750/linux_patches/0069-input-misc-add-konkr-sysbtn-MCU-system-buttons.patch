@@ -19,11 +19,12 @@ between — a frame written during the device-suspend window never drains
 reboot.
 
 ---
+
 diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
-index 1f6c57dba..c0383376f 100644
+index 169768e3d..36fde66b4 100644
 --- a/drivers/input/misc/Kconfig
 +++ b/drivers/input/misc/Kconfig
-@@ -993,4 +993,17 @@ config INPUT_STPMIC1_ONKEY
+@@ -1023,4 +1023,17 @@ config INPUT_STPMIC1_ONKEY
  	  To compile this driver as a module, choose M here: the
  	  module will be called stpmic1_onkey.
  
@@ -42,12 +43,12 @@ index 1f6c57dba..c0383376f 100644
 +
  endif
 diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
-index 2281d6803..314d56864 100644
+index 1339619f0..8960460c8 100644
 --- a/drivers/input/misc/Makefile
 +++ b/drivers/input/misc/Makefile
-@@ -50,6 +50,7 @@ obj-$(CONFIG_INPUT_IQS269A)		+= iqs269a.o
- obj-$(CONFIG_INPUT_IQS626A)		+= iqs626a.o
+@@ -52,6 +52,7 @@ obj-$(CONFIG_INPUT_IQS626A)		+= iqs626a.o
  obj-$(CONFIG_INPUT_IQS7222)		+= iqs7222.o
+ obj-$(CONFIG_INPUT_ISA1200_HAPTIC)	+= isa1200.o
  obj-$(CONFIG_INPUT_KEYSPAN_REMOTE)	+= keyspan_remote.o
 +obj-$(CONFIG_INPUT_KONKR_SYSBTN)	+= konkr_sysbtn.o
  obj-$(CONFIG_INPUT_KXTJ9)		+= kxtj9.o

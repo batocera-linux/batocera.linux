@@ -241,7 +241,7 @@ index fd762b5d7..49a65a44b 100644
 +}
 +
  static int ath12k_qmi_wlanfw_mode_send(struct ath12k_base *ab,
- 				       u32 mode)
+ 				       enum ath12k_qmi_firmware_mode mode)
  {
 @@ -3808,6 +4003,14 @@ int ath12k_qmi_event_load_bdf(struct ath12k_qmi *qmi)
  		}
@@ -288,5 +288,5 @@ index 2a63e214e..6cb557746 100644
 +};
 +
  #define QMI_WLANFW_M3_INFO_REQ_MSG_V01_MAX_MSG_LEN	18
- #define QMI_WLANFW_M3_INFO_RESP_MSG_V01_MAX_MSG_LEN	7
- #define QMI_WLANFW_M3_INFO_RESP_V01		0x003C
+ #define QMI_WLANFW_M3_INFO_REQ_V01		0x003C
+ 

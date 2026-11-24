@@ -1631,7 +1631,8 @@
 };
 
 &pcieport0 {
-	wake-gpios = <&tlmm 104 GPIO_ACTIVE_HIGH>;
+	/* Batocera - PCIe WAKE# is active low, 7.3 requests it as a level wake IRQ */
+	wake-gpios = <&tlmm 104 GPIO_ACTIVE_LOW>;
 	reset-gpios = <&tlmm 102 GPIO_ACTIVE_LOW>;
 
 	wifi@0 {
@@ -1708,4 +1709,9 @@
 	firmware-name = "qcom/sm8750/konkr/pfe/cdsp.mbn",
 			"qcom/sm8750/konkr/pfe/cdsp_dtb.mbn";
 	status = "okay";
+};
+
+/* Batocera - QCE depends on BROKEN, an unbound consumer keeps the interconnects at INT_MAX */
+&crypto {
+	status = "disabled";
 };
