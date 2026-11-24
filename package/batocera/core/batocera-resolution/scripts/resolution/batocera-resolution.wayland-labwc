@@ -2,6 +2,8 @@
 
 export LC_ALL=C
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/var/run}"
+# a game inside gamescope has WAYLAND_DISPLAY hidden or pointing at gamescope, labwc is the local display
+[ -n "${GAMESCOPE_WAYLAND_DISPLAY}" ] && unset WAYLAND_DISPLAY
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-$(getLocalWaylandDisplay)}"
 
 log="/userdata/system/logs/display.log"

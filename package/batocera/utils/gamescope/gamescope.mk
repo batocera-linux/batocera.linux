@@ -45,7 +45,7 @@ GAMESCOPE_CONF_OPTS = \
 	-Dbenchmark=disabled
 endif
 
-$(eval $(call register,gamescope._shared.emulator.yml gamescope._global.emulator.yml))
+$(eval $(call register,gamescope._shared.emulator.yml gamescope._emulators.emulator.yml))
 
 $(eval $(meson-package))
 $(eval $(emulator-info-package))

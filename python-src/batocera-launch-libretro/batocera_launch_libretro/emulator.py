@@ -219,6 +219,11 @@ class Libretro(SpecialDecorationsMixin, Emulator):
     def handles_bezels(self) -> bool:
         return True
 
+    @property
+    def supports_gamescope(self) -> bool:
+        # built without X11 on labwc images, and gamescope's Wayland mis-sizes it until RetroArch is bumped
+        return False
+
     @cached_property
     def config_dir(self) -> Path:
         return CONFIGS / 'retroarch'
