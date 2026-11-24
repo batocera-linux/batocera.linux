@@ -1,0 +1,166 @@
+From: virtudude <virtudude@protonmail.com>
+Subject: [PATCH] drm/panel: add a DT-overridable brightness levels helper
+
+Panels whose brightness register is not linear in emitted light (common
+for DSI DCS backlights, where the value is a gamma-domain drive word)
+break userspace brightness models that assume the sysfs scale is linear
+in luminance. Add a small helper that expands a sparse output-levels
+table into a full translation LUT at probe, with the driver supplying a
+per-panel default and boards able to override it through the
+brightness-levels / num-interpolated-steps properties in the panel node,
+following the pwm-backlight binding semantics. Tables must start at zero
+and be nondecreasing; a present-but-malformed override is ignored with a
+warning in favor of the driver default; a board whose module is already
+luminance-linear can declare the identity curve. Upstreaming needs a
+binding schema for these properties on panel nodes (panel-common.yaml or
+similar).
+
+Carried for the Chipone ICNA35XX driver (0530-chipone-icna35xx-panel.patch),
+its only caller so far. Applies later than it in lexical order, which is
+harmless -- the files do not overlap and nothing is compiled until every patch
+has been applied.
+
+---
+--- a/drivers/gpu/drm/drm_panel.c
++++ b/drivers/gpu/drm/drm_panel.c
+@@ -23,6 +23,7 @@
+ 
+ #include <linux/backlight.h>
+ #include <linux/err.h>
++#include <linux/math64.h>
+ #include <linux/export.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+@@ -715,6 +716,111 @@
+ }
+ EXPORT_SYMBOL(devm_drm_panel_add_follower);
+ 
++/**
++ * drm_panel_bl_levels_init - build a brightness translation table
++ * @levels: table to initialize
++ * @dev: panel device, used for allocation and DT lookup
++ * @fallback: driver default output levels at uniform input spacing
++ * @num_fallback: entries in @fallback
++ * @num_interp: interpolated steps between consecutive fallback levels
++ * @max: maximum brightness on the input scale, at most U16_MAX
++ *
++ * Panels whose brightness register is not linear in emitted light can use
++ * this to expose a luminance-linear scale: list the register values that
++ * uniform steps of the linear input scale should produce, and translate
++ * writes through the interpolated table. A board can override the driver's
++ * curve with the brightness-levels and num-interpolated-steps device tree
++ * properties, following the pwm-backlight binding semantics. Tables must
++ * start at zero and be nondecreasing; invalid DT tables are ignored with a
++ * warning and the driver default is used.
++ *
++ * Return: 0 on success or a negative error code on failure.
++ */
++int drm_panel_bl_levels_init(struct drm_panel_bl_levels *levels,
++			     struct device *dev,
++			     const u16 *fallback, unsigned int num_fallback,
++			     unsigned int num_interp, unsigned int max)
++{
++	struct device_node *np = dev->of_node;
++	u32 *dt_levels = NULL;
++	unsigned int i, j, num = num_fallback, interp = num_interp;
++	int num_dt = 0;
++
++	if (!max || max > 0xffff)
++		return -EINVAL;
++
++	if (np && of_property_present(np, "brightness-levels")) {
++		u32 dt_interp = 1;
++		bool ok = false;
++
++		num_dt = of_property_count_u32_elems(np, "brightness-levels");
++		of_property_read_u32(np, "num-interpolated-steps", &dt_interp);
++		if (num_dt > 1 && (u64)(num_dt - 1) * dt_interp == max) {
++			dt_levels = devm_kcalloc(dev, num_dt, sizeof(*dt_levels),
++						 GFP_KERNEL);
++			if (!dt_levels)
++				return -ENOMEM;
++			ok = !of_property_read_u32_array(np, "brightness-levels",
++							 dt_levels, num_dt);
++			if (ok)
++				ok = dt_levels[0] == 0;
++			for (i = 1; ok && i < num_dt; i++)
++				ok = dt_levels[i] <= 0xffff &&
++				     dt_levels[i] >= dt_levels[i - 1];
++		}
++		if (ok) {
++			num = num_dt;
++			interp = dt_interp;
++		} else {
++			dev_warn(dev, "ignoring invalid brightness-levels\n");
++			dt_levels = NULL;
++		}
++	}
++
++	if (!interp || num < 2 || (u64)(num - 1) * interp != max)
++		return -EINVAL;
++	if (!dt_levels) {
++		if (fallback[0] != 0)
++			return -EINVAL;
++		for (i = 1; i < num; i++)
++			if (fallback[i] < fallback[i - 1])
++				return -EINVAL;
++	}
++
++	levels->lut = devm_kcalloc(dev, max + 1, sizeof(*levels->lut),
++				   GFP_KERNEL);
++	if (!levels->lut)
++		return -ENOMEM;
++
++	for (i = 0; i < num - 1; i++) {
++		u32 a = dt_levels ? dt_levels[i] : fallback[i];
++		u32 b = dt_levels ? dt_levels[i + 1] : fallback[i + 1];
++
++		for (j = 0; j < interp; j++)
++			levels->lut[i * interp + j] =
++				a + div_u64((u64)(b - a) * j, interp);
++	}
++	levels->lut[max] = dt_levels ? dt_levels[num - 1] : fallback[num - 1];
++	levels->max = max;
++
++	return 0;
++}
++EXPORT_SYMBOL(drm_panel_bl_levels_init);
++
++/**
++ * drm_panel_bl_levels_map - translate a brightness value through the table
++ * @levels: table built by drm_panel_bl_levels_init()
++ * @brightness: value on the input scale
++ *
++ * Return: the device brightness level for @brightness.
++ */
++u16 drm_panel_bl_levels_map(const struct drm_panel_bl_levels *levels,
++			    u16 brightness)
++{
++	return levels->lut[min_t(unsigned int, brightness, levels->max)];
++}
++EXPORT_SYMBOL(drm_panel_bl_levels_map);
++
+ #if IS_REACHABLE(CONFIG_BACKLIGHT_CLASS_DEVICE)
+ /**
+  * drm_panel_of_backlight - use backlight device node for backlight
+--- a/include/drm/drm_panel.h
++++ b/include/drm/drm_panel.h
+@@ -379,6 +379,18 @@
+ }
+ #endif
+ 
++struct drm_panel_bl_levels {
++	u16 *lut;
++	unsigned int max;
++};
++
++int drm_panel_bl_levels_init(struct drm_panel_bl_levels *levels,
++			     struct device *dev,
++			     const u16 *fallback, unsigned int num_fallback,
++			     unsigned int num_interp, unsigned int max);
++u16 drm_panel_bl_levels_map(const struct drm_panel_bl_levels *levels,
++			    u16 brightness);
++
+ #if IS_ENABLED(CONFIG_DRM_PANEL) && (IS_BUILTIN(CONFIG_BACKLIGHT_CLASS_DEVICE) || \
+ 	(IS_MODULE(CONFIG_DRM) && IS_MODULE(CONFIG_BACKLIGHT_CLASS_DEVICE)))
+ int drm_panel_of_backlight(struct drm_panel *panel);

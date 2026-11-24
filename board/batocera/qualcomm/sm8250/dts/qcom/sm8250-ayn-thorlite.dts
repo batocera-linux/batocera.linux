@@ -1843,3 +1843,8 @@
 };
 
 #include "sm8250-pwm-fan-cooling.dtsi"
+
+/* batocera - QCE depends on BROKEN, an unbound consumer keeps the interconnects at INT_MAX */
+&crypto {
+	status = "disabled";
+};

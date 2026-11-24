@@ -1,0 +1,31 @@
+From: xenocideend (with Claude Opus 5.5) <xenocideend@gmail.com>
+Subject: [PATCH] usb: dwc3: qcom-legacy: don't crash in suspend when the host
+ is gone
+
+dwc3_qcom_read_usb2_speed() reads the xHCI host's usb_hcd unconditionally.
+If the host failed to probe or restore (xhci probe -110 after a failed
+resume) its drvdata is NULL, and the next suspend with wakeup enabled
+oopses in dwc3_qcom_suspend().
+
+Return USB_SPEED_UNKNOWN when there is no host, the same answer as when no
+device is attached.
+
+Seen on a Retroid Pocket 5 after a failed restore (pstore oops in
+dwc3_qcom_suspend). Checked by forcing host mode, unbinding the xhci
+driver and suspending: it suspends and resumes cleanly.
+
+---
+--- a/drivers/usb/dwc3/dwc3-qcom-legacy.c
++++ b/drivers/usb/dwc3/dwc3-qcom-legacy.c
+@@ -326,7 +326,10 @@
+ 	/*
+ 	 * FIXME: Fix this layering violation.
+ 	 */
+-	hcd = platform_get_drvdata(dwc->xhci);
++	hcd = dwc->xhci ? platform_get_drvdata(dwc->xhci) : NULL;
++	/* no host (xhci failed to probe or restore): nothing to read, and no crash */
++	if (!hcd || !hcd->self.root_hub)
++		return USB_SPEED_UNKNOWN;
+ 
+ #ifdef CONFIG_USB
+ 	udev = usb_hub_find_child(hcd->self.root_hub, port_index + 1);
