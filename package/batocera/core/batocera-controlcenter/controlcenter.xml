@@ -16,6 +16,7 @@
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
+		<tab display="Monitor" target="Monitor" />
 		<tab display="Outputs" target="Outputs" />
 		<tab display="Record" target="Record" />
 	</feature>
@@ -82,6 +83,12 @@
 				<doc display="Manual" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .manual | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="manual" refresh="3"/>
 				<doc display="Map" content='${IMG=$(curl http://127.0.0.1:1234/runningGame | jq -r .map | sed "s/null//"); [ -n "$IMG" ] &amp;&amp; [ "$IMG" != "null" ] &amp;&amp; echo http://127.0.0.1:1234$IMG}' id="map" refresh="3"/>
 			</feature>
+			<feature>
+				<button display="Save state" action="hotkeygen --send save_state" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  save_state-" &amp;&amp; echo 1}' />
+				<button display="Load state" action="hotkeygen --send restore_state" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  restore_state-" &amp;&amp; echo 1}' />
+				<button_confirm display="Reset game" action="hotkeygen --send reset" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  reset-" &amp;&amp; echo 1}' />
+				<button display="Screenshot" action="hotkeygen --send screenshot" afterclick="bcc_close" />
+			</feature>
 			<feature display="Mouse Pointer">
 				<switch value='${cat /var/run/bcc-mouse || echo 0}'
 					action_on="batocera-mouse show; echo 1 >/var/run/bcc-mouse" action_off="batocera-mouse hide; echo 0 >/var/run/bcc-mouse"
@@ -100,12 +107,12 @@
 	<hgroup name="System" display="System">
 		<feature>
 				<button display="Vol -" action="batocera-audio setSystemVolume -5" updateids="volumebar" />
-				<progressbar id="volumebar" display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" />
+				<progressbar id="volumebar" display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" action_set="batocera-audio setSystemVolume {value}" />
 				<button display="Vol +" action="batocera-audio setSystemVolume +5" updateids="volumebar" />
 		</feature>
 		<feature if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
 				<button display="Bright -" action="batocera-brightness - 10" updateids="brightnessbar" />
-				<progressbar id="brightnessbar" display="${batocera-brightness}" min="0" max="100" refresh="1" />
+				<progressbar id="brightnessbar" display="${batocera-brightness}" min="0" max="100" refresh="1" action_set="batocera-brightness {value}" />
 				<button display="Bright +" action="batocera-brightness + 10" updateids="brightnessbar" />
 		</feature>
 		<feature display="Mute Sound" group="Audio/Video">
@@ -114,10 +121,26 @@
 		</feature>
 		<feature display="Plane Mode">
 			<switch value="${batocera-planemode status}"
-			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left"/>
+			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left" updateids="wifi bluetooth"/>
 		</feature>
-		<feature display="Stuck emulator?">
-			<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" afterclick="bcc_close" />
+		<feature display="Wi-Fi" if='${ls -d /sys/class/net/*/wireless 2&gt;/dev/null | head -n1}'>
+			<switch id="wifi" value='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; [ "$(batocera-settings-get wifi.enabled)" = "1" ] &amp;&amp; echo true}'
+			enabled='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; echo 1}' disabled_display="Plane mode"
+			action_on="batocera-wifi enable" action_off="batocera-wifi disable" refresh="2" align="left"/>
+		</feature>
+		<feature display="Bluetooth" if='${ls -d /sys/class/bluetooth/hci* 2&gt;/dev/null | head -n1}'>
+			<switch id="bluetooth" value='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; [ "$(batocera-settings-get controllers.bluetooth.enabled)" = "1" ] &amp;&amp; echo true}'
+			enabled='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; echo 1}' disabled_display="Plane mode"
+			action_on="batocera-bluetooth enable" action_off="batocera-bluetooth disable" refresh="2" align="left"/>
+		</feature>
+		<feature display="Pause game">
+			<switch value='${[ "$(batocera-settings-get controlcenter.pause)" = "1" ] &amp;&amp; echo true}'
+			action_on="batocera-settings-set controlcenter.pause 1" action_off="batocera-settings-set controlcenter.pause 0" refresh="5" align="left"
+			enabled='${curl -s http://127.0.0.1:1234/runningGame | jq -e .name &gt;/dev/null &amp;&amp; echo 1}' disabled_display="No game running"/>
+		</feature>
+		<feature display="Kill emulator?">
+			<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" afterclick="bcc_close"
+			enabled='${curl -s http://127.0.0.1:1234/runningGame | jq -e .name &gt;/dev/null &amp;&amp; echo 1}' disabled_display="No game running" />
 		</feature>
 		<feature name="PowerMode" display="Power Mode">
 			<choice display="Default"      action="batocera-power-mode default" />
@@ -128,11 +151,11 @@
 			<choice display="Saver"        action="batocera-power-mode Powersaver" />
 			<text display="${cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" refresh="1" />
 		</feature>
-                <feature name="Screen" display="BCC screen" if='${[ "$(batocera-settings-get controlcenter.screen)" ] || [ "$(batocera-resolution listOutputs | wc -l)" -gt 1 ] &amp;&amp; echo 1}' refresh="5">
-                        <choice display="Auto" action="batocera-settings-set controlcenter.screen &quot;&quot;" afterclick="bcc_rescreen" />
-                        <choice_cmd display="${batocera-resolution listOutputs}" action="batocera-settings-set controlcenter.screen" action_arg="${batocera-resolution listOutputs}" afterclick="bcc_rescreen" cache="5" />
-                        <text display="Now: ${[ -n &quot;$(batocera-settings-get controlcenter.screen | tr -d &apos;&quot;&apos;)&quot; ] &amp;&amp; batocera-settings-get controlcenter.screen | tr -d &apos;&quot;&apos; || echo auto}" refresh="1" />
-                </feature>
+		<feature name="Screen" display="Control center screen" if='${[ "$(batocera-resolution listOutputs | wc -l)" -gt 1 ] &amp;&amp; echo 1}'>
+			<choice display="Secondary" action="batocera-settings-set controlcenter.screen secondary" afterclick="bcc_rescreen" />
+			<choice display="Primary"   action="batocera-settings-set controlcenter.screen primary" afterclick="bcc_rescreen" />
+			<text display='${[ "$(batocera-settings-get controlcenter.screen)" = primary ] &amp;&amp; echo Primary || echo Secondary}' refresh="2" />
+		</feature>
 		<vgroup>
 		  <feature display="Network IP address:">
 			<text display='${printf "%s " "$(ip -4 addr show | grep -oP "(?&lt;=inet\s)\d+(\.\d+){3}" | grep -v "127.0.0.1" | head -n1)" ; for d in /sys/class/net/*; do n=$(basename "$d"); if [ "$n" != lo ]; then printf "%s: %s, " "$n" "$(cat "$d/operstate")"; fi; done | sed "s/, $//"}' refresh="5" align="left" />
@@ -142,6 +165,32 @@
 		  </feature>
 		</vgroup>
 
+	</hgroup>
+
+	<hgroup name="Monitor" display="Monitor">
+		<feature display="CPU">
+			<graph display="${batocera-resources cpu}" refresh="1" history="60" />
+			<text display="${batocera-resources cpu-detail}" refresh="2" />
+		</feature>
+		<feature display="GPU">
+			<graph display="${batocera-resources gpu}" refresh="1" history="60" />
+			<text display="${batocera-resources gpu-detail}" refresh="2" />
+		</feature>
+		<feature display="Memory">
+			<graph display="${batocera-resources mem}" refresh="1" history="60" />
+			<text display="${batocera-resources mem-detail}" refresh="2" />
+		</feature>
+		<feature display="Temperature">
+			<graph display="${batocera-resources temp}" refresh="1" history="60" min="30" max="100" unit="°C" warn="80" />
+		</feature>
+		<feature display="Battery" if="${batocera-resources battery}">
+			<graph display="${batocera-resources battery}" refresh="5" history="60" warn="101" />
+			<text display="${batocera-resources battery-detail}" refresh="2" />
+		</feature>
+		<feature display="Network">
+			<graph display="${batocera-resources net}" refresh="1" history="60" max="auto" unit=" KB/s" warn="-1" />
+			<text display="${batocera-resources net-detail}" refresh="2" />
+		</feature>
 	</hgroup>
 
 	<hgroup name="Outputs" display="Outputs">
@@ -158,13 +207,6 @@
 			action_arg="${batocera-audio list-profiles | grep -vE '^auto' | cut -f 1}"
 			cache="10" />
 	    <text display="${batocera-audio get-profile | cut -f 2}" refresh="3" />
-	  </feature>
-	  <feature display="Video Output" if="${curl http://127.0.0.1:1234/runningGame 2&gt;/dev/null | jq -r '.systemName' | grep -qE '^null$' &amp;&amp; batocera-resolution listOutputs | wc -l | grep -vE '^[01]$' }" refresh="5">
-	    <choice_cmd display="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 2}"
-			action="batocera-switch-screen-checker --switch"
-			action_arg="${batocera-switch-screen-checker --switch-list | cut -d ';' -f 1}"
-			cache="10" />
-	    <text display="${batocera-switch-screen-checker --switch-get | cut -d ';' -f 2}" refresh="3" />
 	  </feature>
 	</hgroup>
 	<vgroup name="Bottom bar" role="footer">

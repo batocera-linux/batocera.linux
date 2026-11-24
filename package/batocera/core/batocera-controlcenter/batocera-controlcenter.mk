@@ -3,14 +3,10 @@
 # batocera-controlcenter
 #
 ################################################################################
-# Version: Commits on Oct 30, 2026
-BATOCERA_CONTROLCENTER_VERSION = 8fd3b8452915b470436565a00ca641e592bed385
-BATOCERA_CONTROLCENTER_SITE = $(call github,lbrpdx,batocera-controlcenter,$(BATOCERA_CONTROLCENTER_VERSION))
-BATOCERA_CONTROLCENTER_STE_METHOD = git
+BATOCERA_CONTROLCENTER_VERSION = 2.0
 BATOCERA_CONTROLCENTER_LICENSE = GPL3
-BATOCERA_CONTROLCENTER_INSTALL_STAGING = YES
-
-BATOCERA_CONTROLCENTER_DEPENDENCIES = python3 python-evdev
+BATOCERA_CONTROLCENTER_SOURCE =
+BATOCERA_CONTROLCENTER_DEPENDENCIES = host-python3 host-gettext
 
 BATOCERA_CONTROLCENTER_PATH = \
     $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/core/batocera-controlcenter
@@ -28,27 +24,16 @@ define BATOCERA_CONTROLCENTER_INSTALL_TARGET_CMDS
 	mkdir -p $(TARGET_DIR)/usr/bin
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/controlcenter
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/controlcenter/resources
-	$(INSTALL) -m 0755 $(@D)/controlcenter.py  $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/style.css         $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/ui_core.py        $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/xml_utils.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/shell.py          $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/refresh.py        $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/gamepads.py       $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/DocViewer.py      $(TARGET_DIR)/usr/share/batocera/controlcenter
-	$(INSTALL) -m 0755 $(@D)/log.py            $(TARGET_DIR)/usr/share/batocera/controlcenter
 	$(INSTALL) -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/images/bato-record.gif \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter
 	$(INSTALL) -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/batocera-controlcenter-toogle.sh \
 	    $(TARGET_DIR)/usr/bin/batocera-controlcenter
 	$(INSTALL) -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/batocera-controlcenter-play-time.sh \
 	    $(TARGET_DIR)/usr/bin/batocera-controlcenter-play-time
-	$(INSTALL) -m 0755 $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml \
+	$(INSTALL) -m 0644 $(BATOCERA_CONTROLCENTER_PATH)/controlcenter.xml \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter
 	$(INSTALL) -m 0644 $(BATOCERA_CONTROLCENTER_PATH)/ra-icon.png \
 	    $(TARGET_DIR)/usr/share/batocera/controlcenter/resources/ra-icon.png
-	cd $(TARGET_DIR)/usr/bin; ln -sf ../share/batocera/controlcenter/controlcenter.py \
-	    ./batocera-controlcenter-app
 
 	# install translations
 	$(BATOCERA_CONTROLCENTER_PATH)/updatepo.sh build \

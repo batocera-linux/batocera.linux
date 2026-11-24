@@ -1,55 +1,40 @@
 #!/bin/sh
+# Shows or hides the control center; "hidden" starts it in the background at boot.
 
 PIDFILE="/var/run/batocera-controlcenter.pid"
 
 getCCPID() {
     X=$(cat "${PIDFILE}" 2>/dev/null)
-    test -z "${X}" && return 1
-
-    # valiate that the pid is still running
-    if test -e "/proc/${X}"; then
-        echo "${X}"
-        return 0
-    fi
-    return 1
+    test -n "${X}" && test -e "/proc/${X}" && echo "${X}"
 }
 
-FLAGS=
-test "$1" = "hidden" && FLAGS="--hidden"
+test "$(/usr/bin/batocera-settings-get bcc.disabled)" = "1" && exit 0
 
-NB_SCREENS=$(batocera-resolution listOutputs | wc -l)
-if [ "$NB_SCREENS" -ge 2 ]; then
-    COMP=$(batocera-resolution getDisplayComp)
-    if test "$COMP" = "labwc"; then
-        RC=/userdata/system/.config/labwc/rc.xml
-        BCC_SCREEN=$(grep -A5 "Batocera Control Center" "$RC" | grep output | sed 's,.*<output>[[:space:]]*\([[:alnum:]_-][[:alnum:]_-]*\)[[:space:]]*</output>.*,\1,')
-        RESO=$(batocera-resolution --screen "$BCC_SCREEN" currentResolution)
-        FLAGS="$FLAGS --window $RESO"
-    fi
+if test "$1" != "hidden"; then
+    curl -sf --max-time 1 http://127.0.0.1:1234/controlcenter >/dev/null 2>&1 && exit 0
 fi
+
 PIDVALUE=$(getCCPID)
-if test "$?" -eq 0; then
-    # don't toogle if the hidden argument is given
-    if test "$1" != "hidden"; then
-        # toogle
-        kill -10 "${PIDVALUE}"
-    fi
-else
-    # switch on
-    export DISPLAY=$(getLocalXDisplay)
-    if [ -f "/etc/profile.d/wayland.sh" ]; then
-        . /etc/profile.d/wayland.sh
-    fi
-
-    bccdisabled="$(/usr/bin/batocera-settings-get bcc.disabled)"
-    bcclogs="$(/usr/bin/batocera-settings-get bcc.logs)"
-    if test "$bccdisabled" != "1"; then
-        if test "$bcclogs" = "1"; then
-            CONTROLCENTER_DEBUG=1 batocera-controlcenter-app ${FLAGS} 20 >/dev/null &
-            echo "$!" >"${PIDFILE}"
-        else
-            batocera-controlcenter-app ${FLAGS} 20 >/dev/null &
-            echo "$!" >"${PIDFILE}"
-        fi
-    fi
+if test -n "${PIDVALUE}"; then
+    # don't toggle if the hidden argument is given
+    test "$1" = "hidden" || kill -USR1 "${PIDVALUE}"
+    exit 0
 fi
+
+export DISPLAY=$(getLocalXDisplay)
+if [ -f "/etc/profile.d/wayland.sh" ]; then
+    . /etc/profile.d/wayland.sh
+fi
+export HOME=/userdata/system
+
+settings_lang="$(/usr/bin/batocera-settings-get system.language)"
+if test -n "${settings_lang}"; then
+    export LC_ALL="${settings_lang}.UTF-8"
+    export LANG="${LC_ALL}"
+fi
+
+FLAGS=
+test "$1" = "hidden" && FLAGS="--controlcenter-hidden"
+
+emulationstation --controlcenter ${FLAGS} --home /userdata/system >/dev/null 2>&1 &
+echo "$!" >"${PIDFILE}"
