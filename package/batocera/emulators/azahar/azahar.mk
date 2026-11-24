@@ -77,5 +77,14 @@ endef
 
 AZAHAR_POST_INSTALL_TARGET_HOOKS = AZAHAR_EVMAPY
 
+# the git download has no .git: without these the revision is UNKNOWN and no savestate loads
+define AZAHAR_GIT_VERSION
+	$(BR2_GIT) -C $(AZAHAR_DL_DIR)/git rev-parse "refs/tags/$(AZAHAR_VERSION)^{commit}" \
+		> $(@D)/GIT-COMMIT
+	echo $(AZAHAR_VERSION) > $(@D)/GIT-TAG
+endef
+
+AZAHAR_POST_EXTRACT_HOOKS += AZAHAR_GIT_VERSION
+
 $(eval $(cmake-package))
 $(eval $(emulator-info-package))
