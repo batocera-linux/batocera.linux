@@ -158,6 +158,8 @@ class Azahar(Emulator):
                 'menu': 'KEY_F4',
                 'pause': 'KEY_F4',
                 'reset': 'KEY_F6',
+                'save_state': ['KEY_LEFTCTRL', 'KEY_C'],
+                'restore_state': ['KEY_LEFTCTRL', 'KEY_V'],
                 'screen_layout': 'KEY_F10',
                 'swap_screen': 'KEY_F9',
             },
@@ -250,6 +252,9 @@ class Azahar(Emulator):
         # Remove pop-up prompt on start
         azahar_config.set('UI', 'calloutFlags', '1')
         azahar_config.set('UI', r'calloutFlags\default', 'false')
+        # the first savestate load otherwise waits on a warning dialog
+        azahar_config.set('UI', 'saveStateWarning', 'false')
+        azahar_config.set('UI', r'saveStateWarning\default', 'false')
 
         # screenshots
         azahar_config.set('UI', r'Paths\screenshotPath', str(SCREENSHOTS))
