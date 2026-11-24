@@ -40,6 +40,8 @@ def test_defaults_follow_the_output() -> None:
         '1080',
         '-f',
         '--',
+        'env',
+        'WAYLAND_DISPLAY=none',
     ]
 
 

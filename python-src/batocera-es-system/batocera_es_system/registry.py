@@ -26,7 +26,7 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, NotRequired, Protocol, Self, TypedDict, Unpack, cast
+from typing import TYPE_CHECKING, Any, Final, Literal, NotRequired, Protocol, Self, TypedDict, Unpack, cast
 
 from batocera_common.yaml import safe_load_yaml12
 
@@ -112,6 +112,16 @@ class EmulatorInfoDict(InfoDict):
     cores: NotRequired[dict[str, CoreInfoDict]]
     systems: NotRequired[list[str | EmulatorSystemInfoDict]]
     file_extensions: NotRequired[list[str]]
+
+
+# `_emulators` overlays add their shared features to every emulator but the excluded ones
+class AllEmulatorsDict(TypedDict):
+    shared_features: list[str]
+    exclude: NotRequired[list[str]]
+
+
+_ALL_EMULATORS: Final = '_emulators'
+_POWER_OPTIONS: Final = 'POWER OPTIONS'
 
 
 class CommentDict(TypedDict):
@@ -638,6 +648,49 @@ type EmulatorsBySystemDict = dict[str, dict[str, dict[str, EmulatorInfo]]]
 type EmulatorsBySystemMapping = Mapping[str, Mapping[str, Mapping[str, EmulatorInfo]]]
 
 
+def _insert_after_power_options(
+    info: EmulatorInfo | CoreInfo, power: set[str], defined: set[str], features: list[str], /
+) -> bool:
+    names = info.shared_features or []
+    at = next((index for index, name in enumerate(names) if name in power), None)
+    if at is None:
+        return False
+
+    # ES orders groups by their first feature, so after the first run of power options is enough;
+    # features this image doesn't define never show, so they don't end the run
+    while at < len(names) and (names[at] in power or names[at] not in defined):
+        at += 1
+
+    info.shared_features = [*names[:at], *(name for name in features if name not in names), *names[at:]]
+    return True
+
+
+def _add_to_all_emulators(
+    emulators: Mapping[str, EmulatorInfo],
+    cores: Mapping[str, Mapping[str, CoreInfo]],
+    features: list[str],
+    exclude: set[str],
+    /,
+) -> None:
+    # ES lists an emulator's features before its core's, so they go in the list holding the power options
+    shared = emulators.get('_shared')
+    shared_features = (shared.custom_features or {}) if shared else {}
+    power = {name for name, feature in shared_features.items() if feature.group == _POWER_OPTIONS}
+    defined = set(shared_features)
+
+    for name, emulator in emulators.items():
+        if name == '_shared' or name in exclude or _insert_after_power_options(emulator, power, defined, features):
+            continue
+
+        inserted = False
+        for core in chain(emulator.cores.values(), cores.get(name, {}).values()):
+            inserted = _insert_after_power_options(core, power, defined, features) or inserted
+
+        if not inserted:
+            existing = emulator.shared_features or []
+            emulator.shared_features = [*(feature for feature in features if feature not in existing), *existing]
+
+
 @dataclass(slots=True)
 class Registry:
     _emulators: dict[str, EmulatorInfo]
@@ -764,6 +817,8 @@ class Registry:
         extensions: dict[str, list[Path]] = defaultdict(list)
         core_extensions: dict[str, dict[str, list[Path]]] = defaultdict(lambda: defaultdict(list))
 
+        all_emulators: list[AllEmulatorsDict] = []
+
         for file in files:
             file = Path(file)
 
@@ -776,7 +831,10 @@ class Registry:
 
             file_info = get_file_info(file)
 
-            if not file_info['is_extension']:
+            if file_info['kind'] == 'emulator' and file_info['name'] == _ALL_EMULATORS:
+                if data := safe_load_yaml12(file, AllEmulatorsDict):
+                    all_emulators.append(data)
+            elif not file_info['is_extension']:
                 if file_info['kind'] == 'emulator':
                     emulators[file_info['name']] = EmulatorInfo.from_info(file, file_info)
                 else:
@@ -796,6 +854,9 @@ class Registry:
             for core_name, core in emulator_cores.items():
                 for extension in core_extensions.get(emulator_name, {}).get(core_name, []):
                     core.extend(safe_load_yaml12(extension, CoreInfoDict) or {})
+
+        for data in all_emulators:
+            _add_to_all_emulators(emulators, cores, data['shared_features'], set(data.get('exclude', [])))
 
         return cls(_emulators=emulators, _cores=cores)
 

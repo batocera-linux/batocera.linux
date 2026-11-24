@@ -55,6 +55,9 @@ Special emulator names:
 
 - `_shared` → `sharedFeatures` in `es_features.cfg` (shared feature catalog)
 - `_global` → `globalFeatures` in `es_features.cfg`
+- `_emulators` → overlays only (`<prefix>._emulators.emulator.yml`): their
+  `shared_features` are added to every emulator except those in `exclude`, after
+  its POWER OPTIONS features (or first when it has none), and to `_global`
 
 Overlays (extra path segments before the base name) are applied with
 `extend()` after the base file loads: lists append, `custom_features` merge

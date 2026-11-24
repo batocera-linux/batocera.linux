@@ -25,7 +25,6 @@ from pathlib import Path
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
-from batocera_launch.gamescope import game_resolution
 
 _PROTON_WINE = Path('/usr/wine/wine-proton/bin/wine')
 
@@ -45,10 +44,6 @@ class Wine(Emulator):
 
     @cached_property
     def in_game_ratio(self) -> float:
-        if self.uses_gamescope:
-            game = game_resolution(self.config, self.resolution)
-            return game.width / game.height
-
         return 16 / 9
 
     @property

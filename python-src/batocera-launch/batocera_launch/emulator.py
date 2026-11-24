@@ -51,7 +51,7 @@ from .devices.video import get_screens, prepare_resolution
 from .devices.wheels import configure_wheels
 from .draw.bezel import bezel_overlay
 from .exceptions import UnknownEmulator
-from .gamescope import gamescope_args, gamescope_available
+from .gamescope import game_resolution, gamescope_args, gamescope_available
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, PRECALIBRATION_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .plugin_manager import HookContext, PluginManager
 from .rom import Rom, ShortGameID
@@ -128,6 +128,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
     trackballs: TrackballSpinners = field(init=False, default=cast('TrackballSpinners', None), repr=False)
     spinners: TrackballSpinners = field(init=False, default=cast('TrackballSpinners', None), repr=False)
     resolution: Resolution = field(init=False, default=cast('Resolution', None), repr=False)
+    output_resolution: Resolution = field(init=False, default=cast('Resolution', None), repr=False)
 
     __client_session: aiohttp.ClientSession | None = field(init=False, default=None, repr=False)
     __stack: AsyncExitStack = field(init=False, default_factory=AsyncExitStack, repr=False)
@@ -172,11 +173,15 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             )
             self.trackballs, self.spinners = trackballspinners
 
-            ((self.controllers, self.wheels), self.resolution) = await self.__stack.enter_async_context(
+            ((self.controllers, self.wheels), self.output_resolution) = await self.__stack.enter_async_context(
                 parallel(
                     configure_wheels(self.config, controllers, self.metadata),
                     prepare_resolution(self.config.video_mode == 'default', self.target_video_mode),
                 )
+            )
+            # inside gamescope the emulator only sees the game resolution, gamescope scales it to the output
+            self.resolution = (
+                game_resolution(self.config, self.output_resolution) if self.uses_gamescope else self.output_resolution
             )
 
             await self.__stack.enter_async_context(prepare_mouse(self.needs_mouse))
@@ -385,6 +390,11 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         return 'standalone'
 
     @cached_property
+    def bezel(self) -> str | None:
+        bezel = self.config.get_str('bezel', 'none')
+        return None if not bezel or bezel == 'none' else bezel
+
+    @cached_property
     def bezel_files(self) -> BezelFiles | None:
         # by order choose :
         # rom name in the system subfolder of the user directory (gb/mario.png)
@@ -399,9 +409,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         # else return
         # mamezip files are for MAME-specific advanced artwork (bezels with overlays and backdrops, animated LEDs, etc)
 
-        bezel = self.config.get_str('bezel', 'none')
+        bezel = self.bezel
 
-        if not bezel or bezel == 'none':
+        if bezel is None:
             return None
 
         game_id = self.rom.stem
@@ -486,30 +496,30 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _logger.debug('skipping bezels for emulator %s', self.name)
             return None
 
-        bezel = self.config.get_str('bezel', 'none')
+        bezel = self.bezel
         bezel_tattoo = self.config.get_str('bezel.tattoo', '0')
         bezel_qrcode = self.config.get_str('bezel.qrcode', '0')
         gun_borders_dimensions = self.gun_border_dimensions
 
         if (
-            (not bezel or bezel == 'none')
+            bezel is None
             and (not bezel_tattoo or bezel_tattoo == '0')
             and (not bezel_qrcode or bezel_qrcode == '0')
             and gun_borders_dimensions is None
         ):
             return None
 
-        if not bezel or bezel == 'none':
+        if bezel is None:
             # no bezel, generate a transparent one for the tatoo/gun borders ... and so on
             overlay_png_path = Path('/tmp/bezel_transhud_black.png')
             overlay_info_path = Path('/tmp/bezel_transhud_black.info')
 
             from .draw.pil import create_transparent_image
 
-            create_transparent_image(overlay_png_path, self.resolution.width, self.resolution.height)
+            create_transparent_image(overlay_png_path, self.output_resolution.width, self.output_resolution.height)
 
             overlay_info_path.write_text(
-                f'{{ "width":{self.resolution.width}, "height":{self.resolution.height}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000 }}'
+                f'{{ "width":{self.output_resolution.width}, "height":{self.output_resolution.height}, "opacity":1.0000000, "messagex":0.220000, "messagey":0.120000 }}'
             )
         else:
             _logger.debug('hud enabled. trying to apply the bezel %s', bezel)
@@ -536,7 +546,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         max_cover = 0.05  # 5%
         max_ratio_delta = 0.01
 
-        screen_ratio = self.resolution.width / self.resolution.height
+        screen_ratio = self.output_resolution.width / self.output_resolution.height
         bezel_ratio = bezel_width / bezel_height
 
         if self.guns_borders_size is None:
@@ -569,6 +579,9 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
 
         ## the bezel left and right cover must be maximum
         in_game_ratio = self.in_game_ratio
+        if self.uses_gamescope:
+            # gamescope fits the game window to the output, so the image is never wider than that window
+            in_game_ratio = min(in_game_ratio, self.resolution.width / self.resolution.height)
         img_height = bezel_height
         img_width = img_height * in_game_ratio
 
@@ -632,7 +645,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
         # if screen and bezel sizes doesn't match, resize
         # stretch option
         bezel_stretch = self.config.get_bool('bezel_stretch')
-        if bezel_width != self.resolution.width or bezel_height != self.resolution.height:
+        if bezel_width != self.output_resolution.width or bezel_height != self.output_resolution.height:
             _logger.debug('bezel needs to be resized')
             output_png_file = Path('/tmp/bezel.png')
             try:
@@ -641,8 +654,8 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 resize_image(
                     overlay_png_path,
                     output_png_file,
-                    self.resolution.width,
-                    self.resolution.height,
+                    self.output_resolution.width,
+                    self.output_resolution.height,
                     stretch=bezel_stretch,
                 )
             except Exception as e:
@@ -887,17 +900,16 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                 await self.prepare_hud(command, bezel)
 
                 if self.uses_gamescope:
-                    if not self.gamescope_exposes_wayland:
-                        # without WAYLAND_DISPLAY, GTK falls back to labwc's wayland-0 and escapes gamescope
-                        command.env.setdefault('GDK_BACKEND', 'x11')
                     if self.config.get_str('gamescope_fps_limit'):
                         # the WSI layer leaves DXVK and vkd3d to limit themselves, which they don't, so it paces them too
                         command.env.setdefault('GAMESCOPE_WSI_FRAME_LIMITER_AWARE', '0')
                     command.prepend_args(
-                        *gamescope_args(self.config, self.resolution, expose_wayland=self.gamescope_exposes_wayland)
+                        *gamescope_args(
+                            self.config, self.output_resolution, expose_wayland=self.gamescope_exposes_wayland
+                        )
                     )
 
-                async with bezel_overlay(bezel, self.resolution):
+                async with bezel_overlay(bezel, self.output_resolution):
                     self.prepare_gun_help()
 
                     if self.config.use_guns and self.guns:

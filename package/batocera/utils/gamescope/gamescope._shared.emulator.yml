@@ -2,14 +2,14 @@ custom_features:
   gamescope:
     prompt: GAMESCOPE
     description: Run the game inside gamescope, so its resolution and refresh changes never reach the display.
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       "Off": 0
       "On": 1
   gamescope_resolution:
     prompt: GAME RESOLUTION
     description: The resolution the game sees. Gamescope scales it to the display.
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       320x240: 320x240
       640x400: 640x400
@@ -34,7 +34,7 @@ custom_features:
       3840x2160: 3840x2160
   gamescope_scaler:
     prompt: SCALING
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       Fit: fit
       Integer: integer
@@ -42,7 +42,7 @@ custom_features:
       Stretch: stretch
   gamescope_filter:
     prompt: UPSCALE FILTER
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       Linear: linear
       Nearest: nearest
@@ -53,7 +53,7 @@ custom_features:
   gamescope_sharpness:
     prompt: UPSCALE SHARPNESS
     description: FSR, NIS and SGSR sharpness, from 0 (sharpest) to 20 (softest).
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       "0": 0
       "2": 2
@@ -63,7 +63,7 @@ custom_features:
   gamescope_fps_limit:
     prompt: FRAME RATE LIMIT
     description: Rounds to the nearest whole divisor of the display refresh rate, so 40 needs a 120 Hz display.
-    submenu: GAMESCOPE
+    group: GAMESCOPE
     choices:
       "15": 15
       "20": 20

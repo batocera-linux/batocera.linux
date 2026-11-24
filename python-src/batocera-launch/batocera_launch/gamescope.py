@@ -81,6 +81,7 @@ def gamescope_args(config: Config, output: Resolution, /, *, expose_wayland: boo
         args.append('--hdr-enabled')
 
     if expose_wayland:
-        args.append('--expose-wayland')
+        return [*args, '--expose-wayland', '-f', '--']
 
-    return [*args, '-f', '--']
+    # gamescope unsets WAYLAND_DISPLAY, so libwayland would fall back to wayland-0 (labwc) and the game would escape
+    return [*args, '-f', '--', 'env', 'WAYLAND_DISPLAY=none']
