@@ -1,0 +1,300 @@
+#!/bin/bash
+# batocera-romm-ps3-install - install a PS3 game's packages downloaded from RomM into RPCS3
+#
+#   batocera-romm-ps3-install install <folder> <game.psn>
+#       PSN games: <folder> holds the game's .pkg (base game, updates, DLC) and licenses (.rap, .edat),
+#       in any sub folders. Installed into RPCS3, then <game.psn> is written with the game's title id
+#       (what Batocera launches) and <folder> is deleted.
+#
+#   batocera-romm-ps3-install install-addons <folder>
+#       Disc games (an .iso the system launches): only the updates and DLC are in <folder>, with their
+#       licenses. Installed the same way, then <folder> is deleted. The disc next to <folder> (same name,
+#       .iso or .ps3 instead of .rommaddons) is read too: updates not newer than the disc are skipped, and
+#       the packages the disc carries itself are installed with the downloaded ones (see disc_prepare).
+#
+#   batocera-romm-ps3-install uninstall <game.psn>
+#       Removes the installed game (dev_hdd0/game/<title id>) and its licenses. Saves are kept.
+#
+# What a package is comes from its header, not its file name:
+#   update = PATCH flag set (content type 0x4 for disc games, 0x5 for PSN games)
+#   base   = content type 0x5 (GameExec) without PATCH
+#   dlc    = content type 0x4 (GameData) without PATCH
+# Order: base, then updates by the app version in their header, then DLC. Every package is checked
+# after its install (RPCS3 log, and the installed PARAM.SFO version for updates); on a failure the
+# folder is kept and the exit status is 3.
+#
+# Exit status: 0 done, 1 usage, 2 no package or no title id, 3 installation failed.
+# The last line of the output says what happened.
+set -u
+
+RPCS3_BIN="${RPCS3_BIN:-/usr/bin/rpcs3}"
+CONFIGS="${RPCS3_CONFIGS:-/userdata/system/configs}" # XDG_CONFIG_HOME for RPCS3, as batocera-launch sets it
+CACHE="${RPCS3_CACHE:-/userdata/system/cache}"
+HDD0="${PS3_HDD0:-/userdata/saves/ps3/rpcs3/dev_hdd0}" # batocera-launch: SAVES/<system>/rpcs3/dev_hdd0
+EXDATA="$HDD0/home/00000001/exdata"
+LOG="${ROMM_PS3_LOG:-/userdata/system/logs/romm-ps3-install.log}" # RPCS3's log of every install
+RPCS3_LOG="$CACHE/rpcs3/RPCS3.log" # RPCS3 rewrites it at every start
+
+fail() {
+  echo "$2"
+  exit "$1"
+}
+
+hexdump_of() { od -An -tx1 -v -N "$2" "$1" 2>/dev/null | tr -d ' \n'; }
+
+# pkg_meta <file.pkg>: "<kind> <content id> <drm type> <app version>" from the unencrypted header.
+# Header: magic at 0, metadata offset at 0x08, metadata count at 0x0C, content id at 0x30. Metadata
+# packets are <u32 id><u32 size><data>: 1 DRM type, 2 content type, 3 flags, 8 software revision
+# (its last 2 bytes are the app version).
+pkg_meta() {
+  local hex p i id size ctype=0 drm=0 flags=0 ver="" cid kind
+  hex=$(hexdump_of "$1" 4096)
+  [ "${hex:0:8}" = "7f504b47" ] || return 1
+  cid=$(dd if="$1" bs=1 skip=48 count=36 2>/dev/null | tr -d '\0')
+  [[ "$cid" =~ ^[A-Z0-9]{6}-[A-Z]{4}[0-9]{5}_[0-9]{2}-[A-Z0-9_]{16}$ ]] || return 1
+  p=$((16#${hex:16:8}))
+  for ((i = 0; i < 16#${hex:24:8} && p * 2 + 16 <= ${#hex}; i++)); do
+    id=$((16#${hex:p*2:8})) size=$((16#${hex:p*2+8:8}))
+    case $id in
+    1) drm=$((16#${hex:p*2+16:8})) ;;
+    2) ctype=$((16#${hex:p*2+16:8})) ;;
+    3) flags=$((16#${hex:p*2+16:8})) ;;
+    8) [ "$size" -eq 8 ] && ver="${hex:p*2+28:2}.${hex:p*2+30:2}" ;;
+    esac
+    p=$((p + 8 + size))
+  done
+  if ((flags & 0x10)) && { [ "$ctype" -eq 4 ] || [ "$ctype" -eq 5 ]; }; then kind=update
+  elif [ "$ctype" -eq 5 ]; then kind=base
+  elif [ "$ctype" -eq 4 ]; then kind=dlc
+  else kind=other
+  fi
+  echo "$kind $cid $drm ${ver:-00.00}"
+}
+
+# sfo_get <PARAM.SFO> <key>: the value of that key
+sfo_get() {
+  local hex n keys data i e key_off len data_off key k want="$2"
+  hex=$(hexdump_of "$1" 65536)
+  [ "${hex:0:8}" = "00505346" ] || return 1
+  le32() { echo $((16#${hex:$1*2+6:2}${hex:$1*2+4:2}${hex:$1*2+2:2}${hex:$1*2:2})); }
+  le16() { echo $((16#${hex:$1*2+2:2}${hex:$1*2:2})); }
+  keys=$(le32 8) data=$(le32 12) n=$(le32 16)
+  for ((i = 0; i < n; i++)); do
+    e=$((20 + i * 16))
+    key_off=$(le16 "$e") len=$(le32 $((e + 4))) data_off=$(le32 $((e + 12)))
+    key="" k=$((keys + key_off))
+    while [ "${hex:k*2:2}" != "00" ] && [ $((k * 2)) -lt ${#hex} ]; do key+=$(printf "\\x${hex:k*2:2}"); k=$((k + 1)); done
+    if [ "$key" = "$want" ]; then
+      printf "$(echo "${hex:(data + data_off)*2:len*2}" | sed 's/00$//; s/\(..\)/\\x\1/g')"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Disc games. At its first boot RPCS3 installs the packages a disc carries (PS3_GAME/INSDIR/*.PKG,
+# PS3_GAME/PKGDIR/PKG*/INSTALL.PKG, PS3_EXTRA/D*/DATA000.PKG), unless dev_hdd0/game/＄locks/<title id>_v<disc
+# APP_VER> exists, and refuses to boot when one of them is older than the update already installed. So
+# they are installed here with the downloaded packages (same order, same skipping), then that lock is
+# written. Updates not newer than the disc itself are skipped: the disc already has them.
+DISC_DIR="" DISC_MNT="" DISC_TID="" DISC_VER="" DISC_LOCK="" DISC_PKGS=()
+
+disc_release() {
+  [ -n "$DISC_MNT" ] && umount "$DISC_MNT" 2>/dev/null && rmdir "$DISC_MNT"
+  DISC_MNT=""
+}
+
+disc_prepare() {
+  local base="${1%/}" sfo p locks
+  base="${base%.rommaddons}"
+  if [ -d "$base.ps3" ]; then
+    DISC_DIR="$base.ps3"
+  elif [ -f "$base.iso" ]; then
+    DISC_MNT=$(mktemp -d)
+    if ! mount -o loop,ro "$base.iso" "$DISC_MNT" 2>/dev/null; then
+      rmdir "$DISC_MNT"
+      DISC_MNT=""
+      echo "Warning: cannot read $(basename "$base.iso"), the packages on the disc are not checked"
+      return
+    fi
+    trap disc_release EXIT
+    DISC_DIR="$DISC_MNT"
+  else
+    return
+  fi
+
+  sfo="$DISC_DIR/PS3_GAME/PARAM.SFO"
+  DISC_TID=$(sfo_get "$sfo" TITLE_ID)
+  DISC_VER=$(sfo_get "$sfo" APP_VER)
+  [[ "$DISC_TID" =~ ^[A-Z]{4}[0-9]{5}$ ]] || { DISC_TID="" DISC_VER=""; return; }
+
+  locks="$HDD0/game/＄locks"
+  [ -e "$locks/${DISC_TID}_v$DISC_VER" ] || [ -e "$HDD0/game/.locks/$DISC_TID" ] && return
+  shopt -s nullglob
+  for p in "$DISC_DIR"/PS3_GAME/INSDIR/*.PKG "$DISC_DIR"/PS3_GAME/PKGDIR/PKG*/INSTALL.PKG "$DISC_DIR"/PS3_EXTRA/D*/DATA000.PKG; do
+    [ -f "$p" ] && DISC_PKGS+=("$p")
+  done
+  shopt -u nullglob
+  [ ${#DISC_PKGS[@]} -gt 0 ] && DISC_LOCK="$locks/${DISC_TID}_v$DISC_VER"
+}
+
+# RPCS3 installs into the dev_hdd0 of its vfs.yml. batocera-launch rewrites that file at every
+# launch, and after a PSN squashfs game it points into that game's overlay: set it first.
+point_vfs() {
+  local vfs="$CONFIGS/rpcs3/vfs.yml"
+  mkdir -p "$CONFIGS/rpcs3" "$HDD0"
+  if [ -f "$vfs" ] && grep -q '^/dev_hdd0/:' "$vfs"; then
+    sed -i "s|^/dev_hdd0/:.*|/dev_hdd0/: $HDD0/|" "$vfs"
+  else
+    echo "/dev_hdd0/: $HDD0/" >>"$vfs"
+  fi
+}
+
+# install_pkg <file.pkg> <kind> <content id> <app version>: install it, then check it worked
+install_pkg() {
+  local pkg="$1" kind="$2" cid="$3" ver="$4" tid installed name
+  tid="${cid:7:9}"
+  name=$(basename "$pkg")
+  [ -n "$DISC_DIR" ] && [[ "$pkg" == "$DISC_DIR"/* ]] && name="disc ${pkg#"$DISC_DIR"/}"
+  # An update the game already has (or a newer one): RPCS3 refuses to go back, nothing to do
+  if [ "$kind" = update ]; then
+    installed=$(sfo_get "$HDD0/game/$tid/PARAM.SFO" APP_VER)
+    [ -z "$installed" ] && [ "$tid" = "$DISC_TID" ] && installed="$DISC_VER"
+    if [ -n "$installed" ] && [ $((10#${installed/./})) -ge $((10#${ver/./})) ]; then
+      echo "Skipping update $ver: $name ($tid is already at $installed)"
+      return 2
+    fi
+  fi
+  echo "Installing $kind $ver: $name"
+  rm -f "$RPCS3_LOG"
+  # --headless: no dialogs, exits once done. Its exit status is not reliable (it aborts while
+  # tearing down after a successful install): RPCS3's own log says whether the package went in.
+  { XDG_CONFIG_HOME="$CONFIGS" XDG_CACHE_HOME="$CACHE" "$RPCS3_BIN" --headless --installpkg "$pkg" >/dev/null 2>&1; } 2>/dev/null
+  mkdir -p "$(dirname "$LOG")"
+  { echo "===== $(date '+%F %T') $pkg"; grep -a -E 'PKG:|GUI:|SYS: (Firmware|Option)|·[EF] ' "$RPCS3_LOG" 2>/dev/null | grep -av 'PKG: \(Entry\|Created\)'; } >>"$LOG"
+  if ! grep -aqF "Successfully installed $pkg " "$RPCS3_LOG" 2>/dev/null; then
+    echo "Failed: $name (see $LOG)"
+    return 1
+  fi
+  if [ "$kind" = update ]; then
+    installed=$(sfo_get "$HDD0/game/$tid/PARAM.SFO" APP_VER)
+    if [ "$installed" != "$ver" ]; then
+      echo "Failed: $name is $ver but $tid is at ${installed:-no version} (see $LOG)"
+      return 1
+    fi
+  fi
+  return 0
+}
+
+# do_packages <folder> <require base: 0|1>: classify, check licenses, install. Sets BASE_ID and the counts.
+do_packages() {
+  local folder="$1" need_base="$2" list f m kind cid drm ver n_fail=0 rap missing=""
+  list=$(mktemp)
+  N_BASE=0 N_UPD=0 N_DLC=0 N_SKIP=0 BASE_ID=""
+
+  while IFS= read -r -d '' f; do
+    if ! m=$(pkg_meta "$f"); then
+      echo "Skipped, not a PS3 package: $(basename "$f")"
+      continue
+    fi
+    read -r kind cid drm ver <<<"$m"
+    case $kind in base) r=1 ;; update) r=2 ;; dlc) r=3 ;; *) r=4 ;; esac
+    printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$r" "${cid:7:9}" "$ver" "$kind" "$cid" "$f" >>"$list"
+    if [ "$drm" -eq 1 ] || [ "$drm" -eq 2 ]; then
+      rap=$(find "$folder" -type f -iname "$cid.rap" | head -1)
+      if [ -z "$rap" ]; then
+        # Without it RPCS3 cannot decrypt the game's EBOOT and the game will not start;
+        # DLC without its license still installs, the game only reports it missing when used
+        case $kind in
+        base | update) [[ " $missing" == *" $cid.rap "* ]] || missing+="$cid.rap "; echo "Missing license $cid.rap for $(basename "$f")" ;;
+        *) echo "Warning: no license $cid.rap for $(basename "$f")" ;;
+        esac
+      fi
+    fi
+  done < <(find "$folder" -type f -iname '*.pkg' -print0; [ ${#DISC_PKGS[@]} -eq 0 ] || printf '%s\0' "${DISC_PKGS[@]}")
+
+  [ -s "$list" ] || { rm -f "$list"; fail 2 "No PS3 package in $folder"; }
+  [ -z "$missing" ] || { rm -f "$list"; fail 3 "Installation failed, $folder kept: missing license ${missing% }"; }
+  if [ "$need_base" = 1 ]; then
+    BASE_ID=$(awk -F'\t' '$1 == 1 { print $2; exit }' "$list")
+    [ -n "$BASE_ID" ] || { rm -f "$list"; fail 2 "No game package in $folder"; }
+  fi
+
+  point_vfs
+
+  # Licenses first: RPCS3 looks for exdata/<content id>.rap with a lowercase extension
+  mkdir -p "$EXDATA"
+  while IFS= read -r -d '' f; do
+    n=$(basename "$f")
+    case "${n,,}" in *.rap) cp -f "$f" "$EXDATA/${n%.*}.rap" ;; *) cp -f "$f" "$EXDATA/" ;; esac
+  done < <(find "$folder" -type f \( -iname '*.rap' -o -iname '*.edat' \) -print0)
+
+  # base, then updates by title id and app version, then DLC
+  while IFS=$'\t' read -r _ _ ver kind cid f; do
+    install_pkg "$f" "$kind" "$cid" "$ver"
+    case $? in
+    0) case $kind in base) N_BASE=$((N_BASE + 1)) ;; update) N_UPD=$((N_UPD + 1)) ;; *) N_DLC=$((N_DLC + 1)) ;; esac ;;
+    2) N_SKIP=$((N_SKIP + 1)) ;;
+    *)
+      n_fail=$((n_fail + 1))
+      # An update that did not go in: later ones for that game may depend on it, stop here
+      [ "$kind" = base ] || [ "$kind" = update ] && break
+      ;;
+    esac
+  done < <(sort -s -t$'\t' -k1,1n -k2,2 -k3,3 "$list")
+  rm -f "$list"
+  N_FAIL=$n_fail
+}
+
+do_install() {
+  local folder="$1" psn="$2"
+  [ -d "$folder" ] || fail 1 "No folder $folder"
+  do_packages "$folder" 1
+  [ "$N_FAIL" -eq 0 ] || fail 3 "Installation failed, $folder kept ($N_BASE game, $N_UPD updates, $N_DLC DLC installed)"
+  [ -f "$HDD0/game/$BASE_ID/USRDIR/EBOOT.BIN" ] || fail 3 "Installation failed: no $BASE_ID/USRDIR/EBOOT.BIN"
+  echo "$BASE_ID" >"$psn.tmp" && mv -f "$psn.tmp" "$psn" || fail 3 "Cannot write $psn"
+  rm -rf "$folder"
+  echo "Installed $BASE_ID ($N_BASE game, $N_UPD updates, $N_DLC DLC packages, $N_SKIP already installed)"
+}
+
+do_install_addons() {
+  local folder="$1"
+  [ -d "$folder" ] || fail 1 "No folder $folder"
+  disc_prepare "$folder"
+  do_packages "$folder" 0
+  [ "$N_FAIL" -eq 0 ] || fail 3 "Installation failed, $folder kept ($N_UPD updates, $N_DLC DLC installed)"
+  if [ -n "$DISC_LOCK" ]; then
+    mkdir -p "$(dirname "$DISC_LOCK")" && : >"$DISC_LOCK" || fail 3 "Cannot write $DISC_LOCK"
+  fi
+  disc_release
+  rm -rf "$folder"
+  echo "Installed $N_UPD updates, $N_DLC DLC packages, $N_SKIP already installed"
+}
+
+do_uninstall() {
+  local psn="$1" id
+  [ -f "$psn" ] || fail 1 "No file $psn"
+  id=$(tr -d '\r' <"$psn" | awk 'length($0) >= 9 { print toupper($0); exit }' | tr -d '[:space:]')
+  [[ "$id" =~ ^[A-Z]{4}[0-9]{5}$ ]] || fail 2 "No title id in $psn"
+
+  rm -rf "${HDD0:?}/game/$id"
+  find "$EXDATA" -maxdepth 1 -type f -name "*-${id}_*" -delete 2>/dev/null
+  echo "Uninstalled $id"
+}
+
+case "${1:-}" in
+install)
+  [ $# -eq 3 ] || fail 1 "Usage: $0 install <folder> <game.psn>"
+  do_install "$2" "$3"
+  ;;
+install-addons)
+  [ $# -eq 2 ] || fail 1 "Usage: $0 install-addons <folder>"
+  do_install_addons "$2"
+  ;;
+uninstall)
+  [ $# -eq 2 ] || fail 1 "Usage: $0 uninstall <game.psn>"
+  do_uninstall "$2"
+  ;;
+*) fail 1 "Usage: $0 install <folder> <game.psn> | install-addons <folder> | uninstall <game.psn>" ;;
+esac
+

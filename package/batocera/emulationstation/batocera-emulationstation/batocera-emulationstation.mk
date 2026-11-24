@@ -145,6 +145,10 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	# hooks
 	cp $(BATOCERA_EMULATIONSTATION_PKGDIR)/batocera-preupdate-gamelists-hook \
 	    $(TARGET_DIR)/usr/bin/
+
+        # RomM install scripts
+	$(INSTALL) -m 0755 $(BATOCERA_EMULATIONSTATION_PKGDIR)/romm/batocera-romm-ps3-install \
+	    $(TARGET_DIR)/usr/bin/
 endef
 
 ### S31emulationstation
