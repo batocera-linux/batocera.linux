@@ -1,0 +1,89 @@
+From: sunshineinabox <aqemail@gmail.com>
+Date: Wed, 16 Sep 2026 17:45:10 -0700
+Subject: [PATCH] drm/msm/dpu: give a scaled compressed fetch its own QoS LUT
+
+The catalogs have one QoS request curve for compressed buffers, with a
+TODO saying the scaled case is different. The vendor device trees agree
+and give qseed-fed macrotile fetches a curve that reaches the top
+request levels much sooner, because the scaler drains a line before a
+plain fetch would have needed it.
+
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
+@@ -341,7 +341,9 @@ static const struct dpu_perf_cfg sm8250_perf_data = {
+ 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+ 		.entries = sc7180_qos_nrt
+ 		},
+-		/* TODO: macrotile-qseed is different from macrotile */
++		{.nentry = ARRAY_SIZE(sc7180_qos_macrotile_qseed),
++		.entries = sc7180_qos_macrotile_qseed
++		},
+ 	},
+ 	.cdp_cfg = {
+ 		{.rd_enable = 1, .wr_enable = 1},
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_3_sm6115.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_3_sm6115.h
+@@ -113,7 +113,9 @@ static const struct dpu_perf_cfg sm6115_perf_data = {
+ 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+ 		.entries = sc7180_qos_nrt
+ 		},
+-		/* TODO: macrotile-qseed is different from macrotile */
++		{.nentry = ARRAY_SIZE(sc7180_qos_macrotile_qseed),
++		.entries = sc7180_qos_macrotile_qseed
++		},
+ 	},
+ 	.cdp_cfg = {
+ 		{.rd_enable = 1, .wr_enable = 1},
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+@@ -720,6 +720,11 @@ static const struct dpu_qos_lut_entry sc7180_qos_macrotile[] = {
+ 	{.fl = 0, .lut = 0x0011223344556677},
+ };
+ 
++
++static const struct dpu_qos_lut_entry sc7180_qos_macrotile_qseed[] = {
++	{.fl = 0, .lut = 0x0011223366777777},
++};
++
+ static const struct dpu_qos_lut_entry kaanapali_qos_macrotile[] = {
+ 	{.fl = 0, .lut = 0x0011223344556666},
+ };
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+@@ -229,6 +229,7 @@ enum dpu_qos_lut_usage {
+ 	DPU_QOS_LUT_USAGE_LINEAR,
+ 	DPU_QOS_LUT_USAGE_MACROTILE,
+ 	DPU_QOS_LUT_USAGE_NRT,
++	DPU_QOS_LUT_USAGE_MACROTILE_QSEED,
+ 	DPU_QOS_LUT_USAGE_MAX,
+ };
+ 
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+@@ -256,7 +256,8 @@ static void _dpu_plane_set_qos_lut(struct drm_plane *plane,
+ {
+ 	struct dpu_plane *pdpu = to_dpu_plane(plane);
+ 	struct dpu_hw_qos_cfg cfg;
+-	u32 total_fl, lut_usage;
++	u32 total_fl, lut_usage, creq_usage;
++	bool scaling;
+ 
+ 	if (!pdpu->is_rt_pipe) {
+ 		lut_usage = DPU_QOS_LUT_USAGE_NRT;
+@@ -270,7 +271,15 @@ static void _dpu_plane_set_qos_lut(struct drm_plane *plane,
+ 	total_fl = _dpu_plane_calc_fill_level(plane, pipe, lut_usage, fmt,
+ 				drm_rect_width(&pipe_cfg->src_rect));
+ 
+-	cfg.creq_lut = _dpu_hw_get_qos_lut(&pdpu->catalog->perf->qos_lut_tbl[lut_usage], total_fl);
++
++	creq_usage = lut_usage;
++	scaling = drm_rect_width(&pipe_cfg->src_rect) != drm_rect_width(&pipe_cfg->dst_rect) ||
++		  drm_rect_height(&pipe_cfg->src_rect) != drm_rect_height(&pipe_cfg->dst_rect);
++	if (lut_usage == DPU_QOS_LUT_USAGE_MACROTILE && scaling &&
++	    pdpu->catalog->perf->qos_lut_tbl[DPU_QOS_LUT_USAGE_MACROTILE_QSEED].nentry)
++		creq_usage = DPU_QOS_LUT_USAGE_MACROTILE_QSEED;
++
++	cfg.creq_lut = _dpu_hw_get_qos_lut(&pdpu->catalog->perf->qos_lut_tbl[creq_usage], total_fl);
+ 	cfg.danger_lut = pdpu->catalog->perf->danger_lut_tbl[lut_usage];
+ 	cfg.safe_lut = pdpu->catalog->perf->safe_lut_tbl[lut_usage];
+ 

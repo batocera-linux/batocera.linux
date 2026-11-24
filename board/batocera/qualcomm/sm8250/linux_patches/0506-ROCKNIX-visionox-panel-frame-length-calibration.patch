@@ -1,0 +1,198 @@
+From 4aa9817022099ac09aff7f687c318d8bcd5b9a73 Mon Sep 17 00:00:00 2001
+From: Jacob Cook <jacobmcook1984@gmail.com>
+Date: Fri, 16 Oct 2026 15:29:03 -0400
+Subject: [PATCH] drm/panel: vtdr6130-cog: allow calibrating the RP5 and Flip 2
+ frame length
+
+---
+ .../drm/panel/panel-visionox-vtdr6130-cog.c   | 120 +++++++++++++++++-
+ 1 file changed, 114 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
+index 1a1db84..7586954 100644
+--- a/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
++++ b/drivers/gpu/drm/panel/panel-visionox-vtdr6130-cog.c
+@@ -32,6 +32,10 @@ struct panel_info {
+ 
+ 	struct gpio_desc *reset_gpio;
+ 	struct regulator_bulk_data *supplies;
++	bool enabled;
++
++	u16 frame_len_120;
++	u16 frame_len_60;
+ };
+ 
+ struct panel_desc {
+@@ -97,6 +101,22 @@ static int vtdr6130_get_current_mode(struct panel_info *pinfo)
+ 	return 0;
+ }
+ 
++static void vtdr6130_rp6_set_frame_len(struct mipi_dsi_multi_context *dsi_ctx,
++				       struct panel_info *pinfo)
++{
++	u8 payload[] = {
++		0xB1,
++		0x02, 0x16, 0x00, 0x14,
++		pinfo->frame_len_120 >> 8, pinfo->frame_len_120 & 0xff, 0x00,
++		0x02, 0x16, 0x00, 0x14,
++		pinfo->frame_len_60 >> 8, pinfo->frame_len_60 & 0xff, 0x00,
++		0x02, 0x16, 0x00, 0x14, 0x00, 0x10, 0x00,
++	};
++
++	mipi_dsi_generic_write_seq_multi(dsi_ctx, 0xF0, 0xAA, 0x10);
++	mipi_dsi_generic_write_multi(dsi_ctx, payload, sizeof(payload));
++}
++
+ static int vtdr6130_rp6_init_sequence(struct panel_info *pinfo)
+ {
+ 	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
+@@ -155,12 +175,7 @@ static int vtdr6130_rp6_init_sequence(struct panel_info *pinfo)
+ 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+ 	}
+ 
+-	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xF0, 0xAA, 0x10);
+-
+-	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xB1, 
+-				0x02, 0x16, 0x00, 0x14, 0x00, 0x1C, 0x00, 0x02,
+-				0x16, 0x00, 0x14, 0x07, 0xD0, 0x00, 0x02, 0x16,
+-				0x00, 0x14, 0x00, 0x10, 0x00);
++	vtdr6130_rp6_set_frame_len(&dsi_ctx, pinfo);
+ 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xF0, 0xAA, 0x13);
+ 	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xC9, 
+ 				0x07, 0xA4, 0x06, 0xE0, 0x06, 0xE0, 0x06, 0xE0,
+@@ -322,11 +337,22 @@ static int vtdr6130_prepare(struct drm_panel *panel)
+ 	return 0;
+ }
+ 
++static int vtdr6130_enable(struct drm_panel *panel)
++{
++	struct panel_info *pinfo = to_panel_info(panel);
++
++	pinfo->enabled = true;
++
++	return 0;
++}
++
+ static int vtdr6130_disable(struct drm_panel *panel)
+ {
+ 	struct panel_info *pinfo = to_panel_info(panel);
+ 	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
+ 
++	pinfo->enabled = false;
++
+ 	pinfo->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
+ 
+ 	mipi_dsi_dcs_set_display_off_multi(&dsi_ctx);
+@@ -401,6 +427,7 @@ static enum drm_panel_orientation vtdr6130_get_orientation(struct drm_panel *pan
+ 
+ static const struct drm_panel_funcs vtdr6130_panel_funcs = {
+ 	.disable = vtdr6130_disable,
++	.enable = vtdr6130_enable,
+ 	.prepare = vtdr6130_prepare,
+ 	.unprepare = vtdr6130_unprepare,
+ 	.get_modes = vtdr6130_get_modes,
+@@ -459,6 +486,83 @@ static struct backlight_device *vtdr6130_create_backlight(struct mipi_dsi_device
+ 					      &vtdr6130_bl_ops, &props);
+ }
+ 
++static ssize_t vtdr6130_rp6_frame_len_store(struct device *dev, u16 *frame_len,
++					    u16 min, u16 max,
++					    const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++	struct mipi_dsi_multi_context dsi_ctx = { .dsi = pinfo->dsi };
++	u16 val;
++	int ret;
++
++	ret = kstrtou16(buf, 0, &val);
++	if (ret)
++		return ret;
++
++	if (val < min || val > max)
++		return -EINVAL;
++
++	*frame_len = val;
++
++	if (!pinfo->enabled)
++		return count;
++
++	pinfo->dsi->mode_flags &= ~MIPI_DSI_MODE_LPM;
++	vtdr6130_rp6_set_frame_len(&dsi_ctx, pinfo);
++	mipi_dsi_generic_write_seq_multi(&dsi_ctx, 0xF0, 0xAA, 0x00);
++	pinfo->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
++
++	if (dsi_ctx.accum_err)
++		return dsi_ctx.accum_err;
++
++	return count;
++}
++
++static ssize_t frame_len_120_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%u\n", pinfo->frame_len_120);
++}
++
++static ssize_t frame_len_120_store(struct device *dev,
++				   struct device_attribute *attr,
++				   const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return vtdr6130_rp6_frame_len_store(dev, &pinfo->frame_len_120,
++					    0x10, 0x80, buf, count);
++}
++static DEVICE_ATTR_RW(frame_len_120);
++
++static ssize_t frame_len_60_show(struct device *dev,
++				 struct device_attribute *attr, char *buf)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return sysfs_emit(buf, "%u\n", pinfo->frame_len_60);
++}
++
++static ssize_t frame_len_60_store(struct device *dev,
++				  struct device_attribute *attr,
++				  const char *buf, size_t count)
++{
++	struct panel_info *pinfo = dev_get_drvdata(dev);
++
++	return vtdr6130_rp6_frame_len_store(dev, &pinfo->frame_len_60,
++					    0x76C, 0x834, buf, count);
++}
++static DEVICE_ATTR_RW(frame_len_60);
++
++static struct attribute *vtdr6130_rp6_attrs[] = {
++	&dev_attr_frame_len_120.attr,
++	&dev_attr_frame_len_60.attr,
++	NULL
++};
++ATTRIBUTE_GROUPS(vtdr6130_rp6);
++
+ static int vtdr6130_probe(struct mipi_dsi_device *dsi)
+ {
+ 	struct device *dev = &dsi->dev;
+@@ -486,6 +590,9 @@ static int vtdr6130_probe(struct mipi_dsi_device *dsi)
+ 	pinfo->dsi = dsi;
+ 	mipi_dsi_set_drvdata(dsi, pinfo);
+ 
++	pinfo->frame_len_120 = 0x1C;
++	pinfo->frame_len_60 = 0x7D0;
++
+ 	ret = drm_of_get_panel_orientation(dev->of_node, &pinfo->orientation);
+ 	if (ret < 0) {
+ 		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
+@@ -530,6 +637,7 @@ static struct mipi_dsi_driver vtdr6130_driver = {
+ 	.driver = {
+ 		.name = "panel-visionox-vtdr6130-cog",
+ 		.of_match_table = vtdr6130_of_match,
++		.dev_groups = vtdr6130_rp6_groups,
+ 	},
+ };
+ module_mipi_dsi_driver(vtdr6130_driver);
+-- 
+2.43.0
+

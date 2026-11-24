@@ -1,0 +1,16 @@
+From: sunshineinabox <aqemail@gmail.com>
+Date: Wed, 23 Sep 2026 10:52:24 -0700
+Subject: [PATCH] drm/msm/dpu: correct the linear danger LUT on sm8250
+
+
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
+@@ -329,7 +329,7 @@
+ 	.min_llcc_ib = 0,
+ 	.min_dram_ib = 800000,
+ 	.min_prefill_lines = 35,
+-	.danger_lut_tbl = {0xf, 0xffff, 0x0},
++	.danger_lut_tbl = {0xff, 0xffff, 0x0},
+ 	.safe_lut_tbl = {0xfff0, 0xff00, 0xffff},
+ 	.qos_lut_tbl = {
+ 		{.nentry = ARRAY_SIZE(sc7180_qos_linear),

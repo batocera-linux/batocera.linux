@@ -1,0 +1,81 @@
+From: sunshineinabox <aqemail@gmail.com>
+Date: Wed, 16 Sep 2026 12:27:39 -0700
+Subject: [PATCH] drm/msm/dpu: give a scaled fetch its own line width
+
+The catalogs have one sspp line width per SoC and apply it to every
+fetch. The vendor device trees list the line width per use case, and a
+scaled fetch has its own limit because the scaler has its own line
+buffer. That limit can be wider or narrower than max_linewidth.
+
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+@@ -274,6 +274,7 @@
+  * @has_idle_pc        indicate if idle power collapse feature is supported
+  * @has_3d_merge       indicate if 3D merge is supported
+  * @max_linewidth      max linewidth for sspp
++ * @max_linewidth_scaling  max linewidth for a scaled sspp fetch, 0 if same
+  * @pixel_ram_size     size of latency hiding and de-tiling buffer in bytes
+  * @max_hdeci_exp      max horizontal decimation supported (max is 2^value)
+  * @max_vdeci_exp      max vertical decimation supported (max is 2^value)
+@@ -287,6 +288,7 @@
+ 	bool has_3d_merge;
+ 	/* SSPP limits */
+ 	u32 max_linewidth;
++	u32 max_linewidth_scaling;
+ 	u32 pixel_ram_size;
+ 	u32 max_hdeci_exp;
+ 	u32 max_vdeci_exp;
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_0_sm8250.h
+@@ -15,6 +15,7 @@
+ 	.has_idle_pc = true,
+ 	.has_3d_merge = true,
+ 	.max_linewidth = 4096,
++	.max_linewidth_scaling = 2560,
+ 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+ };
+ 
+--- a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_3_sm6115.h
++++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_6_3_sm6115.h
+@@ -13,6 +13,7 @@
+ 	.has_dim_layer = true,
+ 	.has_idle_pc = true,
+ 	.max_linewidth = 2160,
++	.max_linewidth_scaling = 2560,
+ 	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+ };
+ 
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c
+@@ -880,6 +880,7 @@
+ 	struct dpu_sw_pipe_cfg *r_pipe_cfg;
+ 	const struct drm_display_mode *mode = &crtc_state->adjusted_mode;
+ 	uint32_t max_linewidth;
++	uint32_t pipe_linewidth;
+ 	u32 num_lm;
+ 	int stage_id, num_stages;
+ 
+@@ -947,14 +948,20 @@
+ 
+ 		DPU_DEBUG_PLANE(pdpu, "Got clip src:" DRM_RECT_FMT " dst: " DRM_RECT_FMT "\n",
+ 				DRM_RECT_ARG(&pipe_cfg->src_rect), DRM_RECT_ARG(&pipe_cfg->dst_rect));
++
++		pipe_linewidth = max_linewidth;
++		if (pdpu->catalog->caps->max_linewidth_scaling &&
++		    (drm_rect_width(&pipe_cfg->src_rect) != drm_rect_width(&pipe_cfg->dst_rect) ||
++		     drm_rect_height(&pipe_cfg->src_rect) != drm_rect_height(&pipe_cfg->dst_rect)))
++			pipe_linewidth = pdpu->catalog->caps->max_linewidth_scaling;
+ 
+ 		/* Split wide rect into 2 rect */
+-		if ((drm_rect_width(&pipe_cfg->src_rect) > max_linewidth) ||
++		if ((drm_rect_width(&pipe_cfg->src_rect) > pipe_linewidth) ||
+ 		     _dpu_plane_calc_clk(mode, pipe_cfg) > max_mdp_clk_rate) {
+ 
+-			if (drm_rect_width(&pipe_cfg->src_rect) > 2 * max_linewidth) {
++			if (drm_rect_width(&pipe_cfg->src_rect) > 2 * pipe_linewidth) {
+ 				DPU_DEBUG_PLANE(pdpu, "invalid src " DRM_RECT_FMT " line:%u\n",
+-						DRM_RECT_ARG(&pipe_cfg->src_rect), max_linewidth);
++						DRM_RECT_ARG(&pipe_cfg->src_rect), pipe_linewidth);
+ 				return -E2BIG;
+ 			}
+ 

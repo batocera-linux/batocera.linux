@@ -1,0 +1,52 @@
+From: mercurious <dutch.money@gmail.com>
+Subject: [PATCH] Retroid Pocket Flip 2: add the internal microphone
+
+The built-in mic is a WCD938x DMIC on data slot 3, clocked from DMIC3/4 and
+powered by MIC BIAS3. HiFi-RP.conf is shared with the RP5 and Mini, so the
+device is only added on Flip 2 models. It shares its PCM and decimator with
+the headset mic, so the two conflict and the jack wins by priority.
+---
+--- a/ucm2/Qualcomm/sm8250/HiFi-RP.conf
++++ b/ucm2/Qualcomm/sm8250/HiFi-RP.conf
+@@ -63,3 +63,41 @@
+ 		JackControl "Mic Jack"
+ 	}
+ }
++
++If.flip2-mic {
++	Condition {
++		Type String
++		Haystack "${sys:firmware/devicetree/base/model}"
++		Needle "Retroid Pocket Flip2"
++	}
++	True {
++		SectionDevice."Mic" {
++			Comment "Internal Microphone"
++
++			ConflictingDevice [
++				"Headset"
++			]
++
++			EnableSequence [
++				cset "name='DMIC4_MIXER Switch' 1"
++				cset "name='DMIC3 Switch' 1"
++				cset "name='TX DEC0 MUX' SWR_MIC"
++				cset "name='TX SMIC MUX0' SWR_DMIC3"
++				cset "name='TX_AIF1_CAP Mixer DEC0' 1"
++				cset "name='TX_DEC0 Volume' 96"
++			]
++
++			DisableSequence [
++				cset "name='TX_AIF1_CAP Mixer DEC0' 0"
++				cset "name='TX SMIC MUX0' ZERO"
++				cset "name='DMIC3 Switch' 0"
++				cset "name='DMIC4_MIXER Switch' 0"
++			]
++
++			Value {
++				CapturePriority 50
++				CapturePCM "hw:${CardId},2"
++			}
++		}
++	}
++}
