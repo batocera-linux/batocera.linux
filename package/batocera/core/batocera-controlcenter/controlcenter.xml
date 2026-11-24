@@ -119,10 +119,6 @@
                        <switch value="${batocera-audio getSystemMute}" refresh="2"
                                action_on="batocera-audio setSystemVolume mute" action_off="batocera-audio setSystemVolume unmute" />
 		</feature>
-		<feature display="Plane Mode">
-			<switch value="${batocera-planemode status}"
-			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left" updateids="wifi bluetooth"/>
-		</feature>
 		<feature display="Wi-Fi" if='${ls -d /sys/class/net/*/wireless 2&gt;/dev/null | head -n1}'>
 			<switch id="wifi" value='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; [ "$(batocera-settings-get wifi.enabled)" = "1" ] &amp;&amp; echo true}'
 			enabled='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; echo 1}' disabled_display="Plane mode"
@@ -132,6 +128,10 @@
 			<switch id="bluetooth" value='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; [ "$(batocera-settings-get controllers.bluetooth.enabled)" = "1" ] &amp;&amp; echo true}'
 			enabled='${[ "$(batocera-planemode status)" = "off" ] &amp;&amp; echo 1}' disabled_display="Plane mode"
 			action_on="batocera-bluetooth enable" action_off="batocera-bluetooth disable" refresh="2" align="left"/>
+		</feature>
+		<feature display="Plane Mode">
+			<switch value="${batocera-planemode status}"
+			action_on="batocera-planemode enable" action_off="batocera-planemode disable" refresh="2" align="left" updateids="wifi bluetooth"/>
 		</feature>
 		<feature display="Pause game">
 			<switch value='${[ "$(batocera-settings-get controlcenter.pause)" = "1" ] &amp;&amp; echo true}'
