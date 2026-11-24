@@ -42,7 +42,7 @@ class SdlPop(Emulator):
         return {
             'name': 'sdlpop',
             'keys': {
-                'exit': ['KEY_LEFTALT', 'KEY_F4'],
+                'exit': ['KEY_LEFTCTRL', 'KEY_Q'],
                 'menu': 'KEY_ESC',
                 'pause': 'KEY_ESC',
                 'save_state': 'KEY_F6',
