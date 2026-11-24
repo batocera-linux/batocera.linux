@@ -1,0 +1,213 @@
+#!/bin/sh
+# Usage: batocera-resources cpu|gpu|mem|temp|battery|net and their -detail forms
+# cpu, gpu and net measure the time since the previous call
+
+STATE=/tmp/.batocera-resources
+mkdir -p "$STATE"
+
+now_ns() {
+    date +%s%N
+}
+
+do_cpu() {
+    read -r _ u n s i w x y z _ < /proc/stat
+    total=$((u + n + s + i + w + x + y + z))
+    idle=$((i + w))
+
+    prev_total=0
+    prev_idle=0
+    [ -r "$STATE/cpu" ] && read -r prev_total prev_idle < "$STATE/cpu"
+    echo "$total $idle" > "$STATE/cpu"
+
+    dt=$((total - prev_total))
+    di=$((idle - prev_idle))
+    if [ "$prev_total" -eq 0 ] || [ "$dt" -le 0 ]; then
+        echo 0
+    else
+        echo $(( (100 * (dt - di) + dt / 2) / dt ))
+    fi
+}
+
+do_cpu_detail() {
+    mhz=$(cat /sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq 2>/dev/null | sort -n | tail -n1)
+    temp=$(batocera-temp --cpu 2>/dev/null)
+    out=""
+    [ -n "$mhz" ] && out="$((mhz / 1000)) MHz"
+    [ -n "$temp" ] && out="${out:+$out · }${temp}°C"
+    echo "$out"
+}
+
+gpu_devfreq() {
+    for d in /sys/class/devfreq/*gpu* /sys/class/devfreq/*.mali /sys/class/devfreq/*.g3d; do
+        [ -r "$d/cur_freq" ] && { echo "$d"; return; }
+    done
+}
+
+# GPU engine busy time from fdinfo, summed over DRM clients (a client is counted once)
+gpu_engine_ns() {
+    grep -s -H -E '^drm-(client-id|engine-[a-z0-9-]+):' /proc/[0-9]*/fdinfo/* 2>/dev/null | awk -F'[:\t ]+' '
+        {
+            file = $1
+            if ($2 == "drm-client-id") { client[file] = $3; next }
+            busy[file, $2] = $3; engines[$2] = 1; files[file] = 1
+        }
+        END {
+            for (f in files) {
+                id = (f in client) ? client[f] : f
+                if (seen[id]++) continue
+                for (e in engines) if ((f, e) in busy) sum[e] += busy[f, e]
+            }
+            for (e in sum) print e, sum[e]
+        }'
+}
+
+do_gpu() {
+    for f in /sys/class/drm/card*/device/gpu_busy_percent; do
+        [ -r "$f" ] && { cat "$f"; return; }
+    done
+
+    now=$(now_ns)
+    current=$(gpu_engine_ns)
+    if [ -n "$current" ]; then
+        echo "$now" > "$STATE/gpu.new"
+        echo "$current" >> "$STATE/gpu.new"
+        if [ -r "$STATE/gpu" ]; then
+            awk -v now="$now" '
+                NR == FNR { if (FNR == 1) then_ = $1; else prev[$1] = $2; next }
+                FNR > 1 && ($1 in prev) {
+                    d = $2 - prev[$1]
+                    if (d > best) best = d
+                }
+                END {
+                    dt = now - then_
+                    if (dt <= 0) { print 0; exit }
+                    p = int(100 * best / dt + 0.5)
+                    if (p > 100) p = 100
+                    if (p < 0) p = 0
+                    print p
+                }' "$STATE/gpu" "$STATE/gpu.new"
+        else
+            echo 0
+        fi
+        mv "$STATE/gpu.new" "$STATE/gpu"
+        return
+    fi
+
+    # no busy counters (panfrost without profiling): use the clock, idle reads 0
+    d=$(gpu_devfreq)
+    if [ -n "$d" ]; then
+        cur=$(cat "$d/cur_freq")
+        max=$(cat "$d/max_freq")
+        min=$(cat "$d/min_freq" 2>/dev/null || echo 0)
+        range=$((max - min))
+        [ "$range" -gt 0 ] && { echo $(( (100 * (cur - min) + range / 2) / range )); return; }
+    fi
+    echo 0
+}
+
+do_gpu_detail() {
+    d=$(gpu_devfreq)
+    [ -z "$d" ] && return
+    mhz=$(( $(cat "$d/cur_freq") / 1000000 ))
+    temp=$(batocera-temp --gpu 2>/dev/null)
+    out="$mhz MHz"
+    [ -z "$(gpu_engine_ns)" ] && ! ls /sys/class/drm/card*/device/gpu_busy_percent >/dev/null 2>&1 && out="$out (clock)"
+    [ -n "$temp" ] && out="$out · ${temp}°C"
+    echo "$out"
+}
+
+do_temp() {
+    batocera-temp --cpu 2>/dev/null || echo 0
+}
+
+battery_dir() {
+    for d in /sys/class/power_supply/*; do
+        [ "$(cat "$d/type" 2>/dev/null)" = "Battery" ] && [ -r "$d/capacity" ] && { echo "$d"; return; }
+    done
+}
+
+do_battery() {
+    d=$(battery_dir)
+    [ -n "$d" ] && cat "$d/capacity"
+}
+
+do_battery_detail() {
+    d=$(battery_dir)
+    [ -z "$d" ] && return
+    status=$(cat "$d/status" 2>/dev/null)
+
+    # some gauges report power_now in other units
+    ua=$(cat "$d/current_now" 2>/dev/null)
+    uv=$(cat "$d/voltage_now" 2>/dev/null)
+    if [ -n "$ua" ] && [ -n "$uv" ]; then
+        uw=$(awk -v a="$ua" -v v="$uv" 'BEGIN { if (a < 0) a = -a; printf "%d", a * v / 1000000 }')
+    else
+        uw=$(cat "$d/power_now" 2>/dev/null)
+    fi
+
+    if [ -n "$uw" ] && [ "$uw" -gt 0 ]; then
+        awk -v s="$status" -v w="$uw" 'BEGIN { printf "%s · %.1f W\n", s, w / 1000000 }'
+    else
+        echo "$status"
+    fi
+}
+
+net_bytes() {
+    awk -F'[: ]+' 'NR > 2 && $2 != "lo" { rx += $3; tx += $11 } END { print rx + 0, tx + 0 }' /proc/net/dev
+}
+
+# rx and tx KB/s since the previous call, per caller ($1)
+net_rates() {
+    ref="$STATE/$1"
+    now=$(now_ns)
+    set -- $(net_bytes)
+    rx=$1
+    tx=$2
+
+    prev_now=0
+    prev_rx=0
+    prev_tx=0
+    [ -r "$ref" ] && read -r prev_now prev_rx prev_tx < "$ref"
+    echo "$now $rx $tx" > "$ref"
+
+    awk -v n="$now" -v pn="$prev_now" -v r="$rx" -v pr="$prev_rx" -v t="$tx" -v pt="$prev_tx" 'BEGIN {
+        dt = (n - pn) / 1000000000
+        if (pn == 0 || dt <= 0) { print 0, 0; exit }
+        printf "%d %d\n", (r - pr) / 1024 / dt, (t - pt) / 1024 / dt
+    }'
+}
+
+do_net() {
+    net_rates net | awk '{ print $1 + $2 }'
+}
+
+do_net_detail() {
+    set -- $(net_rates net-detail)
+    echo "down $1 KB/s · up $2 KB/s"
+}
+
+do_mem() {
+    awk '/^MemTotal:/ { t = $2 } /^MemAvailable:/ { a = $2 } END { if (t > 0) print int(100 * (t - a) / t + 0.5); else print 0 }' /proc/meminfo
+}
+
+do_mem_detail() {
+    awk '/^MemTotal:/ { t = $2 } /^MemAvailable:/ { a = $2 } END { printf "%.1f / %.1f GB\n", (t - a) / 1048576, t / 1048576 }' /proc/meminfo
+}
+
+case "$1" in
+    cpu)        do_cpu ;;
+    cpu-detail) do_cpu_detail ;;
+    gpu)        do_gpu ;;
+    gpu-detail) do_gpu_detail ;;
+    mem)        do_mem ;;
+    mem-detail) do_mem_detail ;;
+    temp)       do_temp ;;
+    battery)        do_battery ;;
+    battery-detail) do_battery_detail ;;
+    net)        do_net ;;
+    net-detail) do_net_detail ;;
+    *)
+        echo "usage: $0 cpu|gpu|mem|temp|battery|net, or cpu-detail|gpu-detail|mem-detail|battery-detail|net-detail" >&2
+        exit 1
+        ;;
+esac

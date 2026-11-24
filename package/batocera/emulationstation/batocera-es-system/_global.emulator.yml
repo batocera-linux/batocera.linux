@@ -43,10 +43,10 @@ labwc:
       actions:
         - name: MoveToOutput
           output: secondary
-    - title: Batocera Control Center
+    - identifier: es-controlcenter
       actions:
         - name: MoveToOutput
-          output: primary
+          output: secondary|primary
     - identifier: "batocera-flash-screen*"
       actions:
         - name: MoveToOutput
