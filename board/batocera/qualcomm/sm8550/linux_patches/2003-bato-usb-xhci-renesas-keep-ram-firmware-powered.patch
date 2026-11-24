@@ -1,0 +1,34 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] usb: xhci-pci-renesas - keep RAM firmware controllers out of D3cold
+
+Since 7.3 the DWC host powers the link off in system suspend once every
+endpoint is in D3hot. A uPD720201 without a ROM loses the firmware the
+driver uploaded at probe, so resume times out ("Controller not ready")
+and the HC dies. Mark such controllers no_d3cold and make the host check
+honour it.
+
+---
+--- a/drivers/pci/controller/pci-host-common.c
++++ b/drivers/pci/controller/pci-host-common.c
+@@ -274,7 +274,7 @@
+ 	if (!pdev->dev.driver && !pci_is_enabled(pdev))
+ 		return 0;
+ 
+-	if (pdev->current_state != PCI_D3hot)
++	if (pdev->current_state != PCI_D3hot || pdev->no_d3cold)
+ 		goto exit;
+ 
+ 	if (device_may_wakeup(&pdev->dev)) {
+--- a/drivers/usb/host/xhci-pci-renesas.c
++++ b/drivers/usb/host/xhci-pci-renesas.c
+@@ -636,6 +636,10 @@
+ 	if (retval)
+ 		return retval;
+ 
++	/* Without a ROM the firmware is in RAM and does not survive D3cold */
++	if (!renesas_check_rom(dev))
++		pci_d3cold_disable(dev);
++
+ 	return xhci_pci_common_probe(dev, id);
+ }
+ 
