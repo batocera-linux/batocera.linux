@@ -1,0 +1,21 @@
+diff --git a/evmapy/multiplexer.py b/evmapy/multiplexer.py
+index 44d5902..d6ff1c4 100644
+--- a/evmapy/multiplexer.py
++++ b/evmapy/multiplexer.py
+@@ -165,7 +165,15 @@ class Multiplexer(object):
+         :type path: str
+         :returns: None
+         """
+-        device = evdev.InputDevice(path)
++        try:
++            device = evdev.InputDevice(path)
++        except OSError as exc:
++            # The device was listed by evdev.list_devices() but is gone (or
++            # unreadable) by the time we open it, e.g. a controller dongle
++            # re-enumerating or a short-lived uinput device. Skip it instead of
++            # letting the exception kill the whole daemon.
++            self._logger.warning("skipping %s: %s", path, exc)
++            return { "rel":{}, "key": {} }
+         self._logger.debug("trying to add %s (%s)", device.path, device.name)
+         try:
+             source = evmapy.source.Source(device)           
