@@ -135,15 +135,34 @@ else
 	TORRENT_UPDATE_BOOT_FILE="boot-${SUBTARGET}-${SUFFIXVERSION}.tar.xz"
 
 	echo "creating ${TORRENT_UPDATE_BOOT_FILE}.torrent"
-	(cd "${BOOTDIR}" &&
-	     ln -f "boot.tar.xz" "${TORRENT_UPDATE_BOOT_FILE}" &&
-	     mktorrent -a udp://tracker.opentrackr.org:1337/announce \
-		       -a udp://tracker.openbittorrent.com:6969/announce \
-		       -a udp://tracker.torrent.eu.org:451/announce \
-		       -a udp://open.stealth.si:80/announce \
-		       -a http://tracker.opentrackr.org:1337/announce \
-		       -a http://open.acgnxtracker.com/announce \
-		       -o "${TORRENT_UPDATE_BOOT_FILE}.torrent" "${TORRENT_UPDATE_BOOT_FILE}") || exit 1
+	(cd "${BOOTDIR}" || exit 1
+	 ln -f "boot.tar.xz" "${TORRENT_UPDATE_BOOT_FILE}" || exit 1
+	 mktorrent -a udp://tracker.opentrackr.org:1337/announce \
+		   -a udp://tracker.openbittorrent.com:6969/announce \
+		   -a udp://tracker.torrent.eu.org:451/announce \
+		   -a udp://open.stealth.si:80/announce \
+		   -a http://tracker.opentrackr.org:1337/announce \
+		   -a http://open.acgnxtracker.com/announce \
+		   -o "${TORRENT_UPDATE_BOOT_FILE}.torrent" "${TORRENT_UPDATE_BOOT_FILE}" || exit 1
+	 unlink "${TORRENT_UPDATE_BOOT_FILE}" || exit 1
+	)
+    done
+
+    for FILE in "${BATOCERA_BINARIES_DIR}/images/"*"/batocera-"*".img.gz"
+    do
+	BOOTDIR=$(dirname "${FILE}")
+	TORRENT_IMG_FILE=$(basename "${FILE}")
+
+	echo "creating ${TORRENT_IMG_FILE}.torrent"
+	(cd "${BOOTDIR}" || exit 1
+	 mktorrent -a udp://tracker.opentrackr.org:1337/announce \
+		   -a udp://tracker.openbittorrent.com:6969/announce \
+		   -a udp://tracker.torrent.eu.org:451/announce \
+		   -a udp://open.stealth.si:80/announce \
+		   -a http://tracker.opentrackr.org:1337/announce \
+		   -a http://open.acgnxtracker.com/announce \
+		   -o "${TORRENT_IMG_FILE}.torrent" "${TORRENT_IMG_FILE}" || exit 1
+	)
     done
 fi
 
