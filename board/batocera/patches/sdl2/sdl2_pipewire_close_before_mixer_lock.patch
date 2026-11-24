@@ -1,0 +1,25 @@
+--- a/src/audio/SDL_audio.c
++++ b/src/audio/SDL_audio.c
+@@ -1205,6 +1205,11 @@
+     if (device->thread != NULL) {
+         SDL_WaitThread(device->thread, NULL);
+     }
++
++    /* backends with their own callback thread (pipewire) must stop it before the mixer lock and buffers go */
++    if (device->hidden != NULL) {
++        current_audio.impl.CloseDevice(device);
++    }
+     if (device->mixer_lock != NULL) {
+         SDL_DestroyMutex(device->mixer_lock);
+     }
+@@ -1220,10 +1225,6 @@
+         }
+     }
+ 
+-    if (device->hidden != NULL) {
+-        current_audio.impl.CloseDevice(device);
+-    }
+-
+     SDL_FreeDataQueue(device->buffer_queue);
+ 
+     SDL_free(device);
