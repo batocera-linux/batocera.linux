@@ -1,0 +1,45 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] wind: generate each table once under parallel make
+
+"foo.h foo.c: deps" runs the generator once per target, so with -j two
+runs overlap and one truncates the files the other is compiling. Make the
+header depend on the C file and give only the C file the recipe.
+---
+diff --git a/lib/wind/Makefile.am b/lib/wind/Makefile.am
+--- a/lib/wind/Makefile.am
++++ b/lib/wind/Makefile.am
+@@ -93,22 +93,28 @@ if !MAINTAINER_MODE
+ skip_python = test -f $@ ||
+ endif
+ 
+-map_table.h map_table.c: rfc3454.txt gen-map.py stringprep.py
++map_table.h: map_table.c
++map_table.c: rfc3454.txt gen-map.py stringprep.py
+ 	$(skip_python) $(PYTHON) $(srcdir)/gen-map.py $(srcdir)/rfc3454.txt $(builddir)
+ 
+-errorlist_table.h errorlist_table.c: rfc3454.txt gen-errorlist.py stringprep.py
++errorlist_table.h: errorlist_table.c
++errorlist_table.c: rfc3454.txt gen-errorlist.py stringprep.py
+ 	$(skip_python) $(PYTHON) $(srcdir)/gen-errorlist.py $(srcdir)/rfc3454.txt $(builddir)
+ 
+-normalize_table.h normalize_table.c: UnicodeData.txt CompositionExclusions-3.2.0.txt gen-normalize.py
++normalize_table.h: normalize_table.c
++normalize_table.c: UnicodeData.txt CompositionExclusions-3.2.0.txt gen-normalize.py
+ 	$(skip_python) $(PYTHON) $(srcdir)/gen-normalize.py $(srcdir)/UnicodeData.txt $(srcdir)/CompositionExclusions-3.2.0.txt $(builddir)
+ 
+-combining_table.h combining_table.c: UnicodeData.txt gen-combining.py
++combining_table.h: combining_table.c
++combining_table.c: UnicodeData.txt gen-combining.py
+ 	$(skip_python) $(PYTHON) $(srcdir)/gen-combining.py $(srcdir)/UnicodeData.txt $(builddir)
+ 
+-bidi_table.h bidi_table.c: rfc3454.txt gen-bidi.py
++bidi_table.h: bidi_table.c
++bidi_table.c: rfc3454.txt gen-bidi.py
+ 	$(skip_python) $(PYTHON) $(srcdir)/gen-bidi.py $(srcdir)/rfc3454.txt $(builddir)
+ 
+-punycode_examples.h punycode_examples.c: gen-punycode-examples.py rfc3492.txt
++punycode_examples.h: punycode_examples.c
++punycode_examples.c: gen-punycode-examples.py rfc3492.txt
+ 	$(PYTHON) $(srcdir)/gen-punycode-examples.py $(srcdir)/rfc3492.txt $(builddir)
+ 
+ EXTRA_DIST = \
