@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_launch import Command, Emulator, HotkeysContext, InputDict, configure_windows, find_screen
+from batocera_launch import Command, Emulator, HotkeysContext, InputDict, configure_windows, find_screen, state_manager
 
 _SHARE_DIR: Final = Path('/usr/share/drastic')
 
@@ -191,8 +191,6 @@ class Drastic(Emulator):
             'name': 'drastic',
             'keys': {
                 'exit': 'KEY_ESC',
-                'save_state': 'KEY_F5',
-                'restore_state': 'KEY_F7',
                 'menu': 'KEY_F1',
                 'fastforward': 'KEY_TAB',
                 'swap_screen': 'KEY_F2',
@@ -278,6 +276,8 @@ class Drastic(Emulator):
             'controls_a[CONTROL_INDEX_UI_SWITCH]': '481',
             **_read_existing_config(config_file),
         }
+        # the save state manager picks the slot and puts the state ES starts from in it
+        config['savestate_number'] = str(state_manager(self.config).slot or 0)
 
         # Safe parsing for screen orientation configuration
         orientation = self.config.get_str('drastic_screen_orientation')

@@ -442,3 +442,12 @@ cores:
             prompt: SERVICE AND TEST BUTTONS
             description: Service on L3 and Test on R3, to open the test menu.
             preset: switchauto
+
+savestates:
+  directory: dolphin-emu/StateSaves
+  file: '{{romfilename}}.s{{slot2d}}'
+  image: '{{romfilename}}.s{{slot2d}}.png'
+  nofileextension: false
+  firstslot: 1
+  autosave: false
+  incremental: true

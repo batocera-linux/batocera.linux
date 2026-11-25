@@ -66,3 +66,14 @@ custom_features:
     choices:
       "On": "true"
       "Off": "false"
+
+savestates:
+  directory: '{{system}}'
+  file: '{{romfilename}}.state{{slot}}'
+  image: '{{romfilename}}.state{{slot}}.png'
+  nofileextension: true
+  firstslot: 0
+  autosave: true
+  autosave_file: '{{romfilename}}.state.auto'
+  autosave_image: '{{romfilename}}.state.auto.png'
+  incremental: true

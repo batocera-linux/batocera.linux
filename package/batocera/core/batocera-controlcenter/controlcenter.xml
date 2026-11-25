@@ -106,7 +106,7 @@
 	<!-- the running game's save states, newest first; picking one loads it -->
 	<hgroup name="SaveStates" display="Save States">
 		<feature>
-			<button display="Save new state" action="hotkeygen --send save_state" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  save_state-" &amp;&amp; echo 1}' />
+			<button display="Save new state" action="batocera-savestate save" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  save_state-" &amp;&amp; echo 1}' />
 		</feature>
 		<feature>
 			<gallery display="${curl -s http://127.0.0.1:1234/runningGame/savestates}" refresh="5"

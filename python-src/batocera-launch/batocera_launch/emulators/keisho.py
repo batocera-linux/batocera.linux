@@ -31,7 +31,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BATOCERA_CONF, CONFIGS, ROMS, SAVES, SCREENSHOTS
 from batocera_common.vulkan import VulkanInfo, get_vulkan_info
-from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses
+from batocera_launch import Command, Emulator, HotkeysContext, guns_need_crosses, state_manager
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -335,8 +335,6 @@ class Keisho(Emulator):
                 'menu': 'KEY_F10',
                 'pause': 'KEY_P',
                 'screenshot': 'KEY_F12',
-                'save_state': 'KEY_F6',
-                'restore_state': 'KEY_F7',
                 'rewind': 'KEY_BACKSPACE',
                 'fastforward': 'KEY_TAB',
                 'coin': 'KEY_5',
@@ -495,6 +493,7 @@ class Keisho(Emulator):
                 '/usr/bin/keisho',
                 '--config',
                 self.config_dir,
+                *state_manager(self.config).boot_args,
                 self.rom,
             ],
             env={

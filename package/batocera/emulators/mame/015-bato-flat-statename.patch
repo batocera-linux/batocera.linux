@@ -1,0 +1,101 @@
+diff --git a/src/emu/machine.h b/src/emu/machine.h
+--- a/src/emu/machine.h
++++ b/src/emu/machine.h
+@@ -204,6 +204,7 @@
+ 	std::string describe_context() const;
+ 	std::string compose_saveload_filename(std::string &&base_filename, const char **searchpath = nullptr);
+ 	std::string get_statename(const char *statename_opt) const;
++	std::string state_file_prefix() const;
+ 
+ private:
+ 	// side effect disable counter
+diff --git a/src/emu/machine.cpp b/src/emu/machine.cpp
+--- a/src/emu/machine.cpp
++++ b/src/emu/machine.cpp
+@@ -618,6 +618,20 @@
+ 
+ 
+ //-------------------------------------------------
++//  state_file_prefix - a plain statename keeps
++//  states flat as <statename>.<slot>.sta
++//-------------------------------------------------
++
++std::string running_machine::state_file_prefix() const
++{
++	std::string_view const stateopt(options().state_name());
++	if (stateopt.empty() || stateopt.find_first_of("%/\\") != std::string_view::npos)
++		return std::string();
++	return get_statename(options().state_name()) + '.';
++}
++
++
++//-------------------------------------------------
+ //  compose_saveload_filename - composes a filename
+ //  for state loading/saving
+ //-------------------------------------------------
+@@ -641,9 +655,17 @@
+ 			*searchpath = options().state_directory();
+ 
+ 		// take into account the statename option
+-		const char *stateopt = options().state_name();
+-		std::string statename = get_statename(stateopt);
+-		result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
++		std::string const prefix = state_file_prefix();
++		if (!prefix.empty())
++		{
++			result = string_format("%s%s.sta", prefix, filename);
++		}
++		else
++		{
++			const char *stateopt = options().state_name();
++			std::string statename = get_statename(stateopt);
++			result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
++		}
+ 	}
+ 	return result;
+ }
+diff --git a/src/frontend/mame/ui/state.cpp b/src/frontend/mame/ui/state.cpp
+--- a/src/frontend/mame/ui/state.cpp
++++ b/src/frontend/mame/ui/state.cpp
+@@ -160,6 +160,7 @@
+ 
+ 	// open the state directory
+ 	osd::directory::ptr dir = osd::directory::open(state_directory());
++	std::string const prefix = machine().state_file_prefix();
+ 
+ 	// create a separate vector, so we can add sorted entries to the menu
+ 	std::vector<const file_entry *> m_entries_vec;
+@@ -175,6 +176,12 @@
+ 			{
+ 				// get the file name of the entry
+ 				std::string file_name(core_filename_extract_base(entry->name, true));
++				if (!prefix.empty())
++				{
++					if (!file_name.starts_with(prefix) || file_name.find('.', prefix.length()) != std::string::npos)
++						continue;
++					file_name.erase(0, prefix.length());
++				}
+ 
+ 				// try translating it
+ 				std::string visible_name = get_visible_name(file_name);
+@@ -388,9 +395,8 @@
+ 		{
+ 			// try to remove the file
+ 			std::string const filename(util::path_concat(
+-						machine().options().state_directory(),
+-						machine().get_statename(machine().options().state_name()),
+-						m_confirm_delete->file_name() + ".sta"));
++						state_directory(),
++						machine().state_file_prefix() + m_confirm_delete->file_name() + ".sta"));
+ 			std::error_condition const err(osd_file::remove(filename));
+ 			if (err)
+ 			{
+@@ -528,6 +534,8 @@
+ 
+ std::string menu_load_save_state_base::state_directory() const
+ {
++	if (!machine().state_file_prefix().empty())
++		return machine().options().state_directory();
+ 	return util::path_concat(
+ 			machine().options().state_directory(),
+ 			machine().get_statename(machine().options().state_name()));

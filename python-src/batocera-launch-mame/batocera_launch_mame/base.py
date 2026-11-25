@@ -23,7 +23,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from batocera_common.dataclasses import cached_dataclass, cached_property
-from batocera_launch import Emulator, HotkeysContext, SpecialDecorationsMixin
+from batocera_launch import Emulator, HotkeysContext, SpecialDecorationsMixin, state_manager
 from batocera_launch_mame_common import (
     MameControlScheme,
     MessSystemInfo,
@@ -58,10 +58,13 @@ class MAMEBase(MAMEPathsMixin, SpecialDecorationsMixin, Emulator):  # pyright: i
                 'reset': 'KEY_F3',
                 'coin': 'KEY_5',
                 'fastforward': 'KEY_PAGEDOWN',
-                'save_state': ['KEY_LEFTSHIFT', 'KEY_F6'],
-                'restore_state': ['KEY_LEFTSHIFT', 'KEY_F7'],
             },
         }
+
+    @cached_property
+    def state_args(self) -> list[str]:
+        # MAME drops the extension, and a statename without % keeps states flat as <stem>.<slot>.sta
+        return ['-statename', self.rom.source.name, *state_manager(self.config).boot_args]
 
     @cached_property
     def mess_system_info(self) -> MessSystemInfo | None:

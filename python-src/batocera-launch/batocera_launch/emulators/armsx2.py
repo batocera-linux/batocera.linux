@@ -30,13 +30,15 @@ from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Emulator, HotkeysContext, Input
+from batocera_launch import Command, Emulator, HotkeysContext, Input, state_manager
 from batocera_launch.paths import DATAINIT_DIR, configure_emulator
 
 _logger = logging.getLogger(__name__)
 
 _ARMSX2_BIN_DIR: Final = Path('/usr/armsx2/bin')
 _ARMSX2_RESOURCES_DIR: Final = _ARMSX2_BIN_DIR / 'resources'
+
+_STATE_SLOTS: Final = range(1, 11)
 
 # PCSX2/Pad.cpp Pad_subtype values for the wheel devices we support
 _WHEEL_TYPE_MAPPING: Final = {
@@ -145,8 +147,6 @@ class Armsx2(Emulator):
                 'exit': ['KEY_LEFTALT', 'KEY_F4'],
                 'menu': 'KEY_ESC',
                 'pause': 'KEY_ESC',
-                'save_state': 'KEY_F1',
-                'restore_state': 'KEY_F3',
                 'previous_slot': ['KEY_LEFTSHIFT', 'KEY_F2'],
                 'next_slot': 'KEY_F2',
             },
@@ -223,12 +223,7 @@ class Armsx2(Emulator):
         if not pcsx2_patches.exists():
             shutil.copy(DATAINIT_DIR / 'bios' / 'ps2' / 'patches.zip', pcsx2_patches)
 
-        # state_slot option
-        if state_filename := self.config.get('state_filename'):
-            command_array.extend(['-statefile', state_filename])
-
-        if state_slot := self.config.get_str('state_slot'):
-            command_array.extend(['-stateindex', state_slot])
+        command_array.extend(state_manager(self.config).boot_args)
 
         return Command(command_array, env=envcmd)
 
@@ -541,6 +536,12 @@ class Armsx2(Emulator):
         pcsx2_ini_config.set('Hotkeys', 'SaveStateToSlot', 'Keyboard/F1')
         pcsx2_ini_config.set('Hotkeys', 'NextSaveStateSlot', 'Keyboard/F2')
         pcsx2_ini_config.set('Hotkeys', 'PreviousSaveStateSlot', 'Keyboard/Shift & Keyboard/F2')
+        # the save state manager's keys for each slot
+        for slot in _STATE_SLOTS:
+            pcsx2_ini_config.set('Hotkeys', f'LoadStateFromSlot{slot}', f'Keyboard/Control & Keyboard/F{slot}')
+            pcsx2_ini_config.set(
+                'Hotkeys', f'SaveStateToSlot{slot}', f'Keyboard/Control & Keyboard/Shift & Keyboard/F{slot}'
+            )
         pcsx2_ini_config.set('Hotkeys', 'OpenPauseMenu', 'Keyboard/Escape')
         pcsx2_ini_config.set('Hotkeys', 'ToggleFrameLimit', 'Keyboard/F4')
         pcsx2_ini_config.set('Hotkeys', 'TogglePause', 'Keyboard/Space')

@@ -336,3 +336,20 @@ systems:
   - model1
   - model2
   - model3
+
+savestates:
+  # the quick slot is listed as the autosave
+  directory: '{{system}}/keisho/states'
+  file: '{{romfilename}}.{{slot0}}.kstate'
+  image: ''
+  nofileextension: true
+  firstslot: 1
+  autosave: true
+  autosave_file: '{{romfilename}}.quick.kstate'
+  autosave_image: ''
+  incremental: false
+  keys:
+    quick_save: KEY_F6
+    quick_load: KEY_F7
+  boot:
+    args: [--load-state, '{file}']

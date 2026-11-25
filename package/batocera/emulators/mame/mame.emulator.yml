@@ -2267,3 +2267,31 @@ labwc:
       actions:
         - name: MoveToOutput
           output: secondary|primary
+
+savestates:
+  # flat as <statename>.<slot>.sta by 015-bato-flat-statename.patch, per system as rom names repeat across them;
+  # the quick slot is the autosave
+  directory: mame/state/{{system}}
+  file: '{{romfilename}}.{{slot0}}.sta'
+  image: ''
+  nofileextension: true
+  firstslot: 0
+  autosave: true
+  autosave_file: '{{romfilename}}.quick.sta'
+  autosave_image: ''
+  incremental: true
+  slots: [0, 9]
+  # MAME's state menus, then a key per slot
+  keys:
+    quick_save: [KEY_LEFTSHIFT, KEY_F6]
+    quick_load: [KEY_LEFTSHIFT, KEY_F7]
+    save_menu: KEY_F6
+    load_menu: KEY_F7
+    slot: 'KEY_{slot}'
+  boot:
+    args: [-state, '{file}']
+  migrate:
+    - from: '../{{romfilename}}/{{slot0}}.sta'
+      to: '{{romfilename}}.{{slot0}}.sta'
+    - from: '../{{romfilename}}/quick.sta'
+      to: '{{romfilename}}.quick.sta'

@@ -55,6 +55,7 @@ from .gamescope import game_resolution, gamescope_args, gamescope_available
 from .paths import ES_GAMES_METADATA, ES_GUNS_ART_METADATA, PRECALIBRATION_DIR, SYSTEM_DECORATIONS, USER_DECORATIONS
 from .plugin_manager import HookContext, PluginManager
 from .rom import Rom, ShortGameID
+from .savestates.manager import state_manager
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Container, Iterator, Mapping
@@ -883,7 +884,10 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
             _exit_together(
                 EvmapyManager(self),
                 HotkeygenManager(
-                    self.bus, self.hotkeygen_context, self.config.get_bool('exithotkeyonly'), self.config.ui_mode
+                    self.bus,
+                    state_manager(self.config).hotkeys_context(self.hotkeygen_context),
+                    self.config.get_bool('exithotkeyonly'),
+                    self.config.ui_mode,
                 ),
             ) as evmapy_manager,
         ):
@@ -923,6 +927,7 @@ class Emulator(AbstractAsyncContextManager['Emulator', bool | None], ABC):
                                 self.config.get_str('cpucluster', self.cpu_cluster)
                             )
                             await self.before_run(command)
+                            state_manager(self.config).game_started()
                             return await command.run()
 
     @staticmethod

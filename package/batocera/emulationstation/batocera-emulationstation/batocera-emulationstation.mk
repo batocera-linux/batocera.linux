@@ -3,8 +3,8 @@
 # batocera-emulationstation
 #
 ################################################################################
-# Last update: Commits on Nov 25, 2026
-BATOCERA_EMULATIONSTATION_VERSION = 79fb52e95abe55ffe7b6d0814b7a6714c241714a
+# Last update: Commits on Nov 26, 2026
+BATOCERA_EMULATIONSTATION_VERSION = 472c63ad3578ba0bf98c243bb6703bf09b9bd75a
 BATOCERA_EMULATIONSTATION_SITE = https://github.com/batocera-linux/batocera-emulationstation
 BATOCERA_EMULATIONSTATION_SITE_METHOD = git
 BATOCERA_EMULATIONSTATION_LICENSE = MIT
@@ -136,10 +136,6 @@ define BATOCERA_EMULATIONSTATION_RESOURCES
 	# es_input.cfg
 	mkdir -p $(TARGET_DIR)/usr/share/batocera/datainit/system/configs/emulationstation
 	cp $(BATOCERA_EMULATIONSTATION_PKGDIR)/controllers/es_input.cfg \
-	    $(TARGET_DIR)/usr/share/emulationstation
-
-	# savestates config
-	$(INSTALL) -m 0644 $(BATOCERA_EMULATIONSTATION_PKGDIR)/es_savestates.cfg \
 	    $(TARGET_DIR)/usr/share/emulationstation
 
 	# hooks

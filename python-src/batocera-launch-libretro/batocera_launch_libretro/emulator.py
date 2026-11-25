@@ -57,6 +57,8 @@ from batocera_launch.paths import (
 from .load import load_core
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from .core import Core
 
 _logger = logging.getLogger(__name__)
@@ -166,23 +168,25 @@ class Libretro(SpecialDecorationsMixin, Emulator):
 
     @cached_property
     def hotkeygen_context(self) -> HotkeysContext:
-        return {
-            'name': 'retroarch',
-            'keys': {
-                'exit': ['KEY_LEFTSHIFT', 'KEY_ESC'],
-                'menu': ['KEY_LEFTSHIFT', 'KEY_F1'],
-                'pause': ['KEY_LEFTSHIFT', 'KEY_P'],
-                'coin': 'KEY_5',
+        keys: dict[str, Sequence[str]] = {
+            'exit': ['KEY_LEFTSHIFT', 'KEY_ESC'],
+            'menu': ['KEY_LEFTSHIFT', 'KEY_F1'],
+            'pause': ['KEY_LEFTSHIFT', 'KEY_P'],
+            'coin': 'KEY_5',
+            'rewind': ['KEY_LEFTSHIFT', 'KEY_F11'],
+            'fastforward': ['KEY_LEFTSHIFT', 'KEY_F12'],
+            'reset': ['KEY_LEFTSHIFT', 'KEY_F10'],
+            'translation': ['KEY_LEFTSHIFT', 'KEY_F9'],
+        }
+        # the control center offers saving only where a save_state key is registered
+        if self.lr_core.can_save_state:
+            keys |= {
                 'save_state': ['KEY_LEFTSHIFT', 'KEY_F3'],
                 'restore_state': ['KEY_LEFTSHIFT', 'KEY_F4'],
                 'previous_slot': ['KEY_LEFTSHIFT', 'KEY_F5'],
                 'next_slot': ['KEY_LEFTSHIFT', 'KEY_F6'],
-                'rewind': ['KEY_LEFTSHIFT', 'KEY_F11'],
-                'fastforward': ['KEY_LEFTSHIFT', 'KEY_F12'],
-                'reset': ['KEY_LEFTSHIFT', 'KEY_F10'],
-                'translation': ['KEY_LEFTSHIFT', 'KEY_F9'],
-            },
-        }
+            }
+        return {'name': 'retroarch', 'keys': keys}
 
     @cached_property
     def bezel(self) -> str | None:

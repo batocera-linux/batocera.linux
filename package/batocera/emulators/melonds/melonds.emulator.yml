@@ -218,3 +218,20 @@ labwc:
       actions:
         - name: MoveToOutput
           output: secondary|primary
+
+savestates:
+  directory: nds
+  file: '{{romfilename}}.ml{{slot0}}'
+  image: ''
+  nofileextension: true
+  firstslot: 1
+  autosave: false
+  incremental: true
+  slots: [1, 8]
+  keys:
+    save_slot: [KEY_LEFTSHIFT, 'KEY_F{slot}']
+    load_slot: 'KEY_F{slot}'
+  # states take the name of the rom inside an archive
+  archive: [nds, dsi, ids, srl]
+  boot:
+    send: load

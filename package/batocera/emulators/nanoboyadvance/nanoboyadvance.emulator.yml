@@ -80,3 +80,18 @@ file_extensions:
   - rar
 systems:
   - gba
+
+savestates:
+  directory: nanoboyadvance
+  file: '{{romfilename}}.{{slot2d}}.nbss'
+  image: ''
+  nofileextension: true
+  firstslot: 1
+  autosave: false
+  incremental: true
+  slots: [1, 10]
+  keys:
+    save_slot: [KEY_LEFTSHIFT, 'KEY_F{slot}']
+    load_slot: 'KEY_F{slot}'
+  boot:
+    send: load

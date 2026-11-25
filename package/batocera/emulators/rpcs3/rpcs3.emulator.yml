@@ -503,3 +503,24 @@ systems:
         - psn
         - iso
   - namco3xx
+
+savestates:
+  directory: '{{system}}/rpcs3/states'
+  file: '{{romfilename}}.{{slot0}}.SAVESTAT.zst'
+  image: ''
+  nofileextension: true
+  firstslot: 1
+  autosave: false
+  incremental: true
+  # every save takes a new number; loads restart the game, as RPCS3's in-game reload segfaults
+  keys:
+    save: [KEY_LEFTCTRL, KEY_S]
+  boot:
+    args: [--savestate, '{file}']
+  mirror:
+    native_dir: /userdata/saves/ps3
+    glob: '*/*.SAVESTAT.zst'
+    pattern: '(?P<serial>[A-Z0-9]{9})/(?P=serial)_\w_(?P<slot>\d+)\.SAVESTAT\.zst'
+    # the digit count keeps RPCS3's newest-last name order
+    slot_name: '{serial}/{serial}_{digits}_{slot}.SAVESTAT.zst'
+    placement: [0, 3]

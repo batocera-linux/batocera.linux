@@ -276,3 +276,11 @@ file_extensions:
   - zip
 systems:
   - psp
+
+savestates:
+  directory: psp
+  file: '{{romfilename}}_{{slot0}}.ppst'
+  image: '{{romfilename}}_{{slot0}}.jpg'
+  nofileextension: true
+  firstslot: 0
+  autosave: false

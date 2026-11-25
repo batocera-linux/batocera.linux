@@ -14,23 +14,58 @@
 # YOU MUST KEEP THIS HEADER AS IT IS
 #
 
-# Loads a save state of the running game, by the slot ES lists it under: live when the emulator
-# can load a given slot, otherwise by starting the game again from it.
-# Usage: batocera-savestate load <slot>
+# Saves or loads a save state of the running game, by the slot ES lists it under: through the
+# launcher's save state manager when it handles the emulator, then RetroArch's command pipe,
+# otherwise ES starts the game again from the state. Slot -1 is the quick slot, listed as the
+# autosave; a save without a slot makes a new state.
+# Usage: batocera-savestate save [-1]
+#        batocera-savestate load [<slot>]
 
 # batocera-launch gives RetroArch this pipe as stdin
 RETROARCH_COMMANDS=/var/run/retroarch-commands
 
-if [ "$1" != load ] || ! [ "$2" -eq "$2" ] 2>/dev/null; then
-    echo "usage: $0 load <slot>" >&2
-    exit 1
-fi
+ACTION="$1"
 SLOT="$2"
+case "${ACTION}" in
+    save) [ $# -eq 1 ] || { [ $# -eq 2 ] && [ "${SLOT}" = -1 ]; } ;;
+    load) [ $# -eq 1 ] || { [ $# -eq 2 ] && [ "${SLOT}" -eq "${SLOT}" ] 2>/dev/null; } ;;
+    *) false ;;
+esac || {
+    echo "usage: $0 save [-1] | load [<slot>]" >&2
+    exit 1
+}
 
-# an emulator with a hotkey for each slot
-if hotkeygen --list | sed "/^#/q" | grep -q "^  load_state_slot_${SLOT}-"; then
-    exec hotkeygen --send "load_state_slot_${SLOT}"
+# 0 done, 1 no launcher, 2 no state handling, 3 only a restart loads it
+batocera-launch-savestate "$@"
+CODE=$?
+[ "${CODE}" -eq 0 ] && exit 0
+
+has_action() {
+    hotkeygen --list | sed "/^#/q" | grep -q "^  $1-"
+}
+
+# save_state and restore_state run this script, so without the launcher only the manager's raw keys are left
+send_first() {
+    for action in "$@"; do
+        has_action "${action}" && exec hotkeygen --send "${action}"
+    done
+    exit 1
+}
+
+if [ "${ACTION}" = save ]; then
+    [ "${CODE}" -eq 2 ] && exec hotkeygen --send save_state
+    [ "${CODE}" -eq 1 ] || exit 1
+    [ "${SLOT}" = -1 ] && send_first savestate_quick_save savestate_save
+    send_first savestate_save savestate_quick_save
 fi
+
+if [ "${CODE}" -eq 1 ]; then
+    case "${SLOT}" in
+        -1) send_first savestate_quick_load ;;
+        '') send_first savestate_restore savestate_quick_load ;;
+    esac
+fi
+[ -n "${SLOT}" ] || exit 1
 
 # RetroArch, which takes commands on stdin; the pipe goes when it quits, the timeout covers a crash
 if [ -p "${RETROARCH_COMMANDS}" ]; then

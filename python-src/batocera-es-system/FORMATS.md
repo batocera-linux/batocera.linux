@@ -5,6 +5,7 @@ emulator/core YAML files, then writes:
 
 - `es_systems.cfg` — from `es_systems.yml` plus registry metadata
 - `es_features.cfg` — from registry features
+- `es_savestates.cfg` and `savestates.json` — from registry `savestates`
 - `roms/<system>/_info.txt` — comments from `es_systems.yml`, extension lists
   from registry metadata
 - translation sources — from feature prompts/choices and key descriptions
@@ -108,12 +109,37 @@ previous level’s extensions become the implied `values`.
 Standalone emulators (no cores) resolve system extensions against the
 emulator. Cores resolve system → core → emulator.
 
+### `savestates` (emulator files only)
+
+One map per emulator; an overlay replaces it whole. It is written to
+`es_savestates.cfg` for ES and to `savestates.json`, which batocera-launch's
+save state manager reads at `/usr/share/batocera/launch/savestates.json`.
+
+ES keys, emitted in this order when present: `directory`, `file`, `image`,
+`nofileextension`, `firstslot`, `autosave`, `autosave_file`, `autosave_image`,
+`incremental` (see ES's `es_savestates.cfg`).
+
+Launcher keys:
+
+| Key | Role |
+| --- | --- |
+| `slots` | `[first, last]` numbered slots the emulator has |
+| `keys` | `quick_save` / `quick_load` (its quick slot, listed as the autosave), `save_slot` / `load_slot` per slot, `save` / `restore` for its current slot or its own choice, or MAME's `save_menu` / `load_menu` / `slot`; `{slot}` is substituted |
+| `boot` | starting from a state: `args` (`{file}` substituted), `copy` into the current slot, `send: load\|restore` after `delay` s |
+| `mirror` | serial-named states: `native_dir`, `glob`, `pattern` (groups `serial`, `slot`), `slot_name`, `auto_name` or `auto_slot`, `placement`, `fresh`, `screenshot` |
+| `archive` | rom extensions; inside a zip or 7z the emulator names states after that rom, which the manager mirrors |
+| `migrate` | `from`/`to` names in the ES directory, moved at launch when the target is free |
+
+The pad's `save_state` / `restore_state` use the quick slot when there is one; otherwise, like
+`batocera-savestate save`, a save always makes a new numbered state and a load takes the newest.
+
 ## Outputs worth knowing
 
 | Output | Source |
 | --- | --- |
 | `es_systems.cfg` | `es_systems.yml` + registry system/core metadata |
 | `es_features.cfg` | Registry `features` / `shared_features` / `custom_features` |
+| `es_savestates.cfg`, `savestates.json` | Registry `savestates` |
 | `roms/<system>/_info.txt` | Comments from `es_systems.yml`; per-core extension lists from metadata |
 
 Defaults for which emulator/core is marked `default="true"` come from
