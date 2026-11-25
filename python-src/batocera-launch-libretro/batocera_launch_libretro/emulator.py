@@ -73,6 +73,9 @@ _RETROARCH_BIN: Final = Path('/usr/bin/retroarch')
 _RETROARCH_SHARE_DIR: Final = Path('/usr/share/libretro')
 _RETROARCH_INFO_DIR: Final = _RETROARCH_SHARE_DIR / 'info'
 
+# RetroArch reads commands such as LOAD_STATE_SLOT from it while it runs, see batocera-savestate
+RETROARCH_COMMANDS: Final = Path('/var/run/retroarch-commands')
+
 # Warning the values in the array must be exactly at the same index than
 # https://github.com/libretro/RetroArch/blob/master/gfx/video_driver.c#L188
 _RATIOS: Final = [
@@ -380,7 +383,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
             # a link would work, but on fat32, we need to copy
             args.extend(['-e', state_slot])
 
-        return Command(args, {'XDG_CONFIG_HOME': CONFIGS})
+        return Command(args, {'XDG_CONFIG_HOME': CONFIGS}, stdin_pipe=RETROARCH_COMMANDS)
 
     async def get_gfx_backend(self, game_shader: str | None = None) -> str:
         # Start with the selected option
@@ -525,6 +528,7 @@ class Libretro(SpecialDecorationsMixin, Emulator):
         custom_config.set('input_state_slot_increase', 'f6')
         custom_config.set('input_ai_service', 'f9')
         custom_config.set('input_reset', 'f10')
+        custom_config.set('stdin_cmd_enable', 'true')
         custom_config.set('input_rewind', 'f11')
 
         # See if FF is toggle or hold

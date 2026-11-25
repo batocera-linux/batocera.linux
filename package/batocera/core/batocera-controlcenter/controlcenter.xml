@@ -14,6 +14,7 @@
 
 	<feature name="shortcuts_tabs" display="Quick Access">
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
+		<tab display="Save States" target="SaveStates" if="${curl -s http://127.0.0.1:1234/runningGame/savestates | jq -e 'length &gt; 0' &gt;/dev/null &amp;&amp; echo 1}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
 		<tab display="Performance" target="Performance" if="${ls /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" />
@@ -102,6 +103,18 @@
 			<img display="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's:\(.*\):/usr/share/batocera/controller-overlays/\1.png:'}" height="25%" refresh="5" align="center" />
 		</vgroup>
 	</hgroup>
+	<!-- the running game's save states, newest first; picking one loads it -->
+	<hgroup name="SaveStates" display="Save States">
+		<feature>
+			<button display="Save new state" action="hotkeygen --send save_state" afterclick="bcc_close" if='${hotkeygen --list | sed "/^#/q" | grep -q "^  save_state-" &amp;&amp; echo 1}' />
+		</feature>
+		<feature>
+			<gallery display="${curl -s http://127.0.0.1:1234/runningGame/savestates}" refresh="5"
+				action="batocera-savestate load {id}"
+				confirm="Load this state? Progress since it was saved is lost." afterclick="bcc_close" />
+		</feature>
+	</hgroup>
+
         <hgroup name="Gun" display="Gun">
           <img display='${echo /var/run/batocera-overlays/gun_help.png}' height="50%" refresh="5" align="center" />
         </hgroup>

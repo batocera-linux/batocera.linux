@@ -1,0 +1,40 @@
+#!/bin/sh
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# Loads a save state of the running game, by the slot ES lists it under: live when the emulator
+# can load a given slot, otherwise by starting the game again from it.
+# Usage: batocera-savestate load <slot>
+
+# batocera-launch gives RetroArch this pipe as stdin
+RETROARCH_COMMANDS=/var/run/retroarch-commands
+
+if [ "$1" != load ] || ! [ "$2" -eq "$2" ] 2>/dev/null; then
+    echo "usage: $0 load <slot>" >&2
+    exit 1
+fi
+SLOT="$2"
+
+# an emulator with a hotkey for each slot
+if hotkeygen --list | sed "/^#/q" | grep -q "^  load_state_slot_${SLOT}-"; then
+    exec hotkeygen --send "load_state_slot_${SLOT}"
+fi
+
+# RetroArch, which takes commands on stdin; the pipe goes when it quits, the timeout covers a crash
+if [ -p "${RETROARCH_COMMANDS}" ]; then
+    timeout 2 sh -c "echo 'LOAD_STATE_SLOT ${SLOT}' >'${RETROARCH_COMMANDS}'" && exit 0
+fi
+
+exec curl -sf -X POST -d "${SLOT}" http://127.0.0.1:1234/runningGame/savestates/load
