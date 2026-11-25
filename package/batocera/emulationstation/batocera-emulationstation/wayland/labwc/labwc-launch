@@ -12,6 +12,7 @@ echo "XKB_DEFAULT_VARIANT=$XKB_DEFAULT_VARIANT" >> "$LABWC_ENV_FILE"
 
 # Allow startup from a user session where WAYLAND_DISPLAY is set,
 # e.g. to restart via /etc/init.d/S31emulationstation start
+unset DISPLAY
 unset WAYLAND_DISPLAY
 
 # Log and configuration file paths
