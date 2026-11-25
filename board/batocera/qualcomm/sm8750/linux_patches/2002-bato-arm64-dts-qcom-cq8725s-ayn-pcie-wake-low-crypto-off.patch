@@ -1,0 +1,31 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: qcom: cq8725s-ayn: active-low PCIe wake, disable crypto
+
+7.3 requests the root port wake-gpios as a level wake IRQ, so an active-high
+WAKE# stays asserted and aborts suspend. QCE is now BROKEN, and the unbound
+crypto node holds the interconnects at their maximum until sync_state.
+
+---
+diff --git a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
+index 33bbc27f9..b102784ce 100644
+--- a/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/cq8725s-ayn-common.dtsi
+@@ -982,7 +982,8 @@ &pcie0_phy {
+ };
+ 
+ &pcieport0 {
+-	wake-gpios = <&tlmm 104 GPIO_ACTIVE_HIGH>;
++	/* Batocera - PCIe WAKE# is active low, 7.3 requests it as a level wake IRQ */
++	wake-gpios = <&tlmm 104 GPIO_ACTIVE_LOW>;
+ 	reset-gpios = <&tlmm 102 GPIO_ACTIVE_LOW>;
+ 
+ 	wifi@0 {
+@@ -1469,3 +1470,8 @@ rtc_offset: rtc-offset@72 {
+ 		reg = <0x72 0x4>;
+ 	};
+ };
++
++/* Batocera - QCE depends on BROKEN, an unbound consumer keeps the interconnects at INT_MAX */
++&crypto {
++	status = "disabled";
++};

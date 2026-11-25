@@ -21,7 +21,7 @@ index 982abaa..80f0016 100644
 +	struct clk *pixel_src_parent;
  
  	unsigned long byte_clk_rate;
- 	unsigned long byte_intf_clk_rate;
+ 	bool byte_intf_clk_div_2;
 @@ -416,6 +418,11 @@ int dsi_link_clk_set_rate_6g_v2_9(struct msm_dsi_host *msm_host)
  	struct device *dev = &msm_host->pdev->dev;
  	int ret;

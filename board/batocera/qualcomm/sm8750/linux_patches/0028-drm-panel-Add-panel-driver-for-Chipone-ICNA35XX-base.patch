@@ -5,21 +5,16 @@ Subject: [PATCH] drm/panel: Add panel driver for Chipone ICNA35XX based panels
 
 Signed-off-by: Teguh Sobirin <teguh@sobir.in>
 ---
- drivers/gpu/drm/panel/Kconfig                 |  11 +
- drivers/gpu/drm/panel/Makefile                |   1 +
- .../gpu/drm/panel/panel-chipone-icna35xx.c    | 551 ++++++++++++++++++
- 3 files changed, 563 insertions(+)
- create mode 100644 drivers/gpu/drm/panel/panel-chipone-icna35xx.c
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 3bcf710414dd..cc2b93322628 100644
+index cbdf7b8f7..e328b46f0 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -115,6 +115,17 @@ config DRM_PANEL_BOE_XM91080G
- 	  Say Y if you want to enable support for panels based on the
- 	  Xm-Plus XM91080G controller.
+@@ -126,6 +126,17 @@ config DRM_PANEL_CHIPONE_ICNA35XX
+ 	  around the Chipone ICNA3512 and ICNA3520 display controllers,
+ 	  such as some Tianma panels used in AYN Odin2 Portal and Thor.
  
-+config DRM_PANEL_CHIPONE_ICNA35XX
++config DRM_PANEL_DDIC_ICNA35XX
 +	tristate "Chipone ICNA35XX panel driver"
 +	depends on OF
 +	depends on DRM_MIPI_DSI
@@ -30,26 +25,27 @@ index 3bcf710414dd..cc2b93322628 100644
 +	  around the Chipone ICNA3512 and ICNA3520 display controllers,
 +	  such as some Tianma panels used in AYN Odin2 Portal and Thor.
 +
- config DRM_PANEL_EBBG_FT8719
- 	tristate "EBBG FT8719 panel driver"
+ config DRM_PANEL_CHIPWEALTH_CH13726A
+ 	tristate "CHIPWEALTH CH13726A-based DSI panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 4b64459f88b5..339a5cb9f31b 100644
+index 3b523cf37..4d87f9951 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -9,6 +9,7 @@
- obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.o
+@@ -11,6 +11,7 @@ obj-$(CONFIG_DRM_PANEL_BOE_TH101MB31UIG002_28A) += panel-boe-th101mb31ig002-28a.
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_LL2) += panel-boe-tv101wum-ll2.o
  obj-$(CONFIG_DRM_PANEL_BOE_TV101WUM_NL6) += panel-boe-tv101wum-nl6.o
-+obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
+ obj-$(CONFIG_DRM_PANEL_CHIPONE_ICNA35XX) += panel-chipone-icna35xx.o
++obj-$(CONFIG_DRM_PANEL_DDIC_ICNA35XX) += panel-ddic-icna35xx.o
  obj-$(CONFIG_DRM_PANEL_CHIPWEALTH_CH13726A) += panel-chipwealth-ch13726a.o
  obj-$(CONFIG_DRM_PANEL_DSI_CM) += panel-dsi-cm.o
  obj-$(CONFIG_DRM_PANEL_LVDS) += panel-lvds.o
-diff --git a/drivers/gpu/drm/panel/panel-chipone-icna35xx.c b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
+diff --git a/drivers/gpu/drm/panel/panel-ddic-icna35xx.c b/drivers/gpu/drm/panel/panel-ddic-icna35xx.c
 new file mode 100644
+index 000000000..64156129d
 --- /dev/null
-+++ b/drivers/gpu/drm/panel/panel-chipone-icna35xx.c
-@@ -0,0 +1,573 @@
++++ b/drivers/gpu/drm/panel/panel-ddic-icna35xx.c
+@@ -0,0 +1,574 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Chipone ICNA35XX Driver IC panels driver
@@ -72,6 +68,7 @@ new file mode 100644
 +#include <drm/drm_connector.h>
 +#include <drm/drm_crtc.h>
 +#include <drm/drm_mipi_dsi.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_modes.h>
 +#include <drm/drm_panel.h>
 +
@@ -573,7 +570,7 @@ new file mode 100644
 +	pinfo->dsi = dsi;
 +	mipi_dsi_set_drvdata(dsi, pinfo);
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &pinfo->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &pinfo->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "%pOF: failed to get orientation %d\n", dev->of_node, ret);
 +		return ret;
@@ -614,7 +611,7 @@ new file mode 100644
 +	.probe = icna35xx_probe,
 +	.remove = icna35xx_remove,
 +	.driver = {
-+		.name = "panel-chipone-icna35xx",
++		.name = "panel-ddic-icna35xx",
 +		.of_match_table = icna35xx_of_match,
 +	},
 +};
@@ -623,4 +620,3 @@ new file mode 100644
 +MODULE_AUTHOR("Teguh Sobirin <teguh@sobir.in>");
 +MODULE_DESCRIPTION("DRM driver for Chipone ICNA35XX based MIPI DSI panels");
 +MODULE_LICENSE("GPL");
-\ No newline at end of file

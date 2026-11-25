@@ -7,44 +7,42 @@ floor is a corner logic can run at.
 
 ---
 diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
-index ffc46de8d..729949804 100644
+index 907432759..3646f4d7a 100644
 --- a/drivers/pmdomain/qcom/rpmhpd.c
 +++ b/drivers/pmdomain/qcom/rpmhpd.c
-@@ -42,6 +42,7 @@
+@@ -41,6 +41,7 @@
+  * @addr:		Resource address as looped up using resource name from
   *			cmd-db
   * @state_synced:	Indicator that sync_state has been invoked for the rpmhpd resource
-  * @skip_retention_level: Indicate that retention level should not be used for the power domain
 + * @presync_floor:	Clamp to the lowest functional corner instead of the highest before sync_state
   */
  struct rpmhpd {
  	struct device	*dev;
-@@ -59,6 +60,7 @@ struct rpmhpd {
+@@ -57,6 +58,7 @@ struct rpmhpd {
+ 	const char	*res_name;
  	u32		addr;
  	bool		state_synced;
- 	bool            skip_retention_level;
 +	bool		presync_floor;
  };
  
  struct rpmhpd_desc {
-@@ -120,6 +122,8 @@ static struct rpmhpd gbx = {
+@@ -118,6 +120,7 @@ static struct rpmhpd gbx = {
  static struct rpmhpd gfx = {
  	.pd = { .name = "gfx", },
  	.res_name = "gfx.lvl",
 +	.presync_floor = true,
-+	.skip_retention_level = true,
  };
  
  static struct rpmhpd gfx1 = {
-@@ -235,6 +239,8 @@ static struct rpmhpd qphy = {
+@@ -231,6 +234,7 @@ static struct rpmhpd qphy = {
  static struct rpmhpd gmxc = {
  	.pd = { .name = "gmxc", },
  	.res_name = "gmxc.lvl",
 +	.presync_floor = true,
-+	.skip_retention_level = true,
  };
  
  /* Eliza RPMH powerdomains */
-@@ -975,6 +981,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
+@@ -967,6 +971,10 @@ static int rpmhpd_aggregate_corner(struct rpmhpd *pd, unsigned int corner)
  
  	if (pd->state_synced) {
  		to_active_sleep(pd, corner, &this_active_corner, &this_sleep_corner);
