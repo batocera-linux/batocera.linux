@@ -9,6 +9,8 @@ import glob
 import subprocess
 from threading import Thread
 
+from batocera_common.fan import current_fan_profile, fan_curve, start_fan_profile, stop_fan_profile, wait_for_fan_check
+
 DEBUG = 0
 CHECK_INTERVAL = 10
 
@@ -142,10 +144,12 @@ def temp_check():
                 print(f"Warning: Could not set pwm1_enable to manual: {e}")
 
     prev_pwm_val = -1
+    start_fan_profile()
 
     while True:
         val = get_cpu_temp()
-        target_pct = get_fanspeed(val, fanconfig)
+        profile = current_fan_profile()
+        target_pct = get_fanspeed(val, fan_curve(fanconfig, profile))
         
         # Scale percentage (0-100) to our physical PWM range (MIN_PWM to MAX_PWM)
         if target_pct == 0:
@@ -169,7 +173,7 @@ def temp_check():
             except IOError:
                 pass
 
-        time.sleep(CHECK_INTERVAL)
+        wait_for_fan_check(profile, CHECK_INTERVAL)
 
 if len(sys.argv) > 1:
     if str(sys.argv[1]) == "start":
@@ -185,6 +189,7 @@ if len(sys.argv) > 1:
         except Exception:
             sys.exit(1)
     elif str(sys.argv[1]) == "stop":
+        stop_fan_profile()
         try:
             fan_path = find_pwm_path()
             if fan_path:

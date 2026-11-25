@@ -121,6 +121,7 @@ yquake2 = 'batocera_launch.emulators.yquake2:YQuake2'
 
 [project.entry-points."batocera_launch.plugins"]
 devfreq = 'batocera_launch.plugins.devfreq:DevfreqPlugin'
+fan = 'batocera_launch.plugins.fan:FanPlugin'
 power-mode = 'batocera_launch.plugins.power:PowerModePlugin'
 tdp = 'batocera_launch.plugins.tdp:TdpPlugin'
 
