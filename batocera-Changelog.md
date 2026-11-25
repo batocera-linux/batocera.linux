@@ -5,6 +5,8 @@
 - Orange Pi 5 Max and 5 Ultra move to the RK3588 mainline kernel, with Wi-Fi through the bcmdhd driver
 - Orange Pi 5 Pro, Banana Pi M7 / ArmSoM Sige7, NanoPi M6, Firefly ROC-RK3588S-PC / Station M3 and Mekotronics R58X move to the RK3588 mainline kernel, the RK3588 vendor kernel image is removed
 - Orange Pi 4A (T527) moves from the vendor 5.15 kernel to mainline Linux 7.3.5 with mainline U-Boot
+- Anbernic H700 handhelds now have just two images, one per memory type (LPDDR4 and LPDDR3)
+  You will have to manually set the device type if not upgrading from a previous version
 ### Hardware
 - Initial support for the Avaota A1
 - Initial support for the Radxa Cubie A5E
@@ -46,6 +48,7 @@
 - Windows: the FPS limiter option had no effect on DXVK games
 - wiringOP (wiringpi Python) could not identify the board on Orange Pi images
 - Xenia Canary / Edge signed in a profile for every player slot, not just the connected pads
+- Anbernic H700 devices stopped charging short of a full battery and never showed it as full
 ### Changed / Improved
 - AE light gun driver is no longer included, it was seen as a generic mouse like some trackballs
 - Boot logo is drawn on each screen of dual-screen devices with that screen's size and rotation
@@ -82,6 +85,7 @@
 - Xenia Edge to Nov 20, 2026 build
 - Ymir to v0.4.1
 ### System
+- Allwinner H700 device kernel updated to 7.3.5
 - Armbian firmware to Nov 18, 2026 build
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3

@@ -99,6 +99,9 @@ define UBOOT_ANBERNIC_H700_BUILD_CMDS
 	$(HOST_DIR)/bin/dtc -@ -I dts -O dtb \
 		-o $(@D)/sun50i-h700-anbernic-rg35xx-2024-ddr3.dtbo \
 		$(UBOOT_ANBERNIC_H700_PKGDIR)/sun50i-h700-anbernic-rg35xx-2024-ddr3.dts
+
+	$(@D)/tools/mkimage -C none -A arm64 -T script \
+		-d $(UBOOT_ANBERNIC_H700_PKGDIR)/boot.cmd $(@D)/boot.scr
 endef
 
 define UBOOT_ANBERNIC_H700_INSTALL_IMAGES_CMDS
@@ -109,6 +112,7 @@ define UBOOT_ANBERNIC_H700_INSTALL_IMAGES_CMDS
 			$(BINARIES_DIR)/$${board}/u-boot-sunxi-with-spl.bin; \
 	done
 	cp -v $(@D)/sun50i-h700-anbernic-rg35xx-2024-ddr3.dtbo $(BINARIES_DIR)/
+	cp -v $(@D)/boot.scr $(BINARIES_DIR)/
 endef
 
 $(eval $(generic-package))

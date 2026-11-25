@@ -1,0 +1,194 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] power: supply: axp20x_battery: load the AXP717 fuel gauge
+ model from the device tree
+
+The AXP717 gauge needs a battery model in its BROM; without one it runs on
+a generic default. Write x-powers,gauge-model into it when the PMIC reports
+none loaded, as the vendor driver does, and restart the gauge on it. Give
+the H700 handhelds the vendor model and its 4.1V charge voltage.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -38,7 +38,8 @@ battery: battery {
+ 		/* batocera - 128mA end of charge as in vendor firmware */
+ 		charge-term-current-microamp = <128000>;
+ 		constant-charge-current-max-microamp = <1024000>;
+-		voltage-max-design-microvolt = <4200000>;
++		/* batocera - 4.1V as in vendor firmware, which the gauge model assumes */
++		voltage-max-design-microvolt = <4100000>;
+ 	};
+ 
+ 	chosen {
+@@ -497,6 +498,16 @@ battery_power: battery-power {
+ 			compatible = "x-powers,axp717-battery-power-supply";
+ 			monitored-battery = <&battery>;
+ 			x-powers,no-thermistor;
++			/* batocera - vendor fuel gauge model, the same on every H700 handheld */
++			x-powers,gauge-model = [
++				01 f5 40 00 1b 1e 28 0f 0c 1e 32 02 14 05 0a 04
++				74 fb e1 0d 43 10 36 fb 4b 01 ea 0a 88 06 36 06
++				0d 0a d5 0f 67 0f 0e 09 b8 0e 5b 0e 54 04 46 04
++				39 09 2e 0e 1e 0e 18 09 0a 0d ed 0d e4 03 ce 03
++				b4 08 99 0d 83 0d 6a 07 ed 74 3d 34 28 15 1b 0e
++				c5 98 7e 66 4e 44 38 1a 12 0a f6 00 00 f6 00 f6
++				00 fb 00 00 fb 00 00 fb 00 00 f6 00 00 f6 00 f6
++				00 fb 00 00 fb 00 00 fb 00 00 f6 00 00 f6 00 f6];
+ 		};
+ 
+ 		regulators {
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -227,6 +227,7 @@ static const struct regmap_range axp717_writeable_ranges[] = {
+ 	regmap_reg_range(AXP717_TS_PIN_CFG, AXP717_TS_PIN_CFG),
+ 	regmap_reg_range(AXP717_ICC_CHG_SET, AXP717_CV_CHG_SET),
+ 	regmap_reg_range(AXP717_DCDC_OUTPUT_CONTROL, AXP717_CPUSLDO_CONTROL),
++	regmap_reg_range(AXP717_GAUGE_BROM, AXP717_GAUGE_CONFIG),
+ 	regmap_reg_range(AXP717_ADC_CH_EN_CONTROL, AXP717_ADC_CH_EN_CONTROL),
+ 	regmap_reg_range(AXP717_ADC_DATA_SEL, AXP717_ADC_DATA_SEL),
+ 	regmap_reg_range(AXP717_TYPEC_CC_AA_EN, AXP717_TYPEC_CC_AA_EN),
+@@ -236,6 +237,7 @@ static const struct regmap_range axp717_writeable_ranges[] = {
+ static const struct regmap_range axp717_volatile_ranges[] = {
+ 	regmap_reg_range(AXP717_ON_INDICATE, AXP717_PMU_FAULT),
+ 	regmap_reg_range(AXP717_IRQ0_STATE, AXP717_IRQ4_STATE),
++	regmap_reg_range(AXP717_GAUGE_BROM, AXP717_GAUGE_CONFIG),
+ 	regmap_reg_range(AXP717_BATT_PERCENT_DATA, AXP717_BATT_PERCENT_DATA),
+ 	regmap_reg_range(AXP717_BATT_V_H, AXP717_BATT_CHRG_I_L),
+ 	regmap_reg_range(AXP717_ADC_DATA_H, AXP717_ADC_DATA_L),
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -18,6 +18,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+@@ -95,6 +96,12 @@
+ 
+ #define AXP717_TS_PIN_DISABLE		BIT(4)
+ 
++#define AXP717_RESET_GAUGE		BIT(2)
++#define AXP717_GAUGE_ENABLE		BIT(1)
++#define AXP717_GAUGE_BROM_ENABLE	BIT(0)
++#define AXP717_GAUGE_MODEL_LOADED	BIT(4)
++#define AXP717_GAUGE_MODEL_LEN		128
++
+ struct axp20x_batt_ps;
+ 
+ struct axp_data {
+@@ -1010,6 +1017,81 @@ static void axp209_set_battery_info(struct platform_device *pdev,
+ 	}
+ }
+ 
++static int axp717_open_gauge_brom(struct axp20x_batt_ps *axp_batt)
++{
++	int ret;
++
++	ret = regmap_update_bits(axp_batt->regmap, AXP717_GAUGE_CONFIG,
++				 AXP717_GAUGE_BROM_ENABLE, 0);
++	if (ret)
++		return ret;
++
++	return regmap_update_bits(axp_batt->regmap, AXP717_GAUGE_CONFIG,
++				  AXP717_GAUGE_BROM_ENABLE,
++				  AXP717_GAUGE_BROM_ENABLE);
++}
++
++/* The gauge keeps a loaded model until the battery is disconnected. */
++static int axp717_load_gauge_model(struct axp20x_batt_ps *axp_batt)
++{
++	u8 model[AXP717_GAUGE_MODEL_LEN];
++	unsigned int reg;
++	int i, ret;
++
++	if (device_property_count_u8(axp_batt->dev, "x-powers,gauge-model") !=
++	    AXP717_GAUGE_MODEL_LEN)
++		return 0;
++
++	ret = device_property_read_u8_array(axp_batt->dev,
++					    "x-powers,gauge-model", model,
++					    AXP717_GAUGE_MODEL_LEN);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(axp_batt->regmap, AXP717_GAUGE_CONFIG, &reg);
++	if (ret || (reg & AXP717_GAUGE_MODEL_LOADED))
++		return ret;
++
++	ret = axp717_open_gauge_brom(axp_batt);
++	for (i = 0; !ret && i < AXP717_GAUGE_MODEL_LEN; i++)
++		ret = regmap_write(axp_batt->regmap, AXP717_GAUGE_BROM, model[i]);
++
++	if (!ret)
++		ret = axp717_open_gauge_brom(axp_batt);
++	for (i = 0; !ret && i < AXP717_GAUGE_MODEL_LEN; i++) {
++		ret = regmap_read(axp_batt->regmap, AXP717_GAUGE_BROM, &reg);
++		if (!ret && reg != model[i])
++			ret = -EIO;
++	}
++
++	regmap_update_bits(axp_batt->regmap, AXP717_GAUGE_CONFIG,
++			   AXP717_GAUGE_BROM_ENABLE, 0);
++	if (ret)
++		return ret;
++
++	ret = regmap_update_bits(axp_batt->regmap, AXP717_GAUGE_CONFIG,
++				 AXP717_GAUGE_MODEL_LOADED,
++				 AXP717_GAUGE_MODEL_LOADED);
++	if (ret)
++		return ret;
++
++	/* Restart the gauge so it runs on the new model. */
++	regmap_update_bits(axp_batt->regmap, AXP717_MODULE_EN_CONTROL_2,
++			   AXP717_GAUGE_ENABLE, 0);
++	msleep(500);
++	regmap_update_bits(axp_batt->regmap, AXP717_RESET_CONTROL,
++			   AXP717_RESET_GAUGE, AXP717_RESET_GAUGE);
++	regmap_update_bits(axp_batt->regmap, AXP717_RESET_CONTROL,
++			   AXP717_RESET_GAUGE, 0);
++	msleep(500);
++	ret = regmap_update_bits(axp_batt->regmap, AXP717_MODULE_EN_CONTROL_2,
++				 AXP717_GAUGE_ENABLE, AXP717_GAUGE_ENABLE);
++	if (!ret)
++		dev_info(axp_batt->dev, "loaded the fuel gauge battery model\n");
++
++	return ret;
++}
++
+ static void axp717_set_battery_info(struct platform_device *pdev,
+ 				    struct axp20x_batt_ps *axp_batt,
+ 				    struct power_supply_battery_info *info)
+@@ -1038,6 +1120,9 @@ static void axp717_set_battery_info(struct platform_device *pdev,
+ 				   AXP717_TS_PIN_DISABLE);
+ 	}
+ 
++	if (axp717_load_gauge_model(axp_batt))
++		dev_err(&pdev->dev, "couldn't load the fuel gauge model\n");
++
+ 	if (vmin > 0 && axp717_set_voltage_min_design(axp_batt, vmin))
+ 		dev_err(&pdev->dev,
+ 			"couldn't set voltage_min_design\n");
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -124,6 +124,7 @@ enum axp20x_variants {
+ #define AXP717_MIN_SYS_V_CONTROL	0x15
+ #define AXP717_INPUT_VOL_LIMIT_CTRL	0x16
+ #define AXP717_INPUT_CUR_LIMIT_CTRL	0x17
++#define AXP717_RESET_CONTROL		0x18
+ #define AXP717_MODULE_EN_CONTROL_2	0x19
+ #define AXP717_BOOST_CONTROL		0x1e
+ #define AXP717_VSYS_V_POWEROFF		0x24
+@@ -161,6 +162,8 @@ enum axp20x_variants {
+ #define AXP717_CLDO3_CONTROL		0x9d
+ #define AXP717_CLDO4_CONTROL		0x9e
+ #define AXP717_CPUSLDO_CONTROL		0x9f
++#define AXP717_GAUGE_BROM		0xa1
++#define AXP717_GAUGE_CONFIG		0xa2
+ #define AXP717_BATT_PERCENT_DATA	0xa4
+ #define AXP717_ADC_CH_EN_CONTROL	0xc0
+ #define AXP717_BATT_V_H			0xc4

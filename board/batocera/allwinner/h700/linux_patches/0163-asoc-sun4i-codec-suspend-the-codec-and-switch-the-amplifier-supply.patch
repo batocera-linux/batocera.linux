@@ -18,9 +18,10 @@ Measured on RG34XX-SP in deep sleep: AUDIO_DAC_CLK 0x81000000 ->
 Origin: kailashrs/H700_rocknix_enhancement c2dcab6bb
 Assisted-by: Claude:claude-opus-5
 ---
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
 --- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
 +++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
-@@ -355,6 +355,7 @@
+@@ -355,6 +355,7 @@ &codec {
  	allwinner,audio-routing = "Speaker", "LINEOUT",
  				  "Headphone", "LINEOUT";
  	allwinner,pa-gpios = <&pio 8 5 GPIO_ACTIVE_HIGH>; // PI5
@@ -28,7 +29,7 @@ Assisted-by: Claude:claude-opus-5
  	hp-det-gpios = <&pio 8 3 GPIO_ACTIVE_HIGH>; // PI3
  	status = "okay";
  };
-@@ -556,7 +557,7 @@
+@@ -556,7 +557,7 @@ reg_bldo4: bldo4 {
  			};
  
  			reg_cldo1: cldo1 {
@@ -37,6 +38,7 @@ Assisted-by: Claude:claude-opus-5
  				regulator-min-microvolt = <3300000>;
  				regulator-max-microvolt = <3300000>;
  				regulator-name = "vcc-spkr-amp";
+diff --git a/sound/soc/sunxi/sun4i-codec.c b/sound/soc/sunxi/sun4i-codec.c
 --- a/sound/soc/sunxi/sun4i-codec.c
 +++ b/sound/soc/sunxi/sun4i-codec.c
 @@ -10,6 +10,7 @@
@@ -54,7 +56,7 @@ Assisted-by: Claude:claude-opus-5
 +#include <linux/regulator/consumer.h>
  
  #include <sound/core.h>
- #include <sound/jack.h>
+ #include <sound/dmaengine_pcm.h>
 @@ -325,6 +327,17 @@
  
  #define SUNIV_CODEC_ADC_DBG		(0x4c)
@@ -73,7 +75,7 @@ Assisted-by: Claude:claude-opus-5
  struct sun4i_codec {
  	struct device	*dev;
  	struct regmap	*regmap;
-@@ -333,6 +346,14 @@
+@@ -333,6 +346,14 @@ struct sun4i_codec {
  	struct reset_control *rst;
  	struct gpio_desc *gpio_pa;
  	struct gpio_desc *gpio_hp;
@@ -88,7 +90,7 @@ Assisted-by: Claude:claude-opus-5
  
  	/* ADC_FIFOC register is at different offset on different SoCs */
  	struct regmap_field *reg_adc_fifoc;
-@@ -683,6 +704,11 @@
+@@ -683,6 +704,11 @@ static int sun4i_codec_startup(struct snd_pcm_substream *substream,
  	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
  	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(rtd->card);
  
@@ -100,7 +102,7 @@ Assisted-by: Claude:claude-opus-5
  	/*
  	 * Stop issuing DRQ when we have room for less than 16 samples
  	 * in our TX FIFO
-@@ -690,7 +716,11 @@
+@@ -690,7 +716,11 @@ static int sun4i_codec_startup(struct snd_pcm_substream *substream,
  	regmap_field_set_bits(scodec->reg_dac_fifoc,
  			      3 << SUN4I_CODEC_DAC_FIFOC_DRQ_CLR_CNT);
  
@@ -113,7 +115,7 @@ Assisted-by: Claude:claude-opus-5
  }
  
  static void sun4i_codec_shutdown(struct snd_pcm_substream *substream,
-@@ -699,7 +729,9 @@
+@@ -699,7 +729,9 @@ static void sun4i_codec_shutdown(struct snd_pcm_substream *substream,
  	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
  	struct sun4i_codec *scodec = snd_soc_card_get_drvdata(rtd->card);
  
@@ -124,7 +126,7 @@ Assisted-by: Claude:claude-opus-5
  }
  
  static const struct snd_soc_dai_ops sun4i_codec_dai_ops = {
-@@ -1660,14 +1692,49 @@
+@@ -1660,14 +1692,49 @@ static struct snd_soc_dai_link *sun4i_codec_create_link(struct device *dev,
  	return link;
  };
  
@@ -176,7 +178,7 @@ Assisted-by: Claude:claude-opus-5
  
  	if (SND_SOC_DAPM_EVENT_ON(event)) {
  		/*
-@@ -2148,6 +2215,7 @@
+@@ -2148,6 +2215,7 @@ struct sun4i_codec_quirks {
  	unsigned int reg_adc_rxdata;	/* RX FIFO offset for DMA config */
  	bool has_reset;
  	bool playback_only;
@@ -184,7 +186,7 @@ Assisted-by: Claude:claude-opus-5
  	u32 dma_max_burst;
  };
  
-@@ -2232,6 +2300,7 @@
+@@ -2232,6 +2300,7 @@ static const struct sun4i_codec_quirks sun8i_v3s_codec_quirks = {
  
  static const struct sun4i_codec_quirks sun50i_h616_codec_quirks = {
  	.regmap_config	= &sun50i_h616_codec_regmap_config,
@@ -192,7 +194,7 @@ Assisted-by: Claude:claude-opus-5
  	.codec		= &sun50i_h616_codec_codec,
  	.create_card	= sun50i_h616_codec_create_card,
  	.reg_dac_fifoc	= REG_FIELD(SUN50I_H616_CODEC_DAC_FIFOC, 0, 31),
-@@ -2290,6 +2359,114 @@
+@@ -2290,6 +2359,114 @@ static const struct of_device_id sun4i_codec_of_match[] = {
  };
  MODULE_DEVICE_TABLE(of, sun4i_codec_of_match);
  
@@ -307,7 +309,7 @@ Assisted-by: Claude:claude-opus-5
  static int sun4i_codec_probe(struct platform_device *pdev)
  {
  	struct snd_soc_card *card;
-@@ -2304,6 +2481,7 @@
+@@ -2304,6 +2481,7 @@ static int sun4i_codec_probe(struct platform_device *pdev)
  		return -ENOMEM;
  
  	scodec->dev = &pdev->dev;
@@ -315,7 +317,7 @@ Assisted-by: Claude:claude-opus-5
  
  	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
  	if (IS_ERR(base))
-@@ -2315,6 +2493,8 @@
+@@ -2315,6 +2493,8 @@ static int sun4i_codec_probe(struct platform_device *pdev)
  		return -ENODEV;
  	}
  
@@ -323,17 +325,16 @@ Assisted-by: Claude:claude-opus-5
 +
  	scodec->regmap = devm_regmap_init_mmio(&pdev->dev, base,
  					       quirks->regmap_config);
- 	if (IS_ERR(scodec->regmap)) {
-@@ -2323,12 +2503,20 @@
- 	}
+ 	if (IS_ERR(scodec->regmap))
+@@ -2322,11 +2502,19 @@ static int sun4i_codec_probe(struct platform_device *pdev)
+ 				     "Failed to create our regmap\n");
  
  	/* Get the clocks from the DT */
 -	scodec->clk_apb = devm_clk_get_enabled(&pdev->dev, "apb");
 +	scodec->clk_apb = devm_clk_get(&pdev->dev, "apb");
- 	if (IS_ERR(scodec->clk_apb)) {
- 		dev_err(&pdev->dev, "Failed to get the APB clock\n");
- 		return PTR_ERR(scodec->clk_apb);
- 	}
+ 	if (IS_ERR(scodec->clk_apb))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(scodec->clk_apb),
+ 				     "Failed to get the APB clock\n");
  
 +	ret = clk_prepare_enable(scodec->clk_apb);
 +	if (ret)
@@ -344,11 +345,11 @@ Assisted-by: Claude:claude-opus-5
 +		return ret;
 +
  	scodec->clk_module = devm_clk_get(&pdev->dev, "codec");
- 	if (IS_ERR(scodec->clk_module)) {
- 		dev_err(&pdev->dev, "Failed to get the module clock\n");
-@@ -2351,6 +2539,15 @@
- 		return ret;
- 	}
+ 	if (IS_ERR(scodec->clk_module))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(scodec->clk_module),
+@@ -2346,6 +2534,15 @@ static int sun4i_codec_probe(struct platform_device *pdev)
+ 				     "Failed to get pa gpio\n");
+ 
  
 +	scodec->pa_reg = devm_regulator_get_optional(&pdev->dev, "allwinner,pa");
 +	if (IS_ERR(scodec->pa_reg)) {
@@ -360,9 +361,9 @@ Assisted-by: Claude:claude-opus-5
 +	}
 +
  	scodec->gpio_hp = devm_gpiod_get_optional(&pdev->dev, "hp-det", GPIOD_IN);
- 	if (IS_ERR(scodec->gpio_hp)) {
- 		ret = PTR_ERR(scodec->gpio_hp);
-@@ -2442,6 +2639,7 @@
+ 	if (IS_ERR(scodec->gpio_hp))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(scodec->gpio_hp),
+@@ -2419,6 +2616,7 @@ static struct platform_driver sun4i_codec_driver = {
  	.driver = {
  		.name = "sun4i-codec",
  		.of_match_table = sun4i_codec_of_match,
