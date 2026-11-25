@@ -1,4 +1,4 @@
-# 2027/xx/xx - batocera.linux 45 - xxxx
+# 2027/xx/xx - batocera.linux 45 - Comet Moth
 ### Special Notes
 - SM2-Emu is now Keisho and replaces Supermodel for Model 3
   SM2-Emu and Supermodel settings, saves and NVRAM move over on the first launch; Supermodel save states can't be loaded and stay in saves/supermodel
