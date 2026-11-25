@@ -3,14 +3,14 @@
 # vpinball
 #
 ################################################################################
-# Version: Commits on Nov 24, 2026
-VPINBALL_VERSION = 78f2178c9461b52e23deaff7eb69265a59b69de1
-VPINBALL_REVISION = 6994
+# Version: Commits on Nov 25, 2026
+VPINBALL_VERSION = f0c27cd7b15c3f86d4904a2958daf51388a788ab
+VPINBALL_REVISION = 7008
 VPINBALL_SITE = $(call github,vpinball,vpinball,$(VPINBALL_VERSION))
 VPINBALL_LICENSE = GPLv3+
 VPINBALL_LICENSE_FILES = LICENSE
 VPINBALL_DEPENDENCIES = host-bgfx host-libcurl host-cmake libfreeimage-vpinball libpinmame
-VPINBALL_DEPENDENCIES += libdmdutil libdof sdl3 sdl3_image sdl3_ttf
+VPINBALL_DEPENDENCIES += libdmdutil libdof libserum libvni libpupdmd sdl3 sdl3_image sdl3_ttf
 VPINBALL_DEPENDENCIES += bgfx ffmpeg libaltsound libwinevbs openxr-sdk vulkan-headers
 VPINBALL_DEPENDENCIES += libspatialaudio libogg opus opusfile zlib
 VPINBALL_SUPPORTS_IN_SOURCE_BUILD = NO
@@ -43,8 +43,7 @@ VPINBALL_CONF_OPTS += -DVPX_SHADERC=$(HOST_DIR)/bin/shaderc
 VPINBALL_CONF_OPTS += -DUSE_SYSTEM_LIBS=ON
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_INCLUDE_DIR=$(STAGING_DIR)/usr/include
 VPINBALL_CONF_OPTS += -DSYSTEM_LIBS_LIB_DIR=$(STAGING_DIR)/usr/lib
-VPINBALL_CONF_OPTS += -DFREEIMAGE_INCLUDE_DIR=$(STAGING_DIR)/libfreeimage-vpinball/include
-VPINBALL_CONF_OPTS += -DFREEIMAGE_LIBRARY=$(STAGING_DIR)/libfreeimage-vpinball/lib/libfreeimage.a
+VPINBALL_CONF_OPTS += -DFREEIMAGE_DIR=$(STAGING_DIR)/libfreeimage-vpinball
 
 define VPINBALL_SET_GIT_VERSION
 	$(SED) 's/9999/$(VPINBALL_REVISION)/;s/unknown/$(shell echo $(VPINBALL_VERSION) | cut -c1-9)/' \
