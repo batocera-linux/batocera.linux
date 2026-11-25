@@ -20,6 +20,7 @@
 - KICKPI K3B Wi-Fi and Bluetooth
 - RetroAchievements hardcore mode can be set per system and per game
 - Trackball and spinner support in MAME and libretro MAME 2003-Plus, used for games flagged as trackball or spinner games
+- RomM support: libraries can be synced, with roms and metadata transparently downloaded to Batocera. Saves for libretro cores are supported but require at least RomM 5.5 as they're following the channels/snapshots model.
 ### Fixed
 - AYN Odin could reboot instead of powering off
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
@@ -56,6 +57,7 @@
 - KICKPI K3B boot splash video uses hardware decoding
 - KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
 - Support file gathers more information for a wider array of devices
+- WASM4 supports .zip roms
 ### Updated
 - Amiberry to v8.5.0
 - AnyBOR to v0.2.48
