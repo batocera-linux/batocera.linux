@@ -194,6 +194,41 @@
 	</hgroup>
 
 	<hgroup name="Outputs" display="Outputs">
+	  <feature display="Gamescope" if="${batocera-gamescope status}" refresh="5">
+	    <text display="${batocera-gamescope status}" refresh="5" />
+	  </feature>
+	  <feature display="Upscale Filter" if="${batocera-gamescope status}" refresh="5">
+	    <choice display="Linear"  action="batocera-gamescope set filter linear"  afterclick="bcc_refresh" />
+	    <choice display="Nearest" action="batocera-gamescope set filter nearest" afterclick="bcc_refresh" />
+	    <choice display="FSR"     action="batocera-gamescope set filter fsr"     afterclick="bcc_refresh" />
+	    <choice display="NIS"     action="batocera-gamescope set filter nis"     afterclick="bcc_refresh" />
+	    <choice display="SGSR"    action="batocera-gamescope set filter sgsr"    afterclick="bcc_refresh" />
+	    <choice display="Pixel"   action="batocera-gamescope set filter pixel"   afterclick="bcc_refresh" />
+	    <text display="${batocera-gamescope show filter}" refresh="2" />
+	  </feature>
+	  <feature display="Sharpness" if='${batocera-gamescope get filter | grep -xE "fsr|nis|sgsr"}' refresh="2">
+	    <button display="Sharpness -" action="batocera-gamescope set sharpness -1" updateids="gamescopesharpness" />
+	    <progressbar id="gamescopesharpness" display="${batocera-gamescope get sharpness}" min="0" max="20" unit="" refresh="2" action_set="batocera-gamescope set sharpness {value}" />
+	    <button display="Sharpness +" action="batocera-gamescope set sharpness +1" updateids="gamescopesharpness" />
+	  </feature>
+	  <feature display="Scaling" if="${batocera-gamescope status}" refresh="5">
+	    <choice display="Fit"     action="batocera-gamescope set scaler fit"     afterclick="bcc_refresh" />
+	    <choice display="Integer" action="batocera-gamescope set scaler integer" afterclick="bcc_refresh" />
+	    <choice display="Fill"    action="batocera-gamescope set scaler fill"    afterclick="bcc_refresh" />
+	    <choice display="Stretch" action="batocera-gamescope set scaler stretch" afterclick="bcc_refresh" />
+	    <text display="${batocera-gamescope show scaler}" refresh="2" />
+	  </feature>
+	  <feature display="Frame Rate Limit" if="${batocera-gamescope status}" refresh="5">
+	    <choice_cmd display="${batocera-gamescope fps-limits | cut -f 2}"
+			action="batocera-gamescope set fps_limit"
+			action_arg="${batocera-gamescope fps-limits | cut -f 1}"
+			cache="10" />
+	    <text display="${batocera-gamescope show fps_limit}" refresh="2" />
+	  </feature>
+	  <feature if="${batocera-gamescope status}" refresh="5">
+	    <button display="Save for this game" action="batocera-gamescope save game" />
+	    <button display="Save for system" action="batocera-gamescope save system" />
+	  </feature>
 	  <feature display="Audio Output">
 	    <choice_cmd display="${batocera-audio list | grep -vE '^auto' | cut -f 2}"
 			action="batocera-audio set"
