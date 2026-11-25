@@ -1,0 +1,122 @@
+#!/bin/sh
+# Shows and changes the settings of the game running in gamescope, for the control center
+# Usage: batocera-gamescope status|fps-limits|get <setting>|show <setting>|set <setting> <value>|save game|system
+# settings: filter, scaler, sharpness, fps_limit
+# sharpness reads 0 to 20 from softest to sharpest here, gamescope counts the other way
+
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/var/run}"
+
+PID=$(pidof -s gamescope) || exit 1
+
+# changes made since this gamescope started, the rest comes from its command line
+CHANGES="/var/run/batocera-gamescope.${PID}"
+
+launch_arg() {
+    tr '\0' '\n' <"/proc/${PID}/cmdline" | awk -v short="$1" -v long="$2" '
+        $0 == "--" { exit }
+        found { print; exit }
+        $0 == short || $0 == long { found = 1 }'
+}
+
+raw() {
+    VALUE=$(sed -n "s/^$1=//p" "${CHANGES}" 2>/dev/null)
+    test -z "${VALUE}" && case "$1" in
+        filter)    VALUE=$(launch_arg -F --filter) ;;
+        scaler)    VALUE=$(launch_arg -S --scaler) ;;
+        sharpness) VALUE=$(launch_arg --sharpness --fsr-sharpness) ;;
+        fps_limit) VALUE=$(launch_arg --framerate-limit --framerate-limit) ;;
+    esac
+    test -z "${VALUE}" && case "$1" in
+        filter)    VALUE=linear ;;
+        scaler)    VALUE=fit ;;
+        sharpness) VALUE=2 ;;
+        fps_limit) VALUE=0 ;;
+    esac
+    echo "${VALUE}"
+}
+
+get() {
+    if test "$1" = sharpness; then
+        echo $((20 - $(raw sharpness)))
+    else
+        raw "$1"
+    fi
+}
+
+gamescopectl_run() {
+    for SOCKET in "${XDG_RUNTIME_DIR}"/gamescope-[0-9]*; do
+        case "${SOCKET}" in
+            *.lock) ;;
+            *) GAMESCOPE_WAYLAND_DISPLAY=$(basename "${SOCKET}") gamescopectl "$@" >/dev/null 2>&1 && return 0 ;;
+        esac
+    done
+    return 1
+}
+
+case "$1" in
+    status)
+        REFRESH=$(batocera-resolution refreshRate 2>/dev/null | cut -d. -f1)
+        echo "$(launch_arg -w --nested-width)x$(launch_arg -h --nested-height) → $(launch_arg -W --output-width)x$(launch_arg -H --output-height)${REFRESH:+ @ ${REFRESH} Hz}"
+        ;;
+    fps-limits)
+        # gamescope rounds a limit to a whole divisor of the refresh rate
+        REFRESH=$(batocera-resolution refreshRate 2>/dev/null | cut -d. -f1)
+        printf "0\tOff\n"
+        for D in 8 7 6 5 4 3 2 1; do
+            [ -n "${REFRESH}" ] && [ $((REFRESH % D)) -eq 0 ] && [ $((REFRESH / D)) -ge 15 ] && printf "%s\t%s\n" $((REFRESH / D)) $((REFRESH / D))
+        done
+        ;;
+    get)
+        get "$2"
+        ;;
+    show)
+        VALUE=$(get "$2")
+        case "$2:${VALUE}" in
+            fps_limit:0)  echo "Off" ;;
+            filter:fsr|filter:nis|filter:sgsr) echo "${VALUE}" | tr a-z A-Z ;;
+            filter:*|scaler:*) echo "${VALUE}" | awk '{ print toupper(substr($0, 1, 1)) substr($0, 2) }' ;;
+            *) echo "${VALUE}" ;;
+        esac
+        ;;
+    set)
+        VALUE="$3"
+        case "$2" in
+            filter)    gamescopectl_run scaling_filter "${VALUE}" ;;
+            scaler)    gamescopectl_run scaling_scaler "${VALUE}" ;;
+            sharpness)
+                # +n and -n move from the current value
+                case "${VALUE}" in
+                    [+-]*) VALUE=$(($(get sharpness) ${VALUE})) ;;
+                esac
+                VALUE=$((20 - (VALUE < 0 ? 0 : VALUE > 20 ? 20 : VALUE)))
+                gamescopectl_run scaling_sharpness "${VALUE}"
+                ;;
+            fps_limit) gamescopectl_run fps_limit "${VALUE}" ;;
+            *) exit 1 ;;
+        esac || exit 1
+        rm -f $(ls /var/run/batocera-gamescope.* 2>/dev/null | grep -v "^${CHANGES}$")
+        { sed "/^$2=/d" "${CHANGES}" 2>/dev/null; echo "$2=${VALUE}"; } >"${CHANGES}.new" && mv "${CHANGES}.new" "${CHANGES}"
+        ;;
+    save)
+        GAME=$(curl -sf http://127.0.0.1:1234/runningGame) || exit 1
+        SYSTEM=$(echo "${GAME}" | jq -r .systemName)
+        case "$2" in
+            game)
+                # the same name ES gives the game in batocera.conf
+                ROM=$(basename "$(echo "${GAME}" | jq -r .path)" | tr -d '=#')
+                PREFIX="${SYSTEM}[\"${ROM}\"]"
+                ;;
+            system) PREFIX="${SYSTEM}" ;;
+            *) exit 1 ;;
+        esac
+        for SETTING in filter scaler sharpness fps_limit; do
+            VALUE=$(raw "${SETTING}")
+            test "${SETTING}" = fps_limit && test "${VALUE}" = 0 && VALUE=
+            batocera-settings-set "${PREFIX}.gamescope_${SETTING}" "${VALUE}"
+        done
+        ;;
+    *)
+        echo "usage: $0 status|fps-limits|get <setting>|show <setting>|set <setting> <value>|save game|system" >&2
+        exit 1
+        ;;
+esac

@@ -43,6 +43,12 @@ GAMESCOPE_CONF_OPTS = \
 	-Denable_zenity=false \
 	-Denable_tests=false \
 	-Dbenchmark=disabled
+
+# the control center changes the running game's settings through it
+define GAMESCOPE_INSTALL_CONTROL_SCRIPT
+	$(INSTALL) -D -m 0755 $(GAMESCOPE_PKGDIR)/batocera-gamescope $(TARGET_DIR)/usr/bin/batocera-gamescope
+endef
+GAMESCOPE_POST_INSTALL_TARGET_HOOKS += GAMESCOPE_INSTALL_CONTROL_SCRIPT
 endif
 
 $(eval $(call register,gamescope._shared.emulator.yml gamescope._emulators.emulator.yml))

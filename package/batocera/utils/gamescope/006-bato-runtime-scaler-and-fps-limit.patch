@@ -1,0 +1,75 @@
+--- a/src/steamcompmgr.cpp
++++ b/src/steamcompmgr.cpp
+@@ -1193,6 +1193,38 @@
+ 	g_nPendingUpscaleSharpness = clamp( *onSharpness, 0, 20 );
+ });
+ 
++static std::atomic<int32_t> g_nPendingUpscaleScaler = { -1 };
++
++static gamescope::ConCommand cc_scaling_scaler( "scaling_scaler", "Set the scaler (auto, integer, fit, fill, stretch)",
++[]( std::span<std::string_view> args )
++{
++	static constexpr std::pair<std::string_view, GamescopeUpscaleScaler> k_Scalers[] =
++	{
++		{ "auto",    GamescopeUpscaleScaler::AUTO },
++		{ "integer", GamescopeUpscaleScaler::INTEGER },
++		{ "fit",     GamescopeUpscaleScaler::FIT },
++		{ "fill",    GamescopeUpscaleScaler::FILL },
++		{ "stretch", GamescopeUpscaleScaler::STRETCH },
++	};
++
++	if ( args.size() < 2 )
++	{
++		console_log.errorf( "Usage: scaling_scaler <scaler>" );
++		return;
++	}
++
++	for ( const auto &[svName, eScaler] : k_Scalers )
++	{
++		if ( svName == args[1] )
++		{
++			g_nPendingUpscaleScaler = int32_t( eScaler );
++			return;
++		}
++	}
++
++	console_log.errorf( "Unknown scaler '%.*s'", (int)args[1].size(), args[1].data() );
++});
++
+ static void ApplyPendingUpscaleSettings()
+ {
+ 	int32_t nSharpness = g_nPendingUpscaleSharpness.exchange( -1 );
+@@ -1203,7 +1235,11 @@
+ 	if ( nFilter >= 0 )
+ 		g_wantedUpscaleFilter = GamescopeUpscaleFilter( nFilter );
+ 
+-	if ( nSharpness >= 0 || nFilter >= 0 )
++	int32_t nScaler = g_nPendingUpscaleScaler.exchange( -1 );
++	if ( nScaler >= 0 )
++		g_wantedUpscaleScaler = GamescopeUpscaleScaler( nScaler );
++
++	if ( nSharpness >= 0 || nFilter >= 0 || nScaler >= 0 )
+ 		hasRepaint = true;
+ }
+ 
+@@ -1310,6 +1346,20 @@
+ 	steamcompmgr_set_app_refresh_cycle_override( GetBackend()->GetScreenType(), nFps, true, true );
+ });
+ 
++// like --framerate-limit, without asking the output for another refresh rate
++gamescope::ConCommand cc_fps_limit( "fps_limit", "Limit the game frame rate, 0 for no limit",
++[](std::span<std::string_view> svArgs)
++{
++	std::optional<int32_t> onFps = svArgs.size() < 2 ? std::nullopt : gamescope::Parse<int32_t>( svArgs[1] );
++	if ( !onFps || *onFps < 0 )
++	{
++		console_log.errorf( "Usage: fps_limit <fps>" );
++		return;
++	}
++
++	steamcompmgr_set_app_refresh_cycle_override( GetBackend()->GetScreenType(), *onFps, false, true );
++});
++
+ static int g_nRuntimeInfoFd = -1;
+ 
+ // The shader upscaler that produced the base layer, LINEAR when none did.
