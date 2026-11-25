@@ -1,0 +1,70 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] power: supply: axp20x_battery: set the AXP717 termination
+ current from the battery node
+
+The driver reads ITERM but never sets it, so charging ends at the 320mA
+reset default. Program it from charge-term-current-microamp and use the
+128mA the vendor firmware sets on the H700 handhelds.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -35,6 +35,8 @@ backlight: backlight {
+ 
+ 	battery: battery {
+ 		compatible = "simple-battery";
++		/* batocera - 128mA end of charge as in vendor firmware */
++		charge-term-current-microamp = <128000>;
+ 		constant-charge-current-max-microamp = <1024000>;
+ 		voltage-max-design-microvolt = <4200000>;
+ 	};
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -79,6 +79,8 @@
+ 
+ #define AXP717_ITERM_CHG_LIM_MASK	GENMASK(3, 0)
+ #define AXP717_ITERM_CC_STEP		64000
++#define AXP717_ITERM_MIN_UA		64000
++#define AXP717_ITERM_MAX_UA		960000
+ 
+ #define AXP20X_V_OFF_MASK		GENMASK(2, 0)
+ #define AXP717_V_OFF_MASK		GENMASK(6, 4)
+@@ -784,6 +786,18 @@ static int axp717_set_voltage_min_design(struct axp20x_batt_ps *axp_batt,
+ 				  AXP717_V_OFF_MASK, val1);
+ }
+ 
++static int axp717_set_charge_term_current(struct axp20x_batt_ps *axp_batt,
++					  int term_current)
++{
++	if (term_current < AXP717_ITERM_MIN_UA ||
++	    term_current > AXP717_ITERM_MAX_UA)
++		return -EINVAL;
++
++	return regmap_update_bits(axp_batt->regmap, AXP717_ITERM_CHG_SET,
++				  AXP717_ITERM_CHG_LIM_MASK,
++				  term_current / AXP717_ITERM_CC_STEP);
++}
++
+ static int axp20x_battery_set_prop(struct power_supply *psy,
+ 				   enum power_supply_property psp,
+ 				   const union power_supply_propval *val)
+@@ -1003,6 +1017,7 @@ static void axp717_set_battery_info(struct platform_device *pdev,
+ 	int vmin = info->voltage_min_design_uv;
+ 	int vmax = info->voltage_max_design_uv;
+ 	int ccc = info->constant_charge_current_max_ua;
++	int iterm = info->charge_term_current_ua;
+ 	int val;
+ 
+ 	axp_batt->ts_disable = (device_property_read_bool(axp_batt->dev,
+@@ -1031,6 +1046,10 @@ static void axp717_set_battery_info(struct platform_device *pdev,
+ 		dev_err(&pdev->dev,
+ 			"couldn't set voltage_max_design\n");
+ 
++	if (iterm > 0 && axp717_set_charge_term_current(axp_batt, iterm))
++		dev_err(&pdev->dev,
++			"couldn't set charge_term_current\n");
++
+ 	axp717_get_constant_charge_current(axp_batt, &val);
+ 	axp_batt->max_ccc = ccc;
+ 	if (ccc <= 0 || axp717_set_constant_charge_current(axp_batt, ccc)) {

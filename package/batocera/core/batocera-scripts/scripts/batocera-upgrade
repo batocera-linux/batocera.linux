@@ -129,7 +129,8 @@ validate_arch() {
     if test "${LOCAL_FILE_BOARD}" != "${G_BOARD}"; then
         # Allow migration between x86_64 and x86-64-v3 in either direction
         if { [ "${LOCAL_FILE_BOARD}" = "x86_64" ] && [ "${G_BOARD}" = "x86-64-v3" ]; } || \
-           { [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ] && [ "${G_BOARD}" = "x86_64" ]; }; then
+           { [ "${LOCAL_FILE_BOARD}" = "x86-64-v3" ] && [ "${G_BOARD}" = "x86_64" ]; } || \
+           { [ -n "${G_H700_MIGRATION}" ] && [ "${LOCAL_FILE_BOARD}" = "${G_TARGET_BOARD}" ]; }; then
             upgmsg "Migrating ${G_BOARD} to ${LOCAL_FILE_BOARD}" 2
         else
             upgmsg "Error: ${LOCAL_FILE_BOARD} didn't match this ${G_BOARD} board!" 5
@@ -330,6 +331,18 @@ do_update() {
 	fi
     done
 
+    # boot.scr now picks the device tree: carry over the one the old extlinux.conf booted
+    if test -n "${G_H700_MIGRATION}" && test -f /boot/boot.scr && test -f /boot/extlinux/extlinux.conf
+    then
+	local H700_MODEL=$(sed -n 's|^[[:space:]]*FDT /boot/sun50i-h700-anbernic-\(.*\)\.dtb[[:space:]]*$|\1|p' /boot/extlinux/extlinux.conf)
+	if test -n "${H700_MODEL}" && ! grep -q '^h700_model=' /boot/batocera-boot.conf
+	then
+	    upgmsg "Keeping the ${H700_MODEL} device tree ..." 0.5
+	    printf '\nh700_model=%s\n' "${H700_MODEL}" >> /boot/batocera-boot.conf
+	fi
+	rm -rf /boot/extlinux
+    fi
+
     # remount /boot in ro
     upgmsg "Doing final cleanups ..." 0.5
     if ! mount -o remount,ro /boot
@@ -347,7 +360,7 @@ do_update() {
 
     # verify update is for same board, provide a warning if not
     NEWBOARD=$(cat /boot/boot/batocera.board)
-    if [ "${G_BOARD}" != "${NEWBOARD}" ]
+    if [ "${G_TARGET_BOARD}" != "${NEWBOARD}" ]
     then
 	echo; echo "WARNING: Current board is ${G_BOARD}, applied update is for ${NEWBOARD}"
     fi
@@ -528,6 +541,17 @@ then
     fi
 fi
 ###
+
+# the per-model Anbernic H700 images became one image per DRAM type
+case "${G_BOARD}" in
+    anbernic-rg28xx*|anbernic-rg34xx*|anbernic-rg35xx-2024*|anbernic-rg35xx-h*|anbernic-rg35xx-plus*|anbernic-rg35xx-pro*|anbernic-rg35xx-sp*|anbernic-rg40xx-h*|anbernic-rg40xx-v*|anbernic-rgcubexx*|anbernic-rg-sp)
+	G_H700_MIGRATION=1
+	case "${G_BOARD}" in
+	    *-ddr3) G_TARGET_BOARD=anbernic-h700-ddr3 ;;
+	    *)      G_TARGET_BOARD=anbernic-h700 ;;
+	esac
+	;;
+esac
 
 # customizable upgrade url website
 test -n "${G_SETTINGSUPDATEURL}" && G_UPDATEURL="${G_SETTINGSUPDATEURL}"

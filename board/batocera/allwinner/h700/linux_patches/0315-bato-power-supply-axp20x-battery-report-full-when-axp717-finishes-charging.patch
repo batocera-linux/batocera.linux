@@ -1,0 +1,55 @@
+From abed1c417391abf5c9bcd8892f488e10feeec8cf Mon Sep 17 00:00:00 2001
+From: Daniel Martin <dmanlfc@gmail.com>
+Date: Wed, 25 Nov 2026 05:52:14 +1000
+Subject: [PATCH] power: supply: axp20x_battery: report Full when the AXP717
+ finishes charging
+
+Once charging terminates the AXP717 moves the battery to standby, which
+the driver reports as "Not charging" even with the charger still online.
+Report Full when the charge state field (PMU status 2, bits 2:0) says done,
+and report 100% then too, as the gauge can settle a point or two short.
+---
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -37,6 +37,8 @@
+ #define AXP717_PWR_STATUS_BAT_STANDBY	0
+ #define AXP717_PWR_STATUS_BAT_CHRG	1
+ #define AXP717_PWR_STATUS_BAT_DISCHRG	2
++#define AXP717_CHRG_STATUS_MASK		GENMASK(2, 0)
++#define AXP717_CHRG_STATUS_DONE		4
+ 
+ #define AXP20X_PWR_OP_BATT_PRESENT	BIT(5)
+ #define AXP20X_PWR_OP_BATT_ACTIVATED	BIT(3)
+@@ -451,7 +453,11 @@ static int axp717_battery_get_prop(struct power_supply *psy,
+ 
+ 		switch (FIELD_GET(AXP717_PWR_STATUS_MASK, reg)) {
+ 		case AXP717_PWR_STATUS_BAT_STANDBY:
+-			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
++			if (FIELD_GET(AXP717_CHRG_STATUS_MASK, reg) ==
++			    AXP717_CHRG_STATUS_DONE)
++				val->intval = POWER_SUPPLY_STATUS_FULL;
++			else
++				val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+ 			return 0;
+ 
+ 		case AXP717_PWR_STATUS_BAT_CHRG:
+@@ -551,6 +557,18 @@ static int axp717_battery_get_prop(struct power_supply *psy,
+ 		 * directly the raw percentage without any scaling to 7 bits.
+ 		 */
+ 		val->intval = reg & AXP209_FG_PERCENT;
++
++		/* The gauge can settle a point or two short once charging ends. */
++		ret = regmap_read(axp20x_batt->regmap, AXP717_PMU_STATUS_2,
++				  &reg);
++		if (ret)
++			return ret;
++
++		if (FIELD_GET(AXP717_PWR_STATUS_MASK, reg) ==
++		    AXP717_PWR_STATUS_BAT_STANDBY &&
++		    FIELD_GET(AXP717_CHRG_STATUS_MASK, reg) ==
++		    AXP717_CHRG_STATUS_DONE)
++			val->intval = 100;
+ 		return 0;
+ 
+ 	case POWER_SUPPLY_PROP_VOLTAGE_MAX:
