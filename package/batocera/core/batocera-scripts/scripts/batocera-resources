@@ -131,10 +131,55 @@ do_battery() {
     [ -n "$d" ] && cat "$d/capacity"
 }
 
+# time until empty or full, the driver's own estimate first
+battery_time() {
+    d="$1"
+    case "$2" in
+        Discharging) to=empty ;;
+        Charging)    to=full ;;
+        *) return ;;
+    esac
+
+    secs=
+    for f in "time_to_${to}_avg" "time_to_${to}_now"; do
+        secs=$(cat "$d/$f" 2>/dev/null)
+        [ -n "$secs" ] && [ "$secs" -gt 0 ] 2>/dev/null && break
+        secs=
+    done
+
+    if [ -z "$secs" ]; then
+        secs=$(awk -v to="$to" \
+            -v en="$(cat "$d/energy_now" 2>/dev/null)" -v ef="$(cat "$d/energy_full" 2>/dev/null)" -v p="$(cat "$d/power_now" 2>/dev/null)" \
+            -v cn="$(cat "$d/charge_now" 2>/dev/null)" -v cf="$(cat "$d/charge_full" 2>/dev/null)" -v i="$(cat "$d/current_now" 2>/dev/null)" '
+            BEGIN {
+                if (p < 0) p = -p
+                if (i < 0) i = -i
+                if (to == "empty") {
+                    if (en != "" && p > 0) h = en / p
+                    else if (cn != "" && i > 0) h = cn / i
+                } else {
+                    if (ef != "" && en != "" && p > 0) h = (ef - en) / p
+                    else if (cf != "" && cn != "" && i > 0) h = (cf - cn) / i
+                }
+                if (h > 0) printf "%d", h * 3600
+            }')
+    fi
+
+    [ -n "${secs}" ] && [ "${secs}" -gt 0 ] || return
+    label="left"
+    [ "$to" = full ] && label="to full"
+    if [ "${secs}" -ge 3600 ]; then
+        printf "%dh %02dm %s\n" $((secs / 3600)) $((secs % 3600 / 60)) "$label"
+    else
+        printf "%dm %s\n" $((secs / 60)) "$label"
+    fi
+}
+
 do_battery_detail() {
     d=$(battery_dir)
     [ -z "$d" ] && return
     status=$(cat "$d/status" 2>/dev/null)
+    remaining=$(battery_time "$d" "$status")
 
     # some gauges report power_now in other units
     ua=$(cat "$d/current_now" 2>/dev/null)
@@ -146,9 +191,9 @@ do_battery_detail() {
     fi
 
     if [ -n "$uw" ] && [ "$uw" -gt 0 ]; then
-        awk -v s="$status" -v w="$uw" 'BEGIN { printf "%s · %.1f W\n", s, w / 1000000 }'
+        awk -v s="$status" -v w="$uw" -v r="$remaining" 'BEGIN { printf "%s · %.1f W%s\n", s, w / 1000000, r == "" ? "" : " · " r }'
     else
-        echo "$status"
+        echo "${status}${remaining:+ · ${remaining}}"
     fi
 }
 
