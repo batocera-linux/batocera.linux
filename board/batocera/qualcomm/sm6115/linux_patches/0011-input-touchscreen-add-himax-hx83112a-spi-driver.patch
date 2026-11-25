@@ -10,20 +10,20 @@ Sources:
   - Android paritions: himax_mmi_ts.ko kallsyms, ftrace SPI traces from android
 
 ---
- drivers/input/touchscreen/Kconfig          |   14 +
- drivers/input/touchscreen/Makefile         |    1 +
- drivers/input/touchscreen/himax_hx83112a.c | 1060 ++++++++++++++++++++
- 3 files changed, 1075 insertions(+)
  create mode 100644 drivers/input/touchscreen/himax_hx83112a.c
 
+diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+index 9b9ae8ac3..a26164ad0 100644
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
-@@ -1425,3 +1425,17 @@ config TOUCHSCREEN_HIMAX_HX83112B
+@@ -1414,4 +1414,19 @@ config TOUCHSCREEN_HIMAX_HX83112B
+ 	  To compile this driver as a module, choose M here: the
  	  module will be called himax_hx83112b.
-
+ 
 +config TOUCHSCREEN_HIMAX_HX83112A
 +	tristate "Himax HX83112A touchscreen driver (SPI)"
 +	depends on SPI_MASTER
++	depends on DRM || !DRM
 +	select FW_LOADER
 +	help
 +	  Say Y here to enable support for Himax HX83112A touchscreens
@@ -36,15 +36,21 @@ Sources:
 +	  module will be called himax_hx83112a.
 +
  endif
+diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+index bfd9de833..6e7636752 100644
 --- a/drivers/input/touchscreen/Makefile
 +++ b/drivers/input/touchscreen/Makefile
-@@ -121,2 +121,3 @@
+@@ -119,3 +119,4 @@ obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
+ obj-$(CONFIG_TOUCHSCREEN_IQS7211)	+= iqs7211.o
  obj-$(CONFIG_TOUCHSCREEN_ZINITIX)	+= zinitix.o
  obj-$(CONFIG_TOUCHSCREEN_HIMAX_HX83112B)	+= himax_hx83112b.o
 +obj-$(CONFIG_TOUCHSCREEN_HIMAX_HX83112A)	+= himax_hx83112a.o
+diff --git a/drivers/input/touchscreen/himax_hx83112a.c b/drivers/input/touchscreen/himax_hx83112a.c
+new file mode 100644
+index 000000000..521459871
 --- /dev/null
 +++ b/drivers/input/touchscreen/himax_hx83112a.c
-@@ -0,0 +1,1060 @@
+@@ -0,0 +1,1153 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Driver for Himax HX83112A touchscreens (SPI, 0flash variant)
@@ -70,9 +76,12 @@ Sources:
 +#include <linux/iopoll.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
++#include <linux/mutex.h>
 +#include <linux/regmap.h>
 +#include <linux/spi/spi.h>
 +#include <linux/unaligned.h>
++
++#include <drm/drm_panel.h>
 +
 +#define HIMAX_FW_NAME			"Himax_firmware.bin"
 +
@@ -175,11 +184,16 @@ Sources:
 +	struct delayed_work idle_work;
 +	struct work_struct idle_exit_work;
 +	struct delayed_work watchdog_work;
++	struct work_struct panel_on_work;
++	struct drm_panel_follower panel_follower;
++	struct mutex panel_lock;
 +	u8 *xfer_buf;
 +	bool reset_activate;
 +	bool idle_enabled;
 +	bool fw_loaded;
 +	bool suspended;
++	bool panel_off;
++	bool panel_irq_masked;
 +};
 +
 +static int himax_spi_bus_read(void *context, const void *reg_buf,
@@ -843,7 +857,7 @@ Sources:
 +	struct device *dev = &ts->spi->dev;
 +	int retry, error = 0;
 +
-+	if (READ_ONCE(ts->suspended))
++	if (READ_ONCE(ts->suspended) || READ_ONCE(ts->panel_off))
 +		return;
 +
 +	dev_info(dev, "Recovery: re-uploading firmware\n");
@@ -879,7 +893,8 @@ Sources:
 +	u8 fw_ver[4] = {};
 +	int error;
 +
-+	if (!READ_ONCE(ts->fw_loaded) || READ_ONCE(ts->suspended))
++	if (!READ_ONCE(ts->fw_loaded) || READ_ONCE(ts->suspended) ||
++	    READ_ONCE(ts->panel_off))
 +		return;
 +
 +	error = himax_ahb_read(ts, HIMAX_REG_FW_VER, fw_ver, sizeof(fw_ver));
@@ -955,10 +970,77 @@ Sources:
 +	return input_register_device(ts->input_dev);
 +}
 +
++static void himax_panel_on_work(struct work_struct *work)
++{
++	struct himax_ts_data *ts = container_of(work, struct himax_ts_data,
++						panel_on_work);
++
++	himax_recovery_work(&ts->recovery_work);
++
++	/* the panel may have gone off again meanwhile: its next enable unmasks */
++	mutex_lock(&ts->panel_lock);
++	if (!ts->panel_off && ts->panel_irq_masked) {
++		ts->panel_irq_masked = false;
++		enable_irq(ts->spi->irq);
++	}
++	mutex_unlock(&ts->panel_lock);
++}
++
++static int himax_panel_disabling(struct drm_panel_follower *follower)
++{
++	struct himax_ts_data *ts = container_of(follower, struct himax_ts_data,
++						panel_follower);
++
++	mutex_lock(&ts->panel_lock);
++	WRITE_ONCE(ts->panel_off, true);
++	WRITE_ONCE(ts->fw_loaded, false);
++	if (!ts->panel_irq_masked) {
++		ts->panel_irq_masked = true;
++		disable_irq(ts->spi->irq);
++	}
++	mutex_unlock(&ts->panel_lock);
++	cancel_delayed_work(&ts->watchdog_work);
++	return 0;
++}
++
++static int himax_panel_enabled(struct drm_panel_follower *follower)
++{
++	struct himax_ts_data *ts = container_of(follower, struct himax_ts_data,
++						panel_follower);
++
++	mutex_lock(&ts->panel_lock);
++	if (ts->panel_off) {
++		WRITE_ONCE(ts->panel_off, false);
++		queue_work(ts->recovery_wq, &ts->panel_on_work);
++	}
++	mutex_unlock(&ts->panel_lock);
++	return 0;
++}
++
++static const struct drm_panel_follower_funcs himax_panel_follower_funcs = {
++	.panel_disabling = himax_panel_disabling,
++	.panel_enabled = himax_panel_enabled,
++};
++
++/* stop the works before the IRQ and the register map are released */
++static void himax_stop_work(void *data)
++{
++	struct himax_ts_data *ts = data;
++
++	disable_irq(ts->spi->irq);
++	WRITE_ONCE(ts->suspended, true);
++	cancel_work_sync(&ts->panel_on_work);
++	cancel_delayed_work_sync(&ts->watchdog_work);
++	cancel_work_sync(&ts->recovery_work);
++	cancel_delayed_work_sync(&ts->idle_work);
++	cancel_work_sync(&ts->idle_exit_work);
++}
++
 +static void himax_destroy_recovery_wq(void *data)
 +{
 +	struct himax_ts_data *ts = data;
 +
++	cancel_work_sync(&ts->panel_on_work);
 +	cancel_work_sync(&ts->recovery_work);
 +	cancel_delayed_work_sync(&ts->idle_work);
 +	cancel_work_sync(&ts->idle_exit_work);
@@ -987,6 +1069,11 @@ Sources:
 +	INIT_DELAYED_WORK(&ts->idle_work, himax_idle_work);
 +	INIT_WORK(&ts->idle_exit_work, himax_idle_exit_work_fn);
 +	INIT_DELAYED_WORK(&ts->watchdog_work, himax_watchdog_work);
++	INIT_WORK(&ts->panel_on_work, himax_panel_on_work);
++
++	error = devm_mutex_init(dev, &ts->panel_lock);
++	if (error)
++		return error;
 +
 +	ts->recovery_wq = alloc_ordered_workqueue("himax_recovery",
 +						  WQ_FREEZABLE);
@@ -1046,6 +1133,17 @@ Sources:
 +	if (error)
 +		return dev_err_probe(dev, error, "Failed to request IRQ\n");
 +
++	error = devm_add_action_or_reset(dev, himax_stop_work, ts);
++	if (error)
++		return error;
++
++	if (drm_is_panel_follower(dev)) {
++		ts->panel_follower.funcs = &himax_panel_follower_funcs;
++		error = devm_drm_panel_add_follower(dev, &ts->panel_follower);
++		if (error)
++			return dev_err_probe(dev, error, "Failed to follow panel\n");
++	}
++
 +	return 0;
 +}
 +
@@ -1072,7 +1170,8 @@ Sources:
 +	input_sync(ts->input_dev);
 +
 +	enable_irq(ts->spi->irq);
-+	queue_work(ts->recovery_wq, &ts->recovery_work);
++	if (!READ_ONCE(ts->panel_off))
++		queue_work(ts->recovery_wq, &ts->recovery_work);
 +	return 0;
 +}
 +

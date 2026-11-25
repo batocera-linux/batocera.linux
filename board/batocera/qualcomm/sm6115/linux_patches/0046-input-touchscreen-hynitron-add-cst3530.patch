@@ -6,7 +6,7 @@ panel and system sleep with the stock deep-sleep and power-up sequences.
 
 ---
 diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 9b9ae8a..3f7c70b 100644
+index a26164ad0..7dc461938 100644
 --- a/drivers/input/touchscreen/Kconfig
 +++ b/drivers/input/touchscreen/Kconfig
 @@ -466,6 +466,7 @@ config TOUCHSCREEN_HYCON_HY46XX
@@ -18,7 +18,7 @@ index 9b9ae8a..3f7c70b 100644
  	  Say Y here if you have a touchscreen using a Hynitron
  	  touchscreen controller.
 diff --git a/drivers/input/touchscreen/hynitron_cstxxx.c b/drivers/input/touchscreen/hynitron_cstxxx.c
-index 49fb35c..a222ae5 100644
+index 49fb35c83..f11febaae 100644
 --- a/drivers/input/touchscreen/hynitron_cstxxx.c
 +++ b/drivers/input/touchscreen/hynitron_cstxxx.c
 @@ -21,8 +21,11 @@
@@ -431,9 +431,9 @@ index 49fb35c..a222ae5 100644
 +	if (ts_data->chip->suspend)
 +		hyn_set_power_flag(ts_data, &ts_data->suspended, true);
 +
-+	return 0;
-+}
-+
+ 	return 0;
+ }
+ 
 +static int hyn_resume(struct device *dev)
 +{
 +	struct hynitron_ts_data *ts_data = dev_get_drvdata(dev);
@@ -441,9 +441,9 @@ index 49fb35c..a222ae5 100644
 +	if (ts_data->chip->suspend)
 +		hyn_set_power_flag(ts_data, &ts_data->suspended, false);
 +
- 	return 0;
- }
- 
++	return 0;
++}
++
 +static DEFINE_SIMPLE_DEV_PM_OPS(hyn_pm_ops, hyn_suspend, hyn_resume);
 +
  static const struct hynitron_ts_chip_data cst3xx_data = {

@@ -38,10 +38,9 @@ Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 [Pending upstream: 5/5 of "clk: qcom: Fix RCG/branch MND divider and
 timeout issues"]
 ---
- drivers/clk/qcom/clk-rcg2.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+index d7914e591..001f515d5 100644
 --- a/drivers/clk/qcom/clk-rcg2.c
 +++ b/drivers/clk/qcom/clk-rcg2.c
 @@ -783,9 +783,9 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)

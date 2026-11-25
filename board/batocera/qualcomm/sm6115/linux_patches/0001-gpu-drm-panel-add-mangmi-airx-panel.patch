@@ -4,16 +4,12 @@ Date: Mon, 22 Dec 2025 23:39:45 +0100
 Subject: [PATCH] gpu:drm:panel: add mangmi airx panel
 
 ---
- drivers/gpu/drm/panel/Kconfig          |  10 +
- drivers/gpu/drm/panel/Makefile         |   1 +
- drivers/gpu/drm/panel/panel-hx83112a.c | 374 +++++++++++++++++++++++++++++++++
- 3 files changed, 384 insertions(+)
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index d592f4f4b..9a2c8dc13 100644
+index cbdf7b8f7..bfae99b28 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -491,6 +491,16 @@ config DRM_PANEL_MAGNACHIP_D53E6EA8966
+@@ -562,6 +562,16 @@ config DRM_PANEL_MAGNACHIP_D53E6EA8966
  	  with the Magnachip D53E6EA8966 panel IC. This panel receives
  	  video data via DSI but commands via 9-bit SPI using DBI.
  
@@ -31,10 +27,10 @@ index d592f4f4b..9a2c8dc13 100644
  	tristate "Mantix MLAF057WE51-X MIPI-DSI LCD panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index a4291dc39..9c44a9212 100644
+index 3b523cf37..1cd30b195 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -49,6 +49,7 @@ obj-$(CONFIG_DRM_PANEL_LG_LG4573) += panel-lg-lg4573.o
+@@ -55,6 +55,7 @@ obj-$(CONFIG_DRM_PANEL_LG_LG4573) += panel-lg-lg4573.o
  obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
  obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
@@ -44,10 +40,10 @@ index a4291dc39..9c44a9212 100644
  obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3051D) += panel-newvision-nv3051d.o
 diff --git a/drivers/gpu/drm/panel/panel-hx83112a.c b/drivers/gpu/drm/panel/panel-hx83112a.c
 new file mode 100644
-index 000000000..fd0674398
+index 000000000..c06fa1684
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-hx83112a.c
-@@ -0,0 +1,374 @@
+@@ -0,0 +1,375 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +// Copyright (c) 2025 FIXME
 +// Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
@@ -63,6 +59,7 @@ index 000000000..fd0674398
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_panel.h>
 +#include <drm/drm_probe_helper.h>
 +
@@ -370,7 +367,7 @@ index 000000000..fd0674398
 +			  MIPI_DSI_MODE_VIDEO_BURST |
 +			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0)
 +		return dev_err_probe(dev, ret, "Failed to get orientation\n");
 +
@@ -422,4 +419,3 @@ index 000000000..fd0674398
 +MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 +MODULE_DESCRIPTION("DRM driver for hx83112a video mode dsi truly panel");
 +MODULE_LICENSE("GPL");
---

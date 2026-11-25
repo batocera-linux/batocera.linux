@@ -4,10 +4,10 @@ IPS panel of the Mangmi Air Y.
 
 ---
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 1e9eead..101f9b5 100644
+index e78ff86d1..d570463b2 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -540,6 +540,15 @@ config DRM_PANEL_MANGMI_BM5460BB1
+@@ -582,6 +582,15 @@ config DRM_PANEL_MANGMI_BM5460BB1
  	  Say Y here if you want to enable support for BM5460BB1
  	  display panels, such as the one found in the Fairphone 4 smartphone.
  
@@ -24,10 +24,10 @@ index 1e9eead..101f9b5 100644
  	tristate "Mangmi TD4310 DSI panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index db55eb3..a8296ce 100644
+index 109004690..9146d6a47 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -53,6 +53,7 @@ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
+@@ -57,6 +57,7 @@ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_HX83112A) += panel-hx83112a.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_BM5460BB1) += panel-bm5460bb1.o
@@ -37,7 +37,7 @@ index db55eb3..a8296ce 100644
  obj-$(CONFIG_DRM_PANEL_NEC_NL8048HL11) += panel-nec-nl8048hl11.o
 diff --git a/drivers/gpu/drm/panel/panel-gh7005.c b/drivers/gpu/drm/panel/panel-gh7005.c
 new file mode 100644
-index 0000000..e5a97f1
+index 000000000..d292ac3ab
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-gh7005.c
 @@ -0,0 +1,314 @@
@@ -47,13 +47,13 @@ index 0000000..e5a97f1
 +#include <linux/delay.h>
 +#include <linux/gpio/consumer.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
 +#include <linux/regulator/consumer.h>
 +
 +#include <video/mipi_display.h>
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_panel.h>
 +#include <drm/drm_probe_helper.h>
 +
@@ -308,7 +308,7 @@ index 0000000..e5a97f1
 +	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE |
 +			  MIPI_DSI_MODE_LPM | MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0)
 +		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
 +

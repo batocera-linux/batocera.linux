@@ -94,6 +94,7 @@
 - Mesa3D to 26.3.1
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
+- Qualcomm SM6115 device kernel updated to 7.3.5
 - Qualcomm SM8550 device kernel updated to 7.3.5
 - Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5

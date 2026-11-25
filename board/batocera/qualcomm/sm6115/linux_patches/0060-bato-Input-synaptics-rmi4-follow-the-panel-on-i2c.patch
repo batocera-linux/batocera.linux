@@ -16,12 +16,21 @@ panel is unprepared. System sleep is then handled by the panel sequence.
 
 Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
 ---
- drivers/input/rmi4/Kconfig   |   1 +
- drivers/input/rmi4/rmi_i2c.c | 152 +++++++++++++++++++++++++++++++++++-------
- 2 files changed, 128 insertions(+), 25 deletions(-)
 
+diff --git a/drivers/input/rmi4/Kconfig b/drivers/input/rmi4/Kconfig
+index 5db58fc9e..15f7534d6 100644
+--- a/drivers/input/rmi4/Kconfig
++++ b/drivers/input/rmi4/Kconfig
+@@ -16,6 +16,7 @@ if RMI4_CORE
+ config RMI4_I2C
+ 	tristate "RMI4 I2C Support"
+ 	depends on I2C
++	depends on DRM || !DRM
+ 	help
+ 	  Say Y here if you want to support RMI4 devices connected to an I2C
+ 	  bus.
 diff --git a/drivers/input/rmi4/rmi_i2c.c b/drivers/input/rmi4/rmi_i2c.c
-index e11d0ac..54ca311 100644
+index e11d0acb9..54ca311f9 100644
 --- a/drivers/input/rmi4/rmi_i2c.c
 +++ b/drivers/input/rmi4/rmi_i2c.c
 @@ -9,6 +9,8 @@
@@ -306,14 +315,3 @@ index e11d0ac..54ca311 100644
  	ret = regulator_bulk_enable(ARRAY_SIZE(rmi_i2c->supplies),
  				    rmi_i2c->supplies);
  	if (ret)
-diff --git a/drivers/input/rmi4/Kconfig b/drivers/input/rmi4/Kconfig
---- a/drivers/input/rmi4/Kconfig
-+++ b/drivers/input/rmi4/Kconfig
-@@ -16,6 +16,7 @@ config RMI4_CORE
- config RMI4_I2C
- 	tristate "RMI4 I2C Support"
- 	depends on I2C
-+	depends on DRM || !DRM
- 	help
- 	  Say Y here if you want to support RMI4 devices connected to an I2C
- 	  bus.

@@ -4,12 +4,12 @@ Subject: [PATCH] ASoC: es8326: combine paired playback volume controls into ster
   "Speakers Playback Volume"   -> SOC_DOUBLE_R(SPKL_VOL, SPKR_VOL)
 
 ---
- sound/soc/codecs/es8326.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
 
+diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
+index b1d2b391d..07678746b 100644
 --- a/sound/soc/codecs/es8326.c
 +++ b/sound/soc/codecs/es8326.c
-@@ -238,7 +238,6 @@
+@@ -244,7 +244,6 @@ static const struct soc_enum hpvol_spkvol_switch =
  	SOC_ENUM_SINGLE(ES8326_HP_MISC, 6, 4, hp_spkvol_switch);
  
  static const struct snd_kcontrol_new es8326_snd_controls[] = {
@@ -17,7 +17,7 @@ Subject: [PATCH] ASoC: es8326: combine paired playback volume controls into ster
  	SOC_ENUM("Playback Polarity", dacpol),
  	SOC_SINGLE_TLV("DAC Ramp Rate", ES8326_DAC_RAMPRATE, 0, 0x0f, 0, softramp_rate),
  	SOC_SINGLE_TLV("DRC Recovery Level", ES8326_DRC_RECOVERY, 0, 4, 0, drc_recovery_tlv),
-@@ -277,10 +276,10 @@
+@@ -283,10 +282,10 @@ static const struct snd_kcontrol_new es8326_snd_controls[] = {
  	SOC_SINGLE_EXT("HPR Volume", SND_SOC_NOPM, 0, 5, 0,
  			es8326_hprvol_get, es8326_hprvol_set),
  

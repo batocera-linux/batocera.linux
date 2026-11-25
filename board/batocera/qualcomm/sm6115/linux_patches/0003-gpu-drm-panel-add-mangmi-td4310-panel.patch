@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 18298ab77..bda27079b 100644
+index b2383f09c..e78ff86d1 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -511,6 +511,15 @@ config DRM_PANEL_MANGMI_BM5460BB1
+@@ -582,6 +582,15 @@ config DRM_PANEL_MANGMI_BM5460BB1
  	  Say Y here if you want to enable support for BM5460BB1
  	  display panels, such as the one found in the Fairphone 4 smartphone.
  
@@ -19,10 +19,10 @@ index 18298ab77..bda27079b 100644
  	tristate "Mantix MLAF057WE51-X MIPI-DSI LCD panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index f27f9c705..a468e7958 100644
+index c66ad861e..109004690 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -51,6 +51,7 @@ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
+@@ -57,6 +57,7 @@ obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_HX83112A) += panel-hx83112a.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_BM5460BB1) += panel-bm5460bb1.o
@@ -32,7 +32,7 @@ index f27f9c705..a468e7958 100644
  obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3051D) += panel-newvision-nv3051d.o
 diff --git a/drivers/gpu/drm/panel/panel-td4310.c b/drivers/gpu/drm/panel/panel-td4310.c
 new file mode 100644
-index 000000000..467c2cbcd
+index 000000000..ea6b3af42
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-td4310.c
 @@ -0,0 +1,286 @@
@@ -50,6 +50,7 @@ index 000000000..467c2cbcd
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_panel.h>
 +#include <drm/drm_probe_helper.h>
 +
@@ -273,7 +274,7 @@ index 000000000..467c2cbcd
 +	                  MIPI_DSI_MODE_LPM | MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
 +	/* Orientation */
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0) {
 +		ctx->orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
 +	}
@@ -321,4 +322,3 @@ index 000000000..467c2cbcd
 +
 +MODULE_AUTHOR("Daniel Martin <dmanlfc@gmail.com> ");
 +MODULE_DESCRIPTION("DRM driver for td4310 video mode dsi panel");
-+MODULE_LICENSE("GPL");

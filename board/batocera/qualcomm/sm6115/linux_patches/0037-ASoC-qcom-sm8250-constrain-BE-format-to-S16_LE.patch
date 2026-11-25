@@ -1,10 +1,9 @@
 Subject: [PATCH] ASoC: qcom: sm8250: constrain BE format mask to S16_LE only
 
 ---
- sound/soc/qcom/sm8250.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
+index 76dc3a3f4..ccf277693 100644
 --- a/sound/soc/qcom/sm8250.c
 +++ b/sound/soc/qcom/sm8250.c
 @@ -62,11 +62,9 @@ static int sm8250_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
@@ -20,5 +19,3 @@ diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
  
  	return 0;
  }
---
-2.43.1

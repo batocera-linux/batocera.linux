@@ -5,26 +5,23 @@ Subject: [PATCH] gpu:drm:msm: a610 add 221 speedbin
 Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
 
 ---
- arch/arm64/boot/dts/qcom/sm6115.dtsi      | 17 +++++++++++++----
- drivers/clk/qcom/gpucc-sm6115.c           |  3 ++-
- drivers/gpu/drm/msm/adreno/a6xx_catalog.c |  3 ++-
- drivers/pmdomain/qcom/rpmpd.c             |  2 +-
- 4 files changed, 18 insertions(+), 7 deletions(-)
 
+diff --git a/arch/arm64/boot/dts/qcom/sm6115.dtsi b/arch/arm64/boot/dts/qcom/sm6115.dtsi
+index 3520802d1..4e5ff665a 100644
 --- a/arch/arm64/boot/dts/qcom/sm6115.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm6115.dtsi
-@@ -428,6 +428,10 @@
- 
+@@ -429,6 +429,10 @@ rpmpd_opp_turbo: opp7 {
  						rpmpd_opp_turbo_plus: opp8 {
  							opp-level = <RPM_SMD_LEVEL_TURBO_NO_CPR>;
-+						};
+ 						};
 +
 +						rpmpd_opp_turbo_high: opp9 {
 +							opp-level = <464>;
- 						};
++						};
  					};
  				};
-@@ -1759,37 +1763,37 @@
+ 			};
+@@ -1759,37 +1763,37 @@ gpu_opp_table: opp-table {
  				opp-320000000 {
  					opp-hz = /bits/ 64 <320000000>;
  					required-opps = <&rpmpd_opp_low_svs>;
@@ -68,7 +65,7 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  				};
  
  				/* Speed bin 2 can reach 950 Mhz instead of 980 like the rest. */
-@@ -1802,8 +1806,14 @@
+@@ -1802,8 +1806,14 @@ opp-950000000 {
  				opp-980000000 {
  					opp-hz = /bits/ 64 <980000000>;
  					required-opps = <&rpmpd_opp_turbo_plus>;
@@ -84,9 +81,11 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  			};
  		};
  
+diff --git a/drivers/clk/qcom/gpucc-sm6115.c b/drivers/clk/qcom/gpucc-sm6115.c
+index a075fa395..08f2635b0 100644
 --- a/drivers/clk/qcom/gpucc-sm6115.c
 +++ b/drivers/clk/qcom/gpucc-sm6115.c
-@@ -39,7 +39,7 @@
+@@ -38,7 +38,7 @@ enum {
  };
  
  static const struct pll_vco default_vco[] = {
@@ -95,7 +94,7 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  };
  
  static const struct pll_vco pll1_vco[] = {
-@@ -216,6 +216,7 @@
+@@ -215,6 +215,7 @@ static const struct freq_tbl ftbl_gpu_cc_gx_gfx3d_clk_src[] = {
  	F(900000000, P_GPU_CC_PLL0_OUT_AUX2, 2, 0, 0),
  	F(950000000, P_GPU_CC_PLL0_OUT_AUX2, 2, 0, 0),
  	F(980000000, P_GPU_CC_PLL0_OUT_AUX2, 2, 0, 0),
@@ -103,9 +102,11 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  	{ }
  };
  
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
+index 90a0c7ffb..aab46d4ec 100644
 --- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
 +++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-@@ -706,11 +706,12 @@
+@@ -706,11 +706,12 @@ static const struct adreno_info a6xx_gpus[] = {
  		 * table is only valid for bengal.
  		 */
  		.speedbins = ADRENO_SPEEDBINS(
@@ -119,9 +120,11 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  		),
  	}, {
  		.chip_ids = ADRENO_CHIP_IDS(0x06010200),
+diff --git a/drivers/pmdomain/qcom/rpmpd.c b/drivers/pmdomain/qcom/rpmpd.c
+index 5f55fc791..a5b2a902a 100644
 --- a/drivers/pmdomain/qcom/rpmpd.c
 +++ b/drivers/pmdomain/qcom/rpmpd.c
-@@ -877,7 +877,7 @@
+@@ -877,7 +877,7 @@ static struct rpmpd *sm6115_rpmpds[] = {
  static const struct rpmpd_desc sm6115_desc = {
  	.rpmpds = sm6115_rpmpds,
  	.num_pds = ARRAY_SIZE(sm6115_rpmpds),
@@ -130,6 +133,3 @@ Updated Subject: [PATCH] gpu:drm:msm: a610 unlock 1050 MHz based on stock values
  };
  
  static struct rpmpd *sm6125_rpmpds[] = {
--- 
-2.52.0
-

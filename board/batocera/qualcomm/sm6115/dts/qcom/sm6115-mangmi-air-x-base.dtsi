@@ -687,6 +687,11 @@
 	};
 };
 
+// Batocera - QCE is BROKEN in 7.3, an unbound consumer blocks sync_state
+&crypto {
+	status = "disabled";
+};
+
 &gpi_dma0 {
 	status = "okay";
 };

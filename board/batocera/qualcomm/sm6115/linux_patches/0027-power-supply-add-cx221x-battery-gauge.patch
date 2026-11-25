@@ -8,20 +8,16 @@ battery fuel gauge ICs. Based on Rockchip BSP driver by Xu Shengfei,
 reworked to use regmap and devm managed resources. Battery status follows
 the charger named by "cellwise,charger", as the vendor driver does.
 ---
- drivers/power/supply/Kconfig          |  11 +
- drivers/power/supply/Makefile         |   1 +
- drivers/power/supply/cw221x_battery.c | 626 ++++++++++++++++++++++++++++
- 3 files changed, 638 insertions(+)
  create mode 100644 drivers/power/supply/cw221x_battery.c
 
 diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index dca4be23ee70..1c6609c5be36 100644
+index b89ef40df..57c1e6146 100644
 --- a/drivers/power/supply/Kconfig
 +++ b/drivers/power/supply/Kconfig
 @@ -141,6 +141,17 @@ config BATTERY_CW2015
  	  This driver can also be built as a module. If so, the module will be
  	  called cw2015_battery.
-
+ 
 +config BATTERY_CW221X
 +	tristate "CW221X Battery driver"
 +	depends on I2C
@@ -37,7 +33,7 @@ index dca4be23ee70..1c6609c5be36 100644
  	tristate "DS2760 battery driver (HP iPAQ & others)"
  	depends on W1
 diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index 99a820d38197..724d621d3d31 100644
+index f3c0d1006..173bc0605 100644
 --- a/drivers/power/supply/Makefile
 +++ b/drivers/power/supply/Makefile
 @@ -27,6 +27,7 @@ obj-$(CONFIG_CHARGER_AXP20X)	+= axp20x_ac_power.o
@@ -50,7 +46,7 @@ index 99a820d38197..724d621d3d31 100644
  obj-$(CONFIG_BATTERY_DS2781)	+= ds2781_battery.o
 diff --git a/drivers/power/supply/cw221x_battery.c b/drivers/power/supply/cw221x_battery.c
 new file mode 100644
-index 000000000000..a1b2c3d4e5f6
+index 000000000..6378b4d86
 --- /dev/null
 +++ b/drivers/power/supply/cw221x_battery.c
 @@ -0,0 +1,624 @@

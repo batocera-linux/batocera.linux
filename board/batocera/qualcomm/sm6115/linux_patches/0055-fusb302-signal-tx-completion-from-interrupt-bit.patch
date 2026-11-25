@@ -1,13 +1,12 @@
 Subject: [PATCH] usb: typec: tcpc: fusb302: signal TX completion from IRQ bit
 
 ---
- drivers/usb/typec/tcpm/fusb302.c | 20 +++++++++-----------
- 1 file changed, 9 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+index 3319f6a2b..d3b8d0da1 100644
 --- a/drivers/usb/typec/tcpm/fusb302.c
 +++ b/drivers/usb/typec/tcpm/fusb302.c
-@@ -1463,20 +1463,17 @@
+@@ -1464,19 +1464,16 @@ static int fusb302_pd_read_message(struct fusb302_chip *chip,
  	fusb302_log(chip, "PD message len: %d", len);
  
  	/*
@@ -30,13 +29,12 @@ diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
 -	else
 -		tcpm_pd_receive(chip->tcpm_port, msg, TCPC_TX_SOP);
 +		return ret;
- 
-+	tcpm_pd_receive(chip->tcpm_port, msg, TCPC_TX_SOP);
 +
++	tcpm_pd_receive(chip->tcpm_port, msg, TCPC_TX_SOP);
+ 
  	return ret;
  }
- 
-@@ -1601,6 +1598,7 @@
+@@ -1602,6 +1599,7 @@ static void fusb302_irq_work(struct work_struct *work)
  
  	if (interrupta & FUSB_REG_INTERRUPTA_TX_SUCCESS) {
  		fusb302_log(chip, "IRQ: PD tx success");

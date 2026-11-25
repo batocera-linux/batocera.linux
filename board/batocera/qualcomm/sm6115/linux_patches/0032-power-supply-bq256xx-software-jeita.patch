@@ -1,3 +1,5 @@
+diff --git a/drivers/power/supply/bq256xx_charger.c b/drivers/power/supply/bq256xx_charger.c
+index 9a79b8390..c3f0ea7db 100644
 --- a/drivers/power/supply/bq256xx_charger.c
 +++ b/drivers/power/supply/bq256xx_charger.c
 @@ -78,6 +78,16 @@
@@ -17,7 +19,7 @@
  #define BQ256XX_OTG_CONFIG		BIT(5)
  
  #define BQ256XX_ITERM_MASK		GENMASK(3, 0)
-@@ -251,6 +261,16 @@ enum bq256xx_id {
+@@ -247,6 +257,16 @@ enum bq256xx_id {
   * @state: device status and faults
   * @watchdog_timer: watchdog timer value in milliseconds
   */
@@ -34,7 +36,7 @@
  struct bq256xx_device {
  	struct i2c_client *client;
  	struct device *dev;
-@@ -275,6 +295,10 @@ struct bq256xx_device {
+@@ -271,6 +291,10 @@ struct bq256xx_device {
  	const struct bq256xx_chip_info *chip_info;
  	struct bq256xx_state state;
  	int watchdog_timer;
@@ -45,7 +47,7 @@
  };
  
  /**
-@@ -1400,6 +1424,115 @@ static int bq256xx_get_charger_property(struct power_supply *psy,
+@@ -1394,6 +1418,115 @@ static int bq256xx_get_charger_property(struct power_supply *psy,
  	return ret;
  }
  
@@ -161,7 +163,7 @@
  static bool bq256xx_state_changed(struct bq256xx_device *bq,
  				  struct bq256xx_state *new_state)
  {
-@@ -1504,8 +1637,10 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
+@@ -1496,8 +1629,10 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
  	bq->state = state;
  	mutex_unlock(&bq->lock);
  
@@ -173,9 +175,9 @@
  
  	power_supply_changed(bq->charger);
  
-@@ -2098,6 +2233,12 @@ static int bq256xx_probe(struct i2c_client *client)
- 		return ret;
- 	}
+@@ -2089,6 +2224,12 @@ static int bq256xx_probe(struct i2c_client *client)
+ 	if (!IS_ERR_OR_NULL(bq->usb3_phy))
+ 		usb_register_notifier(bq->usb3_phy, &bq->usb_nb);
  
 +	INIT_DELAYED_WORK(&bq->jeita_work, bq256xx_jeita_work);
 +	bq->jeita_band = BQ256XX_JEITA_BAND_UNKNOWN;
@@ -186,7 +188,7 @@
  	if (client->irq) {
  		ret = devm_request_threaded_irq(dev, client->irq, NULL,
  						bq256xx_irq_handler_thread,
-@@ -2138,6 +2279,11 @@ static int bq256xx_probe(struct i2c_client *client)
+@@ -2126,6 +2267,11 @@ static int bq256xx_probe(struct i2c_client *client)
  	if (ret)
  		return ret;
  

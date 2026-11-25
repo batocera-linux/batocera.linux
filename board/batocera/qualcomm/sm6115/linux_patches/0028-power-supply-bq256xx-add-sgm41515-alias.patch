@@ -5,9 +5,9 @@ from disassembly of SGM41515 datasheet and vendor driver.
 
 
 ---
- drivers/power/supply/bq256xx_charger.c | 206 +++++++++++++++++++++++++
- 1 file changed, 206 insertions(+)
 
+diff --git a/drivers/power/supply/bq256xx_charger.c b/drivers/power/supply/bq256xx_charger.c
+index 4b1f81b1e..937dd8421 100644
 --- a/drivers/power/supply/bq256xx_charger.c
 +++ b/drivers/power/supply/bq256xx_charger.c
 @@ -113,6 +113,21 @@
@@ -32,7 +32,7 @@ from disassembly of SGM41515 datasheet and vendor driver.
  #define BQ256XX_VBUS_STAT_MASK		GENMASK(7, 5)
  #define BQ256XX_VBUS_STAT_NO_INPUT	0
  #define BQ256XX_VBUS_STAT_USB_SDP	BIT(5)
-@@ -202,6 +222,7 @@
+@@ -202,6 +217,7 @@ enum bq256xx_id {
  	BQ25618,
  	BQ25619,
  	BQ25611D,
@@ -40,7 +40,7 @@ from disassembly of SGM41515 datasheet and vendor driver.
  };
  
  /**
-@@ -333,6 +354,22 @@
+@@ -333,6 +349,22 @@ static const int bq25618_619_ichg_values[] = {
  	1290000, 1360000, 1430000, 1500000
  };
  
@@ -63,7 +63,7 @@ from disassembly of SGM41515 datasheet and vendor driver.
  static int bq256xx_array_parse(int array_size, int val, const int array[])
  {
  	int i = 0;
-@@ -539,6 +578,35 @@
+@@ -535,6 +567,35 @@ static int bq25618_619_set_ichg_curr(struct bq256xx_device *bq, int ichg)
  					BQ256XX_ICHG_MASK, ichg_reg_code);
  }
  
@@ -99,12 +99,10 @@ from disassembly of SGM41515 datasheet and vendor driver.
  static int bq25618_619_get_chrg_volt(struct bq256xx_device *bq)
  {
  	unsigned int battery_volt_lim;
-@@ -692,6 +760,45 @@
- 	return regmap_update_bits(bq->regmap, BQ256XX_BATTERY_VOLTAGE_LIMIT,
- 				BQ256XX_VBATREG_MASK, vbatreg_reg_code <<
+@@ -690,6 +751,45 @@ static int bq25601d_set_chrg_volt(struct bq256xx_device *bq, int vbatreg)
  						BQ256XX_VBATREG_BIT_SHIFT);
-+}
-+
+ }
+ 
 +static int sgm41515_get_chrg_volt(struct bq256xx_device *bq)
 +{
 +	unsigned int battery_volt_lim;
@@ -142,10 +140,12 @@ from disassembly of SGM41515 datasheet and vendor driver.
 +	return regmap_update_bits(bq->regmap, BQ256XX_BATTERY_VOLTAGE_LIMIT,
 +				  BQ256XX_VBATREG_MASK,
 +				  vbatreg_reg_code << BQ256XX_VBATREG_BIT_SHIFT);
- }
- 
++}
++
  static int bq256xx_set_ts_ignore(struct bq256xx_device *bq, bool ts_ignore)
-@@ -764,6 +876,38 @@
+ {
+ 	return regmap_update_bits(bq->regmap, BQ256XX_INPUT_CURRENT_LIMIT,
+@@ -760,6 +860,38 @@ static int bq25618_619_set_prechrg_curr(struct bq256xx_device *bq, int iprechg)
  				BQ256XX_IPRECHG_MASK, iprechg_reg_code);
  }
  
@@ -184,12 +184,10 @@ from disassembly of SGM41515 datasheet and vendor driver.
  static int bq256xx_get_term_curr(struct bq256xx_device *bq)
  {
  	unsigned int prechg_and_term_curr_lim;
-@@ -822,8 +966,36 @@
- 
- 	return regmap_update_bits(bq->regmap, BQ256XX_PRECHG_AND_TERM_CURR_LIM,
+@@ -820,6 +952,34 @@ static int bq25618_619_set_term_curr(struct bq256xx_device *bq, int iterm)
  				BQ256XX_ITERM_MASK, iterm_reg_code);
-+}
-+
+ }
+ 
 +static int sgm41515_get_term_curr(struct bq256xx_device *bq)
 +{
 +	unsigned int prechg_and_term_curr_lim;
@@ -203,8 +201,8 @@ from disassembly of SGM41515 datasheet and vendor driver.
 +
 +	iterm_reg_code = prechg_and_term_curr_lim & BQ256XX_ITERM_MASK;
 +	return sgm41515_prechrg_term_values[iterm_reg_code];
- }
- 
++}
++
 +static int sgm41515_set_term_curr(struct bq256xx_device *bq, int iterm)
 +{
 +	int array_size = ARRAY_SIZE(sgm41515_prechrg_term_values);
@@ -221,11 +219,10 @@ from disassembly of SGM41515 datasheet and vendor driver.
  static int bq256xx_get_input_volt_lim(struct bq256xx_device *bq)
  {
  	unsigned int charger_control_2;
-@@ -1532,6 +1704,38 @@
- 		.bq256xx_max_vbatreg = BQ25618_VBATREG_MAX_uV,
+@@ -1531,6 +1691,38 @@ static const struct bq256xx_chip_info bq256xx_chip_info_tbl[] = {
  
  		.has_usb_detect = false,
-+	},
+ 	},
 +
 +	[SGM41515] = {
 +		.model_id = SGM41515,
@@ -257,10 +254,11 @@ from disassembly of SGM41515 datasheet and vendor driver.
 +		.bq256xx_max_vbatreg = SGM41515_VBATREG_MAX_uV,
 +
 +		.has_usb_detect = true,
- 	},
++	},
  };
  
-@@ -1775,6 +1979,7 @@
+ static int bq256xx_power_supply_init(struct bq256xx_device *bq,
+@@ -1770,6 +1962,7 @@ static const struct i2c_device_id bq256xx_i2c_ids[] = {
  	{ .name = "bq25611d", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25611D] },
  	{ .name = "bq25618", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25618] },
  	{ .name = "bq25619", .driver_data = (kernel_ulong_t)&bq256xx_chip_info_tbl[BQ25619] },
@@ -268,7 +266,7 @@ from disassembly of SGM41515 datasheet and vendor driver.
  	{ }
  };
  MODULE_DEVICE_TABLE(i2c, bq256xx_i2c_ids);
-@@ -1787,6 +1992,7 @@
+@@ -1782,6 +1975,7 @@ static const struct of_device_id bq256xx_of_match[] = {
  	{ .compatible = "ti,bq25611d", .data = &bq256xx_chip_info_tbl[BQ25611D] },
  	{ .compatible = "ti,bq25618", .data = &bq256xx_chip_info_tbl[BQ25618] },
  	{ .compatible = "ti,bq25619", .data = &bq256xx_chip_info_tbl[BQ25619] },

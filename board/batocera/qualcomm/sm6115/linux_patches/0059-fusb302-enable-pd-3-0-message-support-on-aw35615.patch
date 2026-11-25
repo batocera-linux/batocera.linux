@@ -1,14 +1,12 @@
 Subject: [PATCH] usb: typec: tcpc: fusb302: enable PD 3.0 message handling on AW35615
 
 ---
- drivers/usb/typec/tcpm/fusb302.c     | 5 +++++
- drivers/usb/typec/tcpm/fusb302_reg.h | 5 +++++
- 2 files changed, 10 insertions(+)
 
 diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
+index a7bce495a..0011fe473 100644
 --- a/drivers/usb/typec/tcpm/fusb302.c
 +++ b/drivers/usb/typec/tcpm/fusb302.c
-@@ -404,6 +404,11 @@
+@@ -405,6 +405,11 @@ static int tcpm_init(struct tcpc_dev *dev)
  	ret = fusb302_enable_tx_auto_retries(chip, FUSB_REG_CONTROL3_N_RETRIES_3);
  	if (ret < 0)
  		return ret;
@@ -21,6 +19,7 @@ diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
  	if (ret < 0)
  		return ret;
 diff --git a/drivers/usb/typec/tcpm/fusb302_reg.h b/drivers/usb/typec/tcpm/fusb302_reg.h
+index edc0e4b0f..a01c17ce9 100644
 --- a/drivers/usb/typec/tcpm/fusb302_reg.h
 +++ b/drivers/usb/typec/tcpm/fusb302_reg.h
 @@ -69,6 +69,11 @@

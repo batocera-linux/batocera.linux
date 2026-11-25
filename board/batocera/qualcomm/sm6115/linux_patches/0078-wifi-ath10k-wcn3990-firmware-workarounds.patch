@@ -16,7 +16,7 @@ Seen on the Retroid Pocket Duo Lite (WCN3950, WLAN.HL.3.0.2): a
 wlan_process fatal error on interface up, and no 5GHz networks in scans.
 ---
 diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 746867b..b4c7b42 100644
+index 746867b6a..b4c7b421e 100644
 --- a/drivers/net/wireless/ath/ath10k/mac.c
 +++ b/drivers/net/wireless/ath/ath10k/mac.c
 @@ -3528,6 +3528,14 @@ static int ath10k_update_channel_list(struct ath10k *ar)
@@ -35,7 +35,7 @@ index 746867b..b4c7b42 100644
  			 * channel and is scanning actively using Probe Requests
  			 * on "Radar detection"/DFS channels which are not
 diff --git a/drivers/net/wireless/ath/ath10k/thermal.c b/drivers/net/wireless/ath/ath10k/thermal.c
-index 9bb486f..5987df3 100644
+index 9bb486f8e..5987df325 100644
 --- a/drivers/net/wireless/ath/ath10k/thermal.c
 +++ b/drivers/net/wireless/ath/ath10k/thermal.c
 @@ -136,6 +136,16 @@ void ath10k_thermal_set_throttling(struct ath10k *ar)
