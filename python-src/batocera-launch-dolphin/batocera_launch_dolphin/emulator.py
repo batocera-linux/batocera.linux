@@ -44,6 +44,9 @@ from .paths import (
 
 _logger = logging.getLogger(__name__)
 
+# Dolphin's own Load State Slot hotkeys go from 1 to 10
+_STATE_SLOTS: Final = range(1, 11)
+
 _GAMECUBE_LANGUAGES: Final = {'en_US': 0, 'de_DE': 1, 'fr_FR': 2, 'es_ES': 3, 'it_IT': 4, 'nl_NL': 5}
 
 
@@ -67,6 +70,8 @@ class Dolphin(Emulator):
                 'save_state': 'KEY_F5',
                 'restore_state': 'KEY_F8',
                 'pause': 'KEY_F10',
+                # the control center loads the save state it shows
+                **{f'load_state_slot_{slot}': ['KEY_LEFTCTRL', f'KEY_F{slot}'] for slot in _STATE_SLOTS},
             },
         }
 
@@ -338,6 +343,8 @@ class Dolphin(Emulator):
         hotkeys.set('Hotkeys', 'Other State Hotkeys/Increase Selected State Slot', '@(Shift+F1)')
         hotkeys.set('Hotkeys', 'Other State Hotkeys/Decrease Selected State Slot', '@(Shift+F2)')
         hotkeys.set('Hotkeys', 'Load State/Load from Selected Slot', 'F8')
+        for slot in _STATE_SLOTS:
+            hotkeys.set('Hotkeys', f'Load State/Load State Slot {slot}', f'@(Ctrl+F{slot})')
         hotkeys.set('Hotkeys', 'Save State/Save to Selected Slot', 'F5')
         hotkeys.set('Hotkeys', 'Other State Hotkeys/Undo Load State', '@(Shift+F12)')
         hotkeys.set('Hotkeys', 'GBA Core/Load ROM', '@(`Ctrl`+`Shift`+`O`)')

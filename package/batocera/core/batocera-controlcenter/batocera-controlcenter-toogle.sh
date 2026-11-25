@@ -16,15 +16,26 @@ fi
 
 PIDVALUE=$(getCCPID)
 if test -n "${PIDVALUE}"; then
-    # don't toggle if the hidden argument is given
-    test "$1" = "hidden" || kill -USR1 "${PIDVALUE}"
-    exit 0
+    if test "$1" != "hidden"; then
+        kill -USR1 "${PIDVALUE}"
+        exit 0
+    fi
+
+    kill "${PIDVALUE}"
+    N=0
+    while test -e "/proc/${PIDVALUE}" && test "${N}" -lt 30; do
+        sleep 0.1
+        N=$((N + 1))
+    done
+    kill -9 "${PIDVALUE}" 2>/dev/null
 fi
 
 export DISPLAY=$(getLocalXDisplay)
 if [ -f "/etc/profile.d/wayland.sh" ]; then
     . /etc/profile.d/wayland.sh
 fi
+# hotkeygen has none: without it the card can't reach wayland and falls back to xwayland, sized wrong
+[ -z "${XDG_RUNTIME_DIR}" ] && [ -f /etc/profile.d/xdg.sh ] && . /etc/profile.d/xdg.sh
 export HOME=/userdata/system
 
 settings_lang="$(/usr/bin/batocera-settings-get system.language)"

@@ -103,6 +103,9 @@ class Command:
     # Confine the emulator to these CPUs; None inherits the launcher's affinity.
     cpu_affinity: frozenset[int] | None = None
 
+    # A named pipe created here and given to the emulator as stdin, for commands sent to it while it runs
+    stdin_pipe: Path | None = None
+
     def __post_init__(self) -> None:
         self.args = list(self.args)
         self.env = dict(self.env)
@@ -114,6 +117,10 @@ class Command:
         self.args = [*args, *self.args]
 
     async def run(self) -> int:
+        with _command_pipe(self.stdin_pipe) as stdin:
+            return await self._run(stdin)
+
+    async def _run(self, stdin: int | None, /) -> int:
         env: dict[str, str | Path] = os.environ | self.env
 
         _logger.debug('Running command: %s', ' '.join(map(str, self.args)))
@@ -132,6 +139,7 @@ class Command:
                 '-4',
                 *self.args,
                 env=env_to_fspath(env),
+                stdin=stdin,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
             )
@@ -187,3 +195,20 @@ class Command:
             loop.remove_signal_handler(signal.SIGINT)
 
         return exit_code
+
+
+@contextmanager
+def _command_pipe(path: Path | None, /) -> Generator[int | None]:
+    if path is None:
+        yield None
+        return
+
+    path.unlink(missing_ok=True)
+    os.mkfifo(path)
+    # also open for writing, so the emulator never reads the end of the pipe between two senders
+    fd = os.open(path, os.O_RDWR)
+    try:
+        yield fd
+    finally:
+        os.close(fd)
+        path.unlink(missing_ok=True)
