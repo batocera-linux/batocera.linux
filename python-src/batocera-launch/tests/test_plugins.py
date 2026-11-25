@@ -25,11 +25,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from batocera_common.fan import PROFILE_FILE, current_fan_profile
 from batocera_common.paths import BATOCERA_CONF
 from batocera_launch.plugin_manager import HookContext
 from batocera_launch.plugins.devfreq import STATE_DIR, DevfreqPlugin, detect_knobs, should_boost
+from batocera_launch.plugins.fan import FanPlugin
 from batocera_launch.plugins.power import PowerModePlugin, resolve_power_mode
-from batocera_launch.plugins.tdp import TdpPlugin, tdp_watts
+from batocera_launch.plugins.tdp import LIVE_CHANGES, TdpPlugin, tdp_watts
 
 if TYPE_CHECKING:
     from unittest.mock import Mock
@@ -366,3 +368,73 @@ class TestTdpPlugin:
 
         assert profiles == ['custom']
         apply_tdp.assert_not_called()
+
+    @pytest.mark.launch_config_user_settings({'system.cpu.tdp': '28'})
+    def test_a_live_tdp_change_is_undone(self, apply_tdp: Mock, hook_context: HookContext) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        _write(LIVE_CHANGES, 'game=/userdata/roms/snes/game.zip\ntdp=50\n')
+        plugin.stop(hook_context)
+
+        assert apply_tdp.call_args_list == [((28,), {'detach': True})]
+        assert not LIVE_CHANGES.exists()
+
+    def test_a_live_profile_change_is_undone(
+        self, apply_tdp: Mock, profiles: list[str], hook_context: HookContext
+    ) -> None:
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        profiles.append('low-power')
+        plugin.stop(hook_context)
+
+        assert profiles[-1] == 'custom'
+        apply_tdp.assert_not_called()
+
+    @pytest.mark.launch_config_user_settings({'system.cpu.tdp': '28'})
+    def test_changes_left_by_an_earlier_game_are_ignored(self, apply_tdp: Mock, hook_context: HookContext) -> None:
+        _write(LIVE_CHANGES, 'game=/userdata/roms/snes/old.zip\ntdp=50\n')
+        plugin = TdpPlugin()
+
+        plugin.start(hook_context)
+        plugin.stop(hook_context)
+
+        apply_tdp.assert_not_called()
+
+
+class TestFanPlugin:
+    @pytest.fixture
+    def fan_daemon(self, fake_fs: FakeFilesystem) -> None:
+        _write(PROFILE_FILE, 'balanced')
+
+    @pytest.mark.usefixtures('fan_daemon')
+    @pytest.mark.launch_config_system_settings({'fanprofile': 'max'})
+    @pytest.mark.launch_config_global_settings({'fanprofile': 'quiet'})
+    def test_game_profile_then_the_global_one(self, hook_context: HookContext) -> None:
+        plugin = FanPlugin()
+
+        plugin.start(hook_context)
+        assert current_fan_profile() == 'max'
+
+        plugin.stop(hook_context)
+        assert current_fan_profile() == 'quiet'
+
+    @pytest.mark.usefixtures('fan_daemon')
+    def test_a_change_during_the_game_is_undone(self, hook_context: HookContext) -> None:
+        plugin = FanPlugin()
+
+        plugin.start(hook_context)
+        PROFILE_FILE.write_text('max')
+        plugin.stop(hook_context)
+
+        assert current_fan_profile() == 'balanced'
+
+    @pytest.mark.launch_config_system_settings({'fanprofile': 'max'})
+    def test_nothing_without_a_fan_daemon(self, hook_context: HookContext) -> None:
+        plugin = FanPlugin()
+
+        plugin.start(hook_context)
+        plugin.stop(hook_context)
+
+        assert not PROFILE_FILE.exists()

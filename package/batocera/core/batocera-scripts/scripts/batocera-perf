@@ -1,0 +1,253 @@
+#!/bin/sh
+# Shows and changes the power settings for the control center
+# Usage: batocera-perf status|ingame|has battery|tdp|profile|fan|get <setting>|show <setting>|set <setting> <value>|save game|system
+# outside a game: acmode, batterymode, tdp, profile and fan are the global settings
+# in a game: mode, tdp, profile and fan change now and last until the game ends, unless saved
+# fanlevel is the fan profile as a 0 to 3 step, for a slider
+
+CHANGES=/var/run/batocera-perf.changes
+FAN_LEVELS="quiet balanced performance max"
+# a fan daemon follows the profile in it while it runs
+FAN_PROFILE=/var/run/batocera-fan.profile
+DEVFREQ_STATE=/run/batocera-launch/devfreq
+
+running_game() {
+    curl -sf --max-time 1 http://127.0.0.1:1234/runningGame | jq -e 'select(.path != null)' 2>/dev/null
+}
+
+on_charger() {
+    for d in /sys/class/power_supply/*; do
+        case "$(cat "$d/type" 2>/dev/null)" in
+            Mains|USB|Wireless) [ "$(cat "$d/online" 2>/dev/null)" = 1 ] && return 0 ;;
+        esac
+    done
+    return 1
+}
+
+has_battery() {
+    grep -qx Battery /sys/class/power_supply/*/type 2>/dev/null
+}
+
+has() {
+    case "$1" in
+        battery) has_battery ;;
+        tdp)     [ -x /usr/bin/ryzenadj ] && [ -n "$(batocera-settings-get system.cpu.tdp)" ] ;;
+        profile) [ -n "$(batocera-platform-profile list 2>/dev/null)" ] ;;
+        fan)     [ -e "${FAN_PROFILE}" ] ;;
+        *) return 1 ;;
+    esac
+}
+
+apply_tdp() {
+    has tdp && batocera-amd-tdp "$(watts "$1")" >/dev/null 2>&1
+}
+
+# a profile change resets the firmware's power limits, the TDP goes back on after it
+apply_profile() {
+    batocera-platform-profile set "$1"
+    has tdp && apply_tdp "$(get tdp)"
+}
+
+watts() {
+    awk -v max="$(batocera-settings-get system.cpu.tdp)" -v pct="$1" 'BEGIN { printf "%.0f", max * pct / 100 }'
+}
+
+# the game's settings, as batocera.conf keys, most specific first
+game_keys() {
+    SYSTEM=$(echo "${GAME}" | jq -r .systemName)
+    # the same name ES gives the game in batocera.conf
+    ROM=$(basename "$(echo "${GAME}" | jq -r .path)" | tr -d '=#')
+    echo "${SYSTEM}[\"${ROM}\"].$1"
+    echo "${SYSTEM}.$1"
+}
+
+game_setting() {
+    game_keys "$1" | while IFS= read -r KEY; do
+        VALUE=$(batocera-settings-get "${KEY}")
+        [ -n "${VALUE}" ] && echo "${VALUE}" && break
+    done
+}
+
+# the first of the commands that prints something
+first() {
+    for CMD in "$@"; do
+        VALUE=$(eval "${CMD}")
+        [ -n "${VALUE}" ] && echo "${VALUE}" && return
+    done
+}
+
+# a change made in this game, dropped once another game starts
+changed() {
+    [ "$(sed -n 's/^game=//p' "${CHANGES}" 2>/dev/null)" = "$(echo "${GAME}" | jq -r .path)" ] || return 1
+    sed -n "s/^$1=//p" "${CHANGES}" | grep .
+}
+
+record() {
+    PATH_NOW=$(echo "${GAME}" | jq -r .path)
+    [ "$(sed -n 's/^game=//p' "${CHANGES}" 2>/dev/null)" = "${PATH_NOW}" ] || echo "game=${PATH_NOW}" >"${CHANGES}"
+    { sed "/^$1=/d" "${CHANGES}"; echo "$1=$2"; } >"${CHANGES}.new" && mv "${CHANGES}.new" "${CHANGES}"
+}
+
+global_mode() {
+    if on_charger || ! has_battery; then
+        batocera-settings-get global.powermode
+    else
+        batocera-settings-get global.batterymode
+    fi
+}
+
+# like the launcher: high performance also runs the GPU and memory at full speed, saved where the launcher restores it
+devfreq_boost() {
+    for KNOB in /sys/class/devfreq/*.gpu/governor /sys/class/devfreq/*dmc*/governor /sys/class/mpgpu/scale_mode; do
+        [ -w "${KNOB}" ] || continue
+        BOOST=performance
+        [ "${KNOB}" = /sys/class/mpgpu/scale_mode ] && BOOST=2
+        [ "${BOOST}" = 2 ] || grep -qw performance "$(dirname "${KNOB}")/available_governors" 2>/dev/null || continue
+        STATE="${DEVFREQ_STATE}/$(echo "${KNOB#/}" | tr / _)"
+        if [ "$1" = on ]; then
+            [ -e "${STATE}" ] && continue
+            CURRENT=$(cat "${KNOB}")
+            [ "${CURRENT}" = "${BOOST}" ] && continue
+            mkdir -p "${DEVFREQ_STATE}" && echo "${CURRENT}" >"${STATE}" && echo "${BOOST}" >"${KNOB}"
+        elif [ -e "${STATE}" ]; then
+            cat "${STATE}" >"${KNOB}" && rm -f "${STATE}"
+        fi
+    done
+}
+
+get() {
+    if [ -n "${GAME}" ]; then
+        case "$1" in
+            mode)    first "changed mode" "game_setting powermode" global_mode ;;
+            tdp)     first "changed tdp" "game_setting tdp" "batocera-settings-get global.tdp" "echo 100" ;;
+            profile) first "changed profile" "game_setting platformprofile" "batocera-platform-profile get" ;;
+            fan)     first "changed fan" "game_setting fanprofile" "batocera-settings-get global.fanprofile" "echo balanced" ;;
+        esac
+    else
+        case "$1" in
+            acmode)      batocera-settings-get global.powermode ;;
+            batterymode) batocera-settings-get global.batterymode ;;
+            tdp)         first "batocera-settings-get global.tdp" "echo 100" ;;
+            profile)     first "batocera-settings-get global.platformprofile" "batocera-platform-profile get" ;;
+            fan)         first "batocera-settings-get global.fanprofile" "echo balanced" ;;
+        esac
+    fi
+}
+
+GAME=$(running_game)
+
+case "$1" in
+    status)
+        TEMP=$(batocera-temp --cpu 2>/dev/null)
+        MHZ=$(cat /sys/devices/system/cpu/cpufreq/policy*/scaling_cur_freq 2>/dev/null | sort -n | tail -n1)
+        OUT=""
+        has_battery && { on_charger && OUT="On charger" || OUT="On battery"; }
+        [ -n "${TEMP}" ] && OUT="${OUT:+${OUT} · }${TEMP}°C"
+        [ -n "${MHZ}" ] && OUT="${OUT:+${OUT} · }$(awk -v k="${MHZ}" 'BEGIN { printf "%.1f GHz", k / 1000000 }')"
+        STATE_W=$(cat /var/run/amd-tdp.state 2>/dev/null)
+        has tdp && [ -n "${STATE_W}" ] && OUT="${OUT:+${OUT} · }${STATE_W} W"
+        echo "${OUT}"
+        ;;
+    ingame)
+        [ -n "${GAME}" ] && echo 1
+        ;;
+    has)
+        has "$2" && echo 1
+        ;;
+    get)
+        if [ "$2" = fanlevel ]; then
+            echo ${FAN_LEVELS} | tr ' ' '\n' | grep -nx "$(get fan)" | cut -d: -f1 | awk '{ print $1 - 1 }' | grep . || echo 1
+        else
+            get "$2"
+        fi
+        ;;
+    show)
+        VALUE=$(get "$2")
+        case "$2:${VALUE}" in
+            *mode:highperformance) echo "High Perf" ;;
+            *mode:balanced)        echo "Balanced" ;;
+            *mode:powersaver)      echo "Saver" ;;
+            *mode:*)               echo "Default" ;;
+            tdp:*)                 has tdp && echo "${VALUE}% · $(watts "${VALUE}") W" ;;
+            fan:quiet)             echo "Quiet" ;;
+            fan:performance)       echo "Performance" ;;
+            fan:max)               echo "Max" ;;
+            fan:*)                 echo "Balanced" ;;
+            *) echo "${VALUE}" ;;
+        esac
+        ;;
+    set)
+        if [ "$2" = fanlevel ]; then
+            LEVEL="$3"
+            # +n and -n move from the current step
+            case "${LEVEL}" in
+                [+-]*) LEVEL=$(($("$0" get fanlevel) ${LEVEL})) ;;
+            esac
+            LEVEL=$((LEVEL < 0 ? 0 : LEVEL > 3 ? 3 : LEVEL))
+            exec "$0" set fan "$(echo ${FAN_LEVELS} | cut -d' ' -f$((LEVEL + 1)))"
+        fi
+        VALUE="$3"
+        # +n and -n move from the current value
+        case "$2:${VALUE}" in
+            tdp:[+-]*) VALUE=$(($(get tdp) ${VALUE})) ;;
+        esac
+        [ "$2" = tdp ] && VALUE=$((VALUE < 10 ? 10 : VALUE > 120 ? 120 : VALUE))
+        [ "${VALUE}" = default ] && [ "$2" != profile ] && VALUE=
+        if [ -n "${GAME}" ]; then
+            case "$2" in
+                mode)
+                    batocera-power-mode "${VALUE:-default}"
+                    if [ "${VALUE}" = highperformance ]; then devfreq_boost on; else devfreq_boost off; fi
+                    ;;
+                tdp)     apply_tdp "${VALUE}" ;;
+                profile) apply_profile "${VALUE}" ;;
+                fan)     has fan && echo "${VALUE}" >"${FAN_PROFILE}" ;;
+                *) exit 1 ;;
+            esac
+            record "$2" "${VALUE:-default}"
+        else
+            case "$2" in
+                acmode)
+                    batocera-settings-set global.powermode "${VALUE}"
+                    { on_charger || ! has_battery; } && batocera-power-mode ac
+                    ;;
+                batterymode)
+                    batocera-settings-set global.batterymode "${VALUE}"
+                    has_battery && ! on_charger && batocera-power-mode battery
+                    ;;
+                tdp)
+                    batocera-settings-set global.tdp "${VALUE}"
+                    apply_tdp "${VALUE}"
+                    ;;
+                profile)
+                    batocera-settings-set global.platformprofile "${VALUE}"
+                    apply_profile "${VALUE}"
+                    ;;
+                fan)
+                    batocera-settings-set global.fanprofile "${VALUE}"
+                    has fan && echo "${VALUE}" >"${FAN_PROFILE}"
+                    ;;
+                *) exit 1 ;;
+            esac
+        fi
+        ;;
+    save)
+        [ -n "${GAME}" ] || exit 1
+        case "$2" in
+            game)   KEYS=$(game_keys X | head -n1) ;;
+            system) KEYS=$(game_keys X | tail -n1) ;;
+            *) exit 1 ;;
+        esac
+        PREFIX="${KEYS%.X}"
+        MODE=$(get mode)
+        [ "${MODE}" = default ] && MODE=
+        batocera-settings-set "${PREFIX}.powermode" "${MODE}"
+        has tdp && batocera-settings-set "${PREFIX}.tdp" "$(get tdp)"
+        has profile && batocera-settings-set "${PREFIX}.platformprofile" "$(get profile)"
+        has fan && batocera-settings-set "${PREFIX}.fanprofile" "$(get fan)"
+        ;;
+    *)
+        echo "usage: $0 status|ingame|has battery|tdp|profile|fan|get <setting>|show <setting>|set <setting> <value>|save game|system" >&2
+        exit 1
+        ;;
+esac

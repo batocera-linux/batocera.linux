@@ -16,6 +16,7 @@
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
+		<tab display="Performance" target="Performance" if="${ls /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" />
 		<tab display="Monitor" target="Monitor" />
 		<tab display="Outputs" target="Outputs" />
 		<tab display="Record" target="Record" />
@@ -142,15 +143,6 @@
 			<button_confirm display="Kill it!" action="curl http://127.0.0.1:1234/emukill" align="left" afterclick="bcc_close"
 			enabled='${curl -s http://127.0.0.1:1234/runningGame | jq -e .name &gt;/dev/null &amp;&amp; echo 1}' disabled_display="No game running" />
 		</feature>
-		<feature name="PowerMode" display="Power Mode">
-			<choice display="Default"      action="batocera-power-mode default" />
-			<choice display="AC"           action="batocera-power-mode ac" />
-			<choice display="Battery"      action="batocera-power-mode battery" />
-			<choice display="High Perf"    action="batocera-power-mode highperformance" />
-			<choice display="Balanced"     action="batocera-power-mode balanced" />
-			<choice display="Saver"        action="batocera-power-mode Powersaver" />
-			<text display="${cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" refresh="1" />
-		</feature>
 		<feature name="Screen" display="Control center screen" if='${[ "$(batocera-resolution listOutputs | wc -l)" -gt 1 ] &amp;&amp; echo 1}'>
 			<choice display="Secondary" action="batocera-settings-set controlcenter.screen secondary" afterclick="bcc_rescreen" />
 			<choice display="Primary"   action="batocera-settings-set controlcenter.screen primary" afterclick="bcc_rescreen" />
@@ -165,6 +157,68 @@
 		  </feature>
 		</vgroup>
 
+	</hgroup>
+
+	<hgroup name="Performance" display="Performance">
+		<feature display="Performance">
+			<text display="${batocera-perf status}" refresh="2" />
+		</feature>
+
+		<!-- outside a game: the global settings -->
+		<feature display="On charger" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}' refresh="5">
+			<choice display="Default" action="batocera-perf set acmode default" afterclick="bcc_refresh" />
+			<choice display="High Perf" action="batocera-perf set acmode highperformance" afterclick="bcc_refresh" />
+			<choice display="Balanced" action="batocera-perf set acmode balanced" afterclick="bcc_refresh" />
+			<choice display="Saver" action="batocera-perf set acmode powersaver" afterclick="bcc_refresh" />
+			<text display="${batocera-perf show acmode}" refresh="2" />
+		</feature>
+		<feature display="On battery" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}' refresh="5">
+			<choice display="Default" action="batocera-perf set batterymode default" afterclick="bcc_refresh" />
+			<choice display="High Perf" action="batocera-perf set batterymode highperformance" afterclick="bcc_refresh" />
+			<choice display="Balanced" action="batocera-perf set batterymode balanced" afterclick="bcc_refresh" />
+			<choice display="Saver" action="batocera-perf set batterymode powersaver" afterclick="bcc_refresh" />
+			<text display="${batocera-perf show batterymode}" refresh="2" />
+		</feature>
+		<feature display="Power Mode" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; [ -z &quot;$(batocera-perf has battery)&quot; ] &amp;&amp; echo 1}' refresh="5">
+			<choice display="Default" action="batocera-perf set acmode default" afterclick="bcc_refresh" />
+			<choice display="High Perf" action="batocera-perf set acmode highperformance" afterclick="bcc_refresh" />
+			<choice display="Balanced" action="batocera-perf set acmode balanced" afterclick="bcc_refresh" />
+			<choice display="Saver" action="batocera-perf set acmode powersaver" afterclick="bcc_refresh" />
+			<text display="${batocera-perf show acmode}" refresh="2" />
+		</feature>
+
+		<!-- in a game: changes apply now and last until the game ends, unless saved -->
+		<feature display="Power Mode" if='${batocera-perf ingame}' refresh="5">
+			<choice display="Default" action="batocera-perf set mode default" afterclick="bcc_refresh" />
+			<choice display="High Perf" action="batocera-perf set mode highperformance" afterclick="bcc_refresh" />
+			<choice display="Balanced" action="batocera-perf set mode balanced" afterclick="bcc_refresh" />
+			<choice display="Saver" action="batocera-perf set mode powersaver" afterclick="bcc_refresh" />
+			<text display="${batocera-perf show mode}" refresh="2" />
+		</feature>
+
+		<feature display="TDP" if='${batocera-perf has tdp}'>
+			<button display="TDP -" action="batocera-perf set tdp -5" updateids="perftdp" />
+			<progressbar id="perftdp" display="${batocera-perf get tdp}" min="10" max="120" refresh="2" action_set="batocera-perf set tdp {value}" />
+			<button display="TDP +" action="batocera-perf set tdp +5" updateids="perftdp" />
+		</feature>
+		<feature display="Platform Profile" if='${batocera-perf has profile}'>
+			<choice_cmd display="${batocera-platform-profile list | tr ' ' '\n'}"
+				action="batocera-perf set profile"
+				action_arg="${batocera-platform-profile list | tr ' ' '\n'}"
+				cache="30" />
+			<text display="${batocera-perf show profile}" refresh="2" />
+		</feature>
+
+		<feature display="Fan" if='${batocera-perf has fan}'>
+			<button display="Fan -" action="batocera-perf set fanlevel -1" updateids="perffan" />
+			<progressbar id="perffan" display="${batocera-perf get fanlevel}" min="0" max="3" labels="Quiet|Balanced|Performance|Max" refresh="2" action_set="batocera-perf set fanlevel {value}" />
+			<button display="Fan +" action="batocera-perf set fanlevel +1" updateids="perffan" />
+		</feature>
+
+		<feature if='${batocera-perf ingame}' refresh="5">
+			<button display="Save for this game" action="batocera-perf save game" />
+			<button display="Save for system" action="batocera-perf save system" />
+		</feature>
 	</hgroup>
 
 	<hgroup name="Monitor" display="Monitor">

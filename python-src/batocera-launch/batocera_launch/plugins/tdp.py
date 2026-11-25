@@ -24,6 +24,7 @@ import logging
 import subprocess
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Final
 
 from batocera_common.platform_profile import PROFILE_SETTLE_SECONDS, current_platform_profile, set_platform_profile
@@ -33,6 +34,9 @@ from ..plugin_manager import HookContext, Plugin
 _logger: Final = logging.getLogger(__name__)
 
 _AMD_TDP: Final = '/usr/bin/batocera-amd-tdp'
+
+# the control center's in-game changes, which the end of the game undoes too
+LIVE_CHANGES: Final = Path('/var/run/batocera-perf.changes')
 
 
 def tdp_watts(max_tdp: str, percentage: str, /) -> int | None:
@@ -84,13 +88,13 @@ class TdpPlugin(Plugin):
     def start(self, context: HookContext, /) -> None:
         config = context.config
         profile_changed = False
+        LIVE_CHANGES.unlink(missing_ok=True)
+        self._previous_profile = current_platform_profile()
 
-        if (profile := config.get_str('platformprofile')) is not None:
-            previous = current_platform_profile()
-
-            if profile_changed := set_platform_profile(profile):
-                _logger.debug('setting platform profile to %s for %s', profile, config.rom.name)
-                self._previous_profile = previous
+        if (profile := config.get_str('platformprofile')) is not None and (
+            profile_changed := set_platform_profile(profile)
+        ):
+            _logger.debug('setting platform profile to %s for %s', profile, config.rom.name)
 
         # only set at boot when the CPU is supported
         max_tdp = config.user_config.get('system.cpu.tdp')
@@ -114,7 +118,10 @@ class TdpPlugin(Plugin):
         if (profile := config.global_settings.get('platformprofile') or self._previous_profile) is not None:
             restored = set_platform_profile(profile)
 
-        if not (self._changed or restored):
+        live = LIVE_CHANGES.exists()
+        LIVE_CHANGES.unlink(missing_ok=True)
+
+        if not (self._changed or restored or live):
             return
 
         if not (max_tdp := config.user_config.get('system.cpu.tdp', '')):
