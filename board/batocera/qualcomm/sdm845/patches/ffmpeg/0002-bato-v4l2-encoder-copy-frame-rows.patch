@@ -1,0 +1,36 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] avcodec/v4l2_buffers: copy only the frame rows into the encoder buffer
+
+The OUTPUT buffer height is aligned by the driver (720 becomes 736 on
+Qualcomm Venus), but a software frame only has its own rows. Copying
+linesize * aligned height reads past the end of the frame and crashes
+720p encodes.
+---
+--- a/libavcodec/v4l2_buffers.c
++++ b/libavcodec/v4l2_buffers.c
+@@ -538,16 +538,23 @@
+             planes_nb = FFMAX(planes_nb, desc->comp[i].plane + 1);
+ 
+         for (i = 0; i < planes_nb; i++) {
+-            int size, h = height;
++            int size, h = height, rows = frame->height;
+             if (i == 1 || i == 2) {
+                 h = AV_CEIL_RSHIFT(h, desc->log2_chroma_h);
++                rows = AV_CEIL_RSHIFT(rows, desc->log2_chroma_h);
+             }
+             size = frame->linesize[i] * h;
+-            ret = v4l2_bufref_to_buf(out, 0, frame->data[i], size, offset);
++            /* the buffer height is aligned, the frame only has its own rows */
++            ret = v4l2_bufref_to_buf(out, 0, frame->data[i],
++                                     frame->linesize[i] * FFMIN(rows, h), offset);
+             if (ret)
+                 return ret;
+             offset += size;
+         }
++        if (V4L2_TYPE_IS_MULTIPLANAR(out->buf.type))
++            out->planes[0].bytesused = FFMIN(offset, out->plane_info[0].length);
++        else
++            out->buf.bytesused = FFMIN(offset, out->plane_info[0].length);
+         return 0;
+     }
+ 
