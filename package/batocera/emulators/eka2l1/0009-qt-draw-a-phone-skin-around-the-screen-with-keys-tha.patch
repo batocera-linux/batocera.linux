@@ -1,0 +1,711 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Wed, 4 Nov 2026 23:03:57 +0100
+Subject: [PATCH 09/15] qt: draw a phone skin around the screen, with keys that
+ light up and can be touched
+
+A skin is a JSON layout next to two pictures: the phone, and its keys lit.
+The layout gives where the screen goes and where each key is, with the
+scan code it sends. skin-layout is used while the screen is taller than
+wide, skin-layout-wide (when set) while it is wider.
+
+The phone is drawn as big as the window allows and the screen fills the
+place drawn for it. A key the device has down, from the keyboard, a pad
+or a touch, is drawn lit: the window server now tells a key watcher
+about every key it ships. A touch that starts on a drawn key presses
+that key until the finger is lifted.
+---
+ src/emu/config/include/config/config.h        |   5 +
+ src/emu/config/include/config/options.inl     |   2 +
+ src/emu/qt/CMakeLists.txt                     |   2 +
+ src/emu/qt/include/qt/mainwindow.h            |  38 ++++
+ src/emu/qt/include/qt/skin.h                  |  86 +++++++++
+ src/emu/qt/src/mainwindow.cpp                 | 145 ++++++++++++++-
+ src/emu/qt/src/skin.cpp                       | 166 ++++++++++++++++++
+ src/emu/qt/src/state.cpp                      |  10 ++
+ src/emu/qt/src/thread.cpp                     |  20 +++
+ .../services/include/services/window/window.h |   4 +
+ src/emu/services/src/window/window.cpp        |  12 +-
+ 11 files changed, 485 insertions(+), 5 deletions(-)
+ create mode 100644 src/emu/qt/include/qt/skin.h
+ create mode 100644 src/emu/qt/src/skin.cpp
+
+diff --git a/src/emu/config/include/config/config.h b/src/emu/config/include/config/config.h
+index 6e9ba6374..899597116 100644
+--- a/src/emu/config/include/config/config.h
++++ b/src/emu/config/include/config/config.h
+@@ -190,6 +190,11 @@ namespace eka2l1::config {
+         bool background_image_follow_rotation{ false };
+         int screen_scale_ratio{ 100 };
+ 
++        // Skin layouts (JSON) drawn around the screen, with keys that light up and can be
++        // touched. The wide one is used while the screen is wider than tall.
++        std::string skin_layout;
++        std::string skin_layout_wide;
++
+         // Family name of a font imported into <storage>/fonts that the device
+         // draws its own text with instead of its ROM fonts. Empty keeps the
+         // device's fonts. The scale is a percentage of the ROM font's capital
+diff --git a/src/emu/config/include/config/options.inl b/src/emu/config/include/config/options.inl
+index d28aa419c..0dd4bf4dd 100644
+--- a/src/emu/config/include/config/options.inl
++++ b/src/emu/config/include/config/options.inl
+@@ -78,6 +78,8 @@ OPTION(background-image-opacity, background_image_opacity, 255)
+ OPTION(background-image-keep-aspect, background_image_keep_aspect, false)
+ OPTION(background-image-follow-rotation, background_image_follow_rotation, false)
+ OPTION(screen-scale-ratio, screen_scale_ratio, 100)
++OPTION(skin-layout, skin_layout, "")
++OPTION(skin-layout-wide, skin_layout_wide, "")
+ OPTION(enable-hw-gles1, enable_hw_gles1, true)
+ OPTION(log-filter, log_filter, DEFAULT_LOG_FILTERING)
+ OPTION(hide-system-apps, hide_system_apps, true)
+diff --git a/src/emu/qt/CMakeLists.txt b/src/emu/qt/CMakeLists.txt
+index edf5b7735..9b0a67565 100644
+--- a/src/emu/qt/CMakeLists.txt
++++ b/src/emu/qt/CMakeLists.txt
+@@ -87,6 +87,7 @@ set(PROJECT_SOURCES
+         include/qt/thread.h
+         include/qt/update_dialog.h
+         include/qt/update_notice_dialog.h
++        include/qt/skin.h
+         include/qt/utils.h
+         src/btnmap/aim.cpp
+         src/btnmap/base.cpp
+@@ -129,6 +130,7 @@ set(PROJECT_SOURCES
+         src/update_dialog.ui
+         src/update_notice_dialog.cpp
+         src/update_notice_dialog.ui
++        src/skin.cpp
+         src/utils.cpp
+         EKA2L1.def
+         ${RESOURCE_FILES}
+diff --git a/src/emu/qt/include/qt/mainwindow.h b/src/emu/qt/include/qt/mainwindow.h
+index b068dc620..835a64759 100644
+--- a/src/emu/qt/include/qt/mainwindow.h
++++ b/src/emu/qt/include/qt/mainwindow.h
+@@ -31,10 +31,14 @@
+ #include <QPointer>
+ #include <QProgressDialog>
+ #include <QSystemTrayIcon>
++#include <array>
++#include <atomic>
+ #include <memory>
+ #include <map>
++#include <mutex>
+ 
+ #include <qt/discord_rpc.h>
++#include <qt/skin.h>
+ 
+ QT_BEGIN_NAMESPACE
+ namespace Ui {
+@@ -124,6 +128,19 @@ private:
+     eka2l1::drivers::handle background_image_texture_;
+     eka2l1::vec2 previous_background_image_size_;
+     std::string previous_background_image_path_;
++
++    // Skins: 0 is used while the screen is taller than wide, 1 while it is wider
++    eka2l1::desktop::skin_layout skins_[2];
++    std::string skin_paths_[2];
++    bool skin_ready_[2] = { false, false };
++    int skin_drawn_ = -1;
++    eka2l1::vec2 skin_origin_;
++    float skin_scale_ = 0.0f;
++    std::map<int, std::uint32_t> skin_touch_keys_;
++    std::array<std::atomic<bool>, 256> skin_keys_down_{};
++    std::mutex skin_lock_;
++
++    eka2l1::rect skin_to_window(const eka2l1::rect &area) const;
+     
+     QSystemTrayIcon *tray_icon_;
+     QIcon emu_icon_;
+@@ -266,6 +283,27 @@ public:
+         return previous_background_image_size_;
+     }
+ 
++    /**
++     * \brief Draw the skin picture, if one is set. Called while the screen is drawn.
++     * \param wide           True when the screen is wider than tall.
++     * \param screen_area    Set to where the screen goes in the window.
++     * \return True when a skin was drawn.
++     */
++    bool draw_skin(eka2l1::drivers::graphics_driver *driver, eka2l1::drivers::graphics_command_builder &builder,
++        const eka2l1::vec2 &swapchain_size, const bool wide, eka2l1::rect &screen_area);
++
++    // Draw the keys the device has down, lit, over the skin drawn last
++    void draw_skin_lit(eka2l1::drivers::graphics_command_builder &builder);
++
++    void skin_key_changed(const std::uint32_t code, const bool down);
++
++    /**
++     * \brief Find the skin key under a touch.
++     * \return 0 when the touch is not for the skin, 1 when it is taken with nothing to do,
++     *         2 when the key in code goes down or up.
++     */
++    int skin_touch(const eka2l1::vec3 &pos, const int action, const int mouse_id, std::uint32_t &code, bool &down);
++
+     std::function<void(eka2l1::kernel::process *)> get_process_exit_callback();
+ 
+ private:
+diff --git a/src/emu/qt/include/qt/skin.h b/src/emu/qt/include/qt/skin.h
+new file mode 100644
+index 000000000..9bd1e8418
+--- /dev/null
++++ b/src/emu/qt/include/qt/skin.h
+@@ -0,0 +1,86 @@
++/*
++ * Copyright (c) 2026 EKA2L1 Team.
++ *
++ * This file is part of EKA2L1 project.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#pragma once
++
++#include <common/vecx.h>
++#include <drivers/graphics/common.h>
++
++#include <cstdint>
++#include <string>
++#include <vector>
++
++namespace eka2l1::drivers {
++    class graphics_driver;
++}
++
++namespace eka2l1::desktop {
++    /**
++     * \brief A key drawn on a skin.
++     */
++    struct skin_key {
++        std::uint32_t code; ///< Scan code the device receives when the key is touched.
++        eka2l1::rect area; ///< Where the key is, in the skin picture.
++        eka2l1::rect lit; ///< The key lit, in the lit picture.
++        bool ellipse; ///< Touch only inside the ellipse of the area.
++    };
++
++    /**
++     * \brief Picture of a phone around the screen, with keys that light up and can be touched.
++     *
++     * Described by a JSON file:
++     * {
++     *   "image": "phone.png", "lit_image": "phone-lit.png", "size": { "w": 1920, "h": 1080 },
++     *   "screen": { "x": 520, "y": 20, "w": 880, "h": 1040 },
++     *   "keys": [ { "code": 16, "x": 0, "y": 0, "w": 10, "h": 10, "shape": "rect",
++     *               "lit": { "x": 0, "y": 0, "w": 10, "h": 10 } } ]
++     * }
++     * The pictures are next to the JSON file. "lit" is where the key's lit picture is in
++     * the lit picture; it is drawn over the key while the device has the key down.
++     */
++    struct skin_layout {
++        std::string path; ///< The JSON file this layout was read from.
++        eka2l1::vec2 size; ///< Size of the picture the positions are given in.
++        eka2l1::rect screen; ///< Where the device's screen goes.
++        std::vector<skin_key> keys;
++
++        std::string image_path;
++        std::string lit_image_path;
++        drivers::handle image{ 0 };
++        drivers::handle lit_image{ 0 };
++
++        /**
++         * \brief Read the layout. Pictures are uploaded later, by the graphics thread.
++         * \return False when the file can't be read or has no screen.
++         */
++        bool load(const std::string &json_path);
++
++        /**
++         * \brief Create the textures of both pictures.
++         * \return False if the main picture can't be loaded. A missing lit picture only turns lighting off.
++         */
++        bool upload(drivers::graphics_driver *driver);
++
++        /**
++         * \brief Find the key at a point of the skin picture.
++         * \return The key, or nullptr.
++         */
++        const skin_key *key_at(const eka2l1::vec2 &point) const;
++    };
++}
+diff --git a/src/emu/qt/src/mainwindow.cpp b/src/emu/qt/src/mainwindow.cpp
+index aab659cb9..a2e387026 100644
+--- a/src/emu/qt/src/mainwindow.cpp
++++ b/src/emu/qt/src/mainwindow.cpp
+@@ -208,7 +208,10 @@ static void draw_emulator_screen(void *userdata, eka2l1::epoc::screen *scr, cons
+ 
+     eka2l1::drivers::handle background_image = state_ptr->ui_main->get_background_image();
+     builder.clear({ color_clear.z / 255.0f, color_clear.y / 255.0f, color_clear.x / 255.0f, color_clear.w / 255.0f, 0.0f, 0.0f }, eka2l1::drivers::draw_buffer_bit_color_buffer);
+-    if (background_image != 0) {
++    // A skin draws the phone around the screen, and says where the screen goes
++    const bool skin_drawn = state_ptr->ui_main->draw_skin(state_ptr->graphics_driver.get(), builder, swapchain_size, size.x > size.y, area);
++
++    if (!skin_drawn && (background_image != 0)) {
+         eka2l1::vec2 image_size = state_ptr->ui_main->get_background_image_size();
+ 
+         // A picture of a phone held sideways stands up, turned clockwise, while the screen is taller than wide
+@@ -258,7 +261,7 @@ static void draw_emulator_screen(void *userdata, eka2l1::epoc::screen *scr, cons
+     }
+ 
+     // Shrink the screen to fit the one drawn on the background, like the Android screen scale
+-    if (scr->requested_ui_scale_factor <= 0.0f) {
++    if (!skin_drawn && (scr->requested_ui_scale_factor <= 0.0f)) {
+         const float ratio = eka2l1::common::clamp<int>(10, 100, state.conf.screen_scale_ratio) / 100.0f;
+         mult_x *= ratio;
+         mult_y *= ratio;
+@@ -291,6 +294,10 @@ static void draw_emulator_screen(void *userdata, eka2l1::epoc::screen *scr, cons
+     builder.draw_bitmap(scr->screen_texture, 0, dest, src, eka2l1::vec2(0, 0), static_cast<float>(scr->ui_rotation),
+         (scr->flags_ & eka2l1::epoc::screen::FLAG_SCREEN_UPSCALE_FACTOR_LOCK) ? eka2l1::drivers::bitmap_draw_flag_use_upscale_shader : 0);
+ 
++    if (skin_drawn) {
++        state_ptr->ui_main->draw_skin_lit(builder);
++    }
++
+     if (state_ptr->ui_main) {
+         builder.set_viewport(dest);
+         state_ptr->ui_main->draw_enabled_overlay(state_ptr->graphics_driver.get(), builder, mult_x, mult_y);
+@@ -2123,3 +2130,137 @@ void main_window::control_pause(bool paused) {
+     ui_->action_pause->setChecked(paused);
+     on_pause_toggled(paused);
+ }
++
++static void use_skin_blending(eka2l1::drivers::graphics_command_builder &builder) {
++    builder.set_feature(eka2l1::drivers::graphics_feature::blend, true);
++    builder.blend_formula(eka2l1::drivers::blend_equation::add, eka2l1::drivers::blend_equation::add,
++        eka2l1::drivers::blend_factor::frag_out_alpha, eka2l1::drivers::blend_factor::one_minus_frag_out_alpha,
++        eka2l1::drivers::blend_factor::one, eka2l1::drivers::blend_factor::one_minus_frag_out_alpha);
++    builder.set_brush_color_detail(eka2l1::vec4(255, 255, 255, 255));
++}
++
++eka2l1::rect main_window::skin_to_window(const eka2l1::rect &area) const {
++    return eka2l1::rect(eka2l1::vec2(skin_origin_.x + static_cast<int>(area.top.x * skin_scale_), skin_origin_.y + static_cast<int>(area.top.y * skin_scale_)),
++        eka2l1::vec2(static_cast<int>(area.size.x * skin_scale_), static_cast<int>(area.size.y * skin_scale_)));
++}
++
++bool main_window::draw_skin(eka2l1::drivers::graphics_driver *driver, eka2l1::drivers::graphics_command_builder &builder,
++    const eka2l1::vec2 &swapchain_size, const bool wide, eka2l1::rect &screen_area) {
++    const std::lock_guard<std::mutex> guard(skin_lock_);
++    skin_drawn_ = -1;
++
++    const bool use_wide = wide && !emulator_state_.conf.skin_layout_wide.empty();
++    const int index = use_wide ? 1 : 0;
++    const std::string path = use_wide ? emulator_state_.conf.skin_layout_wide : emulator_state_.conf.skin_layout;
++
++    if (path.empty()) {
++        return false;
++    }
++
++    eka2l1::desktop::skin_layout &skin = skins_[index];
++    if (skin_paths_[index] != path) {
++        if (skin.image) {
++            builder.destroy(skin.image);
++        }
++
++        if (skin.lit_image) {
++            builder.destroy(skin.lit_image);
++        }
++
++        skin = eka2l1::desktop::skin_layout();
++        skin_paths_[index] = path;
++        skin_ready_[index] = skin.load(path) && skin.upload(driver);
++    }
++
++    if (!skin_ready_[index]) {
++        return false;
++    }
++
++    const float scale = std::min(static_cast<float>(swapchain_size.x) / skin.size.x, static_cast<float>(swapchain_size.y) / skin.size.y);
++    const eka2l1::vec2 drawn_size(static_cast<int>(skin.size.x * scale), static_cast<int>(skin.size.y * scale));
++
++    skin_origin_ = eka2l1::vec2((swapchain_size.x - drawn_size.x) / 2, (swapchain_size.y - drawn_size.y) / 2);
++    skin_scale_ = scale;
++    skin_drawn_ = index;
++
++    use_skin_blending(builder);
++    builder.draw_bitmap(skin.image, 0, eka2l1::rect(skin_origin_, drawn_size), eka2l1::rect(), eka2l1::vec2(0, 0), 0.0f,
++        eka2l1::drivers::bitmap_draw_flag_use_brush);
++    builder.set_feature(eka2l1::drivers::graphics_feature::blend, false);
++
++    screen_area = skin_to_window(skin.screen);
++    return true;
++}
++
++void main_window::draw_skin_lit(eka2l1::drivers::graphics_command_builder &builder) {
++    const std::lock_guard<std::mutex> guard(skin_lock_);
++    if (skin_drawn_ < 0) {
++        return;
++    }
++
++    const eka2l1::desktop::skin_layout &skin = skins_[skin_drawn_];
++    if (!skin.lit_image) {
++        return;
++    }
++
++    bool blending = false;
++    for (const eka2l1::desktop::skin_key &key : skin.keys) {
++        if ((key.code >= skin_keys_down_.size()) || !skin_keys_down_[key.code].load(std::memory_order_relaxed)) {
++            continue;
++        }
++
++        if ((key.lit.size.x <= 0) || (key.lit.size.y <= 0)) {
++            continue;
++        }
++
++        if (!blending) {
++            use_skin_blending(builder);
++            blending = true;
++        }
++
++        builder.draw_bitmap(skin.lit_image, 0, skin_to_window(key.area), key.lit, eka2l1::vec2(0, 0), 0.0f,
++            eka2l1::drivers::bitmap_draw_flag_use_brush);
++    }
++
++    if (blending) {
++        builder.set_feature(eka2l1::drivers::graphics_feature::blend, false);
++    }
++}
++
++void main_window::skin_key_changed(const std::uint32_t code, const bool down) {
++    if (code < skin_keys_down_.size()) {
++        skin_keys_down_[code].store(down, std::memory_order_relaxed);
++    }
++}
++
++int main_window::skin_touch(const eka2l1::vec3 &pos, const int action, const int mouse_id, std::uint32_t &code, bool &down) {
++    const std::lock_guard<std::mutex> guard(skin_lock_);
++
++    // A finger that went down on a key keeps it until it is lifted, wherever it goes
++    auto held = skin_touch_keys_.find(mouse_id);
++    if (held != skin_touch_keys_.end()) {
++        if (action != 2) {
++            return 1;
++        }
++
++        code = held->second;
++        down = false;
++        skin_touch_keys_.erase(held);
++        return 2;
++    }
++
++    if ((action != 0) || (skin_drawn_ < 0) || (skin_scale_ <= 0.0f)) {
++        return 0;
++    }
++
++    const eka2l1::vec2 point(static_cast<int>((pos.x - skin_origin_.x) / skin_scale_), static_cast<int>((pos.y - skin_origin_.y) / skin_scale_));
++    const eka2l1::desktop::skin_key *key = skins_[skin_drawn_].key_at(point);
++    if (!key) {
++        return 0;
++    }
++
++    skin_touch_keys_[mouse_id] = key->code;
++    code = key->code;
++    down = true;
++    return 2;
++}
+diff --git a/src/emu/qt/src/skin.cpp b/src/emu/qt/src/skin.cpp
+new file mode 100644
+index 000000000..ad53d57fb
+--- /dev/null
++++ b/src/emu/qt/src/skin.cpp
+@@ -0,0 +1,166 @@
++/*
++ * Copyright (c) 2026 EKA2L1 Team.
++ *
++ * This file is part of EKA2L1 project.
++ *
++ * This program is free software: you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation, either version 3 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <qt/skin.h>
++
++#include <common/fileutils.h>
++#include <common/log.h>
++#include <common/path.h>
++#include <drivers/graphics/graphics.h>
++#include <drivers/itc.h>
++
++#include <QFile>
++#include <QJsonArray>
++#include <QJsonDocument>
++#include <QJsonObject>
++
++#include <stb_image.h>
++
++namespace eka2l1::desktop {
++    static eka2l1::rect read_rect(const QJsonObject &object) {
++        return eka2l1::rect(eka2l1::vec2(object["x"].toInt(), object["y"].toInt()),
++            eka2l1::vec2(object["w"].toInt(), object["h"].toInt()));
++    }
++
++    bool skin_layout::load(const std::string &json_path) {
++        QFile file(QString::fromStdString(json_path));
++        if (!file.open(QIODevice::ReadOnly)) {
++            LOG_ERROR(FRONTEND_UI, "Unable to open the skin layout {}", json_path);
++            return false;
++        }
++
++        QJsonParseError error;
++        const QJsonDocument document = QJsonDocument::fromJson(file.readAll(), &error);
++        if (!document.isObject()) {
++            LOG_ERROR(FRONTEND_UI, "Skin layout {} is not valid: {}", json_path, error.errorString().toStdString());
++            return false;
++        }
++
++        const QJsonObject root = document.object();
++        const QJsonObject size_object = root["size"].toObject();
++
++        path = json_path;
++        size = eka2l1::vec2(size_object["w"].toInt(), size_object["h"].toInt());
++        screen = read_rect(root["screen"].toObject());
++
++        if ((size.x <= 0) || (size.y <= 0) || (screen.size.x <= 0) || (screen.size.y <= 0)) {
++            LOG_ERROR(FRONTEND_UI, "Skin layout {} has no size or no screen", json_path);
++            return false;
++        }
++
++        const std::string folder = eka2l1::file_directory(json_path);
++        image_path = eka2l1::add_path(folder, root["image"].toString().toStdString());
++        if (root.contains("lit_image")) {
++            lit_image_path = eka2l1::add_path(folder, root["lit_image"].toString().toStdString());
++        }
++
++        keys.clear();
++        for (const QJsonValue &value : root["keys"].toArray()) {
++            const QJsonObject key_object = value.toObject();
++            if (!key_object.contains("code")) {
++                continue;
++            }
++
++            skin_key key;
++            key.code = static_cast<std::uint32_t>(key_object["code"].toInt());
++            key.area = read_rect(key_object);
++            key.lit = read_rect(key_object["lit"].toObject());
++            key.ellipse = (key_object["shape"].toString() == "ellipse");
++
++            keys.push_back(key);
++        }
++
++        return true;
++    }
++
++    static drivers::handle upload_picture(drivers::graphics_driver *driver, const std::string &picture_path) {
++        FILE *f = eka2l1::common::open_c_file(picture_path, "rb");
++        if (!f) {
++            LOG_ERROR(FRONTEND_UI, "Unable to open the skin picture {}", picture_path);
++            return 0;
++        }
++
++        int x = 0;
++        int y = 0;
++        int comp = STBI_rgb_alpha;
++
++        stbi_uc *data = stbi_load_from_file(f, &x, &y, &comp, STBI_rgb_alpha);
++        fclose(f);
++
++        if (!data) {
++            LOG_ERROR(FRONTEND_UI, "Unable to read the skin picture {}", picture_path);
++            return 0;
++        }
++
++        drivers::handle texture = drivers::create_texture(driver, 2, 0, drivers::texture_format::rgba, drivers::texture_format::rgba,
++            drivers::texture_data_type::ubyte, data, x * y * 4, eka2l1::vec3(x, y, 0));
++
++        stbi_image_free(data);
++
++        if (texture) {
++            // The picture is scaled to the window
++            drivers::graphics_command_builder builder;
++            builder.set_texture_filter(texture, true, drivers::filter_option::linear);
++            builder.set_texture_filter(texture, false, drivers::filter_option::linear);
++
++            auto cmd_list = builder.retrieve_command_list();
++            driver->submit_command_list(cmd_list);
++        }
++
++        return texture;
++    }
++
++    bool skin_layout::upload(drivers::graphics_driver *driver) {
++        image = upload_picture(driver, image_path);
++        if (!image) {
++            return false;
++        }
++
++        if (!lit_image_path.empty()) {
++            lit_image = upload_picture(driver, lit_image_path);
++        }
++
++        LOG_INFO(FRONTEND_UI, "Skin {} ready, {} keys", path, keys.size());
++        return true;
++    }
++
++    const skin_key *skin_layout::key_at(const eka2l1::vec2 &point) const {
++        for (const skin_key &key : keys) {
++            const eka2l1::rect &area = key.area;
++            if ((point.x < area.top.x) || (point.y < area.top.y) || (point.x >= area.top.x + area.size.x) || (point.y >= area.top.y + area.size.y)) {
++                continue;
++            }
++
++            if (key.ellipse) {
++                const float rx = area.size.x / 2.0f;
++                const float ry = area.size.y / 2.0f;
++                const float dx = (point.x - area.top.x - rx) / rx;
++                const float dy = (point.y - area.top.y - ry) / ry;
++
++                if (dx * dx + dy * dy > 1.0f) {
++                    continue;
++                }
++            }
++
++            return &key;
++        }
++
++        return nullptr;
++    }
++}
+diff --git a/src/emu/qt/src/state.cpp b/src/emu/qt/src/state.cpp
+index b83000499..b9a375cc4 100644
+--- a/src/emu/qt/src/state.cpp
++++ b/src/emu/qt/src/state.cpp
+@@ -36,6 +36,7 @@
+ #include <services/window/window.h>
+ #include <services/init.h>
+ 
++#include <qt/mainwindow.h>
+ #include <qt/state.h>
+ #include <qt/utils.h>
+ 
+@@ -218,6 +219,15 @@ namespace eka2l1::desktop {
+         winserv = reinterpret_cast<eka2l1::window_server *>(the_sys->get_kernel_system()->get_by_name<eka2l1::service::server>(
+             eka2l1::get_winserv_name_by_epocver(symsys->get_symbian_version_use())));
+ 
++        // Keys of the skin light up while the device has them down
++        if (winserv) {
++            winserv->key_watcher = [this](const std::uint32_t code, const bool down) {
++                if (ui_main) {
++                    ui_main->skin_key_changed(code, down);
++                }
++            };
++        }
++
+         // Load patch libraries
+         if (stage_two_inited) {
+             symsys->initialize_user_parties();
+diff --git a/src/emu/qt/src/thread.cpp b/src/emu/qt/src/thread.cpp
+index 8144a6119..b87e36588 100644
+--- a/src/emu/qt/src/thread.cpp
++++ b/src/emu/qt/src/thread.cpp
+@@ -90,6 +90,26 @@ static void on_ui_window_mouse_evt(void *userdata, eka2l1::vec3 mouse_pos, int b
+         return;
+     }
+ 
++    // A touch on a key drawn on the skin presses that key
++    if (emu->ui_main) {
++        std::uint32_t skin_code = 0;
++        bool skin_down = false;
++
++        const int skin_result = emu->ui_main->skin_touch(mouse_pos, action, mouse_id, skin_code, skin_down);
++        if (skin_result != 0) {
++            if ((skin_result == 2) && emu->winserv) {
++                eka2l1::drivers::input_event key_evt;
++                key_evt.type_ = eka2l1::drivers::input_event_type::key_raw;
++                key_evt.key_.code_ = skin_code;
++                key_evt.key_.state_ = skin_down ? eka2l1::drivers::key_state::pressed : eka2l1::drivers::key_state::released;
++
++                emu->winserv->queue_input_from_driver(key_evt);
++            }
++
++            return;
++        }
++    }
++
+     const float scale = emu->symsys->get_config()->ui_scale;
+     auto mouse_evt = make_mouse_event_driver(mouse_pos_x / scale, mouse_pos_y / scale, mouse_pos_z / scale,
+         button, action, emu->ui_main->map_mouse_id_to_touch_index(mouse_id, (action == 2)));
+diff --git a/src/emu/services/include/services/window/window.h b/src/emu/services/include/services/window/window.h
+index 1576aae80..c66495d51 100644
+--- a/src/emu/services/include/services/window/window.h
++++ b/src/emu/services/include/services/window/window.h
+@@ -24,6 +24,7 @@
+ #include <atomic>
+ #include <cassert>
+ #include <cstdint>
++#include <functional>
+ #include <memory>
+ #include <optional>
+ #include <queue>
+@@ -367,6 +368,9 @@ namespace eka2l1 {
+             epoc::key_map key_input_map;
+         } input_mapping;
+ 
++        // Called with the scan code of every key the device gets, and whether it went down
++        std::function<void(std::uint32_t, bool)> key_watcher;
++
+         void delete_key_mapping(const std::uint32_t target);
+ 
+     private:
+diff --git a/src/emu/services/src/window/window.cpp b/src/emu/services/src/window/window.cpp
+index eb5a4c7bc..206a2643c 100644
+--- a/src/emu/services/src/window/window.cpp
++++ b/src/emu/services/src/window/window.cpp
+@@ -2035,6 +2035,12 @@ namespace eka2l1 {
+         handle_input_from_driver(evt);
+     }
+ 
++    static void tell_key_watcher(const std::function<void(std::uint32_t, bool)> &watcher, const epoc::event &guest_event) {
++        if (watcher) {
++            watcher(static_cast<std::uint32_t>(guest_event.key_evt_.scancode), guest_event.type == epoc::event_code::key_down);
++        }
++    }
++
+     void window_server::handle_input_from_driver(drivers::input_event input_event) {
+         epoc::event guest_event;
+ 
+@@ -2067,7 +2073,7 @@ namespace eka2l1 {
+                     guest_event.key_evt_.scancode = uiq_2_scancode(guest_event.key_evt_.scancode);
+                 }
+ 
+-                key_shipper.add_new_event(guest_event);
++                key_shipper.add_new_event(guest_event); tell_key_watcher(key_watcher, guest_event);
+                 key_shipper.start_shipping();
+ 
+                 shipped = true;
+@@ -2080,7 +2086,7 @@ namespace eka2l1 {
+                 if (is_uiq_2_device()) {
+                     guest_event.key_evt_.scancode = uiq_2_scancode(guest_event.key_evt_.scancode);
+                 }
+-                key_shipper.add_new_event(guest_event);
++                key_shipper.add_new_event(guest_event); tell_key_watcher(key_watcher, guest_event);
+                 key_shipper.start_shipping();
+ 
+                 shipped = true;
+@@ -2142,7 +2148,7 @@ namespace eka2l1 {
+                     }
+                 } else {
+                     if (input_event.key_.state_ != drivers::key_state::repeat) {
+-                        key_shipper.add_new_event(guest_event);
++                        key_shipper.add_new_event(guest_event); tell_key_watcher(key_watcher, guest_event);
+                         key_shipper.start_shipping();
+                     }
+                 }
