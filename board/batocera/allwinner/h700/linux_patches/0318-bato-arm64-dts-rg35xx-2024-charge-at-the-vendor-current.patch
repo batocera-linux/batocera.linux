@@ -1,0 +1,20 @@
+From: Daniel Martin <dmanlfc@gmail.com>
+Subject: [PATCH] arm64: dts: allwinner: rg35xx-2024: charge at the vendor
+ current
+
+The vendor firmware charges at 1500mA, ours at 1024mA, which takes about
+five hours from empty. The AXP717 programs 1472mA, its nearest 64mA step.
+---
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h700-anbernic-rg35xx-2024.dts
+@@ -37,7 +37,8 @@ battery: battery {
+ 		compatible = "simple-battery";
+ 		/* batocera - 128mA end of charge as in vendor firmware */
+ 		charge-term-current-microamp = <128000>;
+-		constant-charge-current-max-microamp = <1024000>;
++		/* batocera - 1500mA as in vendor firmware */
++		constant-charge-current-max-microamp = <1500000>;
+ 		/* batocera - 4.1V as in vendor firmware, which the gauge model assumes */
+ 		voltage-max-design-microvolt = <4100000>;
+ 	};
