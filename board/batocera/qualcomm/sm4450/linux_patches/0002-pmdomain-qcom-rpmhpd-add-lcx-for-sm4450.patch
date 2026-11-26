@@ -1,10 +1,11 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] pmdomain: qcom: rpmhpd: add LCX to SM4450
 
-
+diff --git a/drivers/pmdomain/qcom/rpmhpd.c b/drivers/pmdomain/qcom/rpmhpd.c
+index 907432759..54a92bf18 100644
 --- a/drivers/pmdomain/qcom/rpmhpd.c
 +++ b/drivers/pmdomain/qcom/rpmhpd.c
-@@ -452,6 +452,7 @@
+@@ -444,6 +444,7 @@ static struct rpmhpd *sm4450_rpmhpds[] = {
  	[RPMHPD_CX] = &cx,
  	[RPMHPD_CX_AO] = &cx_ao,
  	[RPMHPD_EBI] = &ebi,

@@ -4,9 +4,10 @@ Subject: [PATCH] regulator: qcom-rpmh: add PBS trigger resource type
 Some AOP firmwares sequence rail power through dedicated PBS trigger
 resources. Identical to downstream.
 
---- a/drivers/regulator/qcom-rpmh-regulator.c	2026-08-28 19:23:14.336211582 -0700
-+++ b/drivers/regulator/qcom-rpmh-regulator.c	2026-08-28 19:45:28.522913918 -0700
-@@ -26,10 +26,14 @@
+diff --git a/drivers/regulator/qcom-rpmh-regulator.c b/drivers/regulator/qcom-rpmh-regulator.c
+--- a/drivers/regulator/qcom-rpmh-regulator.c
++++ b/drivers/regulator/qcom-rpmh-regulator.c
+@@ -27,10 +27,14 @@
   *		and mode of LDO, SMPS, and BOB type PMIC regulators.
   * @XOB:	RPMh XOB accelerator which supports voting on the enable state
   *		of PMIC regulators.
@@ -21,15 +22,15 @@ resources. Identical to downstream.
  };
  
  /**
-@@ -62,6 +66,7 @@
+@@ -66,6 +70,7 @@
  
- #define RPMH_REGULATOR_REG_VRM_VOLTAGE		0x0
  #define RPMH_REGULATOR_REG_ENABLE		0x4
+ #define RPMH_REGULATOR_ENABLE_MASK		BIT(0)
 +#define RPMH_REGULATOR_REG_PBS_ENABLE		0x0
- #define RPMH_REGULATOR_REG_VRM_MODE		0x8
  
- #define PMIC4_LDO_MODE_RETENTION		4
-@@ -183,6 +188,7 @@
+ #define RPMH_REGULATOR_REG_VRM_MODE		0x8
+ #define RPMH_REGULATOR_MODE_MASK		GENMASK(2, 0)
+@@ -191,6 +196,7 @@
  	int				index;
  	const char			*supply_name;
  	const struct rpmh_vreg_hw_data	*hw_data;
@@ -37,7 +38,7 @@ resources. Identical to downstream.
  };
  
  /**
-@@ -265,7 +271,8 @@
+@@ -298,7 +304,8 @@
  {
  	struct rpmh_vreg *vreg = rdev_get_drvdata(rdev);
  	struct tcs_cmd cmd = {
@@ -47,7 +48,7 @@ resources. Identical to downstream.
  		.data = enable,
  	};
  	int ret;
-@@ -468,7 +475,10 @@
+@@ -517,7 +524,10 @@
  		return -EINVAL;
  	}
  
@@ -59,7 +60,7 @@ resources. Identical to downstream.
  		rsc_name = vreg_rsc_name_lookup[rpmh_data->vreg_hw_type].rsc_name_fmt;
  		scnprintf(rpmh_resource_name, sizeof(rpmh_resource_name),
  			  rsc_name, rpmh_data->index, pmic_id);
-@@ -512,7 +522,7 @@
+@@ -561,7 +571,7 @@
  	if (!init_data)
  		return -ENOMEM;
  
@@ -68,7 +69,18 @@ resources. Identical to downstream.
  	    init_data->constraints.min_uV &&
  	    init_data->constraints.min_uV == init_data->constraints.max_uV) {
  		vreg->rdesc.fixed_uV = init_data->constraints.min_uV;
-@@ -777,6 +787,12 @@
+@@ -595,6 +605,10 @@
+ 	int ret, pmic_mode, mode;
+ 	int sts;
+ 
++	/* PBS triggers have no VRM enable or mode registers to read back. */
++	if (vreg->hw_data->regulator_type == PBS)
++		return 0;
++
+ 	ret = rpmh_read(vreg->dev, &cmd);
+ 	if (ret) {
+ 		dev_err(vreg->dev, "failed to read ENABLE status ret = %d\n", ret);
+@@ -894,6 +908,12 @@
  	/* LVS hardware does not support voltage or mode configuration. */
  };
  

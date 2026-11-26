@@ -18,12 +18,12 @@ control as PlaybackVolume in an ALSA UCM profile.
 
 Adapted for aw88166 from Val Packett's aw88261 series.
 ---
- sound/soc/codecs/aw88166.c | 43 +++++++++++++++++---------------------
- sound/soc/codecs/aw88166.h |  4 ++--
- 2 files changed, 21 insertions(+), 26 deletions(-)
+
+diff --git a/sound/soc/codecs/aw88166.c b/sound/soc/codecs/aw88166.c
+index 48bab4996..2b4ab9c15 100644
 --- a/sound/soc/codecs/aw88166.c
 +++ b/sound/soc/codecs/aw88166.c
-@@ -15,6 +15,7 @@
+@@ -16,6 +16,7 @@
  #include <linux/regmap.h>
  #include <sound/soc.h>
  #include <sound/pcm_params.h>
@@ -31,7 +31,7 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  #include "aw88166.h"
  #include "aw88395/aw88395_device.h"
  
-@@ -613,24 +614,10 @@
+@@ -615,24 +616,10 @@ static int aw_dev_dsp_check(struct aw_device *aw_dev)
  
  static int aw_dev_set_volume(struct aw_device *aw_dev, unsigned int value)
  {
@@ -59,7 +59,7 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  }
  
  static void aw88166_dev_mute(struct aw_device *aw_dev, bool is_mute)
-@@ -1434,7 +1421,8 @@
+@@ -1447,7 +1434,8 @@ static int aw88166_volume_get(struct snd_kcontrol *kcontrol,
  	struct aw88166 *aw88166 = snd_soc_component_get_drvdata(codec);
  	struct aw_volume_desc *vol_desc = &aw88166->aw_pa->volume_desc;
  
@@ -69,7 +69,7 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  
  	return 0;
  }
-@@ -1447,12 +1435,13 @@
+@@ -1460,12 +1448,13 @@ static int aw88166_volume_set(struct snd_kcontrol *kcontrol,
  	struct aw_volume_desc *vol_desc = &aw88166->aw_pa->volume_desc;
  	struct soc_mixer_control *mc =
  		(struct soc_mixer_control *)kcontrol->private_value;
@@ -85,7 +85,7 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  	if (vol_desc->ctl_volume != value) {
  		vol_desc->ctl_volume = value;
  		aw_dev_set_volume(aw88166->aw_pa, vol_desc->ctl_volume);
-@@ -1579,10 +1568,16 @@
+@@ -1590,10 +1579,16 @@ static int aw88166_request_firmware_file(struct aw88166 *aw88166)
  	return ret;
  }
  
@@ -105,7 +105,7 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  	SOC_SINGLE_EXT("Calib", 0, 0, AW88166_CALI_RE_MAX, 0,
  		aw88166_re_get, aw88166_re_set),
  	AW88166_PROFILE_EXT("AW88166 Profile Set", aw88166_profile_info,
-@@ -1701,7 +1696,7 @@
+@@ -1721,7 +1716,7 @@ static int aw88166_init(struct aw88166 *aw88166, struct i2c_client *i2c, struct
  	aw_dev->channel = AW88166_DEV_DEFAULT_CH;
  	aw_dev->fw_status = AW88166_DEV_FW_FAILED;
  
@@ -114,6 +114,8 @@ Adapted for aw88166 from Val Packett's aw88261 series.
  
  	aw88166_parse_channel_dt(aw88166);
  
+diff --git a/sound/soc/codecs/aw88166.h b/sound/soc/codecs/aw88166.h
+index 846413db8..41fd8adba 100644
 --- a/sound/soc/codecs/aw88166.h
 +++ b/sound/soc/codecs/aw88166.h
 @@ -539,8 +539,8 @@

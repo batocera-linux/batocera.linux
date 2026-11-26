@@ -1,9 +1,12 @@
 Subject: [PATCH] Bluetooth: hci_qca: drop baudrate-change vendor event for WCN3950
 
 ---
+
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index e22e2269e..38d71d694 100644
 --- a/drivers/bluetooth/hci_qca.c
 +++ b/drivers/bluetooth/hci_qca.c
-@@ -1521,6 +1521,7 @@
+@@ -1521,6 +1521,7 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
  		}
  
  		switch (soc_type) {
@@ -11,7 +14,7 @@ Subject: [PATCH] Bluetooth: hci_qca: drop baudrate-change vendor event for WCN39
  		case QCA_WCN3990:
  			reinit_completion(&qca->drop_ev_comp);
  			set_bit(QCA_DROP_VENDOR_EVENT, &qca->flags);
-@@ -1556,6 +1557,7 @@
+@@ -1556,6 +1557,7 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
  		}
  
  		switch (soc_type) {

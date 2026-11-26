@@ -4,9 +4,11 @@ Subject: [PATCH] clk: qcom: dispcc-sm4450: Fix disp_cc_mdss_mdp_clk_src ops
 Same fix as commit 73df1b79026d ("clk: qcom: dispcc-sm8450: Fix
 disp_cc_mdss_mdp_clk_src ops") by Esteban Urrutia.
 
+diff --git a/drivers/clk/qcom/dispcc-sm4450.c b/drivers/clk/qcom/dispcc-sm4450.c
+index 4a4811db5..f71ff3286 100644
 --- a/drivers/clk/qcom/dispcc-sm4450.c
 +++ b/drivers/clk/qcom/dispcc-sm4450.c
-@@ -234,6 +234,6 @@
+@@ -234,7 +234,7 @@ static struct clk_rcg2 disp_cc_mdss_mdp_clk_src = {
  		.parent_data = disp_cc_parent_data_1,
  		.num_parents = ARRAY_SIZE(disp_cc_parent_data_1),
  		.flags = CLK_SET_RATE_PARENT,
@@ -14,3 +16,4 @@ disp_cc_mdss_mdp_clk_src ops") by Esteban Urrutia.
 +		.ops = &clk_rcg2_shared_no_init_park_ops,
  	},
  };
+ 

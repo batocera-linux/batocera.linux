@@ -10,10 +10,13 @@ use that here too. The only difference was an extra 0x20 entry at the
 head of the DP AUX cfg1 retraining table.
 
 ---
+
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+index c39ced168..b5ea5545b 100644
 --- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
 +++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-@@ -1063,6 +1063,65 @@
- 	QMP_PHY_INIT_CFG(QPHY_V5_PCS_USB3_RXEQTRAINING_DFE_TIME_S2, 0x07),
+@@ -1147,6 +1147,65 @@ static const struct qmp_phy_init_tbl sm8475_usb3_pcs_usb_tbl[] = {
+ 	QMP_PHY_INIT_CFG(QPHY_V6_PCS_USB3_RCVR_DTCT_DLY_U3_H, 0x00),
  };
  
 +/* SM4450: sm8350 tables with stock-firmware tuning deltas */
@@ -78,8 +81,8 @@ head of the DP AUX cfg1 retraining table.
  static const struct qmp_phy_init_tbl sm8550_usb3_serdes_tbl[] = {
  	QMP_PHY_INIT_CFG(QSERDES_V6_COM_SSC_STEP_SIZE1_MODE1, 0xc0),
  	QMP_PHY_INIT_CFG(QSERDES_V6_COM_SSC_STEP_SIZE2_MODE1, 0x01),
-@@ -2845,6 +2904,54 @@
- 	.has_pwrdn_delay	= true,
+@@ -3214,6 +3273,54 @@ static const struct qmp_phy_cfg sm8475_usb3dpphy_cfg = {
+ 	.num_vregs		= ARRAY_SIZE(qmp_phy_vreg_l),
  };
  
 +static const struct qmp_phy_cfg sm4450_usb3dpphy_cfg = {
@@ -133,14 +136,14 @@ head of the DP AUX cfg1 retraining table.
  static const struct qmp_phy_cfg sm8550_usb3dpphy_cfg = {
  	.offsets		= &qmp_combo_offsets_v3,
  
-@@ -5025,6 +5132,10 @@
+@@ -5395,6 +5502,10 @@ static const struct of_device_id qmp_combo_of_match_table[] = {
+ 		.compatible = "qcom,sm8250-qmp-usb3-dp-phy",
  		.data = &sm8250_usb3dpphy_cfg,
  	},
- 	{
++	{
 +		.compatible = "qcom,sm4450-qmp-usb3-dp-phy",
 +		.data = &sm4450_usb3dpphy_cfg,
 +	},
-+	{
+ 	{
  		.compatible = "qcom,sm8350-qmp-usb3-dp-phy",
  		.data = &sm8350_usb3dpphy_cfg,
- 	},

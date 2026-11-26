@@ -3,9 +3,11 @@ Subject: [PATCH] regulator: qcom-rpmh: add PM6450 regulators
 
 Confirmed required on hardware Retroid Pocket Classic
 
+diff --git a/drivers/regulator/qcom-rpmh-regulator.c b/drivers/regulator/qcom-rpmh-regulator.c
+index 25c14de3c..707f2f4aa 100644
 --- a/drivers/regulator/qcom-rpmh-regulator.c
 +++ b/drivers/regulator/qcom-rpmh-regulator.c
-@@ -1478,6 +1478,45 @@
+@@ -1616,6 +1616,45 @@ static const struct rpmh_vreg_init_data pm6350_vreg_data[] = {
  	RPMH_VREG("ldo22",  LDO,  22, &pmic5_nldo,      NULL),
  };
  
@@ -51,14 +53,14 @@ Confirmed required on hardware Retroid Pocket Classic
  static const struct rpmh_vreg_init_data pmcx0102_vreg_data[] = {
  	RPMH_VREG("smps1",   SMPS, 1,    &pmic5_ftsmps530, "vdd-s1"),
  	RPMH_VREG("smps2",   SMPS, 2,    &pmic5_ftsmps530, "vdd-s2"),
-@@ -1898,6 +1933,10 @@
+@@ -2049,6 +2088,10 @@ static const struct of_device_id __maybe_unused rpmh_regulator_match_table[] = {
+ 		.compatible = "qcom,pm6350-rpmh-regulators",
  		.data = pm6350_vreg_data,
  	},
- 	{
++	{
 +		.compatible = "qcom,pm6450-rpmh-regulators",
 +		.data = pm6450_vreg_data,
 +	},
-+	{
+ 	{
  		.compatible = "qcom,pmc8180-rpmh-regulators",
  		.data = pm8150_vreg_data,
- 	},

@@ -1,9 +1,11 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] clk: qcom: gpucc-sm4450: add hlos1_vote_gpu_smmu clock
 
+diff --git a/drivers/clk/qcom/gpucc-sm4450.c b/drivers/clk/qcom/gpucc-sm4450.c
+index 808b1eaa5..5ca834abc 100644
 --- a/drivers/clk/qcom/gpucc-sm4450.c
 +++ b/drivers/clk/qcom/gpucc-sm4450.c
-@@ -484,6 +484,19 @@
+@@ -484,6 +484,19 @@ static struct clk_branch gpu_cc_freq_measure_clk = {
  	},
  };
  
@@ -23,7 +25,7 @@ Subject: [PATCH] clk: qcom: gpucc-sm4450: add hlos1_vote_gpu_smmu clock
  static struct clk_branch gpu_cc_gx_cxo_clk = {
  	.halt_reg = 0x90b8,
  	.halt_check = BRANCH_HALT,
-@@ -717,6 +730,7 @@
+@@ -717,6 +730,7 @@ static struct clk_regmap *gpu_cc_sm4450_clocks[] = {
  	[GPU_CC_HUB_AON_CLK] = &gpu_cc_hub_aon_clk.clkr,
  	[GPU_CC_HUB_CLK_SRC] = &gpu_cc_hub_clk_src.clkr,
  	[GPU_CC_HUB_CX_INT_CLK] = &gpu_cc_hub_cx_int_clk.clkr,
@@ -31,6 +33,8 @@ Subject: [PATCH] clk: qcom: gpucc-sm4450: add hlos1_vote_gpu_smmu clock
  	[GPU_CC_HUB_CX_INT_DIV_CLK_SRC] = &gpu_cc_hub_cx_int_div_clk_src.clkr,
  	[GPU_CC_MEMNOC_GFX_CLK] = &gpu_cc_memnoc_gfx_clk.clkr,
  	[GPU_CC_MND1X_0_GFX3D_CLK] = &gpu_cc_mnd1x_0_gfx3d_clk.clkr,
+diff --git a/include/dt-bindings/clock/qcom,sm4450-gpucc.h b/include/dt-bindings/clock/qcom,sm4450-gpucc.h
+index 304f83e5f..dab1ff412 100644
 --- a/include/dt-bindings/clock/qcom,sm4450-gpucc.h
 +++ b/include/dt-bindings/clock/qcom,sm4450-gpucc.h
 @@ -41,6 +41,7 @@

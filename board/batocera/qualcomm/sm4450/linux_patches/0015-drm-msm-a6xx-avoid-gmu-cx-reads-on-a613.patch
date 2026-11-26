@@ -1,16 +1,25 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] drm/msm/a6xx: avoid SPTPRAC status read on GPUs without SPTPRAC
 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
+index 6d49c51df..0ae9367b0 100644
 --- a/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
 +++ b/drivers/gpu/drm/msm/adreno/a6xx_gmu.c
-@@ -80,2 +80,3 @@
+@@ -78,12 +78,17 @@ static irqreturn_t a6xx_hfi_irq(int irq, void *data)
+ 
+ bool a6xx_gmu_sptprac_is_on(struct a6xx_gmu *gmu)
  {
 +	struct a6xx_gpu *a6xx_gpu = container_of(gmu, struct a6xx_gpu, gmu);
  	u32 val;
-@@ -86,2 +87,6 @@
-
+ 
+ 	/* This can be called from gpu state code so make sure GMU is valid */
+ 	if (!gmu->initialized)
+ 		return false;
+ 
 +	/* Only A630 and the A615 family have SPTPRAC */
 +	if (!adreno_is_a630(&a6xx_gpu->base) && !adreno_is_a615_family(&a6xx_gpu->base))
 +		return true;
 +
  	val = gmu_read(gmu, REG_A6XX_GMU_SPTPRAC_PWR_CLK_STATUS);
+ 
+ 	return !(val &

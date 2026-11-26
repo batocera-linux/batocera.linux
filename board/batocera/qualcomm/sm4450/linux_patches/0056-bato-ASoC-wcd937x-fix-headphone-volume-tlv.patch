@@ -14,9 +14,11 @@ the Anbernic RG 55G1 the sink's 0 dB "base volume" lands at 95% (register
 the top 5% of the slider, with everything below it needlessly attenuated.
 Describe the range the hardware actually has.
 
+diff --git a/sound/soc/codecs/wcd937x.c b/sound/soc/codecs/wcd937x.c
+index 0dd05604f..c110f4373 100644
 --- a/sound/soc/codecs/wcd937x.c
 +++ b/sound/soc/codecs/wcd937x.c
-@@ -113,7 +113,7 @@
+@@ -114,7 +114,7 @@ static const char * const wcd937x_supplies[] = {
  };
  
  static const SNDRV_CTL_TLVD_DECLARE_DB_MINMAX(ear_pa_gain, 600, -1800);

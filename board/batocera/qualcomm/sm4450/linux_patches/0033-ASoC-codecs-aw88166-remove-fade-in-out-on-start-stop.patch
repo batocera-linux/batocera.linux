@@ -7,12 +7,9 @@ the kernel at all. Remove it to simplify the driver.
 
 Adapted for aw88166 from Val Packett's aw88261 series.
 ---
- sound/soc/codecs/aw88166.c | 157 +------------------------------------
- sound/soc/codecs/aw88166.h |   2 -
- 2 files changed, 2 insertions(+), 157 deletions(-)
 
 diff --git a/sound/soc/codecs/aw88166.c b/sound/soc/codecs/aw88166.c
-index e08a443..af0b00f 100644
+index 39622a824..48bab4996 100644
 --- a/sound/soc/codecs/aw88166.c
 +++ b/sound/soc/codecs/aw88166.c
 @@ -635,59 +635,16 @@ static int aw_dev_set_volume(struct aw_device *aw_dev, unsigned int value)
@@ -77,7 +74,7 @@ index e08a443..af0b00f 100644
  	}
  }
  
-@@ -1417,75 +1374,6 @@ static struct snd_soc_dai_driver aw88166_dai[] = {
+@@ -1399,75 +1356,6 @@ static struct snd_soc_dai_driver aw88166_dai[] = {
  	},
  };
  
@@ -153,7 +150,7 @@ index e08a443..af0b00f 100644
  static int aw88166_dev_set_profile_index(struct aw_device *aw_dev, int index)
  {
  	/* check the index whether is valid */
-@@ -1609,38 +1497,6 @@ static int aw88166_volume_set(struct snd_kcontrol *kcontrol,
+@@ -1588,38 +1476,6 @@ static int aw88166_volume_set(struct snd_kcontrol *kcontrol,
  	return 0;
  }
  
@@ -192,7 +189,7 @@ index e08a443..af0b00f 100644
  static int aw88166_re_get(struct snd_kcontrol *kcontrol,
  				struct snd_ctl_elem_value *ucontrol)
  {
-@@ -1685,8 +1541,6 @@ static int aw88166_dev_init(struct aw88166 *aw88166, struct aw_container *aw_cfg
+@@ -1664,8 +1520,6 @@ static int aw88166_dev_init(struct aw88166 *aw88166, struct aw_container *aw_cfg
  		dev_err(aw_dev->dev, "aw_dev acf parse failed\n");
  		return -EINVAL;
  	}
@@ -201,7 +198,7 @@ index e08a443..af0b00f 100644
  	aw_dev->prof_cur = aw_dev->prof_info.prof_desc[0].id;
  	aw_dev->prof_index = aw_dev->prof_info.prof_desc[0].id;
  
-@@ -1763,12 +1617,6 @@ static const struct snd_kcontrol_new aw88166_controls[] = {
+@@ -1740,12 +1594,6 @@ static const struct snd_kcontrol_new aw88166_controls[] = {
  	SOC_SINGLE_EXT("PCM Playback Volume", AW88166_SYSCTRL2_REG,
  		6, AW88166_MUTE_VOL, 0, aw88166_volume_get,
  		aw88166_volume_set),
@@ -214,7 +211,7 @@ index e08a443..af0b00f 100644
  	SOC_SINGLE_EXT("Calib", 0, 0, AW88166_CALI_RE_MAX, 0,
  		aw88166_re_get, aw88166_re_set),
  	AW88166_PROFILE_EXT("AW88166 Profile Set", aw88166_profile_info,
-@@ -1897,7 +1745,6 @@ static int aw88166_init(struct aw88166 *aw88166, struct i2c_client *i2c, struct
+@@ -1873,7 +1721,6 @@ static int aw88166_init(struct aw88166 *aw88166, struct i2c_client *i2c, struct
  	aw_dev->channel = AW88166_DEV_DEFAULT_CH;
  	aw_dev->fw_status = AW88166_DEV_FW_FAILED;
  
@@ -223,7 +220,7 @@ index e08a443..af0b00f 100644
  
  	aw88166_parse_channel_dt(aw88166);
 diff --git a/sound/soc/codecs/aw88166.h b/sound/soc/codecs/aw88166.h
-index 38087ad..846413d 100644
+index 38087ad50..846413db8 100644
 --- a/sound/soc/codecs/aw88166.h
 +++ b/sound/soc/codecs/aw88166.h
 @@ -557,8 +557,6 @@

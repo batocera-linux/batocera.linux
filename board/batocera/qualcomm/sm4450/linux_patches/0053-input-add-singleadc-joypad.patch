@@ -20,9 +20,11 @@ present that path is unused; it is kept verbatim rather than removed so
 this stays a faithful port, and is worth deleting once the SPI path is
 confirmed on hardware.
 
---- a/drivers/input/joystick/Kconfig	2026-09-06 19:14:38.430615078 +0200
-+++ b/drivers/input/joystick/Kconfig	2026-09-06 19:16:37.537628969 +0200
-@@ -400,6 +400,19 @@
+diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
+index 0da3c0f44..0e46401f4 100644
+--- a/drivers/input/joystick/Kconfig
++++ b/drivers/input/joystick/Kconfig
+@@ -404,6 +404,19 @@ config JOYSTICK_N64
  	  Say Y here if you want enable support for the four
  	  built-in controller ports on the Nintendo 64 console.
  
@@ -42,18 +44,23 @@ confirmed on hardware.
  config JOYSTICK_SENSEHAT
  	tristate "Raspberry Pi Sense HAT joystick"
  	depends on INPUT && I2C
---- a/drivers/input/joystick/Makefile	2026-09-06 19:14:38.431476100 +0200
-+++ b/drivers/input/joystick/Makefile	2026-09-06 19:16:37.537657632 +0200
-@@ -29,6 +29,7 @@
- obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
+diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
+index 3de503e29..8cfc304d4 100644
+--- a/drivers/input/joystick/Makefile
++++ b/drivers/input/joystick/Makefile
+@@ -30,6 +30,7 @@ obj-$(CONFIG_JOYSTICK_PXRC)		+= pxrc.o
  obj-$(CONFIG_JOYSTICK_QWIIC)		+= qwiic-joystick.o
+ obj-$(CONFIG_JOYSTICK_RSINPUT)		+= rsinput.o
  obj-$(CONFIG_JOYSTICK_SEESAW)		+= adafruit-seesaw.o
 +obj-$(CONFIG_JOYSTICK_SINGLEADC_JOYPAD)	+= singleadc-joypad.o
  obj-$(CONFIG_JOYSTICK_SENSEHAT)	+= sensehat-joystick.o
  obj-$(CONFIG_JOYSTICK_SIDEWINDER)	+= sidewinder.o
  obj-$(CONFIG_JOYSTICK_SPACEBALL)	+= spaceball.o
---- a/drivers/input/joystick/singleadc-joypad.c	2026-09-06 11:05:13.957929782 +0200
-+++ b/drivers/input/joystick/singleadc-joypad.c	2026-09-06 19:16:37.531116752 +0200
+diff --git a/drivers/input/joystick/singleadc-joypad.c b/drivers/input/joystick/singleadc-joypad.c
+new file mode 100644
+index 000000000..69e026110
+--- /dev/null
++++ b/drivers/input/joystick/singleadc-joypad.c
 @@ -0,0 +1,1458 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*

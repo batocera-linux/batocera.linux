@@ -2,12 +2,12 @@ From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] iommu/arm-smmu-qcom: add SM4450 support
 
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 +++
- 1 file changed, 3 insertions(+)
 
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 795e8ec7e..c598d3a84 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -55,6 +55,8 @@
+@@ -55,6 +55,8 @@ static const struct of_device_id qcom_smmu_actlr_client_of_match[] = {
  			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
  	{ .compatible = "qcom,sc8280xp-mdss",
  			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
@@ -16,7 +16,7 @@ Subject: [PATCH] iommu/arm-smmu-qcom: add SM4450 support
  	{ .compatible = "qcom,sm6115-mdss",
  			.data = (const void *) (PREFETCH_SHALLOW | CPRE | CMTLB) },
  	{ .compatible = "qcom,sm6125-mdss",
-@@ -420,6 +422,7 @@
+@@ -420,6 +422,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
  	{ .compatible = "qcom,sdm670-mdss" },
  	{ .compatible = "qcom,sdm845-mdss" },
  	{ .compatible = "qcom,sdm845-mss-pil" },
