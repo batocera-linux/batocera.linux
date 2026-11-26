@@ -10,16 +10,15 @@ Add MI2S DAI cases so codecs on MI2S links get their jack set up.
 Based on upstream patch by Hongyang Zhao:
 https://lore.kernel.org/linux-arm-msm/20260305-rubikpi-next-20260304-v1-4-327595a4528a@thundersoft.com/
 ---
- sound/soc/qcom/common.c | 2 ++
- 1 file changed, 2 insertions(+)
 
 diff --git a/sound/soc/qcom/common.c b/sound/soc/qcom/common.c
+index d9f256d51..d23925f76 100644
 --- a/sound/soc/qcom/common.c
 +++ b/sound/soc/qcom/common.c
-@@ -226,6 +226,8 @@
- 	}
-
+@@ -371,6 +371,8 @@ int qcom_snd_wcd_jack_setup(struct snd_soc_pcm_runtime *rtd,
+ 
  	switch (cpu_dai->id) {
+ 	case LPI_MI2S_RX_0:
 +	case PRIMARY_MI2S_RX ... QUATERNARY_MI2S_TX:
 +	case QUINARY_MI2S_RX ... QUINARY_MI2S_TX:
  	case TX_CODEC_DMA_TX_0:

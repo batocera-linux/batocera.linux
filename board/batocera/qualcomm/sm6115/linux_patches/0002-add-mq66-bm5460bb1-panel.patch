@@ -4,16 +4,12 @@ Date: Sun, 26 Apr 2026 19:58:33 +0200
 Subject: [PATCH] add mq66 bm5460bb1 panel
 
 ---
- drivers/gpu/drm/panel/Kconfig           |  10 +
- drivers/gpu/drm/panel/Makefile          |   1 +
- drivers/gpu/drm/panel/panel-bm5460bb1.c | 421 ++++++++++++++++++++++++++++++++
- 3 files changed, 432 insertions(+)
 
 diff --git a/drivers/gpu/drm/panel/Kconfig b/drivers/gpu/drm/panel/Kconfig
-index 9a2c8dc13..18298ab77 100644
+index bfae99b28..b2383f09c 100644
 --- a/drivers/gpu/drm/panel/Kconfig
 +++ b/drivers/gpu/drm/panel/Kconfig
-@@ -501,6 +501,16 @@ config DRM_PANEL_MANGMI_HX83112A
+@@ -572,6 +572,16 @@ config DRM_PANEL_MANGMI_HX83112A
  	  Say Y here if you want to enable support for Himax HX83112A-based
  	  display panels, such as the one found in the Fairphone 4 smartphone.
  
@@ -31,10 +27,10 @@ index 9a2c8dc13..18298ab77 100644
  	tristate "Mantix MLAF057WE51-X MIPI-DSI LCD panel"
  	depends on OF
 diff --git a/drivers/gpu/drm/panel/Makefile b/drivers/gpu/drm/panel/Makefile
-index 9c44a9212..f27f9c705 100644
+index 1cd30b195..c66ad861e 100644
 --- a/drivers/gpu/drm/panel/Makefile
 +++ b/drivers/gpu/drm/panel/Makefile
-@@ -50,6 +50,7 @@ obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
+@@ -56,6 +56,7 @@ obj-$(CONFIG_DRM_PANEL_LG_SW43408) += panel-lg-sw43408.o
  obj-$(CONFIG_DRM_PANEL_LXD_M9189A) += panel-lxd-m9189a.o
  obj-$(CONFIG_DRM_PANEL_MAGNACHIP_D53E6EA8966) += panel-magnachip-d53e6ea8966.o
  obj-$(CONFIG_DRM_PANEL_MANGMI_HX83112A) += panel-hx83112a.o
@@ -44,7 +40,7 @@ index 9c44a9212..f27f9c705 100644
  obj-$(CONFIG_DRM_PANEL_NEWVISION_NV3051D) += panel-newvision-nv3051d.o
 diff --git a/drivers/gpu/drm/panel/panel-bm5460bb1.c b/drivers/gpu/drm/panel/panel-bm5460bb1.c
 new file mode 100644
-index 000000000..061518d3a
+index 000000000..ec7a781e8
 --- /dev/null
 +++ b/drivers/gpu/drm/panel/panel-bm5460bb1.c
 @@ -0,0 +1,459 @@
@@ -63,6 +59,7 @@ index 000000000..061518d3a
 +
 +#include <drm/drm_mipi_dsi.h>
 +#include <drm/drm_modes.h>
++#include <drm/drm_of.h>
 +#include <drm/drm_panel.h>
 +#include <drm/drm_probe_helper.h>
 +
@@ -453,7 +450,7 @@ index 000000000..061518d3a
 +	dsi->mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +
 +	/* Orientation */
-+	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
++	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
 +	if (ret < 0) {
 +		dev_err(dev, "failed to get orientation %d\n", ret);
 +		return ret;
@@ -506,4 +503,3 @@ index 000000000..061518d3a
 +
 +MODULE_AUTHOR("linux-mdss-dsi-panel-driver-generator <fix@me>"); // FIXME
 +MODULE_DESCRIPTION("DRM driver for bm5460bb1 video mode dsi truly panel");
-+MODULE_LICENSE("GPL");

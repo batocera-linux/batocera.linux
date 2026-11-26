@@ -7,9 +7,11 @@ before starting the vdev. mac80211 assigns the channel context (vdev
 start) before adding the AP station (peer create), so on WCN3990 defer
 the station vdev start until the peer has been created.
 
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index dfee43261..4ee9c8233 100644
 --- a/drivers/net/wireless/ath/ath10k/core.h
 +++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -592,6 +592,8 @@
+@@ -592,6 +592,8 @@ struct ath10k_vif {
  
  	bool is_started;
  	bool is_up;
@@ -18,9 +20,11 @@ the station vdev start until the peer has been created.
  	bool spectral_enabled;
  	bool ps;
  	u32 aid;
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index b4c7b421e..911f2b46b 100644
 --- a/drivers/net/wireless/ath/ath10k/mac.c
 +++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -7684,6 +7684,19 @@
+@@ -7684,6 +7684,19 @@ static int ath10k_sta_state(struct ieee80211_hw *hw,
  
  		spin_unlock_bh(&ar->data_lock);
  
@@ -40,7 +44,7 @@ the station vdev start until the peer has been created.
  		if (!sta->tdls)
  			goto exit;
  
-@@ -9089,12 +9102,22 @@
+@@ -9089,12 +9102,22 @@ ath10k_mac_op_assign_vif_chanctx(struct ieee80211_hw *hw,
  		return -EBUSY;
  	}
  
@@ -69,7 +73,7 @@ the station vdev start until the peer has been created.
  	}
  
  	arvif->is_started = true;
-@@ -9139,7 +9162,10 @@
+@@ -9139,7 +9162,10 @@ ath10k_mac_op_assign_vif_chanctx(struct ieee80211_hw *hw,
  	return 0;
  
  err_stop:
@@ -81,7 +85,7 @@ the station vdev start until the peer has been created.
  	arvif->is_started = false;
  	ath10k_mac_vif_setup_ps(arvif);
  
-@@ -9177,10 +9203,14 @@
+@@ -9177,10 +9203,14 @@ ath10k_mac_op_unassign_vif_chanctx(struct ieee80211_hw *hw,
  		arvif->is_up = false;
  	}
  

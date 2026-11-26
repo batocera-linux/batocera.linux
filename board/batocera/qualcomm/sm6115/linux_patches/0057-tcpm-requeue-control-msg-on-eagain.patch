@@ -1,13 +1,12 @@
 Subject: [PATCH] usb: typec: tcpm: re-queue queued control messages on -EAGAIN
 
 ---
- drivers/usb/typec/tcpm/tcpm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/usb/typec/tcpm/tcpm.c b/drivers/usb/typec/tcpm/tcpm.c
+index 06692feb6..f8cd35b0b 100644
 --- a/drivers/usb/typec/tcpm/tcpm.c
 +++ b/drivers/usb/typec/tcpm/tcpm.c
-@@ -3868,13 +3868,16 @@
+@@ -4291,13 +4291,16 @@ static bool tcpm_send_queued_message(struct tcpm_port *port)
  
  		switch (queued_message) {
  		case PD_MSG_CTRL_WAIT:

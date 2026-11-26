@@ -1,10 +1,9 @@
 Subject: [PATCH] Input: pwm-vibra - support a minimum duty cycle
 
 ---
- drivers/input/misc/pwm-vibra.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/input/misc/pwm-vibra.c b/drivers/input/misc/pwm-vibra.c
+index 3e5ed685e..612010d8c 100644
 --- a/drivers/input/misc/pwm-vibra.c
 +++ b/drivers/input/misc/pwm-vibra.c
 @@ -14,6 +14,7 @@
@@ -15,7 +14,7 @@ diff --git a/drivers/input/misc/pwm-vibra.c b/drivers/input/misc/pwm-vibra.c
  #include <linux/module.h>
  #include <linux/of.h>
  #include <linux/platform_device.h>
-@@ -32,6 +33,7 @@
+@@ -32,6 +33,7 @@ struct pwm_vibrator {
  	struct work_struct play_work;
  	u16 level;
  	u32 direction_duty_cycle;
@@ -23,7 +22,7 @@ diff --git a/drivers/input/misc/pwm-vibra.c b/drivers/input/misc/pwm-vibra.c
  	bool vcc_on;
  };
  
-@@ -53,7 +55,12 @@
+@@ -53,7 +55,12 @@ static int pwm_vibrator_start(struct pwm_vibrator *vibrator)
  	gpiod_set_value_cansleep(vibrator->enable_gpio, 1);
  
  	pwm_get_state(vibrator->pwm, &state);
@@ -37,7 +36,7 @@ diff --git a/drivers/input/misc/pwm-vibra.c b/drivers/input/misc/pwm-vibra.c
  	state.enabled = true;
  
  	err = pwm_apply_might_sleep(vibrator->pwm, &state);
-@@ -167,6 +174,9 @@
+@@ -167,6 +174,9 @@ static int pwm_vibrator_probe(struct platform_device *pdev)
  		return err;
  	}
  

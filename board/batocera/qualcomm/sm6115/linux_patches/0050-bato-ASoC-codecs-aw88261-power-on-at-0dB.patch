@@ -6,9 +6,11 @@ these boards on the PipeWire pro-audio profile, so the UCM sequences that set
 it never run and the speakers came up quieter than on 7.1. Start at 0dB as
 the old series did.
 
+diff --git a/sound/soc/codecs/aw88261.c b/sound/soc/codecs/aw88261.c
+index b8d06534b..0b2dc8695 100644
 --- a/sound/soc/codecs/aw88261.c
 +++ b/sound/soc/codecs/aw88261.c
-@@ -1281,7 +1281,7 @@
+@@ -1276,7 +1276,7 @@ static int aw88261_init(struct aw88261 *aw88261, struct i2c_client *i2c, struct
  	aw_dev->prof_info.prof_type = AW88395_DEV_NONE_TYPE_ID;
  	aw_dev->channel = 0;
  	aw_dev->fw_status = AW88261_DEV_FW_FAILED;

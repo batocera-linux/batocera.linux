@@ -5,9 +5,11 @@ Power the Mangmi Air X panel up one supply at a time with the vendor
 delays and down in reverse. The Duo Lite keeps the bulk sequence.
 
 ---
+diff --git a/drivers/gpu/drm/panel/panel-hx83112a.c b/drivers/gpu/drm/panel/panel-hx83112a.c
+index fa900d52c..3e2fd50d9 100644
 --- a/drivers/gpu/drm/panel/panel-hx83112a.c
 +++ b/drivers/gpu/drm/panel/panel-hx83112a.c
-@@ -23,6 +23,7 @@
+@@ -24,6 +24,7 @@ struct hx83112a_desc {
  	unsigned long mode_flags;
  	const struct regulator_bulk_data *supplies;
  	unsigned int num_supplies;
@@ -15,12 +17,10 @@ delays and down in reverse. The Duo Lite keeps the bulk sequence.
  	int (*init)(struct hx83112a *ctx);
  };
  
-@@ -368,6 +369,68 @@
- 	mipi_dsi_msleep(&dsi_ctx, 120);
- 
+@@ -371,19 +372,77 @@ static int hx83112a_disable(struct drm_panel *panel)
  	return dsi_ctx.accum_err;
-+}
-+
+ }
+ 
 +static void hx83112a_power_off(struct hx83112a *ctx)
 +{
 +	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
@@ -81,10 +81,11 @@ delays and down in reverse. The Duo Lite keeps the bulk sequence.
 +	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
 +	regulator_disable(ctx->supplies[0].consumer);
 +	return ret;
- }
- 
++}
++
  static int hx83112a_prepare(struct drm_panel *panel)
-@@ -376,14 +439,10 @@
+ {
+ 	struct hx83112a *ctx = to_hx83112a(panel);
  	struct device *dev = &ctx->dsi->dev;
  	int ret;
  
@@ -93,14 +94,13 @@ delays and down in reverse. The Duo Lite keeps the bulk sequence.
  	if (ret < 0)
  		return dev_err_probe(dev, ret, "Failed to enable regulators\n");
 -	msleep(20);
- 
+-
 -	gpiod_set_value_cansleep(ctx->enable_gpio, 1);
 -	msleep(20);
--
+ 
  	hx83112a_reset(ctx);
  
- 	ctx->dsi->mode_flags |= MIPI_DSI_MODE_LPM;
-@@ -391,9 +450,7 @@
+@@ -392,9 +451,7 @@ static int hx83112a_prepare(struct drm_panel *panel)
  	ret = ctx->desc->init(ctx);
  	if (ret < 0) {
  		dev_err(dev, "Failed to initialize panel: %d\n", ret);
@@ -111,7 +111,7 @@ delays and down in reverse. The Duo Lite keeps the bulk sequence.
  		return ret;
  	}
  
-@@ -404,9 +461,7 @@
+@@ -405,9 +462,7 @@ static int hx83112a_unprepare(struct drm_panel *panel)
  {
  	struct hx83112a *ctx = to_hx83112a(panel);
  
@@ -122,7 +122,7 @@ delays and down in reverse. The Duo Lite keeps the bulk sequence.
  
  	return 0;
  }
-@@ -445,6 +500,7 @@
+@@ -446,6 +501,7 @@ static const struct hx83112a_desc mangmi_airx_desc = {
  		      MIPI_DSI_CLOCK_NON_CONTINUOUS,
  	.supplies = mangmi_airx_supplies,
  	.num_supplies = ARRAY_SIZE(mangmi_airx_supplies),

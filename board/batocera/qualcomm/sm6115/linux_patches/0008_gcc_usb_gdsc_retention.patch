@@ -6,12 +6,12 @@ Based on: sc8180x by Val Packett in upstream commit 25bc96f26cd6.
 Upstream-reference: clk: qcom: gcc-sc8180x: Use
                     retention for USB power domains
 ---
- drivers/clk/qcom/gcc-sm6115.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/clk/qcom/gcc-sm6115.c b/drivers/clk/qcom/gcc-sm6115.c
+index f1c1f5128..eae60b1d8 100644
 --- a/drivers/clk/qcom/gcc-sm6115.c
 +++ b/drivers/clk/qcom/gcc-sm6115.c
-@@ -3210,7 +3210,7 @@
+@@ -3206,7 +3206,7 @@ static struct gdsc gcc_usb30_prim_gdsc = {
  	.pd = {
  		.name = "gcc_usb30_prim",
  	},

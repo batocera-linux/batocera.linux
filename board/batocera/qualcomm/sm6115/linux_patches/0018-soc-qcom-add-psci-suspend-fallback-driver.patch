@@ -1,16 +1,13 @@
 Subject: [PATCH] soc: qcom: add PSCI SYSTEM_SUSPEND fallback driver
 
 ---
- drivers/soc/qcom/Kconfig                      | 10 +++++
- drivers/soc/qcom/Makefile                     |  1 +
- drivers/soc/qcom/qcom-psci-suspend-fallback.c | 81 +++++++++++++++++++
- 3 files changed, 92 insertions(+)
  create mode 100644 drivers/soc/qcom/qcom-psci-suspend-fallback.c
 
 diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
+index 2b524154d..3fff12ca7 100644
 --- a/drivers/soc/qcom/Kconfig
 +++ b/drivers/soc/qcom/Kconfig
-@@ -16,6 +16,16 @@
+@@ -27,6 +27,16 @@ config QCOM_AOSS_QMP
  	  subsystems as well as controlling the debug clocks exposed by the Always On
  	  Subsystem (AOSS) using Qualcomm Messaging Protocol (QMP).
  
@@ -26,8 +23,9 @@ diff --git a/drivers/soc/qcom/Kconfig b/drivers/soc/qcom/Kconfig
 +
  config QCOM_COMMAND_DB
  	tristate "Qualcomm Command DB"
- 	depends on ARCH_QCOM || COMPILE_TEST
+ 	depends on OF_RESERVED_MEM
 diff --git a/drivers/soc/qcom/Makefile b/drivers/soc/qcom/Makefile
+index 798643be3..7e5c542be 100644
 --- a/drivers/soc/qcom/Makefile
 +++ b/drivers/soc/qcom/Makefile
 @@ -2,6 +2,7 @@
@@ -40,6 +38,7 @@ diff --git a/drivers/soc/qcom/Makefile b/drivers/soc/qcom/Makefile
  obj-$(CONFIG_QCOM_GSBI)	+=	qcom_gsbi.o
 diff --git a/drivers/soc/qcom/qcom-psci-suspend-fallback.c b/drivers/soc/qcom/qcom-psci-suspend-fallback.c
 new file mode 100644
+index 000000000..98b19f27d
 --- /dev/null
 +++ b/drivers/soc/qcom/qcom-psci-suspend-fallback.c
 @@ -0,0 +1,81 @@

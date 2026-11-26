@@ -1,8 +1,6 @@
 Subject: [PATCH] usb: typec: tcpc: fusb302: trigger TX via TX_START bit, not TXON token
 
 ---
- drivers/usb/typec/tcpm/fusb302.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
 index b575c6c2e..a7bce495a 100644

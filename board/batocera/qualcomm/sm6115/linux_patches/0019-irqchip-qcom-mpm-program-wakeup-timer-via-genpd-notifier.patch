@@ -3,11 +3,12 @@ Subject: [PATCH] irqchip/qcom-mpm: program wakeup timer via genpd and PM notifie
 Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
 
 ---
- drivers/irqchip/irq-qcom-mpm.c | 118 ++++++++++++++++++++++++++++++++++++++++-
 
+diff --git a/drivers/irqchip/irq-qcom-mpm.c b/drivers/irqchip/irq-qcom-mpm.c
+index 8c575d7ce..ed3457125 100644
 --- a/drivers/irqchip/irq-qcom-mpm.c
 +++ b/drivers/irqchip/irq-qcom-mpm.c
-@@ -11,17 +11,24 @@
+@@ -11,16 +11,23 @@
  #include <linux/io.h>
  #include <linux/irqchip.h>
  #include <linux/irqdomain.h>
@@ -26,13 +27,12 @@ Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
  #include <linux/spinlock.h>
 +#include <linux/suspend.h>
 +#include <linux/syscore_ops.h>
- 
-+#include <clocksource/arm_arch_timer.h>
 +
++#include <clocksource/arm_arch_timer.h>
+ 
  /*
   * This is the driver for Qualcomm MPM (MSM Power Manager) interrupt controller,
-  * which is commonly found on Qualcomm SoCs built on the RPM architecture.
-@@ -85,6 +92,9 @@
+@@ -85,6 +92,9 @@ struct qcom_mpm_priv {
  	unsigned int reg_stride;
  	struct irq_domain *domain;
  	struct generic_pm_domain genpd;
@@ -42,25 +42,25 @@ Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
  };
  
  static u32 qcom_mpm_read(struct qcom_mpm_priv *priv, unsigned int reg,
-@@ -292,10 +302,14 @@
+@@ -292,10 +302,14 @@ static irqreturn_t qcom_mpm_handler(int irq, void *dev_id)
  	return ret;
  }
  
 -static int mpm_pd_power_off(struct generic_pm_domain *genpd)
 +static void qcom_mpm_program_timer(struct qcom_mpm_priv *priv, u64 cval)
- {
--	struct qcom_mpm_priv *priv = container_of(genpd, struct qcom_mpm_priv,
--						  genpd);
++{
 +	writel_relaxed(lower_32_bits(cval), priv->base + 0x00);
 +	writel_relaxed(upper_32_bits(cval), priv->base + 0x04);
 +}
 +
 +static int qcom_mpm_handover_to_rpm(struct qcom_mpm_priv *priv)
-+{
+ {
+-	struct qcom_mpm_priv *priv = container_of(genpd, struct qcom_mpm_priv,
+-						  genpd);
  	int i, ret;
  
  	for (i = 0; i < priv->reg_stride; i++)
-@@ -311,6 +325,79 @@
+@@ -311,6 +325,79 @@ static int mpm_pd_power_off(struct generic_pm_domain *genpd)
  	return 0;
  }
  
@@ -140,7 +140,7 @@ Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
  static bool gic_hwirq_is_mapped(struct mpm_gic_map *maps, int cnt, u32 hwirq)
  {
  	int i;
-@@ -339,6 +426,8 @@
+@@ -339,6 +426,8 @@ static int qcom_mpm_probe(struct platform_device *pdev, struct device_node *pare
  	if (!priv)
  		return -ENOMEM;
  
@@ -149,9 +149,9 @@ Mirror rpmh_rsc_write_next_wakeup on RPMh-based SOCs.
  	ret = of_property_read_u32(np, "qcom,mpm-pin-count", &pin_cnt);
  	if (ret) {
  		dev_err(dev, "failed to read qcom,mpm-pin-count: %d\n", ret);
-@@ -469,6 +558,29 @@
+@@ -467,6 +556,29 @@ static int qcom_mpm_probe(struct platform_device *pdev, struct device_node *pare
+ 	if (ret)
  		goto remove_domain;
- 	}
  
 +	if (of_property_present(np, "power-domains")) {
 +		pm_runtime_enable(dev);

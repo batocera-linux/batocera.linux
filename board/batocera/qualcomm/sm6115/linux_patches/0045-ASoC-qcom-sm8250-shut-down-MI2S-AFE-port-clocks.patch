@@ -12,6 +12,7 @@ Original commit message:
 
 ---
 diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
+index 517e2b313..20f3f4e1e 100644
 --- a/sound/soc/qcom/sm8250.c
 +++ b/sound/soc/qcom/sm8250.c
 @@ -20,6 +20,7 @@
@@ -110,7 +111,7 @@ diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
  		snd_soc_dai_set_fmt(cpu_dai, fmt);
  		for_each_rtd_codec_dais(rtd, j, codec_dai)
  			snd_soc_dai_set_fmt(codec_dai, codec_dai_fmt);
-@@ -140,6 +149,57 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
+@@ -156,6 +165,57 @@ static int sm8250_snd_startup(struct snd_pcm_substream *substream)
  	return qcom_snd_sdw_startup(substream);
  }
  
@@ -168,7 +169,7 @@ diff --git a/sound/soc/qcom/sm8250.c b/sound/soc/qcom/sm8250.c
  static int sm8250_snd_prepare(struct snd_pcm_substream *substream)
  {
  	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
-@@ -160,7 +220,7 @@ static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
+@@ -176,7 +236,7 @@ static int sm8250_snd_hw_free(struct snd_pcm_substream *substream)
  
  static const struct snd_soc_ops sm8250_be_ops = {
  	.startup = sm8250_snd_startup,

@@ -6,10 +6,10 @@ suspend, drop vdd and park the MCLK pin; resume re-inits the codec.
 
 ---
 diff --git a/sound/soc/codecs/es8326.c b/sound/soc/codecs/es8326.c
-index 95262dc..8975f05 100644
+index 870d628a7..b1d2b391d 100644
 --- a/sound/soc/codecs/es8326.c
 +++ b/sound/soc/codecs/es8326.c
-@@ -11,6 +11,8 @@
+@@ -12,6 +12,8 @@
  #include <linux/interrupt.h>
  #include <linux/irq.h>
  #include <linux/module.h>
@@ -18,7 +18,7 @@ index 95262dc..8975f05 100644
  #include <sound/jack.h>
  #include <sound/pcm_params.h>
  #include <sound/soc.h>
-@@ -40,6 +42,8 @@ struct es8326_priv {
+@@ -42,6 +44,8 @@ struct es8326_priv {
  	unsigned int sysclk;
  
  	bool calibrated;
@@ -27,7 +27,7 @@ index 95262dc..8975f05 100644
  	int version;
  	int hp;
  	int jack_remove_retry;
-@@ -1126,6 +1130,10 @@ static int es8326_resume(struct snd_soc_component *component)
+@@ -1136,6 +1140,10 @@ static int es8326_resume(struct snd_soc_component *component)
  	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
  	unsigned int reg;
  
@@ -38,7 +38,7 @@ index 95262dc..8975f05 100644
  	regcache_cache_only(es8326->regmap, false);
  	regcache_cache_bypass(es8326->regmap, true);
  	regmap_read(es8326->regmap, ES8326_CLK_RESAMPLE, &reg);
-@@ -1146,6 +1154,10 @@ static int es8326_suspend(struct snd_soc_component *component)
+@@ -1156,6 +1164,10 @@ static int es8326_suspend(struct snd_soc_component *component)
  {
  	struct es8326_priv *es8326 = snd_soc_component_get_drvdata(component);
  
@@ -47,9 +47,9 @@ index 95262dc..8975f05 100644
 +	es8326->suspended = true;
 +
  	cancel_delayed_work_sync(&es8326->jack_detect_work);
+ 	cancel_delayed_work_sync(&es8326->capture_pop_work);
  	es8326_disable_micbias(component);
- 	es8326->calibrated = false;
-@@ -1272,6 +1284,53 @@ static const struct snd_soc_component_driver soc_component_dev_es8326 = {
+@@ -1281,6 +1293,53 @@ static const struct snd_soc_component_driver soc_component_dev_es8326 = {
  	.endianness		= 1,
  };
  
@@ -103,7 +103,7 @@ index 95262dc..8975f05 100644
  static int es8326_i2c_probe(struct i2c_client *i2c)
  {
  	struct es8326_priv *es8326;
-@@ -1281,6 +1340,24 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
+@@ -1290,6 +1349,24 @@ static int es8326_i2c_probe(struct i2c_client *i2c)
  	if (!es8326)
  		return -ENOMEM;
  
@@ -128,7 +128,7 @@ index 95262dc..8975f05 100644
  	i2c_set_clientdata(i2c, es8326);
  	es8326->i2c = i2c;
  	mutex_init(&es8326->lock);
-@@ -1376,6 +1453,7 @@ MODULE_DEVICE_TABLE(acpi, es8326_acpi_match);
+@@ -1387,6 +1464,7 @@ MODULE_DEVICE_TABLE(acpi, es8326_acpi_match);
  static struct i2c_driver es8326_i2c_driver = {
  	.driver = {
  		.name = "es8326",

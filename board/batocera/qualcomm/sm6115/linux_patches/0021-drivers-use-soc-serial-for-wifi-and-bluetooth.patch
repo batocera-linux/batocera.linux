@@ -4,19 +4,15 @@ Date: Thu, 8 Jan 2026 00:34:32 +0000
 Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
 
 ---
- drivers/bluetooth/btqca.c             | 106 +++++++++++++++++++++++++++++-
- drivers/bluetooth/btqca.h             |   1 +
- drivers/net/wireless/ath/ath10k/mac.c |  92 +++++++++++++++++++++-
- drivers/soc/qcom/socinfo.c            |  10 +++
- 4 files changed, 205 insertions(+), 4 deletions(-)
 
---- a/drivers/bluetooth/btqca.c	2026-04-12 13:48:06
-+++ b/drivers/bluetooth/btqca.c	2026-04-26 21:59:35
-@@ -12,7 +12,109 @@
- #include <net/bluetooth/hci_core.h>
+diff --git a/drivers/bluetooth/btqca.c b/drivers/bluetooth/btqca.c
+index 002307000..33ee7849f 100644
+--- a/drivers/bluetooth/btqca.c
++++ b/drivers/bluetooth/btqca.c
+@@ -13,6 +13,108 @@
  
  #include "btqca.h"
-+
+ 
 +extern const char *qcom_serial_number;
 +
 +/* Define a static, predefined BD_ADDR structure */
@@ -73,7 +69,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
 +					   byte_str[0], byte_str[1]);
 +			return -EINVAL;
 +		}
- 
++
 +		ret = kstrtou8(byte_str, 16, &byte_val);
 +		if (ret < 0) {
 +			bt_dev_err(hdev, "Failed to convert hex string to u8: %c%c",
@@ -122,7 +118,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
  			 enum qca_btsoc_type soc_type)
  {
-@@ -697,7 +799,7 @@
+@@ -681,7 +783,7 @@ int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
  }
  EXPORT_SYMBOL_GPL(qca_set_bdaddr_rome);
  
@@ -131,7 +127,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  {
  	struct hci_rp_read_bd_addr *bda;
  	struct sk_buff *skb;
-@@ -1007,7 +1109,7 @@
+@@ -993,7 +1095,7 @@ int qca_uart_setup(struct hci_dev *hdev, uint8_t baudrate,
  		break;
  	}
  
@@ -140,9 +136,11 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  	if (err)
  		return err;
  
---- a/drivers/bluetooth/btqca.h	2026-04-12 13:48:06
-+++ b/drivers/bluetooth/btqca.h	2026-04-26 21:59:35
-@@ -170,6 +170,7 @@
+diff --git a/drivers/bluetooth/btqca.h b/drivers/bluetooth/btqca.h
+index 8f3c1b1c7..31471943b 100644
+--- a/drivers/bluetooth/btqca.h
++++ b/drivers/bluetooth/btqca.h
+@@ -170,6 +170,7 @@ int qca_read_soc_version(struct hci_dev *hdev, struct qca_btsoc_version *ver,
  			 enum qca_btsoc_type);
  int qca_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr);
  int qca_send_pre_shutdown_cmd(struct hci_dev *hdev);
@@ -150,13 +148,14 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  #else
  
  static inline int qca_set_bdaddr_rome(struct hci_dev *hdev, const bdaddr_t *bdaddr)
---- a/drivers/net/wireless/ath/ath10k/mac.c	2026-04-12 13:48:06
-+++ b/drivers/net/wireless/ath/ath10k/mac.c	2026-04-26 21:58:50
-@@ -28,7 +28,87 @@
- #include "wmi-ops.h"
+diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
+index 8e604697d..746867b6a 100644
+--- a/drivers/net/wireless/ath/ath10k/mac.c
++++ b/drivers/net/wireless/ath/ath10k/mac.c
+@@ -29,6 +29,86 @@
  #include "wow.h"
  #include "leds.h"
-+
+ 
 +extern const char *qcom_serial_number;
 +
 +/* Define a small struct for storing a 6-byte MAC address array */
@@ -204,7 +203,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
 +	for (i = 0; i < 3; i++) {
 +		char byte_str[3] = {0};
 +		u8 byte_val;
- 
++
 +		byte_str[0] = last6[i * 2];
 +		byte_str[1] = last6[i * 2 + 1];
 +
@@ -240,7 +239,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  /*********/
  /* Rates */
  /*********/
-@@ -9995,10 +10075,18 @@
+@@ -9995,10 +10075,18 @@ int ath10k_mac_register(struct ath10k *ar)
  	struct ieee80211_supported_band *band;
  	void *channels;
  	int ret;
@@ -261,9 +260,11 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  	}
  	SET_IEEE80211_PERM_ADDR(ar->hw, ar->mac_addr);
  
---- a/drivers/soc/qcom/socinfo.c	2026-04-12 13:48:06
-+++ b/drivers/soc/qcom/socinfo.c	2026-04-26 21:58:50
-@@ -224,6 +224,10 @@
+diff --git a/drivers/soc/qcom/socinfo.c b/drivers/soc/qcom/socinfo.c
+index 1836e226a..7f1810473 100644
+--- a/drivers/soc/qcom/socinfo.c
++++ b/drivers/soc/qcom/socinfo.c
+@@ -237,6 +237,10 @@ struct smem_image_version {
  };
  #endif /* CONFIG_DEBUG_FS */
  
@@ -274,7 +275,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  struct qcom_socinfo {
  	struct soc_device *soc_dev;
  	struct soc_device_attribute attr;
-@@ -891,6 +895,9 @@
+@@ -926,6 +930,9 @@ static int qcom_socinfo_probe(struct platform_device *pdev)
  							le32_to_cpu(info->serial_num));
  		if (!qs->attr.serial_number)
  			return -ENOMEM;
@@ -284,7 +285,7 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  	}
  
  	qs->soc_dev = soc_device_register(&qs->attr);
-@@ -914,6 +921,9 @@
+@@ -949,6 +956,9 @@ static void qcom_socinfo_remove(struct platform_device *pdev)
  	soc_device_unregister(qs->soc_dev);
  
  	socinfo_debugfs_exit(qs);
@@ -294,5 +295,3 @@ Subject: [PATCH] drivers: use soc serial for wifi and bluetooth
  }
  
  static struct platform_driver qcom_socinfo_driver = {
--- 
-2.34.1

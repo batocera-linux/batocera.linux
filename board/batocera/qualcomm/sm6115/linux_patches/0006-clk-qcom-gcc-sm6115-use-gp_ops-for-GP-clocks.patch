@@ -7,13 +7,12 @@ Link: https://lore.kernel.org/linux-arm-msm/20260406-gcc-gpclk-sc7280-2b412227c5
 Signed-off-by: Xilin Wu <sophon@radxa.com>
 [adapted for gcc-sm6115.c]
 ---
- drivers/clk/qcom/gcc-sm6115.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/clk/qcom/gcc-sm6115.c b/drivers/clk/qcom/gcc-sm6115.c
+index a3c9dbe3a..f1c1f5128 100644
 --- a/drivers/clk/qcom/gcc-sm6115.c
 +++ b/drivers/clk/qcom/gcc-sm6115.c
-@@ -1060,10 +1060,6 @@
+@@ -1060,10 +1060,6 @@ static struct clk_rcg2 gcc_camss_top_ahb_clk_src = {
  };
  
  static const struct freq_tbl ftbl_gcc_gp1_clk_src[] = {
@@ -24,7 +23,7 @@ diff --git a/drivers/clk/qcom/gcc-sm6115.c b/drivers/clk/qcom/gcc-sm6115.c
  	{ }
  };
  
-@@ -1077,7 +1073,7 @@
+@@ -1077,7 +1073,7 @@ static struct clk_rcg2 gcc_gp1_clk_src = {
  		.name = "gcc_gp1_clk_src",
  		.parent_data = gcc_parents_2,
  		.num_parents = ARRAY_SIZE(gcc_parents_2),
@@ -33,7 +32,7 @@ diff --git a/drivers/clk/qcom/gcc-sm6115.c b/drivers/clk/qcom/gcc-sm6115.c
  	},
  };
  
-@@ -1091,7 +1087,7 @@
+@@ -1091,7 +1087,7 @@ static struct clk_rcg2 gcc_gp2_clk_src = {
  		.name = "gcc_gp2_clk_src",
  		.parent_data = gcc_parents_2,
  		.num_parents = ARRAY_SIZE(gcc_parents_2),
@@ -42,7 +41,7 @@ diff --git a/drivers/clk/qcom/gcc-sm6115.c b/drivers/clk/qcom/gcc-sm6115.c
  	},
  };
  
-@@ -1105,7 +1101,7 @@
+@@ -1105,7 +1101,7 @@ static struct clk_rcg2 gcc_gp3_clk_src = {
  		.name = "gcc_gp3_clk_src",
  		.parent_data = gcc_parents_2,
  		.num_parents = ARRAY_SIZE(gcc_parents_2),

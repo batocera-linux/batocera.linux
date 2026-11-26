@@ -1,13 +1,12 @@
 Subject: [PATCH] cpuidle: psci: defer init to late_initcall_sync
 
 ---
- drivers/cpuidle/cpuidle-psci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/cpuidle/cpuidle-psci.c b/drivers/cpuidle/cpuidle-psci.c
+index b250d0dde..3cbca393a 100644
 --- a/drivers/cpuidle/cpuidle-psci.c
 +++ b/drivers/cpuidle/cpuidle-psci.c
-@@ -489,4 +489,4 @@
+@@ -479,4 +479,4 @@ static int __init psci_idle_init(void)
  
  	return 0;
  }

@@ -10,13 +10,13 @@ The MCU is powered down while the panel is off, as stock does.
 ---
 
 diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 7755e5b454d2..bf12c66e6a9f 100644
+index 7755e5b45..37dfa6e53 100644
 --- a/drivers/input/joystick/Kconfig
 +++ b/drivers/input/joystick/Kconfig
 @@ -332,6 +332,16 @@ config JOYSTICK_WALKERA0701
  	  To compile this driver as a module, choose M here: the
  	  module will be called walkera0701.
-
+ 
 +config JOYSTICK_MANGMI
 +	tristate "Mangmi game controller"
 +	depends on SERIAL_DEV_BUS
@@ -31,7 +31,7 @@ index 7755e5b454d2..bf12c66e6a9f 100644
  	tristate "Dreamcast control pad"
  	depends on MAPLE
 diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 9976f596a920..a117fed293ec 100644
+index 9976f596a..a117fed29 100644
 --- a/drivers/input/joystick/Makefile
 +++ b/drivers/input/joystick/Makefile
 @@ -22,6 +22,7 @@ obj-$(CONFIG_JOYSTICK_GUILLEMOT)	+= guillemot.o
@@ -44,6 +44,7 @@ index 9976f596a920..a117fed293ec 100644
  obj-$(CONFIG_JOYSTICK_N64)		+= n64joy.o
 diff --git a/drivers/input/joystick/mangmi.c b/drivers/input/joystick/mangmi.c
 new file mode 100644
+index 000000000..615ce790a
 --- /dev/null
 +++ b/drivers/input/joystick/mangmi.c
 @@ -0,0 +1,753 @@

@@ -9,14 +9,12 @@ and add the Duo Lite top panel. It shares most of the Mangmi Air X init
 but has its own CF, digital gamma and timings, runs in non-burst
 sync-event mode and takes an extra 2.8V VCI supply.
 ---
- drivers/gpu/drm/panel/panel-hx83112a.c | 228 +++++++++++++++++++++++--
- 1 file changed, 212 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/gpu/drm/panel/panel-hx83112a.c b/drivers/gpu/drm/panel/panel-hx83112a.c
-index 41173a1..a8973cc 100644
+index c06fa1684..fa900d52c 100644
 --- a/drivers/gpu/drm/panel/panel-hx83112a.c
 +++ b/drivers/gpu/drm/panel/panel-hx83112a.c
-@@ -16,21 +16,39 @@
+@@ -17,21 +17,39 @@
  #include <drm/drm_panel.h>
  #include <drm/drm_probe_helper.h>
  
@@ -57,7 +55,7 @@ index 41173a1..a8973cc 100644
  static inline struct hx83112a *to_hx83112a(struct drm_panel *panel)
  {
  	return container_of(panel, struct hx83112a, panel);
-@@ -46,12 +64,10 @@ static void hx83112a_reset(struct hx83112a *ctx)
+@@ -47,12 +65,10 @@ static void hx83112a_reset(struct hx83112a *ctx)
  	usleep_range(10000, 11000);
  }
  
@@ -71,7 +69,7 @@ index 41173a1..a8973cc 100644
  	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xb9, 0x83, 0x11, 0x2a);
  	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcf, 0x00, 0x14, 0x00, 0xc0);
  	mipi_dsi_dcs_write_seq_multi(&dsi_ctx, 0xcc, 0x08);
-@@ -194,6 +210,151 @@ static int hx83112a_on(struct hx83112a *ctx)
+@@ -195,6 +211,151 @@ static int hx83112a_on(struct hx83112a *ctx)
  	return dsi_ctx.accum_err;
  }
  
@@ -223,7 +221,7 @@ index 41173a1..a8973cc 100644
  static int hx83112a_disable(struct drm_panel *panel)
  {
  	struct hx83112a *ctx = to_hx83112a(panel);
-@@ -215,7 +376,7 @@ static int hx83112a_prepare(struct drm_panel *panel)
+@@ -216,7 +377,7 @@ static int hx83112a_prepare(struct drm_panel *panel)
  	struct device *dev = &ctx->dsi->dev;
  	int ret;
  
@@ -232,7 +230,7 @@ index 41173a1..a8973cc 100644
  	if (ret < 0)
  		return dev_err_probe(dev, ret, "Failed to enable regulators\n");
  	msleep(20);
-@@ -225,12 +386,14 @@ static int hx83112a_prepare(struct drm_panel *panel)
+@@ -226,12 +387,14 @@ static int hx83112a_prepare(struct drm_panel *panel)
  
  	hx83112a_reset(ctx);
  
@@ -249,7 +247,7 @@ index 41173a1..a8973cc 100644
  		return ret;
  	}
  
-@@ -243,12 +406,12 @@ static int hx83112a_unprepare(struct drm_panel *panel)
+@@ -244,12 +407,12 @@ static int hx83112a_unprepare(struct drm_panel *panel)
  
  	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
  	gpiod_set_value_cansleep(ctx->enable_gpio, 0);
@@ -264,7 +262,7 @@ index 41173a1..a8973cc 100644
  	.clock = 1124 * 1957 * 60 / 1000,
  	.hdisplay = 1080,
  	.hsync_start = 1080 + 28,
-@@ -263,10 +426,42 @@ static const struct drm_display_mode hx83112a_mode = {
+@@ -264,10 +427,42 @@ static const struct drm_display_mode hx83112a_mode = {
  	.type = DRM_MODE_TYPE_DRIVER,
  };
  
@@ -308,7 +306,7 @@ index 41173a1..a8973cc 100644
  }
  
  static enum drm_panel_orientation hx83112a_get_orientation(struct drm_panel *panel)
-@@ -296,8 +491,10 @@ static int hx83112a_probe(struct mipi_dsi_device *dsi)
+@@ -297,8 +492,10 @@ static int hx83112a_probe(struct mipi_dsi_device *dsi)
  	if (IS_ERR(ctx))
  		return PTR_ERR(ctx);
  
@@ -321,7 +319,7 @@ index 41173a1..a8973cc 100644
  	if (ret < 0)
  		return dev_err_probe(dev, ret, "Failed to get regulators\n");
  
-@@ -316,9 +513,7 @@ static int hx83112a_probe(struct mipi_dsi_device *dsi)
+@@ -317,9 +514,7 @@ static int hx83112a_probe(struct mipi_dsi_device *dsi)
  
  	dsi->lanes = 4;
  	dsi->format = MIPI_DSI_FMT_RGB888;
@@ -330,9 +328,9 @@ index 41173a1..a8973cc 100644
 -			  MIPI_DSI_CLOCK_NON_CONTINUOUS;
 +	dsi->mode_flags = ctx->desc->mode_flags;
  
- 	ret = of_drm_get_panel_orientation(dev->of_node, &ctx->orientation);
+ 	ret = drm_of_get_panel_orientation(dev->of_node, &ctx->orientation);
  	if (ret < 0)
-@@ -354,7 +549,8 @@ static void hx83112a_remove(struct mipi_dsi_device *dsi)
+@@ -355,7 +550,8 @@ static void hx83112a_remove(struct mipi_dsi_device *dsi)
  }
  
  static const struct of_device_id hx83112a_of_match[] = {
@@ -342,6 +340,3 @@ index 41173a1..a8973cc 100644
  	{ /* sentinel */ }
  };
  MODULE_DEVICE_TABLE(of, hx83112a_of_match);
--- 
-2.43.0
-

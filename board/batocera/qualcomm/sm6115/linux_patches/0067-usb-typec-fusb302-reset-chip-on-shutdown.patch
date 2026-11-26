@@ -5,7 +5,7 @@ that no source or OTG role is left configured across a power cycle.
 
 ---
 diff --git a/drivers/usb/typec/tcpm/fusb302.c b/drivers/usb/typec/tcpm/fusb302.c
-index 0011fe4..f40f82f 100644
+index 0011fe473..19ecb3b33 100644
 --- a/drivers/usb/typec/tcpm/fusb302.c
 +++ b/drivers/usb/typec/tcpm/fusb302.c
 @@ -1858,6 +1858,19 @@ static const struct dev_pm_ops fusb302_pm_ops = {

@@ -6,7 +6,7 @@ below 100%, as vendor kernels do for some panels.
 
 ---
 diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
-index 237d3d3..eaaff43 100644
+index 237d3d3f3..8e9982107 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
 @@ -446,6 +446,7 @@ static int pwm_backlight_probe(struct platform_device *pdev)

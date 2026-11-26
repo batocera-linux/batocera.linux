@@ -1,8 +1,8 @@
 Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
 ---
- drivers/power/supply/bq256xx_charger.c | 107 +++++++++++++++++++++++++++++++++
- 1 file changed, 107 insertions(+)
 
+diff --git a/drivers/power/supply/bq256xx_charger.c b/drivers/power/supply/bq256xx_charger.c
+index ebb9ba191..9a79b8390 100644
 --- a/drivers/power/supply/bq256xx_charger.c
 +++ b/drivers/power/supply/bq256xx_charger.c
 @@ -41,6 +41,8 @@
@@ -25,7 +25,7 @@ Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
  	char model_name[I2C_NAME_SIZE];
  
  	struct bq256xx_init_data init_data;
-@@ -1402,10 +1408,80 @@ static bool bq256xx_state_changed(struct bq256xx_device *bq,
+@@ -1400,10 +1406,80 @@ static bool bq256xx_state_changed(struct bq256xx_device *bq,
  	return memcmp(&old_state, new_state, sizeof(struct bq256xx_state)) != 0;
  }
  
@@ -106,7 +106,7 @@ Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
  	int ret;
  
  	ret = bq256xx_get_state(bq, &state);
-@@ -1416,9 +1492,15 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
+@@ -1414,9 +1490,15 @@ static irqreturn_t bq256xx_irq_handler_thread(int irq, void *private)
  		goto irq_out;
  
  	mutex_lock(&bq->lock);
@@ -122,7 +122,7 @@ Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
  	power_supply_changed(bq->charger);
  
  irq_out:
-@@ -1953,6 +2035,7 @@ static int bq256xx_probe(struct i2c_client *client)
+@@ -1951,6 +2033,7 @@ static int bq256xx_probe(struct i2c_client *client)
  	struct device *dev = &client->dev;
  	struct bq256xx_device *bq;
  	struct power_supply_config psy_cfg = { };
@@ -130,7 +130,7 @@ Subject: [PATCH] power: supply: bq256xx: set IINDPM by Type-C precedence
  
  	int ret;
  
-@@ -2031,6 +2114,23 @@ static int bq256xx_probe(struct i2c_client *client)
+@@ -2026,6 +2109,23 @@ static int bq256xx_probe(struct i2c_client *client)
  		return ret;
  	}
  

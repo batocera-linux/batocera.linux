@@ -6,7 +6,7 @@ driver. Resume repowers the chip and redoes the probe setup.
 
 ---
 diff --git a/drivers/leds/leds-aw200xx.c b/drivers/leds/leds-aw200xx.c
-index b92158a..8986c55 100644
+index b92158ac9..457c81ca2 100644
 --- a/drivers/leds/leds-aw200xx.c
 +++ b/drivers/leds/leds-aw200xx.c
 @@ -15,7 +15,9 @@
@@ -83,7 +83,7 @@ index b92158a..8986c55 100644
  	chip->hwen = devm_gpiod_get_optional(&client->dev, "enable",
  					     GPIOD_OUT_HIGH);
  	if (IS_ERR(chip->hwen))
-@@ -611,6 +641,51 @@ out_unlock:
+@@ -611,6 +641,51 @@ static int aw200xx_probe(struct i2c_client *client)
  	return ret;
  }
  
