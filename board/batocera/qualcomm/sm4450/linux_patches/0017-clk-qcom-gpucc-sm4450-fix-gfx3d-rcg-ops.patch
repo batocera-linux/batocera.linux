@@ -1,9 +1,11 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] clk: qcom: gpucc-sm4450: adapt gfx3d RCG for GMU-less use
 
+diff --git a/drivers/clk/qcom/gpucc-sm4450.c b/drivers/clk/qcom/gpucc-sm4450.c
+index 6a756937d..d3f1c6bf7 100644
 --- a/drivers/clk/qcom/gpucc-sm4450.c
 +++ b/drivers/clk/qcom/gpucc-sm4450.c
-@@ -222,8 +222,8 @@
+@@ -222,8 +222,8 @@ static struct clk_rcg2 gpu_cc_gx_gfx3d_clk_src = {
  		.name = "gpu_cc_gx_gfx3d_clk_src",
  		.parent_data = gpu_cc_parent_data_2,
  		.num_parents = ARRAY_SIZE(gpu_cc_parent_data_2),

@@ -10,9 +10,9 @@ off and restore the default state when it comes back on.
 
 Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
 ---
- drivers/video/backlight/pwm_bl.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
+diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+index 237d3d3f3..6eff17d9c 100644
 --- a/drivers/video/backlight/pwm_bl.c
 +++ b/drivers/video/backlight/pwm_bl.c
 @@ -8,6 +8,7 @@
@@ -23,7 +23,7 @@ Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
  #include <linux/kernel.h>
  #include <linux/init.h>
  #include <linux/platform_device.h>
-@@ -43,6 +44,8 @@
+@@ -43,6 +44,8 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb)
  	if (pb->enabled)
  		return;
  
@@ -32,7 +32,7 @@ Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
  	if (pb->power_supply) {
  		err = regulator_enable(pb->power_supply);
  		if (err < 0)
-@@ -69,6 +72,8 @@
+@@ -69,6 +72,8 @@ static void pwm_backlight_power_off(struct pwm_bl_data *pb)
  
  	if (pb->power_supply)
  		regulator_disable(pb->power_supply);
@@ -41,6 +41,3 @@ Signed-off-by: Daniel Martin <dmanlfc@gmail.com>
  	pb->enabled = false;
  }
  
--- 
-2.43.0
-

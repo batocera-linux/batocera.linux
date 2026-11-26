@@ -1,14 +1,15 @@
 Subject: [PATCH] power: supply: qcom_battmgr: allow setting the USB input current limit
 
 ---
+
+diff --git a/drivers/power/supply/qcom_battmgr.c b/drivers/power/supply/qcom_battmgr.c
+index 97c8501c2..41d271335 100644
 --- a/drivers/power/supply/qcom_battmgr.c
 +++ b/drivers/power/supply/qcom_battmgr.c
-@@ -1040,8 +1040,37 @@
- 	}
- 
+@@ -1043,6 +1043,35 @@ static int qcom_battmgr_usb_get_property(struct power_supply *psy,
  	return 0;
-+}
-+
+ }
+ 
 +static int qcom_battmgr_usb_set_property(struct power_supply *psy,
 +					 enum power_supply_property psp,
 +					 const union power_supply_propval *val)
@@ -30,8 +31,8 @@ Subject: [PATCH] power: supply: qcom_battmgr: allow setting the USB input curren
 +	mutex_unlock(&battmgr->lock);
 +
 +	return ret;
- }
- 
++}
++
 +static int qcom_battmgr_usb_is_writeable(struct power_supply *psy,
 +					 enum power_supply_property psp)
 +{
@@ -41,7 +42,7 @@ Subject: [PATCH] power: supply: qcom_battmgr: allow setting the USB input curren
  static const enum power_supply_property sc8280xp_usb_props[] = {
  	POWER_SUPPLY_PROP_ONLINE,
  };
-@@ -1080,6 +1109,8 @@
+@@ -1081,6 +1110,8 @@ static const struct power_supply_desc sm8350_usb_psy_desc = {
  	.properties = sm8350_usb_props,
  	.num_properties = ARRAY_SIZE(sm8350_usb_props),
  	.get_property = qcom_battmgr_usb_get_property,
@@ -50,7 +51,7 @@ Subject: [PATCH] power: supply: qcom_battmgr: allow setting the USB input curren
  	.usb_types = BIT(POWER_SUPPLY_USB_TYPE_UNKNOWN) |
  		     BIT(POWER_SUPPLY_USB_TYPE_SDP)     |
  		     BIT(POWER_SUPPLY_USB_TYPE_DCP)     |
-@@ -1557,6 +1588,7 @@
+@@ -1578,6 +1609,7 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
  		break;
  	case BATTMGR_REQUEST_NOTIFICATION:
  	case BATTMGR_CHG_CTRL_LIMIT_EN:

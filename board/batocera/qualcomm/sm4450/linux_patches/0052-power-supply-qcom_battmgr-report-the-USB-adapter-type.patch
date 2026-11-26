@@ -1,9 +1,12 @@
 Subject: [PATCH] power: supply: qcom_battmgr: report the USB adapter type
 
 ---
+
+diff --git a/drivers/power/supply/qcom_battmgr.c b/drivers/power/supply/qcom_battmgr.c
+index 41d271335..29b5e0289 100644
 --- a/drivers/power/supply/qcom_battmgr.c
 +++ b/drivers/power/supply/qcom_battmgr.c
-@@ -974,7 +974,7 @@
+@@ -975,7 +975,7 @@ static const u8 sm8350_usb_prop_map[] = {
  	[POWER_SUPPLY_PROP_CURRENT_NOW] = USB_CURR_NOW,
  	[POWER_SUPPLY_PROP_CURRENT_MAX] = USB_CURR_MAX,
  	[POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT] = USB_INPUT_CURR_LIMIT,
@@ -12,7 +15,7 @@ Subject: [PATCH] power: supply: qcom_battmgr: report the USB adapter type
  };
  
  static int qcom_battmgr_usb_sm8350_update(struct qcom_battmgr *battmgr,
-@@ -1543,8 +1543,11 @@
+@@ -1564,8 +1564,11 @@ static void qcom_battmgr_sm8350_callback(struct qcom_battmgr *battmgr,
  		case USB_INPUT_CURR_LIMIT:
  			battmgr->usb.current_limit = le32_to_cpu(resp->intval.value);
  			break;

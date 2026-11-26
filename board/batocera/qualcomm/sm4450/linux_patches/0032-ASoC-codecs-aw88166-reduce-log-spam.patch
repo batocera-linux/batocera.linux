@@ -9,11 +9,9 @@ and log a single error if the retry loop ultimately fails.
 
 Adapted for aw88166 from Val Packett's aw88261 series.
 ---
- sound/soc/codecs/aw88166.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/sound/soc/codecs/aw88166.c b/sound/soc/codecs/aw88166.c
-index bef5ef7..e08a443 100644
+index fb73f384e..39622a824 100644
 --- a/sound/soc/codecs/aw88166.c
 +++ b/sound/soc/codecs/aw88166.c
 @@ -101,7 +101,7 @@ static int aw_dev_get_iis_status(struct aw_device *aw_dev)
@@ -61,7 +59,7 @@ index bef5ef7..e08a443 100644
  		goto sysst_check_fail;
  	}
  
-@@ -1159,10 +1159,14 @@ static void aw88166_start_pa(struct aw88166 *aw88166)
+@@ -1142,10 +1142,14 @@ static void aw88166_start_pa(struct aw88166 *aw88166)
  	for (i = 0; i < AW88166_START_RETRIES; i++) {
  		ret = aw88166_dev_start(aw88166);
  		if (ret) {
@@ -80,7 +78,7 @@ index bef5ef7..e08a443 100644
  				continue;
  			}
  		} else {
-@@ -1170,6 +1174,8 @@ static void aw88166_start_pa(struct aw88166 *aw88166)
+@@ -1153,6 +1157,8 @@ static void aw88166_start_pa(struct aw88166 *aw88166)
  			break;
  		}
  	}

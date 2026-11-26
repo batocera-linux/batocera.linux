@@ -1,12 +1,15 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] drm/msm/adreno: add Adreno 613 to the a6xx catalog
 
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
+index 90a0c7ffb..a034fcdbe 100644
 --- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
 +++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-@@ -729,6 +729,30 @@
+@@ -728,6 +728,30 @@ static const struct adreno_info a6xx_gpus[] = {
+ 			.gmu_cgc_mode = 0x00000022,
  			.prim_fifo_threshold = 0x00080000,
  		},
- 	}, {
++	}, {
 +		.chip_ids = ADRENO_CHIP_IDS(0x06010300),
 +		.family = ADRENO_6XX_GEN1,
 +		.fw = {
@@ -30,16 +33,60 @@ Subject: [PATCH] drm/msm/adreno: add Adreno 613 to the a6xx catalog
 +			{ 213, 2 },
 +			{ 162, 3 },
 +		),
-+	}, {
+ 	}, {
  		.chip_ids = ADRENO_CHIP_IDS(0x06010500),
  		.family = ADRENO_6XX_GEN1,
- 		.revn = 615,
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 081e79ea4..078abba55 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -653,7 +653,8 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+ 
+ 	if (adreno_is_a630(adreno_gpu))
+ 		clock_cntl_on = 0x8aa8aa02;
+-	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu))
++	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
++		 adreno_is_a613(adreno_gpu))
+ 		clock_cntl_on = 0xaaa8aa82;
+ 	else if (adreno_is_a702(adreno_gpu))
+ 		clock_cntl_on = 0xaaaaaa82;
+@@ -1245,6 +1246,9 @@ static int hw_init(struct msm_gpu *gpu)
+ 		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE1, 0x00071620);
+ 		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE2, 0x00071620);
+ 		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
++		/* A613 (gen6_3_26_0) requires GBIF_CX_CONFIG[18:16] cleared */
++		if (adreno_is_a613(adreno_gpu))
++			gpu_rmw(gpu, 0x3c00, GENMASK(18, 16), 0);
+ 	}
+ 
+ 	if (adreno_is_a610_family(adreno_gpu) ||
+@@ -1311,7 +1315,8 @@ static int hw_init(struct msm_gpu *gpu)
+ 		gpu_write(gpu, REG_A7XX_CP_LPAC_PROG_FIFO_SIZE, 0x00000020);
+ 
+ 	/* Setting the mem pool size */
+-	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu)) {
++	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
++	    adreno_is_a613(adreno_gpu)) {
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 47);
+ 	} else if (adreno_is_a702(adreno_gpu)) {
+@@ -1351,7 +1356,7 @@ static int hw_init(struct msm_gpu *gpu)
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0xcfffff);
+ 	else if (adreno_is_a690(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x4fffff);
+-	else if (adreno_is_a619(adreno_gpu))
++	else if (adreno_is_a619(adreno_gpu) || adreno_is_a613(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3fffff);
+ 	else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3ffff);
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+index 114a40f79..a13c89412 100644
 --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
 +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-@@ -421,6 +421,11 @@
+@@ -421,6 +421,11 @@ static inline int adreno_is_a612(const struct adreno_gpu *gpu)
  	return gpu->info->chip_ids[0] == 0x06010200;
  }
-
+ 
 +static inline int adreno_is_a613(const struct adreno_gpu *gpu)
 +{
 +	return gpu->info->chip_ids[0] == 0x06010300;
@@ -48,40 +95,11 @@ Subject: [PATCH] drm/msm/adreno: add Adreno 613 to the a6xx catalog
  static inline bool adreno_has_rgmu(const struct adreno_gpu *gpu)
  {
  	return adreno_is_a612(gpu);
-@@ -502,6 +507,7 @@
+@@ -502,6 +507,7 @@ static inline int adreno_is_a610_family(const struct adreno_gpu *gpu)
  		return false;
  	return adreno_is_a610(gpu) ||
  	       adreno_is_a612(gpu) ||
 +	       adreno_is_a613(gpu) ||
  	       adreno_is_a702(gpu);
  }
-
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -648,5 +648,6 @@
- 	if (adreno_is_a630(adreno_gpu))
- 		clock_cntl_on = 0x8aa8aa02;
--	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu))
-+	else if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
-+		 adreno_is_a613(adreno_gpu))
- 		clock_cntl_on = 0xaaa8aa82;
- 	else if (adreno_is_a702(adreno_gpu))
-@@ -1241,2 +1242,5 @@
- 		gpu_write(gpu, REG_A6XX_GBIF_QSB_SIDE3, 0x00071620);
-+		/* A613 (gen6_3_26_0) requires GBIF_CX_CONFIG[18:16] cleared */
-+		if (adreno_is_a613(adreno_gpu))
-+			gpu_rmw(gpu, 0x3c00, GENMASK(18, 16), 0);
- 	}
-@@ -1306,3 +1311,4 @@
- 	/* Setting the mem pool size */
--	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu)) {
-+	if (adreno_is_a610(adreno_gpu) || adreno_is_a612(adreno_gpu) ||
-+	    adreno_is_a613(adreno_gpu)) {
- 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
-@@ -1344,5 +1350,5 @@
- 	else if (adreno_is_a690(adreno_gpu))
- 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x4fffff);
--	else if (adreno_is_a619(adreno_gpu))
-+	else if (adreno_is_a619(adreno_gpu) || adreno_is_a613(adreno_gpu))
- 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3fffff);
- 	else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu))
+ 

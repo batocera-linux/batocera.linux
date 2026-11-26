@@ -3,9 +3,12 @@ From: Tengfei Fan <quic_tengfan@quicinc.com>
 Subject: [PATCH] interconnect: qcom: add SM4450 driver
 Adapted from the Sep 2023 SM4450 interconnect series;
 ROCKNIX: virt provider regmap fix
+
+diff --git a/drivers/interconnect/qcom/Kconfig b/drivers/interconnect/qcom/Kconfig
+index b3187acf9..836b11aca 100644
 --- a/drivers/interconnect/qcom/Kconfig
 +++ b/drivers/interconnect/qcom/Kconfig
-@@ -337,6 +337,15 @@
+@@ -348,6 +348,15 @@ config INTERCONNECT_QCOM_SHIKRA
  	  This is a driver for the Qualcomm Network-on-Chip on shikra-based
  	  platforms.
  
@@ -21,9 +24,11 @@ ROCKNIX: virt provider regmap fix
  config INTERCONNECT_QCOM_SM6115
  	tristate "Qualcomm SM6115 interconnect driver"
  	depends on INTERCONNECT_QCOM
+diff --git a/drivers/interconnect/qcom/Makefile b/drivers/interconnect/qcom/Makefile
+index 5f139a370..94a5d5cfb 100644
 --- a/drivers/interconnect/qcom/Makefile
 +++ b/drivers/interconnect/qcom/Makefile
-@@ -38,6 +38,7 @@
+@@ -39,6 +39,7 @@ qnoc-sdx55-objs				:= sdx55.o
  qnoc-sdx65-objs				:= sdx65.o
  qnoc-sdx75-objs				:= sdx75.o
  qnoc-shikra-objs			:= shikra.o
@@ -31,7 +36,7 @@ ROCKNIX: virt provider regmap fix
  qnoc-sm6115-objs			:= sm6115.o
  qnoc-sm6350-objs			:= sm6350.o
  qnoc-sm7150-objs			:= sm7150.o
-@@ -86,6 +87,7 @@
+@@ -88,6 +89,7 @@ obj-$(CONFIG_INTERCONNECT_QCOM_SDX55) += qnoc-sdx55.o
  obj-$(CONFIG_INTERCONNECT_QCOM_SDX65) += qnoc-sdx65.o
  obj-$(CONFIG_INTERCONNECT_QCOM_SDX75) += qnoc-sdx75.o
  obj-$(CONFIG_INTERCONNECT_QCOM_SHIKRA) += qnoc-shikra.o
@@ -39,6 +44,9 @@ ROCKNIX: virt provider regmap fix
  obj-$(CONFIG_INTERCONNECT_QCOM_SM6115) += qnoc-sm6115.o
  obj-$(CONFIG_INTERCONNECT_QCOM_SM6350) += qnoc-sm6350.o
  obj-$(CONFIG_INTERCONNECT_QCOM_SM7150) += qnoc-sm7150.o
+diff --git a/drivers/interconnect/qcom/sm4450.c b/drivers/interconnect/qcom/sm4450.c
+new file mode 100644
+index 000000000..cca1692d8
 --- /dev/null
 +++ b/drivers/interconnect/qcom/sm4450.c
 @@ -0,0 +1,1985 @@
@@ -2027,6 +2035,9 @@ ROCKNIX: virt provider regmap fix
 +
 +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. SM4450 NoC driver");
 +MODULE_LICENSE("GPL");
+diff --git a/include/dt-bindings/interconnect/qcom,sm4450-rpmh.h b/include/dt-bindings/interconnect/qcom,sm4450-rpmh.h
+new file mode 100644
+index 000000000..00d0b7218
 --- /dev/null
 +++ b/include/dt-bindings/interconnect/qcom,sm4450-rpmh.h
 @@ -0,0 +1,152 @@

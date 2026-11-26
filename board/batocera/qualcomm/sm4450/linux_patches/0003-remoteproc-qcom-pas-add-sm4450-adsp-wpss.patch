@@ -1,9 +1,11 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] remoteproc: qcom: pas: add SM4450 ADSP and WPSS
 
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index a005546c2..07e689c3f 100644
 --- a/drivers/remoteproc/qcom_q6v5_pas.c
 +++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -1455,6 +1455,40 @@
+@@ -1645,6 +1645,40 @@ static const struct qcom_pas_data sc7280_wpss_resource = {
  	.ssctl_id = 0x19,
  };
  
@@ -44,7 +46,7 @@ Subject: [PATCH] remoteproc: qcom: pas: add SM4450 ADSP and WPSS
  static const struct qcom_pas_data shikra_cdsp_resource = {
  	.crash_reason_smem = 601,
  	.firmware_name = "cdsp.mbn",
-@@ -1616,6 +1650,8 @@
+@@ -1875,6 +1909,8 @@ static const struct of_device_id qcom_pas_of_match[] = {
  	{ .compatible = "qcom,shikra-cdsp-pas", .data = &shikra_cdsp_resource },
  	{ .compatible = "qcom,shikra-lpaicp-pas", .data = &shikra_lpaicp_resource },
  	{ .compatible = "qcom,shikra-mpss-pas", .data = &shikra_mpss_resource },

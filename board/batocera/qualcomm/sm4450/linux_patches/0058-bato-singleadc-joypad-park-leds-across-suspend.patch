@@ -8,9 +8,11 @@ stays powered through suspend, so the rings stayed lit in standby. Add
 sleep PM ops to the SPI client that send an off frame on suspend and
 restore the staged state on resume.
 
+diff --git a/drivers/input/joystick/singleadc-joypad.c b/drivers/input/joystick/singleadc-joypad.c
+index 69e661e5c..24c802050 100644
 --- a/drivers/input/joystick/singleadc-joypad.c
 +++ b/drivers/input/joystick/singleadc-joypad.c
-@@ -1587,6 +1587,48 @@
+@@ -1587,6 +1587,48 @@ static void sprd_spi_mcu_remove(struct spi_device *spi)
  	}
  }
  
@@ -59,7 +61,7 @@ restore the staged state on resume.
  static const struct of_device_id sprd_spi_mcu_dt_match[] = {
  	{ .compatible = "mcu,spi_joystick" },
  	{ }
-@@ -1597,6 +1639,7 @@
+@@ -1597,6 +1639,7 @@ static struct spi_driver spi_mcu_joy_driver = {
  	.driver = {
  		.name = "spi_mcu",
  		.of_match_table = sprd_spi_mcu_dt_match,

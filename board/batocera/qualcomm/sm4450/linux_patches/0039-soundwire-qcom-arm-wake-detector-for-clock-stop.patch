@@ -2,6 +2,9 @@ From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] soundwire: qcom: use EE0 link manager so wake reaches the CPU
 
 ---
+
+diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+index 55678a30c..0fc3ce8b1 100644
 --- a/drivers/soundwire/qcom.c
 +++ b/drivers/soundwire/qcom.c
 @@ -25,7 +25,7 @@
@@ -13,7 +16,7 @@ Subject: [PATCH] soundwire: qcom: use EE0 link manager so wake reaches the CPU
  #define SWRM_FRM_GEN_ENABLED					BIT(0)
  #define SWRM_VERSION_1_3_0					0x01030000
  #define SWRM_VERSION_1_5_1					0x01050001
-@@ -826,6 +826,10 @@
+@@ -825,6 +825,10 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
  			case SWRM_INTERRUPT_STATUS_CLK_STOP_FINISHED_V2:
  				break;
  			case SWRM_INTERRUPT_STATUS_EXT_CLK_STOP_WAKEUP:

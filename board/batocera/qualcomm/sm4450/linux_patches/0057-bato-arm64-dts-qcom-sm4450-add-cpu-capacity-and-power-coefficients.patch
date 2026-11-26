@@ -8,9 +8,11 @@ Cortex-A78 cores as equal and may leave a heavy thread on an A55. Add
 the capacity and dynamic-power-coefficient values sm6350 uses for its
 A55/A7x clusters.
 
+diff --git a/arch/arm64/boot/dts/qcom/sm4450.dtsi b/arch/arm64/boot/dts/qcom/sm4450.dtsi
+index b7dc40f37..e2f4b92dd 100644
 --- a/arch/arm64/boot/dts/qcom/sm4450.dtsi
 +++ b/arch/arm64/boot/dts/qcom/sm4450.dtsi
-@@ -52,6 +52,8 @@
+@@ -52,6 +52,8 @@ cpu0: cpu@0 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x0>;
@@ -19,7 +21,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_0>;
-@@ -78,6 +80,8 @@
+@@ -78,6 +80,8 @@ cpu1: cpu@100 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x100>;
@@ -28,7 +30,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_100>;
-@@ -98,6 +102,8 @@
+@@ -98,6 +102,8 @@ cpu2: cpu@200 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x200>;
@@ -37,7 +39,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_200>;
-@@ -118,6 +124,8 @@
+@@ -118,6 +124,8 @@ cpu3: cpu@300 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x300>;
@@ -46,7 +48,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_300>;
-@@ -138,6 +146,8 @@
+@@ -138,6 +146,8 @@ cpu4: cpu@400 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x400>;
@@ -55,7 +57,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_400>;
-@@ -158,6 +168,8 @@
+@@ -158,6 +168,8 @@ cpu5: cpu@500 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a55";
  			reg = <0x0 0x500>;
@@ -64,7 +66,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 0>;
  			enable-method = "psci";
  			next-level-cache = <&l2_500>;
-@@ -178,6 +190,8 @@
+@@ -178,6 +190,8 @@ cpu6: cpu@600 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a78";
  			reg = <0x0 0x600>;
@@ -73,7 +75,7 @@ A55/A7x clusters.
  			clocks = <&cpufreq_hw 1>;
  			enable-method = "psci";
  			next-level-cache = <&l2_600>;
-@@ -198,6 +212,8 @@
+@@ -198,6 +212,8 @@ cpu7: cpu@700 {
  			device_type = "cpu";
  			compatible = "arm,cortex-a78";
  			reg = <0x0 0x700>;

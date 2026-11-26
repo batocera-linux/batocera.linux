@@ -1,9 +1,11 @@
 From: sunshineinabox <aqemail@gmail.com>
 Subject: [PATCH] leds: qcom-lpg: add PM6450 PWM support
 
---- a/drivers/leds/rgb/leds-qcom-lpg.c	2026-08-29 13:03:31.293466864 -0700
-+++ b/drivers/leds/rgb/leds-qcom-lpg.c	2026-08-29 13:03:31.343145251 -0700
-@@ -245,6 +245,8 @@
+diff --git a/drivers/leds/rgb/leds-qcom-lpg.c b/drivers/leds/rgb/leds-qcom-lpg.c
+index d7d6518de..cc7506483 100644
+--- a/drivers/leds/rgb/leds-qcom-lpg.c
++++ b/drivers/leds/rgb/leds-qcom-lpg.c
+@@ -245,6 +245,8 @@ struct lpg_data {
  	bool triled_has_src_sel;
  	int num_channels;
  	const struct lpg_channel_data *channels;
@@ -12,7 +14,7 @@ Subject: [PATCH] leds: qcom-lpg: add PM6450 PWM support
  };
  
  #define PBS_SW_TRIG_BIT		BIT(0)
-@@ -452,6 +454,9 @@
+@@ -452,6 +454,9 @@ static int lpg_calc_freq(struct lpg_channel *chan, uint64_t period)
  	if (chan->subtype == LPG_SUBTYPE_HI_RES_PWM) {
  		clk_rate_arr = lpg_clk_rates_hi_res;
  		clk_len = ARRAY_SIZE(lpg_clk_rates_hi_res);
@@ -22,7 +24,7 @@ Subject: [PATCH] leds: qcom-lpg: add PM6450 PWM support
  		pwm_resolution_arr = lpg_pwm_resolution_hi_res;
  		pwm_resolution_count = ARRAY_SIZE(lpg_pwm_resolution_hi_res);
  		max_res = LPG_RESOLUTION_15BIT;
-@@ -795,7 +800,8 @@
+@@ -795,7 +800,8 @@ static void lpg_apply(struct lpg_channel *chan)
  		lpg_sdam_apply_lut_control(chan);
  	else
  		lpg_apply_lut_control(chan);
@@ -32,7 +34,7 @@ Subject: [PATCH] leds: qcom-lpg: add PM6450 PWM support
  }
  
  static void lpg_brightness_set(struct lpg_led *led, struct led_classdev *cdev,
-@@ -1650,6 +1656,15 @@
+@@ -1650,6 +1656,15 @@ static int lpg_probe(struct platform_device *pdev)
  	return lpg_add_pwm(lpg);
  }
  
@@ -48,7 +50,7 @@ Subject: [PATCH] leds: qcom-lpg: add PM6450 PWM support
  static const struct lpg_data pm660l_lpg_data = {
  	.lut_base = 0xb000,
  	.lut_size = 49,
-@@ -1820,6 +1842,7 @@
+@@ -1820,6 +1835,7 @@ static const struct lpg_data pmk8550_pwm_data = {
  };
  
  static const struct of_device_id lpg_of_table[] = {
