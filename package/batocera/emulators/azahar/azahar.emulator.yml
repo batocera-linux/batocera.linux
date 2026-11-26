@@ -170,3 +170,29 @@ labwc:
         - name: MoveToOutput
           output: secondary|primary
         - name: ToggleFullscreen
+
+savestates:
+  directory: '{{system}}/azahar/states'
+  file: '{{romfilename}}.{{slot0}}.cst'
+  image: ''
+  nofileextension: true
+  firstslot: 1
+  autosave: true
+  autosave_file: '{{romfilename}}.auto.cst'
+  autosave_image: ''
+  incremental: true
+  # save takes an empty slot, else the oldest; restore loads the newest; slot 0 is the quick slot
+  keys:
+    quick_save: [KEY_LEFTCTRL, KEY_F1]
+    quick_load: [KEY_LEFTCTRL, KEY_F2]
+    save: [KEY_LEFTCTRL, KEY_C]
+    restore: [KEY_LEFTCTRL, KEY_V]
+  boot:
+    send: restore
+  mirror:
+    native_dir: /userdata/saves/3ds/azahar-emu/states
+    glob: '*.cst'
+    pattern: '(?P<serial>[0-9A-F]{16})\.(?P<slot>\d{2})\.cst'
+    slot_name: '{serial}.{slot:02d}.cst'
+    auto_slot: 0
+    placement: [1, 1]

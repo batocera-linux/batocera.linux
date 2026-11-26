@@ -28,7 +28,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CONFIGS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Emulator, HotkeysContext
+from batocera_launch import Command, Emulator, HotkeysContext, state_manager
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -220,8 +220,6 @@ class Odin(Emulator):
                 'exit': ['KEY_LEFTCTRL', 'KEY_Q'],
                 'menu': 'KEY_F10',
                 'pause': 'KEY_P',
-                'save_state': 'KEY_F2',
-                'restore_state': 'KEY_F4',
                 'reset': ['KEY_LEFTCTRL', 'KEY_R'],
                 'coin': 'KEY_5',
             },
@@ -363,6 +361,7 @@ class Odin(Emulator):
         ]
         if (anisotropy := self.config.get_str('odin_anisotropy', '1')) != '1':
             args.extend(['-a', anisotropy])
+        args.extend(state_manager(self.config).boot_args)
 
         own = CONFIGS / 'odin' / 'artwork'
         artwork = own if any((own / f'{name}_bezel.png').exists() for name in (game, parent)) else _ARTWORK

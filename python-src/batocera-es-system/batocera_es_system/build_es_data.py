@@ -24,6 +24,7 @@ import argparse
 from pathlib import Path
 
 from batocera_es_system.es_features import build as _build_es_features
+from batocera_es_system.es_savestates import build as _build_es_savestates
 from batocera_es_system.es_systems import build as _build_es_systems
 from batocera_es_system.registry import (
     Registry,
@@ -59,6 +60,7 @@ def main() -> None:
         args.output,
     )
     _build_es_features(registry, args.output)
+    _build_es_savestates(registry, args.output)
     _build_translations(registry, args.keys_dir, args.locales_dir, args.output)
     _build_roms_dir(systems_data, args.roms_dir, args.output)
 

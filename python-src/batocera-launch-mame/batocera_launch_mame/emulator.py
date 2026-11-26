@@ -27,7 +27,7 @@ from typing import Final
 
 from batocera_common.dataclasses import cached_dataclass
 from batocera_common.paths import BIOS, CONFIGS, ROMS, SAVES, SCREENSHOTS
-from batocera_launch import Command
+from batocera_launch import Command, state_manager
 from batocera_launch.paths import USER_DECORATIONS
 from batocera_launch_mame_common import MessSystemInfo, get_autorun_command, precalibrate_mame_guns
 from batocera_launch_mame_common.paths import MAME_BIN_DIR
@@ -139,7 +139,8 @@ class MAME(MAMEControllers, MAMEBezels, MAMEBase):
                 '-input_directory',
                 self.saves_dir / 'input',
                 '-state_directory',
-                self.saves_dir / 'state',
+                state_manager(self.config).es_dir or self.saves_dir / 'state',
+                *self.state_args,
                 '-snapshot_directory',
                 SCREENSHOTS,
                 '-diff_directory',

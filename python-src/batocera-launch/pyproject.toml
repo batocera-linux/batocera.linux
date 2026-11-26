@@ -22,6 +22,7 @@ batocera-joysticks-hotkeys = "batocera_launch.joysticks_hotkeys:main"
 batocera-guns = "batocera_launch.devices.gun:main"
 batocera-trackballs-spinners = "batocera_launch.devices.trackballspinner:main"
 batocera-keisho-migrate = "batocera_launch.emulators.keisho:main"
+batocera-launch-savestate = "batocera_launch.savestates.client:main"
 
 [project.entry-points."batocera_launch.emulators"]
 lexaloffle = 'batocera_launch.emulators.lexaloffle:Lexaloffle'
@@ -123,6 +124,7 @@ yquake2 = 'batocera_launch.emulators.yquake2:YQuake2'
 devfreq = 'batocera_launch.plugins.devfreq:DevfreqPlugin'
 fan = 'batocera_launch.plugins.fan:FanPlugin'
 power-mode = 'batocera_launch.plugins.power:PowerModePlugin'
+savestates = 'batocera_launch.plugins.savestates:SaveStatesPlugin'
 tdp = 'batocera_launch.plugins.tdp:TdpPlugin'
 
 [build-system]

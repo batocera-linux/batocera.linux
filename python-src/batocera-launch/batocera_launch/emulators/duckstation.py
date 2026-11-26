@@ -27,7 +27,7 @@ from typing import TYPE_CHECKING, Final
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CACHE, CHEATS, CONFIGS, ROMS, SAVES, SCREENSHOTS
-from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext
+from batocera_launch import BatoceraException, Command, Emulator, HotkeysContext, state_manager
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
@@ -77,6 +77,8 @@ _BIOS_LISTS: Final[Mapping[str, Sequence[str]]] = {
 _BIOS_REGION_KEYS: Final = {'NTSCU': 'PathNTSCU', 'PAL': 'PathPAL', 'NTSCJ': 'PathNTSCJ'}
 
 _PEDAL_KEYS: Final = {1: 'c', 2: 'v', 3: 'b', 4: 'n'}
+
+_STATE_SLOTS: Final = range(1, 11)
 
 # SDL2 pad bindings are identical for every controller
 _PAD_BINDINGS: Final = {
@@ -185,8 +187,6 @@ class Duckstation(Emulator):
                 'exit': ['KEY_LEFTALT', 'KEY_F4'],
                 'menu': 'KEY_F7',
                 'reset': 'KEY_F6',
-                'restore_state': 'KEY_F1',
-                'save_state': 'KEY_F2',
                 'previous_slot': 'KEY_F3',
                 'next_slot': 'KEY_F4',
                 'rewind': 'KEY_F5',
@@ -463,6 +463,12 @@ class Duckstation(Emulator):
             settings.set('Hotkeys', hotkey, key)
         if settings.has_option('Hotkeys', 'OpenQuickMenu'):
             settings.remove_option('Hotkeys', 'OpenQuickMenu')
+        # the save state manager's keys for each slot; DuckStation's per-game slots are the *GlobalState* names
+        for slot in _STATE_SLOTS:
+            settings.remove_option('Hotkeys', f'LoadGameState{slot}')
+            settings.remove_option('Hotkeys', f'SaveGameState{slot}')
+            settings.set('Hotkeys', f'LoadGlobalState{slot}', f'Keyboard/Control & Keyboard/F{slot}')
+            settings.set('Hotkeys', f'SaveGlobalState{slot}', f'Keyboard/Control & Keyboard/Shift & Keyboard/F{slot}')
 
         ## [CDROM]
         settings.set('CDROM', 'AllowBootingWithoutSBIFile', self.config.get('duckstation_boot_without_sbi', 'false'))
@@ -563,9 +569,11 @@ class Duckstation(Emulator):
         self._write_settings()
 
         if Path('/usr/bin/duckstation-qt').exists():
-            args: list[str | Path] = ['duckstation-qt', '-batch', '-nogui', '--', rom]
+            args: list[str | Path] = ['duckstation-qt', '-batch', '-nogui']
         else:
-            args = ['duckstation-nogui', '-batch', '-fullscreen', '--', rom]
+            args = ['duckstation-nogui', '-batch', '-fullscreen']
+
+        args.extend([*state_manager(self.config).boot_args, '--', rom])
 
         env: dict[str, str | Path] = {
             'XDG_CONFIG_HOME': CONFIGS,

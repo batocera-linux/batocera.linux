@@ -32,6 +32,7 @@ from batocera_launch import (
     Emulator,
     HotkeysContext,
     precalibrate_reicast_guns,
+    state_manager,
 )
 
 from .controllers import generate_controller_config, generate_keyboard_config
@@ -54,8 +55,6 @@ class Flycast(Emulator):
                 'exit': 'KEY_F7',
                 'menu': 'KEY_TAB',
                 'coin': 'KEY_A',
-                'save_state': 'KEY_F9',
-                'restore_state': 'KEY_F8',
                 'fastforward': 'KEY_SPACE',
             },
         }
@@ -187,6 +186,12 @@ class Flycast(Emulator):
         # save / load states
         config.set('config', 'Dreamcast.AutoLoadState', self.config.get_str('flycast_loadstate', 'no'))
         config.set('config', 'Dreamcast.AutoSaveState', self.config.get_str('flycast_savestate', 'no'))
+        # the save state manager picks the slot and puts the state ES starts from in it
+        states = state_manager(self.config)
+        if states.slot is not None:
+            config.set('config', 'Dreamcast.SavestateSlot', str(states.slot))
+        if states.boot_in_slot:
+            config.set('config', 'Dreamcast.AutoLoadState', 'yes')
         # Per-game VMU
         config.set('config', 'PerGameVmu', self.config.get_bool('flycast_per_game_vmu', return_values=('yes', 'no')))
         # DSP

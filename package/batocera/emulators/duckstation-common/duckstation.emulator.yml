@@ -332,3 +332,33 @@ file_extensions:
   - ccd
   - chd
   - iso
+
+savestates:
+  directory: '{{system}}/duckstation/states'
+  file: '{{romfilename}}.{{slot0}}.sav'
+  image: '{{romfilename}}.{{slot0}}.sav.png'
+  nofileextension: true
+  firstslot: 1
+  autosave: true
+  autosave_file: '{{romfilename}}.auto.sav'
+  autosave_image: '{{romfilename}}.auto.sav.png'
+  incremental: true
+  # no quick slot; the resume state written on exit is the autosave
+  slots: [1, 10]
+  keys:
+    save: KEY_F2
+    restore: KEY_F1
+    save_slot: [KEY_LEFTCTRL, KEY_LEFTSHIFT, 'KEY_F{slot}']
+    load_slot: [KEY_LEFTCTRL, 'KEY_F{slot}']
+  boot:
+    args: [-statefile, '{file}']
+  mirror:
+    native_dir: /userdata/saves/duckstation
+    glob: '*.sav'
+    # savestate_<n>.sav are the global states
+    pattern: '(?!savestate_\d+\.sav)(?P<serial>.+)_(?:(?P<slot>\d+)|resume)\.sav'
+    slot_name: '{serial}_{slot}.sav'
+    auto_name: '{serial}_resume.sav'
+    placement: [2, 10]
+    fresh: 1
+    screenshot: duckstation

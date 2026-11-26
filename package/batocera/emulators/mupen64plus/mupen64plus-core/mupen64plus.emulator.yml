@@ -290,3 +290,12 @@ systems:
     file_extensions:
       add:
         - ndd  # d64 : Not supported yet
+
+savestates:
+  directory: n64
+  file: '{{romfilename}}.st{{slot0}}'
+  image: '{{romfilename}}.st{{slot0}}.png'
+  nofileextension: false
+  firstslot: 0
+  autosave: false
+  incremental: true

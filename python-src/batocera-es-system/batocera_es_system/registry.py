@@ -112,6 +112,8 @@ class EmulatorInfoDict(InfoDict):
     cores: NotRequired[dict[str, CoreInfoDict]]
     systems: NotRequired[list[str | EmulatorSystemInfoDict]]
     file_extensions: NotRequired[list[str]]
+    # es_savestates.cfg attributes plus what batocera-launch's save state manager reads
+    savestates: NotRequired[dict[str, Any]]
 
 
 # `_emulators` overlays add their shared features to every emulator but the excluded ones
@@ -482,6 +484,7 @@ class CoreInfo(_FileInfoBase[CoreInfoDict]):
 @dataclass(slots=True)
 class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
     cores: dict[str, CoreInfo]
+    savestates: dict[str, Any] | None = None
 
     @property
     def filename(self) -> str:
@@ -511,6 +514,9 @@ class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
 
     def extend(self, extension: EmulatorInfoDict, /) -> None:
         super(EmulatorInfo, self).extend(extension)
+
+        if 'savestates' in extension:
+            self.savestates = extension['savestates']
 
         if 'cores' in extension:
             for core_name, core_info in extension['cores'].items():
@@ -543,6 +549,7 @@ class EmulatorInfo(_FileInfoBase[EmulatorInfoDict]):
             else {},
             keys=data.get('keys'),
             file_extensions=data.get('file_extensions'),
+            savestates=data.get('savestates'),
         )
 
 

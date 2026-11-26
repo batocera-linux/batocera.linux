@@ -141,6 +141,10 @@ class Core:
 
         return 'deterministic'
 
+    @property
+    def can_save_state(self) -> bool:
+        return self.__savestate_features != 'disabled'
+
     @cached_property
     def can_rewind(self) -> bool:
         return self.__savestate_features in {'serialized', 'deterministic'} and self.config.get_bool('rewind')

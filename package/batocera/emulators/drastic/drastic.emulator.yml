@@ -104,3 +104,20 @@ labwc:
     - identifier: drastic
       actions:
         - name: SpanOutputs
+
+savestates:
+  directory: /userdata/system/configs/drastic/savestates
+  file: '{{romfilename}}_{{slot0}}.dss'
+  image: ''
+  nofileextension: true
+  firstslot: 0
+  autosave: false
+  incremental: true
+  # saves to and loads its current slot only
+  slots: [0, 9]
+  keys:
+    save: KEY_F5
+    restore: KEY_F7
+  boot:
+    copy: true
+    send: restore

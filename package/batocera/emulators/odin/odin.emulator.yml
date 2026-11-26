@@ -197,3 +197,19 @@ systems:
           Stereo (Default): mix
           4 Speakers: quad
           No Bass Speaker: main
+
+savestates:
+  # one state per game, the quick slot
+  directory: '{{system}}/states'
+  file: ''
+  image: ''
+  nofileextension: true
+  autosave: true
+  autosave_file: '{{romfilename}}.odinstate'
+  autosave_image: ''
+  incremental: false
+  keys:
+    quick_save: KEY_F2
+    quick_load: KEY_F4
+  boot:
+    args: [-l, '{file}']

@@ -138,8 +138,6 @@ class Nanoboyadvance(Emulator):
             'name': 'nanoboyadvance',
             'keys': {
                 'exit': ['KEY_LEFTALT', 'KEY_F4'],
-                'save_state': ['KEY_LEFTSHIFT', 'KEY_F1'],
-                'restore_state': 'KEY_F1',
             },
         }
 
