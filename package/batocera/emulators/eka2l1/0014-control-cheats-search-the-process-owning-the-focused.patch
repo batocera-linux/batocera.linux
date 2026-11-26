@@ -1,0 +1,88 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Thu, 5 Nov 2026 08:22:20 +0100
+Subject: [PATCH 14/15] control: cheats search the process owning the focused
+ window
+
+The window group name (Avkon: status, UID, caption) was the only way to
+find the app, so a game that does not name its group was "no app has
+the focus", and a game run by another app (N-Gage 2.0) had its host's
+memory searched. The memory is now the process owning the focused
+window group, the name only gives its UID and caption when it is that
+process's; else its UID3 and process name. With nothing focused, the top
+window group of an app.
+---
+ src/emu/control/src/cheats.cpp | 45 +++++++++++++++++++++-------------
+ 1 file changed, 28 insertions(+), 17 deletions(-)
+
+diff --git a/src/emu/control/src/cheats.cpp b/src/emu/control/src/cheats.cpp
+index b0f78e80a..d9b8e661c 100755
+--- a/src/emu/control/src/cheats.cpp
++++ b/src/emu/control/src/cheats.cpp
+@@ -110,38 +110,49 @@ namespace eka2l1::control {
+         return process_id_ ? sys.get_kernel_system()->get_by_id<kernel::process>(process_id_) : nullptr;
+     }
+ 
+-    // The app whose window has the focus, found as the Qt frontend finds the app its settings apply to
++    // The app whose window has the focus. Its memory is the one of the process owning that window: the
++    // window group name (Avkon: status, UID, caption) only names it, and not every game sets it; a game
++    // run by another app (N-Gage 2.0) owns its window while the group naming it is its host's
+     void cheat_engine::attach(system &sys) {
+         kernel_system *kern = sys.get_kernel_system();
+         require(kern != nullptr, "no_device", "no device is booted", 409);
+         auto *winserv = reinterpret_cast<window_server *>(kern->get_by_name<service::server>(get_winserv_name_by_epocver(kern->get_epoc_version())));
+         epoc::screen *scr = winserv ? winserv->get_current_focus_screen() : nullptr;
+-        std::optional<akn_running_app_info> found;
+-        if (scr && scr->focus) {
++        require(scr != nullptr, "no_app", "no app has the focus", 409);
++        const auto owned = [](epoc::window_group *group) {
++            return group && group->client && group->client->get_client() && group->client->get_client()->owning_process();
++        };
++        epoc::window_group *focus = scr->focus;
++        if (!owned(focus)) {
++            // nothing focused: the top window group of an app
++            focus = nullptr;
+             for (auto *group = scr->get_group_chain(); group; group = reinterpret_cast<epoc::window_group *>(group->sibling)) {
+-                auto info = get_akn_app_info_from_window_group(group);
+-                if (!info.has_value())
+-                    continue;
+-                if (group == scr->focus) {
+-                    found = info;
++                if (owned(group) && get_akn_app_info_from_window_group(group).has_value()) {
++                    focus = group;
+                     break;
+                 }
+-                kernel::thread *owner = scr->focus->client->get_client();
+-                if (owner && info->associated_->has_child_process(owner->owning_process()))
+-                    found = info;
+             }
+         }
+-        require(found.has_value() && found->associated_, "no_app", "no app has the focus", 409);
+-        if (found->app_uid_ != app_uid_) {
++        require(owned(focus), "no_app", "no app has the focus", 409);
++        kernel::process *pr = focus->client->get_client()->owning_process();
++        std::uint32_t uid = std::get<2>(pr->get_uid_type());
++        std::string name = pr->name();
++        name = name.substr(0, name.find('['));
++        if (const auto info = get_akn_app_info_from_window_group(focus); info.has_value() && (info->associated_ == pr)) {
++            uid = info->app_uid_;
++            name = common::ucs2_to_utf8(info->app_name_);
++        }
++        require(uid != 0, "no_app", "no app has the focus", 409);
++        if (uid != app_uid_) {
+             reset_search();
+-            app_uid_ = found->app_uid_;
++            app_uid_ = uid;
+             load();
+         }
+-        app_name_ = common::ucs2_to_utf8(found->app_name_);
+-        if (found->associated_->unique_id() != process_id_) {
++        app_name_ = name;
++        if (pr->unique_id() != process_id_) {
+             // the game started again: its old results point at memory it no longer has
+             reset_search();
+-            process_id_ = found->associated_->unique_id();
++            process_id_ = pr->unique_id();
+         }
+     }
+ 

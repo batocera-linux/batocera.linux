@@ -1,0 +1,55 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Thu, 5 Nov 2026 08:57:46 +0100
+Subject: [PATCH 12/15] window: let the app's orientation win over the
+ remembered screen mode
+
+When a window group got the focus, the focus change callbacks ran
+first, and the Avkon SGC server set the screen mode the app asks for;
+the screen mode remembered in the group's settings was restored after
+that and took it back. A portrait dialog of another process over a
+landscape game (the N-Gage 2.0 PlayServer trial and purchase screen
+over Prince of Persia HD, which ngigameorientation keeps in landscape)
+got the game's landscape mode, and was laid out for a portrait screen
+cut at 240 lines. The remembered settings are now restored first.
+---
+ src/emu/services/src/window/screen.cpp | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/src/emu/services/src/window/screen.cpp b/src/emu/services/src/window/screen.cpp
+index ef70de48a..becb8cc38 100644
+--- a/src/emu/services/src/window/screen.cpp
++++ b/src/emu/services/src/window/screen.cpp
+@@ -659,23 +659,27 @@ namespace eka2l1::epoc {
+                 flags_ &= ~FLAG_SCREEN_UPSCALE_FACTOR_LOCK;
+             }
+ 
++            // The settings remembered for the group come first: the focus change callbacks then apply the
++            // orientation its app asks for (Avkon SGC server), which must win over the remembered screen mode.
++            // A portrait dialog of another process (N-Gage 2.0 PlayServer) over a landscape game got the game's
++            // landscape mode back otherwise, and was laid out for a screen it did not have.
+             if (new_focus_screen) {
+                 serv->set_focus_screen(new_focus_screen);
+ 
+                 alternative_focus->gain_focus();
+ 
+-                serv->send_focus_group_change_events(new_focus_screen);
+-                new_focus_screen->fire_focus_change_callbacks(focus_change_target);
+-
+                 new_focus_screen->restore_from_config(serv->get_graphics_driver(),
+                     alternative_focus->saved_setting, serv);
++
++                serv->send_focus_group_change_events(new_focus_screen);
++                new_focus_screen->fire_focus_change_callbacks(focus_change_target);
+             } else if (focus && is_me_currently_focus) {
+                 focus->gain_focus();
+ 
++                restore_from_config(serv->get_graphics_driver(), focus->saved_setting, serv);
++
+                 serv->send_focus_group_change_events(this);
+                 fire_focus_change_callbacks(focus_change_target);
+-
+-                restore_from_config(serv->get_graphics_driver(), focus->saved_setting, serv);
+             }
+         }
+ 
