@@ -51,6 +51,8 @@ class AnyBOR(RACore):
         # global.retroarch.crt_switch_resolution); fit the image to a 4:3 TV there
         crt = self.config.get_str('retroarch.crt_switch_resolution', '0') not in ('', '0')
         core_options.set('anybor_crt_tv', 'On' if crt else 'Off')
+        portrait = crt and self.config.get_str('display.rotate') in ('1', '3')
+        core_options.set('anybor_os_screen_orientation', 'Vertical' if portrait else 'Horizontal')
 
     def set_config(self, custom_config: LibretroConfig, /) -> None:
         for pad in self.controllers[:4]:
