@@ -1,0 +1,4 @@
+# AICSemi AIC8800 Wifi USB (Tenda, UGREEN CM762), eject the storage mode
+ATTR{idVendor}=="a69c", ATTR{idProduct}=="5721", RUN+="/usr/sbin/usb_modeswitch -K -v a69c -p 5721"
+ATTR{idVendor}=="a69c", ATTR{idProduct}=="5723", RUN+="/usr/sbin/usb_modeswitch -K -v a69c -p 5723"
+ATTR{idVendor}=="a69c", ATTR{idProduct}=="5724", RUN+="/usr/sbin/usb_modeswitch -K -v a69c -p 5724"
