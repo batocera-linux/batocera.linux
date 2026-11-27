@@ -63,7 +63,7 @@
 - WASM4 supports .zip roms
 ### Updated
 - Amiberry to v8.5.0
-- AnyBOR to v0.2.48
+- AnyBOR to v0.3.0 with 34 more engine profiles and automatic vertical CRT orientation
 - AppleWin to Nov 8, 2026 build
 - Armsx2 to 2.9.5
 - Azahar to 2126.2
