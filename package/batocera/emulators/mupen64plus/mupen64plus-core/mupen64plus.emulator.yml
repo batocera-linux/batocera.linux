@@ -299,3 +299,11 @@ savestates:
   firstslot: 0
   autosave: false
   incremental: true
+  # a key selects the slot, then saves or loads it
+  slots: [0, 9]
+  keys:
+    save: KEY_F5
+    restore: KEY_F7
+    slot: 'KEY_{slot}'
+  boot:
+    args: [--savestate, '{file}']

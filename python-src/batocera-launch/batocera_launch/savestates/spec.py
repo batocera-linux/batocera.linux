@@ -64,6 +64,10 @@ def _slot_text(token: str, slot: int, /) -> str:
     return f'{slot:02d}'
 
 
+def _render(template: str, romfilename: str, slot: int, /) -> str:
+    return _TOKEN.sub(lambda match: romfilename if match[1] == 'romfilename' else _slot_text(match[1], slot), template)
+
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class EsNaming:
     """How ES names a game's states, as es_savestates.cfg describes it."""
@@ -71,6 +75,7 @@ class EsNaming:
     directory: str
     file: str
     autosave_file: str | None = None
+    image: str | None = None
     nofileextension: bool = True
     firstslot: int = 0
 
@@ -84,12 +89,10 @@ class EsNaming:
 
     def name(self, romfilename: str, slot: int, /) -> str | None:
         template = self.autosave_file if slot == AUTO else self.file
-        if not template:
-            return None
+        return _render(template, romfilename, slot) if template else None
 
-        return _TOKEN.sub(
-            lambda match: romfilename if match[1] == 'romfilename' else _slot_text(match[1], slot), template
-        )
+    def image_name(self, romfilename: str, slot: int, /) -> str | None:
+        return _render(self.image, romfilename, slot) if self.image and slot != AUTO else None
 
     def parse(self, romfilename: str, name: str, /) -> int | None:
         if self.autosave_file and name == self.name(romfilename, AUTO):
@@ -207,7 +210,13 @@ class SaveStateSpec:
     def current_slot(self) -> bool:
         """An emulator that saves to and loads its current slot only."""
         keys = self.keys
-        return self.slots is not None and self.mirror is None and 'save' in keys and 'save_slot' not in keys
+        return (
+            self.slots is not None
+            and self.mirror is None
+            and 'save' in keys
+            and 'save_slot' not in keys
+            and 'slot' not in keys
+        )
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any], /) -> SaveStateSpec:
@@ -220,6 +229,7 @@ class SaveStateSpec:
                 directory=data['directory'],
                 file=data.get('file', ''),
                 autosave_file=data.get('autosave_file') or None,
+                image=data.get('image') or None,
                 nofileextension=data.get('nofileextension', True),
                 firstslot=data.get('firstslot', 0),
             ),

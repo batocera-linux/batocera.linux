@@ -337,11 +337,17 @@ systems:
 
 savestates:
   directory: ps2/pcsx2/sstates
-  file: '{{romfilename}}.{{slot0}}.p2s'
-  image: '{{romfilename}}.{{slot0}}.jpg'
+  file: '{{romfilename}}.{{slot2d}}.p2s'
+  image: '{{romfilename}}.{{slot2d}}.p2s.png'
   nofileextension: false
   firstslot: 1
   autosave: true
   autosave_file: '{{romfilename}}.p2s.auto'
   autosave_image: '{{romfilename}}.p2s.auto.jpg'
   incremental: true
+  slots: [1, 10]
+  keys:
+    save_slot: [KEY_LEFTCTRL, KEY_LEFTSHIFT, 'KEY_F{slot}']
+    load_slot: [KEY_LEFTCTRL, 'KEY_F{slot}']
+  boot:
+    args: [-statefile, '{file}']

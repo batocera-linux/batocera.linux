@@ -113,6 +113,12 @@ class SaveStateManager:
         state_file = self.state_file
         boot_slot = None if state_file is None else spec.es.parse(self.romfilename, state_file.name)
 
+        # some emulators fail to save rather than create their state directory
+        try:
+            self.es_dir.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            _logger.exception('cannot create %s', self.es_dir)
+
         self._migrate()
 
         if spec.slots is not None:
@@ -251,14 +257,22 @@ class SaveStateManager:
             return
         if (current := self.es_path(self.slot)) is None or not current.exists():
             return
-        if (target := self.es_path(self._free_slot(self.spec.slots, skip=self.slot))) is None:
+        free = self._free_slot(self.spec.slots, skip=self.slot)
+        if (target := self.es_path(free)) is None:
             return
+
+        images = [(current.with_name(f'{current.name}.png'), target.with_name(f'{target.name}.png'))]
+        es = self.spec.es
+        if (image := es.image_name(self.romfilename, self.slot)) and (
+            target_image := es.image_name(self.romfilename, free)
+        ):
+            images.append((current.with_name(image), target.with_name(target_image)))
 
         try:
             current.replace(target)
-            image = current.with_name(f'{current.name}.png')
-            if image.exists():
-                image.replace(target.with_name(f'{target.name}.png'))
+            for source, destination in images:
+                if source.exists():
+                    source.replace(destination)
         except OSError:
             _logger.exception('cannot keep the state in %s', current)
 
@@ -271,6 +285,10 @@ class SaveStateManager:
                 slot = self._free_slot(spec.slots)
                 self._saved.add(slot)
                 return self._send('savestate_save_menu', f'savestate_slot_{slot}')
+            if f'savestate_slot_{spec.slots.start}' in keys and 'savestate_save' in keys:
+                slot = self._free_slot(spec.slots)
+                self._saved.add(slot)
+                return self._send(f'savestate_slot_{slot}', 'savestate_save')
             if f'savestate_save_slot_{spec.slots.start}' in keys:
                 if self.mirror is not None:
                     slot = self.mirror.free_native_slot(spec.slots, self._saved)
@@ -300,6 +318,9 @@ class SaveStateManager:
         elif 'savestate_load_menu' in keys:
             if slot in self._existing_slots():
                 return self._send('savestate_load_menu', f'savestate_slot_{slot}')
+        elif f'savestate_slot_{slot}' in keys and 'savestate_restore' in keys:
+            if slot in self._existing_slots():
+                return self._send(f'savestate_slot_{slot}', 'savestate_restore')
         elif (native := self._native_slot(slot)) is not None and f'savestate_load_slot_{native}' in keys:
             return self._send(f'savestate_load_slot_{native}')
         elif (

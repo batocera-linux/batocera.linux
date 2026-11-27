@@ -284,3 +284,10 @@ savestates:
   nofileextension: true
   firstslot: 0
   autosave: false
+  # saves to and loads its current slot only
+  slots: [0, 4]
+  keys:
+    save: KEY_F3
+    restore: KEY_F4
+  boot:
+    args: ['--state={file}']
