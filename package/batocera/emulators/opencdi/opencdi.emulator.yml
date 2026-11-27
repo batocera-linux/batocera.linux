@@ -1,0 +1,65 @@
+shared_features:
+  - powermode
+  - tdp
+  - platformprofile
+  - cpucluster
+  - videomode
+  - hud
+  - hud_corner
+custom_features:
+  opencdi_autoplay:
+    prompt: AUTO START DISC
+    description: Click PLAY CD-I in the console menu once it is ready.
+    choices:
+      On (Default): 1
+      'Off': 0
+  opencdi_dvc:
+    prompt: DIGITAL VIDEO CARTRIDGE
+    description: Fit the DVC for FMV titles. Needs vmpega.rom (or impega.rom for the CD-i 490).
+    choices:
+      On (Default): 1
+      'Off': 0
+  opencdi_deinterlace:
+    prompt: DEINTERLACING
+    description: Smooth interlaced FMV and still images.
+    choices:
+      Off (Default): 0
+      'On': 1
+  opencdi_board:
+    group: ADVANCED OPTIONS
+    prompt: CONSOLE
+    description: The CD-i 490 is experimental and needs cdi490a.zip.
+    choices:
+      CD-i 220 (Default): mono1
+      CD-i 490: mono4
+  opencdi_audio_latency:
+    group: ADVANCED OPTIONS
+    prompt: AUDIO LATENCY
+    description: Raise it if the sound crackles.
+    choices:
+      Low: low
+      Normal (Default): normal
+      High: high
+      Safe: safe
+file_extensions:
+  - chd
+  - cue
+  - iso
+systems:
+  - cdi
+
+savestates:
+  # one state per game, opencdi's slot 0
+  directory: '{{system}}/opencdi'
+  file: ''
+  image: ''
+  nofileextension: true
+  autosave: true
+  autosave_file: '{{romfilename}}.state'
+  autosave_image: ''
+  incremental: false
+  keys:
+    quick_save: KEY_F2
+    quick_load: KEY_F4
+  boot:
+    send: load

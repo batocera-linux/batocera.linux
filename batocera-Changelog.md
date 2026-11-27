@@ -19,6 +19,7 @@
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 - KICKPI K3B Wi-Fi and Bluetooth
+- OpenCDI as the default Philips CD-i emulator, with Digital Video Cartridge (FMV) support and save states
 - RetroAchievements hardcore mode can be set per system and per game
 - Trackball and spinner support in MAME and libretro MAME 2003-Plus, used for games flagged as trackball or spinner games
 - RomM support: libraries can be synced, with roms and metadata transparently downloaded to Batocera. Saves for libretro cores are supported but require at least RomM 5.5 as they're following the channels/snapshots model.

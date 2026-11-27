@@ -1,0 +1,36 @@
+Add --states-dir so save states can live outside the program directory.
+
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -108,6 +108,7 @@
+   --no-menu, --nomenu      Start without the top menu bar (useful for frontends)
+   --monitor <n>            Monitor index to display on in fullscreen
+   --screenshot-dir <path>  Folder for F8/F12 PNG screenshots (default: screenshots/ next to the program)
++  --states-dir <path>      Folder for F2/F4 save states (default: states/ next to the program)
+   --run-in-menu            Windows: keep emulating while a menu or dialog is open, or the window is moved (default: paused)
+   --console                Windows: show the log in the parent console or a new console window
+   --help, -h               Show this text
+@@ -482,9 +483,13 @@
+     if name.is_empty() { "opencdi".to_string() } else { name.to_string() }
+ }
+ 
+-// Savestates go into states/ next to the binary
++// Savestates go into --states-dir, else states/ next to the binary
+ fn states_dir() -> PathBuf {
+-    beside_program("states")
++    let args: Vec<String> = std::env::args().collect();
++    match args.iter().position(|a| a == "--states-dir").and_then(|i| args.get(i + 1)) {
++        Some(dir) => PathBuf::from(dir),
++        None => beside_program("states"),
++    }
+ }
+ 
+ // `name` next to the executable; inside a macOS app bundle, in the working directory (the data folder) instead
+@@ -559,6 +564,7 @@
+     "--mouse-speed",
+     "--mouse-sensitivity",
+     "--screenshot-dir",
++    "--states-dir",
+     "--monitor",
+     "--video-levels",
+     "--audio-latency",
