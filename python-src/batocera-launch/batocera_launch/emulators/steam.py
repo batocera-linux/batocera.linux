@@ -35,7 +35,7 @@ class Steam(Emulator):
     def hotkeygen_context(self) -> HotkeysContext:
         return {
             'name': 'steam',
-            'keys': {'exit': ['KEY_LEFTALT', 'KEY_F4']},
+            'keys': {'exit': 'batocera-steam-exit', 'close': ['KEY_LEFTALT', 'KEY_F4']},
         }
 
     @property
