@@ -11,36 +11,66 @@
 - Initial support for the Avaota A1
 - Initial support for the Radxa Cubie A5E
 ### Added
+- Azahar save and load state hotkeys
+- Battery charging mode option (fast, standard or long life, which stops at about 80%) on devices whose firmware offers it, such as the Legion Go
 - Conservative power mode
+- Batocera Control Centre (BCC):
+  - Performance tab for power modes, TDP, platform profile and fan
+  - Save states tab
+  - Monitor tab for performance analysis
+  - Gamescope option for games on Wayland images with Vulkan:
+    - Game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
+    - Visible in-game with the Output tab
+    - Windows games run inside gamescope use WINE Proton unless a runner is chosen
 - FightBox R10-PRO controller configuration
-- Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
-  Windows games run inside gamescope use WINE Proton unless a runner is chosen
 - Half-Life 1: Counter-Strike 1.6 support
 - Handheld LED battery mode: the joystick LEDs show the battery level, with levels, colours and effects set in EmulationStation, and LED colour presets
 - Keisho Model 3 emulation, with surround sound and cabinet outputs options
 - KICKPI K3B Wi-Fi and Bluetooth
 - OpenCDI as the default Philips CD-i emulator, with Digital Video Cartridge (FMV) support and save states
 - RetroAchievements hardcore mode can be set per system and per game
+- Retroid Pocket Flip 2 internal microphone
+- RomM PS3 games and DLC install
+- Save state manager for standalone emulators: states are saved, listed and loaded from EmulationStation and the BCC, loading live in game where the emulator allows it (e.g. PCSX2, PPSSPP and Mupen64Plus)
 - Trackball and spinner support in MAME and libretro MAME 2003-Plus, used for games flagged as trackball or spinner games
 - RomM support: libraries can be synced, with roms and metadata transparently downloaded to Batocera. Saves for libretro cores are supported but require at least RomM 5.5 as they're following the channels/snapshots model.
 ### Fixed
+- AIC8800 USB Wi-Fi adapters showed up as a USB drive instead of Wi-Fi
+- Automatic partition resize failed when the share partition already filled the disk
 - AYN Odin could reboot instead of powering off
+- Azahar could not load newly created save states
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
 - Chronic Concepts Insert Coin Cube was sometimes not configured after being plugged in
 - Collective Minds PS4 Chat Boost keyboard input was ignored and the device was seen as a joystick
+- Dolphin pad profiles were not matched to the right controller when several of the same controller model were connected
+- EmulationStation froze at the screensaver with "stop music on screensaver" on
+- EmulationStation message box buttons ran off the screen when they did not fit
+- evmapy stopped at startup if an input device disappeared during its scan, leaving the game without hotkeys
 - Ghost Squad Evolution and other OSS audio games left a stuck audio process after exiting, which blocked cleanup for later games
 - Half-Life 1: Blue Shift ran as Half-Life
+- Intel Arc and Meteor Lake graphics failed to initialise the GSC proxy
 - Kodi black screen on 10-bit videos, with hardware decoding now used on Raspberry Pi, Allwinner H700, Rockchip mainline and Amlogic devices
+- Lenovo Legion Go S controller LEDs stayed dark after boot until the controller settings were opened
 - Libretro-Gambatte could not load older save states (e.g. from RomM / EmulatorJS)
 - PPSSPP exit hotkey did nothing when no controller was connected
+- Qualcomm devices crashed recording 720p video with the hardware encoder
+- Restarting EmulationStation from its init script failed on Wayland (labwc)
 - RetroArch 2xScaleHQ shader failed to load
 - RetroArch held the left stick up on Bluetooth Xbox controllers (xpadneo)
 - Retroid Pocket Classic speaker only played one audio channel
 - RPCS3 data move copied symlinked dev_hdd0 folders (e.g. games on another drive) in full, and failed when dev_hdd0 itself was a link
+- Screenshots and batocera-resolution failed on Wayland without a login environment (e.g. over SSH)
 - SDLPoP was stretched to 16:10 behind its 4:3 bezel
+- SM8550 devices: speakers came back at full volume after suspend, and USB on the AYANEO Pocket DS stopped working after resume
+- Some Anbernic H700 devices stopped charging short of a full battery and never showed it as full
+- Sound card setup commands in UCM profiles failed, breaking audio on cards such as the Steam Deck OLED
+- Standalone MAME bezels failed for vector games
 - Steam games that go through a second launcher (EA app) returned to EmulationStation before the game opened
 - Support file creation hung when Bluetooth was off, and passwords in the logs folder were not removed
 - System upgrades deleted preshare.sh, postshare.sh and network-connman.config from the boot partition
+- The boot logo was cropped on ultra-wide screens
+- The netplay password was shown in the batocera-launch debug log
+- UZDoom wrote no log file and failed to start on GLES-only GPUs (PowerVR)
 - Visual Pinball on Wayland (labwc): the playfield lost keyboard and controller focus to the backglass and needed alt-tab, and the score view was not placed on the third screen
 - Wayland (labwc): a second screen was not placed beside the first unless a display position was set
 - Wayland (labwc): the resolution limit was lost when a screen dropped and came back
@@ -51,15 +81,22 @@
 - Windows: the FPS limiter option had no effect on DXVK games
 - wiringOP (wiringpi Python) could not identify the board on Orange Pi images
 - Xenia Canary / Edge signed in a profile for every player slot, not just the connected pads
-- Anbernic H700 devices stopped charging short of a full battery and never showed it as full
+- YCbCr 4:2:0-only modes (such as some 4K 60 Hz modes) were missing from the resolution list
 ### Changed / Improved
 - AE light gun driver is no longer included, it was seen as a generic mouse like some trackballs
+- Anbernic H700 devices charge the battery at the vendor 1500 mA
+- Anbernic RG 55G1 back key opens the BCC now
+- Bluetooth controller unpair and re-pair is more reliable
 - Boot logo is drawn on each screen of dual-screen devices with that screen's size and rotation
+- BCC is now drawn by EmulationStation so it follows the GUI theme
 - Handheld LED chroma mode cycles through the colours more slowly
 - KICKPI K3B boot splash video uses hardware decoding
 - KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
 - Power modes default to Balanced on the charger and Conservative on battery, and switch when the charger is plugged in or out
+- SDLPoP exits faster under gamescope
+- Steam exit hotkey closes the game through batocera-steam-exit
 - Support file gathers more information for a wider array of devices
+- The menu entry to unlock the UI is hidden when kiosk or kid mode is forced from the command line
 - WASM4 supports .zip roms
 ### Updated
 - Amiberry to v8.5.0
@@ -83,6 +120,7 @@
 - ShadPS4 to v.0.21.0
 - Snes9x to Sep 24, 2026 build
 - TIC-80 to v1.4.1
+- Visual Pinball to Nov 25, 2026 build
 - Vita3k to Nov 19, 2026 build
 - Xash3D-FWGS (Half-Life engine) HLSDK mobile_hacks to Nov 7, 2026 build
 - Xemu to v0.8.139
@@ -99,7 +137,9 @@
 - Qualcomm QCS6490 device kernel updated to 7.3.5
 - Qualcomm SM4450 device kernel updated to 7.3.5
 - Qualcomm SM6115 device kernel updated to 7.3.5
+- Qualcomm SM8250 device kernel updated to 7.3.5
 - Qualcomm SM8550 device kernel updated to 7.3.5
+- Qualcomm SM8750 device kernel updated to 7.3.5
 - Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
 - U-Boot updated to 2026.10 on Allwinner H3, H5, H6, H616 and T527 and Rockchip RK3288 and RK3399 devices
