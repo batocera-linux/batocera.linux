@@ -13,7 +13,7 @@ from .control_config import (
     reverse_mapping as reverse_mapping,
 )
 from .gun_precalibration import precalibrate_mame_guns as precalibrate_mame_guns
-from .info import get_machine_size as get_machine_size
+from .info import get_machine_rotation as get_machine_rotation
 from .mame_control_scheme import (
     MameControlScheme as MameControlScheme,
     load_mame_control_scheme as load_mame_control_scheme,
