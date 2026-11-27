@@ -5,8 +5,10 @@
 
 from pathlib import Path
 import yaml
+import json
 
 def images_info_to_board_line(filepath: Path) -> str:
+    res = []
     path = Path(filepath)
   
     with open(path, 'r', encoding='utf-8') as f:
@@ -19,8 +21,14 @@ def images_info_to_board_line(filepath: Path) -> str:
             raise Exception("no hardware found for board")
         for hardware in image["hardwares"]:
             path = filepath.relative_to("board/batocera").parent
-            print(f"  [\"arch\"=> \"{image["name"]}\", \"path\" => \"{path}\", \"family\" => \"{image["family"]}\", \"name\" => \"{hardware["name"]}\", \"vendor\" => \"{hardware["vendor"]}\", \"type\" => \"{hardware["type"]}\"],")
-
+            res.append({"arch": f"{image["name"]}",
+                        "path": f"{path}",
+                        "family": f"{image["family"]}",
+                        "name": f"{hardware["name"]}",
+                        "vendor": f"{hardware["vendor"]}",
+                        "type": f"{hardware["type"]}",
+                        })
+    return res
 images_infos = list(Path("board").rglob("image.infos"))
 genimages    = list(Path("board").rglob("genimage.cfg"))
 
@@ -38,9 +46,16 @@ for x in genimages_dict:
     if x not in images_infos_dict:
         print(f"genimage.cfg without image.infos ({x})")
 
-print("<?php")
-print("$boards = [")
+all = []
 for images_info in images_infos:
-    images_info_to_board_line(images_info)
-print("];")
-print("?>")
+    all.extend(images_info_to_board_line(images_info))
+
+# id
+n = 1
+for x, obj in enumerate(all):
+    all[x]["id"] = n
+    #all[x]["doc"] = ""
+    #all[x]["labeled"] = False
+    n = n+1
+
+print(json.dumps({"boards": all}, indent=2))
