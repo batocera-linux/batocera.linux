@@ -21,7 +21,7 @@
 from __future__ import annotations
 
 from argparse import ArgumentParser, Namespace
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, Self
 
@@ -45,7 +45,7 @@ class Arguments:
     core: str | None
     players: tuple[PlayerArguments | None, ...]
     netplaymode: str | None
-    netplaypass: str | None
+    netplaypass: str | None = field(repr=False)
     netplayip: str | None
     netplayport: str | None
     netplaysession: str | None
@@ -63,9 +63,9 @@ class Arguments:
     def from_namespace(cls, args: Namespace, max_players: int) -> Self:
         arguments_dict: dict[str, Any] = {}
 
-        for field in fields(cls):
-            if field.name == 'players':
-                arguments_dict[field.name] = tuple(
+        for arg in fields(cls):
+            if arg.name == 'players':
+                arguments_dict[arg.name] = tuple(
                     None
                     if (index := getattr(args, f'p{p}index')) is None
                     or (guid := getattr(args, f'p{p}guid')) is None
@@ -86,7 +86,7 @@ class Arguments:
                     for p in range(1, max_players + 1)
                 )
             else:
-                arguments_dict[field.name] = getattr(args, field.name)
+                arguments_dict[arg.name] = getattr(args, arg.name)
 
         return cls(**arguments_dict)
 
