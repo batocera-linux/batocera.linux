@@ -214,26 +214,15 @@ _get_current_transform() {
     esac
 }
 
-# modes a sink only takes as YCbCr 4:2:0 sit in the EDID's Y420 video data block; TVs tend to show
-# no picture on them, so they are left out of every listing
-_420_only_modes() {
-    local edid
-    edid=$(ls /sys/class/drm/card*-"$1"/edid 2>/dev/null | head -n1)
-    [ -n "${edid}" ] || return 0
-    edid-decode "${edid}" 2>/dev/null | sed -n '/YCbCr 4:2:0 Video Data Block/,/^  [^ ]/p' | awk '/VIC/ { printf "%s@%.0f\n", $3, $4 }'
-}
-
 # Get all available modes for a screen
 _get_available_modes() {
     local screen_name="$1"
     local screen_block
     local modes_section
-    local skip
 
     if [ -z "${screen_name}" ]; then
         return 1
     fi
-    skip=$(_420_only_modes "${screen_name}" | tr '\n' ' ')
 
     screen_block=$(_get_screen_block "${screen_name}")
     if [ $? -ne 0 ]; then
@@ -255,7 +244,7 @@ _get_available_modes() {
             elif [ -n "${resolution}" ]; then
                 printf "%s\n" "${resolution}"
             fi
-        done | awk -F'[@H]' -v skip=" ${skip} " '!index(skip, " " $1 "@" int($2 + 0.5) " ")' | sort -u | sort -Vr
+        done | sort -u | sort -Vr
 }
 
 # wlr-randr prints the refresh as a float, so "59.939999" has to round back up to 59940 mHz
