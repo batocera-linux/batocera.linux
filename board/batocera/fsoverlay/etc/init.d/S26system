@@ -72,6 +72,7 @@ case "$1" in
     ba_timezone &
     ba_hostname &
     ba_es_core_dump &
+    /usr/bin/batocera-battery-charge apply >/dev/null 2>&1 &
     echo "done."
     ;;
   stop)
