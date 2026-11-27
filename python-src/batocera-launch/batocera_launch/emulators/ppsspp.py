@@ -27,7 +27,7 @@ from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CONFIGS, SAVES
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Controller, Emulator, HotkeysContext
+from batocera_launch import Command, Controller, Emulator, HotkeysContext, state_manager
 from batocera_launch.paths import CONF_INIT
 
 if TYPE_CHECKING:
@@ -222,8 +222,6 @@ class PPSSPP(Emulator):
                 'fastforward': 'KEY_F2',
                 'next_slot': 'KEY_F6',
                 'previous_slot': 'KEY_F5',
-                'save_state': 'KEY_F3',
-                'restore_state': 'KEY_F4',
             },
         }
 
@@ -388,8 +386,9 @@ class PPSSPP(Emulator):
         # the exit hotkey uses Exit App, which otherwise asks to confirm after 5 minutes of unsaved play
         ini_config.set('General', 'AskForExitConfirmationAfterSeconds', '0')
 
-        # SaveState
-        ini_config.set('General', 'StateSlot', self.config.get_str('state_slot', '0'))
+        # the save state manager picks the slot, and its spec has the default five
+        ini_config.set('General', 'StateSlot', str(state_manager(self.config).slot or 0))
+        ini_config.set('General', 'SaveStateSlotCount', '5')
 
         ## [UPGRADE] - don't upgrade
         if not ini_config.has_section('Upgrade'):
@@ -497,9 +496,7 @@ class PPSSPP(Emulator):
         if self.resolution.width <= 480 or self.resolution.height <= 480:
             args.extend(['--dpi', '0.5'])
 
-        # state_slot option
-        if state_filename := self.config.get_str('state_filename'):
-            args.append(f'--state={state_filename}')
+        args.extend(state_manager(self.config).boot_args)
 
         return Command(
             args,

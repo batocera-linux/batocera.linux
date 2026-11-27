@@ -31,13 +31,15 @@ from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import CACHE, CONFIGS
 from batocera_common.vulkan import get_vulkan_info
-from batocera_launch import Command, Emulator, HotkeysContext, Input
+from batocera_launch import Command, Emulator, HotkeysContext, Input, state_manager
 from batocera_launch.paths import DATAINIT_DIR, configure_emulator
 
 _logger = logging.getLogger(__name__)
 
 _PCSX2_BIN_DIR: Final = Path('/usr/pcsx2/bin')
 _PCSX2_RESOURCES_DIR: Final = _PCSX2_BIN_DIR / 'resources'
+
+_STATE_SLOTS: Final = range(1, 11)
 
 # PCSX2/Pad.cpp Pad_subtype values for the wheel devices we support
 _WHEEL_TYPE_MAPPING: Final = {
@@ -146,8 +148,6 @@ class Pcsx2(Emulator):
                 'exit': ['KEY_LEFTALT', 'KEY_F4'],
                 'menu': 'KEY_ESC',
                 'pause': 'KEY_ESC',
-                'save_state': 'KEY_F1',
-                'restore_state': 'KEY_F3',
                 'previous_slot': ['KEY_LEFTSHIFT', 'KEY_F2'],
                 'next_slot': 'KEY_F2',
             },
@@ -231,12 +231,7 @@ class Pcsx2(Emulator):
         if not pcsx2_patches.exists():
             shutil.copy(DATAINIT_DIR / 'bios' / 'ps2' / 'patches.zip', pcsx2_patches)
 
-        # state_slot option
-        if state_filename := self.config.get('state_filename'):
-            command_array.extend(['-statefile', state_filename])
-
-        if state_slot := self.config.get_str('state_slot'):
-            command_array.extend(['-stateindex', state_slot])
+        command_array.extend(state_manager(self.config).boot_args)
 
         return Command(command_array, env=envcmd)
 
@@ -506,11 +501,8 @@ class Pcsx2(Emulator):
         # TV Shader
         pcsx2_ini_config.set('EmuCore/GS', 'TVShader', self.config.get('pcsx2_shaderset', '0'))
 
-        pcsx2_ini_config.set(
-            'EmuCore',
-            'AutoIncrementSlot',
-            self.config.get_bool('incrementalsavestates', True, return_values=('true', 'false')),
-        )
+        # the save state manager picks a new slot for each save; incrementing would move its slot hotkeys
+        pcsx2_ini_config.set('EmuCore', 'AutoIncrementSlot', 'false')
 
         pcsx2_ini_config.set(
             'EmuCore', 'SaveStateOnShutdown', self.config.get_bool('autosave', return_values=('true', 'false'))
@@ -539,7 +531,8 @@ class Pcsx2(Emulator):
         pcsx2_ini_config.set('Hotkeys', 'ToggleFullscreen', 'Keyboard/Alt & Keyboard/Return')
         pcsx2_ini_config.set('Hotkeys', 'CycleAspectRatio', 'Keyboard/F6')
         pcsx2_ini_config.set('Hotkeys', 'CycleInterlaceMode', 'Keyboard/F5')
-        pcsx2_ini_config.set('Hotkeys', 'GSDumpMultiFrame', 'Keyboard/Control & Keyboard/Shift & Keyboard/F8')
+        # Control & Shift & F8 saves slot 8
+        pcsx2_ini_config.remove_option('Hotkeys', 'GSDumpMultiFrame')
         pcsx2_ini_config.set('Hotkeys', 'Screenshot', 'Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'GSDumpSingleFrame', 'Keyboard/Shift & Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'ToggleSoftwareRendering', 'Keyboard/F9')
@@ -550,6 +543,12 @@ class Pcsx2(Emulator):
         pcsx2_ini_config.set('Hotkeys', 'SaveStateToSlot', 'Keyboard/F1')
         pcsx2_ini_config.set('Hotkeys', 'NextSaveStateSlot', 'Keyboard/F2')
         pcsx2_ini_config.set('Hotkeys', 'PreviousSaveStateSlot', 'Keyboard/Shift & Keyboard/F2')
+        # the save state manager's keys for each slot
+        for slot in _STATE_SLOTS:
+            pcsx2_ini_config.set('Hotkeys', f'LoadStateFromSlot{slot}', f'Keyboard/Control & Keyboard/F{slot}')
+            pcsx2_ini_config.set(
+                'Hotkeys', f'SaveStateToSlot{slot}', f'Keyboard/Control & Keyboard/Shift & Keyboard/F{slot}'
+            )
         pcsx2_ini_config.set('Hotkeys', 'OpenPauseMenu', 'Keyboard/Escape')
         pcsx2_ini_config.set('Hotkeys', 'ShutdownVM', 'Keyboard/Alt & Keyboard/F4')
         pcsx2_ini_config.set('Hotkeys', 'ToggleFrameLimit', 'Keyboard/Shift & Keyboard/F4')

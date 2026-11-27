@@ -280,6 +280,60 @@ def test_saving_in_the_current_slot_keeps_the_previous_state(make: _Make, send: 
     assert states.request('load', 2) == RESTART
 
 
+def test_the_state_directory_is_created(make: _Make, tmp_path: Path) -> None:
+    make({'directory': str(tmp_path / 'saves' / 'sstates'), 'file': '{{romfilename}}.{{slot2d}}.p2s'})
+
+    assert (tmp_path / 'saves' / 'sstates').is_dir()
+
+
+def test_saving_in_the_current_slot_moves_its_screenshot(make: _Make, tmp_path: Path) -> None:
+    es = tmp_path / 'es'
+    _save(es / 'test_0.ppst', b'old')
+    _save(es / 'test_0.jpg', b'old shot')
+    states = make(
+        {
+            'file': '{{romfilename}}_{{slot0}}.ppst',
+            'image': '{{romfilename}}_{{slot0}}.jpg',
+            'slots': [0, 4],
+            'keys': {'save': 'KEY_F3', 'restore': 'KEY_F4'},
+        }
+    )
+    states.hotkeys_context({'name': 'ppsspp', 'keys': {}})
+
+    assert states.request('save') == DONE
+
+    assert _files(es) == {'test_1.jpg': b'old shot', 'test_1.ppst': b'old'}
+
+
+_MUPEN: dict[str, Any] = {
+    'file': '{{romfilename}}.st{{slot0}}',
+    'slots': [0, 9],
+    'keys': {'save': 'KEY_F5', 'restore': 'KEY_F7', 'slot': 'KEY_{slot}'},
+}
+
+
+def test_a_slot_key_selects_the_slot_before_saving_or_loading(make: _Make, send: MagicMock, tmp_path: Path) -> None:
+    _save(tmp_path / 'es' / 'test.st0', b'zero')
+    _save(tmp_path / 'es' / 'test.st2', b'two')
+    states = make(_MUPEN)
+    states.hotkeys_context({'name': 'mupen64', 'keys': {}})
+
+    assert not states.spec.current_slot  # pyright: ignore[reportOptionalMemberAccess]
+    assert states.request('save') == DONE
+    assert states.request('load', 0) == DONE
+    assert states.request('load') == DONE
+    assert states.request('load', 5) == RESTART
+
+    assert [call.args[0] for call in send.call_args_list] == [
+        'savestate_slot_1',
+        'savestate_save',
+        'savestate_slot_0',
+        'savestate_restore',
+        'savestate_slot_2',
+        'savestate_restore',
+    ]
+
+
 def test_mame_folders_named_after_the_game_flatten_into_the_system(make: _Make, tmp_path: Path) -> None:
     state = tmp_path / 'state'
     _save(state / 'test' / '1.sta', b'one')

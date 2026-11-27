@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 from batocera_common.configparser import CaseSensitiveConfigParser
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.paths import BIOS, CONFIGS, SAVES, SCREENSHOTS
-from batocera_launch import Command, Emulator, HotkeysContext
+from batocera_launch import Command, Emulator, HotkeysContext, state_manager
 
 from .controllers import Mupen64PlusControllersMixin
 
@@ -57,8 +57,6 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
             'name': 'mupen64',
             'keys': {
                 'exit': 'KEY_ESC',
-                'save_state': 'KEY_F5',
-                'restore_state': 'KEY_F7',
                 'menu': 'KEY_P',
                 'pause': 'KEY_P',
             },
@@ -114,9 +112,7 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
             self.config_dir,
         ]
 
-        # state_filename option
-        if state_filename := self.config.get('state_filename'):
-            args.extend(['--savestate', state_filename])
+        args.extend(state_manager(self.config).boot_args)
 
         # custom cheats option
         if cheats := self.config.get_str('mupen64plus_cheats', '').strip():
@@ -128,7 +124,14 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
 
     def _set_mupen_config(self, ini_config: CaseSensitiveConfigParser, /) -> None:
         # Hotkeys
+        if not ini_config.has_section('CoreEvents'):
+            ini_config.add_section('CoreEvents')
         _clean_hotkey_config(ini_config)
+        # the save state manager's keys, as SDL 1 keysyms: F5, F7 and 0-9
+        ini_config.set('CoreEvents', 'Kbd Mapping Save State', '286')
+        ini_config.set('CoreEvents', 'Kbd Mapping Load State', '288')
+        for slot in range(10):
+            ini_config.set('CoreEvents', f'Kbd Mapping Slot {slot}', str(48 + slot))
 
         # Paths
         if not ini_config.has_section('Core'):
@@ -146,12 +149,9 @@ class Mupen64Plus(Mupen64PlusControllersMixin, Emulator):
         # 4MB RAM Extention Pack
         ini_config.set('Core', 'DisableExtraMem', str(self.config.get_bool('mupen64plus_DisableExtraMem')))
 
-        # state_slot option, AutoStateSlotIncrement could be set too depending on the es option
-        if state_slot := self.config.get_str('state_slot'):
-            ini_config.set('Core', 'CurrentStateSlot', state_slot)
-
-        # increment savestates
-        ini_config.set('Core', 'AutoStateSlotIncrement', str(self.config.get_bool('incrementalsavestates', True)))
+        # the save state manager selects a slot before each save or load
+        ini_config.set('Core', 'CurrentStateSlot', str(state_manager(self.config).slot or 0))
+        ini_config.set('Core', 'AutoStateSlotIncrement', 'False')
 
         # Create section for Audio-SDL
         if not ini_config.has_section('Audio-SDL'):

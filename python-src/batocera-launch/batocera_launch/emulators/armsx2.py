@@ -525,7 +525,8 @@ class Armsx2(Emulator):
         pcsx2_ini_config.set('Hotkeys', 'ToggleFullscreen', 'Keyboard/Alt & Keyboard/Return')
         pcsx2_ini_config.set('Hotkeys', 'CycleAspectRatio', 'Keyboard/F6')
         pcsx2_ini_config.set('Hotkeys', 'CycleInterlaceMode', 'Keyboard/F5')
-        pcsx2_ini_config.set('Hotkeys', 'GSDumpMultiFrame', 'Keyboard/Control & Keyboard/Shift & Keyboard/F8')
+        # Control & Shift & F8 saves slot 8
+        pcsx2_ini_config.remove_option('Hotkeys', 'GSDumpMultiFrame')
         pcsx2_ini_config.set('Hotkeys', 'Screenshot', 'Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'GSDumpSingleFrame', 'Keyboard/Shift & Keyboard/F8')
         pcsx2_ini_config.set('Hotkeys', 'ToggleSoftwareRendering', 'Keyboard/F9')
