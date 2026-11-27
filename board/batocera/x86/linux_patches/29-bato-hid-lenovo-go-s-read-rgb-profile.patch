@@ -1,0 +1,23 @@
+hid-lenovo-go-s: read the active RGB profile at setup
+
+rgb_profile stayed 0 until userspace read the profile attribute, so the
+RGB stores wrote their profile to index 2 (LIGHT_PROFILE_SEL) and the MCU
+rejected them with -EIO, leaving the joystick rings dark after boot.
+
+diff --git a/drivers/hid/hid-lenovo-go-s.c b/drivers/hid/hid-lenovo-go-s.c
+--- a/drivers/hid/hid-lenovo-go-s.c
++++ b/drivers/hid/hid-lenovo-go-s.c
+@@ -1704,6 +1704,13 @@
+ 		return;
+ 	}
+ 
++	/* the RGB attributes address the active profile, unread they write to LIGHT_PROFILE_SEL */
++	ret = mcu_property_out(drvdata->hdev, GET_RGB_CFG, LIGHT_PROFILE_SEL, NULL, 0);
++	if (!ret && drvdata->rgb_profile >= 1 && drvdata->rgb_profile <= 3)
++		ret = mcu_property_out(drvdata->hdev, GET_RGB_CFG, drvdata->rgb_profile + 2, NULL, 0);
++	if (ret)
++		dev_warn(&drvdata->hdev->dev, "Failed to retrieve RGB profile: %i\n", ret);
++
+ /* Pairs with smp_store_release from below */
+ 	gp_registered = smp_load_acquire(&drvdata->gp_registered);
+ 	if (gp_registered)
