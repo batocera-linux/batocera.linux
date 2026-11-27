@@ -157,6 +157,10 @@ draw_logo () {
             if { [ "${video_rotation}" = "1" ] || [ "${video_rotation}" = "3" ]; } && [ "${WIDTH}" -gt "${HEIGHT}" ]; then
                 logo_filter="scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=decrease,pad=${CROP_WIDTH}:${CROP_HEIGHT}:(ow-iw)/2:(oh-ih)/2:black"
             fi
+            # ultra-wide (marquee) screens: cropping cuts the artwork off, fit its middle band and fade the sides into the background
+            if [ "$((CROP_WIDTH * 5))" -gt "$((CROP_HEIGHT * 12))" ]; then
+                logo_filter="crop=iw:ih*2/3,split[a][b];[a]scale=${CROP_WIDTH}:${CROP_HEIGHT},setsar=1,drawbox=t=fill:color=0x030709[bg];[b]scale=w=${CROP_WIDTH}:h=${CROP_HEIGHT}:force_original_aspect_ratio=decrease,format=rgba,geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='255*min(1,min(X,W-1-X)/(W/6))'[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,format=rgb24"
+            fi
             # png, not bmp: fbv reads png faster than bmp on slow devices
             cropped_image="/tmp/boot-logo-cropped.png"
             if [ -f "${image}" ]; then

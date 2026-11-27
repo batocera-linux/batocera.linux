@@ -82,6 +82,12 @@ def logo(image, width, height, rotation):
     vf = "scale=w=%d:h=%d:force_original_aspect_ratio=increase,crop=%d:%d" % (w, h, w, h)
     if rotation in ("1", "3") and width > height:
         vf = "scale=w=%d:h=%d:force_original_aspect_ratio=decrease,pad=%d:%d:(ow-iw)/2:(oh-ih)/2:black" % (w, h, w, h)
+    # ultra-wide (marquee) screens: cropping cuts the artwork off, fit its middle band and fade the sides into the background
+    if w * 5 > h * 12:
+        vf = ("crop=iw:ih*2/3,split[a][b];[a]scale=%d:%d,setsar=1,drawbox=t=fill:color=0x030709[bg];"
+              "[b]scale=w=%d:h=%d:force_original_aspect_ratio=decrease,format=rgba,"
+              "geq=r='r(X,Y)':g='g(X,Y)':b='b(X,Y)':a='255*min(1,min(X,W-1-X)/(W/6))'[fg];"
+              "[bg][fg]overlay=(W-w)/2:(H-h)/2,format=rgb24" % (w, h, w, h))
     vf += {"1": ",transpose=1", "2": ",hflip,vflip", "3": ",transpose=2"}.get(rotation, "")
     return subprocess.run(["ffmpeg", "-v", "quiet", "-threads", "1", "-i", image, "-vf", vf,
                            "-pix_fmt", "bgr0", "-f", "rawvideo", "-"], stdout=subprocess.PIPE, check=True).stdout
