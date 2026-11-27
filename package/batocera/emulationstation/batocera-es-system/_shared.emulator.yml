@@ -2,19 +2,22 @@ custom_features:
   powermode:
     group: POWER OPTIONS
     prompt: POWER MODE
-    description: Adjust the CPU power frequency profile whilst in-game. Some systems will benefit from improved voltage handling.
+    description: CPU speed, from Power Saver (slowest) to High Performance (full speed).
     choices:
-      High Performance: highperformance
-      Balanced: balanced
       Power Saver: powersaver
+      Conservative: conservative
+      Balanced: balanced
+      High Performance: highperformance
   batterymode:
     group: POWER OPTIONS
     prompt: BATTERY MODE
-    description: CPU power profile whilst on battery, replacing the global Power Mode. A system or game Power Mode still takes priority.
+    description: Power Mode on battery.
+    requires: battery
     choices:
-      High Performance: highperformance
-      Balanced: balanced
       Power Saver: powersaver
+      Conservative: conservative
+      Balanced: balanced
+      High Performance: highperformance
   videomode:
     prompt: VIDEO MODE
     description: Set the display's resolution. Does not affect the rendering resolution.

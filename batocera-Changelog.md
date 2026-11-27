@@ -11,6 +11,7 @@
 - Initial support for the Avaota A1
 - Initial support for the Radxa Cubie A5E
 ### Added
+- Conservative power mode
 - FightBox R10-PRO controller configuration
 - Gamescope option for games on Wayland images with Vulkan, set globally, per system or per game, with game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
   Windows games run inside gamescope use WINE Proton unless a runner is chosen
@@ -56,6 +57,7 @@
 - Handheld LED chroma mode cycles through the colours more slowly
 - KICKPI K3B boot splash video uses hardware decoding
 - KICKPI K3B thermal monitoring, memory frequency scaling, watchdog and hardware JPEG / video decoding
+- Power modes default to Balanced on the charger and Conservative on battery, and switch when the charger is plugged in or out
 - Support file gathers more information for a wider array of devices
 - WASM4 supports .zip roms
 ### Updated

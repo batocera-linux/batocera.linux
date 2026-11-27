@@ -29,6 +29,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal, Self, cast, ove
 from batocera_common.dataclasses import cached_dataclass, cached_property
 from batocera_common.key_value_config import KeyValueConfig
 from batocera_common.paths import BATOCERA_CONF
+from batocera_common.settings import settings_sections
 
 from ..exceptions import MissingEmulator
 from ..paths import BATOCERA_SHADERS, SYSTEM_ES_DIR, USER_ES_DIR, USER_SHADERS
@@ -42,16 +43,6 @@ if TYPE_CHECKING:
     from ..cli.arguments import Arguments
 
 _logger: Final = logging.getLogger(__name__)
-
-
-def _settings_sections(system: str, rom: Path, /) -> Iterator[str]:
-    # sanitize rule by EmulationStation
-    # see FileData::getConfigurationName() on batocera-emulationstation
-    settings_name = rom.name.replace('=', '').replace('#', '')
-
-    yield f'{system}["{settings_name}"]'  # game-specific
-    yield f'{system}.folder["{rom.parent}"]'  # folder-specific
-    yield system
 
 
 def _system_emulators(system: str, /) -> set[str] | None:
@@ -199,7 +190,7 @@ class SystemConfig(Config):
         object.__setattr__(self, 'use_spinners', self.get_bool('use_spinners'))
 
     def remove_user_setting(self, key: str, value: str, /) -> None:
-        names = {f'{section}.{key}' for section in _settings_sections(self.system, self.rom)}
+        names = {f'{section}.{key}' for section in settings_sections(self.system, self.rom)}
         lines = BATOCERA_CONF.read_text(encoding='latin1').splitlines(keepends=True)
         kept = [
             line
@@ -240,7 +231,7 @@ class SystemConfig(Config):
 
         rom = args.rom
 
-        system_settings = ChainMap(*(user_config.section(section) for section in _settings_sections(args.system, rom)))
+        system_settings = ChainMap(*(user_config.section(section) for section in settings_sections(args.system, rom)))
         global_settings = user_config.section('global')
         user_settings = ChainMap(system_settings, global_settings)
         system_defaults = load_system_defaults(args.system)
