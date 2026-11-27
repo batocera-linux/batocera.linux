@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-async def get_machine_size(machine: str, tmpdir: Path, /):
+async def get_machine_rotation(machine: str, tmpdir: Path, /) -> int:
     try:
         result = await run(MAME_BIN_DIR / 'mame', '-listxml', machine, check=True, text=True)
     except Exception as e:
@@ -44,11 +44,8 @@ async def get_machine_size(machine: str, tmpdir: Path, /):
     info_dom = minidom.parse(str(info_file))
     display = info_dom.getElementsByTagName('display')
 
+    # vector screens have no width or height
     for element in display:
-        return (
-            int(element.getAttribute('width')),
-            int(element.getAttribute('height')),
-            int(element.getAttribute('rotate')),
-        )
+        return int(element.getAttribute('rotate'))
 
     raise BatoceraException('Display element not found')

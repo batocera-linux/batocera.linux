@@ -31,7 +31,7 @@ from PIL import Image
 from batocera_common.dataclasses import cached_dataclass
 from batocera_common.paths import BATOCERA_SHARE_DIR
 from batocera_launch import BezelFiles, create_gun_border_image, create_transparent_image, get_image_size
-from batocera_launch_mame_common import get_machine_size
+from batocera_launch_mame_common import get_machine_rotation
 
 from .base import MAMEBase
 
@@ -44,6 +44,7 @@ class MAMEBezels(MAMEBase):
         try:
             await self.__write_bezel_config(self.bezel_set)
         except Exception:
+            _logger.exception('Bezel setup failed, continuing without it')
             await self.__write_bezel_config(None)
 
     async def __write_bezel_config(self, bezel_set: str | None, /) -> None:
@@ -119,7 +120,7 @@ class MAMEBezels(MAMEBase):
                 bz_height = image_height - bz_y - bz_bottom
             else:
                 image_width, image_height = get_image_size(bezel_files.png)
-                _, _, rotate = await get_machine_size(self.rom.stem, tmp_zip_dir)
+                rotate = await get_machine_rotation(self.rom.stem, tmp_zip_dir)
 
                 # assumes that all bezels are setup for 4:3H or 3:4V aspects
                 if rotate == 270 or rotate == 90:
