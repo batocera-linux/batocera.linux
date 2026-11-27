@@ -25,10 +25,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from batocera_common.devfreq import STATE_DIR, detect_knobs, should_boost
 from batocera_common.fan import PROFILE_FILE, current_fan_profile
-from batocera_common.paths import BATOCERA_CONF
 from batocera_launch.plugin_manager import HookContext
-from batocera_launch.plugins.devfreq import STATE_DIR, DevfreqPlugin, detect_knobs, should_boost
+from batocera_launch.plugins.devfreq import DevfreqPlugin
 from batocera_launch.plugins.fan import FanPlugin
 from batocera_launch.plugins.power import PowerModePlugin, resolve_power_mode
 from batocera_launch.plugins.tdp import LIVE_CHANGES, TdpPlugin, tdp_watts
@@ -52,12 +52,12 @@ def _write(path: Path, content: str) -> None:
 
 @pytest.fixture
 def on_mains(mocker: MockerFixture) -> None:
-    mocker.patch('batocera_launch.plugins.power.is_power_connected', return_value=True)
+    mocker.patch('batocera_common.power.is_power_connected', return_value=True)
 
 
 @pytest.fixture
 def on_battery(mocker: MockerFixture) -> None:
-    mocker.patch('batocera_launch.plugins.power.is_power_connected', return_value=False)
+    mocker.patch('batocera_common.power.is_power_connected', return_value=False)
 
 
 @pytest.fixture
@@ -83,8 +83,14 @@ class TestResolvePowerMode:
         assert resolve_power_mode(launch_config) == 'powersaver'
 
     @pytest.mark.usefixtures('on_mains')
-    def test_nothing_set(self, launch_config: SystemConfig) -> None:
-        assert resolve_power_mode(launch_config) is None
+    def test_nothing_set_on_mains_is_balanced(self, launch_config: SystemConfig) -> None:
+        assert resolve_power_mode(launch_config) == 'balanced'
+
+    @pytest.mark.usefixtures('on_battery')
+    @pytest.mark.launch_config_system_settings({'powermode': 'auto'})
+    @pytest.mark.launch_config_global_settings({'powermode': 'powersaver'})
+    def test_auto_on_battery_is_conservative(self, launch_config: SystemConfig) -> None:
+        assert resolve_power_mode(launch_config) == 'conservative'
 
 
 @pytest.mark.usefixtures('on_mains')
@@ -98,36 +104,46 @@ class TestPowerModePlugin:
     def test_start_applies_the_resolved_mode(self, apply_power_mode: Mock, hook_context: HookContext) -> None:
         PowerModePlugin().start(hook_context)
 
-        apply_power_mode.assert_called_once_with('powersaver', user_config=hook_context.config.user_config)
+        apply_power_mode.assert_called_once_with('powersaver')
 
     @pytest.mark.launch_config_system_settings({'powermode': 'powersaver'})
     @pytest.mark.launch_config_global_settings({'powermode': 'balanced'})
     def test_stop_restores_the_global_mode(self, apply_power_mode: Mock, hook_context: HookContext) -> None:
         PowerModePlugin().stop(hook_context)
 
-        apply_power_mode.assert_called_once_with('balanced', user_config=hook_context.config.user_config)
+        apply_power_mode.assert_called_once_with('balanced')
 
     @pytest.mark.launch_config_system_settings({'powermode': 'powersaver'})
-    def test_stop_without_a_global_mode_restores_the_default(
-        self, apply_power_mode: Mock, hook_context: HookContext
-    ) -> None:
+    def test_stop_without_a_global_mode_is_balanced(self, apply_power_mode: Mock, hook_context: HookContext) -> None:
         PowerModePlugin().stop(hook_context)
 
-        apply_power_mode.assert_called_once_with(None, user_config=hook_context.config.user_config)
+        apply_power_mode.assert_called_once_with('balanced')
+
+    @pytest.mark.launch_config_system_settings({'powermode': 'highperformance'})
+    def test_stop_on_battery_without_a_battery_mode_is_conservative(
+        self, mocker: MockerFixture, apply_power_mode: Mock, hook_context: HookContext
+    ) -> None:
+        # it used to leave the device default governor, performance on most boards, running on battery
+        mocker.patch('batocera_common.power.is_power_connected', return_value=False)
+
+        PowerModePlugin().stop(hook_context)
+
+        apply_power_mode.assert_called_once_with('conservative')
 
 
 class TestShouldBoost:
     @pytest.mark.parametrize(
-        ('mode', 'expected'), [('highperformance', True), ('balanced', False), ('powersaver', False), ('bogus', False)]
+        ('mode', 'expected'),
+        [
+            ('highperformance', True),
+            ('balanced', False),
+            ('conservative', False),
+            ('powersaver', False),
+            ('bogus', False),
+        ],
     )
     def test_from_the_power_mode(self, mode: str, expected: bool) -> None:
         assert should_boost(mode) is expected
-
-    @pytest.mark.parametrize(('governor', 'expected'), [('performance', True), ('schedutil', False)])
-    def test_from_the_system_governor_without_a_mode(self, governor: str, expected: bool) -> None:
-        _write(BATOCERA_CONF, f'system.cpu.governor={governor}\n')
-
-        assert should_boost(None) is expected
 
 
 def _initialize_sysfs_governor(

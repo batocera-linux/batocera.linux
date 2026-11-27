@@ -20,16 +20,26 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Final
 
 import pytest
 
 from batocera_common.paths import BATOCERA_CONF
-from batocera_common.power import CPU_DIR, CPUFREQ_DIR, POWER_SUPPLY_DIR, apply_power_mode, is_power_connected, main
+from batocera_common.power import (
+    CPU_DIR,
+    CPUFREQ_DIR,
+    GAME_CHANGES,
+    POWER_SUPPLY_DIR,
+    RunningGame,
+    apply_power_mode,
+    current_power_mode,
+    is_power_connected,
+    main,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
-    from pathlib import Path
     from unittest.mock import Mock
 
     from pytest_mock import MockerFixture
@@ -91,32 +101,22 @@ class TestApplyPowerMode:
         assert _governors() == {'powersave'}
         assert _epps() == {'power'}
 
-    def test_default_restores_the_system_governor(self) -> None:
-        _cpufreq('performance ondemand schedutil', epp='performance power')
-        _write(BATOCERA_CONF, 'system.cpu.governor=ondemand\n')
+    def test_conservative(self) -> None:
+        _cpufreq('performance conservative schedutil powersave', epp='default balance_power power')
 
-        apply_power_mode(None)
+        apply_power_mode('conservative')
 
-        assert _governors() == {'ondemand'}
-        assert _epps() == {'performance'}
+        assert _governors() == {'conservative'}
+        assert _epps() == {'balance_power'}
 
-    def test_default_leaves_epp_alone_under_performance(self, mocker: MockerFixture) -> None:
-        _cpufreq('performance schedutil', epp='default performance power')
-        _write(BATOCERA_CONF, 'system.cpu.governor=performance\n')
-        mock_set_epp = mocker.patch('batocera_common.power.set_epp')
+    def test_conservative_without_the_governor_is_balanced(self) -> None:
+        # amd-pstate-epp and intel_pstate only offer performance and powersave, the preference tells them apart
+        _cpufreq('performance powersave', epp='default balance_power power')
 
-        apply_power_mode(None)
+        apply_power_mode('conservative')
 
-        assert _governors() == {'performance'}
-        mock_set_epp.assert_not_called()
-
-    def test_default_ignores_an_unavailable_governor(self) -> None:
-        _cpufreq('performance schedutil')
-        _write(BATOCERA_CONF, 'system.cpu.governor=ondemand\n')
-
-        apply_power_mode('default')
-
-        assert _governors() == {'schedutil\n'}
+        assert _governors() == {'powersave'}
+        assert _epps() == {'balance_power'}
 
     def test_unknown_mode_changes_nothing(self) -> None:
         _cpufreq('performance schedutil')
@@ -173,7 +173,44 @@ class TestIsPowerConnected:
         assert is_power_connected()
 
 
+_GAME: Final = RunningGame('snes', Path('/userdata/roms/snes/Game.zip'))
+
+
+class TestCurrentPowerMode:
+    def test_a_control_center_change_wins(self) -> None:
+        _write(GAME_CHANGES, f'game={_GAME.rom}\nmode=powersaver\n')
+        _write(BATOCERA_CONF, 'snes["Game.zip"].powermode=balanced\n')
+
+        assert current_power_mode(_GAME, connected=True) == 'powersaver'
+
+    def test_a_change_to_another_game_is_ignored(self) -> None:
+        _write(GAME_CHANGES, 'game=/userdata/roms/snes/Other.zip\nmode=powersaver\n')
+        _write(BATOCERA_CONF, 'snes["Game.zip"].powermode=conservative\nsnes.powermode=highperformance\n')
+
+        assert current_power_mode(_GAME, connected=True) == 'conservative'
+
+    def test_the_system_mode(self) -> None:
+        _write(BATOCERA_CONF, 'snes.powermode=highperformance\nglobal.powermode=powersaver\n')
+
+        assert current_power_mode(_GAME, connected=True) == 'highperformance'
+
+    @pytest.mark.parametrize('value', ['auto', 'custom', ''])
+    def test_anything_else_follows_the_power_source(self, value: str) -> None:
+        _write(BATOCERA_CONF, f'snes.powermode={value}\nglobal.batterymode=powersaver\n')
+
+        assert current_power_mode(_GAME, connected=False) == 'powersaver'
+
+    def test_no_game_is_the_global_mode(self) -> None:
+        _write(BATOCERA_CONF, 'snes.powermode=highperformance\n')
+
+        assert current_power_mode(None, connected=False) == 'conservative'
+
+
 class TestMain:
+    @pytest.fixture(autouse=True)
+    def running_game(self, mocker: MockerFixture) -> Mock:
+        return mocker.patch('batocera_common.power.running_game', return_value=None)
+
     @pytest.fixture
     def mock_apply_power_mode(self, mocker: MockerFixture) -> Mock:
         return mocker.patch('batocera_common.power.apply_power_mode')
@@ -193,21 +230,19 @@ class TestMain:
 
         mock_apply_power_mode.assert_called_once_with('balanced')
 
-    def test_ac_without_a_mode_restores_the_default(
-        self, run_main: Callable[..., None], mock_apply_power_mode: Mock
-    ) -> None:
-        _write(BATOCERA_CONF, '')
+    def test_ac_defaults_to_balanced(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
+        _write(BATOCERA_CONF, 'global.powermode=auto\n')
 
         run_main('ac')
 
-        mock_apply_power_mode.assert_called_once_with(None)
+        mock_apply_power_mode.assert_called_once_with('balanced')
 
-    def test_battery_defaults_to_balanced(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
+    def test_battery_defaults_to_conservative(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         _write(BATOCERA_CONF, '')
 
         run_main('battery')
 
-        mock_apply_power_mode.assert_called_once_with('balanced')
+        mock_apply_power_mode.assert_called_once_with('conservative')
 
     def test_battery_uses_the_battery_mode(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         _write(BATOCERA_CONF, 'global.batterymode=powersaver\n')
@@ -215,6 +250,47 @@ class TestMain:
         run_main('battery')
 
         mock_apply_power_mode.assert_called_once_with('powersaver')
+
+    def test_auto_follows_the_power_source(
+        self, mocker: MockerFixture, run_main: Callable[..., None], mock_apply_power_mode: Mock
+    ) -> None:
+        _write(BATOCERA_CONF, 'global.powermode=conservative\nglobal.batterymode=powersaver\n')
+        mocker.patch('batocera_common.power.is_power_connected', return_value=False)
+
+        run_main('auto')
+
+        mock_apply_power_mode.assert_called_once_with('powersaver')
+
+    @pytest.mark.parametrize(('mode', 'boosted'), [('highperformance', True), ('balanced', False)])
+    def test_in_a_game_the_charger_keeps_the_game_mode(
+        self,
+        mocker: MockerFixture,
+        running_game: Mock,
+        run_main: Callable[..., None],
+        mock_apply_power_mode: Mock,
+        mode: str,
+        boosted: bool,
+    ) -> None:
+        running_game.return_value = _GAME
+        _write(BATOCERA_CONF, f'snes.powermode={mode}\nglobal.powermode=powersaver\n')
+        boost = mocker.patch('batocera_common.power.boost')
+        restore = mocker.patch('batocera_common.power.restore')
+
+        run_main('ac')
+
+        mock_apply_power_mode.assert_called_once_with(mode)
+        assert boost.called is boosted
+        assert restore.called is not boosted
+
+    @pytest.mark.parametrize(('source', 'expected'), [('ac', 'balanced'), ('battery', 'conservative')])
+    def test_get_prints_the_global_default(
+        self, capsys: pytest.CaptureFixture[str], run_main: Callable[..., None], source: str, expected: str
+    ) -> None:
+        _write(BATOCERA_CONF, '')
+
+        run_main('get', source)
+
+        assert capsys.readouterr().out == f'{expected}\n'
 
     def test_mode_is_case_insensitive(self, run_main: Callable[..., None], mock_apply_power_mode: Mock) -> None:
         run_main('Powersaver')

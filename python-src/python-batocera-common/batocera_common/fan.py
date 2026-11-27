@@ -24,8 +24,8 @@ import time
 from pathlib import Path
 from typing import Final
 
-from .power import read_sysfs, write_sysfs
 from .settings import get_master_setting
+from .sysfs import read_sysfs, write_sysfs
 
 # picked by the control center or a game; exists while a fan daemon runs, which rereads it on every check
 PROFILE_FILE: Final = Path('/var/run/batocera-fan.profile')

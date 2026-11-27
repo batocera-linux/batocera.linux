@@ -26,7 +26,7 @@ import time
 from pathlib import Path
 from typing import Final
 
-from .power import read_sysfs, write_sysfs
+from .sysfs import read_sysfs, write_sysfs
 
 _logger: Final = logging.getLogger(__name__)
 

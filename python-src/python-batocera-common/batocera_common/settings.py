@@ -22,10 +22,13 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from .key_value_config import KeyValueConfig
 from .paths import BATOCERA_CONF, SYSCONFIG
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 _DEVICETREE_MODEL: Final = Path('/sys/firmware/devicetree/base/model')
 _DMI_PRODUCT_NAME: Final = Path('/sys/devices/virtual/dmi/id/product_name')
@@ -66,6 +69,16 @@ def _board_sysconfig() -> Path | None:
     board_conf = SYSCONFIG.with_name(f'{SYSCONFIG.name}.{model}')
 
     return board_conf if board_conf.is_file() else None
+
+
+def settings_sections(system: str, rom: Path, /) -> Iterator[str]:
+    # sanitize rule by EmulationStation
+    # see FileData::getConfigurationName() on batocera-emulationstation
+    settings_name = rom.name.replace('=', '').replace('#', '')
+
+    yield f'{system}["{settings_name}"]'  # game-specific
+    yield f'{system}.folder["{rom.parent}"]'  # folder-specific
+    yield system
 
 
 def get_master_setting(key: str, /, *, user_config: KeyValueConfig | None = None) -> str | None:

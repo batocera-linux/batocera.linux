@@ -119,12 +119,12 @@
           <img display='${echo /var/run/batocera-overlays/gun_help.png}' height="50%" refresh="5" align="center" />
         </hgroup>
 	<hgroup name="System" display="System">
-		<feature>
+		<feature display="Volume">
 				<button display="Vol -" action="batocera-audio setSystemVolume -5" updateids="volumebar" />
 				<progressbar id="volumebar" display="${batocera-audio getSystemVolume}" min="0" max="100" refresh="1" action_set="batocera-audio setSystemVolume {value}" />
 				<button display="Vol +" action="batocera-audio setSystemVolume +5" updateids="volumebar" />
 		</feature>
-		<feature if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
+		<feature display="Brightness" if='${printf "%s" $(batocera-brightness 2&gt;/dev/null)}'>
 				<button display="Bright -" action="batocera-brightness - 10" updateids="brightnessbar" />
 				<progressbar id="brightnessbar" display="${batocera-brightness}" min="0" max="100" refresh="1" action_set="batocera-brightness {value}" />
 				<button display="Bright +" action="batocera-brightness + 10" updateids="brightnessbar" />
@@ -178,35 +178,27 @@
 		</feature>
 
 		<!-- outside a game: the global settings -->
-		<feature display="On charger" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}' refresh="5">
-			<choice display="Default" action="batocera-perf set acmode default" afterclick="bcc_refresh" />
-			<choice display="High Perf" action="batocera-perf set acmode highperformance" afterclick="bcc_refresh" />
-			<choice display="Balanced" action="batocera-perf set acmode balanced" afterclick="bcc_refresh" />
-			<choice display="Saver" action="batocera-perf set acmode powersaver" afterclick="bcc_refresh" />
-			<text display="${batocera-perf show acmode}" refresh="2" />
+		<feature display="On charger" refresh="5" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}'>
+			<button display="On charger -" action="batocera-perf set acmodelevel -1" updateids="perfacmode" />
+			<progressbar id="perfacmode" display="${batocera-perf get acmodelevel}" min="0" max="3" labels="Power Saver|Conservative|Balanced|High Perf" refresh="2" action_set="batocera-perf set acmodelevel {value}" />
+			<button display="On charger +" action="batocera-perf set acmodelevel +1" updateids="perfacmode" />
 		</feature>
-		<feature display="On battery" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}' refresh="5">
-			<choice display="Default" action="batocera-perf set batterymode default" afterclick="bcc_refresh" />
-			<choice display="High Perf" action="batocera-perf set batterymode highperformance" afterclick="bcc_refresh" />
-			<choice display="Balanced" action="batocera-perf set batterymode balanced" afterclick="bcc_refresh" />
-			<choice display="Saver" action="batocera-perf set batterymode powersaver" afterclick="bcc_refresh" />
-			<text display="${batocera-perf show batterymode}" refresh="2" />
+		<feature display="On battery" refresh="5" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; batocera-perf has battery}'>
+			<button display="On battery -" action="batocera-perf set batterymodelevel -1" updateids="perfbatterymode" />
+			<progressbar id="perfbatterymode" display="${batocera-perf get batterymodelevel}" min="0" max="3" labels="Power Saver|Conservative|Balanced|High Perf" refresh="2" action_set="batocera-perf set batterymodelevel {value}" />
+			<button display="On battery +" action="batocera-perf set batterymodelevel +1" updateids="perfbatterymode" />
 		</feature>
-		<feature display="Power Mode" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; [ -z &quot;$(batocera-perf has battery)&quot; ] &amp;&amp; echo 1}' refresh="5">
-			<choice display="Default" action="batocera-perf set acmode default" afterclick="bcc_refresh" />
-			<choice display="High Perf" action="batocera-perf set acmode highperformance" afterclick="bcc_refresh" />
-			<choice display="Balanced" action="batocera-perf set acmode balanced" afterclick="bcc_refresh" />
-			<choice display="Saver" action="batocera-perf set acmode powersaver" afterclick="bcc_refresh" />
-			<text display="${batocera-perf show acmode}" refresh="2" />
+		<feature display="Power Mode" refresh="5" if='${[ -z &quot;$(batocera-perf ingame)&quot; ] &amp;&amp; [ -z &quot;$(batocera-perf has battery)&quot; ] &amp;&amp; echo 1}'>
+			<button display="Power Mode -" action="batocera-perf set acmodelevel -1" updateids="perfpowermode" />
+			<progressbar id="perfpowermode" display="${batocera-perf get acmodelevel}" min="0" max="3" labels="Power Saver|Conservative|Balanced|High Perf" refresh="2" action_set="batocera-perf set acmodelevel {value}" />
+			<button display="Power Mode +" action="batocera-perf set acmodelevel +1" updateids="perfpowermode" />
 		</feature>
 
 		<!-- in a game: changes apply now and last until the game ends, unless saved -->
-		<feature display="Power Mode" if='${batocera-perf ingame}' refresh="5">
-			<choice display="Default" action="batocera-perf set mode default" afterclick="bcc_refresh" />
-			<choice display="High Perf" action="batocera-perf set mode highperformance" afterclick="bcc_refresh" />
-			<choice display="Balanced" action="batocera-perf set mode balanced" afterclick="bcc_refresh" />
-			<choice display="Saver" action="batocera-perf set mode powersaver" afterclick="bcc_refresh" />
-			<text display="${batocera-perf show mode}" refresh="2" />
+		<feature display="Power Mode" refresh="5" if='${batocera-perf ingame}'>
+			<button display="Power Mode -" action="batocera-perf set modelevel -1" updateids="perfmode" />
+			<progressbar id="perfmode" display="${batocera-perf get modelevel}" min="0" max="3" labels="Power Saver|Conservative|Balanced|High Perf" refresh="2" action_set="batocera-perf set modelevel {value}" />
+			<button display="Power Mode +" action="batocera-perf set modelevel +1" updateids="perfmode" />
 		</feature>
 
 		<feature display="TDP" if='${batocera-perf has tdp}'>

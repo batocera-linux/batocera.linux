@@ -20,42 +20,38 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import sys
+import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
-from .settings import get_master_setting
+from .devfreq import boost, restore, should_boost
+from .key_value_config import KeyValueConfig
+from .paths import BATOCERA_CONF
+from .settings import settings_sections
+from .sysfs import read_sysfs, write_sysfs
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Container, Iterable
-
-    from .key_value_config import KeyValueConfig
+    from collections.abc import Callable, Container, Iterable, Mapping
 
 _logger: Final = logging.getLogger(__name__)
 
 CPU_DIR: Final = Path('/sys/devices/system/cpu')
 CPUFREQ_DIR: Final = CPU_DIR / 'cpufreq'
 POWER_SUPPLY_DIR: Final = Path('/sys/class/power_supply')
+RUNNING_GAME_URL: Final = 'http://127.0.0.1:1234/runningGame'
+# control center changes to the running game
+GAME_CHANGES: Final = Path('/var/run/batocera-perf.changes')
 
-POWER_MODES: Final = frozenset(('highperformance', 'balanced', 'powersaver'))
+POWER_MODES: Final = frozenset(('highperformance', 'balanced', 'conservative', 'powersaver'))
 
 _BALANCED_GOVERNORS: Final = ('schedutil', 'ondemand', 'conservative', 'powersave')
+_CONSERVATIVE_GOVERNORS: Final = ('conservative', *_BALANCED_GOVERNORS)
 _DEFAULT_EPP: Final = ('default', 'performance')
-
-
-def read_sysfs(path: Path, /) -> str | None:
-    try:
-        return path.read_text().strip()
-    except OSError:
-        return None
-
-
-def write_sysfs(path: Path, value: str, /) -> None:
-    try:
-        path.write_text(value)
-    except OSError:
-        _logger.debug('cannot write %s to %s', value, path)
+_CONSERVATIVE_EPP: Final = ('balance_power', *_DEFAULT_EPP)
 
 
 def _words(path: Path, /) -> frozenset[str]:
@@ -96,29 +92,34 @@ def _set_first_available(
             return
 
 
-def apply_default(*, user_config: KeyValueConfig | None = None) -> None:
-    governor = get_master_setting('system.cpu.governor', user_config=user_config)
-
-    if governor is not None and governor in available_governors():
-        set_governor(governor)
-        # pstate drivers pin EPP under this governor and reject other values
-        if governor != 'performance':
-            _set_first_available(_DEFAULT_EPP, available_epp(), set_epp)
+def power_mode(value: str | None, /) -> str | None:
+    return value if value in POWER_MODES else None
 
 
-def apply_power_mode(mode: str | None, /, *, user_config: KeyValueConfig | None = None) -> None:
+def global_power_mode(settings: Mapping[str, str], /, *, connected: bool | None = None) -> str:
+    if connected is None:
+        connected = is_power_connected()
+
+    if connected:
+        return power_mode(settings.get('powermode')) or 'balanced'
+
+    return power_mode(settings.get('batterymode')) or 'conservative'
+
+
+def apply_power_mode(mode: str, /) -> None:
     if not cpufreq_available():
         return
 
     match mode:
-        case None | 'default':
-            apply_default(user_config=user_config)
         case 'highperformance':
             set_governor('performance')
             _set_first_available(('performance',), available_epp(), set_epp)
         case 'balanced':
             _set_first_available(_BALANCED_GOVERNORS, available_governors(), set_governor)
             _set_first_available(_DEFAULT_EPP, available_epp(), set_epp)
+        case 'conservative':
+            _set_first_available(_CONSERVATIVE_GOVERNORS, available_governors(), set_governor)
+            _set_first_available(_CONSERVATIVE_EPP, available_epp(), set_epp)
         case 'powersaver':
             set_governor('powersave')
             _set_first_available(('power',), available_epp(), set_epp)
@@ -139,16 +140,89 @@ def is_power_connected() -> bool:
     return all(read_sysfs(battery / 'status') != 'Discharging' for battery in batteries)
 
 
-def main() -> None:
-    mode = sys.argv[1].lower() if len(sys.argv) > 1 else ''
+@dataclass(frozen=True, slots=True)
+class RunningGame:
+    system: str
+    rom: Path
 
-    match mode:
-        case 'ac':
-            apply_power_mode(get_master_setting('global.powermode'))
-        case 'battery':
-            apply_power_mode(get_master_setting('global.batterymode') or 'balanced')
-        case 'default' | 'highperformance' | 'balanced' | 'powersaver':
+
+def running_game() -> RunningGame | None:
+    try:
+        with urllib.request.urlopen(RUNNING_GAME_URL, timeout=1) as response:
+            game = json.load(response)
+    except OSError, ValueError:
+        return None
+
+    if not isinstance(game, dict):
+        return None
+
+    game = cast('dict[str, object]', game)
+    system, path = game.get('systemName'), game.get('path')
+
+    if not isinstance(system, str) or not isinstance(path, str) or not system or not path:
+        return None
+
+    return RunningGame(system, Path(path))
+
+
+def _changed_mode(game: RunningGame, /) -> str | None:
+    try:
+        changes = dict(line.split('=', 1) for line in GAME_CHANGES.read_text().splitlines() if '=' in line)
+    except OSError:
+        return None
+
+    return power_mode(changes.get('mode')) if changes.get('game') == str(game.rom) else None
+
+
+def current_power_mode(
+    game: RunningGame | None, /, *, connected: bool | None = None, user_config: KeyValueConfig | None = None
+) -> str:
+    if user_config is None:
+        user_config = KeyValueConfig(BATOCERA_CONF)
+
+    if game is not None:
+        if (mode := _changed_mode(game)) is not None:
+            return mode
+
+        for section in settings_sections(game.system, game.rom):
+            if (mode := power_mode(user_config.section(section).get('powermode'))) is not None:
+                return mode
+
+    return global_power_mode(user_config.section('global'), connected=connected)
+
+
+def apply_current_power_mode(*, connected: bool | None = None) -> None:
+    game = running_game()
+    mode = current_power_mode(game, connected=connected)
+    apply_power_mode(mode)
+
+    if game is not None:
+        if should_boost(mode):
+            boost()
+        else:
+            restore()
+
+
+_SOURCES: Final = {'ac': True, 'battery': False, 'auto': None}
+
+
+def main() -> None:
+    args = [arg.lower() for arg in sys.argv[1:]]
+
+    match args:
+        case []:
+            apply_current_power_mode()
+        case ['auto' | 'ac' | 'battery' as source]:
+            apply_current_power_mode(connected=_SOURCES[source])
+        case ['get']:
+            print(current_power_mode(running_game()))
+        case ['get', 'ac' | 'battery' as source]:
+            print(global_power_mode(KeyValueConfig(BATOCERA_CONF).section('global'), connected=_SOURCES[source]))
+        case [mode] if mode in POWER_MODES:
             apply_power_mode(mode)
         case _:
-            print(f'Usage: {sys.argv[0]} [ac|battery|default|highperformance|balanced|powersaver]', file=sys.stderr)
+            print(
+                f'Usage: {sys.argv[0]} [auto|ac|battery|get [ac|battery]|highperformance|balanced|conservative|powersaver]',
+                file=sys.stderr,
+            )
             sys.exit(1)
