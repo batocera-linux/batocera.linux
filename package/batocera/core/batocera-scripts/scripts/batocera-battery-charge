@@ -1,0 +1,116 @@
+#!/bin/sh
+
+#
+# This file is part of the batocera distribution (https://batocera.org).
+# Copyright (c) 2026+.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, version 3.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
+# YOU MUST KEEP THIS HEADER AS IT IS
+#
+
+# The battery charging mode, system.battery.chargemode: auto (left to the firmware), fast, standard or longlife.
+# Usage: batocera-battery-charge list | get | set <mode> | apply
+
+# the firmware's own mode, put back for auto
+ORIGINAL=/userdata/system/.config/batocera-battery-charge
+
+battery() {
+    for psy in /sys/class/power_supply/*; do
+        [ "$(cat "${psy}/type" 2>/dev/null)" = Battery ] || continue
+        # pad and mouse batteries
+        [ "$(cat "${psy}/scope" 2>/dev/null)" = Device ] && continue
+        if [ -w "${psy}/charge_types" ]; then
+            echo "${psy}"
+            return 0
+        fi
+        # ACPI batteries only, qcom-battmgr rejects thresholds and has no off
+        case "$(basename "${psy}")" in
+            BAT*) [ -w "${psy}/charge_control_end_threshold" ] && { echo "${psy}"; return 0; } ;;
+        esac
+    done
+    return 1
+}
+
+# the mode the battery charges in now
+current() {
+    if [ -e "$1/charge_types" ]; then
+        case "$(sed -n 's/.*\[\([^]]*\)\].*/\1/p' "$1/charge_types")" in
+            Fast) echo fast ;;
+            Standard) echo standard ;;
+            Long_Life) echo longlife ;;
+            *) echo unknown ;;
+        esac
+    elif [ "$(cat "$1/charge_control_end_threshold")" -lt 100 ]; then
+        echo longlife
+    else
+        echo standard
+    fi
+}
+
+modes() {
+    if [ -e "$1/charge_types" ]; then
+        for type in $(tr -d '[]' <"$1/charge_types"); do
+            case "${type}" in
+                Fast) echo fast ;;
+                Standard) echo standard ;;
+                Long_Life) echo longlife ;;
+            esac
+        done
+    else
+        echo standard
+        echo longlife
+    fi
+}
+
+write() {
+    if [ -e "$1/charge_types" ]; then
+        case "$2" in
+            fast) echo Fast ;;
+            standard) echo Standard ;;
+            longlife) echo Long_Life ;;
+        esac >"$1/charge_types"
+    else
+        case "$2" in
+            standard) echo 100 ;;
+            longlife) echo 80 ;;
+        esac >"$1/charge_control_end_threshold"
+    fi
+}
+
+set_mode() {
+    if [ "$2" = auto ] || [ -z "$2" ]; then
+        [ -f "${ORIGINAL}" ] || return 0
+        write "$1" "$(cat "${ORIGINAL}")" && rm -f "${ORIGINAL}"
+        return
+    fi
+
+    modes "$1" | grep -qx "$2" || {
+        echo "unsupported mode: $2" >&2
+        return 1
+    }
+    original="$(current "$1")"
+    if [ ! -f "${ORIGINAL}" ] && [ "${original}" != unknown ]; then
+        mkdir -p "$(dirname "${ORIGINAL}")"
+        echo "${original}" >"${ORIGINAL}"
+    fi
+    write "$1" "$2"
+}
+
+BATTERY="$(battery)" || exit 1
+
+case "$1" in
+    list) modes "${BATTERY}" ;;
+    get) current "${BATTERY}" ;;
+    set) set_mode "${BATTERY}" "$2" ;;
+    apply) set_mode "${BATTERY}" "$(batocera-settings-get system.battery.chargemode)" ;;
+    *)
+        echo "usage: $0 list | get | set <auto|fast|standard|longlife> | apply" >&2
+        exit 1
+        ;;
+esac
