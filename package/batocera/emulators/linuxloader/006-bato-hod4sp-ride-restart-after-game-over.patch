@@ -1,0 +1,17 @@
+Let House of the Dead 4 Special start again after game over
+
+After game over the game sends ride command 0x19 and waits for 0x06
+(back to waiting for the attendant). The case fell through into 0x05
+and replied 0x05 instead, so the game sat in attract and never started
+again.
+
+--- a/src/loader/hardware/lindbergh/rideBoard.c
++++ b/src/loader/hardware/lindbergh/rideBoard.c
+@@ -247,6 +247,7 @@
+         break;
+     case 0x19: // Work out what ADF means?
+         state->CommandReply = 0x06;
++        break;
+     case 0x05: // Coin play, not coined up
+         state->CommandReply = 0x05;
+         break;
