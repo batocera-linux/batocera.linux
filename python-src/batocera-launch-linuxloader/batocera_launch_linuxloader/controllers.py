@@ -173,7 +173,14 @@ class ControllersMixin(Emulator):
                             player_input = 2
                         ###
 
-                        if pad.inputs[input_base_name].type == 'button':
+                        if button_name == 'SHAKE':
+                            # each player's shake sensors are ANALOGUE_5/6 and ANALOGUE_7/8
+                            if pad.inputs[input_base_name].type == 'button':
+                                conf.set(
+                                    f'ANALOGUE_{3 + nplayer * 2}',
+                                    f'{controller_name}:KEY:{pad.inputs[input_base_name].code}:SHAKE',
+                                )
+                        elif pad.inputs[input_base_name].type == 'button':
                             input_value = f'KEY:{pad.inputs[input_base_name].code}'
                             if button_name in no_player_button:
                                 if nplayer == 1:
@@ -416,6 +423,11 @@ class ControllersMixin(Emulator):
             linuxloader_ctrl_pad.update(linuxloader_ctrl_pad_abc)
             del linuxloader_ctrl_pad['l2']
             del linuxloader_ctrl_pad['y']
+
+        # pads have no motion sensor, R1 shakes the gun
+        if short_rom_name.startswith('hotd4'):
+            linuxloader_ctrl_pad['pagedown'] = 'SHAKE'
+            linuxloader_ctrl_gun['pagedown'] = 'SHAKE'
         ###
 
         # remap buttons if for non real wheel

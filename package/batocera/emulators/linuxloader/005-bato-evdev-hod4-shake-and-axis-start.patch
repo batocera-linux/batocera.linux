@@ -1,0 +1,116 @@
+Centre the HOD4 shake sensors, add a shake button and start axes at their position in evdev mode
+
+In evdev mode initSdlInput() returns before it centres the House of the
+Dead 4 shake sensors (ANALOGUE_5-8), and the per-frame shake update never
+runs. With a pad nothing maps them, so they read 0, the game sees the gun
+shaking and every shot reloads. Centre them in initEvdevControllers().
+
+Pads have no motion sensor, so a button can be mapped as
+<device>:KEY:<code>:SHAKE to ANALOGUE_5 or ANALOGUE_7. Held, it reads
+as shaking on both of that player's sensors, released as still.
+
+A stick resting in its centre also sends no events until it moves, so
+the gun sits at 0,0 (off-screen). Read each mapped axis when the
+controller thread starts.
+
+--- a/src/loader/input/evdevInput.c
++++ b/src/loader/input/evdevInput.c
+@@ -1072,6 +1072,19 @@
+                         // hum ok, truncated value
+                     }
+                     strncpy(controllerInput->inputTechNegName, "-", SIZE); // unassignable value (not "" while some conf are empty)
++
++                    // a button can stand in for a gun's shake sensor (HOD4 on a pad)
++                    if (code >= BTN_MISC && controllers->controller[i].inputCount < MAX_INPUTS)
++                    {
++                        ControllerInput *shakeControllerInput = &controllers->controller[i].inputs[controllers->controller[i].inputCount++];
++                        shakeControllerInput->evType = EV_KEY;
++                        shakeControllerInput->evCode = code;
++                        shakeControllerInput->specialFunction = ANALOGUE_SHAKE;
++                        strncpy(shakeControllerInput->inputName, controllerInput->inputName, SIZE);
++                        strcat(shakeControllerInput->inputName, "_SHAKE");
++                        snprintf(shakeControllerInput->inputTechName, SIZE, "%s:KEY:%i:SHAKE", controllers->controller[i].path, code);
++                        strncpy(shakeControllerInput->inputTechNegName, "-", SIZE);
++                    }
+                 }
+             }
+         }
+@@ -1236,6 +1249,26 @@
+         analogue_deadzones[i].end_min = 1.0 - (args->analogue_deadzone_end[i] / 100.0);
+     }
+ 
++    // A centred stick sends no events until it moves, so start each analogue channel from the axis position,
++    // otherwise a gun on a stick sits at 0,0 (off-screen) until the stick moves
++    for (int code = 0; code < ABS_MAX; code++)
++    {
++        ArcadeInput *trigger = &args->controller->absTriggers[code];
++        struct input_absinfo absInfo;
++        if (!trigger->enabled || !trigger->isAnalogue || ioctl(fd, EVIOCGABS(code), &absInfo) < 0 ||
++            absInfo.maximum <= absInfo.minimum)
++            continue;
++
++        double scaled = ((double)absInfo.value - absInfo.minimum) / ((double)absInfo.maximum - absInfo.minimum);
++        if (trigger->isNeg == 1)
++            scaled = 1.0 - scaled;
++        if (scaled > analogue_deadzones[trigger->channel].middle_min && scaled < analogue_deadzones[trigger->channel].middle_max)
++            scaled = 0.5;
++
++        args->controller->lastAnalogueValue[trigger->channel] = scaled;
++        setAnalogue(trigger->channel, scaled * (pow(2, jvsBits) - 1));
++    }
++
+     while (args->controllers->threadsRunning)
+     {
+         FD_ZERO(&file_descriptor);
+@@ -1283,6 +1316,15 @@
+                         continue;
+                     }
+ 
++                    // Held reads as shaking on both of the player's sensors (5/6 or 7/8), released as still
++                    if (args->controller->keyTriggers[event.code].shakeEnabled && event.value != 2)
++                    {
++                        int channel = args->controller->keyTriggers[event.code].shakeChannel & ~1;
++                        int value = event.value ? 0 : pow(2, jvsBits) / 2;
++                        setAnalogue(channel, value);
++                        setAnalogue(channel + 1, value);
++                    }
++
+                     if (!args->controller->keyTriggers[event.code].enabled)
+                         continue;
+ 
+@@ -1649,6 +1691,7 @@
+             controllers->controller[i].keyTriggers[j].isAnalogue = 0;
+             controllers->controller[i].keyTriggers[j].isCoin = 0;
+             controllers->controller[i].keyTriggers[j].isExitGame = 0;
++            controllers->controller[i].keyTriggers[j].shakeEnabled = 0;
+         }
+ 
+         controllers->controller[i].numExitCombos = 0;
+@@ -1800,6 +1843,13 @@
+ 
+                 case EV_KEY:
+                 {
++                    if (controllers->controller[i].inputs[j].specialFunction == ANALOGUE_SHAKE)
++                    {
++                        controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].shakeEnabled = 1;
++                        controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].shakeChannel = input.channel;
++                        break;
++                    }
++
+                     controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].enabled = 1;
+                     controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].channel = input.channel;
+                     strncpy(controllers->controller[i].keyTriggers[controllers->controller[i].inputs[j].evCode].name, input.name, SIZE);
+@@ -1877,6 +1927,13 @@
+     controllers->threadIndex = 0;
+ 
+ #ifndef COMPILING_LINUXLOADER_ELF
++    // Same as initSdlInput(): the shake sensors read 0 (shaking) otherwise, and every shot reloads
++    if (gGrp == GROUP_HOD4 || gGrp == GROUP_HOD4_TEST)
++    {
++        for (int channel = ANALOGUE_5; channel <= ANALOGUE_8; channel++)
++            setAnalogue(channel, pow(2, jvsBits) / 2);
++    }
++
+     if (startControllerThreads(controllers) != CONTROLLER_STATUS_SUCCESS)
+     {
+         return CONTROLLER_STATUS_ERROR;
