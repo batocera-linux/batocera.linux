@@ -10,24 +10,44 @@
 
 set -euo pipefail
 
-clear
+BOOT_SRC=/boot
+USERDATA_SRC=/userdata
+TMP_BATOCERA=/tmp/batocera
+TMP_SHARE=/tmp/share
 
-# ---- Helper: Check Power Connection ----
-check_power() {
-    local power_connected=0
-    # Check all power supplies for a 'Mains' or 'USB' source that is 'online'
+MIN_SIZE=$((1 * 1024**3))
+# 8GB for BATOCERA + 2GB minimum for SHARE
+RESERVE=$((10 * 1024**3))
+
+usage() {
+    echo "$0                interactive install" >&2
+    echo "$0 disk           print the internal disk if Batocera can be installed to it" >&2
+    echo "$0 check          print the install parameters" >&2
+    echo "$0 power          print whether the charger is connected" >&2
+    echo "$0 install --android-size <GB> --copy-data <all|bios|none>" >&2
+}
+
+fail() {
+    echo "ERROR: $*"
+    exit 1
+}
+
+power_connected() {
+    local supply
     for supply in /sys/class/power_supply/*; do
         if [ -f "$supply/online" ] && [ -f "$supply/type" ]; then
-            type=$(cat "$supply/type")
-            online=$(cat "$supply/online")
-            if [[ "$type" == "Mains" || "$type" == "USB" ]] && [ "$online" -eq 1 ]; then
-                power_connected=1
-                break
-            fi
+            case "$(cat "$supply/type")" in
+                Mains|USB)
+                    [ "$(cat "$supply/online")" -eq 1 ] && return 0
+                    ;;
+            esac
         fi
     done
+    return 1
+}
 
-    if [ "$power_connected" -eq 0 ]; then
+check_power() {
+    if ! power_connected; then
         echo "------------------------------------------------------------"
         echo " ERROR: DEVICE IS NOT ON AC POWER "
         echo " To prevent potential data corruption or bricking during "
@@ -38,318 +58,377 @@ check_power() {
     fi
 }
 
-# ---- Get Device Architecture ----
-ARCH_FILE="/usr/share/batocera/batocera.arch"
-if [ -f "$ARCH_FILE" ]; then
-    HW_DEVICE=$(cat "$ARCH_FILE" | tr '[:lower:]' '[:upper:]')
-else
-    echo "Error: Architecture file $ARCH_FILE not found!"
-    exit 1
-fi
+get_gb() {
+    local bytes
+    if bytes=$(blockdev --getsize64 "$1" 2>/dev/null); then
+        echo $(( bytes / 1024**3 ))
+    else
+        echo "N/A"
+    fi
+}
 
-# Set storage device and partition naming scheme based on architecture
-MODEL=$(tr -d '\0' < /proc/device-tree/model 2>/dev/null || true)
+get_storage_size_kb() {
+    local total_kb folder folder_kb
+    total_kb=$(du -ks "$USERDATA_SRC" | awk '{print $1}')
+    for folder in "$@"; do
+        if [[ -d "$USERDATA_SRC/$folder" ]]; then
+            folder_kb=$(du -ks "$USERDATA_SRC/$folder" | awk '{print $1}')
+            total_kb=$((total_kb - folder_kb))
+        fi
+    done
+    echo "$total_kb"
+}
 
-case "$HW_DEVICE" in
-  SM4450)
-    case "$MODEL" in
-      *"RG 55G1"*)
-        DEVICE="/dev/sda"
-        IS_EMMC=false
+# run a copy in the background and report progress from the space used on the target
+copy_progress() {
+    local label=$1 total_kb=$2 dest=$3 start_kb used_kb pct last=-1 pid
+    shift 3
+    start_kb=$(df -k "$dest" | awk 'NR==2 {print $3}')
+    "$@" &
+    pid=$!
+    while kill -0 "$pid" 2>/dev/null; do
+        used_kb=$(df -k "$dest" | awk 'NR==2 {print $3}')
+        pct=0
+        (( total_kb > 0 )) && pct=$(( (used_kb - start_kb) * 100 / total_kb ))
+        (( pct < 0 )) && pct=0
+        (( pct > 99 )) && pct=99
+        if (( pct != last )); then
+            echo "$label >>> ${pct}%"
+            last=$pct
+        fi
+        sleep 2
+    done
+    wait "$pid"
+    echo "$label >>> 100%"
+}
+
+detect_device() {
+    local hw_device model
+    [ -f /usr/share/batocera/batocera.arch ] || fail "Architecture file /usr/share/batocera/batocera.arch not found!"
+    hw_device=$(tr '[:lower:]' '[:upper:]' < /usr/share/batocera/batocera.arch)
+    model=$(tr -d '\0' < /proc/device-tree/model 2>/dev/null || true)
+
+    case "$hw_device" in
+        SM4450)
+            case "$model" in
+                *"RG 55G1"*)
+                    DEVICE="/dev/sda"
+                    IS_EMMC=false
+                    ;;
+                *"Retroid Pocket Classic"*)
+                    # either storage can be fitted
+                    if [ "$(cat /sys/block/mmcblk0/device/type 2>/dev/null)" = "MMC" ]; then
+                        DEVICE="/dev/mmcblk0"
+                        IS_EMMC=true
+                    else
+                        DEVICE="/dev/sda"
+                        IS_EMMC=false
+                    fi
+                    ;;
+                *)
+                    fail "This script is not compatible with device: $model"
+                    ;;
+            esac
+            ;;
+        SM6115)
+            DEVICE="/dev/mmcblk1"
+            IS_EMMC=true
+            ;;
+        SM8250|SM8550|SM8650|SM8750)
+            DEVICE="/dev/sda"
+            IS_EMMC=false
+            ;;
+        *)
+            fail "This script is not compatible with device: $hw_device"
+            ;;
+    esac
+
+    [ -b "$DEVICE" ] || fail "${DEVICE} not found."
+    if [ "/dev/$(lsblk -no PKNAME "$(findmnt -no SOURCE "$BOOT_SRC")")" = "$DEVICE" ]; then
+        fail "${DEVICE} holds the running system, not the internal storage."
+    fi
+}
+
+part_dev() {
+    if [ "$IS_EMMC" = true ]; then
+        echo "${DEVICE}p$1"
+    else
+        echo "${DEVICE}$1"
+    fi
+}
+
+# parted opens the disk read-write, and udev rereads the partition table when it closes
+read_table() {
+    sfdisk -d "$DEVICE" 2>/dev/null
+}
+
+probe_layout() {
+    local table ss name ud_line ud_sectors ud_start ud_end ud_end_mb
+
+    table=$(read_table) || fail "Could not read the partition table of ${DEVICE}."
+    ss=$(echo "$table" | sed -n 's/^sector-size: *//p')
+    [ -n "$ss" ] || ss=512
+
+    for name in BATOCERA SHARE; do
+        if echo "$table" | grep -q "name=\"${name}\""; then
+            fail "An installation already exists (found partition named '$name')."
+        fi
+    done
+
+    mapfile -t ud_line < <(echo "$table" | grep 'name="userdata"' || true)
+    [[ ${#ud_line[@]} -eq 1 ]] || fail "Could not uniquely find a Android userdata partition labeled 'userdata'."
+    UD_NUM=$(echo "${ud_line[0]}" | sed -e 's/ .*//' -e 's/^.*[^0-9]//')
+    ud_start=$(echo "${ud_line[0]}" | sed -n 's/.*start= *\([0-9]*\).*/\1/p')
+    ud_sectors=$(echo "${ud_line[0]}" | sed -n 's/.*size= *\([0-9]*\).*/\1/p')
+    ud_start=$(( ud_start * ss ))
+    ud_end=$(( ud_start + ud_sectors * ss - 1 ))
+
+    BT_NUM=$(( UD_NUM + 1 ))
+    SH_NUM=$(( UD_NUM + 2 ))
+    UD_PART_DEV=$(part_dev "$UD_NUM")
+    BT_PART_DEV=$(part_dev "$BT_NUM")
+    SH_PART_DEV=$(part_dev "$SH_NUM")
+
+    UD_START_MB=$(( (ud_start + 1048575) / 1048576 ))
+    ud_end_mb=$(( ud_end / 1048576 ))
+    ORIG_SIZE=$(( (ud_end_mb - UD_START_MB) * 1024**2 ))
+    MAX_SIZE=$(( ORIG_SIZE - RESERVE ))
+    (( MAX_SIZE >= MIN_SIZE )) || fail "Not enough space to shrink by 10GB."
+
+    SOURCE_FS=$(findmnt -n -o FSTYPE "$USERDATA_SRC" | tr '[:upper:]' '[:lower:]' || true)
+    case "$SOURCE_FS" in
+        btrfs|ntfs|exfat) ;;
+        *) SOURCE_FS=ext4 ;;
+    esac
+}
+
+share_size_kb() {
+    echo $(( (ORIG_SIZE - $1 * 1024**3 - 8 * 1024**3) / 1024 ))
+}
+
+do_check() {
+    local power=0
+    power_connected && power=1
+    echo "DISK=${DEVICE}"
+    echo "POWER_CONNECTED=${power}"
+    echo "ANDROID_GB=$(( ORIG_SIZE / 1024**3 ))"
+    echo "MIN_ANDROID_GB=$(( MIN_SIZE / 1024**3 ))"
+    echo "MAX_ANDROID_GB=$(( MAX_SIZE / 1024**3 ))"
+    echo "SHARE_FS=${SOURCE_FS}"
+    echo "TOTAL_USERDATA_KB=$(get_storage_size_kb)"
+    echo "ESSENTIAL_USERDATA_KB=$(get_storage_size_kb .cache roms)"
+}
+
+do_install() {
+    local ud_gb=$1 copy_data=$2
+    local ud_bytes new_ud_end_mb bt_end_mb dev avail_kb need_kb ud_sz bt_sz sh_sz
+    local -a entries
+
+    ud_bytes=$(( ud_gb * 1024**3 ))
+    if (( ud_bytes < MIN_SIZE || ud_bytes > MAX_SIZE )); then
+        fail "Android userdata size must be between 1 and $((MAX_SIZE / 1024**3)) GB."
+    fi
+    case "$copy_data" in
+        all) need_kb=$(get_storage_size_kb) ;;
+        bios) need_kb=$(get_storage_size_kb .cache roms) ;;
+        none) need_kb=0 ;;
+        *) fail "Invalid data copy option: $copy_data" ;;
+    esac
+    if (( need_kb > $(share_size_kb "$ud_gb") )); then
+        fail "Not enough space on the internal SHARE partition for the selected data."
+    fi
+
+    # Update the internal bootloaders first so a failed flash leaves Android untouched
+    if [ -x /usr/bin/updateabl ]; then
+        echo "Starting ABL Bootloader update..."
+        if ! /usr/bin/updateabl --check-online; then
+            fail "ABL update failed. For safety, the installation will not proceed."
+        fi
+    else
+        echo "Warning: /usr/bin/updateabl not found. Skipping bootloader update."
+    fi
+
+    new_ud_end_mb=$(( UD_START_MB + (ud_bytes / 1024**2) ))
+
+    if findmnt -n "$UD_PART_DEV" >/dev/null; then
+        echo "Unmounting internal Android userdata..."
+        umount -f "$UD_PART_DEV"
+    fi
+
+    echo "Deleting Android userdata partition #$UD_NUM..."
+    parted -s "$DEVICE" rm "$UD_NUM"
+    echo "Creating Android userdata partition #$UD_NUM (${UD_START_MB}MiB–${new_ud_end_mb}MiB)..."
+    parted -a optimal -s "$DEVICE" mkpart primary ext4 "${UD_START_MB}MiB" "${new_ud_end_mb}MiB"
+    parted -s "$DEVICE" name "$UD_NUM" userdata
+
+    echo "Zeroing first 8 MiB of ${UD_PART_DEV}..."
+    dd if=/dev/zero of="$UD_PART_DEV" bs=1M count=8 &>/dev/null
+
+    bt_end_mb=$(( new_ud_end_mb + 8192 ))
+    echo "Creating BATOCERA partition #$BT_NUM (${new_ud_end_mb}MiB–${bt_end_mb}MiB)..."
+    parted -a optimal -s "$DEVICE" mkpart primary fat32 "${new_ud_end_mb}MiB" "${bt_end_mb}MiB"
+    parted -s "$DEVICE" name "$BT_NUM" BATOCERA
+    parted -s "$DEVICE" set "$BT_NUM" msftdata on
+    parted -s "$DEVICE" set "$BT_NUM" boot on
+
+    echo "Creating SHARE partition #$SH_NUM (from ${bt_end_mb}MiB to end)..."
+    parted -a optimal -s "$DEVICE" mkpart primary "${bt_end_mb}MiB" 100%
+    parted -s "$DEVICE" name "$SH_NUM" SHARE
+
+    # udev may automount the new partitions
+    for dev in "$BT_PART_DEV" "$SH_PART_DEV"; do
+        if findmnt -n "$dev" >/dev/null; then
+            echo "Auto-unmounting $dev..."
+            umount "$dev"
+        fi
+    done
+
+    echo "Formatting BATOCERA partition..."
+    mkfs.vfat -F 32 -n BATOCERA "$BT_PART_DEV" &>/dev/null
+    echo "Formatting SHARE partition as ${SOURCE_FS}..."
+    case "$SOURCE_FS" in
+        btrfs) mkfs.btrfs -f -L SHARE "$SH_PART_DEV" &>/dev/null ;;
+        ntfs) mkfs.ntfs -f -L SHARE "$SH_PART_DEV" &>/dev/null ;;
+        exfat) mkfs.exfat -n SHARE "$SH_PART_DEV" &>/dev/null ;;
+        *) mkfs.ext4 -F -q -L SHARE -m 0 "$SH_PART_DEV" &>/dev/null ;;
+    esac
+
+    mkdir -p "$TMP_BATOCERA" "$TMP_SHARE"
+    mount "$BT_PART_DEV" "$TMP_BATOCERA"
+    mount "$SH_PART_DEV" "$TMP_SHARE"
+
+    copy_progress "Copying system files" "$(du -ks "$BOOT_SRC" | awk '{print $1}')" "$TMP_BATOCERA" \
+        cp -a "$BOOT_SRC"/. "$TMP_BATOCERA"/
+    sync
+
+    avail_kb=$(df -k "$TMP_SHARE" | awk 'NR==2 {print $4}')
+    if (( need_kb > avail_kb )); then
+        echo "Warning: only $((avail_kb / 1024**2)) GB free on SHARE, skipping the data copy."
+        copy_data=none
+    fi
+    case "$copy_data" in
+        all)
+            copy_progress "Copying data" "$need_kb" "$TMP_SHARE" cp -a "$USERDATA_SRC"/. "$TMP_SHARE"/
+            ;;
+        bios)
+            mapfile -d '' entries < <(find "$USERDATA_SRC" -mindepth 1 -maxdepth 1 ! -name roms ! -name .cache -print0)
+            if (( ${#entries[@]} > 0 )); then
+                copy_progress "Copying settings and BIOS" "$need_kb" "$TMP_SHARE" cp -a "${entries[@]}" "$TMP_SHARE"/
+            fi
+            ;;
+    esac
+
+    echo "Syncing data..."
+    sync
+    umount "$TMP_BATOCERA"
+    umount "$TMP_SHARE"
+    rmdir "$TMP_BATOCERA" "$TMP_SHARE"
+
+    ud_sz=$(get_gb "$UD_PART_DEV")
+    bt_sz=$(get_gb "$BT_PART_DEV")
+    sh_sz=$(get_gb "$SH_PART_DEV")
+    echo "Done. New partitions:"
+    echo "  Android userdata: ${UD_PART_DEV} (${ud_sz} GB)"
+    echo "  BATOCERA (System): ${BT_PART_DEV} (${bt_sz} GB)"
+    echo "  SHARE    (Data)  : ${SH_PART_DEV} (${sh_sz} GB) [${SOURCE_FS^^}]"
+    echo
+    echo "Batocera Installation successful. Reboot and remove your SD card."
+}
+
+do_interactive() {
+    local confirm ud_gb copy_ans copy_data=none total_kb essential_kb share_kb
+
+    clear
+    check_power
+    echo "Internal storage: ${DEVICE}"
+
+    read -rp "WARNING: This will wipe Android userdata on ${DEVICE}. Proceed? [y/N]: " confirm
+    if [[ ! $confirm =~ ^[Yy]$ ]]; then
+        echo "Aborted by user."
+        exit 0
+    fi
+
+    echo "Current Android userdata size: $((ORIG_SIZE / 1024**3)) GB"
+    echo "You may choose between 1 GB and $((MAX_SIZE / 1024**3)) GB"
+    while :; do
+        read -rp "Enter new Android userdata size in GB: " ud_gb
+        if ! [[ $ud_gb =~ ^[0-9]+$ ]]; then
+            echo "Please enter an integer."
+            continue
+        fi
+        if (( ud_gb * 1024**3 < MIN_SIZE || ud_gb * 1024**3 > MAX_SIZE )); then
+            echo "Value out of range. Must be between 1 and $((MAX_SIZE / 1024**3)) GB."
+            continue
+        fi
+        break
+    done
+
+    echo "Calculating data migration requirements..."
+    share_kb=$(share_size_kb "$ud_gb")
+    total_kb=$(get_storage_size_kb)
+    essential_kb=$(get_storage_size_kb .cache roms)
+    echo "Space available internally: $((share_kb / 1024**2)) GB"
+    echo "Space required for everything (including ROMs): $((total_kb / 1024**2)) GB"
+
+    if (( total_kb <= share_kb )); then
+        read -rp "Enough space found. Copy ALL data (including ROMs) to internal storage? [y/N]: " copy_ans
+        [[ $copy_ans =~ ^[Yy]$ ]] && copy_data=all
+    elif (( essential_kb <= share_kb )); then
+        echo "WARNING: Not enough space to copy all ROMs."
+        read -rp "Copy settings and BIOS only (skip ROMs)? [y/N]: " copy_ans
+        [[ $copy_ans =~ ^[Yy]$ ]] && copy_data=bios
+    else
+        echo "Skipping copy: Even settings and BIOS are too large for the internal partition."
+    fi
+
+    do_install "$ud_gb" "$copy_data"
+}
+
+ACTION=${1:-}
+[ $# -gt 0 ] && shift
+
+case "$ACTION" in
+    "")
+        detect_device
+        probe_layout
+        do_interactive
         ;;
-      *"Retroid Pocket Classic"*)
-        # either storage can be fitted
-        if [ "$(cat /sys/block/mmcblk0/device/type 2>/dev/null)" = "MMC" ]; then
-          DEVICE="/dev/mmcblk0"
-          IS_EMMC=true
+    disk)
+        detect_device
+        probe_layout
+        echo "$DEVICE"
+        ;;
+    check)
+        detect_device
+        probe_layout
+        do_check
+        ;;
+    power)
+        if power_connected; then
+            echo "POWER_CONNECTED=1"
         else
-          DEVICE="/dev/sda"
-          IS_EMMC=false
+            echo "POWER_CONNECTED=0"
         fi
         ;;
-      *)
-        echo "This script is not compatible with device: $MODEL"
+    install)
+        ud_gb=
+        copy_data=none
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                --android-size) ud_gb=${2:-}; shift 2 || break ;;
+                --copy-data) copy_data=${2:-}; shift 2 || break ;;
+                *) usage; exit 1 ;;
+            esac
+        done
+        [[ $ud_gb =~ ^[0-9]+$ ]] || { usage; exit 1; }
+        detect_device
+        probe_layout
+        check_power
+        export NON_INTERACTIVE=1
+        do_install "$ud_gb" "$copy_data"
+        ;;
+    *)
+        usage
         exit 1
         ;;
-    esac
-    ;;
-  SM6115)
-    DEVICE="/dev/mmcblk1"
-    IS_EMMC=true
-    ;;
-  SM8250|SM8550|SM8650|SM8750)
-    DEVICE="/dev/sda"
-    IS_EMMC=false
-    ;;
-  *)
-    echo "This script is not compatible with device: $HW_DEVICE"
-    exit 1
-    ;;
 esac
-
-if [ "/dev/$(lsblk -no PKNAME "$(findmnt -no SOURCE /boot)")" = "$DEVICE" ]; then
-  echo "Error: ${DEVICE} holds the running system, not the internal storage."
-  exit 1
-fi
-
-# Perform Power Check before proceeding
-check_power
-
-# Directory vars (Batocera standard)
-BOOT_SRC=/boot
-USERDATA_SRC=/userdata
-TMP_BATOCERA=/tmp/batocera
-TMP_SHARE=/tmp/share
-
-# Helper: report a device's size in GiB
-get_gb() {
-  local dev=$1 bytes
-  if bytes=$(blockdev --getsize64 "$dev" 2>/dev/null); then
-    echo $(( bytes / 1024**3 ))
-  else
-    echo "N/A"
-  fi
-}
-
-# Helper: calculate storage size excluding specific folders
-get_storage_size_kb() {
-  local storage_path="$1"
-  local total_kb=0
-  local excluded_folders=(".cache")
-
-  # Get total size first
-  total_kb=$(du -ks "$storage_path" | awk '{print $1}')
-
-  # Subtract excluded folders if they exist
-  for folder in "${excluded_folders[@]}"; do
-    if [[ -d "$storage_path/$folder" ]]; then
-      local folder_kb=$(du -ks "$storage_path/$folder" | awk '{print $1}')
-      total_kb=$((total_kb - folder_kb))
-    fi
-  done
-
-  echo "$total_kb"
-}
-
-# 1) Check for existing BATOCERA or SHARE partitions
-mapfile -t part_names < <(parted -m -s "$DEVICE" print | tail -n +2 | cut -d: -f6)
-for name in "${part_names[@]}"; do
-  if [[ "$name" == "BATOCERA" || "$name" == "SHARE" ]]; then
-    echo "An installation already exists (found partition named '$name'). Exiting."
-    exit 0
-  fi
-done
-
-# 2) Warn user
-read -rp "WARNING: This will wipe Android userdata on ${DEVICE}. Proceed? [y/N]: " confirm
-if [[ ! $confirm =~ ^[Yy]$ ]]; then
-  echo "Aborted by user."
-  exit 0
-fi
-
-# --- 2b) Update ABL Bootloader ---
-# Call the updateabl script to ensure internal bootloaders are current and compatible
-if [ -f "/usr/bin/updateabl" ]; then
-    echo "Starting ABL Bootloader update..."
-    if ! /usr/bin/updateabl --check-online; then
-        echo "Error: ABL update failed. For safety, the installation will not proceed."
-        exit 1
-    fi
-else
-    echo "Warning: /usr/bin/updateabl not found. Skipping bootloader update."
-fi
-
-# 3) Find current Android userdata partition
-mapfile -t ud_line < <(parted -m -s "$DEVICE" unit B print | grep ':userdata:')
-if [[ ${#ud_line[@]} -ne 1 ]]; then
-  echo "ERROR: Could not uniquely find a Android userdata partition labeled 'userdata'."
-  exit 1
-fi
-IFS=':' read -r UD_NUM UD_STARTB UD_ENDB _ <<< "${ud_line[0]}"
-UD_START=${UD_STARTB%B}
-UD_END=${UD_ENDB%B}
-
-# Derive partition numbers
-BT_NUM=$(( UD_NUM + 1 ))
-SH_NUM=$(( UD_NUM + 2 ))
-
-# Derive partition block devices
-if [ "$IS_EMMC" = true ]; then
-  UD_PART_DEV="${DEVICE}p${UD_NUM}"
-  BT_PART_DEV="${DEVICE}p${BT_NUM}"
-  SH_PART_DEV="${DEVICE}p${SH_NUM}"
-else
-  UD_PART_DEV="${DEVICE}${UD_NUM}"
-  BT_PART_DEV="${DEVICE}${BT_NUM}"
-  SH_PART_DEV="${DEVICE}${SH_NUM}"
-fi
-
-# Compute MiB-aligned boundaries for Android userdata
-UD_START_MB=$(( (UD_START + 1048575) / 1048576 ))     # round up to MiB
-UD_END_MB=$(( UD_END / 1048576 ))                     # round down to MiB
-ORIG_SIZE=$(( (UD_END_MB - UD_START_MB) * 1024**2 ))  # bytes
-MIN_SIZE=$((1 * 1024**3))
-
-# Reserve 10GB total (8GB for BATOCERA + 2GB minimum for SHARE)
-RESERVE=$((10 * 1024**3))
-MAX_SIZE=$(( ORIG_SIZE - RESERVE ))
-
-if (( MAX_SIZE < MIN_SIZE )); then
-  echo "ERROR: Not enough space to shrink by 10GB. Aborting."
-  exit 1
-fi
-
-# 4) Ask desired Android userdata size in GB
-echo "Detected Hardware Architecture: $HW_DEVICE"
-echo "Current Android userdata size: $((ORIG_SIZE / 1024**3)) GB"
-echo "You may choose between 1 GB and $((MAX_SIZE / 1024**3)) GB"
-while :; do
-  read -rp "Enter new Android userdata size in GB: " ud_gb
-  if ! [[ $ud_gb =~ ^[0-9]+$ ]]; then
-    echo "Please enter an integer."
-    continue
-  fi
-  ud_bytes=$(( ud_gb * 1024**3 ))
-  if (( ud_bytes < MIN_SIZE || ud_bytes > MAX_SIZE )); then
-    echo "Value out of range. Must be between 1 and $((MAX_SIZE / 1024**3)) GB."
-    continue
-  fi
-  break
-done
-NEW_UD_END_MB=$(( UD_START_MB + (ud_bytes / 1024**2) ))
-
-# 5) Delete and recreate Android userdata partition
-if mount | grep -q "^${UD_PART_DEV} "; then
-  echo "Unmounting internal Android userdata..."
-  umount -f "${UD_PART_DEV}"
-fi
-
-echo "Deleting Android userdata partition #$UD_NUM..."
-parted -s "$DEVICE" rm "$UD_NUM"
-echo "Creating Android userdata partition #$UD_NUM (${UD_START_MB}MiB–${NEW_UD_END_MB}MiB)..."
-parted -a optimal -s "$DEVICE" \
-  mkpart primary ext4 "${UD_START_MB}MiB" "${NEW_UD_END_MB}MiB"
-parted -s "$DEVICE" name "$UD_NUM" userdata
-
-# 5b) Wipe first 8 MiB of the new Android userdata partition
-echo "Zeroing first 8 MiB of ${UD_PART_DEV}..."
-dd if=/dev/zero of="${UD_PART_DEV}" bs=1M count=8 &>/dev/null
-
-# 6) Create BATOCERA partition (fixed 8 GiB)
-BT_START_MB=$NEW_UD_END_MB
-BT_END_MB=$(( BT_START_MB + 8192 ))  # 8 GiB
-echo "Creating BATOCERA partition #$BT_NUM (${BT_START_MB}MiB–${BT_END_MB}MiB)..."
-parted -a optimal -s "$DEVICE" \
-  mkpart primary fat32 "${BT_START_MB}MiB" "${BT_END_MB}MiB"
-parted -s "$DEVICE" name "$BT_NUM" BATOCERA
-parted -s "$DEVICE" set "$BT_NUM" msftdata on
-parted -s "$DEVICE" set "$BT_NUM" boot on
-
-# 7) Format BATOCERA partition
-if mount | grep -q "^${BT_PART_DEV} "; then
-  echo "Auto-unmounting ${BT_PART_DEV}..."
-  umount "${BT_PART_DEV}"
-fi
-mkfs.vfat -F 32 -n BATOCERA "${BT_PART_DEV}" &>/dev/null
-
-# 8) Create SHARE partition (Rest of the disk)
-echo "Creating SHARE partition #$SH_NUM (from ${BT_END_MB}MiB to end)..."
-parted -a optimal -s "$DEVICE" \
-  mkpart primary "${BT_END_MB}MiB" 100%
-parted -s "$DEVICE" name "$SH_NUM" SHARE
-
-# 9) Format SHARE (Detect user preference from source /userdata)
-if mount | grep -q "^${SH_PART_DEV} "; then
-  echo "Auto-unmounting ${SH_PART_DEV}..."
-  umount "${SH_PART_DEV}"
-fi
-
-# Detect source filesystem type (ext4, btrfs, ntfs, exfat)
-SOURCE_FS=$(findmnt -n -o FSTYPE "$USERDATA_SRC" | tr '[:upper:]' '[:lower:]' || echo "ext4")
-
-echo "Formatting SHARE partition as ${SOURCE_FS}..."
-case "$SOURCE_FS" in
-  btrfs)
-    mkfs.btrfs -f -L SHARE "${SH_PART_DEV}" &>/dev/null
-    ;;
-  ntfs)
-    mkfs.ntfs -f -L SHARE "${SH_PART_DEV}" &>/dev/null
-    ;;
-  exfat)
-    mkfs.exfat -n SHARE "${SH_PART_DEV}" &>/dev/null
-    ;;
-  *)
-    # Default to ext4
-    mkfs.ext4 -F -q -L SHARE -m 0 "${SH_PART_DEV}" &>/dev/null
-    ;;
-esac
-
-# 10) Final mounts
-for dev in "${BT_PART_DEV}" "${SH_PART_DEV}"; do
-  if mount | grep -q "^$dev "; then
-    echo "Auto-unmounting $dev..."
-    umount $dev
-  fi
-done
-mkdir -p "$TMP_BATOCERA" "$TMP_SHARE"
-mount "${BT_PART_DEV}" "$TMP_BATOCERA"
-mount "${SH_PART_DEV}" "$TMP_SHARE"
-
-# 11) Copy system files
-echo "Copying system files from $BOOT_SRC to internal BATOCERA..."
-cp -av "$BOOT_SRC"/. "$TMP_BATOCERA"/
-sync
-
-# 12) Copy userdata
-echo "Calculating data migration requirements..."
-avail_kb=$(df -k "$TMP_SHARE" | awk 'NR==2 {print $4}')
-total_userdata_kb=$(du -ks "$USERDATA_SRC" | awk '{print $1}')
-essential_data_kb=$(get_storage_size_kb "$USERDATA_SRC")
-
-echo "Space available internally: $((avail_kb / 1024 / 1024)) GB"
-echo "Space required for everything (including ROMs): $((total_userdata_kb / 1024 / 1024)) GB"
-
-if (( total_userdata_kb <= avail_kb )); then
-  # Scenario: Everything fits
-  read -rp "Enough space found. Copy ALL data (including ROMs) to internal storage? [y/N]: " copy_ans
-  if [[ $copy_ans =~ ^[Yy]$ ]]; then
-    echo "Copying all data... this may take a long time."
-    cp -av "$USERDATA_SRC"/. "$TMP_SHARE"/
-    sync
-  fi
-else
-  # Scenario: Not enough space for everything
-  echo "WARNING: Not enough space to copy all ROMs."
-  echo "Required: $((total_userdata_kb / 1024 / 1024)) GB | Available: $((avail_kb / 1024 / 1024)) GB"
-  read -rp "Copy settings and BIOS only (skip ROMs)? [y/N]: " copy_ans
-  if [[ $copy_ans =~ ^[Yy]$ ]]; then
-    if (( essential_data_kb <= avail_kb )); then
-      echo "Copying BIOS and settings files (excluding roms)..."
-      find "$USERDATA_SRC" -mindepth 1 -maxdepth 1 \
-        ! -name "roms" \
-        -exec cp -av {} "$TMP_SHARE"/ \;
-      sync
-    else
-      echo "Skipping copy: Even settings and BIOS are too large for the internal partition."
-    fi
-  fi
-fi
-
-# 13) Final sync and cleanup
-echo "Syncing data..."
-sync
-umount "$TMP_BATOCERA"
-umount "$TMP_SHARE"
-rmdir "$TMP_BATOCERA" "$TMP_SHARE"
-
-# 15) Final summary
-ud_sz=$(get_gb "${UD_PART_DEV}")
-bt_sz=$(get_gb "${BT_PART_DEV}")
-sh_sz=$(get_gb "${SH_PART_DEV}")
-
-echo "Done. New partitions:"
-echo "  Android userdata: ${UD_PART_DEV} (${ud_sz} GB)"
-echo "  BATOCERA (System): ${BT_PART_DEV} (${bt_sz} GB)"
-echo "  SHARE    (Data)  : ${SH_PART_DEV} (${sh_sz} GB) [${SOURCE_FS^^}]"
-echo
-echo "Batocera Installation successful. Reboot and remove your SD card."

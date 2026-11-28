@@ -20,10 +20,10 @@ determine_boot_part() {
 
 determine_default_share_part() {
     BOOTPART=$(determine_boot_part)
-    XBOOT=$(echo "${BOOTPART}" | sed -e s+'^.*\([0-9]\)$'+'\1'+)
+    XBOOT=$(echo "${BOOTPART}" | sed -e s+'^.*[^0-9]\([0-9][0-9]*\)$'+'\1'+)
 
     # check that it is a number
-    if ! echo "${XBOOT}" | grep -qE '^[0-9]$'
+    if ! echo "${XBOOT}" | grep -qE '^[0-9]+$'
     then
 	return 1
     fi
@@ -34,10 +34,10 @@ determine_default_share_part() {
 
 determine_default_share_part_num() {
     BOOTPART=$(determine_boot_part)
-    XBOOT=$(echo "${BOOTPART}" | sed -e s+'^.*\([0-9]\)$'+'\1'+)
+    XBOOT=$(echo "${BOOTPART}" | sed -e s+'^.*[^0-9]\([0-9][0-9]*\)$'+'\1'+)
 
     # check that it is a number
-    if ! echo "${XBOOT}" | grep -qE '^[0-9]$'
+    if ! echo "${XBOOT}" | grep -qE '^[0-9]+$'
     then
 	return 1
     fi

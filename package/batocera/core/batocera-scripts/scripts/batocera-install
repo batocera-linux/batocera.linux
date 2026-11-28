@@ -14,7 +14,10 @@ do_help() {
 	echo "$0 listDisks" >&2
 	echo "$0 listArchs" >&2
 	echo "$0 listFiles" >&2
+	echo "$0 checkDisk <disk>" >&2
+	echo "$0 checkPower" >&2
 	echo "$0 install <disk> <arch|file>" >&2
+	echo "$0 install <disk> internal --android-size <GB> --copy-data <all|bios|none>" >&2
 }
 
 if [ $# -eq 0 ]; then
@@ -48,21 +51,43 @@ disks_to_keep() {
 	sort -u
 }
 
+# the internal disk of an Android device that batocera-install-internal can resize
+internal_disk() {
+    command -v batocera-install-internal >/dev/null || return 0
+    batocera-install-internal disk 2>/dev/null | grep '^/dev/' | sed -e s+'^/dev/'++
+}
+
 do_listDisks() {
+    KEEP=$(disks_to_keep)
+    INTERNAL=$(internal_disk)
+    # the other Qualcomm UFS LUNs and eMMC hold the bootloaders, only USB disks are safe to overwrite
+    QCOM=0
+    grep -qs '^PARTNAME=abl_a$' /sys/class/block/*/uevent && QCOM=1
+
     lsblk -n -P -o TYPE,NAME,SIZE,MODEL |
 	grep -E '^TYPE="disk" ' |
 	sed -e s+' [ ]*"$'+'"'+ | # remove trailing spaces
 	sed -e s+'^TYPE="[^"]*" NAME=\"\([^"]*\)\" SIZE=\"\([^"]*\)\" MODEL=\"\([^"]*\)\"$'+'\1 \3 (\2)'+ |
 	while read XDRIVE XTEXT
 	do
-	    for XKEEP in $(disks_to_keep)
-	    do
-		if test "${XKEEP}" != "${XDRIVE}"
-		then
-		    echo "${XDRIVE} ${XTEXT}"
-		fi
-	    done
+	    echo "${KEEP}" | grep -qx "${XDRIVE}" && continue
+	    if test "${QCOM}" = 1 && test "$(lsblk -d -n -o TRAN "/dev/${XDRIVE}")" != "usb" && test "${XDRIVE}" != "${INTERNAL}"
+	    then
+		continue
+	    fi
+	    echo "${XDRIVE} ${XTEXT}"
 	done
+}
+
+do_checkDisk() {
+    CDISK=${1#/dev/}
+    if test -n "${CDISK}" && test "${CDISK}" = "$(internal_disk)"
+    then
+	echo "TYPE=android_internal"
+	batocera-install-internal check
+	return $?
+    fi
+    echo "TYPE=standard"
 }
 
 do_listArchs() {
@@ -118,6 +143,18 @@ do_install() {
     if ! test -e "/dev/${INSDISK}"
     then
 	echo "invalid disk ${INSDISK}" >&2
+	return 1
+    fi
+
+    if test "${INSDISK}" = "$(internal_disk)"
+    then
+	echo "${INSDISK} holds Android, install to it with the internal option" >&2
+	return 1
+    fi
+
+    if ! do_listDisks | cut -d ' ' -f 1 | grep -qx "${INSDISK}"
+    then
+	echo "${INSDISK} is not an install target" >&2
 	return 1
     fi
 
@@ -224,7 +261,29 @@ case "${ACTION}" in
     listFiles)
 	do_listFiles
 	;;
+    checkDisk)
+	if test $# -ne 1
+	then
+	    do_help
+	    exit 1
+	fi
+	do_checkDisk "${1}" || exit 1
+	;;
+    checkPower)
+	command -v batocera-install-internal >/dev/null || exit 1
+	batocera-install-internal power
+	;;
     install)
+	if test "${2}" = "internal"
+	then
+	    if test "${1#/dev/}" != "$(internal_disk)"
+	    then
+		echo "${1} is not the internal Android disk" >&2
+		exit 1
+	    fi
+	    shift 2
+	    exec batocera-install-internal install "$@"
+	fi
 	if test $# -ne 2
 	then
 	    do_help
