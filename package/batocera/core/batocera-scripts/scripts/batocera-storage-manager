@@ -411,6 +411,12 @@ handle_partition_event() {
         exit 0
     fi
 
+    # Batocera installed to the internal storage alongside Android
+    if [[ "$label" =~ ^(SHARE|BATOCERA)$ ]] && { [ -f "/tmp/is_system_disk_$parent" ] || grep -qsE '^PARTNAME=(abl_a|persist)$' /sys/class/block/"$parent"/*/uevent; }; then
+        log_msg "SKIP: [$devname] Internal Batocera install alongside Android on $parent (label: $label)."
+        exit 0
+    fi
+
     # Comprehensive Android/Qualcomm check
     shopt -s nocasematch
     local combined_test="$label $part_label"
@@ -451,7 +457,11 @@ handle_disk_event() {
     if [ -z "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ]; then
         log_msg "SAFETY: [$devname] No partitions seen. Probing for hidden tables..."
         partprobe "/dev/$devname" >/dev/null 2>&1
-        udevadm settle
+        # udev runs this script, so udevadm settle would wait on our own event until it times out
+        for i in $(seq 15); do
+            [ -n "$(lsblk -no NAME "/dev/$devname" | grep -v "^$devname$")" ] && break
+            sleep 0.2
+        done
     fi
 
     # Check if this disk contains any Android/Qualcomm/Critical labels
