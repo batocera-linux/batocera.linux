@@ -134,6 +134,7 @@
 - Armbian firmware to Nov 18, 2026 build
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
+- Linux Firmware to 20261124
 - Mesa3D to 26.3.1
 - Nvidia Open Production driver to 620.70.06
 - Qualcomm QCS6490 device kernel updated to 7.3.5
@@ -144,6 +145,7 @@
 - Qualcomm SM8750 device kernel updated to 7.3.5
 - Rockchip RK3562 device kernel updated to 7.3.5
 - Rockchip RK3588 mainline kernel updated to 7.3.5
+- Sound Open Firmware to 2026.09.2
 - U-Boot updated to 2026.10 on Allwinner H3, H5, H6, H616 and T527 and Rockchip RK3288 and RK3399 devices
 - VKD3D Proton to 3.1
 - WINE Proton to proton-11.0-2
