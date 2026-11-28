@@ -15,6 +15,7 @@
 	<feature name="shortcuts_tabs" display="Quick Access">
 		<tab display="Game" target="Game" align="right" if="${curl http://127.0.0.1:1234/runningGame | jq -r '.systemName' | sed 's/^null$//'}" />
 		<tab display="Save States" target="SaveStates" if="${curl -s http://127.0.0.1:1234/runningGame/savestates | jq -e 'length &gt; 0' &gt;/dev/null &amp;&amp; echo 1}" />
+		<tab display="Achievements" target="Achievements" if="${curl -s http://127.0.0.1:1234/runningGame/achievements/summary}" />
 		<tab display="Gun" target="Gun" if="${curl -s http://127.0.0.1:1234/runningGame | jq -r '.name' | grep -qE '^null$' || ls /var/run/batocera-overlays/gun_help.png}" />
 		<tab display="System" target="System" align="right" />
 		<tab display="Performance" target="Performance" if="${ls /sys/devices/system/cpu/cpufreq/policy0/scaling_governor}" />
@@ -112,6 +113,16 @@
 			<gallery display="${curl -s http://127.0.0.1:1234/runningGame/savestates}" refresh="5"
 				action="batocera-savestate load {id}"
 				confirm="Load this state? Progress since it was saved is lost." afterclick="bcc_close" />
+		</feature>
+	</hgroup>
+
+	<!-- the running game's RetroAchievements, unlocked first -->
+	<hgroup name="Achievements" display="Achievements">
+		<feature display="Progress">
+			<text display="${curl -s http://127.0.0.1:1234/runningGame/achievements/summary}" refresh="30" />
+		</feature>
+		<feature>
+			<gallery display="${curl -s http://127.0.0.1:1234/runningGame/achievements}" refresh="30" />
 		</feature>
 	</hgroup>
 
