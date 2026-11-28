@@ -42,6 +42,7 @@
 - Cemu game profiles, Wii U system fonts and UI translations were not loaded
 - Chronic Concepts Insert Coin Cube was sometimes not configured after being plugged in
 - Collective Minds PS4 Chat Boost keyboard input was ignored and the device was seen as a joystick
+- Descent 1 shareware crashed at start while loading its sounds
 - Dolphin pad profiles were not matched to the right controller when several of the same controller model were connected
 - EmulationStation froze at the screensaver with "stop music on screensaver" on
 - EmulationStation message box buttons ran off the screen when they did not fit
@@ -108,6 +109,7 @@
 - Dolphin-Emu to Nov 19, 2026 build
 - DOSBox Staging to v0.83.1
 - DOSBox-X to 2026.10.01
+- DXX-Rebirth (Descent 1 & 2) to Nov 24, 2026 build
 - GameTankEmulator to Nov 19, 2026 build
 - Keisho (formerly SM2-Emu) to v0.9.63
 - Lightspark to 0.10.0
