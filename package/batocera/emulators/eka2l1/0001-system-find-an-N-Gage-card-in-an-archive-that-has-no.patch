@@ -1,0 +1,156 @@
+From 3bf49616a1a893af8710dac2c7fe2d3132bf603b Mon Sep 17 00:00:00 2001
+From: soaresden <soaresden@gmail.com>
+Date: Sun, 1 Nov 2026 21:49:24 +0100
+Subject: [PATCH 1/8] system: find an N-Gage card in an archive that has no
+ System folder
+
+Some card dumps start one level lower, at Apps and Libs, or hold only the game folder, sometimes renamed
+(TombRaider/6R25.app). Mounting and installing them failed with "no System folder". Look for System
+first, as before; otherwise put Apps and Libs under System, and a folder holding an application under
+System/Apps with the name of that application.
+---
+ src/emu/system/src/epoc.cpp | 97 +++++++++++++++++++++++++++++++------
+ 1 file changed, 81 insertions(+), 16 deletions(-)
+
+diff --git a/src/emu/system/src/epoc.cpp b/src/emu/system/src/epoc.cpp
+index 1c3238d20..5f125f2c0 100644
+--- a/src/emu/system/src/epoc.cpp
++++ b/src/emu/system/src/epoc.cpp
+@@ -967,6 +967,78 @@ namespace eka2l1 {
+         return found;
+     }
+ 
++    // Where the entries of an N-Gage card archive go on the card. Most dumps hold its System folder; others
++    // start one level lower, at Apps and Libs, or hold only the game folder (6R21/6R21.app), which goes to
++    // System/Apps under the name of its application. The rule with the longest matching prefix applies.
++    struct ngage_card_archive_layout {
++        std::vector<std::pair<std::string, std::string>> rules;   // archive prefix, folder on the card
++
++        bool find(const std::vector<common::archive_entry_info> &entries) {
++            std::string prefix;
++
++            if (find_archive_root_by_marker(entries, "system/", prefix)) {
++                rules.emplace_back(prefix, "");
++                return true;
++            }
++
++            for (const char *folder : { "apps/", "libs/" }) {
++                if (find_archive_root_by_marker(entries, folder, prefix)) {
++                    rules.emplace_back(prefix + entry_case(entries, prefix, folder), std::string("system/") + folder);
++                }
++            }
++
++            for (const common::archive_entry_info &entry : entries) {
++                const std::string lowered = common::lowercase_string(entry.path);
++                if (!lowered.ends_with(".app")) {
++                    continue;
++                }
++
++                const std::size_t name_pos = lowered.find_last_of('/') + 1;
++                const std::string folder = entry.path.substr(0, name_pos);
++
++                // Already under an Apps folder found above
++                if (lowered.substr(0, name_pos).ends_with("apps/") || (lowered.find("/apps/") != std::string::npos)
++                    || lowered.starts_with("apps/")) {
++                    continue;
++                }
++
++                rules.emplace_back(folder, "system/apps/" + entry.path.substr(name_pos, entry.path.size() - name_pos - 4) + "/");
++            }
++
++            return !rules.empty();
++        }
++
++        // The card path of an entry, or nothing when it is not part of the card
++        std::string destination(const std::string &path) const {
++            const std::pair<std::string, std::string> *best = nullptr;
++
++            for (const auto &rule : rules) {
++                if ((path.compare(0, rule.first.size(), rule.first) == 0) && (!best || (rule.first.size() > best->first.size()))) {
++                    best = &rule;
++                }
++            }
++
++            if (!best || (path.size() == best->first.size())) {
++                return {};
++            }
++
++            return best->second + path.substr(best->first.size());
++        }
++
++    private:
++        // The folder as the archive spells it, for the prefix to match its entries
++        static std::string entry_case(const std::vector<common::archive_entry_info> &entries, const std::string &prefix,
++            const std::string &folder) {
++            for (const common::archive_entry_info &entry : entries) {
++                if ((entry.path.size() >= prefix.size() + folder.size()) && (entry.path.compare(0, prefix.size(), prefix) == 0)
++                    && (common::lowercase_string(entry.path.substr(prefix.size(), folder.size())) == folder)) {
++                    return entry.path.substr(prefix.size(), folder.size());
++                }
++            }
++            return folder;
++        }
++    };
++
+     zip_mount_error system_impl::mount_game_zip(drive_number drv, const drive_media media, const std::string &zip_path, const std::uint32_t base_attrib, progress_changed_callback progress_cb, cancel_requested_callback cancel_cb) {
+         std::vector<common::archive_entry_info> entries;
+ 
+@@ -974,9 +1046,9 @@ namespace eka2l1 {
+             return zip_mount_error_not_zip;
+         }
+ 
+-        std::string card_prefix;
++        ngage_card_archive_layout layout;
+ 
+-        if (!find_archive_root_by_marker(entries, "system/", card_prefix)) {
++        if (!layout.find(entries)) {
+             return zip_mount_error_no_system_folder;
+         }
+ 
+@@ -993,11 +1065,8 @@ namespace eka2l1 {
+ 
+         const bool unpacked = common::extract_archive(zip_path,
+             [&](const common::archive_entry_info &entry) -> std::string {
+-                if (entry.path.compare(0, card_prefix.size(), card_prefix) != 0) {
+-                    return {};
+-                }
+-                const std::string relative = entry.path.substr(card_prefix.size());
+-                return relative.empty() ? std::string() : eka2l1::add_path(temp_folder, relative);
++                const std::string on_card = layout.destination(entry.path);
++                return on_card.empty() ? std::string() : eka2l1::add_path(temp_folder, on_card);
+             },
+             progress_cb, cancel_cb);
+ 
+@@ -1161,9 +1230,9 @@ namespace eka2l1 {
+             return ngage_game_card_general_error;
+         }
+ 
+-        std::string card_prefix;
++        ngage_card_archive_layout layout;
+ 
+-        if (!find_archive_root_by_marker(entries, "system/apps/", card_prefix)) {
++        if (!layout.find(entries)) {
+             return ngage_game_card_no_game_data_folder;
+         }
+ 
+@@ -1180,14 +1249,10 @@ namespace eka2l1 {
+         std::vector<std::string> destinations(entries.size());
+ 
+         for (std::size_t i = 0; i < entries.size(); i++) {
+-            if (entries[i].path.compare(0, card_prefix.size(), card_prefix) != 0) {
+-                continue;
+-            }
+-
+-            const std::string relative = entries[i].path.substr(card_prefix.size());
++            const std::string on_card = layout.destination(entries[i].path);
+ 
+-            if (!relative.empty()) {
+-                destinations[i] = eka2l1::add_path(staging, relative);
++            if (!on_card.empty()) {
++                destinations[i] = eka2l1::add_path(staging, on_card);
+             }
+         }
+ 
+-- 
+2.53.0
+

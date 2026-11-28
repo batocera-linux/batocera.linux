@@ -43,6 +43,7 @@ BATOCERA_LAUNCH_LOCAL_PYTHON_EXCLUSIONS = \
 		$(if $(BR2_PACKAGE_EASYRPG_PLAYER),,easyrpg.py) \
 		$(if $(BR2_PACKAGE_ECWOLF),,ecwolf.py) \
 		$(if $(BR2_PACKAGE_EDUKE32),,eduke32.py) \
+		$(if $(BR2_PACKAGE_EKA2L1),,eka2l1.py eka2l1_remap.py) \
 		$(if $(BR2_PACKAGE_ETLEGACY),,etlegacy.py) \
 		$(if $(BR2_PACKAGE_FLATPAK),,flatpak.py) \
 		$(if $(BR2_PACKAGE_FSUAE),,fsuae.py) \
