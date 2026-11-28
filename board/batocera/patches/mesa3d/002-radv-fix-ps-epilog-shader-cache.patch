@@ -1,0 +1,65 @@
+From 108edde056a4a62e5a12d0252834edc7c788e63a Mon Sep 17 00:00:00 2001
+From: Samuel Pitoiset <samuel.pitoiset@gmail.com>
+Date: Mon, 23 Nov 2026 10:38:27 +0100
+Subject: [PATCH] radv: fix enabling the per-device shader cache for PS epilogs
+
+Using the enabled features isn't safe because they are part of Vulkan
+1.3, so this should be enabled by default since PS epilogs depend on
+this state.
+
+Fixes: ccb8eb5cb7a ("radv: use the PS epilog for the FS depth output if dynamic state can remove it")
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/work_items/16948
+Signed-off-by: Samuel Pitoiset <samuel.pitoiset@gmail.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/46621>
+---
+ src/amd/vulkan/radv_cmd_buffer.c |  3 +--
+ src/amd/vulkan/radv_device.c     | 12 ++----------
+ 2 files changed, 3 insertions(+), 12 deletions(-)
+
+diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
+index a03b899eb4d1..31865ec73016 100644
+--- a/src/amd/vulkan/radv_cmd_buffer.c
++++ b/src/amd/vulkan/radv_cmd_buffer.c
+@@ -1327,8 +1327,7 @@ radv_cmd_buffer_init_shader_part_cache(struct radv_device *device, struct radv_c
+ {
+    if (device->vs_prologs.ops)
+       _mesa_set_init(&cmd_buffer->vs_prologs, NULL, device->vs_prologs.ops->hash, device->vs_prologs.ops->equals);
+-   if (device->ps_epilogs.ops)
+-      _mesa_set_init(&cmd_buffer->ps_epilogs, NULL, device->ps_epilogs.ops->hash, device->ps_epilogs.ops->equals);
++   _mesa_set_init(&cmd_buffer->ps_epilogs, NULL, device->ps_epilogs.ops->hash, device->ps_epilogs.ops->equals);
+ }
+ 
+ static void radv_destroy_msrtss_transients(struct radv_cmd_buffer *cmd_buffer);
+diff --git a/src/amd/vulkan/radv_device.c b/src/amd/vulkan/radv_device.c
+index 4b9f2b090c2e..66a11a993a6d 100644
+--- a/src/amd/vulkan/radv_device.c
++++ b/src/amd/vulkan/radv_device.c
+@@ -1473,8 +1473,7 @@ radv_destroy_device(struct radv_device *device, const VkAllocationCallbacks *pAl
+ 
+    radv_device_finish_notifier(device);
+    radv_device_finish_vs_prologs(device);
+-   if (device->ps_epilogs.ops)
+-      radv_shader_part_cache_finish(device, &device->ps_epilogs);
++   radv_shader_part_cache_finish(device, &device->ps_epilogs);
+    radv_device_finish_border_color(device);
+    radv_device_finish_vrs_image(device);
+ 
+@@ -1787,14 +1786,7 @@ radv_CreateDevice(VkPhysicalDevice physicalDevice, const VkDeviceCreateInfo *pCr
+          goto fail;
+    }
+ 
+-   if (device->vk.enabled_features.graphicsPipelineLibrary || device->vk.enabled_features.shaderObject ||
+-       device->vk.enabled_features.extendedDynamicState ||
+-       device->vk.enabled_features.extendedDynamicState3ColorBlendEnable ||
+-       device->vk.enabled_features.extendedDynamicState3ColorWriteMask ||
+-       device->vk.enabled_features.extendedDynamicState3AlphaToCoverageEnable ||
+-       device->vk.enabled_features.extendedDynamicState3ColorBlendEquation ||
+-       device->vk.enabled_features.extendedDynamicState3RasterizationSamples)
+-      radv_shader_part_cache_init(&device->ps_epilogs, &ps_epilog_ops);
++   radv_shader_part_cache_init(&device->ps_epilogs, &ps_epilog_ops);
+ 
+    if (pdev->info.has_zero_index_buffer_bug || device->compiler_info.key.mitigate_smem_oob) {
+       result = radv_bo_create(
+-- 
+GitLab
+
