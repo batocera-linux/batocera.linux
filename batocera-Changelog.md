@@ -17,6 +17,7 @@
 - Batocera Control Centre (BCC):
   - Performance tab for power modes, TDP, platform profile and fan
   - Save states tab
+  - Achievements tab with RetroAchievements progress for the running game, save states are hidden in hardcore mode
   - Monitor tab for performance analysis
   - Gamescope option for games on Wayland images with Vulkan:
     - Game resolution, scaling, upscale filter (FSR, NIS, SGSR), sharpness and frame rate limit options
