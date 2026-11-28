@@ -135,7 +135,8 @@
 - D7VK to v2.4
 - DXVK-NVAPI to v0.9.3
 - Mesa3D to 26.3.1
-- Nvidia Open Production driver to 620.70.06
+- Nvidia 580 Legacy driver to 580.196.07
+- Nvidia Open Production driver to 620.73.04
 - Qualcomm QCS6490 device kernel updated to 7.3.5
 - Qualcomm SM4450 device kernel updated to 7.3.5
 - Qualcomm SM6115 device kernel updated to 7.3.5
